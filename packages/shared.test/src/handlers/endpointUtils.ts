@@ -16,10 +16,14 @@
 
 import stableStringify from "json-stable-stringify";
 
-export type PagedBodyResponse<T> = {
+export interface PagedBodyResponse<T> {
   nextPageToken?: string;
-  data: readonly T[];
-};
+  data: T[];
+}
+
+export interface PagedBodyResponseWithTotal<T> extends PagedBodyResponse<T> {
+  totalCount: string;
+}
 
 export type PagedRequest = {
   excludeRid?: boolean;
@@ -30,11 +34,21 @@ export type PagedRequest = {
 export function pageThroughResponse<
   TData,
   TRequest extends PagedRequest,
-  TResponse extends PagedBodyResponse<TData>,
+  TResponse extends
+    | PagedBodyResponse<TData>
+    | PagedBodyResponseWithTotal<TData>,
+  TIncludeCount
+    extends (TResponse extends PagedBodyResponseWithTotal<TData> ? true
+      : false),
 >(
   handlers: { [key: string]: TResponse["data"] },
   request: TRequest,
-): PagedBodyResponse<TData> | undefined {
+  includeCount: TIncludeCount,
+):
+  | (TIncludeCount extends true ? PagedBodyResponseWithTotal<TData>
+    : PagedBodyResponse<TData>)
+  | undefined
+{
   const { pageSize, pageToken, excludeRid, ...requestWithoutPagination } =
     request;
 
@@ -66,18 +80,34 @@ export function pageThroughResponse<
     ? (currentPage + 1).toString()
     : undefined;
 
-  return {
+  const ret: PagedBodyResponse<TData> | PagedBodyResponseWithTotal<TData> = {
     nextPageToken,
     data: data.slice(startIndex, endIndex),
+    ...(includeCount
+      ? { totalCount: "" + data.length }
+      : {}),
   };
+
+  return ret as
+    | (TIncludeCount extends true ? PagedBodyResponseWithTotal<TData>
+      : PagedBodyResponse<TData>)
+    | undefined;
 }
 
-export function pageThroughResponseSearchParams<TData>(
+export function pageThroughResponseSearchParams<
+  TData,
+  TIncludeCount extends boolean,
+>(
   handlers: { [key: string]: readonly TData[] },
   handlerKey: string,
   pageSize: number = 1000,
   pageToken?: string,
-): PagedBodyResponse<TData> | undefined {
+  includeCount?: TIncludeCount,
+):
+  | (TIncludeCount extends true ? PagedBodyResponseWithTotal<TData>
+    : PagedBodyResponse<TData>)
+  | undefined
+{
   if (handlers[handlerKey] === undefined) {
     return undefined;
   }
@@ -95,10 +125,18 @@ export function pageThroughResponseSearchParams<TData>(
     ? (currentPage + 1).toString()
     : undefined;
 
-  return {
+  const ret: PagedBodyResponse<TData> | PagedBodyResponseWithTotal<TData> = {
     nextPageToken,
     data: data.slice(startIndex, endIndex),
+    ...(includeCount
+      ? { totalCount: "" + data.length }
+      : {}),
   };
+
+  return ret as
+    | (TIncludeCount extends true ? PagedBodyResponseWithTotal<TData>
+      : PagedBodyResponse<TData>)
+    | undefined;
 }
 
 export function areArrayBuffersEqual(

@@ -37,7 +37,11 @@ export function createAttachmentFromRid(
       ) as Promise<Blob>;
     },
     async fetchMetadata() {
-      return Ontologies.Attachments.getAttachment(client, rid);
+      const r = await Ontologies.Attachments.getAttachment(client, rid);
+      return {
+        ...r,
+        sizeBytes: Number(r.sizeBytes),
+      };
     },
   };
 }

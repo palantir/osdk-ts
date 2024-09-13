@@ -2323,9 +2323,6 @@ importers:
       '@osdk/api':
         specifier: workspace:~
         version: link:../api
-      '@osdk/gateway':
-        specifier: workspace:~
-        version: link:../gateway
       consola:
         specifier: ^3.2.3
         version: 3.2.3
@@ -2345,6 +2342,9 @@ importers:
       '@osdk/client.unstable':
         specifier: workspace:~
         version: link:../client.unstable
+      '@osdk/internal.foundry.core':
+        specifier: workspace:~
+        version: link:../internal.foundry.core
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -2608,6 +2608,15 @@ importers:
       '@osdk/gateway':
         specifier: workspace:~
         version: link:../gateway
+      '@osdk/internal.foundry.core':
+        specifier: workspace:~
+        version: link:../internal.foundry.core
+      '@osdk/internal.foundry.ontologies':
+        specifier: workspace:~
+        version: link:../internal.foundry.ontologies
+      '@osdk/internal.foundry.ontologiesv2':
+        specifier: workspace:~
+        version: link:../internal.foundry.ontologiesv2
       fetch-retry:
         specifier: ^6.0.0
         version: 6.0.0
