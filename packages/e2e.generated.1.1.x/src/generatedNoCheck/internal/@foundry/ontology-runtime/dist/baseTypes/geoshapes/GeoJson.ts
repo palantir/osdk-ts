@@ -1,4 +1,4 @@
-import type {
+import {
   GeoJson as OG_GeoJson,
   GeoJsonGeometry as OG_GeoJsonGeometry,
   GeoJsonGeometryCollection as OG_GeoJsonGeometryCollection,

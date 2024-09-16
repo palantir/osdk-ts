@@ -41,9 +41,9 @@ export async function generatePerQueryDataFiles(
     Object.values(ontology.queryTypes).map(async query => {
       const objectTypes = getObjectTypesFromQuery(query);
       const importObjects = objectTypes.length > 0
-        ? `import {${
-          [...objectTypes].join(",")
-        }} from "../objects${importExt}";`
+        ? `import {${[...objectTypes].join(",")}} from "../objects${
+          v2 ? "" : "/index"
+        }${importExt}";`
         : "";
       if (v2) {
         await fs.writeFile(

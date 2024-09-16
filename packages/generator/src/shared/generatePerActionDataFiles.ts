@@ -141,43 +141,55 @@ export async function generatePerActionDataFiles(
         } satisfies ActionDefinition<"${action.apiName}", ${uniqueApiNamesString}>;`;
       }
 
-      const referencedObjectDefs = new Set();
+      const referencedObjectDefs = new Set<string>();
       for (const p of Object.values(action.parameters)) {
         if (p.dataType.type === "object" || p.dataType.type === "objectSet") {
-          referencedObjectDefs.add(
-            getObjectDefIdentifier(p.dataType.objectApiName!, v2),
-          );
-          referencedObjectDefs.add(
-            getObjectDefIdentifier(p.dataType.objectTypeApiName!, v2),
-          );
+          if (p.dataType.objectApiName) {
+            referencedObjectDefs.add(
+              getObjectDefIdentifier(p.dataType.objectApiName, v2),
+            );
+          }
+          if (p.dataType.objectTypeApiName) {
+            referencedObjectDefs.add(
+              getObjectDefIdentifier(p.dataType.objectTypeApiName, v2),
+            );
+          }
         }
         if (
           p.dataType.type === "array"
           && (p.dataType.subType.type === "object"
             || p.dataType.subType.type === "objectSet")
         ) {
-          referencedObjectDefs.add(
-            getObjectDefIdentifier(p.dataType.subType.objectApiName!, v2),
-          );
-          referencedObjectDefs.add(
-            getObjectDefIdentifier(p.dataType.subType.objectTypeApiName!, v2),
-          );
+          if (p.dataType.subType.objectApiName) {
+            referencedObjectDefs.add(
+              getObjectDefIdentifier(p.dataType.subType.objectApiName, v2),
+            );
+          }
+          if (p.dataType.subType.objectTypeApiName!) {
+            referencedObjectDefs.add(
+              getObjectDefIdentifier(p.dataType.subType.objectTypeApiName, v2),
+            );
+          }
         }
       }
 
       const importObjects = referencedObjectDefs.size > 0
         ? `import type {${
-          [...referencedObjectDefs].join(",")
-        }} from "../objects${importExt}";`
+          [...referencedObjectDefs].filter(a => a && a.length > 0).join(",")
+        }} from "../objects${v2 ? "" : "/index"}${importExt}";`
         : "";
 
       await fs.writeFile(
         path.join(outDir, `${action.apiName}.ts`),
         await formatTs(`
           import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType, VersionBound} from "@osdk/api";
-          import type { ActionSignature, ApplyActionOptions, ApplyBatchActionOptions, OsdkActionParameters,ActionReturnTypeForOptions, NOOP } from '@osdk/client.api';
+          ${
+          v2
+            ? `import type { ActionSignature, ApplyActionOptions, ApplyBatchActionOptions, OsdkActionParameters,ActionReturnTypeForOptions, NOOP } from '@osdk/client.api';
           import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
-          import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
+          import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";`
+            : ""
+        }
           ${importObjects}
 
         

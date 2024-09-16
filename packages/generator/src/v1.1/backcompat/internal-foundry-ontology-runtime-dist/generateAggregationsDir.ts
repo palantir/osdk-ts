@@ -59,8 +59,7 @@ export async function generateAggregationsDir(
     await formatTs(
       `
       import { ObjectSetDefinition } from "../baseTypes/index${importExt}";
-      import { FoundryClientOptions } from "../client/${importExt}";
-      import { AggregateObjectsError, OntologyMetadata, Result } from "../ontologyProvider/index${importExt}";
+      import { FoundryClientOptions } from "../client/index${importExt}";
       import { AggregationClause, AggregationResult, BucketGroup, BucketValue, InternalBucketing, Metrics, MetricValue } from "./Aggregations${importExt}";
       `
         + reexportConsts(["ComputeStep"])
@@ -82,7 +81,8 @@ export async function generateAggregationsDir(
     path.join(aggregationsDir, "CountOperation.ts"),
     await formatTs(
       ``
-        + reexportConsts(["CountOperation", "isCountOperation"])
+        + reexportConsts(["CountOperation"])
+        + reexportConsts(["isCountOperation"], true)
         + reexportTypes(["CountOperation"]),
     ),
   );

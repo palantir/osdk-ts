@@ -1,4 +1,4 @@
-import type {
+import {
   DurationUnit as OG_DurationUnit,
   TimeSeriesDuration as OG_TimeSeriesDuration,
   WhenUnit as OG_WhenUnit,

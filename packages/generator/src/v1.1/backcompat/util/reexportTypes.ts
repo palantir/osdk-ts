@@ -20,7 +20,7 @@ export function reexportTypes(
   genericArgsRight = cleanup(genericArgsLeft),
 ) {
   return `
-    import type { ${
+    import { ${
     typesToExport.map(q => `${q} as OG_${q}`).join(", ")
   }} from "@osdk/legacy-client";
     

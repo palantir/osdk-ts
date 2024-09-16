@@ -37,7 +37,7 @@ export async function generateUserTokenDir(
     path.join(userTokenDistDir, "UserTokenAuth.ts"),
     await formatTs(
       `
-        ${reexportConsts(["UserTokenAuth"])}
+        ${reexportConsts(["UserTokenAuth"], true)}
     `,
     ),
   );

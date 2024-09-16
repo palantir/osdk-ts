@@ -38,7 +38,7 @@ export async function generatePublicClientDir(
     path.join(publicClientDistDir, "PublicClientAuth.ts"),
     await formatTs(
       `
-        ${reexportConsts(["PublicClientAuth"])}
+        ${reexportConsts(["PublicClientAuth"], true)}
     `,
     ),
   );

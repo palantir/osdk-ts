@@ -101,7 +101,10 @@ export async function generateAggregationsAggregations(
           ],
           "<TAggregatableProperties, TResult extends MetricValue>",
         )
-        + reexportConsts(["assertBucketingInternal", "visitInternalBucketing"])
+        + reexportConsts(
+          ["assertBucketingInternal", "visitInternalBucketing"],
+          true,
+        )
         + reexportTypes(
           ["AggregatableObjectSetStep"],
           "<TAggregatableProperties, TMultipleAggregationProperties, TBucketableProperties, TBucketGroup extends BucketGroup = {}>",

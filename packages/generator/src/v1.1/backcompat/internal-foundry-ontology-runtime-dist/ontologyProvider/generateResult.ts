@@ -31,7 +31,7 @@ export async function generateResult(
         `
         + reexportTypes(["Ok", "Err"], "<T>")
         + reexportTypes(["Result"], "<V, E = FoundryApiError>", "<V,E>")
-        + reexportConsts(["isOk", "isErr", "visitError"])
+        + reexportConsts(["isOk", "isErr", "visitError"], true)
         + reexportTypes(
           ["ErrorVisitor"],
           "<E extends FoundryApiError, R>",

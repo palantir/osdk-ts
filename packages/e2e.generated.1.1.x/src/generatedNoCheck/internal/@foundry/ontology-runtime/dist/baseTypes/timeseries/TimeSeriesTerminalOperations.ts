@@ -1,4 +1,4 @@
-import type {
+import {
   TimeSeriesIterator as OG_TimeSeriesIterator,
   TimeSeriesTerminalOperations as OG_TimeSeriesTerminalOperations,
 } from '@osdk/legacy-client';

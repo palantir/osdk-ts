@@ -41,7 +41,7 @@ export async function generateConfidentialClientDir(
     path.join(confidentialClientDistDir, "ConfidentialClientAuth.ts"),
     await formatTs(
       `
-        ${reexportConsts(["ConfidentialClientAuth"])}
+        ${reexportConsts(["ConfidentialClientAuth"], true)}
     `,
     ),
   );

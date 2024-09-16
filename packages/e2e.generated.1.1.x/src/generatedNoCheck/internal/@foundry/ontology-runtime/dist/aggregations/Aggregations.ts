@@ -1,6 +1,6 @@
 import { LocalDate, Timestamp } from '@osdk/legacy-client';
 
-import type {
+import {
   AggregatableProperties as OG_AggregatableProperties,
   AggregationClause as OG_AggregationClause,
   BucketGroup as OG_BucketGroup,
@@ -47,22 +47,22 @@ export type AggregatableProperties = OG_AggregatableProperties;
 /** @deprecated submodule imports aren't public api **/
 export type AggregationClause = OG_AggregationClause;
 
-import type { Range as OG_Range } from '@osdk/legacy-client';
+import { Range as OG_Range } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type Range<T extends Rangeable> = OG_Range<T>;
 
-import type { BaseGroupBy as OG_BaseGroupBy } from '@osdk/legacy-client';
+import { BaseGroupBy as OG_BaseGroupBy } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type BaseGroupBy<_T extends BucketValue = BucketValue> = OG_BaseGroupBy<_T>;
 
-import type { Duration as OG_Duration } from '@osdk/legacy-client';
+import { Duration as OG_Duration } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type Duration<_T extends Timestamp | LocalDate = Timestamp | LocalDate> = OG_Duration<_T>;
 
-import type {
+import {
   AggregatableProperty as OG_AggregatableProperty,
   MultipleAggregationsOperations as OG_MultipleAggregationsOperations,
 } from '@osdk/legacy-client';
@@ -74,7 +74,7 @@ export type AggregatableProperty<_T extends MetricValue = MetricValue> = OG_Aggr
 export type MultipleAggregationsOperations<_T extends MetricValue = MetricValue> =
   OG_MultipleAggregationsOperations<_T>;
 
-import type { AggregationGroup as OG_AggregationGroup } from '@osdk/legacy-client';
+import { AggregationGroup as OG_AggregationGroup } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type AggregationGroup<
@@ -82,12 +82,12 @@ export type AggregationGroup<
   TBucketGroup extends BucketGroup,
 > = OG_AggregationGroup<TMetrics, TBucketGroup>;
 
-import type { Bucketing as OG_Bucketing } from '@osdk/legacy-client';
+import { Bucketing as OG_Bucketing } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type Bucketing<_T extends string, _X extends BucketValue> = OG_Bucketing<_T, _X>;
 
-import type { AggregationResult as OG_AggregationResult } from '@osdk/legacy-client';
+import { AggregationResult as OG_AggregationResult } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type AggregationResult<
@@ -95,7 +95,7 @@ export type AggregationResult<
   TMetrics extends Metrics | MetricValue,
 > = OG_AggregationResult<TBucketGroup, TMetrics>;
 
-import type { BaseBucketing as OG_BaseBucketing } from '@osdk/legacy-client';
+import { BaseBucketing as OG_BaseBucketing } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type BaseBucketing<
@@ -104,7 +104,7 @@ export type BaseBucketing<
   Kind extends string,
 > = OG_BaseBucketing<TBucketKey, TBucketValue, Kind>;
 
-import type {
+import {
   ExactValueBucketing as OG_ExactValueBucketing,
   InternalBucketing as OG_InternalBucketing,
 } from '@osdk/legacy-client';
@@ -121,7 +121,7 @@ export type InternalBucketing<TBucketKey extends BucketKey, TBucketValue extends
   TBucketValue
 >;
 
-import type {
+import {
   FixedWidthBucketing as OG_FixedWidthBucketing,
   RangeBucketing as OG_RangeBucketing,
 } from '@osdk/legacy-client';
@@ -138,7 +138,7 @@ export type FixedWidthBucketing<
   TBucketValue extends Range<Rangeable>,
 > = OG_FixedWidthBucketing<TBucketKey, TBucketValue>;
 
-import type { DurationBucketing as OG_DurationBucketing } from '@osdk/legacy-client';
+import { DurationBucketing as OG_DurationBucketing } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type DurationBucketing<TBucketKey extends BucketKey, TBucketValue extends Date> = OG_DurationBucketing<
@@ -146,7 +146,7 @@ export type DurationBucketing<TBucketKey extends BucketKey, TBucketValue extends
   TBucketValue
 >;
 
-import type { InternalBucketingVisitor as OG_InternalBucketingVisitor } from '@osdk/legacy-client';
+import { InternalBucketingVisitor as OG_InternalBucketingVisitor } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type InternalBucketingVisitor<
@@ -155,7 +155,7 @@ export type InternalBucketingVisitor<
   R,
 > = OG_InternalBucketingVisitor<TBucketKey, T, R>;
 
-import type { AggregationBuilderResult as OG_AggregationBuilderResult } from '@osdk/legacy-client';
+import { AggregationBuilderResult as OG_AggregationBuilderResult } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type AggregationBuilderResult<T, TMultipleAggregationProperties> = OG_AggregationBuilderResult<
@@ -163,7 +163,7 @@ export type AggregationBuilderResult<T, TMultipleAggregationProperties> = OG_Agg
   TMultipleAggregationProperties
 >;
 
-import type {
+import {
   AggregatablePropertiesForResult as OG_AggregatablePropertiesForResult,
   AggregatablePropertyNamesForResult as OG_AggregatablePropertyNamesForResult,
 } from '@osdk/legacy-client';
@@ -191,7 +191,7 @@ export const assertBucketingInternal = OG_assertBucketingInternal;
 /** @deprecated submodule imports aren't public api **/
 export const visitInternalBucketing = OG_visitInternalBucketing;
 
-import type { AggregatableObjectSetStep as OG_AggregatableObjectSetStep } from '@osdk/legacy-client';
+import { AggregatableObjectSetStep as OG_AggregatableObjectSetStep } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type AggregatableObjectSetStep<
@@ -206,7 +206,7 @@ export type AggregatableObjectSetStep<
   TBucketGroup
 >;
 
-import type { GroupedTerminalAggregationOperations as OG_GroupedTerminalAggregationOperations } from '@osdk/legacy-client';
+import { GroupedTerminalAggregationOperations as OG_GroupedTerminalAggregationOperations } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type GroupedTerminalAggregationOperations<

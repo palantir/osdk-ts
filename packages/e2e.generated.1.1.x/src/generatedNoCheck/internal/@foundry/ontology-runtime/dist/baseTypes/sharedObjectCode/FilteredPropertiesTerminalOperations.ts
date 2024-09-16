@@ -1,4 +1,4 @@
-import type {
+import {
   FilteredPropertiesTerminalOperations as OG_FilteredPropertiesTerminalOperations,
   FilteredPropertiesTerminalOperationsWithGet as OG_FilteredPropertiesTerminalOperationsWithGet,
 } from '@osdk/legacy-client';

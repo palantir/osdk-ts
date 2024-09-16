@@ -1,4 +1,4 @@
-import type {
+import {
   BaseObjectSetDefinition as OG_BaseObjectSetDefinition,
   FilterObjectSetDefinition as OG_FilterObjectSetDefinition,
   IntersectObjectSetDefinition as OG_IntersectObjectSetDefinition,

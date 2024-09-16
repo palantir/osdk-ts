@@ -1,4 +1,4 @@
-import type { OntologyObject as OG_OntologyObject } from '@osdk/legacy-client';
+import { OntologyObject as OG_OntologyObject } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type OntologyObject = OG_OntologyObject;

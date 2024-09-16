@@ -1,16 +1,16 @@
 import { BucketValue } from '../aggregations/index.js';
 
-import type { QueryResponse as OG_QueryResponse } from '@osdk/legacy-client';
+import { QueryResponse as OG_QueryResponse } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type QueryResponse<T> = OG_QueryResponse<T>;
 
-import type { BaseBucket as OG_BaseBucket } from '@osdk/legacy-client';
+import { BaseBucket as OG_BaseBucket } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type BaseBucket<K, V> = OG_BaseBucket<K, V>;
 
-import type { NestedBucket as OG_NestedBucket } from '@osdk/legacy-client';
+import { NestedBucket as OG_NestedBucket } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type NestedBucket<TGroupKey, TSegmentKey, TValue extends BucketValue> = OG_NestedBucket<
@@ -19,7 +19,7 @@ export type NestedBucket<TGroupKey, TSegmentKey, TValue extends BucketValue> = O
   TValue
 >;
 
-import type { TwoDimensionalAggregation as OG_TwoDimensionalAggregation } from '@osdk/legacy-client';
+import { TwoDimensionalAggregation as OG_TwoDimensionalAggregation } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type TwoDimensionalAggregation<
@@ -27,7 +27,7 @@ export type TwoDimensionalAggregation<
   TValue extends BucketValue = number,
 > = OG_TwoDimensionalAggregation<TGroupKey, TValue>;
 
-import type { ThreeDimensionalAggregation as OG_ThreeDimensionalAggregation } from '@osdk/legacy-client';
+import { ThreeDimensionalAggregation as OG_ThreeDimensionalAggregation } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type ThreeDimensionalAggregation<
@@ -36,7 +36,7 @@ export type ThreeDimensionalAggregation<
   TValue extends BucketValue = number,
 > = OG_ThreeDimensionalAggregation<TGroupKey, TSegmentKey, TValue>;
 
-import type { QueryBucketKey as OG_QueryBucketKey } from '@osdk/legacy-client';
+import { QueryBucketKey as OG_QueryBucketKey } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type QueryBucketKey = OG_QueryBucketKey;

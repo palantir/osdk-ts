@@ -1,4 +1,4 @@
-import type {
+import {
   AllValueTypes as OG_AllValueTypes,
   AttachmentType as OG_AttachmentType,
   BaseType as OG_BaseType,
@@ -98,7 +98,7 @@ export type ObjectTypeProperties = OG_ObjectTypeProperties;
 /** @deprecated submodule imports aren't public api **/
 export type StructType = OG_StructType;
 
-import type {
+import {
   ArrayType as OG_ArrayType,
   SetType as OG_SetType,
   TimeSeriesType as OG_TimeSeriesType,
@@ -113,28 +113,28 @@ export type ArrayType<T extends BaseType> = OG_ArrayType<T>;
 /** @deprecated submodule imports aren't public api **/
 export type SetType<T extends BaseType> = OG_SetType<T>;
 
-import type { Property as OG_Property } from '@osdk/legacy-client';
+import { Property as OG_Property } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type Property<TType extends OntologyType = OntologyType> = OG_Property<TType>;
 
-import type { BaseObjectType as OG_BaseObjectType } from '@osdk/legacy-client';
+import { BaseObjectType as OG_BaseObjectType } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type BaseObjectType<TOntologyObject extends OntologyObject = OntologyObject> =
   OG_BaseObjectType<TOntologyObject>;
 
-import type { ObjectSetType as OG_ObjectSetType } from '@osdk/legacy-client';
+import { ObjectSetType as OG_ObjectSetType } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type ObjectSetType<T extends ObjectType> = OG_ObjectSetType<T>;
 
-import type { RangeType as OG_RangeType } from '@osdk/legacy-client';
+import { RangeType as OG_RangeType } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type RangeType<T extends QueryBucketRangeableType> = OG_RangeType<T>;
 
-import type { TwoDimensionalAggregationType as OG_TwoDimensionalAggregationType } from '@osdk/legacy-client';
+import { TwoDimensionalAggregationType as OG_TwoDimensionalAggregationType } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type TwoDimensionalAggregationType<
@@ -142,7 +142,7 @@ export type TwoDimensionalAggregationType<
   TValue extends QueryBucketValueType,
 > = OG_TwoDimensionalAggregationType<TGroupKey, TValue>;
 
-import type { ThreeDimensionalAggregationType as OG_ThreeDimensionalAggregationType } from '@osdk/legacy-client';
+import { ThreeDimensionalAggregationType as OG_ThreeDimensionalAggregationType } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type ThreeDimensionalAggregationType<
