@@ -1,16 +1,19 @@
+import type { PropertyDef as $PropertyDef } from '@osdk/api';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+import type { Person } from './Person.js';
 import type {
+  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
-  PropertyDef as $PropertyDef,
 } from '@osdk/api';
 import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
+  OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client.api';
-import { $osdkMetadata } from '../../OntologyMetadata.js';
-import type { Person } from './Person.js';
 
 export namespace Todo {
   export type PropertyKeys = 'id' | 'body' | 'text' | 'priority' | 'complete';

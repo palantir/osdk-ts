@@ -21,6 +21,7 @@ import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOnto
 import type { EnhancedQuery } from "../GenerateContext/EnhancedQuery.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import type { MinimalFs } from "../MinimalFs.js";
+import { getObjectImports } from "../shared/getObjectImports.js";
 import { getObjectTypeApiNamesFromQuery } from "../shared/getObjectTypeApiNamesFromQuery.js";
 import { wireQueryDataTypeToQueryDataTypeDefinition } from "../shared/wireQueryDataTypeToQueryDataTypeDefinition.js";
 import {
@@ -88,10 +89,14 @@ async function generateV2QueryFile(
 ) {
   const relFilePath = path.join(relOutDir, `${query.shortApiName}.ts`);
   const objectTypes = getObjectTypeApiNamesFromQuery(query);
+  const objectTypeObjects = new Set(
+    objectTypes.map(o => ontology.requireObjectType(o)),
+  );
   const importObjects = getObjectImports(
-    ontology,
-    objectTypes,
+    objectTypeObjects,
+    "",
     relFilePath,
+    true,
   );
 
   const baseProps = deleteUndefineds(
@@ -242,23 +247,6 @@ export function queryParamJsDoc(
   }
 
   ret += ` */\n`;
-  return ret;
-}
-
-function getObjectImports(
-  enhancedOntology: EnhancedOntologyDefinition,
-  objectTypes: string[],
-  filePath: string,
-) {
-  let ret = "";
-
-  for (const fqObjectApiName of objectTypes) {
-    const obj = enhancedOntology.requireObjectType(fqObjectApiName);
-    ret += `import type { ${obj.getDefinitionIdentifier(true)} as ${
-      obj.getImportedDefinitionIdentifier(true)
-    } } from "${obj.getImportPathRelTo(filePath)}";\n`;
-  }
-
   return ret;
 }
 

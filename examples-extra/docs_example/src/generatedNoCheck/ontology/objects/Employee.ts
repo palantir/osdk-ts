@@ -1,15 +1,18 @@
+import type { PropertyDef as $PropertyDef } from '@osdk/api';
+import { $osdkMetadata } from '../../OntologyMetadata';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import type {
+  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
-  PropertyDef as $PropertyDef,
 } from '@osdk/api';
 import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
+  OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client.api';
-import { $osdkMetadata } from '../../OntologyMetadata';
 
 export namespace Employee {
   export type PropertyKeys = 'employeeId' | 'class' | 'fullName' | 'office' | 'startDate' | 'employeeStatus';

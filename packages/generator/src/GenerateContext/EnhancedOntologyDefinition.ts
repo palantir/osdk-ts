@@ -35,6 +35,7 @@ export class EnhancedOntologyDefinition {
     string,
     EnhancedSharedPropertyType
   >;
+  #foreignTypes: Record<string, ForeignType> = {};
 
   og: WireOntologyDefinition;
   common: EnhanceCommon;
@@ -110,12 +111,15 @@ export class EnhancedOntologyDefinition {
           );
         }
 
-        return new ForeignType(
+        const ret = this.#foreignTypes[fullApiName] ?? new ForeignType(
           this.common,
           type,
           apiNamespace,
           shortApiName,
-        ) as L extends true ? this[K][string] : ForeignType;
+        );
+
+        this.#foreignTypes[fullApiName] = ret;
+        return ret as L extends true ? this[K][string] : ForeignType;
       }
       return ret as this[K][string] as L extends true ? this[K][string]
         : ForeignType;

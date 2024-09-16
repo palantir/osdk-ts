@@ -15,9 +15,6 @@
  */
 
 import { format } from "prettier";
-// @ts-ignore the plugin doesn't have types but we need to import the actual plugin
-// so we can bundle it rather than trying to resolve it at runtime
-import organizeImports from "prettier-plugin-organize-imports";
 
 export function formatTs(contents: string) {
   try {
@@ -25,7 +22,6 @@ export function formatTs(contents: string) {
       parser: "typescript",
       singleQuote: true,
       trailingComma: "all",
-      plugins: [organizeImports],
       tabWidth: 2,
       printWidth: 120,
     });

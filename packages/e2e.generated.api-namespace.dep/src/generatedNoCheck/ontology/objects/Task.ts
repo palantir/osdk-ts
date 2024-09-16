@@ -1,6 +1,18 @@
-import type { ObjectTypeDefinition as $ObjectTypeDefinition, PropertyDef as $PropertyDef } from '@osdk/api';
-import type { ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from '@osdk/client.api';
+import type { PropertyDef as $PropertyDef } from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+import type {
+  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+  ObjectTypeDefinition as $ObjectTypeDefinition,
+  ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+} from '@osdk/api';
+import type {
+  ObjectSet as $ObjectSet,
+  Osdk as $Osdk,
+  OsdkObject as $OsdkObject,
+  PropertyValueWireToClient as $PropType,
+  SingleLinkAccessor as $SingleLinkAccessor,
+} from '@osdk/client.api';
 
 export namespace Task {
   export type PropertyKeys = 'taskId' | 'body';

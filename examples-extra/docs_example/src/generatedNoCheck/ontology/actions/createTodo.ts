@@ -1,4 +1,4 @@
-import type { ActionDefinition, VersionBound } from '@osdk/api';
+import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType, VersionBound } from '@osdk/api';
 import type {
   ActionParam,
   ActionReturnTypeForOptions,
