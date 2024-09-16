@@ -1,5 +1,22 @@
 # @osdk/foundry
 
+## 2.1.0-beta.2
+
+### Minor Changes
+
+- 0148d5a: We now generate error types
+
+### Patch Changes
+
+- Updated dependencies [0148d5a]
+  - @osdk/foundry.thirdpartyapplications@2.1.0-beta.2
+  - @osdk/foundry.orchestration@2.1.0-beta.2
+  - @osdk/foundry.filesystem@2.1.0-beta.2
+  - @osdk/foundry.publicapis@2.1.0-beta.2
+  - @osdk/foundry.datasets@2.1.0-beta.2
+  - @osdk/foundry.admin@2.1.0-beta.2
+  - @osdk/foundry.core@2.1.0-beta.2
+
 ## 2.1.0-beta.1
 
 ### Minor Changes

@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.8.0-beta.3
+
+### Minor Changes
+
+- ee39a61: Add support for gotham mapping of SPTs in maker
+
+### Patch Changes
+
+- Updated dependencies [9b0617d]
+  - @osdk/api@2.0.0-beta.7
+
 ## 0.8.0-beta.2
 
 ### Patch Changes

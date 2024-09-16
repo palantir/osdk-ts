@@ -1,5 +1,20 @@
 # @osdk/e2e.sandbox.oauth
 
+## 0.3.0-beta.7
+
+### Patch Changes
+
+- Updated dependencies [39525b8]
+- Updated dependencies [cad781e]
+- Updated dependencies [cad781e]
+- Updated dependencies [cad781e]
+- Updated dependencies [cad781e]
+- Updated dependencies [512ee35]
+- Updated dependencies [cad781e]
+- Updated dependencies [fc28eae]
+  - @osdk/client@2.0.0-beta.7
+  - @osdk/oauth@0.4.0-beta.0
+
 ## 0.3.0-beta.6
 
 ### Patch Changes

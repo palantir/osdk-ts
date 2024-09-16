@@ -1,5 +1,11 @@
 # @osdk/platform-sdk-generator
 
+## 0.5.0-beta.2
+
+### Minor Changes
+
+- 0148d5a: We now generate error types
+
 ## 0.5.0-beta.1
 
 ### Minor Changes

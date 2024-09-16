@@ -1,5 +1,16 @@
 # @osdk/example-generator
 
+## 0.8.0-beta.2
+
+### Minor Changes
+
+- a0330ef: create TS 2.0 template, update the create app to use it when needed and the generate example to generate it
+
+### Patch Changes
+
+- Updated dependencies [a0330ef]
+  - @osdk/create-app@0.19.0-beta.2
+
 ## 0.8.0-beta.1
 
 ### Patch Changes

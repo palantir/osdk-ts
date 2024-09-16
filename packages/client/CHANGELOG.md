@@ -1,5 +1,25 @@
 # @osdk/client
 
+## 2.0.0-beta.7
+
+### Minor Changes
+
+- 39525b8: We now have a hard dependency on pino for type resolution. This has no effect on a project if it doesn't provide a logger to the client.
+- 512ee35: Exposed editedObjectTypes for all action results and split edits based on edit type.
+- fc28eae: Fetching interfaces learns $\_\_EXPERIMENTAL_selectedObjectTypes
+
+### Patch Changes
+
+- Updated dependencies [9b0617d]
+- Updated dependencies [512ee35]
+- Updated dependencies [e86c505]
+- Updated dependencies [fc28eae]
+- Updated dependencies [ee39a61]
+  - @osdk/api@2.0.0-beta.7
+  - @osdk/client.api@2.0.0-beta.7
+  - @osdk/client.unstable@2.0.0-beta.7
+  - @osdk/generator-converters@2.0.0-beta.7
+
 ## 2.0.0-beta.6
 
 ### Minor Changes

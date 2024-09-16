@@ -1,5 +1,24 @@
 # @osdk/e2e.sandbox.todoappapp
 
+## 3.0.0-beta.7
+
+### Patch Changes
+
+- Updated dependencies [39525b8]
+- Updated dependencies [9b0617d]
+- Updated dependencies [cad781e]
+- Updated dependencies [cad781e]
+- Updated dependencies [cad781e]
+- Updated dependencies [cad781e]
+- Updated dependencies [512ee35]
+- Updated dependencies [cad781e]
+- Updated dependencies [e86c505]
+- Updated dependencies [fc28eae]
+  - @osdk/client@2.0.0-beta.7
+  - @osdk/api@2.0.0-beta.7
+  - @osdk/oauth@0.4.0-beta.0
+  - @osdk/client.api@2.0.0-beta.7
+
 ## 3.0.0-beta.6
 
 ### Minor Changes

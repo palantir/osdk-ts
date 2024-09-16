@@ -1,5 +1,22 @@
 # @osdk/e2e.sandbox.catchall
 
+## 0.3.0-beta.7
+
+### Patch Changes
+
+- Updated dependencies [39525b8]
+- Updated dependencies [9b0617d]
+- Updated dependencies [0148d5a]
+- Updated dependencies [512ee35]
+- Updated dependencies [e86c505]
+- Updated dependencies [fc28eae]
+  - @osdk/client@2.0.0-beta.7
+  - @osdk/api@2.0.0-beta.7
+  - @osdk/internal.foundry@0.5.0-beta.4
+  - @osdk/foundry@2.1.0-beta.2
+  - @osdk/client.api@2.0.0-beta.7
+  - @osdk/e2e.generated.catchall@3.0.0-beta.7
+
 ## 0.3.0-beta.6
 
 ### Minor Changes

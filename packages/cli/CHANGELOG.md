@@ -1,5 +1,11 @@
 # @osdk/cli
 
+## 0.24.0-beta.6
+
+### Patch Changes
+
+- @osdk/generator@2.0.0-beta.7
+
 ## 0.24.0-beta.5
 
 ### Minor Changes

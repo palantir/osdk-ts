@@ -1,5 +1,17 @@
 # @osdk/internal.foundry.ontologiesv2
 
+## 0.2.0-beta.4
+
+### Minor Changes
+
+- 0148d5a: We now generate error types
+
+### Patch Changes
+
+- Updated dependencies [0148d5a]
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.4
+  - @osdk/internal.foundry.core@0.2.0-beta.4
+
 ## 0.2.0-beta.3
 
 ### Minor Changes
