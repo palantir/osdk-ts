@@ -30,41 +30,39 @@ export namespace DherlihyComplexObject {
     readonly seriesId: $PropType['numericTimeseries'] | undefined;
   }
 
-  export interface ObjectSet extends $ObjectSet<DherlihyComplexObject.Definition, DherlihyComplexObject.ObjectSet> {}
-
-  export interface Definition extends $ObjectTypeDefinition<'DherlihyComplexObject', DherlihyComplexObject.Definition> {
-    osdkMetadata: typeof $osdkMetadata;
-    objectSet: DherlihyComplexObject.ObjectSet;
-    props: DherlihyComplexObject.Props;
-    linksType: DherlihyComplexObject.Links;
-    strictProps: DherlihyComplexObject.StrictProps;
-    description: 'Dherlihy Complex Object';
-    links: {};
-    primaryKeyApiName: 'id';
-    primaryKeyType: 'string';
-    properties: {
-      /**
-       * (no ontology metadata)
-       */
-      id: $PropertyDef<'string', 'non-nullable', 'single'>;
-      /**
-       * (no ontology metadata)
-       */
-      secret: $PropertyDef<'string', 'nullable', 'single'>;
-      /**
-       * (no ontology metadata)
-       */
-      seriesId: $PropertyDef<'numericTimeseries', 'nullable', 'single'>;
-    };
-  }
+  export interface ObjectSet extends $ObjectSet<DherlihyComplexObject, DherlihyComplexObject.ObjectSet> {}
 
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof DherlihyComplexObject.Props = keyof DherlihyComplexObject.Props,
-  > = $Osdk<DherlihyComplexObject.Definition, K | OPTIONS>;
+  > = $Osdk<DherlihyComplexObject, K | OPTIONS>;
 }
 
-export type DherlihyComplexObject = DherlihyComplexObject.Definition;
+export interface DherlihyComplexObject extends $ObjectTypeDefinition<'DherlihyComplexObject', DherlihyComplexObject> {
+  osdkMetadata: typeof $osdkMetadata;
+  objectSet: DherlihyComplexObject.ObjectSet;
+  props: DherlihyComplexObject.Props;
+  linksType: DherlihyComplexObject.Links;
+  strictProps: DherlihyComplexObject.StrictProps;
+  description: 'Dherlihy Complex Object';
+  links: {};
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'string';
+  properties: {
+    /**
+     * (no ontology metadata)
+     */
+    id: $PropertyDef<'string', 'non-nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
+    secret: $PropertyDef<'string', 'nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
+    seriesId: $PropertyDef<'numericTimeseries', 'nullable', 'single'>;
+  };
+}
 
 export const DherlihyComplexObject: DherlihyComplexObject = {
   osdkMetadata: $osdkMetadata,

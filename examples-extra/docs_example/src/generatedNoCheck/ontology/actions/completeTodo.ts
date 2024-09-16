@@ -21,7 +21,7 @@ export namespace completeTodo {
       description: 'A todo Object';
       multiplicity: true;
       nullable: false;
-      type: ObjectActionDataType<'Todo', Todo.Definition>;
+      type: ObjectActionDataType<'Todo', Todo>;
     };
   };
 
@@ -33,10 +33,8 @@ export namespace completeTodo {
     /**
      * A todo Object
      */
-    readonly Todo: ReadonlyArray<ActionParam.ObjectType<Todo.Definition>>;
+    readonly Todo: ReadonlyArray<ActionParam.ObjectType<Todo>>;
   }
-  /** @deprecated **/
-  export type Parameters = Params;
 
   // Represents the definition of the action
   export interface Definition
@@ -66,11 +64,6 @@ export namespace completeTodo {
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }
 }
-
-/**
- * @deprecated Use `completeTodo.Params`
- */
-export type completeTodo$Params = completeTodo.Params | ReadonlyArray<completeTodo.Params>;
 
 /** @deprecated Use `completeTodo.Definition` **/
 export type completeTodo = completeTodo.Signatures;

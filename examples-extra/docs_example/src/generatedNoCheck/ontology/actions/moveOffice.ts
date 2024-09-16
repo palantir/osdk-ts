@@ -55,8 +55,6 @@ export namespace moveOffice {
      */
     readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'integer'>>;
   }
-  /** @deprecated **/
-  export type Parameters = Params;
 
   // Represents the definition of the action
   export interface Definition
@@ -86,11 +84,6 @@ export namespace moveOffice {
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }
 }
-
-/**
- * @deprecated Use `moveOffice.Params`
- */
-export type moveOffice$Params = moveOffice.Params | ReadonlyArray<moveOffice.Params>;
 
 /** @deprecated Use `moveOffice.Definition` **/
 export type moveOffice = moveOffice.Signatures;

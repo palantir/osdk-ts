@@ -15,7 +15,7 @@ export namespace promoteEmployeeObject {
     employee: {
       multiplicity: false;
       nullable: false;
-      type: ObjectActionDataType<'Employee', Employee.Definition>;
+      type: ObjectActionDataType<'Employee', Employee>;
     };
     newCompensation: {
       multiplicity: false;
@@ -33,14 +33,12 @@ export namespace promoteEmployeeObject {
    * Update an employee's title and compensation
    */
   export interface Params {
-    readonly employee: ActionParam.ObjectType<Employee.Definition>;
+    readonly employee: ActionParam.ObjectType<Employee>;
 
     readonly newCompensation: ActionParam.PrimitiveType<'double'>;
 
     readonly newTitle: ActionParam.PrimitiveType<'string'>;
   }
-  /** @deprecated **/
-  export type Parameters = Params;
 
   // Represents the definition of the action
   export interface Definition
@@ -70,11 +68,6 @@ export namespace promoteEmployeeObject {
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }
 }
-
-/**
- * @deprecated Use `promoteEmployeeObject.Params`
- */
-export type promoteEmployeeObject$Params = promoteEmployeeObject.Params | ReadonlyArray<promoteEmployeeObject.Params>;
 
 /** @deprecated Use `promoteEmployeeObject.Definition` **/
 export type promoteEmployeeObject = promoteEmployeeObject.Signatures;

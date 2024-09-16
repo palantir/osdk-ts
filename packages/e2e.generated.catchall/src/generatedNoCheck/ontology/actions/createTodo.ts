@@ -16,8 +16,6 @@ export namespace createTodo {
    * Creates a new Todo
    */
   export interface Params {}
-  /** @deprecated **/
-  export type Parameters = Params;
 
   // Represents the definition of the action
   export interface Definition
@@ -47,11 +45,6 @@ export namespace createTodo {
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }
 }
-
-/**
- * @deprecated Use `createTodo.Params`
- */
-export type createTodo$Params = createTodo.Params | ReadonlyArray<createTodo.Params>;
 
 /** @deprecated Use `createTodo.Definition` **/
 export type createTodo = createTodo.Signatures;

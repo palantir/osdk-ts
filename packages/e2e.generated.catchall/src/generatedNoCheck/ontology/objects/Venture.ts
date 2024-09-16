@@ -33,43 +33,41 @@ export namespace Venture {
     readonly ventureStart: $PropType['datetime'] | undefined;
   }
 
-  export interface ObjectSet extends $ObjectSet<Venture.Definition, Venture.ObjectSet> {}
-
-  export interface Definition extends $ObjectTypeDefinition<'Venture', Venture.Definition> {
-    osdkMetadata: typeof $osdkMetadata;
-    objectSet: Venture.ObjectSet;
-    props: Venture.Props;
-    linksType: Venture.Links;
-    strictProps: Venture.StrictProps;
-    description: 'A venture';
-    links: {
-      employees: $ObjectTypeLinkDefinition<Employee, true>;
-    };
-    primaryKeyApiName: 'ventureId';
-    primaryKeyType: 'string';
-    properties: {
-      /**
-       * (no ontology metadata)
-       */
-      ventureId: $PropertyDef<'string', 'non-nullable', 'single'>;
-      /**
-       * (no ontology metadata)
-       */
-      ventureName: $PropertyDef<'string', 'nullable', 'single'>;
-      /**
-       * (no ontology metadata)
-       */
-      ventureStart: $PropertyDef<'datetime', 'nullable', 'single'>;
-    };
-  }
+  export interface ObjectSet extends $ObjectSet<Venture, Venture.ObjectSet> {}
 
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Venture.Props = keyof Venture.Props,
-  > = $Osdk<Venture.Definition, K | OPTIONS>;
+  > = $Osdk<Venture, K | OPTIONS>;
 }
 
-export type Venture = Venture.Definition;
+export interface Venture extends $ObjectTypeDefinition<'Venture', Venture> {
+  osdkMetadata: typeof $osdkMetadata;
+  objectSet: Venture.ObjectSet;
+  props: Venture.Props;
+  linksType: Venture.Links;
+  strictProps: Venture.StrictProps;
+  description: 'A venture';
+  links: {
+    employees: $ObjectTypeLinkDefinition<Employee, true>;
+  };
+  primaryKeyApiName: 'ventureId';
+  primaryKeyType: 'string';
+  properties: {
+    /**
+     * (no ontology metadata)
+     */
+    ventureId: $PropertyDef<'string', 'non-nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
+    ventureName: $PropertyDef<'string', 'nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
+    ventureStart: $PropertyDef<'datetime', 'nullable', 'single'>;
+  };
+}
 
 export const Venture: Venture = {
   osdkMetadata: $osdkMetadata,

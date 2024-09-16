@@ -65,8 +65,6 @@ export namespace createOfficeAndEmployee {
      */
     readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'string'>>;
   }
-  /** @deprecated **/
-  export type Parameters = Params;
 
   // Represents the definition of the action
   export interface Definition
@@ -96,13 +94,6 @@ export namespace createOfficeAndEmployee {
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }
 }
-
-/**
- * @deprecated Use `createOfficeAndEmployee.Params`
- */
-export type createOfficeAndEmployee$Params =
-  | createOfficeAndEmployee.Params
-  | ReadonlyArray<createOfficeAndEmployee.Params>;
 
 /** @deprecated Use `createOfficeAndEmployee.Definition` **/
 export type createOfficeAndEmployee = createOfficeAndEmployee.Signatures;

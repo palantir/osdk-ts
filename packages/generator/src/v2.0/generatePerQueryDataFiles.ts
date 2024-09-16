@@ -100,7 +100,7 @@ async function generateV2QueryFile(
   );
 
   const baseProps = deleteUndefineds(
-    wireQueryTypeV2ToSdkQueryDefinitionNoParams(query.og),
+    wireQueryTypeV2ToSdkQueryDefinitionNoParams(query.raw),
   );
 
   const outputBase = deleteUndefineds(

@@ -16,12 +16,12 @@ export namespace assignEmployee1 {
     'employee-1': {
       multiplicity: false;
       nullable: false;
-      type: ObjectActionDataType<'Employee', Employee.Definition>;
+      type: ObjectActionDataType<'Employee', Employee>;
     };
     'venture-1': {
       multiplicity: false;
       nullable: false;
-      type: ObjectActionDataType<'Venture', Venture.Definition>;
+      type: ObjectActionDataType<'Venture', Venture>;
     };
   };
 
@@ -29,12 +29,10 @@ export namespace assignEmployee1 {
    * Assigns an employee to a venture
    */
   export interface Params {
-    readonly 'employee-1': ActionParam.ObjectType<Employee.Definition>;
+    readonly 'employee-1': ActionParam.ObjectType<Employee>;
 
-    readonly 'venture-1': ActionParam.ObjectType<Venture.Definition>;
+    readonly 'venture-1': ActionParam.ObjectType<Venture>;
   }
-  /** @deprecated **/
-  export type Parameters = Params;
 
   // Represents the definition of the action
   export interface Definition
@@ -64,11 +62,6 @@ export namespace assignEmployee1 {
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }
 }
-
-/**
- * @deprecated Use `assignEmployee1.Params`
- */
-export type assignEmployee1$Params = assignEmployee1.Params | ReadonlyArray<assignEmployee1.Params>;
 
 /** @deprecated Use `assignEmployee1.Definition` **/
 export type assignEmployee1 = assignEmployee1.Signatures;

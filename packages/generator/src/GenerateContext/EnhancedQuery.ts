@@ -19,20 +19,20 @@ import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedBase } from "./EnhancedBase.js";
 
 export class EnhancedQuery extends EnhancedBase<QueryTypeV2> {
-  constructor(common: EnhanceCommon, public og: QueryTypeV2) {
-    super(common, og, og.apiName, "./ontology/queries");
+  constructor(common: EnhanceCommon, public raw: QueryTypeV2) {
+    super(common, raw, raw.apiName, "./ontology/queries");
   }
 
   get description() {
-    return this.og.description;
+    return this.raw.description;
   }
 
   get parameters() {
-    return this.og.parameters;
+    return this.raw.parameters;
   }
 
   get output() {
-    return this.og.output;
+    return this.raw.output;
   }
 
   get paramsIdentifier() {

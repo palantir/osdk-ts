@@ -39,7 +39,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
 ) {
   const definition = deleteUndefineds(
     __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
-      interfaceDef.og,
+      interfaceDef.raw,
       v2,
     ),
   );
@@ -54,7 +54,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
 
     const it = deleteUndefineds(
       __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
-        ontology.requireInterfaceType(p, true).og,
+        ontology.requireInterfaceType(p, true).raw,
         v2,
       ),
     );

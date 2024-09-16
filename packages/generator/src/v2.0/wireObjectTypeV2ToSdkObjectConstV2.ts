@@ -50,7 +50,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
 
   const definition = deleteUndefineds(
     wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
-      object.og,
+      object.raw,
       true,
     ),
   );
@@ -66,7 +66,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
   const osdkObjectIdentifier = `${object.shortApiName}.OsdkObject`;
 
   const identifiers: Identifiers = {
-    objectDefIdentifier: `${object.shortApiName}.Definition`,
+    objectDefIdentifier: `${object.shortApiName}`,
     osdkObjectLinksIdentifier,
     osdkObjectPropsIdentifier,
     osdkObjectStrictPropsIdentifier,
@@ -101,16 +101,15 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
       ${createProps(object, "StrictProps", true)}
 
       ${createObjectSet(object, identifiers)}
-
-      ${createDefinition(object, ontology, "Definition", identifiers)}
+      
       ${createOsdkObject(object, "OsdkObject", identifiers)}
     }    
 
 
 
-
+    ${createDefinition(object, ontology, object.shortApiName, identifiers)}
   
-  export type ${objectDefIdentifier} = ${object.shortApiName}.Definition;
+  
 
 
     `;
@@ -327,7 +326,7 @@ ${
               `${
                 definition.multiplicity
                   ? `${linkTarget}.ObjectSet`
-                  : `$SingleLinkAccessor<${linkTarget}.Definition>`
+                  : `$SingleLinkAccessor<${linkTarget}>`
               }
           `,
             ];

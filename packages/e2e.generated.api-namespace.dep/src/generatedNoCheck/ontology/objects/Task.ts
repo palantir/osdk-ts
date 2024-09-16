@@ -28,41 +28,39 @@ export namespace Task {
     readonly taskId: $PropType['string'];
   }
 
-  export interface ObjectSet extends $ObjectSet<Task.Definition, Task.ObjectSet> {}
-
-  export interface Definition extends $ObjectTypeDefinition<'com.example.dep.Task', Task.Definition> {
-    osdkMetadata: typeof $osdkMetadata;
-    objectSet: Task.ObjectSet;
-    props: Task.Props;
-    linksType: Task.Links;
-    strictProps: Task.StrictProps;
-    implements: [];
-    interfaceMap: {};
-    inverseInterfaceMap: {};
-    inverseSpts: {};
-    links: {};
-    primaryKeyApiName: 'taskId';
-    primaryKeyType: 'string';
-    properties: {
-      /**
-       * (no ontology metadata)
-       */
-      body: $PropertyDef<'string', 'nullable', 'single'>;
-      /**
-       * (no ontology metadata)
-       */
-      taskId: $PropertyDef<'string', 'non-nullable', 'single'>;
-    };
-    spts: {};
-  }
+  export interface ObjectSet extends $ObjectSet<Task, Task.ObjectSet> {}
 
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Task.Props = keyof Task.Props,
-  > = $Osdk<Task.Definition, K | OPTIONS>;
+  > = $Osdk<Task, K | OPTIONS>;
 }
 
-export type Task = Task.Definition;
+export interface Task extends $ObjectTypeDefinition<'com.example.dep.Task', Task> {
+  osdkMetadata: typeof $osdkMetadata;
+  objectSet: Task.ObjectSet;
+  props: Task.Props;
+  linksType: Task.Links;
+  strictProps: Task.StrictProps;
+  implements: [];
+  interfaceMap: {};
+  inverseInterfaceMap: {};
+  inverseSpts: {};
+  links: {};
+  primaryKeyApiName: 'taskId';
+  primaryKeyType: 'string';
+  properties: {
+    /**
+     * (no ontology metadata)
+     */
+    body: $PropertyDef<'string', 'nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
+    taskId: $PropertyDef<'string', 'non-nullable', 'single'>;
+  };
+  spts: {};
+}
 
 export const Task: Task = {
   osdkMetadata: $osdkMetadata,

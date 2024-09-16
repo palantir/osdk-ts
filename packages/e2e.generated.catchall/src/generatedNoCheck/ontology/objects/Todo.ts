@@ -19,7 +19,7 @@ export namespace Todo {
   export type PropertyKeys = 'id' | 'body' | 'text' | 'priority' | 'complete';
 
   export interface Links {
-    readonly Assignee: $SingleLinkAccessor<Person.Definition>;
+    readonly Assignee: $SingleLinkAccessor<Person>;
   }
 
   export interface Props {
@@ -37,52 +37,50 @@ export namespace Todo {
     readonly text: $PropType['string'] | undefined;
   }
 
-  export interface ObjectSet extends $ObjectSet<Todo.Definition, Todo.ObjectSet> {}
-
-  export interface Definition extends $ObjectTypeDefinition<'Todo', Todo.Definition> {
-    osdkMetadata: typeof $osdkMetadata;
-    objectSet: Todo.ObjectSet;
-    props: Todo.Props;
-    linksType: Todo.Links;
-    strictProps: Todo.StrictProps;
-    description: 'Its a todo item.';
-    links: {
-      Assignee: $ObjectTypeLinkDefinition<Person, false>;
-    };
-    primaryKeyApiName: 'id';
-    primaryKeyType: 'integer';
-    properties: {
-      /**
-       *   display name: 'Body',
-       *   description: The text of the todo
-       */
-      body: $PropertyDef<'string', 'nullable', 'single'>;
-      /**
-       * (no ontology metadata)
-       */
-      complete: $PropertyDef<'boolean', 'nullable', 'single'>;
-      /**
-       * (no ontology metadata)
-       */
-      id: $PropertyDef<'integer', 'non-nullable', 'single'>;
-      /**
-       * (no ontology metadata)
-       */
-      priority: $PropertyDef<'integer', 'nullable', 'single'>;
-      /**
-       *   display name: 'Text'
-       */
-      text: $PropertyDef<'string', 'nullable', 'single'>;
-    };
-  }
+  export interface ObjectSet extends $ObjectSet<Todo, Todo.ObjectSet> {}
 
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Todo.Props = keyof Todo.Props,
-  > = $Osdk<Todo.Definition, K | OPTIONS>;
+  > = $Osdk<Todo, K | OPTIONS>;
 }
 
-export type Todo = Todo.Definition;
+export interface Todo extends $ObjectTypeDefinition<'Todo', Todo> {
+  osdkMetadata: typeof $osdkMetadata;
+  objectSet: Todo.ObjectSet;
+  props: Todo.Props;
+  linksType: Todo.Links;
+  strictProps: Todo.StrictProps;
+  description: 'Its a todo item.';
+  links: {
+    Assignee: $ObjectTypeLinkDefinition<Person, false>;
+  };
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'integer';
+  properties: {
+    /**
+     *   display name: 'Body',
+     *   description: The text of the todo
+     */
+    body: $PropertyDef<'string', 'nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
+    complete: $PropertyDef<'boolean', 'nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
+    id: $PropertyDef<'integer', 'non-nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
+    priority: $PropertyDef<'integer', 'nullable', 'single'>;
+    /**
+     *   display name: 'Text'
+     */
+    text: $PropertyDef<'string', 'nullable', 'single'>;
+  };
+}
 
 export const Todo: Todo = {
   osdkMetadata: $osdkMetadata,

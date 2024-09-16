@@ -57,13 +57,15 @@ export async function generatePerActionDataFiles(
         path.join("ontology", "actions", `${action.shortApiName}.ts`)
       }`;
 
-      const uniqueApiNamesArray = extractReferencedObjectsFromAction(action.og);
+      const uniqueApiNamesArray = extractReferencedObjectsFromAction(
+        action.raw,
+      );
       const uniqueApiNames = new Set(uniqueApiNamesArray);
 
       const uniqueApiNamesString = stringUnionFrom([...uniqueApiNames]);
 
       const fullActionDef = deleteUndefineds(
-        wireActionTypeV2ToSdkActionDefinition(action.og),
+        wireActionTypeV2ToSdkActionDefinition(action.raw),
       );
 
       const { parameters, ...actionDefSansParameters } = fullActionDef;
@@ -92,11 +94,11 @@ export async function generatePerActionDataFiles(
                     const obj = enhancedOntology.requireObjectType(type.object);
                     return `ObjectActionDataType<"${obj.fullApiName}", ${
                       obj.getImportedDefinitionIdentifier(true)
-                    }.Definition>`;
+                    }>`;
                   } else if (type.type === "objectSet") {
                     return `ObjectSetActionDataType<"${type.objectSet}", ${
                       getObjectDefIdentifier(type.objectSet, true)
-                    }.Definition>`;
+                    }>`;
                   }
                   return undefined;
                 },
@@ -118,12 +120,12 @@ export async function generatePerActionDataFiles(
           return `ActionParam.ObjectType<${
             enhancedOntology.requireObjectType(input.object)
               .getImportedDefinitionIdentifier(true)
-          }.Definition>`;
+          }>`;
         } else if (input.type === "objectSet") {
           return `ActionParam.ObjectSetType<${
             enhancedOntology.requireObjectType(input.objectSet)
               .getImportedDefinitionIdentifier(true)
-          }.Definition>`;
+          }>`;
         }
       }
 
@@ -152,8 +154,6 @@ export async function generatePerActionDataFiles(
           })
         }
             }
-            /** @deprecated **/
-            export type Parameters = Params;
 
 
               // Represents the definition of the action
@@ -178,11 +178,6 @@ export async function generatePerActionDataFiles(
             }
   
           }
-
-          /**
-           * @deprecated Use \`${action.paramsIdentifier}\`
-           */
-          export type ${oldParamsIdentifier} = ${action.paramsIdentifier} | ReadonlyArray<${action.paramsIdentifier}>;
 
           /** @deprecated Use \`${action.definitionIdentifier}\` **/
           export type ${action.shortApiName} = ${action.shortApiName}.Signatures;

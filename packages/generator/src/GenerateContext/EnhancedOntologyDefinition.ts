@@ -37,11 +37,11 @@ export class EnhancedOntologyDefinition {
   >;
   #foreignTypes: Record<string, ForeignType> = {};
 
-  og: WireOntologyDefinition;
+  raw: WireOntologyDefinition;
   common: EnhanceCommon;
 
   constructor(
-    original: WireOntologyDefinition,
+    raw: WireOntologyDefinition,
     ontologyApiNamespace: string | undefined,
     apiNamespacePackageMap: Map<string, string>,
     importExt: string,
@@ -52,30 +52,30 @@ export class EnhancedOntologyDefinition {
       importExt,
       ontologyApiNamespace,
     };
-    this.og = original;
-    this.ontology = original.ontology;
+    this.raw = raw;
+    this.ontology = raw.ontology;
     this.objectTypes = remap(
-      original.objectTypes,
+      raw.objectTypes,
       this.common,
       EnhancedObjectType,
     );
     this.actionTypes = remap(
-      original.actionTypes,
+      raw.actionTypes,
       this.common,
       EnhancedAction,
     );
     this.queryTypes = remap(
-      original.queryTypes,
+      raw.queryTypes,
       this.common,
       EnhancedQuery,
     );
     this.interfaceTypes = remap(
-      original.interfaceTypes,
+      raw.interfaceTypes,
       this.common,
       EnhancedInterfaceType,
     );
     this.sharedPropertyTypes = remap(
-      original.sharedPropertyTypes,
+      raw.sharedPropertyTypes,
       this.common,
       EnhancedSharedPropertyType,
     );
@@ -137,7 +137,7 @@ export class EnhancedOntologyDefinition {
 function remap<T, X>(
   r: Record<string, T>,
   common: EnhanceCommon,
-  Constructor: { new(common: EnhanceCommon, og: T): X },
+  Constructor: { new(common: EnhanceCommon, original: T): X },
 ): Record<string, X> {
   return Object.fromEntries(
     Object.entries(r ?? {}).map(([fullApiName, v]) => {

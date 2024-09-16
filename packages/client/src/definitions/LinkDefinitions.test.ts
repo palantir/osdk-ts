@@ -42,9 +42,9 @@ describe("LinkDefinitions", () => {
       expectTypeOf<OsdkObjectLinksObject<Employee>>()
         .toEqualTypeOf<
           {
-            readonly lead: SingleLinkAccessor<Employee.Definition>;
-            readonly officeLink: SingleLinkAccessor<Office.Definition>;
-            readonly peeps: ObjectSet<Employee.Definition>;
+            readonly lead: SingleLinkAccessor<Employee>;
+            readonly officeLink: SingleLinkAccessor<Office>;
+            readonly peeps: ObjectSet<Employee>;
           }
         >();
     });
@@ -72,7 +72,7 @@ describe("LinkDefinitions", () => {
           }
         }
 
-        type PersonDef = Person.Definition;
+        type PersonDef = Person;
 
         //   // e.g. .lead.fetchOne({});
         expectTypeOf<Awaited<ReturnType<Helper<PersonDef, {}>["fetchOne"]>>>()

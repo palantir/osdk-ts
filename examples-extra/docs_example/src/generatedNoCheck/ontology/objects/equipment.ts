@@ -28,36 +28,34 @@ export namespace equipment {
     readonly type: $PropType['string'] | undefined;
   }
 
-  export interface ObjectSet extends $ObjectSet<equipment.Definition, equipment.ObjectSet> {}
-
-  export interface Definition extends $ObjectTypeDefinition<'equipment', equipment.Definition> {
-    osdkMetadata: typeof $osdkMetadata;
-    objectSet: equipment.ObjectSet;
-    props: equipment.Props;
-    linksType: equipment.Links;
-    strictProps: equipment.StrictProps;
-    links: {};
-    primaryKeyApiName: 'equipmentId';
-    primaryKeyType: 'string';
-    properties: {
-      /**
-       *   description: The id of an equipment
-       */
-      equipmentId: $PropertyDef<'string', 'non-nullable', 'single'>;
-      /**
-       * (no ontology metadata)
-       */
-      type: $PropertyDef<'string', 'nullable', 'single'>;
-    };
-  }
+  export interface ObjectSet extends $ObjectSet<equipment, equipment.ObjectSet> {}
 
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof equipment.Props = keyof equipment.Props,
-  > = $Osdk<equipment.Definition, K | OPTIONS>;
+  > = $Osdk<equipment, K | OPTIONS>;
 }
 
-export type equipment = equipment.Definition;
+export interface equipment extends $ObjectTypeDefinition<'equipment', equipment> {
+  osdkMetadata: typeof $osdkMetadata;
+  objectSet: equipment.ObjectSet;
+  props: equipment.Props;
+  linksType: equipment.Links;
+  strictProps: equipment.StrictProps;
+  links: {};
+  primaryKeyApiName: 'equipmentId';
+  primaryKeyType: 'string';
+  properties: {
+    /**
+     *   description: The id of an equipment
+     */
+    equipmentId: $PropertyDef<'string', 'non-nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
+    type: $PropertyDef<'string', 'nullable', 'single'>;
+  };
+}
 
 export const equipment: equipment = {
   osdkMetadata: $osdkMetadata,
