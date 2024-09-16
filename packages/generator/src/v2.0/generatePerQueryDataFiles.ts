@@ -250,23 +250,6 @@ export function queryParamJsDoc(
   return ret;
 }
 
-// function getObjectImports(
-//   enhancedOntology: EnhancedOntologyDefinition,
-//   objectTypes: string[],
-//   filePath: string,
-// ) {
-//   let ret = "";
-
-//   for (const fqObjectApiName of objectTypes) {
-//     const obj = enhancedOntology.requireObjectType(fqObjectApiName);
-//     ret += `import type { ${obj.getDefinitionIdentifier(true)} as ${
-//       obj.getImportedDefinitionIdentifier(true)
-//     } } from "${obj.getImportPathRelTo(filePath)}";\n`;
-//   }
-
-//   return ret;
-// }
-
 export function getQueryParamType(
   enhancedOntology: EnhancedOntologyDefinition,
   input: QueryParameterDefinition<any, any>,
