@@ -1,13 +1,13 @@
-import type { ActionDefinition, ObjectActionDataType, VersionBound } from '@osdk/api';
+import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType, VersionBound } from '@osdk/api';
 import type {
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client.api';
-import type { Task as $Imported$objectTypes$com$example$dep$Task } from '@osdk/e2e.generated.api-namespace.dep';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
+import type { Task as $Imported$objectTypes$com$example$dep$Task } from '@osdk/e2e.generated.api-namespace.dep';
 
 export namespace setTaskBody {
   // Represents the definition of the parameters for the action

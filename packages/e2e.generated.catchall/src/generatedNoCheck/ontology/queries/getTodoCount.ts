@@ -1,5 +1,5 @@
 import type { QueryDefinition, VersionBound } from '@osdk/api';
-import type { QueryResult } from '@osdk/client.api';
+import type { QueryParam, QueryResult } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 
 export namespace getTodoCount {
