@@ -30,4 +30,6 @@ export interface TypescriptGenerateArgs {
   internal: boolean;
   ontologyApiNamespace: string | undefined;
   apiNamespaceMap: Map<string, string>;
+  externalObjects: Map<string, string>;
+  externalInterfaces: Map<string, string>;
 }

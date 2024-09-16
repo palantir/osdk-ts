@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import type { WireOntologyDefinition } from "@osdk/generator";
+import type { Sdk, SdkPackage } from "@osdk/client.unstable.tpsa";
+import { getSdk, getSdkPackage } from "@osdk/client.unstable.tpsa";
 import type {
   ActionParameterType,
   ActionTypeV2,
+  ObjectTypeFullMetadata,
   Ontology,
   OntologyFullMetadata,
   OntologyIdentifier,
@@ -26,6 +28,18 @@ import type {
 } from "@osdk/internal.foundry.core";
 import { createClientContext } from "@osdk/shared.net";
 import { Result } from "./Result.js";
+
+type PackageInfo = Map<string, {
+  sdkPackage: SdkPackage;
+  sdk: Sdk;
+  packageVersion: string;
+}>;
+
+export interface OntologyInfo {
+  filteredFullMetadata: OntologyFullMetadata;
+  externalInterfaces: Map<string, string>;
+  externalObjects: Map<string, string>;
+}
 
 export class OntologyMetadataResolver {
   #authToken: string;
@@ -43,7 +57,7 @@ export class OntologyMetadataResolver {
     );
   }
 
-  private filterMetadata(
+  private filterMetadataByApiName(
     ontologyFullMetadata: OntologyFullMetadata,
     expectedEntities: {
       linkTypes: Map<string, Set<string>>;
@@ -52,22 +66,32 @@ export class OntologyMetadataResolver {
       actionTypes: Set<string>;
       interfaceTypes: Set<string>;
     },
+    z: PackageInfo,
   ): OntologyFullMetadata {
     const filteredObjectTypes = Object.fromEntries(
-      Object.entries(ontologyFullMetadata.objectTypes).filter((
-        [objectTypeApiName],
-      ) => expectedEntities.objectTypes.has(objectTypeApiName.toLowerCase())),
+      Object.entries(ontologyFullMetadata.objectTypes).filter(
+        ([, { objectType }]) => {
+          for (const { sdk: { inputs: { dataScope } } } of z.values()) {
+            for (const objectTypeRid of dataScope.ontologyV2.objectTypes) {
+              if (objectTypeRid === objectType.rid) {
+                return true;
+              }
+            }
+          }
+          return expectedEntities.objectTypes.has(objectType.apiName);
+        },
+      ),
     );
 
     const filteredInterfaceTypes = Object.fromEntries(
       Object.entries(ontologyFullMetadata.interfaceTypes).filter((
         [interfaceApiName],
-      ) => expectedEntities.interfaceTypes.has(interfaceApiName.toLowerCase())),
+      ) => expectedEntities.interfaceTypes.has(interfaceApiName)),
     );
 
     Object.values(filteredObjectTypes).forEach(objectType => {
       const linkTypesToKeep = expectedEntities.linkTypes.get(
-        objectType.objectType.apiName.toLowerCase(),
+        objectType.objectType.apiName,
       );
       if (!linkTypesToKeep) {
         objectType.linkTypes = [];
@@ -75,7 +99,7 @@ export class OntologyMetadataResolver {
       }
 
       objectType.linkTypes = objectType.linkTypes.filter(linkType =>
-        linkTypesToKeep.has(linkType.apiName.toLowerCase())
+        linkTypesToKeep.has(linkType.apiName)
       );
     });
 
@@ -83,9 +107,7 @@ export class OntologyMetadataResolver {
       Object.entries(ontologyFullMetadata.actionTypes).filter(
         ([actionApiName]) => {
           if (
-            expectedEntities.actionTypes.has(
-              this.camelize(actionApiName).toLowerCase(),
-            )
+            expectedEntities.actionTypes.has(this.camelize(actionApiName))
           ) {
             return true;
           }
@@ -96,7 +118,7 @@ export class OntologyMetadataResolver {
 
     const filteredQueryTypes = Object.fromEntries(
       Object.entries(ontologyFullMetadata.queryTypes).filter(([queryApiName]) =>
-        expectedEntities.queryTypes.has(queryApiName.toLowerCase())
+        expectedEntities.queryTypes.has(queryApiName)
       ),
     );
 
@@ -110,6 +132,36 @@ export class OntologyMetadataResolver {
     };
   }
 
+  public async getInfoForPackages(
+    pkgs: Map<string, string>,
+  ): Promise<PackageInfo> {
+    const conjureCtx = {
+      baseUrl: `https://${this.stackName}`,
+      servicePath: "/third-party-application-service/api",
+      tokenProvider: () => Promise.resolve(this.#authToken),
+    };
+
+    const ret: PackageInfo = new Map();
+
+    for (const [packageRid, packageVersion] of pkgs) {
+      const sdkPackage = await getSdkPackage(
+        conjureCtx,
+        packageRid,
+      );
+
+      const sdk = await getSdk(
+        conjureCtx,
+        sdkPackage.repositoryRid,
+        sdkPackage.packageName,
+        packageVersion,
+      );
+
+      ret.set(packageRid, { sdkPackage, sdk, packageVersion });
+    }
+
+    return ret;
+  }
+
   public async getWireOntologyDefinition(
     ontologyRid: string,
     entities: {
@@ -119,7 +171,10 @@ export class OntologyMetadataResolver {
       interfaceTypesApiNamesToLoad?: string[];
       linkTypesApiNamesToLoad?: string[];
     },
-  ): Promise<Result<WireOntologyDefinition, string[]>> {
+    extPackageInfo: PackageInfo = new Map(),
+  ): Promise<
+    Result<OntologyInfo, string[]>
+  > {
     let ontology: Ontology;
 
     const { Ontologies } = await import("@osdk/internal.foundry.ontologies");
@@ -153,27 +208,55 @@ export class OntologyMetadataResolver {
       ]);
     }
 
+    const externalObjects = new Map();
+    const externalInterfaces = new Map();
+
+    for (const { sdk } of extPackageInfo.values()) {
+      if (sdk.npm?.npmPackageName == null) {
+        throw new Error("External package is not generated as an npm package");
+      }
+
+      const dataScope = sdk.inputs.dataScope.ontologyV2;
+
+      for (const rid of dataScope.objectTypes) {
+        const ot = Object.values(ontologyFullMetadata.objectTypes).find(
+          (ot) => ot.objectType.rid === rid,
+        );
+
+        if (!ot) {
+          throw new Error(
+            `Could not find external object type with rid ${rid}`,
+          );
+        }
+
+        externalObjects.set(ot.objectType.apiName, sdk.npm.npmPackageName);
+      }
+
+      for (const rid of dataScope.interfaceTypes) {
+        const it = Object.values(ontologyFullMetadata.interfaceTypes).find(
+          (it) => it.rid === rid,
+        );
+
+        if (!it) {
+          throw new Error(
+            `Could not find external interface type with rid ${rid}`,
+          );
+        }
+        externalInterfaces.set(it.apiName, sdk.npm.npmPackageName);
+      }
+    }
+
     const linkTypes = new Map<string, Set<string>>();
-    const objectTypes = new Set(
-      entities.objectTypesApiNamesToLoad?.map(object => object.toLowerCase()),
-    );
-    const queryTypes = new Set(
-      entities.queryTypesApiNamesToLoad?.map(query => query.toLowerCase()),
-    );
+    const objectTypes = new Set(entities.objectTypesApiNamesToLoad);
+    const queryTypes = new Set(entities.queryTypesApiNamesToLoad);
     const actionTypes = new Set(
-      entities.actionTypesApiNamesToLoad?.map(action =>
-        this.camelize(action).toLowerCase()
-      ),
+      entities.actionTypesApiNamesToLoad?.map(action => this.camelize(action)),
     );
 
-    const interfaceTypes = new Set(
-      entities.interfaceTypesApiNamesToLoad?.map(interfaceName =>
-        interfaceName.toLowerCase()
-      ),
-    );
+    const interfaceTypes = new Set(entities.interfaceTypesApiNamesToLoad);
 
     for (const linkType of entities.linkTypesApiNamesToLoad ?? []) {
-      const [objectTypeApiName, linkTypeApiName] = linkType.toLowerCase().split(
+      const [objectTypeApiName, linkTypeApiName] = linkType.split(
         ".",
       );
       if (!linkTypes.has(objectTypeApiName)) {
@@ -182,13 +265,17 @@ export class OntologyMetadataResolver {
       linkTypes.get(objectTypeApiName)?.add(linkTypeApiName);
     }
 
-    const filteredFullMetadata = this.filterMetadata(ontologyFullMetadata, {
-      objectTypes,
-      linkTypes,
-      actionTypes,
-      queryTypes,
-      interfaceTypes,
-    });
+    const filteredFullMetadata = this.filterMetadataByApiName(
+      ontologyFullMetadata,
+      {
+        objectTypes,
+        linkTypes,
+        actionTypes,
+        queryTypes,
+        interfaceTypes,
+      },
+      extPackageInfo,
+    );
 
     const validData: Result<{}, string[]> = this.validateLoadedOntologyMetadata(
       filteredFullMetadata,
@@ -198,18 +285,18 @@ export class OntologyMetadataResolver {
         actionTypes,
         queryTypes,
       },
+      ontologyFullMetadata,
+      extPackageInfo,
     );
 
     if (validData.isErr()) {
-      return Result.err(validData.error) as Result<
-        WireOntologyDefinition,
-        string[]
-      >;
+      return Result.err(validData.error);
     }
-    return Result.ok(filteredFullMetadata) as Result<
-      WireOntologyDefinition,
-      string[]
-    >;
+    return Result.ok({
+      filteredFullMetadata,
+      externalInterfaces,
+      externalObjects,
+    });
   }
 
   private validateLoadedOntologyMetadata(
@@ -220,20 +307,22 @@ export class OntologyMetadataResolver {
       queryTypes: Set<string>;
       actionTypes: Set<string>;
     },
+    fullOntology: OntologyFullMetadata,
+    packageInfo: PackageInfo,
   ): Result<{}, string[]> {
     const errors: string[] = [];
     const loadedObjectTypes = Object.fromEntries(
       Object.values(filteredFullMetadata.objectTypes).map(object => [
-        object.objectType.apiName.toLowerCase(),
+        object.objectType.apiName,
         object,
       ]),
     );
 
     const loadedLinkTypes = Object.fromEntries(
       Object.values(filteredFullMetadata.objectTypes).map(object => [
-        object.objectType.apiName.toLowerCase(),
+        object.objectType.apiName,
         Object.fromEntries(
-          object.linkTypes.map(link => [link.apiName.toLowerCase(), link]),
+          object.linkTypes.map(link => [link.apiName, link]),
         ),
       ]),
     );
@@ -259,9 +348,15 @@ export class OntologyMetadataResolver {
         // Loaded a link where target was not loaded
         if (
           !expectedEntities.objectTypes.has(
-            link.objectTypeApiName.toLowerCase(),
+            link.objectTypeApiName,
           )
         ) {
+          // is it in a package?
+          const fromFull = fullOntology.objectTypes[link.objectTypeApiName];
+          if (fromFull && hasObjectType(packageInfo, fromFull)) {
+            continue;
+          }
+
           errors.push(
             `Unable to load link type ${link.apiName} for ${
               loadedObjectTypes[object].objectType.apiName
@@ -273,7 +368,9 @@ export class OntologyMetadataResolver {
 
     if (missingObjectTypes.length > 0) {
       errors.push(
-        `Unable to find the following Object Types: ${missingObjectTypes.join()}`,
+        `Unable to find the following Object Types: ${
+          missingObjectTypes.join(", ")
+        }`,
       );
     }
 
@@ -281,7 +378,7 @@ export class OntologyMetadataResolver {
       Object.entries(filteredFullMetadata.queryTypes).map((
         [queryApiName, query],
       ) => [
-        queryApiName.toLowerCase(),
+        queryApiName,
         query,
       ]),
     );
@@ -317,7 +414,7 @@ export class OntologyMetadataResolver {
       Object.entries(filteredFullMetadata.actionTypes).map((
         [actionApiName, action],
       ) => [
-        this.camelize(actionApiName).toLowerCase(),
+        this.camelize(actionApiName),
         action,
       ]),
     );
@@ -421,9 +518,7 @@ export class OntologyMetadataResolver {
         );
       case "objectSet":
       case "object":
-        if (
-          loadedObjectApiNames.has(baseType.objectTypeApiName?.toLowerCase()!)
-        ) {
+        if (loadedObjectApiNames.has(baseType.objectTypeApiName!)) {
           return Result.ok({});
         }
         return Result.err([
@@ -498,11 +593,7 @@ export class OntologyMetadataResolver {
           loadedObjectApiNames,
         );
       case "object":
-        if (
-          loadedObjectApiNames.has(
-            actonTypeParameter.objectTypeApiName?.toLowerCase()!,
-          )
-        ) {
+        if (loadedObjectApiNames.has(actonTypeParameter.objectTypeApiName!)) {
           return Result.ok({});
         }
         return Result.err([
@@ -512,11 +603,7 @@ export class OntologyMetadataResolver {
             .objectTypeApiName!})`,
         ]);
       case "objectSet":
-        if (
-          loadedObjectApiNames.has(
-            actonTypeParameter.objectTypeApiName?.toLowerCase()!,
-          )
-        ) {
+        if (loadedObjectApiNames.has(actonTypeParameter.objectTypeApiName!)) {
           return Result.ok({});
         }
         return Result.err([
@@ -549,4 +636,14 @@ export class OntologyMetadataResolver {
   private camelize(name: string) {
     return name.replace(/-./g, segment => segment[1]!.toUpperCase());
   }
+}
+
+function hasObjectType(z: PackageInfo, fromFull: ObjectTypeFullMetadata) {
+  for (const q of z.values()) {
+    const { objectTypes } = q.sdk.inputs.dataScope.ontologyV2;
+    if (objectTypes.includes(fromFull.objectType.rid)) {
+      return true;
+    }
+  }
+  return false;
 }

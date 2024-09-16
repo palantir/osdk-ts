@@ -36,6 +36,33 @@
   },
   "interfaceTypes": {},
   "objectTypes": {
+    "com.example.dep.Task": {
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {},
+      "objectType": {
+        "apiName": "com.example.dep.Task",
+        "primaryKey": "taskId",
+
+        "titleProperty": "taskId",
+
+        "properties": {
+          "taskId": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "body": {
+            "dataType": {
+              "type": "string"
+            }
+          }
+        },
+        "status": "ACTIVE",
+        "rid": "ridForTask"
+      },
+      "linkTypes": []
+    },
     "Thing": {
       "implementsInterfaces": ["com.example.dep.SomeInterface"],
       "implementsInterfaces2": {

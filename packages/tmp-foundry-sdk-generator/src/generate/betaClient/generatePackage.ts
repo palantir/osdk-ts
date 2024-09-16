@@ -19,6 +19,7 @@ import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
 import { mkdir, readdir, readFile, writeFile } from "fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, isAbsolute, join, normalize } from "path";
+import type { OntologyInfo } from "../../ontologyMetadata/ontologyMetadataResolver.js";
 import { USER_AGENT } from "../../utils/UserAgent.js";
 import { generateBundles } from "../generateBundles.js";
 import { bundleDependencies } from "./bundleDependencies.js";
@@ -40,7 +41,7 @@ const betaPeerDependencies: { [key: string]: string | undefined } = {
 };
 
 export async function generatePackage(
-  ontology: WireOntologyDefinition,
+  ontologyInfo: OntologyInfo,
   options: {
     packageName: string;
     packageVersion: string;
@@ -73,11 +74,13 @@ export async function generatePackage(
     throw new Error("Only beta is supported in this version");
   } else {
     await generateClientSdkVersionTwoPointZero(
-      ontology,
+      ontologyInfo.filteredFullMetadata,
       `typescript-sdk/${options.packageVersion} ${USER_AGENT}`,
       hostFs,
       packagePath,
       "module",
+      ontologyInfo.externalObjects,
+      ontologyInfo.externalInterfaces,
     );
   }
 

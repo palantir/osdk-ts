@@ -20,6 +20,7 @@ import invariant from "tiny-invariant";
 import { extractNamespace } from "../GenerateContext/EnhancedBase.js";
 import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
+import { ForeignType } from "../GenerateContext/ForeignType.js";
 import { propertyJsdoc } from "../shared/propertyJsdoc.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
@@ -53,9 +54,14 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
       `Expected to find a parent interface named ${p} in the ontology and did not.`,
     );
 
+    const parent = ontology.requireInterfaceType(p, true);
+    if (parent instanceof ForeignType) {
+      throw new Error("Don't current support this");
+    }
+
     const it = deleteUndefineds(
       __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
-        ontology.requireInterfaceType(p, true).raw,
+        parent.raw,
         v2,
       ),
     );

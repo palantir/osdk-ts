@@ -2603,6 +2603,12 @@ importers:
       '@osdk/client':
         specifier: workspace:*
         version: link:../client
+      '@osdk/foundry.core':
+        specifier: workspace:*
+        version: link:../foundry.core
+      '@osdk/foundry.thirdpartyapplications':
+        specifier: workspace:*
+        version: link:../foundry.thirdpartyapplications
       '@osdk/generator':
         specifier: workspace:*
         version: link:../generator
@@ -2646,6 +2652,12 @@ importers:
         specifier: 17.7.2
         version: 17.7.2
     devDependencies:
+      '@osdk/client.unstable':
+        specifier: workspace:~
+        version: link:../client.unstable
+      '@osdk/client.unstable.tpsa':
+        specifier: workspace:~
+        version: link:../client.unstable.tpsa
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -2655,6 +2667,9 @@ importers:
       '@osdk/monorepo.tsup':
         specifier: workspace:~
         version: link:../monorepo.tsup
+      '@osdk/shared.client.impl':
+        specifier: workspace:~
+        version: link:../shared.client.impl
       '@osdk/shared.test':
         specifier: workspace:~
         version: link:../shared.test
@@ -8876,7 +8891,7 @@ snapshots:
       '@babel/helper-split-export-declaration': 7.24.5
       '@babel/parser': 7.24.5
       '@babel/types': 7.24.5
-      debug: 4.3.5
+      debug: 4.3.4
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
@@ -10681,7 +10696,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 6.21.0
       '@typescript-eslint/visitor-keys': 6.21.0
-      debug: 4.3.5
+      debug: 4.3.4
       globby: 11.1.0
       is-glob: 4.0.3
       minimatch: 9.0.3
@@ -10741,7 +10756,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 7.17.0
       '@typescript-eslint/visitor-keys': 7.17.0
-      debug: 4.3.5
+      debug: 4.3.4
       globby: 11.1.0
       is-glob: 4.0.3
       minimatch: 9.0.4
@@ -10756,7 +10771,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 7.17.0
       '@typescript-eslint/visitor-keys': 7.17.0
-      debug: 4.3.5
+      debug: 4.3.4
       globby: 11.1.0
       is-glob: 4.0.3
       minimatch: 9.0.4

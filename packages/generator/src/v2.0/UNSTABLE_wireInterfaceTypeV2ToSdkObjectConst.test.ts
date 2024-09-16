@@ -20,6 +20,7 @@ import type {
 } from "@osdk/internal.foundry.core";
 import { format } from "prettier";
 import { describe, expect, it } from "vitest";
+import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "./UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst.js";
@@ -86,18 +87,16 @@ function simpleOntology<I extends InterfaceType>(
 
 describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
   it("Does not say (inherited) on properties locally defined", async () => {
-    const ontology = enhanceOntology(
-      simpleOntology("ontology", [
+    const ontology = enhanceOntology({
+      sanitized: simpleOntology("ontology", [
         simpleInterface("Bar", [simpleSpt("bar", 0)], [], 0),
       ]),
-      undefined,
-      new Map(),
-      "",
-    );
+      importExt: "",
+    });
 
     const formattedCode = await format(
       __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
-        ontology.interfaceTypes.Bar,
+        ontology.interfaceTypes.Bar as EnhancedInterfaceType,
         ontology,
         true,
       ),
@@ -172,18 +171,19 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     const barSpt = simpleSpt("bar");
 
     const ontology = enhanceOntology(
-      simpleOntology("ontology", [
-        simpleInterface("Foo", [fooSpt], ["Parent"]),
-        simpleInterface("Parent", [barSpt], []),
-      ]),
-      undefined,
-      new Map(),
-      "",
+      {
+        sanitized: simpleOntology("ontology", [
+          simpleInterface("Foo", [fooSpt], ["Parent"]),
+          simpleInterface("Parent", [barSpt], []),
+        ]),
+
+        importExt: "",
+      },
     );
 
     const formattedCode = await format(
       __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
-        ontology.interfaceTypes.Foo,
+        ontology.interfaceTypes.Foo as EnhancedInterfaceType,
         ontology,
         true,
       ),
@@ -259,18 +259,18 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     const barSpt = simpleSpt("bar");
 
     const ontology = enhanceOntology(
-      simpleOntology("ontology", [
-        simpleInterface("Foo", [fooSpt, barSpt], ["Parent"]),
-        simpleInterface("Parent", [barSpt], []),
-      ]),
-      undefined,
-      new Map(),
-      "",
+      {
+        sanitized: simpleOntology("ontology", [
+          simpleInterface("Foo", [fooSpt, barSpt], ["Parent"]),
+          simpleInterface("Parent", [barSpt], []),
+        ]),
+        importExt: "",
+      },
     );
 
     const formattedCode = await format(
       __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
-        ontology.interfaceTypes.Foo,
+        ontology.interfaceTypes.Foo as EnhancedInterfaceType,
         ontology,
         true,
       ),

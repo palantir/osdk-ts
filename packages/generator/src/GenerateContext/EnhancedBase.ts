@@ -32,12 +32,12 @@ export abstract class AbstractImportable {
   uniqueImportName: string;
 
   readonly isLocal: boolean;
-  readonly sourcePackage: string | undefined;
 
   constructor(
     common: EnhanceCommon,
     fullApiName: string,
     basePath: string,
+    isLocal: boolean = true,
   ) {
     this._common = common;
     this.fullApiName = fullApiName;
@@ -46,15 +46,12 @@ export abstract class AbstractImportable {
       this.fullApiName,
     );
 
-    const { ontologyApiNamespace, apiNamespacePackageMap, importExt } = common;
-    this.isLocal = ontologyApiNamespace === this.apiNamespace;
-    this.sourcePackage = this.apiNamespace && !this.isLocal
-      ? apiNamespacePackageMap.get(this.apiNamespace)
-      : undefined;
+    const { importExt } = common;
+    this.isLocal = isLocal;
 
     this.importPath = this.isLocal
       ? `${basePath}/${this.shortApiName}${importExt}`
-      : this.sourcePackage!;
+      : basePath;
     this.uniqueImportName = this.shortApiName;
   }
 
@@ -86,11 +83,11 @@ export abstract class EnhancedBase<T> extends AbstractImportable {
     super(common, fullApiName, basePath);
     this.raw = raw;
 
-    if (!this.isLocal && !this.sourcePackage) {
-      throw new Error(
-        `Expected { ns:'${this.apiNamespace}', shortName: '${this.shortApiName}'} to be in namespace '${common.ontologyApiNamespace}' or in a provided package mapping`,
-      );
-    }
+    // if (this.apiNamespace !== common.ontologyApiNamespace) {
+    //   throw new Error(
+    //     `Found type { ns:'${this.apiNamespace}', shortName: '${this.shortApiName}'} but it is not in the generation namespace '${this._common.ontologyApiNamespace}'. This violates the contract of the generator.`,
+    //   );
+    // }
   }
 }
 
