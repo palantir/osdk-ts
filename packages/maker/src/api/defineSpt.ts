@@ -35,5 +35,6 @@ export function defineSharedPropertyType(
 
   return ontologyDefinition.sharedPropertyTypes[apiName] = {
     ...opts,
+    apiName,
   };
 }
