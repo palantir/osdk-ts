@@ -77,42 +77,18 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
 
   function getV2Types() {
     return `import type {
-      AggregateOpts as $AggregateOpts,
-      AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-      AggregationsResults as $AggregationsResults, 
-      Augments as $Augments,
-      ConvertProps as $ConvertProps,
-      DefaultToFalse as $DefaultToFalse,
-      FetchPageArgs as $FetchPageArgs,
-      FetchPageResult as $FetchPageResult,
-      IsAny as $IsAny,
-      LinkedType as $LinkedType,
-      LinkNames as $LinkNames,
-      NullabilityAdherence as $NullabilityAdherence,
-      NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
-      ObjectSet as $ObjectSet, 
-      Osdk as $Osdk,
-      OsdkObject as $OsdkObject,
-      OsdkObjectLinksEntry as $OsdkObjectLinksEntry,
-      OsdkObjectLinksObject as $OsdkObjectLinksObject,
-      OsdkObjectPropertyType as $OsdkObjectPropertyType,
-      PageResult as $PageResult,
-      PropertyValueClientToWire as $PropertyValueClientToWire,
-      PropertyValueWireToClient as $PropType,
-      Result as $Result,
-      SelectArg as $SelectArg, 
-      SingleLinkAccessor  as $SingleLinkAccessor,
-      SingleLinkAccessor as $SingleLinkAccessor
-      SingleOsdkResult as $SingleOsdkResult,
-      ValidToFrom as $ValidToFrom,
-      WhereClause as $WhereClause,
-    } from "@osdk/client.api";
-    import type * as $clientApi from "@osdk/client.api";
-    import type {
       ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,  
       ObjectTypeDefinition as $ObjectTypeDefinition,
       ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
     } from "@osdk/api";
+     import type {
+      ObjectSet as $ObjectSet, 
+      Osdk as $Osdk,
+      OsdkObject as $OsdkObject,
+      PropertyValueWireToClient as $PropType,
+      SingleLinkAccessor  as $SingleLinkAccessor,
+    } from "@osdk/client.api";
+
 
     export namespace ${object.shortApiName} {
 

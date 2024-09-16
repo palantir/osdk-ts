@@ -245,9 +245,9 @@ export async function generatePerActionDataFiles(
         path.join(rootOutDir, currentFilePath),
         await formatTs(`
           import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType, VersionBound} from "@osdk/api";
-          import type { ApplyActionOptions, ApplyBatchActionOptions, ActionReturnTypeForOptions, ActionParam } from '@osdk/client.api';
-          import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
+          import type { ActionParam, ActionReturnTypeForOptions, ApplyActionOptions, ApplyBatchActionOptions,  } from '@osdk/client.api';
           import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
+          import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
           ${imports}
 
         
