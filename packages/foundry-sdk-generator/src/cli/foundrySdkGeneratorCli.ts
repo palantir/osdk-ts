@@ -50,8 +50,17 @@ export async function cli(args: string[] = process.argv) {
 
             await cli(args);
           } else {
-            // rerun so behavior stays consistent with old world. (`--help` exits 0)
-            await createBase().parseAsync(hideBin(args));
+            if (err) {
+              // eslint-disable-next-line no-console
+              console.error(output);
+              // eslint-disable-next-line no-console
+              console.error(err);
+              process.exit(1);
+            } else {
+              // eslint-disable-next-line no-console
+              console.log(output);
+              process.exit(0);
+            }
           }
         },
       );
