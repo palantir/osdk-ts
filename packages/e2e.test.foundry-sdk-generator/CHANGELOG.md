@@ -1,5 +1,11 @@
 # @osdk/e2e.test.foundry-sdk-generator
 
+## 0.2.4
+
+### Patch Changes
+
+- @osdk/foundry-sdk-generator@1.3.4
+
 ## 0.2.3
 
 ### Patch Changes
