@@ -1,5 +1,11 @@
 # @osdk/generator
 
+## 1.13.3
+
+### Patch Changes
+
+- 52317e9: Fixes additional compile breaks when formatting is off
+
 ## 1.13.2
 
 ### Patch Changes
