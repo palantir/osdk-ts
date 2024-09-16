@@ -1,5 +1,11 @@
 # @osdk/foundry-sdk-generator
 
+## 1.3.5
+
+### Patch Changes
+
+- 090cd28: Generator does not retry on failure
+
 ## 1.3.4
 
 ### Patch Changes
