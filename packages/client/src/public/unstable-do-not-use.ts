@@ -17,5 +17,3 @@
 export { UNSTABLE_createClient as createClient } from "../__unstable/UNSTABLE_createClient.js";
 export type { UnstableClient as Client } from "../__unstable/UnstableClient.js";
 export { augment } from "../object/fetchPage.js";
-export type { UNSTABLE_ObjectSet as ObjectSet } from "../objectSet/createUnstableObjectSet.js";
-export type { ObjectSetListener } from "../objectSet/ObjectSetListener.js";

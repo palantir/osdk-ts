@@ -126,4 +126,5 @@ export type {
 } from "./timeseries/timeseries.js";
 export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
 
-export {};
+export type { EXPERIMENTAL_ObjectSetListener } from "./objectSet/EXPERIMENTAL_ObjectSetListener.js";
+export { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "./objectSet/ObjectSet.js";

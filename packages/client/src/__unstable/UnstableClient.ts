@@ -20,9 +20,8 @@ import type {
   MinObjectDef,
   ObjectOrInterfaceDefinition,
 } from "@osdk/api";
-import type { MinimalObjectSet, Osdk } from "@osdk/client.api";
+import type { MinimalObjectSet, ObjectSet, Osdk } from "@osdk/client.api";
 import type { Client } from "../Client.js";
-import type { UNSTABLE_ObjectSet } from "../objectSet/createUnstableObjectSet.js";
 import type { BulkLinkResult } from "./createBulkLinksAsyncIterFactory.js";
 
 export interface UnstableClient extends Client {
@@ -33,12 +32,12 @@ export interface UnstableClient extends Client {
 
   <Q extends (MinObjectDef<any, any>)>(
     o: Q,
-  ): UNSTABLE_ObjectSet<Q>;
+  ): ObjectSet<Q>;
 
   __UNSTABLE_preexistingObjectSet<T extends ObjectOrInterfaceDefinition>(
     type: T,
     rid: string,
-  ): UNSTABLE_ObjectSet<T>;
+  ): ObjectSet<T>;
 
   __UNSTABLE_getBulkLinks<T extends ObjectOrInterfaceDefinition>(
     objs: Osdk<T>[],

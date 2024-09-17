@@ -19,7 +19,7 @@ import { symbolClientContext } from "@osdk/shared.client";
 import type { Client } from "../Client.js";
 import type { createClient } from "../createClient.js";
 import { createClientInternal } from "../createClient.js";
-import { UNSTABLE_createObjectSet } from "../objectSet/createUnstableObjectSet.js";
+import { createObjectSet } from "../objectSet/createObjectSet.js";
 import { createBulkLinksAsyncIterFactory } from "./createBulkLinksAsyncIterFactory.js";
 import type { UnstableClient } from "./UnstableClient.js";
 
@@ -27,7 +27,7 @@ export function UNSTABLE_createClient(
   ...args: Parameters<typeof createClient>
 ) {
   const client = createClientInternal(
-    UNSTABLE_createObjectSet,
+    createObjectSet,
     ...args,
   );
 
@@ -45,7 +45,7 @@ export function UNSTABLE_createClient(
           definition: T,
           rid: string,
         ) => {
-          return UNSTABLE_createObjectSet(
+          return createObjectSet(
             definition,
             client[symbolClientContext],
             {

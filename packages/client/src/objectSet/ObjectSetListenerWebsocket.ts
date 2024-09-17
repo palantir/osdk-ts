@@ -15,7 +15,11 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { Osdk } from "@osdk/client.api";
+import type {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
+  EXPERIMENTAL_ObjectSetListener as ObjectSetListener,
+  Osdk,
+} from "@osdk/client.api";
 import type { LoadAllOntologiesResponse } from "@osdk/client.unstable";
 import {
   bulkLoadOntologyEntities,
@@ -48,7 +52,6 @@ import { metadataCacheClient } from "../__unstable/ConjureSupport.js";
 import type { Logger } from "../Logger.js";
 import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
-import type { ObjectSetListener } from "./ObjectSetListener.js";
 import {
   getObjectSetBaseType,
   toConjureObjectSet,
