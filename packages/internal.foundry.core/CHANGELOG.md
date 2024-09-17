@@ -1,5 +1,11 @@
 # @osdk/internal.foundry.core
 
+## 0.2.0-beta.4
+
+### Minor Changes
+
+- 5d6d5ab: We now generate error types
+
 ## 0.2.0-beta.3
 
 ### Minor Changes

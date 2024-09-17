@@ -1,5 +1,18 @@
 # @osdk/e2e.generated.catchall
 
+## 3.0.0-beta.7
+
+### Patch Changes
+
+- Updated dependencies [39525b8]
+- Updated dependencies [9b0617d]
+- Updated dependencies [512ee35]
+- Updated dependencies [e86c505]
+- Updated dependencies [fc28eae]
+  - @osdk/client@2.0.0-beta.7
+  - @osdk/api@2.0.0-beta.7
+  - @osdk/client.api@2.0.0-beta.7
+
 ## 3.0.0-beta.6
 
 ### Minor Changes
