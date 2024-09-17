@@ -39,9 +39,12 @@ import type {
 import type { Result } from "../object/Result.js";
 import type { PrimaryKeyType } from "../OsdkBase.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
+import type {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
+  EXPERIMENTAL_ObjectSetListener,
+} from "../public/unstable.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 import type { BaseObjectSet } from "./BaseObjectSet.js";
-import type { EXPERIMENTAL_ObjectSetListener } from "./EXPERIMENTAL_ObjectSetListener.js";
 
 export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
   extends BaseObjectSet<Q>
@@ -119,8 +122,6 @@ export interface InterfaceObjectSet<
   Q extends MinInterfaceDef<any, any>,
 > extends MinimalObjectSet<Q> {
 }
-
-export const __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe = Symbol();
 
 export interface ObjectSet<
   Q extends ObjectOrInterfaceDefinition = any,
@@ -227,6 +228,7 @@ export interface ObjectSet<
     ) => Promise<Result<SingleOsdkResult<Q, L, R, S>>>
     : never;
 
+  /** @alpha */
   readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]: (
     listener: EXPERIMENTAL_ObjectSetListener<Q>,
   ) => () => unknown;

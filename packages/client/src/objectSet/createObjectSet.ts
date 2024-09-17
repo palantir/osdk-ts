@@ -31,9 +31,9 @@ import type {
   Result,
   SelectArg,
 } from "@osdk/client.api";
-import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/client.api";
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/client.api/unstable";
+import type { EXPERIMENTAL_ObjectSetListener } from "@osdk/client.api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
-import type { EXPERIMENTAL_ObjectSetListener } from "../../../client.api/build/esm/objectSet/EXPERIMENTAL_ObjectSetListener.js";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { aggregate } from "../object/aggregate.js";
