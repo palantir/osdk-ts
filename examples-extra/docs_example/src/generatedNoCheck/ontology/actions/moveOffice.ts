@@ -1,11 +1,10 @@
-import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType, VersionBound } from '@osdk/api';
+import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client.api';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 export namespace moveOffice {
@@ -56,18 +55,6 @@ export namespace moveOffice {
     readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'integer'>>;
   }
 
-  // Represents the definition of the action
-  export interface Definition
-    extends ActionDefinition<'moveOffice', 'Office', moveOffice.Signatures>,
-      VersionBound<$ExpectedClientVersion> {
-    apiName: 'moveOffice';
-    description: "Update an office's physical location";
-    modifiedEntities: { Office: { created: false; modified: true } };
-    type: 'action';
-    parameters: moveOffice.ParamsDefinition;
-    osdkMetadata: typeof $osdkMetadata;
-  }
-
   // Represents a fqn of the action
   export interface Signatures {
     /**
@@ -92,42 +79,28 @@ export namespace moveOffice {
  * @param {ActionParam.PrimitiveType<"string">} officeId
  * @param {ActionParam.PrimitiveType<"integer">} [officeNames] A list of all office names
  */
-export type moveOffice = moveOffice.Signatures;
+export interface moveOffice extends ActionDefinition<'moveOffice', 'Office', moveOffice.Signatures> {
+  __DefinitionMetadata?: {
+    apiName: 'moveOffice';
+    description: "Update an office's physical location";
+    modifiedEntities: {
+      Office: {
+        created: false;
+        modified: true;
+      };
+    };
+    parameters: moveOffice.ParamsDefinition;
+    type: 'action';
 
-export const moveOffice: moveOffice.Definition = {
+    signatures: moveOffice.Signatures;
+  };
+  apiName: 'moveOffice';
+  type: 'action';
+  osdkMetadata: typeof $osdkMetadata;
+}
+
+export const moveOffice: moveOffice = {
   apiName: 'moveOffice',
-  description: "Update an office's physical location",
-  modifiedEntities: {
-    Office: {
-      created: false,
-      modified: true,
-    },
-  },
-  parameters: {
-    officeId: {
-      multiplicity: false,
-      type: 'string',
-      nullable: false,
-    },
-    newAddress: {
-      multiplicity: false,
-      type: 'string',
-      nullable: true,
-      description: "The office's new physical address (not necessarily shipping address)",
-    },
-    newCapacity: {
-      multiplicity: false,
-      type: 'integer',
-      nullable: true,
-      description: 'The maximum seated-at-desk capacity of the new office (maximum fire-safe capacity may be higher)',
-    },
-    officeNames: {
-      multiplicity: true,
-      type: 'integer',
-      nullable: true,
-      description: 'A list of all office names',
-    },
-  },
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

@@ -1,11 +1,10 @@
-import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType, VersionBound } from '@osdk/api';
+import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client.api';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 export namespace promoteEmployee {
@@ -39,18 +38,6 @@ export namespace promoteEmployee {
     readonly newTitle: ActionParam.PrimitiveType<'string'>;
   }
 
-  // Represents the definition of the action
-  export interface Definition
-    extends ActionDefinition<'promoteEmployee', 'Employee', promoteEmployee.Signatures>,
-      VersionBound<$ExpectedClientVersion> {
-    apiName: 'promoteEmployee';
-    description: "Update an employee's title and compensation";
-    modifiedEntities: { Employee: { created: false; modified: true } };
-    type: 'action';
-    parameters: promoteEmployee.ParamsDefinition;
-    osdkMetadata: typeof $osdkMetadata;
-  }
-
   // Represents a fqn of the action
   export interface Signatures {
     /**
@@ -74,34 +61,28 @@ export namespace promoteEmployee {
  * @param {ActionParam.PrimitiveType<"double">} newCompensation
  * @param {ActionParam.PrimitiveType<"string">} newTitle
  */
-export type promoteEmployee = promoteEmployee.Signatures;
+export interface promoteEmployee extends ActionDefinition<'promoteEmployee', 'Employee', promoteEmployee.Signatures> {
+  __DefinitionMetadata?: {
+    apiName: 'promoteEmployee';
+    description: "Update an employee's title and compensation";
+    modifiedEntities: {
+      Employee: {
+        created: false;
+        modified: true;
+      };
+    };
+    parameters: promoteEmployee.ParamsDefinition;
+    type: 'action';
 
-export const promoteEmployee: promoteEmployee.Definition = {
+    signatures: promoteEmployee.Signatures;
+  };
+  apiName: 'promoteEmployee';
+  type: 'action';
+  osdkMetadata: typeof $osdkMetadata;
+}
+
+export const promoteEmployee: promoteEmployee = {
   apiName: 'promoteEmployee',
-  description: "Update an employee's title and compensation",
-  modifiedEntities: {
-    Employee: {
-      created: false,
-      modified: true,
-    },
-  },
-  parameters: {
-    employeeId: {
-      multiplicity: false,
-      type: 'integer',
-      nullable: false,
-    },
-    newTitle: {
-      multiplicity: false,
-      type: 'string',
-      nullable: false,
-    },
-    newCompensation: {
-      multiplicity: false,
-      type: 'double',
-      nullable: false,
-    },
-  },
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

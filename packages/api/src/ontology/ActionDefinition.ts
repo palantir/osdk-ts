@@ -14,22 +14,32 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "../index.js";
 import type { OsdkMetadata } from "../OsdkMetadata.js";
+import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
 
 export interface ActionDefinition<
   A extends string,
   K extends string,
-  T = never, // used in client 2
+  T_signatures = never,
 > {
-  __OsdkActionType?: T;
+  type: "action";
+  apiName: A;
+  osdkMetadata: OsdkMetadata;
+  __DefinitionMetadata?: RawActionDefinition<A, K> & {
+    signatures: T_signatures;
+  };
+}
+
+export interface RawActionDefinition<
+  A extends string,
+  K extends string,
+> {
   type: "action";
   apiName: A;
   description?: string;
   displayName?: string;
   parameters: Record<any, ActionParameterDefinition<K, any>>;
   modifiedEntities?: Partial<Record<K, ActionModifiedEntity>>;
-  osdkMetadata?: OsdkMetadata;
 }
 
 export interface ActionModifiedEntity {

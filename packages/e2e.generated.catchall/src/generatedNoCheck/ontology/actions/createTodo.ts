@@ -1,11 +1,10 @@
-import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType, VersionBound } from '@osdk/api';
+import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client.api';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createTodo {
@@ -16,18 +15,6 @@ export namespace createTodo {
    * Creates a new Todo
    */
   export interface Params {}
-
-  // Represents the definition of the action
-  export interface Definition
-    extends ActionDefinition<'createTodo', 'Todo', createTodo.Signatures>,
-      VersionBound<$ExpectedClientVersion> {
-    apiName: 'createTodo';
-    description: 'Creates a new Todo';
-    modifiedEntities: { Todo: { created: true; modified: false } };
-    type: 'action';
-    parameters: createTodo.ParamsDefinition;
-    osdkMetadata: typeof $osdkMetadata;
-  }
 
   // Represents a fqn of the action
   export interface Signatures {
@@ -49,18 +36,28 @@ export namespace createTodo {
 /**
  * Creates a new Todo
  */
-export type createTodo = createTodo.Signatures;
+export interface createTodo extends ActionDefinition<'createTodo', 'Todo', createTodo.Signatures> {
+  __DefinitionMetadata?: {
+    apiName: 'createTodo';
+    description: 'Creates a new Todo';
+    modifiedEntities: {
+      Todo: {
+        created: true;
+        modified: false;
+      };
+    };
+    parameters: createTodo.ParamsDefinition;
+    type: 'action';
 
-export const createTodo: createTodo.Definition = {
+    signatures: createTodo.Signatures;
+  };
+  apiName: 'createTodo';
+  type: 'action';
+  osdkMetadata: typeof $osdkMetadata;
+}
+
+export const createTodo: createTodo = {
   apiName: 'createTodo',
-  description: 'Creates a new Todo',
-  modifiedEntities: {
-    Todo: {
-      created: true,
-      modified: false,
-    },
-  },
-  parameters: {},
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

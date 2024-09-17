@@ -1,11 +1,10 @@
-import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType, VersionBound } from '@osdk/api';
+import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client.api';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
 import type { Venture } from '../objects/Venture.js';
@@ -34,18 +33,6 @@ export namespace assignEmployee1 {
     readonly 'venture-1': ActionParam.ObjectType<Venture>;
   }
 
-  // Represents the definition of the action
-  export interface Definition
-    extends ActionDefinition<'assignEmployee1', 'Employee' | 'Venture', assignEmployee1.Signatures>,
-      VersionBound<$ExpectedClientVersion> {
-    apiName: 'assignEmployee1';
-    description: 'Assigns an employee to a venture';
-    modifiedEntities: { Employee: { created: false; modified: true } };
-    type: 'action';
-    parameters: assignEmployee1.ParamsDefinition;
-    osdkMetadata: typeof $osdkMetadata;
-  }
-
   // Represents a fqn of the action
   export interface Signatures {
     /**
@@ -68,35 +55,29 @@ export namespace assignEmployee1 {
  * @param {ActionParam.ObjectType<Employee>} employee-1
  * @param {ActionParam.ObjectType<Venture>} venture-1
  */
-export type assignEmployee1 = assignEmployee1.Signatures;
+export interface assignEmployee1
+  extends ActionDefinition<'assignEmployee1', 'Employee' | 'Venture', assignEmployee1.Signatures> {
+  __DefinitionMetadata?: {
+    apiName: 'assignEmployee1';
+    description: 'Assigns an employee to a venture';
+    modifiedEntities: {
+      Employee: {
+        created: false;
+        modified: true;
+      };
+    };
+    parameters: assignEmployee1.ParamsDefinition;
+    type: 'action';
 
-export const assignEmployee1: assignEmployee1.Definition = {
+    signatures: assignEmployee1.Signatures;
+  };
+  apiName: 'assignEmployee1';
+  type: 'action';
+  osdkMetadata: typeof $osdkMetadata;
+}
+
+export const assignEmployee1: assignEmployee1 = {
   apiName: 'assignEmployee1',
-  description: 'Assigns an employee to a venture',
-  modifiedEntities: {
-    Employee: {
-      created: false,
-      modified: true,
-    },
-  },
-  parameters: {
-    'employee-1': {
-      multiplicity: false,
-      type: {
-        type: 'object',
-        object: 'Employee',
-      },
-      nullable: false,
-    },
-    'venture-1': {
-      multiplicity: false,
-      type: {
-        type: 'object',
-        object: 'Venture',
-      },
-      nullable: false,
-    },
-  },
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

@@ -20,6 +20,7 @@ export type {
   ActionParameterDefinition,
   ObjectActionDataType,
   ObjectSetActionDataType,
+  RawActionDefinition,
   ValidActionParameterTypes,
 } from "./ontology/ActionDefinition.js";
 export type {

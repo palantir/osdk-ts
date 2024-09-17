@@ -68,10 +68,8 @@ export async function generatePerActionDataFiles(
         wireActionTypeV2ToSdkActionDefinition(action.raw),
       );
 
-      const { parameters, ...actionDefSansParameters } = fullActionDef;
-
       function createParamsDef() {
-        const entries = Object.entries(parameters);
+        const entries = Object.entries(fullActionDef.parameters ?? {});
         entries.sort((a, b) => a[0].localeCompare(b[0]));
 
         if (entries.length === 0) {
@@ -145,7 +143,7 @@ export async function generatePerActionDataFiles(
             ${getDescriptionIfPresent(action.description)}
             export interface Params {
               ${
-          stringify(parameters, {
+          stringify(fullActionDef.parameters, {
             "*": (ogValue, _, ogKey) => {
               const key = `${getDescriptionIfPresent(ogValue.description)}
                   readonly "${ogKey}"${ogValue.nullable ? "?" : ""}`;
@@ -164,20 +162,6 @@ export async function generatePerActionDataFiles(
         }
             }
 
-
-              // Represents the definition of the action
-              export interface Definition extends ActionDefinition<"${action.shortApiName}", ${uniqueApiNamesString}, ${action.shortApiName}.Signatures>, VersionBound<$ExpectedClientVersion> {
-              ${
-          Object.entries(actionDefSansParameters).sort((a, b) =>
-            a[0].localeCompare(b[0])
-          ).map(([key, value]) => {
-            return `${key}: ${JSON.stringify(value)};`;
-          }).join("\n")
-        }
-              parameters: ${action.definitionParamsIdentifier};
-              osdkMetadata: typeof $osdkMetadata;
-            }
-
             // Represents a fqn of the action
             export interface Signatures {
               ${getDescriptionIfPresent(action.description)}
@@ -188,16 +172,43 @@ export async function generatePerActionDataFiles(
   
           }
 
+          
           ${jsDocBlock.join("\n")}
           */
-          export type ${action.shortApiName} = ${action.shortApiName}.Signatures;
+          export interface ${action.shortApiName} extends ActionDefinition<"${action.shortApiName}", ${uniqueApiNamesString}, ${action.shortApiName}.Signatures> {
+            __DefinitionMetadata?: {
+              ${
+          stringify(fullActionDef, {
+            "parameters": () => action.definitionParamsIdentifier,
+          })
+        }
+              
+              signatures: ${action.shortApiName}.Signatures;
+            },
+            ${
+          stringify(fullActionDef, {
+            "description": () => undefined,
+            "displayName": () => undefined,
+            "modifiedEntities": () => undefined,
+            "parameters": () => undefined,
+          })
+        }
+            osdkMetadata: typeof $osdkMetadata;
+            }
           `;
       }
 
       function createV2Object() {
-        return `  export const ${action.shortApiName}: ${action.definitionIdentifier} = 
+        return `  export const ${action.shortApiName}: ${action.shortApiName} = 
         {
-          ${stringify(fullActionDef)},
+          ${
+          stringify(fullActionDef, {
+            "description": () => undefined,
+            "displayName": () => undefined,
+            "modifiedEntities": () => undefined,
+            "parameters": () => undefined,
+          })
+        },
           osdkMetadata: $osdkMetadata
         }
         `;
@@ -249,9 +260,8 @@ export async function generatePerActionDataFiles(
       await fs.writeFile(
         path.join(rootOutDir, currentFilePath),
         await formatTs(`
-          import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType, VersionBound} from "@osdk/api";
+          import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from "@osdk/api";
           import type { ActionParam, ActionReturnTypeForOptions, ApplyActionOptions, ApplyBatchActionOptions,  } from '@osdk/client.api';
-          import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
           import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
           ${imports}
 

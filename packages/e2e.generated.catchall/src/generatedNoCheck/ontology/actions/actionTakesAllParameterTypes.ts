@@ -1,11 +1,10 @@
-import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType, VersionBound } from '@osdk/api';
+import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client.api';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Todo } from '../objects/Todo.js';
 import type { Person } from '../objects/Person.js';
@@ -65,25 +64,6 @@ export namespace actionTakesAllParameterTypes {
     readonly 'time-stamp': ActionParam.PrimitiveType<'timestamp'>;
   }
 
-  // Represents the definition of the action
-  export interface Definition
-    extends ActionDefinition<
-        'actionTakesAllParameterTypes',
-        'Todo' | 'ObjectTypeWithAllPropertyTypes' | 'Person',
-        actionTakesAllParameterTypes.Signatures
-      >,
-      VersionBound<$ExpectedClientVersion> {
-    apiName: 'actionTakesAllParameterTypes';
-    description: 'An action which takes different types of parameters';
-    modifiedEntities: {
-      Todo: { created: true; modified: true };
-      ObjectTypeWithAllPropertyTypes: { created: false; modified: true };
-    };
-    type: 'action';
-    parameters: actionTakesAllParameterTypes.ParamsDefinition;
-    osdkMetadata: typeof $osdkMetadata;
-  }
-
   // Represents a fqn of the action
   export interface Signatures {
     /**
@@ -110,60 +90,37 @@ export namespace actionTakesAllParameterTypes {
  * @param {ActionParam.PrimitiveType<"string">} string
  * @param {ActionParam.PrimitiveType<"timestamp">} time-stamp
  */
-export type actionTakesAllParameterTypes = actionTakesAllParameterTypes.Signatures;
+export interface actionTakesAllParameterTypes
+  extends ActionDefinition<
+    'actionTakesAllParameterTypes',
+    'Todo' | 'ObjectTypeWithAllPropertyTypes' | 'Person',
+    actionTakesAllParameterTypes.Signatures
+  > {
+  __DefinitionMetadata?: {
+    apiName: 'actionTakesAllParameterTypes';
+    description: 'An action which takes different types of parameters';
+    modifiedEntities: {
+      Todo: {
+        created: true;
+        modified: true;
+      };
+      ObjectTypeWithAllPropertyTypes: {
+        created: false;
+        modified: true;
+      };
+    };
+    parameters: actionTakesAllParameterTypes.ParamsDefinition;
+    type: 'action';
 
-export const actionTakesAllParameterTypes: actionTakesAllParameterTypes.Definition = {
+    signatures: actionTakesAllParameterTypes.Signatures;
+  };
+  apiName: 'actionTakesAllParameterTypes';
+  type: 'action';
+  osdkMetadata: typeof $osdkMetadata;
+}
+
+export const actionTakesAllParameterTypes: actionTakesAllParameterTypes = {
   apiName: 'actionTakesAllParameterTypes',
-  description: 'An action which takes different types of parameters',
-  modifiedEntities: {
-    Todo: {
-      created: true,
-      modified: true,
-    },
-    ObjectTypeWithAllPropertyTypes: {
-      created: false,
-      modified: true,
-    },
-  },
-  parameters: {
-    objectSet: {
-      multiplicity: false,
-      type: {
-        type: 'objectSet',
-        objectSet: 'Todo',
-      },
-      nullable: false,
-    },
-    object: {
-      multiplicity: false,
-      type: {
-        type: 'object',
-        object: 'Person',
-      },
-      nullable: true,
-      description: 'A person Object',
-    },
-    string: {
-      multiplicity: false,
-      type: 'string',
-      nullable: false,
-    },
-    'time-stamp': {
-      multiplicity: false,
-      type: 'timestamp',
-      nullable: false,
-    },
-    dateArray: {
-      multiplicity: true,
-      type: 'datetime',
-      nullable: true,
-    },
-    attachmentArray: {
-      multiplicity: true,
-      type: 'attachment',
-      nullable: false,
-    },
-  },
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

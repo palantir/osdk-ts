@@ -163,6 +163,9 @@ const updateTask: ActionDef$updateTask = {
   modifiedEntities: {
     Task: { modified: true, created: false },
   },
+  osdkMetadata: {
+    extraUserAgent: "",
+  },
 };
 
 export const MockOntology = {

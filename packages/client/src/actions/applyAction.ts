@@ -66,16 +66,23 @@ export type OsdkActionParameters<
 > = NullableProps<X> extends never ? NotOptionalParams<X>
   : PartialBy<NotOptionalParams<X>, NullableProps<X>>;
 
-export type ActionSignatureFromDef<T extends ActionDefinition<any, any, any>> =
-  {
-    applyAction: [NonNullable<T["__OsdkActionType"]>] extends [never]
-      ? ActionSignature<T["parameters"]>
-      : NonNullable<T["__OsdkActionType"]>["applyAction"];
+export type CompileTimeActionMetadata<
+  T extends ActionDefinition<any, any, any>,
+> = NonNullable<T["__DefinitionMetadata"]>;
 
-    batchApplyAction: [NonNullable<T["__OsdkActionType"]>] extends [never]
-      ? BatchActionSignature<T["parameters"]>
-      : NonNullable<T["__OsdkActionType"]>["batchApplyAction"];
-  };
+export type ActionSignatureFromDef<
+  T extends ActionDefinition<any, any, any>,
+> = {
+  applyAction:
+    [CompileTimeActionMetadata<T>["signatures"]["applyAction"]] extends [never]
+      ? ActionSignature<CompileTimeActionMetadata<T>["parameters"]>
+      : CompileTimeActionMetadata<T>["signatures"]["applyAction"];
+
+  batchApplyAction:
+    [CompileTimeActionMetadata<T>["signatures"]["batchApplyAction"]] extends
+      [never] ? BatchActionSignature<CompileTimeActionMetadata<T>["parameters"]>
+      : CompileTimeActionMetadata<T>["signatures"]["batchApplyAction"];
+};
 
 type ActionParametersDefinition = Record<
   any,
@@ -107,12 +114,12 @@ export type BatchActionSignature<
 >;
 
 export async function applyAction<
-  AD extends ActionDefinition<any, any>,
-  P extends OsdkActionParameters<AD["parameters"]> | OsdkActionParameters<
-    AD["parameters"]
-  >[],
+  AD extends ActionDefinition<any, any, any>,
+  P extends
+    | OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>
+    | OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>[],
   Op extends P extends OsdkActionParameters<
-    AD["parameters"]
+    CompileTimeActionMetadata<AD>["parameters"]
   >[] ? ApplyBatchActionOptions
     : ApplyActionOptions,
 >(
@@ -153,7 +160,9 @@ export async function applyAction<
       action.apiName,
       {
         parameters: await remapActionParams(
-          parameters as OsdkActionParameters<AD["parameters"]>,
+          parameters as OsdkActionParameters<
+            CompileTimeActionMetadata<AD>["parameters"]
+          >,
           client,
         ),
         options: {
@@ -184,7 +193,9 @@ export async function applyAction<
 }
 
 async function remapActionParams<AD extends ActionDefinition<any, any>>(
-  params: OsdkActionParameters<AD["parameters"]> | undefined,
+  params:
+    | OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>
+    | undefined,
   client: MinimalClient,
 ): Promise<Record<string, DataValue>> {
   if (params == null) {
@@ -201,7 +212,10 @@ async function remapActionParams<AD extends ActionDefinition<any, any>>(
 
 async function remapBatchActionParams<
   AD extends ActionDefinition<any, any>,
->(params: OsdkActionParameters<AD["parameters"]>[], client: MinimalClient) {
+>(
+  params: OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>[],
+  client: MinimalClient,
+) {
   const remappedParams = await Promise.all(params.map(
     async param => {
       return { parameters: await remapActionParams<AD>(param, client) };
