@@ -274,7 +274,7 @@ export type DisplayMetadata = {
     pluralDisplayName: string;
     description?: string;
     icon: Icon;
-    visibility: ObjectTypeVisibility;
+    visibility?: ObjectTypeVisibility;
 };
 
 // @public (undocumented)

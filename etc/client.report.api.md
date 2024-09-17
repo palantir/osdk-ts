@@ -17,13 +17,9 @@ import type { AttachmentUpload } from '@osdk/client.api';
 import type { DataValueClientToWire } from '@osdk/client.api';
 import type { DataValueWireToClient } from '@osdk/client.api';
 import type { DisplayMetadata } from '@osdk/client.api';
-import type { GreaterThan } from 'type-fest';
-import type { GreaterThanOrEqual } from 'type-fest';
 import type { InterfaceDefinition } from '@osdk/api';
 import { InterfaceObjectSet } from '@osdk/client.api';
-import type { IsEqual } from 'type-fest';
 import { isOk } from '@osdk/client.api';
-import type { LessThan } from 'type-fest';
 import type { Logger } from 'pino';
 import type { ObjectActionDataType } from '@osdk/api';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
@@ -43,7 +39,6 @@ import type { QueryResult } from '@osdk/client.api';
 import { Result } from '@osdk/client.api';
 import type { SharedClient } from '@osdk/shared.client';
 import type { SharedClientContext } from '@osdk/shared.client';
-import type { VersionBound } from '@osdk/api';
 import { WhereClause } from '@osdk/client.api';
 
 export { ActionEditResponse }
@@ -77,10 +72,8 @@ export interface Client extends SharedClient<MinimalClient> {
     //
     // (undocumented)
     <Q extends QueryDefinition<any, any, any>>(o: Q): QuerySignatureFromDef<Q>;
-    // Warning: (ae-forgotten-export) The symbol "CheckVersionBound" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
-    fetchDisplayMetadata<Q extends (ObjectTypeDefinition<any> & VersionBound<any>)>(o: CheckVersionBound<Q>): Promise<DisplayMetadata>;
+    fetchDisplayMetadata<Q extends ObjectTypeDefinition<any, any>>(o: Q): Promise<DisplayMetadata>;
 }
 
 // @public
