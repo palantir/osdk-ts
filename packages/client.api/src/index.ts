@@ -55,6 +55,7 @@ export type {
   OsdkObjectLinksObject,
   SingleLinkAccessor,
 } from "./definitions/LinkDefinitions.js";
+export type { DisplayMetadata } from "./DisplayMetadata.js";
 
 export { DurationMapping } from "./groupby/GroupByClause.js";
 export type {
