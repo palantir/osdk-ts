@@ -85,7 +85,13 @@ export namespace moveOffice {
   }
 }
 
-/** @deprecated Use `moveOffice.Definition` **/
+/**
+ * Update an office's physical location
+ * @param {ActionParam.PrimitiveType<"string">} [newAddress] The office's new physical address (not necessarily shipping address)
+ * @param {ActionParam.PrimitiveType<"integer">} [newCapacity] The maximum seated-at-desk capacity of the new office (maximum fire-safe capacity may be higher)
+ * @param {ActionParam.PrimitiveType<"string">} officeId
+ * @param {ActionParam.PrimitiveType<"integer">} [officeNames] A list of all office names
+ */
 export type moveOffice = moveOffice.Signatures;
 
 export const moveOffice: moveOffice.Definition = {

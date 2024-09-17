@@ -61,7 +61,11 @@ export namespace createTodo {
   }
 }
 
-/** @deprecated Use `createTodo.Definition` **/
+/**
+ * Creates Todo
+ * @param {ActionParam.PrimitiveType<"boolean">} is_complete
+ * @param {ActionParam.PrimitiveType<"string">} Todo
+ */
 export type createTodo = createTodo.Signatures;
 
 export const createTodo: createTodo.Definition = {

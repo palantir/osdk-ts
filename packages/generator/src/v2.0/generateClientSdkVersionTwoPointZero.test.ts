@@ -559,7 +559,10 @@ describe("generator", () => {
         }
       }
 
-      /** @deprecated Use \`deleteTodos.Definition\` **/
+      /**
+       * An action which takes in an array of objects
+       * @param {ActionParam.ObjectType<Todo>} [object] Todo(s) to be deleted
+       */
       export type deleteTodos = deleteTodos.Signatures;
 
       export const deleteTodos: deleteTodos.Definition = {
@@ -642,7 +645,10 @@ describe("generator", () => {
         }
       }
 
-      /** @deprecated Use \`markTodoCompleted.Definition\` **/
+      /**
+       * An action which takes different types of parameters
+       * @param {ActionParam.ObjectType<Todo>} [object] A Todo to mark completed
+       */
       export type markTodoCompleted = markTodoCompleted.Signatures;
 
       export const markTodoCompleted: markTodoCompleted.Definition = {
@@ -1231,7 +1237,10 @@ describe("generator", () => {
           }
         }
 
-        /** @deprecated Use \`deleteTodos.Definition\` **/
+        /**
+         * An action which takes in an array of objects
+         * @param {ActionParam.ObjectType<Todo>} [object] Todo(s) to be deleted
+         */
         export type deleteTodos = deleteTodos.Signatures;
 
         export const deleteTodos: deleteTodos.Definition = {
@@ -1314,7 +1323,10 @@ describe("generator", () => {
           }
         }
 
-        /** @deprecated Use \`markTodoCompleted.Definition\` **/
+        /**
+         * An action which takes different types of parameters
+         * @param {ActionParam.ObjectType<Todo>} [object] A Todo to mark completed
+         */
         export type markTodoCompleted = markTodoCompleted.Signatures;
 
         export const markTodoCompleted: markTodoCompleted.Definition = {
@@ -2141,7 +2153,10 @@ describe("generator", () => {
             }
           }
 
-          /** @deprecated Use \`setTaskBody.Definition\` **/
+          /**
+           * @param {ActionParam.PrimitiveType<"string">} body
+           * @param {ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>} task
+           */
           export type setTaskBody = setTaskBody.Signatures;
 
           export const setTaskBody: setTaskBody.Definition = {

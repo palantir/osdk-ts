@@ -55,7 +55,10 @@ export namespace setTaskBody {
   }
 }
 
-/** @deprecated Use `setTaskBody.Definition` **/
+/**
+ * @param {ActionParam.PrimitiveType<"string">} body
+ * @param {ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>} task
+ */
 export type setTaskBody = setTaskBody.Signatures;
 
 export const setTaskBody: setTaskBody.Definition = {
