@@ -15,9 +15,9 @@
  */
 
 import type {
+  ActionDefinition,
   ActionModifiedEntity,
   ActionParameterDefinition,
-  RawActionDefinition,
 } from "@osdk/api";
 import type {
   ActionParameterType,
@@ -28,7 +28,7 @@ import { getModifiedEntityTypes } from "./getEditedEntities.js";
 
 export function wireActionTypeV2ToSdkActionDefinition(
   input: ActionTypeV2,
-): RawActionDefinition<any, any> {
+): ActionDefinition<any, any> {
   const modifiedEntityTypes = getModifiedEntityTypes(input);
   return {
     type: "action",

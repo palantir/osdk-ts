@@ -66,7 +66,7 @@ export interface Client extends SharedClient<MinimalClient> {
     // Warning: (ae-forgotten-export) The symbol "ActionSignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    <Q extends ActionDefinition<any, any, any>>(o: Q): ActionSignatureFromDef<Q>;
+    <Q extends MinimalActionDefinition<any, any, any>>(o: Q): ActionSignatureFromDef<Q>;
     // Warning: (ae-forgotten-export) The symbol "QuerySignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)

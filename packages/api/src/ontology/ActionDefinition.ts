@@ -20,19 +20,6 @@ import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
 export interface ActionDefinition<
   A extends string,
   K extends string,
-  T_signatures = never,
-> {
-  type: "action";
-  apiName: A;
-  osdkMetadata: OsdkMetadata;
-  __DefinitionMetadata?: RawActionDefinition<A, K> & {
-    signatures: T_signatures;
-  };
-}
-
-export interface RawActionDefinition<
-  A extends string,
-  K extends string,
 > {
   type: "action";
   apiName: A;
@@ -40,6 +27,19 @@ export interface RawActionDefinition<
   displayName?: string;
   parameters: Record<any, ActionParameterDefinition<K, any>>;
   modifiedEntities?: Partial<Record<K, ActionModifiedEntity>>;
+}
+
+export interface MinimalActionDefinition<
+  A extends string,
+  K extends string,
+  T_signatures = never,
+> {
+  type: "action";
+  apiName: A;
+  osdkMetadata: OsdkMetadata;
+  __DefinitionMetadata?: ActionDefinition<A, K> & {
+    signatures: T_signatures;
+  };
 }
 
 export interface ActionModifiedEntity {

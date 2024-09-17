@@ -18,9 +18,9 @@ export type {
   ActionDefinition,
   ActionModifiedEntity,
   ActionParameterDefinition,
+  MinimalActionDefinition,
   ObjectActionDataType,
   ObjectSetActionDataType,
-  RawActionDefinition,
   ValidActionParameterTypes,
 } from "./ontology/ActionDefinition.js";
 export type {

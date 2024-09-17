@@ -498,7 +498,7 @@ describe("generator", () => {
         "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos';
       export { markTodoCompleted } from './actions/markTodoCompleted';
       ",
-        "/foo/ontology/actions/deleteTodos.ts": "import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+        "/foo/ontology/actions/deleteTodos.ts": "import type { MinimalActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
       import type {
         ActionParam,
         ActionReturnTypeForOptions,
@@ -550,7 +550,7 @@ describe("generator", () => {
        * An action which takes in an array of objects
        * @param {ActionParam.ObjectType<Todo>} [object] Todo(s) to be deleted
        */
-      export interface deleteTodos extends ActionDefinition<'deleteTodos', 'Todo', deleteTodos.Signatures> {
+      export interface deleteTodos extends MinimalActionDefinition<'deleteTodos', 'Todo', deleteTodos.Signatures> {
         __DefinitionMetadata?: {
           apiName: 'deleteTodos';
           description: 'An action which takes in an array of objects';
@@ -571,7 +571,7 @@ describe("generator", () => {
         osdkMetadata: $osdkMetadata,
       };
       ",
-        "/foo/ontology/actions/markTodoCompleted.ts": "import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+        "/foo/ontology/actions/markTodoCompleted.ts": "import type { MinimalActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
       import type {
         ActionParam,
         ActionReturnTypeForOptions,
@@ -623,7 +623,8 @@ describe("generator", () => {
        * An action which takes different types of parameters
        * @param {ActionParam.ObjectType<Todo>} [object] A Todo to mark completed
        */
-      export interface markTodoCompleted extends ActionDefinition<'markTodoCompleted', 'Todo', markTodoCompleted.Signatures> {
+      export interface markTodoCompleted
+        extends MinimalActionDefinition<'markTodoCompleted', 'Todo', markTodoCompleted.Signatures> {
         __DefinitionMetadata?: {
           apiName: 'markTodoCompleted';
           description: 'An action which takes different types of parameters';
@@ -1150,7 +1151,7 @@ describe("generator", () => {
           "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos.js';
         export { markTodoCompleted } from './actions/markTodoCompleted.js';
         ",
-          "/foo/ontology/actions/deleteTodos.ts": "import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+          "/foo/ontology/actions/deleteTodos.ts": "import type { MinimalActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
         import type {
           ActionParam,
           ActionReturnTypeForOptions,
@@ -1202,7 +1203,7 @@ describe("generator", () => {
          * An action which takes in an array of objects
          * @param {ActionParam.ObjectType<Todo>} [object] Todo(s) to be deleted
          */
-        export interface deleteTodos extends ActionDefinition<'deleteTodos', 'foo.bar.Todo', deleteTodos.Signatures> {
+        export interface deleteTodos extends MinimalActionDefinition<'deleteTodos', 'foo.bar.Todo', deleteTodos.Signatures> {
           __DefinitionMetadata?: {
             apiName: 'foo.bar.deleteTodos';
             description: 'An action which takes in an array of objects';
@@ -1223,7 +1224,7 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
         };
         ",
-          "/foo/ontology/actions/markTodoCompleted.ts": "import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+          "/foo/ontology/actions/markTodoCompleted.ts": "import type { MinimalActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
         import type {
           ActionParam,
           ActionReturnTypeForOptions,
@@ -1276,7 +1277,7 @@ describe("generator", () => {
          * @param {ActionParam.ObjectType<Todo>} [object] A Todo to mark completed
          */
         export interface markTodoCompleted
-          extends ActionDefinition<'markTodoCompleted', 'foo.bar.Todo', markTodoCompleted.Signatures> {
+          extends MinimalActionDefinition<'markTodoCompleted', 'foo.bar.Todo', markTodoCompleted.Signatures> {
           __DefinitionMetadata?: {
             apiName: 'foo.bar.markTodoCompleted';
             description: 'An action which takes different types of parameters';
@@ -2045,7 +2046,7 @@ describe("generator", () => {
 
       expect(helper.getFiles()["/foo/ontology/actions/setTaskBody.ts"])
         .toMatchInlineSnapshot(`
-          "import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+          "import type { MinimalActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
           import type {
             ActionParam,
             ActionReturnTypeForOptions,
@@ -2094,7 +2095,8 @@ describe("generator", () => {
            * @param {ActionParam.PrimitiveType<"string">} body
            * @param {ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>} task
            */
-          export interface setTaskBody extends ActionDefinition<'setTaskBody', 'com.example.dep.Task', setTaskBody.Signatures> {
+          export interface setTaskBody
+            extends MinimalActionDefinition<'setTaskBody', 'com.example.dep.Task', setTaskBody.Signatures> {
             __DefinitionMetadata?: {
               apiName: 'setTaskBody';
               modifiedEntities: {

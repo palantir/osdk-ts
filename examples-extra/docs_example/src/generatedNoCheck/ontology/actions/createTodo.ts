@@ -1,4 +1,4 @@
-import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+import type { MinimalActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
   ActionParam,
   ActionReturnTypeForOptions,
@@ -53,7 +53,7 @@ export namespace createTodo {
  * @param {ActionParam.PrimitiveType<"boolean">} is_complete
  * @param {ActionParam.PrimitiveType<"string">} Todo
  */
-export interface createTodo extends ActionDefinition<'createTodo', 'Todo', createTodo.Signatures> {
+export interface createTodo extends MinimalActionDefinition<'createTodo', 'Todo', createTodo.Signatures> {
   __DefinitionMetadata?: {
     apiName: 'createTodo';
     description: 'Creates Todo';
