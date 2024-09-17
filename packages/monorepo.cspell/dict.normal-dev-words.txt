@@ -20,3 +20,11 @@ unevaluable
 unioned
 webapi
 typemapping
+aimpoints
+backlink
+gantt
+geofence
+geosearch
+inbetween
+ungroup
+unresolve
