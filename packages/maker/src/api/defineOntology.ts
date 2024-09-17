@@ -113,8 +113,15 @@ export function dumpOntologyFullMetadata(): OntologyIrOntologyBlockDataV2 {
 }
 
 function convertSpt(
-  { type, array, description, apiName, displayName, gothamMapping }:
-    SharedPropertyType,
+  {
+    type,
+    array,
+    description,
+    apiName,
+    displayName,
+    gothamMapping,
+    typeClasses,
+  }: SharedPropertyType,
 ): OntologyIrSharedPropertyType {
   return {
     apiName,
@@ -137,7 +144,7 @@ function convertSpt(
     gothamMapping: gothamMapping,
     indexedForSearch: true,
     provenance: undefined,
-    typeClasses: [],
+    typeClasses: typeClasses ?? [],
     valueType: undefined,
   };
 }
