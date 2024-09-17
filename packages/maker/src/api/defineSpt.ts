@@ -18,6 +18,11 @@ import invariant from "tiny-invariant";
 import { namespace, ontologyDefinition } from "./defineOntology.js";
 import type { PropertyTypeType, SharedPropertyType } from "./types.js";
 
+const defaultTypeClasses: SharedPropertyType["typeClasses"] = [{
+  kind: "render_hint",
+  name: "SELECTABLE",
+}, { kind: "render_hint", name: "SORTABLE" }];
+
 export function defineSharedPropertyType(
   opts: {
     apiName: string;
@@ -36,5 +41,6 @@ export function defineSharedPropertyType(
   return ontologyDefinition.sharedPropertyTypes[apiName] = {
     ...opts,
     apiName,
+    typeClasses: defaultTypeClasses,
   };
 }
