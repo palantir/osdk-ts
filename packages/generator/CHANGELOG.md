@@ -1,5 +1,20 @@
 # @osdk/generator
 
+## 2.0.0-beta.7
+
+### Minor Changes
+
+- 33759fb: Removes deprecated types and renames Definition to improve intellisense
+- 5c89065: Generator no longer organizes imports
+
+### Patch Changes
+
+- Updated dependencies [9b0617d]
+- Updated dependencies [5d6d5ab]
+  - @osdk/api@2.0.0-beta.7
+  - @osdk/internal.foundry.core@0.2.0-beta.4
+  - @osdk/generator-converters@2.0.0-beta.7
+
 ## 2.0.0-beta.6
 
 ### Minor Changes

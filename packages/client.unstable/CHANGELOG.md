@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.0.0-beta.7
+
+### Minor Changes
+
+- ee39a61: Add support for gotham mapping of SPTs in maker
+
 ## 2.0.0-beta.6
 
 ### Minor Changes

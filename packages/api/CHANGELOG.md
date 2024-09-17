@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.0.0-beta.7
+
+### Major Changes
+
+- 9b0617d: Legacy types were removed
+
 ## 2.0.0-beta.6
 
 ### Major Changes

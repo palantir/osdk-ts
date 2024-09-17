@@ -1,5 +1,12 @@
 # @osdk/shared.test
 
+## 1.7.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [9b0617d]
+  - @osdk/api@2.0.0-beta.7
+
 ## 1.7.0-beta.2
 
 ### Patch Changes

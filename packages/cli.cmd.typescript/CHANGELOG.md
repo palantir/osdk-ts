@@ -1,5 +1,16 @@
 # @osdk/cli.cmd.typescript
 
+## 0.6.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [33759fb]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [5c89065]
+  - @osdk/generator@2.0.0-beta.7
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.4
+  - @osdk/internal.foundry.core@0.2.0-beta.4
+
 ## 0.6.0-beta.5
 
 ### Minor Changes

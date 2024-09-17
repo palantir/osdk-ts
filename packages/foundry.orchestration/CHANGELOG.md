@@ -1,5 +1,18 @@
 # @osdk/foundry.orchestration
 
+## 2.1.0-beta.2
+
+### Minor Changes
+
+- 5d6d5ab: We now generate error types
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+  - @osdk/foundry.filesystem@2.1.0-beta.2
+  - @osdk/foundry.datasets@2.1.0-beta.2
+  - @osdk/foundry.core@2.1.0-beta.2
+
 ## 2.1.0-beta.1
 
 ### Minor Changes

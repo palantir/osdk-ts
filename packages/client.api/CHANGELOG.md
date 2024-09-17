@@ -1,5 +1,18 @@
 # @osdk/client.api
 
+## 2.0.0-beta.7
+
+### Minor Changes
+
+- 512ee35: Exposed editedObjectTypes for all action results and split edits based on edit type.
+- e86c505: Removed unused test file
+- fc28eae: Fetching interfaces learns $\_\_EXPERIMENTAL_selectedObjectTypes
+
+### Patch Changes
+
+- Updated dependencies [9b0617d]
+  - @osdk/api@2.0.0-beta.7
+
 ## 2.0.0-beta.6
 
 ### Minor Changes
