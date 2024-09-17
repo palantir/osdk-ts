@@ -23,7 +23,8 @@
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "transpile": "monorepo.tool.transpile",
-    "typecheck": "monorepo.tool.typecheck esm"
+    "typecheck": "monorepo.tool.typecheck esm",
+    "test": "vitest run"
   },
   "dependencies": {
     "@osdk/api": "workspace:~",

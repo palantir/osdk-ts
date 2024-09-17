@@ -23,7 +23,7 @@ import type { InterfaceType } from "./types.js";
 
 describe("Ontology Defining", () => {
   beforeEach(() => {
-    defineOntology("myNamespace", () => {});
+    defineOntology("", () => {});
   });
 
   describe("Interfaces", () => {
@@ -104,7 +104,16 @@ describe("Ontology Defining", () => {
                         },
                         "type": "string",
                       },
-                      "typeClasses": [{ "kind": "render_hint", "name": "SELECTABLE",}, { "kind": "render_hint", "name": "SORTABLE" }],
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
                       "valueType": undefined,
                     },
                   ],
@@ -139,7 +148,16 @@ describe("Ontology Defining", () => {
                     },
                     "type": "string",
                   },
-                  "typeClasses": [{ "kind": "render_hint", "name": "SELECTABLE",}, { "kind": "render_hint", "name": "SORTABLE" }],
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE",
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE",
+                    },
+                  ],
                   "valueType": undefined,
                 },
               },
@@ -186,7 +204,16 @@ describe("Ontology Defining", () => {
                     },
                     "type": "string",
                   },
-                  "typeClasses": [{ "kind": "render_hint", "name": "SELECTABLE",}, { "kind": "render_hint", "name": "SORTABLE" }],
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE",
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE",
+                    },
+                  ],
                   "valueType": undefined,
                 },
               },
@@ -322,7 +349,7 @@ describe("Ontology Defining", () => {
                 "extendsInterfaces": [],
                 "links": [
                   {
-                    "cardinality": "SINGLE",
+                    "cardinality": "MANY",
                     "linkedEntityTypeId": {
                       "interfaceType": "B",
                       "type": "interfaceType",
@@ -419,7 +446,13 @@ describe("Ontology Defining", () => {
               "displayMetadata": {
                 "description": "Foo Interface",
                 "displayName": "Foo Interface",
-                "icon": {color: "#00000", locator: "airplane"},
+                "icon": {
+                  "blueprint": {
+                    "color": "#00000",
+                    "locator": "airplane",
+                  },
+                  "type": "blueprint",
+                },
               },
               "extendsInterfaces": [],
               "links": [],
@@ -446,7 +479,16 @@ describe("Ontology Defining", () => {
                     },
                     "type": "string",
                   },
-                  "typeClasses": [],
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE",
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE",
+                    },
+                  ],
                   "valueType": undefined,
                 },
               ],
@@ -481,7 +523,16 @@ describe("Ontology Defining", () => {
                 },
                 "type": "string",
               },
-              "typeClasses": [],
+              "typeClasses": [
+                {
+                  "kind": "render_hint",
+                  "name": "SELECTABLE",
+                },
+                {
+                  "kind": "render_hint",
+                  "name": "SORTABLE",
+                },
+              ],
               "valueType": undefined,
             },
           },
