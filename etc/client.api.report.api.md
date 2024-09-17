@@ -269,6 +269,15 @@ export interface DataValueWireToClient {
 export type DefaultToFalse<B extends boolean | undefined> = false extends B ? false : undefined extends B ? false : true;
 
 // @public (undocumented)
+export type DisplayMetadata = {
+    displayName: string;
+    pluralDisplayName: string;
+    description?: string;
+    icon: Icon;
+    visibility: ObjectTypeVisibility;
+};
+
+// @public (undocumented)
 export const DistanceUnitMapping: {
     centimeter: "CENTIMETERS";
     centimeters: "CENTIMETERS";
@@ -779,6 +788,11 @@ export type ValidToFrom<FROM extends ObjectTypeDefinition<any, any> | InterfaceD
 export type WhereClause<T extends ObjectOrInterfaceDefinition<any, any>> = OrWhereClause<T> | AndWhereClause<T> | NotWhereClause<T> | {
     [P in keyof T["properties"]]?: FilterFor<T["properties"][P]>;
 };
+
+// Warnings were encountered during analysis:
+//
+// src/DisplayMetadata.ts:30:3 - (ae-forgotten-export) The symbol "Icon" needs to be exported by the entry point index.d.ts
+// src/DisplayMetadata.ts:31:3 - (ae-forgotten-export) The symbol "ObjectTypeVisibility" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
