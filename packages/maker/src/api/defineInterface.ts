@@ -17,6 +17,7 @@
 import invariant from "tiny-invariant";
 import { namespace, ontologyDefinition } from "./defineOntology.js";
 import { defineSharedPropertyType } from "./defineSpt.js";
+import type { BlueprintIcon } from "./iconNames.js";
 import type {
   InterfaceType,
   PropertyTypeType,
@@ -28,6 +29,7 @@ export function defineInterface(
     apiName: string;
     displayName?: string;
     description?: string;
+    icon?: { locator: BlueprintIcon; color: string };
     properties?: Record<
       string,
       SharedPropertyType | PropertyTypeType
@@ -76,7 +78,12 @@ export function defineInterface(
     displayMetadata: {
       displayName: opts.displayName ?? opts.apiName,
       description: opts.description ?? opts.displayName ?? opts.apiName,
-      icon: undefined,
+      icon: opts.icon !== undefined
+        ? {
+          type: "blueprint",
+          blueprint: { color: opts.icon.color, locator: opts.icon.locator },
+        }
+        : undefined,
     },
     extendsInterfaces: [],
     links: [],

@@ -399,6 +399,7 @@ describe("Ontology Defining", () => {
       properties: {
         fooSpt,
       },
+      icon: { color: "#00000", locator: "airplane" },
     });
 
     expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -418,7 +419,7 @@ describe("Ontology Defining", () => {
               "displayMetadata": {
                 "description": "Foo Interface",
                 "displayName": "Foo Interface",
-                "icon": undefined,
+                "icon": {color: "#00000", locator: "airplane"},
               },
               "extendsInterfaces": [],
               "links": [],
