@@ -65,7 +65,11 @@ export namespace completeTodo {
   }
 }
 
-/** @deprecated Use `completeTodo.Definition` **/
+/**
+ * Completes Todo
+ * @param {ActionParam.PrimitiveType<"boolean">} is_complete
+ * @param {ActionParam.ObjectType<Todo>} Todo A todo Object
+ */
 export type completeTodo = completeTodo.Signatures;
 
 export const completeTodo: completeTodo.Definition = {

@@ -101,7 +101,15 @@ export namespace actionTakesAllParameterTypes {
   }
 }
 
-/** @deprecated Use `actionTakesAllParameterTypes.Definition` **/
+/**
+ * An action which takes different types of parameters
+ * @param {ActionParam.PrimitiveType<"attachment">} attachmentArray
+ * @param {ActionParam.PrimitiveType<"datetime">} [dateArray]
+ * @param {ActionParam.ObjectType<Person>} [object] A person Object
+ * @param {ActionParam.ObjectSetType<Todo>} objectSet
+ * @param {ActionParam.PrimitiveType<"string">} string
+ * @param {ActionParam.PrimitiveType<"timestamp">} time-stamp
+ */
 export type actionTakesAllParameterTypes = actionTakesAllParameterTypes.Signatures;
 
 export const actionTakesAllParameterTypes: actionTakesAllParameterTypes.Definition = {

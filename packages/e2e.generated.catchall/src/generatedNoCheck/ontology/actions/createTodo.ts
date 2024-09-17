@@ -46,7 +46,9 @@ export namespace createTodo {
   }
 }
 
-/** @deprecated Use `createTodo.Definition` **/
+/**
+ * Creates a new Todo
+ */
 export type createTodo = createTodo.Signatures;
 
 export const createTodo: createTodo.Definition = {

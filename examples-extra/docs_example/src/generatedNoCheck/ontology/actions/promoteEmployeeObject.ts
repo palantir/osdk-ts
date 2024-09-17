@@ -69,7 +69,12 @@ export namespace promoteEmployeeObject {
   }
 }
 
-/** @deprecated Use `promoteEmployeeObject.Definition` **/
+/**
+ * Update an employee's title and compensation
+ * @param {ActionParam.ObjectType<Employee>} employee
+ * @param {ActionParam.PrimitiveType<"double">} newCompensation
+ * @param {ActionParam.PrimitiveType<"string">} newTitle
+ */
 export type promoteEmployeeObject = promoteEmployeeObject.Signatures;
 
 export const promoteEmployeeObject: promoteEmployeeObject.Definition = {

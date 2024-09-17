@@ -63,7 +63,11 @@ export namespace assignEmployee1 {
   }
 }
 
-/** @deprecated Use `assignEmployee1.Definition` **/
+/**
+ * Assigns an employee to a venture
+ * @param {ActionParam.ObjectType<Employee>} employee-1
+ * @param {ActionParam.ObjectType<Venture>} venture-1
+ */
 export type assignEmployee1 = assignEmployee1.Signatures;
 
 export const assignEmployee1: assignEmployee1.Definition = {

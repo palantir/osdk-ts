@@ -131,6 +131,10 @@ export async function generatePerActionDataFiles(
 
       function createV2Types() {
         const oldParamsIdentifier = `${action.shortApiName}$Params`;
+        let jsDocBlock = ["/**"];
+        if (action.description != null) {
+          jsDocBlock.push(`* ${action.description}`);
+        }
         // the params must be a `type` to align properly with the `ActionDefinition` interface
         // this way we can generate a strict type for the function itself and reference it from the Action Definition
         return `
@@ -149,6 +153,11 @@ export async function generatePerActionDataFiles(
               const value = ogValue.multiplicity
                 ? `ReadonlyArray<${getActionParamType(ogValue.type)}>`
                 : `${getActionParamType(ogValue.type)}`;
+              jsDocBlock.push(
+                `* @param {${getActionParamType(ogValue.type)}} ${
+                  ogValue.nullable ? `[${ogKey}]` : `${ogKey}`
+                } ${ogValue.description ?? ""} `,
+              );
               return [key, value];
             },
           })
@@ -179,7 +188,8 @@ export async function generatePerActionDataFiles(
   
           }
 
-          /** @deprecated Use \`${action.definitionIdentifier}\` **/
+          ${jsDocBlock.join("\n")}
+          */
           export type ${action.shortApiName} = ${action.shortApiName}.Signatures;
           `;
       }
