@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 
-import type { errors } from "@osdk/gateway";
+import type {
+  ApplyActionFailed,
+  AttachmentNotFound,
+  AttachmentSizeExceededLimit,
+  InvalidContentType,
+  LinkTypeNotFound,
+  ObjectNotFound,
+  ObjectTypeNotFound,
+  OntologyNotFound,
+  QueryEncounteredUserFacingError,
+  QueryNotFound,
+} from "@osdk/internal.foundry.ontologies";
 import type { BaseAPIError } from "./BaseError.js";
 
 const errorInstanceId = "errorInstanceId";
@@ -22,7 +33,7 @@ const objectTypeRid = "ri.foundry.main.objectType.1";
 
 export function ObjectTypeDoesNotExistError(
   objectType: string,
-): errors.ObjectTypeNotFound {
+): ObjectTypeNotFound {
   return {
     errorCode: "NOT_FOUND",
     errorName: "ObjectTypeNotFound",
@@ -37,7 +48,7 @@ export function ObjectTypeDoesNotExistError(
 export function LinkTypeNotFound(
   objectType: string,
   linkType: string,
-): errors.LinkTypeNotFound {
+): LinkTypeNotFound {
   return {
     errorCode: "NOT_FOUND",
     errorName: "LinkTypeNotFound",
@@ -51,7 +62,7 @@ export function LinkTypeNotFound(
 
 export function OntologyNotFoundError(
   ontology: string,
-): errors.OntologyNotFound {
+): OntologyNotFound {
   return {
     errorCode: "NOT_FOUND",
     errorName: "OntologyNotFound",
@@ -66,7 +77,7 @@ export function OntologyNotFoundError(
 export function ObjectNotFoundError(
   objectType: string,
   primaryKey: string,
-): errors.ObjectNotFound {
+): ObjectNotFound {
   return {
     errorCode: "NOT_FOUND",
     errorName: "ObjectNotFound",
@@ -80,7 +91,7 @@ export function ObjectNotFoundError(
   };
 }
 
-export function QueryNotFoundError(queryApiName: string): errors.QueryNotFound {
+export function QueryNotFoundError(queryApiName: string): QueryNotFound {
   return {
     errorCode: "NOT_FOUND",
     errorName: "QueryNotFound",
@@ -100,14 +111,14 @@ export function InvalidRequest(errorName: string): BaseAPIError {
   };
 }
 
-export const ApplyActionFailedError: errors.ApplyActionFailed = {
+export const ApplyActionFailedError: ApplyActionFailed = {
   errorCode: "INVALID_ARGUMENT",
   errorName: "ApplyActionFailed",
   errorInstanceId,
   parameters: {},
 };
 
-export const ExecuteQueryFailedError: errors.QueryEncounteredUserFacingError = {
+export const ExecuteQueryFailedError: QueryEncounteredUserFacingError = {
   errorCode: "CONFLICT",
   errorName: "QueryEncounteredUserFacingError",
   errorInstanceId,
@@ -119,25 +130,24 @@ export const ExecuteQueryFailedError: errors.QueryEncounteredUserFacingError = {
   },
 };
 
-export const InvalidContentTypeError: errors.InvalidContentType = {
+export const InvalidContentTypeError: InvalidContentType = {
   errorCode: "INVALID_ARGUMENT",
   errorName: "InvalidContentType",
   errorInstanceId,
   parameters: {},
 };
 
-export const AttachmentSizeExceededLimitError:
-  errors.AttachmentSizeExceededLimit = {
-    errorCode: "INVALID_ARGUMENT",
-    errorName: "AttachmentSizeExceededLimit",
-    errorInstanceId,
-    parameters: {
-      fileSizeBytes: "230000",
-      fileLimitBytes: "200000",
-    },
-  };
+export const AttachmentSizeExceededLimitError: AttachmentSizeExceededLimit = {
+  errorCode: "INVALID_ARGUMENT",
+  errorName: "AttachmentSizeExceededLimit",
+  errorInstanceId,
+  parameters: {
+    fileSizeBytes: "230000",
+    fileLimitBytes: "200000",
+  },
+};
 
-export const AttachmentNotFoundError: errors.AttachmentNotFound = {
+export const AttachmentNotFoundError: AttachmentNotFound = {
   errorCode: "NOT_FOUND",
   errorName: "AttachmentNotFound",
   errorInstanceId,

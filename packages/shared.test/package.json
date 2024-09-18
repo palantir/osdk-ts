@@ -33,7 +33,6 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
-    "@osdk/gateway": "workspace:~",
     "@osdk/internal.foundry.core": "workspace:~",
     "@osdk/internal.foundry.ontologies": "workspace:~",
     "@osdk/internal.foundry.ontologiesv2": "workspace:~",

@@ -31,7 +31,6 @@
     "typecheck": "monorepo.tool.typecheck both"
   },
   "dependencies": {
-    "@osdk/gateway": "workspace:~",
     "@osdk/shared.client": "workspace:~",
     "@osdk/shared.client.impl": "workspace:~",
     "@osdk/shared.net.errors": "workspace:~",
