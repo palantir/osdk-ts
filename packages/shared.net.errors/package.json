@@ -8,24 +8,22 @@
   },
   "exports": {
     ".": {
-      "require": "./build/cjs/index.cjs",
       "browser": "./build/browser/index.js",
       "import": "./build/esm/index.js"
     },
     "./*": {
-      "require": "./build/cjs/public/*.cjs",
       "browser": "./build/browser/public/*.js",
       "import": "./build/esm/public/*.js"
     }
   },
   "scripts": {
-    "check-attw": "monorepo.tool.attw both",
+    "check-attw": "monorepo.tool.attw esm",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "transpile": "monorepo.tool.transpile",
-    "typecheck": "monorepo.tool.typecheck both"
+    "typecheck": "monorepo.tool.typecheck esm"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
@@ -45,8 +43,7 @@
     "templates",
     "*.d.ts"
   ],
-  "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
-  "types": "./build/cjs/index.d.cts",
+  "types": "./build/esm/index.d.ts",
   "type": "module"
 }
