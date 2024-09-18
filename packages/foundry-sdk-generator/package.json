@@ -39,7 +39,7 @@
     "@osdk/gateway": "workspace:~",
     "@osdk/generator": "workspace:~",
     "@osdk/legacy-client": "workspace:~",
-    "@osdk/main-foundry-sdk-generator": "npm:@osdk/foundry-sdk-generator@2.0.0-beta.7",
+    "@osdk/main-foundry-sdk-generator": "npm:@osdk/foundry-sdk-generator@2.0.0-beta.8",
     "@rollup/plugin-commonjs": "^25.0.4",
     "@rollup/plugin-node-resolve": "^15.2.1",
     "consola": "^3.2.3",
