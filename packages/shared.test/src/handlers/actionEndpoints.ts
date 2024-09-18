@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  applyActionBatchV2,
-  applyActionV2,
-  listActionTypesV2,
-} from "@osdk/gateway/requests";
 import type {
   BatchApplyActionResponse,
   SyncApplyActionResponseV2,
-} from "@osdk/gateway/types";
+} from "@osdk/internal.foundry.core";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import stableStringify from "json-stable-stringify";
 import type { HttpResponseResolver, PathParams, RequestHandler } from "msw";
 import type { BaseAPIError } from "../BaseError.js";
@@ -41,7 +37,7 @@ export const actionHandlers: Array<RequestHandler> = [
    * List ActionTypes
    */
   handleOpenApiCall(
-    listActionTypesV2,
+    OntologiesV2.ActionTypesV2.listActionTypesV2,
     ["ontologyApiName"],
     async ({ params }) => {
       const ontology = getOntology(params.ontologyApiName);
@@ -56,7 +52,7 @@ export const actionHandlers: Array<RequestHandler> = [
    * Apply an Action
    */
   handleOpenApiCall(
-    applyActionV2,
+    OntologiesV2.Actions.applyActionV2,
     ["ontologyApiName", "actionType"],
     handleAction<SyncApplyActionResponseV2>,
   ),
@@ -65,10 +61,10 @@ export const actionHandlers: Array<RequestHandler> = [
    * Apply a Batch Action
    */
   handleOpenApiCall(
-    applyActionBatchV2,
+    OntologiesV2.Actions.applyActionBatchV2,
     ["ontologyApiName", "actionType"],
     handleAction<
-      ExtractResponse<typeof applyActionBatchV2>
+      ExtractResponse<typeof OntologiesV2.Actions.applyActionBatchV2>
     >,
   ),
 ];
@@ -79,8 +75,8 @@ async function handleAction<
   req: Parameters<
     HttpResponseResolver<
       PathParams<string>,
-      | ExtractBody<typeof applyActionV2>
-      | ExtractBody<typeof applyActionBatchV2>,
+      | ExtractBody<typeof OntologiesV2.Actions.applyActionV2>
+      | ExtractBody<typeof OntologiesV2.Actions.applyActionBatchV2>,
       T | BaseAPIError
     >
   >[0],

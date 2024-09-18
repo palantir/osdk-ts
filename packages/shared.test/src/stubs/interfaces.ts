@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { InterfaceType } from "@osdk/gateway/types";
+import type { InterfaceType } from "@osdk/internal.foundry.core";
 import { fooSpt } from "./spts.js";
 
 export const FooInterface: InterfaceType = {

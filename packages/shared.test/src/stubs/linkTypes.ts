@@ -17,7 +17,7 @@
 import type {
   LinkTypeSideV2,
   ListOutgoingLinkTypesResponseV2,
-} from "@osdk/gateway/types";
+} from "@osdk/internal.foundry.core";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
 
 export const peepsLinkType: LinkTypeSideV2 = {
@@ -26,6 +26,7 @@ export const peepsLinkType: LinkTypeSideV2 = {
   objectTypeApiName: employeeObjectType.apiName,
   cardinality: "MANY",
   displayName: "Peeps",
+  linkTypeRid: "rid.link-type.327",
 };
 
 export const leadLinkType: LinkTypeSideV2 = {
@@ -34,6 +35,7 @@ export const leadLinkType: LinkTypeSideV2 = {
   objectTypeApiName: employeeObjectType.apiName,
   cardinality: "ONE",
   displayName: "Lead",
+  linkTypeRid: "rid.link-type.326",
 };
 
 export const officeLinkType: LinkTypeSideV2 = {
@@ -42,6 +44,7 @@ export const officeLinkType: LinkTypeSideV2 = {
   objectTypeApiName: officeObjectType.apiName,
   cardinality: "ONE",
   displayName: "Office",
+  linkTypeRid: "rid.link-type.324",
 };
 
 export const occupants: LinkTypeSideV2 = {
@@ -50,6 +53,7 @@ export const occupants: LinkTypeSideV2 = {
   objectTypeApiName: employeeObjectType.apiName,
   cardinality: "MANY",
   displayName: "Office Occupants",
+  linkTypeRid: "rid.link-type.323",
 };
 
 export const linkTypesResponseMap: {

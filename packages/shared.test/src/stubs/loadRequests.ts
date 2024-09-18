@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ListObjectsResponseV2 } from "@osdk/gateway/types";
+import type { ListObjectsResponseV2 } from "@osdk/internal.foundry.core";
 
 import {
   employee1,

@@ -17,7 +17,7 @@
 import type {
   ExecuteQueryRequest,
   ExecuteQueryResponse,
-} from "@osdk/gateway/types";
+} from "@osdk/internal.foundry.core";
 import { employee1, employee2 } from "./objects.js";
 import {
   addOneQueryType,

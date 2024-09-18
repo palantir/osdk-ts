@@ -15,7 +15,10 @@
  */
 
 import type * as api from "@osdk/api";
-import type { ObjectTypeFullMetadata, PropertyV2 } from "@osdk/gateway/types";
+import type {
+  ObjectTypeFullMetadata,
+  PropertyV2,
+} from "@osdk/internal.foundry.core";
 import invariant from "tiny-invariant";
 import { ontologyDefinition } from "./defineOntology.js";
 
@@ -53,6 +56,13 @@ export function defineObject(
     objectType: {
       apiName,
       primaryKey: opts.primaryKey.apiName,
+      displayName: opts.displayName ?? apiName,
+      pluralDisplayName: opts.pluralDisplayName ?? apiName,
+      icon: {
+        color: "blue",
+        name: "cube",
+        type: "blueprint",
+      },
 
       properties: {
         [opts.primaryKey.apiName]: {

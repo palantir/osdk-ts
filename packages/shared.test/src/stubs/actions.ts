@@ -19,7 +19,7 @@ import type {
   BatchApplyActionRequestV2,
   BatchApplyActionResponseV2,
   SyncApplyActionResponseV2,
-} from "@osdk/gateway/types";
+} from "@osdk/internal.foundry.core";
 import stableStringify from "json-stable-stringify";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
 
