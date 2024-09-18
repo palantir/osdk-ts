@@ -1,5 +1,11 @@
 # @osdk/foundry-sdk-generator
 
+## 1.3.7
+
+### Patch Changes
+
+- 35d976b: Bump --beta to 2.0.0-beta.8
+
 ## 1.3.6
 
 ### Patch Changes

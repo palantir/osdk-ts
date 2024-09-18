@@ -1512,8 +1512,8 @@ importers:
         specifier: workspace:~
         version: link:../legacy-client
       '@osdk/main-foundry-sdk-generator':
-        specifier: npm:@osdk/foundry-sdk-generator@2.0.0-beta.7
-        version: '@osdk/foundry-sdk-generator@2.0.0-beta.7(@types/geojson@7946.0.14)(pino@9.1.0)'
+        specifier: npm:@osdk/foundry-sdk-generator@2.0.0-beta.8
+        version: '@osdk/foundry-sdk-generator@2.0.0-beta.8(@types/geojson@7946.0.14)(pino@9.1.0)'
       '@rollup/plugin-commonjs':
         specifier: ^25.0.4
         version: 25.0.7(rollup@3.29.1)
@@ -3727,30 +3727,30 @@ packages:
   '@osdk/api@1.9.1':
     resolution: {integrity: sha512-a67IMGvlLYkGDsO0Dja9J+vTzWfshn6xAICZlv3d12ys71YvMoTA6kKUgiMrec+cC0vp4R3IE3ESlczsfiJ/iQ==}
 
-  '@osdk/api@2.0.0-beta.7':
-    resolution: {integrity: sha512-FObPmECKK89cCA9fPCRHrWLnJbHI0NQtvqLYeHYsuXgtXV2iUvuDgzZdPiixJcHn9XCZmvgjD7a/5VmbjBFe4A==}
+  '@osdk/api@2.0.0-beta.8':
+    resolution: {integrity: sha512-d1RpfJt68TIhdqCWw8+D4IVf+VEdxkzcsnN9OcIbTijhz5ve2lAxFdyUb8HFBwzDtvQ5kTlvxuf2wrOD73Sqlw==}
 
-  '@osdk/client.api@2.0.0-beta.7':
-    resolution: {integrity: sha512-qIEHSP1XLIU1gzPUahi+RzHVxG5mGdVylkbNu0X+Ir/a0/+4fWft1xnfDQbZfC4KBPl/kdqdezgg8oNEzEcpAw==}
+  '@osdk/client.api@2.0.0-beta.8':
+    resolution: {integrity: sha512-z2vCEr0AgAO/jB+fXi7kOZsvwKG5xbau43Ys0W+51cfvbO8XnfvgASal3xuxWnld0s601lQ5F0t6u6f/HKW4cw==}
     peerDependencies:
       '@types/geojson': '*'
 
   '@osdk/client.unstable.osw@0.1.0':
     resolution: {integrity: sha512-R0OgiOI0V5nCCT00YSYJfSbaNQKmyZrjCA7fOksysu6ax46te783gH2qDhZYtlebJ2CZSgUy9v7PA//Sia1oow==}
 
-  '@osdk/client.unstable@2.0.0-beta.7':
-    resolution: {integrity: sha512-WP0IH8oIQx7dRE2mZIBVOoXSocCo1vmKZl5RdKRiQhRmj7J4ZVxzt6eu849kFPd6StqFG4CKVyCxzzYG/sajhg==}
+  '@osdk/client.unstable@2.0.0-beta.8':
+    resolution: {integrity: sha512-nGaVzN6zLoEy3nHOaXTC2lcNfkY63DhbNOouADQEIgCLlCFLTU/+Cidk0YVkwM+E9ZvJO8yM/WffM+hhkI33Bg==}
 
-  '@osdk/client@2.0.0-beta.7':
-    resolution: {integrity: sha512-sla/yoy4CbdwL/AcjcOOoTvkPfrdkIUzyJNVLZ7eUJs/lWD1Az6Cx62/WYyveA1j302OWUVpNJyx5slcUqSntw==}
+  '@osdk/client@2.0.0-beta.8':
+    resolution: {integrity: sha512-Q9iZ2I3tNTx7oont1Z4PEM7Jgrx7luNydhgQVYeo2/1cZEJU0ktLEx9v7GjioQoPbK1KO4nDpTYYlqlilcAfug==}
     peerDependencies:
       pino: ^9.1.0
     peerDependenciesMeta:
       pino:
         optional: true
 
-  '@osdk/foundry-sdk-generator@2.0.0-beta.7':
-    resolution: {integrity: sha512-qDhw5pXZlnuIB6EHy49en1/zMl6k3atZCJw5zXEzysSG4pLP9Bnu19AbmCTuj1K9RG3JdAjTT6BeBo1KtgiBBg==}
+  '@osdk/foundry-sdk-generator@2.0.0-beta.8':
+    resolution: {integrity: sha512-nhDHPq+bYyw7TNNSMF/71B6j1l8I2Z3fAMGhyM+6ITnUaB3yRNa2X+ZQP3qxLQ1MRmCIGJGmfxEdisnQghfULw==}
     hasBin: true
 
   '@osdk/gateway@2.4.1':
@@ -3759,20 +3759,20 @@ packages:
   '@osdk/gateway@2.5.0-beta.0':
     resolution: {integrity: sha512-M/z94TvRjkzc4ur09K4kAuuJQ2Arhbqu79G+uP08jJqvsyhoU5lA/5J5MPOm1t0WPUcoUUWXnH4rqqTgZZDI0w==}
 
-  '@osdk/generator-converters@2.0.0-beta.7':
-    resolution: {integrity: sha512-u+iEmpe+AKElGXADId8YGMNOJkZWFZeHOJJ20IE2JgiyG+GzIugPSEuN6QCdUBM3aZoARzCTrOyxMJRKyx8vNg==}
+  '@osdk/generator-converters@2.0.0-beta.8':
+    resolution: {integrity: sha512-EWPnzMIYwsP/VmchsTMfuYENZ6ofVcMD/qNj+37+tJjnsvKPqdhnKsQv3SxbgbSQuIsCtD0YYOsOkiGqtp2LmA==}
 
-  '@osdk/generator@2.0.0-beta.7':
-    resolution: {integrity: sha512-qxmk8FlUeGit1jyCValcbCvAZ5rxkC+NLnabdjEwjHO9y/Q8eCSE2IDeP5u56Dt6iCPWG8t17UyrMXwm3CanEg==}
+  '@osdk/generator@2.0.0-beta.8':
+    resolution: {integrity: sha512-b8uthXFOl3IAMW66ARCldm8VLunpsQ2YYaU94I3ZMLAGZz1x/sOolVGB5guF8wylfPbLBxf5ycnpc8LMP/tGpg==}
 
-  '@osdk/internal.foundry.core@0.2.0-beta.4':
-    resolution: {integrity: sha512-0idjeAUn7O1trDmHB2oMuXWQht3KTScIPjRpVwewS4GFncMppQzGlfB73E8ABCGemz4UmkK2Xgcl2n01y3mP8g==}
+  '@osdk/internal.foundry.core@0.2.0-beta.5':
+    resolution: {integrity: sha512-34FeJf0AcSDLgWOslG/hpd8dQdFXAKEiSCP+uwjDm3MJdnxurVtqnC2gQa86RyeLyGQnXr74tCeORJ8vyx6vTg==}
 
-  '@osdk/internal.foundry.ontologies@0.2.0-beta.4':
-    resolution: {integrity: sha512-w+yIvxPXmxV7mwQ6Blhn3eCulPGime6bg5D5j32GVhB4tdHXfpnK4gDdnx6Z0D/A5irjgfMkIUFsQQYEYiCvTg==}
+  '@osdk/internal.foundry.ontologies@0.2.0-beta.5':
+    resolution: {integrity: sha512-sEyAHkY94I89s71cEU+CcQWePD+gqFkpxnqFHfEmlHUL6Xak+PCwgGMNasDDao/kjvdGU4zPWnRkARsONyqphA==}
 
-  '@osdk/internal.foundry.ontologiesv2@0.2.0-beta.4':
-    resolution: {integrity: sha512-uqYYGU/iF6xZr77Ys2CIsq4Ilx9XeSPQMupdsF/wXgtu94+RC/p27TIFvzxNMBzTizNfFCrmTipC3sQI68K4CA==}
+  '@osdk/internal.foundry.ontologiesv2@0.2.0-beta.5':
+    resolution: {integrity: sha512-qvZEwdPBxAoGwIJZMPU8FZy3DK/hD7LRzmhe+zYOv+eZj/C6bFK8jovHKX+8BUT467cQg9KKO+gm8GIN8zKr6w==}
 
   '@osdk/legacy-client@2.5.1':
     resolution: {integrity: sha512-vo5mMnnAIoBhQORSlKfbVH7G9UNMxJYiRCUxwdrKMkBaJKT5ClJbLTiv9anpqTFkBaw82vMxd7MA80nt3X8hXg==}
@@ -3795,8 +3795,8 @@ packages:
   '@osdk/shared.net@1.12.1':
     resolution: {integrity: sha512-uJE124K3O21A1Of2TdOqMHBfrIYshcDSLr5em4v1vNZZGSsSCYUYGo5vvkS6vzUVDA2xSn/Uf2FgdzX6BWxIhQ==}
 
-  '@osdk/shared.net@1.13.0-beta.0':
-    resolution: {integrity: sha512-F4lPl0DPvlf0pVbphiyuxz9ge6EiVK2xNFIzwbS/Kp/K6Q3tF6LxJHK++PnrOkHkarRMEcKSrONWBPWjicJuGw==}
+  '@osdk/shared.net@2.0.0-beta.1':
+    resolution: {integrity: sha512-LKSGB4ORKhY9xgfzPY+EDagsHjzVQpQjiS8yBmoE9RmMnM1MI8KWmEFTHML7h0HrzbxbRrW2GZA3BOprY3vDxQ==}
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -9313,16 +9313,16 @@ snapshots:
       fetch-retry: 6.0.0
       tiny-invariant: 1.3.3
 
-  '@osdk/api@2.0.0-beta.7':
+  '@osdk/api@2.0.0-beta.8':
     dependencies:
-      '@osdk/shared.net': 1.13.0-beta.0
+      '@osdk/shared.net': 2.0.0-beta.1
       '@types/geojson': 7946.0.14
       fetch-retry: 6.0.0
       tiny-invariant: 1.3.3
 
-  '@osdk/client.api@2.0.0-beta.7(@types/geojson@7946.0.14)':
+  '@osdk/client.api@2.0.0-beta.8(@types/geojson@7946.0.14)':
     dependencies:
-      '@osdk/api': 2.0.0-beta.7
+      '@osdk/api': 2.0.0-beta.8
       '@types/geojson': 7946.0.14
       type-fest: 4.18.2
 
@@ -9330,17 +9330,17 @@ snapshots:
     dependencies:
       conjure-lite: 0.4.4
 
-  '@osdk/client.unstable@2.0.0-beta.7':
+  '@osdk/client.unstable@2.0.0-beta.8':
     dependencies:
       conjure-lite: 0.4.4
 
-  '@osdk/client@2.0.0-beta.7(pino@9.1.0)':
+  '@osdk/client@2.0.0-beta.8(pino@9.1.0)':
     dependencies:
-      '@osdk/api': 2.0.0-beta.7
-      '@osdk/client.api': 2.0.0-beta.7(@types/geojson@7946.0.14)
-      '@osdk/client.unstable': 2.0.0-beta.7
+      '@osdk/api': 2.0.0-beta.8
+      '@osdk/client.api': 2.0.0-beta.8(@types/geojson@7946.0.14)
+      '@osdk/client.unstable': 2.0.0-beta.8
       '@osdk/client.unstable.osw': 0.1.0
-      '@osdk/generator-converters': 2.0.0-beta.7
+      '@osdk/generator-converters': 2.0.0-beta.8
       '@osdk/shared.client': 0.0.0
       '@osdk/shared.client.impl': 0.1.0
       '@osdk/shared.net.errors': 1.1.0
@@ -9360,17 +9360,17 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@osdk/foundry-sdk-generator@2.0.0-beta.7(@types/geojson@7946.0.14)(pino@9.1.0)':
+  '@osdk/foundry-sdk-generator@2.0.0-beta.8(@types/geojson@7946.0.14)(pino@9.1.0)':
     dependencies:
-      '@osdk/api': 2.0.0-beta.7
-      '@osdk/client': 2.0.0-beta.7(pino@9.1.0)
-      '@osdk/client.api': 2.0.0-beta.7(@types/geojson@7946.0.14)
-      '@osdk/generator': 2.0.0-beta.7
-      '@osdk/internal.foundry.core': 0.2.0-beta.4
-      '@osdk/internal.foundry.ontologies': 0.2.0-beta.4
-      '@osdk/internal.foundry.ontologiesv2': 0.2.0-beta.4
+      '@osdk/api': 2.0.0-beta.8
+      '@osdk/client': 2.0.0-beta.8(pino@9.1.0)
+      '@osdk/client.api': 2.0.0-beta.8(@types/geojson@7946.0.14)
+      '@osdk/generator': 2.0.0-beta.8
+      '@osdk/internal.foundry.core': 0.2.0-beta.5
+      '@osdk/internal.foundry.ontologies': 0.2.0-beta.5
+      '@osdk/internal.foundry.ontologiesv2': 0.2.0-beta.5
       '@osdk/legacy-client': 2.5.1
-      '@osdk/shared.net': 1.13.0-beta.0
+      '@osdk/shared.net': 2.0.0-beta.1
       '@rollup/plugin-commonjs': 25.0.7(rollup@3.29.1)
       '@rollup/plugin-node-resolve': 15.2.3(rollup@3.29.1)
       consola: 3.2.3
@@ -9396,39 +9396,39 @@ snapshots:
       fetch-retry: 6.0.0
       tiny-invariant: 1.3.3
 
-  '@osdk/generator-converters@2.0.0-beta.7':
+  '@osdk/generator-converters@2.0.0-beta.8':
     dependencies:
-      '@osdk/api': 2.0.0-beta.7
+      '@osdk/api': 2.0.0-beta.8
 
-  '@osdk/generator@2.0.0-beta.7':
+  '@osdk/generator@2.0.0-beta.8':
     dependencies:
-      '@osdk/api': 2.0.0-beta.7
-      '@osdk/generator-converters': 2.0.0-beta.7
-      '@osdk/internal.foundry.core': 0.2.0-beta.4
+      '@osdk/api': 2.0.0-beta.8
+      '@osdk/generator-converters': 2.0.0-beta.8
+      '@osdk/internal.foundry.core': 0.2.0-beta.5
       fast-deep-equal: 3.1.3
       fetch-retry: 6.0.0
       prettier: 3.3.3
       tiny-invariant: 1.3.3
 
-  '@osdk/internal.foundry.core@0.2.0-beta.4':
+  '@osdk/internal.foundry.core@0.2.0-beta.5':
     dependencies:
       '@osdk/shared.client': 0.0.0
-      '@osdk/shared.net': 1.13.0-beta.0
+      '@osdk/shared.net': 2.0.0-beta.1
       '@osdk/shared.net.platformapi': 0.2.0
 
-  '@osdk/internal.foundry.ontologies@0.2.0-beta.4':
+  '@osdk/internal.foundry.ontologies@0.2.0-beta.5':
     dependencies:
-      '@osdk/internal.foundry.core': 0.2.0-beta.4
+      '@osdk/internal.foundry.core': 0.2.0-beta.5
       '@osdk/shared.client': 0.0.0
-      '@osdk/shared.net': 1.13.0-beta.0
+      '@osdk/shared.net': 2.0.0-beta.1
       '@osdk/shared.net.platformapi': 0.2.0
 
-  '@osdk/internal.foundry.ontologiesv2@0.2.0-beta.4':
+  '@osdk/internal.foundry.ontologiesv2@0.2.0-beta.5':
     dependencies:
-      '@osdk/internal.foundry.core': 0.2.0-beta.4
-      '@osdk/internal.foundry.ontologies': 0.2.0-beta.4
+      '@osdk/internal.foundry.core': 0.2.0-beta.5
+      '@osdk/internal.foundry.ontologies': 0.2.0-beta.5
       '@osdk/shared.client': 0.0.0
-      '@osdk/shared.net': 1.13.0-beta.0
+      '@osdk/shared.net': 2.0.0-beta.1
       '@osdk/shared.net.platformapi': 0.2.0
 
   '@osdk/legacy-client@2.5.1':
@@ -9469,7 +9469,7 @@ snapshots:
       '@osdk/shared.net.errors': 1.1.0
       '@osdk/shared.net.fetch': 0.1.0
 
-  '@osdk/shared.net@1.13.0-beta.0':
+  '@osdk/shared.net@2.0.0-beta.1':
     dependencies:
       '@osdk/gateway': 2.5.0-beta.0
       '@osdk/shared.client': 0.0.0
