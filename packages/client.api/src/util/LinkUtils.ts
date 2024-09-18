@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type {
+  CompileTimeMetadata,
+  ObjectOrInterfaceDefinition,
+} from "@osdk/api";
 
 export type LinkNames<Q extends ObjectOrInterfaceDefinition> =
-  & keyof Q["links"]
+  & keyof CompileTimeMetadata<Q>["links"]
   & string;
 
 export type LinkedType<
   Q extends ObjectOrInterfaceDefinition,
-  L extends keyof Q["links"] & string,
-> = NonNullable<Q["links"][L]["__OsdkLinkTargetType"]>;
+  L extends keyof CompileTimeMetadata<Q>["links"] & string,
+> = NonNullable<CompileTimeMetadata<Q>["links"][L]["__OsdkLinkTargetType"]>;

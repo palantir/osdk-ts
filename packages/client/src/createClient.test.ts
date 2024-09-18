@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, VersionBound } from "@osdk/api";
+import { Task } from "@osdk/client.test.ontology";
 import { mockFetchResponse, MockOntology } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -55,64 +55,16 @@ describe(createClient, () => {
     }
 
     it("works for objects", async () => {
-      await client(MockOntology.objects.Task).fetchPage();
+      await client(Task).fetchPage();
       expect(fetchFunction).toHaveBeenCalledTimes(1);
 
       const parts = getUserAgentPartsFromMockedFetch();
       expect(parts).toEqual([
-        ...MockOntology.objects.Task.osdkMetadata!
+        ...Task.osdkMetadata!
           .extraUserAgent
           .split(" "),
         USER_AGENT,
       ]);
-    });
-  });
-
-  describe("Version compatibility checks", () => {
-    it("does not error on older builds before this check", () => {
-      // this cast simulates older definitions as they wont have the BoundVersion type
-      client(MockOntology.objects.Task as ObjectTypeDefinition<"Task">)
-        .fetchPage();
-    });
-
-    it("works with 'older versions'", () => {
-      // to simulate this, we will use 0.13.0 as it was the prior version when this test was written
-      // meaning this version of the code should work with 0.13.0 and 0.14.0.
-      // We will need to update these assumptions when we break major
-      client(
-        MockOntology.objects.Task as
-          & ObjectTypeDefinition<"Task">
-          & VersionBound<typeof validOlderVersion>,
-      )
-        .fetchPage();
-    });
-
-    it("works with 'current versions'", () => {
-      // to simulate this, we will use 0.13.0 as it was the prior version when this test was written
-      // meaning this version of the code should work with 0.13.0 and 0.14.0.
-      // We will need to update these assumptions when we break major
-      client(
-        MockOntology.objects.Task as
-          & ObjectTypeDefinition<
-            "Task",
-            any
-          >
-          & VersionBound<typeof validCurrentVersion>,
-      )
-        .fetchPage();
-    });
-
-    it.skip("doesn't work with a far future version", () => {
-      client(
-        // if we re-enable version bounds checks: // @ts-expect-error
-        MockOntology.objects.Task as
-          & ObjectTypeDefinition<
-            "Task",
-            any
-          >
-          & VersionBound<typeof invalidFutureVersion>,
-      )
-        .fetchPage();
     });
   });
 });

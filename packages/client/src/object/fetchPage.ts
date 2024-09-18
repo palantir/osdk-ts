@@ -15,10 +15,11 @@
  */
 
 import type {
-  InterfaceDefinition,
+  CompileTimeMetadata,
+  MinInterfaceDef,
+  MinObjectDef,
   ObjectOrInterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition,
 } from "@osdk/api";
 import type {
   Augment,
@@ -27,6 +28,7 @@ import type {
   FetchPageResult,
   NullabilityAdherence,
   Result,
+  SingleOsdkResult,
 } from "@osdk/client.api";
 import { OntologiesV2 } from "@osdk/internal.foundry";
 import type {
@@ -44,12 +46,12 @@ import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndReq
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 export function augment<
-  X extends ObjectOrInterfaceDefinition,
-  T extends keyof X["properties"] & string,
+  Q extends ObjectOrInterfaceDefinition,
+  T extends keyof CompileTimeMetadata<Q>["properties"] & string,
 >(
-  type: X,
+  type: Q,
   ...properties: T[]
-): Augment<X, T> {
+): Augment<Q, T> {
   return { [type.apiName]: properties } as any;
 }
 
@@ -84,7 +86,7 @@ export function objectSetToSearchJsonV2(
 }
 
 async function fetchInterfacePage<
-  Q extends InterfaceDefinition<any, any>,
+  Q extends MinInterfaceDef<any, any>,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
@@ -247,7 +249,7 @@ function applyFetchArgs<
 
 /** @internal */
 export async function fetchObjectPage<
-  Q extends ObjectTypeDefinition<any>,
+  Q extends MinObjectDef<any, any>,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean,
   S extends NullabilityAdherence,

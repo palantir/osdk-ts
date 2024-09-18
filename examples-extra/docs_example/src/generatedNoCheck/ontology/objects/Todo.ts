@@ -3,7 +3,7 @@ import { $osdkMetadata } from '../../OntologyMetadata';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import type {
   ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition as $ObjectTypeDefinition,
+  MinObjectDef as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
 } from '@osdk/api';
 import type {
@@ -40,60 +40,41 @@ export namespace Todo {
 
 export interface Todo extends $ObjectTypeDefinition<'Todo', Todo> {
   osdkMetadata: typeof $osdkMetadata;
-  objectSet: Todo.ObjectSet;
-  props: Todo.Props;
-  linksType: Todo.Links;
-  strictProps: Todo.StrictProps;
-  description: 'Its a todo item.';
-  links: {};
-  primaryKeyApiName: 'id';
-  primaryKeyType: 'string';
-  properties: {
-    /**
-     * (no ontology metadata)
-     */
-    id: $PropertyDef<'string', 'non-nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    isComplete: $PropertyDef<'boolean', 'nullable', 'single'>;
-    /**
-     *   display name: 'Title',
-     *   description: The text of the todo
-     */
-    title: $PropertyDef<'string', 'nullable', 'single'>;
+  type: 'object';
+  apiName: 'Todo';
+  __DefinitionMetadata?: {
+    objectSet: Todo.ObjectSet;
+    props: Todo.Props;
+    linksType: Todo.Links;
+    strictProps: Todo.StrictProps;
+    apiName: 'Todo';
+    description: 'Its a todo item.';
+    interfaceMap: {};
+    inverseInterfaceMap: {};
+    links: {};
+    primaryKeyApiName: 'id';
+    primaryKeyType: 'string';
+    properties: {
+      /**
+       * (no ontology metadata)
+       */
+      id: $PropertyDef<'string', 'non-nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      isComplete: $PropertyDef<'boolean', 'nullable', 'single'>;
+      /**
+       *   display name: 'Title',
+       *   description: The text of the todo
+       */
+      title: $PropertyDef<'string', 'nullable', 'single'>;
+    };
+    type: 'object';
   };
 }
 
 export const Todo: Todo = {
-  osdkMetadata: $osdkMetadata,
-  objectSet: undefined as any,
-  props: undefined as any,
-  linksType: undefined as any,
-  strictProps: undefined as any,
-  apiName: 'Todo',
-  description: 'Its a todo item.',
-  links: {},
-  primaryKeyApiName: 'id',
-  primaryKeyType: 'string',
-  properties: {
-    id: {
-      multiplicity: false,
-      type: 'string',
-      nullable: false,
-    },
-    title: {
-      displayName: 'Title',
-      multiplicity: false,
-      description: 'The text of the todo',
-      type: 'string',
-      nullable: true,
-    },
-    isComplete: {
-      multiplicity: false,
-      type: 'boolean',
-      nullable: true,
-    },
-  },
   type: 'object',
+  apiName: 'Todo',
+  osdkMetadata: $osdkMetadata,
 };

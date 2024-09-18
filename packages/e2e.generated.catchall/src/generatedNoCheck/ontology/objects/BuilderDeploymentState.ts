@@ -3,7 +3,7 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
   ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition as $ObjectTypeDefinition,
+  MinObjectDef as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
 } from '@osdk/api';
 import type {
@@ -41,57 +41,40 @@ export namespace BuilderDeploymentState {
 export interface BuilderDeploymentState
   extends $ObjectTypeDefinition<'BuilderDeploymentState', BuilderDeploymentState> {
   osdkMetadata: typeof $osdkMetadata;
-  objectSet: BuilderDeploymentState.ObjectSet;
-  props: BuilderDeploymentState.Props;
-  linksType: BuilderDeploymentState.Links;
-  strictProps: BuilderDeploymentState.StrictProps;
-  description: 'Builder Deployment State';
-  links: {};
-  primaryKeyApiName: 'skuId';
-  primaryKeyType: 'string';
-  properties: {
-    /**
-     * (no ontology metadata)
-     */
-    currentTimestamp: $PropertyDef<'timestamp', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    date: $PropertyDef<'datetime', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    skuId: $PropertyDef<'string', 'non-nullable', 'single'>;
+  type: 'object';
+  apiName: 'BuilderDeploymentState';
+  __DefinitionMetadata?: {
+    objectSet: BuilderDeploymentState.ObjectSet;
+    props: BuilderDeploymentState.Props;
+    linksType: BuilderDeploymentState.Links;
+    strictProps: BuilderDeploymentState.StrictProps;
+    apiName: 'BuilderDeploymentState';
+    description: 'Builder Deployment State';
+    interfaceMap: {};
+    inverseInterfaceMap: {};
+    links: {};
+    primaryKeyApiName: 'skuId';
+    primaryKeyType: 'string';
+    properties: {
+      /**
+       * (no ontology metadata)
+       */
+      currentTimestamp: $PropertyDef<'timestamp', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      date: $PropertyDef<'datetime', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      skuId: $PropertyDef<'string', 'non-nullable', 'single'>;
+    };
+    type: 'object';
   };
 }
 
 export const BuilderDeploymentState: BuilderDeploymentState = {
-  osdkMetadata: $osdkMetadata,
-  objectSet: undefined as any,
-  props: undefined as any,
-  linksType: undefined as any,
-  strictProps: undefined as any,
-  apiName: 'BuilderDeploymentState',
-  description: 'Builder Deployment State',
-  links: {},
-  primaryKeyApiName: 'skuId',
-  primaryKeyType: 'string',
-  properties: {
-    skuId: {
-      multiplicity: false,
-      type: 'string',
-      nullable: false,
-    },
-    date: {
-      multiplicity: false,
-      type: 'datetime',
-      nullable: true,
-    },
-    currentTimestamp: {
-      multiplicity: false,
-      type: 'timestamp',
-      nullable: true,
-    },
-  },
   type: 'object',
+  apiName: 'BuilderDeploymentState',
+  osdkMetadata: $osdkMetadata,
 };

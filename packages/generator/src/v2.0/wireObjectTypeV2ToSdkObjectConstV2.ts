@@ -78,7 +78,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
   function getV2Types() {
     return `import type {
       ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,  
-      ObjectTypeDefinition as $ObjectTypeDefinition,
+      MinObjectDef as $ObjectTypeDefinition,
       ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
     } from "@osdk/api";
      import type {
@@ -108,10 +108,6 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
 
 
     ${createDefinition(object, ontology, object.shortApiName, identifiers)}
-  
-  
-
-
     `;
   }
 
@@ -126,17 +122,9 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
 
     export const ${object.shortApiName}: ${objectDefIdentifier}
     = {
-      osdkMetadata: $osdkMetadata,
-      objectSet: undefined as any,
-      props: undefined as any,
-      linksType: undefined as any,
-      strictProps: undefined as any,
-      ${
-    stringify(definition, {
-      osdkMetadata: (value) => undefined,
-    })
-  }
-    
+      type: "${object instanceof EnhancedObjectType ? "object" : "interface"}",
+      apiName: "${object.fullApiName}",
+      osdkMetadata: $osdkMetadata,  
     };`;
 }
 
@@ -258,6 +246,9 @@ export function createDefinition(
       : `$InterfaceDefinition`
   }<"${object.fullApiName}", ${objectDefIdentifier}> {
       osdkMetadata: typeof $osdkMetadata;
+      type: "${object instanceof EnhancedObjectType ? "object" : "interface"}";
+      apiName: "${object.fullApiName}";
+      __DefinitionMetadata?: {
       objectSet: ${objectSetIdentifier};
       props: ${osdkObjectPropsIdentifier};
       linksType: ${osdkObjectLinksIdentifier};
@@ -265,8 +256,6 @@ export function createDefinition(
       ${
     stringify(definition, {
       osdkMetadata: () => undefined, // we are going to reference another object instead
-      type: () => undefined,
-      apiName: () => undefined,
       links: (_value) =>
         `{
         ${
@@ -296,6 +285,7 @@ export function createDefinition(
       }`),
     })
   }
+  } 
 }
   `;
 }

@@ -6,15 +6,18 @@
 
 import type { BBox } from 'geojson';
 import type { BrandedApiName } from '@osdk/api';
-import type { InterfaceDefinition } from '@osdk/api';
+import type { CompileTimeMetadata } from '@osdk/api';
+import type { MinInterfaceDef } from '@osdk/api';
+import type { MinObjectDef } from '@osdk/api';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectOrInterfacePropertyKeysFrom2 } from '@osdk/api';
-import type { ObjectTypeDefinition } from '@osdk/api';
 import type { ObjectTypeLinkDefinition } from '@osdk/api';
 import type { ObjectTypeLinkKeysFrom2 } from '@osdk/api';
 import type { ObjectTypePropertyDefinition } from '@osdk/api';
 import type { Point } from 'geojson';
 import type { Polygon } from 'geojson';
+import type { PrimaryKeyTypes } from '@osdk/api';
+import type { PropertyKeys } from '@osdk/api';
 import type { SingleKeyObject } from 'type-fest';
 
 // Warning: (ae-forgotten-export) The symbol "ActionResults" needs to be exported by the entry point index.d.ts
@@ -31,8 +34,8 @@ export type ActionMetadata = {
 
 // @public
 export namespace ActionParam {
-    export type ObjectSetType<T extends ObjectTypeDefinition<any>> = BaseObjectSet<T>;
-    export type ObjectType<T extends ObjectTypeDefinition<any>> = OsdkBase<T> | OsdkObjectPrimaryKeyType<T>;
+    export type ObjectSetType<T extends MinObjectDef<any, any>> = BaseObjectSet<T>;
+    export type ObjectType<T extends MinObjectDef<any, any>> = OsdkBase<T> | OsdkObjectPrimaryKeyType<T>;
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueClientToWire[T];
 }
 
@@ -50,7 +53,7 @@ export type ActionValidationResponse = ValidateActionResponseV2;
 
 // @public (undocumented)
 export type AggregatableKeys<Q extends ObjectOrInterfaceDefinition> = keyof {
-    [P in keyof Q["properties"]]: any;
+    [P in PropertyKeys<Q>]: any;
 };
 
 // @public (undocumented)
@@ -72,12 +75,12 @@ export type AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q ext
 // @public (undocumented)
 export type AggregationResultsWithGroups<Q extends ObjectOrInterfaceDefinition<any, any>, A extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>, G extends GroupByClause<Q> | undefined> = ({
     $group: {
-        [P in keyof G & keyof Q["properties"]]: G[P] extends {
+        [P in keyof G & PropertyKeys<Q>]: G[P] extends {
             $ranges: GroupByRange<infer T>[];
         } ? {
             startValue: T;
             endValue: T;
-        } : OsdkObjectPropertyType<Q["properties"][P], true>;
+        } : OsdkObjectPropertyType<CompileTimeMetadata<Q>["properties"][P], true>;
     };
 } & AggregationResultsWithoutGroups<Q, A>)[];
 
@@ -87,7 +90,7 @@ export type AggregationResultsWithGroups<Q extends ObjectOrInterfaceDefinition<a
 // @public (undocumented)
 export type AggregationResultsWithoutGroups<Q extends ObjectOrInterfaceDefinition<any, any>, AC extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>> = {
     [PropName in ExtractPropName<keyof AC & string>]: PropName extends "$count" ? number : {
-        [MetricName in ExtractMetricNameForPropName<keyof AC & string, PropName>]: MetricName extends "approximateDistinct" | "exactDistinct" ? number : OsdkObjectPropertyType<Q["properties"][PropName]>;
+        [MetricName in ExtractMetricNameForPropName<keyof AC & string, PropName>]: MetricName extends "approximateDistinct" | "exactDistinct" ? number : OsdkObjectPropertyType<CompileTimeMetadata<Q>["properties"][PropName]>;
     };
 };
 
@@ -168,11 +171,12 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
     readonly [ObjectSetType]: Q;
 }
 
+// Warning: (ae-forgotten-export) The symbol "ValidOsdkPropParams" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MapPropNamesToObjectType" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MapPropNamesToInterface" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type ConvertProps<FROM extends ObjectTypeDefinition<any> | InterfaceDefinition<any>, TO extends ValidToFrom<FROM>, P extends "$rid" | "$all" | "$strict" | "$notStrict" | keyof FROM["props"]> = TO extends FROM ? P : TO extends ObjectTypeDefinition<any> ? (UnionIfTrue<MapPropNamesToObjectType<FROM, TO, P>, P extends "$rid" ? true : false, "$rid">) : TO extends InterfaceDefinition<any> ? FROM extends ObjectTypeDefinition<any> ? (UnionIfTrue<MapPropNamesToInterface<FROM, TO, P>, P extends "$rid" ? true : false, "$rid">) : never : never;
+export type ConvertProps<FROM extends ObjectOrInterfaceDefinition, TO extends ValidToFrom<FROM>, P extends ValidOsdkPropParams<FROM>> = TO extends FROM ? P : TO extends MinObjectDef<any, any> ? (UnionIfTrue<MapPropNamesToObjectType<FROM, TO, P>, P extends "$rid" ? true : false, "$rid">) : TO extends MinInterfaceDef<any, any> ? FROM extends MinObjectDef<any, any> ? (UnionIfTrue<MapPropNamesToInterface<FROM, TO, P>, P extends "$rid" ? true : false, "$rid">) : never : never;
 
 // @public
 export interface DataValueClientToWire {
@@ -326,7 +330,7 @@ export const DurationMapping: {
 };
 
 // @public (undocumented)
-export interface FetchInterfacePageArgs<Q extends InterfaceDefinition<any, any>, K extends ObjectOrInterfacePropertyKeysFrom2<Q> = ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean = false> extends SelectArg<Q, K, R>, OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>> {
+export interface FetchInterfacePageArgs<Q extends MinInterfaceDef<any, any>, K extends ObjectOrInterfacePropertyKeysFrom2<Q> = ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean = false> extends SelectArg<Q, K, R>, OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>> {
     // (undocumented)
     $augment?: Augments;
     // (undocumented)
@@ -402,7 +406,7 @@ export type InterfaceMetadata = {
 };
 
 // @public (undocumented)
-export interface InterfaceObjectSet<Q extends InterfaceDefinition<any, any>> extends MinimalObjectSet<Q> {
+export interface InterfaceObjectSet<Q extends MinInterfaceDef<any, any>> extends MinimalObjectSet<Q> {
 }
 
 // @public (undocumented)
@@ -414,10 +418,10 @@ export type IsAny<T> = unknown extends T ? [keyof T] extends [never] ? false : t
 export function isOk<X>(a: Result<X>): a is OkResult<X>;
 
 // @public (undocumented)
-export type LinkedType<Q extends ObjectOrInterfaceDefinition, L extends keyof Q["links"] & string> = NonNullable<Q["links"][L]["__OsdkLinkTargetType"]>;
+export type LinkedType<Q extends ObjectOrInterfaceDefinition, L extends keyof CompileTimeMetadata<Q>["links"] & string> = NonNullable<CompileTimeMetadata<Q>["links"][L]["__OsdkLinkTargetType"]>;
 
 // @public (undocumented)
-export type LinkNames<Q extends ObjectOrInterfaceDefinition> = keyof Q["links"] & string;
+export type LinkNames<Q extends ObjectOrInterfaceDefinition> = keyof CompileTimeMetadata<Q>["links"] & string;
 
 // @public (undocumented)
 export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition> extends BaseObjectSet<Q> {
@@ -477,12 +481,12 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED 
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     readonly aggregate: <AO extends AggregateOpts<Q>>(req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>) => Promise<AggregationsResults<Q, AO>>;
-    readonly fetchOne: Q extends ObjectTypeDefinition<any> ? <const L extends ObjectOrInterfacePropertyKeysFrom2<Q>, const R extends boolean, const S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]], options?: SelectArg<Q, L, R, S>) => Promise<SingleOsdkResult<Q, L, R, S>> : never;
-    readonly fetchOneWithErrors: Q extends ObjectTypeDefinition<any> ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]], options?: SelectArg<Q, L, R, S>) => Promise<Result<SingleOsdkResult<Q, L, R, S>>> : never;
-    readonly intersect: (...objectSets: ReadonlyArray<Q["objectSet"]>) => this;
-    readonly pivotTo: <L extends LinkNames<Q>>(type: L) => LinkedType<Q, L>["objectSet"];
-    readonly subtract: (...objectSets: ReadonlyArray<Q["objectSet"]>) => this;
-    readonly union: (...objectSets: ReadonlyArray<Q["objectSet"]>) => this;
+    readonly fetchOne: Q extends MinObjectDef<any, any> ? <const L extends ObjectOrInterfacePropertyKeysFrom2<Q>, const R extends boolean, const S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<SingleOsdkResult<Q, L, R, S>> : never;
+    readonly fetchOneWithErrors: Q extends MinObjectDef<any, any> ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<Result<SingleOsdkResult<Q, L, R, S>>> : never;
+    readonly intersect: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
+    readonly pivotTo: <L extends LinkNames<Q>>(type: L) => CompileTimeMetadata<LinkedType<Q, L>>["objectSet"];
+    readonly subtract: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
+    readonly union: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
 }
 
 // @public (undocumented)
@@ -509,22 +513,20 @@ export interface OrWhereClause<T extends ObjectOrInterfaceDefinition<any, any>> 
 // Warning: (ae-forgotten-export) The symbol "IsNever" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type Osdk<Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>, P extends "$all" | "$rid" | "$strict" | "$notStrict" | keyof Q["properties"] = "$all"> = OsdkBase<Q> & Pick<GetProps<Q, P>, GetPropsKeys<Q, P>> & {
+export type Osdk<Q extends ObjectOrInterfaceDefinition, P extends ValidOsdkPropParams<Q> = "$all"> = OsdkBase<Q> & Pick<GetProps<Q, P>, GetPropsKeys<Q, P>> & {
     readonly $link: Q extends {
         linksType?: any;
-    } ? Q["linksType"] : Q extends ObjectTypeDefinition<any> ? OsdkObjectLinksObject<Q> : never;
+    } ? Q["linksType"] : Q extends MinObjectDef<any, any> ? OsdkObjectLinksObject<Q> : never;
     readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk<NEW_Q, ConvertProps<Q, NEW_Q, P>>;
 } & (IsNever<P> extends true ? {} : string extends P ? {} : "$rid" extends P ? {
     readonly $rid: string;
 } : {});
 
 // @public (undocumented)
-export type OsdkBase<Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>> = {
-    readonly $apiName: Q["apiName"] & {
-        __OsdkType?: Q["apiName"];
-    };
+export type OsdkBase<Q extends ObjectOrInterfaceDefinition> = {
+    readonly $apiName: Q["apiName"];
     readonly $objectType: string;
-    readonly $primaryKey: Q extends ObjectTypeDefinition<any> ? OsdkObjectPrimaryKeyType<Q> : (string | number);
+    readonly $primaryKey: PrimaryKeyType<Q>;
     readonly $title: string | undefined;
 };
 
@@ -532,22 +534,22 @@ export type OsdkBase<Q extends ObjectTypeDefinition<any> | InterfaceDefinition<a
 export type OsdkObject<N extends string> = {
     readonly $apiName: N;
     readonly $objectType: string;
-    readonly $primaryKey: unknown;
+    readonly $primaryKey: PropertyValueWireToClient[PrimaryKeyTypes];
 };
 
 // @public (undocumented)
-export type OsdkObjectLinksEntry<O extends ObjectTypeDefinition<any>, L extends ObjectTypeLinkKeysFrom2<O>> = O["links"][L] extends ObjectTypeLinkDefinition<infer T, infer M> ? (M extends false ? SingleLinkAccessor<T> : ObjectSet<T>) : never;
+export type OsdkObjectLinksEntry<Q extends MinObjectDef<any, any>, L extends ObjectTypeLinkKeysFrom2<Q>> = CompileTimeMetadata<Q>["links"][L] extends ObjectTypeLinkDefinition<infer T, infer M> ? (M extends false ? SingleLinkAccessor<T> : ObjectSet<T>) : never;
 
 // @public
-export type OsdkObjectLinksObject<O extends ObjectTypeDefinition<any>> = ObjectTypeLinkKeysFrom2<O> extends never ? never : {
+export type OsdkObjectLinksObject<O extends MinObjectDef<any>> = ObjectTypeLinkKeysFrom2<O> extends never ? never : {
     readonly [L in ObjectTypeLinkKeysFrom2<O>]: OsdkObjectLinksEntry<O, L>;
 };
 
 // @public (undocumented)
-export type OsdkObjectOrInterfaceFrom<Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>, P extends string = string & keyof Q["properties"]> = Osdk<Q, P>;
+export type OsdkObjectOrInterfaceFrom<Q extends ObjectOrInterfaceDefinition, P extends string = PropertyKeys<Q>> = Osdk<Q, P>;
 
 // @public (undocumented)
-export type OsdkObjectPrimaryKeyType<O extends ObjectTypeDefinition<any>> = PropertyValueWireToClient[O["primaryKeyType"]];
+export type OsdkObjectPrimaryKeyType<Q extends MinObjectDef<any, any>> = PropertyValueWireToClient[CompileTimeMetadata<Q>["primaryKeyType"]];
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
@@ -570,6 +572,9 @@ export interface PageResult<T> {
 
 // @public (undocumented)
 export type PossibleWhereClauseFilters = "$gt" | "$eq" | "$ne" | "$isNull" | "$contains" | "$gte" | "$lt" | "$lte" | "$within" | "$intersects" | "$startsWith" | "$containsAllTermsInOrder" | "$containsAnyTerm" | "$containsAllTerms";
+
+// @public (undocumented)
+export type PrimaryKeyType<Q extends ObjectOrInterfaceDefinition> = (Q extends MinObjectDef<any, any> ? OsdkObjectPrimaryKeyType<Q> : unknown) & PropertyValueWireToClient[PrimaryKeyTypes];
 
 // @public
 export interface PropertyValueClientToWire {
@@ -656,15 +661,15 @@ export type QueryMetadata = {
 
 // @public
 export namespace QueryParam {
-    export type ObjectSetType<T extends ObjectTypeDefinition<any>> = BaseObjectSet<T>;
-    export type ObjectType<T extends ObjectTypeDefinition<any>> = OsdkBase<T> | OsdkObjectPrimaryKeyType<T>;
+    export type ObjectSetType<T extends MinObjectDef<any>> = BaseObjectSet<T>;
+    export type ObjectType<T extends MinObjectDef<any>> = OsdkBase<T> | OsdkObjectPrimaryKeyType<T>;
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueClientToWire[T];
 }
 
 // @public
 export namespace QueryResult {
-    export type ObjectSetType<T extends ObjectTypeDefinition<any>> = ObjectSet<T>;
-    export type ObjectType<T extends ObjectTypeDefinition<any>> = OsdkBase<T>;
+    export type ObjectSetType<T extends MinObjectDef<any>> = ObjectSet<T>;
+    export type ObjectType<T extends MinObjectDef<any>> = OsdkBase<T>;
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueWireToClient[T];
 }
 
@@ -687,10 +692,10 @@ export interface SelectArg<Q extends ObjectOrInterfaceDefinition<any, any>, L ex
 }
 
 // @public (undocumented)
-export type SelectArgToKeys<Q extends ObjectOrInterfaceDefinition, A extends SelectArg<Q, any, any>> = A extends SelectArg<Q, never> ? keyof Q["props"] : A["$select"] extends readonly string[] ? A["$select"][number] : keyof Q["props"];
+export type SelectArgToKeys<Q extends ObjectOrInterfaceDefinition, A extends SelectArg<Q, any, any>> = A extends SelectArg<Q, never> ? PropertyKeys<Q> : A["$select"] extends readonly string[] ? A["$select"][number] : PropertyKeys<Q>;
 
 // @public (undocumented)
-export interface SingleLinkAccessor<T extends ObjectTypeDefinition<any>> {
+export interface SingleLinkAccessor<T extends MinObjectDef<any, any>> {
     fetchOne: <const A extends SelectArg<T, ObjectOrInterfacePropertyKeysFrom2<T>, boolean>>(options?: A) => Promise<DefaultToFalse<A["$includeRid"]> extends false ? Osdk<T, SelectArgToKeys<T, A>> : Osdk<T, SelectArgToKeys<T, A> | "$rid">>;
     fetchOneWithErrors: <const A extends SelectArg<T, ObjectOrInterfacePropertyKeysFrom2<T>, boolean>>(options?: A) => Promise<Result<DefaultToFalse<A["$includeRid"]> extends false ? Osdk<T, SelectArgToKeys<T, A>> : Osdk<T, SelectArgToKeys<T, A> | "$rid">>>;
 }
@@ -796,19 +801,19 @@ export type UnorderedAggregationClause<Q extends ObjectOrInterfaceDefinition> = 
 //
 // @public (undocumented)
 export type ValidAggregationKeys<Q extends ObjectOrInterfaceDefinition> = keyof ({
-    [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<PropertyValueClientToWire[Q["properties"][KK]["type"]]>}`]?: any;
+    [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<PropertyValueClientToWire[CompileTimeMetadata<Q>["properties"][KK]["type"]]>}`]?: any;
 } & {
     $count?: any;
 });
 
 // @public
-export type ValidToFrom<FROM extends ObjectTypeDefinition<any, any> | InterfaceDefinition<any>> = FROM extends InterfaceDefinition<any, any> ? ObjectTypeDefinition<any> | InterfaceDefinition<any, any> : InterfaceDefinition<any, any>;
+export type ValidToFrom<FROM extends ObjectOrInterfaceDefinition> = FROM extends MinInterfaceDef<any, any> ? ObjectOrInterfaceDefinition : MinInterfaceDef<any, any>;
 
 // Warning: (ae-forgotten-export) The symbol "FilterFor" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type WhereClause<T extends ObjectOrInterfaceDefinition<any, any>> = OrWhereClause<T> | AndWhereClause<T> | NotWhereClause<T> | {
-    [P in keyof T["properties"]]?: FilterFor<T["properties"][P]>;
+    [P in PropertyKeys<T>]?: FilterFor<CompileTimeMetadata<T>["properties"][P]>;
 };
 
 // Warnings were encountered during analysis:

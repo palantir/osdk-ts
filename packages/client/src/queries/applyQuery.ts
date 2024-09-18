@@ -15,7 +15,6 @@
  */
 
 import type {
-  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
   QueryDataTypeDefinition,
@@ -26,7 +25,7 @@ import type {
   AllowedBucketKeyTypes,
   AllowedBucketTypes,
   OsdkBase,
-  OsdkObjectPrimaryKeyType,
+  PrimaryKeyType,
 } from "@osdk/client.api";
 import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { DataValue } from "@osdk/internal.foundry.core";
@@ -321,10 +320,9 @@ function requiresConversion(dataType: QueryDataTypeDefinition<any>) {
 }
 
 export function createQueryObjectResponse<
-  Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
+  Q extends ObjectOrInterfaceDefinition,
 >(
-  primaryKey: Q extends ObjectTypeDefinition<any> ? OsdkObjectPrimaryKeyType<Q>
-    : (string | number),
+  primaryKey: PrimaryKeyType<Q>,
   objectDef: Q,
 ): OsdkBase<Q> {
   return {

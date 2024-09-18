@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition } from "./InterfaceDefinition.js";
-import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
+import type { MinInterfaceDef } from "./InterfaceDefinition.js";
+import type { MinObjectDef } from "./ObjectTypeDefinition.js";
 
 export type ObjectOrInterfaceDefinition<
   K extends string = any,
   L extends string = any,
 > =
-  | ObjectTypeDefinition<K>
-  | InterfaceDefinition<K, L>;
+  | MinObjectDef<K, L>
+  | MinInterfaceDef<K, L>;
 
+/** @deprecated use `PropertyKeys` */
 export type ObjectOrInterfacePropertyKeysFrom2<
-  O extends ObjectTypeDefinition<any, any> | InterfaceDefinition<any, any>,
-> = keyof O["properties"] & string;
+  O extends ObjectOrInterfaceDefinition,
+> = keyof NonNullable<O["__DefinitionMetadata"]>["properties"] & string;
+
+export type PropertyKeys<
+  O extends ObjectOrInterfaceDefinition,
+> = keyof NonNullable<O["__DefinitionMetadata"]>["properties"] & string;

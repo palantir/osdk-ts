@@ -15,10 +15,11 @@
  */
 
 import type {
-  InterfaceDefinition,
+  CompileTimeMetadata,
+  MinInterfaceDef,
+  MinObjectDef,
   ObjectOrInterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition,
 } from "@osdk/api";
 import type { AggregateOpts } from "../aggregate/AggregateOpts.js";
 import type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } from "../aggregate/AggregateOptsThatErrors.js";
@@ -37,6 +38,7 @@ import type {
   SingleOsdkResult,
 } from "../object/FetchPageResult.js";
 import type { Result } from "../object/Result.js";
+import type { PrimaryKeyType } from "../OsdkBase.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 import type { BaseObjectSet } from "./BaseObjectSet.js";
@@ -113,9 +115,9 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
   readonly asyncIter: () => AsyncIterableIterator<Osdk<Q>>;
 }
 
-export interface InterfaceObjectSet<Q extends InterfaceDefinition<any, any>>
-  extends MinimalObjectSet<Q>
-{
+export interface InterfaceObjectSet<
+  Q extends MinInterfaceDef<any, any>,
+> extends MinimalObjectSet<Q> {
 }
 
 export interface ObjectSet<
@@ -159,7 +161,7 @@ export interface ObjectSet<
    * @returns the unioned object set
    */
   readonly union: (
-    ...objectSets: ReadonlyArray<Q["objectSet"]>
+    ...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>
   ) => this;
 
   /**
@@ -172,7 +174,7 @@ export interface ObjectSet<
    * @returns the intersected object set
    */
   readonly intersect: (
-    ...objectSets: ReadonlyArray<Q["objectSet"]>
+    ...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>
   ) => this;
 
   /**
@@ -185,7 +187,7 @@ export interface ObjectSet<
    * @returns the subtract object set
    */
   readonly subtract: (
-    ...objectSets: ReadonlyArray<Q["objectSet"]>
+    ...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>
   ) => this;
 
   /**
@@ -195,17 +197,17 @@ export interface ObjectSet<
    */
   readonly pivotTo: <L extends LinkNames<Q>>(
     type: L,
-  ) => LinkedType<Q, L>["objectSet"]; // ObjectSet<LinkedType<Q, L>>;
+  ) => CompileTimeMetadata<LinkedType<Q, L>>["objectSet"]; // ObjectSet<LinkedType<Q, L>>;
 
   /**
    * Fetches one object with the specified primary key, without a result wrapper
    */
-  readonly fetchOne: Q extends ObjectTypeDefinition<any> ? <
+  readonly fetchOne: Q extends MinObjectDef<any, any> ? <
       const L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
       const R extends boolean,
       const S extends false | "throw" = NullabilityAdherenceDefault,
     >(
-      primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]],
+      primaryKey: PrimaryKeyType<Q>,
       options?: SelectArg<Q, L, R, S>,
     ) => Promise<SingleOsdkResult<Q, L, R, S>>
     : never;
@@ -213,12 +215,12 @@ export interface ObjectSet<
   /**
    * Fetches one object with the specified primary key, with a result wrapper
    */
-  readonly fetchOneWithErrors: Q extends ObjectTypeDefinition<any> ? <
+  readonly fetchOneWithErrors: Q extends MinObjectDef<any, any> ? <
       L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
       R extends boolean,
       S extends false | "throw" = NullabilityAdherenceDefault,
     >(
-      primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]],
+      primaryKey: PrimaryKeyType<Q>,
       options?: SelectArg<Q, L, R, S>,
     ) => Promise<Result<SingleOsdkResult<Q, L, R, S>>>
     : never;

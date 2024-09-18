@@ -22,24 +22,30 @@ export namespace FooInterface {
 
   export interface Definition extends $InterfaceDefinition<'FooInterface', FooInterface.Definition> {
     osdkMetadata: typeof $osdkMetadata;
-    objectSet: FooInterface.ObjectSet;
-    props: FooInterface.Props;
-    linksType: OsdkObjectLinks$FooInterface;
-    strictProps: FooInterface.StrictProps;
-    description: 'Its a Foo.';
-    displayName: 'Foo interface';
-    links: {};
-    properties: {
-      /**
-       *   display name: 'Description',
-       *   description: Description of Description
-       */
-      description: $PropertyDef<'string', 'nullable', 'single'>;
-      /**
-       *   display name: 'Name',
-       *   description: Name of Foo
-       */
-      name: $PropertyDef<'string', 'nullable', 'single'>;
+    type: 'interface';
+    apiName: 'FooInterface';
+    __DefinitionMetadata?: {
+      objectSet: FooInterface.ObjectSet;
+      props: FooInterface.Props;
+      linksType: OsdkObjectLinks$FooInterface;
+      strictProps: FooInterface.StrictProps;
+      apiName: 'FooInterface';
+      description: 'Its a Foo.';
+      displayName: 'Foo interface';
+      links: {};
+      properties: {
+        /**
+         *   display name: 'Description',
+         *   description: Description of Description
+         */
+        description: $PropertyDef<'string', 'nullable', 'single'>;
+        /**
+         *   display name: 'Name',
+         *   description: Name of Foo
+         */
+        name: $PropertyDef<'string', 'nullable', 'single'>;
+      };
+      type: 'interface';
     };
   }
 

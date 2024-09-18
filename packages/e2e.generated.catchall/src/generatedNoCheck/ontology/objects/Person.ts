@@ -4,7 +4,7 @@ import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type { Todo } from './Todo.js';
 import type {
   ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition as $ObjectTypeDefinition,
+  MinObjectDef as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
 } from '@osdk/api';
 import type {
@@ -40,51 +40,35 @@ export namespace Person {
 
 export interface Person extends $ObjectTypeDefinition<'Person', Person> {
   osdkMetadata: typeof $osdkMetadata;
-  objectSet: Person.ObjectSet;
-  props: Person.Props;
-  linksType: Person.Links;
-  strictProps: Person.StrictProps;
-  description: 'A person';
-  links: {
-    Friends: $ObjectTypeLinkDefinition<Person, true>;
-    Todos: $ObjectTypeLinkDefinition<Todo, true>;
-  };
-  primaryKeyApiName: 'email';
-  primaryKeyType: 'string';
-  properties: {
-    /**
-     * (no ontology metadata)
-     */
-    email: $PropertyDef<'string', 'non-nullable', 'single'>;
+  type: 'object';
+  apiName: 'Person';
+  __DefinitionMetadata?: {
+    objectSet: Person.ObjectSet;
+    props: Person.Props;
+    linksType: Person.Links;
+    strictProps: Person.StrictProps;
+    apiName: 'Person';
+    description: 'A person';
+    interfaceMap: {};
+    inverseInterfaceMap: {};
+    links: {
+      Friends: $ObjectTypeLinkDefinition<Person, true>;
+      Todos: $ObjectTypeLinkDefinition<Todo, true>;
+    };
+    primaryKeyApiName: 'email';
+    primaryKeyType: 'string';
+    properties: {
+      /**
+       * (no ontology metadata)
+       */
+      email: $PropertyDef<'string', 'non-nullable', 'single'>;
+    };
+    type: 'object';
   };
 }
 
 export const Person: Person = {
-  osdkMetadata: $osdkMetadata,
-  objectSet: undefined as any,
-  props: undefined as any,
-  linksType: undefined as any,
-  strictProps: undefined as any,
-  apiName: 'Person',
-  description: 'A person',
-  links: {
-    Todos: {
-      multiplicity: true,
-      targetType: 'Todo',
-    },
-    Friends: {
-      multiplicity: true,
-      targetType: 'Person',
-    },
-  },
-  primaryKeyApiName: 'email',
-  primaryKeyType: 'string',
-  properties: {
-    email: {
-      multiplicity: false,
-      type: 'string',
-      nullable: false,
-    },
-  },
   type: 'object',
+  apiName: 'Person',
+  osdkMetadata: $osdkMetadata,
 };

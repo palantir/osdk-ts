@@ -15,7 +15,7 @@
  */
 
 import type { OsdkMetadata } from "../OsdkMetadata.js";
-import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
+import type { MinObjectDef } from "./ObjectTypeDefinition.js";
 
 export interface ActionDefinition<
   A extends string,
@@ -60,7 +60,7 @@ export type ValidBaseActionParameterTypes =
 
 export interface ObjectActionDataType<
   K extends string,
-  T_Target extends ObjectTypeDefinition<any> = never,
+  T_Target extends MinObjectDef<any> = never,
 > {
   __OsdkTargetType?: T_Target;
   type: "object";
@@ -69,7 +69,7 @@ export interface ObjectActionDataType<
 
 export interface ObjectSetActionDataType<
   K extends string,
-  T_Target extends ObjectTypeDefinition<any> = never,
+  T_Target extends MinObjectDef<any> = never,
 > {
   __OsdkTargetType?: T_Target;
   type: "objectSet";
@@ -78,7 +78,7 @@ export interface ObjectSetActionDataType<
 
 export type ValidActionParameterTypes<
   K extends string = never,
-  T_Target extends ObjectTypeDefinition<any> = never,
+  T_Target extends MinObjectDef<any> = never,
 > =
   | ValidBaseActionParameterTypes
   | ObjectActionDataType<K, T_Target>
@@ -86,7 +86,7 @@ export type ValidActionParameterTypes<
 
 export interface ActionParameterDefinition<
   K extends string = never,
-  T_Target extends ObjectTypeDefinition<any> = never,
+  T_Target extends MinObjectDef<any> = never,
 > {
   type: ValidActionParameterTypes<K, T_Target>;
   description?: string;

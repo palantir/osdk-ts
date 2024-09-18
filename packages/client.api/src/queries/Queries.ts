@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { MinObjectDef } from "@osdk/api";
 import type {
   DataValueClientToWire,
   DataValueWireToClient,
@@ -37,15 +37,14 @@ export namespace QueryParam {
   /**
    * Helper type to convert action definition parameter object types to typescript types
    */
-  export type ObjectType<T extends ObjectTypeDefinition<any>> =
+  export type ObjectType<T extends MinObjectDef<any>> =
     | OsdkBase<T>
     | OsdkObjectPrimaryKeyType<T>;
 
   /**
    * Helper type to convert action definition parameter object sets to typescript types
    */
-  export type ObjectSetType<T extends ObjectTypeDefinition<any>> =
-    BaseObjectSet<T>;
+  export type ObjectSetType<T extends MinObjectDef<any>> = BaseObjectSet<T>;
 }
 
 /**
@@ -61,10 +60,12 @@ export namespace QueryResult {
   /**
    * Helper type to convert action definition parameter object types to typescript types
    */
-  export type ObjectType<T extends ObjectTypeDefinition<any>> = OsdkBase<T>;
+  export type ObjectType<T extends MinObjectDef<any>> = OsdkBase<T>;
 
   /**
    * Helper type to convert action definition parameter object sets to typescript types
    */
-  export type ObjectSetType<T extends ObjectTypeDefinition<any>> = ObjectSet<T>;
+  export type ObjectSetType<T extends MinObjectDef<any>> = ObjectSet<
+    T
+  >;
 }

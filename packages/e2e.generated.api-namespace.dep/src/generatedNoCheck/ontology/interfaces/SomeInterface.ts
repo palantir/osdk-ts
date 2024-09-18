@@ -20,18 +20,24 @@ export namespace SomeInterface {
 
   export interface Definition extends $InterfaceDefinition<'com.example.dep.SomeInterface', SomeInterface.Definition> {
     osdkMetadata: typeof $osdkMetadata;
-    objectSet: SomeInterface.ObjectSet;
-    props: SomeInterface.Props;
-    linksType: OsdkObjectLinks$SomeInterface;
-    strictProps: SomeInterface.StrictProps;
-    displayName: 'Sum Interface';
-    implements: [];
-    links: {};
-    properties: {
-      /**
-       *   display name: 'Some Property'
-       */
-      spt: $PropertyDef<'string', 'nullable', 'single'>;
+    type: 'interface';
+    apiName: 'com.example.dep.SomeInterface';
+    __DefinitionMetadata?: {
+      objectSet: SomeInterface.ObjectSet;
+      props: SomeInterface.Props;
+      linksType: OsdkObjectLinks$SomeInterface;
+      strictProps: SomeInterface.StrictProps;
+      apiName: 'com.example.dep.SomeInterface';
+      displayName: 'Sum Interface';
+      implements: [];
+      links: {};
+      properties: {
+        /**
+         *   display name: 'Some Property'
+         */
+        spt: $PropertyDef<'string', 'nullable', 'single'>;
+      };
+      type: 'interface';
     };
   }
 

@@ -674,20 +674,26 @@ describe("generator", () => {
 
         export interface Definition extends $InterfaceDefinition<'SomeInterface', SomeInterface.Definition> {
           osdkMetadata: typeof $osdkMetadata;
-          objectSet: SomeInterface.ObjectSet;
-          props: SomeInterface.Props;
-          linksType: OsdkObjectLinks$SomeInterface;
-          strictProps: SomeInterface.StrictProps;
-          description: 'Some interface';
-          displayName: 'Sum Interface';
-          implements: [];
-          links: {};
-          properties: {
-            /**
-             *   display name: 'Sum Property',
-             *   description: Some property
-             */
-            SomeProperty: $PropertyDef<'string', 'nullable', 'single'>;
+          type: 'interface';
+          apiName: 'SomeInterface';
+          __DefinitionMetadata?: {
+            objectSet: SomeInterface.ObjectSet;
+            props: SomeInterface.Props;
+            linksType: OsdkObjectLinks$SomeInterface;
+            strictProps: SomeInterface.StrictProps;
+            apiName: 'SomeInterface';
+            description: 'Some interface';
+            displayName: 'Sum Interface';
+            implements: [];
+            links: {};
+            properties: {
+              /**
+               *   display name: 'Sum Property',
+               *   description: Some property
+               */
+              SomeProperty: $PropertyDef<'string', 'nullable', 'single'>;
+            };
+            type: 'interface';
           };
         }
 
@@ -732,7 +738,7 @@ describe("generator", () => {
       import type { Todo } from './Todo';
       import type {
         ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-        ObjectTypeDefinition as $ObjectTypeDefinition,
+        MinObjectDef as $ObjectTypeDefinition,
         ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
       } from '@osdk/api';
       import type {
@@ -767,58 +773,39 @@ describe("generator", () => {
 
       export interface Person extends $ObjectTypeDefinition<'Person', Person> {
         osdkMetadata: typeof $osdkMetadata;
-        objectSet: Person.ObjectSet;
-        props: Person.Props;
-        linksType: Person.Links;
-        strictProps: Person.StrictProps;
-        description: 'A person';
-        implements: [];
-        interfaceMap: {};
-        inverseInterfaceMap: {};
-        inverseSpts: {};
-        links: {
-          Todos: $ObjectTypeLinkDefinition<Todo, true>;
+        type: 'object';
+        apiName: 'Person';
+        __DefinitionMetadata?: {
+          objectSet: Person.ObjectSet;
+          props: Person.Props;
+          linksType: Person.Links;
+          strictProps: Person.StrictProps;
+          apiName: 'Person';
+          description: 'A person';
+          implements: [];
+          interfaceMap: {};
+          inverseInterfaceMap: {};
+          inverseSpts: {};
+          links: {
+            Todos: $ObjectTypeLinkDefinition<Todo, true>;
+          };
+          primaryKeyApiName: 'email';
+          primaryKeyType: 'string';
+          properties: {
+            /**
+             * (no ontology metadata)
+             */
+            email: $PropertyDef<'string', 'non-nullable', 'single'>;
+          };
+          spts: {};
+          type: 'object';
         };
-        primaryKeyApiName: 'email';
-        primaryKeyType: 'string';
-        properties: {
-          /**
-           * (no ontology metadata)
-           */
-          email: $PropertyDef<'string', 'non-nullable', 'single'>;
-        };
-        spts: {};
       }
 
       export const Person: Person = {
-        osdkMetadata: $osdkMetadata,
-        objectSet: undefined as any,
-        props: undefined as any,
-        linksType: undefined as any,
-        strictProps: undefined as any,
-        apiName: 'Person',
-        description: 'A person',
-        implements: [],
-        interfaceMap: {},
-        inverseInterfaceMap: {},
-        inverseSpts: {},
-        links: {
-          Todos: {
-            multiplicity: true,
-            targetType: 'Todo',
-          },
-        },
-        primaryKeyApiName: 'email',
-        primaryKeyType: 'string',
-        properties: {
-          email: {
-            multiplicity: false,
-            type: 'string',
-            nullable: false,
-          },
-        },
-        spts: {},
         type: 'object',
+        apiName: 'Person',
+        osdkMetadata: $osdkMetadata,
       };
       ",
         "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
@@ -827,7 +814,7 @@ describe("generator", () => {
       import type { Person } from './Person';
       import type {
         ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-        ObjectTypeDefinition as $ObjectTypeDefinition,
+        MinObjectDef as $ObjectTypeDefinition,
         ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
       } from '@osdk/api';
       import type {
@@ -866,95 +853,56 @@ describe("generator", () => {
 
       export interface Todo extends $ObjectTypeDefinition<'Todo', Todo> {
         osdkMetadata: typeof $osdkMetadata;
-        objectSet: Todo.ObjectSet;
-        props: Todo.Props;
-        linksType: Todo.Links;
-        strictProps: Todo.StrictProps;
-        description: 'Its a todo item.';
-        implements: ['SomeInterface'];
-        interfaceMap: {
-          SomeInterface: {
-            SomeProperty: 'body';
+        type: 'object';
+        apiName: 'Todo';
+        __DefinitionMetadata?: {
+          objectSet: Todo.ObjectSet;
+          props: Todo.Props;
+          linksType: Todo.Links;
+          strictProps: Todo.StrictProps;
+          apiName: 'Todo';
+          description: 'Its a todo item.';
+          implements: ['SomeInterface'];
+          interfaceMap: {
+            SomeInterface: {
+              SomeProperty: 'body';
+            };
           };
-        };
-        inverseInterfaceMap: {
-          SomeInterface: {
-            body: 'SomeProperty';
+          inverseInterfaceMap: {
+            SomeInterface: {
+              body: 'SomeProperty';
+            };
           };
+          inverseSpts: {};
+          links: {
+            Assignee: $ObjectTypeLinkDefinition<Person, false>;
+          };
+          primaryKeyApiName: 'id';
+          primaryKeyType: 'integer';
+          properties: {
+            /**
+             *   display name: 'Body',
+             *   description: The text of the todo
+             */
+            body: $PropertyDef<'string', 'nullable', 'single'>;
+            /**
+             * (no ontology metadata)
+             */
+            complete: $PropertyDef<'boolean', 'nullable', 'single'>;
+            /**
+             * (no ontology metadata)
+             */
+            id: $PropertyDef<'integer', 'non-nullable', 'single'>;
+          };
+          spts: {};
+          type: 'object';
         };
-        inverseSpts: {};
-        links: {
-          Assignee: $ObjectTypeLinkDefinition<Person, false>;
-        };
-        primaryKeyApiName: 'id';
-        primaryKeyType: 'integer';
-        properties: {
-          /**
-           *   display name: 'Body',
-           *   description: The text of the todo
-           */
-          body: $PropertyDef<'string', 'nullable', 'single'>;
-          /**
-           * (no ontology metadata)
-           */
-          complete: $PropertyDef<'boolean', 'nullable', 'single'>;
-          /**
-           * (no ontology metadata)
-           */
-          id: $PropertyDef<'integer', 'non-nullable', 'single'>;
-        };
-        spts: {};
       }
 
       export const Todo: Todo = {
-        osdkMetadata: $osdkMetadata,
-        objectSet: undefined as any,
-        props: undefined as any,
-        linksType: undefined as any,
-        strictProps: undefined as any,
-        apiName: 'Todo',
-        description: 'Its a todo item.',
-        implements: ['SomeInterface'],
-        interfaceMap: {
-          SomeInterface: {
-            SomeProperty: 'body',
-          },
-        },
-        inverseInterfaceMap: {
-          SomeInterface: {
-            body: 'SomeProperty',
-          },
-        },
-        inverseSpts: {},
-        links: {
-          Assignee: {
-            multiplicity: false,
-            targetType: 'Person',
-          },
-        },
-        primaryKeyApiName: 'id',
-        primaryKeyType: 'integer',
-        properties: {
-          id: {
-            multiplicity: false,
-            type: 'integer',
-            nullable: false,
-          },
-          body: {
-            displayName: 'Body',
-            multiplicity: false,
-            description: 'The text of the todo',
-            type: 'string',
-            nullable: true,
-          },
-          complete: {
-            multiplicity: false,
-            type: 'boolean',
-            nullable: true,
-          },
-        },
-        spts: {},
         type: 'object',
+        apiName: 'Todo',
+        osdkMetadata: $osdkMetadata,
       };
       ",
         "/foo/ontology/queries.ts": "export * from './queries/getCount';
@@ -1327,20 +1275,26 @@ describe("generator", () => {
 
           export interface Definition extends $InterfaceDefinition<'foo.bar.SomeInterface', SomeInterface.Definition> {
             osdkMetadata: typeof $osdkMetadata;
-            objectSet: SomeInterface.ObjectSet;
-            props: SomeInterface.Props;
-            linksType: OsdkObjectLinks$SomeInterface;
-            strictProps: SomeInterface.StrictProps;
-            description: 'Some interface';
-            displayName: 'Sum Interface';
-            implements: [];
-            links: {};
-            properties: {
-              /**
-               *   display name: 'Sum Property',
-               *   description: Some property
-               */
-              SomeProperty: $PropertyDef<'string', 'nullable', 'single'>;
+            type: 'interface';
+            apiName: 'foo.bar.SomeInterface';
+            __DefinitionMetadata?: {
+              objectSet: SomeInterface.ObjectSet;
+              props: SomeInterface.Props;
+              linksType: OsdkObjectLinks$SomeInterface;
+              strictProps: SomeInterface.StrictProps;
+              apiName: 'foo.bar.SomeInterface';
+              description: 'Some interface';
+              displayName: 'Sum Interface';
+              implements: [];
+              links: {};
+              properties: {
+                /**
+                 *   display name: 'Sum Property',
+                 *   description: Some property
+                 */
+                SomeProperty: $PropertyDef<'string', 'nullable', 'single'>;
+              };
+              type: 'interface';
             };
           }
 
@@ -1385,7 +1339,7 @@ describe("generator", () => {
         import type { Todo } from './Todo.js';
         import type {
           ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-          ObjectTypeDefinition as $ObjectTypeDefinition,
+          MinObjectDef as $ObjectTypeDefinition,
           ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
         } from '@osdk/api';
         import type {
@@ -1420,58 +1374,39 @@ describe("generator", () => {
 
         export interface Person extends $ObjectTypeDefinition<'foo.bar.Person', Person> {
           osdkMetadata: typeof $osdkMetadata;
-          objectSet: Person.ObjectSet;
-          props: Person.Props;
-          linksType: Person.Links;
-          strictProps: Person.StrictProps;
-          description: 'A person';
-          implements: [];
-          interfaceMap: {};
-          inverseInterfaceMap: {};
-          inverseSpts: {};
-          links: {
-            Todos: $ObjectTypeLinkDefinition<Todo, true>;
+          type: 'object';
+          apiName: 'foo.bar.Person';
+          __DefinitionMetadata?: {
+            objectSet: Person.ObjectSet;
+            props: Person.Props;
+            linksType: Person.Links;
+            strictProps: Person.StrictProps;
+            apiName: 'foo.bar.Person';
+            description: 'A person';
+            implements: [];
+            interfaceMap: {};
+            inverseInterfaceMap: {};
+            inverseSpts: {};
+            links: {
+              Todos: $ObjectTypeLinkDefinition<Todo, true>;
+            };
+            primaryKeyApiName: 'email';
+            primaryKeyType: 'string';
+            properties: {
+              /**
+               * (no ontology metadata)
+               */
+              email: $PropertyDef<'string', 'non-nullable', 'single'>;
+            };
+            spts: {};
+            type: 'object';
           };
-          primaryKeyApiName: 'email';
-          primaryKeyType: 'string';
-          properties: {
-            /**
-             * (no ontology metadata)
-             */
-            email: $PropertyDef<'string', 'non-nullable', 'single'>;
-          };
-          spts: {};
         }
 
         export const Person: Person = {
-          osdkMetadata: $osdkMetadata,
-          objectSet: undefined as any,
-          props: undefined as any,
-          linksType: undefined as any,
-          strictProps: undefined as any,
-          apiName: 'foo.bar.Person',
-          description: 'A person',
-          implements: [],
-          interfaceMap: {},
-          inverseInterfaceMap: {},
-          inverseSpts: {},
-          links: {
-            Todos: {
-              multiplicity: true,
-              targetType: 'foo.bar.Todo',
-            },
-          },
-          primaryKeyApiName: 'email',
-          primaryKeyType: 'string',
-          properties: {
-            email: {
-              multiplicity: false,
-              type: 'string',
-              nullable: false,
-            },
-          },
-          spts: {},
           type: 'object',
+          apiName: 'foo.bar.Person',
+          osdkMetadata: $osdkMetadata,
         };
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
@@ -1480,7 +1415,7 @@ describe("generator", () => {
         import type { Person } from './Person.js';
         import type {
           ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-          ObjectTypeDefinition as $ObjectTypeDefinition,
+          MinObjectDef as $ObjectTypeDefinition,
           ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
         } from '@osdk/api';
         import type {
@@ -1519,95 +1454,56 @@ describe("generator", () => {
 
         export interface Todo extends $ObjectTypeDefinition<'foo.bar.Todo', Todo> {
           osdkMetadata: typeof $osdkMetadata;
-          objectSet: Todo.ObjectSet;
-          props: Todo.Props;
-          linksType: Todo.Links;
-          strictProps: Todo.StrictProps;
-          description: 'Its a todo item.';
-          implements: ['foo.bar.SomeInterface'];
-          interfaceMap: {
-            'foo.bar.SomeInterface': {
-              SomeProperty: 'body';
+          type: 'object';
+          apiName: 'foo.bar.Todo';
+          __DefinitionMetadata?: {
+            objectSet: Todo.ObjectSet;
+            props: Todo.Props;
+            linksType: Todo.Links;
+            strictProps: Todo.StrictProps;
+            apiName: 'foo.bar.Todo';
+            description: 'Its a todo item.';
+            implements: ['foo.bar.SomeInterface'];
+            interfaceMap: {
+              'foo.bar.SomeInterface': {
+                SomeProperty: 'body';
+              };
             };
-          };
-          inverseInterfaceMap: {
-            'foo.bar.SomeInterface': {
-              body: 'SomeProperty';
+            inverseInterfaceMap: {
+              'foo.bar.SomeInterface': {
+                body: 'SomeProperty';
+              };
             };
+            inverseSpts: {};
+            links: {
+              Assignee: $ObjectTypeLinkDefinition<Person, false>;
+            };
+            primaryKeyApiName: 'id';
+            primaryKeyType: 'integer';
+            properties: {
+              /**
+               *   display name: 'Body',
+               *   description: The text of the todo
+               */
+              body: $PropertyDef<'string', 'nullable', 'single'>;
+              /**
+               * (no ontology metadata)
+               */
+              complete: $PropertyDef<'boolean', 'nullable', 'single'>;
+              /**
+               * (no ontology metadata)
+               */
+              id: $PropertyDef<'integer', 'non-nullable', 'single'>;
+            };
+            spts: {};
+            type: 'object';
           };
-          inverseSpts: {};
-          links: {
-            Assignee: $ObjectTypeLinkDefinition<Person, false>;
-          };
-          primaryKeyApiName: 'id';
-          primaryKeyType: 'integer';
-          properties: {
-            /**
-             *   display name: 'Body',
-             *   description: The text of the todo
-             */
-            body: $PropertyDef<'string', 'nullable', 'single'>;
-            /**
-             * (no ontology metadata)
-             */
-            complete: $PropertyDef<'boolean', 'nullable', 'single'>;
-            /**
-             * (no ontology metadata)
-             */
-            id: $PropertyDef<'integer', 'non-nullable', 'single'>;
-          };
-          spts: {};
         }
 
         export const Todo: Todo = {
-          osdkMetadata: $osdkMetadata,
-          objectSet: undefined as any,
-          props: undefined as any,
-          linksType: undefined as any,
-          strictProps: undefined as any,
-          apiName: 'foo.bar.Todo',
-          description: 'Its a todo item.',
-          implements: ['foo.bar.SomeInterface'],
-          interfaceMap: {
-            'foo.bar.SomeInterface': {
-              SomeProperty: 'body',
-            },
-          },
-          inverseInterfaceMap: {
-            'foo.bar.SomeInterface': {
-              body: 'SomeProperty',
-            },
-          },
-          inverseSpts: {},
-          links: {
-            Assignee: {
-              multiplicity: false,
-              targetType: 'foo.bar.Person',
-            },
-          },
-          primaryKeyApiName: 'id',
-          primaryKeyType: 'integer',
-          properties: {
-            id: {
-              multiplicity: false,
-              type: 'integer',
-              nullable: false,
-            },
-            body: {
-              displayName: 'Body',
-              multiplicity: false,
-              description: 'The text of the todo',
-              type: 'string',
-              nullable: true,
-            },
-            complete: {
-              multiplicity: false,
-              type: 'boolean',
-              nullable: true,
-            },
-          },
-          spts: {},
           type: 'object',
+          apiName: 'foo.bar.Todo',
+          osdkMetadata: $osdkMetadata,
         };
         ",
           "/foo/ontology/queries.ts": "export * from './queries/getCount.js';
@@ -1929,7 +1825,7 @@ describe("generator", () => {
           import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
           import type {
             ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-            ObjectTypeDefinition as $ObjectTypeDefinition,
+            MinObjectDef as $ObjectTypeDefinition,
             ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
           } from '@osdk/api';
           import type {
@@ -1964,66 +1860,44 @@ describe("generator", () => {
 
           export interface UsesForeignSpt extends $ObjectTypeDefinition<'UsesForeignSpt', UsesForeignSpt> {
             osdkMetadata: typeof $osdkMetadata;
-            objectSet: UsesForeignSpt.ObjectSet;
-            props: UsesForeignSpt.Props;
-            linksType: UsesForeignSpt.Links;
-            strictProps: UsesForeignSpt.StrictProps;
-            implements: [];
-            interfaceMap: {};
-            inverseInterfaceMap: {};
-            inverseSpts: {
-              body: 'com.example.dep.spt';
-            };
-            links: {};
-            primaryKeyApiName: 'id';
-            primaryKeyType: 'integer';
-            properties: {
-              /**
-               * (no ontology metadata)
-               */
-              body: $PropertyDef<'string', 'nullable', 'single'>;
-              /**
-               * (no ontology metadata)
-               */
-              id: $PropertyDef<'integer', 'non-nullable', 'single'>;
-            };
-            spts: {
-              'com.example.dep.spt': 'body';
+            type: 'object';
+            apiName: 'UsesForeignSpt';
+            __DefinitionMetadata?: {
+              objectSet: UsesForeignSpt.ObjectSet;
+              props: UsesForeignSpt.Props;
+              linksType: UsesForeignSpt.Links;
+              strictProps: UsesForeignSpt.StrictProps;
+              apiName: 'UsesForeignSpt';
+              implements: [];
+              interfaceMap: {};
+              inverseInterfaceMap: {};
+              inverseSpts: {
+                body: 'com.example.dep.spt';
+              };
+              links: {};
+              primaryKeyApiName: 'id';
+              primaryKeyType: 'integer';
+              properties: {
+                /**
+                 * (no ontology metadata)
+                 */
+                body: $PropertyDef<'string', 'nullable', 'single'>;
+                /**
+                 * (no ontology metadata)
+                 */
+                id: $PropertyDef<'integer', 'non-nullable', 'single'>;
+              };
+              spts: {
+                'com.example.dep.spt': 'body';
+              };
+              type: 'object';
             };
           }
 
           export const UsesForeignSpt: UsesForeignSpt = {
-            osdkMetadata: $osdkMetadata,
-            objectSet: undefined as any,
-            props: undefined as any,
-            linksType: undefined as any,
-            strictProps: undefined as any,
-            apiName: 'UsesForeignSpt',
-            implements: [],
-            interfaceMap: {},
-            inverseInterfaceMap: {},
-            inverseSpts: {
-              body: 'com.example.dep.spt',
-            },
-            links: {},
-            primaryKeyApiName: 'id',
-            primaryKeyType: 'integer',
-            properties: {
-              id: {
-                multiplicity: false,
-                type: 'integer',
-                nullable: false,
-              },
-              body: {
-                multiplicity: false,
-                type: 'string',
-                nullable: true,
-              },
-            },
-            spts: {
-              'com.example.dep.spt': 'body',
-            },
             type: 'object',
+            apiName: 'UsesForeignSpt',
+            osdkMetadata: $osdkMetadata,
           };
           "
         `);
@@ -2182,18 +2056,24 @@ describe("generator", () => {
 
           export interface Definition extends $InterfaceDefinition<'com.example.dep.SomeInterface', SomeInterface.Definition> {
             osdkMetadata: typeof $osdkMetadata;
-            objectSet: SomeInterface.ObjectSet;
-            props: SomeInterface.Props;
-            linksType: OsdkObjectLinks$SomeInterface;
-            strictProps: SomeInterface.StrictProps;
-            displayName: 'Sum Interface';
-            implements: [];
-            links: {};
-            properties: {
-              /**
-               *   display name: 'Some Property'
-               */
-              spt: $PropertyDef<'string', 'nullable', 'single'>;
+            type: 'interface';
+            apiName: 'com.example.dep.SomeInterface';
+            __DefinitionMetadata?: {
+              objectSet: SomeInterface.ObjectSet;
+              props: SomeInterface.Props;
+              linksType: OsdkObjectLinks$SomeInterface;
+              strictProps: SomeInterface.StrictProps;
+              apiName: 'com.example.dep.SomeInterface';
+              displayName: 'Sum Interface';
+              implements: [];
+              links: {};
+              properties: {
+                /**
+                 *   display name: 'Some Property'
+                 */
+                spt: $PropertyDef<'string', 'nullable', 'single'>;
+              };
+              type: 'interface';
             };
           }
 
@@ -2234,7 +2114,7 @@ describe("generator", () => {
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import type {
           ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-          ObjectTypeDefinition as $ObjectTypeDefinition,
+          MinObjectDef as $ObjectTypeDefinition,
           ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
         } from '@osdk/api';
         import type {
@@ -2269,58 +2149,40 @@ describe("generator", () => {
 
         export interface Task extends $ObjectTypeDefinition<'com.example.dep.Task', Task> {
           osdkMetadata: typeof $osdkMetadata;
-          objectSet: Task.ObjectSet;
-          props: Task.Props;
-          linksType: Task.Links;
-          strictProps: Task.StrictProps;
-          implements: [];
-          interfaceMap: {};
-          inverseInterfaceMap: {};
-          inverseSpts: {};
-          links: {};
-          primaryKeyApiName: 'taskId';
-          primaryKeyType: 'string';
-          properties: {
-            /**
-             * (no ontology metadata)
-             */
-            body: $PropertyDef<'string', 'nullable', 'single'>;
-            /**
-             * (no ontology metadata)
-             */
-            taskId: $PropertyDef<'string', 'non-nullable', 'single'>;
+          type: 'object';
+          apiName: 'com.example.dep.Task';
+          __DefinitionMetadata?: {
+            objectSet: Task.ObjectSet;
+            props: Task.Props;
+            linksType: Task.Links;
+            strictProps: Task.StrictProps;
+            apiName: 'com.example.dep.Task';
+            implements: [];
+            interfaceMap: {};
+            inverseInterfaceMap: {};
+            inverseSpts: {};
+            links: {};
+            primaryKeyApiName: 'taskId';
+            primaryKeyType: 'string';
+            properties: {
+              /**
+               * (no ontology metadata)
+               */
+              body: $PropertyDef<'string', 'nullable', 'single'>;
+              /**
+               * (no ontology metadata)
+               */
+              taskId: $PropertyDef<'string', 'non-nullable', 'single'>;
+            };
+            spts: {};
+            type: 'object';
           };
-          spts: {};
         }
 
         export const Task: Task = {
-          osdkMetadata: $osdkMetadata,
-          objectSet: undefined as any,
-          props: undefined as any,
-          linksType: undefined as any,
-          strictProps: undefined as any,
-          apiName: 'com.example.dep.Task',
-          implements: [],
-          interfaceMap: {},
-          inverseInterfaceMap: {},
-          inverseSpts: {},
-          links: {},
-          primaryKeyApiName: 'taskId',
-          primaryKeyType: 'string',
-          properties: {
-            taskId: {
-              multiplicity: false,
-              type: 'string',
-              nullable: false,
-            },
-            body: {
-              multiplicity: false,
-              type: 'string',
-              nullable: true,
-            },
-          },
-          spts: {},
           type: 'object',
+          apiName: 'com.example.dep.Task',
+          osdkMetadata: $osdkMetadata,
         };
         ",
           "/foo/ontology/queries.ts": "export {};

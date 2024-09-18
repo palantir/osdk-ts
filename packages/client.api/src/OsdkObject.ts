@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import type { PrimaryKeyTypes } from "@osdk/api";
+import type { PropertyValueWireToClient } from "./mapping/PropertyValueMapping.js";
+
 export type OsdkObject<N extends string> = {
   readonly $apiName: N;
   readonly $objectType: string;
-  readonly $primaryKey: unknown;
+  readonly $primaryKey: PropertyValueWireToClient[PrimaryKeyTypes];
 };

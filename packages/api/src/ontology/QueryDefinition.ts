@@ -15,7 +15,10 @@
  */
 
 import type { OsdkMetadata } from "../OsdkMetadata.js";
-import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
+import type {
+  MinObjectDef,
+  ObjectTypeDefinition,
+} from "./ObjectTypeDefinition.js";
 
 export interface QueryDefinition<
   Q extends string,
@@ -76,7 +79,7 @@ export type PrimitiveDataType<
 
 export interface ObjectQueryDataType<
   K extends string,
-  T_Target extends ObjectTypeDefinition<any> = never,
+  T_Target extends MinObjectDef<any> = never,
 > extends BaseQueryDataTypeDefinition<"object"> {
   object: K;
   __OsdkTargetType?: T_Target;
@@ -84,7 +87,7 @@ export interface ObjectQueryDataType<
 
 export interface ObjectSetQueryDataType<
   K extends string,
-  T_Target extends ObjectTypeDefinition<any> = never,
+  T_Target extends MinObjectDef<any> = never,
 > extends BaseQueryDataTypeDefinition<"objectSet"> {
   objectSet: K;
   __OsdkTargetType?: T_Target;

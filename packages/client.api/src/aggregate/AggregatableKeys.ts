@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type {
+  CompileTimeMetadata,
+  ObjectOrInterfaceDefinition,
+  PropertyKeys,
+} from "@osdk/api";
 import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
 
 export type StringAggregateOption = "approximateDistinct" | "exactDistinct";
@@ -36,7 +40,9 @@ export type ValidAggregationKeys<
   & {
     [
       KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<
-        PropertyValueClientToWire[Q["properties"][KK]["type"]]
+        PropertyValueClientToWire[
+          CompileTimeMetadata<Q>["properties"][KK]["type"]
+        ]
       >}`
     ]?: any;
   }
@@ -46,5 +52,5 @@ export type ValidAggregationKeys<
 export type AggregatableKeys<
   Q extends ObjectOrInterfaceDefinition,
 > = keyof {
-  [P in keyof Q["properties"]]: any;
+  [P in PropertyKeys<Q>]: any;
 };

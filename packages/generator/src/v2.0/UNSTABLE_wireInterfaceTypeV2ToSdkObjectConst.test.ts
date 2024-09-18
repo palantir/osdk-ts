@@ -130,18 +130,24 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
 
         export interface Definition extends $InterfaceDefinition<"Bar", Bar.Definition> {
           osdkMetadata: typeof $osdkMetadata;
-          objectSet: Bar.ObjectSet;
-          props: Bar.Props;
-          linksType: OsdkObjectLinks$Bar;
-          strictProps: Bar.StrictProps;
-          displayName: "Bar";
-          implements: [];
-          links: {};
-          properties: {
-            /**
-             * (no ontology metadata)
-             */
-            bar: $PropertyDef<"integer", "nullable", "single">;
+          type: "interface";
+          apiName: "Bar";
+          __DefinitionMetadata?: {
+            objectSet: Bar.ObjectSet;
+            props: Bar.Props;
+            linksType: OsdkObjectLinks$Bar;
+            strictProps: Bar.StrictProps;
+            apiName: "Bar";
+            displayName: "Bar";
+            implements: [];
+            links: {};
+            properties: {
+              /**
+               * (no ontology metadata)
+               */
+              bar: $PropertyDef<"integer", "nullable", "single">;
+            };
+            type: "interface";
           };
         }
 
@@ -228,20 +234,26 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         export interface Definition
           extends $InterfaceDefinition<"Foo", Foo.Definition> {
           osdkMetadata: typeof $osdkMetadata;
-          objectSet: Foo.ObjectSet;
-          props: Foo.Props;
-          linksType: OsdkObjectLinks$Foo;
-          strictProps: Foo.StrictProps;
-          description: "Foo interface desc";
-          displayName: "Foo interface dn";
-          implements: ["Parent"];
-          links: {};
-          properties: {
-            /**
-             *   display name: 'foo property dn',
-             *   description: foo property desc
-             */
-            foo: $PropertyDef<"integer", "nullable", "single">;
+          type: "interface";
+          apiName: "Foo";
+          __DefinitionMetadata?: {
+            objectSet: Foo.ObjectSet;
+            props: Foo.Props;
+            linksType: OsdkObjectLinks$Foo;
+            strictProps: Foo.StrictProps;
+            apiName: "Foo";
+            description: "Foo interface desc";
+            displayName: "Foo interface dn";
+            implements: ["Parent"];
+            links: {};
+            properties: {
+              /**
+               *   display name: 'foo property dn',
+               *   description: foo property desc
+               */
+              foo: $PropertyDef<"integer", "nullable", "single">;
+            };
+            type: "interface";
           };
         }
 
@@ -339,25 +351,31 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         export interface Definition
           extends $InterfaceDefinition<"Foo", Foo.Definition> {
           osdkMetadata: typeof $osdkMetadata;
-          objectSet: Foo.ObjectSet;
-          props: Foo.Props;
-          linksType: OsdkObjectLinks$Foo;
-          strictProps: Foo.StrictProps;
-          description: "Foo interface desc";
-          displayName: "Foo interface dn";
-          implements: ["Parent"];
-          links: {};
-          properties: {
-            /**
-             *   display name: 'bar property dn',
-             *   description: bar property desc
-             */
-            bar: $PropertyDef<"integer", "nullable", "single">;
-            /**
-             *   display name: 'foo property dn',
-             *   description: foo property desc
-             */
-            foo: $PropertyDef<"integer", "nullable", "single">;
+          type: "interface";
+          apiName: "Foo";
+          __DefinitionMetadata?: {
+            objectSet: Foo.ObjectSet;
+            props: Foo.Props;
+            linksType: OsdkObjectLinks$Foo;
+            strictProps: Foo.StrictProps;
+            apiName: "Foo";
+            description: "Foo interface desc";
+            displayName: "Foo interface dn";
+            implements: ["Parent"];
+            links: {};
+            properties: {
+              /**
+               *   display name: 'bar property dn',
+               *   description: bar property desc
+               */
+              bar: $PropertyDef<"integer", "nullable", "single">;
+              /**
+               *   display name: 'foo property dn',
+               *   description: foo property desc
+               */
+              foo: $PropertyDef<"integer", "nullable", "single">;
+            };
+            type: "interface";
           };
         }
 

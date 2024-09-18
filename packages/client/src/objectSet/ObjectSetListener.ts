@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { OsdkObjectOrInterfaceFrom } from "@osdk/client.api";
 
 export interface ObjectSetListener<
-  O extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
+  O extends ObjectOrInterfaceDefinition,
 > {
   /**
    * Specific objects have changed and can be immediately updated

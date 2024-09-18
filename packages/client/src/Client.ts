@@ -15,10 +15,10 @@
  */
 
 import type {
-  ActionDefinition,
-  InterfaceDefinition,
+  CompileTimeMetadata,
   MinimalActionDefinition,
-  ObjectTypeDefinition,
+  MinInterfaceDef,
+  MinObjectDef,
   QueryDefinition,
   VersionBound,
 } from "@osdk/api";
@@ -45,9 +45,9 @@ export type CheckVersionBound<Q> = Q extends VersionBound<infer V> ? (
   : Q;
 
 export interface Client extends SharedClient<MinimalClient> {
-  <Q extends ObjectTypeDefinition<any, any>>(
+  <Q extends MinObjectDef<any, any>>(
     o: Q,
-  ): Q["objectSet"];
+  ): CompileTimeMetadata<Q>["objectSet"];
 
   <Q extends MinimalActionDefinition<any, any, any>>(
     o: Q,
@@ -59,14 +59,14 @@ export interface Client extends SharedClient<MinimalClient> {
 
   fetchMetadata<
     Q extends (
-      | ObjectTypeDefinition<any, any>
-      | InterfaceDefinition<any, any>
+      | MinObjectDef<any, any>
+      | MinInterfaceDef<any, any>
       | MinimalActionDefinition<any, any, any>
       | QueryDefinition<any, any, any>
     ),
   >(o: Q): Promise<
-    Q extends ObjectTypeDefinition<any, any> ? ObjectMetadata
-      : Q extends InterfaceDefinition<any, any> ? InterfaceMetadata
+    Q extends MinObjectDef<any, any> ? ObjectMetadata
+      : Q extends MinInterfaceDef<any, any> ? InterfaceMetadata
       : Q extends MinimalActionDefinition<any, any, any> ? ActionMetadata
       : Q extends QueryDefinition<any, any, any> ? QueryMetadata
       : never

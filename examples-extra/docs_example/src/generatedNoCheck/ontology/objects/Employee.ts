@@ -3,7 +3,7 @@ import { $osdkMetadata } from '../../OntologyMetadata';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import type {
   ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition as $ObjectTypeDefinition,
+  MinObjectDef as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
 } from '@osdk/api';
 import type {
@@ -49,99 +49,55 @@ export namespace Employee {
 
 export interface Employee extends $ObjectTypeDefinition<'Employee', Employee> {
   osdkMetadata: typeof $osdkMetadata;
-  objectSet: Employee.ObjectSet;
-  props: Employee.Props;
-  linksType: Employee.Links;
-  strictProps: Employee.StrictProps;
-  description: 'A full-time or part-time employee of our firm';
-  links: {
-    lead: $ObjectTypeLinkDefinition<Employee, false>;
-    peeps: $ObjectTypeLinkDefinition<Employee, true>;
-  };
-  primaryKeyApiName: 'employeeId';
-  primaryKeyType: 'integer';
-  properties: {
-    /**
-     * (no ontology metadata)
-     */
-    class: $PropertyDef<'string', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    employeeId: $PropertyDef<'integer', 'non-nullable', 'single'>;
-    /**
-     *   description: TimeSeries of the status of the employee
-     */
-    employeeStatus: $PropertyDef<'numericTimeseries', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    fullName: $PropertyDef<'string', 'nullable', 'single'>;
-    /**
-     *   description: The unique of the employee's assigned office. This is some more text.
-     */
-    office: $PropertyDef<'integer', 'nullable', 'single'>;
-    /**
-     *   description: The date the employee was hired (most recently, if they were re-hired)
-     */
-    startDate: $PropertyDef<'datetime', 'nullable', 'single'>;
+  type: 'object';
+  apiName: 'Employee';
+  __DefinitionMetadata?: {
+    objectSet: Employee.ObjectSet;
+    props: Employee.Props;
+    linksType: Employee.Links;
+    strictProps: Employee.StrictProps;
+    apiName: 'Employee';
+    description: 'A full-time or part-time employee of our firm';
+    interfaceMap: {};
+    inverseInterfaceMap: {};
+    links: {
+      lead: $ObjectTypeLinkDefinition<Employee, false>;
+      peeps: $ObjectTypeLinkDefinition<Employee, true>;
+    };
+    primaryKeyApiName: 'employeeId';
+    primaryKeyType: 'integer';
+    properties: {
+      /**
+       * (no ontology metadata)
+       */
+      class: $PropertyDef<'string', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      employeeId: $PropertyDef<'integer', 'non-nullable', 'single'>;
+      /**
+       *   description: TimeSeries of the status of the employee
+       */
+      employeeStatus: $PropertyDef<'numericTimeseries', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      fullName: $PropertyDef<'string', 'nullable', 'single'>;
+      /**
+       *   description: The unique of the employee's assigned office. This is some more text.
+       */
+      office: $PropertyDef<'integer', 'nullable', 'single'>;
+      /**
+       *   description: The date the employee was hired (most recently, if they were re-hired)
+       */
+      startDate: $PropertyDef<'datetime', 'nullable', 'single'>;
+    };
+    type: 'object';
   };
 }
 
 export const Employee: Employee = {
-  osdkMetadata: $osdkMetadata,
-  objectSet: undefined as any,
-  props: undefined as any,
-  linksType: undefined as any,
-  strictProps: undefined as any,
-  apiName: 'Employee',
-  description: 'A full-time or part-time employee of our firm',
-  links: {
-    lead: {
-      multiplicity: false,
-      targetType: 'Employee',
-    },
-    peeps: {
-      multiplicity: true,
-      targetType: 'Employee',
-    },
-  },
-  primaryKeyApiName: 'employeeId',
-  primaryKeyType: 'integer',
-  properties: {
-    employeeId: {
-      multiplicity: false,
-      type: 'integer',
-      nullable: false,
-    },
-    class: {
-      multiplicity: false,
-      type: 'string',
-      nullable: true,
-    },
-    fullName: {
-      multiplicity: false,
-      type: 'string',
-      nullable: true,
-    },
-    office: {
-      multiplicity: false,
-      description: "The unique of the employee's assigned office. This is some more text.",
-      type: 'integer',
-      nullable: true,
-    },
-    startDate: {
-      multiplicity: false,
-      description: 'The date the employee was hired (most recently, if they were re-hired)',
-      type: 'datetime',
-      nullable: true,
-    },
-    employeeStatus: {
-      multiplicity: false,
-      description: 'TimeSeries of the status of the employee',
-      type: 'numericTimeseries',
-      nullable: true,
-    },
-  },
   type: 'object',
+  apiName: 'Employee',
+  osdkMetadata: $osdkMetadata,
 };

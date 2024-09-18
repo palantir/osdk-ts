@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type {
+  CompileTimeMetadata,
+  ObjectOrInterfaceDefinition,
+} from "@osdk/api";
 import type { AggregatableKeys } from "../aggregate/AggregatableKeys.js";
 import { TimeDurationMapping } from "../mapping/DurationMapping.js";
 import type { GroupByMapper } from "./GroupByMapper.js";
@@ -80,10 +83,10 @@ type TimestampDurationGroupBy = DurationGroupBy<TimestampTimeUnits>;
 type DatetimeDurationGroupBy = DurationGroupBy<DateTimeUnits>;
 
 type GroupByEntry<
-  Q extends ObjectOrInterfaceDefinition<any, any>,
+  Q extends ObjectOrInterfaceDefinition,
   P extends AggregatableKeys<Q>,
-> = Q["properties"][P]["type"] extends keyof GroupByMapper
-  ? GroupByMapper[Q["properties"][P]["type"]]
+> = CompileTimeMetadata<Q>["properties"][P]["type"] extends keyof GroupByMapper
+  ? GroupByMapper[CompileTimeMetadata<Q>["properties"][P]["type"]]
   : never;
 
 export type AllGroupByValues = GroupByMapper[keyof GroupByMapper];

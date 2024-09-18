@@ -14,21 +14,29 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
+import type {
+  MinObjectDef,
+  ObjectOrInterfaceDefinition,
+  PrimaryKeyTypes,
+} from "@osdk/api";
+import type { PropertyValueWireToClient } from "./mapping/PropertyValueMapping.js";
 import type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
 
 export type OsdkBase<
-  Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
+  Q extends ObjectOrInterfaceDefinition,
 > = {
-  readonly $apiName: Q["apiName"] & {
-    __OsdkType?: Q["apiName"];
-  };
+  readonly $apiName: Q["apiName"];
 
   readonly $objectType: string;
 
-  readonly $primaryKey: Q extends ObjectTypeDefinition<any>
-    ? OsdkObjectPrimaryKeyType<Q>
-    : (string | number);
+  readonly $primaryKey: PrimaryKeyType<Q>;
 
   readonly $title: string | undefined;
 };
+
+export type PrimaryKeyType<Q extends ObjectOrInterfaceDefinition> =
+  & (Q extends MinObjectDef<any, any> ? OsdkObjectPrimaryKeyType<Q>
+    : unknown)
+  // if the type is `unknown` then the next line will
+  // restrict it down to all valid primary key types
+  & PropertyValueWireToClient[PrimaryKeyTypes];

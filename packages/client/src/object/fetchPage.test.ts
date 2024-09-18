@@ -15,8 +15,8 @@
  */
 
 import type {
+  MinObjectDef,
   ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition,
 } from "@osdk/api";
 import type {
   FetchPageArgs,
@@ -45,7 +45,7 @@ describe(fetchPage, () => {
   it("infers select properly", () => {
     // this helper lets us get return types of functions that are generic
     class Helper<
-      T extends ObjectTypeDefinition<any, any>,
+      T extends MinObjectDef<any, any>,
       const A extends FetchPageArgs<T>,
     > {
       public fetchPage<
