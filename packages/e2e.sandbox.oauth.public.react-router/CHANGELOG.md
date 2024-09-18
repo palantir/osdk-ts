@@ -1,5 +1,12 @@
 # @osdk/e2e.sandbox.oauth.public.react-router
 
+## 0.1.0-beta.1
+
+### Patch Changes
+
+- Updated dependencies [64818dc]
+  - @osdk/client@2.0.0-beta.8
+
 ## 0.1.0-beta.0
 
 ### Patch Changes

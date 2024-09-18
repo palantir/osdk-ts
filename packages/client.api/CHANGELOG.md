@@ -1,5 +1,15 @@
 # @osdk/client.api
 
+## 2.0.0-beta.8
+
+### Minor Changes
+
+- 64818dc: Drop support for internal gateway package
+
+### Patch Changes
+
+- @osdk/api@2.0.0-beta.8
+
 ## 2.0.0-beta.7
 
 ### Minor Changes

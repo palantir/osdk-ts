@@ -1,5 +1,14 @@
 # @osdk/e2e.generated.api-namespace.dep
 
+## 1.0.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [64818dc]
+  - @osdk/client.api@2.0.0-beta.8
+  - @osdk/client@2.0.0-beta.8
+  - @osdk/api@2.0.0-beta.8
+
 ## 1.0.0-beta.7
 
 ### Patch Changes

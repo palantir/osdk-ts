@@ -1,5 +1,11 @@
 # @osdk/shared.net
 
+## 2.0.0-beta.1
+
+### Major Changes
+
+- 64818dc: Drop support for internal gateway package
+
 ## 1.13.0-beta.0
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @osdk/generator
 
+## 2.0.0-beta.8
+
+### Minor Changes
+
+- 96ea876: Adding js docs for actions so you can hover and see params and description.
+
+### Patch Changes
+
+- @osdk/api@2.0.0-beta.8
+- @osdk/internal.foundry.core@0.2.0-beta.5
+- @osdk/generator-converters@2.0.0-beta.8
+
 ## 2.0.0-beta.7
 
 ### Minor Changes

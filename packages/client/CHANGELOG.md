@@ -1,5 +1,19 @@
 # @osdk/client
 
+## 2.0.0-beta.8
+
+### Minor Changes
+
+- 64818dc: Drop support for internal gateway package
+
+### Patch Changes
+
+- Updated dependencies [64818dc]
+  - @osdk/client.api@2.0.0-beta.8
+  - @osdk/api@2.0.0-beta.8
+  - @osdk/generator-converters@2.0.0-beta.8
+  - @osdk/client.unstable@2.0.0-beta.8
+
 ## 2.0.0-beta.7
 
 ### Minor Changes
