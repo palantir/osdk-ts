@@ -1,5 +1,12 @@
 # @osdk/api
 
+## 2.0.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [64818dc]
+  - @osdk/shared.net@2.0.0-beta.1
+
 ## 2.0.0-beta.7
 
 ### Major Changes

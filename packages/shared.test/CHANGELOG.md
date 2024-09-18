@@ -1,5 +1,18 @@
 # @osdk/shared.test
 
+## 1.7.0-beta.4
+
+### Minor Changes
+
+- 64818dc: Drop support for internal gateway package
+
+### Patch Changes
+
+- @osdk/api@2.0.0-beta.8
+- @osdk/internal.foundry.core@0.2.0-beta.5
+- @osdk/internal.foundry.ontologies@0.2.0-beta.5
+- @osdk/internal.foundry.ontologiesv2@0.2.0-beta.5
+
 ## 1.7.0-beta.3
 
 ### Patch Changes

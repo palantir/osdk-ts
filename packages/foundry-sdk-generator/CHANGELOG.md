@@ -1,5 +1,24 @@
 # @osdk/foundry-sdk-generator
 
+## 2.0.0-beta.8
+
+### Minor Changes
+
+- 45b8178: Generation now works with or without https prefix on stack name
+
+### Patch Changes
+
+- Updated dependencies [96ea876]
+- Updated dependencies [64818dc]
+  - @osdk/generator@2.0.0-beta.8
+  - @osdk/shared.net@2.0.0-beta.1
+  - @osdk/client.api@2.0.0-beta.8
+  - @osdk/client@2.0.0-beta.8
+  - @osdk/api@2.0.0-beta.8
+  - @osdk/internal.foundry.core@0.2.0-beta.5
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.5
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.5
+
 ## 2.0.0-beta.7
 
 ### Patch Changes

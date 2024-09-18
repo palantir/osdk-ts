@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.8.0-beta.4
+
+### Minor Changes
+
+- 7282cf6: Add Default Type Classes to maker
+- 64818dc: Drop support for internal gateway package
+
+### Patch Changes
+
+- @osdk/api@2.0.0-beta.8
+
 ## 0.8.0-beta.3
 
 ### Minor Changes
