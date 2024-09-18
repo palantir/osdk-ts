@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-export type InterfaceMetadata = {
-  displayName: string;
-  description?: string;
-  rid: string;
-  // TODO: Add links, extendsInterfaces, and Properties
-};
+import type {
+  ActionDefinition,
+  InterfaceDefinition,
+  ObjectTypeDefinition,
+  QueryDefinition,
+} from "@osdk/api";
+
+export type Definition =
+  | ObjectTypeDefinition<any, any>
+  | InterfaceDefinition<any, any>
+  | ActionDefinition<any, any, any>
+  | QueryDefinition<any, any, any>;

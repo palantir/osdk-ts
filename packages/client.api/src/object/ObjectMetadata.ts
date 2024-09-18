@@ -14,20 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypePropertyDefinition,
-  WirePropertyTypes,
-} from "@osdk/api";
-
 type ObjectTypeVisibility = "NORMAL" | "PROMINENT" | "HIDDEN";
-
-export type ReleaseStatus = "ACTIVE" | "EXPERIMENTAL" | "DEPRECATED";
-
-interface ObjectProperty {
-  description?: string;
-  displayName?: string;
-  dataType: WirePropertyTypes;
-}
 
 type BlueprintIcon = {
   color: string;
@@ -41,8 +28,7 @@ export type ObjectMetadata = {
   displayName: string;
   icon: Icon;
   pluralDisplayName: string;
-  properties: Record<string, ObjectTypePropertyDefinition>;
-  releaseStatus: ReleaseStatus;
   rid: string;
   visibility?: ObjectTypeVisibility;
+  // TODO: Add Links, Interfaces, and Properties
 };

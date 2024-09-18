@@ -15,6 +15,7 @@
  */
 
 import type {
+  ActionNotFound,
   ApplyActionFailed,
   AttachmentNotFound,
   AttachmentSizeExceededLimit,
@@ -98,6 +99,17 @@ export function QueryNotFoundError(queryApiName: string): QueryNotFound {
     errorInstanceId,
     parameters: {
       query: queryApiName,
+    },
+  };
+}
+
+export function ActionNotFoundError(): ActionNotFound {
+  return {
+    errorCode: "NOT_FOUND",
+    errorName: "ActionNotFound",
+    errorInstanceId,
+    parameters: {
+      actionRid: "",
     },
   };
 }

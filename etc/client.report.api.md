@@ -6,6 +6,7 @@
 
 import type { ActionDefinition } from '@osdk/api';
 import { ActionEditResponse } from '@osdk/client.api';
+import type { ActionMetadata } from '@osdk/client.api';
 import type { ActionParam } from '@osdk/client.api';
 import type { ActionParameterDefinition } from '@osdk/api';
 import { ActionReturnTypeForOptions } from '@osdk/client.api';
@@ -16,11 +17,14 @@ import type { Attachment } from '@osdk/client.api';
 import type { AttachmentUpload } from '@osdk/client.api';
 import type { DataValueClientToWire } from '@osdk/client.api';
 import type { DataValueWireToClient } from '@osdk/client.api';
+import type { Definition } from '@osdk/client.api';
 import type { InterfaceDefinition } from '@osdk/api';
+import type { InterfaceMetadata } from '@osdk/client.api';
 import { InterfaceObjectSet } from '@osdk/client.api';
 import { isOk } from '@osdk/client.api';
 import type { Logger } from 'pino';
 import type { ObjectActionDataType } from '@osdk/api';
+import type { ObjectMetadata } from '@osdk/client.api';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
 import { ObjectSet } from '@osdk/client.api';
@@ -33,6 +37,7 @@ import { PageResult } from '@osdk/client.api';
 import { PalantirApiError } from '@osdk/shared.net.errors';
 import type { QueryDataTypeDefinition } from '@osdk/api';
 import type { QueryDefinition } from '@osdk/api';
+import type { QueryMetadata } from '@osdk/client.api';
 import type { QueryParam } from '@osdk/client.api';
 import type { QueryResult } from '@osdk/client.api';
 import { Result } from '@osdk/client.api';
@@ -71,6 +76,8 @@ export interface Client extends SharedClient<MinimalClient> {
     //
     // (undocumented)
     <Q extends QueryDefinition<any, any, any>>(o: Q): QuerySignatureFromDef<Q>;
+    // (undocumented)
+    fetchMetadata<Q extends Definition>(o: Q): Promise<Q extends ObjectTypeDefinition<any, any> ? ObjectMetadata : Q extends InterfaceDefinition<any, any> ? InterfaceMetadata : Q extends ActionDefinition<any, any, any> ? ActionMetadata : Q extends QueryDefinition<any, any, any> ? QueryMetadata : never>;
 }
 
 // @public

@@ -4,6 +4,7 @@
 
 ```ts
 
+import type { ActionDefinition } from '@osdk/api';
 import type { BBox } from 'geojson';
 import type { BrandedApiName } from '@osdk/api';
 import type { InterfaceDefinition } from '@osdk/api';
@@ -15,6 +16,7 @@ import type { ObjectTypeLinkKeysFrom2 } from '@osdk/api';
 import type { ObjectTypePropertyDefinition } from '@osdk/api';
 import type { Point } from 'geojson';
 import type { Polygon } from 'geojson';
+import type { QueryDefinition } from '@osdk/api';
 import type { SingleKeyObject } from 'type-fest';
 
 // Warning: (ae-forgotten-export) The symbol "ActionResults" needs to be exported by the entry point index.d.ts
@@ -24,7 +26,9 @@ export type ActionEditResponse = ActionResults;
 
 // @public (undocumented)
 export type ActionMetadata = {
+    description?: string;
     displayName?: string;
+    rid: string;
 };
 
 // @public
@@ -274,6 +278,9 @@ export interface DataValueWireToClient {
 export type DefaultToFalse<B extends boolean | undefined> = false extends B ? false : undefined extends B ? false : true;
 
 // @public (undocumented)
+export type Definition = ObjectTypeDefinition<any, any> | InterfaceDefinition<any, any> | ActionDefinition<any, any, any> | QueryDefinition<any, any, any>;
+
+// @public (undocumented)
 export const DistanceUnitMapping: {
     centimeter: "CENTIMETERS";
     centimeters: "CENTIMETERS";
@@ -395,6 +402,8 @@ export type GroupByRange<T> = [T, T];
 // @public (undocumented)
 export type InterfaceMetadata = {
     displayName: string;
+    description?: string;
+    rid: string;
 };
 
 // @public (undocumented)
@@ -454,10 +463,11 @@ export type NumericAggregateOption = "min" | "max" | "sum" | "avg" | "approximat
 
 // @public (undocumented)
 export type ObjectMetadata = {
-    displayName: string;
-    pluralDisplayName: string;
     description?: string;
+    displayName: string;
     icon: Icon;
+    pluralDisplayName: string;
+    rid: string;
     visibility?: ObjectTypeVisibility;
 };
 
@@ -644,7 +654,9 @@ export interface PropertyValueWireToClient {
 
 // @public (undocumented)
 export type QueryMetadata = {
+    description?: string;
     displayName?: string;
+    rid: string;
 };
 
 // @public
@@ -806,8 +818,8 @@ export type WhereClause<T extends ObjectOrInterfaceDefinition<any, any>> = OrWhe
 
 // Warnings were encountered during analysis:
 //
-// src/object/ObjectMetadata.ts:30:3 - (ae-forgotten-export) The symbol "Icon" needs to be exported by the entry point index.d.ts
-// src/object/ObjectMetadata.ts:31:3 - (ae-forgotten-export) The symbol "ObjectTypeVisibility" needs to be exported by the entry point index.d.ts
+// src/object/ObjectMetadata.ts:29:3 - (ae-forgotten-export) The symbol "Icon" needs to be exported by the entry point index.d.ts
+// src/object/ObjectMetadata.ts:32:3 - (ae-forgotten-export) The symbol "ObjectTypeVisibility" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

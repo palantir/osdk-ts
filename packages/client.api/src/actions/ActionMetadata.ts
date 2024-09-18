@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-type ObjectTypeVisibility = "NORMAL" | "PROMINENT" | "HIDDEN";
-
-type BlueprintIcon = {
-  color: string;
-  name: string;
-};
-
-type Icon = BlueprintIcon;
-
 export type ActionMetadata = {
+  description?: string;
   displayName?: string;
+  rid: string;
+  // TODO: Add Parameters
 };

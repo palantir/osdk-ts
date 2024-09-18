@@ -22,6 +22,7 @@ import type {
 } from "@osdk/api";
 import type {
   ActionMetadata,
+  Definition,
   InterfaceMetadata,
   ObjectMetadata,
   QueryMetadata,
@@ -30,23 +31,17 @@ import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "./util/addUserAgentAndRequestContextHeaders.js";
 
-type FetchMetadataArgs =
-  | ObjectTypeDefinition<any>
-  | InterfaceDefinition<any>
-  | ActionDefinition<any, any>
-  | QueryDefinition<any, any>;
-
 /** @internal */
 export const fetchMetadataInternal = async <
-  Q extends FetchMetadataArgs,
+  Q extends Definition,
 >(
   client: MinimalClient,
   definition: Q,
 ): Promise<
-  Q extends ObjectTypeDefinition<any> ? ObjectMetadata
-    : Q extends InterfaceDefinition<any> ? InterfaceDefinition
+  Q extends ObjectTypeDefinition<any, any> ? ObjectMetadata
+    : Q extends InterfaceDefinition<any, any> ? InterfaceMetadata
     : Q extends ActionDefinition<any, any, any> ? ActionMetadata
-    : Q extends QueryDefinition<any, any> ? QueryMetadata
+    : Q extends QueryDefinition<any, any, any> ? QueryMetadata
     : never
 > => {
   if (definition.type === "object") {
@@ -77,6 +72,7 @@ const fetchObjectMetadata = async <Q extends ObjectTypeDefinition<any>>(
     visibility: response.objectType.visibility,
     pluralDisplayName: response.objectType.pluralDisplayName,
     icon: response.objectType.icon,
+    rid: response.objectType.rid,
   };
 };
 
@@ -90,10 +86,15 @@ const fetchInterfaceMetadata = async <Q extends InterfaceDefinition<any>>(
     interfaceType.apiName,
     { preview: true },
   );
-  return {};
+
+  return {
+    displayName: response.displayName,
+    description: response.description,
+    rid: response.rid,
+  };
 };
 
-const fetchActionMetadata = async <Q extends ActionDefinition<any, any>>(
+const fetchActionMetadata = async <Q extends ActionDefinition<any, any, any>>(
   client: MinimalClient,
   actionType: Q,
 ): Promise<ActionMetadata> => {
@@ -102,10 +103,14 @@ const fetchActionMetadata = async <Q extends ActionDefinition<any, any>>(
     await client.ontologyRid,
     actionType.apiName,
   );
-  return { c: "hi" };
+  return {
+    displayName: response.displayName,
+    description: response.description,
+    rid: response.rid,
+  };
 };
 
-const fetchQueryMetadata = async <Q extends QueryDefinition<any, any>>(
+const fetchQueryMetadata = async <Q extends QueryDefinition<any, any, any>>(
   client: MinimalClient,
   queryType: Q,
 ): Promise<QueryMetadata> => {
@@ -114,5 +119,9 @@ const fetchQueryMetadata = async <Q extends QueryDefinition<any, any>>(
     await client.ontologyRid,
     queryType.apiName,
   );
-  return { d: "hi" };
+  return {
+    displayName: response.displayName,
+    description: response.description,
+    rid: response.rid,
+  };
 };

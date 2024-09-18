@@ -20,11 +20,13 @@ import type { RequestHandler } from "msw";
 import { http as rest, HttpResponse } from "msw";
 import invariant from "tiny-invariant";
 import {
+  ActionNotFoundError,
   InvalidRequest,
   LinkTypeNotFound,
   ObjectNotFoundError,
   ObjectTypeDoesNotExistError,
   OntologyNotFoundError,
+  QueryNotFoundError,
 } from "../errors.js";
 import {
   defaultOntology,
@@ -153,6 +155,38 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
         req.params.ontologyApiName,
         req.params.objectTypeApiName,
       );
+    },
+  ),
+
+  handleOpenApiCall(
+    OntologiesV2.ActionTypesV2.getActionTypeV2,
+    ["ontologyApiName", "actionTypeApiName"],
+    async (req) => {
+      const ontology = getOntology(req.params.ontologyApiName);
+      const actionType = ontology.actionTypes[req.params.actionTypeApiName];
+      if (actionType === undefined) {
+        throw new OpenApiCallError(
+          404,
+          ActionNotFoundError(),
+        );
+      }
+      return actionType;
+    },
+  ),
+
+  handleOpenApiCall(
+    OntologiesV2.QueryTypes.getQueryTypeV2,
+    ["ontologyApiName", "queryTypeApiName"],
+    async (req) => {
+      const ontology = getOntology(req.params.ontologyApiName);
+      const queryType = ontology.queryTypes[req.params.queryTypeApiName];
+      if (queryType === undefined) {
+        throw new OpenApiCallError(
+          404,
+          QueryNotFoundError(req.params.queryTypeApiName),
+        );
+      }
+      return queryType;
     },
   ),
 

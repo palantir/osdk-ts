@@ -19,6 +19,7 @@ import { fooSpt } from "./spts.js";
 
 export const FooInterface: InterfaceType = {
   apiName: "FooInterface",
+  description: "Interface for Foo",
   displayName: "Foo Interface",
   rid: "ri.interface.main.interface.1",
   extendsInterfaces: [],

@@ -16,11 +16,18 @@
 
 import type {
   ActionDefinition,
+  InterfaceDefinition,
   ObjectTypeDefinition,
   QueryDefinition,
   VersionBound,
 } from "@osdk/api";
-import type { ObjectSet } from "@osdk/client.api";
+import type {
+  ActionMetadata,
+  Definition,
+  InterfaceMetadata,
+  ObjectMetadata,
+  QueryMetadata,
+} from "@osdk/client.api";
 import type { SharedClient } from "@osdk/shared.client";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
@@ -51,8 +58,14 @@ export interface Client extends SharedClient<MinimalClient> {
   ): QuerySignatureFromDef<Q>;
 
   fetchMetadata<
-    Q extends ObjectTypeDefinition<any, any>,
-  >(o: Q): Promise<any>;
+    Q extends Definition,
+  >(o: Q): Promise<
+    Q extends ObjectTypeDefinition<any, any> ? ObjectMetadata
+      : Q extends InterfaceDefinition<any, any> ? InterfaceMetadata
+      : Q extends ActionDefinition<any, any, any> ? ActionMetadata
+      : Q extends QueryDefinition<any, any, any> ? QueryMetadata
+      : never
+  >;
 }
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.

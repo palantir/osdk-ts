@@ -3,8 +3,8 @@
 exports[`Load Ontologies Metadata > Loads object and action types using only specified link types 1`] = `
 {
   "actionTypes": {
-    "promote-employee": {
-      "apiName": "promote-employee",
+    "promoteEmployee": {
+      "apiName": "promoteEmployee",
       "description": "Update an employee's title and compensation",
       "operations": [
         {
@@ -117,6 +117,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
         "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
         "status": "ACTIVE",
         "titleProperty": "fullName",
+        "visibility": "NORMAL",
       },
       "sharedPropertyTypeMapping": {
         "fooSpt": "fullName",
@@ -182,8 +183,8 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
 exports[`Load Ontologies Metadata > Loads object and action types without link types 1`] = `
 {
   "actionTypes": {
-    "promote-employee": {
-      "apiName": "promote-employee",
+    "promoteEmployee": {
+      "apiName": "promoteEmployee",
       "description": "Update an employee's title and compensation",
       "operations": [
         {
@@ -279,6 +280,7 @@ exports[`Load Ontologies Metadata > Loads object and action types without link t
         "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
         "status": "ACTIVE",
         "titleProperty": "fullName",
+        "visibility": "NORMAL",
       },
       "sharedPropertyTypeMapping": {
         "fooSpt": "fullName",
