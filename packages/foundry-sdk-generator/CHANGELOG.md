@@ -1,5 +1,11 @@
 # @osdk/foundry-sdk-generator
 
+## 1.3.6
+
+### Patch Changes
+
+- 47b5a58: Update beta dependency to fix beta package generation
+
 ## 1.3.5
 
 ### Patch Changes
