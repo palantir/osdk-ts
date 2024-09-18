@@ -22,6 +22,11 @@ import type { SingleKeyObject } from 'type-fest';
 // @public (undocumented)
 export type ActionEditResponse = ActionResults;
 
+// @public (undocumented)
+export type ActionMetadata = {
+    displayName?: string;
+};
+
 // @public
 export namespace ActionParam {
     export type ObjectSetType<T extends ObjectTypeDefinition<any>> = BaseObjectSet<T>;
@@ -388,6 +393,11 @@ export type GroupByClause<Q extends ObjectOrInterfaceDefinition<any, any>> = {
 export type GroupByRange<T> = [T, T];
 
 // @public (undocumented)
+export type InterfaceMetadata = {
+    displayName: string;
+};
+
+// @public (undocumented)
 export interface InterfaceObjectSet<Q extends InterfaceDefinition<any, any>> extends MinimalObjectSet<Q> {
 }
 
@@ -441,6 +451,15 @@ export type NullabilityAdherenceDefault = "throw";
 
 // @public (undocumented)
 export type NumericAggregateOption = "min" | "max" | "sum" | "avg" | "approximateDistinct" | "exactDistinct";
+
+// @public (undocumented)
+export type ObjectMetadata = {
+    displayName: string;
+    pluralDisplayName: string;
+    description?: string;
+    icon: Icon;
+    visibility?: ObjectTypeVisibility;
+};
 
 // @public (undocumented)
 export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED = any> extends MinimalObjectSet<Q> {
@@ -623,6 +642,11 @@ export interface PropertyValueWireToClient {
     timestamp: string;
 }
 
+// @public (undocumented)
+export type QueryMetadata = {
+    displayName?: string;
+};
+
 // @public
 export namespace QueryParam {
     export type ObjectSetType<T extends ObjectTypeDefinition<any>> = BaseObjectSet<T>;
@@ -779,6 +803,11 @@ export type ValidToFrom<FROM extends ObjectTypeDefinition<any, any> | InterfaceD
 export type WhereClause<T extends ObjectOrInterfaceDefinition<any, any>> = OrWhereClause<T> | AndWhereClause<T> | NotWhereClause<T> | {
     [P in keyof T["properties"]]?: FilterFor<T["properties"][P]>;
 };
+
+// Warnings were encountered during analysis:
+//
+// src/object/ObjectMetadata.ts:30:3 - (ae-forgotten-export) The symbol "Icon" needs to be exported by the entry point index.d.ts
+// src/object/ObjectMetadata.ts:31:3 - (ae-forgotten-export) The symbol "ObjectTypeVisibility" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

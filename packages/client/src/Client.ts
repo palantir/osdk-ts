@@ -49,6 +49,10 @@ export interface Client extends SharedClient<MinimalClient> {
   <Q extends QueryDefinition<any, any, any>>(
     o: Q,
   ): QuerySignatureFromDef<Q>;
+
+  fetchMetadata<
+    Q extends ObjectTypeDefinition<any, any>,
+  >(o: Q): Promise<any>;
 }
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.

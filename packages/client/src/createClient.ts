@@ -28,6 +28,7 @@ import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import { applyAction } from "./actions/applyAction.js";
 import type { Client } from "./Client.js";
 import { createMinimalClient } from "./createMinimalClient.js";
+import { fetchMetadataInternal } from "./fetchMetadata.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
@@ -119,11 +120,19 @@ export function createClientInternal(
     }
   }
 
+  const fetchMetadata = fetchMetadataInternal.bind(
+    undefined,
+    clientCtx,
+  );
+
   const client: Client = Object.defineProperties<Client>(
     clientFn as Client,
     {
       [symbolClientContext]: {
         value: clientCtx,
+      },
+      fetchMetadata: {
+        value: fetchMetadata,
       },
     } satisfies Record<keyof Client, PropertyDescriptor>,
   );
