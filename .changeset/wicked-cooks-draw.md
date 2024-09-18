@@ -9,13 +9,11 @@
 "@osdk/e2e.sandbox.catchall": patch
 "@osdk/foundry.filesystem": patch
 "@osdk/foundry.publicapis": patch
-"@osdk/gateway-generator": patch
 "@osdk/foundry.datasets": patch
 "@osdk/internal.foundry": patch
 "@osdk/foundry.admin": patch
 "@osdk/foundry.core": patch
 "@osdk/foundry": patch
-"@osdk/gateway": patch
 "@osdk/client": patch
 ---
 

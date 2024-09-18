@@ -36,6 +36,6 @@ export interface AttachmentUpload extends Blob {
 export interface AttachmentMetadata {
   rid: string;
   filename: string;
-  sizeBytes: string;
+  sizeBytes: number;
   mediaType: string;
 }

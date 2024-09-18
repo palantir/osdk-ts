@@ -1,6 +1,6 @@
 {
   "name": "@osdk/maker",
-  "version": "0.8.0-beta.3",
+  "version": "0.8.0-beta.4",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -22,12 +22,12 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "test": "vitest run",
     "transpile": "monorepo.tool.transpile",
     "typecheck": "monorepo.tool.typecheck esm"
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
-    "@osdk/gateway": "workspace:~",
     "consola": "^3.2.3",
     "jiti": "^1.21.6",
     "tiny-invariant": "^1.3.3",
@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "@osdk/client.unstable": "workspace:~",
+    "@osdk/internal.foundry.core": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",

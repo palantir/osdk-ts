@@ -18,11 +18,11 @@ import type {
   OntologyIrInterfaceType,
   SharedPropertyTypeGothamMapping,
 } from "@osdk/client.unstable";
-import type * as Gateway from "@osdk/gateway/types";
+import type { OntologyFullMetadata } from "@osdk/internal.foundry.core";
 
 export interface Ontology extends
   Omit<
-    Gateway.OntologyFullMetadata,
+    OntologyFullMetadata,
     "ontology" | "sharedPropertyTypes" | "interfaceTypes"
   >
 {
@@ -49,7 +49,10 @@ export interface PropertyType {
   array?: boolean;
   description?: string;
   displayName?: string;
+  typeClasses?: TypeClass[];
 }
+
+type TypeClass = { kind: string; name: string };
 
 export interface SharedPropertyType extends PropertyType {
   apiName: string;

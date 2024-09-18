@@ -14,28 +14,10 @@
  * limitations under the License.
  */
 
-import { request } from "@osdk/gateway";
-import {
-  getAttachment,
-  getAttachmentContent,
-  getAttachmentContentV2,
-  getAttachmentsV2,
-  getFirstPoint,
-  getLastPoint,
-  getLinkedObjectV2,
-  getObjectV2,
-  getOntology as getOntologyOpenApiCall,
-  getOutgoingLinkType,
-  listLinkedObjectsV2,
-  listObjectsV2,
-  listObjectTypes,
-  listObjectTypesV2,
-  listOntologies,
-  listOutgoingLinkTypes,
-  streamPoints,
-  uploadAttachment,
-} from "@osdk/gateway/requests";
-import type { LinkTypeSide } from "@osdk/gateway/types";
+import type { LinkTypeSide } from "@osdk/internal.foundry.core";
+import * as OntologiesV1 from "@osdk/internal.foundry.ontologies";
+import { Attachments as AttachmentsV1 } from "@osdk/internal.foundry.ontologies";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import stableStringify from "json-stable-stringify";
 import type { HttpResponseResolver, PathParams, RequestHandler } from "msw";
 import type { BaseAPIError } from "../BaseError.js";
@@ -91,55 +73,71 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
   /**
    * List ontologies
    */
-  handleOpenApiCall(listOntologies, [], async () => {
-    return {
-      data: [defaultOntology],
-    };
-  }),
+  handleOpenApiCall(
+    OntologiesV1.Ontologies.listOntologies,
+    [],
+    async () => {
+      return {
+        data: [defaultOntology],
+      };
+    },
+  ),
 
   /**
    * Get specified Ontology
    */
-  handleOpenApiCall(getOntologyOpenApiCall, ["ontologyRid"], async req => {
-    return defaultOntology;
-  }),
+  handleOpenApiCall(
+    OntologiesV1.Ontologies.getOntology,
+    ["ontologyRid"],
+    async req => {
+      return defaultOntology;
+    },
+  ),
 
   /**
    * List objectTypes
    */
-  handleOpenApiCall(listObjectTypes, ["ontologyRid"], async req => {
-    getOntology(req.params.ontologyRid as string);
+  handleOpenApiCall(
+    OntologiesV1.ObjectTypes.listObjectTypes,
+    ["ontologyRid"],
+    async req => {
+      getOntology(req.params.ontologyRid as string);
 
-    return {
-      data: [
-        employeeObjectType,
-        objectTypeWithAllPropertyTypes,
-        officeObjectType,
-        objectTypeWithTimestampPrimaryKey,
-        equipmentObjectType,
-      ],
-    };
-  }),
+      return {
+        data: [
+          employeeObjectType,
+          objectTypeWithAllPropertyTypes,
+          officeObjectType,
+          objectTypeWithTimestampPrimaryKey,
+          equipmentObjectType,
+        ],
+      };
+    },
+  ),
 
   /**
    * List objectTypes V2
    */
-  handleOpenApiCall(listObjectTypesV2, ["ontologyApiName"], async req => {
-    // will throw if bad name
-    getOntology(req.params.ontologyApiName as string);
+  handleOpenApiCall(
+    OntologiesV2.ObjectTypesV2.listObjectTypesV2,
+    ["ontologyApiName"],
+    async req => {
+      // will throw if bad name
+      getOntology(req.params.ontologyApiName as string);
 
-    return {
-      data: ObjectTypesV2,
-    };
-  }),
+      return {
+        data: ObjectTypesV2,
+      };
+    },
+  ),
 
   /**
    * Load object
    */
   handleOpenApiCall(
-    getObjectV2,
+    OntologiesV2.OntologyObjectsV2.getObjectV2,
     ["ontologyApiName", "objectType", "primaryKey"],
-    req => {
+    async req => {
       // will throw if bad name
       getOntology(req.params.ontologyApiName as string);
 
@@ -172,7 +170,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
    * Load all objects
    */
   handleOpenApiCall(
-    listObjectsV2,
+    OntologiesV2.OntologyObjectsV2.listObjectsV2,
     ["ontologyApiName", "objectType"],
     async req => {
       const objectType = req.params.objectType;
@@ -199,12 +197,13 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
         objectType,
         paginationParams.pageSize,
         paginationParams.pageToken,
+        true,
       );
 
       if (
         req.params.ontologyApiName === defaultOntology.apiName && loadObjects
       ) {
-        return filterObjectsProperties(loadObjects, url);
+        return filterObjectsProperties(loadObjects, url, true);
       }
       throw new OpenApiCallError(400, InvalidRequest("Invalid Request"));
     },
@@ -213,33 +212,37 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
   /**
    * Load firstPoint
    */
-  handleOpenApiCall(getFirstPoint, [
-    "ontologyApiName",
-    "objectType",
-    "primaryKey",
-    "propertyName",
-  ], async req => {
-    const pointParams = {
-      primaryKey: req.params.primaryKey,
-      propertyName: req.params.propertyName,
-    };
-    const firstPointResp =
-      firstPointRequestHandlers[JSON.stringify(pointParams)];
-    if (
-      (req.params.ontologyApiName === defaultOntology.apiName
-        || req.params.ontologyApiName === defaultOntology.rid)
-      && req.params.objectType === employeeObjectType.apiName
-    ) {
-      return firstPointResp;
-    }
-    throw new OpenApiCallError(400, InvalidRequest("Invalid request"));
-  }),
+  handleOpenApiCall(
+    OntologiesV2.TimeSeriesPropertiesV2.getFirstPoint,
+    [
+      "ontologyApiName",
+      "objectType",
+      "primaryKey",
+      "propertyName",
+    ],
+    async req => {
+      const pointParams = {
+        primaryKey: req.params.primaryKey,
+        propertyName: req.params.propertyName,
+      };
+      const firstPointResp =
+        firstPointRequestHandlers[JSON.stringify(pointParams)];
+      if (
+        (req.params.ontologyApiName === defaultOntology.apiName
+          || req.params.ontologyApiName === defaultOntology.rid)
+        && req.params.objectType === employeeObjectType.apiName
+      ) {
+        return firstPointResp;
+      }
+      throw new OpenApiCallError(400, InvalidRequest("Invalid request"));
+    },
+  ),
 
   /**
    * Load lastPoint
    */
   handleOpenApiCall(
-    getLastPoint,
+    OntologiesV2.TimeSeriesPropertiesV2.getLastPoint,
     ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
     async req => {
       const pointParams = {
@@ -263,7 +266,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
    * stream points
    */
   handleOpenApiCall(
-    streamPoints,
+    OntologiesV2.TimeSeriesPropertiesV2.streamPoints,
     ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
     handleStreamPoints,
   ),
@@ -271,57 +274,61 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
   /**
    * Get linkType
    */
-  handleOpenApiCall(getOutgoingLinkType, [
-    "ontologyRid",
-    "objectType",
-    "linkType",
-  ], async req => {
-    // will throw if bad name
-    getOntology(req.params.ontologyRid);
+  handleOpenApiCall(
+    OntologiesV1.ObjectTypes.getOutgoingLinkType,
+    [
+      "ontologyRid",
+      "objectType",
+      "linkType",
+    ],
+    async req => {
+      // will throw if bad name
+      getOntology(req.params.ontologyRid);
 
-    const objectTypeApiName = req.params.objectType;
-    const linkTypeApiName = req.params.linkType;
-    if (
-      typeof objectTypeApiName !== "string"
-      || typeof linkTypeApiName !== "string"
-    ) {
+      const objectTypeApiName = req.params.objectType;
+      const linkTypeApiName = req.params.linkType;
+      if (
+        typeof objectTypeApiName !== "string"
+        || typeof linkTypeApiName !== "string"
+      ) {
+        throw new OpenApiCallError(
+          400,
+          InvalidRequest(
+            "Invalid parameters for objectTypeApiName linkTypeApiName",
+          ),
+        );
+      }
+
+      if (linkTypesResponseMap[objectTypeApiName]) {
+        const linkTypes: ReadonlyArray<{
+          apiName: string;
+          status: string;
+          objectTypeApiName: string;
+          cardinality: string;
+        }> = linkTypesResponseMap[objectTypeApiName].data;
+        const foundLinkType = linkTypes.find(linkType =>
+          linkType.apiName === linkTypeApiName
+        );
+
+        if (foundLinkType) {
+          return foundLinkType as LinkTypeSide;
+        }
+      }
+
       throw new OpenApiCallError(
         400,
-        InvalidRequest(
-          "Invalid parameters for objectTypeApiName linkTypeApiName",
-        ),
+        LinkTypeNotFound(objectTypeApiName, linkTypeApiName),
       );
-    }
-
-    if (linkTypesResponseMap[objectTypeApiName]) {
-      const linkTypes: ReadonlyArray<{
-        apiName: string;
-        status: string;
-        objectTypeApiName: string;
-        cardinality: string;
-      }> = linkTypesResponseMap[objectTypeApiName].data;
-      const foundLinkType = linkTypes.find(linkType =>
-        linkType.apiName === linkTypeApiName
-      );
-
-      if (foundLinkType) {
-        return foundLinkType as LinkTypeSide;
-      }
-    }
-
-    throw new OpenApiCallError(
-      400,
-      LinkTypeNotFound(objectTypeApiName, linkTypeApiName),
-    );
-  }),
+    },
+  ),
 
   /**
    * List linkTypes
    */
   handleOpenApiCall(
-    listOutgoingLinkTypes,
+    OntologiesV1.ObjectTypes.listOutgoingLinkTypes,
     ["ontologyRid", "objectType"],
-    req => {
+    async req => {
       // will throw if bad name
       getOntology(req.params.ontologyRid as string);
 
@@ -351,264 +358,297 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
   /**
    * List Linked Objects
    */
-  handleOpenApiCall(listLinkedObjectsV2, [
-    "ontologyApiName",
-    "objectType",
-    "primaryKey",
-    "linkType",
-  ], async req => {
-    // will throw if bad name
-    getOntology(req.params.ontologyApiName as string);
+  handleOpenApiCall(
+    OntologiesV2.LinkedObjectsV2.listLinkedObjectsV2,
+    [
+      "ontologyApiName",
+      "objectType",
+      "primaryKey",
+      "linkType",
+    ],
+    async req => {
+      // will throw if bad name
+      getOntology(req.params.ontologyApiName as string);
 
-    const primaryKey = req.params.primaryKey;
-    const linkType = req.params.linkType;
-    const objectType = req.params.objectType;
+      const primaryKey = req.params.primaryKey;
+      const linkType = req.params.linkType;
+      const objectType = req.params.objectType;
 
-    if (
-      typeof primaryKey !== "string" || typeof linkType !== "string"
-      || typeof objectType !== "string"
-    ) {
-      throw new OpenApiCallError(
-        400,
-        InvalidRequest("Invalid path parameters sent"),
+      if (
+        typeof primaryKey !== "string" || typeof linkType !== "string"
+        || typeof objectType !== "string"
+      ) {
+        throw new OpenApiCallError(
+          400,
+          InvalidRequest("Invalid path parameters sent"),
+        );
+      }
+
+      if (!linkResponseMap[objectType]) {
+        throw new OpenApiCallError(
+          400,
+          ObjectTypeDoesNotExistError(objectType),
+        );
+      }
+
+      if (!linkResponseMap[objectType][linkType]) {
+        throw new OpenApiCallError(
+          400,
+          LinkTypeNotFound(objectType, linkType),
+        );
+      }
+
+      if (!linkResponseMap[objectType][linkType][primaryKey]) {
+        return {
+          data: [],
+        };
+      }
+      return filterObjectsProperties(
+        linkResponseMap[objectType][linkType][primaryKey],
+        new URL(req.request.url),
+        false,
       );
-    }
-
-    if (!linkResponseMap[objectType]) {
-      throw new OpenApiCallError(
-        400,
-        ObjectTypeDoesNotExistError(objectType),
-      );
-    }
-
-    if (!linkResponseMap[objectType][linkType]) {
-      throw new OpenApiCallError(
-        400,
-        LinkTypeNotFound(objectType, linkType),
-      );
-    }
-
-    if (!linkResponseMap[objectType][linkType][primaryKey]) {
-      return {
-        data: [],
-      };
-    }
-    return filterObjectsProperties(
-      linkResponseMap[objectType][linkType][primaryKey],
-      new URL(req.request.url),
-    );
-  }),
+    },
+  ),
 
   /**
    * Get specific Linked Object
    */
-  handleOpenApiCall(getLinkedObjectV2, [
-    "ontologyApiName",
-    "objectType",
-    "primaryKey",
-    "linkType",
-    "targetPrimaryKey",
-  ], async req => {
-    // will throw if bad name
-    getOntology(req.params.ontologyApiName as string);
+  handleOpenApiCall(
+    OntologiesV2.LinkedObjectsV2.getLinkedObjectV2,
+    [
+      "ontologyApiName",
+      "objectType",
+      "primaryKey",
+      "linkType",
+      "targetPrimaryKey",
+    ],
+    async req => {
+      // will throw if bad name
+      getOntology(req.params.ontologyApiName as string);
 
-    const primaryKey = req.params.primaryKey;
-    const linkType = req.params.linkType;
-    const objectType = req.params.objectType;
-    const targetPrimaryKey = req.params.targetPrimaryKey;
+      const primaryKey = req.params.primaryKey;
+      const linkType = req.params.linkType;
+      const objectType = req.params.objectType;
+      const targetPrimaryKey = req.params.targetPrimaryKey;
 
-    if (
-      typeof primaryKey !== "string" || typeof linkType !== "string"
-      || typeof objectType !== "string"
-      || typeof targetPrimaryKey !== "string"
-    ) {
-      throw new OpenApiCallError(
-        400,
-        InvalidRequest("Invalid path parameters sent"),
+      if (
+        typeof primaryKey !== "string" || typeof linkType !== "string"
+        || typeof objectType !== "string"
+        || typeof targetPrimaryKey !== "string"
+      ) {
+        throw new OpenApiCallError(
+          400,
+          InvalidRequest("Invalid path parameters sent"),
+        );
+      }
+
+      if (!linkResponseMap[objectType]) {
+        throw new OpenApiCallError(
+          400,
+          ObjectTypeDoesNotExistError(objectType),
+        );
+      }
+
+      if (!linkResponseMap[objectType][linkType]) {
+        throw new OpenApiCallError(400, LinkTypeNotFound(objectType, linkType));
+      }
+
+      if (!linkResponseMap[objectType][linkType][primaryKey]) {
+        return {
+          data: [],
+        };
+      }
+
+      const object = linkResponseMap[objectType][linkType][primaryKey].data
+        .find((o: any) => o.__primaryKey.toString() === targetPrimaryKey);
+
+      if (!object) {
+        throw new OpenApiCallError(
+          404,
+          ObjectNotFoundError(
+            linkResponseMap[objectType][linkType][primaryKey].data[0]
+              ?.__apiName
+              ?? `${objectType} -> ${linkType}`,
+            targetPrimaryKey,
+          ),
+        );
+      }
+
+      return filterObjectProperties(
+        object,
+        new URL(req.request.url),
       );
-    }
-
-    if (!linkResponseMap[objectType]) {
-      throw new OpenApiCallError(400, ObjectTypeDoesNotExistError(objectType));
-    }
-
-    if (!linkResponseMap[objectType][linkType]) {
-      throw new OpenApiCallError(400, LinkTypeNotFound(objectType, linkType));
-    }
-
-    if (!linkResponseMap[objectType][linkType][primaryKey]) {
-      return {
-        data: [],
-      };
-    }
-
-    const object = linkResponseMap[objectType][linkType][primaryKey].data
-      .find((o: any) => o.__primaryKey.toString() === targetPrimaryKey);
-
-    if (!object) {
-      throw new OpenApiCallError(
-        404,
-        ObjectNotFoundError(
-          linkResponseMap[objectType][linkType][primaryKey].data[0]
-            ?.__apiName
-            ?? `${objectType} -> ${linkType}`,
-          targetPrimaryKey,
-        ),
-      );
-    }
-
-    return filterObjectProperties(
-      object,
-      new URL(req.request.url),
-    );
-  }),
+    },
+  ),
 
   /**
    * Upload attachment
    */
-  handleOpenApiCall(uploadAttachment, [], async req => {
-    const urlObj = new URL(req.request.url);
-    const fileName = urlObj.searchParams.get("filename");
+  handleOpenApiCall(
+    AttachmentsV1.uploadAttachment,
+    [],
+    async req => {
+      const urlObj = new URL(req.request.url);
+      const fileName = urlObj.searchParams.get("filename");
 
-    if (typeof fileName !== "string") {
-      throw new OpenApiCallError(400, InvalidRequest("Invalid parameter"));
-    }
-
-    const attachmentsUploadResponse = attachmentUploadRequest[fileName];
-    const body = await req.request.arrayBuffer();
-
-    if (attachmentsUploadResponse) {
-      const expectedBody = attachmentUploadRequestBody[fileName];
-      const expectedBodyArray = await expectedBody.arrayBuffer();
-
-      if (!areArrayBuffersEqual(body, expectedBodyArray)) {
-        throw new OpenApiCallError(400, InvalidContentTypeError);
+      if (typeof fileName !== "string") {
+        throw new OpenApiCallError(400, InvalidRequest("Invalid parameter"));
       }
 
-      return attachmentsUploadResponse;
-    }
-    throw new OpenApiCallError(400, AttachmentSizeExceededLimitError);
-  }),
+      const attachmentsUploadResponse = attachmentUploadRequest[fileName];
+      const body = await req.request.arrayBuffer();
+
+      if (attachmentsUploadResponse) {
+        const expectedBody = attachmentUploadRequestBody[fileName];
+        const expectedBodyArray = await expectedBody.arrayBuffer();
+
+        if (!areArrayBuffersEqual(body, expectedBodyArray)) {
+          throw new OpenApiCallError(400, InvalidContentTypeError);
+        }
+
+        return attachmentsUploadResponse as any; // fixme
+      }
+      throw new OpenApiCallError(400, AttachmentSizeExceededLimitError);
+    },
+  ),
 
   /**
    * Get attachment metadata V1
    */
-  handleOpenApiCall(getAttachment, ["attachmentRid"], async req => {
-    const attachmentRid = req.params.attachmentRid;
+  handleOpenApiCall(
+    AttachmentsV1.getAttachment,
+    ["attachmentRid"],
+    async req => {
+      const attachmentRid = req.params.attachmentRid;
 
-    if (typeof attachmentRid !== "string") {
-      throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
-    }
+      if (typeof attachmentRid !== "string") {
+        throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
+      }
 
-    const getAttachmentMetadataResponse =
-      attachmentMetadataRequest[attachmentRid];
-    if (getAttachmentMetadataResponse) {
-      return getAttachmentMetadataResponse;
-    }
+      const getAttachmentMetadataResponse =
+        attachmentMetadataRequest[attachmentRid];
+      if (getAttachmentMetadataResponse) {
+        return getAttachmentMetadataResponse as any; // fixme
+      }
 
-    throw new OpenApiCallError(404, AttachmentNotFoundError);
-  }),
+      throw new OpenApiCallError(404, AttachmentNotFoundError);
+    },
+  ),
 
   /**
    * Get attachment metadata V2
    */
-  handleOpenApiCall(getAttachmentsV2, [
-    "ontologyApiName",
-    "objectType",
-    "primaryKey",
-    "propertyName",
-  ], async req => {
-    const ontologyApiName = req.params.ontologyApiName;
-    const primaryKey = req.params.primaryKey;
-    const objectType = req.params.objectType;
-    const propertyName = req.params.propertyName;
+  handleOpenApiCall(
+    OntologiesV2.AttachmentPropertiesV2.listPropertyAttachments,
+    [
+      "ontologyApiName",
+      "objectType",
+      "primaryKey",
+      "propertyName",
+    ],
+    async req => {
+      const ontologyApiName = req.params.ontologyApiName;
+      const primaryKey = req.params.primaryKey;
+      const objectType = req.params.objectType;
+      const propertyName = req.params.propertyName;
 
-    if (
-      typeof primaryKey !== "string"
-      || typeof ontologyApiName !== "string"
-      || typeof objectType !== "string"
-      || typeof propertyName !== "string"
-    ) {
-      throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
-    }
+      if (
+        typeof primaryKey !== "string"
+        || typeof ontologyApiName !== "string"
+        || typeof objectType !== "string"
+        || typeof propertyName !== "string"
+      ) {
+        throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
+      }
 
-    const getAttachmentMetadataResponse =
-      attachmentMetadataRequest[propertyName];
-    if (getAttachmentMetadataResponse) {
-      return {
-        ...getAttachmentMetadataResponse,
-        type: "single" as const,
-      };
-    }
+      const getAttachmentMetadataResponse =
+        attachmentMetadataRequest[propertyName];
+      if (getAttachmentMetadataResponse) {
+        return {
+          ...getAttachmentMetadataResponse,
+          type: "single" as const,
+        } as any; // fixme
+      }
 
-    throw new OpenApiCallError(404, AttachmentNotFoundError);
-  }),
+      throw new OpenApiCallError(404, AttachmentNotFoundError);
+    },
+  ),
 
   /**
    * Read attachment content V1
    */
-  handleOpenApiCall(getAttachmentContent, ["attachmentRid"], async req => {
-    const attachmentRid = req.params.attachmentRid;
+  handleOpenApiCall(
+    AttachmentsV1.getAttachmentContent,
+    ["attachmentRid"],
+    async req => {
+      const attachmentRid = req.params.attachmentRid;
 
-    if (typeof attachmentRid !== "string") {
-      throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
-    }
+      if (typeof attachmentRid !== "string") {
+        throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
+      }
 
-    const getAttachmentContentResponse =
-      attachmentContentRequest[attachmentRid];
+      const getAttachmentContentResponse =
+        attachmentContentRequest[attachmentRid];
 
-    if (getAttachmentContentResponse) {
-      const blob = new Blob(
-        [JSON.stringify(getAttachmentContentResponse)],
-        { type: "application/json" },
-      );
-      return blob;
-    }
+      if (getAttachmentContentResponse) {
+        const blob = new Blob(
+          [JSON.stringify(getAttachmentContentResponse)],
+          { type: "application/json" },
+        );
+        return blob;
+      }
 
-    throw new OpenApiCallError(404, AttachmentNotFoundError);
-  }),
+      throw new OpenApiCallError(404, AttachmentNotFoundError);
+    },
+  ),
 
   /**
    * Read attachment content V2
    */
-  handleOpenApiCall(getAttachmentContentV2, [
-    "ontologyApiName",
-    "objectType",
-    "primaryKey",
-    "propertyName",
-  ], async req => {
-    const ontologyApiName = req.params.ontologyApiName;
-    const primaryKey = req.params.primaryKey;
-    const objectType = req.params.objectType;
-    const propertyName = req.params.propertyName;
+  handleOpenApiCall(
+    OntologiesV2.AttachmentPropertiesV2.getAttachmentPropertyContentV2,
+    [
+      "ontologyApiName",
+      "objectType",
+      "primaryKey",
+      "propertyName",
+    ],
+    async req => {
+      const ontologyApiName = req.params.ontologyApiName;
+      const primaryKey = req.params.primaryKey;
+      const objectType = req.params.objectType;
+      const propertyName = req.params.propertyName;
 
-    if (
-      typeof primaryKey !== "string"
-      || typeof ontologyApiName !== "string"
-      || typeof objectType !== "string"
-      || typeof propertyName !== "string"
-    ) {
-      throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
-    }
+      if (
+        typeof primaryKey !== "string"
+        || typeof ontologyApiName !== "string"
+        || typeof objectType !== "string"
+        || typeof propertyName !== "string"
+      ) {
+        throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
+      }
 
-    const getAttachmentContentResponse = attachmentContentRequest[propertyName];
-    if (getAttachmentContentResponse) {
-      const blob = new Blob(
-        [JSON.stringify(getAttachmentContentResponse)],
-        { type: "application/json" },
-      );
-      return blob;
-    }
+      const getAttachmentContentResponse =
+        attachmentContentRequest[propertyName];
+      if (getAttachmentContentResponse) {
+        const blob = new Blob(
+          [JSON.stringify(getAttachmentContentResponse)],
+          { type: "application/json" },
+        );
+        return blob;
+      }
 
-    throw new OpenApiCallError(404, AttachmentNotFoundError);
-  }),
+      throw new OpenApiCallError(404, AttachmentNotFoundError);
+    },
+  ),
 ] as const;
 
 async function handleStreamPoints(
   req: Parameters<
     HttpResponseResolver<
       PathParams<string>,
-      | ExtractBody<typeof streamPoints>
+      | ExtractBody<typeof OntologiesV2.TimeSeriesPropertiesV2.streamPoints>
       | Blob
       | BaseAPIError
     >

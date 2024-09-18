@@ -24,7 +24,7 @@ import {
 } from "@osdk/generator";
 import type { OntologyIdentifier } from "@osdk/internal.foundry.core";
 import { OntologiesV2 } from "@osdk/internal.foundry.ontologiesv2";
-import { createClientContext, createOpenApiRequest } from "@osdk/shared.net";
+import { createClientContext } from "@osdk/shared.net";
 import { consola } from "consola";
 import deepEqual from "fast-deep-equal";
 import { findUp } from "find-up";

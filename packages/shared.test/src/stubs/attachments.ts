@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { AttachmentV2 } from "@osdk/gateway/types";
+import type { AttachmentV2 } from "@osdk/internal.foundry.core";
 
 export const attachmentMetadata: AttachmentV2 = {
   filename: "file1.txt",
   mediaType: "application/json",
-  sizeBytes: 18,
+  sizeBytes: "18",
   rid: "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
 };
 

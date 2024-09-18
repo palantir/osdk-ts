@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeFullMetadata, ObjectTypeV2 } from "@osdk/gateway/types";
+import type {
+  ObjectTypeFullMetadata,
+  ObjectTypeV2,
+} from "@osdk/internal.foundry.core";
 import {
   leadLinkType,
   occupants,
@@ -89,6 +92,7 @@ export const taskWithLinkTypes: ObjectTypeFullMetadata = {
       cardinality: "MANY",
       objectTypeApiName: "Todo",
       status: "ACTIVE",
+      linkTypeRid: "rid.link-type.123",
     },
     {
       apiName: "RP",
@@ -96,6 +100,7 @@ export const taskWithLinkTypes: ObjectTypeFullMetadata = {
       cardinality: "ONE",
       objectTypeApiName: "Person",
       status: "ACTIVE",
+      linkTypeRid: "rid.link-type.124",
     },
   ],
   implementsInterfaces: [],

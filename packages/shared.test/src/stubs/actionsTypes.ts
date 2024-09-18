@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionTypeV2 } from "@osdk/gateway/types";
+import type { ActionTypeV2 } from "@osdk/internal.foundry.core";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
 
 export const PromoteEmployee: ActionTypeV2 = {

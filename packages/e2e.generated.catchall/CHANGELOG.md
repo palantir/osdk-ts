@@ -1,5 +1,18 @@
 # @osdk/e2e.generated.catchall
 
+## 3.0.0-beta.8
+
+### Minor Changes
+
+- 96ea876: Adding js docs for actions so you can hover and see params and description.
+
+### Patch Changes
+
+- Updated dependencies [64818dc]
+  - @osdk/client.api@2.0.0-beta.8
+  - @osdk/client@2.0.0-beta.8
+  - @osdk/api@2.0.0-beta.8
+
 ## 3.0.0-beta.7
 
 ### Patch Changes

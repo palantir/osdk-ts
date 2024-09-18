@@ -143,7 +143,7 @@ export interface AttachmentMetadata {
     // (undocumented)
     rid: string;
     // (undocumented)
-    sizeBytes: string;
+    sizeBytes: number;
 }
 
 // @public

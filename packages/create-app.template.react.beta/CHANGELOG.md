@@ -1,5 +1,11 @@
 # @osdk/create-app.template.react
 
+## 0.19.0-beta.3
+
+### Minor Changes
+
+- 5d98af2: Add dev dependency
+
 ## 0.19.0-beta.2
 
 ### Minor Changes

@@ -1,5 +1,20 @@
 # @osdk/cli.cmd.typescript
 
+## 0.6.0-beta.7
+
+### Minor Changes
+
+- 64818dc: Drop support for internal gateway package
+
+### Patch Changes
+
+- Updated dependencies [96ea876]
+- Updated dependencies [64818dc]
+  - @osdk/generator@2.0.0-beta.8
+  - @osdk/shared.net@2.0.0-beta.1
+  - @osdk/internal.foundry.core@0.2.0-beta.5
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.5
+
 ## 0.6.0-beta.6
 
 ### Patch Changes

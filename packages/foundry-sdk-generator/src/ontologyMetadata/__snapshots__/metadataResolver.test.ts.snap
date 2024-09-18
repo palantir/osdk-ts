@@ -54,6 +54,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
           "apiName": "peeps",
           "cardinality": "MANY",
           "displayName": "Peeps",
+          "linkTypeRid": "rid.link-type.327",
           "objectTypeApiName": "Employee",
           "status": "EXPERIMENTAL",
         },
@@ -61,6 +62,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
           "apiName": "officeLink",
           "cardinality": "ONE",
           "displayName": "Office",
+          "linkTypeRid": "rid.link-type.324",
           "objectTypeApiName": "Office",
           "status": "EXPERIMENTAL",
         },
@@ -70,6 +72,13 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
         "description": "A full-time or part-time 
 
  employee of our firm",
+        "displayName": "Employee",
+        "icon": {
+          "color": "blue",
+          "name": "person",
+          "type": "blueprint",
+        },
+        "pluralDisplayName": "Employees",
         "primaryKey": "employeeId",
         "properties": {
           "employeeId": {
@@ -120,6 +129,13 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
       "objectType": {
         "apiName": "Office",
         "description": "A office in our Company",
+        "displayName": "Office",
+        "icon": {
+          "color": "blue",
+          "name": "office",
+          "type": "blueprint",
+        },
+        "pluralDisplayName": "Office",
         "primaryKey": "officeId",
         "properties": {
           "entrance": {
@@ -218,6 +234,13 @@ exports[`Load Ontologies Metadata > Loads object and action types without link t
         "description": "A full-time or part-time 
 
  employee of our firm",
+        "displayName": "Employee",
+        "icon": {
+          "color": "blue",
+          "name": "person",
+          "type": "blueprint",
+        },
+        "pluralDisplayName": "Employees",
         "primaryKey": "employeeId",
         "properties": {
           "employeeId": {

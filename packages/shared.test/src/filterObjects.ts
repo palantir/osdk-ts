@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-import type { OntologyObject, OntologyObjectV2 } from "@osdk/gateway/types";
-import type { PagedBodyResponse } from "./handlers/endpointUtils.js";
+import type {
+  OntologyObject,
+  OntologyObjectV2,
+} from "@osdk/internal.foundry.core";
+import type {
+  PagedBodyResponse,
+  PagedBodyResponseWithTotal,
+} from "./handlers/endpointUtils.js";
 
 export function filterObjectProperties<
   T extends OntologyObjectV2 | OntologyObject,
@@ -46,10 +52,18 @@ export function filterObjectProperties<
 
 export function filterObjectsProperties<
   T extends OntologyObjectV2 | OntologyObject,
+  TResponse extends
+    | PagedBodyResponse<T>
+    | PagedBodyResponseWithTotal<T>,
+  TIncludeCount extends (TResponse extends PagedBodyResponseWithTotal<T> ? true
+    : false),
 >(
   objects: PagedBodyResponse<T>,
   url: URL | string[],
-): PagedBodyResponse<T> {
+  includeCount: TIncludeCount,
+): TIncludeCount extends true ? PagedBodyResponseWithTotal<T>
+  : PagedBodyResponse<T>
+{
   let properties: Set<string>;
   if (Array.isArray(url)) {
     properties = new Set(url);
@@ -58,7 +72,8 @@ export function filterObjectsProperties<
   }
 
   if (properties.size === 0) {
-    return objects;
+    return objects as TIncludeCount extends true ? PagedBodyResponseWithTotal<T>
+      : PagedBodyResponse<T>;
   }
 
   const result = objects.data.map(object =>
@@ -75,8 +90,14 @@ export function filterObjectsProperties<
     }, {} as { [key: string]: any })
   );
 
-  return {
-    nextPageToken: objects.nextPageToken,
-    data: result as T[],
-  };
+  const ret:
+    | PagedBodyResponse<T>
+    | PagedBodyResponseWithTotal<T> = {
+      nextPageToken: objects.nextPageToken,
+      data: result as T[],
+      totalCount: (objects as PagedBodyResponseWithTotal<T>).totalCount,
+    };
+
+  return ret as TIncludeCount extends true ? PagedBodyResponseWithTotal<T>
+    : PagedBodyResponse<T>;
 }
