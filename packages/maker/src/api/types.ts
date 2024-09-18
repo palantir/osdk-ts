@@ -49,7 +49,10 @@ export interface PropertyType {
   array?: boolean;
   description?: string;
   displayName?: string;
+  typeClasses?: TypeClass[];
 }
+
+type TypeClass = { kind: string; name: string };
 
 export interface SharedPropertyType extends PropertyType {
   apiName: string;

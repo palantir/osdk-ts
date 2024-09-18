@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
+import type { SharedPropertyTypeGothamMapping } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import { namespace, ontologyDefinition } from "./defineOntology.js";
 import type { PropertyTypeType, SharedPropertyType } from "./types.js";
+
+const defaultTypeClasses: SharedPropertyType["typeClasses"] = [{
+  kind: "render_hint",
+  name: "SELECTABLE",
+}, { kind: "render_hint", name: "SORTABLE" }];
 
 export function defineSharedPropertyType(
   opts: {
@@ -25,6 +31,8 @@ export function defineSharedPropertyType(
     array?: boolean;
     description?: string;
     displayName?: string;
+    typeClasses?: SharedPropertyType["typeClasses"];
+    gothamMapping?: SharedPropertyTypeGothamMapping;
   },
 ): SharedPropertyType {
   const apiName = namespace + opts.apiName;
@@ -36,5 +44,6 @@ export function defineSharedPropertyType(
   return ontologyDefinition.sharedPropertyTypes[apiName] = {
     ...opts,
     apiName,
+    typeClasses: opts.typeClasses ?? defaultTypeClasses,
   };
 }
