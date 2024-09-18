@@ -35,7 +35,9 @@ export class OntologyMetadataResolver {
 
   private getClientContext() {
     return createClientContext(
-      this.stackName,
+      this.stackName.match(/^https?:\/\//)
+        ? this.stackName
+        : `https://${this.stackName}`,
       () => this.#authToken,
       `foundry-typescript-osdk-generator/${process.env.npm_package_version!}`,
     );
