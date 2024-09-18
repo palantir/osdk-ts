@@ -1,11 +1,10 @@
-import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType, VersionBound } from '@osdk/api';
+import type { MinimalActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client.api';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 export namespace createOffice {
@@ -56,18 +55,6 @@ export namespace createOffice {
     readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'string'>>;
   }
 
-  // Represents the definition of the action
-  export interface Definition
-    extends ActionDefinition<'createOffice', 'Office', createOffice.Signatures>,
-      VersionBound<$ExpectedClientVersion> {
-    apiName: 'createOffice';
-    description: "Create an office's";
-    modifiedEntities: { Office: { created: true; modified: false } };
-    type: 'action';
-    parameters: createOffice.ParamsDefinition;
-    osdkMetadata: typeof $osdkMetadata;
-  }
-
   // Represents a fqn of the action
   export interface Signatures {
     /**
@@ -92,42 +79,28 @@ export namespace createOffice {
  * @param {ActionParam.PrimitiveType<"string">} officeId
  * @param {ActionParam.PrimitiveType<"string">} [officeNames] A list of all office names
  */
-export type createOffice = createOffice.Signatures;
+export interface createOffice extends MinimalActionDefinition<'createOffice', 'Office', createOffice.Signatures> {
+  __DefinitionMetadata?: {
+    apiName: 'createOffice';
+    description: "Create an office's";
+    modifiedEntities: {
+      Office: {
+        created: true;
+        modified: false;
+      };
+    };
+    parameters: createOffice.ParamsDefinition;
+    type: 'action';
 
-export const createOffice: createOffice.Definition = {
+    signatures: createOffice.Signatures;
+  };
+  apiName: 'createOffice';
+  type: 'action';
+  osdkMetadata: typeof $osdkMetadata;
+}
+
+export const createOffice: createOffice = {
   apiName: 'createOffice',
-  description: "Create an office's",
-  modifiedEntities: {
-    Office: {
-      created: true,
-      modified: false,
-    },
-  },
-  parameters: {
-    officeId: {
-      multiplicity: false,
-      type: 'string',
-      nullable: false,
-    },
-    address: {
-      multiplicity: false,
-      type: 'string',
-      nullable: true,
-      description: "The office's physical address (not necessarily shipping address)",
-    },
-    capacity: {
-      multiplicity: false,
-      type: 'integer',
-      nullable: true,
-      description: 'The maximum seated-at-desk capacity of the office (maximum fire-safe capacity may be higher)',
-    },
-    officeNames: {
-      multiplicity: true,
-      type: 'string',
-      nullable: true,
-      description: 'A list of all office names',
-    },
-  },
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

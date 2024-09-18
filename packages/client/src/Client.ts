@@ -15,7 +15,7 @@
  */
 
 import type {
-  ActionDefinition,
+  MinimalActionDefinition,
   ObjectTypeDefinition,
   QueryDefinition,
   VersionBound,
@@ -42,7 +42,7 @@ export interface Client extends SharedClient<MinimalClient> {
     o: Q,
   ): Q["objectSet"];
 
-  <Q extends ActionDefinition<any, any, any>>(
+  <Q extends MinimalActionDefinition<any, any, any>>(
     o: Q,
   ): ActionSignatureFromDef<Q>;
 

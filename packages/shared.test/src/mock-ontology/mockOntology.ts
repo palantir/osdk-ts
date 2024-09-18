@@ -15,7 +15,7 @@
  */
 
 import type {
-  ActionDefinition,
+  MinimalActionDefinition,
   ObjectTypeDefinition,
   ObjectTypeLinkDefinition,
   VersionBound,
@@ -126,11 +126,13 @@ export type ActionDef$updateTask$Parameters = {
   };
 };
 
-interface ActionDef$updateTask extends ActionDefinition<"updateTask", "Task"> {
+interface ActionDef$updateTask
+  extends MinimalActionDefinition<"updateTask", "Task">
+{
   type: "action";
   apiName: "updateTask";
   parameters: ActionDef$updateTask$Parameters;
-  modifiedEntities: {
+  BaseActionDefinition: {
     Task: { modified: true; created: false };
   };
 }
@@ -160,8 +162,11 @@ const updateTask: ActionDef$updateTask = {
       nullable: true,
     },
   },
-  modifiedEntities: {
+  BaseActionDefinition: {
     Task: { modified: true, created: false },
+  },
+  osdkMetadata: {
+    extraUserAgent: "",
   },
 };
 

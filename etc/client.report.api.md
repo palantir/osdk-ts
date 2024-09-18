@@ -4,7 +4,6 @@
 
 ```ts
 
-import type { ActionDefinition } from '@osdk/api';
 import { ActionEditResponse } from '@osdk/client.api';
 import type { ActionParam } from '@osdk/client.api';
 import type { ActionParameterDefinition } from '@osdk/api';
@@ -20,6 +19,7 @@ import type { InterfaceDefinition } from '@osdk/api';
 import { InterfaceObjectSet } from '@osdk/client.api';
 import { isOk } from '@osdk/client.api';
 import type { Logger } from 'pino';
+import type { MinimalActionDefinition } from '@osdk/api';
 import type { ObjectActionDataType } from '@osdk/api';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
@@ -66,7 +66,7 @@ export interface Client extends SharedClient<MinimalClient> {
     // Warning: (ae-forgotten-export) The symbol "ActionSignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    <Q extends ActionDefinition<any, any, any>>(o: Q): ActionSignatureFromDef<Q>;
+    <Q extends MinimalActionDefinition<any, any, any>>(o: Q): ActionSignatureFromDef<Q>;
     // Warning: (ae-forgotten-export) The symbol "QuerySignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
