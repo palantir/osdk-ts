@@ -15,10 +15,10 @@
  */
 
 import type {
-  InterfaceDefinition,
   MinimalActionDefinition,
+  MinInterfaceDef,
+  MinObjectDef,
   ObjectOrInterfaceDefinition,
-  ObjectTypeDefinition,
   QueryDefinition,
 } from "@osdk/api";
 import type { MinimalObjectSet, ObjectSet } from "@osdk/client.api";
@@ -90,8 +90,8 @@ export function createClientInternal(
       | ObjectOrInterfaceDefinition
       | MinimalActionDefinition<any, any, any>
       | QueryDefinition<any, any>,
-  >(o: T): T extends ObjectTypeDefinition<any> ? ObjectSet<T>
-    : T extends InterfaceDefinition<any, any> ? MinimalObjectSet<T>
+  >(o: T): T extends MinObjectDef<any> ? ObjectSet<T>
+    : T extends MinInterfaceDef<any, any> ? MinimalObjectSet<T>
     : T extends MinimalActionDefinition<any, any, any>
       ? ActionSignatureFromDef<T>
     : T extends QueryDefinition<any, any> ? QuerySignatureFromDef<T>

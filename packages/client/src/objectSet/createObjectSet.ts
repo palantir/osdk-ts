@@ -18,7 +18,6 @@ import type {
   MinObjectDef,
   ObjectOrInterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition,
 } from "@osdk/api";
 import type {
   BaseObjectSet,
@@ -29,7 +28,6 @@ import type {
   ObjectSet,
   Osdk,
   PrimaryKeyType,
-  PropertyValueClientToWire,
   Result,
   SelectArg,
 } from "@osdk/client.api";
@@ -196,8 +194,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
 
     fetchOneWithErrors: (isObjectTypeDefinition(objectType)
       ? async <A extends SelectArg<Q>>(
-        primaryKey: Q extends ObjectTypeDefinition<any>
-          ? PropertyValueClientToWire[Q["primaryKeyType"]]
+        primaryKey: Q extends MinObjectDef<any, any> ? PrimaryKeyType<Q>
           : never,
         options: A,
       ) => {
