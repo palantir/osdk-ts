@@ -37,8 +37,6 @@
     "@osdk/foundry.core": "2.0.0",
     "@osdk/foundry.datasets": "2.0.0",
     "@osdk/foundry.thirdpartyapplications": "2.0.0",
-    "@osdk/gateway": "2.4.0",
-    "@osdk/gateway-generator": "0.4.0",
     "@osdk/generator": "1.13.0",
     "@osdk/generator-converters": "0.7.0",
     "@osdk/internal.foundry": "0.4.0",

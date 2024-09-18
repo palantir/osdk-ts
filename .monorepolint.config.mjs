@@ -62,7 +62,6 @@ const nonStandardPackages = [
 // at next major.
 const legacyPackages = [
   "@osdk/api",
-  "@osdk/gateway",
   "@osdk/legacy-client",
   "@osdk/shared.net",
   "@osdk/shared.net.errors",
