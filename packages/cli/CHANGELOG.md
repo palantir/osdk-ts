@@ -1,5 +1,14 @@
 # @osdk/cli
 
+## 0.24.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [b946e00]
+- Updated dependencies [01724ae]
+  - @osdk/generator@2.0.0-beta.9
+  - @osdk/shared.net@2.0.0-beta.2
+
 ## 0.24.0-beta.7
 
 ### Patch Changes
