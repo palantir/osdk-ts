@@ -27,6 +27,7 @@ import type {
   QueryMetadata,
 } from "@osdk/client.api";
 import { OntologiesV2 } from "@osdk/internal.foundry";
+import type { MinimalActionDefinition } from "../../api/build/cjs/index.cjs";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "./util/addUserAgentAndRequestContextHeaders.js";
 
@@ -35,7 +36,7 @@ export const fetchMetadataInternal = async <
   Q extends (
     | ObjectTypeDefinition<any, any>
     | InterfaceDefinition<any, any>
-    | ActionDefinition<any, any, any>
+    | MinimalActionDefinition<any, any>
     | QueryDefinition<any, any, any>
   ),
 >(
@@ -44,7 +45,7 @@ export const fetchMetadataInternal = async <
 ): Promise<
   Q extends ObjectTypeDefinition<any, any> ? ObjectMetadata
     : Q extends InterfaceDefinition<any, any> ? InterfaceMetadata
-    : Q extends ActionDefinition<any, any, any> ? ActionMetadata
+    : Q extends ActionDefinition<any, any> ? ActionMetadata
     : Q extends QueryDefinition<any, any, any> ? QueryMetadata
     : never
 > => {
@@ -61,9 +62,9 @@ export const fetchMetadataInternal = async <
   }
 };
 
-const fetchObjectMetadata = async <Q extends ObjectTypeDefinition<any>>(
+const fetchObjectMetadata = async (
   client: MinimalClient,
-  objectType: Q,
+  objectType: ObjectTypeDefinition<any, any>,
 ): Promise<ObjectMetadata> => {
   const response = await OntologiesV2.ObjectTypesV2.getObjectTypeFullMetadata(
     addUserAgentAndRequestContextHeaders(client, objectType),
@@ -82,9 +83,9 @@ const fetchObjectMetadata = async <Q extends ObjectTypeDefinition<any>>(
   };
 };
 
-const fetchInterfaceMetadata = async <Q extends InterfaceDefinition<any>>(
+const fetchInterfaceMetadata = async (
   client: MinimalClient,
-  interfaceType: Q,
+  interfaceType: InterfaceDefinition<any, any>,
 ): Promise<InterfaceMetadata> => {
   const response = await OntologiesV2.OntologyInterfaces.getInterfaceType(
     addUserAgentAndRequestContextHeaders(client, interfaceType),
@@ -100,9 +101,9 @@ const fetchInterfaceMetadata = async <Q extends InterfaceDefinition<any>>(
   };
 };
 
-const fetchActionMetadata = async <Q extends ActionDefinition<any, any, any>>(
+const fetchActionMetadata = async (
   client: MinimalClient,
-  actionType: Q,
+  actionType: MinimalActionDefinition<any, any>,
 ): Promise<ActionMetadata> => {
   const response = await OntologiesV2.ActionTypesV2.getActionTypeV2(
     addUserAgentAndRequestContextHeaders(client, actionType),
@@ -118,7 +119,7 @@ const fetchActionMetadata = async <Q extends ActionDefinition<any, any, any>>(
 
 const fetchQueryMetadata = async <Q extends QueryDefinition<any, any, any>>(
   client: MinimalClient,
-  queryType: Q,
+  queryType: QueryDefinition<any, any, any>,
 ): Promise<QueryMetadata> => {
   const response = await OntologiesV2.QueryTypes.getQueryTypeV2(
     addUserAgentAndRequestContextHeaders(client, queryType),
