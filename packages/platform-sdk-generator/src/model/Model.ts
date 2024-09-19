@@ -122,11 +122,13 @@ export class Model {
     npmOrg: string;
   }): Promise<Model> {
     const model = new Model(opts);
-
+    await model.#addNamespace("Core");
     for (const ns of ir.namespaces) {
       if (isIgnoredNamespace(ns.name)) continue;
 
-      await model.#addNamespace(ns.name === "Ontologies" ? "Core" : ns.name);
+      if (ns.name !== "Core" && ns.name !== "Ontologies") {
+        await model.#addNamespace(ns.name);
+      }
 
       for (const c of ns.components) {
         if (isIgnoredType(c)) continue;

@@ -71,7 +71,9 @@ async function generateMethods(resource: Resource, model: Model) {
     const parameters = generateMethodParameters(method);
     const requestType = method.requestType;
 
-    const shouldFillBlobHeaders = method.parametersByType.HEADER != null
+    const shouldFillBlobHeaders = requestType !== "unknown"
+      && requestType instanceof BinaryType
+      && method.parametersByType.HEADER != null
       && method.parametersByType.HEADER.find((p) => p.name === "Content-Type")
         != null;
     const blobHeaders = fillBlobHeaders(
@@ -89,8 +91,7 @@ async function generateMethods(resource: Resource, model: Model) {
       $ctx: $Client | $ClientContext,
       ...args: [${parameters}]
     ): ${returnType}{${
-      requestType !== "unknown" && requestType instanceof BinaryType
-        && shouldFillBlobHeaders
+      shouldFillBlobHeaders
         ? blobHeaders.autofill
         : ""
     }return $foundryPlatformFetch($ctx, _${methodName}, ${
