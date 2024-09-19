@@ -22,7 +22,6 @@ import type {
 } from "@osdk/api";
 import type {
   ActionMetadata,
-  Definition,
   InterfaceMetadata,
   ObjectMetadata,
   QueryMetadata,
@@ -33,7 +32,12 @@ import { addUserAgentAndRequestContextHeaders } from "./util/addUserAgentAndRequ
 
 /** @internal */
 export const fetchMetadataInternal = async <
-  Q extends Definition,
+  Q extends (
+    | ObjectTypeDefinition<any, any>
+    | InterfaceDefinition<any, any>
+    | ActionDefinition<any, any, any>
+    | QueryDefinition<any, any, any>
+  ),
 >(
   client: MinimalClient,
   definition: Q,
@@ -50,8 +54,10 @@ export const fetchMetadataInternal = async <
     return fetchInterfaceMetadata(client, definition) as any;
   } else if (definition.type === "action") {
     return fetchActionMetadata(client, definition) as any;
-  } else {
+  } else if (definition.type === "query") {
     return fetchQueryMetadata(client, definition) as any;
+  } else {
+    throw new Error("Type checking should be exhaustive");
   }
 };
 

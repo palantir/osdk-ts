@@ -17,7 +17,6 @@ import type { Attachment } from '@osdk/client.api';
 import type { AttachmentUpload } from '@osdk/client.api';
 import type { DataValueClientToWire } from '@osdk/client.api';
 import type { DataValueWireToClient } from '@osdk/client.api';
-import type { Definition } from '@osdk/client.api';
 import type { InterfaceDefinition } from '@osdk/api';
 import type { InterfaceMetadata } from '@osdk/client.api';
 import { InterfaceObjectSet } from '@osdk/client.api';
@@ -77,7 +76,7 @@ export interface Client extends SharedClient<MinimalClient> {
     // (undocumented)
     <Q extends QueryDefinition<any, any, any>>(o: Q): QuerySignatureFromDef<Q>;
     // (undocumented)
-    fetchMetadata<Q extends Definition>(o: Q): Promise<Q extends ObjectTypeDefinition<any, any> ? ObjectMetadata : Q extends InterfaceDefinition<any, any> ? InterfaceMetadata : Q extends ActionDefinition<any, any, any> ? ActionMetadata : Q extends QueryDefinition<any, any, any> ? QueryMetadata : never>;
+    fetchMetadata<Q extends (ObjectTypeDefinition<any, any> | InterfaceDefinition<any, any> | ActionDefinition<any, any, any> | QueryDefinition<any, any, any>)>(o: Q): Promise<Q extends ObjectTypeDefinition<any, any> ? ObjectMetadata : Q extends InterfaceDefinition<any, any> ? InterfaceMetadata : Q extends ActionDefinition<any, any, any> ? ActionMetadata : Q extends QueryDefinition<any, any, any> ? QueryMetadata : never>;
 }
 
 // @public

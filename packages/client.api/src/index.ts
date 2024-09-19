@@ -49,7 +49,6 @@ export type {
   PossibleWhereClauseFilters,
   WhereClause,
 } from "./aggregate/WhereClause.js";
-export type { Definition } from "./Definition.js";
 export type { OsdkObjectPropertyType } from "./Definitions.js";
 export type {
   DefaultToFalse,

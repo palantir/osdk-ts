@@ -23,7 +23,6 @@ import type {
 } from "@osdk/api";
 import type {
   ActionMetadata,
-  Definition,
   InterfaceMetadata,
   ObjectMetadata,
   QueryMetadata,
@@ -58,7 +57,12 @@ export interface Client extends SharedClient<MinimalClient> {
   ): QuerySignatureFromDef<Q>;
 
   fetchMetadata<
-    Q extends Definition,
+    Q extends (
+      | ObjectTypeDefinition<any, any>
+      | InterfaceDefinition<any, any>
+      | ActionDefinition<any, any, any>
+      | QueryDefinition<any, any, any>
+    ),
   >(o: Q): Promise<
     Q extends ObjectTypeDefinition<any, any> ? ObjectMetadata
       : Q extends InterfaceDefinition<any, any> ? InterfaceMetadata

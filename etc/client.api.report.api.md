@@ -4,7 +4,6 @@
 
 ```ts
 
-import type { ActionDefinition } from '@osdk/api';
 import type { BBox } from 'geojson';
 import type { BrandedApiName } from '@osdk/api';
 import type { InterfaceDefinition } from '@osdk/api';
@@ -16,7 +15,6 @@ import type { ObjectTypeLinkKeysFrom2 } from '@osdk/api';
 import type { ObjectTypePropertyDefinition } from '@osdk/api';
 import type { Point } from 'geojson';
 import type { Polygon } from 'geojson';
-import type { QueryDefinition } from '@osdk/api';
 import type { SingleKeyObject } from 'type-fest';
 
 // Warning: (ae-forgotten-export) The symbol "ActionResults" needs to be exported by the entry point index.d.ts
@@ -276,9 +274,6 @@ export interface DataValueWireToClient {
 
 // @public (undocumented)
 export type DefaultToFalse<B extends boolean | undefined> = false extends B ? false : undefined extends B ? false : true;
-
-// @public (undocumented)
-export type Definition = ObjectTypeDefinition<any, any> | InterfaceDefinition<any, any> | ActionDefinition<any, any, any> | QueryDefinition<any, any, any>;
 
 // @public (undocumented)
 export const DistanceUnitMapping: {
