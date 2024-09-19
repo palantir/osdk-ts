@@ -57,7 +57,7 @@ export const fetchMetadataInternal = async <
   } else if (definition.type === "query") {
     return fetchQueryMetadata(client, definition) as any;
   } else {
-    throw new Error("Type checking should be exhaustive");
+    throw new Error("Not implemented for given definition");
   }
 };
 
