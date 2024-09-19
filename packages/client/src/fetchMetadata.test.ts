@@ -56,7 +56,6 @@ describe("FetchMetadata", () => {
   });
 
   it("fetches object metadata correctly", async () => {
-    client.fetchMetadata;
     const objectMetadata = await client.fetchMetadata($Objects.Employee);
 
     expectTypeOf(objectMetadata).toEqualTypeOf<ObjectMetadata>();
@@ -80,12 +79,13 @@ describe("FetchMetadata", () => {
   });
 
   it("fetches interface metadata correctly", async () => {
-    client.fetchMetadata;
-    const objectMetadata = await client.fetchMetadata($Interfaces.FooInterface);
+    const interfaceMetadata = await client.fetchMetadata(
+      $Interfaces.FooInterface,
+    );
 
-    expectTypeOf(objectMetadata).toEqualTypeOf<InterfaceMetadata>();
+    expectTypeOf(interfaceMetadata).toEqualTypeOf<InterfaceMetadata>();
 
-    expect(objectMetadata).toMatchInlineSnapshot(`
+    expect(interfaceMetadata).toMatchInlineSnapshot(`
       {
         "description": "Interface for Foo",
         "displayName": "Foo Interface",
@@ -95,14 +95,13 @@ describe("FetchMetadata", () => {
   });
 
   it("fetches action metadata correctly", async () => {
-    client.fetchMetadata;
-    const objectMetadata = await client.fetchMetadata(
+    const actionMetadata = await client.fetchMetadata(
       $Actions.moveOffice,
     );
 
-    expectTypeOf(objectMetadata).toEqualTypeOf<ActionMetadata>();
+    expectTypeOf(actionMetadata).toEqualTypeOf<ActionMetadata>();
 
-    expect(objectMetadata).toMatchInlineSnapshot(`
+    expect(actionMetadata).toMatchInlineSnapshot(`
       {
         "description": "Update an office's physical location",
         "displayName": "move-office",
@@ -112,14 +111,13 @@ describe("FetchMetadata", () => {
   });
 
   it("fetches query metadata correctly", async () => {
-    client.fetchMetadata;
-    const objectMetadata = await client.fetchMetadata(
+    const queryMetadata = await client.fetchMetadata(
       $Queries.queryAcceptsObject,
     );
 
-    expectTypeOf(objectMetadata).toEqualTypeOf<QueryMetadata>();
+    expectTypeOf(queryMetadata).toEqualTypeOf<QueryMetadata>();
 
-    expect(objectMetadata).toMatchInlineSnapshot(`
+    expect(queryMetadata).toMatchInlineSnapshot(`
       {
         "description": "description of the query that takes object types",
         "displayName": "QueryAcceptsObject",
