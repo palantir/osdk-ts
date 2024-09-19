@@ -15,8 +15,8 @@
  */
 
 import type { QueryDataTypeDefinition } from "@osdk/api";
+import { OntologiesV2 } from "@osdk/internal.foundry";
 import { type DataValue } from "@osdk/internal.foundry.core";
-import { Attachments } from "@osdk/internal.foundry.ontologies";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { isAttachmentUpload } from "../object/AttachmentUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
@@ -50,7 +50,7 @@ export async function toDataValueQueries<T extends string>(
   switch (desiredType.type) {
     case "attachment": {
       if (isAttachmentUpload(value)) {
-        const attachment = await Attachments.uploadAttachment(
+        const attachment = await OntologiesV2.Attachments.uploadAttachmentV2(
           client,
           value,
           {

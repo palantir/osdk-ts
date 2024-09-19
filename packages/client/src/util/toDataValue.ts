@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { OntologiesV2 } from "@osdk/internal.foundry";
 import { type DataValue } from "@osdk/internal.foundry.core";
-import { Attachments } from "@osdk/internal.foundry.ontologies";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { isAttachmentUpload } from "../object/AttachmentUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
@@ -49,7 +49,7 @@ export async function toDataValue(
 
   // For uploads, we need to upload ourselves first to get the RID of the attachment
   if (isAttachmentUpload(value)) {
-    const attachment = await Attachments.uploadAttachment(
+    const attachment = await OntologiesV2.Attachments.uploadAttachmentV2(
       client,
       value,
       {

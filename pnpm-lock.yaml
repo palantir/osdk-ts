@@ -746,9 +746,6 @@ importers:
       '@osdk/internal.foundry.core':
         specifier: workspace:~
         version: link:../internal.foundry.core
-      '@osdk/internal.foundry.ontologies':
-        specifier: workspace:~
-        version: link:../internal.foundry.ontologies
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor

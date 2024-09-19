@@ -15,7 +15,7 @@
  */
 
 import type { Attachment } from "@osdk/client.api";
-import { Attachments } from "@osdk/internal.foundry.ontologies";
+import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "./MinimalClientContext.js";
 
 /**
@@ -31,13 +31,13 @@ export function createAttachmentFromRid(
   return {
     rid,
     async fetchContents() {
-      return Attachments.getAttachmentContent(
+      return OntologiesV2.Attachments.getAttachmentContentV2(
         client,
         rid,
       ) as Promise<Blob>;
     },
     async fetchMetadata() {
-      const r = await Attachments.getAttachment(client, rid);
+      const r = await OntologiesV2.Attachments.getAttachmentV2(client, rid);
       return {
         ...r,
         sizeBytes: Number(r.sizeBytes),
