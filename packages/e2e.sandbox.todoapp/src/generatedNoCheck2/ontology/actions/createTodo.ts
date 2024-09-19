@@ -1,11 +1,10 @@
-import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType, VersionBound } from '@osdk/api';
+import type { MinimalActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client.api';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 export namespace createTodo {
@@ -32,18 +31,6 @@ export namespace createTodo {
     readonly Todo: ActionParam.PrimitiveType<'string'>;
   }
 
-  // Represents the definition of the action
-  export interface Definition
-    extends ActionDefinition<'createTodo', 'Todo', createTodo.Signatures>,
-      VersionBound<$ExpectedClientVersion> {
-    apiName: 'createTodo';
-    description: 'Creates Todo';
-    modifiedEntities: { Todo: { created: true; modified: false } };
-    type: 'action';
-    parameters: createTodo.ParamsDefinition;
-    osdkMetadata: typeof $osdkMetadata;
-  }
-
   // Represents a fqn of the action
   export interface Signatures {
     /**
@@ -66,29 +53,28 @@ export namespace createTodo {
  * @param {ActionParam.PrimitiveType<"boolean">} is_complete
  * @param {ActionParam.PrimitiveType<"string">} Todo
  */
-export type createTodo = createTodo.Signatures;
+export interface createTodo extends MinimalActionDefinition<'createTodo', 'Todo', createTodo.Signatures> {
+  __DefinitionMetadata?: {
+    apiName: 'createTodo';
+    description: 'Creates Todo';
+    modifiedEntities: {
+      Todo: {
+        created: true;
+        modified: false;
+      };
+    };
+    parameters: createTodo.ParamsDefinition;
+    type: 'action';
 
-export const createTodo: createTodo.Definition = {
+    signatures: createTodo.Signatures;
+  };
+  apiName: 'createTodo';
+  type: 'action';
+  osdkMetadata: typeof $osdkMetadata;
+}
+
+export const createTodo: createTodo = {
   apiName: 'createTodo',
-  description: 'Creates Todo',
-  modifiedEntities: {
-    Todo: {
-      created: true,
-      modified: false,
-    },
-  },
-  parameters: {
-    Todo: {
-      multiplicity: false,
-      type: 'string',
-      nullable: false,
-    },
-    is_complete: {
-      multiplicity: false,
-      type: 'boolean',
-      nullable: false,
-    },
-  },
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

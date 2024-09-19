@@ -15,9 +15,9 @@
  */
 
 export type {
-  ActionDefinition,
   ActionModifiedEntity,
   ActionParameterDefinition,
+  MinimalActionDefinition,
   ObjectActionDataType,
   ObjectSetActionDataType,
   ValidActionParameterTypes,

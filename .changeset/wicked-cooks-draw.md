@@ -6,7 +6,6 @@
 "@osdk/platform-sdk-generator": patch
 "@osdk/foundry.orchestration": patch
 "@osdk/internal.foundry.core": patch
-"@osdk/e2e.sandbox.catchall": patch
 "@osdk/foundry.filesystem": patch
 "@osdk/foundry.publicapis": patch
 "@osdk/foundry.datasets": patch

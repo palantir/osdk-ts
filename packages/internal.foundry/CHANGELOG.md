@@ -1,5 +1,16 @@
 # @osdk/foundry
 
+## 0.5.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [01724ae]
+  - @osdk/shared.net@2.0.0-beta.2
+  - @osdk/internal.foundry.core@0.2.0-beta.6
+  - @osdk/internal.foundry.datasets@0.2.0-beta.6
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.6
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.6
+
 ## 0.5.0-beta.5
 
 ### Patch Changes

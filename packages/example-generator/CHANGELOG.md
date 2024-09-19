@@ -1,5 +1,15 @@
 # @osdk/example-generator
 
+## 0.8.0-beta.4
+
+### Minor Changes
+
+- 646081b: fix latest to "workspace:\*" on examples
+
+### Patch Changes
+
+- @osdk/create-app@0.19.0-beta.4
+
 ## 0.8.0-beta.3
 
 ### Patch Changes
