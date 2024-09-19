@@ -40,7 +40,7 @@ export type ContentType = LooselyBrandedString<"ContentType">;
  *
  * Log Safety: SAFE
  */
-export type CreatedBy = UserId;
+export type CreatedBy = PrincipalId;
 
 /**
  * The time at which the resource was created.
@@ -96,6 +96,13 @@ export interface Duration {
  * Log Safety: UNSAFE
  */
 export type FilePath = LooselyBrandedString<"FilePath">;
+
+/**
+ * The ID of a security marking.
+ *
+ * Log Safety: SAFE
+ */
+export type MarkingId = string;
 
 /**
  * The Resource Identifier (RID) of a Media Set

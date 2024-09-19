@@ -156,9 +156,7 @@ export type ResponseBody =
 export type RequestBodyType = ComponentRequestType | BinaryResponseType;
 
 export interface RequestBody {
-  body: {
-    requestType: RequestBodyType;
-  };
+  body: RequestBodyType;
 }
 
 export interface Response {

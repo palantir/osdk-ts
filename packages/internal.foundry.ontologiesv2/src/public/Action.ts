@@ -78,6 +78,49 @@ export function applyActionV2(
   return $foundryPlatformFetch($ctx, _applyActionV2, ...args);
 }
 
+const _applyActionAsyncV2: $FoundryPlatformMethod<
+  (
+    ontology: OntologyIdentifier,
+    action: ActionTypeApiName,
+    $body: AsyncApplyActionRequestV2,
+    $queryParams?: {
+      artifactRepository?: ArtifactRepositoryRid | undefined;
+      packageName?: SdkPackageName | undefined;
+    },
+  ) => Promise<AsyncApplyActionResponseV2>
+> = [1, "/v2/ontologies/{0}/actions/{1}/applyAsync", 3];
+
+/**
+ * Applies an action using the given parameters.
+ *
+ * Changes to the Ontology are eventually consistent and may take some time to be visible.
+ *
+ * Note that [parameter default values](https://www.palantir.com/docs/foundry/action-types/parameters-default-value/) are not currently supported by
+ * this endpoint.
+ *
+ * Third-party applications using this endpoint via OAuth2 must request the
+ * following operation scopes: `api:ontologies-read api:ontologies-write`.
+ *
+ * @alpha
+ *
+ * Required Scopes: [api:ontologies-read, api:ontologies-write]
+ * URL: /v2/ontologies/{ontology}/actions/{action}/applyAsync
+ */
+export function applyActionAsyncV2(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    ontology: OntologyIdentifier,
+    action: ActionTypeApiName,
+    $body: AsyncApplyActionRequestV2,
+    $queryParams?: {
+      artifactRepository?: ArtifactRepositoryRid | undefined;
+      packageName?: SdkPackageName | undefined;
+    },
+  ]
+): Promise<AsyncApplyActionResponseV2> {
+  return $foundryPlatformFetch($ctx, _applyActionAsyncV2, ...args);
+}
+
 const _applyActionBatchV2: $FoundryPlatformMethod<
   (
     ontology: OntologyIdentifier,
@@ -120,47 +163,4 @@ export function applyActionBatchV2(
   ]
 ): Promise<BatchApplyActionResponseV2> {
   return $foundryPlatformFetch($ctx, _applyActionBatchV2, ...args);
-}
-
-const _applyActionAsyncV2: $FoundryPlatformMethod<
-  (
-    ontology: OntologyIdentifier,
-    action: ActionTypeApiName,
-    $body: AsyncApplyActionRequestV2,
-    $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
-    },
-  ) => Promise<AsyncApplyActionResponseV2>
-> = [1, "/v2/ontologies/{0}/actions/{1}/applyAsync", 3];
-
-/**
- * Applies an action using the given parameters.
- *
- * Changes to the Ontology are eventually consistent and may take some time to be visible.
- *
- * Note that [parameter default values](https://www.palantir.com/docs/foundry/action-types/parameters-default-value/) are not currently supported by
- * this endpoint.
- *
- * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:ontologies-read api:ontologies-write`.
- *
- * @alpha
- *
- * Required Scopes: [api:ontologies-read, api:ontologies-write]
- * URL: /v2/ontologies/{ontology}/actions/{action}/applyAsync
- */
-export function applyActionAsyncV2(
-  $ctx: $Client | $ClientContext,
-  ...args: [
-    ontology: OntologyIdentifier,
-    action: ActionTypeApiName,
-    $body: AsyncApplyActionRequestV2,
-    $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
-    },
-  ]
-): Promise<AsyncApplyActionResponseV2> {
-  return $foundryPlatformFetch($ctx, _applyActionAsyncV2, ...args);
 }

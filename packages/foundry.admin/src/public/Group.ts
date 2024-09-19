@@ -158,7 +158,7 @@ const _getGroupsBatch: $FoundryPlatformMethod<
  *
  * The maximum batch size for this endpoint is 500.
  *
- * @alpha
+ * @beta
  *
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/groups/getBatch

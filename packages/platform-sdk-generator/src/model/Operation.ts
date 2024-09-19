@@ -95,38 +95,38 @@ export class Operation {
   }
 
   get requestBodyInfo(): { type: Type | undefined; mimeType: string } {
-    const requestType = this.spec.http.requestBody?.body.requestType;
-    const mimeType = requestType == null
+    const requestBody = this.spec.http.requestBody?.body;
+    const mimeType = requestBody == null
       ? ""
-      : requestType.type === "component"
-      ? quoteMimeTypeOrEmpty(requestType.component.mediaType)
-      : quoteMimeTypeOrEmpty(requestType.binary.mediaType);
+      : requestBody?.type === "component"
+      ? quoteMimeTypeOrEmpty(requestBody.component.mediaType)
+      : quoteMimeTypeOrEmpty(requestBody.binary.mediaType);
 
-    const type = requestType?.type === "component"
-      ? this.model.getType(requestType.component.type.type)
+    const type = requestBody?.type === "component"
+      ? this.model.getType(requestBody.component.type.type)
       : undefined;
 
     return { mimeType, type };
   }
 
   get requestMimeType(): string {
-    const requestType = this.spec.http.requestBody?.body.requestType;
-    const mimeType = requestType == null
+    const requestBody = this.spec.http.requestBody?.body;
+    const mimeType = requestBody == null
       ? ""
-      : requestType.type === "component"
-      ? quoteMimeTypeOrEmpty(requestType.component.mediaType)
-      : quoteMimeTypeOrEmpty(requestType.binary.mediaType);
+      : requestBody.type === "component"
+      ? quoteMimeTypeOrEmpty(requestBody.component.mediaType)
+      : quoteMimeTypeOrEmpty(requestBody.binary.mediaType);
 
     return mimeType;
   }
 
   get requestType(): Type | "unknown" {
-    const requestType = this.spec.http.requestBody?.body.requestType;
+    const requestBody = this.spec.http.requestBody?.body;
 
-    const type = requestType?.type === "component"
-      ? this.model.getType(requestType.component.type.type)
-      : requestType?.type === "binary"
-      ? this.model.getType(requestType)
+    const type = requestBody?.type === "component"
+      ? this.model.getType(requestBody.component.type.type)
+      : requestBody?.type === "binary"
+      ? this.model.getType(requestBody)
       : "unknown"; // FIXME
 
     return type;

@@ -746,6 +746,9 @@ importers:
       '@osdk/internal.foundry.core':
         specifier: workspace:~
         version: link:../internal.foundry.core
+      '@osdk/internal.foundry.ontologies':
+        specifier: workspace:~
+        version: link:../internal.foundry.ontologies
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -1756,6 +1759,9 @@ importers:
       '@osdk/foundry.filesystem':
         specifier: workspace:*
         version: link:../foundry.filesystem
+      '@osdk/foundry.functions':
+        specifier: workspace:*
+        version: link:../foundry.functions
       '@osdk/foundry.orchestration':
         specifier: workspace:*
         version: link:../foundry.orchestration
@@ -1961,6 +1967,31 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
 
+  packages/foundry.functions:
+    dependencies:
+      '@osdk/foundry.core':
+        specifier: workspace:*
+        version: link:../foundry.core
+      '@osdk/shared.client':
+        specifier: workspace:~
+        version: link:../shared.client
+      '@osdk/shared.net.platformapi':
+        specifier: workspace:~
+        version: link:../shared.net.platformapi
+    devDependencies:
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@osdk/monorepo.tsup':
+        specifier: workspace:~
+        version: link:../monorepo.tsup
+      typescript:
+        specifier: ^5.5.4
+        version: 5.5.4
+
   packages/foundry.orchestration:
     dependencies:
       '@osdk/foundry.core':
@@ -2127,6 +2158,9 @@ importers:
       '@osdk/internal.foundry.datasets':
         specifier: workspace:*
         version: link:../internal.foundry.datasets
+      '@osdk/internal.foundry.geo':
+        specifier: workspace:*
+        version: link:../internal.foundry.geo
       '@osdk/internal.foundry.ontologies':
         specifier: workspace:*
         version: link:../internal.foundry.ontologies
@@ -2158,6 +2192,9 @@ importers:
 
   packages/internal.foundry.core:
     dependencies:
+      '@osdk/internal.foundry.geo':
+        specifier: workspace:*
+        version: link:../internal.foundry.geo
       '@osdk/shared.client':
         specifier: workspace:~
         version: link:../shared.client
@@ -2192,6 +2229,28 @@ importers:
       '@osdk/shared.net':
         specifier: workspace:~
         version: link:../shared.net
+      '@osdk/shared.net.platformapi':
+        specifier: workspace:~
+        version: link:../shared.net.platformapi
+    devDependencies:
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@osdk/monorepo.tsup':
+        specifier: workspace:~
+        version: link:../monorepo.tsup
+      typescript:
+        specifier: ^5.5.4
+        version: 5.5.4
+
+  packages/internal.foundry.geo:
+    dependencies:
+      '@osdk/shared.client':
+        specifier: workspace:~
+        version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -2555,6 +2614,9 @@ importers:
       '@osdk/internal.foundry.core':
         specifier: workspace:~
         version: link:../internal.foundry.core
+      '@osdk/internal.foundry.geo':
+        specifier: workspace:~
+        version: link:../internal.foundry.geo
       '@osdk/internal.foundry.ontologies':
         specifier: workspace:~
         version: link:../internal.foundry.ontologies

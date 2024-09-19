@@ -15,8 +15,6 @@
  */
 
 import type {
-  BranchId,
-  DatasetRid,
   FilePath,
   FolderRid,
   PageToken,
@@ -25,6 +23,13 @@ import type {
 export type LooselyBrandedString<T extends string> = string & {
   __LOOSE_BRAND?: T;
 };
+
+/**
+ * The identifier (name) of a Branch. Example: master.
+ *
+ * Log Safety: UNSAFE
+ */
+export type BranchId = LooselyBrandedString<"BranchId">;
 
 /**
  * The type of a Transaction.
@@ -40,6 +45,13 @@ export interface ListBranchesResponse {
   nextPageToken?: PageToken;
   data: Array<Branch>;
 }
+
+/**
+ * The Resource Identifier (RID) of a Dataset. Example: ri.foundry.main.dataset.c26f11c8-cdb3-4f44-9f5d-9816ea1c82da.
+ *
+ * Log Safety: SAFE
+ */
+export type DatasetRid = LooselyBrandedString<"DatasetRid">;
 
 /**
  * Log Safety: UNSAFE

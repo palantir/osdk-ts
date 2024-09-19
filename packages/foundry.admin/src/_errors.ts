@@ -85,6 +85,48 @@ export interface GetCurrentUserPermissionDenied {
 }
 
 /**
+ * You do not have permission to view the marking category.
+ *
+ * Log Safety: SAFE
+ */
+export interface GetMarkingCategoryPermissionDenied {
+  errorCode: "PERMISSION_DENIED";
+  errorName: "GetMarkingCategoryPermissionDenied";
+  errorInstanceId: string;
+  parameters: {
+    markingCategoryId: unknown;
+  };
+}
+
+/**
+ * You do not have permission to view the marking.
+ *
+ * Log Safety: SAFE
+ */
+export interface GetMarkingPermissionDenied {
+  errorCode: "PERMISSION_DENIED";
+  errorName: "GetMarkingPermissionDenied";
+  errorInstanceId: string;
+  parameters: {
+    markingId: unknown;
+  };
+}
+
+/**
+ * Could not getMarkings the User.
+ *
+ * Log Safety: SAFE
+ */
+export interface GetMarkingsUserPermissionDenied {
+  errorCode: "PERMISSION_DENIED";
+  errorName: "GetMarkingsUserPermissionDenied";
+  errorInstanceId: string;
+  parameters: {
+    userId: unknown;
+  };
+}
+
+/**
  * Could not profilePicture the User.
  *
  * Log Safety: SAFE
@@ -166,6 +208,34 @@ export interface InvalidProfilePicture {
   errorInstanceId: string;
   parameters: {
     userId: unknown;
+  };
+}
+
+/**
+ * The given MarkingCategory could not be found.
+ *
+ * Log Safety: SAFE
+ */
+export interface MarkingCategoryNotFound {
+  errorCode: "NOT_FOUND";
+  errorName: "MarkingCategoryNotFound";
+  errorInstanceId: string;
+  parameters: {
+    markingCategoryId: unknown;
+  };
+}
+
+/**
+ * The given Marking could not be found.
+ *
+ * Log Safety: SAFE
+ */
+export interface MarkingNotFound {
+  errorCode: "NOT_FOUND";
+  errorName: "MarkingNotFound";
+  errorInstanceId: string;
+  parameters: {
+    markingId: unknown;
   };
 }
 

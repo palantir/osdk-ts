@@ -18,6 +18,7 @@ export * as Admin from "@osdk/foundry.admin";
 export * as Core from "@osdk/foundry.core";
 export * as Datasets from "@osdk/foundry.datasets";
 export * as Filesystem from "@osdk/foundry.filesystem";
+export * as Functions from "@osdk/foundry.functions";
 export * as Orchestration from "@osdk/foundry.orchestration";
 export * as PublicApis from "@osdk/foundry.publicapis";
 export * as ThirdPartyApplications from "@osdk/foundry.thirdpartyapplications";

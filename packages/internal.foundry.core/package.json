@@ -26,6 +26,7 @@
     "typecheck": "monorepo.tool.typecheck esm"
   },
   "dependencies": {
+    "@osdk/internal.foundry.geo": "workspace:*",
     "@osdk/shared.client": "workspace:~",
     "@osdk/shared.net": "workspace:~",
     "@osdk/shared.net.platformapi": "workspace:~"
@@ -54,7 +55,7 @@
   "sls": {
     "dependencies": {
       "com.palantir.foundry.api:api-gateway": {
-        "minVersion": "1.922.0",
+        "minVersion": "1.927.0",
         "maxVersion": "1.x.x",
         "optional": true
       }

@@ -47,4 +47,4 @@ export type ApiDefinitionRid = LooselyBrandedString<"ApiDefinitionRid">;
 /**
  * Log Safety: SAFE
  */
-export type IrVersion = "v1";
+export type IrVersion = "v1" | "v2";

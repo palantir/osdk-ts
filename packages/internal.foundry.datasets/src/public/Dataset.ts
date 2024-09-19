@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  BranchId,
-  DatasetRid,
-  PreviewMode,
-} from "@osdk/internal.foundry.core";
+import type { PreviewMode } from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
@@ -26,8 +22,10 @@ import type {
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
 import type {
+  BranchId,
   CreateDatasetRequest,
   Dataset,
+  DatasetRid,
   TableExportFormat,
   TransactionRid,
 } from "../_components.js";
@@ -120,6 +118,39 @@ export function readTable(
   return $foundryPlatformFetch($ctx, _readTable, ...args);
 }
 
+const _putSchema: $FoundryPlatformMethod<
+  (
+    datasetRid: DatasetRid,
+    $body: any,
+    $queryParams?: {
+      branchId?: BranchId | undefined;
+      preview?: PreviewMode | undefined;
+    },
+  ) => Promise<void>
+> = [2, "/v1/datasets/{0}/schema", 3];
+
+/**
+ * Puts a Schema on an existing Dataset and Branch.
+ *
+ * @alpha
+ *
+ * Required Scopes: [api:datasets-write]
+ * URL: /v1/datasets/{datasetRid}/schema
+ */
+export function putSchema(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    datasetRid: DatasetRid,
+    $body: any,
+    $queryParams?: {
+      branchId?: BranchId | undefined;
+      preview?: PreviewMode | undefined;
+    },
+  ]
+): Promise<void> {
+  return $foundryPlatformFetch($ctx, _putSchema, ...args);
+}
+
 const _getSchema: $FoundryPlatformMethod<
   (
     datasetRid: DatasetRid,
@@ -152,39 +183,6 @@ export function getSchema(
   ]
 ): Promise<any | undefined> {
   return $foundryPlatformFetch($ctx, _getSchema, ...args);
-}
-
-const _putSchema: $FoundryPlatformMethod<
-  (
-    datasetRid: DatasetRid,
-    $body: any,
-    $queryParams?: {
-      branchId?: BranchId | undefined;
-      preview?: PreviewMode | undefined;
-    },
-  ) => Promise<void>
-> = [2, "/v1/datasets/{0}/schema", 3];
-
-/**
- * Puts a Schema on an existing Dataset and Branch.
- *
- * @alpha
- *
- * Required Scopes: [api:datasets-write]
- * URL: /v1/datasets/{datasetRid}/schema
- */
-export function putSchema(
-  $ctx: $Client | $ClientContext,
-  ...args: [
-    datasetRid: DatasetRid,
-    $body: any,
-    $queryParams?: {
-      branchId?: BranchId | undefined;
-      preview?: PreviewMode | undefined;
-    },
-  ]
-): Promise<void> {
-  return $foundryPlatformFetch($ctx, _putSchema, ...args);
 }
 
 const _deleteSchema: $FoundryPlatformMethod<

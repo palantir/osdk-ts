@@ -15,6 +15,9 @@
  */
 
 import type {
+  CreatedBy,
+  CreatedTime,
+  MarkingId,
   OrganizationRid,
   PageSize,
   PageToken,
@@ -72,6 +75,13 @@ export interface GetGroupsBatchRequestElement {
  */
 export interface GetGroupsBatchResponse {
   data: Record<PrincipalId, Group>;
+}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface GetUserMarkingsResponse {
+  view: Array<MarkingId>;
 }
 
 /**
@@ -162,10 +172,83 @@ export interface ListGroupsResponse {
 /**
  * Log Safety: UNSAFE
  */
+export interface ListMarkingCategoriesResponse {
+  data: Array<MarkingCategory>;
+  nextPageToken?: PageToken;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface ListMarkingsResponse {
+  data: Array<Marking>;
+  nextPageToken?: PageToken;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
 export interface ListUsersResponse {
   data: Array<User>;
   nextPageToken?: PageToken;
 }
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface Marking {
+  id: MarkingId;
+  categoryId: MarkingCategoryId;
+  displayName: MarkingDisplayName;
+  description?: string;
+  organizationRid?: OrganizationRid;
+  createdTime: CreatedTime;
+  createdBy?: CreatedBy;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface MarkingCategory {
+  id: MarkingCategoryId;
+  displayName: MarkingCategoryDisplayName;
+  description?: string;
+  categoryType: MarkingCategoryType;
+  markingType: MarkingType;
+  markings: Array<MarkingId>;
+  createdTime: CreatedTime;
+  createdBy?: CreatedBy;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export type MarkingCategoryDisplayName = LooselyBrandedString<
+  "MarkingCategoryDisplayName"
+>;
+
+/**
+   * The ID of a marking category. For user-created categories, this will be a UUID. Markings associated with
+Organizations are placed in a category with ID "Organization".
+   *
+   * Log Safety: SAFE
+   */
+export type MarkingCategoryId = LooselyBrandedString<"MarkingCategoryId">;
+
+/**
+ * Log Safety: SAFE
+ */
+export type MarkingCategoryType = "CONJUNCTIVE" | "DISJUNCTIVE";
+
+/**
+ * Log Safety: UNSAFE
+ */
+export type MarkingDisplayName = LooselyBrandedString<"MarkingDisplayName">;
+
+/**
+ * Log Safety: SAFE
+ */
+export type MarkingType = "MANDATORY" | "CBAC";
 
 /**
  * Log Safety: SAFE

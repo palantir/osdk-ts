@@ -95,8 +95,8 @@ export type BuildStatus = "RUNNING" | "SUCCEEDED" | "FAILED" | "CANCELED";
  * Log Safety: UNSAFE
  */
 export type BuildTarget =
-  | ({ type: "manual" } & ManualTarget)
   | ({ type: "upstream" } & UpstreamTarget)
+  | ({ type: "manual" } & ManualTarget)
   | ({ type: "connecting" } & ConnectingTarget);
 
 /**
@@ -322,8 +322,8 @@ ignored if all targets are up-to-date or error.
    * Log Safety: UNSAFE
    */
 export type ScheduleRunResult =
-  | ({ type: "submitted" } & ScheduleRunSubmitted)
   | ({ type: "ignored" } & ScheduleRunIgnored)
+  | ({ type: "submitted" } & ScheduleRunSubmitted)
   | ({ type: "error" } & ScheduleRunError);
 
 /**
@@ -372,8 +372,8 @@ export type ScheduleVersionRid = LooselyBrandedString<"ScheduleVersionRid">;
  * Log Safety: UNSAFE
  */
 export type ScopeMode =
-  | ({ type: "user" } & UserScope)
-  | ({ type: "project" } & ProjectScope);
+  | ({ type: "project" } & ProjectScope)
+  | ({ type: "user" } & UserScope);
 
 /**
  * Trigger on a time based schedule.
@@ -389,14 +389,14 @@ export interface TimeTrigger {
  * Log Safety: UNSAFE
  */
 export type Trigger =
-  | ({ type: "and" } & AndTrigger)
-  | ({ type: "or" } & OrTrigger)
-  | ({ type: "time" } & TimeTrigger)
-  | ({ type: "datasetUpdated" } & DatasetUpdatedTrigger)
-  | ({ type: "newLogic" } & NewLogicTrigger)
   | ({ type: "jobSucceeded" } & JobSucceededTrigger)
+  | ({ type: "or" } & OrTrigger)
+  | ({ type: "newLogic" } & NewLogicTrigger)
+  | ({ type: "and" } & AndTrigger)
+  | ({ type: "datasetUpdated" } & DatasetUpdatedTrigger)
   | ({ type: "scheduleSucceeded" } & ScheduleSucceededTrigger)
-  | ({ type: "mediaSetUpdated" } & MediaSetUpdatedTrigger);
+  | ({ type: "mediaSetUpdated" } & MediaSetUpdatedTrigger)
+  | ({ type: "time" } & TimeTrigger);
 
 /**
  * Target the specified datasets along with all upstream datasets except the ignored datasets.

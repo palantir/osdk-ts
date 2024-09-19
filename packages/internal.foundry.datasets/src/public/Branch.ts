@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  BranchId,
-  DatasetRid,
-  PageSize,
-  PageToken,
-} from "@osdk/internal.foundry.core";
+import type { PageSize, PageToken } from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
@@ -28,45 +23,13 @@ import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shar
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
 import type {
   Branch,
+  BranchId,
   CreateBranchRequest,
+  DatasetRid,
   ListBranchesResponse,
 } from "../_components.js";
 
 //
-
-const _listBranches: $FoundryPlatformMethod<
-  (
-    datasetRid: DatasetRid,
-    $queryParams?: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-    },
-  ) => Promise<ListBranchesResponse>
-> = [0, "/v1/datasets/{0}/branches", 2];
-
-/**
- * Lists the Branches of a Dataset.
- *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-read`.
- *
- * @public
- *
- * Required Scopes: [api:datasets-read]
- * URL: /v1/datasets/{datasetRid}/branches
- */
-export function listBranches(
-  $ctx: $Client | $ClientContext,
-  ...args: [
-    datasetRid: DatasetRid,
-
-    $queryParams?: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-    },
-  ]
-): Promise<ListBranchesResponse> {
-  return $foundryPlatformFetch($ctx, _listBranches, ...args);
-}
 
 const _createBranch: $FoundryPlatformMethod<
   (datasetRid: DatasetRid, $body: CreateBranchRequest) => Promise<Branch>
@@ -129,4 +92,38 @@ export function deleteBranch(
   ...args: [datasetRid: DatasetRid, branchId: BranchId]
 ): Promise<void> {
   return $foundryPlatformFetch($ctx, _deleteBranch, ...args);
+}
+
+const _listBranches: $FoundryPlatformMethod<
+  (
+    datasetRid: DatasetRid,
+    $queryParams?: {
+      pageSize?: PageSize | undefined;
+      pageToken?: PageToken | undefined;
+    },
+  ) => Promise<ListBranchesResponse>
+> = [0, "/v1/datasets/{0}/branches", 2];
+
+/**
+ * Lists the Branches of a Dataset.
+ *
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-read`.
+ *
+ * @public
+ *
+ * Required Scopes: [api:datasets-read]
+ * URL: /v1/datasets/{datasetRid}/branches
+ */
+export function listBranches(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    datasetRid: DatasetRid,
+
+    $queryParams?: {
+      pageSize?: PageSize | undefined;
+      pageToken?: PageToken | undefined;
+    },
+  ]
+): Promise<ListBranchesResponse> {
+  return $foundryPlatformFetch($ctx, _listBranches, ...args);
 }
