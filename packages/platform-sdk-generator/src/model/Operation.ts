@@ -25,7 +25,7 @@ import type { Model } from "./Model.js";
 import { OptionalType } from "./OptionalType.js";
 import type { Type } from "./Type.js";
 
-export class StaticOperation {
+export class Operation {
   model: Model;
   name: string;
   httpMethod: ir.HttpMethod;
@@ -34,13 +34,13 @@ export class StaticOperation {
   auth: ir.Auth;
 
   constructor(
-    public spec: ir.StaticOperation,
+    public spec: ir.Operation,
     model: Model,
   ) {
     this.model = model;
     this.name = spec.name;
-    this.httpMethod = spec.httpMethod;
-    this.path = spec.path;
+    this.httpMethod = spec.http.httpMethod;
+    this.path = spec.http.path;
     this.documentation = spec.documentation;
     this.auth = spec.auth;
   }
@@ -58,7 +58,7 @@ export class StaticOperation {
   }
 
   get responseMimeType(): string {
-    const { body } = this.spec.response;
+    const { body } = this.spec.http.response;
     if (body.type === "ok") {
       const { responseType } = body.ok;
       if (responseType.type === "binary") {
@@ -76,7 +76,7 @@ export class StaticOperation {
   }
 
   get responseType(): Type | "unknown" | "void" {
-    const { body } = this.spec.response;
+    const { body } = this.spec.http.response;
     if (body.type === "ok") {
       const { responseType, required } = body.ok;
       if (responseType.type === "binary") {
@@ -95,7 +95,7 @@ export class StaticOperation {
   }
 
   get requestBodyInfo(): { type: Type | undefined; mimeType: string } {
-    const requestType = this.spec.requestBody?.body.requestType;
+    const requestType = this.spec.http.requestBody?.body.requestType;
     const mimeType = requestType == null
       ? ""
       : requestType.type === "component"
@@ -110,7 +110,7 @@ export class StaticOperation {
   }
 
   get requestMimeType(): string {
-    const requestType = this.spec.requestBody?.body.requestType;
+    const requestType = this.spec.http.requestBody?.body.requestType;
     const mimeType = requestType == null
       ? ""
       : requestType.type === "component"
@@ -121,7 +121,7 @@ export class StaticOperation {
   }
 
   get requestType(): Type | "unknown" {
-    const requestType = this.spec.requestBody?.body.requestType;
+    const requestType = this.spec.http.requestBody?.body.requestType;
 
     const type = requestType?.type === "component"
       ? this.model.getType(requestType.component.type.type)
@@ -151,7 +151,7 @@ export class StaticOperation {
 
     for (
       const { name, type: { type: dataType }, inputType } of this.spec
-        .parameters
+        .http.parameters
     ) {
       invariant(
         inputType === "PATH" || inputType === "QUERY" || inputType === "HEADER",

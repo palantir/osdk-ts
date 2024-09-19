@@ -41,7 +41,7 @@ export class Component extends Type {
     this.externalImportSpecifier = externalImportSpecifier;
     this.component = component;
     this.model = model;
-    this.name = component.name;
+    this.name = component.locator.localName;
   }
 
   get referencedTypes(): Set<Type> {
@@ -49,7 +49,7 @@ export class Component extends Type {
   }
 
   get tsReferenceString(): string {
-    return this.component.name;
+    return this.component.locator.localName;
   }
 
   get declaration(): string {
@@ -63,7 +63,7 @@ export class Component extends Type {
    * 
    * Log Safety: ${component.safety}
    */
-  export ${isAlias ? "type" : "interface"} ${component.name} ${
+  export ${isAlias ? "type" : "interface"} ${component.locator.localName} ${
       isAlias ? " = " : ""
     }`;
 
@@ -82,7 +82,7 @@ export class Component extends Type {
       case "builtin":
         // need to special case this since we use a branded type
         if (dt.builtin.type === "rid" || dt.builtin.type === "string") {
-          out += `LooselyBrandedString<"${component.name}">`;
+          out += `LooselyBrandedString<"${component.locator.localName}">`;
         } else {
           out += ourType.declaration;
         }

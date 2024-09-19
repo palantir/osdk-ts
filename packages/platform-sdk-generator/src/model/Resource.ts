@@ -15,9 +15,10 @@
  */
 
 import type { Component } from "./Component.js";
-import type { StaticOperation } from "./StaticOperation.js";
+import type { Operation } from "./Operation.js";
 
 export interface Resource {
   component: string;
-  operations: StaticOperation[];
+  namespace: string;
+  operations: Operation[];
 }
