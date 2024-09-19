@@ -1,5 +1,11 @@
 # @osdk/shared.net
 
+## 2.0.0-beta.2
+
+### Minor Changes
+
+- 01724ae: Remove unnecessary dependency
+
 ## 2.0.0-beta.1
 
 ### Major Changes

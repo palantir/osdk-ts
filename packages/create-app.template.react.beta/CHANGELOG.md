@@ -1,5 +1,11 @@
 # @osdk/create-app.template.react
 
+## 0.19.0-beta.4
+
+### Minor Changes
+
+- 646081b: fix latest to "workspace:\*" on examples
+
 ## 0.19.0-beta.3
 
 ### Minor Changes

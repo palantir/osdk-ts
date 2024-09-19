@@ -1,5 +1,18 @@
 # @osdk/generator
 
+## 2.0.0-beta.9
+
+### Minor Changes
+
+- b946e00: Emitted action definition is minimal size now
+
+### Patch Changes
+
+- Updated dependencies [b946e00]
+  - @osdk/api@2.0.0-beta.9
+  - @osdk/generator-converters@2.0.0-beta.9
+  - @osdk/internal.foundry.core@0.2.0-beta.6
+
 ## 2.0.0-beta.8
 
 ### Minor Changes
