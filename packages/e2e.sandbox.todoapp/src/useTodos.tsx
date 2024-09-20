@@ -1,6 +1,7 @@
 import type { MinObjectDef } from "@osdk/api";
 import { ActionValidationError } from "@osdk/client";
 import type { Osdk } from "@osdk/client.api";
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/client.api/unstable";
 import { useCallback, useEffect } from "react";
 import type { KeyedMutator } from "swr";
 import useSWR from "swr";
@@ -167,69 +168,70 @@ function updateOne<T extends { $primaryKey: Q }, Q>(
 /** disabling for now */
 export function useSubscribe(mutate: KeyedMutator<SimpleTodo[]>) {
   useEffect(() => {
-    const unsubscribe = $(MyOsdk.Todo).subscribe({
-      onChange(objects) {
-        // index incoming objects by apiName and then by pk value
-        const byApiNameByPK = new Map<
-          string,
-          Map<(typeof objects)[0]["$primaryKey"], (typeof objects)[0]>
-        >();
-        for (const object of objects) {
-          const byPk = byApiNameByPK.get(object.$apiName);
-          if (byPk) {
-            byPk.set(object.$primaryKey, object);
-          } else {
-            byApiNameByPK.set(
-              object.$apiName,
-              new Map([[object.$primaryKey, object]]),
-            );
-          }
-        }
-
-        // get the new version of an object that has changed, removing it from the list of updates
-        const getUpdate = (
-          apiName: (typeof objects)[0]["$apiName"],
-          primaryKey: (typeof objects)[0]["$primaryKey"],
-        ) => {
-          const byPk = byApiNameByPK.get(apiName);
-          if (byPk) {
-            const value = byPk.get(primaryKey);
-            if (value) {
-              byPk.delete(primaryKey);
-              return value;
-            }
-          }
-        };
-
-        mutate((data) => {
-          // update any Todos that we got a new version for
-          const updated = data?.map((object) => {
-            const updateObject = getUpdate(
-              object.$apiName,
-              object.$primaryKey,
-            );
-            return updateObject ?? object;
-          }) ?? [];
-
-          // add any new Todos to the bottom
-          for (const byPk of byApiNameByPK.values()) {
-            for (const object of byPk.values()) {
-              updated.push(object);
+    const unsubscribe = $(MyOsdk.Todo)
+      [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]({
+        onChange(objects) {
+          // index incoming objects by apiName and then by pk value
+          const byApiNameByPK = new Map<
+            string,
+            Map<(typeof objects)[0]["$primaryKey"], (typeof objects)[0]>
+          >();
+          for (const object of objects) {
+            const byPk = byApiNameByPK.get(object.$apiName);
+            if (byPk) {
+              byPk.set(object.$primaryKey, object);
+            } else {
+              byApiNameByPK.set(
+                object.$apiName,
+                new Map([[object.$primaryKey, object]]),
+              );
             }
           }
 
-          return updated as typeof data;
-        });
-      },
+          // get the new version of an object that has changed, removing it from the list of updates
+          const getUpdate = (
+            apiName: (typeof objects)[0]["$apiName"],
+            primaryKey: (typeof objects)[0]["$primaryKey"],
+          ) => {
+            const byPk = byApiNameByPK.get(apiName);
+            if (byPk) {
+              const value = byPk.get(primaryKey);
+              if (value) {
+                byPk.delete(primaryKey);
+                return value;
+              }
+            }
+          };
 
-      onOutOfDate() {
-        mutate();
-      },
+          mutate((data) => {
+            // update any Todos that we got a new version for
+            const updated = data?.map((object) => {
+              const updateObject = getUpdate(
+                object.$apiName,
+                object.$primaryKey,
+              );
+              return updateObject ?? object;
+            }) ?? [];
 
-      onError(data) {
-        console.error("Todo subscription error", data);
-      },
-    });
+            // add any new Todos to the bottom
+            for (const byPk of byApiNameByPK.values()) {
+              for (const object of byPk.values()) {
+                updated.push(object);
+              }
+            }
+
+            return updated as typeof data;
+          });
+        },
+
+        onOutOfDate() {
+          mutate();
+        },
+
+        onError(data) {
+          console.error("Todo subscription error", data);
+        },
+      });
 
     return function() {
       unsubscribe();
