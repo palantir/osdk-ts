@@ -1,6 +1,6 @@
 {
   "name": "@osdk/internal.foundry.ontologies",
-  "version": "0.2.0-beta.5",
+  "version": "0.0.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -28,7 +28,6 @@
   "dependencies": {
     "@osdk/internal.foundry.core": "workspace:*",
     "@osdk/shared.client": "workspace:~",
-    "@osdk/shared.net": "workspace:~",
     "@osdk/shared.net.platformapi": "workspace:~"
   },
   "devDependencies": {
@@ -54,7 +53,7 @@
   "sls": {
     "dependencies": {
       "com.palantir.foundry.api:api-gateway": {
-        "minVersion": "1.922.0",
+        "minVersion": "1.927.0",
         "maxVersion": "1.x.x",
         "optional": true
       }

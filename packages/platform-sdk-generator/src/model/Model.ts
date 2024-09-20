@@ -122,7 +122,17 @@ export class Model {
     npmOrg: string;
   }): Promise<Model> {
     const model = new Model(opts);
+
+    /**
+     * We are manually remapping all of the components(types)
+     * from the Ontologies namespace to the Core namespace
+     * so that packages don't have to depend on code in
+     * internal.foundry.ontologies that is present in
+     * internal.foundry.ontologiesv2 just to depend on types
+     * only present in the former.
+     */
     await model.#addNamespace("Core");
+    await model.#addNamespace("Ontologies");
     for (const ns of ir.namespaces) {
       if (isIgnoredNamespace(ns.name)) continue;
 
@@ -239,7 +249,7 @@ export class Model {
   }
 
   addResource(ns: ir.Namespace, r: ir.Resource): void {
-    this.#namespaces.get(ns.name === "Ontologies" ? "Core" : ns.name)!.resources
+    this.#namespaces.get(ns.name)!.resources
       .push({
         component: r.component.localName,
         namespace: r.component.namespaceName,

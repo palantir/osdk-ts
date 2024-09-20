@@ -1,5 +1,5 @@
 {
-  "name": "@osdk/internal.foundry.core",
+  "name": "@osdk/foundry.ontologies",
   "version": "0.0.0",
   "license": "Apache-2.0",
   "repository": {
@@ -26,7 +26,6 @@
     "typecheck": "monorepo.tool.typecheck esm"
   },
   "dependencies": {
-    "@osdk/internal.foundry.geo": "workspace:*",
     "@osdk/shared.client": "workspace:~",
     "@osdk/shared.net.platformapi": "workspace:~"
   },

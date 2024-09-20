@@ -498,11 +498,3 @@ export type {
   UnsupportedObjectSet,
   ViewObjectPermissionDenied,
 } from "./_errors.js";
-export * as Actions from "./public/Action.js";
-export * as ActionTypes from "./public/ActionType.js";
-export * as Attachments from "./public/Attachment.js";
-export * as ObjectTypes from "./public/ObjectType.js";
-export * as Ontologies from "./public/Ontology.js";
-export * as OntologyObjects from "./public/OntologyObject.js";
-export * as Queries from "./public/Query.js";
-export * as QueryTypes from "./public/QueryType.js";

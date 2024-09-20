@@ -31,6 +31,7 @@
     "@osdk/foundry.datasets": "workspace:*",
     "@osdk/foundry.filesystem": "workspace:*",
     "@osdk/foundry.functions": "workspace:*",
+    "@osdk/foundry.ontologies": "workspace:*",
     "@osdk/foundry.orchestration": "workspace:*",
     "@osdk/foundry.publicapis": "workspace:*",
     "@osdk/foundry.thirdpartyapplications": "workspace:*",
