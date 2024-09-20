@@ -17,6 +17,7 @@
 import type {
   ActionDefinition,
   InterfaceDefinition,
+  MinimalActionDefinition,
   ObjectTypeDefinition,
   QueryDefinition,
 } from "@osdk/api";
@@ -27,7 +28,6 @@ import type {
   QueryMetadata,
 } from "@osdk/client.api";
 import { OntologiesV2 } from "@osdk/internal.foundry";
-import type { MinimalActionDefinition } from "../../api/build/cjs/index.cjs";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "./util/addUserAgentAndRequestContextHeaders.js";
 
