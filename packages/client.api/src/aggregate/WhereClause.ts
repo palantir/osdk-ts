@@ -30,6 +30,7 @@ export type PossibleWhereClauseFilters =
   | "$lt"
   | "$lte"
   | "$within"
+  | "$in"
   | "$intersects"
   | "$startsWith"
   | "$containsAllTermsInOrder"
@@ -45,6 +46,7 @@ type MakeFilter<K extends PossibleWhereClauseFilters, V> = K extends string ? {
 type BaseFilter<T> =
   | T
   | MakeFilter<"$eq" | "$ne", T>
+  | MakeFilter<"$in", Array<T>>
   | MakeFilter<"$isNull", boolean>;
 
 type StringFilter =
