@@ -41,6 +41,12 @@ export async function osdkObjectSetExample() {
     }],
   });
 
+  // Where clause in
+
+  await client(Employee).where({
+    fullName: { $in: ["George Clooney", "Emily Blunt", "Dwayne Johnson"] },
+  });
+
   // Where clause boolean
 
   await client(Todo).where({ isComplete: true });
