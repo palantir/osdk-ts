@@ -1,5 +1,19 @@
 # @osdk/shared.test
 
+## 1.7.0-beta.5
+
+### Minor Changes
+
+- 01724ae: Remove unnecessary dependency
+
+### Patch Changes
+
+- Updated dependencies [b946e00]
+  - @osdk/api@2.0.0-beta.9
+  - @osdk/internal.foundry.core@0.2.0-beta.6
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.6
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.6
+
 ## 1.7.0-beta.4
 
 ### Minor Changes
