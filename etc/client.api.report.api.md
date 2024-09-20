@@ -460,7 +460,7 @@ export type NumericAggregateOption = "min" | "max" | "sum" | "avg" | "approximat
 export type ObjectMetadata = {
     description?: string;
     displayName: string;
-    icon: Icon;
+    icon?: Icon;
     pluralDisplayName: string;
     rid: string;
     visibility?: ObjectTypeVisibility;
@@ -813,8 +813,8 @@ export type WhereClause<T extends ObjectOrInterfaceDefinition<any, any>> = OrWhe
 
 // Warnings were encountered during analysis:
 //
-// src/object/ObjectMetadata.ts:29:3 - (ae-forgotten-export) The symbol "Icon" needs to be exported by the entry point index.d.ts
-// src/object/ObjectMetadata.ts:32:3 - (ae-forgotten-export) The symbol "ObjectTypeVisibility" needs to be exported by the entry point index.d.ts
+// src/object/ObjectMetadata.ts:30:3 - (ae-forgotten-export) The symbol "Icon" needs to be exported by the entry point index.d.ts
+// src/object/ObjectMetadata.ts:33:3 - (ae-forgotten-export) The symbol "ObjectTypeVisibility" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

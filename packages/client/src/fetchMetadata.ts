@@ -73,12 +73,15 @@ const fetchObjectMetadata = async (
     { preview: true },
   );
 
+  const supportedIconTypes = ["blueprint"];
   return {
     description: response.objectType.description,
     displayName: response.objectType.displayName,
     visibility: response.objectType.visibility,
     pluralDisplayName: response.objectType.pluralDisplayName,
-    icon: response.objectType.icon,
+    icon: supportedIconTypes.includes(response.objectType.icon.type)
+      ? response.objectType.icon
+      : undefined,
     rid: response.objectType.rid,
   };
 };

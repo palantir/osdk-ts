@@ -17,6 +17,7 @@
 type ObjectTypeVisibility = "NORMAL" | "PROMINENT" | "HIDDEN";
 
 type BlueprintIcon = {
+  type: "blueprint";
   color: string;
   name: string;
 };
@@ -26,7 +27,7 @@ type Icon = BlueprintIcon;
 export type ObjectMetadata = {
   description?: string;
   displayName: string;
-  icon: Icon;
+  icon?: Icon;
   pluralDisplayName: string;
   rid: string;
   visibility?: ObjectTypeVisibility;
