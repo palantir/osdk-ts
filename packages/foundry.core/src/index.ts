@@ -25,6 +25,7 @@ export type {
   DistanceUnit,
   Duration,
   FilePath,
+  MarkingId,
   MediaSetRid,
   OrganizationRid,
   PageSize,

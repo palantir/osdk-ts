@@ -22,9 +22,9 @@ import { BinaryType } from "./model/BinaryType.js";
 import type { Component } from "./model/Component.js";
 import type { Model } from "./model/Model.js";
 import type { Namespace } from "./model/Namespace.js";
+import type { Operation } from "./model/Operation.js";
 import { OptionalType } from "./model/OptionalType.js";
 import type { Resource } from "./model/Resource.js";
-import type { StaticOperation } from "./model/StaticOperation.js";
 import type { Type } from "./model/Type.js";
 import { addAll } from "./util/addAll.js";
 import { writeCode } from "./writeCode.js";
@@ -71,7 +71,9 @@ async function generateMethods(resource: Resource, model: Model) {
     const parameters = generateMethodParameters(method);
     const requestType = method.requestType;
 
-    const shouldFillBlobHeaders = method.parametersByType.HEADER != null
+    const shouldFillBlobHeaders = requestType !== "unknown"
+      && requestType instanceof BinaryType
+      && method.parametersByType.HEADER != null
       && method.parametersByType.HEADER.find((p) => p.name === "Content-Type")
         != null;
     const blobHeaders = fillBlobHeaders(
@@ -89,8 +91,7 @@ async function generateMethods(resource: Resource, model: Model) {
       $ctx: $Client | $ClientContext,
       ...args: [${parameters}]
     ): ${returnType}{${
-      requestType !== "unknown" && requestType instanceof BinaryType
-        && shouldFillBlobHeaders
+      shouldFillBlobHeaders
         ? blobHeaders.autofill
         : ""
     }return $foundryPlatformFetch($ctx, _${methodName}, ${
@@ -102,7 +103,7 @@ async function generateMethods(resource: Resource, model: Model) {
   return { out, referencedTypes };
 }
 
-function generateMethodParameters(method: StaticOperation) {
+function generateMethodParameters(method: Operation) {
   const requestType = method.requestType;
   const byType = method.parametersByType;
 
@@ -129,7 +130,7 @@ function generateMethodParameters(method: StaticOperation) {
     ${headerParams}`;
 }
 
-function generateOperationArray(op: StaticOperation, model: Model) {
+function generateOperationArray(op: Operation, model: Model) {
   const byType = op.parametersByType;
   // bit wise math
   const flag = (op.requestType !== "unknown" ? 1 : 0)
@@ -153,7 +154,7 @@ function generateOperationArray(op: StaticOperation, model: Model) {
 }
 
 function getParamsAsSyntaxListString(
-  params: StaticOperation["parameters"] | undefined,
+  params: Operation["parameters"] | undefined,
   quoteChar: string = "",
   requestType?: Type,
 ) {
@@ -178,7 +179,7 @@ function getParamsAsSyntaxListString(
 
 function getParamsAsObject(
   prefix: "$queryParams" | "$headerParams",
-  params: StaticOperation["parameters"] | undefined,
+  params: Operation["parameters"] | undefined,
   requestType?: Type,
   shouldMakeHeadersOptional?: boolean,
 ) {

@@ -25,7 +25,7 @@ import type { Model } from "./Model.js";
 import { OptionalType } from "./OptionalType.js";
 import type { Type } from "./Type.js";
 
-export class StaticOperation {
+export class Operation {
   model: Model;
   name: string;
   httpMethod: ir.HttpMethod;
@@ -34,13 +34,13 @@ export class StaticOperation {
   auth: ir.Auth;
 
   constructor(
-    public spec: ir.StaticOperation,
+    public spec: ir.Operation,
     model: Model,
   ) {
     this.model = model;
     this.name = spec.name;
-    this.httpMethod = spec.httpMethod;
-    this.path = spec.path;
+    this.httpMethod = spec.http.httpMethod;
+    this.path = spec.http.path;
     this.documentation = spec.documentation;
     this.auth = spec.auth;
   }
@@ -58,7 +58,7 @@ export class StaticOperation {
   }
 
   get responseMimeType(): string {
-    const { body } = this.spec.response;
+    const { body } = this.spec.http.response;
     if (body.type === "ok") {
       const { responseType } = body.ok;
       if (responseType.type === "binary") {
@@ -76,7 +76,7 @@ export class StaticOperation {
   }
 
   get responseType(): Type | "unknown" | "void" {
-    const { body } = this.spec.response;
+    const { body } = this.spec.http.response;
     if (body.type === "ok") {
       const { responseType, required } = body.ok;
       if (responseType.type === "binary") {
@@ -95,38 +95,38 @@ export class StaticOperation {
   }
 
   get requestBodyInfo(): { type: Type | undefined; mimeType: string } {
-    const requestType = this.spec.requestBody?.body.requestType;
-    const mimeType = requestType == null
+    const requestBody = this.spec.http.requestBody?.body;
+    const mimeType = requestBody == null
       ? ""
-      : requestType.type === "component"
-      ? quoteMimeTypeOrEmpty(requestType.component.mediaType)
-      : quoteMimeTypeOrEmpty(requestType.binary.mediaType);
+      : requestBody.type === "component"
+      ? quoteMimeTypeOrEmpty(requestBody.component.mediaType)
+      : quoteMimeTypeOrEmpty(requestBody.binary.mediaType);
 
-    const type = requestType?.type === "component"
-      ? this.model.getType(requestType.component.type.type)
+    const type = requestBody?.type === "component"
+      ? this.model.getType(requestBody.component.type.type)
       : undefined;
 
     return { mimeType, type };
   }
 
   get requestMimeType(): string {
-    const requestType = this.spec.requestBody?.body.requestType;
-    const mimeType = requestType == null
+    const requestBody = this.spec.http.requestBody?.body;
+    const mimeType = requestBody == null
       ? ""
-      : requestType.type === "component"
-      ? quoteMimeTypeOrEmpty(requestType.component.mediaType)
-      : quoteMimeTypeOrEmpty(requestType.binary.mediaType);
+      : requestBody.type === "component"
+      ? quoteMimeTypeOrEmpty(requestBody.component.mediaType)
+      : quoteMimeTypeOrEmpty(requestBody.binary.mediaType);
 
     return mimeType;
   }
 
   get requestType(): Type | "unknown" {
-    const requestType = this.spec.requestBody?.body.requestType;
+    const requestBody = this.spec.http.requestBody?.body;
 
-    const type = requestType?.type === "component"
-      ? this.model.getType(requestType.component.type.type)
-      : requestType?.type === "binary"
-      ? this.model.getType(requestType)
+    const type = requestBody?.type === "component"
+      ? this.model.getType(requestBody.component.type.type)
+      : requestBody?.type === "binary"
+      ? this.model.getType(requestBody)
       : "unknown"; // FIXME
 
     return type;
@@ -151,7 +151,7 @@ export class StaticOperation {
 
     for (
       const { name, type: { type: dataType }, inputType } of this.spec
-        .parameters
+        .http.parameters
     ) {
       invariant(
         inputType === "PATH" || inputType === "QUERY" || inputType === "HEADER",

@@ -16,10 +16,10 @@
 
 import { getCleanedUpJsdoc } from "./getCleanedUpJsdoc.js";
 import type * as ir from "./ir/index.js";
-import type { StaticOperation } from "./model/StaticOperation.js";
+import type { Operation } from "./model/Operation.js";
 
 export async function generateMethodJsdoc(
-  method: StaticOperation,
+  method: Operation,
 ) {
   return `/**
   * ${await getCleanedUpJsdoc(method.documentation)}
@@ -32,7 +32,7 @@ export async function generateMethodJsdoc(
 }
 
 function jsdocTagForReleaseStage(
-  releaseStage: ir.StaticOperation["releaseStage"],
+  releaseStage: ir.Operation["releaseStage"],
 ) {
   switch (releaseStage) {
     case "PRIVATE_BETA":

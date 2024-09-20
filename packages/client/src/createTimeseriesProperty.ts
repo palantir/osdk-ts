@@ -21,7 +21,7 @@ import {
   TimeSeriesProperty,
   type TimeSeriesQuery,
 } from "@osdk/client.api";
-import { Ontologies, OntologiesV2 } from "@osdk/internal.foundry";
+import { OntologiesV2 } from "@osdk/internal.foundry";
 import type {
   AbsoluteTimeRange,
   RelativeTime,

@@ -43,7 +43,7 @@ export class ErrorType extends Type {
     this.externalImportSpecifier = externalImportSpecifier;
     this.spec = spec;
     this.model = model;
-    this.name = spec.name;
+    this.name = spec.locator.localName;
   }
 
   get referencedComponents(): Component[] {
@@ -64,7 +64,7 @@ export class ErrorType extends Type {
   }
 
   get tsReferenceString(): string {
-    return this.spec.name;
+    return this.spec.locator.localName;
   }
 
   get declaration(): string {
@@ -81,9 +81,9 @@ export class ErrorType extends Type {
    * 
    * Log Safety: ${safety}
    */
-  export interface ${error.name} {
+  export interface ${error.locator.localName} {
     errorCode: "${error.errorType}";
-    errorName: "${error.name}";
+    errorName: "${error.locator.localName}";
     errorInstanceId: string;
     parameters: {
       ${

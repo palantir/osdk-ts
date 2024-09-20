@@ -486,7 +486,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
    * Upload attachment
    */
   handleOpenApiCall(
-    AttachmentsV1.uploadAttachment,
+    OntologiesV2.Attachments.uploadAttachmentV2,
     [],
     async req => {
       const urlObj = new URL(req.request.url);
@@ -517,7 +517,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
    * Get attachment metadata V1
    */
   handleOpenApiCall(
-    AttachmentsV1.getAttachment,
+    OntologiesV2.Attachments.getAttachmentV2,
     ["attachmentRid"],
     async req => {
       const attachmentRid = req.params.attachmentRid;
@@ -579,7 +579,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
    * Read attachment content V1
    */
   handleOpenApiCall(
-    AttachmentsV1.getAttachmentContent,
+    OntologiesV2.Attachments.getAttachmentContentV2,
     ["attachmentRid"],
     async req => {
       const attachmentRid = req.params.attachmentRid;

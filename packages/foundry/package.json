@@ -30,6 +30,8 @@
     "@osdk/foundry.core": "workspace:*",
     "@osdk/foundry.datasets": "workspace:*",
     "@osdk/foundry.filesystem": "workspace:*",
+    "@osdk/foundry.functions": "workspace:*",
+    "@osdk/foundry.ontologies": "workspace:*",
     "@osdk/foundry.orchestration": "workspace:*",
     "@osdk/foundry.publicapis": "workspace:*",
     "@osdk/foundry.thirdpartyapplications": "workspace:*",
@@ -59,7 +61,7 @@
   "sls": {
     "dependencies": {
       "com.palantir.foundry.api:api-gateway": {
-        "minVersion": "1.922.0",
+        "minVersion": "1.927.0",
         "maxVersion": "1.x.x",
         "optional": true
       }

@@ -94,6 +94,23 @@ export interface TransactionNotFound {
 }
 
 /**
+ * The requested file could not be found on the given transaction range, or the client token does not have access to it.
+ *
+ * Log Safety: UNSAFE
+ */
+export interface FileNotFoundOnTransactionRange {
+  errorCode: "NOT_FOUND";
+  errorName: "FileNotFoundOnTransactionRange";
+  errorInstanceId: string;
+  parameters: {
+    datasetRid: unknown;
+    startTransactionRid: unknown;
+    endTransactionRid: unknown;
+    path: unknown;
+  };
+}
+
+/**
  * The given transaction type is not valid. Valid transaction types are SNAPSHOT, UPDATE, APPEND, and DELETE.
  *
  * Log Safety: SAFE

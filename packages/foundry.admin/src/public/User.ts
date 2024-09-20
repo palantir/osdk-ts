@@ -27,6 +27,7 @@ import type {
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
 import type {
+  GetUserMarkingsResponse,
   GetUsersBatchRequestElement,
   GetUsersBatchResponse,
   ListUsersResponse,
@@ -132,7 +133,7 @@ const _getUsersBatch: $FoundryPlatformMethod<
  *
  * The maximum batch size for this endpoint is 500.
  *
- * @alpha
+ * @beta
  *
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/users/getBatch
@@ -162,6 +163,32 @@ export function getCurrentUser(
   ...args: [$queryParams?: { preview?: PreviewMode | undefined }]
 ): Promise<User> {
   return $foundryPlatformFetch($ctx, _getCurrentUser, ...args);
+}
+
+const _getMarkingsUser: $FoundryPlatformMethod<
+  (
+    userId: PrincipalId,
+    $queryParams?: { preview?: PreviewMode | undefined },
+  ) => Promise<GetUserMarkingsResponse>
+> = [0, "/v2/admin/users/{0}/getMarkings", 2];
+
+/**
+ * Retrieve Markings that the user is currently a member of.
+ *
+ * @alpha
+ *
+ * Required Scopes: [api:security-read]
+ * URL: /v2/admin/users/{userId}/getMarkings
+ */
+export function getMarkingsUser(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    userId: PrincipalId,
+
+    $queryParams?: { preview?: PreviewMode | undefined },
+  ]
+): Promise<GetUserMarkingsResponse> {
+  return $foundryPlatformFetch($ctx, _getMarkingsUser, ...args);
 }
 
 const _getProfilePictureOfUser: $FoundryPlatformMethod<

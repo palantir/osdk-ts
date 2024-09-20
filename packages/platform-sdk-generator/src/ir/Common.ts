@@ -26,3 +26,8 @@ export interface Example {
   type: "example";
   example: Record<string, any> | any;
 }
+
+export interface Locator {
+  localName: string;
+  namespaceName: string;
+}

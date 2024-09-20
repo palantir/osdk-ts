@@ -200,6 +200,7 @@ function mapWhereClauseToObjectSetFilter(
     case "intersectsPolygon":
     case "doesNotIntersectPolygon":
     case "containsAllTermsInOrderPrefixLastTerm":
+    case "in":
       throw new Error("not implemented");
   }
 }

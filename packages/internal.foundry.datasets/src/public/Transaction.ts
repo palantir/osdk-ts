@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { BranchId, DatasetRid } from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
@@ -22,7 +21,9 @@ import type {
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
 import type {
+  BranchId,
   CreateTransactionRequest,
+  DatasetRid,
   Transaction,
   TransactionRid,
 } from "../_components.js";

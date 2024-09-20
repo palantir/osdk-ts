@@ -32,6 +32,7 @@
   "dependencies": {
     "@osdk/api": "workspace:~",
     "@osdk/internal.foundry.core": "workspace:~",
+    "@osdk/internal.foundry.geo": "workspace:~",
     "@osdk/internal.foundry.ontologies": "workspace:~",
     "@osdk/internal.foundry.ontologiesv2": "workspace:~",
     "fetch-retry": "^6.0.0",

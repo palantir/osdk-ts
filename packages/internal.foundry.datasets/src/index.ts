@@ -16,11 +16,13 @@
 
 export type {
   Branch,
+  BranchId,
   CreateBranchRequest,
   CreateDatasetRequest,
   CreateTransactionRequest,
   Dataset,
   DatasetName,
+  DatasetRid,
   File,
   ListBranchesResponse,
   ListFilesResponse,
@@ -46,6 +48,7 @@ export type {
   DeleteSchemaPermissionDenied,
   FileAlreadyExists,
   FileNotFoundOnBranch,
+  FileNotFoundOnTransactionRange,
   InvalidBranchId,
   InvalidTransactionType,
   OpenTransactionAlreadyExists,
