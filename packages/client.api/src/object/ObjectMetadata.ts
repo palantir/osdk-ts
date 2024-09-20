@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-import type { InterfaceType } from "@osdk/internal.foundry.core";
-import { fooSpt } from "./spts.js";
+type ObjectTypeVisibility = "NORMAL" | "PROMINENT" | "HIDDEN";
 
-export const FooInterface: InterfaceType = {
-  apiName: "FooInterface",
-  description: "Interface for Foo",
-  displayName: "Foo Interface",
-  rid: "ri.interface.main.interface.1",
-  extendsInterfaces: [],
-  properties: {
-    fooSpt,
-  },
-  links: {},
+type BlueprintIcon = {
+  type: "blueprint";
+  color: string;
+  name: string;
+};
+
+type Icon = BlueprintIcon;
+
+export type ObjectMetadata = {
+  description?: string;
+  displayName: string;
+  icon?: Icon;
+  pluralDisplayName: string;
+  rid: string;
+  visibility?: ObjectTypeVisibility;
+  // TODO: Add Links, Interfaces, and Properties
 };

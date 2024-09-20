@@ -24,6 +24,7 @@ export const employeeObjectType: ObjectTypeV2 = {
   description: "A full-time or part-time \n\n employee of our firm",
   primaryKey: "employeeId",
   titleProperty: "fullName",
+  visibility: "NORMAL",
   properties: {
     employeeId: {
       dataType: {

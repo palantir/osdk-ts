@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-import type { InterfaceType } from "@osdk/internal.foundry.core";
-import { fooSpt } from "./spts.js";
-
-export const FooInterface: InterfaceType = {
-  apiName: "FooInterface",
-  description: "Interface for Foo",
-  displayName: "Foo Interface",
-  rid: "ri.interface.main.interface.1",
-  extendsInterfaces: [],
-  properties: {
-    fooSpt,
-  },
-  links: {},
+export type QueryMetadata = {
+  description?: string;
+  displayName?: string;
+  rid: string;
+  // TODO: Add Parameters
 };

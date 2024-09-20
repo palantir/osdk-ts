@@ -18,7 +18,7 @@ import type { ActionTypeV2 } from "@osdk/internal.foundry.core";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
 
 export const PromoteEmployee: ActionTypeV2 = {
-  apiName: "promote-employee",
+  apiName: "promoteEmployee",
   description: "Update an employee's title and compensation",
   parameters: {
     employeeId: {
@@ -49,7 +49,7 @@ export const PromoteEmployee: ActionTypeV2 = {
 };
 
 export const PromoteEmployeeObject: ActionTypeV2 = {
-  apiName: "promote-employee-object",
+  apiName: "promoteEmployeeObject",
   description: "Update an employee's title and compensation",
   parameters: {
     employee: {
@@ -82,7 +82,7 @@ export const PromoteEmployeeObject: ActionTypeV2 = {
 };
 
 export const CreateOffice: ActionTypeV2 = {
-  apiName: "create-office",
+  apiName: "createOffice",
   description: "Create an office's",
   parameters: {
     officeId: {
@@ -127,7 +127,7 @@ export const CreateOffice: ActionTypeV2 = {
 };
 
 export const CreateOfficeAndEmployee: ActionTypeV2 = {
-  apiName: "create-office-and-employee",
+  apiName: "createOfficeAndEmployee",
   description: "Create an office and employee",
   parameters: {
     officeId: {
@@ -179,8 +179,9 @@ export const CreateOfficeAndEmployee: ActionTypeV2 = {
 };
 
 export const MoveOffice: ActionTypeV2 = {
-  apiName: "move-office",
+  apiName: "moveOffice",
   description: "Update an office's physical location",
+  displayName: "move-office",
   parameters: {
     officeId: {
       dataType: {
@@ -258,7 +259,7 @@ export const ActionTakesAttachment: ActionTypeV2 = {
 };
 
 export const ActionTypeWithUnsupportedTypes: ActionTypeV2 = {
-  apiName: "unsupported-action",
+  apiName: "unsupportedAction",
   description: "An unsupported action type",
   parameters: {
     unsupportedProperty: {
