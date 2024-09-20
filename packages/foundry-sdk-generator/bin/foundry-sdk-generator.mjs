@@ -14,6 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { cli } from "../build/esm/index.js";
 
-const cli = require("../build/cjs/index.cjs");
-cli.cli();
+cli();

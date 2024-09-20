@@ -27,38 +27,17 @@ describe("foundry-sdk-generator", () => {
       const { stdout } = await execa`pnpm exec foundry-sdk-generator --help`;
 
       expect(stdout).toMatchInlineSnapshot(`
-      "foundry-sdk-generator.cjs <command>
+        "foundry-sdk-generator.mjs <command>
 
-      Commands:
-        foundry-sdk-generator.cjs                 Generates a new npm package which
-        generatePackage                           can be published
+        Commands:
+          foundry-sdk-generator.mjs generatePackag  Generates a new npm package which ca
+          e                                         n be published
 
-      Options:
-        --help     Show help                                                 [boolean]
-        --version  Show version number                                       [boolean]"
-    `);
+        Options:
+          --help     Show help                                                 [boolean]
+          --version  Show version number                                       [boolean]"
+      `);
     },
   );
-
-  it("should do a basic execution via simulated internal mechanism", {
-    timeout: 10_000,
-  }, async () => {
-    expect(true).toBe(true);
-
-    const { stdout } =
-      await execaNode`${__dirname}/../bin/simulate-internal-foundry-sdk-generator.cjs --help`;
-
-    expect(stdout).toMatchInlineSnapshot(`
-      "simulate-internal-foundry-sdk-generator.cjs <command>
-
-      Commands:
-        simulate-internal-foundry-sdk-generator.  Generates a new npm package which
-        cjs generatePackage                       can be published
-
-      Options:
-        --help     Show help                                                 [boolean]
-        --version  Show version number                                       [boolean]"
-    `);
-  });
 });
 //
