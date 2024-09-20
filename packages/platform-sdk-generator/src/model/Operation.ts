@@ -98,7 +98,7 @@ export class Operation {
     const requestBody = this.spec.http.requestBody?.body;
     const mimeType = requestBody == null
       ? ""
-      : requestBody?.type === "component"
+      : requestBody.type === "component"
       ? quoteMimeTypeOrEmpty(requestBody.component.mediaType)
       : quoteMimeTypeOrEmpty(requestBody.binary.mediaType);
 
