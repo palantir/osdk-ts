@@ -25,10 +25,11 @@ export type {
 } from "./ActionDefinition.js";
 export type {
   InterfaceDefinition,
-  InterfacePropertyKeysFrom2,
+  MinInterfaceDef,
 } from "./InterfaceDefinition.js";
 export type { ObjectOrInterfaceDefinition } from "./ObjectOrInterface.js";
 export type {
+  MinObjectDef,
   ObjectTypeDefinition,
   ObjectTypeLinkDefinition,
   ObjectTypePropertyDefinition,

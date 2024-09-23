@@ -16,6 +16,7 @@
 
 import type { ObjectSetListener } from "@osdk/client/unstable-do-not-use";
 import { Employee } from "@osdk/e2e.generated.catchall";
+import type { UNSTABLE_ObjectSet } from "../../client/build/esm/objectSet/createUnstableObjectSet.js";
 import { client } from "./client.js";
 import { logger } from "./logger.js";
 
@@ -36,11 +37,15 @@ export function runSubscriptionsTest() {
     };
   };
 
-  client(Employee).where({
+  (client(Employee).where({
     jobProfile: "Echo",
-  }).subscribe(makeObjectSetListener("Sub(Echo)"));
+  }) as UNSTABLE_ObjectSet<Employee>).subscribe(
+    makeObjectSetListener("Sub(Echo)"),
+  );
 
-  client(Employee).where({
+  (client(Employee).where({
     jobProfile: "Delta",
-  }).subscribe(makeObjectSetListener("Sub(Delta)"));
+  }) as UNSTABLE_ObjectSet<Employee>).subscribe(
+    makeObjectSetListener("Sub(Delta)"),
+  );
 }

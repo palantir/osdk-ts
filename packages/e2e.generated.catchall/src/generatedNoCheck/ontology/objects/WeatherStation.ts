@@ -3,7 +3,7 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
   ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition as $ObjectTypeDefinition,
+  MinObjectDef as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
 } from '@osdk/api';
 import type {
@@ -38,51 +38,37 @@ export namespace WeatherStation {
 
 export interface WeatherStation extends $ObjectTypeDefinition<'WeatherStation', WeatherStation> {
   osdkMetadata: typeof $osdkMetadata;
-  objectSet: WeatherStation.ObjectSet;
-  props: WeatherStation.Props;
-  linksType: WeatherStation.Links;
-  strictProps: WeatherStation.StrictProps;
-  description: 'Weather Station';
-  links: {};
-  primaryKeyApiName: 'stationId';
-  primaryKeyType: 'string';
-  properties: {
-    /**
-     *   display name: 'Geohash',
-     *   description: geopoint
-     */
-    geohash: $PropertyDef<'geopoint', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    stationId: $PropertyDef<'string', 'non-nullable', 'single'>;
+  type: 'object';
+  apiName: 'WeatherStation';
+  __DefinitionMetadata?: {
+    objectSet: WeatherStation.ObjectSet;
+    props: WeatherStation.Props;
+    linksType: WeatherStation.Links;
+    strictProps: WeatherStation.StrictProps;
+    apiName: 'WeatherStation';
+    description: 'Weather Station';
+    interfaceMap: {};
+    inverseInterfaceMap: {};
+    links: {};
+    primaryKeyApiName: 'stationId';
+    primaryKeyType: 'string';
+    properties: {
+      /**
+       *   display name: 'Geohash',
+       *   description: geopoint
+       */
+      geohash: $PropertyDef<'geopoint', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      stationId: $PropertyDef<'string', 'non-nullable', 'single'>;
+    };
+    type: 'object';
   };
 }
 
 export const WeatherStation: WeatherStation = {
-  osdkMetadata: $osdkMetadata,
-  objectSet: undefined as any,
-  props: undefined as any,
-  linksType: undefined as any,
-  strictProps: undefined as any,
-  apiName: 'WeatherStation',
-  description: 'Weather Station',
-  links: {},
-  primaryKeyApiName: 'stationId',
-  primaryKeyType: 'string',
-  properties: {
-    stationId: {
-      multiplicity: false,
-      type: 'string',
-      nullable: false,
-    },
-    geohash: {
-      displayName: 'Geohash',
-      multiplicity: false,
-      description: 'geopoint',
-      type: 'geopoint',
-      nullable: true,
-    },
-  },
   type: 'object',
+  apiName: 'WeatherStation',
+  osdkMetadata: $osdkMetadata,
 };

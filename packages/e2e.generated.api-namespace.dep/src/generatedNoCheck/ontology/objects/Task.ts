@@ -3,7 +3,7 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
   ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition as $ObjectTypeDefinition,
+  MinObjectDef as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
 } from '@osdk/api';
 import type {
@@ -38,56 +38,38 @@ export namespace Task {
 
 export interface Task extends $ObjectTypeDefinition<'com.example.dep.Task', Task> {
   osdkMetadata: typeof $osdkMetadata;
-  objectSet: Task.ObjectSet;
-  props: Task.Props;
-  linksType: Task.Links;
-  strictProps: Task.StrictProps;
-  implements: [];
-  interfaceMap: {};
-  inverseInterfaceMap: {};
-  inverseSpts: {};
-  links: {};
-  primaryKeyApiName: 'taskId';
-  primaryKeyType: 'string';
-  properties: {
-    /**
-     * (no ontology metadata)
-     */
-    body: $PropertyDef<'string', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    taskId: $PropertyDef<'string', 'non-nullable', 'single'>;
+  type: 'object';
+  apiName: 'com.example.dep.Task';
+  __DefinitionMetadata?: {
+    objectSet: Task.ObjectSet;
+    props: Task.Props;
+    linksType: Task.Links;
+    strictProps: Task.StrictProps;
+    apiName: 'com.example.dep.Task';
+    implements: [];
+    interfaceMap: {};
+    inverseInterfaceMap: {};
+    inverseSpts: {};
+    links: {};
+    primaryKeyApiName: 'taskId';
+    primaryKeyType: 'string';
+    properties: {
+      /**
+       * (no ontology metadata)
+       */
+      body: $PropertyDef<'string', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      taskId: $PropertyDef<'string', 'non-nullable', 'single'>;
+    };
+    spts: {};
+    type: 'object';
   };
-  spts: {};
 }
 
 export const Task: Task = {
-  osdkMetadata: $osdkMetadata,
-  objectSet: undefined as any,
-  props: undefined as any,
-  linksType: undefined as any,
-  strictProps: undefined as any,
-  apiName: 'com.example.dep.Task',
-  implements: [],
-  interfaceMap: {},
-  inverseInterfaceMap: {},
-  inverseSpts: {},
-  links: {},
-  primaryKeyApiName: 'taskId',
-  primaryKeyType: 'string',
-  properties: {
-    taskId: {
-      multiplicity: false,
-      type: 'string',
-      nullable: false,
-    },
-    body: {
-      multiplicity: false,
-      type: 'string',
-      nullable: true,
-    },
-  },
-  spts: {},
   type: 'object',
+  apiName: 'com.example.dep.Task',
+  osdkMetadata: $osdkMetadata,
 };

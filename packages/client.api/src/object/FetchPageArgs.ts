@@ -16,9 +16,10 @@
 
 import type {
   BrandedApiName,
-  InterfaceDefinition,
+  MinInterfaceDef,
   ObjectOrInterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
+  PropertyKeys,
 } from "@osdk/api";
 
 export type NullabilityAdherence = false | "throw" | "drop";
@@ -49,9 +50,9 @@ export interface OrderByArg<
 export type SelectArgToKeys<
   Q extends ObjectOrInterfaceDefinition,
   A extends SelectArg<Q, any, any>,
-> = A extends SelectArg<Q, never> ? keyof Q["props"]
+> = A extends SelectArg<Q, never> ? PropertyKeys<Q>
   : A["$select"] extends readonly string[] ? A["$select"][number]
-  : keyof Q["props"];
+  : PropertyKeys<Q>;
 
 export interface FetchPageArgs<
   Q extends ObjectOrInterfaceDefinition,
@@ -80,7 +81,7 @@ export type Augment<
 export type Augments = Record<string, string[]>;
 
 export interface FetchInterfacePageArgs<
-  Q extends InterfaceDefinition<any, any>,
+  Q extends MinInterfaceDef<any, any>,
   K extends ObjectOrInterfacePropertyKeysFrom2<Q> =
     ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean = false,

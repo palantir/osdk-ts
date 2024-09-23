@@ -187,7 +187,7 @@ function isConforming(
 }
 
 function invariantInterfacesAsViews(
-  objectDef: FetchedObjectTypeDefinition<any, unknown>,
+  objectDef: FetchedObjectTypeDefinition<any, any>,
   interfaceApiName: string,
   client: MinimalClient,
 ): asserts objectDef is typeof objectDef & { interfaceMap: {} } {

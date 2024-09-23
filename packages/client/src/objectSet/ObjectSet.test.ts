@@ -15,8 +15,10 @@
  */
 
 import type {
-  InterfaceDefinition,
+  CompileTimeMetadata,
+  MinInterfaceDef,
   ObjectOrInterfacePropertyKeysFrom2,
+  PropertyKeys,
 } from "@osdk/api";
 import type { ConvertProps, ObjectSet, Osdk, Result } from "@osdk/client.api";
 import { isOk } from "@osdk/client.api";
@@ -462,7 +464,9 @@ describe("ObjectSet", () => {
         expectTypeOf<ApiNameAsString<FooInterface>>()
           .toEqualTypeOf<"FooInterface">();
 
-        expectTypeOf<NonNullable<Employee["interfaceMap"]>>()
+        expectTypeOf<
+          NonNullable<CompileTimeMetadata<Employee>["interfaceMap"]>
+        >()
           .toEqualTypeOf<{
             FooInterface: {
               fooSpt: "fullName";
@@ -499,8 +503,8 @@ describe("ObjectSet", () => {
         // a non-null property on an interface so
         // we cheese it here to be sure the types work
         type CheesedProp<
-          T extends InterfaceDefinition<any>,
-          K extends keyof T["properties"],
+          T extends MinInterfaceDef<any>,
+          K extends PropertyKeys<T>,
         > = T & { properties: { [KK in K]: { nullable: false } } };
 
         type CheesedFoo = CheesedProp<FooInterface, "fooSpt">;

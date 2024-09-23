@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { MinObjectDef } from "@osdk/api";
 import type { DataValueClientToWire } from "../mapping/DataValueMapping.js";
 import type { BaseObjectSet } from "../objectSet/BaseObjectSet.js";
 import type { OsdkBase } from "../OsdkBase.js";
@@ -46,15 +46,16 @@ export namespace ActionParam {
   /**
    * Helper type to convert action definition parameter object types to typescript types
    */
-  export type ObjectType<T extends ObjectTypeDefinition<any>> =
+  export type ObjectType<T extends MinObjectDef<any, any>> =
     | OsdkBase<T>
     | OsdkObjectPrimaryKeyType<T>;
 
   /**
    * Helper type to convert action definition parameter object sets to typescript types
    */
-  export type ObjectSetType<T extends ObjectTypeDefinition<any>> =
-    BaseObjectSet<T>;
+  export type ObjectSetType<T extends MinObjectDef<any, any>> = BaseObjectSet<
+    T
+  >;
 }
 
 export type ActionEditResponse = ActionResults;

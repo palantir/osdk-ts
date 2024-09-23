@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
 import type {
   AggregateOpts,
   AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
   GroupByClause,
+  ValidAggregationKeys,
 } from "@osdk/client.api";
+import type { Employee } from "@osdk/client.test.ontology";
+import {
+  objectTypeWithAllPropertyTypes,
+  Todo,
+} from "@osdk/client.test.ontology";
 import type { AggregateObjectsResponseV2 } from "@osdk/internal.foundry.core";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
@@ -35,98 +40,6 @@ import {
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { aggregate } from "./aggregate.js";
-
-interface TodoDef extends ObjectTypeDefinition<"Todo"> {
-  type: "object";
-  apiName: "Todo";
-  links: {};
-  primaryKeyApiName: "id";
-  primaryKeyType: "double";
-  properties: {
-    text: {
-      type: "string";
-    };
-    id: {
-      type: "double";
-    };
-    intProp: {
-      type: "integer";
-    };
-    floatProp: {
-      type: "float";
-    };
-    shortProp: {
-      type: "short";
-    };
-    byteProp: {
-      type: "byte";
-    };
-    decimalProp: {
-      type: "decimal";
-    };
-    priority: {
-      type: "double";
-    };
-    date: {
-      type: "datetime";
-    };
-    timestamp: {
-      type: "timestamp";
-    };
-    other: {
-      type: "string";
-    };
-    boolean: {
-      type: "boolean";
-    };
-  };
-}
-
-const Todo: TodoDef = {
-  type: "object",
-  apiName: "Todo",
-  links: {},
-  primaryKeyApiName: "id",
-  primaryKeyType: "double",
-  properties: {
-    text: {
-      type: "string",
-    },
-    id: {
-      type: "double",
-    },
-    priority: {
-      type: "double",
-    },
-    intProp: {
-      type: "integer",
-    },
-    floatProp: {
-      type: "float",
-    },
-    shortProp: {
-      type: "short",
-    },
-    byteProp: {
-      type: "byte",
-    },
-    decimalProp: {
-      type: "decimal",
-    },
-    date: {
-      type: "datetime",
-    },
-    timestamp: {
-      type: "timestamp",
-    },
-    other: {
-      type: "string",
-    },
-    boolean: {
-      type: "boolean",
-    },
-  },
-};
 
 const metadata = {
   expectsClientVersion: "0.0.0",
@@ -161,19 +74,15 @@ const aggregationResponse: AggregateObjectsResponseV2 = {
   data: [
     {
       group: {
-        text: "hello",
+        string: "hello",
       },
       metrics: [
         {
-          name: "text.approximateDistinct",
+          name: "string.approximateDistinct",
           value: 1,
         },
         {
-          name: "text.exactDistinct",
-          value: 1,
-        },
-        {
-          name: "priority.avg",
+          name: "string.exactDistinct",
           value: 1,
         },
         {
@@ -191,18 +100,29 @@ const aggregationResponse: AggregateObjectsResponseV2 = {
 
 describe("aggregate", () => {
   it("works", async () => {
+    expectTypeOf<ValidAggregationKeys<Todo>>().toEqualTypeOf<
+      | "$count"
+      | "id:min"
+      | "id:max"
+      | "id:sum"
+      | "id:avg"
+      | "id:approximateDistinct"
+      | "id:exactDistinct"
+      | "text:approximateDistinct"
+      | "text:exactDistinct"
+    >;
+
     const notGrouped = await aggregate(
       clientCtx,
-      Todo,
+      objectTypeWithAllPropertyTypes,
       {
         type: "base",
         objectType: "ToDo",
       },
       {
         $select: {
-          "text:approximateDistinct": "unordered",
-          "text:exactDistinct": "unordered",
-          "priority:avg": "unordered",
+          "string:approximateDistinct": "unordered",
+          "string:exactDistinct": "unordered",
           "id:max": "unordered",
           "id:avg": "unordered",
           "$count": "unordered",
@@ -219,15 +139,14 @@ describe("aggregate", () => {
           "aggregation": [
             {
               "type": "approximateDistinct",
-              "name": "text.approximateDistinct",
-              "field": "text",
+              "name": "string.approximateDistinct",
+              "field": "string",
             },
             {
               "type": "exactDistinct",
-              "name": "text.exactDistinct",
-              "field": "text",
+              "name": "string.exactDistinct",
+              "field": "string",
             },
-            { "type": "avg", "name": "priority.avg", "field": "priority" },
             { "type": "max", "name": "id.max", "field": "id" },
             { "type": "avg", "name": "id.avg", "field": "id" },
             { "type": "count", "name": "count" },
@@ -238,9 +157,8 @@ describe("aggregate", () => {
       },
     );
 
-    expectType<number>(notGrouped.text.approximateDistinct);
-    expectType<number>(notGrouped.text.exactDistinct);
-    expectType<number | undefined>(notGrouped.priority.avg);
+    expectType<number>(notGrouped.string.approximateDistinct);
+    expectType<number>(notGrouped.string.exactDistinct);
     expectType<number | undefined>(notGrouped.id.max);
     expectType<number | undefined>(notGrouped.id.avg);
     expectType<number>(notGrouped.$count);
@@ -255,7 +173,7 @@ describe("aggregate", () => {
 
     const grouped = await aggregate(
       clientCtx,
-      Todo,
+      objectTypeWithAllPropertyTypes,
       {
         type: "base",
         objectType: "ToDo",
@@ -264,92 +182,98 @@ describe("aggregate", () => {
         $select: {
           "id:approximateDistinct": "unordered",
           "id:exactDistinct": "unordered",
-          "priority:max": "unordered",
+          "id:max": "unordered",
           "$count": "unordered",
         },
         $groupBy: {
-          text: "exact",
-          priority: { $exactWithLimit: 10 },
-          intProp: { $ranges: [[1, 2]] },
-          shortProp: {
+          string: "exact",
+          id: { $exactWithLimit: 10 },
+          integer: { $ranges: [[1, 2]] },
+          short: {
             $ranges: [[2, 3], [4, 5]],
           },
-          floatProp: { $fixedWidth: 10 },
-          timestamp: { $duration: [10, "seconds"] },
+          float: { $fixedWidth: 10 },
+          dateTime: { $duration: [10, "seconds"] },
           date: { $ranges: [["2024-01-02", "2024-01-09"]] },
           boolean: "exact",
         },
       },
     );
     expectType<Array<any>>(grouped);
-    expectType<string | undefined>(grouped[0].$group.text);
+    expectType<string | undefined>(grouped[0].$group.string);
     expectType<number>(grouped[0].id.approximateDistinct);
     expectType<number>(grouped[0].id.exactDistinct);
-    expectType<number>(grouped[0].$group.priority);
+    expectType<number>(grouped[0].$group.id);
     expectType<number>(grouped[0].$count);
     expectType<{ startValue: number; endValue: number }>(
-      grouped[0].$group.intProp,
+      grouped[0].$group.integer,
     );
     expectType<{ startValue: number; endValue: number }>(
-      grouped[0].$group.shortProp,
+      grouped[0].$group.short,
     );
-    expectType<number>(grouped[0].$group.floatProp);
-    expectType<string>(grouped[0].$group.timestamp);
+    expectType<number | undefined>(grouped[0].$group.float);
+    expectType<string | undefined>(grouped[0].$group.dateTime);
     expectType<{ startValue: string; endValue: string }>(
       grouped[0].$group.date,
     );
-    expectType<boolean>(grouped[0].$group.boolean);
+    expectType<boolean | undefined>(grouped[0].$group.boolean);
 
     expectType<
-      AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<TodoDef, {
-        $select: {
-          "id:approximateDistinct": "unordered";
-          "$count": "unordered";
-        };
-        $groupBy: {
-          text: "exact";
-          priority: { $exactWithLimit: 10 };
-          intProp: { $ranges: [[1, 2]] };
-          shortProp: {
-            $ranges: [[2, 3], [4, 5]];
+      AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
+        objectTypeWithAllPropertyTypes,
+        {
+          $select: {
+            "id:approximateDistinct": "unordered";
+            "$count": "unordered";
           };
-          floatProp: { $fixedWidth: 10 };
-        };
-      }>
+          $groupBy: {
+            string: "exact";
+            id: { $exactWithLimit: 10 };
+            integer: { $ranges: [[1, 2]] };
+            short: {
+              $ranges: [[2, 3], [4, 5]];
+            };
+            float: { $fixedWidth: 10 };
+          };
+        }
+      >
     >({
       $select: {
         "id:approximateDistinct": "unordered",
         "$count": "unordered",
       },
       $groupBy: {
-        text: "exact",
-        priority: { $exactWithLimit: 10 },
-        intProp: { $ranges: [[1, 2]] },
-        shortProp: {
+        string: "exact",
+        id: { $exactWithLimit: 10 },
+        integer: { $ranges: [[1, 2]] },
+        short: {
           $ranges: [[2, 3], [4, 5]],
         },
-        floatProp: { $fixedWidth: 10 },
+        float: { $fixedWidth: 10 },
       },
     });
 
     expectType<
-      AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<TodoDef, {
-        $select: {
-          "id:approximateDistinct": "unordered";
-          "wrongSelectKey": "don't work";
-          "$count": "unordered";
-        };
-        $groupBy: {
-          wrongKey: "don't work";
-          text: "exact";
-          priority: { $exactWithLimit: 10 };
-          intProp: { $ranges: [[1, 2]] };
-          shortProp: {
-            $ranges: [[2, 3], [4, 5]];
+      AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
+        objectTypeWithAllPropertyTypes,
+        {
+          $select: {
+            "id:approximateDistinct": "unordered";
+            "wrongSelectKey": "don't work";
+            "$count": "unordered";
           };
-          floatProp: { $fixedWidth: 10 };
-        };
-      }>
+          $groupBy: {
+            wrongKey: "don't work";
+            text: "exact";
+            id: { $exactWithLimit: 10 };
+            integer: { $ranges: [[1, 2]] };
+            short: {
+              $ranges: [[2, 3], [4, 5]];
+            };
+            float: { $fixedWidth: 10 };
+          };
+        }
+      >
     >({
       $select: {
         id: "approximateDistinct",
@@ -360,37 +284,37 @@ describe("aggregate", () => {
       $groupBy: {
         // @ts-expect-error
         wrongKey: "don't work",
-        text: "exact",
-        priority: { $exactWithLimit: 10 },
-        intProp: { $ranges: [[1, 2]] },
-        shortProp: {
+        string: "exact",
+        id: { $exactWithLimit: 10 },
+        integer: { $ranges: [[1, 2]] },
+        short: {
           $ranges: [[2, 3], [4, 5]],
         },
-        floatProp: { $fixedWidth: 10 },
+        float: { $fixedWidth: 10 },
       },
     });
 
     expectTypeOf<
-      typeof aggregate<TodoDef, {
+      typeof aggregate<objectTypeWithAllPropertyTypes, {
         $select: {
           "id:approximateDistinct": "unordered";
           "wrongSelectKey": "wrong key";
           "$count": "unordered";
         };
         $groupBy: {
-          text: "exact";
+          string: "exact";
           wrongKey: "wrongKey";
-          priority: { $exactWithLimit: 10 };
-          intProp: { $ranges: [[1, 2]] };
-          shortProp: {
+          id: { $exactWithLimit: 10 };
+          integer: { $ranges: [[1, 2]] };
+          short: {
             $ranges: [[2, 3], [4, 5]];
           };
-          floatProp: { $fixedWidth: 10 };
+          float: { $fixedWidth: 10 };
         };
       }>
     >().toBeCallableWith(
       clientCtx,
-      Todo,
+      objectTypeWithAllPropertyTypes,
       {
         type: "base",
         objectType: "ToDo",
@@ -403,41 +327,38 @@ describe("aggregate", () => {
           "$count": "unordered",
         },
         $groupBy: {
-          text: "exact",
+          string: "exact",
           // @ts-expect-error
           wrongKey: "wrongKey",
-          priority: { $exactWithLimit: 10 },
-          intProp: { $ranges: [[1, 2]] },
-          shortProp: {
+          id: { $exactWithLimit: 10 },
+          integer: { $ranges: [[1, 2]] },
+          short: {
             $ranges: [[2, 3], [4, 5]],
           },
-          floatProp: { $fixedWidth: 10 },
+          float: { $fixedWidth: 10 },
         },
       },
     );
 
-    expectType<GroupByClause<TodoDef>>({
-      timestamp: { $duration: [10, "seconds"] },
+    expectType<GroupByClause<objectTypeWithAllPropertyTypes>>({
+      dateTime: { $duration: [10, "seconds"] },
       date: { $duration: [1, "years"] },
     });
 
     // Can't use value greater than 1 for years
-    expectType<GroupByClause<TodoDef>>({
-      timestamp: { $duration: [1, "seconds"] },
+    expectType<GroupByClause<objectTypeWithAllPropertyTypes>>({
       // @ts-expect-error
       date: { $duration: [10, "years"] },
     });
 
     // Can't use arbitrary string for time unit
-    expectType<GroupByClause<TodoDef>>({
+    expectType<GroupByClause<objectTypeWithAllPropertyTypes>>({
       // @ts-expect-error
-      timestamp: { $duration: [1, "nonexistentTimeUnit"] },
-      date: { $duration: [10, "days"] },
+      dateTime: { $duration: [1, "nonexistentTimeUnit"] },
     });
 
     // Can't use time unit smaller than days for date type
-    expectType<GroupByClause<TodoDef>>({
-      timestamp: { $duration: [10, "seconds"] },
+    expectType<GroupByClause<objectTypeWithAllPropertyTypes>>({
       // @ts-expect-error
       date: { $duration: [1, "seconds"] },
     });
@@ -446,18 +367,17 @@ describe("aggregate", () => {
   it("works with $orderBy (no groups)", async () => {
     const notGrouped = await aggregate(
       clientCtx,
-      Todo,
+      objectTypeWithAllPropertyTypes,
       {
         type: "base",
         objectType: "ToDo",
       },
       {
         $select: {
-          "text:approximateDistinct": "asc",
-          "priority:exactDistinct": "asc",
-          "priority:avg": "desc",
+          "string:approximateDistinct": "asc",
+          "id:exactDistinct": "asc",
+          "id:avg": "desc",
           "id:max": "asc",
-          "id:avg": "unordered",
           "$count": "unordered",
         },
       },
@@ -472,21 +392,21 @@ describe("aggregate", () => {
           "aggregation": [
             {
               "type": "approximateDistinct",
-              "name": "text.approximateDistinct",
+              "name": "string.approximateDistinct",
               direction: "ASC",
-              "field": "text",
+              "field": "string",
             },
             {
               "type": "exactDistinct",
-              "name": "priority.exactDistinct",
+              "name": "id.exactDistinct",
               direction: "ASC",
-              "field": "priority",
+              "field": "id",
             },
             {
               "type": "avg",
-              "name": "priority.avg",
+              "name": "id.avg",
               direction: "DESC",
-              "field": "priority",
+              "field": "id",
             },
             {
               "type": "max",
@@ -494,7 +414,6 @@ describe("aggregate", () => {
               direction: "ASC",
               "field": "id",
             },
-            { "type": "avg", "name": "id.avg", "field": "id" },
             { "type": "count", "name": "count" },
           ],
         }),
@@ -503,9 +422,8 @@ describe("aggregate", () => {
       },
     );
 
-    expectType<number>(notGrouped.text.approximateDistinct);
-    expectType<number>(notGrouped.priority.exactDistinct);
-    expectType<number>(notGrouped.priority.avg);
+    expectType<number>(notGrouped.string.approximateDistinct);
+    expectType<number>(notGrouped.id.exactDistinct);
     expectType<number>(notGrouped.id.max);
     expectType<number>(notGrouped.id.avg);
     expectType<number>(notGrouped.$count);
@@ -522,7 +440,7 @@ describe("aggregate", () => {
   it("works with $orderBy (1 group)", async () => {
     const grouped = await aggregate(
       clientCtx,
-      Todo,
+      objectTypeWithAllPropertyTypes,
       {
         type: "base",
         objectType: "ToDo",
@@ -530,13 +448,13 @@ describe("aggregate", () => {
       {
         $select: {
           "id:max": "desc",
-          "text:approximateDistinct": "asc",
+          "string:approximateDistinct": "asc",
           "id:avg": "unordered",
           "$count": "unordered",
-          "text:exactDistinct": "desc",
+          "string:exactDistinct": "desc",
         },
         $groupBy: {
-          priority: "exact",
+          id: "exact",
         },
       },
     );
@@ -546,7 +464,7 @@ describe("aggregate", () => {
       {
         body: JSON.stringify({
           "objectSet": { "type": "base", "objectType": "ToDo" },
-          "groupBy": [{ "type": "exact", "field": "priority" }],
+          "groupBy": [{ "type": "exact", "field": "id" }],
           "aggregation": [
             {
               "type": "max",
@@ -556,17 +474,17 @@ describe("aggregate", () => {
             },
             {
               "type": "approximateDistinct",
-              "name": "text.approximateDistinct",
+              "name": "string.approximateDistinct",
               direction: "ASC",
-              "field": "text",
+              "field": "string",
             },
             { "type": "avg", "name": "id.avg", "field": "id" },
             { "type": "count", "name": "count" },
             {
               "type": "exactDistinct",
-              "name": "text.exactDistinct",
+              "name": "string.exactDistinct",
               direction: "DESC",
-              "field": "text",
+              "field": "string",
             },
           ],
         }),
@@ -575,11 +493,11 @@ describe("aggregate", () => {
       },
     );
 
-    expectType<number>(grouped[0].text.approximateDistinct);
+    expectType<number>(grouped[0].string.approximateDistinct);
     expectType<number>(grouped[0].id.max);
     expectType<number>(grouped[0].id.avg);
     expectType<number>(grouped[0].$count);
-    expectType<number>(grouped[0].text.exactDistinct);
+    expectType<number>(grouped[0].string.exactDistinct);
     expectType<
       TypeOf<
         {
@@ -610,7 +528,7 @@ describe("aggregate", () => {
           "$count": "unordered",
         },
         $groupBy: {
-          priority: "exact",
+          id: "exact",
           timestamp: "exact",
         },
       },
@@ -618,65 +536,11 @@ describe("aggregate", () => {
   });
 
   it("works with where: todo", async () => {
-    type f = AggregateOpts<
-      {
-        metadata: any;
-        objects: {
-          Todo: {
-            type: "object";
-            apiName: "Todo";
-            primaryKeyApiName: "id";
-            primaryKeyType: "double";
-            links: {};
-            properties: {
-              text: {
-                type: "string";
-              };
-              id: {
-                type: "double";
-              };
-              locationCity: {
-                type: "string";
-              };
-            };
-          };
-        };
-        actions: {};
-        queries: {};
-      }["objects"]["Todo"]
-    > // "locationCity" | "text"
-    ;
-
     const f: AggregateOpts<
-      {
-        metadata: any;
-        objects: {
-          Todo: {
-            type: "object";
-            apiName: "Todo";
-            primaryKeyApiName: "id";
-            primaryKeyType: "double";
-            links: {};
-            properties: {
-              text: {
-                type: "string";
-              };
-              id: {
-                type: "double";
-              };
-              locationCity: {
-                type: "string";
-              };
-            };
-          };
-        };
-        actions: {};
-        queries: {};
-      }["objects"]["Todo"]
+      Employee
     > = {
       $select: {
-        "locationCity:approximateDistinct": "unordered",
-        "text:approximateDistinct": "unordered",
+        "office:approximateDistinct": "unordered",
       },
     };
   });

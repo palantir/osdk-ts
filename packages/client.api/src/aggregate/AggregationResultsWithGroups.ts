@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type {
+  CompileTimeMetadata,
+  ObjectOrInterfaceDefinition,
+  PropertyKeys,
+} from "@osdk/api";
 import type { OsdkObjectPropertyType } from "../Definitions.js";
 import type { GroupByClause, GroupByRange } from "../groupby/GroupByClause.js";
 import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithoutGroups.js";
@@ -30,9 +34,9 @@ export type AggregationResultsWithGroups<
 > = (
   & {
     $group: {
-      [P in keyof G & keyof Q["properties"]]: G[P] extends
+      [P in keyof G & PropertyKeys<Q>]: G[P] extends
         { $ranges: GroupByRange<infer T>[] } ? { startValue: T; endValue: T }
-        : OsdkObjectPropertyType<Q["properties"][P], true>;
+        : OsdkObjectPropertyType<CompileTimeMetadata<Q>["properties"][P], true>;
     };
   }
   & AggregationResultsWithoutGroups<Q, A>

@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
+import type { OsdkMetadata } from "../OsdkMetadata.js";
 import type { ObjectInterfaceBaseDefinition } from "./ObjectTypeDefinition.js";
-
-export type InterfacePropertyKeysFrom2<
-  I extends InterfaceDefinition<any, any>,
-> = keyof I["properties"] & string;
 
 export interface InterfaceDefinition<
   K extends string,
   N = unknown,
 > extends ObjectInterfaceBaseDefinition<K, N> {
   type: "interface";
+}
+
+export interface MinInterfaceDef<K extends string, N = unknown> {
+  type: "interface";
+  apiName: K;
+  osdkMetadata?: OsdkMetadata;
+  __DefinitionMetadata?: InterfaceDefinition<K, N>;
 }

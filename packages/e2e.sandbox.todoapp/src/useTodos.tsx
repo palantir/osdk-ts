@@ -1,4 +1,4 @@
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { MinObjectDef } from "@osdk/api";
 import { ActionValidationError } from "@osdk/client";
 import type { Osdk } from "@osdk/client.api";
 import { useCallback, useEffect } from "react";
@@ -123,7 +123,7 @@ export function useTodos() {
   };
 }
 
-type OsdkPropsOnly<T extends ObjectTypeDefinition<any>> = Omit<
+type OsdkPropsOnly<T extends MinObjectDef<any>> = Omit<
   Osdk<T>,
   "$as" | "$link"
 >;

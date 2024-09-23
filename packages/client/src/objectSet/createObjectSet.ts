@@ -15,9 +15,9 @@
  */
 
 import type {
+  MinObjectDef,
   ObjectOrInterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition,
 } from "@osdk/api";
 import type {
   BaseObjectSet,
@@ -27,7 +27,7 @@ import type {
   MinimalObjectSet,
   ObjectSet,
   Osdk,
-  PropertyValueClientToWire,
+  PrimaryKeyType,
   Result,
   SelectArg,
 } from "@osdk/client.api";
@@ -45,7 +45,7 @@ import { isWireObjectSet } from "../util/WireObjectSet.js";
 
 function isObjectTypeDefinition(
   def: ObjectOrInterfaceDefinition,
-): def is ObjectTypeDefinition<any> {
+): def is MinObjectDef<any, any> {
   return def.type === "object";
 }
 
@@ -172,21 +172,9 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
 
     fetchOne: (isObjectTypeDefinition(objectType)
       ? async <A extends SelectArg<Q>>(
-        primaryKey: Q extends ObjectTypeDefinition<any>
-          ? PropertyValueClientToWire[Q["primaryKeyType"]]
-          : never,
+        primaryKey: PrimaryKeyType<Q>,
         options: A,
       ) => {
-        const withPk: WireObjectSet = {
-          type: "filter",
-          objectSet: objectSet,
-          where: {
-            type: "eq",
-            field: objectType.primaryKeyApiName,
-            value: primaryKey,
-          },
-        };
-
         return await fetchSingle(
           augmentRequestContext(
             clientCtx,
@@ -194,28 +182,22 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           ),
           objectType,
           options,
-          withPk,
+          await createWithPk(
+            clientCtx,
+            objectType,
+            objectSet,
+            primaryKey,
+          ),
         ) as Osdk<Q>;
       }
       : undefined) as ObjectSet<Q>["fetchOne"],
 
     fetchOneWithErrors: (isObjectTypeDefinition(objectType)
       ? async <A extends SelectArg<Q>>(
-        primaryKey: Q extends ObjectTypeDefinition<any>
-          ? PropertyValueClientToWire[Q["primaryKeyType"]]
+        primaryKey: Q extends MinObjectDef<any, any> ? PrimaryKeyType<Q>
           : never,
         options: A,
       ) => {
-        const withPk: WireObjectSet = {
-          type: "filter",
-          objectSet: objectSet,
-          where: {
-            type: "eq",
-            field: objectType.primaryKeyApiName,
-            value: primaryKey,
-          },
-        };
-
         return await fetchSingleWithErrors(
           augmentRequestContext(
             clientCtx,
@@ -223,7 +205,12 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           ),
           objectType,
           options,
-          withPk,
+          await createWithPk(
+            clientCtx,
+            objectType,
+            objectSet,
+            primaryKey,
+          ),
         ) as Result<Osdk<Q>>;
       }
       : undefined) as ObjectSet<Q>["fetchOneWithErrors"],
@@ -248,4 +235,25 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   // we are using a type assertion because the marker symbol defined in BaseObjectSet isn't actually used
   // at runtime.
   return base as ObjectSet<Q>;
+}
+async function createWithPk(
+  clientCtx: MinimalClient,
+  objectType: MinObjectDef<any, any>,
+  objectSet: WireObjectSet,
+  primaryKey: PrimaryKeyType<MinObjectDef<any, any>>,
+) {
+  const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
+    objectType.apiName,
+  );
+
+  const withPk: WireObjectSet = {
+    type: "filter",
+    objectSet: objectSet,
+    where: {
+      type: "eq",
+      field: objDef.primaryKeyApiName,
+      value: primaryKey,
+    },
+  };
+  return withPk;
 }

@@ -106,7 +106,7 @@ export type {
   MinimalObjectSet,
   ObjectSet,
 } from "./objectSet/ObjectSet.js";
-export type { OsdkBase } from "./OsdkBase.js";
+export type { OsdkBase, PrimaryKeyType } from "./OsdkBase.js";
 export type { OsdkObject } from "./OsdkObject.js";
 export type {
   ConvertProps,

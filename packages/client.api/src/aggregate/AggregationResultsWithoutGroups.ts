@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type {
+  CompileTimeMetadata,
+  ObjectOrInterfaceDefinition,
+} from "@osdk/api";
 import type { OsdkObjectPropertyType } from "../Definitions.js";
 import type {
   OrderedAggregationClause,
@@ -38,6 +41,8 @@ export type AggregationResultsWithoutGroups<
     : {
       [MetricName in ExtractMetricNameForPropName<keyof AC & string, PropName>]:
         MetricName extends "approximateDistinct" | "exactDistinct" ? number
-          : OsdkObjectPropertyType<Q["properties"][PropName]>;
+          : OsdkObjectPropertyType<
+            CompileTimeMetadata<Q>["properties"][PropName]
+          >;
     };
 };

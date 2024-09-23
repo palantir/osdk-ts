@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { CompileTimeMetadata, MinObjectDef } from "@osdk/api";
 import type { PropertyValueWireToClient } from "./mapping/PropertyValueMapping.js";
 
 export type OsdkObjectPrimaryKeyType<
-  O extends ObjectTypeDefinition<any>,
-> = PropertyValueWireToClient[O["primaryKeyType"]];
+  Q extends MinObjectDef<any, any>,
+> = PropertyValueWireToClient[CompileTimeMetadata<Q>["primaryKeyType"]];

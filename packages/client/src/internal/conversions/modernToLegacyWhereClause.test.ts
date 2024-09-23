@@ -15,13 +15,13 @@
  */
 
 import type { WhereClause } from "@osdk/client.api";
-import type { MockOntology } from "@osdk/shared.test";
+import type { objectTypeWithAllPropertyTypes } from "@osdk/client.test.ontology";
 import type { Point } from "geojson";
 import { expectType } from "ts-expect";
 import { describe, expect, it } from "vitest";
 import { modernToLegacyWhereClause } from "./modernToLegacyWhereClause.js";
 
-type ObjAllProps = MockOntology["objects"]["ObjectTypeWithAllPropertyTypes"];
+type ObjAllProps = objectTypeWithAllPropertyTypes;
 describe(modernToLegacyWhereClause, () => {
   describe("single checks", () => {
     describe("$within", () => {

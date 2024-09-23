@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { MinObjectDef } from "@osdk/api";
 import type {
   DefaultToFalse,
   ObjectSet,
@@ -62,7 +62,7 @@ describe("LinkDefinitions", () => {
       it("infers select properly", () => {
         // this helper lets us get return types of functions that are generic
         class Helper<
-          T extends ObjectTypeDefinition<any, any>,
+          T extends MinObjectDef<any, any>,
           const A extends SelectArg<T>,
         > {
           constructor(private accessor: SingleLinkAccessor<T>) {}

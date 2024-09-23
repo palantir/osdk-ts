@@ -15,8 +15,10 @@
  */
 
 import type {
+  CompileTimeMetadata,
   ObjectOrInterfaceDefinition,
   ObjectTypePropertyDefinition,
+  PropertyKeys,
 } from "@osdk/api";
 import type { BBox, Point, Polygon } from "geojson";
 
@@ -186,5 +188,5 @@ export type WhereClause<
   | AndWhereClause<T>
   | NotWhereClause<T>
   | {
-    [P in keyof T["properties"]]?: FilterFor<T["properties"][P]>;
+    [P in PropertyKeys<T>]?: FilterFor<CompileTimeMetadata<T>["properties"][P]>;
   };

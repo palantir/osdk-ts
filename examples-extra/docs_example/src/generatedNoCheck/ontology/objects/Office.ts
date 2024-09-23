@@ -3,7 +3,7 @@ import { $osdkMetadata } from '../../OntologyMetadata';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import type {
   ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition as $ObjectTypeDefinition,
+  MinObjectDef as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
 } from '@osdk/api';
 import type {
@@ -52,88 +52,52 @@ export namespace Office {
 
 export interface Office extends $ObjectTypeDefinition<'Office', Office> {
   osdkMetadata: typeof $osdkMetadata;
-  objectSet: Office.ObjectSet;
-  props: Office.Props;
-  linksType: Office.Links;
-  strictProps: Office.StrictProps;
-  description: 'A office in our Company';
-  links: {};
-  primaryKeyApiName: 'officeId';
-  primaryKeyType: 'string';
-  properties: {
-    /**
-     * (no ontology metadata)
-     */
-    entrance: $PropertyDef<'geopoint', 'nullable', 'single'>;
-    /**
-     *   description: The individual capacities of meetings rooms in the office
-     */
-    meetingRoomCapacities: $PropertyDef<'integer', 'nullable', 'array'>;
-    /**
-     *   description: The Names of meetings rooms in the office
-     */
-    meetingRooms: $PropertyDef<'string', 'nullable', 'array'>;
-    /**
-     *   description: The Name of the Office
-     */
-    name: $PropertyDef<'string', 'nullable', 'single'>;
-    /**
-     *   description: The occupied area of the Office
-     */
-    occupiedArea: $PropertyDef<'geoshape', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    officeId: $PropertyDef<'string', 'non-nullable', 'single'>;
+  type: 'object';
+  apiName: 'Office';
+  __DefinitionMetadata?: {
+    objectSet: Office.ObjectSet;
+    props: Office.Props;
+    linksType: Office.Links;
+    strictProps: Office.StrictProps;
+    apiName: 'Office';
+    description: 'A office in our Company';
+    interfaceMap: {};
+    inverseInterfaceMap: {};
+    links: {};
+    primaryKeyApiName: 'officeId';
+    primaryKeyType: 'string';
+    properties: {
+      /**
+       * (no ontology metadata)
+       */
+      entrance: $PropertyDef<'geopoint', 'nullable', 'single'>;
+      /**
+       *   description: The individual capacities of meetings rooms in the office
+       */
+      meetingRoomCapacities: $PropertyDef<'integer', 'nullable', 'array'>;
+      /**
+       *   description: The Names of meetings rooms in the office
+       */
+      meetingRooms: $PropertyDef<'string', 'nullable', 'array'>;
+      /**
+       *   description: The Name of the Office
+       */
+      name: $PropertyDef<'string', 'nullable', 'single'>;
+      /**
+       *   description: The occupied area of the Office
+       */
+      occupiedArea: $PropertyDef<'geoshape', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      officeId: $PropertyDef<'string', 'non-nullable', 'single'>;
+    };
+    type: 'object';
   };
 }
 
 export const Office: Office = {
-  osdkMetadata: $osdkMetadata,
-  objectSet: undefined as any,
-  props: undefined as any,
-  linksType: undefined as any,
-  strictProps: undefined as any,
-  apiName: 'Office',
-  description: 'A office in our Company',
-  links: {},
-  primaryKeyApiName: 'officeId',
-  primaryKeyType: 'string',
-  properties: {
-    officeId: {
-      multiplicity: false,
-      type: 'string',
-      nullable: false,
-    },
-    entrance: {
-      multiplicity: false,
-      type: 'geopoint',
-      nullable: true,
-    },
-    occupiedArea: {
-      multiplicity: false,
-      description: 'The occupied area of the Office',
-      type: 'geoshape',
-      nullable: true,
-    },
-    name: {
-      multiplicity: false,
-      description: 'The Name of the Office',
-      type: 'string',
-      nullable: true,
-    },
-    meetingRooms: {
-      multiplicity: true,
-      description: 'The Names of meetings rooms in the office',
-      type: 'string',
-      nullable: true,
-    },
-    meetingRoomCapacities: {
-      multiplicity: true,
-      description: 'The individual capacities of meetings rooms in the office',
-      type: 'integer',
-      nullable: true,
-    },
-  },
   type: 'object',
+  apiName: 'Office',
+  osdkMetadata: $osdkMetadata,
 };

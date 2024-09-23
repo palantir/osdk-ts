@@ -4,7 +4,7 @@ import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type { Employee } from './Employee.js';
 import type {
   ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition as $ObjectTypeDefinition,
+  MinObjectDef as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
 } from '@osdk/api';
 import type {
@@ -43,64 +43,42 @@ export namespace Venture {
 
 export interface Venture extends $ObjectTypeDefinition<'Venture', Venture> {
   osdkMetadata: typeof $osdkMetadata;
-  objectSet: Venture.ObjectSet;
-  props: Venture.Props;
-  linksType: Venture.Links;
-  strictProps: Venture.StrictProps;
-  description: 'A venture';
-  links: {
-    employees: $ObjectTypeLinkDefinition<Employee, true>;
-  };
-  primaryKeyApiName: 'ventureId';
-  primaryKeyType: 'string';
-  properties: {
-    /**
-     * (no ontology metadata)
-     */
-    ventureId: $PropertyDef<'string', 'non-nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    ventureName: $PropertyDef<'string', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    ventureStart: $PropertyDef<'datetime', 'nullable', 'single'>;
+  type: 'object';
+  apiName: 'Venture';
+  __DefinitionMetadata?: {
+    objectSet: Venture.ObjectSet;
+    props: Venture.Props;
+    linksType: Venture.Links;
+    strictProps: Venture.StrictProps;
+    apiName: 'Venture';
+    description: 'A venture';
+    interfaceMap: {};
+    inverseInterfaceMap: {};
+    links: {
+      employees: $ObjectTypeLinkDefinition<Employee, true>;
+    };
+    primaryKeyApiName: 'ventureId';
+    primaryKeyType: 'string';
+    properties: {
+      /**
+       * (no ontology metadata)
+       */
+      ventureId: $PropertyDef<'string', 'non-nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      ventureName: $PropertyDef<'string', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      ventureStart: $PropertyDef<'datetime', 'nullable', 'single'>;
+    };
+    type: 'object';
   };
 }
 
 export const Venture: Venture = {
-  osdkMetadata: $osdkMetadata,
-  objectSet: undefined as any,
-  props: undefined as any,
-  linksType: undefined as any,
-  strictProps: undefined as any,
-  apiName: 'Venture',
-  description: 'A venture',
-  links: {
-    employees: {
-      multiplicity: true,
-      targetType: 'Employee',
-    },
-  },
-  primaryKeyApiName: 'ventureId',
-  primaryKeyType: 'string',
-  properties: {
-    ventureId: {
-      multiplicity: false,
-      type: 'string',
-      nullable: false,
-    },
-    ventureName: {
-      multiplicity: false,
-      type: 'string',
-      nullable: true,
-    },
-    ventureStart: {
-      multiplicity: false,
-      type: 'datetime',
-      nullable: true,
-    },
-  },
   type: 'object',
+  apiName: 'Venture',
+  osdkMetadata: $osdkMetadata,
 };

@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
+import type {
+  CompileTimeMetadata,
+  MinInterfaceDef,
+  MinObjectDef,
+  ObjectOrInterfaceDefinition,
+  PropertyKeys,
+} from "@osdk/api";
 import type { OsdkObjectLinksObject } from "./definitions/LinkDefinitions.js";
 import type { UnionIfTrue } from "./object/FetchPageResult.js";
 import type { OsdkBase } from "./OsdkBase.js";
@@ -29,51 +35,51 @@ type DropDollarAll<T extends string> = Exclude<
   "$all"
 >;
 
+type SpecialOsdkPropParams =
+  | "$all"
+  | "$rid"
+  | "$strict"
+  | "$notStrict";
+
+type ValidOsdkPropParams<Q extends ObjectOrInterfaceDefinition> =
+  | SpecialOsdkPropParams
+  | PropertyKeys<Q>;
+
 export type ApiNameAsString<
-  T extends ObjectTypeDefinition<any, any> | InterfaceDefinition<any>,
-> = NonNullable<
-  T["apiName"]["__Unbranded"]
->;
+  T extends ObjectOrInterfaceDefinition,
+> = CompileTimeMetadata<T>["apiName"];
 
 export type JustProps<
-  T extends ObjectTypeDefinition<any> | InterfaceDefinition<any>,
-  P extends "$rid" | "$strict" | "$notStrict" | "$all" | keyof T["properties"],
-> = P extends "$all" ? keyof T["properties"]
-  : Exclude<P, "$all" | "$rid" | "$strict" | "$notStrict">;
+  T extends ObjectOrInterfaceDefinition,
+  P extends ValidOsdkPropParams<T>,
+> = P extends "$all" ? PropertyKeys<T>
+  : Exclude<P, SpecialOsdkPropParams>;
 
 export type PropMapToObject<
-  FROM extends InterfaceDefinition<any> | ObjectTypeDefinition<any>,
-  TO extends ObjectTypeDefinition<any>,
-> = NonNullable<TO["interfaceMap"]>[ApiNameAsString<FROM>];
+  FROM extends ObjectOrInterfaceDefinition,
+  TO extends MinObjectDef<any, any>,
+> = NonNullable<CompileTimeMetadata<TO>["interfaceMap"]>[ApiNameAsString<FROM>];
 
 export type MapPropNamesToObjectType<
-  FROM extends InterfaceDefinition<any> | ObjectTypeDefinition<any>,
-  TO extends ObjectTypeDefinition<any>,
-  P extends
-    | "$rid"
-    | "$strict"
-    | "$notStrict"
-    | "$all"
-    | keyof FROM["properties"],
+  FROM extends ObjectOrInterfaceDefinition,
+  TO extends MinObjectDef<any, any>,
+  P extends ValidOsdkPropParams<FROM>,
 > = PropMapToObject<
   FROM,
   TO
 >[JustProps<FROM, P> & keyof PropMapToObject<FROM, TO>];
 
 export type PropMapToInterface<
-  FROM extends ObjectTypeDefinition<any>,
-  TO extends InterfaceDefinition<any>,
-> = NonNullable<FROM["inverseInterfaceMap"]>[ApiNameAsString<TO>];
+  FROM extends MinObjectDef<any>,
+  TO extends MinInterfaceDef<any>,
+> = NonNullable<
+  CompileTimeMetadata<FROM>["inverseInterfaceMap"]
+>[ApiNameAsString<TO>];
 
 export type MapPropNamesToInterface<
-  FROM extends ObjectTypeDefinition<any>,
-  TO extends InterfaceDefinition<any>,
-  P extends
-    | "$rid"
-    | "$strict"
-    | "$notStrict"
-    | "$all"
-    | keyof FROM["properties"],
+  FROM extends MinObjectDef<any>,
+  TO extends MinInterfaceDef<any>,
+  P extends ValidOsdkPropParams<FROM>,
 > = PropMapToInterface<
   FROM,
   TO
@@ -84,19 +90,19 @@ export type MapPropNamesToInterface<
  * @param P - the property(s) to convert
  */
 export type ConvertProps<
-  FROM extends ObjectTypeDefinition<any> | InterfaceDefinition<any>,
+  FROM extends ObjectOrInterfaceDefinition,
   TO extends ValidToFrom<FROM>,
-  P extends "$rid" | "$all" | "$strict" | "$notStrict" | keyof FROM["props"],
+  P extends ValidOsdkPropParams<FROM>,
 > = TO extends FROM ? P
-  : TO extends ObjectTypeDefinition<any> ? (
+  : TO extends MinObjectDef<any, any> ? (
       UnionIfTrue<
         MapPropNamesToObjectType<FROM, TO, P>,
         P extends "$rid" ? true : false,
         "$rid"
       >
     )
-  : TO extends InterfaceDefinition<any>
-    ? FROM extends ObjectTypeDefinition<any> ? (
+  : TO extends MinInterfaceDef<any, any>
+    ? FROM extends MinObjectDef<any, any> ? (
         UnionIfTrue<
           MapPropNamesToInterface<FROM, TO, P>,
           P extends "$rid" ? true : false,
@@ -108,44 +114,43 @@ export type ConvertProps<
 
 /** DO NOT EXPORT FROM PACKAGE */
 export type ValidToFrom<
-  FROM extends ObjectTypeDefinition<any, any> | InterfaceDefinition<any>,
-> = FROM extends InterfaceDefinition<any, any>
-  ? ObjectTypeDefinition<any> | InterfaceDefinition<any, any>
-  : InterfaceDefinition<any, any>;
+  FROM extends ObjectOrInterfaceDefinition,
+> = FROM extends MinInterfaceDef<any, any> ? ObjectOrInterfaceDefinition
+  : MinInterfaceDef<any, any>;
 
 /**
  * @param P The properties to add from Q
  * @param Z The existing underlying properties
  */
 type UnderlyingProps<
-  Q extends ObjectTypeDefinition<any, any> | InterfaceDefinition<any>,
+  Q extends ObjectOrInterfaceDefinition,
   P extends string,
   Z extends string,
   NEW_Q extends ValidToFrom<Q>,
 > =
   & Z
-  & Q extends InterfaceDefinition<any, any>
-  ? NEW_Q extends ObjectTypeDefinition<any> ? ConvertProps<Q, NEW_Q, P>
+  & Q extends MinInterfaceDef<any, any>
+  ? NEW_Q extends MinObjectDef<any> ? ConvertProps<Q, NEW_Q, P>
   : Z
   : Z;
 
 export type IsNever<T> = [T] extends [never] ? true : false;
 
 type GetPropsKeys<
-  Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
-  P extends "$all" | "$rid" | "$strict" | "$notStrict" | keyof Q["properties"],
-> = P extends "$all" ? keyof Q["properties"]
+  Q extends ObjectOrInterfaceDefinition,
+  P extends ValidOsdkPropParams<Q>,
+> = P extends "$all" ? PropertyKeys<Q>
   : Exclude<P, "$strict" | "$notStrict" | "$rid">;
 
 type GetProps<
-  Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
-  P extends "$all" | "$rid" | "$strict" | "$notStrict" | keyof Q["properties"],
-> = P extends "$notStrict" ? Q["props"] : Q["strictProps"];
+  Q extends ObjectOrInterfaceDefinition,
+  P extends ValidOsdkPropParams<Q>,
+> = P extends "$notStrict" ? CompileTimeMetadata<Q>["props"]
+  : CompileTimeMetadata<Q>["strictProps"];
 
 export type Osdk<
-  Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
-  P extends "$all" | "$rid" | "$strict" | "$notStrict" | keyof Q["properties"] =
-    "$all",
+  Q extends ObjectOrInterfaceDefinition,
+  P extends ValidOsdkPropParams<Q> = "$all",
 > =
   & OsdkBase<Q>
   & Pick<
@@ -154,7 +159,7 @@ export type Osdk<
   >
   & {
     readonly $link: Q extends { linksType?: any } ? Q["linksType"]
-      : Q extends ObjectTypeDefinition<any> ? OsdkObjectLinksObject<Q>
+      : Q extends MinObjectDef<any, any> ? OsdkObjectLinksObject<Q>
       : never;
 
     readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk<
@@ -169,6 +174,6 @@ export type Osdk<
     : {});
 
 export type OsdkObjectOrInterfaceFrom<
-  Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
-  P extends string = string & keyof Q["properties"],
+  Q extends ObjectOrInterfaceDefinition,
+  P extends string = PropertyKeys<Q>,
 > = Osdk<Q, P>;

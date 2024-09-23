@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { MinObjectDef } from "@osdk/api";
 import type {
   ObjectSet,
   Osdk,
@@ -54,7 +54,7 @@ const DollarLinkProxyHandler: ProxyHandler<ObjectHolder<any>> = {
       (client.objectSetFactory(objDef, client) as ObjectSet<any>)
         .where({
           [objDef.primaryKeyApiName]: rawObj.$primaryKey,
-        } as WhereClause<ObjectTypeDefinition<any>>)
+        } as WhereClause<MinObjectDef<any, any>>)
         .pivotTo(p as string);
 
     if (!linkDef.multiplicity) {

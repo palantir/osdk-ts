@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "../index.js";
+import type { ObjectOrInterfaceDefinition, PropertyKeys } from "../index.js";
 import type { OsdkMetadata } from "../OsdkMetadata.js";
 import type { PrimaryKeyTypes } from "./PrimaryKeyTypes.js";
 import type { VersionString } from "./VersionString.js";
 import type { WirePropertyTypes } from "./WirePropertyTypes.js";
 
+export type CompileTimeMetadata<T extends { __DefinitionMetadata?: {} }> =
+  NonNullable<
+    T["__DefinitionMetadata"]
+  >;
+
 export type ObjectTypePropertyDefinitionFrom2<
   Q extends ObjectOrInterfaceDefinition<any, any>,
-  P extends keyof Q["properties"] & string,
-> = Q["properties"][P];
+  P extends PropertyKeys<Q>,
+> = CompileTimeMetadata<Q>["properties"][P];
 
 export interface ObjectInterfaceBaseDefinition<K extends string, N = unknown> {
   type: "object" | "interface";
-  apiName: BrandedApiName<K, N>;
+  apiName: K;
   displayName?: string;
   description?: string;
   properties: Record<string, ObjectTypePropertyDefinition>;
@@ -90,16 +95,25 @@ export interface ObjectTypeDefinition<
   inverseSpts?: Record<string, string>;
 }
 
-export type ObjectTypeLinkKeysFrom2<O extends ObjectTypeDefinition<any>> =
-  & keyof O["links"]
+export interface MinObjectDef<K extends string, N = unknown> {
+  type: "object";
+  apiName: K;
+  osdkMetadata?: OsdkMetadata;
+  __DefinitionMetadata?: ObjectTypeDefinition<K, N>;
+}
+
+export type ObjectTypeLinkKeysFrom2<
+  Q extends MinObjectDef<any, any>,
+> =
+  & keyof CompileTimeMetadata<Q>["links"]
   & string;
 
 export interface ObjectTypeLinkDefinition<
-  O extends ObjectTypeDefinition<any, any>,
+  Q extends MinObjectDef<any, any>,
   M extends boolean,
 > {
-  __OsdkLinkTargetType?: O;
-  targetType: O["apiName"];
+  __OsdkLinkTargetType?: Q;
+  targetType: Q["apiName"];
   multiplicity: M;
 }
 

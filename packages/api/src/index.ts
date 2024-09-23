@@ -25,14 +25,17 @@ export type {
 } from "./ontology/ActionDefinition.js";
 export type {
   InterfaceDefinition,
-  InterfacePropertyKeysFrom2,
+  MinInterfaceDef,
 } from "./ontology/InterfaceDefinition.js";
 export type {
   ObjectOrInterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
+  PropertyKeys,
 } from "./ontology/ObjectOrInterface.js";
 export type {
   BrandedApiName,
+  CompileTimeMetadata,
+  MinObjectDef,
   ObjectTypeDefinition,
   ObjectTypeLinkDefinition,
   ObjectTypeLinkKeysFrom2,

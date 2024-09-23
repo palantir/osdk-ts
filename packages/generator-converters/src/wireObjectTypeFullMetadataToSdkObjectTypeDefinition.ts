@@ -56,7 +56,7 @@ export function wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
         ([interfaceApiName, impl]) => [interfaceApiName, impl.properties],
       ),
     )
-    : undefined;
+    : {};
 
   return {
     type: "object",
@@ -88,13 +88,11 @@ export function wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
     inverseSpts: invertProps(objectTypeWithLink.sharedPropertyTypeMapping),
     implements: objectTypeWithLink.implementsInterfaces as string[],
     interfaceMap,
-    inverseInterfaceMap: interfaceMap
-      ? Object.fromEntries(
-        Object.entries(interfaceMap).map((
-          [interfaceApiName, props],
-        ) => [interfaceApiName, invertProps(props)]),
-      )
-      : undefined,
+    inverseInterfaceMap: Object.fromEntries(
+      Object.entries(interfaceMap).map((
+        [interfaceApiName, props],
+      ) => [interfaceApiName, invertProps(props)]),
+    ),
   };
 }
 function invertProps(
