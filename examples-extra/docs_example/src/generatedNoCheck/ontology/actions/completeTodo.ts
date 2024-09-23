@@ -1,4 +1,4 @@
-import type { MinimalActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
   ActionParam,
   ActionReturnTypeForOptions,
@@ -57,7 +57,7 @@ export namespace completeTodo {
  * @param {ActionParam.PrimitiveType<"boolean">} is_complete
  * @param {ActionParam.ObjectType<Todo>} Todo A todo Object
  */
-export interface completeTodo extends MinimalActionDefinition<'completeTodo', 'Todo', completeTodo.Signatures> {
+export interface completeTodo extends MinActionDef<'completeTodo', 'Todo', completeTodo.Signatures> {
   __DefinitionMetadata?: {
     apiName: 'completeTodo';
     description: 'Completes Todo';

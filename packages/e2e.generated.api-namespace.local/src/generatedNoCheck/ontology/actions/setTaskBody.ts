@@ -1,4 +1,4 @@
-import type { MinimalActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
   ActionParam,
   ActionReturnTypeForOptions,
@@ -47,8 +47,7 @@ export namespace setTaskBody {
  * @param {ActionParam.PrimitiveType<"string">} body
  * @param {ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>} task
  */
-export interface setTaskBody
-  extends MinimalActionDefinition<'setTaskBody', 'com.example.dep.Task', setTaskBody.Signatures> {
+export interface setTaskBody extends MinActionDef<'setTaskBody', 'com.example.dep.Task', setTaskBody.Signatures> {
   __DefinitionMetadata?: {
     apiName: 'setTaskBody';
     modifiedEntities: {

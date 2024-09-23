@@ -16,7 +16,7 @@
 
 import type {
   InterfaceDefinition,
-  MinimalActionDefinition,
+  MinActionDef,
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
   QueryDefinition,
@@ -70,7 +70,7 @@ export interface OntologyProvider {
   maybeSeed: (
     definition:
       | ObjectOrInterfaceDefinition
-      | MinimalActionDefinition<string, string, any>
+      | MinActionDef<string, string, any>
       | QueryDefinition<any, any>,
   ) => void;
 }

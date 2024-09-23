@@ -16,7 +16,7 @@
 
 import type {
   ActionParameterDefinition,
-  MinimalActionDefinition,
+  MinActionDef,
   ObjectActionDataType,
   ObjectSetActionDataType,
 } from "@osdk/api";
@@ -67,11 +67,11 @@ export type OsdkActionParameters<
   : PartialBy<NotOptionalParams<X>, NullableProps<X>>;
 
 export type CompileTimeActionMetadata<
-  T extends MinimalActionDefinition<any, any, any>,
+  T extends MinActionDef<any, any, any>,
 > = NonNullable<T["__DefinitionMetadata"]>;
 
 export type ActionSignatureFromDef<
-  T extends MinimalActionDefinition<any, any, any>,
+  T extends MinActionDef<any, any, any>,
 > = {
   applyAction:
     [CompileTimeActionMetadata<T>["signatures"]["applyAction"]] extends [never]
@@ -114,7 +114,7 @@ export type BatchActionSignature<
 >;
 
 export async function applyAction<
-  AD extends MinimalActionDefinition<any, any, any>,
+  AD extends MinActionDef<any, any, any>,
   P extends
     | OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>
     | OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>[],
@@ -192,7 +192,7 @@ export async function applyAction<
   }
 }
 
-async function remapActionParams<AD extends MinimalActionDefinition<any, any>>(
+async function remapActionParams<AD extends MinActionDef<any, any>>(
   params:
     | OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>
     | undefined,
@@ -211,7 +211,7 @@ async function remapActionParams<AD extends MinimalActionDefinition<any, any>>(
 }
 
 async function remapBatchActionParams<
-  AD extends MinimalActionDefinition<any, any>,
+  AD extends MinActionDef<any, any>,
 >(
   params: OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>[],
   client: MinimalClient,
