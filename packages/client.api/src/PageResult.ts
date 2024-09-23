@@ -19,4 +19,5 @@ import type { OsdkObject } from "./OsdkObject.js";
 export interface PageResult<T> {
   data: T[];
   nextPageToken: string | undefined;
+  totalCount: string;
 }

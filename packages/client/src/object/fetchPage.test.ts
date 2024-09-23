@@ -176,6 +176,7 @@ describe(fetchPage, () => {
         .toEqualTypeOf<{
           data: Osdk<TodoDef, "text">[];
           nextPageToken: string | undefined;
+          totalCount: string;
         }>();
 
       expectTypeOf<Awaited<FetchPageResult<TodoDef, "text", true, false>>>()
@@ -183,6 +184,7 @@ describe(fetchPage, () => {
         .toEqualTypeOf<{
           data: Osdk<TodoDef, "text" | "$rid" | "$notStrict">[];
           nextPageToken: string | undefined;
+          totalCount: string;
         }>();
     });
 
@@ -193,6 +195,7 @@ describe(fetchPage, () => {
         .toEqualTypeOf<{
           data: Osdk<TodoDef>[];
           nextPageToken: string | undefined;
+          totalCount: string;
         }>();
 
       expectTypeOf<
@@ -202,6 +205,7 @@ describe(fetchPage, () => {
         .toEqualTypeOf<{
           data: Osdk<TodoDef, "$all" | "$rid">[];
           nextPageToken: string | undefined;
+          totalCount: string;
         }>();
 
       expectTypeOf<
@@ -211,6 +215,7 @@ describe(fetchPage, () => {
         .toEqualTypeOf<{
           data: Osdk<TodoDef, "$all" | "$rid">[];
           nextPageToken: string | undefined;
+          totalCount: string;
         }>();
 
       expectTypeOf<
@@ -220,6 +225,7 @@ describe(fetchPage, () => {
         .toEqualTypeOf<{
           data: Osdk<FooInterface, "$all" | "$rid">[];
           nextPageToken: string | undefined;
+          totalCount: string;
         }>();
 
       expectTypeOf<
@@ -229,6 +235,7 @@ describe(fetchPage, () => {
         .toEqualTypeOf<{
           data: Osdk<FooInterface, "$all" | "$rid">[];
           nextPageToken: string | undefined;
+          totalCount: string;
         }>();
     });
   });

@@ -568,6 +568,8 @@ export interface PageResult<T> {
     data: T[];
     // (undocumented)
     nextPageToken: string | undefined;
+    // (undocumented)
+    totalCount: string;
 }
 
 // @public (undocumented)

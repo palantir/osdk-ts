@@ -280,5 +280,6 @@ export async function fetchObjectPage<
       args.$__EXPERIMENTAL_strictNonNull,
     ),
     nextPageToken: r.nextPageToken,
-  }) as Promise<FetchPageResult<Q, L, R, S>>;
+    totalCount: r.totalCount,
+  }) as unknown as Promise<FetchPageResult<Q, L, R, S>>;
 }
