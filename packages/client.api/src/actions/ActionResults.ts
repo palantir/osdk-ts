@@ -25,9 +25,9 @@ export type ActionResults =
 
 interface ObjectEdits {
   type: "edits";
-  addedObjects: Array<ObjectEdit>;
-  modifiedObjects: Array<ObjectEdit>;
-  addedLinks: Array<ObjectEdit>;
+  addedObjects: Array<ObjectReference>;
+  modifiedObjects: Array<ObjectReference>;
+  addedLinks: Array<LinkReference>;
   deletedObjectsCount: number;
   deletedLinksCount: number;
 }
@@ -40,16 +40,12 @@ interface LargeScaleObjectEdits {
   deletedLinksCount?: never;
 }
 
-type ObjectEdit =
-  | ({ type: "addObject" } & ObjectReference)
-  | ({ type: "modifyObject" } & ObjectReference)
-  | ({
-    type: "addLink";
-    linkTypeApiNameAtoB: string;
-    linkTypeApiNameBtoA: string;
-    aSideObject: ObjectReference;
-    bSideObject: ObjectReference;
-  });
+type LinkReference = {
+  linkTypeApiNameAtoB: string;
+  linkTypeApiNameBtoA: string;
+  aSideObject: ObjectReference;
+  bSideObject: ObjectReference;
+};
 interface ObjectReference {
   primaryKey: string | number;
   objectType: string;
