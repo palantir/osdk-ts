@@ -16,6 +16,7 @@
 
 import type {
   CompileTimeMetadata,
+  MinQueryDef,
   ObjectQueryDataType,
   ObjectSetQueryDataType,
   QueryDataTypeDefinition,
@@ -26,7 +27,6 @@ import type {
   QueryParam,
   QueryResult,
 } from "@osdk/client.api";
-import type { MinQueryDef } from "../../../api/build/esm/ontology/QueryDefinition.js";
 import type { PartialByNotStrict } from "../util/partialBy.js";
 
 export type QuerySignatureFromDef<T extends MinQueryDef<any, any, any>> = {
