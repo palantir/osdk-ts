@@ -15,7 +15,7 @@
  */
 
 import type {
-  MinimalActionDefinition,
+  MinActionDef,
   MinInterfaceDef,
   MinObjectDef,
   ObjectOrInterfaceDefinition,
@@ -35,12 +35,12 @@ import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import { applyQuery } from "./queries/applyQuery.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 
-class ActionInvoker<Q extends MinimalActionDefinition<any, any, any>>
+class ActionInvoker<Q extends MinActionDef<any, any, any>>
   implements ActionSignatureFromDef<Q>
 {
   constructor(
     clientCtx: MinimalClient,
-    actionDef: MinimalActionDefinition<any, any, any>,
+    actionDef: MinActionDef<any, any, any>,
   ) {
     // We type the property as a generic function as binding `applyAction`
     // doesn't return a type thats all that useful anyway
@@ -88,12 +88,11 @@ export function createClientInternal(
   function clientFn<
     T extends
       | ObjectOrInterfaceDefinition
-      | MinimalActionDefinition<any, any, any>
+      | MinActionDef<any, any, any>
       | QueryDefinition<any, any>,
   >(o: T): T extends MinObjectDef<any> ? ObjectSet<T>
     : T extends MinInterfaceDef<any, any> ? MinimalObjectSet<T>
-    : T extends MinimalActionDefinition<any, any, any>
-      ? ActionSignatureFromDef<T>
+    : T extends MinActionDef<any, any, any> ? ActionSignatureFromDef<T>
     : T extends QueryDefinition<any, any> ? QuerySignatureFromDef<T>
     : never
   {
@@ -105,7 +104,7 @@ export function createClientInternal(
       return new ActionInvoker(
         clientCtx,
         o,
-      ) as (T extends MinimalActionDefinition<any, any, any>
+      ) as (T extends MinActionDef<any, any, any>
         // first `as` to the action definition for our "real" typecheck
         ? ActionSignatureFromDef<T>
         : never) as any; // then as any for dealing with the conditional return value

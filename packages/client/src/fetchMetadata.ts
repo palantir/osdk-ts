@@ -17,7 +17,7 @@
 import type {
   ActionDefinition,
   InterfaceDefinition,
-  MinimalActionDefinition,
+  MinActionDef,
   ObjectTypeDefinition,
   QueryDefinition,
 } from "@osdk/api";
@@ -36,7 +36,7 @@ export const fetchMetadataInternal = async <
   Q extends (
     | ObjectTypeDefinition<any, any>
     | InterfaceDefinition<any, any>
-    | MinimalActionDefinition<any, any>
+    | MinActionDef<any, any>
     | QueryDefinition<any, any, any>
   ),
 >(
@@ -106,7 +106,7 @@ const fetchInterfaceMetadata = async (
 
 const fetchActionMetadata = async (
   client: MinimalClient,
-  actionType: MinimalActionDefinition<any, any>,
+  actionType: MinActionDef<any, any>,
 ): Promise<ActionMetadata> => {
   const response = await OntologiesV2.ActionTypesV2.getActionTypeV2(
     addUserAgentAndRequestContextHeaders(client, actionType),

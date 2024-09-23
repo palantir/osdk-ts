@@ -29,7 +29,7 @@ export interface ActionDefinition<
   modifiedEntities?: Partial<Record<K, ActionModifiedEntity>>;
 }
 
-export interface MinimalActionDefinition<
+export interface MinActionDef<
   A extends string,
   K extends string,
   T_signatures = never,

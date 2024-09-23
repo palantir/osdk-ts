@@ -22,7 +22,7 @@ import type { InterfaceMetadata } from '@osdk/client.api';
 import { InterfaceObjectSet } from '@osdk/client.api';
 import { isOk } from '@osdk/client.api';
 import type { Logger } from 'pino';
-import type { MinimalActionDefinition } from '@osdk/api';
+import type { MinActionDef } from '@osdk/api';
 import type { MinInterfaceDef } from '@osdk/api';
 import type { MinObjectDef } from '@osdk/api';
 import type { ObjectActionDataType } from '@osdk/api';
@@ -73,13 +73,13 @@ export interface Client extends SharedClient<MinimalClient> {
     // Warning: (ae-forgotten-export) The symbol "ActionSignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    <Q extends MinimalActionDefinition<any, any, any>>(o: Q): ActionSignatureFromDef<Q>;
+    <Q extends MinActionDef<any, any, any>>(o: Q): ActionSignatureFromDef<Q>;
     // Warning: (ae-forgotten-export) The symbol "QuerySignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     <Q extends QueryDefinition<any, any, any>>(o: Q): QuerySignatureFromDef<Q>;
     // (undocumented)
-    fetchMetadata<Q extends (MinObjectDef<any, any> | MinInterfaceDef<any, any> | MinimalActionDefinition<any, any, any> | QueryDefinition<any, any, any>)>(o: Q): Promise<Q extends MinObjectDef<any, any> ? ObjectMetadata : Q extends MinInterfaceDef<any, any> ? InterfaceMetadata : Q extends MinimalActionDefinition<any, any, any> ? ActionMetadata : Q extends QueryDefinition<any, any, any> ? QueryMetadata : never>;
+    fetchMetadata<Q extends (MinObjectDef<any, any> | MinInterfaceDef<any, any> | MinActionDef<any, any, any> | QueryDefinition<any, any, any>)>(o: Q): Promise<Q extends MinObjectDef<any, any> ? ObjectMetadata : Q extends MinInterfaceDef<any, any> ? InterfaceMetadata : Q extends MinActionDef<any, any, any> ? ActionMetadata : Q extends QueryDefinition<any, any, any> ? QueryMetadata : never>;
 }
 
 // @public

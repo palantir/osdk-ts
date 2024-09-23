@@ -1,4 +1,4 @@
-import type { MinimalActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
   ActionParam,
   ActionReturnTypeForOptions,
@@ -79,7 +79,7 @@ export namespace moveOffice {
  * @param {ActionParam.PrimitiveType<"string">} officeId
  * @param {ActionParam.PrimitiveType<"integer">} [officeNames] A list of all office names
  */
-export interface moveOffice extends MinimalActionDefinition<'moveOffice', 'Office', moveOffice.Signatures> {
+export interface moveOffice extends MinActionDef<'moveOffice', 'Office', moveOffice.Signatures> {
   __DefinitionMetadata?: {
     apiName: 'moveOffice';
     description: "Update an office's physical location";

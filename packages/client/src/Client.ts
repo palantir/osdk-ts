@@ -16,7 +16,7 @@
 
 import type {
   CompileTimeMetadata,
-  MinimalActionDefinition,
+  MinActionDef,
   MinInterfaceDef,
   MinObjectDef,
   QueryDefinition,
@@ -49,7 +49,7 @@ export interface Client extends SharedClient<MinimalClient> {
     o: Q,
   ): CompileTimeMetadata<Q>["objectSet"];
 
-  <Q extends MinimalActionDefinition<any, any, any>>(
+  <Q extends MinActionDef<any, any, any>>(
     o: Q,
   ): ActionSignatureFromDef<Q>;
 
@@ -61,13 +61,13 @@ export interface Client extends SharedClient<MinimalClient> {
     Q extends (
       | MinObjectDef<any, any>
       | MinInterfaceDef<any, any>
-      | MinimalActionDefinition<any, any, any>
+      | MinActionDef<any, any, any>
       | QueryDefinition<any, any, any>
     ),
   >(o: Q): Promise<
     Q extends MinObjectDef<any, any> ? ObjectMetadata
       : Q extends MinInterfaceDef<any, any> ? InterfaceMetadata
-      : Q extends MinimalActionDefinition<any, any, any> ? ActionMetadata
+      : Q extends MinActionDef<any, any, any> ? ActionMetadata
       : Q extends QueryDefinition<any, any, any> ? QueryMetadata
       : never
   >;
