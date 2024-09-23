@@ -1,5 +1,11 @@
 # @osdk/foundry-sdk-generator
 
+## 1.3.8
+
+### Patch Changes
+
+- 9b48bf8: Releasing a new beta version
+
 ## 1.3.7
 
 ### Patch Changes
