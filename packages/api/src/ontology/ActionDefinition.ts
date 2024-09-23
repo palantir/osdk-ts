@@ -29,6 +29,12 @@ export interface ActionDefinition<
   modifiedEntities?: Partial<Record<K, ActionModifiedEntity>>;
 }
 
+export interface ActionDefMetadata<A extends string, K extends string, T>
+  extends ActionDefinition<A, K>
+{
+  signatures: T;
+}
+
 export interface MinActionDef<
   A extends string,
   K extends string,
@@ -36,10 +42,8 @@ export interface MinActionDef<
 > {
   type: "action";
   apiName: A;
-  osdkMetadata: OsdkMetadata;
-  __DefinitionMetadata?: ActionDefinition<A, K> & {
-    signatures: T_signatures;
-  };
+  osdkMetadata?: OsdkMetadata;
+  __DefinitionMetadata?: ActionDefMetadata<A, K, T_signatures>;
 }
 
 export interface ActionModifiedEntity {

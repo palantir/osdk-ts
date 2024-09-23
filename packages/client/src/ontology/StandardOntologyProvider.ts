@@ -17,11 +17,13 @@
 import type {
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
+  QueryDefinition,
 } from "@osdk/api";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createAsyncClientCache } from "../object/Cache.js";
 import { loadFullObjectMetadata } from "./loadFullObjectMetadata.js";
 import { loadInterfaceDefinition } from "./loadInterfaceDefinition.js";
+import { loadQueryDefinition } from "./loadQueryDefinition.js";
 import {
   type FetchedObjectTypeDefinition,
   InterfaceDefinitions,
@@ -65,7 +67,17 @@ export const createStandardOntologyProviderFactory: (
       return loadInterfaceDefinition(client, key);
     }
 
-    function makeGetter<N extends ObjectOrInterfaceDefinition>(
+    async function loadQuery(
+      client: MinimalClient,
+      key: string,
+    ) {
+      const r = await loadQueryDefinition(client, key);
+      return r;
+    }
+
+    function makeGetter<
+      N extends ObjectOrInterfaceDefinition | QueryDefinition<any, any>,
+    >(
       fn: (
         client: MinimalClient,
         key: string,
@@ -83,9 +95,7 @@ export const createStandardOntologyProviderFactory: (
     const ret = {
       getObjectDefinition: makeGetter(loadObject),
       getInterfaceDefinition: makeGetter(loadInterface),
-      maybeSeed(definition: any) {
-        // not using this for now
-      },
+      getQueryDefinition: makeGetter(loadQuery),
     };
     return ret;
   };

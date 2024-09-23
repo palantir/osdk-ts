@@ -907,7 +907,7 @@ describe("generator", () => {
         "/foo/ontology/queries.ts": "export * from './queries/getCount';
       export * from './queries/returnsTodo';
       ",
-        "/foo/ontology/queries/getCount.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
+        "/foo/ontology/queries/getCount.ts": "import type { MinQueryDef, VersionBound } from '@osdk/api';
       import type { QueryParam, QueryResult } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 
@@ -924,7 +924,7 @@ describe("generator", () => {
         }
 
         export interface Definition
-          extends QueryDefinition<'getCount', never, getCount.Signature>,
+          extends MinQueryDef<'getCount', never, getCount.Signature>,
             VersionBound<$ExpectedClientVersion> {
           apiName: 'getCount';
           type: 'query';
@@ -964,7 +964,7 @@ describe("generator", () => {
         },
       };
       ",
-        "/foo/ontology/queries/returnsTodo.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
+        "/foo/ontology/queries/returnsTodo.ts": "import type { MinQueryDef, VersionBound } from '@osdk/api';
       import type { QueryParam, QueryResult } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata';
       import type { Todo } from '../objects/Todo';
@@ -982,7 +982,7 @@ describe("generator", () => {
         }
 
         export interface Definition
-          extends QueryDefinition<'returnsTodo', 'Todo', returnsTodo.Signature>,
+          extends MinQueryDef<'returnsTodo', 'Todo', returnsTodo.Signature>,
             VersionBound<$ExpectedClientVersion> {
           apiName: 'returnsTodo';
           type: 'query';
@@ -1508,7 +1508,7 @@ describe("generator", () => {
           "/foo/ontology/queries.ts": "export * from './queries/getCount.js';
         export * from './queries/returnsTodo.js';
         ",
-          "/foo/ontology/queries/getCount.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
+          "/foo/ontology/queries/getCount.ts": "import type { MinQueryDef, VersionBound } from '@osdk/api';
         import type { QueryParam, QueryResult } from '@osdk/client.api';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 
@@ -1525,7 +1525,7 @@ describe("generator", () => {
           }
 
           export interface Definition
-            extends QueryDefinition<'foo.bar.getCount', never, getCount.Signature>,
+            extends MinQueryDef<'foo.bar.getCount', never, getCount.Signature>,
               VersionBound<$ExpectedClientVersion> {
             apiName: 'foo.bar.getCount';
             type: 'query';
@@ -1565,7 +1565,7 @@ describe("generator", () => {
           },
         };
         ",
-          "/foo/ontology/queries/returnsTodo.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
+          "/foo/ontology/queries/returnsTodo.ts": "import type { MinQueryDef, VersionBound } from '@osdk/api';
         import type { QueryParam, QueryResult } from '@osdk/client.api';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import type { Todo } from '../objects/Todo.js';
@@ -1583,7 +1583,7 @@ describe("generator", () => {
           }
 
           export interface Definition
-            extends QueryDefinition<'foo.bar.returnsTodo', 'foo.bar.Todo', returnsTodo.Signature>,
+            extends MinQueryDef<'foo.bar.returnsTodo', 'foo.bar.Todo', returnsTodo.Signature>,
               VersionBound<$ExpectedClientVersion> {
             apiName: 'foo.bar.returnsTodo';
             type: 'query';
@@ -1735,7 +1735,7 @@ describe("generator", () => {
 
       expect(helper.getFiles()["/foo/ontology/queries/getTask.ts"])
         .toMatchInlineSnapshot(`
-          "import type { QueryDefinition, VersionBound } from '@osdk/api';
+          "import type { MinQueryDef, VersionBound } from '@osdk/api';
           import type { QueryParam, QueryResult } from '@osdk/client.api';
           import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
           import type { Task as $Imported$objectTypes$com$example$dep$Task } from '@com.example.dep/osdk';
@@ -1753,7 +1753,7 @@ describe("generator", () => {
             }
 
             export interface Definition
-              extends QueryDefinition<'getTask', 'com.example.dep.Task', getTask.Signature>,
+              extends MinQueryDef<'getTask', 'com.example.dep.Task', getTask.Signature>,
                 VersionBound<$ExpectedClientVersion> {
               apiName: 'getTask';
               type: 'query';

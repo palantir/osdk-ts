@@ -16,8 +16,6 @@
 
 import type {
   InterfaceDefinition,
-  MinActionDef,
-  ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
   QueryDefinition,
 } from "@osdk/api";
@@ -61,18 +59,7 @@ export interface OntologyProvider {
     apiName: string,
   ) => Promise<InterfaceDefinition<any, any>>;
 
-  /**
-   * If the OntologyProvider supports seeding, this method will seed the provider with the given definition.
-   *
-   * @param definition
-   * @returns
-   */
-  maybeSeed: (
-    definition:
-      | ObjectOrInterfaceDefinition
-      | MinActionDef<string, string, any>
-      | QueryDefinition<any, any>,
-  ) => void;
+  getQueryDefinition: (apiName: string) => Promise<QueryDefinition<any, any>>;
 }
 
 export type OntologyProviderFactory<

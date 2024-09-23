@@ -18,8 +18,8 @@ import type {
   MinActionDef,
   MinInterfaceDef,
   MinObjectDef,
+  MinQueryDef,
   ObjectOrInterfaceDefinition,
-  QueryDefinition,
 } from "@osdk/api";
 import type { MinimalObjectSet, ObjectSet } from "@osdk/client.api";
 import { symbolClientContext } from "@osdk/shared.client";
@@ -54,12 +54,12 @@ class ActionInvoker<Q extends MinActionDef<any, any, any>>
   batchApplyAction: (...args: any[]) => any;
 }
 
-class QueryInvoker<Q extends QueryDefinition<any, any>>
+class QueryInvoker<Q extends MinQueryDef<any, any, any>>
   implements QuerySignatureFromDef<Q>
 {
   constructor(
     clientCtx: MinimalClient,
-    queryDef: QueryDefinition<any, any>,
+    queryDef: MinQueryDef<any, any>,
   ) {
     this.executeFunction = applyQuery.bind(undefined, clientCtx, queryDef);
   }
@@ -89,18 +89,16 @@ export function createClientInternal(
     T extends
       | ObjectOrInterfaceDefinition
       | MinActionDef<any, any, any>
-      | QueryDefinition<any, any>,
+      | MinQueryDef<any, any>,
   >(o: T): T extends MinObjectDef<any> ? ObjectSet<T>
     : T extends MinInterfaceDef<any, any> ? MinimalObjectSet<T>
     : T extends MinActionDef<any, any, any> ? ActionSignatureFromDef<T>
-    : T extends QueryDefinition<any, any> ? QuerySignatureFromDef<T>
+    : T extends MinQueryDef<any, any> ? QuerySignatureFromDef<T>
     : never
   {
     if (o.type === "object" || o.type === "interface") {
-      clientCtx.ontologyProvider.maybeSeed(o);
       return objectSetFactory(o, clientCtx) as any;
     } else if (o.type === "action") {
-      clientCtx.ontologyProvider.maybeSeed(o);
       return new ActionInvoker(
         clientCtx,
         o,
@@ -109,11 +107,10 @@ export function createClientInternal(
         ? ActionSignatureFromDef<T>
         : never) as any; // then as any for dealing with the conditional return value
     } else if (o.type === "query") {
-      clientCtx.ontologyProvider.maybeSeed(o);
       return new QueryInvoker(
         clientCtx,
         o,
-      ) as (T extends QueryDefinition<any, any> ? QuerySignatureFromDef<T>
+      ) as (T extends MinQueryDef<any, any> ? QuerySignatureFromDef<T>
         : never) as any;
     } else {
       throw new Error("not implemented");

@@ -15,10 +15,11 @@
  */
 
 import type {
+  CompileTimeMetadata,
   MinObjectDef,
+  MinQueryDef,
   ObjectOrInterfaceDefinition,
   QueryDataTypeDefinition,
-  QueryDefinition,
   QueryParameterDefinition,
 } from "@osdk/api";
 import type {
@@ -38,15 +39,17 @@ import { toDataValueQueries } from "../util/toDataValueQueries.js";
 import type { QueryParameterType, QueryReturnType } from "./types.js";
 
 export async function applyQuery<
-  QD extends QueryDefinition<any, any>,
-  P extends QueryParameterType<QD["parameters"]>,
+  QD extends MinQueryDef<any, any, any>,
+  P extends QueryParameterType<CompileTimeMetadata<QD>["parameters"]>,
 >(
   client: MinimalClient,
   query: QD,
   params?: P,
 ): Promise<
-  QueryReturnType<QD["output"]>
+  QueryReturnType<CompileTimeMetadata<QD>["output"]>
 > {
+  const qd = await client.ontologyProvider.getQueryDefinition(query.apiName);
+
   const response = await OntologiesV2.Queries.executeQueryV2(
     addUserAgentAndRequestContextHeaders(
       augmentRequestContext(client, _ => ({ finalMethodCall: "applyQuery" })),
@@ -59,19 +62,19 @@ export async function applyQuery<
         ? await remapQueryParams(
           params as { [parameterId: string]: any },
           client,
-          query.parameters,
+          qd.parameters,
         )
         : {},
     },
   );
-  const objectOutputDefs = await getRequiredDefinitions(query.output, client);
+  const objectOutputDefs = await getRequiredDefinitions(qd.output, client);
   const remappedResponse = await remapQueryResponse(
     client,
-    query.output,
+    qd.output,
     response.value,
     objectOutputDefs,
   );
-  return remappedResponse as QueryReturnType<QD["output"]>;
+  return remappedResponse as QueryReturnType<CompileTimeMetadata<QD>["output"]>;
 }
 
 async function remapQueryParams(
