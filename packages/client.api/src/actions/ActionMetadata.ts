@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+import type { ActionParameterDefinition } from "@osdk/api";
+
 export type ActionMetadata = {
   description?: string;
   displayName?: string;
   rid: string;
-  // TODO: Add Parameters
+  parameters: Record<string, ActionParameterDefinition<string, any>>;
+  apiName: string;
 };

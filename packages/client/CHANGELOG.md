@@ -1,5 +1,33 @@
 # @osdk/client
 
+## 2.0.0-beta.12
+
+### Minor Changes
+
+- dc25fb4: Expose parameters on action metadata
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/generator-converters@2.0.0-beta.12
+  - @osdk/client.api@2.0.0-beta.12
+  - @osdk/client.unstable@2.0.0-beta.12
+  - @osdk/api@2.0.0-beta.12
+
+## 2.0.0-beta.11
+
+### Minor Changes
+
+- f009bb2: Remove the direct dependency on pino in favor of a similar shape
+- 6eeca39: Internally refactored Action Edits types
+
+### Patch Changes
+
+- @osdk/client.api@2.0.0-beta.11
+- @osdk/generator-converters@2.0.0-beta.11
+- @osdk/client.unstable@2.0.0-beta.11
+- @osdk/api@2.0.0-beta.11
+
 ## 2.0.0-beta.10
 
 ### Major Changes

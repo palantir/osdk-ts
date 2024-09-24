@@ -1,5 +1,17 @@
 # @osdk/cli
 
+## 0.24.0-beta.11
+
+### Patch Changes
+
+- @osdk/generator@2.0.0-beta.12
+
+## 0.24.0-beta.10
+
+### Patch Changes
+
+- @osdk/generator@2.0.0-beta.11
+
 ## 0.24.0-beta.9
 
 ### Patch Changes

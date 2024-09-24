@@ -23,7 +23,10 @@ import type {
   ObjectTypeDefinition,
 } from "@osdk/api";
 import type { ActionMetadata, QueryMetadata } from "@osdk/client.api";
-import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/generator-converters";
+import {
+  __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition,
+  wireActionTypeV2ToSdkActionDefinition,
+} from "@osdk/generator-converters";
 import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { loadFullObjectMetadata } from "./ontology/loadFullObjectMetadata.js";
@@ -90,9 +93,9 @@ const fetchActionMetadata = async (
     await client.ontologyRid,
     actionType.apiName,
   );
+  const { type, ...rest } = wireActionTypeV2ToSdkActionDefinition(response);
   return {
-    displayName: response.displayName,
-    description: response.description,
+    ...rest,
     rid: response.rid,
   };
 };
