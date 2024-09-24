@@ -1,5 +1,12 @@
 # @osdk/e2e.test.foundry-sdk-generator
 
+## 0.2.9
+
+### Patch Changes
+
+- Updated dependencies [d5ced06]
+  - @osdk/foundry-sdk-generator@1.3.9
+
 ## 0.2.8
 
 ### Patch Changes
