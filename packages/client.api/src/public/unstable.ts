@@ -16,4 +16,7 @@
 
 export const __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe = Symbol();
 
+export const __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet = Symbol();
+export const __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks = Symbol();
+
 export type { EXPERIMENTAL_ObjectSetListener } from "../objectSet/EXPERIMENTAL_ObjectSetListener.js";

@@ -15,6 +15,7 @@ import type { ObjectOrInterfacePropertyKeysFrom2 } from '@osdk/api';
 import type { ObjectTypeLinkDefinition } from '@osdk/api';
 import type { ObjectTypeLinkKeysFrom2 } from '@osdk/api';
 import type { ObjectTypePropertyDefinition } from '@osdk/api';
+import type { OsdkObjectOrInterfaceFrom as OsdkObjectOrInterfaceFrom_2 } from '@osdk/client.api';
 import type { Point } from 'geojson';
 import type { Polygon } from 'geojson';
 import type { PrimaryKeyTypes } from '@osdk/api';
@@ -477,7 +478,7 @@ export type ObjectMetadata = {
 export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED = any> extends MinimalObjectSet<Q> {
     // Warning: (ae-forgotten-export) The symbol "EXPERIMENTAL_ObjectSetListener" needs to be exported by the entry point index.d.ts
     //
-    // @alpha (undocumented)
+    // @alpha
     readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]: (listener: EXPERIMENTAL_ObjectSetListener<Q>) => () => unknown;
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"

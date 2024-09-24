@@ -228,7 +228,13 @@ export interface ObjectSet<
     ) => Promise<Result<SingleOsdkResult<Q, L, R, S>>>
     : never;
 
-  /** @alpha */
+  /**
+   * WARNING. THIS METHOD IS EXPERIMENTAL AND NOT SUPPORTED YET.
+   *
+   * It may change at any time and does not follow semantic versioning. Use at your own risk.
+   *
+   *  @alpha
+   */
   readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]: (
     listener: EXPERIMENTAL_ObjectSetListener<Q>,
   ) => () => unknown;

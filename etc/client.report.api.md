@@ -4,6 +4,8 @@
 
 ```ts
 
+import type { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from '@osdk/client.api/unstable';
+import type { __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet } from '@osdk/client.api/unstable';
 import { ActionEditResponse } from '@osdk/client.api';
 import type { ActionMetadata } from '@osdk/client.api';
 import type { ActionParam } from '@osdk/client.api';
@@ -67,8 +69,16 @@ export { ApplyBatchActionOptions }
 //
 // @public (undocumented)
 export interface Client extends SharedClient<MinimalClient> {
+    // Warning: (ae-forgotten-export) The symbol "BulkLinkResult" needs to be exported by the entry point index.d.ts
+    //
+    // @alpha
+    readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks]: <T extends ObjectOrInterfaceDefinition>(objs: Osdk<T>[], links: string[]) => AsyncGenerator<BulkLinkResult, void, undefined>;
+    // @alpha
+    readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet]: <T extends ObjectOrInterfaceDefinition>(type: T, rid: string) => ObjectSet<T>;
     // (undocumented)
     <Q extends MinObjectDef<any, any>>(o: Q): CompileTimeMetadata<Q>["objectSet"];
+    // (undocumented)
+    <Q extends (InterfaceDefinition<any, any>)>(o: Q): Q["objectSet"];
     // Warning: (ae-forgotten-export) The symbol "ActionSignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
