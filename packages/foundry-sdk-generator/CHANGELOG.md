@@ -1,5 +1,11 @@
 # @osdk/foundry-sdk-generator
 
+## 1.3.9
+
+### Patch Changes
+
+- d5ced06: --beta uses 2.0.0-beta.10
+
 ## 1.3.8
 
 ### Patch Changes
