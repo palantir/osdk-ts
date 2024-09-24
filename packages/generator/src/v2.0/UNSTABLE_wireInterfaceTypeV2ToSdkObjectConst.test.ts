@@ -107,7 +107,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
       },
     );
     expect(formattedCode).toMatchInlineSnapshot(`
-      "import type { InterfaceDefinition as $InterfaceDefinition } from "@osdk/api";
+      "import type { MinInterfaceDef as $InterfaceDefinition } from "@osdk/api";
       import type {
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
@@ -126,59 +126,42 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           readonly bar: $PropType["integer"] | undefined;
         }
 
-        export interface ObjectSet extends $ObjectSet<Bar.Definition, Bar.ObjectSet> {}
-
-        export interface Definition extends $InterfaceDefinition<"Bar", Bar.Definition> {
-          osdkMetadata: typeof $osdkMetadata;
-          type: "interface";
-          apiName: "Bar";
-          __DefinitionMetadata?: {
-            objectSet: Bar.ObjectSet;
-            props: Bar.Props;
-            linksType: OsdkObjectLinks$Bar;
-            strictProps: Bar.StrictProps;
-            apiName: "Bar";
-            displayName: "Bar";
-            implements: [];
-            links: {};
-            properties: {
-              /**
-               * (no ontology metadata)
-               */
-              bar: $PropertyDef<"integer", "nullable", "single">;
-            };
-            type: "interface";
-          };
-        }
+        export interface ObjectSet extends $ObjectSet<Bar, Bar.ObjectSet> {}
 
         export type OsdkObject<
           OPTIONS extends never | "$notStrict" | "$rid" = never,
           K extends keyof Bar.Props = keyof Bar.Props,
-        > = $Osdk<Bar.Definition, K | OPTIONS>;
+        > = $Osdk<Bar, K | OPTIONS>;
       }
 
-      /** @deprecated use Bar.Definition **/
-      export type Bar = Bar.Definition;
+      export interface Bar extends $InterfaceDefinition<"Bar", Bar> {
+        osdkMetadata: typeof $osdkMetadata;
+        type: "interface";
+        apiName: "Bar";
+        __DefinitionMetadata?: {
+          objectSet: Bar.ObjectSet;
+          props: Bar.Props;
+          linksType: OsdkObjectLinks$Bar;
+          strictProps: Bar.StrictProps;
+          apiName: "Bar";
+          displayName: "Bar";
+          implements: [];
+          links: {};
+          properties: {
+            /**
+             * (no ontology metadata)
+             */
+            bar: $PropertyDef<"integer", "nullable", "single">;
+          };
+          rid: "BarRid";
+          type: "interface";
+        };
+      }
 
-      export const Bar: Bar.Definition = {
-        osdkMetadata: $osdkMetadata,
-        objectSet: undefined as any,
-        props: undefined as any,
-        linksType: undefined as any,
-        strictProps: undefined as any,
-        apiName: "Bar",
-        displayName: "Bar",
-        implements: [],
-        links: {},
-        properties: {
-          bar: {
-            displayName: "bar",
-            multiplicity: false,
-            type: "integer",
-            nullable: true,
-          },
-        },
+      export const Bar: Bar = {
         type: "interface",
+        apiName: "Bar",
+        osdkMetadata: $osdkMetadata,
       };
       "
     `);
@@ -209,7 +192,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
       },
     );
     expect(formattedCode).toMatchInlineSnapshot(`
-      "import type { InterfaceDefinition as $InterfaceDefinition } from "@osdk/api";
+      "import type { MinInterfaceDef as $InterfaceDefinition } from "@osdk/api";
       import type {
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
@@ -228,72 +211,44 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           readonly foo: $PropType["integer"] | undefined;
         }
 
-        export interface ObjectSet
-          extends $ObjectSet<Foo.Definition, Foo.ObjectSet> {}
-
-        export interface Definition
-          extends $InterfaceDefinition<"Foo", Foo.Definition> {
-          osdkMetadata: typeof $osdkMetadata;
-          type: "interface";
-          apiName: "Foo";
-          __DefinitionMetadata?: {
-            objectSet: Foo.ObjectSet;
-            props: Foo.Props;
-            linksType: OsdkObjectLinks$Foo;
-            strictProps: Foo.StrictProps;
-            apiName: "Foo";
-            description: "Foo interface desc";
-            displayName: "Foo interface dn";
-            implements: ["Parent"];
-            links: {};
-            properties: {
-              /**
-               *   display name: 'foo property dn',
-               *   description: foo property desc
-               */
-              foo: $PropertyDef<"integer", "nullable", "single">;
-            };
-            type: "interface";
-          };
-        }
+        export interface ObjectSet extends $ObjectSet<Foo, Foo.ObjectSet> {}
 
         export type OsdkObject<
           OPTIONS extends never | "$notStrict" | "$rid" = never,
           K extends keyof Foo.Props = keyof Foo.Props,
-        > = $Osdk<Foo.Definition, K | OPTIONS>;
+        > = $Osdk<Foo, K | OPTIONS>;
       }
 
-      /** @deprecated use Foo.Definition **/
-      export type Foo = Foo.Definition;
+      export interface Foo extends $InterfaceDefinition<"Foo", Foo> {
+        osdkMetadata: typeof $osdkMetadata;
+        type: "interface";
+        apiName: "Foo";
+        __DefinitionMetadata?: {
+          objectSet: Foo.ObjectSet;
+          props: Foo.Props;
+          linksType: OsdkObjectLinks$Foo;
+          strictProps: Foo.StrictProps;
+          apiName: "Foo";
+          description: "Foo interface desc";
+          displayName: "Foo interface dn";
+          implements: ["Parent"];
+          links: {};
+          properties: {
+            /**
+             *   display name: 'foo property dn',
+             *   description: foo property desc
+             */
+            foo: $PropertyDef<"integer", "nullable", "single">;
+          };
+          rid: "FooRid";
+          type: "interface";
+        };
+      }
 
-      export const Foo: Foo.Definition = {
-        osdkMetadata: $osdkMetadata,
-        objectSet: undefined as any,
-        props: undefined as any,
-        linksType: undefined as any,
-        strictProps: undefined as any,
-        apiName: "Foo",
-        description: "Foo interface desc",
-        displayName: "Foo interface dn",
-        implements: ["Parent"],
-        links: {},
-        properties: {
-          bar: {
-            displayName: "bar property dn",
-            multiplicity: false,
-            description: "bar property desc",
-            type: "integer",
-            nullable: true,
-          },
-          foo: {
-            displayName: "foo property dn",
-            multiplicity: false,
-            description: "foo property desc",
-            type: "integer",
-            nullable: true,
-          },
-        },
+      export const Foo: Foo = {
         type: "interface",
+        apiName: "Foo",
+        osdkMetadata: $osdkMetadata,
       };
       "
     `);
@@ -324,7 +279,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
       },
     );
     expect(formattedCode).toMatchInlineSnapshot(`
-      "import type { InterfaceDefinition as $InterfaceDefinition } from "@osdk/api";
+      "import type { MinInterfaceDef as $InterfaceDefinition } from "@osdk/api";
       import type {
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
@@ -345,77 +300,49 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           readonly foo: $PropType["integer"] | undefined;
         }
 
-        export interface ObjectSet
-          extends $ObjectSet<Foo.Definition, Foo.ObjectSet> {}
-
-        export interface Definition
-          extends $InterfaceDefinition<"Foo", Foo.Definition> {
-          osdkMetadata: typeof $osdkMetadata;
-          type: "interface";
-          apiName: "Foo";
-          __DefinitionMetadata?: {
-            objectSet: Foo.ObjectSet;
-            props: Foo.Props;
-            linksType: OsdkObjectLinks$Foo;
-            strictProps: Foo.StrictProps;
-            apiName: "Foo";
-            description: "Foo interface desc";
-            displayName: "Foo interface dn";
-            implements: ["Parent"];
-            links: {};
-            properties: {
-              /**
-               *   display name: 'bar property dn',
-               *   description: bar property desc
-               */
-              bar: $PropertyDef<"integer", "nullable", "single">;
-              /**
-               *   display name: 'foo property dn',
-               *   description: foo property desc
-               */
-              foo: $PropertyDef<"integer", "nullable", "single">;
-            };
-            type: "interface";
-          };
-        }
+        export interface ObjectSet extends $ObjectSet<Foo, Foo.ObjectSet> {}
 
         export type OsdkObject<
           OPTIONS extends never | "$notStrict" | "$rid" = never,
           K extends keyof Foo.Props = keyof Foo.Props,
-        > = $Osdk<Foo.Definition, K | OPTIONS>;
+        > = $Osdk<Foo, K | OPTIONS>;
       }
 
-      /** @deprecated use Foo.Definition **/
-      export type Foo = Foo.Definition;
+      export interface Foo extends $InterfaceDefinition<"Foo", Foo> {
+        osdkMetadata: typeof $osdkMetadata;
+        type: "interface";
+        apiName: "Foo";
+        __DefinitionMetadata?: {
+          objectSet: Foo.ObjectSet;
+          props: Foo.Props;
+          linksType: OsdkObjectLinks$Foo;
+          strictProps: Foo.StrictProps;
+          apiName: "Foo";
+          description: "Foo interface desc";
+          displayName: "Foo interface dn";
+          implements: ["Parent"];
+          links: {};
+          properties: {
+            /**
+             *   display name: 'bar property dn',
+             *   description: bar property desc
+             */
+            bar: $PropertyDef<"integer", "nullable", "single">;
+            /**
+             *   display name: 'foo property dn',
+             *   description: foo property desc
+             */
+            foo: $PropertyDef<"integer", "nullable", "single">;
+          };
+          rid: "FooRid";
+          type: "interface";
+        };
+      }
 
-      export const Foo: Foo.Definition = {
-        osdkMetadata: $osdkMetadata,
-        objectSet: undefined as any,
-        props: undefined as any,
-        linksType: undefined as any,
-        strictProps: undefined as any,
-        apiName: "Foo",
-        description: "Foo interface desc",
-        displayName: "Foo interface dn",
-        implements: ["Parent"],
-        links: {},
-        properties: {
-          bar: {
-            displayName: "bar property dn",
-            multiplicity: false,
-            description: "bar property desc",
-            type: "integer",
-            nullable: true,
-          },
-          foo: {
-            displayName: "foo property dn",
-            multiplicity: false,
-            description: "foo property desc",
-            type: "integer",
-            nullable: true,
-          },
-        },
+      export const Foo: Foo = {
         type: "interface",
+        apiName: "Foo",
+        osdkMetadata: $osdkMetadata,
       };
       "
     `);

@@ -654,7 +654,7 @@ describe("generator", () => {
         "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
       import { $osdkMetadata } from '../../OntologyMetadata';
 
-      import type { InterfaceDefinition as $InterfaceDefinition } from '@osdk/api';
+      import type { MinInterfaceDef as $InterfaceDefinition } from '@osdk/api';
       import type { ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from '@osdk/client.api';
 
       export type OsdkObjectLinks$SomeInterface = {};
@@ -669,63 +669,44 @@ describe("generator", () => {
           readonly SomeProperty: $PropType['string'] | undefined;
         }
 
-        export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {}
-
-        export interface Definition extends $InterfaceDefinition<'SomeInterface', SomeInterface.Definition> {
-          osdkMetadata: typeof $osdkMetadata;
-          type: 'interface';
-          apiName: 'SomeInterface';
-          __DefinitionMetadata?: {
-            objectSet: SomeInterface.ObjectSet;
-            props: SomeInterface.Props;
-            linksType: OsdkObjectLinks$SomeInterface;
-            strictProps: SomeInterface.StrictProps;
-            apiName: 'SomeInterface';
-            description: 'Some interface';
-            displayName: 'Sum Interface';
-            implements: [];
-            links: {};
-            properties: {
-              /**
-               *   display name: 'Sum Property',
-               *   description: Some property
-               */
-              SomeProperty: $PropertyDef<'string', 'nullable', 'single'>;
-            };
-            type: 'interface';
-          };
-        }
+        export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 
         export type OsdkObject<
           OPTIONS extends never | '$notStrict' | '$rid' = never,
           K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
-        > = $Osdk<SomeInterface.Definition, K | OPTIONS>;
+        > = $Osdk<SomeInterface, K | OPTIONS>;
       }
 
-      /** @deprecated use SomeInterface.Definition **/
-      export type SomeInterface = SomeInterface.Definition;
+      export interface SomeInterface extends $InterfaceDefinition<'SomeInterface', SomeInterface> {
+        osdkMetadata: typeof $osdkMetadata;
+        type: 'interface';
+        apiName: 'SomeInterface';
+        __DefinitionMetadata?: {
+          objectSet: SomeInterface.ObjectSet;
+          props: SomeInterface.Props;
+          linksType: OsdkObjectLinks$SomeInterface;
+          strictProps: SomeInterface.StrictProps;
+          apiName: 'SomeInterface';
+          description: 'Some interface';
+          displayName: 'Sum Interface';
+          implements: [];
+          links: {};
+          properties: {
+            /**
+             *   display name: 'Sum Property',
+             *   description: Some property
+             */
+            SomeProperty: $PropertyDef<'string', 'nullable', 'single'>;
+          };
+          rid: 'idk';
+          type: 'interface';
+        };
+      }
 
-      export const SomeInterface: SomeInterface.Definition = {
-        osdkMetadata: $osdkMetadata,
-        objectSet: undefined as any,
-        props: undefined as any,
-        linksType: undefined as any,
-        strictProps: undefined as any,
-        apiName: 'SomeInterface',
-        description: 'Some interface',
-        displayName: 'Sum Interface',
-        implements: [],
-        links: {},
-        properties: {
-          SomeProperty: {
-            displayName: 'Sum Property',
-            multiplicity: false,
-            description: 'Some property',
-            type: 'string',
-            nullable: true,
-          },
-        },
+      export const SomeInterface: SomeInterface = {
         type: 'interface',
+        apiName: 'SomeInterface',
+        osdkMetadata: $osdkMetadata,
       };
       ",
         "/foo/ontology/objects.ts": "export * from './objects/Person';
@@ -781,13 +762,19 @@ describe("generator", () => {
           strictProps: Person.StrictProps;
           apiName: 'Person';
           description: 'A person';
+          displayName: 'Person';
+          icon: {
+            type: 'blueprint';
+            name: 'document';
+            color: 'blue';
+          };
           implements: [];
           interfaceMap: {};
           inverseInterfaceMap: {};
-          inverseSpts: {};
           links: {
             Todos: $ObjectTypeLinkDefinition<Todo, true>;
           };
+          pluralDisplayName: 'Persons';
           primaryKeyApiName: 'email';
           primaryKeyType: 'string';
           properties: {
@@ -796,7 +783,9 @@ describe("generator", () => {
              */
             email: $PropertyDef<'string', 'non-nullable', 'single'>;
           };
-          spts: {};
+          rid: 'ridForPerson';
+          status: 'ACTIVE';
+          titleProperty: 'email';
           type: 'object';
         };
       }
@@ -861,6 +850,12 @@ describe("generator", () => {
           strictProps: Todo.StrictProps;
           apiName: 'Todo';
           description: 'Its a todo item.';
+          displayName: 'AwesomeTodoDisplayname';
+          icon: {
+            type: 'blueprint';
+            name: 'document';
+            color: 'blue';
+          };
           implements: ['SomeInterface'];
           interfaceMap: {
             SomeInterface: {
@@ -872,10 +867,10 @@ describe("generator", () => {
               body: 'SomeProperty';
             };
           };
-          inverseSpts: {};
           links: {
             Assignee: $ObjectTypeLinkDefinition<Person, false>;
           };
+          pluralDisplayName: 'AwesomeTodoDisplayNames';
           primaryKeyApiName: 'id';
           primaryKeyType: 'integer';
           properties: {
@@ -893,7 +888,9 @@ describe("generator", () => {
              */
             id: $PropertyDef<'integer', 'non-nullable', 'single'>;
           };
-          spts: {};
+          rid: 'ridForTodo';
+          status: 'ACTIVE';
+          titleProperty: 'body';
           type: 'object';
         };
       }
@@ -1255,7 +1252,7 @@ describe("generator", () => {
           "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
-        import type { InterfaceDefinition as $InterfaceDefinition } from '@osdk/api';
+        import type { MinInterfaceDef as $InterfaceDefinition } from '@osdk/api';
         import type { ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from '@osdk/client.api';
 
         export type OsdkObjectLinks$SomeInterface = {};
@@ -1270,63 +1267,44 @@ describe("generator", () => {
             readonly SomeProperty: $PropType['string'] | undefined;
           }
 
-          export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {}
-
-          export interface Definition extends $InterfaceDefinition<'foo.bar.SomeInterface', SomeInterface.Definition> {
-            osdkMetadata: typeof $osdkMetadata;
-            type: 'interface';
-            apiName: 'foo.bar.SomeInterface';
-            __DefinitionMetadata?: {
-              objectSet: SomeInterface.ObjectSet;
-              props: SomeInterface.Props;
-              linksType: OsdkObjectLinks$SomeInterface;
-              strictProps: SomeInterface.StrictProps;
-              apiName: 'foo.bar.SomeInterface';
-              description: 'Some interface';
-              displayName: 'Sum Interface';
-              implements: [];
-              links: {};
-              properties: {
-                /**
-                 *   display name: 'Sum Property',
-                 *   description: Some property
-                 */
-                SomeProperty: $PropertyDef<'string', 'nullable', 'single'>;
-              };
-              type: 'interface';
-            };
-          }
+          export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 
           export type OsdkObject<
             OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
-          > = $Osdk<SomeInterface.Definition, K | OPTIONS>;
+          > = $Osdk<SomeInterface, K | OPTIONS>;
         }
 
-        /** @deprecated use SomeInterface.Definition **/
-        export type SomeInterface = SomeInterface.Definition;
+        export interface SomeInterface extends $InterfaceDefinition<'foo.bar.SomeInterface', SomeInterface> {
+          osdkMetadata: typeof $osdkMetadata;
+          type: 'interface';
+          apiName: 'foo.bar.SomeInterface';
+          __DefinitionMetadata?: {
+            objectSet: SomeInterface.ObjectSet;
+            props: SomeInterface.Props;
+            linksType: OsdkObjectLinks$SomeInterface;
+            strictProps: SomeInterface.StrictProps;
+            apiName: 'foo.bar.SomeInterface';
+            description: 'Some interface';
+            displayName: 'Sum Interface';
+            implements: [];
+            links: {};
+            properties: {
+              /**
+               *   display name: 'Sum Property',
+               *   description: Some property
+               */
+              SomeProperty: $PropertyDef<'string', 'nullable', 'single'>;
+            };
+            rid: 'idk';
+            type: 'interface';
+          };
+        }
 
-        export const SomeInterface: SomeInterface.Definition = {
-          osdkMetadata: $osdkMetadata,
-          objectSet: undefined as any,
-          props: undefined as any,
-          linksType: undefined as any,
-          strictProps: undefined as any,
-          apiName: 'foo.bar.SomeInterface',
-          description: 'Some interface',
-          displayName: 'Sum Interface',
-          implements: [],
-          links: {},
-          properties: {
-            SomeProperty: {
-              displayName: 'Sum Property',
-              multiplicity: false,
-              description: 'Some property',
-              type: 'string',
-              nullable: true,
-            },
-          },
+        export const SomeInterface: SomeInterface = {
           type: 'interface',
+          apiName: 'foo.bar.SomeInterface',
+          osdkMetadata: $osdkMetadata,
         };
         ",
           "/foo/ontology/objects.ts": "export * from './objects/Person.js';
@@ -1382,13 +1360,19 @@ describe("generator", () => {
             strictProps: Person.StrictProps;
             apiName: 'foo.bar.Person';
             description: 'A person';
+            displayName: 'Person';
+            icon: {
+              type: 'blueprint';
+              name: 'document';
+              color: 'blue';
+            };
             implements: [];
             interfaceMap: {};
             inverseInterfaceMap: {};
-            inverseSpts: {};
             links: {
               Todos: $ObjectTypeLinkDefinition<Todo, true>;
             };
+            pluralDisplayName: 'Persons';
             primaryKeyApiName: 'email';
             primaryKeyType: 'string';
             properties: {
@@ -1397,7 +1381,9 @@ describe("generator", () => {
                */
               email: $PropertyDef<'string', 'non-nullable', 'single'>;
             };
-            spts: {};
+            rid: 'ridForPerson';
+            status: 'ACTIVE';
+            titleProperty: 'email';
             type: 'object';
           };
         }
@@ -1462,6 +1448,12 @@ describe("generator", () => {
             strictProps: Todo.StrictProps;
             apiName: 'foo.bar.Todo';
             description: 'Its a todo item.';
+            displayName: 'AwesomeTodoDisplayname';
+            icon: {
+              type: 'blueprint';
+              name: 'document';
+              color: 'blue';
+            };
             implements: ['foo.bar.SomeInterface'];
             interfaceMap: {
               'foo.bar.SomeInterface': {
@@ -1473,10 +1465,10 @@ describe("generator", () => {
                 body: 'SomeProperty';
               };
             };
-            inverseSpts: {};
             links: {
               Assignee: $ObjectTypeLinkDefinition<Person, false>;
             };
+            pluralDisplayName: 'AwesomeTodoDisplayNames';
             primaryKeyApiName: 'id';
             primaryKeyType: 'integer';
             properties: {
@@ -1494,7 +1486,9 @@ describe("generator", () => {
                */
               id: $PropertyDef<'integer', 'non-nullable', 'single'>;
             };
-            spts: {};
+            rid: 'ridForTodo';
+            status: 'ACTIVE';
+            titleProperty: 'body';
             type: 'object';
           };
         }
@@ -1867,13 +1861,17 @@ describe("generator", () => {
               linksType: UsesForeignSpt.Links;
               strictProps: UsesForeignSpt.StrictProps;
               apiName: 'UsesForeignSpt';
+              displayName: 'Uses Foreign Spt';
+              icon: {
+                type: 'blueprint';
+                color: 'blue';
+                name: 'document';
+              };
               implements: [];
               interfaceMap: {};
               inverseInterfaceMap: {};
-              inverseSpts: {
-                body: 'com.example.dep.spt';
-              };
               links: {};
+              pluralDisplayName: 'Uses Foreign Spts';
               primaryKeyApiName: 'id';
               primaryKeyType: 'integer';
               properties: {
@@ -1886,9 +1884,9 @@ describe("generator", () => {
                  */
                 id: $PropertyDef<'integer', 'non-nullable', 'single'>;
               };
-              spts: {
-                'com.example.dep.spt': 'body';
-              };
+              rid: 'theRid';
+              status: 'ACTIVE';
+              titleProperty: 'id';
               type: 'object';
             };
           }
@@ -2035,7 +2033,7 @@ describe("generator", () => {
           "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
-        import type { InterfaceDefinition as $InterfaceDefinition } from '@osdk/api';
+        import type { MinInterfaceDef as $InterfaceDefinition } from '@osdk/api';
         import type { ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from '@osdk/client.api';
 
         export type OsdkObjectLinks$SomeInterface = {};
@@ -2050,59 +2048,42 @@ describe("generator", () => {
             readonly spt: $PropType['string'] | undefined;
           }
 
-          export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {}
-
-          export interface Definition extends $InterfaceDefinition<'com.example.dep.SomeInterface', SomeInterface.Definition> {
-            osdkMetadata: typeof $osdkMetadata;
-            type: 'interface';
-            apiName: 'com.example.dep.SomeInterface';
-            __DefinitionMetadata?: {
-              objectSet: SomeInterface.ObjectSet;
-              props: SomeInterface.Props;
-              linksType: OsdkObjectLinks$SomeInterface;
-              strictProps: SomeInterface.StrictProps;
-              apiName: 'com.example.dep.SomeInterface';
-              displayName: 'Sum Interface';
-              implements: [];
-              links: {};
-              properties: {
-                /**
-                 *   display name: 'Some Property'
-                 */
-                spt: $PropertyDef<'string', 'nullable', 'single'>;
-              };
-              type: 'interface';
-            };
-          }
+          export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 
           export type OsdkObject<
             OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
-          > = $Osdk<SomeInterface.Definition, K | OPTIONS>;
+          > = $Osdk<SomeInterface, K | OPTIONS>;
         }
 
-        /** @deprecated use SomeInterface.Definition **/
-        export type SomeInterface = SomeInterface.Definition;
+        export interface SomeInterface extends $InterfaceDefinition<'com.example.dep.SomeInterface', SomeInterface> {
+          osdkMetadata: typeof $osdkMetadata;
+          type: 'interface';
+          apiName: 'com.example.dep.SomeInterface';
+          __DefinitionMetadata?: {
+            objectSet: SomeInterface.ObjectSet;
+            props: SomeInterface.Props;
+            linksType: OsdkObjectLinks$SomeInterface;
+            strictProps: SomeInterface.StrictProps;
+            apiName: 'com.example.dep.SomeInterface';
+            displayName: 'Sum Interface';
+            implements: [];
+            links: {};
+            properties: {
+              /**
+               *   display name: 'Some Property'
+               */
+              spt: $PropertyDef<'string', 'nullable', 'single'>;
+            };
+            rid: 'idk2';
+            type: 'interface';
+          };
+        }
 
-        export const SomeInterface: SomeInterface.Definition = {
-          osdkMetadata: $osdkMetadata,
-          objectSet: undefined as any,
-          props: undefined as any,
-          linksType: undefined as any,
-          strictProps: undefined as any,
-          apiName: 'com.example.dep.SomeInterface',
-          displayName: 'Sum Interface',
-          implements: [],
-          links: {},
-          properties: {
-            spt: {
-              displayName: 'Some Property',
-              multiplicity: false,
-              type: 'string',
-              nullable: true,
-            },
-          },
+        export const SomeInterface: SomeInterface = {
           type: 'interface',
+          apiName: 'com.example.dep.SomeInterface',
+          osdkMetadata: $osdkMetadata,
         };
         ",
           "/foo/ontology/objects.ts": "export * from './objects/Task.js';
@@ -2155,11 +2136,17 @@ describe("generator", () => {
             linksType: Task.Links;
             strictProps: Task.StrictProps;
             apiName: 'com.example.dep.Task';
+            displayName: 'Task';
+            icon: {
+              type: 'blueprint';
+              color: 'blue';
+              name: 'document';
+            };
             implements: [];
             interfaceMap: {};
             inverseInterfaceMap: {};
-            inverseSpts: {};
             links: {};
+            pluralDisplayName: 'Tasks';
             primaryKeyApiName: 'taskId';
             primaryKeyType: 'string';
             properties: {
@@ -2172,7 +2159,9 @@ describe("generator", () => {
                */
               taskId: $PropertyDef<'string', 'non-nullable', 'single'>;
             };
-            spts: {};
+            rid: 'ridForTask';
+            status: 'ACTIVE';
+            titleProperty: 'taskId';
             type: 'object';
           };
         }
