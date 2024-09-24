@@ -1,5 +1,20 @@
 # @osdk/internal.foundry.datasets
 
+## 0.2.0-beta.7
+
+### Minor Changes
+
+- 1252d94: ESM Only
+- 5d6d5ab: Internally refactored to support new API versions
+
+### Patch Changes
+
+- Updated dependencies [1252d94]
+- Updated dependencies [5d6d5ab]
+  - @osdk/internal.foundry.core@0.2.0-beta.7
+  - @osdk/shared.client@1.0.0-beta.0
+  - @osdk/shared.net.platformapi@0.3.0-beta.0
+
 ## 0.2.0-beta.6
 
 ### Patch Changes

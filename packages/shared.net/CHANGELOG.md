@@ -1,5 +1,19 @@
 # @osdk/shared.net
 
+## 2.0.0-beta.3
+
+### Major Changes
+
+- 1252d94: ESM Only
+
+### Patch Changes
+
+- Updated dependencies [1252d94]
+  - @osdk/shared.client.impl@1.0.0-beta.0
+  - @osdk/shared.client@1.0.0-beta.0
+  - @osdk/shared.net.errors@2.0.0-beta.0
+  - @osdk/shared.net.fetch@1.0.0-beta.0
+
 ## 2.0.0-beta.2
 
 ### Minor Changes

@@ -1,5 +1,20 @@
 # @osdk/maker
 
+## 0.8.0-beta.6
+
+### Minor Changes
+
+- 1252d94: ESM Only
+- 465660b: Fix double namespacing bug.
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [1252d94]
+- Updated dependencies [56df85a]
+  - @osdk/api@2.0.0-beta.10
+
 ## 0.8.0-beta.5
 
 ### Patch Changes

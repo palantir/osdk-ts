@@ -1,5 +1,11 @@
 # @osdk/oauth
 
+## 0.4.0-beta.1
+
+### Minor Changes
+
+- 1252d94: ESM Only
+
 ## 0.4.0-beta.0
 
 ### Minor Changes

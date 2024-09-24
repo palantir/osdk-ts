@@ -1,5 +1,39 @@
 # @osdk/client
 
+## 2.0.0-beta.10
+
+### Major Changes
+
+- 56df85a: We now generate minimal object and interface types
+
+### Minor Changes
+
+- dc25fb4: Code generation now uses MinQueryDef
+- 0b20066: Fixes an import
+- dc25fb4: Rename MinimumActionDefinition to MinActionDef
+- e6ade8b: Adds fetchMetadata method to client
+- 0ae2b07: Pino is no longer listed as a peer dep due to an issue with some versions of pnpm
+- 5d6d5ab: Internally refactored to support new API versions
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+- Updated dependencies [94105a5]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [1252d94]
+- Updated dependencies [e6ade8b]
+- Updated dependencies [95f9247]
+- Updated dependencies [56df85a]
+  - @osdk/generator-converters@2.0.0-beta.10
+  - @osdk/client.api@2.0.0-beta.10
+  - @osdk/api@2.0.0-beta.10
+  - @osdk/client.unstable.osw@0.2.0-beta.0
+  - @osdk/client.unstable@2.0.0-beta.10
+  - @osdk/shared.client.impl@1.0.0-beta.0
+  - @osdk/shared.client@1.0.0-beta.0
+  - @osdk/shared.net.errors@2.0.0-beta.0
+  - @osdk/shared.net.fetch@1.0.0-beta.0
+
 ## 2.0.0-beta.9
 
 ### Minor Changes

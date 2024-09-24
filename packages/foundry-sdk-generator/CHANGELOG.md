@@ -1,5 +1,36 @@
 # @osdk/foundry-sdk-generator
 
+## 2.0.0-beta.10
+
+### Major Changes
+
+- 1252d94: ESM Only
+
+### Minor Changes
+
+- e6ade8b: Adds fetchMetadata method to client
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+- Updated dependencies [0b20066]
+- Updated dependencies [94105a5]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [1252d94]
+- Updated dependencies [e6ade8b]
+- Updated dependencies [95f9247]
+- Updated dependencies [0ae2b07]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [56df85a]
+  - @osdk/client.api@2.0.0-beta.10
+  - @osdk/generator@2.0.0-beta.10
+  - @osdk/client@2.0.0-beta.10
+  - @osdk/api@2.0.0-beta.10
+  - @osdk/internal.foundry.core@0.2.0-beta.7
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.7
+  - @osdk/shared.net@2.0.0-beta.3
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.7
+
 ## 2.0.0-beta.9
 
 ### Patch Changes

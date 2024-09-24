@@ -1,5 +1,11 @@
 # @osdk/platform-sdk-generator
 
+## 0.5.0-beta.3
+
+### Minor Changes
+
+- 5d6d5ab: Internally refactored to support new API versions
+
 ## 0.5.0-beta.2
 
 ### Minor Changes

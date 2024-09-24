@@ -1,5 +1,11 @@
 # @osdk/create-app.template.react
 
+## 0.19.0-beta.5
+
+### Minor Changes
+
+- 5d98af2: fix import client from beta
+
 ## 0.19.0-beta.4
 
 ### Minor Changes

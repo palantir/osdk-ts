@@ -1,5 +1,29 @@
 # @osdk/shared.test
 
+## 2.0.0-beta.6
+
+### Major Changes
+
+- 1252d94: ESM Only
+
+### Minor Changes
+
+- e6ade8b: Adds fetchMetadata method to client
+- 5d6d5ab: Internally refactored to support new API versions
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [1252d94]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [56df85a]
+  - @osdk/api@2.0.0-beta.10
+  - @osdk/internal.foundry.core@0.2.0-beta.7
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.7
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.7
+  - @osdk/internal.foundry.geo@0.1.0-beta.0
+
 ## 1.7.0-beta.5
 
 ### Minor Changes

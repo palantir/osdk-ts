@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.0.0-beta.10
+
+### Minor Changes
+
+- 1252d94: ESM Only
+
 ## 2.0.0-beta.9
 
 ## 2.0.0-beta.8
