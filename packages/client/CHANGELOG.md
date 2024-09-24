@@ -1,5 +1,19 @@
 # @osdk/client
 
+## 2.0.0-beta.12
+
+### Minor Changes
+
+- dc25fb4: Expose parameters on action metadata
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/generator-converters@2.0.0-beta.12
+  - @osdk/client.api@2.0.0-beta.12
+  - @osdk/client.unstable@2.0.0-beta.12
+  - @osdk/api@2.0.0-beta.12
+
 ## 2.0.0-beta.11
 
 ### Minor Changes
