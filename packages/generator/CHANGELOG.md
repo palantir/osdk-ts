@@ -1,5 +1,13 @@
 # @osdk/generator
 
+## 2.0.0-beta.12
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/generator-converters@2.0.0-beta.12
+  - @osdk/api@2.0.0-beta.12
+
 ## 2.0.0-beta.11
 
 ### Patch Changes
