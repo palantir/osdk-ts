@@ -18,19 +18,33 @@ import type { OsdkMetadata } from "../OsdkMetadata.js";
 import type { MinObjectDef } from "./ObjectTypeDefinition.js";
 
 export interface QueryDefinition<
-  Q extends string,
+  A extends string,
   K extends string,
-  T = never, // used in client 2
 > {
-  __OsdkQueryType?: T;
   type: "query";
-  apiName: Q;
+  apiName: A;
   description?: string;
   displayName?: string;
   version: string;
   parameters: Record<string, QueryParameterDefinition<K, any>>;
   output: QueryDataTypeDefinition<K, any>;
+}
+
+export interface QueryDefMetadata<A extends string, K extends string, T>
+  extends QueryDefinition<A, K>
+{
+  signature: T;
+}
+
+export interface MinQueryDef<
+  A extends string,
+  K extends string,
+  T = never,
+> {
+  type: "query";
+  apiName: A;
   osdkMetadata?: OsdkMetadata;
+  __DefinitionMetadata?: QueryDefMetadata<A, K, T>;
 }
 
 export type QueryParameterDefinition<

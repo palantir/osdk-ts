@@ -15,11 +15,10 @@
  */
 
 import type {
-  ActionDefinition,
-  InterfaceDefinition,
   MinActionDef,
-  ObjectTypeDefinition,
-  QueryDefinition,
+  MinInterfaceDef,
+  MinObjectDef,
+  MinQueryDef,
 } from "@osdk/api";
 import type {
   ActionMetadata,
@@ -34,19 +33,19 @@ import { addUserAgentAndRequestContextHeaders } from "./util/addUserAgentAndRequ
 /** @internal */
 export const fetchMetadataInternal = async <
   Q extends (
-    | ObjectTypeDefinition<any, any>
-    | InterfaceDefinition<any, any>
+    | MinObjectDef<any, any>
+    | MinInterfaceDef<any, any>
     | MinActionDef<any, any>
-    | QueryDefinition<any, any, any>
+    | MinQueryDef<any, any, any>
   ),
 >(
   client: MinimalClient,
   definition: Q,
 ): Promise<
-  Q extends ObjectTypeDefinition<any, any> ? ObjectMetadata
-    : Q extends InterfaceDefinition<any, any> ? InterfaceMetadata
-    : Q extends ActionDefinition<any, any> ? ActionMetadata
-    : Q extends QueryDefinition<any, any, any> ? QueryMetadata
+  Q extends MinObjectDef<any, any> ? ObjectMetadata
+    : Q extends MinInterfaceDef<any, any> ? InterfaceMetadata
+    : Q extends MinActionDef<any, any> ? ActionMetadata
+    : Q extends MinQueryDef<any, any, any> ? QueryMetadata
     : never
 > => {
   if (definition.type === "object") {
@@ -64,7 +63,7 @@ export const fetchMetadataInternal = async <
 
 const fetchObjectMetadata = async (
   client: MinimalClient,
-  objectType: ObjectTypeDefinition<any, any>,
+  objectType: MinObjectDef<any, any>,
 ): Promise<ObjectMetadata> => {
   const response = await OntologiesV2.ObjectTypesV2.getObjectTypeFullMetadata(
     addUserAgentAndRequestContextHeaders(client, objectType),
@@ -88,7 +87,7 @@ const fetchObjectMetadata = async (
 
 const fetchInterfaceMetadata = async (
   client: MinimalClient,
-  interfaceType: InterfaceDefinition<any, any>,
+  interfaceType: MinInterfaceDef<any, any>,
 ): Promise<InterfaceMetadata> => {
   const response = await OntologiesV2.OntologyInterfaces.getInterfaceType(
     addUserAgentAndRequestContextHeaders(client, interfaceType),
@@ -120,9 +119,9 @@ const fetchActionMetadata = async (
   };
 };
 
-const fetchQueryMetadata = async <Q extends QueryDefinition<any, any, any>>(
+const fetchQueryMetadata = async (
   client: MinimalClient,
-  queryType: QueryDefinition<any, any, any>,
+  queryType: MinQueryDef<any, any, any>,
 ): Promise<QueryMetadata> => {
   const response = await OntologiesV2.QueryTypes.getQueryTypeV2(
     addUserAgentAndRequestContextHeaders(client, queryType),

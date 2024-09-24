@@ -15,6 +15,11 @@
  */
 
 import type { QueryParameterDefinition } from "@osdk/api";
+import {
+  wireQueryDataTypeToQueryDataTypeDefinition,
+  wireQueryParameterV2ToQueryParameterDefinition as paramToDef,
+  wireQueryTypeV2ToSdkQueryDefinitionNoParams,
+} from "@osdk/generator-converters";
 import type { QueryDataType } from "@osdk/internal.foundry.core";
 import path from "node:path";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
@@ -23,11 +28,6 @@ import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import type { MinimalFs } from "../MinimalFs.js";
 import { getObjectImports } from "../shared/getObjectImports.js";
 import { getObjectTypeApiNamesFromQuery } from "../shared/getObjectTypeApiNamesFromQuery.js";
-import { wireQueryDataTypeToQueryDataTypeDefinition } from "../shared/wireQueryDataTypeToQueryDataTypeDefinition.js";
-import {
-  wireQueryParameterV2ToQueryParameterDefinition as paramToDef,
-  wireQueryTypeV2ToSdkQueryDefinitionNoParams,
-} from "../shared/wireQueryTypeV2ToSdkQueryDefinition.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
 import { formatTs } from "../util/test/formatTs.js";
@@ -114,7 +114,7 @@ async function generateV2QueryFile(
   await fs.writeFile(
     path.join(outDir, `${query.shortApiName}.ts`),
     await formatTs(`
-        import type { QueryDefinition , VersionBound} from "@osdk/api";
+        import type { MinQueryDef , VersionBound} from "@osdk/api";
         import type { QueryParam, QueryResult } from "@osdk/client.api";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
         ${importObjects}
@@ -159,7 +159,7 @@ async function generateV2QueryFile(
         : ""
     }
 
-        export interface Definition extends QueryDefinition<
+        export interface Definition extends MinQueryDef<
           "${query.fullApiName}", 
           ${referencedObjectTypes},
           ${query.shortApiName}.Signature

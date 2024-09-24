@@ -15,32 +15,32 @@
  */
 
 import type {
+  CompileTimeMetadata,
+  MinQueryDef,
   ObjectQueryDataType,
   ObjectSetQueryDataType,
   QueryDataTypeDefinition,
-  QueryDefinition,
 } from "@osdk/api";
 import type {
   DataValueClientToWire,
   DataValueWireToClient,
-  OsdkBase,
   QueryParam,
   QueryResult,
 } from "@osdk/client.api";
 import type { PartialByNotStrict } from "../util/partialBy.js";
 
-export type QuerySignatureFromDef<T extends QueryDefinition<any, any, any>> = {
-  executeFunction: NonNullable<T["__OsdkQueryType"]> extends never
+export type QuerySignatureFromDef<T extends MinQueryDef<any, any, any>> = {
+  executeFunction: NonNullable<T["__DefinitionMetadata"]> extends never
     ? QuerySignature<T>
-    : NonNullable<T["__OsdkQueryType"]>;
+    : NonNullable<T["__DefinitionMetadata"]>["signature"];
 };
 
-export type QuerySignature<T extends QueryDefinition<any, any, any>> =
-  keyof T["parameters"] extends never
-    ? () => Promise<QueryReturnType<T["output"]>>
+export type QuerySignature<T extends MinQueryDef<any, any, any>> =
+  keyof CompileTimeMetadata<T>["parameters"] extends never
+    ? () => Promise<QueryReturnType<CompileTimeMetadata<T>["output"]>>
     : (
-      params: QueryParameterType<T["parameters"]>,
-    ) => Promise<QueryReturnType<T["output"]>>;
+      params: QueryParameterType<CompileTimeMetadata<T>["parameters"]>,
+    ) => Promise<QueryReturnType<CompileTimeMetadata<T>["output"]>>;
 
 export type QueryParameterType<
   T extends Record<any, QueryDataTypeDefinition<any, any>>,

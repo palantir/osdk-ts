@@ -48,6 +48,7 @@ export type { OntologyMetadata } from "./ontology/OntologyMetadata.js";
 export type { PrimaryKeyTypes } from "./ontology/PrimaryKeyTypes.js";
 export type {
   AggregationKeyDataType,
+  MinQueryDef,
   ObjectQueryDataType,
   ObjectSetQueryDataType,
   PrimitiveDataType,

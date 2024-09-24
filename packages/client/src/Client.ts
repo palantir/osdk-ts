@@ -19,7 +19,7 @@ import type {
   MinActionDef,
   MinInterfaceDef,
   MinObjectDef,
-  QueryDefinition,
+  MinQueryDef,
   VersionBound,
 } from "@osdk/api";
 import type {
@@ -53,7 +53,7 @@ export interface Client extends SharedClient<MinimalClient> {
     o: Q,
   ): ActionSignatureFromDef<Q>;
 
-  <Q extends QueryDefinition<any, any, any>>(
+  <Q extends MinQueryDef<any, any, any>>(
     o: Q,
   ): QuerySignatureFromDef<Q>;
 
@@ -62,13 +62,13 @@ export interface Client extends SharedClient<MinimalClient> {
       | MinObjectDef<any, any>
       | MinInterfaceDef<any, any>
       | MinActionDef<any, any, any>
-      | QueryDefinition<any, any, any>
+      | MinQueryDef<any, any, any>
     ),
   >(o: Q): Promise<
     Q extends MinObjectDef<any, any> ? ObjectMetadata
       : Q extends MinInterfaceDef<any, any> ? InterfaceMetadata
       : Q extends MinActionDef<any, any, any> ? ActionMetadata
-      : Q extends QueryDefinition<any, any, any> ? QueryMetadata
+      : Q extends MinQueryDef<any, any, any> ? QueryMetadata
       : never
   >;
 }
