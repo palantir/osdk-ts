@@ -76,7 +76,6 @@ describe("actions", () => {
           {
             "objectType": "Office",
             "primaryKey": "NYC",
-            "type": "addObject",
           },
         ],
         "deletedLinksCount": 0,
@@ -225,7 +224,7 @@ describe("actions", () => {
       },
     ], { $returnEdits: true });
 
-    expect(result).toMatchInlineSnapshot(` 
+    expect(result).toMatchInlineSnapshot(`
       {
         "addedLinks": [],
         "addedObjects": [],
@@ -238,17 +237,15 @@ describe("actions", () => {
           {
             "objectType": "Office",
             "primaryKey": "SEA",
-            "type": "modifyObject",
           },
           {
             "objectType": "Office",
             "primaryKey": "NYC",
-            "type": "modifyObject",
           },
         ],
         "type": "edits",
       }
-  `);
+    `);
   });
 });
 
@@ -324,14 +321,12 @@ describe("ActionResponse remapping", () => {
             },
             "linkTypeApiNameAtoB": "test",
             "linkTypeApiNameBtoA": "test",
-            "type": "addLink",
           },
         ],
         "addedObjects": [
           {
             "objectType": "Developer",
             "primaryKey": "PalantirDev",
-            "type": "addObject",
           },
         ],
         "deletedLinksCount": 0,
@@ -346,7 +341,6 @@ describe("ActionResponse remapping", () => {
           {
             "objectType": "Contractor",
             "primaryKey": "Contractor1",
-            "type": "modifyObject",
           },
         ],
         "type": "edits",
@@ -366,14 +360,12 @@ describe("ActionResponse remapping", () => {
             },
             "linkTypeApiNameAtoB": "test",
             "linkTypeApiNameBtoA": "test",
-            "type": "addLink",
           },
         ],
         "addedObjects": [
           {
             "objectType": "Developer",
             "primaryKey": "PalantirDev",
-            "type": "addObject",
           },
         ],
         "deletedLinksCount": 0,
@@ -388,7 +380,6 @@ describe("ActionResponse remapping", () => {
           {
             "objectType": "Contractor",
             "primaryKey": "Contractor1",
-            "type": "modifyObject",
           },
         ],
         "type": "edits",

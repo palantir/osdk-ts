@@ -243,14 +243,29 @@ export function remapActionResponse(
     const editedObjectTypesSet = new Set<string>();
     for (const edit of editResponses.edits) {
       if (edit.type === "addLink") {
-        remappedActionResponse.addedLinks.push(edit);
+        remappedActionResponse.addedLinks.push(
+          {
+            linkTypeApiNameAtoB: edit.linkTypeApiNameAtoB,
+            linkTypeApiNameBtoA: edit.linkTypeApiNameBtoA,
+            aSideObject: edit.aSideObject,
+            bSideObject: edit.bSideObject,
+          },
+        );
         editedObjectTypesSet.add(edit.aSideObject.objectType);
         editedObjectTypesSet.add(edit.bSideObject.objectType);
       } else if (edit.type === "addObject") {
-        remappedActionResponse.addedObjects.push(edit);
+        remappedActionResponse.addedObjects.push(
+          {
+            objectType: edit.objectType,
+            primaryKey: edit.primaryKey,
+          },
+        );
         editedObjectTypesSet.add(edit.objectType);
       } else if (edit.type === "modifyObject") {
-        remappedActionResponse.modifiedObjects.push(edit);
+        remappedActionResponse.modifiedObjects.push({
+          objectType: edit.objectType,
+          primaryKey: edit.primaryKey,
+        });
         editedObjectTypesSet.add(edit.objectType);
       } else {
         invariant(false, "Unknown edit type");
