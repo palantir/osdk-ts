@@ -291,14 +291,14 @@ importers:
   examples/example-react-beta:
     dependencies:
       '@osdk/client':
-        specifier: latest
-        version: 0.21.1(pino@9.1.0)
+        specifier: beta
+        version: 2.0.0-beta.9(pino@9.1.0)
       '@osdk/e2e.generated.catchall':
         specifier: workspace:*
         version: link:../../packages/e2e.generated.catchall
       '@osdk/oauth':
-        specifier: latest
-        version: 0.3.0
+        specifier: beta
+        version: 0.4.0-beta.0
       react:
         specifier: ^18
         version: 18.3.1
@@ -4032,19 +4032,22 @@ packages:
   '@osdk/api@1.9.1':
     resolution: {integrity: sha512-a67IMGvlLYkGDsO0Dja9J+vTzWfshn6xAICZlv3d12ys71YvMoTA6kKUgiMrec+cC0vp4R3IE3ESlczsfiJ/iQ==}
 
-  '@osdk/client.api@0.21.1':
-    resolution: {integrity: sha512-RHRxmvVJZQUndYc1/zCPjs5SbungyVjv1MJ/J5K1rwZnaksgL7CG9nh/soJoHQnXUbRM0ldKcRSzCu2RyjA+3g==}
+  '@osdk/api@2.0.0-beta.9':
+    resolution: {integrity: sha512-lAPOyHTXLAEvgoVqIuJWcUVP39L8Fchl1VDrXhMbsfOA8G92TKVCv3voVBZu0SLddkjHexZrPvvo9+5Q/9GZYA==}
+
+  '@osdk/client.api@2.0.0-beta.9':
+    resolution: {integrity: sha512-wbjfV2ITTsxQrfEginguct0CWPxkreVnS80fsJXJtkM373+8takk2vC0/tZDZAl6rJ8FAnIY1ONgsFrnuc+gQg==}
     peerDependencies:
       '@types/geojson': '*'
 
   '@osdk/client.unstable.osw@0.1.0':
     resolution: {integrity: sha512-R0OgiOI0V5nCCT00YSYJfSbaNQKmyZrjCA7fOksysu6ax46te783gH2qDhZYtlebJ2CZSgUy9v7PA//Sia1oow==}
 
-  '@osdk/client.unstable@0.1.0':
-    resolution: {integrity: sha512-YDE+LZqbHSrHSsa8pDW91m68Z28upd/wyef/Y6WbJokeKjyUKscvF6KE1KTUIu1leWzvEyQWv1GbYZDKUn/H+g==}
+  '@osdk/client.unstable@2.0.0-beta.9':
+    resolution: {integrity: sha512-Yq5BaNUKZWavX36f3e/FZl9Ugru5ApDBPezjjs/QaGoYJm+s4Ufmy0O60x+hmQWPXSU14zbeXPeXUIM56+iVAQ==}
 
-  '@osdk/client@0.21.1':
-    resolution: {integrity: sha512-8GM9VCmxshJIXmbQA8pt0OyHXMMZGa5QUI97VNl2yzGJhD/EX3viHtulw+mCQJiPzvCJkj+oUOfLieVuYCdKZQ==}
+  '@osdk/client@2.0.0-beta.9':
+    resolution: {integrity: sha512-uPpt1+FK4j2Gpqkq9NZP71ThVAikwtEDyf8WjIAj/IBx0ErqRXOkvG2LcYzim8DkR6ArYkzBeDg8Bq/vRwNQRg==}
     peerDependencies:
       pino: ^9.1.0
     peerDependenciesMeta:
@@ -4054,14 +4057,14 @@ packages:
   '@osdk/gateway@2.4.1':
     resolution: {integrity: sha512-RHwTFQ2dGKbu25YwjukRKQj9CzoO3xdueSEetIkfCuuHvOLOlIUAJsjj+j7UV96MzsbefAcsQyJC+PqENdU57w==}
 
-  '@osdk/generator-converters@0.7.1':
-    resolution: {integrity: sha512-GDM5FVPzDNTK+SHPC8mhrqQMW+3AvZn66U6u5LcVIlYZbc0uh9s04YKbDykMJU3j/NPZqYqEmJp/Up6VNcuhTg==}
+  '@osdk/generator-converters@2.0.0-beta.9':
+    resolution: {integrity: sha512-jVtM3X/6ncjz3KQsLK9+zUymTtmTXld11GKZq9xrIcOhi0L8FsEZ+8/mWbaOBq/qnekhvR698j5qBeehfN/B1w==}
 
   '@osdk/legacy-client@2.5.1':
     resolution: {integrity: sha512-vo5mMnnAIoBhQORSlKfbVH7G9UNMxJYiRCUxwdrKMkBaJKT5ClJbLTiv9anpqTFkBaw82vMxd7MA80nt3X8hXg==}
 
-  '@osdk/oauth@0.3.0':
-    resolution: {integrity: sha512-AbFVgzvDtTNDk4N/3iQYQfGUFngWlY44K2aK+0gfX6yavdUO3fLnylGzSW8vPycJ16F8cwT1A/rs9Vll4PVlDg==}
+  '@osdk/oauth@0.4.0-beta.0':
+    resolution: {integrity: sha512-kBzt2Z18L665sgZglcSUKENYISjtX1+3TrA8cKIVs3Kf3P60VsMriI0Dm6PCJZzWjlaI32rhqWAUyZVP0xxvEQ==}
 
   '@osdk/shared.client.impl@0.1.0':
     resolution: {integrity: sha512-mNpUkkwnDuPK3LNgilQ0uaUUstrTZ/gqNejSil0Q7Zd+Nq05sAmuyiC6a+5el6p1zByzv+XthQAnJF5Nwcuoag==}
@@ -4077,6 +4080,9 @@ packages:
 
   '@osdk/shared.net@1.12.1':
     resolution: {integrity: sha512-uJE124K3O21A1Of2TdOqMHBfrIYshcDSLr5em4v1vNZZGSsSCYUYGo5vvkS6vzUVDA2xSn/Uf2FgdzX6BWxIhQ==}
+
+  '@osdk/shared.net@2.0.0-beta.2':
+    resolution: {integrity: sha512-UD7BK7Ou9zOzK05hQTbDsZhlmF9isxV5EtfTUd1uAPR1nuRFsutL3Krr/+Kpt/DR8U8m773tHcabfL6j/oYbgA==}
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -9750,9 +9756,16 @@ snapshots:
       fetch-retry: 6.0.0
       tiny-invariant: 1.3.3
 
-  '@osdk/client.api@0.21.1(@types/geojson@7946.0.14)':
+  '@osdk/api@2.0.0-beta.9':
     dependencies:
-      '@osdk/api': 1.9.1
+      '@osdk/shared.net': 2.0.0-beta.2
+      '@types/geojson': 7946.0.14
+      fetch-retry: 6.0.0
+      tiny-invariant: 1.3.3
+
+  '@osdk/client.api@2.0.0-beta.9(@types/geojson@7946.0.14)':
+    dependencies:
+      '@osdk/api': 2.0.0-beta.9
       '@types/geojson': 7946.0.14
       type-fest: 4.18.2
 
@@ -9760,17 +9773,17 @@ snapshots:
     dependencies:
       conjure-lite: 0.4.4
 
-  '@osdk/client.unstable@0.1.0':
+  '@osdk/client.unstable@2.0.0-beta.9':
     dependencies:
       conjure-lite: 0.4.4
 
-  '@osdk/client@0.21.1(pino@9.1.0)':
+  '@osdk/client@2.0.0-beta.9(pino@9.1.0)':
     dependencies:
-      '@osdk/api': 1.9.1
-      '@osdk/client.api': 0.21.1(@types/geojson@7946.0.14)
-      '@osdk/client.unstable': 0.1.0
+      '@osdk/api': 2.0.0-beta.9
+      '@osdk/client.api': 2.0.0-beta.9(@types/geojson@7946.0.14)
+      '@osdk/client.unstable': 2.0.0-beta.9
       '@osdk/client.unstable.osw': 0.1.0
-      '@osdk/generator-converters': 0.7.1
+      '@osdk/generator-converters': 2.0.0-beta.9
       '@osdk/shared.client': 0.0.0
       '@osdk/shared.client.impl': 0.1.0
       '@osdk/shared.net.errors': 1.1.0
@@ -9779,6 +9792,7 @@ snapshots:
       conjure-lite: 0.4.4
       fast-deep-equal: 3.1.3
       fetch-retry: 6.0.0
+      find-up: 7.0.0
       isomorphic-ws: 5.0.0(ws@8.18.0)
       tiny-invariant: 1.3.3
       type-fest: 4.18.2
@@ -9794,10 +9808,9 @@ snapshots:
       fetch-retry: 6.0.0
       tiny-invariant: 1.3.3
 
-  '@osdk/generator-converters@0.7.1':
+  '@osdk/generator-converters@2.0.0-beta.9':
     dependencies:
-      '@osdk/api': 1.9.1
-      '@osdk/gateway': 2.4.1
+      '@osdk/api': 2.0.0-beta.9
 
   '@osdk/legacy-client@2.5.1':
     dependencies:
@@ -9809,7 +9822,7 @@ snapshots:
       ngeohash: 0.6.3
       tiny-invariant: 1.3.3
 
-  '@osdk/oauth@0.3.0':
+  '@osdk/oauth@0.4.0-beta.0':
     dependencies:
       delay: 6.0.0
       oauth4webapi: 2.10.4
@@ -9834,6 +9847,13 @@ snapshots:
   '@osdk/shared.net@1.12.1':
     dependencies:
       '@osdk/gateway': 2.4.1
+      '@osdk/shared.client': 0.0.0
+      '@osdk/shared.client.impl': 0.1.0
+      '@osdk/shared.net.errors': 1.1.0
+      '@osdk/shared.net.fetch': 0.1.0
+
+  '@osdk/shared.net@2.0.0-beta.2':
+    dependencies:
       '@osdk/shared.client': 0.0.0
       '@osdk/shared.client.impl': 0.1.0
       '@osdk/shared.net.errors': 1.1.0
@@ -11712,8 +11732,8 @@ snapshots:
       '@typescript-eslint/parser': 6.21.0(eslint@8.57.0)(typescript@5.5.4)
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0)
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0))(eslint@8.57.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
       eslint-plugin-jsx-a11y: 6.8.0(eslint@8.57.0)
       eslint-plugin-react: 7.34.1(eslint@8.57.0)
       eslint-plugin-react-hooks: 4.6.2(eslint@8.57.0)
@@ -11731,13 +11751,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0):
+  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0))(eslint@8.57.0):
     dependencies:
       debug: 4.3.4
       enhanced-resolve: 5.16.1
       eslint: 8.57.0
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0))(eslint@8.57.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0)
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
       fast-glob: 3.3.2
       get-tsconfig: 4.7.5
       is-core-module: 2.13.1
@@ -11765,25 +11785,14 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-module-utils@2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0))(eslint@8.57.0):
+  eslint-module-utils@2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
       '@typescript-eslint/parser': 6.21.0(eslint@8.57.0)(typescript@5.5.4)
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0)
-    transitivePeerDependencies:
-      - supports-color
-
-  eslint-module-utils@2.8.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0):
-    dependencies:
-      debug: 3.2.7
-    optionalDependencies:
-      '@typescript-eslint/parser': 7.16.0(eslint@9.7.0)(typescript@5.5.3)
-      eslint: 8.57.0
-      eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0)
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0))(eslint@8.57.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -11812,7 +11821,7 @@ snapshots:
     dependencies:
       eslint: 9.7.0
 
-  eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0):
+  eslint-plugin-import@2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0):
     dependencies:
       array-includes: 3.1.8
       array.prototype.findlastindex: 1.2.5
@@ -11822,7 +11831,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0)
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0)
       hasown: 2.0.2
       is-core-module: 2.13.1
       is-glob: 4.0.3
@@ -11833,7 +11842,7 @@ snapshots:
       semver: 6.3.1
       tsconfig-paths: 3.15.0
     optionalDependencies:
-      '@typescript-eslint/parser': 7.16.0(eslint@9.7.0)(typescript@5.5.3)
+      '@typescript-eslint/parser': 6.21.0(eslint@8.57.0)(typescript@5.5.4)
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
