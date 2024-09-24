@@ -43,9 +43,9 @@ import {
 } from "@osdk/internal.foundry.core";
 import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
-import type { Logger } from "pino";
 import invariant from "tiny-invariant";
 import { metadataCacheClient } from "../__unstable/ConjureSupport.js";
+import type { Logger } from "../Logger.js";
 import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
 import type { ObjectSetListener } from "./ObjectSetListener.js";

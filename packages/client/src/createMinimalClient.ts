@@ -15,7 +15,7 @@
  */
 
 import { createSharedClientContext } from "@osdk/shared.client.impl";
-import type { Logger } from "pino";
+import type { Logger } from "./Logger.js";
 import type {
   ClientCacheKey,
   MinimalClient,

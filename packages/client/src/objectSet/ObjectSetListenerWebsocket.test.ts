@@ -23,7 +23,6 @@ import type {
 import { apiServer } from "@osdk/shared.test";
 import ImportedWebSocket from "isomorphic-ws";
 import { http, HttpResponse } from "msw";
-import type { Logger } from "pino";
 import type { MockedClass, MockedFunction, MockedObject } from "vitest";
 import {
   afterAll,
@@ -37,6 +36,7 @@ import {
 } from "vitest";
 import { z } from "zod";
 import { createMinimalClient } from "../createMinimalClient.js";
+import type { Logger } from "../Logger.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { conjureUnionType } from "./conjureUnionType.js";
 import type { ObjectSetListener } from "./ObjectSetListener.js";
@@ -57,7 +57,7 @@ const rootLogger = await vi.hoisted(async (): Promise<Logger> => {
       console.log(a);
     }
   }
-  return pino(
+  return Promise.resolve(pino(
     { level: "info" },
     (pinoPretty.build)({
       sync: true,
@@ -67,7 +67,7 @@ const rootLogger = await vi.hoisted(async (): Promise<Logger> => {
       ignore: "time,hostname,pid",
       destination: new PinoConsoleLogDestination(),
     }),
-  );
+  ));
 });
 
 // make local uses of WebSocket typed right

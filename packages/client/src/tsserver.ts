@@ -22,9 +22,9 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import pLocate from "p-locate";
 import pMap from "p-map";
-import type { Logger } from "pino";
 import invariant from "tiny-invariant";
 import { server as s } from "typescript";
+import type { Logger } from "./Logger.js";
 
 class TsServerImpl extends EventEmitter<{
   exit: [];
