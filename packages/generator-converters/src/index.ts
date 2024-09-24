@@ -15,6 +15,7 @@
  */
 
 export { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "./__UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition.js";
+export { wireActionTypeV2ToSdkActionDefinition } from "./wireActionTypeV2ToSdkActionDefinition.js";
 export { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "./wireObjectTypeFullMetadataToSdkObjectTypeDefinition.js";
 export { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition.js";
 export { wireQueryDataTypeToQueryDataTypeDefinition } from "./wireQueryDataTypeToQueryDataTypeDefinition.js";
