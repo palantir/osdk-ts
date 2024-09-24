@@ -37,5 +37,6 @@ export { createAttachmentFromRid } from "./createAttachmentFromRid.js";
 export { createClient } from "./createClient.js";
 export { createPlatformClient } from "./createPlatformClient.js";
 export type { PlatformClient } from "./createPlatformClient.js";
+export type { Logger } from "./Logger.js";
 export { createAttachmentUpload } from "./object/AttachmentUpload.js";
 export type { ResultOrError } from "./ResultOrError.js";

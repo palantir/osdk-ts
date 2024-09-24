@@ -21,7 +21,6 @@ import type { InterfaceDefinition } from '@osdk/api';
 import type { InterfaceMetadata } from '@osdk/client.api';
 import { InterfaceObjectSet } from '@osdk/client.api';
 import { isOk } from '@osdk/client.api';
-import type { Logger } from 'pino';
 import type { MinActionDef } from '@osdk/api';
 import type { MinInterfaceDef } from '@osdk/api';
 import type { MinObjectDef } from '@osdk/api';
@@ -104,6 +103,31 @@ export function createPlatformClient(baseUrl: string, tokenProvider: () => Promi
 export { InterfaceObjectSet }
 
 export { isOk }
+
+// @public (undocumented)
+export interface Logger {
+    // (undocumented)
+    child(bindings: Record<string, any>, options?: {
+        level?: string;
+        msgPrefix?: string;
+    }): Logger;
+    // (undocumented)
+    debug: LogFn;
+    // (undocumented)
+    error: LogFn;
+    // (undocumented)
+    fatal: LogFn;
+    // (undocumented)
+    info: LogFn;
+    // (undocumented)
+    isLevelEnabled(level: string): boolean;
+    // Warning: (ae-forgotten-export) The symbol "LogFn" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    trace: LogFn;
+    // (undocumented)
+    warn: LogFn;
+}
 
 export { ObjectSet }
 
