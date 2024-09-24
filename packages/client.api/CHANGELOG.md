@@ -1,5 +1,27 @@
 # @osdk/client.api
 
+## 2.0.0-beta.10
+
+### Major Changes
+
+- 56df85a: We now generate minimal object and interface types
+
+### Minor Changes
+
+- dc25fb4: Code generation now uses MinQueryDef
+- 94105a5: Updates return type of actions to improve ease of use
+- dc25fb4: Rename MinimumActionDefinition to MinActionDef
+- e6ade8b: Adds fetchMetadata method to client
+- 95f9247: Adds In filter to Where clauses
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [1252d94]
+- Updated dependencies [56df85a]
+  - @osdk/api@2.0.0-beta.10
+
 ## 2.0.0-beta.9
 
 ### Patch Changes

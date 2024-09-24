@@ -1,5 +1,28 @@
 # @osdk/generator
 
+## 2.0.0-beta.10
+
+### Major Changes
+
+- 1252d94: ESM Only
+- 56df85a: We now generate minimal object and interface types
+
+### Minor Changes
+
+- dc25fb4: Code generation now uses MinQueryDef
+- dc25fb4: Rename MinimumActionDefinition to MinActionDef
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [1252d94]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [56df85a]
+  - @osdk/generator-converters@2.0.0-beta.10
+  - @osdk/api@2.0.0-beta.10
+  - @osdk/internal.foundry.core@0.2.0-beta.7
+
 ## 2.0.0-beta.9
 
 ### Minor Changes

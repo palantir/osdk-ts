@@ -1,5 +1,15 @@
 # @osdk/example-generator
 
+## 0.8.0-beta.5
+
+### Minor Changes
+
+- 1252d94: ESM Only
+
+### Patch Changes
+
+- @osdk/create-app@0.19.0-beta.5
+
 ## 0.8.0-beta.4
 
 ### Minor Changes

@@ -1,5 +1,22 @@
 # @osdk/api
 
+## 2.0.0-beta.10
+
+### Major Changes
+
+- 1252d94: ESM Only
+- 56df85a: We now generate minimal object and interface types
+
+### Minor Changes
+
+- dc25fb4: Code generation now uses MinQueryDef
+- dc25fb4: Rename MinimumActionDefinition to MinActionDef
+
+### Patch Changes
+
+- Updated dependencies [1252d94]
+  - @osdk/shared.net@2.0.0-beta.3
+
 ## 2.0.0-beta.9
 
 ### Minor Changes

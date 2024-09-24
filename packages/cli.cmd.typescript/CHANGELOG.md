@@ -1,5 +1,19 @@
 # @osdk/cli.cmd.typescript
 
+## 0.6.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [1252d94]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [56df85a]
+  - @osdk/generator@2.0.0-beta.10
+  - @osdk/internal.foundry.core@0.2.0-beta.7
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.7
+  - @osdk/shared.net@2.0.0-beta.3
+
 ## 0.6.0-beta.8
 
 ### Patch Changes
