@@ -23,12 +23,12 @@ import type {
 } from "@osdk/api";
 import type { MinimalObjectSet, ObjectSet } from "@osdk/client.api";
 import { symbolClientContext } from "@osdk/shared.client";
-import type { Logger } from "pino";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import { applyAction } from "./actions/applyAction.js";
 import type { Client } from "./Client.js";
 import { createMinimalClient } from "./createMinimalClient.js";
 import { fetchMetadataInternal } from "./fetchMetadata.js";
+import type { Logger } from "./Logger.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
