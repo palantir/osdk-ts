@@ -103,8 +103,41 @@ describe("FetchMetadata", () => {
 
     expect(actionMetadata).toMatchInlineSnapshot(`
       {
+        "apiName": "moveOffice",
         "description": "Update an office's physical location",
         "displayName": "move-office",
+        "modifiedEntities": {
+          "Office": {
+            "created": false,
+            "modified": true,
+          },
+        },
+        "parameters": {
+          "newAddress": {
+            "description": "The office's new physical address (not necessarily shipping address)",
+            "multiplicity": false,
+            "nullable": true,
+            "type": "string",
+          },
+          "newCapacity": {
+            "description": "The maximum seated-at-desk capacity of the new office (maximum fire-safe capacity may be higher)",
+            "multiplicity": false,
+            "nullable": true,
+            "type": "integer",
+          },
+          "officeId": {
+            "description": undefined,
+            "multiplicity": false,
+            "nullable": false,
+            "type": "string",
+          },
+          "officeNames": {
+            "description": "A list of all office names",
+            "multiplicity": true,
+            "nullable": true,
+            "type": "integer",
+          },
+        },
         "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
       }
     `);

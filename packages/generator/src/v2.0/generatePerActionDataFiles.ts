@@ -15,6 +15,7 @@
  */
 
 import type { ActionParameterDefinition } from "@osdk/api";
+import { wireActionTypeV2ToSdkActionDefinition } from "@osdk/generator-converters";
 import type {
   ActionParameterType,
   ActionTypeV2,
@@ -24,7 +25,6 @@ import type { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.j
 import type { ForeignType } from "../GenerateContext/ForeignType.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { getObjectImports } from "../shared/getObjectImports.js";
-import { wireActionTypeV2ToSdkActionDefinition } from "../shared/wireActionTypeV2ToSdkActionDefinition.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
 import { stringUnionFrom } from "../util/stringUnionFrom.js";

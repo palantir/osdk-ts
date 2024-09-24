@@ -4,6 +4,7 @@
 
 ```ts
 
+import type { ActionParameterDefinition } from '@osdk/api';
 import type { BBox } from 'geojson';
 import type { BrandedApiName } from '@osdk/api';
 import type { CompileTimeMetadata } from '@osdk/api';
@@ -30,6 +31,8 @@ export type ActionMetadata = {
     description?: string;
     displayName?: string;
     rid: string;
+    parameters: Record<string, ActionParameterDefinition<string, any>>;
+    apiName: string;
 };
 
 // @public
