@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
 import type {
   ActionMetadata,
   InterfaceMetadata,
-  ObjectMetadata,
   QueryMetadata,
 } from "@osdk/client.api";
 import {
@@ -58,10 +58,13 @@ describe("FetchMetadata", () => {
   it("fetches object metadata correctly", async () => {
     const objectMetadata = await client.fetchMetadata($Objects.Employee);
 
-    expectTypeOf(objectMetadata).toEqualTypeOf<ObjectMetadata>();
+    expectTypeOf(objectMetadata).toEqualTypeOf<
+      ObjectTypeDefinition<any, any>
+    >();
 
     expect(objectMetadata).toMatchInlineSnapshot(`
       {
+        "apiName": "Employee",
         "description": "A full-time or part-time 
 
        employee of our firm",
@@ -71,9 +74,78 @@ describe("FetchMetadata", () => {
           "name": "person",
           "type": "blueprint",
         },
+        "implements": [
+          "FooInterface",
+        ],
+        "interfaceMap": {
+          "FooInterface": {
+            "fooSpt": "fullName",
+          },
+        },
+        "inverseInterfaceMap": {
+          "FooInterface": {
+            "fullName": "fooSpt",
+          },
+        },
+        "links": {
+          "lead": {
+            "multiplicity": false,
+            "targetType": "Employee",
+          },
+          "officeLink": {
+            "multiplicity": false,
+            "targetType": "Office",
+          },
+          "peeps": {
+            "multiplicity": true,
+            "targetType": "Employee",
+          },
+        },
         "pluralDisplayName": "Employees",
+        "primaryKeyApiName": "employeeId",
+        "primaryKeyType": "integer",
+        "properties": {
+          "employeeId": {
+            "description": undefined,
+            "displayName": undefined,
+            "multiplicity": false,
+            "nullable": false,
+            "type": "integer",
+          },
+          "employeeStatus": {
+            "description": "TimeSeries of the status of the employee",
+            "displayName": undefined,
+            "multiplicity": false,
+            "nullable": true,
+            "type": "stringTimeseries",
+          },
+          "fullName": {
+            "description": undefined,
+            "displayName": undefined,
+            "multiplicity": false,
+            "nullable": true,
+            "type": "string",
+          },
+          "office": {
+            "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
+       This is some more text.",
+            "displayName": undefined,
+            "multiplicity": false,
+            "nullable": true,
+            "type": "string",
+          },
+          "startDate": {
+            "description": "The date the employee was hired (most recently, if they were re-hired)",
+            "displayName": undefined,
+            "multiplicity": false,
+            "nullable": true,
+            "type": "datetime",
+          },
+        },
         "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
-        "visibility": "NORMAL",
+        "status": "ACTIVE",
+        "titleProperty": "fullName",
+        "type": "object",
       }
     `);
   });
@@ -83,13 +155,28 @@ describe("FetchMetadata", () => {
       $Interfaces.FooInterface,
     );
 
-    expectTypeOf(interfaceMetadata).toEqualTypeOf<InterfaceMetadata>();
+    expectTypeOf(interfaceMetadata).toEqualTypeOf<
+      InterfaceDefinition<any, any>
+    >();
 
     expect(interfaceMetadata).toMatchInlineSnapshot(`
       {
+        "apiName": "FooInterface",
         "description": "Interface for Foo",
         "displayName": "Foo Interface",
+        "implements": [],
+        "links": {},
+        "properties": {
+          "fooSpt": {
+            "description": "A foo",
+            "displayName": "Foo",
+            "multiplicity": false,
+            "nullable": true,
+            "type": "string",
+          },
+        },
         "rid": "ri.interface.main.interface.1",
+        "type": "interface",
       }
     `);
   });
