@@ -91,7 +91,7 @@ export function defineInterface(
     status: { type: "active", active: {} },
   };
 
-  return ontologyDefinition.interfaceTypes[namespace + apiName] = a;
+  return ontologyDefinition.interfaceTypes[apiName] = a;
 }
 
 function isSimpleType(
