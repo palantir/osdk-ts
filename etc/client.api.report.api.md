@@ -15,7 +15,6 @@ import type { ObjectOrInterfacePropertyKeysFrom2 } from '@osdk/api';
 import type { ObjectTypeLinkDefinition } from '@osdk/api';
 import type { ObjectTypeLinkKeysFrom2 } from '@osdk/api';
 import type { ObjectTypePropertyDefinition } from '@osdk/api';
-import type { OsdkObjectOrInterfaceFrom as OsdkObjectOrInterfaceFrom_2 } from '@osdk/client.api';
 import type { Point } from 'geojson';
 import type { Polygon } from 'geojson';
 import type { PrimaryKeyTypes } from '@osdk/api';
