@@ -30,7 +30,15 @@
           }
         },
         "status": "ACTIVE",
-        "rid": "ridForTask"
+        "rid": "ridForTask",
+        "displayName": "Task",
+        "description": "Task description",
+        "icon": {
+          "type": "blueprint",
+          "name": "task",
+          "color": "#000000"
+        },
+        "pluralDisplayName": "Tasks"
       },
       "linkTypes": []
     }

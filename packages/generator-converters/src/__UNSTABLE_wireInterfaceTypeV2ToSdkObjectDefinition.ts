@@ -24,6 +24,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
 ): InterfaceDefinition<any, any> {
   return {
     type: "interface",
+    rid: interfaceType.rid,
     apiName: interfaceType.apiName,
     displayName: interfaceType.displayName,
     description: interfaceType.description,

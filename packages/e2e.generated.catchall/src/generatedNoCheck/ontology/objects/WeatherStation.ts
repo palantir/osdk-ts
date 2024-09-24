@@ -47,9 +47,16 @@ export interface WeatherStation extends $ObjectTypeDefinition<'WeatherStation', 
     strictProps: WeatherStation.StrictProps;
     apiName: 'WeatherStation';
     description: 'Weather Station';
+    displayName: 'Weather Station';
+    icon: {
+      type: 'blueprint';
+      name: 'weather';
+      color: 'color';
+    };
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
+    pluralDisplayName: 'Weather Stations';
     primaryKeyApiName: 'stationId';
     primaryKeyType: 'string';
     properties: {
@@ -63,6 +70,9 @@ export interface WeatherStation extends $ObjectTypeDefinition<'WeatherStation', 
        */
       stationId: $PropertyDef<'string', 'non-nullable', 'single'>;
     };
+    rid: 'ri.a.b.c.d';
+    status: 'ACTIVE';
+    titleProperty: 'stationId';
     type: 'object';
   };
 }

@@ -49,9 +49,16 @@ export interface DherlihyComplexObject extends $ObjectTypeDefinition<'DherlihyCo
     strictProps: DherlihyComplexObject.StrictProps;
     apiName: 'DherlihyComplexObject';
     description: 'Dherlihy Complex Object';
+    displayName: 'Dherlihy Complex Object';
+    icon: {
+      type: 'blueprint';
+      name: 'dherlihy';
+      color: 'color';
+    };
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
+    pluralDisplayName: 'Dherlihy Complex Objects';
     primaryKeyApiName: 'id';
     primaryKeyType: 'string';
     properties: {
@@ -68,6 +75,9 @@ export interface DherlihyComplexObject extends $ObjectTypeDefinition<'DherlihyCo
        */
       seriesId: $PropertyDef<'numericTimeseries', 'nullable', 'single'>;
     };
+    rid: 'rid.a.b.c.d';
+    status: 'ACTIVE';
+    titleProperty: 'id';
     type: 'object';
   };
 }

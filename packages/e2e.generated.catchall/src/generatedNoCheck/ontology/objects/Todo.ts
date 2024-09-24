@@ -56,11 +56,18 @@ export interface Todo extends $ObjectTypeDefinition<'Todo', Todo> {
     strictProps: Todo.StrictProps;
     apiName: 'Todo';
     description: 'Its a todo item.';
+    displayName: 'AwesomeTodoDisplayname';
+    icon: {
+      type: 'blueprint';
+      name: 'todo';
+      color: 'color';
+    };
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
       Assignee: $ObjectTypeLinkDefinition<Person, false>;
     };
+    pluralDisplayName: 'AwesomeTodoDisplayname';
     primaryKeyApiName: 'id';
     primaryKeyType: 'integer';
     properties: {
@@ -86,6 +93,9 @@ export interface Todo extends $ObjectTypeDefinition<'Todo', Todo> {
        */
       text: $PropertyDef<'string', 'nullable', 'single'>;
     };
+    rid: 'rid.a.b.c.d';
+    status: 'ACTIVE';
+    titleProperty: 'body';
     type: 'object';
   };
 }

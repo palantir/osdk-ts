@@ -31,5 +31,5 @@ export async function loadFullObjectMetadata(
   );
   const ret = wireObjectTypeFullMetadataToSdkObjectTypeDefinition(full, true);
   client.logger?.debug(`END loadFullObjectMetadata(${objectType})`);
-  return { ...ret, rid: full.objectType.rid };
+  return { ...ret };
 }

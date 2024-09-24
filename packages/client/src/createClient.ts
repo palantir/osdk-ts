@@ -90,7 +90,7 @@ export function createClientInternal(
       | ObjectOrInterfaceDefinition
       | MinActionDef<any, any, any>
       | MinQueryDef<any, any>,
-  >(o: T): T extends MinObjectDef<any> ? ObjectSet<T>
+  >(o: T): T extends MinObjectDef<any, any> ? ObjectSet<T>
     : T extends MinInterfaceDef<any, any> ? MinimalObjectSet<T>
     : T extends MinActionDef<any, any, any> ? ActionSignatureFromDef<T>
     : T extends MinQueryDef<any, any> ? QuerySignatureFromDef<T>

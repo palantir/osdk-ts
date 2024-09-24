@@ -16,6 +16,7 @@
 
 import type { ObjectTypeDefinition } from "@osdk/api";
 import type {
+  Icon,
   ObjectTypeFullMetadata,
   PropertyApiName,
   PropertyV2,
@@ -84,8 +85,6 @@ export function wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
         ),
       ]),
     ),
-    spts: objectTypeWithLink.sharedPropertyTypeMapping,
-    inverseSpts: invertProps(objectTypeWithLink.sharedPropertyTypeMapping),
     implements: objectTypeWithLink.implementsInterfaces as string[],
     interfaceMap,
     inverseInterfaceMap: Object.fromEntries(
@@ -93,8 +92,17 @@ export function wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
         [interfaceApiName, props],
       ) => [interfaceApiName, invertProps(props)]),
     ),
+    icon: supportedIconTypes.includes(objectTypeWithLink.objectType.icon.type)
+      ? objectTypeWithLink.objectType.icon
+      : undefined,
+    titleProperty: objectTypeWithLink.objectType.titleProperty,
+    displayName: objectTypeWithLink.objectType.displayName,
+    pluralDisplayName: objectTypeWithLink.objectType.pluralDisplayName,
+    status: objectTypeWithLink.objectType.status,
+    rid: objectTypeWithLink.objectType.rid,
   };
 }
+
 function invertProps(
   a?: Record<string, string>,
 ): typeof a extends undefined ? typeof a : Record<string, string> {
@@ -103,3 +111,5 @@ function invertProps(
     : undefined) as typeof a extends undefined ? typeof a
       : Record<string, string>;
 }
+
+const supportedIconTypes = ["blueprint"];

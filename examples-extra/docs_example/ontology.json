@@ -283,6 +283,12 @@
             }
           }
         },
+        "icon": {
+          "type": "blueprint",
+          "name": "todo",
+          "color": "blue"
+        },
+        "pluralDisplayName": "Todo",
         "status": "ACTIVE",
         "rid": "ridForTodo"
       },
@@ -329,6 +335,13 @@
             }
           }
         },
+        "icon": {
+          "type": "blueprint",
+          "name": "employee",
+          "color": "blue"
+        },
+        "displayName": "Employee",
+        "pluralDisplayName": "Employees",
         "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0aa912b9efb44",
         "status": "ACTIVE"
       },
@@ -398,6 +411,13 @@
             }
           }
         },
+        "icon": {
+          "type": "blueprint",
+          "name": "office",
+          "color": "blue"
+        },
+        "displayName": "Office",
+        "pluralDisplayName": "Offices",
         "rid": "ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45",
         "status": "ACTIVE"
       },
@@ -420,6 +440,13 @@
             }
           }
         },
+        "icon": {
+          "type": "blueprint",
+          "name": "equipment",
+          "color": "blue"
+        },
+        "displayName": "Equipment",
+        "pluralDisplayName": "Equipment",
         "rid": "ri.ontology.main.object-type.808ac022-89eb-4591-8b7e-1a912b9efb45",
         "status": "ACTIVE"
       },

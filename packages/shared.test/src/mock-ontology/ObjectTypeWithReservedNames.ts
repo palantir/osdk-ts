@@ -66,4 +66,16 @@ export const ObjectTypeWithReservedNames: ObjectTypeWithReservedNamesDef = {
       type: "integer",
     },
   },
+  icon: {
+    type: "blueprint",
+    name: "icon",
+    color: "blue",
+  },
+  titleProperty: "id" as const,
+  displayName: "ObjectTypeWithReservedNames",
+  pluralDisplayName: "",
+  status: "ACTIVE",
+  interfaceMap: {},
+  inverseInterfaceMap: {},
+  rid: "",
 };

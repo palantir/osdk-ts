@@ -61,9 +61,16 @@ export interface Office extends $ObjectTypeDefinition<'Office', Office> {
     strictProps: Office.StrictProps;
     apiName: 'Office';
     description: 'A office in our Company';
+    displayName: 'Office';
+    icon: {
+      type: 'blueprint';
+      name: 'office';
+      color: 'blue';
+    };
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
+    pluralDisplayName: 'Offices';
     primaryKeyApiName: 'officeId';
     primaryKeyType: 'string';
     properties: {
@@ -92,6 +99,8 @@ export interface Office extends $ObjectTypeDefinition<'Office', Office> {
        */
       officeId: $PropertyDef<'string', 'non-nullable', 'single'>;
     };
+    rid: 'ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45';
+    status: 'ACTIVE';
     type: 'object';
   };
 }

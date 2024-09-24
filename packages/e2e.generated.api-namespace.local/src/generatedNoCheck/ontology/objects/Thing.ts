@@ -46,6 +46,12 @@ export interface Thing extends $ObjectTypeDefinition<'Thing', Thing> {
     linksType: Thing.Links;
     strictProps: Thing.StrictProps;
     apiName: 'Thing';
+    displayName: 'Thing';
+    icon: {
+      type: 'blueprint';
+      name: 'thing';
+      color: 'green';
+    };
     implements: ['com.example.dep.SomeInterface'];
     interfaceMap: {
       'com.example.dep.SomeInterface': {
@@ -57,8 +63,8 @@ export interface Thing extends $ObjectTypeDefinition<'Thing', Thing> {
         body: 'com.example.dep.spt';
       };
     };
-    inverseSpts: {};
     links: {};
+    pluralDisplayName: 'Things';
     primaryKeyApiName: 'id';
     primaryKeyType: 'integer';
     properties: {
@@ -71,7 +77,9 @@ export interface Thing extends $ObjectTypeDefinition<'Thing', Thing> {
        */
       id: $PropertyDef<'integer', 'non-nullable', 'single'>;
     };
-    spts: {};
+    rid: 'ridForThing';
+    status: 'ACTIVE';
+    titleProperty: 'id';
     type: 'object';
   };
 }

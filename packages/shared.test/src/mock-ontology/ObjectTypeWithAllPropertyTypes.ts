@@ -155,6 +155,11 @@ export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypesDef =
     primaryKeyApiName: "id" as const,
     primaryKeyType: "integer",
     links: {},
+    icon: {
+      type: "blueprint",
+      name: "icon",
+      color: "blue",
+    },
     properties: {
       id: {
         multiplicity: false,
@@ -273,6 +278,13 @@ export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypesDef =
         type: "geoshape",
       },
     },
+    titleProperty: "id" as const,
+    displayName: "ObjectTypeWithAllPropertyTypes",
+    pluralDisplayName: "ObjectTypeWithAllPropertyTypes",
+    status: "ACTIVE",
+    interfaceMap: {},
+    inverseInterfaceMap: {},
+    rid: "rid.object-type.123",
   } satisfies ObjectTypeDefinition<
     "ObjectTypeWithAllPropertyTypes"
   >;
