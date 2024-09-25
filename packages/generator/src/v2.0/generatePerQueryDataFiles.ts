@@ -117,6 +117,7 @@ async function generateV2QueryFile(
         import type { MinQueryDef , VersionBound} from "@osdk/api";
         import type { QueryParam, QueryResult } from "@osdk/client.api";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
+        import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
         ${importObjects}
 
         export namespace ${query.shortApiName} {
@@ -159,12 +160,17 @@ async function generateV2QueryFile(
         : ""
     }
 
-        export interface Definition extends MinQueryDef<
+        
+
+        }
+
+        export interface ${query.shortApiName} extends MinQueryDef<
           "${query.fullApiName}", 
           ${referencedObjectTypes},
           ${query.shortApiName}.Signature
         >, VersionBound<$ExpectedClientVersion>{
-            ${stringify(baseProps)},
+         __DefinitionMetadata?: {
+             ${stringify(baseProps)}
             parameters: {
             ${parameterDefsForType(ontology, query)}
             };
@@ -172,25 +178,28 @@ async function generateV2QueryFile(
             ${stringify(outputBase)},
             ${getLineFor__OsdkTargetType(ontology, query.output)}
             };
-        }
-
-        }
-
-        /** @deprecated use \`${query.shortApiName}.Signature\' instead */
-        export type ${query.shortApiName} = ${query.shortApiName}.Signature;
-
-
-
+            signature: ${query.shortApiName}.Signature;
+        }, 
+        ${
+      stringify(baseProps, {
+        "description": () => undefined,
+        "displayName": () => undefined,
+        "rid": () => undefined,
+      })
+    }, 
+          osdkMetadata: typeof $osdkMetadata;
+              }
 
 
         export const ${query.shortApiName}: ${query.definitionIdentifier} = {
-            ${stringify(baseProps)},
-            parameters: {
-            ${parametersForConst(query)}
-            },
-            output: {
-            ${stringify(outputBase)},
-            }
+            ${
+      stringify(baseProps, {
+        "description": () => undefined,
+        "displayName": () => undefined,
+        "rid": () => undefined,
+      })
+    },
+    osdkMetadata: $osdkMetadata
         };
         `),
   );

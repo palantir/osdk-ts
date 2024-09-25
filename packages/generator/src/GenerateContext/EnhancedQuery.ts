@@ -40,7 +40,7 @@ export class EnhancedQuery extends EnhancedBase<QueryTypeV2> {
   }
 
   get definitionIdentifier() {
-    return `${this.shortApiName}.Definition`;
+    return `${this.shortApiName}`;
   }
 
   get definitionParamsIdentifier() {

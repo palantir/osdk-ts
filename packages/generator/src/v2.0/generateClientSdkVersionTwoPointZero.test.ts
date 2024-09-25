@@ -911,6 +911,7 @@ describe("generator", () => {
         "/foo/ontology/queries/getCount.ts": "import type { MinQueryDef, VersionBound } from '@osdk/api';
       import type { QueryParam, QueryResult } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata';
+      import { $osdkMetadata } from '../../OntologyMetadata';
 
       export namespace getCount {
         export interface Signature {
@@ -923,10 +924,12 @@ describe("generator", () => {
            */
           readonly completed: QueryParam.PrimitiveType<'boolean'>;
         }
+      }
 
-        export interface Definition
-          extends MinQueryDef<'getCount', never, getCount.Signature>,
-            VersionBound<$ExpectedClientVersion> {
+      export interface getCount
+        extends MinQueryDef<'getCount', never, getCount.Signature>,
+          VersionBound<$ExpectedClientVersion> {
+        __DefinitionMetadata?: {
           apiName: 'getCount';
           rid: 'rid.query.1';
           type: 'query';
@@ -944,32 +947,25 @@ describe("generator", () => {
             nullable: false;
             type: 'integer';
           };
-        }
+          signature: getCount.Signature;
+        };
+        apiName: 'getCount';
+        type: 'query';
+        version: '0';
+        osdkMetadata: typeof $osdkMetadata;
       }
 
-      /** @deprecated use \`getCount.Signature' instead */
-      export type getCount = getCount.Signature;
-
-      export const getCount: getCount.Definition = {
+      export const getCount: getCount = {
         apiName: 'getCount',
-        rid: 'rid.query.1',
         type: 'query',
         version: '0',
-        parameters: {
-          completed: {
-            type: 'boolean',
-            nullable: false,
-          },
-        },
-        output: {
-          nullable: false,
-          type: 'integer',
-        },
+        osdkMetadata: $osdkMetadata,
       };
       ",
         "/foo/ontology/queries/returnsTodo.ts": "import type { MinQueryDef, VersionBound } from '@osdk/api';
       import type { QueryParam, QueryResult } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata';
+      import { $osdkMetadata } from '../../OntologyMetadata';
       import type { Todo } from '../objects/Todo';
 
       export namespace returnsTodo {
@@ -983,10 +979,12 @@ describe("generator", () => {
            */
           readonly someTodo: QueryParam.ObjectType<Todo>;
         }
+      }
 
-        export interface Definition
-          extends MinQueryDef<'returnsTodo', 'Todo', returnsTodo.Signature>,
-            VersionBound<$ExpectedClientVersion> {
+      export interface returnsTodo
+        extends MinQueryDef<'returnsTodo', 'Todo', returnsTodo.Signature>,
+          VersionBound<$ExpectedClientVersion> {
+        __DefinitionMetadata?: {
           apiName: 'returnsTodo';
           rid: 'rid.query.2';
           type: 'query';
@@ -1009,30 +1007,19 @@ describe("generator", () => {
             type: 'object';
             __OsdkTargetType?: Todo;
           };
-        }
+          signature: returnsTodo.Signature;
+        };
+        apiName: 'returnsTodo';
+        type: 'query';
+        version: '0';
+        osdkMetadata: typeof $osdkMetadata;
       }
 
-      /** @deprecated use \`returnsTodo.Signature' instead */
-      export type returnsTodo = returnsTodo.Signature;
-
-      export const returnsTodo: returnsTodo.Definition = {
+      export const returnsTodo: returnsTodo = {
         apiName: 'returnsTodo',
-        rid: 'rid.query.2',
         type: 'query',
         version: '0',
-        parameters: {
-          someTodo: {
-            description: 'Random desc so we test jsdoc',
-            type: 'object',
-            object: 'Todo',
-            nullable: false,
-          },
-        },
-        output: {
-          nullable: false,
-          object: 'Todo',
-          type: 'object',
-        },
+        osdkMetadata: $osdkMetadata,
       };
       ",
       }
@@ -1517,6 +1504,7 @@ describe("generator", () => {
           "/foo/ontology/queries/getCount.ts": "import type { MinQueryDef, VersionBound } from '@osdk/api';
         import type { QueryParam, QueryResult } from '@osdk/client.api';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
 
         export namespace getCount {
           export interface Signature {
@@ -1529,10 +1517,12 @@ describe("generator", () => {
              */
             readonly completed: QueryParam.PrimitiveType<'boolean'>;
           }
+        }
 
-          export interface Definition
-            extends MinQueryDef<'foo.bar.getCount', never, getCount.Signature>,
-              VersionBound<$ExpectedClientVersion> {
+        export interface getCount
+          extends MinQueryDef<'foo.bar.getCount', never, getCount.Signature>,
+            VersionBound<$ExpectedClientVersion> {
+          __DefinitionMetadata?: {
             apiName: 'foo.bar.getCount';
             rid: 'rid.query.1';
             type: 'query';
@@ -1550,32 +1540,25 @@ describe("generator", () => {
               nullable: false;
               type: 'integer';
             };
-          }
+            signature: getCount.Signature;
+          };
+          apiName: 'foo.bar.getCount';
+          type: 'query';
+          version: '0';
+          osdkMetadata: typeof $osdkMetadata;
         }
 
-        /** @deprecated use \`getCount.Signature' instead */
-        export type getCount = getCount.Signature;
-
-        export const getCount: getCount.Definition = {
+        export const getCount: getCount = {
           apiName: 'foo.bar.getCount',
-          rid: 'rid.query.1',
           type: 'query',
           version: '0',
-          parameters: {
-            completed: {
-              type: 'boolean',
-              nullable: false,
-            },
-          },
-          output: {
-            nullable: false,
-            type: 'integer',
-          },
+          osdkMetadata: $osdkMetadata,
         };
         ",
           "/foo/ontology/queries/returnsTodo.ts": "import type { MinQueryDef, VersionBound } from '@osdk/api';
         import type { QueryParam, QueryResult } from '@osdk/client.api';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { Todo } from '../objects/Todo.js';
 
         export namespace returnsTodo {
@@ -1589,10 +1572,12 @@ describe("generator", () => {
              */
             readonly someTodo: QueryParam.ObjectType<Todo>;
           }
+        }
 
-          export interface Definition
-            extends MinQueryDef<'foo.bar.returnsTodo', 'foo.bar.Todo', returnsTodo.Signature>,
-              VersionBound<$ExpectedClientVersion> {
+        export interface returnsTodo
+          extends MinQueryDef<'foo.bar.returnsTodo', 'foo.bar.Todo', returnsTodo.Signature>,
+            VersionBound<$ExpectedClientVersion> {
+          __DefinitionMetadata?: {
             apiName: 'foo.bar.returnsTodo';
             rid: 'rid.query.2';
             type: 'query';
@@ -1615,30 +1600,19 @@ describe("generator", () => {
               type: 'object';
               __OsdkTargetType?: Todo;
             };
-          }
+            signature: returnsTodo.Signature;
+          };
+          apiName: 'foo.bar.returnsTodo';
+          type: 'query';
+          version: '0';
+          osdkMetadata: typeof $osdkMetadata;
         }
 
-        /** @deprecated use \`returnsTodo.Signature' instead */
-        export type returnsTodo = returnsTodo.Signature;
-
-        export const returnsTodo: returnsTodo.Definition = {
+        export const returnsTodo: returnsTodo = {
           apiName: 'foo.bar.returnsTodo',
-          rid: 'rid.query.2',
           type: 'query',
           version: '0',
-          parameters: {
-            someTodo: {
-              description: 'Random desc so we test jsdoc',
-              type: 'object',
-              object: 'foo.bar.Todo',
-              nullable: false,
-            },
-          },
-          output: {
-            nullable: false,
-            object: 'foo.bar.Todo',
-            type: 'object',
-          },
+          osdkMetadata: $osdkMetadata,
         };
         ",
         }
@@ -1748,6 +1722,7 @@ describe("generator", () => {
           "import type { MinQueryDef, VersionBound } from '@osdk/api';
           import type { QueryParam, QueryResult } from '@osdk/client.api';
           import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+          import { $osdkMetadata } from '../../OntologyMetadata.js';
           import type { Task as $Imported$objectTypes$com$example$dep$Task } from '@com.example.dep/osdk';
 
           export namespace getTask {
@@ -1761,10 +1736,12 @@ describe("generator", () => {
                */
               readonly a: QueryParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>;
             }
+          }
 
-            export interface Definition
-              extends MinQueryDef<'getTask', 'com.example.dep.Task', getTask.Signature>,
-                VersionBound<$ExpectedClientVersion> {
+          export interface getTask
+            extends MinQueryDef<'getTask', 'com.example.dep.Task', getTask.Signature>,
+              VersionBound<$ExpectedClientVersion> {
+            __DefinitionMetadata?: {
               apiName: 'getTask';
               rid: 'ri.a.b.c';
               type: 'query';
@@ -1786,29 +1763,19 @@ describe("generator", () => {
                 type: 'object';
                 __OsdkTargetType?: $Imported$objectTypes$com$example$dep$Task;
               };
-            }
+              signature: getTask.Signature;
+            };
+            apiName: 'getTask';
+            type: 'query';
+            version: '0';
+            osdkMetadata: typeof $osdkMetadata;
           }
 
-          /** @deprecated use \`getTask.Signature' instead */
-          export type getTask = getTask.Signature;
-
-          export const getTask: getTask.Definition = {
+          export const getTask: getTask = {
             apiName: 'getTask',
-            rid: 'ri.a.b.c',
             type: 'query',
             version: '0',
-            parameters: {
-              a: {
-                type: 'object',
-                object: 'com.example.dep.Task',
-                nullable: false,
-              },
-            },
-            output: {
-              nullable: false,
-              object: 'com.example.dep.Task',
-              type: 'object',
-            },
+            osdkMetadata: $osdkMetadata,
           };
           "
         `);
