@@ -26,6 +26,7 @@ import type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } f
 import type { AggregationsResults } from "../aggregate/AggregationsResults.js";
 import type { WhereClause } from "../aggregate/WhereClause.js";
 import type {
+  AsyncIterArgs,
   Augments,
   FetchPageArgs,
   NullabilityAdherence,
@@ -115,7 +116,14 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
    * }
    * @returns an async iterator to load all objects
    */
-  readonly asyncIter: () => AsyncIterableIterator<Osdk<Q>>;
+  readonly asyncIter: <
+    L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+    R extends boolean,
+    const A extends Augments,
+    S extends NullabilityAdherence = NullabilityAdherenceDefault,
+  >(
+    args?: AsyncIterArgs<Q, L, R, A, S>,
+  ) => AsyncIterableIterator<SingleOsdkResult<Q, L, R, S>>;
 }
 
 export interface InterfaceObjectSet<

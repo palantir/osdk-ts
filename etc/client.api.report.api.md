@@ -135,6 +135,14 @@ export type ApplyBatchActionOptions = {
 };
 
 // @public (undocumented)
+export interface AsyncIterArgs<Q extends ObjectOrInterfaceDefinition, K extends ObjectOrInterfacePropertyKeysFrom2<Q> = ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean = false, A extends Augments = {}, S extends NullabilityAdherence = NullabilityAdherenceDefault> extends SelectArg<Q, K, R, S>, OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>> {
+    // (undocumented)
+    $__EXPERIMENTAL_selectedObjectTypes?: string[];
+    // (undocumented)
+    $augment?: A;
+}
+
+// @public (undocumented)
 export interface Attachment {
     fetchContents(): Promise<Blob>;
     fetchMetadata(): Promise<AttachmentMetadata>;
@@ -343,11 +351,7 @@ export interface FetchInterfacePageArgs<Q extends MinInterfaceDef<any, any>, K e
 }
 
 // @public (undocumented)
-export interface FetchPageArgs<Q extends ObjectOrInterfaceDefinition, K extends ObjectOrInterfacePropertyKeysFrom2<Q> = ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean = false, A extends Augments = {}, S extends NullabilityAdherence = NullabilityAdherenceDefault> extends SelectArg<Q, K, R, S>, OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>> {
-    // (undocumented)
-    $__EXPERIMENTAL_selectedObjectTypes?: string[];
-    // (undocumented)
-    $augment?: A;
+export interface FetchPageArgs<Q extends ObjectOrInterfaceDefinition, K extends ObjectOrInterfacePropertyKeysFrom2<Q> = ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean = false, A extends Augments = {}, S extends NullabilityAdherence = NullabilityAdherenceDefault> extends AsyncIterArgs<Q, K, R, A, S> {
     // (undocumented)
     $nextPageToken?: string;
     // (undocumented)
@@ -430,7 +434,7 @@ export type LinkNames<Q extends ObjectOrInterfaceDefinition> = keyof CompileTime
 export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition> extends BaseObjectSet<Q> {
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    readonly asyncIter: () => AsyncIterableIterator<Osdk<Q>>;
+    readonly asyncIter: <L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, const A extends Augments, S extends NullabilityAdherence = NullabilityAdherenceDefault>(args?: AsyncIterArgs<Q, L, R, A, S>) => AsyncIterableIterator<SingleOsdkResult<Q, L, R, S>>;
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     readonly fetchPage: <L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, const A extends Augments, S extends NullabilityAdherence = NullabilityAdherenceDefault>(args?: FetchPageArgs<Q, L, R, A, S>) => Promise<FetchPageResult<Q, L, R, S>>;
