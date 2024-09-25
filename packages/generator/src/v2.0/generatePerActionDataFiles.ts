@@ -191,6 +191,8 @@ export async function generatePerActionDataFiles(
             "displayName": () => undefined,
             "modifiedEntities": () => undefined,
             "parameters": () => undefined,
+            "rid": () => undefined,
+            "status": () => undefined,
           })
         }
             osdkMetadata: typeof $osdkMetadata;
@@ -207,6 +209,8 @@ export async function generatePerActionDataFiles(
             "displayName": () => undefined,
             "modifiedEntities": () => undefined,
             "parameters": () => undefined,
+            "rid": () => undefined,
+            "status": () => undefined,
           })
         },
           osdkMetadata: $osdkMetadata

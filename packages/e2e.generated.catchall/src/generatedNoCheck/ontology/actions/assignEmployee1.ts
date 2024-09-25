@@ -67,6 +67,8 @@ export interface assignEmployee1
       };
     };
     parameters: assignEmployee1.ParamsDefinition;
+    rid: 'ri.a.b.c.d';
+    status: 'ACTIVE';
     type: 'action';
 
     signatures: assignEmployee1.Signatures;

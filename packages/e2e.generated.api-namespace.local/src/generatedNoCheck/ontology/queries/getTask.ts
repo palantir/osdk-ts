@@ -19,6 +19,7 @@ export namespace getTask {
     extends MinQueryDef<'getTask', 'com.example.dep.Task', getTask.Signature>,
       VersionBound<$ExpectedClientVersion> {
     apiName: 'getTask';
+    rid: 'ri.a.b.c';
     type: 'query';
     version: '0';
     parameters: {
@@ -46,6 +47,7 @@ export type getTask = getTask.Signature;
 
 export const getTask: getTask.Definition = {
   apiName: 'getTask',
+  rid: 'ri.a.b.c',
   type: 'query',
   version: '0',
   parameters: {

@@ -15,12 +15,14 @@
  */
 
 import type {
+  ActionDefinition,
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   QueryDefinition,
 } from "@osdk/api";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createAsyncClientCache } from "../object/Cache.js";
+import { loadActionDefinition } from "./loadActionDefinition.js";
 import { loadFullObjectMetadata } from "./loadFullObjectMetadata.js";
 import { loadInterfaceDefinition } from "./loadInterfaceDefinition.js";
 import { loadQueryDefinition } from "./loadQueryDefinition.js";
@@ -75,8 +77,19 @@ export const createStandardOntologyProviderFactory: (
       return r;
     }
 
+    async function loadAction(
+      client: MinimalClient,
+      key: string,
+    ) {
+      const r = await loadActionDefinition(client, key);
+      return r;
+    }
+
     function makeGetter<
-      N extends ObjectOrInterfaceDefinition | QueryDefinition<any, any>,
+      N extends
+        | ObjectOrInterfaceDefinition
+        | QueryDefinition<any, any>
+        | ActionDefinition<any, any>,
     >(
       fn: (
         client: MinimalClient,
@@ -96,6 +109,7 @@ export const createStandardOntologyProviderFactory: (
       getObjectDefinition: makeGetter(loadObject),
       getInterfaceDefinition: makeGetter(loadInterface),
       getQueryDefinition: makeGetter(loadQuery),
+      getActionDefinition: makeGetter(loadAction),
     };
     return ret;
   };

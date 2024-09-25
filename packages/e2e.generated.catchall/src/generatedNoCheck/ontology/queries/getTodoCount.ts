@@ -11,6 +11,7 @@ export namespace getTodoCount {
     extends MinQueryDef<'getTodoCount', never, getTodoCount.Signature>,
       VersionBound<$ExpectedClientVersion> {
     apiName: 'getTodoCount';
+    rid: 'query.rid2';
     type: 'query';
     version: '0.1.2';
     parameters: {};
@@ -26,6 +27,7 @@ export type getTodoCount = getTodoCount.Signature;
 
 export const getTodoCount: getTodoCount.Definition = {
   apiName: 'getTodoCount',
+  rid: 'query.rid2',
   type: 'query',
   version: '0.1.2',
   parameters: {},

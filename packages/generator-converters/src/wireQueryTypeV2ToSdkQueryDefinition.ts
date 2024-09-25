@@ -38,6 +38,7 @@ export function wireQueryTypeV2ToSdkQueryDefinition(
       ) => [name, wireQueryParameterV2ToQueryParameterDefinition(parameter)]),
     ),
     output: wireQueryDataTypeToQueryDataTypeDefinition(input.output),
+    rid: input.rid,
   };
 }
 
@@ -50,6 +51,7 @@ export function wireQueryTypeV2ToSdkQueryDefinitionNoParams(
     description: input.description,
     displayName: input.displayName,
     version: input.version,
+    rid: input.rid,
   };
 }
 

@@ -90,6 +90,8 @@ export interface createOffice extends MinActionDef<'createOffice', 'Office', cre
       };
     };
     parameters: createOffice.ParamsDefinition;
+    rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f1';
+    status: 'ACTIVE';
     type: 'action';
 
     signatures: createOffice.Signatures;

@@ -44,6 +44,8 @@ export function wireActionTypeV2ToSdkActionDefinition(
       modifiedEntityTypes.addedObjects,
       modifiedEntityTypes.modifiedObjects,
     ),
+    rid: input.rid,
+    status: input.status,
   };
 }
 

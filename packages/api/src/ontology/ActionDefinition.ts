@@ -15,7 +15,7 @@
  */
 
 import type { OsdkMetadata } from "../OsdkMetadata.js";
-import type { MinObjectDef } from "./ObjectTypeDefinition.js";
+import type { MinObjectDef, ReleaseStatus } from "./ObjectTypeDefinition.js";
 
 export interface ActionDefinition<
   A extends string,
@@ -27,11 +27,11 @@ export interface ActionDefinition<
   displayName?: string;
   parameters: Record<any, ActionParameterDefinition<K, any>>;
   modifiedEntities?: Partial<Record<K, ActionModifiedEntity>>;
+  status: ReleaseStatus;
+  rid: string;
 }
 
-export interface ActionDefMetadata<A extends string, K extends string, T>
-  extends ActionDefinition<A, K>
-{
+export interface ActionCompileTimeMetadata<T> {
   signatures: T;
 }
 
@@ -43,7 +43,9 @@ export interface MinActionDef<
   type: "action";
   apiName: A;
   osdkMetadata?: OsdkMetadata;
-  __DefinitionMetadata?: ActionDefMetadata<A, K, T_signatures>;
+  __DefinitionMetadata?:
+    & ActionCompileTimeMetadata<T_signatures>
+    & ActionDefinition<A, K>;
 }
 
 export interface ActionModifiedEntity {

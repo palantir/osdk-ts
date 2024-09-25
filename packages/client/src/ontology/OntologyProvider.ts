@@ -15,6 +15,7 @@
  */
 
 import type {
+  ActionDefinition,
   InterfaceDefinition,
   ObjectTypeDefinition,
   QueryDefinition,
@@ -58,6 +59,8 @@ export interface OntologyProvider {
   ) => Promise<InterfaceDefinition<any, any>>;
 
   getQueryDefinition: (apiName: string) => Promise<QueryDefinition<any, any>>;
+
+  getActionDefinition: (apiName: string) => Promise<ActionDefinition<any, any>>;
 }
 
 export type OntologyProviderFactory<

@@ -66,6 +66,7 @@ describe("generatePerQueryDataFiles", () => {
           extends MinQueryDef<'getCount', never, getCount.Signature>,
             VersionBound<$ExpectedClientVersion> {
           apiName: 'getCount';
+          rid: 'rid.query.1';
           type: 'query';
           version: '0';
           parameters: {
@@ -89,6 +90,7 @@ describe("generatePerQueryDataFiles", () => {
 
       export const getCount: getCount.Definition = {
         apiName: 'getCount',
+        rid: 'rid.query.1',
         type: 'query',
         version: '0',
         parameters: {
@@ -124,6 +126,7 @@ describe("generatePerQueryDataFiles", () => {
           extends MinQueryDef<'returnsTodo', 'Todo', returnsTodo.Signature>,
             VersionBound<$ExpectedClientVersion> {
           apiName: 'returnsTodo';
+          rid: 'rid.query.2';
           type: 'query';
           version: '0';
           parameters: {
@@ -152,6 +155,7 @@ describe("generatePerQueryDataFiles", () => {
 
       export const returnsTodo: returnsTodo.Definition = {
         apiName: 'returnsTodo',
+        rid: 'rid.query.2',
         type: 'query',
         version: '0',
         parameters: {

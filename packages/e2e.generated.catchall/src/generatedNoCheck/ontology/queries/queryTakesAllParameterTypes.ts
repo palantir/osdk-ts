@@ -109,6 +109,7 @@ export namespace queryTakesAllParameterTypes {
     apiName: 'queryTakesAllParameterTypes';
     description: 'description of the query that takes all parameter types';
     displayName: 'qTAPT';
+    rid: 'query.rid';
     type: 'query';
     version: 'version';
     parameters: {
@@ -311,6 +312,7 @@ export const queryTakesAllParameterTypes: queryTakesAllParameterTypes.Definition
   apiName: 'queryTakesAllParameterTypes',
   description: 'description of the query that takes all parameter types',
   displayName: 'qTAPT',
+  rid: 'query.rid',
   type: 'query',
   version: 'version',
   parameters: {

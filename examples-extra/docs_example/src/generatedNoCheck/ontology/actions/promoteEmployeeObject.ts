@@ -74,6 +74,8 @@ export interface promoteEmployeeObject
       };
     };
     parameters: promoteEmployeeObject.ParamsDefinition;
+    rid: 'ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2168';
+    status: 'ACTIVE';
     type: 'action';
 
     signatures: promoteEmployeeObject.Signatures;

@@ -14,9 +14,22 @@
  * limitations under the License.
  */
 
-export type InterfaceMetadata = {
-  displayName: string;
-  description?: string;
-  rid: string;
-  // TODO: Add links, extendsInterfaces, and Properties
-};
+import type { ActionDefinition } from "@osdk/api";
+import {
+  wireActionTypeV2ToSdkActionDefinition,
+} from "@osdk/generator-converters";
+import { OntologiesV2 } from "@osdk/internal.foundry";
+import type { MinimalClient } from "../MinimalClientContext.js";
+
+export async function loadActionDefinition(
+  client: MinimalClient,
+  actionType: string,
+): Promise<ActionDefinition<any, any>> {
+  const r = await OntologiesV2.ActionTypesV2.getActionTypeV2(
+    client,
+    await client.ontologyRid,
+    actionType,
+  );
+
+  return wireActionTypeV2ToSdkActionDefinition(r);
+}

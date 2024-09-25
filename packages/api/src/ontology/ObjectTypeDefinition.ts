@@ -146,9 +146,9 @@ export type PropertyDef<
   & E
   & ObjectTypePropertyDefinition;
 
-type ObjectTypeVisibility = "NORMAL" | "PROMINENT" | "HIDDEN";
+export type ReleaseStatus = "ACTIVE" | "EXPERIMENTAL" | "DEPRECATED";
 
-type ReleaseStatus = "ACTIVE" | "EXPERIMENTAL" | "DEPRECATED";
+type ObjectTypeVisibility = "NORMAL" | "PROMINENT" | "HIDDEN";
 
 type BlueprintIcon = {
   type: "blueprint";
