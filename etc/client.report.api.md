@@ -28,7 +28,6 @@ import type { MinInterfaceDef } from '@osdk/api';
 import type { MinObjectDef } from '@osdk/api';
 import type { MinQueryDef } from '@osdk/api';
 import type { ObjectActionDataType } from '@osdk/api';
-import type { ObjectMetadata } from '@osdk/client.api';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
 import { ObjectSet } from '@osdk/client.api';
