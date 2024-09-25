@@ -7,7 +7,4 @@ export default defineConfig({
   server: {
     port: 8080,
   },
-  optimizeDeps: {
-    include: ["@osdk/shared.client"],
-  },
 });
