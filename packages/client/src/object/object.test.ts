@@ -153,7 +153,7 @@ describe("OsdkObject", () => {
     });
     it("objects are enumerable in an sdk", async () => {
       const objects = Object.keys($Objects);
-      expect(objects).toStrictEqual([
+      expect(objects.sort()).toStrictEqual([
         "Employee",
         "ObjectWithTimestampPrimaryKey",
         "Office",
@@ -162,7 +162,7 @@ describe("OsdkObject", () => {
         "Todo",
         "equipment",
         "objectTypeWithAllPropertyTypes",
-      ]);
+      ].sort());
     });
   });
 });

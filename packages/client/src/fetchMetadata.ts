@@ -24,9 +24,6 @@ import type {
   ObjectMetadata,
   QueryMetadata,
 } from "@osdk/api";
-import {
-  __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition,
-} from "@osdk/generator-converters";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { InterfaceDefinitions } from "./ontology/OntologyProvider.js";
 

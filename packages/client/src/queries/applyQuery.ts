@@ -28,8 +28,8 @@ import type {
   OsdkBase,
   PrimaryKeyType,
 } from "@osdk/client.api";
-import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { DataValue } from "@osdk/internal.foundry.core";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import { createAttachmentFromRid } from "../createAttachmentFromRid.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";

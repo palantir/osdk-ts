@@ -31,10 +31,10 @@
     "typecheck": "monorepo.tool.typecheck esm"
   },
   "dependencies": {
-    "@osdk/api": "workspace:~"
+    "@osdk/api": "workspace:~",
+    "@osdk/internal.foundry.core": "workspace:~"
   },
   "devDependencies": {
-    "@osdk/internal.foundry.core": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",

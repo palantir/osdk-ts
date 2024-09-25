@@ -15,20 +15,13 @@
  */
 
 import {
-  type Attachment,
   TimeseriesDurationMapping,
   type TimeSeriesPoint,
   TimeSeriesProperty,
   type TimeSeriesQuery,
 } from "@osdk/client.api";
-import { OntologiesV2 } from "@osdk/internal.foundry";
-import type {
-  AbsoluteTimeRange,
-  RelativeTime,
-  RelativeTimeRange,
-  StreamTimeSeriesPointsRequest,
-  TimeRange,
-} from "@osdk/internal.foundry.core";
+import type { TimeRange } from "@osdk/internal.foundry.core";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import {
   iterateReadableStream,

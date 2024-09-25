@@ -32,7 +32,6 @@ export default defineConfig(({ mode }) => {
       // shared.client is a mixed package that needs to be properly processed by vite
       // but normally linked packages do not get that treatment so we have to explicitly add it here
       // and in the `commonjsOptions` below
-      include: ["@osdk/client > @osdk/shared.client"],
     },
     build: {
       outDir: "build/site/",
