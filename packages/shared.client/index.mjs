@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-import cjsIndex from "./index.cjs";
-export const symbolClientContext = cjsIndex.symbolClientContext;
+export const symbolClientContext = Symbol("ClientContext");

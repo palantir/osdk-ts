@@ -14,4 +14,26 @@
  * limitations under the License.
  */
 
-export * from "./index.cjs";
+export declare interface SharedClientContext {
+  /**
+   * The base origin to use for requests (e.g. `https://api.example.com`)
+   */
+  baseUrl: string;
+
+  /**
+   * The fetch function to use for all requests.
+   */
+  fetch: typeof globalThis.fetch;
+
+  tokenProvider: () => Promise<string>;
+}
+
+// This allows us to reference the ctx as property referenced by a symbol
+// so that its not suggested when you do `client.` in the client code
+export declare const symbolClientContext: unique symbol;
+
+export declare interface SharedClient<
+  T extends SharedClientContext = SharedClientContext,
+> {
+  [symbolClientContext]: T;
+}
