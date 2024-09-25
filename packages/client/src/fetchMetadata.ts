@@ -29,7 +29,7 @@ import {
 } from "@osdk/generator-converters";
 import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "./MinimalClientContext.js";
-import { loadFullObjectMetadata } from "./ontology/loadFullObjectMetadata.js";
+import { InterfaceDefinitions } from "./ontology/OntologyProvider.js";
 import { addUserAgentAndRequestContextHeaders } from "./util/addUserAgentAndRequestContextHeaders.js";
 
 /** @internal */
@@ -67,21 +67,17 @@ const fetchObjectMetadata = async (
   client: MinimalClient,
   objectType: MinObjectDef<any, any>,
 ): Promise<ObjectTypeDefinition<any, any>> => {
-  return loadFullObjectMetadata(client, objectType.apiName);
+  const { [InterfaceDefinitions]: interfaceDefs, ...objectTypeDef } =
+    await client.ontologyProvider
+      .getObjectDefinition(objectType.apiName);
+  return objectTypeDef;
 };
 
 const fetchInterfaceMetadata = async (
   client: MinimalClient,
   interfaceType: MinInterfaceDef<any, any>,
 ): Promise<InterfaceDefinition<any, any>> => {
-  const response = await OntologiesV2.OntologyInterfaces.getInterfaceType(
-    addUserAgentAndRequestContextHeaders(client, interfaceType),
-    await client.ontologyRid,
-    interfaceType.apiName,
-    { preview: true },
-  );
-
-  return __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(response, true);
+  return client.ontologyProvider.getInterfaceDefinition(interfaceType.apiName);
 };
 
 const fetchActionMetadata = async (

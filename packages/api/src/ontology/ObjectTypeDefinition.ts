@@ -55,7 +55,6 @@ export interface ObjectInterfaceCompileDefinition<> {
   props?: any;
   strictProps?: any;
   linksType?: any;
-  osdkMetadata?: OsdkMetadata;
 }
 
 export interface VersionBound<V extends VersionString<any, any, any>> {
