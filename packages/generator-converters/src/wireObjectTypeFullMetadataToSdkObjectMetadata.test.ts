@@ -15,7 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "./wireObjectTypeFullMetadataToSdkObjectTypeDefinition.js";
+import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "./wireObjectTypeFullMetadataToSdkObjectMetadata.js";
 
 describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
   it("handles magic nullable properties", () => {
