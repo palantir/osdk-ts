@@ -16,7 +16,7 @@
 
 import type {
   BrandedApiName,
-  MinInterfaceDef,
+  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
   PropertyKeys,
@@ -91,7 +91,7 @@ export type Augment<
 export type Augments = Record<string, string[]>;
 
 export interface FetchInterfacePageArgs<
-  Q extends MinInterfaceDef<any, any>,
+  Q extends InterfaceDefinition<any, any>,
   K extends ObjectOrInterfacePropertyKeysFrom2<Q> =
     ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean = false,

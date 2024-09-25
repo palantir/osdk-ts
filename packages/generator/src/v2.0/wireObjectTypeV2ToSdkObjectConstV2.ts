@@ -78,7 +78,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
   function getV2Types() {
     return `import type {
       ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,  
-      MinObjectDef as $ObjectTypeDefinition,
+      ObjectTypeDefinition as $ObjectTypeDefinition,
       ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
     } from "@osdk/api";
      import type {

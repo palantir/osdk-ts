@@ -114,7 +114,7 @@ async function generateV2QueryFile(
   await fs.writeFile(
     path.join(outDir, `${query.shortApiName}.ts`),
     await formatTs(`
-        import type { MinQueryDef , VersionBound} from "@osdk/api";
+        import type { QueryDefinition , VersionBound} from "@osdk/api";
         import type { QueryParam, QueryResult } from "@osdk/client.api";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
         ${importObjects}
@@ -159,7 +159,7 @@ async function generateV2QueryFile(
         : ""
     }
 
-        export interface Definition extends MinQueryDef<
+        export interface Definition extends QueryDefinition<
           "${query.fullApiName}", 
           ${referencedObjectTypes},
           ${query.shortApiName}.Signature

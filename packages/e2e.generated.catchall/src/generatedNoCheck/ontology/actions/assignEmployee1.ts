@@ -1,4 +1,4 @@
-import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
   ActionParam,
   ActionReturnTypeForOptions,
@@ -56,7 +56,7 @@ export namespace assignEmployee1 {
  * @param {ActionParam.ObjectType<Venture>} venture-1
  */
 export interface assignEmployee1
-  extends MinActionDef<'assignEmployee1', 'Employee' | 'Venture', assignEmployee1.Signatures> {
+  extends ActionDefinition<'assignEmployee1', 'Employee' | 'Venture', assignEmployee1.Signatures> {
   __DefinitionMetadata?: {
     apiName: 'assignEmployee1';
     description: 'Assigns an employee to a venture';

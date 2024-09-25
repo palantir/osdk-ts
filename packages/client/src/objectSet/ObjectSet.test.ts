@@ -16,7 +16,7 @@
 
 import type {
   CompileTimeMetadata,
-  MinInterfaceDef,
+  InterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
   PropertyKeys,
 } from "@osdk/api";
@@ -503,7 +503,7 @@ describe("ObjectSet", () => {
         // a non-null property on an interface so
         // we cheese it here to be sure the types work
         type CheesedProp<
-          T extends MinInterfaceDef<any>,
+          T extends InterfaceDefinition<any>,
           K extends PropertyKeys<T>,
         > = T & { properties: { [KK in K]: { nullable: false } } };
 

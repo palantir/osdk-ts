@@ -15,15 +15,15 @@
  */
 
 import type {
+  ActionDefinition,
   ActionMetadata,
   CompileTimeMetadata,
+  InterfaceDefinition,
   InterfaceMetadata,
-  MinActionDef,
-  MinInterfaceDef,
-  MinObjectDef,
-  MinQueryDef,
   ObjectMetadata,
   ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
+  QueryDefinition,
   QueryMetadata,
   VersionBound,
 } from "@osdk/api";
@@ -49,36 +49,36 @@ export type CheckVersionBound<Q> = Q extends VersionBound<infer V> ? (
   : Q;
 
 export interface Client extends SharedClient<MinimalClient> {
-  <Q extends MinObjectDef<any, any>>(
+  <Q extends ObjectTypeDefinition<any, any>>(
     o: Q,
   ): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q>
     : CompileTimeMetadata<Q>["objectSet"];
 
-  <Q extends (MinInterfaceDef<any, any>)>(
+  <Q extends (InterfaceDefinition<any, any>)>(
     o: Q,
   ): unknown extends CompileTimeMetadata<Q>["objectSet"] ? MinimalObjectSet<Q>
     : CompileTimeMetadata<Q>["objectSet"];
 
-  <Q extends MinActionDef<any, any, any>>(
+  <Q extends ActionDefinition<any, any, any>>(
     o: Q,
   ): ActionSignatureFromDef<Q>;
 
-  <Q extends MinQueryDef<any, any, any>>(
+  <Q extends QueryDefinition<any, any, any>>(
     o: Q,
   ): QuerySignatureFromDef<Q>;
 
   fetchMetadata<
     Q extends (
-      | MinObjectDef<any, any>
-      | MinInterfaceDef<any, any>
-      | MinActionDef<any, any, any>
-      | MinQueryDef<any, any, any>
+      | ObjectTypeDefinition<any, any>
+      | InterfaceDefinition<any, any>
+      | ActionDefinition<any, any, any>
+      | QueryDefinition<any, any, any>
     ),
   >(o: Q): Promise<
-    Q extends MinObjectDef<any, any> ? ObjectMetadata<any, any>
-      : Q extends MinInterfaceDef<any, any> ? InterfaceMetadata<any, any>
-      : Q extends MinActionDef<any, any, any> ? ActionMetadata<any, any>
-      : Q extends MinQueryDef<any, any, any> ? QueryMetadata<any, any>
+    Q extends ObjectTypeDefinition<any, any> ? ObjectMetadata<any, any>
+      : Q extends InterfaceDefinition<any, any> ? InterfaceMetadata<any, any>
+      : Q extends ActionDefinition<any, any, any> ? ActionMetadata<any, any>
+      : Q extends QueryDefinition<any, any, any> ? QueryMetadata<any, any>
       : never
   >;
 

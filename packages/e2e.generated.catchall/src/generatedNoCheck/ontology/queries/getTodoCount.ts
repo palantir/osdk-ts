@@ -1,4 +1,4 @@
-import type { MinQueryDef, VersionBound } from '@osdk/api';
+import type { QueryDefinition, VersionBound } from '@osdk/api';
 import type { QueryParam, QueryResult } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 
@@ -8,7 +8,7 @@ export namespace getTodoCount {
   }
 
   export interface Definition
-    extends MinQueryDef<'getTodoCount', never, getTodoCount.Signature>,
+    extends QueryDefinition<'getTodoCount', never, getTodoCount.Signature>,
       VersionBound<$ExpectedClientVersion> {
     apiName: 'getTodoCount';
     rid: 'query.rid2';

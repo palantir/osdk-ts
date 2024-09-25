@@ -1,4 +1,4 @@
-import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
   ActionParam,
   ActionReturnTypeForOptions,
@@ -91,7 +91,7 @@ export namespace actionTakesAllParameterTypes {
  * @param {ActionParam.PrimitiveType<"timestamp">} time-stamp
  */
 export interface actionTakesAllParameterTypes
-  extends MinActionDef<
+  extends ActionDefinition<
     'actionTakesAllParameterTypes',
     'Todo' | 'ObjectTypeWithAllPropertyTypes' | 'Person',
     actionTakesAllParameterTypes.Signatures
