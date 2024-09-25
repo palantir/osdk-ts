@@ -20,6 +20,7 @@ import type {
   ObjectOrInterfacePropertyKeysFrom2,
 } from "@osdk/api";
 import type {
+  AsyncIterArgs,
   Augments,
   BaseObjectSet,
   FetchPageResult,
@@ -38,7 +39,6 @@ import type {
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/client.api/unstable";
 import type { EXPERIMENTAL_ObjectSetListener } from "@osdk/client.api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
-import type { AsyncIterArgs } from "../../../client.api/build/esm/object/FetchPageArgs.js";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { aggregate } from "../object/aggregate.js";

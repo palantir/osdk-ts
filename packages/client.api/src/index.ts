@@ -78,6 +78,7 @@ export type {
   AttachmentUpload,
 } from "./object/Attachment.js";
 export type {
+  AsyncIterArgs,
   Augment,
   Augments,
   FetchInterfacePageArgs,
