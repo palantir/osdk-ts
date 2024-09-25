@@ -67,7 +67,7 @@ export async function generatePlatformSdkV2(
         + path.relative(
           ns.paths.srcDir,
           ns.paths.resourcesDir,
-        );
+        ).split(path.sep).join("/");
 
       const resourceName = pluralize(r.component);
       if (componentsGenerated.get(ns)!.some(c => c === resourceName)) {

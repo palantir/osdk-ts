@@ -60,7 +60,8 @@ export abstract class AbstractImportable {
 
   getImportPathRelTo = (filePath: string) => {
     if (this.importPath.startsWith(".")) {
-      const result = path.relative(path.dirname(filePath), this.importPath);
+      const result = path.relative(path.dirname(filePath), this.importPath)
+        .split(path.sep).join("/");
 
       if (result.startsWith(".")) {
         return result;
