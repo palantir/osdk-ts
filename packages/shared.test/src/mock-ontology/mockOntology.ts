@@ -16,7 +16,7 @@
 
 import type {
   MinActionDef,
-  ObjectTypeDefinition,
+  ObjectMetadata,
   ObjectTypeLinkDefinition,
   VersionBound,
 } from "@osdk/api";
@@ -92,7 +92,7 @@ const Todo: TodoDef = {
   rid: "",
 };
 
-interface TodoDef extends ObjectTypeDefinition<"Todo">, VersionBound<"0.15.0"> {
+interface TodoDef extends ObjectMetadata<"Todo">, VersionBound<"0.15.0"> {
   type: "object";
   apiName: "Todo";
   primaryKeyApiName: "id";
@@ -112,7 +112,7 @@ interface TodoDef extends ObjectTypeDefinition<"Todo">, VersionBound<"0.15.0"> {
   };
 }
 
-interface TaskDef extends ObjectTypeDefinition<"Task">, VersionBound<"0.15.0"> {
+interface TaskDef extends ObjectMetadata<"Task">, VersionBound<"0.15.0"> {
   type: "object";
   apiName: "Task";
   primaryKeyApiName: "id";

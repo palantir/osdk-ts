@@ -15,7 +15,7 @@
  */
 
 import type { ActionParameterDefinition } from "@osdk/api";
-import { wireActionTypeV2ToSdkActionDefinition } from "@osdk/generator-converters";
+import { wireActionTypeV2ToSdkActionMetadata } from "@osdk/generator-converters";
 import type {
   ActionParameterType,
   ActionTypeV2,
@@ -65,7 +65,7 @@ export async function generatePerActionDataFiles(
       const uniqueApiNamesString = stringUnionFrom([...uniqueApiNames]);
 
       const fullActionDef = deleteUndefineds(
-        wireActionTypeV2ToSdkActionDefinition(action.raw),
+        wireActionTypeV2ToSdkActionMetadata(action.raw),
       );
 
       function createParamsDef() {

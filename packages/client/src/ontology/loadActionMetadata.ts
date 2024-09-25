@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-import type { QueryDefinition } from "@osdk/api";
-import { wireQueryTypeV2ToSdkQueryDefinition } from "@osdk/generator-converters";
+import type { ActionMetadata } from "@osdk/api";
+import {
+  wireActionTypeV2ToSdkActionMetadata,
+} from "@osdk/generator-converters";
 import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
-export async function loadQueryDefinition(
+export async function loadActionMetadata(
   client: MinimalClient,
-  queryType: string,
-): Promise<QueryDefinition<any, any>> {
-  const r = await OntologiesV2.QueryTypes.getQueryTypeV2(
+  actionType: string,
+): Promise<ActionMetadata<any, any>> {
+  const r = await OntologiesV2.ActionTypesV2.getActionTypeV2(
     client,
     await client.ontologyRid,
-    queryType,
+    actionType,
   );
 
-  return wireQueryTypeV2ToSdkQueryDefinition(r);
+  return wireActionTypeV2ToSdkActionMetadata(r);
 }

@@ -15,11 +15,11 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "./wireObjectTypeFullMetadataToSdkObjectTypeDefinition.js";
+import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "./wireObjectTypeFullMetadataToSdkObjectTypeDefinition.js";
 
-describe(wireObjectTypeFullMetadataToSdkObjectTypeDefinition, () => {
+describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
   it("handles magic nullable properties", () => {
-    const result = wireObjectTypeFullMetadataToSdkObjectTypeDefinition({
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
       implementsInterfaces: [],
       implementsInterfaces2: {},
       linkTypes: [],

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { QueryDefinition, QueryParameterDefinition } from "@osdk/api";
+import type { QueryMetadata, QueryParameterDefinition } from "@osdk/api";
 import type {
   QueryParameterV2,
   QueryTypeV2,
@@ -23,9 +23,9 @@ import {
   wireQueryDataTypeToQueryDataTypeDefinition,
 } from "./wireQueryDataTypeToQueryDataTypeDefinition.js";
 
-export function wireQueryTypeV2ToSdkQueryDefinition(
+export function wireQueryTypeV2ToSdkQueryMetadata(
   input: QueryTypeV2,
-): QueryDefinition<any, any> {
+): QueryMetadata<any, any> {
   return {
     type: "query",
     apiName: input.apiName,

@@ -15,13 +15,13 @@
  */
 
 import type {
-  ObjectTypeDefinition,
+  ObjectMetadata,
   ObjectTypeLinkDefinition,
   VersionBound,
 } from "@osdk/api";
 
 export interface ObjectTypeWithReservedNamesDef extends
-  ObjectTypeDefinition<
+  ObjectMetadata<
     "ObjectTypeWithReservedNames"
   >,
   VersionBound<"0.15.0">

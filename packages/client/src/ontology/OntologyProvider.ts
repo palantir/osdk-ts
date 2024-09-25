@@ -15,10 +15,10 @@
  */
 
 import type {
-  ActionDefinition,
-  InterfaceDefinition,
-  ObjectTypeDefinition,
-  QueryDefinition,
+  ActionMetadata,
+  InterfaceMetadata,
+  ObjectMetadata,
+  QueryMetadata,
 } from "@osdk/api";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
@@ -27,11 +27,11 @@ export const InterfaceDefinitions = Symbol(
 );
 
 export interface FetchedObjectTypeDefinition<K extends string, N = unknown>
-  extends ObjectTypeDefinition<K, N>
+  extends ObjectMetadata<K, N>
 {
   // we keep this here so we can depend on these synchronously
   [InterfaceDefinitions]: {
-    [key: string]: { def: InterfaceDefinition<any> };
+    [key: string]: { def: InterfaceMetadata<any> };
   };
 }
 
@@ -56,11 +56,11 @@ export interface OntologyProvider {
    */
   getInterfaceDefinition: (
     apiName: string,
-  ) => Promise<InterfaceDefinition<any, any>>;
+  ) => Promise<InterfaceMetadata<any, any>>;
 
-  getQueryDefinition: (apiName: string) => Promise<QueryDefinition<any, any>>;
+  getQueryDefinition: (apiName: string) => Promise<QueryMetadata<any, any>>;
 
-  getActionDefinition: (apiName: string) => Promise<ActionDefinition<any, any>>;
+  getActionDefinition: (apiName: string) => Promise<ActionMetadata<any, any>>;
 }
 
 export type OntologyProviderFactory<

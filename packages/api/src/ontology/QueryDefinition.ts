@@ -17,7 +17,7 @@
 import type { OsdkMetadata } from "../OsdkMetadata.js";
 import type { MinObjectDef, ReleaseStatus } from "./ObjectTypeDefinition.js";
 
-export interface QueryDefinition<
+export interface QueryMetadata<
   A extends string,
   K extends string,
 > {
@@ -43,7 +43,7 @@ export interface MinQueryDef<
   type: "query";
   apiName: A;
   osdkMetadata?: OsdkMetadata;
-  __DefinitionMetadata?: QueryCompileTimeMetadata<T> & QueryDefinition<A, K>;
+  __DefinitionMetadata?: QueryCompileTimeMetadata<T> & QueryMetadata<A, K>;
 }
 
 export type QueryParameterDefinition<

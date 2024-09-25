@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "@osdk/generator-converters";
+import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
 import type { ObjectTypeFullMetadata } from "@osdk/internal.foundry.core";
 import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
@@ -49,7 +49,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
   );
 
   const definition = deleteUndefineds(
-    wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
+    wireObjectTypeFullMetadataToSdkObjectMetadata(
       object.raw,
       true,
     ),

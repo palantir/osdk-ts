@@ -17,7 +17,7 @@
 import type { OsdkMetadata } from "../OsdkMetadata.js";
 import type { MinObjectDef, ReleaseStatus } from "./ObjectTypeDefinition.js";
 
-export interface ActionDefinition<
+export interface ActionMetadata<
   A extends string,
   K extends string,
 > {
@@ -45,7 +45,7 @@ export interface MinActionDef<
   osdkMetadata?: OsdkMetadata;
   __DefinitionMetadata?:
     & ActionCompileTimeMetadata<T_signatures>
-    & ActionDefinition<A, K>;
+    & ActionMetadata<A, K>;
 }
 
 export interface ActionModifiedEntity {

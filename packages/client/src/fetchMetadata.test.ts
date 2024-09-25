@@ -15,10 +15,10 @@
  */
 
 import type {
-  ActionDefinition,
-  InterfaceDefinition,
-  ObjectTypeDefinition,
-  QueryDefinition,
+  ActionMetadata,
+  InterfaceMetadata,
+  ObjectMetadata,
+  QueryMetadata,
 } from "@osdk/api";
 import {
   $Actions,
@@ -59,7 +59,7 @@ describe("FetchMetadata", () => {
     const objectMetadata = await client.fetchMetadata($Objects.Employee);
 
     expectTypeOf(objectMetadata).toEqualTypeOf<
-      ObjectTypeDefinition<any, any>
+      ObjectMetadata<any, any>
     >();
 
     expect(objectMetadata).toMatchInlineSnapshot(`
@@ -157,7 +157,7 @@ describe("FetchMetadata", () => {
     );
 
     expectTypeOf(interfaceMetadata).toEqualTypeOf<
-      InterfaceDefinition<any, any>
+      InterfaceMetadata<any, any>
     >();
 
     expect(interfaceMetadata).toMatchInlineSnapshot(`
@@ -187,7 +187,7 @@ describe("FetchMetadata", () => {
       $Actions.moveOffice,
     );
 
-    expectTypeOf(actionMetadata).toEqualTypeOf<ActionDefinition<any, any>>();
+    expectTypeOf(actionMetadata).toEqualTypeOf<ActionMetadata<any, any>>();
 
     expect(actionMetadata).toMatchInlineSnapshot(`
       {
@@ -238,7 +238,7 @@ describe("FetchMetadata", () => {
       $Queries.queryAcceptsObject,
     );
 
-    expectTypeOf(queryMetadata).toEqualTypeOf<QueryDefinition<any, any>>();
+    expectTypeOf(queryMetadata).toEqualTypeOf<QueryMetadata<any, any>>();
 
     expect(queryMetadata).toMatchInlineSnapshot(`
       {
