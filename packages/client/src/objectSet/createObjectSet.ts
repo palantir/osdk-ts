@@ -20,20 +20,25 @@ import type {
   ObjectOrInterfacePropertyKeysFrom2,
 } from "@osdk/api";
 import type {
+  Augments,
   BaseObjectSet,
   FetchPageResult,
   LinkedType,
   LinkNames,
   MinimalObjectSet,
+  NullabilityAdherence,
+  NullabilityAdherenceDefault,
   ObjectSet,
   Osdk,
   PrimaryKeyType,
   Result,
   SelectArg,
+  SingleOsdkResult,
 } from "@osdk/client.api";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/client.api/unstable";
 import type { EXPERIMENTAL_ObjectSetListener } from "@osdk/client.api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
+import type { AsyncIterArgs } from "../../../client.api/build/esm/object/FetchPageArgs.js";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { aggregate } from "../object/aggregate.js";
@@ -148,14 +153,21 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       });
     },
 
-    asyncIter: async function*(): AsyncIterableIterator<Osdk<Q>> {
+    asyncIter: async function*<
+      L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+      R extends boolean,
+      const A extends Augments,
+      S extends NullabilityAdherence = NullabilityAdherenceDefault,
+    >(
+      args?: AsyncIterArgs<Q, L, R, A, S>,
+    ): AsyncIterableIterator<SingleOsdkResult<Q, L, R, S>> {
       let $nextPageToken: string | undefined = undefined;
       do {
         const result: FetchPageResult<
           Q,
-          ObjectOrInterfacePropertyKeysFrom2<Q>,
-          boolean,
-          "throw"
+          L,
+          R,
+          S
         > = await fetchPageInternal(
           augmentRequestContext(
             clientCtx,
@@ -163,12 +175,12 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           ),
           objectType,
           objectSet,
-          { $nextPageToken },
+          { ...args, $nextPageToken },
         );
         $nextPageToken = result.nextPageToken;
 
         for (const obj of result.data) {
-          yield obj as Osdk<Q>;
+          yield obj as SingleOsdkResult<Q, L, R, S>;
         }
       } while ($nextPageToken != null);
     },
