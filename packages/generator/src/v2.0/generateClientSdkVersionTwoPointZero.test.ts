@@ -556,6 +556,8 @@ describe("generator", () => {
           description: 'An action which takes in an array of objects';
           modifiedEntities: {};
           parameters: deleteTodos.ParamsDefinition;
+          rid: 'ri.ontology.main.action-type.8f94017d-cf17-4fa8-84c3-8e01e5d594f2';
+          status: 'ACTIVE';
           type: 'action';
 
           signatures: deleteTodos.Signatures;
@@ -634,6 +636,8 @@ describe("generator", () => {
             };
           };
           parameters: markTodoCompleted.ParamsDefinition;
+          rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2';
+          status: 'ACTIVE';
           type: 'action';
 
           signatures: markTodoCompleted.Signatures;
@@ -924,6 +928,7 @@ describe("generator", () => {
           extends MinQueryDef<'getCount', never, getCount.Signature>,
             VersionBound<$ExpectedClientVersion> {
           apiName: 'getCount';
+          rid: 'rid.query.1';
           type: 'query';
           version: '0';
           parameters: {
@@ -947,6 +952,7 @@ describe("generator", () => {
 
       export const getCount: getCount.Definition = {
         apiName: 'getCount',
+        rid: 'rid.query.1',
         type: 'query',
         version: '0',
         parameters: {
@@ -982,6 +988,7 @@ describe("generator", () => {
           extends MinQueryDef<'returnsTodo', 'Todo', returnsTodo.Signature>,
             VersionBound<$ExpectedClientVersion> {
           apiName: 'returnsTodo';
+          rid: 'rid.query.2';
           type: 'query';
           version: '0';
           parameters: {
@@ -1010,6 +1017,7 @@ describe("generator", () => {
 
       export const returnsTodo: returnsTodo.Definition = {
         apiName: 'returnsTodo',
+        rid: 'rid.query.2',
         type: 'query',
         version: '0',
         parameters: {
@@ -1153,6 +1161,8 @@ describe("generator", () => {
             description: 'An action which takes in an array of objects';
             modifiedEntities: {};
             parameters: deleteTodos.ParamsDefinition;
+            rid: 'ri.ontology.main.action-type.8f94017d-cf17-4fa8-84c3-8e01e5d594f2';
+            status: 'ACTIVE';
             type: 'action';
 
             signatures: deleteTodos.Signatures;
@@ -1232,6 +1242,8 @@ describe("generator", () => {
               };
             };
             parameters: markTodoCompleted.ParamsDefinition;
+            rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2';
+            status: 'ACTIVE';
             type: 'action';
 
             signatures: markTodoCompleted.Signatures;
@@ -1522,6 +1534,7 @@ describe("generator", () => {
             extends MinQueryDef<'foo.bar.getCount', never, getCount.Signature>,
               VersionBound<$ExpectedClientVersion> {
             apiName: 'foo.bar.getCount';
+            rid: 'rid.query.1';
             type: 'query';
             version: '0';
             parameters: {
@@ -1545,6 +1558,7 @@ describe("generator", () => {
 
         export const getCount: getCount.Definition = {
           apiName: 'foo.bar.getCount',
+          rid: 'rid.query.1',
           type: 'query',
           version: '0',
           parameters: {
@@ -1580,6 +1594,7 @@ describe("generator", () => {
             extends MinQueryDef<'foo.bar.returnsTodo', 'foo.bar.Todo', returnsTodo.Signature>,
               VersionBound<$ExpectedClientVersion> {
             apiName: 'foo.bar.returnsTodo';
+            rid: 'rid.query.2';
             type: 'query';
             version: '0';
             parameters: {
@@ -1608,6 +1623,7 @@ describe("generator", () => {
 
         export const returnsTodo: returnsTodo.Definition = {
           apiName: 'foo.bar.returnsTodo',
+          rid: 'rid.query.2',
           type: 'query',
           version: '0',
           parameters: {
@@ -1750,6 +1766,7 @@ describe("generator", () => {
               extends MinQueryDef<'getTask', 'com.example.dep.Task', getTask.Signature>,
                 VersionBound<$ExpectedClientVersion> {
               apiName: 'getTask';
+              rid: 'ri.a.b.c';
               type: 'query';
               version: '0';
               parameters: {
@@ -1777,6 +1794,7 @@ describe("generator", () => {
 
           export const getTask: getTask.Definition = {
             apiName: 'getTask',
+            rid: 'ri.a.b.c',
             type: 'query',
             version: '0',
             parameters: {
@@ -1976,6 +1994,8 @@ describe("generator", () => {
                 };
               };
               parameters: setTaskBody.ParamsDefinition;
+              rid: 'ri.a.b.c.d';
+              status: 'ACTIVE';
               type: 'action';
 
               signatures: setTaskBody.Signatures;

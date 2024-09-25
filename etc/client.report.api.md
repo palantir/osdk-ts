@@ -6,8 +6,8 @@
 
 import type { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from '@osdk/client.api/unstable';
 import type { __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet } from '@osdk/client.api/unstable';
+import type { ActionDefinition } from '@osdk/api';
 import { ActionEditResponse } from '@osdk/client.api';
-import type { ActionMetadata } from '@osdk/client.api';
 import type { ActionParam } from '@osdk/client.api';
 import type { ActionParameterDefinition } from '@osdk/api';
 import { ActionReturnTypeForOptions } from '@osdk/client.api';
@@ -40,7 +40,6 @@ import { PageResult } from '@osdk/client.api';
 import { PalantirApiError } from '@osdk/shared.net.errors';
 import type { QueryDataTypeDefinition } from '@osdk/api';
 import type { QueryDefinition } from '@osdk/api';
-import type { QueryMetadata } from '@osdk/client.api';
 import type { QueryParam } from '@osdk/client.api';
 import type { QueryResult } from '@osdk/client.api';
 import { Result } from '@osdk/client.api';
@@ -88,7 +87,7 @@ export interface Client extends SharedClient<MinimalClient> {
     // (undocumented)
     <Q extends MinQueryDef<any, any, any>>(o: Q): QuerySignatureFromDef<Q>;
     // (undocumented)
-    fetchMetadata<Q extends (MinObjectDef<any, any> | MinInterfaceDef<any, any> | MinActionDef<any, any, any> | MinQueryDef<any, any, any>)>(o: Q): Promise<Q extends MinObjectDef<any, any> ? ObjectTypeDefinition<any, any> : Q extends MinInterfaceDef<any, any> ? InterfaceDefinition<any, any> : Q extends MinActionDef<any, any, any> ? ActionMetadata : Q extends MinQueryDef<any, any, any> ? QueryMetadata : never>;
+    fetchMetadata<Q extends (MinObjectDef<any, any> | MinInterfaceDef<any, any> | MinActionDef<any, any, any> | MinQueryDef<any, any, any>)>(o: Q): Promise<Q extends MinObjectDef<any, any> ? ObjectTypeDefinition<any, any> : Q extends MinInterfaceDef<any, any> ? InterfaceDefinition<any, any> : Q extends MinActionDef<any, any, any> ? ActionDefinition<any, any> : Q extends MinQueryDef<any, any, any> ? QueryDefinition<any, any> : never>;
 }
 
 // @public

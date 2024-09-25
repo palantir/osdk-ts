@@ -68,6 +68,8 @@ export interface completeTodo extends MinActionDef<'completeTodo', 'Todo', compl
       };
     };
     parameters: completeTodo.ParamsDefinition;
+    rid: '';
+    status: 'ACTIVE';
     type: 'action';
 
     signatures: completeTodo.Signatures;

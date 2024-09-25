@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
 import type {
-  ActionMetadata,
-  InterfaceMetadata,
-  QueryMetadata,
-} from "@osdk/client.api";
+  ActionDefinition,
+  InterfaceDefinition,
+  ObjectTypeDefinition,
+  QueryDefinition,
+} from "@osdk/api";
 import {
   $Actions,
   $Interfaces,
@@ -187,7 +187,7 @@ describe("FetchMetadata", () => {
       $Actions.moveOffice,
     );
 
-    expectTypeOf(actionMetadata).toEqualTypeOf<ActionMetadata>();
+    expectTypeOf(actionMetadata).toEqualTypeOf<ActionDefinition<any, any>>();
 
     expect(actionMetadata).toMatchInlineSnapshot(`
       {
@@ -227,6 +227,8 @@ describe("FetchMetadata", () => {
           },
         },
         "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
+        "status": "ACTIVE",
+        "type": "action",
       }
     `);
   });
@@ -236,13 +238,29 @@ describe("FetchMetadata", () => {
       $Queries.queryAcceptsObject,
     );
 
-    expectTypeOf(queryMetadata).toEqualTypeOf<QueryMetadata>();
+    expectTypeOf(queryMetadata).toEqualTypeOf<QueryDefinition<any, any>>();
 
     expect(queryMetadata).toMatchInlineSnapshot(`
       {
+        "apiName": "queryAcceptsObject",
         "description": "description of the query that takes object types",
         "displayName": "QueryAcceptsObject",
+        "output": {
+          "nullable": false,
+          "object": "Employee",
+          "type": "object",
+        },
+        "parameters": {
+          "object": {
+            "description": undefined,
+            "nullable": false,
+            "object": "Employee",
+            "type": "object",
+          },
+        },
         "rid": "ri.function-registry.main.function.9b55870a-63c7-4d48-8f06-9627c0805968",
+        "type": "query",
+        "version": "0.11.0",
       }
     `);
   });

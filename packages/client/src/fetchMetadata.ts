@@ -15,14 +15,15 @@
  */
 
 import type {
+  ActionDefinition,
   InterfaceDefinition,
   MinActionDef,
   MinInterfaceDef,
   MinObjectDef,
   MinQueryDef,
   ObjectTypeDefinition,
+  QueryDefinition,
 } from "@osdk/api";
-import type { ActionMetadata, QueryMetadata } from "@osdk/client.api";
 import {
   __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition,
   wireActionTypeV2ToSdkActionDefinition,
@@ -46,8 +47,8 @@ export const fetchMetadataInternal = async <
 ): Promise<
   Q extends MinObjectDef<any, any> ? ObjectTypeDefinition<any, any>
     : Q extends MinInterfaceDef<any, any> ? InterfaceDefinition<any, any>
-    : Q extends MinActionDef<any, any> ? ActionMetadata
-    : Q extends MinQueryDef<any, any, any> ? QueryMetadata
+    : Q extends MinActionDef<any, any> ? ActionDefinition<any, any>
+    : Q extends MinQueryDef<any, any, any> ? QueryDefinition<any, any>
     : never
 > => {
   if (definition.type === "object") {
@@ -83,31 +84,13 @@ const fetchInterfaceMetadata = async (
 const fetchActionMetadata = async (
   client: MinimalClient,
   actionType: MinActionDef<any, any>,
-): Promise<ActionMetadata> => {
-  const response = await OntologiesV2.ActionTypesV2.getActionTypeV2(
-    addUserAgentAndRequestContextHeaders(client, actionType),
-    await client.ontologyRid,
-    actionType.apiName,
-  );
-  const { type, ...rest } = wireActionTypeV2ToSdkActionDefinition(response);
-  return {
-    ...rest,
-    rid: response.rid,
-  };
+): Promise<ActionDefinition<any, any>> => {
+  return client.ontologyProvider.getActionDefinition(actionType.apiName);
 };
 
 const fetchQueryMetadata = async (
   client: MinimalClient,
   queryType: MinQueryDef<any, any, any>,
-): Promise<QueryMetadata> => {
-  const response = await OntologiesV2.QueryTypes.getQueryTypeV2(
-    addUserAgentAndRequestContextHeaders(client, queryType),
-    await client.ontologyRid,
-    queryType.apiName,
-  );
-  return {
-    displayName: response.displayName,
-    description: response.description,
-    rid: response.rid,
-  };
+): Promise<QueryDefinition<any, any>> => {
+  return client.ontologyProvider.getQueryDefinition(queryType.apiName);
 };

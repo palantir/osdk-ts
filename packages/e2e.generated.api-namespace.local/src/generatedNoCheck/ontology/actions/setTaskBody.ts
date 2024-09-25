@@ -57,6 +57,8 @@ export interface setTaskBody extends MinActionDef<'setTaskBody', 'com.example.de
       };
     };
     parameters: setTaskBody.ParamsDefinition;
+    rid: 'ri.a.b.c.d';
+    status: 'ACTIVE';
     type: 'action';
 
     signatures: setTaskBody.Signatures;

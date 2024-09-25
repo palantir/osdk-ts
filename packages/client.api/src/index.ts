@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-export type { ActionMetadata } from "./actions/ActionMetadata.js";
 export type { ActionReturnTypeForOptions } from "./actions/ActionReturnTypeForOptions.js";
 export type {
   ActionEditResponse,
@@ -97,8 +96,6 @@ export type {
   UnionIfFalse,
   UnionIfTrue,
 } from "./object/FetchPageResult.js";
-export type { InterfaceMetadata } from "./object/InterfaceMetadata.js";
-export type { ObjectMetadata } from "./object/ObjectMetadata.js";
 export { isOk } from "./object/Result.js";
 export type { Result } from "./object/Result.js";
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
@@ -118,7 +115,6 @@ export type {
 export type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
 export type { PageResult } from "./PageResult.js";
 export type { QueryParam, QueryResult } from "./queries/Queries.js";
-export type { QueryMetadata } from "./queries/QueryMetadata.js";
 export { TimeseriesDurationMapping } from "./timeseries/timeseries.js";
 export { TimeSeriesProperty } from "./timeseries/timeseries.js";
 export type {

@@ -15,6 +15,7 @@
  */
 
 import type {
+  ActionDefinition,
   CompileTimeMetadata,
   InterfaceDefinition,
   MinActionDef,
@@ -23,22 +24,16 @@ import type {
   MinQueryDef,
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
+  QueryDefinition,
   VersionBound,
 } from "@osdk/api";
-import type {
-  ActionMetadata,
-  InterfaceMetadata,
-  MinimalObjectSet,
-  ObjectMetadata,
-  ObjectSet,
-  Osdk,
-  QueryMetadata,
-} from "@osdk/client.api";
+import type { MinimalObjectSet, ObjectSet, Osdk } from "@osdk/client.api";
 import type {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
 } from "@osdk/client.api/unstable";
 import type { SharedClient } from "@osdk/shared.client";
+import { an } from "vitest/dist/reporters-B7ebVMkT.js";
 import type { BulkLinkResult } from "./__unstable/createBulkLinksAsyncIterFactory.js";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
@@ -83,8 +78,8 @@ export interface Client extends SharedClient<MinimalClient> {
   >(o: Q): Promise<
     Q extends MinObjectDef<any, any> ? ObjectTypeDefinition<any, any>
       : Q extends MinInterfaceDef<any, any> ? InterfaceDefinition<any, any>
-      : Q extends MinActionDef<any, any, any> ? ActionMetadata
-      : Q extends MinQueryDef<any, any, any> ? QueryMetadata
+      : Q extends MinActionDef<any, any, any> ? ActionDefinition<any, any>
+      : Q extends MinQueryDef<any, any, any> ? QueryDefinition<any, any>
       : never
   >;
 

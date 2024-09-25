@@ -4,7 +4,6 @@
 
 ```ts
 
-import type { ActionParameterDefinition } from '@osdk/api';
 import type { BBox } from 'geojson';
 import type { BrandedApiName } from '@osdk/api';
 import type { CompileTimeMetadata } from '@osdk/api';
@@ -25,15 +24,6 @@ import type { SingleKeyObject } from 'type-fest';
 //
 // @public (undocumented)
 export type ActionEditResponse = ActionResults;
-
-// @public (undocumented)
-export type ActionMetadata = {
-    description?: string;
-    displayName?: string;
-    rid: string;
-    parameters: Record<string, ActionParameterDefinition<string, any>>;
-    apiName: string;
-};
 
 // @public
 export namespace ActionParam {
@@ -406,13 +396,6 @@ export type GroupByClause<Q extends ObjectOrInterfaceDefinition<any, any>> = {
 export type GroupByRange<T> = [T, T];
 
 // @public (undocumented)
-export type InterfaceMetadata = {
-    displayName: string;
-    description?: string;
-    rid: string;
-};
-
-// @public (undocumented)
 export interface InterfaceObjectSet<Q extends MinInterfaceDef<any, any>> extends MinimalObjectSet<Q> {
 }
 
@@ -466,16 +449,6 @@ export type NullabilityAdherenceDefault = "throw";
 
 // @public (undocumented)
 export type NumericAggregateOption = "min" | "max" | "sum" | "avg" | "approximateDistinct" | "exactDistinct";
-
-// @public (undocumented)
-export type ObjectMetadata = {
-    description?: string;
-    displayName: string;
-    icon?: Icon;
-    pluralDisplayName: string;
-    rid: string;
-    visibility?: ObjectTypeVisibility;
-};
 
 // @public (undocumented)
 export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED = any> extends MinimalObjectSet<Q> {
@@ -665,13 +638,6 @@ export interface PropertyValueWireToClient {
     timestamp: string;
 }
 
-// @public (undocumented)
-export type QueryMetadata = {
-    description?: string;
-    displayName?: string;
-    rid: string;
-};
-
 // @public
 export namespace QueryParam {
     export type ObjectSetType<T extends MinObjectDef<any>> = BaseObjectSet<T>;
@@ -828,11 +794,6 @@ export type ValidToFrom<FROM extends ObjectOrInterfaceDefinition> = FROM extends
 export type WhereClause<T extends ObjectOrInterfaceDefinition<any, any>> = OrWhereClause<T> | AndWhereClause<T> | NotWhereClause<T> | {
     [P in PropertyKeys<T>]?: FilterFor<CompileTimeMetadata<T>["properties"][P]>;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/object/ObjectMetadata.ts:30:3 - (ae-forgotten-export) The symbol "Icon" needs to be exported by the entry point index.d.ts
-// src/object/ObjectMetadata.ts:33:3 - (ae-forgotten-export) The symbol "ObjectTypeVisibility" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

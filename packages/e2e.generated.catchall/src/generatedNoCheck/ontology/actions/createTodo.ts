@@ -47,6 +47,8 @@ export interface createTodo extends MinActionDef<'createTodo', 'Todo', createTod
       };
     };
     parameters: createTodo.ParamsDefinition;
+    rid: 'ri.a.b.c.d';
+    status: 'ACTIVE';
     type: 'action';
 
     signatures: createTodo.Signatures;

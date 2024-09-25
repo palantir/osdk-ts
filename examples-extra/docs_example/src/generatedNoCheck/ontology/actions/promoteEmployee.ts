@@ -72,6 +72,8 @@ export interface promoteEmployee extends MinActionDef<'promoteEmployee', 'Employ
       };
     };
     parameters: promoteEmployee.ParamsDefinition;
+    rid: 'ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2167';
+    status: 'ACTIVE';
     type: 'action';
 
     signatures: promoteEmployee.Signatures;
