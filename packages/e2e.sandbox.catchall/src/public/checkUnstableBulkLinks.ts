@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from "@osdk/client.api/unstable";
 import { Employee, WeatherStation } from "@osdk/e2e.generated.catchall";
 import { client } from "../client.js";
 import { logger } from "../logger.js";
@@ -27,9 +28,12 @@ export async function checkUnstableBulkLinks() {
       linkApiName,
       otherObjectApiName,
       otherObjectPk,
-    } of client.__UNSTABLE_getBulkLinks(stations.data, [
-      "boundariesUsState",
-    ])
+    } of client[__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks](
+      stations.data,
+      [
+        "boundariesUsState",
+      ],
+    )
   ) {
     logger.info(
       `Found link ${object.$objectType}:${object.$primaryKey} <- (${linkApiName}) -> ${otherObjectApiName}:${otherObjectPk}`,
@@ -49,7 +53,7 @@ export async function checkUnstableBulkLinks() {
       linkApiName,
       otherObjectApiName,
       otherObjectPk,
-    } of client.__UNSTABLE_getBulkLinks(employees, [
+    } of client[__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks](employees, [
       "ventures",
       "amishsSyncGroup",
     ])

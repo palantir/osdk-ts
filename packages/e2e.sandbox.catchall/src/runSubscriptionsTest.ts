@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import type { ObjectSetListener } from "@osdk/client/unstable-do-not-use";
+import type { EXPERIMENTAL_ObjectSetListener } from "@osdk/client.api/unstable";
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/client.api/unstable";
 import { Employee } from "@osdk/e2e.generated.catchall";
-import type { UNSTABLE_ObjectSet } from "../../client/build/esm/objectSet/createUnstableObjectSet.js";
 import { client } from "./client.js";
 import { logger } from "./logger.js";
 
 export function runSubscriptionsTest() {
-  const makeObjectSetListener = (prefix: string): ObjectSetListener<any> => {
+  const makeObjectSetListener = (
+    prefix: string,
+  ): EXPERIMENTAL_ObjectSetListener<any> => {
     return {
       onError(err) {
         logger.error({ err }, "%s: Error in subscription", prefix);
@@ -37,15 +39,15 @@ export function runSubscriptionsTest() {
     };
   };
 
-  (client(Employee).where({
+  client(Employee).where({
     jobProfile: "Echo",
-  }) as UNSTABLE_ObjectSet<Employee>).subscribe(
+  })[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
     makeObjectSetListener("Sub(Echo)"),
   );
 
-  (client(Employee).where({
+  client(Employee).where({
     jobProfile: "Delta",
-  }) as UNSTABLE_ObjectSet<Employee>).subscribe(
+  })[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
     makeObjectSetListener("Sub(Delta)"),
   );
 }

@@ -39,6 +39,10 @@ import type {
 import type { Result } from "../object/Result.js";
 import type { PrimaryKeyType } from "../OsdkBase.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
+import type {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
+  EXPERIMENTAL_ObjectSetListener,
+} from "../public/unstable.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 import type { BaseObjectSet } from "./BaseObjectSet.js";
 
@@ -223,4 +227,15 @@ export interface ObjectSet<
       options?: SelectArg<Q, L, R, S>,
     ) => Promise<Result<SingleOsdkResult<Q, L, R, S>>>
     : never;
+
+  /**
+   * WARNING. THIS METHOD IS EXPERIMENTAL AND NOT SUPPORTED YET.
+   *
+   * It may change at any time and does not follow semantic versioning. Use at your own risk.
+   *
+   *  @alpha
+   */
+  readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]: (
+    listener: EXPERIMENTAL_ObjectSetListener<Q>,
+  ) => () => unknown;
 }

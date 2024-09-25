@@ -15,6 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type { EXPERIMENTAL_ObjectSetListener as ObjectSetListener } from "@osdk/client.api/unstable";
 import { $ontologyRid, Employee, Office } from "@osdk/client.test.ontology";
 import type {
   ObjectSetSubscribeRequests,
@@ -39,7 +40,6 @@ import { createMinimalClient } from "../createMinimalClient.js";
 import type { Logger } from "../Logger.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { conjureUnionType } from "./conjureUnionType.js";
-import type { ObjectSetListener } from "./ObjectSetListener.js";
 import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
 // it needs to be hoisted because its referenced from our mocked WebSocket

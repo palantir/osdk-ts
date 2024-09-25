@@ -4,6 +4,8 @@
 
 ```ts
 
+import type { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from '@osdk/client.api/unstable';
+import type { __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet } from '@osdk/client.api/unstable';
 import { ActionEditResponse } from '@osdk/client.api';
 import type { ActionMetadata } from '@osdk/client.api';
 import type { ActionParam } from '@osdk/client.api';
@@ -22,11 +24,13 @@ import type { InterfaceMetadata } from '@osdk/client.api';
 import { InterfaceObjectSet } from '@osdk/client.api';
 import { isOk } from '@osdk/client.api';
 import type { MinActionDef } from '@osdk/api';
+import type { MinimalObjectSet } from '@osdk/client.api';
 import type { MinInterfaceDef } from '@osdk/api';
 import type { MinObjectDef } from '@osdk/api';
 import type { MinQueryDef } from '@osdk/api';
 import type { ObjectActionDataType } from '@osdk/api';
 import type { ObjectMetadata } from '@osdk/client.api';
+import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
 import { ObjectSet } from '@osdk/client.api';
 import type { ObjectSetActionDataType } from '@osdk/api';
@@ -67,8 +71,16 @@ export { ApplyBatchActionOptions }
 //
 // @public (undocumented)
 export interface Client extends SharedClient<MinimalClient> {
+    // Warning: (ae-forgotten-export) The symbol "BulkLinkResult" needs to be exported by the entry point index.d.ts
+    //
+    // @alpha
+    readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks]: <T extends ObjectOrInterfaceDefinition>(objs: Osdk<T>[], links: string[]) => AsyncGenerator<BulkLinkResult, void, undefined>;
+    // @alpha
+    readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet]: <T extends ObjectOrInterfaceDefinition>(type: T, rid: string) => ObjectSet<T>;
     // (undocumented)
-    <Q extends MinObjectDef<any, any>>(o: Q): CompileTimeMetadata<Q>["objectSet"];
+    <Q extends MinObjectDef<any, any>>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
+    // (undocumented)
+    <Q extends (MinInterfaceDef<any, any>)>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? MinimalObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
     // Warning: (ae-forgotten-export) The symbol "ActionSignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)

@@ -475,6 +475,10 @@ export type ObjectMetadata = {
 
 // @public (undocumented)
 export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED = any> extends MinimalObjectSet<Q> {
+    // Warning: (ae-forgotten-export) The symbol "EXPERIMENTAL_ObjectSetListener" needs to be exported by the entry point index.d.ts
+    //
+    // @alpha
+    readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]: (listener: EXPERIMENTAL_ObjectSetListener<Q>) => () => unknown;
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
