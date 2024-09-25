@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, VersionBound } from "@osdk/api";
+import type { ObjectMetadata, VersionBound } from "@osdk/api";
 
 export interface ObjectTypeWithAllPropertyTypesDef extends
-  ObjectTypeDefinition<
+  ObjectMetadata<
     "ObjectTypeWithAllPropertyTypes",
     ObjectTypeWithAllPropertyTypesDef
   >,
@@ -285,6 +285,6 @@ export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypesDef =
     interfaceMap: {},
     inverseInterfaceMap: {},
     rid: "rid.object-type.123",
-  } satisfies ObjectTypeDefinition<
+  } satisfies ObjectMetadata<
     "ObjectTypeWithAllPropertyTypes"
   >;

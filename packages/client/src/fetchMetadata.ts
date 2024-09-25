@@ -15,14 +15,14 @@
  */
 
 import type {
-  ActionDefinition,
-  InterfaceDefinition,
+  ActionMetadata,
+  InterfaceMetadata,
   MinActionDef,
   MinInterfaceDef,
   MinObjectDef,
   MinQueryDef,
-  ObjectTypeDefinition,
-  QueryDefinition,
+  ObjectMetadata,
+  QueryMetadata,
 } from "@osdk/api";
 import {
   __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition,
@@ -42,10 +42,10 @@ export const fetchMetadataInternal = async <
   client: MinimalClient,
   definition: Q,
 ): Promise<
-  Q extends MinObjectDef<any, any> ? ObjectTypeDefinition<any, any>
-    : Q extends MinInterfaceDef<any, any> ? InterfaceDefinition<any, any>
-    : Q extends MinActionDef<any, any> ? ActionDefinition<any, any>
-    : Q extends MinQueryDef<any, any, any> ? QueryDefinition<any, any>
+  Q extends MinObjectDef<any, any> ? ObjectMetadata<any, any>
+    : Q extends MinInterfaceDef<any, any> ? InterfaceMetadata<any, any>
+    : Q extends MinActionDef<any, any> ? ActionMetadata<any, any>
+    : Q extends MinQueryDef<any, any, any> ? QueryMetadata<any, any>
     : never
 > => {
   if (definition.type === "object") {

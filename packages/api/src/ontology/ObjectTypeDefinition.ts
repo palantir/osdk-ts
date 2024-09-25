@@ -61,7 +61,7 @@ export interface VersionBound<V extends VersionString<any, any, any>> {
   __expectedClientVersion?: V;
 }
 
-export interface ObjectTypeDefinition<
+export interface ObjectMetadata<
   K extends string,
   N = unknown,
 > extends ObjectInterfaceBaseDefinition<K, N> {
@@ -94,7 +94,7 @@ export interface MinObjectDef<K extends string, N = unknown> {
   apiName: K;
   osdkMetadata?: OsdkMetadata;
   __DefinitionMetadata?:
-    & ObjectTypeDefinition<K, N>
+    & ObjectMetadata<K, N>
     & ObjectInterfaceCompileDefinition;
 }
 

@@ -6,8 +6,8 @@
 
 import type { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from '@osdk/client.api/unstable';
 import type { __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet } from '@osdk/client.api/unstable';
-import type { ActionDefinition } from '@osdk/api';
 import { ActionEditResponse } from '@osdk/client.api';
+import type { ActionMetadata } from '@osdk/api';
 import type { ActionParam } from '@osdk/client.api';
 import type { ActionParameterDefinition } from '@osdk/api';
 import { ActionReturnTypeForOptions } from '@osdk/client.api';
@@ -19,7 +19,7 @@ import type { AttachmentUpload } from '@osdk/client.api';
 import type { CompileTimeMetadata } from '@osdk/api';
 import type { DataValueClientToWire } from '@osdk/client.api';
 import type { DataValueWireToClient } from '@osdk/client.api';
-import type { InterfaceDefinition } from '@osdk/api';
+import type { InterfaceMetadata } from '@osdk/api';
 import { InterfaceObjectSet } from '@osdk/client.api';
 import { isOk } from '@osdk/client.api';
 import type { MinActionDef } from '@osdk/api';
@@ -28,18 +28,18 @@ import type { MinInterfaceDef } from '@osdk/api';
 import type { MinObjectDef } from '@osdk/api';
 import type { MinQueryDef } from '@osdk/api';
 import type { ObjectActionDataType } from '@osdk/api';
+import type { ObjectMetadata } from '@osdk/api';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
 import { ObjectSet } from '@osdk/client.api';
 import type { ObjectSetActionDataType } from '@osdk/api';
 import type { ObjectSetQueryDataType } from '@osdk/api';
-import type { ObjectTypeDefinition } from '@osdk/api';
 import { Osdk } from '@osdk/client.api';
 import { OsdkObject } from '@osdk/client.api';
 import { PageResult } from '@osdk/client.api';
 import { PalantirApiError } from '@osdk/shared.net.errors';
 import type { QueryDataTypeDefinition } from '@osdk/api';
-import type { QueryDefinition } from '@osdk/api';
+import type { QueryMetadata } from '@osdk/api';
 import type { QueryParam } from '@osdk/client.api';
 import type { QueryResult } from '@osdk/client.api';
 import { Result } from '@osdk/client.api';
@@ -87,7 +87,7 @@ export interface Client extends SharedClient<MinimalClient> {
     // (undocumented)
     <Q extends MinQueryDef<any, any, any>>(o: Q): QuerySignatureFromDef<Q>;
     // (undocumented)
-    fetchMetadata<Q extends (MinObjectDef<any, any> | MinInterfaceDef<any, any> | MinActionDef<any, any, any> | MinQueryDef<any, any, any>)>(o: Q): Promise<Q extends MinObjectDef<any, any> ? ObjectTypeDefinition<any, any> : Q extends MinInterfaceDef<any, any> ? InterfaceDefinition<any, any> : Q extends MinActionDef<any, any, any> ? ActionDefinition<any, any> : Q extends MinQueryDef<any, any, any> ? QueryDefinition<any, any> : never>;
+    fetchMetadata<Q extends (MinObjectDef<any, any> | MinInterfaceDef<any, any> | MinActionDef<any, any, any> | MinQueryDef<any, any, any>)>(o: Q): Promise<Q extends MinObjectDef<any, any> ? ObjectMetadata<any, any> : Q extends MinInterfaceDef<any, any> ? InterfaceMetadata<any, any> : Q extends MinActionDef<any, any, any> ? ActionMetadata<any, any> : Q extends MinQueryDef<any, any, any> ? QueryMetadata<any, any> : never>;
 }
 
 // @public

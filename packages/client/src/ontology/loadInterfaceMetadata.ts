@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition } from "@osdk/api";
+import type { InterfaceMetadata } from "@osdk/api";
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/generator-converters";
 import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
-export async function loadInterfaceDefinition(
+export async function loadInterfaceMetadata(
   client: MinimalClient,
   objectType: string,
-): Promise<InterfaceDefinition<any, any>> {
+): Promise<InterfaceMetadata<any, any>> {
   const r = await OntologiesV2.OntologyInterfaces.getInterfaceType(
     client,
     await client.ontologyRid,

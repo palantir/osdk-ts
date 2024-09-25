@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectMetadata } from "@osdk/api";
 import type {
   Icon,
   ObjectTypeFullMetadata,
@@ -24,14 +24,14 @@ import type {
 import { wirePropertyV2ToSdkPrimaryKeyTypeDefinition } from "./wirePropertyV2ToSdkPrimaryKeyTypeDefinition.js";
 import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition.js";
 
-export function wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
+export function wireObjectTypeFullMetadataToSdkObjectMetadata(
   objectTypeWithLink: ObjectTypeFullMetadata & {
     objectType: {
       properties: Record<PropertyApiName, PropertyV2 & { nullable?: boolean }>;
     };
   },
   v2: boolean,
-): ObjectTypeDefinition<any> {
+): ObjectMetadata<any> {
   if (
     objectTypeWithLink.objectType
       .properties[objectTypeWithLink.objectType.primaryKey] === undefined

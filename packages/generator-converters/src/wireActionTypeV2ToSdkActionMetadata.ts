@@ -15,7 +15,7 @@
  */
 
 import type {
-  ActionDefinition,
+  ActionMetadata,
   ActionModifiedEntity,
   ActionParameterDefinition,
 } from "@osdk/api";
@@ -26,9 +26,9 @@ import type {
 } from "@osdk/internal.foundry.core";
 import { getModifiedEntityTypes } from "./getEditedEntities.js";
 
-export function wireActionTypeV2ToSdkActionDefinition(
+export function wireActionTypeV2ToSdkActionMetadata(
   input: ActionTypeV2,
-): ActionDefinition<any, any> {
+): ActionMetadata<any, any> {
   const modifiedEntityTypes = getModifiedEntityTypes(input);
   return {
     type: "action",

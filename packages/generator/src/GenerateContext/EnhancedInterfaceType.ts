@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition } from "@osdk/api";
+import type { InterfaceMetadata } from "@osdk/api";
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/generator-converters";
 import type { InterfaceType } from "@osdk/internal.foundry.core";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
@@ -38,7 +38,7 @@ export class EnhancedInterfaceType extends EnhancedBase<InterfaceType> {
     return this.raw.properties;
   }
 
-  getCleanedUpDefinition(v2: boolean): InterfaceDefinition<any, any> {
+  getCleanedUpDefinition(v2: boolean): InterfaceMetadata<any, any> {
     return deleteUndefineds(
       __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
         this.raw,

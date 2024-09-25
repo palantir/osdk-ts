@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
-import { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "@osdk/generator-converters";
+import type { ObjectMetadata } from "@osdk/api";
+import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
 import type { ObjectTypeFullMetadata } from "@osdk/internal.foundry.core";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
@@ -34,9 +34,9 @@ export class EnhancedObjectType extends EnhancedBase<ObjectTypeFullMetadata> {
     return this.getDefinitionIdentifier(v2);
   }
 
-  getCleanedUpDefinition(v2: boolean): ObjectTypeDefinition<any> {
+  getCleanedUpDefinition(v2: boolean): ObjectMetadata<any> {
     return deleteUndefineds(
-      wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
+      wireObjectTypeFullMetadataToSdkObjectMetadata(
         this.raw,
         v2,
       ),

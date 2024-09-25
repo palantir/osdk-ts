@@ -24,13 +24,13 @@ export type {
   ValidBaseActionParameterTypes,
 } from "./ActionDefinition.js";
 export type {
-  InterfaceDefinition,
+  InterfaceMetadata,
   MinInterfaceDef,
 } from "./InterfaceDefinition.js";
 export type { ObjectOrInterfaceDefinition } from "./ObjectOrInterface.js";
 export type {
   MinObjectDef,
-  ObjectTypeDefinition,
+  ObjectMetadata,
   ObjectTypeLinkDefinition,
   ObjectTypePropertyDefinition,
 } from "./ObjectTypeDefinition.js";
@@ -40,7 +40,7 @@ export type {
   ObjectQueryDataType,
   ObjectSetQueryDataType,
   QueryDataTypeDefinition,
-  QueryDefinition,
+  QueryMetadata,
   QueryParameterDefinition,
   RangeAggregationKeyDataType,
   SetQueryDataType,
