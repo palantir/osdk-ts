@@ -33,7 +33,6 @@ import type {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
 } from "@osdk/client.api/unstable";
 import type { SharedClient } from "@osdk/shared.client";
-import { an } from "vitest/dist/reporters-B7ebVMkT.js";
 import type { BulkLinkResult } from "./__unstable/createBulkLinksAsyncIterFactory.js";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
