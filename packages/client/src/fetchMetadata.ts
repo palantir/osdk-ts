@@ -26,12 +26,9 @@ import type {
 } from "@osdk/api";
 import {
   __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition,
-  wireActionTypeV2ToSdkActionDefinition,
 } from "@osdk/generator-converters";
-import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { InterfaceDefinitions } from "./ontology/OntologyProvider.js";
-import { addUserAgentAndRequestContextHeaders } from "./util/addUserAgentAndRequestContextHeaders.js";
 
 /** @internal */
 export const fetchMetadataInternal = async <
@@ -52,45 +49,23 @@ export const fetchMetadataInternal = async <
     : never
 > => {
   if (definition.type === "object") {
-    return fetchObjectMetadata(client, definition) as any;
+    const { [InterfaceDefinitions]: interfaceDefs, ...objectTypeDef } =
+      await client.ontologyProvider
+        .getObjectDefinition(definition.apiName);
+    return objectTypeDef as any;
   } else if (definition.type === "interface") {
-    return fetchInterfaceMetadata(client, definition) as any;
+    return client.ontologyProvider.getInterfaceDefinition(
+      definition.apiName,
+    ) as any;
   } else if (definition.type === "action") {
-    return fetchActionMetadata(client, definition) as any;
+    return client.ontologyProvider.getActionDefinition(
+      definition.apiName,
+    ) as any;
   } else if (definition.type === "query") {
-    return fetchQueryMetadata(client, definition) as any;
+    return client.ontologyProvider.getQueryDefinition(
+      definition.apiName,
+    ) as any;
   } else {
     throw new Error("Not implemented for given definition");
   }
-};
-
-const fetchObjectMetadata = async (
-  client: MinimalClient,
-  objectType: MinObjectDef<any, any>,
-): Promise<ObjectTypeDefinition<any, any>> => {
-  const { [InterfaceDefinitions]: interfaceDefs, ...objectTypeDef } =
-    await client.ontologyProvider
-      .getObjectDefinition(objectType.apiName);
-  return objectTypeDef;
-};
-
-const fetchInterfaceMetadata = async (
-  client: MinimalClient,
-  interfaceType: MinInterfaceDef<any, any>,
-): Promise<InterfaceDefinition<any, any>> => {
-  return client.ontologyProvider.getInterfaceDefinition(interfaceType.apiName);
-};
-
-const fetchActionMetadata = async (
-  client: MinimalClient,
-  actionType: MinActionDef<any, any>,
-): Promise<ActionDefinition<any, any>> => {
-  return client.ontologyProvider.getActionDefinition(actionType.apiName);
-};
-
-const fetchQueryMetadata = async (
-  client: MinimalClient,
-  queryType: MinQueryDef<any, any, any>,
-): Promise<QueryDefinition<any, any>> => {
-  return client.ontologyProvider.getQueryDefinition(queryType.apiName);
 };
