@@ -25,8 +25,7 @@
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "generate": "./bin/exampleGenerator.mjs ../../examples",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "transpile": "monorepo.tool.transpile",
-    "typecheck": "monorepo.tool.typecheck esm"
+    "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
     "@osdk/create-app": "workspace:~",
