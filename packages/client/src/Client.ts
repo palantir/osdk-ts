@@ -16,11 +16,13 @@
 
 import type {
   CompileTimeMetadata,
+  InterfaceDefinition,
   MinActionDef,
   MinInterfaceDef,
   MinObjectDef,
   MinQueryDef,
   ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
   VersionBound,
 } from "@osdk/api";
 import type {
@@ -79,8 +81,8 @@ export interface Client extends SharedClient<MinimalClient> {
       | MinQueryDef<any, any, any>
     ),
   >(o: Q): Promise<
-    Q extends MinObjectDef<any, any> ? ObjectMetadata
-      : Q extends MinInterfaceDef<any, any> ? InterfaceMetadata
+    Q extends MinObjectDef<any, any> ? ObjectTypeDefinition<any, any>
+      : Q extends MinInterfaceDef<any, any> ? InterfaceDefinition<any, any>
       : Q extends MinActionDef<any, any, any> ? ActionMetadata
       : Q extends MinQueryDef<any, any, any> ? QueryMetadata
       : never

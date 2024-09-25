@@ -28,8 +28,6 @@ export const InterfaceDefinitions = Symbol(
 export interface FetchedObjectTypeDefinition<K extends string, N = unknown>
   extends ObjectTypeDefinition<K, N>
 {
-  rid: string;
-
   // we keep this here so we can depend on these synchronously
   [InterfaceDefinitions]: {
     [key: string]: { def: InterfaceDefinition<any> };

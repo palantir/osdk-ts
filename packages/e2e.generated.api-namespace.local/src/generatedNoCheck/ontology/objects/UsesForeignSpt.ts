@@ -46,13 +46,17 @@ export interface UsesForeignSpt extends $ObjectTypeDefinition<'UsesForeignSpt', 
     linksType: UsesForeignSpt.Links;
     strictProps: UsesForeignSpt.StrictProps;
     apiName: 'UsesForeignSpt';
+    displayName: 'Uses Foreign Spt';
+    icon: {
+      type: 'blueprint';
+      name: 'foreign';
+      color: 'red';
+    };
     implements: [];
     interfaceMap: {};
     inverseInterfaceMap: {};
-    inverseSpts: {
-      body: 'com.example.dep.spt';
-    };
     links: {};
+    pluralDisplayName: 'Uses Foreign Spts';
     primaryKeyApiName: 'id';
     primaryKeyType: 'integer';
     properties: {
@@ -65,9 +69,9 @@ export interface UsesForeignSpt extends $ObjectTypeDefinition<'UsesForeignSpt', 
        */
       id: $PropertyDef<'integer', 'non-nullable', 'single'>;
     };
-    spts: {
-      'com.example.dep.spt': 'body';
-    };
+    rid: 'theRid';
+    status: 'ACTIVE';
+    titleProperty: 'id';
     type: 'object';
   };
 }

@@ -15,20 +15,21 @@
  */
 
 import type {
+  InterfaceDefinition,
   MinActionDef,
   MinInterfaceDef,
   MinObjectDef,
   MinQueryDef,
+  ObjectTypeDefinition,
 } from "@osdk/api";
-import type {
-  ActionMetadata,
-  InterfaceMetadata,
-  ObjectMetadata,
-  QueryMetadata,
-} from "@osdk/client.api";
-import { wireActionTypeV2ToSdkActionDefinition } from "@osdk/generator-converters";
+import type { ActionMetadata, QueryMetadata } from "@osdk/client.api";
+import {
+  __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition,
+  wireActionTypeV2ToSdkActionDefinition,
+} from "@osdk/generator-converters";
 import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "./MinimalClientContext.js";
+import { InterfaceDefinitions } from "./ontology/OntologyProvider.js";
 import { addUserAgentAndRequestContextHeaders } from "./util/addUserAgentAndRequestContextHeaders.js";
 
 /** @internal */
@@ -43,8 +44,8 @@ export const fetchMetadataInternal = async <
   client: MinimalClient,
   definition: Q,
 ): Promise<
-  Q extends MinObjectDef<any, any> ? ObjectMetadata
-    : Q extends MinInterfaceDef<any, any> ? InterfaceMetadata
+  Q extends MinObjectDef<any, any> ? ObjectTypeDefinition<any, any>
+    : Q extends MinInterfaceDef<any, any> ? InterfaceDefinition<any, any>
     : Q extends MinActionDef<any, any> ? ActionMetadata
     : Q extends MinQueryDef<any, any, any> ? QueryMetadata
     : never
@@ -65,43 +66,18 @@ export const fetchMetadataInternal = async <
 const fetchObjectMetadata = async (
   client: MinimalClient,
   objectType: MinObjectDef<any, any>,
-): Promise<ObjectMetadata> => {
-  const response = await OntologiesV2.ObjectTypesV2.getObjectTypeFullMetadata(
-    addUserAgentAndRequestContextHeaders(client, objectType),
-    await client.ontologyRid,
-    objectType.apiName,
-    { preview: true },
-  );
-
-  const supportedIconTypes = ["blueprint"];
-  return {
-    description: response.objectType.description,
-    displayName: response.objectType.displayName,
-    visibility: response.objectType.visibility,
-    pluralDisplayName: response.objectType.pluralDisplayName,
-    icon: supportedIconTypes.includes(response.objectType.icon.type)
-      ? response.objectType.icon
-      : undefined,
-    rid: response.objectType.rid,
-  };
+): Promise<ObjectTypeDefinition<any, any>> => {
+  const { [InterfaceDefinitions]: interfaceDefs, ...objectTypeDef } =
+    await client.ontologyProvider
+      .getObjectDefinition(objectType.apiName);
+  return objectTypeDef;
 };
 
 const fetchInterfaceMetadata = async (
   client: MinimalClient,
   interfaceType: MinInterfaceDef<any, any>,
-): Promise<InterfaceMetadata> => {
-  const response = await OntologiesV2.OntologyInterfaces.getInterfaceType(
-    addUserAgentAndRequestContextHeaders(client, interfaceType),
-    await client.ontologyRid,
-    interfaceType.apiName,
-    { preview: true },
-  );
-
-  return {
-    displayName: response.displayName,
-    description: response.description,
-    rid: response.rid,
-  };
+): Promise<InterfaceDefinition<any, any>> => {
+  return client.ontologyProvider.getInterfaceDefinition(interfaceType.apiName);
 };
 
 const fetchActionMetadata = async (

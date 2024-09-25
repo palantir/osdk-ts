@@ -116,7 +116,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
   const osdkObjectIdentifier = `${interfaceDef.shortApiName}.OsdkObject`;
 
   const ids: Identifiers = {
-    objectDefIdentifier: `${interfaceDef.shortApiName}.Definition`,
+    objectDefIdentifier: interfaceDef.shortApiName,
     osdkObjectLinksIdentifier,
     osdkObjectPropsIdentifier,
     osdkObjectStrictPropsIdentifier,
@@ -127,7 +127,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
 
   function getV2Types() {
     return `    import type {
-    InterfaceDefinition as $InterfaceDefinition,
+    MinInterfaceDef as $InterfaceDefinition,
     } from "@osdk/api";
      import type {
       ObjectSet as $ObjectSet, 
@@ -175,20 +175,11 @@ ${
 
       ${createObjectSet(interfaceDef, ids)}
 
-      ${createDefinition(interfaceDef, ontology, "Definition", ids)}
-
       ${createOsdkObject(interfaceDef, "OsdkObject", ids)}
       
     }    
 
-
-
-
-  /** @deprecated use ${interfaceDef.shortApiName}.Definition **/
-  export type ${objectDefIdentifier} = ${interfaceDef.shortApiName}.Definition;
-
-
-
+    ${createDefinition(interfaceDef, ontology, interfaceDef.shortApiName, ids)}
 
 `;
   }
@@ -196,35 +187,13 @@ ${
   // FIXME: We need to fill in the imports
   // if we want links to work
   const imports: string[] = [];
-
+  definition;
   return `${imports.join("\n")}
     ${v2 ? getV2Types() : ""}
 
-    export const ${interfaceDef.shortApiName}: ${interfaceDef.shortApiName}.Definition = {
+    export const ${interfaceDef.shortApiName}: ${interfaceDef.shortApiName} = {
+      type: "interface",
+      apiName: "${interfaceDef.fullApiName}",
       osdkMetadata: $osdkMetadata,
-      objectSet: undefined as any,
-      props: undefined as any,
-      linksType: undefined as any,
-      strictProps: undefined as any,
-      ${
-    stringify(definition, {
-      osdkMetadata: () => undefined,
-      properties: (properties) => (`{
-        ${
-        stringify(properties, {
-          "*": (
-            propertyDefinition,
-            _,
-            key,
-          ) => [
-            `"${maybeStripNamespace(key)}"`,
-            _(propertyDefinition),
-          ],
-        })
-      }
-      }`),
-    })
-  }
-      
-    };`;
+       };`;
 }

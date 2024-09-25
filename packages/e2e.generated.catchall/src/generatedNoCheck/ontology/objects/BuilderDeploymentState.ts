@@ -50,9 +50,16 @@ export interface BuilderDeploymentState
     strictProps: BuilderDeploymentState.StrictProps;
     apiName: 'BuilderDeploymentState';
     description: 'Builder Deployment State';
+    displayName: 'BuilderDeploymentState';
+    icon: {
+      type: 'blueprint';
+      name: 'builder';
+      color: 'color';
+    };
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
+    pluralDisplayName: 'Builder Deployment States';
     primaryKeyApiName: 'skuId';
     primaryKeyType: 'string';
     properties: {
@@ -69,6 +76,9 @@ export interface BuilderDeploymentState
        */
       skuId: $PropertyDef<'string', 'non-nullable', 'single'>;
     };
+    rid: 'rid.a.b.c.d';
+    status: 'ACTIVE';
+    titleProperty: 'skuId';
     type: 'object';
   };
 }

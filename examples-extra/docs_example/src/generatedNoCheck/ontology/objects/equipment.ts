@@ -46,9 +46,16 @@ export interface equipment extends $ObjectTypeDefinition<'equipment', equipment>
     linksType: equipment.Links;
     strictProps: equipment.StrictProps;
     apiName: 'equipment';
+    displayName: 'Equipment';
+    icon: {
+      type: 'blueprint';
+      name: 'equipment';
+      color: 'blue';
+    };
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
+    pluralDisplayName: 'Equipment';
     primaryKeyApiName: 'equipmentId';
     primaryKeyType: 'string';
     properties: {
@@ -61,6 +68,9 @@ export interface equipment extends $ObjectTypeDefinition<'equipment', equipment>
        */
       type: $PropertyDef<'string', 'nullable', 'single'>;
     };
+    rid: 'ri.ontology.main.object-type.808ac022-89eb-4591-8b7e-1a912b9efb45';
+    status: 'ACTIVE';
+    titleProperty: 'equipmentId';
     type: 'object';
   };
 }

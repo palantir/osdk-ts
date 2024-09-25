@@ -1,7 +1,7 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
-import type { InterfaceDefinition as $InterfaceDefinition } from '@osdk/api';
+import type { MinInterfaceDef as $InterfaceDefinition } from '@osdk/api';
 import type { ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from '@osdk/client.api';
 
 export type OsdkObjectLinks$SomeInterface = {};
@@ -16,57 +16,40 @@ export namespace SomeInterface {
     readonly spt: $PropType['string'] | undefined;
   }
 
-  export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {}
-
-  export interface Definition extends $InterfaceDefinition<'com.example.dep.SomeInterface', SomeInterface.Definition> {
-    osdkMetadata: typeof $osdkMetadata;
-    type: 'interface';
-    apiName: 'com.example.dep.SomeInterface';
-    __DefinitionMetadata?: {
-      objectSet: SomeInterface.ObjectSet;
-      props: SomeInterface.Props;
-      linksType: OsdkObjectLinks$SomeInterface;
-      strictProps: SomeInterface.StrictProps;
-      apiName: 'com.example.dep.SomeInterface';
-      displayName: 'Sum Interface';
-      implements: [];
-      links: {};
-      properties: {
-        /**
-         *   display name: 'Some Property'
-         */
-        spt: $PropertyDef<'string', 'nullable', 'single'>;
-      };
-      type: 'interface';
-    };
-  }
+  export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
-  > = $Osdk<SomeInterface.Definition, K | OPTIONS>;
+  > = $Osdk<SomeInterface, K | OPTIONS>;
 }
 
-/** @deprecated use SomeInterface.Definition **/
-export type SomeInterface = SomeInterface.Definition;
+export interface SomeInterface extends $InterfaceDefinition<'com.example.dep.SomeInterface', SomeInterface> {
+  osdkMetadata: typeof $osdkMetadata;
+  type: 'interface';
+  apiName: 'com.example.dep.SomeInterface';
+  __DefinitionMetadata?: {
+    objectSet: SomeInterface.ObjectSet;
+    props: SomeInterface.Props;
+    linksType: OsdkObjectLinks$SomeInterface;
+    strictProps: SomeInterface.StrictProps;
+    apiName: 'com.example.dep.SomeInterface';
+    displayName: 'Sum Interface';
+    implements: [];
+    links: {};
+    properties: {
+      /**
+       *   display name: 'Some Property'
+       */
+      spt: $PropertyDef<'string', 'nullable', 'single'>;
+    };
+    rid: 'idk2';
+    type: 'interface';
+  };
+}
 
-export const SomeInterface: SomeInterface.Definition = {
-  osdkMetadata: $osdkMetadata,
-  objectSet: undefined as any,
-  props: undefined as any,
-  linksType: undefined as any,
-  strictProps: undefined as any,
-  apiName: 'com.example.dep.SomeInterface',
-  displayName: 'Sum Interface',
-  implements: [],
-  links: {},
-  properties: {
-    spt: {
-      displayName: 'Some Property',
-      multiplicity: false,
-      type: 'string',
-      nullable: true,
-    },
-  },
+export const SomeInterface: SomeInterface = {
   type: 'interface',
+  apiName: 'com.example.dep.SomeInterface',
+  osdkMetadata: $osdkMetadata,
 };

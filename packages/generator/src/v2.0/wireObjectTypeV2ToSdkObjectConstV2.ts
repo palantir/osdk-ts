@@ -255,7 +255,6 @@ export function createDefinition(
       strictProps: ${osdkObjectStrictPropsIdentifier};
       ${
     stringify(definition, {
-      osdkMetadata: () => undefined, // we are going to reference another object instead
       links: (_value) =>
         `{
         ${

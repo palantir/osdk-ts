@@ -15,7 +15,10 @@
  */
 
 import type { OsdkMetadata } from "../OsdkMetadata.js";
-import type { ObjectInterfaceBaseDefinition } from "./ObjectTypeDefinition.js";
+import type {
+  ObjectInterfaceBaseDefinition,
+  ObjectInterfaceCompileDefinition,
+} from "./ObjectTypeDefinition.js";
 
 export interface InterfaceDefinition<
   K extends string,
@@ -28,5 +31,7 @@ export interface MinInterfaceDef<K extends string, N = unknown> {
   type: "interface";
   apiName: K;
   osdkMetadata?: OsdkMetadata;
-  __DefinitionMetadata?: InterfaceDefinition<K, N>;
+  __DefinitionMetadata?:
+    & InterfaceDefinition<K, N>
+    & ObjectInterfaceCompileDefinition;
 }
