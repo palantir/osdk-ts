@@ -205,7 +205,7 @@ export function common<
     if (!token || Date.now() >= token.expires_at) {
       token = await signIn();
     }
-    return token!.access_token;
+    return token?.access_token;
   }, {
     signIn,
     refresh,

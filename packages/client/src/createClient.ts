@@ -22,7 +22,12 @@ import type {
   ObjectOrInterfaceDefinition,
 } from "@osdk/api";
 import type { MinimalObjectSet, ObjectSet } from "@osdk/client.api";
+import {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
+} from "@osdk/client.api/unstable";
 import { symbolClientContext } from "@osdk/shared.client";
+import { createBulkLinksAsyncIterFactory } from "./__unstable/createBulkLinksAsyncIterFactory.js";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import { applyAction } from "./actions/applyAction.js";
 import type { Client } from "./Client.js";
@@ -127,6 +132,34 @@ export function createClientInternal(
     {
       [symbolClientContext]: {
         value: clientCtx,
+      },
+      [__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks]: {
+        get: () => createBulkLinksAsyncIterFactory(clientCtx),
+      },
+      [__EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet]: {
+        get: () =>
+        <T extends ObjectOrInterfaceDefinition>(
+          definition: T,
+          rid: string,
+        ) => {
+          return createObjectSet(
+            definition,
+            client[symbolClientContext],
+            {
+              type: "intersect",
+              objectSets: [
+                {
+                  type: "base",
+                  objectType: definition.apiName,
+                },
+                {
+                  type: "reference",
+                  reference: rid,
+                },
+              ],
+            },
+          );
+        },
       },
       fetchMetadata: {
         value: fetchMetadata,

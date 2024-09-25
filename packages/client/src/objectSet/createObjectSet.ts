@@ -31,6 +31,8 @@ import type {
   Result,
   SelectArg,
 } from "@osdk/client.api";
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/client.api/unstable";
+import type { EXPERIMENTAL_ObjectSetListener } from "@osdk/client.api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -42,6 +44,7 @@ import {
 import { fetchSingle, fetchSingleWithErrors } from "../object/fetchSingle.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
+import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
 function isObjectTypeDefinition(
   def: ObjectOrInterfaceDefinition,
@@ -214,6 +217,19 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         ) as Result<Osdk<Q>>;
       }
       : undefined) as ObjectSet<Q>["fetchOneWithErrors"],
+
+    [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]: (
+      listener: EXPERIMENTAL_ObjectSetListener<Q>,
+    ) => {
+      const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
+        clientCtx,
+      ).subscribe(
+        objectSet,
+        listener,
+      );
+
+      return async () => (await pendingSubscribe)();
+    },
   };
 
   function createSearchAround<L extends LinkNames<Q>>(link: L) {

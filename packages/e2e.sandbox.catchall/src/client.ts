@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { createPlatformClient } from "@osdk/client";
-import type { Client } from "@osdk/client/unstable-do-not-use";
-import { createClient } from "@osdk/client/unstable-do-not-use";
+import type { Client } from "@osdk/client";
+import { createClient, createPlatformClient } from "@osdk/client";
 import invariant from "tiny-invariant";
 import { logger } from "./logger.js";
 import { loggingFetch } from "./loggingFetch.js";
