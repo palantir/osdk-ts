@@ -135,6 +135,14 @@ export type ApplyBatchActionOptions = {
 };
 
 // @public (undocumented)
+export interface AsyncIterArgs<Q extends ObjectOrInterfaceDefinition, K extends ObjectOrInterfacePropertyKeysFrom2<Q> = ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean = false, A extends Augments = {}, S extends NullabilityAdherence = NullabilityAdherenceDefault> extends SelectArg<Q, K, R, S>, OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>> {
+    // (undocumented)
+    $__EXPERIMENTAL_selectedObjectTypes?: string[];
+    // (undocumented)
+    $augment?: A;
+}
+
+// @public (undocumented)
 export interface Attachment {
     fetchContents(): Promise<Blob>;
     fetchMetadata(): Promise<AttachmentMetadata>;
@@ -342,8 +350,6 @@ export interface FetchInterfacePageArgs<Q extends MinInterfaceDef<any, any>, K e
     $pageSize?: number;
 }
 
-// Warning: (ae-forgotten-export) The symbol "AsyncIterArgs" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
 export interface FetchPageArgs<Q extends ObjectOrInterfaceDefinition, K extends ObjectOrInterfacePropertyKeysFrom2<Q> = ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean = false, A extends Augments = {}, S extends NullabilityAdherence = NullabilityAdherenceDefault> extends AsyncIterArgs<Q, K, R, A, S> {
     // (undocumented)
