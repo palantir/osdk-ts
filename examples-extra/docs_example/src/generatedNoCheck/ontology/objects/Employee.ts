@@ -101,6 +101,7 @@ export interface Employee extends $ObjectTypeDefinition<'Employee', Employee> {
     };
     rid: 'ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0aa912b9efb44';
     status: 'ACTIVE';
+    titleProperty: 'employeeId';
     type: 'object';
   };
 }

@@ -146,6 +146,7 @@ describe("FetchMetadata", () => {
         "status": "ACTIVE",
         "titleProperty": "fullName",
         "type": "object",
+        "visibility": "NORMAL",
       }
     `);
   });

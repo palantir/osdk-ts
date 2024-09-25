@@ -289,6 +289,7 @@
           "color": "blue"
         },
         "pluralDisplayName": "Todo",
+        "titleProperty": "id",
         "status": "ACTIVE",
         "rid": "ridForTodo"
       },
@@ -342,6 +343,7 @@
         },
         "displayName": "Employee",
         "pluralDisplayName": "Employees",
+        "titleProperty": "employeeId",
         "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0aa912b9efb44",
         "status": "ACTIVE"
       },
@@ -416,6 +418,7 @@
           "name": "office",
           "color": "blue"
         },
+        "titleProperty": "officeId",
         "displayName": "Office",
         "pluralDisplayName": "Offices",
         "rid": "ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45",
@@ -447,6 +450,7 @@
         },
         "displayName": "Equipment",
         "pluralDisplayName": "Equipment",
+        "titleProperty": "equipmentId",
         "rid": "ri.ontology.main.object-type.808ac022-89eb-4591-8b7e-1a912b9efb45",
         "status": "ACTIVE"
       },

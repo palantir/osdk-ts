@@ -78,6 +78,7 @@ export interface Todo extends $ObjectTypeDefinition<'Todo', Todo> {
     };
     rid: 'ridForTodo';
     status: 'ACTIVE';
+    titleProperty: 'id';
     type: 'object';
   };
 }

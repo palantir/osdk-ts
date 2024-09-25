@@ -100,6 +100,7 @@ export function wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
     pluralDisplayName: objectTypeWithLink.objectType.pluralDisplayName,
     status: objectTypeWithLink.objectType.status,
     rid: objectTypeWithLink.objectType.rid,
+    visibility: objectTypeWithLink.objectType.visibility,
   };
 }
 

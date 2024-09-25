@@ -58,6 +58,7 @@ export interface Todo extends $ObjectTypeDefinition<'Todo', Todo> {
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
+    pluralDisplayName: "Todo's";
     primaryKeyApiName: 'id';
     primaryKeyType: 'string';
     properties: {
@@ -77,6 +78,7 @@ export interface Todo extends $ObjectTypeDefinition<'Todo', Todo> {
     };
     rid: 'ridForTodo';
     status: 'ACTIVE';
+    titleProperty: 'title';
     type: 'object';
   };
 }

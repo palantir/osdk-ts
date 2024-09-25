@@ -116,7 +116,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
   const osdkObjectIdentifier = `${interfaceDef.shortApiName}.OsdkObject`;
 
   const ids: Identifiers = {
-    objectDefIdentifier: `${interfaceDef.shortApiName}`,
+    objectDefIdentifier: interfaceDef.shortApiName,
     osdkObjectLinksIdentifier,
     osdkObjectPropsIdentifier,
     osdkObjectStrictPropsIdentifier,
