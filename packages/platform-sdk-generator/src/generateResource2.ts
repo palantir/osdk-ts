@@ -64,7 +64,7 @@ async function generateMethods(resource: Resource, model: Model) {
 
     const innerReturnType = typeof method.responseType === "string"
       ? method.responseType
-      : method.responseType.tsReferenceString;
+      : method.responseType.getTsReferenceString(undefined);
 
     const returnType = `Promise<${innerReturnType}>`;
 
@@ -109,7 +109,7 @@ function generateMethodParameters(method: Operation) {
 
   const bodyArg = requestType === "unknown"
     ? ""
-    : `$body: ${requestType.tsReferenceString},`;
+    : `$body: ${requestType.getTsReferenceString(undefined)},`;
 
   const pathParams = getParamsAsSyntaxListString(byType.PATH);
   const queryParams = getParamsAsObject("$queryParams", byType.QUERY);
@@ -173,7 +173,7 @@ function getParamsAsSyntaxListString(
           && (p.name === "Content-Type"))
         ? "?"
         : ""
-    }: ${p.type.tsReferenceString},`;
+    }: ${p.type.getTsReferenceString(undefined)},`;
   }).join("");
 }
 

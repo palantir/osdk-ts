@@ -48,11 +48,15 @@ export class Component extends Type {
     return this.model.getType(this.component.type).referencedTypes;
   }
 
-  get tsReferenceString(): string {
-    return this.component.locator.localName;
+  getTsReferenceString(localNamespace: string) {
+    if (localNamespace === this.namespace.name) {
+      return this.component.locator.localName;
+    } else {
+      return `_${this.component.locator.namespaceName}.${this.component.locator.localName}`;
+    }
   }
 
-  get declaration(): string {
+  getDeclaration(localNamespace: string | undefined): string {
     const component = this.component;
     const dt = this.component.type;
     const isAlias = dt.type !== "object";
@@ -76,7 +80,7 @@ export class Component extends Type {
       case "union":
       case "object":
       case "reference":
-        out += ourType.tsReferenceString;
+        out += ourType.getTsReferenceString(localNamespace);
         break;
 
       case "builtin":
@@ -84,7 +88,7 @@ export class Component extends Type {
         if (dt.builtin.type === "rid" || dt.builtin.type === "string") {
           out += `LooselyBrandedString<"${component.locator.localName}">`;
         } else {
-          out += ourType.declaration;
+          out += ourType.getDeclaration(localNamespace);
         }
         break;
 
