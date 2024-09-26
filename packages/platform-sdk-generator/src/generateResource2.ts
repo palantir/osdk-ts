@@ -58,7 +58,7 @@ async function generateMethods(resource: Resource, model: Model) {
   const referencedTypes = new Set<Component>();
 
   for (const method of resource.operations) {
-    const methodName = method.name; // method.verb ?? method.name;
+    const methodName = method.verb;
 
     addAll(referencedTypes, method.referencedComponents);
 
