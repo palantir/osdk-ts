@@ -25,7 +25,7 @@ import type * as _Orchestration from "../_components.js";
 
 //
 
-const _getBuild: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (
     buildRid: _Orchestration.BuildRid,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -40,7 +40,7 @@ const _getBuild: $FoundryPlatformMethod<
  * Required Scopes: [api:orchestration-read]
  * URL: /v2/orchestration/builds/{buildRid}
  */
-export function getBuild(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [
     buildRid: _Orchestration.BuildRid,
@@ -48,10 +48,10 @@ export function getBuild(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Orchestration.Build> {
-  return $foundryPlatformFetch($ctx, _getBuild, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }
 
-const _createBuilds: $FoundryPlatformMethod<
+const _create: $FoundryPlatformMethod<
   (
     $body: _Orchestration.CreateBuildsRequest,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -64,12 +64,12 @@ const _createBuilds: $FoundryPlatformMethod<
  * Required Scopes: [api:orchestration-write]
  * URL: /v2/orchestration/builds/create
  */
-export function createBuilds(
+export function create(
   $ctx: $Client | $ClientContext,
   ...args: [
     $body: _Orchestration.CreateBuildsRequest,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Orchestration.Build> {
-  return $foundryPlatformFetch($ctx, _createBuilds, ...args);
+  return $foundryPlatformFetch($ctx, _create, ...args);
 }

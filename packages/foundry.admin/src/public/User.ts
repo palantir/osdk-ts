@@ -51,7 +51,7 @@ export function deleteUser(
   return $foundryPlatformFetch($ctx, _deleteUser, ...args);
 }
 
-const _listUsers: $FoundryPlatformMethod<
+const _list: $FoundryPlatformMethod<
   ($queryParams?: {
     pageSize?: _Core.PageSize | undefined;
     pageToken?: _Core.PageToken | undefined;
@@ -69,7 +69,7 @@ const _listUsers: $FoundryPlatformMethod<
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/users
  */
-export function listUsers(
+export function list(
   $ctx: $Client | $ClientContext,
   ...args: [
     $queryParams?: {
@@ -79,10 +79,10 @@ export function listUsers(
     },
   ]
 ): Promise<_Admin.ListUsersResponse> {
-  return $foundryPlatformFetch($ctx, _listUsers, ...args);
+  return $foundryPlatformFetch($ctx, _list, ...args);
 }
 
-const _getUser: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (
     userId: _Core.PrincipalId,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -97,7 +97,7 @@ const _getUser: $FoundryPlatformMethod<
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/users/{userId}
  */
-export function getUser(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [
     userId: _Core.PrincipalId,
@@ -105,10 +105,10 @@ export function getUser(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Admin.User> {
-  return $foundryPlatformFetch($ctx, _getUser, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }
 
-const _getUsersBatch: $FoundryPlatformMethod<
+const _getBatch: $FoundryPlatformMethod<
   (
     $body: Array<_Admin.GetUsersBatchRequestElement>,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -125,17 +125,17 @@ const _getUsersBatch: $FoundryPlatformMethod<
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/users/getBatch
  */
-export function getUsersBatch(
+export function getBatch(
   $ctx: $Client | $ClientContext,
   ...args: [
     $body: Array<_Admin.GetUsersBatchRequestElement>,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Admin.GetUsersBatchResponse> {
-  return $foundryPlatformFetch($ctx, _getUsersBatch, ...args);
+  return $foundryPlatformFetch($ctx, _getBatch, ...args);
 }
 
-const _getCurrentUser: $FoundryPlatformMethod<
+const _getCurrent: $FoundryPlatformMethod<
   ($queryParams?: {
     preview?: _Core.PreviewMode | undefined;
   }) => Promise<_Admin.User>
@@ -147,14 +147,14 @@ const _getCurrentUser: $FoundryPlatformMethod<
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/users/getCurrent
  */
-export function getCurrentUser(
+export function getCurrent(
   $ctx: $Client | $ClientContext,
   ...args: [$queryParams?: { preview?: _Core.PreviewMode | undefined }]
 ): Promise<_Admin.User> {
-  return $foundryPlatformFetch($ctx, _getCurrentUser, ...args);
+  return $foundryPlatformFetch($ctx, _getCurrent, ...args);
 }
 
-const _getMarkingsUser: $FoundryPlatformMethod<
+const _getMarkings: $FoundryPlatformMethod<
   (
     userId: _Core.PrincipalId,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -169,7 +169,7 @@ const _getMarkingsUser: $FoundryPlatformMethod<
  * Required Scopes: [api:security-read]
  * URL: /v2/admin/users/{userId}/getMarkings
  */
-export function getMarkingsUser(
+export function getMarkings(
   $ctx: $Client | $ClientContext,
   ...args: [
     userId: _Core.PrincipalId,
@@ -177,10 +177,10 @@ export function getMarkingsUser(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Admin.GetUserMarkingsResponse> {
-  return $foundryPlatformFetch($ctx, _getMarkingsUser, ...args);
+  return $foundryPlatformFetch($ctx, _getMarkings, ...args);
 }
 
-const _getProfilePictureOfUser: $FoundryPlatformMethod<
+const _profilePicture: $FoundryPlatformMethod<
   (
     userId: _Core.PrincipalId,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -193,7 +193,7 @@ const _getProfilePictureOfUser: $FoundryPlatformMethod<
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/users/{userId}/profilePicture
  */
-export function getProfilePictureOfUser(
+export function profilePicture(
   $ctx: $Client | $ClientContext,
   ...args: [
     userId: _Core.PrincipalId,
@@ -201,10 +201,10 @@ export function getProfilePictureOfUser(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<Blob> {
-  return $foundryPlatformFetch($ctx, _getProfilePictureOfUser, ...args);
+  return $foundryPlatformFetch($ctx, _profilePicture, ...args);
 }
 
-const _searchUsers: $FoundryPlatformMethod<
+const _search: $FoundryPlatformMethod<
   (
     $body: _Admin.SearchUsersRequest,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -217,12 +217,12 @@ const _searchUsers: $FoundryPlatformMethod<
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/users/search
  */
-export function searchUsers(
+export function search(
   $ctx: $Client | $ClientContext,
   ...args: [
     $body: _Admin.SearchUsersRequest,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Admin.SearchUsersResponse> {
-  return $foundryPlatformFetch($ctx, _searchUsers, ...args);
+  return $foundryPlatformFetch($ctx, _search, ...args);
 }

@@ -24,7 +24,7 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 //
 
-const _executeQueryV2: $FoundryPlatformMethod<
+const _execute: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     queryApiName: _Core.QueryApiName,
@@ -49,7 +49,7 @@ const _executeQueryV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/queries/{queryApiName}/execute
  */
-export function executeQueryV2(
+export function execute(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -61,5 +61,5 @@ export function executeQueryV2(
     },
   ]
 ): Promise<_Core.ExecuteQueryResponse> {
-  return $foundryPlatformFetch($ctx, _executeQueryV2, ...args);
+  return $foundryPlatformFetch($ctx, _execute, ...args);
 }

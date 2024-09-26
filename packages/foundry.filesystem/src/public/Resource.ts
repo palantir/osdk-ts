@@ -25,7 +25,7 @@ import type * as _Filesystem from "../_components.js";
 
 //
 
-const _getResource: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (
     resourceRid: _Filesystem.ResourceRid,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -40,7 +40,7 @@ const _getResource: $FoundryPlatformMethod<
  * Required Scopes: [api:filesystem-read]
  * URL: /v2/filesystem/resources/{resourceRid}
  */
-export function getResource(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [
     resourceRid: _Filesystem.ResourceRid,
@@ -48,5 +48,5 @@ export function getResource(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Filesystem.Resource> {
-  return $foundryPlatformFetch($ctx, _getResource, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }

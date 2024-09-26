@@ -24,7 +24,7 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 //
 
-const _listLinkedObjectsV2: $FoundryPlatformMethod<
+const _listLinkedObjects: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     objectType: _Core.ObjectTypeApiName,
@@ -64,7 +64,7 @@ const _listLinkedObjectsV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/links/{linkType}
  */
-export function listLinkedObjectsV2(
+export function listLinkedObjects(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -83,10 +83,10 @@ export function listLinkedObjectsV2(
     },
   ]
 ): Promise<_Core.ListLinkedObjectsResponseV2> {
-  return $foundryPlatformFetch($ctx, _listLinkedObjectsV2, ...args);
+  return $foundryPlatformFetch($ctx, _listLinkedObjects, ...args);
 }
 
-const _getLinkedObjectV2: $FoundryPlatformMethod<
+const _getLinkedObject: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     objectType: _Core.ObjectTypeApiName,
@@ -114,7 +114,7 @@ const _getLinkedObjectV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/links/{linkType}/{linkedObjectPrimaryKey}
  */
-export function getLinkedObjectV2(
+export function getLinkedObject(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -131,5 +131,5 @@ export function getLinkedObjectV2(
     },
   ]
 ): Promise<_Core.OntologyObjectV2> {
-  return $foundryPlatformFetch($ctx, _getLinkedObjectV2, ...args);
+  return $foundryPlatformFetch($ctx, _getLinkedObject, ...args);
 }

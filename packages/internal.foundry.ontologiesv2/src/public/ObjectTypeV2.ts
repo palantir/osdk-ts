@@ -24,7 +24,7 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 //
 
-const _listObjectTypesV2: $FoundryPlatformMethod<
+const _list: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     $queryParams?: {
@@ -48,7 +48,7 @@ const _listObjectTypesV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objectTypes
  */
-export function listObjectTypesV2(
+export function list(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -59,10 +59,10 @@ export function listObjectTypesV2(
     },
   ]
 ): Promise<_Core.ListObjectTypesV2Response> {
-  return $foundryPlatformFetch($ctx, _listObjectTypesV2, ...args);
+  return $foundryPlatformFetch($ctx, _list, ...args);
 }
 
-const _getObjectTypeV2: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     objectType: _Core.ObjectTypeApiName,
@@ -79,17 +79,17 @@ const _getObjectTypeV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objectTypes/{objectType}
  */
-export function getObjectTypeV2(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
     objectType: _Core.ObjectTypeApiName,
   ]
 ): Promise<_Core.ObjectTypeV2> {
-  return $foundryPlatformFetch($ctx, _getObjectTypeV2, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }
 
-const _getObjectTypeFullMetadata: $FoundryPlatformMethod<
+const _getFullMetadata: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     objectType: _Core.ObjectTypeApiName,
@@ -107,7 +107,7 @@ const _getObjectTypeFullMetadata: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objectTypes/{objectType}/fullMetadata
  */
-export function getObjectTypeFullMetadata(
+export function getFullMetadata(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -116,10 +116,10 @@ export function getObjectTypeFullMetadata(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Core.ObjectTypeFullMetadata> {
-  return $foundryPlatformFetch($ctx, _getObjectTypeFullMetadata, ...args);
+  return $foundryPlatformFetch($ctx, _getFullMetadata, ...args);
 }
 
-const _listOutgoingLinkTypesV2: $FoundryPlatformMethod<
+const _listOutgoingLinkTypes: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     objectType: _Core.ObjectTypeApiName,
@@ -141,7 +141,7 @@ const _listOutgoingLinkTypesV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objectTypes/{objectType}/outgoingLinkTypes
  */
-export function listOutgoingLinkTypesV2(
+export function listOutgoingLinkTypes(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -153,10 +153,10 @@ export function listOutgoingLinkTypesV2(
     },
   ]
 ): Promise<_Core.ListOutgoingLinkTypesResponseV2> {
-  return $foundryPlatformFetch($ctx, _listOutgoingLinkTypesV2, ...args);
+  return $foundryPlatformFetch($ctx, _listOutgoingLinkTypes, ...args);
 }
 
-const _getOutgoingLinkTypeV2: $FoundryPlatformMethod<
+const _getOutgoingLinkType: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     objectType: _Core.ObjectTypeApiName,
@@ -175,7 +175,7 @@ const _getOutgoingLinkTypeV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objectTypes/{objectType}/outgoingLinkTypes/{linkType}
  */
-export function getOutgoingLinkTypeV2(
+export function getOutgoingLinkType(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -183,5 +183,5 @@ export function getOutgoingLinkTypeV2(
     linkType: _Core.LinkTypeApiName,
   ]
 ): Promise<_Core.LinkTypeSideV2> {
-  return $foundryPlatformFetch($ctx, _getOutgoingLinkTypeV2, ...args);
+  return $foundryPlatformFetch($ctx, _getOutgoingLinkType, ...args);
 }

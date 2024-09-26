@@ -24,7 +24,7 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 //
 
-const _listQueryTypesV2: $FoundryPlatformMethod<
+const _list: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     $queryParams?: {
@@ -47,7 +47,7 @@ const _listQueryTypesV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/queryTypes
  */
-export function listQueryTypesV2(
+export function list(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -58,10 +58,10 @@ export function listQueryTypesV2(
     },
   ]
 ): Promise<_Core.ListQueryTypesResponseV2> {
-  return $foundryPlatformFetch($ctx, _listQueryTypesV2, ...args);
+  return $foundryPlatformFetch($ctx, _list, ...args);
 }
 
-const _getQueryTypeV2: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     queryApiName: _Core.QueryApiName,
@@ -78,12 +78,12 @@ const _getQueryTypeV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/queryTypes/{queryApiName}
  */
-export function getQueryTypeV2(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
     queryApiName: _Core.QueryApiName,
   ]
 ): Promise<_Core.QueryTypeV2> {
-  return $foundryPlatformFetch($ctx, _getQueryTypeV2, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }

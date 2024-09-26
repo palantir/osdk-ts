@@ -24,7 +24,7 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 //
 
-const _uploadAttachmentV2: $FoundryPlatformMethod<
+const _upload: $FoundryPlatformMethod<
   (
     $body: Blob,
     $queryParams: { filename: _Core.Filename },
@@ -47,7 +47,7 @@ const _uploadAttachmentV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-write]
  * URL: /v2/ontologies/attachments/upload
  */
-export function uploadAttachmentV2(
+export function upload(
   $ctx: $Client | $ClientContext,
   ...args: [
     $body: Blob,
@@ -61,16 +61,10 @@ export function uploadAttachmentV2(
     "Content-Length": args[0].size.toString(),
   };
 
-  return $foundryPlatformFetch(
-    $ctx,
-    _uploadAttachmentV2,
-    args[0],
-    args[1],
-    headerParams,
-  );
+  return $foundryPlatformFetch($ctx, _upload, args[0], args[1], headerParams);
 }
 
-const _getAttachmentContentV2: $FoundryPlatformMethod<
+const _read: $FoundryPlatformMethod<
   (attachmentRid: _Core.AttachmentRid) => Promise<Blob>
 > = [0, "/v2/ontologies/attachments/{0}/content", , , "*/*"];
 
@@ -85,14 +79,14 @@ const _getAttachmentContentV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/attachments/{attachmentRid}/content
  */
-export function getAttachmentContentV2(
+export function read(
   $ctx: $Client | $ClientContext,
   ...args: [attachmentRid: _Core.AttachmentRid]
 ): Promise<Blob> {
-  return $foundryPlatformFetch($ctx, _getAttachmentContentV2, ...args);
+  return $foundryPlatformFetch($ctx, _read, ...args);
 }
 
-const _getAttachmentV2: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (attachmentRid: _Core.AttachmentRid) => Promise<_Core.AttachmentV2>
 > = [0, "/v2/ontologies/attachments/{0}"];
 
@@ -107,9 +101,9 @@ const _getAttachmentV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/attachments/{attachmentRid}
  */
-export function getAttachmentV2(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [attachmentRid: _Core.AttachmentRid]
 ): Promise<_Core.AttachmentV2> {
-  return $foundryPlatformFetch($ctx, _getAttachmentV2, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }

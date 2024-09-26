@@ -25,7 +25,7 @@ import type * as _Admin from "../_components.js";
 
 //
 
-const _createGroup: $FoundryPlatformMethod<
+const _create: $FoundryPlatformMethod<
   (
     $body: _Admin.CreateGroupRequest,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -40,14 +40,14 @@ const _createGroup: $FoundryPlatformMethod<
  * Required Scopes: [api:admin-write]
  * URL: /v2/admin/groups
  */
-export function createGroup(
+export function create(
   $ctx: $Client | $ClientContext,
   ...args: [
     $body: _Admin.CreateGroupRequest,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Admin.Group> {
-  return $foundryPlatformFetch($ctx, _createGroup, ...args);
+  return $foundryPlatformFetch($ctx, _create, ...args);
 }
 
 const _deleteGroup: $FoundryPlatformMethod<
@@ -76,7 +76,7 @@ export function deleteGroup(
   return $foundryPlatformFetch($ctx, _deleteGroup, ...args);
 }
 
-const _listGroups: $FoundryPlatformMethod<
+const _list: $FoundryPlatformMethod<
   ($queryParams?: {
     pageSize?: _Core.PageSize | undefined;
     pageToken?: _Core.PageToken | undefined;
@@ -94,7 +94,7 @@ const _listGroups: $FoundryPlatformMethod<
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/groups
  */
-export function listGroups(
+export function list(
   $ctx: $Client | $ClientContext,
   ...args: [
     $queryParams?: {
@@ -104,10 +104,10 @@ export function listGroups(
     },
   ]
 ): Promise<_Admin.ListGroupsResponse> {
-  return $foundryPlatformFetch($ctx, _listGroups, ...args);
+  return $foundryPlatformFetch($ctx, _list, ...args);
 }
 
-const _getGroup: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (
     groupId: _Core.PrincipalId,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -122,7 +122,7 @@ const _getGroup: $FoundryPlatformMethod<
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/groups/{groupId}
  */
-export function getGroup(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [
     groupId: _Core.PrincipalId,
@@ -130,10 +130,10 @@ export function getGroup(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Admin.Group> {
-  return $foundryPlatformFetch($ctx, _getGroup, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }
 
-const _getGroupsBatch: $FoundryPlatformMethod<
+const _getBatch: $FoundryPlatformMethod<
   (
     $body: Array<_Admin.GetGroupsBatchRequestElement>,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -150,17 +150,17 @@ const _getGroupsBatch: $FoundryPlatformMethod<
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/groups/getBatch
  */
-export function getGroupsBatch(
+export function getBatch(
   $ctx: $Client | $ClientContext,
   ...args: [
     $body: Array<_Admin.GetGroupsBatchRequestElement>,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Admin.GetGroupsBatchResponse> {
-  return $foundryPlatformFetch($ctx, _getGroupsBatch, ...args);
+  return $foundryPlatformFetch($ctx, _getBatch, ...args);
 }
 
-const _searchGroups: $FoundryPlatformMethod<
+const _search: $FoundryPlatformMethod<
   (
     $body: _Admin.SearchGroupsRequest,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -173,12 +173,12 @@ const _searchGroups: $FoundryPlatformMethod<
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/groups/search
  */
-export function searchGroups(
+export function search(
   $ctx: $Client | $ClientContext,
   ...args: [
     $body: _Admin.SearchGroupsRequest,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Admin.SearchGroupsResponse> {
-  return $foundryPlatformFetch($ctx, _searchGroups, ...args);
+  return $foundryPlatformFetch($ctx, _search, ...args);
 }

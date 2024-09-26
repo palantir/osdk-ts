@@ -25,7 +25,7 @@ import type * as _Admin from "../_components.js";
 
 //
 
-const _listMarkings: $FoundryPlatformMethod<
+const _list: $FoundryPlatformMethod<
   ($queryParams?: {
     pageSize?: _Core.PageSize | undefined;
     pageToken?: _Core.PageToken | undefined;
@@ -41,7 +41,7 @@ const _listMarkings: $FoundryPlatformMethod<
  * Required Scopes: [api:security-read]
  * URL: /v2/admin/markings
  */
-export function listMarkings(
+export function list(
   $ctx: $Client | $ClientContext,
   ...args: [
     $queryParams?: {
@@ -51,10 +51,10 @@ export function listMarkings(
     },
   ]
 ): Promise<_Admin.ListMarkingsResponse> {
-  return $foundryPlatformFetch($ctx, _listMarkings, ...args);
+  return $foundryPlatformFetch($ctx, _list, ...args);
 }
 
-const _getMarking: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (
     markingId: _Core.MarkingId,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -69,7 +69,7 @@ const _getMarking: $FoundryPlatformMethod<
  * Required Scopes: [api:security-read]
  * URL: /v2/admin/markings/{markingId}
  */
-export function getMarking(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [
     markingId: _Core.MarkingId,
@@ -77,10 +77,10 @@ export function getMarking(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Admin.Marking> {
-  return $foundryPlatformFetch($ctx, _getMarking, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }
 
-const _getMarkingsBatch: $FoundryPlatformMethod<
+const _getBatch: $FoundryPlatformMethod<
   (
     $body: Array<_Admin.GetMarkingsBatchRequestElement>,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -97,12 +97,12 @@ const _getMarkingsBatch: $FoundryPlatformMethod<
  * Required Scopes: [api:security-read]
  * URL: /v2/admin/markings/getBatch
  */
-export function getMarkingsBatch(
+export function getBatch(
   $ctx: $Client | $ClientContext,
   ...args: [
     $body: Array<_Admin.GetMarkingsBatchRequestElement>,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Admin.GetMarkingsBatchResponse> {
-  return $foundryPlatformFetch($ctx, _getMarkingsBatch, ...args);
+  return $foundryPlatformFetch($ctx, _getBatch, ...args);
 }

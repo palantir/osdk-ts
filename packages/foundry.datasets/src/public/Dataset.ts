@@ -25,7 +25,7 @@ import type * as _Datasets from "../_components.js";
 
 //
 
-const _createDataset: $FoundryPlatformMethod<
+const _create: $FoundryPlatformMethod<
   (
     $body: _Datasets.CreateDatasetRequest,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -40,17 +40,17 @@ const _createDataset: $FoundryPlatformMethod<
  * Required Scopes: [api:datasets-write]
  * URL: /v2/datasets
  */
-export function createDataset(
+export function create(
   $ctx: $Client | $ClientContext,
   ...args: [
     $body: _Datasets.CreateDatasetRequest,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Datasets.Dataset> {
-  return $foundryPlatformFetch($ctx, _createDataset, ...args);
+  return $foundryPlatformFetch($ctx, _create, ...args);
 }
 
-const _getDataset: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (
     datasetRid: _Datasets.DatasetRid,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -65,7 +65,7 @@ const _getDataset: $FoundryPlatformMethod<
  * Required Scopes: [api:datasets-read]
  * URL: /v2/datasets/{datasetRid}
  */
-export function getDataset(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: _Datasets.DatasetRid,
@@ -73,10 +73,10 @@ export function getDataset(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Datasets.Dataset> {
-  return $foundryPlatformFetch($ctx, _getDataset, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }
 
-const _readTableDataset: $FoundryPlatformMethod<
+const _readTable: $FoundryPlatformMethod<
   (
     datasetRid: _Datasets.DatasetRid,
     $queryParams: {
@@ -101,7 +101,7 @@ const _readTableDataset: $FoundryPlatformMethod<
  * Required Scopes: [api:datasets-read]
  * URL: /v2/datasets/{datasetRid}/readTable
  */
-export function readTableDataset(
+export function readTable(
   $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: _Datasets.DatasetRid,
@@ -117,5 +117,5 @@ export function readTableDataset(
     },
   ]
 ): Promise<Blob> {
-  return $foundryPlatformFetch($ctx, _readTableDataset, ...args);
+  return $foundryPlatformFetch($ctx, _readTable, ...args);
 }

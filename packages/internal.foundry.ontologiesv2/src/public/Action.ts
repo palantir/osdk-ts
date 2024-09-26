@@ -24,7 +24,7 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 //
 
-const _applyActionV2: $FoundryPlatformMethod<
+const _apply: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     action: _Core.ActionTypeApiName,
@@ -52,7 +52,7 @@ const _applyActionV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v2/ontologies/{ontology}/actions/{action}/apply
  */
-export function applyActionV2(
+export function apply(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -64,10 +64,10 @@ export function applyActionV2(
     },
   ]
 ): Promise<_Core.SyncApplyActionResponseV2> {
-  return $foundryPlatformFetch($ctx, _applyActionV2, ...args);
+  return $foundryPlatformFetch($ctx, _apply, ...args);
 }
 
-const _applyActionAsyncV2: $FoundryPlatformMethod<
+const _applyAsync: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     action: _Core.ActionTypeApiName,
@@ -95,7 +95,7 @@ const _applyActionAsyncV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v2/ontologies/{ontology}/actions/{action}/applyAsync
  */
-export function applyActionAsyncV2(
+export function applyAsync(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -107,10 +107,10 @@ export function applyActionAsyncV2(
     },
   ]
 ): Promise<_Core.AsyncApplyActionResponseV2> {
-  return $foundryPlatformFetch($ctx, _applyActionAsyncV2, ...args);
+  return $foundryPlatformFetch($ctx, _applyAsync, ...args);
 }
 
-const _applyActionBatchV2: $FoundryPlatformMethod<
+const _applyBatch: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     action: _Core.ActionTypeApiName,
@@ -139,7 +139,7 @@ const _applyActionBatchV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v2/ontologies/{ontology}/actions/{action}/applyBatch
  */
-export function applyActionBatchV2(
+export function applyBatch(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -151,5 +151,5 @@ export function applyActionBatchV2(
     },
   ]
 ): Promise<_Core.BatchApplyActionResponseV2> {
-  return $foundryPlatformFetch($ctx, _applyActionBatchV2, ...args);
+  return $foundryPlatformFetch($ctx, _applyBatch, ...args);
 }

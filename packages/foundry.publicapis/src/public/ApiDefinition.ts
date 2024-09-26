@@ -25,7 +25,7 @@ import type * as _PublicApis from "../_components.js";
 
 //
 
-const _getApiDefinition: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (
     apiDefinitionVersion: _PublicApis.IrVersion,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -40,7 +40,7 @@ const _getApiDefinition: $FoundryPlatformMethod<
  * Required Scopes: [public-api:view]
  * URL: /v2/publicApis/apiDefinitions/{apiDefinitionVersion}
  */
-export function getApiDefinition(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [
     apiDefinitionVersion: _PublicApis.IrVersion,
@@ -48,5 +48,5 @@ export function getApiDefinition(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_PublicApis.ApiDefinition> {
-  return $foundryPlatformFetch($ctx, _getApiDefinition, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }

@@ -25,7 +25,7 @@ import type * as _Admin from "../_components.js";
 
 //
 
-const _listMarkingCategories: $FoundryPlatformMethod<
+const _list: $FoundryPlatformMethod<
   ($queryParams?: {
     pageSize?: _Core.PageSize | undefined;
     pageToken?: _Core.PageToken | undefined;
@@ -41,7 +41,7 @@ const _listMarkingCategories: $FoundryPlatformMethod<
  * Required Scopes: [api:security-read]
  * URL: /v2/admin/markingCategories
  */
-export function listMarkingCategories(
+export function list(
   $ctx: $Client | $ClientContext,
   ...args: [
     $queryParams?: {
@@ -51,10 +51,10 @@ export function listMarkingCategories(
     },
   ]
 ): Promise<_Admin.ListMarkingCategoriesResponse> {
-  return $foundryPlatformFetch($ctx, _listMarkingCategories, ...args);
+  return $foundryPlatformFetch($ctx, _list, ...args);
 }
 
-const _getMarkingCategory: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (
     markingCategoryId: _Admin.MarkingCategoryId,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -69,7 +69,7 @@ const _getMarkingCategory: $FoundryPlatformMethod<
  * Required Scopes: [api:security-read]
  * URL: /v2/admin/markingCategories/{markingCategoryId}
  */
-export function getMarkingCategory(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [
     markingCategoryId: _Admin.MarkingCategoryId,
@@ -77,5 +77,5 @@ export function getMarkingCategory(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Admin.MarkingCategory> {
-  return $foundryPlatformFetch($ctx, _getMarkingCategory, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }

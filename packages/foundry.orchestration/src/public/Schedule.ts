@@ -25,7 +25,7 @@ import type * as _Orchestration from "../_components.js";
 
 //
 
-const _createSchedule: $FoundryPlatformMethod<
+const _create: $FoundryPlatformMethod<
   (
     $body: _Orchestration.CreateScheduleRequest,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -40,14 +40,14 @@ const _createSchedule: $FoundryPlatformMethod<
  * Required Scopes: [api:orchestration-write]
  * URL: /v2/orchestration/schedules
  */
-export function createSchedule(
+export function create(
   $ctx: $Client | $ClientContext,
   ...args: [
     $body: _Orchestration.CreateScheduleRequest,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Orchestration.Schedule> {
-  return $foundryPlatformFetch($ctx, _createSchedule, ...args);
+  return $foundryPlatformFetch($ctx, _create, ...args);
 }
 
 const _deleteSchedule: $FoundryPlatformMethod<
@@ -76,7 +76,7 @@ export function deleteSchedule(
   return $foundryPlatformFetch($ctx, _deleteSchedule, ...args);
 }
 
-const _getSchedule: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (
     scheduleRid: _Orchestration.ScheduleRid,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -91,7 +91,7 @@ const _getSchedule: $FoundryPlatformMethod<
  * Required Scopes: [api:orchestration-read]
  * URL: /v2/orchestration/schedules/{scheduleRid}
  */
-export function getSchedule(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [
     scheduleRid: _Orchestration.ScheduleRid,
@@ -99,10 +99,10 @@ export function getSchedule(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Orchestration.Schedule> {
-  return $foundryPlatformFetch($ctx, _getSchedule, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }
 
-const _replaceSchedule: $FoundryPlatformMethod<
+const _replace: $FoundryPlatformMethod<
   (
     scheduleRid: _Orchestration.ScheduleRid,
     $body: _Orchestration.ReplaceScheduleRequest,
@@ -118,7 +118,7 @@ const _replaceSchedule: $FoundryPlatformMethod<
  * Required Scopes: [api:orchestration-write]
  * URL: /v2/orchestration/schedules/{scheduleRid}
  */
-export function replaceSchedule(
+export function replace(
   $ctx: $Client | $ClientContext,
   ...args: [
     scheduleRid: _Orchestration.ScheduleRid,
@@ -126,10 +126,10 @@ export function replaceSchedule(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Orchestration.Schedule> {
-  return $foundryPlatformFetch($ctx, _replaceSchedule, ...args);
+  return $foundryPlatformFetch($ctx, _replace, ...args);
 }
 
-const _runSchedule: $FoundryPlatformMethod<
+const _run: $FoundryPlatformMethod<
   (
     scheduleRid: _Orchestration.ScheduleRid,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -142,7 +142,7 @@ const _runSchedule: $FoundryPlatformMethod<
  * Required Scopes: [api:orchestration-write]
  * URL: /v2/orchestration/schedules/{scheduleRid}/run
  */
-export function runSchedule(
+export function run(
   $ctx: $Client | $ClientContext,
   ...args: [
     scheduleRid: _Orchestration.ScheduleRid,
@@ -150,10 +150,10 @@ export function runSchedule(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Orchestration.ScheduleRun> {
-  return $foundryPlatformFetch($ctx, _runSchedule, ...args);
+  return $foundryPlatformFetch($ctx, _run, ...args);
 }
 
-const _pauseSchedule: $FoundryPlatformMethod<
+const _pause: $FoundryPlatformMethod<
   (
     scheduleRid: _Orchestration.ScheduleRid,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -166,7 +166,7 @@ const _pauseSchedule: $FoundryPlatformMethod<
  * Required Scopes: [api:orchestration-write]
  * URL: /v2/orchestration/schedules/{scheduleRid}/pause
  */
-export function pauseSchedule(
+export function pause(
   $ctx: $Client | $ClientContext,
   ...args: [
     scheduleRid: _Orchestration.ScheduleRid,
@@ -174,10 +174,10 @@ export function pauseSchedule(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<void> {
-  return $foundryPlatformFetch($ctx, _pauseSchedule, ...args);
+  return $foundryPlatformFetch($ctx, _pause, ...args);
 }
 
-const _unpauseSchedule: $FoundryPlatformMethod<
+const _unpause: $FoundryPlatformMethod<
   (
     scheduleRid: _Orchestration.ScheduleRid,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -190,7 +190,7 @@ const _unpauseSchedule: $FoundryPlatformMethod<
  * Required Scopes: [api:orchestration-write]
  * URL: /v2/orchestration/schedules/{scheduleRid}/unpause
  */
-export function unpauseSchedule(
+export function unpause(
   $ctx: $Client | $ClientContext,
   ...args: [
     scheduleRid: _Orchestration.ScheduleRid,
@@ -198,5 +198,5 @@ export function unpauseSchedule(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<void> {
-  return $foundryPlatformFetch($ctx, _unpauseSchedule, ...args);
+  return $foundryPlatformFetch($ctx, _unpause, ...args);
 }
