@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ActionMetadata,
-  ActionModifiedEntity,
-  ActionParameterDefinition,
-} from "@osdk/api";
+import type { ActionMetadata, ActionParameterDefinition } from "@osdk/api";
 import type {
   ActionParameterType,
   ActionParameterV2,
@@ -89,10 +85,13 @@ function actionPropertyToSdkPropertyDefinition(
 function createModifiedEntities<K extends string>(
   addedObjects: Set<K>,
   modifiedObjects: Set<K>,
-): Record<K, ActionModifiedEntity> {
-  let entities: Record<K, ActionModifiedEntity> = {} as Record<
+): ActionMetadata<any, K>["modifiedEntities"] {
+  let entities = {} as Record<
     K,
-    ActionModifiedEntity
+    {
+      created: boolean;
+      modified: boolean;
+    }
   >;
 
   for (const key of addedObjects) {

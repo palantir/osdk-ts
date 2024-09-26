@@ -29,7 +29,12 @@ export interface ActionMetadata<
   description?: string;
   displayName?: string;
   parameters: Record<any, ActionParameterDefinition<K, any>>;
-  modifiedEntities?: Partial<Record<K, ActionModifiedEntity>>;
+  modifiedEntities?: Partial<
+    Record<K, {
+      created: boolean;
+      modified: boolean;
+    }>
+  >;
   status: ReleaseStatus;
   rid: string;
 }
@@ -49,11 +54,6 @@ export interface ActionDefinition<
   __DefinitionMetadata?:
     & ActionCompileTimeMetadata<T_signatures>
     & ActionMetadata<A, K>;
-}
-
-export interface ActionModifiedEntity {
-  created: boolean;
-  modified: boolean;
 }
 
 export type ValidBaseActionParameterTypes =

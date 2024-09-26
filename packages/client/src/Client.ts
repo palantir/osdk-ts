@@ -20,7 +20,6 @@ import type {
   CompileTimeMetadata,
   InterfaceDefinition,
   InterfaceMetadata,
-  MinimalObjectSet,
   ObjectMetadata,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -33,6 +32,7 @@ import type {
 import type {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
+  MinimalObjectSet,
 } from "@osdk/api/unstable";
 import type { SharedClient } from "@osdk/shared.client";
 import type { BulkLinkResult } from "./__unstable/createBulkLinksAsyncIterFactory.js";

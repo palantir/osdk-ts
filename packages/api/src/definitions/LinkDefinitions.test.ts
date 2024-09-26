@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
-import type { ValidAggregationKeys } from "./AggregatableKeys.js";
+import { describe, expectTypeOf, it } from "vitest";
+import type { DefaultToFalse } from "./LinkDefinitions.js";
 
-export type UnorderedAggregationClause<Q extends ObjectOrInterfaceDefinition> =
-  { [AK in ValidAggregationKeys<Q>]?: "unordered" };
-
-export type OrderedAggregationClause<Q extends ObjectOrInterfaceDefinition> = {
-  [AK in ValidAggregationKeys<Q>]?: "unordered" | "asc" | "desc";
-};
-
-export type AggregationClause<Q extends ObjectOrInterfaceDefinition> =
-  | UnorderedAggregationClause<Q>
-  | OrderedAggregationClause<Q>;
+describe("DefaultToFalse", () => {
+  it("infers properly", () => {
+    expectTypeOf<DefaultToFalse<true>>().toEqualTypeOf<true>();
+    expectTypeOf<DefaultToFalse<false>>().toEqualTypeOf<false>();
+    expectTypeOf<DefaultToFalse<undefined>>().toEqualTypeOf<false>();
+    expectTypeOf<DefaultToFalse<boolean>>().toEqualTypeOf<false>();
+  });
+});

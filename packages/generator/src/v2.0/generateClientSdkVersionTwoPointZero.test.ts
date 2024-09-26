@@ -729,7 +729,7 @@ describe("generator", () => {
       import type { $ExpectedClientVersion } from '../../OntologyMetadata';
       import type { Todo } from './Todo';
       import type {
-        ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+        PropertyKeys as $PropertyKeys,
         ObjectTypeDefinition as $ObjectTypeDefinition,
         ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
       } from '@osdk/api';
@@ -813,7 +813,7 @@ describe("generator", () => {
       import type { $ExpectedClientVersion } from '../../OntologyMetadata';
       import type { Person } from './Person';
       import type {
-        ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+        PropertyKeys as $PropertyKeys,
         ObjectTypeDefinition as $ObjectTypeDefinition,
         ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
       } from '@osdk/api';
@@ -1330,7 +1330,7 @@ describe("generator", () => {
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import type { Todo } from './Todo.js';
         import type {
-          ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+          PropertyKeys as $PropertyKeys,
           ObjectTypeDefinition as $ObjectTypeDefinition,
           ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
         } from '@osdk/api';
@@ -1414,7 +1414,7 @@ describe("generator", () => {
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import type { Person } from './Person.js';
         import type {
-          ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+          PropertyKeys as $PropertyKeys,
           ObjectTypeDefinition as $ObjectTypeDefinition,
           ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
         } from '@osdk/api';
@@ -1818,7 +1818,7 @@ describe("generator", () => {
           import { $osdkMetadata } from '../../OntologyMetadata.js';
           import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
           import type {
-            ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+            PropertyKeys as $PropertyKeys,
             ObjectTypeDefinition as $ObjectTypeDefinition,
             ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
           } from '@osdk/api';
@@ -2101,7 +2101,7 @@ describe("generator", () => {
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import type {
-          ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+          PropertyKeys as $PropertyKeys,
           ObjectTypeDefinition as $ObjectTypeDefinition,
           ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
         } from '@osdk/api';

@@ -17,10 +17,10 @@
 import type {
   FetchPageArgs,
   FetchPageResult,
-  ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
   Osdk,
   PageResult,
+  PropertyKeys,
   SelectArgToKeys,
 } from "@osdk/api";
 import type { FooInterface } from "@osdk/client.test.ontology";
@@ -52,7 +52,7 @@ describe(fetchPage, () => {
       >() {
         return fetchPage<
           T,
-          L & ObjectOrInterfacePropertyKeysFrom2<T>,
+          L & PropertyKeys<T>,
           R,
           "drop"
         >({} as any, {} as any, {} as any);

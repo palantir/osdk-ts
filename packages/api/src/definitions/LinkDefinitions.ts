@@ -17,7 +17,7 @@
 import type { SelectArg, SelectArgToKeys } from "../object/FetchPageArgs.js";
 import type { Result } from "../object/Result.js";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
-import type { ObjectOrInterfacePropertyKeysFrom2 } from "../ontology/ObjectOrInterface.js";
+import type { PropertyKeys } from "../ontology/ObjectOrInterface.js";
 import type {
   CompileTimeMetadata,
   ObjectTypeDefinition,
@@ -55,7 +55,7 @@ export interface SingleLinkAccessor<
   fetchOne: <
     const A extends SelectArg<
       T,
-      ObjectOrInterfacePropertyKeysFrom2<T>,
+      PropertyKeys<T>,
       boolean
     >,
   >(
@@ -71,7 +71,7 @@ export interface SingleLinkAccessor<
   fetchOneWithErrors: <
     const A extends SelectArg<
       T,
-      ObjectOrInterfacePropertyKeysFrom2<T>,
+      PropertyKeys<T>,
       boolean
     >,
   >(

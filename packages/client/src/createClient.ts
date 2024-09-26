@@ -17,12 +17,12 @@
 import type {
   ActionDefinition,
   InterfaceDefinition,
-  MinimalObjectSet,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   QueryDefinition,
 } from "@osdk/api";
+import type { MinimalObjectSet } from "@osdk/api/unstable";
 import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,

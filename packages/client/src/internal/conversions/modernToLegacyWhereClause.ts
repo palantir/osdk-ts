@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type {
-  AndWhereClause,
   GeoFilter_Intersects,
   GeoFilter_Within,
-  NotWhereClause,
-  ObjectOrInterfaceDefinition,
-  OrWhereClause,
   PossibleWhereClauseFilters,
   WhereClause,
 } from "@osdk/api";
 import { DistanceUnitMapping } from "@osdk/api";
+
 import type { SearchJsonQueryV2 } from "@osdk/internal.foundry.core";
 import type { BBox, Position } from "geojson";
 import invariant from "tiny-invariant";
@@ -38,21 +36,21 @@ export function modernToLegacyWhereClause<
   if ("$and" in whereClause) {
     return {
       type: "and",
-      value: (whereClause as AndWhereClause<T>).$and.map(
+      value: (whereClause.$and as WhereClause<T>[]).map(
         modernToLegacyWhereClause,
       ),
     };
   } else if ("$or" in whereClause) {
     return {
       type: "or",
-      value: (whereClause as OrWhereClause<T>).$or.map(
+      value: (whereClause.$or as WhereClause<T>[]).map(
         modernToLegacyWhereClause,
       ),
     };
   } else if ("$not" in whereClause) {
     return {
       type: "not",
-      value: modernToLegacyWhereClause((whereClause as NotWhereClause<T>).$not),
+      value: modernToLegacyWhereClause(whereClause.$not as WhereClause<T>),
     };
   }
 

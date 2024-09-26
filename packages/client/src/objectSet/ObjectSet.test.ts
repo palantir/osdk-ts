@@ -18,7 +18,6 @@ import type {
   CompileTimeMetadata,
   ConvertProps,
   InterfaceDefinition,
-  ObjectOrInterfacePropertyKeysFrom2,
   ObjectSet,
   Osdk,
   PropertyKeys,
@@ -194,7 +193,7 @@ describe("ObjectSet", () => {
       stubData.employee1.employeeId,
     );
     expectTypeOf<typeof employee>().toMatchTypeOf<
-      Osdk<Employee, ObjectOrInterfacePropertyKeysFrom2<Employee>>
+      Osdk<Employee, PropertyKeys<Employee>>
     >;
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
   });
@@ -205,7 +204,7 @@ describe("ObjectSet", () => {
         stubData.employee1.employeeId,
       );
     expectTypeOf<typeof employeeResult>().toMatchTypeOf<
-      Result<Osdk<Employee, ObjectOrInterfacePropertyKeysFrom2<Employee>>>
+      Result<Osdk<Employee, PropertyKeys<Employee>>>
     >;
 
     if (isOk(employeeResult)) {

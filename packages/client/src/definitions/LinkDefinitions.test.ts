@@ -15,7 +15,6 @@
  */
 
 import type {
-  DefaultToFalse,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
@@ -47,15 +46,6 @@ describe("LinkDefinitions", () => {
             readonly peeps: ObjectSet<Employee>;
           }
         >();
-    });
-
-    describe("DefaultToFalse", () => {
-      it("infers properly", () => {
-        expectTypeOf<DefaultToFalse<true>>().toEqualTypeOf<true>();
-        expectTypeOf<DefaultToFalse<false>>().toEqualTypeOf<false>();
-        expectTypeOf<DefaultToFalse<undefined>>().toEqualTypeOf<false>();
-        expectTypeOf<DefaultToFalse<boolean>>().toEqualTypeOf<false>();
-      });
     });
 
     describe("SingletonLinkAccessor", () => {

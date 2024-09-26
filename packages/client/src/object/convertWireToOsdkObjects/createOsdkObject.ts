@@ -17,7 +17,7 @@
 import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
 import { createAttachmentFromRid } from "../../createAttachmentFromRid.js";
-import { createTimeseriesProperty } from "../../createTimeseriesProperty.js";
+import { TimeSeriesPropertyImpl } from "../../createTimeseriesProperty.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { createClientCache } from "../Cache.js";
@@ -117,7 +117,7 @@ export function createOsdkObject<
             propDef.type === "numericTimeseries"
             || propDef.type === "stringTimeseries"
           ) {
-            return createTimeseriesProperty<
+            return new TimeSeriesPropertyImpl<
               (typeof propDef)["type"] extends "numericTimeseries" ? number
                 : string
             >(
