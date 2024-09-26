@@ -1,6 +1,7 @@
 import type { QueryDefinition, VersionBound } from '@osdk/api';
 import type { QueryParam, QueryResult } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Todo } from '../objects/Todo.js';
 
 export namespace queryTakesAllParameterTypes {
@@ -102,10 +103,12 @@ export namespace queryTakesAllParameterTypes {
      */
     readonly unionNullable?: QueryParam.PrimitiveType<'string'> | QueryParam.PrimitiveType<'integer'>;
   }
+}
 
-  export interface Definition
-    extends QueryDefinition<'queryTakesAllParameterTypes', 'Todo', queryTakesAllParameterTypes.Signature>,
-      VersionBound<$ExpectedClientVersion> {
+export interface queryTakesAllParameterTypes
+  extends QueryDefinition<'queryTakesAllParameterTypes', 'Todo', queryTakesAllParameterTypes.Signature>,
+    VersionBound<$ExpectedClientVersion> {
+  __DefinitionMetadata?: {
     apiName: 'queryTakesAllParameterTypes';
     description: 'description of the query that takes all parameter types';
     displayName: 'qTAPT';
@@ -302,151 +305,17 @@ export namespace queryTakesAllParameterTypes {
       nullable: false;
       type: 'string';
     };
-  }
+    signature: queryTakesAllParameterTypes.Signature;
+  };
+  apiName: 'queryTakesAllParameterTypes';
+  type: 'query';
+  version: 'version';
+  osdkMetadata: typeof $osdkMetadata;
 }
 
-/** @deprecated use `queryTakesAllParameterTypes.Signature' instead */
-export type queryTakesAllParameterTypes = queryTakesAllParameterTypes.Signature;
-
-export const queryTakesAllParameterTypes: queryTakesAllParameterTypes.Definition = {
+export const queryTakesAllParameterTypes: queryTakesAllParameterTypes = {
   apiName: 'queryTakesAllParameterTypes',
-  description: 'description of the query that takes all parameter types',
-  displayName: 'qTAPT',
-  rid: 'query.rid',
   type: 'query',
   version: 'version',
-  parameters: {
-    array: {
-      description: 'an array of strings',
-      type: 'string',
-      nullable: false,
-      multiplicity: true,
-    },
-    attachment: {
-      type: 'attachment',
-      nullable: false,
-    },
-    boolean: {
-      type: 'boolean',
-      nullable: false,
-    },
-    date: {
-      type: 'date',
-      nullable: false,
-    },
-    double: {
-      description: 'a double parameter',
-      type: 'double',
-      nullable: false,
-    },
-    float: {
-      type: 'float',
-      nullable: false,
-    },
-    integer: {
-      type: 'integer',
-      nullable: false,
-    },
-    long: {
-      type: 'long',
-      nullable: false,
-    },
-    object: {
-      type: 'object',
-      object: 'Todo',
-      nullable: false,
-    },
-    objectSet: {
-      type: 'objectSet',
-      objectSet: 'Todo',
-      nullable: false,
-    },
-    set: {
-      description: 'a set of strings',
-      type: 'set',
-      set: {
-        type: 'string',
-        nullable: false,
-      },
-      nullable: false,
-    },
-    string: {
-      type: 'string',
-      nullable: false,
-    },
-    struct: {
-      description: 'a struct with some fields',
-      type: 'struct',
-      struct: {
-        name: {
-          type: 'string',
-          nullable: false,
-        },
-        id: {
-          type: 'integer',
-          nullable: false,
-        },
-      },
-      nullable: false,
-    },
-    threeDimensionalAggregation: {
-      type: 'threeDimensionalAggregation',
-      threeDimensionalAggregation: {
-        keyType: 'range',
-        keySubtype: 'date',
-        valueType: {
-          keyType: 'range',
-          keySubtype: 'timestamp',
-          valueType: 'date',
-        },
-      },
-      nullable: false,
-    },
-    timestamp: {
-      type: 'timestamp',
-      nullable: false,
-    },
-    twoDimensionalAggregation: {
-      type: 'twoDimensionalAggregation',
-      twoDimensionalAggregation: {
-        keyType: 'string',
-        valueType: 'double',
-      },
-      nullable: false,
-    },
-    unionNonNullable: {
-      description: 'a union of strings and integers',
-      type: 'union',
-      union: [
-        {
-          type: 'string',
-          nullable: false,
-        },
-        {
-          type: 'integer',
-          nullable: false,
-        },
-      ],
-      nullable: false,
-    },
-    unionNullable: {
-      description: 'a union of strings and integers but its optional',
-      type: 'union',
-      union: [
-        {
-          type: 'string',
-          nullable: false,
-        },
-        {
-          type: 'integer',
-          nullable: false,
-        },
-      ],
-      nullable: true,
-    },
-  },
-  output: {
-    nullable: false,
-    type: 'string',
-  },
+  osdkMetadata: $osdkMetadata,
 };

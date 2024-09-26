@@ -49,6 +49,7 @@ describe("generatePerQueryDataFiles", () => {
         "/foo/ontology/queries/getCount.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
       import type { QueryParam, QueryResult } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+      import { $osdkMetadata } from '../../OntologyMetadata.js';
 
       export namespace getCount {
         export interface Signature {
@@ -61,10 +62,12 @@ describe("generatePerQueryDataFiles", () => {
            */
           readonly completed: QueryParam.PrimitiveType<'boolean'>;
         }
+      }
 
-        export interface Definition
-          extends QueryDefinition<'getCount', never, getCount.Signature>,
-            VersionBound<$ExpectedClientVersion> {
+      export interface getCount
+        extends QueryDefinition<'getCount', never, getCount.Signature>,
+          VersionBound<$ExpectedClientVersion> {
+        __DefinitionMetadata?: {
           apiName: 'getCount';
           rid: 'rid.query.1';
           type: 'query';
@@ -82,32 +85,25 @@ describe("generatePerQueryDataFiles", () => {
             nullable: false;
             type: 'integer';
           };
-        }
+          signature: getCount.Signature;
+        };
+        apiName: 'getCount';
+        type: 'query';
+        version: '0';
+        osdkMetadata: typeof $osdkMetadata;
       }
 
-      /** @deprecated use \`getCount.Signature' instead */
-      export type getCount = getCount.Signature;
-
-      export const getCount: getCount.Definition = {
+      export const getCount: getCount = {
         apiName: 'getCount',
-        rid: 'rid.query.1',
         type: 'query',
         version: '0',
-        parameters: {
-          completed: {
-            type: 'boolean',
-            nullable: false,
-          },
-        },
-        output: {
-          nullable: false,
-          type: 'integer',
-        },
+        osdkMetadata: $osdkMetadata,
       };
       ",
         "/foo/ontology/queries/returnsTodo.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
       import type { QueryParam, QueryResult } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+      import { $osdkMetadata } from '../../OntologyMetadata.js';
       import type { Todo } from '../objects/Todo.js';
 
       export namespace returnsTodo {
@@ -121,10 +117,12 @@ describe("generatePerQueryDataFiles", () => {
            */
           readonly someTodo: QueryParam.ObjectType<Todo>;
         }
+      }
 
-        export interface Definition
-          extends QueryDefinition<'returnsTodo', 'Todo', returnsTodo.Signature>,
-            VersionBound<$ExpectedClientVersion> {
+      export interface returnsTodo
+        extends QueryDefinition<'returnsTodo', 'Todo', returnsTodo.Signature>,
+          VersionBound<$ExpectedClientVersion> {
+        __DefinitionMetadata?: {
           apiName: 'returnsTodo';
           rid: 'rid.query.2';
           type: 'query';
@@ -147,30 +145,19 @@ describe("generatePerQueryDataFiles", () => {
             type: 'object';
             __OsdkTargetType?: Todo;
           };
-        }
+          signature: returnsTodo.Signature;
+        };
+        apiName: 'returnsTodo';
+        type: 'query';
+        version: '0';
+        osdkMetadata: typeof $osdkMetadata;
       }
 
-      /** @deprecated use \`returnsTodo.Signature' instead */
-      export type returnsTodo = returnsTodo.Signature;
-
-      export const returnsTodo: returnsTodo.Definition = {
+      export const returnsTodo: returnsTodo = {
         apiName: 'returnsTodo',
-        rid: 'rid.query.2',
         type: 'query',
         version: '0',
-        parameters: {
-          someTodo: {
-            description: 'Random desc so we test jsdoc',
-            type: 'object',
-            object: 'Todo',
-            nullable: false,
-          },
-        },
-        output: {
-          nullable: false,
-          object: 'Todo',
-          type: 'object',
-        },
+        osdkMetadata: $osdkMetadata,
       };
       ",
       }
