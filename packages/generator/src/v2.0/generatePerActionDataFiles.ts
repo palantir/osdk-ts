@@ -175,7 +175,7 @@ export async function generatePerActionDataFiles(
           
           ${jsDocBlock.join("\n")}
           */
-          export interface ${action.shortApiName} extends MinActionDef<"${action.shortApiName}", ${uniqueApiNamesString}, ${action.shortApiName}.Signatures> {
+          export interface ${action.shortApiName} extends MinActionDef<"${action.fullApiName}", ${uniqueApiNamesString}, ${action.shortApiName}.Signatures> {
             __DefinitionMetadata?: {
               ${
           stringify(fullActionDef, {
