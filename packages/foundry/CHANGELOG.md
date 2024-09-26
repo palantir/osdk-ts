@@ -1,5 +1,22 @@
 # @osdk/foundry
 
+## 2.1.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [5dc1241]
+  - @osdk/shared.client@1.0.0-beta.1
+  - @osdk/foundry.admin@2.1.0-beta.4
+  - @osdk/foundry.core@2.1.0-beta.4
+  - @osdk/foundry.datasets@2.1.0-beta.4
+  - @osdk/foundry.filesystem@2.1.0-beta.4
+  - @osdk/foundry.functions@2.1.0-beta.4
+  - @osdk/foundry.ontologies@2.1.0-beta.4
+  - @osdk/foundry.orchestration@2.1.0-beta.4
+  - @osdk/foundry.publicapis@2.1.0-beta.4
+  - @osdk/foundry.thirdpartyapplications@2.1.0-beta.4
+  - @osdk/shared.net.platformapi@0.3.0-beta.1
+
 ## 2.1.0-beta.3
 
 ### Minor Changes

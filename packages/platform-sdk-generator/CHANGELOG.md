@@ -1,5 +1,11 @@
 # @osdk/platform-sdk-generator
 
+## 0.5.0-beta.4
+
+### Minor Changes
+
+- 885c8e4: Fixing bug for codegen on windows machines, where we would use backslashes instead of forward slashes for import paths, which should be OS agnostic.
+
 ## 0.5.0-beta.3
 
 ### Minor Changes

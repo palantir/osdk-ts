@@ -1,5 +1,25 @@
 # @osdk/shared.test
 
+## 2.0.0-beta.9
+
+### Minor Changes
+
+- 1488144: Renamed definition types to metadata
+- c28792e: Modified return type of fetchMetadata to return Object/Interface Definitions
+- 6ab5d2e: Renamed Min_Definition to \_Definition
+
+### Patch Changes
+
+- Updated dependencies [1488144]
+- Updated dependencies [c28792e]
+- Updated dependencies [26ee3bd]
+- Updated dependencies [6ab5d2e]
+  - @osdk/api@2.0.0-beta.13
+  - @osdk/internal.foundry.core@0.2.0-beta.8
+  - @osdk/internal.foundry.geo@0.1.0-beta.1
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.8
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.8
+
 ## 2.0.0-beta.8
 
 ### Patch Changes

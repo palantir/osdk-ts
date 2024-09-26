@@ -1,5 +1,13 @@
 # @osdk/internal.foundry.geo
 
+## 0.1.0-beta.1
+
+### Patch Changes
+
+- Updated dependencies [5dc1241]
+  - @osdk/shared.client@1.0.0-beta.1
+  - @osdk/shared.net.platformapi@0.3.0-beta.1
+
 ## 0.1.0-beta.0
 
 ### Minor Changes

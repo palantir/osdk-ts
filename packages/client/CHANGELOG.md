@@ -1,5 +1,32 @@
 # @osdk/client
 
+## 2.0.0-beta.13
+
+### Minor Changes
+
+- 1488144: Renamed definition types to metadata
+- d2f75f9: Adding support for arguments in asyncIter similar to fetchPage. Arguments that are not permitted in asyncIter are nextPageToken and pageSize.
+- b7cd0a1: Exposes unstable experimental features directly on client
+- c28792e: Modified return type of fetchMetadata to return Object/Interface Definitions
+- 26ee3bd: Updates return types of fetchMetadata to be Action and Query Definitions
+- 6ab5d2e: Renamed Min_Definition to \_Definition
+
+### Patch Changes
+
+- Updated dependencies [5dc1241]
+- Updated dependencies [1488144]
+- Updated dependencies [d2f75f9]
+- Updated dependencies [b7cd0a1]
+- Updated dependencies [c28792e]
+- Updated dependencies [26ee3bd]
+- Updated dependencies [6ab5d2e]
+  - @osdk/shared.client@1.0.0-beta.1
+  - @osdk/generator-converters@2.0.0-beta.13
+  - @osdk/api@2.0.0-beta.13
+  - @osdk/client.api@2.0.0-beta.13
+  - @osdk/shared.client.impl@1.0.0-beta.1
+  - @osdk/client.unstable@2.0.0-beta.13
+
 ## 2.0.0-beta.12
 
 ### Minor Changes

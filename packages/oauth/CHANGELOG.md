@@ -1,5 +1,11 @@
 # @osdk/oauth
 
+## 0.4.0-beta.2
+
+### Minor Changes
+
+- d80e2ec: Fixes a bug that can occur during the login flow
+
 ## 0.4.0-beta.1
 
 ### Minor Changes
