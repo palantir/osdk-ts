@@ -22,7 +22,6 @@ import type { DataValueClientToWire } from '@osdk/client.api';
 import type { DataValueWireToClient } from '@osdk/client.api';
 import type { InterfaceDefinition } from '@osdk/api';
 import type { InterfaceMetadata } from '@osdk/api';
-import { InterfaceObjectSet } from '@osdk/client.api';
 import { isOk } from '@osdk/client.api';
 import type { MinimalObjectSet } from '@osdk/client.api';
 import type { ObjectActionDataType } from '@osdk/api';
@@ -108,8 +107,6 @@ export const createClient: (baseUrl: string, ontologyRid: string | Promise<strin
 //
 // @public
 export function createPlatformClient(baseUrl: string, tokenProvider: () => Promise<string>, options?: undefined, fetchFn?: typeof globalThis.fetch): PlatformClient;
-
-export { InterfaceObjectSet }
 
 export { isOk }
 
