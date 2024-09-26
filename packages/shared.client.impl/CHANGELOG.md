@@ -1,5 +1,12 @@
 # @osdk/shared.client.impl
 
+## 1.0.0-beta.1
+
+### Patch Changes
+
+- Updated dependencies [5dc1241]
+  - @osdk/shared.client@1.0.0-beta.1
+
 ## 1.0.0-beta.0
 
 ### Major Changes

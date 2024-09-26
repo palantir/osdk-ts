@@ -1,5 +1,27 @@
 # @osdk/generator
 
+## 2.0.0-beta.13
+
+### Minor Changes
+
+- 1488144: Renamed definition types to metadata
+- bbfebfd: Fix generation of actions with full api names
+- f6e2880: Fixes query type generation
+- c28792e: Modified return type of fetchMetadata to return Object/Interface Definitions
+- 26ee3bd: Updates return types of fetchMetadata to be Action and Query Definitions
+- 6ab5d2e: Renamed Min_Definition to \_Definition
+- 885c8e4: Fixing bug for codegen on windows machines, where we would use backslashes instead of forward slashes for import paths, which should be OS agnostic.
+
+### Patch Changes
+
+- Updated dependencies [1488144]
+- Updated dependencies [c28792e]
+- Updated dependencies [26ee3bd]
+- Updated dependencies [6ab5d2e]
+  - @osdk/generator-converters@2.0.0-beta.13
+  - @osdk/api@2.0.0-beta.13
+  - @osdk/internal.foundry.core@0.2.0-beta.8
+
 ## 2.0.0-beta.12
 
 ### Patch Changes

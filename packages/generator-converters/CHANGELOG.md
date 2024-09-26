@@ -1,5 +1,21 @@
 # @osdk/generator-converters
 
+## 2.0.0-beta.13
+
+### Minor Changes
+
+- 1488144: Renamed definition types to metadata
+- c28792e: Modified return type of fetchMetadata to return Object/Interface Definitions
+- 26ee3bd: Updates return types of fetchMetadata to be Action and Query Definitions
+
+### Patch Changes
+
+- Updated dependencies [1488144]
+- Updated dependencies [c28792e]
+- Updated dependencies [26ee3bd]
+- Updated dependencies [6ab5d2e]
+  - @osdk/api@2.0.0-beta.13
+
 ## 2.0.0-beta.12
 
 ### Minor Changes
