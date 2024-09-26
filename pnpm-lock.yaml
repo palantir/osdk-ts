@@ -1630,9 +1630,9 @@ importers:
 
   packages/e2e.test.foundry-sdk-generator:
     dependencies:
-      '@osdk/foundry-sdk-generator':
+      '@osdk/tmp-foundry-sdk-generator':
         specifier: workspace:~
-        version: link:../foundry-sdk-generator
+        version: link:../tmp-foundry-sdk-generator
       execa:
         specifier: ^9.3.0
         version: 9.3.0
@@ -1753,76 +1753,6 @@ importers:
       typescript:
         specifier: ^5.5.4
         version: 5.5.4
-
-  packages/foundry-sdk-generator:
-    dependencies:
-      '@osdk/api':
-        specifier: workspace:*
-        version: link:../api
-      '@osdk/client':
-        specifier: workspace:*
-        version: link:../client
-      '@osdk/generator':
-        specifier: workspace:*
-        version: link:../generator
-      '@osdk/internal.foundry.core':
-        specifier: workspace:*
-        version: link:../internal.foundry.core
-      '@osdk/internal.foundry.ontologies':
-        specifier: workspace:*
-        version: link:../internal.foundry.ontologies
-      '@osdk/internal.foundry.ontologiesv2':
-        specifier: workspace:*
-        version: link:../internal.foundry.ontologiesv2
-      '@osdk/shared.net':
-        specifier: workspace:*
-        version: link:../shared.net
-      '@rollup/plugin-commonjs':
-        specifier: 28.0.0
-        version: 28.0.0(rollup@3.29.5)
-      '@rollup/plugin-node-resolve':
-        specifier: 15.3.0
-        version: 15.3.0(rollup@3.29.5)
-      consola:
-        specifier: 3.2.3
-        version: 3.2.3
-      find-up:
-        specifier: 7.0.0
-        version: 7.0.0
-      rollup:
-        specifier: 3.29.5
-        version: 3.29.5
-      rollup-plugin-polyfill-node:
-        specifier: 0.13.0
-        version: 0.13.0(rollup@3.29.5)
-      ts-morph:
-        specifier: 19.0.0
-        version: 19.0.0
-      typescript:
-        specifier: 5.5.3
-        version: 5.5.3
-      yargs:
-        specifier: 17.7.2
-        version: 17.7.2
-    devDependencies:
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      '@osdk/shared.test':
-        specifier: workspace:~
-        version: link:../shared.test
-      '@types/node':
-        specifier: ^18.0.0
-        version: 18.17.15
-      '@types/yargs':
-        specifier: ^17.0.29
-        version: 17.0.32
 
   packages/foundry.admin:
     dependencies:
@@ -2646,6 +2576,76 @@ importers:
       typescript:
         specifier: ^5.5.4
         version: 5.5.4
+
+  packages/tmp-foundry-sdk-generator:
+    dependencies:
+      '@osdk/api':
+        specifier: workspace:*
+        version: link:../api
+      '@osdk/client':
+        specifier: workspace:*
+        version: link:../client
+      '@osdk/generator':
+        specifier: workspace:*
+        version: link:../generator
+      '@osdk/internal.foundry.core':
+        specifier: workspace:*
+        version: link:../internal.foundry.core
+      '@osdk/internal.foundry.ontologies':
+        specifier: workspace:*
+        version: link:../internal.foundry.ontologies
+      '@osdk/internal.foundry.ontologiesv2':
+        specifier: workspace:*
+        version: link:../internal.foundry.ontologiesv2
+      '@osdk/shared.net':
+        specifier: workspace:*
+        version: link:../shared.net
+      '@rollup/plugin-commonjs':
+        specifier: 28.0.0
+        version: 28.0.0(rollup@3.29.5)
+      '@rollup/plugin-node-resolve':
+        specifier: 15.3.0
+        version: 15.3.0(rollup@3.29.5)
+      consola:
+        specifier: 3.2.3
+        version: 3.2.3
+      find-up:
+        specifier: 7.0.0
+        version: 7.0.0
+      rollup:
+        specifier: 3.29.5
+        version: 3.29.5
+      rollup-plugin-polyfill-node:
+        specifier: 0.13.0
+        version: 0.13.0(rollup@3.29.5)
+      ts-morph:
+        specifier: 19.0.0
+        version: 19.0.0
+      typescript:
+        specifier: 5.5.3
+        version: 5.5.3
+      yargs:
+        specifier: 17.7.2
+        version: 17.7.2
+    devDependencies:
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@osdk/monorepo.tsup':
+        specifier: workspace:~
+        version: link:../monorepo.tsup
+      '@osdk/shared.test':
+        specifier: workspace:~
+        version: link:../shared.test
+      '@types/node':
+        specifier: ^18.0.0
+        version: 18.17.15
+      '@types/yargs':
+        specifier: ^17.0.29
+        version: 17.0.32
 
   packages/tool.release:
     dependencies:
@@ -5536,10 +5536,6 @@ packages:
     resolution: {integrity: sha512-1lvV17H2bMYda/WaFb2jLPeHU3zml2k4/yagNMG8Q/YtfMjCwEUZa2eXXMgZTVSL5q1n4H7sQ0X6CdJDqqeCFA==}
     engines: {node: '>=18'}
     hasBin: true
-
-  escalade@3.1.1:
-    resolution: {integrity: sha512-k0er2gUkLf8O0zKJiAhmkTnJlTvINGv7ygDNPbeIsX/TJjGJZHuh9B2UxbsaEkmlEo9MfhrSzmhIlhRlI2GXnw==}
-    engines: {node: '>=6'}
 
   escalade@3.1.2:
     resolution: {integrity: sha512-ErCHMCae19vR8vQGe50xIsVomy19rg6gFu3+r3jkEO46suLMWBksvVyoGgQV+jOfl84ZSOSlmv6Gxa89PmTGmA==}
@@ -11771,8 +11767,6 @@ snapshots:
       '@esbuild/win32-ia32': 0.23.0
       '@esbuild/win32-x64': 0.23.0
 
-  escalade@3.1.1: {}
-
   escalade@3.1.2: {}
 
   escape-string-regexp@1.0.5: {}
@@ -14720,7 +14714,7 @@ snapshots:
   update-browserslist-db@1.0.13(browserslist@4.23.0):
     dependencies:
       browserslist: 4.23.0
-      escalade: 3.1.1
+      escalade: 3.1.2
       picocolors: 1.0.1
 
   update-browserslist-db@1.1.0(browserslist@4.23.2):
@@ -15210,7 +15204,7 @@ snapshots:
   yargs@17.7.2:
     dependencies:
       cliui: 8.0.1
-      escalade: 3.1.1
+      escalade: 3.1.2
       get-caller-file: 2.0.5
       require-directory: 2.1.1
       string-width: 4.2.3

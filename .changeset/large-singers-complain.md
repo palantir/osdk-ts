@@ -1,5 +1,5 @@
 ---
-"@osdk/foundry-sdk-generator": minor
+"@osdk/tmp-foundry-sdk-generator": minor
 "@osdk/shared.test": minor
 "@osdk/api": minor
 "@osdk/client": minor

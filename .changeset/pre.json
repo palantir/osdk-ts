@@ -31,7 +31,7 @@
     "@osdk/e2e.test.foundry-sdk-generator": "0.2.0",
     "@osdk/example-generator": "0.7.0",
     "@osdk/foundry": "2.0.0",
-    "@osdk/foundry-sdk-generator": "1.3.0",
+    "@osdk/tmp-foundry-sdk-generator": "1.3.0",
     "@osdk/foundry.admin": "2.0.0",
     "@osdk/foundry.core": "2.0.0",
     "@osdk/foundry.datasets": "2.0.0",

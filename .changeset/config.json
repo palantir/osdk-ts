@@ -6,7 +6,7 @@
     ["@osdk/foundry.*", "@osdk/foundry"],
     [
       "@osdk/client",
-      "@osdk/foundry-sdk-generator",
+      "@osdk/tmp-foundry-sdk-generator",
       "@osdk/generator",
       "@osdk/generator-converters",
       "@osdk/client.unstable",
