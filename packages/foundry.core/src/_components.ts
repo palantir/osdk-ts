@@ -28,6 +28,16 @@ export type ArchiveFileFormat = "ZIP";
 /**
  * Log Safety: SAFE
  */
+export interface AttachmentType {}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface BooleanType {}
+
+/**
+ * Log Safety: SAFE
+ */
 export type ContentLength = string;
 
 /**
@@ -48,6 +58,11 @@ export type CreatedBy = PrincipalId;
  * Log Safety: SAFE
  */
 export type CreatedTime = string;
+
+/**
+ * Log Safety: SAFE
+ */
+export interface DateType {}
 
 /**
  * The display name of the entity.
@@ -81,6 +96,11 @@ export type DistanceUnit =
   | "NAUTICAL_MILES";
 
 /**
+ * Log Safety: SAFE
+ */
+export interface DoubleType {}
+
+/**
  * A measurement of duration.
  *
  * Log Safety: SAFE
@@ -98,6 +118,21 @@ export interface Duration {
 export type FilePath = LooselyBrandedString<"FilePath">;
 
 /**
+ * Log Safety: SAFE
+ */
+export interface FloatType {}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface IntegerType {}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface LongType {}
+
+/**
  * The ID of a security marking.
  *
  * Log Safety: SAFE
@@ -110,6 +145,11 @@ export type MarkingId = string;
  * Log Safety: SAFE
  */
 export type MediaSetRid = LooselyBrandedString<"MediaSetRid">;
+
+/**
+ * Log Safety: SAFE
+ */
+export interface NullType {}
 
 /**
  * Log Safety: SAFE
@@ -167,67 +207,16 @@ export type Realm = LooselyBrandedString<"Realm">;
 export type ReleaseStatus = "ACTIVE" | "EXPERIMENTAL" | "DEPRECATED";
 
 /**
- * The type of a resource.
- *
- * Log Safety: SAFE
- */
-export type ResourceType =
-  | "Academy_Tutorial"
-  | "Artifacts_Repository"
-  | "Automate_Automation"
-  | "Builder_Pipeline"
-  | "Carbon_Workspace"
-  | "Cipher_Channel"
-  | "Code_Repository"
-  | "Code_Workbook"
-  | "Code_Workspace"
-  | "Connectivity_Agent"
-  | "Connectivity_Source"
-  | "Connectivity_VirtualTable"
-  | "Contour_Analysis"
-  | "Data_Lineage_Graph"
-  | "Datasets_Dataset"
-  | "Filesystem_Document"
-  | "Filesystem_Folder"
-  | "Filesystem_Image"
-  | "Filesystem_Project"
-  | "Filesystem_Space"
-  | "Filesystem_WebLink"
-  | "Foundry_Form"
-  | "Foundry_Report"
-  | "Foundry_Template"
-  | "FoundryRules_Workflow"
-  | "Fusion_Document"
-  | "Logic_Function"
-  | "Machinery_ProcessGraph"
-  | "Maps_Layer"
-  | "Maps_Map"
-  | "Marketplace_Installation"
-  | "Marketplace_LocalStore"
-  | "Marketplace_RemoteStore"
-  | "Media_Set"
-  | "Modeling_Model"
-  | "Modeling_ModelVersion"
-  | "Modeling_Objective"
-  | "Monitoring_MonitoringView"
-  | "Notepad_Document"
-  | "Notepad_Template"
-  | "ObjectExploration_Exploration"
-  | "ObjectExploration_Layout"
-  | "Quiver_Analysis"
-  | "Slate_Application"
-  | "SolutionDesigner_Diagram"
-  | "ThirdPartyApplication_ThirdPartyApplication"
-  | "Unknown"
-  | "Vertex_Graph"
-  | "Workshop_Module";
-
-/**
  * The size of the file or attachment in bytes.
  *
  * Log Safety: SAFE
  */
 export type SizeBytes = string;
+
+/**
+ * Log Safety: SAFE
+ */
+export interface StringType {}
 
 /**
  * Log Safety: SAFE
@@ -241,6 +230,18 @@ export type TimeUnit =
   | "WEEKS"
   | "MONTHS"
   | "YEARS";
+
+/**
+ * Log Safety: SAFE
+ */
+export interface TimestampType {}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface UnsupportedType {
+  unsupportedType: string;
+}
 
 /**
  * The Foundry user who last updated this resource
@@ -262,3 +263,10 @@ export type UpdatedTime = string;
  * Log Safety: SAFE
  */
 export type UserId = string;
+
+/**
+ * A string representation of a java.time.ZoneId
+ *
+ * Log Safety: SAFE
+ */
+export type ZoneId = LooselyBrandedString<"ZoneId">;

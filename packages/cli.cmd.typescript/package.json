@@ -1,7 +1,7 @@
 {
   "name": "@osdk/cli.cmd.typescript",
   "private": true,
-  "version": "0.6.0-beta.11",
+  "version": "0.6.0-beta.12",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -23,8 +23,7 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "transpile": "monorepo.tool.transpile",
-    "typecheck": "monorepo.tool.typecheck esm"
+    "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
     "@arethetypeswrong/cli": "^0.15.2",

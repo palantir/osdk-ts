@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
-import { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "@osdk/generator-converters";
-import { OntologiesV2 } from "@osdk/internal.foundry";
+import type { ObjectMetadata } from "@osdk/api";
+import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export async function loadFullObjectMetadata(
   client: MinimalClient,
   objectType: string,
-): Promise<ObjectTypeDefinition<any, any> & { rid: string }> {
+): Promise<ObjectMetadata<any, any> & { rid: string }> {
   const full = await OntologiesV2.ObjectTypesV2.getObjectTypeFullMetadata(
     client,
     await client.ontologyRid,
     objectType,
     { preview: true },
   );
-  const ret = wireObjectTypeFullMetadataToSdkObjectTypeDefinition(full, true);
+  const ret = wireObjectTypeFullMetadataToSdkObjectMetadata(full, true);
   client.logger?.debug(`END loadFullObjectMetadata(${objectType})`);
-  return { ...ret, rid: full.objectType.rid };
+  return { ...ret };
 }

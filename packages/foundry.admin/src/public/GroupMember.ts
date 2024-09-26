@@ -14,36 +14,27 @@
  * limitations under the License.
  */
 
-import type {
-  PageSize,
-  PageToken,
-  PreviewMode,
-  PrincipalId,
-} from "@osdk/foundry.core";
+import type * as _Core from "@osdk/foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
-import type {
-  AddGroupMembersRequest,
-  ListGroupMembersResponse,
-  RemoveGroupMembersRequest,
-} from "../_components.js";
+import type * as _Admin from "../_components.js";
 
 //
 
 const _listGroupMembers: $FoundryPlatformMethod<
   (
-    groupId: PrincipalId,
+    groupId: _Core.PrincipalId,
     $queryParams?: {
       transitive?: boolean | undefined;
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-      preview?: PreviewMode | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
-  ) => Promise<ListGroupMembersResponse>
+  ) => Promise<_Admin.ListGroupMembersResponse>
 > = [0, "/v2/admin/groups/{0}/groupMembers", 2];
 
 /**
@@ -59,24 +50,24 @@ const _listGroupMembers: $FoundryPlatformMethod<
 export function listGroupMembers(
   $ctx: $Client | $ClientContext,
   ...args: [
-    groupId: PrincipalId,
+    groupId: _Core.PrincipalId,
 
     $queryParams?: {
       transitive?: boolean | undefined;
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-      preview?: PreviewMode | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
   ]
-): Promise<ListGroupMembersResponse> {
+): Promise<_Admin.ListGroupMembersResponse> {
   return $foundryPlatformFetch($ctx, _listGroupMembers, ...args);
 }
 
 const _addGroupMembers: $FoundryPlatformMethod<
   (
-    groupId: PrincipalId,
-    $body: AddGroupMembersRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
+    groupId: _Core.PrincipalId,
+    $body: _Admin.AddGroupMembersRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ) => Promise<void>
 > = [1, "/v2/admin/groups/{0}/groupMembers/add", 3];
 
@@ -89,9 +80,9 @@ const _addGroupMembers: $FoundryPlatformMethod<
 export function addGroupMembers(
   $ctx: $Client | $ClientContext,
   ...args: [
-    groupId: PrincipalId,
-    $body: AddGroupMembersRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
+    groupId: _Core.PrincipalId,
+    $body: _Admin.AddGroupMembersRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<void> {
   return $foundryPlatformFetch($ctx, _addGroupMembers, ...args);
@@ -99,9 +90,9 @@ export function addGroupMembers(
 
 const _removeGroupMembers: $FoundryPlatformMethod<
   (
-    groupId: PrincipalId,
-    $body: RemoveGroupMembersRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
+    groupId: _Core.PrincipalId,
+    $body: _Admin.RemoveGroupMembersRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ) => Promise<void>
 > = [1, "/v2/admin/groups/{0}/groupMembers/remove", 3];
 
@@ -114,9 +105,9 @@ const _removeGroupMembers: $FoundryPlatformMethod<
 export function removeGroupMembers(
   $ctx: $Client | $ClientContext,
   ...args: [
-    groupId: PrincipalId,
-    $body: RemoveGroupMembersRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
+    groupId: _Core.PrincipalId,
+    $body: _Admin.RemoveGroupMembersRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<void> {
   return $foundryPlatformFetch($ctx, _removeGroupMembers, ...args);

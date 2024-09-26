@@ -15,9 +15,9 @@
  */
 
 export type {
+  ActionDefinition,
   ActionModifiedEntity,
   ActionParameterDefinition,
-  MinActionDef,
   ObjectActionDataType,
   ObjectSetActionDataType,
   ValidActionParameterTypes,
@@ -25,11 +25,11 @@ export type {
 } from "./ActionDefinition.js";
 export type {
   InterfaceDefinition,
-  MinInterfaceDef,
+  InterfaceMetadata,
 } from "./InterfaceDefinition.js";
 export type { ObjectOrInterfaceDefinition } from "./ObjectOrInterface.js";
 export type {
-  MinObjectDef,
+  ObjectMetadata,
   ObjectTypeDefinition,
   ObjectTypeLinkDefinition,
   ObjectTypePropertyDefinition,
@@ -40,7 +40,7 @@ export type {
   ObjectQueryDataType,
   ObjectSetQueryDataType,
   QueryDataTypeDefinition,
-  QueryDefinition,
+  QueryMetadata,
   QueryParameterDefinition,
   RangeAggregationKeyDataType,
   SetQueryDataType,

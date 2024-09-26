@@ -498,7 +498,7 @@ describe("generator", () => {
         "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos';
       export { markTodoCompleted } from './actions/markTodoCompleted';
       ",
-        "/foo/ontology/actions/deleteTodos.ts": "import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+        "/foo/ontology/actions/deleteTodos.ts": "import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
       import type {
         ActionParam,
         ActionReturnTypeForOptions,
@@ -550,12 +550,14 @@ describe("generator", () => {
        * An action which takes in an array of objects
        * @param {ActionParam.ObjectType<Todo>} [object] Todo(s) to be deleted
        */
-      export interface deleteTodos extends MinActionDef<'deleteTodos', 'Todo', deleteTodos.Signatures> {
+      export interface deleteTodos extends ActionDefinition<'deleteTodos', 'Todo', deleteTodos.Signatures> {
         __DefinitionMetadata?: {
           apiName: 'deleteTodos';
           description: 'An action which takes in an array of objects';
           modifiedEntities: {};
           parameters: deleteTodos.ParamsDefinition;
+          rid: 'ri.ontology.main.action-type.8f94017d-cf17-4fa8-84c3-8e01e5d594f2';
+          status: 'ACTIVE';
           type: 'action';
 
           signatures: deleteTodos.Signatures;
@@ -571,7 +573,7 @@ describe("generator", () => {
         osdkMetadata: $osdkMetadata,
       };
       ",
-        "/foo/ontology/actions/markTodoCompleted.ts": "import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+        "/foo/ontology/actions/markTodoCompleted.ts": "import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
       import type {
         ActionParam,
         ActionReturnTypeForOptions,
@@ -623,7 +625,7 @@ describe("generator", () => {
        * An action which takes different types of parameters
        * @param {ActionParam.ObjectType<Todo>} [object] A Todo to mark completed
        */
-      export interface markTodoCompleted extends MinActionDef<'markTodoCompleted', 'Todo', markTodoCompleted.Signatures> {
+      export interface markTodoCompleted extends ActionDefinition<'markTodoCompleted', 'Todo', markTodoCompleted.Signatures> {
         __DefinitionMetadata?: {
           apiName: 'markTodoCompleted';
           description: 'An action which takes different types of parameters';
@@ -634,6 +636,8 @@ describe("generator", () => {
             };
           };
           parameters: markTodoCompleted.ParamsDefinition;
+          rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2';
+          status: 'ACTIVE';
           type: 'action';
 
           signatures: markTodoCompleted.Signatures;
@@ -669,63 +673,44 @@ describe("generator", () => {
           readonly SomeProperty: $PropType['string'] | undefined;
         }
 
-        export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {}
-
-        export interface Definition extends $InterfaceDefinition<'SomeInterface', SomeInterface.Definition> {
-          osdkMetadata: typeof $osdkMetadata;
-          type: 'interface';
-          apiName: 'SomeInterface';
-          __DefinitionMetadata?: {
-            objectSet: SomeInterface.ObjectSet;
-            props: SomeInterface.Props;
-            linksType: OsdkObjectLinks$SomeInterface;
-            strictProps: SomeInterface.StrictProps;
-            apiName: 'SomeInterface';
-            description: 'Some interface';
-            displayName: 'Sum Interface';
-            implements: [];
-            links: {};
-            properties: {
-              /**
-               *   display name: 'Sum Property',
-               *   description: Some property
-               */
-              SomeProperty: $PropertyDef<'string', 'nullable', 'single'>;
-            };
-            type: 'interface';
-          };
-        }
+        export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 
         export type OsdkObject<
           OPTIONS extends never | '$notStrict' | '$rid' = never,
           K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
-        > = $Osdk<SomeInterface.Definition, K | OPTIONS>;
+        > = $Osdk<SomeInterface, K | OPTIONS>;
       }
 
-      /** @deprecated use SomeInterface.Definition **/
-      export type SomeInterface = SomeInterface.Definition;
+      export interface SomeInterface extends $InterfaceDefinition<'SomeInterface', SomeInterface> {
+        osdkMetadata: typeof $osdkMetadata;
+        type: 'interface';
+        apiName: 'SomeInterface';
+        __DefinitionMetadata?: {
+          objectSet: SomeInterface.ObjectSet;
+          props: SomeInterface.Props;
+          linksType: OsdkObjectLinks$SomeInterface;
+          strictProps: SomeInterface.StrictProps;
+          apiName: 'SomeInterface';
+          description: 'Some interface';
+          displayName: 'Sum Interface';
+          implements: [];
+          links: {};
+          properties: {
+            /**
+             *   display name: 'Sum Property',
+             *   description: Some property
+             */
+            SomeProperty: $PropertyDef<'string', 'nullable', 'single'>;
+          };
+          rid: 'idk';
+          type: 'interface';
+        };
+      }
 
-      export const SomeInterface: SomeInterface.Definition = {
-        osdkMetadata: $osdkMetadata,
-        objectSet: undefined as any,
-        props: undefined as any,
-        linksType: undefined as any,
-        strictProps: undefined as any,
-        apiName: 'SomeInterface',
-        description: 'Some interface',
-        displayName: 'Sum Interface',
-        implements: [],
-        links: {},
-        properties: {
-          SomeProperty: {
-            displayName: 'Sum Property',
-            multiplicity: false,
-            description: 'Some property',
-            type: 'string',
-            nullable: true,
-          },
-        },
+      export const SomeInterface: SomeInterface = {
         type: 'interface',
+        apiName: 'SomeInterface',
+        osdkMetadata: $osdkMetadata,
       };
       ",
         "/foo/ontology/objects.ts": "export * from './objects/Person';
@@ -737,7 +722,7 @@ describe("generator", () => {
       import type { Todo } from './Todo';
       import type {
         ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-        MinObjectDef as $ObjectTypeDefinition,
+        ObjectTypeDefinition as $ObjectTypeDefinition,
         ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
       } from '@osdk/api';
       import type {
@@ -781,13 +766,19 @@ describe("generator", () => {
           strictProps: Person.StrictProps;
           apiName: 'Person';
           description: 'A person';
+          displayName: 'Person';
+          icon: {
+            type: 'blueprint';
+            name: 'document';
+            color: 'blue';
+          };
           implements: [];
           interfaceMap: {};
           inverseInterfaceMap: {};
-          inverseSpts: {};
           links: {
             Todos: $ObjectTypeLinkDefinition<Todo, true>;
           };
+          pluralDisplayName: 'Persons';
           primaryKeyApiName: 'email';
           primaryKeyType: 'string';
           properties: {
@@ -796,7 +787,9 @@ describe("generator", () => {
              */
             email: $PropertyDef<'string', 'non-nullable', 'single'>;
           };
-          spts: {};
+          rid: 'ridForPerson';
+          status: 'ACTIVE';
+          titleProperty: 'email';
           type: 'object';
         };
       }
@@ -813,7 +806,7 @@ describe("generator", () => {
       import type { Person } from './Person';
       import type {
         ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-        MinObjectDef as $ObjectTypeDefinition,
+        ObjectTypeDefinition as $ObjectTypeDefinition,
         ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
       } from '@osdk/api';
       import type {
@@ -861,6 +854,12 @@ describe("generator", () => {
           strictProps: Todo.StrictProps;
           apiName: 'Todo';
           description: 'Its a todo item.';
+          displayName: 'AwesomeTodoDisplayname';
+          icon: {
+            type: 'blueprint';
+            name: 'document';
+            color: 'blue';
+          };
           implements: ['SomeInterface'];
           interfaceMap: {
             SomeInterface: {
@@ -872,10 +871,10 @@ describe("generator", () => {
               body: 'SomeProperty';
             };
           };
-          inverseSpts: {};
           links: {
             Assignee: $ObjectTypeLinkDefinition<Person, false>;
           };
+          pluralDisplayName: 'AwesomeTodoDisplayNames';
           primaryKeyApiName: 'id';
           primaryKeyType: 'integer';
           properties: {
@@ -893,7 +892,9 @@ describe("generator", () => {
              */
             id: $PropertyDef<'integer', 'non-nullable', 'single'>;
           };
-          spts: {};
+          rid: 'ridForTodo';
+          status: 'ACTIVE';
+          titleProperty: 'body';
           type: 'object';
         };
       }
@@ -907,9 +908,10 @@ describe("generator", () => {
         "/foo/ontology/queries.ts": "export * from './queries/getCount';
       export * from './queries/returnsTodo';
       ",
-        "/foo/ontology/queries/getCount.ts": "import type { MinQueryDef, VersionBound } from '@osdk/api';
+        "/foo/ontology/queries/getCount.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
       import type { QueryParam, QueryResult } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata';
+      import { $osdkMetadata } from '../../OntologyMetadata';
 
       export namespace getCount {
         export interface Signature {
@@ -922,11 +924,14 @@ describe("generator", () => {
            */
           readonly completed: QueryParam.PrimitiveType<'boolean'>;
         }
+      }
 
-        export interface Definition
-          extends MinQueryDef<'getCount', never, getCount.Signature>,
-            VersionBound<$ExpectedClientVersion> {
+      export interface getCount
+        extends QueryDefinition<'getCount', never, getCount.Signature>,
+          VersionBound<$ExpectedClientVersion> {
+        __DefinitionMetadata?: {
           apiName: 'getCount';
+          rid: 'rid.query.1';
           type: 'query';
           version: '0';
           parameters: {
@@ -942,31 +947,25 @@ describe("generator", () => {
             nullable: false;
             type: 'integer';
           };
-        }
+          signature: getCount.Signature;
+        };
+        apiName: 'getCount';
+        type: 'query';
+        version: '0';
+        osdkMetadata: typeof $osdkMetadata;
       }
 
-      /** @deprecated use \`getCount.Signature' instead */
-      export type getCount = getCount.Signature;
-
-      export const getCount: getCount.Definition = {
+      export const getCount: getCount = {
         apiName: 'getCount',
         type: 'query',
         version: '0',
-        parameters: {
-          completed: {
-            type: 'boolean',
-            nullable: false,
-          },
-        },
-        output: {
-          nullable: false,
-          type: 'integer',
-        },
+        osdkMetadata: $osdkMetadata,
       };
       ",
-        "/foo/ontology/queries/returnsTodo.ts": "import type { MinQueryDef, VersionBound } from '@osdk/api';
+        "/foo/ontology/queries/returnsTodo.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
       import type { QueryParam, QueryResult } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata';
+      import { $osdkMetadata } from '../../OntologyMetadata';
       import type { Todo } from '../objects/Todo';
 
       export namespace returnsTodo {
@@ -980,11 +979,14 @@ describe("generator", () => {
            */
           readonly someTodo: QueryParam.ObjectType<Todo>;
         }
+      }
 
-        export interface Definition
-          extends MinQueryDef<'returnsTodo', 'Todo', returnsTodo.Signature>,
-            VersionBound<$ExpectedClientVersion> {
+      export interface returnsTodo
+        extends QueryDefinition<'returnsTodo', 'Todo', returnsTodo.Signature>,
+          VersionBound<$ExpectedClientVersion> {
+        __DefinitionMetadata?: {
           apiName: 'returnsTodo';
+          rid: 'rid.query.2';
           type: 'query';
           version: '0';
           parameters: {
@@ -1005,29 +1007,19 @@ describe("generator", () => {
             type: 'object';
             __OsdkTargetType?: Todo;
           };
-        }
+          signature: returnsTodo.Signature;
+        };
+        apiName: 'returnsTodo';
+        type: 'query';
+        version: '0';
+        osdkMetadata: typeof $osdkMetadata;
       }
 
-      /** @deprecated use \`returnsTodo.Signature' instead */
-      export type returnsTodo = returnsTodo.Signature;
-
-      export const returnsTodo: returnsTodo.Definition = {
+      export const returnsTodo: returnsTodo = {
         apiName: 'returnsTodo',
         type: 'query',
         version: '0',
-        parameters: {
-          someTodo: {
-            description: 'Random desc so we test jsdoc',
-            type: 'object',
-            object: 'Todo',
-            nullable: false,
-          },
-        },
-        output: {
-          nullable: false,
-          object: 'Todo',
-          type: 'object',
-        },
+        osdkMetadata: $osdkMetadata,
       };
       ",
       }
@@ -1098,7 +1090,7 @@ describe("generator", () => {
           "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos.js';
         export { markTodoCompleted } from './actions/markTodoCompleted.js';
         ",
-          "/foo/ontology/actions/deleteTodos.ts": "import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+          "/foo/ontology/actions/deleteTodos.ts": "import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
         import type {
           ActionParam,
           ActionReturnTypeForOptions,
@@ -1150,12 +1142,14 @@ describe("generator", () => {
          * An action which takes in an array of objects
          * @param {ActionParam.ObjectType<Todo>} [object] Todo(s) to be deleted
          */
-        export interface deleteTodos extends MinActionDef<'deleteTodos', 'foo.bar.Todo', deleteTodos.Signatures> {
+        export interface deleteTodos extends ActionDefinition<'foo.bar.deleteTodos', 'foo.bar.Todo', deleteTodos.Signatures> {
           __DefinitionMetadata?: {
             apiName: 'foo.bar.deleteTodos';
             description: 'An action which takes in an array of objects';
             modifiedEntities: {};
             parameters: deleteTodos.ParamsDefinition;
+            rid: 'ri.ontology.main.action-type.8f94017d-cf17-4fa8-84c3-8e01e5d594f2';
+            status: 'ACTIVE';
             type: 'action';
 
             signatures: deleteTodos.Signatures;
@@ -1171,7 +1165,7 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
         };
         ",
-          "/foo/ontology/actions/markTodoCompleted.ts": "import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+          "/foo/ontology/actions/markTodoCompleted.ts": "import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
         import type {
           ActionParam,
           ActionReturnTypeForOptions,
@@ -1224,7 +1218,7 @@ describe("generator", () => {
          * @param {ActionParam.ObjectType<Todo>} [object] A Todo to mark completed
          */
         export interface markTodoCompleted
-          extends MinActionDef<'markTodoCompleted', 'foo.bar.Todo', markTodoCompleted.Signatures> {
+          extends ActionDefinition<'foo.bar.markTodoCompleted', 'foo.bar.Todo', markTodoCompleted.Signatures> {
           __DefinitionMetadata?: {
             apiName: 'foo.bar.markTodoCompleted';
             description: 'An action which takes different types of parameters';
@@ -1235,6 +1229,8 @@ describe("generator", () => {
               };
             };
             parameters: markTodoCompleted.ParamsDefinition;
+            rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2';
+            status: 'ACTIVE';
             type: 'action';
 
             signatures: markTodoCompleted.Signatures;
@@ -1270,63 +1266,44 @@ describe("generator", () => {
             readonly SomeProperty: $PropType['string'] | undefined;
           }
 
-          export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {}
-
-          export interface Definition extends $InterfaceDefinition<'foo.bar.SomeInterface', SomeInterface.Definition> {
-            osdkMetadata: typeof $osdkMetadata;
-            type: 'interface';
-            apiName: 'foo.bar.SomeInterface';
-            __DefinitionMetadata?: {
-              objectSet: SomeInterface.ObjectSet;
-              props: SomeInterface.Props;
-              linksType: OsdkObjectLinks$SomeInterface;
-              strictProps: SomeInterface.StrictProps;
-              apiName: 'foo.bar.SomeInterface';
-              description: 'Some interface';
-              displayName: 'Sum Interface';
-              implements: [];
-              links: {};
-              properties: {
-                /**
-                 *   display name: 'Sum Property',
-                 *   description: Some property
-                 */
-                SomeProperty: $PropertyDef<'string', 'nullable', 'single'>;
-              };
-              type: 'interface';
-            };
-          }
+          export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 
           export type OsdkObject<
             OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
-          > = $Osdk<SomeInterface.Definition, K | OPTIONS>;
+          > = $Osdk<SomeInterface, K | OPTIONS>;
         }
 
-        /** @deprecated use SomeInterface.Definition **/
-        export type SomeInterface = SomeInterface.Definition;
+        export interface SomeInterface extends $InterfaceDefinition<'foo.bar.SomeInterface', SomeInterface> {
+          osdkMetadata: typeof $osdkMetadata;
+          type: 'interface';
+          apiName: 'foo.bar.SomeInterface';
+          __DefinitionMetadata?: {
+            objectSet: SomeInterface.ObjectSet;
+            props: SomeInterface.Props;
+            linksType: OsdkObjectLinks$SomeInterface;
+            strictProps: SomeInterface.StrictProps;
+            apiName: 'foo.bar.SomeInterface';
+            description: 'Some interface';
+            displayName: 'Sum Interface';
+            implements: [];
+            links: {};
+            properties: {
+              /**
+               *   display name: 'Sum Property',
+               *   description: Some property
+               */
+              SomeProperty: $PropertyDef<'string', 'nullable', 'single'>;
+            };
+            rid: 'idk';
+            type: 'interface';
+          };
+        }
 
-        export const SomeInterface: SomeInterface.Definition = {
-          osdkMetadata: $osdkMetadata,
-          objectSet: undefined as any,
-          props: undefined as any,
-          linksType: undefined as any,
-          strictProps: undefined as any,
-          apiName: 'foo.bar.SomeInterface',
-          description: 'Some interface',
-          displayName: 'Sum Interface',
-          implements: [],
-          links: {},
-          properties: {
-            SomeProperty: {
-              displayName: 'Sum Property',
-              multiplicity: false,
-              description: 'Some property',
-              type: 'string',
-              nullable: true,
-            },
-          },
+        export const SomeInterface: SomeInterface = {
           type: 'interface',
+          apiName: 'foo.bar.SomeInterface',
+          osdkMetadata: $osdkMetadata,
         };
         ",
           "/foo/ontology/objects.ts": "export * from './objects/Person.js';
@@ -1338,7 +1315,7 @@ describe("generator", () => {
         import type { Todo } from './Todo.js';
         import type {
           ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-          MinObjectDef as $ObjectTypeDefinition,
+          ObjectTypeDefinition as $ObjectTypeDefinition,
           ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
         } from '@osdk/api';
         import type {
@@ -1382,13 +1359,19 @@ describe("generator", () => {
             strictProps: Person.StrictProps;
             apiName: 'foo.bar.Person';
             description: 'A person';
+            displayName: 'Person';
+            icon: {
+              type: 'blueprint';
+              name: 'document';
+              color: 'blue';
+            };
             implements: [];
             interfaceMap: {};
             inverseInterfaceMap: {};
-            inverseSpts: {};
             links: {
               Todos: $ObjectTypeLinkDefinition<Todo, true>;
             };
+            pluralDisplayName: 'Persons';
             primaryKeyApiName: 'email';
             primaryKeyType: 'string';
             properties: {
@@ -1397,7 +1380,9 @@ describe("generator", () => {
                */
               email: $PropertyDef<'string', 'non-nullable', 'single'>;
             };
-            spts: {};
+            rid: 'ridForPerson';
+            status: 'ACTIVE';
+            titleProperty: 'email';
             type: 'object';
           };
         }
@@ -1414,7 +1399,7 @@ describe("generator", () => {
         import type { Person } from './Person.js';
         import type {
           ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-          MinObjectDef as $ObjectTypeDefinition,
+          ObjectTypeDefinition as $ObjectTypeDefinition,
           ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
         } from '@osdk/api';
         import type {
@@ -1462,6 +1447,12 @@ describe("generator", () => {
             strictProps: Todo.StrictProps;
             apiName: 'foo.bar.Todo';
             description: 'Its a todo item.';
+            displayName: 'AwesomeTodoDisplayname';
+            icon: {
+              type: 'blueprint';
+              name: 'document';
+              color: 'blue';
+            };
             implements: ['foo.bar.SomeInterface'];
             interfaceMap: {
               'foo.bar.SomeInterface': {
@@ -1473,10 +1464,10 @@ describe("generator", () => {
                 body: 'SomeProperty';
               };
             };
-            inverseSpts: {};
             links: {
               Assignee: $ObjectTypeLinkDefinition<Person, false>;
             };
+            pluralDisplayName: 'AwesomeTodoDisplayNames';
             primaryKeyApiName: 'id';
             primaryKeyType: 'integer';
             properties: {
@@ -1494,7 +1485,9 @@ describe("generator", () => {
                */
               id: $PropertyDef<'integer', 'non-nullable', 'single'>;
             };
-            spts: {};
+            rid: 'ridForTodo';
+            status: 'ACTIVE';
+            titleProperty: 'body';
             type: 'object';
           };
         }
@@ -1508,9 +1501,10 @@ describe("generator", () => {
           "/foo/ontology/queries.ts": "export * from './queries/getCount.js';
         export * from './queries/returnsTodo.js';
         ",
-          "/foo/ontology/queries/getCount.ts": "import type { MinQueryDef, VersionBound } from '@osdk/api';
+          "/foo/ontology/queries/getCount.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
         import type { QueryParam, QueryResult } from '@osdk/client.api';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
 
         export namespace getCount {
           export interface Signature {
@@ -1523,11 +1517,14 @@ describe("generator", () => {
              */
             readonly completed: QueryParam.PrimitiveType<'boolean'>;
           }
+        }
 
-          export interface Definition
-            extends MinQueryDef<'foo.bar.getCount', never, getCount.Signature>,
-              VersionBound<$ExpectedClientVersion> {
+        export interface getCount
+          extends QueryDefinition<'foo.bar.getCount', never, getCount.Signature>,
+            VersionBound<$ExpectedClientVersion> {
+          __DefinitionMetadata?: {
             apiName: 'foo.bar.getCount';
+            rid: 'rid.query.1';
             type: 'query';
             version: '0';
             parameters: {
@@ -1543,31 +1540,25 @@ describe("generator", () => {
               nullable: false;
               type: 'integer';
             };
-          }
+            signature: getCount.Signature;
+          };
+          apiName: 'foo.bar.getCount';
+          type: 'query';
+          version: '0';
+          osdkMetadata: typeof $osdkMetadata;
         }
 
-        /** @deprecated use \`getCount.Signature' instead */
-        export type getCount = getCount.Signature;
-
-        export const getCount: getCount.Definition = {
+        export const getCount: getCount = {
           apiName: 'foo.bar.getCount',
           type: 'query',
           version: '0',
-          parameters: {
-            completed: {
-              type: 'boolean',
-              nullable: false,
-            },
-          },
-          output: {
-            nullable: false,
-            type: 'integer',
-          },
+          osdkMetadata: $osdkMetadata,
         };
         ",
-          "/foo/ontology/queries/returnsTodo.ts": "import type { MinQueryDef, VersionBound } from '@osdk/api';
+          "/foo/ontology/queries/returnsTodo.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
         import type { QueryParam, QueryResult } from '@osdk/client.api';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { Todo } from '../objects/Todo.js';
 
         export namespace returnsTodo {
@@ -1581,11 +1572,14 @@ describe("generator", () => {
              */
             readonly someTodo: QueryParam.ObjectType<Todo>;
           }
+        }
 
-          export interface Definition
-            extends MinQueryDef<'foo.bar.returnsTodo', 'foo.bar.Todo', returnsTodo.Signature>,
-              VersionBound<$ExpectedClientVersion> {
+        export interface returnsTodo
+          extends QueryDefinition<'foo.bar.returnsTodo', 'foo.bar.Todo', returnsTodo.Signature>,
+            VersionBound<$ExpectedClientVersion> {
+          __DefinitionMetadata?: {
             apiName: 'foo.bar.returnsTodo';
+            rid: 'rid.query.2';
             type: 'query';
             version: '0';
             parameters: {
@@ -1606,29 +1600,19 @@ describe("generator", () => {
               type: 'object';
               __OsdkTargetType?: Todo;
             };
-          }
+            signature: returnsTodo.Signature;
+          };
+          apiName: 'foo.bar.returnsTodo';
+          type: 'query';
+          version: '0';
+          osdkMetadata: typeof $osdkMetadata;
         }
 
-        /** @deprecated use \`returnsTodo.Signature' instead */
-        export type returnsTodo = returnsTodo.Signature;
-
-        export const returnsTodo: returnsTodo.Definition = {
+        export const returnsTodo: returnsTodo = {
           apiName: 'foo.bar.returnsTodo',
           type: 'query',
           version: '0',
-          parameters: {
-            someTodo: {
-              description: 'Random desc so we test jsdoc',
-              type: 'object',
-              object: 'foo.bar.Todo',
-              nullable: false,
-            },
-          },
-          output: {
-            nullable: false,
-            object: 'foo.bar.Todo',
-            type: 'object',
-          },
+          osdkMetadata: $osdkMetadata,
         };
         ",
         }
@@ -1735,9 +1719,10 @@ describe("generator", () => {
 
       expect(helper.getFiles()["/foo/ontology/queries/getTask.ts"])
         .toMatchInlineSnapshot(`
-          "import type { MinQueryDef, VersionBound } from '@osdk/api';
+          "import type { QueryDefinition, VersionBound } from '@osdk/api';
           import type { QueryParam, QueryResult } from '@osdk/client.api';
           import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+          import { $osdkMetadata } from '../../OntologyMetadata.js';
           import type { Task as $Imported$objectTypes$com$example$dep$Task } from '@com.example.dep/osdk';
 
           export namespace getTask {
@@ -1751,11 +1736,14 @@ describe("generator", () => {
                */
               readonly a: QueryParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>;
             }
+          }
 
-            export interface Definition
-              extends MinQueryDef<'getTask', 'com.example.dep.Task', getTask.Signature>,
-                VersionBound<$ExpectedClientVersion> {
+          export interface getTask
+            extends QueryDefinition<'getTask', 'com.example.dep.Task', getTask.Signature>,
+              VersionBound<$ExpectedClientVersion> {
+            __DefinitionMetadata?: {
               apiName: 'getTask';
+              rid: 'ri.a.b.c';
               type: 'query';
               version: '0';
               parameters: {
@@ -1775,28 +1763,19 @@ describe("generator", () => {
                 type: 'object';
                 __OsdkTargetType?: $Imported$objectTypes$com$example$dep$Task;
               };
-            }
+              signature: getTask.Signature;
+            };
+            apiName: 'getTask';
+            type: 'query';
+            version: '0';
+            osdkMetadata: typeof $osdkMetadata;
           }
 
-          /** @deprecated use \`getTask.Signature' instead */
-          export type getTask = getTask.Signature;
-
-          export const getTask: getTask.Definition = {
+          export const getTask: getTask = {
             apiName: 'getTask',
             type: 'query',
             version: '0',
-            parameters: {
-              a: {
-                type: 'object',
-                object: 'com.example.dep.Task',
-                nullable: false,
-              },
-            },
-            output: {
-              nullable: false,
-              object: 'com.example.dep.Task',
-              type: 'object',
-            },
+            osdkMetadata: $osdkMetadata,
           };
           "
         `);
@@ -1824,7 +1803,7 @@ describe("generator", () => {
           import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
           import type {
             ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-            MinObjectDef as $ObjectTypeDefinition,
+            ObjectTypeDefinition as $ObjectTypeDefinition,
             ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
           } from '@osdk/api';
           import type {
@@ -1867,13 +1846,17 @@ describe("generator", () => {
               linksType: UsesForeignSpt.Links;
               strictProps: UsesForeignSpt.StrictProps;
               apiName: 'UsesForeignSpt';
+              displayName: 'Uses Foreign Spt';
+              icon: {
+                type: 'blueprint';
+                color: 'blue';
+                name: 'document';
+              };
               implements: [];
               interfaceMap: {};
               inverseInterfaceMap: {};
-              inverseSpts: {
-                body: 'com.example.dep.spt';
-              };
               links: {};
+              pluralDisplayName: 'Uses Foreign Spts';
               primaryKeyApiName: 'id';
               primaryKeyType: 'integer';
               properties: {
@@ -1886,9 +1869,9 @@ describe("generator", () => {
                  */
                 id: $PropertyDef<'integer', 'non-nullable', 'single'>;
               };
-              spts: {
-                'com.example.dep.spt': 'body';
-              };
+              rid: 'theRid';
+              status: 'ACTIVE';
+              titleProperty: 'id';
               type: 'object';
             };
           }
@@ -1919,7 +1902,7 @@ describe("generator", () => {
 
       expect(helper.getFiles()["/foo/ontology/actions/setTaskBody.ts"])
         .toMatchInlineSnapshot(`
-          "import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+          "import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
           import type {
             ActionParam,
             ActionReturnTypeForOptions,
@@ -1968,7 +1951,7 @@ describe("generator", () => {
            * @param {ActionParam.PrimitiveType<"string">} body
            * @param {ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>} task
            */
-          export interface setTaskBody extends MinActionDef<'setTaskBody', 'com.example.dep.Task', setTaskBody.Signatures> {
+          export interface setTaskBody extends ActionDefinition<'setTaskBody', 'com.example.dep.Task', setTaskBody.Signatures> {
             __DefinitionMetadata?: {
               apiName: 'setTaskBody';
               modifiedEntities: {
@@ -1978,6 +1961,8 @@ describe("generator", () => {
                 };
               };
               parameters: setTaskBody.ParamsDefinition;
+              rid: 'ri.a.b.c.d';
+              status: 'ACTIVE';
               type: 'action';
 
               signatures: setTaskBody.Signatures;
@@ -2050,59 +2035,42 @@ describe("generator", () => {
             readonly spt: $PropType['string'] | undefined;
           }
 
-          export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {}
-
-          export interface Definition extends $InterfaceDefinition<'com.example.dep.SomeInterface', SomeInterface.Definition> {
-            osdkMetadata: typeof $osdkMetadata;
-            type: 'interface';
-            apiName: 'com.example.dep.SomeInterface';
-            __DefinitionMetadata?: {
-              objectSet: SomeInterface.ObjectSet;
-              props: SomeInterface.Props;
-              linksType: OsdkObjectLinks$SomeInterface;
-              strictProps: SomeInterface.StrictProps;
-              apiName: 'com.example.dep.SomeInterface';
-              displayName: 'Sum Interface';
-              implements: [];
-              links: {};
-              properties: {
-                /**
-                 *   display name: 'Some Property'
-                 */
-                spt: $PropertyDef<'string', 'nullable', 'single'>;
-              };
-              type: 'interface';
-            };
-          }
+          export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 
           export type OsdkObject<
             OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
-          > = $Osdk<SomeInterface.Definition, K | OPTIONS>;
+          > = $Osdk<SomeInterface, K | OPTIONS>;
         }
 
-        /** @deprecated use SomeInterface.Definition **/
-        export type SomeInterface = SomeInterface.Definition;
+        export interface SomeInterface extends $InterfaceDefinition<'com.example.dep.SomeInterface', SomeInterface> {
+          osdkMetadata: typeof $osdkMetadata;
+          type: 'interface';
+          apiName: 'com.example.dep.SomeInterface';
+          __DefinitionMetadata?: {
+            objectSet: SomeInterface.ObjectSet;
+            props: SomeInterface.Props;
+            linksType: OsdkObjectLinks$SomeInterface;
+            strictProps: SomeInterface.StrictProps;
+            apiName: 'com.example.dep.SomeInterface';
+            displayName: 'Sum Interface';
+            implements: [];
+            links: {};
+            properties: {
+              /**
+               *   display name: 'Some Property'
+               */
+              spt: $PropertyDef<'string', 'nullable', 'single'>;
+            };
+            rid: 'idk2';
+            type: 'interface';
+          };
+        }
 
-        export const SomeInterface: SomeInterface.Definition = {
-          osdkMetadata: $osdkMetadata,
-          objectSet: undefined as any,
-          props: undefined as any,
-          linksType: undefined as any,
-          strictProps: undefined as any,
-          apiName: 'com.example.dep.SomeInterface',
-          displayName: 'Sum Interface',
-          implements: [],
-          links: {},
-          properties: {
-            spt: {
-              displayName: 'Some Property',
-              multiplicity: false,
-              type: 'string',
-              nullable: true,
-            },
-          },
+        export const SomeInterface: SomeInterface = {
           type: 'interface',
+          apiName: 'com.example.dep.SomeInterface',
+          osdkMetadata: $osdkMetadata,
         };
         ",
           "/foo/ontology/objects.ts": "export * from './objects/Task.js';
@@ -2112,7 +2080,7 @@ describe("generator", () => {
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import type {
           ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-          MinObjectDef as $ObjectTypeDefinition,
+          ObjectTypeDefinition as $ObjectTypeDefinition,
           ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
         } from '@osdk/api';
         import type {
@@ -2155,11 +2123,17 @@ describe("generator", () => {
             linksType: Task.Links;
             strictProps: Task.StrictProps;
             apiName: 'com.example.dep.Task';
+            displayName: 'Task';
+            icon: {
+              type: 'blueprint';
+              color: 'blue';
+              name: 'document';
+            };
             implements: [];
             interfaceMap: {};
             inverseInterfaceMap: {};
-            inverseSpts: {};
             links: {};
+            pluralDisplayName: 'Tasks';
             primaryKeyApiName: 'taskId';
             primaryKeyType: 'string';
             properties: {
@@ -2172,7 +2146,9 @@ describe("generator", () => {
                */
               taskId: $PropertyDef<'string', 'non-nullable', 'single'>;
             };
-            spts: {};
+            rid: 'ridForTask';
+            status: 'ACTIVE';
+            titleProperty: 'taskId';
             type: 'object';
           };
         }

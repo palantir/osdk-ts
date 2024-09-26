@@ -1,4 +1,4 @@
-import type { MinObjectDef } from "@osdk/api";
+import type { ObjectTypeDefinition } from "@osdk/api";
 import { ActionValidationError } from "@osdk/client";
 import type { Osdk } from "@osdk/client.api";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/client.api/unstable";
@@ -124,7 +124,7 @@ export function useTodos() {
   };
 }
 
-type OsdkPropsOnly<T extends MinObjectDef<any>> = Omit<
+type OsdkPropsOnly<T extends ObjectTypeDefinition<any>> = Omit<
   Osdk<T>,
   "$as" | "$link"
 >;

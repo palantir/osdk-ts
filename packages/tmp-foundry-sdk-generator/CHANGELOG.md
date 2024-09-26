@@ -1,5 +1,27 @@
 # @osdk/foundry-sdk-generator
 
+## 2.0.0-beta.13
+
+### Patch Changes
+
+- Updated dependencies [1488144]
+- Updated dependencies [d2f75f9]
+- Updated dependencies [bbfebfd]
+- Updated dependencies [b7cd0a1]
+- Updated dependencies [f6e2880]
+- Updated dependencies [c28792e]
+- Updated dependencies [26ee3bd]
+- Updated dependencies [6ab5d2e]
+- Updated dependencies [885c8e4]
+  - @osdk/generator@2.0.0-beta.13
+  - @osdk/client@2.0.0-beta.13
+  - @osdk/api@2.0.0-beta.13
+  - @osdk/client.api@2.0.0-beta.13
+  - @osdk/internal.foundry.core@0.2.0-beta.8
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.8
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.8
+  - @osdk/shared.net@2.0.0-beta.4
+
 ## 2.0.0-beta.12
 
 ### Patch Changes

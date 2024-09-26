@@ -14,32 +14,26 @@
  * limitations under the License.
  */
 
-import type { PreviewMode } from "@osdk/foundry.core";
+import type * as _Core from "@osdk/foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
-import type {
-  BranchName,
-  CreateTransactionRequest,
-  DatasetRid,
-  Transaction,
-  TransactionRid,
-} from "../_components.js";
+import type * as _Datasets from "../_components.js";
 
 //
 
 const _createTransaction: $FoundryPlatformMethod<
   (
-    datasetRid: DatasetRid,
-    $body: CreateTransactionRequest,
+    datasetRid: _Datasets.DatasetRid,
+    $body: _Datasets.CreateTransactionRequest,
     $queryParams?: {
-      branchName?: BranchName | undefined;
-      preview?: PreviewMode | undefined;
+      branchName?: _Datasets.BranchName | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
-  ) => Promise<Transaction>
+  ) => Promise<_Datasets.Transaction>
 > = [1, "/v2/datasets/{0}/transactions", 3];
 
 /**
@@ -53,23 +47,23 @@ const _createTransaction: $FoundryPlatformMethod<
 export function createTransaction(
   $ctx: $Client | $ClientContext,
   ...args: [
-    datasetRid: DatasetRid,
-    $body: CreateTransactionRequest,
+    datasetRid: _Datasets.DatasetRid,
+    $body: _Datasets.CreateTransactionRequest,
     $queryParams?: {
-      branchName?: BranchName | undefined;
-      preview?: PreviewMode | undefined;
+      branchName?: _Datasets.BranchName | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
   ]
-): Promise<Transaction> {
+): Promise<_Datasets.Transaction> {
   return $foundryPlatformFetch($ctx, _createTransaction, ...args);
 }
 
 const _getTransaction: $FoundryPlatformMethod<
   (
-    datasetRid: DatasetRid,
-    transactionRid: TransactionRid,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<Transaction>
+    datasetRid: _Datasets.DatasetRid,
+    transactionRid: _Datasets.TransactionRid,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Datasets.Transaction>
 > = [0, "/v2/datasets/{0}/transactions/{1}", 2];
 
 /**
@@ -83,21 +77,21 @@ const _getTransaction: $FoundryPlatformMethod<
 export function getTransaction(
   $ctx: $Client | $ClientContext,
   ...args: [
-    datasetRid: DatasetRid,
-    transactionRid: TransactionRid,
+    datasetRid: _Datasets.DatasetRid,
+    transactionRid: _Datasets.TransactionRid,
 
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<Transaction> {
+): Promise<_Datasets.Transaction> {
   return $foundryPlatformFetch($ctx, _getTransaction, ...args);
 }
 
 const _commitTransaction: $FoundryPlatformMethod<
   (
-    datasetRid: DatasetRid,
-    transactionRid: TransactionRid,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<Transaction>
+    datasetRid: _Datasets.DatasetRid,
+    transactionRid: _Datasets.TransactionRid,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Datasets.Transaction>
 > = [1, "/v2/datasets/{0}/transactions/{1}/commit", 2];
 
 /**
@@ -112,21 +106,21 @@ const _commitTransaction: $FoundryPlatformMethod<
 export function commitTransaction(
   $ctx: $Client | $ClientContext,
   ...args: [
-    datasetRid: DatasetRid,
-    transactionRid: TransactionRid,
+    datasetRid: _Datasets.DatasetRid,
+    transactionRid: _Datasets.TransactionRid,
 
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<Transaction> {
+): Promise<_Datasets.Transaction> {
   return $foundryPlatformFetch($ctx, _commitTransaction, ...args);
 }
 
 const _abortTransaction: $FoundryPlatformMethod<
   (
-    datasetRid: DatasetRid,
-    transactionRid: TransactionRid,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<Transaction>
+    datasetRid: _Datasets.DatasetRid,
+    transactionRid: _Datasets.TransactionRid,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Datasets.Transaction>
 > = [1, "/v2/datasets/{0}/transactions/{1}/abort", 2];
 
 /**
@@ -141,11 +135,11 @@ const _abortTransaction: $FoundryPlatformMethod<
 export function abortTransaction(
   $ctx: $Client | $ClientContext,
   ...args: [
-    datasetRid: DatasetRid,
-    transactionRid: TransactionRid,
+    datasetRid: _Datasets.DatasetRid,
+    transactionRid: _Datasets.TransactionRid,
 
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<Transaction> {
+): Promise<_Datasets.Transaction> {
   return $foundryPlatformFetch($ctx, _abortTransaction, ...args);
 }

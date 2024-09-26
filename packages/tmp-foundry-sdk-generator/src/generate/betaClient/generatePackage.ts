@@ -17,7 +17,8 @@
 import type { MinimalFs, WireOntologyDefinition } from "@osdk/generator";
 import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
 import { mkdir, readdir, readFile, writeFile } from "fs/promises";
-import { isAbsolute, join, normalize } from "path";
+import { fileURLToPath } from "node:url";
+import { dirname, isAbsolute, join, normalize } from "path";
 import { USER_AGENT } from "../../utils/UserAgent.js";
 import { generateBundles } from "../generateBundles.js";
 import { bundleDependencies } from "./bundleDependencies.js";
@@ -94,7 +95,7 @@ export async function generatePackage(
 
   const { findUp } = await import("find-up");
   const nodeModulesPath = await findUp("node_modules", {
-    cwd: __dirname,
+    cwd: dirname(fileURLToPath(import.meta.url)),
     type: "directory",
   });
 
@@ -148,7 +149,7 @@ export async function generatePackage(
 async function getDependencyVersion(dependency: string): Promise<string> {
   const { findUp } = await import("find-up");
   const result = await findUp("package.json", {
-    cwd: __dirname,
+    cwd: dirname(fileURLToPath(import.meta.url)),
   });
   const packageJson = await readFile(result!, {
     encoding: "utf-8",

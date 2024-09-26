@@ -33,19 +33,14 @@ export type ObjectTypePropertyDefinitionFrom2<
 export interface ObjectInterfaceBaseDefinition<K extends string, N = unknown> {
   type: "object" | "interface";
   apiName: K;
-  displayName?: string;
+  displayName: string;
   description?: string;
   properties: Record<string, ObjectTypePropertyDefinition>;
   links: Record<
     string,
     ObjectTypeLinkDefinition<any, any>
   >;
-  osdkMetadata?: OsdkMetadata;
-  objectSet?: any;
-  props?: any;
-  strictProps?: any;
-  linksType?: any;
-
+  rid: string;
   /**
    * Represents the "super interfaces" of this object.
    *
@@ -54,62 +49,63 @@ export interface ObjectInterfaceBaseDefinition<K extends string, N = unknown> {
   implements?: ReadonlyArray<string>;
 }
 
+export interface ObjectInterfaceCompileDefinition<> {
+  type: "object" | "interface";
+  objectSet?: any;
+  props?: any;
+  strictProps?: any;
+  linksType?: any;
+}
+
 export interface VersionBound<V extends VersionString<any, any, any>> {
   __expectedClientVersion?: V;
 }
 
-export interface ObjectTypeDefinition<
+export interface ObjectMetadata<
   K extends string,
   N = unknown,
 > extends ObjectInterfaceBaseDefinition<K, N> {
   type: "object";
   primaryKeyApiName: keyof this["properties"];
+  titleProperty: keyof this["properties"];
   primaryKeyType: PrimaryKeyTypes;
-
-  /**
-   * Optional because they may not exist on legacy.
-   */
-  interfaceMap?: Record<
+  icon?: Icon;
+  visibility?: ObjectTypeVisibility;
+  pluralDisplayName: string;
+  status: ReleaseStatus;
+  interfaceMap: Record<
     /* InterfaceType api name */ string,
     Record<
       /* InterfaceType property api name */ string,
       /* ObjectType property api name */ string
     >
   >;
-
-  /**
-   * Optional because they may not exist on legacy.
-   */
-  inverseInterfaceMap?: Record<
+  inverseInterfaceMap: Record<
     /* InterfaceType api name */ string,
     Record<
       /* ObjectType property api name */ string,
       /* InterfaceType property api name */ string
     >
   >;
-
-  /* no longer used */
-  spts?: Record<string, string>;
-
-  /* no longer used */
-  inverseSpts?: Record<string, string>;
 }
 
-export interface MinObjectDef<K extends string, N = unknown> {
+export interface ObjectTypeDefinition<K extends string, N = unknown> {
   type: "object";
   apiName: K;
   osdkMetadata?: OsdkMetadata;
-  __DefinitionMetadata?: ObjectTypeDefinition<K, N>;
+  __DefinitionMetadata?:
+    & ObjectMetadata<K, N>
+    & ObjectInterfaceCompileDefinition;
 }
 
 export type ObjectTypeLinkKeysFrom2<
-  Q extends MinObjectDef<any, any>,
+  Q extends ObjectTypeDefinition<any, any>,
 > =
   & keyof CompileTimeMetadata<Q>["links"]
   & string;
 
 export interface ObjectTypeLinkDefinition<
-  Q extends MinObjectDef<any, any>,
+  Q extends ObjectTypeDefinition<any, any>,
   M extends boolean,
 > {
   __OsdkLinkTargetType?: Q;
@@ -149,3 +145,15 @@ export type PropertyDef<
   }
   & E
   & ObjectTypePropertyDefinition;
+
+export type ReleaseStatus = "ACTIVE" | "EXPERIMENTAL" | "DEPRECATED";
+
+type ObjectTypeVisibility = "NORMAL" | "PROMINENT" | "HIDDEN";
+
+type BlueprintIcon = {
+  type: "blueprint";
+  color: string;
+  name: string;
+};
+
+type Icon = BlueprintIcon;

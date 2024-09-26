@@ -4,7 +4,7 @@ import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type { Employee } from './Employee.js';
 import type {
   ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-  MinObjectDef as $ObjectTypeDefinition,
+  ObjectTypeDefinition as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
 } from '@osdk/api';
 import type {
@@ -52,11 +52,18 @@ export interface Venture extends $ObjectTypeDefinition<'Venture', Venture> {
     strictProps: Venture.StrictProps;
     apiName: 'Venture';
     description: 'A venture';
+    displayName: 'Venture';
+    icon: {
+      type: 'blueprint';
+      name: 'ventureIcon';
+      color: 'color';
+    };
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
       employees: $ObjectTypeLinkDefinition<Employee, true>;
     };
+    pluralDisplayName: 'Ventures';
     primaryKeyApiName: 'ventureId';
     primaryKeyType: 'string';
     properties: {
@@ -73,6 +80,9 @@ export interface Venture extends $ObjectTypeDefinition<'Venture', Venture> {
        */
       ventureStart: $PropertyDef<'datetime', 'nullable', 'single'>;
     };
+    rid: 'rid.a.b.c.d';
+    status: 'ACTIVE';
+    titleProperty: 'ventureName';
     type: 'object';
   };
 }

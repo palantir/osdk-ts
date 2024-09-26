@@ -15,13 +15,13 @@
  */
 
 import type {
-  ObjectTypeDefinition,
+  ObjectMetadata,
   ObjectTypeLinkDefinition,
   VersionBound,
 } from "@osdk/api";
 
 export interface ObjectTypeWithReservedNamesDef extends
-  ObjectTypeDefinition<
+  ObjectMetadata<
     "ObjectTypeWithReservedNames"
   >,
   VersionBound<"0.15.0">
@@ -66,4 +66,16 @@ export const ObjectTypeWithReservedNames: ObjectTypeWithReservedNamesDef = {
       type: "integer",
     },
   },
+  icon: {
+    type: "blueprint",
+    name: "icon",
+    color: "blue",
+  },
+  titleProperty: "id" as const,
+  displayName: "ObjectTypeWithReservedNames",
+  pluralDisplayName: "",
+  status: "ACTIVE",
+  interfaceMap: {},
+  inverseInterfaceMap: {},
+  rid: "",
 };

@@ -16,10 +16,10 @@
 
 import type {
   CompileTimeMetadata,
-  MinObjectDef,
-  MinQueryDef,
   ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
   QueryDataTypeDefinition,
+  QueryDefinition,
   QueryParameterDefinition,
 } from "@osdk/api";
 import type {
@@ -28,8 +28,8 @@ import type {
   OsdkBase,
   PrimaryKeyType,
 } from "@osdk/client.api";
-import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { DataValue } from "@osdk/internal.foundry.core";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import { createAttachmentFromRid } from "../createAttachmentFromRid.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
@@ -39,7 +39,7 @@ import { toDataValueQueries } from "../util/toDataValueQueries.js";
 import type { QueryParameterType, QueryReturnType } from "./types.js";
 
 export async function applyQuery<
-  QD extends MinQueryDef<any, any, any>,
+  QD extends QueryDefinition<any, any, any>,
   P extends QueryParameterType<CompileTimeMetadata<QD>["parameters"]>,
 >(
   client: MinimalClient,
@@ -95,7 +95,7 @@ async function remapQueryParams(
 
 async function remapQueryResponse<
   K extends string,
-  Q extends MinObjectDef<any>,
+  Q extends ObjectTypeDefinition<any>,
   T extends QueryDataTypeDefinition<K, Q | never>,
 >(
   client: MinimalClient,

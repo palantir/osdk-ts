@@ -15,9 +15,9 @@
  */
 
 import type {
-  InterfaceDefinition,
+  InterfaceMetadata,
+  ObjectMetadata,
   ObjectOrInterfaceDefinition,
-  ObjectTypeDefinition,
 } from "@osdk/api";
 import type { NullabilityAdherence, Osdk } from "@osdk/client.api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
@@ -162,8 +162,8 @@ function reframeAsObjectInPlace(
 function isConforming(
   client: MinimalClient,
   def:
-    | InterfaceDefinition<any, any>
-    | ObjectTypeDefinition<any, unknown>,
+    | InterfaceMetadata<any, any>
+    | ObjectMetadata<any, unknown>,
   obj: OntologyObjectV2,
   propsToCheck: readonly string[],
 ) {

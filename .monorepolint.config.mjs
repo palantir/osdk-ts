@@ -48,7 +48,7 @@ const nonStandardPackages = [
 // Packages that should have the `check-api` task installed
 const checkApiPackages = [
   "@osdk/client",
-  "@osdk/client.api",
+  "@osdk/api",
 ];
 
 // Packages that should be private
@@ -84,7 +84,34 @@ const disallowWorkspaceCaret = createRuleFactory({
       const deps = packageJson[d] ?? {};
 
       for (const [dep, version] of Object.entries(deps)) {
-        if (version === "workspace:^") {
+        if (dep === "@osdk/shared.client") {
+          // for shared client we need the symbol to work almost always so we are permissive
+          if (version !== "workspace:^") {
+            const message = `${dep} may only have 'workspace:^'`;
+            context.addError({
+              message,
+              longMessage: message,
+              file: context.getPackageJsonPath(),
+              fixer: () => {
+                // always refetch in fixer since another fixer may have already changed the file
+                let packageJson = context.getPackageJson();
+                if (packageJson[d]) {
+                  packageJson[d] = Object.assign(
+                    {},
+                    packageJson[d],
+                    { [dep]: "workspace:^" },
+                  );
+
+                  context.host.writeJson(
+                    context.getPackageJsonPath(),
+                    packageJson,
+                  );
+                }
+              },
+            });
+          }
+        } else if (version === "workspace:^") {
+          if (dep === "@osdk/shared.client") continue;
           const message = `'workspace:^' not allowed (${d}['${dep}']).`;
           context.addError({
             message,
@@ -108,6 +135,34 @@ const disallowWorkspaceCaret = createRuleFactory({
             },
           });
         }
+      }
+    }
+  },
+  validateOptions: () => {}, // no options right now
+});
+
+// We hit that fun fun bug where foundry-sdk-generator ended up getting packaged with a newer version
+// of typescript which broke code formatting. This rule is to make sure we don't experience that again.
+// (note devDeps are only happening at buildtime so they should be fine)
+const fixedDepsOnly = createRuleFactory({
+  name: "disallowWorkspaceCaret",
+  check: async (context) => {
+    const packageJson = context.getPackageJson();
+
+    for (const d of ["dependencies", "peerDependencies"]) {
+      const deps = packageJson[d] ?? {};
+
+      for (const [dep, version] of Object.entries(deps)) {
+        if (version === "workspace:*") continue;
+        if (version[0] >= "0" && version[0] <= "9") continue;
+
+        const message =
+          `May only have fixed dependencies (found ${d}['${dep}'] == '${version}').`;
+        context.addError({
+          message,
+          longMessage: message,
+          file: context.getPackageJsonPath(),
+        });
       }
     }
   },
@@ -190,7 +245,8 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
  *  esmOnly?: boolean,
  *  customTsconfigExcludes?: string[],
  *  tsVersion?: typeof LATEST_TYPESCRIPT_DEP | "^4.9.5",
- *  skipTsconfigReferences?: boolean
+ *  skipTsconfigReferences?: boolean,
+ *  aliasConsola?: boolean
  * }} options
  * @returns {import("@monorepolint/config").RuleModule[]}
  */
@@ -259,10 +315,17 @@ function standardPackageRules(shared, options) {
           lint: "eslint . && dprint check  --config $(find-up dprint.json)",
           "fix-lint":
             "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-          transpile: "monorepo.tool.transpile",
-          typecheck: `monorepo.tool.typecheck ${
-            options.esmOnly ? "esm" : "both"
-          }`,
+          transpile: {
+            options: [
+              "monorepo.tool.transpile",
+              "monorepo.tool.transpile tsup",
+            ],
+            fixValue: "monorepo.tool.transpile",
+          },
+          transpileWatch: DELETE_SCRIPT_ENTRY,
+          typecheck: options.esmOnly
+            ? DELETE_SCRIPT_ENTRY
+            : `monorepo.tool.typecheck ${options.esmOnly ? "esm" : "both"}`,
         },
       },
     }),
@@ -312,6 +375,59 @@ function standardPackageRules(shared, options) {
           }ts`,
           type: "module",
         },
+      },
+    }),
+    fileContents({
+      ...shared,
+      options: {
+        file: "vitest.config.mts",
+        generator: formattedGeneratorHelper(
+          `
+          /*
+           * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+           *
+           * Licensed under the Apache License, Version 2.0 (the "License");
+           * you may not use this file except in compliance with the License.
+           * You may obtain a copy of the License at
+           *
+           *     http://www.apache.org/licenses/LICENSE-2.0
+           *
+           * Unless required by applicable law or agreed to in writing, software
+           * distributed under the License is distributed on an "AS IS" BASIS,
+           * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+           * See the License for the specific language governing permissions and
+           * limitations under the License.
+           */
+          ${
+            options.aliasConsola
+              ? `
+          import { dirname, join } from "path";
+          import { fileURLToPath } from "url";`
+              : ""
+          }
+          import { configDefaults, defineConfig } from "vitest/config";
+
+          export default defineConfig({
+            test: {
+            ${
+            options.aliasConsola
+              ? `
+              alias: {
+                "consola": join(
+                  dirname(fileURLToPath(import.meta.url)),
+                  "./src/__e2e_tests__/consola.ts",
+                ),
+              },`
+              : ""
+          }
+              pool: "forks",
+              exclude: [...configDefaults.exclude, "**/build/**/*"],
+            },
+          });
+     
+          `,
+          "js",
+        ),
       },
     }),
     fileContents({
@@ -408,17 +524,20 @@ NOTE: DO NOT EDIT THIS README BY HAND. It is generated by monorepolint.
       tsVersion: LATEST_TYPESCRIPT_DEP,
     }),
 
-    // internal packages depend on the cjs nature of this package! Do not make esmOnly without
-    // fixing the internal packages first (and bumping major).
     ...standardPackageRules({
       includePackages: ["@osdk/tmp-foundry-sdk-generator"],
     }, {
       esmOnly: true,
       tsVersion: LATEST_TYPESCRIPT_DEP,
+      aliasConsola: true,
       customTsconfigExcludes: [
         "./src/generatedNoCheck/**/*",
       ],
     }),
+    fixedDepsOnly({
+      includePackages: ["@osdk/foundry-sdk-generator"],
+    }),
+
     ...standardPackageRules({
       includePackages: ["@osdk/e2e.test.foundry-sdk-generator"],
     }, {
@@ -427,16 +546,6 @@ NOTE: DO NOT EDIT THIS README BY HAND. It is generated by monorepolint.
       customTsconfigExcludes: [
         "./src/generatedNoCheck/**/*",
       ],
-    }),
-
-    // most packages can use the newest typescript, but we enforce that @osdk/example.one.dot.one uses TS4.9
-    // so that we get build-time checking to make sure we don't regress v1.1 clients using an older Typescript.
-    ...standardPackageRules({
-      includePackages: ["@osdk/e2e.generated.1.1.x"],
-    }, {
-      esmOnly: false,
-      tsVersion: "^4.9.5",
-      skipTsconfigReferences: true,
     }),
 
     ...rulesForPackagesWithChecKApiTask(),
@@ -463,7 +572,7 @@ NOTE: DO NOT EDIT THIS README BY HAND. It is generated by monorepolint.
       ],
       options: {
         dependencies: {
-          "@osdk/shared.client": "workspace:~",
+          "@osdk/shared.client": "workspace:^",
           "@osdk/shared.net.platformapi": "workspace:~",
         },
       },

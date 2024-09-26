@@ -3,7 +3,7 @@ import { $osdkMetadata } from '../../OntologyMetadata';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import type {
   ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-  MinObjectDef as $ObjectTypeDefinition,
+  ObjectTypeDefinition as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
 } from '@osdk/api';
 import type {
@@ -58,12 +58,19 @@ export interface Employee extends $ObjectTypeDefinition<'Employee', Employee> {
     strictProps: Employee.StrictProps;
     apiName: 'Employee';
     description: 'A full-time or part-time employee of our firm';
+    displayName: 'Employee';
+    icon: {
+      type: 'blueprint';
+      name: 'employee';
+      color: 'blue';
+    };
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
       lead: $ObjectTypeLinkDefinition<Employee, false>;
       peeps: $ObjectTypeLinkDefinition<Employee, true>;
     };
+    pluralDisplayName: 'Employees';
     primaryKeyApiName: 'employeeId';
     primaryKeyType: 'integer';
     properties: {
@@ -92,6 +99,9 @@ export interface Employee extends $ObjectTypeDefinition<'Employee', Employee> {
        */
       startDate: $PropertyDef<'datetime', 'nullable', 'single'>;
     };
+    rid: 'ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0aa912b9efb44';
+    status: 'ACTIVE';
+    titleProperty: 'employeeId';
     type: 'object';
   };
 }

@@ -14,28 +14,22 @@
  * limitations under the License.
  */
 
-import type { PreviewMode } from "@osdk/foundry.core";
+import type * as _Core from "@osdk/foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
-import type {
-  ApiName,
-  ExecuteQueryRequest,
-  ExecuteQueryResponse,
-  GetByRidQueriesRequest,
-  Query,
-} from "../_components.js";
+import type * as _Functions from "../_components.js";
 
 //
 
 const _getQuery: $FoundryPlatformMethod<
   (
-    queryApiName: ApiName,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<Query>
+    queryApiName: _Functions.QueryApiName,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Functions.Query>
 > = [0, "/v2/functions/queries/{0}", 2];
 
 /**
@@ -49,19 +43,19 @@ const _getQuery: $FoundryPlatformMethod<
 export function getQuery(
   $ctx: $Client | $ClientContext,
   ...args: [
-    queryApiName: ApiName,
+    queryApiName: _Functions.QueryApiName,
 
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<Query> {
+): Promise<_Functions.Query> {
   return $foundryPlatformFetch($ctx, _getQuery, ...args);
 }
 
 const _getByRidQueries: $FoundryPlatformMethod<
   (
-    $body: GetByRidQueriesRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<Query>
+    $body: _Functions.GetByRidQueriesRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Functions.Query>
 > = [1, "/v2/functions/queries/getByRid", 3];
 
 /**
@@ -75,19 +69,19 @@ const _getByRidQueries: $FoundryPlatformMethod<
 export function getByRidQueries(
   $ctx: $Client | $ClientContext,
   ...args: [
-    $body: GetByRidQueriesRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $body: _Functions.GetByRidQueriesRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<Query> {
+): Promise<_Functions.Query> {
   return $foundryPlatformFetch($ctx, _getByRidQueries, ...args);
 }
 
 const _executeQuery: $FoundryPlatformMethod<
   (
-    queryApiName: ApiName,
-    $body: ExecuteQueryRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<ExecuteQueryResponse>
+    queryApiName: _Functions.QueryApiName,
+    $body: _Functions.ExecuteQueryRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Functions.ExecuteQueryResponse>
 > = [1, "/v2/functions/queries/{0}/execute", 3];
 
 /**
@@ -103,10 +97,10 @@ const _executeQuery: $FoundryPlatformMethod<
 export function executeQuery(
   $ctx: $Client | $ClientContext,
   ...args: [
-    queryApiName: ApiName,
-    $body: ExecuteQueryRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
+    queryApiName: _Functions.QueryApiName,
+    $body: _Functions.ExecuteQueryRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<ExecuteQueryResponse> {
+): Promise<_Functions.ExecuteQueryResponse> {
   return $foundryPlatformFetch($ctx, _executeQuery, ...args);
 }

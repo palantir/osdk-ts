@@ -3,7 +3,7 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
   ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-  MinObjectDef as $ObjectTypeDefinition,
+  ObjectTypeDefinition as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
 } from '@osdk/api';
 import type {
@@ -138,9 +138,16 @@ export interface ObjectTypeWithAllPropertyTypes
     strictProps: ObjectTypeWithAllPropertyTypes.StrictProps;
     apiName: 'ObjectTypeWithAllPropertyTypes';
     description: 'A type with all property types';
+    displayName: 'ObjectTypeWithAllPropertyTypes';
+    icon: {
+      type: 'blueprint';
+      name: 'objectTypeWithAllPropertyTypes';
+      color: 'color';
+    };
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
+    pluralDisplayName: 'ObjectTypeWithAllPropertyTypes';
     primaryKeyApiName: 'id';
     primaryKeyType: 'integer';
     properties: {
@@ -269,6 +276,9 @@ export interface ObjectTypeWithAllPropertyTypes
        */
       stringTimeseries: $PropertyDef<'stringTimeseries', 'nullable', 'single'>;
     };
+    rid: 'rid.a.b.c.d';
+    status: 'ACTIVE';
+    titleProperty: 'id';
     type: 'object';
   };
 }

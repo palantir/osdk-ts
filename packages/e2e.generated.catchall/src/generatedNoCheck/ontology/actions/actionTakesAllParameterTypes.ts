@@ -1,4 +1,4 @@
-import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
   ActionParam,
   ActionReturnTypeForOptions,
@@ -91,7 +91,7 @@ export namespace actionTakesAllParameterTypes {
  * @param {ActionParam.PrimitiveType<"timestamp">} time-stamp
  */
 export interface actionTakesAllParameterTypes
-  extends MinActionDef<
+  extends ActionDefinition<
     'actionTakesAllParameterTypes',
     'Todo' | 'ObjectTypeWithAllPropertyTypes' | 'Person',
     actionTakesAllParameterTypes.Signatures
@@ -110,6 +110,8 @@ export interface actionTakesAllParameterTypes
       };
     };
     parameters: actionTakesAllParameterTypes.ParamsDefinition;
+    rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2';
+    status: 'ACTIVE';
     type: 'action';
 
     signatures: actionTakesAllParameterTypes.Signatures;

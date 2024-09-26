@@ -17,15 +17,11 @@
 import { SingleSubType } from "./Type.js";
 
 export class OptionalType extends SingleSubType {
-  get tsReferenceString() {
-    return `${this.subType.tsReferenceString} | undefined`;
+  getDeclaration(localNamespace: string): string {
+    return `${this.subType.getTsReferenceString(localNamespace)} | undefined`;
   }
 
-  get declaration(): string {
-    return this.tsReferenceString;
-  }
-
-  getPropertyDeclaration(name: string) {
-    return `${name}?: ${this.subType.tsReferenceString}`;
+  getPropertyDeclaration(name: string, localNamespace: string) {
+    return `${name}?: ${this.subType.getDeclaration(localNamespace)}`;
   }
 }

@@ -67,7 +67,7 @@ export async function generatePlatformSdkV2(
         + path.relative(
           ns.paths.srcDir,
           ns.paths.resourcesDir,
-        );
+        ).split(path.sep).join("/");
 
       const resourceName = pluralize(r.component);
       if (componentsGenerated.get(ns)!.some(c => c === resourceName)) {
@@ -160,7 +160,7 @@ export async function generateComponents(
     if (isIgnoredType(component.component)) {
       continue;
     }
-    out += component.declaration;
+    out += component.getDeclaration(ns.name);
     ret.push(component.name);
 
     addAll(referencedComponents, component.referencedComponents);
@@ -195,7 +195,7 @@ export async function generateErrors(
     if (isIgnoredType(error.spec)) {
       continue;
     }
-    out += error.declaration;
+    out += error.getDeclaration(ns.name);
     ret.push(error.name);
 
     addAll(referencedComponents, error.referencedComponents);

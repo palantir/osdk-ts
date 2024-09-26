@@ -4,7 +4,7 @@ import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type { Venture } from './Venture.js';
 import type {
   ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-  MinObjectDef as $ObjectTypeDefinition,
+  ObjectTypeDefinition as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
 } from '@osdk/api';
 import type {
@@ -84,6 +84,12 @@ export interface Employee extends $ObjectTypeDefinition<'Employee', Employee> {
     strictProps: Employee.StrictProps;
     apiName: 'Employee';
     description: 'An employee';
+    displayName: 'Employee';
+    icon: {
+      type: 'blueprint';
+      name: 'color';
+      color: 'color';
+    };
     implements: ['FooInterface'];
     interfaceMap: {
       FooInterface: {
@@ -97,15 +103,12 @@ export interface Employee extends $ObjectTypeDefinition<'Employee', Employee> {
         email: 'description';
       };
     };
-    inverseSpts: {
-      firstName: 'name';
-      email: 'description';
-    };
     links: {
       lead: $ObjectTypeLinkDefinition<Employee, false>;
       peeps: $ObjectTypeLinkDefinition<Employee, true>;
       ventures: $ObjectTypeLinkDefinition<Venture, true>;
     };
+    pluralDisplayName: 'Employees';
     primaryKeyApiName: 'id';
     primaryKeyType: 'string';
     properties: {
@@ -158,10 +161,9 @@ export interface Employee extends $ObjectTypeDefinition<'Employee', Employee> {
        */
       locationType: $PropertyDef<'string', 'nullable', 'single'>;
     };
-    spts: {
-      name: 'firstName';
-      description: 'email';
-    };
+    rid: 'rid.a.b.c.d';
+    status: 'ACTIVE';
+    titleProperty: 'firstName';
     type: 'object';
   };
 }

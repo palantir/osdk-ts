@@ -14,18 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ActionTypeApiName,
-  ApplyActionRequestV2,
-  ArtifactRepositoryRid,
-  AsyncApplyActionRequestV2,
-  AsyncApplyActionResponseV2,
-  BatchApplyActionRequestV2,
-  BatchApplyActionResponseV2,
-  OntologyIdentifier,
-  SdkPackageName,
-  SyncApplyActionResponseV2,
-} from "@osdk/internal.foundry.core";
+import type * as _Core from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
@@ -37,14 +26,14 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 const _applyActionV2: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    action: ActionTypeApiName,
-    $body: ApplyActionRequestV2,
+    ontology: _Core.OntologyIdentifier,
+    action: _Core.ActionTypeApiName,
+    $body: _Core.ApplyActionRequestV2,
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
-  ) => Promise<SyncApplyActionResponseV2>
+  ) => Promise<_Core.SyncApplyActionResponseV2>
 > = [1, "/v2/ontologies/{0}/actions/{1}/apply", 3];
 
 /**
@@ -66,28 +55,28 @@ const _applyActionV2: $FoundryPlatformMethod<
 export function applyActionV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    action: ActionTypeApiName,
-    $body: ApplyActionRequestV2,
+    ontology: _Core.OntologyIdentifier,
+    action: _Core.ActionTypeApiName,
+    $body: _Core.ApplyActionRequestV2,
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
   ]
-): Promise<SyncApplyActionResponseV2> {
+): Promise<_Core.SyncApplyActionResponseV2> {
   return $foundryPlatformFetch($ctx, _applyActionV2, ...args);
 }
 
 const _applyActionAsyncV2: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    action: ActionTypeApiName,
-    $body: AsyncApplyActionRequestV2,
+    ontology: _Core.OntologyIdentifier,
+    action: _Core.ActionTypeApiName,
+    $body: _Core.AsyncApplyActionRequestV2,
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
-  ) => Promise<AsyncApplyActionResponseV2>
+  ) => Promise<_Core.AsyncApplyActionResponseV2>
 > = [1, "/v2/ontologies/{0}/actions/{1}/applyAsync", 3];
 
 /**
@@ -109,28 +98,28 @@ const _applyActionAsyncV2: $FoundryPlatformMethod<
 export function applyActionAsyncV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    action: ActionTypeApiName,
-    $body: AsyncApplyActionRequestV2,
+    ontology: _Core.OntologyIdentifier,
+    action: _Core.ActionTypeApiName,
+    $body: _Core.AsyncApplyActionRequestV2,
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
   ]
-): Promise<AsyncApplyActionResponseV2> {
+): Promise<_Core.AsyncApplyActionResponseV2> {
   return $foundryPlatformFetch($ctx, _applyActionAsyncV2, ...args);
 }
 
 const _applyActionBatchV2: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    action: ActionTypeApiName,
-    $body: BatchApplyActionRequestV2,
+    ontology: _Core.OntologyIdentifier,
+    action: _Core.ActionTypeApiName,
+    $body: _Core.BatchApplyActionRequestV2,
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
-  ) => Promise<BatchApplyActionResponseV2>
+  ) => Promise<_Core.BatchApplyActionResponseV2>
 > = [1, "/v2/ontologies/{0}/actions/{1}/applyBatch", 3];
 
 /**
@@ -153,14 +142,14 @@ const _applyActionBatchV2: $FoundryPlatformMethod<
 export function applyActionBatchV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    action: ActionTypeApiName,
-    $body: BatchApplyActionRequestV2,
+    ontology: _Core.OntologyIdentifier,
+    action: _Core.ActionTypeApiName,
+    $body: _Core.BatchApplyActionRequestV2,
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
   ]
-): Promise<BatchApplyActionResponseV2> {
+): Promise<_Core.BatchApplyActionResponseV2> {
   return $foundryPlatformFetch($ctx, _applyActionBatchV2, ...args);
 }

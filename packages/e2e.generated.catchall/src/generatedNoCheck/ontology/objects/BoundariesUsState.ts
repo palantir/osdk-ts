@@ -3,7 +3,7 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
   ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-  MinObjectDef as $ObjectTypeDefinition,
+  ObjectTypeDefinition as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
 } from '@osdk/api';
 import type {
@@ -51,9 +51,16 @@ export interface BoundariesUsState extends $ObjectTypeDefinition<'BoundariesUsSt
     strictProps: BoundariesUsState.StrictProps;
     apiName: 'BoundariesUsState';
     description: 'Boundaries US State';
+    displayName: 'Boundaries US State';
+    icon: {
+      type: 'blueprint';
+      name: 'usState';
+      color: 'color';
+    };
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
+    pluralDisplayName: 'Boundaries US States';
     primaryKeyApiName: 'usState';
     primaryKeyType: 'string';
     properties: {
@@ -75,6 +82,9 @@ export interface BoundariesUsState extends $ObjectTypeDefinition<'BoundariesUsSt
        */
       usState: $PropertyDef<'string', 'non-nullable', 'single'>;
     };
+    rid: 'ri.a.b.c.d';
+    status: 'ACTIVE';
+    titleProperty: 'usState';
     type: 'object';
   };
 }

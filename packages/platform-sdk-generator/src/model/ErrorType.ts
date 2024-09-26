@@ -67,7 +67,15 @@ export class ErrorType extends Type {
     return this.spec.locator.localName;
   }
 
-  get declaration(): string {
+  getTsReferenceString(localNamespace: string): string {
+    if (localNamespace === this.namespace.name) {
+      return this.spec.locator.localName;
+    } else {
+      return `_${this.spec.locator.namespaceName}.${this.spec.locator.localName}`;
+    }
+  }
+
+  getDeclaration(localNamespace: string | undefined): string {
     const error = this.spec;
 
     const safety = this.parameters.find(p => p.safety === "UNSAFE") != null
@@ -88,7 +96,9 @@ export class ErrorType extends Type {
     parameters: {
       ${
       this.parameters.map(p =>
-        `${p.name}: ${true ? "unknown" : p.type.tsReferenceString};`
+        `${p.name}: ${
+          true ? "unknown" : p.type.getDeclaration(localNamespace)
+        };`
       ).join(
         "\n",
       )

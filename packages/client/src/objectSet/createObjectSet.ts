@@ -15,21 +15,26 @@
  */
 
 import type {
-  MinObjectDef,
   ObjectOrInterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
+  ObjectTypeDefinition,
 } from "@osdk/api";
 import type {
+  AsyncIterArgs,
+  Augments,
   BaseObjectSet,
   FetchPageResult,
   LinkedType,
   LinkNames,
   MinimalObjectSet,
+  NullabilityAdherence,
+  NullabilityAdherenceDefault,
   ObjectSet,
   Osdk,
   PrimaryKeyType,
   Result,
   SelectArg,
+  SingleOsdkResult,
 } from "@osdk/client.api";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/client.api/unstable";
 import type { EXPERIMENTAL_ObjectSetListener } from "@osdk/client.api/unstable";
@@ -48,7 +53,7 @@ import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
 function isObjectTypeDefinition(
   def: ObjectOrInterfaceDefinition,
-): def is MinObjectDef<any, any> {
+): def is ObjectTypeDefinition<any, any> {
   return def.type === "object";
 }
 
@@ -148,14 +153,21 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       });
     },
 
-    asyncIter: async function*(): AsyncIterableIterator<Osdk<Q>> {
+    asyncIter: async function*<
+      L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+      R extends boolean,
+      const A extends Augments,
+      S extends NullabilityAdherence = NullabilityAdherenceDefault,
+    >(
+      args?: AsyncIterArgs<Q, L, R, A, S>,
+    ): AsyncIterableIterator<SingleOsdkResult<Q, L, R, S>> {
       let $nextPageToken: string | undefined = undefined;
       do {
         const result: FetchPageResult<
           Q,
-          ObjectOrInterfacePropertyKeysFrom2<Q>,
-          boolean,
-          "throw"
+          L,
+          R,
+          S
         > = await fetchPageInternal(
           augmentRequestContext(
             clientCtx,
@@ -163,12 +175,12 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           ),
           objectType,
           objectSet,
-          { $nextPageToken },
+          { ...args, $nextPageToken },
         );
         $nextPageToken = result.nextPageToken;
 
         for (const obj of result.data) {
-          yield obj as Osdk<Q>;
+          yield obj as SingleOsdkResult<Q, L, R, S>;
         }
       } while ($nextPageToken != null);
     },
@@ -197,7 +209,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
 
     fetchOneWithErrors: (isObjectTypeDefinition(objectType)
       ? async <A extends SelectArg<Q>>(
-        primaryKey: Q extends MinObjectDef<any, any> ? PrimaryKeyType<Q>
+        primaryKey: Q extends ObjectTypeDefinition<any, any> ? PrimaryKeyType<Q>
           : never,
         options: A,
       ) => {
@@ -254,9 +266,9 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
 }
 async function createWithPk(
   clientCtx: MinimalClient,
-  objectType: MinObjectDef<any, any>,
+  objectType: ObjectTypeDefinition<any, any>,
   objectSet: WireObjectSet,
-  primaryKey: PrimaryKeyType<MinObjectDef<any, any>>,
+  primaryKey: PrimaryKeyType<ObjectTypeDefinition<any, any>>,
 ) {
   const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
     objectType.apiName,

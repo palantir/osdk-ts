@@ -1,4 +1,4 @@
-import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
   ActionParam,
   ActionReturnTypeForOptions,
@@ -79,7 +79,7 @@ export namespace createOffice {
  * @param {ActionParam.PrimitiveType<"string">} officeId
  * @param {ActionParam.PrimitiveType<"string">} [officeNames] A list of all office names
  */
-export interface createOffice extends MinActionDef<'createOffice', 'Office', createOffice.Signatures> {
+export interface createOffice extends ActionDefinition<'createOffice', 'Office', createOffice.Signatures> {
   __DefinitionMetadata?: {
     apiName: 'createOffice';
     description: "Create an office's";
@@ -90,6 +90,8 @@ export interface createOffice extends MinActionDef<'createOffice', 'Office', cre
       };
     };
     parameters: createOffice.ParamsDefinition;
+    rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f1';
+    status: 'ACTIVE';
     type: 'action';
 
     signatures: createOffice.Signatures;

@@ -4,7 +4,7 @@ import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type { Person } from './Person.js';
 import type {
   ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-  MinObjectDef as $ObjectTypeDefinition,
+  ObjectTypeDefinition as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
 } from '@osdk/api';
 import type {
@@ -56,11 +56,18 @@ export interface Todo extends $ObjectTypeDefinition<'Todo', Todo> {
     strictProps: Todo.StrictProps;
     apiName: 'Todo';
     description: 'Its a todo item.';
+    displayName: 'AwesomeTodoDisplayname';
+    icon: {
+      type: 'blueprint';
+      name: 'todo';
+      color: 'color';
+    };
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
       Assignee: $ObjectTypeLinkDefinition<Person, false>;
     };
+    pluralDisplayName: 'AwesomeTodoDisplayname';
     primaryKeyApiName: 'id';
     primaryKeyType: 'integer';
     properties: {
@@ -86,6 +93,9 @@ export interface Todo extends $ObjectTypeDefinition<'Todo', Todo> {
        */
       text: $PropertyDef<'string', 'nullable', 'single'>;
     };
+    rid: 'rid.a.b.c.d';
+    status: 'ACTIVE';
+    titleProperty: 'body';
     type: 'object';
   };
 }

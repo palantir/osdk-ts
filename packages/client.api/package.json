@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client.api",
-  "version": "2.0.0-beta.12",
+  "version": "2.0.0-beta.13",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -18,14 +18,12 @@
   },
   "scripts": {
     "api-docs": "api-documenter markdown -i build/api-extractor --output-folder api-docs",
-    "check-api": "api-extractor run --verbose --local",
     "check-attw": "monorepo.tool.attw esm",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "transpile": "monorepo.tool.transpile",
-    "typecheck": "monorepo.tool.typecheck esm"
+    "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
@@ -37,8 +35,6 @@
   "devDependencies": {
     "@microsoft/api-documenter": "^7.25.3",
     "@microsoft/api-extractor": "^7.47.0",
-    "@osdk/api": "workspace:~",
-    "@osdk/internal.foundry": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",

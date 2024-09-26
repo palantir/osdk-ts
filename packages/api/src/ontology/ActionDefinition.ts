@@ -15,9 +15,12 @@
  */
 
 import type { OsdkMetadata } from "../OsdkMetadata.js";
-import type { MinObjectDef } from "./ObjectTypeDefinition.js";
+import type {
+  ObjectTypeDefinition,
+  ReleaseStatus,
+} from "./ObjectTypeDefinition.js";
 
-export interface ActionDefinition<
+export interface ActionMetadata<
   A extends string,
   K extends string,
 > {
@@ -27,15 +30,15 @@ export interface ActionDefinition<
   displayName?: string;
   parameters: Record<any, ActionParameterDefinition<K, any>>;
   modifiedEntities?: Partial<Record<K, ActionModifiedEntity>>;
+  status: ReleaseStatus;
+  rid: string;
 }
 
-export interface ActionDefMetadata<A extends string, K extends string, T>
-  extends ActionDefinition<A, K>
-{
+export interface ActionCompileTimeMetadata<T> {
   signatures: T;
 }
 
-export interface MinActionDef<
+export interface ActionDefinition<
   A extends string,
   K extends string,
   T_signatures = never,
@@ -43,7 +46,9 @@ export interface MinActionDef<
   type: "action";
   apiName: A;
   osdkMetadata?: OsdkMetadata;
-  __DefinitionMetadata?: ActionDefMetadata<A, K, T_signatures>;
+  __DefinitionMetadata?:
+    & ActionCompileTimeMetadata<T_signatures>
+    & ActionMetadata<A, K>;
 }
 
 export interface ActionModifiedEntity {
@@ -64,7 +69,7 @@ export type ValidBaseActionParameterTypes =
 
 export interface ObjectActionDataType<
   K extends string,
-  T_Target extends MinObjectDef<any> = never,
+  T_Target extends ObjectTypeDefinition<any> = never,
 > {
   __OsdkTargetType?: T_Target;
   type: "object";
@@ -73,7 +78,7 @@ export interface ObjectActionDataType<
 
 export interface ObjectSetActionDataType<
   K extends string,
-  T_Target extends MinObjectDef<any> = never,
+  T_Target extends ObjectTypeDefinition<any> = never,
 > {
   __OsdkTargetType?: T_Target;
   type: "objectSet";
@@ -82,7 +87,7 @@ export interface ObjectSetActionDataType<
 
 export type ValidActionParameterTypes<
   K extends string = never,
-  T_Target extends MinObjectDef<any> = never,
+  T_Target extends ObjectTypeDefinition<any> = never,
 > =
   | ValidBaseActionParameterTypes
   | ObjectActionDataType<K, T_Target>
@@ -90,7 +95,7 @@ export type ValidActionParameterTypes<
 
 export interface ActionParameterDefinition<
   K extends string = never,
-  T_Target extends MinObjectDef<any> = never,
+  T_Target extends ObjectTypeDefinition<any> = never,
 > {
   type: ValidActionParameterTypes<K, T_Target>;
   description?: string;

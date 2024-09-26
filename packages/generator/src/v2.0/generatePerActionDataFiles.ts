@@ -15,7 +15,7 @@
  */
 
 import type { ActionParameterDefinition } from "@osdk/api";
-import { wireActionTypeV2ToSdkActionDefinition } from "@osdk/generator-converters";
+import { wireActionTypeV2ToSdkActionMetadata } from "@osdk/generator-converters";
 import type {
   ActionParameterType,
   ActionTypeV2,
@@ -65,7 +65,7 @@ export async function generatePerActionDataFiles(
       const uniqueApiNamesString = stringUnionFrom([...uniqueApiNames]);
 
       const fullActionDef = deleteUndefineds(
-        wireActionTypeV2ToSdkActionDefinition(action.raw),
+        wireActionTypeV2ToSdkActionMetadata(action.raw),
       );
 
       function createParamsDef() {
@@ -175,7 +175,7 @@ export async function generatePerActionDataFiles(
           
           ${jsDocBlock.join("\n")}
           */
-          export interface ${action.shortApiName} extends MinActionDef<"${action.shortApiName}", ${uniqueApiNamesString}, ${action.shortApiName}.Signatures> {
+          export interface ${action.shortApiName} extends ActionDefinition<"${action.fullApiName}", ${uniqueApiNamesString}, ${action.shortApiName}.Signatures> {
             __DefinitionMetadata?: {
               ${
           stringify(fullActionDef, {
@@ -191,6 +191,8 @@ export async function generatePerActionDataFiles(
             "displayName": () => undefined,
             "modifiedEntities": () => undefined,
             "parameters": () => undefined,
+            "rid": () => undefined,
+            "status": () => undefined,
           })
         }
             osdkMetadata: typeof $osdkMetadata;
@@ -207,6 +209,8 @@ export async function generatePerActionDataFiles(
             "displayName": () => undefined,
             "modifiedEntities": () => undefined,
             "parameters": () => undefined,
+            "rid": () => undefined,
+            "status": () => undefined,
           })
         },
           osdkMetadata: $osdkMetadata
@@ -260,7 +264,7 @@ export async function generatePerActionDataFiles(
       await fs.writeFile(
         path.join(rootOutDir, currentFilePath),
         await formatTs(`
-          import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from "@osdk/api";
+          import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from "@osdk/api";
           import type { ActionParam, ActionReturnTypeForOptions, ApplyActionOptions, ApplyBatchActionOptions,  } from '@osdk/client.api';
           import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
           ${imports}

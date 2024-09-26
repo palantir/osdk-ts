@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ListQueryTypesResponseV2,
-  OntologyIdentifier,
-  PageSize,
-  PageToken,
-  QueryApiName,
-  QueryTypeV2,
-} from "@osdk/internal.foundry.core";
+import type * as _Core from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
@@ -33,12 +26,12 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 const _listQueryTypesV2: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
+    ontology: _Core.OntologyIdentifier,
     $queryParams?: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
     },
-  ) => Promise<ListQueryTypesResponseV2>
+  ) => Promise<_Core.ListQueryTypesResponseV2>
 > = [0, "/v2/ontologies/{0}/queryTypes", 2];
 
 /**
@@ -57,22 +50,22 @@ const _listQueryTypesV2: $FoundryPlatformMethod<
 export function listQueryTypesV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
+    ontology: _Core.OntologyIdentifier,
 
     $queryParams?: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
     },
   ]
-): Promise<ListQueryTypesResponseV2> {
+): Promise<_Core.ListQueryTypesResponseV2> {
   return $foundryPlatformFetch($ctx, _listQueryTypesV2, ...args);
 }
 
 const _getQueryTypeV2: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    queryApiName: QueryApiName,
-  ) => Promise<QueryTypeV2>
+    ontology: _Core.OntologyIdentifier,
+    queryApiName: _Core.QueryApiName,
+  ) => Promise<_Core.QueryTypeV2>
 > = [0, "/v2/ontologies/{0}/queryTypes/{1}"];
 
 /**
@@ -87,7 +80,10 @@ const _getQueryTypeV2: $FoundryPlatformMethod<
  */
 export function getQueryTypeV2(
   $ctx: $Client | $ClientContext,
-  ...args: [ontology: OntologyIdentifier, queryApiName: QueryApiName]
-): Promise<QueryTypeV2> {
+  ...args: [
+    ontology: _Core.OntologyIdentifier,
+    queryApiName: _Core.QueryApiName,
+  ]
+): Promise<_Core.QueryTypeV2> {
   return $foundryPlatformFetch($ctx, _getQueryTypeV2, ...args);
 }

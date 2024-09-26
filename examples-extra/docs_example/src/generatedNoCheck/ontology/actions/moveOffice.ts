@@ -1,4 +1,4 @@
-import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
   ActionParam,
   ActionReturnTypeForOptions,
@@ -79,7 +79,7 @@ export namespace moveOffice {
  * @param {ActionParam.PrimitiveType<"string">} officeId
  * @param {ActionParam.PrimitiveType<"integer">} [officeNames] A list of all office names
  */
-export interface moveOffice extends MinActionDef<'moveOffice', 'Office', moveOffice.Signatures> {
+export interface moveOffice extends ActionDefinition<'moveOffice', 'Office', moveOffice.Signatures> {
   __DefinitionMetadata?: {
     apiName: 'moveOffice';
     description: "Update an office's physical location";
@@ -90,6 +90,8 @@ export interface moveOffice extends MinActionDef<'moveOffice', 'Office', moveOff
       };
     };
     parameters: moveOffice.ParamsDefinition;
+    rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2';
+    status: 'ACTIVE';
     type: 'action';
 
     signatures: moveOffice.Signatures;

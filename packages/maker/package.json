@@ -1,6 +1,6 @@
 {
   "name": "@osdk/maker",
-  "version": "0.8.0-beta.8",
+  "version": "0.8.0-beta.9",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -23,8 +23,7 @@
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run",
-    "transpile": "monorepo.tool.transpile",
-    "typecheck": "monorepo.tool.typecheck esm"
+    "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
     "@osdk/api": "workspace:~",

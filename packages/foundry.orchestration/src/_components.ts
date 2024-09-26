@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-import type {
-  CreatedBy,
-  CreatedTime,
-  Duration,
-  MediaSetRid,
-  UpdatedBy,
-  UpdatedTime,
-} from "@osdk/foundry.core";
-import type { BranchName, DatasetRid } from "@osdk/foundry.datasets";
-import type { ProjectRid } from "@osdk/foundry.filesystem";
+import type * as _Core from "@osdk/foundry.core";
+import type * as _Datasets from "@osdk/foundry.datasets";
+import type * as _Filesystem from "@osdk/foundry.filesystem";
 
 export type LooselyBrandedString<T extends string> = string & {
   __LOOSE_BRAND?: T;
@@ -42,7 +35,7 @@ export type AbortOnFailure = boolean;
  */
 export interface Action {
   target: BuildTarget;
-  branchName: BranchName;
+  branchName: _Datasets.BranchName;
   fallbackBranches: FallbackBranches;
   forceBuild: ForceBuild;
   retryCount?: RetryCount;
@@ -65,9 +58,9 @@ export interface AndTrigger {
  */
 export interface Build {
   rid: BuildRid;
-  branchName: BranchName;
-  createdTime: CreatedTime;
-  createdBy: CreatedBy;
+  branchName: _Datasets.BranchName;
+  createdTime: _Core.CreatedTime;
+  createdBy: _Core.CreatedBy;
   fallbackBranches: FallbackBranches;
   retryCount: RetryCount;
   retryBackoffDuration: RetryBackoffDuration;
@@ -106,9 +99,9 @@ target datasets (inclusive) except for the datasets to ignore.
    * Log Safety: SAFE
    */
 export interface ConnectingTarget {
-  inputDatasetRids: Array<DatasetRid>;
-  targetDatasetRids: Array<DatasetRid>;
-  ignoredDatasetRids: Array<DatasetRid>;
+  inputDatasetRids: Array<_Datasets.DatasetRid>;
+  targetDatasetRids: Array<_Datasets.DatasetRid>;
+  ignoredDatasetRids: Array<_Datasets.DatasetRid>;
 }
 
 /**
@@ -116,13 +109,185 @@ export interface ConnectingTarget {
  */
 export interface CreateBuildsRequest {
   target: BuildTarget;
-  branchName?: BranchName;
+  branchName?: _Datasets.BranchName;
   fallbackBranches: FallbackBranches;
   forceBuild?: ForceBuild;
   retryCount?: RetryCount;
   retryBackoffDuration?: RetryBackoffDuration;
   abortOnFailure?: AbortOnFailure;
   notificationsEnabled?: NotificationsEnabled;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface CreateScheduleRequest {
+  displayName?: string;
+  description?: string;
+  action: CreateScheduleRequestAction;
+  trigger?: Trigger;
+  scopeMode?: CreateScheduleRequestScopeMode;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface CreateScheduleRequestAction {
+  abortOnFailure?: AbortOnFailure;
+  forceBuild?: ForceBuild;
+  retryBackoffDuration?: RetryBackoffDuration;
+  retryCount?: RetryCount;
+  fallbackBranches?: FallbackBranches;
+  branchName?: _Datasets.BranchName;
+  notificationsEnabled?: NotificationsEnabled;
+  target: CreateScheduleRequestActionBuildTarget;
+}
+
+/**
+ * The targets of the build.
+ *
+ * Log Safety: UNSAFE
+ */
+export type CreateScheduleRequestActionBuildTarget =
+  | ({
+    type: "upstream";
+  } & CreateScheduleRequestActionBuildTargetUpstreamTarget)
+  | ({ type: "manual" } & CreateScheduleRequestActionBuildTargetManualTarget)
+  | ({
+    type: "connecting";
+  } & CreateScheduleRequestActionBuildTargetConnectingTarget);
+
+/**
+ * Log Safety: SAFE
+ */
+export interface CreateScheduleRequestActionBuildTargetConnectingTarget {
+  ignoredDatasetRids?: Array<_Datasets.DatasetRid>;
+  inputDatasetRids: Array<_Datasets.DatasetRid>;
+  targetDatasetRids: Array<_Datasets.DatasetRid>;
+}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface CreateScheduleRequestActionBuildTargetManualTarget {
+  datasetRids: Array<_Datasets.DatasetRid>;
+}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface CreateScheduleRequestActionBuildTargetUpstreamTarget {
+  datasetRids: Array<_Datasets.DatasetRid>;
+  ignoredDatasetRids?: Array<_Datasets.DatasetRid>;
+}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface CreateScheduleRequestActionDuration {
+  unit: _Core.TimeUnit;
+  value: number;
+}
+
+/**
+ * The boundaries for the schedule build.
+ *
+ * Log Safety: UNSAFE
+ */
+export type CreateScheduleRequestScopeMode =
+  | ({ type: "project" } & CreateScheduleRequestScopeModeProjectScope)
+  | ({ type: "user" } & CreateScheduleRequestScopeModeUserScope);
+
+/**
+ * Log Safety: SAFE
+ */
+export interface CreateScheduleRequestScopeModeProjectScope {
+  projectRids: Array<_Filesystem.ProjectRid>;
+}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface CreateScheduleRequestScopeModeUserScope {}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export type CreateScheduleRequestTrigger =
+  | ({ type: "jobSucceeded" } & CreateScheduleRequestTriggerJobSucceededTrigger)
+  | ({ type: "or" } & CreateScheduleRequestTriggerOrTrigger)
+  | ({ type: "newLogic" } & CreateScheduleRequestTriggerNewLogicTrigger)
+  | ({ type: "and" } & CreateScheduleRequestTriggerAndTrigger)
+  | ({
+    type: "datasetUpdated";
+  } & CreateScheduleRequestTriggerDatasetUpdatedTrigger)
+  | ({
+    type: "scheduleSucceeded";
+  } & CreateScheduleRequestTriggerScheduleSucceededTrigger)
+  | ({
+    type: "mediaSetUpdated";
+  } & CreateScheduleRequestTriggerMediaSetUpdatedTrigger)
+  | ({ type: "time" } & CreateScheduleRequestTriggerTimeTrigger);
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface CreateScheduleRequestTriggerAndTrigger {
+  triggers: Array<Trigger>;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface CreateScheduleRequestTriggerDatasetUpdatedTrigger {
+  datasetRid: _Datasets.DatasetRid;
+  branchName?: _Datasets.BranchName;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface CreateScheduleRequestTriggerJobSucceededTrigger {
+  datasetRid: _Datasets.DatasetRid;
+  branchName?: _Datasets.BranchName;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface CreateScheduleRequestTriggerMediaSetUpdatedTrigger {
+  branchName?: _Datasets.BranchName;
+  mediaSetRid: _Core.MediaSetRid;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface CreateScheduleRequestTriggerNewLogicTrigger {
+  datasetRid: _Datasets.DatasetRid;
+  branchName?: _Datasets.BranchName;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface CreateScheduleRequestTriggerOrTrigger {
+  triggers: Array<Trigger>;
+}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface CreateScheduleRequestTriggerScheduleSucceededTrigger {
+  scheduleRid: ScheduleRid;
+}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface CreateScheduleRequestTriggerTimeTrigger {
+  cronExpression: CronExpression;
+  timeZone?: _Core.ZoneId;
 }
 
 /**
@@ -140,8 +305,8 @@ dataset on the target branch.
    * Log Safety: UNSAFE
    */
 export interface DatasetUpdatedTrigger {
-  datasetRid: DatasetRid;
-  branchName: BranchName;
+  datasetRid: _Datasets.DatasetRid;
+  branchName: _Datasets.BranchName;
 }
 
 /**
@@ -150,7 +315,7 @@ target branch.
    *
    * Log Safety: UNSAFE
    */
-export type FallbackBranches = Array<BranchName>;
+export type FallbackBranches = Array<_Datasets.BranchName>;
 
 /**
  * Whether to ignore staleness information when running the build.
@@ -166,8 +331,8 @@ branch.
    * Log Safety: UNSAFE
    */
 export interface JobSucceededTrigger {
-  datasetRid: DatasetRid;
-  branchName: BranchName;
+  datasetRid: _Datasets.DatasetRid;
+  branchName: _Datasets.BranchName;
 }
 
 /**
@@ -176,7 +341,7 @@ export interface JobSucceededTrigger {
  * Log Safety: SAFE
  */
 export interface ManualTarget {
-  datasetRids: Array<DatasetRid>;
+  datasetRids: Array<_Datasets.DatasetRid>;
 }
 
 /**
@@ -188,8 +353,8 @@ eventually (but not necessary immediately) after an update.
    * Log Safety: UNSAFE
    */
 export interface MediaSetUpdatedTrigger {
-  mediaSetRid: MediaSetRid;
-  branchName: BranchName;
+  mediaSetRid: _Core.MediaSetRid;
+  branchName: _Datasets.BranchName;
 }
 
 /**
@@ -199,8 +364,8 @@ that branch.
    * Log Safety: UNSAFE
    */
 export interface NewLogicTrigger {
-  branchName: BranchName;
-  datasetRid: DatasetRid;
+  branchName: _Datasets.BranchName;
+  datasetRid: _Datasets.DatasetRid;
 }
 
 /**
@@ -225,7 +390,181 @@ export interface OrTrigger {
  * Log Safety: SAFE
  */
 export interface ProjectScope {
-  projectRids: Array<ProjectRid>;
+  projectRids: Array<_Filesystem.ProjectRid>;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface ReplaceScheduleRequest {
+  displayName?: string;
+  description?: string;
+  action: ReplaceScheduleRequestAction;
+  trigger?: Trigger;
+  scopeMode?: ReplaceScheduleRequestScopeMode;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface ReplaceScheduleRequestAction {
+  abortOnFailure?: AbortOnFailure;
+  forceBuild?: ForceBuild;
+  retryBackoffDuration?: RetryBackoffDuration;
+  retryCount?: RetryCount;
+  fallbackBranches?: FallbackBranches;
+  branchName?: _Datasets.BranchName;
+  notificationsEnabled?: NotificationsEnabled;
+  target: ReplaceScheduleRequestActionBuildTarget;
+}
+
+/**
+ * The targets of the build.
+ *
+ * Log Safety: UNSAFE
+ */
+export type ReplaceScheduleRequestActionBuildTarget =
+  | ({
+    type: "upstream";
+  } & ReplaceScheduleRequestActionBuildTargetUpstreamTarget)
+  | ({ type: "manual" } & ReplaceScheduleRequestActionBuildTargetManualTarget)
+  | ({
+    type: "connecting";
+  } & ReplaceScheduleRequestActionBuildTargetConnectingTarget);
+
+/**
+ * Log Safety: SAFE
+ */
+export interface ReplaceScheduleRequestActionBuildTargetConnectingTarget {
+  ignoredDatasetRids?: Array<_Datasets.DatasetRid>;
+  inputDatasetRids: Array<_Datasets.DatasetRid>;
+  targetDatasetRids: Array<_Datasets.DatasetRid>;
+}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface ReplaceScheduleRequestActionBuildTargetManualTarget {
+  datasetRids: Array<_Datasets.DatasetRid>;
+}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface ReplaceScheduleRequestActionBuildTargetUpstreamTarget {
+  datasetRids: Array<_Datasets.DatasetRid>;
+  ignoredDatasetRids?: Array<_Datasets.DatasetRid>;
+}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface ReplaceScheduleRequestActionDuration {
+  unit: _Core.TimeUnit;
+  value: number;
+}
+
+/**
+ * The boundaries for the schedule build.
+ *
+ * Log Safety: UNSAFE
+ */
+export type ReplaceScheduleRequestScopeMode =
+  | ({ type: "project" } & ReplaceScheduleRequestScopeModeProjectScope)
+  | ({ type: "user" } & ReplaceScheduleRequestScopeModeUserScope);
+
+/**
+ * Log Safety: SAFE
+ */
+export interface ReplaceScheduleRequestScopeModeProjectScope {
+  projectRids: Array<_Filesystem.ProjectRid>;
+}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface ReplaceScheduleRequestScopeModeUserScope {}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export type ReplaceScheduleRequestTrigger =
+  | ({
+    type: "jobSucceeded";
+  } & ReplaceScheduleRequestTriggerJobSucceededTrigger)
+  | ({ type: "or" } & ReplaceScheduleRequestTriggerOrTrigger)
+  | ({ type: "newLogic" } & ReplaceScheduleRequestTriggerNewLogicTrigger)
+  | ({ type: "and" } & ReplaceScheduleRequestTriggerAndTrigger)
+  | ({
+    type: "datasetUpdated";
+  } & ReplaceScheduleRequestTriggerDatasetUpdatedTrigger)
+  | ({
+    type: "scheduleSucceeded";
+  } & ReplaceScheduleRequestTriggerScheduleSucceededTrigger)
+  | ({
+    type: "mediaSetUpdated";
+  } & ReplaceScheduleRequestTriggerMediaSetUpdatedTrigger)
+  | ({ type: "time" } & ReplaceScheduleRequestTriggerTimeTrigger);
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface ReplaceScheduleRequestTriggerAndTrigger {
+  triggers: Array<Trigger>;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface ReplaceScheduleRequestTriggerDatasetUpdatedTrigger {
+  datasetRid: _Datasets.DatasetRid;
+  branchName?: _Datasets.BranchName;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface ReplaceScheduleRequestTriggerJobSucceededTrigger {
+  datasetRid: _Datasets.DatasetRid;
+  branchName?: _Datasets.BranchName;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface ReplaceScheduleRequestTriggerMediaSetUpdatedTrigger {
+  branchName?: _Datasets.BranchName;
+  mediaSetRid: _Core.MediaSetRid;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface ReplaceScheduleRequestTriggerNewLogicTrigger {
+  datasetRid: _Datasets.DatasetRid;
+  branchName?: _Datasets.BranchName;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface ReplaceScheduleRequestTriggerOrTrigger {
+  triggers: Array<Trigger>;
+}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface ReplaceScheduleRequestTriggerScheduleSucceededTrigger {
+  scheduleRid: ScheduleRid;
+}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface ReplaceScheduleRequestTriggerTimeTrigger {
+  cronExpression: CronExpression;
+  timeZone?: _Core.ZoneId;
 }
 
 /**
@@ -233,7 +572,7 @@ export interface ProjectScope {
  *
  * Log Safety: SAFE
  */
-export type RetryBackoffDuration = Duration;
+export type RetryBackoffDuration = _Core.Duration;
 
 /**
    * The number of retry attempts for failed Jobs within the Build. A Job's failure is not considered final until
@@ -252,10 +591,10 @@ export interface Schedule {
   displayName?: string;
   description?: string;
   currentVersionRid: ScheduleVersionRid;
-  createdTime: CreatedTime;
-  createdBy: CreatedBy;
-  updatedTime: UpdatedTime;
-  updatedBy: UpdatedBy;
+  createdTime: _Core.CreatedTime;
+  createdBy: _Core.CreatedBy;
+  updatedTime: _Core.UpdatedTime;
+  updatedBy: _Core.UpdatedBy;
   paused: SchedulePaused;
   trigger?: Trigger;
   action: Action;
@@ -281,8 +620,8 @@ export interface ScheduleRun {
   rid: ScheduleRunRid;
   scheduleRid: ScheduleRid;
   scheduleVersionRid: ScheduleVersionRid;
-  createdTime: CreatedTime;
-  createdBy?: CreatedBy;
+  createdTime: _Core.CreatedTime;
+  createdBy?: _Core.CreatedBy;
   result?: ScheduleRunResult;
 }
 
@@ -382,7 +721,7 @@ export type ScopeMode =
  */
 export interface TimeTrigger {
   cronExpression: CronExpression;
-  timeZone: ZoneId;
+  timeZone: _Core.ZoneId;
 }
 
 /**
@@ -404,8 +743,8 @@ export type Trigger =
  * Log Safety: SAFE
  */
 export interface UpstreamTarget {
-  datasetRids: Array<DatasetRid>;
-  ignoredDatasetRids: Array<DatasetRid>;
+  datasetRids: Array<_Datasets.DatasetRid>;
+  ignoredDatasetRids: Array<_Datasets.DatasetRid>;
 }
 
 /**
@@ -415,10 +754,3 @@ associated user is permitted to build.
    * Log Safety: SAFE
    */
 export interface UserScope {}
-
-/**
- * A string representation of a java.time.ZoneId
- *
- * Log Safety: SAFE
- */
-export type ZoneId = LooselyBrandedString<"ZoneId">;

@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ActionTypeApiName,
-  ActionTypeV2,
-  ListActionTypesResponseV2,
-  OntologyIdentifier,
-  PageSize,
-  PageToken,
-} from "@osdk/internal.foundry.core";
+import type * as _Core from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
@@ -33,12 +26,12 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 const _listActionTypesV2: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
+    ontology: _Core.OntologyIdentifier,
     $queryParams?: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
     },
-  ) => Promise<ListActionTypesResponseV2>
+  ) => Promise<_Core.ListActionTypesResponseV2>
 > = [0, "/v2/ontologies/{0}/actionTypes", 2];
 
 /**
@@ -57,22 +50,22 @@ const _listActionTypesV2: $FoundryPlatformMethod<
 export function listActionTypesV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
+    ontology: _Core.OntologyIdentifier,
 
     $queryParams?: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
     },
   ]
-): Promise<ListActionTypesResponseV2> {
+): Promise<_Core.ListActionTypesResponseV2> {
   return $foundryPlatformFetch($ctx, _listActionTypesV2, ...args);
 }
 
 const _getActionTypeV2: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    actionType: ActionTypeApiName,
-  ) => Promise<ActionTypeV2>
+    ontology: _Core.OntologyIdentifier,
+    actionType: _Core.ActionTypeApiName,
+  ) => Promise<_Core.ActionTypeV2>
 > = [0, "/v2/ontologies/{0}/actionTypes/{1}"];
 
 /**
@@ -87,7 +80,10 @@ const _getActionTypeV2: $FoundryPlatformMethod<
  */
 export function getActionTypeV2(
   $ctx: $Client | $ClientContext,
-  ...args: [ontology: OntologyIdentifier, actionType: ActionTypeApiName]
-): Promise<ActionTypeV2> {
+  ...args: [
+    ontology: _Core.OntologyIdentifier,
+    actionType: _Core.ActionTypeApiName,
+  ]
+): Promise<_Core.ActionTypeV2> {
   return $foundryPlatformFetch($ctx, _getActionTypeV2, ...args);
 }

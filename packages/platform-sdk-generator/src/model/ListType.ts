@@ -18,8 +18,8 @@ import type { Type } from "./Type.js";
 import { SingleSubType } from "./Type.js";
 
 export class ListType extends SingleSubType {
-  get tsReferenceString() {
-    return `Array<${this.subType.tsReferenceString}>`;
+  getDeclaration(localNamespace: string) {
+    return `Array<${this.subType.getDeclaration(localNamespace)}>`;
   }
 
   get referencedTypes(): Set<Type> {

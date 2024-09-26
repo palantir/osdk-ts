@@ -1,4 +1,4 @@
-import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
   ActionParam,
   ActionReturnTypeForOptions,
@@ -63,7 +63,7 @@ export namespace promoteEmployeeObject {
  * @param {ActionParam.PrimitiveType<"string">} newTitle
  */
 export interface promoteEmployeeObject
-  extends MinActionDef<'promoteEmployeeObject', 'Employee', promoteEmployeeObject.Signatures> {
+  extends ActionDefinition<'promoteEmployeeObject', 'Employee', promoteEmployeeObject.Signatures> {
   __DefinitionMetadata?: {
     apiName: 'promoteEmployeeObject';
     description: "Update an employee's title and compensation";
@@ -74,6 +74,8 @@ export interface promoteEmployeeObject
       };
     };
     parameters: promoteEmployeeObject.ParamsDefinition;
+    rid: 'ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2168';
+    status: 'ACTIVE';
     type: 'action';
 
     signatures: promoteEmployeeObject.Signatures;

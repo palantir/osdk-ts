@@ -1,4 +1,4 @@
-import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
   ActionParam,
   ActionReturnTypeForOptions,
@@ -91,7 +91,7 @@ export namespace createOfficeAndEmployee {
  * @param {ActionParam.PrimitiveType<"string">} [officeNames] A list of all office names
  */
 export interface createOfficeAndEmployee
-  extends MinActionDef<'createOfficeAndEmployee', 'Office' | 'Employee', createOfficeAndEmployee.Signatures> {
+  extends ActionDefinition<'createOfficeAndEmployee', 'Office' | 'Employee', createOfficeAndEmployee.Signatures> {
   __DefinitionMetadata?: {
     apiName: 'createOfficeAndEmployee';
     description: 'Create an office and employee';
@@ -106,6 +106,8 @@ export interface createOfficeAndEmployee
       };
     };
     parameters: createOfficeAndEmployee.ParamsDefinition;
+    rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2';
+    status: 'ACTIVE';
     type: 'action';
 
     signatures: createOfficeAndEmployee.Signatures;

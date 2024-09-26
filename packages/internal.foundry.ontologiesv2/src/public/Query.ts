@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ArtifactRepositoryRid,
-  ExecuteQueryRequest,
-  ExecuteQueryResponse,
-  OntologyIdentifier,
-  QueryApiName,
-  SdkPackageName,
-} from "@osdk/internal.foundry.core";
+import type * as _Core from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
@@ -33,14 +26,14 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 const _executeQueryV2: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    queryApiName: QueryApiName,
-    $body: ExecuteQueryRequest,
+    ontology: _Core.OntologyIdentifier,
+    queryApiName: _Core.QueryApiName,
+    $body: _Core.ExecuteQueryRequest,
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
-  ) => Promise<ExecuteQueryResponse>
+  ) => Promise<_Core.ExecuteQueryResponse>
 > = [1, "/v2/ontologies/{0}/queries/{1}/execute", 3];
 
 /**
@@ -59,14 +52,14 @@ const _executeQueryV2: $FoundryPlatformMethod<
 export function executeQueryV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    queryApiName: QueryApiName,
-    $body: ExecuteQueryRequest,
+    ontology: _Core.OntologyIdentifier,
+    queryApiName: _Core.QueryApiName,
+    $body: _Core.ExecuteQueryRequest,
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
   ]
-): Promise<ExecuteQueryResponse> {
+): Promise<_Core.ExecuteQueryResponse> {
   return $foundryPlatformFetch($ctx, _executeQueryV2, ...args);
 }

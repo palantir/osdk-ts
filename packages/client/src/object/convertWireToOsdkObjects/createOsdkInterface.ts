@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition } from "@osdk/api";
+import type { InterfaceMetadata } from "@osdk/api";
 import type { Osdk, OsdkObject } from "@osdk/client.api";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { createSimpleCache } from "../SimpleCache.js";
@@ -31,7 +31,7 @@ import type { ObjectHolder } from "./ObjectHolder.js";
 import { OsdkCustomInspectPrototype } from "./OsdkCustomInspectPrototype.js";
 
 const handlerCache = createSimpleCache<
-  InterfaceDefinition<any>,
+  InterfaceMetadata<any>,
   ProxyHandler<InterfaceHolder<any> & Osdk<any>>
 >(
   new WeakMap(),
@@ -43,7 +43,7 @@ export function createOsdkInterface<
   Q extends FetchedObjectTypeDefinition<any, any>,
 >(
   underlying: Osdk<Q> & ObjectHolder<Q>,
-  interfaceDef: InterfaceDefinition<any>,
+  interfaceDef: InterfaceMetadata<any>,
 ) {
   const interfaceHolder: InterfaceHolderOwnProps<Q> = {
     [UnderlyingOsdkObject]: underlying,
@@ -60,7 +60,7 @@ export function createOsdkInterface<
 }
 
 function createInterfaceProxyHandler(
-  newDef: InterfaceDefinition<any, any>,
+  newDef: InterfaceMetadata<any, any>,
 ): ProxyHandler<InterfaceHolder<any> & Osdk<any>> {
   return {
     getOwnPropertyDescriptor(target, p) {

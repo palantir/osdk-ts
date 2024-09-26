@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import type { PreviewMode } from "@osdk/foundry.core";
+import type * as _Core from "@osdk/foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
-import type { ApiDefinition, IrVersion } from "../_components.js";
+import type * as _PublicApis from "../_components.js";
 
 //
 
 const _getApiDefinition: $FoundryPlatformMethod<
   (
-    apiDefinitionVersion: IrVersion,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<ApiDefinition>
+    apiDefinitionVersion: _PublicApis.IrVersion,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_PublicApis.ApiDefinition>
 > = [0, "/v2/publicApis/apiDefinitions/{0}", 2];
 
 /**
@@ -43,10 +43,10 @@ const _getApiDefinition: $FoundryPlatformMethod<
 export function getApiDefinition(
   $ctx: $Client | $ClientContext,
   ...args: [
-    apiDefinitionVersion: IrVersion,
+    apiDefinitionVersion: _PublicApis.IrVersion,
 
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<ApiDefinition> {
+): Promise<_PublicApis.ApiDefinition> {
   return $foundryPlatformFetch($ctx, _getApiDefinition, ...args);
 }

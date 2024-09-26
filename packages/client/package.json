@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client",
-  "version": "2.0.0-beta.12",
+  "version": "2.0.0-beta.13",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -27,9 +27,7 @@
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --pool=forks",
     "test:watch": "vitest",
-    "transpile": "monorepo.tool.transpile",
-    "transpileWatch": "tsup --watch",
-    "typecheck": "monorepo.tool.typecheck esm"
+    "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
@@ -37,7 +35,9 @@
     "@osdk/client.unstable": "workspace:*",
     "@osdk/client.unstable.osw": "workspace:*",
     "@osdk/generator-converters": "workspace:~",
-    "@osdk/shared.client": "workspace:~",
+    "@osdk/internal.foundry.core": "workspace:~",
+    "@osdk/internal.foundry.ontologiesv2": "workspace:~",
+    "@osdk/shared.client": "workspace:^",
     "@osdk/shared.client.impl": "workspace:~",
     "@osdk/shared.net.errors": "workspace:~",
     "@osdk/shared.net.fetch": "workspace:~",
@@ -55,8 +55,6 @@
     "@microsoft/api-documenter": "^7.25.3",
     "@microsoft/api-extractor": "^7.47.0",
     "@osdk/client.test.ontology": "workspace:~",
-    "@osdk/internal.foundry": "workspace:~",
-    "@osdk/internal.foundry.core": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
@@ -67,7 +65,6 @@
     "jest-extended": "^4.0.2",
     "msw": "^2.3.4",
     "p-defer": "^4.0.1",
-    "p-event": "^6.0.1",
     "p-locate": "^6.0.0",
     "p-map": "^7.0.2",
     "p-state": "^2.0.1",

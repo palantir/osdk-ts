@@ -28,7 +28,9 @@ export class MapType extends SimpleType {
     );
   }
 
-  get tsReferenceString() {
-    return `Record<${this.keyType.tsReferenceString}, ${this.valueType.tsReferenceString}>`;
+  getDeclaration(localNamespace: string) {
+    return `Record<${this.keyType.getDeclaration(localNamespace)}, ${
+      this.valueType.getDeclaration(localNamespace)
+    }>`;
   }
 }

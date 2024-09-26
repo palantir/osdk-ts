@@ -15,8 +15,8 @@
  */
 
 import type {
-  MinActionDef,
-  ObjectTypeDefinition,
+  ActionDefinition,
+  ObjectMetadata,
   ObjectTypeLinkDefinition,
   VersionBound,
 } from "@osdk/api";
@@ -34,6 +34,11 @@ const Task: TaskDef = {
   apiName: "Task",
   primaryKeyApiName: "id",
   primaryKeyType: "integer",
+  icon: {
+    type: "blueprint",
+    name: "icon",
+    color: "blue",
+  },
   properties: {
     id: { type: "integer", nullable: true },
   },
@@ -43,7 +48,13 @@ const Task: TaskDef = {
       targetType: "Todo",
     },
   },
-  osdkMetadata,
+  titleProperty: "id",
+  displayName: "Task",
+  pluralDisplayName: "Tasks",
+  status: "ACTIVE",
+  interfaceMap: {},
+  inverseInterfaceMap: {},
+  rid: "",
 };
 
 const Todo: TodoDef = {
@@ -52,6 +63,11 @@ const Todo: TodoDef = {
   primaryKeyApiName: "id",
   primaryKeyType: "string",
   description: "A todo object",
+  icon: {
+    type: "blueprint",
+    name: "icon",
+    color: "blue",
+  },
   properties: {
     id: { type: "string", nullable: true, description: "The id" },
     body: { type: "string", nullable: true },
@@ -67,10 +83,16 @@ const Todo: TodoDef = {
       targetType: "Task",
     },
   },
-  osdkMetadata,
+  titleProperty: "id",
+  displayName: "Todo",
+  pluralDisplayName: "Todo's",
+  status: "ACTIVE",
+  interfaceMap: {},
+  inverseInterfaceMap: {},
+  rid: "",
 };
 
-interface TodoDef extends ObjectTypeDefinition<"Todo">, VersionBound<"0.15.0"> {
+interface TodoDef extends ObjectMetadata<"Todo">, VersionBound<"0.15.0"> {
   type: "object";
   apiName: "Todo";
   primaryKeyApiName: "id";
@@ -90,7 +112,7 @@ interface TodoDef extends ObjectTypeDefinition<"Todo">, VersionBound<"0.15.0"> {
   };
 }
 
-interface TaskDef extends ObjectTypeDefinition<"Task">, VersionBound<"0.15.0"> {
+interface TaskDef extends ObjectMetadata<"Task">, VersionBound<"0.15.0"> {
   type: "object";
   apiName: "Task";
   primaryKeyApiName: "id";
@@ -126,7 +148,7 @@ export type ActionDef$updateTask$Parameters = {
   };
 };
 
-interface ActionDef$updateTask extends MinActionDef<"updateTask", "Task"> {
+interface ActionDef$updateTask extends ActionDefinition<"updateTask", "Task"> {
   type: "action";
   apiName: "updateTask";
   parameters: ActionDef$updateTask$Parameters;

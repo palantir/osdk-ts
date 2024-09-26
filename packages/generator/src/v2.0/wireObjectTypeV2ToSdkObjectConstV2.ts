@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "@osdk/generator-converters";
+import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
 import type { ObjectTypeFullMetadata } from "@osdk/internal.foundry.core";
 import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
@@ -49,7 +49,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
   );
 
   const definition = deleteUndefineds(
-    wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
+    wireObjectTypeFullMetadataToSdkObjectMetadata(
       object.raw,
       true,
     ),
@@ -78,7 +78,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
   function getV2Types() {
     return `import type {
       ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,  
-      MinObjectDef as $ObjectTypeDefinition,
+      ObjectTypeDefinition as $ObjectTypeDefinition,
       ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
     } from "@osdk/api";
      import type {
@@ -255,7 +255,6 @@ export function createDefinition(
       strictProps: ${osdkObjectStrictPropsIdentifier};
       ${
     stringify(definition, {
-      osdkMetadata: () => undefined, // we are going to reference another object instead
       links: (_value) =>
         `{
         ${

@@ -3,7 +3,7 @@ import { $osdkMetadata } from '../../OntologyMetadata';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import type {
   ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-  MinObjectDef as $ObjectTypeDefinition,
+  ObjectTypeDefinition as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
 } from '@osdk/api';
 import type {
@@ -49,9 +49,16 @@ export interface Todo extends $ObjectTypeDefinition<'Todo', Todo> {
     strictProps: Todo.StrictProps;
     apiName: 'Todo';
     description: 'Its a todo item.';
+    displayName: 'Todo';
+    icon: {
+      type: 'blueprint';
+      name: 'todo';
+      color: 'blue';
+    };
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
+    pluralDisplayName: 'Todo';
     primaryKeyApiName: 'id';
     primaryKeyType: 'string';
     properties: {
@@ -69,6 +76,9 @@ export interface Todo extends $ObjectTypeDefinition<'Todo', Todo> {
        */
       title: $PropertyDef<'string', 'nullable', 'single'>;
     };
+    rid: 'ridForTodo';
+    status: 'ACTIVE';
+    titleProperty: 'id';
     type: 'object';
   };
 }

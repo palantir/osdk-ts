@@ -1,7 +1,7 @@
 {
   "name": "@osdk/client.test.ontology",
   "private": true,
-  "version": "2.0.0-beta.12",
+  "version": "2.0.0-beta.13",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -24,17 +24,14 @@
     "codegen": "node ./generateMockOntology.js",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "transpile": "monorepo.tool.transpile",
-    "typecheck": "monorepo.tool.typecheck esm"
+    "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
+    "@osdk/api": "workspace:*",
     "@osdk/client.api": "workspace:*"
   },
-  "peerDependencies": {
-    "@osdk/api": "workspace:*"
-  },
+  "peerDependencies": {},
   "devDependencies": {
-    "@osdk/api": "workspace:~",
     "@osdk/generator": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",

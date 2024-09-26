@@ -14,103 +14,11 @@
  * limitations under the License.
  */
 
-import type { DisplayName } from "@osdk/foundry.core";
+import type * as _Core from "@osdk/foundry.core";
 
 export type LooselyBrandedString<T extends string> = string & {
   __LOOSE_BRAND?: T;
 };
-
-/**
- * A union of all the types supported by query aggregation keys.
- *
- * Log Safety: UNSAFE
- */
-export type AggregationKeyType =
-  | ({ type: "date" } & DateType)
-  | ({ type: "boolean" } & BooleanType)
-  | ({ type: "string" } & StringType)
-  | ({ type: "double" } & DoubleType)
-  | ({ type: "range" } & AggregationRangeType)
-  | ({ type: "integer" } & IntegerType)
-  | ({ type: "timestamp" } & TimestampType);
-
-/**
- * A union of all the types supported by query aggregation ranges.
- *
- * Log Safety: UNSAFE
- */
-export type AggregationRangeSubType =
-  | ({ type: "date" } & DateType)
-  | ({ type: "double" } & DoubleType)
-  | ({ type: "integer" } & IntegerType)
-  | ({ type: "timestamp" } & TimestampType);
-
-/**
- * Log Safety: UNSAFE
- */
-export interface AggregationRangeType {
-  subType: AggregationRangeSubType;
-}
-
-/**
- * A union of all the types supported by query aggregation keys.
- *
- * Log Safety: UNSAFE
- */
-export type AggregationValueType =
-  | ({ type: "date" } & DateType)
-  | ({ type: "double" } & DoubleType)
-  | ({ type: "timestamp" } & TimestampType);
-
-/**
- * The name of the Query in the API.
- *
- * Log Safety: UNSAFE
- */
-export type ApiName = LooselyBrandedString<"ApiName">;
-
-/**
- * Log Safety: UNSAFE
- */
-export interface ArrayType {
-  subType: DataType;
-}
-
-/**
- * Log Safety: SAFE
- */
-export interface AttachmentType {}
-
-/**
- * Log Safety: SAFE
- */
-export interface BooleanType {}
-
-/**
- * A union of all the types supported by Ontology Query parameters or outputs.
- *
- * Log Safety: UNSAFE
- */
-export type DataType =
-  | ({ type: "date" } & DateType)
-  | ({ type: "struct" } & StructType)
-  | ({ type: "set" } & SetType)
-  | ({ type: "string" } & StringType)
-  | ({ type: "double" } & DoubleType)
-  | ({ type: "integer" } & IntegerType)
-  | ({ type: "threeDimensionalAggregation" } & ThreeDimensionalAggregation)
-  | ({ type: "union" } & UnionType)
-  | ({ type: "float" } & FloatType)
-  | ({ type: "long" } & LongType)
-  | ({ type: "boolean" } & BooleanType)
-  | ({ type: "unsupported" } & UnsupportedType)
-  | ({ type: "attachment" } & AttachmentType)
-  | ({ type: "null" } & NullType)
-  | ({ type: "array" } & ArrayType)
-  | ({ type: "objectSet" } & OntologyObjectSetType)
-  | ({ type: "twoDimensionalAggregation" } & TwoDimensionalAggregation)
-  | ({ type: "object" } & OntologyObjectType)
-  | ({ type: "timestamp" } & TimestampType);
 
 /**
    * Represents the value of data in the following format. Note that these values can be nested, for example an array of structs.
@@ -128,8 +36,6 @@ export type DataType =
 | Long                        | string                                                | "58319870951433"                                                            |
 | Marking                     | string                                                | "MU"                                                                        |
 | Null                        | null                                                  | null                                                                        |
-| Object Set                  | string OR the object set definition                   | ri.object-set.main.versioned-object-set.h13274m8-23f5-431c-8aee-a4554157c57z|
-| Ontology Object Reference   | JSON encoding of the object's primary key             | 10033123 or "EMP1234"                                                     |
 | Set                         | array                                                 | ["alpha", "bravo", "charlie"]                                               |
 | Short                       | number                                                | 8739                                                                        |
 | String                      | string                                                | "Call me Ishmael"                                                           |
@@ -143,20 +49,10 @@ export type DataType =
 export type DataValue = any;
 
 /**
- * Log Safety: SAFE
- */
-export interface DateType {}
-
-/**
- * Log Safety: SAFE
- */
-export interface DoubleType {}
-
-/**
  * Log Safety: UNSAFE
  */
 export interface ExecuteQueryRequest {
-  parameters: Record<ParameterId, DataValue>;
+  parameters: Record<ParameterId, DataValue | undefined>;
 }
 
 /**
@@ -165,11 +61,6 @@ export interface ExecuteQueryRequest {
 export interface ExecuteQueryResponse {
   value: DataValue;
 }
-
-/**
- * Log Safety: SAFE
- */
-export interface FloatType {}
 
 /**
  * The unique resource identifier of a Function, useful for interacting with other Foundry APIs.
@@ -194,52 +85,13 @@ export interface GetByRidQueriesRequest {
 }
 
 /**
- * Log Safety: SAFE
- */
-export interface IntegerType {}
-
-/**
- * Log Safety: SAFE
- */
-export interface LongType {}
-
-/**
- * Log Safety: SAFE
- */
-export interface NullType {}
-
-/**
-   * The name of the object type in the API in camelCase format. To find the API name for your Object Type, use the
-List object types endpoint or check the Ontology Manager.
-   *
-   * Log Safety: UNSAFE
-   */
-export type ObjectTypeApiName = LooselyBrandedString<"ObjectTypeApiName">;
-
-/**
- * Log Safety: UNSAFE
- */
-export interface OntologyObjectSetType {
-  objectApiName?: ObjectTypeApiName;
-  objectTypeApiName?: ObjectTypeApiName;
-}
-
-/**
- * Log Safety: UNSAFE
- */
-export interface OntologyObjectType {
-  objectApiName: ObjectTypeApiName;
-  objectTypeApiName: ObjectTypeApiName;
-}
-
-/**
  * Details about a parameter of a query.
  *
  * Log Safety: UNSAFE
  */
 export interface Parameter {
   description?: string;
-  dataType: DataType;
+  dataType: QueryDataType;
 }
 
 /**
@@ -254,33 +106,129 @@ export type ParameterId = LooselyBrandedString<"ParameterId">;
  * Log Safety: UNSAFE
  */
 export interface Query {
-  apiName: ApiName;
+  apiName: QueryApiName;
   description?: string;
-  displayName?: DisplayName;
+  displayName?: _Core.DisplayName;
   parameters: Record<ParameterId, Parameter>;
-  output: DataType;
+  output: QueryDataType;
   rid: FunctionRid;
   version: FunctionVersion;
 }
 
 /**
+ * A union of all the types supported by query aggregation keys.
+ *
  * Log Safety: UNSAFE
  */
-export interface SetType {
-  subType: DataType;
+export type QueryAggregationKeyType =
+  | ({ type: "date" } & _Core.DateType)
+  | ({ type: "boolean" } & _Core.BooleanType)
+  | ({ type: "string" } & _Core.StringType)
+  | ({ type: "double" } & _Core.DoubleType)
+  | ({ type: "range" } & QueryAggregationRangeType)
+  | ({ type: "integer" } & _Core.IntegerType)
+  | ({ type: "timestamp" } & _Core.TimestampType);
+
+/**
+ * A union of all the types supported by query aggregation ranges.
+ *
+ * Log Safety: UNSAFE
+ */
+export type QueryAggregationRangeSubType =
+  | ({ type: "date" } & _Core.DateType)
+  | ({ type: "double" } & _Core.DoubleType)
+  | ({ type: "integer" } & _Core.IntegerType)
+  | ({ type: "timestamp" } & _Core.TimestampType);
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface QueryAggregationRangeType {
+  subType: QueryAggregationRangeSubType;
 }
 
 /**
- * Log Safety: SAFE
+ * A union of all the types supported by query aggregation keys.
+ *
+ * Log Safety: UNSAFE
  */
-export interface StringType {}
+export type QueryAggregationValueType =
+  | ({ type: "date" } & _Core.DateType)
+  | ({ type: "double" } & _Core.DoubleType)
+  | ({ type: "timestamp" } & _Core.TimestampType);
+
+/**
+ * The name of the Query in the API.
+ *
+ * Log Safety: UNSAFE
+ */
+export type QueryApiName = LooselyBrandedString<"QueryApiName">;
 
 /**
  * Log Safety: UNSAFE
  */
-export interface StructField {
+export interface QueryArrayType {
+  subType: QueryDataType;
+}
+
+/**
+ * A union of all the types supported by Query parameters or outputs.
+ *
+ * Log Safety: UNSAFE
+ */
+export type QueryDataType =
+  | ({ type: "date" } & _Core.DateType)
+  | ({ type: "struct" } & QueryStructType)
+  | ({ type: "set" } & QuerySetType)
+  | ({ type: "string" } & _Core.StringType)
+  | ({ type: "double" } & _Core.DoubleType)
+  | ({ type: "integer" } & _Core.IntegerType)
+  | ({ type: "threeDimensionalAggregation" } & ThreeDimensionalAggregation)
+  | ({ type: "union" } & QueryUnionType)
+  | ({ type: "float" } & _Core.FloatType)
+  | ({ type: "long" } & _Core.LongType)
+  | ({ type: "boolean" } & _Core.BooleanType)
+  | ({ type: "unsupported" } & _Core.UnsupportedType)
+  | ({ type: "attachment" } & _Core.AttachmentType)
+  | ({ type: "null" } & _Core.NullType)
+  | ({ type: "array" } & QueryArrayType)
+  | ({ type: "twoDimensionalAggregation" } & TwoDimensionalAggregation)
+  | ({ type: "timestamp" } & _Core.TimestampType);
+
+/**
+ * Log Safety: UNSAFE
+ */
+export type QueryRuntimeErrorParameter = LooselyBrandedString<
+  "QueryRuntimeErrorParameter"
+>;
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface QuerySetType {
+  subType: QueryDataType;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface QueryStructField {
   name: StructFieldName;
-  fieldType: DataType;
+  fieldType: QueryDataType;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface QueryStructType {
+  fields: Array<QueryStructField>;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface QueryUnionType {
+  unionTypes: Array<QueryDataType>;
 }
 
 /**
@@ -293,15 +241,8 @@ export type StructFieldName = LooselyBrandedString<"StructFieldName">;
 /**
  * Log Safety: UNSAFE
  */
-export interface StructType {
-  fields: Array<StructField>;
-}
-
-/**
- * Log Safety: UNSAFE
- */
 export interface ThreeDimensionalAggregation {
-  keyType: AggregationKeyType;
+  keyType: QueryAggregationKeyType;
   valueType: TwoDimensionalAggregation;
 }
 
@@ -314,20 +255,6 @@ export interface TimestampType {}
  * Log Safety: UNSAFE
  */
 export interface TwoDimensionalAggregation {
-  keyType: AggregationKeyType;
-  valueType: AggregationValueType;
-}
-
-/**
- * Log Safety: UNSAFE
- */
-export interface UnionType {
-  unionTypes: Array<DataType>;
-}
-
-/**
- * Log Safety: UNSAFE
- */
-export interface UnsupportedType {
-  unsupportedType: string;
+  keyType: QueryAggregationKeyType;
+  valueType: QueryAggregationValueType;
 }

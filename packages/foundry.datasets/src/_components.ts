@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { FilePath, PageToken } from "@osdk/foundry.core";
-import type { FolderRid } from "@osdk/foundry.filesystem";
+import type * as _Core from "@osdk/foundry.core";
+import type * as _Filesystem from "@osdk/foundry.filesystem";
 
 export type LooselyBrandedString<T extends string> = string & {
   __LOOSE_BRAND?: T;
@@ -48,7 +48,7 @@ export interface CreateBranchRequest {
  * Log Safety: UNSAFE
  */
 export interface CreateDatasetRequest {
-  parentFolderRid: FolderRid;
+  parentFolderRid: _Filesystem.FolderRid;
   name: DatasetName;
 }
 
@@ -65,7 +65,7 @@ export interface CreateTransactionRequest {
 export interface Dataset {
   rid: DatasetRid;
   name: DatasetName;
-  parentFolderRid: FolderRid;
+  parentFolderRid: _Filesystem.FolderRid;
 }
 
 /**
@@ -84,7 +84,7 @@ export type DatasetRid = LooselyBrandedString<"DatasetRid">;
  * Log Safety: UNSAFE
  */
 export interface File {
-  path: FilePath;
+  path: _Core.FilePath;
   transactionRid: TransactionRid;
   sizeBytes?: string;
   updatedTime: FileUpdatedTime;
@@ -100,7 +100,7 @@ export type FileUpdatedTime = string;
  */
 export interface ListBranchesResponse {
   data: Array<Branch>;
-  nextPageToken?: PageToken;
+  nextPageToken?: _Core.PageToken;
 }
 
 /**
@@ -108,7 +108,7 @@ export interface ListBranchesResponse {
  */
 export interface ListFilesResponse {
   data: Array<File>;
-  nextPageToken?: PageToken;
+  nextPageToken?: _Core.PageToken;
 }
 
 /**

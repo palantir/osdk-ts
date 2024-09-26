@@ -3,7 +3,7 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
   ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-  MinObjectDef as $ObjectTypeDefinition,
+  ObjectTypeDefinition as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
 } from '@osdk/api';
 import type {
@@ -46,11 +46,18 @@ export interface Task extends $ObjectTypeDefinition<'com.example.dep.Task', Task
     linksType: Task.Links;
     strictProps: Task.StrictProps;
     apiName: 'com.example.dep.Task';
+    description: 'Task description';
+    displayName: 'Task';
+    icon: {
+      type: 'blueprint';
+      name: 'task';
+      color: '#000000';
+    };
     implements: [];
     interfaceMap: {};
     inverseInterfaceMap: {};
-    inverseSpts: {};
     links: {};
+    pluralDisplayName: 'Tasks';
     primaryKeyApiName: 'taskId';
     primaryKeyType: 'string';
     properties: {
@@ -63,7 +70,9 @@ export interface Task extends $ObjectTypeDefinition<'com.example.dep.Task', Task
        */
       taskId: $PropertyDef<'string', 'non-nullable', 'single'>;
     };
-    spts: {};
+    rid: 'ridForTask';
+    status: 'ACTIVE';
+    titleProperty: 'taskId';
     type: 'object';
   };
 }

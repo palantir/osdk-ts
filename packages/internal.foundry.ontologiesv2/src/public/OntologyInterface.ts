@@ -14,19 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  AggregateObjectsRequestV2,
-  AggregateObjectsResponseV2,
-  InterfaceType,
-  InterfaceTypeApiName,
-  ListInterfaceTypesResponse,
-  OntologyIdentifier,
-  PageSize,
-  PageToken,
-  PreviewMode,
-  SearchObjectsForInterfaceRequest,
-  SearchObjectsResponseV2,
-} from "@osdk/internal.foundry.core";
+import type * as _Core from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
@@ -38,13 +26,13 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 const _listInterfaceTypes: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
+    ontology: _Core.OntologyIdentifier,
     $queryParams?: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-      preview?: PreviewMode | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
-  ) => Promise<ListInterfaceTypesResponse>
+  ) => Promise<_Core.ListInterfaceTypesResponse>
 > = [0, "/v2/ontologies/{0}/interfaceTypes", 2];
 
 /**
@@ -68,24 +56,24 @@ const _listInterfaceTypes: $FoundryPlatformMethod<
 export function listInterfaceTypes(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
+    ontology: _Core.OntologyIdentifier,
 
     $queryParams?: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-      preview?: PreviewMode | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
   ]
-): Promise<ListInterfaceTypesResponse> {
+): Promise<_Core.ListInterfaceTypesResponse> {
   return $foundryPlatformFetch($ctx, _listInterfaceTypes, ...args);
 }
 
 const _getInterfaceType: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    interfaceType: InterfaceTypeApiName,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<InterfaceType>
+    ontology: _Core.OntologyIdentifier,
+    interfaceType: _Core.InterfaceTypeApiName,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Core.InterfaceType>
 > = [0, "/v2/ontologies/{0}/interfaceTypes/{1}", 2];
 
 /**
@@ -106,22 +94,22 @@ const _getInterfaceType: $FoundryPlatformMethod<
 export function getInterfaceType(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    interfaceType: InterfaceTypeApiName,
+    ontology: _Core.OntologyIdentifier,
+    interfaceType: _Core.InterfaceTypeApiName,
 
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<InterfaceType> {
+): Promise<_Core.InterfaceType> {
   return $foundryPlatformFetch($ctx, _getInterfaceType, ...args);
 }
 
 const _searchObjectsForInterface: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    interfaceType: InterfaceTypeApiName,
-    $body: SearchObjectsForInterfaceRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<SearchObjectsResponseV2>
+    ontology: _Core.OntologyIdentifier,
+    interfaceType: _Core.InterfaceTypeApiName,
+    $body: _Core.SearchObjectsForInterfaceRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Core.SearchObjectsResponseV2>
 > = [1, "/v2/ontologies/{0}/interfaces/{1}/search", 3];
 
 /**
@@ -163,22 +151,22 @@ const _searchObjectsForInterface: $FoundryPlatformMethod<
 export function searchObjectsForInterface(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    interfaceType: InterfaceTypeApiName,
-    $body: SearchObjectsForInterfaceRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
+    ontology: _Core.OntologyIdentifier,
+    interfaceType: _Core.InterfaceTypeApiName,
+    $body: _Core.SearchObjectsForInterfaceRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<SearchObjectsResponseV2> {
+): Promise<_Core.SearchObjectsResponseV2> {
   return $foundryPlatformFetch($ctx, _searchObjectsForInterface, ...args);
 }
 
 const _aggregateObjectsForInterface: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    interfaceType: InterfaceTypeApiName,
-    $body: AggregateObjectsRequestV2,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<AggregateObjectsResponseV2>
+    ontology: _Core.OntologyIdentifier,
+    interfaceType: _Core.InterfaceTypeApiName,
+    $body: _Core.AggregateObjectsRequestV2,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Core.AggregateObjectsResponseV2>
 > = [1, "/v2/ontologies/{0}/interfaces/{1}/aggregate", 3];
 
 /**
@@ -200,11 +188,11 @@ const _aggregateObjectsForInterface: $FoundryPlatformMethod<
 export function aggregateObjectsForInterface(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    interfaceType: InterfaceTypeApiName,
-    $body: AggregateObjectsRequestV2,
-    $queryParams?: { preview?: PreviewMode | undefined },
+    ontology: _Core.OntologyIdentifier,
+    interfaceType: _Core.InterfaceTypeApiName,
+    $body: _Core.AggregateObjectsRequestV2,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<AggregateObjectsResponseV2> {
+): Promise<_Core.AggregateObjectsResponseV2> {
   return $foundryPlatformFetch($ctx, _aggregateObjectsForInterface, ...args);
 }

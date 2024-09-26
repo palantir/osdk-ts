@@ -140,7 +140,14 @@
           }
         },
         "status": "ACTIVE",
-        "rid": "ridForWeatherStation"
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "weather",
+          "color": "color"
+        },
+        "titleProperty": "stationId",
+        "pluralDisplayName": "Weather Stations"
       },
       "linkTypes": []
     },
@@ -175,7 +182,14 @@
           }
         },
         "status": "ACTIVE",
-        "rid": "ridforBoundariesUsState"
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "usState",
+          "color": "color"
+        },
+        "titleProperty": "usState",
+        "pluralDisplayName": "Boundaries US States"
       },
       "linkTypes": []
     },
@@ -206,7 +220,14 @@
           }
         },
         "status": "ACTIVE",
-        "rid": "ridfordherlihy"
+        "rid": "rid.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "dherlihy",
+          "color": "color"
+        },
+        "titleProperty": "id",
+        "pluralDisplayName": "Dherlihy Complex Objects"
       },
       "linkTypes": []
     },
@@ -234,7 +255,14 @@
           }
         },
         "status": "ACTIVE",
-        "rid": "ridforbuilderdeployment"
+        "rid": "rid.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "builder",
+          "color": "color"
+        },
+        "titleProperty": "skuId",
+        "pluralDisplayName": "Builder Deployment States"
       },
       "linkTypes": []
     },
@@ -275,7 +303,14 @@
           }
         },
         "status": "ACTIVE",
-        "rid": "ridForTodo"
+        "rid": "rid.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "todo",
+          "color": "color"
+        },
+        "titleProperty": "body",
+        "pluralDisplayName": "AwesomeTodoDisplayname"
       },
       "linkTypes": [{
         "apiName": "Assignee",
@@ -300,8 +335,15 @@
           }
         },
 
-        "rid": "ridForPerson",
-        "status": "ACTIVE"
+        "rid": "rid.a.b.c.d",
+        "status": "ACTIVE",
+        "icon": {
+          "type": "blueprint",
+          "name": "person",
+          "color": "color"
+        },
+        "titleProperty": "email",
+        "pluralDisplayName": "People"
       },
       "linkTypes": [{
         "apiName": "Todos",
@@ -324,6 +366,11 @@
         "primaryKey": "id",
         "displayName": "Employee",
         "description": "An employee",
+        "icon": {
+          "type": "blueprint",
+          "name": "color",
+          "color": "color"
+        },
         "properties": {
           "id": {
             "dataType": {
@@ -387,8 +434,10 @@
           }
         },
 
-        "rid": "ridForPerson",
-        "status": "ACTIVE"
+        "rid": "rid.a.b.c.d",
+        "status": "ACTIVE",
+        "titleProperty": "firstName",
+        "pluralDisplayName": "Employees"
       },
       "linkTypes": [
         {
@@ -452,9 +501,15 @@
             }
           }
         },
-
-        "rid": "ridForVenture",
-        "status": "ACTIVE"
+        "icon": {
+          "type": "blueprint",
+          "name": "ventureIcon",
+          "color": "color"
+        },
+        "rid": "rid.a.b.c.d",
+        "status": "ACTIVE",
+        "titleProperty": "ventureName",
+        "pluralDisplayName": "Ventures"
       },
       "linkTypes": [
         {
@@ -472,8 +527,15 @@
         "primaryKey": "id",
         "displayName": "ObjectTypeWithAllPropertyTypes",
         "description": "A type with all property types",
-        "rid": "ridForObjectTypeWithAllPropertyTypes",
+        "rid": "rid.a.b.c.d",
         "status": "ACTIVE",
+        "titleProperty": "id",
+        "pluralDisplayName": "ObjectTypeWithAllPropertyTypes",
+        "icon": {
+          "type": "blueprint",
+          "name": "objectTypeWithAllPropertyTypes",
+          "color": "color"
+        },
         "properties": {
           "id": {
             "dataType": {
@@ -845,6 +907,7 @@
           "description": "Description of Description"
         }
       },
+      "rid": "ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b",
       "status": "ACTIVE"
     }
   },

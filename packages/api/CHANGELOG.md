@@ -1,5 +1,18 @@
 # @osdk/api
 
+## 2.0.0-beta.13
+
+### Minor Changes
+
+- 1488144: Renamed definition types to metadata
+- c28792e: Modified return type of fetchMetadata to return Object/Interface Definitions
+- 26ee3bd: Updates return types of fetchMetadata to be Action and Query Definitions
+- 6ab5d2e: Renamed Min_Definition to \_Definition
+
+### Patch Changes
+
+- @osdk/shared.net@2.0.0-beta.4
+
 ## 2.0.0-beta.12
 
 ## 2.0.0-beta.11

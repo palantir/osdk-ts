@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ListQueryTypesResponse,
-  OntologyRid,
-  PageSize,
-  PageToken,
-  QueryApiName,
-  QueryType,
-} from "@osdk/internal.foundry.core";
+import type * as _Core from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
@@ -33,12 +26,12 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 const _listQueryTypes: $FoundryPlatformMethod<
   (
-    ontologyRid: OntologyRid,
+    ontologyRid: _Core.OntologyRid,
     $queryParams?: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
     },
-  ) => Promise<ListQueryTypesResponse>
+  ) => Promise<_Core.ListQueryTypesResponse>
 > = [0, "/v1/ontologies/{0}/queryTypes", 2];
 
 /**
@@ -57,19 +50,22 @@ const _listQueryTypes: $FoundryPlatformMethod<
 export function listQueryTypes(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontologyRid: OntologyRid,
+    ontologyRid: _Core.OntologyRid,
 
     $queryParams?: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
     },
   ]
-): Promise<ListQueryTypesResponse> {
+): Promise<_Core.ListQueryTypesResponse> {
   return $foundryPlatformFetch($ctx, _listQueryTypes, ...args);
 }
 
 const _getQueryType: $FoundryPlatformMethod<
-  (ontologyRid: OntologyRid, queryApiName: QueryApiName) => Promise<QueryType>
+  (
+    ontologyRid: _Core.OntologyRid,
+    queryApiName: _Core.QueryApiName,
+  ) => Promise<_Core.QueryType>
 > = [0, "/v1/ontologies/{0}/queryTypes/{1}"];
 
 /**
@@ -84,7 +80,7 @@ const _getQueryType: $FoundryPlatformMethod<
  */
 export function getQueryType(
   $ctx: $Client | $ClientContext,
-  ...args: [ontologyRid: OntologyRid, queryApiName: QueryApiName]
-): Promise<QueryType> {
+  ...args: [ontologyRid: _Core.OntologyRid, queryApiName: _Core.QueryApiName]
+): Promise<_Core.QueryType> {
   return $foundryPlatformFetch($ctx, _getQueryType, ...args);
 }
