@@ -16,10 +16,10 @@
 
 import type {
   CompileTimeMetadata,
-  MinInterfaceDef,
-  MinObjectDef,
+  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
+  ObjectTypeDefinition,
 } from "@osdk/api";
 import type {
   Augment,
@@ -86,7 +86,7 @@ export function objectSetToSearchJsonV2(
 }
 
 async function fetchInterfacePage<
-  Q extends MinInterfaceDef<any, any>,
+  Q extends InterfaceDefinition<any, any>,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
@@ -249,7 +249,7 @@ function applyFetchArgs<
 
 /** @internal */
 export async function fetchObjectPage<
-  Q extends MinObjectDef<any, any>,
+  Q extends ObjectTypeDefinition<any, any>,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean,
   S extends NullabilityAdherence,

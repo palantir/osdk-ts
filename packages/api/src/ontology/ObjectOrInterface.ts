@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { MinInterfaceDef } from "./InterfaceDefinition.js";
-import type { MinObjectDef } from "./ObjectTypeDefinition.js";
+import type { InterfaceDefinition } from "./InterfaceDefinition.js";
+import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
 
 export type ObjectOrInterfaceDefinition<
   K extends string = any,
   L extends string = any,
 > =
-  | MinObjectDef<K, L>
-  | MinInterfaceDef<K, L>;
+  | ObjectTypeDefinition<K, L>
+  | InterfaceDefinition<K, L>;
 
 /** @deprecated use `PropertyKeys` */
 export type ObjectOrInterfacePropertyKeysFrom2<

@@ -1,4 +1,4 @@
-import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
   ActionParam,
   ActionReturnTypeForOptions,
@@ -36,7 +36,7 @@ export namespace createTodo {
 /**
  * Creates a new Todo
  */
-export interface createTodo extends MinActionDef<'createTodo', 'Todo', createTodo.Signatures> {
+export interface createTodo extends ActionDefinition<'createTodo', 'Todo', createTodo.Signatures> {
   __DefinitionMetadata?: {
     apiName: 'createTodo';
     description: 'Creates a new Todo';

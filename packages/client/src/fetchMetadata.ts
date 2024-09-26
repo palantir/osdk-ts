@@ -15,13 +15,13 @@
  */
 
 import type {
+  ActionDefinition,
   ActionMetadata,
+  InterfaceDefinition,
   InterfaceMetadata,
-  MinActionDef,
-  MinInterfaceDef,
-  MinObjectDef,
-  MinQueryDef,
   ObjectMetadata,
+  ObjectTypeDefinition,
+  QueryDefinition,
   QueryMetadata,
 } from "@osdk/api";
 import {
@@ -33,19 +33,19 @@ import { InterfaceDefinitions } from "./ontology/OntologyProvider.js";
 /** @internal */
 export const fetchMetadataInternal = async <
   Q extends (
-    | MinObjectDef<any, any>
-    | MinInterfaceDef<any, any>
-    | MinActionDef<any, any>
-    | MinQueryDef<any, any, any>
+    | ObjectTypeDefinition<any, any>
+    | InterfaceDefinition<any, any>
+    | ActionDefinition<any, any>
+    | QueryDefinition<any, any, any>
   ),
 >(
   client: MinimalClient,
   definition: Q,
 ): Promise<
-  Q extends MinObjectDef<any, any> ? ObjectMetadata<any, any>
-    : Q extends MinInterfaceDef<any, any> ? InterfaceMetadata<any, any>
-    : Q extends MinActionDef<any, any> ? ActionMetadata<any, any>
-    : Q extends MinQueryDef<any, any, any> ? QueryMetadata<any, any>
+  Q extends ObjectTypeDefinition<any, any> ? ObjectMetadata<any, any>
+    : Q extends InterfaceDefinition<any, any> ? InterfaceMetadata<any, any>
+    : Q extends ActionDefinition<any, any> ? ActionMetadata<any, any>
+    : Q extends QueryDefinition<any, any, any> ? QueryMetadata<any, any>
     : never
 > => {
   if (definition.type === "object") {

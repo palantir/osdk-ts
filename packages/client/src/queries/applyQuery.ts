@@ -16,10 +16,10 @@
 
 import type {
   CompileTimeMetadata,
-  MinObjectDef,
-  MinQueryDef,
   ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
   QueryDataTypeDefinition,
+  QueryDefinition,
   QueryParameterDefinition,
 } from "@osdk/api";
 import type {
@@ -39,7 +39,7 @@ import { toDataValueQueries } from "../util/toDataValueQueries.js";
 import type { QueryParameterType, QueryReturnType } from "./types.js";
 
 export async function applyQuery<
-  QD extends MinQueryDef<any, any, any>,
+  QD extends QueryDefinition<any, any, any>,
   P extends QueryParameterType<CompileTimeMetadata<QD>["parameters"]>,
 >(
   client: MinimalClient,
@@ -95,7 +95,7 @@ async function remapQueryParams(
 
 async function remapQueryResponse<
   K extends string,
-  Q extends MinObjectDef<any>,
+  Q extends ObjectTypeDefinition<any>,
   T extends QueryDataTypeDefinition<K, Q | never>,
 >(
   client: MinimalClient,

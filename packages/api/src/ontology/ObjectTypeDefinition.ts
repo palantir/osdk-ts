@@ -89,7 +89,7 @@ export interface ObjectMetadata<
   >;
 }
 
-export interface MinObjectDef<K extends string, N = unknown> {
+export interface ObjectTypeDefinition<K extends string, N = unknown> {
   type: "object";
   apiName: K;
   osdkMetadata?: OsdkMetadata;
@@ -99,13 +99,13 @@ export interface MinObjectDef<K extends string, N = unknown> {
 }
 
 export type ObjectTypeLinkKeysFrom2<
-  Q extends MinObjectDef<any, any>,
+  Q extends ObjectTypeDefinition<any, any>,
 > =
   & keyof CompileTimeMetadata<Q>["links"]
   & string;
 
 export interface ObjectTypeLinkDefinition<
-  Q extends MinObjectDef<any, any>,
+  Q extends ObjectTypeDefinition<any, any>,
   M extends boolean,
 > {
   __OsdkLinkTargetType?: Q;

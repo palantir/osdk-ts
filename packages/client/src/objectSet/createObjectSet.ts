@@ -15,9 +15,9 @@
  */
 
 import type {
-  MinObjectDef,
   ObjectOrInterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
+  ObjectTypeDefinition,
 } from "@osdk/api";
 import type {
   AsyncIterArgs,
@@ -53,7 +53,7 @@ import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
 function isObjectTypeDefinition(
   def: ObjectOrInterfaceDefinition,
-): def is MinObjectDef<any, any> {
+): def is ObjectTypeDefinition<any, any> {
   return def.type === "object";
 }
 
@@ -209,7 +209,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
 
     fetchOneWithErrors: (isObjectTypeDefinition(objectType)
       ? async <A extends SelectArg<Q>>(
-        primaryKey: Q extends MinObjectDef<any, any> ? PrimaryKeyType<Q>
+        primaryKey: Q extends ObjectTypeDefinition<any, any> ? PrimaryKeyType<Q>
           : never,
         options: A,
       ) => {
@@ -266,9 +266,9 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
 }
 async function createWithPk(
   clientCtx: MinimalClient,
-  objectType: MinObjectDef<any, any>,
+  objectType: ObjectTypeDefinition<any, any>,
   objectSet: WireObjectSet,
-  primaryKey: PrimaryKeyType<MinObjectDef<any, any>>,
+  primaryKey: PrimaryKeyType<ObjectTypeDefinition<any, any>>,
 ) {
   const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
     objectType.apiName,

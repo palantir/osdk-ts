@@ -127,7 +127,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
 
   function getV2Types() {
     return `    import type {
-    MinInterfaceDef as $InterfaceDefinition,
+    InterfaceDefinition as $InterfaceDefinition,
     } from "@osdk/api";
      import type {
       ObjectSet as $ObjectSet, 

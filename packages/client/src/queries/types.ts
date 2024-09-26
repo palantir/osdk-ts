@@ -16,10 +16,10 @@
 
 import type {
   CompileTimeMetadata,
-  MinQueryDef,
   ObjectQueryDataType,
   ObjectSetQueryDataType,
   QueryDataTypeDefinition,
+  QueryDefinition,
 } from "@osdk/api";
 import type {
   DataValueClientToWire,
@@ -29,13 +29,13 @@ import type {
 } from "@osdk/client.api";
 import type { PartialByNotStrict } from "../util/partialBy.js";
 
-export type QuerySignatureFromDef<T extends MinQueryDef<any, any, any>> = {
+export type QuerySignatureFromDef<T extends QueryDefinition<any, any, any>> = {
   executeFunction: NonNullable<T["__DefinitionMetadata"]> extends never
     ? QuerySignature<T>
     : NonNullable<T["__DefinitionMetadata"]>["signature"];
 };
 
-export type QuerySignature<T extends MinQueryDef<any, any, any>> =
+export type QuerySignature<T extends QueryDefinition<any, any, any>> =
   keyof CompileTimeMetadata<T>["parameters"] extends never
     ? () => Promise<QueryReturnType<CompileTimeMetadata<T>["output"]>>
     : (
