@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type {
   GeoFilter_Intersects,
   GeoFilter_Within,
+  ObjectOrInterfaceDefinition,
   PossibleWhereClauseFilters,
   WhereClause,
 } from "@osdk/api";
