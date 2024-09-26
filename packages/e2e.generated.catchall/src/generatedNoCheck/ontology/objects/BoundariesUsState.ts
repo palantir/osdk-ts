@@ -12,7 +12,7 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
-} from '@osdk/client.api';
+} from '@osdk/api';
 
 export namespace BoundariesUsState {
   export type PropertyKeys = 'usState' | 'latitude' | 'longitude' | 'geometry10M';

@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { Osdk } from "@osdk/client.api";
+import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
 import type {
   __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
   EXPERIMENTAL_ObjectSetListener as ObjectSetListener,
-} from "@osdk/client.api/unstable";
+} from "@osdk/api/unstable";
 import type { LoadAllOntologiesResponse } from "@osdk/client.unstable";
 import {
   bulkLoadOntologyEntities,

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type {
   AggregationResultsWithoutGroups,
   NumericAggregateOption,
+  ObjectOrInterfaceDefinition,
   OrderedAggregationClause,
   StringAggregateOption,
   UnorderedAggregationClause,
-} from "@osdk/client.api";
+} from "@osdk/api";
 import type { AggregateObjectsResponseV2 } from "@osdk/internal.foundry.core";
 import invariant from "tiny-invariant";
 import type { ArrayElement } from "../../util/ArrayElement.js";

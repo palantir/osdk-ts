@@ -19,7 +19,7 @@ import type {
   AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
   GroupByClause,
   ValidAggregationKeys,
-} from "@osdk/client.api";
+} from "@osdk/api";
 import type { Employee } from "@osdk/client.test.ontology";
 import {
   objectTypeWithAllPropertyTypes,

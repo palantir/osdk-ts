@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
 import type {
   DefaultToFalse,
   ObjectSet,
+  ObjectTypeDefinition,
   Osdk,
   OsdkObjectLinksObject,
   SelectArg,
   SingleLinkAccessor,
-} from "@osdk/client.api";
+} from "@osdk/api";
 import type {
   Employee,
   equipment,

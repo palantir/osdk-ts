@@ -29,9 +29,6 @@ declare const __OSDK_CLIENT_API_VERSION__: string | undefined;
 declare const __OSDK_API_VERSION__: string | undefined;
 
 const betaDependencies: { [key: string]: string | undefined } = {
-  "@osdk/client.api": typeof __OSDK_CLIENT_API_VERSION__ !== "undefined"
-    ? __OSDK_CLIENT_API_VERSION__
-    : undefined,
   "@osdk/api": typeof __OSDK_API_VERSION__ !== "undefined"
     ? __OSDK_API_VERSION__
     : undefined,

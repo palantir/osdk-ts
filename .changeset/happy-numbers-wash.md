@@ -1,5 +1,4 @@
 ---
-"@osdk/client.api": patch
 "@osdk/client": patch
 "@osdk/api": patch
 ---

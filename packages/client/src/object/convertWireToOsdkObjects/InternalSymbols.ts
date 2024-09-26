@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { OsdkObject } from "@osdk/client.api";
+import type { ObjectOrInterfaceDefinition, OsdkObject } from "@osdk/api";
 
 export const UnderlyingOsdkObject = Symbol(
   process.env.MODE !== "production" ? "Underlying Object" : undefined,

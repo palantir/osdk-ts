@@ -15,19 +15,17 @@
  */
 
 import type {
+  AllowedBucketKeyTypes,
+  AllowedBucketTypes,
   CompileTimeMetadata,
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
+  OsdkBase,
+  PrimaryKeyType,
   QueryDataTypeDefinition,
   QueryDefinition,
   QueryParameterDefinition,
 } from "@osdk/api";
-import type {
-  AllowedBucketKeyTypes,
-  AllowedBucketTypes,
-  OsdkBase,
-  PrimaryKeyType,
-} from "@osdk/client.api";
 import type { DataValue } from "@osdk/internal.foundry.core";
 import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import { createAttachmentFromRid } from "../createAttachmentFromRid.js";

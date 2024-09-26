@@ -264,8 +264,15 @@ export async function generatePerActionDataFiles(
       await fs.writeFile(
         path.join(rootOutDir, currentFilePath),
         await formatTs(`
-          import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from "@osdk/api";
-          import type { ActionParam, ActionReturnTypeForOptions, ApplyActionOptions, ApplyBatchActionOptions,  } from '@osdk/client.api';
+          import type {
+            ActionDefinition,
+            ActionParam,
+            ActionReturnTypeForOptions,
+            ApplyActionOptions,
+            ApplyBatchActionOptions,
+            ObjectActionDataType,
+            ObjectSetActionDataType,
+          } from "@osdk/api";
           import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
           ${imports}
 

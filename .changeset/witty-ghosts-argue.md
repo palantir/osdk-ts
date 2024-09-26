@@ -38,7 +38,6 @@
 "@osdk/tool.release": patch
 "@osdk/shared.test": patch
 "@osdk/cli.common": patch
-"@osdk/client.api": patch
 "@osdk/create-app": patch
 "@osdk/shared.net": patch
 "@osdk/generator": patch

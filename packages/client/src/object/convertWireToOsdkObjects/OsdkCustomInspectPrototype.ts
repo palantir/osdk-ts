@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { Osdk } from "@osdk/client.api";
+import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
 import type { inspect, InspectOptionsStylized } from "node:util";
 import type { HolderBase } from "./InternalSymbols.js";
 import {

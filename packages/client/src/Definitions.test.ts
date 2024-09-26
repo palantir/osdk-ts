@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import type { ObjectTypePropertyDefinition } from "@osdk/api";
-import type { OsdkObjectPropertyType } from "@osdk/client.api";
+import type {
+  ObjectTypePropertyDefinition,
+  OsdkObjectPropertyType,
+} from "@osdk/api";
 import { describe, expectTypeOf, it } from "vitest";
 
 describe("OsdkObjectPropertyType", () => {

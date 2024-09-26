@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/client.api";
+import type { Osdk } from "@osdk/api";
 import { Employee, FooInterface } from "@osdk/e2e.generated.catchall";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
