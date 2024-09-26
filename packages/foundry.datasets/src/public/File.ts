@@ -14,37 +14,25 @@
  * limitations under the License.
  */
 
-import type {
-  FilePath,
-  PageSize,
-  PageToken,
-  PreviewMode,
-} from "@osdk/foundry.core";
+import type * as _Core from "@osdk/foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
-import type {
-  BranchName,
-  DatasetRid,
-  File,
-  ListFilesResponse,
-  TransactionRid,
-  TransactionType,
-} from "../_components.js";
+import type * as _Datasets from "../_components.js";
 
 //
 
 const _deleteFile: $FoundryPlatformMethod<
   (
-    datasetRid: DatasetRid,
-    filePath: FilePath,
+    datasetRid: _Datasets.DatasetRid,
+    filePath: _Core.FilePath,
     $queryParams?: {
-      branchName?: BranchName | undefined;
-      transactionRid?: TransactionRid | undefined;
-      preview?: PreviewMode | undefined;
+      branchName?: _Datasets.BranchName | undefined;
+      transactionRid?: _Datasets.TransactionRid | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
   ) => Promise<void>
 > = [3, "/v2/datasets/{0}/files/{1}", 2];
@@ -71,13 +59,13 @@ const _deleteFile: $FoundryPlatformMethod<
 export function deleteFile(
   $ctx: $Client | $ClientContext,
   ...args: [
-    datasetRid: DatasetRid,
-    filePath: FilePath,
+    datasetRid: _Datasets.DatasetRid,
+    filePath: _Core.FilePath,
 
     $queryParams?: {
-      branchName?: BranchName | undefined;
-      transactionRid?: TransactionRid | undefined;
-      preview?: PreviewMode | undefined;
+      branchName?: _Datasets.BranchName | undefined;
+      transactionRid?: _Datasets.TransactionRid | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
   ]
 ): Promise<void> {
@@ -86,16 +74,16 @@ export function deleteFile(
 
 const _listFiles: $FoundryPlatformMethod<
   (
-    datasetRid: DatasetRid,
+    datasetRid: _Datasets.DatasetRid,
     $queryParams?: {
-      branchName?: BranchName | undefined;
-      startTransactionRid?: TransactionRid | undefined;
-      endTransactionRid?: TransactionRid | undefined;
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-      preview?: PreviewMode | undefined;
+      branchName?: _Datasets.BranchName | undefined;
+      startTransactionRid?: _Datasets.TransactionRid | undefined;
+      endTransactionRid?: _Datasets.TransactionRid | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
-  ) => Promise<ListFilesResponse>
+  ) => Promise<_Datasets.ListFilesResponse>
 > = [0, "/v2/datasets/{0}/files", 2];
 
 /**
@@ -128,32 +116,32 @@ const _listFiles: $FoundryPlatformMethod<
 export function listFiles(
   $ctx: $Client | $ClientContext,
   ...args: [
-    datasetRid: DatasetRid,
+    datasetRid: _Datasets.DatasetRid,
 
     $queryParams?: {
-      branchName?: BranchName | undefined;
-      startTransactionRid?: TransactionRid | undefined;
-      endTransactionRid?: TransactionRid | undefined;
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-      preview?: PreviewMode | undefined;
+      branchName?: _Datasets.BranchName | undefined;
+      startTransactionRid?: _Datasets.TransactionRid | undefined;
+      endTransactionRid?: _Datasets.TransactionRid | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
   ]
-): Promise<ListFilesResponse> {
+): Promise<_Datasets.ListFilesResponse> {
   return $foundryPlatformFetch($ctx, _listFiles, ...args);
 }
 
 const _getFile: $FoundryPlatformMethod<
   (
-    datasetRid: DatasetRid,
-    filePath: FilePath,
+    datasetRid: _Datasets.DatasetRid,
+    filePath: _Core.FilePath,
     $queryParams?: {
-      branchName?: BranchName | undefined;
-      startTransactionRid?: TransactionRid | undefined;
-      endTransactionRid?: TransactionRid | undefined;
-      preview?: PreviewMode | undefined;
+      branchName?: _Datasets.BranchName | undefined;
+      startTransactionRid?: _Datasets.TransactionRid | undefined;
+      endTransactionRid?: _Datasets.TransactionRid | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
-  ) => Promise<File>
+  ) => Promise<_Datasets.File>
 > = [0, "/v2/datasets/{0}/files/{1}", 2];
 
 /**
@@ -184,32 +172,32 @@ const _getFile: $FoundryPlatformMethod<
 export function getFile(
   $ctx: $Client | $ClientContext,
   ...args: [
-    datasetRid: DatasetRid,
-    filePath: FilePath,
+    datasetRid: _Datasets.DatasetRid,
+    filePath: _Core.FilePath,
 
     $queryParams?: {
-      branchName?: BranchName | undefined;
-      startTransactionRid?: TransactionRid | undefined;
-      endTransactionRid?: TransactionRid | undefined;
-      preview?: PreviewMode | undefined;
+      branchName?: _Datasets.BranchName | undefined;
+      startTransactionRid?: _Datasets.TransactionRid | undefined;
+      endTransactionRid?: _Datasets.TransactionRid | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
   ]
-): Promise<File> {
+): Promise<_Datasets.File> {
   return $foundryPlatformFetch($ctx, _getFile, ...args);
 }
 
 const _uploadFile: $FoundryPlatformMethod<
   (
-    datasetRid: DatasetRid,
-    filePath: FilePath,
+    datasetRid: _Datasets.DatasetRid,
+    filePath: _Core.FilePath,
     $body: Blob,
     $queryParams?: {
-      branchName?: BranchName | undefined;
-      transactionType?: TransactionType | undefined;
-      transactionRid?: TransactionRid | undefined;
-      preview?: PreviewMode | undefined;
+      branchName?: _Datasets.BranchName | undefined;
+      transactionType?: _Datasets.TransactionType | undefined;
+      transactionRid?: _Datasets.TransactionRid | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
-  ) => Promise<File>
+  ) => Promise<_Datasets.File>
 > = [1, "/v2/datasets/{0}/files/{1}/upload", 3, "application/octet-stream"];
 
 /**
@@ -237,29 +225,29 @@ const _uploadFile: $FoundryPlatformMethod<
 export function uploadFile(
   $ctx: $Client | $ClientContext,
   ...args: [
-    datasetRid: DatasetRid,
-    filePath: FilePath,
+    datasetRid: _Datasets.DatasetRid,
+    filePath: _Core.FilePath,
     $body: Blob,
     $queryParams?: {
-      branchName?: BranchName | undefined;
-      transactionType?: TransactionType | undefined;
-      transactionRid?: TransactionRid | undefined;
-      preview?: PreviewMode | undefined;
+      branchName?: _Datasets.BranchName | undefined;
+      transactionType?: _Datasets.TransactionType | undefined;
+      transactionRid?: _Datasets.TransactionRid | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
   ]
-): Promise<File> {
+): Promise<_Datasets.File> {
   return $foundryPlatformFetch($ctx, _uploadFile, ...args);
 }
 
 const _getFileContent: $FoundryPlatformMethod<
   (
-    datasetRid: DatasetRid,
-    filePath: FilePath,
+    datasetRid: _Datasets.DatasetRid,
+    filePath: _Core.FilePath,
     $queryParams?: {
-      branchName?: BranchName | undefined;
-      startTransactionRid?: TransactionRid | undefined;
-      endTransactionRid?: TransactionRid | undefined;
-      preview?: PreviewMode | undefined;
+      branchName?: _Datasets.BranchName | undefined;
+      startTransactionRid?: _Datasets.TransactionRid | undefined;
+      endTransactionRid?: _Datasets.TransactionRid | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
   ) => Promise<Blob>
 > = [0, "/v2/datasets/{0}/files/{1}/content", 2, , "application/octet-stream"];
@@ -293,14 +281,14 @@ const _getFileContent: $FoundryPlatformMethod<
 export function getFileContent(
   $ctx: $Client | $ClientContext,
   ...args: [
-    datasetRid: DatasetRid,
-    filePath: FilePath,
+    datasetRid: _Datasets.DatasetRid,
+    filePath: _Core.FilePath,
 
     $queryParams?: {
-      branchName?: BranchName | undefined;
-      startTransactionRid?: TransactionRid | undefined;
-      endTransactionRid?: TransactionRid | undefined;
-      preview?: PreviewMode | undefined;
+      branchName?: _Datasets.BranchName | undefined;
+      startTransactionRid?: _Datasets.TransactionRid | undefined;
+      endTransactionRid?: _Datasets.TransactionRid | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
   ]
 ): Promise<Blob> {

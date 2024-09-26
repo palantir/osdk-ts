@@ -34,6 +34,7 @@
     "@osdk/foundry.ontologies": "workspace:*",
     "@osdk/foundry.orchestration": "workspace:*",
     "@osdk/foundry.publicapis": "workspace:*",
+    "@osdk/foundry.streams": "workspace:*",
     "@osdk/foundry.thirdpartyapplications": "workspace:*",
     "@osdk/shared.client": "workspace:~",
     "@osdk/shared.net.platformapi": "workspace:~"
@@ -61,7 +62,7 @@
   "sls": {
     "dependencies": {
       "com.palantir.foundry.api:api-gateway": {
-        "minVersion": "1.927.0",
+        "minVersion": "1.934.0",
         "maxVersion": "1.x.x",
         "optional": true
       }

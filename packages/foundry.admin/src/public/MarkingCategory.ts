@@ -14,27 +14,23 @@
  * limitations under the License.
  */
 
-import type { PageSize, PageToken, PreviewMode } from "@osdk/foundry.core";
+import type * as _Core from "@osdk/foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
-import type {
-  ListMarkingCategoriesResponse,
-  MarkingCategory,
-  MarkingCategoryId,
-} from "../_components.js";
+import type * as _Admin from "../_components.js";
 
 //
 
 const _listMarkingCategories: $FoundryPlatformMethod<
   ($queryParams?: {
-    pageSize?: PageSize | undefined;
-    pageToken?: PageToken | undefined;
-    preview?: PreviewMode | undefined;
-  }) => Promise<ListMarkingCategoriesResponse>
+    pageSize?: _Core.PageSize | undefined;
+    pageToken?: _Core.PageToken | undefined;
+    preview?: _Core.PreviewMode | undefined;
+  }) => Promise<_Admin.ListMarkingCategoriesResponse>
 > = [0, "/v2/admin/markingCategories", 2];
 
 /**
@@ -49,20 +45,20 @@ export function listMarkingCategories(
   $ctx: $Client | $ClientContext,
   ...args: [
     $queryParams?: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-      preview?: PreviewMode | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
   ]
-): Promise<ListMarkingCategoriesResponse> {
+): Promise<_Admin.ListMarkingCategoriesResponse> {
   return $foundryPlatformFetch($ctx, _listMarkingCategories, ...args);
 }
 
 const _getMarkingCategory: $FoundryPlatformMethod<
   (
-    markingCategoryId: MarkingCategoryId,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<MarkingCategory>
+    markingCategoryId: _Admin.MarkingCategoryId,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Admin.MarkingCategory>
 > = [0, "/v2/admin/markingCategories/{0}", 2];
 
 /**
@@ -76,10 +72,10 @@ const _getMarkingCategory: $FoundryPlatformMethod<
 export function getMarkingCategory(
   $ctx: $Client | $ClientContext,
   ...args: [
-    markingCategoryId: MarkingCategoryId,
+    markingCategoryId: _Admin.MarkingCategoryId,
 
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<MarkingCategory> {
+): Promise<_Admin.MarkingCategory> {
   return $foundryPlatformFetch($ctx, _getMarkingCategory, ...args);
 }

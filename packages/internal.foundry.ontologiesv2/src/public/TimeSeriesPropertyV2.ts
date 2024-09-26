@@ -14,16 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ArtifactRepositoryRid,
-  ObjectTypeApiName,
-  OntologyIdentifier,
-  PropertyApiName,
-  PropertyValueEscapedString,
-  SdkPackageName,
-  StreamTimeSeriesPointsRequest,
-  TimeSeriesPoint,
-} from "@osdk/internal.foundry.core";
+import type * as _Core from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
@@ -35,15 +26,15 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 const _getFirstPoint: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    property: PropertyApiName,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    property: _Core.PropertyApiName,
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
-  ) => Promise<TimeSeriesPoint | undefined>
+  ) => Promise<_Core.TimeSeriesPoint | undefined>
 > = [0, "/v2/ontologies/{0}/objects/{1}/{2}/timeseries/{3}/firstPoint", 2];
 
 /**
@@ -60,31 +51,31 @@ const _getFirstPoint: $FoundryPlatformMethod<
 export function getFirstPoint(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    property: PropertyApiName,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    property: _Core.PropertyApiName,
 
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
   ]
-): Promise<TimeSeriesPoint | undefined> {
+): Promise<_Core.TimeSeriesPoint | undefined> {
   return $foundryPlatformFetch($ctx, _getFirstPoint, ...args);
 }
 
 const _getLastPoint: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    property: PropertyApiName,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    property: _Core.PropertyApiName,
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
-  ) => Promise<TimeSeriesPoint | undefined>
+  ) => Promise<_Core.TimeSeriesPoint | undefined>
 > = [0, "/v2/ontologies/{0}/objects/{1}/{2}/timeseries/{3}/lastPoint", 2];
 
 /**
@@ -101,30 +92,30 @@ const _getLastPoint: $FoundryPlatformMethod<
 export function getLastPoint(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    property: PropertyApiName,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    property: _Core.PropertyApiName,
 
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
   ]
-): Promise<TimeSeriesPoint | undefined> {
+): Promise<_Core.TimeSeriesPoint | undefined> {
   return $foundryPlatformFetch($ctx, _getLastPoint, ...args);
 }
 
 const _streamPoints: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    property: PropertyApiName,
-    $body: StreamTimeSeriesPointsRequest,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    property: _Core.PropertyApiName,
+    $body: _Core.StreamTimeSeriesPointsRequest,
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
   ) => Promise<Blob>
 > = [
@@ -149,14 +140,14 @@ const _streamPoints: $FoundryPlatformMethod<
 export function streamPoints(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    property: PropertyApiName,
-    $body: StreamTimeSeriesPointsRequest,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    property: _Core.PropertyApiName,
+    $body: _Core.StreamTimeSeriesPointsRequest,
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
   ]
 ): Promise<Blob> {

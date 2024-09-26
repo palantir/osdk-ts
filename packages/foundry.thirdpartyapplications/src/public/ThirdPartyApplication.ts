@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-import type { PreviewMode } from "@osdk/foundry.core";
+import type * as _Core from "@osdk/foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
-import type {
-  ThirdPartyApplication,
-  ThirdPartyApplicationRid,
-} from "../_components.js";
+import type * as _ThirdPartyApplications from "../_components.js";
 
 //
 
 const _getThirdPartyApplication: $FoundryPlatformMethod<
   (
-    thirdPartyApplicationRid: ThirdPartyApplicationRid,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<ThirdPartyApplication>
+    thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_ThirdPartyApplications.ThirdPartyApplication>
 > = [0, "/v2/thirdPartyApplications/{0}", 2];
 
 /**
@@ -46,10 +43,10 @@ const _getThirdPartyApplication: $FoundryPlatformMethod<
 export function getThirdPartyApplication(
   $ctx: $Client | $ClientContext,
   ...args: [
-    thirdPartyApplicationRid: ThirdPartyApplicationRid,
+    thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
 
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<ThirdPartyApplication> {
+): Promise<_ThirdPartyApplications.ThirdPartyApplication> {
   return $foundryPlatformFetch($ctx, _getThirdPartyApplication, ...args);
 }

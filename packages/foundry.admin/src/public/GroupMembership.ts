@@ -14,32 +14,27 @@
  * limitations under the License.
  */
 
-import type {
-  PageSize,
-  PageToken,
-  PreviewMode,
-  PrincipalId,
-} from "@osdk/foundry.core";
+import type * as _Core from "@osdk/foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
-import type { ListGroupMembershipsResponse } from "../_components.js";
+import type * as _Admin from "../_components.js";
 
 //
 
 const _listGroupMemberships: $FoundryPlatformMethod<
   (
-    userId: PrincipalId,
+    userId: _Core.PrincipalId,
     $queryParams?: {
       transitive?: boolean | undefined;
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-      preview?: PreviewMode | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
-  ) => Promise<ListGroupMembershipsResponse>
+  ) => Promise<_Admin.ListGroupMembershipsResponse>
 > = [0, "/v2/admin/users/{0}/groupMemberships", 2];
 
 /**
@@ -55,15 +50,15 @@ const _listGroupMemberships: $FoundryPlatformMethod<
 export function listGroupMemberships(
   $ctx: $Client | $ClientContext,
   ...args: [
-    userId: PrincipalId,
+    userId: _Core.PrincipalId,
 
     $queryParams?: {
       transitive?: boolean | undefined;
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-      preview?: PreviewMode | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
   ]
-): Promise<ListGroupMembershipsResponse> {
+): Promise<_Admin.ListGroupMembershipsResponse> {
   return $foundryPlatformFetch($ctx, _listGroupMemberships, ...args);
 }

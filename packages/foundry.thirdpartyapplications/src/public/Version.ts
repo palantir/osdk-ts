@@ -14,27 +14,22 @@
  * limitations under the License.
  */
 
-import type { PageSize, PageToken, PreviewMode } from "@osdk/foundry.core";
+import type * as _Core from "@osdk/foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
-import type {
-  ListVersionsResponse,
-  ThirdPartyApplicationRid,
-  Version,
-  VersionVersion,
-} from "../_components.js";
+import type * as _ThirdPartyApplications from "../_components.js";
 
 //
 
 const _deleteVersion: $FoundryPlatformMethod<
   (
-    thirdPartyApplicationRid: ThirdPartyApplicationRid,
-    versionVersion: VersionVersion,
-    $queryParams?: { preview?: PreviewMode | undefined },
+    thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
+    versionVersion: _ThirdPartyApplications.VersionVersion,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ) => Promise<void>
 > = [3, "/v2/thirdPartyApplications/{0}/website/versions/{1}", 2];
 
@@ -49,10 +44,10 @@ const _deleteVersion: $FoundryPlatformMethod<
 export function deleteVersion(
   $ctx: $Client | $ClientContext,
   ...args: [
-    thirdPartyApplicationRid: ThirdPartyApplicationRid,
-    versionVersion: VersionVersion,
+    thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
+    versionVersion: _ThirdPartyApplications.VersionVersion,
 
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<void> {
   return $foundryPlatformFetch($ctx, _deleteVersion, ...args);
@@ -60,13 +55,13 @@ export function deleteVersion(
 
 const _listVersions: $FoundryPlatformMethod<
   (
-    thirdPartyApplicationRid: ThirdPartyApplicationRid,
+    thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
     $queryParams?: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-      preview?: PreviewMode | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
-  ) => Promise<ListVersionsResponse>
+  ) => Promise<_ThirdPartyApplications.ListVersionsResponse>
 > = [0, "/v2/thirdPartyApplications/{0}/website/versions", 2];
 
 /**
@@ -82,24 +77,24 @@ const _listVersions: $FoundryPlatformMethod<
 export function listVersions(
   $ctx: $Client | $ClientContext,
   ...args: [
-    thirdPartyApplicationRid: ThirdPartyApplicationRid,
+    thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
 
     $queryParams?: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-      preview?: PreviewMode | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
   ]
-): Promise<ListVersionsResponse> {
+): Promise<_ThirdPartyApplications.ListVersionsResponse> {
   return $foundryPlatformFetch($ctx, _listVersions, ...args);
 }
 
 const _getVersion: $FoundryPlatformMethod<
   (
-    thirdPartyApplicationRid: ThirdPartyApplicationRid,
-    versionVersion: VersionVersion,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<Version>
+    thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
+    versionVersion: _ThirdPartyApplications.VersionVersion,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_ThirdPartyApplications.Version>
 > = [0, "/v2/thirdPartyApplications/{0}/website/versions/{1}", 2];
 
 /**
@@ -113,24 +108,24 @@ const _getVersion: $FoundryPlatformMethod<
 export function getVersion(
   $ctx: $Client | $ClientContext,
   ...args: [
-    thirdPartyApplicationRid: ThirdPartyApplicationRid,
-    versionVersion: VersionVersion,
+    thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
+    versionVersion: _ThirdPartyApplications.VersionVersion,
 
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<Version> {
+): Promise<_ThirdPartyApplications.Version> {
   return $foundryPlatformFetch($ctx, _getVersion, ...args);
 }
 
 const _uploadVersion: $FoundryPlatformMethod<
   (
-    thirdPartyApplicationRid: ThirdPartyApplicationRid,
+    thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
     $body: Blob,
     $queryParams: {
-      version: VersionVersion;
-      preview?: PreviewMode | undefined;
+      version: _ThirdPartyApplications.VersionVersion;
+      preview?: _Core.PreviewMode | undefined;
     },
-  ) => Promise<Version>
+  ) => Promise<_ThirdPartyApplications.Version>
 > = [
   1,
   "/v2/thirdPartyApplications/{0}/website/versions/upload",
@@ -149,13 +144,13 @@ const _uploadVersion: $FoundryPlatformMethod<
 export function uploadVersion(
   $ctx: $Client | $ClientContext,
   ...args: [
-    thirdPartyApplicationRid: ThirdPartyApplicationRid,
+    thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
     $body: Blob,
     $queryParams: {
-      version: VersionVersion;
-      preview?: PreviewMode | undefined;
+      version: _ThirdPartyApplications.VersionVersion;
+      preview?: _Core.PreviewMode | undefined;
     },
   ]
-): Promise<Version> {
+): Promise<_ThirdPartyApplications.Version> {
   return $foundryPlatformFetch($ctx, _uploadVersion, ...args);
 }

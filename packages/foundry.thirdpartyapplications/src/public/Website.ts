@@ -14,26 +14,22 @@
  * limitations under the License.
  */
 
-import type { PreviewMode } from "@osdk/foundry.core";
+import type * as _Core from "@osdk/foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
-import type {
-  DeployWebsiteRequest,
-  ThirdPartyApplicationRid,
-  Website,
-} from "../_components.js";
+import type * as _ThirdPartyApplications from "../_components.js";
 
 //
 
 const _getWebsite: $FoundryPlatformMethod<
   (
-    thirdPartyApplicationRid: ThirdPartyApplicationRid,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<Website>
+    thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_ThirdPartyApplications.Website>
 > = [0, "/v2/thirdPartyApplications/{0}/website", 2];
 
 /**
@@ -47,20 +43,20 @@ const _getWebsite: $FoundryPlatformMethod<
 export function getWebsite(
   $ctx: $Client | $ClientContext,
   ...args: [
-    thirdPartyApplicationRid: ThirdPartyApplicationRid,
+    thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
 
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<Website> {
+): Promise<_ThirdPartyApplications.Website> {
   return $foundryPlatformFetch($ctx, _getWebsite, ...args);
 }
 
 const _deployWebsite: $FoundryPlatformMethod<
   (
-    thirdPartyApplicationRid: ThirdPartyApplicationRid,
-    $body: DeployWebsiteRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<Website>
+    thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
+    $body: _ThirdPartyApplications.DeployWebsiteRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_ThirdPartyApplications.Website>
 > = [1, "/v2/thirdPartyApplications/{0}/website/deploy", 3];
 
 /**
@@ -74,19 +70,19 @@ const _deployWebsite: $FoundryPlatformMethod<
 export function deployWebsite(
   $ctx: $Client | $ClientContext,
   ...args: [
-    thirdPartyApplicationRid: ThirdPartyApplicationRid,
-    $body: DeployWebsiteRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
+    thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
+    $body: _ThirdPartyApplications.DeployWebsiteRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<Website> {
+): Promise<_ThirdPartyApplications.Website> {
   return $foundryPlatformFetch($ctx, _deployWebsite, ...args);
 }
 
 const _undeployWebsite: $FoundryPlatformMethod<
   (
-    thirdPartyApplicationRid: ThirdPartyApplicationRid,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<Website>
+    thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_ThirdPartyApplications.Website>
 > = [1, "/v2/thirdPartyApplications/{0}/website/undeploy", 2];
 
 /**
@@ -100,10 +96,10 @@ const _undeployWebsite: $FoundryPlatformMethod<
 export function undeployWebsite(
   $ctx: $Client | $ClientContext,
   ...args: [
-    thirdPartyApplicationRid: ThirdPartyApplicationRid,
+    thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
 
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<Website> {
+): Promise<_ThirdPartyApplications.Website> {
   return $foundryPlatformFetch($ctx, _undeployWebsite, ...args);
 }

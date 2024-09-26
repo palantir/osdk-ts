@@ -14,17 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  CreatedBy,
-  CreatedTime,
-  MarkingId,
-  OrganizationRid,
-  PageSize,
-  PageToken,
-  PrincipalId,
-  PrincipalType,
-  Realm,
-} from "@osdk/foundry.core";
+import type * as _Core from "@osdk/foundry.core";
 
 export type LooselyBrandedString<T extends string> = string & {
   __LOOSE_BRAND?: T;
@@ -34,7 +24,7 @@ export type LooselyBrandedString<T extends string> = string & {
  * Log Safety: SAFE
  */
 export interface AddGroupMembersRequest {
-  principalIds: Array<PrincipalId>;
+  principalIds: Array<_Core.PrincipalId>;
   expiration?: GroupMembershipExpiration;
 }
 
@@ -58,7 +48,7 @@ export type AttributeValues = Array<AttributeValue>;
  */
 export interface CreateGroupRequest {
   name: GroupName;
-  organizations: Array<OrganizationRid>;
+  organizations: Array<_Core.OrganizationRid>;
   description?: string;
   attributes: Record<AttributeName, AttributeValues>;
 }
@@ -67,46 +57,60 @@ export interface CreateGroupRequest {
  * Log Safety: SAFE
  */
 export interface GetGroupsBatchRequestElement {
-  groupId: PrincipalId;
+  groupId: _Core.PrincipalId;
 }
 
 /**
  * Log Safety: UNSAFE
  */
 export interface GetGroupsBatchResponse {
-  data: Record<PrincipalId, Group>;
+  data: Record<_Core.PrincipalId, Group>;
+}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface GetMarkingsBatchRequestElement {
+  markingId: _Core.MarkingId;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface GetMarkingsBatchResponse {
+  data: Record<_Core.MarkingId, Marking>;
 }
 
 /**
  * Log Safety: SAFE
  */
 export interface GetUserMarkingsResponse {
-  view: Array<MarkingId>;
+  view: Array<_Core.MarkingId>;
 }
 
 /**
  * Log Safety: SAFE
  */
 export interface GetUsersBatchRequestElement {
-  userId: PrincipalId;
+  userId: _Core.PrincipalId;
 }
 
 /**
  * Log Safety: UNSAFE
  */
 export interface GetUsersBatchResponse {
-  data: Record<PrincipalId, User>;
+  data: Record<_Core.PrincipalId, User>;
 }
 
 /**
  * Log Safety: UNSAFE
  */
 export interface Group {
-  id: PrincipalId;
+  id: _Core.PrincipalId;
   name: GroupName;
   description?: string;
-  realm: Realm;
-  organizations: Array<OrganizationRid>;
+  realm: _Core.Realm;
+  organizations: Array<_Core.OrganizationRid>;
   attributes: Record<AttributeName, AttributeValues>;
 }
 
@@ -114,15 +118,15 @@ export interface Group {
  * Log Safety: SAFE
  */
 export interface GroupMember {
-  principalType: PrincipalType;
-  principalId: PrincipalId;
+  principalType: _Core.PrincipalType;
+  principalId: _Core.PrincipalId;
 }
 
 /**
  * Log Safety: SAFE
  */
 export interface GroupMembership {
-  groupId: PrincipalId;
+  groupId: _Core.PrincipalId;
 }
 
 /**
@@ -150,7 +154,7 @@ export interface GroupSearchFilter {
  */
 export interface ListGroupMembersResponse {
   data: Array<GroupMember>;
-  nextPageToken?: PageToken;
+  nextPageToken?: _Core.PageToken;
 }
 
 /**
@@ -158,7 +162,7 @@ export interface ListGroupMembersResponse {
  */
 export interface ListGroupMembershipsResponse {
   data: Array<GroupMembership>;
-  nextPageToken?: PageToken;
+  nextPageToken?: _Core.PageToken;
 }
 
 /**
@@ -166,7 +170,7 @@ export interface ListGroupMembershipsResponse {
  */
 export interface ListGroupsResponse {
   data: Array<Group>;
-  nextPageToken?: PageToken;
+  nextPageToken?: _Core.PageToken;
 }
 
 /**
@@ -174,7 +178,7 @@ export interface ListGroupsResponse {
  */
 export interface ListMarkingCategoriesResponse {
   data: Array<MarkingCategory>;
-  nextPageToken?: PageToken;
+  nextPageToken?: _Core.PageToken;
 }
 
 /**
@@ -182,7 +186,7 @@ export interface ListMarkingCategoriesResponse {
  */
 export interface ListMarkingsResponse {
   data: Array<Marking>;
-  nextPageToken?: PageToken;
+  nextPageToken?: _Core.PageToken;
 }
 
 /**
@@ -190,20 +194,20 @@ export interface ListMarkingsResponse {
  */
 export interface ListUsersResponse {
   data: Array<User>;
-  nextPageToken?: PageToken;
+  nextPageToken?: _Core.PageToken;
 }
 
 /**
  * Log Safety: UNSAFE
  */
 export interface Marking {
-  id: MarkingId;
+  id: _Core.MarkingId;
   categoryId: MarkingCategoryId;
   displayName: MarkingDisplayName;
   description?: string;
-  organizationRid?: OrganizationRid;
-  createdTime: CreatedTime;
-  createdBy?: CreatedBy;
+  organizationRid?: _Core.OrganizationRid;
+  createdTime: _Core.CreatedTime;
+  createdBy?: _Core.CreatedBy;
 }
 
 /**
@@ -215,9 +219,9 @@ export interface MarkingCategory {
   description?: string;
   categoryType: MarkingCategoryType;
   markingType: MarkingType;
-  markings: Array<MarkingId>;
-  createdTime: CreatedTime;
-  createdBy?: CreatedBy;
+  markings: Array<_Core.MarkingId>;
+  createdTime: _Core.CreatedTime;
+  createdBy?: _Core.CreatedBy;
 }
 
 /**
@@ -259,7 +263,7 @@ export type PrincipalFilterType = "queryString";
  * Log Safety: SAFE
  */
 export interface RemoveGroupMembersRequest {
-  principalIds: Array<PrincipalId>;
+  principalIds: Array<_Core.PrincipalId>;
 }
 
 /**
@@ -267,8 +271,8 @@ export interface RemoveGroupMembersRequest {
  */
 export interface SearchGroupsRequest {
   where: GroupSearchFilter;
-  pageSize?: PageSize;
-  pageToken?: PageToken;
+  pageSize?: _Core.PageSize;
+  pageToken?: _Core.PageToken;
 }
 
 /**
@@ -276,7 +280,7 @@ export interface SearchGroupsRequest {
  */
 export interface SearchGroupsResponse {
   data: Array<Group>;
-  nextPageToken?: PageToken;
+  nextPageToken?: _Core.PageToken;
 }
 
 /**
@@ -284,8 +288,8 @@ export interface SearchGroupsResponse {
  */
 export interface SearchUsersRequest {
   where: UserSearchFilter;
-  pageSize?: PageSize;
-  pageToken?: PageToken;
+  pageSize?: _Core.PageSize;
+  pageToken?: _Core.PageToken;
 }
 
 /**
@@ -293,20 +297,20 @@ export interface SearchUsersRequest {
  */
 export interface SearchUsersResponse {
   data: Array<User>;
-  nextPageToken?: PageToken;
+  nextPageToken?: _Core.PageToken;
 }
 
 /**
  * Log Safety: UNSAFE
  */
 export interface User {
-  id: PrincipalId;
+  id: _Core.PrincipalId;
   username: UserUsername;
   givenName?: string;
   familyName?: string;
   email?: string;
-  realm: Realm;
-  organization?: OrganizationRid;
+  realm: _Core.Realm;
+  organization?: _Core.OrganizationRid;
   attributes: Record<AttributeName, AttributeValues>;
 }
 

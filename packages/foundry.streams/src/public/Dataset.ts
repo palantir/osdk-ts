@@ -21,32 +21,33 @@ import type {
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
-import type * as _PublicApis from "../_components.js";
+import type * as _Streams from "../_components.js";
 
 //
 
-const _getApiDefinition: $FoundryPlatformMethod<
+const _createStreamingDataset: $FoundryPlatformMethod<
   (
-    apiDefinitionVersion: _PublicApis.IrVersion,
+    $body: _Streams.CreateStreamingDatasetRequest,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
-  ) => Promise<_PublicApis.ApiDefinition>
-> = [0, "/v2/publicApis/apiDefinitions/{0}", 2];
+  ) => Promise<_Streams.Dataset>
+> = [1, "/v2/streams/datasets/create", 3];
 
 /**
- * Gets the public API specification for this API.
+ * Creates a streaming dataset with a stream on the specified branch, or if no branch is specified, on the
+ * default branch ('master' for most enrollments). For more information on streaming datasets, refer to the
+ * [streams](https://www.palantir.com/docs/foundry/data-integration/streams/) user documentation.
  *
  * @alpha
  *
- * Required Scopes: [public-api:view]
- * URL: /v2/publicApis/apiDefinitions/{apiDefinitionVersion}
+ * Required Scopes: [api:datasets-write, api:streams-write]
+ * URL: /v2/streams/datasets/create
  */
-export function getApiDefinition(
+export function createStreamingDataset(
   $ctx: $Client | $ClientContext,
   ...args: [
-    apiDefinitionVersion: _PublicApis.IrVersion,
-
+    $body: _Streams.CreateStreamingDatasetRequest,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<_PublicApis.ApiDefinition> {
-  return $foundryPlatformFetch($ctx, _getApiDefinition, ...args);
+): Promise<_Streams.Dataset> {
+  return $foundryPlatformFetch($ctx, _createStreamingDataset, ...args);
 }

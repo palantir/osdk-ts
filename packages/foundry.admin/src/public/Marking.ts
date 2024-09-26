@@ -14,28 +14,23 @@
  * limitations under the License.
  */
 
-import type {
-  MarkingId,
-  PageSize,
-  PageToken,
-  PreviewMode,
-} from "@osdk/foundry.core";
+import type * as _Core from "@osdk/foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
-import type { ListMarkingsResponse, Marking } from "../_components.js";
+import type * as _Admin from "../_components.js";
 
 //
 
 const _listMarkings: $FoundryPlatformMethod<
   ($queryParams?: {
-    pageSize?: PageSize | undefined;
-    pageToken?: PageToken | undefined;
-    preview?: PreviewMode | undefined;
-  }) => Promise<ListMarkingsResponse>
+    pageSize?: _Core.PageSize | undefined;
+    pageToken?: _Core.PageToken | undefined;
+    preview?: _Core.PreviewMode | undefined;
+  }) => Promise<_Admin.ListMarkingsResponse>
 > = [0, "/v2/admin/markings", 2];
 
 /**
@@ -50,20 +45,20 @@ export function listMarkings(
   $ctx: $Client | $ClientContext,
   ...args: [
     $queryParams?: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-      preview?: PreviewMode | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
   ]
-): Promise<ListMarkingsResponse> {
+): Promise<_Admin.ListMarkingsResponse> {
   return $foundryPlatformFetch($ctx, _listMarkings, ...args);
 }
 
 const _getMarking: $FoundryPlatformMethod<
   (
-    markingId: MarkingId,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<Marking>
+    markingId: _Core.MarkingId,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Admin.Marking>
 > = [0, "/v2/admin/markings/{0}", 2];
 
 /**
@@ -77,10 +72,37 @@ const _getMarking: $FoundryPlatformMethod<
 export function getMarking(
   $ctx: $Client | $ClientContext,
   ...args: [
-    markingId: MarkingId,
+    markingId: _Core.MarkingId,
 
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<Marking> {
+): Promise<_Admin.Marking> {
   return $foundryPlatformFetch($ctx, _getMarking, ...args);
+}
+
+const _getMarkingsBatch: $FoundryPlatformMethod<
+  (
+    $body: Array<_Admin.GetMarkingsBatchRequestElement>,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Admin.GetMarkingsBatchResponse>
+> = [1, "/v2/admin/markings/getBatch", 3];
+
+/**
+ * Execute multiple get requests on Marking.
+ *
+ * The maximum batch size for this endpoint is 500.
+ *
+ * @alpha
+ *
+ * Required Scopes: [api:security-read]
+ * URL: /v2/admin/markings/getBatch
+ */
+export function getMarkingsBatch(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    $body: Array<_Admin.GetMarkingsBatchRequestElement>,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ]
+): Promise<_Admin.GetMarkingsBatchResponse> {
+  return $foundryPlatformFetch($ctx, _getMarkingsBatch, ...args);
 }

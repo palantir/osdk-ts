@@ -24,42 +24,43 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 //
 
-const _executeQueryV2: $FoundryPlatformMethod<
+const _getLatestValue: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
-    queryApiName: _Core.QueryApiName,
-    $body: _Core.ExecuteQueryRequest,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    propertyName: _Core.PropertyApiName,
     $queryParams?: {
       artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
       packageName?: _Core.SdkPackageName | undefined;
     },
-  ) => Promise<_Core.ExecuteQueryResponse>
-> = [1, "/v2/ontologies/{0}/queries/{1}/execute", 3];
+  ) => Promise<_Core.TimeseriesEntry | undefined>
+> = [0, "/v2/ontologies/{0}/objects/{1}/{2}/timeseries/{3}/latestValue", 2];
 
 /**
- * Executes a Query using the given parameters.
- *
- * Optional parameters do not need to be supplied.
+ * Get the latest value of a property backed by a timeseries. If a specific geotime series integration has both a history and a live integration, we will give precedence to the live integration.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:ontologies-read`.
+ * following operation scopes: `api:read-data`.
  *
- * @public
+ * @alpha
  *
- * Required Scopes: [api:ontologies-read]
- * URL: /v2/ontologies/{ontology}/queries/{queryApiName}/execute
+ * Required Scopes: [api:read-data]
+ * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/timeseries/{propertyName}/latestValue
  */
-export function executeQueryV2(
+export function getLatestValue(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
-    queryApiName: _Core.QueryApiName,
-    $body: _Core.ExecuteQueryRequest,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    propertyName: _Core.PropertyApiName,
+
     $queryParams?: {
       artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
       packageName?: _Core.SdkPackageName | undefined;
     },
   ]
-): Promise<_Core.ExecuteQueryResponse> {
-  return $foundryPlatformFetch($ctx, _executeQueryV2, ...args);
+): Promise<_Core.TimeseriesEntry | undefined> {
+  return $foundryPlatformFetch($ctx, _getLatestValue, ...args);
 }

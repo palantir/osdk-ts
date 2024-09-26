@@ -15,38 +15,42 @@
  */
 
 import type * as _Core from "@osdk/foundry.core";
+import type * as _Datasets from "@osdk/foundry.datasets";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
-import type * as _PublicApis from "../_components.js";
+import type * as _Streams from "../_components.js";
 
 //
 
-const _getApiDefinition: $FoundryPlatformMethod<
+const _getStream: $FoundryPlatformMethod<
   (
-    apiDefinitionVersion: _PublicApis.IrVersion,
+    datasetRid: _Datasets.DatasetRid,
+    streamBranchName: _Datasets.BranchName,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
-  ) => Promise<_PublicApis.ApiDefinition>
-> = [0, "/v2/publicApis/apiDefinitions/{0}", 2];
+  ) => Promise<_Streams.Stream>
+> = [0, "/v2/streams/datasets/{0}/streams/{1}", 2];
 
 /**
- * Gets the public API specification for this API.
+ * Get a stream by its branch name. If the branch does not exist, there is no stream on that branch, or the
+ * user does not have permission to access the stream, a 404 error will be returned.
  *
  * @alpha
  *
- * Required Scopes: [public-api:view]
- * URL: /v2/publicApis/apiDefinitions/{apiDefinitionVersion}
+ * Required Scopes: [api:datasets-read, api:streams-read]
+ * URL: /v2/streams/datasets/{datasetRid}/streams/{streamBranchName}
  */
-export function getApiDefinition(
+export function getStream(
   $ctx: $Client | $ClientContext,
   ...args: [
-    apiDefinitionVersion: _PublicApis.IrVersion,
+    datasetRid: _Datasets.DatasetRid,
+    streamBranchName: _Datasets.BranchName,
 
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<_PublicApis.ApiDefinition> {
-  return $foundryPlatformFetch($ctx, _getApiDefinition, ...args);
+): Promise<_Streams.Stream> {
+  return $foundryPlatformFetch($ctx, _getStream, ...args);
 }

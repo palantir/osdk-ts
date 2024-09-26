@@ -15,18 +15,19 @@
  */
 
 export type {
-  Folder,
-  FolderRid,
-  Project,
-  ProjectRid,
-  Resource,
-  ResourceDisplayName,
-  ResourcePath,
-  ResourceRid,
-  ResourceType,
-  Space,
-  SpaceRid,
-  TrashedStatus,
+  Compressed,
+  CreateStreamingDatasetRequest,
+  Dataset,
+  PartitionsCount,
+  Stream,
+  StreamType,
+  ViewRid,
 } from "./_components.js";
-export type { ResourceNotFound } from "./_errors.js";
-export * as Resources from "./public/Resource.js";
+export type {
+  CannotCreateStreamingDatasetInUserFolder,
+  CreateStreamingDatasetPermissionDenied,
+  InvalidStreamType,
+  StreamNotFound,
+} from "./_errors.js";
+export * as Datasets from "./public/Dataset.js";
+export * as Streams from "./public/Stream.js";

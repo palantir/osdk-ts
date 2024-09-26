@@ -14,17 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ArtifactRepositoryRid,
-  AttachmentMetadataResponse,
-  AttachmentRid,
-  AttachmentV2,
-  ObjectTypeApiName,
-  OntologyIdentifier,
-  PropertyApiName,
-  PropertyValueEscapedString,
-  SdkPackageName,
-} from "@osdk/internal.foundry.core";
+import type * as _Core from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
@@ -36,15 +26,15 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 const _listPropertyAttachments: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    property: PropertyApiName,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    property: _Core.PropertyApiName,
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
-  ) => Promise<AttachmentMetadataResponse>
+  ) => Promise<_Core.AttachmentMetadataResponse>
 > = [0, "/v2/ontologies/{0}/objects/{1}/{2}/attachments/{3}", 2];
 
 /**
@@ -61,32 +51,32 @@ const _listPropertyAttachments: $FoundryPlatformMethod<
 export function listPropertyAttachments(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    property: PropertyApiName,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    property: _Core.PropertyApiName,
 
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
   ]
-): Promise<AttachmentMetadataResponse> {
+): Promise<_Core.AttachmentMetadataResponse> {
   return $foundryPlatformFetch($ctx, _listPropertyAttachments, ...args);
 }
 
 const _getAttachmentPropertyByRidV2: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    property: PropertyApiName,
-    attachmentRid: AttachmentRid,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    property: _Core.PropertyApiName,
+    attachmentRid: _Core.AttachmentRid,
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
-  ) => Promise<AttachmentV2>
+  ) => Promise<_Core.AttachmentV2>
 > = [0, "/v2/ontologies/{0}/objects/{1}/{2}/attachments/{3}/{4}", 2];
 
 /**
@@ -103,30 +93,30 @@ const _getAttachmentPropertyByRidV2: $FoundryPlatformMethod<
 export function getAttachmentPropertyByRidV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    property: PropertyApiName,
-    attachmentRid: AttachmentRid,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    property: _Core.PropertyApiName,
+    attachmentRid: _Core.AttachmentRid,
 
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
   ]
-): Promise<AttachmentV2> {
+): Promise<_Core.AttachmentV2> {
   return $foundryPlatformFetch($ctx, _getAttachmentPropertyByRidV2, ...args);
 }
 
 const _getAttachmentPropertyContentV2: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    property: PropertyApiName,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    property: _Core.PropertyApiName,
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
   ) => Promise<Blob>
 > = [
@@ -151,14 +141,14 @@ const _getAttachmentPropertyContentV2: $FoundryPlatformMethod<
 export function getAttachmentPropertyContentV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    property: PropertyApiName,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    property: _Core.PropertyApiName,
 
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
   ]
 ): Promise<Blob> {
@@ -167,14 +157,14 @@ export function getAttachmentPropertyContentV2(
 
 const _getAttachmentPropertyContentByRidV2: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    property: PropertyApiName,
-    attachmentRid: AttachmentRid,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    property: _Core.PropertyApiName,
+    attachmentRid: _Core.AttachmentRid,
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
   ) => Promise<Blob>
 > = [
@@ -201,15 +191,15 @@ const _getAttachmentPropertyContentByRidV2: $FoundryPlatformMethod<
 export function getAttachmentPropertyContentByRidV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    property: PropertyApiName,
-    attachmentRid: AttachmentRid,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    property: _Core.PropertyApiName,
+    attachmentRid: _Core.AttachmentRid,
 
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
   ]
 ): Promise<Blob> {
