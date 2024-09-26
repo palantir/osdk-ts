@@ -26,15 +26,13 @@
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --pool=forks",
     "test:watch": "vitest",
-    "transpile": "monorepo.tool.transpile",
-    "transpileWatch": "tsup --watch",
-    "typecheck": "monorepo.tool.typecheck esm"
+    "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
-    "@osdk/api": "workspace:~"
+    "@osdk/api": "workspace:~",
+    "@osdk/internal.foundry.core": "workspace:~"
   },
   "devDependencies": {
-    "@osdk/internal.foundry.core": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",

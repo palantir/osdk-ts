@@ -26,9 +26,7 @@
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --pool=forks",
     "test:watch": "vitest",
-    "transpile": "monorepo.tool.transpile",
-    "transpileWatch": "tsup --watch",
-    "typecheck": "monorepo.tool.typecheck esm"
+    "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
     "@osdk/shared.net": "workspace:~",

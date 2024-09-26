@@ -40,11 +40,11 @@ import type {
   SubscriptionClosed,
 } from "@osdk/client.unstable.osw";
 import { batchEnableWatcher } from "@osdk/client.unstable.osw";
-import { OntologiesV2 } from "@osdk/internal.foundry";
 import {
   type ObjectSet,
   type OntologyObjectV2,
 } from "@osdk/internal.foundry.core";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";

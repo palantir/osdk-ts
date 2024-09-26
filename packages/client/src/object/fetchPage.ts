@@ -28,9 +28,7 @@ import type {
   FetchPageResult,
   NullabilityAdherence,
   Result,
-  SingleOsdkResult,
 } from "@osdk/client.api";
-import { OntologiesV2 } from "@osdk/internal.foundry";
 import type {
   LoadObjectSetRequestV2,
   ObjectSet,
@@ -41,6 +39,7 @@ import type {
   SearchObjectsForInterfaceRequest,
   SearchOrderByV2,
 } from "@osdk/internal.foundry.core";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";

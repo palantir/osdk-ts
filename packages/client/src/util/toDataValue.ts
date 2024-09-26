@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { OntologiesV2 } from "@osdk/internal.foundry";
 import { type DataValue } from "@osdk/internal.foundry.core";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { isAttachmentUpload } from "../object/AttachmentUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";

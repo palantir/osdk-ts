@@ -24,8 +24,7 @@
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --pool=forks",
-    "transpile": "monorepo.tool.transpile",
-    "typecheck": "monorepo.tool.typecheck esm"
+    "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
     "@actions/exec": "^1.1.1",

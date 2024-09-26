@@ -24,8 +24,7 @@
     "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --beta true --packageType module --version dev --internal --ontologyApiNamespace com.example.dep",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "transpile": "monorepo.tool.transpile",
-    "typecheck": "monorepo.tool.typecheck esm"
+    "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
     "@osdk/api": "workspace:~",

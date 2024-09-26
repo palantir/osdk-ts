@@ -15,7 +15,7 @@
  */
 
 import type { Attachment } from "@osdk/client.api";
-import { OntologiesV2 } from "@osdk/internal.foundry";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "./MinimalClientContext.js";
 
 /**

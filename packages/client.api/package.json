@@ -24,8 +24,7 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "transpile": "monorepo.tool.transpile",
-    "typecheck": "monorepo.tool.typecheck esm"
+    "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
@@ -38,7 +37,6 @@
     "@microsoft/api-documenter": "^7.25.3",
     "@microsoft/api-extractor": "^7.47.0",
     "@osdk/api": "workspace:~",
-    "@osdk/internal.foundry": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",

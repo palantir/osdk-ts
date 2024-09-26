@@ -27,9 +27,7 @@
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --pool=forks",
     "test:watch": "vitest",
-    "transpile": "monorepo.tool.transpile",
-    "transpileWatch": "tsup --watch",
-    "typecheck": "monorepo.tool.typecheck esm"
+    "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
@@ -37,6 +35,8 @@
     "@osdk/client.unstable": "workspace:*",
     "@osdk/client.unstable.osw": "workspace:*",
     "@osdk/generator-converters": "workspace:~",
+    "@osdk/internal.foundry.core": "workspace:~",
+    "@osdk/internal.foundry.ontologiesv2": "workspace:~",
     "@osdk/shared.client": "workspace:~",
     "@osdk/shared.client.impl": "workspace:~",
     "@osdk/shared.net.errors": "workspace:~",
@@ -55,8 +55,6 @@
     "@microsoft/api-documenter": "^7.25.3",
     "@microsoft/api-extractor": "^7.47.0",
     "@osdk/client.test.ontology": "workspace:~",
-    "@osdk/internal.foundry": "workspace:~",
-    "@osdk/internal.foundry.core": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",

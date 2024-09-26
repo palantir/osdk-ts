@@ -18,7 +18,7 @@ import type { ActionMetadata } from "@osdk/api";
 import {
   wireActionTypeV2ToSdkActionMetadata,
 } from "@osdk/generator-converters";
-import { OntologiesV2 } from "@osdk/internal.foundry";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export async function loadActionMetadata(
