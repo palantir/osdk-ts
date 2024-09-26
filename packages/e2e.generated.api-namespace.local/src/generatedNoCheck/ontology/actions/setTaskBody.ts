@@ -1,10 +1,12 @@
-import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
+  ActionDefinition,
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-} from '@osdk/client.api';
+  ObjectActionDataType,
+  ObjectSetActionDataType,
+} from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Task as $Imported$objectTypes$com$example$dep$Task } from '@osdk/e2e.generated.api-namespace.dep';
 

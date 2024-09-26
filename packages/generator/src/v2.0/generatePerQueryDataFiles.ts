@@ -115,7 +115,7 @@ async function generateV2QueryFile(
     path.join(outDir, `${query.shortApiName}.ts`),
     await formatTs(`
         import type { QueryDefinition , VersionBound} from "@osdk/api";
-        import type { QueryParam, QueryResult } from "@osdk/client.api";
+        import type { QueryParam, QueryResult } from "@osdk/api";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
         import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
         ${importObjects}

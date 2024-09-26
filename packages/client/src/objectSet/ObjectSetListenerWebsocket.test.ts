@@ -15,7 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { EXPERIMENTAL_ObjectSetListener as ObjectSetListener } from "@osdk/client.api/unstable";
+import type { EXPERIMENTAL_ObjectSetListener as ObjectSetListener } from "@osdk/api/unstable";
 import { $ontologyRid, Employee, Office } from "@osdk/client.test.ontology";
 import type {
   ObjectSetSubscribeRequests,

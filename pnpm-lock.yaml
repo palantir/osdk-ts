@@ -143,9 +143,6 @@ importers:
       '@osdk/client':
         specifier: workspace:~
         version: link:../../packages/client
-      '@osdk/client.api':
-        specifier: workspace:~
-        version: link:../../packages/client.api
       '@osdk/legacy-client':
         specifier: ^2.5.0
         version: 2.5.1
@@ -697,9 +694,6 @@ importers:
       '@osdk/api':
         specifier: workspace:~
         version: link:../api
-      '@osdk/client.api':
-        specifier: workspace:*
-        version: link:../client.api
       '@osdk/client.unstable':
         specifier: workspace:*
         version: link:../client.unstable
@@ -816,45 +810,11 @@ importers:
         specifier: ^3.23.8
         version: 3.23.8
 
-  packages/client.api:
-    dependencies:
-      '@osdk/api':
-        specifier: workspace:~
-        version: link:../api
-      type-fest:
-        specifier: ^4.18.2
-        version: 4.18.2
-    devDependencies:
-      '@microsoft/api-documenter':
-        specifier: ^7.25.3
-        version: 7.25.3(@types/node@20.14.10)
-      '@microsoft/api-extractor':
-        specifier: ^7.47.0
-        version: 7.47.0(@types/node@20.14.10)
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      '@types/geojson':
-        specifier: ^7946.0.14
-        version: 7946.0.14
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-
   packages/client.test.ontology:
     dependencies:
       '@osdk/api':
         specifier: workspace:*
         version: link:../api
-      '@osdk/client.api':
-        specifier: workspace:*
-        version: link:../client.api
     devDependencies:
       '@osdk/generator':
         specifier: workspace:~
@@ -1393,9 +1353,6 @@ importers:
       '@osdk/client':
         specifier: workspace:~
         version: link:../client
-      '@osdk/client.api':
-        specifier: workspace:*
-        version: link:../client.api
     devDependencies:
       '@osdk/cli.cmd.typescript':
         specifier: workspace:~
@@ -1421,9 +1378,6 @@ importers:
       '@osdk/client':
         specifier: workspace:~
         version: link:../client
-      '@osdk/client.api':
-        specifier: workspace:*
-        version: link:../client.api
       '@osdk/e2e.generated.api-namespace.dep':
         specifier: workspace:~
         version: link:../e2e.generated.api-namespace.dep
@@ -1452,9 +1406,6 @@ importers:
       '@osdk/client':
         specifier: workspace:~
         version: link:../client
-      '@osdk/client.api':
-        specifier: workspace:*
-        version: link:../client.api
     devDependencies:
       '@arethetypeswrong/cli':
         specifier: ^0.15.2
@@ -1486,9 +1437,6 @@ importers:
       '@osdk/client':
         specifier: workspace:~
         version: link:../client
-      '@osdk/client.api':
-        specifier: workspace:*
-        version: link:../client.api
       '@osdk/e2e.generated.catchall':
         specifier: workspace:~
         version: link:../e2e.generated.catchall
@@ -1615,9 +1563,6 @@ importers:
       '@osdk/client':
         specifier: workspace:~
         version: link:../client
-      '@osdk/client.api':
-        specifier: workspace:*
-        version: link:../client.api
       '@osdk/oauth':
         specifier: workspace:~
         version: link:../oauth
@@ -1817,9 +1762,6 @@ importers:
       '@osdk/client':
         specifier: workspace:*
         version: link:../client
-      '@osdk/client.api':
-        specifier: workspace:*
-        version: link:../client.api
       '@osdk/generator':
         specifier: workspace:*
         version: link:../generator

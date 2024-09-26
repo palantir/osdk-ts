@@ -28,18 +28,15 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
-    "@osdk/client.api": "workspace:*",
     "@osdk/e2e.generated.api-namespace.dep": "workspace:~"
   },
   "peerDependencies": {
     "@osdk/api": "workspace:~",
-    "@osdk/client": "workspace:~",
-    "@osdk/client.api": "workspace:~"
+    "@osdk/client": "workspace:~"
   },
   "devDependencies": {
     "@osdk/api": "workspace:~",
     "@osdk/cli.cmd.typescript": "workspace:~",
-    "@osdk/client.api": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",

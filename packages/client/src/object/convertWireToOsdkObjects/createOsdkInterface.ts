@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { InterfaceMetadata } from "@osdk/api";
-import type { Osdk, OsdkObject } from "@osdk/client.api";
+import type { InterfaceMetadata, Osdk, OsdkObject } from "@osdk/api";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { createSimpleCache } from "../SimpleCache.js";
 import type {
@@ -28,7 +27,6 @@ import {
   UnderlyingOsdkObject,
 } from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
-import { OsdkCustomInspectPrototype } from "./OsdkCustomInspectPrototype.js";
 
 const handlerCache = createSimpleCache<
   InterfaceMetadata<any>,

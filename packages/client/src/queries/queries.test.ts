@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet } from "@osdk/client.api";
+import type { ObjectSet } from "@osdk/api";
 import {
   $ontologyRid,
   $Queries,

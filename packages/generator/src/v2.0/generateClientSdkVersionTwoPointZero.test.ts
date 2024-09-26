@@ -498,13 +498,15 @@ describe("generator", () => {
         "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos';
       export { markTodoCompleted } from './actions/markTodoCompleted';
       ",
-        "/foo/ontology/actions/deleteTodos.ts": "import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
-      import type {
+        "/foo/ontology/actions/deleteTodos.ts": "import type {
+        ActionDefinition,
         ActionParam,
         ActionReturnTypeForOptions,
         ApplyActionOptions,
         ApplyBatchActionOptions,
-      } from '@osdk/client.api';
+        ObjectActionDataType,
+        ObjectSetActionDataType,
+      } from '@osdk/api';
       import { $osdkMetadata } from '../../OntologyMetadata';
       import type { Todo } from '../objects/Todo';
 
@@ -573,13 +575,15 @@ describe("generator", () => {
         osdkMetadata: $osdkMetadata,
       };
       ",
-        "/foo/ontology/actions/markTodoCompleted.ts": "import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
-      import type {
+        "/foo/ontology/actions/markTodoCompleted.ts": "import type {
+        ActionDefinition,
         ActionParam,
         ActionReturnTypeForOptions,
         ApplyActionOptions,
         ApplyBatchActionOptions,
-      } from '@osdk/client.api';
+        ObjectActionDataType,
+        ObjectSetActionDataType,
+      } from '@osdk/api';
       import { $osdkMetadata } from '../../OntologyMetadata';
       import type { Todo } from '../objects/Todo';
 
@@ -658,8 +662,12 @@ describe("generator", () => {
         "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
       import { $osdkMetadata } from '../../OntologyMetadata';
 
-      import type { InterfaceDefinition as $InterfaceDefinition } from '@osdk/api';
-      import type { ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from '@osdk/client.api';
+      import type {
+        InterfaceDefinition as $InterfaceDefinition,
+        ObjectSet as $ObjectSet,
+        Osdk as $Osdk,
+        PropertyValueWireToClient as $PropType,
+      } from '@osdk/api';
 
       export type OsdkObjectLinks$SomeInterface = {};
 
@@ -731,7 +739,7 @@ describe("generator", () => {
         OsdkObject as $OsdkObject,
         PropertyValueWireToClient as $PropType,
         SingleLinkAccessor as $SingleLinkAccessor,
-      } from '@osdk/client.api';
+      } from '@osdk/api';
 
       export namespace Person {
         export type PropertyKeys = 'email';
@@ -815,7 +823,7 @@ describe("generator", () => {
         OsdkObject as $OsdkObject,
         PropertyValueWireToClient as $PropType,
         SingleLinkAccessor as $SingleLinkAccessor,
-      } from '@osdk/client.api';
+      } from '@osdk/api';
 
       export namespace Todo {
         export type PropertyKeys = 'id' | 'body' | 'complete';
@@ -909,7 +917,7 @@ describe("generator", () => {
       export * from './queries/returnsTodo';
       ",
         "/foo/ontology/queries/getCount.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
-      import type { QueryParam, QueryResult } from '@osdk/client.api';
+      import type { QueryParam, QueryResult } from '@osdk/api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata';
       import { $osdkMetadata } from '../../OntologyMetadata';
 
@@ -963,7 +971,7 @@ describe("generator", () => {
       };
       ",
         "/foo/ontology/queries/returnsTodo.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
-      import type { QueryParam, QueryResult } from '@osdk/client.api';
+      import type { QueryParam, QueryResult } from '@osdk/api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata';
       import { $osdkMetadata } from '../../OntologyMetadata';
       import type { Todo } from '../objects/Todo';
@@ -1090,13 +1098,15 @@ describe("generator", () => {
           "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos.js';
         export { markTodoCompleted } from './actions/markTodoCompleted.js';
         ",
-          "/foo/ontology/actions/deleteTodos.ts": "import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
-        import type {
+          "/foo/ontology/actions/deleteTodos.ts": "import type {
+          ActionDefinition,
           ActionParam,
           ActionReturnTypeForOptions,
           ApplyActionOptions,
           ApplyBatchActionOptions,
-        } from '@osdk/client.api';
+          ObjectActionDataType,
+          ObjectSetActionDataType,
+        } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { Todo } from '../objects/Todo.js';
 
@@ -1165,13 +1175,15 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
         };
         ",
-          "/foo/ontology/actions/markTodoCompleted.ts": "import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
-        import type {
+          "/foo/ontology/actions/markTodoCompleted.ts": "import type {
+          ActionDefinition,
           ActionParam,
           ActionReturnTypeForOptions,
           ApplyActionOptions,
           ApplyBatchActionOptions,
-        } from '@osdk/client.api';
+          ObjectActionDataType,
+          ObjectSetActionDataType,
+        } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { Todo } from '../objects/Todo.js';
 
@@ -1251,8 +1263,12 @@ describe("generator", () => {
           "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
-        import type { InterfaceDefinition as $InterfaceDefinition } from '@osdk/api';
-        import type { ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from '@osdk/client.api';
+        import type {
+          InterfaceDefinition as $InterfaceDefinition,
+          ObjectSet as $ObjectSet,
+          Osdk as $Osdk,
+          PropertyValueWireToClient as $PropType,
+        } from '@osdk/api';
 
         export type OsdkObjectLinks$SomeInterface = {};
 
@@ -1324,7 +1340,7 @@ describe("generator", () => {
           OsdkObject as $OsdkObject,
           PropertyValueWireToClient as $PropType,
           SingleLinkAccessor as $SingleLinkAccessor,
-        } from '@osdk/client.api';
+        } from '@osdk/api';
 
         export namespace Person {
           export type PropertyKeys = 'email';
@@ -1408,7 +1424,7 @@ describe("generator", () => {
           OsdkObject as $OsdkObject,
           PropertyValueWireToClient as $PropType,
           SingleLinkAccessor as $SingleLinkAccessor,
-        } from '@osdk/client.api';
+        } from '@osdk/api';
 
         export namespace Todo {
           export type PropertyKeys = 'id' | 'body' | 'complete';
@@ -1502,7 +1518,7 @@ describe("generator", () => {
         export * from './queries/returnsTodo.js';
         ",
           "/foo/ontology/queries/getCount.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
-        import type { QueryParam, QueryResult } from '@osdk/client.api';
+        import type { QueryParam, QueryResult } from '@osdk/api';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
@@ -1556,7 +1572,7 @@ describe("generator", () => {
         };
         ",
           "/foo/ontology/queries/returnsTodo.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
-        import type { QueryParam, QueryResult } from '@osdk/client.api';
+        import type { QueryParam, QueryResult } from '@osdk/api';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { Todo } from '../objects/Todo.js';
@@ -1720,7 +1736,7 @@ describe("generator", () => {
       expect(helper.getFiles()["/foo/ontology/queries/getTask.ts"])
         .toMatchInlineSnapshot(`
           "import type { QueryDefinition, VersionBound } from '@osdk/api';
-          import type { QueryParam, QueryResult } from '@osdk/client.api';
+          import type { QueryParam, QueryResult } from '@osdk/api';
           import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
           import { $osdkMetadata } from '../../OntologyMetadata.js';
           import type { Task as $Imported$objectTypes$com$example$dep$Task } from '@com.example.dep/osdk';
@@ -1812,7 +1828,7 @@ describe("generator", () => {
             OsdkObject as $OsdkObject,
             PropertyValueWireToClient as $PropType,
             SingleLinkAccessor as $SingleLinkAccessor,
-          } from '@osdk/client.api';
+          } from '@osdk/api';
 
           export namespace UsesForeignSpt {
             export type PropertyKeys = 'id' | 'body';
@@ -1902,13 +1918,15 @@ describe("generator", () => {
 
       expect(helper.getFiles()["/foo/ontology/actions/setTaskBody.ts"])
         .toMatchInlineSnapshot(`
-          "import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
-          import type {
+          "import type {
+            ActionDefinition,
             ActionParam,
             ActionReturnTypeForOptions,
             ApplyActionOptions,
             ApplyBatchActionOptions,
-          } from '@osdk/client.api';
+            ObjectActionDataType,
+            ObjectSetActionDataType,
+          } from '@osdk/api';
           import { $osdkMetadata } from '../../OntologyMetadata.js';
           import type { Task as $Imported$objectTypes$com$example$dep$Task } from '@com.example.dep/osdk';
 
@@ -2020,8 +2038,12 @@ describe("generator", () => {
           "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
-        import type { InterfaceDefinition as $InterfaceDefinition } from '@osdk/api';
-        import type { ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from '@osdk/client.api';
+        import type {
+          InterfaceDefinition as $InterfaceDefinition,
+          ObjectSet as $ObjectSet,
+          Osdk as $Osdk,
+          PropertyValueWireToClient as $PropType,
+        } from '@osdk/api';
 
         export type OsdkObjectLinks$SomeInterface = {};
 
@@ -2089,7 +2111,7 @@ describe("generator", () => {
           OsdkObject as $OsdkObject,
           PropertyValueWireToClient as $PropType,
           SingleLinkAccessor as $SingleLinkAccessor,
-        } from '@osdk/client.api';
+        } from '@osdk/api';
 
         export namespace Task {
           export type PropertyKeys = 'taskId' | 'body';

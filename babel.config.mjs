@@ -23,9 +23,7 @@ process.env.PACKAGE_API_VERSION = await readPackageVersion("packages/api");
 process.env.PACKAGE_CLIENT_VERSION = await readPackageVersion(
   "packages/client",
 );
-process.env.PACKAGE_CLIENT_API_VERSION = await readPackageVersion(
-  "packages/client.api",
-);
+
 process.env.PACKAGE_CLI_VERSION = await readPackageVersion("packages/cli");
 process.env.TARGET ??= "node";
 process.env.MODE = process.env.production ? "production" : "development";
@@ -41,7 +39,6 @@ const config = function(api) {
           "PACKAGE_VERSION",
           "PACKAGE_API_VERSION",
           "PACKAGE_CLIENT_VERSION",
-          "PACKAGE_CLIENT_API_VERSION",
           "PACKAGE_CLI_VERSION",
           "TARGET",
           "MODE",

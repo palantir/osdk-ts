@@ -15,11 +15,6 @@
  */
 
 import type {
-  ObjectOrInterfaceDefinition,
-  ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition,
-} from "@osdk/api";
-import type {
   AsyncIterArgs,
   Augments,
   BaseObjectSet,
@@ -29,15 +24,18 @@ import type {
   MinimalObjectSet,
   NullabilityAdherence,
   NullabilityAdherenceDefault,
+  ObjectOrInterfaceDefinition,
+  ObjectOrInterfacePropertyKeysFrom2,
   ObjectSet,
+  ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
   Result,
   SelectArg,
   SingleOsdkResult,
-} from "@osdk/client.api";
-import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/client.api/unstable";
-import type { EXPERIMENTAL_ObjectSetListener } from "@osdk/client.api/unstable";
+} from "@osdk/api";
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/api/unstable";
+import type { EXPERIMENTAL_ObjectSetListener } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";

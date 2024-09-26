@@ -31,7 +31,6 @@
   "dependencies": {
     "@osdk/api": "workspace:*",
     "@osdk/client": "workspace:*",
-    "@osdk/client.api": "workspace:*",
     "@osdk/generator": "workspace:*",
     "@osdk/internal.foundry.core": "workspace:*",
     "@osdk/internal.foundry.ontologies": "workspace:*",

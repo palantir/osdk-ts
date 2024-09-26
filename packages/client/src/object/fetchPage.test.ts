@@ -15,16 +15,14 @@
  */
 
 import type {
-  ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition,
-} from "@osdk/api";
-import type {
   FetchPageArgs,
   FetchPageResult,
+  ObjectOrInterfacePropertyKeysFrom2,
+  ObjectTypeDefinition,
   Osdk,
   PageResult,
   SelectArgToKeys,
-} from "@osdk/client.api";
+} from "@osdk/api";
 import type { FooInterface } from "@osdk/client.test.ontology";
 import { Todo } from "@osdk/client.test.ontology";
 import type { SearchJsonQueryV2 } from "@osdk/internal.foundry.core";

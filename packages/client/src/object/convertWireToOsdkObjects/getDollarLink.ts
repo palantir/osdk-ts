@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
 import type {
   ObjectSet,
-  Osdk,
+  ObjectTypeDefinition,
   OsdkObjectLinksObject,
   SelectArg,
   WhereClause,
-} from "@osdk/client.api";
+} from "@osdk/api";
 import { getWireObjectSet } from "../../objectSet/createObjectSet.js";
 import { fetchSingle, fetchSingleWithErrors } from "../fetchSingle.js";
 import { ClientRef, ObjectDefRef, RawObject } from "./InternalSymbols.js";

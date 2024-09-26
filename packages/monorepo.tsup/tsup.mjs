@@ -31,9 +31,6 @@ export default async (options, ourOptions) => {
       PACKAGE_VERSION: packageJson.version,
       PACKAGE_API_VERSION: await readPackageVersion("packages/api"),
       PACKAGE_CLIENT_VERSION: await readPackageVersion("packages/client"),
-      PACKAGE_CLIENT_API_VERSION: await readPackageVersion(
-        "packages/client.api",
-      ),
       PACKAGE_CLI_VERSION: await readPackageVersion("packages/cli"),
       TARGET: "node",
       MODE: process.env.production ? "production" : "development",

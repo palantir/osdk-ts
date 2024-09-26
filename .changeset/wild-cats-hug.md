@@ -1,5 +1,5 @@
 ---
-"@osdk/client.api": minor
+"@osdk/api": minor
 "@osdk/client": minor
 ---
 

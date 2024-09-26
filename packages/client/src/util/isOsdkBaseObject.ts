@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OsdkBase } from "@osdk/client.api";
+import type { OsdkBase } from "@osdk/api";
 
 export function isOsdkBaseObject(o: any): o is OsdkBase<any> {
   return o && typeof o === "object" && typeof o.$apiName === "string"

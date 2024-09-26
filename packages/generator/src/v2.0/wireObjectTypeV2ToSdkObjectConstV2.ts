@@ -87,7 +87,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
       OsdkObject as $OsdkObject,
       PropertyValueWireToClient as $PropType,
       SingleLinkAccessor  as $SingleLinkAccessor,
-    } from "@osdk/client.api";
+    } from "@osdk/api";
 
 
     export namespace ${object.shortApiName} {

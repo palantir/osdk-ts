@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { InterfaceMetadata } from "@osdk/api";
-import type { Osdk } from "@osdk/client.api";
+import type { InterfaceMetadata, Osdk } from "@osdk/api";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import type {
   InterfaceDefRef,

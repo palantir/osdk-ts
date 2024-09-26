@@ -1,6 +1,5 @@
 ---
 "@osdk/shared.test": patch
-"@osdk/client.api": patch
 "@osdk/generator": patch
 "@osdk/client": patch
 "@osdk/api": patch

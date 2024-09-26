@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OsdkObject } from "@osdk/client.api";
+import type { OsdkObject } from "@osdk/api";
 import type {
   DirectedLinkTypeRid,
   FoundryObjectReference,

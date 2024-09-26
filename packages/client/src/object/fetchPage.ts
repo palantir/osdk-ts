@@ -15,20 +15,18 @@
  */
 
 import type {
+  Augment,
+  Augments,
   CompileTimeMetadata,
+  FetchPageArgs,
+  FetchPageResult,
   InterfaceDefinition,
+  NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
-} from "@osdk/api";
-import type {
-  Augment,
-  Augments,
-  FetchPageArgs,
-  FetchPageResult,
-  NullabilityAdherence,
   Result,
-} from "@osdk/client.api";
+} from "@osdk/api";
 import type {
   LoadObjectSetRequestV2,
   ObjectSet,

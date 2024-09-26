@@ -127,24 +127,20 @@ export interface DependencyVersions {
   areTheTypesWrongVersion: string;
   osdkApiVersion: string;
   osdkClientVersion: string;
-  osdkClientApiVersion: string;
 }
 
 export function getExpectedDependencies(
   {
     osdkApiVersion,
     osdkClientVersion,
-    osdkClientApiVersion,
   }: DependencyVersions,
 ) {
   return {
     devDependencies: {
       "@osdk/api": osdkApiVersion,
-      "@osdk/client.api": osdkClientApiVersion,
     },
     peerDependencies: {
       "@osdk/api": osdkApiVersion,
-      "@osdk/client.api": osdkClientApiVersion,
       "@osdk/client": osdkClientVersion,
     },
   };

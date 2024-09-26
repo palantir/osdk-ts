@@ -126,18 +126,13 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
   };
 
   function getV2Types() {
-    return `    import type {
-    InterfaceDefinition as $InterfaceDefinition,
-    } from "@osdk/api";
-     import type {
+    return `import type {
+      InterfaceDefinition as $InterfaceDefinition,
       ObjectSet as $ObjectSet, 
       Osdk as $Osdk,
-      PropertyValueWireToClient as $PropType,    } from "@osdk/client.api";
+      PropertyValueWireToClient as $PropType,
+    } from "@osdk/api";
     
-
-
-    
-
         ${
       Object.keys(definition.links).length === 0
         ? `export type ${osdkObjectLinksIdentifier} = {};`

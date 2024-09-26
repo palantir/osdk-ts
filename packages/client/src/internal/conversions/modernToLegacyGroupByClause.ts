@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import type {
-  AllGroupByValues,
-  GroupByClause,
-  GroupByRange,
-} from "@osdk/client.api";
-import { DurationMapping } from "@osdk/client.api";
+import type { AllGroupByValues, GroupByClause, GroupByRange } from "@osdk/api";
+import { DurationMapping } from "@osdk/api";
 import type {
   AggregationGroupByV2,
   AggregationRangeV2,

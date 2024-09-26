@@ -16,18 +16,16 @@
 
 import type {
   ActionDefinition,
-  ActionParameterDefinition,
-  ObjectActionDataType,
-  ObjectSetActionDataType,
-} from "@osdk/api";
-import type {
   ActionEditResponse,
   ActionParam,
+  ActionParameterDefinition,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
   DataValueClientToWire,
-} from "@osdk/client.api";
+  ObjectActionDataType,
+  ObjectSetActionDataType,
+} from "@osdk/api";
 import type {
   BatchApplyActionResponseV2,
   DataValue,

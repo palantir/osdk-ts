@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import { DistanceUnitMapping } from "@osdk/client.api";
 import type {
   AndWhereClause,
   GeoFilter_Intersects,
   GeoFilter_Within,
   NotWhereClause,
+  ObjectOrInterfaceDefinition,
   OrWhereClause,
   PossibleWhereClauseFilters,
   WhereClause,
-} from "@osdk/client.api";
+} from "@osdk/api";
+import { DistanceUnitMapping } from "@osdk/api";
 import type { SearchJsonQueryV2 } from "@osdk/internal.foundry.core";
 import type { BBox, Position } from "geojson";
 import invariant from "tiny-invariant";

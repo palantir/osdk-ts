@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { TimeSeriesPoint } from "@osdk/client.api";
+import type { TimeSeriesPoint } from "@osdk/api";
 import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import { apiServer } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
