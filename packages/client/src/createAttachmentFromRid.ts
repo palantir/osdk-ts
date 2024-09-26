@@ -31,13 +31,13 @@ export function createAttachmentFromRid(
   return {
     rid,
     async fetchContents() {
-      return OntologiesV2.Attachments.getAttachmentContentV2(
+      return OntologiesV2.Attachments.read(
         client,
         rid,
       ) as Promise<Blob>;
     },
     async fetchMetadata() {
-      const r = await OntologiesV2.Attachments.getAttachmentV2(client, rid);
+      const r = await OntologiesV2.Attachments.get(client, rid);
       return {
         ...r,
         sizeBytes: Number(r.sizeBytes),

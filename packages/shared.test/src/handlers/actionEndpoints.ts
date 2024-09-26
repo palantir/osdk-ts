@@ -37,7 +37,7 @@ export const actionHandlers: Array<RequestHandler> = [
    * List ActionTypes
    */
   handleOpenApiCall(
-    OntologiesV2.ActionTypesV2.listActionTypesV2,
+    OntologiesV2.ActionTypesV2.list,
     ["ontologyApiName"],
     async ({ params }) => {
       const ontology = getOntology(params.ontologyApiName);
@@ -52,7 +52,7 @@ export const actionHandlers: Array<RequestHandler> = [
    * Apply an Action
    */
   handleOpenApiCall(
-    OntologiesV2.Actions.applyActionV2,
+    OntologiesV2.Actions.apply,
     ["ontologyApiName", "actionType"],
     handleAction<SyncApplyActionResponseV2>,
   ),
@@ -61,10 +61,10 @@ export const actionHandlers: Array<RequestHandler> = [
    * Apply a Batch Action
    */
   handleOpenApiCall(
-    OntologiesV2.Actions.applyActionBatchV2,
+    OntologiesV2.Actions.applyBatch,
     ["ontologyApiName", "actionType"],
     handleAction<
-      ExtractResponse<typeof OntologiesV2.Actions.applyActionBatchV2>
+      ExtractResponse<typeof OntologiesV2.Actions.applyBatch>
     >,
   ),
 ];
@@ -75,8 +75,8 @@ async function handleAction<
   req: Parameters<
     HttpResponseResolver<
       PathParams<string>,
-      | ExtractBody<typeof OntologiesV2.Actions.applyActionV2>
-      | ExtractBody<typeof OntologiesV2.Actions.applyActionBatchV2>,
+      | ExtractBody<typeof OntologiesV2.Actions.apply>
+      | ExtractBody<typeof OntologiesV2.Actions.applyBatch>,
       T | BaseAPIError
     >
   >[0],

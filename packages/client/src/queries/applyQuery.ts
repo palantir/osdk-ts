@@ -50,7 +50,7 @@ export async function applyQuery<
 > {
   const qd = await client.ontologyProvider.getQueryDefinition(query.apiName);
 
-  const response = await OntologiesV2.Queries.executeQueryV2(
+  const response = await OntologiesV2.Queries.execute(
     addUserAgentAndRequestContextHeaders(
       augmentRequestContext(client, _ => ({ finalMethodCall: "applyQuery" })),
       query,

@@ -135,7 +135,7 @@ export async function applyAction<
     action,
   );
   if (Array.isArray(parameters)) {
-    const response = await OntologiesV2.Actions.applyActionBatchV2(
+    const response = await OntologiesV2.Actions.applyBatch(
       clientWithHeaders,
       await client.ontologyRid,
       action.apiName,
@@ -154,7 +154,7 @@ export async function applyAction<
       ? edits?.type === "edits" ? remapActionResponse(response) : edits
       : undefined) as ActionReturnTypeForOptions<Op>;
   } else {
-    const response = await OntologiesV2.Actions.applyActionV2(
+    const response = await OntologiesV2.Actions.apply(
       clientWithHeaders,
       await client.ontologyRid,
       action.apiName,

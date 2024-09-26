@@ -50,7 +50,7 @@ export async function toDataValueQueries<T extends string>(
   switch (desiredType.type) {
     case "attachment": {
       if (isAttachmentUpload(value)) {
-        const attachment = await OntologiesV2.Attachments.uploadAttachmentV2(
+        const attachment = await OntologiesV2.Attachments.upload(
           client,
           value,
           {

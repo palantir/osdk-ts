@@ -128,7 +128,7 @@ export class OntologyMetadataResolver {
     );
 
     try {
-      ontology = await Ontologies.getOntology(
+      ontology = await Ontologies.get(
         this.getClientContext(),
         ontologyRid,
       );
@@ -140,7 +140,7 @@ export class OntologyMetadataResolver {
       ]);
     }
 
-    const ontologyFullMetadata = await OntologiesV2.getOntologyFullMetadata(
+    const ontologyFullMetadata = await OntologiesV2.getFullMetadata(
       this.getClientContext(),
       ontology.rid as OntologyIdentifier,
     );
