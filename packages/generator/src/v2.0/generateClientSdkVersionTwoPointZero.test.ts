@@ -1155,7 +1155,7 @@ describe("generator", () => {
          * An action which takes in an array of objects
          * @param {ActionParam.ObjectType<Todo>} [object] Todo(s) to be deleted
          */
-        export interface deleteTodos extends MinActionDef<'deleteTodos', 'foo.bar.Todo', deleteTodos.Signatures> {
+        export interface deleteTodos extends MinActionDef<'foo.bar.deleteTodos', 'foo.bar.Todo', deleteTodos.Signatures> {
           __DefinitionMetadata?: {
             apiName: 'foo.bar.deleteTodos';
             description: 'An action which takes in an array of objects';
@@ -1231,7 +1231,7 @@ describe("generator", () => {
          * @param {ActionParam.ObjectType<Todo>} [object] A Todo to mark completed
          */
         export interface markTodoCompleted
-          extends MinActionDef<'markTodoCompleted', 'foo.bar.Todo', markTodoCompleted.Signatures> {
+          extends MinActionDef<'foo.bar.markTodoCompleted', 'foo.bar.Todo', markTodoCompleted.Signatures> {
           __DefinitionMetadata?: {
             apiName: 'foo.bar.markTodoCompleted';
             description: 'An action which takes different types of parameters';
