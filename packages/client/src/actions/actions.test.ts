@@ -18,7 +18,7 @@ import type {
   ActionEditResponse,
   ActionValidationResponse,
   AttachmentUpload,
-} from "@osdk/client.api";
+} from "@osdk/api";
 import {
   $Actions,
   $ontologyRid,

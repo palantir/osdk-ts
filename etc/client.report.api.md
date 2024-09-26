@@ -4,47 +4,47 @@
 
 ```ts
 
-import type { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from '@osdk/client.api/unstable';
-import type { __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet } from '@osdk/client.api/unstable';
+import type { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from '@osdk/api/unstable';
+import type { __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet } from '@osdk/api/unstable';
 import type { ActionDefinition } from '@osdk/api';
-import { ActionEditResponse } from '@osdk/client.api';
+import { ActionEditResponse } from '@osdk/api';
 import type { ActionMetadata } from '@osdk/api';
-import type { ActionParam } from '@osdk/client.api';
+import type { ActionParam } from '@osdk/api';
 import type { ActionParameterDefinition } from '@osdk/api';
-import { ActionReturnTypeForOptions } from '@osdk/client.api';
-import { ActionValidationResponse } from '@osdk/client.api';
-import { ApplyActionOptions } from '@osdk/client.api';
-import { ApplyBatchActionOptions } from '@osdk/client.api';
-import type { Attachment } from '@osdk/client.api';
-import type { AttachmentUpload } from '@osdk/client.api';
+import { ActionReturnTypeForOptions } from '@osdk/api';
+import { ActionValidationResponse } from '@osdk/api';
+import { ApplyActionOptions } from '@osdk/api';
+import { ApplyBatchActionOptions } from '@osdk/api';
+import type { Attachment } from '@osdk/api';
+import type { AttachmentUpload } from '@osdk/api';
 import type { CompileTimeMetadata } from '@osdk/api';
-import type { DataValueClientToWire } from '@osdk/client.api';
-import type { DataValueWireToClient } from '@osdk/client.api';
+import type { DataValueClientToWire } from '@osdk/api';
+import type { DataValueWireToClient } from '@osdk/api';
 import type { InterfaceDefinition } from '@osdk/api';
 import type { InterfaceMetadata } from '@osdk/api';
-import { isOk } from '@osdk/client.api';
-import type { MinimalObjectSet } from '@osdk/client.api';
+import { isOk } from '@osdk/api';
+import type { MinimalObjectSet } from '@osdk/api';
 import type { ObjectActionDataType } from '@osdk/api';
 import type { ObjectMetadata } from '@osdk/api';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
-import { ObjectSet } from '@osdk/client.api';
+import { ObjectSet } from '@osdk/api';
 import type { ObjectSetActionDataType } from '@osdk/api';
 import type { ObjectSetQueryDataType } from '@osdk/api';
 import type { ObjectTypeDefinition } from '@osdk/api';
-import { Osdk } from '@osdk/client.api';
-import { OsdkObject } from '@osdk/client.api';
-import { PageResult } from '@osdk/client.api';
+import { Osdk } from '@osdk/api';
+import { OsdkObject } from '@osdk/api';
+import { PageResult } from '@osdk/api';
 import { PalantirApiError } from '@osdk/shared.net.errors';
 import type { QueryDataTypeDefinition } from '@osdk/api';
 import type { QueryDefinition } from '@osdk/api';
 import type { QueryMetadata } from '@osdk/api';
-import type { QueryParam } from '@osdk/client.api';
-import type { QueryResult } from '@osdk/client.api';
-import { Result } from '@osdk/client.api';
+import type { QueryParam } from '@osdk/api';
+import type { QueryResult } from '@osdk/api';
+import { Result } from '@osdk/api';
 import type { SharedClient } from '@osdk/shared.client';
 import type { SharedClientContext } from '@osdk/shared.client';
-import { WhereClause } from '@osdk/client.api';
+import { WhereClause } from '@osdk/api';
 
 export { ActionEditResponse }
 

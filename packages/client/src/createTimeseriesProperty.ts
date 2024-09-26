@@ -19,7 +19,7 @@ import {
   type TimeSeriesPoint,
   TimeSeriesProperty,
   type TimeSeriesQuery,
-} from "@osdk/client.api";
+} from "@osdk/api";
 import type { TimeRange } from "@osdk/internal.foundry.core";
 import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "./MinimalClientContext.js";

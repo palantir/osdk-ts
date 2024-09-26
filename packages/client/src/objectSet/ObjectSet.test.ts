@@ -16,12 +16,15 @@
 
 import type {
   CompileTimeMetadata,
+  ConvertProps,
   InterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
+  ObjectSet,
+  Osdk,
   PropertyKeys,
+  Result,
 } from "@osdk/api";
-import type { ConvertProps, ObjectSet, Osdk, Result } from "@osdk/client.api";
-import { isOk } from "@osdk/client.api";
+import { isOk } from "@osdk/api";
 import {
   $ontologyRid,
   Employee,

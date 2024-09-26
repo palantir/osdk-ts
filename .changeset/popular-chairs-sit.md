@@ -1,5 +1,4 @@
 ---
-"@osdk/client.api": major
 "@osdk/api": major
 ---
 

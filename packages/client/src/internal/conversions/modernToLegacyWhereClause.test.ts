@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { WhereClause } from "@osdk/client.api";
+import type { WhereClause } from "@osdk/api";
 import type { objectTypeWithAllPropertyTypes } from "@osdk/client.test.ontology";
 import type { Point } from "geojson";
 import { expectType } from "ts-expect";

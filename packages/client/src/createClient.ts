@@ -17,15 +17,16 @@
 import type {
   ActionDefinition,
   InterfaceDefinition,
+  MinimalObjectSet,
   ObjectOrInterfaceDefinition,
+  ObjectSet,
   ObjectTypeDefinition,
   QueryDefinition,
 } from "@osdk/api";
-import type { MinimalObjectSet, ObjectSet } from "@osdk/client.api";
 import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
-} from "@osdk/client.api/unstable";
+} from "@osdk/api/unstable";
 import { symbolClientContext } from "@osdk/shared.client";
 import { createBulkLinksAsyncIterFactory } from "./__unstable/createBulkLinksAsyncIterFactory.js";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";

@@ -1,7 +1,6 @@
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/api/unstable";
 import { ActionValidationError } from "@osdk/client";
-import type { Osdk } from "@osdk/client.api";
-import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/client.api/unstable";
 import { useCallback, useEffect } from "react";
 import type { KeyedMutator } from "swr";
 import useSWR from "swr";

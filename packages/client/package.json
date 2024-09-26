@@ -31,7 +31,6 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
-    "@osdk/client.api": "workspace:*",
     "@osdk/client.unstable": "workspace:*",
     "@osdk/client.unstable.osw": "workspace:*",
     "@osdk/generator-converters": "workspace:~",

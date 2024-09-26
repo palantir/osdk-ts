@@ -16,17 +16,15 @@
 
 import type {
   CompileTimeMetadata,
+  DataValueClientToWire,
+  DataValueWireToClient,
   ObjectQueryDataType,
   ObjectSetQueryDataType,
   QueryDataTypeDefinition,
   QueryDefinition,
-} from "@osdk/api";
-import type {
-  DataValueClientToWire,
-  DataValueWireToClient,
   QueryParam,
   QueryResult,
-} from "@osdk/client.api";
+} from "@osdk/api";
 import type { PartialByNotStrict } from "../util/partialBy.js";
 
 export type QuerySignatureFromDef<T extends QueryDefinition<any, any, any>> = {

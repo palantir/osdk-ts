@@ -27,8 +27,7 @@
     "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
-    "@osdk/api": "workspace:*",
-    "@osdk/client.api": "workspace:*"
+    "@osdk/api": "workspace:*"
   },
   "peerDependencies": {},
   "devDependencies": {

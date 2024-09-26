@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
-import type { Osdk } from "@osdk/client.api";
+import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
 import { createAttachmentFromRid } from "../../createAttachmentFromRid.js";
 import { createTimeseriesProperty } from "../../createTimeseriesProperty.js";

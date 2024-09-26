@@ -107,12 +107,12 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
       },
     );
     expect(formattedCode).toMatchInlineSnapshot(`
-      "import type { InterfaceDefinition as $InterfaceDefinition } from "@osdk/api";
-      import type {
+      "import type {
+        InterfaceDefinition as $InterfaceDefinition,
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
         PropertyValueWireToClient as $PropType,
-      } from "@osdk/client.api";
+      } from "@osdk/api";
 
       export type OsdkObjectLinks$Bar = {};
 
@@ -192,12 +192,12 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
       },
     );
     expect(formattedCode).toMatchInlineSnapshot(`
-      "import type { InterfaceDefinition as $InterfaceDefinition } from "@osdk/api";
-      import type {
+      "import type {
+        InterfaceDefinition as $InterfaceDefinition,
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
         PropertyValueWireToClient as $PropType,
-      } from "@osdk/client.api";
+      } from "@osdk/api";
 
       export type OsdkObjectLinks$Foo = {};
 
@@ -279,12 +279,12 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
       },
     );
     expect(formattedCode).toMatchInlineSnapshot(`
-      "import type { InterfaceDefinition as $InterfaceDefinition } from "@osdk/api";
-      import type {
+      "import type {
+        InterfaceDefinition as $InterfaceDefinition,
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
         PropertyValueWireToClient as $PropType,
-      } from "@osdk/client.api";
+      } from "@osdk/api";
 
       export type OsdkObjectLinks$Foo = {};
 

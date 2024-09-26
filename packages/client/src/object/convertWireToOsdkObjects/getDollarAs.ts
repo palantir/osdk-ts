@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { Osdk, OsdkObject } from "@osdk/client.api";
+import type { ObjectOrInterfaceDefinition, Osdk, OsdkObject } from "@osdk/api";
 import {
   type FetchedObjectTypeDefinition,
   InterfaceDefinitions,

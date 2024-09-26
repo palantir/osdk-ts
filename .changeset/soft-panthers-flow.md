@@ -1,6 +1,6 @@
 ---
 "@osdk/generator-converters": patch
-"@osdk/client.api": patch
+"@osdk/api": patch
 "@osdk/client": patch
 ---
 

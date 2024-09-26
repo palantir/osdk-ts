@@ -19,7 +19,7 @@ import type {
   OrderedAggregationClause,
   StringAggregateOption,
   UnorderedAggregationClause,
-} from "@osdk/client.api";
+} from "@osdk/api";
 import type { AggregationV2 } from "@osdk/internal.foundry.core";
 
 const directionFieldMap = (dir?: "asc" | "desc" | "unordered") =>

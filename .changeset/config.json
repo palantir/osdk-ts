@@ -5,7 +5,6 @@
   "fixed": [
     ["@osdk/foundry.*", "@osdk/foundry"],
     [
-      "@osdk/client.api",
       "@osdk/client",
       "@osdk/tmp-foundry-sdk-generator",
       "@osdk/generator",

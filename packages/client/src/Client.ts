@@ -20,18 +20,20 @@ import type {
   CompileTimeMetadata,
   InterfaceDefinition,
   InterfaceMetadata,
+  MinimalObjectSet,
   ObjectMetadata,
   ObjectOrInterfaceDefinition,
+  ObjectSet,
   ObjectTypeDefinition,
+  Osdk,
   QueryDefinition,
   QueryMetadata,
   VersionBound,
 } from "@osdk/api";
-import type { MinimalObjectSet, ObjectSet, Osdk } from "@osdk/client.api";
 import type {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
-} from "@osdk/client.api/unstable";
+} from "@osdk/api/unstable";
 import type { SharedClient } from "@osdk/shared.client";
 import type { BulkLinkResult } from "./__unstable/createBulkLinksAsyncIterFactory.js";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";

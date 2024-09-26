@@ -1,5 +1,5 @@
 ---
-"@osdk/client.api": patch
+"@osdk/api": patch
 ---
 
 Removed unused test file
