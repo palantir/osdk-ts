@@ -78,9 +78,6 @@ export type { ObjectSet } from "./objectSet/ObjectSet.js";
 export type {
   ActionDefinition,
   ActionMetadata,
-  ActionParameterDefinition,
-  ObjectActionDataType,
-  ObjectSetActionDataType,
 } from "./ontology/ActionDefinition.js";
 export type {
   InterfaceDefinition,

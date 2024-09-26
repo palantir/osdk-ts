@@ -1,11 +1,10 @@
 import type {
   ActionDefinition,
+  ActionMetadata,
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-  ObjectActionDataType,
-  ObjectSetActionDataType,
 } from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
@@ -81,7 +80,7 @@ export namespace moveOffice {
  * @param {ActionParam.PrimitiveType<"string">} officeId
  * @param {ActionParam.PrimitiveType<"integer">} [officeNames] A list of all office names
  */
-export interface moveOffice extends ActionDefinition<'moveOffice', 'Office', moveOffice.Signatures> {
+export interface moveOffice extends ActionDefinition<moveOffice.Signatures> {
   __DefinitionMetadata?: {
     apiName: 'moveOffice';
     description: "Update an office's physical location";

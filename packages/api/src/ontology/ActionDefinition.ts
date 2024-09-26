@@ -20,17 +20,14 @@ import type {
   ReleaseStatus,
 } from "./ObjectTypeDefinition.js";
 
-export interface ActionMetadata<
-  A extends string,
-  K extends string,
-> {
+export interface ActionMetadata {
   type: "action";
-  apiName: A;
+  apiName: string;
   description?: string;
   displayName?: string;
-  parameters: Record<any, ActionParameterDefinition<K, any>>;
+  parameters: Record<any, ActionMetadata.Parameter<any>>;
   modifiedEntities?: Partial<
-    Record<K, {
+    Record<any, {
       created: boolean;
       modified: boolean;
     }>
@@ -39,21 +36,51 @@ export interface ActionMetadata<
   rid: string;
 }
 
+export namespace ActionMetadata {
+  export interface Parameter<
+    T_Target extends ObjectTypeDefinition<any> = never,
+  > {
+    type:
+      | ValidBaseActionParameterTypes
+      | DataType.Object<any>
+      | DataType.ObjectSet<any>;
+    description?: string;
+    multiplicity?: boolean;
+    nullable?: boolean;
+  }
+
+  export namespace DataType {
+    export interface Object<
+      T_Target extends ObjectTypeDefinition<any> = never,
+    > {
+      __OsdkTargetType?: T_Target;
+      type: "object";
+      object: T_Target["apiName"];
+    }
+
+    export interface ObjectSet<
+      T_Target extends ObjectTypeDefinition<any> = never,
+    > {
+      __OsdkTargetType?: T_Target;
+      type: "objectSet";
+      objectSet: T_Target["apiName"];
+    }
+  }
+}
+
 export interface ActionCompileTimeMetadata<T> {
   signatures: T;
 }
 
 export interface ActionDefinition<
-  A extends string,
-  K extends string,
   T_signatures = never,
 > {
   type: "action";
-  apiName: A;
+  apiName: string;
   osdkMetadata?: OsdkMetadata;
   __DefinitionMetadata?:
     & ActionCompileTimeMetadata<T_signatures>
-    & ActionMetadata<A, K>;
+    & ActionMetadata;
 }
 
 export type ValidBaseActionParameterTypes =
@@ -66,39 +93,3 @@ export type ValidBaseActionParameterTypes =
   | "timestamp"
   | "attachment"
   | "marking";
-
-export interface ObjectActionDataType<
-  K extends string,
-  T_Target extends ObjectTypeDefinition<any> = never,
-> {
-  __OsdkTargetType?: T_Target;
-  type: "object";
-  object: K;
-}
-
-export interface ObjectSetActionDataType<
-  K extends string,
-  T_Target extends ObjectTypeDefinition<any> = never,
-> {
-  __OsdkTargetType?: T_Target;
-  type: "objectSet";
-  objectSet: K;
-}
-
-export type ValidActionParameterTypes<
-  K extends string = never,
-  T_Target extends ObjectTypeDefinition<any> = never,
-> =
-  | ValidBaseActionParameterTypes
-  | ObjectActionDataType<K, T_Target>
-  | ObjectSetActionDataType<K, T_Target>;
-
-export interface ActionParameterDefinition<
-  K extends string = never,
-  T_Target extends ObjectTypeDefinition<any> = never,
-> {
-  type: ValidActionParameterTypes<K, T_Target>;
-  description?: string;
-  multiplicity?: boolean;
-  nullable?: boolean;
-}

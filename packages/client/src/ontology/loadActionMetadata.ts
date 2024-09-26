@@ -24,7 +24,7 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 export async function loadActionMetadata(
   client: MinimalClient,
   actionType: string,
-): Promise<ActionMetadata<any, any>> {
+): Promise<ActionMetadata> {
   const r = await OntologiesV2.ActionTypesV2.getActionTypeV2(
     client,
     await client.ontologyRid,

@@ -1,11 +1,10 @@
 import type {
   ActionDefinition,
+  ActionMetadata,
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-  ObjectActionDataType,
-  ObjectSetActionDataType,
 } from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Todo } from '../objects/Todo.js';
@@ -28,12 +27,12 @@ export namespace actionTakesAllParameterTypes {
       description: 'A person Object';
       multiplicity: false;
       nullable: true;
-      type: ObjectActionDataType<'Person', Person>;
+      type: ActionMetadata.DataType.Object<Person>;
     };
     objectSet: {
       multiplicity: false;
       nullable: false;
-      type: ObjectSetActionDataType<'Todo', Todo>;
+      type: ActionMetadata.DataType.ObjectSet<Todo>;
     };
     string: {
       multiplicity: false;
@@ -92,12 +91,7 @@ export namespace actionTakesAllParameterTypes {
  * @param {ActionParam.PrimitiveType<"string">} string
  * @param {ActionParam.PrimitiveType<"timestamp">} time-stamp
  */
-export interface actionTakesAllParameterTypes
-  extends ActionDefinition<
-    'actionTakesAllParameterTypes',
-    'Todo' | 'ObjectTypeWithAllPropertyTypes' | 'Person',
-    actionTakesAllParameterTypes.Signatures
-  > {
+export interface actionTakesAllParameterTypes extends ActionDefinition<actionTakesAllParameterTypes.Signatures> {
   __DefinitionMetadata?: {
     apiName: 'actionTakesAllParameterTypes';
     description: 'An action which takes different types of parameters';
