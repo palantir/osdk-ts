@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,11 @@
  * limitations under the License.
  */
 
-// TEMPORARY FILE
-export * from "@osdk/api";
+import type { PropertyValueWireToClient } from "./mapping/PropertyValueMapping.js";
+import type { PrimaryKeyTypes } from "./ontology/PrimaryKeyTypes.js";
+
+export type OsdkObject<N extends string> = {
+  readonly $apiName: N;
+  readonly $objectType: string;
+  readonly $primaryKey: PropertyValueWireToClient[PrimaryKeyTypes];
+};

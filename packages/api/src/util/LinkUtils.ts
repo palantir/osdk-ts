@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,14 @@
  * limitations under the License.
  */
 
-// TEMPORARY FILE
-export * from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
+import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
+
+export type LinkNames<Q extends ObjectOrInterfaceDefinition> =
+  & keyof CompileTimeMetadata<Q>["links"]
+  & string;
+
+export type LinkedType<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends keyof CompileTimeMetadata<Q>["links"] & string,
+> = NonNullable<CompileTimeMetadata<Q>["links"][L]["__OsdkLinkTargetType"]>;

@@ -14,5 +14,12 @@
  * limitations under the License.
  */
 
-// TEMPORARY FILE
-export * from "@osdk/api";
+import type { PropertyValueWireToClient } from "./mapping/PropertyValueMapping.js";
+import type {
+  CompileTimeMetadata,
+  ObjectTypeDefinition,
+} from "./ontology/ObjectTypeDefinition.js";
+
+export type OsdkObjectPrimaryKeyType<
+  Q extends ObjectTypeDefinition<any, any>,
+> = PropertyValueWireToClient[CompileTimeMetadata<Q>["primaryKeyType"]];

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,12 @@
  * limitations under the License.
  */
 
-// TEMPORARY FILE
-export * from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
+import type { ValidAggregationKeys } from "./AggregatableKeys.js";
+
+export type UnorderedAggregationClause<Q extends ObjectOrInterfaceDefinition> =
+  { [AK in ValidAggregationKeys<Q>]?: "unordered" };
+
+export type OrderedAggregationClause<Q extends ObjectOrInterfaceDefinition> = {
+  [AK in ValidAggregationKeys<Q>]?: "unordered" | "asc" | "desc";
+};
