@@ -468,7 +468,7 @@ describe("generator", () => {
     const diagnostics = compileThis(helper.getFiles(), BASE_PATH);
     for (const q of diagnostics) {
       console.error(
-        `${q.file?.fileName}:${q.file?.getLineStarts()} ${q.messageText}`,
+        `${q.file?.fileName}:${q.file?.getLineStarts()} ${q.messageText} ${q.code}`,
       );
     }
 

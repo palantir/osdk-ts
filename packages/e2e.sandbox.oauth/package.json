@@ -32,9 +32,6 @@
     "tiny-invariant": "^1.3.3"
   },
   "devDependencies": {
-    "@osdk/monorepo.api-extractor": "workspace:~",
-    "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~"
   },
   "publishConfig": {
     "access": "public"

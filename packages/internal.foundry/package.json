@@ -35,9 +35,6 @@
     "@osdk/shared.net.platformapi": "workspace:~"
   },
   "devDependencies": {
-    "@osdk/monorepo.api-extractor": "workspace:~",
-    "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~"
   },
   "publishConfig": {
     "access": "public"

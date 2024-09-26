@@ -642,16 +642,6 @@ function rulesForPackagesWithChecKApiTask() {
         },
       },
     }),
-    requireDependency({
-      includePackages: checkApiPackages,
-      options: {
-        devDependencies: {
-          "@osdk/monorepo.api-extractor": "workspace:~",
-          "@microsoft/api-documenter": "^7.25.3",
-          "@microsoft/api-extractor": "^7.47.0",
-        },
-      },
-    }),
     fileContents({
       includePackages: checkApiPackages,
       options: {

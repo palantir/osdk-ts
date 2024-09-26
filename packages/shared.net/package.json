@@ -33,9 +33,6 @@
     "@osdk/shared.net.fetch": "workspace:~"
   },
   "devDependencies": {
-    "@osdk/monorepo.api-extractor": "workspace:~",
-    "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~",
     "ts-expect": "^1.3.0"
   },
   "publishConfig": {

@@ -32,11 +32,8 @@
   },
   "devDependencies": {
     "@osdk/create-app.template-packager": "workspace:~",
-    "@osdk/monorepo.api-extractor": "workspace:~",
-    "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~",
     "@vitejs/plugin-vue": "^4.5.0",
-
+    "typescript": "^5.5.4",
     "vite": "^5.3.4",
     "vitest": "^2.0.5",
     "vue-tsc": "^2"

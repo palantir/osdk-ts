@@ -20,6 +20,7 @@ export function compileThis(files: Record<string, string>, basePath: string) {
   const compilerOptions: ts.CompilerOptions = {
     noEmit: true,
     target: ts.ScriptTarget.ES2020,
+    skipLibCheck: true,
   };
 
   const host = ts.createCompilerHost(compilerOptions);

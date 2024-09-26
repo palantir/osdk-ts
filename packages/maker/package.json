@@ -36,9 +36,7 @@
   "devDependencies": {
     "@osdk/client.unstable": "workspace:~",
     "@osdk/internal.foundry.core": "workspace:~",
-    "@osdk/monorepo.api-extractor": "workspace:~",
-    "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~",
+
     "@types/yargs": "^17.0.32",
     "vitest": "^2.0.4"
   },

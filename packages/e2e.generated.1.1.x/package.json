@@ -41,9 +41,7 @@
     "@arethetypeswrong/cli": "^0.15.2",
     "@osdk/api": "^1.9.0",
     "@osdk/legacy-client": "^2.5.0",
-    "@osdk/monorepo.api-extractor": "workspace:~",
-    "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~",
+
     "@types/node": "^18.0.0"
   },
   "publishConfig": {

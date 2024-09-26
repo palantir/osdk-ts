@@ -29,6 +29,7 @@
     "@monorepolint/config": "0.5.0-beta.10",
     "@monorepolint/core": "0.5.0-beta.10",
     "@monorepolint/rules": "0.5.0-beta.10",
+    "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.cspell": "workspace:~",
     "@osdk/monorepo.tool.attw": "workspace:~",
     "@osdk/monorepo.tool.transpile": "workspace:~",

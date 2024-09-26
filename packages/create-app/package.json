@@ -41,9 +41,7 @@
     "@osdk/create-app.template.tutorial-todo-aip-app": "workspace:*",
     "@osdk/create-app.template.tutorial-todo-app": "workspace:*",
     "@osdk/create-app.template.vue": "workspace:*",
-    "@osdk/monorepo.api-extractor": "workspace:~",
-    "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~",
+
     "@types/node": "^18.0.0",
     "@types/tmp": "^0.2.6",
     "@types/yargs": "^17.0.29",

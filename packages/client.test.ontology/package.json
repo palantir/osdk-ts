@@ -33,9 +33,7 @@
   "peerDependencies": {},
   "devDependencies": {
     "@osdk/generator": "workspace:~",
-    "@osdk/monorepo.api-extractor": "workspace:~",
-    "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~",
+
     "@osdk/shared.test": "workspace:~"
   },
   "publishConfig": {

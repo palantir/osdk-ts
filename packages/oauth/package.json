@@ -31,9 +31,6 @@
     "typescript-event-target": "^1.1.1"
   },
   "devDependencies": {
-    "@osdk/monorepo.api-extractor": "workspace:~",
-    "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~",
     "jest-extended": "^4.0.2"
   },
   "publishConfig": {
