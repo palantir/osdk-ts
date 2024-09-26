@@ -218,6 +218,12 @@ async function generateClientSdk(
         }
       }
 
+      updateVersionsIfTheyExist(packageJson, {
+        "@osdk/client": dependencyVersions.osdkClientVersion,
+        "@osdk/client.api": dependencyVersions.osdkClientApiVersion,
+        "@osdk/api": dependencyVersions.osdkApiVersion,
+      });
+
       // only write if changed
       if (!deepEqual(packageJsonOriginal, packageJson)) {
         await fs.promises.writeFile(
@@ -252,6 +258,19 @@ async function generateClientSdk(
     return false;
   }
 } //
+
+export function updateVersionsIfTheyExist(
+  packageJson: any,
+  versions: Record<string, string>,
+) {
+  for (const d of ["dependencies", "devDependencies", "peerDependencies"]) {
+    for (const [key, value] of Object.entries(versions)) {
+      if (packageJson?.[d]?.[key]) {
+        packageJson[d][key] = value;
+      }
+    }
+  }
+}
 
 export async function getDependencyVersions() {
   const ourPackageJsonPath = await getOurPackageJsonPath();
