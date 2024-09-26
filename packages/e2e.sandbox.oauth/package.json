@@ -34,8 +34,7 @@
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~",
-    "typescript": "^5.5.4"
+    "@osdk/monorepo.tsup": "workspace:~"
   },
   "publishConfig": {
     "access": "public"

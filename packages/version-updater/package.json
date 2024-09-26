@@ -36,8 +36,7 @@
     "@osdk/monorepo.tsup": "workspace:~",
     "consola": "^3.2.3",
     "find-up": "^7.0.0",
-    "semver": "^7.6.3",
-    "typescript": "^5.5.4"
+    "semver": "^7.6.3"
   },
   "publishConfig": {
     "access": "public"

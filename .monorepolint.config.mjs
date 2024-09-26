@@ -283,26 +283,6 @@ function standardPackageRules(shared, options) {
         }),
       ]
     ),
-    ...(options.tsVersion
-      ? [
-        requireDependency({
-          ...shared,
-          options: {
-            devDependencies: { typescript: options.tsVersion },
-          },
-        }),
-      ]
-      : []),
-    requireDependency({
-      ...shared,
-      options: {
-        devDependencies: {
-          "@osdk/monorepo.tsconfig": "workspace:~",
-          "@osdk/monorepo.tsup": "workspace:~",
-          "@osdk/monorepo.api-extractor": "workspace:~",
-        },
-      },
-    }),
     packageScript({
       ...shared,
       options: {

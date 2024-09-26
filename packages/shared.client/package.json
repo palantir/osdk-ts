@@ -18,7 +18,6 @@
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)"
   },
   "devDependencies": {
-    "typescript": "^5.4.5"
   },
   "publishConfig": {
     "access": "public"

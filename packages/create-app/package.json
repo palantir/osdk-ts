@@ -47,8 +47,7 @@
     "@types/node": "^18.0.0",
     "@types/tmp": "^0.2.6",
     "@types/yargs": "^17.0.29",
-    "tmp": "^0.2.3",
-    "typescript": "^5.5.4"
+    "tmp": "^0.2.3"
   },
   "publishConfig": {
     "access": "public"

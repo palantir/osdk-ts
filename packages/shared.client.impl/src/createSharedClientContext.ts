@@ -67,7 +67,7 @@ export function createSharedClientContext(
           e.errorInstanceId,
           e.parameters,
         )
-        : new Error("Captured stack trace for error: " + e.message ?? e);
+        : new Error("Captured stack trace for error: " + (e.message ?? e));
 
       (betterError as any).cause = e;
       throw betterError;

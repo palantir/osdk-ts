@@ -34,8 +34,7 @@
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
-    "jest-extended": "^4.0.2",
-    "typescript": "^5.5.4"
+    "jest-extended": "^4.0.2"
   },
   "publishConfig": {
     "access": "public"

@@ -269,9 +269,6 @@ const BASE_PACKAGE_JSON = {
     "typecheck": "tsc-absolute",
   },
   "dependencies": {},
-  "devDependencies": {
-    "typescript": "^5.4.5",
-  },
   "publishConfig": {
     "access": "public",
   },
