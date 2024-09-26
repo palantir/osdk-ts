@@ -12,7 +12,7 @@
 "@osdk/create-app.template.vue": patch
 "@osdk/platform-sdk-generator": patch
 "@osdk/shared.net.platformapi": patch
-"@osdk/foundry-sdk-generator": patch
+"@osdk/tmp-foundry-sdk-generator": patch
 "@osdk/foundry.orchestration": patch
 "@osdk/internal.foundry.core": patch
 "@osdk/client.test.ontology": patch
