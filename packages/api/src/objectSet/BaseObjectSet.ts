@@ -14,5 +14,11 @@
  * limitations under the License.
  */
 
-// TEMPORARY FILE
-export * from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
+
+declare const ObjectSetType: unique symbol;
+
+// mostly a marker interface to simplify types that must be exported/shared
+export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
+  readonly [ObjectSetType]: Q;
+}

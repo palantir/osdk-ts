@@ -42,7 +42,7 @@ import type {
   JustProps,
   PropMapToInterface,
   PropMapToObject,
-} from "../../../client.api/build/esm/OsdkObjectFrom.js";
+} from "../../../api/build/esm/OsdkObjectFrom.js";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 

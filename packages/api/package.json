@@ -19,6 +19,7 @@
     }
   },
   "scripts": {
+    "check-api": "api-extractor run --verbose --local",
     "check-attw": "monorepo.tool.attw esm",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
@@ -32,9 +33,12 @@
     "@osdk/shared.net": "workspace:~",
     "@types/geojson": "^7946.0.13",
     "fetch-retry": "^6.0.0",
-    "tiny-invariant": "^1.3.1"
+    "tiny-invariant": "^1.3.1",
+    "type-fest": "^4.18.2"
   },
   "devDependencies": {
+    "@microsoft/api-documenter": "^7.25.3",
+    "@microsoft/api-extractor": "^7.47.0",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",

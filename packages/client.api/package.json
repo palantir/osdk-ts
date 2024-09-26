@@ -18,7 +18,6 @@
   },
   "scripts": {
     "api-docs": "api-documenter markdown -i build/api-extractor --output-folder api-docs",
-    "check-api": "api-extractor run --verbose --local",
     "check-attw": "monorepo.tool.attw esm",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
