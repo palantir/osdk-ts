@@ -10,13 +10,13 @@ import type { Polygon } from 'geojson';
 import type { SingleKeyObject } from 'type-fest';
 
 // @public (undocumented)
-export interface ActionDefinition<A extends string, K extends string, T_signatures = never> {
+export interface ActionDefinition<T_signatures = never> {
     // Warning: (ae-forgotten-export) The symbol "ActionCompileTimeMetadata" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    __DefinitionMetadata?: ActionCompileTimeMetadata<T_signatures> & ActionMetadata<A, K>;
+    __DefinitionMetadata?: ActionCompileTimeMetadata<T_signatures> & ActionMetadata;
     // (undocumented)
-    apiName: A;
+    apiName: string;
     // Warning: (ae-forgotten-export) The symbol "OsdkMetadata" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -31,17 +31,20 @@ export interface ActionDefinition<A extends string, K extends string, T_signatur
 export type ActionEditResponse = ActionResults;
 
 // @public (undocumented)
-export interface ActionMetadata<A extends string, K extends string> {
+export interface ActionMetadata {
     // (undocumented)
-    apiName: A;
+    apiName: string;
     // (undocumented)
     description?: string;
     // (undocumented)
     displayName?: string;
     // (undocumented)
-    modifiedEntities?: Partial<Record<K, ActionModifiedEntity>>;
+    modifiedEntities?: Partial<Record<any, {
+        created: boolean;
+        modified: boolean;
+    }>>;
     // (undocumented)
-    parameters: Record<any, ActionParameterDefinition<K, any>>;
+    parameters: Record<any, ActionMetadata.Parameter<any>>;
     // (undocumented)
     rid: string;
     // Warning: (ae-forgotten-export) The symbol "ReleaseStatus" needs to be exported by the entry point index.d.ts
@@ -53,11 +56,41 @@ export interface ActionMetadata<A extends string, K extends string> {
 }
 
 // @public (undocumented)
-export interface ActionModifiedEntity {
+export namespace ActionMetadata {
     // (undocumented)
-    created: boolean;
+    export namespace DataType {
+        // (undocumented)
+        export interface Object<T_Target extends ObjectTypeDefinition<any> = never> {
+            // (undocumented)
+            __OsdkTargetType?: T_Target;
+            // (undocumented)
+            object: T_Target["apiName"];
+            // (undocumented)
+            type: "object";
+        }
+        // (undocumented)
+        export interface ObjectSet<T_Target extends ObjectTypeDefinition<any> = never> {
+            // (undocumented)
+            __OsdkTargetType?: T_Target;
+            // (undocumented)
+            objectSet: T_Target["apiName"];
+            // (undocumented)
+            type: "objectSet";
+        }
+    }
     // (undocumented)
-    modified: boolean;
+    export interface Parameter<T_Target extends ObjectTypeDefinition<any> = never> {
+        // (undocumented)
+        description?: string;
+        // (undocumented)
+        multiplicity?: boolean;
+        // (undocumented)
+        nullable?: boolean;
+        // Warning: (ae-forgotten-export) The symbol "ValidBaseActionParameterTypes" needs to be exported by the entry point index.d.ts
+        //
+        // (undocumented)
+        type: ValidBaseActionParameterTypes | DataType.Object<any> | DataType.ObjectSet<any>;
+    }
 }
 
 // @public
@@ -66,20 +99,6 @@ export namespace ActionParam {
     // Warning: (ae-forgotten-export) The symbol "OsdkObjectPrimaryKeyType" needs to be exported by the entry point index.d.ts
     export type ObjectType<T extends ObjectTypeDefinition<any, any>> = OsdkBase<T> | OsdkObjectPrimaryKeyType<T>;
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueClientToWire[T];
-}
-
-// @public (undocumented)
-export interface ActionParameterDefinition<K extends string = never, T_Target extends ObjectTypeDefinition<any> = never> {
-    // (undocumented)
-    description?: string;
-    // (undocumented)
-    multiplicity?: boolean;
-    // (undocumented)
-    nullable?: boolean;
-    // Warning: (ae-forgotten-export) The symbol "ValidActionParameterTypes" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    type: ValidActionParameterTypes<K, T_Target>;
 }
 
 // @public (undocumented)
@@ -109,6 +128,9 @@ export type AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q ext
     $select: UnorderedAggregationClause<Q>;
     $where?: AO["$where"];
 }) : AggregateOptsThatErrors<Q, AO>;
+
+// @public (undocumented)
+export type AggregationClause<Q extends ObjectOrInterfaceDefinition> = UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>;
 
 // @public (undocumented)
 export type AggregationResultsWithGroups<Q extends ObjectOrInterfaceDefinition<any, any>, A extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>, G extends GroupByClause<Q> | undefined> = ({
@@ -152,12 +174,6 @@ export type AllowedBucketKeyTypes = AllowedBucketTypes | {
 export type AllowedBucketTypes = string | number | boolean;
 
 // @public (undocumented)
-export interface AndWhereClause<T extends ObjectOrInterfaceDefinition<any, any>> {
-    // (undocumented)
-    $and: WhereClause<T>[];
-}
-
-// @public (undocumented)
 export type ApplyActionOptions = {
     $returnEdits?: true;
     $validateOnly?: false;
@@ -174,7 +190,7 @@ export type ApplyBatchActionOptions = {
 // Warning: (ae-forgotten-export) The symbol "OrderByArg" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export interface AsyncIterArgs<Q extends ObjectOrInterfaceDefinition, K extends ObjectOrInterfacePropertyKeysFrom2<Q> = ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean = false, A extends Augments = {}, S extends NullabilityAdherence = NullabilityAdherenceDefault> extends SelectArg<Q, K, R, S>, OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>> {
+export interface AsyncIterArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, A extends Augments = {}, S extends NullabilityAdherence = NullabilityAdherenceDefault> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
     // (undocumented)
     $__EXPERIMENTAL_selectedObjectTypes?: string[];
     // (undocumented)
@@ -325,9 +341,6 @@ export interface DataValueWireToClient {
 }
 
 // @public (undocumented)
-export type DefaultToFalse<B extends boolean | undefined> = false extends B ? false : undefined extends B ? false : true;
-
-// @public (undocumented)
 export const DistanceUnitMapping: {
     centimeter: "CENTIMETERS";
     centimeters: "CENTIMETERS";
@@ -378,7 +391,7 @@ export const DurationMapping: {
 };
 
 // @public (undocumented)
-export interface FetchPageArgs<Q extends ObjectOrInterfaceDefinition, K extends ObjectOrInterfacePropertyKeysFrom2<Q> = ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean = false, A extends Augments = {}, S extends NullabilityAdherence = NullabilityAdherenceDefault> extends AsyncIterArgs<Q, K, R, A, S> {
+export interface FetchPageArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, A extends Augments = {}, S extends NullabilityAdherence = NullabilityAdherenceDefault> extends AsyncIterArgs<Q, K, R, A, S> {
     // (undocumented)
     $nextPageToken?: string;
     // (undocumented)
@@ -386,7 +399,7 @@ export interface FetchPageArgs<Q extends ObjectOrInterfaceDefinition, K extends 
 }
 
 // @public (undocumented)
-export type FetchPageResult<Q extends ObjectOrInterfaceDefinition, L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, S extends NullabilityAdherence> = PageResult<SingleOsdkResult<Q, L, R, S>>;
+export type FetchPageResult<Q extends ObjectOrInterfaceDefinition, L extends PropertyKeys<Q>, R extends boolean, S extends NullabilityAdherence> = PageResult<SingleOsdkResult<Q, L, R, S>>;
 
 // @public (undocumented)
 export type GeoFilter_Intersects = {
@@ -463,51 +476,10 @@ export type LinkedType<Q extends ObjectOrInterfaceDefinition, L extends keyof Co
 export type LinkNames<Q extends ObjectOrInterfaceDefinition> = keyof CompileTimeMetadata<Q>["links"] & string;
 
 // @public (undocumented)
-export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition> extends BaseObjectSet<Q> {
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    readonly asyncIter: <L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, const A extends Augments, S extends NullabilityAdherence = NullabilityAdherenceDefault>(args?: AsyncIterArgs<Q, L, R, A, S>) => AsyncIterableIterator<SingleOsdkResult<Q, L, R, S>>;
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    readonly fetchPage: <L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, const A extends Augments, S extends NullabilityAdherence = NullabilityAdherenceDefault>(args?: FetchPageArgs<Q, L, R, A, S>) => Promise<FetchPageResult<Q, L, R, S>>;
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    readonly fetchPageWithErrors: <L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, const A extends Augments, S extends NullabilityAdherence = NullabilityAdherenceDefault>(args?: FetchPageArgs<Q, L, R, A, S>) => Promise<Result<FetchPageResult<Q, L, R, S>>>;
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    readonly where: (clause: WhereClause<Q>) => this;
-}
-
-// @public (undocumented)
-export interface NotWhereClause<T extends ObjectOrInterfaceDefinition<any, any>> {
-    // (undocumented)
-    $not: WhereClause<T>;
-}
-
-// @public (undocumented)
 export type NullabilityAdherence = false | "throw" | "drop";
 
 // @public (undocumented)
 export type NullabilityAdherenceDefault = "throw";
-
-// @public (undocumented)
-export type NumericAggregateOption = "min" | "max" | "sum" | "avg" | "approximateDistinct" | "exactDistinct";
-
-// @public (undocumented)
-export interface ObjectActionDataType<K extends string, T_Target extends ObjectTypeDefinition<any> = never> {
-    // (undocumented)
-    __OsdkTargetType?: T_Target;
-    // (undocumented)
-    object: K;
-    // (undocumented)
-    type: "object";
-}
 
 // @public (undocumented)
 export interface ObjectMetadata<K extends string, N = unknown> extends ObjectInterfaceBaseDefinition<K, N> {
@@ -540,9 +512,6 @@ export interface ObjectMetadata<K extends string, N = unknown> extends ObjectInt
 // @public (undocumented)
 export type ObjectOrInterfaceDefinition<K extends string = any, L extends string = any> = ObjectTypeDefinition<K, L> | InterfaceDefinition<K, L>;
 
-// @public @deprecated (undocumented)
-export type ObjectOrInterfacePropertyKeysFrom2<O extends ObjectOrInterfaceDefinition> = keyof NonNullable<O["__DefinitionMetadata"]>["properties"] & string;
-
 // Warning: (ae-forgotten-export) The symbol "BaseQueryDataTypeDefinition" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -553,6 +522,8 @@ export interface ObjectQueryDataType<K extends string, T_Target extends ObjectTy
     object: K;
 }
 
+// Warning: (ae-forgotten-export) The symbol "MinimalObjectSet" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
 export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED = any> extends MinimalObjectSet<Q> {
     // Warning: (ae-forgotten-export) The symbol "EXPERIMENTAL_ObjectSetListener" needs to be exported by the entry point index.d.ts
@@ -568,22 +539,12 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED 
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     readonly aggregate: <AO extends AggregateOpts<Q>>(req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>) => Promise<AggregationsResults<Q, AO>>;
-    readonly fetchOne: Q extends ObjectTypeDefinition<any, any> ? <const L extends ObjectOrInterfacePropertyKeysFrom2<Q>, const R extends boolean, const S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<SingleOsdkResult<Q, L, R, S>> : never;
-    readonly fetchOneWithErrors: Q extends ObjectTypeDefinition<any, any> ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<Result<SingleOsdkResult<Q, L, R, S>>> : never;
+    readonly fetchOne: Q extends ObjectTypeDefinition<any, any> ? <const L extends PropertyKeys<Q>, const R extends boolean, const S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<SingleOsdkResult<Q, L, R, S>> : never;
+    readonly fetchOneWithErrors: Q extends ObjectTypeDefinition<any, any> ? <L extends PropertyKeys<Q>, R extends boolean, S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<Result<SingleOsdkResult<Q, L, R, S>>> : never;
     readonly intersect: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
     readonly pivotTo: <L extends LinkNames<Q>>(type: L) => CompileTimeMetadata<LinkedType<Q, L>>["objectSet"];
     readonly subtract: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
     readonly union: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
-}
-
-// @public (undocumented)
-export interface ObjectSetActionDataType<K extends string, T_Target extends ObjectTypeDefinition<any> = never> {
-    // (undocumented)
-    __OsdkTargetType?: T_Target;
-    // (undocumented)
-    objectSet: K;
-    // (undocumented)
-    type: "objectSet";
 }
 
 // @public (undocumented)
@@ -642,17 +603,6 @@ export interface OntologyMetadata<_NEVER_USED_KEPT_FOR_BACKCOMPAT = any> {
     ontologyRid: string;
     // (undocumented)
     userAgent: string;
-}
-
-// @public (undocumented)
-export type OrderedAggregationClause<Q extends ObjectOrInterfaceDefinition> = {
-    [AK in ValidAggregationKeys<Q>]?: "unordered" | "asc" | "desc";
-};
-
-// @public (undocumented)
-export interface OrWhereClause<T extends ObjectOrInterfaceDefinition<any, any>> {
-    // (undocumented)
-    $or: WhereClause<T>[];
 }
 
 // Warning: (ae-forgotten-export) The symbol "GetProps" needs to be exported by the entry point index.d.ts
@@ -839,7 +789,7 @@ export namespace QueryResult {
 export type Result<V> = OkResult<V> | ErrorResult;
 
 // @public (undocumented)
-export interface SelectArg<Q extends ObjectOrInterfaceDefinition<any, any>, L extends ObjectOrInterfacePropertyKeysFrom2<Q> = ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean = false, S extends NullabilityAdherence = NullabilityAdherenceDefault> {
+export interface SelectArg<Q extends ObjectOrInterfaceDefinition<any, any>, L extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, S extends NullabilityAdherence = NullabilityAdherenceDefault> {
     // (undocumented)
     $__EXPERIMENTAL_strictNonNull?: S;
     // (undocumented)
@@ -853,17 +803,15 @@ export type SelectArgToKeys<Q extends ObjectOrInterfaceDefinition, A extends Sel
 
 // @public (undocumented)
 export interface SingleLinkAccessor<T extends ObjectTypeDefinition<any, any>> {
-    fetchOne: <const A extends SelectArg<T, ObjectOrInterfacePropertyKeysFrom2<T>, boolean>>(options?: A) => Promise<DefaultToFalse<A["$includeRid"]> extends false ? Osdk<T, SelectArgToKeys<T, A>> : Osdk<T, SelectArgToKeys<T, A> | "$rid">>;
-    fetchOneWithErrors: <const A extends SelectArg<T, ObjectOrInterfacePropertyKeysFrom2<T>, boolean>>(options?: A) => Promise<Result<DefaultToFalse<A["$includeRid"]> extends false ? Osdk<T, SelectArgToKeys<T, A>> : Osdk<T, SelectArgToKeys<T, A> | "$rid">>>;
+    // Warning: (ae-forgotten-export) The symbol "DefaultToFalse" needs to be exported by the entry point index.d.ts
+    fetchOne: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<DefaultToFalse<A["$includeRid"]> extends false ? Osdk<T, SelectArgToKeys<T, A>> : Osdk<T, SelectArgToKeys<T, A> | "$rid">>;
+    fetchOneWithErrors: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<Result<DefaultToFalse<A["$includeRid"]> extends false ? Osdk<T, SelectArgToKeys<T, A>> : Osdk<T, SelectArgToKeys<T, A> | "$rid">>>;
 }
 
 // Warning: (ae-forgotten-export) The symbol "IsAny" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type SingleOsdkResult<Q extends ObjectOrInterfaceDefinition, L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, S extends NullabilityAdherence> = Osdk<Q, (IsAny<L> extends true ? ObjectOrInterfacePropertyKeysFrom2<Q> : L) | (S extends false ? "$notStrict" : never) | (DefaultToFalse<R> extends false ? never : "$rid")>;
-
-// @public (undocumented)
-export type StringAggregateOption = "approximateDistinct" | "exactDistinct";
+export type SingleOsdkResult<Q extends ObjectOrInterfaceDefinition, L extends PropertyKeys<Q>, R extends boolean, S extends NullabilityAdherence> = Osdk<Q, (IsAny<L> extends true ? PropertyKeys<Q> : L) | (S extends false ? "$notStrict" : never) | (DefaultToFalse<R> extends false ? never : "$rid")>;
 
 // Warning: (ae-forgotten-export) The symbol "AggregationKeyDataType" needs to be exported by the entry point index.d.ts
 //
@@ -905,12 +853,7 @@ export interface TimeSeriesPoint<T extends string | number> {
 }
 
 // @public (undocumented)
-export class TimeSeriesProperty<T extends number | string> {
-    constructor(
-    getFirstPoint: () => Promise<TimeSeriesPoint<T>>,
-    getLastPoint: () => Promise<TimeSeriesPoint<T>>,
-    getAllPoints: (query?: TimeSeriesQuery) => Promise<Array<TimeSeriesPoint<T>>>,
-    asyncIterPoints: (query?: TimeSeriesQuery) => AsyncGenerator<TimeSeriesPoint<T>>);
+export interface TimeSeriesProperty<T extends number | string> {
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
@@ -953,11 +896,6 @@ export type TimeSeriesQuery = {
 // @public (undocumented)
 export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<"date" | "double" | "timestamp">;
 
-// @public (undocumented)
-export type UnorderedAggregationClause<Q extends ObjectOrInterfaceDefinition> = {
-    [AK in ValidAggregationKeys<Q>]?: "unordered";
-};
-
 // Warning: (ae-forgotten-export) The symbol "AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "PropertyValueClientToWire" needs to be exported by the entry point index.d.ts
 //
@@ -976,6 +914,9 @@ export interface VersionBound<V extends VersionString<any, any, any>> {
     __expectedClientVersion?: V;
 }
 
+// Warning: (ae-forgotten-export) The symbol "OrWhereClause" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "AndWhereClause" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "NotWhereClause" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "FilterFor" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -985,6 +926,11 @@ export type WhereClause<T extends ObjectOrInterfaceDefinition<any, any>> = OrWhe
 
 // @public (undocumented)
 export type WirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "numericTimeseries" | "stringTimeseries" | "attachment" | "geopoint" | "geoshape";
+
+// Warnings were encountered during analysis:
+//
+// src/aggregate/AggregateOpts.ts:26:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
+// src/aggregate/AggregateOpts.ts:26:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

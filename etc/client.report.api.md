@@ -10,7 +10,6 @@ import type { ActionDefinition } from '@osdk/api';
 import { ActionEditResponse } from '@osdk/api';
 import type { ActionMetadata } from '@osdk/api';
 import type { ActionParam } from '@osdk/api';
-import type { ActionParameterDefinition } from '@osdk/api';
 import { ActionReturnTypeForOptions } from '@osdk/api';
 import { ActionValidationResponse } from '@osdk/api';
 import { ApplyActionOptions } from '@osdk/api';
@@ -23,13 +22,11 @@ import type { DataValueWireToClient } from '@osdk/api';
 import type { InterfaceDefinition } from '@osdk/api';
 import type { InterfaceMetadata } from '@osdk/api';
 import { isOk } from '@osdk/api';
-import type { MinimalObjectSet } from '@osdk/api';
-import type { ObjectActionDataType } from '@osdk/api';
+import type { MinimalObjectSet } from '@osdk/api/unstable';
 import type { ObjectMetadata } from '@osdk/api';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
 import { ObjectSet } from '@osdk/api';
-import type { ObjectSetActionDataType } from '@osdk/api';
 import type { ObjectSetQueryDataType } from '@osdk/api';
 import type { ObjectTypeDefinition } from '@osdk/api';
 import { Osdk } from '@osdk/api';
@@ -80,13 +77,13 @@ export interface Client extends SharedClient<MinimalClient> {
     // Warning: (ae-forgotten-export) The symbol "ActionSignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    <Q extends ActionDefinition<any, any, any>>(o: Q): ActionSignatureFromDef<Q>;
+    <Q extends ActionDefinition<any>>(o: Q): ActionSignatureFromDef<Q>;
     // Warning: (ae-forgotten-export) The symbol "QuerySignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     <Q extends QueryDefinition<any, any, any>>(o: Q): QuerySignatureFromDef<Q>;
     // (undocumented)
-    fetchMetadata<Q extends (ObjectTypeDefinition<any, any> | InterfaceDefinition<any, any> | ActionDefinition<any, any, any> | QueryDefinition<any, any, any>)>(o: Q): Promise<Q extends ObjectTypeDefinition<any, any> ? ObjectMetadata<any, any> : Q extends InterfaceDefinition<any, any> ? InterfaceMetadata<any, any> : Q extends ActionDefinition<any, any, any> ? ActionMetadata<any, any> : Q extends QueryDefinition<any, any, any> ? QueryMetadata<any, any> : never>;
+    fetchMetadata<Q extends (ObjectTypeDefinition<any, any> | InterfaceDefinition<any, any> | ActionDefinition<any> | QueryDefinition<any, any, any>)>(o: Q): Promise<Q extends ObjectTypeDefinition<any, any> ? ObjectMetadata<any, any> : Q extends InterfaceDefinition<any, any> ? InterfaceMetadata<any, any> : Q extends ActionDefinition<any> ? ActionMetadata : Q extends QueryDefinition<any, any, any> ? QueryMetadata<any, any> : never>;
 }
 
 // @public
