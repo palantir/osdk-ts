@@ -20,7 +20,6 @@ export type {
   ActionValidationResponse,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-  InterfaceObjectSet,
   ObjectSet,
   Osdk,
   OsdkObject,

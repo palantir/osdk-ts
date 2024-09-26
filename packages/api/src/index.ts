@@ -23,7 +23,6 @@ export type {
   ApplyBatchActionOptions,
 } from "./actions/Actions.js";
 export type {
-  AggregatableKeys,
   NumericAggregateOption,
   StringAggregateOption,
   ValidAggregationKeys,
@@ -40,7 +39,6 @@ export type { AggregationsResults } from "./aggregate/AggregationsResults.js";
 export { DistanceUnitMapping } from "./aggregate/WhereClause.js";
 export type {
   AndWhereClause,
-  GeoFilter,
   GeoFilter_Intersects,
   GeoFilter_Within,
   NotWhereClause,
@@ -51,7 +49,6 @@ export type {
 export type { OsdkObjectPropertyType } from "./Definitions.js";
 export type {
   DefaultToFalse,
-  OsdkObjectLinksEntry,
   OsdkObjectLinksObject,
   SingleLinkAccessor,
 } from "./definitions/LinkDefinitions.js";
@@ -68,42 +65,27 @@ export type {
   DataValueWireToClient,
 } from "./mapping/DataValueMapping.js";
 export type {
-  PropertyValueClientToWire,
   PropertyValueWireToClient,
 } from "./mapping/PropertyValueMapping.js";
-export type {
-  Attachment,
-  AttachmentMetadata,
-  AttachmentUpload,
-} from "./object/Attachment.js";
+export type { Attachment, AttachmentUpload } from "./object/Attachment.js";
 export type {
   AsyncIterArgs,
   Augment,
   Augments,
-  FetchInterfacePageArgs,
   FetchPageArgs,
   NullabilityAdherence,
   NullabilityAdherenceDefault,
-  OrderByArg,
   SelectArg,
   SelectArgToKeys,
 } from "./object/FetchPageArgs.js";
 export type {
   FetchPageResult,
-  IsAny,
-  RespectNullability,
   SingleOsdkResult,
-  UnionIfFalse,
-  UnionIfTrue,
 } from "./object/FetchPageResult.js";
 export { isOk } from "./object/Result.js";
 export type { Result } from "./object/Result.js";
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
-export type {
-  InterfaceObjectSet,
-  MinimalObjectSet,
-  ObjectSet,
-} from "./objectSet/ObjectSet.js";
+export type { MinimalObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
 export type {
   ActionDefinition,
   ActionMetadata,
@@ -111,7 +93,6 @@ export type {
   ActionParameterDefinition,
   ObjectActionDataType,
   ObjectSetActionDataType,
-  ValidActionParameterTypes,
 } from "./ontology/ActionDefinition.js";
 export type {
   InterfaceDefinition,
@@ -123,49 +104,30 @@ export type {
   PropertyKeys,
 } from "./ontology/ObjectOrInterface.js";
 export type {
-  BrandedApiName,
   CompileTimeMetadata,
   ObjectMetadata,
   ObjectTypeDefinition,
   ObjectTypeLinkDefinition,
-  ObjectTypeLinkKeysFrom2,
   ObjectTypePropertyDefinition,
-  ObjectTypePropertyDefinitionFrom2,
   PropertyDef,
   VersionBound,
 } from "./ontology/ObjectTypeDefinition.js";
 export type { OntologyMetadata } from "./ontology/OntologyMetadata.js";
 export type { PrimaryKeyTypes } from "./ontology/PrimaryKeyTypes.js";
 export type {
-  AggregationKeyDataType,
   ObjectQueryDataType,
   ObjectSetQueryDataType,
-  PrimitiveDataType,
   QueryDataTypeDefinition,
   QueryDefinition,
   QueryMetadata,
   QueryParameterDefinition,
-  RangeAggregationKeyDataType,
-  SetQueryDataType,
-  SimpleAggregationKeyDataType,
-  StructQueryDataType,
-  ThreeDimensionalAggregationDataType,
   ThreeDimensionalQueryAggregationDefinition,
-  TwoDimensionalAggregationDataType,
   TwoDimensionalQueryAggregationDefinition,
-  UnionQueryDataType,
 } from "./ontology/QueryDefinition.js";
 export type { WirePropertyTypes } from "./ontology/WirePropertyTypes.js";
 export type { OsdkBase, PrimaryKeyType } from "./OsdkBase.js";
-export type { OsdkMetadata } from "./OsdkMetadata.js";
 export type { OsdkObject } from "./OsdkObject.js";
-export type {
-  ConvertProps,
-  Osdk,
-  OsdkObjectOrInterfaceFrom,
-  ValidToFrom,
-} from "./OsdkObjectFrom.js";
-export type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
+export type { ConvertProps, Osdk } from "./OsdkObjectFrom.js";
 export type { PageResult } from "./PageResult.js";
 export type { QueryParam, QueryResult } from "./queries/Queries.js";
 export {
