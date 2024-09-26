@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-export enum MediaType {
-  APPLICATION_JSON = "application/json",
-  APPLICATION_OCTET_STREAM = "application/octet-stream",
-  APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded",
-  MULTIPART_FORM_DATA = "multipart/form-data",
-  TEXT_PLAIN = "text/plain",
-}
+import { configDefaults, defineConfig } from "vitest/config";
+
+export default defineConfig({
+  test: {
+    pool: "forks",
+    exclude: [...configDefaults.exclude, "**/build/**/*"],
+  },
+});

@@ -25,7 +25,7 @@
     "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
-    "@osdk/shared.client": "workspace:~",
+    "@osdk/shared.client": "workspace:^",
     "@osdk/shared.net.errors": "workspace:~"
   },
   "devDependencies": {

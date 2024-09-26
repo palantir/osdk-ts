@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@osdk/internal.foundry.geo": "workspace:*",
-    "@osdk/shared.client": "workspace:~",
+    "@osdk/shared.client": "workspace:^",
     "@osdk/shared.net.platformapi": "workspace:~"
   },
   "devDependencies": {

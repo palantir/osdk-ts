@@ -707,7 +707,7 @@ importers:
         specifier: workspace:~
         version: link:../internal.foundry.ontologiesv2
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.client.impl':
         specifier: workspace:~
@@ -782,9 +782,6 @@ importers:
       p-defer:
         specifier: ^4.0.1
         version: 4.0.1
-      p-event:
-        specifier: ^6.0.1
-        version: 6.0.1
       p-locate:
         specifier: ^6.0.0
         version: 6.0.0
@@ -843,13 +840,13 @@ importers:
 
   packages/client.test.ontology:
     dependencies:
+      '@osdk/api':
+        specifier: workspace:*
+        version: link:../api
       '@osdk/client.api':
         specifier: workspace:*
         version: link:../client.api
     devDependencies:
-      '@osdk/api':
-        specifier: workspace:~
-        version: link:../api
       '@osdk/generator':
         specifier: workspace:~
         version: link:../generator
@@ -1784,7 +1781,7 @@ importers:
         specifier: workspace:*
         version: link:../foundry.thirdpartyapplications
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -1806,58 +1803,55 @@ importers:
   packages/foundry-sdk-generator:
     dependencies:
       '@osdk/api':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../api
       '@osdk/client':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../client
       '@osdk/client.api':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../client.api
       '@osdk/generator':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../generator
       '@osdk/internal.foundry.core':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../internal.foundry.core
       '@osdk/internal.foundry.ontologies':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../internal.foundry.ontologies
       '@osdk/internal.foundry.ontologiesv2':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../internal.foundry.ontologiesv2
-      '@osdk/legacy-client':
-        specifier: ^2.5.0
-        version: 2.5.1
       '@osdk/shared.net':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../shared.net
       '@rollup/plugin-commonjs':
-        specifier: ^25.0.4
+        specifier: 25.0.7
         version: 25.0.7(rollup@3.29.1)
       '@rollup/plugin-node-resolve':
-        specifier: ^15.2.1
+        specifier: 15.2.3
         version: 15.2.3(rollup@3.29.1)
       consola:
-        specifier: ^3.2.3
+        specifier: 3.2.3
         version: 3.2.3
       find-up:
-        specifier: ^7.0.0
+        specifier: 7.0.0
         version: 7.0.0
       rollup:
-        specifier: ^3.28.1
+        specifier: 3.29.1
         version: 3.29.1
       rollup-plugin-polyfill-node:
-        specifier: ^0.13.0
+        specifier: 0.13.0
         version: 0.13.0(rollup@3.29.1)
       ts-morph:
-        specifier: ^19.0.0
+        specifier: 19.0.0
         version: 19.0.0
       typescript:
-        specifier: ^5.5.3
+        specifier: 5.5.3
         version: 5.5.3
       yargs:
-        specifier: ^17.7.2
+        specifier: 17.7.2
         version: 17.7.2
     devDependencies:
       '@osdk/monorepo.api-extractor':
@@ -1885,7 +1879,7 @@ importers:
         specifier: workspace:*
         version: link:../foundry.core
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -1907,7 +1901,7 @@ importers:
   packages/foundry.core:
     dependencies:
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -1935,7 +1929,7 @@ importers:
         specifier: workspace:*
         version: link:../foundry.filesystem
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -1960,7 +1954,7 @@ importers:
         specifier: workspace:*
         version: link:../foundry.core
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -1985,7 +1979,7 @@ importers:
         specifier: workspace:*
         version: link:../foundry.core
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -2007,7 +2001,7 @@ importers:
   packages/foundry.ontologies:
     dependencies:
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -2038,7 +2032,7 @@ importers:
         specifier: workspace:*
         version: link:../foundry.filesystem
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -2063,7 +2057,7 @@ importers:
         specifier: workspace:*
         version: link:../foundry.core
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -2094,7 +2088,7 @@ importers:
         specifier: workspace:*
         version: link:../foundry.filesystem
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -2119,7 +2113,7 @@ importers:
         specifier: workspace:*
         version: link:../foundry.core
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -2233,7 +2227,7 @@ importers:
         specifier: workspace:*
         version: link:../internal.foundry.ontologiesv2
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -2258,7 +2252,7 @@ importers:
         specifier: workspace:*
         version: link:../internal.foundry.geo
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -2283,7 +2277,7 @@ importers:
         specifier: workspace:*
         version: link:../internal.foundry.core
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -2305,7 +2299,7 @@ importers:
   packages/internal.foundry.geo:
     dependencies:
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -2330,7 +2324,7 @@ importers:
         specifier: workspace:*
         version: link:../internal.foundry.core
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -2355,7 +2349,7 @@ importers:
         specifier: workspace:*
         version: link:../internal.foundry.core
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -2541,7 +2535,7 @@ importers:
   packages/shared.client.impl:
     dependencies:
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.errors':
         specifier: workspace:~
@@ -2566,7 +2560,7 @@ importers:
   packages/shared.net:
     dependencies:
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.client.impl':
         specifier: workspace:~
@@ -2634,7 +2628,7 @@ importers:
   packages/shared.net.platformapi:
     dependencies:
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.errors':
         specifier: workspace:~
@@ -6022,6 +6016,7 @@ packages:
   glob@8.1.0:
     resolution: {integrity: sha512-r8hpEjiQEYlF2QU0df3dS+nxxSIreXQS1qRhMJM0Q5NDdR386C7jb7Hwwod8Fgiuex+k0GFjgft18yvxm5XoCQ==}
     engines: {node: '>=12'}
+    deprecated: Glob versions prior to v9 are no longer supported
 
   global-directory@4.0.1:
     resolution: {integrity: sha512-wHTUcDUoZ1H5/0iVqEudYW4/kAlN5cZ3j/bXn0Dpbizl9iaUVeWSHqiOjsgk6OW2bkLclbBjzewBz6weQ1zA2Q==}
@@ -6969,10 +6964,6 @@ packages:
     resolution: {integrity: sha512-Mr5KC5efvAK5VUptYEIopP1bakB85k2IWXaRC0rsh1uwn1L6M0LVml8OIQ4Gudg4oyZakf7FmeRLkMMtZW1i5A==}
     engines: {node: '>=12'}
 
-  p-event@6.0.1:
-    resolution: {integrity: sha512-Q6Bekk5wpzW5qIyUP4gdMEujObYstZl6DMMOSenwBvV0BlE5LkDwkjs5yHbZmdCEq2o4RJx4tE1vwxFVf2FG1w==}
-    engines: {node: '>=16.17'}
-
   p-filter@2.1.0:
     resolution: {integrity: sha512-ZBxxZ5sL2HghephhpGAQdoskxplTwr7ICaehZwLIlfL6acuVgZPm8yBNuRAFBGEqtD/hmUeq9eqLg2ys9Xr/yw==}
     engines: {node: '>=8'}
@@ -7016,10 +7007,6 @@ packages:
   p-state@2.0.1:
     resolution: {integrity: sha512-izK3LJXvFsTOnompAXfyZRMJ6StMxwcdjgaoG20ZQH/8USERQnrSs7dtG3z6qiDHfeWhjT/WXWTCKug3pmoO1g==}
     engines: {node: '>=18'}
-
-  p-timeout@6.1.2:
-    resolution: {integrity: sha512-UbD77BuZ9Bc9aABo74gfXhNvzC9Tx7SxtHSh1fxvx3jTLLYvmVhiQZZrJzqqU0jKbN32kb5VOKiLEQI/3bIjgQ==}
-    engines: {node: '>=14.16'}
 
   p-try@2.2.0:
     resolution: {integrity: sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==}
@@ -11857,8 +11844,8 @@ snapshots:
       '@typescript-eslint/parser': 6.21.0(eslint@8.57.0)(typescript@5.5.4)
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0)
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0))(eslint@8.57.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
       eslint-plugin-jsx-a11y: 6.8.0(eslint@8.57.0)
       eslint-plugin-react: 7.34.1(eslint@8.57.0)
       eslint-plugin-react-hooks: 4.6.2(eslint@8.57.0)
@@ -11876,13 +11863,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0):
+  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0))(eslint@8.57.0):
     dependencies:
       debug: 4.3.4
       enhanced-resolve: 5.16.1
       eslint: 8.57.0
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0))(eslint@8.57.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0)
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
       fast-glob: 3.3.2
       get-tsconfig: 4.7.5
       is-core-module: 2.13.1
@@ -11910,25 +11897,14 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-module-utils@2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0))(eslint@8.57.0):
+  eslint-module-utils@2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
       '@typescript-eslint/parser': 6.21.0(eslint@8.57.0)(typescript@5.5.4)
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0)
-    transitivePeerDependencies:
-      - supports-color
-
-  eslint-module-utils@2.8.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0):
-    dependencies:
-      debug: 3.2.7
-    optionalDependencies:
-      '@typescript-eslint/parser': 7.16.0(eslint@9.7.0)(typescript@5.5.3)
-      eslint: 8.57.0
-      eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0)
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0))(eslint@8.57.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -11957,7 +11933,7 @@ snapshots:
     dependencies:
       eslint: 9.7.0
 
-  eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0):
+  eslint-plugin-import@2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0):
     dependencies:
       array-includes: 3.1.8
       array.prototype.findlastindex: 1.2.5
@@ -11967,7 +11943,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0)
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0)
       hasown: 2.0.2
       is-core-module: 2.13.1
       is-glob: 4.0.3
@@ -11978,7 +11954,7 @@ snapshots:
       semver: 6.3.1
       tsconfig-paths: 3.15.0
     optionalDependencies:
-      '@typescript-eslint/parser': 7.16.0(eslint@9.7.0)(typescript@5.5.3)
+      '@typescript-eslint/parser': 6.21.0(eslint@8.57.0)(typescript@5.5.4)
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
@@ -13479,10 +13455,6 @@ snapshots:
 
   p-defer@4.0.1: {}
 
-  p-event@6.0.1:
-    dependencies:
-      p-timeout: 6.1.2
-
   p-filter@2.1.0:
     dependencies:
       p-map: 2.1.0
@@ -13520,8 +13492,6 @@ snapshots:
   p-map@7.0.2: {}
 
   p-state@2.0.1: {}
-
-  p-timeout@6.1.2: {}
 
   p-try@2.2.0: {}
 

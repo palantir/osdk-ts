@@ -27,13 +27,11 @@
     "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
+    "@osdk/api": "workspace:*",
     "@osdk/client.api": "workspace:*"
   },
-  "peerDependencies": {
-    "@osdk/api": "workspace:*"
-  },
+  "peerDependencies": {},
   "devDependencies": {
-    "@osdk/api": "workspace:~",
     "@osdk/generator": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
