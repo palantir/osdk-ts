@@ -147,6 +147,20 @@ export interface InvalidParameterCombination {
 }
 
 /**
+ * The time zone is invalid.
+ *
+ * Log Safety: SAFE
+ */
+export interface InvalidTimeZone {
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "InvalidTimeZone";
+  errorInstanceId: string;
+  parameters: {
+    timeZone: unknown;
+  };
+}
+
+/**
  * Batch requests must contain at least one element.
  *
  * Log Safety: SAFE

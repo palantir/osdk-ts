@@ -18,15 +18,15 @@ import type { Type } from "./Type.js";
 import { SingleSubType } from "./Type.js";
 
 export class ReferenceType extends SingleSubType {
-  get tsReferenceString(): string {
-    return this.subType.tsReferenceString;
-  }
-
-  get declaration(): string {
-    return this.tsReferenceString;
+  getDeclaration(localNamespace: string): string {
+    return this.getTsReferenceString(localNamespace);
   }
 
   get referencedTypes(): Set<Type> {
     return new Set([this.subType]);
+  }
+
+  getTsReferenceString(localNamespace: string): string {
+    return this.subType.getTsReferenceString(localNamespace);
   }
 }

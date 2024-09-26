@@ -14,24 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  AggregateObjectsRequestV2,
-  AggregateObjectsResponseV2,
-  ArtifactRepositoryRid,
-  CountObjectsResponseV2,
-  ListObjectsResponseV2,
-  ObjectTypeApiName,
-  OntologyIdentifier,
-  OntologyObjectV2,
-  OrderBy,
-  PageSize,
-  PageToken,
-  PropertyValueEscapedString,
-  SdkPackageName,
-  SearchObjectsRequestV2,
-  SearchObjectsResponseV2,
-  SelectedPropertyApiName,
-} from "@osdk/internal.foundry.core";
+import type * as _Core from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
@@ -43,18 +26,18 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 const _listObjectsV2: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
     $queryParams: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-      select: Array<SelectedPropertyApiName>;
-      orderBy?: OrderBy | undefined;
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
+      select: Array<_Core.SelectedPropertyApiName>;
+      orderBy?: _Core.OrderBy | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
       excludeRid?: boolean | undefined;
     },
-  ) => Promise<ListObjectsResponseV2>
+  ) => Promise<_Core.ListObjectsResponseV2>
 > = [0, "/v2/ontologies/{0}/objects/{1}", 2];
 
 /**
@@ -82,35 +65,35 @@ const _listObjectsV2: $FoundryPlatformMethod<
 export function listObjectsV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
 
     $queryParams: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-      select: Array<SelectedPropertyApiName>;
-      orderBy?: OrderBy | undefined;
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
+      select: Array<_Core.SelectedPropertyApiName>;
+      orderBy?: _Core.OrderBy | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
       excludeRid?: boolean | undefined;
     },
   ]
-): Promise<ListObjectsResponseV2> {
+): Promise<_Core.ListObjectsResponseV2> {
   return $foundryPlatformFetch($ctx, _listObjectsV2, ...args);
 }
 
 const _getObjectV2: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
     $queryParams: {
-      select: Array<SelectedPropertyApiName>;
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      select: Array<_Core.SelectedPropertyApiName>;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
       excludeRid?: boolean | undefined;
     },
-  ) => Promise<OntologyObjectV2>
+  ) => Promise<_Core.OntologyObjectV2>
 > = [0, "/v2/ontologies/{0}/objects/{1}/{2}", 2];
 
 /**
@@ -126,30 +109,30 @@ const _getObjectV2: $FoundryPlatformMethod<
 export function getObjectV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
 
     $queryParams: {
-      select: Array<SelectedPropertyApiName>;
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      select: Array<_Core.SelectedPropertyApiName>;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
       excludeRid?: boolean | undefined;
     },
   ]
-): Promise<OntologyObjectV2> {
+): Promise<_Core.OntologyObjectV2> {
   return $foundryPlatformFetch($ctx, _getObjectV2, ...args);
 }
 
 const _countObjects: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
-  ) => Promise<CountObjectsResponseV2>
+  ) => Promise<_Core.CountObjectsResponseV2>
 > = [1, "/v2/ontologies/{0}/objects/{1}/count", 2];
 
 /**
@@ -165,28 +148,28 @@ const _countObjects: $FoundryPlatformMethod<
 export function countObjects(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
 
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
   ]
-): Promise<CountObjectsResponseV2> {
+): Promise<_Core.CountObjectsResponseV2> {
   return $foundryPlatformFetch($ctx, _countObjects, ...args);
 }
 
 const _searchObjectsV2: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    $body: SearchObjectsRequestV2,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    $body: _Core.SearchObjectsRequestV2,
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
-  ) => Promise<SearchObjectsResponseV2>
+  ) => Promise<_Core.SearchObjectsResponseV2>
 > = [1, "/v2/ontologies/{0}/objects/{1}/search", 3];
 
 /**
@@ -221,28 +204,28 @@ const _searchObjectsV2: $FoundryPlatformMethod<
 export function searchObjectsV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    $body: SearchObjectsRequestV2,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    $body: _Core.SearchObjectsRequestV2,
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
   ]
-): Promise<SearchObjectsResponseV2> {
+): Promise<_Core.SearchObjectsResponseV2> {
   return $foundryPlatformFetch($ctx, _searchObjectsV2, ...args);
 }
 
 const _aggregateObjectsV2: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    $body: AggregateObjectsRequestV2,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    $body: _Core.AggregateObjectsRequestV2,
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
-  ) => Promise<AggregateObjectsResponseV2>
+  ) => Promise<_Core.AggregateObjectsResponseV2>
 > = [1, "/v2/ontologies/{0}/objects/{1}/aggregate", 3];
 
 /**
@@ -258,14 +241,14 @@ const _aggregateObjectsV2: $FoundryPlatformMethod<
 export function aggregateObjectsV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    $body: AggregateObjectsRequestV2,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    $body: _Core.AggregateObjectsRequestV2,
     $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
     },
   ]
-): Promise<AggregateObjectsResponseV2> {
+): Promise<_Core.AggregateObjectsResponseV2> {
   return $foundryPlatformFetch($ctx, _aggregateObjectsV2, ...args);
 }

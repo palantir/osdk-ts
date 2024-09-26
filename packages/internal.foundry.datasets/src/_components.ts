@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  FilePath,
-  FolderRid,
-  PageToken,
-} from "@osdk/internal.foundry.core";
+import type * as _Core from "@osdk/internal.foundry.core";
 
 export type LooselyBrandedString<T extends string> = string & {
   __LOOSE_BRAND?: T;
@@ -42,7 +38,7 @@ export type TransactionType = "APPEND" | "UPDATE" | "SNAPSHOT" | "DELETE";
  * Log Safety: UNSAFE
  */
 export interface ListBranchesResponse {
-  nextPageToken?: PageToken;
+  nextPageToken?: _Core.PageToken;
   data: Array<Branch>;
 }
 
@@ -64,7 +60,7 @@ export type DatasetName = LooselyBrandedString<"DatasetName">;
 export interface Dataset {
   rid: DatasetRid;
   name: DatasetName;
-  parentFolderRid: FolderRid;
+  parentFolderRid: _Core.FolderRid;
 }
 
 /**
@@ -92,7 +88,7 @@ export interface Transaction {
  * Log Safety: UNSAFE
  */
 export interface File {
-  path: FilePath;
+  path: _Core.FilePath;
   transactionRid: TransactionRid;
   sizeBytes?: string;
   updatedTime: string;
@@ -117,7 +113,7 @@ export type TableExportFormat = "ARROW" | "CSV";
  */
 export interface CreateDatasetRequest {
   name: DatasetName;
-  parentFolderRid: FolderRid;
+  parentFolderRid: _Core.FolderRid;
 }
 
 /**
@@ -143,7 +139,7 @@ export interface Branch {
  * Log Safety: UNSAFE
  */
 export interface ListFilesResponse {
-  nextPageToken?: PageToken;
+  nextPageToken?: _Core.PageToken;
   data: Array<File>;
 }
 

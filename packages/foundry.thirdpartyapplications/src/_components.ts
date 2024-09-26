@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PageToken } from "@osdk/foundry.core";
+import type * as _Core from "@osdk/foundry.core";
 
 export type LooselyBrandedString<T extends string> = string & {
   __LOOSE_BRAND?: T;
@@ -32,7 +32,7 @@ export interface DeployWebsiteRequest {
  */
 export interface ListVersionsResponse {
   data: Array<Version>;
-  nextPageToken?: PageToken;
+  nextPageToken?: _Core.PageToken;
 }
 
 /**

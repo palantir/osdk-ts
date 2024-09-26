@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  AttachmentRid,
-  AttachmentV2,
-  ContentType,
-  Filename,
-} from "@osdk/internal.foundry.core";
-import { ContentLength } from "@osdk/internal.foundry.core";
+import type * as _Core from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
@@ -33,9 +27,9 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 const _uploadAttachmentV2: $FoundryPlatformMethod<
   (
     $body: Blob,
-    $queryParams: { filename: Filename },
-    $headerParams?: { "Content-Type"?: ContentType },
-  ) => Promise<AttachmentV2>
+    $queryParams: { filename: _Core.Filename },
+    $headerParams?: { "Content-Type"?: _Core.ContentType },
+  ) => Promise<_Core.AttachmentV2>
 > = [1, "/v2/ontologies/attachments/upload", 7, "*/*"];
 
 /**
@@ -57,10 +51,10 @@ export function uploadAttachmentV2(
   $ctx: $Client | $ClientContext,
   ...args: [
     $body: Blob,
-    $queryParams: { filename: Filename },
-    $headerParams?: { "Content-Type"?: ContentType },
+    $queryParams: { filename: _Core.Filename },
+    $headerParams?: { "Content-Type"?: _Core.ContentType },
   ]
-): Promise<AttachmentV2> {
+): Promise<_Core.AttachmentV2> {
   const headerParams = {
     ...args[2],
     "Content-Type": args[2]?.["Content-Type"] ?? args[0].type,
@@ -77,7 +71,7 @@ export function uploadAttachmentV2(
 }
 
 const _getAttachmentContentV2: $FoundryPlatformMethod<
-  (attachmentRid: AttachmentRid) => Promise<Blob>
+  (attachmentRid: _Core.AttachmentRid) => Promise<Blob>
 > = [0, "/v2/ontologies/attachments/{0}/content", , , "*/*"];
 
 /**
@@ -93,13 +87,13 @@ const _getAttachmentContentV2: $FoundryPlatformMethod<
  */
 export function getAttachmentContentV2(
   $ctx: $Client | $ClientContext,
-  ...args: [attachmentRid: AttachmentRid]
+  ...args: [attachmentRid: _Core.AttachmentRid]
 ): Promise<Blob> {
   return $foundryPlatformFetch($ctx, _getAttachmentContentV2, ...args);
 }
 
 const _getAttachmentV2: $FoundryPlatformMethod<
-  (attachmentRid: AttachmentRid) => Promise<AttachmentV2>
+  (attachmentRid: _Core.AttachmentRid) => Promise<_Core.AttachmentV2>
 > = [0, "/v2/ontologies/attachments/{0}"];
 
 /**
@@ -115,7 +109,7 @@ const _getAttachmentV2: $FoundryPlatformMethod<
  */
 export function getAttachmentV2(
   $ctx: $Client | $ClientContext,
-  ...args: [attachmentRid: AttachmentRid]
-): Promise<AttachmentV2> {
+  ...args: [attachmentRid: _Core.AttachmentRid]
+): Promise<_Core.AttachmentV2> {
   return $foundryPlatformFetch($ctx, _getAttachmentV2, ...args);
 }

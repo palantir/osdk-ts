@@ -61,6 +61,11 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         nullable: true,
       };
     }
+    case "geotimeSeriesReference":
+      throw new Error(
+        `Unsupported data type ${JSON.stringify(input.dataType)}`,
+      );
+
     default:
       const _: never = input.dataType;
       throw new Error(
@@ -97,6 +102,11 @@ function objectPropertyTypeToSdkPropertyDefinition(
         return "stringTimeseries";
       }
       return "numericTimeseries";
+    case "geotimeSeriesReference":
+      throw new Error(
+        `Unsupported data type ${JSON.stringify(propertyType)}`,
+      );
+
     default:
       const _: never = propertyType;
       throw new Error(`Unexpected data type ${JSON.stringify(propertyType)}`);

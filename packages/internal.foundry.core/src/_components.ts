@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { GeoPoint, Polygon, Position } from "@osdk/internal.foundry.geo";
+import type * as _Geo from "@osdk/internal.foundry.geo";
 
 export type LooselyBrandedString<T extends string> = string & {
   __LOOSE_BRAND?: T;
@@ -186,22 +186,22 @@ export interface ListLinkedObjectsResponse {
 }
 
 /**
- * The underlying data values pointed to by a GeotimeSeriesReference.
- *
- * Log Safety: UNSAFE
- */
-export interface GeotimeSeriesValue {
-  position: Position;
-  timestamp: string;
-}
-
-/**
    * Divides objects into groups based on their object type. This grouping is only useful when aggregating across
 multiple object types, such as when aggregating over an interface type.
    *
    * Log Safety: SAFE
    */
 export interface AggregationObjectTypeGrouping {}
+
+/**
+ * The underlying data values pointed to by a GeotimeSeriesReference.
+ *
+ * Log Safety: UNSAFE
+ */
+export interface GeotimeSeriesValue {
+  position: _Geo.Position;
+  timestamp: string;
+}
 
 /**
  * Log Safety: SAFE
@@ -287,6 +287,16 @@ export interface OntologyFullMetadata {
   queryTypes: Record<QueryApiName, QueryTypeV2>;
   interfaceTypes: Record<InterfaceTypeApiName, InterfaceType>;
   sharedPropertyTypes: Record<SharedPropertyTypeApiName, SharedPropertyType>;
+}
+
+/**
+ * A time and value pair.
+ *
+ * Log Safety: UNSAFE
+ */
+export interface TimeseriesEntry {
+  time: string;
+  value: any;
 }
 
 /**
@@ -416,6 +426,13 @@ export interface Parameter {
 export interface ObjectSetIntersectionType {
   objectSets: Array<ObjectSet>;
 }
+
+/**
+ * The unique id of a geotime series (track) associated with a GTSR.
+ *
+ * Log Safety: UNSAFE
+ */
+export type GeotimeSeriesId = LooselyBrandedString<"GeotimeSeriesId">;
 
 /**
  * Log Safety: UNSAFE
@@ -621,16 +638,6 @@ export type SubscriptionClosureCause =
   | ({ type: "error" } & Error);
 
 /**
- * Divides objects into groups with the specified width.
- *
- * Log Safety: UNSAFE
- */
-export interface AggregationFixedWidthGrouping {
-  field: FieldNameV1;
-  fixedWidth: number;
-}
-
-/**
  * Metadata about an Ontology.
  *
  * Log Safety: UNSAFE
@@ -640,6 +647,16 @@ export interface Ontology {
   displayName: DisplayName;
   description: string;
   rid: OntologyRid;
+}
+
+/**
+ * Divides objects into groups with the specified width.
+ *
+ * Log Safety: UNSAFE
+ */
+export interface AggregationFixedWidthGrouping {
+  field: FieldNameV1;
+  fixedWidth: number;
 }
 
 /**
@@ -735,6 +752,13 @@ export interface NotQuery {
 }
 
 /**
+ * A reference to an Ontology object property with the form properties.{propertyApiName}.
+ *
+ * Log Safety: UNSAFE
+ */
+export type FieldNameV1 = LooselyBrandedString<"FieldNameV1">;
+
+/**
  * Divides objects into groups according to specified ranges.
  *
  * Log Safety: UNSAFE
@@ -743,13 +767,6 @@ export interface AggregationRangesGrouping {
   field: FieldNameV1;
   ranges: Array<AggregationRange>;
 }
-
-/**
- * A reference to an Ontology object property with the form properties.{propertyApiName}.
- *
- * Log Safety: UNSAFE
- */
-export type FieldNameV1 = LooselyBrandedString<"FieldNameV1">;
 
 /**
  * Log Safety: UNSAFE
@@ -924,7 +941,7 @@ export interface ObjectSetStreamSubscribeRequests {
 /**
  * Log Safety: UNSAFE
  */
-export type CenterPointTypes = { type: "Point" } & GeoPoint;
+export type CenterPointTypes = { type: "Point" } & _Geo.GeoPoint;
 
 /**
  * Log Safety: UNSAFE
@@ -1391,6 +1408,7 @@ export type ObjectPropertyType =
   | ({ type: "byte" } & ByteType)
   | ({ type: "double" } & DoubleType)
   | ({ type: "geopoint" } & GeoPointType)
+  | ({ type: "geotimeSeriesReference" } & GeotimeSeriesReferenceType)
   | ({ type: "integer" } & IntegerType)
   | ({ type: "float" } & FloatType)
   | ({ type: "geoshape" } & GeoShapeType)
@@ -1416,14 +1434,6 @@ export interface ActionParameterV2 {
 }
 
 /**
- * Log Safety: UNSAFE
- */
-export interface SearchOrdering {
-  field: FieldNameV1;
-  direction?: string;
-}
-
-/**
    * The parameter value must have a length within the defined range.
 This range is always inclusive.
    *
@@ -1437,11 +1447,26 @@ export interface StringLengthConstraint {
 }
 
 /**
+ * Log Safety: UNSAFE
+ */
+export interface SearchOrdering {
+  field: FieldNameV1;
+  direction?: string;
+}
+
+/**
  * The name of the Query in the API.
  *
  * Log Safety: UNSAFE
  */
 export type QueryApiName = LooselyBrandedString<"QueryApiName">;
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface QueryTwoDimensionalAggregation {
+  groups: Array<QueryAggregation>;
+}
 
 /**
  * Returns objects where the specified field contains the provided value as a substring.
@@ -1451,13 +1476,6 @@ export type QueryApiName = LooselyBrandedString<"QueryApiName">;
 export interface PhraseQuery {
   field: FieldNameV1;
   value: string;
-}
-
-/**
- * Log Safety: UNSAFE
- */
-export interface QueryTwoDimensionalAggregation {
-  groups: Array<QueryAggregation>;
 }
 
 /**
@@ -1935,7 +1953,7 @@ export interface CountAggregation {
 /**
  * Log Safety: UNSAFE
  */
-export type PolygonValue = { type: "Polygon" } & Polygon;
+export type PolygonValue = { type: "Polygon" } & _Geo.Polygon;
 
 /**
  * Returns objects where the specified field is greater than or equal to a value.
@@ -2222,6 +2240,15 @@ definition.
 export type ObjectState = "ADDED_OR_UPDATED" | "REMOVED";
 
 /**
+ * The unique resource identifier of a geotime integration.
+ *
+ * Log Safety: SAFE
+ */
+export type GeotimeSeriesIntegrationRid = LooselyBrandedString<
+  "GeotimeSeriesIntegrationRid"
+>;
+
+/**
  * Details about the output of a query.
  *
  * Log Safety: UNSAFE
@@ -2278,6 +2305,16 @@ export interface ContainsAnyTermQuery {
   field: PropertyApiName;
   value: string;
   fuzzy?: FuzzyV2;
+}
+
+/**
+ * The representation of a geotime series integration as a data type.
+ *
+ * Log Safety: UNSAFE
+ */
+export interface GeotimeSeriesProperty {
+  geotimeSeriesId: GeotimeSeriesId;
+  geotimeSeriesIntegrationRid: GeotimeSeriesIntegrationRid;
 }
 
 /**
@@ -2703,7 +2740,7 @@ export interface QueryParameterV2 {
 /**
  * Log Safety: UNSAFE
  */
-export type WithinBoundingBoxPoint = { type: "Point" } & GeoPoint;
+export type WithinBoundingBoxPoint = { type: "Point" } & _Geo.GeoPoint;
 
 /**
  * Specifies a range from an inclusive start value to an exclusive end value.
@@ -3123,6 +3160,13 @@ export type InterfaceTypeApiName = LooselyBrandedString<"InterfaceTypeApiName">;
 /**
  * Log Safety: UNSAFE
  */
+export type TimeSeriesValueBankProperty = LooselyBrandedString<
+  "TimeSeriesValueBankProperty"
+>;
+
+/**
+ * Log Safety: UNSAFE
+ */
 export interface ListOntologiesV2Response {
   data: Array<OntologyV2>;
 }
@@ -3151,6 +3195,13 @@ export type SharedPropertyTypeRid = LooselyBrandedString<
 export type ObjectTypeRid = LooselyBrandedString<"ObjectTypeRid">;
 
 /**
+ * Log Safety: UNSAFE
+ */
+export interface ApplyActionRequest {
+  parameters: Record<ParameterId, DataValue | undefined>;
+}
+
+/**
  * Returns objects where the specified field starts with the provided value.
  *
  * Log Safety: UNSAFE
@@ -3158,13 +3209,6 @@ export type ObjectTypeRid = LooselyBrandedString<"ObjectTypeRid">;
 export interface PrefixQuery {
   field: FieldNameV1;
   value: string;
-}
-
-/**
- * Log Safety: UNSAFE
- */
-export interface ApplyActionRequest {
-  parameters: Record<ParameterId, DataValue | undefined>;
 }
 
 /**
@@ -3337,6 +3381,11 @@ export type Filename = LooselyBrandedString<"Filename">;
  * Log Safety: SAFE
  */
 export interface LocalFilePath {}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface GeotimeSeriesReferenceType {}
 
 /**
  * Log Safety: SAFE

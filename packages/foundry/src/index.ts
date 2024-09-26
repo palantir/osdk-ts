@@ -22,4 +22,5 @@ export * as Functions from "@osdk/foundry.functions";
 export * as Ontologies from "@osdk/foundry.ontologies";
 export * as Orchestration from "@osdk/foundry.orchestration";
 export * as PublicApis from "@osdk/foundry.publicapis";
+export * as Streams from "@osdk/foundry.streams";
 export * as ThirdPartyApplications from "@osdk/foundry.thirdpartyapplications";

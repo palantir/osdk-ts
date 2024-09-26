@@ -22,6 +22,8 @@ export type {
   CreateGroupRequest,
   GetGroupsBatchRequestElement,
   GetGroupsBatchResponse,
+  GetMarkingsBatchRequestElement,
+  GetMarkingsBatchResponse,
   GetUserMarkingsResponse,
   GetUsersBatchRequestElement,
   GetUsersBatchResponse,

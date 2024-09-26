@@ -14,19 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  LinkTypeApiName,
-  LinkTypeSideV2,
-  ListObjectTypesV2Response,
-  ListOutgoingLinkTypesResponseV2,
-  ObjectTypeApiName,
-  ObjectTypeFullMetadata,
-  ObjectTypeV2,
-  OntologyIdentifier,
-  PageSize,
-  PageToken,
-  PreviewMode,
-} from "@osdk/internal.foundry.core";
+import type * as _Core from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
@@ -38,12 +26,12 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 const _listObjectTypesV2: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
+    ontology: _Core.OntologyIdentifier,
     $queryParams?: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
     },
-  ) => Promise<ListObjectTypesV2Response>
+  ) => Promise<_Core.ListObjectTypesV2Response>
 > = [0, "/v2/ontologies/{0}/objectTypes", 2];
 
 /**
@@ -63,22 +51,22 @@ const _listObjectTypesV2: $FoundryPlatformMethod<
 export function listObjectTypesV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
+    ontology: _Core.OntologyIdentifier,
 
     $queryParams?: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
     },
   ]
-): Promise<ListObjectTypesV2Response> {
+): Promise<_Core.ListObjectTypesV2Response> {
   return $foundryPlatformFetch($ctx, _listObjectTypesV2, ...args);
 }
 
 const _getObjectTypeV2: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-  ) => Promise<ObjectTypeV2>
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+  ) => Promise<_Core.ObjectTypeV2>
 > = [0, "/v2/ontologies/{0}/objectTypes/{1}"];
 
 /**
@@ -93,17 +81,20 @@ const _getObjectTypeV2: $FoundryPlatformMethod<
  */
 export function getObjectTypeV2(
   $ctx: $Client | $ClientContext,
-  ...args: [ontology: OntologyIdentifier, objectType: ObjectTypeApiName]
-): Promise<ObjectTypeV2> {
+  ...args: [
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+  ]
+): Promise<_Core.ObjectTypeV2> {
   return $foundryPlatformFetch($ctx, _getObjectTypeV2, ...args);
 }
 
 const _getObjectTypeFullMetadata: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<ObjectTypeFullMetadata>
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Core.ObjectTypeFullMetadata>
 > = [0, "/v2/ontologies/{0}/objectTypes/{1}/fullMetadata", 2];
 
 /**
@@ -119,24 +110,24 @@ const _getObjectTypeFullMetadata: $FoundryPlatformMethod<
 export function getObjectTypeFullMetadata(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
 
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<ObjectTypeFullMetadata> {
+): Promise<_Core.ObjectTypeFullMetadata> {
   return $foundryPlatformFetch($ctx, _getObjectTypeFullMetadata, ...args);
 }
 
 const _listOutgoingLinkTypesV2: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
     $queryParams?: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
     },
-  ) => Promise<ListOutgoingLinkTypesResponseV2>
+  ) => Promise<_Core.ListOutgoingLinkTypesResponseV2>
 > = [0, "/v2/ontologies/{0}/objectTypes/{1}/outgoingLinkTypes", 2];
 
 /**
@@ -153,24 +144,24 @@ const _listOutgoingLinkTypesV2: $FoundryPlatformMethod<
 export function listOutgoingLinkTypesV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
 
     $queryParams?: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
     },
   ]
-): Promise<ListOutgoingLinkTypesResponseV2> {
+): Promise<_Core.ListOutgoingLinkTypesResponseV2> {
   return $foundryPlatformFetch($ctx, _listOutgoingLinkTypesV2, ...args);
 }
 
 const _getOutgoingLinkTypeV2: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    linkType: LinkTypeApiName,
-  ) => Promise<LinkTypeSideV2>
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    linkType: _Core.LinkTypeApiName,
+  ) => Promise<_Core.LinkTypeSideV2>
 > = [0, "/v2/ontologies/{0}/objectTypes/{1}/outgoingLinkTypes/{2}"];
 
 /**
@@ -187,10 +178,10 @@ const _getOutgoingLinkTypeV2: $FoundryPlatformMethod<
 export function getOutgoingLinkTypeV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    linkType: LinkTypeApiName,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    linkType: _Core.LinkTypeApiName,
   ]
-): Promise<LinkTypeSideV2> {
+): Promise<_Core.LinkTypeSideV2> {
   return $foundryPlatformFetch($ctx, _getOutgoingLinkTypeV2, ...args);
 }

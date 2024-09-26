@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import type { PreviewMode } from "@osdk/foundry.core";
+import type * as _Core from "@osdk/foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
-import type { Build, BuildRid, CreateBuildsRequest } from "../_components.js";
+import type * as _Orchestration from "../_components.js";
 
 //
 
 const _getBuild: $FoundryPlatformMethod<
   (
-    buildRid: BuildRid,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<Build>
+    buildRid: _Orchestration.BuildRid,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Orchestration.Build>
 > = [0, "/v2/orchestration/builds/{0}", 2];
 
 /**
@@ -43,19 +43,19 @@ const _getBuild: $FoundryPlatformMethod<
 export function getBuild(
   $ctx: $Client | $ClientContext,
   ...args: [
-    buildRid: BuildRid,
+    buildRid: _Orchestration.BuildRid,
 
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<Build> {
+): Promise<_Orchestration.Build> {
   return $foundryPlatformFetch($ctx, _getBuild, ...args);
 }
 
 const _createBuilds: $FoundryPlatformMethod<
   (
-    $body: CreateBuildsRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<Build>
+    $body: _Orchestration.CreateBuildsRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Orchestration.Build>
 > = [1, "/v2/orchestration/builds/create", 3];
 
 /**
@@ -67,9 +67,9 @@ const _createBuilds: $FoundryPlatformMethod<
 export function createBuilds(
   $ctx: $Client | $ClientContext,
   ...args: [
-    $body: CreateBuildsRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $body: _Orchestration.CreateBuildsRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<Build> {
+): Promise<_Orchestration.Build> {
   return $foundryPlatformFetch($ctx, _createBuilds, ...args);
 }
