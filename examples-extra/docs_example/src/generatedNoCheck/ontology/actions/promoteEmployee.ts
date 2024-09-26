@@ -1,4 +1,4 @@
-import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
   ActionParam,
   ActionReturnTypeForOptions,
@@ -61,7 +61,7 @@ export namespace promoteEmployee {
  * @param {ActionParam.PrimitiveType<"double">} newCompensation
  * @param {ActionParam.PrimitiveType<"string">} newTitle
  */
-export interface promoteEmployee extends MinActionDef<'promoteEmployee', 'Employee', promoteEmployee.Signatures> {
+export interface promoteEmployee extends ActionDefinition<'promoteEmployee', 'Employee', promoteEmployee.Signatures> {
   __DefinitionMetadata?: {
     apiName: 'promoteEmployee';
     description: "Update an employee's title and compensation";

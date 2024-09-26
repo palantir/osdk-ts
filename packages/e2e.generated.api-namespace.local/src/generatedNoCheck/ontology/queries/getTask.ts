@@ -1,4 +1,4 @@
-import type { MinQueryDef, VersionBound } from '@osdk/api';
+import type { QueryDefinition, VersionBound } from '@osdk/api';
 import type { QueryParam, QueryResult } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -18,7 +18,7 @@ export namespace getTask {
 }
 
 export interface getTask
-  extends MinQueryDef<'getTask', 'com.example.dep.Task', getTask.Signature>,
+  extends QueryDefinition<'getTask', 'com.example.dep.Task', getTask.Signature>,
     VersionBound<$ExpectedClientVersion> {
   __DefinitionMetadata?: {
     apiName: 'getTask';

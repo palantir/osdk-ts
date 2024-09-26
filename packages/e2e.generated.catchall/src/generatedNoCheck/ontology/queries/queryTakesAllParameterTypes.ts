@@ -1,4 +1,4 @@
-import type { MinQueryDef, VersionBound } from '@osdk/api';
+import type { QueryDefinition, VersionBound } from '@osdk/api';
 import type { QueryParam, QueryResult } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -106,7 +106,7 @@ export namespace queryTakesAllParameterTypes {
 }
 
 export interface queryTakesAllParameterTypes
-  extends MinQueryDef<'queryTakesAllParameterTypes', 'Todo', queryTakesAllParameterTypes.Signature>,
+  extends QueryDefinition<'queryTakesAllParameterTypes', 'Todo', queryTakesAllParameterTypes.Signature>,
     VersionBound<$ExpectedClientVersion> {
   __DefinitionMetadata?: {
     apiName: 'queryTakesAllParameterTypes';

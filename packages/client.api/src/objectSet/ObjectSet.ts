@@ -16,10 +16,10 @@
 
 import type {
   CompileTimeMetadata,
-  MinInterfaceDef,
-  MinObjectDef,
+  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
+  ObjectTypeDefinition,
 } from "@osdk/api";
 import type { AggregateOpts } from "../aggregate/AggregateOpts.js";
 import type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } from "../aggregate/AggregateOptsThatErrors.js";
@@ -127,7 +127,7 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
 }
 
 export interface InterfaceObjectSet<
-  Q extends MinInterfaceDef<any, any>,
+  Q extends InterfaceDefinition<any, any>,
 > extends MinimalObjectSet<Q> {
 }
 
@@ -213,7 +213,7 @@ export interface ObjectSet<
   /**
    * Fetches one object with the specified primary key, without a result wrapper
    */
-  readonly fetchOne: Q extends MinObjectDef<any, any> ? <
+  readonly fetchOne: Q extends ObjectTypeDefinition<any, any> ? <
       const L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
       const R extends boolean,
       const S extends false | "throw" = NullabilityAdherenceDefault,
@@ -226,7 +226,7 @@ export interface ObjectSet<
   /**
    * Fetches one object with the specified primary key, with a result wrapper
    */
-  readonly fetchOneWithErrors: Q extends MinObjectDef<any, any> ? <
+  readonly fetchOneWithErrors: Q extends ObjectTypeDefinition<any, any> ? <
       L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
       R extends boolean,
       S extends false | "throw" = NullabilityAdherenceDefault,

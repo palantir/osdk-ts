@@ -6,6 +6,7 @@
 
 import type { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from '@osdk/client.api/unstable';
 import type { __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet } from '@osdk/client.api/unstable';
+import type { ActionDefinition } from '@osdk/api';
 import { ActionEditResponse } from '@osdk/client.api';
 import type { ActionMetadata } from '@osdk/api';
 import type { ActionParam } from '@osdk/client.api';
@@ -19,14 +20,11 @@ import type { AttachmentUpload } from '@osdk/client.api';
 import type { CompileTimeMetadata } from '@osdk/api';
 import type { DataValueClientToWire } from '@osdk/client.api';
 import type { DataValueWireToClient } from '@osdk/client.api';
+import type { InterfaceDefinition } from '@osdk/api';
 import type { InterfaceMetadata } from '@osdk/api';
 import { InterfaceObjectSet } from '@osdk/client.api';
 import { isOk } from '@osdk/client.api';
-import type { MinActionDef } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/client.api';
-import type { MinInterfaceDef } from '@osdk/api';
-import type { MinObjectDef } from '@osdk/api';
-import type { MinQueryDef } from '@osdk/api';
 import type { ObjectActionDataType } from '@osdk/api';
 import type { ObjectMetadata } from '@osdk/api';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
@@ -34,11 +32,13 @@ import type { ObjectQueryDataType } from '@osdk/api';
 import { ObjectSet } from '@osdk/client.api';
 import type { ObjectSetActionDataType } from '@osdk/api';
 import type { ObjectSetQueryDataType } from '@osdk/api';
+import type { ObjectTypeDefinition } from '@osdk/api';
 import { Osdk } from '@osdk/client.api';
 import { OsdkObject } from '@osdk/client.api';
 import { PageResult } from '@osdk/client.api';
 import { PalantirApiError } from '@osdk/shared.net.errors';
 import type { QueryDataTypeDefinition } from '@osdk/api';
+import type { QueryDefinition } from '@osdk/api';
 import type { QueryMetadata } from '@osdk/api';
 import type { QueryParam } from '@osdk/client.api';
 import type { QueryResult } from '@osdk/client.api';
@@ -75,19 +75,19 @@ export interface Client extends SharedClient<MinimalClient> {
     // @alpha
     readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet]: <T extends ObjectOrInterfaceDefinition>(type: T, rid: string) => ObjectSet<T>;
     // (undocumented)
-    <Q extends MinObjectDef<any, any>>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
+    <Q extends ObjectTypeDefinition<any, any>>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
     // (undocumented)
-    <Q extends (MinInterfaceDef<any, any>)>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? MinimalObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
+    <Q extends (InterfaceDefinition<any, any>)>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? MinimalObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
     // Warning: (ae-forgotten-export) The symbol "ActionSignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    <Q extends MinActionDef<any, any, any>>(o: Q): ActionSignatureFromDef<Q>;
+    <Q extends ActionDefinition<any, any, any>>(o: Q): ActionSignatureFromDef<Q>;
     // Warning: (ae-forgotten-export) The symbol "QuerySignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    <Q extends MinQueryDef<any, any, any>>(o: Q): QuerySignatureFromDef<Q>;
+    <Q extends QueryDefinition<any, any, any>>(o: Q): QuerySignatureFromDef<Q>;
     // (undocumented)
-    fetchMetadata<Q extends (MinObjectDef<any, any> | MinInterfaceDef<any, any> | MinActionDef<any, any, any> | MinQueryDef<any, any, any>)>(o: Q): Promise<Q extends MinObjectDef<any, any> ? ObjectMetadata<any, any> : Q extends MinInterfaceDef<any, any> ? InterfaceMetadata<any, any> : Q extends MinActionDef<any, any, any> ? ActionMetadata<any, any> : Q extends MinQueryDef<any, any, any> ? QueryMetadata<any, any> : never>;
+    fetchMetadata<Q extends (ObjectTypeDefinition<any, any> | InterfaceDefinition<any, any> | ActionDefinition<any, any, any> | QueryDefinition<any, any, any>)>(o: Q): Promise<Q extends ObjectTypeDefinition<any, any> ? ObjectMetadata<any, any> : Q extends InterfaceDefinition<any, any> ? InterfaceMetadata<any, any> : Q extends ActionDefinition<any, any, any> ? ActionMetadata<any, any> : Q extends QueryDefinition<any, any, any> ? QueryMetadata<any, any> : never>;
 }
 
 // @public

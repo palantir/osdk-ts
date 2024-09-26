@@ -15,22 +15,22 @@
  */
 
 export type {
+  ActionDefinition,
   ActionModifiedEntity,
   ActionParameterDefinition,
-  MinActionDef,
   ObjectActionDataType,
   ObjectSetActionDataType,
   ValidActionParameterTypes,
   ValidBaseActionParameterTypes,
 } from "./ActionDefinition.js";
 export type {
+  InterfaceDefinition,
   InterfaceMetadata,
-  MinInterfaceDef,
 } from "./InterfaceDefinition.js";
 export type { ObjectOrInterfaceDefinition } from "./ObjectOrInterface.js";
 export type {
-  MinObjectDef,
   ObjectMetadata,
+  ObjectTypeDefinition,
   ObjectTypeLinkDefinition,
   ObjectTypePropertyDefinition,
 } from "./ObjectTypeDefinition.js";

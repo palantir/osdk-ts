@@ -16,8 +16,8 @@
 
 import type {
   CompileTimeMetadata,
-  MinObjectDef,
   ObjectOrInterfacePropertyKeysFrom2,
+  ObjectTypeDefinition,
   ObjectTypeLinkDefinition,
   ObjectTypeLinkKeysFrom2,
 } from "@osdk/api";
@@ -28,13 +28,13 @@ import type { Osdk } from "../OsdkObjectFrom.js";
 
 /** The $link container to get from one object type to its linked objects */
 export type OsdkObjectLinksObject<
-  O extends MinObjectDef<any>,
+  O extends ObjectTypeDefinition<any>,
 > = ObjectTypeLinkKeysFrom2<O> extends never ? never : {
   readonly [L in ObjectTypeLinkKeysFrom2<O>]: OsdkObjectLinksEntry<O, L>;
 };
 
 export type OsdkObjectLinksEntry<
-  Q extends MinObjectDef<any, any>,
+  Q extends ObjectTypeDefinition<any, any>,
   L extends ObjectTypeLinkKeysFrom2<Q>,
 > = CompileTimeMetadata<Q>["links"][L] extends
   ObjectTypeLinkDefinition<infer T, infer M> ? (
@@ -48,7 +48,7 @@ export type DefaultToFalse<B extends boolean | undefined> = false extends B
   : true;
 
 export interface SingleLinkAccessor<
-  T extends MinObjectDef<any, any>,
+  T extends ObjectTypeDefinition<any, any>,
 > {
   /** Load the linked object
    */

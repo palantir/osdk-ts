@@ -15,17 +15,17 @@
  */
 
 export type {
+  ActionDefinition,
   ActionMetadata,
   ActionModifiedEntity,
   ActionParameterDefinition,
-  MinActionDef,
   ObjectActionDataType,
   ObjectSetActionDataType,
   ValidActionParameterTypes,
 } from "./ontology/ActionDefinition.js";
 export type {
+  InterfaceDefinition,
   InterfaceMetadata,
-  MinInterfaceDef,
 } from "./ontology/InterfaceDefinition.js";
 export type {
   ObjectOrInterfaceDefinition,
@@ -35,8 +35,8 @@ export type {
 export type {
   BrandedApiName,
   CompileTimeMetadata,
-  MinObjectDef,
   ObjectMetadata,
+  ObjectTypeDefinition,
   ObjectTypeLinkDefinition,
   ObjectTypeLinkKeysFrom2,
   ObjectTypePropertyDefinition,
@@ -48,11 +48,11 @@ export type { OntologyMetadata } from "./ontology/OntologyMetadata.js";
 export type { PrimaryKeyTypes } from "./ontology/PrimaryKeyTypes.js";
 export type {
   AggregationKeyDataType,
-  MinQueryDef,
   ObjectQueryDataType,
   ObjectSetQueryDataType,
   PrimitiveDataType,
   QueryDataTypeDefinition,
+  QueryDefinition,
   QueryMetadata,
   QueryParameterDefinition,
   RangeAggregationKeyDataType,

@@ -107,7 +107,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
       },
     );
     expect(formattedCode).toMatchInlineSnapshot(`
-      "import type { MinInterfaceDef as $InterfaceDefinition } from "@osdk/api";
+      "import type { InterfaceDefinition as $InterfaceDefinition } from "@osdk/api";
       import type {
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
@@ -192,7 +192,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
       },
     );
     expect(formattedCode).toMatchInlineSnapshot(`
-      "import type { MinInterfaceDef as $InterfaceDefinition } from "@osdk/api";
+      "import type { InterfaceDefinition as $InterfaceDefinition } from "@osdk/api";
       import type {
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
@@ -279,7 +279,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
       },
     );
     expect(formattedCode).toMatchInlineSnapshot(`
-      "import type { MinInterfaceDef as $InterfaceDefinition } from "@osdk/api";
+      "import type { InterfaceDefinition as $InterfaceDefinition } from "@osdk/api";
       import type {
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,

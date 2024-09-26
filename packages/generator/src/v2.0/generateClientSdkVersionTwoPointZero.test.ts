@@ -498,7 +498,7 @@ describe("generator", () => {
         "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos';
       export { markTodoCompleted } from './actions/markTodoCompleted';
       ",
-        "/foo/ontology/actions/deleteTodos.ts": "import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+        "/foo/ontology/actions/deleteTodos.ts": "import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
       import type {
         ActionParam,
         ActionReturnTypeForOptions,
@@ -550,7 +550,7 @@ describe("generator", () => {
        * An action which takes in an array of objects
        * @param {ActionParam.ObjectType<Todo>} [object] Todo(s) to be deleted
        */
-      export interface deleteTodos extends MinActionDef<'deleteTodos', 'Todo', deleteTodos.Signatures> {
+      export interface deleteTodos extends ActionDefinition<'deleteTodos', 'Todo', deleteTodos.Signatures> {
         __DefinitionMetadata?: {
           apiName: 'deleteTodos';
           description: 'An action which takes in an array of objects';
@@ -573,7 +573,7 @@ describe("generator", () => {
         osdkMetadata: $osdkMetadata,
       };
       ",
-        "/foo/ontology/actions/markTodoCompleted.ts": "import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+        "/foo/ontology/actions/markTodoCompleted.ts": "import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
       import type {
         ActionParam,
         ActionReturnTypeForOptions,
@@ -625,7 +625,7 @@ describe("generator", () => {
        * An action which takes different types of parameters
        * @param {ActionParam.ObjectType<Todo>} [object] A Todo to mark completed
        */
-      export interface markTodoCompleted extends MinActionDef<'markTodoCompleted', 'Todo', markTodoCompleted.Signatures> {
+      export interface markTodoCompleted extends ActionDefinition<'markTodoCompleted', 'Todo', markTodoCompleted.Signatures> {
         __DefinitionMetadata?: {
           apiName: 'markTodoCompleted';
           description: 'An action which takes different types of parameters';
@@ -658,7 +658,7 @@ describe("generator", () => {
         "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
       import { $osdkMetadata } from '../../OntologyMetadata';
 
-      import type { MinInterfaceDef as $InterfaceDefinition } from '@osdk/api';
+      import type { InterfaceDefinition as $InterfaceDefinition } from '@osdk/api';
       import type { ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from '@osdk/client.api';
 
       export type OsdkObjectLinks$SomeInterface = {};
@@ -722,7 +722,7 @@ describe("generator", () => {
       import type { Todo } from './Todo';
       import type {
         ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-        MinObjectDef as $ObjectTypeDefinition,
+        ObjectTypeDefinition as $ObjectTypeDefinition,
         ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
       } from '@osdk/api';
       import type {
@@ -806,7 +806,7 @@ describe("generator", () => {
       import type { Person } from './Person';
       import type {
         ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-        MinObjectDef as $ObjectTypeDefinition,
+        ObjectTypeDefinition as $ObjectTypeDefinition,
         ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
       } from '@osdk/api';
       import type {
@@ -908,7 +908,7 @@ describe("generator", () => {
         "/foo/ontology/queries.ts": "export * from './queries/getCount';
       export * from './queries/returnsTodo';
       ",
-        "/foo/ontology/queries/getCount.ts": "import type { MinQueryDef, VersionBound } from '@osdk/api';
+        "/foo/ontology/queries/getCount.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
       import type { QueryParam, QueryResult } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata';
       import { $osdkMetadata } from '../../OntologyMetadata';
@@ -927,7 +927,7 @@ describe("generator", () => {
       }
 
       export interface getCount
-        extends MinQueryDef<'getCount', never, getCount.Signature>,
+        extends QueryDefinition<'getCount', never, getCount.Signature>,
           VersionBound<$ExpectedClientVersion> {
         __DefinitionMetadata?: {
           apiName: 'getCount';
@@ -962,7 +962,7 @@ describe("generator", () => {
         osdkMetadata: $osdkMetadata,
       };
       ",
-        "/foo/ontology/queries/returnsTodo.ts": "import type { MinQueryDef, VersionBound } from '@osdk/api';
+        "/foo/ontology/queries/returnsTodo.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
       import type { QueryParam, QueryResult } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata';
       import { $osdkMetadata } from '../../OntologyMetadata';
@@ -982,7 +982,7 @@ describe("generator", () => {
       }
 
       export interface returnsTodo
-        extends MinQueryDef<'returnsTodo', 'Todo', returnsTodo.Signature>,
+        extends QueryDefinition<'returnsTodo', 'Todo', returnsTodo.Signature>,
           VersionBound<$ExpectedClientVersion> {
         __DefinitionMetadata?: {
           apiName: 'returnsTodo';
@@ -1090,7 +1090,7 @@ describe("generator", () => {
           "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos.js';
         export { markTodoCompleted } from './actions/markTodoCompleted.js';
         ",
-          "/foo/ontology/actions/deleteTodos.ts": "import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+          "/foo/ontology/actions/deleteTodos.ts": "import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
         import type {
           ActionParam,
           ActionReturnTypeForOptions,
@@ -1142,7 +1142,7 @@ describe("generator", () => {
          * An action which takes in an array of objects
          * @param {ActionParam.ObjectType<Todo>} [object] Todo(s) to be deleted
          */
-        export interface deleteTodos extends MinActionDef<'deleteTodos', 'foo.bar.Todo', deleteTodos.Signatures> {
+        export interface deleteTodos extends ActionDefinition<'foo.bar.deleteTodos', 'foo.bar.Todo', deleteTodos.Signatures> {
           __DefinitionMetadata?: {
             apiName: 'foo.bar.deleteTodos';
             description: 'An action which takes in an array of objects';
@@ -1165,7 +1165,7 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
         };
         ",
-          "/foo/ontology/actions/markTodoCompleted.ts": "import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+          "/foo/ontology/actions/markTodoCompleted.ts": "import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
         import type {
           ActionParam,
           ActionReturnTypeForOptions,
@@ -1218,7 +1218,7 @@ describe("generator", () => {
          * @param {ActionParam.ObjectType<Todo>} [object] A Todo to mark completed
          */
         export interface markTodoCompleted
-          extends MinActionDef<'markTodoCompleted', 'foo.bar.Todo', markTodoCompleted.Signatures> {
+          extends ActionDefinition<'foo.bar.markTodoCompleted', 'foo.bar.Todo', markTodoCompleted.Signatures> {
           __DefinitionMetadata?: {
             apiName: 'foo.bar.markTodoCompleted';
             description: 'An action which takes different types of parameters';
@@ -1251,7 +1251,7 @@ describe("generator", () => {
           "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
-        import type { MinInterfaceDef as $InterfaceDefinition } from '@osdk/api';
+        import type { InterfaceDefinition as $InterfaceDefinition } from '@osdk/api';
         import type { ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from '@osdk/client.api';
 
         export type OsdkObjectLinks$SomeInterface = {};
@@ -1315,7 +1315,7 @@ describe("generator", () => {
         import type { Todo } from './Todo.js';
         import type {
           ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-          MinObjectDef as $ObjectTypeDefinition,
+          ObjectTypeDefinition as $ObjectTypeDefinition,
           ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
         } from '@osdk/api';
         import type {
@@ -1399,7 +1399,7 @@ describe("generator", () => {
         import type { Person } from './Person.js';
         import type {
           ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-          MinObjectDef as $ObjectTypeDefinition,
+          ObjectTypeDefinition as $ObjectTypeDefinition,
           ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
         } from '@osdk/api';
         import type {
@@ -1501,7 +1501,7 @@ describe("generator", () => {
           "/foo/ontology/queries.ts": "export * from './queries/getCount.js';
         export * from './queries/returnsTodo.js';
         ",
-          "/foo/ontology/queries/getCount.ts": "import type { MinQueryDef, VersionBound } from '@osdk/api';
+          "/foo/ontology/queries/getCount.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
         import type { QueryParam, QueryResult } from '@osdk/client.api';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -1520,7 +1520,7 @@ describe("generator", () => {
         }
 
         export interface getCount
-          extends MinQueryDef<'foo.bar.getCount', never, getCount.Signature>,
+          extends QueryDefinition<'foo.bar.getCount', never, getCount.Signature>,
             VersionBound<$ExpectedClientVersion> {
           __DefinitionMetadata?: {
             apiName: 'foo.bar.getCount';
@@ -1555,7 +1555,7 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
         };
         ",
-          "/foo/ontology/queries/returnsTodo.ts": "import type { MinQueryDef, VersionBound } from '@osdk/api';
+          "/foo/ontology/queries/returnsTodo.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
         import type { QueryParam, QueryResult } from '@osdk/client.api';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -1575,7 +1575,7 @@ describe("generator", () => {
         }
 
         export interface returnsTodo
-          extends MinQueryDef<'foo.bar.returnsTodo', 'foo.bar.Todo', returnsTodo.Signature>,
+          extends QueryDefinition<'foo.bar.returnsTodo', 'foo.bar.Todo', returnsTodo.Signature>,
             VersionBound<$ExpectedClientVersion> {
           __DefinitionMetadata?: {
             apiName: 'foo.bar.returnsTodo';
@@ -1719,7 +1719,7 @@ describe("generator", () => {
 
       expect(helper.getFiles()["/foo/ontology/queries/getTask.ts"])
         .toMatchInlineSnapshot(`
-          "import type { MinQueryDef, VersionBound } from '@osdk/api';
+          "import type { QueryDefinition, VersionBound } from '@osdk/api';
           import type { QueryParam, QueryResult } from '@osdk/client.api';
           import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
           import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -1739,7 +1739,7 @@ describe("generator", () => {
           }
 
           export interface getTask
-            extends MinQueryDef<'getTask', 'com.example.dep.Task', getTask.Signature>,
+            extends QueryDefinition<'getTask', 'com.example.dep.Task', getTask.Signature>,
               VersionBound<$ExpectedClientVersion> {
             __DefinitionMetadata?: {
               apiName: 'getTask';
@@ -1803,7 +1803,7 @@ describe("generator", () => {
           import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
           import type {
             ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-            MinObjectDef as $ObjectTypeDefinition,
+            ObjectTypeDefinition as $ObjectTypeDefinition,
             ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
           } from '@osdk/api';
           import type {
@@ -1902,7 +1902,7 @@ describe("generator", () => {
 
       expect(helper.getFiles()["/foo/ontology/actions/setTaskBody.ts"])
         .toMatchInlineSnapshot(`
-          "import type { MinActionDef, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+          "import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
           import type {
             ActionParam,
             ActionReturnTypeForOptions,
@@ -1951,7 +1951,7 @@ describe("generator", () => {
            * @param {ActionParam.PrimitiveType<"string">} body
            * @param {ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>} task
            */
-          export interface setTaskBody extends MinActionDef<'setTaskBody', 'com.example.dep.Task', setTaskBody.Signatures> {
+          export interface setTaskBody extends ActionDefinition<'setTaskBody', 'com.example.dep.Task', setTaskBody.Signatures> {
             __DefinitionMetadata?: {
               apiName: 'setTaskBody';
               modifiedEntities: {
@@ -2020,7 +2020,7 @@ describe("generator", () => {
           "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
-        import type { MinInterfaceDef as $InterfaceDefinition } from '@osdk/api';
+        import type { InterfaceDefinition as $InterfaceDefinition } from '@osdk/api';
         import type { ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from '@osdk/client.api';
 
         export type OsdkObjectLinks$SomeInterface = {};
@@ -2080,7 +2080,7 @@ describe("generator", () => {
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import type {
           ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-          MinObjectDef as $ObjectTypeDefinition,
+          ObjectTypeDefinition as $ObjectTypeDefinition,
           ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
         } from '@osdk/api';
         import type {

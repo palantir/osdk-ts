@@ -27,7 +27,7 @@ export interface InterfaceMetadata<
   type: "interface";
 }
 
-export interface MinInterfaceDef<K extends string, N = unknown> {
+export interface InterfaceDefinition<K extends string, N = unknown> {
   type: "interface";
   apiName: K;
   osdkMetadata?: OsdkMetadata;

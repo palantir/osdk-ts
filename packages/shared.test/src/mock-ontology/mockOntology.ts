@@ -15,7 +15,7 @@
  */
 
 import type {
-  MinActionDef,
+  ActionDefinition,
   ObjectMetadata,
   ObjectTypeLinkDefinition,
   VersionBound,
@@ -148,7 +148,7 @@ export type ActionDef$updateTask$Parameters = {
   };
 };
 
-interface ActionDef$updateTask extends MinActionDef<"updateTask", "Task"> {
+interface ActionDef$updateTask extends ActionDefinition<"updateTask", "Task"> {
   type: "action";
   apiName: "updateTask";
   parameters: ActionDef$updateTask$Parameters;
