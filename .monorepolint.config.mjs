@@ -48,7 +48,7 @@ const nonStandardPackages = [
 // Packages that should have the `check-api` task installed
 const checkApiPackages = [
   "@osdk/client",
-  "@osdk/client.api",
+  "@osdk/api",
 ];
 
 // Packages that should be private
