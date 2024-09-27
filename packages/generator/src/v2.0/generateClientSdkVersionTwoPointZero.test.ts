@@ -932,9 +932,7 @@ describe("generator", () => {
         }
       }
 
-      export interface getCount
-        extends QueryDefinition<'getCount', never, getCount.Signature>,
-          VersionBound<$ExpectedClientVersion> {
+      export interface getCount extends QueryDefinition<getCount.Signature>, VersionBound<$ExpectedClientVersion> {
         __DefinitionMetadata?: {
           apiName: 'getCount';
           rid: 'rid.query.1';
@@ -987,9 +985,7 @@ describe("generator", () => {
         }
       }
 
-      export interface returnsTodo
-        extends QueryDefinition<'returnsTodo', 'Todo', returnsTodo.Signature>,
-          VersionBound<$ExpectedClientVersion> {
+      export interface returnsTodo extends QueryDefinition<returnsTodo.Signature>, VersionBound<$ExpectedClientVersion> {
         __DefinitionMetadata?: {
           apiName: 'returnsTodo';
           rid: 'rid.query.2';
@@ -1530,9 +1526,7 @@ describe("generator", () => {
           }
         }
 
-        export interface getCount
-          extends QueryDefinition<'foo.bar.getCount', never, getCount.Signature>,
-            VersionBound<$ExpectedClientVersion> {
+        export interface getCount extends QueryDefinition<getCount.Signature>, VersionBound<$ExpectedClientVersion> {
           __DefinitionMetadata?: {
             apiName: 'foo.bar.getCount';
             rid: 'rid.query.1';
@@ -1585,9 +1579,7 @@ describe("generator", () => {
           }
         }
 
-        export interface returnsTodo
-          extends QueryDefinition<'foo.bar.returnsTodo', 'foo.bar.Todo', returnsTodo.Signature>,
-            VersionBound<$ExpectedClientVersion> {
+        export interface returnsTodo extends QueryDefinition<returnsTodo.Signature>, VersionBound<$ExpectedClientVersion> {
           __DefinitionMetadata?: {
             apiName: 'foo.bar.returnsTodo';
             rid: 'rid.query.2';
@@ -1749,9 +1741,7 @@ describe("generator", () => {
             }
           }
 
-          export interface getTask
-            extends QueryDefinition<'getTask', 'com.example.dep.Task', getTask.Signature>,
-              VersionBound<$ExpectedClientVersion> {
+          export interface getTask extends QueryDefinition<getTask.Signature>, VersionBound<$ExpectedClientVersion> {
             __DefinitionMetadata?: {
               apiName: 'getTask';
               rid: 'ri.a.b.c';

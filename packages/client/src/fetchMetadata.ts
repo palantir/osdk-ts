@@ -33,7 +33,7 @@ export const fetchMetadataInternal = async <
     | ObjectTypeDefinition
     | InterfaceDefinition
     | ActionDefinition<any>
-    | QueryDefinition<any, any, any>
+    | QueryDefinition<any>
   ),
 >(
   client: MinimalClient,
@@ -42,7 +42,7 @@ export const fetchMetadataInternal = async <
   Q extends ObjectTypeDefinition ? ObjectMetadata
     : Q extends InterfaceDefinition ? InterfaceMetadata
     : Q extends ActionDefinition<any> ? ActionMetadata
-    : Q extends QueryDefinition<any, any, any> ? QueryMetadata<any, any>
+    : Q extends QueryDefinition<any> ? QueryMetadata
     : never
 > => {
   if (definition.type === "object") {

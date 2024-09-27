@@ -238,7 +238,7 @@ describe("FetchMetadata", () => {
       $Queries.queryAcceptsObject,
     );
 
-    expectTypeOf(queryMetadata).toEqualTypeOf<QueryMetadata<any, any>>();
+    expectTypeOf(queryMetadata).toEqualTypeOf<QueryMetadata>();
 
     expect(queryMetadata).toMatchInlineSnapshot(`
       {

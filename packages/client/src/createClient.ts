@@ -60,12 +60,12 @@ class ActionInvoker<Q extends ActionDefinition<any>>
   batchApplyAction: (...args: any[]) => any;
 }
 
-class QueryInvoker<Q extends QueryDefinition<any, any, any>>
+class QueryInvoker<Q extends QueryDefinition<any>>
   implements QuerySignatureFromDef<Q>
 {
   constructor(
     clientCtx: MinimalClient,
-    queryDef: QueryDefinition<any, any>,
+    queryDef: QueryDefinition<any>,
   ) {
     this.executeFunction = applyQuery.bind(undefined, clientCtx, queryDef);
   }
@@ -95,11 +95,11 @@ export function createClientInternal(
     T extends
       | ObjectOrInterfaceDefinition
       | ActionDefinition<any>
-      | QueryDefinition<any, any>,
+      | QueryDefinition<any>,
   >(o: T): T extends ObjectTypeDefinition ? ObjectSet<T>
     : T extends InterfaceDefinition ? MinimalObjectSet<T>
     : T extends ActionDefinition<any> ? ActionSignatureFromDef<T>
-    : T extends QueryDefinition<any, any> ? QuerySignatureFromDef<T>
+    : T extends QueryDefinition<any> ? QuerySignatureFromDef<T>
     : never
   {
     if (o.type === "object" || o.type === "interface") {
@@ -116,7 +116,7 @@ export function createClientInternal(
       return new QueryInvoker(
         clientCtx,
         o,
-      ) as (T extends QueryDefinition<any, any> ? QuerySignatureFromDef<T>
+      ) as (T extends QueryDefinition<any> ? QuerySignatureFromDef<T>
         : never) as any;
     } else {
       throw new Error("not implemented");

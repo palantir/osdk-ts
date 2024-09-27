@@ -106,7 +106,7 @@ export namespace queryTakesAllParameterTypes {
 }
 
 export interface queryTakesAllParameterTypes
-  extends QueryDefinition<'queryTakesAllParameterTypes', 'Todo', queryTakesAllParameterTypes.Signature>,
+  extends QueryDefinition<queryTakesAllParameterTypes.Signature>,
     VersionBound<$ExpectedClientVersion> {
   __DefinitionMetadata?: {
     apiName: 'queryTakesAllParameterTypes';

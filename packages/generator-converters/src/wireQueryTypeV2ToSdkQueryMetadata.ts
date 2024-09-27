@@ -25,7 +25,7 @@ import {
 
 export function wireQueryTypeV2ToSdkQueryMetadata(
   input: QueryTypeV2,
-): QueryMetadata<any, any> {
+): QueryMetadata {
   return {
     type: "query",
     apiName: input.apiName,

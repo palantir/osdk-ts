@@ -17,9 +17,7 @@ export namespace getTask {
   }
 }
 
-export interface getTask
-  extends QueryDefinition<'getTask', 'com.example.dep.Task', getTask.Signature>,
-    VersionBound<$ExpectedClientVersion> {
+export interface getTask extends QueryDefinition<getTask.Signature>, VersionBound<$ExpectedClientVersion> {
   __DefinitionMetadata?: {
     apiName: 'getTask';
     rid: 'ri.a.b.c';

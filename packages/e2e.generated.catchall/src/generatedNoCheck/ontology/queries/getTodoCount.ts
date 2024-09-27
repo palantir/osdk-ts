@@ -9,9 +9,7 @@ export namespace getTodoCount {
   }
 }
 
-export interface getTodoCount
-  extends QueryDefinition<'getTodoCount', never, getTodoCount.Signature>,
-    VersionBound<$ExpectedClientVersion> {
+export interface getTodoCount extends QueryDefinition<getTodoCount.Signature>, VersionBound<$ExpectedClientVersion> {
   __DefinitionMetadata?: {
     apiName: 'getTodoCount';
     rid: 'query.rid2';
