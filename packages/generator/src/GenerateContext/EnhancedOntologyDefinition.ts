@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ActionTypeApiName,
-  InterfaceTypeApiName,
-  OntologyV2,
-  QueryApiName,
-  SharedPropertyTypeApiName,
-} from "@osdk/gateway/types";
+import type { OntologyV2 } from "@osdk/internal.foundry.core";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedAction } from "./EnhancedAction.js";
@@ -34,19 +28,20 @@ import { ForeignType } from "./ForeignType.js";
 export class EnhancedOntologyDefinition {
   ontology: OntologyV2;
   objectTypes: Record<string, EnhancedObjectType>;
-  actionTypes: Record<ActionTypeApiName, EnhancedAction>;
-  queryTypes: Record<QueryApiName, EnhancedQuery>;
-  interfaceTypes: Record<InterfaceTypeApiName, EnhancedInterfaceType>;
+  actionTypes: Record<string, EnhancedAction>;
+  queryTypes: Record<string, EnhancedQuery>;
+  interfaceTypes: Record<string, EnhancedInterfaceType>;
   sharedPropertyTypes: Record<
-    SharedPropertyTypeApiName,
+    string,
     EnhancedSharedPropertyType
   >;
+  #foreignTypes: Record<string, ForeignType> = {};
 
-  og: WireOntologyDefinition;
+  raw: WireOntologyDefinition;
   common: EnhanceCommon;
 
   constructor(
-    original: WireOntologyDefinition,
+    raw: WireOntologyDefinition,
     ontologyApiNamespace: string | undefined,
     apiNamespacePackageMap: Map<string, string>,
     importExt: string,
@@ -57,30 +52,30 @@ export class EnhancedOntologyDefinition {
       importExt,
       ontologyApiNamespace,
     };
-    this.og = original;
-    this.ontology = original.ontology;
+    this.raw = raw;
+    this.ontology = raw.ontology;
     this.objectTypes = remap(
-      original.objectTypes,
+      raw.objectTypes,
       this.common,
       EnhancedObjectType,
     );
     this.actionTypes = remap(
-      original.actionTypes,
+      raw.actionTypes,
       this.common,
       EnhancedAction,
     );
     this.queryTypes = remap(
-      original.queryTypes,
+      raw.queryTypes,
       this.common,
       EnhancedQuery,
     );
     this.interfaceTypes = remap(
-      original.interfaceTypes,
+      raw.interfaceTypes,
       this.common,
       EnhancedInterfaceType,
     );
     this.sharedPropertyTypes = remap(
-      original.sharedPropertyTypes,
+      raw.sharedPropertyTypes,
       this.common,
       EnhancedSharedPropertyType,
     );
@@ -116,12 +111,15 @@ export class EnhancedOntologyDefinition {
           );
         }
 
-        return new ForeignType(
+        const ret = this.#foreignTypes[fullApiName] ?? new ForeignType(
           this.common,
           type,
           apiNamespace,
           shortApiName,
-        ) as L extends true ? this[K][string] : ForeignType;
+        );
+
+        this.#foreignTypes[fullApiName] = ret;
+        return ret as L extends true ? this[K][string] : ForeignType;
       }
       return ret as this[K][string] as L extends true ? this[K][string]
         : ForeignType;
@@ -139,7 +137,7 @@ export class EnhancedOntologyDefinition {
 function remap<T, X>(
   r: Record<string, T>,
   common: EnhanceCommon,
-  Constructor: { new(common: EnhanceCommon, og: T): X },
+  Constructor: { new(common: EnhanceCommon, original: T): X },
 ): Record<string, X> {
   return Object.fromEntries(
     Object.entries(r ?? {}).map(([fullApiName, v]) => {

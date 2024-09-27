@@ -1,34 +1,18 @@
+import type { PropertyDef as $PropertyDef } from '@osdk/api';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
+  PropertyKeys as $PropertyKeys,
   ObjectTypeDefinition as $ObjectTypeDefinition,
-  PropertyDef as $PropertyDef,
-  VersionBound as $VersionBound,
+  ObjectMetadata as $ObjectMetadata,
 } from '@osdk/api';
 import type {
-  AggregateOpts as $AggregateOpts,
-  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-  AggregationsResults as $AggregationsResults,
-  Augments as $Augments,
-  ConvertProps as $ConvertProps,
-  DefaultToFalse as $DefaultToFalse,
-  FetchPageArgs as $FetchPageArgs,
-  IsAny as $IsAny,
-  LinkedType as $LinkedType,
-  LinkNames as $LinkNames,
-  NullabilityAdherence as $NullabilityAdherence,
-  NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   OsdkObject as $OsdkObject,
-  OsdkObjectPropertyType as $OsdkObjectPropertyType,
-  PageResult as $PageResult,
-  PropertyValueClientToWire as $PropertyValueClientToWire,
   PropertyValueWireToClient as $PropType,
-  Result as $Result,
-  SelectArg as $SelectArg,
-  ValidToFrom as $ValidToFrom,
-} from '@osdk/client.api';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
-import { $osdkMetadata } from '../../OntologyMetadata.js';
+  SingleLinkAccessor as $SingleLinkAccessor,
+} from '@osdk/api';
 
 export namespace BuilderDeploymentState {
   export type PropertyKeys = 'skuId' | 'date' | 'currentTimestamp';
@@ -46,92 +30,35 @@ export namespace BuilderDeploymentState {
     readonly skuId: $PropType['string'];
   }
 
-  export interface ObjectSet extends $ObjectSet<BuilderDeploymentState.Definition, BuilderDeploymentState.ObjectSet> {
-    readonly aggregate: <const AO extends $AggregateOpts<BuilderDeploymentState.Definition>>(
-      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<BuilderDeploymentState.Definition, AO>,
-    ) => Promise<$AggregationsResults<BuilderDeploymentState.Definition, AO>>;
+  export interface ObjectSet extends $ObjectSet<BuilderDeploymentState, BuilderDeploymentState.ObjectSet> {}
 
-    readonly pivotTo: <const L extends $LinkNames<BuilderDeploymentState.Definition>>(
-      type: L,
-    ) => $LinkedType<BuilderDeploymentState.Definition, L>['objectSet'];
+  export type OsdkObject<
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    K extends keyof BuilderDeploymentState.Props = keyof BuilderDeploymentState.Props,
+  > = $Osdk<BuilderDeploymentState, K | OPTIONS>;
+}
 
-    readonly fetchOne: <
-      const L extends BuilderDeploymentState.PropertyKeys,
-      const R extends boolean,
-      const S extends false | 'throw' = $NullabilityAdherenceDefault,
-    >(
-      primaryKey: $PropertyValueClientToWire[BuilderDeploymentState.Definition['primaryKeyType']],
-      options?: $SelectArg<BuilderDeploymentState.Definition, L, R, S>,
-    ) => Promise<
-      BuilderDeploymentState.OsdkObject<
-        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-        $IsAny<L> extends true ? BuilderDeploymentState.PropertyKeys : L
-      >
-    >;
-
-    readonly fetchOneWithErrors: <
-      const L extends BuilderDeploymentState.PropertyKeys,
-      const R extends boolean,
-      const S extends false | 'throw' = $NullabilityAdherenceDefault,
-    >(
-      primaryKey: $PropertyValueClientToWire[BuilderDeploymentState.Definition['primaryKeyType']],
-      options?: $SelectArg<BuilderDeploymentState.Definition, L, R, S>,
-    ) => Promise<
-      $Result<
-        BuilderDeploymentState.OsdkObject<
-          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          $IsAny<L> extends true ? BuilderDeploymentState.PropertyKeys : L
-        >
-      >
-    >;
-
-    readonly fetchPage: <
-      const L extends BuilderDeploymentState.PropertyKeys,
-      const R extends boolean,
-      const A extends $Augments,
-      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-    >(
-      args?: $FetchPageArgs<BuilderDeploymentState.Definition, L, R, A, S>,
-    ) => Promise<
-      $PageResult<
-        BuilderDeploymentState.OsdkObject<
-          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          $IsAny<L> extends true ? BuilderDeploymentState.PropertyKeys : L
-        >
-      >
-    >;
-
-    readonly fetchPageWithErrors: <
-      const L extends BuilderDeploymentState.PropertyKeys,
-      const R extends boolean,
-      const A extends $Augments,
-      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-    >(
-      args?: $FetchPageArgs<BuilderDeploymentState.Definition, L, R, A, S>,
-    ) => Promise<
-      $Result<
-        $PageResult<
-          BuilderDeploymentState.OsdkObject<
-            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-            $IsAny<L> extends true ? BuilderDeploymentState.PropertyKeys : L
-          >
-        >
-      >
-    >;
-
-    readonly asyncIter: () => AsyncIterableIterator<BuilderDeploymentState.OsdkObject>;
-  }
-
-  export interface Definition
-    extends $ObjectTypeDefinition<'BuilderDeploymentState', BuilderDeploymentState.Definition>,
-      $VersionBound<$ExpectedClientVersion> {
-    osdkMetadata: typeof $osdkMetadata;
+export interface BuilderDeploymentState extends $ObjectTypeDefinition {
+  osdkMetadata: typeof $osdkMetadata;
+  type: 'object';
+  apiName: 'BuilderDeploymentState';
+  __DefinitionMetadata?: {
     objectSet: BuilderDeploymentState.ObjectSet;
     props: BuilderDeploymentState.Props;
     linksType: BuilderDeploymentState.Links;
     strictProps: BuilderDeploymentState.StrictProps;
+    apiName: 'BuilderDeploymentState';
     description: 'Builder Deployment State';
+    displayName: 'BuilderDeploymentState';
+    icon: {
+      type: 'blueprint';
+      name: 'builder';
+      color: 'color';
+    };
+    interfaceMap: {};
+    inverseInterfaceMap: {};
     links: {};
+    pluralDisplayName: 'Builder Deployment States';
     primaryKeyApiName: 'skuId';
     primaryKeyType: 'string';
     properties: {
@@ -148,59 +75,15 @@ export namespace BuilderDeploymentState {
        */
       skuId: $PropertyDef<'string', 'non-nullable', 'single'>;
     };
-  }
-
-  export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
-    K extends keyof BuilderDeploymentState.Props = keyof BuilderDeploymentState.Props,
-  > = $Osdk<BuilderDeploymentState.Definition, K | OPTIONS> &
-    Pick<
-      [OPTIONS] extends [never]
-        ? BuilderDeploymentState.StrictProps
-        : OPTIONS extends '$notStrict'
-          ? BuilderDeploymentState.Props
-          : BuilderDeploymentState.StrictProps,
-      K
-    > & {
-      readonly $link: BuilderDeploymentState.Links;
-      readonly $title: string | undefined; // FIXME
-      readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
-
-      readonly $as: <NEW_Q extends $ValidToFrom<BuilderDeploymentState.Definition>>(
-        type: NEW_Q | string,
-      ) => $Osdk<NEW_Q, $ConvertProps<BuilderDeploymentState.Definition, NEW_Q, K>>;
-    } & $OsdkObject<'BuilderDeploymentState'>;
+    rid: 'rid.a.b.c.d';
+    status: 'ACTIVE';
+    titleProperty: 'skuId';
+    type: 'object';
+  };
 }
 
-export type BuilderDeploymentState = BuilderDeploymentState.Definition;
-
-export const BuilderDeploymentState: BuilderDeploymentState & $VersionBound<$ExpectedClientVersion> = {
-  osdkMetadata: $osdkMetadata,
-  objectSet: undefined as any,
-  props: undefined as any,
-  linksType: undefined as any,
-  strictProps: undefined as any,
-  apiName: 'BuilderDeploymentState',
-  description: 'Builder Deployment State',
-  links: {},
-  primaryKeyApiName: 'skuId',
-  primaryKeyType: 'string',
-  properties: {
-    skuId: {
-      multiplicity: false,
-      type: 'string',
-      nullable: false,
-    },
-    date: {
-      multiplicity: false,
-      type: 'datetime',
-      nullable: true,
-    },
-    currentTimestamp: {
-      multiplicity: false,
-      type: 'timestamp',
-      nullable: true,
-    },
-  },
+export const BuilderDeploymentState: BuilderDeploymentState = {
   type: 'object',
+  apiName: 'BuilderDeploymentState',
+  osdkMetadata: $osdkMetadata,
 };

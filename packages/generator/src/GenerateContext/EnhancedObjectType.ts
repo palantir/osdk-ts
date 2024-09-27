@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
-import type { ObjectTypeFullMetadata } from "@osdk/gateway/types";
-import { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "@osdk/generator-converters";
+import type { ObjectMetadata } from "@osdk/api";
+import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
+import type { ObjectTypeFullMetadata } from "@osdk/internal.foundry.core";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedBase } from "./EnhancedBase.js";
 
 export class EnhancedObjectType extends EnhancedBase<ObjectTypeFullMetadata> {
-  constructor(common: EnhanceCommon, public og: ObjectTypeFullMetadata) {
-    super(common, og, og.objectType.apiName, "./ontology/objects");
+  constructor(common: EnhanceCommon, public raw: ObjectTypeFullMetadata) {
+    super(common, raw, raw.objectType.apiName, "./ontology/objects");
   }
 
   getDefinitionIdentifier(v2: boolean) {
@@ -34,10 +34,10 @@ export class EnhancedObjectType extends EnhancedBase<ObjectTypeFullMetadata> {
     return this.getDefinitionIdentifier(v2);
   }
 
-  getCleanedUpDefinition(v2: boolean): ObjectTypeDefinition<any> {
+  getCleanedUpDefinition(v2: boolean): ObjectMetadata {
     return deleteUndefineds(
-      wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
-        this.og,
+      wireObjectTypeFullMetadataToSdkObjectMetadata(
+        this.raw,
         v2,
       ),
     );

@@ -34,6 +34,37 @@ export type {
   TransactionStatus,
   TransactionType,
 } from "./_components.js";
+export type {
+  AbortTransactionPermissionDenied,
+  BranchAlreadyExists,
+  BranchNotFound,
+  ColumnTypesNotSupported,
+  CommitTransactionPermissionDenied,
+  CreateBranchPermissionDenied,
+  CreateDatasetPermissionDenied,
+  CreateTransactionPermissionDenied,
+  DatasetNotFound,
+  DatasetReadNotSupported,
+  DeleteBranchPermissionDenied,
+  DeleteFilePermissionDenied,
+  DeleteSchemaPermissionDenied,
+  FileAlreadyExists,
+  FileNotFound,
+  FileNotFoundOnBranch,
+  FileNotFoundOnTransactionRange,
+  GetFileContentPermissionDenied,
+  InvalidBranchName,
+  InvalidTransactionType,
+  OpenTransactionAlreadyExists,
+  PutSchemaPermissionDenied,
+  ReadTableDatasetPermissionDenied,
+  ReadTablePermissionDenied,
+  SchemaNotFound,
+  TransactionNotCommitted,
+  TransactionNotFound,
+  TransactionNotOpen,
+  UploadFilePermissionDenied,
+} from "./_errors.js";
 export * as Branches from "./public/Branch.js";
 export * as Datasets from "./public/Dataset.js";
 export * as Files from "./public/File.js";

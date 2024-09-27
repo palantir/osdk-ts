@@ -1,29 +1,12 @@
-import type { PropertyDef as $PropertyDef, VersionBound as $VersionBound } from '@osdk/api';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+import type { PropertyDef as $PropertyDef } from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
-import type { InterfaceDefinition as $InterfaceDefinition } from '@osdk/api';
 import type {
-  AggregateOpts as $AggregateOpts,
-  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-  AggregationsResults as $AggregationsResults,
-  Augments as $Augments,
-  ConvertProps as $ConvertProps,
-  DefaultToFalse as $DefaultToFalse,
-  FetchPageArgs as $FetchPageArgs,
-  IsAny as $IsAny,
-  LinkedType as $LinkedType,
-  LinkNames as $LinkNames,
-  NullabilityAdherence as $NullabilityAdherence,
-  NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
+  InterfaceDefinition as $InterfaceDefinition,
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
-  OsdkObject as $OsdkObject,
-  PageResult as $PageResult,
   PropertyValueWireToClient as $PropType,
-  Result as $Result,
-  ValidToFrom as $ValidToFrom,
-} from '@osdk/client.api';
+} from '@osdk/api';
 
 export type OsdkObjectLinks$SomeInterface = {};
 
@@ -37,60 +20,24 @@ export namespace SomeInterface {
     readonly spt: $PropType['string'] | undefined;
   }
 
-  export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {
-    readonly aggregate: <const AO extends $AggregateOpts<SomeInterface.Definition>>(
-      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<SomeInterface.Definition, AO>,
-    ) => Promise<$AggregationsResults<SomeInterface.Definition, AO>>;
+  export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 
-    readonly pivotTo: <const L extends $LinkNames<SomeInterface.Definition>>(
-      type: L,
-    ) => $LinkedType<SomeInterface.Definition, L>['objectSet'];
+  export type OsdkObject<
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
+  > = $Osdk<SomeInterface, K | OPTIONS>;
+}
 
-    readonly fetchPage: <
-      const L extends SomeInterface.PropertyKeys,
-      const R extends boolean,
-      const A extends $Augments,
-      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-    >(
-      args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
-    ) => Promise<
-      $PageResult<
-        SomeInterface.OsdkObject<
-          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          $IsAny<L> extends true ? SomeInterface.PropertyKeys : L
-        >
-      >
-    >;
-
-    readonly fetchPageWithErrors: <
-      const L extends SomeInterface.PropertyKeys,
-      const R extends boolean,
-      const A extends $Augments,
-      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-    >(
-      args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
-    ) => Promise<
-      $Result<
-        $PageResult<
-          SomeInterface.OsdkObject<
-            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-            $IsAny<L> extends true ? SomeInterface.PropertyKeys : L
-          >
-        >
-      >
-    >;
-
-    readonly asyncIter: () => AsyncIterableIterator<SomeInterface.OsdkObject>;
-  }
-
-  export interface Definition
-    extends $InterfaceDefinition<'com.example.dep.SomeInterface', SomeInterface.Definition>,
-      $VersionBound<$ExpectedClientVersion> {
-    osdkMetadata: typeof $osdkMetadata;
+export interface SomeInterface extends $InterfaceDefinition {
+  osdkMetadata: typeof $osdkMetadata;
+  type: 'interface';
+  apiName: 'com.example.dep.SomeInterface';
+  __DefinitionMetadata?: {
     objectSet: SomeInterface.ObjectSet;
     props: SomeInterface.Props;
     linksType: OsdkObjectLinks$SomeInterface;
     strictProps: SomeInterface.StrictProps;
+    apiName: 'com.example.dep.SomeInterface';
     displayName: 'Sum Interface';
     implements: [];
     links: {};
@@ -100,50 +47,13 @@ export namespace SomeInterface {
        */
       spt: $PropertyDef<'string', 'nullable', 'single'>;
     };
-  }
-
-  export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
-    K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
-  > = $Osdk<SomeInterface.Definition, K | OPTIONS> &
-    Pick<
-      [OPTIONS] extends [never]
-        ? SomeInterface.StrictProps
-        : OPTIONS extends '$notStrict'
-          ? SomeInterface.Props
-          : SomeInterface.StrictProps,
-      K
-    > & {
-      readonly $link: OsdkObjectLinks$SomeInterface;
-      readonly $title: string | undefined; // FIXME
-      readonly $primaryKey: string | number;
-
-      readonly $as: <NEW_Q extends $ValidToFrom<SomeInterface.Definition>>(
-        type: NEW_Q | string,
-      ) => $Osdk<NEW_Q, $ConvertProps<SomeInterface.Definition, NEW_Q, K>>;
-    } & $OsdkObject<'com.example.dep.SomeInterface'>;
+    rid: 'idk2';
+    type: 'interface';
+  };
 }
 
-/** @deprecated use SomeInterface.Definition **/
-export type SomeInterface = SomeInterface.Definition;
-
-export const SomeInterface: SomeInterface.Definition = {
-  osdkMetadata: $osdkMetadata,
-  objectSet: undefined as any,
-  props: undefined as any,
-  linksType: undefined as any,
-  strictProps: undefined as any,
-  apiName: 'com.example.dep.SomeInterface',
-  displayName: 'Sum Interface',
-  implements: [],
-  links: {},
-  properties: {
-    spt: {
-      displayName: 'Some Property',
-      multiplicity: false,
-      type: 'string',
-      nullable: true,
-    },
-  },
+export const SomeInterface: SomeInterface = {
   type: 'interface',
+  apiName: 'com.example.dep.SomeInterface',
+  osdkMetadata: $osdkMetadata,
 };

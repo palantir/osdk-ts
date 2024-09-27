@@ -19,7 +19,7 @@ import type {
   BatchApplyActionRequestV2,
   BatchApplyActionResponseV2,
   SyncApplyActionResponseV2,
-} from "@osdk/gateway/types";
+} from "@osdk/internal.foundry.core";
 import stableStringify from "json-stable-stringify";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
 
@@ -253,7 +253,7 @@ const actionResponseCreateOffice: SyncApplyActionResponseV2 = {
       primaryKey: "NYC",
       objectType: officeObjectType.apiName,
     }],
-    addedObjectCount: 2,
+    addedObjectCount: 1,
     addedLinksCount: 0,
     modifiedObjectsCount: 0,
     deletedLinksCount: 0,

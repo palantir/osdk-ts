@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { AttachmentUpload } from "@osdk/client.api";
+import type { AttachmentUpload } from "@osdk/api";
 
 export function isAttachmentUpload(o: any): o is AttachmentUpload {
   return o instanceof Blob && "name" in o;

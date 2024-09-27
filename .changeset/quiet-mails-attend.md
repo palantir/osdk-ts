@@ -3,7 +3,6 @@
 "@osdk/internal.foundry.ontologiesv2": patch
 "@osdk/internal.foundry.ontologies": patch
 "@osdk/internal.foundry.datasets": patch
-"@osdk/internal.foundry.models": patch
 "@osdk/foundry.orchestration": patch
 "@osdk/internal.foundry.core": patch
 "@osdk/foundry.datasets": patch

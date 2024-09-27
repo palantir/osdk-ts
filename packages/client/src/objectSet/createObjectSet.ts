@@ -15,22 +15,28 @@
  */
 
 import type {
-  ObjectOrInterfaceDefinition,
-  ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition,
-} from "@osdk/api";
-import type {
+  AsyncIterArgs,
+  Augments,
   BaseObjectSet,
   FetchPageResult,
   LinkedType,
   LinkNames,
-  MinimalObjectSet,
+  NullabilityAdherence,
+  ObjectOrInterfaceDefinition,
   ObjectSet,
+  ObjectTypeDefinition,
   Osdk,
-  PropertyValueClientToWire,
+  PrimaryKeyType,
+  PropertyKeys,
   Result,
   SelectArg,
-} from "@osdk/client.api";
+  SingleOsdkResult,
+} from "@osdk/api";
+import type {
+  EXPERIMENTAL_ObjectSetListener,
+  MinimalObjectSet,
+} from "@osdk/api/unstable";
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -42,10 +48,11 @@ import {
 import { fetchSingle, fetchSingleWithErrors } from "../object/fetchSingle.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
+import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
 function isObjectTypeDefinition(
   def: ObjectOrInterfaceDefinition,
-): def is ObjectTypeDefinition<any> {
+): def is ObjectTypeDefinition {
   return def.type === "object";
 }
 
@@ -145,14 +152,21 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       });
     },
 
-    asyncIter: async function*(): AsyncIterableIterator<Osdk<Q>> {
+    asyncIter: async function*<
+      L extends PropertyKeys<Q>,
+      R extends boolean,
+      const A extends Augments,
+      S extends NullabilityAdherence = NullabilityAdherence.Default,
+    >(
+      args?: AsyncIterArgs<Q, L, R, A, S>,
+    ): AsyncIterableIterator<SingleOsdkResult<Q, L, R, S>> {
       let $nextPageToken: string | undefined = undefined;
       do {
         const result: FetchPageResult<
           Q,
-          ObjectOrInterfacePropertyKeysFrom2<Q>,
-          boolean,
-          "throw"
+          L,
+          R,
+          S
         > = await fetchPageInternal(
           augmentRequestContext(
             clientCtx,
@@ -160,33 +174,21 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           ),
           objectType,
           objectSet,
-          { $nextPageToken },
+          { ...args, $nextPageToken },
         );
         $nextPageToken = result.nextPageToken;
 
         for (const obj of result.data) {
-          yield obj as Osdk<Q>;
+          yield obj as SingleOsdkResult<Q, L, R, S>;
         }
       } while ($nextPageToken != null);
     },
 
     fetchOne: (isObjectTypeDefinition(objectType)
       ? async <A extends SelectArg<Q>>(
-        primaryKey: Q extends ObjectTypeDefinition<any>
-          ? PropertyValueClientToWire[Q["primaryKeyType"]]
-          : never,
+        primaryKey: PrimaryKeyType<Q>,
         options: A,
       ) => {
-        const withPk: WireObjectSet = {
-          type: "filter",
-          objectSet: objectSet,
-          where: {
-            type: "eq",
-            field: objectType.primaryKeyApiName,
-            value: primaryKey,
-          },
-        };
-
         return await fetchSingle(
           augmentRequestContext(
             clientCtx,
@@ -194,28 +196,22 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           ),
           objectType,
           options,
-          withPk,
+          await createWithPk(
+            clientCtx,
+            objectType,
+            objectSet,
+            primaryKey,
+          ),
         ) as Osdk<Q>;
       }
       : undefined) as ObjectSet<Q>["fetchOne"],
 
     fetchOneWithErrors: (isObjectTypeDefinition(objectType)
       ? async <A extends SelectArg<Q>>(
-        primaryKey: Q extends ObjectTypeDefinition<any>
-          ? PropertyValueClientToWire[Q["primaryKeyType"]]
+        primaryKey: Q extends ObjectTypeDefinition ? PrimaryKeyType<Q>
           : never,
         options: A,
       ) => {
-        const withPk: WireObjectSet = {
-          type: "filter",
-          objectSet: objectSet,
-          where: {
-            type: "eq",
-            field: objectType.primaryKeyApiName,
-            value: primaryKey,
-          },
-        };
-
         return await fetchSingleWithErrors(
           augmentRequestContext(
             clientCtx,
@@ -223,10 +219,28 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           ),
           objectType,
           options,
-          withPk,
+          await createWithPk(
+            clientCtx,
+            objectType,
+            objectSet,
+            primaryKey,
+          ),
         ) as Result<Osdk<Q>>;
       }
       : undefined) as ObjectSet<Q>["fetchOneWithErrors"],
+
+    [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]: (
+      listener: EXPERIMENTAL_ObjectSetListener<Q>,
+    ) => {
+      const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
+        clientCtx,
+      ).subscribe(
+        objectSet,
+        listener,
+      );
+
+      return async () => (await pendingSubscribe)();
+    },
   };
 
   function createSearchAround<L extends LinkNames<Q>>(link: L) {
@@ -248,4 +262,25 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   // we are using a type assertion because the marker symbol defined in BaseObjectSet isn't actually used
   // at runtime.
   return base as ObjectSet<Q>;
+}
+async function createWithPk(
+  clientCtx: MinimalClient,
+  objectType: ObjectTypeDefinition,
+  objectSet: WireObjectSet,
+  primaryKey: PrimaryKeyType<ObjectTypeDefinition>,
+) {
+  const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
+    objectType.apiName,
+  );
+
+  const withPk: WireObjectSet = {
+    type: "filter",
+    objectSet: objectSet,
+    where: {
+      type: "eq",
+      field: objDef.primaryKeyApiName,
+      value: primaryKey,
+    },
+  };
+  return withPk;
 }

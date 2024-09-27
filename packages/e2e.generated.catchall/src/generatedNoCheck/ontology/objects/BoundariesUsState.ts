@@ -1,34 +1,18 @@
+import type { PropertyDef as $PropertyDef } from '@osdk/api';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
+  PropertyKeys as $PropertyKeys,
   ObjectTypeDefinition as $ObjectTypeDefinition,
-  PropertyDef as $PropertyDef,
-  VersionBound as $VersionBound,
+  ObjectMetadata as $ObjectMetadata,
 } from '@osdk/api';
 import type {
-  AggregateOpts as $AggregateOpts,
-  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-  AggregationsResults as $AggregationsResults,
-  Augments as $Augments,
-  ConvertProps as $ConvertProps,
-  DefaultToFalse as $DefaultToFalse,
-  FetchPageArgs as $FetchPageArgs,
-  IsAny as $IsAny,
-  LinkedType as $LinkedType,
-  LinkNames as $LinkNames,
-  NullabilityAdherence as $NullabilityAdherence,
-  NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   OsdkObject as $OsdkObject,
-  OsdkObjectPropertyType as $OsdkObjectPropertyType,
-  PageResult as $PageResult,
-  PropertyValueClientToWire as $PropertyValueClientToWire,
   PropertyValueWireToClient as $PropType,
-  Result as $Result,
-  SelectArg as $SelectArg,
-  ValidToFrom as $ValidToFrom,
-} from '@osdk/client.api';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
-import { $osdkMetadata } from '../../OntologyMetadata.js';
+  SingleLinkAccessor as $SingleLinkAccessor,
+} from '@osdk/api';
 
 export namespace BoundariesUsState {
   export type PropertyKeys = 'usState' | 'latitude' | 'longitude' | 'geometry10M';
@@ -48,92 +32,35 @@ export namespace BoundariesUsState {
     readonly usState: $PropType['string'];
   }
 
-  export interface ObjectSet extends $ObjectSet<BoundariesUsState.Definition, BoundariesUsState.ObjectSet> {
-    readonly aggregate: <const AO extends $AggregateOpts<BoundariesUsState.Definition>>(
-      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<BoundariesUsState.Definition, AO>,
-    ) => Promise<$AggregationsResults<BoundariesUsState.Definition, AO>>;
+  export interface ObjectSet extends $ObjectSet<BoundariesUsState, BoundariesUsState.ObjectSet> {}
 
-    readonly pivotTo: <const L extends $LinkNames<BoundariesUsState.Definition>>(
-      type: L,
-    ) => $LinkedType<BoundariesUsState.Definition, L>['objectSet'];
+  export type OsdkObject<
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    K extends keyof BoundariesUsState.Props = keyof BoundariesUsState.Props,
+  > = $Osdk<BoundariesUsState, K | OPTIONS>;
+}
 
-    readonly fetchOne: <
-      const L extends BoundariesUsState.PropertyKeys,
-      const R extends boolean,
-      const S extends false | 'throw' = $NullabilityAdherenceDefault,
-    >(
-      primaryKey: $PropertyValueClientToWire[BoundariesUsState.Definition['primaryKeyType']],
-      options?: $SelectArg<BoundariesUsState.Definition, L, R, S>,
-    ) => Promise<
-      BoundariesUsState.OsdkObject<
-        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-        $IsAny<L> extends true ? BoundariesUsState.PropertyKeys : L
-      >
-    >;
-
-    readonly fetchOneWithErrors: <
-      const L extends BoundariesUsState.PropertyKeys,
-      const R extends boolean,
-      const S extends false | 'throw' = $NullabilityAdherenceDefault,
-    >(
-      primaryKey: $PropertyValueClientToWire[BoundariesUsState.Definition['primaryKeyType']],
-      options?: $SelectArg<BoundariesUsState.Definition, L, R, S>,
-    ) => Promise<
-      $Result<
-        BoundariesUsState.OsdkObject<
-          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          $IsAny<L> extends true ? BoundariesUsState.PropertyKeys : L
-        >
-      >
-    >;
-
-    readonly fetchPage: <
-      const L extends BoundariesUsState.PropertyKeys,
-      const R extends boolean,
-      const A extends $Augments,
-      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-    >(
-      args?: $FetchPageArgs<BoundariesUsState.Definition, L, R, A, S>,
-    ) => Promise<
-      $PageResult<
-        BoundariesUsState.OsdkObject<
-          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          $IsAny<L> extends true ? BoundariesUsState.PropertyKeys : L
-        >
-      >
-    >;
-
-    readonly fetchPageWithErrors: <
-      const L extends BoundariesUsState.PropertyKeys,
-      const R extends boolean,
-      const A extends $Augments,
-      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-    >(
-      args?: $FetchPageArgs<BoundariesUsState.Definition, L, R, A, S>,
-    ) => Promise<
-      $Result<
-        $PageResult<
-          BoundariesUsState.OsdkObject<
-            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-            $IsAny<L> extends true ? BoundariesUsState.PropertyKeys : L
-          >
-        >
-      >
-    >;
-
-    readonly asyncIter: () => AsyncIterableIterator<BoundariesUsState.OsdkObject>;
-  }
-
-  export interface Definition
-    extends $ObjectTypeDefinition<'BoundariesUsState', BoundariesUsState.Definition>,
-      $VersionBound<$ExpectedClientVersion> {
-    osdkMetadata: typeof $osdkMetadata;
+export interface BoundariesUsState extends $ObjectTypeDefinition {
+  osdkMetadata: typeof $osdkMetadata;
+  type: 'object';
+  apiName: 'BoundariesUsState';
+  __DefinitionMetadata?: {
     objectSet: BoundariesUsState.ObjectSet;
     props: BoundariesUsState.Props;
     linksType: BoundariesUsState.Links;
     strictProps: BoundariesUsState.StrictProps;
+    apiName: 'BoundariesUsState';
     description: 'Boundaries US State';
+    displayName: 'Boundaries US State';
+    icon: {
+      type: 'blueprint';
+      name: 'usState';
+      color: 'color';
+    };
+    interfaceMap: {};
+    inverseInterfaceMap: {};
     links: {};
+    pluralDisplayName: 'Boundaries US States';
     primaryKeyApiName: 'usState';
     primaryKeyType: 'string';
     properties: {
@@ -155,66 +82,15 @@ export namespace BoundariesUsState {
        */
       usState: $PropertyDef<'string', 'non-nullable', 'single'>;
     };
-  }
-
-  export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
-    K extends keyof BoundariesUsState.Props = keyof BoundariesUsState.Props,
-  > = $Osdk<BoundariesUsState.Definition, K | OPTIONS> &
-    Pick<
-      [OPTIONS] extends [never]
-        ? BoundariesUsState.StrictProps
-        : OPTIONS extends '$notStrict'
-          ? BoundariesUsState.Props
-          : BoundariesUsState.StrictProps,
-      K
-    > & {
-      readonly $link: BoundariesUsState.Links;
-      readonly $title: string | undefined; // FIXME
-      readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
-
-      readonly $as: <NEW_Q extends $ValidToFrom<BoundariesUsState.Definition>>(
-        type: NEW_Q | string,
-      ) => $Osdk<NEW_Q, $ConvertProps<BoundariesUsState.Definition, NEW_Q, K>>;
-    } & $OsdkObject<'BoundariesUsState'>;
+    rid: 'ri.a.b.c.d';
+    status: 'ACTIVE';
+    titleProperty: 'usState';
+    type: 'object';
+  };
 }
 
-export type BoundariesUsState = BoundariesUsState.Definition;
-
-export const BoundariesUsState: BoundariesUsState & $VersionBound<$ExpectedClientVersion> = {
-  osdkMetadata: $osdkMetadata,
-  objectSet: undefined as any,
-  props: undefined as any,
-  linksType: undefined as any,
-  strictProps: undefined as any,
-  apiName: 'BoundariesUsState',
-  description: 'Boundaries US State',
-  links: {},
-  primaryKeyApiName: 'usState',
-  primaryKeyType: 'string',
-  properties: {
-    usState: {
-      multiplicity: false,
-      type: 'string',
-      nullable: false,
-    },
-    latitude: {
-      multiplicity: false,
-      type: 'double',
-      nullable: true,
-    },
-    longitude: {
-      multiplicity: false,
-      type: 'double',
-      nullable: true,
-    },
-    geometry10M: {
-      displayName: 'Geometry10M',
-      multiplicity: false,
-      description: 'geoshape',
-      type: 'geoshape',
-      nullable: true,
-    },
-  },
+export const BoundariesUsState: BoundariesUsState = {
   type: 'object',
+  apiName: 'BoundariesUsState',
+  osdkMetadata: $osdkMetadata,
 };

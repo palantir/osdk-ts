@@ -39,7 +39,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
 ) {
   const definition = deleteUndefineds(
     __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
-      interfaceDef.og,
+      interfaceDef.raw,
       v2,
     ),
   );
@@ -54,7 +54,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
 
     const it = deleteUndefineds(
       __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
-        ontology.requireInterfaceType(p, true).og,
+        ontology.requireInterfaceType(p, true).raw,
         v2,
       ),
     );
@@ -116,7 +116,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
   const osdkObjectIdentifier = `${interfaceDef.shortApiName}.OsdkObject`;
 
   const ids: Identifiers = {
-    objectDefIdentifier: `${interfaceDef.shortApiName}.Definition`,
+    objectDefIdentifier: interfaceDef.shortApiName,
     osdkObjectLinksIdentifier,
     osdkObjectPropsIdentifier,
     osdkObjectStrictPropsIdentifier,
@@ -127,45 +127,12 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
 
   function getV2Types() {
     return `import type {
-      AggregateOpts as $AggregateOpts,
-      AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-      AggregationsResults as $AggregationsResults, 
-      Augments as $Augments,
-      ConvertProps as $ConvertProps,
-      DefaultToFalse as $DefaultToFalse,
-      FetchPageArgs as $FetchPageArgs,
-      FetchPageResult as $FetchPageResult,
-      IsAny as $IsAny,
-      LinkedType as $LinkedType,
-      LinkNames as $LinkNames,
-      NullabilityAdherence as $NullabilityAdherence,
-      NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
+      InterfaceDefinition as $InterfaceDefinition,
       ObjectSet as $ObjectSet, 
       Osdk as $Osdk,
-      OsdkObject as $OsdkObject,
-      OsdkObjectLinksEntry as $OsdkObjectLinksEntry,
-      OsdkObjectLinksObject as $OsdkObjectLinksObject,
-      OsdkObjectPropertyType as $OsdkObjectPropertyType,
-      PageResult as $PageResult,
-      PropertyValueClientToWire as $PropertyValueClientToWire,
       PropertyValueWireToClient as $PropType,
-      Result as $Result,
-      SelectArg as $SelectArg, 
-      SingleLinkAccessor  as $SingleLinkAccessor,
-      SingleOsdkResult as $SingleOsdkResult,
-      ValidToFrom as $ValidToFrom,
-      WhereClause as $WhereClause,
-    } from "@osdk/client.api";
-    import type * as $clientApi from "@osdk/client.api";
-    import type {
-      ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2, 
-      ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
-      ObjectTypeDefinition as $ObjectTypeDefinition,
-      InterfaceDefinition as $InterfaceDefinition,
     } from "@osdk/api";
-
     
-
         ${
       Object.keys(definition.links).length === 0
         ? `export type ${osdkObjectLinksIdentifier} = {};`
@@ -203,20 +170,11 @@ ${
 
       ${createObjectSet(interfaceDef, ids)}
 
-      ${createDefinition(interfaceDef, ontology, "Definition", ids)}
-
       ${createOsdkObject(interfaceDef, "OsdkObject", ids)}
       
     }    
 
-
-
-
-  /** @deprecated use ${interfaceDef.shortApiName}.Definition **/
-  export type ${objectDefIdentifier} = ${interfaceDef.shortApiName}.Definition;
-
-
-
+    ${createDefinition(interfaceDef, ontology, interfaceDef.shortApiName, ids)}
 
 `;
   }
@@ -224,35 +182,13 @@ ${
   // FIXME: We need to fill in the imports
   // if we want links to work
   const imports: string[] = [];
-
+  definition;
   return `${imports.join("\n")}
     ${v2 ? getV2Types() : ""}
 
-    export const ${interfaceDef.shortApiName}: ${interfaceDef.shortApiName}.Definition = {
+    export const ${interfaceDef.shortApiName}: ${interfaceDef.shortApiName} = {
+      type: "interface",
+      apiName: "${interfaceDef.fullApiName}",
       osdkMetadata: $osdkMetadata,
-      objectSet: undefined as any,
-      props: undefined as any,
-      linksType: undefined as any,
-      strictProps: undefined as any,
-      ${
-    stringify(definition, {
-      osdkMetadata: () => undefined,
-      properties: (properties) => (`{
-        ${
-        stringify(properties, {
-          "*": (
-            propertyDefinition,
-            _,
-            key,
-          ) => [
-            `"${maybeStripNamespace(key)}"`,
-            _(propertyDefinition),
-          ],
-        })
-      }
-      }`),
-    })
-  }
-      
-    };`;
+       };`;
 }

@@ -28,9 +28,7 @@
     "postVersioning": "./scripts/postVersioning.mjs",
     "test": "vitest run --pool=forks",
     "test:watch": "vitest",
-    "transpile": "monorepo.tool.transpile",
-    "transpileWatch": "tsup --watch",
-    "typecheck": "monorepo.tool.typecheck esm"
+    "transpile": "monorepo.tool.transpile"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
@@ -60,7 +58,8 @@
     "dependencies": {
       "com.palantir.foundry.api:api-gateway": {
         "minVersion": "1.804.0",
-        "maxVersion": "1.x.x"
+        "maxVersion": "1.x.x",
+        "optional": true
       }
     }
   },

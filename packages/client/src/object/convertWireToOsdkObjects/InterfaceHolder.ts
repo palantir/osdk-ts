@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition } from "@osdk/api";
-import type { Osdk } from "@osdk/client.api";
+import type { InterfaceMetadata, Osdk } from "@osdk/api";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import type {
   InterfaceDefRef,
@@ -24,13 +23,13 @@ import type {
 import type { ObjectHolder } from "./ObjectHolder.js";
 
 export interface InterfaceHolderOwnProps<
-  Q extends FetchedObjectTypeDefinition<any, any>,
+  Q extends FetchedObjectTypeDefinition,
 > {
   [UnderlyingOsdkObject]: Osdk<Q> & ObjectHolder<Q>;
-  [InterfaceDefRef]: InterfaceDefinition<any>;
+  [InterfaceDefRef]: InterfaceMetadata;
 }
 
 export interface InterfaceHolder<
-  Q extends FetchedObjectTypeDefinition<any, any>,
+  Q extends FetchedObjectTypeDefinition,
 > extends InterfaceHolderOwnProps<Q> {
 }

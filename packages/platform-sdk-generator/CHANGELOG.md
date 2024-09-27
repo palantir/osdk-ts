@@ -1,5 +1,37 @@
 # @osdk/platform-sdk-generator
 
+## 0.5.0-beta.5
+
+### Minor Changes
+
+- 5d6d5ab: Internal improvement to type references
+- d4d6605: Audited and cleaned up deps
+
+## 0.5.0-beta.4
+
+### Minor Changes
+
+- 885c8e4: Fixing bug for codegen on windows machines, where we would use backslashes instead of forward slashes for import paths, which should be OS agnostic.
+
+## 0.5.0-beta.3
+
+### Minor Changes
+
+- 5d6d5ab: Internally refactored to support new API versions
+
+## 0.5.0-beta.2
+
+### Minor Changes
+
+- 5d6d5ab: We now generate error types
+
+## 0.5.0-beta.1
+
+### Minor Changes
+
+- 5d6d5ab: Autofill Content-Length and Content-Type headers in API's that accept Blobs
+- 5d6d5ab: SLS dependencies are optional
+
 ## 0.5.0-beta.0
 
 ### Minor Changes

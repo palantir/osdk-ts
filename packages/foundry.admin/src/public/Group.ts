@@ -14,35 +14,22 @@
  * limitations under the License.
  */
 
-import type {
-  PageSize,
-  PageToken,
-  PreviewMode,
-  PrincipalId,
-} from "@osdk/foundry.core";
+import type * as _Core from "@osdk/foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
-import type {
-  CreateGroupRequest,
-  GetGroupsBatchRequestElement,
-  GetGroupsBatchResponse,
-  Group,
-  ListGroupsResponse,
-  SearchGroupsRequest,
-  SearchGroupsResponse,
-} from "../_components.js";
+import type * as _Admin from "../_components.js";
 
 //
 
 const _createGroup: $FoundryPlatformMethod<
   (
-    $body: CreateGroupRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<Group>
+    $body: _Admin.CreateGroupRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Admin.Group>
 > = [1, "/v2/admin/groups", 3];
 
 /**
@@ -56,17 +43,17 @@ const _createGroup: $FoundryPlatformMethod<
 export function createGroup(
   $ctx: $Client | $ClientContext,
   ...args: [
-    $body: CreateGroupRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $body: _Admin.CreateGroupRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<Group> {
+): Promise<_Admin.Group> {
   return $foundryPlatformFetch($ctx, _createGroup, ...args);
 }
 
 const _deleteGroup: $FoundryPlatformMethod<
   (
-    groupId: PrincipalId,
-    $queryParams?: { preview?: PreviewMode | undefined },
+    groupId: _Core.PrincipalId,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ) => Promise<void>
 > = [3, "/v2/admin/groups/{0}", 2];
 
@@ -81,9 +68,9 @@ const _deleteGroup: $FoundryPlatformMethod<
 export function deleteGroup(
   $ctx: $Client | $ClientContext,
   ...args: [
-    groupId: PrincipalId,
+    groupId: _Core.PrincipalId,
 
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<void> {
   return $foundryPlatformFetch($ctx, _deleteGroup, ...args);
@@ -91,10 +78,10 @@ export function deleteGroup(
 
 const _listGroups: $FoundryPlatformMethod<
   ($queryParams?: {
-    pageSize?: PageSize | undefined;
-    pageToken?: PageToken | undefined;
-    preview?: PreviewMode | undefined;
-  }) => Promise<ListGroupsResponse>
+    pageSize?: _Core.PageSize | undefined;
+    pageToken?: _Core.PageToken | undefined;
+    preview?: _Core.PreviewMode | undefined;
+  }) => Promise<_Admin.ListGroupsResponse>
 > = [0, "/v2/admin/groups", 2];
 
 /**
@@ -111,20 +98,20 @@ export function listGroups(
   $ctx: $Client | $ClientContext,
   ...args: [
     $queryParams?: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-      preview?: PreviewMode | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
   ]
-): Promise<ListGroupsResponse> {
+): Promise<_Admin.ListGroupsResponse> {
   return $foundryPlatformFetch($ctx, _listGroups, ...args);
 }
 
 const _getGroup: $FoundryPlatformMethod<
   (
-    groupId: PrincipalId,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<Group>
+    groupId: _Core.PrincipalId,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Admin.Group>
 > = [0, "/v2/admin/groups/{0}", 2];
 
 /**
@@ -138,19 +125,19 @@ const _getGroup: $FoundryPlatformMethod<
 export function getGroup(
   $ctx: $Client | $ClientContext,
   ...args: [
-    groupId: PrincipalId,
+    groupId: _Core.PrincipalId,
 
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<Group> {
+): Promise<_Admin.Group> {
   return $foundryPlatformFetch($ctx, _getGroup, ...args);
 }
 
 const _getGroupsBatch: $FoundryPlatformMethod<
   (
-    $body: Array<GetGroupsBatchRequestElement>,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<GetGroupsBatchResponse>
+    $body: Array<_Admin.GetGroupsBatchRequestElement>,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Admin.GetGroupsBatchResponse>
 > = [1, "/v2/admin/groups/getBatch", 3];
 
 /**
@@ -158,7 +145,7 @@ const _getGroupsBatch: $FoundryPlatformMethod<
  *
  * The maximum batch size for this endpoint is 500.
  *
- * @alpha
+ * @beta
  *
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/groups/getBatch
@@ -166,18 +153,18 @@ const _getGroupsBatch: $FoundryPlatformMethod<
 export function getGroupsBatch(
   $ctx: $Client | $ClientContext,
   ...args: [
-    $body: Array<GetGroupsBatchRequestElement>,
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $body: Array<_Admin.GetGroupsBatchRequestElement>,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<GetGroupsBatchResponse> {
+): Promise<_Admin.GetGroupsBatchResponse> {
   return $foundryPlatformFetch($ctx, _getGroupsBatch, ...args);
 }
 
 const _searchGroups: $FoundryPlatformMethod<
   (
-    $body: SearchGroupsRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<SearchGroupsResponse>
+    $body: _Admin.SearchGroupsRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Admin.SearchGroupsResponse>
 > = [1, "/v2/admin/groups/search", 3];
 
 /**
@@ -189,9 +176,9 @@ const _searchGroups: $FoundryPlatformMethod<
 export function searchGroups(
   $ctx: $Client | $ClientContext,
   ...args: [
-    $body: SearchGroupsRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $body: _Admin.SearchGroupsRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<SearchGroupsResponse> {
+): Promise<_Admin.SearchGroupsResponse> {
   return $foundryPlatformFetch($ctx, _searchGroups, ...args);
 }

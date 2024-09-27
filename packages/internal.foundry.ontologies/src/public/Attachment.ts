@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  Attachment,
-  AttachmentRid,
-  ContentLength,
-  ContentType,
-  Filename,
-} from "@osdk/internal.foundry.core";
+import type * as _Core from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
@@ -33,12 +27,9 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 const _uploadAttachment: $FoundryPlatformMethod<
   (
     $body: Blob,
-    $queryParams: { filename: Filename },
-    $headerParams: {
-      "Content-Length": ContentLength;
-      "Content-Type": ContentType;
-    },
-  ) => Promise<Attachment>
+    $queryParams: { filename: _Core.Filename },
+    $headerParams?: { "Content-Type"?: _Core.ContentType },
+  ) => Promise<_Core.Attachment>
 > = [1, "/v1/attachments/upload", 7, "*/*"];
 
 /**
@@ -60,18 +51,27 @@ export function uploadAttachment(
   $ctx: $Client | $ClientContext,
   ...args: [
     $body: Blob,
-    $queryParams: { filename: Filename },
-    $headerParams: {
-      "Content-Length": ContentLength;
-      "Content-Type": ContentType;
-    },
+    $queryParams: { filename: _Core.Filename },
+    $headerParams?: { "Content-Type"?: _Core.ContentType },
   ]
-): Promise<Attachment> {
-  return $foundryPlatformFetch($ctx, _uploadAttachment, ...args);
+): Promise<_Core.Attachment> {
+  const headerParams = {
+    ...args[2],
+    "Content-Type": args[2]?.["Content-Type"] ?? args[0].type,
+    "Content-Length": args[0].size.toString(),
+  };
+
+  return $foundryPlatformFetch(
+    $ctx,
+    _uploadAttachment,
+    args[0],
+    args[1],
+    headerParams,
+  );
 }
 
 const _getAttachmentContent: $FoundryPlatformMethod<
-  (attachmentRid: AttachmentRid) => Promise<Blob>
+  (attachmentRid: _Core.AttachmentRid) => Promise<Blob>
 > = [0, "/v1/attachments/{0}/content", , , "*/*"];
 
 /**
@@ -87,13 +87,13 @@ const _getAttachmentContent: $FoundryPlatformMethod<
  */
 export function getAttachmentContent(
   $ctx: $Client | $ClientContext,
-  ...args: [attachmentRid: AttachmentRid]
+  ...args: [attachmentRid: _Core.AttachmentRid]
 ): Promise<Blob> {
   return $foundryPlatformFetch($ctx, _getAttachmentContent, ...args);
 }
 
 const _getAttachment: $FoundryPlatformMethod<
-  (attachmentRid: AttachmentRid) => Promise<Attachment>
+  (attachmentRid: _Core.AttachmentRid) => Promise<_Core.Attachment>
 > = [0, "/v1/attachments/{0}"];
 
 /**
@@ -109,7 +109,7 @@ const _getAttachment: $FoundryPlatformMethod<
  */
 export function getAttachment(
   $ctx: $Client | $ClientContext,
-  ...args: [attachmentRid: AttachmentRid]
-): Promise<Attachment> {
+  ...args: [attachmentRid: _Core.AttachmentRid]
+): Promise<_Core.Attachment> {
   return $foundryPlatformFetch($ctx, _getAttachment, ...args);
 }

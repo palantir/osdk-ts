@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { Osdk } from "@osdk/client.api";
+import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
+import type {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
+  EXPERIMENTAL_ObjectSetListener as ObjectSetListener,
+} from "@osdk/api/unstable";
 import type { LoadAllOntologiesResponse } from "@osdk/client.unstable";
 import {
   bulkLoadOntologyEntities,
@@ -36,19 +39,18 @@ import type {
   SubscriptionClosed,
 } from "@osdk/client.unstable.osw";
 import { batchEnableWatcher } from "@osdk/client.unstable.osw";
-import { OntologiesV2 } from "@osdk/internal.foundry";
 import {
   type ObjectSet,
   type OntologyObjectV2,
 } from "@osdk/internal.foundry.core";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
-import type { Logger } from "pino";
 import invariant from "tiny-invariant";
 import { metadataCacheClient } from "../__unstable/ConjureSupport.js";
+import type { Logger } from "../Logger.js";
 import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
-import type { ObjectSetListener } from "./ObjectSetListener.js";
 import {
   getObjectSetBaseType,
   toConjureObjectSet,

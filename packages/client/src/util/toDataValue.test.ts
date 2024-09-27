@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
+import { $ontologyRid, Employee, Task } from "@osdk/client.test.ontology";
 import { apiServer, MockOntology, stubData } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
@@ -115,7 +115,7 @@ describe(toDataValue, () => {
   });
 
   it("passes through object set definitions", async () => {
-    const clientObjectSet = client(MockOntology.objects.Task).where({ id: 0 });
+    const clientObjectSet = client(Task).where({ id: 0 });
     const definition = getWireObjectSet(clientObjectSet);
 
     const expected = `

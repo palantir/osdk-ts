@@ -15,13 +15,17 @@
  */
 
 import type {
-  InterfaceDefinition,
+  ActionMetadata,
+  InterfaceMetadata,
   ObjectOrInterfaceDefinition,
+  QueryMetadata,
 } from "@osdk/api";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createAsyncClientCache } from "../object/Cache.js";
+import { loadActionMetadata } from "./loadActionMetadata.js";
 import { loadFullObjectMetadata } from "./loadFullObjectMetadata.js";
-import { loadInterfaceDefinition } from "./loadInterfaceDefinition.js";
+import { loadInterfaceMetadata } from "./loadInterfaceMetadata.js";
+import { loadQueryMetadata } from "./loadQueryMetadata.js";
 import {
   type FetchedObjectTypeDefinition,
   InterfaceDefinitions,
@@ -38,14 +42,14 @@ export const createStandardOntologyProviderFactory: (
     async function loadObject(
       client: MinimalClient,
       key: string,
-    ): Promise<FetchedObjectTypeDefinition<any, any> & { rid: string }> {
+    ): Promise<FetchedObjectTypeDefinition> {
       let objectDef = await loadFullObjectMetadata(client, key);
 
       // ensure we have all of the interfaces loaded
       const interfaceDefs = Object.fromEntries<
-        { def: InterfaceDefinition<any>; handler: undefined }
+        { def: InterfaceMetadata; handler: undefined }
       >(
-        (await Promise.all<InterfaceDefinition<any, any>>(
+        (await Promise.all<InterfaceMetadata>(
           objectDef.implements?.map((i) => ret.getInterfaceDefinition(i)) ?? [],
         )).map(i => [i.apiName, { def: i, handler: undefined }]),
       );
@@ -62,10 +66,31 @@ export const createStandardOntologyProviderFactory: (
       client: MinimalClient,
       key: string,
     ) {
-      return loadInterfaceDefinition(client, key);
+      return loadInterfaceMetadata(client, key);
     }
 
-    function makeGetter<N extends ObjectOrInterfaceDefinition>(
+    async function loadQuery(
+      client: MinimalClient,
+      key: string,
+    ) {
+      const r = await loadQueryMetadata(client, key);
+      return r;
+    }
+
+    async function loadAction(
+      client: MinimalClient,
+      key: string,
+    ) {
+      const r = await loadActionMetadata(client, key);
+      return r;
+    }
+
+    function makeGetter<
+      N extends
+        | ObjectOrInterfaceDefinition
+        | QueryMetadata<any, any>
+        | ActionMetadata,
+    >(
       fn: (
         client: MinimalClient,
         key: string,
@@ -83,9 +108,8 @@ export const createStandardOntologyProviderFactory: (
     const ret = {
       getObjectDefinition: makeGetter(loadObject),
       getInterfaceDefinition: makeGetter(loadInterface),
-      maybeSeed(definition: any) {
-        // not using this for now
-      },
+      getQueryDefinition: makeGetter(loadQuery),
+      getActionDefinition: makeGetter(loadAction),
     };
     return ret;
   };

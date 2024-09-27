@@ -88,8 +88,15 @@
             }
           }
         },
+        "icon": {
+          "type": "blueprint",
+          "name": "todo",
+          "color": "red"
+        },
+        "titleProperty": "title",
         "status": "ACTIVE",
-        "rid": "ridForTodo"
+        "rid": "ridForTodo",
+        "pluralDisplayName": "Todo's"
       },
       "linkTypes": []
     }

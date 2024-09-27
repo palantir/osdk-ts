@@ -14,20 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ActionRid,
-  ActionTypeApiName,
-  ApplyActionRequest,
-  ApplyActionResponse,
-  AsyncActionOperation,
-  AsyncApplyActionRequest,
-  BatchApplyActionRequest,
-  BatchApplyActionResponse,
-  OntologyRid,
-  PreviewMode,
-  ValidateActionRequest,
-  ValidateActionResponse,
-} from "@osdk/internal.foundry.core";
+import type * as _Core from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
@@ -39,10 +26,10 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 const _applyAction: $FoundryPlatformMethod<
   (
-    ontologyRid: OntologyRid,
-    actionType: ActionTypeApiName,
-    $body: ApplyActionRequest,
-  ) => Promise<ApplyActionResponse>
+    ontologyRid: _Core.OntologyRid,
+    actionType: _Core.ActionTypeApiName,
+    $body: _Core.ApplyActionRequest,
+  ) => Promise<_Core.ApplyActionResponse>
 > = [1, "/v1/ontologies/{0}/actions/{1}/apply", 1];
 
 /**
@@ -63,20 +50,20 @@ const _applyAction: $FoundryPlatformMethod<
 export function applyAction(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontologyRid: OntologyRid,
-    actionType: ActionTypeApiName,
-    $body: ApplyActionRequest,
+    ontologyRid: _Core.OntologyRid,
+    actionType: _Core.ActionTypeApiName,
+    $body: _Core.ApplyActionRequest,
   ]
-): Promise<ApplyActionResponse> {
+): Promise<_Core.ApplyActionResponse> {
   return $foundryPlatformFetch($ctx, _applyAction, ...args);
 }
 
 const _applyActionBatch: $FoundryPlatformMethod<
   (
-    ontologyRid: OntologyRid,
-    actionType: ActionTypeApiName,
-    $body: BatchApplyActionRequest,
-  ) => Promise<BatchApplyActionResponse>
+    ontologyRid: _Core.OntologyRid,
+    actionType: _Core.ActionTypeApiName,
+    $body: _Core.BatchApplyActionRequest,
+  ) => Promise<_Core.BatchApplyActionResponse>
 > = [1, "/v1/ontologies/{0}/actions/{1}/applyBatch", 1];
 
 /**
@@ -100,20 +87,20 @@ const _applyActionBatch: $FoundryPlatformMethod<
 export function applyActionBatch(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontologyRid: OntologyRid,
-    actionType: ActionTypeApiName,
-    $body: BatchApplyActionRequest,
+    ontologyRid: _Core.OntologyRid,
+    actionType: _Core.ActionTypeApiName,
+    $body: _Core.BatchApplyActionRequest,
   ]
-): Promise<BatchApplyActionResponse> {
+): Promise<_Core.BatchApplyActionResponse> {
   return $foundryPlatformFetch($ctx, _applyActionBatch, ...args);
 }
 
 const _applyActionAsync: $FoundryPlatformMethod<
   (
-    ontologyRid: OntologyRid,
-    actionType: ActionTypeApiName,
-    $body: AsyncApplyActionRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
+    ontologyRid: _Core.OntologyRid,
+    actionType: _Core.ActionTypeApiName,
+    $body: _Core.AsyncApplyActionRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ) => Promise<void>
 > = [1, "/v1/ontologies/{0}/actions/{1}/applyAsync", 3];
 
@@ -135,10 +122,10 @@ const _applyActionAsync: $FoundryPlatformMethod<
 export function applyActionAsync(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontologyRid: OntologyRid,
-    actionType: ActionTypeApiName,
-    $body: AsyncApplyActionRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
+    ontologyRid: _Core.OntologyRid,
+    actionType: _Core.ActionTypeApiName,
+    $body: _Core.AsyncApplyActionRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<void> {
   return $foundryPlatformFetch($ctx, _applyActionAsync, ...args);
@@ -146,11 +133,11 @@ export function applyActionAsync(
 
 const _getAsyncActionStatus: $FoundryPlatformMethod<
   (
-    ontologyRid: OntologyRid,
-    actionType: ActionTypeApiName,
-    actionRid: ActionRid,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<AsyncActionOperation>
+    ontologyRid: _Core.OntologyRid,
+    actionType: _Core.ActionTypeApiName,
+    actionRid: _Core.ActionRid,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Core.AsyncActionOperation>
 > = [0, "/v1/ontologies/{0}/actions/{1}/applyAsync/{2}", 2];
 
 /**
@@ -162,22 +149,22 @@ const _getAsyncActionStatus: $FoundryPlatformMethod<
 export function getAsyncActionStatus(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontologyRid: OntologyRid,
-    actionType: ActionTypeApiName,
-    actionRid: ActionRid,
+    ontologyRid: _Core.OntologyRid,
+    actionType: _Core.ActionTypeApiName,
+    actionRid: _Core.ActionRid,
 
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<AsyncActionOperation> {
+): Promise<_Core.AsyncActionOperation> {
   return $foundryPlatformFetch($ctx, _getAsyncActionStatus, ...args);
 }
 
 const _validateAction: $FoundryPlatformMethod<
   (
-    ontologyRid: OntologyRid,
-    actionType: ActionTypeApiName,
-    $body: ValidateActionRequest,
-  ) => Promise<ValidateActionResponse>
+    ontologyRid: _Core.OntologyRid,
+    actionType: _Core.ActionTypeApiName,
+    $body: _Core.ValidateActionRequest,
+  ) => Promise<_Core.ValidateActionResponse>
 > = [1, "/v1/ontologies/{0}/actions/{1}/validate", 1];
 
 /**
@@ -200,10 +187,10 @@ const _validateAction: $FoundryPlatformMethod<
 export function validateAction(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontologyRid: OntologyRid,
-    actionType: ActionTypeApiName,
-    $body: ValidateActionRequest,
+    ontologyRid: _Core.OntologyRid,
+    actionType: _Core.ActionTypeApiName,
+    $body: _Core.ValidateActionRequest,
   ]
-): Promise<ValidateActionResponse> {
+): Promise<_Core.ValidateActionResponse> {
   return $foundryPlatformFetch($ctx, _validateAction, ...args);
 }

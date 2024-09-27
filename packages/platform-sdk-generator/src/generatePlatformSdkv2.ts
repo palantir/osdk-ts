@@ -39,10 +39,12 @@ export async function generatePlatformSdkV2(
   const model = await Model.create(ir, { npmOrg, outputDir, packagePrefix });
 
   const componentsGenerated = new Map<Namespace, string[]>();
+  const errorsGenerated = new Map<Namespace, string[]>();
 
   // We need to make sure the components are all populated before we generate the resources
   for (const ns of model.namespaces) {
     componentsGenerated.set(ns, await generateComponents(ns, ns.paths.srcDir));
+    errorsGenerated.set(ns, await generateErrors(ns, ns.paths.srcDir));
   }
 
   // Now we can generate the resources
@@ -65,7 +67,7 @@ export async function generatePlatformSdkV2(
         + path.relative(
           ns.paths.srcDir,
           ns.paths.resourcesDir,
-        );
+        ).split(path.sep).join("/");
 
       const resourceName = pluralize(r.component);
       if (componentsGenerated.get(ns)!.some(c => c === resourceName)) {
@@ -104,6 +106,9 @@ export async function generatePlatformSdkV2(
     nsIndexTsContents += `export type {${
       componentsGenerated.get(ns)?.sort().join(",\n")
     }} from "./_components.js";\n`;
+    nsIndexTsContents += `export type {${
+      errorsGenerated.get(ns)?.sort().join(",\n")
+    }} from "./_errors.js";\n`;
     await writeCode(
       path.join(ns.paths.srcDir, "index.ts"),
       nsIndexTsContents,
@@ -155,7 +160,7 @@ export async function generateComponents(
     if (isIgnoredType(component.component)) {
       continue;
     }
-    out += component.declaration;
+    out += component.getDeclaration(ns.name);
     ret.push(component.name);
 
     addAll(referencedComponents, component.referencedComponents);
@@ -165,6 +170,41 @@ export async function generateComponents(
 
   await writeCode(
     path.join(outputDir, "_components.ts"),
+    `${copyright}
+    
+    ${imports}
+
+  ${out}`,
+  );
+
+  return ret;
+}
+
+export async function generateErrors(
+  ns: Namespace,
+  outputDir: string,
+): Promise<string[]> {
+  const referencedComponents = new Set<Component>();
+  const ret = [];
+
+  let out =
+    `export type LooselyBrandedString<T extends string> = string & {__LOOSE_BRAND?: T };
+      `;
+
+  for (const error of ns.errors) {
+    if (isIgnoredType(error.spec)) {
+      continue;
+    }
+    out += error.getDeclaration(ns.name);
+    ret.push(error.name);
+
+    addAll(referencedComponents, error.referencedComponents);
+  }
+
+  const imports = generateImports(referencedComponents, new Map([[ns, SKIP]]));
+
+  await writeCode(
+    path.join(outputDir, "_errors.ts"),
     `${copyright}
     
     ${imports}
@@ -250,6 +290,7 @@ const BASE_PACKAGE_JSON = {
       "com.palantir.foundry.api:api-gateway": {
         "minVersion": "1.824.0",
         "maxVersion": "1.x.x",
+        "optional": true,
       },
     },
   },

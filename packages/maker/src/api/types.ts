@@ -19,6 +19,7 @@ import type {
   BaseType,
   ExampleValue,
   OntologyIrInterfaceType,
+  SharedPropertyTypeGothamMapping,
   ValueTypeApiName,
   ValueTypeDataConstraint,
   ValueTypeDisplayMetadata,
@@ -26,11 +27,11 @@ import type {
   ValueTypeVersion,
 } from "@osdk/client.unstable";
 
-import type * as Gateway from "@osdk/gateway/types";
+import type { OntologyFullMetadata } from "@osdk/internal.foundry.core";
 
 export interface Ontology extends
   Omit<
-    Gateway.OntologyFullMetadata,
+    OntologyFullMetadata,
     "ontology" | "sharedPropertyTypes" | "interfaceTypes"
   >
 {
@@ -59,10 +60,14 @@ export interface PropertyType {
   description?: string;
   displayName?: string;
   valueType?: ApiNameValueTypeReference;
+  typeClasses?: TypeClass[];
 }
+
+type TypeClass = { kind: string; name: string };
 
 export interface SharedPropertyType extends PropertyType {
   apiName: string;
+  gothamMapping?: SharedPropertyTypeGothamMapping;
 }
 
 export type PropertyTypeType =

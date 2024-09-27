@@ -22,3 +22,4 @@ export * from "./DataTypes.js";
 export * from "./Error.js";
 export * from "./Namespace.js";
 export * from "./ParameterValue.js";
+export * from "./Resource.js";

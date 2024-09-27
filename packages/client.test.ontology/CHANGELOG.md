@@ -1,5 +1,107 @@
 # @osdk/client.test.ontology
 
+## 2.0.0-beta.15
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/api@2.0.0-beta.15
+
+## 2.0.0-beta.14
+
+### Minor Changes
+
+- 1f633f7: Removed dependency on @osdk/client.api
+- d4d6605: Audited and cleaned up deps
+
+### Patch Changes
+
+- Updated dependencies [a2c7b37]
+- Updated dependencies [fe9547e]
+- Updated dependencies [1f633f7]
+- Updated dependencies [d4d6605]
+  - @osdk/api@2.0.0-beta.14
+
+## 2.0.0-beta.13
+
+### Patch Changes
+
+- Updated dependencies [1488144]
+- Updated dependencies [d2f75f9]
+- Updated dependencies [b7cd0a1]
+- Updated dependencies [c28792e]
+- Updated dependencies [26ee3bd]
+- Updated dependencies [6ab5d2e]
+  - @osdk/api@2.0.0-beta.13
+  - @osdk/client.api@2.0.0-beta.13
+
+## 2.0.0-beta.12
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/client.api@2.0.0-beta.12
+  - @osdk/api@2.0.0-beta.12
+
+## 2.0.0-beta.11
+
+### Patch Changes
+
+- @osdk/client.api@2.0.0-beta.11
+- @osdk/api@2.0.0-beta.11
+
+## 2.0.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+- Updated dependencies [94105a5]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [1252d94]
+- Updated dependencies [e6ade8b]
+- Updated dependencies [95f9247]
+- Updated dependencies [56df85a]
+  - @osdk/client.api@2.0.0-beta.10
+  - @osdk/api@2.0.0-beta.10
+
+## 2.0.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [b946e00]
+  - @osdk/api@2.0.0-beta.9
+  - @osdk/client.api@2.0.0-beta.9
+
+## 2.0.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [64818dc]
+  - @osdk/client.api@2.0.0-beta.8
+  - @osdk/api@2.0.0-beta.8
+
+## 2.0.0-beta.7
+
+### Patch Changes
+
+- Updated dependencies [9b0617d]
+- Updated dependencies [512ee35]
+- Updated dependencies [e86c505]
+- Updated dependencies [fc28eae]
+  - @osdk/api@2.0.0-beta.7
+  - @osdk/client.api@2.0.0-beta.7
+
+## 2.0.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [3affe49]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [0ce2858]
+- Updated dependencies [a9923f3]
+  - @osdk/api@2.0.0-beta.6
+  - @osdk/client.api@2.0.0-beta.6
+
 ## 1.2.0-beta.5
 
 ### Patch Changes

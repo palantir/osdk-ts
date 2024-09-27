@@ -15,11 +15,12 @@
  */
 
 import type {
-  InterfaceDefinition,
+  InterfaceMetadata,
+  NullabilityAdherence,
+  ObjectMetadata,
   ObjectOrInterfaceDefinition,
-  ObjectTypeDefinition,
+  Osdk,
 } from "@osdk/api";
-import type { NullabilityAdherence, Osdk } from "@osdk/client.api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -116,7 +117,7 @@ export async function convertWireToOsdkObjects(
  * and convert them to an array of property names on an object.
  */
 function convertInterfacePropNamesToObjectPropNames(
-  objectDef: FetchedObjectTypeDefinition<any, unknown> & { interfaceMap: {} },
+  objectDef: FetchedObjectTypeDefinition & { interfaceMap: {} },
   interfaceApiName: string,
   ifacePropsToMap: readonly string[],
 ) {
@@ -134,7 +135,7 @@ function convertInterfacePropNamesToObjectPropNames(
  * @param rawObj
  */
 function reframeAsObjectInPlace(
-  objectDef: FetchedObjectTypeDefinition<any, unknown> & { interfaceMap: {} },
+  objectDef: FetchedObjectTypeDefinition & { interfaceMap: {} },
   interfaceApiName: string,
   rawObj: OntologyObjectV2,
 ) {
@@ -162,8 +163,8 @@ function reframeAsObjectInPlace(
 function isConforming(
   client: MinimalClient,
   def:
-    | InterfaceDefinition<any, any>
-    | ObjectTypeDefinition<any, unknown>,
+    | InterfaceMetadata
+    | ObjectMetadata,
   obj: OntologyObjectV2,
   propsToCheck: readonly string[],
 ) {
@@ -187,7 +188,7 @@ function isConforming(
 }
 
 function invariantInterfacesAsViews(
-  objectDef: FetchedObjectTypeDefinition<any, unknown>,
+  objectDef: FetchedObjectTypeDefinition,
   interfaceApiName: string,
   client: MinimalClient,
 ): asserts objectDef is typeof objectDef & { interfaceMap: {} } {

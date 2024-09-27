@@ -60,7 +60,8 @@ export abstract class AbstractImportable {
 
   getImportPathRelTo = (filePath: string) => {
     if (this.importPath.startsWith(".")) {
-      const result = path.relative(path.dirname(filePath), this.importPath);
+      const result = path.relative(path.dirname(filePath), this.importPath)
+        .split(path.sep).join("/");
 
       if (result.startsWith(".")) {
         return result;
@@ -74,16 +75,16 @@ export abstract class AbstractImportable {
 }
 
 export abstract class EnhancedBase<T> extends AbstractImportable {
-  og: T;
+  raw: T;
 
   constructor(
     common: EnhanceCommon,
-    og: T,
+    raw: T,
     fullApiName: string,
     basePath: string,
   ) {
     super(common, fullApiName, basePath);
-    this.og = og;
+    this.raw = raw;
 
     if (!this.isLocal && !this.sourcePackage) {
       throw new Error(

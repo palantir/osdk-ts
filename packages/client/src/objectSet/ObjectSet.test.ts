@@ -15,11 +15,15 @@
  */
 
 import type {
+  CompileTimeMetadata,
+  ConvertProps,
   InterfaceDefinition,
-  ObjectOrInterfacePropertyKeysFrom2,
+  ObjectSet,
+  Osdk,
+  PropertyKeys,
+  Result,
 } from "@osdk/api";
-import type { ConvertProps, Osdk, Result } from "@osdk/client.api";
-import { isOk } from "@osdk/client.api";
+import { isOk } from "@osdk/api";
 import {
   $ontologyRid,
   Employee,
@@ -40,7 +44,7 @@ import type {
   JustProps,
   PropMapToInterface,
   PropMapToObject,
-} from "../../../client.api/build/esm/OsdkObjectFrom.js";
+} from "../../../api/build/esm/OsdkObjectFrom.js";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
@@ -72,6 +76,32 @@ describe("ObjectSet", () => {
 
     // @ts-expect-error
     employeeObjectSet.intersect(officeObjectSet);
+  });
+
+  it("can be cast bidirectionally", () => {
+    function takesOldStyleObjectSet(os: ObjectSet<Employee>) {
+      return os;
+    }
+
+    function takesNewStyleObjectSet(os: Employee.ObjectSet) {
+      return os;
+    }
+
+    function maybe() {
+      const newStyleObjectSet: Employee.ObjectSet = client(Employee);
+      const oldStyleObjectSet: ObjectSet<Employee> = newStyleObjectSet;
+
+      takesOldStyleObjectSet(newStyleObjectSet);
+      takesNewStyleObjectSet(newStyleObjectSet);
+
+      takesOldStyleObjectSet(oldStyleObjectSet);
+      takesNewStyleObjectSet(oldStyleObjectSet);
+    }
+
+    if (false) {
+      // here for a simple type check
+      maybe();
+    }
   });
 
   it("objects set union", async () => {
@@ -163,7 +193,7 @@ describe("ObjectSet", () => {
       stubData.employee1.employeeId,
     );
     expectTypeOf<typeof employee>().toMatchTypeOf<
-      Osdk<Employee, ObjectOrInterfacePropertyKeysFrom2<Employee>>
+      Osdk<Employee, PropertyKeys<Employee>>
     >;
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
   });
@@ -174,7 +204,7 @@ describe("ObjectSet", () => {
         stubData.employee1.employeeId,
       );
     expectTypeOf<typeof employeeResult>().toMatchTypeOf<
-      Result<Osdk<Employee, ObjectOrInterfacePropertyKeysFrom2<Employee>>>
+      Result<Osdk<Employee, PropertyKeys<Employee>>>
     >;
 
     if (isOk(employeeResult)) {
@@ -436,7 +466,9 @@ describe("ObjectSet", () => {
         expectTypeOf<ApiNameAsString<FooInterface>>()
           .toEqualTypeOf<"FooInterface">();
 
-        expectTypeOf<NonNullable<Employee["interfaceMap"]>>()
+        expectTypeOf<
+          NonNullable<CompileTimeMetadata<Employee>["interfaceMap"]>
+        >()
           .toEqualTypeOf<{
             FooInterface: {
               fooSpt: "fullName";
@@ -473,8 +505,8 @@ describe("ObjectSet", () => {
         // a non-null property on an interface so
         // we cheese it here to be sure the types work
         type CheesedProp<
-          T extends InterfaceDefinition<any>,
-          K extends keyof T["properties"],
+          T extends InterfaceDefinition,
+          K extends PropertyKeys<T>,
         > = T & { properties: { [KK in K]: { nullable: false } } };
 
         type CheesedFoo = CheesedProp<FooInterface, "fooSpt">;

@@ -21,10 +21,10 @@ export class ObjectLiteralType extends Type {
     super();
   }
 
-  get declaration(): string {
+  getDeclaration(localNamespace: string): string {
     return `{\n`
       + Object.entries(this.properties).map(
-        ([name, value]) => value.getPropertyDeclaration(name),
+        ([name, value]) => value.getPropertyDeclaration(name, localNamespace),
       ).join("\n") + `\n}`;
   }
 
@@ -34,7 +34,7 @@ export class ObjectLiteralType extends Type {
     );
   }
 
-  get tsReferenceString(): string {
-    return this.declaration;
+  getTsReferenceString(localNamespace: string): string {
+    return this.getDeclaration(localNamespace);
   }
 }

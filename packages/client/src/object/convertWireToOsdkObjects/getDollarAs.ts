@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { Osdk, OsdkObject } from "@osdk/client.api";
+import type { ObjectOrInterfaceDefinition, Osdk, OsdkObject } from "@osdk/api";
 import {
   type FetchedObjectTypeDefinition,
   InterfaceDefinitions,
@@ -28,15 +27,15 @@ import type { ObjectHolder } from "./ObjectHolder.js";
 
 /** @internal */
 export type DollarAsFn = <
-  Q extends FetchedObjectTypeDefinition<any, any>,
-  NEW_Q extends ObjectOrInterfaceDefinition<any>,
+  Q extends FetchedObjectTypeDefinition,
+  NEW_Q extends ObjectOrInterfaceDefinition,
 >(
   this: Osdk<any> & (InterfaceHolder<Q> | ObjectHolder<Q>),
   newDef: string | NEW_Q,
 ) => OsdkObject<any>;
 
 export const get$as = createSimpleCache<
-  FetchedObjectTypeDefinition<any, any>,
+  FetchedObjectTypeDefinition,
   DollarAsFn
 >(new WeakMap(), $asFactory).get;
 
@@ -53,37 +52,45 @@ const osdkObjectToInterfaceView = createSimpleCache(
 );
 
 function $asFactory(
-  objDef: FetchedObjectTypeDefinition<any, any>,
+  objDef: FetchedObjectTypeDefinition,
 ): DollarAsFn {
   // We use the exact same logic for both the interface rep and the underlying rep
   return function $as<
-    NEW_Q extends ObjectOrInterfaceDefinition<any>,
+    NEW_Q extends ObjectOrInterfaceDefinition,
   >(
     this: OsdkObject<any> & { [UnderlyingOsdkObject]: any },
-    newDef: NEW_Q | string,
+    targetMinDef: NEW_Q | string,
   ): OsdkObject<any> {
-    if (typeof newDef === "string") {
-      if (newDef === objDef.apiName) {
+    let targetInterfaceApiName: string;
+
+    if (typeof targetMinDef === "string") {
+      if (targetMinDef === objDef.apiName) {
         return this[UnderlyingOsdkObject];
       }
 
       // this is sufficient to determine if we implement the interface
-      if (objDef.interfaceMap?.[newDef] == null) {
-        throw new Error(`Object does not implement interface '${newDef}'.`);
+      if (objDef.interfaceMap?.[targetMinDef] == null) {
+        throw new Error(
+          `Object does not implement interface '${targetMinDef}'.`,
+        );
       }
 
-      const def = objDef[InterfaceDefinitions][newDef];
-      if (!def) {
-        throw new Error(`Object does not implement interface '${newDef}'.`);
-      }
-      newDef = def.def as NEW_Q;
-    } else if (newDef.apiName === objDef.apiName) {
+      targetInterfaceApiName = targetMinDef;
+    } else if (targetMinDef.apiName === objDef.apiName) {
       return this[UnderlyingOsdkObject];
+    } else {
+      if (targetMinDef.type === "object") {
+        throw new Error(
+          `'${targetMinDef.apiName}' is not an interface nor is it '${objDef.apiName}', which is the object type.`,
+        );
+      }
+      targetInterfaceApiName = targetMinDef.apiName;
     }
 
-    if (newDef.type === "object") {
+    const def = objDef[InterfaceDefinitions][targetInterfaceApiName];
+    if (!def) {
       throw new Error(
-        `'${newDef.apiName}' is not an interface nor is it '${objDef.apiName}', which is the object type.`,
+        `Object does not implement interface '${targetMinDef}'.`,
       );
     }
 
@@ -91,12 +98,12 @@ function $asFactory(
 
     const existing = osdkObjectToInterfaceView
       .get(underlying)
-      .get(newDef.apiName);
+      .get(targetInterfaceApiName);
     if (existing) return existing;
 
-    const osdkInterface = createOsdkInterface(underlying, newDef);
+    const osdkInterface = createOsdkInterface(underlying, def.def);
     osdkObjectToInterfaceView.get(underlying).set(
-      newDef.apiName,
+      targetInterfaceApiName,
       osdkInterface,
     );
     return osdkInterface;

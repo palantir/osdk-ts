@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypeDefinition,
-  ObjectTypeLinkDefinition,
-  VersionBound,
-} from "@osdk/api";
+import type { ObjectMetadata, VersionBound } from "@osdk/api";
 
-export interface ObjectTypeWithReservedNamesDef extends
-  ObjectTypeDefinition<
-    "ObjectTypeWithReservedNames"
-  >,
-  VersionBound<"0.15.0">
+export interface ObjectTypeWithReservedNamesDef
+  extends ObjectMetadata, VersionBound<"0.15.0">
 {
   type: "object";
   apiName: "ObjectTypeWithReservedNames";
   primaryKeyApiName: "id";
   primaryKeyType: "integer";
   links: {
-    const: ObjectTypeLinkDefinition<ObjectTypeWithReservedNamesDef, false>;
+    const: ObjectMetadata.Link<ObjectTypeWithReservedNamesDef, false>;
   };
   properties: {
     id: {
@@ -66,4 +59,16 @@ export const ObjectTypeWithReservedNames: ObjectTypeWithReservedNamesDef = {
       type: "integer",
     },
   },
+  icon: {
+    type: "blueprint",
+    name: "icon",
+    color: "blue",
+  },
+  titleProperty: "id" as const,
+  displayName: "ObjectTypeWithReservedNames",
+  pluralDisplayName: "",
+  status: "ACTIVE",
+  interfaceMap: {},
+  inverseInterfaceMap: {},
+  rid: "",
 };

@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import type { Component } from "./ir/index.js";
+import type * as ir from "./ir/index.js";
 import { isIgnoredNamespace } from "./isIgnoredNamespace.js";
+import type { ErrorType } from "./model/ErrorType.js";
 
-export function isIgnoredType(component: Component): boolean {
-  return isIgnoredNamespace(component.namespace);
+export function isIgnoredType(component: ir.Component | ir.Error): boolean {
+  return isIgnoredNamespace(component.locator.namespaceName);
 }

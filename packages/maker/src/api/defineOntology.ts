@@ -150,8 +150,16 @@ export function dumpValueTypeWireType(): OntologyIrValueTypeBlockData {
 }
 
 function convertSpt(
-  { type, array, description, apiName, displayName, valueType }:
-    SharedPropertyType,
+  {
+    type,
+    array,
+    description,
+    apiName,
+    displayName,
+    gothamMapping,
+    typeClasses,
+    valueType,
+  }: SharedPropertyType,
 ): OntologyIrSharedPropertyType {
   return {
     apiName,
@@ -171,10 +179,10 @@ function convertSpt(
     aliases: [],
     baseFormatter: undefined,
     dataConstraints: undefined,
-    gothamMapping: undefined,
+    gothamMapping: gothamMapping,
     indexedForSearch: true,
     provenance: undefined,
-    typeClasses: [],
+    typeClasses: typeClasses ?? [],
     valueType: valueType,
   };
 }

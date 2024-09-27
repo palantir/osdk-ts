@@ -16,19 +16,21 @@
 
 import type {
   ActionDefinition,
-  ActionParameterDefinition,
-  ObjectActionDataType,
-  ObjectSetActionDataType,
-} from "@osdk/api";
-import type {
+  ActionEditResponse,
+  ActionMetadata,
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
   DataValueClientToWire,
-} from "@osdk/client.api";
-import { OntologiesV2 } from "@osdk/internal.foundry";
-import type { DataValue } from "@osdk/internal.foundry.core";
+} from "@osdk/api";
+import type {
+  BatchApplyActionResponseV2,
+  DataValue,
+  SyncApplyActionResponseV2,
+} from "@osdk/internal.foundry.core";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
+import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
@@ -38,16 +40,16 @@ import type { PartialBy } from "../util/partialBy.js";
 import { toDataValue } from "../util/toDataValue.js";
 import { ActionValidationError } from "./ActionValidationError.js";
 
-type BaseType<APD extends Pick<ActionParameterDefinition<any, any>, "type">> =
-  APD["type"] extends ObjectActionDataType<any, infer TTargetType>
+type BaseType<APD extends Pick<ActionMetadata.Parameter<any>, "type">> =
+  APD["type"] extends ActionMetadata.DataType.Object<infer TTargetType>
     ? ActionParam.ObjectType<TTargetType>
-    : APD["type"] extends ObjectSetActionDataType<any, infer TTargetType>
+    : APD["type"] extends ActionMetadata.DataType.ObjectSet<infer TTargetType>
       ? ActionParam.ObjectSetType<TTargetType>
     : APD["type"] extends keyof DataValueClientToWire
       ? ActionParam.PrimitiveType<APD["type"]>
     : never;
 
-type MaybeArrayType<APD extends ActionParameterDefinition<any, any>> =
+type MaybeArrayType<APD extends ActionMetadata.Parameter<any>> =
   APD["multiplicity"] extends true ? Array<BaseType<APD>>
     : BaseType<APD>;
 
@@ -60,24 +62,31 @@ export type OsdkActionParameters<
 > = NullableProps<X> extends never ? NotOptionalParams<X>
   : PartialBy<NotOptionalParams<X>, NullableProps<X>>;
 
-export type ActionSignatureFromDef<T extends ActionDefinition<any, any, any>> =
-  {
-    applyAction: [NonNullable<T["__OsdkActionType"]>] extends [never]
-      ? ActionSignature<T["parameters"]>
-      : NonNullable<T["__OsdkActionType"]>["applyAction"];
+export type CompileTimeActionMetadata<
+  T extends ActionDefinition<any>,
+> = NonNullable<T["__DefinitionMetadata"]>;
 
-    batchApplyAction: [NonNullable<T["__OsdkActionType"]>] extends [never]
-      ? BatchActionSignature<T["parameters"]>
-      : NonNullable<T["__OsdkActionType"]>["batchApplyAction"];
-  };
+export type ActionSignatureFromDef<
+  T extends ActionDefinition<any>,
+> = {
+  applyAction:
+    [CompileTimeActionMetadata<T>["signatures"]["applyAction"]] extends [never]
+      ? ActionSignature<CompileTimeActionMetadata<T>["parameters"]>
+      : CompileTimeActionMetadata<T>["signatures"]["applyAction"];
+
+  batchApplyAction:
+    [CompileTimeActionMetadata<T>["signatures"]["batchApplyAction"]] extends
+      [never] ? BatchActionSignature<CompileTimeActionMetadata<T>["parameters"]>
+      : CompileTimeActionMetadata<T>["signatures"]["batchApplyAction"];
+};
 
 type ActionParametersDefinition = Record<
   any,
-  ActionParameterDefinition<any, any>
+  ActionMetadata.Parameter<any>
 >;
 
 export type ActionSignature<
-  X extends Record<any, ActionParameterDefinition<any, any>>,
+  X extends Record<any, ActionMetadata.Parameter<any>>,
 > = <
   A extends NOOP<OsdkActionParameters<X>>,
   OP extends ApplyActionOptions,
@@ -89,7 +98,7 @@ export type ActionSignature<
 >;
 
 export type BatchActionSignature<
-  X extends Record<any, ActionParameterDefinition<any, any>>,
+  X extends Record<any, ActionMetadata.Parameter<any>>,
 > = <
   A extends NOOP<OsdkActionParameters<X>>[],
   OP extends ApplyBatchActionOptions,
@@ -101,12 +110,12 @@ export type BatchActionSignature<
 >;
 
 export async function applyAction<
-  AD extends ActionDefinition<any, any>,
-  P extends OsdkActionParameters<AD["parameters"]> | OsdkActionParameters<
-    AD["parameters"]
-  >[],
+  AD extends ActionDefinition<any>,
+  P extends
+    | OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>
+    | OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>[],
   Op extends P extends OsdkActionParameters<
-    AD["parameters"]
+    CompileTimeActionMetadata<AD>["parameters"]
   >[] ? ApplyBatchActionOptions
     : ApplyActionOptions,
 >(
@@ -136,8 +145,9 @@ export async function applyAction<
       },
     );
 
+    const edits = response.edits;
     return (options?.$returnEdits
-      ? response.edits
+      ? edits?.type === "edits" ? remapActionResponse(response) : edits
       : undefined) as ActionReturnTypeForOptions<Op>;
   } else {
     const response = await OntologiesV2.Actions.applyActionV2(
@@ -146,7 +156,9 @@ export async function applyAction<
       action.apiName,
       {
         parameters: await remapActionParams(
-          parameters as OsdkActionParameters<AD["parameters"]>,
+          parameters as OsdkActionParameters<
+            CompileTimeActionMetadata<AD>["parameters"]
+          >,
           client,
         ),
         options: {
@@ -169,14 +181,17 @@ export async function applyAction<
       throw new ActionValidationError(response.validation);
     }
 
+    const edits = response.edits;
     return (options?.$returnEdits
-      ? response.edits
+      ? edits?.type === "edits" ? remapActionResponse(response) : edits
       : undefined) as ActionReturnTypeForOptions<Op>;
   }
 }
 
-async function remapActionParams<AD extends ActionDefinition<any, any>>(
-  params: OsdkActionParameters<AD["parameters"]> | undefined,
+async function remapActionParams<AD extends ActionDefinition<any>>(
+  params:
+    | OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>
+    | undefined,
   client: MinimalClient,
 ): Promise<Record<string, DataValue>> {
   if (params == null) {
@@ -192,8 +207,11 @@ async function remapActionParams<AD extends ActionDefinition<any, any>>(
 }
 
 async function remapBatchActionParams<
-  AD extends ActionDefinition<any, any>,
->(params: OsdkActionParameters<AD["parameters"]>[], client: MinimalClient) {
+  AD extends ActionDefinition<any>,
+>(
+  params: OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>[],
+  client: MinimalClient,
+) {
   const remappedParams = await Promise.all(params.map(
     async param => {
       return { parameters: await remapActionParams<AD>(param, client) };
@@ -201,4 +219,55 @@ async function remapBatchActionParams<
   ));
 
   return remappedParams;
+}
+
+export function remapActionResponse(
+  response: SyncApplyActionResponseV2 | BatchApplyActionResponseV2,
+): ActionEditResponse | undefined {
+  const editResponses = response?.edits;
+  if (editResponses?.type === "edits") {
+    const remappedActionResponse: ActionEditResponse = {
+      type: editResponses.type,
+      deletedLinksCount: editResponses.deletedLinksCount,
+      deletedObjectsCount: editResponses.deletedObjectsCount,
+      addedLinks: [],
+      addedObjects: [],
+      modifiedObjects: [],
+      editedObjectTypes: [],
+    };
+
+    const editedObjectTypesSet = new Set<string>();
+    for (const edit of editResponses.edits) {
+      if (edit.type === "addLink") {
+        remappedActionResponse.addedLinks.push(
+          {
+            linkTypeApiNameAtoB: edit.linkTypeApiNameAtoB,
+            linkTypeApiNameBtoA: edit.linkTypeApiNameBtoA,
+            aSideObject: edit.aSideObject,
+            bSideObject: edit.bSideObject,
+          },
+        );
+        editedObjectTypesSet.add(edit.aSideObject.objectType);
+        editedObjectTypesSet.add(edit.bSideObject.objectType);
+      } else if (edit.type === "addObject") {
+        remappedActionResponse.addedObjects.push(
+          {
+            objectType: edit.objectType,
+            primaryKey: edit.primaryKey,
+          },
+        );
+        editedObjectTypesSet.add(edit.objectType);
+      } else if (edit.type === "modifyObject") {
+        remappedActionResponse.modifiedObjects.push({
+          objectType: edit.objectType,
+          primaryKey: edit.primaryKey,
+        });
+        editedObjectTypesSet.add(edit.objectType);
+      } else {
+        invariant(false, "Unknown edit type");
+      }
+    }
+    remappedActionResponse.editedObjectTypes = [...editedObjectTypesSet];
+    return remappedActionResponse;
+  }
 }

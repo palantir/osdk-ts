@@ -77,6 +77,8 @@ export const TodoWireOntology = {
         apiName: "Todo",
         primaryKey: "id",
         displayName: "AwesomeTodoDisplayname",
+        pluralDisplayName: "AwesomeTodoDisplayNames",
+        icon: { type: "blueprint", name: "document", color: "blue" },
         description: "Its a todo item.",
         titleProperty: "body",
         properties: {
@@ -108,6 +110,7 @@ export const TodoWireOntology = {
         objectTypeApiName: "Person",
         status: "ACTIVE",
         foreignKeyPropertyApiName: "email",
+        linkTypeRid: "",
       }],
       implementsInterfaces: ["SomeInterface"],
       implementsInterfaces2: {
@@ -124,6 +127,8 @@ export const TodoWireOntology = {
         apiName: "Person",
         primaryKey: "email",
         displayName: "Person",
+        pluralDisplayName: "Persons",
+        icon: { type: "blueprint", name: "document", color: "blue" },
         description: "A person",
         titleProperty: "email",
         properties: {
@@ -144,6 +149,7 @@ export const TodoWireOntology = {
         objectTypeApiName: "Todo",
         status: "ACTIVE",
         foreignKeyPropertyApiName: "id",
+        linkTypeRid: "",
       }],
       implementsInterfaces: [],
       implementsInterfaces2: {},

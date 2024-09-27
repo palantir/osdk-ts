@@ -1,5 +1,0 @@
-type: fix
-fix:
-  description: Avoid caching auth related calls
-  links:
-  - https://github.com/palantir/osdk-ts/pull/148

@@ -1,11 +1,11 @@
-import type { ActionDefinition, VersionBound } from '@osdk/api';
 import type {
+  ActionDefinition,
+  ActionMetadata,
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-} from '@osdk/client.api';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata';
+} from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 export namespace createTodo {
@@ -31,20 +31,6 @@ export namespace createTodo {
 
     readonly Todo: ActionParam.PrimitiveType<'string'>;
   }
-  /** @deprecated **/
-  export type Parameters = Params;
-
-  // Represents the definition of the action
-  export interface Definition
-    extends ActionDefinition<'createTodo', 'Todo', createTodo.Signatures>,
-      VersionBound<$ExpectedClientVersion> {
-    apiName: 'createTodo';
-    description: 'Creates Todo';
-    modifiedEntities: { Todo: { created: true; modified: false } };
-    type: 'action';
-    parameters: createTodo.ParamsDefinition;
-    osdkMetadata: typeof $osdkMetadata;
-  }
 
   // Represents a fqn of the action
   export interface Signatures {
@@ -64,34 +50,34 @@ export namespace createTodo {
 }
 
 /**
- * @deprecated Use `createTodo.Params`
+ * Creates Todo
+ * @param {ActionParam.PrimitiveType<"boolean">} is_complete
+ * @param {ActionParam.PrimitiveType<"string">} Todo
  */
-export type createTodo$Params = createTodo.Params | ReadonlyArray<createTodo.Params>;
+export interface createTodo extends ActionDefinition<createTodo.Signatures> {
+  __DefinitionMetadata?: {
+    apiName: 'createTodo';
+    description: 'Creates Todo';
+    modifiedEntities: {
+      Todo: {
+        created: true;
+        modified: false;
+      };
+    };
+    parameters: createTodo.ParamsDefinition;
+    rid: 'notNeeded?';
+    status: 'ACTIVE';
+    type: 'action';
 
-/** @deprecated Use `createTodo.Definition` **/
-export type createTodo = createTodo.Signatures;
+    signatures: createTodo.Signatures;
+  };
+  apiName: 'createTodo';
+  type: 'action';
+  osdkMetadata: typeof $osdkMetadata;
+}
 
-export const createTodo: createTodo.Definition = {
+export const createTodo: createTodo = {
   apiName: 'createTodo',
-  description: 'Creates Todo',
-  modifiedEntities: {
-    Todo: {
-      created: true,
-      modified: false,
-    },
-  },
-  parameters: {
-    Todo: {
-      multiplicity: false,
-      type: 'string',
-      nullable: false,
-    },
-    is_complete: {
-      multiplicity: false,
-      type: 'boolean',
-      nullable: false,
-    },
-  },
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

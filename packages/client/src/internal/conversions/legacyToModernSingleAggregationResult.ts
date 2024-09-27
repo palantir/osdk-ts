@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type {
+  AggregationClause,
   AggregationResultsWithoutGroups,
-  NumericAggregateOption,
-  OrderedAggregationClause,
-  StringAggregateOption,
-  UnorderedAggregationClause,
-} from "@osdk/client.api";
+  ObjectOrInterfaceDefinition,
+} from "@osdk/api";
 import type { AggregateObjectsResponseV2 } from "@osdk/internal.foundry.core";
 import invariant from "tiny-invariant";
 import type { ArrayElement } from "../../util/ArrayElement.js";
@@ -29,7 +26,7 @@ import type { ArrayElement } from "../../util/ArrayElement.js";
 /** @internal */
 export function legacyToModernSingleAggregationResult<
   Q extends ObjectOrInterfaceDefinition,
-  AC extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>,
+  AC extends AggregationClause<Q>,
 >(
   entry: ArrayElement<AggregateObjectsResponseV2["data"]>,
 ): AggregationResultsWithoutGroups<Q, AC> {
@@ -44,9 +41,7 @@ export function legacyToModernSingleAggregationResult<
         "assumed we were getting a `${key}.${type}`",
       );
       const property = parts[0] as keyof AggregationResultsWithoutGroups<Q, AC>;
-      const metricType = parts[1] as
-        | StringAggregateOption
-        | NumericAggregateOption;
+      const metricType = parts[1];
       if (!(property in accumulator)) {
         accumulator[property] = {} as any; // fixme?
       }

@@ -1,7 +1,7 @@
 {
   "name": "@osdk/e2e.generated.api-namespace.dep",
   "private": true,
-  "version": "1.0.0-beta.5",
+  "version": "1.0.0-beta.8",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -24,22 +24,18 @@
     "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --beta true --packageType module --version dev --internal --ontologyApiNamespace com.example.dep",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "transpile": "monorepo.tool.transpile",
-    "typecheck": "monorepo.tool.typecheck esm"
+    "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
-    "@osdk/api": "workspace:~",
-    "@osdk/client.api": "workspace:*"
+    "@osdk/api": "workspace:~"
   },
   "peerDependencies": {
     "@osdk/api": "workspace:~",
-    "@osdk/client": "workspace:~",
-    "@osdk/client.api": "workspace:~"
+    "@osdk/client": "workspace:~"
   },
   "devDependencies": {
     "@osdk/api": "workspace:~",
     "@osdk/cli.cmd.typescript": "workspace:~",
-    "@osdk/client.api": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",

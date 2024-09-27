@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import type { Documentation } from "./Common.js";
+import type { Documentation, Locator } from "./Common.js";
 import type { ParameterValue } from "./ParameterValue.js";
 
 export interface Error {
-  name: string;
+  locator: Locator;
   errorType: string;
   parameters: Record<string, ParameterValue>;
   documentation: Documentation;
-  namespace?: string;
 }

@@ -63,7 +63,14 @@
         },
         "rid": "ridForThing",
         "status": "ACTIVE",
-        "titleProperty": "id"
+        "titleProperty": "id",
+        "icon": {
+          "type": "blueprint",
+          "name": "thing",
+          "color": "green"
+        },
+        "displayName": "Thing",
+        "pluralDisplayName": "Things"
       },
       "sharedPropertyTypeMapping": {}
     },
@@ -88,7 +95,14 @@
         },
         "rid": "theRid",
         "status": "ACTIVE",
-        "titleProperty": "id"
+        "titleProperty": "id",
+        "icon": {
+          "type": "blueprint",
+          "name": "foreign",
+          "color": "red"
+        },
+        "displayName": "Uses Foreign Spt",
+        "pluralDisplayName": "Uses Foreign Spts"
       },
       "sharedPropertyTypeMapping": {
         "com.example.dep.spt": "body"

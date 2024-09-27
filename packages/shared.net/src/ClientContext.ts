@@ -15,17 +15,3 @@
  */
 
 import type { SharedClientContext } from "@osdk/shared.client";
-
-/** @deprecated */
-export interface ClientContext<O extends { metadata: { userAgent: string } }>
-  extends SharedClientContext
-{
-  /** @deprecated */
-  ontology: O;
-
-  /**
-   * The base origin to use for requests (e.g. `https://api.example.com`)
-   * @deprecated use `baseUrl` instead
-   */
-  stack: string;
-}

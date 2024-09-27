@@ -16,7 +16,6 @@
 
 import { findUpSync } from "find-up";
 import * as path from "node:path";
-import type { Logger } from "pino";
 import invariant from "tiny-invariant";
 import * as ts from "typescript";
 import {
@@ -28,6 +27,7 @@ import {
   it,
   vi,
 } from "vitest";
+import type { Logger } from "./Logger.js";
 import type { TsServer } from "./tsserver.js";
 import { startTsServer } from "./tsserver.js";
 
@@ -46,7 +46,7 @@ const rootLogger = await vi.hoisted(async (): Promise<Logger> => {
       console.log(a);
     }
   }
-  return pino(
+  return Promise.resolve(pino(
     { level: "info" },
     (pinoPretty.build)({
       sync: true,
@@ -56,7 +56,7 @@ const rootLogger = await vi.hoisted(async (): Promise<Logger> => {
       ignore: "time,hostname,pid",
       destination: new PinoConsoleLogDestination(),
     }),
-  );
+  ));
 });
 
 describe("intellisense", () => {

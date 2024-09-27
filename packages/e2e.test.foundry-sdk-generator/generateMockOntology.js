@@ -15,8 +15,8 @@
  */
 
 // @ts-check
-import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePackageCommand } from "@osdk/foundry-sdk-generator";
 import { apiServer } from "@osdk/shared.test";
+import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePackageCommand } from "@osdk/tmp-foundry-sdk-generator";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -41,45 +41,6 @@ async function setup() {
   await fs.mkdir(dir, { recursive: true });
 
   const generatePackageCommand = new GeneratePackageCommand();
-  await generatePackageCommand.handler({
-    packageName: "@test-app/osdk",
-    packageVersion: "0.0.1",
-    outputDir: dir,
-    authToken: "myAccessToken",
-    foundryHostname: "https://stack.palantir.com",
-    ontology: "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
-    objectTypes: [
-      "employee",
-      "office",
-      "objectTypeWithAllPropertyTypes",
-      "ObjectWithTimestampPrimaryKey",
-      "equipment",
-    ],
-    actionTypes: [
-      "createOffice",
-      "moveOffice",
-      "createOfficeAndEmployee",
-      "actionTakesObjectSet",
-    ],
-    queryTypes: [
-      "addOne",
-      "incrementPersonAge",
-      "returnsTimestamp",
-      "returnsDate",
-      "returnsObject",
-      "twoDimensionalAggregationFunction",
-      "threeDimensionalAggregationFunction",
-    ],
-    interfaceTypes: [
-      "FooInterface",
-    ],
-    linkTypes: ["employee.peeps", "employee.lead", "employee.officeLink"],
-    palantirOnlyTest: true,
-    _: [],
-    $0: "",
-  });
-
-  await safeStat(testAppDir, "should exist");
 
   await generatePackageCommand.handler({
     packageName: "@test-app2/osdk",
@@ -139,8 +100,7 @@ async function rmRf(testAppDir) {
   try {
     await fs.rm(testAppDir, { recursive: true });
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.debug("rm error", e);
+    // console.debug("rm error", e);
     // Only needed for regenerations
   }
 }

@@ -19,8 +19,6 @@ export {
   createFetchHeaderMutator,
   createFetchOrThrow,
 } from "@osdk/shared.net.fetch";
-export { createOpenApiRequest } from "./client/createOpenApiRequest.js";
-export type { ClientContext } from "./ClientContext.js";
 export { createClientContext } from "./createClientContext.js";
 export type { FetchAsJsonFn } from "./FetchAsJsonFn.js";
 export { isOk, type ResultOrError } from "./ResultOrError.js";

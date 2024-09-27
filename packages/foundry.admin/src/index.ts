@@ -22,6 +22,9 @@ export type {
   CreateGroupRequest,
   GetGroupsBatchRequestElement,
   GetGroupsBatchResponse,
+  GetMarkingsBatchRequestElement,
+  GetMarkingsBatchResponse,
+  GetUserMarkingsResponse,
   GetUsersBatchRequestElement,
   GetUsersBatchResponse,
   Group,
@@ -33,7 +36,16 @@ export type {
   ListGroupMembershipsResponse,
   ListGroupMembersResponse,
   ListGroupsResponse,
+  ListMarkingCategoriesResponse,
+  ListMarkingsResponse,
   ListUsersResponse,
+  Marking,
+  MarkingCategory,
+  MarkingCategoryDisplayName,
+  MarkingCategoryId,
+  MarkingCategoryType,
+  MarkingDisplayName,
+  MarkingType,
   PrincipalFilterType,
   RemoveGroupMembersRequest,
   SearchGroupsRequest,
@@ -44,7 +56,34 @@ export type {
   UserSearchFilter,
   UserUsername,
 } from "./_components.js";
+export type {
+  AddGroupMembersPermissionDenied,
+  CreateGroupPermissionDenied,
+  DeleteGroupPermissionDenied,
+  DeleteUserPermissionDenied,
+  GetCurrentUserPermissionDenied,
+  GetMarkingCategoryPermissionDenied,
+  GetMarkingPermissionDenied,
+  GetMarkingsUserPermissionDenied,
+  GetProfilePictureOfUserPermissionDenied,
+  GroupNameAlreadyExists,
+  GroupNotFound,
+  InvalidGroupMembershipExpiration,
+  InvalidGroupOrganizations,
+  InvalidProfilePicture,
+  MarkingCategoryNotFound,
+  MarkingNotFound,
+  OrganizationNotFound,
+  PrincipalNotFound,
+  ProfilePictureNotFound,
+  RemoveGroupMembersPermissionDenied,
+  SearchGroupsPermissionDenied,
+  SearchUsersPermissionDenied,
+  UserNotFound,
+} from "./_errors.js";
 export * as Groups from "./public/Group.js";
 export * as GroupMembers from "./public/GroupMember.js";
 export * as GroupMemberships from "./public/GroupMembership.js";
+export * as Markings from "./public/Marking.js";
+export * as MarkingCategories from "./public/MarkingCategory.js";
 export * as Users from "./public/User.js";

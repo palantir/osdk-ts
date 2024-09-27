@@ -1,11 +1,11 @@
-import type { ActionDefinition, VersionBound } from '@osdk/api';
 import type {
+  ActionDefinition,
+  ActionMetadata,
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-} from '@osdk/client.api';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata';
+} from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 export namespace createOffice {
@@ -55,20 +55,6 @@ export namespace createOffice {
      */
     readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'string'>>;
   }
-  /** @deprecated **/
-  export type Parameters = Params;
-
-  // Represents the definition of the action
-  export interface Definition
-    extends ActionDefinition<'createOffice', 'Office', createOffice.Signatures>,
-      VersionBound<$ExpectedClientVersion> {
-    apiName: 'createOffice';
-    description: "Create an office's";
-    modifiedEntities: { Office: { created: true; modified: false } };
-    type: 'action';
-    parameters: createOffice.ParamsDefinition;
-    osdkMetadata: typeof $osdkMetadata;
-  }
 
   // Represents a fqn of the action
   export interface Signatures {
@@ -88,47 +74,36 @@ export namespace createOffice {
 }
 
 /**
- * @deprecated Use `createOffice.Params`
+ * Create an office's
+ * @param {ActionParam.PrimitiveType<"string">} [address] The office's physical address (not necessarily shipping address)
+ * @param {ActionParam.PrimitiveType<"integer">} [capacity] The maximum seated-at-desk capacity of the office (maximum fire-safe capacity may be higher)
+ * @param {ActionParam.PrimitiveType<"string">} officeId
+ * @param {ActionParam.PrimitiveType<"string">} [officeNames] A list of all office names
  */
-export type createOffice$Params = createOffice.Params | ReadonlyArray<createOffice.Params>;
+export interface createOffice extends ActionDefinition<createOffice.Signatures> {
+  __DefinitionMetadata?: {
+    apiName: 'createOffice';
+    description: "Create an office's";
+    modifiedEntities: {
+      Office: {
+        created: true;
+        modified: false;
+      };
+    };
+    parameters: createOffice.ParamsDefinition;
+    rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f1';
+    status: 'ACTIVE';
+    type: 'action';
 
-/** @deprecated Use `createOffice.Definition` **/
-export type createOffice = createOffice.Signatures;
+    signatures: createOffice.Signatures;
+  };
+  apiName: 'createOffice';
+  type: 'action';
+  osdkMetadata: typeof $osdkMetadata;
+}
 
-export const createOffice: createOffice.Definition = {
+export const createOffice: createOffice = {
   apiName: 'createOffice',
-  description: "Create an office's",
-  modifiedEntities: {
-    Office: {
-      created: true,
-      modified: false,
-    },
-  },
-  parameters: {
-    officeId: {
-      multiplicity: false,
-      type: 'string',
-      nullable: false,
-    },
-    address: {
-      multiplicity: false,
-      type: 'string',
-      nullable: true,
-      description: "The office's physical address (not necessarily shipping address)",
-    },
-    capacity: {
-      multiplicity: false,
-      type: 'integer',
-      nullable: true,
-      description: 'The maximum seated-at-desk capacity of the office (maximum fire-safe capacity may be higher)',
-    },
-    officeNames: {
-      multiplicity: true,
-      type: 'string',
-      nullable: true,
-      description: 'A list of all office names',
-    },
-  },
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

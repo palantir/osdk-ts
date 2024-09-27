@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ActionDefinition,
-  ObjectTypeDefinition,
-  ObjectTypeLinkDefinition,
-  OntologyDefinition,
-  VersionBound,
-} from "@osdk/api";
+import type { ActionDefinition, ObjectMetadata, VersionBound } from "@osdk/api";
 import type { ObjectTypeWithAllPropertyTypesDef } from "./ObjectTypeWithAllPropertyTypes.js";
 import { ObjectTypeWithAllPropertyTypes } from "./ObjectTypeWithAllPropertyTypes.js";
 import type { ObjectTypeWithReservedNamesDef } from "./ObjectTypeWithReservedNames.js";
@@ -35,6 +29,11 @@ const Task: TaskDef = {
   apiName: "Task",
   primaryKeyApiName: "id",
   primaryKeyType: "integer",
+  icon: {
+    type: "blueprint",
+    name: "icon",
+    color: "blue",
+  },
   properties: {
     id: { type: "integer", nullable: true },
   },
@@ -44,7 +43,13 @@ const Task: TaskDef = {
       targetType: "Todo",
     },
   },
-  osdkMetadata,
+  titleProperty: "id",
+  displayName: "Task",
+  pluralDisplayName: "Tasks",
+  status: "ACTIVE",
+  interfaceMap: {},
+  inverseInterfaceMap: {},
+  rid: "",
 };
 
 const Todo: TodoDef = {
@@ -53,6 +58,11 @@ const Todo: TodoDef = {
   primaryKeyApiName: "id",
   primaryKeyType: "string",
   description: "A todo object",
+  icon: {
+    type: "blueprint",
+    name: "icon",
+    color: "blue",
+  },
   properties: {
     id: { type: "string", nullable: true, description: "The id" },
     body: { type: "string", nullable: true },
@@ -68,10 +78,16 @@ const Todo: TodoDef = {
       targetType: "Task",
     },
   },
-  osdkMetadata,
+  titleProperty: "id",
+  displayName: "Todo",
+  pluralDisplayName: "Todo's",
+  status: "ACTIVE",
+  interfaceMap: {},
+  inverseInterfaceMap: {},
+  rid: "",
 };
 
-interface TodoDef extends ObjectTypeDefinition<"Todo">, VersionBound<"0.15.0"> {
+interface TodoDef extends ObjectMetadata, VersionBound<"0.15.0"> {
   type: "object";
   apiName: "Todo";
   primaryKeyApiName: "id";
@@ -87,11 +103,11 @@ interface TodoDef extends ObjectTypeDefinition<"Todo">, VersionBound<"0.15.0"> {
     unixTimestamp: { type: "long"; nullable: true };
   };
   links: {
-    linkedTask: ObjectTypeLinkDefinition<TaskDef, false>;
+    linkedTask: ObjectMetadata.Link<TaskDef, false>;
   };
 }
 
-interface TaskDef extends ObjectTypeDefinition<"Task">, VersionBound<"0.15.0"> {
+interface TaskDef extends ObjectMetadata, VersionBound<"0.15.0"> {
   type: "object";
   apiName: "Task";
   primaryKeyApiName: "id";
@@ -100,7 +116,7 @@ interface TaskDef extends ObjectTypeDefinition<"Task">, VersionBound<"0.15.0"> {
     id: { type: "integer"; nullable: true };
   };
   links: {
-    linkedTodos: ObjectTypeLinkDefinition<TodoDef, true>;
+    linkedTodos: ObjectMetadata.Link<TodoDef, true>;
   };
 }
 
@@ -127,11 +143,11 @@ export type ActionDef$updateTask$Parameters = {
   };
 };
 
-interface ActionDef$updateTask extends ActionDefinition<"updateTask", "Task"> {
+interface ActionDef$updateTask extends ActionDefinition {
   type: "action";
   apiName: "updateTask";
   parameters: ActionDef$updateTask$Parameters;
-  modifiedEntities: {
+  BaseActionDefinition: {
     Task: { modified: true; created: false };
   };
 }
@@ -161,8 +177,11 @@ const updateTask: ActionDef$updateTask = {
       nullable: true,
     },
   },
-  modifiedEntities: {
+  BaseActionDefinition: {
     Task: { modified: true, created: false },
+  },
+  osdkMetadata: {
+    extraUserAgent: "",
   },
 };
 
@@ -385,7 +404,7 @@ export const MockOntology = {
       },
     },
   },
-} as const satisfies OntologyDefinition<any, any, any, any>;
+} as const;
 type capture = typeof MockOntology;
 export interface MockOntology extends capture {
 }

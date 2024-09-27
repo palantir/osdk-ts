@@ -18,28 +18,35 @@ import type {
   ActionDefinition,
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
+  ObjectSet,
   ObjectTypeDefinition,
   QueryDefinition,
 } from "@osdk/api";
-import type { MinimalObjectSet, ObjectSet } from "@osdk/client.api";
+import type { MinimalObjectSet } from "@osdk/api/unstable";
+import {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
+} from "@osdk/api/unstable";
 import { symbolClientContext } from "@osdk/shared.client";
-import type { Logger } from "pino";
+import { createBulkLinksAsyncIterFactory } from "./__unstable/createBulkLinksAsyncIterFactory.js";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import { applyAction } from "./actions/applyAction.js";
 import type { Client } from "./Client.js";
 import { createMinimalClient } from "./createMinimalClient.js";
+import { fetchMetadataInternal } from "./fetchMetadata.js";
+import type { Logger } from "./Logger.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import { applyQuery } from "./queries/applyQuery.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 
-class ActionInvoker<Q extends ActionDefinition<any, any, any>>
+class ActionInvoker<Q extends ActionDefinition<any>>
   implements ActionSignatureFromDef<Q>
 {
   constructor(
     clientCtx: MinimalClient,
-    actionDef: ActionDefinition<any, any, any>,
+    actionDef: ActionDefinition<any>,
   ) {
     // We type the property as a generic function as binding `applyAction`
     // doesn't return a type thats all that useful anyway
@@ -53,7 +60,7 @@ class ActionInvoker<Q extends ActionDefinition<any, any, any>>
   batchApplyAction: (...args: any[]) => any;
 }
 
-class QueryInvoker<Q extends QueryDefinition<any, any>>
+class QueryInvoker<Q extends QueryDefinition<any, any, any>>
   implements QuerySignatureFromDef<Q>
 {
   constructor(
@@ -87,28 +94,25 @@ export function createClientInternal(
   function clientFn<
     T extends
       | ObjectOrInterfaceDefinition
-      | ActionDefinition<any, any, any>
+      | ActionDefinition<any>
       | QueryDefinition<any, any>,
-  >(o: T): T extends ObjectTypeDefinition<any> ? ObjectSet<T>
-    : T extends InterfaceDefinition<any, any> ? MinimalObjectSet<T>
-    : T extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<T>
+  >(o: T): T extends ObjectTypeDefinition ? ObjectSet<T>
+    : T extends InterfaceDefinition ? MinimalObjectSet<T>
+    : T extends ActionDefinition<any> ? ActionSignatureFromDef<T>
     : T extends QueryDefinition<any, any> ? QuerySignatureFromDef<T>
     : never
   {
     if (o.type === "object" || o.type === "interface") {
-      clientCtx.ontologyProvider.maybeSeed(o);
       return objectSetFactory(o, clientCtx) as any;
     } else if (o.type === "action") {
-      clientCtx.ontologyProvider.maybeSeed(o);
       return new ActionInvoker(
         clientCtx,
         o,
-      ) as (T extends ActionDefinition<any, any, any>
+      ) as (T extends ActionDefinition<any>
         // first `as` to the action definition for our "real" typecheck
         ? ActionSignatureFromDef<T>
         : never) as any; // then as any for dealing with the conditional return value
     } else if (o.type === "query") {
-      clientCtx.ontologyProvider.maybeSeed(o);
       return new QueryInvoker(
         clientCtx,
         o,
@@ -119,11 +123,47 @@ export function createClientInternal(
     }
   }
 
+  const fetchMetadata = fetchMetadataInternal.bind(
+    undefined,
+    clientCtx,
+  );
+
   const client: Client = Object.defineProperties<Client>(
     clientFn as Client,
     {
       [symbolClientContext]: {
         value: clientCtx,
+      },
+      [__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks]: {
+        get: () => createBulkLinksAsyncIterFactory(clientCtx),
+      },
+      [__EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet]: {
+        get: () =>
+        <T extends ObjectOrInterfaceDefinition>(
+          definition: T,
+          rid: string,
+        ) => {
+          return createObjectSet(
+            definition,
+            client[symbolClientContext],
+            {
+              type: "intersect",
+              objectSets: [
+                {
+                  type: "base",
+                  objectType: definition.apiName,
+                },
+                {
+                  type: "reference",
+                  reference: rid,
+                },
+              ],
+            },
+          );
+        },
+      },
+      fetchMetadata: {
+        value: fetchMetadata,
       },
     } satisfies Record<keyof Client, PropertyDescriptor>,
   );

@@ -1,11 +1,11 @@
-import type { ActionDefinition, ObjectActionDataType, VersionBound } from '@osdk/api';
 import type {
+  ActionDefinition,
+  ActionMetadata,
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-} from '@osdk/client.api';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata';
+} from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata';
 import type { Todo } from '../objects/Todo';
 
@@ -21,7 +21,7 @@ export namespace completeTodo {
       description: 'A todo Object';
       multiplicity: true;
       nullable: false;
-      type: ObjectActionDataType<'Todo', Todo.Definition>;
+      type: ActionMetadata.DataType.Object<Todo>;
     };
   };
 
@@ -33,21 +33,7 @@ export namespace completeTodo {
     /**
      * A todo Object
      */
-    readonly Todo: ReadonlyArray<ActionParam.ObjectType<Todo.Definition>>;
-  }
-  /** @deprecated **/
-  export type Parameters = Params;
-
-  // Represents the definition of the action
-  export interface Definition
-    extends ActionDefinition<'completeTodo', 'Todo', completeTodo.Signatures>,
-      VersionBound<$ExpectedClientVersion> {
-    apiName: 'completeTodo';
-    description: 'Completes Todo';
-    modifiedEntities: { Todo: { created: false; modified: true } };
-    type: 'action';
-    parameters: completeTodo.ParamsDefinition;
-    osdkMetadata: typeof $osdkMetadata;
+    readonly Todo: ReadonlyArray<ActionParam.ObjectType<Todo>>;
   }
 
   // Represents a fqn of the action
@@ -68,38 +54,34 @@ export namespace completeTodo {
 }
 
 /**
- * @deprecated Use `completeTodo.Params`
+ * Completes Todo
+ * @param {ActionParam.PrimitiveType<"boolean">} is_complete
+ * @param {ActionParam.ObjectType<Todo>} Todo A todo Object
  */
-export type completeTodo$Params = completeTodo.Params | ReadonlyArray<completeTodo.Params>;
+export interface completeTodo extends ActionDefinition<completeTodo.Signatures> {
+  __DefinitionMetadata?: {
+    apiName: 'completeTodo';
+    description: 'Completes Todo';
+    modifiedEntities: {
+      Todo: {
+        created: false;
+        modified: true;
+      };
+    };
+    parameters: completeTodo.ParamsDefinition;
+    rid: '';
+    status: 'ACTIVE';
+    type: 'action';
 
-/** @deprecated Use `completeTodo.Definition` **/
-export type completeTodo = completeTodo.Signatures;
+    signatures: completeTodo.Signatures;
+  };
+  apiName: 'completeTodo';
+  type: 'action';
+  osdkMetadata: typeof $osdkMetadata;
+}
 
-export const completeTodo: completeTodo.Definition = {
+export const completeTodo: completeTodo = {
   apiName: 'completeTodo',
-  description: 'Completes Todo',
-  modifiedEntities: {
-    Todo: {
-      created: false,
-      modified: true,
-    },
-  },
-  parameters: {
-    Todo: {
-      multiplicity: true,
-      type: {
-        type: 'object',
-        object: 'Todo',
-      },
-      nullable: false,
-      description: 'A todo Object',
-    },
-    is_complete: {
-      multiplicity: false,
-      type: 'boolean',
-      nullable: false,
-    },
-  },
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

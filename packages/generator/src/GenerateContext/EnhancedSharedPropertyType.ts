@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import type { SharedPropertyType } from "@osdk/gateway/types";
+import type { SharedPropertyType } from "@osdk/internal.foundry.core";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedBase } from "./EnhancedBase.js";
 
 export class EnhancedSharedPropertyType
   extends EnhancedBase<SharedPropertyType>
 {
-  constructor(common: EnhanceCommon, public og: SharedPropertyType) {
-    super(common, og, og.apiName, "./ontology/interfaces");
+  constructor(common: EnhanceCommon, public raw: SharedPropertyType) {
+    super(common, raw, raw.apiName, "./ontology/interfaces");
   }
 }

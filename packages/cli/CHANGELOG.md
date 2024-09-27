@@ -1,5 +1,108 @@
 # @osdk/cli
 
+## 0.24.0-beta.14
+
+### Minor Changes
+
+- ff790c5: Rollup dependencies
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/generator@2.0.0-beta.15
+
+## 0.24.0-beta.13
+
+### Minor Changes
+
+- d4d6605: Audited and cleaned up deps
+
+### Patch Changes
+
+- Updated dependencies [1f633f7]
+- Updated dependencies [d4d6605]
+  - @osdk/generator@2.0.0-beta.14
+  - @osdk/shared.net@2.0.0-beta.5
+
+## 0.24.0-beta.12
+
+### Patch Changes
+
+- Updated dependencies [1488144]
+- Updated dependencies [bbfebfd]
+- Updated dependencies [f6e2880]
+- Updated dependencies [c28792e]
+- Updated dependencies [26ee3bd]
+- Updated dependencies [6ab5d2e]
+- Updated dependencies [885c8e4]
+  - @osdk/generator@2.0.0-beta.13
+  - @osdk/shared.net@2.0.0-beta.4
+
+## 0.24.0-beta.11
+
+### Patch Changes
+
+- @osdk/generator@2.0.0-beta.12
+
+## 0.24.0-beta.10
+
+### Patch Changes
+
+- @osdk/generator@2.0.0-beta.11
+
+## 0.24.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [1252d94]
+- Updated dependencies [56df85a]
+  - @osdk/generator@2.0.0-beta.10
+  - @osdk/shared.net@2.0.0-beta.3
+
+## 0.24.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [b946e00]
+- Updated dependencies [01724ae]
+  - @osdk/generator@2.0.0-beta.9
+  - @osdk/shared.net@2.0.0-beta.2
+
+## 0.24.0-beta.7
+
+### Patch Changes
+
+- Updated dependencies [96ea876]
+- Updated dependencies [64818dc]
+  - @osdk/generator@2.0.0-beta.8
+  - @osdk/shared.net@2.0.0-beta.1
+
+## 0.24.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [33759fb]
+- Updated dependencies [5c89065]
+  - @osdk/generator@2.0.0-beta.7
+
+## 0.24.0-beta.5
+
+### Minor Changes
+
+- 0a374d6: Remove legacy client
+
+### Patch Changes
+
+- Updated dependencies [0a374d6]
+- Updated dependencies [96ea876]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [6f93c8b]
+  - @osdk/generator@2.0.0-beta.6
+  - @osdk/gateway@2.5.0-beta.0
+  - @osdk/shared.net@1.13.0-beta.0
+
 ## 0.24.0-beta.4
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@osdk/internal.foundry.core",
-  "version": "0.2.0-beta.2",
+  "version": "0.2.0-beta.9",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -22,13 +22,11 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "transpile": "monorepo.tool.transpile",
-    "typecheck": "monorepo.tool.typecheck esm"
+    "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
-    "@osdk/api": "workspace:~",
-    "@osdk/shared.client": "workspace:~",
-    "@osdk/shared.net": "workspace:~",
+    "@osdk/internal.foundry.geo": "workspace:*",
+    "@osdk/shared.client": "workspace:^",
     "@osdk/shared.net.platformapi": "workspace:~"
   },
   "devDependencies": {
@@ -49,14 +47,14 @@
     "templates",
     "*.d.ts"
   ],
-  "main": "./build/js/index.cjs",
   "module": "./build/esm/index.js",
   "types": "./build/esm/index.d.ts",
   "sls": {
     "dependencies": {
       "com.palantir.foundry.api:api-gateway": {
-        "minVersion": "1.908.0",
-        "maxVersion": "1.x.x"
+        "minVersion": "1.934.0",
+        "maxVersion": "1.x.x",
+        "optional": true
       }
     }
   },

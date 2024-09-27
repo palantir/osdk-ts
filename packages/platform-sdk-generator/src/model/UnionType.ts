@@ -30,9 +30,11 @@ export class UnionType extends SimpleType {
     return new Set(Object.values(this.subTypes));
   }
 
-  get tsReferenceString(): string {
+  getDeclaration(localNamespace: string): string {
     return Object.entries(this.subTypes).map(([name, type]) =>
-      `{ ${this.discriminator}: "${name}" } & ${type.tsReferenceString}`
+      `{ ${this.discriminator}: "${name}" } & ${
+        type.getTsReferenceString(localNamespace)
+      }`
     ).join("|");
   }
 }

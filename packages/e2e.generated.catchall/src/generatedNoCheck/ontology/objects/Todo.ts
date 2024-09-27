@@ -1,43 +1,25 @@
+import type { PropertyDef as $PropertyDef } from '@osdk/api';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+import type { Person } from './Person.js';
 import type {
+  PropertyKeys as $PropertyKeys,
   ObjectTypeDefinition as $ObjectTypeDefinition,
-  ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
-  PropertyDef as $PropertyDef,
-  VersionBound as $VersionBound,
+  ObjectMetadata as $ObjectMetadata,
 } from '@osdk/api';
 import type {
-  AggregateOpts as $AggregateOpts,
-  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-  AggregationsResults as $AggregationsResults,
-  Augments as $Augments,
-  ConvertProps as $ConvertProps,
-  DefaultToFalse as $DefaultToFalse,
-  FetchPageArgs as $FetchPageArgs,
-  IsAny as $IsAny,
-  LinkedType as $LinkedType,
-  LinkNames as $LinkNames,
-  NullabilityAdherence as $NullabilityAdherence,
-  NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   OsdkObject as $OsdkObject,
-  OsdkObjectPropertyType as $OsdkObjectPropertyType,
-  PageResult as $PageResult,
-  PropertyValueClientToWire as $PropertyValueClientToWire,
   PropertyValueWireToClient as $PropType,
-  Result as $Result,
-  SelectArg as $SelectArg,
   SingleLinkAccessor as $SingleLinkAccessor,
-  ValidToFrom as $ValidToFrom,
-} from '@osdk/client.api';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
-import { $osdkMetadata } from '../../OntologyMetadata.js';
-import type { Person } from './Person.js';
+} from '@osdk/api';
 
 export namespace Todo {
   export type PropertyKeys = 'id' | 'body' | 'text' | 'priority' | 'complete';
 
   export interface Links {
-    readonly Assignee: $SingleLinkAccessor<Person.Definition>;
+    readonly Assignee: $SingleLinkAccessor<Person>;
   }
 
   export interface Props {
@@ -55,94 +37,37 @@ export namespace Todo {
     readonly text: $PropType['string'] | undefined;
   }
 
-  export interface ObjectSet extends $ObjectSet<Todo.Definition, Todo.ObjectSet> {
-    readonly aggregate: <const AO extends $AggregateOpts<Todo.Definition>>(
-      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Todo.Definition, AO>,
-    ) => Promise<$AggregationsResults<Todo.Definition, AO>>;
+  export interface ObjectSet extends $ObjectSet<Todo, Todo.ObjectSet> {}
 
-    readonly pivotTo: <const L extends $LinkNames<Todo.Definition>>(
-      type: L,
-    ) => $LinkedType<Todo.Definition, L>['objectSet'];
+  export type OsdkObject<
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    K extends keyof Todo.Props = keyof Todo.Props,
+  > = $Osdk<Todo, K | OPTIONS>;
+}
 
-    readonly fetchOne: <
-      const L extends Todo.PropertyKeys,
-      const R extends boolean,
-      const S extends false | 'throw' = $NullabilityAdherenceDefault,
-    >(
-      primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
-      options?: $SelectArg<Todo.Definition, L, R, S>,
-    ) => Promise<
-      Todo.OsdkObject<
-        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-        $IsAny<L> extends true ? Todo.PropertyKeys : L
-      >
-    >;
-
-    readonly fetchOneWithErrors: <
-      const L extends Todo.PropertyKeys,
-      const R extends boolean,
-      const S extends false | 'throw' = $NullabilityAdherenceDefault,
-    >(
-      primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
-      options?: $SelectArg<Todo.Definition, L, R, S>,
-    ) => Promise<
-      $Result<
-        Todo.OsdkObject<
-          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          $IsAny<L> extends true ? Todo.PropertyKeys : L
-        >
-      >
-    >;
-
-    readonly fetchPage: <
-      const L extends Todo.PropertyKeys,
-      const R extends boolean,
-      const A extends $Augments,
-      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-    >(
-      args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
-    ) => Promise<
-      $PageResult<
-        Todo.OsdkObject<
-          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          $IsAny<L> extends true ? Todo.PropertyKeys : L
-        >
-      >
-    >;
-
-    readonly fetchPageWithErrors: <
-      const L extends Todo.PropertyKeys,
-      const R extends boolean,
-      const A extends $Augments,
-      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-    >(
-      args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
-    ) => Promise<
-      $Result<
-        $PageResult<
-          Todo.OsdkObject<
-            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-            $IsAny<L> extends true ? Todo.PropertyKeys : L
-          >
-        >
-      >
-    >;
-
-    readonly asyncIter: () => AsyncIterableIterator<Todo.OsdkObject>;
-  }
-
-  export interface Definition
-    extends $ObjectTypeDefinition<'Todo', Todo.Definition>,
-      $VersionBound<$ExpectedClientVersion> {
-    osdkMetadata: typeof $osdkMetadata;
+export interface Todo extends $ObjectTypeDefinition {
+  osdkMetadata: typeof $osdkMetadata;
+  type: 'object';
+  apiName: 'Todo';
+  __DefinitionMetadata?: {
     objectSet: Todo.ObjectSet;
     props: Todo.Props;
     linksType: Todo.Links;
     strictProps: Todo.StrictProps;
+    apiName: 'Todo';
     description: 'Its a todo item.';
-    links: {
-      Assignee: $ObjectTypeLinkDefinition<Person, false>;
+    displayName: 'AwesomeTodoDisplayname';
+    icon: {
+      type: 'blueprint';
+      name: 'todo';
+      color: 'color';
     };
+    interfaceMap: {};
+    inverseInterfaceMap: {};
+    links: {
+      Assignee: $ObjectMetadata.Link<Person, false>;
+    };
+    pluralDisplayName: 'AwesomeTodoDisplayname';
     primaryKeyApiName: 'id';
     primaryKeyType: 'integer';
     properties: {
@@ -168,73 +93,15 @@ export namespace Todo {
        */
       text: $PropertyDef<'string', 'nullable', 'single'>;
     };
-  }
-
-  export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
-    K extends keyof Todo.Props = keyof Todo.Props,
-  > = $Osdk<Todo.Definition, K | OPTIONS> &
-    Pick<
-      [OPTIONS] extends [never] ? Todo.StrictProps : OPTIONS extends '$notStrict' ? Todo.Props : Todo.StrictProps,
-      K
-    > & {
-      readonly $link: Todo.Links;
-      readonly $title: string | undefined; // FIXME
-      readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
-
-      readonly $as: <NEW_Q extends $ValidToFrom<Todo.Definition>>(
-        type: NEW_Q | string,
-      ) => $Osdk<NEW_Q, $ConvertProps<Todo.Definition, NEW_Q, K>>;
-    } & $OsdkObject<'Todo'>;
+    rid: 'rid.a.b.c.d';
+    status: 'ACTIVE';
+    titleProperty: 'body';
+    type: 'object';
+  };
 }
 
-export type Todo = Todo.Definition;
-
-export const Todo: Todo & $VersionBound<$ExpectedClientVersion> = {
-  osdkMetadata: $osdkMetadata,
-  objectSet: undefined as any,
-  props: undefined as any,
-  linksType: undefined as any,
-  strictProps: undefined as any,
-  apiName: 'Todo',
-  description: 'Its a todo item.',
-  links: {
-    Assignee: {
-      multiplicity: false,
-      targetType: 'Person',
-    },
-  },
-  primaryKeyApiName: 'id',
-  primaryKeyType: 'integer',
-  properties: {
-    id: {
-      multiplicity: false,
-      type: 'integer',
-      nullable: false,
-    },
-    body: {
-      displayName: 'Body',
-      multiplicity: false,
-      description: 'The text of the todo',
-      type: 'string',
-      nullable: true,
-    },
-    text: {
-      displayName: 'Text',
-      multiplicity: false,
-      type: 'string',
-      nullable: true,
-    },
-    priority: {
-      multiplicity: false,
-      type: 'integer',
-      nullable: true,
-    },
-    complete: {
-      multiplicity: false,
-      type: 'boolean',
-      nullable: true,
-    },
-  },
+export const Todo: Todo = {
   type: 'object',
+  apiName: 'Todo',
+  osdkMetadata: $osdkMetadata,
 };

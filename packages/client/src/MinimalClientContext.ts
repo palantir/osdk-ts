@@ -15,7 +15,7 @@
  */
 
 import type { SharedClientContext } from "@osdk/shared.client";
-import type { Logger } from "pino";
+import type { Logger } from "./Logger.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import type { OntologyProvider } from "./ontology/OntologyProvider.js";
 

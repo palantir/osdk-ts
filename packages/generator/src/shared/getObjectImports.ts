@@ -25,8 +25,15 @@ export function getObjectImports(
 ) {
   return Array.from(objects).filter(obj => obj.fullApiName !== curApiName)
     .map(obj => {
-      return `import type { ${obj.getDefinitionIdentifier(v2)} as ${
-        obj.getImportedDefinitionIdentifier(v2)
-      } } from "${obj.getImportPathRelTo("./" + currentFilePath)}";`;
+      const defId = obj.getDefinitionIdentifier(v2);
+      const importedId = obj.getImportedDefinitionIdentifier(v2);
+
+      const nameOrAlias = defId === importedId
+        ? defId
+        : `${defId} as ${importedId}`;
+
+      return `import type { ${nameOrAlias} } from "${
+        obj.getImportPathRelTo("./" + currentFilePath)
+      }";`;
     }).join("\n");
 }

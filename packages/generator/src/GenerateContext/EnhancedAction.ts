@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import type { ActionTypeV2 } from "@osdk/gateway/types";
+import type { ActionTypeV2 } from "@osdk/internal.foundry.core";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedBase } from "./EnhancedBase.js";
 
 export class EnhancedAction extends EnhancedBase<ActionTypeV2> {
-  constructor(common: EnhanceCommon, public og: ActionTypeV2) {
-    super(common, og, og.apiName, "./ontology/actions");
+  constructor(common: EnhanceCommon, public raw: ActionTypeV2) {
+    super(common, raw, raw.apiName, "./ontology/actions");
   }
 
   get description() {
-    return this.og.description;
+    return this.raw.description;
   }
 
   get parameters() {
-    return this.og.parameters;
+    return this.raw.parameters;
   }
 
   get operations() {
-    return this.og.operations;
+    return this.raw.operations;
   }
 
   get paramsIdentifier() {

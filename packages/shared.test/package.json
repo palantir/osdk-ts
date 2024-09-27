@@ -1,7 +1,7 @@
 {
   "name": "@osdk/shared.test",
   "private": true,
-  "version": "1.7.0-beta.1",
+  "version": "2.0.0-beta.11",
   "description": "",
   "access": "private",
   "license": "Apache-2.0",
@@ -11,29 +11,28 @@
   },
   "exports": {
     ".": {
-      "require": "./build/cjs/index.cjs",
       "browser": "./build/browser/index.js",
       "import": "./build/esm/index.js"
     },
     "./*": {
-      "require": "./build/cjs/public/*.cjs",
       "browser": "./build/browser/public/*.js",
       "import": "./build/esm/public/*.js"
     }
   },
   "scripts": {
-    "check-attw": "monorepo.tool.attw both",
+    "check-attw": "monorepo.tool.attw esm",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "transpile": "monorepo.tool.transpile",
-    "transpileWatch": "tsup --watch",
-    "typecheck": "monorepo.tool.typecheck both"
+    "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
-    "@osdk/gateway": "workspace:~",
+    "@osdk/internal.foundry.core": "workspace:~",
+    "@osdk/internal.foundry.geo": "workspace:~",
+    "@osdk/internal.foundry.ontologies": "workspace:~",
+    "@osdk/internal.foundry.ontologiesv2": "workspace:~",
     "fetch-retry": "^6.0.0",
     "json-stable-stringify": "^1.1.1",
     "msw": "^2.3.4",
@@ -60,8 +59,7 @@
     "templates",
     "*.d.ts"
   ],
-  "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
-  "types": "./build/cjs/index.d.cts",
+  "types": "./build/esm/index.d.ts",
   "type": "module"
 }

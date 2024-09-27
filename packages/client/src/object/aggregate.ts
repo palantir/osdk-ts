@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type {
   AggregateOpts,
   AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
   AggregationResultsWithGroups,
   AggregationsResults,
-} from "@osdk/client.api";
-import { OntologiesV2 } from "@osdk/internal.foundry";
+  ObjectOrInterfaceDefinition,
+} from "@osdk/api";
 import type {
   AggregateObjectsRequestV2,
   AggregateObjectsResponseV2,
   ObjectSet,
 } from "@osdk/internal.foundry.core";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import invariant from "tiny-invariant";
 import { legacyToModernSingleAggregationResult } from "../internal/conversions/legacyToModernSingleAggregationResult.js";
 import { modernToLegacyAggregationClause } from "../internal/conversions/modernToLegacyAggregationClause.js";
@@ -35,22 +35,6 @@ import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegac
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import type { ArrayElement } from "../util/ArrayElement.js";
-
-/** @deprecated use `aggregate` @internal */
-export async function aggregateOrThrow<
-  Q extends ObjectOrInterfaceDefinition,
-  AO extends AggregateOpts<Q>,
->(
-  clientCtx: MinimalClient,
-  objectType: Q,
-  objectSet: ObjectSet = {
-    type: "base",
-    objectType: objectType["apiName"] as string,
-  },
-  req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
-): Promise<AggregationsResults<Q, AO>> {
-  return aggregate<Q, AO>(clientCtx, objectType, objectSet, req);
-}
 
 /** @internal */
 export async function aggregate<

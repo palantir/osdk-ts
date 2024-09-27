@@ -15,20 +15,18 @@
  */
 
 import type {
-  InterfaceDefinition,
-  ObjectOrInterfaceDefinition,
-  ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition,
-} from "@osdk/api";
-import type {
   Augment,
   Augments,
+  CompileTimeMetadata,
   FetchPageArgs,
   FetchPageResult,
+  InterfaceDefinition,
   NullabilityAdherence,
+  ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
+  PropertyKeys,
   Result,
-} from "@osdk/client.api";
-import { OntologiesV2 } from "@osdk/internal.foundry";
+} from "@osdk/api";
 import type {
   LoadObjectSetRequestV2,
   ObjectSet,
@@ -39,17 +37,18 @@ import type {
   SearchObjectsForInterfaceRequest,
   SearchOrderByV2,
 } from "@osdk/internal.foundry.core";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 export function augment<
-  X extends ObjectOrInterfaceDefinition,
-  T extends keyof X["properties"] & string,
+  Q extends ObjectOrInterfaceDefinition,
+  T extends PropertyKeys<Q>,
 >(
-  type: X,
+  type: Q,
   ...properties: T[]
-): Augment<X, T> {
+): Augment<Q, T> {
   return { [type.apiName]: properties } as any;
 }
 
@@ -84,8 +83,8 @@ export function objectSetToSearchJsonV2(
 }
 
 async function fetchInterfacePage<
-  Q extends InterfaceDefinition<any, any>,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  Q extends InterfaceDefinition,
+  L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
 >(
@@ -103,7 +102,7 @@ async function fetchInterfacePage<
         augmentedProperties: args.$augment ?? {},
         augmentedSharedPropertyTypes: {},
         otherInterfaceTypes: [],
-        selectedObjectTypes: [],
+        selectedObjectTypes: args.$__EXPERIMENTAL_selectedObjectTypes ?? [],
         selectedSharedPropertyTypes: args.$select as undefined | string[] ?? [],
         where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
       }),
@@ -121,7 +120,7 @@ async function fetchInterfacePage<
 /** @internal */
 export async function fetchPageInternal<
   Q extends ObjectOrInterfaceDefinition,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  L extends PropertyKeys<Q>,
   R extends boolean,
   A extends Augments,
   S extends NullabilityAdherence,
@@ -151,7 +150,7 @@ export async function fetchPageInternal<
 /** @internal */
 export async function fetchPageWithErrorsInternal<
   Q extends ObjectOrInterfaceDefinition,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  L extends PropertyKeys<Q>,
   R extends boolean,
   A extends Augments,
   S extends NullabilityAdherence,
@@ -182,7 +181,7 @@ export async function fetchPageWithErrorsInternal<
  */
 export async function fetchPage<
   Q extends ObjectOrInterfaceDefinition,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
 >(
@@ -200,7 +199,7 @@ export async function fetchPage<
 /** @internal */
 export async function fetchPageWithErrors<
   Q extends ObjectOrInterfaceDefinition,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
 >(
@@ -247,8 +246,8 @@ function applyFetchArgs<
 
 /** @internal */
 export async function fetchObjectPage<
-  Q extends ObjectTypeDefinition<any>,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  Q extends ObjectTypeDefinition,
+  L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
 >(
@@ -278,5 +277,6 @@ export async function fetchObjectPage<
       args.$__EXPERIMENTAL_strictNonNull,
     ),
     nextPageToken: r.nextPageToken,
-  }) as Promise<FetchPageResult<Q, L, R, S>>;
+    totalCount: r.totalCount,
+  }) as unknown as Promise<FetchPageResult<Q, L, R, S>>;
 }

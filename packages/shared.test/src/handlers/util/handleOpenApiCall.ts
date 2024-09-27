@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { OpenApiRequest } from "@osdk/gateway/types";
 import type {
   DefaultBodyType,
   HttpHandler,
@@ -60,9 +59,7 @@ export type ExtractBody<
 
 export type ExtractResponse<
   X extends ((...args: any[]) => Promise<any>),
-> =
-  & (Parameters<X>[0] extends OpenApiRequest<infer R, any> ? R : never)
-  & {};
+> = Awaited<ReturnType<X>> & {};
 
 type ParamsAfterReqCall<
   T extends (reqCall: any, ...args: any[]) => Promise<any>,
@@ -94,30 +91,39 @@ export function handleOpenApiCall<
     responseMediaType?: string;
   } = {} as any;
 
-  const capture: OpenApiRequest<any> = (
-    method,
-    endPoint,
-  ): Promise<any> => {
-    captured = {
-      method: method as any,
-      endPoint,
-    };
+  const capture = {
+    fetch: (url: string, req: Request) => {
+      const u = new URL(url);
+      u.search = ""; // msw doesn't want the search string
+      captured = {
+        method: req.method as any,
+        endPoint: u.toString().replace(/%3A/g, ":"),
+      };
 
-    return Promise.resolve();
+      // fake a response object so the call doesn't fail
+      return {
+        ok: true,
+        json: () => Promise.resolve({}),
+        blob: () => new Blob(),
+      };
+    },
+    baseUrl: "https://stack.palantir.com/",
   };
 
   // we don't care about the promise here, we are just building the url
   openApiCall(
     capture as any,
     ...(names.map(n => `:${n}`) as any),
+    // add a simulated blob in here in case of an upload
+    { type: "", size: 5 },
   );
 
   return http
     [captured.method.toLowerCase() as Lowercase<typeof captured.method>](
-      `https://stack.palantir.com/api${captured.endPoint}`,
+      captured.endPoint,
       authHandlerMiddleware(async (info) => {
         try {
-          const result = await restImpl(
+          const result: any = await restImpl(
             info as any,
           );
 

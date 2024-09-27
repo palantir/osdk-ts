@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import type { Component } from "./Component.js";
-import type { Error } from "./Error.js";
 import type { Namespace } from "./Namespace.js";
 
 export interface ApiSpec {
-  components: Component[];
-  errors: Error[];
   namespaces: Namespace[];
 }

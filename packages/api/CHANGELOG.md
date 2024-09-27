@@ -1,5 +1,98 @@
 # @osdk/api
 
+## 2.0.0-beta.15
+
+### Minor Changes
+
+- dc25fb4: Simplified types
+
+## 2.0.0-beta.14
+
+### Major Changes
+
+- fe9547e: All types from @osdk/client.api merged into @osdk/api
+
+### Minor Changes
+
+- a2c7b37: Enables better tree shaking
+- 1f633f7: Removed dependency on @osdk/client.api
+- d4d6605: Audited and cleaned up deps
+
+### Patch Changes
+
+- Updated dependencies [d4d6605]
+  - @osdk/shared.net@2.0.0-beta.5
+
+## 2.0.0-beta.13
+
+### Minor Changes
+
+- 1488144: Renamed definition types to metadata
+- c28792e: Modified return type of fetchMetadata to return Object/Interface Definitions
+- 26ee3bd: Updates return types of fetchMetadata to be Action and Query Definitions
+- 6ab5d2e: Renamed Min_Definition to \_Definition
+
+### Patch Changes
+
+- @osdk/shared.net@2.0.0-beta.4
+
+## 2.0.0-beta.12
+
+## 2.0.0-beta.11
+
+## 2.0.0-beta.10
+
+### Major Changes
+
+- 1252d94: ESM Only
+- 56df85a: We now generate minimal object and interface types
+
+### Minor Changes
+
+- dc25fb4: Code generation now uses MinQueryDef
+- dc25fb4: Rename MinimumActionDefinition to MinActionDef
+
+### Patch Changes
+
+- Updated dependencies [1252d94]
+  - @osdk/shared.net@2.0.0-beta.3
+
+## 2.0.0-beta.9
+
+### Minor Changes
+
+- b946e00: Emitted action definition is minimal size now
+
+### Patch Changes
+
+- Updated dependencies [01724ae]
+  - @osdk/shared.net@2.0.0-beta.2
+
+## 2.0.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [64818dc]
+  - @osdk/shared.net@2.0.0-beta.1
+
+## 2.0.0-beta.7
+
+### Major Changes
+
+- 9b0617d: Legacy types were removed
+
+## 2.0.0-beta.6
+
+### Major Changes
+
+- 3affe49: Placeholder for breaking changes
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+  - @osdk/gateway@2.5.0-beta.0
+  - @osdk/shared.net@1.13.0-beta.0
+
 ## 1.10.0-beta.1
 
 ### Minor Changes

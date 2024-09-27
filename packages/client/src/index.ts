@@ -20,15 +20,14 @@ export type {
   ActionValidationResponse,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-  InterfaceObjectSet,
   ObjectSet,
   Osdk,
   OsdkObject,
   PageResult,
   Result,
   WhereClause,
-} from "@osdk/client.api";
-export { isOk } from "@osdk/client.api";
+} from "@osdk/api";
+export { isOk } from "@osdk/api";
 export { PalantirApiError } from "@osdk/shared.net.errors";
 
 export { ActionValidationError } from "./actions/ActionValidationError.js";
@@ -37,5 +36,6 @@ export { createAttachmentFromRid } from "./createAttachmentFromRid.js";
 export { createClient } from "./createClient.js";
 export { createPlatformClient } from "./createPlatformClient.js";
 export type { PlatformClient } from "./createPlatformClient.js";
+export type { Logger } from "./Logger.js";
 export { createAttachmentUpload } from "./object/AttachmentUpload.js";
 export type { ResultOrError } from "./ResultOrError.js";

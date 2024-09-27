@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  NumericAggregateOption,
-  OrderedAggregationClause,
-  StringAggregateOption,
-  UnorderedAggregationClause,
-} from "@osdk/client.api";
+import type { AggregationClause } from "@osdk/api";
 import type { AggregationV2 } from "@osdk/internal.foundry.core";
 
 const directionFieldMap = (dir?: "asc" | "desc" | "unordered") =>
@@ -27,7 +22,7 @@ const directionFieldMap = (dir?: "asc" | "desc" | "unordered") =>
 
 /** @internal */
 export function modernToLegacyAggregationClause<
-  AC extends UnorderedAggregationClause<any> | OrderedAggregationClause<any>,
+  AC extends AggregationClause<any>,
 >(select: AC) {
   return Object.entries(select).flatMap<AggregationV2>(
     ([propAndMetric, aggregationType]) => {
@@ -45,7 +40,15 @@ export function modernToLegacyAggregationClause<
 
       return [
         {
-          type: metric as StringAggregateOption | NumericAggregateOption,
+          type: metric as
+            | "approximateDistinct"
+            | "exactDistinct"
+            | "min"
+            | "max"
+            | "sum"
+            | "avg"
+            | "approximateDistinct"
+            | "exactDistinct",
           name: `${property}.${metric}`,
           direction: directionFieldMap(aggregationType),
           field: property,

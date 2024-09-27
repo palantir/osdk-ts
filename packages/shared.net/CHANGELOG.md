@@ -1,5 +1,61 @@
 # @osdk/shared.net
 
+## 2.0.0-beta.5
+
+### Minor Changes
+
+- d4d6605: Audited and cleaned up deps
+
+### Patch Changes
+
+- Updated dependencies [b60e107]
+- Updated dependencies [d4d6605]
+  - @osdk/shared.client@1.0.0-beta.2
+  - @osdk/shared.client.impl@1.0.0-beta.2
+  - @osdk/shared.net.errors@2.0.0-beta.1
+  - @osdk/shared.net.fetch@1.0.0-beta.1
+
+## 2.0.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [5dc1241]
+  - @osdk/shared.client@1.0.0-beta.1
+  - @osdk/shared.client.impl@1.0.0-beta.1
+
+## 2.0.0-beta.3
+
+### Major Changes
+
+- 1252d94: ESM Only
+
+### Patch Changes
+
+- Updated dependencies [1252d94]
+  - @osdk/shared.client.impl@1.0.0-beta.0
+  - @osdk/shared.client@1.0.0-beta.0
+  - @osdk/shared.net.errors@2.0.0-beta.0
+  - @osdk/shared.net.fetch@1.0.0-beta.0
+
+## 2.0.0-beta.2
+
+### Minor Changes
+
+- 01724ae: Remove unnecessary dependency
+
+## 2.0.0-beta.1
+
+### Major Changes
+
+- 64818dc: Drop support for internal gateway package
+
+## 1.13.0-beta.0
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+  - @osdk/gateway@2.5.0-beta.0
+
 ## 1.12.0
 
 ### Minor Changes

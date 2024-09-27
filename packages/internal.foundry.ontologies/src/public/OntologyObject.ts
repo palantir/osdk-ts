@@ -14,23 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  AggregateObjectsRequest,
-  AggregateObjectsResponse,
-  LinkTypeApiName,
-  ListLinkedObjectsResponse,
-  ListObjectsResponse,
-  ObjectTypeApiName,
-  OntologyObject,
-  OntologyRid,
-  OrderBy,
-  PageSize,
-  PageToken,
-  PropertyValueEscapedString,
-  SearchObjectsRequest,
-  SearchObjectsResponse,
-  SelectedPropertyApiName,
-} from "@osdk/internal.foundry.core";
+import type * as _Core from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
@@ -42,15 +26,15 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 const _listObjects: $FoundryPlatformMethod<
   (
-    ontologyRid: OntologyRid,
-    objectType: ObjectTypeApiName,
+    ontologyRid: _Core.OntologyRid,
+    objectType: _Core.ObjectTypeApiName,
     $queryParams: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-      properties: Array<SelectedPropertyApiName>;
-      orderBy?: OrderBy | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
+      properties: Array<_Core.SelectedPropertyApiName>;
+      orderBy?: _Core.OrderBy | undefined;
     },
-  ) => Promise<ListObjectsResponse>
+  ) => Promise<_Core.ListObjectsResponse>
 > = [0, "/v1/ontologies/{0}/objects/{1}", 2];
 
 /**
@@ -81,27 +65,27 @@ const _listObjects: $FoundryPlatformMethod<
 export function listObjects(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontologyRid: OntologyRid,
-    objectType: ObjectTypeApiName,
+    ontologyRid: _Core.OntologyRid,
+    objectType: _Core.ObjectTypeApiName,
 
     $queryParams: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-      properties: Array<SelectedPropertyApiName>;
-      orderBy?: OrderBy | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
+      properties: Array<_Core.SelectedPropertyApiName>;
+      orderBy?: _Core.OrderBy | undefined;
     },
   ]
-): Promise<ListObjectsResponse> {
+): Promise<_Core.ListObjectsResponse> {
   return $foundryPlatformFetch($ctx, _listObjects, ...args);
 }
 
 const _getObject: $FoundryPlatformMethod<
   (
-    ontologyRid: OntologyRid,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    $queryParams: { properties: Array<SelectedPropertyApiName> },
-  ) => Promise<OntologyObject>
+    ontologyRid: _Core.OntologyRid,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    $queryParams: { properties: Array<_Core.SelectedPropertyApiName> },
+  ) => Promise<_Core.OntologyObject>
 > = [0, "/v1/ontologies/{0}/objects/{1}/{2}", 2];
 
 /**
@@ -117,29 +101,29 @@ const _getObject: $FoundryPlatformMethod<
 export function getObject(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontologyRid: OntologyRid,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
+    ontologyRid: _Core.OntologyRid,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
 
-    $queryParams: { properties: Array<SelectedPropertyApiName> },
+    $queryParams: { properties: Array<_Core.SelectedPropertyApiName> },
   ]
-): Promise<OntologyObject> {
+): Promise<_Core.OntologyObject> {
   return $foundryPlatformFetch($ctx, _getObject, ...args);
 }
 
 const _listLinkedObjects: $FoundryPlatformMethod<
   (
-    ontologyRid: OntologyRid,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    linkType: LinkTypeApiName,
+    ontologyRid: _Core.OntologyRid,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    linkType: _Core.LinkTypeApiName,
     $queryParams: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-      properties: Array<SelectedPropertyApiName>;
-      orderBy?: OrderBy | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
+      properties: Array<_Core.SelectedPropertyApiName>;
+      orderBy?: _Core.OrderBy | undefined;
     },
-  ) => Promise<ListLinkedObjectsResponse>
+  ) => Promise<_Core.ListLinkedObjectsResponse>
 > = [0, "/v1/ontologies/{0}/objects/{1}/{2}/links/{3}", 2];
 
 /**
@@ -170,31 +154,31 @@ const _listLinkedObjects: $FoundryPlatformMethod<
 export function listLinkedObjects(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontologyRid: OntologyRid,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    linkType: LinkTypeApiName,
+    ontologyRid: _Core.OntologyRid,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    linkType: _Core.LinkTypeApiName,
 
     $queryParams: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-      properties: Array<SelectedPropertyApiName>;
-      orderBy?: OrderBy | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
+      properties: Array<_Core.SelectedPropertyApiName>;
+      orderBy?: _Core.OrderBy | undefined;
     },
   ]
-): Promise<ListLinkedObjectsResponse> {
+): Promise<_Core.ListLinkedObjectsResponse> {
   return $foundryPlatformFetch($ctx, _listLinkedObjects, ...args);
 }
 
 const _getLinkedObject: $FoundryPlatformMethod<
   (
-    ontologyRid: OntologyRid,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    linkType: LinkTypeApiName,
-    linkedObjectPrimaryKey: PropertyValueEscapedString,
-    $queryParams: { properties: Array<SelectedPropertyApiName> },
-  ) => Promise<OntologyObject>
+    ontologyRid: _Core.OntologyRid,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    linkType: _Core.LinkTypeApiName,
+    linkedObjectPrimaryKey: _Core.PropertyValueEscapedString,
+    $queryParams: { properties: Array<_Core.SelectedPropertyApiName> },
+  ) => Promise<_Core.OntologyObject>
 > = [0, "/v1/ontologies/{0}/objects/{1}/{2}/links/{3}/{4}", 2];
 
 /**
@@ -211,24 +195,24 @@ const _getLinkedObject: $FoundryPlatformMethod<
 export function getLinkedObject(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontologyRid: OntologyRid,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    linkType: LinkTypeApiName,
-    linkedObjectPrimaryKey: PropertyValueEscapedString,
+    ontologyRid: _Core.OntologyRid,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    linkType: _Core.LinkTypeApiName,
+    linkedObjectPrimaryKey: _Core.PropertyValueEscapedString,
 
-    $queryParams: { properties: Array<SelectedPropertyApiName> },
+    $queryParams: { properties: Array<_Core.SelectedPropertyApiName> },
   ]
-): Promise<OntologyObject> {
+): Promise<_Core.OntologyObject> {
   return $foundryPlatformFetch($ctx, _getLinkedObject, ...args);
 }
 
 const _searchObjects: $FoundryPlatformMethod<
   (
-    ontologyRid: OntologyRid,
-    objectType: ObjectTypeApiName,
-    $body: SearchObjectsRequest,
-  ) => Promise<SearchObjectsResponse>
+    ontologyRid: _Core.OntologyRid,
+    objectType: _Core.ObjectTypeApiName,
+    $body: _Core.SearchObjectsRequest,
+  ) => Promise<_Core.SearchObjectsResponse>
 > = [1, "/v1/ontologies/{0}/objects/{1}/search", 1];
 
 /**
@@ -262,20 +246,20 @@ const _searchObjects: $FoundryPlatformMethod<
 export function searchObjects(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontologyRid: OntologyRid,
-    objectType: ObjectTypeApiName,
-    $body: SearchObjectsRequest,
+    ontologyRid: _Core.OntologyRid,
+    objectType: _Core.ObjectTypeApiName,
+    $body: _Core.SearchObjectsRequest,
   ]
-): Promise<SearchObjectsResponse> {
+): Promise<_Core.SearchObjectsResponse> {
   return $foundryPlatformFetch($ctx, _searchObjects, ...args);
 }
 
 const _aggregateObjects: $FoundryPlatformMethod<
   (
-    ontologyRid: OntologyRid,
-    objectType: ObjectTypeApiName,
-    $body: AggregateObjectsRequest,
-  ) => Promise<AggregateObjectsResponse>
+    ontologyRid: _Core.OntologyRid,
+    objectType: _Core.ObjectTypeApiName,
+    $body: _Core.AggregateObjectsRequest,
+  ) => Promise<_Core.AggregateObjectsResponse>
 > = [1, "/v1/ontologies/{0}/objects/{1}/aggregate", 1];
 
 /**
@@ -291,10 +275,10 @@ const _aggregateObjects: $FoundryPlatformMethod<
 export function aggregateObjects(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontologyRid: OntologyRid,
-    objectType: ObjectTypeApiName,
-    $body: AggregateObjectsRequest,
+    ontologyRid: _Core.OntologyRid,
+    objectType: _Core.ObjectTypeApiName,
+    $body: _Core.AggregateObjectsRequest,
   ]
-): Promise<AggregateObjectsResponse> {
+): Promise<_Core.AggregateObjectsResponse> {
   return $foundryPlatformFetch($ctx, _aggregateObjects, ...args);
 }

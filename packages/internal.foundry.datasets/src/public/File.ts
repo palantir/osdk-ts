@@ -14,39 +14,28 @@
  * limitations under the License.
  */
 
-import type {
-  BranchId,
-  DatasetRid,
-  FilePath,
-  PageSize,
-  PageToken,
-} from "@osdk/internal.foundry.core";
+import type * as _Core from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
-import type {
-  File,
-  ListFilesResponse,
-  TransactionRid,
-  TransactionType,
-} from "../_components.js";
+import type * as _Datasets from "../_components.js";
 
 //
 
 const _listFiles: $FoundryPlatformMethod<
   (
-    datasetRid: DatasetRid,
+    datasetRid: _Datasets.DatasetRid,
     $queryParams?: {
-      branchId?: BranchId | undefined;
-      startTransactionRid?: TransactionRid | undefined;
-      endTransactionRid?: TransactionRid | undefined;
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
+      branchId?: _Datasets.BranchId | undefined;
+      startTransactionRid?: _Datasets.TransactionRid | undefined;
+      endTransactionRid?: _Datasets.TransactionRid | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
     },
-  ) => Promise<ListFilesResponse>
+  ) => Promise<_Datasets.ListFilesResponse>
 > = [0, "/v1/datasets/{0}/files", 2];
 
 /**
@@ -85,31 +74,31 @@ const _listFiles: $FoundryPlatformMethod<
 export function listFiles(
   $ctx: $Client | $ClientContext,
   ...args: [
-    datasetRid: DatasetRid,
+    datasetRid: _Datasets.DatasetRid,
 
     $queryParams?: {
-      branchId?: BranchId | undefined;
-      startTransactionRid?: TransactionRid | undefined;
-      endTransactionRid?: TransactionRid | undefined;
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
+      branchId?: _Datasets.BranchId | undefined;
+      startTransactionRid?: _Datasets.TransactionRid | undefined;
+      endTransactionRid?: _Datasets.TransactionRid | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
     },
   ]
-): Promise<ListFilesResponse> {
+): Promise<_Datasets.ListFilesResponse> {
   return $foundryPlatformFetch($ctx, _listFiles, ...args);
 }
 
 const _uploadFile: $FoundryPlatformMethod<
   (
-    datasetRid: DatasetRid,
+    datasetRid: _Datasets.DatasetRid,
     $body: Blob,
     $queryParams: {
-      filePath: FilePath;
-      branchId?: BranchId | undefined;
-      transactionType?: TransactionType | undefined;
-      transactionRid?: TransactionRid | undefined;
+      filePath: _Core.FilePath;
+      branchId?: _Datasets.BranchId | undefined;
+      transactionType?: _Datasets.TransactionType | undefined;
+      transactionRid?: _Datasets.TransactionRid | undefined;
     },
-  ) => Promise<File>
+  ) => Promise<_Datasets.File>
 > = [1, "/v1/datasets/{0}/files:upload", 3, "*/*"];
 
 /**
@@ -142,29 +131,29 @@ const _uploadFile: $FoundryPlatformMethod<
 export function uploadFile(
   $ctx: $Client | $ClientContext,
   ...args: [
-    datasetRid: DatasetRid,
+    datasetRid: _Datasets.DatasetRid,
     $body: Blob,
     $queryParams: {
-      filePath: FilePath;
-      branchId?: BranchId | undefined;
-      transactionType?: TransactionType | undefined;
-      transactionRid?: TransactionRid | undefined;
+      filePath: _Core.FilePath;
+      branchId?: _Datasets.BranchId | undefined;
+      transactionType?: _Datasets.TransactionType | undefined;
+      transactionRid?: _Datasets.TransactionRid | undefined;
     },
   ]
-): Promise<File> {
+): Promise<_Datasets.File> {
   return $foundryPlatformFetch($ctx, _uploadFile, ...args);
 }
 
 const _getFileMetadata: $FoundryPlatformMethod<
   (
-    datasetRid: DatasetRid,
-    filePath: FilePath,
+    datasetRid: _Datasets.DatasetRid,
+    filePath: _Core.FilePath,
     $queryParams?: {
-      branchId?: BranchId | undefined;
-      startTransactionRid?: TransactionRid | undefined;
-      endTransactionRid?: TransactionRid | undefined;
+      branchId?: _Datasets.BranchId | undefined;
+      startTransactionRid?: _Datasets.TransactionRid | undefined;
+      endTransactionRid?: _Datasets.TransactionRid | undefined;
     },
-  ) => Promise<File>
+  ) => Promise<_Datasets.File>
 > = [0, "/v1/datasets/{0}/files/{1}", 2];
 
 /**
@@ -201,26 +190,26 @@ const _getFileMetadata: $FoundryPlatformMethod<
 export function getFileMetadata(
   $ctx: $Client | $ClientContext,
   ...args: [
-    datasetRid: DatasetRid,
-    filePath: FilePath,
+    datasetRid: _Datasets.DatasetRid,
+    filePath: _Core.FilePath,
 
     $queryParams?: {
-      branchId?: BranchId | undefined;
-      startTransactionRid?: TransactionRid | undefined;
-      endTransactionRid?: TransactionRid | undefined;
+      branchId?: _Datasets.BranchId | undefined;
+      startTransactionRid?: _Datasets.TransactionRid | undefined;
+      endTransactionRid?: _Datasets.TransactionRid | undefined;
     },
   ]
-): Promise<File> {
+): Promise<_Datasets.File> {
   return $foundryPlatformFetch($ctx, _getFileMetadata, ...args);
 }
 
 const _deleteFile: $FoundryPlatformMethod<
   (
-    datasetRid: DatasetRid,
-    filePath: FilePath,
+    datasetRid: _Datasets.DatasetRid,
+    filePath: _Core.FilePath,
     $queryParams?: {
-      branchId?: BranchId | undefined;
-      transactionRid?: TransactionRid | undefined;
+      branchId?: _Datasets.BranchId | undefined;
+      transactionRid?: _Datasets.TransactionRid | undefined;
     },
   ) => Promise<void>
 > = [3, "/v1/datasets/{0}/files/{1}", 2];
@@ -251,12 +240,12 @@ const _deleteFile: $FoundryPlatformMethod<
 export function deleteFile(
   $ctx: $Client | $ClientContext,
   ...args: [
-    datasetRid: DatasetRid,
-    filePath: FilePath,
+    datasetRid: _Datasets.DatasetRid,
+    filePath: _Core.FilePath,
 
     $queryParams?: {
-      branchId?: BranchId | undefined;
-      transactionRid?: TransactionRid | undefined;
+      branchId?: _Datasets.BranchId | undefined;
+      transactionRid?: _Datasets.TransactionRid | undefined;
     },
   ]
 ): Promise<void> {
@@ -265,12 +254,12 @@ export function deleteFile(
 
 const _getFileContent: $FoundryPlatformMethod<
   (
-    datasetRid: DatasetRid,
-    filePath: FilePath,
+    datasetRid: _Datasets.DatasetRid,
+    filePath: _Core.FilePath,
     $queryParams?: {
-      branchId?: BranchId | undefined;
-      startTransactionRid?: TransactionRid | undefined;
-      endTransactionRid?: TransactionRid | undefined;
+      branchId?: _Datasets.BranchId | undefined;
+      startTransactionRid?: _Datasets.TransactionRid | undefined;
+      endTransactionRid?: _Datasets.TransactionRid | undefined;
     },
   ) => Promise<Blob>
 > = [0, "/v1/datasets/{0}/files/{1}/content", 2, , "*/*"];
@@ -310,13 +299,13 @@ const _getFileContent: $FoundryPlatformMethod<
 export function getFileContent(
   $ctx: $Client | $ClientContext,
   ...args: [
-    datasetRid: DatasetRid,
-    filePath: FilePath,
+    datasetRid: _Datasets.DatasetRid,
+    filePath: _Core.FilePath,
 
     $queryParams?: {
-      branchId?: BranchId | undefined;
-      startTransactionRid?: TransactionRid | undefined;
-      endTransactionRid?: TransactionRid | undefined;
+      branchId?: _Datasets.BranchId | undefined;
+      startTransactionRid?: _Datasets.TransactionRid | undefined;
+      endTransactionRid?: _Datasets.TransactionRid | undefined;
     },
   ]
 ): Promise<Blob> {

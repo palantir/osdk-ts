@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export * from "./generated/third-party-application-service/index.js";
+export type * from "./generated/third-party-application-service/index.js";
+export {};

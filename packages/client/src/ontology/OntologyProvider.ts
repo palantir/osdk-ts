@@ -15,11 +15,10 @@
  */
 
 import type {
-  ActionDefinition,
-  InterfaceDefinition,
-  ObjectOrInterfaceDefinition,
-  ObjectTypeDefinition,
-  QueryDefinition,
+  ActionMetadata,
+  InterfaceMetadata,
+  ObjectMetadata,
+  QueryMetadata,
 } from "@osdk/api";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
@@ -27,14 +26,10 @@ export const InterfaceDefinitions = Symbol(
   process.env.MODE !== "production" ? "InterfaceDefinitions" : undefined,
 );
 
-export interface FetchedObjectTypeDefinition<K extends string, N = unknown>
-  extends ObjectTypeDefinition<K, N>
-{
-  rid: string;
-
+export interface FetchedObjectTypeDefinition extends ObjectMetadata {
   // we keep this here so we can depend on these synchronously
   [InterfaceDefinitions]: {
-    [key: string]: { def: InterfaceDefinition<any> };
+    [key: string]: { def: InterfaceMetadata };
   };
 }
 
@@ -48,7 +43,7 @@ export interface OntologyProvider {
    */
   getObjectDefinition: (
     apiName: string,
-  ) => Promise<FetchedObjectTypeDefinition<string>>;
+  ) => Promise<FetchedObjectTypeDefinition>;
 
   /**
    * Returns the current known definition for the interface.
@@ -59,20 +54,11 @@ export interface OntologyProvider {
    */
   getInterfaceDefinition: (
     apiName: string,
-  ) => Promise<InterfaceDefinition<any, any>>;
+  ) => Promise<InterfaceMetadata>;
 
-  /**
-   * If the OntologyProvider supports seeding, this method will seed the provider with the given definition.
-   *
-   * @param definition
-   * @returns
-   */
-  maybeSeed: (
-    definition:
-      | ObjectOrInterfaceDefinition
-      | ActionDefinition<string, string, any>
-      | QueryDefinition<any, any>,
-  ) => void;
+  getQueryDefinition: (apiName: string) => Promise<QueryMetadata<any, any>>;
+
+  getActionDefinition: (apiName: string) => Promise<ActionMetadata>;
 }
 
 export type OntologyProviderFactory<

@@ -28,7 +28,7 @@ import type { InterfaceType } from "./types.js";
 
 describe("Ontology Defining", () => {
   beforeEach(() => {
-    defineOntology("", () => {});
+    defineOntology("com.palantir.", () => {});
   });
 
   describe("ValueTypes", () => {
@@ -104,6 +104,7 @@ describe("Ontology Defining", () => {
           }
         `);
     });
+    defineOntology("com.palantir.", () => {});
   });
 
   describe("Interfaces", () => {
@@ -112,7 +113,7 @@ describe("Ontology Defining", () => {
       expect(() => {
         defineInterface({ apiName: "Foo" });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Interface Foo already exists]`,
+        `[Error: Invariant failed: Interface com.palantir.Foo already exists]`,
       );
     });
 
@@ -148,12 +149,12 @@ describe("Ontology Defining", () => {
               "objectTypes": {},
             },
             "interfaceTypes": {
-              "Foo": {
+              "com.palantir.Foo": {
                 "interfaceType": {
                   "allExtendsInterfaces": [],
                   "allLinks": [],
                   "allProperties": [],
-                  "apiName": "Foo",
+                  "apiName": "com.palantir.Foo",
                   "displayMetadata": {
                     "description": "Foo",
                     "displayName": "Foo",
@@ -164,7 +165,7 @@ describe("Ontology Defining", () => {
                   "properties": [
                     {
                       "aliases": [],
-                      "apiName": "foo",
+                      "apiName": "com.palantir.foo",
                       "baseFormatter": undefined,
                       "dataConstraints": undefined,
                       "displayMetadata": {
@@ -184,7 +185,16 @@ describe("Ontology Defining", () => {
                         },
                         "type": "string",
                       },
-                      "typeClasses": [],
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
                       "valueType": undefined,
                     },
                   ],
@@ -196,10 +206,10 @@ describe("Ontology Defining", () => {
               },
             },
             "sharedPropertyTypes": {
-              "foo": {
+              "com.palantir.foo": {
                 "sharedPropertyType": {
                   "aliases": [],
-                  "apiName": "foo",
+                  "apiName": "com.palantir.foo",
                   "baseFormatter": undefined,
                   "dataConstraints": undefined,
                   "displayMetadata": {
@@ -219,7 +229,16 @@ describe("Ontology Defining", () => {
                     },
                     "type": "string",
                   },
-                  "typeClasses": [],
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE",
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE",
+                    },
+                  ],
                   "valueType": undefined,
                 },
               },
@@ -243,10 +262,10 @@ describe("Ontology Defining", () => {
             },
             "interfaceTypes": {},
             "sharedPropertyTypes": {
-              "foo": {
+              "com.palantir.foo": {
                 "sharedPropertyType": {
                   "aliases": [],
-                  "apiName": "foo",
+                  "apiName": "com.palantir.foo",
                   "baseFormatter": undefined,
                   "dataConstraints": undefined,
                   "displayMetadata": {
@@ -266,7 +285,16 @@ describe("Ontology Defining", () => {
                     },
                     "type": "string",
                   },
-                  "typeClasses": [],
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE",
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE",
+                    },
+                  ],
                   "valueType": undefined,
                 },
               },
@@ -282,7 +310,7 @@ describe("Ontology Defining", () => {
             },
           });
         }).toThrowErrorMatchingInlineSnapshot(
-          `[Error: Invariant failed: Shared property type foo already exists]`,
+          `[Error: Invariant failed: Shared property type com.palantir.foo already exists]`,
         );
       });
     });
@@ -313,12 +341,12 @@ describe("Ontology Defining", () => {
             "objectTypes": {},
           },
           "interfaceTypes": {
-            "A": {
+            "com.palantir.A": {
               "interfaceType": {
                 "allExtendsInterfaces": [],
                 "allLinks": [],
                 "allProperties": [],
-                "apiName": "A",
+                "apiName": "com.palantir.A",
                 "displayMetadata": {
                   "description": "A",
                   "displayName": "A",
@@ -329,11 +357,11 @@ describe("Ontology Defining", () => {
                   {
                     "cardinality": "SINGLE",
                     "linkedEntityTypeId": {
-                      "interfaceType": "B",
+                      "interfaceType": "com.palantir.B",
                       "type": "interfaceType",
                     },
                     "metadata": {
-                      "apiName": "singleLink",
+                      "apiName": "com.palantir.singleLink",
                       "description": "singleLink",
                       "displayName": "singleLink",
                     },
@@ -347,12 +375,12 @@ describe("Ontology Defining", () => {
                 },
               },
             },
-            "B": {
+            "com.palantir.B": {
               "interfaceType": {
                 "allExtendsInterfaces": [],
                 "allLinks": [],
                 "allProperties": [],
-                "apiName": "B",
+                "apiName": "com.palantir.B",
                 "displayMetadata": {
                   "description": "B",
                   "displayName": "B",
@@ -388,12 +416,12 @@ describe("Ontology Defining", () => {
             "objectTypes": {},
           },
           "interfaceTypes": {
-            "A": {
+            "com.palantir.A": {
               "interfaceType": {
                 "allExtendsInterfaces": [],
                 "allLinks": [],
                 "allProperties": [],
-                "apiName": "A",
+                "apiName": "com.palantir.A",
                 "displayMetadata": {
                   "description": "A",
                   "displayName": "A",
@@ -404,11 +432,11 @@ describe("Ontology Defining", () => {
                   {
                     "cardinality": "MANY",
                     "linkedEntityTypeId": {
-                      "interfaceType": "B",
+                      "interfaceType": "com.palantir.B",
                       "type": "interfaceType",
                     },
                     "metadata": {
-                      "apiName": "manyLink",
+                      "apiName": "com.palantir.manyLink",
                       "description": "manyLink",
                       "displayName": "manyLink",
                     },
@@ -422,12 +450,12 @@ describe("Ontology Defining", () => {
                 },
               },
             },
-            "B": {
+            "com.palantir.B": {
               "interfaceType": {
                 "allExtendsInterfaces": [],
                 "allLinks": [],
                 "allProperties": [],
-                "apiName": "B",
+                "apiName": "com.palantir.B",
                 "displayMetadata": {
                   "description": "B",
                   "displayName": "B",
@@ -462,7 +490,7 @@ describe("Ontology Defining", () => {
           type: "string",
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Shared property type foo already exists]`,
+        `[Error: Invariant failed: Shared property type com.palantir.foo already exists]`,
       );
     });
   });
@@ -479,6 +507,7 @@ describe("Ontology Defining", () => {
       properties: {
         fooSpt,
       },
+      icon: { color: "#00000", locator: "airplane" },
     });
 
     expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -489,23 +518,29 @@ describe("Ontology Defining", () => {
           "objectTypes": {},
         },
         "interfaceTypes": {
-          "FooInterface": {
+          "com.palantir.FooInterface": {
             "interfaceType": {
               "allExtendsInterfaces": [],
               "allLinks": [],
               "allProperties": [],
-              "apiName": "FooInterface",
+              "apiName": "com.palantir.FooInterface",
               "displayMetadata": {
                 "description": "Foo Interface",
                 "displayName": "Foo Interface",
-                "icon": undefined,
+                "icon": {
+                  "blueprint": {
+                    "color": "#00000",
+                    "locator": "airplane",
+                  },
+                  "type": "blueprint",
+                },
               },
               "extendsInterfaces": [],
               "links": [],
               "properties": [
                 {
                   "aliases": [],
-                  "apiName": "fooSpt",
+                  "apiName": "com.palantir.fooSpt",
                   "baseFormatter": undefined,
                   "dataConstraints": undefined,
                   "displayMetadata": {
@@ -525,7 +560,16 @@ describe("Ontology Defining", () => {
                     },
                     "type": "string",
                   },
-                  "typeClasses": [],
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE",
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE",
+                    },
+                  ],
                   "valueType": undefined,
                 },
               ],
@@ -537,10 +581,10 @@ describe("Ontology Defining", () => {
           },
         },
         "sharedPropertyTypes": {
-          "fooSpt": {
+          "com.palantir.fooSpt": {
             "sharedPropertyType": {
               "aliases": [],
-              "apiName": "fooSpt",
+              "apiName": "com.palantir.fooSpt",
               "baseFormatter": undefined,
               "dataConstraints": undefined,
               "displayMetadata": {
@@ -560,7 +604,16 @@ describe("Ontology Defining", () => {
                 },
                 "type": "string",
               },
-              "typeClasses": [],
+              "typeClasses": [
+                {
+                  "kind": "render_hint",
+                  "name": "SELECTABLE",
+                },
+                {
+                  "kind": "render_hint",
+                  "name": "SORTABLE",
+                },
+              ],
               "valueType": undefined,
             },
           },

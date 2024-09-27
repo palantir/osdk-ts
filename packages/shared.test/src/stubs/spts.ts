@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { SharedPropertyType } from "@osdk/gateway/types";
+import type { SharedPropertyType } from "@osdk/internal.foundry.core";
 
 export const fooSpt: SharedPropertyType = {
   rid: "ri.sharedPropertyType.main.sharedPropertyType.1",

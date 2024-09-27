@@ -1,6 +1,6 @@
 {
   "name": "@osdk/shared.client",
-  "version": "0.0.0",
+  "version": "1.0.0-beta.2",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -8,12 +8,12 @@
   },
   "exports": {
     ".": {
-      "require": "./index.cjs",
-      "import": "./index.mjs"
+      "import": "./index.js",
+      "browser": "./index.js"
     }
   },
   "scripts": {
-    "check-attw": "monorepo.tool.attw both",
+    "check-attw": "monorepo.tool.attw esm",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)"
@@ -33,9 +33,9 @@
     "templates",
     "*.d.{c,m}ts",
     "index.cjs",
-    "index.mjs"
+    "index.mjs",
+    "index.js"
   ],
-  "main": "index.cjs",
   "module": "index.mjs",
   "types": "index.d.mts",
   "type": "module"

@@ -28,8 +28,8 @@ export function generateImports(
   const imports = [...groups.entries()].filter(([ns]) =>
     namespaceMapping.get(ns) !== SKIP
   )
-    .map(([ns, components]) => {
-      return `import { ${components.map(a => a.name).join(",")} } from "${
+    .map(([ns]) => {
+      return `import type * as _${ns.name} from "${
         namespaceMapping.get(ns) as string ?? ns.packageName
       }";`;
     }).join("\n");

@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { InterfaceType, SharedPropertyType } from "@osdk/gateway/types";
+import type {
+  InterfaceType,
+  SharedPropertyType,
+} from "@osdk/internal.foundry.core";
 import { format } from "prettier";
 import { describe, expect, it } from "vitest";
 import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
@@ -105,41 +108,10 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     );
     expect(formattedCode).toMatchInlineSnapshot(`
       "import type {
-        AggregateOpts as $AggregateOpts,
-        AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-        AggregationsResults as $AggregationsResults,
-        Augments as $Augments,
-        ConvertProps as $ConvertProps,
-        DefaultToFalse as $DefaultToFalse,
-        FetchPageArgs as $FetchPageArgs,
-        FetchPageResult as $FetchPageResult,
-        IsAny as $IsAny,
-        LinkedType as $LinkedType,
-        LinkNames as $LinkNames,
-        NullabilityAdherence as $NullabilityAdherence,
-        NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
+        InterfaceDefinition as $InterfaceDefinition,
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
-        OsdkObject as $OsdkObject,
-        OsdkObjectLinksEntry as $OsdkObjectLinksEntry,
-        OsdkObjectLinksObject as $OsdkObjectLinksObject,
-        OsdkObjectPropertyType as $OsdkObjectPropertyType,
-        PageResult as $PageResult,
-        PropertyValueClientToWire as $PropertyValueClientToWire,
         PropertyValueWireToClient as $PropType,
-        Result as $Result,
-        SelectArg as $SelectArg,
-        SingleLinkAccessor as $SingleLinkAccessor,
-        SingleOsdkResult as $SingleOsdkResult,
-        ValidToFrom as $ValidToFrom,
-        WhereClause as $WhereClause,
-      } from "@osdk/client.api";
-      import type * as $clientApi from "@osdk/client.api";
-      import type {
-        ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-        ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
-        ObjectTypeDefinition as $ObjectTypeDefinition,
-        InterfaceDefinition as $InterfaceDefinition,
       } from "@osdk/api";
 
       export type OsdkObjectLinks$Bar = {};
@@ -154,62 +126,24 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           readonly bar: $PropType["integer"] | undefined;
         }
 
-        export interface ObjectSet extends $ObjectSet<Bar.Definition, Bar.ObjectSet> {
-          readonly aggregate: <const AO extends $AggregateOpts<Bar.Definition>>(
-            req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Bar.Definition, AO>,
-          ) => Promise<$AggregationsResults<Bar.Definition, AO>>;
+        export interface ObjectSet extends $ObjectSet<Bar, Bar.ObjectSet> {}
 
-          readonly pivotTo: <const L extends $LinkNames<Bar.Definition>>(
-            type: L,
-          ) => $LinkedType<Bar.Definition, L>["objectSet"];
+        export type OsdkObject<
+          OPTIONS extends never | "$notStrict" | "$rid" = never,
+          K extends keyof Bar.Props = keyof Bar.Props,
+        > = $Osdk<Bar, K | OPTIONS>;
+      }
 
-          readonly fetchPage: <
-            const L extends Bar.PropertyKeys,
-            const R extends boolean,
-            const A extends $Augments,
-            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-          >(
-            args?: $FetchPageArgs<Bar.Definition, L, R, A, S>,
-          ) => Promise<
-            $PageResult<
-              Bar.OsdkObject<
-                | (S extends false ? "$notStrict" : never)
-                | ($DefaultToFalse<R> extends false ? never : "$rid"),
-                $IsAny<L> extends true ? Bar.PropertyKeys : L
-              >
-            >
-          >;
-
-          readonly fetchPageWithErrors: <
-            const L extends Bar.PropertyKeys,
-            const R extends boolean,
-            const A extends $Augments,
-            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-          >(
-            args?: $FetchPageArgs<Bar.Definition, L, R, A, S>,
-          ) => Promise<
-            $Result<
-              $PageResult<
-                Bar.OsdkObject<
-                  | (S extends false ? "$notStrict" : never)
-                  | ($DefaultToFalse<R> extends false ? never : "$rid"),
-                  $IsAny<L> extends true ? Bar.PropertyKeys : L
-                >
-              >
-            >
-          >;
-
-          readonly asyncIter: () => AsyncIterableIterator<Bar.OsdkObject>;
-        }
-
-        export interface Definition
-          extends $InterfaceDefinition<"Bar", Bar.Definition>,
-            $VersionBound<$ExpectedClientVersion> {
-          osdkMetadata: typeof $osdkMetadata;
+      export interface Bar extends $InterfaceDefinition {
+        osdkMetadata: typeof $osdkMetadata;
+        type: "interface";
+        apiName: "Bar";
+        __DefinitionMetadata?: {
           objectSet: Bar.ObjectSet;
           props: Bar.Props;
           linksType: OsdkObjectLinks$Bar;
           strictProps: Bar.StrictProps;
+          apiName: "Bar";
           displayName: "Bar";
           implements: [];
           links: {};
@@ -219,52 +153,15 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
              */
             bar: $PropertyDef<"integer", "nullable", "single">;
           };
-        }
-
-        export type OsdkObject<
-          OPTIONS extends never | "$notStrict" | "$rid" = never,
-          K extends keyof Bar.Props = keyof Bar.Props,
-        > = $Osdk<Bar.Definition, K | OPTIONS> &
-          Pick<
-            [OPTIONS] extends [never]
-              ? Bar.StrictProps
-              : OPTIONS extends "$notStrict"
-                ? Bar.Props
-                : Bar.StrictProps,
-            K
-          > & {
-            readonly $link: OsdkObjectLinks$Bar;
-            readonly $title: string | undefined; // FIXME
-            readonly $primaryKey: string | number;
-
-            readonly $as: <NEW_Q extends $ValidToFrom<Bar.Definition>>(
-              type: NEW_Q | string,
-            ) => $Osdk<NEW_Q, $ConvertProps<Bar.Definition, NEW_Q, K>>;
-          } & $OsdkObject<"Bar">;
+          rid: "BarRid";
+          type: "interface";
+        };
       }
 
-      /** @deprecated use Bar.Definition **/
-      export type Bar = Bar.Definition;
-
-      export const Bar: Bar.Definition = {
-        osdkMetadata: $osdkMetadata,
-        objectSet: undefined as any,
-        props: undefined as any,
-        linksType: undefined as any,
-        strictProps: undefined as any,
-        apiName: "Bar",
-        displayName: "Bar",
-        implements: [],
-        links: {},
-        properties: {
-          bar: {
-            displayName: "bar",
-            multiplicity: false,
-            type: "integer",
-            nullable: true,
-          },
-        },
+      export const Bar: Bar = {
         type: "interface",
+        apiName: "Bar",
+        osdkMetadata: $osdkMetadata,
       };
       "
     `);
@@ -296,41 +193,10 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     );
     expect(formattedCode).toMatchInlineSnapshot(`
       "import type {
-        AggregateOpts as $AggregateOpts,
-        AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-        AggregationsResults as $AggregationsResults,
-        Augments as $Augments,
-        ConvertProps as $ConvertProps,
-        DefaultToFalse as $DefaultToFalse,
-        FetchPageArgs as $FetchPageArgs,
-        FetchPageResult as $FetchPageResult,
-        IsAny as $IsAny,
-        LinkedType as $LinkedType,
-        LinkNames as $LinkNames,
-        NullabilityAdherence as $NullabilityAdherence,
-        NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
+        InterfaceDefinition as $InterfaceDefinition,
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
-        OsdkObject as $OsdkObject,
-        OsdkObjectLinksEntry as $OsdkObjectLinksEntry,
-        OsdkObjectLinksObject as $OsdkObjectLinksObject,
-        OsdkObjectPropertyType as $OsdkObjectPropertyType,
-        PageResult as $PageResult,
-        PropertyValueClientToWire as $PropertyValueClientToWire,
         PropertyValueWireToClient as $PropType,
-        Result as $Result,
-        SelectArg as $SelectArg,
-        SingleLinkAccessor as $SingleLinkAccessor,
-        SingleOsdkResult as $SingleOsdkResult,
-        ValidToFrom as $ValidToFrom,
-        WhereClause as $WhereClause,
-      } from "@osdk/client.api";
-      import type * as $clientApi from "@osdk/client.api";
-      import type {
-        ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-        ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
-        ObjectTypeDefinition as $ObjectTypeDefinition,
-        InterfaceDefinition as $InterfaceDefinition,
       } from "@osdk/api";
 
       export type OsdkObjectLinks$Foo = {};
@@ -345,65 +211,24 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           readonly foo: $PropType["integer"] | undefined;
         }
 
-        export interface ObjectSet extends $ObjectSet<Foo.Definition, Foo.ObjectSet> {
-          readonly aggregate: <const AO extends $AggregateOpts<Foo.Definition>>(
-            req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
-              Foo.Definition,
-              AO
-            >,
-          ) => Promise<$AggregationsResults<Foo.Definition, AO>>;
+        export interface ObjectSet extends $ObjectSet<Foo, Foo.ObjectSet> {}
 
-          readonly pivotTo: <const L extends $LinkNames<Foo.Definition>>(
-            type: L,
-          ) => $LinkedType<Foo.Definition, L>["objectSet"];
+        export type OsdkObject<
+          OPTIONS extends never | "$notStrict" | "$rid" = never,
+          K extends keyof Foo.Props = keyof Foo.Props,
+        > = $Osdk<Foo, K | OPTIONS>;
+      }
 
-          readonly fetchPage: <
-            const L extends Foo.PropertyKeys,
-            const R extends boolean,
-            const A extends $Augments,
-            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-          >(
-            args?: $FetchPageArgs<Foo.Definition, L, R, A, S>,
-          ) => Promise<
-            $PageResult<
-              Foo.OsdkObject<
-                | (S extends false ? "$notStrict" : never)
-                | ($DefaultToFalse<R> extends false ? never : "$rid"),
-                $IsAny<L> extends true ? Foo.PropertyKeys : L
-              >
-            >
-          >;
-
-          readonly fetchPageWithErrors: <
-            const L extends Foo.PropertyKeys,
-            const R extends boolean,
-            const A extends $Augments,
-            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-          >(
-            args?: $FetchPageArgs<Foo.Definition, L, R, A, S>,
-          ) => Promise<
-            $Result<
-              $PageResult<
-                Foo.OsdkObject<
-                  | (S extends false ? "$notStrict" : never)
-                  | ($DefaultToFalse<R> extends false ? never : "$rid"),
-                  $IsAny<L> extends true ? Foo.PropertyKeys : L
-                >
-              >
-            >
-          >;
-
-          readonly asyncIter: () => AsyncIterableIterator<Foo.OsdkObject>;
-        }
-
-        export interface Definition
-          extends $InterfaceDefinition<"Foo", Foo.Definition>,
-            $VersionBound<$ExpectedClientVersion> {
-          osdkMetadata: typeof $osdkMetadata;
+      export interface Foo extends $InterfaceDefinition {
+        osdkMetadata: typeof $osdkMetadata;
+        type: "interface";
+        apiName: "Foo";
+        __DefinitionMetadata?: {
           objectSet: Foo.ObjectSet;
           props: Foo.Props;
           linksType: OsdkObjectLinks$Foo;
           strictProps: Foo.StrictProps;
+          apiName: "Foo";
           description: "Foo interface desc";
           displayName: "Foo interface dn";
           implements: ["Parent"];
@@ -415,61 +240,15 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
              */
             foo: $PropertyDef<"integer", "nullable", "single">;
           };
-        }
-
-        export type OsdkObject<
-          OPTIONS extends never | "$notStrict" | "$rid" = never,
-          K extends keyof Foo.Props = keyof Foo.Props,
-        > = $Osdk<Foo.Definition, K | OPTIONS> &
-          Pick<
-            [OPTIONS] extends [never]
-              ? Foo.StrictProps
-              : OPTIONS extends "$notStrict"
-                ? Foo.Props
-                : Foo.StrictProps,
-            K
-          > & {
-            readonly $link: OsdkObjectLinks$Foo;
-            readonly $title: string | undefined; // FIXME
-            readonly $primaryKey: string | number;
-
-            readonly $as: <NEW_Q extends $ValidToFrom<Foo.Definition>>(
-              type: NEW_Q | string,
-            ) => $Osdk<NEW_Q, $ConvertProps<Foo.Definition, NEW_Q, K>>;
-          } & $OsdkObject<"Foo">;
+          rid: "FooRid";
+          type: "interface";
+        };
       }
 
-      /** @deprecated use Foo.Definition **/
-      export type Foo = Foo.Definition;
-
-      export const Foo: Foo.Definition = {
-        osdkMetadata: $osdkMetadata,
-        objectSet: undefined as any,
-        props: undefined as any,
-        linksType: undefined as any,
-        strictProps: undefined as any,
-        apiName: "Foo",
-        description: "Foo interface desc",
-        displayName: "Foo interface dn",
-        implements: ["Parent"],
-        links: {},
-        properties: {
-          bar: {
-            displayName: "bar property dn",
-            multiplicity: false,
-            description: "bar property desc",
-            type: "integer",
-            nullable: true,
-          },
-          foo: {
-            displayName: "foo property dn",
-            multiplicity: false,
-            description: "foo property desc",
-            type: "integer",
-            nullable: true,
-          },
-        },
+      export const Foo: Foo = {
         type: "interface",
+        apiName: "Foo",
+        osdkMetadata: $osdkMetadata,
       };
       "
     `);
@@ -501,41 +280,10 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     );
     expect(formattedCode).toMatchInlineSnapshot(`
       "import type {
-        AggregateOpts as $AggregateOpts,
-        AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-        AggregationsResults as $AggregationsResults,
-        Augments as $Augments,
-        ConvertProps as $ConvertProps,
-        DefaultToFalse as $DefaultToFalse,
-        FetchPageArgs as $FetchPageArgs,
-        FetchPageResult as $FetchPageResult,
-        IsAny as $IsAny,
-        LinkedType as $LinkedType,
-        LinkNames as $LinkNames,
-        NullabilityAdherence as $NullabilityAdherence,
-        NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
+        InterfaceDefinition as $InterfaceDefinition,
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
-        OsdkObject as $OsdkObject,
-        OsdkObjectLinksEntry as $OsdkObjectLinksEntry,
-        OsdkObjectLinksObject as $OsdkObjectLinksObject,
-        OsdkObjectPropertyType as $OsdkObjectPropertyType,
-        PageResult as $PageResult,
-        PropertyValueClientToWire as $PropertyValueClientToWire,
         PropertyValueWireToClient as $PropType,
-        Result as $Result,
-        SelectArg as $SelectArg,
-        SingleLinkAccessor as $SingleLinkAccessor,
-        SingleOsdkResult as $SingleOsdkResult,
-        ValidToFrom as $ValidToFrom,
-        WhereClause as $WhereClause,
-      } from "@osdk/client.api";
-      import type * as $clientApi from "@osdk/client.api";
-      import type {
-        ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
-        ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
-        ObjectTypeDefinition as $ObjectTypeDefinition,
-        InterfaceDefinition as $InterfaceDefinition,
       } from "@osdk/api";
 
       export type OsdkObjectLinks$Foo = {};
@@ -552,65 +300,24 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           readonly foo: $PropType["integer"] | undefined;
         }
 
-        export interface ObjectSet extends $ObjectSet<Foo.Definition, Foo.ObjectSet> {
-          readonly aggregate: <const AO extends $AggregateOpts<Foo.Definition>>(
-            req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
-              Foo.Definition,
-              AO
-            >,
-          ) => Promise<$AggregationsResults<Foo.Definition, AO>>;
+        export interface ObjectSet extends $ObjectSet<Foo, Foo.ObjectSet> {}
 
-          readonly pivotTo: <const L extends $LinkNames<Foo.Definition>>(
-            type: L,
-          ) => $LinkedType<Foo.Definition, L>["objectSet"];
+        export type OsdkObject<
+          OPTIONS extends never | "$notStrict" | "$rid" = never,
+          K extends keyof Foo.Props = keyof Foo.Props,
+        > = $Osdk<Foo, K | OPTIONS>;
+      }
 
-          readonly fetchPage: <
-            const L extends Foo.PropertyKeys,
-            const R extends boolean,
-            const A extends $Augments,
-            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-          >(
-            args?: $FetchPageArgs<Foo.Definition, L, R, A, S>,
-          ) => Promise<
-            $PageResult<
-              Foo.OsdkObject<
-                | (S extends false ? "$notStrict" : never)
-                | ($DefaultToFalse<R> extends false ? never : "$rid"),
-                $IsAny<L> extends true ? Foo.PropertyKeys : L
-              >
-            >
-          >;
-
-          readonly fetchPageWithErrors: <
-            const L extends Foo.PropertyKeys,
-            const R extends boolean,
-            const A extends $Augments,
-            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-          >(
-            args?: $FetchPageArgs<Foo.Definition, L, R, A, S>,
-          ) => Promise<
-            $Result<
-              $PageResult<
-                Foo.OsdkObject<
-                  | (S extends false ? "$notStrict" : never)
-                  | ($DefaultToFalse<R> extends false ? never : "$rid"),
-                  $IsAny<L> extends true ? Foo.PropertyKeys : L
-                >
-              >
-            >
-          >;
-
-          readonly asyncIter: () => AsyncIterableIterator<Foo.OsdkObject>;
-        }
-
-        export interface Definition
-          extends $InterfaceDefinition<"Foo", Foo.Definition>,
-            $VersionBound<$ExpectedClientVersion> {
-          osdkMetadata: typeof $osdkMetadata;
+      export interface Foo extends $InterfaceDefinition {
+        osdkMetadata: typeof $osdkMetadata;
+        type: "interface";
+        apiName: "Foo";
+        __DefinitionMetadata?: {
           objectSet: Foo.ObjectSet;
           props: Foo.Props;
           linksType: OsdkObjectLinks$Foo;
           strictProps: Foo.StrictProps;
+          apiName: "Foo";
           description: "Foo interface desc";
           displayName: "Foo interface dn";
           implements: ["Parent"];
@@ -627,61 +334,15 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
              */
             foo: $PropertyDef<"integer", "nullable", "single">;
           };
-        }
-
-        export type OsdkObject<
-          OPTIONS extends never | "$notStrict" | "$rid" = never,
-          K extends keyof Foo.Props = keyof Foo.Props,
-        > = $Osdk<Foo.Definition, K | OPTIONS> &
-          Pick<
-            [OPTIONS] extends [never]
-              ? Foo.StrictProps
-              : OPTIONS extends "$notStrict"
-                ? Foo.Props
-                : Foo.StrictProps,
-            K
-          > & {
-            readonly $link: OsdkObjectLinks$Foo;
-            readonly $title: string | undefined; // FIXME
-            readonly $primaryKey: string | number;
-
-            readonly $as: <NEW_Q extends $ValidToFrom<Foo.Definition>>(
-              type: NEW_Q | string,
-            ) => $Osdk<NEW_Q, $ConvertProps<Foo.Definition, NEW_Q, K>>;
-          } & $OsdkObject<"Foo">;
+          rid: "FooRid";
+          type: "interface";
+        };
       }
 
-      /** @deprecated use Foo.Definition **/
-      export type Foo = Foo.Definition;
-
-      export const Foo: Foo.Definition = {
-        osdkMetadata: $osdkMetadata,
-        objectSet: undefined as any,
-        props: undefined as any,
-        linksType: undefined as any,
-        strictProps: undefined as any,
-        apiName: "Foo",
-        description: "Foo interface desc",
-        displayName: "Foo interface dn",
-        implements: ["Parent"],
-        links: {},
-        properties: {
-          bar: {
-            displayName: "bar property dn",
-            multiplicity: false,
-            description: "bar property desc",
-            type: "integer",
-            nullable: true,
-          },
-          foo: {
-            displayName: "foo property dn",
-            multiplicity: false,
-            description: "foo property desc",
-            type: "integer",
-            nullable: true,
-          },
-        },
+      export const Foo: Foo = {
         type: "interface",
+        apiName: "Foo",
+        osdkMetadata: $osdkMetadata,
       };
       "
     `);

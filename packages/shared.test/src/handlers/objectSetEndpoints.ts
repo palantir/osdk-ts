@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { aggregateObjectSetV2, loadObjectSetV2 } from "@osdk/gateway/requests";
-import type { LoadObjectSetResponseV2 } from "@osdk/gateway/types";
+import type { LoadObjectSetResponseV2 } from "@osdk/internal.foundry.core";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import stableStringify from "json-stable-stringify";
 import type { RequestHandler } from "msw";
 import { InvalidRequest } from "../errors.js";
@@ -34,7 +34,7 @@ export const objectSetHandlers: Array<RequestHandler> = [
    * Load ObjectSet Objects
    */
   handleOpenApiCall(
-    loadObjectSetV2,
+    OntologiesV2.OntologyObjectSets.loadObjectSetV2,
     ["ontologyApiName"],
     async (req) => {
       const parsedBody = await req.request.json();
@@ -42,6 +42,7 @@ export const objectSetHandlers: Array<RequestHandler> = [
       const response: LoadObjectSetResponseV2 | undefined = pageThroughResponse(
         loadObjectSetRequestHandlers,
         parsedBody,
+        true,
       );
 
       if (
@@ -49,7 +50,7 @@ export const objectSetHandlers: Array<RequestHandler> = [
           || req.params.ontologyApiName === defaultOntology.rid)
         && response
       ) {
-        return filterObjectsProperties(response, [...selected]);
+        return filterObjectsProperties(response, [...selected], true);
       }
 
       throw new OpenApiCallError(
@@ -65,7 +66,7 @@ export const objectSetHandlers: Array<RequestHandler> = [
    * Aggregate Objects in ObjectSet
    */
   handleOpenApiCall(
-    aggregateObjectSetV2,
+    OntologiesV2.OntologyObjectSets.aggregateObjectSetV2,
     ["ontologyApiName"],
     async ({ request }) => {
       const parsedBody = await request.json();

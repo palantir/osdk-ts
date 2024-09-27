@@ -1,2 +1,6 @@
 geopoint
 geoshape
+geoshape
+gtsr
+bellaso
+fforms

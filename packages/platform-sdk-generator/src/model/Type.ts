@@ -17,12 +17,12 @@
 import type { Component } from "./Component.js";
 
 export abstract class Type {
-  abstract get declaration(): string;
+  abstract getDeclaration(localNamespace: string | undefined): string;
   abstract get referencedTypes(): Set<Type>;
-  abstract get tsReferenceString(): string;
+  abstract getTsReferenceString(localNamespace: string | undefined): string;
 
-  getPropertyDeclaration(name: string) {
-    return `${name}: ${this.declaration}`;
+  getPropertyDeclaration(name: string, localNamespace: string | undefined) {
+    return `${name}: ${this.getDeclaration(localNamespace)}`;
   }
 
   isComponent: boolean = false;
@@ -36,8 +36,8 @@ export abstract class SimpleType extends Type {
     return new Set();
   }
 
-  get declaration(): string {
-    return this.tsReferenceString;
+  getTsReferenceString(localNamespace: string): string {
+    return this.getDeclaration(localNamespace);
   }
 }
 export abstract class SingleSubType extends SimpleType {

@@ -15,7 +15,7 @@
  */
 
 import type { PrimitiveType } from "./BuiltInTypes.js";
-import type { Documentation, Safety } from "./Common.js";
+import type { Documentation, Locator, Safety } from "./Common.js";
 
 export interface ObjectSpec {
   properties: {
@@ -44,7 +44,7 @@ export interface UnionType {
   union: {
     discriminator: string;
     subTypes: {
-      [key: string]: string;
+      [key: string]: { type: ReferenceType };
     };
   };
 }
@@ -90,7 +90,7 @@ export interface ListType {
 
 export interface ReferenceType {
   type: "reference";
-  reference: string;
+  reference: { locator: Locator };
 }
 
 export interface MapType {

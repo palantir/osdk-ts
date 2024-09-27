@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Osdk, PageResult } from "@osdk/client.api";
+import type { Osdk } from "@osdk/api";
 import { Employee, FooInterface } from "@osdk/e2e.generated.catchall";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
@@ -30,6 +30,16 @@ export async function runInterfacesTest() {
   })();
 
   const qqq = await client(FooInterface).where({ name: { $ne: "Patti" } });
+
+  const fooLimitedToEmployees = await client(FooInterface).fetchPage({
+    $__EXPERIMENTAL_selectedObjectTypes: ["Employee"],
+  });
+  invariant(fooLimitedToEmployees.data.length > 0);
+
+  const fooLimitedToOther = await client(FooInterface).fetchPage({
+    $__EXPERIMENTAL_selectedObjectTypes: ["Other"],
+  });
+  invariant(fooLimitedToOther.data.length === 0);
 
   const r = await client(FooInterface)
     .where({ name: { $ne: "Patti" } })

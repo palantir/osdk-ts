@@ -1,8 +1,9 @@
 import { createClient } from "@osdk/client";
 import {
-  Employee,
-  Office,
   $ontologyRid,
+  Employee,
+  moveOffice,
+  Office,
   promoteEmployee,
   promoteEmployeeObject,
   Todo,
@@ -38,6 +39,12 @@ export async function osdkObjectSetExample() {
         }],
       }],
     }],
+  });
+
+  // Where clause in
+
+  await client(Employee).where({
+    fullName: { $in: ["George Clooney", "Emily Blunt", "Dwayne Johnson"] },
   });
 
   // Where clause boolean
@@ -149,11 +156,11 @@ export async function osdkObjectSetExample() {
   }], { $returnEdits: true });
 
   if (actionResults.type === "edits") {
-    console.log("Edited employee: ", actionResults.edits);
+    console.log("Edited employee: ", actionResults.modifiedObjects);
   }
 
   if (actionResults1.type === "edits") {
-    console.log("Edited employee: ", actionResults1.edits);
+    console.log("Edited employee: ", actionResults1.modifiedObjects);
   }
 
   // You can also just run validation to make sure the parameters you passed in for valid

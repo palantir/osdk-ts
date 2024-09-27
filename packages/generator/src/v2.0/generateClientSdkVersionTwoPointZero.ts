@@ -36,19 +36,19 @@ async function generateRootIndexTsFile(
   fs.writeFile(
     path.join(outDir, "index.ts"),
     await formatTs(
-      `${
+      `export * from "./ontology/actions${importExt}";
+        export * as $Actions from "./ontology/actions${importExt}";
+        export * from "./ontology/interfaces${importExt}";
+        export * as $Interfaces from "./ontology/interfaces${importExt}";
+        export * from "./ontology/objects${importExt}";
+        export * as $Objects from "./ontology/objects${importExt}";
+        export * from "./ontology/queries${importExt}";
+        export * as $Queries from "./ontology/queries${importExt}";
+        ${
         ontologyApiNamespace == null
           ? `export { $ontologyRid } from "./OntologyMetadata${importExt}";`
           : ``
       }
-        export * from "./ontology/actions${importExt}";
-        export * as $Actions from "./ontology/actions${importExt}";
-        export * from "./ontology/objects${importExt}";
-        export * as $Objects from "./ontology/objects${importExt}";
-        export * from "./ontology/interfaces${importExt}";
-        export * as $Interfaces from "./ontology/interfaces${importExt}";
-        export * from "./ontology/queries${importExt}";
-        export * as $Queries from "./ontology/queries${importExt}";
     `,
     ),
   );
@@ -76,11 +76,10 @@ async function generateEachObjectFile(
     await fs.writeFile(
       outFilePath,
       await formatTs(`
-        import type {  VersionBound as $VersionBound, PropertyDef as $PropertyDef } from "@osdk/api";
-        import type { Osdk } from "@osdk/client.api";
+        import type { PropertyDef as $PropertyDef } from "@osdk/api";
         import { $osdkMetadata } from "../../OntologyMetadata${importExt}";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
-        ${wireObjectTypeV2ToSdkObjectConstV2(obj.og, ctx, relPath)}
+        ${wireObjectTypeV2ToSdkObjectConstV2(obj.raw, ctx, relPath)}
       `),
     );
   }
@@ -156,10 +155,8 @@ async function generateOntologyInterfaces(
     await fs.writeFile(
       path.join(interfacesDir, `${obj.shortApiName}.ts`),
       await formatTs(`
-    
-      import type { PropertyDef as $PropertyDef, VersionBound as $VersionBound } from "@osdk/api";
-      import { $osdkMetadata, $expectedClientVersion } from "../../OntologyMetadata${importExt}";
-      import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
+        import type { PropertyDef as $PropertyDef } from "@osdk/api";
+        import { $osdkMetadata } from "../../OntologyMetadata${importExt}";
       ${
         __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
           obj,

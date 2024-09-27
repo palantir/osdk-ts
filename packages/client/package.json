@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client",
-  "version": "0.22.0-beta.5",
+  "version": "2.0.0-beta.15",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -27,17 +27,16 @@
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --pool=forks",
     "test:watch": "vitest",
-    "transpile": "monorepo.tool.transpile",
-    "transpileWatch": "tsup --watch",
-    "typecheck": "monorepo.tool.typecheck esm"
+    "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
-    "@osdk/client.api": "workspace:*",
     "@osdk/client.unstable": "workspace:*",
     "@osdk/client.unstable.osw": "workspace:*",
     "@osdk/generator-converters": "workspace:~",
-    "@osdk/shared.client": "workspace:~",
+    "@osdk/internal.foundry.core": "workspace:~",
+    "@osdk/internal.foundry.ontologiesv2": "workspace:~",
+    "@osdk/shared.client": "workspace:^",
     "@osdk/shared.client.impl": "workspace:~",
     "@osdk/shared.net.errors": "workspace:~",
     "@osdk/shared.net.fetch": "workspace:~",
@@ -51,20 +50,10 @@
     "type-fest": "^4.18.2",
     "ws": "^8.18.0"
   },
-  "peerDependencies": {
-    "pino": "^9.1.0"
-  },
-  "peerDependenciesMeta": {
-    "pino": {
-      "optional": true
-    }
-  },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.25.3",
     "@microsoft/api-extractor": "^7.47.0",
     "@osdk/client.test.ontology": "workspace:~",
-    "@osdk/internal.foundry": "workspace:~",
-    "@osdk/internal.foundry.core": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
@@ -75,7 +64,6 @@
     "jest-extended": "^4.0.2",
     "msw": "^2.3.4",
     "p-defer": "^4.0.1",
-    "p-event": "^6.0.1",
     "p-locate": "^6.0.0",
     "p-map": "^7.0.2",
     "p-state": "^2.0.1",
@@ -104,7 +92,8 @@
     "dependencies": {
       "com.palantir.foundry.api:api-gateway": {
         "minVersion": "1.834.0",
-        "maxVersion": "1.x.x"
+        "maxVersion": "1.x.x",
+        "optional": true
       }
     }
   },

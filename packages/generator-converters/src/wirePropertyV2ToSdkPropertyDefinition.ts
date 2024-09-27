@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypePropertyDefinition,
-  WirePropertyTypes,
-} from "@osdk/api";
+import type { ObjectMetadata, WirePropertyTypes } from "@osdk/api";
 import type {
   ObjectPropertyType,
   PropertyV2,
   SharedPropertyType,
-} from "@osdk/gateway/types";
+} from "@osdk/internal.foundry.core";
 
 export function wirePropertyV2ToSdkPropertyDefinition(
   input: (PropertyV2 | SharedPropertyType) & { nullable?: boolean },
   isNullable: boolean = true,
-): ObjectTypePropertyDefinition {
+): ObjectMetadata.Property {
   switch (input.dataType.type) {
     case "integer":
     case "string":
@@ -61,6 +58,11 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         nullable: true,
       };
     }
+    case "geotimeSeriesReference":
+      throw new Error(
+        `Unsupported data type ${JSON.stringify(input.dataType)}`,
+      );
+
     default:
       const _: never = input.dataType;
       throw new Error(
@@ -97,6 +99,11 @@ function objectPropertyTypeToSdkPropertyDefinition(
         return "stringTimeseries";
       }
       return "numericTimeseries";
+    case "geotimeSeriesReference":
+      throw new Error(
+        `Unsupported data type ${JSON.stringify(propertyType)}`,
+      );
+
     default:
       const _: never = propertyType;
       throw new Error(`Unexpected data type ${JSON.stringify(propertyType)}`);

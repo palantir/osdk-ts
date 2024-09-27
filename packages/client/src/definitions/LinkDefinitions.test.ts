@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
 import type {
-  DefaultToFalse,
   ObjectSet,
+  ObjectTypeDefinition,
   Osdk,
   OsdkObjectLinksObject,
   SelectArg,
   SingleLinkAccessor,
-} from "@osdk/client.api";
+} from "@osdk/api";
 import type {
   Employee,
   equipment,
@@ -42,27 +41,18 @@ describe("LinkDefinitions", () => {
       expectTypeOf<OsdkObjectLinksObject<Employee>>()
         .toEqualTypeOf<
           {
-            readonly lead: SingleLinkAccessor<Employee.Definition>;
-            readonly officeLink: SingleLinkAccessor<Office.Definition>;
-            readonly peeps: ObjectSet<Employee.Definition>;
+            readonly lead: SingleLinkAccessor<Employee>;
+            readonly officeLink: SingleLinkAccessor<Office>;
+            readonly peeps: ObjectSet<Employee>;
           }
         >();
-    });
-
-    describe("DefaultToFalse", () => {
-      it("infers properly", () => {
-        expectTypeOf<DefaultToFalse<true>>().toEqualTypeOf<true>();
-        expectTypeOf<DefaultToFalse<false>>().toEqualTypeOf<false>();
-        expectTypeOf<DefaultToFalse<undefined>>().toEqualTypeOf<false>();
-        expectTypeOf<DefaultToFalse<boolean>>().toEqualTypeOf<false>();
-      });
     });
 
     describe("SingletonLinkAccessor", () => {
       it("infers select properly", () => {
         // this helper lets us get return types of functions that are generic
         class Helper<
-          T extends ObjectTypeDefinition<any, any>,
+          T extends ObjectTypeDefinition,
           const A extends SelectArg<T>,
         > {
           constructor(private accessor: SingleLinkAccessor<T>) {}
@@ -72,7 +62,7 @@ describe("LinkDefinitions", () => {
           }
         }
 
-        type PersonDef = Person.Definition;
+        type PersonDef = Person;
 
         //   // e.g. .lead.fetchOne({});
         expectTypeOf<Awaited<ReturnType<Helper<PersonDef, {}>["fetchOne"]>>>()

@@ -24,19 +24,21 @@ import { BinaryType } from "./BinaryType.js";
 import { BuiltinType } from "./BuiltinType.js";
 import { Component } from "./Component.js";
 import { EnumType } from "./EnumType.js";
+import { ErrorType } from "./ErrorType.js";
 import { ListType } from "./ListType.js";
 import { MapType } from "./MapType.js";
 import type { Namespace } from "./Namespace.js";
 import { ObjectLiteralType } from "./ObjectLiteralType.js";
+import { Operation } from "./Operation.js";
 import { OptionalType } from "./OptionalType.js";
 import { ReferenceType } from "./ReferenceType.js";
-import { StaticOperation } from "./StaticOperation.js";
 import type { Type } from "./Type.js";
 import { UnionType } from "./UnionType.js";
 
 export class Model {
   #typeCache = new Map<string, Type>();
   #components = new Map<string, Component>();
+  #errors = new Map<string, ErrorType>();
   #opts: { outputDir: string; packagePrefix: string; npmOrg: string };
 
   getType(dt: ir.DataType): Type {
@@ -57,14 +59,19 @@ export class Model {
       case "union":
         return new UnionType(
           dt.union.discriminator,
-          mapObjectValues(dt.union.subTypes, st => this.getComponent(st)),
+          mapObjectValues(
+            dt.union.subTypes,
+            rt => this.getComponent(rt.type.reference.locator),
+          ),
         );
       case "enum":
         return new EnumType(dt.enum.values);
       case "optional":
         return new OptionalType(this.getType(dt.optional.subType));
       case "reference":
-        return new ReferenceType(this.getComponent(dt.reference));
+        return new ReferenceType(
+          this.getComponent(dt.reference.locator),
+        );
       case "builtin":
         return new BuiltinType(dt.builtin);
       case "map":
@@ -93,9 +100,17 @@ export class Model {
     }
   }
 
-  getComponent(reference: string): Component {
-    const ret = this.#components.get(reference);
-    if (!ret) throw new Error(`Component ${reference} not found`);
+  getComponent(locator: ir.Locator): Component {
+    const ret = this.#components.get(
+      `${
+        locator.namespaceName === "Ontologies" ? "Core" : locator.namespaceName
+      }.${locator.localName}`,
+    );
+    if (!ret) {
+      throw new Error(
+        `Component ${locator.localName} not found in ${locator.namespaceName}`,
+      );
+    }
     return ret;
   }
 
@@ -107,35 +122,49 @@ export class Model {
     npmOrg: string;
   }): Promise<Model> {
     const model = new Model(opts);
-    // Special "no namespace" for v1
-    await model.#addNamespace({
-      name: "Core",
-      resources: [],
-    });
 
+    /**
+     * We are manually remapping all of the components(types)
+     * from the Ontologies namespace to the Core namespace
+     * so that packages don't have to depend on code in
+     * internal.foundry.ontologies that is present in
+     * internal.foundry.ontologiesv2 just to depend on types
+     * only present in the former.
+     */
+    await model.#addNamespace("Core");
+    await model.#addNamespace("Ontologies");
     for (const ns of ir.namespaces) {
       if (isIgnoredNamespace(ns.name)) continue;
 
-      await model.#addNamespace(ns);
-    }
-
-    for (const c of ir.components) {
-      if (c.namespace === "Ontologies") {
-        c.namespace = undefined;
+      if (ns.name !== "Core" && ns.name !== "Ontologies") {
+        await model.#addNamespace(ns.name);
       }
-      if (isIgnoredType(c)) continue;
 
-      await model.#addComponent(c);
-    }
+      for (const c of ns.components) {
+        if (isIgnoredType(c)) continue;
+        if (c.locator.namespaceName === "Ontologies") {
+          c.locator.namespaceName = "Core";
+        }
 
-    for (const ns of ir.namespaces) {
-      if (isIgnoredNamespace(ns.name)) continue;
+        model.#addComponent(c);
+      }
+
+      for (const e of ns.errors) {
+        if (isIgnoredType(e)) continue;
+        if (e.locator.namespaceName === "Ontologies") {
+          e.locator.namespaceName = "Core";
+        }
+        model.#addError(e);
+      }
 
       for (const r of ns.resources) {
-        if (r.staticOperations.length === 0) continue;
-        await model.addResource(ns, r);
+        if (r.operations.length === 0) {
+          continue;
+        }
+        model.addResource(ns, r);
       }
     }
+
     return model;
   }
 
@@ -153,30 +182,32 @@ export class Model {
     return this.#namespaces.values();
   }
 
-  async #addNamespace(ns: ir.Namespace) {
+  async #addNamespace(nsName: string) {
     const dir = `${this.#opts.packagePrefix}${
-      ns.name === ""
+      nsName === ""
         ? ".core"
-        : `.${ns.name.toLowerCase()}`
+        : `.${nsName.toLowerCase()}`
     }`;
     const packagePath = path.join(this.#opts.outputDir, dir);
     const packageName = `${this.#opts.npmOrg}/${dir}`;
-    this.#namespaces.set(ns.name, {
+    this.#namespaces.set(nsName, {
       components: [],
+      errors: [],
       resources: [],
       packageName,
       paths: await ensurePackageSetup(packagePath, packageName, []),
-      name: ns.name,
+      name: nsName,
     });
   }
 
   #addComponent(c: ir.Component) {
-    const nsName = (c.namespace == null || c.namespace === "Core")
-      ? "Core"
-      : c.namespace;
+    const nsName = c.locator.namespaceName;
+
     const ns = this.#namespaces.get(nsName);
     if (!ns) {
-      throw new Error(`Namespace not found for ${c.namespace} in ${c.name}`);
+      throw new Error(
+        `Namespace not found for ${c.locator.namespaceName} in ${c.locator.localName}`,
+      );
     }
 
     const component = new Component(
@@ -188,13 +219,41 @@ export class Model {
     );
 
     ns.components.push(component);
-    this.#components.set(c.name, component);
+    this.#components.set(
+      `${c.locator.namespaceName}.${c.locator.localName}`,
+      component,
+    );
+  }
+
+  #addError(e: ir.Error) {
+    const nsName = (e.locator.namespaceName == null)
+      ? "Core"
+      : e.locator.namespaceName;
+    const ns = this.#namespaces.get(nsName);
+    if (!ns) {
+      throw new Error(
+        `Namespace not found for ${e.locator.namespaceName} in ${e.locator.localName}`,
+      );
+    }
+
+    const error = new ErrorType(
+      this,
+      ns,
+      path.join(ns.paths.srcDir, `_errors.ts`),
+      ns.packageName,
+      e,
+    );
+
+    ns.errors.push(error);
+    this.#errors.set(e.locator.localName, error);
   }
 
   addResource(ns: ir.Namespace, r: ir.Resource): void {
-    this.#namespaces.get(ns.name)!.resources.push({
-      component: r.component,
-      operations: r.staticOperations.map(so => new StaticOperation(so, this)),
-    });
+    this.#namespaces.get(ns.name)!.resources
+      .push({
+        component: r.component.localName,
+        namespace: r.component.namespaceName,
+        operations: r.operations.map(so => new Operation(so, this)),
+      });
   }
 }

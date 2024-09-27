@@ -1,5 +1,90 @@
 # @osdk/internal.foundry.ontologiesv2
 
+## 0.2.0-beta.9
+
+### Minor Changes
+
+- 5d6d5ab: Internal improvement to type references
+- d4d6605: Audited and cleaned up deps
+
+### Patch Changes
+
+- Updated dependencies [b60e107]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [d4d6605]
+  - @osdk/shared.client@1.0.0-beta.2
+  - @osdk/internal.foundry.core@0.2.0-beta.9
+  - @osdk/shared.net.platformapi@0.3.0-beta.2
+
+## 0.2.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [5dc1241]
+  - @osdk/shared.client@1.0.0-beta.1
+  - @osdk/internal.foundry.core@0.2.0-beta.8
+  - @osdk/shared.net.platformapi@0.3.0-beta.1
+
+## 0.2.0-beta.7
+
+### Minor Changes
+
+- 1252d94: ESM Only
+- 5d6d5ab: Internally refactored to support new API versions
+
+### Patch Changes
+
+- Updated dependencies [1252d94]
+- Updated dependencies [5d6d5ab]
+  - @osdk/internal.foundry.core@0.2.0-beta.7
+  - @osdk/shared.client@1.0.0-beta.0
+  - @osdk/shared.net.platformapi@0.3.0-beta.0
+
+## 0.2.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [01724ae]
+  - @osdk/shared.net@2.0.0-beta.2
+  - @osdk/internal.foundry.core@0.2.0-beta.6
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.6
+
+## 0.2.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [64818dc]
+  - @osdk/shared.net@2.0.0-beta.1
+  - @osdk/internal.foundry.core@0.2.0-beta.5
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.5
+
+## 0.2.0-beta.4
+
+### Minor Changes
+
+- 5d6d5ab: We now generate error types
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.4
+  - @osdk/internal.foundry.core@0.2.0-beta.4
+
+## 0.2.0-beta.3
+
+### Minor Changes
+
+- 5d6d5ab: Autofill Content-Length and Content-Type headers in API's that accept Blobs
+- 5d6d5ab: SLS dependencies are optional
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [5d6d5ab]
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.3
+  - @osdk/internal.foundry.core@0.2.0-beta.3
+  - @osdk/shared.net@1.13.0-beta.0
+
 ## 0.2.0-beta.2
 
 ### Patch Changes

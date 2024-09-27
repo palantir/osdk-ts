@@ -28,6 +28,7 @@ export default {
         "**/templates/**/*",
         "**/generatedNoCheck/**/*",
         "**/generatedNoCheck2/**/*",
+        "**/examples/**/*",
       ],
     );
     if (match.length === 0) return [];

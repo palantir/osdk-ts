@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ListOntologiesResponse,
-  Ontology,
-  OntologyRid,
-} from "@osdk/internal.foundry.core";
+import type * as _Core from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
@@ -29,7 +25,7 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 //
 
 const _listOntologies: $FoundryPlatformMethod<
-  () => Promise<ListOntologiesResponse>
+  () => Promise<_Core.ListOntologiesResponse>
 > = [0, "/v1/ontologies"];
 
 /**
@@ -45,12 +41,12 @@ const _listOntologies: $FoundryPlatformMethod<
 export function listOntologies(
   $ctx: $Client | $ClientContext,
   ...args: []
-): Promise<ListOntologiesResponse> {
+): Promise<_Core.ListOntologiesResponse> {
   return $foundryPlatformFetch($ctx, _listOntologies, ...args);
 }
 
 const _getOntology: $FoundryPlatformMethod<
-  (ontologyRid: OntologyRid) => Promise<Ontology>
+  (ontologyRid: _Core.OntologyRid) => Promise<_Core.Ontology>
 > = [0, "/v1/ontologies/{0}"];
 
 /**
@@ -65,7 +61,7 @@ const _getOntology: $FoundryPlatformMethod<
  */
 export function getOntology(
   $ctx: $Client | $ClientContext,
-  ...args: [ontologyRid: OntologyRid]
-): Promise<Ontology> {
+  ...args: [ontologyRid: _Core.OntologyRid]
+): Promise<_Core.Ontology> {
   return $foundryPlatformFetch($ctx, _getOntology, ...args);
 }

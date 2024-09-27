@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import type { Type } from "./Type.js";
 import { SimpleType } from "./Type.js";
 
 export class BinaryType extends SimpleType {
-  get tsReferenceString() {
+  getDeclaration() {
     return `Blob`;
   }
 }

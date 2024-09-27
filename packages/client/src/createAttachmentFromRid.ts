@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Attachment } from "@osdk/client.api";
-import { Ontologies } from "@osdk/internal.foundry";
+import type { Attachment } from "@osdk/api";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "./MinimalClientContext.js";
 
 /**
@@ -31,13 +31,17 @@ export function createAttachmentFromRid(
   return {
     rid,
     async fetchContents() {
-      return Ontologies.Attachments.getAttachmentContent(
+      return OntologiesV2.Attachments.getAttachmentContentV2(
         client,
         rid,
       ) as Promise<Blob>;
     },
     async fetchMetadata() {
-      return Ontologies.Attachments.getAttachment(client, rid);
+      const r = await OntologiesV2.Attachments.getAttachmentV2(client, rid);
+      return {
+        ...r,
+        sizeBytes: Number(r.sizeBytes),
+      };
     },
   };
 }

@@ -14,20 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ArtifactRepositoryRid,
-  LinkTypeApiName,
-  ListLinkedObjectsResponseV2,
-  ObjectTypeApiName,
-  OntologyIdentifier,
-  OntologyObjectV2,
-  OrderBy,
-  PageSize,
-  PageToken,
-  PropertyValueEscapedString,
-  SdkPackageName,
-  SelectedPropertyApiName,
-} from "@osdk/internal.foundry.core";
+import type * as _Core from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
@@ -39,20 +26,20 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 const _listLinkedObjectsV2: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    linkType: LinkTypeApiName,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    linkType: _Core.LinkTypeApiName,
     $queryParams: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-      select: Array<SelectedPropertyApiName>;
-      orderBy?: OrderBy | undefined;
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
+      select: Array<_Core.SelectedPropertyApiName>;
+      orderBy?: _Core.OrderBy | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
       excludeRid?: boolean | undefined;
     },
-  ) => Promise<ListLinkedObjectsResponseV2>
+  ) => Promise<_Core.ListLinkedObjectsResponseV2>
 > = [0, "/v2/ontologies/{0}/objects/{1}/{2}/links/{3}", 2];
 
 /**
@@ -80,39 +67,39 @@ const _listLinkedObjectsV2: $FoundryPlatformMethod<
 export function listLinkedObjectsV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    linkType: LinkTypeApiName,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    linkType: _Core.LinkTypeApiName,
 
     $queryParams: {
-      pageSize?: PageSize | undefined;
-      pageToken?: PageToken | undefined;
-      select: Array<SelectedPropertyApiName>;
-      orderBy?: OrderBy | undefined;
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      pageSize?: _Core.PageSize | undefined;
+      pageToken?: _Core.PageToken | undefined;
+      select: Array<_Core.SelectedPropertyApiName>;
+      orderBy?: _Core.OrderBy | undefined;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
       excludeRid?: boolean | undefined;
     },
   ]
-): Promise<ListLinkedObjectsResponseV2> {
+): Promise<_Core.ListLinkedObjectsResponseV2> {
   return $foundryPlatformFetch($ctx, _listLinkedObjectsV2, ...args);
 }
 
 const _getLinkedObjectV2: $FoundryPlatformMethod<
   (
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    linkType: LinkTypeApiName,
-    linkedObjectPrimaryKey: PropertyValueEscapedString,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    linkType: _Core.LinkTypeApiName,
+    linkedObjectPrimaryKey: _Core.PropertyValueEscapedString,
     $queryParams: {
-      select: Array<SelectedPropertyApiName>;
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      select: Array<_Core.SelectedPropertyApiName>;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
       excludeRid?: boolean | undefined;
     },
-  ) => Promise<OntologyObjectV2>
+  ) => Promise<_Core.OntologyObjectV2>
 > = [0, "/v2/ontologies/{0}/objects/{1}/{2}/links/{3}/{4}", 2];
 
 /**
@@ -130,19 +117,19 @@ const _getLinkedObjectV2: $FoundryPlatformMethod<
 export function getLinkedObjectV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: OntologyIdentifier,
-    objectType: ObjectTypeApiName,
-    primaryKey: PropertyValueEscapedString,
-    linkType: LinkTypeApiName,
-    linkedObjectPrimaryKey: PropertyValueEscapedString,
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    linkType: _Core.LinkTypeApiName,
+    linkedObjectPrimaryKey: _Core.PropertyValueEscapedString,
 
     $queryParams: {
-      select: Array<SelectedPropertyApiName>;
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
+      select: Array<_Core.SelectedPropertyApiName>;
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
       excludeRid?: boolean | undefined;
     },
   ]
-): Promise<OntologyObjectV2> {
+): Promise<_Core.OntologyObjectV2> {
   return $foundryPlatformFetch($ctx, _getLinkedObjectV2, ...args);
 }

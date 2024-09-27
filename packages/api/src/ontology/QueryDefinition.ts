@@ -15,34 +15,50 @@
  */
 
 import type { OsdkMetadata } from "../OsdkMetadata.js";
-import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
+import type {
+  ObjectTypeDefinition,
+  ReleaseStatus,
+} from "./ObjectTypeDefinition.js";
 
-export interface QueryDefinition<
-  Q extends string,
+export interface QueryMetadata<
+  A extends string,
   K extends string,
-  T = never, // used in client 2
 > {
-  __OsdkQueryType?: T;
   type: "query";
-  apiName: Q;
+  apiName: A;
   description?: string;
   displayName?: string;
   version: string;
   parameters: Record<string, QueryParameterDefinition<K, any>>;
   output: QueryDataTypeDefinition<K, any>;
+  rid: string;
+}
+
+export interface QueryCompileTimeMetadata<T> {
+  signature: T;
+}
+
+export interface QueryDefinition<
+  A extends string,
+  K extends string,
+  T = never,
+> {
+  type: "query";
+  apiName: A;
   osdkMetadata?: OsdkMetadata;
+  __DefinitionMetadata?: QueryCompileTimeMetadata<T> & QueryMetadata<A, K>;
 }
 
 export type QueryParameterDefinition<
   K extends string,
-  T_Target extends ObjectTypeDefinition<any> = never,
+  T_Target extends ObjectTypeDefinition = never,
 > = {
   description?: string;
 } & QueryDataTypeDefinition<K, T_Target>;
 
 export type QueryDataTypeDefinition<
   K extends string,
-  T_Target extends ObjectTypeDefinition<any> = never,
+  T_Target extends ObjectTypeDefinition = never,
 > =
   | PrimitiveDataType
   | ObjectQueryDataType<K, T_Target>
@@ -76,7 +92,7 @@ export type PrimitiveDataType<
 
 export interface ObjectQueryDataType<
   K extends string,
-  T_Target extends ObjectTypeDefinition<any> = never,
+  T_Target extends ObjectTypeDefinition = never,
 > extends BaseQueryDataTypeDefinition<"object"> {
   object: K;
   __OsdkTargetType?: T_Target;
@@ -84,7 +100,7 @@ export interface ObjectQueryDataType<
 
 export interface ObjectSetQueryDataType<
   K extends string,
-  T_Target extends ObjectTypeDefinition<any> = never,
+  T_Target extends ObjectTypeDefinition = never,
 > extends BaseQueryDataTypeDefinition<"objectSet"> {
   objectSet: K;
   __OsdkTargetType?: T_Target;

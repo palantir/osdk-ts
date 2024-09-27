@@ -14,138 +14,84 @@
  * limitations under the License.
  */
 
-import {
-  type Attachment,
-  TimeseriesDurationMapping,
-  type TimeSeriesPoint,
-  TimeSeriesProperty,
-  type TimeSeriesQuery,
-} from "@osdk/client.api";
-import { Ontologies, OntologiesV2 } from "@osdk/internal.foundry";
 import type {
-  AbsoluteTimeRange,
-  RelativeTime,
-  RelativeTimeRange,
-  StreamTimeSeriesPointsRequest,
-  TimeRange,
-} from "@osdk/internal.foundry.core";
+  TimeSeriesPoint,
+  TimeSeriesProperty,
+  TimeSeriesQuery,
+} from "@osdk/api";
+import { TimeseriesDurationMapping } from "@osdk/api";
+import type { TimeRange } from "@osdk/internal.foundry.core";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import {
   iterateReadableStream,
   parseStreamedResponse,
 } from "./util/streamutils.js";
 
-export function createTimeseriesProperty<T extends number | string>(
-  client: MinimalClient,
-  objectApiName: string,
-  primaryKey: any,
-  propertyName: string,
-): TimeSeriesProperty<T> {
-  const getFirstPoint = async () => {
-    return OntologiesV2.TimeSeriesPropertiesV2.getFirstPoint(
-      client,
-      await client.ontologyRid,
-      objectApiName,
-      primaryKey,
-      propertyName,
-    ) as Promise<TimeSeriesPoint<T>>;
-  };
+export class TimeSeriesPropertyImpl<T extends number | string>
+  implements TimeSeriesProperty<T>
+{
+  #triplet: [string, any, string];
+  #client: MinimalClient;
 
-  const getLastPoint = async () => {
-    return OntologiesV2.TimeSeriesPropertiesV2.getLastPoint(
-      client,
-      await client.ontologyRid,
-      objectApiName,
-      primaryKey,
-      propertyName,
-    ) as Promise<TimeSeriesPoint<T>>;
-  };
-
-  const getAllPoints = async (
-    query?: TimeSeriesQuery,
-  ): Promise<Array<TimeSeriesPoint<T>>> => {
-    return getAllTimeSeriesPoints(
-      client,
-      objectApiName,
-      primaryKey,
-      propertyName,
-      query,
-    );
-  };
-
-  const asyncIterPoints = (
-    query?: TimeSeriesQuery,
-  ): AsyncGenerator<TimeSeriesPoint<T>> => {
-    return iterateTimeSeriesPoints(
-      client,
-      objectApiName,
-      primaryKey,
-      propertyName,
-      query,
-    );
-  };
-
-  return new TimeSeriesProperty<T>(
-    getFirstPoint,
-    getLastPoint,
-    getAllPoints,
-    asyncIterPoints,
-  );
-}
-
-async function getAllTimeSeriesPoints<T extends string | number>(
-  client: MinimalClient,
-  objectApiName: string,
-  primaryKey: any,
-  propertyName: string,
-  body?: TimeSeriesQuery,
-): Promise<Array<TimeSeriesPoint<T>>> {
-  const allPoints: Array<TimeSeriesPoint<T>> = [];
-
-  for await (
-    const point of iterateTimeSeriesPoints(
-      client,
-      objectApiName,
-      primaryKey,
-      propertyName,
-      body,
-    )
+  constructor(
+    client: MinimalClient,
+    objectApiName: string,
+    primaryKey: any,
+    propertyName: string,
   ) {
-    allPoints.push({
-      time: point.time,
-      value: point.value as T,
-    });
+    this.#client = client;
+    this.#triplet = [objectApiName, primaryKey, propertyName];
   }
-  return allPoints;
-}
 
-async function* iterateTimeSeriesPoints<T extends string | number>(
-  client: MinimalClient,
-  objectApiName: string,
-  primaryKey: any,
-  propertyName: string,
-  body?: TimeSeriesQuery,
-): AsyncGenerator<TimeSeriesPoint<T>, any, unknown> {
-  const utf8decoder = new TextDecoder("utf-8");
+  public async getFirstPoint() {
+    return OntologiesV2.TimeSeriesPropertiesV2.getFirstPoint(
+      this.#client,
+      await this.#client.ontologyRid,
+      ...this.#triplet,
+    ) as Promise<TimeSeriesPoint<T>>;
+  }
 
-  const streamPointsIterator = await OntologiesV2.TimeSeriesPropertiesV2
-    .streamPoints(
-      client,
-      await client.ontologyRid,
-      objectApiName,
-      primaryKey,
-      propertyName,
-      body ? { range: getTimeRange(body) } : {},
-    );
+  public async getLastPoint() {
+    return OntologiesV2.TimeSeriesPropertiesV2.getLastPoint(
+      this.#client,
+      await this.#client.ontologyRid,
+      ...this.#triplet,
+    ) as Promise<TimeSeriesPoint<T>>;
+  }
 
-  const reader = streamPointsIterator.stream().getReader();
-  for await (
-    const point of parseStreamedResponse(iterateReadableStream(reader))
+  public async getAllPoints(query?: TimeSeriesQuery) {
+    const allPoints: Array<TimeSeriesPoint<T>> = [];
+
+    for await (const point of this.asyncIterPoints(query)) {
+      allPoints.push({
+        time: point.time,
+        value: point.value as T,
+      });
+    }
+    return allPoints;
+  }
+
+  public async *asyncIterPoints(
+    query?: TimeSeriesQuery,
   ) {
-    yield {
-      time: point.time,
-      value: point.value as T,
-    };
+    const streamPointsIterator = await OntologiesV2.TimeSeriesPropertiesV2
+      .streamPoints(
+        this.#client,
+        await this.#client.ontologyRid,
+        ...this.#triplet,
+        query ? { range: getTimeRange(query) } : {},
+      );
+
+    const reader = streamPointsIterator.stream().getReader();
+    for await (
+      const point of parseStreamedResponse(iterateReadableStream(reader))
+    ) {
+      yield {
+        time: point.time,
+        value: point.value as T,
+      };
+    }
   }
 }
 

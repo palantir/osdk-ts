@@ -41,18 +41,22 @@ export class Component extends Type {
     this.externalImportSpecifier = externalImportSpecifier;
     this.component = component;
     this.model = model;
-    this.name = component.name;
+    this.name = component.locator.localName;
   }
 
   get referencedTypes(): Set<Type> {
     return this.model.getType(this.component.type).referencedTypes;
   }
 
-  get tsReferenceString(): string {
-    return this.component.name;
+  getTsReferenceString(localNamespace: string) {
+    if (localNamespace === this.namespace.name) {
+      return this.component.locator.localName;
+    } else {
+      return `_${this.component.locator.namespaceName}.${this.component.locator.localName}`;
+    }
   }
 
-  get declaration(): string {
+  getDeclaration(localNamespace: string | undefined): string {
     const component = this.component;
     const dt = this.component.type;
     const isAlias = dt.type !== "object";
@@ -63,7 +67,7 @@ export class Component extends Type {
    * 
    * Log Safety: ${component.safety}
    */
-  export ${isAlias ? "type" : "interface"} ${component.name} ${
+  export ${isAlias ? "type" : "interface"} ${component.locator.localName} ${
       isAlias ? " = " : ""
     }`;
 
@@ -76,15 +80,15 @@ export class Component extends Type {
       case "union":
       case "object":
       case "reference":
-        out += ourType.tsReferenceString;
+        out += ourType.getTsReferenceString(localNamespace);
         break;
 
       case "builtin":
         // need to special case this since we use a branded type
         if (dt.builtin.type === "rid" || dt.builtin.type === "string") {
-          out += `LooselyBrandedString<"${component.name}">`;
+          out += `LooselyBrandedString<"${component.locator.localName}">`;
         } else {
-          out += ourType.declaration;
+          out += ourType.getDeclaration(localNamespace);
         }
         break;
 

@@ -47,8 +47,8 @@
     },
 
     /* Psuedo task to depend on the script contents */
-    "//#script-typecheck": {
-      "inputs": ["scripts/build_common/typecheck.sh"]
+    "//#babel-config": {
+      "inputs": ["babel.config.mjs"]
     },
 
     "//#global-eslint-config": {
@@ -59,13 +59,14 @@
       "cache": false
     },
 
-    "typecheck": {
+    "@osdk/e2e.generated.1.1.x#typecheck": {
       "outputLogs": "new-only",
       "inputs": [
         "bin/**",
         "src/**",
         "src/**/*.{mts,cts,ts,tsx}",
         "tsconfig.json",
+        "typecheck.sh",
         "tsconfig.cjs.json",
         "*.d.ts"
       ],
@@ -73,11 +74,25 @@
         "build/{esm,cjs,browser}/**/*.{ts,cjs,ts.map,cts.map}"
       ],
       "dependsOn": [
-        "//#script-typecheck",
         "@osdk/monorepo.tsconfig#typecheck",
         "@osdk/monorepo.tsup#typecheck",
         "^typecheck",
+        "^transpile",
         "codegen"
+      ]
+    },
+
+    "@osdk/e2e.generated.1.1.x#transpile": {
+      "outputLogs": "new-only",
+      "dependsOn": ["@osdk/monorepo.tsup#typecheck", "@osdk/monorepo.tsconfig#typecheck", "^transpile", "codegen"],
+      "inputs": ["bin/**", "src/**", "tsup.config.js", "tsconfig.json", "tsconfig.cjs.json", "transpile.sh"],
+      "outputs": ["dist/**", "lib/**", "build/**/*.{js,cjs,js.map,cjs.map}"]
+    },
+
+    // left around for muscle memory
+    "typecheck": {
+      "dependsOn": [
+        "transpile"
       ]
     },
 
@@ -136,12 +151,31 @@
       "dependsOn": ["transpile", "typecheck"],
       "inputs": ["../../google-font-mocked-response.js"]
     },
-
     "transpile": {
       "outputLogs": "new-only",
-      "dependsOn": ["@osdk/monorepo.tsup#typecheck", "@osdk/monorepo.tsconfig#typecheck", "^transpile", "codegen"],
-      "inputs": ["bin/**", "src/**", "tsup.config.js", "tsconfig.json", "tsconfig.cjs.json"],
-      "outputs": ["dist/**", "lib/**", "build/**/*.{js,cjs,js.map,cjs.map}"]
+      "dependsOn": [
+        "//#babel-config",
+        "@osdk/monorepo.tsconfig#typecheck",
+        "@osdk/monorepo.tsup#typecheck",
+        "^typecheck",
+        "codegen",
+        "@osdk/monorepo.tsup#typecheck",
+        "@osdk/monorepo.tsconfig#typecheck",
+        "^transpile",
+        "codegen"
+      ],
+      "inputs": [
+        "bin/**",
+        "src/**",
+        "tsup.config.js",
+        "tsconfig.json",
+        "tsconfig.cjs.json"
+      ],
+      "outputs": [
+        "dist/**",
+        "lib/**",
+        "build/{esm,cjs,browser}/*"
+      ]
     },
 
     "test": {

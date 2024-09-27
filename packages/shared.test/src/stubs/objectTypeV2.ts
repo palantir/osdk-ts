@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeV2 } from "@osdk/gateway/types";
+import type { ObjectTypeV2 } from "@osdk/internal.foundry.core";
 
 export const employeeObjectType: ObjectTypeV2 = {
   apiName: "Employee",
+  displayName: "Employee",
+  pluralDisplayName: "Employees",
+  icon: { type: "blueprint", color: "blue", name: "person" },
   description: "A full-time or part-time \n\n employee of our firm",
   primaryKey: "employeeId",
   titleProperty: "fullName",
+  visibility: "NORMAL",
   properties: {
     employeeId: {
       dataType: {
@@ -62,6 +66,9 @@ export const employeeObjectType: ObjectTypeV2 = {
 
 export const officeObjectType: ObjectTypeV2 = {
   apiName: "Office",
+  displayName: "Office",
+  pluralDisplayName: "Office",
+  icon: { type: "blueprint", color: "blue", name: "office" },
   description: "A office in our Company",
   primaryKey: "officeId",
   titleProperty: "officeId",
@@ -95,6 +102,9 @@ export const officeObjectType: ObjectTypeV2 = {
 
 export const equipmentObjectType: ObjectTypeV2 = {
   apiName: "equipment",
+  displayName: "Equipment",
+  pluralDisplayName: "Equipment",
+  icon: { type: "blueprint", color: "blue", name: "gear" },
   primaryKey: "equipmentId",
   titleProperty: "type",
   properties: {
@@ -116,6 +126,9 @@ export const equipmentObjectType: ObjectTypeV2 = {
 
 export const objectTypeWithTimestampPrimaryKey: ObjectTypeV2 = {
   apiName: "ObjectWithTimestampPrimaryKey",
+  displayName: "ObjectWithTimestampPrimaryKey",
+  pluralDisplayName: "ObjectWithTimestampPrimaryKeys",
+  icon: { type: "blueprint", color: "blue", name: "person" },
   description: "Object Type With Timestamp Primary Key",
   primaryKey: "timestamp",
   titleProperty: "value",
@@ -137,6 +150,9 @@ export const objectTypeWithTimestampPrimaryKey: ObjectTypeV2 = {
 
 export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
   apiName: "objectTypeWithAllPropertyTypes",
+  displayName: "objectTypeWithAllPropertyType",
+  pluralDisplayName: "objectTypeWithAllPropertyTypes",
+  icon: { type: "blueprint", color: "blue", name: "person" },
   description: "An object type with all property types",
   primaryKey: "id",
   titleProperty: "string",
@@ -348,6 +364,9 @@ export const ObjectTypesV2: ObjectTypeV2[] = [
 
 export const taskObjectType: ObjectTypeV2 = {
   apiName: "Task",
+  displayName: "Task",
+  pluralDisplayName: "Tasks",
+  icon: { type: "blueprint", color: "blue", name: "box" },
   primaryKey: "id",
   properties: {
     id: {
@@ -365,6 +384,9 @@ export const taskObjectType: ObjectTypeV2 = {
 
 export const todoObjectType: ObjectTypeV2 = {
   apiName: "Todo",
+  displayName: "Todo",
+  pluralDisplayName: "ManyTodo",
+  icon: { type: "blueprint", color: "blue", name: "box" },
   primaryKey: "id",
   properties: {
     id: {
@@ -385,6 +407,9 @@ export const todoObjectType: ObjectTypeV2 = {
 
 export const personObjectType: ObjectTypeV2 = {
   apiName: "Person",
+  displayName: "Person",
+  pluralDisplayName: "Persons",
+  icon: { type: "blueprint", color: "blue", name: "person" },
   primaryKey: "id",
   properties: {
     id: {

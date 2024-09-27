@@ -14,6 +14,9 @@ importers:
       '@arethetypeswrong/cli':
         specifier: ^0.15.3
         version: 0.15.3
+      '@babel/cli':
+        specifier: ^7.25.6
+        version: 7.25.6(@babel/core@7.24.9)
       '@babel/core':
         specifier: ^7.24.9
         version: 7.24.9
@@ -65,6 +68,12 @@ importers:
       babel-plugin-dev-expression:
         specifier: ^0.2.3
         version: 0.2.3(@babel/core@7.24.9)
+      babel-plugin-minify-dead-code-elimination:
+        specifier: ^0.5.2
+        version: 0.5.2
+      babel-plugin-transform-inline-environment-variables:
+        specifier: ^0.4.4
+        version: 0.4.4
       cspell:
         specifier: ^8.12.1
         version: 8.12.1
@@ -89,6 +98,9 @@ importers:
       eslint-plugin-unused-imports:
         specifier: ^4.0.1
         version: 4.0.1(eslint@9.7.0)
+      find-up:
+        specifier: ^7.0.0
+        version: 7.0.0
       find-up-cli:
         specifier: ^6.0.0
         version: 6.0.0
@@ -131,12 +143,9 @@ importers:
       '@osdk/client':
         specifier: workspace:~
         version: link:../../packages/client
-      '@osdk/client.api':
-        specifier: workspace:~
-        version: link:../../packages/client.api
       '@osdk/legacy-client':
-        specifier: workspace:~
-        version: link:../../packages/legacy-client
+        specifier: ^2.5.0
+        version: 2.5.1
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -205,8 +214,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/e2e.generated.1.1.x
       next:
-        specifier: 14.2.3
-        version: 14.2.3(@babel/core@7.24.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 14.2.10
+        version: 14.2.10(@babel/core@7.24.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18
         version: 18.3.1
@@ -266,6 +275,61 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^7.16.0
         version: 7.16.0(eslint@8.57.0)(typescript@5.5.4)
+      '@vitejs/plugin-react':
+        specifier: ^4.2.0
+        version: 4.2.1(vite@5.3.4(@types/node@20.14.10))
+      eslint:
+        specifier: ^8.57.0
+        version: 8.57.0
+      eslint-plugin-react-hooks:
+        specifier: ^4.6.2
+        version: 4.6.2(eslint@8.57.0)
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.6
+        version: 0.4.7(eslint@8.57.0)
+      typescript:
+        specifier: ^5.5.4
+        version: 5.5.4
+      vite:
+        specifier: ^5.3.4
+        version: 5.3.4(@types/node@20.14.10)
+      vitest:
+        specifier: ^2.0.5
+        version: 2.0.5(@types/node@20.14.10)
+
+  examples/example-react-beta:
+    dependencies:
+      '@osdk/client':
+        specifier: beta
+        version: 2.0.0-beta.9(pino@9.1.0)
+      '@osdk/e2e.generated.catchall':
+        specifier: workspace:*
+        version: link:../../packages/e2e.generated.catchall
+      '@osdk/oauth':
+        specifier: beta
+        version: 0.4.0-beta.0
+      react:
+        specifier: ^18
+        version: 18.3.1
+      react-dom:
+        specifier: ^18
+        version: 18.3.1(react@18.3.1)
+      react-router-dom:
+        specifier: ^6.23.1
+        version: 6.23.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18
+        version: 18.3.2
+      '@types/react-dom':
+        specifier: ^18
+        version: 18.3.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^7.16.0
+        version: 7.17.0(@typescript-eslint/parser@7.17.0(eslint@8.57.0)(typescript@5.5.4))(eslint@8.57.0)(typescript@5.5.4)
+      '@typescript-eslint/parser':
+        specifier: ^7.16.0
+        version: 7.17.0(eslint@8.57.0)(typescript@5.5.4)
       '@vitejs/plugin-react':
         specifier: ^4.2.0
         version: 4.2.1(vite@5.3.4(@types/node@20.14.10))
@@ -422,9 +486,6 @@ importers:
 
   packages/api:
     dependencies:
-      '@osdk/gateway':
-        specifier: workspace:~
-        version: link:../gateway
       '@osdk/shared.net':
         specifier: workspace:~
         version: link:../shared.net
@@ -437,7 +498,16 @@ importers:
       tiny-invariant:
         specifier: ^1.3.1
         version: 1.3.3
+      type-fest:
+        specifier: ^4.18.2
+        version: 4.18.2
     devDependencies:
+      '@microsoft/api-documenter':
+        specifier: ^7.25.3
+        version: 7.25.3(@types/node@20.14.10)
+      '@microsoft/api-extractor':
+        specifier: ^7.47.0
+        version: 7.47.0(@types/node@20.14.10)
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -459,12 +529,6 @@ importers:
       '@arethetypeswrong/cli':
         specifier: ^0.15.2
         version: 0.15.3
-      '@osdk/api':
-        specifier: workspace:~
-        version: link:../api
-      '@osdk/gateway':
-        specifier: workspace:~
-        version: link:../gateway
       '@osdk/generator':
         specifier: workspace:~
         version: link:../generator
@@ -541,12 +605,15 @@ importers:
       '@osdk/cli.common':
         specifier: workspace:~
         version: link:../cli.common
-      '@osdk/gateway':
-        specifier: workspace:~
-        version: link:../gateway
       '@osdk/generator':
         specifier: workspace:~
         version: link:../generator
+      '@osdk/internal.foundry.core':
+        specifier: workspace:~
+        version: link:../internal.foundry.core
+      '@osdk/internal.foundry.ontologiesv2':
+        specifier: workspace:~
+        version: link:../internal.foundry.ontologiesv2
       '@osdk/shared.net':
         specifier: workspace:~
         version: link:../shared.net
@@ -627,9 +694,6 @@ importers:
       '@osdk/api':
         specifier: workspace:~
         version: link:../api
-      '@osdk/client.api':
-        specifier: workspace:*
-        version: link:../client.api
       '@osdk/client.unstable':
         specifier: workspace:*
         version: link:../client.unstable
@@ -639,8 +703,14 @@ importers:
       '@osdk/generator-converters':
         specifier: workspace:~
         version: link:../generator-converters
-      '@osdk/shared.client':
+      '@osdk/internal.foundry.core':
         specifier: workspace:~
+        version: link:../internal.foundry.core
+      '@osdk/internal.foundry.ontologiesv2':
+        specifier: workspace:~
+        version: link:../internal.foundry.ontologiesv2
+      '@osdk/shared.client':
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.client.impl':
         specifier: workspace:~
@@ -688,12 +758,6 @@ importers:
       '@osdk/client.test.ontology':
         specifier: workspace:~
         version: link:../client.test.ontology
-      '@osdk/internal.foundry':
-        specifier: workspace:~
-        version: link:../internal.foundry
-      '@osdk/internal.foundry.core':
-        specifier: workspace:~
-        version: link:../internal.foundry.core
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -721,9 +785,6 @@ importers:
       p-defer:
         specifier: ^4.0.1
         version: 4.0.1
-      p-event:
-        specifier: ^6.0.1
-        version: 6.0.1
       p-locate:
         specifier: ^6.0.0
         version: 6.0.0
@@ -749,49 +810,12 @@ importers:
         specifier: ^3.23.8
         version: 3.23.8
 
-  packages/client.api:
-    dependencies:
-      '@osdk/api':
-        specifier: workspace:~
-        version: link:../api
-      type-fest:
-        specifier: ^4.18.2
-        version: 4.18.2
-    devDependencies:
-      '@microsoft/api-documenter':
-        specifier: ^7.25.3
-        version: 7.25.3(@types/node@20.14.10)
-      '@microsoft/api-extractor':
-        specifier: ^7.47.0
-        version: 7.47.0(@types/node@20.14.10)
-      '@osdk/internal.foundry':
-        specifier: workspace:~
-        version: link:../internal.foundry
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      '@types/geojson':
-        specifier: ^7946.0.14
-        version: 7946.0.14
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-
   packages/client.test.ontology:
     dependencies:
-      '@osdk/client.api':
-        specifier: workspace:*
-        version: link:../client.api
-    devDependencies:
       '@osdk/api':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../api
+    devDependencies:
       '@osdk/generator':
         specifier: workspace:~
         version: link:../generator
@@ -889,6 +913,9 @@ importers:
       '@osdk/create-app.template.react':
         specifier: workspace:*
         version: link:../create-app.template.react
+      '@osdk/create-app.template.react.beta':
+        specifier: workspace:*
+        version: link:../create-app.template.react.beta
       '@osdk/create-app.template.tutorial-todo-aip-app':
         specifier: workspace:*
         version: link:../create-app.template.tutorial-todo-aip-app
@@ -966,8 +993,8 @@ importers:
   packages/create-app.template.next-static-export:
     dependencies:
       next:
-        specifier: 14.2.3
-        version: 14.2.3(@babel/core@7.24.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 14.2.10
+        version: 14.2.10(@babel/core@7.24.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18
         version: 18.3.1
@@ -1048,6 +1075,64 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^7.16.0
         version: 7.16.0(eslint@8.57.0)(typescript@5.5.4)
+      '@vitejs/plugin-react':
+        specifier: ^4.2.0
+        version: 4.2.1(vite@5.3.4(@types/node@20.14.10))
+      eslint:
+        specifier: ^8.57.0
+        version: 8.57.0
+      eslint-plugin-react-hooks:
+        specifier: ^4.6.2
+        version: 4.6.2(eslint@8.57.0)
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.6
+        version: 0.4.7(eslint@8.57.0)
+      typescript:
+        specifier: ^5.5.4
+        version: 5.5.4
+      vite:
+        specifier: ^5.3.4
+        version: 5.3.4(@types/node@20.14.10)
+      vitest:
+        specifier: ^2.0.5
+        version: 2.0.5(@types/node@20.14.10)
+
+  packages/create-app.template.react.beta:
+    dependencies:
+      react:
+        specifier: ^18
+        version: 18.3.1
+      react-dom:
+        specifier: ^18
+        version: 18.3.1(react@18.3.1)
+      react-router-dom:
+        specifier: ^6.23.1
+        version: 6.23.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+    devDependencies:
+      '@osdk/create-app.template-packager':
+        specifier: workspace:~
+        version: link:../create-app.template-packager
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@osdk/monorepo.tsup':
+        specifier: workspace:~
+        version: link:../monorepo.tsup
+      '@types/react':
+        specifier: ^18
+        version: 18.3.2
+      '@types/react-dom':
+        specifier: ^18
+        version: 18.3.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^7.16.0
+        version: 7.17.0(@typescript-eslint/parser@7.17.0(eslint@8.57.0)(typescript@5.5.4))(eslint@8.57.0)(typescript@5.5.4)
+      '@typescript-eslint/parser':
+        specifier: ^7.16.0
+        version: 7.17.0(eslint@8.57.0)(typescript@5.5.4)
       '@vitejs/plugin-react':
         specifier: ^4.2.0
         version: 4.2.1(vite@5.3.4(@types/node@20.14.10))
@@ -1232,21 +1317,15 @@ importers:
   packages/e2e.generated.1.1.x:
     dependencies:
       '@osdk/api':
-        specifier: workspace:~
-        version: link:../api
-      '@osdk/generator':
-        specifier: workspace:~
-        version: link:../generator
+        specifier: ^1.9.0
+        version: 1.9.1
       '@osdk/legacy-client':
-        specifier: workspace:~
-        version: link:../legacy-client
+        specifier: ^2.5.0
+        version: 2.5.1
     devDependencies:
       '@arethetypeswrong/cli':
         specifier: ^0.15.2
         version: 0.15.3
-      '@osdk/cli.cmd.typescript':
-        specifier: workspace:~
-        version: link:../cli.cmd.typescript
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -1274,9 +1353,6 @@ importers:
       '@osdk/client':
         specifier: workspace:~
         version: link:../client
-      '@osdk/client.api':
-        specifier: workspace:*
-        version: link:../client.api
     devDependencies:
       '@osdk/cli.cmd.typescript':
         specifier: workspace:~
@@ -1302,9 +1378,6 @@ importers:
       '@osdk/client':
         specifier: workspace:~
         version: link:../client
-      '@osdk/client.api':
-        specifier: workspace:*
-        version: link:../client.api
       '@osdk/e2e.generated.api-namespace.dep':
         specifier: workspace:~
         version: link:../e2e.generated.api-namespace.dep
@@ -1333,9 +1406,6 @@ importers:
       '@osdk/client':
         specifier: workspace:~
         version: link:../client
-      '@osdk/client.api':
-        specifier: workspace:*
-        version: link:../client.api
     devDependencies:
       '@arethetypeswrong/cli':
         specifier: ^0.15.2
@@ -1367,9 +1437,6 @@ importers:
       '@osdk/client':
         specifier: workspace:~
         version: link:../client
-      '@osdk/client.api':
-        specifier: workspace:*
-        version: link:../client.api
       '@osdk/e2e.generated.catchall':
         specifier: workspace:~
         version: link:../e2e.generated.catchall
@@ -1442,6 +1509,52 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
 
+  packages/e2e.sandbox.oauth.public.react-router:
+    dependencies:
+      '@osdk/client':
+        specifier: workspace:~
+        version: link:../client
+      '@osdk/oauth':
+        specifier: workspace:~
+        version: link:../oauth
+      react:
+        specifier: ^18
+        version: 18.3.1
+      react-dom:
+        specifier: ^18
+        version: 18.3.1(react@18.3.1)
+      react-router-dom:
+        specifier: ^6.23.1
+        version: 6.23.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+    devDependencies:
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@osdk/monorepo.tsup':
+        specifier: workspace:~
+        version: link:../monorepo.tsup
+      '@types/react':
+        specifier: ^18
+        version: 18.3.2
+      '@types/react-dom':
+        specifier: ^18
+        version: 18.3.0
+      '@vitejs/plugin-react':
+        specifier: ^4.2.0
+        version: 4.2.1(vite@5.3.4(@types/node@20.14.10))
+      typescript:
+        specifier: ^5.5.4
+        version: 5.5.4
+      vite:
+        specifier: ^5.3.4
+        version: 5.3.4(@types/node@20.14.10)
+      vitest:
+        specifier: ^2.0.5
+        version: 2.0.5(@types/node@20.14.10)
+
   packages/e2e.sandbox.todoapp:
     dependencies:
       '@osdk/api':
@@ -1450,9 +1563,6 @@ importers:
       '@osdk/client':
         specifier: workspace:~
         version: link:../client
-      '@osdk/client.api':
-        specifier: workspace:*
-        version: link:../client.api
       '@osdk/oauth':
         specifier: workspace:~
         version: link:../oauth
@@ -1520,16 +1630,13 @@ importers:
 
   packages/e2e.test.foundry-sdk-generator:
     dependencies:
-      '@osdk/foundry-sdk-generator':
+      '@osdk/tmp-foundry-sdk-generator':
         specifier: workspace:~
-        version: link:../foundry-sdk-generator
+        version: link:../tmp-foundry-sdk-generator
       execa:
         specifier: ^9.3.0
         version: 9.3.0
     devDependencies:
-      '@osdk/legacy-client':
-        specifier: workspace:~
-        version: link:../legacy-client
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -1609,17 +1716,26 @@ importers:
       '@osdk/foundry.filesystem':
         specifier: workspace:*
         version: link:../foundry.filesystem
+      '@osdk/foundry.functions':
+        specifier: workspace:*
+        version: link:../foundry.functions
+      '@osdk/foundry.ontologies':
+        specifier: workspace:*
+        version: link:../foundry.ontologies
       '@osdk/foundry.orchestration':
         specifier: workspace:*
         version: link:../foundry.orchestration
       '@osdk/foundry.publicapis':
         specifier: workspace:*
         version: link:../foundry.publicapis
+      '@osdk/foundry.streams':
+        specifier: workspace:*
+        version: link:../foundry.streams
       '@osdk/foundry.thirdpartyapplications':
         specifier: workspace:*
         version: link:../foundry.thirdpartyapplications
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -1638,80 +1754,13 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
 
-  packages/foundry-sdk-generator:
-    dependencies:
-      '@osdk/api':
-        specifier: workspace:~
-        version: link:../api
-      '@osdk/client':
-        specifier: workspace:~
-        version: link:../client
-      '@osdk/client.api':
-        specifier: workspace:~
-        version: link:../client.api
-      '@osdk/gateway':
-        specifier: workspace:~
-        version: link:../gateway
-      '@osdk/generator':
-        specifier: workspace:~
-        version: link:../generator
-      '@osdk/legacy-client':
-        specifier: workspace:~
-        version: link:../legacy-client
-      '@rollup/plugin-commonjs':
-        specifier: ^25.0.4
-        version: 25.0.7(rollup@3.29.1)
-      '@rollup/plugin-node-resolve':
-        specifier: ^15.2.1
-        version: 15.2.3(rollup@3.29.1)
-      consola:
-        specifier: ^3.2.3
-        version: 3.2.3
-      find-up:
-        specifier: ^7.0.0
-        version: 7.0.0
-      rollup:
-        specifier: ^3.28.1
-        version: 3.29.1
-      rollup-plugin-polyfill-node:
-        specifier: ^0.13.0
-        version: 0.13.0(rollup@3.29.1)
-      ts-morph:
-        specifier: ^19.0.0
-        version: 19.0.0
-      typescript:
-        specifier: ^5.5.3
-        version: 5.5.3
-      yargs:
-        specifier: ^17.7.2
-        version: 17.7.2
-    devDependencies:
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      '@osdk/shared.test':
-        specifier: workspace:~
-        version: link:../shared.test
-      '@types/node':
-        specifier: ^18.0.0
-        version: 18.17.15
-      '@types/yargs':
-        specifier: ^17.0.29
-        version: 17.0.32
-
   packages/foundry.admin:
     dependencies:
       '@osdk/foundry.core':
         specifier: workspace:*
         version: link:../foundry.core
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -1733,7 +1782,7 @@ importers:
   packages/foundry.core:
     dependencies:
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -1761,7 +1810,7 @@ importers:
         specifier: workspace:*
         version: link:../foundry.filesystem
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -1786,7 +1835,54 @@ importers:
         specifier: workspace:*
         version: link:../foundry.core
       '@osdk/shared.client':
+        specifier: workspace:^
+        version: link:../shared.client
+      '@osdk/shared.net.platformapi':
         specifier: workspace:~
+        version: link:../shared.net.platformapi
+    devDependencies:
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@osdk/monorepo.tsup':
+        specifier: workspace:~
+        version: link:../monorepo.tsup
+      typescript:
+        specifier: ^5.5.4
+        version: 5.5.4
+
+  packages/foundry.functions:
+    dependencies:
+      '@osdk/foundry.core':
+        specifier: workspace:*
+        version: link:../foundry.core
+      '@osdk/shared.client':
+        specifier: workspace:^
+        version: link:../shared.client
+      '@osdk/shared.net.platformapi':
+        specifier: workspace:~
+        version: link:../shared.net.platformapi
+    devDependencies:
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@osdk/monorepo.tsup':
+        specifier: workspace:~
+        version: link:../monorepo.tsup
+      typescript:
+        specifier: ^5.5.4
+        version: 5.5.4
+
+  packages/foundry.ontologies:
+    dependencies:
+      '@osdk/shared.client':
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -1817,7 +1913,7 @@ importers:
         specifier: workspace:*
         version: link:../foundry.filesystem
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -1842,7 +1938,38 @@ importers:
         specifier: workspace:*
         version: link:../foundry.core
       '@osdk/shared.client':
+        specifier: workspace:^
+        version: link:../shared.client
+      '@osdk/shared.net.platformapi':
         specifier: workspace:~
+        version: link:../shared.net.platformapi
+    devDependencies:
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@osdk/monorepo.tsup':
+        specifier: workspace:~
+        version: link:../monorepo.tsup
+      typescript:
+        specifier: ^5.5.4
+        version: 5.5.4
+
+  packages/foundry.streams:
+    dependencies:
+      '@osdk/foundry.core':
+        specifier: workspace:*
+        version: link:../foundry.core
+      '@osdk/foundry.datasets':
+        specifier: workspace:*
+        version: link:../foundry.datasets
+      '@osdk/foundry.filesystem':
+        specifier: workspace:*
+        version: link:../foundry.filesystem
+      '@osdk/shared.client':
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -1867,7 +1994,7 @@ importers:
         specifier: workspace:*
         version: link:../foundry.core
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
@@ -1886,73 +2013,17 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
 
-  packages/gateway:
-    dependencies:
-      fetch-retry:
-        specifier: ^6.0.0
-        version: 6.0.0
-      tiny-invariant:
-        specifier: ^1.3.1
-        version: 1.3.3
-    devDependencies:
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      ts-expect:
-        specifier: ^1.3.0
-        version: 1.3.0
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-
-  packages/gateway-generator:
-    dependencies:
-      find-up:
-        specifier: ^7.0.0
-        version: 7.0.0
-      ts-morph:
-        specifier: ^19.0.0
-        version: 19.0.0
-      yaml:
-        specifier: ^2.4.2
-        version: 2.4.2
-      yargs:
-        specifier: ^17.7.2
-        version: 17.7.2
-    devDependencies:
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      '@types/yargs':
-        specifier: ^17.0.29
-        version: 17.0.32
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-
   packages/generator:
     dependencies:
       '@osdk/api':
         specifier: workspace:~
         version: link:../api
-      '@osdk/gateway':
-        specifier: workspace:~
-        version: link:../gateway
       '@osdk/generator-converters':
         specifier: workspace:~
         version: link:../generator-converters
+      '@osdk/internal.foundry.core':
+        specifier: workspace:~
+        version: link:../internal.foundry.core
       fast-deep-equal:
         specifier: ^3.1.3
         version: 3.1.3
@@ -1962,9 +2033,6 @@ importers:
       prettier:
         specifier: ^3.0.3
         version: 3.2.5
-      prettier-plugin-organize-imports:
-        specifier: ^3.2.4
-        version: 3.2.4(prettier@3.2.5)(typescript@5.5.4)
       tiny-invariant:
         specifier: ^1.3.1
         version: 1.3.3
@@ -1999,9 +2067,9 @@ importers:
       '@osdk/api':
         specifier: workspace:~
         version: link:../api
-      '@osdk/gateway':
+      '@osdk/internal.foundry.core':
         specifier: workspace:~
-        version: link:../gateway
+        version: link:../internal.foundry.core
     devDependencies:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
@@ -2024,18 +2092,15 @@ importers:
 
   packages/internal.foundry:
     dependencies:
-      '@osdk/api':
-        specifier: workspace:~
-        version: link:../api
       '@osdk/internal.foundry.core':
         specifier: workspace:*
         version: link:../internal.foundry.core
       '@osdk/internal.foundry.datasets':
         specifier: workspace:*
         version: link:../internal.foundry.datasets
-      '@osdk/internal.foundry.models':
+      '@osdk/internal.foundry.geo':
         specifier: workspace:*
-        version: link:../internal.foundry.models
+        version: link:../internal.foundry.geo
       '@osdk/internal.foundry.ontologies':
         specifier: workspace:*
         version: link:../internal.foundry.ontologies
@@ -2043,11 +2108,8 @@ importers:
         specifier: workspace:*
         version: link:../internal.foundry.ontologiesv2
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
-      '@osdk/shared.net':
-        specifier: workspace:~
-        version: link:../shared.net
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -2067,15 +2129,12 @@ importers:
 
   packages/internal.foundry.core:
     dependencies:
-      '@osdk/api':
-        specifier: workspace:~
-        version: link:../api
+      '@osdk/internal.foundry.geo':
+        specifier: workspace:*
+        version: link:../internal.foundry.geo
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
-      '@osdk/shared.net':
-        specifier: workspace:~
-        version: link:../shared.net
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -2095,18 +2154,12 @@ importers:
 
   packages/internal.foundry.datasets:
     dependencies:
-      '@osdk/api':
-        specifier: workspace:~
-        version: link:../api
       '@osdk/internal.foundry.core':
         specifier: workspace:*
         version: link:../internal.foundry.core
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
-      '@osdk/shared.net':
-        specifier: workspace:~
-        version: link:../shared.net
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -2124,20 +2177,11 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
 
-  packages/internal.foundry.models:
+  packages/internal.foundry.geo:
     dependencies:
-      '@osdk/api':
-        specifier: workspace:~
-        version: link:../api
-      '@osdk/internal.foundry.core':
-        specifier: workspace:*
-        version: link:../internal.foundry.core
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
-      '@osdk/shared.net':
-        specifier: workspace:~
-        version: link:../shared.net
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -2157,18 +2201,12 @@ importers:
 
   packages/internal.foundry.ontologies:
     dependencies:
-      '@osdk/api':
-        specifier: workspace:~
-        version: link:../api
       '@osdk/internal.foundry.core':
         specifier: workspace:*
         version: link:../internal.foundry.core
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
-      '@osdk/shared.net':
-        specifier: workspace:~
-        version: link:../shared.net
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -2188,21 +2226,12 @@ importers:
 
   packages/internal.foundry.ontologiesv2:
     dependencies:
-      '@osdk/api':
-        specifier: workspace:~
-        version: link:../api
       '@osdk/internal.foundry.core':
         specifier: workspace:*
         version: link:../internal.foundry.core
-      '@osdk/internal.foundry.ontologies':
-        specifier: workspace:*
-        version: link:../internal.foundry.ontologies
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
-      '@osdk/shared.net':
-        specifier: workspace:~
-        version: link:../shared.net
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -2220,66 +2249,11 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
 
-  packages/legacy-client:
-    dependencies:
-      '@osdk/api':
-        specifier: workspace:~
-        version: link:../api
-      '@osdk/gateway':
-        specifier: workspace:~
-        version: link:../gateway
-      '@osdk/shared.net':
-        specifier: workspace:~
-        version: link:../shared.net
-      fetch-retry:
-        specifier: ^6.0.0
-        version: 6.0.0
-      luxon:
-        specifier: ^3.4.4
-        version: 3.4.4
-      ngeohash:
-        specifier: ^0.6.3
-        version: 0.6.3
-      tiny-invariant:
-        specifier: ^1.3.1
-        version: 1.3.3
-    devDependencies:
-      '@osdk/generator':
-        specifier: workspace:~
-        version: link:../generator
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      '@osdk/shared.test':
-        specifier: workspace:~
-        version: link:../shared.test
-      '@types/luxon':
-        specifier: ^3.4.2
-        version: 3.4.2
-      '@types/ngeohash':
-        specifier: ^0.6.4
-        version: 0.6.8
-      ts-expect:
-        specifier: ^1.3.0
-        version: 1.3.0
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-
   packages/maker:
     dependencies:
       '@osdk/api':
         specifier: workspace:~
         version: link:../api
-      '@osdk/gateway':
-        specifier: workspace:~
-        version: link:../gateway
       consola:
         specifier: ^3.2.3
         version: 3.2.3
@@ -2299,6 +2273,9 @@ importers:
       '@osdk/client.unstable':
         specifier: workspace:~
         version: link:../client.unstable
+      '@osdk/internal.foundry.core':
+        specifier: workspace:~
+        version: link:../internal.foundry.core
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -2439,7 +2416,7 @@ importers:
   packages/shared.client.impl:
     dependencies:
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.errors':
         specifier: workspace:~
@@ -2463,11 +2440,8 @@ importers:
 
   packages/shared.net:
     dependencies:
-      '@osdk/gateway':
-        specifier: workspace:~
-        version: link:../gateway
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.client.impl':
         specifier: workspace:~
@@ -2535,7 +2509,7 @@ importers:
   packages/shared.net.platformapi:
     dependencies:
       '@osdk/shared.client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.client
       '@osdk/shared.net.errors':
         specifier: workspace:~
@@ -2559,9 +2533,18 @@ importers:
       '@osdk/api':
         specifier: workspace:~
         version: link:../api
-      '@osdk/gateway':
+      '@osdk/internal.foundry.core':
         specifier: workspace:~
-        version: link:../gateway
+        version: link:../internal.foundry.core
+      '@osdk/internal.foundry.geo':
+        specifier: workspace:~
+        version: link:../internal.foundry.geo
+      '@osdk/internal.foundry.ontologies':
+        specifier: workspace:~
+        version: link:../internal.foundry.ontologies
+      '@osdk/internal.foundry.ontologiesv2':
+        specifier: workspace:~
+        version: link:../internal.foundry.ontologiesv2
       fetch-retry:
         specifier: ^6.0.0
         version: 6.0.0
@@ -2593,6 +2576,76 @@ importers:
       typescript:
         specifier: ^5.5.4
         version: 5.5.4
+
+  packages/tmp-foundry-sdk-generator:
+    dependencies:
+      '@osdk/api':
+        specifier: workspace:*
+        version: link:../api
+      '@osdk/client':
+        specifier: workspace:*
+        version: link:../client
+      '@osdk/generator':
+        specifier: workspace:*
+        version: link:../generator
+      '@osdk/internal.foundry.core':
+        specifier: workspace:*
+        version: link:../internal.foundry.core
+      '@osdk/internal.foundry.ontologies':
+        specifier: workspace:*
+        version: link:../internal.foundry.ontologies
+      '@osdk/internal.foundry.ontologiesv2':
+        specifier: workspace:*
+        version: link:../internal.foundry.ontologiesv2
+      '@osdk/shared.net':
+        specifier: workspace:*
+        version: link:../shared.net
+      '@rollup/plugin-commonjs':
+        specifier: 28.0.0
+        version: 28.0.0(rollup@3.29.5)
+      '@rollup/plugin-node-resolve':
+        specifier: 15.3.0
+        version: 15.3.0(rollup@3.29.5)
+      consola:
+        specifier: 3.2.3
+        version: 3.2.3
+      find-up:
+        specifier: 7.0.0
+        version: 7.0.0
+      rollup:
+        specifier: 3.29.5
+        version: 3.29.5
+      rollup-plugin-polyfill-node:
+        specifier: 0.13.0
+        version: 0.13.0(rollup@3.29.5)
+      ts-morph:
+        specifier: 19.0.0
+        version: 19.0.0
+      typescript:
+        specifier: 5.5.3
+        version: 5.5.3
+      yargs:
+        specifier: 17.7.2
+        version: 17.7.2
+    devDependencies:
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@osdk/monorepo.tsup':
+        specifier: workspace:~
+        version: link:../monorepo.tsup
+      '@osdk/shared.test':
+        specifier: workspace:~
+        version: link:../shared.test
+      '@types/node':
+        specifier: ^18.0.0
+        version: 18.17.15
+      '@types/yargs':
+        specifier: ^17.0.29
+        version: 17.0.32
 
   packages/tool.release:
     dependencies:
@@ -2724,15 +2777,6 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
 
-  tests/verify-fallback-package:
-    dependencies:
-      '@osdk/api':
-        specifier: workspace:~
-        version: link:../../packages/api
-      '@osdk/legacy-client':
-        specifier: workspace:~
-        version: link:../../packages/legacy-client
-
   tests/verify-fallback-package-v2:
     dependencies:
       '@osdk/api':
@@ -2777,6 +2821,13 @@ packages:
   '@arethetypeswrong/core@0.15.1':
     resolution: {integrity: sha512-FYp6GBAgsNz81BkfItRz8RLZO03w5+BaeiPma1uCfmxTnxbtuMrI/dbzGiOk8VghO108uFI0oJo0OkewdSHw7g==}
     engines: {node: '>=18'}
+
+  '@babel/cli@7.25.6':
+    resolution: {integrity: sha512-Z+Doemr4VtvSD2SNHTrkiFZ1LX+JI6tyRXAAOb4N9khIuPyoEPmTPJarPm8ljJV1D6bnMQjyHMWTT9NeKbQuXA==}
+    engines: {node: '>=6.9.0'}
+    hasBin: true
+    peerDependencies:
+      '@babel/core': ^7.0.0-0
 
   '@babel/code-frame@7.24.2':
     resolution: {integrity: sha512-y5+tLQyV8pg3fsiln67BVLD1P13Eg4lh5RW9mF0zUuvLrv9uIQ4MCL+CRT+FTsBlBjcIan6PGsLcBN0m3ClUyQ==}
@@ -3782,8 +3833,8 @@ packages:
     resolution: {integrity: sha512-3rDakgJZ77+RiQUuSK69t1F0m8BQKA8Vh5DCS5V0DWvNY67zob2JhhQrhCO0AKLGINTRSFd1tBaHcJTkhefoSw==}
     engines: {node: '>=18'}
 
-  '@next/env@14.2.3':
-    resolution: {integrity: sha512-W7fd7IbkfmeeY2gXrzJYDx8D2lWKbVoTIj1o1ScPHNzvp30s1AuoEFSdr39bC5sjxJaxTtq3OTCZboNp0lNWHA==}
+  '@next/env@14.2.10':
+    resolution: {integrity: sha512-dZIu93Bf5LUtluBXIv4woQw2cZVZ2DJTjax5/5DOs3lzEOeKLy7GxRSr4caK9/SCPdaW6bCgpye6+n4Dh9oJPw==}
 
   '@next/env@14.2.7':
     resolution: {integrity: sha512-OTx9y6I3xE/eih+qtthppwLytmpJVPM5PPoJxChFsbjIEFXIayG0h/xLzefHGJviAa3Q5+Fd+9uYojKkHDKxoQ==}
@@ -3791,59 +3842,62 @@ packages:
   '@next/eslint-plugin-next@14.2.3':
     resolution: {integrity: sha512-L3oDricIIjgj1AVnRdRor21gI7mShlSwU/1ZGHmqM3LzHhXXhdkrfeNY5zif25Bi5Dd7fiJHsbhoZCHfXYvlAw==}
 
-  '@next/swc-darwin-arm64@14.2.3':
-    resolution: {integrity: sha512-3pEYo/RaGqPP0YzwnlmPN2puaF2WMLM3apt5jLW2fFdXD9+pqcoTzRk+iZsf8ta7+quAe4Q6Ms0nR0SFGFdS1A==}
+  '@next/swc-darwin-arm64@14.2.10':
+    resolution: {integrity: sha512-V3z10NV+cvMAfxQUMhKgfQnPbjw+Ew3cnr64b0lr8MDiBJs3eLnM6RpGC46nhfMZsiXgQngCJKWGTC/yDcgrDQ==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
 
-  '@next/swc-darwin-x64@14.2.3':
-    resolution: {integrity: sha512-6adp7waE6P1TYFSXpY366xwsOnEXM+y1kgRpjSRVI2CBDOcbRjsJ67Z6EgKIqWIue52d2q/Mx8g9MszARj8IEA==}
+  '@next/swc-darwin-x64@14.2.10':
+    resolution: {integrity: sha512-Y0TC+FXbFUQ2MQgimJ/7Ina2mXIKhE7F+GUe1SgnzRmwFY3hX2z8nyVCxE82I2RicspdkZnSWMn4oTjIKz4uzA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
 
-  '@next/swc-linux-arm64-gnu@14.2.3':
-    resolution: {integrity: sha512-cuzCE/1G0ZSnTAHJPUT1rPgQx1w5tzSX7POXSLaS7w2nIUJUD+e25QoXD/hMfxbsT9rslEXugWypJMILBj/QsA==}
+  '@next/swc-linux-arm64-gnu@14.2.10':
+    resolution: {integrity: sha512-ZfQ7yOy5zyskSj9rFpa0Yd7gkrBnJTkYVSya95hX3zeBG9E55Z6OTNPn1j2BTFWvOVVj65C3T+qsjOyVI9DQpA==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
 
-  '@next/swc-linux-arm64-musl@14.2.3':
-    resolution: {integrity: sha512-0D4/oMM2Y9Ta3nGuCcQN8jjJjmDPYpHX9OJzqk42NZGJocU2MqhBq5tWkJrUQOQY9N+In9xOdymzapM09GeiZw==}
+  '@next/swc-linux-arm64-musl@14.2.10':
+    resolution: {integrity: sha512-n2i5o3y2jpBfXFRxDREr342BGIQCJbdAUi/K4q6Env3aSx8erM9VuKXHw5KNROK9ejFSPf0LhoSkU/ZiNdacpQ==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
 
-  '@next/swc-linux-x64-gnu@14.2.3':
-    resolution: {integrity: sha512-ENPiNnBNDInBLyUU5ii8PMQh+4XLr4pG51tOp6aJ9xqFQ2iRI6IH0Ds2yJkAzNV1CfyagcyzPfROMViS2wOZ9w==}
+  '@next/swc-linux-x64-gnu@14.2.10':
+    resolution: {integrity: sha512-GXvajAWh2woTT0GKEDlkVhFNxhJS/XdDmrVHrPOA83pLzlGPQnixqxD8u3bBB9oATBKB//5e4vpACnx5Vaxdqg==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
 
-  '@next/swc-linux-x64-musl@14.2.3':
-    resolution: {integrity: sha512-BTAbq0LnCbF5MtoM7I/9UeUu/8ZBY0i8SFjUMCbPDOLv+un67e2JgyN4pmgfXBwy/I+RHu8q+k+MCkDN6P9ViQ==}
+  '@next/swc-linux-x64-musl@14.2.10':
+    resolution: {integrity: sha512-opFFN5B0SnO+HTz4Wq4HaylXGFV+iHrVxd3YvREUX9K+xfc4ePbRrxqOuPOFjtSuiVouwe6uLeDtabjEIbkmDA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
 
-  '@next/swc-win32-arm64-msvc@14.2.3':
-    resolution: {integrity: sha512-AEHIw/dhAMLNFJFJIJIyOFDzrzI5bAjI9J26gbO5xhAKHYTZ9Or04BesFPXiAYXDNdrwTP2dQceYA4dL1geu8A==}
+  '@next/swc-win32-arm64-msvc@14.2.10':
+    resolution: {integrity: sha512-9NUzZuR8WiXTvv+EiU/MXdcQ1XUvFixbLIMNQiVHuzs7ZIFrJDLJDaOF1KaqttoTujpcxljM/RNAOmw1GhPPQQ==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [win32]
 
-  '@next/swc-win32-ia32-msvc@14.2.3':
-    resolution: {integrity: sha512-vga40n1q6aYb0CLrM+eEmisfKCR45ixQYXuBXxOOmmoV8sYST9k7E3US32FsY+CkkF7NtzdcebiFT4CHuMSyZw==}
+  '@next/swc-win32-ia32-msvc@14.2.10':
+    resolution: {integrity: sha512-fr3aEbSd1GeW3YUMBkWAu4hcdjZ6g4NBl1uku4gAn661tcxd1bHs1THWYzdsbTRLcCKLjrDZlNp6j2HTfrw+Bg==}
     engines: {node: '>= 10'}
     cpu: [ia32]
     os: [win32]
 
-  '@next/swc-win32-x64-msvc@14.2.3':
-    resolution: {integrity: sha512-Q1/zm43RWynxrO7lW4ehciQVj+5ePBhOK+/K2P7pLFX3JaJ/IZVC69SHidrmZSOkqz7ECIOhhy7XhAFG4JYyHA==}
+  '@next/swc-win32-x64-msvc@14.2.10':
+    resolution: {integrity: sha512-UjeVoRGKNL2zfbcQ6fscmgjBAS/inHBh63mjIlfPg/NG8Yn2ztqylXt5qilYb6hoHIwaU2ogHknHWWmahJjgZQ==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
+
+  '@nicolo-ribaudo/chokidar-2@2.1.8-no-fsevents.3':
+    resolution: {integrity: sha512-s88O1aVtXftvp5bCPB7WnmXc5IwOZZ7YPuwNPt+GtOOXpPvad1LfbmjYv+qII7zP6RU2QGnqve27dnLycEnyEQ==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -3973,6 +4027,61 @@ packages:
   '@open-draft/until@2.1.0':
     resolution: {integrity: sha512-U69T3ItWHvLwGg5eJ0n3I62nWuE6ilHlmz7zM0npLBRvPRd7e6NYmg54vvRtP5mZG7kZqZCFVdsTWo7BPtBujg==}
 
+  '@osdk/api@1.9.1':
+    resolution: {integrity: sha512-a67IMGvlLYkGDsO0Dja9J+vTzWfshn6xAICZlv3d12ys71YvMoTA6kKUgiMrec+cC0vp4R3IE3ESlczsfiJ/iQ==}
+
+  '@osdk/api@2.0.0-beta.9':
+    resolution: {integrity: sha512-lAPOyHTXLAEvgoVqIuJWcUVP39L8Fchl1VDrXhMbsfOA8G92TKVCv3voVBZu0SLddkjHexZrPvvo9+5Q/9GZYA==}
+
+  '@osdk/client.api@2.0.0-beta.9':
+    resolution: {integrity: sha512-wbjfV2ITTsxQrfEginguct0CWPxkreVnS80fsJXJtkM373+8takk2vC0/tZDZAl6rJ8FAnIY1ONgsFrnuc+gQg==}
+    peerDependencies:
+      '@types/geojson': '*'
+
+  '@osdk/client.unstable.osw@0.1.0':
+    resolution: {integrity: sha512-R0OgiOI0V5nCCT00YSYJfSbaNQKmyZrjCA7fOksysu6ax46te783gH2qDhZYtlebJ2CZSgUy9v7PA//Sia1oow==}
+
+  '@osdk/client.unstable@2.0.0-beta.9':
+    resolution: {integrity: sha512-Yq5BaNUKZWavX36f3e/FZl9Ugru5ApDBPezjjs/QaGoYJm+s4Ufmy0O60x+hmQWPXSU14zbeXPeXUIM56+iVAQ==}
+
+  '@osdk/client@2.0.0-beta.9':
+    resolution: {integrity: sha512-uPpt1+FK4j2Gpqkq9NZP71ThVAikwtEDyf8WjIAj/IBx0ErqRXOkvG2LcYzim8DkR6ArYkzBeDg8Bq/vRwNQRg==}
+    peerDependencies:
+      pino: ^9.1.0
+    peerDependenciesMeta:
+      pino:
+        optional: true
+
+  '@osdk/gateway@2.4.1':
+    resolution: {integrity: sha512-RHwTFQ2dGKbu25YwjukRKQj9CzoO3xdueSEetIkfCuuHvOLOlIUAJsjj+j7UV96MzsbefAcsQyJC+PqENdU57w==}
+
+  '@osdk/generator-converters@2.0.0-beta.9':
+    resolution: {integrity: sha512-jVtM3X/6ncjz3KQsLK9+zUymTtmTXld11GKZq9xrIcOhi0L8FsEZ+8/mWbaOBq/qnekhvR698j5qBeehfN/B1w==}
+
+  '@osdk/legacy-client@2.5.1':
+    resolution: {integrity: sha512-vo5mMnnAIoBhQORSlKfbVH7G9UNMxJYiRCUxwdrKMkBaJKT5ClJbLTiv9anpqTFkBaw82vMxd7MA80nt3X8hXg==}
+
+  '@osdk/oauth@0.4.0-beta.0':
+    resolution: {integrity: sha512-kBzt2Z18L665sgZglcSUKENYISjtX1+3TrA8cKIVs3Kf3P60VsMriI0Dm6PCJZzWjlaI32rhqWAUyZVP0xxvEQ==}
+
+  '@osdk/shared.client.impl@0.1.0':
+    resolution: {integrity: sha512-mNpUkkwnDuPK3LNgilQ0uaUUstrTZ/gqNejSil0Q7Zd+Nq05sAmuyiC6a+5el6p1zByzv+XthQAnJF5Nwcuoag==}
+
+  '@osdk/shared.client@0.0.0':
+    resolution: {integrity: sha512-8X42+4YUM6ItGqG5nkNRGlYBgCLPmT4BklCy1SvhHPn02A87bikACCqWYiMSDy+I2Tw/qm9oyHl/fTYCH8dvGg==}
+
+  '@osdk/shared.net.errors@1.1.0':
+    resolution: {integrity: sha512-mn6KiTUfTQnQr0UdqHzViuIdXOEDT04e+3RSmr3DHEUcAN8cnIBMCOpnSQ/+o1li7SqW+gx3uDA03MdODtLA2g==}
+
+  '@osdk/shared.net.fetch@0.1.0':
+    resolution: {integrity: sha512-YQXAy2ZcBRtI12/Yrivj7Yf33NYg9EQs0FX2uCGeSapkLqb8hQH7VBgTdDWXMJIJeUdIgANg0+DmWckNIY9DDQ==}
+
+  '@osdk/shared.net@1.12.1':
+    resolution: {integrity: sha512-uJE124K3O21A1Of2TdOqMHBfrIYshcDSLr5em4v1vNZZGSsSCYUYGo5vvkS6vzUVDA2xSn/Uf2FgdzX6BWxIhQ==}
+
+  '@osdk/shared.net@2.0.0-beta.2':
+    resolution: {integrity: sha512-UD7BK7Ou9zOzK05hQTbDsZhlmF9isxV5EtfTUd1uAPR1nuRFsutL3Krr/+Kpt/DR8U8m773tHcabfL6j/oYbgA==}
+
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
@@ -4025,9 +4134,9 @@ packages:
     resolution: {integrity: sha512-es2g3dq6Nb07iFxGk5GuHN20RwBZOsuDQN7izWIisUcv9r+d2C5jQxqmgkdebXgReWfiyUabcki6Fg77mSNrig==}
     engines: {node: '>=14.0.0'}
 
-  '@rollup/plugin-commonjs@25.0.7':
-    resolution: {integrity: sha512-nEvcR+LRjEjsaSsc4x3XZfCCvZIaSMenZu/OiwOKGN2UhQpAYI7ru7czFvyWbErlpoGjnSX3D5Ch5FcMA3kRWQ==}
-    engines: {node: '>=14.0.0'}
+  '@rollup/plugin-commonjs@28.0.0':
+    resolution: {integrity: sha512-BJcu+a+Mpq476DMXG+hevgPSl56bkUoi88dKT8t3RyUp8kGuOh+2bU8Gs7zXDlu+fyZggnJ+iOBGrb/O1SorYg==}
+    engines: {node: '>=16.0.0 || 14 >= 14.17'}
     peerDependencies:
       rollup: ^2.68.0||^3.0.0||^4.0.0
     peerDependenciesMeta:
@@ -4043,8 +4152,8 @@ packages:
       rollup:
         optional: true
 
-  '@rollup/plugin-node-resolve@15.2.3':
-    resolution: {integrity: sha512-j/lym8nf5E21LwBT4Df1VD6hRO2L2iwUeUmP7litikRsVp1H6NWx20NEp0Y7su+7XGc476GnXXc4kFeZNGmaSQ==}
+  '@rollup/plugin-node-resolve@15.3.0':
+    resolution: {integrity: sha512-9eO5McEICxMzJpDW9OnMYSv4Sta3hmt7VtBFz5zR9273suNOydOyq/FrGeGy+KsTRFm8w0SLVhzig2ILFT63Ag==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       rollup: ^2.78.0||^3.0.0||^4.0.0
@@ -4324,9 +4433,6 @@ packages:
 
   '@types/lint-staged@13.3.0':
     resolution: {integrity: sha512-WxGjVP+rA4OJlEdbZdT9MS9PFKQ7kVPhLn26gC+2tnBWBEFEj/KW+IbFfz6sxdxY5U6V7BvyF+3BzCGsAMHhNg==}
-
-  '@types/luxon@3.4.2':
-    resolution: {integrity: sha512-TifLZlFudklWlMBfhubvgqTXRzLDI5pCbGa4P8a3wPyUQSW+1xQ5eDsreP9DWHX3tjq1ke96uYG/nwundroWcA==}
 
   '@types/mdast@4.0.4':
     resolution: {integrity: sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA==}
@@ -4848,10 +4954,25 @@ packages:
   b4a@1.6.4:
     resolution: {integrity: sha512-fpWrvyVHEKyeEvbKZTVOeZF3VSKKWtJxFIxX/jaVPf+cLbGUSitjb49pHLqPV2BUNNZ0LcoeEGfE/YCpyDYHIw==}
 
+  babel-helper-evaluate-path@0.5.0:
+    resolution: {integrity: sha512-mUh0UhS607bGh5wUMAQfOpt2JX2ThXMtppHRdRU1kL7ZLRWIXxoV2UIV1r2cAeeNeU1M5SB5/RSUgUxrK8yOkA==}
+
+  babel-helper-mark-eval-scopes@0.4.3:
+    resolution: {integrity: sha512-+d/mXPP33bhgHkdVOiPkmYoeXJ+rXRWi7OdhwpyseIqOS8CmzHQXHUp/+/Qr8baXsT0kjGpMHHofHs6C3cskdA==}
+
+  babel-helper-remove-or-void@0.4.3:
+    resolution: {integrity: sha512-eYNceYtcGKpifHDir62gHJadVXdg9fAhuZEXiRQnJJ4Yi4oUTpqpNY//1pM4nVyjjDMPYaC2xSf0I+9IqVzwdA==}
+
   babel-plugin-dev-expression@0.2.3:
     resolution: {integrity: sha512-rP5LK9QQTzCW61nVVzw88En1oK8t8gTsIeC6E61oelxNsU842yMjF0G1MxhvUpCkxCEIj7sE8/e5ieTheT//uw==}
     peerDependencies:
       '@babel/core': ^7.0.0
+
+  babel-plugin-minify-dead-code-elimination@0.5.2:
+    resolution: {integrity: sha512-krq9Lwi0QIzyAlcNBXTL4usqUvevB4BzktdEsb8srcXC1AaYqRJiAQw6vdKdJSaXbz6snBvziGr6ch/aoRCfpA==}
+
+  babel-plugin-transform-inline-environment-variables@0.4.4:
+    resolution: {integrity: sha512-bJILBtn5a11SmtR2j/3mBOjX4K3weC6cq+NNZ7hG22wCAqpc3qtj/iN7dSe9HDiS46lgp1nHsQgeYrea/RUe+g==}
 
   bail@1.0.5:
     resolution: {integrity: sha512-xFbRxM1tahm08yHBP16MMjVUAvDaBMD38zsM9EMAUN61omwLmKlOpB/Zku5QkjZ8TZ4vn53pj+t518cH0S03RQ==}
@@ -4905,10 +5026,6 @@ packages:
 
   buffer@6.0.3:
     resolution: {integrity: sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==}
-
-  builtin-modules@3.3.0:
-    resolution: {integrity: sha512-zhaCDicdLuWN5UbN5IMnFqNMhNfo919sH85y2/ea+5Yg9TsTkeZxpL+JLbp6cgYFS4sRLp3YV4S6yDuqVWHYOw==}
-    engines: {node: '>=6'}
 
   builtins@5.0.1:
     resolution: {integrity: sha512-qwVpFEHNfhYJIzNRBvd2C1kyo6jz3ZSMPyyuR47OPdiKWlbYnZNyDWuyR175qDnAJLiCo5fBBqPb3RiXgWlkOQ==}
@@ -5081,6 +5198,10 @@ packages:
 
   commander@4.1.1:
     resolution: {integrity: sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==}
+    engines: {node: '>= 6'}
+
+  commander@6.2.1:
+    resolution: {integrity: sha512-U7VdrJFnJgo4xjrHpTzu0yrHPGImdsmD95ZlgYSEajAn2JKzDhDTPG9kBTefmObL2w/ngeZnilk+OV9CG3d7UA==}
     engines: {node: '>= 6'}
 
   comment-json@4.2.4:
@@ -5416,10 +5537,6 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  escalade@3.1.1:
-    resolution: {integrity: sha512-k0er2gUkLf8O0zKJiAhmkTnJlTvINGv7ygDNPbeIsX/TJjGJZHuh9B2UxbsaEkmlEo9MfhrSzmhIlhRlI2GXnw==}
-    engines: {node: '>=6'}
-
   escalade@3.1.2:
     resolution: {integrity: sha512-ErCHMCae19vR8vQGe50xIsVomy19rg6gFu3+r3jkEO46suLMWBksvVyoGgQV+jOfl84ZSOSlmv6Gxa89PmTGmA==}
     engines: {node: '>=6'}
@@ -5659,6 +5776,14 @@ packages:
   fastq@1.17.1:
     resolution: {integrity: sha512-sRVD3lWVIXWg6By68ZN7vho9a1pQcN/WBFaAAsDDFzlJjvoGx0P8z7V1t72grFJfJhu3YPZBuu25f7Kaw2jN1w==}
 
+  fdir@6.3.0:
+    resolution: {integrity: sha512-QOnuT+BOtivR77wYvCWHfGt9s4Pz1VIMbD463vegT5MLqNXy8rYFT/lPVEqf/bhYeT6qmqrNHhsX+rWwe3rOCQ==}
+    peerDependencies:
+      picomatch: ^3 || ^4
+    peerDependenciesMeta:
+      picomatch:
+        optional: true
+
   fetch-retry@6.0.0:
     resolution: {integrity: sha512-BUFj1aMubgib37I3v4q78fYo63Po7t4HUPTpQ6/QE6yK6cIQrP+W43FYToeTEyg5m2Y7eFUtijUuAv/PDlWuag==}
 
@@ -5745,6 +5870,9 @@ packages:
   fs-extra@8.1.0:
     resolution: {integrity: sha512-yhlQgA6mnOJUKOsRUFsgJdQCvkKhcz8tlZG5HBQfReYZy46OwLcY+Zia0mtdHsOo9y/hP+CxMN0TU9QxoOtG4g==}
     engines: {node: '>=6 <7 || >=8'}
+
+  fs-readdir-recursive@1.1.0:
+    resolution: {integrity: sha512-GNanXlVr2pf02+sPN40XN8HG+ePaNcvM0q5mZBd668Obwb0yD5GiUbZOFgwn8kGMY6I3mdyDJzieUy3PTYyTRA==}
 
   fs.realpath@1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
@@ -5835,10 +5963,6 @@ packages:
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
     deprecated: Glob versions prior to v9 are no longer supported
-
-  glob@8.1.0:
-    resolution: {integrity: sha512-r8hpEjiQEYlF2QU0df3dS+nxxSIreXQS1qRhMJM0Q5NDdR386C7jb7Hwwod8Fgiuex+k0GFjgft18yvxm5XoCQ==}
-    engines: {node: '>=12'}
 
   global-directory@4.0.1:
     resolution: {integrity: sha512-wHTUcDUoZ1H5/0iVqEudYW4/kAlN5cZ3j/bXn0Dpbizl9iaUVeWSHqiOjsgk6OW2bkLclbBjzewBz6weQ1zA2Q==}
@@ -5992,6 +6116,7 @@ packages:
 
   inflight@1.0.6:
     resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
+    deprecated: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
 
   inherits@2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
@@ -6042,10 +6167,6 @@ packages:
   is-buffer@2.0.5:
     resolution: {integrity: sha512-i2R6zNFDwgEHJyQUtJEk0XFi1i0dPFn/oqjK3/vPCcDeJvW5NQ83V8QbicfF1SupOaB0h8ntgBC2YiE7dfyctQ==}
     engines: {node: '>=4'}
-
-  is-builtin-module@3.2.1:
-    resolution: {integrity: sha512-BSLE3HnV2syZ0FK0iMA/yUGplUeMmNz4AW5fnTunbCIqZi4vG3WjJT9FHMy5D69xmAYBHXQhJdALdpwVxV501A==}
-    engines: {node: '>=6'}
 
   is-callable@1.2.7:
     resolution: {integrity: sha512-1BC0BVFhS/p0qtw6enp8e+8OD0UrK0oFLztSjNzhcKA3WDuJxxAPXzPuPtKkjEY9UUoEWlX/8fgKeu2S8i9JTA==}
@@ -6450,6 +6571,10 @@ packages:
   magic-string@0.30.10:
     resolution: {integrity: sha512-iIRwTIf0QKV3UAnYK4PU8uiEc4SRh5jX0mwpIwETPpHdhVM4f53RSwS/vXvN1JhGX+Cs7B8qIq3d6AH49O5fAQ==}
 
+  make-dir@2.1.0:
+    resolution: {integrity: sha512-LS9X+dc8KLxXCb8dni79fLIIUA5VyZoyjSMCwTluaXA0o27cCK0bhXkpgw+sTXVpPy/lSO57ilRixqk0vDmtRA==}
+    engines: {node: '>=6'}
+
   make-error@1.3.6:
     resolution: {integrity: sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==}
 
@@ -6649,8 +6774,8 @@ packages:
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
-  next@14.2.3:
-    resolution: {integrity: sha512-dowFkFTR8v79NPJO4QsBUtxv0g9BrS/phluVpMAt2ku7H+cbcBJlopXjkWlwxrk/xGqMemr7JkGPGemPrLLX7A==}
+  next@14.2.10:
+    resolution: {integrity: sha512-sDDExXnh33cY3RkS9JuFEKaS4HmlWmDKP1VJioucCG6z5KuA008DPsDZOzi8UfqEk3Ii+2NCQSJrfbEWtZZfww==}
     engines: {node: '>=18.17.0'}
     hasBin: true
     peerDependencies:
@@ -6781,10 +6906,6 @@ packages:
     resolution: {integrity: sha512-Mr5KC5efvAK5VUptYEIopP1bakB85k2IWXaRC0rsh1uwn1L6M0LVml8OIQ4Gudg4oyZakf7FmeRLkMMtZW1i5A==}
     engines: {node: '>=12'}
 
-  p-event@6.0.1:
-    resolution: {integrity: sha512-Q6Bekk5wpzW5qIyUP4gdMEujObYstZl6DMMOSenwBvV0BlE5LkDwkjs5yHbZmdCEq2o4RJx4tE1vwxFVf2FG1w==}
-    engines: {node: '>=16.17'}
-
   p-filter@2.1.0:
     resolution: {integrity: sha512-ZBxxZ5sL2HghephhpGAQdoskxplTwr7ICaehZwLIlfL6acuVgZPm8yBNuRAFBGEqtD/hmUeq9eqLg2ys9Xr/yw==}
     engines: {node: '>=8'}
@@ -6828,10 +6949,6 @@ packages:
   p-state@2.0.1:
     resolution: {integrity: sha512-izK3LJXvFsTOnompAXfyZRMJ6StMxwcdjgaoG20ZQH/8USERQnrSs7dtG3z6qiDHfeWhjT/WXWTCKug3pmoO1g==}
     engines: {node: '>=18'}
-
-  p-timeout@6.1.2:
-    resolution: {integrity: sha512-UbD77BuZ9Bc9aABo74gfXhNvzC9Tx7SxtHSh1fxvx3jTLLYvmVhiQZZrJzqqU0jKbN32kb5VOKiLEQI/3bIjgQ==}
-    engines: {node: '>=14.16'}
 
   p-try@2.2.0:
     resolution: {integrity: sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==}
@@ -7043,19 +7160,6 @@ packages:
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
-
-  prettier-plugin-organize-imports@3.2.4:
-    resolution: {integrity: sha512-6m8WBhIp0dfwu0SkgfOxJqh+HpdyfqSSLfKKRZSFbDuEQXDDndb8fTpRWkUrX/uBenkex3MgnVk0J3b3Y5byog==}
-    peerDependencies:
-      '@volar/vue-language-plugin-pug': ^1.0.4
-      '@volar/vue-typescript': ^1.0.4
-      prettier: '>=2.0'
-      typescript: '>=2.9'
-    peerDependenciesMeta:
-      '@volar/vue-language-plugin-pug':
-        optional: true
-      '@volar/vue-typescript':
-        optional: true
 
   prettier@2.8.8:
     resolution: {integrity: sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==}
@@ -7292,8 +7396,8 @@ packages:
       rollup:
         optional: true
 
-  rollup@3.29.1:
-    resolution: {integrity: sha512-c+ebvQz0VIH4KhhCpDsI+Bik0eT8ZFEVZEYw0cGMVqIP8zc+gnwl7iXCamTw7vzv2MeuZFZfdx5JJIq+ehzDlg==}
+  rollup@3.29.5:
+    resolution: {integrity: sha512-GVsDdsbJzzy4S/v3dqWPJ7EfvZJfCHiDqe80IyrF59LYuP+e6U1LJoUqeuqRbwAWoMNoXivMNeNAOf5E22VA1w==}
     engines: {node: '>=14.18.0', npm: '>=8.0.0'}
     hasBin: true
 
@@ -7343,6 +7447,10 @@ packages:
 
   secure-json-parse@2.7.0:
     resolution: {integrity: sha512-6aU+Rwsezw7VR8/nyvKTx8QpWH9FrcYiXXlqC4z5d5XQBDRqtbfsRjnwGyqbi3gddNtWHuEk9OANUotL26qKUw==}
+
+  semver@5.7.2:
+    resolution: {integrity: sha512-cBznnQ9KjJqU67B52RMC65CMarK2600WFnbkcaiwWq3xy/5haFJlshgnpjovMVJ+Hff49d8GEn0b87C5pDQ10g==}
+    hasBin: true
 
   semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
@@ -7407,6 +7515,10 @@ packages:
   skin-tone@2.0.0:
     resolution: {integrity: sha512-kUMbT1oBJCpgrnKoSr0o6wPtvRWT9W9UKvGLwfJYO2WuahZRHOpEyL1ckyMGgMWh0UdpmaoFqKKD29WTomNEGA==}
     engines: {node: '>=8'}
+
+  slash@2.0.0:
+    resolution: {integrity: sha512-ZYKh3Wh2z1PpEXWr0MpSBZ0V6mZHAQfYevttO11c51CaWjGTaadiKZ+wVt1PbMlDV5qhMFslpZCemhwOK7C89A==}
+    engines: {node: '>=6'}
 
   slash@3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
@@ -7737,6 +7849,9 @@ packages:
 
   tslib@2.6.3:
     resolution: {integrity: sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ==}
+
+  tslib@2.7.0:
+    resolution: {integrity: sha512-gLXCKdN1/j47AiHiOkJN69hJmcbGTHI0ImLmbYLHykhgeN0jVGola9yVjFgzCUklsZQMW55o+dW7IXv3RCXDzA==}
 
   tsup@8.2.3:
     resolution: {integrity: sha512-6YNT44oUfXRbZuSMNmN36GzwPPIlD2wBccY7looM2fkTcxkf2NEmwr3OZuDZoySklnrIG4hoEtzy8yUXYOqNcg==}
@@ -8298,6 +8413,20 @@ snapshots:
       typescript: 5.3.3
       validate-npm-package-name: 5.0.0
 
+  '@babel/cli@7.25.6(@babel/core@7.24.9)':
+    dependencies:
+      '@babel/core': 7.24.9
+      '@jridgewell/trace-mapping': 0.3.25
+      commander: 6.2.1
+      convert-source-map: 2.0.0
+      fs-readdir-recursive: 1.1.0
+      glob: 7.2.3
+      make-dir: 2.1.0
+      slash: 2.0.0
+    optionalDependencies:
+      '@nicolo-ribaudo/chokidar-2': 2.1.8-no-fsevents.3
+      chokidar: 3.6.0
+
   '@babel/code-frame@7.24.2':
     dependencies:
       '@babel/highlight': 7.24.2
@@ -8629,7 +8758,7 @@ snapshots:
       '@babel/helper-split-export-declaration': 7.24.5
       '@babel/parser': 7.24.5
       '@babel/types': 7.24.5
-      debug: 4.3.4
+      debug: 4.3.5
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
@@ -9404,21 +9533,21 @@ snapshots:
       '@monorepolint/core': 0.5.0-beta.10
       '@monorepolint/utils': 0.5.0-beta.10
       chalk: 5.3.0
-      tslib: 2.6.3
+      tslib: 2.7.0
       yargs: 17.7.2
 
   '@monorepolint/config@0.5.0-beta.10':
     dependencies:
       '@monorepolint/utils': 0.5.0-beta.10
       chalk: 5.3.0
-      tslib: 2.6.3
+      tslib: 2.7.0
 
   '@monorepolint/core@0.5.0-beta.10':
     dependencies:
       '@monorepolint/config': 0.5.0-beta.10
       '@monorepolint/utils': 0.5.0-beta.10
       chalk: 5.3.0
-      tslib: 2.6.3
+      tslib: 2.7.0
 
   '@monorepolint/rules@0.5.0-beta.10':
     dependencies:
@@ -9430,7 +9559,7 @@ snapshots:
       resolve-package-path: 4.0.3
       runtypes: 6.7.0
       semver: 7.6.3
-      tslib: 2.6.3
+      tslib: 2.7.0
 
   '@monorepolint/utils@0.5.0-beta.10':
     dependencies:
@@ -9439,7 +9568,7 @@ snapshots:
       glob: 10.3.12
       micromatch: 4.0.7
       read-yaml-file: 2.1.0
-      tslib: 2.6.3
+      tslib: 2.7.0
 
   '@mswjs/interceptors@0.29.1':
     dependencies:
@@ -9450,7 +9579,7 @@ snapshots:
       outvariant: 1.4.2
       strict-event-emitter: 0.5.1
 
-  '@next/env@14.2.3': {}
+  '@next/env@14.2.10': {}
 
   '@next/env@14.2.7': {}
 
@@ -9458,31 +9587,34 @@ snapshots:
     dependencies:
       glob: 10.3.10
 
-  '@next/swc-darwin-arm64@14.2.3':
+  '@next/swc-darwin-arm64@14.2.10':
     optional: true
 
-  '@next/swc-darwin-x64@14.2.3':
+  '@next/swc-darwin-x64@14.2.10':
     optional: true
 
-  '@next/swc-linux-arm64-gnu@14.2.3':
+  '@next/swc-linux-arm64-gnu@14.2.10':
     optional: true
 
-  '@next/swc-linux-arm64-musl@14.2.3':
+  '@next/swc-linux-arm64-musl@14.2.10':
     optional: true
 
-  '@next/swc-linux-x64-gnu@14.2.3':
+  '@next/swc-linux-x64-gnu@14.2.10':
     optional: true
 
-  '@next/swc-linux-x64-musl@14.2.3':
+  '@next/swc-linux-x64-musl@14.2.10':
     optional: true
 
-  '@next/swc-win32-arm64-msvc@14.2.3':
+  '@next/swc-win32-arm64-msvc@14.2.10':
     optional: true
 
-  '@next/swc-win32-ia32-msvc@14.2.3':
+  '@next/swc-win32-ia32-msvc@14.2.10':
     optional: true
 
-  '@next/swc-win32-x64-msvc@14.2.3':
+  '@next/swc-win32-x64-msvc@14.2.10':
+    optional: true
+
+  '@nicolo-ribaudo/chokidar-2@2.1.8-no-fsevents.3':
     optional: true
 
   '@nodelib/fs.scandir@2.1.5':
@@ -9653,6 +9785,117 @@ snapshots:
 
   '@open-draft/until@2.1.0': {}
 
+  '@osdk/api@1.9.1':
+    dependencies:
+      '@osdk/gateway': 2.4.1
+      '@osdk/shared.net': 1.12.1
+      '@types/geojson': 7946.0.14
+      fetch-retry: 6.0.0
+      tiny-invariant: 1.3.3
+
+  '@osdk/api@2.0.0-beta.9':
+    dependencies:
+      '@osdk/shared.net': 2.0.0-beta.2
+      '@types/geojson': 7946.0.14
+      fetch-retry: 6.0.0
+      tiny-invariant: 1.3.3
+
+  '@osdk/client.api@2.0.0-beta.9(@types/geojson@7946.0.14)':
+    dependencies:
+      '@osdk/api': 2.0.0-beta.9
+      '@types/geojson': 7946.0.14
+      type-fest: 4.18.2
+
+  '@osdk/client.unstable.osw@0.1.0':
+    dependencies:
+      conjure-lite: 0.4.4
+
+  '@osdk/client.unstable@2.0.0-beta.9':
+    dependencies:
+      conjure-lite: 0.4.4
+
+  '@osdk/client@2.0.0-beta.9(pino@9.1.0)':
+    dependencies:
+      '@osdk/api': 2.0.0-beta.9
+      '@osdk/client.api': 2.0.0-beta.9(@types/geojson@7946.0.14)
+      '@osdk/client.unstable': 2.0.0-beta.9
+      '@osdk/client.unstable.osw': 0.1.0
+      '@osdk/generator-converters': 2.0.0-beta.9
+      '@osdk/shared.client': 0.0.0
+      '@osdk/shared.client.impl': 0.1.0
+      '@osdk/shared.net.errors': 1.1.0
+      '@osdk/shared.net.fetch': 0.1.0
+      '@types/geojson': 7946.0.14
+      conjure-lite: 0.4.4
+      fast-deep-equal: 3.1.3
+      fetch-retry: 6.0.0
+      find-up: 7.0.0
+      isomorphic-ws: 5.0.0(ws@8.18.0)
+      tiny-invariant: 1.3.3
+      type-fest: 4.18.2
+      ws: 8.18.0
+    optionalDependencies:
+      pino: 9.1.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
+  '@osdk/gateway@2.4.1':
+    dependencies:
+      fetch-retry: 6.0.0
+      tiny-invariant: 1.3.3
+
+  '@osdk/generator-converters@2.0.0-beta.9':
+    dependencies:
+      '@osdk/api': 2.0.0-beta.9
+
+  '@osdk/legacy-client@2.5.1':
+    dependencies:
+      '@osdk/api': 1.9.1
+      '@osdk/gateway': 2.4.1
+      '@osdk/shared.net': 1.12.1
+      fetch-retry: 6.0.0
+      luxon: 3.4.4
+      ngeohash: 0.6.3
+      tiny-invariant: 1.3.3
+
+  '@osdk/oauth@0.4.0-beta.0':
+    dependencies:
+      delay: 6.0.0
+      oauth4webapi: 2.10.4
+      tiny-invariant: 1.3.3
+      typescript-event-target: 1.1.1
+
+  '@osdk/shared.client.impl@0.1.0':
+    dependencies:
+      '@osdk/shared.client': 0.0.0
+      '@osdk/shared.net.errors': 1.1.0
+      '@osdk/shared.net.fetch': 0.1.0
+
+  '@osdk/shared.client@0.0.0': {}
+
+  '@osdk/shared.net.errors@1.1.0': {}
+
+  '@osdk/shared.net.fetch@0.1.0':
+    dependencies:
+      '@osdk/shared.net.errors': 1.1.0
+      fetch-retry: 6.0.0
+
+  '@osdk/shared.net@1.12.1':
+    dependencies:
+      '@osdk/gateway': 2.4.1
+      '@osdk/shared.client': 0.0.0
+      '@osdk/shared.client.impl': 0.1.0
+      '@osdk/shared.net.errors': 1.1.0
+      '@osdk/shared.net.fetch': 0.1.0
+
+  '@osdk/shared.net@2.0.0-beta.2':
+    dependencies:
+      '@osdk/shared.client': 0.0.0
+      '@osdk/shared.client.impl': 0.1.0
+      '@osdk/shared.net.errors': 1.1.0
+      '@osdk/shared.net.fetch': 0.1.0
+
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
@@ -9712,43 +9955,43 @@ snapshots:
 
   '@remix-run/router@1.16.1': {}
 
-  '@rollup/plugin-commonjs@25.0.7(rollup@3.29.1)':
+  '@rollup/plugin-commonjs@28.0.0(rollup@3.29.5)':
     dependencies:
-      '@rollup/pluginutils': 5.1.0(rollup@3.29.1)
+      '@rollup/pluginutils': 5.1.0(rollup@3.29.5)
       commondir: 1.0.1
       estree-walker: 2.0.2
-      glob: 8.1.0
+      fdir: 6.3.0(picomatch@2.3.1)
       is-reference: 1.2.1
       magic-string: 0.30.10
+      picomatch: 2.3.1
     optionalDependencies:
-      rollup: 3.29.1
+      rollup: 3.29.5
 
-  '@rollup/plugin-inject@5.0.5(rollup@3.29.1)':
+  '@rollup/plugin-inject@5.0.5(rollup@3.29.5)':
     dependencies:
-      '@rollup/pluginutils': 5.1.0(rollup@3.29.1)
+      '@rollup/pluginutils': 5.1.0(rollup@3.29.5)
       estree-walker: 2.0.2
       magic-string: 0.30.10
     optionalDependencies:
-      rollup: 3.29.1
+      rollup: 3.29.5
 
-  '@rollup/plugin-node-resolve@15.2.3(rollup@3.29.1)':
+  '@rollup/plugin-node-resolve@15.3.0(rollup@3.29.5)':
     dependencies:
-      '@rollup/pluginutils': 5.1.0(rollup@3.29.1)
+      '@rollup/pluginutils': 5.1.0(rollup@3.29.5)
       '@types/resolve': 1.20.2
       deepmerge: 4.3.1
-      is-builtin-module: 3.2.1
       is-module: 1.0.0
       resolve: 1.22.8
     optionalDependencies:
-      rollup: 3.29.1
+      rollup: 3.29.5
 
-  '@rollup/pluginutils@5.1.0(rollup@3.29.1)':
+  '@rollup/pluginutils@5.1.0(rollup@3.29.5)':
     dependencies:
       '@types/estree': 1.0.5
       estree-walker: 2.0.2
       picomatch: 2.3.1
     optionalDependencies:
-      rollup: 3.29.1
+      rollup: 3.29.5
 
   '@rollup/rollup-android-arm-eabi@4.14.1':
     optional: true
@@ -9894,7 +10137,7 @@ snapshots:
   '@swc/helpers@0.5.5':
     dependencies:
       '@swc/counter': 0.1.3
-      tslib: 2.6.3
+      tslib: 2.7.0
 
   '@ts-morph/common@0.20.0':
     dependencies:
@@ -9957,8 +10200,6 @@ snapshots:
   '@types/json5@0.0.29': {}
 
   '@types/lint-staged@13.3.0': {}
-
-  '@types/luxon@3.4.2': {}
 
   '@types/mdast@4.0.4':
     dependencies:
@@ -10083,9 +10324,27 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@typescript-eslint/eslint-plugin@7.17.0(@typescript-eslint/parser@7.17.0(eslint@8.57.0)(typescript@5.5.4))(eslint@8.57.0)(typescript@5.5.4)':
+    dependencies:
+      '@eslint-community/regexpp': 4.11.0
+      '@typescript-eslint/parser': 7.17.0(eslint@8.57.0)(typescript@5.5.4)
+      '@typescript-eslint/scope-manager': 7.17.0
+      '@typescript-eslint/type-utils': 7.17.0(eslint@8.57.0)(typescript@5.5.4)
+      '@typescript-eslint/utils': 7.17.0(eslint@8.57.0)(typescript@5.5.4)
+      '@typescript-eslint/visitor-keys': 7.17.0
+      eslint: 8.57.0
+      graphemer: 1.4.0
+      ignore: 5.3.1
+      natural-compare: 1.4.0
+      ts-api-utils: 1.3.0(typescript@5.5.4)
+    optionalDependencies:
+      typescript: 5.5.4
+    transitivePeerDependencies:
+      - supports-color
+
   '@typescript-eslint/eslint-plugin@7.17.0(@typescript-eslint/parser@7.17.0(eslint@9.7.0)(typescript@5.5.3))(eslint@9.7.0)(typescript@5.5.3)':
     dependencies:
-      '@eslint-community/regexpp': 4.10.0
+      '@eslint-community/regexpp': 4.11.0
       '@typescript-eslint/parser': 7.17.0(eslint@9.7.0)(typescript@5.5.3)
       '@typescript-eslint/scope-manager': 7.17.0
       '@typescript-eslint/type-utils': 7.17.0(eslint@9.7.0)(typescript@5.5.3)
@@ -10153,13 +10412,26 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@typescript-eslint/parser@7.17.0(eslint@8.57.0)(typescript@5.5.4)':
+    dependencies:
+      '@typescript-eslint/scope-manager': 7.17.0
+      '@typescript-eslint/types': 7.17.0
+      '@typescript-eslint/typescript-estree': 7.17.0(typescript@5.5.4)
+      '@typescript-eslint/visitor-keys': 7.17.0
+      debug: 4.3.5
+      eslint: 8.57.0
+    optionalDependencies:
+      typescript: 5.5.4
+    transitivePeerDependencies:
+      - supports-color
+
   '@typescript-eslint/parser@7.17.0(eslint@9.7.0)(typescript@5.5.3)':
     dependencies:
       '@typescript-eslint/scope-manager': 7.17.0
       '@typescript-eslint/types': 7.17.0
       '@typescript-eslint/typescript-estree': 7.17.0(typescript@5.5.3)
       '@typescript-eslint/visitor-keys': 7.17.0
-      debug: 4.3.4
+      debug: 4.3.5
       eslint: 9.7.0
     optionalDependencies:
       typescript: 5.5.3
@@ -10217,11 +10489,23 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@typescript-eslint/type-utils@7.17.0(eslint@8.57.0)(typescript@5.5.4)':
+    dependencies:
+      '@typescript-eslint/typescript-estree': 7.17.0(typescript@5.5.4)
+      '@typescript-eslint/utils': 7.17.0(eslint@8.57.0)(typescript@5.5.4)
+      debug: 4.3.5
+      eslint: 8.57.0
+      ts-api-utils: 1.3.0(typescript@5.5.4)
+    optionalDependencies:
+      typescript: 5.5.4
+    transitivePeerDependencies:
+      - supports-color
+
   '@typescript-eslint/type-utils@7.17.0(eslint@9.7.0)(typescript@5.5.3)':
     dependencies:
       '@typescript-eslint/typescript-estree': 7.17.0(typescript@5.5.3)
       '@typescript-eslint/utils': 7.17.0(eslint@9.7.0)(typescript@5.5.3)
-      debug: 4.3.4
+      debug: 4.3.5
       eslint: 9.7.0
       ts-api-utils: 1.3.0(typescript@5.5.3)
     optionalDependencies:
@@ -10239,7 +10523,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 6.21.0
       '@typescript-eslint/visitor-keys': 6.21.0
-      debug: 4.3.4
+      debug: 4.3.5
       globby: 11.1.0
       is-glob: 4.0.3
       minimatch: 9.0.3
@@ -10299,7 +10583,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 7.17.0
       '@typescript-eslint/visitor-keys': 7.17.0
-      debug: 4.3.4
+      debug: 4.3.5
       globby: 11.1.0
       is-glob: 4.0.3
       minimatch: 9.0.4
@@ -10307,6 +10591,21 @@ snapshots:
       ts-api-utils: 1.3.0(typescript@5.5.3)
     optionalDependencies:
       typescript: 5.5.3
+    transitivePeerDependencies:
+      - supports-color
+
+  '@typescript-eslint/typescript-estree@7.17.0(typescript@5.5.4)':
+    dependencies:
+      '@typescript-eslint/types': 7.17.0
+      '@typescript-eslint/visitor-keys': 7.17.0
+      debug: 4.3.5
+      globby: 11.1.0
+      is-glob: 4.0.3
+      minimatch: 9.0.4
+      semver: 7.6.3
+      ts-api-utils: 1.3.0(typescript@5.5.4)
+    optionalDependencies:
+      typescript: 5.5.4
     transitivePeerDependencies:
       - supports-color
 
@@ -10339,6 +10638,17 @@ snapshots:
       '@typescript-eslint/types': 7.16.0
       '@typescript-eslint/typescript-estree': 7.16.0(typescript@5.5.3)
       eslint: 9.7.0
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
+
+  '@typescript-eslint/utils@7.17.0(eslint@8.57.0)(typescript@5.5.4)':
+    dependencies:
+      '@eslint-community/eslint-utils': 4.4.0(eslint@8.57.0)
+      '@typescript-eslint/scope-manager': 7.17.0
+      '@typescript-eslint/types': 7.17.0
+      '@typescript-eslint/typescript-estree': 7.17.0(typescript@5.5.4)
+      eslint: 8.57.0
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -10760,9 +11070,24 @@ snapshots:
 
   b4a@1.6.4: {}
 
+  babel-helper-evaluate-path@0.5.0: {}
+
+  babel-helper-mark-eval-scopes@0.4.3: {}
+
+  babel-helper-remove-or-void@0.4.3: {}
+
   babel-plugin-dev-expression@0.2.3(@babel/core@7.24.9):
     dependencies:
       '@babel/core': 7.24.9
+
+  babel-plugin-minify-dead-code-elimination@0.5.2:
+    dependencies:
+      babel-helper-evaluate-path: 0.5.0
+      babel-helper-mark-eval-scopes: 0.4.3
+      babel-helper-remove-or-void: 0.4.3
+      lodash: 4.17.21
+
+  babel-plugin-transform-inline-environment-variables@0.4.4: {}
 
   bail@1.0.5: {}
 
@@ -10815,8 +11140,6 @@ snapshots:
     dependencies:
       base64-js: 1.5.1
       ieee754: 1.2.1
-
-  builtin-modules@3.3.0: {}
 
   builtins@5.0.1:
     dependencies:
@@ -10986,6 +11309,8 @@ snapshots:
   commander@12.1.0: {}
 
   commander@4.1.1: {}
+
+  commander@6.2.1: {}
 
   comment-json@4.2.4:
     dependencies:
@@ -11442,8 +11767,6 @@ snapshots:
       '@esbuild/win32-ia32': 0.23.0
       '@esbuild/win32-x64': 0.23.0
 
-  escalade@3.1.1: {}
-
   escalade@3.1.2: {}
 
   escape-string-regexp@1.0.5: {}
@@ -11885,6 +12208,10 @@ snapshots:
     dependencies:
       reusify: 1.0.4
 
+  fdir@6.3.0(picomatch@2.3.1):
+    optionalDependencies:
+      picomatch: 2.3.1
+
   fetch-retry@6.0.0: {}
 
   fflate@0.8.2: {}
@@ -11986,6 +12313,8 @@ snapshots:
       jsonfile: 4.0.0
       universalify: 0.1.2
 
+  fs-readdir-recursive@1.1.0: {}
+
   fs.realpath@1.0.0: {}
 
   fsevents@2.3.3:
@@ -12082,14 +12411,6 @@ snapshots:
       minimatch: 3.1.2
       once: 1.4.0
       path-is-absolute: 1.0.1
-
-  glob@8.1.0:
-    dependencies:
-      fs.realpath: 1.0.0
-      inflight: 1.0.6
-      inherits: 2.0.4
-      minimatch: 5.1.6
-      once: 1.4.0
 
   global-directory@4.0.1:
     dependencies:
@@ -12263,10 +12584,6 @@ snapshots:
       has-tostringtag: 1.0.2
 
   is-buffer@2.0.5: {}
-
-  is-builtin-module@3.2.1:
-    dependencies:
-      builtin-modules: 3.3.0
 
   is-callable@1.2.7: {}
 
@@ -12627,6 +12944,11 @@ snapshots:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.4.15
 
+  make-dir@2.1.0:
+    dependencies:
+      pify: 4.0.1
+      semver: 5.7.2
+
   make-error@1.3.6: {}
 
   markdown-escapes@1.0.4: {}
@@ -12910,27 +13232,27 @@ snapshots:
 
   neo-async@2.6.2: {}
 
-  next@14.2.3(@babel/core@7.24.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  next@14.2.10(@babel/core@7.24.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
-      '@next/env': 14.2.3
+      '@next/env': 14.2.10
       '@swc/helpers': 0.5.5
       busboy: 1.6.0
-      caniuse-lite: 1.0.30001612
+      caniuse-lite: 1.0.30001643
       graceful-fs: 4.2.11
       postcss: 8.4.31
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       styled-jsx: 5.1.1(@babel/core@7.24.9)(react@18.3.1)
     optionalDependencies:
-      '@next/swc-darwin-arm64': 14.2.3
-      '@next/swc-darwin-x64': 14.2.3
-      '@next/swc-linux-arm64-gnu': 14.2.3
-      '@next/swc-linux-arm64-musl': 14.2.3
-      '@next/swc-linux-x64-gnu': 14.2.3
-      '@next/swc-linux-x64-musl': 14.2.3
-      '@next/swc-win32-arm64-msvc': 14.2.3
-      '@next/swc-win32-ia32-msvc': 14.2.3
-      '@next/swc-win32-x64-msvc': 14.2.3
+      '@next/swc-darwin-arm64': 14.2.10
+      '@next/swc-darwin-x64': 14.2.10
+      '@next/swc-linux-arm64-gnu': 14.2.10
+      '@next/swc-linux-arm64-musl': 14.2.10
+      '@next/swc-linux-x64-gnu': 14.2.10
+      '@next/swc-linux-x64-musl': 14.2.10
+      '@next/swc-win32-arm64-msvc': 14.2.10
+      '@next/swc-win32-ia32-msvc': 14.2.10
+      '@next/swc-win32-x64-msvc': 14.2.10
     transitivePeerDependencies:
       - '@babel/core'
       - babel-plugin-macros
@@ -13063,10 +13385,6 @@ snapshots:
 
   p-defer@4.0.1: {}
 
-  p-event@6.0.1:
-    dependencies:
-      p-timeout: 6.1.2
-
   p-filter@2.1.0:
     dependencies:
       p-map: 2.1.0
@@ -13104,8 +13422,6 @@ snapshots:
   p-map@7.0.2: {}
 
   p-state@2.0.1: {}
-
-  p-timeout@6.1.2: {}
 
   p-try@2.2.0: {}
 
@@ -13309,11 +13625,6 @@ snapshots:
       which-pm: 2.0.0
 
   prelude-ls@1.2.1: {}
-
-  prettier-plugin-organize-imports@3.2.4(prettier@3.2.5)(typescript@5.5.4):
-    dependencies:
-      prettier: 3.2.5
-      typescript: 5.5.4
 
   prettier@2.8.8: {}
 
@@ -13580,10 +13891,10 @@ snapshots:
     dependencies:
       glob: 7.2.3
 
-  rollup-plugin-polyfill-node@0.13.0(rollup@3.29.1):
+  rollup-plugin-polyfill-node@0.13.0(rollup@3.29.5):
     dependencies:
-      '@rollup/plugin-inject': 5.0.5(rollup@3.29.1)
-      rollup: 3.29.1
+      '@rollup/plugin-inject': 5.0.5(rollup@3.29.5)
+      rollup: 3.29.5
 
   rollup-plugin-visualizer@5.12.0(rollup@4.19.0):
     dependencies:
@@ -13594,7 +13905,7 @@ snapshots:
     optionalDependencies:
       rollup: 4.19.0
 
-  rollup@3.29.1:
+  rollup@3.29.5:
     optionalDependencies:
       fsevents: 2.3.3
 
@@ -13676,6 +13987,8 @@ snapshots:
 
   secure-json-parse@2.7.0: {}
 
+  semver@5.7.2: {}
+
   semver@6.3.1: {}
 
   semver@7.5.4:
@@ -13734,6 +14047,8 @@ snapshots:
   skin-tone@2.0.0:
     dependencies:
       unicode-emoji-modifier-base: 1.0.0
+
+  slash@2.0.0: {}
 
   slash@3.0.0: {}
 
@@ -14153,6 +14468,8 @@ snapshots:
 
   tslib@2.6.3: {}
 
+  tslib@2.7.0: {}
+
   tsup@8.2.3(@microsoft/api-extractor@7.47.0(@types/node@20.14.10))(jiti@1.21.6)(postcss@8.4.39)(typescript@5.5.3)(yaml@2.4.5):
     dependencies:
       bundle-require: 5.0.0(esbuild@0.23.0)
@@ -14397,7 +14714,7 @@ snapshots:
   update-browserslist-db@1.0.13(browserslist@4.23.0):
     dependencies:
       browserslist: 4.23.0
-      escalade: 3.1.1
+      escalade: 3.1.2
       picocolors: 1.0.1
 
   update-browserslist-db@1.1.0(browserslist@4.23.2):
@@ -14887,7 +15204,7 @@ snapshots:
   yargs@17.7.2:
     dependencies:
       cliui: 8.0.1
-      escalade: 3.1.1
+      escalade: 3.1.2
       get-caller-file: 2.0.5
       require-directory: 2.1.1
       string-width: 4.2.3

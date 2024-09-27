@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import type { Documentation, Safety } from "./Common.js";
+import type { Documentation, Locator, Safety } from "./Common.js";
 import type { DataType } from "./DataTypes.js";
 
 export interface Component {
-  name: string;
+  locator: Locator;
   type: DataType;
   safety: Safety;
   documentation: Documentation;
-  namespace?: string;
   nullable?: boolean;
 }

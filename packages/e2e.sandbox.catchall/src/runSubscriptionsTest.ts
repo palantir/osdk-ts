@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import type { ObjectSetListener } from "@osdk/client/unstable-do-not-use";
+import type { EXPERIMENTAL_ObjectSetListener } from "@osdk/api/unstable";
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/api/unstable";
 import { Employee } from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
 import { logger } from "./logger.js";
 
 export function runSubscriptionsTest() {
-  const makeObjectSetListener = (prefix: string): ObjectSetListener<any> => {
+  const makeObjectSetListener = (
+    prefix: string,
+  ): EXPERIMENTAL_ObjectSetListener<any> => {
     return {
       onError(err) {
         logger.error({ err }, "%s: Error in subscription", prefix);
@@ -38,9 +41,13 @@ export function runSubscriptionsTest() {
 
   client(Employee).where({
     jobProfile: "Echo",
-  }).subscribe(makeObjectSetListener("Sub(Echo)"));
+  })[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
+    makeObjectSetListener("Sub(Echo)"),
+  );
 
   client(Employee).where({
     jobProfile: "Delta",
-  }).subscribe(makeObjectSetListener("Sub(Delta)"));
+  })[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
+    makeObjectSetListener("Sub(Delta)"),
+  );
 }

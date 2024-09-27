@@ -14,40 +14,21 @@
  * limitations under the License.
  */
 
-import type { ObjectInterfaceBaseDefinition } from "./ObjectTypeDefinition.js";
-import type { OntologyDefinition } from "./OntologyDefinition.js";
+import type { OsdkMetadata } from "../OsdkMetadata.js";
+import type {
+  ObjectInterfaceBaseMetadata,
+  ObjectInterfaceCompileDefinition,
+} from "./ObjectTypeDefinition.js";
 
-export type InterfaceDefinitionFrom<
-  O extends OntologyDefinition<any>,
-  K extends InterfaceKeysFrom<O>,
-> = O["interfaces"] extends {} ? O["interfaces"][K] : never;
-
-export type InterfaceKeysFrom<O extends OntologyDefinition<string>> =
-  keyof O["interfaces"];
-
-export type InterfacePropertyKeysFrom<
-  O extends OntologyDefinition<any>,
-  K extends InterfaceKeysFrom<O>,
-> = keyof InterfaceDefinitionFrom<O, K>["properties"] & string;
-
-export type InterfacePropertyKeysFrom2<
-  I extends InterfaceDefinition<any, any>,
-> = keyof I["properties"] & string;
-
-export type InterfacePropertyDefinitionsFrom<
-  O extends OntologyDefinition<any>,
-  K extends InterfaceKeysFrom<O>,
-> = InterfaceDefinitionFrom<O, K>["properties"];
-
-export type InterfacePropertyDefinitionFrom<
-  O extends OntologyDefinition<any>,
-  K extends InterfaceKeysFrom<O>,
-  P extends InterfacePropertyKeysFrom<O, K>,
-> = InterfacePropertyDefinitionsFrom<O, K>[P];
-
-export interface InterfaceDefinition<
-  K extends string,
-  N = unknown,
-> extends ObjectInterfaceBaseDefinition<K, N> {
+export interface InterfaceMetadata extends ObjectInterfaceBaseMetadata {
   type: "interface";
+}
+
+export interface InterfaceDefinition {
+  type: "interface";
+  apiName: string;
+  osdkMetadata?: OsdkMetadata;
+  __DefinitionMetadata?:
+    & InterfaceMetadata
+    & ObjectInterfaceCompileDefinition;
 }

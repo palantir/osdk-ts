@@ -14,29 +14,22 @@
  * limitations under the License.
  */
 
-import type { PreviewMode } from "@osdk/foundry.core";
+import type * as _Core from "@osdk/foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
-import type {
-  BranchName,
-  CreateDatasetRequest,
-  Dataset,
-  DatasetRid,
-  TableExportFormat,
-  TransactionRid,
-} from "../_components.js";
+import type * as _Datasets from "../_components.js";
 
 //
 
 const _createDataset: $FoundryPlatformMethod<
   (
-    $body: CreateDatasetRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<Dataset>
+    $body: _Datasets.CreateDatasetRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Datasets.Dataset>
 > = [1, "/v2/datasets", 3];
 
 /**
@@ -50,18 +43,18 @@ const _createDataset: $FoundryPlatformMethod<
 export function createDataset(
   $ctx: $Client | $ClientContext,
   ...args: [
-    $body: CreateDatasetRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $body: _Datasets.CreateDatasetRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<Dataset> {
+): Promise<_Datasets.Dataset> {
   return $foundryPlatformFetch($ctx, _createDataset, ...args);
 }
 
 const _getDataset: $FoundryPlatformMethod<
   (
-    datasetRid: DatasetRid,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<Dataset>
+    datasetRid: _Datasets.DatasetRid,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Datasets.Dataset>
 > = [0, "/v2/datasets/{0}", 2];
 
 /**
@@ -75,25 +68,25 @@ const _getDataset: $FoundryPlatformMethod<
 export function getDataset(
   $ctx: $Client | $ClientContext,
   ...args: [
-    datasetRid: DatasetRid,
+    datasetRid: _Datasets.DatasetRid,
 
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<Dataset> {
+): Promise<_Datasets.Dataset> {
   return $foundryPlatformFetch($ctx, _getDataset, ...args);
 }
 
 const _readTableDataset: $FoundryPlatformMethod<
   (
-    datasetRid: DatasetRid,
+    datasetRid: _Datasets.DatasetRid,
     $queryParams: {
-      branchName?: BranchName | undefined;
-      startTransactionRid?: TransactionRid | undefined;
-      endTransactionRid?: TransactionRid | undefined;
-      format: TableExportFormat;
+      branchName?: _Datasets.BranchName | undefined;
+      startTransactionRid?: _Datasets.TransactionRid | undefined;
+      endTransactionRid?: _Datasets.TransactionRid | undefined;
+      format: _Datasets.TableExportFormat;
       columns: Array<string>;
       rowLimit?: number | undefined;
-      preview?: PreviewMode | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
   ) => Promise<Blob>
 > = [0, "/v2/datasets/{0}/readTable", 2, , "application/octet-stream"];
@@ -111,16 +104,16 @@ const _readTableDataset: $FoundryPlatformMethod<
 export function readTableDataset(
   $ctx: $Client | $ClientContext,
   ...args: [
-    datasetRid: DatasetRid,
+    datasetRid: _Datasets.DatasetRid,
 
     $queryParams: {
-      branchName?: BranchName | undefined;
-      startTransactionRid?: TransactionRid | undefined;
-      endTransactionRid?: TransactionRid | undefined;
-      format: TableExportFormat;
+      branchName?: _Datasets.BranchName | undefined;
+      startTransactionRid?: _Datasets.TransactionRid | undefined;
+      endTransactionRid?: _Datasets.TransactionRid | undefined;
+      format: _Datasets.TableExportFormat;
       columns: Array<string>;
       rowLimit?: number | undefined;
-      preview?: PreviewMode | undefined;
+      preview?: _Core.PreviewMode | undefined;
     },
   ]
 ): Promise<Blob> {

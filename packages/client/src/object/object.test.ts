@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/client.api";
+import type { Osdk, PropertyKeys } from "@osdk/api";
 import { $Objects, $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import { apiServer, stubData, withoutRid } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import type { UnstableClient } from "../__unstable/UnstableClient.js";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
@@ -154,7 +153,7 @@ describe("OsdkObject", () => {
     });
     it("objects are enumerable in an sdk", async () => {
       const objects = Object.keys($Objects);
-      expect(objects).toStrictEqual([
+      expect(objects.sort()).toStrictEqual([
         "Employee",
         "ObjectWithTimestampPrimaryKey",
         "Office",
@@ -163,7 +162,7 @@ describe("OsdkObject", () => {
         "Todo",
         "equipment",
         "objectTypeWithAllPropertyTypes",
-      ]);
+      ].sort());
     });
   });
 });
@@ -193,7 +192,7 @@ export async function shouldCompile_client_fetchOne_old_select(
 }
 
 export async function shouldCompile_unstableClient_fetchOne_old_select(
-  client: UnstableClient,
+  client: Client,
 ): Promise<Osdk<Employee, "employeeId">> {
   return client(Employee).fetchOne(1, {
     $select: ["employeeId"],
@@ -209,7 +208,7 @@ export async function shouldCompile_client_fetchOne_new_select(
 }
 
 export async function shouldCompile_unstableClient_fetchOne_new_select(
-  client: UnstableClient,
+  client: Client,
 ): Promise<Osdk<Employee, "employeeId">> {
   return client(Employee).fetchOne(1, {
     $select: ["employeeId"],
@@ -223,7 +222,7 @@ export async function shouldCompile_client_fetchOne_old_noArgs(
 }
 
 export async function shouldCompile_unstableClient_fetchOne_noArgs(
-  client: UnstableClient,
+  client: Client,
 ): Promise<Osdk<Employee>> {
   return client(Employee).fetchOne(1);
 }

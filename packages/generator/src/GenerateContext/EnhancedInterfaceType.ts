@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition } from "@osdk/api";
-import type { InterfaceType, SharedPropertyType } from "@osdk/gateway/types";
+import type { InterfaceMetadata } from "@osdk/api";
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/generator-converters";
+import type { InterfaceType } from "@osdk/internal.foundry.core";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedBase } from "./EnhancedBase.js";
 
 export class EnhancedInterfaceType extends EnhancedBase<InterfaceType> {
-  constructor(common: EnhanceCommon, public og: InterfaceType) {
-    super(common, og, og.apiName, "./ontology/interfaces");
+  constructor(common: EnhanceCommon, public raw: InterfaceType) {
+    super(common, raw, raw.apiName, "./ontology/interfaces");
   }
 
   getDefinitionIdentifier(v2: boolean) {
@@ -35,13 +35,13 @@ export class EnhancedInterfaceType extends EnhancedBase<InterfaceType> {
   }
 
   get properties() {
-    return this.og.properties;
+    return this.raw.properties;
   }
 
-  getCleanedUpDefinition(v2: boolean): InterfaceDefinition<any, any> {
+  getCleanedUpDefinition(v2: boolean): InterfaceMetadata {
     return deleteUndefineds(
       __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
-        this.og,
+        this.raw,
         v2,
       ),
     );

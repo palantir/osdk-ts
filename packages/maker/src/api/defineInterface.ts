@@ -17,6 +17,7 @@
 import invariant from "tiny-invariant";
 import { namespace, ontologyDefinition } from "./defineOntology.js";
 import { defineSharedPropertyType } from "./defineSpt.js";
+import type { BlueprintIcon } from "./iconNames.js";
 import type {
   InterfaceType,
   PropertyTypeType,
@@ -28,10 +29,12 @@ export function defineInterface(
     apiName: string;
     displayName?: string;
     description?: string;
+    icon?: { locator: BlueprintIcon; color: string };
     properties?: Record<
       string,
       SharedPropertyType | PropertyTypeType
     >;
+    extends?: InterfaceType[] | string[];
   },
 ): InterfaceType {
   const apiName = namespace + opts.apiName;
@@ -60,7 +63,7 @@ export function defineInterface(
           return [apiName, spt];
         } else {
           invariant(
-            apiName === type.apiName,
+            namespace + apiName === type.apiName,
             `property key and it's apiName must be identical. ${
               JSON.stringify({ key: apiName, apiName: type.apiName })
             }`,
@@ -71,12 +74,19 @@ export function defineInterface(
     ),
   );
 
+  // (opts.extends ?? []).map(val => {(val is InterfaceType) ? val :;});
+
   const a: InterfaceType = {
     apiName,
     displayMetadata: {
       displayName: opts.displayName ?? opts.apiName,
       description: opts.description ?? opts.displayName ?? opts.apiName,
-      icon: undefined,
+      icon: opts.icon !== undefined
+        ? {
+          type: "blueprint",
+          blueprint: { color: opts.icon.color, locator: opts.icon.locator },
+        }
+        : undefined,
     },
     extendsInterfaces: [],
     links: [],
@@ -84,7 +94,7 @@ export function defineInterface(
     status: { type: "active", active: {} },
   };
 
-  return ontologyDefinition.interfaceTypes[namespace + apiName] = a;
+  return ontologyDefinition.interfaceTypes[apiName] = a;
 }
 
 function isSimpleType(

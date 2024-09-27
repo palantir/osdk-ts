@@ -15,22 +15,23 @@
  */
 
 import type { QueryParameterDefinition } from "@osdk/api";
-import type { QueryDataType } from "@osdk/gateway/types";
+import {
+  wireQueryDataTypeToQueryDataTypeDefinition,
+  wireQueryParameterV2ToQueryParameterDefinition as paramToDef,
+  wireQueryTypeV2ToSdkQueryDefinitionNoParams,
+} from "@osdk/generator-converters";
+import type { QueryDataType } from "@osdk/internal.foundry.core";
 import path from "node:path";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
 import type { EnhancedQuery } from "../GenerateContext/EnhancedQuery.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import type { MinimalFs } from "../MinimalFs.js";
+import { getObjectImports } from "../shared/getObjectImports.js";
 import { getObjectTypeApiNamesFromQuery } from "../shared/getObjectTypeApiNamesFromQuery.js";
-import { wireQueryDataTypeToQueryDataTypeDefinition } from "../shared/wireQueryDataTypeToQueryDataTypeDefinition.js";
-import {
-  wireQueryParameterV2ToQueryParameterDefinition as paramToDef,
-  wireQueryTypeV2ToSdkQueryDefinitionNoParams,
-} from "../shared/wireQueryTypeV2ToSdkQueryDefinition.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
 import { formatTs } from "../util/test/formatTs.js";
-import { getDescriptionIfPresent } from "../v1.1/wireObjectTypeV2ToV1ObjectInterfaceString.js";
+import { getDescriptionIfPresent } from "./getDescriptionIfPresent.js";
 
 export async function generatePerQueryDataFilesV2(
   {
@@ -88,14 +89,18 @@ async function generateV2QueryFile(
 ) {
   const relFilePath = path.join(relOutDir, `${query.shortApiName}.ts`);
   const objectTypes = getObjectTypeApiNamesFromQuery(query);
+  const objectTypeObjects = new Set(
+    objectTypes.map(o => ontology.requireObjectType(o)),
+  );
   const importObjects = getObjectImports(
-    ontology,
-    objectTypes,
+    objectTypeObjects,
+    "",
     relFilePath,
+    true,
   );
 
   const baseProps = deleteUndefineds(
-    wireQueryTypeV2ToSdkQueryDefinitionNoParams(query.og),
+    wireQueryTypeV2ToSdkQueryDefinitionNoParams(query.raw),
   );
 
   const outputBase = deleteUndefineds(
@@ -110,8 +115,9 @@ async function generateV2QueryFile(
     path.join(outDir, `${query.shortApiName}.ts`),
     await formatTs(`
         import type { QueryDefinition , VersionBound} from "@osdk/api";
-        import type { QueryParam, QueryResult } from "@osdk/client.api";
+        import type { QueryParam, QueryResult } from "@osdk/api";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
+        import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
         ${importObjects}
 
         export namespace ${query.shortApiName} {
@@ -154,12 +160,17 @@ async function generateV2QueryFile(
         : ""
     }
 
-        export interface Definition extends QueryDefinition<
+        
+
+        }
+
+        export interface ${query.shortApiName} extends QueryDefinition<
           "${query.fullApiName}", 
           ${referencedObjectTypes},
           ${query.shortApiName}.Signature
         >, VersionBound<$ExpectedClientVersion>{
-            ${stringify(baseProps)},
+         __DefinitionMetadata?: {
+             ${stringify(baseProps)}
             parameters: {
             ${parameterDefsForType(ontology, query)}
             };
@@ -167,25 +178,28 @@ async function generateV2QueryFile(
             ${stringify(outputBase)},
             ${getLineFor__OsdkTargetType(ontology, query.output)}
             };
-        }
-
-        }
-
-        /** @deprecated use \`${query.shortApiName}.Signature\' instead */
-        export type ${query.shortApiName} = ${query.shortApiName}.Signature;
-
-
-
+            signature: ${query.shortApiName}.Signature;
+        }, 
+        ${
+      stringify(baseProps, {
+        "description": () => undefined,
+        "displayName": () => undefined,
+        "rid": () => undefined,
+      })
+    }, 
+          osdkMetadata: typeof $osdkMetadata;
+              }
 
 
         export const ${query.shortApiName}: ${query.definitionIdentifier} = {
-            ${stringify(baseProps)},
-            parameters: {
-            ${parametersForConst(query)}
-            },
-            output: {
-            ${stringify(outputBase)},
-            }
+            ${
+      stringify(baseProps, {
+        "description": () => undefined,
+        "displayName": () => undefined,
+        "rid": () => undefined,
+      })
+    },
+    osdkMetadata: $osdkMetadata
         };
         `),
   );
@@ -242,23 +256,6 @@ export function queryParamJsDoc(
   }
 
   ret += ` */\n`;
-  return ret;
-}
-
-function getObjectImports(
-  enhancedOntology: EnhancedOntologyDefinition,
-  objectTypes: string[],
-  filePath: string,
-) {
-  let ret = "";
-
-  for (const fqObjectApiName of objectTypes) {
-    const obj = enhancedOntology.requireObjectType(fqObjectApiName);
-    ret += `import type { ${obj.getDefinitionIdentifier(true)} as ${
-      obj.getImportedDefinitionIdentifier(true)
-    } } from "${obj.getImportPathRelTo(filePath)}";\n`;
-  }
-
   return ret;
 }
 

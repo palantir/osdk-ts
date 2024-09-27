@@ -1,5 +1,134 @@
 # @osdk/shared.test
 
+## 2.0.0-beta.11
+
+### Minor Changes
+
+- dc25fb4: Simplified types
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/api@2.0.0-beta.15
+
+## 2.0.0-beta.10
+
+### Minor Changes
+
+- d4d6605: Audited and cleaned up deps
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [fe9547e]
+- Updated dependencies [1f633f7]
+- Updated dependencies [d4d6605]
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.9
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.9
+  - @osdk/internal.foundry.core@0.2.0-beta.9
+  - @osdk/internal.foundry.geo@0.1.0-beta.2
+  - @osdk/api@2.0.0-beta.14
+
+## 2.0.0-beta.9
+
+### Minor Changes
+
+- 1488144: Renamed definition types to metadata
+- c28792e: Modified return type of fetchMetadata to return Object/Interface Definitions
+- 6ab5d2e: Renamed Min_Definition to \_Definition
+
+### Patch Changes
+
+- Updated dependencies [1488144]
+- Updated dependencies [c28792e]
+- Updated dependencies [26ee3bd]
+- Updated dependencies [6ab5d2e]
+  - @osdk/api@2.0.0-beta.13
+  - @osdk/internal.foundry.core@0.2.0-beta.8
+  - @osdk/internal.foundry.geo@0.1.0-beta.1
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.8
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.8
+
+## 2.0.0-beta.8
+
+### Patch Changes
+
+- @osdk/api@2.0.0-beta.12
+
+## 2.0.0-beta.7
+
+### Patch Changes
+
+- @osdk/api@2.0.0-beta.11
+
+## 2.0.0-beta.6
+
+### Major Changes
+
+- 1252d94: ESM Only
+
+### Minor Changes
+
+- e6ade8b: Adds fetchMetadata method to client
+- 5d6d5ab: Internally refactored to support new API versions
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [1252d94]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [56df85a]
+  - @osdk/api@2.0.0-beta.10
+  - @osdk/internal.foundry.core@0.2.0-beta.7
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.7
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.7
+  - @osdk/internal.foundry.geo@0.1.0-beta.0
+
+## 1.7.0-beta.5
+
+### Minor Changes
+
+- 01724ae: Remove unnecessary dependency
+
+### Patch Changes
+
+- Updated dependencies [b946e00]
+  - @osdk/api@2.0.0-beta.9
+  - @osdk/internal.foundry.core@0.2.0-beta.6
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.6
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.6
+
+## 1.7.0-beta.4
+
+### Minor Changes
+
+- 64818dc: Drop support for internal gateway package
+
+### Patch Changes
+
+- @osdk/api@2.0.0-beta.8
+- @osdk/internal.foundry.core@0.2.0-beta.5
+- @osdk/internal.foundry.ontologies@0.2.0-beta.5
+- @osdk/internal.foundry.ontologiesv2@0.2.0-beta.5
+
+## 1.7.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [9b0617d]
+  - @osdk/api@2.0.0-beta.7
+
+## 1.7.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [3affe49]
+- Updated dependencies [5d6d5ab]
+  - @osdk/api@2.0.0-beta.6
+  - @osdk/gateway@2.5.0-beta.0
+
 ## 1.7.0-beta.1
 
 ### Patch Changes

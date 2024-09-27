@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { Osdk } from "@osdk/client.api";
+import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
 import type { inspect, InspectOptionsStylized } from "node:util";
 import type { HolderBase } from "./InternalSymbols.js";
 import {
@@ -38,7 +37,7 @@ export const OsdkCustomInspectPrototype = Object.create(null, {
  */
 function customInspect(
   this:
-    & HolderBase<ObjectOrInterfaceDefinition<any, any>>
+    & HolderBase<ObjectOrInterfaceDefinition>
     & Osdk<any>,
   _depth: number,
   options: InspectOptionsStylized,
@@ -51,7 +50,7 @@ function customInspect(
 
   let ret = `Osdk<${
     options.stylize(
-      this[ObjectDefRef]?.apiName ?? this[InterfaceDefRef]?.apiName,
+      this[ObjectDefRef]?.apiName ?? this[InterfaceDefRef]?.apiName ?? "",
       "special",
     )
   }> {\n`;

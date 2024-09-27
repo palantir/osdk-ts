@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition } from "@osdk/api";
-import type { InterfaceType } from "@osdk/gateway/types";
+import type { InterfaceMetadata } from "@osdk/api";
+import type { InterfaceType } from "@osdk/internal.foundry.core";
 import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition.js";
 
 export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
   interfaceType: InterfaceType,
   v2: boolean,
-): InterfaceDefinition<any, any> {
+): InterfaceMetadata {
   return {
     type: "interface",
+    rid: interfaceType.rid,
     apiName: interfaceType.apiName,
     displayName: interfaceType.displayName,
     description: interfaceType.description,

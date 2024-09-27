@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, VersionBound } from "@osdk/api";
+import type { ObjectMetadata, VersionBound } from "@osdk/api";
 
-export interface ObjectTypeWithAllPropertyTypesDef extends
-  ObjectTypeDefinition<
-    "ObjectTypeWithAllPropertyTypes",
-    ObjectTypeWithAllPropertyTypesDef
-  >,
-  VersionBound<"0.15.0">
+export interface ObjectTypeWithAllPropertyTypesDef
+  extends ObjectMetadata, VersionBound<"0.15.0">
 {
   type: "object";
   apiName: "ObjectTypeWithAllPropertyTypes";
@@ -155,6 +151,11 @@ export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypesDef =
     primaryKeyApiName: "id" as const,
     primaryKeyType: "integer",
     links: {},
+    icon: {
+      type: "blueprint",
+      name: "icon",
+      color: "blue",
+    },
     properties: {
       id: {
         multiplicity: false,
@@ -273,6 +274,11 @@ export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypesDef =
         type: "geoshape",
       },
     },
-  } satisfies ObjectTypeDefinition<
-    "ObjectTypeWithAllPropertyTypes"
-  >;
+    titleProperty: "id" as const,
+    displayName: "ObjectTypeWithAllPropertyTypes",
+    pluralDisplayName: "ObjectTypeWithAllPropertyTypes",
+    status: "ACTIVE",
+    interfaceMap: {},
+    inverseInterfaceMap: {},
+    rid: "rid.object-type.123",
+  } satisfies ObjectMetadata;

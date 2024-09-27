@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-import {
-  getInterfaceType,
-  getObjectTypeFullMetadata,
-  getObjectTypeV2,
-  getOntologyFullMetadata,
-  getOutgoingLinkTypeV2,
-  listInterfaceTypes,
-  listOutgoingLinkTypesV2,
-} from "@osdk/gateway/requests";
-import type { OntologyFullMetadata } from "@osdk/gateway/types";
+import type { OntologyFullMetadata } from "@osdk/internal.foundry.core";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { RequestHandler } from "msw";
 import { http as rest, HttpResponse } from "msw";
 import invariant from "tiny-invariant";
 import {
+  ActionNotFoundError,
   InvalidRequest,
   LinkTypeNotFound,
   ObjectNotFoundError,
   ObjectTypeDoesNotExistError,
   OntologyNotFoundError,
+  QueryNotFoundError,
 } from "../errors.js";
 import {
   defaultOntology,
@@ -132,7 +126,7 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
    * Load ObjectSet Objects
    */
   handleOpenApiCall(
-    getOntologyFullMetadata,
+    OntologiesV2.OntologiesV2.getOntologyFullMetadata,
     ["ontologyApiName"],
     async (req) => {
       const ontology = getOntology(req.params.ontologyApiName);
@@ -141,9 +135,9 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
   ),
 
   handleOpenApiCall(
-    getObjectTypeV2,
+    OntologiesV2.ObjectTypesV2.getObjectTypeV2,
     ["ontologyApiName", "objectTypeApiName"],
-    (req) => {
+    async (req) => {
       const { objectType } = getObjectDef(
         req.params.ontologyApiName,
         req.params.objectTypeApiName,
@@ -154,9 +148,9 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
   ),
 
   handleOpenApiCall(
-    getObjectTypeFullMetadata,
+    OntologiesV2.ObjectTypesV2.getObjectTypeFullMetadata,
     ["ontologyApiName", "objectTypeApiName"],
-    (req) => {
+    async (req) => {
       return getObjectDef(
         req.params.ontologyApiName,
         req.params.objectTypeApiName,
@@ -164,31 +158,71 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
     },
   ),
 
-  handleOpenApiCall(getOutgoingLinkTypeV2, [
-    "ontology",
-    "objectType",
-    "linkType",
-  ], async ({ params }) => {
-    const linkType = getLinkType(
-      params.ontology,
-      params.objectType,
-      params.linkType,
-    );
-
-    return linkType;
-  }),
-
-  handleOpenApiCall(listOutgoingLinkTypesV2, [
-    "ontology",
-    "objectType",
-  ], async ({ params }) => {
-    const object = getObjectDef(params.ontology, params.objectType);
-
-    return { data: object.linkTypes };
-  }),
+  handleOpenApiCall(
+    OntologiesV2.ActionTypesV2.getActionTypeV2,
+    ["ontologyApiName", "actionTypeApiName"],
+    async (req) => {
+      const ontology = getOntology(req.params.ontologyApiName);
+      const actionType = ontology.actionTypes[req.params.actionTypeApiName];
+      if (actionType === undefined) {
+        throw new OpenApiCallError(
+          404,
+          ActionNotFoundError(),
+        );
+      }
+      return actionType;
+    },
+  ),
 
   handleOpenApiCall(
-    listInterfaceTypes,
+    OntologiesV2.QueryTypes.getQueryTypeV2,
+    ["ontologyApiName", "queryTypeApiName"],
+    async (req) => {
+      const ontology = getOntology(req.params.ontologyApiName);
+      const queryType = ontology.queryTypes[req.params.queryTypeApiName];
+      if (queryType === undefined) {
+        throw new OpenApiCallError(
+          404,
+          QueryNotFoundError(req.params.queryTypeApiName),
+        );
+      }
+      return queryType;
+    },
+  ),
+
+  handleOpenApiCall(
+    OntologiesV2.ObjectTypesV2.getOutgoingLinkTypeV2,
+    [
+      "ontology",
+      "objectType",
+      "linkType",
+    ],
+    async ({ params }) => {
+      const linkType = getLinkType(
+        params.ontology,
+        params.objectType,
+        params.linkType,
+      );
+
+      return linkType;
+    },
+  ),
+
+  handleOpenApiCall(
+    OntologiesV2.ObjectTypesV2.listOutgoingLinkTypesV2,
+    [
+      "ontology",
+      "objectType",
+    ],
+    async ({ params }) => {
+      const object = getObjectDef(params.ontology, params.objectType);
+
+      return { data: object.linkTypes };
+    },
+  ),
+
+  handleOpenApiCall(
+    OntologiesV2.OntologyInterfaces.listInterfaceTypes,
     ["ontologyApiName"],
     async (req) => {
       // will throw if bad name
@@ -201,9 +235,9 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
   ),
 
   handleOpenApiCall(
-    getInterfaceType,
+    OntologiesV2.OntologyInterfaces.getInterfaceType,
     ["ontologyApiName", "interfaceType"],
-    (req) => {
+    async (req) => {
       // will throw if bad name
       getOntology(req.params.ontologyApiName as string);
 

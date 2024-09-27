@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-import type { ApiNameValueTypeReference } from "@osdk/client.unstable";
+import type {
+  ApiNameValueTypeReference,
+  SharedPropertyTypeGothamMapping,
+} from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import { namespace, ontologyDefinition } from "./defineOntology.js";
 import type { PropertyTypeType, SharedPropertyType } from "./types.js";
+
+const defaultTypeClasses: SharedPropertyType["typeClasses"] = [{
+  kind: "render_hint",
+  name: "SELECTABLE",
+}, { kind: "render_hint", name: "SORTABLE" }];
 
 export function defineSharedPropertyType(
   opts: {
@@ -27,6 +35,8 @@ export function defineSharedPropertyType(
     description?: string;
     displayName?: string;
     valueType?: ApiNameValueTypeReference;
+    typeClasses?: SharedPropertyType["typeClasses"];
+    gothamMapping?: SharedPropertyTypeGothamMapping;
   },
 ): SharedPropertyType {
   const apiName = namespace + opts.apiName;
@@ -37,5 +47,8 @@ export function defineSharedPropertyType(
 
   return ontologyDefinition.sharedPropertyTypes[apiName] = {
     ...opts,
+    apiName,
+    displayName: opts.displayName ?? opts.apiName, // This way the non-namespaced api name is the display name (maybe not ideal)
+    typeClasses: opts.typeClasses ?? defaultTypeClasses,
   };
 }

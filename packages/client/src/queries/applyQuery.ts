@@ -15,21 +15,19 @@
  */
 
 import type {
-  InterfaceDefinition,
+  AllowedBucketKeyTypes,
+  AllowedBucketTypes,
+  CompileTimeMetadata,
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
+  OsdkBase,
+  PrimaryKeyType,
   QueryDataTypeDefinition,
   QueryDefinition,
   QueryParameterDefinition,
 } from "@osdk/api";
-import type {
-  AllowedBucketKeyTypes,
-  AllowedBucketTypes,
-  OsdkBase,
-  OsdkObjectPrimaryKeyType,
-} from "@osdk/client.api";
-import { Ontologies, OntologiesV2 } from "@osdk/internal.foundry";
 import type { DataValue } from "@osdk/internal.foundry.core";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import { createAttachmentFromRid } from "../createAttachmentFromRid.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
@@ -39,15 +37,17 @@ import { toDataValueQueries } from "../util/toDataValueQueries.js";
 import type { QueryParameterType, QueryReturnType } from "./types.js";
 
 export async function applyQuery<
-  QD extends QueryDefinition<any, any>,
-  P extends QueryParameterType<QD["parameters"]>,
+  QD extends QueryDefinition<any, any, any>,
+  P extends QueryParameterType<CompileTimeMetadata<QD>["parameters"]>,
 >(
   client: MinimalClient,
   query: QD,
   params?: P,
 ): Promise<
-  QueryReturnType<QD["output"]>
+  QueryReturnType<CompileTimeMetadata<QD>["output"]>
 > {
+  const qd = await client.ontologyProvider.getQueryDefinition(query.apiName);
+
   const response = await OntologiesV2.Queries.executeQueryV2(
     addUserAgentAndRequestContextHeaders(
       augmentRequestContext(client, _ => ({ finalMethodCall: "applyQuery" })),
@@ -60,19 +60,19 @@ export async function applyQuery<
         ? await remapQueryParams(
           params as { [parameterId: string]: any },
           client,
-          query.parameters,
+          qd.parameters,
         )
         : {},
     },
   );
-  const objectOutputDefs = await getRequiredDefinitions(query.output, client);
+  const objectOutputDefs = await getRequiredDefinitions(qd.output, client);
   const remappedResponse = await remapQueryResponse(
     client,
-    query.output,
+    qd.output,
     response.value,
     objectOutputDefs,
   );
-  return remappedResponse as QueryReturnType<QD["output"]>;
+  return remappedResponse as QueryReturnType<CompileTimeMetadata<QD>["output"]>;
 }
 
 async function remapQueryParams(
@@ -93,7 +93,7 @@ async function remapQueryParams(
 
 async function remapQueryResponse<
   K extends string,
-  Q extends ObjectTypeDefinition<any>,
+  Q extends ObjectTypeDefinition,
   T extends QueryDataTypeDefinition<K, Q | never>,
 >(
   client: MinimalClient,
@@ -321,10 +321,9 @@ function requiresConversion(dataType: QueryDataTypeDefinition<any>) {
 }
 
 export function createQueryObjectResponse<
-  Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
+  Q extends ObjectOrInterfaceDefinition,
 >(
-  primaryKey: Q extends ObjectTypeDefinition<any> ? OsdkObjectPrimaryKeyType<Q>
-    : (string | number),
+  primaryKey: PrimaryKeyType<Q>,
   objectDef: Q,
 ): OsdkBase<Q> {
   return {

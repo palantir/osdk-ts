@@ -4,7 +4,14 @@
   "commit": false,
   "fixed": [
     ["@osdk/foundry.*", "@osdk/foundry"],
-    ["@osdk/client.api", "@osdk/client"],
+    [
+      "@osdk/client",
+      "@osdk/tmp-foundry-sdk-generator",
+      "@osdk/generator",
+      "@osdk/generator-converters",
+      "@osdk/client.unstable",
+      "@osdk/api"
+    ],
     ["@osdk/create-app", "@osdk/create-app.template.*"]
   ],
   "linked": [],
@@ -16,7 +23,9 @@
     "@osdk/monorepo.*",
     "@osdk/tests.*",
     "@osdk/version-updater",
-    "@osdk/e2e.test.foundry-sdk-generator"
+    "@osdk/e2e.test.foundry-sdk-generator",
+    "@osdk/e2e.generated.*",
+    "@osdk/e2e.sandbox.*"
   ],
   "bumpVersionsWithWorkspaceProtocolOnly": true,
   "snapshot": {

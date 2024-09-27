@@ -28,73 +28,51 @@ import {
   standardTsconfig,
 } from "@monorepolint/rules";
 import * as child_process from "node:child_process";
+import path from "node:path";
 
 const LATEST_TYPESCRIPT_DEP = "^5.5.4";
 
 const DELETE_SCRIPT_ENTRY = { options: [undefined], fixValue: undefined };
 
-//
-// BEGIN MUTUALLY EXCLUSIVE GROUPS
-//
-
-// Packages in this section MUST only belong to one (or none) of these
-// three groups:
-// - nonStandardPackages
-// - legacyPackages
-// - esmAndCjsOnlyPackages
-//
-// Packages in none of these groups are treated as pure esm
-
 const nonStandardPackages = [
   "@osdk/e2e.generated.1.1.x",
   "@osdk/e2e.sandbox.todoapp",
+  "@osdk/e2e.sandbox.oauth.public.react-router",
   "@osdk/examples.*",
-  "@osdk/foundry-sdk-generator",
+  "@osdk/tmp-foundry-sdk-generator",
   "@osdk/e2e.test.foundry-sdk-generator",
   "@osdk/monorepo.*", // internal monorepo packages
   "@osdk/shared.client", // hand written package that only exposes a symbol
   "@osdk/tests.*",
 ];
 
-// Any package that is in the dependency chain of `legacy-client` needs to be in this list so
-// that we are sure to generate them in a backwards compatible way. This can be changed
-// at next major.
-const legacyPackages = [
-  "@osdk/api",
-  "@osdk/gateway",
-  "@osdk/legacy-client",
-  "@osdk/shared.net",
-  "@osdk/shared.net.errors",
-  "@osdk/shared.net.fetch",
-];
-
-/*
-  Generally, this should be packages that are in the code path of foundry-sdk-generator that
-  are not dynamically imported or used by legacy-client.
-*/
-const esmAndCjsPackages = [
-  "@osdk/shared.client.impl",
-  "@osdk/shared.test",
-  "@osdk/generator",
-  "@osdk/generator-converters",
-];
-
-//
-// END MUTUALLY EXCLUSIVE GROUPS
-//
-
 // Packages that should have the `check-api` task installed
 const checkApiPackages = [
   "@osdk/client",
-  "@osdk/client.api",
+  "@osdk/api",
 ];
 
 // Packages that should be private
 const privatePackages = [
+  "@osdk/cli.*",
   "@osdk/client.test.ontology",
+  "@osdk/create-app.template-packager",
+  "@osdk/create-app.template.*",
   "@osdk/e2e.*",
+  "@osdk/example-generator",
+  "@osdk/examples.*",
   "@osdk/monorepo.*",
+  "@osdk/platform-sdk-generator",
+  "@osdk/shared.test",
+  "@osdk/tests.verify-fallback-package-v2",
   "@osdk/tool.*",
+  "@osdk/version-updater",
+];
+
+const consumerCliPackages = [
+  "@osdk/cli",
+  "@osdk/create-app",
+  "@osdk/foundry-sdk-generator",
 ];
 
 /**
@@ -122,7 +100,34 @@ const disallowWorkspaceCaret = createRuleFactory({
       const deps = packageJson[d] ?? {};
 
       for (const [dep, version] of Object.entries(deps)) {
-        if (version === "workspace:^") {
+        if (dep === "@osdk/shared.client") {
+          // for shared client we need the symbol to work almost always so we are permissive
+          if (version !== "workspace:^") {
+            const message = `${dep} may only have 'workspace:^'`;
+            context.addError({
+              message,
+              longMessage: message,
+              file: context.getPackageJsonPath(),
+              fixer: () => {
+                // always refetch in fixer since another fixer may have already changed the file
+                let packageJson = context.getPackageJson();
+                if (packageJson[d]) {
+                  packageJson[d] = Object.assign(
+                    {},
+                    packageJson[d],
+                    { [dep]: "workspace:^" },
+                  );
+
+                  context.host.writeJson(
+                    context.getPackageJsonPath(),
+                    packageJson,
+                  );
+                }
+              },
+            });
+          }
+        } else if (version === "workspace:^") {
+          if (dep === "@osdk/shared.client") continue;
           const message = `'workspace:^' not allowed (${d}['${dep}']).`;
           context.addError({
             message,
@@ -144,6 +149,88 @@ const disallowWorkspaceCaret = createRuleFactory({
                 );
               }
             },
+          });
+        }
+      }
+    }
+  },
+  validateOptions: () => {}, // no options right now
+});
+
+// We hit that fun fun bug where foundry-sdk-generator ended up getting packaged with a newer version
+// of typescript which broke code formatting. This rule is to make sure we don't experience that again.
+// (note devDeps are only happening at buildtime so they should be fine)
+const fixedDepsOnly = createRuleFactory({
+  name: "disallowWorkspaceCaret",
+  check: async (context) => {
+    const packageJson = context.getPackageJson();
+
+    for (const d of ["dependencies", "peerDependencies"]) {
+      const deps = packageJson[d] ?? {};
+
+      for (const [dep, version] of Object.entries(deps)) {
+        if (version === "workspace:*") continue;
+        if (version[0] >= "0" && version[0] <= "9") continue;
+
+        const message =
+          `May only have fixed dependencies (found ${d}['${dep}'] == '${version}').`;
+        context.addError({
+          message,
+          longMessage: message,
+          file: context.getPackageJsonPath(),
+        });
+      }
+    }
+  },
+  validateOptions: () => {}, // no options right now
+});
+
+/**
+ * @type {import("@monorepolint/rules").RuleFactoryFn<{entries: string[]}>}
+ */
+const noPackageEntry = createRuleFactory({
+  name: "noPackageEntry",
+  check: async (context, options) => {
+    const packageJson = context.getPackageJson();
+    for (const entry of options.entries) {
+      if (packageJson[entry]) {
+        context.addError({
+          message: `${entry} field is not allowed`,
+          longMessage: `${entry} field is not allowed`,
+          file: context.getPackageJsonPath(),
+        });
+      }
+    }
+  },
+  validateOptions: (options) => {
+    return typeof options === "object" && "entries" in options
+      && Array.isArray(options.entries);
+  },
+});
+
+const allLocalDepsMustNotBePrivate = createRuleFactory({
+  name: "allLocalDepsMustNotBePrivate",
+  check: async (context) => {
+    const packageJson = context.getPackageJson();
+    const deps = packageJson.dependencies ?? {};
+
+    const nameToDir = await context.getWorkspaceContext().getPackageNameToDir();
+
+    for (const [dep, version] of Object.entries(deps)) {
+      if (nameToDir.has(dep)) {
+        const packageDir = nameToDir.get(dep);
+        /** @type any */
+        const theirPackageJson = context.host.readJson(
+          path.join(packageDir, "package.json"),
+        );
+
+        if (theirPackageJson.private) {
+          const message =
+            `${dep} is private and cannot be used as a regular dependency for this package`;
+          context.addError({
+            message,
+            longMessage: message,
+            file: context.getPackageJsonPath(),
           });
         }
       }
@@ -225,24 +312,15 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
 /**
  * @param {Omit<import("@monorepolint/config").RuleEntry<>,"options" | "id">} shared
  * @param {{
- *  legacy: boolean,
  *  esmOnly?: boolean,
  *  customTsconfigExcludes?: string[],
  *  tsVersion?: typeof LATEST_TYPESCRIPT_DEP | "^4.9.5",
- *  skipTsconfigReferences?: boolean
- *  singlePackageName?: string
+ *  skipTsconfigReferences?: boolean,
+ *  aliasConsola?: boolean
  * }} options
  * @returns {import("@monorepolint/config").RuleModule[]}
  */
 function standardPackageRules(shared, options) {
-  if (options.esmOnly && options.legacy) {
-    throw "It doesn't makes sense to be legacy and esmOnly";
-  }
-
-  if (options.singlePackageName && !options.legacy) {
-    throw "singlePackageName only makes sense for legacy packages";
-  }
-
   return [
     disallowWorkspaceCaret({ ...shared }),
 
@@ -255,7 +333,6 @@ function standardPackageRules(shared, options) {
           customTsconfigExcludes: options.customTsconfigExcludes,
           skipTsconfigReferences: options.skipTsconfigReferences,
           outDir: "build/esm",
-          singlePackageName: options.singlePackageName,
         },
       ),
     }),
@@ -271,7 +348,6 @@ function standardPackageRules(shared, options) {
               skipTsconfigReferences: options.skipTsconfigReferences,
               outDir: "build/cjs",
               commonjs: true,
-              singlePackageName: options.singlePackageName,
             },
           ),
         }),
@@ -309,10 +385,17 @@ function standardPackageRules(shared, options) {
           lint: "eslint . && dprint check  --config $(find-up dprint.json)",
           "fix-lint":
             "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-          transpile: "monorepo.tool.transpile",
-          typecheck: `monorepo.tool.typecheck ${
-            options.esmOnly ? "esm" : "both"
-          }`,
+          transpile: {
+            options: [
+              "monorepo.tool.transpile",
+              "monorepo.tool.transpile tsup",
+            ],
+            fixValue: "monorepo.tool.transpile",
+          },
+          transpileWatch: DELETE_SCRIPT_ENTRY,
+          typecheck: options.esmOnly
+            ? DELETE_SCRIPT_ENTRY
+            : `monorepo.tool.typecheck ${options.esmOnly ? "esm" : "both"}`,
         },
       },
     }),
@@ -367,6 +450,59 @@ function standardPackageRules(shared, options) {
     fileContents({
       ...shared,
       options: {
+        file: "vitest.config.mts",
+        generator: formattedGeneratorHelper(
+          `
+          /*
+           * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+           *
+           * Licensed under the Apache License, Version 2.0 (the "License");
+           * you may not use this file except in compliance with the License.
+           * You may obtain a copy of the License at
+           *
+           *     http://www.apache.org/licenses/LICENSE-2.0
+           *
+           * Unless required by applicable law or agreed to in writing, software
+           * distributed under the License is distributed on an "AS IS" BASIS,
+           * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+           * See the License for the specific language governing permissions and
+           * limitations under the License.
+           */
+          ${
+            options.aliasConsola
+              ? `
+          import { dirname, join } from "path";
+          import { fileURLToPath } from "url";`
+              : ""
+          }
+          import { configDefaults, defineConfig } from "vitest/config";
+
+          export default defineConfig({
+            test: {
+            ${
+            options.aliasConsola
+              ? `
+              alias: {
+                "consola": join(
+                  dirname(fileURLToPath(import.meta.url)),
+                  "./src/__e2e_tests__/consola.ts",
+                ),
+              },`
+              : ""
+          }
+              pool: "forks",
+              exclude: [...configDefaults.exclude, "**/build/**/*"],
+            },
+          });
+     
+          `,
+          "js",
+        ),
+      },
+    }),
+    fileContents({
+      ...shared,
+      options: {
         file: "tsup.config.js",
         generator: formattedGeneratorHelper(
           `
@@ -390,7 +526,6 @@ function standardPackageRules(shared, options) {
 
           export default defineConfig(async (options) =>
             (await import("@osdk/monorepo.tsup")).default(options, {
-              ${options.legacy ? "cjsExtension: '.js'" : ""}
               ${options.esmOnly ? "esmOnly: true," : ""}
           })
           );     
@@ -450,70 +585,37 @@ NOTE: DO NOT EDIT THIS README BY HAND. It is generated by monorepolint.
       },
     }),
 
-    // Fall through case for none of the mutual exclusive groups
-    ...standardPackageRules({
-      includePackages: [
-        ...esmAndCjsPackages,
-      ],
-    }, {
-      legacy: false,
-      tsVersion: LATEST_TYPESCRIPT_DEP,
-    }),
-
     ...standardPackageRules({
       excludePackages: [
         ...nonStandardPackages,
-        ...legacyPackages,
-        ...esmAndCjsPackages,
       ],
     }, {
-      legacy: false,
       esmOnly: true,
       tsVersion: LATEST_TYPESCRIPT_DEP,
     }),
 
-    // internal packages depend on the cjs nature of this package! Do not make esmOnly without
-    // fixing the internal packages first (and bumping major).
     ...standardPackageRules({
-      includePackages: ["@osdk/foundry-sdk-generator"],
+      includePackages: ["@osdk/tmp-foundry-sdk-generator"],
     }, {
-      legacy: false,
+      esmOnly: true,
       tsVersion: LATEST_TYPESCRIPT_DEP,
+      aliasConsola: true,
       customTsconfigExcludes: [
         "./src/generatedNoCheck/**/*",
       ],
     }),
+    fixedDepsOnly({
+      includePackages: ["@osdk/foundry-sdk-generator"],
+    }),
+
     ...standardPackageRules({
       includePackages: ["@osdk/e2e.test.foundry-sdk-generator"],
     }, {
-      legacy: false,
       esmOnly: true,
       tsVersion: LATEST_TYPESCRIPT_DEP,
       customTsconfigExcludes: [
         "./src/generatedNoCheck/**/*",
       ],
-    }),
-
-    ...(
-      legacyPackages.flatMap((pkg) =>
-        standardPackageRules({
-          includePackages: [pkg],
-        }, {
-          legacy: true,
-          tsVersion: LATEST_TYPESCRIPT_DEP,
-          singlePackageName: pkg,
-        })
-      )
-    ),
-
-    // most packages can use the newest typescript, but we enforce that @osdk/example.one.dot.one uses TS4.9
-    // so that we get build-time checking to make sure we don't regress v1.1 clients using an older Typescript.
-    ...standardPackageRules({
-      includePackages: ["@osdk/e2e.generated.1.1.x"],
-    }, {
-      legacy: false,
-      tsVersion: "^4.9.5",
-      skipTsconfigReferences: true,
     }),
 
     ...rulesForPackagesWithChecKApiTask(),
@@ -540,7 +642,7 @@ NOTE: DO NOT EDIT THIS README BY HAND. It is generated by monorepolint.
       ],
       options: {
         dependencies: {
-          "@osdk/shared.client": "workspace:~",
+          "@osdk/shared.client": "workspace:^",
           "@osdk/shared.net.platformapi": "workspace:~",
         },
       },
@@ -578,6 +680,26 @@ package you do so at your own risk.
           private: true,
         },
       },
+    }),
+
+    noPackageEntry({
+      excludePackages: privatePackages,
+      options: {
+        entries: ["private"],
+      },
+    }),
+
+    packageScript({
+      includePackages: consumerCliPackages,
+      options: {
+        scripts: {
+          transpile: "monorepo.tool.transpile tsup",
+        },
+      },
+    }),
+
+    allLocalDepsMustNotBePrivate({
+      includePackages: consumerCliPackages,
     }),
 
     alphabeticalDependencies({ includeWorkspaceRoot: true }),

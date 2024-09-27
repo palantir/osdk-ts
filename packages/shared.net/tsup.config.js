@@ -18,6 +18,6 @@ import { defineConfig } from "tsup";
 
 export default defineConfig(async (options) =>
   (await import("@osdk/monorepo.tsup")).default(options, {
-    cjsExtension: ".js",
+    esmOnly: true,
   })
 );

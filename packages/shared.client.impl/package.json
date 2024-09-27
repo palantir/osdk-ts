@@ -1,6 +1,6 @@
 {
   "name": "@osdk/shared.client.impl",
-  "version": "0.1.0",
+  "version": "1.0.0-beta.2",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -8,27 +8,24 @@
   },
   "exports": {
     ".": {
-      "require": "./build/cjs/index.cjs",
       "browser": "./build/browser/index.js",
       "import": "./build/esm/index.js"
     },
     "./*": {
-      "require": "./build/cjs/public/*.cjs",
       "browser": "./build/browser/public/*.js",
       "import": "./build/esm/public/*.js"
     }
   },
   "scripts": {
-    "check-attw": "monorepo.tool.attw both",
+    "check-attw": "monorepo.tool.attw esm",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "transpile": "monorepo.tool.transpile",
-    "typecheck": "monorepo.tool.typecheck both"
+    "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
-    "@osdk/shared.client": "workspace:~",
+    "@osdk/shared.client": "workspace:^",
     "@osdk/shared.net.errors": "workspace:~",
     "@osdk/shared.net.fetch": "workspace:~"
   },
@@ -50,8 +47,7 @@
     "templates",
     "*.d.ts"
   ],
-  "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
-  "types": "./build/cjs/index.d.cts",
+  "types": "./build/esm/index.d.ts",
   "type": "module"
 }

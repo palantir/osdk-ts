@@ -1,13 +1,13 @@
-import type { ActionDefinition, ObjectActionDataType, VersionBound } from '@osdk/api';
 import type {
+  ActionDefinition,
+  ActionMetadata,
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-} from '@osdk/client.api';
-import type { Task as $Imported$objectTypes$com$example$dep$Task } from '@osdk/e2e.generated.api-namespace.dep';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+} from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
+import type { Task as $Imported$objectTypes$com$example$dep$Task } from '@osdk/e2e.generated.api-namespace.dep';
 
 export namespace setTaskBody {
   // Represents the definition of the parameters for the action
@@ -20,27 +20,14 @@ export namespace setTaskBody {
     task: {
       multiplicity: false;
       nullable: false;
-      type: ObjectActionDataType<'com.example.dep.Task', $Imported$objectTypes$com$example$dep$Task.Definition>;
+      type: ActionMetadata.DataType.Object<$Imported$objectTypes$com$example$dep$Task>;
     };
   };
 
   export interface Params {
     readonly body: ActionParam.PrimitiveType<'string'>;
 
-    readonly task: ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task.Definition>;
-  }
-  /** @deprecated **/
-  export type Parameters = Params;
-
-  // Represents the definition of the action
-  export interface Definition
-    extends ActionDefinition<'setTaskBody', 'com.example.dep.Task', setTaskBody.Signatures>,
-      VersionBound<$ExpectedClientVersion> {
-    apiName: 'setTaskBody';
-    modifiedEntities: { 'com.example.dep.Task': { created: false; modified: true } };
-    type: 'action';
-    parameters: setTaskBody.ParamsDefinition;
-    osdkMetadata: typeof $osdkMetadata;
+    readonly task: ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>;
   }
 
   // Represents a fqn of the action
@@ -58,36 +45,32 @@ export namespace setTaskBody {
 }
 
 /**
- * @deprecated Use `setTaskBody.Params`
+ * @param {ActionParam.PrimitiveType<"string">} body
+ * @param {ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>} task
  */
-export type setTaskBody$Params = setTaskBody.Params | ReadonlyArray<setTaskBody.Params>;
+export interface setTaskBody extends ActionDefinition<setTaskBody.Signatures> {
+  __DefinitionMetadata?: {
+    apiName: 'setTaskBody';
+    modifiedEntities: {
+      'com.example.dep.Task': {
+        created: false;
+        modified: true;
+      };
+    };
+    parameters: setTaskBody.ParamsDefinition;
+    rid: 'ri.a.b.c.d';
+    status: 'ACTIVE';
+    type: 'action';
 
-/** @deprecated Use `setTaskBody.Definition` **/
-export type setTaskBody = setTaskBody.Signatures;
+    signatures: setTaskBody.Signatures;
+  };
+  apiName: 'setTaskBody';
+  type: 'action';
+  osdkMetadata: typeof $osdkMetadata;
+}
 
-export const setTaskBody: setTaskBody.Definition = {
+export const setTaskBody: setTaskBody = {
   apiName: 'setTaskBody',
-  modifiedEntities: {
-    'com.example.dep.Task': {
-      created: false,
-      modified: true,
-    },
-  },
-  parameters: {
-    task: {
-      multiplicity: false,
-      type: {
-        type: 'object',
-        object: 'com.example.dep.Task',
-      },
-      nullable: false,
-    },
-    body: {
-      multiplicity: false,
-      type: 'string',
-      nullable: false,
-    },
-  },
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

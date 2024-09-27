@@ -1,6 +1,6 @@
 {
   "name": "@osdk/create-app",
-  "version": "0.19.0-beta.1",
+  "version": "0.19.0-beta.7",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -26,9 +26,7 @@
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --pool=forks",
     "test:watch": "vitest",
-    "transpile": "monorepo.tool.transpile",
-    "transpileWatch": "tsup --watch",
-    "typecheck": "monorepo.tool.typecheck esm"
+    "transpile": "monorepo.tool.transpile tsup"
   },
   "dependencies": {
     "consola": "^3.2.3",
@@ -39,6 +37,7 @@
   "devDependencies": {
     "@osdk/create-app.template.next-static-export": "workspace:*",
     "@osdk/create-app.template.react": "workspace:*",
+    "@osdk/create-app.template.react.beta": "workspace:*",
     "@osdk/create-app.template.tutorial-todo-aip-app": "workspace:*",
     "@osdk/create-app.template.tutorial-todo-app": "workspace:*",
     "@osdk/create-app.template.vue": "workspace:*",

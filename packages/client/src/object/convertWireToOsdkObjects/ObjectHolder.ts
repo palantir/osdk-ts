@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/client.api";
+import type { Osdk } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
@@ -29,7 +29,7 @@ import type {
 
 /** @internal */
 export interface ObjectHolderPrototypeOwnProps {
-  readonly [ObjectDefRef]: FetchedObjectTypeDefinition<any, any>;
+  readonly [ObjectDefRef]: FetchedObjectTypeDefinition;
   readonly [ClientRef]: MinimalClient;
   readonly "$as": DollarAsFn;
   readonly "$link": ReturnType<typeof get$link>;
@@ -41,7 +41,7 @@ export interface ObjectHolderOwnProperties {
 }
 
 /** @internal */
-export interface ObjectHolder<Q extends FetchedObjectTypeDefinition<any, any>>
+export interface ObjectHolder<Q extends FetchedObjectTypeDefinition>
   extends ObjectHolderPrototypeOwnProps, ObjectHolderOwnProperties
 {
   [UnderlyingOsdkObject]: Osdk<Q>;

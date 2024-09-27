@@ -1,34 +1,18 @@
+import type { PropertyDef as $PropertyDef } from '@osdk/api';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
+  PropertyKeys as $PropertyKeys,
   ObjectTypeDefinition as $ObjectTypeDefinition,
-  PropertyDef as $PropertyDef,
-  VersionBound as $VersionBound,
+  ObjectMetadata as $ObjectMetadata,
 } from '@osdk/api';
 import type {
-  AggregateOpts as $AggregateOpts,
-  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-  AggregationsResults as $AggregationsResults,
-  Augments as $Augments,
-  ConvertProps as $ConvertProps,
-  DefaultToFalse as $DefaultToFalse,
-  FetchPageArgs as $FetchPageArgs,
-  IsAny as $IsAny,
-  LinkedType as $LinkedType,
-  LinkNames as $LinkNames,
-  NullabilityAdherence as $NullabilityAdherence,
-  NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   OsdkObject as $OsdkObject,
-  OsdkObjectPropertyType as $OsdkObjectPropertyType,
-  PageResult as $PageResult,
-  PropertyValueClientToWire as $PropertyValueClientToWire,
   PropertyValueWireToClient as $PropType,
-  Result as $Result,
-  SelectArg as $SelectArg,
-  ValidToFrom as $ValidToFrom,
-} from '@osdk/client.api';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
-import { $osdkMetadata } from '../../OntologyMetadata.js';
+  SingleLinkAccessor as $SingleLinkAccessor,
+} from '@osdk/api';
 
 export namespace ObjectTypeWithAllPropertyTypes {
   export type PropertyKeys =
@@ -134,95 +118,35 @@ export namespace ObjectTypeWithAllPropertyTypes {
   }
 
   export interface ObjectSet
-    extends $ObjectSet<ObjectTypeWithAllPropertyTypes.Definition, ObjectTypeWithAllPropertyTypes.ObjectSet> {
-    readonly aggregate: <const AO extends $AggregateOpts<ObjectTypeWithAllPropertyTypes.Definition>>(
-      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
-        ObjectTypeWithAllPropertyTypes.Definition,
-        AO
-      >,
-    ) => Promise<$AggregationsResults<ObjectTypeWithAllPropertyTypes.Definition, AO>>;
+    extends $ObjectSet<ObjectTypeWithAllPropertyTypes, ObjectTypeWithAllPropertyTypes.ObjectSet> {}
 
-    readonly pivotTo: <const L extends $LinkNames<ObjectTypeWithAllPropertyTypes.Definition>>(
-      type: L,
-    ) => $LinkedType<ObjectTypeWithAllPropertyTypes.Definition, L>['objectSet'];
+  export type OsdkObject<
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    K extends keyof ObjectTypeWithAllPropertyTypes.Props = keyof ObjectTypeWithAllPropertyTypes.Props,
+  > = $Osdk<ObjectTypeWithAllPropertyTypes, K | OPTIONS>;
+}
 
-    readonly fetchOne: <
-      const L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
-      const R extends boolean,
-      const S extends false | 'throw' = $NullabilityAdherenceDefault,
-    >(
-      primaryKey: $PropertyValueClientToWire[ObjectTypeWithAllPropertyTypes.Definition['primaryKeyType']],
-      options?: $SelectArg<ObjectTypeWithAllPropertyTypes.Definition, L, R, S>,
-    ) => Promise<
-      ObjectTypeWithAllPropertyTypes.OsdkObject<
-        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-        $IsAny<L> extends true ? ObjectTypeWithAllPropertyTypes.PropertyKeys : L
-      >
-    >;
-
-    readonly fetchOneWithErrors: <
-      const L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
-      const R extends boolean,
-      const S extends false | 'throw' = $NullabilityAdherenceDefault,
-    >(
-      primaryKey: $PropertyValueClientToWire[ObjectTypeWithAllPropertyTypes.Definition['primaryKeyType']],
-      options?: $SelectArg<ObjectTypeWithAllPropertyTypes.Definition, L, R, S>,
-    ) => Promise<
-      $Result<
-        ObjectTypeWithAllPropertyTypes.OsdkObject<
-          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          $IsAny<L> extends true ? ObjectTypeWithAllPropertyTypes.PropertyKeys : L
-        >
-      >
-    >;
-
-    readonly fetchPage: <
-      const L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
-      const R extends boolean,
-      const A extends $Augments,
-      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-    >(
-      args?: $FetchPageArgs<ObjectTypeWithAllPropertyTypes.Definition, L, R, A, S>,
-    ) => Promise<
-      $PageResult<
-        ObjectTypeWithAllPropertyTypes.OsdkObject<
-          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          $IsAny<L> extends true ? ObjectTypeWithAllPropertyTypes.PropertyKeys : L
-        >
-      >
-    >;
-
-    readonly fetchPageWithErrors: <
-      const L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
-      const R extends boolean,
-      const A extends $Augments,
-      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-    >(
-      args?: $FetchPageArgs<ObjectTypeWithAllPropertyTypes.Definition, L, R, A, S>,
-    ) => Promise<
-      $Result<
-        $PageResult<
-          ObjectTypeWithAllPropertyTypes.OsdkObject<
-            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-            $IsAny<L> extends true ? ObjectTypeWithAllPropertyTypes.PropertyKeys : L
-          >
-        >
-      >
-    >;
-
-    readonly asyncIter: () => AsyncIterableIterator<ObjectTypeWithAllPropertyTypes.OsdkObject>;
-  }
-
-  export interface Definition
-    extends $ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes', ObjectTypeWithAllPropertyTypes.Definition>,
-      $VersionBound<$ExpectedClientVersion> {
-    osdkMetadata: typeof $osdkMetadata;
+export interface ObjectTypeWithAllPropertyTypes extends $ObjectTypeDefinition {
+  osdkMetadata: typeof $osdkMetadata;
+  type: 'object';
+  apiName: 'ObjectTypeWithAllPropertyTypes';
+  __DefinitionMetadata?: {
     objectSet: ObjectTypeWithAllPropertyTypes.ObjectSet;
     props: ObjectTypeWithAllPropertyTypes.Props;
     linksType: ObjectTypeWithAllPropertyTypes.Links;
     strictProps: ObjectTypeWithAllPropertyTypes.StrictProps;
+    apiName: 'ObjectTypeWithAllPropertyTypes';
     description: 'A type with all property types';
+    displayName: 'ObjectTypeWithAllPropertyTypes';
+    icon: {
+      type: 'blueprint';
+      name: 'objectTypeWithAllPropertyTypes';
+      color: 'color';
+    };
+    interfaceMap: {};
+    inverseInterfaceMap: {};
     links: {};
+    pluralDisplayName: 'ObjectTypeWithAllPropertyTypes';
     primaryKeyApiName: 'id';
     primaryKeyType: 'integer';
     properties: {
@@ -351,199 +275,15 @@ export namespace ObjectTypeWithAllPropertyTypes {
        */
       stringTimeseries: $PropertyDef<'stringTimeseries', 'nullable', 'single'>;
     };
-  }
-
-  export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
-    K extends keyof ObjectTypeWithAllPropertyTypes.Props = keyof ObjectTypeWithAllPropertyTypes.Props,
-  > = $Osdk<ObjectTypeWithAllPropertyTypes.Definition, K | OPTIONS> &
-    Pick<
-      [OPTIONS] extends [never]
-        ? ObjectTypeWithAllPropertyTypes.StrictProps
-        : OPTIONS extends '$notStrict'
-          ? ObjectTypeWithAllPropertyTypes.Props
-          : ObjectTypeWithAllPropertyTypes.StrictProps,
-      K
-    > & {
-      readonly $link: ObjectTypeWithAllPropertyTypes.Links;
-      readonly $title: string | undefined; // FIXME
-      readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
-
-      readonly $as: <NEW_Q extends $ValidToFrom<ObjectTypeWithAllPropertyTypes.Definition>>(
-        type: NEW_Q | string,
-      ) => $Osdk<NEW_Q, $ConvertProps<ObjectTypeWithAllPropertyTypes.Definition, NEW_Q, K>>;
-    } & $OsdkObject<'ObjectTypeWithAllPropertyTypes'>;
+    rid: 'rid.a.b.c.d';
+    status: 'ACTIVE';
+    titleProperty: 'id';
+    type: 'object';
+  };
 }
 
-export type ObjectTypeWithAllPropertyTypes = ObjectTypeWithAllPropertyTypes.Definition;
-
-export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypes & $VersionBound<$ExpectedClientVersion> = {
-  osdkMetadata: $osdkMetadata,
-  objectSet: undefined as any,
-  props: undefined as any,
-  linksType: undefined as any,
-  strictProps: undefined as any,
-  apiName: 'ObjectTypeWithAllPropertyTypes',
-  description: 'A type with all property types',
-  links: {},
-  primaryKeyApiName: 'id',
-  primaryKeyType: 'integer',
-  properties: {
-    id: {
-      multiplicity: false,
-      type: 'integer',
-      nullable: false,
-    },
-    string: {
-      multiplicity: false,
-      type: 'string',
-      nullable: true,
-    },
-    boolean: {
-      multiplicity: false,
-      type: 'boolean',
-      nullable: true,
-    },
-    date: {
-      multiplicity: false,
-      type: 'datetime',
-      nullable: true,
-    },
-    dateTime: {
-      multiplicity: false,
-      type: 'timestamp',
-      nullable: true,
-    },
-    decimal: {
-      multiplicity: false,
-      type: 'decimal',
-      nullable: true,
-    },
-    integer: {
-      multiplicity: false,
-      type: 'integer',
-      nullable: true,
-    },
-    long: {
-      multiplicity: false,
-      type: 'long',
-      nullable: true,
-    },
-    short: {
-      multiplicity: false,
-      type: 'short',
-      nullable: true,
-    },
-    float: {
-      multiplicity: false,
-      type: 'float',
-      nullable: true,
-    },
-    double: {
-      multiplicity: false,
-      type: 'double',
-      nullable: true,
-    },
-    byte: {
-      multiplicity: false,
-      type: 'byte',
-      nullable: true,
-    },
-    attachment: {
-      multiplicity: false,
-      type: 'attachment',
-      nullable: true,
-    },
-    geoPoint: {
-      multiplicity: false,
-      type: 'geopoint',
-      nullable: true,
-    },
-    geoShape: {
-      multiplicity: false,
-      type: 'geoshape',
-      nullable: true,
-    },
-    stringArray: {
-      multiplicity: true,
-      type: 'string',
-      nullable: true,
-    },
-    booleanArray: {
-      multiplicity: true,
-      type: 'boolean',
-      nullable: true,
-    },
-    dateArray: {
-      multiplicity: true,
-      type: 'datetime',
-      nullable: true,
-    },
-    dateTimeArray: {
-      multiplicity: true,
-      type: 'timestamp',
-      nullable: true,
-    },
-    decimalArray: {
-      multiplicity: true,
-      type: 'decimal',
-      nullable: true,
-    },
-    integerArray: {
-      multiplicity: true,
-      type: 'integer',
-      nullable: true,
-    },
-    longArray: {
-      multiplicity: true,
-      type: 'long',
-      nullable: true,
-    },
-    shortArray: {
-      multiplicity: true,
-      type: 'short',
-      nullable: true,
-    },
-    floatArray: {
-      multiplicity: true,
-      type: 'float',
-      nullable: true,
-    },
-    doubleArray: {
-      multiplicity: true,
-      type: 'double',
-      nullable: true,
-    },
-    byteArray: {
-      multiplicity: true,
-      type: 'byte',
-      nullable: true,
-    },
-    attachmentArray: {
-      multiplicity: true,
-      type: 'attachment',
-      nullable: true,
-    },
-    geoPointArray: {
-      multiplicity: true,
-      type: 'geopoint',
-      nullable: true,
-    },
-    geoShapeArray: {
-      multiplicity: true,
-      type: 'geoshape',
-      nullable: true,
-    },
-    numericTimeseries: {
-      multiplicity: false,
-      type: 'numericTimeseries',
-      nullable: true,
-    },
-    stringTimeseries: {
-      multiplicity: false,
-      type: 'stringTimeseries',
-      nullable: true,
-    },
-  },
+export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypes = {
   type: 'object',
+  apiName: 'ObjectTypeWithAllPropertyTypes',
+  osdkMetadata: $osdkMetadata,
 };

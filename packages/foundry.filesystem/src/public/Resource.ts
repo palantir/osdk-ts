@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-import type { PreviewMode } from "@osdk/foundry.core";
+import type * as _Core from "@osdk/foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
-import type { Resource, ResourceRid } from "../_components.js";
+import type * as _Filesystem from "../_components.js";
 
 //
 
 const _getResource: $FoundryPlatformMethod<
   (
-    resourceRid: ResourceRid,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<Resource>
+    resourceRid: _Filesystem.ResourceRid,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<_Filesystem.Resource>
 > = [0, "/v2/filesystem/resources/{0}", 2];
 
 /**
  * Get the Resource with the specified rid.
  *
- * @beta
+ * @alpha
  *
  * Required Scopes: [api:filesystem-read]
  * URL: /v2/filesystem/resources/{resourceRid}
@@ -43,10 +43,10 @@ const _getResource: $FoundryPlatformMethod<
 export function getResource(
   $ctx: $Client | $ClientContext,
   ...args: [
-    resourceRid: ResourceRid,
+    resourceRid: _Filesystem.ResourceRid,
 
-    $queryParams?: { preview?: PreviewMode | undefined },
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
-): Promise<Resource> {
+): Promise<_Filesystem.Resource> {
   return $foundryPlatformFetch($ctx, _getResource, ...args);
 }

@@ -15,7 +15,7 @@
  */
 
 import type { PrimaryKeyTypes } from "@osdk/api";
-import type { PropertyV2 } from "@osdk/gateway/types";
+import type { PropertyV2 } from "@osdk/internal.foundry.core";
 
 export function wirePropertyV2ToSdkPrimaryKeyTypeDefinition(
   input: PropertyV2,
@@ -44,6 +44,7 @@ export function wirePropertyV2ToSdkPrimaryKeyTypeDefinition(
     case "array":
     case "marking":
     case "float":
+    case "geotimeSeriesReference":
       throw new Error(
         `Type not supported for primaryKey: ${input.dataType.type}`,
       );

@@ -1,5 +1,151 @@
 # @osdk/generator
 
+## 2.0.0-beta.15
+
+### Minor Changes
+
+- dc25fb4: Simplified types
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/generator-converters@2.0.0-beta.15
+  - @osdk/api@2.0.0-beta.15
+
+## 2.0.0-beta.14
+
+### Minor Changes
+
+- 1f633f7: Removed dependency on @osdk/client.api
+- d4d6605: Audited and cleaned up deps
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [fe9547e]
+- Updated dependencies [1f633f7]
+- Updated dependencies [d4d6605]
+  - @osdk/internal.foundry.core@0.2.0-beta.9
+  - @osdk/api@2.0.0-beta.14
+  - @osdk/generator-converters@2.0.0-beta.14
+
+## 2.0.0-beta.13
+
+### Minor Changes
+
+- 1488144: Renamed definition types to metadata
+- bbfebfd: Fix generation of actions with full api names
+- f6e2880: Fixes query type generation
+- c28792e: Modified return type of fetchMetadata to return Object/Interface Definitions
+- 26ee3bd: Updates return types of fetchMetadata to be Action and Query Definitions
+- 6ab5d2e: Renamed Min_Definition to \_Definition
+- 885c8e4: Fixing bug for codegen on windows machines, where we would use backslashes instead of forward slashes for import paths, which should be OS agnostic.
+
+### Patch Changes
+
+- Updated dependencies [1488144]
+- Updated dependencies [c28792e]
+- Updated dependencies [26ee3bd]
+- Updated dependencies [6ab5d2e]
+  - @osdk/generator-converters@2.0.0-beta.13
+  - @osdk/api@2.0.0-beta.13
+  - @osdk/internal.foundry.core@0.2.0-beta.8
+
+## 2.0.0-beta.12
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/generator-converters@2.0.0-beta.12
+  - @osdk/api@2.0.0-beta.12
+
+## 2.0.0-beta.11
+
+### Patch Changes
+
+- @osdk/generator-converters@2.0.0-beta.11
+- @osdk/api@2.0.0-beta.11
+
+## 2.0.0-beta.10
+
+### Major Changes
+
+- 1252d94: ESM Only
+- 56df85a: We now generate minimal object and interface types
+
+### Minor Changes
+
+- dc25fb4: Code generation now uses MinQueryDef
+- dc25fb4: Rename MinimumActionDefinition to MinActionDef
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [1252d94]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [56df85a]
+  - @osdk/generator-converters@2.0.0-beta.10
+  - @osdk/api@2.0.0-beta.10
+  - @osdk/internal.foundry.core@0.2.0-beta.7
+
+## 2.0.0-beta.9
+
+### Minor Changes
+
+- b946e00: Emitted action definition is minimal size now
+
+### Patch Changes
+
+- Updated dependencies [b946e00]
+  - @osdk/api@2.0.0-beta.9
+  - @osdk/generator-converters@2.0.0-beta.9
+  - @osdk/internal.foundry.core@0.2.0-beta.6
+
+## 2.0.0-beta.8
+
+### Minor Changes
+
+- 96ea876: Adding js docs for actions so you can hover and see params and description.
+
+### Patch Changes
+
+- @osdk/api@2.0.0-beta.8
+- @osdk/internal.foundry.core@0.2.0-beta.5
+- @osdk/generator-converters@2.0.0-beta.8
+
+## 2.0.0-beta.7
+
+### Minor Changes
+
+- 33759fb: Removes deprecated types and renames Definition to improve intellisense
+- 5c89065: Generator no longer organizes imports
+
+### Patch Changes
+
+- Updated dependencies [9b0617d]
+- Updated dependencies [5d6d5ab]
+  - @osdk/api@2.0.0-beta.7
+  - @osdk/internal.foundry.core@0.2.0-beta.4
+  - @osdk/generator-converters@2.0.0-beta.7
+
+## 2.0.0-beta.6
+
+### Minor Changes
+
+- 0a374d6: Remove legacy client
+- 96ea876: Add namespaces for objects,actions,queries so that you can enumerate them.
+- 6f93c8b: Generates fewer overrides to prevent potential failures
+
+### Patch Changes
+
+- Updated dependencies [3affe49]
+- Updated dependencies [5d6d5ab]
+  - @osdk/api@2.0.0-beta.6
+  - @osdk/gateway@2.5.0-beta.0
+  - @osdk/generator-converters@2.0.0-beta.6
+
 ## 1.14.0-beta.4
 
 ### Minor Changes

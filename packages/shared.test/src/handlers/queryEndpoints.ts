@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { executeQueryV2, listQueryTypesV2 } from "@osdk/gateway/requests";
+import type { ListQueryTypesResponseV2 } from "@osdk/internal.foundry.core";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { RequestHandler } from "msw";
 import { InvalidRequest, QueryNotFoundError } from "../errors.js";
 import { defaultOntology } from "../stubs/ontologies.js";
@@ -31,7 +32,7 @@ export const queryHandlers: Array<RequestHandler> = [
    * List Queries
    */
   handleOpenApiCall(
-    listQueryTypesV2,
+    OntologiesV2.QueryTypes.listQueryTypesV2,
     ["ontologyApiName"],
     async (req) => {
       // will throw if bad name
@@ -47,7 +48,7 @@ export const queryHandlers: Array<RequestHandler> = [
    * Execute Queries
    */
   handleOpenApiCall(
-    executeQueryV2,
+    OntologiesV2.Queries.executeQueryV2,
     ["ontologyApiName", "queryApiName"],
     async (req) => {
       const body = await req.request.text();

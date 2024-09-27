@@ -23,8 +23,10 @@ export type {
   ResourceDisplayName,
   ResourcePath,
   ResourceRid,
+  ResourceType,
   Space,
   SpaceRid,
   TrashedStatus,
 } from "./_components.js";
+export type { ResourceNotFound } from "./_errors.js";
 export * as Resources from "./public/Resource.js";

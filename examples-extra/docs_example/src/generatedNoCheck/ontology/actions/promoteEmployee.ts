@@ -1,11 +1,11 @@
-import type { ActionDefinition, VersionBound } from '@osdk/api';
 import type {
+  ActionDefinition,
+  ActionMetadata,
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-} from '@osdk/client.api';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata';
+} from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 export namespace promoteEmployee {
@@ -38,20 +38,6 @@ export namespace promoteEmployee {
 
     readonly newTitle: ActionParam.PrimitiveType<'string'>;
   }
-  /** @deprecated **/
-  export type Parameters = Params;
-
-  // Represents the definition of the action
-  export interface Definition
-    extends ActionDefinition<'promoteEmployee', 'Employee', promoteEmployee.Signatures>,
-      VersionBound<$ExpectedClientVersion> {
-    apiName: 'promoteEmployee';
-    description: "Update an employee's title and compensation";
-    modifiedEntities: { Employee: { created: false; modified: true } };
-    type: 'action';
-    parameters: promoteEmployee.ParamsDefinition;
-    osdkMetadata: typeof $osdkMetadata;
-  }
 
   // Represents a fqn of the action
   export interface Signatures {
@@ -71,39 +57,35 @@ export namespace promoteEmployee {
 }
 
 /**
- * @deprecated Use `promoteEmployee.Params`
+ * Update an employee's title and compensation
+ * @param {ActionParam.PrimitiveType<"integer">} employeeId
+ * @param {ActionParam.PrimitiveType<"double">} newCompensation
+ * @param {ActionParam.PrimitiveType<"string">} newTitle
  */
-export type promoteEmployee$Params = promoteEmployee.Params | ReadonlyArray<promoteEmployee.Params>;
+export interface promoteEmployee extends ActionDefinition<promoteEmployee.Signatures> {
+  __DefinitionMetadata?: {
+    apiName: 'promoteEmployee';
+    description: "Update an employee's title and compensation";
+    modifiedEntities: {
+      Employee: {
+        created: false;
+        modified: true;
+      };
+    };
+    parameters: promoteEmployee.ParamsDefinition;
+    rid: 'ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2167';
+    status: 'ACTIVE';
+    type: 'action';
 
-/** @deprecated Use `promoteEmployee.Definition` **/
-export type promoteEmployee = promoteEmployee.Signatures;
+    signatures: promoteEmployee.Signatures;
+  };
+  apiName: 'promoteEmployee';
+  type: 'action';
+  osdkMetadata: typeof $osdkMetadata;
+}
 
-export const promoteEmployee: promoteEmployee.Definition = {
+export const promoteEmployee: promoteEmployee = {
   apiName: 'promoteEmployee',
-  description: "Update an employee's title and compensation",
-  modifiedEntities: {
-    Employee: {
-      created: false,
-      modified: true,
-    },
-  },
-  parameters: {
-    employeeId: {
-      multiplicity: false,
-      type: 'integer',
-      nullable: false,
-    },
-    newTitle: {
-      multiplicity: false,
-      type: 'string',
-      nullable: false,
-    },
-    newCompensation: {
-      multiplicity: false,
-      type: 'double',
-      nullable: false,
-    },
-  },
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };
