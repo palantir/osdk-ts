@@ -134,7 +134,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         > = $Osdk<Bar, K | OPTIONS>;
       }
 
-      export interface Bar extends $InterfaceDefinition<"Bar"> {
+      export interface Bar extends $InterfaceDefinition {
         osdkMetadata: typeof $osdkMetadata;
         type: "interface";
         apiName: "Bar";
@@ -219,7 +219,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         > = $Osdk<Foo, K | OPTIONS>;
       }
 
-      export interface Foo extends $InterfaceDefinition<"Foo"> {
+      export interface Foo extends $InterfaceDefinition {
         osdkMetadata: typeof $osdkMetadata;
         type: "interface";
         apiName: "Foo";
@@ -308,7 +308,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         > = $Osdk<Foo, K | OPTIONS>;
       }
 
-      export interface Foo extends $InterfaceDefinition<"Foo"> {
+      export interface Foo extends $InterfaceDefinition {
         osdkMetadata: typeof $osdkMetadata;
         type: "interface";
         apiName: "Foo";
