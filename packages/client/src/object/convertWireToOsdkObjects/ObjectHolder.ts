@@ -29,7 +29,7 @@ import type {
 
 /** @internal */
 export interface ObjectHolderPrototypeOwnProps {
-  readonly [ObjectDefRef]: FetchedObjectTypeDefinition<any, any>;
+  readonly [ObjectDefRef]: FetchedObjectTypeDefinition;
   readonly [ClientRef]: MinimalClient;
   readonly "$as": DollarAsFn;
   readonly "$link": ReturnType<typeof get$link>;
@@ -41,7 +41,7 @@ export interface ObjectHolderOwnProperties {
 }
 
 /** @internal */
-export interface ObjectHolder<Q extends FetchedObjectTypeDefinition<any, any>>
+export interface ObjectHolder<Q extends FetchedObjectTypeDefinition>
   extends ObjectHolderPrototypeOwnProps, ObjectHolderOwnProperties
 {
   [UnderlyingOsdkObject]: Osdk<Q>;

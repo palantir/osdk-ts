@@ -71,9 +71,9 @@ export interface Client extends SharedClient<MinimalClient> {
     // @alpha
     readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet]: <T extends ObjectOrInterfaceDefinition>(type: T, rid: string) => ObjectSet<T>;
     // (undocumented)
-    <Q extends ObjectTypeDefinition<any, any>>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
+    <Q extends ObjectTypeDefinition>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
     // (undocumented)
-    <Q extends (InterfaceDefinition<any, any>)>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? MinimalObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
+    <Q extends (InterfaceDefinition)>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? MinimalObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
     // Warning: (ae-forgotten-export) The symbol "ActionSignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -83,7 +83,7 @@ export interface Client extends SharedClient<MinimalClient> {
     // (undocumented)
     <Q extends QueryDefinition<any, any, any>>(o: Q): QuerySignatureFromDef<Q>;
     // (undocumented)
-    fetchMetadata<Q extends (ObjectTypeDefinition<any, any> | InterfaceDefinition<any, any> | ActionDefinition<any> | QueryDefinition<any, any, any>)>(o: Q): Promise<Q extends ObjectTypeDefinition<any, any> ? ObjectMetadata<any, any> : Q extends InterfaceDefinition<any, any> ? InterfaceMetadata<any, any> : Q extends ActionDefinition<any> ? ActionMetadata : Q extends QueryDefinition<any, any, any> ? QueryMetadata<any, any> : never>;
+    fetchMetadata<Q extends (ObjectTypeDefinition | InterfaceDefinition | ActionDefinition<any> | QueryDefinition<any, any, any>)>(o: Q): Promise<Q extends ObjectTypeDefinition ? ObjectMetadata : Q extends InterfaceDefinition ? InterfaceMetadata : Q extends ActionDefinition<any> ? ActionMetadata : Q extends QueryDefinition<any, any, any> ? QueryMetadata<any, any> : never>;
 }
 
 // @public

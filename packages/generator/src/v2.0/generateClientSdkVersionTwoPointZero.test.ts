@@ -687,7 +687,7 @@ describe("generator", () => {
         > = $Osdk<SomeInterface, K | OPTIONS>;
       }
 
-      export interface SomeInterface extends $InterfaceDefinition<'SomeInterface', SomeInterface> {
+      export interface SomeInterface extends $InterfaceDefinition {
         osdkMetadata: typeof $osdkMetadata;
         type: 'interface';
         apiName: 'SomeInterface';
@@ -761,7 +761,7 @@ describe("generator", () => {
         > = $Osdk<Person, K | OPTIONS>;
       }
 
-      export interface Person extends $ObjectTypeDefinition<'Person', Person> {
+      export interface Person extends $ObjectTypeDefinition {
         osdkMetadata: typeof $osdkMetadata;
         type: 'object';
         apiName: 'Person';
@@ -849,7 +849,7 @@ describe("generator", () => {
         > = $Osdk<Todo, K | OPTIONS>;
       }
 
-      export interface Todo extends $ObjectTypeDefinition<'Todo', Todo> {
+      export interface Todo extends $ObjectTypeDefinition {
         osdkMetadata: typeof $osdkMetadata;
         type: 'object';
         apiName: 'Todo';
@@ -1285,7 +1285,7 @@ describe("generator", () => {
           > = $Osdk<SomeInterface, K | OPTIONS>;
         }
 
-        export interface SomeInterface extends $InterfaceDefinition<'foo.bar.SomeInterface', SomeInterface> {
+        export interface SomeInterface extends $InterfaceDefinition {
           osdkMetadata: typeof $osdkMetadata;
           type: 'interface';
           apiName: 'foo.bar.SomeInterface';
@@ -1359,7 +1359,7 @@ describe("generator", () => {
           > = $Osdk<Person, K | OPTIONS>;
         }
 
-        export interface Person extends $ObjectTypeDefinition<'foo.bar.Person', Person> {
+        export interface Person extends $ObjectTypeDefinition {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'foo.bar.Person';
@@ -1447,7 +1447,7 @@ describe("generator", () => {
           > = $Osdk<Todo, K | OPTIONS>;
         }
 
-        export interface Todo extends $ObjectTypeDefinition<'foo.bar.Todo', Todo> {
+        export interface Todo extends $ObjectTypeDefinition {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'foo.bar.Todo';
@@ -1847,7 +1847,7 @@ describe("generator", () => {
             > = $Osdk<UsesForeignSpt, K | OPTIONS>;
           }
 
-          export interface UsesForeignSpt extends $ObjectTypeDefinition<'UsesForeignSpt', UsesForeignSpt> {
+          export interface UsesForeignSpt extends $ObjectTypeDefinition {
             osdkMetadata: typeof $osdkMetadata;
             type: 'object';
             apiName: 'UsesForeignSpt';
@@ -2059,7 +2059,7 @@ describe("generator", () => {
           > = $Osdk<SomeInterface, K | OPTIONS>;
         }
 
-        export interface SomeInterface extends $InterfaceDefinition<'com.example.dep.SomeInterface', SomeInterface> {
+        export interface SomeInterface extends $InterfaceDefinition {
           osdkMetadata: typeof $osdkMetadata;
           type: 'interface';
           apiName: 'com.example.dep.SomeInterface';
@@ -2129,7 +2129,7 @@ describe("generator", () => {
           > = $Osdk<Task, K | OPTIONS>;
         }
 
-        export interface Task extends $ObjectTypeDefinition<'com.example.dep.Task', Task> {
+        export interface Task extends $ObjectTypeDefinition {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'com.example.dep.Task';

@@ -21,5 +21,5 @@ import type {
 } from "./ontology/ObjectTypeDefinition.js";
 
 export type OsdkObjectPrimaryKeyType<
-  Q extends ObjectTypeDefinition<any, any>,
+  Q extends ObjectTypeDefinition,
 > = PropertyValueWireToClient[CompileTimeMetadata<Q>["primaryKeyType"]];

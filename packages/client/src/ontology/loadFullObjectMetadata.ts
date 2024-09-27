@@ -22,7 +22,7 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 export async function loadFullObjectMetadata(
   client: MinimalClient,
   objectType: string,
-): Promise<ObjectMetadata<any, any> & { rid: string }> {
+): Promise<ObjectMetadata & { rid: string }> {
   const full = await OntologiesV2.ObjectTypesV2.getObjectTypeFullMetadata(
     client,
     await client.ontologyRid,

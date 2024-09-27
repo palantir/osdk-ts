@@ -28,13 +28,13 @@ import type { Osdk } from "../OsdkObjectFrom.js";
 
 /** The $link container to get from one object type to its linked objects */
 export type OsdkObjectLinksObject<
-  O extends ObjectTypeDefinition<any>,
+  O extends ObjectTypeDefinition,
 > = ObjectTypeLinkKeysFrom2<O> extends never ? never : {
   readonly [L in ObjectTypeLinkKeysFrom2<O>]: OsdkObjectLinksEntry<O, L>;
 };
 
 export type OsdkObjectLinksEntry<
-  Q extends ObjectTypeDefinition<any, any>,
+  Q extends ObjectTypeDefinition,
   L extends ObjectTypeLinkKeysFrom2<Q>,
 > = CompileTimeMetadata<Q>["links"][L] extends
   ObjectTypeLinkDefinition<infer T, infer M> ? (
@@ -48,7 +48,7 @@ export type DefaultToFalse<B extends boolean | undefined> = false extends B
   : true;
 
 export interface SingleLinkAccessor<
-  T extends ObjectTypeDefinition<any, any>,
+  T extends ObjectTypeDefinition,
 > {
   /** Load the linked object
    */

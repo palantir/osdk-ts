@@ -34,7 +34,7 @@ export class EnhancedObjectType extends EnhancedBase<ObjectTypeFullMetadata> {
     return this.getDefinitionIdentifier(v2);
   }
 
-  getCleanedUpDefinition(v2: boolean): ObjectMetadata<any> {
+  getCleanedUpDefinition(v2: boolean): ObjectMetadata {
     return deleteUndefineds(
       wireObjectTypeFullMetadataToSdkObjectMetadata(
         this.raw,

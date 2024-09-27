@@ -38,8 +38,7 @@ export namespace BuilderDeploymentState {
   > = $Osdk<BuilderDeploymentState, K | OPTIONS>;
 }
 
-export interface BuilderDeploymentState
-  extends $ObjectTypeDefinition<'BuilderDeploymentState', BuilderDeploymentState> {
+export interface BuilderDeploymentState extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'BuilderDeploymentState';

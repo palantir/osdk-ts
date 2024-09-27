@@ -31,7 +31,7 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
     };
   },
   v2: boolean,
-): ObjectMetadata<any> {
+): ObjectMetadata {
   if (
     objectTypeWithLink.objectType
       .properties[objectTypeWithLink.objectType.primaryKey] === undefined

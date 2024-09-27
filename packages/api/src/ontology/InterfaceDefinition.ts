@@ -20,18 +20,15 @@ import type {
   ObjectInterfaceCompileDefinition,
 } from "./ObjectTypeDefinition.js";
 
-export interface InterfaceMetadata<
-  K extends string,
-  N = unknown,
-> extends ObjectInterfaceBaseDefinition<K, N> {
+export interface InterfaceMetadata extends ObjectInterfaceBaseDefinition {
   type: "interface";
 }
 
-export interface InterfaceDefinition<K extends string, N = unknown> {
+export interface InterfaceDefinition {
   type: "interface";
-  apiName: K;
+  apiName: string;
   osdkMetadata?: OsdkMetadata;
   __DefinitionMetadata?:
-    & InterfaceMetadata<K, N>
+    & InterfaceMetadata
     & ObjectInterfaceCompileDefinition;
 }

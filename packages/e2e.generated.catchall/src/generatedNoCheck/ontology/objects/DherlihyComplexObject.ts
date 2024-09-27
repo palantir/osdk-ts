@@ -38,7 +38,7 @@ export namespace DherlihyComplexObject {
   > = $Osdk<DherlihyComplexObject, K | OPTIONS>;
 }
 
-export interface DherlihyComplexObject extends $ObjectTypeDefinition<'DherlihyComplexObject', DherlihyComplexObject> {
+export interface DherlihyComplexObject extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'DherlihyComplexObject';

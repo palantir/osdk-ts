@@ -33,7 +33,7 @@ export type OsdkBase<
 };
 
 export type PrimaryKeyType<Q extends ObjectOrInterfaceDefinition> =
-  & (Q extends ObjectTypeDefinition<any, any> ? OsdkObjectPrimaryKeyType<Q>
+  & (Q extends ObjectTypeDefinition ? OsdkObjectPrimaryKeyType<Q>
     : unknown)
   // if the type is `unknown` then the next line will
   // restrict it down to all valid primary key types

@@ -22,7 +22,7 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 export async function loadInterfaceMetadata(
   client: MinimalClient,
   objectType: string,
-): Promise<InterfaceMetadata<any, any>> {
+): Promise<InterfaceMetadata> {
   const r = await OntologiesV2.OntologyInterfaces.getInterfaceType(
     client,
     await client.ontologyRid,

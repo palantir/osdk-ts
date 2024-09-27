@@ -93,7 +93,7 @@ async function remapQueryParams(
 
 async function remapQueryResponse<
   K extends string,
-  Q extends ObjectTypeDefinition<any>,
+  Q extends ObjectTypeDefinition,
   T extends QueryDataTypeDefinition<K, Q | never>,
 >(
   client: MinimalClient,

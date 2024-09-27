@@ -19,13 +19,16 @@ import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
-import type { BrandedApiName } from "../ontology/ObjectTypeDefinition.js";
+import type {
+  BrandedApiName,
+  CompileTimeMetadata,
+} from "../ontology/ObjectTypeDefinition.js";
 
 export type NullabilityAdherence = false | "throw" | "drop";
 export type NullabilityAdherenceDefault = "throw";
 
 export interface SelectArg<
-  Q extends ObjectOrInterfaceDefinition<any, any>,
+  Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q> = PropertyKeys<Q>,
   R extends boolean = false,
   S extends NullabilityAdherence = NullabilityAdherenceDefault,
@@ -36,7 +39,7 @@ export interface SelectArg<
 }
 
 export interface OrderByArg<
-  Q extends ObjectOrInterfaceDefinition<any, any>,
+  Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q> = PropertyKeys<Q>,
 > {
   $orderBy?: {
@@ -76,14 +79,12 @@ export interface AsyncIterArgs<
 export type Augment<
   X extends ObjectOrInterfaceDefinition,
   T extends string,
-> = X extends ObjectOrInterfaceDefinition<infer Z>
-  ? Z extends BrandedApiName<infer ZZ, any> ? { [K in Z]: T[] } : never
-  : never;
+> = { [K in CompileTimeMetadata<X>["apiName"]]: T[] };
 
 export type Augments = Record<string, string[]>;
 
 export interface FetchInterfacePageArgs<
-  Q extends InterfaceDefinition<any, any>,
+  Q extends InterfaceDefinition,
   K extends PropertyKeys<Q> = PropertyKeys<Q>,
   R extends boolean = false,
 > extends SelectArg<Q, K, R>, OrderByArg<Q, PropertyKeys<Q>> {

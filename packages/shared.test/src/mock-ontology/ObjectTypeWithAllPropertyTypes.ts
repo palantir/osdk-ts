@@ -16,12 +16,8 @@
 
 import type { ObjectMetadata, VersionBound } from "@osdk/api";
 
-export interface ObjectTypeWithAllPropertyTypesDef extends
-  ObjectMetadata<
-    "ObjectTypeWithAllPropertyTypes",
-    ObjectTypeWithAllPropertyTypesDef
-  >,
-  VersionBound<"0.15.0">
+export interface ObjectTypeWithAllPropertyTypesDef
+  extends ObjectMetadata, VersionBound<"0.15.0">
 {
   type: "object";
   apiName: "ObjectTypeWithAllPropertyTypes";
@@ -285,6 +281,4 @@ export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypesDef =
     interfaceMap: {},
     inverseInterfaceMap: {},
     rid: "rid.object-type.123",
-  } satisfies ObjectMetadata<
-    "ObjectTypeWithAllPropertyTypes"
-  >;
+  } satisfies ObjectMetadata;

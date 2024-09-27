@@ -38,7 +38,7 @@ export interface ActionMetadata {
 
 export namespace ActionMetadata {
   export interface Parameter<
-    T_Target extends ObjectTypeDefinition<any> = never,
+    T_Target extends ObjectTypeDefinition = never,
   > {
     type:
       | ValidBaseActionParameterTypes
@@ -51,7 +51,7 @@ export namespace ActionMetadata {
 
   export namespace DataType {
     export interface Object<
-      T_Target extends ObjectTypeDefinition<any> = never,
+      T_Target extends ObjectTypeDefinition = never,
     > {
       __OsdkTargetType?: T_Target;
       type: "object";
@@ -59,7 +59,7 @@ export namespace ActionMetadata {
     }
 
     export interface ObjectSet<
-      T_Target extends ObjectTypeDefinition<any> = never,
+      T_Target extends ObjectTypeDefinition = never,
     > {
       __OsdkTargetType?: T_Target;
       type: "objectSet";

@@ -244,7 +244,7 @@ export function createDefinition(
     object instanceof EnhancedObjectType
       ? `$ObjectTypeDefinition`
       : `$InterfaceDefinition`
-  }<"${object.fullApiName}", ${objectDefIdentifier}> {
+  } {
       osdkMetadata: typeof $osdkMetadata;
       type: "${object instanceof EnhancedObjectType ? "object" : "interface"}";
       apiName: "${object.fullApiName}";

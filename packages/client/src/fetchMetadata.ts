@@ -30,8 +30,8 @@ import { InterfaceDefinitions } from "./ontology/OntologyProvider.js";
 /** @internal */
 export const fetchMetadataInternal = async <
   Q extends (
-    | ObjectTypeDefinition<any, any>
-    | InterfaceDefinition<any, any>
+    | ObjectTypeDefinition
+    | InterfaceDefinition
     | ActionDefinition<any>
     | QueryDefinition<any, any, any>
   ),
@@ -39,8 +39,8 @@ export const fetchMetadataInternal = async <
   client: MinimalClient,
   definition: Q,
 ): Promise<
-  Q extends ObjectTypeDefinition<any, any> ? ObjectMetadata<any, any>
-    : Q extends InterfaceDefinition<any, any> ? InterfaceMetadata<any, any>
+  Q extends ObjectTypeDefinition ? ObjectMetadata
+    : Q extends InterfaceDefinition ? InterfaceMetadata
     : Q extends ActionDefinition<any> ? ActionMetadata
     : Q extends QueryDefinition<any, any, any> ? QueryMetadata<any, any>
     : never

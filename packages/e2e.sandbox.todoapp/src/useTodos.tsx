@@ -123,7 +123,7 @@ export function useTodos() {
   };
 }
 
-type OsdkPropsOnly<T extends ObjectTypeDefinition<any>> = Omit<
+type OsdkPropsOnly<T extends ObjectTypeDefinition> = Omit<
   Osdk<T>,
   "$as" | "$link"
 >;

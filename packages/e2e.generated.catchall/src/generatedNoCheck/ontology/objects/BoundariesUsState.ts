@@ -40,7 +40,7 @@ export namespace BoundariesUsState {
   > = $Osdk<BoundariesUsState, K | OPTIONS>;
 }
 
-export interface BoundariesUsState extends $ObjectTypeDefinition<'BoundariesUsState', BoundariesUsState> {
+export interface BoundariesUsState extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'BoundariesUsState';

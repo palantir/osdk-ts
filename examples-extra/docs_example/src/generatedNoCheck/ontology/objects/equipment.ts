@@ -36,7 +36,7 @@ export namespace equipment {
   > = $Osdk<equipment, K | OPTIONS>;
 }
 
-export interface equipment extends $ObjectTypeDefinition<'equipment', equipment> {
+export interface equipment extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'equipment';

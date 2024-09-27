@@ -505,7 +505,7 @@ describe("ObjectSet", () => {
         // a non-null property on an interface so
         // we cheese it here to be sure the types work
         type CheesedProp<
-          T extends InterfaceDefinition<any>,
+          T extends InterfaceDefinition,
           K extends PropertyKeys<T>,
         > = T & { properties: { [KK in K]: { nullable: false } } };
 

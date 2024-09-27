@@ -29,7 +29,7 @@ import invariant from "tiny-invariant";
 
 /** @internal */
 export function modernToLegacyWhereClause<
-  T extends ObjectOrInterfaceDefinition<any, any>,
+  T extends ObjectOrInterfaceDefinition,
 >(
   whereClause: WhereClause<T>,
 ): SearchJsonQueryV2 {

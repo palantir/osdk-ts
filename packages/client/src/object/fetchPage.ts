@@ -44,7 +44,7 @@ import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 export function augment<
   Q extends ObjectOrInterfaceDefinition,
-  T extends keyof CompileTimeMetadata<Q>["properties"] & string,
+  T extends PropertyKeys<Q>,
 >(
   type: Q,
   ...properties: T[]
@@ -83,7 +83,7 @@ export function objectSetToSearchJsonV2(
 }
 
 async function fetchInterfacePage<
-  Q extends InterfaceDefinition<any, any>,
+  Q extends InterfaceDefinition,
   L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
@@ -246,7 +246,7 @@ function applyFetchArgs<
 
 /** @internal */
 export async function fetchObjectPage<
-  Q extends ObjectTypeDefinition<any, any>,
+  Q extends ObjectTypeDefinition,
   L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,

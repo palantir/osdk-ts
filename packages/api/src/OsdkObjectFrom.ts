@@ -59,12 +59,12 @@ export type JustProps<
 
 export type PropMapToObject<
   FROM extends ObjectOrInterfaceDefinition,
-  TO extends ObjectTypeDefinition<any, any>,
+  TO extends ObjectTypeDefinition,
 > = NonNullable<CompileTimeMetadata<TO>["interfaceMap"]>[ApiNameAsString<FROM>];
 
 export type MapPropNamesToObjectType<
   FROM extends ObjectOrInterfaceDefinition,
-  TO extends ObjectTypeDefinition<any, any>,
+  TO extends ObjectTypeDefinition,
   P extends ValidOsdkPropParams<FROM>,
 > = PropMapToObject<
   FROM,
@@ -72,15 +72,15 @@ export type MapPropNamesToObjectType<
 >[JustProps<FROM, P> & keyof PropMapToObject<FROM, TO>];
 
 export type PropMapToInterface<
-  FROM extends ObjectTypeDefinition<any>,
-  TO extends InterfaceDefinition<any>,
+  FROM extends ObjectTypeDefinition,
+  TO extends InterfaceDefinition,
 > = NonNullable<
   CompileTimeMetadata<FROM>["inverseInterfaceMap"]
 >[ApiNameAsString<TO>];
 
 export type MapPropNamesToInterface<
-  FROM extends ObjectTypeDefinition<any>,
-  TO extends InterfaceDefinition<any>,
+  FROM extends ObjectTypeDefinition,
+  TO extends InterfaceDefinition,
   P extends ValidOsdkPropParams<FROM>,
 > = PropMapToInterface<
   FROM,
@@ -96,15 +96,14 @@ export type ConvertProps<
   TO extends ValidToFrom<FROM>,
   P extends ValidOsdkPropParams<FROM>,
 > = TO extends FROM ? P
-  : TO extends ObjectTypeDefinition<any, any> ? (
+  : TO extends ObjectTypeDefinition ? (
       UnionIfTrue<
         MapPropNamesToObjectType<FROM, TO, P>,
         P extends "$rid" ? true : false,
         "$rid"
       >
     )
-  : TO extends InterfaceDefinition<any, any>
-    ? FROM extends ObjectTypeDefinition<any, any> ? (
+  : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? (
         UnionIfTrue<
           MapPropNamesToInterface<FROM, TO, P>,
           P extends "$rid" ? true : false,
@@ -117,8 +116,8 @@ export type ConvertProps<
 /** DO NOT EXPORT FROM PACKAGE */
 export type ValidToFrom<
   FROM extends ObjectOrInterfaceDefinition,
-> = FROM extends InterfaceDefinition<any, any> ? ObjectOrInterfaceDefinition
-  : InterfaceDefinition<any, any>;
+> = FROM extends InterfaceDefinition ? ObjectOrInterfaceDefinition
+  : InterfaceDefinition;
 
 /**
  * @param P The properties to add from Q
@@ -131,8 +130,8 @@ type UnderlyingProps<
   NEW_Q extends ValidToFrom<Q>,
 > =
   & Z
-  & Q extends InterfaceDefinition<any, any>
-  ? NEW_Q extends ObjectTypeDefinition<any> ? ConvertProps<Q, NEW_Q, P>
+  & Q extends InterfaceDefinition
+  ? NEW_Q extends ObjectTypeDefinition ? ConvertProps<Q, NEW_Q, P>
   : Z
   : Z;
 
@@ -161,7 +160,7 @@ export type Osdk<
   >
   & {
     readonly $link: Q extends { linksType?: any } ? Q["linksType"]
-      : Q extends ObjectTypeDefinition<any, any> ? OsdkObjectLinksObject<Q>
+      : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q>
       : never;
 
     readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk<

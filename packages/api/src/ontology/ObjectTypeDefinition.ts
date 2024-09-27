@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, PropertyKeys } from "../index.js";
 import type { OsdkMetadata } from "../OsdkMetadata.js";
+import type {
+  ObjectOrInterfaceDefinition,
+  PropertyKeys,
+} from "./ObjectOrInterface.js";
 import type { PrimaryKeyTypes } from "./PrimaryKeyTypes.js";
 import type { VersionString } from "./VersionString.js";
 import type { WirePropertyTypes } from "./WirePropertyTypes.js";
@@ -26,16 +29,16 @@ export type CompileTimeMetadata<T extends { __DefinitionMetadata?: {} }> =
   >;
 
 export type ObjectTypePropertyDefinitionFrom2<
-  Q extends ObjectOrInterfaceDefinition<any, any>,
+  Q extends ObjectOrInterfaceDefinition,
   P extends PropertyKeys<Q>,
 > = CompileTimeMetadata<Q>["properties"][P];
 
-export interface ObjectInterfaceBaseDefinition<K extends string, N = unknown> {
+export type ObjectInterfaceBaseDefinition = {
   type: "object" | "interface";
-  apiName: K;
+  apiName: string;
   displayName: string;
   description?: string;
-  properties: Record<string, ObjectTypePropertyDefinition>;
+  properties: Record<any, ObjectTypePropertyDefinition>;
   links: Record<
     string,
     ObjectTypeLinkDefinition<any, any>
@@ -47,7 +50,7 @@ export interface ObjectInterfaceBaseDefinition<K extends string, N = unknown> {
    * Optional because they may not exist on legacy.
    */
   implements?: ReadonlyArray<string>;
-}
+};
 
 export interface ObjectInterfaceCompileDefinition<> {
   type: "object" | "interface";
@@ -61,10 +64,7 @@ export interface VersionBound<V extends VersionString<any, any, any>> {
   __expectedClientVersion?: V;
 }
 
-export interface ObjectMetadata<
-  K extends string,
-  N = unknown,
-> extends ObjectInterfaceBaseDefinition<K, N> {
+export interface ObjectMetadata extends ObjectInterfaceBaseDefinition {
   type: "object";
   primaryKeyApiName: keyof this["properties"];
   titleProperty: keyof this["properties"];
@@ -89,23 +89,23 @@ export interface ObjectMetadata<
   >;
 }
 
-export interface ObjectTypeDefinition<K extends string, N = unknown> {
+export interface ObjectTypeDefinition {
   type: "object";
-  apiName: K;
+  apiName: string;
   osdkMetadata?: OsdkMetadata;
   __DefinitionMetadata?:
-    & ObjectMetadata<K, N>
+    & ObjectMetadata
     & ObjectInterfaceCompileDefinition;
 }
 
 export type ObjectTypeLinkKeysFrom2<
-  Q extends ObjectTypeDefinition<any, any>,
+  Q extends ObjectTypeDefinition,
 > =
   & keyof CompileTimeMetadata<Q>["links"]
   & string;
 
 export interface ObjectTypeLinkDefinition<
-  Q extends ObjectTypeDefinition<any, any>,
+  Q extends ObjectTypeDefinition,
   M extends boolean,
 > {
   __OsdkLinkTargetType?: Q;

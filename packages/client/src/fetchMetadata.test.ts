@@ -59,7 +59,7 @@ describe("FetchMetadata", () => {
     const objectMetadata = await client.fetchMetadata($Objects.Employee);
 
     expectTypeOf(objectMetadata).toEqualTypeOf<
-      ObjectMetadata<any, any>
+      ObjectMetadata
     >();
 
     expect(objectMetadata).toMatchInlineSnapshot(`
@@ -157,7 +157,7 @@ describe("FetchMetadata", () => {
     );
 
     expectTypeOf(interfaceMetadata).toEqualTypeOf<
-      InterfaceMetadata<any, any>
+      InterfaceMetadata
     >();
 
     expect(interfaceMetadata).toMatchInlineSnapshot(`
