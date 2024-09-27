@@ -689,6 +689,15 @@ package you do so at your own risk.
       },
     }),
 
+    packageScript({
+      includePackages: consumerCliPackages,
+      options: {
+        scripts: {
+          transpile: "monorepo.tool.transpile tsup",
+        },
+      },
+    }),
+
     allLocalDepsMustNotBePrivate({
       includePackages: consumerCliPackages,
     }),
