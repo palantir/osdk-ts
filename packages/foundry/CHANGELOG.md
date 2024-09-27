@@ -1,5 +1,23 @@
 # @osdk/foundry
 
+## 2.1.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [5dc1241]
+  - @osdk/shared.client@1.0.0-beta.3
+  - @osdk/foundry.admin@2.1.0-beta.6
+  - @osdk/foundry.core@2.1.0-beta.6
+  - @osdk/foundry.datasets@2.1.0-beta.6
+  - @osdk/foundry.filesystem@2.1.0-beta.6
+  - @osdk/foundry.functions@2.1.0-beta.6
+  - @osdk/foundry.ontologies@2.1.0-beta.6
+  - @osdk/foundry.orchestration@2.1.0-beta.6
+  - @osdk/foundry.publicapis@2.1.0-beta.6
+  - @osdk/foundry.streams@2.1.0-beta.6
+  - @osdk/foundry.thirdpartyapplications@2.1.0-beta.6
+  - @osdk/shared.net.platformapi@0.3.0-beta.3
+
 ## 2.1.0-beta.5
 
 ### Minor Changes

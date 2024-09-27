@@ -1,5 +1,20 @@
 # @osdk/cli.cmd.typescript
 
+## 0.6.0-beta.15
+
+### Minor Changes
+
+- 7b96461: Update dependencies if they exist
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+  - @osdk/generator@2.0.0-beta.16
+  - @osdk/internal.foundry.core@0.2.0-beta.10
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.10
+  - @osdk/shared.net@2.0.0-beta.6
+
 ## 0.6.0-beta.14
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.8.0-beta.12
+
+### Minor Changes
+
+- dc25fb4: Further simplify types
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+  - @osdk/api@2.0.0-beta.16
+
 ## 0.8.0-beta.11
 
 ### Patch Changes

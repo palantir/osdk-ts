@@ -1,5 +1,16 @@
 # @osdk/api
 
+## 2.0.0-beta.16
+
+### Minor Changes
+
+- dc25fb4: Improve query generics
+- dc25fb4: Further simplify types
+
+### Patch Changes
+
+- @osdk/shared.net@2.0.0-beta.6
+
 ## 2.0.0-beta.15
 
 ### Minor Changes

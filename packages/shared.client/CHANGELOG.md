@@ -1,5 +1,11 @@
 # @osdk/shared.client
 
+## 1.0.0-beta.3
+
+### Minor Changes
+
+- 5dc1241: Internally updated exports
+
 ## 1.0.0-beta.2
 
 ### Minor Changes
