@@ -26,11 +26,11 @@ export interface InterfaceMetadata<
   type: "interface";
 }
 
-export interface InterfaceDefinition<K extends string> {
+export interface InterfaceDefinition {
   type: "interface";
-  apiName: K;
+  apiName: string;
   osdkMetadata?: OsdkMetadata;
   __DefinitionMetadata?:
-    & InterfaceMetadata<K>
+    & InterfaceMetadata<any>
     & ObjectInterfaceCompileDefinition;
 }

@@ -36,7 +36,7 @@ export namespace UsesForeignSpt {
   > = $Osdk<UsesForeignSpt, K | OPTIONS>;
 }
 
-export interface UsesForeignSpt extends $ObjectTypeDefinition<'UsesForeignSpt'> {
+export interface UsesForeignSpt extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'UsesForeignSpt';

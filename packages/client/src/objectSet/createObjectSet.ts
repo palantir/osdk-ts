@@ -53,7 +53,7 @@ import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
 function isObjectTypeDefinition(
   def: ObjectOrInterfaceDefinition,
-): def is ObjectTypeDefinition<any> {
+): def is ObjectTypeDefinition {
   return def.type === "object";
 }
 
@@ -209,7 +209,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
 
     fetchOneWithErrors: (isObjectTypeDefinition(objectType)
       ? async <A extends SelectArg<Q>>(
-        primaryKey: Q extends ObjectTypeDefinition<any> ? PrimaryKeyType<Q>
+        primaryKey: Q extends ObjectTypeDefinition ? PrimaryKeyType<Q>
           : never,
         options: A,
       ) => {
@@ -266,9 +266,9 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
 }
 async function createWithPk(
   clientCtx: MinimalClient,
-  objectType: ObjectTypeDefinition<any>,
+  objectType: ObjectTypeDefinition,
   objectSet: WireObjectSet,
-  primaryKey: PrimaryKeyType<ObjectTypeDefinition<any>>,
+  primaryKey: PrimaryKeyType<ObjectTypeDefinition>,
 ) {
   const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
     objectType.apiName,

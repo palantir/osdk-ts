@@ -37,15 +37,14 @@ export namespace QueryParam {
   /**
    * Helper type to convert action definition parameter object types to typescript types
    */
-  export type ObjectType<T extends ObjectTypeDefinition<any>> =
+  export type ObjectType<T extends ObjectTypeDefinition> =
     | OsdkBase<T>
     | OsdkObjectPrimaryKeyType<T>;
 
   /**
    * Helper type to convert action definition parameter object sets to typescript types
    */
-  export type ObjectSetType<T extends ObjectTypeDefinition<any>> =
-    BaseObjectSet<T>;
+  export type ObjectSetType<T extends ObjectTypeDefinition> = BaseObjectSet<T>;
 }
 
 /**
@@ -61,12 +60,12 @@ export namespace QueryResult {
   /**
    * Helper type to convert action definition parameter object types to typescript types
    */
-  export type ObjectType<T extends ObjectTypeDefinition<any>> = OsdkBase<T>;
+  export type ObjectType<T extends ObjectTypeDefinition> = OsdkBase<T>;
 
   /**
    * Helper type to convert action definition parameter object sets to typescript types
    */
-  export type ObjectSetType<T extends ObjectTypeDefinition<any>> = ObjectSet<
+  export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<
     T
   >;
 }

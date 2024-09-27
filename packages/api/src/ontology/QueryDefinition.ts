@@ -51,14 +51,14 @@ export interface QueryDefinition<
 
 export type QueryParameterDefinition<
   K extends string,
-  T_Target extends ObjectTypeDefinition<any> = never,
+  T_Target extends ObjectTypeDefinition = never,
 > = {
   description?: string;
 } & QueryDataTypeDefinition<K, T_Target>;
 
 export type QueryDataTypeDefinition<
   K extends string,
-  T_Target extends ObjectTypeDefinition<any> = never,
+  T_Target extends ObjectTypeDefinition = never,
 > =
   | PrimitiveDataType
   | ObjectQueryDataType<K, T_Target>
@@ -92,7 +92,7 @@ export type PrimitiveDataType<
 
 export interface ObjectQueryDataType<
   K extends string,
-  T_Target extends ObjectTypeDefinition<any> = never,
+  T_Target extends ObjectTypeDefinition = never,
 > extends BaseQueryDataTypeDefinition<"object"> {
   object: K;
   __OsdkTargetType?: T_Target;
@@ -100,7 +100,7 @@ export interface ObjectQueryDataType<
 
 export interface ObjectSetQueryDataType<
   K extends string,
-  T_Target extends ObjectTypeDefinition<any> = never,
+  T_Target extends ObjectTypeDefinition = never,
 > extends BaseQueryDataTypeDefinition<"objectSet"> {
   objectSet: K;
   __OsdkTargetType?: T_Target;

@@ -84,7 +84,7 @@ export type Augment<
 export type Augments = Record<string, string[]>;
 
 export interface FetchInterfacePageArgs<
-  Q extends InterfaceDefinition<any>,
+  Q extends InterfaceDefinition,
   K extends PropertyKeys<Q> = PropertyKeys<Q>,
   R extends boolean = false,
 > extends SelectArg<Q, K, R>, OrderByArg<Q, PropertyKeys<Q>> {

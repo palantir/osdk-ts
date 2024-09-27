@@ -18,8 +18,8 @@ import type { InterfaceDefinition } from "./InterfaceDefinition.js";
 import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
 
 export type ObjectOrInterfaceDefinition =
-  | ObjectTypeDefinition<any>
-  | InterfaceDefinition<any>;
+  | ObjectTypeDefinition
+  | InterfaceDefinition;
 
 export type PropertyKeys<
   O extends ObjectOrInterfaceDefinition,

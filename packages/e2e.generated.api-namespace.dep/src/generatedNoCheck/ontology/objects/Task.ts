@@ -36,7 +36,7 @@ export namespace Task {
   > = $Osdk<Task, K | OPTIONS>;
 }
 
-export interface Task extends $ObjectTypeDefinition<'com.example.dep.Task'> {
+export interface Task extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'com.example.dep.Task';

@@ -42,7 +42,7 @@ export const createStandardOntologyProviderFactory: (
     async function loadObject(
       client: MinimalClient,
       key: string,
-    ): Promise<FetchedObjectTypeDefinition<any>> {
+    ): Promise<FetchedObjectTypeDefinition> {
       let objectDef = await loadFullObjectMetadata(client, key);
 
       // ensure we have all of the interfaces loaded

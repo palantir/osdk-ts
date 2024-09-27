@@ -36,7 +36,7 @@ export namespace WeatherStation {
   > = $Osdk<WeatherStation, K | OPTIONS>;
 }
 
-export interface WeatherStation extends $ObjectTypeDefinition<'WeatherStation'> {
+export interface WeatherStation extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'WeatherStation';

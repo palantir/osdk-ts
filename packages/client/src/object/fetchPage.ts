@@ -83,7 +83,7 @@ export function objectSetToSearchJsonV2(
 }
 
 async function fetchInterfacePage<
-  Q extends InterfaceDefinition<any>,
+  Q extends InterfaceDefinition,
   L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
@@ -246,7 +246,7 @@ function applyFetchArgs<
 
 /** @internal */
 export async function fetchObjectPage<
-  Q extends ObjectTypeDefinition<any>,
+  Q extends ObjectTypeDefinition,
   L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,

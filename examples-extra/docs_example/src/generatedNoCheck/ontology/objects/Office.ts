@@ -50,7 +50,7 @@ export namespace Office {
   > = $Osdk<Office, K | OPTIONS>;
 }
 
-export interface Office extends $ObjectTypeDefinition<'Office'> {
+export interface Office extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Office';

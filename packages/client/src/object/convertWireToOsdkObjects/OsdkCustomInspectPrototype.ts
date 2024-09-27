@@ -50,7 +50,7 @@ function customInspect(
 
   let ret = `Osdk<${
     options.stylize(
-      this[ObjectDefRef]?.apiName ?? this[InterfaceDefRef]?.apiName,
+      this[ObjectDefRef]?.apiName ?? this[InterfaceDefRef]?.apiName ?? "",
       "special",
     )
   }> {\n`;

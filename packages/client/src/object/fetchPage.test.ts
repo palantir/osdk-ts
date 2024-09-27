@@ -43,7 +43,7 @@ describe(fetchPage, () => {
   it("infers select properly", () => {
     // this helper lets us get return types of functions that are generic
     class Helper<
-      T extends ObjectTypeDefinition<any>,
+      T extends ObjectTypeDefinition,
       const A extends FetchPageArgs<T>,
     > {
       public fetchPage<

@@ -38,7 +38,7 @@ const handlerCache = createSimpleCache<
 
 /** @internal */
 export function createOsdkInterface<
-  Q extends FetchedObjectTypeDefinition<any>,
+  Q extends FetchedObjectTypeDefinition,
 >(
   underlying: Osdk<Q> & ObjectHolder<Q>,
   interfaceDef: InterfaceMetadata<any>,

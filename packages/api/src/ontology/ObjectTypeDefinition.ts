@@ -88,23 +88,23 @@ export interface ObjectMetadata<
   >;
 }
 
-export interface ObjectTypeDefinition<K extends string> {
+export interface ObjectTypeDefinition {
   type: "object";
-  apiName: K;
+  apiName: string;
   osdkMetadata?: OsdkMetadata;
   __DefinitionMetadata?:
-    & ObjectMetadata<K>
+    & ObjectMetadata<any>
     & ObjectInterfaceCompileDefinition;
 }
 
 export type ObjectTypeLinkKeysFrom2<
-  Q extends ObjectTypeDefinition<any>,
+  Q extends ObjectTypeDefinition,
 > =
   & keyof CompileTimeMetadata<Q>["links"]
   & string;
 
 export interface ObjectTypeLinkDefinition<
-  Q extends ObjectTypeDefinition<any>,
+  Q extends ObjectTypeDefinition,
   M extends boolean,
 > {
   __OsdkLinkTargetType?: Q;

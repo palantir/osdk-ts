@@ -30,7 +30,7 @@ export namespace FooInterface {
   > = $Osdk<FooInterface, K | OPTIONS>;
 }
 
-export interface FooInterface extends $InterfaceDefinition<'FooInterface'> {
+export interface FooInterface extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'FooInterface';
