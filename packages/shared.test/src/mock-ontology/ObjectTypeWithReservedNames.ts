@@ -20,11 +20,8 @@ import type {
   VersionBound,
 } from "@osdk/api";
 
-export interface ObjectTypeWithReservedNamesDef extends
-  ObjectMetadata<
-    "ObjectTypeWithReservedNames"
-  >,
-  VersionBound<"0.15.0">
+export interface ObjectTypeWithReservedNamesDef
+  extends ObjectMetadata, VersionBound<"0.15.0">
 {
   type: "object";
   apiName: "ObjectTypeWithReservedNames";

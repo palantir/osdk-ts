@@ -221,7 +221,7 @@ export interface ObjectSet<
     >(
       primaryKey: PrimaryKeyType<Q>,
       options?: SelectArg<Q, L, R, S>,
-    ) => Promise<SingleOsdkResult<Q, L, R, S>>
+    ) => Promise<SingleOsdkResult<Q, [L] extends [never] ? any : L, R, S>>
     : never;
 
   /**
@@ -234,7 +234,9 @@ export interface ObjectSet<
     >(
       primaryKey: PrimaryKeyType<Q>,
       options?: SelectArg<Q, L, R, S>,
-    ) => Promise<Result<SingleOsdkResult<Q, L, R, S>>>
+    ) => Promise<
+      Result<SingleOsdkResult<Q, [L] extends [never] ? any : L, R, S>>
+    >
     : never;
 
   /**

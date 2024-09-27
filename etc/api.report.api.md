@@ -445,7 +445,7 @@ export interface InterfaceDefinition {
     // Warning: (ae-forgotten-export) The symbol "ObjectInterfaceCompileDefinition" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    __DefinitionMetadata?: InterfaceMetadata<any> & ObjectInterfaceCompileDefinition;
+    __DefinitionMetadata?: InterfaceMetadata & ObjectInterfaceCompileDefinition;
     // (undocumented)
     apiName: string;
     // (undocumented)
@@ -457,7 +457,7 @@ export interface InterfaceDefinition {
 // Warning: (ae-forgotten-export) The symbol "ObjectInterfaceBaseDefinition" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export interface InterfaceMetadata<K extends string> extends ObjectInterfaceBaseDefinition<K> {
+export interface InterfaceMetadata extends ObjectInterfaceBaseDefinition {
     // (undocumented)
     type: "interface";
 }
@@ -480,7 +480,7 @@ export type NullabilityAdherence = false | "throw" | "drop";
 export type NullabilityAdherenceDefault = "throw";
 
 // @public (undocumented)
-export interface ObjectMetadata<K extends string> extends ObjectInterfaceBaseDefinition<K> {
+export interface ObjectMetadata extends ObjectInterfaceBaseDefinition {
     // Warning: (ae-forgotten-export) The symbol "Icon" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -537,8 +537,8 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED 
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     readonly aggregate: <AO extends AggregateOpts<Q>>(req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>) => Promise<AggregationsResults<Q, AO>>;
-    readonly fetchOne: Q extends ObjectTypeDefinition ? <const L extends PropertyKeys<Q>, const R extends boolean, const S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<SingleOsdkResult<Q, L, R, S>> : never;
-    readonly fetchOneWithErrors: Q extends ObjectTypeDefinition ? <L extends PropertyKeys<Q>, R extends boolean, S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<Result<SingleOsdkResult<Q, L, R, S>>> : never;
+    readonly fetchOne: Q extends ObjectTypeDefinition ? <const L extends PropertyKeys<Q>, const R extends boolean, const S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<SingleOsdkResult<Q, [L] extends [never] ? any : L, R, S>> : never;
+    readonly fetchOneWithErrors: Q extends ObjectTypeDefinition ? <L extends PropertyKeys<Q>, R extends boolean, S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<Result<SingleOsdkResult<Q, [L] extends [never] ? any : L, R, S>>> : never;
     readonly intersect: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
     readonly pivotTo: <L extends LinkNames<Q>>(type: L) => CompileTimeMetadata<LinkedType<Q, L>>["objectSet"];
     readonly subtract: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
@@ -556,7 +556,7 @@ export interface ObjectSetQueryDataType<K extends string, T_Target extends Objec
 // @public (undocumented)
 export interface ObjectTypeDefinition {
     // (undocumented)
-    __DefinitionMetadata?: ObjectMetadata<any> & ObjectInterfaceCompileDefinition;
+    __DefinitionMetadata?: ObjectMetadata & ObjectInterfaceCompileDefinition;
     // (undocumented)
     apiName: string;
     // (undocumented)

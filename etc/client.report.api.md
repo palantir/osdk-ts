@@ -83,7 +83,7 @@ export interface Client extends SharedClient<MinimalClient> {
     // (undocumented)
     <Q extends QueryDefinition<any, any, any>>(o: Q): QuerySignatureFromDef<Q>;
     // (undocumented)
-    fetchMetadata<Q extends (ObjectTypeDefinition | InterfaceDefinition | ActionDefinition<any> | QueryDefinition<any, any, any>)>(o: Q): Promise<Q extends ObjectTypeDefinition ? ObjectMetadata<any> : Q extends InterfaceDefinition ? InterfaceMetadata<any> : Q extends ActionDefinition<any> ? ActionMetadata : Q extends QueryDefinition<any, any, any> ? QueryMetadata<any, any> : never>;
+    fetchMetadata<Q extends (ObjectTypeDefinition | InterfaceDefinition | ActionDefinition<any> | QueryDefinition<any, any, any>)>(o: Q): Promise<Q extends ObjectTypeDefinition ? ObjectMetadata : Q extends InterfaceDefinition ? InterfaceMetadata : Q extends ActionDefinition<any> ? ActionMetadata : Q extends QueryDefinition<any, any, any> ? QueryMetadata<any, any> : never>;
 }
 
 // @public

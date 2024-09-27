@@ -29,7 +29,7 @@ import {
 import type { ObjectHolder } from "./ObjectHolder.js";
 
 const handlerCache = createSimpleCache<
-  InterfaceMetadata<any>,
+  InterfaceMetadata,
   ProxyHandler<InterfaceHolder<any> & Osdk<any>>
 >(
   new WeakMap(),
@@ -41,7 +41,7 @@ export function createOsdkInterface<
   Q extends FetchedObjectTypeDefinition,
 >(
   underlying: Osdk<Q> & ObjectHolder<Q>,
-  interfaceDef: InterfaceMetadata<any>,
+  interfaceDef: InterfaceMetadata,
 ) {
   const interfaceHolder: InterfaceHolderOwnProps<Q> = {
     [UnderlyingOsdkObject]: underlying,
@@ -58,7 +58,7 @@ export function createOsdkInterface<
 }
 
 function createInterfaceProxyHandler(
-  newDef: InterfaceMetadata<any>,
+  newDef: InterfaceMetadata,
 ): ProxyHandler<InterfaceHolder<any> & Osdk<any>> {
   return {
     getOwnPropertyDescriptor(target, p) {

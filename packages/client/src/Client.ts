@@ -77,8 +77,8 @@ export interface Client extends SharedClient<MinimalClient> {
       | QueryDefinition<any, any, any>
     ),
   >(o: Q): Promise<
-    Q extends ObjectTypeDefinition ? ObjectMetadata<any>
-      : Q extends InterfaceDefinition ? InterfaceMetadata<any>
+    Q extends ObjectTypeDefinition ? ObjectMetadata
+      : Q extends InterfaceDefinition ? InterfaceMetadata
       : Q extends ActionDefinition<any> ? ActionMetadata
       : Q extends QueryDefinition<any, any, any> ? QueryMetadata<any, any>
       : never

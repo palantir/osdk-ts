@@ -163,8 +163,8 @@ function reframeAsObjectInPlace(
 function isConforming(
   client: MinimalClient,
   def:
-    | InterfaceMetadata<any>
-    | ObjectMetadata<any>,
+    | InterfaceMetadata
+    | ObjectMetadata,
   obj: OntologyObjectV2,
   propsToCheck: readonly string[],
 ) {

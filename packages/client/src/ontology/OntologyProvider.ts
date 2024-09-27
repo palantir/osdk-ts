@@ -26,10 +26,10 @@ export const InterfaceDefinitions = Symbol(
   process.env.MODE !== "production" ? "InterfaceDefinitions" : undefined,
 );
 
-export interface FetchedObjectTypeDefinition extends ObjectMetadata<any> {
+export interface FetchedObjectTypeDefinition extends ObjectMetadata {
   // we keep this here so we can depend on these synchronously
   [InterfaceDefinitions]: {
-    [key: string]: { def: InterfaceMetadata<any> };
+    [key: string]: { def: InterfaceMetadata };
   };
 }
 
@@ -54,7 +54,7 @@ export interface OntologyProvider {
    */
   getInterfaceDefinition: (
     apiName: string,
-  ) => Promise<InterfaceMetadata<any>>;
+  ) => Promise<InterfaceMetadata>;
 
   getQueryDefinition: (apiName: string) => Promise<QueryMetadata<any, any>>;
 

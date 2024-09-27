@@ -44,7 +44,7 @@ import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 export function augment<
   Q extends ObjectOrInterfaceDefinition,
-  T extends keyof CompileTimeMetadata<Q>["properties"] & string,
+  T extends PropertyKeys<Q>,
 >(
   type: Q,
   ...properties: T[]

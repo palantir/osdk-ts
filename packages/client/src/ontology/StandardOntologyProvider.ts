@@ -47,9 +47,9 @@ export const createStandardOntologyProviderFactory: (
 
       // ensure we have all of the interfaces loaded
       const interfaceDefs = Object.fromEntries<
-        { def: InterfaceMetadata<any>; handler: undefined }
+        { def: InterfaceMetadata; handler: undefined }
       >(
-        (await Promise.all<InterfaceMetadata<any>>(
+        (await Promise.all<InterfaceMetadata>(
           objectDef.implements?.map((i) => ret.getInterfaceDefinition(i)) ?? [],
         )).map(i => [i.apiName, { def: i, handler: undefined }]),
       );

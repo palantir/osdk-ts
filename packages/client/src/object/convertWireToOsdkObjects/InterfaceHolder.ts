@@ -26,7 +26,7 @@ export interface InterfaceHolderOwnProps<
   Q extends FetchedObjectTypeDefinition,
 > {
   [UnderlyingOsdkObject]: Osdk<Q> & ObjectHolder<Q>;
-  [InterfaceDefRef]: InterfaceMetadata<any>;
+  [InterfaceDefRef]: InterfaceMetadata;
 }
 
 export interface InterfaceHolder<

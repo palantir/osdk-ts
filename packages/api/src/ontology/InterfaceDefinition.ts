@@ -20,9 +20,7 @@ import type {
   ObjectInterfaceCompileDefinition,
 } from "./ObjectTypeDefinition.js";
 
-export interface InterfaceMetadata<
-  K extends string,
-> extends ObjectInterfaceBaseDefinition<K> {
+export interface InterfaceMetadata extends ObjectInterfaceBaseDefinition {
   type: "interface";
 }
 
@@ -31,6 +29,6 @@ export interface InterfaceDefinition {
   apiName: string;
   osdkMetadata?: OsdkMetadata;
   __DefinitionMetadata?:
-    & InterfaceMetadata<any>
+    & InterfaceMetadata
     & ObjectInterfaceCompileDefinition;
 }

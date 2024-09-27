@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, PropertyKeys } from "../index.js";
 import type { OsdkMetadata } from "../OsdkMetadata.js";
+import type {
+  ObjectOrInterfaceDefinition,
+  PropertyKeys,
+} from "./ObjectOrInterface.js";
 import type { PrimaryKeyTypes } from "./PrimaryKeyTypes.js";
 import type { VersionString } from "./VersionString.js";
 import type { WirePropertyTypes } from "./WirePropertyTypes.js";
@@ -30,12 +33,12 @@ export type ObjectTypePropertyDefinitionFrom2<
   P extends PropertyKeys<Q>,
 > = CompileTimeMetadata<Q>["properties"][P];
 
-export interface ObjectInterfaceBaseDefinition<K extends string> {
+export type ObjectInterfaceBaseDefinition = {
   type: "object" | "interface";
-  apiName: K;
+  apiName: string;
   displayName: string;
   description?: string;
-  properties: Record<string, ObjectTypePropertyDefinition>;
+  properties: Record<any, ObjectTypePropertyDefinition>;
   links: Record<
     string,
     ObjectTypeLinkDefinition<any, any>
@@ -47,7 +50,7 @@ export interface ObjectInterfaceBaseDefinition<K extends string> {
    * Optional because they may not exist on legacy.
    */
   implements?: ReadonlyArray<string>;
-}
+};
 
 export interface ObjectInterfaceCompileDefinition<> {
   type: "object" | "interface";
@@ -61,9 +64,7 @@ export interface VersionBound<V extends VersionString<any, any, any>> {
   __expectedClientVersion?: V;
 }
 
-export interface ObjectMetadata<
-  K extends string,
-> extends ObjectInterfaceBaseDefinition<K> {
+export interface ObjectMetadata extends ObjectInterfaceBaseDefinition {
   type: "object";
   primaryKeyApiName: keyof this["properties"];
   titleProperty: keyof this["properties"];
@@ -93,7 +94,7 @@ export interface ObjectTypeDefinition {
   apiName: string;
   osdkMetadata?: OsdkMetadata;
   __DefinitionMetadata?:
-    & ObjectMetadata<any>
+    & ObjectMetadata
     & ObjectInterfaceCompileDefinition;
 }
 
