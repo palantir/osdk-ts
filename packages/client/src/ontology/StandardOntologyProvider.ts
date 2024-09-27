@@ -88,7 +88,7 @@ export const createStandardOntologyProviderFactory: (
     function makeGetter<
       N extends
         | ObjectOrInterfaceDefinition
-        | QueryMetadata<any, any>
+        | QueryMetadata
         | ActionMetadata,
     >(
       fn: (

@@ -37,7 +37,7 @@ import { toDataValueQueries } from "../util/toDataValueQueries.js";
 import type { QueryParameterType, QueryReturnType } from "./types.js";
 
 export async function applyQuery<
-  QD extends QueryDefinition<any, any, any>,
+  QD extends QueryDefinition<any>,
   P extends QueryParameterType<CompileTimeMetadata<QD>["parameters"]>,
 >(
   client: MinimalClient,
@@ -92,9 +92,8 @@ async function remapQueryParams(
 }
 
 async function remapQueryResponse<
-  K extends string,
   Q extends ObjectTypeDefinition,
-  T extends QueryDataTypeDefinition<K, Q | never>,
+  T extends QueryDataTypeDefinition<Q | never>,
 >(
   client: MinimalClient,
   responseDataType: T,
@@ -235,7 +234,7 @@ async function remapQueryResponse<
 }
 
 async function getRequiredDefinitions(
-  dataType: QueryDataTypeDefinition<any>,
+  dataType: QueryDataTypeDefinition,
   client: MinimalClient,
 ): Promise<Map<string, ObjectOrInterfaceDefinition>> {
   const result = new Map<string, ObjectOrInterfaceDefinition>();
@@ -287,7 +286,7 @@ async function getRequiredDefinitions(
 
   return result;
 }
-function requiresConversion(dataType: QueryDataTypeDefinition<any>) {
+function requiresConversion(dataType: QueryDataTypeDefinition) {
   switch (dataType.type) {
     case "boolean":
     case "date":

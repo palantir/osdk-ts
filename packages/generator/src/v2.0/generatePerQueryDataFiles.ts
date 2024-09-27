@@ -165,8 +165,6 @@ async function generateV2QueryFile(
         }
 
         export interface ${query.shortApiName} extends QueryDefinition<
-          "${query.fullApiName}", 
-          ${referencedObjectTypes},
           ${query.shortApiName}.Signature
         >, VersionBound<$ExpectedClientVersion>{
          __DefinitionMetadata?: {
@@ -261,12 +259,10 @@ export function queryParamJsDoc(
 
 export function getQueryParamType(
   enhancedOntology: EnhancedOntologyDefinition,
-  input: QueryParameterDefinition<any, any>,
+  input: QueryParameterDefinition,
   type: "Param" | "Result",
 ): string {
-  let inner = `unknown /* ${
-    (input as QueryParameterDefinition<any, any>).type
-  } */`;
+  let inner = `unknown /* ${input.type} */`;
 
   switch (input.type) {
     case "date":

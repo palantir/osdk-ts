@@ -544,11 +544,11 @@ export type ObjectOrInterfaceDefinition = ObjectTypeDefinition | InterfaceDefini
 // Warning: (ae-forgotten-export) The symbol "BaseQueryDataTypeDefinition" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export interface ObjectQueryDataType<K extends string, T_Target extends ObjectTypeDefinition = never> extends BaseQueryDataTypeDefinition<"object"> {
+export interface ObjectQueryDataType<T_Target extends ObjectTypeDefinition = never> extends BaseQueryDataTypeDefinition<"object"> {
     // (undocumented)
     __OsdkTargetType?: T_Target;
     // (undocumented)
-    object: K;
+    object: string;
 }
 
 // Warning: (ae-forgotten-export) The symbol "MinimalObjectSet" needs to be exported by the entry point index.d.ts
@@ -577,11 +577,11 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED 
 }
 
 // @public (undocumented)
-export interface ObjectSetQueryDataType<K extends string, T_Target extends ObjectTypeDefinition = never> extends BaseQueryDataTypeDefinition<"objectSet"> {
+export interface ObjectSetQueryDataType<T_Target extends ObjectTypeDefinition = never> extends BaseQueryDataTypeDefinition<"objectSet"> {
     // (undocumented)
     __OsdkTargetType?: T_Target;
     // (undocumented)
-    objectSet: K;
+    objectSet: string;
 }
 
 // @public (undocumented)
@@ -736,16 +736,16 @@ export interface PropertyValueWireToClient {
 // Warning: (ae-forgotten-export) The symbol "ThreeDimensionalAggregationDataType" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type QueryDataTypeDefinition<K extends string, T_Target extends ObjectTypeDefinition = never> = PrimitiveDataType | ObjectQueryDataType<K, T_Target> | ObjectSetQueryDataType<K, T_Target> | SetQueryDataType<K> | UnionQueryDataType<K> | StructQueryDataType<K> | TwoDimensionalAggregationDataType | ThreeDimensionalAggregationDataType;
+export type QueryDataTypeDefinition<T_Target extends ObjectTypeDefinition = any> = PrimitiveDataType | ObjectQueryDataType<T_Target> | ObjectSetQueryDataType<T_Target> | SetQueryDataType | UnionQueryDataType | StructQueryDataType | TwoDimensionalAggregationDataType | ThreeDimensionalAggregationDataType;
 
 // @public (undocumented)
-export interface QueryDefinition<A extends string, K extends string, T = never> {
+export interface QueryDefinition<T = any> {
     // Warning: (ae-forgotten-export) The symbol "QueryCompileTimeMetadata" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    __DefinitionMetadata?: QueryCompileTimeMetadata<T> & QueryMetadata<A, K>;
+    __DefinitionMetadata?: QueryCompileTimeMetadata<T> & QueryMetadata;
     // (undocumented)
-    apiName: A;
+    apiName: string;
     // (undocumented)
     osdkMetadata?: OsdkMetadata;
     // (undocumented)
@@ -753,17 +753,17 @@ export interface QueryDefinition<A extends string, K extends string, T = never> 
 }
 
 // @public (undocumented)
-export interface QueryMetadata<A extends string, K extends string> {
+export interface QueryMetadata {
     // (undocumented)
-    apiName: A;
+    apiName: string;
     // (undocumented)
     description?: string;
     // (undocumented)
     displayName?: string;
     // (undocumented)
-    output: QueryDataTypeDefinition<K, any>;
+    output: QueryDataTypeDefinition;
     // (undocumented)
-    parameters: Record<string, QueryParameterDefinition<K, any>>;
+    parameters: Record<string, QueryParameterDefinition<any>>;
     // (undocumented)
     rid: string;
     // (undocumented)
@@ -780,9 +780,9 @@ export namespace QueryParam {
 }
 
 // @public (undocumented)
-export type QueryParameterDefinition<K extends string, T_Target extends ObjectTypeDefinition = never> = {
+export type QueryParameterDefinition<T_Target extends ObjectTypeDefinition = any> = {
     description?: string;
-} & QueryDataTypeDefinition<K, T_Target>;
+} & QueryDataTypeDefinition<T_Target>;
 
 // @public
 export namespace QueryResult {

@@ -65,7 +65,7 @@ export interface Client extends SharedClient<MinimalClient> {
     o: Q,
   ): ActionSignatureFromDef<Q>;
 
-  <Q extends QueryDefinition<any, any, any>>(
+  <Q extends QueryDefinition<any>>(
     o: Q,
   ): QuerySignatureFromDef<Q>;
 
@@ -74,13 +74,13 @@ export interface Client extends SharedClient<MinimalClient> {
       | ObjectTypeDefinition
       | InterfaceDefinition
       | ActionDefinition<any>
-      | QueryDefinition<any, any, any>
+      | QueryDefinition<any>
     ),
   >(o: Q): Promise<
     Q extends ObjectTypeDefinition ? ObjectMetadata
       : Q extends InterfaceDefinition ? InterfaceMetadata
       : Q extends ActionDefinition<any> ? ActionMetadata
-      : Q extends QueryDefinition<any, any, any> ? QueryMetadata<any, any>
+      : Q extends QueryDefinition<any> ? QueryMetadata
       : never
   >;
 

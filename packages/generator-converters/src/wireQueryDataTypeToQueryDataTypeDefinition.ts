@@ -31,7 +31,7 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
   K extends string,
 >(
   input: QueryDataType,
-): QueryDataTypeDefinition<K, any> {
+): QueryDataTypeDefinition {
   switch (input.type) {
     case "double":
     case "float":
@@ -96,7 +96,7 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
           }
           acc.push(wireQueryDataTypeToQueryDataTypeDefinition(t));
           return acc;
-        }, [] as QueryDataTypeDefinition<K>[]),
+        }, [] as QueryDataTypeDefinition[]),
         nullable: allowNulls,
       };
 

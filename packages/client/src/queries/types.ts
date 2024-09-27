@@ -27,13 +27,13 @@ import type {
 } from "@osdk/api";
 import type { PartialByNotStrict } from "../util/partialBy.js";
 
-export type QuerySignatureFromDef<T extends QueryDefinition<any, any, any>> = {
+export type QuerySignatureFromDef<T extends QueryDefinition<any>> = {
   executeFunction: NonNullable<T["__DefinitionMetadata"]> extends never
     ? QuerySignature<T>
     : NonNullable<T["__DefinitionMetadata"]>["signature"];
 };
 
-export type QuerySignature<T extends QueryDefinition<any, any, any>> =
+export type QuerySignature<T extends QueryDefinition<any>> =
   keyof CompileTimeMetadata<T>["parameters"] extends never
     ? () => Promise<QueryReturnType<CompileTimeMetadata<T>["output"]>>
     : (
@@ -41,38 +41,36 @@ export type QuerySignature<T extends QueryDefinition<any, any, any>> =
     ) => Promise<QueryReturnType<CompileTimeMetadata<T>["output"]>>;
 
 export type QueryParameterType<
-  T extends Record<any, QueryDataTypeDefinition<any, any>>,
+  T extends Record<any, QueryDataTypeDefinition>,
 > = PartialByNotStrict<NotOptionalParams<T>, OptionalQueryParams<T>>;
 
-export type QueryReturnType<T extends QueryDataTypeDefinition<any, any>> =
-  T extends ObjectQueryDataType<any, infer TTargetType>
-    ? QueryResult.ObjectType<TTargetType>
-    : T extends ObjectSetQueryDataType<any, infer TTargetType>
-      ? QueryResult.ObjectSetType<TTargetType>
-    : T["type"] extends keyof DataValueWireToClient
-      ? QueryResult.PrimitiveType<T["type"]>
-    : never;
+export type QueryReturnType<T extends QueryDataTypeDefinition> = T extends
+  ObjectQueryDataType<infer TTargetType> ? QueryResult.ObjectType<TTargetType>
+  : T extends ObjectSetQueryDataType<infer TTargetType>
+    ? QueryResult.ObjectSetType<TTargetType>
+  : T["type"] extends keyof DataValueWireToClient
+    ? QueryResult.PrimitiveType<T["type"]>
+  : never;
 
 type OptionalQueryParams<
-  T extends Record<any, QueryDataTypeDefinition<any, any>>,
+  T extends Record<any, QueryDataTypeDefinition>,
 > = {
   [K in keyof T]: T[K] extends { nullable: true } ? never : K;
 }[keyof T];
 
 type NotOptionalParams<
-  T extends Record<any, QueryDataTypeDefinition<any, any>>,
+  T extends Record<any, QueryDataTypeDefinition>,
 > = {
   [K in keyof T]: MaybeArrayType<T[K]>;
 };
 
-type MaybeArrayType<T extends QueryDataTypeDefinition<any, any>> =
+type MaybeArrayType<T extends QueryDataTypeDefinition> =
   T["multiplicity"] extends true ? ReadonlyArray<QueryBaseType<T>>
     : QueryBaseType<T>;
 
-type QueryBaseType<T extends QueryDataTypeDefinition<any, any>> = T extends
-  ObjectQueryDataType<any, infer TTargetType>
-  ? QueryParam.ObjectType<TTargetType>
-  : T extends ObjectSetQueryDataType<any, infer TTargetType>
+type QueryBaseType<T extends QueryDataTypeDefinition> = T extends
+  ObjectQueryDataType<infer TTargetType> ? QueryParam.ObjectType<TTargetType>
+  : T extends ObjectSetQueryDataType<infer TTargetType>
     ? QueryParam.ObjectSetType<TTargetType>
   : T["type"] extends keyof DataValueClientToWire
     ? QueryParam.PrimitiveType<T["type"]>
