@@ -1,5 +1,18 @@
 # @osdk/foundry-sdk-generator
 
+## 2.0.0-beta.15
+
+### Minor Changes
+
+- a6486f6: Add peer dependency on client for code generation.
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/generator@2.0.0-beta.15
+  - @osdk/client@2.0.0-beta.15
+  - @osdk/api@2.0.0-beta.15
+
 ## 2.0.0-beta.14
 
 ### Minor Changes

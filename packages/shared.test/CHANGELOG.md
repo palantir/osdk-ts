@@ -1,5 +1,16 @@
 # @osdk/shared.test
 
+## 2.0.0-beta.11
+
+### Minor Changes
+
+- dc25fb4: Simplified types
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/api@2.0.0-beta.15
+
 ## 2.0.0-beta.10
 
 ### Minor Changes

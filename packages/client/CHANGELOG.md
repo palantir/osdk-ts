@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.0.0-beta.15
+
+### Minor Changes
+
+- dc25fb4: Simplified types
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/generator-converters@2.0.0-beta.15
+  - @osdk/api@2.0.0-beta.15
+  - @osdk/client.unstable@2.0.0-beta.15
+
 ## 2.0.0-beta.14
 
 ### Minor Changes

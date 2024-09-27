@@ -1,5 +1,7 @@
 # @osdk/create-app.template.react
 
+## 0.19.0-beta.7
+
 ## 0.19.0-beta.6
 
 ### Minor Changes

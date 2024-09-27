@@ -1,5 +1,12 @@
 # @osdk/cli.cmd.typescript
 
+## 0.6.0-beta.14
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/generator@2.0.0-beta.15
+
 ## 0.6.0-beta.13
 
 ### Minor Changes

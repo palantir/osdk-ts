@@ -1,5 +1,11 @@
 # @osdk/create-app
 
+## 0.19.0-beta.7
+
+### Minor Changes
+
+- ff790c5: Rollup dependencies
+
 ## 0.19.0-beta.6
 
 ### Minor Changes
