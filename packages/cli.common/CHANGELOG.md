@@ -1,5 +1,11 @@
 # @osdk/cli.common
 
+## 0.4.0-beta.0
+
+### Minor Changes
+
+- d4d6605: Audited and cleaned up deps
+
 ## 0.3.0
 
 ### Minor Changes

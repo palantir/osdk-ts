@@ -1,5 +1,16 @@
 # @osdk/example-generator
 
+## 0.8.0-beta.6
+
+### Minor Changes
+
+- d4d6605: Audited and cleaned up deps
+
+### Patch Changes
+
+- Updated dependencies [d4d6605]
+  - @osdk/create-app@0.19.0-beta.6
+
 ## 0.8.0-beta.5
 
 ### Minor Changes

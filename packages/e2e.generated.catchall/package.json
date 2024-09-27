@@ -38,7 +38,6 @@
     "@arethetypeswrong/cli": "^0.15.2",
     "@osdk/api": "workspace:~",
     "@osdk/cli.cmd.typescript": "workspace:~",
-
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",

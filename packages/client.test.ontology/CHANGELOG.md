@@ -1,5 +1,20 @@
 # @osdk/client.test.ontology
 
+## 2.0.0-beta.14
+
+### Minor Changes
+
+- 1f633f7: Removed dependency on @osdk/client.api
+- d4d6605: Audited and cleaned up deps
+
+### Patch Changes
+
+- Updated dependencies [a2c7b37]
+- Updated dependencies [fe9547e]
+- Updated dependencies [1f633f7]
+- Updated dependencies [d4d6605]
+  - @osdk/api@2.0.0-beta.14
+
 ## 2.0.0-beta.13
 
 ### Patch Changes
