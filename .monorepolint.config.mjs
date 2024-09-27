@@ -53,10 +53,19 @@ const checkApiPackages = [
 
 // Packages that should be private
 const privatePackages = [
+  "@osdk/cli.*",
   "@osdk/client.test.ontology",
+  "@osdk/create-app.template-packager",
+  "@osdk/create-app.template.*",
   "@osdk/e2e.*",
+  "@osdk/example-generator",
+  "@osdk/examples.*",
   "@osdk/monorepo.*",
+  "@osdk/platform-sdk-generator",
+  "@osdk/shared.test",
+  "@osdk/tests.verify-fallback-package-v2",
   "@osdk/tool.*",
+  "@osdk/version-updater",
 ];
 
 /**
