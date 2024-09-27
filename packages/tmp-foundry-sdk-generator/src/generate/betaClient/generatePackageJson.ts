@@ -22,12 +22,13 @@ export async function generatePackageJson(options: {
   packageVersion: string;
   packagePath: string;
   dependencies?: Array<{ dependencyName: string; dependencyVersion: string }>;
+  peerDependencies?: Array<
+    { dependencyName: string; dependencyVersion: string }
+  >;
   beta: boolean;
 }) {
-  const packageDeps = options.dependencies?.reduce((acc, value) => {
-    acc[value.dependencyName] = value.dependencyVersion;
-    return acc;
-  }, {} as { [dependencyName: string]: string });
+  const packageDeps = constructDependencies(options.dependencies);
+  const packagePeerDeps = constructDependencies(options.peerDependencies);
 
   // Note that any "default" conditions _must_ be last in their block otherwise it will crash at runtime
   const packageJson = options.beta
@@ -46,6 +47,7 @@ export async function generatePackageJson(options: {
         },
       },
       dependencies: packageDeps,
+      peerDependencies: packagePeerDeps,
     }
     : {
       name: options.packageName,
@@ -67,10 +69,23 @@ export async function generatePackageJson(options: {
         },
       },
       dependencies: packageDeps,
+      peerDependencies: packagePeerDeps,
     };
 
   await writeFile(
     join(options.packagePath, "package.json"),
     JSON.stringify(packageJson, undefined, 4),
   );
+}
+
+function constructDependencies(
+  dependencies: {
+    dependencyName: string;
+    dependencyVersion: string;
+  }[] | undefined,
+) {
+  return dependencies?.reduce((acc, value) => {
+    acc[value.dependencyName] = value.dependencyVersion;
+    return acc;
+  }, {} as { [dependencyName: string]: string });
 }
