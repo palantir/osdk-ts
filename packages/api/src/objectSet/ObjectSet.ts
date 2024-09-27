@@ -23,7 +23,6 @@ import type {
   Augments,
   FetchPageArgs,
   NullabilityAdherence,
-  NullabilityAdherenceDefault,
   SelectArg,
 } from "../object/FetchPageArgs.js";
 import type {
@@ -67,7 +66,7 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
     L extends PropertyKeys<Q>,
     R extends boolean,
     const A extends Augments,
-    S extends NullabilityAdherence = NullabilityAdherenceDefault,
+    S extends NullabilityAdherence = NullabilityAdherence.Default,
   >(
     args?: FetchPageArgs<Q, L, R, A, S>,
   ) => Promise<FetchPageResult<Q, L, R, S>>;
@@ -90,7 +89,7 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
     L extends PropertyKeys<Q>,
     R extends boolean,
     const A extends Augments,
-    S extends NullabilityAdherence = NullabilityAdherenceDefault,
+    S extends NullabilityAdherence = NullabilityAdherence.Default,
   >(
     args?: FetchPageArgs<Q, L, R, A, S>,
   ) => Promise<Result<FetchPageResult<Q, L, R, S>>>;
@@ -121,7 +120,7 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
     L extends PropertyKeys<Q>,
     R extends boolean,
     const A extends Augments,
-    S extends NullabilityAdherence = NullabilityAdherenceDefault,
+    S extends NullabilityAdherence = NullabilityAdherence.Default,
   >(
     args?: AsyncIterArgs<Q, L, R, A, S>,
   ) => AsyncIterableIterator<SingleOsdkResult<Q, L, R, S>>;
@@ -217,7 +216,7 @@ export interface ObjectSet<
   readonly fetchOne: Q extends ObjectTypeDefinition ? <
       const L extends PropertyKeys<Q>,
       const R extends boolean,
-      const S extends false | "throw" = NullabilityAdherenceDefault,
+      const S extends false | "throw" = NullabilityAdherence.Default,
     >(
       primaryKey: PrimaryKeyType<Q>,
       options?: SelectArg<Q, L, R, S>,
@@ -230,7 +229,7 @@ export interface ObjectSet<
   readonly fetchOneWithErrors: Q extends ObjectTypeDefinition ? <
       L extends PropertyKeys<Q>,
       R extends boolean,
-      S extends false | "throw" = NullabilityAdherenceDefault,
+      S extends false | "throw" = NullabilityAdherence.Default,
     >(
       primaryKey: PrimaryKeyType<Q>,
       options?: SelectArg<Q, L, R, S>,

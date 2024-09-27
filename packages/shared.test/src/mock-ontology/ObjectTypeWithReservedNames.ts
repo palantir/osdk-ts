@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectMetadata,
-  ObjectTypeLinkDefinition,
-  VersionBound,
-} from "@osdk/api";
+import type { ObjectMetadata, VersionBound } from "@osdk/api";
 
 export interface ObjectTypeWithReservedNamesDef
   extends ObjectMetadata, VersionBound<"0.15.0">
@@ -28,7 +24,7 @@ export interface ObjectTypeWithReservedNamesDef
   primaryKeyApiName: "id";
   primaryKeyType: "integer";
   links: {
-    const: ObjectTypeLinkDefinition<ObjectTypeWithReservedNamesDef, false>;
+    const: ObjectMetadata.Link<ObjectTypeWithReservedNamesDef, false>;
   };
   properties: {
     id: {

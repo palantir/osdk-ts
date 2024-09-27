@@ -5,7 +5,7 @@ import type { Todo } from './Todo.js';
 import type {
   PropertyKeys as $PropertyKeys,
   ObjectTypeDefinition as $ObjectTypeDefinition,
-  ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+  ObjectMetadata as $ObjectMetadata,
 } from '@osdk/api';
 import type {
   ObjectSet as $ObjectSet,
@@ -58,8 +58,8 @@ export interface Person extends $ObjectTypeDefinition {
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
-      Friends: $ObjectTypeLinkDefinition<Person, true>;
-      Todos: $ObjectTypeLinkDefinition<Todo, true>;
+      Friends: $ObjectMetadata.Link<Person, true>;
+      Todos: $ObjectMetadata.Link<Todo, true>;
     };
     pluralDisplayName: 'People';
     primaryKeyApiName: 'email';

@@ -190,7 +190,7 @@ export type ApplyBatchActionOptions = {
 // Warning: (ae-forgotten-export) The symbol "OrderByArg" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export interface AsyncIterArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, A extends Augments = {}, S extends NullabilityAdherence = NullabilityAdherenceDefault> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
+export interface AsyncIterArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, A extends Augments = {}, S extends NullabilityAdherence = NullabilityAdherence.Default> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
     // (undocumented)
     $__EXPERIMENTAL_selectedObjectTypes?: string[];
     // (undocumented)
@@ -389,7 +389,7 @@ export const DurationMapping: {
 };
 
 // @public (undocumented)
-export interface FetchPageArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, A extends Augments = {}, S extends NullabilityAdherence = NullabilityAdherenceDefault> extends AsyncIterArgs<Q, K, R, A, S> {
+export interface FetchPageArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, A extends Augments = {}, S extends NullabilityAdherence = NullabilityAdherence.Default> extends AsyncIterArgs<Q, K, R, A, S> {
     // (undocumented)
     $nextPageToken?: string;
     // (undocumented)
@@ -454,10 +454,10 @@ export interface InterfaceDefinition {
     type: "interface";
 }
 
-// Warning: (ae-forgotten-export) The symbol "ObjectInterfaceBaseDefinition" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ObjectInterfaceBaseMetadata" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export interface InterfaceMetadata extends ObjectInterfaceBaseDefinition {
+export interface InterfaceMetadata extends ObjectInterfaceBaseMetadata {
     // (undocumented)
     type: "interface";
 }
@@ -468,7 +468,7 @@ export interface InterfaceMetadata extends ObjectInterfaceBaseDefinition {
 export function isOk<X>(a: Result<X>): a is OkResult<X>;
 
 // @public (undocumented)
-export type LinkedType<Q extends ObjectOrInterfaceDefinition, L extends keyof CompileTimeMetadata<Q>["links"] & string> = NonNullable<CompileTimeMetadata<Q>["links"][L]["__OsdkLinkTargetType"]>;
+export type LinkedType<Q extends ObjectOrInterfaceDefinition, L extends LinkNames<Q>> = NonNullable<CompileTimeMetadata<Q>["links"][L]["__OsdkLinkTargetType"]>;
 
 // @public (undocumented)
 export type LinkNames<Q extends ObjectOrInterfaceDefinition> = keyof CompileTimeMetadata<Q>["links"] & string;
@@ -477,10 +477,13 @@ export type LinkNames<Q extends ObjectOrInterfaceDefinition> = keyof CompileTime
 export type NullabilityAdherence = false | "throw" | "drop";
 
 // @public (undocumented)
-export type NullabilityAdherenceDefault = "throw";
+export namespace NullabilityAdherence {
+    // (undocumented)
+    export type Default = "throw";
+}
 
 // @public (undocumented)
-export interface ObjectMetadata extends ObjectInterfaceBaseDefinition {
+export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
     // Warning: (ae-forgotten-export) The symbol "Icon" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -505,6 +508,34 @@ export interface ObjectMetadata extends ObjectInterfaceBaseDefinition {
     //
     // (undocumented)
     visibility?: ObjectTypeVisibility;
+}
+
+// @public (undocumented)
+export namespace ObjectMetadata {
+    // (undocumented)
+    export interface Link<Q extends ObjectTypeDefinition, M extends boolean> {
+        // (undocumented)
+        __OsdkLinkTargetType?: Q;
+        // (undocumented)
+        multiplicity: M;
+        // (undocumented)
+        targetType: Q["apiName"];
+    }
+    // (undocumented)
+    export interface Property {
+        // (undocumented)
+        description?: string;
+        // (undocumented)
+        displayName?: string;
+        // (undocumented)
+        multiplicity?: boolean;
+        // (undocumented)
+        nullable?: boolean;
+        // (undocumented)
+        readonly?: boolean;
+        // (undocumented)
+        type: WirePropertyTypes;
+    }
 }
 
 // @public (undocumented)
@@ -537,8 +568,8 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED 
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     readonly aggregate: <AO extends AggregateOpts<Q>>(req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>) => Promise<AggregationsResults<Q, AO>>;
-    readonly fetchOne: Q extends ObjectTypeDefinition ? <const L extends PropertyKeys<Q>, const R extends boolean, const S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<SingleOsdkResult<Q, [L] extends [never] ? any : L, R, S>> : never;
-    readonly fetchOneWithErrors: Q extends ObjectTypeDefinition ? <L extends PropertyKeys<Q>, R extends boolean, S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<Result<SingleOsdkResult<Q, [L] extends [never] ? any : L, R, S>>> : never;
+    readonly fetchOne: Q extends ObjectTypeDefinition ? <const L extends PropertyKeys<Q>, const R extends boolean, const S extends false | "throw" = NullabilityAdherence.Default>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<SingleOsdkResult<Q, [L] extends [never] ? any : L, R, S>> : never;
+    readonly fetchOneWithErrors: Q extends ObjectTypeDefinition ? <L extends PropertyKeys<Q>, R extends boolean, S extends false | "throw" = NullabilityAdherence.Default>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<Result<SingleOsdkResult<Q, [L] extends [never] ? any : L, R, S>>> : never;
     readonly intersect: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
     readonly pivotTo: <L extends LinkNames<Q>>(type: L) => CompileTimeMetadata<LinkedType<Q, L>>["objectSet"];
     readonly subtract: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
@@ -563,32 +594,6 @@ export interface ObjectTypeDefinition {
     osdkMetadata?: OsdkMetadata;
     // (undocumented)
     type: "object";
-}
-
-// @public (undocumented)
-export interface ObjectTypeLinkDefinition<Q extends ObjectTypeDefinition, M extends boolean> {
-    // (undocumented)
-    __OsdkLinkTargetType?: Q;
-    // (undocumented)
-    multiplicity: M;
-    // (undocumented)
-    targetType: Q["apiName"];
-}
-
-// @public (undocumented)
-export interface ObjectTypePropertyDefinition {
-    // (undocumented)
-    description?: string;
-    // (undocumented)
-    displayName?: string;
-    // (undocumented)
-    multiplicity?: boolean;
-    // (undocumented)
-    nullable?: boolean;
-    // (undocumented)
-    readonly?: boolean;
-    // (undocumented)
-    type: WirePropertyTypes;
 }
 
 // @public (undocumented)
@@ -640,7 +645,9 @@ export type OsdkObjectLinksObject<O extends ObjectTypeDefinition> = ObjectTypeLi
     readonly [L in ObjectTypeLinkKeysFrom2<O>]: OsdkObjectLinksEntry<O, L>;
 };
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+// Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
@@ -649,7 +656,7 @@ export type OsdkObjectLinksObject<O extends ObjectTypeDefinition> = ObjectTypeLi
 // Warning: (ae-forgotten-export) The symbol "MaybeNullable" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type OsdkObjectPropertyType<T extends ObjectTypePropertyDefinition, STRICTLY_ENFORCE_NULLABLE extends boolean = true> = STRICTLY_ENFORCE_NULLABLE extends false ? MaybeArray<T, Converted<PropertyValueWireToClient[T["type"]]>> | undefined : MaybeNullable<T, MaybeArray<T, Converted<PropertyValueWireToClient[T["type"]]>>>;
+export type OsdkObjectPropertyType<T extends ObjectMetadata.Property, STRICTLY_ENFORCE_NULLABLE extends boolean = true> = STRICTLY_ENFORCE_NULLABLE extends false ? MaybeArray<T, Converted<PropertyValueWireToClient[T["type"]]>> | undefined : MaybeNullable<T, MaybeArray<T, Converted<PropertyValueWireToClient[T["type"]]>>>;
 
 // @public (undocumented)
 export interface PageResult<T> {
@@ -671,11 +678,14 @@ export type PrimaryKeyType<Q extends ObjectOrInterfaceDefinition> = (Q extends O
 export type PrimaryKeyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "byte";
 
 // @public (undocumented)
-export type PropertyDef<T extends WirePropertyTypes, N extends "nullable" | "non-nullable" = "nullable", M extends "array" | "single" = "single", E extends Record<string, any> = {}> = {
-    type: T;
+export interface PropertyDef<T extends WirePropertyTypes, N extends "nullable" | "non-nullable" = "nullable", M extends "array" | "single" = "single"> extends ObjectMetadata.Property {
+    // (undocumented)
     multiplicity: M extends "array" ? true : false;
+    // (undocumented)
     nullable: N extends "nullable" ? true : false;
-} & E & ObjectTypePropertyDefinition;
+    // (undocumented)
+    type: T;
+}
 
 // @public (undocumented)
 export type PropertyKeys<O extends ObjectOrInterfaceDefinition> = keyof NonNullable<O["__DefinitionMetadata"]>["properties"] & string;
@@ -787,7 +797,7 @@ export namespace QueryResult {
 export type Result<V> = OkResult<V> | ErrorResult;
 
 // @public (undocumented)
-export interface SelectArg<Q extends ObjectOrInterfaceDefinition, L extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, S extends NullabilityAdherence = NullabilityAdherenceDefault> {
+export interface SelectArg<Q extends ObjectOrInterfaceDefinition, L extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, S extends NullabilityAdherence = NullabilityAdherence.Default> {
     // (undocumented)
     $__EXPERIMENTAL_strictNonNull?: S;
     // (undocumented)

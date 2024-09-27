@@ -20,8 +20,8 @@ import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { PropertyKeys } from "../ontology/ObjectOrInterface.js";
 import type {
   CompileTimeMetadata,
+  ObjectMetadata,
   ObjectTypeDefinition,
-  ObjectTypeLinkDefinition,
   ObjectTypeLinkKeysFrom2,
 } from "../ontology/ObjectTypeDefinition.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
@@ -37,7 +37,7 @@ export type OsdkObjectLinksEntry<
   Q extends ObjectTypeDefinition,
   L extends ObjectTypeLinkKeysFrom2<Q>,
 > = CompileTimeMetadata<Q>["links"][L] extends
-  ObjectTypeLinkDefinition<infer T, infer M> ? (
+  ObjectMetadata.Link<infer T, infer M> ? (
     M extends false ? SingleLinkAccessor<T> : ObjectSet<T>
   )
   : never;

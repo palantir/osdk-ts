@@ -22,7 +22,6 @@ import type {
   LinkedType,
   LinkNames,
   NullabilityAdherence,
-  NullabilityAdherenceDefault,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -157,7 +156,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       L extends PropertyKeys<Q>,
       R extends boolean,
       const A extends Augments,
-      S extends NullabilityAdherence = NullabilityAdherenceDefault,
+      S extends NullabilityAdherence = NullabilityAdherence.Default,
     >(
       args?: AsyncIterArgs<Q, L, R, A, S>,
     ): AsyncIterableIterator<SingleOsdkResult<Q, L, R, S>> {

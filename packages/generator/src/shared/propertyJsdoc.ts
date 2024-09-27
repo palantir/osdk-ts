@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { ObjectTypePropertyDefinition } from "@osdk/api";
+import type { ObjectMetadata } from "@osdk/api";
 
 export function propertyJsdoc(
-  property: ObjectTypePropertyDefinition,
+  property: ObjectMetadata.Property,
   { isInherited, apiName }: { isInherited?: boolean; apiName: string },
 ) {
   let ret = `/**\n`;

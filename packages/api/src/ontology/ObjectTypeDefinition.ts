@@ -33,15 +33,15 @@ export type ObjectTypePropertyDefinitionFrom2<
   P extends PropertyKeys<Q>,
 > = CompileTimeMetadata<Q>["properties"][P];
 
-export type ObjectInterfaceBaseDefinition = {
+export type ObjectInterfaceBaseMetadata = {
   type: "object" | "interface";
   apiName: string;
   displayName: string;
   description?: string;
-  properties: Record<any, ObjectTypePropertyDefinition>;
+  properties: Record<any, ObjectMetadata.Property>;
   links: Record<
     string,
-    ObjectTypeLinkDefinition<any, any>
+    ObjectMetadata.Link<any, any>
   >;
   rid: string;
   /**
@@ -64,7 +64,7 @@ export interface VersionBound<V extends VersionString<any, any, any>> {
   __expectedClientVersion?: V;
 }
 
-export interface ObjectMetadata extends ObjectInterfaceBaseDefinition {
+export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
   type: "object";
   primaryKeyApiName: keyof this["properties"];
   titleProperty: keyof this["properties"];
@@ -89,6 +89,26 @@ export interface ObjectMetadata extends ObjectInterfaceBaseDefinition {
   >;
 }
 
+export namespace ObjectMetadata {
+  export interface Property {
+    readonly?: boolean;
+    displayName?: string;
+    description?: string;
+    type: WirePropertyTypes;
+    multiplicity?: boolean;
+    nullable?: boolean;
+  }
+
+  export interface Link<
+    Q extends ObjectTypeDefinition,
+    M extends boolean,
+  > {
+    __OsdkLinkTargetType?: Q;
+    targetType: Q["apiName"];
+    multiplicity: M;
+  }
+}
+
 export interface ObjectTypeDefinition {
   type: "object";
   apiName: string;
@@ -104,47 +124,15 @@ export type ObjectTypeLinkKeysFrom2<
   & keyof CompileTimeMetadata<Q>["links"]
   & string;
 
-export interface ObjectTypeLinkDefinition<
-  Q extends ObjectTypeDefinition,
-  M extends boolean,
-> {
-  __OsdkLinkTargetType?: Q;
-  targetType: Q["apiName"];
-  multiplicity: M;
-}
-
-export type BrandedApiName<
-  K extends string,
-  N,
-> =
-  & K
-  & {
-    __OsdkType?: N;
-    __Unbranded?: K;
-  };
-
-export interface ObjectTypePropertyDefinition {
-  readonly?: boolean;
-  displayName?: string;
-  description?: string;
-  type: WirePropertyTypes;
-  multiplicity?: boolean;
-  nullable?: boolean;
-}
-
-export type PropertyDef<
+export interface PropertyDef<
   T extends WirePropertyTypes,
   N extends "nullable" | "non-nullable" = "nullable",
   M extends "array" | "single" = "single",
-  E extends Record<string, any> = {},
-> =
-  & {
-    type: T;
-    multiplicity: M extends "array" ? true : false;
-    nullable: N extends "nullable" ? true : false;
-  }
-  & E
-  & ObjectTypePropertyDefinition;
+> extends ObjectMetadata.Property {
+  type: T;
+  multiplicity: M extends "array" ? true : false;
+  nullable: N extends "nullable" ? true : false;
+}
 
 export type ReleaseStatus = "ACTIVE" | "EXPERIMENTAL" | "DEPRECATED";
 

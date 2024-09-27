@@ -19,19 +19,18 @@ import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
-import type {
-  BrandedApiName,
-  CompileTimeMetadata,
-} from "../ontology/ObjectTypeDefinition.js";
+import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
 
 export type NullabilityAdherence = false | "throw" | "drop";
-export type NullabilityAdherenceDefault = "throw";
+export namespace NullabilityAdherence {
+  export type Default = "throw";
+}
 
 export interface SelectArg<
   Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q> = PropertyKeys<Q>,
   R extends boolean = false,
-  S extends NullabilityAdherence = NullabilityAdherenceDefault,
+  S extends NullabilityAdherence = NullabilityAdherence.Default,
 > {
   $select?: readonly L[];
   $includeRid?: R;
@@ -59,7 +58,7 @@ export interface FetchPageArgs<
   K extends PropertyKeys<Q> = PropertyKeys<Q>,
   R extends boolean = false,
   A extends Augments = {},
-  S extends NullabilityAdherence = NullabilityAdherenceDefault,
+  S extends NullabilityAdherence = NullabilityAdherence.Default,
 > extends AsyncIterArgs<Q, K, R, A, S> {
   $nextPageToken?: string;
   $pageSize?: number;
@@ -70,7 +69,7 @@ export interface AsyncIterArgs<
   K extends PropertyKeys<Q> = PropertyKeys<Q>,
   R extends boolean = false,
   A extends Augments = {},
-  S extends NullabilityAdherence = NullabilityAdherenceDefault,
+  S extends NullabilityAdherence = NullabilityAdherence.Default,
 > extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
   $augment?: A;
   $__EXPERIMENTAL_selectedObjectTypes?: string[];
