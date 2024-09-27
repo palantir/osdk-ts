@@ -26,11 +26,11 @@ export type CompileTimeMetadata<T extends { __DefinitionMetadata?: {} }> =
   >;
 
 export type ObjectTypePropertyDefinitionFrom2<
-  Q extends ObjectOrInterfaceDefinition<any, any>,
+  Q extends ObjectOrInterfaceDefinition<any>,
   P extends PropertyKeys<Q>,
 > = CompileTimeMetadata<Q>["properties"][P];
 
-export interface ObjectInterfaceBaseDefinition<K extends string, N = unknown> {
+export interface ObjectInterfaceBaseDefinition<K extends string> {
   type: "object" | "interface";
   apiName: K;
   displayName: string;
@@ -63,8 +63,7 @@ export interface VersionBound<V extends VersionString<any, any, any>> {
 
 export interface ObjectMetadata<
   K extends string,
-  N = unknown,
-> extends ObjectInterfaceBaseDefinition<K, N> {
+> extends ObjectInterfaceBaseDefinition<K> {
   type: "object";
   primaryKeyApiName: keyof this["properties"];
   titleProperty: keyof this["properties"];
@@ -89,23 +88,23 @@ export interface ObjectMetadata<
   >;
 }
 
-export interface ObjectTypeDefinition<K extends string, N = unknown> {
+export interface ObjectTypeDefinition<K extends string> {
   type: "object";
   apiName: K;
   osdkMetadata?: OsdkMetadata;
   __DefinitionMetadata?:
-    & ObjectMetadata<K, N>
+    & ObjectMetadata<K>
     & ObjectInterfaceCompileDefinition;
 }
 
 export type ObjectTypeLinkKeysFrom2<
-  Q extends ObjectTypeDefinition<any, any>,
+  Q extends ObjectTypeDefinition<any>,
 > =
   & keyof CompileTimeMetadata<Q>["links"]
   & string;
 
 export interface ObjectTypeLinkDefinition<
-  Q extends ObjectTypeDefinition<any, any>,
+  Q extends ObjectTypeDefinition<any>,
   M extends boolean,
 > {
   __OsdkLinkTargetType?: Q;

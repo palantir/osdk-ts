@@ -38,7 +38,7 @@ export class EnhancedInterfaceType extends EnhancedBase<InterfaceType> {
     return this.raw.properties;
   }
 
-  getCleanedUpDefinition(v2: boolean): InterfaceMetadata<any, any> {
+  getCleanedUpDefinition(v2: boolean): InterfaceMetadata<any> {
     return deleteUndefineds(
       __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
         this.raw,

@@ -51,12 +51,12 @@ export type CheckVersionBound<Q> = Q extends VersionBound<infer V> ? (
   : Q;
 
 export interface Client extends SharedClient<MinimalClient> {
-  <Q extends ObjectTypeDefinition<any, any>>(
+  <Q extends ObjectTypeDefinition<any>>(
     o: Q,
   ): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q>
     : CompileTimeMetadata<Q>["objectSet"];
 
-  <Q extends (InterfaceDefinition<any, any>)>(
+  <Q extends (InterfaceDefinition<any>)>(
     o: Q,
   ): unknown extends CompileTimeMetadata<Q>["objectSet"] ? MinimalObjectSet<Q>
     : CompileTimeMetadata<Q>["objectSet"];
@@ -71,14 +71,14 @@ export interface Client extends SharedClient<MinimalClient> {
 
   fetchMetadata<
     Q extends (
-      | ObjectTypeDefinition<any, any>
-      | InterfaceDefinition<any, any>
+      | ObjectTypeDefinition<any>
+      | InterfaceDefinition<any>
       | ActionDefinition<any>
       | QueryDefinition<any, any, any>
     ),
   >(o: Q): Promise<
-    Q extends ObjectTypeDefinition<any, any> ? ObjectMetadata<any, any>
-      : Q extends InterfaceDefinition<any, any> ? InterfaceMetadata<any, any>
+    Q extends ObjectTypeDefinition<any> ? ObjectMetadata<any>
+      : Q extends InterfaceDefinition<any> ? InterfaceMetadata<any>
       : Q extends ActionDefinition<any> ? ActionMetadata
       : Q extends QueryDefinition<any, any, any> ? QueryMetadata<any, any>
       : never

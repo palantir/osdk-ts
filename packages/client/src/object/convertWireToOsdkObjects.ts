@@ -117,7 +117,7 @@ export async function convertWireToOsdkObjects(
  * and convert them to an array of property names on an object.
  */
 function convertInterfacePropNamesToObjectPropNames(
-  objectDef: FetchedObjectTypeDefinition<any, unknown> & { interfaceMap: {} },
+  objectDef: FetchedObjectTypeDefinition<any> & { interfaceMap: {} },
   interfaceApiName: string,
   ifacePropsToMap: readonly string[],
 ) {
@@ -135,7 +135,7 @@ function convertInterfacePropNamesToObjectPropNames(
  * @param rawObj
  */
 function reframeAsObjectInPlace(
-  objectDef: FetchedObjectTypeDefinition<any, unknown> & { interfaceMap: {} },
+  objectDef: FetchedObjectTypeDefinition<any> & { interfaceMap: {} },
   interfaceApiName: string,
   rawObj: OntologyObjectV2,
 ) {
@@ -163,8 +163,8 @@ function reframeAsObjectInPlace(
 function isConforming(
   client: MinimalClient,
   def:
-    | InterfaceMetadata<any, any>
-    | ObjectMetadata<any, unknown>,
+    | InterfaceMetadata<any>
+    | ObjectMetadata<any>,
   obj: OntologyObjectV2,
   propsToCheck: readonly string[],
 ) {
@@ -188,7 +188,7 @@ function isConforming(
 }
 
 function invariantInterfacesAsViews(
-  objectDef: FetchedObjectTypeDefinition<any, any>,
+  objectDef: FetchedObjectTypeDefinition<any>,
   interfaceApiName: string,
   client: MinimalClient,
 ): asserts objectDef is typeof objectDef & { interfaceMap: {} } {

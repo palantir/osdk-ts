@@ -38,7 +38,7 @@ export namespace Todo {
   > = $Osdk<Todo, K | OPTIONS>;
 }
 
-export interface Todo extends $ObjectTypeDefinition<'Todo', Todo> {
+export interface Todo extends $ObjectTypeDefinition<'Todo'> {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Todo';

@@ -36,7 +36,7 @@ import type {
 import type { PropertyDescriptorRecord } from "./PropertyDescriptorRecord.js";
 
 const objectPrototypeCache = createClientCache(
-  function(client, objectDef: FetchedObjectTypeDefinition<any, any>) {
+  function(client, objectDef: FetchedObjectTypeDefinition<any>) {
     return Object.create(
       null,
       {
@@ -67,12 +67,12 @@ const objectPrototypeCache = createClientCache(
 
 /** @internal */
 export function createOsdkObject<
-  Q extends FetchedObjectTypeDefinition<any, any>,
+  Q extends FetchedObjectTypeDefinition<any>,
 >(
   client: MinimalClient,
   objectDef: Q,
   rawObj: OntologyObjectV2,
-): Osdk<ObjectTypeDefinition<any, any>, any> {
+): Osdk<ObjectTypeDefinition<any>, any> {
   // We use multiple layers of prototypes to maximize reuse and also to keep
   // [RawObject] out of `ownKeys`. This keeps the code in the proxy below simpler.
   const objectHolderPrototype = Object.create(

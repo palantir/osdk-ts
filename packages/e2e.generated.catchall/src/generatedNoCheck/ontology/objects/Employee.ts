@@ -73,7 +73,7 @@ export namespace Employee {
   > = $Osdk<Employee, K | OPTIONS>;
 }
 
-export interface Employee extends $ObjectTypeDefinition<'Employee', Employee> {
+export interface Employee extends $ObjectTypeDefinition<'Employee'> {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Employee';

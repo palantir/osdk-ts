@@ -53,7 +53,7 @@ const DollarLinkProxyHandler: ProxyHandler<ObjectHolder<any>> = {
       (client.objectSetFactory(objDef, client) as ObjectSet<any>)
         .where({
           [objDef.primaryKeyApiName]: rawObj.$primaryKey,
-        } as WhereClause<ObjectTypeDefinition<any, any>>)
+        } as WhereClause<ObjectTypeDefinition<any>>)
         .pivotTo(p as string);
 
     if (!linkDef.multiplicity) {

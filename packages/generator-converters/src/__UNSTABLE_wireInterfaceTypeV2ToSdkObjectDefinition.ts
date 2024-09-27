@@ -21,7 +21,7 @@ import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkProp
 export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
   interfaceType: InterfaceType,
   v2: boolean,
-): InterfaceMetadata<any, any> {
+): InterfaceMetadata<any> {
   return {
     type: "interface",
     rid: interfaceType.rid,

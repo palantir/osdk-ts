@@ -34,7 +34,7 @@ export type OsdkObjectLinksObject<
 };
 
 export type OsdkObjectLinksEntry<
-  Q extends ObjectTypeDefinition<any, any>,
+  Q extends ObjectTypeDefinition<any>,
   L extends ObjectTypeLinkKeysFrom2<Q>,
 > = CompileTimeMetadata<Q>["links"][L] extends
   ObjectTypeLinkDefinition<infer T, infer M> ? (
@@ -48,7 +48,7 @@ export type DefaultToFalse<B extends boolean | undefined> = false extends B
   : true;
 
 export interface SingleLinkAccessor<
-  T extends ObjectTypeDefinition<any, any>,
+  T extends ObjectTypeDefinition<any>,
 > {
   /** Load the linked object
    */

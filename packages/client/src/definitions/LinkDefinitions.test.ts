@@ -52,7 +52,7 @@ describe("LinkDefinitions", () => {
       it("infers select properly", () => {
         // this helper lets us get return types of functions that are generic
         class Helper<
-          T extends ObjectTypeDefinition<any, any>,
+          T extends ObjectTypeDefinition<any>,
           const A extends SelectArg<T>,
         > {
           constructor(private accessor: SingleLinkAccessor<T>) {}

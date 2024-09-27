@@ -38,7 +38,7 @@ export namespace Person {
   > = $Osdk<Person, K | OPTIONS>;
 }
 
-export interface Person extends $ObjectTypeDefinition<'Person', Person> {
+export interface Person extends $ObjectTypeDefinition<'Person'> {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Person';

@@ -36,7 +36,7 @@ export namespace Thing {
   > = $Osdk<Thing, K | OPTIONS>;
 }
 
-export interface Thing extends $ObjectTypeDefinition<'Thing', Thing> {
+export interface Thing extends $ObjectTypeDefinition<'Thing'> {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Thing';

@@ -96,8 +96,8 @@ export function createClientInternal(
       | ObjectOrInterfaceDefinition
       | ActionDefinition<any>
       | QueryDefinition<any, any>,
-  >(o: T): T extends ObjectTypeDefinition<any, any> ? ObjectSet<T>
-    : T extends InterfaceDefinition<any, any> ? MinimalObjectSet<T>
+  >(o: T): T extends ObjectTypeDefinition<any> ? ObjectSet<T>
+    : T extends InterfaceDefinition<any> ? MinimalObjectSet<T>
     : T extends ActionDefinition<any> ? ActionSignatureFromDef<T>
     : T extends QueryDefinition<any, any> ? QuerySignatureFromDef<T>
     : never

@@ -27,6 +27,11 @@ const client: Client = unstableClient;
 
 export async function runAssignEmployeeToVentureTest() {
   let didValidateOnce = false;
+
+  const e = await client(Employee).fetchOneWithErrors("hi", {
+    $select: ["adUsername"],
+  });
+
   for await (const emp of client(Employee).asyncIter()) {
     emp.id;
     console.log(`Employee: ${emp.id}`);

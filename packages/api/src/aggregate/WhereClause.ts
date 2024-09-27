@@ -168,25 +168,25 @@ type FilterFor<PD extends ObjectTypePropertyDefinition> =
       : NumberFilter); // FIXME we need to represent all types
 
 export interface AndWhereClause<
-  T extends ObjectOrInterfaceDefinition<any, any>,
+  T extends ObjectOrInterfaceDefinition<any>,
 > {
   $and: WhereClause<T>[];
 }
 
 export interface OrWhereClause<
-  T extends ObjectOrInterfaceDefinition<any, any>,
+  T extends ObjectOrInterfaceDefinition<any>,
 > {
   $or: WhereClause<T>[];
 }
 
 export interface NotWhereClause<
-  T extends ObjectOrInterfaceDefinition<any, any>,
+  T extends ObjectOrInterfaceDefinition<any>,
 > {
   $not: WhereClause<T>;
 }
 
 export type WhereClause<
-  T extends ObjectOrInterfaceDefinition<any, any>,
+  T extends ObjectOrInterfaceDefinition<any>,
 > =
   | OrWhereClause<T>
   | AndWhereClause<T>

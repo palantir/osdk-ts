@@ -46,14 +46,14 @@ export namespace ActionParam {
   /**
    * Helper type to convert action definition parameter object types to typescript types
    */
-  export type ObjectType<T extends ObjectTypeDefinition<any, any>> =
+  export type ObjectType<T extends ObjectTypeDefinition<any>> =
     | OsdkBase<T>
     | OsdkObjectPrimaryKeyType<T>;
 
   /**
    * Helper type to convert action definition parameter object sets to typescript types
    */
-  export type ObjectSetType<T extends ObjectTypeDefinition<any, any>> =
+  export type ObjectSetType<T extends ObjectTypeDefinition<any>> =
     BaseObjectSet<
       T
     >;

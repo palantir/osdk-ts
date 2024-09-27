@@ -38,7 +38,7 @@ const handlerCache = createSimpleCache<
 
 /** @internal */
 export function createOsdkInterface<
-  Q extends FetchedObjectTypeDefinition<any, any>,
+  Q extends FetchedObjectTypeDefinition<any>,
 >(
   underlying: Osdk<Q> & ObjectHolder<Q>,
   interfaceDef: InterfaceMetadata<any>,
@@ -58,7 +58,7 @@ export function createOsdkInterface<
 }
 
 function createInterfaceProxyHandler(
-  newDef: InterfaceMetadata<any, any>,
+  newDef: InterfaceMetadata<any>,
 ): ProxyHandler<InterfaceHolder<any> & Osdk<any>> {
   return {
     getOwnPropertyDescriptor(target, p) {

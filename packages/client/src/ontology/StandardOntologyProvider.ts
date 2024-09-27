@@ -42,14 +42,14 @@ export const createStandardOntologyProviderFactory: (
     async function loadObject(
       client: MinimalClient,
       key: string,
-    ): Promise<FetchedObjectTypeDefinition<any, any>> {
+    ): Promise<FetchedObjectTypeDefinition<any>> {
       let objectDef = await loadFullObjectMetadata(client, key);
 
       // ensure we have all of the interfaces loaded
       const interfaceDefs = Object.fromEntries<
         { def: InterfaceMetadata<any>; handler: undefined }
       >(
-        (await Promise.all<InterfaceMetadata<any, any>>(
+        (await Promise.all<InterfaceMetadata<any>>(
           objectDef.implements?.map((i) => ret.getInterfaceDefinition(i)) ?? [],
         )).map(i => [i.apiName, { def: i, handler: undefined }]),
       );

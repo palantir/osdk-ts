@@ -27,7 +27,7 @@ import type { ObjectHolder } from "./ObjectHolder.js";
 
 /** @internal */
 export type DollarAsFn = <
-  Q extends FetchedObjectTypeDefinition<any, any>,
+  Q extends FetchedObjectTypeDefinition<any>,
   NEW_Q extends ObjectOrInterfaceDefinition<any>,
 >(
   this: Osdk<any> & (InterfaceHolder<Q> | ObjectHolder<Q>),
@@ -35,7 +35,7 @@ export type DollarAsFn = <
 ) => OsdkObject<any>;
 
 export const get$as = createSimpleCache<
-  FetchedObjectTypeDefinition<any, any>,
+  FetchedObjectTypeDefinition<any>,
   DollarAsFn
 >(new WeakMap(), $asFactory).get;
 
@@ -52,7 +52,7 @@ const osdkObjectToInterfaceView = createSimpleCache(
 );
 
 function $asFactory(
-  objDef: FetchedObjectTypeDefinition<any, any>,
+  objDef: FetchedObjectTypeDefinition<any>,
 ): DollarAsFn {
   // We use the exact same logic for both the interface rep and the underlying rep
   return function $as<

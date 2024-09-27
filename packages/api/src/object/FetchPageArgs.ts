@@ -25,7 +25,7 @@ export type NullabilityAdherence = false | "throw" | "drop";
 export type NullabilityAdherenceDefault = "throw";
 
 export interface SelectArg<
-  Q extends ObjectOrInterfaceDefinition<any, any>,
+  Q extends ObjectOrInterfaceDefinition<any>,
   L extends PropertyKeys<Q> = PropertyKeys<Q>,
   R extends boolean = false,
   S extends NullabilityAdherence = NullabilityAdherenceDefault,
@@ -36,7 +36,7 @@ export interface SelectArg<
 }
 
 export interface OrderByArg<
-  Q extends ObjectOrInterfaceDefinition<any, any>,
+  Q extends ObjectOrInterfaceDefinition<any>,
   L extends PropertyKeys<Q> = PropertyKeys<Q>,
 > {
   $orderBy?: {
@@ -83,7 +83,7 @@ export type Augment<
 export type Augments = Record<string, string[]>;
 
 export interface FetchInterfacePageArgs<
-  Q extends InterfaceDefinition<any, any>,
+  Q extends InterfaceDefinition<any>,
   K extends PropertyKeys<Q> = PropertyKeys<Q>,
   R extends boolean = false,
 > extends SelectArg<Q, K, R>, OrderByArg<Q, PropertyKeys<Q>> {

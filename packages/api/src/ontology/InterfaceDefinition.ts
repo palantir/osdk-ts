@@ -22,16 +22,15 @@ import type {
 
 export interface InterfaceMetadata<
   K extends string,
-  N = unknown,
-> extends ObjectInterfaceBaseDefinition<K, N> {
+> extends ObjectInterfaceBaseDefinition<K> {
   type: "interface";
 }
 
-export interface InterfaceDefinition<K extends string, N = unknown> {
+export interface InterfaceDefinition<K extends string> {
   type: "interface";
   apiName: K;
   osdkMetadata?: OsdkMetadata;
   __DefinitionMetadata?:
-    & InterfaceMetadata<K, N>
+    & InterfaceMetadata<K>
     & ObjectInterfaceCompileDefinition;
 }

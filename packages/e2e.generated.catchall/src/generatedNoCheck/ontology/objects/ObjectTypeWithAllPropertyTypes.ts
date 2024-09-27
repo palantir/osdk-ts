@@ -126,8 +126,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
   > = $Osdk<ObjectTypeWithAllPropertyTypes, K | OPTIONS>;
 }
 
-export interface ObjectTypeWithAllPropertyTypes
-  extends $ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes', ObjectTypeWithAllPropertyTypes> {
+export interface ObjectTypeWithAllPropertyTypes extends $ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes'> {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'ObjectTypeWithAllPropertyTypes';

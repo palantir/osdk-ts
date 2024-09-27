@@ -21,7 +21,7 @@ import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
 import type { GroupByMapper } from "./GroupByMapper.js";
 
 export type GroupByClause<
-  Q extends ObjectOrInterfaceDefinition<any, any>,
+  Q extends ObjectOrInterfaceDefinition<any>,
 > = {
   [P in AggregatableKeys<Q>]?: GroupByEntry<Q, P>;
 };

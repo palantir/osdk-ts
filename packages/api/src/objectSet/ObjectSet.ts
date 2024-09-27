@@ -128,7 +128,7 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
 }
 
 export interface InterfaceObjectSet<
-  Q extends InterfaceDefinition<any, any>,
+  Q extends InterfaceDefinition<any>,
 > extends MinimalObjectSet<Q> {
 }
 
@@ -214,7 +214,7 @@ export interface ObjectSet<
   /**
    * Fetches one object with the specified primary key, without a result wrapper
    */
-  readonly fetchOne: Q extends ObjectTypeDefinition<any, any> ? <
+  readonly fetchOne: Q extends ObjectTypeDefinition<any> ? <
       const L extends PropertyKeys<Q>,
       const R extends boolean,
       const S extends false | "throw" = NullabilityAdherenceDefault,
@@ -227,7 +227,7 @@ export interface ObjectSet<
   /**
    * Fetches one object with the specified primary key, with a result wrapper
    */
-  readonly fetchOneWithErrors: Q extends ObjectTypeDefinition<any, any> ? <
+  readonly fetchOneWithErrors: Q extends ObjectTypeDefinition<any> ? <
       L extends PropertyKeys<Q>,
       R extends boolean,
       S extends false | "throw" = NullabilityAdherenceDefault,

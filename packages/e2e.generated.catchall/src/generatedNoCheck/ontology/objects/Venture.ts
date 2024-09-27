@@ -41,7 +41,7 @@ export namespace Venture {
   > = $Osdk<Venture, K | OPTIONS>;
 }
 
-export interface Venture extends $ObjectTypeDefinition<'Venture', Venture> {
+export interface Venture extends $ObjectTypeDefinition<'Venture'> {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Venture';

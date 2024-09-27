@@ -18,8 +18,7 @@ import type { ObjectMetadata, VersionBound } from "@osdk/api";
 
 export interface ObjectTypeWithAllPropertyTypesDef extends
   ObjectMetadata<
-    "ObjectTypeWithAllPropertyTypes",
-    ObjectTypeWithAllPropertyTypesDef
+    "ObjectTypeWithAllPropertyTypes"
   >,
   VersionBound<"0.15.0">
 {

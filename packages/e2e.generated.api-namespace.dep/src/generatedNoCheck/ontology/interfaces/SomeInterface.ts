@@ -28,7 +28,7 @@ export namespace SomeInterface {
   > = $Osdk<SomeInterface, K | OPTIONS>;
 }
 
-export interface SomeInterface extends $InterfaceDefinition<'com.example.dep.SomeInterface', SomeInterface> {
+export interface SomeInterface extends $InterfaceDefinition<'com.example.dep.SomeInterface'> {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'com.example.dep.SomeInterface';

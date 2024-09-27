@@ -23,13 +23,13 @@ import type {
 import type { ObjectHolder } from "./ObjectHolder.js";
 
 export interface InterfaceHolderOwnProps<
-  Q extends FetchedObjectTypeDefinition<any, any>,
+  Q extends FetchedObjectTypeDefinition<any>,
 > {
   [UnderlyingOsdkObject]: Osdk<Q> & ObjectHolder<Q>;
   [InterfaceDefRef]: InterfaceMetadata<any>;
 }
 
 export interface InterfaceHolder<
-  Q extends FetchedObjectTypeDefinition<any, any>,
+  Q extends FetchedObjectTypeDefinition<any>,
 > extends InterfaceHolderOwnProps<Q> {
 }
