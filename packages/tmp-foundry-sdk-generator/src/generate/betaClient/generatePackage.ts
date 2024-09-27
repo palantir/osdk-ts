@@ -25,12 +25,17 @@ import { bundleDependencies } from "./bundleDependencies.js";
 import { compileInMemory } from "./compileInMemory.js";
 import { generatePackageJson } from "./generatePackageJson.js";
 
-declare const __OSDK_CLIENT_API_VERSION__: string | undefined;
 declare const __OSDK_API_VERSION__: string | undefined;
+declare const __OSDK_CLIENT_VERSION__: string | undefined;
 
 const betaDependencies: { [key: string]: string | undefined } = {
   "@osdk/api": typeof __OSDK_API_VERSION__ !== "undefined"
     ? __OSDK_API_VERSION__
+    : undefined,
+};
+const betaPeerDependencies: { [key: string]: string | undefined } = {
+  "@osdk/client": typeof __OSDK_CLIENT_VERSION__ !== "undefined"
+    ? __OSDK_CLIENT_VERSION__
     : undefined,
 };
 
@@ -46,16 +51,11 @@ export async function generatePackage(
   const { consola } = await import("consola");
 
   const packagePath = join(options.outputDir, options.packageName);
-  const resolvedDependencies = await Promise.all(
-    Object.keys(betaDependencies).map(
-      async dependency => {
-        return {
-          dependencyName: dependency,
-          dependencyVersion: await getDependencyVersion(dependency),
-        };
-      },
-    ),
+  const resolvedDependencies = await resolveDependencies(betaDependencies);
+  const resolvedPeerDependencies = await resolveDependencies(
+    betaPeerDependencies,
   );
+
   await mkdir(packagePath, { recursive: true });
 
   const inMemoryFileSystem: { [fileName: string]: string } = {};
@@ -128,6 +128,7 @@ export async function generatePackage(
       packagePath,
       packageVersion: options.packageVersion,
       dependencies: resolvedDependencies,
+      peerDependencies: resolvedPeerDependencies,
       beta: options.beta,
     }),
   ]);
@@ -158,4 +159,22 @@ async function getDependencyVersion(dependency: string): Promise<string> {
   }
   const parsedPackageJson = JSON.parse(packageJson);
   return parsedPackageJson.dependencies[dependency];
+}
+
+async function resolveDependencies(
+  deps: { [key: string]: string | undefined },
+): Promise<{
+  dependencyName: string;
+  dependencyVersion: string;
+}[]> {
+  return await Promise.all(
+    Object.keys(deps).map(
+      async dependency => {
+        return {
+          dependencyName: dependency,
+          dependencyVersion: await getDependencyVersion(dependency),
+        };
+      },
+    ),
+  );
 }
