@@ -28,6 +28,7 @@ import {
   standardTsconfig,
 } from "@monorepolint/rules";
 import * as child_process from "node:child_process";
+import path from "node:path";
 
 const LATEST_TYPESCRIPT_DEP = "^5.5.4";
 
@@ -66,6 +67,12 @@ const privatePackages = [
   "@osdk/tests.verify-fallback-package-v2",
   "@osdk/tool.*",
   "@osdk/version-updater",
+];
+
+const consumerCliPackages = [
+  "@osdk/cli",
+  "@osdk/create-app",
+  "@osdk/foundry-sdk-generator",
 ];
 
 /**
@@ -172,6 +179,60 @@ const fixedDepsOnly = createRuleFactory({
           longMessage: message,
           file: context.getPackageJsonPath(),
         });
+      }
+    }
+  },
+  validateOptions: () => {}, // no options right now
+});
+
+/**
+ * @type {import("@monorepolint/rules").RuleFactoryFn<{entries: string[]}>}
+ */
+const noPackageEntry = createRuleFactory({
+  name: "noPackageEntry",
+  check: async (context, options) => {
+    const packageJson = context.getPackageJson();
+    for (const entry of options.entries) {
+      if (packageJson[entry]) {
+        context.addError({
+          message: `${entry} field is not allowed`,
+          longMessage: `${entry} field is not allowed`,
+          file: context.getPackageJsonPath(),
+        });
+      }
+    }
+  },
+  validateOptions: (options) => {
+    return typeof options === "object" && "entries" in options
+      && Array.isArray(options.entries);
+  },
+});
+
+const allLocalDepsMustNotBePrivate = createRuleFactory({
+  name: "allLocalDepsMustNotBePrivate",
+  check: async (context) => {
+    const packageJson = context.getPackageJson();
+    const deps = packageJson.dependencies ?? {};
+
+    const nameToDir = await context.getWorkspaceContext().getPackageNameToDir();
+
+    for (const [dep, version] of Object.entries(deps)) {
+      if (nameToDir.has(dep)) {
+        const packageDir = nameToDir.get(dep);
+        /** @type any */
+        const theirPackageJson = context.host.readJson(
+          path.join(packageDir, "package.json"),
+        );
+
+        if (theirPackageJson.private) {
+          const message =
+            `${dep} is private and cannot be used as a regular dependency for this package`;
+          context.addError({
+            message,
+            longMessage: message,
+            file: context.getPackageJsonPath(),
+          });
+        }
       }
     }
   },
@@ -619,6 +680,26 @@ package you do so at your own risk.
           private: true,
         },
       },
+    }),
+
+    noPackageEntry({
+      excludePackages: privatePackages,
+      options: {
+        entries: ["private"],
+      },
+    }),
+
+    packageScript({
+      includePackages: consumerCliPackages,
+      options: {
+        scripts: {
+          transpile: "monorepo.tool.transpile tsup",
+        },
+      },
+    }),
+
+    allLocalDepsMustNotBePrivate({
+      includePackages: consumerCliPackages,
     }),
 
     alphabeticalDependencies({ includeWorkspaceRoot: true }),
