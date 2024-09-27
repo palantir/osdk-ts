@@ -8,7 +8,8 @@
   },
   "exports": {
     ".": {
-      "import": "./index.mjs"
+      "import": "./index.js",
+      "browser": "./index.js"
     }
   },
   "scripts": {
