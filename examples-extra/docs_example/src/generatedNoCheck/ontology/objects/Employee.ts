@@ -4,7 +4,7 @@ import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import type {
   PropertyKeys as $PropertyKeys,
   ObjectTypeDefinition as $ObjectTypeDefinition,
-  ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+  ObjectMetadata as $ObjectMetadata,
 } from '@osdk/api';
 import type {
   ObjectSet as $ObjectSet,
@@ -67,8 +67,8 @@ export interface Employee extends $ObjectTypeDefinition {
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
-      lead: $ObjectTypeLinkDefinition<Employee, false>;
-      peeps: $ObjectTypeLinkDefinition<Employee, true>;
+      lead: $ObjectMetadata.Link<Employee, false>;
+      peeps: $ObjectMetadata.Link<Employee, true>;
     };
     pluralDisplayName: 'Employees';
     primaryKeyApiName: 'employeeId';

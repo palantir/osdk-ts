@@ -5,7 +5,7 @@ import type { Venture } from './Venture.js';
 import type {
   PropertyKeys as $PropertyKeys,
   ObjectTypeDefinition as $ObjectTypeDefinition,
-  ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+  ObjectMetadata as $ObjectMetadata,
 } from '@osdk/api';
 import type {
   ObjectSet as $ObjectSet,
@@ -104,9 +104,9 @@ export interface Employee extends $ObjectTypeDefinition {
       };
     };
     links: {
-      lead: $ObjectTypeLinkDefinition<Employee, false>;
-      peeps: $ObjectTypeLinkDefinition<Employee, true>;
-      ventures: $ObjectTypeLinkDefinition<Venture, true>;
+      lead: $ObjectMetadata.Link<Employee, false>;
+      peeps: $ObjectMetadata.Link<Employee, true>;
+      ventures: $ObjectMetadata.Link<Venture, true>;
     };
     pluralDisplayName: 'Employees';
     primaryKeyApiName: 'id';

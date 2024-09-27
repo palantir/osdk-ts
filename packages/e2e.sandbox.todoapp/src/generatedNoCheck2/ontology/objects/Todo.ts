@@ -4,7 +4,7 @@ import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import type {
   PropertyKeys as $PropertyKeys,
   ObjectTypeDefinition as $ObjectTypeDefinition,
-  ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+  ObjectMetadata as $ObjectMetadata,
 } from '@osdk/api';
 import type {
   ObjectSet as $ObjectSet,

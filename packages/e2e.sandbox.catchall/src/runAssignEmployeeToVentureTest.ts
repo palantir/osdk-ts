@@ -30,7 +30,7 @@ export async function runAssignEmployeeToVentureTest() {
 
   const e = await client(Employee).fetchOneWithErrors("hi", {
     // $select: ["adUsername"],
-    $select: [],
+    $select: ["adUsername"],
   });
 
   for await (const emp of client(Employee).asyncIter()) {
