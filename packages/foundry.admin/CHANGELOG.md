@@ -1,5 +1,14 @@
 # @osdk/foundry.admin
 
+## 2.1.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [5dc1241]
+  - @osdk/shared.client@1.0.0-beta.3
+  - @osdk/foundry.core@2.1.0-beta.6
+  - @osdk/shared.net.platformapi@0.3.0-beta.3
+
 ## 2.1.0-beta.5
 
 ### Minor Changes

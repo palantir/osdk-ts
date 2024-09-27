@@ -1,5 +1,20 @@
 # @osdk/generator
 
+## 2.0.0-beta.16
+
+### Minor Changes
+
+- dc25fb4: Improve query generics
+- dc25fb4: Further simplify types
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+  - @osdk/generator-converters@2.0.0-beta.16
+  - @osdk/api@2.0.0-beta.16
+  - @osdk/internal.foundry.core@0.2.0-beta.10
+
 ## 2.0.0-beta.15
 
 ### Minor Changes
