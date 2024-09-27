@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ActionDefinition,
-  ObjectMetadata,
-  ObjectTypeLinkDefinition,
-  VersionBound,
-} from "@osdk/api";
+import type { ActionDefinition, ObjectMetadata, VersionBound } from "@osdk/api";
 import type { ObjectTypeWithAllPropertyTypesDef } from "./ObjectTypeWithAllPropertyTypes.js";
 import { ObjectTypeWithAllPropertyTypes } from "./ObjectTypeWithAllPropertyTypes.js";
 import type { ObjectTypeWithReservedNamesDef } from "./ObjectTypeWithReservedNames.js";
@@ -108,7 +103,7 @@ interface TodoDef extends ObjectMetadata, VersionBound<"0.15.0"> {
     unixTimestamp: { type: "long"; nullable: true };
   };
   links: {
-    linkedTask: ObjectTypeLinkDefinition<TaskDef, false>;
+    linkedTask: ObjectMetadata.Link<TaskDef, false>;
   };
 }
 
@@ -121,7 +116,7 @@ interface TaskDef extends ObjectMetadata, VersionBound<"0.15.0"> {
     id: { type: "integer"; nullable: true };
   };
   links: {
-    linkedTodos: ObjectTypeLinkDefinition<TodoDef, true>;
+    linkedTodos: ObjectMetadata.Link<TodoDef, true>;
   };
 }
 

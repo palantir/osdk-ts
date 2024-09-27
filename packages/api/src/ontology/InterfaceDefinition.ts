@@ -16,11 +16,11 @@
 
 import type { OsdkMetadata } from "../OsdkMetadata.js";
 import type {
-  ObjectInterfaceBaseDefinition,
+  ObjectInterfaceBaseMetadata,
   ObjectInterfaceCompileDefinition,
 } from "./ObjectTypeDefinition.js";
 
-export interface InterfaceMetadata extends ObjectInterfaceBaseDefinition {
+export interface InterfaceMetadata extends ObjectInterfaceBaseMetadata {
   type: "interface";
 }
 

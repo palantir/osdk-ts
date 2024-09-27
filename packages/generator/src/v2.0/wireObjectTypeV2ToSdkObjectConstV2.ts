@@ -79,7 +79,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
     return `import type {
       PropertyKeys as $PropertyKeys,  
       ObjectTypeDefinition as $ObjectTypeDefinition,
-      ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+      ObjectMetadata as $ObjectMetadata,
     } from "@osdk/api";
      import type {
       ObjectSet as $ObjectSet, 
@@ -260,7 +260,7 @@ export function createDefinition(
         ${
           stringify(definition.links, {
             "*": (definition) =>
-              `$ObjectTypeLinkDefinition<${
+              `$ObjectMetadata.Link<${
                 ontology.requireObjectType(definition.targetType)
                   .getImportedDefinitionIdentifier(true)
               }, ${definition.multiplicity}>`,

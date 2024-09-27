@@ -729,7 +729,7 @@ describe("generator", () => {
       import type {
         PropertyKeys as $PropertyKeys,
         ObjectTypeDefinition as $ObjectTypeDefinition,
-        ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+        ObjectMetadata as $ObjectMetadata,
       } from '@osdk/api';
       import type {
         ObjectSet as $ObjectSet,
@@ -782,7 +782,7 @@ describe("generator", () => {
           interfaceMap: {};
           inverseInterfaceMap: {};
           links: {
-            Todos: $ObjectTypeLinkDefinition<Todo, true>;
+            Todos: $ObjectMetadata.Link<Todo, true>;
           };
           pluralDisplayName: 'Persons';
           primaryKeyApiName: 'email';
@@ -813,7 +813,7 @@ describe("generator", () => {
       import type {
         PropertyKeys as $PropertyKeys,
         ObjectTypeDefinition as $ObjectTypeDefinition,
-        ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+        ObjectMetadata as $ObjectMetadata,
       } from '@osdk/api';
       import type {
         ObjectSet as $ObjectSet,
@@ -878,7 +878,7 @@ describe("generator", () => {
             };
           };
           links: {
-            Assignee: $ObjectTypeLinkDefinition<Person, false>;
+            Assignee: $ObjectMetadata.Link<Person, false>;
           };
           pluralDisplayName: 'AwesomeTodoDisplayNames';
           primaryKeyApiName: 'id';
@@ -1327,7 +1327,7 @@ describe("generator", () => {
         import type {
           PropertyKeys as $PropertyKeys,
           ObjectTypeDefinition as $ObjectTypeDefinition,
-          ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+          ObjectMetadata as $ObjectMetadata,
         } from '@osdk/api';
         import type {
           ObjectSet as $ObjectSet,
@@ -1380,7 +1380,7 @@ describe("generator", () => {
             interfaceMap: {};
             inverseInterfaceMap: {};
             links: {
-              Todos: $ObjectTypeLinkDefinition<Todo, true>;
+              Todos: $ObjectMetadata.Link<Todo, true>;
             };
             pluralDisplayName: 'Persons';
             primaryKeyApiName: 'email';
@@ -1411,7 +1411,7 @@ describe("generator", () => {
         import type {
           PropertyKeys as $PropertyKeys,
           ObjectTypeDefinition as $ObjectTypeDefinition,
-          ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+          ObjectMetadata as $ObjectMetadata,
         } from '@osdk/api';
         import type {
           ObjectSet as $ObjectSet,
@@ -1476,7 +1476,7 @@ describe("generator", () => {
               };
             };
             links: {
-              Assignee: $ObjectTypeLinkDefinition<Person, false>;
+              Assignee: $ObjectMetadata.Link<Person, false>;
             };
             pluralDisplayName: 'AwesomeTodoDisplayNames';
             primaryKeyApiName: 'id';
@@ -1815,7 +1815,7 @@ describe("generator", () => {
           import type {
             PropertyKeys as $PropertyKeys,
             ObjectTypeDefinition as $ObjectTypeDefinition,
-            ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+            ObjectMetadata as $ObjectMetadata,
           } from '@osdk/api';
           import type {
             ObjectSet as $ObjectSet,
@@ -2097,7 +2097,7 @@ describe("generator", () => {
         import type {
           PropertyKeys as $PropertyKeys,
           ObjectTypeDefinition as $ObjectTypeDefinition,
-          ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+          ObjectMetadata as $ObjectMetadata,
         } from '@osdk/api';
         import type {
           ObjectSet as $ObjectSet,

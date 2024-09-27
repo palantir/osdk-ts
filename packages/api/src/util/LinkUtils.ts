@@ -23,5 +23,5 @@ export type LinkNames<Q extends ObjectOrInterfaceDefinition> =
 
 export type LinkedType<
   Q extends ObjectOrInterfaceDefinition,
-  L extends keyof CompileTimeMetadata<Q>["links"] & string,
+  L extends LinkNames<Q>,
 > = NonNullable<CompileTimeMetadata<Q>["links"][L]["__OsdkLinkTargetType"]>;

@@ -63,7 +63,6 @@ export type {
   Augments,
   FetchPageArgs,
   NullabilityAdherence,
-  NullabilityAdherenceDefault,
   SelectArg,
   SelectArgToKeys,
 } from "./object/FetchPageArgs.js";
@@ -91,8 +90,6 @@ export type {
   CompileTimeMetadata,
   ObjectMetadata,
   ObjectTypeDefinition,
-  ObjectTypeLinkDefinition,
-  ObjectTypePropertyDefinition,
   PropertyDef,
   VersionBound,
 } from "./ontology/ObjectTypeDefinition.js";
@@ -115,9 +112,9 @@ export type { ConvertProps, Osdk } from "./OsdkObjectFrom.js";
 export type { PageResult } from "./PageResult.js";
 export type { QueryParam, QueryResult } from "./queries/Queries.js";
 export { TimeseriesDurationMapping } from "./timeseries/timeseries.js";
-export type { TimeSeriesProperty } from "./timeseries/timeseries.js";
 export type {
   TimeSeriesPoint,
+  TimeSeriesProperty,
   TimeSeriesQuery,
 } from "./timeseries/timeseries.js";
 export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
