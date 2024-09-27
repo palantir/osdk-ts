@@ -17,7 +17,7 @@
 import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
 import type {
   ObjectOrInterfaceDefinition,
-  ObjectOrInterfacePropertyKeysFrom2,
+  PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
 import type { IsNever, Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
@@ -45,19 +45,19 @@ export type UnionIfTrue<
 
 export type FetchPageResult<
   Q extends ObjectOrInterfaceDefinition,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
 > = PageResult<SingleOsdkResult<Q, L, R, S>>;
 
 export type SingleOsdkResult<
   Q extends ObjectOrInterfaceDefinition,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
 > = Osdk<
   Q,
-  | (IsAny<L> extends true ? ObjectOrInterfacePropertyKeysFrom2<Q> : L)
+  | (IsAny<L> extends true ? PropertyKeys<Q> : L)
   | (S extends false ? "$notStrict" : never)
   | (DefaultToFalse<R> extends false ? never : "$rid")
 >;

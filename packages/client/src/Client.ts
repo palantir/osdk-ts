@@ -20,7 +20,6 @@ import type {
   CompileTimeMetadata,
   InterfaceDefinition,
   InterfaceMetadata,
-  MinimalObjectSet,
   ObjectMetadata,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -33,6 +32,7 @@ import type {
 import type {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
+  MinimalObjectSet,
 } from "@osdk/api/unstable";
 import type { SharedClient } from "@osdk/shared.client";
 import type { BulkLinkResult } from "./__unstable/createBulkLinksAsyncIterFactory.js";
@@ -61,7 +61,7 @@ export interface Client extends SharedClient<MinimalClient> {
   ): unknown extends CompileTimeMetadata<Q>["objectSet"] ? MinimalObjectSet<Q>
     : CompileTimeMetadata<Q>["objectSet"];
 
-  <Q extends ActionDefinition<any, any, any>>(
+  <Q extends ActionDefinition<any>>(
     o: Q,
   ): ActionSignatureFromDef<Q>;
 
@@ -73,13 +73,13 @@ export interface Client extends SharedClient<MinimalClient> {
     Q extends (
       | ObjectTypeDefinition<any, any>
       | InterfaceDefinition<any, any>
-      | ActionDefinition<any, any, any>
+      | ActionDefinition<any>
       | QueryDefinition<any, any, any>
     ),
   >(o: Q): Promise<
     Q extends ObjectTypeDefinition<any, any> ? ObjectMetadata<any, any>
       : Q extends InterfaceDefinition<any, any> ? InterfaceMetadata<any, any>
-      : Q extends ActionDefinition<any, any, any> ? ActionMetadata<any, any>
+      : Q extends ActionDefinition<any> ? ActionMetadata
       : Q extends QueryDefinition<any, any, any> ? QueryMetadata<any, any>
       : never
   >;

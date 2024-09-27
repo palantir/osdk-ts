@@ -34,7 +34,7 @@ import type { Result } from "../object/Result.js";
 import type { InterfaceDefinition } from "../ontology/InterfaceDefinition.js";
 import type {
   ObjectOrInterfaceDefinition,
-  ObjectOrInterfacePropertyKeysFrom2,
+  PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
 import type {
   CompileTimeMetadata,
@@ -64,7 +64,7 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
    * @returns a page of objects
    */
   readonly fetchPage: <
-    L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+    L extends PropertyKeys<Q>,
     R extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherenceDefault,
@@ -87,7 +87,7 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
    * @returns a page of objects, wrapped in a result wrapper
    */
   readonly fetchPageWithErrors: <
-    L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+    L extends PropertyKeys<Q>,
     R extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherenceDefault,
@@ -118,7 +118,7 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
    * @returns an async iterator to load all objects
    */
   readonly asyncIter: <
-    L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+    L extends PropertyKeys<Q>,
     R extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherenceDefault,
@@ -215,7 +215,7 @@ export interface ObjectSet<
    * Fetches one object with the specified primary key, without a result wrapper
    */
   readonly fetchOne: Q extends ObjectTypeDefinition<any, any> ? <
-      const L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+      const L extends PropertyKeys<Q>,
       const R extends boolean,
       const S extends false | "throw" = NullabilityAdherenceDefault,
     >(
@@ -228,7 +228,7 @@ export interface ObjectSet<
    * Fetches one object with the specified primary key, with a result wrapper
    */
   readonly fetchOneWithErrors: Q extends ObjectTypeDefinition<any, any> ? <
-      L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+      L extends PropertyKeys<Q>,
       R extends boolean,
       S extends false | "throw" = NullabilityAdherenceDefault,
     >(

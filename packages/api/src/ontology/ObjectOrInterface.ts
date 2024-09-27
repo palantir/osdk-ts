@@ -24,11 +24,6 @@ export type ObjectOrInterfaceDefinition<
   | ObjectTypeDefinition<K, L>
   | InterfaceDefinition<K, L>;
 
-/** @deprecated use `PropertyKeys` */
-export type ObjectOrInterfacePropertyKeysFrom2<
-  O extends ObjectOrInterfaceDefinition,
-> = keyof NonNullable<O["__DefinitionMetadata"]>["properties"] & string;
-
 export type PropertyKeys<
   O extends ObjectOrInterfaceDefinition,
 > = keyof NonNullable<O["__DefinitionMetadata"]>["properties"] & string;

@@ -148,7 +148,7 @@ export type ActionDef$updateTask$Parameters = {
   };
 };
 
-interface ActionDef$updateTask extends ActionDefinition<"updateTask", "Task"> {
+interface ActionDef$updateTask extends ActionDefinition {
   type: "action";
   apiName: "updateTask";
   parameters: ActionDef$updateTask$Parameters;

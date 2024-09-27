@@ -1,11 +1,10 @@
 import type {
   ActionDefinition,
+  ActionMetadata,
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-  ObjectActionDataType,
-  ObjectSetActionDataType,
 } from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
@@ -38,7 +37,7 @@ export namespace createTodo {
 /**
  * Creates a new Todo
  */
-export interface createTodo extends ActionDefinition<'createTodo', 'Todo', createTodo.Signatures> {
+export interface createTodo extends ActionDefinition<createTodo.Signatures> {
   __DefinitionMetadata?: {
     apiName: 'createTodo';
     description: 'Creates a new Todo';

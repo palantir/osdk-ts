@@ -187,7 +187,7 @@ describe("FetchMetadata", () => {
       $Actions.moveOffice,
     );
 
-    expectTypeOf(actionMetadata).toEqualTypeOf<ActionMetadata<any, any>>();
+    expectTypeOf(actionMetadata).toEqualTypeOf<ActionMetadata>();
 
     expect(actionMetadata).toMatchInlineSnapshot(`
       {

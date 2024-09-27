@@ -17,12 +17,12 @@
 import type {
   ActionDefinition,
   InterfaceDefinition,
-  MinimalObjectSet,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   QueryDefinition,
 } from "@osdk/api";
+import type { MinimalObjectSet } from "@osdk/api/unstable";
 import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
@@ -41,12 +41,12 @@ import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import { applyQuery } from "./queries/applyQuery.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 
-class ActionInvoker<Q extends ActionDefinition<any, any, any>>
+class ActionInvoker<Q extends ActionDefinition<any>>
   implements ActionSignatureFromDef<Q>
 {
   constructor(
     clientCtx: MinimalClient,
-    actionDef: ActionDefinition<any, any, any>,
+    actionDef: ActionDefinition<any>,
   ) {
     // We type the property as a generic function as binding `applyAction`
     // doesn't return a type thats all that useful anyway
@@ -94,11 +94,11 @@ export function createClientInternal(
   function clientFn<
     T extends
       | ObjectOrInterfaceDefinition
-      | ActionDefinition<any, any, any>
+      | ActionDefinition<any>
       | QueryDefinition<any, any>,
   >(o: T): T extends ObjectTypeDefinition<any, any> ? ObjectSet<T>
     : T extends InterfaceDefinition<any, any> ? MinimalObjectSet<T>
-    : T extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<T>
+    : T extends ActionDefinition<any> ? ActionSignatureFromDef<T>
     : T extends QueryDefinition<any, any> ? QuerySignatureFromDef<T>
     : never
   {
@@ -108,7 +108,7 @@ export function createClientInternal(
       return new ActionInvoker(
         clientCtx,
         o,
-      ) as (T extends ActionDefinition<any, any, any>
+      ) as (T extends ActionDefinition<any>
         // first `as` to the action definition for our "real" typecheck
         ? ActionSignatureFromDef<T>
         : never) as any; // then as any for dealing with the conditional return value

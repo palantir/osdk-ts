@@ -500,12 +500,11 @@ describe("generator", () => {
       ",
         "/foo/ontology/actions/deleteTodos.ts": "import type {
         ActionDefinition,
+        ActionMetadata,
         ActionParam,
         ActionReturnTypeForOptions,
         ApplyActionOptions,
         ApplyBatchActionOptions,
-        ObjectActionDataType,
-        ObjectSetActionDataType,
       } from '@osdk/api';
       import { $osdkMetadata } from '../../OntologyMetadata';
       import type { Todo } from '../objects/Todo';
@@ -517,7 +516,7 @@ describe("generator", () => {
             description: 'Todo(s) to be deleted';
             multiplicity: true;
             nullable: true;
-            type: ObjectActionDataType<'Todo', Todo>;
+            type: ActionMetadata.DataType.Object<Todo>;
           };
         };
 
@@ -552,7 +551,7 @@ describe("generator", () => {
        * An action which takes in an array of objects
        * @param {ActionParam.ObjectType<Todo>} [object] Todo(s) to be deleted
        */
-      export interface deleteTodos extends ActionDefinition<'deleteTodos', 'Todo', deleteTodos.Signatures> {
+      export interface deleteTodos extends ActionDefinition<deleteTodos.Signatures> {
         __DefinitionMetadata?: {
           apiName: 'deleteTodos';
           description: 'An action which takes in an array of objects';
@@ -577,12 +576,11 @@ describe("generator", () => {
       ",
         "/foo/ontology/actions/markTodoCompleted.ts": "import type {
         ActionDefinition,
+        ActionMetadata,
         ActionParam,
         ActionReturnTypeForOptions,
         ApplyActionOptions,
         ApplyBatchActionOptions,
-        ObjectActionDataType,
-        ObjectSetActionDataType,
       } from '@osdk/api';
       import { $osdkMetadata } from '../../OntologyMetadata';
       import type { Todo } from '../objects/Todo';
@@ -594,7 +592,7 @@ describe("generator", () => {
             description: 'A Todo to mark completed';
             multiplicity: false;
             nullable: true;
-            type: ObjectActionDataType<'Todo', Todo>;
+            type: ActionMetadata.DataType.Object<Todo>;
           };
         };
 
@@ -629,7 +627,7 @@ describe("generator", () => {
        * An action which takes different types of parameters
        * @param {ActionParam.ObjectType<Todo>} [object] A Todo to mark completed
        */
-      export interface markTodoCompleted extends ActionDefinition<'markTodoCompleted', 'Todo', markTodoCompleted.Signatures> {
+      export interface markTodoCompleted extends ActionDefinition<markTodoCompleted.Signatures> {
         __DefinitionMetadata?: {
           apiName: 'markTodoCompleted';
           description: 'An action which takes different types of parameters';
@@ -729,7 +727,7 @@ describe("generator", () => {
       import type { $ExpectedClientVersion } from '../../OntologyMetadata';
       import type { Todo } from './Todo';
       import type {
-        ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+        PropertyKeys as $PropertyKeys,
         ObjectTypeDefinition as $ObjectTypeDefinition,
         ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
       } from '@osdk/api';
@@ -813,7 +811,7 @@ describe("generator", () => {
       import type { $ExpectedClientVersion } from '../../OntologyMetadata';
       import type { Person } from './Person';
       import type {
-        ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+        PropertyKeys as $PropertyKeys,
         ObjectTypeDefinition as $ObjectTypeDefinition,
         ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
       } from '@osdk/api';
@@ -1100,12 +1098,11 @@ describe("generator", () => {
         ",
           "/foo/ontology/actions/deleteTodos.ts": "import type {
           ActionDefinition,
+          ActionMetadata,
           ActionParam,
           ActionReturnTypeForOptions,
           ApplyActionOptions,
           ApplyBatchActionOptions,
-          ObjectActionDataType,
-          ObjectSetActionDataType,
         } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { Todo } from '../objects/Todo.js';
@@ -1117,7 +1114,7 @@ describe("generator", () => {
               description: 'Todo(s) to be deleted';
               multiplicity: true;
               nullable: true;
-              type: ObjectActionDataType<'foo.bar.Todo', Todo>;
+              type: ActionMetadata.DataType.Object<Todo>;
             };
           };
 
@@ -1152,7 +1149,7 @@ describe("generator", () => {
          * An action which takes in an array of objects
          * @param {ActionParam.ObjectType<Todo>} [object] Todo(s) to be deleted
          */
-        export interface deleteTodos extends ActionDefinition<'foo.bar.deleteTodos', 'foo.bar.Todo', deleteTodos.Signatures> {
+        export interface deleteTodos extends ActionDefinition<deleteTodos.Signatures> {
           __DefinitionMetadata?: {
             apiName: 'foo.bar.deleteTodos';
             description: 'An action which takes in an array of objects';
@@ -1177,12 +1174,11 @@ describe("generator", () => {
         ",
           "/foo/ontology/actions/markTodoCompleted.ts": "import type {
           ActionDefinition,
+          ActionMetadata,
           ActionParam,
           ActionReturnTypeForOptions,
           ApplyActionOptions,
           ApplyBatchActionOptions,
-          ObjectActionDataType,
-          ObjectSetActionDataType,
         } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { Todo } from '../objects/Todo.js';
@@ -1194,7 +1190,7 @@ describe("generator", () => {
               description: 'A Todo to mark completed';
               multiplicity: false;
               nullable: true;
-              type: ObjectActionDataType<'foo.bar.Todo', Todo>;
+              type: ActionMetadata.DataType.Object<Todo>;
             };
           };
 
@@ -1229,8 +1225,7 @@ describe("generator", () => {
          * An action which takes different types of parameters
          * @param {ActionParam.ObjectType<Todo>} [object] A Todo to mark completed
          */
-        export interface markTodoCompleted
-          extends ActionDefinition<'foo.bar.markTodoCompleted', 'foo.bar.Todo', markTodoCompleted.Signatures> {
+        export interface markTodoCompleted extends ActionDefinition<markTodoCompleted.Signatures> {
           __DefinitionMetadata?: {
             apiName: 'foo.bar.markTodoCompleted';
             description: 'An action which takes different types of parameters';
@@ -1330,7 +1325,7 @@ describe("generator", () => {
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import type { Todo } from './Todo.js';
         import type {
-          ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+          PropertyKeys as $PropertyKeys,
           ObjectTypeDefinition as $ObjectTypeDefinition,
           ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
         } from '@osdk/api';
@@ -1414,7 +1409,7 @@ describe("generator", () => {
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import type { Person } from './Person.js';
         import type {
-          ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+          PropertyKeys as $PropertyKeys,
           ObjectTypeDefinition as $ObjectTypeDefinition,
           ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
         } from '@osdk/api';
@@ -1818,7 +1813,7 @@ describe("generator", () => {
           import { $osdkMetadata } from '../../OntologyMetadata.js';
           import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
           import type {
-            ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+            PropertyKeys as $PropertyKeys,
             ObjectTypeDefinition as $ObjectTypeDefinition,
             ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
           } from '@osdk/api';
@@ -1920,12 +1915,11 @@ describe("generator", () => {
         .toMatchInlineSnapshot(`
           "import type {
             ActionDefinition,
+            ActionMetadata,
             ActionParam,
             ActionReturnTypeForOptions,
             ApplyActionOptions,
             ApplyBatchActionOptions,
-            ObjectActionDataType,
-            ObjectSetActionDataType,
           } from '@osdk/api';
           import { $osdkMetadata } from '../../OntologyMetadata.js';
           import type { Task as $Imported$objectTypes$com$example$dep$Task } from '@com.example.dep/osdk';
@@ -1941,7 +1935,7 @@ describe("generator", () => {
               task: {
                 multiplicity: false;
                 nullable: false;
-                type: ObjectActionDataType<'com.example.dep.Task', $Imported$objectTypes$com$example$dep$Task>;
+                type: ActionMetadata.DataType.Object<$Imported$objectTypes$com$example$dep$Task>;
               };
             };
 
@@ -1969,7 +1963,7 @@ describe("generator", () => {
            * @param {ActionParam.PrimitiveType<"string">} body
            * @param {ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>} task
            */
-          export interface setTaskBody extends ActionDefinition<'setTaskBody', 'com.example.dep.Task', setTaskBody.Signatures> {
+          export interface setTaskBody extends ActionDefinition<setTaskBody.Signatures> {
             __DefinitionMetadata?: {
               apiName: 'setTaskBody';
               modifiedEntities: {
@@ -2101,7 +2095,7 @@ describe("generator", () => {
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import type {
-          ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+          PropertyKeys as $PropertyKeys,
           ObjectTypeDefinition as $ObjectTypeDefinition,
           ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
         } from '@osdk/api';

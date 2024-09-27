@@ -17,7 +17,6 @@
 import type { InterfaceDefinition } from "../ontology/InterfaceDefinition.js";
 import type {
   ObjectOrInterfaceDefinition,
-  ObjectOrInterfacePropertyKeysFrom2,
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
 import type { BrandedApiName } from "../ontology/ObjectTypeDefinition.js";
@@ -27,8 +26,7 @@ export type NullabilityAdherenceDefault = "throw";
 
 export interface SelectArg<
   Q extends ObjectOrInterfaceDefinition<any, any>,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
-    ObjectOrInterfacePropertyKeysFrom2<Q>,
+  L extends PropertyKeys<Q> = PropertyKeys<Q>,
   R extends boolean = false,
   S extends NullabilityAdherence = NullabilityAdherenceDefault,
 > {
@@ -39,8 +37,7 @@ export interface SelectArg<
 
 export interface OrderByArg<
   Q extends ObjectOrInterfaceDefinition<any, any>,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
-    ObjectOrInterfacePropertyKeysFrom2<Q>,
+  L extends PropertyKeys<Q> = PropertyKeys<Q>,
 > {
   $orderBy?: {
     [K in L]?: "asc" | "desc";
@@ -56,8 +53,7 @@ export type SelectArgToKeys<
 
 export interface FetchPageArgs<
   Q extends ObjectOrInterfaceDefinition,
-  K extends ObjectOrInterfacePropertyKeysFrom2<Q> =
-    ObjectOrInterfacePropertyKeysFrom2<Q>,
+  K extends PropertyKeys<Q> = PropertyKeys<Q>,
   R extends boolean = false,
   A extends Augments = {},
   S extends NullabilityAdherence = NullabilityAdherenceDefault,
@@ -68,15 +64,11 @@ export interface FetchPageArgs<
 
 export interface AsyncIterArgs<
   Q extends ObjectOrInterfaceDefinition,
-  K extends ObjectOrInterfacePropertyKeysFrom2<Q> =
-    ObjectOrInterfacePropertyKeysFrom2<Q>,
+  K extends PropertyKeys<Q> = PropertyKeys<Q>,
   R extends boolean = false,
   A extends Augments = {},
   S extends NullabilityAdherence = NullabilityAdherenceDefault,
-> extends
-  SelectArg<Q, K, R, S>,
-  OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>>
-{
+> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
   $augment?: A;
   $__EXPERIMENTAL_selectedObjectTypes?: string[];
 }
@@ -92,13 +84,9 @@ export type Augments = Record<string, string[]>;
 
 export interface FetchInterfacePageArgs<
   Q extends InterfaceDefinition<any, any>,
-  K extends ObjectOrInterfacePropertyKeysFrom2<Q> =
-    ObjectOrInterfacePropertyKeysFrom2<Q>,
+  K extends PropertyKeys<Q> = PropertyKeys<Q>,
   R extends boolean = false,
-> extends
-  SelectArg<Q, K, R>,
-  OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>>
-{
+> extends SelectArg<Q, K, R>, OrderByArg<Q, PropertyKeys<Q>> {
   $nextPageToken?: string;
   $pageSize?: number;
   $augment?: Augments;

@@ -22,33 +22,22 @@ export type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from "./actions/Actions.js";
-export type {
-  NumericAggregateOption,
-  StringAggregateOption,
-  ValidAggregationKeys,
-} from "./aggregate/AggregatableKeys.js";
+export type { ValidAggregationKeys } from "./aggregate/AggregatableKeys.js";
 export type { AggregateOpts } from "./aggregate/AggregateOpts.js";
 export type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } from "./aggregate/AggregateOptsThatErrors.js";
 export type { AggregationResultsWithGroups } from "./aggregate/AggregationResultsWithGroups.js";
 export type { AggregationResultsWithoutGroups } from "./aggregate/AggregationResultsWithoutGroups.js";
-export type {
-  OrderedAggregationClause,
-  UnorderedAggregationClause,
-} from "./aggregate/AggregationsClause.js";
+export type { AggregationClause } from "./aggregate/AggregationsClause.js";
 export type { AggregationsResults } from "./aggregate/AggregationsResults.js";
 export { DistanceUnitMapping } from "./aggregate/WhereClause.js";
 export type {
-  AndWhereClause,
   GeoFilter_Intersects,
   GeoFilter_Within,
-  NotWhereClause,
-  OrWhereClause,
   PossibleWhereClauseFilters,
   WhereClause,
 } from "./aggregate/WhereClause.js";
 export type { OsdkObjectPropertyType } from "./Definitions.js";
 export type {
-  DefaultToFalse,
   OsdkObjectLinksObject,
   SingleLinkAccessor,
 } from "./definitions/LinkDefinitions.js";
@@ -85,14 +74,10 @@ export type {
 export { isOk } from "./object/Result.js";
 export type { Result } from "./object/Result.js";
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
-export type { MinimalObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
+export type { ObjectSet } from "./objectSet/ObjectSet.js";
 export type {
   ActionDefinition,
   ActionMetadata,
-  ActionModifiedEntity,
-  ActionParameterDefinition,
-  ObjectActionDataType,
-  ObjectSetActionDataType,
 } from "./ontology/ActionDefinition.js";
 export type {
   InterfaceDefinition,
@@ -100,7 +85,6 @@ export type {
 } from "./ontology/InterfaceDefinition.js";
 export type {
   ObjectOrInterfaceDefinition,
-  ObjectOrInterfacePropertyKeysFrom2,
   PropertyKeys,
 } from "./ontology/ObjectOrInterface.js";
 export type {
@@ -130,10 +114,8 @@ export type { OsdkObject } from "./OsdkObject.js";
 export type { ConvertProps, Osdk } from "./OsdkObjectFrom.js";
 export type { PageResult } from "./PageResult.js";
 export type { QueryParam, QueryResult } from "./queries/Queries.js";
-export {
-  TimeseriesDurationMapping,
-  TimeSeriesProperty,
-} from "./timeseries/timeseries.js";
+export { TimeseriesDurationMapping } from "./timeseries/timeseries.js";
+export type { TimeSeriesProperty } from "./timeseries/timeseries.js";
 export type {
   TimeSeriesPoint,
   TimeSeriesQuery,

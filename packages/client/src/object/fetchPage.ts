@@ -23,8 +23,8 @@ import type {
   InterfaceDefinition,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
-  ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
+  PropertyKeys,
   Result,
 } from "@osdk/api";
 import type {
@@ -84,7 +84,7 @@ export function objectSetToSearchJsonV2(
 
 async function fetchInterfacePage<
   Q extends InterfaceDefinition<any, any>,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
 >(
@@ -120,7 +120,7 @@ async function fetchInterfacePage<
 /** @internal */
 export async function fetchPageInternal<
   Q extends ObjectOrInterfaceDefinition,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  L extends PropertyKeys<Q>,
   R extends boolean,
   A extends Augments,
   S extends NullabilityAdherence,
@@ -150,7 +150,7 @@ export async function fetchPageInternal<
 /** @internal */
 export async function fetchPageWithErrorsInternal<
   Q extends ObjectOrInterfaceDefinition,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  L extends PropertyKeys<Q>,
   R extends boolean,
   A extends Augments,
   S extends NullabilityAdherence,
@@ -181,7 +181,7 @@ export async function fetchPageWithErrorsInternal<
  */
 export async function fetchPage<
   Q extends ObjectOrInterfaceDefinition,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
 >(
@@ -199,7 +199,7 @@ export async function fetchPage<
 /** @internal */
 export async function fetchPageWithErrors<
   Q extends ObjectOrInterfaceDefinition,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
 >(
@@ -247,7 +247,7 @@ function applyFetchArgs<
 /** @internal */
 export async function fetchObjectPage<
   Q extends ObjectTypeDefinition<any, any>,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
 >(

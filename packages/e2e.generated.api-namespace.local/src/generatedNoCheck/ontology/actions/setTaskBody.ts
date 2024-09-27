@@ -1,11 +1,10 @@
 import type {
   ActionDefinition,
+  ActionMetadata,
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-  ObjectActionDataType,
-  ObjectSetActionDataType,
 } from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Task as $Imported$objectTypes$com$example$dep$Task } from '@osdk/e2e.generated.api-namespace.dep';
@@ -21,7 +20,7 @@ export namespace setTaskBody {
     task: {
       multiplicity: false;
       nullable: false;
-      type: ObjectActionDataType<'com.example.dep.Task', $Imported$objectTypes$com$example$dep$Task>;
+      type: ActionMetadata.DataType.Object<$Imported$objectTypes$com$example$dep$Task>;
     };
   };
 
@@ -49,7 +48,7 @@ export namespace setTaskBody {
  * @param {ActionParam.PrimitiveType<"string">} body
  * @param {ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>} task
  */
-export interface setTaskBody extends ActionDefinition<'setTaskBody', 'com.example.dep.Task', setTaskBody.Signatures> {
+export interface setTaskBody extends ActionDefinition<setTaskBody.Signatures> {
   __DefinitionMetadata?: {
     apiName: 'setTaskBody';
     modifiedEntities: {

@@ -3,7 +3,7 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type { Todo } from './Todo.js';
 import type {
-  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+  PropertyKeys as $PropertyKeys,
   ObjectTypeDefinition as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
 } from '@osdk/api';

@@ -21,21 +21,23 @@ import type {
   FetchPageResult,
   LinkedType,
   LinkNames,
-  MinimalObjectSet,
   NullabilityAdherence,
   NullabilityAdherenceDefault,
   ObjectOrInterfaceDefinition,
-  ObjectOrInterfacePropertyKeysFrom2,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
+  PropertyKeys,
   Result,
   SelectArg,
   SingleOsdkResult,
 } from "@osdk/api";
+import type {
+  EXPERIMENTAL_ObjectSetListener,
+  MinimalObjectSet,
+} from "@osdk/api/unstable";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/api/unstable";
-import type { EXPERIMENTAL_ObjectSetListener } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -152,7 +154,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     },
 
     asyncIter: async function*<
-      L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+      L extends PropertyKeys<Q>,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,

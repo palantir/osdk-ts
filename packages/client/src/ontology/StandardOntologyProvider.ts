@@ -89,7 +89,7 @@ export const createStandardOntologyProviderFactory: (
       N extends
         | ObjectOrInterfaceDefinition
         | QueryMetadata<any, any>
-        | ActionMetadata<any, any>,
+        | ActionMetadata,
     >(
       fn: (
         client: MinimalClient,
