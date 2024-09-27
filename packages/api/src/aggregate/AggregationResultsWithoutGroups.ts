@@ -31,7 +31,7 @@ type ExtractMetricNameForPropName<T, PropName extends string> = T extends
   `${PropName}:${infer MetricName}` ? MetricName : never;
 
 export type AggregationResultsWithoutGroups<
-  Q extends ObjectOrInterfaceDefinition<any>,
+  Q extends ObjectOrInterfaceDefinition,
   AC extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>,
 > = {
   [PropName in ExtractPropName<keyof AC & string>]: PropName extends "$count"

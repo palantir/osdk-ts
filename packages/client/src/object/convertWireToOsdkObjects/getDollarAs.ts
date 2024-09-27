@@ -28,7 +28,7 @@ import type { ObjectHolder } from "./ObjectHolder.js";
 /** @internal */
 export type DollarAsFn = <
   Q extends FetchedObjectTypeDefinition<any>,
-  NEW_Q extends ObjectOrInterfaceDefinition<any>,
+  NEW_Q extends ObjectOrInterfaceDefinition,
 >(
   this: Osdk<any> & (InterfaceHolder<Q> | ObjectHolder<Q>),
   newDef: string | NEW_Q,

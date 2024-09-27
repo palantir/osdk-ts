@@ -28,7 +28,7 @@ import type {
 } from "./AggregationsClause.js";
 
 export type AggregationResultsWithGroups<
-  Q extends ObjectOrInterfaceDefinition<any>,
+  Q extends ObjectOrInterfaceDefinition,
   A extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>,
   G extends GroupByClause<Q> | undefined,
 > = (

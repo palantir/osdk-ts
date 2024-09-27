@@ -17,11 +17,9 @@
 import type { InterfaceDefinition } from "./InterfaceDefinition.js";
 import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
 
-export type ObjectOrInterfaceDefinition<
-  K extends string = any,
-> =
-  | ObjectTypeDefinition<K>
-  | InterfaceDefinition<K>;
+export type ObjectOrInterfaceDefinition =
+  | ObjectTypeDefinition<any>
+  | InterfaceDefinition<any>;
 
 export type PropertyKeys<
   O extends ObjectOrInterfaceDefinition,

@@ -37,7 +37,7 @@ export const ClientRef = Symbol(
   process.env.MODE !== "production" ? "ClientRef" : undefined,
 );
 
-export interface HolderBase<T extends ObjectOrInterfaceDefinition<any>> {
+export interface HolderBase<T extends ObjectOrInterfaceDefinition> {
   [UnderlyingOsdkObject]: OsdkObject<any>;
   [ObjectDefRef]?: T;
   [InterfaceDefRef]?: T;

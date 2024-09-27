@@ -37,7 +37,7 @@ export const OsdkCustomInspectPrototype = Object.create(null, {
  */
 function customInspect(
   this:
-    & HolderBase<ObjectOrInterfaceDefinition<any>>
+    & HolderBase<ObjectOrInterfaceDefinition>
     & Osdk<any>,
   _depth: number,
   options: InspectOptionsStylized,

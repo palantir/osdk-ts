@@ -26,7 +26,7 @@ export type CompileTimeMetadata<T extends { __DefinitionMetadata?: {} }> =
   >;
 
 export type ObjectTypePropertyDefinitionFrom2<
-  Q extends ObjectOrInterfaceDefinition<any>,
+  Q extends ObjectOrInterfaceDefinition,
   P extends PropertyKeys<Q>,
 > = CompileTimeMetadata<Q>["properties"][P];
 
