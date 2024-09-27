@@ -1,5 +1,16 @@
 # @osdk/cli
 
+## 0.24.0-beta.14
+
+### Minor Changes
+
+- ff790c5: Rollup dependencies
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/generator@2.0.0-beta.15
+
 ## 0.24.0-beta.13
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.0.0-beta.15
+
+### Minor Changes
+
+- dc25fb4: Simplified types
+
 ## 2.0.0-beta.14
 
 ### Major Changes

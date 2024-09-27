@@ -1,5 +1,12 @@
 # @osdk/client.test.ontology
 
+## 2.0.0-beta.15
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/api@2.0.0-beta.15
+
 ## 2.0.0-beta.14
 
 ### Minor Changes

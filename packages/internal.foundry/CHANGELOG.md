@@ -1,5 +1,11 @@
 # @osdk/foundry
 
+## 0.5.0-beta.10
+
+### Minor Changes
+
+- ff790c5: start shipping
+
 ## 0.5.0-beta.9
 
 ### Minor Changes

@@ -1,5 +1,12 @@
 # @osdk/maker
 
+## 0.8.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/api@2.0.0-beta.15
+
 ## 0.8.0-beta.10
 
 ### Minor Changes
