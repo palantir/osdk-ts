@@ -201,7 +201,6 @@ async function generateClientSdk(
       const dependencyVersions = await getDependencyVersions();
       if (args.internal) {
         dependencyVersions.osdkApiVersion = "workspace:~";
-        dependencyVersions.osdkClientApiVersion = "workspace:~";
         dependencyVersions.osdkClientVersion = "workspace:~";
         dependencyVersions.osdkLegacyClientVersion = "workspace:~";
       }
@@ -220,7 +219,6 @@ async function generateClientSdk(
 
       updateVersionsIfTheyExist(packageJson, {
         "@osdk/client": dependencyVersions.osdkClientVersion,
-        "@osdk/client.api": dependencyVersions.osdkClientApiVersion,
         "@osdk/api": dependencyVersions.osdkApiVersion,
       });
 
@@ -284,7 +282,6 @@ export async function getDependencyVersions() {
   const areTheTypesWrongVersion =
     ourPackageJson.dependencies["@arethetypeswrong/cli"];
   const osdkClientVersion = `^${process.env.PACKAGE_CLIENT_VERSION}`;
-  const osdkClientApiVersion = `^${process.env.PACKAGE_CLIENT_API_VERSION}`;
   const osdkApiVersion = `^${process.env.PACKAGE_API_VERSION}`;
   const osdkLegacyClientVersion =
     `^${process.env.PACKAGE_LEGACY_CLIENT_VERSION}`;
@@ -295,7 +292,6 @@ export async function getDependencyVersions() {
     areTheTypesWrongVersion,
     osdkApiVersion,
     osdkClientVersion,
-    osdkClientApiVersion,
     osdkLegacyClientVersion,
   };
 }
