@@ -1,5 +1,12 @@
 # @osdk/platform-sdk-generator
 
+## 0.5.0-beta.5
+
+### Minor Changes
+
+- 5d6d5ab: Internal improvement to type references
+- d4d6605: Audited and cleaned up deps
+
 ## 0.5.0-beta.4
 
 ### Minor Changes

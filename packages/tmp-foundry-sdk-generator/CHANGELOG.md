@@ -1,5 +1,29 @@
 # @osdk/foundry-sdk-generator
 
+## 2.0.0-beta.14
+
+### Minor Changes
+
+- 9eb7c6e: Properly handles \_\_dirname
+- 9eb7c6e: Upgrades version of rollup used internally
+- 1f633f7: Removed dependency on @osdk/client.api
+- d4d6605: Audited and cleaned up deps
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [fe9547e]
+- Updated dependencies [1f633f7]
+- Updated dependencies [d4d6605]
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.9
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.9
+  - @osdk/internal.foundry.core@0.2.0-beta.9
+  - @osdk/client@2.0.0-beta.14
+  - @osdk/api@2.0.0-beta.14
+  - @osdk/generator@2.0.0-beta.14
+  - @osdk/shared.net@2.0.0-beta.5
+
 ## 2.0.0-beta.13
 
 ### Patch Changes

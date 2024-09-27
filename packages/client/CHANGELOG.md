@@ -1,5 +1,32 @@
 # @osdk/client
 
+## 2.0.0-beta.14
+
+### Minor Changes
+
+- a2c7b37: Enables better tree shaking
+- 1f633f7: Removed dependency on @osdk/client.api
+- d4d6605: Audited and cleaned up deps
+
+### Patch Changes
+
+- Updated dependencies [b60e107]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [fe9547e]
+- Updated dependencies [1f633f7]
+- Updated dependencies [d4d6605]
+  - @osdk/shared.client@1.0.0-beta.2
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.9
+  - @osdk/internal.foundry.core@0.2.0-beta.9
+  - @osdk/api@2.0.0-beta.14
+  - @osdk/generator-converters@2.0.0-beta.14
+  - @osdk/client.unstable.osw@0.2.0-beta.1
+  - @osdk/shared.client.impl@1.0.0-beta.2
+  - @osdk/shared.net.errors@2.0.0-beta.1
+  - @osdk/shared.net.fetch@1.0.0-beta.1
+  - @osdk/client.unstable@2.0.0-beta.14
+
 ## 2.0.0-beta.13
 
 ### Minor Changes

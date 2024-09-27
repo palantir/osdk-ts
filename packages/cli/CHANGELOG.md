@@ -1,5 +1,18 @@
 # @osdk/cli
 
+## 0.24.0-beta.13
+
+### Minor Changes
+
+- d4d6605: Audited and cleaned up deps
+
+### Patch Changes
+
+- Updated dependencies [1f633f7]
+- Updated dependencies [d4d6605]
+  - @osdk/generator@2.0.0-beta.14
+  - @osdk/shared.net@2.0.0-beta.5
+
 ## 0.24.0-beta.12
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @osdk/oauth
 
+## 0.4.0-beta.3
+
+### Minor Changes
+
+- d4d6605: Audited and cleaned up deps
+
 ## 0.4.0-beta.2
 
 ### Minor Changes

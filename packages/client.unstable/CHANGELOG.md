@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.0.0-beta.14
+
+### Minor Changes
+
+- d4d6605: Audited and cleaned up deps
+
 ## 2.0.0-beta.13
 
 ## 2.0.0-beta.12
