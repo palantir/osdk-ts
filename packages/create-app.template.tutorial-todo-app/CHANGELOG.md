@@ -1,5 +1,14 @@
 # @osdk/create-app.template.tutorial-todo-app
 
+## 0.19.0
+
+### Minor Changes
+
+- 0131ade: Update tutorial template READMEs to match others
+- a0330ef: create TS 2.0 template, update the create app to use it when needed and the generate example to generate it
+- fb533d2: Include default tests for .env.production in templates
+- d4d6605: Audited and cleaned up deps
+
 ## 0.19.0-beta.7
 
 ## 0.19.0-beta.6

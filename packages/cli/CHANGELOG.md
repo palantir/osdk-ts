@@ -1,5 +1,50 @@
 # @osdk/cli
 
+## 0.24.0
+
+### Minor Changes
+
+- ff790c5: Rollup dependencies
+- 0a374d6: Remove legacy client
+- d4d6605: Audited and cleaned up deps
+
+### Patch Changes
+
+- Updated dependencies [ac4f4fd]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [b946e00]
+- Updated dependencies [7494995]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [33759fb]
+- Updated dependencies [1770490]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [51fe88c]
+- Updated dependencies [68a8dc7]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [1252d94]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [bbfebfd]
+- Updated dependencies [7494995]
+- Updated dependencies [01724ae]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [5c89065]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [56df85a]
+- Updated dependencies [0a374d6]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [885c8e4]
+- Updated dependencies [96ea876]
+- Updated dependencies [6f93c8b]
+- Updated dependencies [1f633f7]
+- Updated dependencies [d4d6605]
+- Updated dependencies [96ea876]
+- Updated dependencies [64818dc]
+- Updated dependencies [081114f]
+  - @osdk/generator@2.0.0
+  - @osdk/shared.net@2.0.0
+
 ## 0.24.0-beta.15
 
 ### Patch Changes
