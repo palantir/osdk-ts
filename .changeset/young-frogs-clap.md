@@ -2,7 +2,7 @@
 "@osdk/shared.net": major
 "@osdk/cli.cmd.typescript": minor
 "@osdk/shared.test": minor
-"@osdk/client.api": minor
+"@osdk/api": minor
 "@osdk/client": minor
 "@osdk/maker": minor
 ---

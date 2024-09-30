@@ -2,9 +2,9 @@ import type { PropertyDef as $PropertyDef } from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
-  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+  PropertyKeys as $PropertyKeys,
   ObjectTypeDefinition as $ObjectTypeDefinition,
-  ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+  ObjectMetadata as $ObjectMetadata,
 } from '@osdk/api';
 import type {
   ObjectSet as $ObjectSet,
@@ -12,7 +12,7 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
-} from '@osdk/client.api';
+} from '@osdk/api';
 
 export namespace Thing {
   export type PropertyKeys = 'id' | 'body';
@@ -36,7 +36,7 @@ export namespace Thing {
   > = $Osdk<Thing, K | OPTIONS>;
 }
 
-export interface Thing extends $ObjectTypeDefinition<'Thing', Thing> {
+export interface Thing extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Thing';

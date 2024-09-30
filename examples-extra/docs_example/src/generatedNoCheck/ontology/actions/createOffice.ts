@@ -1,10 +1,11 @@
-import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
+  ActionDefinition,
+  ActionMetadata,
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-} from '@osdk/client.api';
+} from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 export namespace createOffice {
@@ -79,7 +80,7 @@ export namespace createOffice {
  * @param {ActionParam.PrimitiveType<"string">} officeId
  * @param {ActionParam.PrimitiveType<"string">} [officeNames] A list of all office names
  */
-export interface createOffice extends ActionDefinition<'createOffice', 'Office', createOffice.Signatures> {
+export interface createOffice extends ActionDefinition<createOffice.Signatures> {
   __DefinitionMetadata?: {
     apiName: 'createOffice';
     description: "Create an office's";

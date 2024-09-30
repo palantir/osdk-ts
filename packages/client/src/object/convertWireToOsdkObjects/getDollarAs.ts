@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { Osdk, OsdkObject } from "@osdk/client.api";
+import type { ObjectOrInterfaceDefinition, Osdk, OsdkObject } from "@osdk/api";
 import {
   type FetchedObjectTypeDefinition,
   InterfaceDefinitions,
@@ -28,15 +27,15 @@ import type { ObjectHolder } from "./ObjectHolder.js";
 
 /** @internal */
 export type DollarAsFn = <
-  Q extends FetchedObjectTypeDefinition<any, any>,
-  NEW_Q extends ObjectOrInterfaceDefinition<any>,
+  Q extends FetchedObjectTypeDefinition,
+  NEW_Q extends ObjectOrInterfaceDefinition,
 >(
   this: Osdk<any> & (InterfaceHolder<Q> | ObjectHolder<Q>),
   newDef: string | NEW_Q,
 ) => OsdkObject<any>;
 
 export const get$as = createSimpleCache<
-  FetchedObjectTypeDefinition<any, any>,
+  FetchedObjectTypeDefinition,
   DollarAsFn
 >(new WeakMap(), $asFactory).get;
 
@@ -53,7 +52,7 @@ const osdkObjectToInterfaceView = createSimpleCache(
 );
 
 function $asFactory(
-  objDef: FetchedObjectTypeDefinition<any, any>,
+  objDef: FetchedObjectTypeDefinition,
 ): DollarAsFn {
   // We use the exact same logic for both the interface rep and the underlying rep
   return function $as<

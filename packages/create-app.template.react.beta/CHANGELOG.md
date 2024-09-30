@@ -1,5 +1,13 @@
 # @osdk/create-app.template.react
 
+## 0.19.0-beta.7
+
+## 0.19.0-beta.6
+
+### Minor Changes
+
+- d4d6605: Audited and cleaned up deps
+
 ## 0.19.0-beta.5
 
 ### Minor Changes

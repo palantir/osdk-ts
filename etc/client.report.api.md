@@ -4,48 +4,44 @@
 
 ```ts
 
-import type { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from '@osdk/client.api/unstable';
-import type { __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet } from '@osdk/client.api/unstable';
+import type { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from '@osdk/api/unstable';
+import type { __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet } from '@osdk/api/unstable';
 import type { ActionDefinition } from '@osdk/api';
-import { ActionEditResponse } from '@osdk/client.api';
+import { ActionEditResponse } from '@osdk/api';
 import type { ActionMetadata } from '@osdk/api';
-import type { ActionParam } from '@osdk/client.api';
-import type { ActionParameterDefinition } from '@osdk/api';
-import { ActionReturnTypeForOptions } from '@osdk/client.api';
-import { ActionValidationResponse } from '@osdk/client.api';
-import { ApplyActionOptions } from '@osdk/client.api';
-import { ApplyBatchActionOptions } from '@osdk/client.api';
-import type { Attachment } from '@osdk/client.api';
-import type { AttachmentUpload } from '@osdk/client.api';
+import type { ActionParam } from '@osdk/api';
+import { ActionReturnTypeForOptions } from '@osdk/api';
+import { ActionValidationResponse } from '@osdk/api';
+import { ApplyActionOptions } from '@osdk/api';
+import { ApplyBatchActionOptions } from '@osdk/api';
+import type { Attachment } from '@osdk/api';
+import type { AttachmentUpload } from '@osdk/api';
 import type { CompileTimeMetadata } from '@osdk/api';
-import type { DataValueClientToWire } from '@osdk/client.api';
-import type { DataValueWireToClient } from '@osdk/client.api';
+import type { DataValueClientToWire } from '@osdk/api';
+import type { DataValueWireToClient } from '@osdk/api';
 import type { InterfaceDefinition } from '@osdk/api';
 import type { InterfaceMetadata } from '@osdk/api';
-import { InterfaceObjectSet } from '@osdk/client.api';
-import { isOk } from '@osdk/client.api';
-import type { MinimalObjectSet } from '@osdk/client.api';
-import type { ObjectActionDataType } from '@osdk/api';
+import { isOk } from '@osdk/api';
+import type { MinimalObjectSet } from '@osdk/api/unstable';
 import type { ObjectMetadata } from '@osdk/api';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
-import { ObjectSet } from '@osdk/client.api';
-import type { ObjectSetActionDataType } from '@osdk/api';
+import { ObjectSet } from '@osdk/api';
 import type { ObjectSetQueryDataType } from '@osdk/api';
 import type { ObjectTypeDefinition } from '@osdk/api';
-import { Osdk } from '@osdk/client.api';
-import { OsdkObject } from '@osdk/client.api';
-import { PageResult } from '@osdk/client.api';
+import { Osdk } from '@osdk/api';
+import { OsdkObject } from '@osdk/api';
+import { PageResult } from '@osdk/api';
 import { PalantirApiError } from '@osdk/shared.net.errors';
 import type { QueryDataTypeDefinition } from '@osdk/api';
 import type { QueryDefinition } from '@osdk/api';
 import type { QueryMetadata } from '@osdk/api';
-import type { QueryParam } from '@osdk/client.api';
-import type { QueryResult } from '@osdk/client.api';
-import { Result } from '@osdk/client.api';
+import type { QueryParam } from '@osdk/api';
+import type { QueryResult } from '@osdk/api';
+import { Result } from '@osdk/api';
 import type { SharedClient } from '@osdk/shared.client';
 import type { SharedClientContext } from '@osdk/shared.client';
-import { WhereClause } from '@osdk/client.api';
+import { WhereClause } from '@osdk/api';
 
 export { ActionEditResponse }
 
@@ -75,19 +71,19 @@ export interface Client extends SharedClient<MinimalClient> {
     // @alpha
     readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet]: <T extends ObjectOrInterfaceDefinition>(type: T, rid: string) => ObjectSet<T>;
     // (undocumented)
-    <Q extends ObjectTypeDefinition<any, any>>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
+    <Q extends ObjectTypeDefinition>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
     // (undocumented)
-    <Q extends (InterfaceDefinition<any, any>)>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? MinimalObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
+    <Q extends (InterfaceDefinition)>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? MinimalObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
     // Warning: (ae-forgotten-export) The symbol "ActionSignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    <Q extends ActionDefinition<any, any, any>>(o: Q): ActionSignatureFromDef<Q>;
+    <Q extends ActionDefinition<any>>(o: Q): ActionSignatureFromDef<Q>;
     // Warning: (ae-forgotten-export) The symbol "QuerySignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    <Q extends QueryDefinition<any, any, any>>(o: Q): QuerySignatureFromDef<Q>;
+    <Q extends QueryDefinition<any>>(o: Q): QuerySignatureFromDef<Q>;
     // (undocumented)
-    fetchMetadata<Q extends (ObjectTypeDefinition<any, any> | InterfaceDefinition<any, any> | ActionDefinition<any, any, any> | QueryDefinition<any, any, any>)>(o: Q): Promise<Q extends ObjectTypeDefinition<any, any> ? ObjectMetadata<any, any> : Q extends InterfaceDefinition<any, any> ? InterfaceMetadata<any, any> : Q extends ActionDefinition<any, any, any> ? ActionMetadata<any, any> : Q extends QueryDefinition<any, any, any> ? QueryMetadata<any, any> : never>;
+    fetchMetadata<Q extends (ObjectTypeDefinition | InterfaceDefinition | ActionDefinition<any> | QueryDefinition<any>)>(o: Q): Promise<Q extends ObjectTypeDefinition ? ObjectMetadata : Q extends InterfaceDefinition ? InterfaceMetadata : Q extends ActionDefinition<any> ? ActionMetadata : Q extends QueryDefinition<any> ? QueryMetadata : never>;
 }
 
 // @public
@@ -108,8 +104,6 @@ export const createClient: (baseUrl: string, ontologyRid: string | Promise<strin
 //
 // @public
 export function createPlatformClient(baseUrl: string, tokenProvider: () => Promise<string>, options?: undefined, fetchFn?: typeof globalThis.fetch): PlatformClient;
-
-export { InterfaceObjectSet }
 
 export { isOk }
 

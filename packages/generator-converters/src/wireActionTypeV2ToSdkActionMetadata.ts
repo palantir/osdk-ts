@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ActionMetadata,
-  ActionModifiedEntity,
-  ActionParameterDefinition,
-} from "@osdk/api";
+import type { ActionMetadata } from "@osdk/api";
 import type {
   ActionParameterType,
   ActionParameterV2,
@@ -28,7 +24,7 @@ import { getModifiedEntityTypes } from "./getEditedEntities.js";
 
 export function wireActionTypeV2ToSdkActionMetadata(
   input: ActionTypeV2,
-): ActionMetadata<any, any> {
+): ActionMetadata {
   const modifiedEntityTypes = getModifiedEntityTypes(input);
   return {
     type: "action",
@@ -51,7 +47,7 @@ export function wireActionTypeV2ToSdkActionMetadata(
 
 function wireActionParameterV2ToSdkParameterDefinition(
   value: ActionParameterV2,
-): ActionParameterDefinition<any> {
+): ActionMetadata.Parameter<any> {
   return {
     multiplicity: value.dataType.type === "array",
     type: actionPropertyToSdkPropertyDefinition(
@@ -64,7 +60,7 @@ function wireActionParameterV2ToSdkParameterDefinition(
 
 function actionPropertyToSdkPropertyDefinition(
   parameterType: ActionParameterType,
-): ActionParameterDefinition<string>["type"] {
+): ActionMetadata.Parameter["type"] {
   switch (parameterType.type) {
     case "string":
     case "boolean":
@@ -89,10 +85,13 @@ function actionPropertyToSdkPropertyDefinition(
 function createModifiedEntities<K extends string>(
   addedObjects: Set<K>,
   modifiedObjects: Set<K>,
-): Record<K, ActionModifiedEntity> {
-  let entities: Record<K, ActionModifiedEntity> = {} as Record<
+): ActionMetadata["modifiedEntities"] {
+  let entities = {} as Record<
     K,
-    ActionModifiedEntity
+    {
+      created: boolean;
+      modified: boolean;
+    }
   >;
 
   for (const key of addedObjects) {

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type {
   FetchPageArgs,
+  ObjectOrInterfaceDefinition,
   Osdk,
   Result,
   SelectArgToKeys,
-} from "@osdk/client.api";
+} from "@osdk/api";
 import type { ObjectSet } from "@osdk/internal.foundry.core";
 import { PalantirApiError } from "@osdk/shared.net.errors";
 import type { MinimalClient } from "../MinimalClientContext.js";

@@ -5,7 +5,7 @@
 "@osdk/client.unstable": minor
 "@osdk/create-app.template-packager": minor
 "@osdk/example-generator": minor
-"@osdk/foundry-sdk-generator": major
+"@osdk/tmp-foundry-sdk-generator": major
 "@osdk/foundry.core": minor
 "@osdk/foundry.thirdpartyapplications": minor
 "@osdk/foundry": minor

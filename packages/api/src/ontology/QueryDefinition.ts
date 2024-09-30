@@ -20,17 +20,14 @@ import type {
   ReleaseStatus,
 } from "./ObjectTypeDefinition.js";
 
-export interface QueryMetadata<
-  A extends string,
-  K extends string,
-> {
+export interface QueryMetadata {
   type: "query";
-  apiName: A;
+  apiName: string;
   description?: string;
   displayName?: string;
   version: string;
-  parameters: Record<string, QueryParameterDefinition<K, any>>;
-  output: QueryDataTypeDefinition<K, any>;
+  parameters: Record<string, QueryParameterDefinition<any>>;
+  output: QueryDataTypeDefinition;
   rid: string;
 }
 
@@ -38,34 +35,30 @@ export interface QueryCompileTimeMetadata<T> {
   signature: T;
 }
 
-export interface QueryDefinition<
-  A extends string,
-  K extends string,
-  T = never,
-> {
+export interface QueryDefinition<T = any> {
   type: "query";
-  apiName: A;
+  apiName: string;
   osdkMetadata?: OsdkMetadata;
-  __DefinitionMetadata?: QueryCompileTimeMetadata<T> & QueryMetadata<A, K>;
+  __DefinitionMetadata?:
+    & QueryCompileTimeMetadata<T>
+    & QueryMetadata;
 }
 
 export type QueryParameterDefinition<
-  K extends string,
-  T_Target extends ObjectTypeDefinition<any> = never,
+  T_Target extends ObjectTypeDefinition = any,
 > = {
   description?: string;
-} & QueryDataTypeDefinition<K, T_Target>;
+} & QueryDataTypeDefinition<T_Target>;
 
 export type QueryDataTypeDefinition<
-  K extends string,
-  T_Target extends ObjectTypeDefinition<any> = never,
+  T_Target extends ObjectTypeDefinition = any,
 > =
   | PrimitiveDataType
-  | ObjectQueryDataType<K, T_Target>
-  | ObjectSetQueryDataType<K, T_Target>
-  | SetQueryDataType<K>
-  | UnionQueryDataType<K>
-  | StructQueryDataType<K>
+  | ObjectQueryDataType<T_Target>
+  | ObjectSetQueryDataType<T_Target>
+  | SetQueryDataType
+  | UnionQueryDataType
+  | StructQueryDataType
   | TwoDimensionalAggregationDataType
   | ThreeDimensionalAggregationDataType;
 
@@ -91,37 +84,33 @@ export type PrimitiveDataType<
 > = BaseQueryDataTypeDefinition<Q>;
 
 export interface ObjectQueryDataType<
-  K extends string,
-  T_Target extends ObjectTypeDefinition<any> = never,
+  T_Target extends ObjectTypeDefinition = never,
 > extends BaseQueryDataTypeDefinition<"object"> {
-  object: K;
+  object: string;
   __OsdkTargetType?: T_Target;
 }
 
 export interface ObjectSetQueryDataType<
-  K extends string,
-  T_Target extends ObjectTypeDefinition<any> = never,
+  T_Target extends ObjectTypeDefinition = never,
 > extends BaseQueryDataTypeDefinition<"objectSet"> {
-  objectSet: K;
+  objectSet: string;
   __OsdkTargetType?: T_Target;
 }
 
-export interface SetQueryDataType<K extends string>
-  extends BaseQueryDataTypeDefinition<"set">
-{
-  set: QueryDataTypeDefinition<K>;
+export interface SetQueryDataType extends BaseQueryDataTypeDefinition<"set"> {
+  set: QueryDataTypeDefinition;
 }
 
-export interface UnionQueryDataType<K extends string>
+export interface UnionQueryDataType
   extends BaseQueryDataTypeDefinition<"union">
 {
-  union: ReadonlyArray<QueryDataTypeDefinition<K>>;
+  union: ReadonlyArray<QueryDataTypeDefinition>;
 }
 
-export interface StructQueryDataType<K extends string>
+export interface StructQueryDataType
   extends BaseQueryDataTypeDefinition<"struct">
 {
-  struct: Record<string, QueryDataTypeDefinition<K>>;
+  struct: Record<string, QueryDataTypeDefinition>;
 }
 
 export interface TwoDimensionalAggregationDataType

@@ -1,6 +1,6 @@
 {
   "name": "@osdk/foundry.publicapis",
-  "version": "2.1.0-beta.4",
+  "version": "2.1.0-beta.6",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@osdk/foundry.core": "workspace:*",
-    "@osdk/shared.client": "workspace:~",
+    "@osdk/shared.client": "workspace:^",
     "@osdk/shared.net.platformapi": "workspace:~"
   },
   "devDependencies": {

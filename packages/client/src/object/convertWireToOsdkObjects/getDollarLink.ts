@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
 import type {
   ObjectSet,
-  Osdk,
+  ObjectTypeDefinition,
   OsdkObjectLinksObject,
   SelectArg,
   WhereClause,
-} from "@osdk/client.api";
+} from "@osdk/api";
 import { getWireObjectSet } from "../../objectSet/createObjectSet.js";
 import { fetchSingle, fetchSingleWithErrors } from "../fetchSingle.js";
 import { ClientRef, ObjectDefRef, RawObject } from "./InternalSymbols.js";
@@ -54,7 +53,7 @@ const DollarLinkProxyHandler: ProxyHandler<ObjectHolder<any>> = {
       (client.objectSetFactory(objDef, client) as ObjectSet<any>)
         .where({
           [objDef.primaryKeyApiName]: rawObj.$primaryKey,
-        } as WhereClause<ObjectTypeDefinition<any, any>>)
+        } as WhereClause<ObjectTypeDefinition>)
         .pivotTo(p as string);
 
     if (!linkDef.multiplicity) {

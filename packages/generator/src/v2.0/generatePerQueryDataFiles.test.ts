@@ -47,7 +47,7 @@ describe("generatePerQueryDataFiles", () => {
       export * from './queries/returnsTodo.js';
       ",
         "/foo/ontology/queries/getCount.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
-      import type { QueryParam, QueryResult } from '@osdk/client.api';
+      import type { QueryParam, QueryResult } from '@osdk/api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
       import { $osdkMetadata } from '../../OntologyMetadata.js';
 
@@ -64,9 +64,7 @@ describe("generatePerQueryDataFiles", () => {
         }
       }
 
-      export interface getCount
-        extends QueryDefinition<'getCount', never, getCount.Signature>,
-          VersionBound<$ExpectedClientVersion> {
+      export interface getCount extends QueryDefinition<getCount.Signature>, VersionBound<$ExpectedClientVersion> {
         __DefinitionMetadata?: {
           apiName: 'getCount';
           rid: 'rid.query.1';
@@ -101,7 +99,7 @@ describe("generatePerQueryDataFiles", () => {
       };
       ",
         "/foo/ontology/queries/returnsTodo.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
-      import type { QueryParam, QueryResult } from '@osdk/client.api';
+      import type { QueryParam, QueryResult } from '@osdk/api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
       import { $osdkMetadata } from '../../OntologyMetadata.js';
       import type { Todo } from '../objects/Todo.js';
@@ -119,9 +117,7 @@ describe("generatePerQueryDataFiles", () => {
         }
       }
 
-      export interface returnsTodo
-        extends QueryDefinition<'returnsTodo', 'Todo', returnsTodo.Signature>,
-          VersionBound<$ExpectedClientVersion> {
+      export interface returnsTodo extends QueryDefinition<returnsTodo.Signature>, VersionBound<$ExpectedClientVersion> {
         __DefinitionMetadata?: {
           apiName: 'returnsTodo';
           rid: 'rid.query.2';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Attachment } from "@osdk/client.api";
+import type { Attachment } from "@osdk/api";
 import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "./MinimalClientContext.js";
 

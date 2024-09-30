@@ -3,9 +3,9 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type { Venture } from './Venture.js';
 import type {
-  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+  PropertyKeys as $PropertyKeys,
   ObjectTypeDefinition as $ObjectTypeDefinition,
-  ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+  ObjectMetadata as $ObjectMetadata,
 } from '@osdk/api';
 import type {
   ObjectSet as $ObjectSet,
@@ -13,7 +13,7 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
-} from '@osdk/client.api';
+} from '@osdk/api';
 
 export namespace Employee {
   export type PropertyKeys =
@@ -73,7 +73,7 @@ export namespace Employee {
   > = $Osdk<Employee, K | OPTIONS>;
 }
 
-export interface Employee extends $ObjectTypeDefinition<'Employee', Employee> {
+export interface Employee extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Employee';
@@ -104,9 +104,9 @@ export interface Employee extends $ObjectTypeDefinition<'Employee', Employee> {
       };
     };
     links: {
-      lead: $ObjectTypeLinkDefinition<Employee, false>;
-      peeps: $ObjectTypeLinkDefinition<Employee, true>;
-      ventures: $ObjectTypeLinkDefinition<Venture, true>;
+      lead: $ObjectMetadata.Link<Employee, false>;
+      peeps: $ObjectMetadata.Link<Employee, true>;
+      ventures: $ObjectMetadata.Link<Venture, true>;
     };
     pluralDisplayName: 'Employees';
     primaryKeyApiName: 'id';

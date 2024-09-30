@@ -16,18 +16,14 @@
 
 import type {
   ActionDefinition,
-  ActionParameterDefinition,
-  ObjectActionDataType,
-  ObjectSetActionDataType,
-} from "@osdk/api";
-import type {
   ActionEditResponse,
+  ActionMetadata,
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
   DataValueClientToWire,
-} from "@osdk/client.api";
+} from "@osdk/api";
 import type {
   BatchApplyActionResponseV2,
   DataValue,
@@ -44,16 +40,16 @@ import type { PartialBy } from "../util/partialBy.js";
 import { toDataValue } from "../util/toDataValue.js";
 import { ActionValidationError } from "./ActionValidationError.js";
 
-type BaseType<APD extends Pick<ActionParameterDefinition<any, any>, "type">> =
-  APD["type"] extends ObjectActionDataType<any, infer TTargetType>
+type BaseType<APD extends Pick<ActionMetadata.Parameter<any>, "type">> =
+  APD["type"] extends ActionMetadata.DataType.Object<infer TTargetType>
     ? ActionParam.ObjectType<TTargetType>
-    : APD["type"] extends ObjectSetActionDataType<any, infer TTargetType>
+    : APD["type"] extends ActionMetadata.DataType.ObjectSet<infer TTargetType>
       ? ActionParam.ObjectSetType<TTargetType>
     : APD["type"] extends keyof DataValueClientToWire
       ? ActionParam.PrimitiveType<APD["type"]>
     : never;
 
-type MaybeArrayType<APD extends ActionParameterDefinition<any, any>> =
+type MaybeArrayType<APD extends ActionMetadata.Parameter<any>> =
   APD["multiplicity"] extends true ? Array<BaseType<APD>>
     : BaseType<APD>;
 
@@ -67,11 +63,11 @@ export type OsdkActionParameters<
   : PartialBy<NotOptionalParams<X>, NullableProps<X>>;
 
 export type CompileTimeActionMetadata<
-  T extends ActionDefinition<any, any, any>,
+  T extends ActionDefinition<any>,
 > = NonNullable<T["__DefinitionMetadata"]>;
 
 export type ActionSignatureFromDef<
-  T extends ActionDefinition<any, any, any>,
+  T extends ActionDefinition<any>,
 > = {
   applyAction:
     [CompileTimeActionMetadata<T>["signatures"]["applyAction"]] extends [never]
@@ -86,11 +82,11 @@ export type ActionSignatureFromDef<
 
 type ActionParametersDefinition = Record<
   any,
-  ActionParameterDefinition<any, any>
+  ActionMetadata.Parameter<any>
 >;
 
 export type ActionSignature<
-  X extends Record<any, ActionParameterDefinition<any, any>>,
+  X extends Record<any, ActionMetadata.Parameter<any>>,
 > = <
   A extends NOOP<OsdkActionParameters<X>>,
   OP extends ApplyActionOptions,
@@ -102,7 +98,7 @@ export type ActionSignature<
 >;
 
 export type BatchActionSignature<
-  X extends Record<any, ActionParameterDefinition<any, any>>,
+  X extends Record<any, ActionMetadata.Parameter<any>>,
 > = <
   A extends NOOP<OsdkActionParameters<X>>[],
   OP extends ApplyBatchActionOptions,
@@ -114,7 +110,7 @@ export type BatchActionSignature<
 >;
 
 export async function applyAction<
-  AD extends ActionDefinition<any, any, any>,
+  AD extends ActionDefinition<any>,
   P extends
     | OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>
     | OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>[],
@@ -192,7 +188,7 @@ export async function applyAction<
   }
 }
 
-async function remapActionParams<AD extends ActionDefinition<any, any>>(
+async function remapActionParams<AD extends ActionDefinition<any>>(
   params:
     | OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>
     | undefined,
@@ -211,7 +207,7 @@ async function remapActionParams<AD extends ActionDefinition<any, any>>(
 }
 
 async function remapBatchActionParams<
-  AD extends ActionDefinition<any, any>,
+  AD extends ActionDefinition<any>,
 >(
   params: OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>[],
   client: MinimalClient,

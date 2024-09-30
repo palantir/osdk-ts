@@ -15,16 +15,14 @@
  */
 
 import type {
-  ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition,
-} from "@osdk/api";
-import type {
   FetchPageArgs,
   FetchPageResult,
+  ObjectTypeDefinition,
   Osdk,
   PageResult,
+  PropertyKeys,
   SelectArgToKeys,
-} from "@osdk/client.api";
+} from "@osdk/api";
 import type { FooInterface } from "@osdk/client.test.ontology";
 import { Todo } from "@osdk/client.test.ontology";
 import type { SearchJsonQueryV2 } from "@osdk/internal.foundry.core";
@@ -45,7 +43,7 @@ describe(fetchPage, () => {
   it("infers select properly", () => {
     // this helper lets us get return types of functions that are generic
     class Helper<
-      T extends ObjectTypeDefinition<any, any>,
+      T extends ObjectTypeDefinition,
       const A extends FetchPageArgs<T>,
     > {
       public fetchPage<
@@ -54,7 +52,7 @@ describe(fetchPage, () => {
       >() {
         return fetchPage<
           T,
-          L & ObjectOrInterfacePropertyKeysFrom2<T>,
+          L & PropertyKeys<T>,
           R,
           "drop"
         >({} as any, {} as any, {} as any);

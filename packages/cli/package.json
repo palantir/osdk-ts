@@ -1,6 +1,6 @@
 {
   "name": "@osdk/cli",
-  "version": "0.24.0-beta.12",
+  "version": "0.24.0-beta.15",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -26,7 +26,7 @@
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --pool=forks",
     "test:watch": "vitest",
-    "transpile": "monorepo.tool.transpile"
+    "transpile": "monorepo.tool.transpile tsup"
   },
   "dependencies": {
     "@arethetypeswrong/cli": "^0.15.2",

@@ -28,7 +28,7 @@
     "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
-    "@osdk/foundry-sdk-generator": "workspace:~",
+    "@osdk/tmp-foundry-sdk-generator": "workspace:~",
     "execa": "^9.3.0"
   },
   "devDependencies": {

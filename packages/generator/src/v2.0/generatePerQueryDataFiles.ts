@@ -115,7 +115,7 @@ async function generateV2QueryFile(
     path.join(outDir, `${query.shortApiName}.ts`),
     await formatTs(`
         import type { QueryDefinition , VersionBound} from "@osdk/api";
-        import type { QueryParam, QueryResult } from "@osdk/client.api";
+        import type { QueryParam, QueryResult } from "@osdk/api";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
         import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
         ${importObjects}
@@ -165,8 +165,6 @@ async function generateV2QueryFile(
         }
 
         export interface ${query.shortApiName} extends QueryDefinition<
-          "${query.fullApiName}", 
-          ${referencedObjectTypes},
           ${query.shortApiName}.Signature
         >, VersionBound<$ExpectedClientVersion>{
          __DefinitionMetadata?: {
@@ -261,12 +259,10 @@ export function queryParamJsDoc(
 
 export function getQueryParamType(
   enhancedOntology: EnhancedOntologyDefinition,
-  input: QueryParameterDefinition<any, any>,
+  input: QueryParameterDefinition,
   type: "Param" | "Result",
 ): string {
-  let inner = `unknown /* ${
-    (input as QueryParameterDefinition<any, any>).type
-  } */`;
+  let inner = `unknown /* ${input.type} */`;
 
   switch (input.type) {
     case "date":

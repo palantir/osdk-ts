@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { SharedPropertyTypeGothamMapping } from "@osdk/client.unstable";
+import type {
+  ApiNameValueTypeReference,
+  SharedPropertyTypeGothamMapping,
+} from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import { namespace, ontologyDefinition } from "./defineOntology.js";
 import type { PropertyTypeType, SharedPropertyType } from "./types.js";
@@ -31,6 +34,7 @@ export function defineSharedPropertyType(
     array?: boolean;
     description?: string;
     displayName?: string;
+    valueType?: ApiNameValueTypeReference;
     typeClasses?: SharedPropertyType["typeClasses"];
     gothamMapping?: SharedPropertyTypeGothamMapping;
   },

@@ -2,9 +2,9 @@ import type { PropertyDef as $PropertyDef } from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
-  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+  PropertyKeys as $PropertyKeys,
   ObjectTypeDefinition as $ObjectTypeDefinition,
-  ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+  ObjectMetadata as $ObjectMetadata,
 } from '@osdk/api';
 import type {
   ObjectSet as $ObjectSet,
@@ -12,7 +12,7 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
-} from '@osdk/client.api';
+} from '@osdk/api';
 
 export namespace ObjectTypeWithAllPropertyTypes {
   export type PropertyKeys =
@@ -126,8 +126,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
   > = $Osdk<ObjectTypeWithAllPropertyTypes, K | OPTIONS>;
 }
 
-export interface ObjectTypeWithAllPropertyTypes
-  extends $ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes', ObjectTypeWithAllPropertyTypes> {
+export interface ObjectTypeWithAllPropertyTypes extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'ObjectTypeWithAllPropertyTypes';

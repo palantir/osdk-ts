@@ -3,9 +3,9 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type { Employee } from './Employee.js';
 import type {
-  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+  PropertyKeys as $PropertyKeys,
   ObjectTypeDefinition as $ObjectTypeDefinition,
-  ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+  ObjectMetadata as $ObjectMetadata,
 } from '@osdk/api';
 import type {
   ObjectSet as $ObjectSet,
@@ -13,7 +13,7 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
-} from '@osdk/client.api';
+} from '@osdk/api';
 
 export namespace Venture {
   export type PropertyKeys = 'ventureId' | 'ventureName' | 'ventureStart';
@@ -41,7 +41,7 @@ export namespace Venture {
   > = $Osdk<Venture, K | OPTIONS>;
 }
 
-export interface Venture extends $ObjectTypeDefinition<'Venture', Venture> {
+export interface Venture extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Venture';
@@ -61,7 +61,7 @@ export interface Venture extends $ObjectTypeDefinition<'Venture', Venture> {
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
-      employees: $ObjectTypeLinkDefinition<Employee, true>;
+      employees: $ObjectMetadata.Link<Employee, true>;
     };
     pluralDisplayName: 'Ventures';
     primaryKeyApiName: 'ventureId';

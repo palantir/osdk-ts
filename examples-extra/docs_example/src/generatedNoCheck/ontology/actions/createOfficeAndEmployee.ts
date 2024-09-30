@@ -1,10 +1,11 @@
-import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
+  ActionDefinition,
+  ActionMetadata,
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-} from '@osdk/client.api';
+} from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 export namespace createOfficeAndEmployee {
@@ -90,8 +91,7 @@ export namespace createOfficeAndEmployee {
  * @param {ActionParam.PrimitiveType<"string">} officeId
  * @param {ActionParam.PrimitiveType<"string">} [officeNames] A list of all office names
  */
-export interface createOfficeAndEmployee
-  extends ActionDefinition<'createOfficeAndEmployee', 'Office' | 'Employee', createOfficeAndEmployee.Signatures> {
+export interface createOfficeAndEmployee extends ActionDefinition<createOfficeAndEmployee.Signatures> {
   __DefinitionMetadata?: {
     apiName: 'createOfficeAndEmployee';
     description: 'Create an office and employee';

@@ -1,10 +1,11 @@
-import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
+  ActionDefinition,
+  ActionMetadata,
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-} from '@osdk/client.api';
+} from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 export namespace promoteEmployee {
@@ -61,7 +62,7 @@ export namespace promoteEmployee {
  * @param {ActionParam.PrimitiveType<"double">} newCompensation
  * @param {ActionParam.PrimitiveType<"string">} newTitle
  */
-export interface promoteEmployee extends ActionDefinition<'promoteEmployee', 'Employee', promoteEmployee.Signatures> {
+export interface promoteEmployee extends ActionDefinition<promoteEmployee.Signatures> {
   __DefinitionMetadata?: {
     apiName: 'promoteEmployee';
     description: "Update an employee's title and compensation";

@@ -1,10 +1,11 @@
-import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
+  ActionDefinition,
+  ActionMetadata,
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-} from '@osdk/client.api';
+} from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 export namespace createTodo {
@@ -53,7 +54,7 @@ export namespace createTodo {
  * @param {ActionParam.PrimitiveType<"boolean">} is_complete
  * @param {ActionParam.PrimitiveType<"string">} Todo
  */
-export interface createTodo extends ActionDefinition<'createTodo', 'Todo', createTodo.Signatures> {
+export interface createTodo extends ActionDefinition<createTodo.Signatures> {
   __DefinitionMetadata?: {
     apiName: 'createTodo';
     description: 'Creates Todo';

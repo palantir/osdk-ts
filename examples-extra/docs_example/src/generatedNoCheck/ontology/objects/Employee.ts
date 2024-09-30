@@ -2,9 +2,9 @@ import type { PropertyDef as $PropertyDef } from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import type {
-  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+  PropertyKeys as $PropertyKeys,
   ObjectTypeDefinition as $ObjectTypeDefinition,
-  ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+  ObjectMetadata as $ObjectMetadata,
 } from '@osdk/api';
 import type {
   ObjectSet as $ObjectSet,
@@ -12,7 +12,7 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
-} from '@osdk/client.api';
+} from '@osdk/api';
 
 export namespace Employee {
   export type PropertyKeys = 'employeeId' | 'class' | 'fullName' | 'office' | 'startDate' | 'employeeStatus';
@@ -47,7 +47,7 @@ export namespace Employee {
   > = $Osdk<Employee, K | OPTIONS>;
 }
 
-export interface Employee extends $ObjectTypeDefinition<'Employee', Employee> {
+export interface Employee extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Employee';
@@ -67,8 +67,8 @@ export interface Employee extends $ObjectTypeDefinition<'Employee', Employee> {
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
-      lead: $ObjectTypeLinkDefinition<Employee, false>;
-      peeps: $ObjectTypeLinkDefinition<Employee, true>;
+      lead: $ObjectMetadata.Link<Employee, false>;
+      peeps: $ObjectMetadata.Link<Employee, true>;
     };
     pluralDisplayName: 'Employees';
     primaryKeyApiName: 'employeeId';

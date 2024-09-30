@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type {
   AggregateOpts,
   AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
   AggregationResultsWithGroups,
   AggregationsResults,
-} from "@osdk/client.api";
+  ObjectOrInterfaceDefinition,
+} from "@osdk/api";
 import type {
   AggregateObjectsRequestV2,
   AggregateObjectsResponseV2,

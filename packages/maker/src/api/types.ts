@@ -15,9 +15,18 @@
  */
 
 import type {
+  ApiNameValueTypeReference,
+  BaseType,
+  ExampleValue,
   OntologyIrInterfaceType,
   SharedPropertyTypeGothamMapping,
+  ValueTypeApiName,
+  ValueTypeDataConstraint,
+  ValueTypeDisplayMetadata,
+  ValueTypeStatus,
+  ValueTypeVersion,
 } from "@osdk/client.unstable";
+
 import type { OntologyFullMetadata } from "@osdk/internal.foundry.core";
 
 export interface Ontology extends
@@ -28,6 +37,7 @@ export interface Ontology extends
 {
   interfaceTypes: Record<string, InterfaceType>;
   sharedPropertyTypes: Record<string, SharedPropertyType>;
+  valueTypes: Record<string, ValueTypeDefinitionVersion[]>;
 }
 
 export interface InterfaceType extends
@@ -49,6 +59,7 @@ export interface PropertyType {
   array?: boolean;
   description?: string;
   displayName?: string;
+  valueType?: ApiNameValueTypeReference;
   typeClasses?: TypeClass[];
 }
 
@@ -74,3 +85,13 @@ export type PropertyTypeType =
   | "short"
   | "string"
   | "timestamp";
+
+export type ValueTypeDefinitionVersion = {
+  apiName: ValueTypeApiName;
+  displayMetadata: ValueTypeDisplayMetadata;
+  status: ValueTypeStatus;
+  version: ValueTypeVersion;
+  baseType: BaseType;
+  constraints: ValueTypeDataConstraint[];
+  exampleValues: ExampleValue[];
+};

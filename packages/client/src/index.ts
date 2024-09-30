@@ -20,15 +20,14 @@ export type {
   ActionValidationResponse,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-  InterfaceObjectSet,
   ObjectSet,
   Osdk,
   OsdkObject,
   PageResult,
   Result,
   WhereClause,
-} from "@osdk/client.api";
-export { isOk } from "@osdk/client.api";
+} from "@osdk/api";
+export { isOk } from "@osdk/api";
 export { PalantirApiError } from "@osdk/shared.net.errors";
 
 export { ActionValidationError } from "./actions/ActionValidationError.js";

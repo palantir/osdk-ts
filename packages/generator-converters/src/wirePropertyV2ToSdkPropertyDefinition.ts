@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypePropertyDefinition,
-  WirePropertyTypes,
-} from "@osdk/api";
+import type { ObjectMetadata, WirePropertyTypes } from "@osdk/api";
 import type {
   ObjectPropertyType,
   PropertyV2,
@@ -27,7 +24,7 @@ import type {
 export function wirePropertyV2ToSdkPropertyDefinition(
   input: (PropertyV2 | SharedPropertyType) & { nullable?: boolean },
   isNullable: boolean = true,
-): ObjectTypePropertyDefinition {
+): ObjectMetadata.Property {
   switch (input.dataType.type) {
     case "integer":
     case "string":

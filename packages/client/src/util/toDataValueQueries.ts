@@ -29,10 +29,10 @@ import { isWireObjectSet } from "./WireObjectSet.js";
  * @see DataValue for the expected payloads
  * @internal
  */
-export async function toDataValueQueries<T extends string>(
+export async function toDataValueQueries(
   value: unknown,
   client: MinimalClient,
-  desiredType: QueryDataTypeDefinition<T>,
+  desiredType: QueryDataTypeDefinition,
 ): Promise<DataValue> {
   if (value == null) {
     return value;

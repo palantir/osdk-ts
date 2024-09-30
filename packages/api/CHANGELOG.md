@@ -1,5 +1,39 @@
 # @osdk/api
 
+## 2.0.0-beta.16
+
+### Minor Changes
+
+- dc25fb4: Improve query generics
+- dc25fb4: Further simplify types
+
+### Patch Changes
+
+- @osdk/shared.net@2.0.0-beta.6
+
+## 2.0.0-beta.15
+
+### Minor Changes
+
+- dc25fb4: Simplified types
+
+## 2.0.0-beta.14
+
+### Major Changes
+
+- fe9547e: All types from @osdk/client.api merged into @osdk/api
+
+### Minor Changes
+
+- a2c7b37: Enables better tree shaking
+- 1f633f7: Removed dependency on @osdk/client.api
+- d4d6605: Audited and cleaned up deps
+
+### Patch Changes
+
+- Updated dependencies [d4d6605]
+  - @osdk/shared.net@2.0.0-beta.5
+
 ## 2.0.0-beta.13
 
 ### Minor Changes

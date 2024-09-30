@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { EXPERIMENTAL_ObjectSetListener } from "@osdk/client.api/unstable";
-import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/client.api/unstable";
+import type { EXPERIMENTAL_ObjectSetListener } from "@osdk/api/unstable";
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/api/unstable";
 import { Employee } from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
 import { logger } from "./logger.js";

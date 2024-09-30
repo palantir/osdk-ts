@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { ObjectSet } from "@osdk/client.api";
+import type { ObjectOrInterfaceDefinition, ObjectSet } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
 import type { MinimalClient } from "../MinimalClientContext.js";
 

@@ -1,5 +1,44 @@
 # @osdk/foundry
 
+## 0.5.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [5dc1241]
+  - @osdk/shared.client@1.0.0-beta.3
+  - @osdk/internal.foundry.core@0.2.0-beta.10
+  - @osdk/internal.foundry.datasets@0.2.0-beta.10
+  - @osdk/internal.foundry.geo@0.1.0-beta.3
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.10
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.10
+  - @osdk/shared.net.platformapi@0.3.0-beta.3
+
+## 0.5.0-beta.10
+
+### Minor Changes
+
+- ff790c5: start shipping
+
+## 0.5.0-beta.9
+
+### Minor Changes
+
+- 5d6d5ab: Internal improvement to type references
+- d4d6605: Audited and cleaned up deps
+
+### Patch Changes
+
+- Updated dependencies [b60e107]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [d4d6605]
+  - @osdk/shared.client@1.0.0-beta.2
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.9
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.9
+  - @osdk/internal.foundry.datasets@0.2.0-beta.9
+  - @osdk/internal.foundry.core@0.2.0-beta.9
+  - @osdk/internal.foundry.geo@0.1.0-beta.2
+  - @osdk/shared.net.platformapi@0.3.0-beta.2
+
 ## 0.5.0-beta.8
 
 ### Patch Changes

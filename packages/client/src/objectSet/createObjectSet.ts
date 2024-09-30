@@ -15,29 +15,28 @@
  */
 
 import type {
-  ObjectOrInterfaceDefinition,
-  ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition,
-} from "@osdk/api";
-import type {
   AsyncIterArgs,
   Augments,
   BaseObjectSet,
   FetchPageResult,
   LinkedType,
   LinkNames,
-  MinimalObjectSet,
   NullabilityAdherence,
-  NullabilityAdherenceDefault,
+  ObjectOrInterfaceDefinition,
   ObjectSet,
+  ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
+  PropertyKeys,
   Result,
   SelectArg,
   SingleOsdkResult,
-} from "@osdk/client.api";
-import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/client.api/unstable";
-import type { EXPERIMENTAL_ObjectSetListener } from "@osdk/client.api/unstable";
+} from "@osdk/api";
+import type {
+  EXPERIMENTAL_ObjectSetListener,
+  MinimalObjectSet,
+} from "@osdk/api/unstable";
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -53,7 +52,7 @@ import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
 function isObjectTypeDefinition(
   def: ObjectOrInterfaceDefinition,
-): def is ObjectTypeDefinition<any, any> {
+): def is ObjectTypeDefinition {
   return def.type === "object";
 }
 
@@ -154,10 +153,10 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     },
 
     asyncIter: async function*<
-      L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+      L extends PropertyKeys<Q>,
       R extends boolean,
       const A extends Augments,
-      S extends NullabilityAdherence = NullabilityAdherenceDefault,
+      S extends NullabilityAdherence = NullabilityAdherence.Default,
     >(
       args?: AsyncIterArgs<Q, L, R, A, S>,
     ): AsyncIterableIterator<SingleOsdkResult<Q, L, R, S>> {
@@ -209,7 +208,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
 
     fetchOneWithErrors: (isObjectTypeDefinition(objectType)
       ? async <A extends SelectArg<Q>>(
-        primaryKey: Q extends ObjectTypeDefinition<any, any> ? PrimaryKeyType<Q>
+        primaryKey: Q extends ObjectTypeDefinition ? PrimaryKeyType<Q>
           : never,
         options: A,
       ) => {
@@ -266,9 +265,9 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
 }
 async function createWithPk(
   clientCtx: MinimalClient,
-  objectType: ObjectTypeDefinition<any, any>,
+  objectType: ObjectTypeDefinition,
   objectSet: WireObjectSet,
-  primaryKey: PrimaryKeyType<ObjectTypeDefinition<any, any>>,
+  primaryKey: PrimaryKeyType<ObjectTypeDefinition>,
 ) {
   const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
     objectType.apiName,

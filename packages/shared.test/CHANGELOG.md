@@ -1,5 +1,51 @@
 # @osdk/shared.test
 
+## 2.0.0-beta.12
+
+### Minor Changes
+
+- dc25fb4: Further simplify types
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+  - @osdk/api@2.0.0-beta.16
+  - @osdk/internal.foundry.core@0.2.0-beta.10
+  - @osdk/internal.foundry.geo@0.1.0-beta.3
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.10
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.10
+
+## 2.0.0-beta.11
+
+### Minor Changes
+
+- dc25fb4: Simplified types
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/api@2.0.0-beta.15
+
+## 2.0.0-beta.10
+
+### Minor Changes
+
+- d4d6605: Audited and cleaned up deps
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [fe9547e]
+- Updated dependencies [1f633f7]
+- Updated dependencies [d4d6605]
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.9
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.9
+  - @osdk/internal.foundry.core@0.2.0-beta.9
+  - @osdk/internal.foundry.geo@0.1.0-beta.2
+  - @osdk/api@2.0.0-beta.14
+
 ## 2.0.0-beta.9
 
 ### Minor Changes

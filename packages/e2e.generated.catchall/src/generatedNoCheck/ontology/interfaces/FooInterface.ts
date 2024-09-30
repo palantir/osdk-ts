@@ -1,8 +1,12 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
-import type { InterfaceDefinition as $InterfaceDefinition } from '@osdk/api';
-import type { ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from '@osdk/client.api';
+import type {
+  InterfaceDefinition as $InterfaceDefinition,
+  ObjectSet as $ObjectSet,
+  Osdk as $Osdk,
+  PropertyValueWireToClient as $PropType,
+} from '@osdk/api';
 
 export type OsdkObjectLinks$FooInterface = {};
 
@@ -26,7 +30,7 @@ export namespace FooInterface {
   > = $Osdk<FooInterface, K | OPTIONS>;
 }
 
-export interface FooInterface extends $InterfaceDefinition<'FooInterface', FooInterface> {
+export interface FooInterface extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'FooInterface';

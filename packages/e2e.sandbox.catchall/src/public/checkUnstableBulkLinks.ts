@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from "@osdk/client.api/unstable";
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from "@osdk/api/unstable";
 import { Employee, WeatherStation } from "@osdk/e2e.generated.catchall";
 import { client } from "../client.js";
 import { logger } from "../logger.js";

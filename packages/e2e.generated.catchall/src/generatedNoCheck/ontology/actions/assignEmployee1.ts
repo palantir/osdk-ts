@@ -1,10 +1,11 @@
-import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type {
+  ActionDefinition,
+  ActionMetadata,
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-} from '@osdk/client.api';
+} from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
 import type { Venture } from '../objects/Venture.js';
@@ -15,12 +16,12 @@ export namespace assignEmployee1 {
     'employee-1': {
       multiplicity: false;
       nullable: false;
-      type: ObjectActionDataType<'Employee', Employee>;
+      type: ActionMetadata.DataType.Object<Employee>;
     };
     'venture-1': {
       multiplicity: false;
       nullable: false;
-      type: ObjectActionDataType<'Venture', Venture>;
+      type: ActionMetadata.DataType.Object<Venture>;
     };
   };
 
@@ -55,8 +56,7 @@ export namespace assignEmployee1 {
  * @param {ActionParam.ObjectType<Employee>} employee-1
  * @param {ActionParam.ObjectType<Venture>} venture-1
  */
-export interface assignEmployee1
-  extends ActionDefinition<'assignEmployee1', 'Employee' | 'Venture', assignEmployee1.Signatures> {
+export interface assignEmployee1 extends ActionDefinition<assignEmployee1.Signatures> {
   __DefinitionMetadata?: {
     apiName: 'assignEmployee1';
     description: 'Assigns an employee to a venture';

@@ -22,16 +22,18 @@ import type {
   InterfaceMetadata,
   ObjectMetadata,
   ObjectOrInterfaceDefinition,
+  ObjectSet,
   ObjectTypeDefinition,
+  Osdk,
   QueryDefinition,
   QueryMetadata,
   VersionBound,
 } from "@osdk/api";
-import type { MinimalObjectSet, ObjectSet, Osdk } from "@osdk/client.api";
 import type {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
-} from "@osdk/client.api/unstable";
+  MinimalObjectSet,
+} from "@osdk/api/unstable";
 import type { SharedClient } from "@osdk/shared.client";
 import type { BulkLinkResult } from "./__unstable/createBulkLinksAsyncIterFactory.js";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
@@ -49,36 +51,36 @@ export type CheckVersionBound<Q> = Q extends VersionBound<infer V> ? (
   : Q;
 
 export interface Client extends SharedClient<MinimalClient> {
-  <Q extends ObjectTypeDefinition<any, any>>(
+  <Q extends ObjectTypeDefinition>(
     o: Q,
   ): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q>
     : CompileTimeMetadata<Q>["objectSet"];
 
-  <Q extends (InterfaceDefinition<any, any>)>(
+  <Q extends (InterfaceDefinition)>(
     o: Q,
   ): unknown extends CompileTimeMetadata<Q>["objectSet"] ? MinimalObjectSet<Q>
     : CompileTimeMetadata<Q>["objectSet"];
 
-  <Q extends ActionDefinition<any, any, any>>(
+  <Q extends ActionDefinition<any>>(
     o: Q,
   ): ActionSignatureFromDef<Q>;
 
-  <Q extends QueryDefinition<any, any, any>>(
+  <Q extends QueryDefinition<any>>(
     o: Q,
   ): QuerySignatureFromDef<Q>;
 
   fetchMetadata<
     Q extends (
-      | ObjectTypeDefinition<any, any>
-      | InterfaceDefinition<any, any>
-      | ActionDefinition<any, any, any>
-      | QueryDefinition<any, any, any>
+      | ObjectTypeDefinition
+      | InterfaceDefinition
+      | ActionDefinition<any>
+      | QueryDefinition<any>
     ),
   >(o: Q): Promise<
-    Q extends ObjectTypeDefinition<any, any> ? ObjectMetadata<any, any>
-      : Q extends InterfaceDefinition<any, any> ? InterfaceMetadata<any, any>
-      : Q extends ActionDefinition<any, any, any> ? ActionMetadata<any, any>
-      : Q extends QueryDefinition<any, any, any> ? QueryMetadata<any, any>
+    Q extends ObjectTypeDefinition ? ObjectMetadata
+      : Q extends InterfaceDefinition ? InterfaceMetadata
+      : Q extends ActionDefinition<any> ? ActionMetadata
+      : Q extends QueryDefinition<any> ? QueryMetadata
       : never
   >;
 

@@ -28,6 +28,7 @@ import {
   standardTsconfig,
 } from "@monorepolint/rules";
 import * as child_process from "node:child_process";
+import path from "node:path";
 
 const LATEST_TYPESCRIPT_DEP = "^5.5.4";
 
@@ -38,7 +39,7 @@ const nonStandardPackages = [
   "@osdk/e2e.sandbox.todoapp",
   "@osdk/e2e.sandbox.oauth.public.react-router",
   "@osdk/examples.*",
-  "@osdk/foundry-sdk-generator",
+  "@osdk/tmp-foundry-sdk-generator",
   "@osdk/e2e.test.foundry-sdk-generator",
   "@osdk/monorepo.*", // internal monorepo packages
   "@osdk/shared.client", // hand written package that only exposes a symbol
@@ -48,15 +49,30 @@ const nonStandardPackages = [
 // Packages that should have the `check-api` task installed
 const checkApiPackages = [
   "@osdk/client",
-  "@osdk/client.api",
+  "@osdk/api",
 ];
 
 // Packages that should be private
 const privatePackages = [
+  "@osdk/cli.*",
   "@osdk/client.test.ontology",
+  "@osdk/create-app.template-packager",
+  "@osdk/create-app.template.*",
   "@osdk/e2e.*",
+  "@osdk/example-generator",
+  "@osdk/examples.*",
   "@osdk/monorepo.*",
+  "@osdk/platform-sdk-generator",
+  "@osdk/shared.test",
+  "@osdk/tests.verify-fallback-package-v2",
   "@osdk/tool.*",
+  "@osdk/version-updater",
+];
+
+const consumerCliPackages = [
+  "@osdk/cli",
+  "@osdk/create-app",
+  "@osdk/foundry-sdk-generator",
 ];
 
 /**
@@ -84,7 +100,34 @@ const disallowWorkspaceCaret = createRuleFactory({
       const deps = packageJson[d] ?? {};
 
       for (const [dep, version] of Object.entries(deps)) {
-        if (version === "workspace:^") {
+        if (dep === "@osdk/shared.client") {
+          // for shared client we need the symbol to work almost always so we are permissive
+          if (version !== "workspace:^") {
+            const message = `${dep} may only have 'workspace:^'`;
+            context.addError({
+              message,
+              longMessage: message,
+              file: context.getPackageJsonPath(),
+              fixer: () => {
+                // always refetch in fixer since another fixer may have already changed the file
+                let packageJson = context.getPackageJson();
+                if (packageJson[d]) {
+                  packageJson[d] = Object.assign(
+                    {},
+                    packageJson[d],
+                    { [dep]: "workspace:^" },
+                  );
+
+                  context.host.writeJson(
+                    context.getPackageJsonPath(),
+                    packageJson,
+                  );
+                }
+              },
+            });
+          }
+        } else if (version === "workspace:^") {
+          if (dep === "@osdk/shared.client") continue;
           const message = `'workspace:^' not allowed (${d}['${dep}']).`;
           context.addError({
             message,
@@ -106,6 +149,88 @@ const disallowWorkspaceCaret = createRuleFactory({
                 );
               }
             },
+          });
+        }
+      }
+    }
+  },
+  validateOptions: () => {}, // no options right now
+});
+
+// We hit that fun fun bug where foundry-sdk-generator ended up getting packaged with a newer version
+// of typescript which broke code formatting. This rule is to make sure we don't experience that again.
+// (note devDeps are only happening at buildtime so they should be fine)
+const fixedDepsOnly = createRuleFactory({
+  name: "disallowWorkspaceCaret",
+  check: async (context) => {
+    const packageJson = context.getPackageJson();
+
+    for (const d of ["dependencies", "peerDependencies"]) {
+      const deps = packageJson[d] ?? {};
+
+      for (const [dep, version] of Object.entries(deps)) {
+        if (version === "workspace:*") continue;
+        if (version[0] >= "0" && version[0] <= "9") continue;
+
+        const message =
+          `May only have fixed dependencies (found ${d}['${dep}'] == '${version}').`;
+        context.addError({
+          message,
+          longMessage: message,
+          file: context.getPackageJsonPath(),
+        });
+      }
+    }
+  },
+  validateOptions: () => {}, // no options right now
+});
+
+/**
+ * @type {import("@monorepolint/rules").RuleFactoryFn<{entries: string[]}>}
+ */
+const noPackageEntry = createRuleFactory({
+  name: "noPackageEntry",
+  check: async (context, options) => {
+    const packageJson = context.getPackageJson();
+    for (const entry of options.entries) {
+      if (packageJson[entry]) {
+        context.addError({
+          message: `${entry} field is not allowed`,
+          longMessage: `${entry} field is not allowed`,
+          file: context.getPackageJsonPath(),
+        });
+      }
+    }
+  },
+  validateOptions: (options) => {
+    return typeof options === "object" && "entries" in options
+      && Array.isArray(options.entries);
+  },
+});
+
+const allLocalDepsMustNotBePrivate = createRuleFactory({
+  name: "allLocalDepsMustNotBePrivate",
+  check: async (context) => {
+    const packageJson = context.getPackageJson();
+    const deps = packageJson.dependencies ?? {};
+
+    const nameToDir = await context.getWorkspaceContext().getPackageNameToDir();
+
+    for (const [dep, version] of Object.entries(deps)) {
+      if (nameToDir.has(dep)) {
+        const packageDir = nameToDir.get(dep);
+        /** @type any */
+        const theirPackageJson = context.host.readJson(
+          path.join(packageDir, "package.json"),
+        );
+
+        if (theirPackageJson.private) {
+          const message =
+            `${dep} is private and cannot be used as a regular dependency for this package`;
+          context.addError({
+            message,
+            longMessage: message,
+            file: context.getPackageJsonPath(),
           });
         }
       }
@@ -469,10 +594,8 @@ NOTE: DO NOT EDIT THIS README BY HAND. It is generated by monorepolint.
       tsVersion: LATEST_TYPESCRIPT_DEP,
     }),
 
-    // internal packages depend on the cjs nature of this package! Do not make esmOnly without
-    // fixing the internal packages first (and bumping major).
     ...standardPackageRules({
-      includePackages: ["@osdk/foundry-sdk-generator"],
+      includePackages: ["@osdk/tmp-foundry-sdk-generator"],
     }, {
       esmOnly: true,
       tsVersion: LATEST_TYPESCRIPT_DEP,
@@ -481,6 +604,10 @@ NOTE: DO NOT EDIT THIS README BY HAND. It is generated by monorepolint.
         "./src/generatedNoCheck/**/*",
       ],
     }),
+    fixedDepsOnly({
+      includePackages: ["@osdk/foundry-sdk-generator"],
+    }),
+
     ...standardPackageRules({
       includePackages: ["@osdk/e2e.test.foundry-sdk-generator"],
     }, {
@@ -515,7 +642,7 @@ NOTE: DO NOT EDIT THIS README BY HAND. It is generated by monorepolint.
       ],
       options: {
         dependencies: {
-          "@osdk/shared.client": "workspace:~",
+          "@osdk/shared.client": "workspace:^",
           "@osdk/shared.net.platformapi": "workspace:~",
         },
       },
@@ -553,6 +680,26 @@ package you do so at your own risk.
           private: true,
         },
       },
+    }),
+
+    noPackageEntry({
+      excludePackages: privatePackages,
+      options: {
+        entries: ["private"],
+      },
+    }),
+
+    packageScript({
+      includePackages: consumerCliPackages,
+      options: {
+        scripts: {
+          transpile: "monorepo.tool.transpile tsup",
+        },
+      },
+    }),
+
+    allLocalDepsMustNotBePrivate({
+      includePackages: consumerCliPackages,
     }),
 
     alphabeticalDependencies({ includeWorkspaceRoot: true }),

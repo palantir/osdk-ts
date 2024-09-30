@@ -41,11 +41,11 @@ export function defineObject(
   opts: {
     displayName?: string;
     pluralDisplayName?: string;
-    primaryKey: api.ObjectTypePropertyDefinition & { apiName: string };
+    primaryKey: api.ObjectMetadata.Property & { apiName: string };
     properties?: Record<
       string,
       | api.WirePropertyTypes
-      | api.ObjectTypePropertyDefinition
+      | api.ObjectMetadata.Property
     >;
   },
 ): ObjectType {
@@ -84,7 +84,7 @@ export function defineObject(
 }
 
 function convertType(
-  t: api.ObjectTypePropertyDefinition & {
+  t: api.ObjectMetadata.Property & {
     apiName: string;
   },
 ): PropertyV2["dataType"] {

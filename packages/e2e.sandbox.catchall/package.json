@@ -28,7 +28,6 @@
   "dependencies": {
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
-    "@osdk/client.api": "workspace:*",
     "@osdk/e2e.generated.catchall": "workspace:~",
     "@osdk/foundry": "workspace:~",
     "@osdk/internal.foundry": "workspace:~",

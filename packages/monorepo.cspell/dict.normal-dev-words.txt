@@ -1,5 +1,6 @@
 aggregatable
 aimpoints
+BACKCOMPAT
 backlink
 codegen
 devx
@@ -26,5 +27,6 @@ uncapitalize
 unevaluable
 ungroup
 unioned
+semver
 unresolve
 webapi

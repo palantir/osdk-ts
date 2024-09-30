@@ -59,7 +59,7 @@ describe("FetchMetadata", () => {
     const objectMetadata = await client.fetchMetadata($Objects.Employee);
 
     expectTypeOf(objectMetadata).toEqualTypeOf<
-      ObjectMetadata<any, any>
+      ObjectMetadata
     >();
 
     expect(objectMetadata).toMatchInlineSnapshot(`
@@ -157,7 +157,7 @@ describe("FetchMetadata", () => {
     );
 
     expectTypeOf(interfaceMetadata).toEqualTypeOf<
-      InterfaceMetadata<any, any>
+      InterfaceMetadata
     >();
 
     expect(interfaceMetadata).toMatchInlineSnapshot(`
@@ -187,7 +187,7 @@ describe("FetchMetadata", () => {
       $Actions.moveOffice,
     );
 
-    expectTypeOf(actionMetadata).toEqualTypeOf<ActionMetadata<any, any>>();
+    expectTypeOf(actionMetadata).toEqualTypeOf<ActionMetadata>();
 
     expect(actionMetadata).toMatchInlineSnapshot(`
       {
@@ -238,7 +238,7 @@ describe("FetchMetadata", () => {
       $Queries.queryAcceptsObject,
     );
 
-    expectTypeOf(queryMetadata).toEqualTypeOf<QueryMetadata<any, any>>();
+    expectTypeOf(queryMetadata).toEqualTypeOf<QueryMetadata>();
 
     expect(queryMetadata).toMatchInlineSnapshot(`
       {

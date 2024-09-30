@@ -107,12 +107,12 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
       },
     );
     expect(formattedCode).toMatchInlineSnapshot(`
-      "import type { InterfaceDefinition as $InterfaceDefinition } from "@osdk/api";
-      import type {
+      "import type {
+        InterfaceDefinition as $InterfaceDefinition,
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
         PropertyValueWireToClient as $PropType,
-      } from "@osdk/client.api";
+      } from "@osdk/api";
 
       export type OsdkObjectLinks$Bar = {};
 
@@ -134,7 +134,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         > = $Osdk<Bar, K | OPTIONS>;
       }
 
-      export interface Bar extends $InterfaceDefinition<"Bar", Bar> {
+      export interface Bar extends $InterfaceDefinition {
         osdkMetadata: typeof $osdkMetadata;
         type: "interface";
         apiName: "Bar";
@@ -192,12 +192,12 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
       },
     );
     expect(formattedCode).toMatchInlineSnapshot(`
-      "import type { InterfaceDefinition as $InterfaceDefinition } from "@osdk/api";
-      import type {
+      "import type {
+        InterfaceDefinition as $InterfaceDefinition,
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
         PropertyValueWireToClient as $PropType,
-      } from "@osdk/client.api";
+      } from "@osdk/api";
 
       export type OsdkObjectLinks$Foo = {};
 
@@ -219,7 +219,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         > = $Osdk<Foo, K | OPTIONS>;
       }
 
-      export interface Foo extends $InterfaceDefinition<"Foo", Foo> {
+      export interface Foo extends $InterfaceDefinition {
         osdkMetadata: typeof $osdkMetadata;
         type: "interface";
         apiName: "Foo";
@@ -279,12 +279,12 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
       },
     );
     expect(formattedCode).toMatchInlineSnapshot(`
-      "import type { InterfaceDefinition as $InterfaceDefinition } from "@osdk/api";
-      import type {
+      "import type {
+        InterfaceDefinition as $InterfaceDefinition,
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
         PropertyValueWireToClient as $PropType,
-      } from "@osdk/client.api";
+      } from "@osdk/api";
 
       export type OsdkObjectLinks$Foo = {};
 
@@ -308,7 +308,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         > = $Osdk<Foo, K | OPTIONS>;
       }
 
-      export interface Foo extends $InterfaceDefinition<"Foo", Foo> {
+      export interface Foo extends $InterfaceDefinition {
         osdkMetadata: typeof $osdkMetadata;
         type: "interface";
         apiName: "Foo";

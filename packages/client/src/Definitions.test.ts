@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypePropertyDefinition } from "@osdk/api";
-import type { OsdkObjectPropertyType } from "@osdk/client.api";
+import type { ObjectMetadata, OsdkObjectPropertyType } from "@osdk/api";
 import { describe, expectTypeOf, it } from "vitest";
 
 describe("OsdkObjectPropertyType", () => {
@@ -23,7 +22,7 @@ describe("OsdkObjectPropertyType", () => {
     const nonNullDef = {
       type: "string",
       nullable: false,
-    } satisfies ObjectTypePropertyDefinition;
+    } satisfies ObjectMetadata.Property;
 
     it("is `| undefined` for `false`", () => {
       expectTypeOf<OsdkObjectPropertyType<typeof nonNullDef, false>>()
@@ -40,7 +39,7 @@ describe("OsdkObjectPropertyType", () => {
     const nullableDef = {
       type: "string",
       nullable: true,
-    } satisfies ObjectTypePropertyDefinition;
+    } satisfies ObjectMetadata.Property;
 
     it("is | undefined for `false`", () => {
       expectTypeOf<OsdkObjectPropertyType<typeof nullableDef, false>>()

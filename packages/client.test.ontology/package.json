@@ -1,7 +1,7 @@
 {
   "name": "@osdk/client.test.ontology",
   "private": true,
-  "version": "2.0.0-beta.13",
+  "version": "2.0.0-beta.16",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -27,13 +27,10 @@
     "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
-    "@osdk/client.api": "workspace:*"
-  },
-  "peerDependencies": {
     "@osdk/api": "workspace:*"
   },
+  "peerDependencies": {},
   "devDependencies": {
-    "@osdk/api": "workspace:~",
     "@osdk/generator": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",

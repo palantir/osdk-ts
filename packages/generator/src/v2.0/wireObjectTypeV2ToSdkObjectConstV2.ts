@@ -77,9 +77,9 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
 
   function getV2Types() {
     return `import type {
-      ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,  
+      PropertyKeys as $PropertyKeys,  
       ObjectTypeDefinition as $ObjectTypeDefinition,
-      ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+      ObjectMetadata as $ObjectMetadata,
     } from "@osdk/api";
      import type {
       ObjectSet as $ObjectSet, 
@@ -87,7 +87,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
       OsdkObject as $OsdkObject,
       PropertyValueWireToClient as $PropType,
       SingleLinkAccessor  as $SingleLinkAccessor,
-    } from "@osdk/client.api";
+    } from "@osdk/api";
 
 
     export namespace ${object.shortApiName} {
@@ -244,7 +244,7 @@ export function createDefinition(
     object instanceof EnhancedObjectType
       ? `$ObjectTypeDefinition`
       : `$InterfaceDefinition`
-  }<"${object.fullApiName}", ${objectDefIdentifier}> {
+  } {
       osdkMetadata: typeof $osdkMetadata;
       type: "${object instanceof EnhancedObjectType ? "object" : "interface"}";
       apiName: "${object.fullApiName}";
@@ -260,7 +260,7 @@ export function createDefinition(
         ${
           stringify(definition.links, {
             "*": (definition) =>
-              `$ObjectTypeLinkDefinition<${
+              `$ObjectMetadata.Link<${
                 ontology.requireObjectType(definition.targetType)
                   .getImportedDefinitionIdentifier(true)
               }, ${definition.multiplicity}>`,

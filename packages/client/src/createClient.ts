@@ -18,14 +18,15 @@ import type {
   ActionDefinition,
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
+  ObjectSet,
   ObjectTypeDefinition,
   QueryDefinition,
 } from "@osdk/api";
-import type { MinimalObjectSet, ObjectSet } from "@osdk/client.api";
+import type { MinimalObjectSet } from "@osdk/api/unstable";
 import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
-} from "@osdk/client.api/unstable";
+} from "@osdk/api/unstable";
 import { symbolClientContext } from "@osdk/shared.client";
 import { createBulkLinksAsyncIterFactory } from "./__unstable/createBulkLinksAsyncIterFactory.js";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
@@ -40,12 +41,12 @@ import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import { applyQuery } from "./queries/applyQuery.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 
-class ActionInvoker<Q extends ActionDefinition<any, any, any>>
+class ActionInvoker<Q extends ActionDefinition<any>>
   implements ActionSignatureFromDef<Q>
 {
   constructor(
     clientCtx: MinimalClient,
-    actionDef: ActionDefinition<any, any, any>,
+    actionDef: ActionDefinition<any>,
   ) {
     // We type the property as a generic function as binding `applyAction`
     // doesn't return a type thats all that useful anyway
@@ -59,12 +60,12 @@ class ActionInvoker<Q extends ActionDefinition<any, any, any>>
   batchApplyAction: (...args: any[]) => any;
 }
 
-class QueryInvoker<Q extends QueryDefinition<any, any, any>>
+class QueryInvoker<Q extends QueryDefinition<any>>
   implements QuerySignatureFromDef<Q>
 {
   constructor(
     clientCtx: MinimalClient,
-    queryDef: QueryDefinition<any, any>,
+    queryDef: QueryDefinition<any>,
   ) {
     this.executeFunction = applyQuery.bind(undefined, clientCtx, queryDef);
   }
@@ -93,12 +94,12 @@ export function createClientInternal(
   function clientFn<
     T extends
       | ObjectOrInterfaceDefinition
-      | ActionDefinition<any, any, any>
-      | QueryDefinition<any, any>,
-  >(o: T): T extends ObjectTypeDefinition<any, any> ? ObjectSet<T>
-    : T extends InterfaceDefinition<any, any> ? MinimalObjectSet<T>
-    : T extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<T>
-    : T extends QueryDefinition<any, any> ? QuerySignatureFromDef<T>
+      | ActionDefinition<any>
+      | QueryDefinition<any>,
+  >(o: T): T extends ObjectTypeDefinition ? ObjectSet<T>
+    : T extends InterfaceDefinition ? MinimalObjectSet<T>
+    : T extends ActionDefinition<any> ? ActionSignatureFromDef<T>
+    : T extends QueryDefinition<any> ? QuerySignatureFromDef<T>
     : never
   {
     if (o.type === "object" || o.type === "interface") {
@@ -107,7 +108,7 @@ export function createClientInternal(
       return new ActionInvoker(
         clientCtx,
         o,
-      ) as (T extends ActionDefinition<any, any, any>
+      ) as (T extends ActionDefinition<any>
         // first `as` to the action definition for our "real" typecheck
         ? ActionSignatureFromDef<T>
         : never) as any; // then as any for dealing with the conditional return value
@@ -115,7 +116,7 @@ export function createClientInternal(
       return new QueryInvoker(
         clientCtx,
         o,
-      ) as (T extends QueryDefinition<any, any> ? QuerySignatureFromDef<T>
+      ) as (T extends QueryDefinition<any> ? QuerySignatureFromDef<T>
         : never) as any;
     } else {
       throw new Error("not implemented");

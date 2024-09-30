@@ -15,20 +15,18 @@
  */
 
 import type {
-  CompileTimeMetadata,
-  InterfaceDefinition,
-  ObjectOrInterfaceDefinition,
-  ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition,
-} from "@osdk/api";
-import type {
   Augment,
   Augments,
+  CompileTimeMetadata,
   FetchPageArgs,
   FetchPageResult,
+  InterfaceDefinition,
   NullabilityAdherence,
+  ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
+  PropertyKeys,
   Result,
-} from "@osdk/client.api";
+} from "@osdk/api";
 import type {
   LoadObjectSetRequestV2,
   ObjectSet,
@@ -46,7 +44,7 @@ import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 export function augment<
   Q extends ObjectOrInterfaceDefinition,
-  T extends keyof CompileTimeMetadata<Q>["properties"] & string,
+  T extends PropertyKeys<Q>,
 >(
   type: Q,
   ...properties: T[]
@@ -85,8 +83,8 @@ export function objectSetToSearchJsonV2(
 }
 
 async function fetchInterfacePage<
-  Q extends InterfaceDefinition<any, any>,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  Q extends InterfaceDefinition,
+  L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
 >(
@@ -122,7 +120,7 @@ async function fetchInterfacePage<
 /** @internal */
 export async function fetchPageInternal<
   Q extends ObjectOrInterfaceDefinition,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  L extends PropertyKeys<Q>,
   R extends boolean,
   A extends Augments,
   S extends NullabilityAdherence,
@@ -152,7 +150,7 @@ export async function fetchPageInternal<
 /** @internal */
 export async function fetchPageWithErrorsInternal<
   Q extends ObjectOrInterfaceDefinition,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  L extends PropertyKeys<Q>,
   R extends boolean,
   A extends Augments,
   S extends NullabilityAdherence,
@@ -183,7 +181,7 @@ export async function fetchPageWithErrorsInternal<
  */
 export async function fetchPage<
   Q extends ObjectOrInterfaceDefinition,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
 >(
@@ -201,7 +199,7 @@ export async function fetchPage<
 /** @internal */
 export async function fetchPageWithErrors<
   Q extends ObjectOrInterfaceDefinition,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
 >(
@@ -248,8 +246,8 @@ function applyFetchArgs<
 
 /** @internal */
 export async function fetchObjectPage<
-  Q extends ObjectTypeDefinition<any, any>,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  Q extends ObjectTypeDefinition,
+  L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
 >(

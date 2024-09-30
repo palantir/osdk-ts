@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionParameterDefinition } from "@osdk/api";
+import type { ActionMetadata } from "@osdk/api";
 import { wireActionTypeV2ToSdkActionMetadata } from "@osdk/generator-converters";
 import type {
   ActionParameterType,
@@ -90,11 +90,11 @@ export async function generatePerActionDataFiles(
                     return JSON.stringify(type);
                   } else if (type.type === "object") {
                     const obj = enhancedOntology.requireObjectType(type.object);
-                    return `ObjectActionDataType<"${obj.fullApiName}", ${
+                    return `ActionMetadata.DataType.Object<${
                       obj.getImportedDefinitionIdentifier(true)
                     }>`;
                   } else if (type.type === "objectSet") {
-                    return `ObjectSetActionDataType<"${type.objectSet}", ${
+                    return `ActionMetadata.DataType.ObjectSet<${
                       getObjectDefIdentifier(type.objectSet, true)
                     }>`;
                   }
@@ -110,7 +110,7 @@ export async function generatePerActionDataFiles(
       }
 
       function getActionParamType(
-        input: ActionParameterDefinition<any, any>["type"],
+        input: ActionMetadata.Parameter["type"],
       ) {
         if (typeof input === "string") {
           return `ActionParam.PrimitiveType<${JSON.stringify(input)}>`;
@@ -175,7 +175,7 @@ export async function generatePerActionDataFiles(
           
           ${jsDocBlock.join("\n")}
           */
-          export interface ${action.shortApiName} extends ActionDefinition<"${action.fullApiName}", ${uniqueApiNamesString}, ${action.shortApiName}.Signatures> {
+          export interface ${action.shortApiName} extends ActionDefinition<${action.shortApiName}.Signatures> {
             __DefinitionMetadata?: {
               ${
           stringify(fullActionDef, {
@@ -264,8 +264,14 @@ export async function generatePerActionDataFiles(
       await fs.writeFile(
         path.join(rootOutDir, currentFilePath),
         await formatTs(`
-          import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from "@osdk/api";
-          import type { ActionParam, ActionReturnTypeForOptions, ApplyActionOptions, ApplyBatchActionOptions,  } from '@osdk/client.api';
+          import type {
+            ActionDefinition,
+            ActionMetadata,
+            ActionParam,
+            ActionReturnTypeForOptions,
+            ApplyActionOptions,
+            ApplyBatchActionOptions,
+          } from "@osdk/api";
           import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
           ${imports}
 

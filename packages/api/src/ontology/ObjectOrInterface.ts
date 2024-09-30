@@ -17,17 +17,9 @@
 import type { InterfaceDefinition } from "./InterfaceDefinition.js";
 import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
 
-export type ObjectOrInterfaceDefinition<
-  K extends string = any,
-  L extends string = any,
-> =
-  | ObjectTypeDefinition<K, L>
-  | InterfaceDefinition<K, L>;
-
-/** @deprecated use `PropertyKeys` */
-export type ObjectOrInterfacePropertyKeysFrom2<
-  O extends ObjectOrInterfaceDefinition,
-> = keyof NonNullable<O["__DefinitionMetadata"]>["properties"] & string;
+export type ObjectOrInterfaceDefinition =
+  | ObjectTypeDefinition
+  | InterfaceDefinition;
 
 export type PropertyKeys<
   O extends ObjectOrInterfaceDefinition,

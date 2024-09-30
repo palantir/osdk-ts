@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
-import type { Osdk } from "@osdk/client.api";
+import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
 import { createAttachmentFromRid } from "../../createAttachmentFromRid.js";
-import { createTimeseriesProperty } from "../../createTimeseriesProperty.js";
+import { TimeSeriesPropertyImpl } from "../../createTimeseriesProperty.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { createClientCache } from "../Cache.js";
@@ -37,7 +36,7 @@ import type {
 import type { PropertyDescriptorRecord } from "./PropertyDescriptorRecord.js";
 
 const objectPrototypeCache = createClientCache(
-  function(client, objectDef: FetchedObjectTypeDefinition<any, any>) {
+  function(client, objectDef: FetchedObjectTypeDefinition) {
     return Object.create(
       null,
       {
@@ -68,12 +67,12 @@ const objectPrototypeCache = createClientCache(
 
 /** @internal */
 export function createOsdkObject<
-  Q extends FetchedObjectTypeDefinition<any, any>,
+  Q extends FetchedObjectTypeDefinition,
 >(
   client: MinimalClient,
   objectDef: Q,
   rawObj: OntologyObjectV2,
-): Osdk<ObjectTypeDefinition<any, any>, any> {
+): Osdk<ObjectTypeDefinition, any> {
   // We use multiple layers of prototypes to maximize reuse and also to keep
   // [RawObject] out of `ownKeys`. This keeps the code in the proxy below simpler.
   const objectHolderPrototype = Object.create(
@@ -118,7 +117,7 @@ export function createOsdkObject<
             propDef.type === "numericTimeseries"
             || propDef.type === "stringTimeseries"
           ) {
-            return createTimeseriesProperty<
+            return new TimeSeriesPropertyImpl<
               (typeof propDef)["type"] extends "numericTimeseries" ? number
                 : string
             >(

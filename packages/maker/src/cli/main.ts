@@ -36,6 +36,7 @@ export default async function main(
     output: string;
     apiNamespace: string;
     snapshotDir: string;
+    valueTypesOutput: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -68,6 +69,12 @@ export default async function main(
         default: "snapshots",
         coerce: path.resolve,
       },
+      valueTypesOutput: {
+        describe: "Value Type Output File",
+        type: "string",
+        default: "value-types.json",
+        coerce: path.resolve,
+      },
     })
     .parseAsync();
   let apiNamespace = "";
@@ -88,7 +95,17 @@ export default async function main(
   );
 
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
-  await fs.writeFile(commandLineOpts.output, JSON.stringify(ontology, null, 2));
+  await fs.writeFile(
+    commandLineOpts.output,
+    JSON.stringify(ontology.ontology, null, 2),
+  );
+  // No point in generating block if there aren't any value types
+  if (ontology.valueType.valueTypes.length > 0) {
+    await fs.writeFile(
+      commandLineOpts.valueTypesOutput,
+      JSON.stringify(ontology.valueType, null, 2),
+    );
+  }
 }
 
 async function loadOntologyViaJiti(input: string) {

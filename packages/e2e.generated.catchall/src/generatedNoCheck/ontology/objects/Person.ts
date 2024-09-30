@@ -3,9 +3,9 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type { Todo } from './Todo.js';
 import type {
-  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+  PropertyKeys as $PropertyKeys,
   ObjectTypeDefinition as $ObjectTypeDefinition,
-  ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+  ObjectMetadata as $ObjectMetadata,
 } from '@osdk/api';
 import type {
   ObjectSet as $ObjectSet,
@@ -13,7 +13,7 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
-} from '@osdk/client.api';
+} from '@osdk/api';
 
 export namespace Person {
   export type PropertyKeys = 'email';
@@ -38,7 +38,7 @@ export namespace Person {
   > = $Osdk<Person, K | OPTIONS>;
 }
 
-export interface Person extends $ObjectTypeDefinition<'Person', Person> {
+export interface Person extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Person';
@@ -58,8 +58,8 @@ export interface Person extends $ObjectTypeDefinition<'Person', Person> {
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
-      Friends: $ObjectTypeLinkDefinition<Person, true>;
-      Todos: $ObjectTypeLinkDefinition<Todo, true>;
+      Friends: $ObjectMetadata.Link<Person, true>;
+      Todos: $ObjectMetadata.Link<Todo, true>;
     };
     pluralDisplayName: 'People';
     primaryKeyApiName: 'email';
