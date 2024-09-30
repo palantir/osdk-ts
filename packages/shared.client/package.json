@@ -32,11 +32,12 @@
     "package.json",
     "templates",
     "*.d.{c,m}ts",
+    "index.d.ts",
     "index.cjs",
     "index.mjs",
     "index.js"
   ],
-  "module": "index.mjs",
-  "types": "index.d.mts",
+  "module": "index.js",
+  "types": "index.d.ts",
   "type": "module"
 }
