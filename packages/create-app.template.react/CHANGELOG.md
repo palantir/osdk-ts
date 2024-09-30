@@ -1,5 +1,15 @@
 # @osdk/create-app.template.react
 
+## 0.19.0
+
+### Minor Changes
+
+- 5a85d65: Fix react template
+- a0330ef: create TS 2.0 template, update the create app to use it when needed and the generate example to generate it
+- fb533d2: Include default tests for .env.production in templates
+- d4d6605: Audited and cleaned up deps
+- 646081b: fix latest to "workspace:\*" on examples
+
 ## 0.19.0-beta.7
 
 ## 0.19.0-beta.6

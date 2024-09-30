@@ -1,5 +1,12 @@
 # @osdk/create-app.template.vue
 
+## 0.19.0
+
+### Minor Changes
+
+- fb533d2: Include default tests for .env.production in templates
+- d4d6605: Audited and cleaned up deps
+
 ## 0.19.0-beta.7
 
 ## 0.19.0-beta.6

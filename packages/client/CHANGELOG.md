@@ -1,5 +1,125 @@
 # @osdk/client
 
+## 2.0.0
+
+### Major Changes
+
+- 56df85a: We now generate minimal object and interface types
+
+### Minor Changes
+
+- 39525b8: We now have a hard dependency on pino for type resolution. This has no effect on a project if it doesn't provide a logger to the client.
+- ac4f4fd: Notable changes:
+  - `{{actionApiName}}$Params` is deprecated in favor of `ActionParams${{actionApiName}}`.
+  - All generated `{{actionApiName}}$Params` objects are now exported from generated code.
+  - All `{{actionApiName}}$Params` are marked as `readonly`.
+  - Some types that are now only needed in `@osdk/client` have been moved back out of `@osdk/client.api`.
+  - Generated `ActionParams${{actionApiName}}` are simpler and do not rely on type mapping for the keys, the array'ness, nor multiplicity.
+  - `AttachmentUpload.name` is now `readonly`.
+- f86f8d0: Re-enable X-OSDK-Request-Context header
+- dc25fb4: Code generation now uses MinQueryDef
+- b946e00: Emitted action definition is minimal size now
+- a2c7b37: Add docs for object sets and attachments.
+- dc25fb4: Improve query generics
+- 0b20066: Fixes an import
+- 76a7adb: Use OntologyMetadataService.bulkLoadOntologyEntities in place of deprecated loadOntologyEntities
+- dc25fb4: Rename MinimumActionDefinition to MinActionDef
+- 51fe88c: Fix edge case with never in newly generated types
+- 68a8dc7: Fixes an issue that could cause an object with sub-selection to be assigned as a full object
+- a2c7b37: Enables better tree shaking
+- dc25fb4: Further simplify types
+- e6ade8b: Adds fetchMetadata method to client
+- f009bb2: Remove the direct dependency on pino in favor of a similar shape
+- dc25fb4: Renamed definition types to metadata
+- dc25fb4: Fixes edge cases in inferred return types especially when changing object types
+- 5a41e5e: Adds version compatibility checks to Queries
+- a2c7b37: Internal refactor for TimeSeriesProperty
+- 795777a: Change how queries are executed, now use executeFunction call instead
+- d2f75f9: Adding support for arguments in asyncIter similar to fetchPage. Arguments that are not permitted in asyncIter are nextPageToken and pageSize.
+- b7cd0a1: Exposes unstable experimental features directly on client
+- 512ee35: Exposed editedObjectTypes for all action results and split edits based on edit type.
+- 0ae2b07: Pino is no longer listed as a peer dep due to an issue with some versions of pnpm
+- 6eeca39: Internally refactored Action Edits types
+- dc25fb4: Modified return type of fetchMetadata to return Object/Interface Definitions
+- 0ce2858: Improves casting between Foo.ObjectSet and ObjectSet<Foo>
+- dc25fb4: Expose parameters on action metadata
+- 5d6d5ab: Internally refactored to support new API versions
+- dc25fb4: Simplified types
+- dc25fb4: Updates return types of fetchMetadata to be Action and Query Definitions
+- fc28eae: Fetching interfaces learns $\_\_EXPERIMENTAL_selectedObjectTypes
+- 5d6d5ab: Autofill Content-Length and Content-Type headers in API's that accept Blobs
+- dc25fb4: Renamed Min_Definition to \_Definition
+- 96ea876: Add namespaces for objects,actions,queries so that you can enumerate them.
+- 5d6d5ab: SLS dependencies are optional
+- a9923f3: Adds exactDistinct to aggregations
+- 1f633f7: Removed dependency on @osdk/client.api
+- d4d6605: Audited and cleaned up deps
+- 64818dc: Drop support for internal gateway package
+- 081114f: Splits batchApplyAction out of applyAction
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+- Updated dependencies [3affe49]
+- Updated dependencies [b946e00]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [0ea1a17]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [b60e107]
+- Updated dependencies [9b0617d]
+- Updated dependencies [76a7adb]
+- Updated dependencies [1770490]
+- Updated dependencies [94105a5]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [5dc1241]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [1252d94]
+- Updated dependencies [ee39a61]
+- Updated dependencies [e6ade8b]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [795777a]
+- Updated dependencies [fe9547e]
+- Updated dependencies [95f9247]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [d2f75f9]
+- Updated dependencies [b7cd0a1]
+- Updated dependencies [512ee35]
+- Updated dependencies [e86c505]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [0ce2858]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [7c2db00]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [fc28eae]
+- Updated dependencies [ee39a61]
+- Updated dependencies [56df85a]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [a9923f3]
+- Updated dependencies [1f633f7]
+- Updated dependencies [d4d6605]
+- Updated dependencies [5dc1241]
+- Updated dependencies [64818dc]
+  - @osdk/generator-converters@2.0.0
+  - @osdk/api@2.0.0
+  - @osdk/shared.client@1.0.0
+  - @osdk/client.unstable@2.0.0
+  - @osdk/internal.foundry.ontologiesv2@0.2.0
+  - @osdk/internal.foundry.core@0.2.0
+  - @osdk/client.unstable.osw@0.2.0
+  - @osdk/shared.client.impl@1.0.0
+  - @osdk/shared.net.errors@2.0.0
+  - @osdk/shared.net.fetch@1.0.0
+
 ## 2.0.0-beta.16
 
 ### Minor Changes

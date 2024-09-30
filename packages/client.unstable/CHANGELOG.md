@@ -1,5 +1,15 @@
 # @osdk/client.unstable
 
+## 2.0.0
+
+### Minor Changes
+
+- 76a7adb: Use OntologyMetadataService.bulkLoadOntologyEntities in place of deprecated loadOntologyEntities
+- 1252d94: ESM Only
+- ee39a61: Adding value types to ont as code
+- ee39a61: Add support for gotham mapping of SPTs in maker
+- d4d6605: Audited and cleaned up deps
+
 ## 2.0.0-beta.16
 
 ## 2.0.0-beta.15

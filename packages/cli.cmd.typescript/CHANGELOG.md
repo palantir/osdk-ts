@@ -1,5 +1,62 @@
 # @osdk/cli.cmd.typescript
 
+## 0.6.0
+
+### Minor Changes
+
+- 7b96461: ontology.json output is now sorted
+- 7b96461: Update dependencies if they exist
+- 0a374d6: Remove legacy client
+- d4d6605: Audited and cleaned up deps
+- 64818dc: Drop support for internal gateway package
+
+### Patch Changes
+
+- Updated dependencies [ac4f4fd]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [b946e00]
+- Updated dependencies [7494995]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [33759fb]
+- Updated dependencies [1770490]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [51fe88c]
+- Updated dependencies [68a8dc7]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [1252d94]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [bbfebfd]
+- Updated dependencies [7494995]
+- Updated dependencies [01724ae]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [5c89065]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [56df85a]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [0a374d6]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [885c8e4]
+- Updated dependencies [96ea876]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [6f93c8b]
+- Updated dependencies [1f633f7]
+- Updated dependencies [d4d6605]
+- Updated dependencies [96ea876]
+- Updated dependencies [64818dc]
+- Updated dependencies [081114f]
+  - @osdk/generator@2.0.0
+  - @osdk/internal.foundry.ontologiesv2@0.2.0
+  - @osdk/internal.foundry.core@0.2.0
+  - @osdk/shared.net@2.0.0
+  - @osdk/cli.common@0.4.0
+
 ## 0.6.0-beta.15
 
 ### Minor Changes
