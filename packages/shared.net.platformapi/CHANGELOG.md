@@ -1,5 +1,12 @@
 # @osdk/shared.net.platformapi
 
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies [a4343af]
+  - @osdk/shared.client@1.0.1
+
 ## 0.3.0
 
 ### Minor Changes

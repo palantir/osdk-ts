@@ -1,5 +1,17 @@
 # @osdk/foundry-sdk-generator
 
+## 2.0.1
+
+### Patch Changes
+
+- @osdk/client@2.0.1
+- @osdk/internal.foundry.core@0.2.1
+- @osdk/internal.foundry.ontologies@0.2.1
+- @osdk/internal.foundry.ontologiesv2@0.2.1
+- @osdk/shared.net@2.0.1
+- @osdk/generator@2.0.1
+- @osdk/api@2.0.1
+
 ## 2.0.0
 
 ### Major Changes

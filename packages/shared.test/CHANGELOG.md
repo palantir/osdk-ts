@@ -1,5 +1,15 @@
 # @osdk/shared.test
 
+## 2.0.1
+
+### Patch Changes
+
+- @osdk/internal.foundry.core@0.2.1
+- @osdk/internal.foundry.geo@0.1.1
+- @osdk/internal.foundry.ontologies@0.2.1
+- @osdk/internal.foundry.ontologiesv2@0.2.1
+- @osdk/api@2.0.1
+
 ## 2.0.0
 
 ### Major Changes

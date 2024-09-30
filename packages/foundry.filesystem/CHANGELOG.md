@@ -1,5 +1,14 @@
 # @osdk/foundry.filesystem
 
+## 2.1.1
+
+### Patch Changes
+
+- Updated dependencies [a4343af]
+  - @osdk/shared.client@1.0.1
+  - @osdk/foundry.core@2.1.1
+  - @osdk/shared.net.platformapi@0.3.1
+
 ## 2.1.0
 
 ### Minor Changes
