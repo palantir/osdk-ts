@@ -27,5 +27,6 @@ uncapitalize
 unevaluable
 ungroup
 unioned
+semver
 unresolve
 webapi

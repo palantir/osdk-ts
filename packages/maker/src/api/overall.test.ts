@@ -17,12 +17,93 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { defineInterface } from "./defineInterface.js";
 import { defineInterfaceLinkConstraint } from "./defineInterfaceLinkConstraint.js";
-import { defineOntology, dumpOntologyFullMetadata } from "./defineOntology.js";
+import {
+  defineOntology,
+  dumpOntologyFullMetadata,
+  dumpValueTypeWireType,
+} from "./defineOntology.js";
 import { defineSharedPropertyType } from "./defineSpt.js";
+import { defineValueType } from "./defineValueType.js";
 import type { InterfaceType } from "./types.js";
 
 describe("Ontology Defining", () => {
   beforeEach(() => {
+    defineOntology("com.palantir.", () => {});
+  });
+
+  describe("ValueTypes", () => {
+    it("Fails to define value type with incorrect semver", () => {
+      expect(() =>
+        defineValueType({
+          apiName: "apiName",
+          displayName: "displayName",
+          typeAndConstraints: {
+            baseType: { boolean: {} },
+            constraints: [{
+              constraint: { boolean: { allowedValues: ["TRUE_VALUE"] } },
+            }],
+          },
+          version: "not a version",
+        })
+      ).toThrowErrorMatchingInlineSnapshot(
+        "[Error: Invariant failed: Version is not a valid semver]",
+      );
+    });
+    it("Correctly serializes a value type", () => {
+      defineValueType({
+        apiName: "apiName",
+        displayName: "displayName",
+        typeAndConstraints: {
+          baseType: { boolean: {} },
+          constraints: [{
+            constraint: { boolean: { allowedValues: ["TRUE_VALUE"] } },
+          }],
+        },
+        version: "0.1.0",
+      });
+      expect(dumpValueTypeWireType()).toMatchInlineSnapshot(`
+         {
+            "valueTypes": [
+              {
+                "metadata": {
+                  "apiName": "apiName",
+                  "displayMetadata": {
+                    "description": "",
+                    "displayName": "displayName",
+                  },
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                },
+                "versions": [
+                  {
+                    "baseType": {
+                      "boolean": {},
+                    },
+                    "constraints": [
+                      {
+                        "constraint": {
+                          "boolean": "boolean",
+                          "constraint": {
+                            "boolean": {
+                              "allowedValues": [
+                                "TRUE_VALUE",
+                              ],
+                            },
+                          },
+                        },
+                      },
+                    ],
+                    "exampleValues": [],
+                    "version": "0.1.0",
+                  },
+                ],
+              },
+            ],
+          }
+        `);
+    });
     defineOntology("com.palantir.", () => {});
   });
 

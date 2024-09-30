@@ -34,6 +34,7 @@ export function defineInterface(
       string,
       SharedPropertyType | PropertyTypeType
     >;
+    extends?: InterfaceType[] | string[];
   },
 ): InterfaceType {
   const apiName = namespace + opts.apiName;
@@ -72,6 +73,8 @@ export function defineInterface(
       },
     ),
   );
+
+  // (opts.extends ?? []).map(val => {(val is InterfaceType) ? val :;});
 
   const a: InterfaceType = {
     apiName,

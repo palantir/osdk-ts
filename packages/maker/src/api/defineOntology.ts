@@ -20,6 +20,8 @@ import type {
   OntologyIrOntologyBlockDataV2,
   OntologyIrSharedPropertyType,
   OntologyIrSharedPropertyTypeBlockDataV2,
+  OntologyIrValueTypeBlockData,
+  OntologyIrValueTypeBlockDataEntry,
   Type,
 } from "@osdk/client.unstable";
 import type {
@@ -35,10 +37,15 @@ export let ontologyDefinition: Ontology;
 /** @internal */
 export let namespace: string;
 
+type OntologyAndValueTypeIrs = {
+  ontology: OntologyIrOntologyBlockDataV2;
+  valueType: OntologyIrValueTypeBlockData;
+};
+
 export async function defineOntology(
   ns: string,
   body: () => void | Promise<void>,
-): Promise<OntologyIrOntologyBlockDataV2> {
+): Promise<OntologyAndValueTypeIrs> {
   namespace = ns;
   ontologyDefinition = {
     actionTypes: {},
@@ -46,6 +53,7 @@ export async function defineOntology(
     queryTypes: {},
     interfaceTypes: {},
     sharedPropertyTypes: {},
+    valueTypes: {},
   };
 
   try {
@@ -59,10 +67,35 @@ export async function defineOntology(
     throw e;
   }
 
-  return convertToWireOntology(ontologyDefinition);
+  return {
+    ontology: convertToWireOntologyIr(ontologyDefinition),
+    valueType: convertOntologyToValueTypeIr(ontologyDefinition),
+  };
 }
 
-function convertToWireOntology(
+function convertOntologyToValueTypeIr(
+  ontology: Ontology,
+): OntologyIrValueTypeBlockData {
+  return {
+    valueTypes: Object.values(ontology.valueTypes).map<
+      OntologyIrValueTypeBlockDataEntry
+    >(definitions => ({
+      metadata: {
+        apiName: definitions[0].apiName,
+        displayMetadata: definitions[0].displayMetadata,
+        status: definitions[0].status,
+      },
+      versions: definitions.map(definition => ({
+        version: definition.version,
+        baseType: definition.baseType,
+        constraints: definition.constraints,
+        exampleValues: definition.exampleValues,
+      })),
+    })),
+  };
+}
+
+function convertToWireOntologyIr(
   ontology: Ontology,
 ): OntologyIrOntologyBlockDataV2 {
   return {
@@ -109,7 +142,11 @@ function convertInterface(
 }
 
 export function dumpOntologyFullMetadata(): OntologyIrOntologyBlockDataV2 {
-  return convertToWireOntology(ontologyDefinition);
+  return convertToWireOntologyIr(ontologyDefinition);
+}
+
+export function dumpValueTypeWireType(): OntologyIrValueTypeBlockData {
+  return convertOntologyToValueTypeIr(ontologyDefinition);
 }
 
 function convertSpt(
@@ -121,6 +158,7 @@ function convertSpt(
     displayName,
     gothamMapping,
     typeClasses,
+    valueType,
   }: SharedPropertyType,
 ): OntologyIrSharedPropertyType {
   return {
@@ -145,7 +183,7 @@ function convertSpt(
     indexedForSearch: true,
     provenance: undefined,
     typeClasses: typeClasses ?? [],
-    valueType: undefined,
+    valueType: valueType,
   };
 }
 

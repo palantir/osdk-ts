@@ -36,10 +36,26 @@ export { bulkLoadOntologyEntities } from "./generated/ontology-metadata/api/Onto
 export { getLinkTypesForObjectTypes } from "./generated/ontology-metadata/api/OntologyMetadataService/getLinkTypesForObjectTypes.js";
 export { loadAllOntologies } from "./generated/ontology-metadata/api/OntologyMetadataService/loadAllOntologies.js";
 
+export type { BaseType } from "./generated/type-registry/api/BaseType.js";
+export type { DataConstraint } from "./generated/type-registry/api/DataConstraint.js";
+export type { DataConstraintWrapper } from "./generated/type-registry/api/DataConstraintWrapper.js";
+export type { ExampleValue } from "./generated/type-registry/api/ExampleValue.js";
+export type { FailureMessage } from "./generated/type-registry/api/FailureMessage.js";
+export type { ValueTypeApiName } from "./generated/type-registry/api/ValueTypeApiName.js";
+export type { ValueTypeDataConstraint } from "./generated/type-registry/api/ValueTypeDataConstraint.js";
+export type { ValueTypeDisplayMetadata } from "./generated/type-registry/api/ValueTypeDisplayMetadata.js";
+export type { ValueTypeStatus } from "./generated/type-registry/api/ValueTypeStatus.js";
+export type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVersion.js";
+
 export type {
+  ApiNameValueTypeReference,
   OntologyIrInterfaceType,
   OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrOntologyBlockDataV2,
+  OntologyIrPackagedValueType,
+  OntologyIrPackagedValueTypeMetadata,
   OntologyIrSharedPropertyType,
   OntologyIrSharedPropertyTypeBlockDataV2,
+  OntologyIrValueTypeBlockData,
+  OntologyIrValueTypeBlockDataEntry,
 } from "./blockDataIr.js";
