@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.0.1
+
+### Patch Changes
+
+- Updated dependencies [a4343af]
+  - @osdk/shared.client@1.0.1
+  - @osdk/internal.foundry.core@0.2.1
+  - @osdk/internal.foundry.ontologiesv2@0.2.1
+  - @osdk/shared.client.impl@1.0.1
+  - @osdk/generator-converters@2.0.1
+  - @osdk/api@2.0.1
+  - @osdk/client.unstable@2.0.1
+
 ## 2.0.0
 
 ### Major Changes

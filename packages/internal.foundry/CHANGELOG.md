@@ -1,5 +1,18 @@
 # @osdk/foundry
 
+## 0.5.1
+
+### Patch Changes
+
+- Updated dependencies [a4343af]
+  - @osdk/shared.client@1.0.1
+  - @osdk/internal.foundry.core@0.2.1
+  - @osdk/internal.foundry.datasets@0.2.1
+  - @osdk/internal.foundry.geo@0.1.1
+  - @osdk/internal.foundry.ontologies@0.2.1
+  - @osdk/internal.foundry.ontologiesv2@0.2.1
+  - @osdk/shared.net.platformapi@0.3.1
+
 ## 0.5.0
 
 ### Minor Changes

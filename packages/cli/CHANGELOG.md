@@ -1,5 +1,12 @@
 # @osdk/cli
 
+## 0.24.1
+
+### Patch Changes
+
+- @osdk/shared.net@2.0.1
+- @osdk/generator@2.0.1
+
 ## 0.24.0
 
 ### Minor Changes
