@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.0.0-beta.17
+
+### Minor Changes
+
+- ee39a61: Adding value types to ont as code
+
 ## 2.0.0-beta.16
 
 ## 2.0.0-beta.15

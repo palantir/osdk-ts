@@ -1,5 +1,11 @@
 # @osdk/internal.foundry.geo
 
+## 0.1.0-beta.4
+
+### Minor Changes
+
+- 5d6d5ab: Use the "verb" where possible
+
 ## 0.1.0-beta.3
 
 ### Patch Changes

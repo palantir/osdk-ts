@@ -1,5 +1,16 @@
 # @osdk/internal.foundry.ontologies
 
+## 0.2.0-beta.11
+
+### Minor Changes
+
+- 5d6d5ab: Use the "verb" where possible
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+  - @osdk/internal.foundry.core@0.2.0-beta.11
+
 ## 0.2.0-beta.10
 
 ### Patch Changes

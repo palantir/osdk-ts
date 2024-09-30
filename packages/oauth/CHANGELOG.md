@@ -1,5 +1,11 @@
 # @osdk/oauth
 
+## 1.0.0-beta.4
+
+### Major Changes
+
+- 7e90f77: Releasing first major version of oauth package.
+
 ## 0.4.0-beta.3
 
 ### Minor Changes

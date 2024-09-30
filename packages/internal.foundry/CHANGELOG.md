@@ -1,5 +1,20 @@
 # @osdk/foundry
 
+## 0.5.0-beta.12
+
+### Minor Changes
+
+- 5d6d5ab: Use the "verb" where possible
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.11
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.11
+  - @osdk/internal.foundry.datasets@0.2.0-beta.11
+  - @osdk/internal.foundry.core@0.2.0-beta.11
+  - @osdk/internal.foundry.geo@0.1.0-beta.4
+
 ## 0.5.0-beta.11
 
 ### Patch Changes

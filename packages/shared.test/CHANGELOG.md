@@ -1,5 +1,16 @@
 # @osdk/shared.test
 
+## 2.0.0-beta.13
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.11
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.11
+  - @osdk/internal.foundry.core@0.2.0-beta.11
+  - @osdk/internal.foundry.geo@0.1.0-beta.4
+  - @osdk/api@2.0.0-beta.17
+
 ## 2.0.0-beta.12
 
 ### Minor Changes

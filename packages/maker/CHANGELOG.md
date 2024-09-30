@@ -1,5 +1,15 @@
 # @osdk/maker
 
+## 0.8.0-beta.13
+
+### Minor Changes
+
+- ee39a61: Adding value types to ont as code
+
+### Patch Changes
+
+- @osdk/api@2.0.0-beta.17
+
 ## 0.8.0-beta.12
 
 ### Minor Changes

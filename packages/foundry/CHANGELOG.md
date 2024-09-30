@@ -1,5 +1,21 @@
 # @osdk/foundry
 
+## 2.1.0-beta.7
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+  - @osdk/foundry.thirdpartyapplications@2.1.0-beta.7
+  - @osdk/foundry.orchestration@2.1.0-beta.7
+  - @osdk/foundry.filesystem@2.1.0-beta.7
+  - @osdk/foundry.ontologies@2.1.0-beta.7
+  - @osdk/foundry.publicapis@2.1.0-beta.7
+  - @osdk/foundry.functions@2.1.0-beta.7
+  - @osdk/foundry.datasets@2.1.0-beta.7
+  - @osdk/foundry.streams@2.1.0-beta.7
+  - @osdk/foundry.admin@2.1.0-beta.7
+  - @osdk/foundry.core@2.1.0-beta.7
+
 ## 2.1.0-beta.6
 
 ### Patch Changes

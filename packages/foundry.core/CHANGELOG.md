@@ -1,5 +1,11 @@
 # @osdk/foundry.core
 
+## 2.1.0-beta.7
+
+### Minor Changes
+
+- 5d6d5ab: Use the "verb" where possible
+
 ## 2.1.0-beta.6
 
 ### Patch Changes

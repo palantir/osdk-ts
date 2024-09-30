@@ -1,5 +1,13 @@
 # @osdk/generator-converters
 
+## 2.0.0-beta.17
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+  - @osdk/internal.foundry.core@0.2.0-beta.11
+  - @osdk/api@2.0.0-beta.17
+
 ## 2.0.0-beta.16
 
 ### Minor Changes
