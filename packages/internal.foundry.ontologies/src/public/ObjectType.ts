@@ -24,7 +24,7 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 //
 
-const _listObjectTypes: $FoundryPlatformMethod<
+const _list: $FoundryPlatformMethod<
   (
     ontologyRid: _Core.OntologyRid,
     $queryParams?: {
@@ -48,7 +48,7 @@ const _listObjectTypes: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objectTypes
  */
-export function listObjectTypes(
+export function list(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontologyRid: _Core.OntologyRid,
@@ -59,10 +59,10 @@ export function listObjectTypes(
     },
   ]
 ): Promise<_Core.ListObjectTypesResponse> {
-  return $foundryPlatformFetch($ctx, _listObjectTypes, ...args);
+  return $foundryPlatformFetch($ctx, _list, ...args);
 }
 
-const _getObjectType: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (
     ontologyRid: _Core.OntologyRid,
     objectType: _Core.ObjectTypeApiName,
@@ -79,11 +79,11 @@ const _getObjectType: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objectTypes/{objectType}
  */
-export function getObjectType(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [ontologyRid: _Core.OntologyRid, objectType: _Core.ObjectTypeApiName]
 ): Promise<_Core.ObjectType> {
-  return $foundryPlatformFetch($ctx, _getObjectType, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }
 
 const _listOutgoingLinkTypes: $FoundryPlatformMethod<

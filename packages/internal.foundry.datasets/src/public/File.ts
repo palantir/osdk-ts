@@ -25,7 +25,7 @@ import type * as _Datasets from "../_components.js";
 
 //
 
-const _listFiles: $FoundryPlatformMethod<
+const _list: $FoundryPlatformMethod<
   (
     datasetRid: _Datasets.DatasetRid,
     $queryParams?: {
@@ -71,7 +71,7 @@ const _listFiles: $FoundryPlatformMethod<
  * Required Scopes: [api:datasets-read]
  * URL: /v1/datasets/{datasetRid}/files
  */
-export function listFiles(
+export function list(
   $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: _Datasets.DatasetRid,
@@ -85,10 +85,10 @@ export function listFiles(
     },
   ]
 ): Promise<_Datasets.ListFilesResponse> {
-  return $foundryPlatformFetch($ctx, _listFiles, ...args);
+  return $foundryPlatformFetch($ctx, _list, ...args);
 }
 
-const _uploadFile: $FoundryPlatformMethod<
+const _upload: $FoundryPlatformMethod<
   (
     datasetRid: _Datasets.DatasetRid,
     $body: Blob,
@@ -128,7 +128,7 @@ const _uploadFile: $FoundryPlatformMethod<
  * Required Scopes: [api:datasets-write]
  * URL: /v1/datasets/{datasetRid}/files:upload
  */
-export function uploadFile(
+export function upload(
   $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: _Datasets.DatasetRid,
@@ -141,10 +141,10 @@ export function uploadFile(
     },
   ]
 ): Promise<_Datasets.File> {
-  return $foundryPlatformFetch($ctx, _uploadFile, ...args);
+  return $foundryPlatformFetch($ctx, _upload, ...args);
 }
 
-const _getFileMetadata: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (
     datasetRid: _Datasets.DatasetRid,
     filePath: _Core.FilePath,
@@ -187,7 +187,7 @@ const _getFileMetadata: $FoundryPlatformMethod<
  * Required Scopes: [api:datasets-read]
  * URL: /v1/datasets/{datasetRid}/files/{filePath}
  */
-export function getFileMetadata(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: _Datasets.DatasetRid,
@@ -200,7 +200,7 @@ export function getFileMetadata(
     },
   ]
 ): Promise<_Datasets.File> {
-  return $foundryPlatformFetch($ctx, _getFileMetadata, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }
 
 const _deleteFile: $FoundryPlatformMethod<
@@ -252,7 +252,7 @@ export function deleteFile(
   return $foundryPlatformFetch($ctx, _deleteFile, ...args);
 }
 
-const _getFileContent: $FoundryPlatformMethod<
+const _read: $FoundryPlatformMethod<
   (
     datasetRid: _Datasets.DatasetRid,
     filePath: _Core.FilePath,
@@ -296,7 +296,7 @@ const _getFileContent: $FoundryPlatformMethod<
  * Required Scopes: [api:datasets-read]
  * URL: /v1/datasets/{datasetRid}/files/{filePath}/content
  */
-export function getFileContent(
+export function read(
   $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: _Datasets.DatasetRid,
@@ -309,5 +309,5 @@ export function getFileContent(
     },
   ]
 ): Promise<Blob> {
-  return $foundryPlatformFetch($ctx, _getFileContent, ...args);
+  return $foundryPlatformFetch($ctx, _read, ...args);
 }

@@ -24,7 +24,7 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 //
 
-const _listPropertyAttachments: $FoundryPlatformMethod<
+const _getAttachment: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     objectType: _Core.ObjectTypeApiName,
@@ -48,7 +48,7 @@ const _listPropertyAttachments: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/attachments/{property}
  */
-export function listPropertyAttachments(
+export function getAttachment(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -62,10 +62,10 @@ export function listPropertyAttachments(
     },
   ]
 ): Promise<_Core.AttachmentMetadataResponse> {
-  return $foundryPlatformFetch($ctx, _listPropertyAttachments, ...args);
+  return $foundryPlatformFetch($ctx, _getAttachment, ...args);
 }
 
-const _getAttachmentPropertyByRidV2: $FoundryPlatformMethod<
+const _getAttachmentByRid: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     objectType: _Core.ObjectTypeApiName,
@@ -90,7 +90,7 @@ const _getAttachmentPropertyByRidV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/attachments/{property}/{attachmentRid}
  */
-export function getAttachmentPropertyByRidV2(
+export function getAttachmentByRid(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -105,10 +105,10 @@ export function getAttachmentPropertyByRidV2(
     },
   ]
 ): Promise<_Core.AttachmentV2> {
-  return $foundryPlatformFetch($ctx, _getAttachmentPropertyByRidV2, ...args);
+  return $foundryPlatformFetch($ctx, _getAttachmentByRid, ...args);
 }
 
-const _getAttachmentPropertyContentV2: $FoundryPlatformMethod<
+const _readAttachment: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     objectType: _Core.ObjectTypeApiName,
@@ -138,7 +138,7 @@ const _getAttachmentPropertyContentV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/attachments/{property}/content
  */
-export function getAttachmentPropertyContentV2(
+export function readAttachment(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -152,10 +152,10 @@ export function getAttachmentPropertyContentV2(
     },
   ]
 ): Promise<Blob> {
-  return $foundryPlatformFetch($ctx, _getAttachmentPropertyContentV2, ...args);
+  return $foundryPlatformFetch($ctx, _readAttachment, ...args);
 }
 
-const _getAttachmentPropertyContentByRidV2: $FoundryPlatformMethod<
+const _readAttachmentByRid: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     objectType: _Core.ObjectTypeApiName,
@@ -188,7 +188,7 @@ const _getAttachmentPropertyContentByRidV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/attachments/{property}/{attachmentRid}/content
  */
-export function getAttachmentPropertyContentByRidV2(
+export function readAttachmentByRid(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -203,9 +203,5 @@ export function getAttachmentPropertyContentByRidV2(
     },
   ]
 ): Promise<Blob> {
-  return $foundryPlatformFetch(
-    $ctx,
-    _getAttachmentPropertyContentByRidV2,
-    ...args,
-  );
+  return $foundryPlatformFetch($ctx, _readAttachmentByRid, ...args);
 }

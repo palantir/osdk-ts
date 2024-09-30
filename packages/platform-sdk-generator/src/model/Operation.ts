@@ -28,6 +28,7 @@ import type { Type } from "./Type.js";
 export class Operation {
   model: Model;
   name: string;
+  verb: string;
   httpMethod: ir.HttpMethod;
   path: string;
   documentation: ir.Documentation | undefined;
@@ -39,6 +40,7 @@ export class Operation {
   ) {
     this.model = model;
     this.name = spec.name;
+    this.verb = spec.verb;
     this.httpMethod = spec.http.httpMethod;
     this.path = spec.http.path;
     this.documentation = spec.documentation;

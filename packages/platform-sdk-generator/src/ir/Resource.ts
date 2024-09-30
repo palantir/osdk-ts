@@ -24,36 +24,7 @@ export interface Resource {
 
 export interface Operation {
   name: string;
-  verb?:
-    | "create"
-    | "get"
-    | "iterator"
-    | "delete"
-    | "commit"
-    | "abort"
-    | "upload"
-    | "binary"
-    | "getMetadata"
-    | "getContent"
-    | "apply"
-    | "applyAsync"
-    | "getOperationStatus"
-    | "validate"
-    | "execute"
-    | "search"
-    | "aggregate"
-    | "complete"
-    | "files"
-    | "exportCheckpoint"
-    | "count"
-    | "getContentV2"
-    | "firstPoint"
-    | "lastPoint"
-    | "transform"
-    | "load"
-    | "streamPoints"
-    | "uploadFile"
-    | "getFileContent"; // Why is this optional?
+  verb: string;
   documentation?: Documentation;
   http: Http;
   auth: Auth;

@@ -25,7 +25,7 @@ import type * as _Streams from "../_components.js";
 
 //
 
-const _createStreamingDataset: $FoundryPlatformMethod<
+const _create: $FoundryPlatformMethod<
   (
     $body: _Streams.CreateStreamingDatasetRequest,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -42,12 +42,12 @@ const _createStreamingDataset: $FoundryPlatformMethod<
  * Required Scopes: [api:datasets-write, api:streams-write]
  * URL: /v2/streams/datasets/create
  */
-export function createStreamingDataset(
+export function create(
   $ctx: $Client | $ClientContext,
   ...args: [
     $body: _Streams.CreateStreamingDatasetRequest,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Streams.Dataset> {
-  return $foundryPlatformFetch($ctx, _createStreamingDataset, ...args);
+  return $foundryPlatformFetch($ctx, _create, ...args);
 }

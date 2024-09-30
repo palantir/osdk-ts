@@ -74,7 +74,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
    * List ontologies
    */
   handleOpenApiCall(
-    OntologiesV1.Ontologies.listOntologies,
+    OntologiesV1.Ontologies.list,
     [],
     async () => {
       return {
@@ -87,7 +87,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
    * Get specified Ontology
    */
   handleOpenApiCall(
-    OntologiesV1.Ontologies.getOntology,
+    OntologiesV1.Ontologies.get,
     ["ontologyRid"],
     async req => {
       return defaultOntology;
@@ -98,7 +98,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
    * List objectTypes
    */
   handleOpenApiCall(
-    OntologiesV1.ObjectTypes.listObjectTypes,
+    OntologiesV1.ObjectTypes.list,
     ["ontologyRid"],
     async req => {
       getOntology(req.params.ontologyRid as string);
@@ -119,7 +119,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
    * List objectTypes V2
    */
   handleOpenApiCall(
-    OntologiesV2.ObjectTypesV2.listObjectTypesV2,
+    OntologiesV2.ObjectTypesV2.list,
     ["ontologyApiName"],
     async req => {
       // will throw if bad name
@@ -135,7 +135,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
    * Load object
    */
   handleOpenApiCall(
-    OntologiesV2.OntologyObjectsV2.getObjectV2,
+    OntologiesV2.OntologyObjectsV2.get,
     ["ontologyApiName", "objectType", "primaryKey"],
     async req => {
       // will throw if bad name
@@ -170,7 +170,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
    * Load all objects
    */
   handleOpenApiCall(
-    OntologiesV2.OntologyObjectsV2.listObjectsV2,
+    OntologiesV2.OntologyObjectsV2.list,
     ["ontologyApiName", "objectType"],
     async req => {
       const objectType = req.params.objectType;
@@ -359,7 +359,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
    * List Linked Objects
    */
   handleOpenApiCall(
-    OntologiesV2.LinkedObjectsV2.listLinkedObjectsV2,
+    OntologiesV2.LinkedObjectsV2.listLinkedObjects,
     [
       "ontologyApiName",
       "objectType",
@@ -415,7 +415,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
    * Get specific Linked Object
    */
   handleOpenApiCall(
-    OntologiesV2.LinkedObjectsV2.getLinkedObjectV2,
+    OntologiesV2.LinkedObjectsV2.getLinkedObject,
     [
       "ontologyApiName",
       "objectType",
@@ -486,7 +486,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
    * Upload attachment
    */
   handleOpenApiCall(
-    OntologiesV2.Attachments.uploadAttachmentV2,
+    OntologiesV2.Attachments.upload,
     [],
     async req => {
       const urlObj = new URL(req.request.url);
@@ -517,7 +517,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
    * Get attachment metadata V1
    */
   handleOpenApiCall(
-    OntologiesV2.Attachments.getAttachmentV2,
+    OntologiesV2.Attachments.get,
     ["attachmentRid"],
     async req => {
       const attachmentRid = req.params.attachmentRid;
@@ -540,7 +540,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
    * Get attachment metadata V2
    */
   handleOpenApiCall(
-    OntologiesV2.AttachmentPropertiesV2.listPropertyAttachments,
+    OntologiesV2.AttachmentPropertiesV2.getAttachment,
     [
       "ontologyApiName",
       "objectType",
@@ -579,7 +579,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
    * Read attachment content V1
    */
   handleOpenApiCall(
-    OntologiesV2.Attachments.getAttachmentContentV2,
+    OntologiesV2.Attachments.read,
     ["attachmentRid"],
     async req => {
       const attachmentRid = req.params.attachmentRid;
@@ -607,7 +607,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
    * Read attachment content V2
    */
   handleOpenApiCall(
-    OntologiesV2.AttachmentPropertiesV2.getAttachmentPropertyContentV2,
+    OntologiesV2.AttachmentPropertiesV2.readAttachment,
     [
       "ontologyApiName",
       "objectType",

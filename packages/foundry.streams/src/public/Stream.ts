@@ -26,7 +26,7 @@ import type * as _Streams from "../_components.js";
 
 //
 
-const _getStream: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (
     datasetRid: _Datasets.DatasetRid,
     streamBranchName: _Datasets.BranchName,
@@ -43,7 +43,7 @@ const _getStream: $FoundryPlatformMethod<
  * Required Scopes: [api:datasets-read, api:streams-read]
  * URL: /v2/streams/datasets/{datasetRid}/streams/{streamBranchName}
  */
-export function getStream(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: _Datasets.DatasetRid,
@@ -52,5 +52,5 @@ export function getStream(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Streams.Stream> {
-  return $foundryPlatformFetch($ctx, _getStream, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }

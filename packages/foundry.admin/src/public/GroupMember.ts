@@ -25,7 +25,7 @@ import type * as _Admin from "../_components.js";
 
 //
 
-const _listGroupMembers: $FoundryPlatformMethod<
+const _list: $FoundryPlatformMethod<
   (
     groupId: _Core.PrincipalId,
     $queryParams?: {
@@ -47,7 +47,7 @@ const _listGroupMembers: $FoundryPlatformMethod<
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/groups/{groupId}/groupMembers
  */
-export function listGroupMembers(
+export function list(
   $ctx: $Client | $ClientContext,
   ...args: [
     groupId: _Core.PrincipalId,
@@ -60,10 +60,10 @@ export function listGroupMembers(
     },
   ]
 ): Promise<_Admin.ListGroupMembersResponse> {
-  return $foundryPlatformFetch($ctx, _listGroupMembers, ...args);
+  return $foundryPlatformFetch($ctx, _list, ...args);
 }
 
-const _addGroupMembers: $FoundryPlatformMethod<
+const _add: $FoundryPlatformMethod<
   (
     groupId: _Core.PrincipalId,
     $body: _Admin.AddGroupMembersRequest,
@@ -77,7 +77,7 @@ const _addGroupMembers: $FoundryPlatformMethod<
  * Required Scopes: [api:admin-write]
  * URL: /v2/admin/groups/{groupId}/groupMembers/add
  */
-export function addGroupMembers(
+export function add(
   $ctx: $Client | $ClientContext,
   ...args: [
     groupId: _Core.PrincipalId,
@@ -85,10 +85,10 @@ export function addGroupMembers(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<void> {
-  return $foundryPlatformFetch($ctx, _addGroupMembers, ...args);
+  return $foundryPlatformFetch($ctx, _add, ...args);
 }
 
-const _removeGroupMembers: $FoundryPlatformMethod<
+const _remove: $FoundryPlatformMethod<
   (
     groupId: _Core.PrincipalId,
     $body: _Admin.RemoveGroupMembersRequest,
@@ -102,7 +102,7 @@ const _removeGroupMembers: $FoundryPlatformMethod<
  * Required Scopes: [api:admin-write]
  * URL: /v2/admin/groups/{groupId}/groupMembers/remove
  */
-export function removeGroupMembers(
+export function remove(
   $ctx: $Client | $ClientContext,
   ...args: [
     groupId: _Core.PrincipalId,
@@ -110,5 +110,5 @@ export function removeGroupMembers(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<void> {
-  return $foundryPlatformFetch($ctx, _removeGroupMembers, ...args);
+  return $foundryPlatformFetch($ctx, _remove, ...args);
 }

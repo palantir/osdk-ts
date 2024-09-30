@@ -24,7 +24,7 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 //
 
-const _applyAction: $FoundryPlatformMethod<
+const _apply: $FoundryPlatformMethod<
   (
     ontologyRid: _Core.OntologyRid,
     actionType: _Core.ActionTypeApiName,
@@ -47,7 +47,7 @@ const _applyAction: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v1/ontologies/{ontologyRid}/actions/{actionType}/apply
  */
-export function applyAction(
+export function apply(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontologyRid: _Core.OntologyRid,
@@ -55,10 +55,10 @@ export function applyAction(
     $body: _Core.ApplyActionRequest,
   ]
 ): Promise<_Core.ApplyActionResponse> {
-  return $foundryPlatformFetch($ctx, _applyAction, ...args);
+  return $foundryPlatformFetch($ctx, _apply, ...args);
 }
 
-const _applyActionBatch: $FoundryPlatformMethod<
+const _applyBatch: $FoundryPlatformMethod<
   (
     ontologyRid: _Core.OntologyRid,
     actionType: _Core.ActionTypeApiName,
@@ -84,7 +84,7 @@ const _applyActionBatch: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v1/ontologies/{ontologyRid}/actions/{actionType}/applyBatch
  */
-export function applyActionBatch(
+export function applyBatch(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontologyRid: _Core.OntologyRid,
@@ -92,10 +92,10 @@ export function applyActionBatch(
     $body: _Core.BatchApplyActionRequest,
   ]
 ): Promise<_Core.BatchApplyActionResponse> {
-  return $foundryPlatformFetch($ctx, _applyActionBatch, ...args);
+  return $foundryPlatformFetch($ctx, _applyBatch, ...args);
 }
 
-const _applyActionAsync: $FoundryPlatformMethod<
+const _applyAsync: $FoundryPlatformMethod<
   (
     ontologyRid: _Core.OntologyRid,
     actionType: _Core.ActionTypeApiName,
@@ -119,7 +119,7 @@ const _applyActionAsync: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v1/ontologies/{ontologyRid}/actions/{actionType}/applyAsync
  */
-export function applyActionAsync(
+export function applyAsync(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontologyRid: _Core.OntologyRid,
@@ -128,10 +128,10 @@ export function applyActionAsync(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<void> {
-  return $foundryPlatformFetch($ctx, _applyActionAsync, ...args);
+  return $foundryPlatformFetch($ctx, _applyAsync, ...args);
 }
 
-const _getAsyncActionStatus: $FoundryPlatformMethod<
+const _getOperationStatus: $FoundryPlatformMethod<
   (
     ontologyRid: _Core.OntologyRid,
     actionType: _Core.ActionTypeApiName,
@@ -146,7 +146,7 @@ const _getAsyncActionStatus: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v1/ontologies/{ontologyRid}/actions/{actionType}/applyAsync/{actionRid}
  */
-export function getAsyncActionStatus(
+export function getOperationStatus(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontologyRid: _Core.OntologyRid,
@@ -156,10 +156,10 @@ export function getAsyncActionStatus(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Core.AsyncActionOperation> {
-  return $foundryPlatformFetch($ctx, _getAsyncActionStatus, ...args);
+  return $foundryPlatformFetch($ctx, _getOperationStatus, ...args);
 }
 
-const _validateAction: $FoundryPlatformMethod<
+const _validate: $FoundryPlatformMethod<
   (
     ontologyRid: _Core.OntologyRid,
     actionType: _Core.ActionTypeApiName,
@@ -184,7 +184,7 @@ const _validateAction: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/actions/{actionType}/validate
  */
-export function validateAction(
+export function validate(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontologyRid: _Core.OntologyRid,
@@ -192,5 +192,5 @@ export function validateAction(
     $body: _Core.ValidateActionRequest,
   ]
 ): Promise<_Core.ValidateActionResponse> {
-  return $foundryPlatformFetch($ctx, _validateAction, ...args);
+  return $foundryPlatformFetch($ctx, _validate, ...args);
 }

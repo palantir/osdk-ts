@@ -26,10 +26,10 @@ export async function runFoundrySdkClientVerificationTest(
   const pageSize = 10;
 
   // will throw if dataset not found
-  const dataset = await Datasets.Datasets.getDataset(client, datasetRid);
+  const dataset = await Datasets.Datasets.get(client, datasetRid);
   logger.info({ dataset }, `Loaded dataset ${datasetRid}`);
 
-  const branchesResult = await Datasets.Branches.listBranches(
+  const branchesResult = await Datasets.Branches.list(
     client,
     datasetRid,
     { pageSize },
@@ -60,7 +60,7 @@ export async function runFoundrySdkClientVerificationTest(
   // We want to be sure the error is filled out nicely, so we can use the `master` branch
   // now that we know it exists.
   try {
-    await Datasets.Branches.createBranch(client, datasetRid, {
+    await Datasets.Branches.create(client, datasetRid, {
       branchId: "master",
     });
     throw new Error("createBranch(master) should have failed");
@@ -78,7 +78,7 @@ export async function runFoundrySdkClientVerificationTest(
     }
   }
 
-  const testBranch = await Datasets.Branches.createBranch(
+  const testBranch = await Datasets.Branches.create(
     client,
     datasetRid,
     { branchId: branchToCreate },

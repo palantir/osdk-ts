@@ -32,7 +32,7 @@ export const queryHandlers: Array<RequestHandler> = [
    * List Queries
    */
   handleOpenApiCall(
-    OntologiesV2.QueryTypes.listQueryTypesV2,
+    OntologiesV2.QueryTypes.list,
     ["ontologyApiName"],
     async (req) => {
       // will throw if bad name
@@ -48,7 +48,7 @@ export const queryHandlers: Array<RequestHandler> = [
    * Execute Queries
    */
   handleOpenApiCall(
-    OntologiesV2.Queries.executeQueryV2,
+    OntologiesV2.Queries.execute,
     ["ontologyApiName", "queryApiName"],
     async (req) => {
       const body = await req.request.text();

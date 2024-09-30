@@ -23,7 +23,7 @@ export async function loadQueryMetadata(
   client: MinimalClient,
   queryType: string,
 ): Promise<QueryMetadata> {
-  const r = await OntologiesV2.QueryTypes.getQueryTypeV2(
+  const r = await OntologiesV2.QueryTypes.get(
     client,
     await client.ontologyRid,
     queryType,

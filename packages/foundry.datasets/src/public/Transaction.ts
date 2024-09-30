@@ -25,7 +25,7 @@ import type * as _Datasets from "../_components.js";
 
 //
 
-const _createTransaction: $FoundryPlatformMethod<
+const _create: $FoundryPlatformMethod<
   (
     datasetRid: _Datasets.DatasetRid,
     $body: _Datasets.CreateTransactionRequest,
@@ -44,7 +44,7 @@ const _createTransaction: $FoundryPlatformMethod<
  * Required Scopes: [api:datasets-write]
  * URL: /v2/datasets/{datasetRid}/transactions
  */
-export function createTransaction(
+export function create(
   $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: _Datasets.DatasetRid,
@@ -55,10 +55,10 @@ export function createTransaction(
     },
   ]
 ): Promise<_Datasets.Transaction> {
-  return $foundryPlatformFetch($ctx, _createTransaction, ...args);
+  return $foundryPlatformFetch($ctx, _create, ...args);
 }
 
-const _getTransaction: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (
     datasetRid: _Datasets.DatasetRid,
     transactionRid: _Datasets.TransactionRid,
@@ -74,7 +74,7 @@ const _getTransaction: $FoundryPlatformMethod<
  * Required Scopes: [api:datasets-read]
  * URL: /v2/datasets/{datasetRid}/transactions/{transactionRid}
  */
-export function getTransaction(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: _Datasets.DatasetRid,
@@ -83,10 +83,10 @@ export function getTransaction(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Datasets.Transaction> {
-  return $foundryPlatformFetch($ctx, _getTransaction, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }
 
-const _commitTransaction: $FoundryPlatformMethod<
+const _commit: $FoundryPlatformMethod<
   (
     datasetRid: _Datasets.DatasetRid,
     transactionRid: _Datasets.TransactionRid,
@@ -103,7 +103,7 @@ const _commitTransaction: $FoundryPlatformMethod<
  * Required Scopes: [api:datasets-write]
  * URL: /v2/datasets/{datasetRid}/transactions/{transactionRid}/commit
  */
-export function commitTransaction(
+export function commit(
   $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: _Datasets.DatasetRid,
@@ -112,10 +112,10 @@ export function commitTransaction(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Datasets.Transaction> {
-  return $foundryPlatformFetch($ctx, _commitTransaction, ...args);
+  return $foundryPlatformFetch($ctx, _commit, ...args);
 }
 
-const _abortTransaction: $FoundryPlatformMethod<
+const _abort: $FoundryPlatformMethod<
   (
     datasetRid: _Datasets.DatasetRid,
     transactionRid: _Datasets.TransactionRid,
@@ -132,7 +132,7 @@ const _abortTransaction: $FoundryPlatformMethod<
  * Required Scopes: [api:datasets-write]
  * URL: /v2/datasets/{datasetRid}/transactions/{transactionRid}/abort
  */
-export function abortTransaction(
+export function abort(
   $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: _Datasets.DatasetRid,
@@ -141,5 +141,5 @@ export function abortTransaction(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_Datasets.Transaction> {
-  return $foundryPlatformFetch($ctx, _abortTransaction, ...args);
+  return $foundryPlatformFetch($ctx, _abort, ...args);
 }

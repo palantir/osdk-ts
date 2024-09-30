@@ -49,7 +49,7 @@ export async function toDataValue(
 
   // For uploads, we need to upload ourselves first to get the RID of the attachment
   if (isAttachmentUpload(value)) {
-    const attachment = await OntologiesV2.Attachments.uploadAttachmentV2(
+    const attachment = await OntologiesV2.Attachments.upload(
       client,
       value,
       {

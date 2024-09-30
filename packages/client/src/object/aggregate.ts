@@ -63,7 +63,7 @@ export async function aggregate<
   if (req.$where) {
     body.where = modernToLegacyWhereClause(req.$where);
   }
-  const result = await OntologiesV2.OntologyObjectSets.aggregateObjectSetV2(
+  const result = await OntologiesV2.OntologyObjectSets.aggregate(
     addUserAgentAndRequestContextHeaders(clientCtx, objectType),
     await clientCtx.ontologyRid,
     {

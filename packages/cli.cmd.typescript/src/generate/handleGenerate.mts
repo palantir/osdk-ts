@@ -84,7 +84,7 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
   );
 
   try {
-    const ontologies = await OntologiesV2.listOntologiesV2(
+    const ontologies = await OntologiesV2.list(
       ctx,
     );
 
@@ -101,7 +101,7 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
       return false;
     }
 
-    const ontology = await OntologiesV2.getOntologyFullMetadata(
+    const ontology = await OntologiesV2.getFullMetadata(
       ctx,
       ontologies.data[0].apiName as OntologyIdentifier,
     );

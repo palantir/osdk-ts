@@ -25,7 +25,7 @@ import type * as _Datasets from "../_components.js";
 
 //
 
-const _createBranch: $FoundryPlatformMethod<
+const _create: $FoundryPlatformMethod<
   (
     datasetRid: _Datasets.DatasetRid,
     $body: _Datasets.CreateBranchRequest,
@@ -42,17 +42,17 @@ const _createBranch: $FoundryPlatformMethod<
  * Required Scopes: [api:datasets-write]
  * URL: /v1/datasets/{datasetRid}/branches
  */
-export function createBranch(
+export function create(
   $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: _Datasets.DatasetRid,
     $body: _Datasets.CreateBranchRequest,
   ]
 ): Promise<_Datasets.Branch> {
-  return $foundryPlatformFetch($ctx, _createBranch, ...args);
+  return $foundryPlatformFetch($ctx, _create, ...args);
 }
 
-const _getBranch: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (
     datasetRid: _Datasets.DatasetRid,
     branchId: _Datasets.BranchId,
@@ -69,11 +69,11 @@ const _getBranch: $FoundryPlatformMethod<
  * Required Scopes: [api:datasets-read]
  * URL: /v1/datasets/{datasetRid}/branches/{branchId}
  */
-export function getBranch(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [datasetRid: _Datasets.DatasetRid, branchId: _Datasets.BranchId]
 ): Promise<_Datasets.Branch> {
-  return $foundryPlatformFetch($ctx, _getBranch, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }
 
 const _deleteBranch: $FoundryPlatformMethod<
@@ -100,7 +100,7 @@ export function deleteBranch(
   return $foundryPlatformFetch($ctx, _deleteBranch, ...args);
 }
 
-const _listBranches: $FoundryPlatformMethod<
+const _list: $FoundryPlatformMethod<
   (
     datasetRid: _Datasets.DatasetRid,
     $queryParams?: {
@@ -120,7 +120,7 @@ const _listBranches: $FoundryPlatformMethod<
  * Required Scopes: [api:datasets-read]
  * URL: /v1/datasets/{datasetRid}/branches
  */
-export function listBranches(
+export function list(
   $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: _Datasets.DatasetRid,
@@ -131,5 +131,5 @@ export function listBranches(
     },
   ]
 ): Promise<_Datasets.ListBranchesResponse> {
-  return $foundryPlatformFetch($ctx, _listBranches, ...args);
+  return $foundryPlatformFetch($ctx, _list, ...args);
 }

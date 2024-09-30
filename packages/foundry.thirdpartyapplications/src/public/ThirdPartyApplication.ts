@@ -25,7 +25,7 @@ import type * as _ThirdPartyApplications from "../_components.js";
 
 //
 
-const _getThirdPartyApplication: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (
     thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
@@ -40,7 +40,7 @@ const _getThirdPartyApplication: $FoundryPlatformMethod<
  * Required Scopes: [third-party-application:deploy-application-website]
  * URL: /v2/thirdPartyApplications/{thirdPartyApplicationRid}
  */
-export function getThirdPartyApplication(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [
     thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
@@ -48,5 +48,5 @@ export function getThirdPartyApplication(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_ThirdPartyApplications.ThirdPartyApplication> {
-  return $foundryPlatformFetch($ctx, _getThirdPartyApplication, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }

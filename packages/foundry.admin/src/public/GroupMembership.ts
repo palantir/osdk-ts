@@ -25,7 +25,7 @@ import type * as _Admin from "../_components.js";
 
 //
 
-const _listGroupMemberships: $FoundryPlatformMethod<
+const _list: $FoundryPlatformMethod<
   (
     userId: _Core.PrincipalId,
     $queryParams?: {
@@ -47,7 +47,7 @@ const _listGroupMemberships: $FoundryPlatformMethod<
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/users/{userId}/groupMemberships
  */
-export function listGroupMemberships(
+export function list(
   $ctx: $Client | $ClientContext,
   ...args: [
     userId: _Core.PrincipalId,
@@ -60,5 +60,5 @@ export function listGroupMemberships(
     },
   ]
 ): Promise<_Admin.ListGroupMembershipsResponse> {
-  return $foundryPlatformFetch($ctx, _listGroupMemberships, ...args);
+  return $foundryPlatformFetch($ctx, _list, ...args);
 }

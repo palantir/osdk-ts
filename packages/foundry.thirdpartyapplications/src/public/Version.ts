@@ -53,7 +53,7 @@ export function deleteVersion(
   return $foundryPlatformFetch($ctx, _deleteVersion, ...args);
 }
 
-const _listVersions: $FoundryPlatformMethod<
+const _list: $FoundryPlatformMethod<
   (
     thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
     $queryParams?: {
@@ -74,7 +74,7 @@ const _listVersions: $FoundryPlatformMethod<
  * Required Scopes: [third-party-application:deploy-application-website]
  * URL: /v2/thirdPartyApplications/{thirdPartyApplicationRid}/website/versions
  */
-export function listVersions(
+export function list(
   $ctx: $Client | $ClientContext,
   ...args: [
     thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
@@ -86,10 +86,10 @@ export function listVersions(
     },
   ]
 ): Promise<_ThirdPartyApplications.ListVersionsResponse> {
-  return $foundryPlatformFetch($ctx, _listVersions, ...args);
+  return $foundryPlatformFetch($ctx, _list, ...args);
 }
 
-const _getVersion: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (
     thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
     versionVersion: _ThirdPartyApplications.VersionVersion,
@@ -105,7 +105,7 @@ const _getVersion: $FoundryPlatformMethod<
  * Required Scopes: [third-party-application:deploy-application-website]
  * URL: /v2/thirdPartyApplications/{thirdPartyApplicationRid}/website/versions/{versionVersion}
  */
-export function getVersion(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [
     thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
@@ -114,10 +114,10 @@ export function getVersion(
     $queryParams?: { preview?: _Core.PreviewMode | undefined },
   ]
 ): Promise<_ThirdPartyApplications.Version> {
-  return $foundryPlatformFetch($ctx, _getVersion, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }
 
-const _uploadVersion: $FoundryPlatformMethod<
+const _upload: $FoundryPlatformMethod<
   (
     thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
     $body: Blob,
@@ -141,7 +141,7 @@ const _uploadVersion: $FoundryPlatformMethod<
  * Required Scopes: [third-party-application:deploy-application-website]
  * URL: /v2/thirdPartyApplications/{thirdPartyApplicationRid}/website/versions/upload
  */
-export function uploadVersion(
+export function upload(
   $ctx: $Client | $ClientContext,
   ...args: [
     thirdPartyApplicationRid: _ThirdPartyApplications.ThirdPartyApplicationRid,
@@ -152,5 +152,5 @@ export function uploadVersion(
     },
   ]
 ): Promise<_ThirdPartyApplications.Version> {
-  return $foundryPlatformFetch($ctx, _uploadVersion, ...args);
+  return $foundryPlatformFetch($ctx, _upload, ...args);
 }

@@ -25,7 +25,7 @@ import type * as _Datasets from "../_components.js";
 
 //
 
-const _createDataset: $FoundryPlatformMethod<
+const _create: $FoundryPlatformMethod<
   ($body: _Datasets.CreateDatasetRequest) => Promise<_Datasets.Dataset>
 > = [1, "/v1/datasets", 1];
 
@@ -39,14 +39,14 @@ const _createDataset: $FoundryPlatformMethod<
  * Required Scopes: [api:datasets-write]
  * URL: /v1/datasets
  */
-export function createDataset(
+export function create(
   $ctx: $Client | $ClientContext,
   ...args: [$body: _Datasets.CreateDatasetRequest]
 ): Promise<_Datasets.Dataset> {
-  return $foundryPlatformFetch($ctx, _createDataset, ...args);
+  return $foundryPlatformFetch($ctx, _create, ...args);
 }
 
-const _getDataset: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (datasetRid: _Datasets.DatasetRid) => Promise<_Datasets.Dataset>
 > = [0, "/v1/datasets/{0}"];
 
@@ -60,14 +60,14 @@ const _getDataset: $FoundryPlatformMethod<
  * Required Scopes: [api:datasets-read]
  * URL: /v1/datasets/{datasetRid}
  */
-export function getDataset(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [datasetRid: _Datasets.DatasetRid]
 ): Promise<_Datasets.Dataset> {
-  return $foundryPlatformFetch($ctx, _getDataset, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }
 
-const _readTable: $FoundryPlatformMethod<
+const _read: $FoundryPlatformMethod<
   (
     datasetRid: _Datasets.DatasetRid,
     $queryParams: {
@@ -93,7 +93,7 @@ const _readTable: $FoundryPlatformMethod<
  * Required Scopes: [api:datasets-read]
  * URL: /v1/datasets/{datasetRid}/readTable
  */
-export function readTable(
+export function read(
   $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: _Datasets.DatasetRid,
@@ -108,10 +108,10 @@ export function readTable(
     },
   ]
 ): Promise<Blob> {
-  return $foundryPlatformFetch($ctx, _readTable, ...args);
+  return $foundryPlatformFetch($ctx, _read, ...args);
 }
 
-const _putSchema: $FoundryPlatformMethod<
+const _replaceSchema: $FoundryPlatformMethod<
   (
     datasetRid: _Datasets.DatasetRid,
     $body: any,
@@ -130,7 +130,7 @@ const _putSchema: $FoundryPlatformMethod<
  * Required Scopes: [api:datasets-write]
  * URL: /v1/datasets/{datasetRid}/schema
  */
-export function putSchema(
+export function replaceSchema(
   $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: _Datasets.DatasetRid,
@@ -141,7 +141,7 @@ export function putSchema(
     },
   ]
 ): Promise<void> {
-  return $foundryPlatformFetch($ctx, _putSchema, ...args);
+  return $foundryPlatformFetch($ctx, _replaceSchema, ...args);
 }
 
 const _getSchema: $FoundryPlatformMethod<

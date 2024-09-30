@@ -25,7 +25,7 @@ export async function loadActionMetadata(
   client: MinimalClient,
   actionType: string,
 ): Promise<ActionMetadata> {
-  const r = await OntologiesV2.ActionTypesV2.getActionTypeV2(
+  const r = await OntologiesV2.ActionTypesV2.get(
     client,
     await client.ontologyRid,
     actionType,

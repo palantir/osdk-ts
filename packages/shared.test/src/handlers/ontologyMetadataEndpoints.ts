@@ -126,7 +126,7 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
    * Load ObjectSet Objects
    */
   handleOpenApiCall(
-    OntologiesV2.OntologiesV2.getOntologyFullMetadata,
+    OntologiesV2.OntologiesV2.getFullMetadata,
     ["ontologyApiName"],
     async (req) => {
       const ontology = getOntology(req.params.ontologyApiName);
@@ -135,7 +135,7 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
   ),
 
   handleOpenApiCall(
-    OntologiesV2.ObjectTypesV2.getObjectTypeV2,
+    OntologiesV2.ObjectTypesV2.get,
     ["ontologyApiName", "objectTypeApiName"],
     async (req) => {
       const { objectType } = getObjectDef(
@@ -148,7 +148,7 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
   ),
 
   handleOpenApiCall(
-    OntologiesV2.ObjectTypesV2.getObjectTypeFullMetadata,
+    OntologiesV2.ObjectTypesV2.getFullMetadata,
     ["ontologyApiName", "objectTypeApiName"],
     async (req) => {
       return getObjectDef(
@@ -159,7 +159,7 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
   ),
 
   handleOpenApiCall(
-    OntologiesV2.ActionTypesV2.getActionTypeV2,
+    OntologiesV2.ActionTypesV2.get,
     ["ontologyApiName", "actionTypeApiName"],
     async (req) => {
       const ontology = getOntology(req.params.ontologyApiName);
@@ -175,7 +175,7 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
   ),
 
   handleOpenApiCall(
-    OntologiesV2.QueryTypes.getQueryTypeV2,
+    OntologiesV2.QueryTypes.get,
     ["ontologyApiName", "queryTypeApiName"],
     async (req) => {
       const ontology = getOntology(req.params.ontologyApiName);
@@ -191,7 +191,7 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
   ),
 
   handleOpenApiCall(
-    OntologiesV2.ObjectTypesV2.getOutgoingLinkTypeV2,
+    OntologiesV2.ObjectTypesV2.getOutgoingLinkType,
     [
       "ontology",
       "objectType",
@@ -209,7 +209,7 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
   ),
 
   handleOpenApiCall(
-    OntologiesV2.ObjectTypesV2.listOutgoingLinkTypesV2,
+    OntologiesV2.ObjectTypesV2.listOutgoingLinkTypes,
     [
       "ontology",
       "objectType",
@@ -222,7 +222,7 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
   ),
 
   handleOpenApiCall(
-    OntologiesV2.OntologyInterfaces.listInterfaceTypes,
+    OntologiesV2.OntologyInterfaces.list,
     ["ontologyApiName"],
     async (req) => {
       // will throw if bad name
@@ -235,7 +235,7 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
   ),
 
   handleOpenApiCall(
-    OntologiesV2.OntologyInterfaces.getInterfaceType,
+    OntologiesV2.OntologyInterfaces.get,
     ["ontologyApiName", "interfaceType"],
     async (req) => {
       // will throw if bad name

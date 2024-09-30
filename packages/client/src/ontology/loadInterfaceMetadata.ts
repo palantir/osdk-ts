@@ -23,7 +23,7 @@ export async function loadInterfaceMetadata(
   client: MinimalClient,
   objectType: string,
 ): Promise<InterfaceMetadata> {
-  const r = await OntologiesV2.OntologyInterfaces.getInterfaceType(
+  const r = await OntologiesV2.OntologyInterfaces.get(
     client,
     await client.ontologyRid,
     objectType,

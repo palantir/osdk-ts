@@ -24,7 +24,7 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 //
 
-const _listObjectsV2: $FoundryPlatformMethod<
+const _list: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     objectType: _Core.ObjectTypeApiName,
@@ -62,7 +62,7 @@ const _listObjectsV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}
  */
-export function listObjectsV2(
+export function list(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -79,10 +79,10 @@ export function listObjectsV2(
     },
   ]
 ): Promise<_Core.ListObjectsResponseV2> {
-  return $foundryPlatformFetch($ctx, _listObjectsV2, ...args);
+  return $foundryPlatformFetch($ctx, _list, ...args);
 }
 
-const _getObjectV2: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     objectType: _Core.ObjectTypeApiName,
@@ -106,7 +106,7 @@ const _getObjectV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}
  */
-export function getObjectV2(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -121,10 +121,10 @@ export function getObjectV2(
     },
   ]
 ): Promise<_Core.OntologyObjectV2> {
-  return $foundryPlatformFetch($ctx, _getObjectV2, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }
 
-const _countObjects: $FoundryPlatformMethod<
+const _count: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     objectType: _Core.ObjectTypeApiName,
@@ -145,7 +145,7 @@ const _countObjects: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/count
  */
-export function countObjects(
+export function count(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -157,10 +157,10 @@ export function countObjects(
     },
   ]
 ): Promise<_Core.CountObjectsResponseV2> {
-  return $foundryPlatformFetch($ctx, _countObjects, ...args);
+  return $foundryPlatformFetch($ctx, _count, ...args);
 }
 
-const _searchObjectsV2: $FoundryPlatformMethod<
+const _search: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     objectType: _Core.ObjectTypeApiName,
@@ -201,7 +201,7 @@ const _searchObjectsV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/search
  */
-export function searchObjectsV2(
+export function search(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -213,10 +213,10 @@ export function searchObjectsV2(
     },
   ]
 ): Promise<_Core.SearchObjectsResponseV2> {
-  return $foundryPlatformFetch($ctx, _searchObjectsV2, ...args);
+  return $foundryPlatformFetch($ctx, _search, ...args);
 }
 
-const _aggregateObjectsV2: $FoundryPlatformMethod<
+const _aggregate: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     objectType: _Core.ObjectTypeApiName,
@@ -238,7 +238,7 @@ const _aggregateObjectsV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/aggregate
  */
-export function aggregateObjectsV2(
+export function aggregate(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -250,5 +250,5 @@ export function aggregateObjectsV2(
     },
   ]
 ): Promise<_Core.AggregateObjectsResponseV2> {
-  return $foundryPlatformFetch($ctx, _aggregateObjectsV2, ...args);
+  return $foundryPlatformFetch($ctx, _aggregate, ...args);
 }

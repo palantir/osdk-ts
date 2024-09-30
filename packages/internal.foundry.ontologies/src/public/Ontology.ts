@@ -24,7 +24,7 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 //
 
-const _listOntologies: $FoundryPlatformMethod<
+const _list: $FoundryPlatformMethod<
   () => Promise<_Core.ListOntologiesResponse>
 > = [0, "/v1/ontologies"];
 
@@ -38,14 +38,14 @@ const _listOntologies: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies
  */
-export function listOntologies(
+export function list(
   $ctx: $Client | $ClientContext,
   ...args: []
 ): Promise<_Core.ListOntologiesResponse> {
-  return $foundryPlatformFetch($ctx, _listOntologies, ...args);
+  return $foundryPlatformFetch($ctx, _list, ...args);
 }
 
-const _getOntology: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (ontologyRid: _Core.OntologyRid) => Promise<_Core.Ontology>
 > = [0, "/v1/ontologies/{0}"];
 
@@ -59,9 +59,9 @@ const _getOntology: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}
  */
-export function getOntology(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [ontologyRid: _Core.OntologyRid]
 ): Promise<_Core.Ontology> {
-  return $foundryPlatformFetch($ctx, _getOntology, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }

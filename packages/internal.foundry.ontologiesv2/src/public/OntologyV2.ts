@@ -24,7 +24,7 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 //
 
-const _listOntologiesV2: $FoundryPlatformMethod<
+const _list: $FoundryPlatformMethod<
   () => Promise<_Core.ListOntologiesV2Response>
 > = [0, "/v2/ontologies"];
 
@@ -38,14 +38,14 @@ const _listOntologiesV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies
  */
-export function listOntologiesV2(
+export function list(
   $ctx: $Client | $ClientContext,
   ...args: []
 ): Promise<_Core.ListOntologiesV2Response> {
-  return $foundryPlatformFetch($ctx, _listOntologiesV2, ...args);
+  return $foundryPlatformFetch($ctx, _list, ...args);
 }
 
-const _getOntologyV2: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (ontology: _Core.OntologyIdentifier) => Promise<_Core.OntologyV2>
 > = [0, "/v2/ontologies/{0}"];
 
@@ -59,14 +59,14 @@ const _getOntologyV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}
  */
-export function getOntologyV2(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [ontology: _Core.OntologyIdentifier]
 ): Promise<_Core.OntologyV2> {
-  return $foundryPlatformFetch($ctx, _getOntologyV2, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }
 
-const _getOntologyFullMetadata: $FoundryPlatformMethod<
+const _getFullMetadata: $FoundryPlatformMethod<
   (ontology: _Core.OntologyIdentifier) => Promise<_Core.OntologyFullMetadata>
 > = [0, "/v2/ontologies/{0}/fullMetadata"];
 
@@ -78,9 +78,9 @@ const _getOntologyFullMetadata: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/fullMetadata
  */
-export function getOntologyFullMetadata(
+export function getFullMetadata(
   $ctx: $Client | $ClientContext,
   ...args: [ontology: _Core.OntologyIdentifier]
 ): Promise<_Core.OntologyFullMetadata> {
-  return $foundryPlatformFetch($ctx, _getOntologyFullMetadata, ...args);
+  return $foundryPlatformFetch($ctx, _getFullMetadata, ...args);
 }

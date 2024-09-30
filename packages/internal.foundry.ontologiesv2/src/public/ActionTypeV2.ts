@@ -24,7 +24,7 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 //
 
-const _listActionTypesV2: $FoundryPlatformMethod<
+const _list: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     $queryParams?: {
@@ -47,7 +47,7 @@ const _listActionTypesV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/actionTypes
  */
-export function listActionTypesV2(
+export function list(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -58,10 +58,10 @@ export function listActionTypesV2(
     },
   ]
 ): Promise<_Core.ListActionTypesResponseV2> {
-  return $foundryPlatformFetch($ctx, _listActionTypesV2, ...args);
+  return $foundryPlatformFetch($ctx, _list, ...args);
 }
 
-const _getActionTypeV2: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     actionType: _Core.ActionTypeApiName,
@@ -78,12 +78,12 @@ const _getActionTypeV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/actionTypes/{actionType}
  */
-export function getActionTypeV2(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
     actionType: _Core.ActionTypeApiName,
   ]
 ): Promise<_Core.ActionTypeV2> {
-  return $foundryPlatformFetch($ctx, _getActionTypeV2, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }

@@ -24,7 +24,7 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 //
 
-const _listObjects: $FoundryPlatformMethod<
+const _list: $FoundryPlatformMethod<
   (
     ontologyRid: _Core.OntologyRid,
     objectType: _Core.ObjectTypeApiName,
@@ -62,7 +62,7 @@ const _listObjects: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objects/{objectType}
  */
-export function listObjects(
+export function list(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontologyRid: _Core.OntologyRid,
@@ -76,10 +76,10 @@ export function listObjects(
     },
   ]
 ): Promise<_Core.ListObjectsResponse> {
-  return $foundryPlatformFetch($ctx, _listObjects, ...args);
+  return $foundryPlatformFetch($ctx, _list, ...args);
 }
 
-const _getObject: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (
     ontologyRid: _Core.OntologyRid,
     objectType: _Core.ObjectTypeApiName,
@@ -98,7 +98,7 @@ const _getObject: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objects/{objectType}/{primaryKey}
  */
-export function getObject(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontologyRid: _Core.OntologyRid,
@@ -108,7 +108,7 @@ export function getObject(
     $queryParams: { properties: Array<_Core.SelectedPropertyApiName> },
   ]
 ): Promise<_Core.OntologyObject> {
-  return $foundryPlatformFetch($ctx, _getObject, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }
 
 const _listLinkedObjects: $FoundryPlatformMethod<
@@ -207,7 +207,7 @@ export function getLinkedObject(
   return $foundryPlatformFetch($ctx, _getLinkedObject, ...args);
 }
 
-const _searchObjects: $FoundryPlatformMethod<
+const _search: $FoundryPlatformMethod<
   (
     ontologyRid: _Core.OntologyRid,
     objectType: _Core.ObjectTypeApiName,
@@ -243,7 +243,7 @@ const _searchObjects: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objects/{objectType}/search
  */
-export function searchObjects(
+export function search(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontologyRid: _Core.OntologyRid,
@@ -251,10 +251,10 @@ export function searchObjects(
     $body: _Core.SearchObjectsRequest,
   ]
 ): Promise<_Core.SearchObjectsResponse> {
-  return $foundryPlatformFetch($ctx, _searchObjects, ...args);
+  return $foundryPlatformFetch($ctx, _search, ...args);
 }
 
-const _aggregateObjects: $FoundryPlatformMethod<
+const _aggregate: $FoundryPlatformMethod<
   (
     ontologyRid: _Core.OntologyRid,
     objectType: _Core.ObjectTypeApiName,
@@ -272,7 +272,7 @@ const _aggregateObjects: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objects/{objectType}/aggregate
  */
-export function aggregateObjects(
+export function aggregate(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontologyRid: _Core.OntologyRid,
@@ -280,5 +280,5 @@ export function aggregateObjects(
     $body: _Core.AggregateObjectsRequest,
   ]
 ): Promise<_Core.AggregateObjectsResponse> {
-  return $foundryPlatformFetch($ctx, _aggregateObjects, ...args);
+  return $foundryPlatformFetch($ctx, _aggregate, ...args);
 }

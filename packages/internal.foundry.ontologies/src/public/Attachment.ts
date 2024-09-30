@@ -24,7 +24,7 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 
 //
 
-const _uploadAttachment: $FoundryPlatformMethod<
+const _upload: $FoundryPlatformMethod<
   (
     $body: Blob,
     $queryParams: { filename: _Core.Filename },
@@ -47,7 +47,7 @@ const _uploadAttachment: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-write]
  * URL: /v1/attachments/upload
  */
-export function uploadAttachment(
+export function upload(
   $ctx: $Client | $ClientContext,
   ...args: [
     $body: Blob,
@@ -61,16 +61,10 @@ export function uploadAttachment(
     "Content-Length": args[0].size.toString(),
   };
 
-  return $foundryPlatformFetch(
-    $ctx,
-    _uploadAttachment,
-    args[0],
-    args[1],
-    headerParams,
-  );
+  return $foundryPlatformFetch($ctx, _upload, args[0], args[1], headerParams);
 }
 
-const _getAttachmentContent: $FoundryPlatformMethod<
+const _read: $FoundryPlatformMethod<
   (attachmentRid: _Core.AttachmentRid) => Promise<Blob>
 > = [0, "/v1/attachments/{0}/content", , , "*/*"];
 
@@ -85,14 +79,14 @@ const _getAttachmentContent: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/attachments/{attachmentRid}/content
  */
-export function getAttachmentContent(
+export function read(
   $ctx: $Client | $ClientContext,
   ...args: [attachmentRid: _Core.AttachmentRid]
 ): Promise<Blob> {
-  return $foundryPlatformFetch($ctx, _getAttachmentContent, ...args);
+  return $foundryPlatformFetch($ctx, _read, ...args);
 }
 
-const _getAttachment: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (attachmentRid: _Core.AttachmentRid) => Promise<_Core.Attachment>
 > = [0, "/v1/attachments/{0}"];
 
@@ -107,9 +101,9 @@ const _getAttachment: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/attachments/{attachmentRid}
  */
-export function getAttachment(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [attachmentRid: _Core.AttachmentRid]
 ): Promise<_Core.Attachment> {
-  return $foundryPlatformFetch($ctx, _getAttachment, ...args);
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }
