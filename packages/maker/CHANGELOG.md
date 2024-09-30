@@ -1,5 +1,61 @@
 # @osdk/maker
 
+## 0.8.0
+
+### Minor Changes
+
+- b916b3d: Fix api namespacing of shared property types
+- 465660b: Add icon support to maker
+- dc25fb4: Further simplify types
+- 1252d94: ESM Only
+- ee39a61: Adding value types to ont as code
+- 6e3726b: Support namespacing maker generate ontologies
+- 465660b: Fix double namespacing bug.
+- ee39a61: Add support for gotham mapping of SPTs in maker
+- 7282cf6: Add Default Type Classes to maker
+- d4d6605: Audited and cleaned up deps
+- 64818dc: Drop support for internal gateway package
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+- Updated dependencies [3affe49]
+- Updated dependencies [b946e00]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [0ea1a17]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [9b0617d]
+- Updated dependencies [94105a5]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [1252d94]
+- Updated dependencies [e6ade8b]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [795777a]
+- Updated dependencies [fe9547e]
+- Updated dependencies [95f9247]
+- Updated dependencies [d2f75f9]
+- Updated dependencies [b7cd0a1]
+- Updated dependencies [512ee35]
+- Updated dependencies [e86c505]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [0ce2858]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [7c2db00]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [fc28eae]
+- Updated dependencies [56df85a]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [a9923f3]
+- Updated dependencies [1f633f7]
+- Updated dependencies [d4d6605]
+- Updated dependencies [64818dc]
+  - @osdk/api@2.0.0
+
 ## 0.8.0-beta.12
 
 ### Minor Changes

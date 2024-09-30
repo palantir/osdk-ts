@@ -1,5 +1,22 @@
 # @osdk/oauth
 
+## 1.0.0
+
+### Major Changes
+
+- 7e90f77: Releasing first major version of oauth package.
+
+### Minor Changes
+
+- cad781e: PublicClient allows relative paths for login pages
+- 1252d94: ESM Only
+- cad781e: adds getTokenOrUndefined() to oauth clients
+- cad781e: Redirects to root when visiting an old auth callback
+- cad781e: Fixes a bug where process.env was being emitted
+- d80e2ec: Fixes a bug that can occur during the login flow
+- cad781e: Uses default scopes when provided an empty array
+- d4d6605: Audited and cleaned up deps
+
 ## 0.4.0-beta.3
 
 ### Minor Changes
