@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.1.0
+
+### Patch Changes
+
+- @osdk/shared.net@2.1.0
+
 ## 2.0.0
 
 ### Major Changes

@@ -1,5 +1,13 @@
 # @osdk/generator
 
+## 2.1.0
+
+### Patch Changes
+
+- @osdk/internal.foundry.core@0.3.0
+- @osdk/generator-converters@2.1.0
+- @osdk/api@2.1.0
+
 ## 2.0.0
 
 ### Major Changes

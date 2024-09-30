@@ -1,5 +1,14 @@
 # @osdk/internal.foundry.ontologiesv2
 
+## 0.3.0
+
+### Patch Changes
+
+- Updated dependencies [a4343af]
+  - @osdk/shared.client@1.1.0
+  - @osdk/internal.foundry.core@0.3.0
+  - @osdk/shared.net.platformapi@0.4.0
+
 ## 0.2.0
 
 ### Minor Changes

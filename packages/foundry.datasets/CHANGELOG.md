@@ -1,5 +1,15 @@
 # @osdk/foundry.datasets
 
+## 2.2.0
+
+### Patch Changes
+
+- Updated dependencies [a4343af]
+  - @osdk/shared.client@1.1.0
+  - @osdk/foundry.core@2.2.0
+  - @osdk/foundry.filesystem@2.2.0
+  - @osdk/shared.net.platformapi@0.4.0
+
 ## 2.1.0
 
 ### Minor Changes

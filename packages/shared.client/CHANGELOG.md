@@ -1,5 +1,11 @@
 # @osdk/shared.client
 
+## 1.1.0
+
+### Minor Changes
+
+- a4343af: Actually publish the d.ts file
+
 ## 1.0.0
 
 ### Major Changes

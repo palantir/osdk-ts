@@ -1,5 +1,14 @@
 # @osdk/cli.cmd.typescript
 
+## 0.7.0
+
+### Patch Changes
+
+- @osdk/internal.foundry.core@0.3.0
+- @osdk/internal.foundry.ontologiesv2@0.3.0
+- @osdk/shared.net@2.1.0
+- @osdk/generator@2.1.0
+
 ## 0.6.0
 
 ### Minor Changes

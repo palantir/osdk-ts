@@ -1,5 +1,13 @@
 # @osdk/shared.net
 
+## 2.1.0
+
+### Patch Changes
+
+- Updated dependencies [a4343af]
+  - @osdk/shared.client@1.1.0
+  - @osdk/shared.client.impl@1.1.0
+
 ## 2.0.0
 
 ### Major Changes
