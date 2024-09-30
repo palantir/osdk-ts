@@ -16,7 +16,7 @@
   ],
   "linked": [],
   "access": "restricted",
-  "baseBranch": "main",
+  "baseBranch": "release/2.0.x",
   "updateInternalDependencies": "patch",
   "ignore": [
     "@osdk/examples.*",
