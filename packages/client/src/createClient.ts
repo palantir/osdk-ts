@@ -133,9 +133,15 @@ export function createClientInternal(
     {
       [symbolClientContext]: {
         value: clientCtx,
+        // defaults to configurable: false,
+        // defaults to enumerable: false,
+        // defaults to writable: false,
       },
       [__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks]: {
         get: () => createBulkLinksAsyncIterFactory(clientCtx),
+        // defaults to configurable: false,
+        // defaults to enumerable: false,
+        // defaults to writable: false,
       },
       [__EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet]: {
         get: () =>
@@ -161,9 +167,15 @@ export function createClientInternal(
             },
           );
         },
+        // defaults to configurable: false,
+        // defaults to enumerable: false,
+        // defaults to writable: false,
       },
       fetchMetadata: {
         value: fetchMetadata,
+        // defaults to configurable: false,
+        // defaults to enumerable: false,
+        // defaults to writable: false,
       },
     } satisfies Record<keyof Client, PropertyDescriptor>,
   );

@@ -228,20 +228,27 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         ) as Result<Osdk<Q>>;
       }
       : undefined) as ObjectSet<Q>["fetchOneWithErrors"],
-
-    [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]: (
-      listener: EXPERIMENTAL_ObjectSetListener<Q>,
-    ) => {
-      const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
-        clientCtx,
-      ).subscribe(
-        objectSet,
-        listener,
-      );
-
-      return async () => (await pendingSubscribe)();
-    },
   };
+
+  Object.defineProperties(base, {
+    [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]: {
+      value: (
+        listener: EXPERIMENTAL_ObjectSetListener<Q>,
+      ) => {
+        const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
+          clientCtx,
+        ).subscribe(
+          objectSet,
+          listener,
+        );
+
+        return async () => (await pendingSubscribe)();
+      },
+      // enumerable: false is default
+      // configurable: false is default
+      // writable: false is default
+    },
+  });
 
   function createSearchAround<L extends LinkNames<Q>>(link: L) {
     return () => {

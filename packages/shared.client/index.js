@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export const symbolClientContext = Symbol("ClientContext");
+export const symbolClientContext = "$osdkClientContext";
