@@ -34,7 +34,7 @@ export function defineInterface(
       string,
       SharedPropertyType | PropertyTypeType
     >;
-    extends?: InterfaceType[] | string[];
+    extends?: InterfaceType | InterfaceType[] | string | string[];
   },
 ): InterfaceType {
   const apiName = namespace + opts.apiName;
@@ -74,7 +74,23 @@ export function defineInterface(
     ),
   );
 
-  // (opts.extends ?? []).map(val => {(val is InterfaceType) ? val :;});
+  let extendsInterfaces: string[] = [];
+  if (opts.extends) {
+    if (typeof opts.extends === "string") {
+      extendsInterfaces = [opts.extends];
+    } else if (
+      Array.isArray(opts.extends)
+      && opts.extends.every(item => typeof item === "string")
+    ) {
+      extendsInterfaces = opts.extends;
+    } else if ((opts.extends as InterfaceType).apiName !== undefined) {
+      extendsInterfaces = [(opts.extends as InterfaceType).apiName];
+    } else {
+      extendsInterfaces = (opts.extends as InterfaceType[]).map(item =>
+        item.apiName
+      );
+    }
+  }
 
   const a: InterfaceType = {
     apiName,
@@ -88,7 +104,7 @@ export function defineInterface(
         }
         : undefined,
     },
-    extendsInterfaces: [],
+    extendsInterfaces: extendsInterfaces,
     links: [],
     properties,
     status: { type: "active", active: {} },
