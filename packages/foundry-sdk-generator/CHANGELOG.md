@@ -1,5 +1,11 @@
 # @osdk/foundry-sdk-generator
 
+## 1.3.11
+
+### Patch Changes
+
+- 232f0f0: Update beta generator.
+
 ## 1.3.10
 
 ### Patch Changes
