@@ -127,6 +127,7 @@ describe("ObjectSetListenerWebsocket", async () => {
 
       listener = {
         onChange: vi.fn(),
+        onReferenceUpdate: vi.fn(),
         onError: vi.fn(),
         onOutOfDate: vi.fn(),
       };

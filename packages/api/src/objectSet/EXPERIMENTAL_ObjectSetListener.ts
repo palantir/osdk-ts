@@ -26,6 +26,12 @@ export interface EXPERIMENTAL_ObjectSetListener<
   onChange?: (objects: Array<OsdkObjectOrInterfaceFrom<O>>) => void;
 
   /**
+   * An objects backing datasource has changed and a new value is provided
+   */
+  // TODO: Implement
+  onReferenceUpdate?: (updates: Array<OsdkObjectOrInterfaceFrom<O>>) => void;
+
+  /**
    * The ObjectSet has become outdated and should be re-fetched in its entirety.
    * This is also sent when the subscription is first initialized.
    */
@@ -34,5 +40,5 @@ export interface EXPERIMENTAL_ObjectSetListener<
   /**
    * There was a fatal error with the subscription process
    */
-  onError?: (error: unknown) => void;
+  onError?: (errors: Array<any>) => void;
 }
