@@ -1,5 +1,14 @@
 # @osdk/foundry-sdk-generator
 
+## 2.0.2-rc.0
+
+### Patch Changes
+
+- 85e03ec: Prepare foundry-sdk-generator for GA
+  - @osdk/client@2.0.2-rc.0
+  - @osdk/generator@2.0.2-rc.0
+  - @osdk/api@2.0.2-rc.0
+
 ## 2.0.1
 
 ### Patch Changes
