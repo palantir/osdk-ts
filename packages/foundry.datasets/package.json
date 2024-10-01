@@ -27,7 +27,7 @@
   "dependencies": {
     "@osdk/foundry.core": "workspace:*",
     "@osdk/foundry.filesystem": "workspace:*",
-    "@osdk/shared.client": "workspace:^",
+    "@osdk/shared.client": "^1.0.1",
     "@osdk/shared.net.platformapi": "workspace:~"
   },
   "devDependencies": {

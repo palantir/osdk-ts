@@ -710,8 +710,8 @@ importers:
         specifier: workspace:~
         version: link:../internal.foundry.ontologiesv2
       '@osdk/shared.client':
-        specifier: workspace:^
-        version: link:../shared.client
+        specifier: ^1.0.1
+        version: 1.0.1
       '@osdk/shared.client.impl':
         specifier: workspace:~
         version: link:../shared.client.impl
@@ -1735,8 +1735,8 @@ importers:
         specifier: workspace:*
         version: link:../foundry.thirdpartyapplications
       '@osdk/shared.client':
-        specifier: workspace:^
-        version: link:../shared.client
+        specifier: ^1.0.1
+        version: 1.0.1
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -1760,8 +1760,8 @@ importers:
         specifier: workspace:*
         version: link:../foundry.core
       '@osdk/shared.client':
-        specifier: workspace:^
-        version: link:../shared.client
+        specifier: ^1.0.1
+        version: 1.0.1
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -1782,8 +1782,8 @@ importers:
   packages/foundry.core:
     dependencies:
       '@osdk/shared.client':
-        specifier: workspace:^
-        version: link:../shared.client
+        specifier: ^1.0.1
+        version: 1.0.1
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -1810,8 +1810,8 @@ importers:
         specifier: workspace:*
         version: link:../foundry.filesystem
       '@osdk/shared.client':
-        specifier: workspace:^
-        version: link:../shared.client
+        specifier: ^1.0.1
+        version: 1.0.1
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -1835,8 +1835,8 @@ importers:
         specifier: workspace:*
         version: link:../foundry.core
       '@osdk/shared.client':
-        specifier: workspace:^
-        version: link:../shared.client
+        specifier: ^1.0.1
+        version: 1.0.1
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -1860,8 +1860,8 @@ importers:
         specifier: workspace:*
         version: link:../foundry.core
       '@osdk/shared.client':
-        specifier: workspace:^
-        version: link:../shared.client
+        specifier: ^1.0.1
+        version: 1.0.1
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -1882,8 +1882,8 @@ importers:
   packages/foundry.ontologies:
     dependencies:
       '@osdk/shared.client':
-        specifier: workspace:^
-        version: link:../shared.client
+        specifier: ^1.0.1
+        version: 1.0.1
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -1913,8 +1913,8 @@ importers:
         specifier: workspace:*
         version: link:../foundry.filesystem
       '@osdk/shared.client':
-        specifier: workspace:^
-        version: link:../shared.client
+        specifier: ^1.0.1
+        version: 1.0.1
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -1938,8 +1938,8 @@ importers:
         specifier: workspace:*
         version: link:../foundry.core
       '@osdk/shared.client':
-        specifier: workspace:^
-        version: link:../shared.client
+        specifier: ^1.0.1
+        version: 1.0.1
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -1969,8 +1969,8 @@ importers:
         specifier: workspace:*
         version: link:../foundry.filesystem
       '@osdk/shared.client':
-        specifier: workspace:^
-        version: link:../shared.client
+        specifier: ^1.0.1
+        version: 1.0.1
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -1994,8 +1994,8 @@ importers:
         specifier: workspace:*
         version: link:../foundry.core
       '@osdk/shared.client':
-        specifier: workspace:^
-        version: link:../shared.client
+        specifier: ^1.0.1
+        version: 1.0.1
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -2108,8 +2108,8 @@ importers:
         specifier: workspace:*
         version: link:../internal.foundry.ontologiesv2
       '@osdk/shared.client':
-        specifier: workspace:^
-        version: link:../shared.client
+        specifier: ^1.0.1
+        version: 1.0.1
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -2133,8 +2133,8 @@ importers:
         specifier: workspace:*
         version: link:../internal.foundry.geo
       '@osdk/shared.client':
-        specifier: workspace:^
-        version: link:../shared.client
+        specifier: ^1.0.1
+        version: 1.0.1
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -2158,8 +2158,8 @@ importers:
         specifier: workspace:*
         version: link:../internal.foundry.core
       '@osdk/shared.client':
-        specifier: workspace:^
-        version: link:../shared.client
+        specifier: ^1.0.1
+        version: 1.0.1
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -2180,8 +2180,8 @@ importers:
   packages/internal.foundry.geo:
     dependencies:
       '@osdk/shared.client':
-        specifier: workspace:^
-        version: link:../shared.client
+        specifier: ^1.0.1
+        version: 1.0.1
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -2205,8 +2205,8 @@ importers:
         specifier: workspace:*
         version: link:../internal.foundry.core
       '@osdk/shared.client':
-        specifier: workspace:^
-        version: link:../shared.client
+        specifier: ^1.0.1
+        version: 1.0.1
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -2230,8 +2230,8 @@ importers:
         specifier: workspace:*
         version: link:../internal.foundry.core
       '@osdk/shared.client':
-        specifier: workspace:^
-        version: link:../shared.client
+        specifier: ^1.0.1
+        version: 1.0.1
       '@osdk/shared.net.platformapi':
         specifier: workspace:~
         version: link:../shared.net.platformapi
@@ -2407,17 +2407,11 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
 
-  packages/shared.client:
-    devDependencies:
-      typescript:
-        specifier: ^5.4.5
-        version: 5.4.5
-
   packages/shared.client.impl:
     dependencies:
       '@osdk/shared.client':
-        specifier: workspace:^
-        version: link:../shared.client
+        specifier: ^1.0.1
+        version: 1.0.1
       '@osdk/shared.net.errors':
         specifier: workspace:~
         version: link:../shared.net.errors
@@ -2441,8 +2435,8 @@ importers:
   packages/shared.net:
     dependencies:
       '@osdk/shared.client':
-        specifier: workspace:^
-        version: link:../shared.client
+        specifier: ^1.0.1
+        version: 1.0.1
       '@osdk/shared.client.impl':
         specifier: workspace:~
         version: link:../shared.client.impl
@@ -2509,8 +2503,8 @@ importers:
   packages/shared.net.platformapi:
     dependencies:
       '@osdk/shared.client':
-        specifier: workspace:^
-        version: link:../shared.client
+        specifier: ^1.0.1
+        version: 1.0.1
       '@osdk/shared.net.errors':
         specifier: workspace:~
         version: link:../shared.net.errors
@@ -4069,6 +4063,9 @@ packages:
 
   '@osdk/shared.client@0.0.0':
     resolution: {integrity: sha512-8X42+4YUM6ItGqG5nkNRGlYBgCLPmT4BklCy1SvhHPn02A87bikACCqWYiMSDy+I2Tw/qm9oyHl/fTYCH8dvGg==}
+
+  '@osdk/shared.client@1.0.1':
+    resolution: {integrity: sha512-yTH9nOn46SV2Vh8gtHI1DkNa7VatIaQdb3lp7LLREqviY7bjAQI9+IYK/oMSUYkHgB8uU1JIP1qgVETamhS7VA==}
 
   '@osdk/shared.net.errors@1.1.0':
     resolution: {integrity: sha512-mn6KiTUfTQnQr0UdqHzViuIdXOEDT04e+3RSmr3DHEUcAN8cnIBMCOpnSQ/+o1li7SqW+gx3uDA03MdODtLA2g==}
@@ -9873,6 +9870,8 @@ snapshots:
       '@osdk/shared.net.fetch': 0.1.0
 
   '@osdk/shared.client@0.0.0': {}
+
+  '@osdk/shared.client@1.0.1': {}
 
   '@osdk/shared.net.errors@1.1.0': {}
 
