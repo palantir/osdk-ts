@@ -1,4 +1,5 @@
-import { Client, createClient } from "@osdk/client";
+import type { Client } from "@osdk/client";
+import { createClient } from "@osdk/client";
 import { $ontologyRid } from "@osdk/e2e.generated.catchall";
 import { createPublicOauthClient } from "@osdk/oauth";
 
