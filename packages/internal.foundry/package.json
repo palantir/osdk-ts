@@ -30,7 +30,7 @@
     "@osdk/internal.foundry.geo": "workspace:*",
     "@osdk/internal.foundry.ontologies": "workspace:*",
     "@osdk/internal.foundry.ontologiesv2": "workspace:*",
-    "@osdk/shared.client": "workspace:^",
+    "@osdk/shared.client": "^1.0.1",
     "@osdk/shared.net.platformapi": "workspace:~"
   },
   "devDependencies": {
