@@ -15,7 +15,8 @@
     "@osdk/examples.*",
     "@osdk/monorepo.*",
     "@osdk/tests.*",
-    "@osdk/version-updater"
+    "@osdk/version-updater",
+    "@osdk/e2e.test.foundry-sdk-generator"
   ],
   "bumpVersionsWithWorkspaceProtocolOnly": true,
   "snapshot": {
