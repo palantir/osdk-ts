@@ -1,5 +1,5 @@
 {
-  "name": "@osdk/tmp-foundry-sdk-generator",
+  "name": "@osdk/foundry-sdk-generator",
   "version": "2.0.2-rc.0",
   "description": "",
   "access": "public",
