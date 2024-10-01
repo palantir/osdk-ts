@@ -84,7 +84,8 @@ export type PropertyTypeType =
   | "marking"
   | "short"
   | "string"
-  | "timestamp";
+  | "timestamp"
+  | "mediareference";
 
 export type ValueTypeDefinitionVersion = {
   apiName: ValueTypeApiName;
