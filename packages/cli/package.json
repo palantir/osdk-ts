@@ -40,12 +40,12 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@osdk/shared.net": "workspace:~",
     "@osdk/cli.cmd.typescript": "workspace:~",
     "@osdk/cli.common": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
+    "@osdk/shared.net": "workspace:~",
     "@types/archiver": "^6.0.2",
     "@types/ngeohash": "^0.6.8",
     "@types/node": "^18.0.0",
