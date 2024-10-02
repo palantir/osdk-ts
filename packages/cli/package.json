@@ -30,8 +30,6 @@
   },
   "dependencies": {
     "@arethetypeswrong/cli": "^0.15.2",
-    "@osdk/generator": "workspace:~",
-    "@osdk/shared.net": "workspace:~",
     "ajv": "^8.13.0",
     "archiver": "^7.0.1",
     "consola": "^3.2.3",
@@ -47,6 +45,7 @@
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
+    "@osdk/shared.net": "workspace:~",
     "@types/archiver": "^6.0.2",
     "@types/ngeohash": "^0.6.8",
     "@types/node": "^18.0.0",
