@@ -1,5 +1,16 @@
 # @osdk/client
 
+## 2.0.2-beta.2
+
+### Patch Changes
+
+- 51354c5: Fixes where clauses when objects have an api namespace
+- 51354c5: Locks dependency version of 3 internal libraries
+- Updated dependencies [51354c5]
+  - @osdk/generator-converters@2.0.2-beta.2
+  - @osdk/client.unstable@2.0.2-beta.2
+  - @osdk/api@2.0.2-beta.2
+
 ## 2.0.2-beta.1
 
 ### Patch Changes

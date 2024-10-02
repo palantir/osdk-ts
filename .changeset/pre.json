@@ -78,7 +78,10 @@
     "@osdk/tests.verify-fallback-package-v2": "0.0.3"
   },
   "changesets": [
+    "few-gifts-rule",
     "lemon-seas-fail",
-    "little-months-join"
+    "little-months-join",
+    "old-clouds-wink",
+    "spicy-fishes-matter"
   ]
 }
