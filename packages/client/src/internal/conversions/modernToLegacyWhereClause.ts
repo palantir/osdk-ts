@@ -66,20 +66,16 @@ export function modernToLegacyWhereClause<
     };
   }
 
-  const [objApiNamespace, objApiShortname] = extractNamespace(
-    objectOrInterface.apiName,
-  );
-
   const parts = Object.entries(whereClause);
 
   if (parts.length === 1) {
-    return handleWherePair(parts[0], objApiNamespace);
+    return handleWherePair(parts[0], objectOrInterface);
   }
 
   return {
     type: "and",
     value: parts.map<SearchJsonQueryV2>(
-      v => handleWherePair(v, objApiNamespace),
+      v => handleWherePair(v, objectOrInterface),
     ),
   };
 }
@@ -124,7 +120,7 @@ function makeGeoFilterPolygon(
 
 function handleWherePair(
   [field, filter]: [string, any],
-  objApiNamespace: string | undefined,
+  objectOrInterface: ObjectOrInterfaceDefinition,
 ): SearchJsonQueryV2 {
   invariant(
     filter != null,
@@ -135,10 +131,13 @@ function handleWherePair(
     typeof filter === "string" || typeof filter === "number"
     || typeof filter === "boolean"
   ) {
-    const [fieldApiNamespace, fieldShortName] = extractNamespace(field);
+    if (objectOrInterface.type === "interface") {
+      const [objApiNamespace] = extractNamespace(objectOrInterface.apiName);
+      const [fieldApiNamespace, fieldShortName] = extractNamespace(field);
 
-    if (fieldApiNamespace == null && objApiNamespace != null) {
-      field = `${objApiNamespace}.${fieldShortName}`;
+      if (fieldApiNamespace == null && objApiNamespace != null) {
+        field = `${objApiNamespace}.${fieldShortName}`;
+      }
     }
 
     return {
