@@ -486,9 +486,6 @@ importers:
 
   packages/api:
     dependencies:
-      '@osdk/shared.net':
-        specifier: workspace:~
-        version: link:../shared.net
       '@types/geojson':
         specifier: ^7946.0.13
         version: 7946.0.14
@@ -529,12 +526,6 @@ importers:
       '@arethetypeswrong/cli':
         specifier: ^0.15.2
         version: 0.15.3
-      '@osdk/generator':
-        specifier: workspace:~
-        version: link:../generator
-      '@osdk/shared.net':
-        specifier: workspace:~
-        version: link:../shared.net
       ajv:
         specifier: ^8.13.0
         version: 8.13.0
@@ -575,6 +566,9 @@ importers:
       '@osdk/monorepo.tsup':
         specifier: workspace:~
         version: link:../monorepo.tsup
+      '@osdk/shared.net':
+        specifier: workspace:~
+        version: link:../shared.net
       '@types/archiver':
         specifier: ^6.0.2
         version: 6.0.2
@@ -701,13 +695,13 @@ importers:
         specifier: workspace:*
         version: link:../client.unstable.osw
       '@osdk/generator-converters':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../generator-converters
       '@osdk/internal.foundry.core':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../internal.foundry.core
       '@osdk/internal.foundry.ontologiesv2':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../internal.foundry.ontologiesv2
       '@osdk/shared.client':
         specifier: ^1.0.1
@@ -2068,7 +2062,7 @@ importers:
         specifier: workspace:~
         version: link:../api
       '@osdk/internal.foundry.core':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../internal.foundry.core
     devDependencies:
       '@osdk/monorepo.api-extractor':
