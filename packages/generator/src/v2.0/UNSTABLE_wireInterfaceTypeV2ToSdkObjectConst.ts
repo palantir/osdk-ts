@@ -17,6 +17,7 @@
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/generator-converters";
 import fastDeepEqual from "fast-deep-equal";
 import invariant from "tiny-invariant";
+import { extractNamespace } from "../GenerateContext/EnhancedBase.js";
 import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
 import { propertyJsdoc } from "../shared/propertyJsdoc.js";
@@ -124,6 +125,19 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
     osdkObjectIdentifier,
     propertyKeysIdentifier,
   };
+
+  if (interfaceDef.apiNamespace) {
+    const badProperties = Object.keys(definition.properties).filter(apiName =>
+      extractNamespace(apiName)[0] == null
+    );
+    if (badProperties.length > 0) {
+      throw new Error(
+        `Interfaces with fully qualified api names MUST NOT have any properties with an unqualified api name. Interface: ${interfaceDef.fullApiName}, properties: ${
+          badProperties.join(", ")
+        }`,
+      );
+    }
+  }
 
   function getV2Types() {
     return `import type {
