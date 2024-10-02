@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { WhereClause } from "@osdk/api";
-import type { objectTypeWithAllPropertyTypes } from "@osdk/client.test.ontology";
+import type { ObjectOrInterfaceDefinition, WhereClause } from "@osdk/api";
+import { objectTypeWithAllPropertyTypes } from "@osdk/client.test.ontology";
 import type { Point } from "geojson";
 import { expectType } from "ts-expect";
 import { describe, expect, it } from "vitest";
@@ -23,6 +23,107 @@ import { modernToLegacyWhereClause } from "./modernToLegacyWhereClause.js";
 
 type ObjAllProps = objectTypeWithAllPropertyTypes;
 describe(modernToLegacyWhereClause, () => {
+  describe("api namespaces", () => {
+    describe("interfaces", () => {
+      it("properly converts shortname to fqApiName", () => {
+        const T: ObjectOrInterfaceDefinition = {
+          // ...FooInterface
+          type: "interface",
+          apiName: "a.Foo",
+        };
+
+        const r = modernToLegacyWhereClause({
+          prop: 5,
+        }, T);
+
+        expect(r).toMatchInlineSnapshot(`
+          {
+            "field": "a.prop",
+            "type": "eq",
+            "value": 5,
+          }
+        `);
+      });
+
+      it("properly does not convert when interface has no apiNamespace", () => {
+        const T: ObjectOrInterfaceDefinition = {
+          type: "interface",
+          apiName: "Foo",
+        };
+
+        const r = modernToLegacyWhereClause({
+          "b.prop": 5,
+          foo: 6,
+        }, T);
+
+        expect(r).toMatchInlineSnapshot(`
+          {
+            "type": "and",
+            "value": [
+              {
+                "field": "b.prop",
+                "type": "eq",
+                "value": 5,
+              },
+              {
+                "field": "foo",
+                "type": "eq",
+                "value": 6,
+              },
+            ],
+          }
+        `);
+      });
+
+      it("gracefully handles redundant apiNamespace in property", () => {
+        const T: ObjectOrInterfaceDefinition = {
+          type: "interface",
+          apiName: "a.Foo",
+        };
+
+        const r = modernToLegacyWhereClause({
+          "b.prop": 5,
+          "a.foo": 6,
+        }, T);
+
+        expect(r).toMatchInlineSnapshot(`
+          {
+            "type": "and",
+            "value": [
+              {
+                "field": "b.prop",
+                "type": "eq",
+                "value": 5,
+              },
+              {
+                "field": "a.foo",
+                "type": "eq",
+                "value": 6,
+              },
+            ],
+          }
+        `);
+      });
+
+      it("properly does not convert different apiNamespaces", () => {
+        const T: ObjectOrInterfaceDefinition = {
+          type: "interface",
+          apiName: "a.Foo",
+        };
+
+        expect(modernToLegacyWhereClause({
+          "b.prop": 5,
+        }, T)).toMatchInlineSnapshot(`
+          {
+            "field": "b.prop",
+            "type": "eq",
+            "value": 5,
+          }
+        `);
+      });
+    });
+  });
+
   describe("single checks", () => {
     describe("$within", () => {
       it("properly generates bbox shortcut", async () => {
@@ -32,6 +133,7 @@ describe(modernToLegacyWhereClause, () => {
               $within: [-5, 5, -10, 10],
             },
           },
+          objectTypeWithAllPropertyTypes,
         )).toMatchInlineSnapshot(`
           {
             "field": "geoPoint",
@@ -65,6 +167,7 @@ describe(modernToLegacyWhereClause, () => {
               },
             },
           },
+          objectTypeWithAllPropertyTypes,
         )).toMatchInlineSnapshot(`
           {
             "field": "geoPoint",
@@ -96,6 +199,7 @@ describe(modernToLegacyWhereClause, () => {
               $within: { $distance: [5, "km"], $of: [-5, 5] },
             },
           },
+          objectTypeWithAllPropertyTypes,
         )).toMatchInlineSnapshot(`
         {
           "field": "geoPoint",
@@ -130,6 +234,7 @@ describe(modernToLegacyWhereClause, () => {
               $within: { $distance: [5, "km"], $of: pointAsGeoJsonPoint },
             },
           },
+          objectTypeWithAllPropertyTypes,
         )).toMatchInlineSnapshot(`
         {
           "field": "geoPoint",
@@ -158,6 +263,7 @@ describe(modernToLegacyWhereClause, () => {
               $within: { $polygon: [[[0, 1], [3, 2], [0, 1]]] },
             },
           },
+          objectTypeWithAllPropertyTypes,
         )).toMatchInlineSnapshot(`
           {
             "field": "geoPoint",
@@ -195,6 +301,7 @@ describe(modernToLegacyWhereClause, () => {
               },
             },
           },
+          objectTypeWithAllPropertyTypes,
         )).toMatchInlineSnapshot(`
           {
             "field": "geoPoint",
@@ -284,6 +391,7 @@ describe(modernToLegacyWhereClause, () => {
                 $intersects: [-5, 5, -10, 10],
               },
             },
+            objectTypeWithAllPropertyTypes,
           )).toMatchInlineSnapshot(`
         {
           "field": "geoShape",
@@ -316,6 +424,7 @@ describe(modernToLegacyWhereClause, () => {
                 },
               },
             },
+            objectTypeWithAllPropertyTypes,
           )).toMatchInlineSnapshot(`
           {
             "field": "geoShape",
@@ -347,6 +456,7 @@ describe(modernToLegacyWhereClause, () => {
                 $intersects: { $polygon: [[[0, 1], [3, 2], [0, 1]]] },
               },
             },
+            objectTypeWithAllPropertyTypes,
           )).toMatchInlineSnapshot(`
             {
               "field": "geoShape",
@@ -384,6 +494,7 @@ describe(modernToLegacyWhereClause, () => {
                 },
               },
             },
+            objectTypeWithAllPropertyTypes,
           )).toMatchInlineSnapshot(`
             {
               "field": "geoShape",
@@ -415,7 +526,7 @@ describe(modernToLegacyWhereClause, () => {
       it("inverts ne short hand properly", () => {
         expect(modernToLegacyWhereClause<ObjAllProps>({
           integer: { $ne: 5 },
-        })).toMatchInlineSnapshot(`
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
         {
           "type": "not",
           "value": {
@@ -435,6 +546,7 @@ describe(modernToLegacyWhereClause, () => {
             decimal: 5,
             integer: 10,
           },
+          objectTypeWithAllPropertyTypes,
         )).toMatchInlineSnapshot(`
         {
           "type": "and",
@@ -463,6 +575,7 @@ describe(modernToLegacyWhereClause, () => {
               integer: 10,
             }],
           },
+          objectTypeWithAllPropertyTypes,
         )).toMatchInlineSnapshot(`
           {
             "type": "and",
@@ -491,6 +604,7 @@ describe(modernToLegacyWhereClause, () => {
               integer: 10,
             }],
           },
+          objectTypeWithAllPropertyTypes,
         )).toMatchInlineSnapshot(`
             {
               "type": "or",

@@ -112,7 +112,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       return clientCtx.objectSetFactory(objectType, clientCtx, {
         type: "filter",
         objectSet: objectSet,
-        where: modernToLegacyWhereClause(clause),
+        where: modernToLegacyWhereClause(clause, objectType),
       });
     },
 
