@@ -1,6 +1,6 @@
 {
   "mode": "pre",
-  "tag": "rc",
+  "tag": "beta",
   "initialVersions": {
     "@osdk/examples.docs.example": "0.0.1",
     "@osdk/examples.next-static-export": "0.0.0",
