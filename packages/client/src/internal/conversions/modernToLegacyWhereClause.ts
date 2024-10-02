@@ -27,43 +27,59 @@ import type { SearchJsonQueryV2 } from "@osdk/internal.foundry.core";
 import type { BBox, Position } from "geojson";
 import invariant from "tiny-invariant";
 
+export function extractNamespace(
+  fqApiName: string,
+): [string | undefined, string] {
+  const last = fqApiName.lastIndexOf(".");
+  if (last === -1) return [undefined, fqApiName];
+  return [fqApiName.slice(0, last), fqApiName.slice(last + 1)];
+}
+
 /** @internal */
 export function modernToLegacyWhereClause<
   T extends ObjectOrInterfaceDefinition,
 >(
   whereClause: WhereClause<T>,
+  objectOrInterface: T,
 ): SearchJsonQueryV2 {
   if ("$and" in whereClause) {
     return {
       type: "and",
       value: (whereClause.$and as WhereClause<T>[]).map(
-        modernToLegacyWhereClause,
+        (clause) => modernToLegacyWhereClause(clause, objectOrInterface),
       ),
     };
   } else if ("$or" in whereClause) {
     return {
       type: "or",
       value: (whereClause.$or as WhereClause<T>[]).map(
-        modernToLegacyWhereClause,
+        (clause) => modernToLegacyWhereClause(clause, objectOrInterface),
       ),
     };
   } else if ("$not" in whereClause) {
     return {
       type: "not",
-      value: modernToLegacyWhereClause(whereClause.$not as WhereClause<T>),
+      value: modernToLegacyWhereClause(
+        whereClause.$not as WhereClause<T>,
+        objectOrInterface,
+      ),
     };
   }
+
+  const [objApiNamespace, objApiShortname] = extractNamespace(
+    objectOrInterface.apiName,
+  );
 
   const parts = Object.entries(whereClause);
 
   if (parts.length === 1) {
-    return handleWherePair(parts[0]);
+    return handleWherePair(parts[0], objApiNamespace);
   }
 
   return {
     type: "and",
     value: parts.map<SearchJsonQueryV2>(
-      handleWherePair,
+      v => handleWherePair(v, objApiNamespace),
     ),
   };
 }
@@ -106,7 +122,10 @@ function makeGeoFilterPolygon(
   };
 }
 
-function handleWherePair([field, filter]: [string, any]): SearchJsonQueryV2 {
+function handleWherePair(
+  [field, filter]: [string, any],
+  objApiNamespace: string | undefined,
+): SearchJsonQueryV2 {
   invariant(
     filter != null,
     "Defined key values are only allowed when they are not undefined.",
@@ -116,6 +135,12 @@ function handleWherePair([field, filter]: [string, any]): SearchJsonQueryV2 {
     typeof filter === "string" || typeof filter === "number"
     || typeof filter === "boolean"
   ) {
+    const [fieldApiNamespace, fieldShortName] = extractNamespace(field);
+
+    if (fieldApiNamespace == null && objApiNamespace != null) {
+      field = `${objApiNamespace}.${fieldShortName}`;
+    }
+
     return {
       type: "eq",
       field,

@@ -61,7 +61,7 @@ export async function aggregate<
     body.groupBy = modernToLegacyGroupByClause(req.$groupBy);
   }
   if (req.$where) {
-    body.where = modernToLegacyWhereClause(req.$where);
+    body.where = modernToLegacyWhereClause(req.$where, objectType);
   }
   const result = await OntologiesV2.OntologyObjectSets.aggregate(
     addUserAgentAndRequestContextHeaders(clientCtx, objectType),
