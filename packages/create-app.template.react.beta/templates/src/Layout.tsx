@@ -1,6 +1,6 @@
+import React from "react";
 import palantirLogo from "../public/palantir.svg";
 import reactLogo from "../public/react.svg";
-import React from "react";
 import css from "./Layout.module.css";
 
 interface LayoutProps {

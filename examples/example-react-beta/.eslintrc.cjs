@@ -21,16 +21,16 @@ module.exports = {
     "import/default": "error",
     "import/namespace": "error",
     "import/no-duplicates": "error",
-    "react/react-in-jsx-scope": "off" // Disable this rule for React 17+
+    "react/react-in-jsx-scope": "off", // Disable this rule for React 17+
   },
   settings: {
     react: {
-      version: "detect" // Automatically detect the React version
+      version: "detect", // Automatically detect the React version
     },
     "import/resolver": {
       node: {
-        extensions: [".js", ".jsx", ".ts", ".tsx"]
+        extensions: [".js", ".jsx", ".ts", ".tsx"],
       },
-    }
-  }
+    },
+  },
 };
