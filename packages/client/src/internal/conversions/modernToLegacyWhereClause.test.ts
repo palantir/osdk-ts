@@ -27,7 +27,6 @@ describe(modernToLegacyWhereClause, () => {
     describe("interfaces", () => {
       it("properly converts shortname to fqApiName", () => {
         const T: ObjectOrInterfaceDefinition = {
-          // ...FooInterface
           type: "interface",
           apiName: "a.Foo",
         };
@@ -116,6 +115,27 @@ describe(modernToLegacyWhereClause, () => {
         }, T)).toMatchInlineSnapshot(`
           {
             "field": "b.prop",
+            "type": "eq",
+            "value": 5,
+          }
+        `);
+      });
+    });
+
+    describe("objects", () => {
+      it("does not convert object short property names to fq", () => {
+        const T: ObjectOrInterfaceDefinition = {
+          type: "object",
+          apiName: "a.Foo",
+        };
+
+        const r = modernToLegacyWhereClause({
+          prop: 5,
+        }, T);
+
+        expect(r).toMatchInlineSnapshot(`
+          {
+            "field": "prop",
             "type": "eq",
             "value": 5,
           }
