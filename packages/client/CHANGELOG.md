@@ -1,5 +1,14 @@
 # @osdk/client
 
+## 2.0.2-beta.1
+
+### Patch Changes
+
+- 135bddc: improves interface api name mapping with api namespaces
+  - @osdk/generator-converters@2.0.2-beta.1
+  - @osdk/client.unstable@2.0.2-beta.1
+  - @osdk/api@2.0.2-beta.1
+
 ## 2.0.2-rc.0
 
 ### Patch Changes

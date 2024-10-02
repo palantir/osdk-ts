@@ -78,6 +78,7 @@
     "@osdk/tests.verify-fallback-package-v2": "0.0.3"
   },
   "changesets": [
+    "lemon-seas-fail",
     "little-months-join"
   ]
 }
