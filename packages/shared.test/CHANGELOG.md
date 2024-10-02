@@ -1,5 +1,11 @@
 # @osdk/shared.test
 
+## 2.0.2-beta.1
+
+### Patch Changes
+
+- @osdk/api@2.0.2-beta.1
+
 ## 2.0.2-rc.0
 
 ### Patch Changes
