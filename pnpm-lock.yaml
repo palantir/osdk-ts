@@ -701,13 +701,13 @@ importers:
         specifier: workspace:*
         version: link:../client.unstable.osw
       '@osdk/generator-converters':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../generator-converters
       '@osdk/internal.foundry.core':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../internal.foundry.core
       '@osdk/internal.foundry.ontologiesv2':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../internal.foundry.ontologiesv2
       '@osdk/shared.client':
         specifier: ^1.0.1
@@ -2068,7 +2068,7 @@ importers:
         specifier: workspace:~
         version: link:../api
       '@osdk/internal.foundry.core':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../internal.foundry.core
     devDependencies:
       '@osdk/monorepo.api-extractor':
