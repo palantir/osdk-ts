@@ -19,37 +19,21 @@ import type {
   __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
   EXPERIMENTAL_ObjectSetListener as ObjectSetListener,
 } from "@osdk/api/unstable";
-import type { LoadAllOntologiesResponse } from "@osdk/client.unstable";
-import {
-  bulkLoadOntologyEntities,
-  createTemporaryObjectSet,
-  loadAllOntologies,
-} from "@osdk/client.unstable";
 import type {
   ObjectSet,
   ObjectSetStreamSubscribeRequest,
   ObjectSetStreamSubscribeRequests,
   ObjectSetSubscribeResponses,
   ObjectSetUpdates,
-  OntologyObjectV2,
+  RefreshObjectSet,
   StreamMessage,
   SubscriptionClosed,
 } from "@osdk/internal.foundry.core";
-
-import type { RefreshObjectSet } from "@osdk/client.unstable.osw";
-import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
-import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
-import { ObjectSetSubscribeResponse_error } from "../../../client.unstable.osw/build/esm/generated/object-set-watcher/objectsetwatcher/api/ObjectSetSubscribeResponse.js";
-import { metadataCacheClient } from "../__unstable/ConjureSupport.js";
 import type { Logger } from "../Logger.js";
 import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
-import {
-  getObjectSetBaseType,
-  toConjureObjectSet,
-} from "./toConjureObjectSet.js";
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const MINIMUM_RECONNECT_DELAY_MS = 5 * 1000;
@@ -465,7 +449,6 @@ export class ObjectSetListenerWebsocket {
       const response = responses[i];
       switch (response.type) {
         case "error":
-          // sub.listener.onError(response.error);
           sub.listener.onError(response.errors);
           this.#unsubscribe(sub, "error");
           break;
