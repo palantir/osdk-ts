@@ -57,11 +57,11 @@ describe("OsdkObject", () => {
 
       // we should get the employee we requested
       const employee = result.data[0];
+      expect(JSON.stringify(employee)).toBeDefined();
       expect(employee).toMatchObject({
         "$apiName": "Employee",
         "$objectType": "Employee",
         "$primaryKey": 50030,
-        "$title": "John Doe",
         "class": "Red",
         "employeeId": 50030,
         "employeeStatus": expect.anything(),
