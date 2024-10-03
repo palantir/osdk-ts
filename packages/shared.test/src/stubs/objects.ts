@@ -23,7 +23,6 @@ export const employee1 = {
     "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-7725c5f18b61",
   __primaryKey: 50030,
   __apiName: "Employee",
-  __title: "John Doe",
   employeeId: 50030,
   fullName: "John Doe",
   office: "NYC",

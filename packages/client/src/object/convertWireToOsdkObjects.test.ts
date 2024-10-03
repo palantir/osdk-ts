@@ -67,7 +67,6 @@ describe("convertWireToOsdkObjects", () => {
       "$apiName",
       "$objectType",
       "$primaryKey",
-      "$title",
     ].sort());
 
     expect(Object.keys(employee.$as)).toEqual([]);
