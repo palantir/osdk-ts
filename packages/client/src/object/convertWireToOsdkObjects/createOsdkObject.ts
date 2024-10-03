@@ -143,8 +143,7 @@ export function createOsdkObject<
       }
       return false;
     },
-    // console.log("this is p", p);
-    // console.log(Reflect.getOwnPropertyDescriptor(target, p));
+
     getOwnPropertyDescriptor(target, p) {
       if (p === RawObject) {
         return Reflect.getOwnPropertyDescriptor(target, p);
