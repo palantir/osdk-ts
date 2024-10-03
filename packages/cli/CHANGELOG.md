@@ -1,5 +1,11 @@
 # @osdk/cli
 
+## 0.24.2-beta.2
+
+### Patch Changes
+
+- 51354c5: Ensures codegen is bundled with the cli version
+
 ## 0.24.2-beta.1
 
 ### Patch Changes

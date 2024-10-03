@@ -1,5 +1,12 @@
 # @osdk/generator-converters
 
+## 2.0.2-beta.2
+
+### Patch Changes
+
+- 51354c5: Locks dependency version of 3 internal libraries
+  - @osdk/api@2.0.2-beta.2
+
 ## 2.0.2-beta.1
 
 ### Patch Changes
