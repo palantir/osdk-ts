@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ReferenceUpdate } from "../object/ReferenceUpdates.js";
 import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
 import type { OsdkObjectOrInterfaceFrom } from "../OsdkObjectFrom.js";
 
@@ -26,10 +27,9 @@ export interface EXPERIMENTAL_ObjectSetListener<
   onChange?: (objects: Array<OsdkObjectOrInterfaceFrom<O>>) => void;
 
   /**
-   * An objects backing datasource has changed and a new value is provided
+   * A property on an object that is backed by another datasource has received changes
    */
-  // TODO: Implement
-  onReferenceUpdate?: (updates: Array<OsdkObjectOrInterfaceFrom<O>>) => void;
+  onReferenceUpdate?: (updates: Array<ReferenceUpdate<O>>) => void;
 
   /**
    * The ObjectSet has become outdated and should be re-fetched in its entirety.

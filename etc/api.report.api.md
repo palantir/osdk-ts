@@ -791,6 +791,14 @@ export namespace QueryResult {
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueWireToClient[T];
 }
 
+// @public (undocumented)
+export type ReferenceUpdate<T extends ObjectOrInterfaceDefinition> = {
+    apiName: T["apiName"];
+    primaryKey: PrimaryKeyType<T>;
+    property: PropertyKeys<T>;
+    value?: ReferenceValue;
+};
+
 // Warning: (ae-forgotten-export) The symbol "ErrorResult" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -939,6 +947,7 @@ export type WirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "
 //
 // src/aggregate/AggregateOpts.ts:26:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:26:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
+// src/object/ReferenceUpdates.ts:27:3 - (ae-forgotten-export) The symbol "ReferenceValue" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

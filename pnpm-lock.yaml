@@ -697,9 +697,6 @@ importers:
       '@osdk/client.unstable':
         specifier: workspace:*
         version: link:../client.unstable
-      '@osdk/client.unstable.osw':
-        specifier: workspace:*
-        version: link:../client.unstable.osw
       '@osdk/generator-converters':
         specifier: workspace:~
         version: link:../generator-converters

@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
+import type {
+  ObjectOrInterfaceDefinition,
+  Osdk,
+  ReferenceUpdate,
+} from "@osdk/api";
 import type {
   __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
   EXPERIMENTAL_ObjectSetListener as ObjectSetListener,
@@ -418,7 +422,20 @@ export class ObjectSetListenerWebsocket {
     );
     const referenceUpdates = payload.updates.filter((update) =>
       update.type === "reference"
-    );
+    ).filter((update) => update.value.type === "geotimeSeriesValue");
+
+    sub.listener.onReferenceUpdate(referenceUpdates.map((rf) => {
+      const value = {
+        timestamp: rf.value.timestamp,
+        position: rf.value.position,
+      };
+      return {
+        apiName: rf.objectType,
+        primaryKey: rf.primaryKey,
+        property: rf.property,
+        value: value,
+      };
+    }) as Array<ReferenceUpdate<any>>);
 
     sub.listener.onChange(
       await convertWireToOsdkObjects(
