@@ -1,1 +1,1 @@
-export * from './objects/Todo';
+export { Todo } from './objects/Todo';

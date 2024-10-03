@@ -1,9 +1,9 @@
-export * from './objects/BoundariesUsState.js';
-export * from './objects/BuilderDeploymentState.js';
-export * from './objects/DherlihyComplexObject.js';
-export * from './objects/Employee.js';
-export * from './objects/ObjectTypeWithAllPropertyTypes.js';
-export * from './objects/Person.js';
-export * from './objects/Todo.js';
-export * from './objects/Venture.js';
-export * from './objects/WeatherStation.js';
+export { BoundariesUsState } from './objects/BoundariesUsState.js';
+export { BuilderDeploymentState } from './objects/BuilderDeploymentState.js';
+export { DherlihyComplexObject } from './objects/DherlihyComplexObject.js';
+export { Employee } from './objects/Employee.js';
+export { ObjectTypeWithAllPropertyTypes } from './objects/ObjectTypeWithAllPropertyTypes.js';
+export { Person } from './objects/Person.js';
+export { Todo } from './objects/Todo.js';
+export { Venture } from './objects/Venture.js';
+export { WeatherStation } from './objects/WeatherStation.js';

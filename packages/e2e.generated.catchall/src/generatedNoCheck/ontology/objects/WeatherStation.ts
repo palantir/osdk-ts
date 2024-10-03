@@ -30,10 +30,16 @@ export namespace WeatherStation {
 
   export interface ObjectSet extends $ObjectSet<WeatherStation, WeatherStation.ObjectSet> {}
 
+  export type OsdkInstance<
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    K extends keyof WeatherStation.Props = keyof WeatherStation.Props,
+  > = $Osdk.Instance<WeatherStation, OPTIONS, K>;
+
+  /** @deprecated use OsdkInstance */
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof WeatherStation.Props = keyof WeatherStation.Props,
-  > = $Osdk<WeatherStation, K | OPTIONS>;
+  > = OsdkInstance<OPTIONS, K>;
 }
 
 export interface WeatherStation extends $ObjectTypeDefinition {

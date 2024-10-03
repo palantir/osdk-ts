@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OsdkObject } from "@osdk/api";
+import type { OsdkBase } from "@osdk/api";
 import type {
   DirectedLinkTypeRid,
   FoundryObjectReference,
@@ -34,7 +34,7 @@ import {
 import { metadataCacheClient } from "./ConjureSupport.js";
 
 export interface BulkLinkResult {
-  object: OsdkObject<any>;
+  object: OsdkBase<any>;
   linkApiName: string;
   otherObjectApiName: string | undefined;
   otherObjectPk: unknown;
@@ -42,7 +42,7 @@ export interface BulkLinkResult {
 
 export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
   return async function*(
-    objs: Array<OsdkObject<any>>,
+    objs: Array<OsdkBase<any>>,
     linkTypes: string[],
   ): AsyncGenerator<BulkLinkResult, void, unknown> {
     if (objs.length === 0) {
@@ -158,7 +158,7 @@ export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
 
 function findObject(
   objectIdentifier: ObjectIdentifier,
-  objs: (OsdkObject<any>)[],
+  objs: (OsdkBase<any>)[],
 ) {
   const { pkValue } = getPrimaryKeyOrThrow(objectIdentifier);
 

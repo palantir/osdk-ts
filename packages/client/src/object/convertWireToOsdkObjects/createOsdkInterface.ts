@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { InterfaceMetadata, Osdk, OsdkObject } from "@osdk/api";
+import type { InterfaceMetadata, Osdk, OsdkBase } from "@osdk/api";
 import { extractNamespace } from "../../internal/conversions/modernToLegacyWhereClause.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { createSimpleCache } from "../SimpleCache.js";
@@ -51,8 +51,8 @@ export function createOsdkInterface<
 
   const handler = handlerCache.get(interfaceDef);
 
-  const proxy = new Proxy<OsdkObject<any>>(
-    interfaceHolder as unknown as OsdkObject<any>, // the wrapper doesn't contain everything obviously. we proxy
+  const proxy = new Proxy<OsdkBase<any>>(
+    interfaceHolder as unknown as OsdkBase<any>, // the wrapper doesn't contain everything obviously. we proxy
     handler,
   );
   return proxy;

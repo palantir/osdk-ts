@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
-import type { IsNever, Osdk } from "../OsdkObjectFrom.js";
+import type { ExtractOptions, IsNever, Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { NullabilityAdherence } from "./FetchPageArgs.js";
 
@@ -43,24 +42,28 @@ export type UnionIfTrue<
   : UNION_IF_TRUE extends true ? S | E
   : S;
 
+/**
+ * Helper type for converting fetch options into an Osdk object
+ */
 export type FetchPageResult<
   Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
-> = PageResult<SingleOsdkResult<Q, L, R, S>>;
+> = PageResult<
+  PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S>>
+    : Osdk.Instance<Q, ExtractOptions<R, S>, L>
+>;
 
+/**
+ * Helper type for converting fetch options into an Osdk object
+ */
 export type SingleOsdkResult<
   Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
-> = Osdk<
-  Q,
-  | (IsAny<L> extends true ? PropertyKeys<Q> : L)
-  | (S extends false ? "$notStrict" : never)
-  | (DefaultToFalse<R> extends false ? never : "$rid")
->;
+> = Osdk.Instance<Q, ExtractOptions<R, S>, L>;
 
 export type IsAny<T> = unknown extends T
   ? [keyof T] extends [never] ? false : true

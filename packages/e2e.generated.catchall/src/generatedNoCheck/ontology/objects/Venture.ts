@@ -35,10 +35,16 @@ export namespace Venture {
 
   export interface ObjectSet extends $ObjectSet<Venture, Venture.ObjectSet> {}
 
+  export type OsdkInstance<
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    K extends keyof Venture.Props = keyof Venture.Props,
+  > = $Osdk.Instance<Venture, OPTIONS, K>;
+
+  /** @deprecated use OsdkInstance */
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Venture.Props = keyof Venture.Props,
-  > = $Osdk<Venture, K | OPTIONS>;
+  > = OsdkInstance<OPTIONS, K>;
 }
 
 export interface Venture extends $ObjectTypeDefinition {

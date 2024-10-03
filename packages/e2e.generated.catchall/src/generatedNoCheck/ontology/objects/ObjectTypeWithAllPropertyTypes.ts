@@ -120,10 +120,16 @@ export namespace ObjectTypeWithAllPropertyTypes {
   export interface ObjectSet
     extends $ObjectSet<ObjectTypeWithAllPropertyTypes, ObjectTypeWithAllPropertyTypes.ObjectSet> {}
 
+  export type OsdkInstance<
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    K extends keyof ObjectTypeWithAllPropertyTypes.Props = keyof ObjectTypeWithAllPropertyTypes.Props,
+  > = $Osdk.Instance<ObjectTypeWithAllPropertyTypes, OPTIONS, K>;
+
+  /** @deprecated use OsdkInstance */
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof ObjectTypeWithAllPropertyTypes.Props = keyof ObjectTypeWithAllPropertyTypes.Props,
-  > = $Osdk<ObjectTypeWithAllPropertyTypes, K | OPTIONS>;
+  > = OsdkInstance<OPTIONS, K>;
 }
 
 export interface ObjectTypeWithAllPropertyTypes extends $ObjectTypeDefinition {
