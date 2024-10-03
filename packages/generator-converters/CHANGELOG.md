@@ -1,5 +1,73 @@
 # @osdk/generator-converters
 
+## 2.0.0
+
+### Major Changes
+
+- 1252d94: ESM Only
+- 56df85a: We now generate minimal object and interface types
+
+### Minor Changes
+
+- dc25fb4: Code generation now uses MinQueryDef
+- dc25fb4: Improve query generics
+- dc25fb4: Further simplify types
+- dc25fb4: Renamed definition types to metadata
+- dc25fb4: Modified return type of fetchMetadata to return Object/Interface Definitions
+- dc25fb4: Expose parameters on action metadata
+- dc25fb4: Simplified types
+- dc25fb4: Updates return types of fetchMetadata to be Action and Query Definitions
+- d4d6605: Audited and cleaned up deps
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [3affe49]
+- Updated dependencies [b946e00]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [0ea1a17]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [9b0617d]
+- Updated dependencies [94105a5]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [1252d94]
+- Updated dependencies [e6ade8b]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [795777a]
+- Updated dependencies [fe9547e]
+- Updated dependencies [95f9247]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [d2f75f9]
+- Updated dependencies [b7cd0a1]
+- Updated dependencies [512ee35]
+- Updated dependencies [e86c505]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [0ce2858]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [7c2db00]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [fc28eae]
+- Updated dependencies [56df85a]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [a9923f3]
+- Updated dependencies [1f633f7]
+- Updated dependencies [d4d6605]
+- Updated dependencies [64818dc]
+  - @osdk/internal.foundry.core@0.2.0
+  - @osdk/api@2.0.0
+
 ## 2.0.0-beta.16
 
 ### Minor Changes

@@ -1,5 +1,26 @@
 # @osdk/shared.client.impl
 
+## 1.0.0
+
+### Major Changes
+
+- 1252d94: ESM Only
+
+### Minor Changes
+
+- d4d6605: Audited and cleaned up deps
+
+### Patch Changes
+
+- Updated dependencies [b60e107]
+- Updated dependencies [5dc1241]
+- Updated dependencies [1252d94]
+- Updated dependencies [d4d6605]
+- Updated dependencies [5dc1241]
+  - @osdk/shared.client@1.0.0
+  - @osdk/shared.net.errors@2.0.0
+  - @osdk/shared.net.fetch@1.0.0
+
 ## 1.0.0-beta.3
 
 ### Patch Changes

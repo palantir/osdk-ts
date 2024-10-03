@@ -1,5 +1,39 @@
 # @osdk/internal.foundry.ontologies
 
+## 0.2.0
+
+### Minor Changes
+
+- 5d6d5ab: Use the "verb" where possible
+- 1770490: URLs in jsdoc now link to palantir.com
+- 5d6d5ab: Internal improvement to type references
+- 5d6d5ab: Updated to latest gateway apis
+- 5d6d5ab: We now generate error types
+- 5d6d5ab: Includes @alpha/@beta/@public jsdoc tags
+- 5d6d5ab: Internally refactored to support new API versions
+- 5d6d5ab: Autofill Content-Length and Content-Type headers in API's that accept Blobs
+- 5d6d5ab: SLS dependencies are optional
+- d4d6605: Audited and cleaned up deps
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [b60e107]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [5dc1241]
+- Updated dependencies [1252d94]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [d4d6605]
+- Updated dependencies [5dc1241]
+  - @osdk/internal.foundry.core@0.2.0
+  - @osdk/shared.client@1.0.0
+  - @osdk/shared.net.platformapi@0.3.0
+
 ## 0.2.0-beta.10
 
 ### Patch Changes

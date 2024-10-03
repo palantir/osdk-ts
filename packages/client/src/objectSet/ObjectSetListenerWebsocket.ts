@@ -208,7 +208,6 @@ export class ObjectSetListenerWebsocket {
       if (subscriptionIsDone(sub)) {
         return;
       }
-      // Use new temporary object set id
       sub.isReady = true;
       // if we aren't open, then this happens after we #onConnect
       if (this.#ws?.readyState === WebSocket.OPEN) {

@@ -1,5 +1,47 @@
 # @osdk/e2e.generated.1.1.x
 
+## 0.3.0
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+- Updated dependencies [3affe49]
+- Updated dependencies [b946e00]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [0ea1a17]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [9b0617d]
+- Updated dependencies [94105a5]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [1252d94]
+- Updated dependencies [e6ade8b]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [795777a]
+- Updated dependencies [fe9547e]
+- Updated dependencies [95f9247]
+- Updated dependencies [d2f75f9]
+- Updated dependencies [b7cd0a1]
+- Updated dependencies [512ee35]
+- Updated dependencies [e86c505]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [0ce2858]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [7c2db00]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [fc28eae]
+- Updated dependencies [56df85a]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [a9923f3]
+- Updated dependencies [1f633f7]
+- Updated dependencies [d4d6605]
+- Updated dependencies [64818dc]
+  - @osdk/api@2.0.0
+
 ## 0.3.0-beta.5
 
 ### Patch Changes

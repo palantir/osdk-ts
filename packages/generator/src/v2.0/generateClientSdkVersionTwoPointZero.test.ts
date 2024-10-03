@@ -155,6 +155,14 @@ function changeNames(ontology: WireOntologyDefinition, newNames: {
         ifaceType.extendsInterfaces = ifaceType.extendsInterfaces.map(
           v => v === oldIfaceName ? newIfaceName : v,
         );
+        changeEachEntry(
+          ifaceType.properties,
+          newNames.spts,
+          (property, oldSptName, newSptName) => {
+            changeValue(property, "apiName", oldSptName, newSptName);
+          },
+          true,
+        );
       },
       true,
     );

@@ -15,6 +15,7 @@
  */
 
 import type { InterfaceMetadata, Osdk, OsdkObject } from "@osdk/api";
+import { extractNamespace } from "../../internal/conversions/modernToLegacyWhereClause.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { createSimpleCache } from "../SimpleCache.js";
 import type {
@@ -82,6 +83,14 @@ function createInterfaceProxyHandler(
           };
       }
 
+      const [objApiNamespace] = extractNamespace(newDef.apiName);
+      if (objApiNamespace != null) {
+        const [apiNamespace, apiName] = extractNamespace(p as string);
+        if (apiNamespace == null) {
+          p = `${objApiNamespace}.${apiName}`;
+        }
+      }
+
       if (newDef.properties[p as string] != null) {
         return {
           enumerable: true,
@@ -95,13 +104,26 @@ function createInterfaceProxyHandler(
 
     ownKeys(target) {
       const underlying = target[UnderlyingOsdkObject];
+      const [objApiNamespace] = extractNamespace(newDef.apiName);
+      let propNames = Object.keys(newDef.properties);
+
+      if (objApiNamespace != null) {
+        propNames = propNames.map(p => {
+          const [apiNamespace, apiName] = extractNamespace(p as string);
+          if (apiNamespace === objApiNamespace) {
+            p = apiName;
+          }
+          return p;
+        });
+      }
+
       return [
         "$apiName",
         "$objectType",
         "$primaryKey",
         ...(underlying["$rid"] ? ["$rid"] : []),
         "$title",
-        ...Object.keys(newDef.properties),
+        ...propNames,
       ];
     },
 
@@ -119,6 +141,14 @@ function createInterfaceProxyHandler(
         case "$objectType":
         case "$rid":
           return underlying[p as string];
+      }
+
+      const [objApiNamespace] = extractNamespace(newDef.apiName);
+      if (objApiNamespace != null) {
+        const [apiNamespace, apiName] = extractNamespace(p as string);
+        if (apiNamespace == null) {
+          p = `${objApiNamespace}.${apiName}`;
+        }
       }
 
       if (newDef.properties[p as string] != null) {

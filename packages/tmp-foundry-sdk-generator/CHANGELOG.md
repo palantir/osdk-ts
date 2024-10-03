@@ -1,5 +1,102 @@
 # @osdk/foundry-sdk-generator
 
+## 2.0.0
+
+### Major Changes
+
+- 1252d94: ESM Only
+
+### Minor Changes
+
+- ff718df: Fixes an issue where ambiguous ontology api names can conflict. Used rid instead.
+- 9eb7c6e: Properly handles \_\_dirname
+- 45b8178: Generation now works with or without https prefix on stack name
+- 9eb7c6e: Upgrades version of rollup used internally
+- e6ade8b: Adds fetchMetadata method to client
+- a6486f6: Add peer dependency on client for code generation.
+- 0a374d6: Remove legacy client
+- 9eb7c6e: Restore cjs exports
+- 1f633f7: Removed dependency on @osdk/client.api
+- d4d6605: Audited and cleaned up deps
+
+### Patch Changes
+
+- Updated dependencies [39525b8]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [ac4f4fd]
+- Updated dependencies [f86f8d0]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [3affe49]
+- Updated dependencies [b946e00]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [0ea1a17]
+- Updated dependencies [7494995]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [9b0617d]
+- Updated dependencies [0b20066]
+- Updated dependencies [76a7adb]
+- Updated dependencies [33759fb]
+- Updated dependencies [1770490]
+- Updated dependencies [94105a5]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [51fe88c]
+- Updated dependencies [68a8dc7]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [1252d94]
+- Updated dependencies [e6ade8b]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [f009bb2]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [5a41e5e]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [795777a]
+- Updated dependencies [fe9547e]
+- Updated dependencies [95f9247]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [d2f75f9]
+- Updated dependencies [bbfebfd]
+- Updated dependencies [b7cd0a1]
+- Updated dependencies [7494995]
+- Updated dependencies [512ee35]
+- Updated dependencies [0ae2b07]
+- Updated dependencies [e86c505]
+- Updated dependencies [6eeca39]
+- Updated dependencies [01724ae]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [0ce2858]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [5c89065]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [7c2db00]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [fc28eae]
+- Updated dependencies [56df85a]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [0a374d6]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [885c8e4]
+- Updated dependencies [96ea876]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [6f93c8b]
+- Updated dependencies [a9923f3]
+- Updated dependencies [1f633f7]
+- Updated dependencies [d4d6605]
+- Updated dependencies [96ea876]
+- Updated dependencies [64818dc]
+- Updated dependencies [081114f]
+  - @osdk/client@2.0.0
+  - @osdk/internal.foundry.ontologiesv2@0.2.0
+  - @osdk/internal.foundry.ontologies@0.2.0
+  - @osdk/internal.foundry.core@0.2.0
+  - @osdk/generator@2.0.0
+  - @osdk/api@2.0.0
+  - @osdk/shared.net@2.0.0
+
 ## 2.0.0-beta.16
 
 ### Patch Changes

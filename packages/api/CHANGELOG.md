@@ -1,5 +1,57 @@
 # @osdk/api
 
+## 2.0.0
+
+### Major Changes
+
+- 3affe49: Placeholder for breaking changes
+- 9b0617d: Legacy types were removed
+- 1252d94: ESM Only
+- fe9547e: All types from @osdk/client.api merged into @osdk/api
+- 56df85a: We now generate minimal object and interface types
+
+### Minor Changes
+
+- dc25fb4: Code generation now uses MinQueryDef
+- b946e00: Emitted action definition is minimal size now
+- a2c7b37: Add docs for object sets and attachments.
+- 0ea1a17: Fixes an issue where properties may not be inferred correctly when directly used in a return statement
+- dc25fb4: Improve query generics
+- 94105a5: Updates return type of actions to improve ease of use
+- dc25fb4: Rename MinimumActionDefinition to MinActionDef
+- a2c7b37: Enables better tree shaking
+- dc25fb4: Further simplify types
+- e6ade8b: Adds fetchMetadata method to client
+- dc25fb4: Renamed definition types to metadata
+- dc25fb4: Fixes edge cases in inferred return types especially when changing object types
+- a2c7b37: Internal refactor for TimeSeriesProperty
+- 795777a: Change how queries are executed, now use executeFunction call instead
+- 95f9247: Adds In filter to Where clauses
+- d2f75f9: Adding support for arguments in asyncIter similar to fetchPage. Arguments that are not permitted in asyncIter are nextPageToken and pageSize.
+- b7cd0a1: Exposes unstable experimental features directly on client
+- 512ee35: Exposed editedObjectTypes for all action results and split edits based on edit type.
+- e86c505: Removed unused test file
+- dc25fb4: Modified return type of fetchMetadata to return Object/Interface Definitions
+- 0ce2858: Improves casting between Foo.ObjectSet and ObjectSet<Foo>
+- dc25fb4: Expose parameters on action metadata
+- 7c2db00: Updates QueryDefinition to include an optional generic argument
+- dc25fb4: Simplified types
+- dc25fb4: Updates return types of fetchMetadata to be Action and Query Definitions
+- fc28eae: Fetching interfaces learns $\_\_EXPERIMENTAL_selectedObjectTypes
+- dc25fb4: Renamed Min_Definition to \_Definition
+- a9923f3: Adds exactDistinct to aggregations
+- 1f633f7: Removed dependency on @osdk/client.api
+- d4d6605: Audited and cleaned up deps
+- 64818dc: Drop support for internal gateway package
+
+### Patch Changes
+
+- Updated dependencies [1252d94]
+- Updated dependencies [01724ae]
+- Updated dependencies [d4d6605]
+- Updated dependencies [64818dc]
+  - @osdk/shared.net@2.0.0
+
 ## 2.0.0-beta.16
 
 ### Minor Changes

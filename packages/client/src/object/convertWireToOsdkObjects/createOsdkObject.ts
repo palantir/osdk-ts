@@ -148,10 +148,11 @@ export function createOsdkObject<
       if (p === RawObject) {
         return Reflect.getOwnPropertyDescriptor(target, p);
       }
+
       if (target[RawObject][p as string] != null) {
         return { configurable: true, enumerable: true };
       }
-      return { enumerable: false };
+      return undefined;
     },
   });
   return osdkObject;

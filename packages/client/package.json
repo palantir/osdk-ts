@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client",
-  "version": "2.0.0-beta.16",
+  "version": "2.0.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -32,10 +32,10 @@
   "dependencies": {
     "@osdk/api": "workspace:~",
     "@osdk/client.unstable": "workspace:*",
-    "@osdk/generator-converters": "workspace:~",
-    "@osdk/internal.foundry.core": "workspace:~",
-    "@osdk/internal.foundry.ontologiesv2": "workspace:~",
-    "@osdk/shared.client": "workspace:^",
+    "@osdk/generator-converters": "workspace:*",
+    "@osdk/internal.foundry.core": "workspace:*",
+    "@osdk/internal.foundry.ontologiesv2": "workspace:*",
+    "@osdk/shared.client": "^1.0.1",
     "@osdk/shared.client.impl": "workspace:~",
     "@osdk/shared.net.errors": "workspace:~",
     "@osdk/shared.net.fetch": "workspace:~",

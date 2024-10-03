@@ -1,5 +1,33 @@
 # @osdk/foundry.functions
 
+## 2.1.0
+
+### Minor Changes
+
+- 5d6d5ab: Use the "verb" where possible
+- 5d6d5ab: Internal improvement to type references
+- 5d6d5ab: Internally refactored to support new API versions
+- d4d6605: Audited and cleaned up deps
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [b60e107]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [5dc1241]
+- Updated dependencies [1252d94]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [d4d6605]
+- Updated dependencies [5dc1241]
+  - @osdk/foundry.core@2.1.0
+  - @osdk/shared.client@1.0.0
+  - @osdk/shared.net.platformapi@0.3.0
+
 ## 2.1.0-beta.6
 
 ### Patch Changes

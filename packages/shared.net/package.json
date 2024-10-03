@@ -1,6 +1,6 @@
 {
   "name": "@osdk/shared.net",
-  "version": "2.0.0-beta.6",
+  "version": "2.0.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -27,7 +27,7 @@
     "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
-    "@osdk/shared.client": "workspace:^",
+    "@osdk/shared.client": "^1.0.1",
     "@osdk/shared.client.impl": "workspace:~",
     "@osdk/shared.net.errors": "workspace:~",
     "@osdk/shared.net.fetch": "workspace:~"

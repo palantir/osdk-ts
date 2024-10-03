@@ -1,5 +1,15 @@
 # @osdk/shared.net.errors
 
+## 2.0.0
+
+### Major Changes
+
+- 1252d94: ESM Only
+
+### Minor Changes
+
+- d4d6605: Audited and cleaned up deps
+
 ## 2.0.0-beta.1
 
 ### Minor Changes

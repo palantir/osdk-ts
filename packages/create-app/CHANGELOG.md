@@ -1,5 +1,13 @@
 # @osdk/create-app
 
+## 0.19.0
+
+### Minor Changes
+
+- ff790c5: Rollup dependencies
+- a0330ef: create TS 2.0 template, update the create app to use it when needed and the generate example to generate it
+- d4d6605: Audited and cleaned up deps
+
 ## 0.19.0-beta.7
 
 ### Minor Changes

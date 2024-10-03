@@ -1,5 +1,20 @@
 # @osdk/platform-sdk-generator
 
+## 0.5.0
+
+### Minor Changes
+
+- 5d6d5ab: Use the "verb" where possible
+- 0441dab: Generates @alpha/@beta/@public jsdoc tags
+- 1770490: URLs in jsdoc now link to palantir.com
+- 5d6d5ab: Internal improvement to type references
+- 5d6d5ab: We now generate error types
+- 5d6d5ab: Internally refactored to support new API versions
+- 5d6d5ab: Autofill Content-Length and Content-Type headers in API's that accept Blobs
+- 885c8e4: Fixing bug for codegen on windows machines, where we would use backslashes instead of forward slashes for import paths, which should be OS agnostic.
+- 5d6d5ab: SLS dependencies are optional
+- d4d6605: Audited and cleaned up deps
+
 ## 0.5.0-beta.5
 
 ### Minor Changes

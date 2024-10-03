@@ -1,5 +1,99 @@
 # @osdk/generator
 
+## 2.0.0
+
+### Major Changes
+
+- 1252d94: ESM Only
+- 56df85a: We now generate minimal object and interface types
+
+### Minor Changes
+
+- ac4f4fd: Notable changes:
+  - `{{actionApiName}}$Params` is deprecated in favor of `ActionParams${{actionApiName}}`.
+  - All generated `{{actionApiName}}$Params` objects are now exported from generated code.
+  - All `{{actionApiName}}$Params` are marked as `readonly`.
+  - Some types that are now only needed in `@osdk/client` have been moved back out of `@osdk/client.api`.
+  - Generated `ActionParams${{actionApiName}}` are simpler and do not rely on type mapping for the keys, the array'ness, nor multiplicity.
+  - `AttachmentUpload.name` is now `readonly`.
+- dc25fb4: Code generation now uses MinQueryDef
+- b946e00: Emitted action definition is minimal size now
+- 7494995: Internal changes to file paths
+- dc25fb4: Improve query generics
+- 33759fb: Removes deprecated types and renames Definition to improve intellisense
+- 1770490: URLs in jsdoc now link to palantir.com
+- dc25fb4: Rename MinimumActionDefinition to MinActionDef
+- 51fe88c: Fix edge case with never in newly generated types
+- 68a8dc7: Fixes an issue that could cause an object with sub-selection to be assigned as a full object
+- dc25fb4: Further simplify types
+- dc25fb4: Renamed definition types to metadata
+- dc25fb4: Fixes edge cases in inferred return types especially when changing object types
+- bbfebfd: Fix generation of actions with full api names
+- 7494995: Fixes query type generation
+- dc25fb4: Modified return type of fetchMetadata to return Object/Interface Definitions
+- 5c89065: Generator no longer organizes imports
+- dc25fb4: Simplified types
+- dc25fb4: Updates return types of fetchMetadata to be Action and Query Definitions
+- 0a374d6: Remove legacy client
+- dc25fb4: Renamed Min_Definition to \_Definition
+- 885c8e4: Fixing bug for codegen on windows machines, where we would use backslashes instead of forward slashes for import paths, which should be OS agnostic.
+- 96ea876: Add namespaces for objects,actions,queries so that you can enumerate them.
+- 6f93c8b: Generates fewer overrides to prevent potential failures
+- 1f633f7: Removed dependency on @osdk/client.api
+- d4d6605: Audited and cleaned up deps
+- 96ea876: Adding js docs for actions so you can hover and see params and description.
+- 081114f: Splits batchApplyAction out of applyAction
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [3affe49]
+- Updated dependencies [b946e00]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [0ea1a17]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [9b0617d]
+- Updated dependencies [94105a5]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [1252d94]
+- Updated dependencies [e6ade8b]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [795777a]
+- Updated dependencies [fe9547e]
+- Updated dependencies [95f9247]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [d2f75f9]
+- Updated dependencies [b7cd0a1]
+- Updated dependencies [512ee35]
+- Updated dependencies [e86c505]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [0ce2858]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [7c2db00]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [fc28eae]
+- Updated dependencies [56df85a]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [a9923f3]
+- Updated dependencies [1f633f7]
+- Updated dependencies [d4d6605]
+- Updated dependencies [64818dc]
+  - @osdk/internal.foundry.core@0.2.0
+  - @osdk/generator-converters@2.0.0
+  - @osdk/api@2.0.0
+
 ## 2.0.0-beta.16
 
 ### Minor Changes

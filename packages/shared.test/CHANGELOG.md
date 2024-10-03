@@ -1,5 +1,78 @@
 # @osdk/shared.test
 
+## 2.0.0
+
+### Major Changes
+
+- 1252d94: ESM Only
+
+### Minor Changes
+
+- dc25fb4: Further simplify types
+- e6ade8b: Adds fetchMetadata method to client
+- dc25fb4: Renamed definition types to metadata
+- c94e4dd: Internal file refactor for query endpoints
+- 01724ae: Remove unnecessary dependency
+- dc25fb4: Modified return type of fetchMetadata to return Object/Interface Definitions
+- 5d6d5ab: Internally refactored to support new API versions
+- dc25fb4: Simplified types
+- dc25fb4: Renamed Min_Definition to \_Definition
+- d4d6605: Audited and cleaned up deps
+- 64818dc: Drop support for internal gateway package
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [3affe49]
+- Updated dependencies [b946e00]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [0ea1a17]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [9b0617d]
+- Updated dependencies [1770490]
+- Updated dependencies [94105a5]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [1252d94]
+- Updated dependencies [e6ade8b]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [795777a]
+- Updated dependencies [fe9547e]
+- Updated dependencies [95f9247]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [d2f75f9]
+- Updated dependencies [b7cd0a1]
+- Updated dependencies [512ee35]
+- Updated dependencies [e86c505]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [0ce2858]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [7c2db00]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [fc28eae]
+- Updated dependencies [56df85a]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [dc25fb4]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [a9923f3]
+- Updated dependencies [1f633f7]
+- Updated dependencies [d4d6605]
+- Updated dependencies [64818dc]
+  - @osdk/internal.foundry.ontologiesv2@0.2.0
+  - @osdk/internal.foundry.ontologies@0.2.0
+  - @osdk/internal.foundry.core@0.2.0
+  - @osdk/internal.foundry.geo@0.1.0
+  - @osdk/api@2.0.0
+
 ## 2.0.0-beta.12
 
 ### Minor Changes
