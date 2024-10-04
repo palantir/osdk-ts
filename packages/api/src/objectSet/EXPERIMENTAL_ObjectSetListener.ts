@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ReferenceUpdate } from "../object/ReferenceUpdates.js";
+import type { ReferenceUpdate } from "../object/ReferenceUpdate.js";
 import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
 import type { OsdkObjectOrInterfaceFrom } from "../OsdkObjectFrom.js";
 

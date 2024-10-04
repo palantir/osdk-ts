@@ -70,7 +70,7 @@ export type {
   FetchPageResult,
   SingleOsdkResult,
 } from "./object/FetchPageResult.js";
-export type { ReferenceUpdate } from "./object/ReferenceUpdates.js";
+export type { ReferenceUpdate } from "./object/ReferenceUpdate.js";
 export { isOk } from "./object/Result.js";
 export type { Result } from "./object/Result.js";
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";

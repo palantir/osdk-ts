@@ -30,6 +30,7 @@ export type ReferenceUpdate<T extends ObjectOrInterfaceDefinition> = {
 type ReferenceValue = GeotimeSeriesValue;
 
 type GeotimeSeriesValue = {
+  type: "geotimeSeries";
   timestamp: string;
   position: GeoJSON.Position;
 };
