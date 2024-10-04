@@ -211,6 +211,12 @@ function convertType(
         },
       };
 
+    case "mediaReference":
+      return {
+        type: type,
+        mediaReference: {},
+      };
+
     default:
       // use helper function to distribute `type` properly
       return distributeTypeHelper(type);
