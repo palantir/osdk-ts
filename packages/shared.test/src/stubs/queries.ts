@@ -25,6 +25,7 @@ import {
   queryTypeAcceptsObjectSets,
   queryTypeAcceptsThreeDimensionalAggregation,
   queryTypeAcceptsTwoDimensionalAggregation,
+  queryTypeReturnsArray,
   queryTypeReturnsDate,
   queryTypeReturnsObject,
   queryTypeReturnsStruct,
@@ -223,6 +224,16 @@ export const queryTypeAcceptsThreeDimensionalAggregationResponse:
     },
   };
 
+export const queryTypeReturnsArrayRequest: ExecuteQueryRequest = {
+  parameters: {
+    country: ["Brad", "George", "Ryan"],
+  },
+};
+
+export const queryTypeReturnsArrayResponse: ExecuteQueryResponse = {
+  value: ["Pitt", "Clooney", "Reynolds"],
+};
+
 export const emptyBody: string = JSON.stringify({
   parameters: {},
 });
@@ -270,5 +281,9 @@ export const queryRequestHandlers: {
   [queryTypeAcceptsThreeDimensionalAggregation.apiName]: {
     [JSON.stringify(queryTypeAcceptsThreeDimensionalAggregationRequest)]:
       queryTypeAcceptsThreeDimensionalAggregationResponse,
+  },
+  [queryTypeReturnsArray.apiName]: {
+    [JSON.stringify(queryTypeReturnsArrayRequest)]:
+      queryTypeReturnsArrayResponse,
   },
 };

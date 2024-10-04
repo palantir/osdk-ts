@@ -221,11 +221,19 @@ describe("queries", () => {
       "incrementPersonAge",
       "queryAcceptsObject",
       "queryAcceptsObjectSets",
+      "queryTypeReturnsArray",
       "returnsDate",
       "returnsObject",
       "returnsTimestamp",
       "threeDimensionalAggregationFunction",
       "twoDimensionalAggregationFunction",
     ]);
+  });
+
+  it("queries work with arrays", async () => {
+    const result = await client($Queries.queryTypeReturnsArray).executeFunction(
+      { country: ["Brad", "George", "Ryan"] },
+    );
+    expect(result).toEqual(["Pitt", "Clooney", "Reynolds"]);
   });
 });

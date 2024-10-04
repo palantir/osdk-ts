@@ -23,6 +23,7 @@ import { runFoundrySdkClientVerificationTest } from "./runFoundrySdkClientVerifi
 import { runGeoQueriesTest } from "./runGeoQueriesTest.js";
 import { runInterfacesTest } from "./runInterfacesTest.js";
 import { runLegacyExamples } from "./runLegacyExamples.js";
+import { runQueriesTest } from "./runQueriesTest.js";
 import { runSubscriptionsTest } from "./runSubscriptionsTest.js";
 import { runTimeseriesTest } from "./runTimeseriesTest.js";
 import { typeChecks } from "./typeChecks.js";
@@ -58,6 +59,8 @@ async function runTests() {
     await runAggregationsTest();
 
     await runAggregationGroupByDatesTest();
+
+    await runQueriesTest();
 
     if (runOld) await typeChecks(client);
 
