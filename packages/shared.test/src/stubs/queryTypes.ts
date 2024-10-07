@@ -311,6 +311,25 @@ export const queryTypeAcceptsObjectSets: QueryTypeV2 = {
     "ri.function-registry.main.function.9b55870a-63c7-4d48-8f06-9627c0805968",
   version: "0.11.0",
 };
+
+export const queryTypeReturnsArray: QueryTypeV2 = {
+  "apiName": "queryTypeReturnsArray",
+  "output": {
+    "type": "array",
+    "subType": { "type": "string" },
+  },
+  "parameters": {
+    "people": {
+      "dataType": {
+        "type": "array",
+        "subType": { "type": "string" },
+      },
+    },
+  },
+  "rid":
+    "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdda",
+  "version": "0.1.1",
+};
 export const queryTypes: QueryTypeV2[] = [
   addOneQueryType,
   queryTypeReturnsStruct,
@@ -323,4 +342,5 @@ export const queryTypes: QueryTypeV2[] = [
   queryTypeAcceptsObjectSets,
   queryTypeAcceptsTwoDimensionalAggregation,
   queryTypeAcceptsThreeDimensionalAggregation,
+  queryTypeReturnsArray,
 ];
