@@ -153,7 +153,6 @@ describe("ObjectSet", () => {
         $apiName: "Employee",
         $objectType: "Employee",
         $primaryKey: 50030,
-        $title: "John Doe",
         class: "Red",
         employeeId: 50030,
         employeeStatus: expect.anything(),

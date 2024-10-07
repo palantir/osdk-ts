@@ -67,7 +67,6 @@ describe("convertWireToOsdkObjects", () => {
       "$apiName",
       "$objectType",
       "$primaryKey",
-      "$title",
     ].sort());
 
     expect(Object.keys(employee.$as)).toEqual([]);
@@ -76,6 +75,31 @@ describe("convertWireToOsdkObjects", () => {
       "lead",
       "officeLink",
     ]);
+  });
+
+  it("stringifies properties on objects and interfaces correctly", async () => {
+    const { data: [employee] } = await client(Employee).fetchPage();
+    const { data: [employee2] } = await client(Employee).where({
+      $and: [{ employeeId: { $gt: 50030 } }, { employeeId: { $lt: 50032 } }],
+    }).fetchPage();
+
+    // Should not have $title
+    expect(JSON.stringify(employee)).toMatchInlineSnapshot(
+      `"{"employeeId":50030,"fullName":"John Doe","office":"NYC","class":"Red","startDate":"2019-01-01","employeeStatus":{},"$apiName":"Employee","$objectType":"Employee","$primaryKey":50030}"`,
+    );
+
+    expect(JSON.stringify(employee.$as(FooInterface))).toMatchInlineSnapshot(
+      `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50030,"fooSpt":"John Doe"}"`,
+    );
+
+    // Should have $title
+    expect(JSON.stringify(employee2)).toMatchInlineSnapshot(
+      `"{"employeeId":50031,"fullName":"Jane Doe","office":"SEA","class":"Blue","startDate":"2012-02-12","employeeStatus":{},"$apiName":"Employee","$objectType":"Employee","$primaryKey":50031,"$title":"Jane Doe"}"`,
+    );
+
+    expect(JSON.stringify(employee2.$as(FooInterface))).toMatchInlineSnapshot(
+      `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50031,"$title":"Jane Doe","fooSpt":"Jane Doe"}"`,
+    );
   });
 
   it("reuses the object prototype across objects", async () => {
