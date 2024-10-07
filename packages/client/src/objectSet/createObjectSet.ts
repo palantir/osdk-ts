@@ -32,10 +32,7 @@ import type {
   SelectArg,
   SingleOsdkResult,
 } from "@osdk/api";
-import type {
-  EXPERIMENTAL_ObjectSetListener,
-  MinimalObjectSet,
-} from "@osdk/api/unstable";
+import type { MinimalObjectSet } from "@osdk/api/unstable";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";

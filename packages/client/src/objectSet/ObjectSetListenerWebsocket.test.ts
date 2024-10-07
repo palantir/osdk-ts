@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type { ObjectOrInterfaceDefinition, PropertyKeys } from "@osdk/api";
 import type { EXPERIMENTAL_ObjectSetListener as ObjectSetListener } from "@osdk/api/unstable";
 import { $ontologyRid, Employee, Office } from "@osdk/client.test.ontology";
 import type {
@@ -35,6 +35,7 @@ import {
   it,
   vi,
 } from "vitest";
+import { E } from "vitest/dist/reporters-B7ebVMkT.js";
 import { z } from "zod";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { Logger } from "../Logger.js";
@@ -104,7 +105,9 @@ describe("ObjectSetListenerWebsocket", async () => {
 
     let client: ObjectSetListenerWebsocket;
     let listener: MockedObject<
-      Required<ObjectSetListener<ObjectOrInterfaceDefinition, "">>
+      Required<
+        ObjectSetListener<ObjectOrInterfaceDefinition, PropertyKeys<any>>
+      >
     >;
     let oslwInst = 0;
 
@@ -238,7 +241,7 @@ describe("ObjectSetListenerWebsocket", async () => {
                   objectType: Office.apiName,
                 },
                 listener,
-                ["name"],
+                ["employeeStatus"],
               ),
 
               expectSingleSubscribeMessage(ws),
@@ -323,7 +326,9 @@ interface MockedWebSocket
 }
 
 type MockedListener = MockedObject<
-  Required<ObjectSetListener<ObjectOrInterfaceDefinition, "">>
+  Required<
+    ObjectSetListener<ObjectOrInterfaceDefinition, PropertyKeys<any>>
+  >
 >;
 
 function respondSuccessToSubscribe(
@@ -367,7 +372,7 @@ async function subscribeAndExpectWebSocket(
         objectType: Employee.apiName,
       },
       listener,
-      ["fullName"],
+      ["employeeStatus"],
     ),
   ]);
 

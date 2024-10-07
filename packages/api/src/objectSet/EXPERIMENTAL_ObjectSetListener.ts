@@ -18,7 +18,7 @@ import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
-import type { OsdkObjectOrInterfaceFrom } from "../OsdkObjectFrom.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
 
 export interface EXPERIMENTAL_ObjectSetListener<
   O extends ObjectOrInterfaceDefinition,
@@ -47,6 +47,6 @@ type ObjectUpdate<
   O extends ObjectOrInterfaceDefinition,
   P extends PropertyKeys<O>,
 > = {
-  object: OsdkObjectOrInterfaceFrom<O, P>;
+  object: Osdk<O, P>;
   state: "ADDED_OR_UPDATED" | "REMOVED";
 };

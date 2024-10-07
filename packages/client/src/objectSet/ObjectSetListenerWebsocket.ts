@@ -48,18 +48,24 @@ function doNothing() {}
 /**
  * Converts an ObjectSetListener to one where all the functions are defined.
  */
-function fillOutListener<Q extends ObjectOrInterfaceDefinition>(
+function fillOutListener<
+  Q extends ObjectOrInterfaceDefinition,
+  P extends PropertyKeys<Q>,
+>(
   {
     onChange = doNothing,
     onError = doNothing,
     onOutOfDate = doNothing,
-  }: ObjectSetListener<Q>,
-): Required<ObjectSetListener<Q>> {
+  }: ObjectSetListener<Q, P>,
+): Required<ObjectSetListener<Q, P>> {
   return { onChange, onError, onOutOfDate };
 }
 
-interface Subscription<Q extends ObjectOrInterfaceDefinition> {
-  listener: Required<ObjectSetListener<Q>>;
+interface Subscription<
+  Q extends ObjectOrInterfaceDefinition,
+  P extends PropertyKeys<Q>,
+> {
+  listener: Required<ObjectSetListener<Q, P>>;
   objectSet: ObjectSet;
   requestedProperties: Array<PropertyKeys<Q>>;
   expiry?: ReturnType<typeof setTimeout>;
@@ -74,13 +80,16 @@ interface Subscription<Q extends ObjectOrInterfaceDefinition> {
     | "reconnecting";
 }
 
-function isReady<Q extends ObjectOrInterfaceDefinition>(
-  sub: Subscription<Q>,
-): sub is Subscription<Q> & { temporaryObjectSetId: string } {
+function isReady<
+  Q extends ObjectOrInterfaceDefinition,
+  P extends PropertyKeys<Q>,
+>(
+  sub: Subscription<Q, P>,
+): sub is Subscription<Q, P> & { temporaryObjectSetId: string } {
   return sub.isReady != null;
 }
 
-function subscriptionIsDone(sub: Subscription<any>) {
+function subscriptionIsDone(sub: Subscription<any, any>) {
   return sub.status === "done" || sub.status === "error";
 }
 
@@ -119,7 +128,7 @@ export class ObjectSetListenerWebsocket {
    */
   #pendingSubscriptions = new Map<
     string,
-    Subscription<any>[]
+    Subscription<any, any>[]
   >();
 
   /**
@@ -128,7 +137,7 @@ export class ObjectSetListenerWebsocket {
    */
   #subscriptions = new Map<
     string,
-    Subscription<any>
+    Subscription<any, any>
   >();
   #maybeDisconnectTimeout: ReturnType<typeof setTimeout> | undefined;
 
@@ -153,18 +162,21 @@ export class ObjectSetListenerWebsocket {
     );
   }
 
-  async subscribe<Q extends ObjectOrInterfaceDefinition>(
+  async subscribe<
+    Q extends ObjectOrInterfaceDefinition,
+    P extends PropertyKeys<Q>,
+  >(
     objectSet: ObjectSet,
-    listener: ObjectSetListener<Q>,
-    properties: Array<PropertyKeys<Q>>,
+    listener: ObjectSetListener<Q, P>,
+    properties: Array<P>,
   ): Promise<() => void> {
     if (process.env.TARGET !== "browser") {
       // Node 18 does not expose 'crypto' on globalThis, so we need to do it ourselves. This
       // will not be needed after our minimum version is 19 or greater.
       globalThis.crypto ??= (await import("node:crypto")).webcrypto as any;
     }
-    const sub: Subscription<Q> = {
-      listener: fillOutListener<Q>(listener),
+    const sub: Subscription<Q, P> = {
+      listener: fillOutListener<Q, P>(listener),
       objectSet,
       requestedProperties: properties,
       status: "preparing",
@@ -193,7 +205,7 @@ export class ObjectSetListenerWebsocket {
    *
    * @returns
    */
-  async #initiateSubscribe(sub: Subscription<any>) {
+  async #initiateSubscribe(sub: Subscription<any, any>) {
     if (process?.env?.NODE_ENV !== "production") {
       this.#logger?.trace("#initiateSubscribe()");
     }
@@ -270,7 +282,7 @@ export class ObjectSetListenerWebsocket {
     this.#ws?.send(JSON.stringify(subscribe));
   }
 
-  #expire(sub: Subscription<any>) {
+  #expire(sub: Subscription<any, any>) {
     if (process?.env?.NODE_ENV !== "production") {
       this.#logger?.trace({ subscription: sub }, "#expire()");
     }
@@ -281,7 +293,7 @@ export class ObjectSetListenerWebsocket {
   }
 
   #unsubscribe<Q extends ObjectOrInterfaceDefinition>(
-    sub: Subscription<Q>,
+    sub: Subscription<Q, any>,
     newStatus: "done" | "error" = "done",
   ) {
     if (subscriptionIsDone(sub)) {
@@ -291,7 +303,7 @@ export class ObjectSetListenerWebsocket {
 
     sub.status = newStatus;
     // make sure listeners do nothing now
-    sub.listener = fillOutListener<Q>({});
+    sub.listener = fillOutListener<Q, any>({});
     if (sub.expiry) {
       clearTimeout(sub.expiry);
       sub.expiry = undefined;
