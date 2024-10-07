@@ -1,5 +1,16 @@
 # @osdk/client
 
+## 2.0.2-rc.3
+
+### Patch Changes
+
+- 4c5e0ae: Fix queries that have response types with nested values, like arrays.
+- ba1c42a: Fixing proxy handlers.
+- Updated dependencies [4c5e0ae]
+  - @osdk/api@2.0.2-rc.3
+  - @osdk/generator-converters@2.0.2-rc.3
+  - @osdk/client.unstable@2.0.2-rc.3
+
 ## 2.0.2-beta.2
 
 ### Patch Changes

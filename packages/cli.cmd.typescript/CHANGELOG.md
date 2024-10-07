@@ -1,5 +1,11 @@
 # @osdk/cli.cmd.typescript
 
+## 0.6.2-rc.3
+
+### Patch Changes
+
+- @osdk/generator@2.0.2-rc.3
+
 ## 0.6.2-beta.2
 
 ### Patch Changes
