@@ -126,7 +126,6 @@ describe("ObjectSetListenerWebsocket", async () => {
 
       listener = {
         onChange: vi.fn(),
-        onReferenceUpdate: vi.fn(),
         onError: vi.fn(),
         onOutOfDate: vi.fn(),
       };
@@ -233,10 +232,14 @@ describe("ObjectSetListenerWebsocket", async () => {
           let subReq2: ObjectSetStreamSubscribeRequests;
           beforeEach(async () => {
             [unsubscribe2, subReq2] = await Promise.all([
-              client.subscribe({
-                type: "base",
-                objectType: Office.apiName,
-              }, listener),
+              client.subscribe(
+                {
+                  type: "base",
+                  objectType: Office.apiName,
+                },
+                listener,
+                ["name"],
+              ),
 
               expectSingleSubscribeMessage(ws),
             ]);
@@ -358,10 +361,14 @@ async function subscribeAndExpectWebSocket(
 ): Promise<readonly [MockedWebSocket, () => void]> {
   const [ws, unsubscribe] = await Promise.all([
     expectWebSocketConstructed(),
-    client.subscribe({
-      type: "base",
-      objectType: Employee.apiName,
-    }, listener),
+    client.subscribe(
+      {
+        type: "base",
+        objectType: Employee.apiName,
+      },
+      listener,
+      ["fullName"],
+    ),
   ]);
 
   // otherwise the ObjectSetListenerWebSocket is sitting waiting for it to "connect"

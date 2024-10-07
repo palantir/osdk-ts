@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
+import type {
+  ObjectOrInterfaceDefinition,
+  Osdk,
+  PropertyKeys,
+} from "@osdk/api";
 import type {
   __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
   EXPERIMENTAL_ObjectSetListener as ObjectSetListener,
@@ -47,17 +51,17 @@ function doNothing() {}
 function fillOutListener<Q extends ObjectOrInterfaceDefinition>(
   {
     onChange = doNothing,
-    onReferenceUpdate = doNothing,
     onError = doNothing,
     onOutOfDate = doNothing,
   }: ObjectSetListener<Q>,
 ): Required<ObjectSetListener<Q>> {
-  return { onChange, onReferenceUpdate, onError, onOutOfDate };
+  return { onChange, onError, onOutOfDate };
 }
 
 interface Subscription<Q extends ObjectOrInterfaceDefinition> {
   listener: Required<ObjectSetListener<Q>>;
   objectSet: ObjectSet;
+  requestedProperties: Array<PropertyKeys<Q>>;
   expiry?: ReturnType<typeof setTimeout>;
   subscriptionId: string;
   isReady?: boolean;
@@ -152,6 +156,7 @@ export class ObjectSetListenerWebsocket {
   async subscribe<Q extends ObjectOrInterfaceDefinition>(
     objectSet: ObjectSet,
     listener: ObjectSetListener<Q>,
+    properties: Array<PropertyKeys<Q>>,
   ): Promise<() => void> {
     if (process.env.TARGET !== "browser") {
       // Node 18 does not expose 'crypto' on globalThis, so we need to do it ourselves. This
@@ -161,6 +166,7 @@ export class ObjectSetListenerWebsocket {
     const sub: Subscription<Q> = {
       listener: fillOutListener<Q>(listener),
       objectSet,
+      requestedProperties: properties,
       status: "preparing",
 
       // Since we don't have a real subscription id yet but we need to keep
@@ -247,10 +253,10 @@ export class ObjectSetListenerWebsocket {
     const subscribe: ObjectSetStreamSubscribeRequests = {
       id,
       requests: readySubs.map<ObjectSetStreamSubscribeRequest>((
-        { objectSet },
+        { objectSet, requestedProperties },
       ) => ({
         objectSet: objectSet,
-        propertySet: [],
+        propertySet: requestedProperties,
         referenceSet: [],
       })),
     };
@@ -419,13 +425,21 @@ export class ObjectSetListenerWebsocket {
       update.type === "reference"
     );
 
-    sub.listener.onChange(
-      await convertWireToOsdkObjects(
+    const osdkObjects = await Promise.all(objectUpdates.map(async (o) => {
+      const osdkObjectArray = await convertWireToOsdkObjects(
         this.#client,
-        objectUpdates.map((o) => o.object),
+        [o.object],
         undefined,
-      ) as Array<Osdk<any>>,
-    );
+      ) as Array<Osdk<any>>;
+      const singleOsdkObject = osdkObjectArray[0] ?? undefined;
+      return singleOsdkObject != null
+        ? {
+          object: singleOsdkObject,
+          state: o.state,
+        }
+        : undefined;
+    }));
+    sub.listener.onChange?.(osdkObjects.filter((o) => o != null));
   };
 
   #handleMessage_refreshObjectSet = (payload: RefreshObjectSet) => {

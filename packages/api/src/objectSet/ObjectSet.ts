@@ -243,9 +243,12 @@ export interface ObjectSet<
    *
    * It may change at any time and does not follow semantic versioning. Use at your own risk.
    *
+   * @param properties - The properties to subscribe to on the object. Properties not selected will not be returned on the object.
+   *
    *  @alpha
    */
   readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]: (
+    properties: Array<PropertyKeys<Q>>,
     listener: EXPERIMENTAL_ObjectSetListener<Q>,
   ) => () => unknown;
 }

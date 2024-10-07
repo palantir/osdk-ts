@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
+import type {
+  ObjectOrInterfaceDefinition,
+  PropertyKeys,
+} from "../ontology/ObjectOrInterface.js";
 import type { OsdkObjectOrInterfaceFrom } from "../OsdkObjectFrom.js";
 
 export interface EXPERIMENTAL_ObjectSetListener<
@@ -23,13 +26,7 @@ export interface EXPERIMENTAL_ObjectSetListener<
   /**
    * Specific objects have changed and can be immediately updated
    */
-  onChange?: (objects: Array<OsdkObjectOrInterfaceFrom<O>>) => void;
-
-  /**
-   * An objects backing datasource has changed and a new value is provided
-   */
-  // TODO: Implement
-  onReferenceUpdate?: (updates: Array<OsdkObjectOrInterfaceFrom<O>>) => void;
+  onChange?: (objects: Array<ObjectUpdate<O>>) => void;
 
   /**
    * The ObjectSet has become outdated and should be re-fetched in its entirety.
@@ -42,3 +39,10 @@ export interface EXPERIMENTAL_ObjectSetListener<
    */
   onError?: (errors: Array<any>) => void;
 }
+
+type ObjectUpdate<
+  O extends ObjectOrInterfaceDefinition,
+> = {
+  object: OsdkObjectOrInterfaceFrom<O>;
+  state: "ADDED_OR_UPDATED" | "REMOVED";
+};

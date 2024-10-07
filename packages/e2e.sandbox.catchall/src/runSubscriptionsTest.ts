@@ -42,12 +42,14 @@ export function runSubscriptionsTest() {
   client(Employee).where({
     jobProfile: "Echo",
   })[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
+    ["id"],
     makeObjectSetListener("Sub(Echo)"),
   );
 
   client(Employee).where({
     jobProfile: "Delta",
   })[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
+    ["id"],
     makeObjectSetListener("Sub(Delta)"),
   );
 }
