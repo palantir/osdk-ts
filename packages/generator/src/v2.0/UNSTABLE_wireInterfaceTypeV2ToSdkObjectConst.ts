@@ -56,7 +56,9 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
 
     const parent = ontology.requireInterfaceType(p, true);
     if (parent instanceof ForeignType) {
-      throw new Error("Don't current support this");
+      throw new Error(
+        "Currently, parent types must be within the same package to work",
+      );
     }
 
     const it = deleteUndefineds(
@@ -93,25 +95,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
     }
   }
 
-  const ogProperties = definition.properties;
   definition.properties = mergedProperties;
-
-  function localPropertyJsdoc(apiName: string) {
-    const property = definition.properties[apiName]!;
-    const isInherited = ogProperties[apiName] == null;
-
-    return propertyJsdoc(property, { isInherited, apiName });
-  }
-
-  function maybeStripNamespace(q: string) {
-    if (
-      interfaceDef.apiNamespace && q.startsWith(`${interfaceDef.apiNamespace}.`)
-    ) {
-      return q.slice(interfaceDef.apiNamespace.length + 1);
-    } else {
-      return q;
-    }
-  }
 
   const objectSetIdentifier = `${interfaceDef.shortApiName}.ObjectSet`;
   const propertyKeysIdentifier = `${interfaceDef.shortApiName}.PropertyKeys`;

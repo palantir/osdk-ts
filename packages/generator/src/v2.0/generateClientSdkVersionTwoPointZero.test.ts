@@ -1904,7 +1904,7 @@ describe("generator", () => {
   });
 
   describe("action depends on foreign object", () => {
-    it("stuff2", async () => {
+    it("can generate the action", async () => {
       await expect(
         generateClientSdkVersionTwoPointZero(
           referencingOntology,

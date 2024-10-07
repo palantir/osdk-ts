@@ -31,8 +31,6 @@ export abstract class AbstractImportable {
   importPath: string;
   uniqueImportName: string;
 
-  readonly isLocal: boolean;
-
   constructor(
     common: EnhanceCommon,
     fullApiName: string,
@@ -47,9 +45,8 @@ export abstract class AbstractImportable {
     );
 
     const { importExt } = common;
-    this.isLocal = isLocal;
 
-    this.importPath = this.isLocal
+    this.importPath = isLocal
       ? `${basePath}/${this.shortApiName}${importExt}`
       : basePath;
     this.uniqueImportName = this.shortApiName;
@@ -82,12 +79,6 @@ export abstract class EnhancedBase<T> extends AbstractImportable {
   ) {
     super(common, fullApiName, basePath);
     this.raw = raw;
-
-    // if (this.apiNamespace !== common.ontologyApiNamespace) {
-    //   throw new Error(
-    //     `Found type { ns:'${this.apiNamespace}', shortName: '${this.shortApiName}'} but it is not in the generation namespace '${this._common.ontologyApiNamespace}'. This violates the contract of the generator.`,
-    //   );
-    // }
   }
 }
 

@@ -99,11 +99,6 @@ export async function generateClientSdkVersionTwoPointZero(
   externalObjects: Map<string, string> = new Map(),
   externalInterfaces: Map<string, string> = new Map(),
   externalSpts: Map<string, string> = new Map(),
-  extraOntologies: Array<{
-    ontology: WireOntologyDefinition;
-    npmPackageName: string;
-    npmPackageVersion: string;
-  }> = [],
 ) {
   const importExt = packageType === "module" ? ".js" : "";
 

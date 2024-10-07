@@ -66,12 +66,12 @@ export class OntologyMetadataResolver {
       actionTypes: Set<string>;
       interfaceTypes: Set<string>;
     },
-    z: PackageInfo,
+    pkgInfo: PackageInfo,
   ): OntologyFullMetadata {
     const filteredObjectTypes = Object.fromEntries(
       Object.entries(ontologyFullMetadata.objectTypes).filter(
         ([, { objectType }]) => {
-          for (const { sdk: { inputs: { dataScope } } } of z.values()) {
+          for (const { sdk: { inputs: { dataScope } } } of pkgInfo.values()) {
             for (const objectTypeRid of dataScope.ontologyV2.objectTypes) {
               if (objectTypeRid === objectType.rid) {
                 return true;

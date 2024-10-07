@@ -20,8 +20,9 @@ import type {
 } from "@osdk/internal.foundry.core";
 import { format } from "prettier";
 import { describe, expect, it } from "vitest";
-import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
+import { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
+import { ForeignType } from "../GenerateContext/ForeignType.js";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "./UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst.js";
 
@@ -94,9 +95,18 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
       importExt: "",
     });
 
+    expect(ontology.interfaceTypes.Bar instanceof EnhancedInterfaceType).toBe(
+      true,
+    );
+
+    // type guard for below
+    if (ontology.interfaceTypes.Bar instanceof ForeignType) {
+      throw new Error("Expected Bar to be an EnhancedInterfaceType");
+    }
+
     const formattedCode = await format(
       __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
-        ontology.interfaceTypes.Bar as EnhancedInterfaceType,
+        ontology.interfaceTypes.Bar,
         ontology,
         true,
       ),
