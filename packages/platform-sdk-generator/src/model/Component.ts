@@ -49,10 +49,14 @@ export class Component extends Type {
   }
 
   getTsReferenceString(localNamespace: string) {
+    const revisedName = this.component.locator.localName.replace(
+      /\bRecord\b(?![<])/g,
+      "_Record",
+    );
     if (localNamespace === this.namespace.name) {
-      return this.component.locator.localName;
+      return revisedName;
     } else {
-      return `_${this.component.locator.namespaceName}.${this.component.locator.localName}`;
+      return `_${this.component.locator.namespaceName}.${revisedName}`;
     }
   }
 
@@ -68,9 +72,7 @@ export class Component extends Type {
    * Log Safety: ${component.safety}
    */
   export ${isAlias ? "type" : "interface"} ${
-      component.locator.localName === "Record"
-        ? "_" + component.locator.localName
-        : component.locator.localName
+      this.getTsReferenceString(localNamespace ?? this.namespace.name)
     } ${isAlias ? " = " : ""}`;
 
     const ourType = this.model.getType(dt);

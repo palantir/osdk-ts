@@ -22,9 +22,7 @@ export abstract class Type {
   abstract getTsReferenceString(localNamespace: string | undefined): string;
 
   getPropertyDeclaration(name: string, localNamespace: string | undefined) {
-    return `${name}: ${
-      this.getDeclaration(localNamespace).replace(/Record(?![<])/g, "_Record")
-    }`;
+    return `${name}: ${this.getDeclaration(localNamespace)}`;
   }
 
   isComponent: boolean = false;
