@@ -1,6 +1,6 @@
 {
-  "name": "@osdk/foundry.ontologies",
-  "version": "2.1.0",
+  "name": "@osdk/foundry.aipagents",
+  "version": "0.0.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -25,6 +25,7 @@
     "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
+    "@osdk/foundry.core": "workspace:*",
     "@osdk/shared.client": "^1.0.1",
     "@osdk/shared.net.platformapi": "workspace:~"
   },

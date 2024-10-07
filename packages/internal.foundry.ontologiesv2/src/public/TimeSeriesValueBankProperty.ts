@@ -64,3 +64,51 @@ export function getLatestValue(
 ): Promise<_Core.TimeseriesEntry | undefined> {
   return $foundryPlatformFetch($ctx, _getLatestValue, ...args);
 }
+
+const _streamValues: $FoundryPlatformMethod<
+  (
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    property: _Core.PropertyApiName,
+    $body: _Core.StreamTimeSeriesValuesRequest,
+    $queryParams?: {
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
+    },
+  ) => Promise<Blob>
+> = [
+  1,
+  "/v2/ontologies/{0}/objects/{1}/{2}/timeseries/{3}/streamValues",
+  3,
+  ,
+  "*/*",
+];
+
+/**
+ * Stream all of the points of a time series property (this includes geotime series references).
+ *
+ * Third-party applications using this endpoint via OAuth2 must request the
+ * following operation scopes: `api:read-data`.
+ *
+ * @alpha
+ *
+ * Required Scopes: [api:read-data]
+ * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/timeseries/{property}/streamValues
+ */
+export function streamValues(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    ontology: _Core.OntologyIdentifier,
+    objectType: _Core.ObjectTypeApiName,
+    primaryKey: _Core.PropertyValueEscapedString,
+    property: _Core.PropertyApiName,
+    $body: _Core.StreamTimeSeriesValuesRequest,
+    $queryParams?: {
+      artifactRepository?: _Core.ArtifactRepositoryRid | undefined;
+      packageName?: _Core.SdkPackageName | undefined;
+    },
+  ]
+): Promise<Blob> {
+  return $foundryPlatformFetch($ctx, _streamValues, ...args);
+}

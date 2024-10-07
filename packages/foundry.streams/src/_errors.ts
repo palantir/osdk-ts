@@ -73,6 +73,20 @@ export interface CreateStreamingDatasetPermissionDenied {
 }
 
 /**
+ * The requested stream exists but is invalid, as it does not have a schema.
+ *
+ * Log Safety: SAFE
+ */
+export interface InvalidStreamNoSchema {
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "InvalidStreamNoSchema";
+  errorInstanceId: string;
+  parameters: {
+    viewRid: unknown;
+  };
+}
+
+/**
  * The stream type is invalid.
  *
  * Log Safety: SAFE

@@ -15,30 +15,25 @@
  */
 
 export type {
-  _Record,
-  Compressed,
-  CreateStreamingDatasetRequest,
-  Dataset,
-  PartitionsCount,
-  PublishRecordsToStreamRequest,
-  PublishRecordToStreamRequest,
-  Stream,
-  StreamType,
-  ViewRid,
+  Agent,
+  AgentMetadata,
+  AgentRid,
+  AgentVersion,
+  AgentVersionDetails,
+  AgentVersionString,
+  ListAgentVersionsResponse,
+  ObjectSetParameter,
+  Parameter,
+  ParameterAccessMode,
+  ParameterId,
+  ParameterType,
+  StringParameter,
 } from "./_components.js";
 export type {
-  CannotCreateStreamingDatasetInUserFolder,
-  CannotWriteToOutdatedView,
-  CannotWriteToTrashedStream,
-  CreateStreamingDatasetPermissionDenied,
-  InvalidStreamNoSchema,
-  InvalidStreamType,
-  PublishRecordsToStreamPermissionDenied,
-  PublishRecordToStreamPermissionDenied,
-  RecordDoesNotMatchStreamSchema,
-  RecordTooLarge,
-  StreamNotFound,
-  ViewNotFound,
+  AgentNotFound,
+  AgentVersionNotFound,
+  InvalidAgentVersion,
+  NoPublishedAgentVersion,
 } from "./_errors.js";
-export * as Datasets from "./public/Dataset.js";
-export * as Streams from "./public/Stream.js";
+export * as Agents from "./public/Agent.js";
+export * as AgentVersions from "./public/AgentVersion.js";

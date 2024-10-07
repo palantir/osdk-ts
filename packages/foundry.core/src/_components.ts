@@ -26,6 +26,13 @@ export type LooselyBrandedString<T extends string> = string & {
 export type ArchiveFileFormat = "ZIP";
 
 /**
+ * Log Safety: UNSAFE
+ */
+export interface ArrayFieldType {
+  itemsSchema: FieldSchema;
+}
+
+/**
  * Log Safety: SAFE
  */
 export interface AttachmentType {}
@@ -33,7 +40,29 @@ export interface AttachmentType {}
 /**
  * Log Safety: SAFE
  */
+export interface BinaryType {}
+
+/**
+ * Log Safety: SAFE
+ */
 export interface BooleanType {}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface ByteType {}
+
+/**
+   * Configuration for utilizing the stream as a change data capture (CDC) dataset. To configure CDC on a stream, at
+least one key needs to be provided.
+For more information on CDC in
+Foundry, see the Change Data Capture user documentation.
+   *
+   * Log Safety: UNSAFE
+   */
+export type ChangeDataCaptureConfiguration = {
+  type: "fullRow";
+} & FullRowChangeDataCaptureConfiguration;
 
 /**
  * Log Safety: SAFE
@@ -60,9 +89,22 @@ export type CreatedBy = PrincipalId;
 export type CreatedTime = string;
 
 /**
+ * Log Safety: UNSAFE
+ */
+export type CustomMetadata = Record<string, any>;
+
+/**
  * Log Safety: SAFE
  */
 export interface DateType {}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface DecimalType {
+  scale: number;
+  precision: number;
+}
 
 /**
  * The display name of the entity.
@@ -111,6 +153,53 @@ export interface Duration {
 }
 
 /**
+   * A field in a Foundry schema. For more information on supported data types, see the
+supported field types user documentation.
+   *
+   * Log Safety: UNSAFE
+   */
+export interface Field {
+  name: FieldName;
+  schema: FieldSchema;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export type FieldDataType =
+  | ({ type: "struct" } & StructFieldType)
+  | ({ type: "date" } & DateType)
+  | ({ type: "string" } & StringType)
+  | ({ type: "byte" } & ByteType)
+  | ({ type: "double" } & DoubleType)
+  | ({ type: "integer" } & IntegerType)
+  | ({ type: "float" } & FloatType)
+  | ({ type: "long" } & LongType)
+  | ({ type: "boolean" } & BooleanType)
+  | ({ type: "array" } & ArrayFieldType)
+  | ({ type: "binary" } & BinaryType)
+  | ({ type: "short" } & ShortType)
+  | ({ type: "decimal" } & DecimalType)
+  | ({ type: "map" } & MapFieldType)
+  | ({ type: "timestamp" } & TimestampType);
+
+/**
+ * Log Safety: UNSAFE
+ */
+export type FieldName = LooselyBrandedString<"FieldName">;
+
+/**
+ * The specification of the type of a Foundry schema field.
+ *
+ * Log Safety: UNSAFE
+ */
+export interface FieldSchema {
+  nullable: boolean;
+  customMetadata?: CustomMetadata;
+  dataType: FieldDataType;
+}
+
+/**
  * The path to a File within Foundry. Examples: my-file.txt, path/to/my-file.jpg, dataframe.snappy.parquet.
  *
  * Log Safety: UNSAFE
@@ -123,6 +212,18 @@ export type FilePath = LooselyBrandedString<"FilePath">;
 export interface FloatType {}
 
 /**
+   * Configuration for change data capture which resolves the latest state of the dataset based on new full rows
+being pushed to the stream. For example, if a value for a row is updated, it is only sufficient to publish
+the entire new state of that row to the stream.
+   *
+   * Log Safety: UNSAFE
+   */
+export interface FullRowChangeDataCaptureConfiguration {
+  deletionFieldName: FieldName;
+  orderingFieldName: FieldName;
+}
+
+/**
  * Log Safety: SAFE
  */
 export interface IntegerType {}
@@ -131,6 +232,14 @@ export interface IntegerType {}
  * Log Safety: SAFE
  */
 export interface LongType {}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface MapFieldType {
+  keySchema: FieldSchema;
+  valueSchema: FieldSchema;
+}
 
 /**
  * The ID of a security marking.
@@ -207,6 +316,11 @@ export type Realm = LooselyBrandedString<"Realm">;
 export type ReleaseStatus = "ACTIVE" | "EXPERIMENTAL" | "DEPRECATED";
 
 /**
+ * Log Safety: SAFE
+ */
+export interface ShortType {}
+
+/**
  * The size of the file or attachment in bytes.
  *
  * Log Safety: SAFE
@@ -214,9 +328,27 @@ export type ReleaseStatus = "ACTIVE" | "EXPERIMENTAL" | "DEPRECATED";
 export type SizeBytes = string;
 
 /**
+ * The schema for a Foundry stream. Records pushed to this stream must match this schema.
+ *
+ * Log Safety: UNSAFE
+ */
+export interface StreamSchema {
+  fields: Array<Field>;
+  keyFieldNames?: Array<FieldName>;
+  changeDataCapture?: ChangeDataCaptureConfiguration;
+}
+
+/**
  * Log Safety: SAFE
  */
 export interface StringType {}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface StructFieldType {
+  subFields: Array<Field>;
+}
 
 /**
  * Log Safety: SAFE
@@ -270,3 +402,10 @@ export type UserId = string;
  * Log Safety: SAFE
  */
 export type ZoneId = LooselyBrandedString<"ZoneId">;
+
+/**
+ * The unique identifier (ID) for an object type. This can be viewed in Ontology Manager.
+ *
+ * Log Safety: UNSAFE
+ */
+export type ObjectTypeId = LooselyBrandedString<"ObjectTypeId">;

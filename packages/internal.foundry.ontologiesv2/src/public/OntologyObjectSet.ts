@@ -140,7 +140,8 @@ const _loadObjectSetV2BaseObjects: $FoundryPlatformMethod<
  * For Object Storage V1 backed objects, this endpoint returns a maximum of 10,000 objects. After 10,000 objects have been returned and if more objects
  * are available, attempting to load another page will result in an `ObjectsExceededLimit` error being returned. There is no limit on Object Storage V2 backed objects.
  *
- * Note that null value properties will not be returned.
+ * Note that null value properties will not be returned. In addition, property metadata (rid, apiName, and primaryKey)
+ * will be prefixed with '$' instead of '\_\_' as is the case in `loadObjects`.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *

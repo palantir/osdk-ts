@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type * as _Core from "@osdk/foundry.core";
 import type * as _Datasets from "@osdk/foundry.datasets";
 import type * as _Filesystem from "@osdk/foundry.filesystem";
 
@@ -37,6 +38,7 @@ export type Compressed = boolean;
 export interface CreateStreamingDatasetRequest {
   name: _Datasets.DatasetName;
   parentFolderRid: _Filesystem.FolderRid;
+  schema: _Core.StreamSchema;
   branchName?: _Datasets.BranchName;
   partitionsCount?: PartitionsCount;
   streamType?: StreamType;
@@ -87,6 +89,7 @@ export type _Record = Record<string, any>;
  */
 export interface Stream {
   branchName: _Datasets.BranchName;
+  schema: _Core.StreamSchema;
   viewRid: ViewRid;
   partitionsCount: PartitionsCount;
   streamType: StreamType;

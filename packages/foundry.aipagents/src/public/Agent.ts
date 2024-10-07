@@ -21,33 +21,38 @@ import type {
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
-import type * as _Streams from "../_components.js";
+import type * as _AipAgents from "../_components.js";
 
 //
 
-const _create: $FoundryPlatformMethod<
+const _get: $FoundryPlatformMethod<
   (
-    $body: _Streams.CreateStreamingDatasetRequest,
-    $queryParams?: { preview?: _Core.PreviewMode | undefined },
-  ) => Promise<_Streams.Dataset>
-> = [1, "/v2/streams/datasets/create", 3];
+    agentRid: _AipAgents.AgentRid,
+    $queryParams?: {
+      version?: _AipAgents.AgentVersionString | undefined;
+      preview?: _Core.PreviewMode | undefined;
+    },
+  ) => Promise<_AipAgents.Agent>
+> = [0, "/v2/aipAgents/agents/{0}", 2];
 
 /**
- * Creates a streaming dataset with a stream on the specified branch, or if no branch is specified, on the
- * default branch ('master' for most enrollments). For more information on streaming datasets, refer to the
- * [streams](https://www.palantir.com/docs/foundry/data-integration/streams/) user documentation.
+ * Get details for an AIP Agent.
  *
  * @alpha
  *
- * Required Scopes: [api:streams-write]
- * URL: /v2/streams/datasets/create
+ * Required Scopes: [api:aip-agents-read]
+ * URL: /v2/aipAgents/agents/{agentRid}
  */
-export function create(
+export function get(
   $ctx: $Client | $ClientContext,
   ...args: [
-    $body: _Streams.CreateStreamingDatasetRequest,
-    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+    agentRid: _AipAgents.AgentRid,
+
+    $queryParams?: {
+      version?: _AipAgents.AgentVersionString | undefined;
+      preview?: _Core.PreviewMode | undefined;
+    },
   ]
-): Promise<_Streams.Dataset> {
-  return $foundryPlatformFetch($ctx, _create, ...args);
+): Promise<_AipAgents.Agent> {
+  return $foundryPlatformFetch($ctx, _get, ...args);
 }

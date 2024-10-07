@@ -60,6 +60,33 @@ export interface GetSpaceResourceNotSupported {
 }
 
 /**
+ * The change data capture configuration is invalid.
+ *
+ * Log Safety: SAFE
+ */
+export interface InvalidChangeDataCaptureConfiguration {
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "InvalidChangeDataCaptureConfiguration";
+  errorInstanceId: string;
+  parameters: {};
+}
+
+/**
+ * The field schema failed validations
+ *
+ * Log Safety: UNSAFE
+ */
+export interface InvalidFieldSchema {
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "InvalidFieldSchema";
+  errorInstanceId: string;
+  parameters: {
+    fieldName: unknown;
+    message: unknown;
+  };
+}
+
+/**
  * The provided page size was zero or negative. Page sizes must be greater than zero.
  *
  * Log Safety: SAFE
@@ -104,6 +131,21 @@ export interface InvalidParameterCombination {
 }
 
 /**
+ * The schema failed validations
+ *
+ * Log Safety: UNSAFE
+ */
+export interface InvalidSchema {
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "InvalidSchema";
+  errorInstanceId: string;
+  parameters: {
+    errorType: unknown;
+    message: unknown;
+  };
+}
+
+/**
  * The time zone is invalid.
  *
  * Log Safety: SAFE
@@ -143,4 +185,16 @@ export interface ResourceNameAlreadyExists {
     parentFolderRid: unknown;
     displayName: unknown;
   };
+}
+
+/**
+ * The requested schema could not be converted into a stream schema.
+ *
+ * Log Safety: SAFE
+ */
+export interface SchemaIsNotStreamSchema {
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "SchemaIsNotStreamSchema";
+  errorInstanceId: string;
+  parameters: {};
 }

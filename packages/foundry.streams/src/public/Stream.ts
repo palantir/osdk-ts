@@ -40,7 +40,7 @@ const _get: $FoundryPlatformMethod<
  *
  * @alpha
  *
- * Required Scopes: [api:datasets-read, api:streams-read]
+ * Required Scopes: [api:streams-read]
  * URL: /v2/streams/datasets/{datasetRid}/streams/{streamBranchName}
  */
 export function get(
