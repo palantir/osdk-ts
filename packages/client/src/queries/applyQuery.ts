@@ -116,9 +116,9 @@ async function remapQueryResponse<
     const withoutMultiplicity = { ...responseDataType, multiplicity: false };
     for (let i = 0; i < responseValue.length; i++) {
       responseValue[i] = await remapQueryResponse(
-        responseValue[i],
-        withoutMultiplicity,
         client,
+        withoutMultiplicity,
+        responseValue[i],
         definitions,
       );
     }
@@ -133,9 +133,9 @@ async function remapQueryResponse<
     case "set": {
       for (let i = 0; i < responseValue.length; i++) {
         responseValue[i] = await remapQueryResponse(
-          responseValue[i],
-          responseDataType.set,
           client,
+          responseDataType.set,
+          responseValue[i],
           definitions,
         );
       }
@@ -193,9 +193,9 @@ async function remapQueryResponse<
       for (const [key, subtype] of Object.entries(responseDataType.struct)) {
         if (requiresConversion(subtype)) {
           responseValue[key] = await remapQueryResponse(
-            responseValue[key],
-            subtype,
             client,
+            subtype,
+            responseValue[key],
             definitions,
           );
         }
