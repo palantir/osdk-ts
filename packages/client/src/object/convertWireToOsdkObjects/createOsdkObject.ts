@@ -127,6 +127,8 @@ export function createOsdkObject<
               p as string,
             );
           }
+          if (propDef.type === "geotimeSeriesReference") {
+          }
         }
         return rawValue;
       }

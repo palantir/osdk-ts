@@ -113,6 +113,7 @@ export type { PageResult } from "./PageResult.js";
 export type { QueryParam, QueryResult } from "./queries/Queries.js";
 export { TimeseriesDurationMapping } from "./timeseries/timeseries.js";
 export type {
+  GeotimeSeriesProperty,
   TimeSeriesPoint,
   TimeSeriesProperty,
   TimeSeriesQuery,
