@@ -226,7 +226,7 @@ export const queryTypeAcceptsThreeDimensionalAggregationResponse:
 
 export const queryTypeReturnsArrayRequest: ExecuteQueryRequest = {
   parameters: {
-    country: ["Brad", "George", "Ryan"],
+    people: ["Brad", "George", "Ryan"],
   },
 };
 

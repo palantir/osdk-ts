@@ -319,7 +319,7 @@ export const queryTypeReturnsArray: QueryTypeV2 = {
     "subType": { "type": "string" },
   },
   "parameters": {
-    "country": {
+    "people": {
       "dataType": {
         "type": "array",
         "subType": { "type": "string" },

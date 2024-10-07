@@ -232,7 +232,7 @@ describe("queries", () => {
 
   it("queries work with arrays", async () => {
     const result = await client($Queries.queryTypeReturnsArray).executeFunction(
-      { country: ["Brad", "George", "Ryan"] },
+      { people: ["Brad", "George", "Ryan"] },
     );
     expect(result).toEqual(["Pitt", "Clooney", "Reynolds"]);
   });
