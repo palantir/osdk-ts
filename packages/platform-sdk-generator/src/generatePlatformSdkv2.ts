@@ -161,7 +161,7 @@ export async function generateComponents(
       continue;
     }
     out += component.getDeclaration(ns.name);
-    ret.push(component.name);
+    ret.push(component.name === "Record" ? "_Record" : component.name);
 
     addAll(referencedComponents, component.referencedComponents);
   }

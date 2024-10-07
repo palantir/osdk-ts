@@ -15,29 +15,13 @@
  */
 
 export type {
-  _Record,
-  Compressed,
-  CreateStreamingDatasetRequest,
-  Dataset,
-  PartitionsCount,
-  PublishRecordsToStreamRequest,
-  PublishRecordToStreamRequest,
-  Stream,
-  StreamType,
-  ViewRid,
+  ConnectionRid,
+  FileImport,
+  FileImportDisplayName,
+  FileImportRid,
 } from "./_components.js";
 export type {
-  CannotCreateStreamingDatasetInUserFolder,
-  CannotWriteToOutdatedView,
-  CannotWriteToTrashedStream,
-  CreateStreamingDatasetPermissionDenied,
-  InvalidStreamType,
-  PublishRecordsToStreamPermissionDenied,
-  PublishRecordToStreamPermissionDenied,
-  RecordDoesNotMatchStreamSchema,
-  RecordTooLarge,
-  StreamNotFound,
-  ViewNotFound,
+  ExecuteFileImportPermissionDenied,
+  FileImportNotFound,
 } from "./_errors.js";
-export * as Datasets from "./public/Dataset.js";
-export * as Streams from "./public/Stream.js";
+export * as FileImports from "./public/FileImport.js";

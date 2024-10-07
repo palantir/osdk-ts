@@ -60,6 +60,29 @@ export interface Dataset {
 export type PartitionsCount = number;
 
 /**
+ * Log Safety: DO_NOT_LOG
+ */
+export interface PublishRecordToStreamRequest {
+  record: _Record;
+  viewRid?: ViewRid;
+}
+
+/**
+ * Log Safety: DO_NOT_LOG
+ */
+export interface PublishRecordsToStreamRequest {
+  records: Array<_Record>;
+  viewRid?: ViewRid;
+}
+
+/**
+ * A record to be published to a stream.
+ *
+ * Log Safety: DO_NOT_LOG
+ */
+export type _Record = Record<string, any>;
+
+/**
  * Log Safety: UNSAFE
  */
 export interface Stream {

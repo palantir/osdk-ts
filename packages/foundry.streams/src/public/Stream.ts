@@ -54,3 +54,63 @@ export function get(
 ): Promise<_Streams.Stream> {
   return $foundryPlatformFetch($ctx, _get, ...args);
 }
+
+const _publishRecord: $FoundryPlatformMethod<
+  (
+    datasetRid: _Datasets.DatasetRid,
+    streamBranchName: _Datasets.BranchName,
+    $body: _Streams.PublishRecordToStreamRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<void>
+> = [1, "/v2/highScale/streams/datasets/{0}/streams/{1}/publishRecord", 3];
+
+/**
+ * Publish a single record to the stream. The record will be validated against the stream's schema, and
+ * rejected if it is invalid.
+ *
+ * @alpha
+ *
+ * Required Scopes: [api:streams-write]
+ * URL: /v2/highScale/streams/datasets/{datasetRid}/streams/{streamBranchName}/publishRecord
+ */
+export function publishRecord(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    datasetRid: _Datasets.DatasetRid,
+    streamBranchName: _Datasets.BranchName,
+    $body: _Streams.PublishRecordToStreamRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ]
+): Promise<void> {
+  return $foundryPlatformFetch($ctx, _publishRecord, ...args);
+}
+
+const _publishRecords: $FoundryPlatformMethod<
+  (
+    datasetRid: _Datasets.DatasetRid,
+    streamBranchName: _Datasets.BranchName,
+    $body: _Streams.PublishRecordsToStreamRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<void>
+> = [1, "/v2/highScale/streams/datasets/{0}/streams/{1}/publishRecords", 3];
+
+/**
+ * Publish a batch of records to the stream. The records will be validated against the stream's schema, and
+ * the batch will be rejected if one or more of the records are invalid.
+ *
+ * @alpha
+ *
+ * Required Scopes: [api:streams-write]
+ * URL: /v2/highScale/streams/datasets/{datasetRid}/streams/{streamBranchName}/publishRecords
+ */
+export function publishRecords(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    datasetRid: _Datasets.DatasetRid,
+    streamBranchName: _Datasets.BranchName,
+    $body: _Streams.PublishRecordsToStreamRequest,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ]
+): Promise<void> {
+  return $foundryPlatformFetch($ctx, _publishRecords, ...args);
+}

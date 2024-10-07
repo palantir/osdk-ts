@@ -94,6 +94,8 @@ export class Model {
         throw new Error("Method not implemented.");
       case "binary":
         return new BinaryType();
+      case "string":
+        return new BuiltinType({ type: "string", string: {} });
       default:
         const foo: never = dt;
         throw new Error("Method not implemented.");

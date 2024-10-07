@@ -34,35 +34,6 @@ export interface BatchRequestSizeExceededLimit {
 }
 
 /**
-   * The requested folder could not be found, or the client token does not have access to it.
-
-   *
-   * Log Safety: SAFE
-   */
-export interface FolderNotFound {
-  errorCode: "NOT_FOUND";
-  errorName: "FolderNotFound";
-  errorInstanceId: string;
-  parameters: {
-    folderRid: unknown;
-  };
-}
-
-/**
- * Getting a hidden resource is not supported.
- *
- * Log Safety: UNSAFE
- */
-export interface GetHiddenResourceNotSupported {
-  errorCode: "INVALID_ARGUMENT";
-  errorName: "GetHiddenResourceNotSupported";
-  errorInstanceId: string;
-  parameters: {
-    resourceRid: unknown;
-  };
-}
-
-/**
  * Getting the root folder as a resource is not supported.
  *
  * Log Safety: SAFE
@@ -72,20 +43,6 @@ export interface GetRootFolderNotSupported {
   errorName: "GetRootFolderNotSupported";
   errorInstanceId: string;
   parameters: {};
-}
-
-/**
- * Getting a service is not supported.
- *
- * Log Safety: UNSAFE
- */
-export interface GetServiceResourceNotSupported {
-  errorCode: "INVALID_ARGUMENT";
-  errorName: "GetServiceResourceNotSupported";
-  errorInstanceId: string;
-  parameters: {
-    resourceRid: unknown;
-  };
 }
 
 /**
@@ -184,6 +141,6 @@ export interface ResourceNameAlreadyExists {
   errorInstanceId: string;
   parameters: {
     parentFolderRid: unknown;
-    resourceName: unknown;
+    displayName: unknown;
   };
 }

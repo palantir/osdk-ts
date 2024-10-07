@@ -19,6 +19,7 @@ export type {
   Action,
   AndTrigger,
   Build,
+  BuildableRid,
   BuildRid,
   BuildStatus,
   BuildTarget,

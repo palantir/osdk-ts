@@ -114,6 +114,10 @@ const _search: $FoundryPlatformMethod<
 
 /**
  * :::callout{theme=warning title=Warning}
+ * This endpoint will be removed once TS OSDK is updated to use `objectSets/loadObjects` with interface object
+ * sets.
+ * :::
+ * :::callout{theme=warning title=Warning}
  * This endpoint is in preview and may be modified or removed at any time.
  * To use this endpoint, add `preview=true` to the request query parameters.
  * :::
@@ -170,6 +174,10 @@ const _aggregate: $FoundryPlatformMethod<
 > = [1, "/v2/ontologies/{0}/interfaces/{1}/aggregate", 3];
 
 /**
+ * :::callout{theme=warning title=Warning}
+ * This endpoint will be removed once TS OSDK is updated to use `objectSets/aggregate` with interface object
+ * sets.
+ * :::
  * :::callout{theme=warning title=Warning}
  * This endpoint is in preview and may be modified or removed at any time.
  * To use this endpoint, add `preview=true` to the request query parameters.

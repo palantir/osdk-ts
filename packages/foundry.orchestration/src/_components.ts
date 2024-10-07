@@ -93,15 +93,23 @@ export type BuildTarget =
   | ({ type: "connecting" } & ConnectingTarget);
 
 /**
+   * The Resource Identifier (RID) of a Resource that can be built. For example, this is a Dataset RID, Media Set
+RID or Restricted View RID.
+   *
+   * Log Safety: SAFE
+   */
+export type BuildableRid = LooselyBrandedString<"BuildableRid">;
+
+/**
    * All datasets between the input datasets (exclusive) and the
 target datasets (inclusive) except for the datasets to ignore.
    *
    * Log Safety: SAFE
    */
 export interface ConnectingTarget {
-  inputDatasetRids: Array<_Datasets.DatasetRid>;
-  targetDatasetRids: Array<_Datasets.DatasetRid>;
-  ignoredDatasetRids: Array<_Datasets.DatasetRid>;
+  inputRids: Array<BuildableRid>;
+  targetRids: Array<BuildableRid>;
+  ignoredRids: Array<BuildableRid>;
 }
 
 /**
@@ -161,24 +169,24 @@ export type CreateScheduleRequestActionBuildTarget =
  * Log Safety: SAFE
  */
 export interface CreateScheduleRequestActionBuildTargetConnectingTarget {
-  ignoredDatasetRids?: Array<_Datasets.DatasetRid>;
-  inputDatasetRids: Array<_Datasets.DatasetRid>;
-  targetDatasetRids: Array<_Datasets.DatasetRid>;
+  ignoredRids?: Array<BuildableRid>;
+  targetRids: Array<BuildableRid>;
+  inputRids: Array<BuildableRid>;
 }
 
 /**
  * Log Safety: SAFE
  */
 export interface CreateScheduleRequestActionBuildTargetManualTarget {
-  datasetRids: Array<_Datasets.DatasetRid>;
+  targetRids: Array<BuildableRid>;
 }
 
 /**
  * Log Safety: SAFE
  */
 export interface CreateScheduleRequestActionBuildTargetUpstreamTarget {
-  datasetRids: Array<_Datasets.DatasetRid>;
-  ignoredDatasetRids?: Array<_Datasets.DatasetRid>;
+  ignoredRids?: Array<BuildableRid>;
+  targetRids: Array<BuildableRid>;
 }
 
 /**
@@ -341,7 +349,7 @@ export interface JobSucceededTrigger {
  * Log Safety: SAFE
  */
 export interface ManualTarget {
-  datasetRids: Array<_Datasets.DatasetRid>;
+  targetRids: Array<BuildableRid>;
 }
 
 /**
@@ -436,24 +444,24 @@ export type ReplaceScheduleRequestActionBuildTarget =
  * Log Safety: SAFE
  */
 export interface ReplaceScheduleRequestActionBuildTargetConnectingTarget {
-  ignoredDatasetRids?: Array<_Datasets.DatasetRid>;
-  inputDatasetRids: Array<_Datasets.DatasetRid>;
-  targetDatasetRids: Array<_Datasets.DatasetRid>;
+  ignoredRids?: Array<BuildableRid>;
+  targetRids: Array<BuildableRid>;
+  inputRids: Array<BuildableRid>;
 }
 
 /**
  * Log Safety: SAFE
  */
 export interface ReplaceScheduleRequestActionBuildTargetManualTarget {
-  datasetRids: Array<_Datasets.DatasetRid>;
+  targetRids: Array<BuildableRid>;
 }
 
 /**
  * Log Safety: SAFE
  */
 export interface ReplaceScheduleRequestActionBuildTargetUpstreamTarget {
-  datasetRids: Array<_Datasets.DatasetRid>;
-  ignoredDatasetRids?: Array<_Datasets.DatasetRid>;
+  ignoredRids?: Array<BuildableRid>;
+  targetRids: Array<BuildableRid>;
 }
 
 /**
@@ -743,8 +751,8 @@ export type Trigger =
  * Log Safety: SAFE
  */
 export interface UpstreamTarget {
-  datasetRids: Array<_Datasets.DatasetRid>;
-  ignoredDatasetRids: Array<_Datasets.DatasetRid>;
+  targetRids: Array<BuildableRid>;
+  ignoredRids: Array<BuildableRid>;
 }
 
 /**

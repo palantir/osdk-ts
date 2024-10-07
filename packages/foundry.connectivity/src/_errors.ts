@@ -14,13 +14,34 @@
  * limitations under the License.
  */
 
-export * as Admin from "@osdk/foundry.admin";
-export * as Connectivity from "@osdk/foundry.connectivity";
-export * as Core from "@osdk/foundry.core";
-export * as Datasets from "@osdk/foundry.datasets";
-export * as Filesystem from "@osdk/foundry.filesystem";
-export * as Ontologies from "@osdk/foundry.ontologies";
-export * as Orchestration from "@osdk/foundry.orchestration";
-export * as PublicApis from "@osdk/foundry.publicapis";
-export * as Streams from "@osdk/foundry.streams";
-export * as ThirdPartyApplications from "@osdk/foundry.thirdpartyapplications";
+export type LooselyBrandedString<T extends string> = string & {
+  __LOOSE_BRAND?: T;
+};
+
+/**
+ * Could not execute the FileImport.
+ *
+ * Log Safety: SAFE
+ */
+export interface ExecuteFileImportPermissionDenied {
+  errorCode: "PERMISSION_DENIED";
+  errorName: "ExecuteFileImportPermissionDenied";
+  errorInstanceId: string;
+  parameters: {
+    fileImportRid: unknown;
+  };
+}
+
+/**
+ * The given FileImport could not be found.
+ *
+ * Log Safety: SAFE
+ */
+export interface FileImportNotFound {
+  errorCode: "NOT_FOUND";
+  errorName: "FileImportNotFound";
+  errorInstanceId: string;
+  parameters: {
+    fileImportRid: unknown;
+  };
+}

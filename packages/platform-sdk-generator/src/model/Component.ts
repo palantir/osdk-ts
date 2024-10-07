@@ -67,9 +67,11 @@ export class Component extends Type {
    * 
    * Log Safety: ${component.safety}
    */
-  export ${isAlias ? "type" : "interface"} ${component.locator.localName} ${
-      isAlias ? " = " : ""
-    }`;
+  export ${isAlias ? "type" : "interface"} ${
+      component.locator.localName === "Record"
+        ? "_" + component.locator.localName
+        : component.locator.localName
+    } ${isAlias ? " = " : ""}`;
 
     const ourType = this.model.getType(dt);
 

@@ -25,6 +25,33 @@ import type * as _Filesystem from "../_components.js";
 
 //
 
+const _deleteResource: $FoundryPlatformMethod<
+  (
+    resourceRid: _Filesystem.ResourceRid,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<void>
+> = [3, "/v2/filesystem/resources/{0}", 2];
+
+/**
+ * Move the given resource to the trash. Following this operation, the resource can be restored, using the
+ * `restore` operation, or permanently deleted using the `permanentlyDelete` operation.
+ *
+ * @alpha
+ *
+ * Required Scopes: [api:filesystem-write]
+ * URL: /v2/filesystem/resources/{resourceRid}
+ */
+export function deleteResource(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    resourceRid: _Filesystem.ResourceRid,
+
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ]
+): Promise<void> {
+  return $foundryPlatformFetch($ctx, _deleteResource, ...args);
+}
+
 const _get: $FoundryPlatformMethod<
   (
     resourceRid: _Filesystem.ResourceRid,
@@ -49,4 +76,58 @@ export function get(
   ]
 ): Promise<_Filesystem.Resource> {
   return $foundryPlatformFetch($ctx, _get, ...args);
+}
+
+const _restore: $FoundryPlatformMethod<
+  (
+    resourceRid: _Filesystem.ResourceRid,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<void>
+> = [1, "/v2/filesystem/resources/{0}/restore", 2];
+
+/**
+ * Restore the given resource and any directly trashed ancestors from the trash. If the resource is not
+ * trashed, this operation will be ignored.
+ *
+ * @alpha
+ *
+ * Required Scopes: [api:filesystem-write]
+ * URL: /v2/filesystem/resources/{resourceRid}/restore
+ */
+export function restore(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    resourceRid: _Filesystem.ResourceRid,
+
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ]
+): Promise<void> {
+  return $foundryPlatformFetch($ctx, _restore, ...args);
+}
+
+const _permanentlyDelete: $FoundryPlatformMethod<
+  (
+    resourceRid: _Filesystem.ResourceRid,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<void>
+> = [1, "/v2/filesystem/resources/{0}/permanentlyDelete", 2];
+
+/**
+ * Permanently delete the given resource from the trash. If the Resource is not directly trashed, a
+ * `ResourceNotTrashed` error will be thrown.
+ *
+ * @alpha
+ *
+ * Required Scopes: [api:filesystem-write]
+ * URL: /v2/filesystem/resources/{resourceRid}/permanentlyDelete
+ */
+export function permanentlyDelete(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    resourceRid: _Filesystem.ResourceRid,
+
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ]
+): Promise<void> {
+  return $foundryPlatformFetch($ctx, _permanentlyDelete, ...args);
 }

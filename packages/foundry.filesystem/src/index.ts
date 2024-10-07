@@ -15,8 +15,11 @@
  */
 
 export type {
+  CreateFolderRequest,
   Folder,
   FolderRid,
+  FolderType,
+  ListChildrenOfFolderResponse,
   Project,
   ProjectRid,
   Resource,
@@ -26,7 +29,24 @@ export type {
   ResourceType,
   Space,
   SpaceRid,
-  TrashedStatus,
+  TrashStatus,
 } from "./_components.js";
-export type { ResourceNotFound } from "./_errors.js";
+export type {
+  CreateFolderOutsideProjectNotSupported,
+  CreateFolderPermissionDenied,
+  DeleteResourcePermissionDenied,
+  FolderNotFound,
+  InvalidDisplayName,
+  InvalidFolder,
+  MissingDisplayName,
+  PermanentlyDeleteResourcePermissionDenied,
+  ResourceNotDirectlyTrashed,
+  ResourceNotFound,
+  ResourceNotTrashed,
+  RestoreResourcePermissionDenied,
+  TrashingAutosavedResourcesNotSupported,
+  TrashingHiddenResourcesNotSupported,
+  TrashingSpaceNotSupported,
+} from "./_errors.js";
+export * as Folders from "./public/Folder.js";
 export * as Resources from "./public/Resource.js";

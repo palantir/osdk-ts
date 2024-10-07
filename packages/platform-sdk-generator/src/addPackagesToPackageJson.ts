@@ -26,7 +26,7 @@ export async function addPackagesToPackageJson(
     packageJson[section],
     Object.fromEntries(packagesToAdd.map(a => [a, "workspace:*"])),
   );
-  packageJson.dependencies["@osdk/shared.client"] = "workspace:~";
+  packageJson.dependencies["@osdk/shared.client"] = "1.0.1";
   packageJson.dependencies["@osdk/shared.net.platformapi"] = "workspace:~";
   await fs.writeFile(
     packageJsonPath,

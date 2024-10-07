@@ -1,6 +1,6 @@
 {
-  "name": "@osdk/foundry",
-  "version": "2.1.0",
+  "name": "@osdk/foundry.connectivity",
+  "version": "0.0.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -25,17 +25,9 @@
     "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
-    "@osdk/foundry.admin": "workspace:*",
-    "@osdk/foundry.connectivity": "workspace:*",
     "@osdk/foundry.core": "workspace:*",
     "@osdk/foundry.datasets": "workspace:*",
-    "@osdk/foundry.filesystem": "workspace:*",
-    "@osdk/foundry.functions": "workspace:*",
-    "@osdk/foundry.ontologies": "workspace:*",
     "@osdk/foundry.orchestration": "workspace:*",
-    "@osdk/foundry.publicapis": "workspace:*",
-    "@osdk/foundry.streams": "workspace:*",
-    "@osdk/foundry.thirdpartyapplications": "workspace:*",
     "@osdk/shared.client": "^1.0.1",
     "@osdk/shared.net.platformapi": "workspace:~"
   },

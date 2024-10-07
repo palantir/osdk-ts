@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PrimitiveType } from "./BuiltInTypes.js";
+import type { PrimitiveType, StringType } from "./BuiltInTypes.js";
 import type { Documentation, Locator, Safety } from "./Common.js";
 
 export interface ObjectSpec {
@@ -117,4 +117,5 @@ export type DataType =
   | MapType
   | BinaryType
   | ExternalType
-  | AsyncOperationType;
+  | AsyncOperationType
+  | StringType;

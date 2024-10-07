@@ -21,10 +21,31 @@ export type LooselyBrandedString<T extends string> = string & {
 };
 
 /**
- * Log Safety: SAFE
+ * Log Safety: UNSAFE
+ */
+export interface CreateFolderRequest {
+  parentFolderRid: FolderRid;
+  displayName: ResourceDisplayName;
+}
+
+/**
+ * Log Safety: UNSAFE
  */
 export interface Folder {
   rid: FolderRid;
+  displayName: ResourceDisplayName;
+  description?: string;
+  documentation?: string;
+  path: ResourcePath;
+  type: FolderType;
+  createdBy: _Core.CreatedBy;
+  updatedBy: _Core.UpdatedBy;
+  createdTime: _Core.CreatedTime;
+  updatedTime: _Core.UpdatedTime;
+  trashStatus: TrashStatus;
+  parentFolderRid: FolderRid;
+  projectRid?: ProjectRid;
+  spaceRid: SpaceRid;
 }
 
 /**
@@ -33,6 +54,23 @@ export interface Folder {
  * Log Safety: SAFE
  */
 export type FolderRid = LooselyBrandedString<"FolderRid">;
+
+/**
+   * A folder can either a regular Folder, a
+Project or a
+Space.
+   *
+   * Log Safety: SAFE
+   */
+export type FolderType = "FOLDER" | "SPACE" | "PROJECT";
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface ListChildrenOfFolderResponse {
+  data: Array<Resource>;
+  nextPageToken?: _Core.PageToken;
+}
 
 /**
  * Log Safety: SAFE
@@ -62,7 +100,7 @@ export interface Resource {
   updatedBy: _Core.UpdatedBy;
   createdTime: _Core.CreatedTime;
   updatedTime: _Core.UpdatedTime;
-  trashed: TrashedStatus;
+  trashStatus: TrashStatus;
   parentFolderRid: FolderRid;
   projectRid: ProjectRid;
   spaceRid: SpaceRid;
@@ -95,52 +133,52 @@ export type ResourceRid = LooselyBrandedString<"ResourceRid">;
  * Log Safety: SAFE
  */
 export type ResourceType =
-  | "Artifacts_Repository"
-  | "Bellaso_CipherChannel"
-  | "Blobster_Document"
-  | "Blobster_Image"
-  | "Carbon_Workspace"
-  | "Compass_Folder"
-  | "Compass_WebLink"
-  | "Contour_Analysis"
-  | "DataHealth_MonitoringView"
-  | "Eddie_Logic"
-  | "Eddie_Pipeline"
-  | "Fforms_Form"
-  | "Foundry_Dataset"
-  | "FoundryAcademy_Tutorial"
-  | "FoundryContainerService_Container"
-  | "FoundryMl_Objective"
-  | "FoundryTemplates_Template"
-  | "Fusion_Document"
-  | "Hubble_ExplorationLayout"
-  | "Machinery_Document"
-  | "Magritte_Agent"
-  | "Magritte_Source"
-  | "Marketplace_BlockSetInstallation"
-  | "Marketplace_Local"
-  | "Marketplace_RemoteStore"
-  | "Mio_MediaSet"
-  | "Models_Model"
-  | "Models_ModelVersion"
-  | "Monocle_Graph"
-  | "Notepad_Notepad"
-  | "Notepad_NotepadTemplate"
-  | "ObjectSentinel_Monitor"
-  | "ObjectSet_VersionedObjectSet"
-  | "Opus_Graph"
-  | "Opus_Map"
-  | "Opus_MapLayer"
-  | "Quiver_Analysis"
-  | "Report_Report"
-  | "Slate_Document"
-  | "SolutionDesign_Diagram"
-  | "Stemma_Repository"
-  | "Tables_Table"
-  | "Taurus_Workflow"
-  | "ThirdPartyApplications_Application"
-  | "Vector_Workbook"
-  | "Workshop_Module";
+  | "ARTIFACTS_REPOSITORY"
+  | "BELLASO_CIPHER_CHANNEL"
+  | "BLOBSTER_DOCUMENT"
+  | "BLOBSTER_IMAGE"
+  | "CARBON_WORKSPACE"
+  | "COMPASS_FOLDER"
+  | "COMPASS_WEB_LINK"
+  | "CONTOUR_ANALYSIS"
+  | "DATA_HEALTH_MONITORING_VIEW"
+  | "EDDIE_LOGIC"
+  | "EDDIE_PIPELINE"
+  | "FFORMS_FORM"
+  | "FOUNDRY_DATASET"
+  | "FOUNDRY_ACADEMY_TUTORIAL"
+  | "FOUNDRY_CONTAINER_SERVICE_CONTAINER"
+  | "FOUNDRY_ML_OBJECTIVE"
+  | "FOUNDRY_TEMPLATES_TEMPLATE"
+  | "FUSION_DOCUMENT"
+  | "HUBBLE_EXPLORATION_LAYOUT"
+  | "MACHINERY_DOCUMENT"
+  | "MAGRITTE_AGENT"
+  | "MAGRITTE_SOURCE"
+  | "MARKETPLACE_BLOCK_SET_INSTALLATION"
+  | "MARKETPLACE_LOCAL"
+  | "MARKETPLACE_REMOTE_STORE"
+  | "MIO_MEDIA_SET"
+  | "MODELS_MODEL"
+  | "MODELS_MODEL_VERSION"
+  | "MONOCLE_GRAPH"
+  | "NOTEPAD_NOTEPAD"
+  | "NOTEPAD_NOTEPAD_TEMPLATE"
+  | "OBJECT_SENTINEL_MONITOR"
+  | "OBJECT_SET_VERSIONED_OBJECT_SET"
+  | "OPUS_GRAPH"
+  | "OPUS_MAP"
+  | "OPUS_MAP_LAYER"
+  | "QUIVER_ANALYSIS"
+  | "REPORT_REPORT"
+  | "SLATE_DOCUMENT"
+  | "SOLUTION_DESIGN_DIAGRAM"
+  | "STEMMA_REPOSITORY"
+  | "TABLES_TABLE"
+  | "TAURUS_WORKFLOW"
+  | "THIRD_PARTY_APPLICATIONS_APPLICATION"
+  | "VECTOR_WORKBOOK"
+  | "WORKSHOP_MODULE";
 
 /**
  * Log Safety: SAFE
@@ -159,7 +197,7 @@ export type SpaceRid = LooselyBrandedString<"SpaceRid">;
 /**
  * Log Safety: SAFE
  */
-export type TrashedStatus =
+export type TrashStatus =
   | "DIRECTLY_TRASHED"
   | "ANCESTOR_TRASHED"
   | "NOT_TRASHED";

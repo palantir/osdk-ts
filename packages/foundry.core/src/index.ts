@@ -55,10 +55,7 @@ export type {
 } from "./_components.js";
 export type {
   BatchRequestSizeExceededLimit,
-  FolderNotFound,
-  GetHiddenResourceNotSupported,
   GetRootFolderNotSupported,
-  GetServiceResourceNotSupported,
   GetSpaceResourceNotSupported,
   InvalidPageSize,
   InvalidPageToken,
