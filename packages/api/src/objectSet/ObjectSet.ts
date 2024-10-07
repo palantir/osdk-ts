@@ -247,8 +247,10 @@ export interface ObjectSet<
    *
    *  @alpha
    */
-  readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]: (
-    properties: Array<PropertyKeys<Q>>,
-    listener: EXPERIMENTAL_ObjectSetListener<Q>,
+  readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]: <
+    const P extends Array<PropertyKeys<Q>>,
+  >(
+    properties: P,
+    listener: EXPERIMENTAL_ObjectSetListener<Q, P[number]>,
   ) => () => unknown;
 }

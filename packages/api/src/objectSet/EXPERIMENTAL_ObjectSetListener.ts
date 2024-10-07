@@ -22,11 +22,14 @@ import type { OsdkObjectOrInterfaceFrom } from "../OsdkObjectFrom.js";
 
 export interface EXPERIMENTAL_ObjectSetListener<
   O extends ObjectOrInterfaceDefinition,
+  P extends PropertyKeys<O> = PropertyKeys<O>,
 > {
   /**
    * Specific objects have changed and can be immediately updated
    */
-  onChange?: (objects: Array<ObjectUpdate<O>>) => void;
+  onChange?: (
+    objects: Array<ObjectUpdate<O, P>>,
+  ) => void;
 
   /**
    * The ObjectSet has become outdated and should be re-fetched in its entirety.
@@ -42,7 +45,8 @@ export interface EXPERIMENTAL_ObjectSetListener<
 
 type ObjectUpdate<
   O extends ObjectOrInterfaceDefinition,
+  P extends PropertyKeys<O>,
 > = {
-  object: OsdkObjectOrInterfaceFrom<O>;
+  object: OsdkObjectOrInterfaceFrom<O, P>;
   state: "ADDED_OR_UPDATED" | "REMOVED";
 };

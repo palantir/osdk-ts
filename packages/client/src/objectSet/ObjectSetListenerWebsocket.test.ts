@@ -104,7 +104,7 @@ describe("ObjectSetListenerWebsocket", async () => {
 
     let client: ObjectSetListenerWebsocket;
     let listener: MockedObject<
-      Required<ObjectSetListener<ObjectOrInterfaceDefinition>>
+      Required<ObjectSetListener<ObjectOrInterfaceDefinition, "">>
     >;
     let oslwInst = 0;
 
@@ -323,7 +323,7 @@ interface MockedWebSocket
 }
 
 type MockedListener = MockedObject<
-  Required<ObjectSetListener<ObjectOrInterfaceDefinition>>
+  Required<ObjectSetListener<ObjectOrInterfaceDefinition, "">>
 >;
 
 function respondSuccessToSubscribe(

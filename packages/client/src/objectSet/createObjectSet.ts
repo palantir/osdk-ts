@@ -230,8 +230,8 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       : undefined) as ObjectSet<Q>["fetchOneWithErrors"],
 
     [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]: (
-      properties: Array<PropertyKeys<Q>>,
-      listener: EXPERIMENTAL_ObjectSetListener<Q>,
+      properties,
+      listener,
     ) => {
       const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
         clientCtx,
