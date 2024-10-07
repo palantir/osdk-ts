@@ -140,6 +140,9 @@ const cspell = {
 
         // used in a const (that is removed in a different PR)
         "asdfasdfdhjlkajhgj",
+
+        // Used in a stub
+        "Clooney",
       ],
     },
     {
