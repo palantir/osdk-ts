@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.0.2-beta.3
+
+### Patch Changes
+
+- 4c5e0ae: Add support for null filter on geo properties.
+
 ## 2.0.2-beta.2
 
 ## 2.0.2-beta.1
