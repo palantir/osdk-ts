@@ -83,7 +83,7 @@ export function createClientInternal(
   fetchFn: typeof globalThis.fetch = fetch,
 ): Client {
   if (typeof ontologyRid === "string") {
-    if (!ontologyRid.startsWith("ri")) {
+    if (!ontologyRid.startsWith("ri.")) {
       throw new Error("Invalid ontology RID");
     }
   } else {
