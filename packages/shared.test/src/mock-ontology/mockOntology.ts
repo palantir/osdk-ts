@@ -187,7 +187,7 @@ const updateTask: ActionDef$updateTask = {
 
 export const MockOntology = {
   metadata: {
-    ontologyRid: "",
+    ontologyRid: "ri.filler",
     ontologyApiName: "Ontology",
     userAgent: "typescript-sdk/0.0.0 osdk-cli/0.0.0",
   },

@@ -30,10 +30,16 @@ export namespace Task {
 
   export interface ObjectSet extends $ObjectSet<Task, Task.ObjectSet> {}
 
+  export type OsdkInstance<
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    K extends keyof Task.Props = keyof Task.Props,
+  > = $Osdk.Instance<Task, OPTIONS, K>;
+
+  /** @deprecated use OsdkInstance */
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Task.Props = keyof Task.Props,
-  > = $Osdk<Task, K | OPTIONS>;
+  > = OsdkInstance<OPTIONS, K>;
 }
 
 export interface Task extends $ObjectTypeDefinition {

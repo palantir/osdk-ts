@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, OsdkObject } from "@osdk/api";
+import type { ObjectOrInterfaceDefinition, OsdkBase } from "@osdk/api";
 
 export const UnderlyingOsdkObject = Symbol(
   process.env.MODE !== "production" ? "Underlying Object" : undefined,
@@ -38,7 +38,7 @@ export const ClientRef = Symbol(
 );
 
 export interface HolderBase<T extends ObjectOrInterfaceDefinition> {
-  [UnderlyingOsdkObject]: OsdkObject<any>;
+  [UnderlyingOsdkObject]: OsdkBase<any>;
   [ObjectDefRef]?: T;
   [InterfaceDefRef]?: T;
 }

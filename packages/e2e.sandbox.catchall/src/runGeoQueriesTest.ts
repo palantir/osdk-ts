@@ -119,4 +119,10 @@ export async function runGeoQueriesTest() {
     }).fetchPage();
 
   console.log(intersectResultBoundingBox.data.map(data => data.usState));
+
+  const nonNullGeoProps = await client(BoundariesUsState).where({
+    geometry10M: { $isNull: false },
+  }).fetchPage();
+
+  console.log(nonNullGeoProps.data.map(data => data.usState));
 }

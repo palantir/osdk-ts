@@ -24,10 +24,16 @@ export namespace FooInterface {
 
   export interface ObjectSet extends $ObjectSet<FooInterface, FooInterface.ObjectSet> {}
 
+  export type OsdkInstance<
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    K extends keyof FooInterface.Props = keyof FooInterface.Props,
+  > = $Osdk.Instance<FooInterface, OPTIONS, K>;
+
+  /** @deprecated use OsdkInstance */
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof FooInterface.Props = keyof FooInterface.Props,
-  > = $Osdk<FooInterface, K | OPTIONS>;
+  > = OsdkInstance<OPTIONS, K>;
 }
 
 export interface FooInterface extends $InterfaceDefinition {

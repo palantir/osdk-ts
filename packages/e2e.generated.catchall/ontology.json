@@ -880,6 +880,20 @@
       "parameters": {},
       "rid": "query.rid2",
       "version": "0.1.2"
+    },
+    "getNamesOfCustomersFromCountry": {
+      "apiName": "getNamesOfCustomersFromCountry",
+      "output": {
+        "type": "array",
+        "subType": { "type": "string" }
+      },
+      "parameters": {
+        "country": {
+          "dataType": { "type": "string" }
+        }
+      },
+      "rid": "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdda",
+      "version": "0.1.1"
     }
   },
   "interfaceTypes": {

@@ -152,7 +152,10 @@ export type GeoFilter_Intersects = {
     | Polygon;
 };
 
-export type GeoFilter = GeoFilter_Within | GeoFilter_Intersects;
+export type GeoFilter =
+  | GeoFilter_Within
+  | GeoFilter_Intersects
+  | MakeFilter<"$isNull", boolean>;
 
 type FilterFor<PD extends ObjectMetadata.Property> = PD["multiplicity"] extends
   true

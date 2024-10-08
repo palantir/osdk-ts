@@ -17,9 +17,8 @@
 import type {
   FetchPageArgs,
   ObjectOrInterfaceDefinition,
-  Osdk,
   Result,
-  SelectArgToKeys,
+  SingleOsdkResult,
 } from "@osdk/api";
 import type { ObjectSet } from "@osdk/internal.foundry.core";
 import { PalantirApiError } from "@osdk/shared.net.errors";
@@ -36,16 +35,14 @@ export async function fetchSingle<
   args: A,
   objectSet: ObjectSet,
 ): Promise<
-  Osdk<
-    Q,
-    A["$includeRid"] extends true ? SelectArgToKeys<Q, A> | "$rid"
-      : SelectArgToKeys<Q, A>
-  >
+  A extends FetchPageArgs<Q, infer L, infer R, any, infer S>
+    ? SingleOsdkResult<Q, L, R, S>
+    : SingleOsdkResult<Q, any, any, any>
 > {
   const result = await fetchPage(
     client,
     objectType,
-    { ...args, pageSize: 1 },
+    { ...args, $pageSize: 1 },
     objectSet,
   );
 
@@ -71,11 +68,9 @@ export async function fetchSingleWithErrors<
   objectSet: ObjectSet,
 ): Promise<
   Result<
-    Osdk<
-      Q,
-      A["$includeRid"] extends true ? SelectArgToKeys<Q, A> | "$rid"
-        : SelectArgToKeys<Q, A>
-    >
+    A extends FetchPageArgs<Q, infer L, infer R, any, infer S>
+      ? SingleOsdkResult<Q, L, R, S>
+      : SingleOsdkResult<Q, any, any, any>
   >
 > {
   try {
