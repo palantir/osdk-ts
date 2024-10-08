@@ -32,10 +32,16 @@ export namespace Todo {
 
   export interface ObjectSet extends $ObjectSet<Todo, Todo.ObjectSet> {}
 
+  export type OsdkInstance<
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    K extends keyof Todo.Props = keyof Todo.Props,
+  > = $Osdk.Instance<Todo, OPTIONS, K>;
+
+  /** @deprecated use OsdkInstance */
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Todo.Props = keyof Todo.Props,
-  > = $Osdk<Todo, K | OPTIONS>;
+  > = OsdkInstance<OPTIONS, K>;
 }
 
 export interface Todo extends $ObjectTypeDefinition {

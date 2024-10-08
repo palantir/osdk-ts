@@ -34,10 +34,16 @@ export namespace BoundariesUsState {
 
   export interface ObjectSet extends $ObjectSet<BoundariesUsState, BoundariesUsState.ObjectSet> {}
 
+  export type OsdkInstance<
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    K extends keyof BoundariesUsState.Props = keyof BoundariesUsState.Props,
+  > = $Osdk.Instance<BoundariesUsState, OPTIONS, K>;
+
+  /** @deprecated use OsdkInstance */
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof BoundariesUsState.Props = keyof BoundariesUsState.Props,
-  > = $Osdk<BoundariesUsState, K | OPTIONS>;
+  > = OsdkInstance<OPTIONS, K>;
 }
 
 export interface BoundariesUsState extends $ObjectTypeDefinition {

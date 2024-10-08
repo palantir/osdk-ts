@@ -496,13 +496,13 @@ describe("generator", () => {
 
       export const $ontologyRid = 'ridHere';
       ",
-        "/foo/index.ts": "export * from './ontology/actions';
+        "/foo/index.ts": "export { deleteTodos, markTodoCompleted } from './ontology/actions';
       export * as $Actions from './ontology/actions';
-      export * from './ontology/interfaces';
+      export { SomeInterface } from './ontology/interfaces';
       export * as $Interfaces from './ontology/interfaces';
-      export * from './ontology/objects';
+      export { Person, Todo } from './ontology/objects';
       export * as $Objects from './ontology/objects';
-      export * from './ontology/queries';
+      export { getCount, returnsTodo } from './ontology/queries';
       export * as $Queries from './ontology/queries';
       export { $ontologyRid } from './OntologyMetadata';
       ",
@@ -666,7 +666,7 @@ describe("generator", () => {
         osdkMetadata: $osdkMetadata,
       };
       ",
-        "/foo/ontology/interfaces.ts": "export * from './interfaces/SomeInterface';
+        "/foo/ontology/interfaces.ts": "export { SomeInterface } from './interfaces/SomeInterface';
       ",
         "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
       import { $osdkMetadata } from '../../OntologyMetadata';
@@ -692,10 +692,16 @@ describe("generator", () => {
 
         export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 
+        export type OsdkInstance<
+          OPTIONS extends never | '$notStrict' | '$rid' = never,
+          K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
+        > = $Osdk.Instance<SomeInterface, OPTIONS, K>;
+
+        /** @deprecated use OsdkInstance */
         export type OsdkObject<
           OPTIONS extends never | '$notStrict' | '$rid' = never,
           K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
-        > = $Osdk<SomeInterface, K | OPTIONS>;
+        > = OsdkInstance<OPTIONS, K>;
       }
 
       export interface SomeInterface extends $InterfaceDefinition {
@@ -730,8 +736,8 @@ describe("generator", () => {
         osdkMetadata: $osdkMetadata,
       };
       ",
-        "/foo/ontology/objects.ts": "export * from './objects/Person';
-      export * from './objects/Todo';
+        "/foo/ontology/objects.ts": "export { Person } from './objects/Person';
+      export { Todo } from './objects/Todo';
       ",
         "/foo/ontology/objects/Person.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
       import { $osdkMetadata } from '../../OntologyMetadata';
@@ -766,10 +772,16 @@ describe("generator", () => {
 
         export interface ObjectSet extends $ObjectSet<Person, Person.ObjectSet> {}
 
+        export type OsdkInstance<
+          OPTIONS extends never | '$notStrict' | '$rid' = never,
+          K extends keyof Person.Props = keyof Person.Props,
+        > = $Osdk.Instance<Person, OPTIONS, K>;
+
+        /** @deprecated use OsdkInstance */
         export type OsdkObject<
           OPTIONS extends never | '$notStrict' | '$rid' = never,
           K extends keyof Person.Props = keyof Person.Props,
-        > = $Osdk<Person, K | OPTIONS>;
+        > = OsdkInstance<OPTIONS, K>;
       }
 
       export interface Person extends $ObjectTypeDefinition {
@@ -854,10 +866,16 @@ describe("generator", () => {
 
         export interface ObjectSet extends $ObjectSet<Todo, Todo.ObjectSet> {}
 
+        export type OsdkInstance<
+          OPTIONS extends never | '$notStrict' | '$rid' = never,
+          K extends keyof Todo.Props = keyof Todo.Props,
+        > = $Osdk.Instance<Todo, OPTIONS, K>;
+
+        /** @deprecated use OsdkInstance */
         export type OsdkObject<
           OPTIONS extends never | '$notStrict' | '$rid' = never,
           K extends keyof Todo.Props = keyof Todo.Props,
-        > = $Osdk<Todo, K | OPTIONS>;
+        > = OsdkInstance<OPTIONS, K>;
       }
 
       export interface Todo extends $ObjectTypeDefinition {
@@ -922,8 +940,8 @@ describe("generator", () => {
         osdkMetadata: $osdkMetadata,
       };
       ",
-        "/foo/ontology/queries.ts": "export * from './queries/getCount';
-      export * from './queries/returnsTodo';
+        "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount';
+      export { returnsTodo } from './queries/returnsTodo';
       ",
         "/foo/ontology/queries/getCount.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
       import type { QueryParam, QueryResult } from '@osdk/api';
@@ -1094,13 +1112,13 @@ describe("generator", () => {
 
         export const $ontologyRid = 'ridHere';
         ",
-          "/foo/index.ts": "export * from './ontology/actions.js';
+          "/foo/index.ts": "export { deleteTodos, markTodoCompleted } from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
-        export * from './ontology/interfaces.js';
+        export { SomeInterface } from './ontology/interfaces.js';
         export * as $Interfaces from './ontology/interfaces.js';
-        export * from './ontology/objects.js';
+        export { Person, Todo } from './ontology/objects.js';
         export * as $Objects from './ontology/objects.js';
-        export * from './ontology/queries.js';
+        export { getCount, returnsTodo } from './ontology/queries.js';
         export * as $Queries from './ontology/queries.js';
         export { $ontologyRid } from './OntologyMetadata.js';
         ",
@@ -1264,7 +1282,7 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
         };
         ",
-          "/foo/ontology/interfaces.ts": "export * from './interfaces/SomeInterface.js';
+          "/foo/ontology/interfaces.ts": "export { SomeInterface } from './interfaces/SomeInterface.js';
         ",
           "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -1290,10 +1308,16 @@ describe("generator", () => {
 
           export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 
+          export type OsdkInstance<
+            OPTIONS extends never | '$notStrict' | '$rid' = never,
+            K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
+          > = $Osdk.Instance<SomeInterface, OPTIONS, K>;
+
+          /** @deprecated use OsdkInstance */
           export type OsdkObject<
             OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
-          > = $Osdk<SomeInterface, K | OPTIONS>;
+          > = OsdkInstance<OPTIONS, K>;
         }
 
         export interface SomeInterface extends $InterfaceDefinition {
@@ -1328,8 +1352,8 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
         };
         ",
-          "/foo/ontology/objects.ts": "export * from './objects/Person.js';
-        export * from './objects/Todo.js';
+          "/foo/ontology/objects.ts": "export { Person } from './objects/Person.js';
+        export { Todo } from './objects/Todo.js';
         ",
           "/foo/ontology/objects/Person.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -1364,10 +1388,16 @@ describe("generator", () => {
 
           export interface ObjectSet extends $ObjectSet<Person, Person.ObjectSet> {}
 
+          export type OsdkInstance<
+            OPTIONS extends never | '$notStrict' | '$rid' = never,
+            K extends keyof Person.Props = keyof Person.Props,
+          > = $Osdk.Instance<Person, OPTIONS, K>;
+
+          /** @deprecated use OsdkInstance */
           export type OsdkObject<
             OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof Person.Props = keyof Person.Props,
-          > = $Osdk<Person, K | OPTIONS>;
+          > = OsdkInstance<OPTIONS, K>;
         }
 
         export interface Person extends $ObjectTypeDefinition {
@@ -1452,10 +1482,16 @@ describe("generator", () => {
 
           export interface ObjectSet extends $ObjectSet<Todo, Todo.ObjectSet> {}
 
+          export type OsdkInstance<
+            OPTIONS extends never | '$notStrict' | '$rid' = never,
+            K extends keyof Todo.Props = keyof Todo.Props,
+          > = $Osdk.Instance<Todo, OPTIONS, K>;
+
+          /** @deprecated use OsdkInstance */
           export type OsdkObject<
             OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof Todo.Props = keyof Todo.Props,
-          > = $Osdk<Todo, K | OPTIONS>;
+          > = OsdkInstance<OPTIONS, K>;
         }
 
         export interface Todo extends $ObjectTypeDefinition {
@@ -1520,8 +1556,8 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
         };
         ",
-          "/foo/ontology/queries.ts": "export * from './queries/getCount.js';
-        export * from './queries/returnsTodo.js';
+          "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
+        export { returnsTodo } from './queries/returnsTodo.js';
         ",
           "/foo/ontology/queries/getCount.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
         import type { QueryParam, QueryResult } from '@osdk/api';
@@ -1847,10 +1883,16 @@ describe("generator", () => {
 
             export interface ObjectSet extends $ObjectSet<UsesForeignSpt, UsesForeignSpt.ObjectSet> {}
 
+            export type OsdkInstance<
+              OPTIONS extends never | '$notStrict' | '$rid' = never,
+              K extends keyof UsesForeignSpt.Props = keyof UsesForeignSpt.Props,
+            > = $Osdk.Instance<UsesForeignSpt, OPTIONS, K>;
+
+            /** @deprecated use OsdkInstance */
             export type OsdkObject<
               OPTIONS extends never | '$notStrict' | '$rid' = never,
               K extends keyof UsesForeignSpt.Props = keyof UsesForeignSpt.Props,
-            > = $Osdk<UsesForeignSpt, K | OPTIONS>;
+            > = OsdkInstance<OPTIONS, K>;
           }
 
           export interface UsesForeignSpt extends $ObjectTypeDefinition {
@@ -2020,19 +2062,19 @@ describe("generator", () => {
 
         export const $ontologyRid = 'ri.ontology.main.ontology.dep';
         ",
-          "/foo/index.ts": "export * from './ontology/actions.js';
+          "/foo/index.ts": "export {} from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
-        export * from './ontology/interfaces.js';
+        export { SomeInterface } from './ontology/interfaces.js';
         export * as $Interfaces from './ontology/interfaces.js';
-        export * from './ontology/objects.js';
+        export { Task } from './ontology/objects.js';
         export * as $Objects from './ontology/objects.js';
-        export * from './ontology/queries.js';
+        export {} from './ontology/queries.js';
         export * as $Queries from './ontology/queries.js';
         export { $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export {};
         ",
-          "/foo/ontology/interfaces.ts": "export * from './interfaces/SomeInterface.js';
+          "/foo/ontology/interfaces.ts": "export { SomeInterface } from './interfaces/SomeInterface.js';
         ",
           "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -2058,10 +2100,16 @@ describe("generator", () => {
 
           export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 
+          export type OsdkInstance<
+            OPTIONS extends never | '$notStrict' | '$rid' = never,
+            K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
+          > = $Osdk.Instance<SomeInterface, OPTIONS, K>;
+
+          /** @deprecated use OsdkInstance */
           export type OsdkObject<
             OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
-          > = $Osdk<SomeInterface, K | OPTIONS>;
+          > = OsdkInstance<OPTIONS, K>;
         }
 
         export interface SomeInterface extends $InterfaceDefinition {
@@ -2094,7 +2142,7 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
         };
         ",
-          "/foo/ontology/objects.ts": "export * from './objects/Task.js';
+          "/foo/ontology/objects.ts": "export { Task } from './objects/Task.js';
         ",
           "/foo/ontology/objects/Task.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -2128,10 +2176,16 @@ describe("generator", () => {
 
           export interface ObjectSet extends $ObjectSet<Task, Task.ObjectSet> {}
 
+          export type OsdkInstance<
+            OPTIONS extends never | '$notStrict' | '$rid' = never,
+            K extends keyof Task.Props = keyof Task.Props,
+          > = $Osdk.Instance<Task, OPTIONS, K>;
+
+          /** @deprecated use OsdkInstance */
           export type OsdkObject<
             OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof Task.Props = keyof Task.Props,
-          > = $Osdk<Task, K | OPTIONS>;
+          > = OsdkInstance<OPTIONS, K>;
         }
 
         export interface Task extends $ObjectTypeDefinition {

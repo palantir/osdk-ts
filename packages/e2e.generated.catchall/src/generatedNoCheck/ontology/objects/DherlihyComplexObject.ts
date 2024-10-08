@@ -32,10 +32,16 @@ export namespace DherlihyComplexObject {
 
   export interface ObjectSet extends $ObjectSet<DherlihyComplexObject, DherlihyComplexObject.ObjectSet> {}
 
+  export type OsdkInstance<
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    K extends keyof DherlihyComplexObject.Props = keyof DherlihyComplexObject.Props,
+  > = $Osdk.Instance<DherlihyComplexObject, OPTIONS, K>;
+
+  /** @deprecated use OsdkInstance */
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof DherlihyComplexObject.Props = keyof DherlihyComplexObject.Props,
-  > = $Osdk<DherlihyComplexObject, K | OPTIONS>;
+  > = OsdkInstance<OPTIONS, K>;
 }
 
 export interface DherlihyComplexObject extends $ObjectTypeDefinition {
