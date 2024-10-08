@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 0.21.2
+
+### Patch Changes
+
+- Updated dependencies [68609fe]
+  - @osdk/shared.net.errors@1.1.1
+  - @osdk/shared.net.fetch@0.1.1
+  - @osdk/api@1.9.2
+  - @osdk/shared.client.impl@0.1.1
+  - @osdk/generator-converters@0.7.2
+  - @osdk/client.api@0.21.2
+
 ## 0.21.1
 
 ### Patch Changes

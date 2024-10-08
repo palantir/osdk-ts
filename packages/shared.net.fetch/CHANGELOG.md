@@ -1,5 +1,13 @@
 # @osdk/shared.net.fetch
 
+## 0.1.1
+
+### Patch Changes
+
+- 68609fe: Ensure package works with typescript 4.9
+- Updated dependencies [68609fe]
+  - @osdk/shared.net.errors@1.1.1
+
 ## 0.1.0
 
 ### Minor Changes

@@ -1,5 +1,14 @@
 # @osdk/e2e.sandbox.todoappapp
 
+## 2.0.2
+
+### Patch Changes
+
+- Updated dependencies [68609fe]
+  - @osdk/api@1.9.2
+  - @osdk/client@0.21.2
+  - @osdk/client.api@0.21.2
+
 ## 2.0.1
 
 ### Patch Changes

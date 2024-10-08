@@ -1,5 +1,12 @@
 # @osdk/foundry.datasets
 
+## 2.0.2
+
+### Patch Changes
+
+- @osdk/shared.net.platformapi@0.2.1
+- @osdk/foundry.core@2.0.2
+
 ### Patch Changes
 
 - Updated dependencies [2deb4d9]

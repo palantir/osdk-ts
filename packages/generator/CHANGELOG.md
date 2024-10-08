@@ -1,5 +1,14 @@
 # @osdk/generator
 
+## 1.13.4
+
+### Patch Changes
+
+- Updated dependencies [68609fe]
+  - @osdk/gateway@2.4.2
+  - @osdk/api@1.9.2
+  - @osdk/generator-converters@0.7.2
+
 ## 1.13.3
 
 ### Patch Changes
