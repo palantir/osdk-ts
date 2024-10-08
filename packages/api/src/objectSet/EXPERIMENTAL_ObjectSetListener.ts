@@ -28,7 +28,7 @@ export interface EXPERIMENTAL_ObjectSetListener<
    * Specific objects have changed and can be immediately updated
    */
   onChange?: (
-    objects: Array<ObjectUpdate<O, P>>,
+    objectUpdate: ObjectUpdate<O, P>,
   ) => void;
 
   /**

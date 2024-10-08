@@ -451,7 +451,12 @@ export class ObjectSetListenerWebsocket {
         }
         : undefined;
     }));
-    sub.listener.onChange?.(osdkObjects.filter((o) => o != null));
+
+    for (const osdkObject of osdkObjects) {
+      if (osdkObject != null) {
+        return sub.listener.onChange?.(osdkObject);
+      }
+    }
   };
 
   #handleMessage_refreshObjectSet = (payload: RefreshObjectSet) => {
