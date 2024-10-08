@@ -54,10 +54,8 @@ export class GeotimeSeriesPropertyImpl<T extends GeoJSON.Point>
         await this.#client.ontologyRid,
         ...this.#triplet,
       ) as Promise<TimeSeriesPoint<T>>;
-    return await latestPointPromise.then(latestPoint => {
-      this.lastFetchedPoint = latestPoint;
-      return latestPoint;
-    });
+    latestPointPromise.then(latestPoint => this.lastFetchedPoint = latestPoint);
+    return latestPointPromise;
   }
 
   public async getAllValues(query?: TimeSeriesQuery) {

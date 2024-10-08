@@ -41,6 +41,8 @@ describe("Timeseries", () => {
     const employee = await client(Employee).fetchOne(50030);
     expect(employee.$primaryKey).toEqual(50030);
     const initialLastPoint = employee.employeeLocation?.lastFetchedPoint;
+    expect(initialLastPoint).toBeUndefined();
+
     const fetchedPoint = await employee.employeeLocation?.getLatestValue();
 
     expect(initialLastPoint).toEqual(fetchedPoint);
