@@ -32,7 +32,6 @@
   "dependencies": {
     "@osdk/api": "workspace:~",
     "@osdk/client.unstable": "workspace:*",
-    "@osdk/client.unstable.osw": "workspace:*",
     "@osdk/generator-converters": "workspace:*",
     "@osdk/internal.foundry.core": "workspace:*",
     "@osdk/internal.foundry.ontologiesv2": "workspace:*",
