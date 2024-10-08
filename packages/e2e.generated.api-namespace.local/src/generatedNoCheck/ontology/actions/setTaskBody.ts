@@ -7,7 +7,7 @@ import type {
   ApplyBatchActionOptions,
 } from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
-import type { Task as $Imported$objectTypes$com$example$dep$Task } from '@osdk/e2e.generated.api-namespace.dep';
+import type { Task as $Imported$com$example$dep$Task } from '@osdk/e2e.generated.api-namespace.dep';
 
 export namespace setTaskBody {
   // Represents the definition of the parameters for the action
@@ -20,14 +20,14 @@ export namespace setTaskBody {
     task: {
       multiplicity: false;
       nullable: false;
-      type: ActionMetadata.DataType.Object<$Imported$objectTypes$com$example$dep$Task>;
+      type: ActionMetadata.DataType.Object<$Imported$com$example$dep$Task>;
     };
   };
 
   export interface Params {
     readonly body: ActionParam.PrimitiveType<'string'>;
 
-    readonly task: ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>;
+    readonly task: ActionParam.ObjectType<$Imported$com$example$dep$Task>;
   }
 
   // Represents a fqn of the action
@@ -46,7 +46,7 @@ export namespace setTaskBody {
 
 /**
  * @param {ActionParam.PrimitiveType<"string">} body
- * @param {ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>} task
+ * @param {ActionParam.ObjectType<$Imported$com$example$dep$Task>} task
  */
 export interface setTaskBody extends ActionDefinition<setTaskBody.Signatures> {
   __DefinitionMetadata?: {
