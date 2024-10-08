@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type * from "./OpenApiRequest.js";
+export type { OpenApiRequest } from "./OpenApiRequest.js";
