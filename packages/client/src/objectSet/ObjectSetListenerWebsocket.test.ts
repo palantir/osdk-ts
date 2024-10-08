@@ -35,7 +35,6 @@ import {
   it,
   vi,
 } from "vitest";
-import { E } from "vitest/dist/reporters-B7ebVMkT.js";
 import { z } from "zod";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { Logger } from "../Logger.js";
