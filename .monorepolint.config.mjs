@@ -73,7 +73,7 @@ const privatePackages = [
 const consumerCliPackages = [
   "@osdk/cli",
   "@osdk/create-app",
-  "@osdk/tmp-foundry-sdk-generator",
+  "@osdk/foundry-sdk-generator",
 ];
 
 /**
