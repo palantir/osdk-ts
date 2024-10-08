@@ -6,3 +6,4 @@ export * from './ontology/objects.js';
 export * as $Objects from './ontology/objects.js';
 export * from './ontology/queries.js';
 export * as $Queries from './ontology/queries.js';
+export { $ontologyRid } from './OntologyMetadata.js';

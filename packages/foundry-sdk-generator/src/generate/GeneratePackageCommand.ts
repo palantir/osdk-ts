@@ -35,6 +35,7 @@ export interface generatePackageCommandArgs {
   packageVersion: string;
   outputDir: string;
   beta?: boolean;
+  sdkPackages?: Map<string, string>;
 }
 
 export class GeneratePackageCommand
@@ -150,6 +151,13 @@ export class GeneratePackageCommand
         string: true,
         // experimental for now
         hidden: true,
+        coerce: (arg: string[]) => {
+          return new Map(
+            arg.map((sdkPackage) =>
+              sdkPackage.split("=", 2) as [string, string]
+            ),
+          );
+        },
       })
       .strict();
   }
@@ -174,16 +182,24 @@ export class GeneratePackageCommand
       exit(1);
     }
 
+    const packageInfo = await ontologyMetadataResolver.getInfoForPackages(
+      args.sdkPackages ?? new Map(),
+    );
+
     const timeStart = Date.now();
 
     const wireOntologyDefinition = await ontologyMetadataResolver
-      .getWireOntologyDefinition(ontologyRid, {
-        objectTypesApiNamesToLoad: transformArrayArg(args.objectTypes),
-        actionTypesApiNamesToLoad: transformArrayArg(args.actionTypes),
-        queryTypesApiNamesToLoad: transformArrayArg(args.queryTypes),
-        interfaceTypesApiNamesToLoad: transformArrayArg(args.interfaceTypes),
-        linkTypesApiNamesToLoad: transformArrayArg(args.linkTypes),
-      });
+      .getWireOntologyDefinition(
+        ontologyRid,
+        {
+          objectTypesApiNamesToLoad: transformArrayArg(args.objectTypes),
+          actionTypesApiNamesToLoad: transformArrayArg(args.actionTypes),
+          queryTypesApiNamesToLoad: transformArrayArg(args.queryTypes),
+          interfaceTypesApiNamesToLoad: transformArrayArg(args.interfaceTypes),
+          linkTypesApiNamesToLoad: transformArrayArg(args.linkTypes),
+        },
+        packageInfo,
+      );
 
     if (wireOntologyDefinition.isErr()) {
       wireOntologyDefinition.error.forEach(err => {

@@ -242,8 +242,8 @@ async function generateClientSdk(
       minimalFs,
       await getDependencyVersions(),
       process.env.PACKAGE_CLI_VERSION!,
-      args.ontologyApiNamespace,
-      args.apiNamespaceMap,
+      args.externalObjects,
+      args.externalInterfaces,
     );
     return true;
   } catch (e) {
@@ -320,8 +320,8 @@ async function generateSourceFiles(
     fs,
     args.outDir,
     args.packageType,
-    args.ontologyApiNamespace,
-    args.apiNamespaceMap,
+    args.externalObjects,
+    args.externalInterfaces,
   );
 }
 

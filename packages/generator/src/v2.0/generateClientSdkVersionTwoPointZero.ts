@@ -15,7 +15,10 @@
  */
 
 import path from "node:path";
+import { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
+import { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
 import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
+import { ForeignType } from "../GenerateContext/ForeignType.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import type { MinimalFs } from "../MinimalFs.js";
 import { sanitizeMetadata } from "../shared/sanitizeMetadata.js";
@@ -65,6 +68,8 @@ async function generateEachObjectFile(
   } = ctx;
   await fs.mkdir(path.join(outDir, "ontology", "objects"), { recursive: true });
   for (const obj of Object.values(ontology.objectTypes)) {
+    if (obj instanceof ForeignType) continue;
+
     const relPath = path.join(
       ".",
       "ontology",
@@ -91,22 +96,27 @@ export async function generateClientSdkVersionTwoPointZero(
   fs: MinimalFs,
   outDir: string,
   packageType: "module" | "commonjs" = "commonjs",
-  ontologyApiNamespace?: string,
-  apiNamespacePackageMap: Map<string, string> = new Map(),
+  externalObjects: Map<string, string> = new Map(),
+  externalInterfaces: Map<string, string> = new Map(),
+  externalSpts: Map<string, string> = new Map(),
 ) {
   const importExt = packageType === "module" ? ".js" : "";
+
+  // Structurally, we need to have multiple ontologies read in
+  // with one per package.
 
   await verifyOutDir(outDir, fs);
 
   const sanitizedOntology = sanitizeMetadata(ontology);
 
   await fs.mkdir(outDir, { recursive: true });
-  const enhancedOntology = enhanceOntology(
-    sanitizedOntology,
-    ontologyApiNamespace,
-    apiNamespacePackageMap,
+  const enhancedOntology = enhanceOntology({
+    sanitized: sanitizedOntology,
     importExt,
-  );
+    externalObjects,
+    externalInterfaces,
+    externalSpts,
+  });
 
   const ctx: GenerateContext = {
     sanitizedOntology,
@@ -114,8 +124,6 @@ export async function generateClientSdkVersionTwoPointZero(
     importExt,
     fs,
     outDir,
-    ontologyApiNamespace,
-    apiNamespacePackageMap,
   };
 
   await generateRootIndexTsFile(ctx);
@@ -131,7 +139,9 @@ export async function generateClientSdkVersionTwoPointZero(
     path.join(outDir, "ontology", "objects.ts"),
     await formatTs(`
     ${
-      Object.values(enhancedOntology.objectTypes).map(objType =>
+      Object.values(enhancedOntology.objectTypes).filter(o =>
+        o instanceof EnhancedObjectType
+      ).map(objType =>
         `export * from "./objects/${objType.shortApiName}${importExt}";`
       ).join("\n")
     }
@@ -152,6 +162,8 @@ async function generateOntologyInterfaces(
   });
 
   for (const obj of Object.values(ontology.interfaceTypes)) {
+    if (obj instanceof ForeignType) continue;
+
     await fs.writeFile(
       path.join(interfacesDir, `${obj.shortApiName}.ts`),
       await formatTs(`
@@ -172,7 +184,9 @@ async function generateOntologyInterfaces(
     interfacesDir + ".ts",
     await formatTs(`
     ${
-      Object.values(ontology.interfaceTypes).map(interfaceType =>
+      Object.values(ontology.interfaceTypes).filter(i =>
+        i instanceof EnhancedInterfaceType
+      ).map(interfaceType =>
         `export * from "./interfaces/${interfaceType.shortApiName}${importExt}";`
       ).join("\n")
     }
