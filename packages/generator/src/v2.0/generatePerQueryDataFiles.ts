@@ -70,7 +70,9 @@ export async function generatePerQueryDataFilesV2(
     await formatTs(`
     ${
       Object.values(ontology.queryTypes).map(query =>
-        `export * from "${query.getImportPathRelTo(relOutDir)}";`
+        `export {${query.shortApiName}} from "${
+          query.getImportPathRelTo(relOutDir)
+        }";`
       )
         .join("\n")
     }

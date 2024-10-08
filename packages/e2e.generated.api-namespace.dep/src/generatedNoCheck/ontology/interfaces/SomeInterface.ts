@@ -22,10 +22,16 @@ export namespace SomeInterface {
 
   export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 
+  export type OsdkInstance<
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
+  > = $Osdk.Instance<SomeInterface, OPTIONS, K>;
+
+  /** @deprecated use OsdkInstance */
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
-  > = $Osdk<SomeInterface, K | OPTIONS>;
+  > = OsdkInstance<OPTIONS, K>;
 }
 
 export interface SomeInterface extends $InterfaceDefinition {

@@ -106,7 +106,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
 
       ${createObjectSet(object, identifiers)}
       
-      ${createOsdkObject(object, "OsdkObject", identifiers)}
+      ${createOsdkObject(object, "OsdkInstance", identifiers)}
     }    
 
 
@@ -157,16 +157,22 @@ export function createOsdkObject(
 ) {
   const definition = object.getCleanedUpDefinition(true);
   return `
-  export type ${identifier}<
+    export type ${identifier}<
       OPTIONS extends never | "$notStrict" | "$rid" = never,
       K extends keyof ${osdkObjectPropsIdentifier}= keyof ${osdkObjectPropsIdentifier},
-
-  > 
-    = $Osdk<
+    > 
+    = $Osdk.Instance<
         ${objectDefIdentifier}, 
-        K | OPTIONS
-      > 
+        OPTIONS,
+        K
+      >;
    
+
+    /** @deprecated use ${identifier} */
+    export type OsdkObject<
+      OPTIONS extends never | "$notStrict" | "$rid" = never,
+      K extends keyof ${osdkObjectPropsIdentifier}= keyof ${osdkObjectPropsIdentifier},
+    > = ${identifier}<OPTIONS, K>;
   ;
     `;
 }
