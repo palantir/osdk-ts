@@ -77,5 +77,20 @@
     "@osdk/version-updater": "0.0.0",
     "@osdk/tests.verify-fallback-package-v2": "0.0.3"
   },
-  "changesets": []
+  "changesets": [
+    "curvy-cups-check",
+    "few-apes-visit",
+    "few-gifts-rule",
+    "green-kids-type",
+    "lemon-seas-fail",
+    "old-clouds-wink",
+    "orange-pigs-pretend",
+    "pretty-pumpkins-wave",
+    "selfish-moles-divide",
+    "selfish-suits-thank",
+    "smart-garlics-pretend",
+    "spicy-fishes-matter",
+    "sweet-ants-pull",
+    "two-geckos-care"
+  ]
 }
