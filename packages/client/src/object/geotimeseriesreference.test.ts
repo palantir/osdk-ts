@@ -40,14 +40,17 @@ describe("Timeseries", () => {
   it("get latest value works", async () => {
     const employee = await client(Employee).fetchOne(50030);
     expect(employee.$primaryKey).toEqual(50030);
-    const initialLastPoint = employee.employeeLocation?.lastFetchedPoint;
+    const location = employee.employeeLocation;
+
+    expect(location).toBeDefined();
+
+    const initialLastPoint = location?.lastFetchedPoint;
     expect(initialLastPoint).toBeUndefined();
 
-    const fetchedPoint = await employee.employeeLocation?.getLatestValue();
-    const nextLastPoint = employee.employeeLocation?.lastFetchedPoint;
+    const fetchedPoint = await location?.getLatestValue();
+    const nextLastPoint = location?.lastFetchedPoint;
 
     expect(nextLastPoint).toEqual(fetchedPoint);
-
     expect(nextLastPoint?.time).toEqual("2014-04-14");
     expect(nextLastPoint?.value).toEqual({
       type: "Point",
@@ -59,6 +62,8 @@ describe("Timeseries", () => {
       type: "Point",
       coordinates: [3.3, 3.3],
     });
+
+    expect(location?.lastFetchedPoint).toBeDefined();
   });
 
   it("getAll values with before works", async () => {
