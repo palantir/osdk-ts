@@ -1,5 +1,13 @@
 # @osdk/client.test.ontology
 
+## 1.1.2
+
+### Patch Changes
+
+- Updated dependencies [68609fe]
+  - @osdk/api@1.9.2
+  - @osdk/client.api@0.21.2
+
 ## 1.1.1
 
 ### Patch Changes

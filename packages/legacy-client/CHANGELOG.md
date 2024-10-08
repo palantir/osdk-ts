@@ -1,5 +1,15 @@
 # @osdk/legacy-client
 
+## 2.5.2
+
+### Patch Changes
+
+- 68609fe: Ensure package works with typescript 4.9
+- Updated dependencies [68609fe]
+  - @osdk/shared.net@1.12.2
+  - @osdk/gateway@2.4.2
+  - @osdk/api@1.9.2
+
 ## 2.5.1
 
 ### Patch Changes

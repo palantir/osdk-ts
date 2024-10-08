@@ -1,5 +1,14 @@
 # @osdk/internal.foundry.core
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies [68609fe]
+  - @osdk/shared.net@1.12.2
+  - @osdk/api@1.9.2
+  - @osdk/shared.net.platformapi@0.2.1
+
 ## 0.1.1
 
 ### Patch Changes

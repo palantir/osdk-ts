@@ -53,7 +53,7 @@ export interface Client extends SharedClient<MinimalClient> {
 }
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
-const MaxOsdkVersion = "0.21.1";
+const MaxOsdkVersion = "0.21.2";
 // END: THIS IS GENERATED CODE. DO NOT EDIT.
 export type MaxOsdkVersion = typeof MaxOsdkVersion;
 const ErrorMessage = Symbol("ErrorMessage");
