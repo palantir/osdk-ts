@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export type * from "../generated/openapi/components/index.js";
+export * from "../generated/openapi/components/index.js";
 export * from "../generated/openapi/request/index.js";
 export {};
