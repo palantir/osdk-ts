@@ -10,7 +10,7 @@
   - @osdk/internal.foundry@0.4.2
   - @osdk/client.api@0.21.2
   - @osdk/e2e.generated.catchall@2.0.2
-  - @osdk/foundry@2.0.1
+  - @osdk/foundry@2.0.2
 
 ## 0.2.1
 

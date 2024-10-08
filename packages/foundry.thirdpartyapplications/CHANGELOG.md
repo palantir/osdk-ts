@@ -1,11 +1,11 @@
 # @osdk/foundry.thirdpartyapplications
 
-## 2.0.1
+## 2.0.2
 
 ### Patch Changes
 
 - @osdk/shared.net.platformapi@0.2.1
-- @osdk/foundry.core@2.0.1
+- @osdk/foundry.core@2.0.2
 
 ## 2.0.0
 
