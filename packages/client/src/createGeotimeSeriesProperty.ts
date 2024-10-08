@@ -34,32 +34,36 @@ export class GeotimeSeriesPropertyImpl<T extends GeoJSON.Point>
 {
   #triplet: [string, any, string];
   #client: MinimalClient;
-  lastFetchedPoint: TimeSeriesPoint<T>;
+  lastFetchedPoint: TimeSeriesPoint<T> | undefined;
 
   constructor(
     client: MinimalClient,
     objectApiName: string,
     primaryKey: any,
     propertyName: string,
-    lastFetchedPoint: TimeSeriesPoint<T>,
   ) {
     this.#client = client;
     this.#triplet = [objectApiName, primaryKey, propertyName];
-    this.lastFetchedPoint = lastFetchedPoint;
+    this.getLatestValue();
   }
 
-  public async getLastPoint() {
-    return OntologiesV2.TimeSeriesValueBankProperties.getLatestValue(
-      this.#client,
-      await this.#client.ontologyRid,
-      ...this.#triplet,
-    ) as Promise<TimeSeriesPoint<T>>;
+  public async getLatestValue() {
+    const latestPointPromise = OntologiesV2.TimeSeriesValueBankProperties
+      .getLatestValue(
+        this.#client,
+        await this.#client.ontologyRid,
+        ...this.#triplet,
+      ) as Promise<TimeSeriesPoint<T>>;
+    return await latestPointPromise.then(latestPoint => {
+      this.lastFetchedPoint = latestPoint;
+      return latestPoint;
+    });
   }
 
-  public async getAllPoints(query?: TimeSeriesQuery) {
+  public async getAllValues(query?: TimeSeriesQuery) {
     const allPoints: Array<TimeSeriesPoint<T>> = [];
 
-    for await (const point of this.asyncIterPoints(query)) {
+    for await (const point of this.asyncIterValues(query)) {
       allPoints.push({
         time: point.time,
         value: point.value as T,
@@ -68,7 +72,7 @@ export class GeotimeSeriesPropertyImpl<T extends GeoJSON.Point>
     return allPoints;
   }
 
-  public async *asyncIterPoints(
+  public async *asyncIterValues(
     query?: TimeSeriesQuery,
   ) {
     const streamPointsIterator = await OntologiesV2

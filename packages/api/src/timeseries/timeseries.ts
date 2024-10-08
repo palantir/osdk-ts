@@ -110,7 +110,7 @@ export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
   /**
    * Queries the last point of the Timeseries
    */
-  getLastPoint: () => Promise<TimeSeriesPoint<T>>;
+  getLatestValue: () => Promise<TimeSeriesPoint<T>>;
   /**
      * Loads all points, within the given time range if that's provided
      * @param query - a query representing either an absolute or relative range of time
@@ -120,7 +120,7 @@ export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
         $unit: "month",
       });
      */
-  getAllPoints: (
+  getAllValues: (
     query?: TimeSeriesQuery,
   ) => Promise<Array<TimeSeriesPoint<T>>>;
   /**
@@ -136,9 +136,9 @@ export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
           // Handle time series point
       }
      */
-  asyncIterPoints: (
+  asyncIterValues: (
     query?: TimeSeriesQuery,
   ) => AsyncGenerator<TimeSeriesPoint<T>>;
 
-  lastFetchedPoint: TimeSeriesPoint<T>;
+  lastFetchedPoint: TimeSeriesPoint<T> | undefined;
 }
