@@ -442,7 +442,7 @@ export class ObjectSetListenerWebsocket {
         this.#client,
         [o.object],
         undefined,
-      ) as Array<Osdk<any>>;
+      ) as Array<Osdk.Instance<any, never, any>>;
       const singleOsdkObject = osdkObjectArray[0] ?? undefined;
       return singleOsdkObject != null
         ? {
