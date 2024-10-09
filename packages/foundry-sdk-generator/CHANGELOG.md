@@ -1,5 +1,15 @@
 # @osdk/foundry-sdk-generator
 
+## 2.0.3
+
+### Patch Changes
+
+- 7132212: Fixes being unable to generate in dev console without --beta
+- Updated dependencies [444e7a4]
+  - @osdk/generator@2.0.3
+  - @osdk/client@2.0.3
+  - @osdk/api@2.0.3
+
 ## 2.0.2
 
 ### Patch Changes
