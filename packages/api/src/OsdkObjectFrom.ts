@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { OsdkObjectLinksObject } from "./definitions/LinkDefinitions.js";
+import type { IsAny } from "type-fest";
+import type {
+  DefaultToFalse,
+  OsdkObjectLinksObject,
+} from "./definitions/LinkDefinitions.js";
+import type { NullabilityAdherence } from "./object/FetchPageArgs.js";
 import type { UnionIfTrue } from "./object/FetchPageResult.js";
 import type { InterfaceDefinition } from "./ontology/InterfaceDefinition.js";
 import type {
@@ -137,44 +142,90 @@ type UnderlyingProps<
 
 export type IsNever<T> = [T] extends [never] ? true : false;
 
-type GetPropsKeys<
+type ExtractPropsKeysFromOldPropsStyle<
   Q extends ObjectOrInterfaceDefinition,
   P extends ValidOsdkPropParams<Q>,
 > = P extends "$all" ? PropertyKeys<Q>
   : Exclude<P, "$strict" | "$notStrict" | "$rid">;
 
-type GetProps<
+export type GetPropsKeys<
   Q extends ObjectOrInterfaceDefinition,
-  P extends ValidOsdkPropParams<Q>,
-> = P extends "$notStrict" ? CompileTimeMetadata<Q>["props"]
-  : CompileTimeMetadata<Q>["strictProps"];
+  P extends PropertyKeys<Q>,
+> = IsNever<P> extends true ? PropertyKeys<Q>
+  : IsAny<P> extends true ? PropertyKeys<Q>
+  : P;
 
+export type GetProps<
+  Q extends ObjectOrInterfaceDefinition,
+  OPTIONS extends never | "$notStrict" | "$rid" = never,
+> = IsNever<OPTIONS> extends true ? CompileTimeMetadata<Q>["strictProps"]
+  : (OPTIONS extends "$notStrict" ? CompileTimeMetadata<Q>["props"]
+    : CompileTimeMetadata<Q>["strictProps"]);
+
+/**
+ * Use `Osdk.Instance` or `YourType.OsdkInstance`
+ */
 export type Osdk<
   Q extends ObjectOrInterfaceDefinition,
-  P extends ValidOsdkPropParams<Q> = "$all",
+  OPTIONS extends string = never,
+  P extends PropertyKeys<Q> = PropertyKeys<Q>,
 > =
-  & OsdkBase<Q>
-  & Pick<
-    GetProps<Q, P>,
-    GetPropsKeys<Q, P>
-  >
-  & {
-    readonly $link: Q extends { linksType?: any } ? Q["linksType"]
-      : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q>
-      : never;
-
-    readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk<
-      NEW_Q,
-      ConvertProps<Q, NEW_Q, P>
+  // no middle options is simplest
+  IsNever<OPTIONS> extends true ? Osdk.Instance<Q, never, P>
+    // Options only includes the two allowed in the new style
+    : IsNever<Exclude<OPTIONS, "$notStrict" | "$rid">> extends true
+      ? Osdk.Instance<Q, OPTIONS & ("$notStrict" | "$rid"), P>
+    // else we are in the old style which was just Q and OPTIONS
+    // and OPTIONS was $things + prop names
+    : Osdk.Instance<
+      Q,
+      | ("$notStrict" extends OPTIONS ? "$notStrict" : never)
+      | ("$rid" extends OPTIONS ? "$rid" : never),
+      ExtractPropsKeysFromOldPropsStyle<Q, OPTIONS>
     >;
-  }
-  // We are hiding the $rid field if it wasn't requested as we want to discourage its use
-  & (IsNever<P> extends true ? {}
-    : string extends P ? {}
-    : "$rid" extends P ? { readonly $rid: string }
-    : {});
 
-export type OsdkObjectOrInterfaceFrom<
-  Q extends ObjectOrInterfaceDefinition,
-  P extends string = PropertyKeys<Q>,
-> = Osdk<Q, P>;
+export namespace Osdk {
+  export type Instance<
+    Q extends ObjectOrInterfaceDefinition,
+    OPTIONS extends never | "$notStrict" | "$rid" = never,
+    P extends PropertyKeys<Q> = PropertyKeys<Q>,
+  > =
+    & OsdkBase<Q>
+    & Pick<
+      GetProps<Q, OPTIONS>,
+      GetPropsKeys<Q, P>
+    >
+    & {
+      readonly $link: Q extends { linksType?: any } ? Q["linksType"]
+        : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q>
+        : never;
+
+      readonly $as: <NEW_Q extends ValidToFrom<Q>>(
+        type: NEW_Q | string,
+      ) => Osdk.Instance<
+        NEW_Q,
+        OPTIONS,
+        ConvertProps<Q, NEW_Q, P>
+      >;
+    }
+    // We are hiding the $rid field if it wasn't requested as we want to discourage its use
+    & (IsNever<OPTIONS> extends true ? {}
+      : "$rid" extends OPTIONS ? { readonly $rid: string }
+      : {});
+}
+
+// not exported from package
+export type ExtractStrictOption<S extends NullabilityAdherence> = S extends
+  false ? "$notStrict"
+  : never;
+
+// not exported from package
+export type ExtractRidOption<R extends boolean> = DefaultToFalse<R> extends
+  false ? never
+  : "$rid";
+
+// not exported from package
+export type ExtractOptions<
+  R extends boolean,
+  S extends NullabilityAdherence = NullabilityAdherence.Default,
+> = ExtractStrictOption<S> | ExtractRidOption<R>;

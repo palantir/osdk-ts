@@ -32,10 +32,16 @@ export namespace BuilderDeploymentState {
 
   export interface ObjectSet extends $ObjectSet<BuilderDeploymentState, BuilderDeploymentState.ObjectSet> {}
 
+  export type OsdkInstance<
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    K extends keyof BuilderDeploymentState.Props = keyof BuilderDeploymentState.Props,
+  > = $Osdk.Instance<BuilderDeploymentState, OPTIONS, K>;
+
+  /** @deprecated use OsdkInstance */
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof BuilderDeploymentState.Props = keyof BuilderDeploymentState.Props,
-  > = $Osdk<BuilderDeploymentState, K | OPTIONS>;
+  > = OsdkInstance<OPTIONS, K>;
 }
 
 export interface BuilderDeploymentState extends $ObjectTypeDefinition {

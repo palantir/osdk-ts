@@ -169,7 +169,7 @@ ${
 
       ${createObjectSet(interfaceDef, ids)}
 
-      ${createOsdkObject(interfaceDef, "OsdkObject", ids)}
+      ${createOsdkObject(interfaceDef, "OsdkInstance", ids)}
       
     }    
 

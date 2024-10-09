@@ -137,10 +137,16 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
 
         export interface ObjectSet extends $ObjectSet<Bar, Bar.ObjectSet> {}
 
+        export type OsdkInstance<
+          OPTIONS extends never | "$notStrict" | "$rid" = never,
+          K extends keyof Bar.Props = keyof Bar.Props,
+        > = $Osdk.Instance<Bar, OPTIONS, K>;
+
+        /** @deprecated use OsdkInstance */
         export type OsdkObject<
           OPTIONS extends never | "$notStrict" | "$rid" = never,
           K extends keyof Bar.Props = keyof Bar.Props,
-        > = $Osdk<Bar, K | OPTIONS>;
+        > = OsdkInstance<OPTIONS, K>;
       }
 
       export interface Bar extends $InterfaceDefinition {
@@ -223,10 +229,16 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
 
         export interface ObjectSet extends $ObjectSet<Foo, Foo.ObjectSet> {}
 
+        export type OsdkInstance<
+          OPTIONS extends never | "$notStrict" | "$rid" = never,
+          K extends keyof Foo.Props = keyof Foo.Props,
+        > = $Osdk.Instance<Foo, OPTIONS, K>;
+
+        /** @deprecated use OsdkInstance */
         export type OsdkObject<
           OPTIONS extends never | "$notStrict" | "$rid" = never,
           K extends keyof Foo.Props = keyof Foo.Props,
-        > = $Osdk<Foo, K | OPTIONS>;
+        > = OsdkInstance<OPTIONS, K>;
       }
 
       export interface Foo extends $InterfaceDefinition {
@@ -312,10 +324,16 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
 
         export interface ObjectSet extends $ObjectSet<Foo, Foo.ObjectSet> {}
 
+        export type OsdkInstance<
+          OPTIONS extends never | "$notStrict" | "$rid" = never,
+          K extends keyof Foo.Props = keyof Foo.Props,
+        > = $Osdk.Instance<Foo, OPTIONS, K>;
+
+        /** @deprecated use OsdkInstance */
         export type OsdkObject<
           OPTIONS extends never | "$notStrict" | "$rid" = never,
           K extends keyof Foo.Props = keyof Foo.Props,
-        > = $Osdk<Foo, K | OPTIONS>;
+        > = OsdkInstance<OPTIONS, K>;
       }
 
       export interface Foo extends $InterfaceDefinition {

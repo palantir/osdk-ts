@@ -30,6 +30,7 @@ import { ObjectSet } from '@osdk/api';
 import type { ObjectSetQueryDataType } from '@osdk/api';
 import type { ObjectTypeDefinition } from '@osdk/api';
 import { Osdk } from '@osdk/api';
+import type { OsdkBase } from '@osdk/api';
 import { OsdkObject } from '@osdk/api';
 import { PageResult } from '@osdk/api';
 import { PalantirApiError } from '@osdk/shared.net.errors';

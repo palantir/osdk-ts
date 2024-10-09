@@ -30,10 +30,16 @@ export namespace Thing {
 
   export interface ObjectSet extends $ObjectSet<Thing, Thing.ObjectSet> {}
 
+  export type OsdkInstance<
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    K extends keyof Thing.Props = keyof Thing.Props,
+  > = $Osdk.Instance<Thing, OPTIONS, K>;
+
+  /** @deprecated use OsdkInstance */
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Thing.Props = keyof Thing.Props,
-  > = $Osdk<Thing, K | OPTIONS>;
+  > = OsdkInstance<OPTIONS, K>;
 }
 
 export interface Thing extends $ObjectTypeDefinition {

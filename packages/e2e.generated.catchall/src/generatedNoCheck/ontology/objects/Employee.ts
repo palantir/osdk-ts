@@ -67,10 +67,16 @@ export namespace Employee {
 
   export interface ObjectSet extends $ObjectSet<Employee, Employee.ObjectSet> {}
 
+  export type OsdkInstance<
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    K extends keyof Employee.Props = keyof Employee.Props,
+  > = $Osdk.Instance<Employee, OPTIONS, K>;
+
+  /** @deprecated use OsdkInstance */
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Employee.Props = keyof Employee.Props,
-  > = $Osdk<Employee, K | OPTIONS>;
+  > = OsdkInstance<OPTIONS, K>;
 }
 
 export interface Employee extends $ObjectTypeDefinition {

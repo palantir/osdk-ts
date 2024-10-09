@@ -1,3 +1,3 @@
-export * from './queries/getNamesOfCustomersFromCountry.js';
-export * from './queries/getTodoCount.js';
-export * from './queries/queryTakesAllParameterTypes.js';
+export { getNamesOfCustomersFromCountry } from './queries/getNamesOfCustomersFromCountry.js';
+export { getTodoCount } from './queries/getTodoCount.js';
+export { queryTakesAllParameterTypes } from './queries/queryTakesAllParameterTypes.js';

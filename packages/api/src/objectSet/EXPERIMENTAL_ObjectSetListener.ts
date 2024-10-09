@@ -15,7 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
-import type { OsdkObjectOrInterfaceFrom } from "../OsdkObjectFrom.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
 
 export interface EXPERIMENTAL_ObjectSetListener<
   O extends ObjectOrInterfaceDefinition,
@@ -23,7 +23,7 @@ export interface EXPERIMENTAL_ObjectSetListener<
   /**
    * Specific objects have changed and can be immediately updated
    */
-  onChange?: (objects: Array<OsdkObjectOrInterfaceFrom<O>>) => void;
+  onChange?: (objects: Array<Osdk.Instance<O>>) => void;
 
   /**
    * The ObjectSet has become outdated and should be re-fetched in its entirety.
