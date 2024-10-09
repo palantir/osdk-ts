@@ -22,12 +22,6 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
             },
             "required": true,
           },
-          "employeeLocation": {
-            "dataType": {
-              "type": "geotimeSeriesReference",
-            },
-            "description": "Geotime series reference of the location of the employee",
-          },
           "newCompensation": {
             "dataType": {
               "type": "double",
@@ -94,6 +88,12 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
               "dataType": {
                 "type": "integer",
               },
+            },
+            "employeeLocation": {
+              "dataType": {
+                "type": "geotimeSeriesReference",
+              },
+              "description": "Geotime series reference of the location of the employee",
             },
             "employeeStatus": {
               "dataType": {
@@ -212,12 +212,6 @@ exports[`Load Ontologies Metadata > Loads object and action types without link t
             },
             "required": true,
           },
-          "employeeLocation": {
-            "dataType": {
-              "type": "geotimeSeriesReference",
-            },
-            "description": "Geotime series reference of the location of the employee",
-          },
           "newCompensation": {
             "dataType": {
               "type": "double",
@@ -267,6 +261,12 @@ exports[`Load Ontologies Metadata > Loads object and action types without link t
               "dataType": {
                 "type": "integer",
               },
+            },
+            "employeeLocation": {
+              "dataType": {
+                "type": "geotimeSeriesReference",
+              },
+              "description": "Geotime series reference of the location of the employee",
             },
             "employeeStatus": {
               "dataType": {
