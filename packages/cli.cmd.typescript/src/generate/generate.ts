@@ -95,10 +95,21 @@ export const generateCommand: CommandModule<
             type: "boolean",
             default: false,
           },
-          ontologyApiNamespace: {
+          externalObjects: {
             type: "string",
+            coerce: (value) => {
+              const map = new Map<string, string>();
+              if (value) {
+                for (const entry of value.split(",")) {
+                  const [api, ns] = entry.split(":");
+                  map.set(api, ns);
+                }
+              }
+              return map;
+            },
+            default: "",
           },
-          apiNamespaceMap: {
+          externalInterfaces: {
             type: "string",
             coerce: (value) => {
               const map = new Map<string, string>();

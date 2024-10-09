@@ -61,6 +61,21 @@ export interface CannotWriteToTrashedStream {
 }
 
 /**
+ * Could not create the Stream.
+ *
+ * Log Safety: UNSAFE
+ */
+export interface CreateStreamPermissionDenied {
+  errorCode: "PERMISSION_DENIED";
+  errorName: "CreateStreamPermissionDenied";
+  errorInstanceId: string;
+  parameters: {
+    datasetRid: unknown;
+    streamBranchName: unknown;
+  };
+}
+
+/**
  * Could not create the Dataset.
  *
  * Log Safety: SAFE
@@ -97,6 +112,21 @@ export interface InvalidStreamType {
   errorInstanceId: string;
   parameters: {
     streamType: unknown;
+  };
+}
+
+/**
+ * Could not publishBinaryRecord the Stream.
+ *
+ * Log Safety: UNSAFE
+ */
+export interface PublishBinaryRecordToStreamPermissionDenied {
+  errorCode: "PERMISSION_DENIED";
+  errorName: "PublishBinaryRecordToStreamPermissionDenied";
+  errorInstanceId: string;
+  parameters: {
+    datasetRid: unknown;
+    streamBranchName: unknown;
   };
 }
 
@@ -156,6 +186,21 @@ export interface RecordTooLarge {
   errorName: "RecordTooLarge";
   errorInstanceId: string;
   parameters: {};
+}
+
+/**
+ * Could not reset the Stream.
+ *
+ * Log Safety: UNSAFE
+ */
+export interface ResetStreamPermissionDenied {
+  errorCode: "PERMISSION_DENIED";
+  errorName: "ResetStreamPermissionDenied";
+  errorInstanceId: string;
+  parameters: {
+    datasetRid: unknown;
+    streamBranchName: unknown;
+  };
 }
 
 /**

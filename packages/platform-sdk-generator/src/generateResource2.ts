@@ -58,7 +58,7 @@ async function generateMethods(resource: Resource, model: Model) {
   const referencedTypes = new Set<Component>();
 
   for (const method of resource.operations) {
-    const methodName = (method.verb === "delete" || method.verb === "load")
+    const methodName = (method.verb === "delete")
       ? method.name
       : method.verb;
 

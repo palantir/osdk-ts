@@ -1,1 +1,1 @@
-export * from './interfaces/FooInterface.js';
+export { FooInterface } from './interfaces/FooInterface.js';

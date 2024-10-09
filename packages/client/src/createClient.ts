@@ -82,6 +82,18 @@ export function createClientInternal(
   options: { logger?: Logger } | undefined = undefined,
   fetchFn: typeof globalThis.fetch = fetch,
 ): Client {
+  if (typeof ontologyRid === "string") {
+    if (!ontologyRid.startsWith("ri.")) {
+      throw new Error("Invalid ontology RID");
+    }
+  } else {
+    ontologyRid.then((ontologyRid) => {
+      if (!ontologyRid.startsWith("ri.")) {
+        throw new Error("Invalid ontology RID");
+      }
+    });
+  }
+
   const clientCtx: MinimalClient = createMinimalClient(
     { ontologyRid },
     baseUrl,

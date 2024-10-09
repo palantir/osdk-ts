@@ -5,6 +5,7 @@
 ```ts
 
 import type { BBox } from 'geojson';
+import type { IsAny } from 'type-fest';
 import type { Point } from 'geojson';
 import type { Polygon } from 'geojson';
 import type { SingleKeyObject } from 'type-fest';
@@ -396,8 +397,10 @@ export interface FetchPageArgs<Q extends ObjectOrInterfaceDefinition, K extends 
     $pageSize?: number;
 }
 
-// @public (undocumented)
-export type FetchPageResult<Q extends ObjectOrInterfaceDefinition, L extends PropertyKeys<Q>, R extends boolean, S extends NullabilityAdherence> = PageResult<SingleOsdkResult<Q, L, R, S>>;
+// Warning: (ae-forgotten-export) The symbol "ExtractOptions" needs to be exported by the entry point index.d.ts
+//
+// @public
+export type FetchPageResult<Q extends ObjectOrInterfaceDefinition, L extends PropertyKeys<Q>, R extends boolean, S extends NullabilityAdherence> = PageResult<PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S>> : Osdk.Instance<Q, ExtractOptions<R, S>, L>>;
 
 // @public (undocumented)
 export type GeoFilter_Intersects = {
@@ -573,7 +576,7 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED 
     // Warning: (ae-forgotten-export) The symbol "EXPERIMENTAL_ObjectSetListener" needs to be exported by the entry point index.d.ts
     //
     // @alpha
-    readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]: (listener: EXPERIMENTAL_ObjectSetListener<Q>) => () => unknown;
+    readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]: <const P extends PropertyKeys<Q>>(properties: Array<P>, listener: EXPERIMENTAL_ObjectSetListener<Q, P>) => () => unknown;
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
@@ -583,8 +586,8 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED 
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     readonly aggregate: <AO extends AggregateOpts<Q>>(req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>) => Promise<AggregationsResults<Q, AO>>;
-    readonly fetchOne: Q extends ObjectTypeDefinition ? <const L extends PropertyKeys<Q>, const R extends boolean, const S extends false | "throw" = NullabilityAdherence.Default>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<SingleOsdkResult<Q, [L] extends [never] ? any : L, R, S>> : never;
-    readonly fetchOneWithErrors: Q extends ObjectTypeDefinition ? <L extends PropertyKeys<Q>, R extends boolean, S extends false | "throw" = NullabilityAdherence.Default>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<Result<SingleOsdkResult<Q, [L] extends [never] ? any : L, R, S>>> : never;
+    readonly fetchOne: Q extends ObjectTypeDefinition ? <const L extends PropertyKeys<Q>, const R extends boolean, const S extends false | "throw" = NullabilityAdherence.Default>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<Osdk.Instance<Q, ExtractOptions<R, S>, L>> : never;
+    readonly fetchOneWithErrors: Q extends ObjectTypeDefinition ? <L extends PropertyKeys<Q>, R extends boolean, S extends false | "throw" = NullabilityAdherence.Default>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<Result<Osdk.Instance<Q, ExtractOptions<R, S>, L>>> : never;
     readonly intersect: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
     readonly pivotTo: <L extends LinkNames<Q>>(type: L) => CompileTimeMetadata<LinkedType<Q, L>>["objectSet"];
     readonly subtract: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
@@ -623,19 +626,27 @@ export interface OntologyMetadata<_NEVER_USED_KEPT_FOR_BACKCOMPAT = any> {
     userAgent: string;
 }
 
-// Warning: (ae-forgotten-export) The symbol "GetProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "GetPropsKeys" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "IsNever" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ExtractPropsKeysFromOldPropsStyle" needs to be exported by the entry point index.d.ts
 //
+// @public
+export type Osdk<Q extends ObjectOrInterfaceDefinition, OPTIONS extends string = never, P extends PropertyKeys<Q> = PropertyKeys<Q>> = IsNever<OPTIONS> extends true ? Osdk.Instance<Q, never, P> : IsNever<Exclude<OPTIONS, "$notStrict" | "$rid">> extends true ? Osdk.Instance<Q, OPTIONS & ("$notStrict" | "$rid"), P> : Osdk.Instance<Q, ("$notStrict" extends OPTIONS ? "$notStrict" : never) | ("$rid" extends OPTIONS ? "$rid" : never), ExtractPropsKeysFromOldPropsStyle<Q, OPTIONS>>;
+
 // @public (undocumented)
-export type Osdk<Q extends ObjectOrInterfaceDefinition, P extends ValidOsdkPropParams<Q> = "$all"> = OsdkBase<Q> & Pick<GetProps<Q, P>, GetPropsKeys<Q, P>> & {
-    readonly $link: Q extends {
-        linksType?: any;
-    } ? Q["linksType"] : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q> : never;
-    readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk<NEW_Q, ConvertProps<Q, NEW_Q, P>>;
-} & (IsNever<P> extends true ? {} : string extends P ? {} : "$rid" extends P ? {
-    readonly $rid: string;
-} : {});
+export namespace Osdk {
+    // Warning: (ae-forgotten-export) The symbol "GetProps" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "GetPropsKeys" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export type Instance<Q extends ObjectOrInterfaceDefinition, OPTIONS extends never | "$notStrict" | "$rid" = never, P extends PropertyKeys<Q> = PropertyKeys<Q>> = OsdkBase<Q> & Pick<GetProps<Q, OPTIONS>, GetPropsKeys<Q, P>> & {
+        readonly $link: Q extends {
+            linksType?: any;
+        } ? Q["linksType"] : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q> : never;
+        readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P>>;
+    } & (IsNever<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
+        readonly $rid: string;
+    } : {});
+}
 
 // @public (undocumented)
 export type OsdkBase<Q extends ObjectOrInterfaceDefinition> = {
@@ -645,7 +656,7 @@ export type OsdkBase<Q extends ObjectOrInterfaceDefinition> = {
     readonly $title: string | undefined;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type OsdkObject<N extends string> = {
     readonly $apiName: N;
     readonly $objectType: string;
@@ -833,10 +844,8 @@ export interface SingleLinkAccessor<T extends ObjectTypeDefinition> {
     fetchOneWithErrors: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<Result<DefaultToFalse<A["$includeRid"]> extends false ? Osdk<T, SelectArgToKeys<T, A>> : Osdk<T, SelectArgToKeys<T, A> | "$rid">>>;
 }
 
-// Warning: (ae-forgotten-export) The symbol "IsAny" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
-export type SingleOsdkResult<Q extends ObjectOrInterfaceDefinition, L extends PropertyKeys<Q>, R extends boolean, S extends NullabilityAdherence> = Osdk<Q, (IsAny<L> extends true ? PropertyKeys<Q> : L) | (S extends false ? "$notStrict" : never) | (DefaultToFalse<R> extends false ? never : "$rid")>;
+// @public
+export type SingleOsdkResult<Q extends ObjectOrInterfaceDefinition, L extends PropertyKeys<Q>, R extends boolean, S extends NullabilityAdherence> = Osdk.Instance<Q, ExtractOptions<R, S>, L>;
 
 // Warning: (ae-forgotten-export) The symbol "AggregationKeyDataType" needs to be exported by the entry point index.d.ts
 //

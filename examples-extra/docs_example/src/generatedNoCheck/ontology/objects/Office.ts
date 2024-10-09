@@ -44,10 +44,16 @@ export namespace Office {
 
   export interface ObjectSet extends $ObjectSet<Office, Office.ObjectSet> {}
 
+  export type OsdkInstance<
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    K extends keyof Office.Props = keyof Office.Props,
+  > = $Osdk.Instance<Office, OPTIONS, K>;
+
+  /** @deprecated use OsdkInstance */
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Office.Props = keyof Office.Props,
-  > = $Osdk<Office, K | OPTIONS>;
+  > = OsdkInstance<OPTIONS, K>;
 }
 
 export interface Office extends $ObjectTypeDefinition {

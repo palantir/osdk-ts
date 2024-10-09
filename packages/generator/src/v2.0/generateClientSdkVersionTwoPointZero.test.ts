@@ -337,8 +337,11 @@ const referencingOntology = {
       ],
     },
   },
-  interfaceTypes: {},
+  interfaceTypes: {
+    ...referencedOntology.interfaceTypes,
+  },
   objectTypes: {
+    ...referencedOntology.objectTypes,
     "Thing": {
       implementsInterfaces: ["com.example.dep.SomeInterface"],
       implementsInterfaces2: {
@@ -493,13 +496,13 @@ describe("generator", () => {
 
       export const $ontologyRid = 'ridHere';
       ",
-        "/foo/index.ts": "export * from './ontology/actions';
+        "/foo/index.ts": "export { deleteTodos, markTodoCompleted } from './ontology/actions';
       export * as $Actions from './ontology/actions';
-      export * from './ontology/interfaces';
+      export { SomeInterface } from './ontology/interfaces';
       export * as $Interfaces from './ontology/interfaces';
-      export * from './ontology/objects';
+      export { Person, Todo } from './ontology/objects';
       export * as $Objects from './ontology/objects';
-      export * from './ontology/queries';
+      export { getCount, returnsTodo } from './ontology/queries';
       export * as $Queries from './ontology/queries';
       export { $ontologyRid } from './OntologyMetadata';
       ",
@@ -663,7 +666,7 @@ describe("generator", () => {
         osdkMetadata: $osdkMetadata,
       };
       ",
-        "/foo/ontology/interfaces.ts": "export * from './interfaces/SomeInterface';
+        "/foo/ontology/interfaces.ts": "export { SomeInterface } from './interfaces/SomeInterface';
       ",
         "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
       import { $osdkMetadata } from '../../OntologyMetadata';
@@ -689,10 +692,16 @@ describe("generator", () => {
 
         export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 
+        export type OsdkInstance<
+          OPTIONS extends never | '$notStrict' | '$rid' = never,
+          K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
+        > = $Osdk.Instance<SomeInterface, OPTIONS, K>;
+
+        /** @deprecated use OsdkInstance */
         export type OsdkObject<
           OPTIONS extends never | '$notStrict' | '$rid' = never,
           K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
-        > = $Osdk<SomeInterface, K | OPTIONS>;
+        > = OsdkInstance<OPTIONS, K>;
       }
 
       export interface SomeInterface extends $InterfaceDefinition {
@@ -727,8 +736,8 @@ describe("generator", () => {
         osdkMetadata: $osdkMetadata,
       };
       ",
-        "/foo/ontology/objects.ts": "export * from './objects/Person';
-      export * from './objects/Todo';
+        "/foo/ontology/objects.ts": "export { Person } from './objects/Person';
+      export { Todo } from './objects/Todo';
       ",
         "/foo/ontology/objects/Person.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
       import { $osdkMetadata } from '../../OntologyMetadata';
@@ -763,10 +772,16 @@ describe("generator", () => {
 
         export interface ObjectSet extends $ObjectSet<Person, Person.ObjectSet> {}
 
+        export type OsdkInstance<
+          OPTIONS extends never | '$notStrict' | '$rid' = never,
+          K extends keyof Person.Props = keyof Person.Props,
+        > = $Osdk.Instance<Person, OPTIONS, K>;
+
+        /** @deprecated use OsdkInstance */
         export type OsdkObject<
           OPTIONS extends never | '$notStrict' | '$rid' = never,
           K extends keyof Person.Props = keyof Person.Props,
-        > = $Osdk<Person, K | OPTIONS>;
+        > = OsdkInstance<OPTIONS, K>;
       }
 
       export interface Person extends $ObjectTypeDefinition {
@@ -851,10 +866,16 @@ describe("generator", () => {
 
         export interface ObjectSet extends $ObjectSet<Todo, Todo.ObjectSet> {}
 
+        export type OsdkInstance<
+          OPTIONS extends never | '$notStrict' | '$rid' = never,
+          K extends keyof Todo.Props = keyof Todo.Props,
+        > = $Osdk.Instance<Todo, OPTIONS, K>;
+
+        /** @deprecated use OsdkInstance */
         export type OsdkObject<
           OPTIONS extends never | '$notStrict' | '$rid' = never,
           K extends keyof Todo.Props = keyof Todo.Props,
-        > = $Osdk<Todo, K | OPTIONS>;
+        > = OsdkInstance<OPTIONS, K>;
       }
 
       export interface Todo extends $ObjectTypeDefinition {
@@ -919,8 +940,8 @@ describe("generator", () => {
         osdkMetadata: $osdkMetadata,
       };
       ",
-        "/foo/ontology/queries.ts": "export * from './queries/getCount';
-      export * from './queries/returnsTodo';
+        "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount';
+      export { returnsTodo } from './queries/returnsTodo';
       ",
         "/foo/ontology/queries/getCount.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
       import type { QueryParam, QueryResult } from '@osdk/api';
@@ -1057,11 +1078,13 @@ describe("generator", () => {
         helper.minimalFiles,
         BASE_PATH,
         "module",
-        "foo.bar",
       ),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: Expected { ns:'undefined', shortName: 'Todo'} to be in namespace 'foo.bar' or in a provided package mapping]`,
     );
+
+    // Disabled for now since we can't really enforce it from dev console at the moment
+    // .rejects.toThrowErrorMatchingInlineSnapshot(
+    //   `[Error: Found type { ns:'undefined', shortName: 'Todo'} but it is not in the generation namespace 'foo.bar'. This violates the contract of the generator.]`,
+    // );
   });
 
   it("does not throw an error if a namespace is provided that all top levels use", async () => {
@@ -1072,7 +1095,6 @@ describe("generator", () => {
         helper.minimalFiles,
         BASE_PATH,
         "module",
-        "foo.bar",
       ),
     ).resolves.toMatchInlineSnapshot(`undefined`);
 
@@ -1087,15 +1109,18 @@ describe("generator", () => {
         {
           "/foo/OntologyMetadata.ts": "export type $ExpectedClientVersion = 'PLACEHOLDER';
         export const $osdkMetadata = { extraUserAgent: '' };
+
+        export const $ontologyRid = 'ridHere';
         ",
-          "/foo/index.ts": "export * from './ontology/actions.js';
+          "/foo/index.ts": "export { deleteTodos, markTodoCompleted } from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
-        export * from './ontology/interfaces.js';
+        export { SomeInterface } from './ontology/interfaces.js';
         export * as $Interfaces from './ontology/interfaces.js';
-        export * from './ontology/objects.js';
+        export { Person, Todo } from './ontology/objects.js';
         export * as $Objects from './ontology/objects.js';
-        export * from './ontology/queries.js';
+        export { getCount, returnsTodo } from './ontology/queries.js';
         export * as $Queries from './ontology/queries.js';
+        export { $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos.js';
         export { markTodoCompleted } from './actions/markTodoCompleted.js';
@@ -1257,7 +1282,7 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
         };
         ",
-          "/foo/ontology/interfaces.ts": "export * from './interfaces/SomeInterface.js';
+          "/foo/ontology/interfaces.ts": "export { SomeInterface } from './interfaces/SomeInterface.js';
         ",
           "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -1283,10 +1308,16 @@ describe("generator", () => {
 
           export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 
+          export type OsdkInstance<
+            OPTIONS extends never | '$notStrict' | '$rid' = never,
+            K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
+          > = $Osdk.Instance<SomeInterface, OPTIONS, K>;
+
+          /** @deprecated use OsdkInstance */
           export type OsdkObject<
             OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
-          > = $Osdk<SomeInterface, K | OPTIONS>;
+          > = OsdkInstance<OPTIONS, K>;
         }
 
         export interface SomeInterface extends $InterfaceDefinition {
@@ -1321,8 +1352,8 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
         };
         ",
-          "/foo/ontology/objects.ts": "export * from './objects/Person.js';
-        export * from './objects/Todo.js';
+          "/foo/ontology/objects.ts": "export { Person } from './objects/Person.js';
+        export { Todo } from './objects/Todo.js';
         ",
           "/foo/ontology/objects/Person.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -1357,10 +1388,16 @@ describe("generator", () => {
 
           export interface ObjectSet extends $ObjectSet<Person, Person.ObjectSet> {}
 
+          export type OsdkInstance<
+            OPTIONS extends never | '$notStrict' | '$rid' = never,
+            K extends keyof Person.Props = keyof Person.Props,
+          > = $Osdk.Instance<Person, OPTIONS, K>;
+
+          /** @deprecated use OsdkInstance */
           export type OsdkObject<
             OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof Person.Props = keyof Person.Props,
-          > = $Osdk<Person, K | OPTIONS>;
+          > = OsdkInstance<OPTIONS, K>;
         }
 
         export interface Person extends $ObjectTypeDefinition {
@@ -1445,10 +1482,16 @@ describe("generator", () => {
 
           export interface ObjectSet extends $ObjectSet<Todo, Todo.ObjectSet> {}
 
+          export type OsdkInstance<
+            OPTIONS extends never | '$notStrict' | '$rid' = never,
+            K extends keyof Todo.Props = keyof Todo.Props,
+          > = $Osdk.Instance<Todo, OPTIONS, K>;
+
+          /** @deprecated use OsdkInstance */
           export type OsdkObject<
             OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof Todo.Props = keyof Todo.Props,
-          > = $Osdk<Todo, K | OPTIONS>;
+          > = OsdkInstance<OPTIONS, K>;
         }
 
         export interface Todo extends $ObjectTypeDefinition {
@@ -1513,8 +1556,8 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
         };
         ",
-          "/foo/ontology/queries.ts": "export * from './queries/getCount.js';
-        export * from './queries/returnsTodo.js';
+          "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
+        export { returnsTodo } from './queries/returnsTodo.js';
         ",
           "/foo/ontology/queries/getCount.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
         import type { QueryParam, QueryResult } from '@osdk/api';
@@ -1683,14 +1726,13 @@ describe("generator", () => {
           helper.minimalFiles,
           BASE_PATH,
           "module",
-          "foo.bar",
           new Map(),
         ),
       ).resolves.toMatchInlineSnapshot(`undefined`);
 
-      expect(helper.getFiles()["/foo/index.ts"]).not.toContain(
-        "$ontologyRid",
-      );
+      // expect(helper.getFiles()["/foo/index.ts"]).not.toContain(
+      //   "$ontologyRid",
+      // );
     });
 
     it("does exist when an ontology api name is not provided", async () => {
@@ -1723,8 +1765,9 @@ describe("generator", () => {
           helper.minimalFiles,
           BASE_PATH,
           "module",
-          undefined,
-          new Map([["com.example.dep", "@com.example.dep/osdk"]]),
+          new Map([["com.example.dep.Task", "@com.example.dep/osdk"]]),
+          new Map([["com.example.dep.SomeInterface", "@com.example.dep/osdk"]]),
+          new Map([["com.example.dep.spt", "@com.example.dep/osdk"]]),
         ),
       ).resolves.toMatchInlineSnapshot(`undefined`);
 
@@ -1734,18 +1777,18 @@ describe("generator", () => {
           import type { QueryParam, QueryResult } from '@osdk/api';
           import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
           import { $osdkMetadata } from '../../OntologyMetadata.js';
-          import type { Task as $Imported$objectTypes$com$example$dep$Task } from '@com.example.dep/osdk';
+          import type { Task as $Imported$com$example$dep$Task } from '@com.example.dep/osdk';
 
           export namespace getTask {
             export interface Signature {
-              (query: getTask.Parameters): Promise<QueryResult.ObjectType<$Imported$objectTypes$com$example$dep$Task>>;
+              (query: getTask.Parameters): Promise<QueryResult.ObjectType<$Imported$com$example$dep$Task>>;
             }
 
             export interface Parameters {
               /**
                * (no ontology metadata)
                */
-              readonly a: QueryParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>;
+              readonly a: QueryParam.ObjectType<$Imported$com$example$dep$Task>;
             }
           }
 
@@ -1763,14 +1806,14 @@ describe("generator", () => {
                   nullable: false;
                   object: 'com.example.dep.Task';
                   type: 'object';
-                  __OsdkTargetType?: $Imported$objectTypes$com$example$dep$Task;
+                  __OsdkTargetType?: $Imported$com$example$dep$Task;
                 };
               };
               output: {
                 nullable: false;
                 object: 'com.example.dep.Task';
                 type: 'object';
-                __OsdkTargetType?: $Imported$objectTypes$com$example$dep$Task;
+                __OsdkTargetType?: $Imported$com$example$dep$Task;
               };
               signature: getTask.Signature;
             };
@@ -1800,8 +1843,9 @@ describe("generator", () => {
           helper.minimalFiles,
           BASE_PATH,
           "module",
-          undefined,
-          new Map([["com.example.dep", "@com.example.dep/osdk"]]),
+          new Map([["com.example.dep.Task", "@com.example.dep/osdk"]]),
+          new Map([["com.example.dep.SomeInterface", "@com.example.dep/osdk"]]),
+          new Map([["com.example.dep.spt", "@com.example.dep/osdk"]]),
         ),
       ).resolves.toMatchInlineSnapshot(`undefined`);
 
@@ -1839,10 +1883,16 @@ describe("generator", () => {
 
             export interface ObjectSet extends $ObjectSet<UsesForeignSpt, UsesForeignSpt.ObjectSet> {}
 
+            export type OsdkInstance<
+              OPTIONS extends never | '$notStrict' | '$rid' = never,
+              K extends keyof UsesForeignSpt.Props = keyof UsesForeignSpt.Props,
+            > = $Osdk.Instance<UsesForeignSpt, OPTIONS, K>;
+
+            /** @deprecated use OsdkInstance */
             export type OsdkObject<
               OPTIONS extends never | '$notStrict' | '$rid' = never,
               K extends keyof UsesForeignSpt.Props = keyof UsesForeignSpt.Props,
-            > = $Osdk<UsesForeignSpt, K | OPTIONS>;
+            > = OsdkInstance<OPTIONS, K>;
           }
 
           export interface UsesForeignSpt extends $ObjectTypeDefinition {
@@ -1896,7 +1946,7 @@ describe("generator", () => {
   });
 
   describe("action depends on foreign object", () => {
-    it("stuff", async () => {
+    it("can generate the action", async () => {
       await expect(
         generateClientSdkVersionTwoPointZero(
           referencingOntology,
@@ -1904,8 +1954,9 @@ describe("generator", () => {
           helper.minimalFiles,
           BASE_PATH,
           "module",
-          undefined,
-          new Map([["com.example.dep", "@com.example.dep/osdk"]]),
+          new Map([["com.example.dep.Task", "@com.example.dep/osdk"]]),
+          new Map([["com.example.dep.SomeInterface", "@com.example.dep/osdk"]]),
+          new Map([["com.example.dep.spt", "@com.example.dep/osdk"]]),
         ),
       ).resolves.toMatchInlineSnapshot(`undefined`);
 
@@ -1920,7 +1971,7 @@ describe("generator", () => {
             ApplyBatchActionOptions,
           } from '@osdk/api';
           import { $osdkMetadata } from '../../OntologyMetadata.js';
-          import type { Task as $Imported$objectTypes$com$example$dep$Task } from '@com.example.dep/osdk';
+          import type { Task as $Imported$com$example$dep$Task } from '@com.example.dep/osdk';
 
           export namespace setTaskBody {
             // Represents the definition of the parameters for the action
@@ -1933,14 +1984,14 @@ describe("generator", () => {
               task: {
                 multiplicity: false;
                 nullable: false;
-                type: ActionMetadata.DataType.Object<$Imported$objectTypes$com$example$dep$Task>;
+                type: ActionMetadata.DataType.Object<$Imported$com$example$dep$Task>;
               };
             };
 
             export interface Params {
               readonly body: ActionParam.PrimitiveType<'string'>;
 
-              readonly task: ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>;
+              readonly task: ActionParam.ObjectType<$Imported$com$example$dep$Task>;
             }
 
             // Represents a fqn of the action
@@ -1959,7 +2010,7 @@ describe("generator", () => {
 
           /**
            * @param {ActionParam.PrimitiveType<"string">} body
-           * @param {ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>} task
+           * @param {ActionParam.ObjectType<$Imported$com$example$dep$Task>} task
            */
           export interface setTaskBody extends ActionDefinition<setTaskBody.Signatures> {
             __DefinitionMetadata?: {
@@ -2000,8 +2051,6 @@ describe("generator", () => {
         helper.minimalFiles,
         BASE_PATH,
         "module",
-        undefined,
-        new Map([["com.example.dep", "@com.example.dep/osdk"]]),
       ),
     ).resolves.toMatchInlineSnapshot(`undefined`);
 
@@ -2013,19 +2062,19 @@ describe("generator", () => {
 
         export const $ontologyRid = 'ri.ontology.main.ontology.dep';
         ",
-          "/foo/index.ts": "export * from './ontology/actions.js';
+          "/foo/index.ts": "export {} from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
-        export * from './ontology/interfaces.js';
+        export { SomeInterface } from './ontology/interfaces.js';
         export * as $Interfaces from './ontology/interfaces.js';
-        export * from './ontology/objects.js';
+        export { Task } from './ontology/objects.js';
         export * as $Objects from './ontology/objects.js';
-        export * from './ontology/queries.js';
+        export {} from './ontology/queries.js';
         export * as $Queries from './ontology/queries.js';
         export { $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export {};
         ",
-          "/foo/ontology/interfaces.ts": "export * from './interfaces/SomeInterface.js';
+          "/foo/ontology/interfaces.ts": "export { SomeInterface } from './interfaces/SomeInterface.js';
         ",
           "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -2051,10 +2100,16 @@ describe("generator", () => {
 
           export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 
+          export type OsdkInstance<
+            OPTIONS extends never | '$notStrict' | '$rid' = never,
+            K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
+          > = $Osdk.Instance<SomeInterface, OPTIONS, K>;
+
+          /** @deprecated use OsdkInstance */
           export type OsdkObject<
             OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
-          > = $Osdk<SomeInterface, K | OPTIONS>;
+          > = OsdkInstance<OPTIONS, K>;
         }
 
         export interface SomeInterface extends $InterfaceDefinition {
@@ -2087,7 +2142,7 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
         };
         ",
-          "/foo/ontology/objects.ts": "export * from './objects/Task.js';
+          "/foo/ontology/objects.ts": "export { Task } from './objects/Task.js';
         ",
           "/foo/ontology/objects/Task.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -2121,10 +2176,16 @@ describe("generator", () => {
 
           export interface ObjectSet extends $ObjectSet<Task, Task.ObjectSet> {}
 
+          export type OsdkInstance<
+            OPTIONS extends never | '$notStrict' | '$rid' = never,
+            K extends keyof Task.Props = keyof Task.Props,
+          > = $Osdk.Instance<Task, OPTIONS, K>;
+
+          /** @deprecated use OsdkInstance */
           export type OsdkObject<
             OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof Task.Props = keyof Task.Props,
-          > = $Osdk<Task, K | OPTIONS>;
+          > = OsdkInstance<OPTIONS, K>;
         }
 
         export interface Task extends $ObjectTypeDefinition {

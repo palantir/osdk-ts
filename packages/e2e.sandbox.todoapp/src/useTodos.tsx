@@ -168,29 +168,35 @@ function updateOne<T extends { $primaryKey: Q }, Q>(
 export function useSubscribe(mutate: KeyedMutator<SimpleTodo[]>) {
   useEffect(() => {
     const unsubscribe = $(MyOsdk.Todo)
-      [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]({
-        onChange(objects) {
+      [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]([
+        "id",
+        "isComplete",
+        "title",
+      ], {
+        onChange(objectUpdate) {
           // index incoming objects by apiName and then by pk value
           const byApiNameByPK = new Map<
             string,
-            Map<(typeof objects)[0]["$primaryKey"], (typeof objects)[0]>
+            Map<
+              (typeof objectUpdate)["object"]["$primaryKey"],
+              (typeof objectUpdate)
+            >
           >();
-          for (const object of objects) {
-            const byPk = byApiNameByPK.get(object.$apiName);
-            if (byPk) {
-              byPk.set(object.$primaryKey, object);
-            } else {
-              byApiNameByPK.set(
-                object.$apiName,
-                new Map([[object.$primaryKey, object]]),
-              );
-            }
+
+          const byPk = byApiNameByPK.get(objectUpdate.object.$apiName);
+          if (byPk) {
+            byPk.set(objectUpdate.object.$primaryKey, objectUpdate);
+          } else {
+            byApiNameByPK.set(
+              objectUpdate.object.$apiName,
+              new Map([[objectUpdate.object.$primaryKey, objectUpdate]]),
+            );
           }
 
           // get the new version of an object that has changed, removing it from the list of updates
           const getUpdate = (
-            apiName: (typeof objects)[0]["$apiName"],
-            primaryKey: (typeof objects)[0]["$primaryKey"],
+            apiName: (typeof objectUpdate)["object"]["$apiName"],
+            primaryKey: (typeof objectUpdate)["object"]["$primaryKey"],
           ) => {
             const byPk = byApiNameByPK.get(apiName);
             if (byPk) {

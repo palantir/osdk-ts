@@ -25,10 +25,7 @@ import type {
   NullabilityAdherence,
   SelectArg,
 } from "../object/FetchPageArgs.js";
-import type {
-  FetchPageResult,
-  SingleOsdkResult,
-} from "../object/FetchPageResult.js";
+import type { SingleOsdkResult } from "../object/FetchPageResult.js";
 import type { Result } from "../object/Result.js";
 import type { InterfaceDefinition } from "../ontology/InterfaceDefinition.js";
 import type {
@@ -40,6 +37,8 @@ import type {
   ObjectTypeDefinition,
 } from "../ontology/ObjectTypeDefinition.js";
 import type { PrimaryKeyType } from "../OsdkBase.js";
+import type { ExtractOptions, Osdk } from "../OsdkObjectFrom.js";
+import type { PageResult } from "../PageResult.js";
 import type {
   __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
   EXPERIMENTAL_ObjectSetListener,
@@ -69,7 +68,12 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
     S extends NullabilityAdherence = NullabilityAdherence.Default,
   >(
     args?: FetchPageArgs<Q, L, R, A, S>,
-  ) => Promise<FetchPageResult<Q, L, R, S>>;
+  ) => Promise<
+    PageResult<
+      PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S>>
+        : Osdk.Instance<Q, ExtractOptions<R, S>, L>
+    >
+  >;
 
   /**
    * Gets a page of objects of this type, with a result wrapper
@@ -92,7 +96,7 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
     S extends NullabilityAdherence = NullabilityAdherence.Default,
   >(
     args?: FetchPageArgs<Q, L, R, A, S>,
-  ) => Promise<Result<FetchPageResult<Q, L, R, S>>>;
+  ) => Promise<Result<PageResult<Osdk.Instance<Q, ExtractOptions<R, S>, L>>>>;
 
   /**
    * Allows you to filter an object set with a given clause
@@ -220,7 +224,7 @@ export interface ObjectSet<
     >(
       primaryKey: PrimaryKeyType<Q>,
       options?: SelectArg<Q, L, R, S>,
-    ) => Promise<SingleOsdkResult<Q, [L] extends [never] ? any : L, R, S>>
+    ) => Promise<Osdk.Instance<Q, ExtractOptions<R, S>, L>>
     : never;
 
   /**
@@ -234,7 +238,7 @@ export interface ObjectSet<
       primaryKey: PrimaryKeyType<Q>,
       options?: SelectArg<Q, L, R, S>,
     ) => Promise<
-      Result<SingleOsdkResult<Q, [L] extends [never] ? any : L, R, S>>
+      Result<Osdk.Instance<Q, ExtractOptions<R, S>, L>>
     >
     : never;
 
@@ -243,9 +247,14 @@ export interface ObjectSet<
    *
    * It may change at any time and does not follow semantic versioning. Use at your own risk.
    *
+   * @param properties - The properties to subscribe to on the object. Properties not selected will not be returned on the object.
+   *
    *  @alpha
    */
-  readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]: (
-    listener: EXPERIMENTAL_ObjectSetListener<Q>,
+  readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]: <
+    const P extends PropertyKeys<Q>,
+  >(
+    properties: Array<P>,
+    listener: EXPERIMENTAL_ObjectSetListener<Q, P>,
   ) => () => unknown;
 }

@@ -32,10 +32,7 @@ import type {
   SelectArg,
   SingleOsdkResult,
 } from "@osdk/api";
-import type {
-  EXPERIMENTAL_ObjectSetListener,
-  MinimalObjectSet,
-} from "@osdk/api/unstable";
+import type { MinimalObjectSet } from "@osdk/api/unstable";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
@@ -230,13 +227,15 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       : undefined) as ObjectSet<Q>["fetchOneWithErrors"],
 
     [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]: (
-      listener: EXPERIMENTAL_ObjectSetListener<Q>,
+      properties,
+      listener,
     ) => {
       const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
         clientCtx,
       ).subscribe(
         objectSet,
         listener,
+        properties,
       );
 
       return async () => (await pendingSubscribe)();

@@ -79,7 +79,7 @@ export function get(
   return $foundryPlatformFetch($ctx, _get, ...args);
 }
 
-const _loadObjectSetV2: $FoundryPlatformMethod<
+const _load: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     $body: _Core.LoadObjectSetRequestV2,
@@ -105,7 +105,7 @@ const _loadObjectSetV2: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objectSets/loadObjects
  */
-export function loadObjectSetV2(
+export function load(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -116,10 +116,10 @@ export function loadObjectSetV2(
     },
   ]
 ): Promise<_Core.LoadObjectSetResponseV2> {
-  return $foundryPlatformFetch($ctx, _loadObjectSetV2, ...args);
+  return $foundryPlatformFetch($ctx, _load, ...args);
 }
 
-const _loadObjectSetV2BaseObjects: $FoundryPlatformMethod<
+const _loadBaseObjects: $FoundryPlatformMethod<
   (
     ontology: _Core.OntologyIdentifier,
     $body: _Core.LoadObjectSetV2BaseObjectsRequest,
@@ -150,7 +150,7 @@ const _loadObjectSetV2BaseObjects: $FoundryPlatformMethod<
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objectSets/loadBaseObjects
  */
-export function loadObjectSetV2BaseObjects(
+export function loadBaseObjects(
   $ctx: $Client | $ClientContext,
   ...args: [
     ontology: _Core.OntologyIdentifier,
@@ -161,7 +161,7 @@ export function loadObjectSetV2BaseObjects(
     },
   ]
 ): Promise<_Core.LoadObjectSetV2BaseObjectsResponse> {
-  return $foundryPlatformFetch($ctx, _loadObjectSetV2BaseObjects, ...args);
+  return $foundryPlatformFetch($ctx, _loadBaseObjects, ...args);
 }
 
 const _aggregate: $FoundryPlatformMethod<

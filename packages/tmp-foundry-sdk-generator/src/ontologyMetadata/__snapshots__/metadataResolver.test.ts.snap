@@ -2,89 +2,25 @@
 
 exports[`Load Ontologies Metadata > Loads object and action types using only specified link types 1`] = `
 {
-  "actionTypes": {
-    "promoteEmployee": {
-      "apiName": "promoteEmployee",
-      "description": "Update an employee's title and compensation",
-      "operations": [
-        {
-          "objectTypeApiName": "Employee",
-          "type": "modifyObject",
-        },
-      ],
-      "parameters": {
-        "employeeId": {
-          "dataType": {
-            "type": "integer",
+  "externalInterfaces": Map {},
+  "externalObjects": Map {},
+  "filteredFullMetadata": {
+    "actionTypes": {
+      "promoteEmployee": {
+        "apiName": "promoteEmployee",
+        "description": "Update an employee's title and compensation",
+        "operations": [
+          {
+            "objectTypeApiName": "Employee",
+            "type": "modifyObject",
           },
-          "required": true,
-        },
-        "newCompensation": {
-          "dataType": {
-            "type": "double",
-          },
-          "required": true,
-        },
-        "newTitle": {
-          "dataType": {
-            "type": "string",
-          },
-          "required": true,
-        },
-      },
-      "rid": "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2167",
-      "status": "ACTIVE",
-    },
-  },
-  "interfaceTypes": {},
-  "objectTypes": {
-    "Employee": {
-      "implementsInterfaces": [
-        "FooInterface",
-      ],
-      "implementsInterfaces2": {
-        "FooInterface": {
-          "properties": {
-            "fooSpt": "fullName",
-          },
-        },
-      },
-      "linkTypes": [
-        {
-          "apiName": "peeps",
-          "cardinality": "MANY",
-          "displayName": "Peeps",
-          "linkTypeRid": "rid.link-type.327",
-          "objectTypeApiName": "Employee",
-          "status": "EXPERIMENTAL",
-        },
-        {
-          "apiName": "officeLink",
-          "cardinality": "ONE",
-          "displayName": "Office",
-          "linkTypeRid": "rid.link-type.324",
-          "objectTypeApiName": "Office",
-          "status": "EXPERIMENTAL",
-        },
-      ],
-      "objectType": {
-        "apiName": "Employee",
-        "description": "A full-time or part-time 
-
- employee of our firm",
-        "displayName": "Employee",
-        "icon": {
-          "color": "blue",
-          "name": "person",
-          "type": "blueprint",
-        },
-        "pluralDisplayName": "Employees",
-        "primaryKey": "employeeId",
-        "properties": {
+        ],
+        "parameters": {
           "employeeId": {
             "dataType": {
               "type": "integer",
             },
+            "required": true,
           },
           "employeeLocation": {
             "dataType": {
@@ -92,168 +28,189 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
             },
             "description": "Geotime series reference of the location of the employee",
           },
-          "employeeStatus": {
+          "newCompensation": {
             "dataType": {
-              "itemType": {
+              "type": "double",
+            },
+            "required": true,
+          },
+          "newTitle": {
+            "dataType": {
+              "type": "string",
+            },
+            "required": true,
+          },
+        },
+        "rid": "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2167",
+        "status": "ACTIVE",
+      },
+    },
+    "interfaceTypes": {},
+    "objectTypes": {
+      "Employee": {
+        "implementsInterfaces": [
+          "FooInterface",
+        ],
+        "implementsInterfaces2": {
+          "FooInterface": {
+            "properties": {
+              "fooSpt": "fullName",
+            },
+          },
+        },
+        "linkTypes": [
+          {
+            "apiName": "peeps",
+            "cardinality": "MANY",
+            "displayName": "Peeps",
+            "linkTypeRid": "rid.link-type.327",
+            "objectTypeApiName": "Employee",
+            "status": "EXPERIMENTAL",
+          },
+          {
+            "apiName": "officeLink",
+            "cardinality": "ONE",
+            "displayName": "Office",
+            "linkTypeRid": "rid.link-type.324",
+            "objectTypeApiName": "Office",
+            "status": "EXPERIMENTAL",
+          },
+        ],
+        "objectType": {
+          "apiName": "Employee",
+          "description": "A full-time or part-time 
+
+ employee of our firm",
+          "displayName": "Employee",
+          "icon": {
+            "color": "blue",
+            "name": "person",
+            "type": "blueprint",
+          },
+          "pluralDisplayName": "Employees",
+          "primaryKey": "employeeId",
+          "properties": {
+            "employeeId": {
+              "dataType": {
+                "type": "integer",
+              },
+            },
+            "employeeStatus": {
+              "dataType": {
+                "itemType": {
+                  "type": "string",
+                },
+                "type": "timeseries",
+              },
+              "description": "TimeSeries of the status of the employee",
+            },
+            "fullName": {
+              "dataType": {
                 "type": "string",
               },
-              "type": "timeseries",
             },
-            "description": "TimeSeries of the status of the employee",
-          },
-          "fullName": {
-            "dataType": {
-              "type": "string",
-            },
-          },
-          "office": {
-            "dataType": {
-              "type": "string",
-            },
-            "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
+            "office": {
+              "dataType": {
+                "type": "string",
+              },
+              "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
  This is some more text.",
-          },
-          "startDate": {
-            "dataType": {
-              "type": "date",
             },
-            "description": "The date the employee was hired (most recently, if they were re-hired)",
+            "startDate": {
+              "dataType": {
+                "type": "date",
+              },
+              "description": "The date the employee was hired (most recently, if they were re-hired)",
+            },
           },
+          "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
+          "status": "ACTIVE",
+          "titleProperty": "fullName",
+          "visibility": "NORMAL",
         },
-        "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
-        "status": "ACTIVE",
-        "titleProperty": "fullName",
-        "visibility": "NORMAL",
+        "sharedPropertyTypeMapping": {
+          "fooSpt": "fullName",
+        },
       },
-      "sharedPropertyTypeMapping": {
-        "fooSpt": "fullName",
+      "Office": {
+        "implementsInterfaces": [],
+        "implementsInterfaces2": {},
+        "linkTypes": [],
+        "objectType": {
+          "apiName": "Office",
+          "description": "A office in our Company",
+          "displayName": "Office",
+          "icon": {
+            "color": "blue",
+            "name": "office",
+            "type": "blueprint",
+          },
+          "pluralDisplayName": "Office",
+          "primaryKey": "officeId",
+          "properties": {
+            "entrance": {
+              "dataType": {
+                "type": "geopoint",
+              },
+            },
+            "name": {
+              "dataType": {
+                "type": "string",
+              },
+              "description": "The Name of the Office",
+            },
+            "occupiedArea": {
+              "dataType": {
+                "type": "geoshape",
+              },
+              "description": "The occupied area of the Office",
+            },
+            "officeId": {
+              "dataType": {
+                "type": "string",
+              },
+            },
+          },
+          "rid": "ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45",
+          "status": "ACTIVE",
+          "titleProperty": "officeId",
+        },
+        "sharedPropertyTypeMapping": {},
       },
     },
-    "Office": {
-      "implementsInterfaces": [],
-      "implementsInterfaces2": {},
-      "linkTypes": [],
-      "objectType": {
-        "apiName": "Office",
-        "description": "A office in our Company",
-        "displayName": "Office",
-        "icon": {
-          "color": "blue",
-          "name": "office",
-          "type": "blueprint",
-        },
-        "pluralDisplayName": "Office",
-        "primaryKey": "officeId",
-        "properties": {
-          "entrance": {
-            "dataType": {
-              "type": "geopoint",
-            },
-          },
-          "name": {
-            "dataType": {
-              "type": "string",
-            },
-            "description": "The Name of the Office",
-          },
-          "occupiedArea": {
-            "dataType": {
-              "type": "geoshape",
-            },
-            "description": "The occupied area of the Office",
-          },
-          "officeId": {
-            "dataType": {
-              "type": "string",
-            },
-          },
-        },
-        "rid": "ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45",
-        "status": "ACTIVE",
-        "titleProperty": "officeId",
-      },
-      "sharedPropertyTypeMapping": {},
+    "ontology": {
+      "apiName": "default-ontology",
+      "description": "The default ontology",
+      "displayName": "Ontology",
+      "rid": "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
     },
+    "queryTypes": {},
+    "sharedPropertyTypes": {},
   },
-  "ontology": {
-    "apiName": "default-ontology",
-    "description": "The default ontology",
-    "displayName": "Ontology",
-    "rid": "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
-  },
-  "queryTypes": {},
-  "sharedPropertyTypes": {},
 }
 `;
 
 exports[`Load Ontologies Metadata > Loads object and action types without link types 1`] = `
 {
-  "actionTypes": {
-    "promoteEmployee": {
-      "apiName": "promoteEmployee",
-      "description": "Update an employee's title and compensation",
-      "operations": [
-        {
-          "objectTypeApiName": "Employee",
-          "type": "modifyObject",
-        },
-      ],
-      "parameters": {
-        "employeeId": {
-          "dataType": {
-            "type": "integer",
+  "externalInterfaces": Map {},
+  "externalObjects": Map {},
+  "filteredFullMetadata": {
+    "actionTypes": {
+      "promoteEmployee": {
+        "apiName": "promoteEmployee",
+        "description": "Update an employee's title and compensation",
+        "operations": [
+          {
+            "objectTypeApiName": "Employee",
+            "type": "modifyObject",
           },
-          "required": true,
-        },
-        "newCompensation": {
-          "dataType": {
-            "type": "double",
-          },
-          "required": true,
-        },
-        "newTitle": {
-          "dataType": {
-            "type": "string",
-          },
-          "required": true,
-        },
-      },
-      "rid": "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2167",
-      "status": "ACTIVE",
-    },
-  },
-  "interfaceTypes": {},
-  "objectTypes": {
-    "Employee": {
-      "implementsInterfaces": [
-        "FooInterface",
-      ],
-      "implementsInterfaces2": {
-        "FooInterface": {
-          "properties": {
-            "fooSpt": "fullName",
-          },
-        },
-      },
-      "linkTypes": [],
-      "objectType": {
-        "apiName": "Employee",
-        "description": "A full-time or part-time 
-
- employee of our firm",
-        "displayName": "Employee",
-        "icon": {
-          "color": "blue",
-          "name": "person",
-          "type": "blueprint",
-        },
-        "pluralDisplayName": "Employees",
-        "primaryKey": "employeeId",
-        "properties": {
+        ],
+        "parameters": {
           "employeeId": {
             "dataType": {
               "type": "integer",
             },
+            "required": true,
           },
           "employeeLocation": {
             "dataType": {
@@ -261,51 +218,102 @@ exports[`Load Ontologies Metadata > Loads object and action types without link t
             },
             "description": "Geotime series reference of the location of the employee",
           },
-          "employeeStatus": {
+          "newCompensation": {
             "dataType": {
-              "itemType": {
-                "type": "string",
-              },
-              "type": "timeseries",
+              "type": "double",
             },
-            "description": "TimeSeries of the status of the employee",
+            "required": true,
           },
-          "fullName": {
+          "newTitle": {
             "dataType": {
               "type": "string",
             },
-          },
-          "office": {
-            "dataType": {
-              "type": "string",
-            },
-            "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
- This is some more text.",
-          },
-          "startDate": {
-            "dataType": {
-              "type": "date",
-            },
-            "description": "The date the employee was hired (most recently, if they were re-hired)",
+            "required": true,
           },
         },
-        "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
+        "rid": "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2167",
         "status": "ACTIVE",
-        "titleProperty": "fullName",
-        "visibility": "NORMAL",
-      },
-      "sharedPropertyTypeMapping": {
-        "fooSpt": "fullName",
       },
     },
+    "interfaceTypes": {},
+    "objectTypes": {
+      "Employee": {
+        "implementsInterfaces": [
+          "FooInterface",
+        ],
+        "implementsInterfaces2": {
+          "FooInterface": {
+            "properties": {
+              "fooSpt": "fullName",
+            },
+          },
+        },
+        "linkTypes": [],
+        "objectType": {
+          "apiName": "Employee",
+          "description": "A full-time or part-time 
+
+ employee of our firm",
+          "displayName": "Employee",
+          "icon": {
+            "color": "blue",
+            "name": "person",
+            "type": "blueprint",
+          },
+          "pluralDisplayName": "Employees",
+          "primaryKey": "employeeId",
+          "properties": {
+            "employeeId": {
+              "dataType": {
+                "type": "integer",
+              },
+            },
+            "employeeStatus": {
+              "dataType": {
+                "itemType": {
+                  "type": "string",
+                },
+                "type": "timeseries",
+              },
+              "description": "TimeSeries of the status of the employee",
+            },
+            "fullName": {
+              "dataType": {
+                "type": "string",
+              },
+            },
+            "office": {
+              "dataType": {
+                "type": "string",
+              },
+              "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
+ This is some more text.",
+            },
+            "startDate": {
+              "dataType": {
+                "type": "date",
+              },
+              "description": "The date the employee was hired (most recently, if they were re-hired)",
+            },
+          },
+          "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
+          "status": "ACTIVE",
+          "titleProperty": "fullName",
+          "visibility": "NORMAL",
+        },
+        "sharedPropertyTypeMapping": {
+          "fooSpt": "fullName",
+        },
+      },
+    },
+    "ontology": {
+      "apiName": "default-ontology",
+      "description": "The default ontology",
+      "displayName": "Ontology",
+      "rid": "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+    },
+    "queryTypes": {},
+    "sharedPropertyTypes": {},
   },
-  "ontology": {
-    "apiName": "default-ontology",
-    "description": "The default ontology",
-    "displayName": "Ontology",
-    "rid": "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
-  },
-  "queryTypes": {},
-  "sharedPropertyTypes": {},
 }
 `;

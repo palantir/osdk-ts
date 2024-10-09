@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, Osdk, OsdkObject } from "@osdk/api";
+import type { ObjectOrInterfaceDefinition, Osdk, OsdkBase } from "@osdk/api";
 import {
   type FetchedObjectTypeDefinition,
   InterfaceDefinitions,
@@ -32,7 +32,7 @@ export type DollarAsFn = <
 >(
   this: Osdk<any> & (InterfaceHolder<Q> | ObjectHolder<Q>),
   newDef: string | NEW_Q,
-) => OsdkObject<any>;
+) => OsdkBase<any>;
 
 export const get$as = createSimpleCache<
   FetchedObjectTypeDefinition,
@@ -41,13 +41,13 @@ export const get$as = createSimpleCache<
 
 const osdkObjectToInterfaceView = createSimpleCache(
   new WeakMap<
-    OsdkObject<any>,
-    Map<string, OsdkObject<any>>
+    OsdkBase<any>,
+    Map<string, OsdkBase<any>>
   >(),
   () =>
     new Map<
       /* interface api name */ string,
-      /* $as'd object */ OsdkObject<any>
+      /* $as'd object */ OsdkBase<any>
     >(),
 );
 
@@ -58,9 +58,9 @@ function $asFactory(
   return function $as<
     NEW_Q extends ObjectOrInterfaceDefinition,
   >(
-    this: OsdkObject<any> & { [UnderlyingOsdkObject]: any },
+    this: OsdkBase<any> & { [UnderlyingOsdkObject]: any },
     targetMinDef: NEW_Q | string,
-  ): OsdkObject<any> {
+  ): OsdkBase<any> {
     let targetInterfaceApiName: string;
 
     if (typeof targetMinDef === "string") {

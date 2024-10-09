@@ -73,7 +73,7 @@ const objectPrototypeCache = createClientCache(
 
 const geotimePropertyCache = createClientCache<
   string | symbol,
-  GeotimeSeriesPropertyImpl<GeoJSON.Point>
+  GeotimeSeriesProperty<GeoJSON.Point>
 >();
 
 /** @internal */

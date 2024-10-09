@@ -1,5 +1,20 @@
 # @osdk/shared.test
 
+## 2.1.0-beta.0
+
+### Minor Changes
+
+- d927a1d: Throws error in createClient when passed an invalid ontology RID
+- 5e78575: Fix queries that have response types with nested values, like arrays.
+- 9af346e: Fixing proxy handlers.
+
+### Patch Changes
+
+- Updated dependencies [0dc40b0]
+- Updated dependencies [03e1941]
+- Updated dependencies [e548b9b]
+  - @osdk/api@2.1.0-beta.0
+
 ## 2.0.0
 
 ### Major Changes

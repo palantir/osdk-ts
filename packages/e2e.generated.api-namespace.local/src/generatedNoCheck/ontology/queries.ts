@@ -1,1 +1,1 @@
-export * from './queries/getTask.js';
+export { getTask } from './queries/getTask.js';

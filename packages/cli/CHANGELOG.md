@@ -1,5 +1,11 @@
 # @osdk/cli
 
+## 0.25.0-beta.0
+
+### Minor Changes
+
+- c682504: Ensures codegen is bundled with the cli version
+
 ## 0.24.0
 
 ### Minor Changes

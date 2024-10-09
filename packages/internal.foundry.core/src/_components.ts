@@ -107,18 +107,18 @@ export type ObjectPrimaryKey = Record<PropertyApiName, PropertyValue>;
 /**
  * Log Safety: UNSAFE
  */
-export interface BatchApplyActionResponseV2 {
-  edits?: ActionResults;
-}
-
-/**
- * Log Safety: UNSAFE
- */
 export interface DeleteLinkRule {
   linkTypeApiNameAtoB: LinkTypeApiName;
   linkTypeApiNameBtoA: LinkTypeApiName;
   aSideObjectTypeApiName: ObjectTypeApiName;
   bSideObjectTypeApiName: ObjectTypeApiName;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface BatchApplyActionResponseV2 {
+  edits?: ActionResults;
 }
 
 /**
@@ -316,15 +316,15 @@ export interface LoadObjectSetRequestV2 {
 /**
  * Log Safety: UNSAFE
  */
-export interface StreamTimeSeriesPointsResponse {
-  data: Array<TimeSeriesPoint>;
+export interface QueryArrayType {
+  subType: QueryDataType;
 }
 
 /**
  * Log Safety: UNSAFE
  */
-export interface QueryArrayType {
-  subType: QueryDataType;
+export interface StreamTimeSeriesPointsResponse {
+  data: Array<TimeSeriesPoint>;
 }
 
 /**
@@ -453,14 +453,6 @@ export interface MinAggregationV2 {
 }
 
 /**
- * Log Safety: UNSAFE
- */
-export interface AddObject {
-  primaryKey: PropertyValue;
-  objectType: ObjectTypeApiName;
-}
-
-/**
  * The representation of an attachment.
  *
  * Log Safety: UNSAFE
@@ -479,6 +471,14 @@ export interface OntologyStructField {
   name: StructFieldName;
   fieldType: OntologyDataType;
   required: boolean;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface AddObject {
+  primaryKey: PropertyValue;
+  objectType: ObjectTypeApiName;
 }
 
 /**
@@ -562,18 +562,6 @@ export interface ObjectSetReferenceType {
 }
 
 /**
- * Computes the approximate percentile value for the provided field. Requires Object Storage V2.
- *
- * Log Safety: UNSAFE
- */
-export interface ApproximatePercentileAggregationV2 {
-  field: PropertyApiName;
-  name?: AggregationMetricName;
-  approximatePercentile: number;
-  direction?: OrderByDirection;
-}
-
-/**
    * Represents a filter used on properties.
 Endpoints that accept this supports optional parameters that have the form:
 properties.{propertyApiName}.{propertyFilter}={propertyValueEscapedString} to filter the returned objects.
@@ -601,6 +589,18 @@ This filter is supported on all property types.
    * Log Safety: SAFE
    */
 export type PropertyFilter = LooselyBrandedString<"PropertyFilter">;
+
+/**
+ * Computes the approximate percentile value for the provided field. Requires Object Storage V2.
+ *
+ * Log Safety: UNSAFE
+ */
+export interface ApproximatePercentileAggregationV2 {
+  field: PropertyApiName;
+  name?: AggregationMetricName;
+  approximatePercentile: number;
+  direction?: OrderByDirection;
+}
 
 /**
  * A union currently only consisting of the BlueprintIcon (more icon types may be added in the future).
@@ -638,6 +638,16 @@ export type SubscriptionClosureCause =
   | ({ type: "error" } & Error);
 
 /**
+ * Divides objects into groups with the specified width.
+ *
+ * Log Safety: UNSAFE
+ */
+export interface AggregationFixedWidthGrouping {
+  field: FieldNameV1;
+  fixedWidth: number;
+}
+
+/**
  * Metadata about an Ontology.
  *
  * Log Safety: UNSAFE
@@ -647,16 +657,6 @@ export interface Ontology {
   displayName: DisplayName;
   description: string;
   rid: OntologyRid;
-}
-
-/**
- * Divides objects into groups with the specified width.
- *
- * Log Safety: UNSAFE
- */
-export interface AggregationFixedWidthGrouping {
-  field: FieldNameV1;
-  fixedWidth: number;
 }
 
 /**
@@ -733,6 +733,15 @@ export interface GtQueryV2 {
 export type RelativeTimeRelation = "BEFORE" | "AFTER";
 
 /**
+ * Returns objects where the query is not satisfied.
+ *
+ * Log Safety: UNSAFE
+ */
+export interface NotQuery {
+  value: SearchJsonQuery;
+}
+
+/**
  * Returns objects where the specified array contains a value.
  *
  * Log Safety: UNSAFE
@@ -740,15 +749,6 @@ export type RelativeTimeRelation = "BEFORE" | "AFTER";
 export interface ContainsQueryV2 {
   field: PropertyApiName;
   value: PropertyValue;
-}
-
-/**
- * Returns objects where the query is not satisfied.
- *
- * Log Safety: UNSAFE
- */
-export interface NotQuery {
-  value: SearchJsonQuery;
 }
 
 /**
@@ -970,6 +970,16 @@ export type ObjectSetRid = LooselyBrandedString<"ObjectSetRid">;
 /**
  * Log Safety: UNSAFE
  */
+export interface CreateLinkRule {
+  linkTypeApiNameAtoB: LinkTypeApiName;
+  linkTypeApiNameBtoA: LinkTypeApiName;
+  aSideObjectTypeApiName: ObjectTypeApiName;
+  bSideObjectTypeApiName: ObjectTypeApiName;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
 export interface LinkTypeSideV2 {
   apiName: LinkTypeApiName;
   displayName: DisplayName;
@@ -978,16 +988,6 @@ export interface LinkTypeSideV2 {
   cardinality: LinkTypeSideCardinality;
   foreignKeyPropertyApiName?: PropertyApiName;
   linkTypeRid: LinkTypeRid;
-}
-
-/**
- * Log Safety: UNSAFE
- */
-export interface CreateLinkRule {
-  linkTypeApiNameAtoB: LinkTypeApiName;
-  linkTypeApiNameBtoA: LinkTypeApiName;
-  aSideObjectTypeApiName: ObjectTypeApiName;
-  bSideObjectTypeApiName: ObjectTypeApiName;
 }
 
 /**
@@ -1176,6 +1176,14 @@ export interface SearchObjectsRequestV2 {
 export type OntologyApiName = LooselyBrandedString<"OntologyApiName">;
 
 /**
+   * Represents the value of a property filter. For instance, false is the FilterValue in
+properties.{propertyApiName}.isNull=false.
+   *
+   * Log Safety: UNSAFE
+   */
+export type FilterValue = LooselyBrandedString<"FilterValue">;
+
+/**
  * The attachment metadata response
  *
  * Log Safety: UNSAFE
@@ -1183,14 +1191,6 @@ export type OntologyApiName = LooselyBrandedString<"OntologyApiName">;
 export type AttachmentMetadataResponse =
   | ({ type: "single" } & AttachmentV2)
   | ({ type: "multiple" } & ListAttachmentsResponseV2);
-
-/**
-   * Represents the value of a property filter. For instance, false is the FilterValue in
-properties.{propertyApiName}.isNull=false.
-   *
-   * Log Safety: UNSAFE
-   */
-export type FilterValue = LooselyBrandedString<"FilterValue">;
 
 /**
  * Log Safety: UNSAFE
@@ -1271,16 +1271,16 @@ export interface InterfaceType {
 }
 
 /**
- * Log Safety: UNSAFE
- */
-export type OntologyInterface = LooselyBrandedString<"OntologyInterface">;
-
-/**
  * The unique resource identifier for an action.
  *
  * Log Safety: SAFE
  */
 export type ActionRid = LooselyBrandedString<"ActionRid">;
+
+/**
+ * Log Safety: UNSAFE
+ */
+export type OntologyInterface = LooselyBrandedString<"OntologyInterface">;
 
 /**
  * Log Safety: UNSAFE
@@ -1299,17 +1299,17 @@ export interface ObjectUpdate {
 }
 
 /**
- * Log Safety: UNSAFE
- */
-export type SdkPackageName = LooselyBrandedString<"SdkPackageName">;
-
-/**
    * The name of the object type in the API in camelCase format. To find the API name for your Object Type, use the
 List object types endpoint or check the Ontology Manager.
    *
    * Log Safety: UNSAFE
    */
 export type ObjectTypeApiName = LooselyBrandedString<"ObjectTypeApiName">;
+
+/**
+ * Log Safety: UNSAFE
+ */
+export type SdkPackageName = LooselyBrandedString<"SdkPackageName">;
 
 /**
  * Log Safety: UNSAFE
@@ -1376,12 +1376,12 @@ export type OntologyObjectSet = LooselyBrandedString<"OntologyObjectSet">;
 /**
  * Log Safety: SAFE
  */
-export type ApplyActionMode = "VALIDATE_ONLY" | "VALIDATE_AND_EXECUTE";
+export interface CreateInterfaceObjectRule {}
 
 /**
  * Log Safety: SAFE
  */
-export interface CreateInterfaceObjectRule {}
+export type ApplyActionMode = "VALIDATE_ONLY" | "VALIDATE_AND_EXECUTE";
 
 /**
  * Log Safety: SAFE
@@ -1454,6 +1454,14 @@ export type InterfaceToObjectTypeMapping = Record<
 >;
 
 /**
+ * Log Safety: UNSAFE
+ */
+export interface SearchOrdering {
+  field: FieldNameV1;
+  direction?: string;
+}
+
+/**
    * The parameter value must have a length within the defined range.
 This range is always inclusive.
    *
@@ -1464,14 +1472,6 @@ export interface StringLengthConstraint {
   lte?: any;
   gt?: any;
   gte?: any;
-}
-
-/**
- * Log Safety: UNSAFE
- */
-export interface SearchOrdering {
-  field: FieldNameV1;
-  direction?: string;
 }
 
 /**
@@ -1526,15 +1526,6 @@ structs.
 export type ValueType = LooselyBrandedString<"ValueType">;
 
 /**
- * A reference to the linked interface type.
- *
- * Log Safety: UNSAFE
- */
-export interface LinkedInterfaceTypeApiName {
-  apiName: InterfaceTypeApiName;
-}
-
-/**
  * Computes an approximate number of distinct values for the provided field.
  *
  * Log Safety: UNSAFE
@@ -1542,6 +1533,15 @@ export interface LinkedInterfaceTypeApiName {
 export interface ApproximateDistinctAggregation {
   field: FieldNameV1;
   name?: AggregationMetricName;
+}
+
+/**
+ * A reference to the linked interface type.
+ *
+ * Log Safety: UNSAFE
+ */
+export interface LinkedInterfaceTypeApiName {
+  apiName: InterfaceTypeApiName;
 }
 
 /**
@@ -1566,6 +1566,13 @@ export interface Error {
 }
 
 /**
+ * The parameter value must be the primary key of an object found within an object set.
+ *
+ * Log Safety: SAFE
+ */
+export interface ObjectQueryResultConstraint {}
+
+/**
  * Returns objects where every query is satisfied.
  *
  * Log Safety: UNSAFE
@@ -1573,13 +1580,6 @@ export interface Error {
 export interface AndQueryV2 {
   value: Array<SearchJsonQueryV2>;
 }
-
-/**
- * The parameter value must be the primary key of an object found within an object set.
- *
- * Log Safety: SAFE
- */
-export interface ObjectQueryResultConstraint {}
 
 /**
  * Log Safety: UNSAFE
@@ -1777,18 +1777,18 @@ export interface ObjectSetUpdates {
 /**
  * Log Safety: UNSAFE
  */
-export interface Arg {
-  name: string;
-  value: string;
+export interface AggregateObjectsRequest {
+  aggregation: Array<Aggregation>;
+  query?: SearchJsonQuery;
+  groupBy: Array<AggregationGroupBy>;
 }
 
 /**
  * Log Safety: UNSAFE
  */
-export interface AggregateObjectsRequest {
-  aggregation: Array<Aggregation>;
-  query?: SearchJsonQuery;
-  groupBy: Array<AggregationGroupBy>;
+export interface Arg {
+  name: string;
+  value: string;
 }
 
 /**
@@ -1933,21 +1933,21 @@ export type AggregationGroupByV2 =
   | ({ type: "exact" } & AggregationExactGroupingV2);
 
 /**
+ * Log Safety: UNSAFE
+ */
+export interface SearchObjectsResponse {
+  data: Array<OntologyObject>;
+  nextPageToken?: PageToken;
+  totalCount: TotalCount;
+}
+
+/**
  * Represents the API response when loading an ObjectSet.
  *
  * Log Safety: UNSAFE
  */
 export interface LoadObjectSetResponseV2 {
   data: Array<OntologyObjectV2>;
-  nextPageToken?: PageToken;
-  totalCount: TotalCount;
-}
-
-/**
- * Log Safety: UNSAFE
- */
-export interface SearchObjectsResponse {
-  data: Array<OntologyObject>;
   nextPageToken?: PageToken;
   totalCount: TotalCount;
 }
@@ -2003,11 +2003,6 @@ export interface CountAggregation {
 }
 
 /**
- * Log Safety: UNSAFE
- */
-export type PolygonValue = { type: "Polygon" } & _Geo.Polygon;
-
-/**
  * Returns objects where the specified field is greater than or equal to a value.
  *
  * Log Safety: UNSAFE
@@ -2016,6 +2011,11 @@ export interface GteQuery {
   field: FieldNameV1;
   value: PropertyValue;
 }
+
+/**
+ * Log Safety: UNSAFE
+ */
+export type PolygonValue = { type: "Polygon" } & _Geo.Polygon;
 
 /**
  * Log Safety: SAFE
@@ -2197,16 +2197,16 @@ export type InterfaceLinkTypeCardinality = "ONE" | "MANY";
 /**
  * Log Safety: UNSAFE
  */
-export interface TwoDimensionalAggregation {
-  keyType: QueryAggregationKeyType;
-  valueType: QueryAggregationValueType;
+export interface OntologyArrayType {
+  itemType: OntologyDataType;
 }
 
 /**
  * Log Safety: UNSAFE
  */
-export interface OntologyArrayType {
-  itemType: OntologyDataType;
+export interface TwoDimensionalAggregation {
+  keyType: QueryAggregationKeyType;
+  valueType: QueryAggregationValueType;
 }
 
 /**
@@ -2741,6 +2741,11 @@ export interface WithinPolygonQuery {
 }
 
 /**
+ * Log Safety: SAFE
+ */
+export interface AsyncApplyActionResponse {}
+
+/**
  * Returns objects where the specified field does not intersect the polygon provided.
  *
  * Log Safety: UNSAFE
@@ -2749,11 +2754,6 @@ export interface DoesNotIntersectPolygonQuery {
   field: PropertyApiName;
   value: PolygonValue;
 }
-
-/**
- * Log Safety: SAFE
- */
-export interface AsyncApplyActionResponse {}
 
 /**
    * A command representing the list of properties to order by. Properties should be delimited by commas and
@@ -2865,11 +2865,6 @@ export interface OntologyStructType {
 }
 
 /**
- * Log Safety: SAFE
- */
-export type ReturnEditsMode = "ALL" | "NONE";
-
-/**
  * Represents an action type in the Ontology.
  *
  * Log Safety: UNSAFE
@@ -2885,13 +2880,9 @@ export interface ActionType {
 }
 
 /**
- * Resolved data values pointed to by a reference.
- *
- * Log Safety: UNSAFE
+ * Log Safety: SAFE
  */
-export type ReferenceValue = {
-  type: "geotimeSeriesValue";
-} & GeotimeSeriesValue;
+export type ReturnEditsMode = "ALL" | "NONE";
 
 /**
  * The unique resource identifier of an object, useful for interacting with other Foundry APIs.
@@ -2901,19 +2892,21 @@ export type ReferenceValue = {
 export type ObjectRid = LooselyBrandedString<"ObjectRid">;
 
 /**
+ * Resolved data values pointed to by a reference.
+ *
+ * Log Safety: UNSAFE
+ */
+export type ReferenceValue = {
+  type: "geotimeSeriesValue";
+} & GeotimeSeriesValue;
+
+/**
  * Log Safety: UNSAFE
  */
 export interface NestedQueryAggregation {
   key: any;
   groups: Array<QueryAggregation>;
 }
-
-/**
- * Setting fuzzy to true allows approximate matching in search queries that support it.
- *
- * Log Safety: SAFE
- */
-export type FuzzyV2 = boolean;
 
 /**
  * The parameter expects an array of values and the size of the array must fall within the defined range.
@@ -2926,6 +2919,13 @@ export interface ArraySizeConstraint {
   gt?: any;
   gte?: any;
 }
+
+/**
+ * Setting fuzzy to true allows approximate matching in search queries that support it.
+ *
+ * Log Safety: SAFE
+ */
+export type FuzzyV2 = boolean;
 
 /**
  * Log Safety: UNSAFE
@@ -3047,16 +3047,6 @@ export interface BatchApplyActionRequest {
 }
 
 /**
- * Returns objects based on the existence of the specified field.
- *
- * Log Safety: UNSAFE
- */
-export interface IsNullQueryV2 {
-  field: PropertyApiName;
-  value: boolean;
-}
-
-/**
  * Log Safety: SAFE
  */
 export type AsyncActionStatus =
@@ -3067,6 +3057,16 @@ export type AsyncActionStatus =
   | "WRITING_ONTOLOGY_EDITS"
   | "EXECUTING_SIDE_EFFECT_WEBHOOK"
   | "SENDING_NOTIFICATIONS";
+
+/**
+ * Returns objects based on the existence of the specified field.
+ *
+ * Log Safety: UNSAFE
+ */
+export interface IsNullQueryV2 {
+  field: PropertyApiName;
+  value: boolean;
+}
 
 /**
  * The unique resource identifier of an action type, useful for interacting with other Foundry APIs.
@@ -3183,13 +3183,6 @@ export interface ListQueryTypesResponse {
 }
 
 /**
- * The unique resource identifier of an interface, useful for interacting with other Foundry APIs.
- *
- * Log Safety: SAFE
- */
-export type InterfaceTypeRid = LooselyBrandedString<"InterfaceTypeRid">;
-
-/**
  * Log Safety: UNSAFE
  */
 export interface LinkTypeSide {
@@ -3200,6 +3193,13 @@ export interface LinkTypeSide {
   cardinality: LinkTypeSideCardinality;
   foreignKeyPropertyApiName?: PropertyApiName;
 }
+
+/**
+ * The unique resource identifier of an interface, useful for interacting with other Foundry APIs.
+ *
+ * Log Safety: SAFE
+ */
+export type InterfaceTypeRid = LooselyBrandedString<"InterfaceTypeRid">;
 
 /**
    * The parameter cannot be evaluated because it depends on another parameter or object set that can't be evaluated.
