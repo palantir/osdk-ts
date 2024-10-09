@@ -1,5 +1,15 @@
 # @osdk/shared.test
 
+## 2.0.2
+
+### Patch Changes
+
+- 4c5e0ae: Fix queries that have response types with nested values, like arrays.
+- ba1c42a: Fixing proxy handlers.
+- Updated dependencies [1edf95b]
+- Updated dependencies [4c5e0ae]
+  - @osdk/api@2.0.2
+
 ## 2.0.2-rc.3
 
 ### Patch Changes

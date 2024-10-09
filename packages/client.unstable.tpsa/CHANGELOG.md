@@ -1,5 +1,11 @@
 # @osdk/client.unstable.tpsa
 
+## 0.2.1
+
+### Patch Changes
+
+- 05b7934: Rework namespace codegen
+
 ## 0.2.0
 
 ### Minor Changes

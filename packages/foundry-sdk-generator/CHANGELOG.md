@@ -1,5 +1,23 @@
 # @osdk/foundry-sdk-generator
 
+## 2.0.2
+
+### Patch Changes
+
+- 85e03ec: Prepare foundry-sdk-generator for GA
+- 05b7934: Rework namespace codegen
+- Updated dependencies [1edf95b]
+- Updated dependencies [135bddc]
+- Updated dependencies [51354c5]
+- Updated dependencies [4c5e0ae]
+- Updated dependencies [4c5e0ae]
+- Updated dependencies [05b7934]
+- Updated dependencies [ba1c42a]
+- Updated dependencies [51354c5]
+  - @osdk/generator@2.0.2
+  - @osdk/client@2.0.2
+  - @osdk/api@2.0.2
+
 ## 2.0.2-rc.3
 
 ### Patch Changes

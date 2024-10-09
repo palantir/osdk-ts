@@ -1,6 +1,6 @@
 {
   "name": "@osdk/cli",
-  "version": "0.24.2-beta.2",
+  "version": "0.24.2",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
