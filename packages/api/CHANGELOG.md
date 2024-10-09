@@ -1,5 +1,12 @@
 # @osdk/api
 
+## 2.0.2
+
+### Patch Changes
+
+- 1edf95b: Switch to OSDK.Instance
+- 4c5e0ae: Add support for null filter on geo properties.
+
 ## 2.0.2-rc.3
 
 ### Patch Changes

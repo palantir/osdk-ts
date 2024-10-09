@@ -1,5 +1,15 @@
 # @osdk/maker
 
+## 0.8.2
+
+### Patch Changes
+
+- 76defb9: Allowing interfaces to extend other interfaces for ontology as code.
+- 76defb9: Add media reference to maker
+- Updated dependencies [1edf95b]
+- Updated dependencies [4c5e0ae]
+  - @osdk/api@2.0.2
+
 ## 0.8.2-rc.3
 
 ### Patch Changes

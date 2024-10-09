@@ -1,5 +1,22 @@
 # @osdk/client
 
+## 2.0.2
+
+### Patch Changes
+
+- 1edf95b: Switch to OSDK.Instance
+- 135bddc: improves interface api name mapping with api namespaces
+- 51354c5: Fixes where clauses when objects have an api namespace
+- 4c5e0ae: Fix queries that have response types with nested values, like arrays.
+- ba1c42a: Fixing proxy handlers.
+- 51354c5: Locks dependency version of 3 internal libraries
+- Updated dependencies [1edf95b]
+- Updated dependencies [4c5e0ae]
+- Updated dependencies [51354c5]
+  - @osdk/api@2.0.2
+  - @osdk/generator-converters@2.0.2
+  - @osdk/client.unstable@2.0.2
+
 ## 2.0.2-rc.3
 
 ### Patch Changes

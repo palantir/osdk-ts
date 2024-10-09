@@ -1,5 +1,14 @@
 # @osdk/cli.cmd.typescript
 
+## 0.6.2
+
+### Patch Changes
+
+- 05b7934: Rework namespace codegen
+- Updated dependencies [1edf95b]
+- Updated dependencies [05b7934]
+  - @osdk/generator@2.0.2
+
 ## 0.6.2-rc.3
 
 ### Patch Changes
