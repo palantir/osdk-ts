@@ -123,7 +123,7 @@ importers:
         version: 1.0.1(typescript@5.5.3)
       tsup:
         specifier: ^8.2.3
-        version: 8.2.3(@microsoft/api-extractor@7.47.0(@types/node@22.7.4))(jiti@1.21.6)(postcss@8.4.39)(typescript@5.5.3)(yaml@2.4.5)
+        version: 8.2.3(@microsoft/api-extractor@7.47.0(@types/node@22.7.4))(jiti@1.21.6)(postcss@8.4.47)(typescript@5.5.3)(yaml@2.4.5)
       turbo:
         specifier: ^2.0.9
         version: 2.0.9
@@ -178,7 +178,7 @@ importers:
         version: 7.16.0(eslint@8.57.0)(typescript@5.4.5)
       '@vitejs/plugin-react':
         specifier: ^4.2.1
-        version: 4.2.1(vite@5.3.4(@types/node@22.7.4))
+        version: 4.2.1(vite@5.4.8(@types/node@22.7.4))
       autoprefixer:
         specifier: ^10.4.19
         version: 10.4.19(postcss@8.4.39)
@@ -207,8 +207,8 @@ importers:
         specifier: ^5.4.5
         version: 5.4.5
       vite:
-        specifier: ^5.3.4
-        version: 5.3.4(@types/node@22.7.4)
+        specifier: ^5.4.8
+        version: 5.4.8(@types/node@22.7.4)
 
   examples/example-next-static-export:
     dependencies:
@@ -279,7 +279,7 @@ importers:
         version: 7.16.0(eslint@8.57.0)(typescript@5.5.4)
       '@vitejs/plugin-react':
         specifier: ^4.2.0
-        version: 4.2.1(vite@5.3.4(@types/node@22.7.4))
+        version: 4.2.1(vite@5.4.8(@types/node@22.7.4))
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
@@ -293,8 +293,8 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
       vite:
-        specifier: ^5.3.4
-        version: 5.3.4(@types/node@22.7.4)
+        specifier: ^5.4.8
+        version: 5.4.8(@types/node@22.7.4)
       vitest:
         specifier: ^2.0.5
         version: 2.0.5(@types/node@22.7.4)
@@ -337,7 +337,7 @@ importers:
         version: 7.17.0(eslint@8.57.0)(typescript@5.5.4)
       '@vitejs/plugin-react':
         specifier: ^4.2.0
-        version: 4.2.1(vite@5.3.4(@types/node@22.7.4))
+        version: 4.2.1(vite@5.4.8(@types/node@22.7.4))
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
@@ -363,8 +363,8 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
       vite:
-        specifier: ^5.3.4
-        version: 5.3.4(@types/node@22.7.4)
+        specifier: ^5.4.8
+        version: 5.4.8(@types/node@22.7.4)
       vitest:
         specifier: ^2.0.5
         version: 2.0.5(@types/node@22.7.4)
@@ -401,7 +401,7 @@ importers:
         version: 7.16.0(eslint@8.57.0)(typescript@5.5.4)
       '@vitejs/plugin-react':
         specifier: ^4.2.0
-        version: 4.2.1(vite@5.3.4(@types/node@22.7.4))
+        version: 4.2.1(vite@5.4.8(@types/node@22.7.4))
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
@@ -415,8 +415,8 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
       vite:
-        specifier: ^5.3.4
-        version: 5.3.4(@types/node@22.7.4)
+        specifier: ^5.4.8
+        version: 5.4.8(@types/node@22.7.4)
       vitest:
         specifier: ^2.0.5
         version: 2.0.5(@types/node@22.7.4)
@@ -453,7 +453,7 @@ importers:
         version: 7.16.0(eslint@8.57.0)(typescript@5.5.4)
       '@vitejs/plugin-react':
         specifier: ^4.2.0
-        version: 4.2.1(vite@5.3.4(@types/node@22.7.4))
+        version: 4.2.1(vite@5.4.8(@types/node@22.7.4))
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
@@ -467,8 +467,8 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
       vite:
-        specifier: ^5.3.4
-        version: 5.3.4(@types/node@22.7.4)
+        specifier: ^5.4.8
+        version: 5.4.8(@types/node@22.7.4)
       vitest:
         specifier: ^2.0.5
         version: 2.0.5(@types/node@22.7.4)
@@ -487,13 +487,13 @@ importers:
     devDependencies:
       '@vitejs/plugin-vue':
         specifier: ^4.5.0
-        version: 4.6.2(vite@5.3.4(@types/node@22.7.4))(vue@3.4.27(typescript@5.5.4))
+        version: 4.6.2(vite@5.4.8(@types/node@22.7.4))(vue@3.4.27(typescript@5.5.4))
       typescript:
         specifier: ^5.5.4
         version: 5.5.4
       vite:
-        specifier: ^5.3.4
-        version: 5.3.4(@types/node@22.7.4)
+        specifier: ^5.4.8
+        version: 5.4.8(@types/node@22.7.4)
       vitest:
         specifier: ^2.0.5
         version: 2.0.5(@types/node@22.7.4)
@@ -1085,7 +1085,7 @@ importers:
         version: 7.16.0(eslint@8.57.0)(typescript@5.5.4)
       '@vitejs/plugin-react':
         specifier: ^4.2.0
-        version: 4.2.1(vite@5.3.4(@types/node@22.7.4))
+        version: 4.2.1(vite@5.4.8(@types/node@22.7.4))
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
@@ -1099,8 +1099,8 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
       vite:
-        specifier: ^5.3.4
-        version: 5.3.4(@types/node@22.7.4)
+        specifier: ^5.4.8
+        version: 5.4.8(@types/node@22.7.4)
       vitest:
         specifier: ^2.0.5
         version: 2.0.5(@types/node@22.7.4)
@@ -1146,7 +1146,7 @@ importers:
         version: 7.17.0(eslint@8.57.0)(typescript@5.5.4)
       '@vitejs/plugin-react':
         specifier: ^4.2.0
-        version: 4.2.1(vite@5.3.4(@types/node@22.7.4))
+        version: 4.2.1(vite@5.4.8(@types/node@22.7.4))
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
@@ -1172,8 +1172,8 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
       vite:
-        specifier: ^5.3.4
-        version: 5.3.4(@types/node@22.7.4)
+        specifier: ^5.4.8
+        version: 5.4.8(@types/node@22.7.4)
       vitest:
         specifier: ^2.0.5
         version: 2.0.5(@types/node@22.7.4)
@@ -1219,7 +1219,7 @@ importers:
         version: 7.16.0(eslint@8.57.0)(typescript@5.5.4)
       '@vitejs/plugin-react':
         specifier: ^4.2.0
-        version: 4.2.1(vite@5.3.4(@types/node@22.7.4))
+        version: 4.2.1(vite@5.4.8(@types/node@22.7.4))
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
@@ -1233,8 +1233,8 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
       vite:
-        specifier: ^5.3.4
-        version: 5.3.4(@types/node@22.7.4)
+        specifier: ^5.4.8
+        version: 5.4.8(@types/node@22.7.4)
       vitest:
         specifier: ^2.0.5
         version: 2.0.5(@types/node@22.7.4)
@@ -1280,7 +1280,7 @@ importers:
         version: 7.16.0(eslint@8.57.0)(typescript@5.5.4)
       '@vitejs/plugin-react':
         specifier: ^4.2.0
-        version: 4.2.1(vite@5.3.4(@types/node@22.7.4))
+        version: 4.2.1(vite@5.4.8(@types/node@22.7.4))
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
@@ -1294,8 +1294,8 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
       vite:
-        specifier: ^5.3.4
-        version: 5.3.4(@types/node@22.7.4)
+        specifier: ^5.4.8
+        version: 5.4.8(@types/node@22.7.4)
       vitest:
         specifier: ^2.0.5
         version: 2.0.5(@types/node@22.7.4)
@@ -1323,13 +1323,13 @@ importers:
         version: link:../monorepo.tsup
       '@vitejs/plugin-vue':
         specifier: ^4.5.0
-        version: 4.6.2(vite@5.3.4(@types/node@22.7.4))(vue@3.4.27(typescript@5.5.4))
+        version: 4.6.2(vite@5.4.8(@types/node@22.7.4))(vue@3.4.27(typescript@5.5.4))
       typescript:
         specifier: ^5.5.4
         version: 5.5.4
       vite:
-        specifier: ^5.3.4
-        version: 5.3.4(@types/node@22.7.4)
+        specifier: ^5.4.8
+        version: 5.4.8(@types/node@22.7.4)
       vitest:
         specifier: ^2.0.5
         version: 2.0.5(@types/node@22.7.4)
@@ -1567,13 +1567,13 @@ importers:
         version: 18.3.0
       '@vitejs/plugin-react':
         specifier: ^4.2.0
-        version: 4.2.1(vite@5.3.4(@types/node@22.7.4))
+        version: 4.2.1(vite@5.4.8(@types/node@22.7.4))
       typescript:
         specifier: ^5.5.4
         version: 5.5.4
       vite:
-        specifier: ^5.3.4
-        version: 5.3.4(@types/node@22.7.4)
+        specifier: ^5.4.8
+        version: 5.4.8(@types/node@22.7.4)
       vitest:
         specifier: ^2.0.5
         version: 2.0.5(@types/node@22.7.4)
@@ -1628,7 +1628,7 @@ importers:
         version: 7.16.0(eslint@9.7.0)(typescript@5.5.3)
       '@vitejs/plugin-react':
         specifier: ^4.2.1
-        version: 4.2.1(vite@5.3.4(@types/node@22.7.4))
+        version: 4.2.1(vite@5.4.8(@types/node@22.7.4))
       autoprefixer:
         specifier: ^10.4.19
         version: 10.4.19(postcss@8.4.39)
@@ -1648,8 +1648,8 @@ importers:
         specifier: ^5.4.5
         version: 5.5.3
       vite:
-        specifier: ^5.3.4
-        version: 5.3.4(@types/node@22.7.4)
+        specifier: ^5.4.8
+        version: 5.4.8(@types/node@22.7.4)
 
   packages/e2e.test.foundry-sdk-generator:
     dependencies:
@@ -1875,7 +1875,7 @@ importers:
     devDependencies:
       tsup:
         specifier: ^8.2.3
-        version: 8.2.3(@microsoft/api-extractor@7.47.0(@types/node@22.7.4))(jiti@1.21.6)(postcss@8.4.39)(typescript@5.5.4)(yaml@2.4.5)
+        version: 8.2.3(@microsoft/api-extractor@7.47.0(@types/node@22.7.4))(jiti@1.21.6)(postcss@8.4.47)(typescript@5.5.4)(yaml@2.4.5)
 
   packages/oauth:
     dependencies:
@@ -6516,6 +6516,9 @@ packages:
   picocolors@1.0.1:
     resolution: {integrity: sha512-anP1Z8qwhkbmu7MFP5iTt+wQKXgwzf7zTyGlcdzabySa9vd0Xt392U0rVmz9poOaBj0uHJKyyo9/upk0HrEQew==}
 
+  picocolors@1.1.0:
+    resolution: {integrity: sha512-TQ92mBOW0l3LeMeyLV6mzy/kWr8lkd/hp3mTg7wYK7zJhuBStmGMBG0BdeDZS/dZx1IukaX6Bk11zcln25o1Aw==}
+
   picomatch@2.3.1:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
@@ -6624,6 +6627,10 @@ packages:
 
   postcss@8.4.39:
     resolution: {integrity: sha512-0vzE+lAiG7hZl1/9I8yzKLx3aR9Xbof3fBHKunvMfOCYAtMhrsnccJY2iTURb9EZd5+pLuiNV9/c/GZJOHsgIw==}
+    engines: {node: ^10 || ^12 || >=14}
+
+  postcss@8.4.47:
+    resolution: {integrity: sha512-56rxCq7G/XfB4EkXq9Egn5GCqugWvDFjafDOThIdMBsI15iqPqR5r15TfSr1YPYeEI19YeaXMCbY6u88Y76GLQ==}
     engines: {node: ^10 || ^12 || >=14}
 
   preferred-pm@3.1.2:
@@ -7008,6 +7015,10 @@ packages:
 
   source-map-js@1.2.0:
     resolution: {integrity: sha512-itJW8lvSA0TXEphiRoawsCksnlf8SyvmFzIhltqAHluXd88pkCd+cXJVHTDwdCr0IzwptSm035IHQktUu1QUMg==}
+    engines: {node: '>=0.10.0'}
+
+  source-map-js@1.2.1:
+    resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
 
   source-map@0.6.1:
@@ -7564,8 +7575,8 @@ packages:
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
 
-  vite@5.3.4:
-    resolution: {integrity: sha512-Cw+7zL3ZG9/NZBB8C+8QbQZmR54GwqIz+WMI4b3JgdYJvX+ny9AjJXqkGQlDXSXRP9rP0B4tbciRMOVEKulVOA==}
+  vite@5.4.8:
+    resolution: {integrity: sha512-FqrItQ4DT1NC4zCUqMB4c4AZORMKIa0m8/URVCZ77OZ/QSNeJ54bU1vrFADbDsuwfIPcgknRkmqakQcgnL4GiQ==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
     peerDependencies:
@@ -7573,6 +7584,7 @@ packages:
       less: '*'
       lightningcss: ^1.21.0
       sass: '*'
+      sass-embedded: '*'
       stylus: '*'
       sugarss: '*'
       terser: ^5.4.0
@@ -7584,6 +7596,8 @@ packages:
       lightningcss:
         optional: true
       sass:
+        optional: true
+      sass-embedded:
         optional: true
       stylus:
         optional: true
@@ -7876,12 +7890,12 @@ snapshots:
   '@babel/code-frame@7.24.2':
     dependencies:
       '@babel/highlight': 7.24.2
-      picocolors: 1.0.1
+      picocolors: 1.1.0
 
   '@babel/code-frame@7.24.7':
     dependencies:
       '@babel/highlight': 7.24.7
-      picocolors: 1.0.1
+      picocolors: 1.1.0
 
   '@babel/compat-data@7.23.5': {}
 
@@ -8111,14 +8125,14 @@ snapshots:
       '@babel/helper-validator-identifier': 7.24.5
       chalk: 2.4.2
       js-tokens: 4.0.0
-      picocolors: 1.0.1
+      picocolors: 1.1.0
 
   '@babel/highlight@7.24.7':
     dependencies:
       '@babel/helper-validator-identifier': 7.24.7
       chalk: 2.4.2
       js-tokens: 4.0.0
-      picocolors: 1.0.1
+      picocolors: 1.1.0
 
   '@babel/parser@7.24.5':
     dependencies:
@@ -10231,20 +10245,20 @@ snapshots:
 
   '@ungap/structured-clone@1.2.0': {}
 
-  '@vitejs/plugin-react@4.2.1(vite@5.3.4(@types/node@22.7.4))':
+  '@vitejs/plugin-react@4.2.1(vite@5.4.8(@types/node@22.7.4))':
     dependencies:
       '@babel/core': 7.24.5
       '@babel/plugin-transform-react-jsx-self': 7.23.3(@babel/core@7.24.5)
       '@babel/plugin-transform-react-jsx-source': 7.23.3(@babel/core@7.24.5)
       '@types/babel__core': 7.20.5
       react-refresh: 0.14.0
-      vite: 5.3.4(@types/node@22.7.4)
+      vite: 5.4.8(@types/node@22.7.4)
     transitivePeerDependencies:
       - supports-color
 
-  '@vitejs/plugin-vue@4.6.2(vite@5.3.4(@types/node@22.7.4))(vue@3.4.27(typescript@5.5.4))':
+  '@vitejs/plugin-vue@4.6.2(vite@5.4.8(@types/node@22.7.4))(vue@3.4.27(typescript@5.5.4))':
     dependencies:
-      vite: 5.3.4(@types/node@22.7.4)
+      vite: 5.4.8(@types/node@22.7.4)
       vue: 3.4.27(typescript@5.5.4)
 
   '@vitest/expect@2.0.4':
@@ -10347,7 +10361,7 @@ snapshots:
       '@vue/shared': 3.4.27
       estree-walker: 2.0.2
       magic-string: 0.30.10
-      postcss: 8.4.39
+      postcss: 8.4.47
       source-map-js: 1.2.0
 
   '@vue/compiler-ssr@3.4.27':
@@ -12961,6 +12975,8 @@ snapshots:
 
   picocolors@1.0.1: {}
 
+  picocolors@1.1.0: {}
+
   picomatch@2.3.1: {}
 
   pidtree@0.6.0: {}
@@ -13047,12 +13063,12 @@ snapshots:
       postcss: 8.4.39
       ts-node: 10.9.2(@types/node@22.7.4)(typescript@5.5.3)
 
-  postcss-load-config@6.0.1(jiti@1.21.6)(postcss@8.4.39)(yaml@2.4.5):
+  postcss-load-config@6.0.1(jiti@1.21.6)(postcss@8.4.47)(yaml@2.4.5):
     dependencies:
       lilconfig: 3.1.2
     optionalDependencies:
       jiti: 1.21.6
-      postcss: 8.4.39
+      postcss: 8.4.47
       yaml: 2.4.5
 
   postcss-nested@6.0.1(postcss@8.4.39):
@@ -13070,14 +13086,20 @@ snapshots:
   postcss@8.4.31:
     dependencies:
       nanoid: 3.3.7
-      picocolors: 1.0.1
-      source-map-js: 1.2.0
+      picocolors: 1.1.0
+      source-map-js: 1.2.1
 
   postcss@8.4.39:
     dependencies:
       nanoid: 3.3.7
       picocolors: 1.0.1
       source-map-js: 1.2.0
+
+  postcss@8.4.47:
+    dependencies:
+      nanoid: 3.3.7
+      picocolors: 1.1.0
+      source-map-js: 1.2.1
 
   preferred-pm@3.1.2:
     dependencies:
@@ -13495,6 +13517,8 @@ snapshots:
 
   source-map-js@1.2.0: {}
 
+  source-map-js@1.2.1: {}
+
   source-map@0.6.1: {}
 
   source-map@0.7.4: {}
@@ -13899,7 +13923,7 @@ snapshots:
 
   tslib@2.7.0: {}
 
-  tsup@8.2.3(@microsoft/api-extractor@7.47.0(@types/node@22.7.4))(jiti@1.21.6)(postcss@8.4.39)(typescript@5.5.3)(yaml@2.4.5):
+  tsup@8.2.3(@microsoft/api-extractor@7.47.0(@types/node@22.7.4))(jiti@1.21.6)(postcss@8.4.47)(typescript@5.5.3)(yaml@2.4.5):
     dependencies:
       bundle-require: 5.0.0(esbuild@0.23.0)
       cac: 6.7.14
@@ -13911,7 +13935,7 @@ snapshots:
       globby: 11.1.0
       joycon: 3.1.1
       picocolors: 1.0.1
-      postcss-load-config: 6.0.1(jiti@1.21.6)(postcss@8.4.39)(yaml@2.4.5)
+      postcss-load-config: 6.0.1(jiti@1.21.6)(postcss@8.4.47)(yaml@2.4.5)
       resolve-from: 5.0.0
       rollup: 4.24.0
       source-map: 0.8.0-beta.0
@@ -13919,7 +13943,7 @@ snapshots:
       tree-kill: 1.2.2
     optionalDependencies:
       '@microsoft/api-extractor': 7.47.0(@types/node@22.7.4)
-      postcss: 8.4.39
+      postcss: 8.4.47
       typescript: 5.5.3
     transitivePeerDependencies:
       - jiti
@@ -13927,7 +13951,7 @@ snapshots:
       - tsx
       - yaml
 
-  tsup@8.2.3(@microsoft/api-extractor@7.47.0(@types/node@22.7.4))(jiti@1.21.6)(postcss@8.4.39)(typescript@5.5.4)(yaml@2.4.5):
+  tsup@8.2.3(@microsoft/api-extractor@7.47.0(@types/node@22.7.4))(jiti@1.21.6)(postcss@8.4.47)(typescript@5.5.4)(yaml@2.4.5):
     dependencies:
       bundle-require: 5.0.0(esbuild@0.23.0)
       cac: 6.7.14
@@ -13939,7 +13963,7 @@ snapshots:
       globby: 11.1.0
       joycon: 3.1.1
       picocolors: 1.0.1
-      postcss-load-config: 6.0.1(jiti@1.21.6)(postcss@8.4.39)(yaml@2.4.5)
+      postcss-load-config: 6.0.1(jiti@1.21.6)(postcss@8.4.47)(yaml@2.4.5)
       resolve-from: 5.0.0
       rollup: 4.24.0
       source-map: 0.8.0-beta.0
@@ -13947,7 +13971,7 @@ snapshots:
       tree-kill: 1.2.2
     optionalDependencies:
       '@microsoft/api-extractor': 7.47.0(@types/node@22.7.4)
-      postcss: 8.4.39
+      postcss: 8.4.47
       typescript: 5.5.4
     transitivePeerDependencies:
       - jiti
@@ -14117,13 +14141,13 @@ snapshots:
     dependencies:
       browserslist: 4.23.0
       escalade: 3.1.2
-      picocolors: 1.0.1
+      picocolors: 1.0.0
 
   update-browserslist-db@1.1.0(browserslist@4.23.2):
     dependencies:
       browserslist: 4.23.2
       escalade: 3.1.2
-      picocolors: 1.0.1
+      picocolors: 1.1.0
 
   uri-js@4.4.1:
     dependencies:
@@ -14166,12 +14190,13 @@ snapshots:
       debug: 4.3.5
       pathe: 1.1.2
       tinyrainbow: 1.2.0
-      vite: 5.3.4(@types/node@18.17.15)
+      vite: 5.4.8(@types/node@18.17.15)
     transitivePeerDependencies:
       - '@types/node'
       - less
       - lightningcss
       - sass
+      - sass-embedded
       - stylus
       - sugarss
       - supports-color
@@ -14183,12 +14208,13 @@ snapshots:
       debug: 4.3.5
       pathe: 1.1.2
       tinyrainbow: 1.2.0
-      vite: 5.3.4(@types/node@20.12.12)
+      vite: 5.4.8(@types/node@20.12.12)
     transitivePeerDependencies:
       - '@types/node'
       - less
       - lightningcss
       - sass
+      - sass-embedded
       - stylus
       - sugarss
       - supports-color
@@ -14200,12 +14226,13 @@ snapshots:
       debug: 4.3.5
       pathe: 1.1.2
       tinyrainbow: 1.2.0
-      vite: 5.3.4(@types/node@22.7.4)
+      vite: 5.4.8(@types/node@22.7.4)
     transitivePeerDependencies:
       - '@types/node'
       - less
       - lightningcss
       - sass
+      - sass-embedded
       - stylus
       - sugarss
       - supports-color
@@ -14217,12 +14244,13 @@ snapshots:
       debug: 4.3.5
       pathe: 1.1.2
       tinyrainbow: 1.2.0
-      vite: 5.3.4(@types/node@20.12.12)
+      vite: 5.4.8(@types/node@20.12.12)
     transitivePeerDependencies:
       - '@types/node'
       - less
       - lightningcss
       - sass
+      - sass-embedded
       - stylus
       - sugarss
       - supports-color
@@ -14234,12 +14262,13 @@ snapshots:
       debug: 4.3.5
       pathe: 1.1.2
       tinyrainbow: 1.2.0
-      vite: 5.3.4(@types/node@20.14.10)
+      vite: 5.4.8(@types/node@20.14.10)
     transitivePeerDependencies:
       - '@types/node'
       - less
       - lightningcss
       - sass
+      - sass-embedded
       - stylus
       - sugarss
       - supports-color
@@ -14251,48 +14280,49 @@ snapshots:
       debug: 4.3.5
       pathe: 1.1.2
       tinyrainbow: 1.2.0
-      vite: 5.3.4(@types/node@22.7.4)
+      vite: 5.4.8(@types/node@22.7.4)
     transitivePeerDependencies:
       - '@types/node'
       - less
       - lightningcss
       - sass
+      - sass-embedded
       - stylus
       - sugarss
       - supports-color
       - terser
 
-  vite@5.3.4(@types/node@18.17.15):
+  vite@5.4.8(@types/node@18.17.15):
     dependencies:
       esbuild: 0.21.5
-      postcss: 8.4.39
+      postcss: 8.4.47
       rollup: 4.24.0
     optionalDependencies:
       '@types/node': 18.17.15
       fsevents: 2.3.3
 
-  vite@5.3.4(@types/node@20.12.12):
+  vite@5.4.8(@types/node@20.12.12):
     dependencies:
       esbuild: 0.21.5
-      postcss: 8.4.39
+      postcss: 8.4.47
       rollup: 4.24.0
     optionalDependencies:
       '@types/node': 20.12.12
       fsevents: 2.3.3
 
-  vite@5.3.4(@types/node@20.14.10):
+  vite@5.4.8(@types/node@20.14.10):
     dependencies:
       esbuild: 0.21.5
-      postcss: 8.4.39
+      postcss: 8.4.47
       rollup: 4.24.0
     optionalDependencies:
       '@types/node': 20.14.10
       fsevents: 2.3.3
 
-  vite@5.3.4(@types/node@22.7.4):
+  vite@5.4.8(@types/node@22.7.4):
     dependencies:
       esbuild: 0.21.5
-      postcss: 8.4.39
+      postcss: 8.4.47
       rollup: 4.24.0
     optionalDependencies:
       '@types/node': 22.7.4
@@ -14316,7 +14346,7 @@ snapshots:
       tinybench: 2.8.0
       tinypool: 1.0.0
       tinyrainbow: 1.2.0
-      vite: 5.3.4(@types/node@18.17.15)
+      vite: 5.4.8(@types/node@18.17.15)
       vite-node: 2.0.4(@types/node@18.17.15)
       why-is-node-running: 2.3.0
     optionalDependencies:
@@ -14325,6 +14355,7 @@ snapshots:
       - less
       - lightningcss
       - sass
+      - sass-embedded
       - stylus
       - sugarss
       - supports-color
@@ -14348,7 +14379,7 @@ snapshots:
       tinybench: 2.8.0
       tinypool: 1.0.0
       tinyrainbow: 1.2.0
-      vite: 5.3.4(@types/node@20.12.12)
+      vite: 5.4.8(@types/node@20.12.12)
       vite-node: 2.0.4(@types/node@20.12.12)
       why-is-node-running: 2.3.0
     optionalDependencies:
@@ -14357,6 +14388,7 @@ snapshots:
       - less
       - lightningcss
       - sass
+      - sass-embedded
       - stylus
       - sugarss
       - supports-color
@@ -14380,7 +14412,7 @@ snapshots:
       tinybench: 2.8.0
       tinypool: 1.0.0
       tinyrainbow: 1.2.0
-      vite: 5.3.4(@types/node@22.7.4)
+      vite: 5.4.8(@types/node@22.7.4)
       vite-node: 2.0.4(@types/node@22.7.4)
       why-is-node-running: 2.3.0
     optionalDependencies:
@@ -14389,6 +14421,7 @@ snapshots:
       - less
       - lightningcss
       - sass
+      - sass-embedded
       - stylus
       - sugarss
       - supports-color
@@ -14412,7 +14445,7 @@ snapshots:
       tinybench: 2.8.0
       tinypool: 1.0.0
       tinyrainbow: 1.2.0
-      vite: 5.3.4(@types/node@20.12.12)
+      vite: 5.4.8(@types/node@20.12.12)
       vite-node: 2.0.5(@types/node@20.12.12)
       why-is-node-running: 2.3.0
     optionalDependencies:
@@ -14421,6 +14454,7 @@ snapshots:
       - less
       - lightningcss
       - sass
+      - sass-embedded
       - stylus
       - sugarss
       - supports-color
@@ -14444,7 +14478,7 @@ snapshots:
       tinybench: 2.8.0
       tinypool: 1.0.0
       tinyrainbow: 1.2.0
-      vite: 5.3.4(@types/node@20.14.10)
+      vite: 5.4.8(@types/node@20.14.10)
       vite-node: 2.0.5(@types/node@20.14.10)
       why-is-node-running: 2.3.0
     optionalDependencies:
@@ -14453,6 +14487,7 @@ snapshots:
       - less
       - lightningcss
       - sass
+      - sass-embedded
       - stylus
       - sugarss
       - supports-color
@@ -14476,7 +14511,7 @@ snapshots:
       tinybench: 2.8.0
       tinypool: 1.0.0
       tinyrainbow: 1.2.0
-      vite: 5.3.4(@types/node@22.7.4)
+      vite: 5.4.8(@types/node@22.7.4)
       vite-node: 2.0.5(@types/node@22.7.4)
       why-is-node-running: 2.3.0
     optionalDependencies:
@@ -14485,6 +14520,7 @@ snapshots:
       - less
       - lightningcss
       - sass
+      - sass-embedded
       - stylus
       - sugarss
       - supports-color
