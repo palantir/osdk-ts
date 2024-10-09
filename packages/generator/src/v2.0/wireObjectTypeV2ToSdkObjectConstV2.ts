@@ -26,10 +26,6 @@ import { propertyJsdoc } from "../shared/propertyJsdoc.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
 
-export function getObjectDefIdentifier(name: string, v2: boolean) {
-  return v2 ? name : `${name}Def`;
-}
-
 /** @internal */
 export function wireObjectTypeV2ToSdkObjectConstV2(
   wireObject: ObjectTypeFullMetadata,
