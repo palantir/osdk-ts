@@ -1,6 +1,6 @@
 {
   "name": "@osdk/tmp-foundry-sdk-generator",
-  "version": "2.0.0",
+  "version": "2.1.0-beta.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -31,6 +31,8 @@
   "dependencies": {
     "@osdk/api": "workspace:*",
     "@osdk/client": "workspace:*",
+    "@osdk/foundry.core": "workspace:*",
+    "@osdk/foundry.thirdpartyapplications": "workspace:*",
     "@osdk/generator": "workspace:*",
     "@osdk/internal.foundry.core": "workspace:*",
     "@osdk/internal.foundry.ontologies": "workspace:*",
@@ -47,9 +49,12 @@
     "yargs": "17.7.2"
   },
   "devDependencies": {
+    "@osdk/client.unstable": "workspace:~",
+    "@osdk/client.unstable.tpsa": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
+    "@osdk/shared.client.impl": "workspace:~",
     "@osdk/shared.test": "workspace:~",
     "@types/node": "^18.0.0",
     "@types/yargs": "^17.0.29",

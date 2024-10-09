@@ -18,8 +18,9 @@ import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/gener
 import fastDeepEqual from "fast-deep-equal";
 import invariant from "tiny-invariant";
 import { extractNamespace } from "../GenerateContext/EnhancedBase.js";
-import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
+import { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
+import { ForeignType } from "../GenerateContext/ForeignType.js";
 import { propertyJsdoc } from "../shared/propertyJsdoc.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
@@ -48,23 +49,25 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
   const objectDefIdentifier = interfaceDef.getDefinitionIdentifier(v2);
 
   const parents = definition.implements?.map(p => {
-    invariant(
-      ontology.interfaceTypes[p] != null,
-      `Expected to find a parent interface named ${p} in the ontology and did not.`,
-    );
-
-    const it = deleteUndefineds(
-      __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
-        ontology.requireInterfaceType(p, true).raw,
-        v2,
-      ),
-    );
-
-    return it;
+    const parent = ontology.requireInterfaceType(p, true);
+    if (parent instanceof EnhancedInterfaceType) {
+      const it = deleteUndefineds(
+        __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
+          parent.raw,
+          v2,
+        ),
+      );
+      return it;
+    }
   }) ?? [];
 
   const mergedProperties = { ...definition.properties };
   for (const parent of parents) {
+    if (parent == null) {
+      // came from a foreign type and we cannot merge properties yet
+      // so if they weren't listed on the interface its over
+      continue;
+    }
     for (const apiName of Object.keys(parent.properties)) {
       if (definition.properties[apiName] != null) {
         invariant(
@@ -87,25 +90,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
     }
   }
 
-  const ogProperties = definition.properties;
   definition.properties = mergedProperties;
-
-  function localPropertyJsdoc(apiName: string) {
-    const property = definition.properties[apiName]!;
-    const isInherited = ogProperties[apiName] == null;
-
-    return propertyJsdoc(property, { isInherited, apiName });
-  }
-
-  function maybeStripNamespace(q: string) {
-    if (
-      interfaceDef.apiNamespace && q.startsWith(`${interfaceDef.apiNamespace}.`)
-    ) {
-      return q.slice(interfaceDef.apiNamespace.length + 1);
-    } else {
-      return q;
-    }
-  }
 
   const objectSetIdentifier = `${interfaceDef.shortApiName}.ObjectSet`;
   const propertyKeysIdentifier = `${interfaceDef.shortApiName}.PropertyKeys`;
@@ -184,7 +169,7 @@ ${
 
       ${createObjectSet(interfaceDef, ids)}
 
-      ${createOsdkObject(interfaceDef, "OsdkObject", ids)}
+      ${createOsdkObject(interfaceDef, "OsdkInstance", ids)}
       
     }    
 

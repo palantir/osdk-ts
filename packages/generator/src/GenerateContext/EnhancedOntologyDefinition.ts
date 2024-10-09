@@ -27,13 +27,16 @@ import { ForeignType } from "./ForeignType.js";
 
 export class EnhancedOntologyDefinition {
   ontology: OntologyV2;
-  objectTypes: Record<string, EnhancedObjectType>;
+  objectTypes: Record<string, EnhancedObjectType | ForeignType>;
   actionTypes: Record<string, EnhancedAction>;
   queryTypes: Record<string, EnhancedQuery>;
-  interfaceTypes: Record<string, EnhancedInterfaceType>;
+  interfaceTypes: Record<
+    string,
+    EnhancedInterfaceType | ForeignType
+  >;
   sharedPropertyTypes: Record<
     string,
-    EnhancedSharedPropertyType
+    EnhancedSharedPropertyType | ForeignType
   >;
   #foreignTypes: Record<string, ForeignType> = {};
 
@@ -42,15 +45,14 @@ export class EnhancedOntologyDefinition {
 
   constructor(
     raw: WireOntologyDefinition,
-    ontologyApiNamespace: string | undefined,
-    apiNamespacePackageMap: Map<string, string>,
     importExt: string,
+    externalObjects?: Map<string, string>,
+    externalInterfaces?: Map<string, string>,
+    externalSpts?: Map<string, string>,
   ) {
     this.common = {
-      apiNamespacePackageMap,
       enhancedOntology: this,
       importExt,
-      ontologyApiNamespace,
     };
     this.raw = raw;
     this.ontology = raw.ontology;
@@ -58,6 +60,7 @@ export class EnhancedOntologyDefinition {
       raw.objectTypes,
       this.common,
       EnhancedObjectType,
+      externalObjects,
     );
     this.actionTypes = remap(
       raw.actionTypes,
@@ -73,11 +76,13 @@ export class EnhancedOntologyDefinition {
       raw.interfaceTypes,
       this.common,
       EnhancedInterfaceType,
+      externalInterfaces,
     );
     this.sharedPropertyTypes = remap(
       raw.sharedPropertyTypes,
       this.common,
       EnhancedSharedPropertyType,
+      externalSpts,
     );
   }
 
@@ -99,27 +104,9 @@ export class EnhancedOntologyDefinition {
       if (!ret) {
         const [apiNamespace, shortApiName] = extractNamespace(fullApiName);
 
-        if (localOnly || !apiNamespace) {
-          throw new Error(
-            `Unable to find ${type}: No entry for '${fullApiName}`,
-          );
-        }
-
-        if (!this.common.apiNamespacePackageMap.has(apiNamespace)) {
-          throw new Error(
-            `Unable to find ${type}: Unknown namespace '${apiNamespace}'`,
-          );
-        }
-
-        const ret = this.#foreignTypes[fullApiName] ?? new ForeignType(
-          this.common,
-          type,
-          apiNamespace,
-          shortApiName,
+        throw new Error(
+          `Unable to find ${type}: No entry for '${fullApiName}`,
         );
-
-        this.#foreignTypes[fullApiName] = ret;
-        return ret as L extends true ? this[K][string] : ForeignType;
       }
       return ret as this[K][string] as L extends true ? this[K][string]
         : ForeignType;
@@ -134,17 +121,56 @@ export class EnhancedOntologyDefinition {
     "sharedPropertyTypes",
   );
 }
+
+function remap<T, X>(
+  r: Record<string, T>,
+  common: EnhanceCommon,
+  Constructor: { new(common: EnhanceCommon, og: T): X },
+): Record<string, X>;
 function remap<T, X>(
   r: Record<string, T>,
   common: EnhanceCommon,
   Constructor: { new(common: EnhanceCommon, original: T): X },
-): Record<string, X> {
-  return Object.fromEntries(
-    Object.entries(r ?? {}).map(([fullApiName, v]) => {
-      return [
+  externalMap?: Map<string, string>,
+): Record<string, X | ForeignType>;
+function remap<T, X, const Q extends Map<string, string> | undefined>(
+  r: Record<string, T>,
+  common: EnhanceCommon,
+  Constructor: { new(common: EnhanceCommon, og: T): X },
+  externalMap?: Q,
+): Record<string, X | ForeignType> {
+  const entries: [string, X | ForeignType][] = [];
+
+  for (const [fullApiName, v] of Object.entries(r ?? {})) {
+    if (externalMap?.has(fullApiName)) {
+      // skip it, we handle it below
+    } else {
+      entries.push([fullApiName, new Constructor(common, v)]);
+    }
+  }
+
+  if (externalMap) {
+    for (const [fullApiName, destPackage] of externalMap) {
+      const [apiNamespace, shortApiName] = extractNamespace(fullApiName);
+      // I think this check should be required but the ontology manager / dev console doesn't enforce it right now
+      // if (apiNamespace === undefined) {
+      //   throw new Error(
+      //     `Cannot reference an external type (${fullApiName}) that is missing a namespace`,
+      //   );
+      // }
+      entries.push([
         fullApiName,
-        new Constructor(common, v),
-      ] as const;
-    }).sort((a, b) => a[0].localeCompare(b[0])),
+        new ForeignType(
+          common,
+          apiNamespace,
+          shortApiName,
+          destPackage,
+        ),
+      ]);
+    }
+  }
+
+  return Object.fromEntries(
+    entries.sort((a, b) => a[0].localeCompare(b[0])),
   );
 }

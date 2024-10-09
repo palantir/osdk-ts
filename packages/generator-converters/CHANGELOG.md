@@ -1,5 +1,18 @@
 # @osdk/generator-converters
 
+## 2.1.0-beta.0
+
+### Minor Changes
+
+- c682504: Locks dependency version of 3 internal libraries
+
+### Patch Changes
+
+- Updated dependencies [0dc40b0]
+- Updated dependencies [03e1941]
+- Updated dependencies [e548b9b]
+  - @osdk/api@2.1.0-beta.0
+
 ## 2.0.0
 
 ### Major Changes

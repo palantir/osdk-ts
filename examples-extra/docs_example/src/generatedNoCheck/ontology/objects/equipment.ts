@@ -30,10 +30,16 @@ export namespace equipment {
 
   export interface ObjectSet extends $ObjectSet<equipment, equipment.ObjectSet> {}
 
+  export type OsdkInstance<
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    K extends keyof equipment.Props = keyof equipment.Props,
+  > = $Osdk.Instance<equipment, OPTIONS, K>;
+
+  /** @deprecated use OsdkInstance */
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof equipment.Props = keyof equipment.Props,
-  > = $Osdk<equipment, K | OPTIONS>;
+  > = OsdkInstance<OPTIONS, K>;
 }
 
 export interface equipment extends $ObjectTypeDefinition {

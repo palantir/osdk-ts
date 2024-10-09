@@ -48,17 +48,21 @@ describe("Load Ontologies Metadata", () => {
 
     expect(ontologyDefinitions.value).toMatchInlineSnapshot(`
       {
-        "actionTypes": {},
-        "interfaceTypes": {},
-        "objectTypes": {},
-        "ontology": {
-          "apiName": "default-ontology",
-          "description": "The default ontology",
-          "displayName": "Ontology",
-          "rid": "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+        "externalInterfaces": Map {},
+        "externalObjects": Map {},
+        "filteredFullMetadata": {
+          "actionTypes": {},
+          "interfaceTypes": {},
+          "objectTypes": {},
+          "ontology": {
+            "apiName": "default-ontology",
+            "description": "The default ontology",
+            "displayName": "Ontology",
+            "rid": "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+          },
+          "queryTypes": {},
+          "sharedPropertyTypes": {},
         },
-        "queryTypes": {},
-        "sharedPropertyTypes": {},
       }
     `);
   });
@@ -72,7 +76,7 @@ describe("Load Ontologies Metadata", () => {
       .getWireOntologyDefinition(
         "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
         {
-          objectTypesApiNamesToLoad: ["objectDoesNotExist", "employee"],
+          objectTypesApiNamesToLoad: ["objectDoesNotExist", "Employee"],
           actionTypesApiNamesToLoad: ["action-does-not-exit"],
           linkTypesApiNamesToLoad: ["employee.doesNotExist"],
           queryTypesApiNamesToLoad: ["queryDoesNotExist"],
@@ -85,10 +89,9 @@ describe("Load Ontologies Metadata", () => {
 
     expect(ontologyDefinitions.error).toMatchInlineSnapshot(`
       [
-        "Unable to find link type doesnotexist for Object Type employee",
-        "Unable to find the following Object Types: objectdoesnotexist",
-        "Unable to find the following Query Types: querydoesnotexist",
-        "Unable to find the following Action Types: actiondoesnotexit",
+        "Unable to find the following Object Types: objectDoesNotExist",
+        "Unable to find the following Query Types: queryDoesNotExist",
+        "Unable to find the following Action Types: actionDoesNotExit",
       ]
     `);
   });
@@ -140,9 +143,11 @@ describe("Load Ontologies Metadata", () => {
     if (ontologyDefinitions.isErr()) {
       throw new Error();
     }
-    expect(Object.keys(ontologyDefinitions.value.objectTypes)).toHaveLength(0);
-    expect(Object.keys(ontologyDefinitions.value.actionTypes)).toHaveLength(0);
-    expect(Object.keys(ontologyDefinitions.value.queryTypes)).toHaveLength(0);
+
+    const fullMetadata = ontologyDefinitions.value.filteredFullMetadata;
+    expect(Object.keys(fullMetadata.objectTypes)).toHaveLength(0);
+    expect(Object.keys(fullMetadata.actionTypes)).toHaveLength(0);
+    expect(Object.keys(fullMetadata.queryTypes)).toHaveLength(0);
   });
 
   it("Loads object and action types without link types", async () => {
@@ -154,19 +159,22 @@ describe("Load Ontologies Metadata", () => {
       .getWireOntologyDefinition(
         "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
         {
-          objectTypesApiNamesToLoad: ["employee"],
+          objectTypesApiNamesToLoad: ["Employee"],
           actionTypesApiNamesToLoad: ["promote-employee"],
         },
       );
 
     if (ontologyDefinitions.isErr()) {
+      console.error(ontologyDefinitions.error);
       throw new Error();
     }
 
-    expect(Object.keys(ontologyDefinitions.value.objectTypes)).toHaveLength(1);
-    expect(ontologyDefinitions.value.objectTypes.Employee.linkTypes)
+    const fullMetadata = ontologyDefinitions.value.filteredFullMetadata;
+
+    expect(Object.keys(fullMetadata.objectTypes)).toHaveLength(1);
+    expect(fullMetadata.objectTypes.Employee.linkTypes)
       .toHaveLength(0);
-    expect(Object.keys(ontologyDefinitions.value.actionTypes)).toHaveLength(1);
+    expect(Object.keys(fullMetadata.actionTypes)).toHaveLength(1);
     expect(ontologyDefinitions.value).toMatchSnapshot();
   });
 
@@ -189,13 +197,12 @@ describe("Load Ontologies Metadata", () => {
       throw new Error(ontologyDefinitions.error.join("\n"));
     }
 
-    expect(Object.keys(ontologyDefinitions.value.objectTypes)).toHaveLength(2);
-    expect(ontologyDefinitions.value.objectTypes.Employee.linkTypes)
-      .toHaveLength(2);
-    expect(ontologyDefinitions.value.objectTypes.Office.linkTypes).toHaveLength(
-      0,
-    );
-    expect(Object.keys(ontologyDefinitions.value.actionTypes)).toHaveLength(1);
+    const fullMetadata = ontologyDefinitions.value.filteredFullMetadata;
+
+    expect(Object.keys(fullMetadata.objectTypes)).toHaveLength(2);
+    expect(fullMetadata.objectTypes.Employee.linkTypes).toHaveLength(2);
+    expect(fullMetadata.objectTypes.Office.linkTypes).toHaveLength(0);
+    expect(Object.keys(fullMetadata.actionTypes)).toHaveLength(1);
     expect(ontologyDefinitions.value).toMatchSnapshot();
   });
 });

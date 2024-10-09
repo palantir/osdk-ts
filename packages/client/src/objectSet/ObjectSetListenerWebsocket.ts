@@ -14,47 +14,30 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
+import type {
+  ObjectOrInterfaceDefinition,
+  Osdk,
+  PropertyKeys,
+} from "@osdk/api";
 import type {
   __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
   EXPERIMENTAL_ObjectSetListener as ObjectSetListener,
 } from "@osdk/api/unstable";
-import type { LoadAllOntologiesResponse } from "@osdk/client.unstable";
-import {
-  bulkLoadOntologyEntities,
-  createTemporaryObjectSet,
-  loadAllOntologies,
-} from "@osdk/client.unstable";
 import type {
-  FoundryObject,
-  Message,
-  Message_objectSetChanged,
-  ObjectSetSubscribeRequest,
-  ObjectSetSubscribeRequests,
+  ObjectSet,
+  ObjectSetStreamSubscribeRequest,
+  ObjectSetStreamSubscribeRequests,
   ObjectSetSubscribeResponses,
-  ObjectUpdate_object,
+  ObjectSetUpdates,
   RefreshObjectSet,
   StreamMessage,
-  StreamMessage_objectSetChanged,
   SubscriptionClosed,
-} from "@osdk/client.unstable.osw";
-import { batchEnableWatcher } from "@osdk/client.unstable.osw";
-import {
-  type ObjectSet,
-  type OntologyObjectV2,
 } from "@osdk/internal.foundry.core";
-import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
-import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
-import { metadataCacheClient } from "../__unstable/ConjureSupport.js";
 import type { Logger } from "../Logger.js";
 import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
-import {
-  getObjectSetBaseType,
-  toConjureObjectSet,
-} from "./toConjureObjectSet.js";
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const MINIMUM_RECONNECT_DELAY_MS = 5 * 1000;
@@ -65,19 +48,29 @@ function doNothing() {}
 /**
  * Converts an ObjectSetListener to one where all the functions are defined.
  */
-function fillOutListener<Q extends ObjectOrInterfaceDefinition>(
-  { onChange = doNothing, onError = doNothing, onOutOfDate = doNothing }:
-    ObjectSetListener<Q>,
-): Required<ObjectSetListener<Q>> {
+function fillOutListener<
+  Q extends ObjectOrInterfaceDefinition,
+  P extends PropertyKeys<Q>,
+>(
+  {
+    onChange = doNothing,
+    onError = doNothing,
+    onOutOfDate = doNothing,
+  }: ObjectSetListener<Q, P>,
+): Required<ObjectSetListener<Q, P>> {
   return { onChange, onError, onOutOfDate };
 }
 
-interface Subscription<Q extends ObjectOrInterfaceDefinition> {
-  temporaryObjectSetId?: string;
-  listener: Required<ObjectSetListener<Q>>;
+interface Subscription<
+  Q extends ObjectOrInterfaceDefinition,
+  P extends PropertyKeys<Q>,
+> {
+  listener: Required<ObjectSetListener<Q, P>>;
   objectSet: ObjectSet;
+  requestedProperties: Array<PropertyKeys<Q>>;
   expiry?: ReturnType<typeof setTimeout>;
   subscriptionId: string;
+  isReady?: boolean;
   status:
     | "preparing"
     | "subscribed"
@@ -87,13 +80,16 @@ interface Subscription<Q extends ObjectOrInterfaceDefinition> {
     | "reconnecting";
 }
 
-function isReady<Q extends ObjectOrInterfaceDefinition>(
-  sub: Subscription<Q>,
-): sub is Subscription<Q> & { temporaryObjectSetId: string } {
-  return sub.temporaryObjectSetId != null;
+function isReady<
+  Q extends ObjectOrInterfaceDefinition,
+  P extends PropertyKeys<Q>,
+>(
+  sub: Subscription<Q, P>,
+): sub is Subscription<Q, P> & { temporaryObjectSetId: string } {
+  return sub.isReady != null;
 }
 
-function subscriptionIsDone(sub: Subscription<any>) {
+function subscriptionIsDone(sub: Subscription<any, any>) {
   return sub.status === "done" || sub.status === "error";
 }
 
@@ -132,7 +128,7 @@ export class ObjectSetListenerWebsocket {
    */
   #pendingSubscriptions = new Map<
     string,
-    Subscription<any>[]
+    Subscription<any, any>[]
   >();
 
   /**
@@ -141,13 +137,8 @@ export class ObjectSetListenerWebsocket {
    */
   #subscriptions = new Map<
     string,
-    Subscription<any>
+    Subscription<any, any>
   >();
-
-  #oswContext: ConjureContext;
-  #metadataContext: ConjureContext;
-  #ossContext: ConjureContext;
-
   #maybeDisconnectTimeout: ReturnType<typeof setTimeout> | undefined;
 
   // DO NOT CONSTRUCT DIRECTLY. ONLY EXPOSED AS A TESTING SEAM
@@ -169,35 +160,25 @@ export class ObjectSetListenerWebsocket {
         || client.baseUrl.startsWith("http://"),
       "Stack must be a URL",
     );
-
-    this.#oswContext = {
-      baseUrl: client.baseUrl,
-      servicePath: "/object-set-watcher/api",
-      fetchFn: client.fetch,
-      tokenProvider: async () => await client.tokenProvider(),
-    };
-    this.#ossContext = {
-      ...this.#oswContext,
-      servicePath: "/object-set-service/api",
-    };
-    this.#metadataContext = {
-      ...this.#oswContext,
-      servicePath: "/ontology-metadata/api",
-    };
   }
 
-  async subscribe<Q extends ObjectOrInterfaceDefinition>(
+  async subscribe<
+    Q extends ObjectOrInterfaceDefinition,
+    P extends PropertyKeys<Q>,
+  >(
     objectSet: ObjectSet,
-    listener: ObjectSetListener<Q>,
+    listener: ObjectSetListener<Q, P>,
+    properties: Array<P>,
   ): Promise<() => void> {
     if (process.env.TARGET !== "browser") {
       // Node 18 does not expose 'crypto' on globalThis, so we need to do it ourselves. This
       // will not be needed after our minimum version is 19 or greater.
       globalThis.crypto ??= (await import("node:crypto")).webcrypto as any;
     }
-    const sub: Subscription<Q> = {
-      listener: fillOutListener<Q>(listener),
+    const sub: Subscription<Q, P> = {
+      listener: fillOutListener<Q, P>(listener),
       objectSet,
+      requestedProperties: properties,
       status: "preparing",
 
       // Since we don't have a real subscription id yet but we need to keep
@@ -224,7 +205,7 @@ export class ObjectSetListenerWebsocket {
    *
    * @returns
    */
-  async #initiateSubscribe(sub: Subscription<any>) {
+  async #initiateSubscribe(sub: Subscription<any, any>) {
     if (process?.env?.NODE_ENV !== "production") {
       this.#logger?.trace("#initiateSubscribe()");
     }
@@ -238,41 +219,21 @@ export class ObjectSetListenerWebsocket {
     const ontologyRid = await this.#client.ontologyRid;
 
     try {
-      const [temporaryObjectSet] = await Promise.all([
-        // create a time-bounded object set representation for watching
-        this.#createTemporaryObjectSet(sub.objectSet),
-
-        this.#ensureWebsocket(),
-
-        // look up the object type's rid and ensure that we have enabled object set watcher for that rid
-        // TODO ???
-        getObjectSetBaseType(sub.objectSet).then(baseType =>
-          OntologiesV2.ObjectTypesV2.get(
-            this.#client,
-            ontologyRid,
-            baseType,
-          )
-        ).then(
-          objectType => this.#enableObjectSetsWatcher([objectType.rid]),
-        ),
-      ]);
+      await this.#ensureWebsocket();
 
       // the consumer may have already unsubscribed before we are ready to request a subscription
       // so we have to acquire the pendingSubscription after the await.
       if (subscriptionIsDone(sub)) {
         return;
       }
-
-      // Use new temporary object set id
-      sub.temporaryObjectSetId = temporaryObjectSet.objectSetRid;
-
+      sub.isReady = true;
       // if we aren't open, then this happens after we #onConnect
       if (this.#ws?.readyState === WebSocket.OPEN) {
         this.#sendSubscribeMessage();
       }
     } catch (error) {
       this.#logger?.error(error, "Error in #initiateSubscribe");
-      sub.listener.onError(error);
+      sub.listener.onError([error]);
     }
   }
 
@@ -294,7 +255,6 @@ export class ObjectSetListenerWebsocket {
 
       return;
     }
-
     // Assumes the node 18 crypto fallback to globalThis in `subscribe` has happened.
     const id = crypto.randomUUID();
     // responses come back as an array of subIds, so we need to know the sources
@@ -302,16 +262,14 @@ export class ObjectSetListenerWebsocket {
 
     // every subscribe message "overwrites" the previous ones that are not
     // re-included, so we have to reconstitute the entire list of subscriptions
-    const subscribe: ObjectSetSubscribeRequests = {
+    const subscribe: ObjectSetStreamSubscribeRequests = {
       id,
-      requests: readySubs.map<ObjectSetSubscribeRequest>((
-        { temporaryObjectSetId },
+      requests: readySubs.map<ObjectSetStreamSubscribeRequest>((
+        { objectSet, requestedProperties },
       ) => ({
-        objectSet: temporaryObjectSetId!,
-        objectSetContext: {
-          objectSetFilterContext: { parameterOverrides: {} },
-        },
-        watchAllLinks: false,
+        objectSet: objectSet,
+        propertySet: requestedProperties,
+        referenceSet: [],
       })),
     };
 
@@ -321,11 +279,10 @@ export class ObjectSetListenerWebsocket {
         "sending subscribe message",
       );
     }
-
     this.#ws?.send(JSON.stringify(subscribe));
   }
 
-  #expire(sub: Subscription<any>) {
+  #expire(sub: Subscription<any, any>) {
     if (process?.env?.NODE_ENV !== "production") {
       this.#logger?.trace({ subscription: sub }, "#expire()");
     }
@@ -336,7 +293,7 @@ export class ObjectSetListenerWebsocket {
   }
 
   #unsubscribe<Q extends ObjectOrInterfaceDefinition>(
-    sub: Subscription<Q>,
+    sub: Subscription<Q, any>,
     newStatus: "done" | "error" = "done",
   ) {
     if (subscriptionIsDone(sub)) {
@@ -346,7 +303,7 @@ export class ObjectSetListenerWebsocket {
 
     sub.status = newStatus;
     // make sure listeners do nothing now
-    sub.listener = fillOutListener<Q>({});
+    sub.listener = fillOutListener<Q, any>({});
     if (sub.expiry) {
       clearTimeout(sub.expiry);
       sub.expiry = undefined;
@@ -381,8 +338,8 @@ export class ObjectSetListenerWebsocket {
     if (this.#ws == null) {
       const { baseUrl, tokenProvider } = this.#client;
       const base = new URL(baseUrl);
-      // TODO: This should be a different endpoint
-      const url = `wss://${base.host}/object-set-watcher/ws/subscriptions`;
+      const url =
+        `wss://${base.host}/api/v2/ontologySubscriptions/ontologies/${this.#client.ontologyRid}/streamSubscriptions`;
       const token = await tokenProvider();
 
       // tokenProvider is async, there could potentially be a race to create the websocket.
@@ -411,7 +368,6 @@ export class ObjectSetListenerWebsocket {
           this.#ws.addEventListener("open", this.#onOpen);
         }
       }
-
       // Allow await-ing the websocket open event if it isn't open already.
       // This needs to happen even for callers that didn't just create this.#ws
       if (this.#ws.readyState === WebSocket.CONNECTING) {
@@ -444,28 +400,22 @@ export class ObjectSetListenerWebsocket {
   };
 
   #onMessage = async (message: WebSocket.MessageEvent) => {
-    const data = JSON.parse(message.data.toString()) as
-      | StreamMessage
-      | Message;
-
+    const data = JSON.parse(message.data.toString()) as StreamMessage;
     if (process?.env?.NODE_ENV !== "production") {
       this.#logger?.trace({ payload: data }, "received message from ws");
     }
-
     switch (data.type) {
       case "objectSetChanged":
-        return this.#handleMessage_objectSetChanged(data.objectSetChanged);
+        return this.#handleMessage_objectSetChanged(data);
 
       case "refreshObjectSet":
-        return this.#handleMessage_refreshObjectSet(data.refreshObjectSet);
+        return this.#handleMessage_refreshObjectSet(data);
 
       case "subscribeResponses":
-        return this.#handleMessage_subscribeResponses(data.subscribeResponses);
+        return this.#handleMessage_subscribeResponses(data);
 
       case "subscriptionClosed": {
-        const payload = data.subscriptionClosed;
-
-        return this.#handleMessage_subscriptionClosed(payload);
+        return this.#handleMessage_subscriptionClosed(data);
       }
 
       default:
@@ -475,36 +425,38 @@ export class ObjectSetListenerWebsocket {
   };
 
   #handleMessage_objectSetChanged = async (
-    payload:
-      | StreamMessage_objectSetChanged["objectSetChanged"]
-      | Message_objectSetChanged["objectSetChanged"],
+    payload: ObjectSetUpdates,
   ) => {
     const sub = this.#subscriptions.get(payload.id);
     invariant(sub, `Expected subscription id ${payload.id}`);
 
-    if ("confidenceValue" in payload) {
-      sub.listener.onOutOfDate();
-      return;
-    }
-
-    const objects = payload.updates.filter(
-      function(a): a is ObjectUpdate_object {
-        return a.type === "object";
-      },
-    ).map(a => a.object);
-
-    invariant(
-      objects.length === payload.updates.length,
-      "currently only support full updates not reference updates",
+    const objectUpdates = payload.updates.filter((update) =>
+      update.type === "object"
+    );
+    const referenceUpdates = payload.updates.filter((update) =>
+      update.type === "reference"
     );
 
-    sub.listener.onChange(
-      await convertFoundryToOsdkObjects(
+    const osdkObjects = await Promise.all(objectUpdates.map(async (o) => {
+      const osdkObjectArray = await convertWireToOsdkObjects(
         this.#client,
-        this.#metadataContext,
-        objects,
-      ) as Array<Osdk<any>>,
-    );
+        [o.object],
+        undefined,
+      ) as Array<Osdk.Instance<any, never, any>>;
+      const singleOsdkObject = osdkObjectArray[0] ?? undefined;
+      return singleOsdkObject != null
+        ? {
+          object: singleOsdkObject,
+          state: o.state,
+        }
+        : undefined;
+    }));
+
+    for (const osdkObject of osdkObjects) {
+      if (osdkObject != null) {
+        return sub.listener.onChange?.(osdkObject);
+      }
+    }
   };
 
   #handleMessage_refreshObjectSet = (payload: RefreshObjectSet) => {
@@ -527,7 +479,7 @@ export class ObjectSetListenerWebsocket {
       const response = responses[i];
       switch (response.type) {
         case "error":
-          sub.listener.onError(response.error);
+          sub.listener.onError(response.errors);
           this.#unsubscribe(sub, "error");
           break;
 
@@ -538,7 +490,6 @@ export class ObjectSetListenerWebsocket {
 
         case "success":
           // `"preparing"` should only be the status on an initial subscribe.
-
           const shouldFireOutOfDate = sub.status === "expired"
             || sub.status === "reconnecting";
 
@@ -547,10 +498,10 @@ export class ObjectSetListenerWebsocket {
           }
 
           sub.status = "subscribed";
-          if (sub.subscriptionId !== response.success.id) {
+          if (sub.subscriptionId !== response.id) {
             // might be the temporary one
             this.#subscriptions.delete(sub.subscriptionId);
-            sub.subscriptionId = response.success.id;
+            sub.subscriptionId = response.id;
             this.#subscriptions.set(sub.subscriptionId, sub); // future messages come by this subId
           }
           if (shouldFireOutOfDate) sub.listener.onOutOfDate();
@@ -566,7 +517,7 @@ export class ObjectSetListenerWebsocket {
   #handleMessage_subscriptionClosed(payload: SubscriptionClosed) {
     const sub = this.#subscriptions.get(payload.id);
     invariant(sub, `Expected subscription id ${payload.id}`);
-    sub.listener.onError(payload.error);
+    sub.listener.onError([payload.cause]);
     this.#unsubscribe(sub, "error");
   }
 
@@ -578,29 +529,12 @@ export class ObjectSetListenerWebsocket {
     this.#cycleWebsocket();
   };
 
+  // TODO: Validate if this is needed
   async #enableObjectSetsWatcher(objectTypeRids: string[]) {
-    return batchEnableWatcher(this.#oswContext, {
-      requests: objectTypeRids,
-    });
-  }
-
-  async #createTemporaryObjectSet(
-    objectSet: ObjectSet,
-  ) {
-    const objectSetBaseType = await getObjectSetBaseType(objectSet);
-    const mcc = await metadataCacheClient(this.#client);
-    const objectInfo = await mcc.forObjectByApiName(objectSetBaseType);
-    const propMapping = await objectInfo.getPropertyMapping();
-
-    const temporaryObjectSet = await createTemporaryObjectSet(
-      this.#ossContext,
-      {
-        objectSet: toConjureObjectSet(objectSet, propMapping!),
-        timeToLive: "ONE_DAY", // MUST keep in sync with the value for expiry in `#initiateSubscribe`.
-        objectSetFilterContext: { parameterOverrides: {} },
-      },
-    );
-    return { objectSetRid: temporaryObjectSet.objectSetRid };
+    // return batchEnableWatcher(this.#oswContext, {
+    //   requests: objectTypeRids,
+    // });
+    return;
   }
 
   #cycleWebsocket = () => {
@@ -636,175 +570,4 @@ export class ObjectSetListenerWebsocket {
       this.#ensureWebsocket();
     }
   };
-}
-
-async function convertFoundryToOsdkObjects(
-  client: MinimalClient,
-  ctx: ConjureContext,
-  objects: ReadonlyArray<FoundryObject>,
-): Promise<Array<Osdk<any>>> {
-  const osdkObjects: OntologyObjectV2[] = await Promise.all(
-    objects.map(async object => {
-      const propertyMapping = await (await (await metadataCacheClient(client))
-        .forObjectByRid(object.type))
-        .getPropertyMapping();
-
-      const convertedObject: OntologyObjectV2 = Object.fromEntries([
-        ...Object.entries(object.properties).map(([key, value]) => {
-          return [propertyMapping?.propertyIdToApiNameMapping[key], value];
-        }),
-        [
-          propertyMapping
-            ?.propertyIdToApiNameMapping[Object.entries(object.key)[0][0]],
-          Object.entries(object.key)[0][1],
-        ],
-        [
-          "__apiName",
-          propertyMapping?.apiName,
-        ],
-        [
-          "$apiName",
-          propertyMapping?.apiName,
-        ],
-      ]);
-      return convertedObject;
-    }),
-  );
-
-  // doesn't care about interfaces
-  return await convertWireToOsdkObjects(client, osdkObjects, undefined) as Osdk<
-    any
-  >[];
-}
-
-export type ObjectPropertyMapping = {
-  apiName: string;
-  id: string;
-  propertyIdToApiNameMapping: Record<string, string>;
-  propertyApiNameToIdMapping: Record<string, string>;
-};
-
-// Mapping of ObjectRid to Properties
-const objectTypeMapping = new WeakMap<
-  ConjureContext,
-  Map<string, ObjectPropertyMapping>
->();
-
-const objectApiNameToRid = new Map<string, string>();
-
-async function getOntologyPropertyMappingForApiName(
-  client: MinimalClient,
-  ctx: ConjureContext,
-  objectApiName: string,
-) {
-  if (objectApiNameToRid.has(objectApiName)) {
-    return objectTypeMapping.get(ctx)?.get(
-      objectApiNameToRid.get(objectApiName)!,
-    );
-  }
-
-  const ontologyRid = await client.ontologyRid;
-
-  const wireObjectType = await OntologiesV2.ObjectTypesV2
-    .get(
-      client,
-      ontologyRid,
-      objectApiName,
-    );
-
-  return getOntologyPropertyMappingForRid(
-    ctx,
-    ontologyRid,
-    wireObjectType.rid,
-  );
-}
-
-let cachedAllOntologies: LoadAllOntologiesResponse | undefined;
-async function getOntologyVersionForRid(
-  ctx: ConjureContext,
-  ontologyRid: string,
-) {
-  cachedAllOntologies ??= await loadAllOntologies(ctx, {});
-  invariant(
-    cachedAllOntologies.ontologies[ontologyRid],
-    "ontology should be loaded",
-  );
-
-  return cachedAllOntologies.ontologies[ontologyRid].currentOntologyVersion;
-}
-
-async function getOntologyPropertyMappingForRid(
-  ctx: ConjureContext,
-  ontologyRid: string,
-  objectRid: string,
-) {
-  if (!objectTypeMapping.has(ctx)) {
-    objectTypeMapping.set(ctx, new Map());
-  }
-
-  if (
-    !objectTypeMapping.get(ctx)!.has(objectRid)
-  ) {
-    const ontologyVersion = await getOntologyVersionForRid(ctx, ontologyRid);
-
-    const body = {
-      datasourceTypes: [],
-      objectTypes: [{
-        identifier: {
-          type: "objectTypeRid" as const,
-          objectTypeRid: objectRid,
-        },
-        versionReference: {
-          type: "ontologyVersion" as const,
-          ontologyVersion: ontologyVersion,
-        },
-      }],
-      linkTypes: [],
-      sharedPropertyTypes: [],
-      interfaceTypes: [],
-      typeGroups: [],
-      loadRedacted: false,
-      includeObjectTypeCount: undefined,
-      includeObjectTypesWithoutSearchableDatasources: true,
-      includeEntityMetadata: undefined,
-    };
-    const entities = await bulkLoadOntologyEntities(ctx, undefined, body);
-
-    invariant(
-      entities.objectTypes[0]?.objectType,
-      "object type should be loaded",
-    );
-
-    const propertyIdToApiNameMapping: Record<string, string> = Object
-      .fromEntries(
-        Object.values(entities.objectTypes[0].objectType.propertyTypes).map(
-          property => {
-            return [property.id, property.apiName!];
-          },
-        ),
-      );
-
-    const propertyApiNameToIdMapping: Record<string, string> = Object
-      .fromEntries(
-        Object.values(entities.objectTypes[0].objectType.propertyTypes).map(
-          property => {
-            return [property.apiName!, property.id];
-          },
-        ),
-      );
-
-    objectTypeMapping.get(ctx)?.set(objectRid, {
-      apiName: entities.objectTypes[0].objectType.apiName!,
-      id: entities.objectTypes[0].objectType.id,
-      propertyIdToApiNameMapping,
-      propertyApiNameToIdMapping,
-    });
-
-    objectApiNameToRid.set(
-      entities.objectTypes[0].objectType.apiName!,
-      objectRid,
-    );
-  }
-
-  return objectTypeMapping.get(ctx)?.get(objectRid);
 }

@@ -1,4 +1,4 @@
-export * from './objects/Employee';
-export * from './objects/equipment';
-export * from './objects/Office';
-export * from './objects/Todo';
+export { Employee } from './objects/Employee';
+export { equipment } from './objects/equipment';
+export { Office } from './objects/Office';
+export { Todo } from './objects/Todo';

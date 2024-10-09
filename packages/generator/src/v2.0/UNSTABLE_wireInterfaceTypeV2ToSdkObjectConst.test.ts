@@ -20,7 +20,9 @@ import type {
 } from "@osdk/internal.foundry.core";
 import { format } from "prettier";
 import { describe, expect, it } from "vitest";
+import { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
+import { ForeignType } from "../GenerateContext/ForeignType.js";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "./UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst.js";
 
@@ -86,14 +88,21 @@ function simpleOntology<I extends InterfaceType>(
 
 describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
   it("Does not say (inherited) on properties locally defined", async () => {
-    const ontology = enhanceOntology(
-      simpleOntology("ontology", [
+    const ontology = enhanceOntology({
+      sanitized: simpleOntology("ontology", [
         simpleInterface("Bar", [simpleSpt("bar", 0)], [], 0),
       ]),
-      undefined,
-      new Map(),
-      "",
+      importExt: "",
+    });
+
+    expect(ontology.interfaceTypes.Bar instanceof EnhancedInterfaceType).toBe(
+      true,
     );
+
+    // type guard for below
+    if (ontology.interfaceTypes.Bar instanceof ForeignType) {
+      throw new Error("Expected Bar to be an EnhancedInterfaceType");
+    }
 
     const formattedCode = await format(
       __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
@@ -128,10 +137,16 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
 
         export interface ObjectSet extends $ObjectSet<Bar, Bar.ObjectSet> {}
 
+        export type OsdkInstance<
+          OPTIONS extends never | "$notStrict" | "$rid" = never,
+          K extends keyof Bar.Props = keyof Bar.Props,
+        > = $Osdk.Instance<Bar, OPTIONS, K>;
+
+        /** @deprecated use OsdkInstance */
         export type OsdkObject<
           OPTIONS extends never | "$notStrict" | "$rid" = never,
           K extends keyof Bar.Props = keyof Bar.Props,
-        > = $Osdk<Bar, K | OPTIONS>;
+        > = OsdkInstance<OPTIONS, K>;
       }
 
       export interface Bar extends $InterfaceDefinition {
@@ -172,18 +187,19 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     const barSpt = simpleSpt("bar");
 
     const ontology = enhanceOntology(
-      simpleOntology("ontology", [
-        simpleInterface("Foo", [fooSpt], ["Parent"]),
-        simpleInterface("Parent", [barSpt], []),
-      ]),
-      undefined,
-      new Map(),
-      "",
+      {
+        sanitized: simpleOntology("ontology", [
+          simpleInterface("Foo", [fooSpt], ["Parent"]),
+          simpleInterface("Parent", [barSpt], []),
+        ]),
+
+        importExt: "",
+      },
     );
 
     const formattedCode = await format(
       __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
-        ontology.interfaceTypes.Foo,
+        ontology.interfaceTypes.Foo as EnhancedInterfaceType,
         ontology,
         true,
       ),
@@ -213,10 +229,16 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
 
         export interface ObjectSet extends $ObjectSet<Foo, Foo.ObjectSet> {}
 
+        export type OsdkInstance<
+          OPTIONS extends never | "$notStrict" | "$rid" = never,
+          K extends keyof Foo.Props = keyof Foo.Props,
+        > = $Osdk.Instance<Foo, OPTIONS, K>;
+
+        /** @deprecated use OsdkInstance */
         export type OsdkObject<
           OPTIONS extends never | "$notStrict" | "$rid" = never,
           K extends keyof Foo.Props = keyof Foo.Props,
-        > = $Osdk<Foo, K | OPTIONS>;
+        > = OsdkInstance<OPTIONS, K>;
       }
 
       export interface Foo extends $InterfaceDefinition {
@@ -259,18 +281,18 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     const barSpt = simpleSpt("bar");
 
     const ontology = enhanceOntology(
-      simpleOntology("ontology", [
-        simpleInterface("Foo", [fooSpt, barSpt], ["Parent"]),
-        simpleInterface("Parent", [barSpt], []),
-      ]),
-      undefined,
-      new Map(),
-      "",
+      {
+        sanitized: simpleOntology("ontology", [
+          simpleInterface("Foo", [fooSpt, barSpt], ["Parent"]),
+          simpleInterface("Parent", [barSpt], []),
+        ]),
+        importExt: "",
+      },
     );
 
     const formattedCode = await format(
       __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
-        ontology.interfaceTypes.Foo,
+        ontology.interfaceTypes.Foo as EnhancedInterfaceType,
         ontology,
         true,
       ),
@@ -302,10 +324,16 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
 
         export interface ObjectSet extends $ObjectSet<Foo, Foo.ObjectSet> {}
 
+        export type OsdkInstance<
+          OPTIONS extends never | "$notStrict" | "$rid" = never,
+          K extends keyof Foo.Props = keyof Foo.Props,
+        > = $Osdk.Instance<Foo, OPTIONS, K>;
+
+        /** @deprecated use OsdkInstance */
         export type OsdkObject<
           OPTIONS extends never | "$notStrict" | "$rid" = never,
           K extends keyof Foo.Props = keyof Foo.Props,
-        > = $Osdk<Foo, K | OPTIONS>;
+        > = OsdkInstance<OPTIONS, K>;
       }
 
       export interface Foo extends $InterfaceDefinition {

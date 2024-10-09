@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 2.1.0-beta.0
+
+### Minor Changes
+
+- 0dc40b0: Switch to OSDK.Instance
+- 03e1941: Add support for null filter on geo properties.
+- e548b9b: Updates subscribe to return object updates
+
 ## 2.0.0
 
 ### Major Changes

@@ -20,28 +20,25 @@ import { AbstractImportable } from "./EnhancedBase.js";
 export class ForeignType extends AbstractImportable {
   constructor(
     public _common: EnhanceCommon,
-    public readonly type: string,
-    apiNamespace: string,
+    apiNamespace: string | undefined,
     shortApiName: string,
+    destinationPackage: string,
   ) {
     super(
       _common,
-      `${apiNamespace}.${shortApiName}`,
-      _common.apiNamespacePackageMap.get(apiNamespace)!,
+      apiNamespace ? `${apiNamespace}.${shortApiName}` : shortApiName,
+      destinationPackage,
+      false,
     );
   }
 
   getImportedDefinitionIdentifier(v2: boolean) {
-    return `$Imported$${this.type}$${
-      this.apiNamespace!.replace(/\./g, "$")
+    return `$Imported$${
+      this.apiNamespace?.replace(/\./g, "$")
     }$${this.shortApiName}`;
   }
 
   getDefinitionIdentifier(v2: boolean) {
-    if (this.type === "objectTypes") {
-      return v2 ? this.uniqueImportName : `${this.uniqueImportName}Def`;
-    } else {
-      return this.uniqueImportName;
-    }
+    return this.uniqueImportName;
   }
 }

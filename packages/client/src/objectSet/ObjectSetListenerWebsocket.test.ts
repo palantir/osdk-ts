@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type { ObjectOrInterfaceDefinition, PropertyKeys } from "@osdk/api";
 import type { EXPERIMENTAL_ObjectSetListener as ObjectSetListener } from "@osdk/api/unstable";
 import { $ontologyRid, Employee, Office } from "@osdk/client.test.ontology";
 import type {
-  ObjectSetSubscribeRequests,
-  StreamMessage_subscribeResponses,
-} from "@osdk/client.unstable.osw";
+  ObjectSetStreamSubscribeRequests,
+  StreamMessage,
+} from "@osdk/internal.foundry.core";
 import { apiServer } from "@osdk/shared.test";
 import ImportedWebSocket from "isomorphic-ws";
 import { http, HttpResponse } from "msw";
@@ -39,7 +39,6 @@ import { z } from "zod";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { Logger } from "../Logger.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { conjureUnionType } from "./conjureUnionType.js";
 import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
 // it needs to be hoisted because its referenced from our mocked WebSocket
@@ -105,7 +104,9 @@ describe("ObjectSetListenerWebsocket", async () => {
 
     let client: ObjectSetListenerWebsocket;
     let listener: MockedObject<
-      Required<ObjectSetListener<ObjectOrInterfaceDefinition>>
+      Required<
+        ObjectSetListener<ObjectOrInterfaceDefinition, PropertyKeys<any>>
+      >
     >;
     let oslwInst = 0;
 
@@ -134,17 +135,11 @@ describe("ObjectSetListenerWebsocket", async () => {
       let objectSetRidCounter = 0;
       apiServer.use(
         http.post(
-          `${STACK}/object-set-service/api/objectSets/temporary`,
+          `${STACK}api/v2/ontologySubscriptions/ontologies/${$ontologyRid}/streamSubscriptions`,
           () =>
             HttpResponse.json({
               objectSetRid: `rid.hi.${objectSetRidCounter++}`,
             }),
-        ),
-        http.post(
-          `${STACK}/object-set-watcher/api/object-set-watcher/batchEnableWatcher`,
-          async () => {
-            return HttpResponse.json({});
-          },
         ),
       );
 
@@ -166,7 +161,7 @@ describe("ObjectSetListenerWebsocket", async () => {
     describe("requests subscription", () => {
       let ws: MockedWebSocket;
       let unsubscribe: () => void;
-      let subReq1: ObjectSetSubscribeRequests;
+      let subReq1: ObjectSetStreamSubscribeRequests;
 
       beforeEach(async () => {
         [ws, unsubscribe] = await subscribeAndExpectWebSocket(
@@ -236,13 +231,17 @@ describe("ObjectSetListenerWebsocket", async () => {
 
         describe("additional subscription", async () => {
           let unsubscribe2: () => void;
-          let subReq2: ObjectSetSubscribeRequests;
+          let subReq2: ObjectSetStreamSubscribeRequests;
           beforeEach(async () => {
             [unsubscribe2, subReq2] = await Promise.all([
-              client.subscribe({
-                type: "base",
-                objectType: Office.apiName,
-              }, listener),
+              client.subscribe(
+                {
+                  type: "base",
+                  objectType: Office.apiName,
+                },
+                listener,
+                ["employeeStatus"],
+              ),
 
               expectSingleSubscribeMessage(ws),
             ]);
@@ -326,21 +325,25 @@ interface MockedWebSocket
 }
 
 type MockedListener = MockedObject<
-  Required<ObjectSetListener<ObjectOrInterfaceDefinition>>
+  Required<
+    ObjectSetListener<ObjectOrInterfaceDefinition, PropertyKeys<any>>
+  >
 >;
 
 function respondSuccessToSubscribe(
   ws: MockedWebSocket,
-  subReq2: ObjectSetSubscribeRequests,
+  subReq2: ObjectSetStreamSubscribeRequests,
 ) {
-  sendToClient<StreamMessage_subscribeResponses>(
+  sendToClient<StreamMessage>(
     ws,
-    conjureUnionType("subscribeResponses", {
+    {
       id: subReq2.id,
-      responses: subReq2.requests.map((_, i) =>
-        conjureUnionType("success", { id: `id-${i}` })
-      ),
-    }),
+      type: "subscribeResponses",
+      responses: [{
+        type: "success",
+        id: "subId",
+      }],
+    },
   );
 }
 
@@ -352,10 +355,8 @@ function expectEqualRemoveAndAddListeners(ws: MockedWebSocket) {
 
 async function expectSingleSubscribeMessage(
   ws: MockedWebSocket,
-): Promise<ObjectSetSubscribeRequests> {
-  return SubscribeMessage.parse(
-    await consumeSingleSend(ws),
-  ) as ObjectSetSubscribeRequests;
+): Promise<ObjectSetStreamSubscribeRequests> {
+  return await consumeSingleSend(ws);
 }
 
 async function subscribeAndExpectWebSocket(
@@ -364,10 +365,14 @@ async function subscribeAndExpectWebSocket(
 ): Promise<readonly [MockedWebSocket, () => void]> {
   const [ws, unsubscribe] = await Promise.all([
     expectWebSocketConstructed(),
-    client.subscribe({
-      type: "base",
-      objectType: Employee.apiName,
-    }, listener),
+    client.subscribe(
+      {
+        type: "base",
+        objectType: Employee.apiName,
+      },
+      listener,
+      ["employeeStatus"],
+    ),
   ]);
 
   // otherwise the ObjectSetListenerWebSocket is sitting waiting for it to "connect"
@@ -477,9 +482,9 @@ function addLoggerToApiServer(logger: Logger) {
 const SubscribeMessage = z.object({
   id: z.string(),
   requests: z.array(z.object({
-    objectSet: z.string(),
-    objectSetContext: z.any(),
-    watchAllLinks: z.boolean(),
+    objectSet: z.object({ id: z.string() }),
+    propertySet: z.array(z.string()),
+    referenceSet: z.array(z.string()),
   })),
 });
 

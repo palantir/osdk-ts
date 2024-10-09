@@ -1,5 +1,28 @@
 # @osdk/client
 
+## 2.1.0-beta.0
+
+### Minor Changes
+
+- 0dc40b0: Switch to OSDK.Instance
+- d927a1d: Throws error in createClient when passed an invalid ontology RID
+- d464009: improves interface api name mapping with api namespaces
+- 8eb2378: Fixes where clauses when objects have an api namespace
+- e548b9b: Updates subscribe to return object updates
+- 5e78575: Fix queries that have response types with nested values, like arrays.
+- 9af346e: Fixing proxy handlers.
+- c682504: Locks dependency version of 3 internal libraries
+
+### Patch Changes
+
+- Updated dependencies [0dc40b0]
+- Updated dependencies [03e1941]
+- Updated dependencies [e548b9b]
+- Updated dependencies [c682504]
+  - @osdk/api@2.1.0-beta.0
+  - @osdk/generator-converters@2.1.0-beta.0
+  - @osdk/client.unstable@2.1.0-beta.0
+
 ## 2.0.0
 
 ### Major Changes

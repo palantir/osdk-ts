@@ -29,12 +29,13 @@ describe("generatePerQueryDataFiles", () => {
     await generatePerQueryDataFilesV2(
       {
         fs: helper.minimalFiles,
-        ontology: enhanceOntology(
-          TodoWireOntology,
-          undefined,
-          new Map(),
-          ".js",
-        ),
+        ontology: enhanceOntology({
+          sanitized: TodoWireOntology,
+          importExt: ".js",
+          externalObjects: new Map(),
+          externalInterfaces: new Map(),
+          externalSpts: new Map(),
+        }),
         outDir: BASE_PATH,
         importExt: ".js",
       },
@@ -43,8 +44,8 @@ describe("generatePerQueryDataFiles", () => {
 
     expect(helper.getFiles()).toMatchInlineSnapshot(`
       {
-        "/foo/ontology/queries.ts": "export * from './queries/getCount.js';
-      export * from './queries/returnsTodo.js';
+        "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
+      export { returnsTodo } from './queries/returnsTodo.js';
       ",
         "/foo/ontology/queries/getCount.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
       import type { QueryParam, QueryResult } from '@osdk/api';
