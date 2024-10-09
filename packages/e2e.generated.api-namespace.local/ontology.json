@@ -34,8 +34,52 @@
       ]
     }
   },
-  "interfaceTypes": {},
+  "interfaceTypes": {
+    "com.example.local.SomeInterface": {
+      "apiName": "com.example.local.SomeInterface",
+      "rid": "idk2",
+      "displayName": "Sum Interface",
+      "extendsInterfaces": ["com.example.dep.SomeInterface"],
+      "properties": {
+        "com.example.dep.spt": {
+          "apiName": "com.example.dep.spt",
+          "dataType": {
+            "type": "string"
+          },
+          "displayName": "Some Property",
+          "rid": "idk"
+        }
+      }
+    }
+  },
   "objectTypes": {
+    "com.example.dep.Task": {
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {},
+      "objectType": {
+        "apiName": "com.example.dep.Task",
+        "primaryKey": "taskId",
+
+        "titleProperty": "taskId",
+
+        "properties": {
+          "taskId": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "body": {
+            "dataType": {
+              "type": "string"
+            }
+          }
+        },
+        "status": "ACTIVE",
+        "rid": "ridForTask"
+      },
+      "linkTypes": []
+    },
     "Thing": {
       "implementsInterfaces": ["com.example.dep.SomeInterface"],
       "implementsInterfaces2": {

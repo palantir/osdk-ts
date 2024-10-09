@@ -50,8 +50,8 @@ async function setup() {
     foundryHostname: "https://stack.palantir.com",
     ontology: "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
     objectTypes: [
-      "employee",
-      "office",
+      "Employee",
+      "Office",
       "objectTypeWithAllPropertyTypes",
       "ObjectWithTimestampPrimaryKey",
       "equipment",

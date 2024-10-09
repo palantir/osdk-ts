@@ -19,6 +19,7 @@ import type { ObjectTypeFullMetadata } from "@osdk/internal.foundry.core";
 import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
+import { ForeignType } from "../GenerateContext/ForeignType.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { getObjectImports } from "../shared/getObjectImports.js";
 import { propertyJsdoc } from "../shared/propertyJsdoc.js";
@@ -42,6 +43,9 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
     wireObject.objectType.apiName,
     true,
   );
+  if (object instanceof ForeignType) {
+    throw new Error("Should not be generating types for an external type");
+  }
   const uniqueLinkTargetTypes = new Set(
     wireObject.linkTypes.map(a =>
       ontology.requireObjectType(a.objectTypeApiName, false)
@@ -75,7 +79,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
     propertyKeysIdentifier,
   };
 
-  function getV2Types() {
+  function getV2Types(object: EnhancedObjectType) {
     return `import type {
       PropertyKeys as $PropertyKeys,  
       ObjectTypeDefinition as $ObjectTypeDefinition,
@@ -118,7 +122,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
     true,
   );
 
-  return `${imports}${getV2Types()}
+  return `${imports}${getV2Types(object)}
 
     export const ${object.shortApiName}: ${objectDefIdentifier}
     = {

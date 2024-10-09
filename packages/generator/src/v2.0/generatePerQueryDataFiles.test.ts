@@ -29,12 +29,13 @@ describe("generatePerQueryDataFiles", () => {
     await generatePerQueryDataFilesV2(
       {
         fs: helper.minimalFiles,
-        ontology: enhanceOntology(
-          TodoWireOntology,
-          undefined,
-          new Map(),
-          ".js",
-        ),
+        ontology: enhanceOntology({
+          sanitized: TodoWireOntology,
+          importExt: ".js",
+          externalObjects: new Map(),
+          externalInterfaces: new Map(),
+          externalSpts: new Map(),
+        }),
         outDir: BASE_PATH,
         importExt: ".js",
       },

@@ -31,7 +31,13 @@ describe(generatePerActionDataFiles, () => {
         sanitizedOntology,
         fs: helper.minimalFiles,
         outDir: BASE_PATH,
-        ontology: enhanceOntology(sanitizedOntology, undefined, new Map(), ""),
+        ontology: enhanceOntology({
+          sanitized: sanitizedOntology,
+          importExt: "",
+          externalObjects: new Map(),
+          externalInterfaces: new Map(),
+          externalSpts: new Map(),
+        }),
       },
     );
     expect(helper.getFiles()[`${BASE_PATH}/ontology/actions.ts`]).toEqual(
@@ -48,7 +54,13 @@ describe(generatePerActionDataFiles, () => {
         sanitizedOntology,
         fs: helper.minimalFiles,
         outDir: path.join(BASE_PATH, "..", ".."),
-        ontology: enhanceOntology(sanitizedOntology, undefined, new Map(), ""),
+        ontology: enhanceOntology({
+          sanitized: sanitizedOntology,
+          importExt: "",
+          externalObjects: new Map(),
+          externalInterfaces: new Map(),
+          externalSpts: new Map(),
+        }),
       },
     );
 

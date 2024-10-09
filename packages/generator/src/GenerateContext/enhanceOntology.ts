@@ -18,15 +18,25 @@ import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import { EnhancedOntologyDefinition } from "./EnhancedOntologyDefinition.js";
 
 export function enhanceOntology(
-  sanitized: WireOntologyDefinition,
-  ontologyApiNamespace: string | undefined,
-  apiNamespacePackageMap: Map<string, string>,
-  importExt: string,
+  {
+    sanitized,
+    importExt,
+    externalObjects,
+    externalInterfaces,
+    externalSpts,
+  }: {
+    sanitized: WireOntologyDefinition;
+    externalObjects?: Map<string, string>;
+    externalInterfaces?: Map<string, string>;
+    externalSpts?: Map<string, string>;
+    importExt: string;
+  },
 ): EnhancedOntologyDefinition {
   return new EnhancedOntologyDefinition(
     sanitized,
-    ontologyApiNamespace,
-    apiNamespacePackageMap,
     importExt,
+    externalObjects,
+    externalInterfaces,
+    externalSpts,
   );
 }
