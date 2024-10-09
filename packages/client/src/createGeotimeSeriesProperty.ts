@@ -28,6 +28,7 @@ import {
   iterateReadableStream,
   parseStreamedResponse,
 } from "./util/streamutils.js";
+import { getTimeRange } from "./util/timeseriesUtils.js";
 
 export class GeotimeSeriesPropertyImpl<T extends GeoJSON.Point>
   implements GeotimeSeriesProperty<T>
@@ -92,31 +93,4 @@ export class GeotimeSeriesPropertyImpl<T extends GeoJSON.Point>
       };
     }
   }
-}
-
-function getTimeRange(body: TimeSeriesQuery): TimeRange {
-  if ("$startTime" in body || "$endTime" in body) {
-    return {
-      type: "absolute",
-      startTime: body.$startTime,
-      endTime: body.$endTime,
-    };
-  }
-  return body.$before
-    ? {
-      type: "relative",
-      startTime: {
-        when: "BEFORE",
-        value: body.$before,
-        unit: TimeseriesDurationMapping[body.$unit],
-      },
-    }
-    : {
-      type: "relative",
-      endTime: {
-        when: "AFTER",
-        value: body.$after!,
-        unit: TimeseriesDurationMapping[body.$unit],
-      },
-    };
 }
