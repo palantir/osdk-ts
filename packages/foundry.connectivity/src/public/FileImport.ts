@@ -26,6 +26,34 @@ import type * as _Connectivity from "../_components.js";
 
 //
 
+const _deleteFileImport: $FoundryPlatformMethod<
+  (
+    fileImportRid: _Connectivity.FileImportRid,
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ) => Promise<void>
+> = [3, "/v2/connectivity/fileImports/{0}", 2];
+
+/**
+ * Delete the FileImport with the specified RID.
+ * Deleting the file import does not delete the destination dataset but the dataset will no longer
+ * be updated by this import.
+ *
+ * @alpha
+ *
+ * Required Scopes: [api:connectivity-file-import-write]
+ * URL: /v2/connectivity/fileImports/{fileImportRid}
+ */
+export function deleteFileImport(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    fileImportRid: _Connectivity.FileImportRid,
+
+    $queryParams?: { preview?: _Core.PreviewMode | undefined },
+  ]
+): Promise<void> {
+  return $foundryPlatformFetch($ctx, _deleteFileImport, ...args);
+}
+
 const _get: $FoundryPlatformMethod<
   (
     fileImportRid: _Connectivity.FileImportRid,

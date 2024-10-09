@@ -19,6 +19,20 @@ export type LooselyBrandedString<T extends string> = string & {
 };
 
 /**
+ * Could not delete the FileImport.
+ *
+ * Log Safety: SAFE
+ */
+export interface DeleteFileImportPermissionDenied {
+  errorCode: "PERMISSION_DENIED";
+  errorName: "DeleteFileImportPermissionDenied";
+  errorInstanceId: string;
+  parameters: {
+    fileImportRid: unknown;
+  };
+}
+
+/**
  * Could not execute the FileImport.
  *
  * Log Safety: SAFE

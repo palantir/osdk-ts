@@ -35,6 +35,48 @@ export type Compressed = boolean;
 /**
  * Log Safety: UNSAFE
  */
+export interface CreateStreamRequest {
+  schema: CreateStreamRequestStreamSchema;
+  partitionsCount?: PartitionsCount;
+  streamType?: StreamType;
+  branchName: _Datasets.BranchName;
+  compressed?: Compressed;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface CreateStreamRequestStreamSchema {
+  keyFieldNames?: Array<_Core.FieldName>;
+  fields: Array<_Core.Field>;
+  changeDataCapture?: _Core.ChangeDataCaptureConfiguration;
+}
+
+/**
+   * Configuration for utilizing the stream as a change data capture (CDC) dataset. To configure CDC on a stream, at
+least one key needs to be provided.
+For more information on CDC in
+Foundry, see the Change Data Capture user documentation.
+   *
+   * Log Safety: UNSAFE
+   */
+export type CreateStreamRequestStreamSchemaChangeDataCaptureConfiguration =
+  & {
+    type: "fullRow";
+  }
+  & CreateStreamRequestStreamSchemaChangeDataCaptureConfigurationFullRowChangeDataCaptureConfiguration;
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface CreateStreamRequestStreamSchemaChangeDataCaptureConfigurationFullRowChangeDataCaptureConfiguration {
+  orderingFieldName: _Core.FieldName;
+  deletionFieldName: _Core.FieldName;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
 export interface CreateStreamingDatasetRequest {
   name: _Datasets.DatasetName;
   parentFolderRid: _Filesystem.FolderRid;
@@ -83,6 +125,16 @@ export interface PublishRecordsToStreamRequest {
  * Log Safety: DO_NOT_LOG
  */
 export type _Record = Record<string, any>;
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface ResetStreamRequest {
+  schema?: _Core.StreamSchema;
+  partitionsCount?: PartitionsCount;
+  streamType?: StreamType;
+  compressed?: Compressed;
+}
 
 /**
  * Log Safety: UNSAFE

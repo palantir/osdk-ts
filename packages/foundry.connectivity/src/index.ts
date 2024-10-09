@@ -27,6 +27,7 @@ export type {
   FileSizeFilter,
 } from "./_components.js";
 export type {
+  DeleteFileImportPermissionDenied,
   ExecuteFileImportPermissionDenied,
   FileImportNotFound,
 } from "./_errors.js";
