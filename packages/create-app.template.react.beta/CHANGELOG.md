@@ -1,5 +1,12 @@
 # @osdk/create-app.template.react
 
+## 0.20.0-beta.0
+
+### Minor Changes
+
+- f99c04d: fix ts2.0 template so it doesn't break on lint task
+- f99c04d: update dev dependencies
+
 ## 0.19.0
 
 ### Minor Changes

@@ -1,5 +1,20 @@
 # @osdk/generator
 
+## 2.1.0-beta.0
+
+### Minor Changes
+
+- 0dc40b0: Switch to OSDK.Instance
+
+### Patch Changes
+
+- Updated dependencies [0dc40b0]
+- Updated dependencies [03e1941]
+- Updated dependencies [e548b9b]
+- Updated dependencies [c682504]
+  - @osdk/api@2.1.0-beta.0
+  - @osdk/generator-converters@2.1.0-beta.0
+
 ## 2.0.0
 
 ### Major Changes
