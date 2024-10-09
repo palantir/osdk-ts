@@ -11,7 +11,8 @@
       "@osdk/client.unstable",
       "@osdk/api"
     ],
-    ["@osdk/create-app", "@osdk/create-app.template.*"]
+    ["@osdk/create-app", "@osdk/create-app.template.*"],
+    ["@osdk/cli", "@osdk/cli.*"]
   ],
   "linked": [],
   "access": "restricted",
