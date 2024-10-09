@@ -34,7 +34,7 @@ export const objectSetHandlers: Array<RequestHandler> = [
    * Load ObjectSet Objects
    */
   handleOpenApiCall(
-    OntologiesV2.OntologyObjectSets.loadObjectSetV2,
+    OntologiesV2.OntologyObjectSets.load,
     ["ontologyApiName"],
     async (req) => {
       const parsedBody = await req.request.json();
