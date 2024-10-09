@@ -23,8 +23,15 @@ function readPackage(pkg, context) {
       ...pkg.dependencies,
       rollup: "^4.22.4",
     };
-    context.log("bar@1 => bar@2 in dependencies of foo");
   }
+
+  if (pkg.name === "msw" && pkg.dependencies?.["path-to-regexp"] === "^6.2.0") {
+    pkg.dependencies = {
+      ...pkg.dependencies,
+      "path-to-regexp": "^6.3.0",
+    };
+  }
+
   return pkg;
 }
 
