@@ -30,7 +30,6 @@ import { stringify } from "../util/stringify.js";
 import { stringUnionFrom } from "../util/stringUnionFrom.js";
 import { formatTs } from "../util/test/formatTs.js";
 import { getDescriptionIfPresent } from "./getDescriptionIfPresent.js";
-import { getObjectDefIdentifier } from "./wireObjectTypeV2ToSdkObjectConstV2.js";
 
 export async function generatePerActionDataFiles(
   {
@@ -94,8 +93,11 @@ export async function generatePerActionDataFiles(
                       obj.getImportedDefinitionIdentifier(true)
                     }>`;
                   } else if (type.type === "objectSet") {
+                    const obj = enhancedOntology.requireObjectType(
+                      type.objectSet,
+                    );
                     return `ActionMetadata.DataType.ObjectSet<${
-                      getObjectDefIdentifier(type.objectSet, true)
+                      obj.getImportedDefinitionIdentifier(true)
                     }>`;
                   }
                   return undefined;
