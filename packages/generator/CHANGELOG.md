@@ -1,5 +1,13 @@
 # @osdk/generator
 
+## 2.0.3
+
+### Patch Changes
+
+- 444e7a4: Namespaced object sets in actions no longer generate wrong
+  - @osdk/generator-converters@2.0.3
+  - @osdk/api@2.0.3
+
 ## 2.0.2
 
 ### Patch Changes
