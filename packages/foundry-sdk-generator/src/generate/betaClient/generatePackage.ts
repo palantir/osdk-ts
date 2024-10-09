@@ -70,19 +70,15 @@ export async function generatePackage(
     readdir: path => readdir(path),
   };
 
-  if (!options.beta) {
-    throw new Error("Only beta is supported in this version");
-  } else {
-    await generateClientSdkVersionTwoPointZero(
-      ontologyInfo.filteredFullMetadata,
-      `typescript-sdk/${options.packageVersion} ${USER_AGENT}`,
-      hostFs,
-      packagePath,
-      "module",
-      ontologyInfo.externalObjects,
-      ontologyInfo.externalInterfaces,
-    );
-  }
+  await generateClientSdkVersionTwoPointZero(
+    ontologyInfo.filteredFullMetadata,
+    `typescript-sdk/${options.packageVersion} ${USER_AGENT}`,
+    hostFs,
+    packagePath,
+    "module",
+    ontologyInfo.externalObjects,
+    ontologyInfo.externalInterfaces,
+  );
 
   const compilerOutput = compileInMemory(inMemoryFileSystem, {
     esm: options.beta,

@@ -3,7 +3,6 @@
   "changelog": "@changesets/cli/changelog",
   "commit": false,
   "fixed": [
-    ["@osdk/foundry.*", "@osdk/foundry"],
     [
       "@osdk/client",
       "@osdk/foundry-sdk-generator",
