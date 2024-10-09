@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
-    "@osdk/internal.foundry.core": "0.2.0"
+    "@osdk/internal.foundry.core": "0.2.1"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",

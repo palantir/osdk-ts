@@ -1790,8 +1790,8 @@ importers:
         specifier: workspace:~
         version: link:../generator-converters
       '@osdk/internal.foundry.core':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.2.1
+        version: 0.2.1
       fast-deep-equal:
         specifier: ^3.1.3
         version: 3.1.3
@@ -1836,8 +1836,8 @@ importers:
         specifier: workspace:~
         version: link:../api
       '@osdk/internal.foundry.core':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.2.1
+        version: 0.2.1
     devDependencies:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
@@ -3572,17 +3572,11 @@ packages:
   '@osdk/generator-converters@2.0.0-beta.9':
     resolution: {integrity: sha512-jVtM3X/6ncjz3KQsLK9+zUymTtmTXld11GKZq9xrIcOhi0L8FsEZ+8/mWbaOBq/qnekhvR698j5qBeehfN/B1w==}
 
-  '@osdk/internal.foundry.core@0.2.0':
-    resolution: {integrity: sha512-+It/huASzz4nK/kNVw+hILo2wapzE2ZfptIiem6iEt19KEQVtw/fqJ2VRGMUEop0Q4+rT3VLHdqkNxq5nSUzdA==}
-
   '@osdk/internal.foundry.core@0.2.1':
     resolution: {integrity: sha512-dYa8GnJFDgLjZGlcj9cTY+mOue4gO/ZDGa45zHPSp5ptrEOYmQfpeJLFx5iNijwSrqcUJMKEjiqxTs1G5aczlw==}
 
   '@osdk/internal.foundry.datasets@0.2.1':
     resolution: {integrity: sha512-wbp9RaEtCyiNvj00CiQ7eE46HC7EMpcT2l2vZ9vOQ+NrvM27OxxcqmVtka/961fKOw5W7I/NR3O7TOLoO0hKJw==}
-
-  '@osdk/internal.foundry.geo@0.1.0':
-    resolution: {integrity: sha512-6NbTIEos7LdderlnDj/kTqFSlAjgZe8gkXAqTYWSipRP6UqKRDPwYeOcnMIR4wHZwNblxGohgY6IELvAM2exoA==}
 
   '@osdk/internal.foundry.geo@0.1.1':
     resolution: {integrity: sha512-8UOkTkI6K3pM7a6utyU/4BrQ0eib7c2VbPJSHJujvbsVZTEuJ/3qWMz6Zdf0yfV/qljO3WLalKcG4RGCe3twYg==}
@@ -9338,12 +9332,6 @@ snapshots:
     dependencies:
       '@osdk/api': 2.0.0-beta.9
 
-  '@osdk/internal.foundry.core@0.2.0':
-    dependencies:
-      '@osdk/internal.foundry.geo': 0.1.0
-      '@osdk/shared.client': 1.0.1
-      '@osdk/shared.net.platformapi': 0.3.1
-
   '@osdk/internal.foundry.core@0.2.1':
     dependencies:
       '@osdk/internal.foundry.geo': 0.1.1
@@ -9353,11 +9341,6 @@ snapshots:
   '@osdk/internal.foundry.datasets@0.2.1':
     dependencies:
       '@osdk/internal.foundry.core': 0.2.1
-      '@osdk/shared.client': 1.0.1
-      '@osdk/shared.net.platformapi': 0.3.1
-
-  '@osdk/internal.foundry.geo@0.1.0':
-    dependencies:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.net.platformapi': 0.3.1
 
