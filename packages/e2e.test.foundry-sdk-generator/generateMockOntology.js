@@ -15,8 +15,8 @@
  */
 
 // @ts-check
+import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePackageCommand } from "@osdk/foundry-sdk-generator";
 import { apiServer } from "@osdk/shared.test";
-import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePackageCommand } from "@osdk/tmp-foundry-sdk-generator";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
