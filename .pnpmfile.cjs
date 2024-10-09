@@ -32,6 +32,23 @@ function readPackage(pkg, context) {
     };
   }
 
+  if (
+    pkg.dependencies?.micromatch === "^4.0.0"
+    || pkg.dependencies?.micromatch === "^4.0.1"
+    || pkg.dependencies?.micromatch === "^4.0.2"
+    || pkg.dependencies?.micromatch === "^4.0.3"
+    || pkg.dependencies?.micromatch === "^4.0.4"
+    || pkg.dependencies?.micromatch === "^4.0.5"
+    || pkg.dependencies?.micromatch === "^4.0.6"
+    || pkg.dependencies?.micromatch === "^4.0.7"
+  ) {
+    pkg.dependencies.micromatch = "^4.0.8";
+  }
+
+  if (pkg.dependencies?.micromatch === "~4.0.7") {
+    pkg.dependencies.micromatch = "~4.0.8";
+  }
+
   return pkg;
 }
 
