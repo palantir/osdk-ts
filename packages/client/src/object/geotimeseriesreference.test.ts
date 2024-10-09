@@ -44,11 +44,12 @@ describe("Timeseries", () => {
 
     expect(location).toBeDefined();
 
-    const initialLastPoint = location?.lastFetchedPoint;
+    const initialLastPoint = employee.employeeLocation?.lastFetchedPoint;
     expect(initialLastPoint).toBeUndefined();
 
-    const fetchedPoint = await location?.getLatestValue();
-    const nextLastPoint = location?.lastFetchedPoint;
+    const fetchedPoint = await employee.employeeLocation?.getLatestValue();
+    const nextLastPoint = employee.employeeLocation?.lastFetchedPoint;
+    expect(employee.employeeLocation?.lastFetchedPoint).toBeDefined();
 
     expect(nextLastPoint).toEqual(fetchedPoint);
     expect(nextLastPoint?.time).toEqual("2014-04-14");
@@ -62,8 +63,6 @@ describe("Timeseries", () => {
       type: "Point",
       coordinates: [3.3, 3.3],
     });
-
-    expect(location?.lastFetchedPoint).toBeDefined();
   });
 
   it("getAll values with before works", async () => {

@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
+import type {
+  GeotimeSeriesProperty,
+  ObjectTypeDefinition,
+  Osdk,
+} from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
 import { OntologiesV2 } from "@osdk/internal.foundry.ontologiesv2";
 import { createAttachmentFromRid } from "../../createAttachmentFromRid.js";
@@ -66,6 +70,11 @@ const objectPrototypeCache = createClientCache(
     );
   },
 );
+
+const geotimePropertyCache = createClientCache<
+  string | symbol,
+  GeotimeSeriesPropertyImpl<GeoJSON.Point>
+>();
 
 /** @internal */
 export function createOsdkObject<
@@ -130,12 +139,22 @@ export function createOsdkObject<
             );
           }
           if (propDef.type === "geotimeSeriesReference") {
-            return new GeotimeSeriesPropertyImpl<GeoJSON.Point>(
+            const instance = geotimePropertyCache.get(client, p);
+            if (instance != null) {
+              return instance;
+            }
+            const geotimeProp = new GeotimeSeriesPropertyImpl<GeoJSON.Point>(
               client,
               objectDef.apiName,
               target[RawObject][objectDef.primaryKeyApiName as string],
               p as string,
             );
+            geotimePropertyCache.set(
+              client,
+              p,
+              geotimeProp,
+            );
+            return geotimeProp;
           }
         }
         return rawValue;
