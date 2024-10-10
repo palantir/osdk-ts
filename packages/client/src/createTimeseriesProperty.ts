@@ -27,7 +27,7 @@ import {
   iterateReadableStream,
   parseStreamedResponse,
 } from "./util/streamutils.js";
-import { getTimeRange } from "./util/timeseriesUtils.js";
+import { asyncIterPointsHelper, getTimeRange } from "./util/timeseriesUtils.js";
 
 export class TimeSeriesPropertyImpl<T extends number | string>
   implements TimeSeriesProperty<T>
@@ -65,10 +65,7 @@ export class TimeSeriesPropertyImpl<T extends number | string>
     const allPoints: Array<TimeSeriesPoint<T>> = [];
 
     for await (const point of this.asyncIterPoints(query)) {
-      allPoints.push({
-        time: point.time,
-        value: point.value as T,
-      });
+      allPoints.push(point);
     }
     return allPoints;
   }
@@ -84,14 +81,10 @@ export class TimeSeriesPropertyImpl<T extends number | string>
         query ? { range: getTimeRange(query) } : {},
       );
 
-    const reader = streamPointsIterator.stream().getReader();
     for await (
-      const point of parseStreamedResponse(iterateReadableStream(reader))
+      const timeseriesPoint of asyncIterPointsHelper<T>(streamPointsIterator)
     ) {
-      yield {
-        time: point.time,
-        value: point.value as T,
-      };
+      yield timeseriesPoint;
     }
   }
 }

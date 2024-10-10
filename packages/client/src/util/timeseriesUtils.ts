@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { TimeseriesDurationMapping, type TimeSeriesQuery } from "@osdk/api";
+import type { TimeSeriesQuery } from "@osdk/api";
+import { TimeseriesDurationMapping, TimeSeriesPoint } from "@osdk/api";
 import type { TimeRange } from "@osdk/internal.foundry.core";
+import { it } from "vitest";
+import { iterateReadableStream, parseStreamedResponse } from "./streamutils.js";
 
 export function getTimeRange(body: TimeSeriesQuery): TimeRange {
   if ("$startTime" in body || "$endTime" in body) {
@@ -42,4 +45,20 @@ export function getTimeRange(body: TimeSeriesQuery): TimeRange {
         unit: TimeseriesDurationMapping[body.$unit],
       },
     };
+}
+
+export async function* asyncIterPointsHelper<
+  T extends number | string | GeoJSON.Point,
+>(
+  iterator: Blob,
+) {
+  const reader = iterator.stream().getReader();
+  for await (
+    const point of parseStreamedResponse(iterateReadableStream(reader))
+  ) {
+    yield {
+      time: point.time,
+      value: point.value as T,
+    };
+  }
 }
