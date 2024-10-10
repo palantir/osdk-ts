@@ -421,6 +421,64 @@ importers:
         specifier: ^2.0.5
         version: 2.0.5(@types/node@22.7.4)
 
+  examples/example-tutorial-todo-aip-app-beta:
+    dependencies:
+      '@osdk/client':
+        specifier: latest
+        version: 2.0.4
+      '@osdk/e2e.generated.1.1.x':
+        specifier: workspace:*
+        version: link:../../packages/e2e.generated.1.1.x
+      '@osdk/oauth':
+        specifier: latest
+        version: 1.0.0
+      react:
+        specifier: ^18
+        version: 18.3.1
+      react-dom:
+        specifier: ^18
+        version: 18.3.1(react@18.3.1)
+      react-router-dom:
+        specifier: ^6.23.1
+        version: 6.23.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      swr:
+        specifier: ^2.2.5
+        version: 2.2.5(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18
+        version: 18.3.2
+      '@types/react-dom':
+        specifier: ^18
+        version: 18.3.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^7.16.0
+        version: 7.17.0(@typescript-eslint/parser@7.17.0(eslint@8.57.0)(typescript@5.5.4))(eslint@8.57.0)(typescript@5.5.4)
+      '@typescript-eslint/parser':
+        specifier: ^7.16.0
+        version: 7.17.0(eslint@8.57.0)(typescript@5.5.4)
+      '@vitejs/plugin-react':
+        specifier: ^4.2.0
+        version: 4.2.1(vite@5.3.4(@types/node@22.7.4))
+      eslint:
+        specifier: ^8.57.0
+        version: 8.57.0
+      eslint-plugin-react-hooks:
+        specifier: ^4.6.2
+        version: 4.6.2(eslint@8.57.0)
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.6
+        version: 0.4.7(eslint@8.57.0)
+      typescript:
+        specifier: ^5.5.4
+        version: 5.5.4
+      vite:
+        specifier: ^5.3.4
+        version: 5.3.4(@types/node@22.7.4)
+      vitest:
+        specifier: ^2.0.5
+        version: 2.0.5(@types/node@22.7.4)
+
   examples/example-tutorial-todo-app:
     dependencies:
       '@osdk/e2e.generated.1.1.x':
@@ -451,6 +509,64 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^7.16.0
         version: 7.16.0(eslint@8.57.0)(typescript@5.5.4)
+      '@vitejs/plugin-react':
+        specifier: ^4.2.0
+        version: 4.2.1(vite@5.3.4(@types/node@22.7.4))
+      eslint:
+        specifier: ^8.57.0
+        version: 8.57.0
+      eslint-plugin-react-hooks:
+        specifier: ^4.6.2
+        version: 4.6.2(eslint@8.57.0)
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.6
+        version: 0.4.7(eslint@8.57.0)
+      typescript:
+        specifier: ^5.5.4
+        version: 5.5.4
+      vite:
+        specifier: ^5.3.4
+        version: 5.3.4(@types/node@22.7.4)
+      vitest:
+        specifier: ^2.0.5
+        version: 2.0.5(@types/node@22.7.4)
+
+  examples/example-tutorial-todo-app-beta:
+    dependencies:
+      '@osdk/client':
+        specifier: latest
+        version: 2.0.4
+      '@osdk/e2e.generated.1.1.x':
+        specifier: workspace:*
+        version: link:../../packages/e2e.generated.1.1.x
+      '@osdk/oauth':
+        specifier: latest
+        version: 1.0.0
+      react:
+        specifier: ^18
+        version: 18.3.1
+      react-dom:
+        specifier: ^18
+        version: 18.3.1(react@18.3.1)
+      react-router-dom:
+        specifier: ^6.23.1
+        version: 6.23.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      swr:
+        specifier: ^2.2.5
+        version: 2.2.5(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18
+        version: 18.3.2
+      '@types/react-dom':
+        specifier: ^18
+        version: 18.3.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^7.16.0
+        version: 7.17.0(@typescript-eslint/parser@7.17.0(eslint@8.57.0)(typescript@5.5.4))(eslint@8.57.0)(typescript@5.5.4)
+      '@typescript-eslint/parser':
+        specifier: ^7.16.0
+        version: 7.17.0(eslint@8.57.0)(typescript@5.5.4)
       '@vitejs/plugin-react':
         specifier: ^4.2.0
         version: 4.2.1(vite@5.3.4(@types/node@22.7.4))
@@ -3671,14 +3787,23 @@ packages:
   '@osdk/api@2.0.1':
     resolution: {integrity: sha512-YO/E8CYJK+o6K7pK/uAQM/tKnYlw0dmNhpM5v/+BoXNKIeC87Mnu95NSXBHehKdcJC2Zs5GoLxwJskAhMAe2rw==}
 
+  '@osdk/api@2.0.4':
+    resolution: {integrity: sha512-MiehuQN2TkPxmEg1QgTsCECYK8YASmxgVf/co5fuB/oDp+sha5f+/gnbmKpgnIePQI02dAsWHg8ddq/tzOn/eA==}
+
   '@osdk/client.unstable.osw@0.2.0':
     resolution: {integrity: sha512-BPE+adWcHw/3V9SjMLbHlHVdMRhC+ZxPMqjj1FY/i1BhS+oCj3n1IsEp+AzFAj2yTaYUswuybKjW9iIPnKcEMA==}
 
   '@osdk/client.unstable@2.0.1':
     resolution: {integrity: sha512-xs7AavrCAjQELAX5vjqbArLKZckzIvKD82K+P1+6flv3zs8sLSVyGzo/19qUmnTyxzMvusMlk/nU8TiJ+LFQVw==}
 
+  '@osdk/client.unstable@2.0.4':
+    resolution: {integrity: sha512-HcxLQcocXf5OeeKWSz4cpGkZqTX+HsX9SLqCrFxRU1FbgFp0O5phuCzyE8HSxyWpEG0HSEQqG1GjL+Qn5yJyDg==}
+
   '@osdk/client@2.0.1':
     resolution: {integrity: sha512-vGMNGkHQ2hVWch7vpksLeyaquTvRjXLfaTGK8iGtiPbMOAv63cZ173atpZwjw3mNgX7UBv2S4Z68CDQh1UWADg==}
+
+  '@osdk/client@2.0.4':
+    resolution: {integrity: sha512-bL7mrNiLwulgFrjm6vOPRnpbhwcyHVya9gescs4anD4RN2wvVFiP1Wk2OTeMT9nnSbPBDpL5xYSgoJGysBW1sA==}
 
   '@osdk/foundry.admin@2.1.0':
     resolution: {integrity: sha512-PSepSLbxzddudaXcWa5b2eCpFSKl2GHfcZhvY3+yHImqFqcjXpnJakS0un3DfZvjjrY8MCMHXjbJYzTvwFyFTg==}
@@ -3718,6 +3843,9 @@ packages:
 
   '@osdk/generator-converters@2.0.1':
     resolution: {integrity: sha512-d5i0hYtjW1xsLCsgeDIVtJScoXIlQQd7dk+zQhFROKwTQuzAuGdav5B9ngUGhHYke7yygqnLXI3/I9Vgz8vNhQ==}
+
+  '@osdk/generator-converters@2.0.4':
+    resolution: {integrity: sha512-PocN1KbPsKiqu/zkPBPxfQ28+vQfhI0rw7vWNcvjIXwruH64fVS3dsNFFz++aul4N1B43aK/OlloEZkkTIhjIg==}
 
   '@osdk/internal.foundry.core@0.2.0':
     resolution: {integrity: sha512-+It/huASzz4nK/kNVw+hILo2wapzE2ZfptIiem6iEt19KEQVtw/fqJ2VRGMUEop0Q4+rT3VLHdqkNxq5nSUzdA==}
@@ -9375,11 +9503,22 @@ snapshots:
       tiny-invariant: 1.3.3
       type-fest: 4.18.2
 
+  '@osdk/api@2.0.4':
+    dependencies:
+      '@types/geojson': 7946.0.14
+      fetch-retry: 6.0.0
+      tiny-invariant: 1.3.3
+      type-fest: 4.18.2
+
   '@osdk/client.unstable.osw@0.2.0':
     dependencies:
       conjure-lite: 0.4.4
 
   '@osdk/client.unstable@2.0.1':
+    dependencies:
+      conjure-lite: 0.4.4
+
+  '@osdk/client.unstable@2.0.4':
     dependencies:
       conjure-lite: 0.4.4
 
@@ -9389,6 +9528,31 @@ snapshots:
       '@osdk/client.unstable': 2.0.1
       '@osdk/client.unstable.osw': 0.2.0
       '@osdk/generator-converters': 2.0.1
+      '@osdk/internal.foundry.core': 0.2.1
+      '@osdk/internal.foundry.ontologiesv2': 0.2.1
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client.impl': 1.0.1
+      '@osdk/shared.net.errors': 2.0.0
+      '@osdk/shared.net.fetch': 1.0.0
+      '@types/geojson': 7946.0.14
+      conjure-lite: 0.4.4
+      fast-deep-equal: 3.1.3
+      fetch-retry: 6.0.0
+      find-up: 7.0.0
+      isomorphic-ws: 5.0.0(ws@8.18.0)
+      tiny-invariant: 1.3.3
+      type-fest: 4.18.2
+      ws: 8.18.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
+  '@osdk/client@2.0.4':
+    dependencies:
+      '@osdk/api': 2.0.4
+      '@osdk/client.unstable': 2.0.4
+      '@osdk/client.unstable.osw': 0.2.0
+      '@osdk/generator-converters': 2.0.4
       '@osdk/internal.foundry.core': 0.2.1
       '@osdk/internal.foundry.ontologiesv2': 0.2.1
       '@osdk/shared.client': 1.0.1
@@ -9494,6 +9658,11 @@ snapshots:
   '@osdk/generator-converters@2.0.1':
     dependencies:
       '@osdk/api': 2.0.1
+      '@osdk/internal.foundry.core': 0.2.1
+
+  '@osdk/generator-converters@2.0.4':
+    dependencies:
+      '@osdk/api': 2.0.4
       '@osdk/internal.foundry.core': 0.2.1
 
   '@osdk/internal.foundry.core@0.2.0':
