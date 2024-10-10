@@ -272,7 +272,7 @@ describe("AsyncCache", () => {
               "rejected",
             );
             expect(asyncCacheSpies.get.mock.settledResults[i].value)
-              .toMatchInlineSnapshot(`[Error: aError]`);
+              .toMatchObject(new Error("aError"));
           }
         }
       });
