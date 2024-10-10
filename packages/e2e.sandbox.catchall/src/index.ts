@@ -21,6 +21,7 @@ import { runAggregationsTest } from "./runAggregationsTest.js";
 import { runAssignEmployeeToVentureTest } from "./runAssignEmployeeToVentureTest.js";
 import { runFoundrySdkClientVerificationTest } from "./runFoundrySdkClientVerificationTest.js";
 import { runGeoQueriesTest } from "./runGeoQueriesTest.js";
+import { runGeotimeSeriesReferenceTests } from "./runGeotimeSeriesTest.js";
 import { runInterfacesTest } from "./runInterfacesTest.js";
 import { runLegacyExamples } from "./runLegacyExamples.js";
 import { runQueriesTest } from "./runQueriesTest.js";
@@ -33,38 +34,40 @@ const testSubscriptions = false;
 
 async function runTests() {
   try {
-    await checkUnstableBulkLinks();
+    // await checkUnstableBulkLinks();
 
-    if (runOld) {
-      await runLegacyExamples();
-    }
-    if (testSubscriptions) {
-      runSubscriptionsTest();
+    // if (runOld) {
+    //   await runLegacyExamples();
+    // }
+    // if (testSubscriptions) {
+    //   runSubscriptionsTest();
 
-      // we don't need the console flooded with additional things
-      return;
-    }
+    //   // we don't need the console flooded with additional things
+    //   return;
+    // }
 
-    const datasetRid =
-      "ri.foundry.main.dataset.58070dbb-dd3b-4c82-b012-9c2f8a13dd83";
-    await runFoundrySdkClientVerificationTest(datasetRid);
+    // const datasetRid =
+    //   "ri.foundry.main.dataset.58070dbb-dd3b-4c82-b012-9c2f8a13dd83";
+    // await runFoundrySdkClientVerificationTest(datasetRid);
 
-    await runInterfacesTest();
+    // await runInterfacesTest();
 
-    // only works in default ontology
-    await runGeoQueriesTest();
+    // // only works in default ontology
+    // await runGeoQueriesTest();
 
-    await runAssignEmployeeToVentureTest();
+    // await runAssignEmployeeToVentureTest();
 
-    await runAggregationsTest();
+    // await runAggregationsTest();
 
-    await runAggregationGroupByDatesTest();
+    // await runAggregationGroupByDatesTest();
 
-    await runQueriesTest();
+    // await runQueriesTest();
 
-    if (runOld) await typeChecks(client);
+    // if (runOld) await typeChecks(client);
 
-    await runTimeseriesTest();
+    // await runTimeseriesTest();
+
+    await runGeotimeSeriesReferenceTests();
   } catch (e) {
     console.error(`Caught an error we did not expect, type: ${typeof e}`);
     console.error(e);

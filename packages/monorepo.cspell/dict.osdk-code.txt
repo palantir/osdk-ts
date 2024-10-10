@@ -45,3 +45,6 @@ valuetype
 websockets
 workstateRid
 geotimeseriesrequests
+Fintraffic
+Rhemmings
+mnsi

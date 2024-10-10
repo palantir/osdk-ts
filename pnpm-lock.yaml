@@ -712,11 +712,11 @@ importers:
         specifier: workspace:*
         version: link:../generator-converters
       '@osdk/internal.foundry.core':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.3.0-beta.0
+        version: 0.3.0-beta.0
       '@osdk/internal.foundry.ontologiesv2':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.3.0-beta.0
+        version: 0.3.0-beta.0
       '@osdk/shared.client':
         specifier: ^1.0.1
         version: 1.0.1
@@ -1725,382 +1725,6 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
 
-<<<<<<< HEAD
-  packages/foundry:
-    dependencies:
-      '@osdk/foundry.admin':
-        specifier: workspace:*
-        version: link:../foundry.admin
-      '@osdk/foundry.aipagents':
-        specifier: workspace:*
-        version: link:../foundry.aipagents
-      '@osdk/foundry.connectivity':
-        specifier: workspace:*
-        version: link:../foundry.connectivity
-      '@osdk/foundry.core':
-        specifier: workspace:*
-        version: link:../foundry.core
-      '@osdk/foundry.datasets':
-        specifier: workspace:*
-        version: link:../foundry.datasets
-      '@osdk/foundry.filesystem':
-        specifier: workspace:*
-        version: link:../foundry.filesystem
-      '@osdk/foundry.functions':
-        specifier: workspace:*
-        version: link:../foundry.functions
-      '@osdk/foundry.ontologies':
-        specifier: workspace:*
-        version: link:../foundry.ontologies
-      '@osdk/foundry.orchestration':
-        specifier: workspace:*
-        version: link:../foundry.orchestration
-      '@osdk/foundry.publicapis':
-        specifier: workspace:*
-        version: link:../foundry.publicapis
-      '@osdk/foundry.streams':
-        specifier: workspace:*
-        version: link:../foundry.streams
-      '@osdk/foundry.thirdpartyapplications':
-        specifier: workspace:*
-        version: link:../foundry.thirdpartyapplications
-      '@osdk/shared.client':
-        specifier: ^1.0.1
-        version: 1.0.1
-      '@osdk/shared.net.platformapi':
-        specifier: workspace:~
-        version: link:../shared.net.platformapi
-    devDependencies:
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-
-  packages/foundry.admin:
-    dependencies:
-      '@osdk/foundry.core':
-        specifier: workspace:*
-        version: link:../foundry.core
-      '@osdk/shared.client':
-        specifier: ^1.0.1
-        version: 1.0.1
-      '@osdk/shared.net.platformapi':
-        specifier: workspace:~
-        version: link:../shared.net.platformapi
-    devDependencies:
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-
-  packages/foundry.aipagents:
-    dependencies:
-      '@osdk/foundry.core':
-        specifier: workspace:*
-        version: link:../foundry.core
-      '@osdk/shared.client':
-        specifier: ^1.0.1
-        version: 1.0.1
-      '@osdk/shared.net.platformapi':
-        specifier: workspace:~
-        version: link:../shared.net.platformapi
-    devDependencies:
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-
-  packages/foundry.connectivity:
-    dependencies:
-      '@osdk/foundry.core':
-        specifier: workspace:*
-        version: link:../foundry.core
-      '@osdk/foundry.datasets':
-        specifier: workspace:*
-        version: link:../foundry.datasets
-      '@osdk/foundry.orchestration':
-        specifier: workspace:*
-        version: link:../foundry.orchestration
-      '@osdk/shared.client':
-        specifier: ^1.0.1
-        version: 1.0.1
-      '@osdk/shared.net.platformapi':
-        specifier: workspace:~
-        version: link:../shared.net.platformapi
-    devDependencies:
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-
-  packages/foundry.core:
-    dependencies:
-      '@osdk/shared.client':
-        specifier: ^1.0.1
-        version: 1.0.1
-      '@osdk/shared.net.platformapi':
-        specifier: workspace:~
-        version: link:../shared.net.platformapi
-    devDependencies:
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-
-  packages/foundry.datasets:
-    dependencies:
-      '@osdk/foundry.core':
-        specifier: workspace:*
-        version: link:../foundry.core
-      '@osdk/foundry.filesystem':
-        specifier: workspace:*
-        version: link:../foundry.filesystem
-      '@osdk/shared.client':
-        specifier: ^1.0.1
-        version: 1.0.1
-      '@osdk/shared.net.platformapi':
-        specifier: workspace:~
-        version: link:../shared.net.platformapi
-    devDependencies:
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-
-  packages/foundry.filesystem:
-    dependencies:
-      '@osdk/foundry.core':
-        specifier: workspace:*
-        version: link:../foundry.core
-      '@osdk/shared.client':
-        specifier: ^1.0.1
-        version: 1.0.1
-      '@osdk/shared.net.platformapi':
-        specifier: workspace:~
-        version: link:../shared.net.platformapi
-    devDependencies:
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-
-  packages/foundry.functions:
-    dependencies:
-      '@osdk/foundry.core':
-        specifier: workspace:*
-        version: link:../foundry.core
-      '@osdk/shared.client':
-        specifier: ^1.0.1
-        version: 1.0.1
-      '@osdk/shared.net.platformapi':
-        specifier: workspace:~
-        version: link:../shared.net.platformapi
-    devDependencies:
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-
-  packages/foundry.ontologies:
-    dependencies:
-      '@osdk/shared.client':
-        specifier: ^1.0.1
-        version: 1.0.1
-      '@osdk/shared.net.platformapi':
-        specifier: workspace:~
-        version: link:../shared.net.platformapi
-    devDependencies:
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-
-  packages/foundry.orchestration:
-    dependencies:
-      '@osdk/foundry.core':
-        specifier: workspace:*
-        version: link:../foundry.core
-      '@osdk/foundry.datasets':
-        specifier: workspace:*
-        version: link:../foundry.datasets
-      '@osdk/foundry.filesystem':
-        specifier: workspace:*
-        version: link:../foundry.filesystem
-      '@osdk/shared.client':
-        specifier: ^1.0.1
-        version: 1.0.1
-      '@osdk/shared.net.platformapi':
-        specifier: workspace:~
-        version: link:../shared.net.platformapi
-    devDependencies:
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-
-  packages/foundry.publicapis:
-    dependencies:
-      '@osdk/foundry.core':
-        specifier: workspace:*
-        version: link:../foundry.core
-      '@osdk/shared.client':
-        specifier: ^1.0.1
-        version: 1.0.1
-      '@osdk/shared.net.platformapi':
-        specifier: workspace:~
-        version: link:../shared.net.platformapi
-    devDependencies:
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-
-  packages/foundry.streams:
-    dependencies:
-      '@osdk/foundry.core':
-        specifier: workspace:*
-        version: link:../foundry.core
-      '@osdk/foundry.datasets':
-        specifier: workspace:*
-        version: link:../foundry.datasets
-      '@osdk/foundry.filesystem':
-        specifier: workspace:*
-        version: link:../foundry.filesystem
-      '@osdk/shared.client':
-        specifier: ^1.0.1
-        version: 1.0.1
-      '@osdk/shared.net.platformapi':
-        specifier: workspace:~
-        version: link:../shared.net.platformapi
-    devDependencies:
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-
-  packages/foundry.thirdpartyapplications:
-    dependencies:
-      '@osdk/foundry.core':
-        specifier: workspace:*
-        version: link:../foundry.core
-      '@osdk/shared.client':
-        specifier: ^1.0.1
-        version: 1.0.1
-      '@osdk/shared.net.platformapi':
-        specifier: workspace:~
-        version: link:../shared.net.platformapi
-    devDependencies:
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-
-=======
->>>>>>> main
   packages/generator:
     dependencies:
       '@osdk/api':
@@ -2405,8 +2029,8 @@ importers:
         specifier: workspace:~
         version: link:../api
       '@osdk/internal.foundry.core':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.3.0-beta.0
+        version: 0.3.0-beta.0
       '@osdk/internal.foundry.geo':
         specifier: 0.1.0
         version: 0.1.0
@@ -2414,8 +2038,8 @@ importers:
         specifier: 0.2.0
         version: 0.2.0
       '@osdk/internal.foundry.ontologiesv2':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.3.0-beta.0
+        version: 0.3.0-beta.0
       fetch-retry:
         specifier: ^6.0.0
         version: 6.0.0
@@ -3973,6 +3597,9 @@ packages:
   '@osdk/internal.foundry.core@0.2.1':
     resolution: {integrity: sha512-dYa8GnJFDgLjZGlcj9cTY+mOue4gO/ZDGa45zHPSp5ptrEOYmQfpeJLFx5iNijwSrqcUJMKEjiqxTs1G5aczlw==}
 
+  '@osdk/internal.foundry.core@0.3.0-beta.0':
+    resolution: {integrity: sha512-PvHQp0FfHueVFxl7s2XoZfGklyHn7nQlLJG3Mz04MTN2b4YQZ9PRMkokLmd4YPT2Fd/nQPQqgH3/RcMGOBp49A==}
+
   '@osdk/internal.foundry.datasets@0.2.0':
     resolution: {integrity: sha512-U1adaMni2PDMuF5S5ql4jzRY1drah10besAsO6rO3jkbcP+ISGja14t8161oAjKNiECFYT+CtTNhjyp4E3Xe2w==}
 
@@ -3982,6 +3609,9 @@ packages:
   '@osdk/internal.foundry.geo@0.1.1':
     resolution: {integrity: sha512-8UOkTkI6K3pM7a6utyU/4BrQ0eib7c2VbPJSHJujvbsVZTEuJ/3qWMz6Zdf0yfV/qljO3WLalKcG4RGCe3twYg==}
 
+  '@osdk/internal.foundry.geo@0.3.0-beta.0':
+    resolution: {integrity: sha512-qvEKWyP6kiSP0cUuhpMGxD54qpwBtGaI0/+bTFUKWM/iBn3iAJq0k4LzfbKVNveI2TaJC/+Dg0Rih79wA+O6Jw==}
+
   '@osdk/internal.foundry.ontologies@0.2.0':
     resolution: {integrity: sha512-tAJtBupT5VShN9Q7XJ+bsx+3SeTle+l7kRuaYvVkfUvju1yxzHvhmJWyYHbnPpa4fFwZUVclcHI4NwNkbNK9cQ==}
 
@@ -3990,6 +3620,9 @@ packages:
 
   '@osdk/internal.foundry.ontologiesv2@0.2.1':
     resolution: {integrity: sha512-NgexHZDk4fqHUaidJQXA43QbRPlr9mxtWK5ExAiP8AovR+x0vsyEFXJoR4utRXc0ngc4EvoUKjbwYdQLYlXCmg==}
+
+  '@osdk/internal.foundry.ontologiesv2@0.3.0-beta.0':
+    resolution: {integrity: sha512-8MMPHb22FLzziByfAtjiuHq47d+JcWfq9xDaMunIR7PlZh1i3sAS1YUu648kLIgvhm/e3qnfqaIPwnP5vPvSsA==}
 
   '@osdk/internal.foundry@0.5.0':
     resolution: {integrity: sha512-mCxhEnzOkLde+3h7noVi9V+p1gh7kEzwquLXjGRJ2Ad8nDAyCxJRFkLpnzvsfjGHYrzgk2tZIuzjoQ0I7TlGaw==}
@@ -9756,6 +9389,12 @@ snapshots:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.net.platformapi': 0.3.1
 
+  '@osdk/internal.foundry.core@0.3.0-beta.0':
+    dependencies:
+      '@osdk/internal.foundry.geo': 0.3.0-beta.0
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.net.platformapi': 0.3.1
+
   '@osdk/internal.foundry.datasets@0.2.0':
     dependencies:
       '@osdk/internal.foundry.core': 0.2.0
@@ -9768,6 +9407,11 @@ snapshots:
       '@osdk/shared.net.platformapi': 0.3.1
 
   '@osdk/internal.foundry.geo@0.1.1':
+    dependencies:
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.net.platformapi': 0.3.1
+
+  '@osdk/internal.foundry.geo@0.3.0-beta.0':
     dependencies:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.net.platformapi': 0.3.1
@@ -9787,6 +9431,12 @@ snapshots:
   '@osdk/internal.foundry.ontologiesv2@0.2.1':
     dependencies:
       '@osdk/internal.foundry.core': 0.2.1
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.net.platformapi': 0.3.1
+
+  '@osdk/internal.foundry.ontologiesv2@0.3.0-beta.0':
+    dependencies:
+      '@osdk/internal.foundry.core': 0.3.0-beta.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.net.platformapi': 0.3.1
 
@@ -11704,8 +11354,8 @@ snapshots:
       '@typescript-eslint/parser': 6.21.0(eslint@8.57.0)(typescript@5.5.4)
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0)
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0))(eslint@8.57.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
       eslint-plugin-jsx-a11y: 6.8.0(eslint@8.57.0)
       eslint-plugin-react: 7.34.1(eslint@8.57.0)
       eslint-plugin-react-hooks: 4.6.2(eslint@8.57.0)
@@ -11723,13 +11373,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0):
+  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0))(eslint@8.57.0):
     dependencies:
       debug: 4.3.4
       enhanced-resolve: 5.16.1
       eslint: 8.57.0
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0))(eslint@8.57.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0)
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
       fast-glob: 3.3.2
       get-tsconfig: 4.7.5
       is-core-module: 2.13.1
@@ -11768,25 +11418,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0))(eslint@8.57.0):
+  eslint-module-utils@2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
       '@typescript-eslint/parser': 6.21.0(eslint@8.57.0)(typescript@5.5.4)
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0)
-    transitivePeerDependencies:
-      - supports-color
-
-  eslint-module-utils@2.8.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0):
-    dependencies:
-      debug: 3.2.7
-    optionalDependencies:
-      '@typescript-eslint/parser': 7.16.0(eslint@9.7.0)(typescript@5.5.3)
-      eslint: 8.57.0
-      eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0)
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0))(eslint@8.57.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -11815,7 +11454,7 @@ snapshots:
     dependencies:
       eslint: 9.7.0
 
-  eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0):
+  eslint-plugin-import@2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0):
     dependencies:
       array-includes: 3.1.8
       array.prototype.findlastindex: 1.2.5
@@ -11825,7 +11464,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0)
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.7.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.7.0))(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0)
       hasown: 2.0.2
       is-core-module: 2.13.1
       is-glob: 4.0.3
@@ -11836,7 +11475,7 @@ snapshots:
       semver: 6.3.1
       tsconfig-paths: 3.15.0
     optionalDependencies:
-      '@typescript-eslint/parser': 7.16.0(eslint@9.7.0)(typescript@5.5.3)
+      '@typescript-eslint/parser': 6.21.0(eslint@8.57.0)(typescript@5.5.4)
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
