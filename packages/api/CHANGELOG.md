@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.0.4
+
+### Patch Changes
+
+- 7f29753: Avoid type-fest's IsAny as it doesn't always work
+
 ## 2.0.3
 
 ## 2.0.2
