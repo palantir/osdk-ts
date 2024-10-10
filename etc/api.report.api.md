@@ -5,7 +5,6 @@
 ```ts
 
 import type { BBox } from 'geojson';
-import type { IsAny } from 'type-fest';
 import type { Point } from 'geojson';
 import type { Polygon } from 'geojson';
 import type { SingleKeyObject } from 'type-fest';

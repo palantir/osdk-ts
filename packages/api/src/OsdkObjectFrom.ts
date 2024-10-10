@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { IsAny } from "type-fest";
 import type {
   DefaultToFalse,
   OsdkObjectLinksObject,
@@ -147,6 +146,10 @@ type ExtractPropsKeysFromOldPropsStyle<
   P extends ValidOsdkPropParams<Q>,
 > = P extends "$all" ? PropertyKeys<Q>
   : Exclude<P, "$strict" | "$notStrict" | "$rid">;
+
+export type IsAny<T> = unknown extends T
+  ? [keyof T] extends [never] ? false : true
+  : false;
 
 export type GetPropsKeys<
   Q extends ObjectOrInterfaceDefinition,

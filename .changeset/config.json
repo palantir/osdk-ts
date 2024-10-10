@@ -3,7 +3,6 @@
   "changelog": "@changesets/cli/changelog",
   "commit": false,
   "fixed": [
-    ["@osdk/foundry.*", "@osdk/foundry"],
     [
       "@osdk/client",
       "@osdk/tmp-foundry-sdk-generator",
@@ -12,7 +11,8 @@
       "@osdk/client.unstable",
       "@osdk/api"
     ],
-    ["@osdk/create-app", "@osdk/create-app.template.*"]
+    ["@osdk/create-app", "@osdk/create-app.template.*"],
+    ["@osdk/cli", "@osdk/cli.*"]
   ],
   "linked": [],
   "access": "restricted",
