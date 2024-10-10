@@ -438,12 +438,12 @@ export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    asyncIterValues: (query?: TimeSeriesQuery) => AsyncGenerator<TimeSeriesPoint<T>>;
+    readonly asyncIterValues: (query?: TimeSeriesQuery) => AsyncGenerator<TimeSeriesPoint<T>>;
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    getAllValues: (query?: TimeSeriesQuery) => Promise<Array<TimeSeriesPoint<T>>>;
-    getLatestValue: () => Promise<TimeSeriesPoint<T>>;
-    lastFetchedValue: TimeSeriesPoint<T> | undefined;
+    readonly getAllValues: (query?: TimeSeriesQuery) => Promise<Array<TimeSeriesPoint<T>>>;
+    readonly getLatestValue: () => Promise<TimeSeriesPoint<T> | undefined>;
+    readonly lastFetchedValue: TimeSeriesPoint<T> | undefined;
 }
 
 // Warning: (ae-forgotten-export) The symbol "GroupByEntry" needs to be exported by the entry point index.d.ts
@@ -890,12 +890,12 @@ export interface TimeSeriesProperty<T extends number | string> {
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    asyncIterPoints: (query?: TimeSeriesQuery) => AsyncGenerator<TimeSeriesPoint<T>>;
+    readonly asyncIterPoints: (query?: TimeSeriesQuery) => AsyncGenerator<TimeSeriesPoint<T>>;
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    getAllPoints: (query?: TimeSeriesQuery) => Promise<Array<TimeSeriesPoint<T>>>;
-    getFirstPoint: () => Promise<TimeSeriesPoint<T>>;
-    getLastPoint: () => Promise<TimeSeriesPoint<T>>;
+    readonly getAllPoints: (query?: TimeSeriesQuery) => Promise<Array<TimeSeriesPoint<T>>>;
+    readonly getFirstPoint: () => Promise<TimeSeriesPoint<T>>;
+    readonly getLastPoint: () => Promise<TimeSeriesPoint<T>>;
 }
 
 // @public (undocumented)

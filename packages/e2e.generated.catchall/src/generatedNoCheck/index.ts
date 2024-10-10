@@ -8,6 +8,7 @@ export {
   DherlihyComplexObject,
   Employee,
   FintrafficAis,
+  GtfsTripTrackObject,
   ObjectTypeWithAllPropertyTypes,
   Person,
   RhemmingsObjectWithGtsrProperty2,

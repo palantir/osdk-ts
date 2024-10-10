@@ -47,16 +47,14 @@ export class GeotimeSeriesPropertyImpl<T extends GeoJSON.Point>
     this.#triplet = [objectApiName, primaryKey, propertyName];
   }
 
-  public async getLatestValue() {
+  public async getLatestValue(): Promise<TimeSeriesPoint<T> | undefined> {
     const latestPointPromise = OntologiesV2.TimeSeriesValueBankProperties
       .getLatestValue(
         this.#client,
         await this.#client.ontologyRid,
         ...this.#triplet,
-      ) as Promise<TimeSeriesPoint<T>>;
-
+      );
     latestPointPromise.then(latestPoint => this.lastFetchedValue = latestPoint);
-
     return latestPointPromise;
   }
 

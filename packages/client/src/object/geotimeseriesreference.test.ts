@@ -39,7 +39,9 @@ describe("Timeseries", () => {
 
   it("get latest value works", async () => {
     const employee = await client(Employee).fetchOne(50030);
+    const employee2 = await client(Employee).fetchOne(50031);
     expect(employee.$primaryKey).toEqual(50030);
+    expect(employee2.$primaryKey).toEqual(50031);
     const location = employee.employeeLocation;
 
     expect(location).toBeDefined();
@@ -62,6 +64,27 @@ describe("Timeseries", () => {
     expect(fetchedPoint?.value).toEqual({
       type: "Point",
       coordinates: [3.3, 3.3],
+    });
+
+    // Making sure caching working as expected
+    const initialPointEmployee2 = employee2.employeeLocation?.lastFetchedValue;
+    expect(initialPointEmployee2).toBeUndefined();
+
+    const fetchedPoint2 = await employee2.employeeLocation?.getLatestValue();
+    const nextLastPoint2 = employee2.employeeLocation?.lastFetchedValue;
+    expect(employee2.employeeLocation?.lastFetchedValue).toBeDefined();
+
+    expect(nextLastPoint2).toEqual(fetchedPoint2);
+    expect(nextLastPoint2?.time).toEqual("2013-03-13");
+    expect(nextLastPoint2?.value).toEqual({
+      type: "Point",
+      coordinates: [2.2, 2.2],
+    });
+
+    expect(fetchedPoint2?.time).toEqual("2013-03-13");
+    expect(fetchedPoint2?.value).toEqual({
+      type: "Point",
+      coordinates: [2.2, 2.2],
     });
   });
 
@@ -134,6 +157,17 @@ describe("Timeseries", () => {
       { time: "2014-04-14", value: { type: "Point", coordinates: [3.3, 3.3] } },
       { time: "2014-04-14", value: { type: "Point", coordinates: [3.3, 3.3] } },
     ]);
+  });
+
+  it("getAll points with no data works", async () => {
+    const employee = await client(Employee).fetchOne(50030);
+    expect(employee.$primaryKey).toEqual(50030);
+    const points = await employee.employeeLocation?.getAllValues({
+      $startTime: "2021-03-12T12:00:00.000Z",
+      $endTime: "2022-04-14T12:00:00.000Z",
+    });
+    expect(points).toBeDefined();
+    expect(points!).toEqual([]);
   });
 
   it("async iter points with absolute range works", async () => {
