@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Attachment, Osdk } from "@osdk/api";
+import type { Attachment, Osdk, PropertyKeys } from "@osdk/api";
 import {
   $ontologyRid,
   Employee,
@@ -500,5 +500,41 @@ describe("convertWireToOsdkObjects", () => {
     );
 
     expect(result.length).toBe(1);
+  });
+});
+
+describe("Osdk.Instance", () => {
+  it("is assignable to Osdk<>", () => {
+    const instance: Osdk.Instance<Employee> = {} as any;
+    const osdk: Osdk<Employee> = instance;
+  });
+
+  it("is assignable from Osdk<>", () => {
+    const osdk: Osdk<Employee> = {} as any;
+    const instance: Osdk.Instance<Employee> = osdk;
+  });
+
+  it("is assignable to Osdk<> with $notStrict", () => {
+    const instance: Osdk.Instance<Employee, "$notStrict"> = {} as any;
+    const osdk: Osdk<Employee, "$notStrict"> = instance;
+    const osdk2: Osdk<Employee, "$notStrict" | "$all"> = instance;
+  });
+
+  it("is assignable from Osdk<> with $notStrict", () => {
+    const osdk: Osdk<Employee, "$notStrict"> = {} as any;
+    const osdk2: Osdk<Employee, "$notStrict" | "$all"> = osdk;
+    const instance: Osdk.Instance<Employee, "$notStrict"> = osdk;
+    const instance2: Osdk.Instance<Employee, "$notStrict"> = osdk2;
+  });
+
+  it("object with any for props is assignable to its normal self", () => {
+    const foo: readonly Osdk.Instance<Employee, "$notStrict", any>[] =
+      {} as any;
+
+    const bar: readonly Osdk.Instance<
+      Employee,
+      "$notStrict",
+      PropertyKeys<Employee>
+    >[] = foo;
   });
 });
