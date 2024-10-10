@@ -162,6 +162,7 @@ export type GetProps<
   Q extends ObjectOrInterfaceDefinition,
   OPTIONS extends never | "$notStrict" | "$rid" = never,
 > = IsNever<OPTIONS> extends true ? CompileTimeMetadata<Q>["strictProps"]
+  : IsAny<OPTIONS> extends true ? CompileTimeMetadata<Q>["strictProps"]
   : (OPTIONS extends "$notStrict" ? CompileTimeMetadata<Q>["props"]
     : CompileTimeMetadata<Q>["strictProps"]);
 
@@ -175,8 +176,9 @@ export type Osdk<
 > =
   // no middle options is simplest
   IsNever<OPTIONS> extends true ? Osdk.Instance<Q, never, P>
+    : IsAny<OPTIONS> extends true ? Osdk.Instance<Q, never, P>
     // Options only includes the two allowed in the new style
-    : IsNever<Exclude<OPTIONS, "$notStrict" | "$rid">> extends true
+    : (IsNever<Exclude<OPTIONS, "$notStrict" | "$rid">>) extends true
       ? Osdk.Instance<Q, OPTIONS & ("$notStrict" | "$rid"), P>
     // else we are in the old style which was just Q and OPTIONS
     // and OPTIONS was $things + prop names
@@ -213,18 +215,20 @@ export namespace Osdk {
     }
     // We are hiding the $rid field if it wasn't requested as we want to discourage its use
     & (IsNever<OPTIONS> extends true ? {}
+      : IsAny<OPTIONS> extends true ? {}
       : "$rid" extends OPTIONS ? { readonly $rid: string }
       : {});
 }
 
 // not exported from package
-export type ExtractStrictOption<S extends NullabilityAdherence> = S extends
-  false ? "$notStrict"
+export type ExtractStrictOption<S extends NullabilityAdherence> =
+  IsAny<S> extends true ? never : S extends false ? "$notStrict"
   : never;
 
 // not exported from package
-export type ExtractRidOption<R extends boolean> = DefaultToFalse<R> extends
-  false ? never
+export type ExtractRidOption<R extends boolean> = IsAny<R> extends true ? never
+  : IsNever<R> extends true ? never
+  : DefaultToFalse<R> extends false ? never
   : "$rid";
 
 // not exported from package

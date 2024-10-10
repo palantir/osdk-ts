@@ -611,10 +611,11 @@ export interface OntologyMetadata<_NEVER_USED_KEPT_FOR_BACKCOMPAT = any> {
 }
 
 // Warning: (ae-forgotten-export) The symbol "IsNever" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "IsAny" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ExtractPropsKeysFromOldPropsStyle" needs to be exported by the entry point index.d.ts
 //
 // @public
-export type Osdk<Q extends ObjectOrInterfaceDefinition, OPTIONS extends string = never, P extends PropertyKeys<Q> = PropertyKeys<Q>> = IsNever<OPTIONS> extends true ? Osdk.Instance<Q, never, P> : IsNever<Exclude<OPTIONS, "$notStrict" | "$rid">> extends true ? Osdk.Instance<Q, OPTIONS & ("$notStrict" | "$rid"), P> : Osdk.Instance<Q, ("$notStrict" extends OPTIONS ? "$notStrict" : never) | ("$rid" extends OPTIONS ? "$rid" : never), ExtractPropsKeysFromOldPropsStyle<Q, OPTIONS>>;
+export type Osdk<Q extends ObjectOrInterfaceDefinition, OPTIONS extends string = never, P extends PropertyKeys<Q> = PropertyKeys<Q>> = IsNever<OPTIONS> extends true ? Osdk.Instance<Q, never, P> : IsAny<OPTIONS> extends true ? Osdk.Instance<Q, never, P> : (IsNever<Exclude<OPTIONS, "$notStrict" | "$rid">>) extends true ? Osdk.Instance<Q, OPTIONS & ("$notStrict" | "$rid"), P> : Osdk.Instance<Q, ("$notStrict" extends OPTIONS ? "$notStrict" : never) | ("$rid" extends OPTIONS ? "$rid" : never), ExtractPropsKeysFromOldPropsStyle<Q, OPTIONS>>;
 
 // @public (undocumented)
 export namespace Osdk {
@@ -627,7 +628,7 @@ export namespace Osdk {
             linksType?: any;
         } ? Q["linksType"] : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q> : never;
         readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P>>;
-    } & (IsNever<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
+    } & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
         readonly $rid: string;
     } : {});
 }
