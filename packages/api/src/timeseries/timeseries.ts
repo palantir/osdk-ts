@@ -140,5 +140,10 @@ export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
     query?: TimeSeriesQuery,
   ) => AsyncGenerator<TimeSeriesPoint<T>>;
 
-  lastFetchedPoint: TimeSeriesPoint<T> | undefined;
+  /**
+   * The most recently fetched value for the latest point in the GTSR.
+   * This will not be loaded automatically upon object load, but will be refreshed every time
+   * getLatestValue() is called
+   */
+  lastFetchedValue: TimeSeriesPoint<T> | undefined;
 }

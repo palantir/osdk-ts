@@ -44,12 +44,12 @@ describe("Timeseries", () => {
 
     expect(location).toBeDefined();
 
-    const initialLastPoint = employee.employeeLocation?.lastFetchedPoint;
+    const initialLastPoint = employee.employeeLocation?.lastFetchedValue;
     expect(initialLastPoint).toBeUndefined();
 
     const fetchedPoint = await employee.employeeLocation?.getLatestValue();
-    const nextLastPoint = employee.employeeLocation?.lastFetchedPoint;
-    expect(employee.employeeLocation?.lastFetchedPoint).toBeDefined();
+    const nextLastPoint = employee.employeeLocation?.lastFetchedValue;
+    expect(employee.employeeLocation?.lastFetchedValue).toBeDefined();
 
     expect(nextLastPoint).toEqual(fetchedPoint);
     expect(nextLastPoint?.time).toEqual("2014-04-14");

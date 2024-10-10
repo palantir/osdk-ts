@@ -35,7 +35,7 @@ export class GeotimeSeriesPropertyImpl<T extends GeoJSON.Point>
 {
   #triplet: [string, any, string];
   #client: MinimalClient;
-  lastFetchedPoint: TimeSeriesPoint<T> | undefined;
+  lastFetchedValue: TimeSeriesPoint<T> | undefined;
 
   constructor(
     client: MinimalClient,
@@ -55,7 +55,7 @@ export class GeotimeSeriesPropertyImpl<T extends GeoJSON.Point>
         ...this.#triplet,
       ) as Promise<TimeSeriesPoint<T>>;
 
-    latestPointPromise.then(latestPoint => this.lastFetchedPoint = latestPoint);
+    latestPointPromise.then(latestPoint => this.lastFetchedValue = latestPoint);
 
     return latestPointPromise;
   }

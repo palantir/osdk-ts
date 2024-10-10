@@ -26,7 +26,7 @@ export async function runGeotimeSeriesReferenceTests() {
   console.log(result.seriesId);
 
   const latestPoint = await result.seriesId?.getLatestValue();
-  const latestPointProp = result.seriesId?.lastFetchedPoint;
+  const latestPointProp = result.seriesId?.lastFetchedValue;
 
   console.log("loaded in last point: ", latestPoint);
   console.log("last fetched point: ", latestPointProp);
