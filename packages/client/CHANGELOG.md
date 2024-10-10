@@ -1,5 +1,15 @@
 # @osdk/client
 
+## 2.0.4
+
+### Patch Changes
+
+- 7f29753: Avoid type-fest's IsAny as it doesn't always work
+- Updated dependencies [7f29753]
+  - @osdk/api@2.0.4
+  - @osdk/generator-converters@2.0.4
+  - @osdk/client.unstable@2.0.4
+
 ## 2.0.3
 
 ### Patch Changes
