@@ -1,0 +1,16 @@
+.header {
+  display: flex;
+  align-items: center;
+  margin: 2em;
+}
+
+.logo {
+  height: 4em;
+  align-items: center;
+  margin-right: 1em;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 1.5em;
+}

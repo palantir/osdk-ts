@@ -1,0 +1,11 @@
+{
+  // WARNING: GENERATED FILE. DO NOT EDIT DIRECTLY. See .monorepolint.config.mjs
+  "extends": ["//"],
+  "tasks": {
+    "codegen": {
+      "inputs": ["templates/**/*"],
+      "outputs": ["src/generatedNoCheck/**/*"],
+      "dependsOn": ["@osdk/create-app.template-packager#transpile"]
+    }
+  }
+}

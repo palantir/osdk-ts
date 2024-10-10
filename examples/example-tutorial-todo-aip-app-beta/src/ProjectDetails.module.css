@@ -1,0 +1,53 @@
+.projectCard {
+  margin: 2em;
+  padding: 0.5em;
+  border: 1px solid #ccc;
+  /* margin: 0.5em; */
+  gap: 0.5em;
+  border-radius: 5px;
+
+}
+
+.projectTitle {
+  font-size: 1.5em;
+}
+
+.description {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.image {
+  height: 16px;
+  width: 16px;
+}
+
+.aip {
+  background-color: #7961DB;
+  color: #ffffff;
+  border: 1px solid #ccc;
+  padding: 2px;
+  gap: 10px;
+  height: 30px;
+}
+
+.processing {
+  cursor: progress;
+}
+
+.aipText {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.textArea {
+  border: none;
+  color: gray;
+  resize: none;
+  overflow: hidden;
+  pointer-events: none;
+}
