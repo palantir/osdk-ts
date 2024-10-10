@@ -151,10 +151,10 @@ async function checkExamples(
       for (const q of compareResult.diffSet ?? []) {
         if (q.state !== "equal") {
           const aPath = q.path1 && q.name1
-            ? q.path1 + q.relativePath + q.name1
+            ? path.join(q.path1, q.relativePath, q.name1)
             : null;
           const bPath = q.path2 && q.name2
-            ? q.path2 + q.relativePath + q.name2
+            ? path.join(q.path2, q.relativePath, q.name2)
             : null;
 
           const aContents = getContents(aPath);

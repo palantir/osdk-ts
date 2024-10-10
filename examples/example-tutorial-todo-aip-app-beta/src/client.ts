@@ -1,6 +1,6 @@
 import { createClient } from "@osdk/client";
 import { createPublicOauthClient } from "@osdk/oauth";
-import { $ontologyRid } from "@osdk/e2e.generated.1.1.x";
+import { $ontologyRid } from "@osdk/e2e.generated.catchall";
 
 const url = import.meta.env.VITE_FOUNDRY_API_URL;
 const clientId = import.meta.env.VITE_FOUNDRY_CLIENT_ID;

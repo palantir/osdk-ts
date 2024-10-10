@@ -23,7 +23,7 @@ function AuthenticatedRoute() {
     }
   }, [navigate]);
 
-  if (token == null || token.isExpired) {
+  if (token == null) {
     return null;
   }
 
