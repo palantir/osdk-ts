@@ -23,3 +23,4 @@ schemamigrations
 SearchArounds
 typeclasses
 workstate
+Buildable

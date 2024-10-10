@@ -112,6 +112,13 @@ describe("FetchMetadata", () => {
             "nullable": false,
             "type": "integer",
           },
+          "employeeLocation": {
+            "description": "Geotime series reference of the location of the employee",
+            "displayName": undefined,
+            "multiplicity": false,
+            "nullable": true,
+            "type": "geotimeSeriesReference",
+          },
           "employeeStatus": {
             "description": "TimeSeries of the status of the employee",
             "displayName": undefined,

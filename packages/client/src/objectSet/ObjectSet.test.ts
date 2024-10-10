@@ -159,6 +159,7 @@ describe("ObjectSet", () => {
         fullName: "John Doe",
         office: "NYC",
         startDate: "2019-01-01",
+        employeeLocation: expect.anything(),
       },
       {
         $apiName: "Employee",
@@ -171,6 +172,7 @@ describe("ObjectSet", () => {
         fullName: "Jane Doe",
         office: "SEA",
         startDate: "2012-02-12",
+        employeeLocation: expect.anything(),
       },
       {
         $apiName: "Employee",
@@ -183,6 +185,7 @@ describe("ObjectSet", () => {
         fullName: "Jack Smith",
         office: "LON",
         startDate: "2015-05-15",
+        employeeLocation: expect.anything(),
       },
     ]);
   });
@@ -490,6 +493,7 @@ describe("ObjectSet", () => {
             | "employeeId"
             | "employeeStatus"
             | "startDate"
+            | "employeeLocation"
           >();
 
         expectTypeOf<

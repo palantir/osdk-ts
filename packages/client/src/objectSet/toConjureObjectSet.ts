@@ -74,12 +74,17 @@ export function toConjureObjectSet(
         ),
       });
     case "searchAround":
+    case "asBaseObjectTypes":
+    case "asType":
+    case "interfaceBase":
       throw new Error("not implemented");
   }
 }
 
 /** @internal */
-export async function getObjectSetBaseType(objectSet: ObjectSet) {
+export async function getObjectSetBaseType(
+  objectSet: ObjectSet,
+) {
   switch (objectSet.type) {
     case "base":
       return objectSet.objectType;
@@ -101,6 +106,10 @@ export async function getObjectSetBaseType(objectSet: ObjectSet) {
       return getObjectSetBaseType(objectSet.objectSets[0]);
     case "searchAround":
       // TODO: Get a mapping using the link
+      throw new Error("not implemented");
+    case "asBaseObjectTypes":
+    case "asType":
+    case "interfaceBase":
       throw new Error("not implemented");
   }
 }

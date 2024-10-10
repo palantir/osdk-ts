@@ -193,6 +193,106 @@
       },
       "linkTypes": []
     },
+    "FintrafficAis": {
+      "objectType": {
+        "apiName": "FintrafficAis",
+        "primaryKey": "mmsi",
+        "displayName": "Fintraffic AIS",
+        "description": "Fintraffic AIS",
+        "properties": {
+          "mmsi": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "name": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "centroid": {
+            "dataType": {
+              "type": "geopoint"
+            }
+          },
+          "geometry": {
+            "dataType": {
+              "type": "geoshape"
+            }
+          },
+          "seriesId": {
+            "dataType": {
+              "type": "geotimeSeriesReference"
+            }
+          },
+          "shipType": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "timestamp": {
+            "dataType": {
+              "type": "timestamp"
+            }
+          }
+        },
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "traffic",
+          "color": "color"
+        },
+        "titleProperty": "name",
+        "pluralDisplayName": "Fintraffic AIS"
+      },
+      "linkTypes": []
+    },
+    "RhemmingsObjectWithGtsrProperty2": {
+      "objectType": {
+        "apiName": "RhemmingsObjectWithGtsrProperty2",
+        "primaryKey": "id",
+        "displayName": "(rhemmings) Object with GTSR property 2",
+        "description": "(rhemmings) Object with GTSR property 2",
+        "properties": {
+          "id": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "type": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "location": {
+            "dataType": {
+              "type": "geopoint"
+            }
+          },
+          "gtsr": {
+            "dataType": {
+              "type": "geotimeSeriesReference"
+            }
+          },
+          "timestamp": {
+            "dataType": {
+              "type": "timestamp"
+            }
+          }
+        },
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "traffic",
+          "color": "color"
+        },
+        "titleProperty": "id",
+        "pluralDisplayName": "(rhemmings) Object with GTSR property 2"
+      },
+      "linkTypes": []
+    },
     "DherlihyComplexObject": {
       "objectType": {
         "apiName": "DherlihyComplexObject",

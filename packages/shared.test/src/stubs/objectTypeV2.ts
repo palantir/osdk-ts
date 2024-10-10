@@ -59,6 +59,12 @@ export const employeeObjectType: ObjectTypeV2 = {
         },
       },
     },
+    employeeLocation: {
+      description: "Geotime series reference of the location of the employee",
+      dataType: {
+        type: "geotimeSeriesReference",
+      },
+    },
   },
   rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
   status: "ACTIVE",

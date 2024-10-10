@@ -62,7 +62,7 @@ export const TimeseriesDurationMapping = {
   ...TimeDurationMapping,
 } satisfies Record<string, TimeseriesDurationUnits>;
 
-export interface TimeSeriesPoint<T extends string | number> {
+export interface TimeSeriesPoint<T extends string | number | GeoJSON.Point> {
   time: string;
   value: T;
 }
@@ -104,4 +104,46 @@ export interface TimeSeriesProperty<T extends number | string> {
   asyncIterPoints: (
     query?: TimeSeriesQuery,
   ) => AsyncGenerator<TimeSeriesPoint<T>>;
+}
+
+export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
+  /**
+   * Queries the last point of the Timeseries
+   */
+  getLatestValue: () => Promise<TimeSeriesPoint<T>>;
+  /**
+     * Loads all points, within the given time range if that's provided
+     * @param query - a query representing either an absolute or relative range of time
+     * @example
+     *  const points = await employee.employeeStatus?.getAllPoints({
+        $after: 1,
+        $unit: "month",
+      });
+     */
+  getAllValues: (
+    query?: TimeSeriesQuery,
+  ) => Promise<Array<TimeSeriesPoint<T>>>;
+  /**
+     * Returns an async iterator to load all points
+     * within the given time range if that's provided
+     * @param query - a query representing either an absolute or relative range of time
+     * @example
+     *  const iterator = employee.employeeStatus?.asyncIter({
+        $after: 1,
+        $unit: "month",
+      });
+      for await (const point of iterator) {
+          // Handle time series point
+      }
+     */
+  asyncIterValues: (
+    query?: TimeSeriesQuery,
+  ) => AsyncGenerator<TimeSeriesPoint<T>>;
+
+  /**
+   * The most recently fetched value for the latest point in the GTSR.
+   * This will not be loaded automatically upon object load, but will be refreshed every time
+   * getLatestValue() is called
+   */
+  lastFetchedValue: TimeSeriesPoint<T> | undefined;
 }
