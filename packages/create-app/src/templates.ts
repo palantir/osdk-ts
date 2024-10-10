@@ -89,6 +89,7 @@ export const TEMPLATES: readonly Template[] = [
     label: "Tutorial: To do App",
     envPrefix: "VITE_",
     buildDirectory: "./dist",
+    isBeta: true,
     hidden: true,
     getFiles: async () => ((await import(
       `@osdk/create-app.template.tutorial-todo-app.beta`
@@ -109,6 +110,7 @@ export const TEMPLATES: readonly Template[] = [
     label: "Tutorial: To do AIP App",
     envPrefix: "VITE_",
     buildDirectory: "./dist",
+    isBeta: true,
     hidden: true,
     getFiles: async () => ((await import(
       `@osdk/create-app.template.tutorial-todo-aip-app.beta`
