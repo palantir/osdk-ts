@@ -51,13 +51,13 @@
     "globals": "^15.8.0",
     "husky": "^9.1.1",
     "lint-staged": "^15.2.7",
-    "micromatch": "^4.0.7",
+    "micromatch": "^4.0.8",
     "tsc-absolute": "^1.0.1",
     "tsup": "^8.2.3",
     "turbo": "^2.0.9",
     "typescript": "^5.5.3",
     "typescript-eslint": "^7.17.0",
-    "vitest": "^2.0.4"
+    "vitest": "^2.1.2"
   },
   "pnpm": {
     "overrides": {
