@@ -1,4 +1,6 @@
-import { FoundryClient, PublicClientAuth } from "{{osdkPackage}}";
+import { createClient } from "@osdk/client";
+import { createPublicOauthClient } from "@osdk/oauth";
+import { $ontologyRid } from "{{osdkPackage}}";
 
 const url = import.meta.env.VITE_FOUNDRY_API_URL;
 const clientId = import.meta.env.VITE_FOUNDRY_CLIENT_ID;
@@ -19,13 +21,16 @@ function checkEnv(
 /**
  * Initialize the client to interact with the Ontology SDK
  */
-const client = new FoundryClient({
+const auth = createPublicOauthClient(
+  clientId,
   url,
-  auth: new PublicClientAuth({
-    clientId,
-    url,
-    redirectUrl,
-  }),
-});
+  redirectUrl,
+);
 
-export default client;
+const client = createClient(
+  url,
+  $ontologyRid,
+  auth,
+);
+
+export { auth, client };

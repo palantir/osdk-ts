@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import client from "./client";
+import { auth } from "./client";
 
 /**
  * Component to render at `/auth/callback`
@@ -13,7 +13,7 @@ function AuthCallback() {
   // This effect conflicts with React 18 strict mode in development
   // https://react.dev/learn/synchronizing-with-effects#how-to-handle-the-effect-firing-twice-in-development
   useEffect(() => {
-    client.auth
+    auth
       .signIn()
       .then(() => navigate("/", { replace: true }))
       .catch((e: unknown) => setError((e as Error).message ?? e));
