@@ -443,8 +443,7 @@ export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     getAllValues: (query?: TimeSeriesQuery) => Promise<Array<TimeSeriesPoint<T>>>;
     getLatestValue: () => Promise<TimeSeriesPoint<T>>;
-    // (undocumented)
-    lastFetchedPoint: TimeSeriesPoint<T> | undefined;
+    lastFetchedValue: TimeSeriesPoint<T> | undefined;
 }
 
 // Warning: (ae-forgotten-export) The symbol "GroupByEntry" needs to be exported by the entry point index.d.ts
