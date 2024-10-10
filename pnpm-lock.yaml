@@ -620,11 +620,11 @@ importers:
         specifier: workspace:~
         version: link:../generator
       '@osdk/internal.foundry.core':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.3.0-beta.0
+        version: 0.3.0-beta.0
       '@osdk/internal.foundry.ontologiesv2':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.3.0-beta.0
+        version: 0.3.0-beta.0
       '@osdk/shared.net':
         specifier: workspace:~
         version: link:../shared.net
@@ -1734,8 +1734,8 @@ importers:
         specifier: workspace:~
         version: link:../generator-converters
       '@osdk/internal.foundry.core':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.3.0-beta.0
+        version: 0.3.0-beta.0
       fast-deep-equal:
         specifier: ^3.1.3
         version: 3.1.3
@@ -1780,8 +1780,8 @@ importers:
         specifier: workspace:~
         version: link:../api
       '@osdk/internal.foundry.core':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.3.0-beta.0
+        version: 0.3.0-beta.0
     devDependencies:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
@@ -1827,8 +1827,8 @@ importers:
         specifier: workspace:~
         version: link:../client.unstable
       '@osdk/internal.foundry.core':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.3.0-beta.0
+        version: 0.3.0-beta.0
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -2032,11 +2032,11 @@ importers:
         specifier: 0.3.0-beta.0
         version: 0.3.0-beta.0
       '@osdk/internal.foundry.geo':
-        specifier: 0.1.0
-        version: 0.1.0
+        specifier: 0.3.0-beta.0
+        version: 0.3.0-beta.0
       '@osdk/internal.foundry.ontologies':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.3.0-beta.0
+        version: 0.3.0-beta.0
       '@osdk/internal.foundry.ontologiesv2':
         specifier: 0.3.0-beta.0
         version: 0.3.0-beta.0
@@ -2090,14 +2090,14 @@ importers:
         specifier: workspace:*
         version: link:../generator
       '@osdk/internal.foundry.core':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.3.0-beta.0
+        version: 0.3.0-beta.0
       '@osdk/internal.foundry.ontologies':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.3.0-beta.0
+        version: 0.3.0-beta.0
       '@osdk/internal.foundry.ontologiesv2':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.3.0-beta.0
+        version: 0.3.0-beta.0
       '@osdk/shared.net':
         specifier: workspace:*
         version: link:../shared.net
@@ -3614,6 +3614,9 @@ packages:
 
   '@osdk/internal.foundry.ontologies@0.2.0':
     resolution: {integrity: sha512-tAJtBupT5VShN9Q7XJ+bsx+3SeTle+l7kRuaYvVkfUvju1yxzHvhmJWyYHbnPpa4fFwZUVclcHI4NwNkbNK9cQ==}
+
+  '@osdk/internal.foundry.ontologies@0.3.0-beta.0':
+    resolution: {integrity: sha512-8Z0InoVqBN5Go1sCkN46gg+wE1th2ajg3dqzzS6vjnBWMPXDvbzeFoq5iJ0czqsrIk4Vdu8JB6lrM6pUwTx7HA==}
 
   '@osdk/internal.foundry.ontologiesv2@0.2.0':
     resolution: {integrity: sha512-UUxcwGCfiX1+kvYrWgYxWe1JxttZk7X16XwrRUr8qLKjUTgqLXOvNMq6XtzfytQ7J/nOfbfcjxHBM2LNQwudag==}
@@ -9419,6 +9422,12 @@ snapshots:
   '@osdk/internal.foundry.ontologies@0.2.0':
     dependencies:
       '@osdk/internal.foundry.core': 0.2.0
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.net.platformapi': 0.3.1
+
+  '@osdk/internal.foundry.ontologies@0.3.0-beta.0':
+    dependencies:
+      '@osdk/internal.foundry.core': 0.3.0-beta.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.net.platformapi': 0.3.1
 
