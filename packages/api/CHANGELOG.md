@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.0.5
+
+### Patch Changes
+
+- ca78964: Fixes a bug where any/never could be interpreted wrong when used in types for determining fetch results
+
 ## 2.0.4
 
 ### Patch Changes

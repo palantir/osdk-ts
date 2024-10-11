@@ -1,5 +1,12 @@
 # @osdk/maker
 
+## 0.8.5
+
+### Patch Changes
+
+- Updated dependencies [ca78964]
+  - @osdk/api@2.0.5
+
 ## 0.8.4
 
 ### Patch Changes

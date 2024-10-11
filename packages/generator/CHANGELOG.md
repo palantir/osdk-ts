@@ -1,5 +1,14 @@
 # @osdk/generator
 
+## 2.0.5
+
+### Patch Changes
+
+- e4c00ad: Queries that have structs now represent the struct shape instead of Record<string, any>
+- Updated dependencies [ca78964]
+  - @osdk/api@2.0.5
+  - @osdk/generator-converters@2.0.5
+
 ## 2.0.4
 
 ### Patch Changes
