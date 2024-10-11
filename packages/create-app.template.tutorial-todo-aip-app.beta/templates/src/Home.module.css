@@ -1,0 +1,28 @@
+.tutorialBannerWrapper {
+  display: flex;
+  margin: 2em;
+}
+
+.tutorialBanner {
+  flex: 1;
+  width: 0;
+  background: rgba(121, 97, 219, 0.7);
+  color: #ffffff;
+  border-radius: 1em;
+  padding: 1em;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.tutorialBannerTitle {
+  margin-top: 0;
+  font-weight: 600;
+}
+
+.projectSelect {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  margin: 2em;
+  font-weight: 600;
+}
+
