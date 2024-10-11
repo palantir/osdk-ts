@@ -46,7 +46,7 @@ export interface deleteOsdkTestObject extends ActionDefinition<deleteOsdkTestObj
     displayName: 'Delete Osdk Test Object';
     modifiedEntities: {};
     parameters: deleteOsdkTestObject.ParamsDefinition;
-    rid: 'ri.actions.main.action-type.e5c3bcaa-cd83-4dbb-9ef9-f110f34825af';
+    rid: 'ri.actions.main.action-type.3858bab4-49c7-4fdf-a780-6ccbc359d817';
     status: 'EXPERIMENTAL';
     type: 'action';
 

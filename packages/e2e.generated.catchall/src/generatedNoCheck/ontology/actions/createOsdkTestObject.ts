@@ -50,7 +50,7 @@ export interface createOsdkTestObject extends ActionDefinition<createOsdkTestObj
       };
     };
     parameters: createOsdkTestObject.ParamsDefinition;
-    rid: 'ri.actions.main.action-type.f80772f9-4119-4544-aba5-446d7f8a4d84';
+    rid: 'ri.actions.main.action-type.75c72b90-815b-48df-a3b3-314af2e9e2eb';
     status: 'EXPERIMENTAL';
     type: 'action';
 

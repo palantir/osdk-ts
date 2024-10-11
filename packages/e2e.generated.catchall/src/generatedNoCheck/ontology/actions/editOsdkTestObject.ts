@@ -59,7 +59,7 @@ export interface editOsdkTestObject extends ActionDefinition<editOsdkTestObject.
       };
     };
     parameters: editOsdkTestObject.ParamsDefinition;
-    rid: 'ri.actions.main.action-type.3d13b84a-4f85-4442-baee-34a5ceb7395e';
+    rid: 'ri.actions.main.action-type.4a70a939-b2ee-46dd-8099-a290cafa28e1';
     status: 'EXPERIMENTAL';
     type: 'action';
 

@@ -152,11 +152,15 @@ export function createOsdkObject<
             if (instance != null) {
               return instance;
             }
+
             const geotimeProp = new GeotimeSeriesPropertyImpl<GeoJSON.Point>(
               client,
               objectDef.apiName,
               target[RawObject][objectDef.primaryKeyApiName as string],
               p as string,
+              rawValue.type === "geotimeSeriesValue"
+                ? { time: rawValue.timestamp, value: rawValue.position }
+                : undefined,
             );
             geotimePropertyCache.set(
               client,

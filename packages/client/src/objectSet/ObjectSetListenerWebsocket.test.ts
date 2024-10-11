@@ -219,7 +219,7 @@ describe("ObjectSetListenerWebsocket", async () => {
       });
 
       it("currently requests reference backed properties", () => {
-        expect(subReq1.requests[0].referenceSet).toEqual([]);
+        expect(subReq1.requests[0].referenceSet).toEqual(["employeeLocation"]);
       });
 
       describe("socket closed before subscription confirmed", () => {
@@ -285,18 +285,26 @@ describe("ObjectSetListenerWebsocket", async () => {
           await listenerPromise;
           expect(listener.onChange).toHaveBeenCalled();
           expect(updateReceived).toMatchInlineSnapshot(`
-              {
-                "object": {
-                  "$apiName": "Employee",
-                  "$objectType": "Employee",
-                  "$primaryKey": {
-                    "apiName": "employeeId",
-                  },
-                  "employeeStatus": TimeSeriesPropertyImpl {},
+            {
+              "object": {
+                "$apiName": "Employee",
+                "$objectType": "Employee",
+                "$primaryKey": {
+                  "apiName": "employeeId",
                 },
-                "state": "ADDED_OR_UPDATED",
-              }
-            `);
+                "employeeLocation": GeotimeSeriesPropertyImpl {
+                  "lastFetchedValue": {
+                    "time": "111",
+                    "value": [
+                      100,
+                      200,
+                    ],
+                  },
+                },
+              },
+              "state": "ADDED_OR_UPDATED",
+            }
+          `);
         });
 
         describe("additional subscription", async () => {
@@ -307,11 +315,11 @@ describe("ObjectSetListenerWebsocket", async () => {
               client.subscribe(
                 {
                   type: "base",
-                  objectType: Office.apiName,
+                  objectType: Employee.apiName,
                 },
                 listener,
                 ["employeeStatus"],
-                [],
+                [""],
               ),
 
               expectSingleSubscribeMessage(ws),
@@ -437,9 +445,9 @@ function sendReferenceUpdatesResponse(
       "type": "reference",
       "objectType": "Employee",
       "primaryKey": { "apiName": "employeeId" },
-      "property": "employeeStatus",
+      "property": "employeeLocation",
       "value": {
-        timestamp: "111",
+        "timestamp": "111",
         "type": "geotimeSeriesValue",
         "position": [100, 200],
       },
@@ -477,7 +485,7 @@ async function subscribeAndExpectWebSocket(
       },
       listener,
       ["employeeId"],
-      [],
+      ["employeeLocation"],
     ),
   ]);
 

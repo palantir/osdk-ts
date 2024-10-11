@@ -76,7 +76,7 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
        */
       stringProperty: $PropertyDef<'string', 'nullable', 'single'>;
     };
-    rid: 'ri.ontology.main.object-type.0ff2c340-6d2f-4ff4-9fca-f1a085d4b349';
+    rid: 'ri.ontology.main.object-type.ba4a949c-547a-45de-9c78-b772bb55acfb';
     status: 'EXPERIMENTAL';
     titleProperty: 'primaryKey_';
     type: 'object';

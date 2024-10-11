@@ -18,14 +18,13 @@ import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { EXPERIMENTAL_ObjectSetListener } from "@osdk/api/unstable";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/api/unstable";
 import {
-  Employee,
+  $Actions,
   FintrafficAis,
   OsdkTestObject,
 } from "@osdk/e2e.generated.catchall";
-import { client, danubeClient } from "./client.js";
-import { logger } from "./logger.js";
+import { client, dsClient } from "./client.js";
 
-export function runSubscriptionsTest() {
+export async function runSubscriptionsTest() {
   const makeObjectSetListener = <T extends ObjectOrInterfaceDefinition>(
     prefix: string,
   ): EXPERIMENTAL_ObjectSetListener<T> => {
@@ -48,13 +47,6 @@ export function runSubscriptionsTest() {
     };
   };
 
-  danubeClient(FintrafficAis).where({
-    "shipType": "1",
-  })[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
-    ["timestamp", "mmsi"],
-    makeObjectSetListener<FintrafficAis>("Filtered"),
-  );
-
   client(OsdkTestObject)[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
     [
       "primaryKey_",
@@ -63,7 +55,22 @@ export function runSubscriptionsTest() {
     makeObjectSetListener<OsdkTestObject>("OsdkTestObject"),
   );
 
-  danubeClient(FintrafficAis)[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
+  await client($Actions.createOsdkTestObject).applyAction({
+    string_property: "test",
+  });
+
+  const objectArray = await client(OsdkTestObject).fetchPage();
+
+  await client($Actions.editOsdkTestObject).applyAction({
+    OsdkTestObject: objectArray.data[0],
+    string_property: "a",
+  });
+
+  await client($Actions.deleteOsdkTestObject).applyAction({
+    OsdkTestObject: objectArray.data[0],
+  });
+
+  dsClient(FintrafficAis)[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
     [
       "centroid",
       "geometry",
@@ -74,28 +81,5 @@ export function runSubscriptionsTest() {
       "timestamp",
     ],
     makeObjectSetListener<FintrafficAis>("GeotimeSeries"),
-  );
-
-  danubeClient(FintrafficAis)[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
-    [
-      "centroid",
-      "geometry",
-      "mmsi",
-      "name",
-      "shipType",
-      "seriesId",
-      "timestamp",
-    ],
-    {
-      onChange(objectUpdate) {
-        logger.info("GeotimeSeries2: Changed objects: %o", objectUpdate);
-      },
-      onError(errors) {
-        logger.error({ errors }, "GeotimeSeries2: Error in subscription");
-      },
-      onOutOfDate() {
-        logger.info("GeotimeSeries2: out of date");
-      },
-    },
   );
 }
