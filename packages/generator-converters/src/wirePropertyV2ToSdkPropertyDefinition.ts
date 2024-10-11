@@ -42,6 +42,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "timestamp":
     case "timeseries":
     case "marking":
+    case "geotimeSeriesReference":
       return {
         displayName: input.displayName,
         multiplicity: false,
@@ -58,10 +59,6 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         nullable: true,
       };
     }
-    case "geotimeSeriesReference":
-      throw new Error(
-        `Unsupported data type ${JSON.stringify(input.dataType)}`,
-      );
 
     default:
       const _: never = input.dataType;
@@ -89,6 +86,7 @@ function objectPropertyTypeToSdkPropertyDefinition(
     case "geoshape":
     case "timestamp":
     case "marking":
+    case "geotimeSeriesReference":
       return propertyType.type;
     case "date":
       return "datetime";
@@ -99,10 +97,6 @@ function objectPropertyTypeToSdkPropertyDefinition(
         return "stringTimeseries";
       }
       return "numericTimeseries";
-    case "geotimeSeriesReference":
-      throw new Error(
-        `Unsupported data type ${JSON.stringify(propertyType)}`,
-      );
 
     default:
       const _: never = propertyType;

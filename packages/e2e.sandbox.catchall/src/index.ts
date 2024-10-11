@@ -21,6 +21,7 @@ import { runAggregationsTest } from "./runAggregationsTest.js";
 import { runAssignEmployeeToVentureTest } from "./runAssignEmployeeToVentureTest.js";
 import { runFoundrySdkClientVerificationTest } from "./runFoundrySdkClientVerificationTest.js";
 import { runGeoQueriesTest } from "./runGeoQueriesTest.js";
+import { runGeotimeSeriesReferenceTests } from "./runGeotimeSeriesTest.js";
 import { runInterfacesTest } from "./runInterfacesTest.js";
 import { runLegacyExamples } from "./runLegacyExamples.js";
 import { runQueriesTest } from "./runQueriesTest.js";
@@ -65,6 +66,8 @@ async function runTests() {
     if (runOld) await typeChecks(client);
 
     await runTimeseriesTest();
+
+    await runGeotimeSeriesReferenceTests();
   } catch (e) {
     console.error(`Caught an error we did not expect, type: ${typeof e}`);
     console.error(e);

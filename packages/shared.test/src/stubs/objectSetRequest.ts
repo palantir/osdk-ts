@@ -94,6 +94,19 @@ const eqSearchBody: LoadObjectSetRequestV2 = {
   select: [],
 };
 
+const eqSearchBody2: LoadObjectSetRequestV2 = {
+  objectSet: {
+    type: "filter",
+    objectSet: { type: "base", objectType: employeeObjectType.apiName },
+    where: {
+      type: "eq",
+      field: "employeeId",
+      value: 50031,
+    },
+  },
+  select: [],
+};
+
 const eqSearchBodyBadObject: LoadObjectSetRequestV2 = {
   objectSet: {
     type: "filter",
@@ -433,6 +446,7 @@ export const loadObjectSetRequestHandlers: {
   [stableStringify(intersectedObjectSet)]: [employee3],
   [stableStringify(subtractedObjectSet)]: [employee2, employee3],
   [stableStringify(eqSearchBody)]: [employee1],
+  [stableStringify(eqSearchBody2)]: [employee2],
   [stableStringify(eqSearchBodyBadObject)]: [employeeFailsStrict],
   [stableStringify(eqSearchBodyWithSelect)]: [employee1],
   [stableStringify(andSearchBody)]: [employee2],

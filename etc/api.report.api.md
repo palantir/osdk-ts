@@ -432,6 +432,20 @@ export type GeoFilter_Within = {
     } | Polygon;
 };
 
+// @public (undocumented)
+export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
+    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+    readonly asyncIterValues: (query?: TimeSeriesQuery) => AsyncGenerator<TimeSeriesPoint<T>>;
+    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+    readonly getAllValues: (query?: TimeSeriesQuery) => Promise<Array<TimeSeriesPoint<T>>>;
+    readonly getLatestValue: () => Promise<TimeSeriesPoint<T> | undefined>;
+    readonly lastFetchedValue: TimeSeriesPoint<T> | undefined;
+}
+
 // Warning: (ae-forgotten-export) The symbol "GroupByEntry" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -722,6 +736,8 @@ export interface PropertyValueWireToClient {
     // (undocumented)
     geoshape: GeoJSON.GeoJSON;
     // (undocumented)
+    geotimeSeriesReference: GeotimeSeriesProperty<GeoJSON.Point>;
+    // (undocumented)
     integer: number;
     // (undocumented)
     long: string;
@@ -862,7 +878,7 @@ export const TimeseriesDurationMapping: {
 };
 
 // @public (undocumented)
-export interface TimeSeriesPoint<T extends string | number> {
+export interface TimeSeriesPoint<T extends string | number | GeoJSON.Point> {
     // (undocumented)
     time: string;
     // (undocumented)
@@ -875,12 +891,12 @@ export interface TimeSeriesProperty<T extends number | string> {
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    asyncIterPoints: (query?: TimeSeriesQuery) => AsyncGenerator<TimeSeriesPoint<T>>;
+    readonly asyncIterPoints: (query?: TimeSeriesQuery) => AsyncGenerator<TimeSeriesPoint<T>>;
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    getAllPoints: (query?: TimeSeriesQuery) => Promise<Array<TimeSeriesPoint<T>>>;
-    getFirstPoint: () => Promise<TimeSeriesPoint<T>>;
-    getLastPoint: () => Promise<TimeSeriesPoint<T>>;
+    readonly getAllPoints: (query?: TimeSeriesQuery) => Promise<Array<TimeSeriesPoint<T>>>;
+    readonly getFirstPoint: () => Promise<TimeSeriesPoint<T>>;
+    readonly getLastPoint: () => Promise<TimeSeriesPoint<T>>;
 }
 
 // @public (undocumented)
@@ -942,7 +958,7 @@ export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T
 };
 
 // @public (undocumented)
-export type WirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "numericTimeseries" | "stringTimeseries" | "attachment" | "geopoint" | "geoshape";
+export type WirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "numericTimeseries" | "stringTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
 
 // Warnings were encountered during analysis:
 //

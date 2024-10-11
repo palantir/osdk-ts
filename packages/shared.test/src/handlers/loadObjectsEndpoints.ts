@@ -40,6 +40,10 @@ import {
   attachmentUploadRequest,
   attachmentUploadRequestBody,
 } from "../stubs/attachments.js";
+import {
+  latestValueRequestHandlers,
+  streamValuesRequestHandlers,
+} from "../stubs/geotimeseriesrequests.js";
 import { linkResponseMap } from "../stubs/links.js";
 import { linkTypesResponseMap } from "../stubs/linkTypes.js";
 import { loadRequestHandlersV2 } from "../stubs/loadRequests.js";
@@ -268,7 +272,9 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
   handleOpenApiCall(
     OntologiesV2.TimeSeriesPropertiesV2.streamPoints,
     ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
-    handleStreamPoints,
+    async req => {
+      return handleStreamValues(req, false);
+    },
   ),
 
   /**
@@ -642,9 +648,42 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       throw new OpenApiCallError(404, AttachmentNotFoundError);
     },
   ),
+  /**
+   * Load latestValue
+   */
+  handleOpenApiCall(
+    OntologiesV2.TimeSeriesValueBankProperties.getLatestValue,
+    ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
+    async req => {
+      const pointParams = {
+        primaryKey: req.params.primaryKey,
+        propertyName: req.params.propertyName,
+      };
+      const lastPointResp =
+        latestValueRequestHandlers[JSON.stringify(pointParams)];
+      if (
+        (req.params.ontologyApiName === defaultOntology.apiName
+          || req.params.ontologyApiName === defaultOntology.rid)
+        && req.params.objectType === employeeObjectType.apiName
+      ) {
+        return lastPointResp;
+      }
+      throw new OpenApiCallError(400, InvalidRequest("Invalid request"));
+    },
+  ),
+  /**
+   * stream values
+   */
+  handleOpenApiCall(
+    OntologiesV2.TimeSeriesValueBankProperties.streamValues,
+    ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
+    async req => {
+      return handleStreamValues(req, true);
+    },
+  ),
 ] as const;
 
-async function handleStreamPoints(
+async function handleStreamValues(
   req: Parameters<
     HttpResponseResolver<
       PathParams<string>,
@@ -653,10 +692,12 @@ async function handleStreamPoints(
       | BaseAPIError
     >
   >[0],
+  useGeotime?: boolean,
 ) {
   const requestBody = await req.request.json();
-  const streamPointsResp =
-    streamPointsRequestHandlers[stableStringify(requestBody)];
+  const streamPointsResp = useGeotime
+    ? streamValuesRequestHandlers[stableStringify(requestBody)]
+    : streamPointsRequestHandlers[stableStringify(requestBody)];
   if (
     streamPointsResp
     && (req.params.ontologyApiName === defaultOntology.apiName

@@ -15,6 +15,7 @@
  */
 
 import type {
+  GeotimeSeriesProperty,
   TimeSeriesPoint,
   TimeSeriesProperty,
   TimeSeriesQuery,
@@ -29,11 +30,12 @@ import {
 } from "./util/streamutils.js";
 import { asyncIterPointsHelper, getTimeRange } from "./util/timeseriesUtils.js";
 
-export class TimeSeriesPropertyImpl<T extends number | string>
-  implements TimeSeriesProperty<T>
+export class GeotimeSeriesPropertyImpl<T extends GeoJSON.Point>
+  implements GeotimeSeriesProperty<T>
 {
   #triplet: [string, any, string];
   #client: MinimalClient;
+  lastFetchedValue: TimeSeriesPoint<T> | undefined;
 
   constructor(
     client: MinimalClient,
@@ -45,36 +47,31 @@ export class TimeSeriesPropertyImpl<T extends number | string>
     this.#triplet = [objectApiName, primaryKey, propertyName];
   }
 
-  public async getFirstPoint() {
-    return OntologiesV2.TimeSeriesPropertiesV2.getFirstPoint(
-      this.#client,
-      await this.#client.ontologyRid,
-      ...this.#triplet,
-    ) as Promise<TimeSeriesPoint<T>>;
+  public async getLatestValue(): Promise<TimeSeriesPoint<T> | undefined> {
+    const latestPointPromise = OntologiesV2.TimeSeriesValueBankProperties
+      .getLatestValue(
+        this.#client,
+        await this.#client.ontologyRid,
+        ...this.#triplet,
+      );
+    latestPointPromise.then(latestPoint => this.lastFetchedValue = latestPoint);
+    return latestPointPromise;
   }
 
-  public async getLastPoint() {
-    return OntologiesV2.TimeSeriesPropertiesV2.getLastPoint(
-      this.#client,
-      await this.#client.ontologyRid,
-      ...this.#triplet,
-    ) as Promise<TimeSeriesPoint<T>>;
-  }
-
-  public async getAllPoints(query?: TimeSeriesQuery) {
+  public async getAllValues(query?: TimeSeriesQuery) {
     const allPoints: Array<TimeSeriesPoint<T>> = [];
 
-    for await (const point of this.asyncIterPoints(query)) {
+    for await (const point of this.asyncIterValues(query)) {
       allPoints.push(point);
     }
     return allPoints;
   }
 
-  public async *asyncIterPoints(
+  public async *asyncIterValues(
     query?: TimeSeriesQuery,
   ) {
-    const streamPointsIterator = await OntologiesV2.TimeSeriesPropertiesV2
-      .streamPoints(
+    const streamPointsIterator = await OntologiesV2
+      .TimeSeriesValueBankProperties.streamValues(
         this.#client,
         await this.#client.ontologyRid,
         ...this.#triplet,
