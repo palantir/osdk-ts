@@ -1,0 +1,10 @@
+.buttons {
+  display: flex;
+  gap: 1em;
+  margin-top: 1em;
+}
+
+.dialog {
+  border: 1px solid black;
+  border-radius: 10px;
+}
