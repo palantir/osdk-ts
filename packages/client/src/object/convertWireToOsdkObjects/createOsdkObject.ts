@@ -30,6 +30,7 @@ import { createClientCache } from "../Cache.js";
 import { get$as } from "./getDollarAs.js";
 import { get$link } from "./getDollarLink.js";
 import {
+  CachedPropertiesRef,
   ClientRef,
   ObjectDefRef,
   RawObject,
@@ -93,6 +94,10 @@ export function createOsdkObject<
         value: rawObj,
         writable: true, // so we can allow updates
       },
+      [CachedPropertiesRef]: {
+        value: new Map<string | symbol, any>(),
+        writable: true,
+      },
     },
   );
 
@@ -139,20 +144,10 @@ export function createOsdkObject<
             );
           }
           if (propDef.type === "geotimeSeriesReference") {
-            const cacheKey = JSON.stringify({
-              propertyName: p,
-              apiName: objectDef.apiName,
-              primaryKey:
-                target[RawObject][objectDef.primaryKeyApiName as string],
-            });
-            const instance = geotimePropertyCache.get(
-              client,
-              cacheKey,
-            );
+            const instance = target[CachedPropertiesRef].get(p);
             if (instance != null) {
               return instance;
             }
-
             const geotimeProp = new GeotimeSeriesPropertyImpl<GeoJSON.Point>(
               client,
               objectDef.apiName,
@@ -162,11 +157,7 @@ export function createOsdkObject<
                 ? { time: rawValue.timestamp, value: rawValue.position }
                 : undefined,
             );
-            geotimePropertyCache.set(
-              client,
-              cacheKey,
-              geotimeProp,
-            );
+            target[CachedPropertiesRef].set(p, geotimeProp);
             return geotimeProp;
           }
         }

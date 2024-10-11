@@ -9,7 +9,7 @@ export namespace queryTakesAllParameterTypes {
     /**
      * description of the query that takes all parameter types
      */
-    (query: queryTakesAllParameterTypes.Parameters): Promise<QueryResult.PrimitiveType<'string'>>;
+    (query: queryTakesAllParameterTypes.Parameters): Promise<queryTakesAllParameterTypes.ReturnType>;
   }
 
   export interface Parameters {
@@ -76,7 +76,11 @@ export namespace queryTakesAllParameterTypes {
     /**
      *   description: a struct with some fields
      */
-    readonly struct: QueryParam.PrimitiveType<'struct'>;
+    readonly struct: {
+      readonly id: QueryParam.PrimitiveType<'integer'>;
+
+      readonly name: QueryParam.PrimitiveType<'string'>;
+    };
 
     /**
      * (no ontology metadata)
@@ -103,6 +107,8 @@ export namespace queryTakesAllParameterTypes {
      */
     readonly unionNullable?: QueryParam.PrimitiveType<'string'> | QueryParam.PrimitiveType<'integer'>;
   }
+
+  export type ReturnType = QueryResult.PrimitiveType<'string'>;
 }
 
 export interface queryTakesAllParameterTypes
