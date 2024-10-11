@@ -14,42 +14,88 @@
  * limitations under the License.
  */
 
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { EXPERIMENTAL_ObjectSetListener } from "@osdk/api/unstable";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/api/unstable";
-import { Employee } from "@osdk/e2e.generated.catchall";
-import { client } from "./client.js";
+import {
+  Employee,
+  FintrafficAis,
+  OsdkTestObject,
+} from "@osdk/e2e.generated.catchall";
+import { client, danubeClient } from "./client.js";
 import { logger } from "./logger.js";
 
 export function runSubscriptionsTest() {
-  const makeObjectSetListener = (
+  const makeObjectSetListener = <T extends ObjectOrInterfaceDefinition>(
     prefix: string,
-  ): EXPERIMENTAL_ObjectSetListener<any> => {
+  ): EXPERIMENTAL_ObjectSetListener<T> => {
     return {
       onError(err) {
-        logger.error({ err }, "%s: Error in subscription", prefix);
+        console.error({ err }, "%s: Error in subscription", prefix);
       },
 
       onOutOfDate() {
-        logger.info("%s: out of date", prefix);
+        console.log("%s: out of date", prefix);
       },
 
       onChange(objects) {
-        logger.info("%s: Changed objects: %o", prefix, objects);
+        if (objects.state === "ADDED_OR_UPDATED") {
+          console.log("%s: Changed objects: %o", prefix, objects);
+        } else if (objects.state === "REMOVED") {
+          console.log("%s: Removed objects: %o", prefix, objects);
+        }
       },
     };
   };
 
-  client(Employee).where({
-    jobProfile: "Echo",
+  danubeClient(FintrafficAis).where({
+    "shipType": "1",
   })[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
-    ["id"],
-    makeObjectSetListener("Sub(Echo)"),
+    ["timestamp", "mmsi"],
+    makeObjectSetListener<FintrafficAis>("Filtered"),
   );
 
-  client(Employee).where({
-    jobProfile: "Delta",
-  })[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
-    ["id"],
-    makeObjectSetListener("Sub(Delta)"),
+  client(OsdkTestObject)[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
+    [
+      "primaryKey_",
+      "stringProperty",
+    ],
+    makeObjectSetListener<OsdkTestObject>("OsdkTestObject"),
+  );
+
+  danubeClient(FintrafficAis)[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
+    [
+      "centroid",
+      "geometry",
+      "mmsi",
+      "name",
+      "shipType",
+      "seriesId",
+      "timestamp",
+    ],
+    makeObjectSetListener<FintrafficAis>("GeotimeSeries"),
+  );
+
+  danubeClient(FintrafficAis)[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
+    [
+      "centroid",
+      "geometry",
+      "mmsi",
+      "name",
+      "shipType",
+      "seriesId",
+      "timestamp",
+    ],
+    {
+      onChange(objectUpdate) {
+        logger.info("GeotimeSeries2: Changed objects: %o", objectUpdate);
+      },
+      onError(errors) {
+        logger.error({ errors }, "GeotimeSeries2: Error in subscription");
+      },
+      onOutOfDate() {
+        logger.info("GeotimeSeries2: out of date");
+      },
+    },
   );
 }

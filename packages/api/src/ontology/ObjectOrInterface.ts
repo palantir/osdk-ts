@@ -24,3 +24,8 @@ export type ObjectOrInterfaceDefinition =
 export type PropertyKeys<
   O extends ObjectOrInterfaceDefinition,
 > = keyof NonNullable<O["__DefinitionMetadata"]>["properties"] & string;
+
+export type PropertyValue<
+  O extends ObjectOrInterfaceDefinition,
+  R extends string,
+> = NonNullable<O["__DefinitionMetadata"]>["properties"][R];

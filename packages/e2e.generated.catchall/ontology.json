@@ -6,6 +6,76 @@
     "description": ""
   },
   "actionTypes": {
+    "create-osdk-test-object": {
+      "apiName": "create-osdk-test-object",
+      "displayName": "Create Osdk Test Object",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "string_property": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.f80772f9-4119-4544-aba5-446d7f8a4d84",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "OsdkTestObject"
+        }
+      ]
+    },
+    "delete-osdk-test-object": {
+      "apiName": "delete-osdk-test-object",
+      "displayName": "Delete Osdk Test Object",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "OsdkTestObject": {
+          "dataType": {
+            "type": "object",
+            "objectApiName": "OsdkTestObject",
+            "objectTypeApiName": "OsdkTestObject"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.e5c3bcaa-cd83-4dbb-9ef9-f110f34825af",
+      "operations": [
+        {
+          "type": "deleteObject",
+          "objectTypeApiName": "OsdkTestObject"
+        }
+      ]
+    },
+    "edit-osdk-test-object": {
+      "apiName": "edit-osdk-test-object",
+      "displayName": "Edit Osdk Test Object",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "OsdkTestObject": {
+          "dataType": {
+            "type": "object",
+            "objectApiName": "OsdkTestObject",
+            "objectTypeApiName": "OsdkTestObject"
+          },
+          "required": true
+        },
+        "string_property": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.3d13b84a-4f85-4442-baee-34a5ceb7395e",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "OsdkTestObject"
+        }
+      ]
+    },
     "actionTakesAllParameterTypes": {
       "apiName": "actionTakesAllParameterTypes",
       "description": "An action which takes different types of parameters",
@@ -119,6 +189,42 @@
     }
   },
   "objectTypes": {
+    "OsdkTestObject": {
+      "objectType": {
+        "apiName": "OsdkTestObject",
+        "displayName": "Osdk Test Object",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "Osdk Test Objects",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "primaryKey_",
+        "properties": {
+          "primaryKey_": {
+            "displayName": "Primary Key",
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "stringProperty": {
+            "displayName": "String Property",
+            "dataType": {
+              "type": "string"
+            }
+          }
+        },
+        "rid": "ri.ontology.main.object-type.0ff2c340-6d2f-4ff4-9fca-f1a085d4b349",
+        "titleProperty": "primaryKey_",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    },
     "WeatherStation": {
       "objectType": {
         "apiName": "WeatherStation",

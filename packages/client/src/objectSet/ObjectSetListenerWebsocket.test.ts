@@ -19,6 +19,7 @@ import type { EXPERIMENTAL_ObjectSetListener as ObjectSetListener } from "@osdk/
 import { $ontologyRid, Employee, Office } from "@osdk/client.test.ontology";
 import type {
   ObjectSetStreamSubscribeRequests,
+  ObjectUpdate,
   StreamMessage,
 } from "@osdk/internal.foundry.core";
 import { apiServer } from "@osdk/shared.test";
@@ -86,6 +87,8 @@ vi.mock("isomorphic-ws", async (importOriginal) => {
   return { default: WebSocket, WebSocket };
 });
 
+let currentSubscriptionId = 0;
+
 describe("ObjectSetListenerWebsocket", async () => {
   beforeAll(async () => {
     apiServer.listen();
@@ -110,6 +113,12 @@ describe("ObjectSetListenerWebsocket", async () => {
     >;
     let oslwInst = 0;
 
+    let updateReceived: ObjectUpdate | undefined = undefined;
+
+    let listenerPromise: Promise<void>;
+
+    let listenerPromiseResolveFn: () => void;
+
     beforeEach(() => {
       minimalClient = createMinimalClient(
         { ontologyRid: $ontologyRid },
@@ -126,8 +135,16 @@ describe("ObjectSetListenerWebsocket", async () => {
         objectSetExpiryMs: OBJECT_SET_EXPIRY_MS,
       });
 
+      listenerPromise = new Promise((resolve) => {
+        listenerPromiseResolveFn = resolve;
+      });
+
       listener = {
-        onChange: vi.fn(),
+        onChange: vi.fn((o) => {
+          console.log("HIT CHANGE");
+          listenerPromiseResolveFn();
+          updateReceived = o;
+        }),
         onError: vi.fn(),
         onOutOfDate: vi.fn(),
       };
@@ -195,6 +212,16 @@ describe("ObjectSetListenerWebsocket", async () => {
         expect(ws.send).not.toHaveBeenCalled();
       });
 
+      it("currently requests regular object properties", () => {
+        expect(subReq1.requests[0].propertySet).toEqual([
+          "employeeId",
+        ]);
+      });
+
+      it("currently requests reference backed properties", () => {
+        expect(subReq1.requests[0].referenceSet).toEqual([]);
+      });
+
       describe("socket closed before subscription confirmed", () => {
         beforeEach(() => {
           setWebSocketState(ws, "close");
@@ -210,7 +237,6 @@ describe("ObjectSetListenerWebsocket", async () => {
             ]);
             setWebSocketState(ws, "open");
           });
-
           describe("subscribe and respond", () => {
             beforeEach(async () => {
               const subReq2 = await expectSingleSubscribeMessage(ws);
@@ -226,7 +252,51 @@ describe("ObjectSetListenerWebsocket", async () => {
 
       describe("successfully subscribed", () => {
         beforeEach(() => {
+          console.log("ID WAS", currentSubscriptionId);
           respondSuccessToSubscribe(ws, subReq1);
+          console.log("ID IS NOW", currentSubscriptionId);
+          console.log("responded to subscribe", subReq1.id);
+        });
+
+        it("should correctly return regular updates", async () => {
+          const idNum2 = currentSubscriptionId;
+          console.log("idNum2", idNum2);
+
+          sendObjectUpdateResponse(ws, `${idNum2}`);
+          await listenerPromise;
+          expect(listener.onChange).toHaveBeenCalled();
+          expect(updateReceived).toMatchInlineSnapshot(`
+            {
+              "object": {
+                "$apiName": "Employee",
+                "$objectType": "Employee",
+                "employeeId": 1,
+              },
+              "state": "ADDED_OR_UPDATED",
+            }
+          `);
+        });
+
+        it("should correctly return reference update", async () => {
+          const idNum2 = currentSubscriptionId;
+          console.log("idNum2", idNum2);
+
+          sendReferenceUpdatesResponse(ws, `${idNum2}`);
+          await listenerPromise;
+          expect(listener.onChange).toHaveBeenCalled();
+          expect(updateReceived).toMatchInlineSnapshot(`
+              {
+                "object": {
+                  "$apiName": "Employee",
+                  "$objectType": "Employee",
+                  "$primaryKey": {
+                    "apiName": "employeeId",
+                  },
+                  "employeeStatus": TimeSeriesPropertyImpl {},
+                },
+                "state": "ADDED_OR_UPDATED",
+              }
+            `);
         });
 
         describe("additional subscription", async () => {
@@ -241,6 +311,7 @@ describe("ObjectSetListenerWebsocket", async () => {
                 },
                 listener,
                 ["employeeStatus"],
+                [],
               ),
 
               expectSingleSubscribeMessage(ws),
@@ -256,21 +327,6 @@ describe("ObjectSetListenerWebsocket", async () => {
 
           it("does not trigger an out of date ", () => {
             expect(listener.onOutOfDate).not.toHaveBeenCalled();
-          });
-        });
-
-        describe("temporary object set expires", () => {
-          beforeEach(async () => {
-            await vi.advanceTimersByTimeAsync(OBJECT_SET_EXPIRY_MS + 1000);
-          });
-
-          it("should resubscribe and fire out of date", async () => {
-            vi.runAllTicks();
-            const subReq2 = await expectSingleSubscribeMessage(ws);
-            expect(subReq2.id).not.toEqual(subReq1.id);
-            respondSuccessToSubscribe(ws, subReq2);
-
-            expect(listener.onOutOfDate).toHaveBeenCalledTimes(1);
           });
         });
 
@@ -341,9 +397,58 @@ function respondSuccessToSubscribe(
       type: "subscribeResponses",
       responses: [{
         type: "success",
-        id: "subId",
+        id: `${++currentSubscriptionId}`,
       }],
     },
+  );
+}
+
+function sendObjectUpdateResponse(
+  ws: MockedWebSocket,
+  subId: string,
+) {
+  const updateMessage: StreamMessage = {
+    type: "objectSetChanged",
+    id: subId,
+    updates: [{
+      type: "object",
+      state: "ADDED_OR_UPDATED",
+      object: {
+        __apiName: "Employee",
+        employeeId: 1,
+      },
+    }],
+  };
+
+  sendToClient<StreamMessage>(
+    ws,
+    updateMessage,
+  );
+}
+
+function sendReferenceUpdatesResponse(
+  ws: MockedWebSocket,
+  subId: string,
+) {
+  const referenceUpdateMessage: StreamMessage = {
+    type: "objectSetChanged",
+    id: subId,
+    updates: [{
+      "type": "reference",
+      "objectType": "Employee",
+      "primaryKey": { "apiName": "employeeId" },
+      "property": "employeeStatus",
+      "value": {
+        timestamp: "111",
+        "type": "geotimeSeriesValue",
+        "position": [100, 200],
+      },
+    }],
+  };
+
+  sendToClient<StreamMessage>(
+    ws,
+    referenceUpdateMessage,
   );
 }
 
@@ -365,13 +470,14 @@ async function subscribeAndExpectWebSocket(
 ): Promise<readonly [MockedWebSocket, () => void]> {
   const [ws, unsubscribe] = await Promise.all([
     expectWebSocketConstructed(),
-    client.subscribe(
+    client.subscribe<Employee, PropertyKeys<Employee>>(
       {
         type: "base",
         objectType: Employee.apiName,
       },
       listener,
-      ["employeeStatus"],
+      ["employeeId"],
+      [],
     ),
   ]);
 

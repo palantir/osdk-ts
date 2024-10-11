@@ -34,7 +34,7 @@ export const client: Client = createClient(
 export const danubeClient: Client = createClient(
   "https://danube-staging.palantircloud.com",
   "ri.ontology.main.ontology.6ae2b235-997d-4b5e-9611-85fa88742697",
-  async () => process.env.FOUNDRY_USER_TOKEN!,
+  async () => process.env.SECONDARY_FOUNDRY_USER_TOKEN!,
   { logger },
   loggingFetch,
 );

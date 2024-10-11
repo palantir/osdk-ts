@@ -33,3 +33,8 @@ export type WirePropertyTypes =
   | "geopoint"
   | "geoshape"
   | "geotimeSeriesReference";
+
+export type ReferencePropertyTypes = Extract<
+  WirePropertyTypes,
+  "geotimeSeriesReference"
+>;

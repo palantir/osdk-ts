@@ -15,8 +15,10 @@
  */
 
 import type {
+  GeotimeSeriesProperty,
   ObjectOrInterfaceDefinition,
   Osdk,
+  OsdkBase,
   PropertyKeys,
 } from "@osdk/api";
 import type {
@@ -29,6 +31,7 @@ import type {
   ObjectSetStreamSubscribeRequests,
   ObjectSetSubscribeResponses,
   ObjectSetUpdates,
+  ObjectState,
   RefreshObjectSet,
   StreamMessage,
   SubscriptionClosed,
@@ -41,6 +44,11 @@ import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js"
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const MINIMUM_RECONNECT_DELAY_MS = 5 * 1000;
+
+type PropertyValue<
+  O extends ObjectOrInterfaceDefinition,
+  R extends string,
+> = NonNullable<O["__DefinitionMetadata"]>["properties"][R];
 
 /** Noop function to reduce conditional checks */
 function doNothing() {}
@@ -67,7 +75,8 @@ interface Subscription<
 > {
   listener: Required<ObjectSetListener<Q, P>>;
   objectSet: ObjectSet;
-  requestedProperties: Array<PropertyKeys<Q>>;
+  requestedProperties: Array<P>;
+  requestedReferenceProperties: Array<P>;
   expiry?: ReturnType<typeof setTimeout>;
   subscriptionId: string;
   isReady?: boolean;
@@ -169,18 +178,20 @@ export class ObjectSetListenerWebsocket {
     objectSet: ObjectSet,
     listener: ObjectSetListener<Q, P>,
     properties: Array<P>,
+    referenceBackedProperties: Array<P>,
   ): Promise<() => void> {
     if (process.env.TARGET !== "browser") {
       // Node 18 does not expose 'crypto' on globalThis, so we need to do it ourselves. This
       // will not be needed after our minimum version is 19 or greater.
       globalThis.crypto ??= (await import("node:crypto")).webcrypto as any;
     }
+
     const sub: Subscription<Q, P> = {
       listener: fillOutListener<Q, P>(listener),
       objectSet,
       requestedProperties: properties,
+      requestedReferenceProperties: referenceBackedProperties,
       status: "preparing",
-
       // Since we don't have a real subscription id yet but we need to keep
       // track of this reference, we can just use a random uuid.
       subscriptionId: `TMP-${crypto.randomUUID()}`,
@@ -265,12 +276,14 @@ export class ObjectSetListenerWebsocket {
     const subscribe: ObjectSetStreamSubscribeRequests = {
       id,
       requests: readySubs.map<ObjectSetStreamSubscribeRequest>((
-        { objectSet, requestedProperties },
-      ) => ({
-        objectSet: objectSet,
-        propertySet: requestedProperties,
-        referenceSet: [],
-      })),
+        { objectSet, requestedProperties, requestedReferenceProperties },
+      ) => {
+        return {
+          objectSet: objectSet,
+          propertySet: requestedProperties,
+          referenceSet: requestedReferenceProperties,
+        };
+      }),
     };
 
     if (process?.env?.NODE_ENV !== "production") {
@@ -436,6 +449,32 @@ export class ObjectSetListenerWebsocket {
     const referenceUpdates = payload.updates.filter((update) =>
       update.type === "reference"
     );
+    const osdkObjectsWithReferenceUpdates = await Promise.all(
+      referenceUpdates.map(async (o) => {
+        const osdkObjectArray = await convertWireToOsdkObjects(
+          this.#client,
+          [{
+            __apiName: o.objectType,
+            __primaryKey: o.primaryKey,
+            [o.property]: o.value,
+          }],
+          undefined,
+        ) as Array<Osdk.Instance<any, never, any>>;
+        const singleOsdkObject = osdkObjectArray[0] ?? undefined;
+        return singleOsdkObject != null
+          ? {
+            object: singleOsdkObject,
+            state: "ADDED_OR_UPDATED" as ObjectState,
+          }
+          : undefined;
+      }),
+    );
+
+    for (const osdkObject of osdkObjectsWithReferenceUpdates) {
+      if (osdkObject != null) {
+        sub.listener.onChange?.(osdkObject);
+      }
+    }
 
     const osdkObjects = await Promise.all(objectUpdates.map(async (o) => {
       const osdkObjectArray = await convertWireToOsdkObjects(
@@ -454,7 +493,7 @@ export class ObjectSetListenerWebsocket {
 
     for (const osdkObject of osdkObjects) {
       if (osdkObject != null) {
-        return sub.listener.onChange?.(osdkObject);
+        sub.listener.onChange?.(osdkObject);
       }
     }
   };
@@ -477,6 +516,7 @@ export class ObjectSetListenerWebsocket {
     for (let i = 0; i < responses.length; i++) {
       const sub = subs[i];
       const response = responses[i];
+
       switch (response.type) {
         case "error":
           sub.listener.onError(response.errors);
@@ -528,14 +568,6 @@ export class ObjectSetListenerWebsocket {
     // TODO we should probably throttle this so we don't abuse the backend
     this.#cycleWebsocket();
   };
-
-  // TODO: Validate if this is needed
-  async #enableObjectSetsWatcher(objectTypeRids: string[]) {
-    // return batchEnableWatcher(this.#oswContext, {
-    //   requests: objectTypeRids,
-    // });
-    return;
-  }
 
   #cycleWebsocket = () => {
     if (this.#ws) {
