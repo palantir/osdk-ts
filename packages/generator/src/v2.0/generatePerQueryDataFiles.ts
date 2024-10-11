@@ -129,13 +129,7 @@ async function generateV2QueryFile(
       Object.keys(query.parameters).length > 0
         ? `query: ${query.paramsIdentifier}`
         : ""
-    }): Promise<${
-      getQueryParamType(
-        ontology,
-        paramToDef({ dataType: query.output }),
-        "Result",
-      )
-    }>
+    }): Promise<${query.shortApiName}.ReturnType>
           }
 
         ${
@@ -156,16 +150,35 @@ async function generateV2QueryFile(
             },
           })
         }
-            }
-    
-            `
+            }`
         : ""
     }
 
-        
-
+            ${
+      query.output.type === "struct"
+        ? `
+            export interface ReturnType 
+            ${
+          getQueryParamType(
+            ontology,
+            paramToDef({ dataType: query.output }),
+            "Result",
+          )
         }
-
+        `
+        : `
+        export type ReturnType = ${
+          getQueryParamType(
+            ontology,
+            paramToDef({ dataType: query.output }),
+            "Result",
+          )
+        }
+          `
+    }
+      }
+    
+            
         export interface ${query.shortApiName} extends QueryDefinition<
           ${query.shortApiName}.Signature
         >, VersionBound<$ExpectedClientVersion>{
@@ -278,11 +291,28 @@ export function getQueryParamType(
     case "integer":
     case "long":
     case "string":
-    case "struct":
     case "threeDimensionalAggregation":
     case "timestamp":
     case "twoDimensionalAggregation":
       inner = `Query${type}.PrimitiveType<${JSON.stringify(input.type)}>`;
+      break;
+
+    case "struct":
+      inner = `{
+            ${
+        stringify(input.struct, {
+          "*": (p, formatter, apiName) => {
+            return [
+              `
+                ${type === "Param" ? "readonly " : ""}"${apiName}"${
+                p.nullable ? "?" : ""
+              }`,
+              `${getQueryParamType(enhancedOntology, p, type)}`,
+            ];
+          },
+        })
+      }
+            }`;
       break;
 
     case "object":
