@@ -1,0 +1,19 @@
+<svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_3572_62195)">
+<rect opacity="0.1" width="50" height="50" fill="#9881F3"/>
+<rect x="7" y="11" width="12" height="12" rx="2" fill="#7961DB"/>
+<rect x="7.5" y="11.5" width="11" height="11" rx="1.5" stroke="white" stroke-opacity="0.1"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M16 14.375C15.79 14.375 15.6025 14.4575 15.4675 14.5925L12.25 17.8175L10.5325 16.0925C10.3975 15.9575 10.21 15.875 10 15.875C9.5875 15.875 9.25 16.2125 9.25 16.625C9.25 16.835 9.3325 17.0225 9.4675 17.1575L11.7175 19.4075C11.8525 19.5425 12.04 19.625 12.25 19.625C12.46 19.625 12.6475 19.5425 12.7825 19.4075L16.5325 15.6575C16.6675 15.5225 16.75 15.335 16.75 15.125C16.75 14.7125 16.4125 14.375 16 14.375Z" fill="white"/>
+<rect opacity="0.5" x="22" y="15" width="12" height="5" rx="2.5" fill="#634DBF"/>
+<rect opacity="0.5" x="36" y="15" width="9" height="5" rx="2.5" fill="#634DBF"/>
+<rect x="7.5" y="28.5" width="11" height="11" rx="1.5" fill="#A79BDA" fill-opacity="0.1"/>
+<rect x="7.5" y="28.5" width="11" height="11" rx="1.5" stroke="#A39CC1"/>
+<rect opacity="0.5" x="23" y="32" width="6" height="5" rx="2.5" fill="#634DBF"/>
+<path opacity="0.5" d="M31 34.5C31 33.1193 32.3228 32 33.9545 32H41.0455C42.6772 32 44 33.1193 44 34.5C44 35.8807 42.6772 37 41.0455 37H33.9545C32.3228 37 31 35.8807 31 34.5Z" fill="#634DBF"/>
+</g>
+<defs>
+<clipPath id="clip0_3572_62195">
+<rect width="50" height="50" rx="4" fill="white"/>
+</clipPath>
+</defs>
+</svg>

@@ -85,6 +85,17 @@ export const TEMPLATES: readonly Template[] = [
     )).files),
   },
   {
+    id: "template-tutorial-todo-app-beta",
+    label: "Tutorial: To do App",
+    envPrefix: "VITE_",
+    buildDirectory: "./dist",
+    isBeta: true,
+    hidden: true,
+    getFiles: async () => ((await import(
+      `@osdk/create-app.template.tutorial-todo-app.beta`
+    )).files),
+  },
+  {
     id: "template-tutorial-todo-aip-app",
     label: "Tutorial: To do AIP App",
     envPrefix: "VITE_",
@@ -92,6 +103,17 @@ export const TEMPLATES: readonly Template[] = [
     hidden: true,
     getFiles: async () => ((await import(
       `@osdk/create-app.template.tutorial-todo-aip-app`
+    )).files),
+  },
+  {
+    id: "template-tutorial-todo-aip-app-beta",
+    label: "Tutorial: To do AIP App",
+    envPrefix: "VITE_",
+    buildDirectory: "./dist",
+    isBeta: true,
+    hidden: true,
+    getFiles: async () => ((await import(
+      `@osdk/create-app.template.tutorial-todo-aip-app.beta`
     )).files),
   },
 ];
