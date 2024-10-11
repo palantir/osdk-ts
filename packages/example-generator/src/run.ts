@@ -27,6 +27,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import * as tmp from "tmp";
+import type { SdkVersion } from "../../create-app/build/esm/templates.js";
 import { gitIgnoreFilter } from "./gitIgnoreFilter.js";
 
 interface RunArgs {
@@ -48,15 +49,23 @@ export async function run({ outputDirectory, check }: RunArgs): Promise<void> {
 
 function createTmpDir(): tmp.DirResult {
   const tmpDir = tmp.dirSync({ unsafeCleanup: true });
-  tmp.setGracefulCleanup();
+  // tmp.setGracefulCleanup();
   return tmpDir;
+}
+
+function templatesWithSdkVersions(templates: readonly Template[]) {
+  return templates.flatMap((template) =>
+    Object.keys(template.files).map((sdkVersion) =>
+      [template, sdkVersion as SdkVersion] as const
+    )
+  );
 }
 
 async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
   process.chdir(tmpDir.name);
-  for (const template of TEMPLATES) {
-    const exampleId = templateExampleId(template);
-    const osdkPackage = template.isBeta
+  for (const [template, sdkVersion] of templatesWithSdkVersions(TEMPLATES)) {
+    const exampleId = sdkVersionedTemplateExampleId(template, sdkVersion);
+    const osdkPackage = sdkVersion === "2.x"
       ? "@osdk/e2e.generated.catchall"
       : "@osdk/e2e.generated.1.1.x";
     consola.info(
@@ -65,12 +74,13 @@ async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
     await runCreateApp({
       project: exampleId,
       overwrite: true,
-      template: template,
+      template,
+      sdkVersion,
       foundryUrl: "https://fake.palantirfoundry.com",
       applicationUrl: "https://example.com",
       application: "ri.third-party-applications.main.application.fake",
       clientId: "123",
-      osdkPackage: osdkPackage,
+      osdkPackage,
       osdkRegistryUrl:
         "https://fake.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
       corsProxy: false,
@@ -86,6 +96,7 @@ async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
         const result = mutator.mutate(
           template,
           fs.readFileSync(filePath, "utf-8"),
+          sdkVersion,
         );
         switch (result.type) {
           case "modify":
@@ -113,11 +124,19 @@ async function fixMonorepolint(tmpDir: tmp.DirResult): Promise<void> {
     process.exit(1);
   }
   process.chdir(path.dirname(mrlConfig));
-  const mrlPaths = TEMPLATES.map((template) =>
-    path.join(tmpDir.name, templateExampleId(template), "package.json")
+  const mrlPaths = templatesWithSdkVersions(TEMPLATES).map((
+    [template, sdkVersion],
+  ) =>
+    path.join(
+      tmpDir.name,
+      sdkVersionedTemplateExampleId(template, sdkVersion),
+      "package.json",
+    )
   );
   const { stdout: mrlStdout, stderr: mrlStderr } = await promisify(exec)(
-    `pnpm exec monorepolint check --fix --paths ${mrlPaths.join(" ")}`,
+    `pnpm exec monorepolint check --verbose --fix --paths ${
+      mrlPaths.join(" ")
+    }`,
   );
   consola.log(mrlStdout);
   consola.log(mrlStderr);
@@ -127,8 +146,8 @@ async function checkExamples(
   resolvedOutput: string,
   tmpDir: tmp.DirResult,
 ): Promise<void> {
-  for (const template of TEMPLATES) {
-    const exampleId = templateExampleId(template);
+  for (const [template, sdkVersion] of templatesWithSdkVersions(TEMPLATES)) {
+    const exampleId = sdkVersionedTemplateExampleId(template, sdkVersion);
     consola.info(`Checking contents of ${exampleId}`);
     // realpath because globby in .gitignore filter requires symlinks in tmp directory to be resolved
     const pathLeft = fs.realpathSync(path.join(resolvedOutput, exampleId));
@@ -195,8 +214,8 @@ async function copyExamples(
   tmpDir: tmp.DirResult,
 ): Promise<void> {
   consola.info("Copying generated packages to output directory");
-  for (const template of TEMPLATES) {
-    const exampleId = templateExampleId(template);
+  for (const [template, sdkVersion] of templatesWithSdkVersions(TEMPLATES)) {
+    const exampleId = sdkVersionedTemplateExampleId(template, sdkVersion);
     const exampleOutputPath = path.join(resolvedOutput, exampleId);
     const exampleTmpPath = path.join(tmpDir.name, exampleId);
     fs.rmSync(exampleOutputPath, { recursive: true, force: true });
@@ -211,6 +230,7 @@ interface Mutator {
   mutate: (
     template: Template,
     existingContent: string,
+    sdkVersion: SdkVersion,
   ) => ModifyFile | DeleteFile;
 }
 
@@ -232,7 +252,7 @@ const DELETE_NPM_RC: Mutator = {
 
 const UPDATE_PACKAGE_JSON: Mutator = {
   filePattern: "package.json",
-  mutate: (template, content) => ({
+  mutate: (template, content, sdkVersion) => ({
     type: "modify",
     newContent: content.replace(
       // Use locally generated SDK in the monorepo
@@ -244,7 +264,7 @@ const UPDATE_PACKAGE_JSON: Mutator = {
       "\"@osdk/e2e.generated.catchall\": \"workspace:*\"",
     ).replace(
       // Follow monorepo package naming convention
-      `"name": "${templateExampleId(template)}"`,
+      `"name": "${sdkVersionedTemplateExampleId(template, sdkVersion)}"`,
       `"name": "@osdk/examples.${templateCanonicalId(template)}"`,
     ).replace(
       // Monorepo uses eslint 9 whereas templates are still on eslint 8
@@ -274,6 +294,13 @@ function templateCanonicalId(template: Template): string {
 
 function templateExampleId(template: Template): string {
   return `example-${templateCanonicalId(template)}`;
+}
+
+function sdkVersionedTemplateExampleId(
+  template: Template,
+  sdkVersion: SdkVersion,
+): string {
+  return `${templateExampleId(template)}-sdk-${sdkVersion}`;
 }
 
 function readme(template: Template): string {
