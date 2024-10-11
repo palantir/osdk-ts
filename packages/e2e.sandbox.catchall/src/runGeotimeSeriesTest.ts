@@ -16,12 +16,13 @@
 
 import {
   FintrafficAis,
+  GtfsTripTrackObject,
   RhemmingsObjectWithGtsrProperty2,
 } from "@osdk/e2e.generated.catchall";
-import { danubeClient } from "./client.js";
+import { dsClient } from "./client.js";
 
 export async function runGeotimeSeriesReferenceTests() {
-  const result = await danubeClient(FintrafficAis).fetchOne("21000000");
+  const result = await dsClient(FintrafficAis).fetchOne("21000000");
   console.log(result);
   console.log(result.seriesId);
 
@@ -37,7 +38,7 @@ export async function runGeotimeSeriesReferenceTests() {
   });
   console.log(allPoints![0].value);
 
-  const secondResult = await danubeClient(RhemmingsObjectWithGtsrProperty2)
+  const secondResult = await dsClient(RhemmingsObjectWithGtsrProperty2)
     .fetchOne("track-id");
 
   for await (
@@ -48,4 +49,13 @@ export async function runGeotimeSeriesReferenceTests() {
   ) {
     console.log(t);
   }
+
+  const resultWithNoData = await dsClient(GtfsTripTrackObject).fetchOne(
+    "wmata_35356020",
+  );
+
+  const noDataPoint = await resultWithNoData.geotimeSeriesReferences
+    ?.getLatestValue();
+
+  console.log("GTSR with no data should be undefined: ", noDataPoint);
 }

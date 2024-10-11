@@ -72,7 +72,7 @@ const objectPrototypeCache = createClientCache(
 );
 
 const geotimePropertyCache = createClientCache<
-  string | symbol,
+  string,
   GeotimeSeriesProperty<GeoJSON.Point>
 >();
 
@@ -139,7 +139,16 @@ export function createOsdkObject<
             );
           }
           if (propDef.type === "geotimeSeriesReference") {
-            const instance = geotimePropertyCache.get(client, p);
+            const cacheKey = JSON.stringify({
+              propertyName: p,
+              apiName: objectDef.apiName,
+              primaryKey:
+                target[RawObject][objectDef.primaryKeyApiName as string],
+            });
+            const instance = geotimePropertyCache.get(
+              client,
+              cacheKey,
+            );
             if (instance != null) {
               return instance;
             }
@@ -151,7 +160,7 @@ export function createOsdkObject<
             );
             geotimePropertyCache.set(
               client,
-              p,
+              cacheKey,
               geotimeProp,
             );
             return geotimeProp;

@@ -59,7 +59,7 @@ export type ExtractBody<
 
 export type ExtractResponse<
   X extends ((...args: any[]) => Promise<any>),
-> = Awaited<ReturnType<X>> & {};
+> = Awaited<ReturnType<X>>;
 
 type ParamsAfterReqCall<
   T extends (reqCall: any, ...args: any[]) => Promise<any>,

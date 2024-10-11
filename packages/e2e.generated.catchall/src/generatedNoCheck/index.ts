@@ -15,6 +15,7 @@ export {
   DherlihyComplexObject,
   Employee,
   FintrafficAis,
+  GtfsTripTrackObject,
   ObjectTypeWithAllPropertyTypes,
   OsdkTestObject,
   Person,

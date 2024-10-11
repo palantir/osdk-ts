@@ -399,6 +399,41 @@
       },
       "linkTypes": []
     },
+    "GtfsTripTrackObject": {
+      "objectType": {
+        "apiName": "GtfsTripTrackObject",
+        "primaryKey": "entityId",
+        "displayName": "GtfsTripTrackObject",
+        "description": "GtfsTripTrackObject",
+        "properties": {
+          "entityId": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "geotimeSeriesReferences": {
+            "dataType": {
+              "type": "geotimeSeriesReference"
+            }
+          },
+          "timestamp": {
+            "dataType": {
+              "type": "timestamp"
+            }
+          }
+        },
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "traffic",
+          "color": "color"
+        },
+        "titleProperty": "entityId",
+        "pluralDisplayName": "GtfsTripTrackObject"
+      },
+      "linkTypes": []
+    },
     "DherlihyComplexObject": {
       "objectType": {
         "apiName": "DherlihyComplexObject",

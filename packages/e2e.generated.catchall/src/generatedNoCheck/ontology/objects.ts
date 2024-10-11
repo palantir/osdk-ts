@@ -3,6 +3,7 @@ export { BuilderDeploymentState } from './objects/BuilderDeploymentState.js';
 export { DherlihyComplexObject } from './objects/DherlihyComplexObject.js';
 export { Employee } from './objects/Employee.js';
 export { FintrafficAis } from './objects/FintrafficAis.js';
+export { GtfsTripTrackObject } from './objects/GtfsTripTrackObject.js';
 export { ObjectTypeWithAllPropertyTypes } from './objects/ObjectTypeWithAllPropertyTypes.js';
 export { OsdkTestObject } from './objects/OsdkTestObject.js';
 export { Person } from './objects/Person.js';

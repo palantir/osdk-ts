@@ -48,3 +48,5 @@ geotimeseriesrequests
 Fintraffic
 Rhemmings
 mnsi
+Gtfs
+wmata

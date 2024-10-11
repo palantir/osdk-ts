@@ -89,6 +89,14 @@ const rangeBodyRequest: StreamTimeSeriesValuesRequest = {
   },
 };
 
+const rangeBodyRequestNoData: StreamTimeSeriesValuesRequest = {
+  range: {
+    type: "absolute",
+    startTime: "2021-03-12T12:00:00.000Z",
+    endTime: "2022-04-14T12:00:00.000Z",
+  },
+};
+
 export const streamPointsNoBody: StreamTimeSeriesValuesResponse = {
   data: [
     timeSeriesPoint1,
@@ -108,7 +116,14 @@ export const streamPointsAfter: StreamTimeSeriesValuesResponse = {
   data: [timeSeriesPoint1, timeSeriesPoint3],
 };
 
-export const latestValueRequestHandlers: Record<string, TimeSeriesPoint> = {
+export const noDataResponse: StreamTimeSeriesValuesResponse = {
+  data: [],
+};
+
+export const latestValueRequestHandlers: Record<
+  string,
+  TimeSeriesPoint | undefined
+> = {
   [pointPrimaryKey1]: timeSeriesPoint3,
   [pointPrimaryKey2]: timeSeriesPoint2,
   [pointPrimaryKey3]: timeSeriesPoint1,
@@ -123,4 +138,5 @@ export const streamValuesRequestHandlers: Record<
   [stableStringify(rangeBodyRequest)]: streamPointsRange,
   [stableStringify(fromBodyRequest)]: streamPointsFrom,
   [stableStringify(afterBodyRequest)]: streamPointsAfter,
+  [stableStringify(rangeBodyRequestNoData)]: noDataResponse,
 };

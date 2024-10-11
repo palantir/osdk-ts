@@ -71,11 +71,11 @@ export interface TimeSeriesProperty<T extends number | string> {
   /**
    * Queries the first point of the Timeseries
    */
-  getFirstPoint: () => Promise<TimeSeriesPoint<T>>;
+  readonly getFirstPoint: () => Promise<TimeSeriesPoint<T>>;
   /**
    * Queries the last point of the Timeseries
    */
-  getLastPoint: () => Promise<TimeSeriesPoint<T>>;
+  readonly getLastPoint: () => Promise<TimeSeriesPoint<T>>;
   /**
      * Loads all points, within the given time range if that's provided
      * @param query - a query representing either an absolute or relative range of time
@@ -85,7 +85,7 @@ export interface TimeSeriesProperty<T extends number | string> {
         $unit: "month",
       });
      */
-  getAllPoints: (
+  readonly getAllPoints: (
     query?: TimeSeriesQuery,
   ) => Promise<Array<TimeSeriesPoint<T>>>;
   /**
@@ -101,16 +101,16 @@ export interface TimeSeriesProperty<T extends number | string> {
           // Handle time series point
       }
      */
-  asyncIterPoints: (
+  readonly asyncIterPoints: (
     query?: TimeSeriesQuery,
   ) => AsyncGenerator<TimeSeriesPoint<T>>;
 }
 
 export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
   /**
-   * Queries the last point of the Timeseries
+   * Queries the last point of the Geotime series
    */
-  getLatestValue: () => Promise<TimeSeriesPoint<T>>;
+  readonly getLatestValue: () => Promise<TimeSeriesPoint<T> | undefined>;
   /**
      * Loads all points, within the given time range if that's provided
      * @param query - a query representing either an absolute or relative range of time
@@ -120,7 +120,7 @@ export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
         $unit: "month",
       });
      */
-  getAllValues: (
+  readonly getAllValues: (
     query?: TimeSeriesQuery,
   ) => Promise<Array<TimeSeriesPoint<T>>>;
   /**
@@ -136,7 +136,7 @@ export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
           // Handle time series point
       }
      */
-  asyncIterValues: (
+  readonly asyncIterValues: (
     query?: TimeSeriesQuery,
   ) => AsyncGenerator<TimeSeriesPoint<T>>;
 
@@ -145,5 +145,5 @@ export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
    * This will not be loaded automatically upon object load, but will be refreshed every time
    * getLatestValue() is called
    */
-  lastFetchedValue: TimeSeriesPoint<T> | undefined;
+  readonly lastFetchedValue: TimeSeriesPoint<T> | undefined;
 }
