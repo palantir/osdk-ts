@@ -72,11 +72,6 @@ const objectPrototypeCache = createClientCache(
   },
 );
 
-const geotimePropertyCache = createClientCache<
-  string,
-  GeotimeSeriesProperty<GeoJSON.Point>
->();
-
 /** @internal */
 export function createOsdkObject<
   Q extends FetchedObjectTypeDefinition,
