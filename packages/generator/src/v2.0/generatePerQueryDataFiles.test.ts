@@ -54,7 +54,7 @@ describe("generatePerQueryDataFiles", () => {
 
       export namespace getCount {
         export interface Signature {
-          (query: getCount.Parameters): Promise<QueryResult.PrimitiveType<'integer'>>;
+          (query: getCount.Parameters): Promise<getCount.ReturnType>;
         }
 
         export interface Parameters {
@@ -63,6 +63,8 @@ describe("generatePerQueryDataFiles", () => {
            */
           readonly completed: QueryParam.PrimitiveType<'boolean'>;
         }
+
+        export type ReturnType = QueryResult.PrimitiveType<'integer'>;
       }
 
       export interface getCount extends QueryDefinition<getCount.Signature>, VersionBound<$ExpectedClientVersion> {
@@ -107,7 +109,7 @@ describe("generatePerQueryDataFiles", () => {
 
       export namespace returnsTodo {
         export interface Signature {
-          (query: returnsTodo.Parameters): Promise<QueryResult.ObjectType<Todo>>;
+          (query: returnsTodo.Parameters): Promise<returnsTodo.ReturnType>;
         }
 
         export interface Parameters {
@@ -116,6 +118,8 @@ describe("generatePerQueryDataFiles", () => {
            */
           readonly someTodo: QueryParam.ObjectType<Todo>;
         }
+
+        export type ReturnType = QueryResult.ObjectType<Todo>;
       }
 
       export interface returnsTodo extends QueryDefinition<returnsTodo.Signature>, VersionBound<$ExpectedClientVersion> {
@@ -216,5 +220,256 @@ describe("generatePerQueryDataFiles", () => {
     const q = langServices.getDocCommentTemplateAtPosition("/bar/test.ts", 1);
     console.log(q);
     ts.createDocumentRegistry();
+  });
+
+  it("generates structs for queries", async () => {
+    const helper = createMockMinimalFiles();
+    const BASE_PATH = "/foo";
+
+    await generatePerQueryDataFilesV2(
+      {
+        fs: helper.minimalFiles,
+        ontology: enhanceOntology({
+          sanitized: {
+            actionTypes: {},
+            interfaceTypes: {},
+            objectTypes: {},
+            ontology: {
+              apiName: "foo",
+              description: "foo",
+              displayName: "foo",
+              rid: "ri.foo",
+            },
+            queryTypes: {
+              doThing: {
+                rid: "rid.query.1",
+                version: "0",
+                apiName: "doThing",
+                parameters: {
+                  foo: {
+                    dataType: { type: "string" },
+                  },
+                  paramStruct: {
+                    dataType: {
+                      type: "struct",
+                      fields: [
+                        {
+                          name: "aDate",
+                          fieldType: { type: "date" },
+                        },
+                        {
+                          name: "nestedStruct",
+                          fieldType: {
+                            type: "struct",
+                            fields: [
+                              {
+                                name: "nestedString",
+                                fieldType: { type: "string" },
+                              },
+                              {
+                                name: "nestedInteger",
+                                fieldType: { type: "integer" },
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+                output: {
+                  type: "struct",
+                  fields: [
+                    {
+                      name: "aString",
+                      fieldType: { type: "string" },
+                    },
+                    {
+                      name: "anInteger",
+                      fieldType: { type: "integer" },
+                    },
+                    {
+                      name: "aLong",
+                      fieldType: { type: "long" },
+                    },
+                    {
+                      name: "aDate",
+                      fieldType: { type: "date" },
+                    },
+                    {
+                      name: "nestedStruct",
+                      fieldType: {
+                        type: "struct",
+                        fields: [
+                          {
+                            name: "nestedString",
+                            fieldType: { type: "string" },
+                          },
+                          {
+                            name: "nestedInteger",
+                            fieldType: { type: "integer" },
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+            sharedPropertyTypes: {},
+          },
+          importExt: ".js",
+          externalObjects: new Map(),
+          externalInterfaces: new Map(),
+          externalSpts: new Map(),
+        }),
+        outDir: BASE_PATH,
+        importExt: ".js",
+      },
+      true,
+    );
+    expect(helper.getFiles()["/foo/ontology/queries/doThing.ts"])
+      .toMatchInlineSnapshot(`
+        "import type { QueryDefinition, VersionBound } from '@osdk/api';
+        import type { QueryParam, QueryResult } from '@osdk/api';
+        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
+
+        export namespace doThing {
+          export interface Signature {
+            (query: doThing.Parameters): Promise<doThing.ReturnType>;
+          }
+
+          export interface Parameters {
+            /**
+             * (no ontology metadata)
+             */
+            readonly foo: QueryParam.PrimitiveType<'string'>;
+
+            /**
+             * (no ontology metadata)
+             */
+            readonly paramStruct: {
+              readonly aDate: QueryParam.PrimitiveType<'datetime'>;
+
+              readonly nestedStruct: {
+                readonly nestedInteger: QueryParam.PrimitiveType<'integer'>;
+
+                readonly nestedString: QueryParam.PrimitiveType<'string'>;
+              };
+            };
+          }
+
+          export interface ReturnType {
+            aDate: QueryResult.PrimitiveType<'datetime'>;
+
+            aLong: QueryResult.PrimitiveType<'long'>;
+
+            anInteger: QueryResult.PrimitiveType<'integer'>;
+
+            aString: QueryResult.PrimitiveType<'string'>;
+
+            nestedStruct: {
+              nestedInteger: QueryResult.PrimitiveType<'integer'>;
+
+              nestedString: QueryResult.PrimitiveType<'string'>;
+            };
+          }
+        }
+
+        export interface doThing extends QueryDefinition<doThing.Signature>, VersionBound<$ExpectedClientVersion> {
+          __DefinitionMetadata?: {
+            apiName: 'doThing';
+            rid: 'rid.query.1';
+            type: 'query';
+            version: '0';
+            parameters: {
+              /**
+               * (no ontology metadata)
+               */
+              foo: {
+                nullable: false;
+                type: 'string';
+              };
+              /**
+               * (no ontology metadata)
+               */
+              paramStruct: {
+                nullable: false;
+                struct: {
+                  aDate: {
+                    type: 'date';
+                    nullable: false;
+                  };
+                  nestedStruct: {
+                    type: 'struct';
+                    struct: {
+                      nestedString: {
+                        type: 'string';
+                        nullable: false;
+                      };
+                      nestedInteger: {
+                        type: 'integer';
+                        nullable: false;
+                      };
+                    };
+                    nullable: false;
+                  };
+                };
+                type: 'struct';
+              };
+            };
+            output: {
+              nullable: false;
+              struct: {
+                aString: {
+                  type: 'string';
+                  nullable: false;
+                };
+                anInteger: {
+                  type: 'integer';
+                  nullable: false;
+                };
+                aLong: {
+                  type: 'long';
+                  nullable: false;
+                };
+                aDate: {
+                  type: 'date';
+                  nullable: false;
+                };
+                nestedStruct: {
+                  type: 'struct';
+                  struct: {
+                    nestedString: {
+                      type: 'string';
+                      nullable: false;
+                    };
+                    nestedInteger: {
+                      type: 'integer';
+                      nullable: false;
+                    };
+                  };
+                  nullable: false;
+                };
+              };
+              type: 'struct';
+            };
+            signature: doThing.Signature;
+          };
+          apiName: 'doThing';
+          type: 'query';
+          version: '0';
+          osdkMetadata: typeof $osdkMetadata;
+        }
+
+        export const doThing: doThing = {
+          apiName: 'doThing',
+          type: 'query',
+          version: '0',
+          osdkMetadata: $osdkMetadata,
+        };
+        "
+      `);
   });
 });

@@ -6,7 +6,7 @@ import type { Task as $Imported$com$example$dep$Task } from '@osdk/e2e.generated
 
 export namespace getTask {
   export interface Signature {
-    (query: getTask.Parameters): Promise<QueryResult.ObjectType<$Imported$com$example$dep$Task>>;
+    (query: getTask.Parameters): Promise<getTask.ReturnType>;
   }
 
   export interface Parameters {
@@ -15,6 +15,8 @@ export namespace getTask {
      */
     readonly a: QueryParam.ObjectType<$Imported$com$example$dep$Task>;
   }
+
+  export type ReturnType = QueryResult.ObjectType<$Imported$com$example$dep$Task>;
 }
 
 export interface getTask extends QueryDefinition<getTask.Signature>, VersionBound<$ExpectedClientVersion> {

@@ -950,7 +950,7 @@ describe("generator", () => {
 
       export namespace getCount {
         export interface Signature {
-          (query: getCount.Parameters): Promise<QueryResult.PrimitiveType<'integer'>>;
+          (query: getCount.Parameters): Promise<getCount.ReturnType>;
         }
 
         export interface Parameters {
@@ -959,6 +959,8 @@ describe("generator", () => {
            */
           readonly completed: QueryParam.PrimitiveType<'boolean'>;
         }
+
+        export type ReturnType = QueryResult.PrimitiveType<'integer'>;
       }
 
       export interface getCount extends QueryDefinition<getCount.Signature>, VersionBound<$ExpectedClientVersion> {
@@ -1003,7 +1005,7 @@ describe("generator", () => {
 
       export namespace returnsTodo {
         export interface Signature {
-          (query: returnsTodo.Parameters): Promise<QueryResult.ObjectType<Todo>>;
+          (query: returnsTodo.Parameters): Promise<returnsTodo.ReturnType>;
         }
 
         export interface Parameters {
@@ -1012,6 +1014,8 @@ describe("generator", () => {
            */
           readonly someTodo: QueryParam.ObjectType<Todo>;
         }
+
+        export type ReturnType = QueryResult.ObjectType<Todo>;
       }
 
       export interface returnsTodo extends QueryDefinition<returnsTodo.Signature>, VersionBound<$ExpectedClientVersion> {
@@ -1566,7 +1570,7 @@ describe("generator", () => {
 
         export namespace getCount {
           export interface Signature {
-            (query: getCount.Parameters): Promise<QueryResult.PrimitiveType<'integer'>>;
+            (query: getCount.Parameters): Promise<getCount.ReturnType>;
           }
 
           export interface Parameters {
@@ -1575,6 +1579,8 @@ describe("generator", () => {
              */
             readonly completed: QueryParam.PrimitiveType<'boolean'>;
           }
+
+          export type ReturnType = QueryResult.PrimitiveType<'integer'>;
         }
 
         export interface getCount extends QueryDefinition<getCount.Signature>, VersionBound<$ExpectedClientVersion> {
@@ -1619,7 +1625,7 @@ describe("generator", () => {
 
         export namespace returnsTodo {
           export interface Signature {
-            (query: returnsTodo.Parameters): Promise<QueryResult.ObjectType<Todo>>;
+            (query: returnsTodo.Parameters): Promise<returnsTodo.ReturnType>;
           }
 
           export interface Parameters {
@@ -1628,6 +1634,8 @@ describe("generator", () => {
              */
             readonly someTodo: QueryParam.ObjectType<Todo>;
           }
+
+          export type ReturnType = QueryResult.ObjectType<Todo>;
         }
 
         export interface returnsTodo extends QueryDefinition<returnsTodo.Signature>, VersionBound<$ExpectedClientVersion> {
@@ -1781,7 +1789,7 @@ describe("generator", () => {
 
           export namespace getTask {
             export interface Signature {
-              (query: getTask.Parameters): Promise<QueryResult.ObjectType<$Imported$com$example$dep$Task>>;
+              (query: getTask.Parameters): Promise<getTask.ReturnType>;
             }
 
             export interface Parameters {
@@ -1790,6 +1798,8 @@ describe("generator", () => {
                */
               readonly a: QueryParam.ObjectType<$Imported$com$example$dep$Task>;
             }
+
+            export type ReturnType = QueryResult.ObjectType<$Imported$com$example$dep$Task>;
           }
 
           export interface getTask extends QueryDefinition<getTask.Signature>, VersionBound<$ExpectedClientVersion> {

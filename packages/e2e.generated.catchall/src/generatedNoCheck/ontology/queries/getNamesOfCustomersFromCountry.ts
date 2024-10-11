@@ -5,7 +5,7 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace getNamesOfCustomersFromCountry {
   export interface Signature {
-    (query: getNamesOfCustomersFromCountry.Parameters): Promise<Array<QueryResult.PrimitiveType<'string'>>>;
+    (query: getNamesOfCustomersFromCountry.Parameters): Promise<getNamesOfCustomersFromCountry.ReturnType>;
   }
 
   export interface Parameters {
@@ -14,6 +14,8 @@ export namespace getNamesOfCustomersFromCountry {
      */
     readonly country: QueryParam.PrimitiveType<'string'>;
   }
+
+  export type ReturnType = Array<QueryResult.PrimitiveType<'string'>>;
 }
 
 export interface getNamesOfCustomersFromCountry
