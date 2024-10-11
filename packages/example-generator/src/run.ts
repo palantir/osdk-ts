@@ -265,7 +265,9 @@ const UPDATE_PACKAGE_JSON: Mutator = {
     ).replace(
       // Follow monorepo package naming convention
       `"name": "${sdkVersionedTemplateExampleId(template, sdkVersion)}"`,
-      `"name": "@osdk/examples.${templateCanonicalId(template)}"`,
+      `"name": "@osdk/examples.${
+        sdkVersionedTemplateCanonicalId(template, sdkVersion)
+      }"`,
     ).replace(
       // Monorepo uses eslint 9 whereas templates are still on eslint 8
       "\"lint\": \"eslint",
@@ -276,9 +278,9 @@ const UPDATE_PACKAGE_JSON: Mutator = {
 
 const UPDATE_README: Mutator = {
   filePattern: "README.md",
-  mutate: (template) => ({
+  mutate: (template, _, sdkVersion) => ({
     type: "modify",
-    newContent: readme(template),
+    newContent: readme(template, sdkVersion),
   }),
 };
 
@@ -292,6 +294,13 @@ function templateCanonicalId(template: Template): string {
   return template.id.replace(/^template-/, "");
 }
 
+function sdkVersionedTemplateCanonicalId(
+  template: Template,
+  sdkVersion: SdkVersion,
+): string {
+  return `${templateCanonicalId(template)}-sdk-${sdkVersion}`;
+}
+
 function templateExampleId(template: Template): string {
   return `example-${templateCanonicalId(template)}`;
 }
@@ -303,7 +312,7 @@ function sdkVersionedTemplateExampleId(
   return `${templateExampleId(template)}-sdk-${sdkVersion}`;
 }
 
-function readme(template: Template): string {
+function readme(template: Template, sdkVersion: SdkVersion): string {
   return `# ${templateExampleId(template)}
 
 This project was generated with [\`@osdk/create-app\`](https://www.npmjs.com/package/@osdk/create-app) from the \`${
@@ -313,7 +322,9 @@ This project was generated with [\`@osdk/create-app\`](https://www.npmjs.com/pac
 To quickly create your own version of this template run the following command and answer the prompts based on your Developer Console application:
 
 \`\`\`
-npm create @osdk/app@latest -- --template ${templateCanonicalId(template)}
+npm create @osdk/app@latest -- --template ${
+    templateCanonicalId(template)
+  } --sdkVersion ${sdkVersion}
 \`\`\`
 
 Alternatively check out the Developer Console docs for a full guide on creating and deploying frontend applications with the Ontology SDK.
