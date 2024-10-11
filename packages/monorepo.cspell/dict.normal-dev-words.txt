@@ -18,7 +18,10 @@ onwarn
 pypi
 retryable
 rsort
+semver
 streamutils
+struct
+structs
 tsdoc
 typecheck
 typemapping
@@ -27,6 +30,5 @@ uncapitalize
 unevaluable
 ungroup
 unioned
-semver
 unresolve
 webapi
