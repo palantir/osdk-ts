@@ -45,11 +45,6 @@ import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js"
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const MINIMUM_RECONNECT_DELAY_MS = 5 * 1000;
 
-type PropertyValue<
-  O extends ObjectOrInterfaceDefinition,
-  R extends string,
-> = NonNullable<O["__DefinitionMetadata"]>["properties"][R];
-
 /** Noop function to reduce conditional checks */
 function doNothing() {}
 

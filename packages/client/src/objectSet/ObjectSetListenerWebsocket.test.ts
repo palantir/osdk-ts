@@ -141,7 +141,6 @@ describe("ObjectSetListenerWebsocket", async () => {
 
       listener = {
         onChange: vi.fn((o) => {
-          console.log("HIT CHANGE");
           listenerPromiseResolveFn();
           updateReceived = o;
         }),
@@ -237,6 +236,7 @@ describe("ObjectSetListenerWebsocket", async () => {
             ]);
             setWebSocketState(ws, "open");
           });
+
           describe("subscribe and respond", () => {
             beforeEach(async () => {
               const subReq2 = await expectSingleSubscribeMessage(ws);

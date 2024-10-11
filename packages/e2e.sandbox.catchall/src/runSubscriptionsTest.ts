@@ -37,11 +37,23 @@ export async function runSubscriptionsTest() {
         console.log("%s: out of date", prefix);
       },
 
-      onChange(objects) {
-        if (objects.state === "ADDED_OR_UPDATED") {
-          console.log("%s: Changed objects: %o", prefix, objects);
-        } else if (objects.state === "REMOVED") {
-          console.log("%s: Removed objects: %o", prefix, objects);
+      onChange(object) {
+        if (object.state === "ADDED_OR_UPDATED") {
+          console.log(
+            "%s: Changed objects: %o",
+            prefix,
+            object,
+            object.object.$primaryKey,
+            object.state,
+          );
+        } else if (object.state === "REMOVED") {
+          console.log(
+            "%s: Removed objects: %o",
+            prefix,
+            object,
+            object.object.$primaryKey,
+            object.state,
+          );
         }
       },
     };
