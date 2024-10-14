@@ -49,7 +49,7 @@ export async function run({ outputDirectory, check }: RunArgs): Promise<void> {
 
 function createTmpDir(): tmp.DirResult {
   const tmpDir = tmp.dirSync({ unsafeCleanup: true });
-  // tmp.setGracefulCleanup();
+  tmp.setGracefulCleanup();
   return tmpDir;
 }
 
