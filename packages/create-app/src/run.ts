@@ -27,12 +27,13 @@ import {
 import { generateFoundryConfigJson } from "./generate/generateFoundryConfigJson.js";
 import { generateNpmRc } from "./generate/generateNpmRc.js";
 import { green } from "./highlight.js";
-import type { Template, TemplateContext } from "./templates.js";
+import type { SdkVersion, Template, TemplateContext } from "./templates.js";
 
 interface RunArgs {
   project: string;
   overwrite: boolean;
   template: Template;
+  sdkVersion: SdkVersion;
   foundryUrl: string;
   applicationUrl: string | undefined;
   application: string;
@@ -47,6 +48,7 @@ export async function run(
     project,
     overwrite,
     template,
+    sdkVersion,
     foundryUrl,
     applicationUrl,
     application,
@@ -79,10 +81,16 @@ export async function run(
 
   consola.info(`Copying files into project directory`);
 
+  if (template.files[sdkVersion] == null) {
+    throw new Error(
+      `The ${template.label} template does not support a "${sdkVersion}" SDK version.`,
+    );
+  }
+
   const files: Map<
     string,
     { type: "base64"; body: string } | { type: "raw"; body: string }
-  > = await template.getFiles();
+  > = await template.files[sdkVersion]();
 
   for (const [filePath, contents] of files) {
     const finalPath = path.join(root, filePath);
