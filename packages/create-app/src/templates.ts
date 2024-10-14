@@ -16,6 +16,17 @@
 
 export type SdkVersion = "1.x" | "2.x";
 
+type ModuleImportFiles = Map<
+  string,
+  {
+    type: "base64";
+    body: string;
+  } | {
+    type: "raw";
+    body: string;
+  }
+>;
+
 export interface Template {
   id: string;
   label: string;
@@ -25,10 +36,7 @@ export interface Template {
   isBeta?: boolean;
   files: {
     [K in SdkVersion]?: () => Promise<
-      Map<
-        string,
-        { type: "base64"; body: string } | { type: "raw"; body: string }
-      >
+      ModuleImportFiles
     >;
   };
 }
@@ -40,8 +48,9 @@ export interface TemplateContext {
   corsProxy: boolean;
 }
 
-const getPackageFiles = (packageName: string) => async () =>
-  (await import(packageName)).files;
+const getPackageFiles =
+  (importPromise: Promise<{ files: ModuleImportFiles }>) => async () =>
+    (await importPromise).files;
 
 export const TEMPLATES: readonly Template[] = [
   {
@@ -50,8 +59,8 @@ export const TEMPLATES: readonly Template[] = [
     envPrefix: "VITE_",
     buildDirectory: "./dist",
     files: {
-      "1.x": getPackageFiles("@osdk/create-app.template.react"),
-      "2.x": getPackageFiles("@osdk/create-app.template.react.beta"),
+      "1.x": getPackageFiles(import("@osdk/create-app.template.react")),
+      "2.x": getPackageFiles(import("@osdk/create-app.template.react.beta")),
     },
   },
   {
@@ -60,7 +69,7 @@ export const TEMPLATES: readonly Template[] = [
     envPrefix: "VITE_",
     buildDirectory: "./dist",
     files: {
-      "1.x": getPackageFiles("@osdk/create-app.template.vue"),
+      "1.x": getPackageFiles(import("@osdk/create-app.template.vue")),
     },
   },
   {
@@ -69,7 +78,9 @@ export const TEMPLATES: readonly Template[] = [
     envPrefix: "NEXT_PUBLIC_",
     buildDirectory: "./out",
     files: {
-      "1.x": getPackageFiles("@osdk/create-app.template.next-static-export"),
+      "1.x": getPackageFiles(
+        import("@osdk/create-app.template.next-static-export"),
+      ),
     },
   },
   {
@@ -79,9 +90,11 @@ export const TEMPLATES: readonly Template[] = [
     buildDirectory: "./dist",
     hidden: true,
     files: {
-      "1.x": getPackageFiles("@osdk/create-app.template.tutorial-todo-app"),
+      "1.x": getPackageFiles(
+        import("@osdk/create-app.template.tutorial-todo-app"),
+      ),
       "2.x": getPackageFiles(
-        "@osdk/create-app.template.tutorial-todo-app.beta",
+        import("@osdk/create-app.template.tutorial-todo-app.beta"),
       ),
     },
   },
@@ -92,9 +105,11 @@ export const TEMPLATES: readonly Template[] = [
     buildDirectory: "./dist",
     hidden: true,
     files: {
-      "1.x": getPackageFiles("@osdk/create-app.template.tutorial-todo-aip-app"),
+      "1.x": getPackageFiles(
+        import("@osdk/create-app.template.tutorial-todo-aip-app"),
+      ),
       "2.x": getPackageFiles(
-        "@osdk/create-app.template.tutorial-todo-aip-app.beta",
+        import("@osdk/create-app.template.tutorial-todo-aip-app.beta"),
       ),
     },
   },
