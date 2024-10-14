@@ -230,22 +230,13 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       properties,
       listener,
     ) => {
-      const referenceProperties = properties.filter(p => {
-        objectType.__DefinitionMetadata?.properties[p].type
-          === "geotimeSeriesReference";
-      });
-      const nonReferenceProperties = properties.filter(p => {
-        objectType.__DefinitionMetadata?.properties[p].type
-          !== "geotimeSeriesReference";
-      });
-
       const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
         clientCtx,
       ).subscribe(
+        objectType,
         objectSet,
         listener,
-        nonReferenceProperties,
-        referenceProperties,
+        properties,
       );
       return async () => (await pendingSubscribe)();
     },

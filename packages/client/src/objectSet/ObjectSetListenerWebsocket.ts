@@ -170,10 +170,10 @@ export class ObjectSetListenerWebsocket {
     Q extends ObjectOrInterfaceDefinition,
     P extends PropertyKeys<Q>,
   >(
+    objectType: ObjectOrInterfaceDefinition,
     objectSet: ObjectSet,
     listener: ObjectSetListener<Q, P>,
     properties: Array<P>,
-    referenceBackedProperties: Array<P>,
   ): Promise<() => void> {
     if (process.env.TARGET !== "browser") {
       // Node 18 does not expose 'crypto' on globalThis, so we need to do it ourselves. This
@@ -181,11 +181,22 @@ export class ObjectSetListenerWebsocket {
       globalThis.crypto ??= (await import("node:crypto")).webcrypto as any;
     }
 
+    const objDef = await this.#client.ontologyProvider.getObjectDefinition(
+      objectType.apiName,
+    );
+
+    const objectProperties = properties.filter((p) =>
+      objDef.properties[p].type !== "geotimeSeriesReference"
+    );
+    const referenceProperties = properties.filter((p) =>
+      objDef.properties[p].type === "geotimeSeriesReference"
+    );
+
     const sub: Subscription<Q, P> = {
       listener: fillOutListener<Q, P>(listener),
       objectSet,
-      requestedProperties: properties,
-      requestedReferenceProperties: referenceBackedProperties,
+      requestedProperties: objectProperties,
+      requestedReferenceProperties: referenceProperties,
       status: "preparing",
       // Since we don't have a real subscription id yet but we need to keep
       // track of this reference, we can just use a random uuid.

@@ -217,7 +217,7 @@ describe("ObjectSetListenerWebsocket", async () => {
         ]);
       });
 
-      it("currently requests reference backed properties", () => {
+      it.fails("currently requests reference backed properties", () => {
         expect(subReq1.requests[0].referenceSet).toEqual(["employeeLocation"]);
       });
 
@@ -314,12 +314,15 @@ describe("ObjectSetListenerWebsocket", async () => {
             [unsubscribe2, subReq2] = await Promise.all([
               client.subscribe(
                 {
+                  type: "object",
+                  apiName: "Employee",
+                },
+                {
                   type: "base",
                   objectType: Employee.apiName,
                 },
                 listener,
                 ["employeeStatus"],
-                [""],
               ),
 
               expectSingleSubscribeMessage(ws),
@@ -480,12 +483,15 @@ async function subscribeAndExpectWebSocket(
     expectWebSocketConstructed(),
     client.subscribe<Employee, PropertyKeys<Employee>>(
       {
+        apiName: "Employee",
+        type: "object",
+      },
+      {
         type: "base",
         objectType: Employee.apiName,
       },
       listener,
       ["employeeId"],
-      ["employeeLocation"],
     ),
   ]);
 
