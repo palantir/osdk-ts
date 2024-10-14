@@ -1,5 +1,11 @@
 # @osdk/create-app
 
+## 0.20.0-beta.2
+
+### Minor Changes
+
+- 292f5a5: Fix template imports
+
 ## 0.20.0-beta.1
 
 ### Minor Changes
