@@ -220,16 +220,28 @@ export namespace Osdk {
       : {});
 }
 
-// not exported from package
+/**
+ * NOT EXPORTED FROM PACKAGE
+ *
+ * Anything you throw at this that is not `false` should always be `never`.
+ *
+ * This is structured in a way that it should always short circuit to never early.
+ */
 export type ExtractStrictOption<S extends NullabilityAdherence> =
-  IsAny<S> extends true ? never : S extends false ? "$notStrict"
-  : never;
+  IsNever<S> extends true ? never
+    : "throw" extends S ? never // catches any time "throw" still exists (including any)
+    : "drop" extends S ? never // catches any time "drop" still exists (including any)
+    : "$notStrict";
 
-// not exported from package
-export type ExtractRidOption<R extends boolean> = IsAny<R> extends true ? never
-  : IsNever<R> extends true ? never
-  : DefaultToFalse<R> extends false ? never
-  : "$rid";
+/**
+ * NOT EXPORTED FROM PACKAGE
+ *
+ * Anything you throw at this that is not exactly `true` should always be `never`.
+ */
+export type ExtractRidOption<R extends boolean> = // comment for readability
+  IsNever<R> extends true ? never
+    : DefaultToFalse<R> extends false ? never
+    : "$rid";
 
 // not exported from package
 export type ExtractOptions<

@@ -15,28 +15,60 @@
  */
 
 import { describe, expectTypeOf, it } from "vitest";
+import type { NullabilityAdherence } from "../build/esm/index.js";
+import type { ObjectSet } from "./objectSet/ObjectSet.js";
+import type { ObjectOrInterfaceDefinition } from "./ontology/ObjectOrInterface.js";
 import type { ExtractOptions, Osdk } from "./OsdkObjectFrom.js";
 
 describe("ExtractOptions", () => {
   describe("NullabilityAdherence Generic", () => {
     it("does not add $notStrict for any", () => {
-      expectTypeOf<ExtractOptions<any, any>>().toEqualTypeOf<never>();
+      expectTypeOf<ExtractOptions<any, any>>()
+        .toEqualTypeOf<never>();
     });
 
     it("does not add $notStrict for never", () => {
-      expectTypeOf<ExtractOptions<any, never>>().toEqualTypeOf<never>();
+      expectTypeOf<ExtractOptions<any, never>>()
+        .toEqualTypeOf<never>();
     });
 
     it("does add add $notStrict for false", () => {
-      expectTypeOf<ExtractOptions<any, false>>().toEqualTypeOf<"$notStrict">();
+      expectTypeOf<ExtractOptions<any, false>>()
+        .toEqualTypeOf<"$notStrict">();
     });
 
     it("does not add $notStrict for throw", () => {
-      expectTypeOf<ExtractOptions<any, "throw">>().toEqualTypeOf<never>();
+      expectTypeOf<ExtractOptions<any, "throw">>()
+        .toEqualTypeOf<never>();
     });
 
     it("does not add $notStrict for drop", () => {
-      expectTypeOf<ExtractOptions<any, "drop">>().toEqualTypeOf<never>();
+      expectTypeOf<ExtractOptions<any, "drop">>()
+        .toEqualTypeOf<never>();
+    });
+
+    it("does not add $notStrict for drop | throw", () => {
+      expectTypeOf<ExtractOptions<any, "drop" | "throw">>()
+        .toEqualTypeOf<never>();
+    });
+
+    it("does not add $notStrict for drop | false", () => {
+      expectTypeOf<ExtractOptions<any, "drop" | false>>()
+        .toEqualTypeOf<never>();
+    });
+    it("does not add $notStrict for false | throw", () => {
+      expectTypeOf<ExtractOptions<any, false | "throw">>()
+        .toEqualTypeOf<never>();
+    });
+
+    it("does not add $notStrict for drop | throw | false", () => {
+      expectTypeOf<ExtractOptions<any, "drop" | "throw" | false>>()
+        .toEqualTypeOf<never>();
+    });
+
+    it("does not add $notStrict for NullabilityAdherence", () => {
+      expectTypeOf<ExtractOptions<any, NullabilityAdherence>>()
+        .toEqualTypeOf<never>();
     });
   });
 
@@ -55,6 +87,14 @@ describe("ExtractOptions", () => {
 
     it("does not add $rid for never", () => {
       expectTypeOf<ExtractOptions<never, any>>().toEqualTypeOf<never>();
+    });
+
+    it("does not add $rid for boolean", () => {
+      expectTypeOf<ExtractOptions<boolean, any>>().toEqualTypeOf<never>();
+    });
+
+    it("does not add $rid for true | false", () => {
+      expectTypeOf<ExtractOptions<true | false, any>>().toEqualTypeOf<never>();
     });
   });
 
@@ -295,6 +335,28 @@ describe("ExtractOptions", () => {
       expectTypeOf<Osdk<quickAndDirty, never, "name">>()
         .toEqualTypeOf<
           Osdk.Instance<quickAndDirty, never, "name">
+        >();
+    });
+  });
+
+  describe("Inferred return types from fetchPage work", () => {
+    function createObjectSetChannel<O extends ObjectOrInterfaceDefinition>(
+      objectSet: ObjectSet<O>,
+    ): Awaited<ReturnType<ObjectSet<O>["fetchPage"]>>["data"] {
+      return {} as any;
+    }
+
+    class Helper<O extends ObjectOrInterfaceDefinition> {
+      constructor(private objectSet: ObjectSet<O>) {}
+      public go() {
+        return createObjectSetChannel(this.objectSet);
+      }
+    }
+
+    it("is not $notStrict", async () => {
+      expectTypeOf<ReturnType<Helper<quickAndDirty>["go"]>>().branded
+        .toEqualTypeOf<
+          Osdk.Instance<quickAndDirty>[]
         >();
     });
   });
