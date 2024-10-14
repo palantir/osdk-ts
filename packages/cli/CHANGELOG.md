@@ -1,5 +1,7 @@
 # @osdk/cli
 
+## 0.25.0-beta.1
+
 ## 0.25.0-beta.0
 
 ### Minor Changes

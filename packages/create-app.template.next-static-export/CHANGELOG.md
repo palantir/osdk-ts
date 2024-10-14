@@ -1,5 +1,11 @@
 # @osdk/create-app.template.next-static-export
 
+## 0.20.0-beta.1
+
+### Minor Changes
+
+- bab844f: Update vitest to 2.1.2
+
 ## 0.20.0-beta.0
 
 ## 0.19.0

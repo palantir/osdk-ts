@@ -1,5 +1,12 @@
 # @osdk/create-app
 
+## 0.20.0-beta.1
+
+### Minor Changes
+
+- f7008f7: Support TypeScript 2.0 syntax for Todo App tutorials
+- 81e99c0: Couple templates with SDK version, allow specifying --sdkVersion
+
 ## 0.20.0-beta.0
 
 ## 0.19.0

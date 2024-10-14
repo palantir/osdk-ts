@@ -1,5 +1,17 @@
 # @osdk/example-generator
 
+## 0.9.0-beta.1
+
+### Minor Changes
+
+- 81e99c0: Couple templates with SDK version, allow specifying --sdkVersion
+
+### Patch Changes
+
+- Updated dependencies [f7008f7]
+- Updated dependencies [81e99c0]
+  - @osdk/create-app@0.20.0-beta.1
+
 ## 0.9.0-beta.0
 
 ### Patch Changes

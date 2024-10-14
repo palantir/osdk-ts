@@ -1,5 +1,22 @@
 # @osdk/generator
 
+## 2.1.0-beta.1
+
+### Minor Changes
+
+- 1812118: Add geotime support for OSDK.
+- a5a0ea4: Namespaced object sets in actions no longer generate wrong
+- 518972b: Queries that have structs now represent the struct shape instead of Record<string, any>
+
+### Patch Changes
+
+- Updated dependencies [1812118]
+- Updated dependencies [72c1905]
+- Updated dependencies [6c60414]
+- Updated dependencies [8e6a5f4]
+  - @osdk/generator-converters@2.1.0-beta.1
+  - @osdk/api@2.1.0-beta.1
+
 ## 2.1.0-beta.0
 
 ### Minor Changes

@@ -1,5 +1,19 @@
 # @osdk/cli.cmd.typescript
 
+## 0.25.0-beta.1
+
+### Minor Changes
+
+- 1812118: Add geotime support for OSDK.
+
+### Patch Changes
+
+- Updated dependencies [1812118]
+- Updated dependencies [a5a0ea4]
+- Updated dependencies [518972b]
+  - @osdk/generator@2.1.0-beta.1
+  - @osdk/cli.common@0.25.0-beta.1
+
 ## 0.7.0-beta.0
 
 ### Patch Changes
