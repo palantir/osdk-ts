@@ -44,3 +44,9 @@ undefineds
 valuetype
 websockets
 workstateRid
+geotimeseriesrequests
+Fintraffic
+Rhemmings
+mnsi
+Gtfs
+wmata

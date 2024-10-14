@@ -89,6 +89,12 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
                 "type": "integer",
               },
             },
+            "employeeLocation": {
+              "dataType": {
+                "type": "geotimeSeriesReference",
+              },
+              "description": "Geotime series reference of the location of the employee",
+            },
             "employeeStatus": {
               "dataType": {
                 "itemType": {
@@ -255,6 +261,12 @@ exports[`Load Ontologies Metadata > Loads object and action types without link t
               "dataType": {
                 "type": "integer",
               },
+            },
+            "employeeLocation": {
+              "dataType": {
+                "type": "geotimeSeriesReference",
+              },
+              "description": "Geotime series reference of the location of the employee",
             },
             "employeeStatus": {
               "dataType": {

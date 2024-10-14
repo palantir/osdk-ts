@@ -21,6 +21,7 @@ import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvide
 import type { DollarAsFn } from "./getDollarAs.js";
 import type { get$link } from "./getDollarLink.js";
 import type {
+  CachedPropertiesRef,
   ClientRef,
   ObjectDefRef,
   RawObject,
@@ -38,6 +39,7 @@ export interface ObjectHolderPrototypeOwnProps {
 /** @internal */
 export interface ObjectHolderOwnProperties {
   [RawObject]: OntologyObjectV2;
+  [CachedPropertiesRef]: Map<string | symbol, any>;
 }
 
 /** @internal */

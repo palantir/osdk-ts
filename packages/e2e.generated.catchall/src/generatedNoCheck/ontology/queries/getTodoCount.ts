@@ -5,8 +5,10 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace getTodoCount {
   export interface Signature {
-    (): Promise<QueryResult.PrimitiveType<'integer'>>;
+    (): Promise<getTodoCount.ReturnType>;
   }
+
+  export type ReturnType = QueryResult.PrimitiveType<'integer'>;
 }
 
 export interface getTodoCount extends QueryDefinition<getTodoCount.Signature>, VersionBound<$ExpectedClientVersion> {

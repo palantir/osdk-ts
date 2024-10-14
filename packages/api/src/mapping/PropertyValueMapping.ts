@@ -15,7 +15,10 @@
  */
 
 import type { Attachment, AttachmentUpload } from "../object/Attachment.js";
-import type { TimeSeriesProperty } from "../timeseries/timeseries.js";
+import type {
+  GeotimeSeriesProperty,
+  TimeSeriesProperty,
+} from "../timeseries/timeseries.js";
 
 /**
  * Map from the PropertyDefinition type to the typescript type that we return
@@ -39,6 +42,7 @@ export interface PropertyValueWireToClient {
 
   numericTimeseries: TimeSeriesProperty<number>;
   stringTimeseries: TimeSeriesProperty<string>;
+  geotimeSeriesReference: GeotimeSeriesProperty<GeoJSON.Point>;
 }
 
 /**
@@ -63,4 +67,5 @@ export interface PropertyValueClientToWire {
 
   numericTimeseries: TimeSeriesProperty<number>;
   stringTimeseries: TimeSeriesProperty<string>;
+  geotimeSeriesReference: GeotimeSeriesProperty<GeoJSON.Point>;
 }

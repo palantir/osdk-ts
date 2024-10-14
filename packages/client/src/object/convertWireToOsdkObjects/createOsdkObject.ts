@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
+import type {
+  GeotimeSeriesProperty,
+  ObjectTypeDefinition,
+  Osdk,
+} from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
+import { OntologiesV2 } from "@osdk/internal.foundry.ontologiesv2";
 import { createAttachmentFromRid } from "../../createAttachmentFromRid.js";
+import { GeotimeSeriesPropertyImpl } from "../../createGeotimeSeriesProperty.js";
 import { TimeSeriesPropertyImpl } from "../../createTimeseriesProperty.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
@@ -24,6 +30,7 @@ import { createClientCache } from "../Cache.js";
 import { get$as } from "./getDollarAs.js";
 import { get$link } from "./getDollarLink.js";
 import {
+  CachedPropertiesRef,
   ClientRef,
   ObjectDefRef,
   RawObject,
@@ -82,6 +89,10 @@ export function createOsdkObject<
         value: rawObj,
         writable: true, // so we can allow updates
       },
+      [CachedPropertiesRef]: {
+        value: new Map<string | symbol, any>(),
+        writable: true,
+      },
     },
   );
 
@@ -126,6 +137,20 @@ export function createOsdkObject<
               target[RawObject][objectDef.primaryKeyApiName as string],
               p as string,
             );
+          }
+          if (propDef.type === "geotimeSeriesReference") {
+            const instance = target[CachedPropertiesRef].get(p);
+            if (instance != null) {
+              return instance;
+            }
+            const geotimeProp = new GeotimeSeriesPropertyImpl<GeoJSON.Point>(
+              client,
+              objectDef.apiName,
+              target[RawObject][objectDef.primaryKeyApiName as string],
+              p as string,
+            );
+            target[CachedPropertiesRef].set(p, geotimeProp);
+            return geotimeProp;
           }
         }
         return rawValue;
