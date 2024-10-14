@@ -1,5 +1,24 @@
 # @osdk/foundry-sdk-generator
 
+## 2.1.0-beta.1
+
+### Minor Changes
+
+- 1812118: Add geotime support for OSDK.
+- 2c63bc5: Fixes being unable to generate in dev console without --beta
+
+### Patch Changes
+
+- Updated dependencies [1812118]
+- Updated dependencies [72c1905]
+- Updated dependencies [a5a0ea4]
+- Updated dependencies [6c60414]
+- Updated dependencies [518972b]
+- Updated dependencies [8e6a5f4]
+  - @osdk/generator@2.1.0-beta.1
+  - @osdk/client@2.1.0-beta.1
+  - @osdk/api@2.1.0-beta.1
+
 ## 2.1.0-beta.0
 
 ### Patch Changes

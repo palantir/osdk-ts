@@ -1,5 +1,14 @@
 # @osdk/api
 
+## 2.1.0-beta.1
+
+### Minor Changes
+
+- 1812118: Add geotime support for OSDK.
+- 72c1905: Fixes a bug where any/never could be interpreted wrong when used in types for determining fetch results
+- 6c60414: Ensure that inferred return type of ObjectSet.fetchPage where only the ObjectTypeDefinition is inferred, does not default to $notStrict
+- 8e6a5f4: Avoid type-fest's IsAny as it doesn't always work
+
 ## 2.1.0-beta.0
 
 ### Minor Changes

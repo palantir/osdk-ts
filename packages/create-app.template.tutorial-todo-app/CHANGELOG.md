@@ -1,5 +1,12 @@
 # @osdk/create-app.template.tutorial-todo-app
 
+## 0.20.0-beta.1
+
+### Minor Changes
+
+- bab844f: Update vitest to 2.1.2
+- bab844f: Upgrade vite to 5.4.8
+
 ## 0.20.0-beta.0
 
 ## 0.19.0

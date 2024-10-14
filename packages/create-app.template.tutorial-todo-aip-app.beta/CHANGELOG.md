@@ -1,5 +1,11 @@
 # @osdk/create-app.template.tutorial-todo-aip-app.beta
 
+## 0.20.0-beta.1
+
+### Minor Changes
+
+- f7008f7: Support TypeScript 2.0 syntax for Todo App tutorials
+
 ## 0.20.0-beta.0
 
 ## 0.19.0
