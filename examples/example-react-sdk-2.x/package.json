@@ -1,5 +1,5 @@
 {
-  "name": "@osdk/examples.tutorial-todo-aip-app-beta",
+  "name": "@osdk/examples.react-sdk-2.x",
   "private": true,
   "version": "0.0.0",
   "license": "Apache-2.0",
@@ -15,13 +15,12 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@osdk/client": "latest",
+    "@osdk/client": "beta",
     "@osdk/e2e.generated.catchall": "workspace:*",
-    "@osdk/oauth": "latest",
+    "@osdk/oauth": "beta",
     "react": "^18",
     "react-dom": "^18",
-    "react-router-dom": "^6.23.1",
-    "swr": "^2.2.5"
+    "react-router-dom": "^6.23.1"
   },
   "devDependencies": {
     "@types/react": "^18",
