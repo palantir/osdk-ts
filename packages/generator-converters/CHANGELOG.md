@@ -1,5 +1,15 @@
 # @osdk/generator-converters
 
+## 2.1.0-beta.2
+
+### Minor Changes
+
+- 7d777eb: Improves error message for unsupported query types
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.2
+
 ## 2.1.0-beta.1
 
 ### Minor Changes
