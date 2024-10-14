@@ -25,5 +25,12 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "[jsonc]": {
     "editor.defaultFormatter": "dprint.dprint"
-  }
+  },
+  "typescript.preferences.autoImportSpecifierExcludeRegexes": [
+    "\\.\\./build",
+    "\\.\\./src",
+    "\\.\\./.*?/src",
+    "\\.\\./.*?/build",
+    "\\./index.js"
+  ]
 }
