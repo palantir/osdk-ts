@@ -15,7 +15,7 @@
  */
 
 import { describe, expectTypeOf, it } from "vitest";
-import type { NullabilityAdherence } from "../build/esm/index.js";
+import type { NullabilityAdherence } from "./object/FetchPageArgs.js";
 import type { ObjectSet } from "./objectSet/ObjectSet.js";
 import type { ObjectOrInterfaceDefinition } from "./ontology/ObjectOrInterface.js";
 import type { ExtractOptions, Osdk } from "./OsdkObjectFrom.js";
