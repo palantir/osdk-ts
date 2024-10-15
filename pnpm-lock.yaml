@@ -2059,9 +2059,9 @@ importers:
 
   packages/shared.net.platformapi:
     dependencies:
-      '@osdk/shared.client':
-        specifier: ^1.0.1
-        version: 1.0.1
+      '@osdk/shared.client2':
+        specifier: ^1.0.0
+        version: 1.0.0
       '@osdk/shared.net.errors':
         specifier: workspace:~
         version: link:../shared.net.errors
@@ -3599,6 +3599,15 @@ packages:
   '@osdk/shared.client.impl@0.1.0':
     resolution: {integrity: sha512-mNpUkkwnDuPK3LNgilQ0uaUUstrTZ/gqNejSil0Q7Zd+Nq05sAmuyiC6a+5el6p1zByzv+XthQAnJF5Nwcuoag==}
 
+<<<<<<< HEAD
+=======
+  '@osdk/shared.client.impl@1.0.1':
+    resolution: {integrity: sha512-9EjkT+vhrGuCXGfX2U89ZoOuxMYrmZUkLjzdLPqXkph1elK3sQCS0tFTFKK+tz14oORGaEaH92pHtZSP+zYNeg==}
+
+  '@osdk/shared.client2@1.0.0':
+    resolution: {integrity: sha512-AZiDypfNrsH/men2mB12KDQM8t5iGyUI7QO2BTpgQ1pNKgwdILUY/xBsNEAUCnp0eYqSuPI1puJuJB2xogMDHA==}
+
+>>>>>>> 3678e993 (Update to use new sharedClient dep (#869))
   '@osdk/shared.client@0.0.0':
     resolution: {integrity: sha512-8X42+4YUM6ItGqG5nkNRGlYBgCLPmT4BklCy1SvhHPn02A87bikACCqWYiMSDy+I2Tw/qm9oyHl/fTYCH8dvGg==}
 
@@ -9394,6 +9403,17 @@ snapshots:
       '@osdk/shared.net.errors': 1.1.0
       '@osdk/shared.net.fetch': 0.1.0
 
+<<<<<<< HEAD
+=======
+  '@osdk/shared.client.impl@1.0.1':
+    dependencies:
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.net.errors': 2.0.0
+      '@osdk/shared.net.fetch': 1.0.0
+
+  '@osdk/shared.client2@1.0.0': {}
+
+>>>>>>> 3678e993 (Update to use new sharedClient dep (#869))
   '@osdk/shared.client@0.0.0': {}
 
   '@osdk/shared.client@1.0.1': {}
