@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import type { SharedClient, SharedClientContext } from "@osdk/shared.client";
-import { symbolClientContext } from "@osdk/shared.client";
+import type {
+  SharedClient as OldSharedClient,
+  SharedClientContext as OldSharedClientContext,
+} from "@osdk/shared.client";
+import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.client";
+import type { SharedClient, SharedClientContext } from "@osdk/shared.client2";
+import { symbolClientContext } from "@osdk/shared.client2";
 import { PalantirApiError, UnknownError } from "@osdk/shared.net.errors";
 
 export type FoundryPlatformMethod<F extends (...args: any[]) => any> = [
@@ -31,7 +36,11 @@ export type FoundryPlatformMethod<F extends (...args: any[]) => any> = [
 export async function foundryPlatformFetch<
   X extends FoundryPlatformMethod<any>,
 >(
-  client: SharedClient | SharedClientContext,
+  client:
+    | SharedClient
+    | SharedClientContext
+    | OldSharedClient
+    | OldSharedClientContext,
   [
     httpMethodNum,
     origPath,
@@ -66,7 +75,8 @@ export async function foundryPlatformFetch<
   ][httpMethodNum];
 
   return await apiFetch(
-    (client as SharedClient)[symbolClientContext] ?? client,
+    ((client as SharedClient)[symbolClientContext])
+      ?? ((client as OldSharedClient)[oldSymbolClientContext]) ?? client,
     method,
     path,
     body,
@@ -78,7 +88,9 @@ export async function foundryPlatformFetch<
 }
 
 async function apiFetch(
-  clientCtx: Pick<SharedClientContext, "baseUrl" | "fetch">,
+  clientCtx:
+    | Pick<SharedClientContext, "baseUrl" | "fetch">
+    | Pick<OldSharedClientContext, "baseUrl" | "fetch">,
   method: string,
   endpointPath: string,
   data?: any,

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { SharedClientContext } from "@osdk/shared.client";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
+import type { SharedClientContext } from "@osdk/shared.client2";
 import { USER_AGENT } from "./util/UserAgent.js";
 
 export interface PlatformClient extends SharedClientContext {}

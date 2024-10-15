@@ -34,7 +34,8 @@ import type {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
   MinimalObjectSet,
 } from "@osdk/api/unstable";
-import type { SharedClient } from "@osdk/shared.client";
+import type { SharedClient as OldSharedClient } from "@osdk/shared.client";
+import type { SharedClient } from "@osdk/shared.client2";
 import type { BulkLinkResult } from "./__unstable/createBulkLinksAsyncIterFactory.js";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
@@ -50,7 +51,7 @@ export type CheckVersionBound<Q> = Q extends VersionBound<infer V> ? (
   )
   : Q;
 
-export interface Client extends SharedClient<MinimalClient> {
+export interface Client extends SharedClient, OldSharedClient {
   <Q extends ObjectTypeDefinition>(
     o: Q,
   ): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q>
@@ -111,7 +112,12 @@ export interface Client extends SharedClient<MinimalClient> {
     objs: Osdk<T>[],
     links: string[],
   ) => AsyncGenerator<BulkLinkResult, void, undefined>;
+
+  [additionalContext]: MinimalClient;
 }
+
+// DO NOT EXPORT FROM PACKAGE
+export const additionalContext = Symbol("additionalContext");
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
 const MaxOsdkVersion = "2.0.5";
