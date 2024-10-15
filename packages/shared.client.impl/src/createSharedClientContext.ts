@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { SharedClientContext as OldSharedClientContext } from "@osdk/shared.client";
 import type { SharedClientContext } from "@osdk/shared.client2";
 import { PalantirApiError } from "@osdk/shared.net.errors";
 import {
@@ -27,7 +28,7 @@ export function createSharedClientContext(
   tokenProvider: () => Promise<string>,
   userAgent: string,
   fetchFn: typeof globalThis.fetch = fetch,
-): SharedClientContext {
+): SharedClientContext & OldSharedClientContext {
   const ontology = { metadata: { userAgent: "" } };
   if (baseUrl.length === 0) {
     throw new Error("baseUrl cannot be empty");

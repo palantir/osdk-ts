@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@osdk/shared.client2": "^1.0.0",
+    "@osdk/shared.client": "^1.0.1",
     "@osdk/shared.net.errors": "workspace:~",
     "@osdk/shared.net.fetch": "workspace:~"
   },
