@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { SharedClientContext } from "@osdk/shared.client";
+import type { SharedClientContext } from "@osdk/shared.client2";
 import { PalantirApiError } from "@osdk/shared.net.errors";
 import {
   createFetchHeaderMutator,

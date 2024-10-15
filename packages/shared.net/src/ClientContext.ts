@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-import type { SharedClientContext } from "@osdk/shared.client";
+import type { SharedClientContext } from "@osdk/shared.client2";

@@ -38,6 +38,7 @@
     "@osdk/internal.foundry.ontologiesv2": "0.2.1",
     "@osdk/shared.client": "^1.0.1",
     "@osdk/shared.client.impl": "workspace:~",
+    "@osdk/shared.client2": "^1.0.0",
     "@osdk/shared.net.errors": "workspace:~",
     "@osdk/shared.net.fetch": "workspace:~",
     "@types/geojson": "^7946.0.14",
