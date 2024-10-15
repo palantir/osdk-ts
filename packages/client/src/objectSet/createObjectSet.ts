@@ -238,6 +238,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         listener,
         properties,
       );
+
       return async () => (await pendingSubscribe)();
     },
   };
