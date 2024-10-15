@@ -833,6 +833,9 @@ importers:
       '@osdk/internal.foundry.ontologiesv2':
         specifier: 0.3.0-beta.0
         version: 0.3.0-beta.0
+      '@osdk/shared.client':
+        specifier: ^1.0.1
+        version: 1.0.1
       '@osdk/shared.client.impl':
         specifier: workspace:~
         version: link:../shared.client.impl

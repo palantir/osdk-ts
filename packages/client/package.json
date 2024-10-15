@@ -35,6 +35,7 @@
     "@osdk/generator-converters": "workspace:*",
     "@osdk/internal.foundry.core": "0.3.0-beta.0",
     "@osdk/internal.foundry.ontologiesv2": "0.3.0-beta.0",
+    "@osdk/shared.client": "^1.0.1",
     "@osdk/shared.client.impl": "workspace:~",
     "@osdk/shared.client2": "^1.0.0",
     "@osdk/shared.net.errors": "workspace:~",

@@ -27,6 +27,7 @@ import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
 } from "@osdk/api/unstable";
+import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.client";
 import { symbolClientContext } from "@osdk/shared.client2";
 import { createBulkLinksAsyncIterFactory } from "./__unstable/createBulkLinksAsyncIterFactory.js";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
@@ -143,6 +144,9 @@ export function createClientInternal(
   const client: Client = Object.defineProperties<Client>(
     clientFn as Client,
     {
+      [oldSymbolClientContext]: {
+        value: clientCtx,
+      },
       [symbolClientContext]: {
         value: clientCtx,
       },
