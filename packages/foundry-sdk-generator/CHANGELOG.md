@@ -1,5 +1,15 @@
 # @osdk/foundry-sdk-generator
 
+## 2.0.6
+
+### Patch Changes
+
+- Updated dependencies [bd2207b]
+  - @osdk/shared.net@2.0.2
+  - @osdk/client@2.0.6
+  - @osdk/generator@2.0.6
+  - @osdk/api@2.0.6
+
 ## 2.0.5
 
 ### Patch Changes
