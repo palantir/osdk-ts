@@ -1,5 +1,11 @@
 # @osdk/shared.client.impl
 
+## 1.0.2
+
+### Patch Changes
+
+- bd2207b: Changed shared context to a version less error prone
+
 ## 1.0.1
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @osdk/shared.net.platformapi
 
+## 0.3.2
+
+### Patch Changes
+
+- bd2207b: Using new dependency for shared client.
+
 ## 0.3.1
 
 ### Patch Changes

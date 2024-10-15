@@ -1,5 +1,16 @@
 # @osdk/client
 
+## 2.0.6
+
+### Patch Changes
+
+- bd2207b: Changed shared context to a version less error prone
+- Updated dependencies [bd2207b]
+  - @osdk/shared.client.impl@1.0.2
+  - @osdk/generator-converters@2.0.6
+  - @osdk/client.unstable@2.0.6
+  - @osdk/api@2.0.6
+
 ## 2.0.5
 
 ### Patch Changes
