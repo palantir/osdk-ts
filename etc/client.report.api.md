@@ -40,8 +40,9 @@ import type { QueryMetadata } from '@osdk/api';
 import type { QueryParam } from '@osdk/api';
 import type { QueryResult } from '@osdk/api';
 import { Result } from '@osdk/api';
-import type { SharedClient } from '@osdk/shared.client';
-import type { SharedClientContext } from '@osdk/shared.client';
+import type { SharedClient } from '@osdk/shared.client2';
+import type { SharedClient as SharedClient_2 } from '@osdk/shared.client';
+import type { SharedClientContext } from '@osdk/shared.client2';
 import { WhereClause } from '@osdk/api';
 
 export { ActionEditResponse }
@@ -61,16 +62,18 @@ export { ApplyActionOptions }
 
 export { ApplyBatchActionOptions }
 
-// Warning: (ae-forgotten-export) The symbol "MinimalClient" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
-export interface Client extends SharedClient<MinimalClient> {
+export interface Client extends SharedClient, SharedClient_2 {
     // Warning: (ae-forgotten-export) The symbol "BulkLinkResult" needs to be exported by the entry point index.d.ts
     //
     // @alpha
     readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks]: <T extends ObjectOrInterfaceDefinition>(objs: Osdk<T>[], links: string[]) => AsyncGenerator<BulkLinkResult, void, undefined>;
     // @alpha
     readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet]: <T extends ObjectOrInterfaceDefinition>(type: T, rid: string) => ObjectSet<T>;
+    // Warning: (ae-forgotten-export) The symbol "MinimalClient" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    [additionalContext]: MinimalClient;
     // (undocumented)
     <Q extends ObjectTypeDefinition>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
     // (undocumented)
