@@ -70,9 +70,9 @@ export function createMinimalClient(
     "ontologyProvider"
   > as any;
 
-  return Object.assign(minimalClient, {
+  return Object.freeze(Object.assign(minimalClient, {
     ontologyProvider: createStandardOntologyProviderFactory(
       options,
     )(minimalClient),
-  });
+  }));
 }

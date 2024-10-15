@@ -47,7 +47,6 @@
     "@osdk/monorepo.tsconfig": "0.0.0",
     "@osdk/monorepo.tsup": "0.0.0",
     "@osdk/oauth": "1.0.0",
-    "@osdk/shared.client": "1.0.0",
     "@osdk/shared.client.impl": "1.0.0",
     "@osdk/shared.net": "2.0.0",
     "@osdk/shared.net.errors": "2.0.0",

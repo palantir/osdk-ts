@@ -22,7 +22,6 @@ import {
   objectTypeWithAllPropertyTypes,
 } from "@osdk/client.test.ontology";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
-import { symbolClientContext } from "@osdk/shared.client";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { apiServer } from "@osdk/shared.test";
 import {
@@ -33,7 +32,7 @@ import {
   expectTypeOf,
   it,
 } from "vitest";
-import type { Client } from "../Client.js";
+import { additionalContext, type Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
@@ -339,7 +338,7 @@ describe("convertWireToOsdkObjects", () => {
 
       await expect(() =>
         convertWireToOsdkObjects(
-          client[symbolClientContext],
+          client[additionalContext],
           [object],
           undefined,
           undefined,
@@ -359,7 +358,7 @@ describe("convertWireToOsdkObjects", () => {
 
       await expect(
         convertWireToOsdkObjects(
-          client[symbolClientContext],
+          client[additionalContext],
           [object],
           undefined,
           undefined,
@@ -376,7 +375,7 @@ describe("convertWireToOsdkObjects", () => {
       } as const;
 
       const result = await convertWireToOsdkObjects(
-        client[symbolClientContext],
+        client[additionalContext],
         [object],
         undefined,
         undefined,
@@ -394,7 +393,7 @@ describe("convertWireToOsdkObjects", () => {
       } as const;
 
       const result = await convertWireToOsdkObjects(
-        client[symbolClientContext],
+        client[additionalContext],
         [object],
         undefined,
         undefined,
@@ -415,7 +414,7 @@ describe("convertWireToOsdkObjects", () => {
 
       await expect(() =>
         convertWireToOsdkObjects(
-          client[symbolClientContext],
+          client[additionalContext],
           [object],
           undefined,
           undefined,
@@ -436,7 +435,7 @@ describe("convertWireToOsdkObjects", () => {
 
       await expect(
         convertWireToOsdkObjects(
-          client[symbolClientContext],
+          client[additionalContext],
           [object],
           undefined,
           undefined,
@@ -453,7 +452,7 @@ describe("convertWireToOsdkObjects", () => {
       } as const;
 
       const result = await convertWireToOsdkObjects(
-        client[symbolClientContext],
+        client[additionalContext],
         [object],
         undefined,
         undefined,
@@ -472,7 +471,7 @@ describe("convertWireToOsdkObjects", () => {
       } as const;
 
       const result = await convertWireToOsdkObjects(
-        client[symbolClientContext],
+        client[additionalContext],
         [object],
         undefined,
         undefined,
@@ -492,7 +491,7 @@ describe("convertWireToOsdkObjects", () => {
     } as const;
 
     const result = await convertWireToOsdkObjects(
-      client[symbolClientContext],
+      client[additionalContext],
       [object],
       "FooInterface",
       undefined,
