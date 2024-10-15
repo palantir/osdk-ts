@@ -289,9 +289,8 @@ describe("ObjectSetListenerWebsocket", async () => {
               "object": {
                 "$apiName": "Employee",
                 "$objectType": "Employee",
-                "$primaryKey": {
-                  "apiName": "employeeId",
-                },
+                "$primaryKey": "employeeId",
+                "apiName": "employeeId",
                 "employeeLocation": GeotimeSeriesPropertyImpl {
                   "lastFetchedValue": {
                     "time": "111",

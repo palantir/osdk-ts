@@ -354,6 +354,46 @@
       },
       "linkTypes": []
     },
+    "MtaBus": {
+      "objectType": {
+        "apiName": "MtaBus",
+        "primaryKey": "vehicleId",
+        "displayName": "MtaBus",
+        "description": "MtaBus",
+        "properties": {
+          "vehicleId": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "nextStopId": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "routeId": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "positionId": {
+            "dataType": {
+              "type": "geotimeSeriesReference"
+            }
+          }
+        },
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "traffic",
+          "color": "color"
+        },
+        "titleProperty": "name",
+        "pluralDisplayName": "Fintraffic AIS"
+      },
+      "linkTypes": []
+    },
     "RhemmingsObjectWithGtsrProperty2": {
       "objectType": {
         "apiName": "RhemmingsObjectWithGtsrProperty2",

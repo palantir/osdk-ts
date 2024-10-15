@@ -202,6 +202,7 @@ export class ObjectSetListenerWebsocket {
       // track of this reference, we can just use a random uuid.
       subscriptionId: `TMP-${crypto.randomUUID()}`,
     };
+
     this.#subscriptions.set(sub.subscriptionId, sub);
 
     // actually prepares the subscription, ensures the ws is ready, and sends
@@ -272,6 +273,7 @@ export class ObjectSetListenerWebsocket {
 
       return;
     }
+
     // Assumes the node 18 crypto fallback to globalThis in `subscribe` has happened.
     const id = crypto.randomUUID();
     // responses come back as an array of subIds, so we need to know the sources
@@ -461,7 +463,8 @@ export class ObjectSetListenerWebsocket {
           this.#client,
           [{
             __apiName: o.objectType,
-            __primaryKey: o.primaryKey,
+            __primaryKey: Object.values(o.primaryKey)[0],
+            ...o.primaryKey,
             [o.property]: o.value,
           }],
           undefined,
@@ -483,6 +486,13 @@ export class ObjectSetListenerWebsocket {
     }
 
     const osdkObjects = await Promise.all(objectUpdates.map(async (o) => {
+      const keysToDelete = Object.keys(o.object).filter((key) =>
+        sub.requestedReferenceProperties.includes(key)
+      );
+      for (const key of keysToDelete) {
+        delete o.object[key];
+      }
+
       const osdkObjectArray = await convertWireToOsdkObjects(
         this.#client,
         [o.object],
@@ -542,7 +552,6 @@ export class ObjectSetListenerWebsocket {
           if (process?.env?.NODE_ENV !== "production") {
             this.#logger?.trace({ shouldFireOutOfDate }, "success");
           }
-
           sub.status = "subscribed";
           if (sub.subscriptionId !== response.id) {
             // might be the temporary one

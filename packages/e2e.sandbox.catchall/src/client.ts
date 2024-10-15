@@ -21,7 +21,7 @@ import { logger } from "./logger.js";
 import { loggingFetch } from "./loggingFetch.js";
 
 invariant(process.env.FOUNDRY_STACK !== undefined);
-invariant(process.env.FOUNDRY_USER_TOKEN !== undefined);
+invariant(process.env.SECONDARY_FOUNDRY_STACK !== undefined);
 
 export const client: Client = createClient(
   process.env.FOUNDRY_STACK,
@@ -32,7 +32,7 @@ export const client: Client = createClient(
 );
 
 export const dsClient: Client = createClient(
-  process.env.FOUNDRY_STACK,
+  process.env.SECONDARY_FOUNDRY_STACK,
   "ri.ontology.main.ontology.6ae2b235-997d-4b5e-9611-85fa88742697",
   async () => process.env.SECONDARY_FOUNDRY_USER_TOKEN!,
   { logger },

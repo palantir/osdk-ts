@@ -17,54 +17,31 @@
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { EXPERIMENTAL_ObjectSetListener } from "@osdk/api/unstable";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/api/unstable";
-import {
-  $Actions,
-  FintrafficAis,
-  OsdkTestObject,
-} from "@osdk/e2e.generated.catchall";
+import { $Actions, MtaBus, OsdkTestObject } from "@osdk/e2e.generated.catchall";
 import { client, dsClient } from "./client.js";
 
 export async function runSubscriptionsTest() {
-  const makeObjectSetListener = <T extends ObjectOrInterfaceDefinition>(
-    prefix: string,
-  ): EXPERIMENTAL_ObjectSetListener<T> => {
-    return {
-      onError(err) {
-        console.error({ err }, "%s: Error in subscription", prefix);
-      },
-
-      onOutOfDate() {
-        console.log("%s: out of date", prefix);
-      },
-
-      onChange(object) {
-        if (object.state === "ADDED_OR_UPDATED") {
-          console.log(
-            "%s: Changed objects: %o",
-            prefix,
-            object,
-            object.object.$primaryKey,
-            object.state,
-          );
-        } else if (object.state === "REMOVED") {
-          console.log(
-            "%s: Removed objects: %o",
-            prefix,
-            object,
-            object.object.$primaryKey,
-            object.state,
-          );
-        }
-      },
-    };
-  };
-
   client(OsdkTestObject)[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
     [
       "primaryKey_",
       "stringProperty",
     ],
-    makeObjectSetListener<OsdkTestObject>("OsdkTestObject"),
+    {
+      onChange(object) {
+        console.log(
+          "Object with primaryKey ",
+          object.object.primaryKey_,
+          " changed stringProperty to ",
+          object.object.stringProperty,
+        );
+      },
+      onError(err) {
+        console.error("Error in subscription: ", err);
+      },
+      onOutOfDate() {
+        console.log("Out of date");
+      },
+    },
   );
 
   await client($Actions.createOsdkTestObject).applyAction({
@@ -82,16 +59,38 @@ export async function runSubscriptionsTest() {
     OsdkTestObject: objectArray.data[0],
   });
 
-  dsClient(FintrafficAis)[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
-    [
-      "centroid",
-      "geometry",
-      "mmsi",
-      "name",
-      "shipType",
-      "seriesId",
-      "timestamp",
-    ],
-    makeObjectSetListener<FintrafficAis>("GeotimeSeries"),
-  );
+  dsClient(MtaBus)
+    [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
+      [
+        "nextStopId",
+        "positionId",
+        "routeId",
+        "vehicleId",
+      ],
+      {
+        onChange(object) {
+          if (object.object.positionId != null) {
+            console.log(
+              "Bus with positionId ",
+              object.object.vehicleId,
+              " changed location to ",
+              object.object.positionId.lastFetchedValue?.value,
+            );
+          } else {
+            console.log(
+              "Bus with vehicleId ",
+              object.object.vehicleId,
+              " changed nextStop to ",
+              object.object.nextStopId,
+            );
+          }
+        },
+        onError(err) {
+          console.error("Error in subscription: ", err);
+        },
+        onOutOfDate() {
+          console.log("Out of date");
+        },
+      },
+    );
 }
