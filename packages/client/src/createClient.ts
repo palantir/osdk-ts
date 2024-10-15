@@ -27,11 +27,12 @@ import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
 } from "@osdk/api/unstable";
-import { symbolClientContext } from "@osdk/shared.client";
+import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.client";
+import { symbolClientContext } from "@osdk/shared.client2";
 import { createBulkLinksAsyncIterFactory } from "./__unstable/createBulkLinksAsyncIterFactory.js";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import { applyAction } from "./actions/applyAction.js";
-import type { Client } from "./Client.js";
+import { additionalContext, type Client } from "./Client.js";
 import { createMinimalClient } from "./createMinimalClient.js";
 import { fetchMetadataInternal } from "./fetchMetadata.js";
 import type { Logger } from "./Logger.js";
@@ -143,7 +144,13 @@ export function createClientInternal(
   const client: Client = Object.defineProperties<Client>(
     clientFn as Client,
     {
+      [oldSymbolClientContext]: {
+        value: clientCtx,
+      },
       [symbolClientContext]: {
+        value: clientCtx,
+      },
+      [additionalContext]: {
         value: clientCtx,
       },
       [__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks]: {
@@ -157,7 +164,7 @@ export function createClientInternal(
         ) => {
           return createObjectSet(
             definition,
-            client[symbolClientContext],
+            client[additionalContext],
             {
               type: "intersect",
               objectSets: [
