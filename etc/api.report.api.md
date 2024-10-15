@@ -838,9 +838,8 @@ export type SelectArgToKeys<Q extends ObjectOrInterfaceDefinition, A extends Sel
 
 // @public (undocumented)
 export interface SingleLinkAccessor<T extends ObjectTypeDefinition> {
-    // Warning: (ae-forgotten-export) The symbol "DefaultToFalse" needs to be exported by the entry point index.d.ts
-    fetchOne: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<DefaultToFalse<A["$includeRid"]> extends false ? Osdk<T, SelectArgToKeys<T, A>> : Osdk<T, SelectArgToKeys<T, A> | "$rid">>;
-    fetchOneWithErrors: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<Result<DefaultToFalse<A["$includeRid"]> extends false ? Osdk<T, SelectArgToKeys<T, A>> : Osdk<T, SelectArgToKeys<T, A> | "$rid">>>;
+    fetchOne: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<A extends FetchPageArgs<T, infer L, infer R, any, infer S> ? SingleOsdkResult<T, L, R, S> : SingleOsdkResult<T, any, any, any>>;
+    fetchOneWithErrors: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<Result<A extends FetchPageArgs<T, infer L, infer R, any, infer S> ? SingleOsdkResult<T, L, R, S> : SingleOsdkResult<T, any, any, any>>>;
 }
 
 // @public

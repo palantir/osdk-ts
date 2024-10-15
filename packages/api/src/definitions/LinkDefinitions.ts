@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { SelectArg, SelectArgToKeys } from "../object/FetchPageArgs.js";
+import type {
+  FetchPageArgs,
+  SelectArg,
+  SelectArgToKeys,
+} from "../object/FetchPageArgs.js";
+import type { SingleOsdkResult } from "../object/FetchPageResult.js";
 import type { Result } from "../object/Result.js";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { PropertyKeys } from "../ontology/ObjectOrInterface.js";
@@ -61,9 +66,9 @@ export interface SingleLinkAccessor<
   >(
     options?: A,
   ) => Promise<
-    DefaultToFalse<A["$includeRid"]> extends false
-      ? Osdk<T, SelectArgToKeys<T, A>>
-      : Osdk<T, SelectArgToKeys<T, A> | "$rid">
+    A extends FetchPageArgs<T, infer L, infer R, any, infer S>
+      ? SingleOsdkResult<T, L, R, S>
+      : SingleOsdkResult<T, any, any, any>
   >;
 
   /** Load the linked object, with a result wrapper
@@ -78,9 +83,9 @@ export interface SingleLinkAccessor<
     options?: A,
   ) => Promise<
     Result<
-      DefaultToFalse<A["$includeRid"]> extends false
-        ? Osdk<T, SelectArgToKeys<T, A>>
-        : Osdk<T, SelectArgToKeys<T, A> | "$rid">
+      A extends FetchPageArgs<T, infer L, infer R, any, infer S>
+        ? SingleOsdkResult<T, L, R, S>
+        : SingleOsdkResult<T, any, any, any>
     >
   >;
 }
