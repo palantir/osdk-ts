@@ -42,9 +42,13 @@ export class GeotimeSeriesPropertyImpl<T extends GeoJSON.Point>
     objectApiName: string,
     primaryKey: any,
     propertyName: string,
+    initialValue?: TimeSeriesPoint<T>,
   ) {
     this.#client = client;
     this.#triplet = [objectApiName, primaryKey, propertyName];
+    if (initialValue != null) {
+      this.lastFetchedValue = initialValue;
+    }
   }
 
   public async getLatestValue(): Promise<TimeSeriesPoint<T> | undefined> {
