@@ -287,10 +287,13 @@ describe("ObjectSetListenerWebsocket", async () => {
                 "employeeLocation": GeotimeSeriesPropertyImpl {
                   "lastFetchedValue": {
                     "time": "111",
-                    "value": [
-                      100,
-                      200,
-                    ],
+                    "value": {
+                      "coordinates": [
+                        100,
+                        200,
+                      ],
+                      "type": "Point",
+                    },
                   },
                 },
               },
