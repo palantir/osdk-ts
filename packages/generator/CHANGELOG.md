@@ -1,5 +1,15 @@
 # @osdk/generator
 
+## 2.0.7
+
+### Patch Changes
+
+- 0ff5e50: Update to latest platform sdks
+- Updated dependencies [0dda65c]
+- Updated dependencies [0ff5e50]
+  - @osdk/api@2.0.7
+  - @osdk/generator-converters@2.0.7
+
 ## 2.0.6
 
 ### Patch Changes
