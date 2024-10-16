@@ -1,0 +1,56 @@
+{
+  "ontology": {
+    "apiName": "default",
+    "rid": "ri.ontology.main.ontology.a35bb7f9-2c57-4199-a1cd-af461d88bd6e",
+    "displayName": "",
+    "description": ""
+  },
+  "actionTypes": {
+  },
+  "objectTypes": {
+    "MtaBus": {
+      "objectType": {
+        "apiName": "MtaBus",
+        "primaryKey": "vehicleId",
+        "displayName": "MtaBus",
+        "description": "MtaBus",
+        "properties": {
+          "vehicleId": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "nextStopId": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "routeId": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "positionId": {
+            "dataType": {
+              "type": "geotimeSeriesReference"
+            }
+          }
+        },
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "traffic",
+          "color": "color"
+        },
+        "titleProperty": "name",
+        "pluralDisplayName": "Fintraffic AIS"
+      },
+      "linkTypes": []
+    }
+  },
+  "queryTypes": {
+  },
+  "interfaceTypes": {
+  }
+}
