@@ -16,12 +16,17 @@
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { EXPERIMENTAL_ObjectSetListener } from "@osdk/api/unstable";
-import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/api/unstable";
+import {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
+} from "@osdk/api/unstable";
 import { $Actions, MtaBus, OsdkTestObject } from "@osdk/e2e.generated.catchall";
 import { client, dsClient } from "./client.js";
 
 export async function runSubscriptionsTest() {
-  client(OsdkTestObject)[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
+  client(__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe).subscribe(
+    client(OsdkTestObject),
     [
       "primaryKey_",
       "stringProperty",
@@ -59,38 +64,40 @@ export async function runSubscriptionsTest() {
     OsdkTestObject: objectArray.data[0],
   });
 
-  dsClient(MtaBus)
-    [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
-      [
-        "nextStopId",
-        "positionId",
-        "routeId",
-        "vehicleId",
-      ],
-      {
-        onChange(object) {
-          if (object.object.positionId != null) {
-            console.log(
-              "Bus with positionId ",
-              object.object.vehicleId,
-              " changed location to ",
-              object.object.positionId.lastFetchedValue?.value,
-            );
-          } else {
-            console.log(
-              "Bus with vehicleId ",
-              object.object.vehicleId,
-              " changed nextStop to ",
-              object.object.nextStopId,
-            );
-          }
-        },
-        onError(err) {
-          console.error("Error in subscription: ", err);
-        },
-        onOutOfDate() {
-          console.log("Out of date");
-        },
+  dsClient(
+    __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
+  ).subscribe(
+    dsClient(MtaBus),
+    [
+      "nextStopId",
+      "positionId",
+      "routeId",
+      "vehicleId",
+    ],
+    {
+      onChange(object) {
+        if (object.object.positionId != null) {
+          console.log(
+            "Bus with positionId ",
+            object.object.vehicleId,
+            " changed location to ",
+            object.object.positionId.lastFetchedValue?.value,
+          );
+        } else {
+          console.log(
+            "Bus with vehicleId ",
+            object.object.vehicleId,
+            " changed nextStop to ",
+            object.object.nextStopId,
+          );
+        }
       },
-    );
+      onError(err) {
+        console.error("Error in subscription: ", err);
+      },
+      onOutOfDate() {
+        console.log("Out of date");
+      },
+    },
+  );
 }

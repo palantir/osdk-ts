@@ -15,10 +15,11 @@
  */
 
 import type { DataValueClientToWire } from "../mapping/DataValueMapping.js";
-import type { BaseObjectSet } from "../objectSet/BaseObjectSet.js";
+import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { ObjectTypeDefinition } from "../ontology/ObjectTypeDefinition.js";
 import type { OsdkBase } from "../OsdkBase.js";
 import type { OsdkObjectPrimaryKeyType } from "../OsdkObjectPrimaryKeyType.js";
+
 import type {
   ActionResults,
   ValidateActionResponseV2,
@@ -53,9 +54,7 @@ export namespace ActionParam {
   /**
    * Helper type to convert action definition parameter object sets to typescript types
    */
-  export type ObjectSetType<T extends ObjectTypeDefinition> = BaseObjectSet<
-    T
-  >;
+  export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
 }
 
 export type ActionEditResponse = ActionResults;

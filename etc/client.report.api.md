@@ -4,8 +4,6 @@
 
 ```ts
 
-import type { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from '@osdk/api/unstable';
-import type { __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet } from '@osdk/api/unstable';
 import type { ActionDefinition } from '@osdk/api';
 import { ActionEditResponse } from '@osdk/api';
 import type { ActionMetadata } from '@osdk/api';
@@ -14,23 +12,22 @@ import { ActionReturnTypeForOptions } from '@osdk/api';
 import { ActionValidationResponse } from '@osdk/api';
 import { ApplyActionOptions } from '@osdk/api';
 import { ApplyBatchActionOptions } from '@osdk/api';
-import type { Attachment } from '@osdk/api';
 import type { AttachmentUpload } from '@osdk/api';
 import type { CompileTimeMetadata } from '@osdk/api';
 import type { DataValueClientToWire } from '@osdk/api';
 import type { DataValueWireToClient } from '@osdk/api';
+import type { Experiment } from '@osdk/api/unstable';
+import type { ExperimentFns } from '@osdk/api/unstable';
 import type { InterfaceDefinition } from '@osdk/api';
 import type { InterfaceMetadata } from '@osdk/api';
 import { isOk } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/api/unstable';
 import type { ObjectMetadata } from '@osdk/api';
-import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
 import { ObjectSet } from '@osdk/api';
 import type { ObjectSetQueryDataType } from '@osdk/api';
 import type { ObjectTypeDefinition } from '@osdk/api';
 import { Osdk } from '@osdk/api';
-import type { OsdkBase } from '@osdk/api';
 import { OsdkObject } from '@osdk/api';
 import { PageResult } from '@osdk/api';
 import { PalantirApiError } from '@osdk/shared.net.errors';
@@ -64,12 +61,6 @@ export { ApplyBatchActionOptions }
 
 // @public (undocumented)
 export interface Client extends SharedClient, SharedClient_2 {
-    // Warning: (ae-forgotten-export) The symbol "BulkLinkResult" needs to be exported by the entry point index.d.ts
-    //
-    // @alpha
-    readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks]: <T extends ObjectOrInterfaceDefinition>(objs: Osdk<T>[], links: string[]) => AsyncGenerator<BulkLinkResult, void, undefined>;
-    // @alpha
-    readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet]: <T extends ObjectOrInterfaceDefinition>(type: T, rid: string) => ObjectSet<T>;
     // Warning: (ae-forgotten-export) The symbol "MinimalClient" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -87,11 +78,10 @@ export interface Client extends SharedClient, SharedClient_2 {
     // (undocumented)
     <Q extends QueryDefinition<any>>(o: Q): QuerySignatureFromDef<Q>;
     // (undocumented)
+    <Q extends Experiment<"2.0.8">>(experiment: Q): ExperimentFns<Q>;
+    // (undocumented)
     fetchMetadata<Q extends (ObjectTypeDefinition | InterfaceDefinition | ActionDefinition<any> | QueryDefinition<any>)>(o: Q): Promise<Q extends ObjectTypeDefinition ? ObjectMetadata : Q extends InterfaceDefinition ? InterfaceMetadata : Q extends ActionDefinition<any> ? ActionMetadata : Q extends QueryDefinition<any> ? QueryMetadata : never>;
 }
-
-// @public
-export function createAttachmentFromRid(client: MinimalClient, rid: string): Attachment;
 
 // @public (undocumented)
 export function createAttachmentUpload(data: Blob, name: string): AttachmentUpload;
