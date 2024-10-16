@@ -252,15 +252,11 @@ describe("ObjectSetListenerWebsocket", async () => {
 
       describe("successfully subscribed", () => {
         beforeEach(() => {
-          console.log("ID WAS", currentSubscriptionId);
           respondSuccessToSubscribe(ws, subReq1);
-          console.log("ID IS NOW", currentSubscriptionId);
-          console.log("responded to subscribe", subReq1.id);
         });
 
         it("should correctly return regular updates", async () => {
           const idNum2 = currentSubscriptionId;
-          console.log("idNum2", idNum2);
 
           sendObjectUpdateResponse(ws, `${idNum2}`);
           await listenerPromise;
@@ -279,7 +275,6 @@ describe("ObjectSetListenerWebsocket", async () => {
 
         it("should correctly return reference update", async () => {
           const idNum2 = currentSubscriptionId;
-          console.log("idNum2", idNum2);
 
           sendReferenceUpdatesResponse(ws, `${idNum2}`);
           await listenerPromise;
