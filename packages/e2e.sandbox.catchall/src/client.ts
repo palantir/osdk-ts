@@ -22,6 +22,8 @@ import { loggingFetch } from "./loggingFetch.js";
 
 invariant(process.env.FOUNDRY_STACK !== undefined);
 invariant(process.env.SECONDARY_FOUNDRY_STACK !== undefined);
+invariant(process.env.FOUNDRY_USER_TOKEN !== undefined);
+invariant(process.env.SECONDARY_FOUNDRY_USER_TOKEN !== undefined);
 
 export const client: Client = createClient(
   process.env.FOUNDRY_STACK,
