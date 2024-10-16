@@ -29,7 +29,7 @@ import type {
   ObjectTypeDefinition,
   ObjectTypeLinkKeysFrom2,
 } from "../ontology/ObjectTypeDefinition.js";
-import type { Osdk } from "../OsdkObjectFrom.js";
+import type { ExtractOptions, Osdk } from "../OsdkObjectFrom.js";
 
 /** The $link container to get from one object type to its linked objects */
 export type OsdkObjectLinksObject<
@@ -67,8 +67,8 @@ export interface SingleLinkAccessor<
     options?: A,
   ) => Promise<
     A extends FetchPageArgs<T, infer L, infer R, any, infer S>
-      ? SingleOsdkResult<T, L, R, S>
-      : SingleOsdkResult<T, any, any, any>
+      ? Osdk.Instance<T, ExtractOptions<R, S>, L>
+      : Osdk.Instance<T>
   >;
 
   /** Load the linked object, with a result wrapper
@@ -84,8 +84,8 @@ export interface SingleLinkAccessor<
   ) => Promise<
     Result<
       A extends FetchPageArgs<T, infer L, infer R, any, infer S>
-        ? SingleOsdkResult<T, L, R, S>
-        : SingleOsdkResult<T, any, any, any>
+        ? Osdk.Instance<T, ExtractOptions<R, S>, L>
+        : Osdk.Instance<T>
     >
   >;
 }
