@@ -981,25 +981,6 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
 
-  packages/client.unstable.osw:
-    dependencies:
-      conjure-lite:
-        specifier: ^0.4.4
-        version: 0.4.4
-    devDependencies:
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-
   packages/client.unstable.tpsa:
     dependencies:
       conjure-lite:
