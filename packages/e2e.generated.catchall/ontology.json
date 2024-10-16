@@ -6,6 +6,76 @@
     "description": ""
   },
   "actionTypes": {
+    "create-osdk-test-object": {
+      "apiName": "create-osdk-test-object",
+      "displayName": "Create Osdk Test Object",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "string_property": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.75c72b90-815b-48df-a3b3-314af2e9e2eb",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "OsdkTestObject"
+        }
+      ]
+    },
+    "delete-osdk-test-object": {
+      "apiName": "delete-osdk-test-object",
+      "displayName": "Delete Osdk Test Object",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "OsdkTestObject": {
+          "dataType": {
+            "type": "object",
+            "objectApiName": "OsdkTestObject",
+            "objectTypeApiName": "OsdkTestObject"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.3858bab4-49c7-4fdf-a780-6ccbc359d817",
+      "operations": [
+        {
+          "type": "deleteObject",
+          "objectTypeApiName": "OsdkTestObject"
+        }
+      ]
+    },
+    "edit-osdk-test-object": {
+      "apiName": "edit-osdk-test-object",
+      "displayName": "Edit Osdk Test Object",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "OsdkTestObject": {
+          "dataType": {
+            "type": "object",
+            "objectApiName": "OsdkTestObject",
+            "objectTypeApiName": "OsdkTestObject"
+          },
+          "required": true
+        },
+        "string_property": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.4a70a939-b2ee-46dd-8099-a290cafa28e1",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "OsdkTestObject"
+        }
+      ]
+    },
     "actionTakesAllParameterTypes": {
       "apiName": "actionTakesAllParameterTypes",
       "description": "An action which takes different types of parameters",
@@ -119,6 +189,42 @@
     }
   },
   "objectTypes": {
+    "OsdkTestObject": {
+      "objectType": {
+        "apiName": "OsdkTestObject",
+        "displayName": "Osdk Test Object",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "Osdk Test Objects",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "primaryKey_",
+        "properties": {
+          "primaryKey_": {
+            "displayName": "Primary Key",
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "stringProperty": {
+            "displayName": "String Property",
+            "dataType": {
+              "type": "string"
+            }
+          }
+        },
+        "rid": "ri.ontology.main.object-type.ba4a949c-547a-45de-9c78-b772bb55acfb",
+        "titleProperty": "primaryKey_",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    },
     "WeatherStation": {
       "objectType": {
         "apiName": "WeatherStation",
@@ -233,6 +339,46 @@
           "timestamp": {
             "dataType": {
               "type": "timestamp"
+            }
+          }
+        },
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "traffic",
+          "color": "color"
+        },
+        "titleProperty": "name",
+        "pluralDisplayName": "Fintraffic AIS"
+      },
+      "linkTypes": []
+    },
+    "MtaBus": {
+      "objectType": {
+        "apiName": "MtaBus",
+        "primaryKey": "vehicleId",
+        "displayName": "MtaBus",
+        "description": "MtaBus",
+        "properties": {
+          "vehicleId": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "nextStopId": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "routeId": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "positionId": {
+            "dataType": {
+              "type": "geotimeSeriesReference"
             }
           }
         },

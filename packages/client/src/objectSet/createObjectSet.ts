@@ -233,6 +233,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
         clientCtx,
       ).subscribe(
+        objectType,
         objectSet,
         listener,
         properties,

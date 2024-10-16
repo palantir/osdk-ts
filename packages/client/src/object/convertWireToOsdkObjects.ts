@@ -52,7 +52,7 @@ export async function convertWireToOsdkObjects(
   forceRemoveRid: boolean = false,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull: NullabilityAdherence = false,
-): Promise<Osdk<ObjectOrInterfaceDefinition>[]> {
+): Promise<Osdk.Instance<ObjectOrInterfaceDefinition>[]> {
   client.logger?.debug(`START convertWireToOsdkObjects()`);
 
   fixObjectPropertiesInPlace(objects, forceRemoveRid);
