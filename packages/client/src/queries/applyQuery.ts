@@ -294,7 +294,6 @@ function requiresConversion(dataType: QueryDataTypeDefinition) {
     case "float":
     case "integer":
     case "long":
-    case "object": // JSON encoded primary key
     case "string":
     case "timestamp":
       return false;
@@ -312,6 +311,7 @@ function requiresConversion(dataType: QueryDataTypeDefinition) {
     case "objectSet":
     case "twoDimensionalAggregation":
     case "threeDimensionalAggregation":
+    case "object":
       return true;
 
     default:

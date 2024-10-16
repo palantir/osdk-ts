@@ -108,6 +108,96 @@ export const queryTypeReturnsStruct: QueryTypeV2 = {
   version: "0.0.9",
 };
 
+export const queryTypeReturnsComplexStruct: QueryTypeV2 = {
+  apiName: "incrementPersonAgeComplex",
+  displayName: "incrementAgeComplex",
+  parameters: {
+    person: {
+      dataType: {
+        type: "struct",
+        fields: [
+          {
+            name: "firstName",
+            fieldType: {
+              type: "string",
+            },
+          },
+          {
+            name: "lastName",
+            fieldType: {
+              type: "string",
+            },
+          },
+          {
+            name: "age",
+            fieldType: {
+              type: "union",
+              unionTypes: [
+                {
+                  type: "integer",
+                },
+                {
+                  type: "null",
+                },
+              ],
+            },
+          },
+          {
+            name: "object",
+            fieldType: {
+              type: "object",
+              objectApiName: "Employee",
+              objectTypeApiName: "Employee",
+            },
+          },
+        ],
+      },
+    },
+  },
+  output: {
+    type: "struct",
+    fields: [
+      {
+        name: "firstName",
+        fieldType: {
+          type: "string",
+        },
+      },
+      {
+        name: "lastName",
+        fieldType: {
+          type: "string",
+        },
+      },
+      {
+        name: "age",
+        fieldType: {
+          type: "union",
+          unionTypes: [
+            {
+              type: "integer",
+            },
+            {
+              type: "null",
+            },
+          ],
+        },
+      },
+      {
+        name: "object",
+        fieldType: {
+          type: "object",
+          objectApiName: "Employee",
+          objectTypeApiName: "Employee",
+        },
+      },
+    ],
+  },
+  rid:
+    "ri.function-registry.main.function.b2ae7b3e-2c89-42f5-a762-68957a9c039d",
+  version: "0.0.9",
+};
+
 export const queryTypeReturnsTimestamp: QueryTypeV2 = {
   apiName: "returnsTimestamp",
   displayName: "returnsTimestamp",
@@ -343,4 +433,5 @@ export const queryTypes: QueryTypeV2[] = [
   queryTypeAcceptsTwoDimensionalAggregation,
   queryTypeAcceptsThreeDimensionalAggregation,
   queryTypeReturnsArray,
+  queryTypeReturnsComplexStruct,
 ];
