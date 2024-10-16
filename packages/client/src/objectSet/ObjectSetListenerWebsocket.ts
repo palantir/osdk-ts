@@ -70,6 +70,7 @@ interface Subscription<
 > {
   listener: Required<ObjectSetListener<Q, P>>;
   objectSet: ObjectSet;
+  primaryKeyPropertyName: string;
   requestedProperties: Array<P>;
   requestedReferenceProperties: Array<P>;
   expiry?: ReturnType<typeof setTimeout>;
@@ -195,6 +196,7 @@ export class ObjectSetListenerWebsocket {
     const sub: Subscription<Q, P> = {
       listener: fillOutListener<Q, P>(listener),
       objectSet,
+      primaryKeyPropertyName: objDef.primaryKeyApiName,
       requestedProperties: objectProperties,
       requestedReferenceProperties: referenceProperties,
       status: "preparing",
@@ -463,7 +465,7 @@ export class ObjectSetListenerWebsocket {
           this.#client,
           [{
             __apiName: o.objectType,
-            __primaryKey: Object.values(o.primaryKey)[0],
+            __primaryKey: o.primaryKey[sub.primaryKeyPropertyName],
             ...o.primaryKey,
             [o.property]: o.value,
           }],

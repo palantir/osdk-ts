@@ -47,6 +47,6 @@ type ObjectUpdate<
   O extends ObjectOrInterfaceDefinition,
   P extends PropertyKeys<O>,
 > = {
-  object: Osdk.Instance<O, "$notStrict", P>;
+  object: Osdk.Instance<O, never, P>;
   state: "ADDED_OR_UPDATED" | "REMOVED";
 };
