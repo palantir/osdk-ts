@@ -25,6 +25,8 @@ import type {
 import { apiServer } from "@osdk/shared.test";
 import ImportedWebSocket from "isomorphic-ws";
 import { http, HttpResponse } from "msw";
+import type { DeferredPromise } from "p-defer";
+import pDefer from "p-defer";
 import type { MockedClass, MockedFunction, MockedObject } from "vitest";
 import {
   afterAll,
@@ -115,9 +117,7 @@ describe("ObjectSetListenerWebsocket", async () => {
 
     let updateReceived: ObjectUpdate | undefined = undefined;
 
-    let listenerPromise: Promise<void>;
-
-    let listenerPromiseResolveFn: () => void;
+    let listenerPromise: DeferredPromise<void>;
 
     beforeEach(() => {
       minimalClient = createMinimalClient(
@@ -135,14 +135,12 @@ describe("ObjectSetListenerWebsocket", async () => {
         objectSetExpiryMs: OBJECT_SET_EXPIRY_MS,
       });
 
-      listenerPromise = new Promise((resolve) => {
-        listenerPromiseResolveFn = resolve;
-      });
+      listenerPromise = pDefer();
 
       listener = {
         onChange: vi.fn((o) => {
-          listenerPromiseResolveFn();
           updateReceived = o;
+          listenerPromise.resolve();
         }),
         onError: vi.fn(),
         onOutOfDate: vi.fn(),
@@ -259,7 +257,7 @@ describe("ObjectSetListenerWebsocket", async () => {
           const idNum2 = currentSubscriptionId;
 
           sendObjectUpdateResponse(ws, `${idNum2}`);
-          await listenerPromise;
+          await listenerPromise.promise;
           expect(listener.onChange).toHaveBeenCalled();
           expect(updateReceived).toMatchInlineSnapshot(`
             {
@@ -277,7 +275,7 @@ describe("ObjectSetListenerWebsocket", async () => {
           const idNum2 = currentSubscriptionId;
 
           sendReferenceUpdatesResponse(ws, `${idNum2}`);
-          await listenerPromise;
+          await listenerPromise.promise;
           expect(listener.onChange).toHaveBeenCalled();
           expect(updateReceived).toMatchInlineSnapshot(`
             {
