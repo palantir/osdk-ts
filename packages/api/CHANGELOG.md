@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.0.7
+
+### Patch Changes
+
+- 0dda65c: Ensure that inferred return type of ObjectSet.fetchPage where only the ObjectTypeDefinition is inferred, does not default to $notStrict
+
 ## 2.0.6
 
 ## 2.0.5
