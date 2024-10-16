@@ -26,6 +26,7 @@ import {
   queryTypeAcceptsThreeDimensionalAggregation,
   queryTypeAcceptsTwoDimensionalAggregation,
   queryTypeReturnsArray,
+  queryTypeReturnsComplexStruct,
   queryTypeReturnsDate,
   queryTypeReturnsObject,
   queryTypeReturnsStruct,
@@ -65,6 +66,26 @@ export const queryTypeReturnsStructResponse: ExecuteQueryResponse = {
     firstName: "John",
     lastName: "Doe",
     age: 43,
+  },
+};
+
+export const queryTypeReturnsComplexStructRequest: ExecuteQueryRequest = {
+  parameters: {
+    person: {
+      firstName: "John",
+      lastName: "Doe",
+      age: 42,
+      object: employee1.__primaryKey,
+    },
+  },
+};
+
+export const queryTypeReturnsComplexStructResponse: ExecuteQueryResponse = {
+  value: {
+    firstName: "John",
+    lastName: "Doe",
+    age: 43,
+    object: employee2.__primaryKey,
   },
 };
 
@@ -250,6 +271,10 @@ export const queryRequestHandlers: {
   [queryTypeReturnsStruct.apiName]: {
     [JSON.stringify(queryTypeReturnsStructRequest)]:
       queryTypeReturnsStructResponse,
+  },
+  [queryTypeReturnsComplexStruct.apiName]: {
+    [JSON.stringify(queryTypeReturnsComplexStructRequest)]:
+      queryTypeReturnsComplexStructResponse,
   },
   [queryTypeReturnsTimestamp.apiName]: {
     [emptyBody]: queryTypeReturnsTimestampResponse,
