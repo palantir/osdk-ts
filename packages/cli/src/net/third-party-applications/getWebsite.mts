@@ -15,7 +15,7 @@
  */
 
 import { ExitProcessError } from "@osdk/cli.common";
-import { PalantirApiError } from "@osdk/shared.net";
+import { PalantirApiError } from "@osdk/shared.net.errors";
 import { createFetch } from "../createFetch.mjs";
 import type { InternalClientContext } from "../internalClientContext.mjs";
 import type { ThirdPartyAppRid } from "../ThirdPartyAppRid.js";

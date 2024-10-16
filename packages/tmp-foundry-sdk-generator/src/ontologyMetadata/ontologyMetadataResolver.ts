@@ -26,7 +26,7 @@ import type {
   QueryDataType,
   QueryTypeV2,
 } from "@osdk/internal.foundry.core";
-import { createClientContext } from "@osdk/shared.net";
+import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { Result } from "./Result.js";
 
 type PackageInfo = Map<string, {
@@ -48,11 +48,11 @@ export class OntologyMetadataResolver {
   }
 
   private getClientContext() {
-    return createClientContext(
+    return createSharedClientContext(
       this.stackName.match(/^https?:\/\//)
         ? this.stackName
         : `https://${this.stackName}`,
-      () => this.#authToken,
+      () => Promise.resolve(this.#authToken),
       `foundry-typescript-osdk-generator/${process.env.npm_package_version!}`,
     );
   }
