@@ -29,7 +29,6 @@ export function createSharedClientContext(
   userAgent: string,
   fetchFn: typeof globalThis.fetch = fetch,
 ): SharedClientContext & OldSharedClientContext {
-  const ontology = { metadata: { userAgent: "" } };
   if (baseUrl.length === 0) {
     throw new Error("baseUrl cannot be empty");
   }
@@ -68,7 +67,7 @@ export function createSharedClientContext(
           e.errorInstanceId,
           e.parameters,
         )
-        : new Error("Captured stack trace for error: " + e.message ?? e);
+        : new Error("Captured stack trace for error: " + (e.message ?? e));
 
       (betterError as any).cause = e;
       throw betterError;
