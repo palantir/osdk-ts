@@ -131,9 +131,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         export interface Props {
           readonly bar: $PropType["integer"] | undefined;
         }
-        export interface StrictProps {
-          readonly bar: $PropType["integer"] | undefined;
-        }
+        export type StrictProps = Props;
 
         export interface ObjectSet extends $ObjectSet<Bar, Bar.ObjectSet> {}
 
@@ -223,9 +221,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         export interface Props {
           readonly foo: $PropType["integer"] | undefined;
         }
-        export interface StrictProps {
-          readonly foo: $PropType["integer"] | undefined;
-        }
+        export type StrictProps = Props;
 
         export interface ObjectSet extends $ObjectSet<Foo, Foo.ObjectSet> {}
 
@@ -317,10 +313,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           readonly bar: $PropType["integer"] | undefined;
           readonly foo: $PropType["integer"] | undefined;
         }
-        export interface StrictProps {
-          readonly bar: $PropType["integer"] | undefined;
-          readonly foo: $PropType["integer"] | undefined;
-        }
+        export type StrictProps = Props;
 
         export interface ObjectSet extends $ObjectSet<Foo, Foo.ObjectSet> {}
 

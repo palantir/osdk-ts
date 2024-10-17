@@ -686,9 +686,7 @@ describe("generator", () => {
         export interface Props {
           readonly SomeProperty: $PropType['string'] | undefined;
         }
-        export interface StrictProps {
-          readonly SomeProperty: $PropType['string'] | undefined;
-        }
+        export type StrictProps = Props;
 
         export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 
@@ -766,9 +764,7 @@ describe("generator", () => {
         export interface Props {
           readonly email: $PropType['string'];
         }
-        export interface StrictProps {
-          readonly email: $PropType['string'];
-        }
+        export type StrictProps = Props;
 
         export interface ObjectSet extends $ObjectSet<Person, Person.ObjectSet> {}
 
@@ -858,11 +854,7 @@ describe("generator", () => {
           readonly complete: $PropType['boolean'] | undefined;
           readonly id: $PropType['integer'];
         }
-        export interface StrictProps {
-          readonly body: $PropType['string'] | undefined;
-          readonly complete: $PropType['boolean'] | undefined;
-          readonly id: $PropType['integer'];
-        }
+        export type StrictProps = Props;
 
         export interface ObjectSet extends $ObjectSet<Todo, Todo.ObjectSet> {}
 
@@ -1306,9 +1298,7 @@ describe("generator", () => {
           export interface Props {
             readonly SomeProperty: $PropType['string'] | undefined;
           }
-          export interface StrictProps {
-            readonly SomeProperty: $PropType['string'] | undefined;
-          }
+          export type StrictProps = Props;
 
           export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 
@@ -1386,9 +1376,7 @@ describe("generator", () => {
           export interface Props {
             readonly email: $PropType['string'];
           }
-          export interface StrictProps {
-            readonly email: $PropType['string'];
-          }
+          export type StrictProps = Props;
 
           export interface ObjectSet extends $ObjectSet<Person, Person.ObjectSet> {}
 
@@ -1478,11 +1466,7 @@ describe("generator", () => {
             readonly complete: $PropType['boolean'] | undefined;
             readonly id: $PropType['integer'];
           }
-          export interface StrictProps {
-            readonly body: $PropType['string'] | undefined;
-            readonly complete: $PropType['boolean'] | undefined;
-            readonly id: $PropType['integer'];
-          }
+          export type StrictProps = Props;
 
           export interface ObjectSet extends $ObjectSet<Todo, Todo.ObjectSet> {}
 
@@ -1886,10 +1870,7 @@ describe("generator", () => {
               readonly body: $PropType['string'] | undefined;
               readonly id: $PropType['integer'];
             }
-            export interface StrictProps {
-              readonly body: $PropType['string'] | undefined;
-              readonly id: $PropType['integer'];
-            }
+            export type StrictProps = Props;
 
             export interface ObjectSet extends $ObjectSet<UsesForeignSpt, UsesForeignSpt.ObjectSet> {}
 
@@ -2104,9 +2085,7 @@ describe("generator", () => {
           export interface Props {
             readonly spt: $PropType['string'] | undefined;
           }
-          export interface StrictProps {
-            readonly spt: $PropType['string'] | undefined;
-          }
+          export type StrictProps = Props;
 
           export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 
@@ -2179,10 +2158,7 @@ describe("generator", () => {
             readonly body: $PropType['string'] | undefined;
             readonly taskId: $PropType['string'];
           }
-          export interface StrictProps {
-            readonly body: $PropType['string'] | undefined;
-            readonly taskId: $PropType['string'];
-          }
+          export type StrictProps = Props;
 
           export interface ObjectSet extends $ObjectSet<Task, Task.ObjectSet> {}
 
