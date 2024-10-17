@@ -20,12 +20,19 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
+  PropertyKeys,
   QueryDefinition,
 } from "@osdk/api";
-import type { MinimalObjectSet } from "@osdk/api/unstable";
+import type {
+  Experiment,
+  EXPERIMENTAL_ObjectSetListener,
+  ExperimentFns,
+  MinimalObjectSet,
+} from "@osdk/api/unstable";
 import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
 } from "@osdk/api/unstable";
 import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.client";
 import { symbolClientContext } from "@osdk/shared.client2";
@@ -37,8 +44,12 @@ import { createMinimalClient } from "./createMinimalClient.js";
 import { fetchMetadataInternal } from "./fetchMetadata.js";
 import type { Logger } from "./Logger.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
-import { createObjectSet } from "./objectSet/createObjectSet.js";
+import {
+  createObjectSet,
+  getWireObjectSet,
+} from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
+import { ObjectSetListenerWebsocket } from "./objectSet/ObjectSetListenerWebsocket.js";
 import { applyQuery } from "./queries/applyQuery.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 
@@ -108,11 +119,13 @@ export function createClientInternal(
     T extends
       | ObjectOrInterfaceDefinition
       | ActionDefinition<any>
-      | QueryDefinition<any>,
+      | QueryDefinition<any>
+      | Experiment<"2.0.7">,
   >(o: T): T extends ObjectTypeDefinition ? ObjectSet<T>
     : T extends InterfaceDefinition ? MinimalObjectSet<T>
     : T extends ActionDefinition<any> ? ActionSignatureFromDef<T>
     : T extends QueryDefinition<any> ? QuerySignatureFromDef<T>
+    : T extends Experiment<"2.0.7"> ? { invoke: ExperimentFns<T> }
     : never
   {
     if (o.type === "object" || o.type === "interface") {
@@ -131,6 +144,64 @@ export function createClientInternal(
         o,
       ) as (T extends QueryDefinition<any> ? QuerySignatureFromDef<T>
         : never) as any;
+    } else if (o.type === "experiment") {
+      switch (o.name) {
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks.name:
+          return {
+            invoke: createBulkLinksAsyncIterFactory(
+              clientCtx,
+            ),
+          } as any;
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet.name:
+          return {
+            invoke: <T extends ObjectOrInterfaceDefinition>(
+              definition: T,
+              rid: string,
+            ) => {
+              return createObjectSet(
+                definition,
+                client[additionalContext],
+                {
+                  type: "intersect",
+                  objectSets: [
+                    {
+                      type: "base",
+                      objectType: definition.apiName,
+                    },
+                    {
+                      type: "reference",
+                      reference: rid,
+                    },
+                  ],
+                },
+              );
+            },
+          } as any;
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe.name:
+          return {
+            invoke: <
+              Q extends ObjectOrInterfaceDefinition,
+              const P extends PropertyKeys<Q>,
+            >(
+              objectSet: ObjectSet<Q>,
+              properties: Array<P>,
+              listener: EXPERIMENTAL_ObjectSetListener<Q, P>,
+            ) => {
+              const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
+                clientCtx,
+              ).subscribe(
+                objectSet.$objectSetInternals?.def!,
+                getWireObjectSet(objectSet),
+                listener,
+                properties,
+              );
+
+              return async () => (await pendingSubscribe)();
+            },
+          } as any;
+      }
+
+      throw new Error("not implemented");
     } else {
       throw new Error("not implemented");
     }
@@ -152,34 +223,6 @@ export function createClientInternal(
       },
       [additionalContext]: {
         value: clientCtx,
-      },
-      [__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks]: {
-        get: () => createBulkLinksAsyncIterFactory(clientCtx),
-      },
-      [__EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet]: {
-        get: () =>
-        <T extends ObjectOrInterfaceDefinition>(
-          definition: T,
-          rid: string,
-        ) => {
-          return createObjectSet(
-            definition,
-            client[additionalContext],
-            {
-              type: "intersect",
-              objectSets: [
-                {
-                  type: "base",
-                  objectType: definition.apiName,
-                },
-                {
-                  type: "reference",
-                  reference: rid,
-                },
-              ],
-            },
-          );
-        },
       },
       fetchMetadata: {
         value: fetchMetadata,

@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-export const __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe = Symbol();
+export type { Experiment, ExperimentFns } from "../experimental/Experiment.js";
 
-export const __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet = Symbol();
-export const __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks = Symbol();
+export { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from "../experimental/getBulkLinks.js";
+export { __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet } from "../experimental/preexistingObjectSet.js";
+export { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "../experimental/subscribe.js";
 
+export type { EXPERIMENTAL_BulkLinkResult } from "../objectSet/BulkLinkResult.js";
 export type { EXPERIMENTAL_ObjectSetListener } from "../objectSet/EXPERIMENTAL_ObjectSetListener.js";
 export type { MinimalObjectSet } from "../objectSet/ObjectSet.js";

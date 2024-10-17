@@ -14,24 +14,16 @@
  * limitations under the License.
  */
 
-import type { InterfaceMetadata, Osdk } from "@osdk/api";
-import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
-import type {
-  InterfaceDefRef,
-  UnderlyingOsdkObject,
-} from "./InternalSymbols.js";
-import type { ObjectHolder } from "./ObjectHolder.js";
-
-/** @internal */
-export interface InterfaceHolderOwnProps<
-  Q extends FetchedObjectTypeDefinition,
-> {
-  [UnderlyingOsdkObject]: Osdk<Q> & ObjectHolder<Q>;
-  [InterfaceDefRef]: InterfaceMetadata;
-}
-
-/** @internal */
-export interface InterfaceHolder<
-  Q extends FetchedObjectTypeDefinition,
-> extends InterfaceHolderOwnProps<Q> {
-}
+export type Experiment<
+  V extends string,
+  T extends string = string,
+  K extends Record<string, (...args: any[]) => any> = any,
+> = {
+  type: "experiment";
+  name: T;
+  branded?: K;
+  version: V;
+};
+export type ExperimentFns<B extends Experiment<string, string>> = NonNullable<
+  B["branded"]
+>;

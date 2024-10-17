@@ -16,27 +16,33 @@
 
 import type { ObjectOrInterfaceDefinition, OsdkBase } from "@osdk/api";
 
+/** @internal */
 export const UnderlyingOsdkObject = Symbol(
   process.env.MODE !== "production" ? "Underlying Object" : undefined,
 );
 
+/** @internal */
 export const ObjectDefRef = Symbol(
   process.env.MODE !== "production" ? "ObjectDefinition" : undefined,
 );
 
+/** @internal */
 export const InterfaceDefRef = Symbol(
   process.env.MODE !== "production" ? "InterfaceDefinition" : undefined,
 );
 
 /** A symbol for getting the raw data object off of the holder an osdk object proxy points to */
+/** @internal */
 export const RawObject = Symbol(
   process.env.MODE !== "production" ? "RawObject" : undefined,
 );
 
+/** @internal */
 export const ClientRef = Symbol(
   process.env.MODE !== "production" ? "ClientRef" : undefined,
 );
 
+/** @internal */
 export const CachedPropertiesRef = Symbol(
   process.env.MODE !== "production" ? "CachedProperties" : undefined,
 );

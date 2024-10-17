@@ -14,9 +14,24 @@
  * limitations under the License.
  */
 
+import type {
+  EXPERIMENTAL_BulkLinkResult,
+} from "../objectSet/BulkLinkResult.js";
 import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
+import type { Experiment } from "./Experiment.js";
 
-// mostly a marker interface to simplify types that must be exported/shared
-export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
-  readonly $objectSetInternals: { def: Q };
-}
+type getBulkLinksFn = <T extends ObjectOrInterfaceDefinition>(
+  objs: Osdk.Instance<T>[],
+  links: string[],
+) => AsyncGenerator<EXPERIMENTAL_BulkLinkResult, void, undefined>;
+
+export const __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks: Experiment<
+  "2.0.8",
+  "__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks",
+  { getBulkLinks: getBulkLinksFn }
+> = {
+  name: "__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks",
+  type: "experiment",
+  version: "2.0.8",
+};

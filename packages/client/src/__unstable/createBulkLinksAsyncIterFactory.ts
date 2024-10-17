@@ -15,6 +15,7 @@
  */
 
 import type { OsdkBase } from "@osdk/api";
+import type { EXPERIMENTAL_BulkLinkResult as BulkLinkResult } from "@osdk/api/unstable";
 import type {
   DirectedLinkTypeRid,
   FoundryObjectReference,
@@ -32,13 +33,6 @@ import {
   pageRequestAsAsyncIter,
 } from "../pageRequestAsAsyncIter.js";
 import { metadataCacheClient } from "./ConjureSupport.js";
-
-export interface BulkLinkResult {
-  object: OsdkBase<any>;
-  linkApiName: string;
-  otherObjectApiName: string | undefined;
-  otherObjectPk: unknown;
-}
 
 export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
   return async function*(
