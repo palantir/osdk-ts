@@ -28,15 +28,7 @@ export namespace FintrafficAis {
     readonly shipType: $PropType['string'] | undefined;
     readonly timestamp: $PropType['timestamp'] | undefined;
   }
-  export interface StrictProps {
-    readonly centroid: $PropType['geopoint'] | undefined;
-    readonly geometry: $PropType['geoshape'] | undefined;
-    readonly mmsi: $PropType['string'];
-    readonly name: $PropType['string'] | undefined;
-    readonly seriesId: $PropType['geotimeSeriesReference'] | undefined;
-    readonly shipType: $PropType['string'] | undefined;
-    readonly timestamp: $PropType['timestamp'] | undefined;
-  }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<FintrafficAis, FintrafficAis.ObjectSet> {}
 

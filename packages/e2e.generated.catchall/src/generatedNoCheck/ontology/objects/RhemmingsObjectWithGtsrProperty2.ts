@@ -26,13 +26,7 @@ export namespace RhemmingsObjectWithGtsrProperty2 {
     readonly timestamp: $PropType['timestamp'] | undefined;
     readonly type: $PropType['string'] | undefined;
   }
-  export interface StrictProps {
-    readonly gtsr: $PropType['geotimeSeriesReference'] | undefined;
-    readonly id: $PropType['string'];
-    readonly location: $PropType['geopoint'] | undefined;
-    readonly timestamp: $PropType['timestamp'] | undefined;
-    readonly type: $PropType['string'] | undefined;
-  }
+  export type StrictProps = Props;
 
   export interface ObjectSet
     extends $ObjectSet<RhemmingsObjectWithGtsrProperty2, RhemmingsObjectWithGtsrProperty2.ObjectSet> {}

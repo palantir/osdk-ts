@@ -23,10 +23,7 @@ export namespace equipment {
     readonly equipmentId: $PropType['string'];
     readonly type: $PropType['string'] | undefined;
   }
-  export interface StrictProps {
-    readonly equipmentId: $PropType['string'];
-    readonly type: $PropType['string'] | undefined;
-  }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<equipment, equipment.ObjectSet> {}
 

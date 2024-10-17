@@ -24,11 +24,7 @@ export namespace GtfsTripTrackObject {
     readonly geotimeSeriesReferences: $PropType['geotimeSeriesReference'] | undefined;
     readonly timestamp: $PropType['timestamp'] | undefined;
   }
-  export interface StrictProps {
-    readonly entityId: $PropType['string'];
-    readonly geotimeSeriesReferences: $PropType['geotimeSeriesReference'] | undefined;
-    readonly timestamp: $PropType['timestamp'] | undefined;
-  }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<GtfsTripTrackObject, GtfsTripTrackObject.ObjectSet> {}
 

@@ -212,6 +212,9 @@ export function createProps(
   identifier: string,
   strict: boolean,
 ) {
+  if (identifier === "StrictProps") {
+    return `export type StrictProps = Props`;
+  }
   const definition = type.getCleanedUpDefinition(true);
   return `export interface ${identifier} {
 ${

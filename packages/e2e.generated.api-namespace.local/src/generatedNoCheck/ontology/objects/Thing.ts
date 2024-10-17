@@ -23,10 +23,7 @@ export namespace Thing {
     readonly body: $PropType['string'] | undefined;
     readonly id: $PropType['integer'];
   }
-  export interface StrictProps {
-    readonly body: $PropType['string'] | undefined;
-    readonly id: $PropType['integer'];
-  }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<Thing, Thing.ObjectSet> {}
 

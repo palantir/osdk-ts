@@ -83,39 +83,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
     readonly stringArray: $PropType['string'][] | undefined;
     readonly stringTimeseries: $PropType['stringTimeseries'] | undefined;
   }
-  export interface StrictProps {
-    readonly attachment: $PropType['attachment'] | undefined;
-    readonly attachmentArray: $PropType['attachment'][] | undefined;
-    readonly boolean: $PropType['boolean'] | undefined;
-    readonly booleanArray: $PropType['boolean'][] | undefined;
-    readonly byte: $PropType['byte'] | undefined;
-    readonly byteArray: $PropType['byte'][] | undefined;
-    readonly date: $PropType['datetime'] | undefined;
-    readonly dateArray: $PropType['datetime'][] | undefined;
-    readonly dateTime: $PropType['timestamp'] | undefined;
-    readonly dateTimeArray: $PropType['timestamp'][] | undefined;
-    readonly decimal: $PropType['decimal'] | undefined;
-    readonly decimalArray: $PropType['decimal'][] | undefined;
-    readonly double: $PropType['double'] | undefined;
-    readonly doubleArray: $PropType['double'][] | undefined;
-    readonly float: $PropType['float'] | undefined;
-    readonly floatArray: $PropType['float'][] | undefined;
-    readonly geoPoint: $PropType['geopoint'] | undefined;
-    readonly geoPointArray: $PropType['geopoint'][] | undefined;
-    readonly geoShape: $PropType['geoshape'] | undefined;
-    readonly geoShapeArray: $PropType['geoshape'][] | undefined;
-    readonly id: $PropType['integer'];
-    readonly integer: $PropType['integer'] | undefined;
-    readonly integerArray: $PropType['integer'][] | undefined;
-    readonly long: $PropType['long'] | undefined;
-    readonly longArray: $PropType['long'][] | undefined;
-    readonly numericTimeseries: $PropType['numericTimeseries'] | undefined;
-    readonly short: $PropType['short'] | undefined;
-    readonly shortArray: $PropType['short'][] | undefined;
-    readonly string: $PropType['string'] | undefined;
-    readonly stringArray: $PropType['string'][] | undefined;
-    readonly stringTimeseries: $PropType['stringTimeseries'] | undefined;
-  }
+  export type StrictProps = Props;
 
   export interface ObjectSet
     extends $ObjectSet<ObjectTypeWithAllPropertyTypes, ObjectTypeWithAllPropertyTypes.ObjectSet> {}

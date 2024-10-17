@@ -16,9 +16,7 @@ export namespace SomeInterface {
   export interface Props {
     readonly 'com.example.dep.spt': $PropType['string'] | undefined;
   }
-  export interface StrictProps {
-    readonly 'com.example.dep.spt': $PropType['string'] | undefined;
-  }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 

@@ -17,10 +17,7 @@ export namespace FooInterface {
     readonly description: $PropType['string'] | undefined;
     readonly name: $PropType['string'] | undefined;
   }
-  export interface StrictProps {
-    readonly description: $PropType['string'] | undefined;
-    readonly name: $PropType['string'] | undefined;
-  }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<FooInterface, FooInterface.ObjectSet> {}
 

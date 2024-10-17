@@ -24,11 +24,7 @@ export namespace DherlihyComplexObject {
     readonly secret: $PropType['string'] | undefined;
     readonly seriesId: $PropType['numericTimeseries'] | undefined;
   }
-  export interface StrictProps {
-    readonly id: $PropType['string'];
-    readonly secret: $PropType['string'] | undefined;
-    readonly seriesId: $PropType['numericTimeseries'] | undefined;
-  }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<DherlihyComplexObject, DherlihyComplexObject.ObjectSet> {}
 

@@ -23,10 +23,7 @@ export namespace Task {
     readonly body: $PropType['string'] | undefined;
     readonly taskId: $PropType['string'];
   }
-  export interface StrictProps {
-    readonly body: $PropType['string'] | undefined;
-    readonly taskId: $PropType['string'];
-  }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<Task, Task.ObjectSet> {}
 

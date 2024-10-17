@@ -24,11 +24,7 @@ export namespace Todo {
     readonly isComplete: $PropType['boolean'] | undefined;
     readonly title: $PropType['string'] | undefined;
   }
-  export interface StrictProps {
-    readonly id: $PropType['string'];
-    readonly isComplete: $PropType['boolean'] | undefined;
-    readonly title: $PropType['string'] | undefined;
-  }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<Todo, Todo.ObjectSet> {}
 

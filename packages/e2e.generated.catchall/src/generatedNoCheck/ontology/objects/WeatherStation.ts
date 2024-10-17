@@ -23,10 +23,7 @@ export namespace WeatherStation {
     readonly geohash: $PropType['geopoint'] | undefined;
     readonly stationId: $PropType['string'];
   }
-  export interface StrictProps {
-    readonly geohash: $PropType['geopoint'] | undefined;
-    readonly stationId: $PropType['string'];
-  }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<WeatherStation, WeatherStation.ObjectSet> {}
 

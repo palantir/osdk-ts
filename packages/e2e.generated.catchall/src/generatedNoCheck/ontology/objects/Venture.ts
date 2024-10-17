@@ -27,11 +27,7 @@ export namespace Venture {
     readonly ventureName: $PropType['string'] | undefined;
     readonly ventureStart: $PropType['datetime'] | undefined;
   }
-  export interface StrictProps {
-    readonly ventureId: $PropType['string'];
-    readonly ventureName: $PropType['string'] | undefined;
-    readonly ventureStart: $PropType['datetime'] | undefined;
-  }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<Venture, Venture.ObjectSet> {}
 

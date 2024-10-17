@@ -25,12 +25,7 @@ export namespace BoundariesUsState {
     readonly longitude: $PropType['double'] | undefined;
     readonly usState: $PropType['string'];
   }
-  export interface StrictProps {
-    readonly geometry10M: $PropType['geoshape'] | undefined;
-    readonly latitude: $PropType['double'] | undefined;
-    readonly longitude: $PropType['double'] | undefined;
-    readonly usState: $PropType['string'];
-  }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<BoundariesUsState, BoundariesUsState.ObjectSet> {}
 

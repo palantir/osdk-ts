@@ -24,11 +24,7 @@ export namespace BuilderDeploymentState {
     readonly date: $PropType['datetime'] | undefined;
     readonly skuId: $PropType['string'];
   }
-  export interface StrictProps {
-    readonly currentTimestamp: $PropType['timestamp'] | undefined;
-    readonly date: $PropType['datetime'] | undefined;
-    readonly skuId: $PropType['string'];
-  }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<BuilderDeploymentState, BuilderDeploymentState.ObjectSet> {}
 

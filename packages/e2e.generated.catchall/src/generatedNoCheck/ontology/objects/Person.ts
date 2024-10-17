@@ -26,9 +26,7 @@ export namespace Person {
   export interface Props {
     readonly email: $PropType['string'];
   }
-  export interface StrictProps {
-    readonly email: $PropType['string'];
-  }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<Person, Person.ObjectSet> {}
 
