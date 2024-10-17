@@ -17,11 +17,6 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 8080,
     },
-    optimizeDeps: {
-      // shared.client is a mixed package that needs to be properly processed by vite
-      // but normally linked packages do not get that treatment so we have to explicitly add it here
-      // and in the `commonjsOptions` below
-    },
     build: {
       outDir: "build/site/",
     },

@@ -37,3 +37,5 @@ pnpm-publish-summary.json
 api-docs/
 temp/
 tsup.config.bundled_*.mjs
+
+examples/example-next-static-export/.next/
