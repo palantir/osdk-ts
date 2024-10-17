@@ -1,5 +1,18 @@
 # @osdk/shared.test
 
+## 2.1.0-beta.3
+
+### Minor Changes
+
+- 6f50516: Fix bug where object return types in a query were not properly mapped when wrapped in a struct.
+- 09eaf24: Update to latest platform sdks
+
+### Patch Changes
+
+- Updated dependencies [05febf4]
+- Updated dependencies [b79becf]
+  - @osdk/api@2.1.0-beta.3
+
 ## 2.1.0-beta.2
 
 ### Patch Changes

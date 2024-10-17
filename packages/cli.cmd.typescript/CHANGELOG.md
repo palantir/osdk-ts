@@ -1,5 +1,19 @@
 # @osdk/cli.cmd.typescript
 
+## 0.25.0-beta.3
+
+### Minor Changes
+
+- 09eaf24: Update to latest platform sdks
+
+### Patch Changes
+
+- Updated dependencies [3703d81]
+- Updated dependencies [09eaf24]
+  - @osdk/shared.net@2.1.0-beta.0
+  - @osdk/generator@2.1.0-beta.3
+  - @osdk/cli.common@0.25.0-beta.3
+
 ## 0.25.0-beta.2
 
 ### Patch Changes
