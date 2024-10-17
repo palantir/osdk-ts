@@ -18,6 +18,7 @@ import type {
   GeotimeSeriesProperty,
   ObjectTypeDefinition,
   Osdk,
+  TimeSeriesPoint,
 } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
 import { OntologiesV2 } from "@osdk/internal.foundry.ontologiesv2";
@@ -148,6 +149,15 @@ export function createOsdkObject<
               objectDef.apiName,
               target[RawObject][objectDef.primaryKeyApiName as string],
               p as string,
+              rawValue.type === "geotimeSeriesValue"
+                ? {
+                  time: rawValue.timestamp,
+                  value: {
+                    type: "Point",
+                    coordinates: rawValue.position,
+                  },
+                }
+                : undefined,
             );
             target[CachedPropertiesRef].set(p, geotimeProp);
             return geotimeProp;
