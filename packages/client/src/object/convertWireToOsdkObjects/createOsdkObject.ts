@@ -149,7 +149,10 @@ export function createOsdkObject<
               target[RawObject][objectDef.primaryKeyApiName as string],
               p as string,
               rawValue.type === "geotimeSeriesValue"
-                ? { time: rawValue.timestamp, value: rawValue.position }
+                ? {
+                  time: rawValue.timestamp,
+                  value: { coordinates: rawValue.position, type: "Point" },
+                }
                 : undefined,
             );
             target[CachedPropertiesRef].set(p, geotimeProp);

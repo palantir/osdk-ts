@@ -1827,6 +1827,9 @@ importers:
 
   packages/e2e.sandbox.subscribeapp:
     dependencies:
+      '@types/leaflet':
+        specifier: ^1.9.12
+        version: 1.9.12
       leaflet:
         specifier: ^1.9.4
         version: 1.9.4
@@ -4280,6 +4283,9 @@ packages:
 
   '@types/json5@0.0.29':
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
+
+  '@types/leaflet@1.9.12':
+    resolution: {integrity: sha512-BK7XS+NyRI291HIo0HCfE18Lp8oA30H1gpi1tf0mF3TgiCEzanQjOqNZ4x126SXzzi2oNSZhZ5axJp1k0iM6jg==}
 
   '@types/lint-staged@13.3.0':
     resolution: {integrity: sha512-WxGjVP+rA4OJlEdbZdT9MS9PFKQ7kVPhLn26gC+2tnBWBEFEj/KW+IbFfz6sxdxY5U6V7BvyF+3BzCGsAMHhNg==}
@@ -10058,6 +10064,10 @@ snapshots:
   '@types/json-stable-stringify@1.0.36': {}
 
   '@types/json5@0.0.29': {}
+
+  '@types/leaflet@1.9.12':
+    dependencies:
+      '@types/geojson': 7946.0.14
 
   '@types/lint-staged@13.3.0': {}
 
