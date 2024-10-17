@@ -24,7 +24,7 @@ export namespace Employee {
 
   export interface Props {
     readonly class: $PropType['string'] | undefined;
-    readonly employeeId: $PropType['integer'] | undefined;
+    readonly employeeId: $PropType['integer'];
     readonly employeeStatus: $PropType['numericTimeseries'] | undefined;
     readonly fullName: $PropType['string'] | undefined;
     readonly office: $PropType['integer'] | undefined;
@@ -42,13 +42,13 @@ export namespace Employee {
   export interface ObjectSet extends $ObjectSet<Employee, Employee.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof Employee.Props = keyof Employee.Props,
   > = $Osdk.Instance<Employee, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof Employee.Props = keyof Employee.Props,
   > = OsdkInstance<OPTIONS, K>;
 }

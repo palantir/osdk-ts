@@ -21,7 +21,7 @@ export namespace UsesForeignSpt {
 
   export interface Props {
     readonly body: $PropType['string'] | undefined;
-    readonly id: $PropType['integer'] | undefined;
+    readonly id: $PropType['integer'];
   }
   export interface StrictProps {
     readonly body: $PropType['string'] | undefined;
@@ -31,13 +31,13 @@ export namespace UsesForeignSpt {
   export interface ObjectSet extends $ObjectSet<UsesForeignSpt, UsesForeignSpt.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof UsesForeignSpt.Props = keyof UsesForeignSpt.Props,
   > = $Osdk.Instance<UsesForeignSpt, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof UsesForeignSpt.Props = keyof UsesForeignSpt.Props,
   > = OsdkInstance<OPTIONS, K>;
 }

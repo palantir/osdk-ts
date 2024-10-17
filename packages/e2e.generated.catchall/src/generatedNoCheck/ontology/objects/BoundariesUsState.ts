@@ -23,7 +23,7 @@ export namespace BoundariesUsState {
     readonly geometry10M: $PropType['geoshape'] | undefined;
     readonly latitude: $PropType['double'] | undefined;
     readonly longitude: $PropType['double'] | undefined;
-    readonly usState: $PropType['string'] | undefined;
+    readonly usState: $PropType['string'];
   }
   export interface StrictProps {
     readonly geometry10M: $PropType['geoshape'] | undefined;
@@ -35,13 +35,13 @@ export namespace BoundariesUsState {
   export interface ObjectSet extends $ObjectSet<BoundariesUsState, BoundariesUsState.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof BoundariesUsState.Props = keyof BoundariesUsState.Props,
   > = $Osdk.Instance<BoundariesUsState, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof BoundariesUsState.Props = keyof BoundariesUsState.Props,
   > = OsdkInstance<OPTIONS, K>;
 }

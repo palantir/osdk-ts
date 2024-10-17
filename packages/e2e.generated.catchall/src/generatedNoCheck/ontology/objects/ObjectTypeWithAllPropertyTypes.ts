@@ -71,7 +71,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
     readonly geoPointArray: $PropType['geopoint'][] | undefined;
     readonly geoShape: $PropType['geoshape'] | undefined;
     readonly geoShapeArray: $PropType['geoshape'][] | undefined;
-    readonly id: $PropType['integer'] | undefined;
+    readonly id: $PropType['integer'];
     readonly integer: $PropType['integer'] | undefined;
     readonly integerArray: $PropType['integer'][] | undefined;
     readonly long: $PropType['long'] | undefined;
@@ -121,13 +121,13 @@ export namespace ObjectTypeWithAllPropertyTypes {
     extends $ObjectSet<ObjectTypeWithAllPropertyTypes, ObjectTypeWithAllPropertyTypes.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof ObjectTypeWithAllPropertyTypes.Props = keyof ObjectTypeWithAllPropertyTypes.Props,
   > = $Osdk.Instance<ObjectTypeWithAllPropertyTypes, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof ObjectTypeWithAllPropertyTypes.Props = keyof ObjectTypeWithAllPropertyTypes.Props,
   > = OsdkInstance<OPTIONS, K>;
 }

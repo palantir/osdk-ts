@@ -34,7 +34,6 @@ export interface SelectArg<
 > {
   $select?: readonly L[];
   $includeRid?: R;
-  $__EXPERIMENTAL_strictNonNull?: S;
 }
 
 export interface OrderByArg<

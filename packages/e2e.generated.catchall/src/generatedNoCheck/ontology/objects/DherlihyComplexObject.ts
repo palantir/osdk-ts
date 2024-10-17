@@ -20,7 +20,7 @@ export namespace DherlihyComplexObject {
   export type Links = {};
 
   export interface Props {
-    readonly id: $PropType['string'] | undefined;
+    readonly id: $PropType['string'];
     readonly secret: $PropType['string'] | undefined;
     readonly seriesId: $PropType['numericTimeseries'] | undefined;
   }
@@ -33,13 +33,13 @@ export namespace DherlihyComplexObject {
   export interface ObjectSet extends $ObjectSet<DherlihyComplexObject, DherlihyComplexObject.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof DherlihyComplexObject.Props = keyof DherlihyComplexObject.Props,
   > = $Osdk.Instance<DherlihyComplexObject, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof DherlihyComplexObject.Props = keyof DherlihyComplexObject.Props,
   > = OsdkInstance<OPTIONS, K>;
 }

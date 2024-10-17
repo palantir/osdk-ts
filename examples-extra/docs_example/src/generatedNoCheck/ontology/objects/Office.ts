@@ -31,7 +31,7 @@ export namespace Office {
     readonly meetingRooms: $PropType['string'][] | undefined;
     readonly name: $PropType['string'] | undefined;
     readonly occupiedArea: $PropType['geoshape'] | undefined;
-    readonly officeId: $PropType['string'] | undefined;
+    readonly officeId: $PropType['string'];
   }
   export interface StrictProps {
     readonly entrance: $PropType['geopoint'] | undefined;
@@ -45,13 +45,13 @@ export namespace Office {
   export interface ObjectSet extends $ObjectSet<Office, Office.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof Office.Props = keyof Office.Props,
   > = $Osdk.Instance<Office, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof Office.Props = keyof Office.Props,
   > = OsdkInstance<OPTIONS, K>;
 }

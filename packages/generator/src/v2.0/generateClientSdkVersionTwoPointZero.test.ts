@@ -693,13 +693,13 @@ describe("generator", () => {
         export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 
         export type OsdkInstance<
-          OPTIONS extends never | '$notStrict' | '$rid' = never,
+          OPTIONS extends never | '$rid' = never,
           K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
         > = $Osdk.Instance<SomeInterface, OPTIONS, K>;
 
         /** @deprecated use OsdkInstance */
         export type OsdkObject<
-          OPTIONS extends never | '$notStrict' | '$rid' = never,
+          OPTIONS extends never | '$rid' = never,
           K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
         > = OsdkInstance<OPTIONS, K>;
       }
@@ -764,7 +764,7 @@ describe("generator", () => {
         }
 
         export interface Props {
-          readonly email: $PropType['string'] | undefined;
+          readonly email: $PropType['string'];
         }
         export interface StrictProps {
           readonly email: $PropType['string'];
@@ -773,13 +773,13 @@ describe("generator", () => {
         export interface ObjectSet extends $ObjectSet<Person, Person.ObjectSet> {}
 
         export type OsdkInstance<
-          OPTIONS extends never | '$notStrict' | '$rid' = never,
+          OPTIONS extends never | '$rid' = never,
           K extends keyof Person.Props = keyof Person.Props,
         > = $Osdk.Instance<Person, OPTIONS, K>;
 
         /** @deprecated use OsdkInstance */
         export type OsdkObject<
-          OPTIONS extends never | '$notStrict' | '$rid' = never,
+          OPTIONS extends never | '$rid' = never,
           K extends keyof Person.Props = keyof Person.Props,
         > = OsdkInstance<OPTIONS, K>;
       }
@@ -856,7 +856,7 @@ describe("generator", () => {
         export interface Props {
           readonly body: $PropType['string'] | undefined;
           readonly complete: $PropType['boolean'] | undefined;
-          readonly id: $PropType['integer'] | undefined;
+          readonly id: $PropType['integer'];
         }
         export interface StrictProps {
           readonly body: $PropType['string'] | undefined;
@@ -867,13 +867,13 @@ describe("generator", () => {
         export interface ObjectSet extends $ObjectSet<Todo, Todo.ObjectSet> {}
 
         export type OsdkInstance<
-          OPTIONS extends never | '$notStrict' | '$rid' = never,
+          OPTIONS extends never | '$rid' = never,
           K extends keyof Todo.Props = keyof Todo.Props,
         > = $Osdk.Instance<Todo, OPTIONS, K>;
 
         /** @deprecated use OsdkInstance */
         export type OsdkObject<
-          OPTIONS extends never | '$notStrict' | '$rid' = never,
+          OPTIONS extends never | '$rid' = never,
           K extends keyof Todo.Props = keyof Todo.Props,
         > = OsdkInstance<OPTIONS, K>;
       }
@@ -1313,13 +1313,13 @@ describe("generator", () => {
           export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 
           export type OsdkInstance<
-            OPTIONS extends never | '$notStrict' | '$rid' = never,
+            OPTIONS extends never | '$rid' = never,
             K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
           > = $Osdk.Instance<SomeInterface, OPTIONS, K>;
 
           /** @deprecated use OsdkInstance */
           export type OsdkObject<
-            OPTIONS extends never | '$notStrict' | '$rid' = never,
+            OPTIONS extends never | '$rid' = never,
             K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
           > = OsdkInstance<OPTIONS, K>;
         }
@@ -1384,7 +1384,7 @@ describe("generator", () => {
           }
 
           export interface Props {
-            readonly email: $PropType['string'] | undefined;
+            readonly email: $PropType['string'];
           }
           export interface StrictProps {
             readonly email: $PropType['string'];
@@ -1393,13 +1393,13 @@ describe("generator", () => {
           export interface ObjectSet extends $ObjectSet<Person, Person.ObjectSet> {}
 
           export type OsdkInstance<
-            OPTIONS extends never | '$notStrict' | '$rid' = never,
+            OPTIONS extends never | '$rid' = never,
             K extends keyof Person.Props = keyof Person.Props,
           > = $Osdk.Instance<Person, OPTIONS, K>;
 
           /** @deprecated use OsdkInstance */
           export type OsdkObject<
-            OPTIONS extends never | '$notStrict' | '$rid' = never,
+            OPTIONS extends never | '$rid' = never,
             K extends keyof Person.Props = keyof Person.Props,
           > = OsdkInstance<OPTIONS, K>;
         }
@@ -1476,7 +1476,7 @@ describe("generator", () => {
           export interface Props {
             readonly body: $PropType['string'] | undefined;
             readonly complete: $PropType['boolean'] | undefined;
-            readonly id: $PropType['integer'] | undefined;
+            readonly id: $PropType['integer'];
           }
           export interface StrictProps {
             readonly body: $PropType['string'] | undefined;
@@ -1487,13 +1487,13 @@ describe("generator", () => {
           export interface ObjectSet extends $ObjectSet<Todo, Todo.ObjectSet> {}
 
           export type OsdkInstance<
-            OPTIONS extends never | '$notStrict' | '$rid' = never,
+            OPTIONS extends never | '$rid' = never,
             K extends keyof Todo.Props = keyof Todo.Props,
           > = $Osdk.Instance<Todo, OPTIONS, K>;
 
           /** @deprecated use OsdkInstance */
           export type OsdkObject<
-            OPTIONS extends never | '$notStrict' | '$rid' = never,
+            OPTIONS extends never | '$rid' = never,
             K extends keyof Todo.Props = keyof Todo.Props,
           > = OsdkInstance<OPTIONS, K>;
         }
@@ -1884,7 +1884,7 @@ describe("generator", () => {
 
             export interface Props {
               readonly body: $PropType['string'] | undefined;
-              readonly id: $PropType['integer'] | undefined;
+              readonly id: $PropType['integer'];
             }
             export interface StrictProps {
               readonly body: $PropType['string'] | undefined;
@@ -1894,13 +1894,13 @@ describe("generator", () => {
             export interface ObjectSet extends $ObjectSet<UsesForeignSpt, UsesForeignSpt.ObjectSet> {}
 
             export type OsdkInstance<
-              OPTIONS extends never | '$notStrict' | '$rid' = never,
+              OPTIONS extends never | '$rid' = never,
               K extends keyof UsesForeignSpt.Props = keyof UsesForeignSpt.Props,
             > = $Osdk.Instance<UsesForeignSpt, OPTIONS, K>;
 
             /** @deprecated use OsdkInstance */
             export type OsdkObject<
-              OPTIONS extends never | '$notStrict' | '$rid' = never,
+              OPTIONS extends never | '$rid' = never,
               K extends keyof UsesForeignSpt.Props = keyof UsesForeignSpt.Props,
             > = OsdkInstance<OPTIONS, K>;
           }
@@ -2111,13 +2111,13 @@ describe("generator", () => {
           export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 
           export type OsdkInstance<
-            OPTIONS extends never | '$notStrict' | '$rid' = never,
+            OPTIONS extends never | '$rid' = never,
             K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
           > = $Osdk.Instance<SomeInterface, OPTIONS, K>;
 
           /** @deprecated use OsdkInstance */
           export type OsdkObject<
-            OPTIONS extends never | '$notStrict' | '$rid' = never,
+            OPTIONS extends never | '$rid' = never,
             K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
           > = OsdkInstance<OPTIONS, K>;
         }
@@ -2177,7 +2177,7 @@ describe("generator", () => {
 
           export interface Props {
             readonly body: $PropType['string'] | undefined;
-            readonly taskId: $PropType['string'] | undefined;
+            readonly taskId: $PropType['string'];
           }
           export interface StrictProps {
             readonly body: $PropType['string'] | undefined;
@@ -2187,13 +2187,13 @@ describe("generator", () => {
           export interface ObjectSet extends $ObjectSet<Task, Task.ObjectSet> {}
 
           export type OsdkInstance<
-            OPTIONS extends never | '$notStrict' | '$rid' = never,
+            OPTIONS extends never | '$rid' = never,
             K extends keyof Task.Props = keyof Task.Props,
           > = $Osdk.Instance<Task, OPTIONS, K>;
 
           /** @deprecated use OsdkInstance */
           export type OsdkObject<
-            OPTIONS extends never | '$notStrict' | '$rid' = never,
+            OPTIONS extends never | '$rid' = never,
             K extends keyof Task.Props = keyof Task.Props,
           > = OsdkInstance<OPTIONS, K>;
         }

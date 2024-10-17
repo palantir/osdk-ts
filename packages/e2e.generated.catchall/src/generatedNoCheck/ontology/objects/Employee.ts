@@ -44,7 +44,7 @@ export namespace Employee {
     readonly favPlace: $PropType['geopoint'] | undefined;
     readonly firstFullTimeStartDate: $PropType['datetime'] | undefined;
     readonly firstName: $PropType['string'] | undefined;
-    readonly id: $PropType['string'] | undefined;
+    readonly id: $PropType['string'];
     readonly jobProfile: $PropType['string'] | undefined;
     readonly locationCity: $PropType['string'] | undefined;
     readonly locationName: $PropType['string'] | undefined;
@@ -68,13 +68,13 @@ export namespace Employee {
   export interface ObjectSet extends $ObjectSet<Employee, Employee.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof Employee.Props = keyof Employee.Props,
   > = $Osdk.Instance<Employee, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof Employee.Props = keyof Employee.Props,
   > = OsdkInstance<OPTIONS, K>;
 }

@@ -20,7 +20,7 @@ export namespace Todo {
   export type Links = {};
 
   export interface Props {
-    readonly id: $PropType['string'] | undefined;
+    readonly id: $PropType['string'];
     readonly isComplete: $PropType['boolean'] | undefined;
     readonly title: $PropType['string'] | undefined;
   }
@@ -33,13 +33,13 @@ export namespace Todo {
   export interface ObjectSet extends $ObjectSet<Todo, Todo.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof Todo.Props = keyof Todo.Props,
   > = $Osdk.Instance<Todo, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof Todo.Props = keyof Todo.Props,
   > = OsdkInstance<OPTIONS, K>;
 }

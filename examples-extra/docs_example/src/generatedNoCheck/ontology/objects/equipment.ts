@@ -20,7 +20,7 @@ export namespace equipment {
   export type Links = {};
 
   export interface Props {
-    readonly equipmentId: $PropType['string'] | undefined;
+    readonly equipmentId: $PropType['string'];
     readonly type: $PropType['string'] | undefined;
   }
   export interface StrictProps {
@@ -31,13 +31,13 @@ export namespace equipment {
   export interface ObjectSet extends $ObjectSet<equipment, equipment.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof equipment.Props = keyof equipment.Props,
   > = $Osdk.Instance<equipment, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof equipment.Props = keyof equipment.Props,
   > = OsdkInstance<OPTIONS, K>;
 }

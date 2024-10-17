@@ -22,7 +22,7 @@ export namespace FintrafficAis {
   export interface Props {
     readonly centroid: $PropType['geopoint'] | undefined;
     readonly geometry: $PropType['geoshape'] | undefined;
-    readonly mmsi: $PropType['string'] | undefined;
+    readonly mmsi: $PropType['string'];
     readonly name: $PropType['string'] | undefined;
     readonly seriesId: $PropType['geotimeSeriesReference'] | undefined;
     readonly shipType: $PropType['string'] | undefined;
@@ -41,13 +41,13 @@ export namespace FintrafficAis {
   export interface ObjectSet extends $ObjectSet<FintrafficAis, FintrafficAis.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof FintrafficAis.Props = keyof FintrafficAis.Props,
   > = $Osdk.Instance<FintrafficAis, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof FintrafficAis.Props = keyof FintrafficAis.Props,
   > = OsdkInstance<OPTIONS, K>;
 }

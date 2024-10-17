@@ -274,7 +274,6 @@ export async function fetchObjectPage<
       undefined,
       undefined,
       args.$select,
-      args.$__EXPERIMENTAL_strictNonNull,
     ),
     nextPageToken: r.nextPageToken,
     totalCount: r.totalCount,

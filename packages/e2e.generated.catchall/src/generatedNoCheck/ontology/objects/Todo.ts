@@ -25,7 +25,7 @@ export namespace Todo {
   export interface Props {
     readonly body: $PropType['string'] | undefined;
     readonly complete: $PropType['boolean'] | undefined;
-    readonly id: $PropType['integer'] | undefined;
+    readonly id: $PropType['integer'];
     readonly priority: $PropType['integer'] | undefined;
     readonly text: $PropType['string'] | undefined;
   }
@@ -40,13 +40,13 @@ export namespace Todo {
   export interface ObjectSet extends $ObjectSet<Todo, Todo.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof Todo.Props = keyof Todo.Props,
   > = $Osdk.Instance<Todo, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof Todo.Props = keyof Todo.Props,
   > = OsdkInstance<OPTIONS, K>;
 }

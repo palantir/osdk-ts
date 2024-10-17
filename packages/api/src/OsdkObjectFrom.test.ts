@@ -32,9 +32,9 @@ describe("ExtractOptions", () => {
         .toEqualTypeOf<never>();
     });
 
-    it("does add add $notStrict for false", () => {
+    it("does not add $notStrict for false", () => {
       expectTypeOf<ExtractOptions<any, false>>()
-        .toEqualTypeOf<"$notStrict">();
+        .toEqualTypeOf<never>();
     });
 
     it("does not add $notStrict for throw", () => {
@@ -140,9 +140,9 @@ describe("ExtractOptions", () => {
         Osdk.Instance<quickAndDirty, never>
       >();
 
-      // ensure its the strict type
+      // ensure its the normal props
       expectTypeOf<Pick<toCheck, "name" | "foo">>().toEqualTypeOf<
-        quickAndDirty["__DefinitionMetadata"]["strictProps"]
+        quickAndDirty["__DefinitionMetadata"]["props"]
       >();
     });
 
@@ -151,9 +151,9 @@ describe("ExtractOptions", () => {
       expectTypeOf<toCheck>().toEqualTypeOf<
         Osdk.Instance<quickAndDirty, never>
       >();
-      // ensure its the strict type
+      // ensure its the normal props
       expectTypeOf<Pick<toCheck, "name" | "foo">>().toEqualTypeOf<
-        quickAndDirty["__DefinitionMetadata"]["strictProps"]
+        quickAndDirty["__DefinitionMetadata"]["props"]
       >();
     });
 
@@ -162,15 +162,18 @@ describe("ExtractOptions", () => {
       expectTypeOf<toCheck>().branded.toEqualTypeOf<
         Osdk.Instance<quickAndDirty, never>
       >();
-      // ensure its the strict type
+      // ensure its the normal props
       expectTypeOf<Pick<toCheck, "name" | "foo">>().toEqualTypeOf<
-        quickAndDirty["__DefinitionMetadata"]["strictProps"]
+        quickAndDirty["__DefinitionMetadata"]["props"]
       >();
     });
 
-    it("uses not strict if requested", () => {
+    it("Cannot use $notStrict", () => {
+      // @ts-expect-error
       type toCheck = Osdk.Instance<quickAndDirty, "$notStrict">;
+
       expectTypeOf<toCheck>().branded
+        // @ts-expect-error
         .toEqualTypeOf<Osdk.Instance<quickAndDirty, "$notStrict">>();
       // ensure its not the strict type
       expectTypeOf<Pick<toCheck, "name" | "foo">>().toEqualTypeOf<
@@ -210,9 +213,9 @@ describe("ExtractOptions", () => {
       // expect no rid
       expectTypeOf<keyof toCheck & "$rid">().toEqualTypeOf<never>();
 
-      // ensure its the strict type
+      // ensure its the normal props
       expectTypeOf<Pick<toCheck, "name" | "foo">>().toEqualTypeOf<
-        quickAndDirty["__DefinitionMetadata"]["strictProps"]
+        quickAndDirty["__DefinitionMetadata"]["props"]
       >();
     });
 
@@ -225,9 +228,9 @@ describe("ExtractOptions", () => {
       // expect rid
       expectTypeOf<keyof toCheck & "$rid">().toEqualTypeOf<"$rid">();
 
-      // ensure its the strict type
+      // ensure its the normal props
       expectTypeOf<Pick<toCheck, "name" | "foo">>().toEqualTypeOf<
-        quickAndDirty["__DefinitionMetadata"]["strictProps"]
+        quickAndDirty["__DefinitionMetadata"]["props"]
       >();
     });
 
@@ -255,9 +258,9 @@ describe("ExtractOptions", () => {
       // expect rid
       expectTypeOf<keyof toCheck & "$rid">().toEqualTypeOf<"$rid">();
 
-      // ensure its the strict type
+      // ensure its the normal props
       expectTypeOf<Pick<toCheck, "name" | "foo">>().toEqualTypeOf<
-        quickAndDirty["__DefinitionMetadata"]["strictProps"]
+        quickAndDirty["__DefinitionMetadata"]["props"]
       >();
     });
 
@@ -270,9 +273,9 @@ describe("ExtractOptions", () => {
       // expect no rid
       expectTypeOf<keyof toCheck & "$rid">().toEqualTypeOf<never>();
 
-      // ensure its the strict type
+      // ensure its the normal props
       expectTypeOf<Pick<toCheck, "name" | "foo">>().toEqualTypeOf<
-        quickAndDirty["__DefinitionMetadata"]["strictProps"]
+        quickAndDirty["__DefinitionMetadata"]["props"]
       >();
     });
 
@@ -281,9 +284,9 @@ describe("ExtractOptions", () => {
       expectTypeOf<toCheck>().toEqualTypeOf<
         Osdk.Instance<quickAndDirty, never>
       >();
-      // ensure its the strict type
+      // ensure its the normal props
       expectTypeOf<Pick<toCheck, "name" | "foo">>().toEqualTypeOf<
-        quickAndDirty["__DefinitionMetadata"]["strictProps"]
+        quickAndDirty["__DefinitionMetadata"]["props"]
       >();
 
       // expect no rid
@@ -295,19 +298,19 @@ describe("ExtractOptions", () => {
       expectTypeOf<toCheck>().branded.toEqualTypeOf<
         Osdk.Instance<quickAndDirty, never>
       >();
-      // ensure its the strict type
+      // ensure its the normal props
       expectTypeOf<Pick<toCheck, "name" | "foo">>().toEqualTypeOf<
-        quickAndDirty["__DefinitionMetadata"]["strictProps"]
+        quickAndDirty["__DefinitionMetadata"]["props"]
       >();
 
       // expect no rid
       expectTypeOf<keyof toCheck & "$rid">().toEqualTypeOf<never>();
     });
 
-    it("uses not strict if requested", () => {
+    it("Does not use $notStrict if requested with old type", () => {
       type toCheck = Osdk<quickAndDirty, "$notStrict">;
       expectTypeOf<toCheck>().branded
-        .toEqualTypeOf<Osdk.Instance<quickAndDirty, "$notStrict">>();
+        .toEqualTypeOf<Osdk.Instance<quickAndDirty, never>>();
       // ensure its not the strict type
       expectTypeOf<Pick<toCheck, "name" | "foo">>().toEqualTypeOf<
         quickAndDirty["__DefinitionMetadata"]["props"]
