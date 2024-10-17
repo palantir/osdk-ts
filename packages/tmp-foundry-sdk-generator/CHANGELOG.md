@@ -1,5 +1,24 @@
 # @osdk/foundry-sdk-generator
 
+## 2.1.0-beta.3
+
+### Minor Changes
+
+- 09eaf24: Update to latest platform sdks
+
+### Patch Changes
+
+- Updated dependencies [05febf4]
+- Updated dependencies [a06ec35]
+- Updated dependencies [3703d81]
+- Updated dependencies [6f50516]
+- Updated dependencies [b79becf]
+- Updated dependencies [09eaf24]
+  - @osdk/client@2.1.0-beta.3
+  - @osdk/api@2.1.0-beta.3
+  - @osdk/shared.net@2.1.0-beta.0
+  - @osdk/generator@2.1.0-beta.3
+
 ## 2.1.0-beta.2
 
 ### Patch Changes

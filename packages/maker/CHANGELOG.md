@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.9.0-beta.3
+
+### Minor Changes
+
+- 09eaf24: Update to latest platform sdks
+
+### Patch Changes
+
+- Updated dependencies [05febf4]
+- Updated dependencies [b79becf]
+  - @osdk/api@2.1.0-beta.3
+
 ## 0.9.0-beta.2
 
 ### Patch Changes

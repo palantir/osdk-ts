@@ -1,5 +1,26 @@
 # @osdk/client
 
+## 2.1.0-beta.3
+
+### Minor Changes
+
+- 05febf4: Adds Reference Update support in subscribe
+- a06ec35: Fixes the lastFetchedValue on a Geotime Series property from reference updates
+- 3703d81: Changed shared context to a version less error prone
+- 6f50516: Fix bug where object return types in a query were not properly mapped when wrapped in a struct.
+- 09eaf24: Update to latest platform sdks
+
+### Patch Changes
+
+- Updated dependencies [05febf4]
+- Updated dependencies [3703d81]
+- Updated dependencies [b79becf]
+- Updated dependencies [09eaf24]
+  - @osdk/api@2.1.0-beta.3
+  - @osdk/shared.client.impl@1.1.0-beta.0
+  - @osdk/generator-converters@2.1.0-beta.3
+  - @osdk/client.unstable@2.1.0-beta.3
+
 ## 2.1.0-beta.2
 
 ### Patch Changes

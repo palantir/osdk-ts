@@ -1,5 +1,11 @@
 # @osdk/shared.net.platformapi
 
+## 0.4.0-beta.0
+
+### Minor Changes
+
+- 3678e99: Using new dependency for shared client.
+
 ## 0.3.0
 
 ### Minor Changes

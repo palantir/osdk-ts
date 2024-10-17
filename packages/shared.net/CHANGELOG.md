@@ -1,5 +1,16 @@
 # @osdk/shared.net
 
+## 2.1.0-beta.0
+
+### Minor Changes
+
+- 3703d81: Changed shared context to a version less error prone
+
+### Patch Changes
+
+- Updated dependencies [3703d81]
+  - @osdk/shared.client.impl@1.1.0-beta.0
+
 ## 2.0.0
 
 ### Major Changes
