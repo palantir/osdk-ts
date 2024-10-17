@@ -343,7 +343,6 @@ describe("ObjectSet", () => {
     describe("strictNonNull: false", () => {
       describe("includeRid: true", () => {
         it("returns bad data", async () => {
-          // look here
           const opts = {
             $__EXPERIMENTAL_strictNonNull: false,
             $includeRid: true,
