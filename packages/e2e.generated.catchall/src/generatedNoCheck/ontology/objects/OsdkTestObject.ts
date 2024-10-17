@@ -20,24 +20,21 @@ export namespace OsdkTestObject {
   export type Links = {};
 
   export interface Props {
-    readonly primaryKey_: $PropType['string'] | undefined;
-    readonly stringProperty: $PropType['string'] | undefined;
-  }
-  export interface StrictProps {
     readonly primaryKey_: $PropType['string'];
     readonly stringProperty: $PropType['string'] | undefined;
   }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<OsdkTestObject, OsdkTestObject.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof OsdkTestObject.Props = keyof OsdkTestObject.Props,
   > = $Osdk.Instance<OsdkTestObject, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof OsdkTestObject.Props = keyof OsdkTestObject.Props,
   > = OsdkInstance<OPTIONS, K>;
 }

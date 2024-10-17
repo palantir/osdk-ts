@@ -17,21 +17,18 @@ export namespace FooInterface {
     readonly description: $PropType['string'] | undefined;
     readonly name: $PropType['string'] | undefined;
   }
-  export interface StrictProps {
-    readonly description: $PropType['string'] | undefined;
-    readonly name: $PropType['string'] | undefined;
-  }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<FooInterface, FooInterface.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof FooInterface.Props = keyof FooInterface.Props,
   > = $Osdk.Instance<FooInterface, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof FooInterface.Props = keyof FooInterface.Props,
   > = OsdkInstance<OPTIONS, K>;
 }

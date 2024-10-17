@@ -28,33 +28,33 @@ export async function demoStrictnessObject() {
     .fetchPage();
   expectType<string>(defaultResults[0].usState);
 
-  const { data: dropResults } = await client(BoundariesUsState)
-    .fetchPage({ $__EXPERIMENTAL_strictNonNull: "drop" });
-  expectType<string>(dropResults[0].usState);
+  // const { data: dropResults } = await client(BoundariesUsState)
+  //   .fetchPage({ $__EXPERIMENTAL_strictNonNull: "drop" });
+  // expectType<string>(dropResults[0].usState);
 
-  const { data: notStrictResults } = await client(BoundariesUsState)
-    .fetchPage({ $__EXPERIMENTAL_strictNonNull: false });
-  expectType<string | undefined>(notStrictResults[0].usState);
+  // const { data: notStrictResults } = await client(BoundariesUsState)
+  //   .fetchPage({ $__EXPERIMENTAL_strictNonNull: false });
+  // expectType<string | undefined>(notStrictResults[0].usState);
 
-  const { data: throwResults } = await client(BoundariesUsState)
-    .fetchPage({ $__EXPERIMENTAL_strictNonNull: "throw" });
-  expectType<string>(throwResults[0].usState);
+  // const { data: throwResults } = await client(BoundariesUsState)
+  //   .fetchPage({ $__EXPERIMENTAL_strictNonNull: "throw" });
+  // expectType<string>(throwResults[0].usState);
 
-  const { data: fooDataNotStrict } = await client(FooInterface)
-    .fetchPage({ $__EXPERIMENTAL_strictNonNull: false });
+  // const { data: fooDataNotStrict } = await client(FooInterface)
+  //   .fetchPage({ $__EXPERIMENTAL_strictNonNull: false });
 
-  const employeeNotStrict = fooDataNotStrict[0].$as(Employee);
+  // const employeeNotStrict = fooDataNotStrict[0].$as(Employee);
 }
 
 export async function demoStrictnessInterface() {
-  const { data: fooDataNotStrict } = await client(FooInterface)
-    .fetchPage({ $__EXPERIMENTAL_strictNonNull: false });
+  // const { data: fooDataNotStrict } = await client(FooInterface)
+  //   .fetchPage({ $__EXPERIMENTAL_strictNonNull: false });
 
-  const employeeNotStrict = fooDataNotStrict[0].$as(Employee);
-  expectType<
-    Osdk<
-      Employee,
-      "$notStrict" | "firstName" | "email"
-    >
-  >(employeeNotStrict);
+  // const employeeNotStrict = fooDataNotStrict[0].$as(Employee);
+  // expectType<
+  //   Osdk<
+  //     Employee,
+  //     "$notStrict" | "firstName" | "email"
+  //   >
+  // >(employeeNotStrict);
 }

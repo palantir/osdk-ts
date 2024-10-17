@@ -131,20 +131,18 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         export interface Props {
           readonly bar: $PropType["integer"] | undefined;
         }
-        export interface StrictProps {
-          readonly bar: $PropType["integer"] | undefined;
-        }
+        export type StrictProps = Props;
 
         export interface ObjectSet extends $ObjectSet<Bar, Bar.ObjectSet> {}
 
         export type OsdkInstance<
-          OPTIONS extends never | "$notStrict" | "$rid" = never,
+          OPTIONS extends never | "$rid" = never,
           K extends keyof Bar.Props = keyof Bar.Props,
         > = $Osdk.Instance<Bar, OPTIONS, K>;
 
         /** @deprecated use OsdkInstance */
         export type OsdkObject<
-          OPTIONS extends never | "$notStrict" | "$rid" = never,
+          OPTIONS extends never | "$rid" = never,
           K extends keyof Bar.Props = keyof Bar.Props,
         > = OsdkInstance<OPTIONS, K>;
       }
@@ -223,20 +221,18 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         export interface Props {
           readonly foo: $PropType["integer"] | undefined;
         }
-        export interface StrictProps {
-          readonly foo: $PropType["integer"] | undefined;
-        }
+        export type StrictProps = Props;
 
         export interface ObjectSet extends $ObjectSet<Foo, Foo.ObjectSet> {}
 
         export type OsdkInstance<
-          OPTIONS extends never | "$notStrict" | "$rid" = never,
+          OPTIONS extends never | "$rid" = never,
           K extends keyof Foo.Props = keyof Foo.Props,
         > = $Osdk.Instance<Foo, OPTIONS, K>;
 
         /** @deprecated use OsdkInstance */
         export type OsdkObject<
-          OPTIONS extends never | "$notStrict" | "$rid" = never,
+          OPTIONS extends never | "$rid" = never,
           K extends keyof Foo.Props = keyof Foo.Props,
         > = OsdkInstance<OPTIONS, K>;
       }
@@ -317,21 +313,18 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           readonly bar: $PropType["integer"] | undefined;
           readonly foo: $PropType["integer"] | undefined;
         }
-        export interface StrictProps {
-          readonly bar: $PropType["integer"] | undefined;
-          readonly foo: $PropType["integer"] | undefined;
-        }
+        export type StrictProps = Props;
 
         export interface ObjectSet extends $ObjectSet<Foo, Foo.ObjectSet> {}
 
         export type OsdkInstance<
-          OPTIONS extends never | "$notStrict" | "$rid" = never,
+          OPTIONS extends never | "$rid" = never,
           K extends keyof Foo.Props = keyof Foo.Props,
         > = $Osdk.Instance<Foo, OPTIONS, K>;
 
         /** @deprecated use OsdkInstance */
         export type OsdkObject<
-          OPTIONS extends never | "$notStrict" | "$rid" = never,
+          OPTIONS extends never | "$rid" = never,
           K extends keyof Foo.Props = keyof Foo.Props,
         > = OsdkInstance<OPTIONS, K>;
       }

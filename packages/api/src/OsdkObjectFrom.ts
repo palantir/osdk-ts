@@ -158,14 +158,6 @@ export type GetPropsKeys<
   : IsAny<P> extends true ? PropertyKeys<Q>
   : P;
 
-export type GetProps<
-  Q extends ObjectOrInterfaceDefinition,
-  OPTIONS extends never | "$notStrict" | "$rid" = never,
-> = IsNever<OPTIONS> extends true ? CompileTimeMetadata<Q>["strictProps"]
-  : IsAny<OPTIONS> extends true ? CompileTimeMetadata<Q>["strictProps"]
-  : (OPTIONS extends "$notStrict" ? CompileTimeMetadata<Q>["props"]
-    : CompileTimeMetadata<Q>["strictProps"]);
-
 /**
  * Use `Osdk.Instance` or `YourType.OsdkInstance`
  */
@@ -178,26 +170,25 @@ export type Osdk<
   IsNever<OPTIONS> extends true ? Osdk.Instance<Q, never, P>
     : IsAny<OPTIONS> extends true ? Osdk.Instance<Q, never, P>
     // Options only includes the two allowed in the new style
-    : (IsNever<Exclude<OPTIONS, "$notStrict" | "$rid">>) extends true
-      ? Osdk.Instance<Q, OPTIONS & ("$notStrict" | "$rid"), P>
+    : (IsNever<Exclude<OPTIONS, "$rid">>) extends true
+      ? Osdk.Instance<Q, OPTIONS & "$rid", P>
     // else we are in the old style which was just Q and OPTIONS
     // and OPTIONS was $things + prop names
     : Osdk.Instance<
       Q,
-      | ("$notStrict" extends OPTIONS ? "$notStrict" : never)
-      | ("$rid" extends OPTIONS ? "$rid" : never),
+      ("$rid" extends OPTIONS ? "$rid" : never),
       ExtractPropsKeysFromOldPropsStyle<Q, OPTIONS>
     >;
 
 export namespace Osdk {
   export type Instance<
     Q extends ObjectOrInterfaceDefinition,
-    OPTIONS extends never | "$notStrict" | "$rid" = never,
+    OPTIONS extends never | "$rid" = never,
     P extends PropertyKeys<Q> = PropertyKeys<Q>,
   > =
     & OsdkBase<Q>
     & Pick<
-      GetProps<Q, OPTIONS>,
+      CompileTimeMetadata<Q>["props"],
       GetPropsKeys<Q, P>
     >
     & {
@@ -247,4 +238,4 @@ export type ExtractRidOption<R extends boolean> = // comment for readability
 export type ExtractOptions<
   R extends boolean,
   S extends NullabilityAdherence = NullabilityAdherence.Default,
-> = ExtractStrictOption<S> | ExtractRidOption<R>;
+> = ExtractRidOption<R>;

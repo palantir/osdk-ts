@@ -21,23 +21,20 @@ export namespace Thing {
 
   export interface Props {
     readonly body: $PropType['string'] | undefined;
-    readonly id: $PropType['integer'] | undefined;
-  }
-  export interface StrictProps {
-    readonly body: $PropType['string'] | undefined;
     readonly id: $PropType['integer'];
   }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<Thing, Thing.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof Thing.Props = keyof Thing.Props,
   > = $Osdk.Instance<Thing, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof Thing.Props = keyof Thing.Props,
   > = OsdkInstance<OPTIONS, K>;
 }

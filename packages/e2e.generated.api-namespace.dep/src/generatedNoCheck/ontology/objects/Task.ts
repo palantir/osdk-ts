@@ -21,23 +21,20 @@ export namespace Task {
 
   export interface Props {
     readonly body: $PropType['string'] | undefined;
-    readonly taskId: $PropType['string'] | undefined;
-  }
-  export interface StrictProps {
-    readonly body: $PropType['string'] | undefined;
     readonly taskId: $PropType['string'];
   }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<Task, Task.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof Task.Props = keyof Task.Props,
   > = $Osdk.Instance<Task, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof Task.Props = keyof Task.Props,
   > = OsdkInstance<OPTIONS, K>;
 }

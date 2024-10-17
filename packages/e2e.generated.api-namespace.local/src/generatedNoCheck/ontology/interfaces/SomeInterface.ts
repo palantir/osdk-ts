@@ -16,20 +16,18 @@ export namespace SomeInterface {
   export interface Props {
     readonly 'com.example.dep.spt': $PropType['string'] | undefined;
   }
-  export interface StrictProps {
-    readonly 'com.example.dep.spt': $PropType['string'] | undefined;
-  }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
   > = $Osdk.Instance<SomeInterface, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
   > = OsdkInstance<OPTIONS, K>;
 }
