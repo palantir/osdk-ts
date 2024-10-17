@@ -35,7 +35,6 @@ function generateConjure() {
 
 generateConjure "com.palantir.ontology" "type-registry-api" "${SCRIPT_DIR}/../packages/client.unstable"
 generateConjure "com.palantir.object-set-service" "object-set-service-api" "${SCRIPT_DIR}/../packages/client.unstable"
-generateConjure "com.palantir.object-set-watcher" "object-set-watcher-api" "${SCRIPT_DIR}/../packages/client.unstable.osw"
 generateConjure "com.palantir.ontology" "ontology-metadata-api" "${SCRIPT_DIR}/../packages/client.unstable"
 generateConjure "com.palantir.foundry.third-party-application-service" "third-party-application-service-api" "${SCRIPT_DIR}/../packages/client.unstable.tpsa"
 
