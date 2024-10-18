@@ -24,22 +24,20 @@ export namespace Person {
   }
 
   export interface Props {
-    readonly email: $PropType['string'] | undefined;
-  }
-  export interface StrictProps {
     readonly email: $PropType['string'];
   }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<Person, Person.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof Person.Props = keyof Person.Props,
   > = $Osdk.Instance<Person, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof Person.Props = keyof Person.Props,
   > = OsdkInstance<OPTIONS, K>;
 }

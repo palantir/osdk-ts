@@ -514,7 +514,7 @@ describe("Osdk.Instance", () => {
   });
 
   it("is assignable to Osdk<> with $notStrict", () => {
-    const instance: Osdk.Instance<Employee, "$notStrict"> = {} as any;
+    const instance: Osdk.Instance<Employee> = {} as any;
     const osdk: Osdk<Employee, "$notStrict"> = instance;
     const osdk2: Osdk<Employee, "$notStrict" | "$all"> = instance;
   });
@@ -522,17 +522,16 @@ describe("Osdk.Instance", () => {
   it("is assignable from Osdk<> with $notStrict", () => {
     const osdk: Osdk<Employee, "$notStrict"> = {} as any;
     const osdk2: Osdk<Employee, "$notStrict" | "$all"> = osdk;
-    const instance: Osdk.Instance<Employee, "$notStrict"> = osdk;
-    const instance2: Osdk.Instance<Employee, "$notStrict"> = osdk2;
+    const instance: Osdk.Instance<Employee> = osdk;
+    const instance2: Osdk.Instance<Employee> = osdk2;
   });
 
   it("object with any for props is assignable to its normal self", () => {
-    const foo: readonly Osdk.Instance<Employee, "$notStrict", any>[] =
-      {} as any;
+    const foo: readonly Osdk.Instance<Employee, never, any>[] = {} as any;
 
     const bar: readonly Osdk.Instance<
       Employee,
-      "$notStrict",
+      never,
       PropertyKeys<Employee>
     >[] = foo;
   });

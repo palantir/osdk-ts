@@ -615,15 +615,14 @@ export interface OntologyMetadata<_NEVER_USED_KEPT_FOR_BACKCOMPAT = any> {
 // Warning: (ae-forgotten-export) The symbol "ExtractPropsKeysFromOldPropsStyle" needs to be exported by the entry point index.d.ts
 //
 // @public
-export type Osdk<Q extends ObjectOrInterfaceDefinition, OPTIONS extends string = never, P extends PropertyKeys<Q> = PropertyKeys<Q>> = IsNever<OPTIONS> extends true ? Osdk.Instance<Q, never, P> : IsAny<OPTIONS> extends true ? Osdk.Instance<Q, never, P> : (IsNever<Exclude<OPTIONS, "$notStrict" | "$rid">>) extends true ? Osdk.Instance<Q, OPTIONS & ("$notStrict" | "$rid"), P> : Osdk.Instance<Q, ("$notStrict" extends OPTIONS ? "$notStrict" : never) | ("$rid" extends OPTIONS ? "$rid" : never), ExtractPropsKeysFromOldPropsStyle<Q, OPTIONS>>;
+export type Osdk<Q extends ObjectOrInterfaceDefinition, OPTIONS extends string = never, P extends PropertyKeys<Q> = PropertyKeys<Q>> = IsNever<OPTIONS> extends true ? Osdk.Instance<Q, never, P> : IsAny<OPTIONS> extends true ? Osdk.Instance<Q, never, P> : (IsNever<Exclude<OPTIONS, "$rid">>) extends true ? Osdk.Instance<Q, OPTIONS & "$rid", P> : Osdk.Instance<Q, ("$rid" extends OPTIONS ? "$rid" : never), ExtractPropsKeysFromOldPropsStyle<Q, OPTIONS>>;
 
 // @public (undocumented)
 export namespace Osdk {
-    // Warning: (ae-forgotten-export) The symbol "GetProps" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "GetPropsKeys" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    export type Instance<Q extends ObjectOrInterfaceDefinition, OPTIONS extends never | "$notStrict" | "$rid" = never, P extends PropertyKeys<Q> = PropertyKeys<Q>> = OsdkBase<Q> & Pick<GetProps<Q, OPTIONS>, GetPropsKeys<Q, P>> & {
+    export type Instance<Q extends ObjectOrInterfaceDefinition, OPTIONS extends never | "$rid" = never, P extends PropertyKeys<Q> = PropertyKeys<Q>> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P>> & {
         readonly $link: Q extends {
             linksType?: any;
         } ? Q["linksType"] : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q> : never;
@@ -809,8 +808,6 @@ export type Result<V> = OkResult<V> | ErrorResult;
 
 // @public (undocumented)
 export interface SelectArg<Q extends ObjectOrInterfaceDefinition, L extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, S extends NullabilityAdherence = NullabilityAdherence.Default> {
-    // (undocumented)
-    $__EXPERIMENTAL_strictNonNull?: S;
     // (undocumented)
     $includeRid?: R;
     // (undocumented)
