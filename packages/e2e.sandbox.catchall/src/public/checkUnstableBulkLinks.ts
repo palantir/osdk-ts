@@ -15,7 +15,11 @@
  */
 
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from "@osdk/api/unstable";
-import { Employee, WeatherStation } from "@osdk/e2e.generated.catchall";
+import {
+  Employee,
+  OsdkTestObject,
+  WeatherStation,
+} from "@osdk/e2e.generated.catchall";
 import { client } from "../client.js";
 import { logger } from "../logger.js";
 
@@ -40,7 +44,7 @@ export async function checkUnstableBulkLinks() {
     );
   }
 
-  const { data: employees } = await client(Employee).fetchPage({
+  const { data: objects } = await client(OsdkTestObject).fetchPage({
     $pageSize: 100,
   });
 
@@ -53,9 +57,8 @@ export async function checkUnstableBulkLinks() {
       linkApiName,
       otherObjectApiName,
       otherObjectPk,
-    } of client[__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks](employees, [
-      "ventures",
-      "amishsSyncGroup",
+    } of client[__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks](objects, [
+      "osdkTestContainerLink",
     ])
   ) {
     logger.info(

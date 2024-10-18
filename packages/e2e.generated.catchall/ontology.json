@@ -6,11 +6,49 @@
     "description": ""
   },
   "actionTypes": {
+    "create-osdk-test-container": {
+      "apiName": "create-osdk-test-container",
+      "displayName": "Create Osdk Test Container",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "name": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "time": {
+          "dataType": {
+            "type": "timestamp"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.6d75b952-dd78-4560-b97f-8e344b9b04a7",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "OsdkTestContainer"
+        }
+      ]
+    },
     "create-osdk-test-object": {
       "apiName": "create-osdk-test-object",
       "displayName": "Create Osdk Test Object",
       "status": "EXPERIMENTAL",
       "parameters": {
+        "description": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "osdk_object_name": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
         "string_property": {
           "dataType": {
             "type": "string"
@@ -23,6 +61,28 @@
         {
           "type": "createObject",
           "objectTypeApiName": "OsdkTestObject"
+        }
+      ]
+    },
+    "delete-osdk-test-container": {
+      "apiName": "delete-osdk-test-container",
+      "displayName": "Delete Osdk Test Container",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "OsdkTestContainer": {
+          "dataType": {
+            "type": "object",
+            "objectApiName": "OsdkTestContainer",
+            "objectTypeApiName": "OsdkTestContainer"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.ad5240f6-89d3-45b9-bff6-053c4267d387",
+      "operations": [
+        {
+          "type": "deleteObject",
+          "objectTypeApiName": "OsdkTestContainer"
         }
       ]
     },
@@ -45,6 +105,40 @@
         {
           "type": "deleteObject",
           "objectTypeApiName": "OsdkTestObject"
+        }
+      ]
+    },
+    "edit-osdk-test-container": {
+      "apiName": "edit-osdk-test-container",
+      "displayName": "Edit Osdk Test Container",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "name": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "OsdkTestContainer": {
+          "dataType": {
+            "type": "object",
+            "objectApiName": "OsdkTestContainer",
+            "objectTypeApiName": "OsdkTestContainer"
+          },
+          "required": true
+        },
+        "time": {
+          "dataType": {
+            "type": "timestamp"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.0e75ace8-fd61-4c64-b903-18ee19a878ed",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "OsdkTestContainer"
         }
       ]
     },
@@ -157,43 +251,97 @@
         }
       ]
     },
-    "assign-employee-1": {
-      "apiName": "assign-employee-1",
-      "description": "Assigns an employee to a venture",
+    "create-object-to-container-link": {
+      "apiName": "create-object-to-container-link",
+      "displayName": "createObjectToContainerLink",
+      "status": "EXPERIMENTAL",
       "parameters": {
-        "employee-1": {
+        "osdkTestContainerLink": {
           "dataType": {
             "type": "object",
-            "objectApiName": "Employee",
-            "objectTypeApiName": "Employee"
+            "objectApiName": "OsdkTestContainer",
+            "objectTypeApiName": "OsdkTestContainer"
           },
           "required": true
         },
-        "venture-1": {
+        "osdkTestObjectLink": {
           "dataType": {
             "type": "object",
-            "objectApiName": "Venture",
-            "objectTypeApiName": "Venture"
+            "objectApiName": "OsdkTestObject",
+            "objectTypeApiName": "OsdkTestObject"
           },
           "required": true
         }
       },
-      "status": "ACTIVE",
-      "rid": "ri.a.b.c.d",
+      "rid": "ri.actions.main.action-type.aa92fca8-4ab5-4153-8e75-f4ec8fd9b733",
       "operations": [
         {
-          "type": "modifyObject",
-          "objectTypeApiName": "Employee"
+          "type": "createLink",
+          "linkTypeApiNameAtoB": "osdkTestObjectLink",
+          "linkTypeApiNameBtoA": "osdkTestContainerLink",
+          "aSideObjectTypeApiName": "OsdkTestContainer",
+          "bSideObjectTypeApiName": "OsdkTestObject"
         }
       ]
     }
   },
   "objectTypes": {
+    "OsdkTestContainer": {
+      "objectType": {
+        "apiName": "OsdkTestContainer",
+        "displayName": "Osdk Test Container",
+        "status": "ACTIVE",
+        "description": "",
+        "pluralDisplayName": "Osdk Test Containers",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "id",
+        "properties": {
+          "id": {
+            "displayName": "id",
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "name": {
+            "displayName": "name",
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "time": {
+            "displayName": "time",
+            "dataType": {
+              "type": "timestamp"
+            }
+          }
+        },
+        "rid": "ri.ontology.main.object-type.f755237b-d1da-4c42-933f-23641662d818",
+        "titleProperty": "id",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [
+        {
+          "apiName": "osdkTestObjectLink",
+          "displayName": "Osdk Test Object",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "OsdkTestObject",
+          "cardinality": "MANY",
+          "linkTypeRid": "ri.ontology.main.relation.10740f03-3e22-4f19-9712-a6269b53a930"
+        }
+      ],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    },
     "OsdkTestObject": {
       "objectType": {
         "apiName": "OsdkTestObject",
         "displayName": "Osdk Test Object",
-        "status": "EXPERIMENTAL",
+        "status": "ACTIVE",
         "description": "",
         "pluralDisplayName": "Osdk Test Objects",
         "icon": {
@@ -203,6 +351,18 @@
         },
         "primaryKey": "primaryKey_",
         "properties": {
+          "description": {
+            "displayName": "Description",
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "osdkObjectName": {
+            "displayName": "osdkObjectName",
+            "dataType": {
+              "type": "string"
+            }
+          },
           "primaryKey_": {
             "displayName": "Primary Key",
             "dataType": {
@@ -220,9 +380,25 @@
         "titleProperty": "primaryKey_",
         "visibility": "NORMAL"
       },
-      "linkTypes": [],
-      "implementsInterfaces": [],
-      "implementsInterfaces2": {},
+      "linkTypes": [
+        {
+          "apiName": "osdkTestContainerLink",
+          "displayName": "Osdk Test Container",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "OsdkTestContainer",
+          "cardinality": "MANY",
+          "linkTypeRid": "ri.ontology.main.relation.10740f03-3e22-4f19-9712-a6269b53a930"
+        }
+      ],
+      "implementsInterfaces": ["FooInterface"],
+      "implementsInterfaces2": {
+        "FooInterface": {
+          "properties": {
+            "name": "osdkObjectName",
+            "description": "description"
+          }
+        }
+      },
       "sharedPropertyTypeMapping": {}
     },
     "WeatherStation": {

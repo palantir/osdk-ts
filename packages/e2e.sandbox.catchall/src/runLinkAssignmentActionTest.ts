@@ -16,54 +16,62 @@
 
 import type { Client } from "@osdk/client";
 import {
-  assignEmployee1,
-  Employee,
+  createObjectToContainerLink,
+  createOsdkTestContainer,
+  OsdkTestContainer,
+  OsdkTestObject,
   Person,
-  Venture,
 } from "@osdk/e2e.generated.catchall";
+import { time } from "console";
 import { client as unstableClient } from "./client.js";
 
 const client: Client = unstableClient;
 
-export async function runAssignEmployeeToVentureTest() {
+export async function runLinkAssignmentActionTest() {
   let didValidateOnce = false;
 
-  const e = await client(Employee).fetchOneWithErrors("hi", {
+  const e = await client(OsdkTestObject).fetchOneWithErrors("hi", {
     // $select: ["adUsername"],
-    $select: ["adUsername"],
+    $select: ["osdkObjectName"],
   });
 
-  for await (const emp of client(Employee).asyncIter()) {
-    emp.id;
-    console.log(`Employee: ${emp.id}`);
+  for await (const obj of client(OsdkTestObject).asyncIter()) {
+    console.log(`Name: ${obj.osdkObjectName}`);
 
-    let foundVentures = false;
-    for await (const venture of emp.$link.ventures.asyncIter()) {
-      foundVentures = true;
-      console.log(`  - Venture: ${venture.ventureId} ${venture.ventureName}`);
+    let foundContainer = false;
+    for await (const container of obj.$link.osdkTestContainerLink.asyncIter()) {
+      foundContainer = true;
+      console.log(`  - Venture: ${container.id} ${container.name}`);
     }
 
-    if (!foundVentures) {
-      console.log("  - No ventures. ");
+    if (!foundContainer) {
+      console.log("  - No container for object. ");
 
       if (!didValidateOnce) {
         console.log("  - Validating assignEmployee1");
         didValidateOnce = true;
 
-        const { data: [venture] } = await client(Venture).fetchPage();
-
-        const r = await client(assignEmployee1).applyAction({
-          "employee-1": emp.id,
-          "venture-1": venture.ventureId,
+        const time = new Date().toISOString();
+        client(createOsdkTestContainer).applyAction({
+          "name": "assignEmployee1",
+          time,
+        });
+        const { data: [container] } = await client(OsdkTestContainer)
+          .fetchPage();
+        const r = await client(createObjectToContainerLink).applyAction({
+          "osdkTestObjectLink": obj.primaryKey_,
+          "osdkTestContainerLink": container.id,
         }, {
           $validateOnly: true,
         });
 
         if (false) {
-          const r = await client(assignEmployee1).batchApplyAction([{
-            "employee-1": emp.id,
-            "venture-1": venture.ventureId,
-          }], {
+          const r = await client(createObjectToContainerLink).batchApplyAction([
+            {
+              "osdkTestObjectLink": obj.primaryKey_,
+              "osdkTestContainerLink": container.id,
+            },
+          ], {
             $returnEdits: true,
           });
         }

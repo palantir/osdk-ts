@@ -1,9 +1,12 @@
 export {
   actionTakesAllParameterTypes,
-  assignEmployee1,
+  createObjectToContainerLink,
+  createOsdkTestContainer,
   createOsdkTestObject,
   createTodo,
+  deleteOsdkTestContainer,
   deleteOsdkTestObject,
+  editOsdkTestContainer,
   editOsdkTestObject,
 } from './ontology/actions.js';
 export * as $Actions from './ontology/actions.js';
@@ -18,6 +21,7 @@ export {
   GtfsTripTrackObject,
   MtaBus,
   ObjectTypeWithAllPropertyTypes,
+  OsdkTestContainer,
   OsdkTestObject,
   Person,
   RhemmingsObjectWithGtsrProperty2,

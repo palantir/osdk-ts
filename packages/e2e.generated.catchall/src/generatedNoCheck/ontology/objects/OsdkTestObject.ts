@@ -1,6 +1,7 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+import type { OsdkTestContainer } from './OsdkTestContainer.js';
 import type {
   PropertyKeys as $PropertyKeys,
   ObjectTypeDefinition as $ObjectTypeDefinition,
@@ -15,15 +16,21 @@ import type {
 } from '@osdk/api';
 
 export namespace OsdkTestObject {
-  export type PropertyKeys = 'primaryKey_' | 'stringProperty';
+  export type PropertyKeys = 'description' | 'osdkObjectName' | 'primaryKey_' | 'stringProperty';
 
-  export type Links = {};
+  export interface Links {
+    readonly osdkTestContainerLink: OsdkTestContainer.ObjectSet;
+  }
 
   export interface Props {
+    readonly description: $PropType['string'] | undefined;
+    readonly osdkObjectName: $PropType['string'] | undefined;
     readonly primaryKey_: $PropType['string'] | undefined;
     readonly stringProperty: $PropType['string'] | undefined;
   }
   export interface StrictProps {
+    readonly description: $PropType['string'] | undefined;
+    readonly osdkObjectName: $PropType['string'] | undefined;
     readonly primaryKey_: $PropType['string'];
     readonly stringProperty: $PropType['string'] | undefined;
   }
@@ -59,14 +66,34 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
       color: '#4C90F0';
       name: 'cube';
     };
-    implements: [];
-    interfaceMap: {};
-    inverseInterfaceMap: {};
-    links: {};
+    implements: ['FooInterface'];
+    interfaceMap: {
+      FooInterface: {
+        name: 'osdkObjectName';
+        description: 'description';
+      };
+    };
+    inverseInterfaceMap: {
+      FooInterface: {
+        osdkObjectName: 'name';
+        description: 'description';
+      };
+    };
+    links: {
+      osdkTestContainerLink: $ObjectMetadata.Link<OsdkTestContainer, true>;
+    };
     pluralDisplayName: 'Osdk Test Objects';
     primaryKeyApiName: 'primaryKey_';
     primaryKeyType: 'string';
     properties: {
+      /**
+       *   display name: 'Description'
+       */
+      description: $PropertyDef<'string', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      osdkObjectName: $PropertyDef<'string', 'nullable', 'single'>;
       /**
        *   display name: 'Primary Key'
        */
@@ -77,7 +104,7 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
       stringProperty: $PropertyDef<'string', 'nullable', 'single'>;
     };
     rid: 'ri.ontology.main.object-type.ba4a949c-547a-45de-9c78-b772bb55acfb';
-    status: 'EXPERIMENTAL';
+    status: 'ACTIVE';
     titleProperty: 'primaryKey_';
     type: 'object';
     visibility: 'NORMAL';

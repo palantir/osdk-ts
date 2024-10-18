@@ -6,6 +6,7 @@ export { FintrafficAis } from './objects/FintrafficAis.js';
 export { GtfsTripTrackObject } from './objects/GtfsTripTrackObject.js';
 export { MtaBus } from './objects/MtaBus.js';
 export { ObjectTypeWithAllPropertyTypes } from './objects/ObjectTypeWithAllPropertyTypes.js';
+export { OsdkTestContainer } from './objects/OsdkTestContainer.js';
 export { OsdkTestObject } from './objects/OsdkTestObject.js';
 export { Person } from './objects/Person.js';
 export { RhemmingsObjectWithGtsrProperty2 } from './objects/RhemmingsObjectWithGtsrProperty2.js';
