@@ -23,25 +23,20 @@ export namespace MtaBus {
     readonly nextStopId: $PropType['string'] | undefined;
     readonly positionId: $PropType['geotimeSeriesReference'] | undefined;
     readonly routeId: $PropType['string'] | undefined;
-    readonly vehicleId: $PropType['string'] | undefined;
-  }
-  export interface StrictProps {
-    readonly nextStopId: $PropType['string'] | undefined;
-    readonly positionId: $PropType['geotimeSeriesReference'] | undefined;
-    readonly routeId: $PropType['string'] | undefined;
     readonly vehicleId: $PropType['string'];
   }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<MtaBus, MtaBus.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof MtaBus.Props = keyof MtaBus.Props,
   > = $Osdk.Instance<MtaBus, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof MtaBus.Props = keyof MtaBus.Props,
   > = OsdkInstance<OPTIONS, K>;
 }

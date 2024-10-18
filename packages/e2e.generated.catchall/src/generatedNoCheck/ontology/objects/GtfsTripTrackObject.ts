@@ -20,26 +20,22 @@ export namespace GtfsTripTrackObject {
   export type Links = {};
 
   export interface Props {
-    readonly entityId: $PropType['string'] | undefined;
-    readonly geotimeSeriesReferences: $PropType['geotimeSeriesReference'] | undefined;
-    readonly timestamp: $PropType['timestamp'] | undefined;
-  }
-  export interface StrictProps {
     readonly entityId: $PropType['string'];
     readonly geotimeSeriesReferences: $PropType['geotimeSeriesReference'] | undefined;
     readonly timestamp: $PropType['timestamp'] | undefined;
   }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<GtfsTripTrackObject, GtfsTripTrackObject.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof GtfsTripTrackObject.Props = keyof GtfsTripTrackObject.Props,
   > = $Osdk.Instance<GtfsTripTrackObject, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof GtfsTripTrackObject.Props = keyof GtfsTripTrackObject.Props,
   > = OsdkInstance<OPTIONS, K>;
 }
