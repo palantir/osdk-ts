@@ -1,7 +1,6 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
-import type { Todo } from './Todo.js';
 import type {
   PropertyKeys as $PropertyKeys,
   ObjectTypeDefinition as $ObjectTypeDefinition,
@@ -20,7 +19,6 @@ export namespace Person {
 
   export interface Links {
     readonly Friends: Person.ObjectSet;
-    readonly Todos: Todo.ObjectSet;
   }
 
   export interface Props {
@@ -65,7 +63,6 @@ export interface Person extends $ObjectTypeDefinition {
     inverseInterfaceMap: {};
     links: {
       Friends: $ObjectMetadata.Link<Person, true>;
-      Todos: $ObjectMetadata.Link<Todo, true>;
     };
     pluralDisplayName: 'People';
     primaryKeyApiName: 'email';

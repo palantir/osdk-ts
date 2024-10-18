@@ -7,7 +7,7 @@ import type {
   ApplyBatchActionOptions,
 } from '@osdk/api';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
-import type { Todo } from '../objects/Todo.js';
+import type { OsdkTestObject } from '../objects/OsdkTestObject.js';
 import type { Person } from '../objects/Person.js';
 
 export namespace actionTakesAllParameterTypes {
@@ -32,7 +32,7 @@ export namespace actionTakesAllParameterTypes {
     objectSet: {
       multiplicity: false;
       nullable: false;
-      type: ActionMetadata.DataType.ObjectSet<Todo>;
+      type: ActionMetadata.DataType.ObjectSet<OsdkTestObject>;
     };
     string: {
       multiplicity: false;
@@ -58,7 +58,7 @@ export namespace actionTakesAllParameterTypes {
      */
     readonly object?: ActionParam.ObjectType<Person>;
 
-    readonly objectSet: ActionParam.ObjectSetType<Todo>;
+    readonly objectSet: ActionParam.ObjectSetType<OsdkTestObject>;
 
     readonly string: ActionParam.PrimitiveType<'string'>;
 
@@ -87,7 +87,7 @@ export namespace actionTakesAllParameterTypes {
  * @param {ActionParam.PrimitiveType<"attachment">} attachmentArray
  * @param {ActionParam.PrimitiveType<"datetime">} [dateArray]
  * @param {ActionParam.ObjectType<Person>} [object] A person Object
- * @param {ActionParam.ObjectSetType<Todo>} objectSet
+ * @param {ActionParam.ObjectSetType<OsdkTestObject>} objectSet
  * @param {ActionParam.PrimitiveType<"string">} string
  * @param {ActionParam.PrimitiveType<"timestamp">} time-stamp
  */
@@ -96,7 +96,7 @@ export interface actionTakesAllParameterTypes extends ActionDefinition<actionTak
     apiName: 'actionTakesAllParameterTypes';
     description: 'An action which takes different types of parameters';
     modifiedEntities: {
-      Todo: {
+      OsdkTestObject: {
         created: true;
         modified: true;
       };

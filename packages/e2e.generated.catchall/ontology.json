@@ -177,7 +177,7 @@
         "objectSet": {
           "dataType": {
             "type": "objectSet",
-            "objectTypeApiName": "Todo"
+            "objectTypeApiName": "OsdkTestObject"
           },
           "required": true
         },
@@ -225,11 +225,11 @@
       "operations": [
         {
           "type": "createObject",
-          "objectTypeApiName": "Todo"
+          "objectTypeApiName": "OsdkTestObject"
         },
         {
           "type": "modifyObject",
-          "objectTypeApiName": "Todo"
+          "objectTypeApiName": "OsdkTestObject"
         },
         {
           "type": "modifyObject",
@@ -237,19 +237,6 @@
         }
       ],
       "status": "ACTIVE"
-    },
-    "create-todo": {
-      "apiName": "create-todo",
-      "description": "Creates a new Todo",
-      "parameters": {},
-      "status": "ACTIVE",
-      "rid": "ri.a.b.c.d",
-      "operations": [
-        {
-          "type": "createObject",
-          "objectTypeApiName": "Todo"
-        }
-      ]
     },
     "create-object-to-container-link": {
       "apiName": "create-object-to-container-link",
@@ -723,61 +710,6 @@
       },
       "linkTypes": []
     },
-    "Todo": {
-      "objectType": {
-        "apiName": "Todo",
-        "primaryKey": "id",
-        "displayName": "AwesomeTodoDisplayname",
-        "description": "Its a todo item.",
-        "properties": {
-          "id": {
-            "dataType": {
-              "type": "integer"
-            }
-          },
-          "body": {
-            "dataType": {
-              "type": "string"
-            },
-            "description": "The text of the todo",
-            "displayName": "Body"
-          },
-          "text": {
-            "dataType": {
-              "type": "string"
-            },
-            "displayName": "Text"
-          },
-          "priority": {
-            "dataType": {
-              "type": "integer"
-            }
-          },
-          "complete": {
-            "dataType": {
-              "type": "boolean"
-            }
-          }
-        },
-        "status": "ACTIVE",
-        "rid": "rid.a.b.c.d",
-        "icon": {
-          "type": "blueprint",
-          "name": "todo",
-          "color": "color"
-        },
-        "titleProperty": "body",
-        "pluralDisplayName": "AwesomeTodoDisplayname"
-      },
-      "linkTypes": [{
-        "apiName": "Assignee",
-        "cardinality": "ONE",
-        "displayName": "Assignee",
-        "objectTypeApiName": "Person",
-        "status": "ACTIVE",
-        "foreignKeyPropertyApiName": "email"
-      }]
-    },
     "Person": {
       "objectType": {
         "apiName": "Person",
@@ -803,13 +735,6 @@
         "pluralDisplayName": "People"
       },
       "linkTypes": [{
-        "apiName": "Todos",
-        "cardinality": "MANY",
-        "displayName": "Todos",
-        "objectTypeApiName": "Todo",
-        "status": "ACTIVE",
-        "foreignKeyPropertyApiName": "id"
-      }, {
         "apiName": "Friends",
         "cardinality": "MANY",
         "displayName": "Friends",
@@ -1242,15 +1167,15 @@
         "object": {
           "dataType": {
             "type": "object",
-            "objectApiName": "Todo",
-            "objectTypeApiName": "Todo"
+            "objectApiName": "OsdkTestObject",
+            "objectTypeApiName": "OsdkTestObject"
           }
         },
         "objectSet": {
           "dataType": {
             "type": "objectSet",
-            "objectApiName": "Todo",
-            "objectTypeApiName": "Todo"
+            "objectApiName": "OsdkTestObject",
+            "objectTypeApiName": "OsdkTestObject"
           }
         },
         "array": {
@@ -1328,15 +1253,6 @@
           }
         }
       }
-    },
-    "getTodoCount": {
-      "apiName": "getTodoCount",
-      "output": {
-        "type": "integer"
-      },
-      "parameters": {},
-      "rid": "query.rid2",
-      "version": "0.1.2"
     },
     "getNamesOfCustomersFromCountry": {
       "apiName": "getNamesOfCustomersFromCountry",

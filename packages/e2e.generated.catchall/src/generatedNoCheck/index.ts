@@ -3,7 +3,6 @@ export {
   createObjectToContainerLink,
   createOsdkTestContainer,
   createOsdkTestObject,
-  createTodo,
   deleteOsdkTestContainer,
   deleteOsdkTestObject,
   editOsdkTestContainer,
@@ -25,11 +24,10 @@ export {
   OsdkTestObject,
   Person,
   RhemmingsObjectWithGtsrProperty2,
-  Todo,
   Venture,
   WeatherStation,
 } from './ontology/objects.js';
 export * as $Objects from './ontology/objects.js';
-export { getNamesOfCustomersFromCountry, getTodoCount, queryTakesAllParameterTypes } from './ontology/queries.js';
+export { getNamesOfCustomersFromCountry, queryTakesAllParameterTypes } from './ontology/queries.js';
 export * as $Queries from './ontology/queries.js';
 export { $ontologyRid } from './OntologyMetadata.js';

@@ -10,6 +10,5 @@ export { OsdkTestContainer } from './objects/OsdkTestContainer.js';
 export { OsdkTestObject } from './objects/OsdkTestObject.js';
 export { Person } from './objects/Person.js';
 export { RhemmingsObjectWithGtsrProperty2 } from './objects/RhemmingsObjectWithGtsrProperty2.js';
-export { Todo } from './objects/Todo.js';
 export { Venture } from './objects/Venture.js';
 export { WeatherStation } from './objects/WeatherStation.js';

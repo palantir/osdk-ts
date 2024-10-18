@@ -2,7 +2,7 @@ import type { QueryDefinition, VersionBound } from '@osdk/api';
 import type { QueryParam, QueryResult } from '@osdk/api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
-import type { Todo } from '../objects/Todo.js';
+import type { OsdkTestObject } from '../objects/OsdkTestObject.js';
 
 export namespace queryTakesAllParameterTypes {
   export interface Signature {
@@ -56,12 +56,12 @@ export namespace queryTakesAllParameterTypes {
     /**
      * (no ontology metadata)
      */
-    readonly object: QueryParam.ObjectType<Todo>;
+    readonly object: QueryParam.ObjectType<OsdkTestObject>;
 
     /**
      * (no ontology metadata)
      */
-    readonly objectSet: QueryParam.ObjectSetType<Todo>;
+    readonly objectSet: QueryParam.ObjectSetType<OsdkTestObject>;
 
     /**
      *   description: a set of strings
@@ -186,18 +186,18 @@ export interface queryTakesAllParameterTypes
        */
       object: {
         nullable: false;
-        object: 'Todo';
+        object: 'OsdkTestObject';
         type: 'object';
-        __OsdkTargetType?: Todo;
+        __OsdkTargetType?: OsdkTestObject;
       };
       /**
        * (no ontology metadata)
        */
       objectSet: {
         nullable: false;
-        objectSet: 'Todo';
+        objectSet: 'OsdkTestObject';
         type: 'objectSet';
-        __OsdkTargetType?: Todo;
+        __OsdkTargetType?: OsdkTestObject;
       };
       /**
        *   description: a set of strings
