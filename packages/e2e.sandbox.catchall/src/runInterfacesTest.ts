@@ -15,7 +15,11 @@
  */
 
 import type { Osdk } from "@osdk/api";
-import { Employee, FooInterface } from "@osdk/e2e.generated.catchall";
+import {
+  createOsdkTestObject,
+  FooInterface,
+  OsdkTestObject,
+} from "@osdk/e2e.generated.catchall";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
@@ -26,43 +30,53 @@ export async function runInterfacesTest() {
   (async () => {
     const { data } = await client(FooInterface).fetchPage();
     const first = data[0];
-    const e = first.$as(Employee);
+    const e = first.$as(OsdkTestObject);
   })();
 
-  const qqq = await client(FooInterface).where({ name: { $ne: "Patti" } });
-
-  const fooLimitedToEmployees = await client(FooInterface).fetchPage({
-    $__EXPERIMENTAL_selectedObjectTypes: ["Employee"],
+  const fooLimitedToSpecificObject = await client(FooInterface).fetchPage({
+    $__EXPERIMENTAL_selectedObjectTypes: ["OsdkTestObject"],
   });
-  invariant(fooLimitedToEmployees.data.length > 0);
+  invariant(fooLimitedToSpecificObject.data.length > 0);
 
   const fooLimitedToOther = await client(FooInterface).fetchPage({
     $__EXPERIMENTAL_selectedObjectTypes: ["Other"],
   });
   invariant(fooLimitedToOther.data.length === 0);
 
+  await client(createOsdkTestObject).applyAction({
+    "string_property": "InterfaceTest",
+    "osdk_object_name": "InterfaceTest",
+    "description": "InterfaceTest",
+  });
+
   const r = await client(FooInterface)
-    .where({ name: { $ne: "Patti" } })
-    .where({ name: { $ne: "Roth" } })
     .fetchPage({ $pageSize: 1, $select: ["name"] });
 
   // const q = client(FooInterface)
   //   .where({ name: { $ne: "Patti" } });
   // expectType<TypeOf<typeof q, InterfaceObjectSet<FooInterface>>>(true);
   for (const int of r.data) {
-    console.log("int:", int.name, int);
+    console.log("int:", int.name, JSON.stringify(int));
     invariant(int.name);
     invariant(!(int as any).firstName);
 
-    const employee = int.$as(Employee);
-    expectType<TypeOf<Osdk<Employee, "$all">, typeof employee>>(false);
-    expectType<TypeOf<Osdk<Employee, "firstName">, typeof employee>>(true);
+    const object1 = int.$as(OsdkTestObject);
+    expectType<TypeOf<Osdk<OsdkTestObject, "$all">, typeof object1>>(
+      false,
+    );
+    expectType<
+      TypeOf<Osdk<OsdkTestObject, "osdkObjectName">, typeof object1>
+    >(true);
 
-    console.log("employee:", employee.firstName, employee);
-    invariant(employee.firstName);
-    invariant(!(employee as any).name);
+    console.log(
+      "osdkObject:",
+      object1.osdkObjectName,
+      JSON.stringify(object1),
+    );
+    invariant(object1.osdkObjectName);
+    invariant(!(object1 as any).name);
 
-    const int2 = employee.$as(FooInterface);
+    const int2 = object1.$as(FooInterface);
     expectType<TypeOf<Osdk<FooInterface, "$all">, typeof int2>>(false);
     expectType<TypeOf<Osdk<FooInterface, "name">, typeof int2>>(true);
 
@@ -70,12 +84,12 @@ export async function runInterfacesTest() {
     invariant(int2.name);
     invariant(!(int as any).firstName);
 
-    const employee2 = int2.$as(Employee);
-    console.log("employee2:", employee2.firstName, employee2);
-    invariant(employee2.firstName);
-    invariant(!(employee2 as any).name);
+    const object2 = int2.$as(OsdkTestObject);
+    console.log("osdkObject2:", object2.osdkObjectName, object2);
+    invariant(object2.osdkObjectName);
+    invariant(!(object2 as any).name);
 
     // underlyings are ref equal!
-    console.log("employee === employee2", employee === employee2);
+    console.log("osdkObject1 === osdkObject2", object1 === object2);
   }
 }
