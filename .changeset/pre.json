@@ -69,7 +69,11 @@
     "@osdk/create-app.template.tutorial-todo-app.beta": "0.20.0-beta.0"
   },
   "changesets": [
+    "brown-seas-burn",
+    "cool-pugs-do",
     "curvy-cups-check",
+    "cyan-suns-study",
+    "dirty-lions-drive",
     "famous-terms-attend",
     "few-apes-visit",
     "few-gifts-rule",
@@ -82,6 +86,7 @@
     "old-clouds-wink",
     "orange-pigs-pretend",
     "pretty-pumpkins-wave",
+    "quiet-jobs-return",
     "selfish-badgers-obey",
     "selfish-moles-divide",
     "selfish-suits-thank",
@@ -91,9 +96,11 @@
     "smart-garlics-pretend",
     "soft-boats-eat",
     "spicy-fishes-matter",
+    "spicy-weeks-drum",
     "sweet-ants-pull",
     "thick-coins-wink",
     "three-gifts-leave",
+    "tiny-oranges-grow",
     "two-geckos-care",
     "two-gifts-decide"
   ]

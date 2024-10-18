@@ -1,5 +1,12 @@
 # @osdk/api
 
+## 2.1.0-beta.3
+
+### Minor Changes
+
+- 05febf4: Adds Reference Update support in subscribe
+- b79becf: Modify return type for fetch single on links.
+
 ## 2.1.0-beta.2
 
 ## 2.1.0-beta.1

@@ -22,24 +22,20 @@ export namespace BuilderDeploymentState {
   export interface Props {
     readonly currentTimestamp: $PropType['timestamp'] | undefined;
     readonly date: $PropType['datetime'] | undefined;
-    readonly skuId: $PropType['string'] | undefined;
-  }
-  export interface StrictProps {
-    readonly currentTimestamp: $PropType['timestamp'] | undefined;
-    readonly date: $PropType['datetime'] | undefined;
     readonly skuId: $PropType['string'];
   }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<BuilderDeploymentState, BuilderDeploymentState.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof BuilderDeploymentState.Props = keyof BuilderDeploymentState.Props,
   > = $Osdk.Instance<BuilderDeploymentState, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof BuilderDeploymentState.Props = keyof BuilderDeploymentState.Props,
   > = OsdkInstance<OPTIONS, K>;
 }

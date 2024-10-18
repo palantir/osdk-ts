@@ -21,30 +21,24 @@ export namespace RhemmingsObjectWithGtsrProperty2 {
 
   export interface Props {
     readonly gtsr: $PropType['geotimeSeriesReference'] | undefined;
-    readonly id: $PropType['string'] | undefined;
-    readonly location: $PropType['geopoint'] | undefined;
-    readonly timestamp: $PropType['timestamp'] | undefined;
-    readonly type: $PropType['string'] | undefined;
-  }
-  export interface StrictProps {
-    readonly gtsr: $PropType['geotimeSeriesReference'] | undefined;
     readonly id: $PropType['string'];
     readonly location: $PropType['geopoint'] | undefined;
     readonly timestamp: $PropType['timestamp'] | undefined;
     readonly type: $PropType['string'] | undefined;
   }
+  export type StrictProps = Props;
 
   export interface ObjectSet
     extends $ObjectSet<RhemmingsObjectWithGtsrProperty2, RhemmingsObjectWithGtsrProperty2.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof RhemmingsObjectWithGtsrProperty2.Props = keyof RhemmingsObjectWithGtsrProperty2.Props,
   > = $Osdk.Instance<RhemmingsObjectWithGtsrProperty2, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof RhemmingsObjectWithGtsrProperty2.Props = keyof RhemmingsObjectWithGtsrProperty2.Props,
   > = OsdkInstance<OPTIONS, K>;
 }

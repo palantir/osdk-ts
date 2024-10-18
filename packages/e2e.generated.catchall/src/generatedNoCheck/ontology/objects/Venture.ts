@@ -23,26 +23,22 @@ export namespace Venture {
   }
 
   export interface Props {
-    readonly ventureId: $PropType['string'] | undefined;
-    readonly ventureName: $PropType['string'] | undefined;
-    readonly ventureStart: $PropType['datetime'] | undefined;
-  }
-  export interface StrictProps {
     readonly ventureId: $PropType['string'];
     readonly ventureName: $PropType['string'] | undefined;
     readonly ventureStart: $PropType['datetime'] | undefined;
   }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<Venture, Venture.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof Venture.Props = keyof Venture.Props,
   > = $Osdk.Instance<Venture, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof Venture.Props = keyof Venture.Props,
   > = OsdkInstance<OPTIONS, K>;
 }
