@@ -18,6 +18,7 @@ import type { Client } from "@osdk/client";
 import {
   createObjectToContainerLink,
   createOsdkTestContainer,
+  deleteOsdkTestContainer,
   OsdkTestContainer,
   OsdkTestObject,
   Person,
@@ -48,12 +49,12 @@ export async function runLinkAssignmentActionTest() {
       console.log("  - No container for object. ");
 
       if (!didValidateOnce) {
-        console.log("  - Validating assignEmployee1");
+        console.log("  - Validating createObjectToContainerLink");
         didValidateOnce = true;
 
         const time = new Date().toISOString();
         client(createOsdkTestContainer).applyAction({
-          "name": "assignEmployee1",
+          name: "linkAssignmentActionTest",
           time,
         });
         const { data: [container] } = await client(OsdkTestContainer)
@@ -63,6 +64,9 @@ export async function runLinkAssignmentActionTest() {
           "osdkTestContainerLink": container.id,
         }, {
           $validateOnly: true,
+        });
+        client(deleteOsdkTestContainer).applyAction({
+          "OsdkTestContainer": container.id,
         });
 
         if (false) {
