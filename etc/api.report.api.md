@@ -95,7 +95,7 @@ export namespace ActionMetadata {
 
 // @public
 export namespace ActionParam {
-    export type ObjectSetType<T extends ObjectTypeDefinition> = BaseObjectSet<T>;
+    export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
     // Warning: (ae-forgotten-export) The symbol "OsdkObjectPrimaryKeyType" needs to be exported by the entry point index.d.ts
     export type ObjectType<T extends ObjectTypeDefinition> = OsdkBase<T> | OsdkObjectPrimaryKeyType<T>;
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueClientToWire[T];
@@ -223,7 +223,9 @@ export type Augments = Record<string, string[]>;
 // @public (undocumented)
 export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
     // (undocumented)
-    readonly [ObjectSetType]: Q;
+    readonly $objectSetInternals: {
+        def: Q;
+    };
 }
 
 // @public (undocumented)
@@ -557,10 +559,6 @@ export interface ObjectQueryDataType<T_Target extends ObjectTypeDefinition = nev
 //
 // @public (undocumented)
 export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED = any> extends MinimalObjectSet<Q> {
-    // Warning: (ae-forgotten-export) The symbol "EXPERIMENTAL_ObjectSetListener" needs to be exported by the entry point index.d.ts
-    //
-    // @alpha
-    readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]: (listener: EXPERIMENTAL_ObjectSetListener<Q>) => () => unknown;
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
@@ -785,7 +783,7 @@ export interface QueryMetadata {
 
 // @public
 export namespace QueryParam {
-    export type ObjectSetType<T extends ObjectTypeDefinition> = BaseObjectSet<T>;
+    export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
     export type ObjectType<T extends ObjectTypeDefinition> = OsdkBase<T> | OsdkObjectPrimaryKeyType<T>;
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueClientToWire[T];
 }

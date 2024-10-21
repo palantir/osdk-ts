@@ -28,7 +28,7 @@ export async function checkUnstableBulkLinks() {
       linkApiName,
       otherObjectApiName,
       otherObjectPk,
-    } of client[__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks](
+    } of client(__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks).getBulkLinks(
       stations.data,
       [
         "boundariesUsState",
@@ -53,10 +53,13 @@ export async function checkUnstableBulkLinks() {
       linkApiName,
       otherObjectApiName,
       otherObjectPk,
-    } of client[__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks](employees, [
-      "ventures",
-      "amishsSyncGroup",
-    ])
+    } of client(__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks).getBulkLinks(
+      employees,
+      [
+        "ventures",
+        "amishsSyncGroup",
+      ],
+    )
   ) {
     logger.info(
       `Found link ${object.$objectType}:${object.$primaryKey} <- (${linkApiName}) -> ${otherObjectApiName}:${otherObjectPk}`,
