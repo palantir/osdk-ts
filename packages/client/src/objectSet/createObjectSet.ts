@@ -32,11 +32,7 @@ import type {
   SelectArg,
   SingleOsdkResult,
 } from "@osdk/api";
-import type {
-  EXPERIMENTAL_ObjectSetListener,
-  MinimalObjectSet,
-} from "@osdk/api/unstable";
-import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/api/unstable";
+import type { MinimalObjectSet } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -48,7 +44,6 @@ import {
 import { fetchSingle, fetchSingleWithErrors } from "../object/fetchSingle.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
-import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
 function isObjectTypeDefinition(
   def: ObjectOrInterfaceDefinition,
@@ -83,7 +78,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     objectType: objectType["apiName"] as string,
   },
 ): ObjectSet<Q> {
-  const base: Omit<ObjectSet<Q>, keyof BaseObjectSet<Q>> = {
+  const base: ObjectSet<Q> = {
     aggregate: (aggregate<Q, any>).bind(
       globalThis,
       augmentRequestContext(clientCtx, _ => ({ finalMethodCall: "aggregate" })),
@@ -229,17 +224,8 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       }
       : undefined) as ObjectSet<Q>["fetchOneWithErrors"],
 
-    [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]: (
-      listener: EXPERIMENTAL_ObjectSetListener<Q>,
-    ) => {
-      const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
-        clientCtx,
-      ).subscribe(
-        objectSet,
-        listener,
-      );
-
-      return async () => (await pendingSubscribe)();
+    $objectSetInternals: {
+      def: objectType,
     },
   };
 
@@ -263,6 +249,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   // at runtime.
   return base as ObjectSet<Q>;
 }
+
 async function createWithPk(
   clientCtx: MinimalClient,
   objectType: ObjectTypeDefinition,

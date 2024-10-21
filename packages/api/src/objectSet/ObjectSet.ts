@@ -39,10 +39,6 @@ import type {
 import type { PrimaryKeyType } from "../OsdkBase.js";
 import type { ExtractOptions, Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
-import type {
-  __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
-  EXPERIMENTAL_ObjectSetListener,
-} from "../public/unstable.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 import type { BaseObjectSet } from "./BaseObjectSet.js";
 
@@ -241,15 +237,4 @@ export interface ObjectSet<
       Result<Osdk.Instance<Q, ExtractOptions<R, S>, L>>
     >
     : never;
-
-  /**
-   * WARNING. THIS METHOD IS EXPERIMENTAL AND NOT SUPPORTED YET.
-   *
-   * It may change at any time and does not follow semantic versioning. Use at your own risk.
-   *
-   *  @alpha
-   */
-  readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]: (
-    listener: EXPERIMENTAL_ObjectSetListener<Q>,
-  ) => () => unknown;
 }

@@ -15,7 +15,9 @@
  */
 
 import type { EXPERIMENTAL_ObjectSetListener } from "@osdk/api/unstable";
-import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/api/unstable";
+import {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
+} from "@osdk/api/unstable";
 import { Employee } from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
 import { logger } from "./logger.js";
@@ -39,15 +41,17 @@ export function runSubscriptionsTest() {
     };
   };
 
-  client(Employee).where({
-    jobProfile: "Echo",
-  })[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
+  client(__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe).subscribe(
+    client(Employee).where({
+      jobProfile: "Echo",
+    }),
     makeObjectSetListener("Sub(Echo)"),
   );
 
-  client(Employee).where({
-    jobProfile: "Delta",
-  })[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
+  client(__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe).subscribe(
+    client(Employee).where({
+      jobProfile: "Delta",
+    }),
     makeObjectSetListener("Sub(Delta)"),
   );
 }
