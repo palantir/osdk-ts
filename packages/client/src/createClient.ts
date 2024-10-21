@@ -120,7 +120,7 @@ export function createClientInternal(
       | ObjectOrInterfaceDefinition
       | ActionDefinition<any>
       | QueryDefinition<any>
-      | Experiment<"2.0.7">,
+      | Experiment<"2.0.8">,
   >(o: T): T extends ObjectTypeDefinition ? ObjectSet<T>
     : T extends InterfaceDefinition ? MinimalObjectSet<T>
     : T extends ActionDefinition<any> ? ActionSignatureFromDef<T>
