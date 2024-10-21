@@ -21,22 +21,19 @@ import type {
   InterfaceDefinition,
   InterfaceMetadata,
   ObjectMetadata,
-  ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
-  Osdk,
   QueryDefinition,
   QueryMetadata,
   VersionBound,
 } from "@osdk/api";
 import type {
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
+  Experiment,
+  ExperimentFns,
   MinimalObjectSet,
 } from "@osdk/api/unstable";
 import type { SharedClient as OldSharedClient } from "@osdk/shared.client";
 import type { SharedClient } from "@osdk/shared.client2";
-import type { BulkLinkResult } from "./__unstable/createBulkLinksAsyncIterFactory.js";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
@@ -70,6 +67,10 @@ export interface Client extends SharedClient, OldSharedClient {
     o: Q,
   ): QuerySignatureFromDef<Q>;
 
+  <Q extends Experiment<"2.0.8">>(
+    experiment: Q,
+  ): ExperimentFns<Q>;
+
   fetchMetadata<
     Q extends (
       | ObjectTypeDefinition
@@ -84,34 +85,6 @@ export interface Client extends SharedClient, OldSharedClient {
       : Q extends QueryDefinition<any> ? QueryMetadata
       : never
   >;
-
-  /**
-   * WARNING. THIS METHOD IS EXPERIMENTAL AND NOT SUPPORTED YET.
-   *
-   * It may change at any time and does not follow semantic versioning. Use at your own risk.
-   *
-   *  @alpha
-   */
-  readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet]: <
-    T extends ObjectOrInterfaceDefinition,
-  >(
-    type: T,
-    rid: string,
-  ) => ObjectSet<T>;
-
-  /**
-   * WARNING. THIS METHOD IS EXPERIMENTAL AND NOT SUPPORTED YET.
-   *
-   * It may change at any time and does not follow semantic versioning. Use at your own risk.
-   *
-   *  @alpha
-   */
-  readonly [__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks]: <
-    T extends ObjectOrInterfaceDefinition,
-  >(
-    objs: Osdk<T>[],
-    links: string[],
-  ) => AsyncGenerator<BulkLinkResult, void, undefined>;
 
   [additionalContext]: MinimalClient;
 }
