@@ -23,6 +23,7 @@ import {
   addOne,
   Employee,
   incrementPersonAge,
+  incrementPersonAgeComplex,
   queryAcceptsObject,
   queryAcceptsObjectSets,
   returnsDate,
@@ -113,6 +114,25 @@ describe("queries", () => {
       firstName: "John",
       lastName: "Doe",
       age: 43,
+    });
+  });
+
+  it("returns and accepts complex structs property", async () => {
+    const employee = await client(Employee).fetchOne(
+      50030,
+    );
+    const result = await client(incrementPersonAgeComplex).executeFunction({
+      person: { firstName: "John", lastName: "Doe", age: 42, object: employee },
+    });
+    expect(result).toEqual({
+      firstName: "John",
+      lastName: "Doe",
+      age: 43,
+      object: {
+        $apiName: "Employee",
+        $objectType: "Employee",
+        $primaryKey: 50031,
+      },
     });
   });
 
@@ -212,6 +232,15 @@ describe("queries", () => {
       },
     ]);
   });
+
+  it("accepts and returns objects", async () => {
+    const employeeObjectSet = client(Employee);
+    const result = await client(queryAcceptsObjectSets).executeFunction({
+      objectSet: employeeObjectSet,
+    });
+
+    expectTypeOf<ObjectSet<Employee>>().toMatchTypeOf<typeof result>();
+  });
   it("queries are enumerable", async () => {
     const queries = Object.keys($Queries);
     expect(queries).toStrictEqual([
@@ -219,6 +248,7 @@ describe("queries", () => {
       "acceptsTwoDimensionalAggregationFunction",
       "addOne",
       "incrementPersonAge",
+      "incrementPersonAgeComplex",
       "queryAcceptsObject",
       "queryAcceptsObjectSets",
       "queryTypeReturnsArray",

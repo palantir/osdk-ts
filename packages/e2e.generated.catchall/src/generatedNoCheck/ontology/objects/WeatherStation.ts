@@ -21,23 +21,20 @@ export namespace WeatherStation {
 
   export interface Props {
     readonly geohash: $PropType['geopoint'] | undefined;
-    readonly stationId: $PropType['string'] | undefined;
-  }
-  export interface StrictProps {
-    readonly geohash: $PropType['geopoint'] | undefined;
     readonly stationId: $PropType['string'];
   }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<WeatherStation, WeatherStation.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof WeatherStation.Props = keyof WeatherStation.Props,
   > = $Osdk.Instance<WeatherStation, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof WeatherStation.Props = keyof WeatherStation.Props,
   > = OsdkInstance<OPTIONS, K>;
 }

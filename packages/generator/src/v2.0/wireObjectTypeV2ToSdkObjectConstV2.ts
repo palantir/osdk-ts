@@ -154,7 +154,7 @@ export function createOsdkObject(
   const definition = object.getCleanedUpDefinition(true);
   return `
     export type ${identifier}<
-      OPTIONS extends never | "$notStrict" | "$rid" = never,
+      OPTIONS extends never | "$rid" = never,
       K extends keyof ${osdkObjectPropsIdentifier}= keyof ${osdkObjectPropsIdentifier},
     > 
     = $Osdk.Instance<
@@ -166,7 +166,7 @@ export function createOsdkObject(
 
     /** @deprecated use ${identifier} */
     export type OsdkObject<
-      OPTIONS extends never | "$notStrict" | "$rid" = never,
+      OPTIONS extends never | "$rid" = never,
       K extends keyof ${osdkObjectPropsIdentifier}= keyof ${osdkObjectPropsIdentifier},
     > = ${identifier}<OPTIONS, K>;
   ;
@@ -212,6 +212,9 @@ export function createProps(
   identifier: string,
   strict: boolean,
 ) {
+  if (identifier === "StrictProps") {
+    return `export type StrictProps = Props`;
+  }
   const definition = type.getCleanedUpDefinition(true);
   return `export interface ${identifier} {
 ${
@@ -224,7 +227,14 @@ ${
             ""}`,
           `$PropType[${JSON.stringify(propertyDefinition.type)}]${
             propertyDefinition.multiplicity ? "[]" : ""
-          }${propertyDefinition.nullable || !strict ? `| undefined` : ""}`,
+          }${
+            propertyDefinition.nullable
+              || (!strict
+                && !(definition.type === "object"
+                  && definition.primaryKeyApiName === apiName))
+              ? `| undefined`
+              : ""
+          }`,
         ] as [string, string];
       },
     })
