@@ -26,6 +26,7 @@ import type {
 import type { FooInterface } from "@osdk/client.test.ontology";
 import { Todo } from "@osdk/client.test.ontology";
 import type { SearchJsonQueryV2 } from "@osdk/internal.foundry.core";
+import invariant from "tiny-invariant";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
 import { fetchPage, objectSetToSearchJsonV2 } from "../object/fetchPage.js";
@@ -166,6 +167,23 @@ describe(fetchPage, () => {
         ],
       } satisfies SearchJsonQueryV2,
     );
+  });
+
+  it("where clause keys correctly typed", () => {
+    const client = createMinimalClient(
+      metadata,
+      "https://foo",
+      async () => "",
+    );
+    const objectSet = createObjectSet(Todo, client);
+
+    expectTypeOf(objectSet.where).toBeCallableWith({
+      $and: [{ id: { $gt: 2 } }, { id: { $lte: 2 } }],
+    });
+    expectTypeOf(objectSet.where).toBeCallableWith({
+      // @ts-expect-error
+      id: { $gt: 2, $lte: 2 },
+    });
   });
 
   describe("includeRid", () => {

@@ -29,6 +29,14 @@ describe(modernToLegacyWhereClause, () => {
         const T: ObjectOrInterfaceDefinition = {
           type: "interface",
           apiName: "a.Foo",
+          __DefinitionMetadata: {
+            type: "interface",
+            properties: { prop: { type: "integer" } },
+            apiName: "a.Foo",
+            displayName: "",
+            links: {},
+            rid: "",
+          },
         };
 
         const r = modernToLegacyWhereClause({
