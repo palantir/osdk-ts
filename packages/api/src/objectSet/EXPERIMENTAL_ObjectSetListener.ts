@@ -32,13 +32,18 @@ export interface EXPERIMENTAL_ObjectSetListener<
   ) => void;
 
   /**
+   * The subscription has been successfully established and updates can be expected to be received.
+   */
+  onSuccessfulSubscription?: () => void;
+
+  /**
    * The ObjectSet has become outdated and should be re-fetched in its entirety.
    * This is also sent when the subscription is first initialized.
    */
   onOutOfDate?: () => void;
 
   /**
-   * There was a fatal error with the subscription process
+   * There was a fatal error with the subscription process. The subscription will close or will not be established.
    */
   onError?: (errors: Array<any>) => void;
 }
