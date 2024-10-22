@@ -18,7 +18,6 @@ import type {
   DataValueClientToWire,
   DataValueWireToClient,
 } from "../mapping/DataValueMapping.js";
-import type { BaseObjectSet } from "../objectSet/BaseObjectSet.js";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { ObjectTypeDefinition } from "../ontology/ObjectTypeDefinition.js";
 import type { OsdkBase } from "../OsdkBase.js";
@@ -44,7 +43,7 @@ export namespace QueryParam {
   /**
    * Helper type to convert action definition parameter object sets to typescript types
    */
-  export type ObjectSetType<T extends ObjectTypeDefinition> = BaseObjectSet<T>;
+  export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
 }
 
 /**
