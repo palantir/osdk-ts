@@ -120,12 +120,14 @@ export function createClientInternal(
       | ObjectOrInterfaceDefinition
       | ActionDefinition<any>
       | QueryDefinition<any>
-      | Experiment<"2.0.8">,
+      | Experiment<"2.0.8">
+      | Experiment<"2.1.0">,
   >(o: T): T extends ObjectTypeDefinition ? ObjectSet<T>
     : T extends InterfaceDefinition ? MinimalObjectSet<T>
     : T extends ActionDefinition<any> ? ActionSignatureFromDef<T>
     : T extends QueryDefinition<any> ? QuerySignatureFromDef<T>
-    : T extends Experiment<"2.0.8"> ? { invoke: ExperimentFns<T> }
+    : T extends Experiment<"2.0.8"> | Experiment<"2.1.0">
+      ? { invoke: ExperimentFns<T> }
     : never
   {
     if (o.type === "object" || o.type === "interface") {
