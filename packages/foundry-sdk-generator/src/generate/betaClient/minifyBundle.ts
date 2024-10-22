@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import chalk from "chalk";
+import { colorize } from "consola/utils";
 import type {
   ExportedDeclarations,
   ExportSpecifier,
@@ -82,7 +82,7 @@ export class ProjectMinifier {
       // eslint-disable-next-line no-console
       console.log(
         `pushNextVisit(via ${
-          chalk.grey(source)
+          colorize("gray", source)
         }, "${sourceFile.getFilePath()}",[${[...imports].sort().join(", ")}])`,
       );
     }
@@ -134,7 +134,9 @@ export class ProjectMinifier {
       if (DEBUG) {
         // eslint-disable-next-line no-console
         console.log(
-          `${chalk.red("topOfMinifyProject")}("${logFilename(sourceFile)}", [${
+          `${colorize("red", "topOfMinifyProject")}("${
+            logFilename(sourceFile)
+          }", [${
             [...visitImports.imports].join(", ")
           }])\n=======================`,
         );
@@ -159,7 +161,7 @@ export class ProjectMinifier {
         if (DEBUG) {
           // eslint-disable-next-line no-console
           console.log(
-            `${chalk.red("exploring exported decls")} ${
+            `${colorize("red", "exploring exported decls")} ${
               logFilename(sourceFile)
             } ${key}\n${
               [...declarations].map(d =>
@@ -250,9 +252,10 @@ export class ProjectMinifier {
           if (DEBUG) {
             // eslint-disable-next-line no-console
             console.log(
-              chalk.green(
+              colorize(
+                "green",
                 `${logNode(declaration)} removing ${
-                  chalk.white([...depExportNames].join(", "))
+                  colorize("white", [...depExportNames].join(", "))
                 } from import set of ${logFilename(sourceFile)}`,
               ),
             );
@@ -285,9 +288,10 @@ export class ProjectMinifier {
         if (DEBUG) {
           // eslint-disable-next-line no-console
           console.log(
-            chalk.green(
+            colorize(
+              "green",
               `removing ${
-                chalk.white(namedExports.map(n => n.getName()).join(", "))
+                colorize("white", namedExports.map(n => n.getName()).join(", "))
               } from import set of ${logFilename(sourceFile)}`,
             ),
           );
@@ -658,9 +662,10 @@ function getModuleFromFileName(sourceFile: SourceFile) {
 
 function logFilename(node: Node | string) {
   if (typeof node === "string") {
-    return chalk.yellow(node);
+    return colorize("yellow", node);
   }
-  return chalk.yellow(
+  return colorize(
+    "yellow",
     `${node.getSourceFile().getFilePath()}:${node.getStartLineNumber()}`,
   );
 }
@@ -673,15 +678,17 @@ export function logNode(
   },
 ) {
   if (Node.isSourceFile(node)) {
-    return `${chalk.blue("SourceFile[")}${logFilename(node)}${chalk.blue("]")}`;
+    return `${colorize("blue", "SourceFile[")}${logFilename(node)}${
+      colorize("blue", "]")
+    }`;
   }
-  return `${chalk.blue("Node[")}${logFilename(node)}: ${
-    chalk.grey(node.getKindName())
+  return `${colorize("blue", "Node[")}${logFilename(node)}: ${
+    colorize("gray", node.getKindName())
   }${
     ancestors
       ? `:${node.getAncestors().map(n => n.getKindName()).join(":")}`
       : ""
-  }${text ? `:${logJustNodeText(node)}` : ""}${chalk.blue("]")}`;
+  }${text ? `:${logJustNodeText(node)}` : ""}${colorize("blue", "]")}`;
 }
 
 function logJustNodeText(

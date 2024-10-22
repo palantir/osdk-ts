@@ -17,9 +17,8 @@
 /* eslint-disable no-console */
 
 import chalk from "chalk";
-import type { Consola, LogType } from "consola";
+import type { LogType } from "consola";
 import type { ColorName } from "consola/utils";
-import { colorize } from "consola/utils";
 
 const levels: Partial<
   Record<LogType, {
