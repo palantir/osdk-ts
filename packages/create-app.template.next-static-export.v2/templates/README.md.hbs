@@ -33,3 +33,7 @@ If you did not fill in the URL your production application will be hosted on you
 In order to make API requests to Foundry, CORS must be configured for the stack to allow the production origin to load resources. This will be automatically done for you if you are using Foundry website hosting. The configured OAuth client must also allow the production origin auth callback as a redirect URL.
 
 A `foundry.config.json` file is included in the root of this project to make deploying to Foundry website hosting with [`@osdk/cli`](https://www.npmjs.com/package/@osdk/cli) easier. If you are not using Foundry website hosting for your application you may delete this file.
+
+### Content Security Policy (CSP)
+
+⚠️ Building this Next.js application will produce .html files that will require `'unsafe-inline'` in the `script-src` directive of your Content Security Policy. See https://github.com/vercel/next.js/discussions/54152 for more info.
