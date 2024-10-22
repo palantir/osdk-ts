@@ -82,6 +82,9 @@ export const TEMPLATES: readonly Template[] = [
       "1.x": getPackageFiles(
         import("@osdk/create-app.template.next-static-export"),
       ),
+      "2.x": getPackageFiles(
+        import("@osdk/create-app.template.next-static-export.v2"),
+      ),
     },
   },
   {

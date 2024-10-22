@@ -1052,6 +1052,9 @@ importers:
       '@osdk/create-app.template.next-static-export':
         specifier: workspace:*
         version: link:../create-app.template.next-static-export
+      '@osdk/create-app.template.next-static-export.v2':
+        specifier: workspace:*
+        version: link:../create-app.template.next-static-export.v2
       '@osdk/create-app.template.react':
         specifier: workspace:*
         version: link:../create-app.template.react
@@ -1142,6 +1145,55 @@ importers:
         version: 5.5.4
 
   packages/create-app.template.next-static-export:
+    dependencies:
+      next:
+        specifier: 14.2.10
+        version: 14.2.10(@babel/core@7.24.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react:
+        specifier: ^18
+        version: 18.3.1
+      react-dom:
+        specifier: ^18
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@next/env':
+        specifier: ^14.2.7
+        version: 14.2.10
+      '@osdk/create-app.template-packager':
+        specifier: workspace:~
+        version: link:../create-app.template-packager
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@osdk/monorepo.tsup':
+        specifier: workspace:~
+        version: link:../monorepo.tsup
+      '@types/node':
+        specifier: ^20
+        version: 20.14.10
+      '@types/react':
+        specifier: ^18
+        version: 18.3.2
+      '@types/react-dom':
+        specifier: ^18
+        version: 18.3.0
+      eslint:
+        specifier: ^8.57.0
+        version: 8.57.0
+      eslint-config-next:
+        specifier: ^14.2.3
+        version: 14.2.3(eslint@8.57.0)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.5.4
+        version: 5.5.4
+      vitest:
+        specifier: ^2.1.2
+        version: 2.1.2(@types/node@20.14.10)
+
+  packages/create-app.template.next-static-export.v2:
     dependencies:
       next:
         specifier: 14.2.10

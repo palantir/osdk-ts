@@ -1,4 +1,4 @@
-# @osdk/create-app.template.next-static-export
+# @osdk/create-app.template.next-static-export.v2
 
 This package contains templates for `@osdk/create-app`.
 

@@ -1,5 +1,5 @@
 {
-  "name": "@osdk/create-app.template.next-static-export",
+  "name": "@osdk/create-app.template.next-static-export.v2",
   "private": true,
   "version": "0.20.0-beta.2",
   "license": "Apache-2.0",
