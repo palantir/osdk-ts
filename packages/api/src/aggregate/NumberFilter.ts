@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { BaseFilter } from "./BaseFilter.js";
+import type { BaseFilter, CatchThemAll } from "./BaseFilter.js";
 import type { Just } from "./Just.js";
 
 interface NumberFilterOptions extends BaseFilter<number> {
@@ -44,3 +44,8 @@ export type NumberFilter =
   | NumberFilter.$gte
   | NumberFilter.$lt
   | NumberFilter.$lte;
+
+/** @internal */
+function _typeCheck() {
+  const b: NumberFilter = {} as CatchThemAll<NumberFilterOptions>;
+}

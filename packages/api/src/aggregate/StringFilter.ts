@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { BaseFilter } from "./BaseFilter.js";
+import type { BaseFilter, CatchThemAll } from "./BaseFilter.js";
 import type { Just } from "./Just.js";
 
 interface StringFilterOptions extends BaseFilter<string> {
@@ -58,3 +58,8 @@ export type StringFilter =
   | StringFilter.$containsAllTermsInOrder
   | StringFilter.$containsAnyTerm
   | StringFilter.$containsAllTerms;
+
+/** @internal */
+function _typeCheck() {
+  const b: StringFilter = {} as CatchThemAll<StringFilterOptions>;
+}

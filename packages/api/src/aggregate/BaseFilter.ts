@@ -20,3 +20,19 @@ export type BaseFilter<T> = {
   "$isNull": boolean;
   "$in": ReadonlyArray<T>;
 };
+
+/** @internal */
+export type BaseFilterTestSeam<T> =
+  | Pick<BaseFilter<T>, "$eq">
+  | Pick<BaseFilter<T>, "$in">
+  | Pick<BaseFilter<T>, "$ne">
+  | Pick<BaseFilter<T>, "$isNull">;
+
+/** @internal */
+export type CatchThemAll<T> = CatchThemAllInternal<T, keyof T>;
+
+// extends for union distribution
+/** @internal */
+type CatchThemAllInternal<T, K extends keyof T> = K extends keyof T
+  ? { [k in K]: T[k] }
+  : never;

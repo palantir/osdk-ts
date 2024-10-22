@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { BaseFilter } from "./BaseFilter.js";
+import type { BaseFilter, CatchThemAll } from "./BaseFilter.js";
 import type { Just } from "./Just.js";
 
 export interface DatetimeFilterOptions extends BaseFilter<string> {
@@ -44,3 +44,8 @@ export type DatetimeFilter =
   | DatetimeFilter.$gte
   | DatetimeFilter.$lt
   | DatetimeFilter.$lte;
+
+/** @internal */
+function _typeCheck() {
+  const b: DatetimeFilter = {} as CatchThemAll<DatetimeFilterOptions>;
+}
