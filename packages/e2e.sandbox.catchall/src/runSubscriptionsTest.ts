@@ -42,7 +42,9 @@ export async function runSubscriptionsTest() {
         },
         async onSuccessfulSubscription() {
           await client($Actions.createOsdkTestObject).applyAction({
-            string_property: "test",
+            "description": "This is a test object.",
+            "osdk_object_name": "testObject",
+            "string_property": "test",
           });
 
           const objectArray = await client(OsdkTestObject).fetchPage();

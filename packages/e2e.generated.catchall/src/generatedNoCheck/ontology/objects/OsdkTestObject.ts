@@ -25,10 +25,9 @@ export namespace OsdkTestObject {
   export interface Props {
     readonly description: $PropType['string'] | undefined;
     readonly osdkObjectName: $PropType['string'] | undefined;
-    readonly primaryKey_: $PropType['string'] | undefined;
+    readonly primaryKey_: $PropType['string'];
     readonly stringProperty: $PropType['string'] | undefined;
   }
-
   export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<OsdkTestObject, OsdkTestObject.ObjectSet> {}

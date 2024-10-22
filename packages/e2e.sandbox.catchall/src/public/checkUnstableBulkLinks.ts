@@ -57,9 +57,12 @@ export async function checkUnstableBulkLinks() {
       linkApiName,
       otherObjectApiName,
       otherObjectPk,
-    } of client[__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks](objects, [
-      "osdkTestContainerLink",
-    ])
+    } of client(__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks).getBulkLinks(
+      objects,
+      [
+        "osdkTestContainerLink",
+      ],
+    )
   ) {
     logger.info(
       `Found link ${object.$objectType}:${object.$primaryKey} <- (${linkApiName}) -> ${otherObjectApiName}:${otherObjectPk}`,

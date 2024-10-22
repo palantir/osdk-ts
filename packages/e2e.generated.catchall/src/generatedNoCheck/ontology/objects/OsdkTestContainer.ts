@@ -23,26 +23,22 @@ export namespace OsdkTestContainer {
   }
 
   export interface Props {
-    readonly id: $PropType['string'] | undefined;
-    readonly name: $PropType['string'] | undefined;
-    readonly time: $PropType['timestamp'] | undefined;
-  }
-  export interface StrictProps {
     readonly id: $PropType['string'];
     readonly name: $PropType['string'] | undefined;
     readonly time: $PropType['timestamp'] | undefined;
   }
+  export type StrictProps = Props;
 
   export interface ObjectSet extends $ObjectSet<OsdkTestContainer, OsdkTestContainer.ObjectSet> {}
 
   export type OsdkInstance<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof OsdkTestContainer.Props = keyof OsdkTestContainer.Props,
   > = $Osdk.Instance<OsdkTestContainer, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
-    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    OPTIONS extends never | '$rid' = never,
     K extends keyof OsdkTestContainer.Props = keyof OsdkTestContainer.Props,
   > = OsdkInstance<OPTIONS, K>;
 }
