@@ -32,12 +32,14 @@ export namespace DatetimeFilter {
   export interface $gte extends Just<"$gte", DatetimeFilterOptions> {}
   export interface $lt extends Just<"$lt", DatetimeFilterOptions> {}
   export interface $lte extends Just<"$lte", DatetimeFilterOptions> {}
+  export interface $in extends Just<"$in", DatetimeFilterOptions> {}
 }
 export type DatetimeFilter =
   | string
   | DatetimeFilter.$eq
   | DatetimeFilter.$ne
   | DatetimeFilter.$isNull
+  | DatetimeFilter.$in
   | DatetimeFilter.$gt
   | DatetimeFilter.$gte
   | DatetimeFilter.$lt

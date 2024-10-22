@@ -18,4 +18,5 @@ export type BaseFilter<T> = {
   "$eq": T;
   "$ne": T;
   "$isNull": boolean;
+  "$in": ReadonlyArray<T>;
 };

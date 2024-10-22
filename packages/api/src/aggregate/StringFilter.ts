@@ -22,6 +22,7 @@ interface StringFilterOptions extends BaseFilter<string> {
   "$containsAllTermsInOrder": string;
   "$containsAnyTerm": string;
   "$containsAllTerms": string;
+  "$in": ReadonlyArray<string>;
 }
 
 export namespace StringFilter {
@@ -44,6 +45,7 @@ export namespace StringFilter {
     extends Just<"$containsAllTerms", StringFilterOptions>
   {
   }
+  export interface $in extends Just<"$in", StringFilterOptions> {}
 }
 
 export type StringFilter =
@@ -51,6 +53,7 @@ export type StringFilter =
   | StringFilter.$eq
   | StringFilter.$ne
   | StringFilter.$isNull
+  | StringFilter.$in
   | StringFilter.$startsWith
   | StringFilter.$containsAllTermsInOrder
   | StringFilter.$containsAnyTerm

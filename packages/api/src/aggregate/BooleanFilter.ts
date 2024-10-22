@@ -23,9 +23,11 @@ export namespace BooleanFilter {
   export interface $eq extends Just<"$eq", BooleanFilterOptions> {}
   export interface $ne extends Just<"$ne", BooleanFilterOptions> {}
   export interface $isNull extends Just<"$isNull", BooleanFilterOptions> {}
+  export interface $in extends Just<"$in", BooleanFilterOptions> {}
 }
 export type BooleanFilter =
   | boolean
   | BooleanFilter.$eq
   | BooleanFilter.$ne
+  | BooleanFilter.$in
   | BooleanFilter.$isNull;

@@ -32,12 +32,14 @@ export namespace NumberFilter {
   export interface $gte extends Just<"$gte", NumberFilterOptions> {}
   export interface $lt extends Just<"$lt", NumberFilterOptions> {}
   export interface $lte extends Just<"$lte", NumberFilterOptions> {}
+  export interface $in extends Just<"$in", NumberFilterOptions> {}
 }
 export type NumberFilter =
   | number
   | NumberFilter.$eq
   | NumberFilter.$ne
   | NumberFilter.$isNull
+  | NumberFilter.$in
   | NumberFilter.$gt
   | NumberFilter.$gte
   | NumberFilter.$lt
