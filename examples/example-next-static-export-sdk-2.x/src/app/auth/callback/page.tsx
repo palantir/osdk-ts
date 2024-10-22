@@ -1,5 +1,5 @@
 "use client";
-import client from "@/lib/client";
+import { auth } from "@/lib/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -14,7 +14,7 @@ function AuthCallback() {
   // This effect conflicts with React 18 strict mode in development
   // https://react.dev/learn/synchronizing-with-effects#how-to-handle-the-effect-firing-twice-in-development
   useEffect(() => {
-    client.auth
+    auth
       .signIn()
       .then(() => router.replace("/"))
       .catch((e: unknown) => setError((e as Error).message ?? e));

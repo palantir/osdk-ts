@@ -1,5 +1,5 @@
 "use client";
-import client from "@/lib/client";
+import { $Objects, $Actions, $Queries } from "{{osdkPackage}}";
 import useAuthenticated from "@/lib/useAuthenticated";
 import css from "./page.module.css";
 
@@ -9,9 +9,9 @@ function Home() {
     return null;
   }
 
-  const objectApiNames = Object.keys(client.ontology.objects);
-  const actionApiNames = Object.keys(client.ontology.actions);
-  const queryApiNames = Object.keys(client.ontology.queries);
+  const objectApiNames = Object.keys($Objects);
+  const actionApiNames = Object.keys($Actions);
+  const queryApiNames = Object.keys($Queries);
 
   return (
     <div>
@@ -25,7 +25,7 @@ function Home() {
           <h2>Objects ({objectApiNames.length})</h2>
           {objectApiNames.map((objectApiName) => (
             <pre key={objectApiName}>
-              client.ontology.objects.{objectApiName}
+              $Objects.{objectApiName}
             </pre>
           ))}
         </div>
@@ -33,7 +33,7 @@ function Home() {
           <h2>Actions ({actionApiNames.length})</h2>
           {actionApiNames.map((actionApiName) => (
             <pre key={actionApiName}>
-              client.ontology.actions.{actionApiName}
+              $Actions.{actionApiName}
             </pre>
           ))}
         </div>
@@ -41,7 +41,7 @@ function Home() {
           <h2>Queries ({queryApiNames.length})</h2>
           {queryApiNames.map((queryApiName) => (
             <pre key={queryApiName}>
-              client.ontology.queries.{queryApiName}
+              $Queries.{queryApiName}
             </pre>
           ))}
         </div>

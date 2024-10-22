@@ -250,6 +250,52 @@ importers:
         specifier: ^2.1.2
         version: 2.1.2(@types/node@20.14.10)
 
+  examples/example-next-static-export-sdk-2.x:
+    dependencies:
+      '@osdk/client':
+        specifier: latest
+        version: 2.0.7
+      '@osdk/e2e.generated.catchall':
+        specifier: workspace:*
+        version: link:../../packages/e2e.generated.catchall
+      '@osdk/oauth':
+        specifier: latest
+        version: 1.0.0
+      next:
+        specifier: 14.2.10
+        version: 14.2.10(@babel/core@7.24.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react:
+        specifier: ^18
+        version: 18.3.1
+      react-dom:
+        specifier: ^18
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@next/env':
+        specifier: ^14.2.7
+        version: 14.2.10
+      '@types/node':
+        specifier: ^20
+        version: 20.14.10
+      '@types/react':
+        specifier: ^18
+        version: 18.3.2
+      '@types/react-dom':
+        specifier: ^18
+        version: 18.3.0
+      eslint:
+        specifier: ^8.57.0
+        version: 8.57.0
+      eslint-config-next:
+        specifier: ^14.2.3
+        version: 14.2.3(eslint@8.57.0)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.5.4
+        version: 5.5.4
+      vitest:
+        specifier: ^2.1.2
+        version: 2.1.2(@types/node@20.14.10)
+
   examples/example-react-sdk-1.x:
     dependencies:
       '@osdk/e2e.generated.1.1.x':
