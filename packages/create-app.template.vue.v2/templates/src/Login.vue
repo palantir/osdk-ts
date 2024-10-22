@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onUpdated, ref } from "vue";
-import client from "./client";
+import { auth } from "./client";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -11,7 +11,7 @@ const error = ref<string>();
 const login = async () => {
   isLoggingIn.value = true;
   try {
-    await client.auth.signIn();
+    await auth.signIn();
   } catch (e: unknown) {
     error.value = (e as Error).message;
   } finally {
@@ -21,7 +21,7 @@ const login = async () => {
 
 onUpdated(() => {
   // If the token exists but a user tries to load /login, redirect to the home page instead
-  if (client.auth.token != null) {
+  if (auth.getTokenOrUndefined() != null) {
     router.replace("/");
   }
 });

@@ -1,8 +1,12 @@
-import { FoundryClient, PublicClientAuth } from "@osdk/e2e.generated.catchall";
+import type { Client } from "@osdk/client";
+import { createClient } from "@osdk/client";
+import { $ontologyRid } from "@osdk/e2e.generated.catchall";
+import { createPublicOauthClient } from "@osdk/oauth";
 
 const url = import.meta.env.VITE_FOUNDRY_API_URL;
 const clientId = import.meta.env.VITE_FOUNDRY_CLIENT_ID;
 const redirectUrl = import.meta.env.VITE_FOUNDRY_REDIRECT_URL;
+
 checkEnv(url, "VITE_FOUNDRY_API_URL");
 checkEnv(clientId, "VITE_FOUNDRY_CLIENT_ID");
 checkEnv(redirectUrl, "VITE_FOUNDRY_REDIRECT_URL");
@@ -16,16 +20,18 @@ function checkEnv(
   }
 }
 
+export const auth = createPublicOauthClient(
+  clientId,
+  url,
+  redirectUrl,
+  )
 /**
  * Initialize the client to interact with the Ontology SDK
  */
-const client = new FoundryClient({
+const client: Client = createClient(
   url,
-  auth: new PublicClientAuth({
-    clientId,
-    url,
-    redirectUrl,
-  }),
-});
+  $ontologyRid,
+  auth,
+);
 
 export default client;

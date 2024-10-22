@@ -1,7 +1,7 @@
 import { createApp } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import AuthCallback from "./AuthCallback.vue";
-import client from "./client";
+import { auth } from "./client";
 import Home from "./Home.vue";
 import Layout from "./Layout.vue";
 import Login from "./Login.vue";
@@ -21,10 +21,10 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   if (
     to.meta.requiresAuth
-    && (client.auth.token == null || client.auth.token.isExpired)
+    && (auth.getTokenOrUndefined() == null)
   ) {
     try {
-      await client.auth.refresh();
+      await auth.refresh();
     } catch (e: unknown) {
       // If we cannot refresh the token (i.e. the user is not logged in) we redirect to the login page
       return "/login";

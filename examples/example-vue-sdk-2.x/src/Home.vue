@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import client from "./client";
+import { $Objects, $Actions, $Queries } from "@osdk/e2e.generated.catchall";
 
-const objectApiNames = Object.keys(client.ontology.objects);
-const actionApiNames = Object.keys(client.ontology.actions);
-const queryApiNames = Object.keys(client.ontology.queries);
+const objectApiNames = Object.keys($Objects);
+const actionApiNames = Object.keys($Actions);
+const queryApiNames = Object.keys($Queries);
 </script>
 
 <template>
@@ -14,15 +14,15 @@ const queryApiNames = Object.keys(client.ontology.queries);
   <div class="methods">
     <div>
       <h2>Objects ({{ objectApiNames.length }})</h2>
-      <pre v-for="objectApiName in objectApiNames" key="objectApiName">client.ontology.objects.{{ objectApiName }}</pre>
+      <pre v-for="objectApiName in objectApiNames" key="objectApiName">$Objects.{{ objectApiName }}</pre>
     </div>
     <div>
       <h2>Actions ({{ actionApiNames.length }})</h2>
-      <pre v-for="actionApiName in actionApiNames" key="actionApiName">client.ontology.actions.{{ actionApiName }}</pre>
+      <pre v-for="actionApiName in actionApiNames" key="actionApiName">$Actions.{{ actionApiName }}</pre>
     </div>
     <div>
       <h2>Queries ({{ queryApiNames.length }})</h2>
-      <pre v-for="queryApiName in queryApiNames" key="queryApiName">client.ontology.queries.{{ queryApiName }}</pre>
+      <pre v-for="queryApiName in queryApiNames" key="queryApiName">$Queries.{{ queryApiName }}</pre>
     </div>
   </div>
 </template>
