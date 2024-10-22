@@ -66,6 +66,7 @@ import { createOrUpdatePr } from "./createOrUpdatePr.js";
 import { FailedWithUserMessage } from "./FailedWithUserMessage.js";
 import * as gitUtils from "./gitUtils.js";
 import { mutateReleasePlan } from "./mutateReleasePlan.js";
+import { packageVersionsOrEmptySet } from "./publishPackages.js";
 import { getChangedPackages } from "./util/getChangedPackages.js";
 import { getVersionPrBody } from "./util/getVersionPrBody.js";
 import { getVersionsByDirectory } from "./util/getVersionsByDirectory.js";
@@ -166,6 +167,15 @@ export async function runVersion({
   );
 
   mutateReleasePlan(releasePlan, isMainBranch ? "main" : "patch");
+
+  for (const release of releasePlan.releases) {
+    const versions = await packageVersionsOrEmptySet(release.name);
+    if (versions.has(release.newVersion)) {
+      throw new FailedWithUserMessage(
+        `The version ${release.newVersion} of ${release.name} is already published on npm`,
+      );
+    }
+  }
 
   const touchedFiles = await applyReleasePlan(
     releasePlan,

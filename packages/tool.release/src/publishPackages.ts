@@ -113,7 +113,7 @@ async function publishSinglePackage(
   };
 }
 
-async function packageVersionsOrEmptySet(name: string) {
+export async function packageVersionsOrEmptySet(name: string) {
   try {
     return await packageVersionsOrThrow(name);
   } catch (e) {
