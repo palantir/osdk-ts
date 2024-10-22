@@ -1,5 +1,11 @@
 # @osdk/shared.client.impl
 
+## 1.0.3-rc.0
+
+### Patch Changes
+
+- 078ed56: Changed shared context to a version less error prone
+
 ## 1.0.2
 
 ### Patch Changes

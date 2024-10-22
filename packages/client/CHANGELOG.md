@@ -1,5 +1,22 @@
 # @osdk/client
 
+## 2.0.8-rc.0
+
+### Patch Changes
+
+- 078ed56: Changed shared context to a version less error prone
+- 078ed56: Fix bug where object return types in a query were not properly mapped when wrapped in a struct.
+- 078ed56: Remove experimental non null for now.
+- 1da5942: Change experimental code style to prevent future breaks
+- Updated dependencies [078ed56]
+- Updated dependencies [078ed56]
+- Updated dependencies [078ed56]
+- Updated dependencies [1da5942]
+  - @osdk/shared.client.impl@1.0.3-rc.0
+  - @osdk/api@2.0.8-rc.0
+  - @osdk/generator-converters@2.0.8-rc.0
+  - @osdk/client.unstable@2.0.8-rc.0
+
 ## 2.0.7
 
 ### Patch Changes
