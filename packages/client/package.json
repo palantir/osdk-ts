@@ -90,11 +90,6 @@
   "types": "./build/esm/index.d.ts",
   "sls": {
     "dependencies": {
-      "com.palantir.foundry.api:api-gateway": {
-        "minVersion": "1.834.0",
-        "maxVersion": "1.x.x",
-        "optional": true
-      },
       "com.palantir.object-set-watcher:object-set-watcher": {
         "minVersion": "0.607.0",
         "maxVersion": "0.x.x",
