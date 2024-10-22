@@ -24,7 +24,7 @@ import type {
   SelectArgToKeys,
 } from "@osdk/api";
 import type { FooInterface } from "@osdk/client.test.ontology";
-import { Todo } from "@osdk/client.test.ontology";
+import { Employee, Todo } from "@osdk/client.test.ontology";
 import type { SearchJsonQueryV2 } from "@osdk/internal.foundry.core";
 import invariant from "tiny-invariant";
 import { describe, expect, expectTypeOf, it } from "vitest";
@@ -176,6 +176,7 @@ describe(fetchPage, () => {
       async () => "",
     );
     const objectSet = createObjectSet(Todo, client);
+    const objectSetWithSpecialPropertyTypes = createObjectSet(Employee, client);
 
     expectTypeOf(objectSet.where).toBeCallableWith({
       $and: [{ id: { $gt: 2 } }, { id: { $lte: 2 } }],
@@ -183,6 +184,32 @@ describe(fetchPage, () => {
     expectTypeOf(objectSet.where).toBeCallableWith({
       // @ts-expect-error
       id: { $gt: 2, $lte: 2 },
+    });
+
+    // We used to default to number filters for other types, like geotimeseries reference and timeseries. These tests will make sure
+    // we don't do that anymore
+    expectTypeOf(objectSetWithSpecialPropertyTypes.where).toBeCallableWith({
+      $and: [
+        { employeeLocation: { $eq: "myLocation" } },
+        {
+          employeeLocation: { $ne: "notMyLocation" },
+        },
+        { employeeLocation: { $isNull: false } },
+        // @ts-expect-error
+        { employeeLocation: { $gt: 5 } },
+      ],
+    });
+
+    expectTypeOf(objectSetWithSpecialPropertyTypes.where).toBeCallableWith({
+      $and: [
+        { employeeStatus: { $eq: "myStatus" } },
+        {
+          employeeLocation: { $ne: "notMyStatus" },
+        },
+        { employeeLocation: { $isNull: false } },
+        // @ts-expect-error
+        { employeeLocation: { $lte: 5 } },
+      ],
     });
   });
 

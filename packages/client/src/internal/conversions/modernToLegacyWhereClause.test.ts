@@ -26,18 +26,18 @@ describe(modernToLegacyWhereClause, () => {
   describe("api namespaces", () => {
     describe("interfaces", () => {
       it("properly converts shortname to fqApiName", () => {
-        const T: ObjectOrInterfaceDefinition = {
+        const T = {
           type: "interface",
           apiName: "a.Foo",
           __DefinitionMetadata: {
             type: "interface",
-            properties: { prop: { type: "integer" } },
+            properties: { "prop": { type: "integer" } },
             apiName: "a.Foo",
             displayName: "",
             links: {},
             rid: "",
           },
-        };
+        } as const satisfies ObjectOrInterfaceDefinition;
 
         const r = modernToLegacyWhereClause({
           prop: 5,
@@ -53,10 +53,22 @@ describe(modernToLegacyWhereClause, () => {
       });
 
       it("properly does not convert when interface has no apiNamespace", () => {
-        const T: ObjectOrInterfaceDefinition = {
+        const T = {
           type: "interface",
           apiName: "Foo",
-        };
+          __DefinitionMetadata: {
+            type: "interface",
+            properties: {
+              "foo": { type: "integer" },
+              "b.prop": { type: "integer" },
+              "prop": { type: "integer" },
+            },
+            apiName: "Foo",
+            displayName: "",
+            links: {},
+            rid: "",
+          },
+        } as const satisfies ObjectOrInterfaceDefinition;
 
         const r = modernToLegacyWhereClause({
           "b.prop": 5,
@@ -83,10 +95,22 @@ describe(modernToLegacyWhereClause, () => {
       });
 
       it("gracefully handles redundant apiNamespace in property", () => {
-        const T: ObjectOrInterfaceDefinition = {
+        const T = {
           type: "interface",
           apiName: "a.Foo",
-        };
+          __DefinitionMetadata: {
+            type: "interface",
+            properties: {
+              "a.foo": { type: "integer" },
+              "b.prop": { type: "integer" },
+              "prop": { type: "integer" },
+            },
+            apiName: "a.Foo",
+            displayName: "",
+            links: {},
+            rid: "",
+          },
+        } as const satisfies ObjectOrInterfaceDefinition;
 
         const r = modernToLegacyWhereClause({
           "b.prop": 5,
@@ -113,10 +137,22 @@ describe(modernToLegacyWhereClause, () => {
       });
 
       it("properly does not convert different apiNamespaces", () => {
-        const T: ObjectOrInterfaceDefinition = {
+        const T = {
           type: "interface",
           apiName: "a.Foo",
-        };
+          __DefinitionMetadata: {
+            type: "interface",
+            properties: {
+              "a.foo": { type: "integer" },
+              "b.prop": { type: "integer" },
+              "prop": { type: "integer" },
+            },
+            apiName: "a.Foo",
+            displayName: "",
+            links: {},
+            rid: "",
+          },
+        } as const satisfies ObjectOrInterfaceDefinition;
 
         expect(modernToLegacyWhereClause({
           "b.prop": 5,
@@ -132,10 +168,21 @@ describe(modernToLegacyWhereClause, () => {
 
     describe("objects", () => {
       it("does not convert object short property names to fq", () => {
-        const T: ObjectOrInterfaceDefinition = {
-          type: "object",
+        const T = {
+          type: "interface",
           apiName: "a.Foo",
-        };
+          __DefinitionMetadata: {
+            type: "interface",
+            properties: {
+              "a.foo": { type: "integer" },
+              "prop": { type: "integer" },
+            },
+            apiName: "a.Foo",
+            displayName: "",
+            links: {},
+            rid: "",
+          },
+        } as const satisfies ObjectOrInterfaceDefinition;
 
         const r = modernToLegacyWhereClause({
           prop: 5,
@@ -143,7 +190,7 @@ describe(modernToLegacyWhereClause, () => {
 
         expect(r).toMatchInlineSnapshot(`
           {
-            "field": "prop",
+            "field": "a.prop",
             "type": "eq",
             "value": 5,
           }

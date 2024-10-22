@@ -170,7 +170,21 @@ type FilterFor<PD extends ObjectMetadata.Property> = PD["multiplicity"] extends
     : PD["type"] extends "geopoint" | "geoshape" ? GeoFilter
     : PD["type"] extends "datetime" | "timestamp" ? DatetimeFilter
     : PD["type"] extends "boolean" ? BooleanFilter
-    : NumberFilter); // FIXME we need to represent all types
+    : PD["type"] extends
+      "double" | "integer" | "long" | "float" | "decimal" | "byte"
+      ? NumberFilter
+    :
+      | MakeFilter<"$eq" | "$ne", string>
+      | MakeFilter<"$isNull", boolean>);
+
+type FilterRawType<
+  PD extends ObjectMetadata.Property,
+> = PD["multiplicity"] extends true ? (Record<string, never>)
+  : (PD["type"] extends "string" | "datetime" | "timestamp" ? string
+    : PD["type"] extends "boolean" ? boolean
+    : PD["type"] extends
+      "double" | "integer" | "long" | "float" | "decimal" | "byte" ? number
+    : Record<string, never>);
 
 export interface AndWhereClause<
   T extends ObjectOrInterfaceDefinition,
@@ -215,16 +229,6 @@ type WhereClauseKeys<
 > = FilterDollarSignKeys<
   FlattenUnion<FilterFor<CompileTimeMetadata<T>["properties"][P]>>
 >;
-
-export type FilterRawType<
-  PD extends ObjectMetadata.Property,
-> = PD["multiplicity"] extends true ? (Record<string, never>)
-  : (PD["type"] extends "string" | "datetime" | "timestamp" ? string
-    : PD["type"] extends "geopoint" | "geoshape" ? Record<string, never>
-    : PD["type"] extends "boolean" ? boolean
-    : PD["type"] extends
-      "double" | "integer" | "long" | "float" | "decimal" | "byte" ? number
-    : Record<string, never>);
 
 type FlattenUnion<T> = {
   [K in keyof UnionToIntersection<T>]: K extends keyof T
