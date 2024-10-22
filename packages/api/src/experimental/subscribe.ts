@@ -22,12 +22,14 @@ import type {
 import type { EXPERIMENTAL_ObjectSetListener } from "../public/unstable.js";
 import type { Experiment } from "./Experiment.js";
 
+type NonEmptyArray<T> = [T, ...T[]];
+
 type subscribeFn = <
   Q extends ObjectOrInterfaceDefinition,
   const P extends PropertyKeys<Q>,
 >(
   objectSet: ObjectSet<Q>,
-  properties: Array<P>,
+  properties: NonEmptyArray<P>,
   listener: EXPERIMENTAL_ObjectSetListener<Q, P>,
 ) => { unsubscribe: () => void };
 
