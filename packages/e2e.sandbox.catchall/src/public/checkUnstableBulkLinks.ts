@@ -32,7 +32,7 @@ export async function checkUnstableBulkLinks() {
       linkApiName,
       otherObjectApiName,
       otherObjectPk,
-    } of client[__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks](
+    } of client(__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks).getBulkLinks(
       stations.data,
       [
         "boundariesUsState",

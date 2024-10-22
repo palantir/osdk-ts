@@ -18,71 +18,21 @@ import { $Actions, MtaBus, OsdkTestObject } from "@osdk/e2e.generated.catchall";
 import { client, dsClient } from "./client.js";
 
 export async function runSubscriptionsTest() {
-  client(OsdkTestObject)[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
-    [
-      "primaryKey_",
-      "stringProperty",
-    ],
-    {
-      onChange(object) {
-        console.log(
-          "Object with primaryKey ",
-          object.object.primaryKey_,
-          " changed stringProperty to ",
-          object.object.stringProperty,
-        );
-      },
-      onError(err) {
-        console.error("Error in subscription: ", err);
-      },
-      onOutOfDate() {
-        console.log("Out of date");
-      },
-    },
-  );
-
-  await client($Actions.createOsdkTestObject).applyAction({
-    string_property: "test",
-    osdk_object_name: "test",
-    description: "test",
-  });
-
-  const objectArray = await client(OsdkTestObject).fetchPage();
-
-  await client($Actions.editOsdkTestObject).applyAction({
-    OsdkTestObject: objectArray.data[0],
-    string_property: "a",
-  });
-
-  await client($Actions.deleteOsdkTestObject).applyAction({
-    OsdkTestObject: objectArray.data[0],
-  });
-
-  dsClient(MtaBus)
-    [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
+  const subscription = client(__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe)
+    .subscribe(
+      client(OsdkTestObject),
       [
-        "nextStopId",
-        "positionId",
-        "routeId",
-        "vehicleId",
+        "primaryKey_",
+        "stringProperty",
       ],
       {
         onChange(object) {
-          if (object.object.positionId != null) {
-            console.log(
-              "Bus with positionId ",
-              object.object.vehicleId,
-              " changed location to ",
-              object.object.positionId.lastFetchedValue?.value,
-            );
-          } else {
-            console.log(
-              "Bus with vehicleId ",
-              object.object.vehicleId,
-              " changed nextStop to ",
-              object.object.nextStopId,
-            );
-          }
+          console.log(
+            "Object with primaryKey ",
+            object.object.primaryKey_,
+            " changed stringProperty to ",
+            object.object.stringProperty,
+          );
         },
         onError(err) {
           console.error("Error in subscription: ", err);
@@ -90,6 +40,62 @@ export async function runSubscriptionsTest() {
         onOutOfDate() {
           console.log("Out of date");
         },
+        async onSuccessfulSubscription() {
+          await client($Actions.createOsdkTestObject).applyAction({
+            string_property: "test",
+          });
+
+          const objectArray = await client(OsdkTestObject).fetchPage();
+
+          await client($Actions.editOsdkTestObject).applyAction({
+            OsdkTestObject: objectArray.data[0],
+            string_property: "a",
+          });
+
+          await client($Actions.deleteOsdkTestObject).applyAction({
+            OsdkTestObject: objectArray.data[0],
+          });
+        },
       },
     );
+
+  const mtaBusSubscription = dsClient(
+    __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
+  ).subscribe(
+    dsClient(MtaBus),
+    [
+      "nextStopId",
+      "positionId",
+      "routeId",
+      "vehicleId",
+    ],
+    {
+      onChange(object) {
+        if (object.object.positionId != null) {
+          console.log(
+            "Bus with positionId ",
+            object.object.vehicleId,
+            " changed location to ",
+            object.object.positionId.lastFetchedValue?.value,
+          );
+        } else {
+          console.log(
+            "Bus with vehicleId ",
+            object.object.vehicleId,
+            " changed nextStop to ",
+            object.object.nextStopId,
+          );
+        }
+      },
+      onError(err) {
+        console.error("Error in subscription: ", err);
+      },
+      onOutOfDate() {
+        console.log("Out of date");
+      },
+      onSuccessfulSubscription() {
+        setTimeout(mtaBusSubscription.unsubscribe, 10000);
+      },
+    },
+  );
 }

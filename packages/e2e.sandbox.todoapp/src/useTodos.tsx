@@ -167,79 +167,83 @@ function updateOne<T extends { $primaryKey: Q }, Q>(
 /** disabling for now */
 export function useSubscribe(mutate: KeyedMutator<SimpleTodo[]>) {
   useEffect(() => {
-    const unsubscribe = $(MyOsdk.Todo)
-      [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe]([
-        "id",
-        "isComplete",
-        "title",
-      ], {
-        onChange(objectUpdate) {
-          // index incoming objects by apiName and then by pk value
-          const byApiNameByPK = new Map<
-            string,
-            Map<
-              (typeof objectUpdate)["object"]["$primaryKey"],
-              (typeof objectUpdate)
-            >
-          >();
+    const subscription = $(__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe)
+      .subscribe(
+        $(MyOsdk.Todo),
+        [
+          "id",
+          "isComplete",
+          "title",
+        ],
+        {
+          onChange(objectUpdate) {
+            // index incoming objects by apiName and then by pk value
+            const byApiNameByPK = new Map<
+              string,
+              Map<
+                (typeof objectUpdate)["object"]["$primaryKey"],
+                (typeof objectUpdate)
+              >
+            >();
 
-          const byPk = byApiNameByPK.get(objectUpdate.object.$apiName);
-          if (byPk) {
-            byPk.set(objectUpdate.object.$primaryKey, objectUpdate);
-          } else {
-            byApiNameByPK.set(
-              objectUpdate.object.$apiName,
-              new Map([[objectUpdate.object.$primaryKey, objectUpdate]]),
-            );
-          }
-
-          // get the new version of an object that has changed, removing it from the list of updates
-          const getUpdate = (
-            apiName: (typeof objectUpdate)["object"]["$apiName"],
-            primaryKey: (typeof objectUpdate)["object"]["$primaryKey"],
-          ) => {
-            const byPk = byApiNameByPK.get(apiName);
+            const byPk = byApiNameByPK.get(objectUpdate.object.$apiName);
             if (byPk) {
-              const value = byPk.get(primaryKey);
-              if (value) {
-                byPk.delete(primaryKey);
-                return value;
-              }
-            }
-          };
-
-          mutate((data) => {
-            // update any Todos that we got a new version for
-            const updated = data?.map((object) => {
-              const updateObject = getUpdate(
-                object.$apiName,
-                object.$primaryKey,
+              byPk.set(objectUpdate.object.$primaryKey, objectUpdate);
+            } else {
+              byApiNameByPK.set(
+                objectUpdate.object.$apiName,
+                new Map([[objectUpdate.object.$primaryKey, objectUpdate]]),
               );
-              return updateObject ?? object;
-            }) ?? [];
-
-            // add any new Todos to the bottom
-            for (const byPk of byApiNameByPK.values()) {
-              for (const object of byPk.values()) {
-                updated.push(object);
-              }
             }
 
-            return updated as typeof data;
-          });
-        },
+            // get the new version of an object that has changed, removing it from the list of updates
+            const getUpdate = (
+              apiName: (typeof objectUpdate)["object"]["$apiName"],
+              primaryKey: (typeof objectUpdate)["object"]["$primaryKey"],
+            ) => {
+              const byPk = byApiNameByPK.get(apiName);
+              if (byPk) {
+                const value = byPk.get(primaryKey);
+                if (value) {
+                  byPk.delete(primaryKey);
+                  return value;
+                }
+              }
+            };
 
-        onOutOfDate() {
-          mutate();
-        },
+            mutate((data) => {
+              // update any Todos that we got a new version for
+              const updated = data?.map((object) => {
+                const updateObject = getUpdate(
+                  object.$apiName,
+                  object.$primaryKey,
+                );
+                return updateObject ?? object;
+              }) ?? [];
 
-        onError(data) {
-          console.error("Todo subscription error", data);
+              // add any new Todos to the bottom
+              for (const byPk of byApiNameByPK.values()) {
+                for (const object of byPk.values()) {
+                  updated.push(object);
+                }
+              }
+
+              return updated as typeof data;
+            });
+          },
+
+          onOutOfDate() {
+            mutate();
+          },
+
+          onError(data) {
+            console.error("Todo subscription error", data);
+          },
         },
-      });
+      );
 
     return function() {
-      unsubscribe();
+      subscription.unsubscribe();
     };
   }, [mutate]);
 }
