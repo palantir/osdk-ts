@@ -1,9 +1,11 @@
 export {
   actionTakesAllParameterTypes,
-  assignEmployee1,
+  createObjectToContainerLink,
+  createOsdkTestContainer,
   createOsdkTestObject,
-  createTodo,
+  deleteOsdkTestContainer,
   deleteOsdkTestObject,
+  editOsdkTestContainer,
   editOsdkTestObject,
 } from './ontology/actions.js';
 export * as $Actions from './ontology/actions.js';
@@ -18,14 +20,14 @@ export {
   GtfsTripTrackObject,
   MtaBus,
   ObjectTypeWithAllPropertyTypes,
+  OsdkTestContainer,
   OsdkTestObject,
   Person,
   RhemmingsObjectWithGtsrProperty2,
-  Todo,
   Venture,
   WeatherStation,
 } from './ontology/objects.js';
 export * as $Objects from './ontology/objects.js';
-export { getNamesOfCustomersFromCountry, getTodoCount, queryTakesAllParameterTypes } from './ontology/queries.js';
+export { getNamesOfCustomersFromCountry, queryTakesAllParameterTypes } from './ontology/queries.js';
 export * as $Queries from './ontology/queries.js';
 export { $ontologyRid } from './OntologyMetadata.js';

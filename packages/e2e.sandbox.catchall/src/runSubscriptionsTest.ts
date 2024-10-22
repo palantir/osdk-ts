@@ -13,14 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { EXPERIMENTAL_ObjectSetListener } from "@osdk/api/unstable";
-import {
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
-  __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
-} from "@osdk/api/unstable";
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/api/unstable";
 import { $Actions, MtaBus, OsdkTestObject } from "@osdk/e2e.generated.catchall";
 import { client, dsClient } from "./client.js";
 
@@ -49,7 +42,9 @@ export async function runSubscriptionsTest() {
         },
         async onSuccessfulSubscription() {
           await client($Actions.createOsdkTestObject).applyAction({
-            string_property: "test",
+            "description": "This is a test object.",
+            "osdk_object_name": "testObject",
+            "string_property": "test",
           });
 
           const objectArray = await client(OsdkTestObject).fetchPage();
