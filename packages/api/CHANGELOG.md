@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 2.0.8-rc.0
+
+### Patch Changes
+
+- 078ed56: Remove experimental non null for now.
+- 078ed56: Modify return type for fetch single on links.
+- 1da5942: Change experimental code style to prevent future breaks
+
 ## 2.0.7
 
 ### Patch Changes

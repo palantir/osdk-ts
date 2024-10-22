@@ -58,5 +58,11 @@
     "@osdk/version-updater": "0.0.0",
     "@osdk/tests.verify-fallback-package-v2": "0.0.3"
   },
-  "changesets": []
+  "changesets": [
+    "cyan-suns-study",
+    "dirty-lions-drive",
+    "kind-penguins-try",
+    "quiet-jobs-return",
+    "short-bikes-fold"
+  ]
 }
