@@ -303,7 +303,7 @@ export class ObjectSetListenerWebsocket {
     // make sure listeners do nothing now
     sub.listener = fillOutListener<Q, any>({});
     this.#subscriptions.delete(sub.subscriptionId);
-
+    this.#sendSubscribeMessage();
     // If we have no more subscriptions, we can disconnect the websocket
     // however we should wait a bit to see if we get any more subscriptions.
     // For example, when switching between react views, you may unsubscribe
@@ -422,7 +422,7 @@ export class ObjectSetListenerWebsocket {
     payload: ObjectSetUpdates,
   ) => {
     const sub = this.#subscriptions.get(payload.id);
-    invariant(sub, `Expected subscription id ${payload.id}`);
+    if (sub == null) return;
 
     const objectUpdates = payload.updates.filter((update) =>
       update.type === "object"
