@@ -43,6 +43,7 @@
     "@osdk/create-app.template.tutorial-todo-app": "workspace:*",
     "@osdk/create-app.template.tutorial-todo-app.beta": "workspace:*",
     "@osdk/create-app.template.vue": "workspace:*",
+    "@osdk/create-app.template.vue.v2": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",

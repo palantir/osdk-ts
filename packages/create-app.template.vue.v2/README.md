@@ -1,4 +1,4 @@
-# @osdk/create-app.template.vue
+# @osdk/create-app.template.vue.v2
 
 This package contains templates for `@osdk/create-app`.
 
