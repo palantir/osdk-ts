@@ -239,7 +239,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         properties,
       );
 
-      return async () => (await pendingSubscribe)();
+      return { unsubscribe: async () => (await pendingSubscribe)() };
     },
   };
 

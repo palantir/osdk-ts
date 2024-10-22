@@ -16,7 +16,7 @@
 
 import type { ObjectOrInterfaceDefinition, PropertyKeys } from "@osdk/api";
 import type { EXPERIMENTAL_ObjectSetListener as ObjectSetListener } from "@osdk/api/unstable";
-import { $ontologyRid, Employee, Office } from "@osdk/client.test.ontology";
+import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import type {
   ObjectSetStreamSubscribeRequests,
   ObjectUpdate,
@@ -132,7 +132,6 @@ describe("ObjectSetListenerWebsocket", async () => {
         logger: rootLogger.child({ oslwInst: oslwInst++ }),
       }, {
         minimumReconnectDelayMs: MINIMUM_RECONNECT_DELAY,
-        objectSetExpiryMs: OBJECT_SET_EXPIRY_MS,
       });
 
       listenerPromise = pDefer();
@@ -144,6 +143,7 @@ describe("ObjectSetListenerWebsocket", async () => {
         }),
         onError: vi.fn(),
         onOutOfDate: vi.fn(),
+        onSuccessfulSubscription: vi.fn(),
       };
 
       let objectSetRidCounter = 0;
@@ -215,7 +215,7 @@ describe("ObjectSetListenerWebsocket", async () => {
         ]);
       });
 
-      it.fails("currently requests reference backed properties", () => {
+      it("currently requests reference backed properties", () => {
         expect(subReq1.requests[0].referenceSet).toEqual(["employeeLocation"]);
       });
 
@@ -251,6 +251,10 @@ describe("ObjectSetListenerWebsocket", async () => {
       describe("successfully subscribed", () => {
         beforeEach(() => {
           respondSuccessToSubscribe(ws, subReq1);
+        });
+
+        it("should call onSuccessfulSubscription", () => {
+          expect(listener.onSuccessfulSubscription).toHaveBeenCalled();
         });
 
         it("should correctly return regular updates", async () => {
@@ -486,7 +490,7 @@ async function subscribeAndExpectWebSocket(
         objectType: Employee.apiName,
       },
       listener,
-      ["employeeId"],
+      ["employeeId", "employeeLocation"],
     ),
   ]);
 

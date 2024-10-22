@@ -21,45 +21,49 @@ import { $Actions, MtaBus, OsdkTestObject } from "@osdk/e2e.generated.catchall";
 import { client, dsClient } from "./client.js";
 
 export async function runSubscriptionsTest() {
-  client(OsdkTestObject)[__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
-    [
-      "primaryKey_",
-      "stringProperty",
-    ],
-    {
-      onChange(object) {
-        console.log(
-          "Object with primaryKey ",
-          object.object.primaryKey_,
-          " changed stringProperty to ",
-          object.object.stringProperty,
-        );
+  const subscription = client(OsdkTestObject)
+    [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
+      [
+        "primaryKey_",
+        "stringProperty",
+      ],
+      {
+        onChange(object) {
+          console.log(
+            "Object with primaryKey ",
+            object.object.primaryKey_,
+            " changed stringProperty to ",
+            object.object.stringProperty,
+          );
+        },
+        onError(err) {
+          console.error("Error in subscription: ", err);
+        },
+        onOutOfDate() {
+          console.log("Out of date");
+        },
+        async onSuccessfulSubscription() {
+          await client($Actions.createOsdkTestObject).applyAction({
+            string_property: "test",
+          });
+
+          const objectArray = await client(OsdkTestObject).fetchPage();
+
+          await client($Actions.editOsdkTestObject).applyAction({
+            OsdkTestObject: objectArray.data[0],
+            string_property: "a",
+          });
+
+          await client($Actions.deleteOsdkTestObject).applyAction({
+            OsdkTestObject: objectArray.data[0],
+          });
+
+          subscription.unsubscribe();
+        },
       },
-      onError(err) {
-        console.error("Error in subscription: ", err);
-      },
-      onOutOfDate() {
-        console.log("Out of date");
-      },
-    },
-  );
+    );
 
-  await client($Actions.createOsdkTestObject).applyAction({
-    string_property: "test",
-  });
-
-  const objectArray = await client(OsdkTestObject).fetchPage();
-
-  await client($Actions.editOsdkTestObject).applyAction({
-    OsdkTestObject: objectArray.data[0],
-    string_property: "a",
-  });
-
-  await client($Actions.deleteOsdkTestObject).applyAction({
-    OsdkTestObject: objectArray.data[0],
-  });
-
-  dsClient(MtaBus)
+  const mtaBusSubscription = dsClient(MtaBus)
     [__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe](
       [
         "nextStopId",
@@ -90,6 +94,9 @@ export async function runSubscriptionsTest() {
         },
         onOutOfDate() {
           console.log("Out of date");
+        },
+        onSuccessfulSubscription() {
+          setTimeout(mtaBusSubscription.unsubscribe, 10000);
         },
       },
     );

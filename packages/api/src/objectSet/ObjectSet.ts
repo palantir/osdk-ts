@@ -247,7 +247,9 @@ export interface ObjectSet<
    *
    * It may change at any time and does not follow semantic versioning. Use at your own risk.
    *
-   * @param properties - The properties to subscribe to on the object. Properties not selected will not be returned on the object.
+   * Subscribe to property changes on objects in the object set.
+   *
+   * @param properties - Properties to receive updates for. Updates may be triggered by properties not requested. Not all properties will be returned on every update.
    *
    *  @alpha
    */
@@ -256,5 +258,5 @@ export interface ObjectSet<
   >(
     properties: Array<P>,
     listener: EXPERIMENTAL_ObjectSetListener<Q, P>,
-  ) => () => unknown;
+  ) => { unsubscribe: () => void };
 }
