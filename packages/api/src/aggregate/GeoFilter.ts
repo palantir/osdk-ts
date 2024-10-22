@@ -15,10 +15,10 @@
  */
 
 import type { BBox, Point, Polygon } from "geojson";
-import type { Just } from "./Just";
-import type { DistanceUnitMapping } from "./WhereClause";
+import type { Just } from "./Just.js";
+import type { DistanceUnitMapping } from "./WhereClause.js";
 
-interface GeoFilterMap {
+interface GeoFilterOptions {
   "$within":
     | {
       $distance: [number, keyof typeof DistanceUnitMapping];
@@ -51,11 +51,16 @@ interface GeoFilterMap {
       $bbox?: never;
     }
     | Polygon;
+  "$isNull": boolean;
 }
 
 export namespace GeoFilter {
-  export interface $within extends Just<"$within", GeoFilterMap> {}
-  export interface $intersects extends Just<"$intersects", GeoFilterMap> {}
+  export interface $within extends Just<"$within", GeoFilterOptions> {}
+  export interface $intersects extends Just<"$intersects", GeoFilterOptions> {}
+  export interface $isNull extends Just<"$isNull", GeoFilterOptions> {}
 }
 
-export type GeoFilter = GeoFilter.$within | GeoFilter.$intersects;
+export type GeoFilter =
+  | GeoFilter.$within
+  | GeoFilter.$intersects
+  | GeoFilter.$isNull;

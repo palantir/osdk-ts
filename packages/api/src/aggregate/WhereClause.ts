@@ -158,5 +158,7 @@ export type WhereClause<
   | AndWhereClause<T>
   | NotWhereClause<T>
   | {
-    [P in PropertyKeys<T>]?: FilterFor<CompileTimeMetadata<T>["properties"][P]>;
+    [P in keyof CompileTimeMetadata<T>["properties"]]?: FilterFor<
+      CompileTimeMetadata<T>["properties"][P]
+    >;
   };

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { BaseFilter } from "./BaseFilter";
-import type { Just } from "./Just";
+import type { BaseFilter } from "./BaseFilter.js";
+import type { Just } from "./Just.js";
 
-export interface StringFilterMap extends BaseFilter<string> {
+interface StringFilterOptions extends BaseFilter<string> {
   "$startsWith": string;
   "$containsAllTermsInOrder": string;
   "$containsAnyTerm": string;
@@ -25,21 +25,23 @@ export interface StringFilterMap extends BaseFilter<string> {
 }
 
 export namespace StringFilter {
-  export interface $eq extends Just<"$eq", StringFilterMap> {}
-  export interface $ne extends Just<"$ne", StringFilterMap> {}
-  export interface $isNull extends Just<"$isNull", StringFilterMap> {}
-  export interface $startsWith extends Just<"$startsWith", StringFilterMap> {
+  export interface $eq extends Just<"$eq", StringFilterOptions> {}
+  export interface $ne extends Just<"$ne", StringFilterOptions> {}
+  export interface $isNull extends Just<"$isNull", StringFilterOptions> {}
+  export interface $startsWith
+    extends Just<"$startsWith", StringFilterOptions>
+  {
   }
   export interface $containsAllTermsInOrder
-    extends Just<"$containsAllTermsInOrder", StringFilterMap>
+    extends Just<"$containsAllTermsInOrder", StringFilterOptions>
   {
   }
   export interface $containsAnyTerm
-    extends Just<"$containsAnyTerm", StringFilterMap>
+    extends Just<"$containsAnyTerm", StringFilterOptions>
   {
   }
   export interface $containsAllTerms
-    extends Just<"$containsAllTerms", StringFilterMap>
+    extends Just<"$containsAllTerms", StringFilterOptions>
   {
   }
 }

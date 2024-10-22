@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { BaseFilter } from "./BaseFilter";
-import type { Just } from "./Just";
+import type { BaseFilter } from "./BaseFilter.js";
+import type { Just } from "./Just.js";
 
-export interface DatetimeFilterMap extends BaseFilter<string> {
+export interface DatetimeFilterOptions extends BaseFilter<string> {
   "$gt": string;
   "$gte": string;
   "$lt": string;
@@ -25,13 +25,13 @@ export interface DatetimeFilterMap extends BaseFilter<string> {
 }
 
 export namespace DatetimeFilter {
-  export interface $eq extends Just<"$eq", DatetimeFilterMap> {}
-  export interface $ne extends Just<"$ne", DatetimeFilterMap> {}
-  export interface $isNull extends Just<"$isNull", DatetimeFilterMap> {}
-  export interface $gt extends Just<"$gt", DatetimeFilterMap> {}
-  export interface $gte extends Just<"$gte", DatetimeFilterMap> {}
-  export interface $lt extends Just<"$lt", DatetimeFilterMap> {}
-  export interface $lte extends Just<"$lte", DatetimeFilterMap> {}
+  export interface $eq extends Just<"$eq", DatetimeFilterOptions> {}
+  export interface $ne extends Just<"$ne", DatetimeFilterOptions> {}
+  export interface $isNull extends Just<"$isNull", DatetimeFilterOptions> {}
+  export interface $gt extends Just<"$gt", DatetimeFilterOptions> {}
+  export interface $gte extends Just<"$gte", DatetimeFilterOptions> {}
+  export interface $lt extends Just<"$lt", DatetimeFilterOptions> {}
+  export interface $lte extends Just<"$lte", DatetimeFilterOptions> {}
 }
 export type DatetimeFilter =
   | string

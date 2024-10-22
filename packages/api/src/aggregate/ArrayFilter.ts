@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import type { Just } from "./Just";
+import type { Just } from "./Just.js";
 
-interface ArrayFilterMap<T> {
+interface ArrayFilterOptions<T> {
   "$contains": T;
   "$isNull": boolean;
 }
 namespace ArrayFilter {
-  export interface $contains<T> extends Just<"$contains", ArrayFilterMap<T>> {}
-  export interface $isNull<T> extends Just<"$isNull", ArrayFilterMap<T>> {}
+  export interface $contains<T>
+    extends Just<"$contains", ArrayFilterOptions<T>>
+  {}
+  export interface $isNull<T> extends Just<"$isNull", ArrayFilterOptions<T>> {}
 }
 
 export type ArrayFilter<T> =

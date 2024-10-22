@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { BaseFilter } from "./BaseFilter";
-import type { Just } from "./Just";
+import type { BaseFilter } from "./BaseFilter.js";
+import type { Just } from "./Just.js";
 
-export interface NumberFilterMap extends BaseFilter<number> {
+interface NumberFilterOptions extends BaseFilter<number> {
   "$gt": number;
   "$gte": number;
   "$lt": number;
@@ -25,13 +25,13 @@ export interface NumberFilterMap extends BaseFilter<number> {
 }
 
 export namespace NumberFilter {
-  export interface $eq extends Just<"$eq", NumberFilterMap> {}
-  export interface $ne extends Just<"$ne", NumberFilterMap> {}
-  export interface $isNull extends Just<"$isNull", NumberFilterMap> {}
-  export interface $gt extends Just<"$gt", NumberFilterMap> {}
-  export interface $gte extends Just<"$gte", NumberFilterMap> {}
-  export interface $lt extends Just<"$lt", NumberFilterMap> {}
-  export interface $lte extends Just<"$lte", NumberFilterMap> {}
+  export interface $eq extends Just<"$eq", NumberFilterOptions> {}
+  export interface $ne extends Just<"$ne", NumberFilterOptions> {}
+  export interface $isNull extends Just<"$isNull", NumberFilterOptions> {}
+  export interface $gt extends Just<"$gt", NumberFilterOptions> {}
+  export interface $gte extends Just<"$gte", NumberFilterOptions> {}
+  export interface $lt extends Just<"$lt", NumberFilterOptions> {}
+  export interface $lte extends Just<"$lte", NumberFilterOptions> {}
 }
 export type NumberFilter =
   | number

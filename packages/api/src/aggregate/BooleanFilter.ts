@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { BaseFilter } from "./BaseFilter";
-import type { Just } from "./Just";
+import type { BaseFilter } from "./BaseFilter.js";
+import type { Just } from "./Just.js";
 
-interface BooleanFilterMap extends BaseFilter<boolean> {}
+interface BooleanFilterOptions extends BaseFilter<boolean> {}
 
 export namespace BooleanFilter {
-  export interface $eq extends Just<"$eq", BooleanFilterMap> {}
-  export interface $ne extends Just<"$ne", BooleanFilterMap> {}
-  export interface $isNull extends Just<"$isNull", BooleanFilterMap> {}
+  export interface $eq extends Just<"$eq", BooleanFilterOptions> {}
+  export interface $ne extends Just<"$ne", BooleanFilterOptions> {}
+  export interface $isNull extends Just<"$isNull", BooleanFilterOptions> {}
 }
 export type BooleanFilter =
   | boolean
