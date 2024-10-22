@@ -31,6 +31,9 @@ export async function bundleDependencies(
       declaration: true,
       emitDeclarationOnly: true,
       outFile: "dist/bundle/index.d.ts",
+      paths: {
+        "internal/*": ["/internal/*"],
+      },
     },
   });
 
@@ -44,7 +47,6 @@ export async function bundleDependencies(
     const projectMinifier = new ProjectMinifier(
       project,
       importSet,
-      entry,
     );
     projectMinifier.minifyProject();
   }

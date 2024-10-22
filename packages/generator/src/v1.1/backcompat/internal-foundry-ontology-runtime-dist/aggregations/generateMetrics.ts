@@ -48,8 +48,7 @@ export async function generateMetrics(
     path.join(metricsDir, "MultipleAggregatableProperty.ts"),
     await formatTs(
       `
-        import { Double, MetricValue, MultipleAggregationsOperations } from "../Aggregations${importExt}";
-        import { MetricValueType } from "./index${importExt}";
+       import { Double, MetricValue } from "@osdk/legacy-client";
       `
         + reexportConsts(["MultipleAggregatableProperty"])
         + reexportTypes(
@@ -71,7 +70,7 @@ export async function generateMetrics(
       path.join(metricsDir, `${typeName}.ts`),
       await formatTs(
         `
-          import { MultipleAggregatableProperty } from "./MultipleAggregatableProperty${importExt}";
+          import { MultipleAggregatableProperty } from "@osdk/legacy-client";
         `
           + reexportConsts([typeName], true),
       ),

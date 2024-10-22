@@ -15,20 +15,38 @@
  */
 
 import type { Project, StringLiteral } from "ts-morph";
+import { DEBUG } from "./minifyBundle.js";
 
-export function getModuleSourceFile(project: Project, node: StringLiteral) {
+export const splitExtension = /^(.*)(\.[cm]?js)$/;
+
+export function getModuleSourceFile(
+  project: Project,
+  node: StringLiteral | string,
+) {
   let exportSourceFile;
+
+  const literalText = typeof node === "string" ? node : node.getLiteralText();
+
+  const withoutExtension = literalText.match(splitExtension)?.[1]
+    ?? literalText;
+
   try {
-    exportSourceFile = project.getSourceFile(`/${node.getLiteralText()}.ts`);
+    exportSourceFile = project.getSourceFile(`/${withoutExtension}.ts`);
     if (!exportSourceFile) {
       exportSourceFile = project.getSourceFile(
-        `/${node.getLiteralText()}/index.ts`,
+        `/${withoutExtension}/index.ts`,
       );
-      if (!exportSourceFile) {
+      if (DEBUG && !exportSourceFile) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `Could not find source file for ${withoutExtension}`,
+        );
         return undefined;
       }
     }
   } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
     return undefined;
   }
   return exportSourceFile;

@@ -16,9 +16,10 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import type { Project } from "ts-morph";
-import { Node } from "ts-morph";
-import { withoutTrailingIndex } from "./getModuleSourceFile.js";
+import type { Project, SourceFile } from "ts-morph";
+import { Node, SyntaxKind } from "ts-morph";
+import { splitExtension, withoutTrailingIndex } from "./getModuleSourceFile.js";
+
 const KNOWN_EXTERNAL = new Set(["geojson"]);
 
 function removeDts(file: string) {
@@ -45,60 +46,21 @@ export async function copyFiles(
 
     const sourceFile = project.createSourceFile(newModulePath, file);
 
-    for (const importDeclaration of sourceFile.getImportDeclarations()) {
-      const moduleSpecifier = importDeclaration.getModuleSpecifier();
-      const newModuleSpecifier = transformModuleSpecifier(
-        moduleSpecifier.getLiteralValue(),
-        newModulePath,
-      );
-      moduleSpecifier.setLiteralValue(newModuleSpecifier);
-
-      if (newModuleSpecifier.startsWith("internal")) {
-        for (
-          const importName of importDeclaration.getNamedImports().map(imp =>
-            imp.getName()
-          )
-        ) {
-          importSet.add(importName);
-        }
-      }
-    }
-
-    for (const exportedDecl of sourceFile.getStatements()) {
-      if (Node.isModifierable(exportedDecl)) {
-        exportedDecl.toggleModifier("declare", false);
-      }
-    }
-
-    for (const exportDeclaration of sourceFile.getExportDeclarations()) {
-      const moduleSpecifier = exportDeclaration.getModuleSpecifier();
-      if (moduleSpecifier) {
-        const newModuleSpecifier = transformModuleSpecifier(
-          moduleSpecifier.getLiteralValue(),
-          newModulePath,
-        );
-        moduleSpecifier.setLiteralValue(newModuleSpecifier);
-        if (newModuleSpecifier.startsWith("internal")) {
-          for (
-            const exportName of exportDeclaration.getNamedExports().map(exp =>
-              exp.getName()
-            )
-          ) {
-            importSet.add(exportName);
-          }
-        }
-      }
-    }
+    remapImportsExports(sourceFile, newModulePath, importSet);
   }
 
   for (const dir of dirs) {
-    const buildDirsToTry = ["build/cjs", "build/esm"];
+    const buildDirsToTry = [
+      path.join(dir, "build", "cjs"),
+      path.join(dir, "build", "esm"),
+      dir,
+    ];
     const packageName = getPackageName(dir);
 
-    const relativeBuildDir = buildDirsToTry.find((buildDir) => {
+    const absoluteBuildDir = buildDirsToTry.find((buildDir) => {
       return ["d.ts", "d.cts", "d.mts"].some((ext) => {
         try {
-          fs.statSync(path.join(dir, buildDir, `index.${ext}`));
+          fs.statSync(path.join(buildDir, `index.${ext}`));
           return true;
         } catch (e) {
           return false;
@@ -106,12 +68,11 @@ export async function copyFiles(
       });
     });
 
-    if (!relativeBuildDir) {
+    if (!absoluteBuildDir) {
       throw new Error("Couldn't find the right build dir");
     }
 
-    for (const file of getTypeFiles(path.join(dir, relativeBuildDir))) {
-      const absoluteBuildDir = path.join(dir, relativeBuildDir);
+    for (const file of getTypeFiles(absoluteBuildDir)) {
       const tsPath = removeDts(path.relative(absoluteBuildDir, file));
 
       const newModulePath = `internal/${packageName}/${tsPath}`;
@@ -122,37 +83,81 @@ export async function copyFiles(
         fileContents,
         { overwrite: true },
       );
-      for (const importDeclaration of sourceFile.getImportDeclarations()) {
-        const moduleSpecifier = importDeclaration.getModuleSpecifier();
-        const newModuleSpecifier = transformModuleSpecifier(
-          moduleSpecifier.getLiteralValue(),
-          newModulePath,
-        );
-        moduleSpecifier.setLiteralValue(newModuleSpecifier);
+
+      remapImportsExports(sourceFile, newModulePath, undefined);
+    }
+  }
+  return importSet;
+}
+
+function remapImportsExports(
+  sourceFile: SourceFile,
+  newModulePath: string,
+  importSet: Set<string> | undefined,
+) {
+  for (const importDeclaration of sourceFile.getImportDeclarations()) {
+    const moduleSpecifier = importDeclaration.getModuleSpecifier();
+    const newModuleSpecifier = transformModuleSpecifier(
+      moduleSpecifier.getLiteralValue(),
+      newModulePath,
+    );
+    moduleSpecifier.setLiteralValue(newModuleSpecifier);
+
+    if (importSet && newModuleSpecifier.startsWith("internal")) {
+      for (
+        const importName of importDeclaration.getNamedImports().map(imp =>
+          imp.getName()
+        )
+      ) {
+        importSet.add(`${newModuleSpecifier}:${importName}`);
       }
+    }
+  }
 
-      for (const exportedDecl of sourceFile.getStatements()) {
-        if (Node.isModifierable(exportedDecl)) {
-          exportedDecl.toggleModifier("declare", false);
-        }
-      }
+  for (const exportedDecl of sourceFile.getStatements()) {
+    if (Node.isModifierable(exportedDecl)) {
+      exportedDecl.toggleModifier("declare", false);
+    }
+  }
 
-      for (const exportDeclaration of sourceFile.getExportDeclarations()) {
-        const moduleSpecifier = exportDeclaration.getModuleSpecifier();
-
-        if (moduleSpecifier) {
-          const newModuleSpecifier = transformModuleSpecifier(
-            moduleSpecifier.getLiteralValue(),
-            newModulePath,
-          );
-          moduleSpecifier.setLiteralValue(
-            withoutTrailingIndex(newModuleSpecifier),
-          );
+  for (const exportDeclaration of sourceFile.getExportDeclarations()) {
+    const moduleSpecifier = exportDeclaration.getModuleSpecifier();
+    if (moduleSpecifier) {
+      const newModuleSpecifier = transformModuleSpecifier(
+        moduleSpecifier.getLiteralValue(),
+        newModulePath,
+      );
+      moduleSpecifier.setLiteralValue(newModuleSpecifier);
+      if (importSet && newModuleSpecifier.startsWith("internal")) {
+        for (
+          const exportName of exportDeclaration.getNamedExports().map(exp =>
+            exp.getName()
+          )
+        ) {
+          importSet.add(`${newModuleSpecifier}:${exportName}`);
         }
       }
     }
   }
-  return importSet;
+
+  sourceFile.getDescendantsOfKind(SyntaxKind.ImportType).forEach((node) => {
+    let moduleSpecifier = node.getArgument().getText();
+
+    if (moduleSpecifier.startsWith("\"") && moduleSpecifier.endsWith("\"")) {
+      moduleSpecifier = moduleSpecifier.slice(1, -1);
+    }
+
+    const newModuleSpecifier = transformModuleSpecifier(
+      moduleSpecifier,
+      newModulePath,
+    );
+    node.setArgument(newModuleSpecifier);
+
+    const importName = node.getQualifier()?.getText();
+    if (importSet && newModuleSpecifier.startsWith("internal") && importName) {
+      importSet.add(`${newModuleSpecifier}:${importName}`);
+    }
+  });
 }
 
 function getPackageName(dir: string): string {
@@ -188,9 +193,13 @@ function transformModuleSpecifier(value: string, filePath: string) {
         value.replace("@osdk/gateway/types", "@osdk/gateway/public/types")
       }`;
     } else {
+      const maybe = value.match(splitExtension);
+      value = maybe ? maybe[1] : value;
       moduleSpecifier = `internal/${value}`;
     }
   } else if (value.startsWith(".")) {
+    const maybe = value.match(splitExtension);
+    value = maybe ? maybe[1] : value;
     // path relative import
     moduleSpecifier = path.join(filePath, "..", value);
   } else if (KNOWN_EXTERNAL.has(value)) {
