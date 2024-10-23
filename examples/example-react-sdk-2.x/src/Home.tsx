@@ -18,7 +18,7 @@ function Home() {
           <h2>Objects ({objectApiNames.length})</h2>
           {objectApiNames.map((objectApiName) => (
             <pre key={objectApiName}>
-              client.ontology.objects.{objectApiName}
+              $Objects.{objectApiName}
             </pre>
           ))}
         </div>
@@ -26,7 +26,7 @@ function Home() {
           <h2>Actions ({actionApiNames.length})</h2>
           {actionApiNames.map((actionApiName) => (
             <pre key={actionApiName}>
-              client.ontology.actions.{actionApiName}
+              $Actions.{actionApiName}
             </pre>
           ))}
         </div>
@@ -34,7 +34,7 @@ function Home() {
           <h2>Queries ({queryApiNames.length})</h2>
           {queryApiNames.map((queryApiName) => (
             <pre key={queryApiName}>
-              client.ontology.queries.{queryApiName}
+              $Queries.{queryApiName}
             </pre>
           ))}
         </div>
