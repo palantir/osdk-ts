@@ -37,7 +37,7 @@ describe("generateClientSdkPackage", () => {
                 "@arethetypeswrong/cli": "^0.15.2",
                 "@osdk/api": "^99.9.9",
                 "tslib": "^2.6.2",
-                "typescript": "^5.4.2",
+                "typescript": "~5.5.4",
               },
               "exports": {
                 ".": {
