@@ -56,15 +56,36 @@
     "@osdk/shared.test": "2.0.7",
     "@osdk/tool.release": "0.5.0",
     "@osdk/version-updater": "0.0.0",
-    "@osdk/tests.verify-fallback-package-v2": "0.0.3"
+    "@osdk/tests.verify-fallback-package-v2": "0.0.3",
+    "@osdk/examples.next-static-export-sdk-1.x": "0.0.0",
+    "@osdk/examples.next-static-export-sdk-2.x": "0.0.0",
+    "@osdk/examples.react-sdk-1.x": "0.0.0",
+    "@osdk/examples.react-sdk-2.x": "0.0.0",
+    "@osdk/examples.tutorial-todo-aip-app-sdk-1.x": "0.0.0",
+    "@osdk/examples.tutorial-todo-aip-app-sdk-2.x": "0.0.0",
+    "@osdk/examples.tutorial-todo-app-sdk-1.x": "0.0.0",
+    "@osdk/examples.tutorial-todo-app-sdk-2.x": "0.0.0",
+    "@osdk/examples.vue-sdk-1.x": "0.0.0",
+    "@osdk/examples.vue-sdk-2.x": "0.0.0",
+    "@osdk/create-app.template.next-static-export.v2": "0.20.0-beta.2",
+    "@osdk/create-app.template.tutorial-todo-aip-app.beta": "0.20.0-beta.0",
+    "@osdk/create-app.template.tutorial-todo-app.beta": "0.20.0-beta.0",
+    "@osdk/create-app.template.vue.v2": "0.20.0-beta.2"
   },
   "changesets": [
+    "blue-tips-heal",
+    "calm-tools-battle",
     "cyan-suns-study",
     "dirty-lions-drive",
     "eleven-kids-battle",
+    "fluffy-carpets-sort",
+    "gold-badgers-tell",
+    "heavy-news-study",
+    "hot-houses-sin",
     "kind-penguins-try",
     "quiet-jobs-return",
     "rude-balloons-brake",
+    "shiny-bananas-knock",
     "short-bikes-fold"
   ]
 }
