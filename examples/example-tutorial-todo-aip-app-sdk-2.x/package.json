@@ -15,9 +15,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@osdk/client": "latest",
+    "@osdk/client": "workspace:*",
     "@osdk/e2e.generated.catchall": "workspace:*",
-    "@osdk/oauth": "latest",
+    "@osdk/oauth": "workspace:*",
     "react": "^18",
     "react-dom": "^18",
     "react-router-dom": "^6.23.1",
