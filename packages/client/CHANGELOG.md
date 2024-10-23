@@ -1,5 +1,23 @@
 # @osdk/client
 
+## 2.1.0-beta.4
+
+### Minor Changes
+
+- 0dc40b0: Remove experimental non null for now.
+- d12c92b: Fixes process.env.NODE_ENV handling
+- 1dc0228: Change experimental code style to prevent future breaks
+- d3b3f35: Add's onSuccessfulSubscribe handler to subscribe functionality
+
+### Patch Changes
+
+- Updated dependencies [0dc40b0]
+- Updated dependencies [1dc0228]
+- Updated dependencies [d3b3f35]
+  - @osdk/api@2.1.0-beta.4
+  - @osdk/generator-converters@2.1.0-beta.4
+  - @osdk/client.unstable@2.1.0-beta.4
+
 ## 2.1.0-beta.3
 
 ### Minor Changes
