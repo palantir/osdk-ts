@@ -30,7 +30,7 @@ import {
 import * as child_process from "node:child_process";
 import path from "node:path";
 
-const LATEST_TYPESCRIPT_DEP = "^5.5.4";
+const LATEST_TYPESCRIPT_DEP = "~5.5.4";
 
 const DELETE_SCRIPT_ENTRY = { options: [undefined], fixValue: undefined };
 
