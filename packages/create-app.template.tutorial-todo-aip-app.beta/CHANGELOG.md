@@ -1,5 +1,12 @@
 # @osdk/create-app.template.tutorial-todo-aip-app.beta
 
+## 2.0.8-rc.3
+
+### Patch Changes
+
+- a83938f: Use fixed versions for create-app client and oauth deps
+- a83938f: Support TypeScript 2.0 syntax for Todo App tutorials
+
 ## 0.20.0-beta.0
 
 ## 0.19.0

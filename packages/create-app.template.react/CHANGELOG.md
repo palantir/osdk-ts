@@ -1,5 +1,7 @@
 # @osdk/create-app.template.react
 
+## 2.0.8-rc.3
+
 ## 0.19.0
 
 ### Minor Changes

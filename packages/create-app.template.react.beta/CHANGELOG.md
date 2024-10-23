@@ -1,5 +1,13 @@
 # @osdk/create-app.template.react
 
+## 2.0.8-rc.3
+
+### Patch Changes
+
+- a83938f: Use fixed versions for create-app client and oauth deps
+- a83938f: Remove warning about import paths
+- a83938f: Support 2.0 syntax in Next and Vue templates
+
 ## 0.19.0
 
 ### Minor Changes
