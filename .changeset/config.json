@@ -9,7 +9,10 @@
       "@osdk/generator",
       "@osdk/generator-converters",
       "@osdk/client.unstable",
-      "@osdk/api"
+      "@osdk/api",
+      "@osdk/create-app",
+      "@osdk/create-app.template.*",
+      "@osdk/create-app.template-packager"
     ],
     ["@osdk/create-app", "@osdk/create-app.template.*"],
     ["@osdk/cli", "@osdk/cli.*"]

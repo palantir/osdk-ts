@@ -105,12 +105,23 @@ export async function run(
     );
   }
 
+  const ourPackageJsonPath = findUpSync("package.json", {
+    cwd: fileURLToPath(import.meta.url),
+  });
+
+  const ourPackageJsonVersion = ourPackageJsonPath
+    ? JSON.parse(fs.readFileSync(ourPackageJsonPath, "utf-8")).version
+    : undefined;
+
+  const clientVersion = process.env.PACKAGE_CLIENT_VERSION
+    ?? ourPackageJsonVersion;
+
   const templateContext: TemplateContext = {
     project,
     foundryUrl,
     osdkPackage,
     corsProxy,
-    clientVersion: "^2.0.7",
+    clientVersion: `~${clientVersion}`,
   };
   const processFiles = function(dir: string) {
     fs.readdirSync(dir).forEach(function(file) {
