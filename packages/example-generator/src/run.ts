@@ -263,6 +263,14 @@ const UPDATE_PACKAGE_JSON: Mutator = {
       "\"@osdk/e2e.generated.catchall\": \"latest\"",
       "\"@osdk/e2e.generated.catchall\": \"workspace:*\"",
     ).replace(
+      // Use locally generated SDK in the monorepo
+      /"@osdk\/client": "\^.*?"/,
+      `"@osdk/client": "workspace:*"`,
+    ).replace(
+      // Use locally generated SDK in the monorepo
+      /"@osdk\/oauth": "\^.*?"/,
+      `"@osdk/oauth": "workspace:*"`,
+    ).replace(
       // Follow monorepo package naming convention
       `"name": "${sdkVersionedTemplateExampleId(template, sdkVersion)}"`,
       `"name": "@osdk/examples.${

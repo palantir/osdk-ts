@@ -110,6 +110,7 @@ export async function run(
     foundryUrl,
     osdkPackage,
     corsProxy,
+    clientVersion: "^2.0.7",
   };
   const processFiles = function(dir: string) {
     fs.readdirSync(dir).forEach(function(file) {
