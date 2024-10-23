@@ -1,6 +1,6 @@
 ---
-"@osdk/example-generator": minor
-"@osdk/create-app": minor
+"@osdk/example-generator": patch
+"@osdk/create-app": patch
 ---
 
 Couple templates with SDK version, allow specifying --sdkVersion
