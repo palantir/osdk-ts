@@ -70,6 +70,7 @@ export const TEMPLATES: readonly Template[] = [
     buildDirectory: "./dist",
     files: {
       "1.x": getPackageFiles(import("@osdk/create-app.template.vue")),
+      "2.x": getPackageFiles(import("@osdk/create-app.template.vue.v2")),
     },
   },
   {
@@ -80,6 +81,9 @@ export const TEMPLATES: readonly Template[] = [
     files: {
       "1.x": getPackageFiles(
         import("@osdk/create-app.template.next-static-export"),
+      ),
+      "2.x": getPackageFiles(
+        import("@osdk/create-app.template.next-static-export.v2"),
       ),
     },
   },
