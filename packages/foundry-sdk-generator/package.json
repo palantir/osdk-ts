@@ -45,7 +45,7 @@
     "rollup": "3.29.5",
     "rollup-plugin-polyfill-node": "0.13.0",
     "ts-morph": "19.0.0",
-    "typescript": "5.5.3",
+    "typescript": "~5.5.4",
     "yargs": "17.7.2"
   },
   "devDependencies": {
@@ -58,7 +58,7 @@
     "@osdk/shared.test": "workspace:~",
     "@types/node": "^18.0.0",
     "@types/yargs": "^17.0.29",
-    "typescript": "^5.5.4"
+    "typescript": "~5.5.4"
   },
   "publishConfig": {
     "access": "public"

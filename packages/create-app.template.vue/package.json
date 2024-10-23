@@ -35,11 +35,11 @@
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
-    "@vitejs/plugin-vue": "^4.5.0",
-    "typescript": "^5.5.4",
-    "vite": "^5.3.4",
-    "vitest": "^2.0.5",
-    "vue-tsc": "^2"
+    "@vitejs/plugin-vue": "^5.1.4",
+    "typescript": "~5.5.4",
+    "vite": "^5.4.8",
+    "vitest": "^2.1.2",
+    "vue-tsc": "^2.1.6"
   },
   "publishConfig": {
     "access": "public"

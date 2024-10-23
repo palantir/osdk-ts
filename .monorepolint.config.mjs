@@ -30,7 +30,7 @@ import {
 import * as child_process from "node:child_process";
 import path from "node:path";
 
-const LATEST_TYPESCRIPT_DEP = "^5.5.4";
+const LATEST_TYPESCRIPT_DEP = "~5.5.4";
 
 const DELETE_SCRIPT_ENTRY = { options: [undefined], fixValue: undefined };
 
@@ -172,6 +172,7 @@ const fixedDepsOnly = createRuleFactory({
       for (const [dep, version] of Object.entries(deps)) {
         if (version === "workspace:*") continue;
         if (version[0] >= "0" && version[0] <= "9") continue;
+        if (dep === "typescript" && version[0] === "~") continue;
 
         const message =
           `May only have fixed dependencies (found ${d}['${dep}'] == '${version}').`;
