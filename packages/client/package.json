@@ -91,7 +91,7 @@
   "sls": {
     "dependencies": {
       "com.palantir.object-set-watcher:object-set-watcher": {
-        "minVersion": "0.607.0",
+        "minVersion": "0.613.0",
         "maxVersion": "0.x.x",
         "optional": true
       }
