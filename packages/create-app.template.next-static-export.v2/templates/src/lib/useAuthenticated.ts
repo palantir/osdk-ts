@@ -4,7 +4,7 @@ import { auth } from "./client";
 
 function useAuthenticated() {
   const router = useRouter();
-  const [token, setToken] = useState(auth.token);
+  const [token, setToken] = useState(auth.getTokenOrUndefined());
   useEffect(() => {
     if (auth.getTokenOrUndefined() == null) {
       auth
