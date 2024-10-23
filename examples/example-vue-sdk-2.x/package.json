@@ -14,9 +14,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@osdk/client": "latest",
+    "@osdk/client": "workspace:*",
     "@osdk/e2e.generated.catchall": "workspace:*",
-    "@osdk/oauth": "latest",
+    "@osdk/oauth": "workspace:*",
     "vue": "^3.5.11",
     "vue-router": "^4.4.5"
   },
