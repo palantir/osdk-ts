@@ -1,5 +1,11 @@
 # @osdk/tool.release
 
+## 0.5.1
+
+### Patch Changes
+
+- 0e08224: Throws error when trying to generate PR with package versions that are already published to NPM
+
 ## 0.5.0
 
 ### Minor Changes
