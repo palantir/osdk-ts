@@ -1,5 +1,14 @@
 # @osdk/client
 
+## 2.0.8-rc.1
+
+### Patch Changes
+
+- a27d559: Fixes process.env.NODE_ENV handling
+  - @osdk/generator-converters@2.0.8-rc.1
+  - @osdk/client.unstable@2.0.8-rc.1
+  - @osdk/api@2.0.8-rc.1
+
 ## 2.0.8-rc.0
 
 ### Patch Changes
