@@ -1069,7 +1069,7 @@ importers:
         specifier: workspace:~
         version: link:../monorepo.tsup
       typescript:
-        specifier: ^5.5.4
+        specifier: ~5.5.4
         version: 5.5.4
 
   packages/client.unstable.tpsa:
