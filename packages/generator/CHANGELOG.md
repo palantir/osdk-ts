@@ -1,5 +1,16 @@
 # @osdk/generator
 
+## 2.0.8
+
+### Patch Changes
+
+- 078ed56: Remove experimental non null for now.
+- Updated dependencies [078ed56]
+- Updated dependencies [078ed56]
+- Updated dependencies [1da5942]
+  - @osdk/api@2.0.8
+  - @osdk/generator-converters@2.0.8
+
 ## 2.0.8-rc.0
 
 ### Patch Changes

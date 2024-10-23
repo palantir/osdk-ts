@@ -1,5 +1,15 @@
 # @osdk/cli.cmd.typescript
 
+## 0.24.8
+
+### Patch Changes
+
+- Updated dependencies [078ed56]
+- Updated dependencies [078ed56]
+  - @osdk/shared.net@2.0.3
+  - @osdk/generator@2.0.8
+  - @osdk/cli.common@0.24.8
+
 ## 0.24.8-rc.0
 
 ### Patch Changes
