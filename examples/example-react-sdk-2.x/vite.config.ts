@@ -9,8 +9,7 @@ export default defineConfig(({ mode }) => {
       port: 8080,
     },
     define: {
-      "process.env.NODE_ENV": JSON.stringify(mode)
+      "process.env.NODE_ENV": JSON.stringify(mode),
     },
   };
-}
-);
+});
