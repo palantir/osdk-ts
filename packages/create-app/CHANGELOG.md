@@ -1,5 +1,11 @@
 # @osdk/create-app
 
+## 0.20.0-beta.3
+
+### Minor Changes
+
+- 51b270d: Support 2.0 syntax in Next and Vue templates
+
 ## 0.20.0-beta.2
 
 ### Minor Changes

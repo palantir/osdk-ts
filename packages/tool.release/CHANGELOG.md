@@ -1,5 +1,11 @@
 # @osdk/tool.release
 
+## 0.6.0-beta.0
+
+### Minor Changes
+
+- c170ecd: Throws error when trying to generate PR with package versions that are already published to NPM
+
 ## 0.5.0
 
 ### Minor Changes

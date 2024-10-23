@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 2.1.0-beta.4
+
+### Minor Changes
+
+- 0dc40b0: Remove experimental non null for now.
+- 1dc0228: Change experimental code style to prevent future breaks
+- d3b3f35: Add's onSuccessfulSubscribe handler to subscribe functionality
+
 ## 2.1.0-beta.3
 
 ### Minor Changes
