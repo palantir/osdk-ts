@@ -14,7 +14,6 @@
       "@osdk/create-app.template.*",
       "@osdk/create-app.template-packager"
     ],
-    ["@osdk/create-app", "@osdk/create-app.template.*"],
     ["@osdk/cli", "@osdk/cli.*"]
   ],
   "linked": [],
