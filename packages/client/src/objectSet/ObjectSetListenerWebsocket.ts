@@ -220,7 +220,7 @@ export class ObjectSetListenerWebsocket {
    * @returns
    */
   async #initiateSubscribe(sub: Subscription<any, any>) {
-    if (process?.env?.NODE_ENV !== "production") {
+    if (process.env.NODE_ENV !== "production") {
       this.#logger?.trace("#initiateSubscribe()");
     }
 
@@ -244,7 +244,7 @@ export class ObjectSetListenerWebsocket {
   }
 
   #sendSubscribeMessage() {
-    if (process?.env?.NODE_ENV !== "production") {
+    if (process.env.NODE_ENV !== "production") {
       this.#logger?.trace("#sendSubscribeMessage()");
     }
     // If two calls to `.subscribe()` happen at once (or if the connection is reset),
@@ -253,7 +253,7 @@ export class ObjectSetListenerWebsocket {
     const readySubs = [...this.#subscriptions.values()].filter(isReady);
 
     if (readySubs.length === 0) {
-      if (process?.env?.NODE_ENV !== "production") {
+      if (process.env.NODE_ENV !== "production") {
         this.#logger?.trace(
           "#sendSubscribeMessage(): aborting due to no ready subscriptions",
         );
@@ -282,7 +282,7 @@ export class ObjectSetListenerWebsocket {
       }),
     };
 
-    if (process?.env?.NODE_ENV !== "production") {
+    if (process.env.NODE_ENV !== "production") {
       this.#logger?.trace(
         { payload: subscribe },
         "sending subscribe message",
@@ -353,7 +353,7 @@ export class ObjectSetListenerWebsocket {
 
         // we again may have lost the race after our minimum backoff time
         if (this.#ws == null) {
-          if (process?.env?.NODE_ENV !== "production") {
+          if (process.env.NODE_ENV !== "production") {
             this.#logger?.trace("Creating websocket");
           }
           this.#ws = new WebSocket(url, [`Bearer-${token}`]);
@@ -395,7 +395,7 @@ export class ObjectSetListenerWebsocket {
 
   #onMessage = async (message: WebSocket.MessageEvent) => {
     const data = JSON.parse(message.data.toString()) as StreamMessage;
-    if (process?.env?.NODE_ENV !== "production") {
+    if (process.env.NODE_ENV !== "production") {
       this.#logger?.trace({ payload: data }, "received message from ws");
     }
     switch (data.type) {
@@ -522,7 +522,7 @@ export class ObjectSetListenerWebsocket {
           const shouldFireOutOfDate = sub.status === "expired"
             || sub.status === "reconnecting";
 
-          if (process?.env?.NODE_ENV !== "production") {
+          if (process.env.NODE_ENV !== "production") {
             this.#logger?.trace({ shouldFireOutOfDate }, "success");
           }
           sub.status = "subscribed";
@@ -550,7 +550,7 @@ export class ObjectSetListenerWebsocket {
   }
 
   #onClose = (event: WebSocket.CloseEvent) => {
-    if (process?.env?.NODE_ENV !== "production") {
+    if (process.env.NODE_ENV !== "production") {
       this.#logger?.trace({ event }, "Received close event from ws", event);
     }
     // TODO we should probably throttle this so we don't abuse the backend
@@ -574,7 +574,7 @@ export class ObjectSetListenerWebsocket {
 
     // if we have any listeners that are still depending on us, go ahead and reopen the websocket
     if (this.#subscriptions.size > 0) {
-      if (process?.env?.NODE_ENV !== "production") {
+      if (process.env.NODE_ENV !== "production") {
         for (const s of this.#subscriptions.values()) {
           invariant(
             s.status !== "done" && s.status !== "error",

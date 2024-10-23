@@ -41,7 +41,7 @@ export function createMinimalClient(
   ) => Promise<Response> = global.fetch,
   objectSetFactory: ObjectSetFactory<any, any> = createObjectSet,
 ) {
-  if (process?.env?.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV !== "production") {
     try {
       new URL(baseUrl);
     } catch (e) {
