@@ -25,7 +25,7 @@ describe("generateClientSdkPackage", () => {
       osdkClientApiVersion: "^66.6.6",
       areTheTypesWrongVersion: "^0.15.2",
       tslibVersion: "^2.6.2",
-      typescriptVersion: "^5.4.2",
+      typescriptVersion: "~5.5.4",
     } as const;
 
     describe("v2", () => {
