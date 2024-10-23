@@ -1,4 +1,5 @@
 import type { Client } from "@osdk/client";
+import type { PublicOauthClient } from "@osdk/oauth";
 import { createClient } from "@osdk/client";
 import { $ontologyRid } from "@osdk/e2e.generated.catchall";
 import { createPublicOauthClient } from "@osdk/oauth";
@@ -19,19 +20,28 @@ function checkEnv(
   }
 }
 
-export const auth = createPublicOauthClient(
-  clientId,
-  url,
-  redirectUrl,
-);
+// Lazily configure the auth and client to prevent them from being used in pre-rendering
+let auth: PublicOauthClient | null = null;
+let client: Client | null = null;
 
-/**
- * Initialize the client to interact with the Ontology SDK
- */
-const client: Client = createClient(
-  url,
-  $ontologyRid,
-  auth,
-);
+export const getAuth = () => {
+  if (auth == null) {
+    auth = createPublicOauthClient(
+      clientId,
+      url,
+      redirectUrl,
+    );
+  }
+  return auth;
+}
 
-export default client;
+export const getClient = () => {
+  if (client == null) {
+    client = createClient(
+      url,
+      $ontologyRid,
+      getAuth(),
+    );
+  }
+  return client;
+}
