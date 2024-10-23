@@ -1,5 +1,11 @@
 # @osdk/legacy-client
 
+## 2.5.3
+
+### Patch Changes
+
+- 03fbf31: Fixes .d.ts generation for slate
+
 ## 2.5.2
 
 ### Patch Changes

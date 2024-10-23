@@ -1,5 +1,14 @@
 # @osdk/foundry-sdk-generator
 
+## 1.3.13
+
+### Patch Changes
+
+- 03fbf31: Fixes .d.ts generation for slate
+- Updated dependencies [03fbf31]
+  - @osdk/legacy-client@2.5.3
+  - @osdk/generator@1.13.5
+
 ## 1.3.12
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @osdk/generator
 
+## 1.13.5
+
+### Patch Changes
+
+- 03fbf31: Fixes .d.ts generation for slate
+
 ## 1.13.4
 
 ### Patch Changes
