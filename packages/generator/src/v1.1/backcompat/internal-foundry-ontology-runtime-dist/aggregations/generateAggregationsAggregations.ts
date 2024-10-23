@@ -28,7 +28,7 @@ export async function generateAggregationsAggregations(
     path.join(aggregationsDir, "Aggregations.ts"),
     await formatTs(
       `
-      import { LocalDate, Timestamp } from "@osdk/legacy-client";
+      import { LocalDate, Timestamp, OntologyObject } from "@osdk/legacy-client";
       `
         + reexportTypes([
           "Double",

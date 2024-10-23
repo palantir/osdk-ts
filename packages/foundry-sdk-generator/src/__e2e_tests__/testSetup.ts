@@ -25,6 +25,11 @@ export async function setup() {
 
   try {
     await rm(join(dir, "@test-app"), { recursive: true });
+  } catch (e) {
+    // Only needed for regenerations
+  }
+
+  try {
     await rm(join(dir, "@test-app2"), { recursive: true });
   } catch (e) {
     // Only needed for regenerations

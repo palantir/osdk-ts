@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { colorize } from "consola/utils";
 import type {
   ExportedDeclarations,
   ExportSpecifier,
@@ -26,6 +27,8 @@ import type {
 import { Node, SyntaxKind } from "ts-morph";
 import { getModuleSourceFile } from "./getModuleSourceFile.js";
 
+export const DEBUG = false;
+
 type TraversalStep = { sourceFile: SourceFile; imports: Set<string> };
 export class ProjectMinifier {
   private nodesToKeep: { [moduleName: string]: Set<Node> } = {};
@@ -35,13 +38,25 @@ export class ProjectMinifier {
 
   constructor(
     private project: Project,
-    private startingImportSet: Set<string>,
-    private startingFilePath: string,
+    startingImportSet: Set<string>,
   ) {
-    this.stack.push({
-      sourceFile: this.project.getSourceFile(this.startingFilePath)!,
-      imports: this.startingImportSet,
-    });
+    const filesToImports: Record<string, Set<string>> = {};
+
+    for (const importSet of startingImportSet) {
+      const [file, importString] = importSet.split(":");
+      if (!filesToImports[file]) {
+        filesToImports[file] = new Set();
+      }
+      filesToImports[file].add(importString);
+    }
+
+    for (const [file, imports] of Object.entries(filesToImports)) {
+      this.pushNextVisit(
+        getModuleSourceFile(project, file)!,
+        imports,
+        "constructor",
+      );
+    }
   }
 
   private shouldContinueVisiting() {
@@ -56,7 +71,22 @@ export class ProjectMinifier {
     return this.stack.pop()!;
   }
 
-  private pushNextVisit(sourceFile: SourceFile, imports: Set<string>) {
+  private pushNextVisit(
+    sourceFile: SourceFile,
+    imports: Set<string>,
+    source: string,
+  ) {
+    if (imports.size === 0) return;
+
+    if (DEBUG) {
+      // eslint-disable-next-line no-console
+      console.log(
+        `pushNextVisit(via ${
+          colorize("gray", source)
+        }, "${sourceFile.getFilePath()}",[${[...imports].sort().join(", ")}])`,
+      );
+    }
+
     this.stack.push({ sourceFile, imports });
   }
 
@@ -72,6 +102,8 @@ export class ProjectMinifier {
       if (!this.visitedImports[filePath].has(importToCheck)) {
         shouldSkipCheck = false;
         this.visitedImports[filePath].add(importToCheck);
+      } else {
+        traversalStep.imports.delete(importToCheck);
       }
     }
 
@@ -98,12 +130,47 @@ export class ProjectMinifier {
       const identifiersToResolve = new Set<TsSymbol>();
 
       const sourceFile = visitImports.sourceFile;
+
+      if (DEBUG) {
+        // eslint-disable-next-line no-console
+        console.log(
+          `${colorize("red", "topOfMinifyProject")}("${
+            logFilename(sourceFile)
+          }", [${
+            [...visitImports.imports].join(", ")
+          }])\n=======================`,
+        );
+      }
+
       const moduleName = getModuleFromFileName(sourceFile);
-      const nodeSet: Set<Node> = this.getNodesToKeepForModule(moduleName);
+      const nodesToKeepForThisModule: Set<Node> = this.getNodesToKeepForModule(
+        moduleName,
+      );
 
       // For all the exported declarations that we need to keep from this file
       // we have to determine what we need to keep so that they still compile correctly
       for (const [key, declarations] of sourceFile.getExportedDeclarations()) {
+        if (declarations.length === 0 && DEBUG) {
+          // eslint-disable-next-line no-console
+          console.log(
+            `Possible issue for sdk with slate: can't find declaration for ${key} from ${
+              logNode(sourceFile)
+            }`,
+          );
+        }
+        if (DEBUG) {
+          // eslint-disable-next-line no-console
+          console.log(
+            `${colorize("red", "exploring exported decls")} ${
+              logFilename(sourceFile)
+            } ${key}\n${
+              [...declarations].map(d =>
+                `  - ${logNode(d, { ancestors: false, text: true })}`
+              ).join("\n")
+            }`,
+          );
+        }
+
         if (!visitImports.imports.has(key)) {
           continue;
         }
@@ -113,7 +180,11 @@ export class ProjectMinifier {
         this.visitDependentExports(moduleName);
 
         // Visit the declaration of this key
-        this.visitDeclaration(declarations, nodeSet, identifiersToResolve);
+        this.visitDeclaration(
+          declarations,
+          nodesToKeepForThisModule,
+          identifiersToResolve,
+        );
       }
 
       // Visit all export declarations
@@ -121,6 +192,10 @@ export class ProjectMinifier {
       // export { A } from "..."
       // export * as ns from "..."
       for (const declaration of sourceFile.getExportDeclarations()) {
+        if (DEBUG) {
+          // eslint-disable-next-line no-console
+          console.log(`topOfExportDeclarations(${logNode(declaration)})`);
+        }
         const moduleSpecifier = declaration.getModuleSpecifier();
         if (!moduleSpecifier) {
           continue;
@@ -150,16 +225,48 @@ export class ProjectMinifier {
               const importsFromNamespace = new Set(
                 exportSourceFile.getExportedDeclarations().keys(),
               );
-              this.pushNextVisit(exportSourceFile, importsFromNamespace);
+              this.pushNextVisit(
+                exportSourceFile,
+                importsFromNamespace,
+                "minifyProjectA",
+              );
             }
           }
         }
 
         const namedExports = declaration.getNamedExports();
 
+        function deleteFromSet(set: Set<string>, toDelete: Set<string>) {
+          for (const d of toDelete) {
+            set.delete(d);
+          }
+        }
+
         // export * from "..."
         if (namedExports.length === 0) {
-          this.pushNextVisit(exportSourceFile, visitImports.imports);
+          const depExportNames = new Set(
+            exportSourceFile.getExportSymbols().map(s => s.getName()).filter(
+              s => visitImports.imports.has(s),
+            ),
+          );
+          if (DEBUG) {
+            // eslint-disable-next-line no-console
+            console.log(
+              colorize(
+                "green",
+                `${logNode(declaration)} removing ${
+                  colorize("white", [...depExportNames].join(", "))
+                } from import set of ${logFilename(sourceFile)}`,
+              ),
+            );
+          }
+
+          deleteFromSet(visitImports.imports, depExportNames);
+          this.pushNextVisit(
+            exportSourceFile,
+            depExportNames,
+            "minifyProjectB",
+          );
 
           // Keep track of things that depend on this module
           if (!this.dependentExport[literalText]) {
@@ -174,9 +281,28 @@ export class ProjectMinifier {
         this.visitNamedExports(
           namedExports,
           visitImports,
-          nodeSet,
+          nodesToKeepForThisModule,
           exportSourceFile,
         );
+
+        if (DEBUG) {
+          // eslint-disable-next-line no-console
+          console.log(
+            colorize(
+              "green",
+              `removing ${
+                colorize("white", namedExports.map(n => n.getName()).join(", "))
+              } from import set of ${logFilename(sourceFile)}`,
+            ),
+          );
+        }
+
+        for (const n of namedExports) {
+          if (visitImports.imports.has(n.getName())) {
+            nodesToKeepForThisModule.add(n);
+            visitImports.imports.delete(n.getName());
+          }
+        }
       }
 
       // Visit all import declarations
@@ -216,7 +342,11 @@ export class ProjectMinifier {
               sourceFile,
             );
 
-            this.pushNextVisit(importSourceFile, importsFromNamespace);
+            this.pushNextVisit(
+              importSourceFile,
+              importsFromNamespace,
+              "minifyProjectC",
+            );
           }
           continue;
         }
@@ -231,6 +361,28 @@ export class ProjectMinifier {
           importSourceFile,
         );
       }
+
+      // get the dynamic import statements
+      sourceFile.getDescendantsOfKind(SyntaxKind.ImportType).forEach((node) => {
+        const moduleSpecifier = node.getArgument().getText().slice(1, -1);
+        const importSourceFile = getModuleSourceFile(
+          this.project,
+          moduleSpecifier,
+        );
+        const qualifier = node.getQualifier();
+        const qualifierSymbol = qualifier?.getSymbol();
+
+        if (
+          qualifier && qualifierSymbol && importSourceFile
+          && identifiersToResolve.has(qualifierSymbol)
+        ) {
+          this.pushNextVisit(
+            importSourceFile,
+            new Set([qualifier.getText()]),
+            "dynamic imports",
+          );
+        }
+      });
     }
 
     this.deleteUnused();
@@ -260,7 +412,7 @@ export class ProjectMinifier {
         this.getNodesToKeepForModule(moduleName).add(declaration);
       }
     }
-    this.pushNextVisit(importSourceFile, importsToVisit);
+    this.pushNextVisit(importSourceFile, importsToVisit, "visitNamedImports");
   }
 
   // For each named export if it is something that we need, we keep the export
@@ -289,28 +441,29 @@ export class ProjectMinifier {
         nodeSet.add(ancestor);
       }
     }
-    this.pushNextVisit(exportSourceFile, exportsToVisit);
+    this.pushNextVisit(exportSourceFile, exportsToVisit, "visitNamedExports");
   }
 
   // Traverse the declaration and it's dependent symbols
   private visitDeclaration(
     declarations: ExportedDeclarations[],
-    nodeSet: Set<Node>,
-    identifiers: Set<TsSymbol>,
+    nodesToKeep: Set<Node>,
+    identifiersToResolve: Set<TsSymbol>,
   ) {
-    const declarationStack: Node[] = declarations;
+    // local stack to process to avoid deep recursion
+    const declarationStack: Node[] = [...declarations];
 
     while (declarationStack.length > 0) {
       const currentDeclaration = declarationStack.pop()!;
 
       // If we've already visited this declaration
-      if (nodeSet.has(currentDeclaration)) {
+      if (nodesToKeep.has(currentDeclaration)) {
         continue;
       }
 
-      nodeSet.add(currentDeclaration);
+      nodesToKeep.add(currentDeclaration);
       for (const ancestor of currentDeclaration.getAncestors()) {
-        nodeSet.add(ancestor);
+        nodesToKeep.add(ancestor);
       }
 
       for (
@@ -320,11 +473,11 @@ export class ProjectMinifier {
       ) {
         const symbol = child.getSymbol();
         // If we've seen this symbol we've already traversed it
-        if (!symbol || identifiers.has(symbol)) {
+        if (!symbol || identifiersToResolve.has(symbol)) {
           continue;
         }
 
-        identifiers.add(symbol);
+        identifiersToResolve.add(symbol);
 
         // Find the TsSymbol's declarations
         for (const symbolDeclaration of symbol.getDeclarations()) {
@@ -337,7 +490,11 @@ export class ProjectMinifier {
             if (!importSourceFile) {
               continue;
             }
-            this.pushNextVisit(importSourceFile, new Set(symbol.getName()));
+            this.pushNextVisit(
+              importSourceFile,
+              new Set(symbol.getName()),
+              "visitDeclaration",
+            );
           } else {
             // If it's not an import, it's locally defined, so we may want to traverse it locally
             declarationStack.push(symbolDeclaration);
@@ -354,6 +511,15 @@ export class ProjectMinifier {
       if (sourceFile.getFilePath().startsWith("/internal")) {
         const moduleName = getModuleFromFileName(sourceFile);
         const nodesToKeepForModule = this.nodesToKeep[moduleName];
+
+        if (DEBUG && nodesToKeepForModule) {
+          // eslint-disable-next-line no-console
+          console.log(
+            `KEEPERS for ${logFilename(sourceFile)}\n${
+              [...nodesToKeepForModule].map(n => `  - ${logNode(n)}`).join("\n")
+            }`,
+          );
+        }
 
         if (!nodesToKeepForModule || nodesToKeepForModule.size === 0) {
           deletedModules.add(moduleName);
@@ -387,6 +553,14 @@ export class ProjectMinifier {
 
           const nodesToKeepForTargetModule =
             this.nodesToKeep[targetModuleLiteralText];
+          if (DEBUG && nodesToKeepForTargetModule) {
+            // eslint-disable-next-line no-console
+            console.log(
+              "nodes to keep for target module \n"
+                + [...nodesToKeepForTargetModule].map(x => `  ${logNode(x)}`)
+                  .join("\n"),
+            );
+          }
 
           if (
             !nodesToKeepForTargetModule || nodesToKeepForTargetModule.size === 0
@@ -395,7 +569,24 @@ export class ProjectMinifier {
             continue;
           }
 
-          for (const namedExport of exportDeclaration.getNamedExports()) {
+          perNamedExport: for (
+            const namedExport of exportDeclaration.getNamedExports()
+          ) {
+            for (const n of nodesToKeepForTargetModule) {
+              if (
+                Node.isExportable(n)
+                && n.getSourceFile().getFilePath().startsWith("/internal")
+              ) {
+                if (n.getSymbol()?.getName() === namedExport.getName()) {
+                  continue perNamedExport;
+                }
+              }
+            }
+
+            if (nodesToKeepForModule.has(namedExport)) {
+              continue perNamedExport;
+            }
+
             if (!nodesToKeepForTargetModule.has(namedExport)) {
               namedExport.remove();
             }
@@ -422,6 +613,24 @@ export class ProjectMinifier {
   // Visit all files up which have done
   // `export * from "moduleName"`
   private visitDependentExports(moduleName: string) {
+    if (DEBUG) {
+      // eslint-disable-next-line no-console
+      console.log(
+        `visitDependentExports(${moduleName})`,
+        Object.fromEntries(
+          Object.entries(this.dependentExport).map(([key, value]) => {
+            return [
+              key,
+              [...value].map(n => {
+                return `${n.getKindName()}:${n.getSourceFile().getFilePath()} - ${
+                  n.getText().replace(/\n/g, "\\n")
+                }`;
+              }),
+            ];
+          }),
+        ),
+      );
+    }
     if (!this.dependentExport[moduleName]) {
       return;
     }
@@ -449,4 +658,45 @@ function getModuleFromFileName(sourceFile: SourceFile) {
     "/index",
     "",
   );
+}
+
+function logFilename(node: Node | string) {
+  if (typeof node === "string") {
+    return colorize("yellow", node);
+  }
+  return colorize(
+    "yellow",
+    `${node.getSourceFile().getFilePath()}:${node.getStartLineNumber()}`,
+  );
+}
+
+export function logNode(
+  node: Node,
+  { ancestors, text }: { ancestors: boolean; text: boolean } = {
+    ancestors: false,
+    text: true,
+  },
+) {
+  if (Node.isSourceFile(node)) {
+    return `${colorize("blue", "SourceFile[")}${logFilename(node)}${
+      colorize("blue", "]")
+    }`;
+  }
+  return `${colorize("blue", "Node[")}${logFilename(node)}: ${
+    colorize("gray", node.getKindName())
+  }${
+    ancestors
+      ? `:${node.getAncestors().map(n => n.getKindName()).join(":")}`
+      : ""
+  }${text ? `:${logJustNodeText(node)}` : ""}${colorize("blue", "]")}`;
+}
+
+function logJustNodeText(
+  node: Node,
+  { maxLength }: { maxLength: number } = { maxLength: 50 },
+) {
+  const a = node.getText().replace(/\n/g, "\\n");
+  if (a.length <= maxLength) return `\`${a}\``;
+
+  return `\`${a.slice(0, maxLength)}\`...`;
 }

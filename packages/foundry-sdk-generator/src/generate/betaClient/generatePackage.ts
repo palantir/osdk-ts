@@ -34,6 +34,9 @@ const dependencies: { [key: string]: string | undefined } = {
   "@osdk/legacy-client": typeof __OSDK_LEGACY_CLIENT_VERSION__ !== "undefined"
     ? __OSDK_LEGACY_CLIENT_VERSION__
     : undefined,
+  "@osdk/api": typeof __OSDK_API_VERSION__ !== "undefined"
+    ? __OSDK_API_VERSION__
+    : undefined,
 };
 
 const betaDependencies: { [key: string]: string | undefined } = {
@@ -122,6 +125,8 @@ export async function generatePackage(
             join(nodeModulesPath, "@osdk", "legacy-client"),
             join(nodeModulesPath, "@osdk", "api"),
             join(nodeModulesPath, "@osdk", "gateway"),
+            join(nodeModulesPath, "@osdk", "shared.net"),
+            join(nodeModulesPath, "@osdk", "shared.client"),
           ],
         options.packageName,
         compilerOutput.files,

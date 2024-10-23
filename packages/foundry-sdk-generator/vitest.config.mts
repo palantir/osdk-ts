@@ -24,6 +24,7 @@ export default defineConfig({
   test: {
     globalSetup: [join(__dirname, "./src/__e2e_tests__/testSetup.ts")],
     alias: {
+      "consola/utils": "consola/utils",
       "consola": join(__dirname, "./src/__e2e_tests__/consola.ts"),
     },
     pool: "forks",

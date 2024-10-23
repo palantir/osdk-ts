@@ -14,11 +14,49 @@
  * limitations under the License.
  */
 
-const consola = {
-  ...console,
-  // eslint-disable-next-line no-console
-  start: (message: string) => console.log(message),
-  // eslint-disable-next-line no-console
-  success: (message: string) => console.log(message),
+/* eslint-disable no-console */
+
+import chalk from "chalk";
+import type { LogType } from "consola";
+import type { ColorName } from "consola/utils";
+
+const levels: Partial<
+  Record<LogType, {
+    color: ColorName;
+  }>
+> = {
+  success: {
+    color: "green",
+  },
+  info: {
+    color: "blue",
+  },
+  log: {
+    color: "cyan",
+  },
+  warn: {
+    color: "yellow",
+  },
+  error: {
+    color: "red",
+  },
+  silent: {
+    color: "gray",
+  },
+  start: {
+    color: "magenta",
+  },
 };
+
+const consola: Record<string, (...args: any[]) => void> = {};
+
+for (const [key, data] of Object.entries(levels)) {
+  consola[key as LogType] = (...args: any[]) => {
+    (key === "fatal" || key === "error" ? console.error : console.log)(
+      `[${chalk[data.color](key.toUpperCase())}]`,
+      ...args,
+    );
+  };
+}
+
 export { consola };

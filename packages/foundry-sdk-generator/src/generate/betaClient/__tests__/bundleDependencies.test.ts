@@ -20,13 +20,16 @@ import { outputModule } from "../bundleDependencies.js";
 import { ProjectMinifier } from "../minifyBundle.js";
 
 describe("minify project", () => {
-  it("minifies a project", () => {
+  it("minifies a projectA", () => {
     const project = new Project({
       useInMemoryFileSystem: true,
       compilerOptions: {
         declaration: true,
         emitDeclarationOnly: true,
         outFile: "dist/bundle/index.d.ts",
+        paths: {
+          "internal/*": ["/internal/*"],
+        },
       },
     });
 
@@ -64,15 +67,18 @@ describe("minify project", () => {
 
     const projectMinifier = new ProjectMinifier(
       project,
-      new Set(["A", "B", "C"]),
-      "/internal/moduleA/index.ts",
+      new Set([
+        "internal/moduleA:A",
+        "internal/moduleA:B",
+        "internal/moduleA:C",
+      ]),
     );
     projectMinifier.minifyProject();
 
     expect(outputModule(project)).toMatchInlineSnapshot(`
       "/** /internal/moduleA/index.ts **/
       declare module "internal/moduleA" {
-      	export * from "internal/moduleB"
+      	export { A, B, C } from "internal/moduleB"
       }
       /** /internal/moduleB/index.ts **/
       declare module "internal/moduleB" {
@@ -96,6 +102,71 @@ describe("minify project", () => {
     `);
   });
 
+  it("minifies a project with dynamic import", () => {
+    const project = new Project({
+      useInMemoryFileSystem: true,
+      compilerOptions: {
+        declaration: true,
+        emitDeclarationOnly: true,
+        outFile: "dist/bundle/index.d.ts",
+        paths: {
+          "internal/*": ["/internal/*"],
+        },
+      },
+    });
+
+    project.createSourceFile(
+      "/internal/moduleA/index.ts",
+      `export { A, C } from "internal/moduleB"`,
+    );
+    project.createSourceFile(
+      "/internal/moduleB/index.ts",
+      `export const A : import("internal/moduleB/folder/fileA").B;
+            export const UnusedConst: import("internal/moduleB/folder").C;
+            export * from "internal/moduleB/folder";`,
+    );
+
+    project.createSourceFile(
+      "/internal/moduleB/folder/index.ts",
+      `export * from "internal/moduleB/folder/fileC";`,
+    );
+
+    project.createSourceFile(
+      "/internal/moduleB/folder/fileA.ts",
+      `export type B = string;`,
+    );
+    project.createSourceFile(
+      "/internal/moduleB/folder/fileB.ts",
+      `export type UnusedType = string;`,
+    );
+    project.createSourceFile(
+      "/internal/moduleB/folder/fileC.ts",
+      `
+                            export type C = import("internal/moduleB/folder/fileA").A;`,
+    );
+
+    const projectMinifier = new ProjectMinifier(
+      project,
+      new Set(["internal/moduleA:A"]),
+    );
+    projectMinifier.minifyProject();
+
+    expect(outputModule(project)).toMatchInlineSnapshot(`
+      "/** /internal/moduleA/index.ts **/
+      declare module "internal/moduleA" {
+      	export { A } from "internal/moduleB"
+      }
+      /** /internal/moduleB/index.ts **/
+      declare module "internal/moduleB" {
+      	export const A : import("internal/moduleB/folder/fileA").B;
+      }
+      /** /internal/moduleB/folder/fileA.ts **/
+      declare module "internal/moduleB/folder/fileA" {
+      	export type B = string;
+      }"
+    `);
+  });
+
   it("minifies a project with nested unused types", () => {
     const project = new Project({
       useInMemoryFileSystem: true,
@@ -103,6 +174,9 @@ describe("minify project", () => {
         declaration: true,
         emitDeclarationOnly: true,
         outFile: "dist/bundle/index.d.ts",
+        paths: {
+          "internal/*": ["/internal/*"],
+        },
       },
     });
 
@@ -138,15 +212,14 @@ describe("minify project", () => {
 
     const projectMinifier = new ProjectMinifier(
       project,
-      new Set(["A", "C"]),
-      "/internal/moduleA/index.ts",
+      new Set(["internal/moduleA:A", "internal/moduleA:C"]),
     );
     projectMinifier.minifyProject();
 
     expect(outputModule(project)).toMatchInlineSnapshot(`
       "/** /internal/moduleA/index.ts **/
       declare module "internal/moduleA" {
-      	export * from "internal/moduleB"
+      	export { A, C } from "internal/moduleB"
       }
       /** /internal/moduleB/index.ts **/
       declare module "internal/moduleB" {
@@ -165,6 +238,67 @@ describe("minify project", () => {
     `);
   });
 
+  it("minifies a project with nested unused types that were not requested", () => {
+    const project = new Project({
+      useInMemoryFileSystem: true,
+      compilerOptions: {
+        declaration: true,
+        emitDeclarationOnly: true,
+        outFile: "dist/bundle/index.d.ts",
+        paths: {
+          "internal/*": ["/internal/*"],
+        },
+      },
+    });
+
+    project.createSourceFile(
+      "/internal/moduleA/index.ts",
+      `export { A, C } from "internal/moduleB"`,
+    );
+    project.createSourceFile(
+      "/internal/moduleB/index.ts",
+      `export const A : {};
+              export const UnusedConst: {};
+              export * from "internal/moduleB/folder";`,
+    );
+
+    project.createSourceFile(
+      "/internal/moduleB/folder/index.ts",
+      `export * from "internal/moduleB/folder/fileC";`,
+    );
+
+    project.createSourceFile(
+      "/internal/moduleB/folder/fileA.ts",
+      `export type B = string;`,
+    );
+    project.createSourceFile(
+      "/internal/moduleB/folder/fileB.ts",
+      `export type UnusedType = string;`,
+    );
+    project.createSourceFile(
+      "/internal/moduleB/folder/fileC.ts",
+      `import { A } from "internal/moduleB/folder/fileA";
+                              export type C = A;`,
+    );
+
+    const projectMinifier = new ProjectMinifier(
+      project,
+      new Set(["internal/moduleA:A"]), // , "internal/moduleA:C"]),
+    );
+    projectMinifier.minifyProject();
+
+    expect(outputModule(project)).toMatchInlineSnapshot(`
+      "/** /internal/moduleA/index.ts **/
+      declare module "internal/moduleA" {
+      	export { A } from "internal/moduleB"
+      }
+      /** /internal/moduleB/index.ts **/
+      declare module "internal/moduleB" {
+      	export const A : {};
+      }"
+    `);
+  });
+
   it("minifies a project with nested types", () => {
     const project = new Project({
       useInMemoryFileSystem: true,
@@ -172,6 +306,9 @@ describe("minify project", () => {
         declaration: true,
         emitDeclarationOnly: true,
         outFile: "dist/bundle/index.d.ts",
+        paths: {
+          "internal/*": ["/internal/*"],
+        },
       },
     });
 
@@ -205,15 +342,14 @@ export type C = D;`,
 
     const projectMinifier = new ProjectMinifier(
       project,
-      new Set(["A", "C"]),
-      "/internal/moduleA/index.ts",
+      new Set(["internal/moduleA:A", "internal/moduleA:C"]),
     );
     projectMinifier.minifyProject();
 
     expect(outputModule(project)).toMatchInlineSnapshot(`
       "/** /internal/moduleA/index.ts **/
       declare module "internal/moduleA" {
-      	export * from "internal/moduleB"
+      	export { A, C } from "internal/moduleB"
       }
       /** /internal/moduleB/index.ts **/
       declare module "internal/moduleB" {
@@ -245,6 +381,9 @@ export type C = D;`,
         declaration: true,
         emitDeclarationOnly: true,
         outFile: "dist/bundle/index.d.ts",
+        paths: {
+          "internal/*": ["/internal/*"],
+        },
       },
     });
 
@@ -280,21 +419,30 @@ export type C = D;`,
 
     const projectMinifier = new ProjectMinifier(
       project,
-      new Set(["A", "C"]),
-      "/internal/moduleA/index.ts",
+      new Set(["internal/moduleA:A", "internal/moduleA:C"]),
     );
     projectMinifier.minifyProject();
 
     expect(outputModule(project)).toMatchInlineSnapshot(`
       "/** /internal/moduleA/index.ts **/
       declare module "internal/moduleA" {
-      	export * from "internal/moduleB"
+      	export { A, C } from "internal/moduleB"
       }
       /** /internal/moduleB/index.ts **/
       declare module "internal/moduleB" {
       	export const A : {};
       	import * as B from "internal/moduleB/folder";
       	export type C = B.C;
+      }
+      /** /internal/moduleB/folder/fileB.ts **/
+      declare module "internal/moduleB/folder/fileB" {
+      	export type B = string; export type Unused = string;
+      }
+      /** /internal/moduleB/folder/fileC.ts **/
+      declare module "internal/moduleB/folder/fileC" {
+      	import { B } from "internal/moduleB/folder/fileB";
+      	type D = B;
+      	export type C = D;
       }
       /** /internal/moduleB/folder/index.ts **/
       declare module "internal/moduleB/folder" {
@@ -312,6 +460,9 @@ export type C = D;`,
         declaration: true,
         emitDeclarationOnly: true,
         outFile: "dist/bundle/index.d.ts",
+        paths: {
+          "internal/*": ["/internal/*"],
+        },
       },
     });
 
@@ -342,15 +493,14 @@ export type C = D;`,
 
     const projectMinifier = new ProjectMinifier(
       project,
-      new Set(["A", "C"]),
-      "/internal/moduleA/index.ts",
+      new Set(["internal/moduleA:A", "internal/moduleA:C"]),
     );
     projectMinifier.minifyProject();
 
     expect(outputModule(project)).toMatchInlineSnapshot(`
       "/** /internal/moduleA/index.ts **/
       declare module "internal/moduleA" {
-      	export * from "internal/moduleB"
+      	export { A, C } from "internal/moduleB"
       }
       /** /internal/moduleB/index.ts **/
       declare module "internal/moduleB" {

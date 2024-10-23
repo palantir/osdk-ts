@@ -14,10 +14,46 @@
  * limitations under the License.
  */
 
-export * from "./aggregations.js";
-export * from "./baseObjectSet.js";
-export * from "./filters.js";
-export * from "./objectSet.js";
-export * from "./ordering.js";
-export * from "./searchAround.js";
-export * from "./utils/index.js";
+export type {
+  AggregationFromType,
+  GroupableProperty,
+  GroupByFromType,
+  MultipleAggregationFromType,
+  ObjectSetAggregateArg,
+  ObjectSetGroupByArg,
+  ObjectSetMultipleAggregateArg,
+  ObjectTypesGroupByFunction,
+} from "./aggregations.js";
+export type {
+  BaseObjectSet,
+  BaseObjectSetOperations,
+} from "./baseObjectSet.js";
+export type {
+  ObjectSetFilterArg,
+  ObjectTypeFilterFunction,
+  ObjectTypeOrderByFunction,
+} from "./filters.js";
+export type {
+  ObjectSet,
+  ObjectSetOperations,
+  ObjectSetOrderByStep,
+  ObjectSetTerminalLoadStep,
+} from "./objectSet.js";
+export type {
+  ObjectSetOrderByArg,
+  OrderableProperties,
+  OrderByFunction,
+} from "./ordering.js";
+export type {
+  InferLinkType,
+  SearchAround,
+  SearchAroundKeys,
+} from "./searchAround.js";
+export type {
+  IsLink,
+  LinksProperties,
+  OmitLinksProperties,
+  OmitMetadataProperties,
+  Properties,
+  SelectableProperties,
+} from "./utils/index.js";
