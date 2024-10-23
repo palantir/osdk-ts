@@ -42,7 +42,6 @@ const config = function(api) {
           "PACKAGE_CLI_VERSION",
           "TARGET",
           "MODE",
-          "NODE_ENV",
         ],
       }],
       ["minify-dead-code-elimination"],
