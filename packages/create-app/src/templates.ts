@@ -14,6 +14,19 @@
  * limitations under the License.
  */
 
+export type SdkVersion = "1.x" | "2.x";
+
+type ModuleImportFiles = Map<
+  string,
+  {
+    type: "base64";
+    body: string;
+  } | {
+    type: "raw";
+    body: string;
+  }
+>;
+
 export interface Template {
   id: string;
   label: string;
@@ -21,20 +34,24 @@ export interface Template {
   buildDirectory: string;
   hidden?: boolean;
   isBeta?: boolean;
-  getFiles: () => Promise<
-    Map<
-      string,
-      { type: "base64"; body: string } | { type: "raw"; body: string }
-    >
-  >;
+  files: {
+    [K in SdkVersion]?: () => Promise<
+      ModuleImportFiles
+    >;
+  };
 }
 
 export interface TemplateContext {
   project: string;
   foundryUrl: string;
   osdkPackage: string;
+  clientVersion: string;
   corsProxy: boolean;
 }
+
+const getPackageFiles =
+  (importPromise: Promise<{ files: ModuleImportFiles }>) => async () =>
+    (await importPromise).files;
 
 export const TEMPLATES: readonly Template[] = [
   {
@@ -42,37 +59,34 @@ export const TEMPLATES: readonly Template[] = [
     label: "React",
     envPrefix: "VITE_",
     buildDirectory: "./dist",
-    getFiles: async () => ((await import(
-      `@osdk/create-app.template.react`
-    )).files),
-  },
-  {
-    id: "template-react-beta",
-    label: "React",
-    envPrefix: "VITE_",
-    buildDirectory: "./dist",
-    isBeta: true,
-    getFiles: async () => ((await import(
-      `@osdk/create-app.template.react.beta`
-    )).files),
+    files: {
+      "1.x": getPackageFiles(import("@osdk/create-app.template.react")),
+      "2.x": getPackageFiles(import("@osdk/create-app.template.react.beta")),
+    },
   },
   {
     id: "template-vue",
     label: "Vue",
     envPrefix: "VITE_",
     buildDirectory: "./dist",
-    getFiles: async () => ((await import(
-      `@osdk/create-app.template.vue`
-    )).files),
+    files: {
+      "1.x": getPackageFiles(import("@osdk/create-app.template.vue")),
+      "2.x": getPackageFiles(import("@osdk/create-app.template.vue.v2")),
+    },
   },
   {
     id: "template-next-static-export",
     label: "Next (static export)",
     envPrefix: "NEXT_PUBLIC_",
     buildDirectory: "./out",
-    getFiles: async () => ((await import(
-      `@osdk/create-app.template.next-static-export`
-    )).files),
+    files: {
+      "1.x": getPackageFiles(
+        import("@osdk/create-app.template.next-static-export"),
+      ),
+      "2.x": getPackageFiles(
+        import("@osdk/create-app.template.next-static-export.v2"),
+      ),
+    },
   },
   {
     id: "template-tutorial-todo-app",
@@ -80,9 +94,14 @@ export const TEMPLATES: readonly Template[] = [
     envPrefix: "VITE_",
     buildDirectory: "./dist",
     hidden: true,
-    getFiles: async () => ((await import(
-      `@osdk/create-app.template.tutorial-todo-app`
-    )).files),
+    files: {
+      "1.x": getPackageFiles(
+        import("@osdk/create-app.template.tutorial-todo-app"),
+      ),
+      "2.x": getPackageFiles(
+        import("@osdk/create-app.template.tutorial-todo-app.beta"),
+      ),
+    },
   },
   {
     id: "template-tutorial-todo-aip-app",
@@ -90,8 +109,13 @@ export const TEMPLATES: readonly Template[] = [
     envPrefix: "VITE_",
     buildDirectory: "./dist",
     hidden: true,
-    getFiles: async () => ((await import(
-      `@osdk/create-app.template.tutorial-todo-aip-app`
-    )).files),
+    files: {
+      "1.x": getPackageFiles(
+        import("@osdk/create-app.template.tutorial-todo-aip-app"),
+      ),
+      "2.x": getPackageFiles(
+        import("@osdk/create-app.template.tutorial-todo-aip-app.beta"),
+      ),
+    },
   },
 ];

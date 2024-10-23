@@ -27,15 +27,17 @@ import { promptOsdkPackage } from "./prompts/promptOsdkPackage.js";
 import { promptOsdkRegistryUrl } from "./prompts/promptOsdkRegistryUrl.js";
 import { promptOverwrite } from "./prompts/promptOverwrite.js";
 import { promptProject } from "./prompts/promptProject.js";
+import { promptSdkVersion } from "./prompts/promptSdkVersion.js";
 import { promptTemplate } from "./prompts/promptTemplate.js";
 import { run } from "./run.js";
-import type { Template } from "./templates.js";
+import type { SdkVersion, Template } from "./templates.js";
 
 interface CliArgs {
   project?: string;
   overwrite?: boolean;
   beta?: boolean;
   template?: string;
+  sdkVersion?: string;
   foundryUrl?: string;
   applicationUrl?: string;
   skipApplicationUrl?: boolean;
@@ -73,6 +75,10 @@ export async function cli(args: string[] = process.argv): Promise<void> {
           .option("template", {
             type: "string",
             describe: "Template name to use",
+          })
+          .option("sdkVersion", {
+            type: "string",
+            describe: "The OSDK version to use",
           })
           .option("foundryUrl", {
             type: "string",
@@ -115,6 +121,10 @@ export async function cli(args: string[] = process.argv): Promise<void> {
   const project: string = await promptProject(parsed);
   const overwrite: boolean = await promptOverwrite({ ...parsed, project });
   const template: Template = await promptTemplate(parsed);
+  const sdkVersion: SdkVersion = await promptSdkVersion({
+    ...parsed,
+    template,
+  });
   const foundryUrl: string = await promptFoundryUrl(parsed);
   const applicationUrl: string | undefined = await promptApplicationUrl(parsed);
   const application: string = await promptApplicationRid(parsed);
@@ -127,6 +137,7 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     project,
     overwrite,
     template,
+    sdkVersion,
     foundryUrl,
     applicationUrl,
     application,

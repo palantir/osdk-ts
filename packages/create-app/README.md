@@ -29,6 +29,7 @@ npx @osdk/create-app [project] [--<option>]
 | -------------------- | -------------------------------------------------------------------------------- |
 | --overwrite          | Overwrite project directory if already exists [boolean]                          |
 | --template           | Template name to use [string]                                                    |
+| --sdkVersion         | The SDK version to use (1.x or 2.x), defaults to 1.x [string]                    |
 | --foundryUrl         | URL for the Foundry stack [string]                                               |
 | --applicationUrl     | URL the production application will be hosted on [string]                        |
 | --skipApplicationUrl | Skip filling in URL the production application will be hosted on [boolean]       |

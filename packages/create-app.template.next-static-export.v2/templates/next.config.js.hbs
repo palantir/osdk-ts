@@ -1,0 +1,17 @@
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: false,
+  output: "export",
+  {{#if corsProxy}}
+  // Rewrites are used to proxy requests during local development only for CORS
+  // and will warn when using this feature together with export.
+  rewrites: () => [
+    {
+      source: "/:prefix(multipass/api|api)/:path*",
+      destination: "{{foundryUrl}}/:prefix/:path*",
+    },
+  ],
+  {{/if}}
+};
+
+module.exports = nextConfig;

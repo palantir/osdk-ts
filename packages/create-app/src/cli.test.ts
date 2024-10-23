@@ -15,12 +15,23 @@
  */
 
 import fs from "node:fs";
-import path from "node:path";
+import path, { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import { dirSync } from "tmp";
-import { beforeEach, expect, test, vi } from "vitest";
+import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { cli } from "./cli.js";
 import type { Template } from "./templates.js";
 import { TEMPLATES } from "./templates.js";
+
+let createAppVersion: string;
+beforeAll(() => {
+  createAppVersion = JSON.parse(
+    fs.readFileSync(
+      path.join(dirname(fileURLToPath(import.meta.url)), "..", "package.json"),
+      "utf-8",
+    ),
+  ).version;
+});
 
 beforeEach(() => {
   const tmpDir = dirSync({ unsafeCleanup: true });
@@ -34,28 +45,33 @@ beforeEach(() => {
 });
 
 for (const template of TEMPLATES) {
-  test(`CLI creates ${template.id}`, async () => {
-    await runTest({
-      project: `expected-${template.id}`,
-      template,
-      corsProxy: false,
+  describe.each(["1.x", "2.x"])("For SDK version %s", (sdkVersion) => {
+    test(`CLI creates ${template.id}`, async () => {
+      await runTest({
+        project: `expected-${template.id}`,
+        template,
+        corsProxy: false,
+        sdkVersion,
+      });
     });
-  });
 
-  test(`CLI creates ${template.id} with CORS proxy`, async () => {
-    await runTest({
-      project: `expected-${template.id}-cors-proxy`,
-      template,
-      corsProxy: true,
+    test(`CLI creates ${template.id} with CORS proxy`, async () => {
+      await runTest({
+        project: `expected-${template.id}-cors-proxy`,
+        template,
+        corsProxy: true,
+        sdkVersion,
+      });
     });
   });
 }
 
 async function runTest(
-  { project, template, corsProxy }: {
+  { project, template, corsProxy, sdkVersion }: {
     project: string;
     template: Template;
     corsProxy: boolean;
+    sdkVersion: string;
   },
 ): Promise<void> {
   await cli([
@@ -79,6 +95,8 @@ async function runTest(
     "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
     "--corsProxy",
     corsProxy.toString(),
+    "--sdkVersion",
+    sdkVersion,
   ]);
 
   expect(fs.readdirSync(path.join(process.cwd(), project)).length)
@@ -87,4 +105,24 @@ async function runTest(
     .toBe(true);
   expect(fs.existsSync(path.join(process.cwd(), project, "README.md")))
     .toBe(true);
+
+  const packageJson = JSON.parse(
+    fs.readFileSync(path.join(process.cwd(), project, "package.json"), "utf-8"),
+  );
+
+  if (sdkVersion === "2.x") {
+    // Since the example-generator needs to set the version to `workspace:*`,
+    // we cannot use PRs to check that the version is being generated correctly.
+
+    // Therefore we run this test to be sure that the version is being set as we assume
+    // it should be, so that if the create-app code were to change to different behavior
+    // it would be caught.
+    expect(packageJson.dependencies["@osdk/client"]).toBe(
+      `~${createAppVersion}`,
+    );
+  } else {
+    expect(packageJson.dependencies["@osdk/client"]).toBe(
+      undefined,
+    );
+  }
 }
