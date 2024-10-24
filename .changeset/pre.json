@@ -70,7 +70,8 @@
     "@osdk/create-app.template.next-static-export.v2": "0.20.0-beta.2",
     "@osdk/create-app.template.tutorial-todo-aip-app.beta": "0.20.0-beta.0",
     "@osdk/create-app.template.tutorial-todo-app.beta": "0.20.0-beta.0",
-    "@osdk/create-app.template.vue.v2": "0.20.0-beta.2"
+    "@osdk/create-app.template.vue.v2": "0.20.0-beta.2",
+    "@osdk/generator-utils": "0.0.0"
   },
   "changesets": [
     "blue-tips-heal",
@@ -78,14 +79,18 @@
     "cyan-suns-study",
     "dirty-lions-drive",
     "eleven-kids-battle",
+    "fast-garlics-stare",
     "fluffy-carpets-sort",
+    "four-boxes-drum",
     "gold-badgers-tell",
     "heavy-news-study",
     "hot-houses-sin",
     "kind-penguins-try",
     "quiet-jobs-return",
+    "quiet-windows-teach",
     "rude-balloons-brake",
     "shiny-bananas-knock",
-    "short-bikes-fold"
+    "short-bikes-fold",
+    "three-cooks-divide"
   ]
 }

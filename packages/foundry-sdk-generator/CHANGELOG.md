@@ -1,5 +1,15 @@
 # @osdk/foundry-sdk-generator
 
+## 2.0.8-rc.4
+
+### Patch Changes
+
+- a83ab34: Generated packages should have proper package.json
+- a83ab34: Generated packages now use ^ dependencies on @osdk/api and @osdk/client
+  - @osdk/api@2.0.8-rc.4
+  - @osdk/client@2.0.8-rc.4
+  - @osdk/generator@2.0.8-rc.4
+
 ## 2.0.8-rc.3
 
 ### Patch Changes
