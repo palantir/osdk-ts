@@ -22,7 +22,7 @@ export function getObjectImports(
   curApiName: string | undefined,
   currentFilePath: string,
   v2: boolean,
-) {
+): string {
   return Array.from(objects).filter(obj => obj.fullApiName !== curApiName)
     .map(obj => {
       const defId = obj.getDefinitionIdentifier(v2);

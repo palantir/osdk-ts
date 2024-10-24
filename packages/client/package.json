@@ -53,8 +53,8 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
-    "@microsoft/api-documenter": "^7.25.3",
-    "@microsoft/api-extractor": "^7.47.0",
+    "@microsoft/api-documenter": "^7.25.21",
+    "@microsoft/api-extractor": "^7.47.11",
     "@osdk/client.test.ontology": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",

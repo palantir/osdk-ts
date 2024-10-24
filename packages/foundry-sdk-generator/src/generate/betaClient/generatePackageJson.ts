@@ -26,7 +26,7 @@ export async function generatePackageJson(options: {
     { dependencyName: string; dependencyVersion: string }
   >;
   beta: boolean;
-}) {
+}): Promise<void> {
   const packageDeps = constructDependencies(options.dependencies);
   const packagePeerDeps = constructDependencies(options.peerDependencies);
 

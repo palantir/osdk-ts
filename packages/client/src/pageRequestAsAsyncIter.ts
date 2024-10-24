@@ -36,7 +36,7 @@ export async function* pageRequestAsAsyncIter<P, Z, R>(
   values: (x: R) => Iterable<Z>,
   nextArgs: (previousPayload: P, previousResult: R) => P | undefined,
   initialPayload: P,
-) {
+): AsyncGenerator<Awaited<Z>, void, unknown> {
   let payload: P | undefined = initialPayload;
 
   while (payload) {

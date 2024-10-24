@@ -86,7 +86,7 @@ export class ProjectMinifier {
     return this.nodesToKeep[moduleName];
   }
 
-  public minifyProject() {
+  public minifyProject(): void {
     while (this.shouldContinueVisiting()) {
       const visitImports = this.getNextVisit();
 

@@ -18,7 +18,9 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { GeneratePackageCommand } from "../generate/index.js";
 
-export async function cli(args: string[] = process.argv) {
+export async function cli(args: string[] = process.argv): Promise<
+  Record<string, unknown> | undefined
+> {
   const base = yargs(hideBin(args))
     .command(new GeneratePackageCommand())
     .demandCommand()
