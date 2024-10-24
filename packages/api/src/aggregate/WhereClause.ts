@@ -15,6 +15,7 @@
  */
 
 import type { BBox, Point, Polygon } from "geojson";
+import type { RequireExactlyOne } from "type-fest";
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
@@ -23,6 +24,7 @@ import type {
   CompileTimeMetadata,
   ObjectMetadata,
 } from "../ontology/ObjectTypeDefinition.js";
+import type { IsNever } from "../OsdkObjectFrom.js";
 
 export type PossibleWhereClauseFilters =
   | "$gt"
@@ -168,7 +170,21 @@ type FilterFor<PD extends ObjectMetadata.Property> = PD["multiplicity"] extends
     : PD["type"] extends "geopoint" | "geoshape" ? GeoFilter
     : PD["type"] extends "datetime" | "timestamp" ? DatetimeFilter
     : PD["type"] extends "boolean" ? BooleanFilter
-    : NumberFilter); // FIXME we need to represent all types
+    : PD["type"] extends
+      "double" | "integer" | "long" | "float" | "decimal" | "byte"
+      ? NumberFilter
+    :
+      | MakeFilter<"$eq" | "$ne", string>
+      | MakeFilter<"$isNull", boolean>);
+
+type FilterRawType<
+  PD extends ObjectMetadata.Property,
+> = PD["multiplicity"] extends true ? (Record<string, never>)
+  : (PD["type"] extends "string" | "datetime" | "timestamp" ? string
+    : PD["type"] extends "boolean" ? boolean
+    : PD["type"] extends
+      "double" | "integer" | "long" | "float" | "decimal" | "byte" ? number
+    : Record<string, never>);
 
 export interface AndWhereClause<
   T extends ObjectOrInterfaceDefinition,
@@ -195,5 +211,41 @@ export type WhereClause<
   | AndWhereClause<T>
   | NotWhereClause<T>
   | {
-    [P in PropertyKeys<T>]?: FilterFor<CompileTimeMetadata<T>["properties"][P]>;
+    [P in PropertyKeys<T>]?:
+      | RequireExactlyOne<
+        Pick<
+          WhereClauseKeys<T, P>,
+          NonNeverKeys<
+            WhereClauseKeys<T, P>
+          >
+        >
+      >
+      | FilterRawType<CompileTimeMetadata<T>["properties"][P]>;
   };
+
+type WhereClauseKeys<
+  T extends ObjectOrInterfaceDefinition,
+  P extends PropertyKeys<T>,
+> = FilterDollarSignKeys<
+  FlattenUnion<FilterFor<CompileTimeMetadata<T>["properties"][P]>>
+>;
+
+type FlattenUnion<T> = {
+  [K in keyof UnionToIntersection<T>]: K extends keyof T
+    ? T[K] extends any[] ? T[K]
+    : T[K] extends object ? FlattenUnion<T[K]>
+    : T[K]
+    : UnionToIntersection<T>[K];
+};
+
+type UnionToIntersection<U> = (U extends any ? (k: U) => void
+  : never) extends ((k: infer I) => void) ? I
+  : never;
+
+type FilterDollarSignKeys<T> = {
+  [K in keyof T]: K extends `$${string}` ? T[K] : never;
+};
+
+type NonNeverKeys<T> = {
+  [K in keyof T]: IsNever<T[K]> extends true ? never : K;
+}[keyof T];

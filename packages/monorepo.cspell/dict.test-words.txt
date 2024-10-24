@@ -6,3 +6,5 @@ objectdoesnotexist
 Packag
 querydoesnotexist
 unstubAllEnvs
+geotimeseries
+

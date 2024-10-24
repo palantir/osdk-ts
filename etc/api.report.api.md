@@ -7,6 +7,7 @@
 import type { BBox } from 'geojson';
 import type { Point } from 'geojson';
 import type { Polygon } from 'geojson';
+import type { RequireExactlyOne } from 'type-fest';
 import type { SingleKeyObject } from 'type-fest';
 
 // @public (undocumented)
@@ -944,11 +945,13 @@ export interface VersionBound<V extends VersionString<any, any, any>> {
 // Warning: (ae-forgotten-export) The symbol "OrWhereClause" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "AndWhereClause" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "NotWhereClause" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "FilterFor" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "WhereClauseKeys" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "NonNeverKeys" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "FilterRawType" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T> | AndWhereClause<T> | NotWhereClause<T> | {
-    [P in PropertyKeys<T>]?: FilterFor<CompileTimeMetadata<T>["properties"][P]>;
+    [P in PropertyKeys<T>]?: RequireExactlyOne<Pick<WhereClauseKeys<T, P>, NonNeverKeys<WhereClauseKeys<T, P>>>> | FilterRawType<CompileTimeMetadata<T>["properties"][P]>;
 };
 
 // @public (undocumented)
