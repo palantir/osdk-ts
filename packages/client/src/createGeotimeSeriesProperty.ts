@@ -62,7 +62,9 @@ export class GeotimeSeriesPropertyImpl<T extends GeoJSON.Point>
     return latestPointPromise;
   }
 
-  public async getAllValues(query?: TimeSeriesQuery) {
+  public async getAllValues(
+    query?: TimeSeriesQuery,
+  ): Promise<TimeSeriesPoint<T>[]> {
     const allPoints: Array<TimeSeriesPoint<T>> = [];
 
     for await (const point of this.asyncIterValues(query)) {
@@ -73,7 +75,14 @@ export class GeotimeSeriesPropertyImpl<T extends GeoJSON.Point>
 
   public async *asyncIterValues(
     query?: TimeSeriesQuery,
-  ) {
+  ): AsyncGenerator<
+    {
+      time: any;
+      value: T;
+    },
+    void,
+    unknown
+  > {
     const streamPointsIterator = await OntologiesV2
       .TimeSeriesValueBankProperties.streamValues(
         this.#client,

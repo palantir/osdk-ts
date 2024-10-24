@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export function stringUnionFrom(values: ReadonlyArray<string>) {
+export function stringUnionFrom(values: ReadonlyArray<string>): string {
   if (values.length === 0) {
     return "never";
   } else {

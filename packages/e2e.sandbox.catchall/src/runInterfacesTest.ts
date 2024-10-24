@@ -26,7 +26,7 @@ import { expectType } from "ts-expect";
 import type { InterfaceObjectSet } from "../../api/build/esm/objectSet/ObjectSet.js";
 import { client } from "./client.js";
 
-export async function runInterfacesTest() {
+export async function runInterfacesTest(): Promise<void> {
   // this has the nice effect of faking a 'race' with the below code
   (async () => {
     const { data } = await client(FooInterface).fetchPage();
