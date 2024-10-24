@@ -40,7 +40,7 @@ type One = {
 
 export function defineInterfaceLinkConstraint(
   linkDef: One | Many,
-) {
+): void {
   const fromLinkMeta = getLinkMeta(linkDef);
 
   invariant(

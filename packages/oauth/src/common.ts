@@ -80,7 +80,7 @@ type LocalStorageState =
     oldUrl?: never;
   };
 
-export function saveLocal(client: Client, x: LocalStorageState) {
+export function saveLocal(client: Client, x: LocalStorageState): void {
   // MUST `localStorage?` as nodejs does not have localStorage
   localStorage?.setItem(
     `@osdk/oauth : refresh : ${client.client_id}`,
@@ -88,7 +88,7 @@ export function saveLocal(client: Client, x: LocalStorageState) {
   );
 }
 
-export function removeLocal(client: Client) {
+export function removeLocal(client: Client): void {
   // MUST `localStorage?` as nodejs does not have localStorage
   localStorage?.removeItem(`@osdk/oauth : refresh : ${client.client_id}`);
 }

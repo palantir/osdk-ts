@@ -34,10 +34,11 @@ export type DollarAsFn = <
   newDef: string | NEW_Q,
 ) => OsdkBase<any>;
 
-export const get$as = createSimpleCache<
-  FetchedObjectTypeDefinition,
-  DollarAsFn
->(new WeakMap(), $asFactory).get;
+export const get$as: (key: FetchedObjectTypeDefinition) => DollarAsFn =
+  createSimpleCache<
+    FetchedObjectTypeDefinition,
+    DollarAsFn
+  >(new WeakMap(), $asFactory).get;
 
 const osdkObjectToInterfaceView = createSimpleCache(
   new WeakMap<

@@ -19,7 +19,7 @@ import type { ObjectMetadata } from "@osdk/api";
 export function propertyJsdoc(
   property: ObjectMetadata.Property,
   { isInherited, apiName }: { isInherited?: boolean; apiName: string },
-) {
+): string {
   let ret = `/**\n`;
   const renderDisplayName = property.displayName
     && property.displayName !== apiName;

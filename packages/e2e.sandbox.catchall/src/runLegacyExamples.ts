@@ -22,7 +22,7 @@ import { fetchEmployeePage } from "./legacy-examples/fetchEmployeePage.js";
 import { fetchEmployeePageByAdUsername } from "./legacy-examples/fetchEmployeePageByAdUsername.js";
 import { fetchEmployeePageByAdUsernameAndLimit } from "./legacy-examples/fetchEmployeePageByAdUsernameAndLimit.js";
 
-export async function runLegacyExamples() {
+export async function runLegacyExamples(): Promise<void> {
   await fetchEmployeePage(client);
   await fetchEmployeePageByAdUsername(client, "fish");
   await fetchEmployeePageByAdUsernameAndLimit(client, "fish");

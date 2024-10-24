@@ -26,7 +26,7 @@ import { USER_AGENT } from "./UserAgent.js";
 export function createFetch(
   tokenProvider: () => Promise<string> | string,
   fetchFn: typeof fetch = fetch,
-) {
+): typeof fetch {
   return createFetchHeaderMutator(
     createRequestLoggingFetch(
       createErrorExitingFetch(

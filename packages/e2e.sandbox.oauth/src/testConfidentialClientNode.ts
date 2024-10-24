@@ -22,7 +22,7 @@ declare const process: {
   env: Record<string, string | undefined>;
 };
 
-export async function testConfidentialClientNode() {
+export async function testConfidentialClientNode(): Promise<void> {
   const prefix = "TS_OSDK_E2E_OAUTH_CONFIDENTIAL_";
   const FOUNDRY_CLIENT_ID = process.env[`${prefix}FOUNDRY_CLIENT_ID`];
   const FOUNDRY_URL = process.env[`${prefix}FOUNDRY_URL`];

@@ -42,7 +42,7 @@ export async function generatePackage(
     outputDir: string;
     beta: boolean;
   },
-) {
+): Promise<void> {
   const { consola } = await import("consola");
 
   const packagePath = join(options.outputDir, options.packageName);
