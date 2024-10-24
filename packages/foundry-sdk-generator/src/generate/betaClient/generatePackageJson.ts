@@ -31,46 +31,24 @@ export async function generatePackageJson(options: {
   const packagePeerDeps = constructDependencies(options.peerDependencies);
 
   // Note that any "default" conditions _must_ be last in their block otherwise it will crash at runtime
-  const packageJson = options.beta
-    ? {
-      name: options.packageName,
-      version: options.packageVersion,
-      main: "./index.js",
-      types: "./index.d.ts",
-      exports: {
-        ".": {
-          types: "./index.d.ts",
-          script: {
-            default: "./dist/bundle/index.esm.js",
-          },
-          default: "./index.js",
+  const packageJson = {
+    name: options.packageName,
+    version: options.packageVersion,
+    main: "./index.js",
+    types: "./index.d.ts",
+    exports: {
+      ".": {
+        types: "./index.d.ts",
+        script: {
+          types: "./dist/bundle/index.d.ts",
+          default: "./dist/bundle/index.esm.js",
         },
+        default: "./index.js",
       },
-      dependencies: packageDeps,
-      peerDependencies: packagePeerDeps,
-    }
-    : {
-      name: options.packageName,
-      version: options.packageVersion,
-      main: "./index.js",
-      types: "./index.d.ts",
-      exports: {
-        ".": {
-          types: "./index.d.ts",
-          script: {
-            types: "./dist/bundle/index.d.ts",
-            default: "./dist/bundle/index.esm.js",
-          },
-          default: "./index.js",
-        },
-        "./ontology/objects": {
-          types: "./ontology/objects/index.d.ts",
-          default: "./ontology/objects/index.js",
-        },
-      },
-      dependencies: packageDeps,
-      peerDependencies: packagePeerDeps,
-    };
+    },
+    dependencies: packageDeps,
+    peerDependencies: packagePeerDeps,
+  };
 
   await writeFile(
     join(options.packagePath, "package.json"),

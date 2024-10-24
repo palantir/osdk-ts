@@ -14,5 +14,17 @@
  * limitations under the License.
  */
 
-export { GeneratePackageCommand } from "./GeneratePackageCommand.js";
-export type { generatePackageCommandArgs } from "./GeneratePackageCommand.js";
+export function changeVersionPrefix(
+  version: string,
+  prefix: "^" | "~" | "",
+): string {
+  const isWorkspaceProtocol = version.startsWith("workspace:");
+  if (isWorkspaceProtocol) {
+    version = version.slice("workspace:".length);
+  }
+  if (version[0] === "^" || version[0] === "~" || version[0] === "*") {
+    version = version.slice(1);
+  }
+
+  return `${isWorkspaceProtocol ? "workspace:" : ""}${prefix}${version}`;
+}
