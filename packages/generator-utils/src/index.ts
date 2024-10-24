@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
-export { GeneratePackageCommand } from "./GeneratePackageCommand.js";
-export type { generatePackageCommandArgs } from "./GeneratePackageCommand.js";
+export { changeVersionPrefix } from "./changeVersionPrefix.js";
+export { getDependencyVersionFromFindUpPackageJson } from "./getDependencyVersionFromFindUpPackageJson.js";
+export { resolveDependenciesFromFindUp } from "./resolveDependenciesFromFindUp.js";

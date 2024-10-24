@@ -37,6 +37,7 @@ describe("Generate Package Command", () => {
     expect(scriptsExport).toMatchInlineSnapshot(`
       {
         "default": "./dist/bundle/index.esm.js",
+        "types": "./dist/bundle/index.d.ts",
       }
     `);
 

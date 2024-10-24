@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import type { MinimalFs, WireOntologyDefinition } from "@osdk/generator";
+import type { MinimalFs } from "@osdk/generator";
 import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
-import { mkdir, readdir, readFile, writeFile } from "fs/promises";
+import { resolveDependenciesFromFindUp } from "@osdk/generator-utils";
+import { mkdir, readdir, writeFile } from "fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, isAbsolute, join, normalize } from "path";
 import type { OntologyInfo } from "../../ontologyMetadata/ontologyMetadataResolver.js";
@@ -26,18 +27,11 @@ import { bundleDependencies } from "./bundleDependencies.js";
 import { compileInMemory } from "./compileInMemory.js";
 import { generatePackageJson } from "./generatePackageJson.js";
 
-declare const __OSDK_API_VERSION__: string | undefined;
-declare const __OSDK_CLIENT_VERSION__: string | undefined;
-
 const betaDependencies: { [key: string]: string | undefined } = {
-  "@osdk/api": typeof __OSDK_API_VERSION__ !== "undefined"
-    ? __OSDK_API_VERSION__
-    : undefined,
+  "@osdk/api": undefined,
 };
 const betaPeerDependencies: { [key: string]: string | undefined } = {
-  "@osdk/client": typeof __OSDK_CLIENT_VERSION__ !== "undefined"
-    ? __OSDK_CLIENT_VERSION__
-    : undefined,
+  "@osdk/client": undefined,
 };
 
 export async function generatePackage(
@@ -52,9 +46,13 @@ export async function generatePackage(
   const { consola } = await import("consola");
 
   const packagePath = join(options.outputDir, options.packageName);
-  const resolvedDependencies = await resolveDependencies(betaDependencies);
-  const resolvedPeerDependencies = await resolveDependencies(
+  const resolvedDependencies = await resolveDependenciesFromFindUp(
+    betaDependencies,
+    dirname(fileURLToPath(import.meta.url)),
+  );
+  const resolvedPeerDependencies = await resolveDependenciesFromFindUp(
     betaPeerDependencies,
+    dirname(fileURLToPath(import.meta.url)),
   );
 
   await mkdir(packagePath, { recursive: true });
@@ -141,39 +139,4 @@ export async function generatePackage(
   } catch (e) {
     consola.error(e);
   }
-}
-
-async function getDependencyVersion(dependency: string): Promise<string> {
-  const { findUp } = await import("find-up");
-  const result = await findUp("package.json", {
-    cwd: dirname(fileURLToPath(import.meta.url)),
-  });
-  const packageJson = await readFile(result!, {
-    encoding: "utf-8",
-  });
-  if (!packageJson) {
-    throw new Error(
-      `Could not find package.json in current working directory: ${process.cwd()}`,
-    );
-  }
-  const parsedPackageJson = JSON.parse(packageJson);
-  return parsedPackageJson.dependencies[dependency];
-}
-
-async function resolveDependencies(
-  deps: { [key: string]: string | undefined },
-): Promise<{
-  dependencyName: string;
-  dependencyVersion: string;
-}[]> {
-  return await Promise.all(
-    Object.keys(deps).map(
-      async dependency => {
-        return {
-          dependencyName: dependency,
-          dependencyVersion: await getDependencyVersion(dependency),
-        };
-      },
-    ),
-  );
 }

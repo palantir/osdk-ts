@@ -51,6 +51,7 @@
   "devDependencies": {
     "@osdk/client.unstable": "workspace:~",
     "@osdk/client.unstable.tpsa": "workspace:~",
+    "@osdk/generator-utils": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
