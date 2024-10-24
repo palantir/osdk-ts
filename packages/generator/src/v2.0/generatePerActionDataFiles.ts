@@ -46,7 +46,7 @@ export async function generatePerActionDataFiles(
     | "importExt"
     | "ontology"
   >,
-) {
+): Promise<void> {
   const outDir = path.join(rootOutDir, "ontology", "actions");
 
   await fs.mkdir(outDir, { recursive: true });

@@ -47,7 +47,7 @@ export async function generatePerQueryDataFilesV2(
     | "ontology"
   >,
   v2: boolean,
-) {
+): Promise<void> {
   const relOutDir = path.join(".", "ontology", "queries");
   const outDir = path.join(rootOutDir, "ontology", "queries");
   await fs.mkdir(outDir, { recursive: true });
@@ -257,7 +257,7 @@ function getLineFor__OsdkTargetType(
 export function queryParamJsDoc(
   param: QueryParameterDefinition<any>,
   { apiName }: { apiName: string },
-) {
+): string {
   let ret = `/**\n`;
 
   if (param.description) {

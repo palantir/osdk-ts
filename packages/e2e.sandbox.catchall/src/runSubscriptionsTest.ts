@@ -24,7 +24,7 @@ import {
 import { $Actions, MtaBus, OsdkTestObject } from "@osdk/e2e.generated.catchall";
 import { client, dsClient } from "./client.js";
 
-export async function runSubscriptionsTest() {
+export async function runSubscriptionsTest(): Promise<void> {
   const subscription = client(__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe)
     .subscribe(
       client(OsdkTestObject),

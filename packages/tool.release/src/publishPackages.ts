@@ -113,7 +113,9 @@ async function publishSinglePackage(
   };
 }
 
-export async function packageVersionsOrEmptySet(name: string) {
+export async function packageVersionsOrEmptySet(
+  name: string,
+): Promise<Set<string>> {
   try {
     return await packageVersionsOrThrow(name);
   } catch (e) {

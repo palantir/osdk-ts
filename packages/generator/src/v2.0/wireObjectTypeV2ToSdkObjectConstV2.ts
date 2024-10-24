@@ -211,7 +211,7 @@ export function createProps(
   type: EnhancedInterfaceType | EnhancedObjectType,
   identifier: string,
   strict: boolean,
-) {
+): string {
   if (identifier === "StrictProps") {
     return `export type StrictProps = Props`;
   }

@@ -30,7 +30,7 @@ import { expectType } from "ts-expect";
  * across changes.
  * @param client
  */
-export async function typeChecks(client: Client) {
+export async function typeChecks(client: Client): Promise<void> {
   // single link pivot types are correct
   {
     const objectSet = client(Employee).pivotTo("lead");

@@ -36,7 +36,7 @@ export async function generateClientSdkVersionTwoPointZero(
   externalObjects: Map<string, string> = new Map(),
   externalInterfaces: Map<string, string> = new Map(),
   externalSpts: Map<string, string> = new Map(),
-) {
+): Promise<void> {
   const importExt = packageType === "module" ? ".js" : "";
 
   // Structurally, we need to have multiple ontologies read in

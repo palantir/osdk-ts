@@ -51,7 +51,14 @@ export async function* asyncIterPointsHelper<
   T extends number | string | GeoJSON.Point,
 >(
   iterator: Blob,
-) {
+): AsyncGenerator<
+  {
+    time: any;
+    value: T;
+  },
+  void,
+  unknown
+> {
   const reader = iterator.stream().getReader();
   for await (
     const point of parseStreamedResponse(iterateReadableStream(reader))

@@ -22,7 +22,7 @@ import { logger } from "./logger.js";
 export async function runFoundrySdkClientVerificationTest(
   datasetRid: string,
   branchToCreate = "test",
-) {
+): Promise<void> {
   const pageSize = 10;
 
   // will throw if dataset not found
