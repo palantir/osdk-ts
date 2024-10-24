@@ -2056,9 +2056,9 @@ importers:
 
   packages/e2e.test.foundry-sdk-generator:
     dependencies:
-      '@osdk/tmp-foundry-sdk-generator':
+      '@osdk/foundry-sdk-generator':
         specifier: workspace:~
-        version: link:../tmp-foundry-sdk-generator
+        version: link:../foundry-sdk-generator
       execa:
         specifier: ^9.3.0
         version: 9.3.0
@@ -2127,6 +2127,91 @@ importers:
       typescript:
         specifier: ~5.5.4
         version: 5.5.4
+
+  packages/foundry-sdk-generator:
+    dependencies:
+      '@osdk/api':
+        specifier: workspace:*
+        version: link:../api
+      '@osdk/client':
+        specifier: workspace:*
+        version: link:../client
+      '@osdk/foundry.core':
+        specifier: 2.2.0
+        version: 2.2.0
+      '@osdk/foundry.thirdpartyapplications':
+        specifier: 2.2.0
+        version: 2.2.0
+      '@osdk/generator':
+        specifier: workspace:*
+        version: link:../generator
+      '@osdk/internal.foundry.core':
+        specifier: 2.2.0
+        version: 2.2.0
+      '@osdk/internal.foundry.ontologies':
+        specifier: 2.2.0
+        version: 2.2.0
+      '@osdk/internal.foundry.ontologiesv2':
+        specifier: 2.2.0
+        version: 2.2.0
+      '@osdk/shared.net':
+        specifier: workspace:*
+        version: link:../shared.net
+      '@rollup/plugin-commonjs':
+        specifier: 28.0.0
+        version: 28.0.0(rollup@3.29.5)
+      '@rollup/plugin-node-resolve':
+        specifier: 15.3.0
+        version: 15.3.0(rollup@3.29.5)
+      consola:
+        specifier: 3.2.3
+        version: 3.2.3
+      find-up:
+        specifier: 7.0.0
+        version: 7.0.0
+      rollup:
+        specifier: 3.29.5
+        version: 3.29.5
+      rollup-plugin-polyfill-node:
+        specifier: 0.13.0
+        version: 0.13.0(rollup@3.29.5)
+      ts-morph:
+        specifier: 19.0.0
+        version: 19.0.0
+      typescript:
+        specifier: ~5.5.4
+        version: 5.5.4
+      yargs:
+        specifier: 17.7.2
+        version: 17.7.2
+    devDependencies:
+      '@osdk/client.unstable':
+        specifier: workspace:~
+        version: link:../client.unstable
+      '@osdk/client.unstable.tpsa':
+        specifier: workspace:~
+        version: link:../client.unstable.tpsa
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@osdk/monorepo.tsup':
+        specifier: workspace:~
+        version: link:../monorepo.tsup
+      '@osdk/shared.client.impl':
+        specifier: workspace:~
+        version: link:../shared.client.impl
+      '@osdk/shared.test':
+        specifier: workspace:~
+        version: link:../shared.test
+      '@types/node':
+        specifier: ^18.0.0
+        version: 18.17.15
+      '@types/yargs':
+        specifier: ^17.0.29
+        version: 17.0.32
 
   packages/generator:
     dependencies:
@@ -2480,91 +2565,6 @@ importers:
       typescript:
         specifier: ~5.5.4
         version: 5.5.4
-
-  packages/tmp-foundry-sdk-generator:
-    dependencies:
-      '@osdk/api':
-        specifier: workspace:*
-        version: link:../api
-      '@osdk/client':
-        specifier: workspace:*
-        version: link:../client
-      '@osdk/foundry.core':
-        specifier: 2.2.0
-        version: 2.2.0
-      '@osdk/foundry.thirdpartyapplications':
-        specifier: 2.2.0
-        version: 2.2.0
-      '@osdk/generator':
-        specifier: workspace:*
-        version: link:../generator
-      '@osdk/internal.foundry.core':
-        specifier: 2.2.0
-        version: 2.2.0
-      '@osdk/internal.foundry.ontologies':
-        specifier: 2.2.0
-        version: 2.2.0
-      '@osdk/internal.foundry.ontologiesv2':
-        specifier: 2.2.0
-        version: 2.2.0
-      '@osdk/shared.net':
-        specifier: workspace:*
-        version: link:../shared.net
-      '@rollup/plugin-commonjs':
-        specifier: 28.0.0
-        version: 28.0.0(rollup@3.29.5)
-      '@rollup/plugin-node-resolve':
-        specifier: 15.3.0
-        version: 15.3.0(rollup@3.29.5)
-      consola:
-        specifier: 3.2.3
-        version: 3.2.3
-      find-up:
-        specifier: 7.0.0
-        version: 7.0.0
-      rollup:
-        specifier: 3.29.5
-        version: 3.29.5
-      rollup-plugin-polyfill-node:
-        specifier: 0.13.0
-        version: 0.13.0(rollup@3.29.5)
-      ts-morph:
-        specifier: 19.0.0
-        version: 19.0.0
-      typescript:
-        specifier: ~5.5.4
-        version: 5.5.4
-      yargs:
-        specifier: 17.7.2
-        version: 17.7.2
-    devDependencies:
-      '@osdk/client.unstable':
-        specifier: workspace:~
-        version: link:../client.unstable
-      '@osdk/client.unstable.tpsa':
-        specifier: workspace:~
-        version: link:../client.unstable.tpsa
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      '@osdk/shared.client.impl':
-        specifier: workspace:~
-        version: link:../shared.client.impl
-      '@osdk/shared.test':
-        specifier: workspace:~
-        version: link:../shared.test
-      '@types/node':
-        specifier: ^18.0.0
-        version: 18.17.15
-      '@types/yargs':
-        specifier: ^17.0.29
-        version: 17.0.32
 
   packages/tool.release:
     dependencies:
@@ -11210,7 +11210,7 @@ snapshots:
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.17.0(eslint@8.57.1)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.30.0)(eslint@8.57.1)
-      eslint-plugin-import: 2.30.0(@typescript-eslint/parser@7.17.0(eslint@8.57.1)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.1)
+      eslint-plugin-import: 2.30.0(@typescript-eslint/parser@7.17.0(eslint@8.57.1)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.17.0(eslint@9.7.0)(typescript@5.5.4))(eslint-plugin-import@2.30.0)(eslint@9.7.0))(eslint@8.57.1)
       eslint-plugin-jsx-a11y: 6.8.0(eslint@8.57.1)
       eslint-plugin-react: 7.37.1(eslint@8.57.1)
       eslint-plugin-react-hooks: 4.6.2(eslint@8.57.1)
@@ -11234,7 +11234,7 @@ snapshots:
       enhanced-resolve: 5.16.1
       eslint: 8.57.1
       eslint-module-utils: 2.12.0(@typescript-eslint/parser@7.17.0(eslint@8.57.1)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.17.0(eslint@8.57.1)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.30.0)(eslint@8.57.1))(eslint@8.57.1)
-      eslint-plugin-import: 2.30.0(@typescript-eslint/parser@7.17.0(eslint@8.57.1)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.1)
+      eslint-plugin-import: 2.30.0(@typescript-eslint/parser@7.17.0(eslint@8.57.1)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.17.0(eslint@9.7.0)(typescript@5.5.4))(eslint-plugin-import@2.30.0)(eslint@9.7.0))(eslint@8.57.1)
       fast-glob: 3.3.2
       get-tsconfig: 4.7.5
       is-core-module: 2.15.1
@@ -11281,6 +11281,17 @@ snapshots:
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.17.0(eslint@8.57.1)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.30.0)(eslint@8.57.1)
+    transitivePeerDependencies:
+      - supports-color
+
+  eslint-module-utils@2.12.0(@typescript-eslint/parser@7.17.0(eslint@8.57.1)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.17.0(eslint@9.7.0)(typescript@5.5.4))(eslint-plugin-import@2.30.0)(eslint@9.7.0))(eslint@8.57.1):
+    dependencies:
+      debug: 3.2.7
+    optionalDependencies:
+      '@typescript-eslint/parser': 7.17.0(eslint@8.57.1)(typescript@5.5.4)
+      eslint: 8.57.1
+      eslint-import-resolver-node: 0.3.9
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.17.0(eslint@9.7.0)(typescript@5.5.4))(eslint-plugin-import@2.30.0)(eslint@9.7.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -11337,7 +11348,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-import@2.30.0(@typescript-eslint/parser@7.17.0(eslint@8.57.1)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.1):
+  eslint-plugin-import@2.30.0(@typescript-eslint/parser@7.17.0(eslint@8.57.1)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.17.0(eslint@9.7.0)(typescript@5.5.4))(eslint-plugin-import@2.30.0)(eslint@9.7.0))(eslint@8.57.1):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.8
@@ -11348,7 +11359,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.0(@typescript-eslint/parser@7.17.0(eslint@8.57.1)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.17.0(eslint@8.57.1)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.30.0)(eslint@8.57.1))(eslint@8.57.1)
+      eslint-module-utils: 2.12.0(@typescript-eslint/parser@7.17.0(eslint@8.57.1)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.17.0(eslint@9.7.0)(typescript@5.5.4))(eslint-plugin-import@2.30.0)(eslint@9.7.0))(eslint@8.57.1)
       hasown: 2.0.2
       is-core-module: 2.15.1
       is-glob: 4.0.3

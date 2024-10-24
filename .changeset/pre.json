@@ -53,7 +53,7 @@
     "@osdk/shared.net.fetch": "1.0.0",
     "@osdk/shared.net.platformapi": "0.3.0",
     "@osdk/shared.test": "2.0.0",
-    "@osdk/tmp-foundry-sdk-generator": "2.0.0",
+    "@osdk/foundry-sdk-generator": "2.0.0",
     "@osdk/tool.release": "0.5.0",
     "@osdk/version-updater": "0.0.0",
     "@osdk/tests.verify-fallback-package-v2": "0.0.3",

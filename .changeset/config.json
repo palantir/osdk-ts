@@ -5,7 +5,7 @@
   "fixed": [
     [
       "@osdk/client",
-      "@osdk/tmp-foundry-sdk-generator",
+      "@osdk/foundry-sdk-generator",
       "@osdk/generator",
       "@osdk/generator-converters",
       "@osdk/client.unstable",
