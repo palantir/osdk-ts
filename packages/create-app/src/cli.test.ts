@@ -118,7 +118,7 @@ async function runTest(
     // it should be, so that if the create-app code were to change to different behavior
     // it would be caught.
     expect(packageJson.dependencies["@osdk/client"]).toBe(
-      `~${createAppVersion}`,
+      `^${createAppVersion}`,
     );
   } else {
     expect(packageJson.dependencies["@osdk/client"]).toBe(
