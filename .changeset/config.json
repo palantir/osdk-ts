@@ -4,15 +4,16 @@
   "commit": false,
   "fixed": [
     [
-      "@osdk/client",
-      "@osdk/foundry-sdk-generator",
-      "@osdk/generator",
-      "@osdk/generator-converters",
-      "@osdk/client.unstable",
       "@osdk/api",
-      "@osdk/create-app",
+      "@osdk/client.unstable",
+      "@osdk/client",
+      "@osdk/create-app.template-packager",
       "@osdk/create-app.template.*",
-      "@osdk/create-app.template-packager"
+      "@osdk/create-app",
+      "@osdk/foundry-sdk-generator",
+      "@osdk/generator-converters",
+      "@osdk/generator-utils",
+      "@osdk/generator"
     ],
     ["@osdk/cli", "@osdk/cli.*"]
   ],
