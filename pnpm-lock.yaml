@@ -1743,6 +1743,33 @@ importers:
         specifier: ^2.1.6
         version: 2.1.6(typescript@5.5.4)
 
+  packages/dev-console-snippets:
+    devDependencies:
+      '@osdk/client':
+        specifier: workspace:*
+        version: link:../client
+      '@osdk/e2e.generated.catchall':
+        specifier: workspace:*
+        version: link:../e2e.generated.catchall
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@osdk/monorepo.tsup':
+        specifier: workspace:~
+        version: link:../monorepo.tsup
+      handlebars:
+        specifier: ^4.7.8
+        version: 4.7.8
+      outdent:
+        specifier: ^0.8.0
+        version: 0.8.0
+      typescript:
+        specifier: ~5.5.4
+        version: 5.5.4
+
   packages/e2e.generated.1.1.x:
     dependencies:
       '@osdk/api':
@@ -6613,6 +6640,9 @@ packages:
 
   outdent@0.5.0:
     resolution: {integrity: sha512-/jHxFIzoMXdqPzTaCpFzAAWhpkSjZPF4Vsn6jAfNpmbH/ymsmd7Qc6VE9BGn0L6YMj6uwpQLxCECpus4ukKS9Q==}
+
+  outdent@0.8.0:
+    resolution: {integrity: sha512-KiOAIsdpUTcAXuykya5fnVVT+/5uS0Q1mrkRHcF89tpieSmY33O/tmc54CqwA+bfhbtEfZUNLHaPUiB9X3jt1A==}
 
   outvariant@1.4.2:
     resolution: {integrity: sha512-Ou3dJ6bA/UJ5GVHxah4LnqDwZRwAmWxrG3wtrHrbGnP4RnLCtA64A4F+ae7Y8ww660JaddSoArUR5HjipWSHAQ==}
@@ -12784,6 +12814,8 @@ snapshots:
   os-tmpdir@1.0.2: {}
 
   outdent@0.5.0: {}
+
+  outdent@0.8.0: {}
 
   outvariant@1.4.2: {}
 
