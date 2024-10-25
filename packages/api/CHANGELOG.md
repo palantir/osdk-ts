@@ -1,11 +1,5 @@
 # @osdk/api
 
-## 2.0.8-rc.4
-
-## 2.0.8-rc.3
-
-## 2.0.8-rc.1
-
 ## 2.0.8-rc.0
 
 ### Patch Changes
@@ -20,40 +14,18 @@
 
 - 0dda65c: Ensure that inferred return type of ObjectSet.fetchPage where only the ObjectTypeDefinition is inferred, does not default to $notStrict
 
-## 2.0.6
-
 ## 2.0.5
 
 ### Patch Changes
 
 - ca78964: Fixes a bug where any/never could be interpreted wrong when used in types for determining fetch results
 
-## 2.0.4
-
-### Patch Changes
-
-- 7f29753: Avoid type-fest's IsAny as it doesn't always work
-
-## 2.0.3
-
 ## 2.0.2
 
 ### Patch Changes
 
 - 1edf95b: Switch to OSDK.Instance
-- 4c5e0ae: Add support for null filter on geo properties.
-
-## 2.0.2-rc.3
-
-### Patch Changes
-
-- 4c5e0ae: Add support for null filter on geo properties.
-
-## 2.0.2-beta.2
-
-## 2.0.2-beta.1
-
-## 2.0.2-rc.0
+- 4c5e0ae: Add support for $isNull filter on geo properties.
 
 ## 2.0.1
 
@@ -65,10 +37,8 @@
 
 ### Major Changes
 
-- 3affe49: Placeholder for breaking changes
 - 9b0617d: Legacy types were removed
-- 1252d94: ESM Only
-- fe9547e: All types from @osdk/client.api merged into @osdk/api
+- 1252d94: The typescript OSDK is ESM only
 - 56df85a: We now generate minimal object and interface types
 
 ### Minor Changes
@@ -113,122 +83,6 @@
 - Updated dependencies [64818dc]
   - @osdk/shared.net@2.0.0
 
-## 2.0.0-beta.16
-
-### Minor Changes
-
-- dc25fb4: Improve query generics
-- dc25fb4: Further simplify types
-
-### Patch Changes
-
-- @osdk/shared.net@2.0.0-beta.6
-
-## 2.0.0-beta.15
-
-### Minor Changes
-
-- dc25fb4: Simplified types
-
-## 2.0.0-beta.14
-
-### Major Changes
-
-- fe9547e: All types from @osdk/client.api merged into @osdk/api
-
-### Minor Changes
-
-- a2c7b37: Enables better tree shaking
-- 1f633f7: Removed dependency on @osdk/client.api
-- d4d6605: Audited and cleaned up deps
-
-### Patch Changes
-
-- Updated dependencies [d4d6605]
-  - @osdk/shared.net@2.0.0-beta.5
-
-## 2.0.0-beta.13
-
-### Minor Changes
-
-- 1488144: Renamed definition types to metadata
-- c28792e: Modified return type of fetchMetadata to return Object/Interface Definitions
-- 26ee3bd: Updates return types of fetchMetadata to be Action and Query Definitions
-- 6ab5d2e: Renamed Min_Definition to \_Definition
-
-### Patch Changes
-
-- @osdk/shared.net@2.0.0-beta.4
-
-## 2.0.0-beta.12
-
-## 2.0.0-beta.11
-
-## 2.0.0-beta.10
-
-### Major Changes
-
-- 1252d94: ESM Only
-- 56df85a: We now generate minimal object and interface types
-
-### Minor Changes
-
-- dc25fb4: Code generation now uses MinQueryDef
-- dc25fb4: Rename MinimumActionDefinition to MinActionDef
-
-### Patch Changes
-
-- Updated dependencies [1252d94]
-  - @osdk/shared.net@2.0.0-beta.3
-
-## 2.0.0-beta.9
-
-### Minor Changes
-
-- b946e00: Emitted action definition is minimal size now
-
-### Patch Changes
-
-- Updated dependencies [01724ae]
-  - @osdk/shared.net@2.0.0-beta.2
-
-## 2.0.0-beta.8
-
-### Patch Changes
-
-- Updated dependencies [64818dc]
-  - @osdk/shared.net@2.0.0-beta.1
-
-## 2.0.0-beta.7
-
-### Major Changes
-
-- 9b0617d: Legacy types were removed
-
-## 2.0.0-beta.6
-
-### Major Changes
-
-- 3affe49: Placeholder for breaking changes
-
-### Patch Changes
-
-- Updated dependencies [5d6d5ab]
-  - @osdk/gateway@2.5.0-beta.0
-  - @osdk/shared.net@1.13.0-beta.0
-
-## 1.10.0-beta.1
-
-### Minor Changes
-
-- dc25fb4: Fixes edge cases in inferred return types especially when changing object types
-
-## 1.10.0-beta.0
-
-### Minor Changes
-
-- 7c2db00: Updates QueryDefinition to include an optional generic argument
-
 ## 1.9.0
 
 ### Minor Changes
@@ -244,30 +98,6 @@
 - Updated dependencies [bc89b62]
   - @osdk/shared.net@1.12.0
   - @osdk/gateway@2.4.0
-
-## 1.9.0-beta.1
-
-### Minor Changes
-
-- 3ec7c38: Add support for queries in 2.0
-- bc89b62: Spelling fixes and spell check in CI
-
-### Patch Changes
-
-- Updated dependencies [bc89b62]
-  - @osdk/shared.net@1.12.0-beta.1
-  - @osdk/gateway@2.4.0-beta.0
-
-## 1.9.0-beta.0
-
-### Minor Changes
-
-- 388dba9: Change all internal dependencies to be tilde not caret
-
-### Patch Changes
-
-- Updated dependencies [388dba9]
-  - @osdk/shared.net@1.12.0-beta.0
 
 ## 1.8.0
 
