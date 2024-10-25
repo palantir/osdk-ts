@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
-export { cli } from "./cli.js";
-export { TEMPLATES } from "./generatedNoCheck/templates.js";
-export { run } from "./run.js";
-export type { Template } from "./templates.js";
+import * as path from "node:path";
+import { fileURLToPath } from "node:url";
+import { it } from "vitest";
+import { run } from "./run.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+it("Generates code that matches the files on disk in the examples dir", async () => {
+  await run({
+    outputDirectory: path.join(__dirname, "..", "..", "..", "examples"),
+    check: true,
+  });
+});
