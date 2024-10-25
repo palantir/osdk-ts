@@ -1,5 +1,16 @@
 # @osdk/create-app
 
+## 2.0.8
+
+### Patch Changes
+
+- a83938f: Use fixed versions for create-app client and oauth deps
+- 0b059fc: Update dependencies for next apps and lock in typescript version
+- a83938f: Support TypeScript 2.0 syntax for Todo App tutorials
+- a83938f: Support 2.0 syntax in Next and Vue templates
+- a83938f: Fix template imports
+- a83938f: Couple templates with SDK version, allow specifying --sdkVersion
+
 ## 2.0.8-rc.4
 
 ## 2.0.8-rc.3

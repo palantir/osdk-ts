@@ -1,5 +1,11 @@
 # @osdk/create-app.template.next-static-export
 
+## 2.0.8
+
+### Patch Changes
+
+- a83938f: Support 2.0 syntax in Next and Vue templates
+
 ## 2.0.8-rc.4
 
 ## 2.0.8-rc.3
