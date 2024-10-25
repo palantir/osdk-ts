@@ -29,6 +29,7 @@ export interface SiteConfig {
   application: string;
   directory: string;
   autoVersion?: AutoVersionConfig;
+  uploadOnly?: boolean;
 }
 
 export interface FoundryConfig {
@@ -67,6 +68,7 @@ const CONFIG_FILE_SCHEMA: JSONSchemaType<FoundryConfig> = {
           ],
           required: ["type"],
         },
+        uploadOnly: { type: "boolean", nullable: true },
       },
       required: ["application", "directory"],
     },
