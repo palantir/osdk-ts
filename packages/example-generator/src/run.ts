@@ -84,6 +84,7 @@ async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
       osdkRegistryUrl:
         "https://fake.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
       corsProxy: false,
+      scopes: ["api:read-data", "api:write-data"],
     });
 
     for (const mutator of MUTATORS) {

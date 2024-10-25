@@ -25,6 +25,13 @@ const client = new FoundryClient({
     clientId,
     url,
     redirectUrl,
+    {{#if scopes}}
+    scopes: [
+      {{#each scopes}}
+        "{{this}}",
+      {{/each}}
+    ]
+    {{/if}}
   }),
 });
 
