@@ -120,7 +120,8 @@ export async function cli(args: string[] = process.argv): Promise<void> {
           .option("scopes", {
             type: "string",
             array: true,
-            describe: "Includes a list of scopes for the client call",
+            describe:
+              "List of client-side scopes to be used when creating a client",
           }),
     );
 
