@@ -1,5 +1,19 @@
 # @osdk/example-generator
 
+## 0.8.1
+
+### Patch Changes
+
+- a83938f: Use fixed versions for create-app client and oauth deps
+- a83938f: Couple templates with SDK version, allow specifying --sdkVersion
+- Updated dependencies [a83938f]
+- Updated dependencies [0b059fc]
+- Updated dependencies [a83938f]
+- Updated dependencies [a83938f]
+- Updated dependencies [a83938f]
+- Updated dependencies [a83938f]
+  - @osdk/create-app@2.0.8
+
 ## 0.8.1-rc.1
 
 ### Patch Changes

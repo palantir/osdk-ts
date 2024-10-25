@@ -1,5 +1,11 @@
 # @osdk/oauth
 
+## 1.0.1
+
+### Patch Changes
+
+- a27d559: Fixes process.env.NODE_ENV handling
+
 ## 1.0.1-rc.0
 
 ### Patch Changes
