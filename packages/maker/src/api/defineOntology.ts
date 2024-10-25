@@ -191,8 +191,12 @@ function convertType(
   type: PropertyTypeType,
 ): Type {
   switch (type) {
-    case "marking":
-      return { type, [type]: { markingType: "MANDATORY" } };
+    case { type: "marking", markingType: "MANDATORY" }:
+    case { type: "marking", markingType: "CBAC" }:
+      return {
+        "type": type.type,
+        [type.type]: { markingType: type.markingType },
+      };
 
     case "geopoint":
       return { type: "geohash", geohash: {} };

@@ -81,7 +81,7 @@ export type PropertyTypeType =
   | "geoshape"
   | "integer"
   | "long"
-  | "marking"
+  | { type: "marking"; markingType: "MANDATORY" | "CBAC" }
   | "short"
   | "string"
   | "timestamp"
