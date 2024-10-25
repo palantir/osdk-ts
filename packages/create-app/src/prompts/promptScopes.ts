@@ -25,10 +25,10 @@ export async function promptScopes(
     return undefined;
   }
 
-  for (const scope in scopes) {
+  for (const scope of scopes) {
     if (!scopeNameRegex.test(scope)) {
       consola.fail(
-        "Scope name can only contain letters, hyphens, underscores, and colons",
+        `Scope name ${scope} can only contain letters, hyphens, underscores, and colons`,
       );
       // Following promptOverwrite
       process.exit(0);

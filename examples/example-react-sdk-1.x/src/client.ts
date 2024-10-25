@@ -28,7 +28,7 @@ const client = new FoundryClient({
     scopes: [
         "api:read-data",
         "api:write-data",
-    ]
+    ],
   }),
 });
 
