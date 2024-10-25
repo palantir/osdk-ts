@@ -1,5 +1,12 @@
 # @osdk/create-app.template.tutorial-todo-aip-app.beta
 
+## 2.1.0-beta.5
+
+### Minor Changes
+
+- 62a3d1f: Use fixed versions for create-app client and oauth deps
+- 35efba7: Upgraded to eslint 9
+
 ## 0.20.0-beta.3
 
 ## 0.20.0-beta.2
