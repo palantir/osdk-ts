@@ -10,6 +10,13 @@ const redirectUrl = process.env.NEXT_PUBLIC_FOUNDRY_REDIRECT_URL;
 checkEnv(url, "NEXT_PUBLIC_FOUNDRY_API_URL");
 checkEnv(clientId, "NEXT_PUBLIC_FOUNDRY_CLIENT_ID");
 checkEnv(redirectUrl, "NEXT_PUBLIC_FOUNDRY_REDIRECT_URL");
+{{#if scopes}}
+const scopes = [
+  {{#each scopes}}
+    "{{this}}",
+  {{/each}}
+];
+{{/if}}
 
 function checkEnv(
   value: string | undefined,
@@ -30,6 +37,12 @@ export const getAuth = () => {
       clientId,
       url,
       redirectUrl,
+      true,
+      undefined,
+      window.location.toString(),
+      {{#if scopes}}
+      scopes,
+      {{/if}}
     );
   }
   return auth;

@@ -25,6 +25,10 @@ const client = new FoundryClient({
     clientId,
     url,
     redirectUrl,
+    scopes: [
+        "api:read-data",
+        "api:write-data",
+    ],
   }),
 });
 
