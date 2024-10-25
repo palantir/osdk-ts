@@ -276,10 +276,6 @@ const UPDATE_PACKAGE_JSON: Mutator = {
       `"name": "@osdk/examples.${
         sdkVersionedTemplateCanonicalId(template, sdkVersion)
       }"`,
-    ).replace(
-      // Monorepo uses eslint 9 whereas templates are still on eslint 8
-      "\"lint\": \"eslint",
-      "\"lint\": \"ESLINT_USE_FLAT_CONFIG=false eslint",
     ),
   }),
 };
