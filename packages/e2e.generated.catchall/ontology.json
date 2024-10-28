@@ -923,8 +923,18 @@
       },
       "rid": "ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b",
       "status": "ACTIVE"
+    },
+    "InterfaceNoProps": {
+      "apiName": "InterfaceNoProps",
+      "displayName": "FInterfaceNoProps",
+      "description": "Its a Foo.",
+      "properties": {
+      },
+      "rid": "ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b",
+      "status": "ACTIVE"
     }
   },
+
   "sharedPropertyTypes": {
     "name": {
       "rid": "ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d6",

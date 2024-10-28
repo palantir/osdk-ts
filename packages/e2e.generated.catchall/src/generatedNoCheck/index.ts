@@ -1,6 +1,6 @@
 export { actionTakesAllParameterTypes, assignEmployee1, createTodo } from './ontology/actions.js';
 export * as $Actions from './ontology/actions.js';
-export { FooInterface } from './ontology/interfaces.js';
+export { FooInterface, InterfaceNoProps } from './ontology/interfaces.js';
 export * as $Interfaces from './ontology/interfaces.js';
 export {
   BoundariesUsState,
