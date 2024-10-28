@@ -346,9 +346,12 @@ ${
 export function createPropertyKeys(
   type: EnhancedObjectType | EnhancedInterfaceType,
 ) {
+  const properties = Object.keys(type.getCleanedUpDefinition(true).properties);
   return `export type PropertyKeys = ${
-    Object.keys(type.getCleanedUpDefinition(true).properties).map(
-      (a) => maybeStripNamespace(type, a),
-    ).map(a => `"${a}"`).join("|")
+    properties.length === 0
+      ? "never"
+      : properties.map(
+        (a) => maybeStripNamespace(type, a),
+      ).map(a => `"${a}"`).join("|")
   };`;
 }
