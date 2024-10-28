@@ -37,10 +37,10 @@ export const getAuth = () => {
       clientId,
       url,
       redirectUrl,
+      {{#if scopes}}
       true,
       undefined,
       window.location.toString(),
-      {{#if scopes}}
       scopes,
       {{/if}}
     );

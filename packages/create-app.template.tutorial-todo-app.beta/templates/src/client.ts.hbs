@@ -32,10 +32,10 @@ const auth = createPublicOauthClient(
   clientId,
   url,
   redirectUrl,
+  {{#if scopes}}
   true,
   undefined,
   window.location.toString(),
-  {{#if scopes}}
   scopes,
   {{/if}}
 );
