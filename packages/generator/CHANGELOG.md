@@ -1,5 +1,13 @@
 # @osdk/generator
 
+## 2.0.9
+
+### Patch Changes
+
+- 6bac6fb: Fixes generation for interfaces with no properties
+  - @osdk/api@2.0.9
+  - @osdk/generator-converters@2.0.9
+
 ## 2.0.8
 
 ### Patch Changes

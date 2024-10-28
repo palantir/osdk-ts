@@ -1,5 +1,11 @@
 # @osdk/example-generator
 
+## 0.8.2
+
+### Patch Changes
+
+- @osdk/create-app@2.0.9
+
 ## 0.8.1
 
 ### Patch Changes
