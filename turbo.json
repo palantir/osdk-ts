@@ -23,6 +23,7 @@
         "src/**/*.ts",
         "src/**/*.tsx",
         ".eslintrc.cjs",
+        "eslint.config.mjs",
         "tsconfig.json"
       ],
       "outputs": [],

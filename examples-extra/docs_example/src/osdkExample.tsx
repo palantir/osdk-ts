@@ -2,7 +2,6 @@ import { createClient } from "@osdk/client";
 import {
   $ontologyRid,
   Employee,
-  moveOffice,
   Office,
   promoteEmployee,
   promoteEmployeeObject,
