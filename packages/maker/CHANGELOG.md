@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.8.9
+
+### Patch Changes
+
+- @osdk/api@2.0.9
+
 ## 0.8.8
 
 ### Patch Changes

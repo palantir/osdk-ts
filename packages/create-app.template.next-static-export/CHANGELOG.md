@@ -1,5 +1,7 @@
 # @osdk/create-app.template.next-static-export
 
+## 2.0.9
+
 ## 2.0.8
 
 ### Patch Changes
