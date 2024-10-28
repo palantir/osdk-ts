@@ -24,14 +24,14 @@ export async function logDeployCommandConfigFileOverride(
   config: SiteConfig | undefined,
 ) {
   if (
-    config?.autoVersion != null && args.autoVersion !== config?.autoVersion.type
+    config?.autoVersion != null && args.autoVersion !== config.autoVersion.type
   ) {
     consola.debug(
       `Overriding "autoVersion" from config file with ${args.autoVersion}`,
     );
   }
 
-  if (config?.directory != null && args.directory !== config?.directory) {
+  if (config?.directory != null && args.directory !== config.directory) {
     consola.debug(
       `Overriding "directory" from config file with ${args.directory}`,
     );
@@ -40,10 +40,19 @@ export async function logDeployCommandConfigFileOverride(
   if (
     config?.autoVersion?.tagPrefix != null
     && args.gitTagPrefix != null
-    && args.gitTagPrefix !== config?.autoVersion.tagPrefix
+    && args.gitTagPrefix !== config.autoVersion.tagPrefix
   ) {
     consola.debug(
       `Overriding "gitTagPrefix" from config file with ${args.gitTagPrefix}`,
+    );
+  }
+
+  if (
+    config?.uploadOnly != null
+    && args.uploadOnly !== config.uploadOnly
+  ) {
+    consola.debug(
+      `Overriding "uploadOnly" from config file with ${args.uploadOnly}`,
     );
   }
 }
