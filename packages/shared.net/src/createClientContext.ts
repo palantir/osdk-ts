@@ -66,7 +66,7 @@ export function createClientContext(
         ? new PalantirApiError(
           e.message,
           e.errorName,
-          e.errorType,
+          e.errorCode,
           e.statusCode,
           e.errorInstanceId,
           e.parameters,
