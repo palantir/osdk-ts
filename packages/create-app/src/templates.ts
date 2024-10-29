@@ -16,7 +16,7 @@
 
 export type SdkVersion = "1.x" | "2.x";
 
-type ModuleImportFiles = Map<
+export type ModuleImportFiles = Map<
   string,
   {
     type: "base64";
@@ -48,74 +48,3 @@ export interface TemplateContext {
   clientVersion: string;
   corsProxy: boolean;
 }
-
-const getPackageFiles =
-  (importPromise: Promise<{ files: ModuleImportFiles }>) => async () =>
-    (await importPromise).files;
-
-export const TEMPLATES: readonly Template[] = [
-  {
-    id: "template-react",
-    label: "React",
-    envPrefix: "VITE_",
-    buildDirectory: "./dist",
-    files: {
-      "1.x": getPackageFiles(import("@osdk/create-app.template.react")),
-      "2.x": getPackageFiles(import("@osdk/create-app.template.react.beta")),
-    },
-  },
-  {
-    id: "template-vue",
-    label: "Vue",
-    envPrefix: "VITE_",
-    buildDirectory: "./dist",
-    files: {
-      "1.x": getPackageFiles(import("@osdk/create-app.template.vue")),
-      "2.x": getPackageFiles(import("@osdk/create-app.template.vue.v2")),
-    },
-  },
-  {
-    id: "template-next-static-export",
-    label: "Next (static export)",
-    envPrefix: "NEXT_PUBLIC_",
-    buildDirectory: "./out",
-    files: {
-      "1.x": getPackageFiles(
-        import("@osdk/create-app.template.next-static-export"),
-      ),
-      "2.x": getPackageFiles(
-        import("@osdk/create-app.template.next-static-export.v2"),
-      ),
-    },
-  },
-  {
-    id: "template-tutorial-todo-app",
-    label: "Tutorial: To do App",
-    envPrefix: "VITE_",
-    buildDirectory: "./dist",
-    hidden: true,
-    files: {
-      "1.x": getPackageFiles(
-        import("@osdk/create-app.template.tutorial-todo-app"),
-      ),
-      "2.x": getPackageFiles(
-        import("@osdk/create-app.template.tutorial-todo-app.beta"),
-      ),
-    },
-  },
-  {
-    id: "template-tutorial-todo-aip-app",
-    label: "Tutorial: To do AIP App",
-    envPrefix: "VITE_",
-    buildDirectory: "./dist",
-    hidden: true,
-    files: {
-      "1.x": getPackageFiles(
-        import("@osdk/create-app.template.tutorial-todo-aip-app"),
-      ),
-      "2.x": getPackageFiles(
-        import("@osdk/create-app.template.tutorial-todo-aip-app.beta"),
-      ),
-    },
-  },
-];
