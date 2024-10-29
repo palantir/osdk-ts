@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.1.0-beta.5
+
+### Minor Changes
+
+- 2b35ed4: Structs in maker package
+
 ## 2.1.0-beta.4
 
 ## 2.1.0-beta.3

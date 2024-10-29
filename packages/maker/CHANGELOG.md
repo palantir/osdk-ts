@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.9.0-beta.5
+
+### Minor Changes
+
+- b0544d4: Add additional marking configuration
+- 2b35ed4: Structs in maker package
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.5
+
 ## 0.9.0-beta.4
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @osdk/shared.net.fetch
 
+## 1.1.0-beta.0
+
+### Patch Changes
+
+- Updated dependencies [963addb]
+  - @osdk/shared.net.errors@2.1.0-beta.0
+
 ## 1.0.0
 
 ### Major Changes

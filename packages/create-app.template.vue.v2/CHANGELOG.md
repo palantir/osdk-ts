@@ -1,5 +1,11 @@
 # @osdk/create-app.template.vue.v2
 
+## 2.1.0-beta.5
+
+### Minor Changes
+
+- 62a3d1f: Use fixed versions for create-app client and oauth deps
+
 ## 0.20.0-beta.3
 
 ### Minor Changes
