@@ -20,6 +20,8 @@ import type {
   ExampleValue,
   OntologyIrInterfaceType,
   SharedPropertyTypeGothamMapping,
+  StructFieldType,
+  Type,
   ValueTypeApiName,
   ValueTypeDataConstraint,
   ValueTypeDisplayMetadata,
@@ -71,6 +73,15 @@ export interface SharedPropertyType extends PropertyType {
 }
 
 export type PropertyTypeType =
+  | PropertyTypeTypesWithoutStruct
+  | {
+    type: "struct";
+    structDefinition:
+      | { [api_name: string]: StructPropertyType }
+      | PropertyTypeTypesWithoutStruct;
+  };
+
+export type PropertyTypeTypesWithoutStruct =
   | "boolean"
   | "byte"
   | "date"
@@ -86,6 +97,20 @@ export type PropertyTypeType =
   | "string"
   | "timestamp"
   | "mediaReference";
+
+type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
+
+export interface StructPropertyType extends
+  Optional<
+    Omit<
+      StructFieldType,
+      "fieldType" | "aliases" | "structFieldRid" | "apiName"
+    >,
+    "typeClasses"
+  >
+{
+  type: PropertyTypeTypesWithoutStruct;
+}
 
 export type ValueTypeDefinitionVersion = {
   apiName: ValueTypeApiName;

@@ -250,7 +250,15 @@ describe("Ontology Defining", () => {
       it("does not let you conflict spts", () => {
         defineSharedPropertyType({
           apiName: "foo",
-          type: "string",
+          type: {
+            type: "struct",
+            structDefinition: {
+              "foo": {
+                type: "boolean",
+                displayMetadata: { displayName: "display", description: "foo" },
+              },
+            },
+          },
         });
 
         expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
