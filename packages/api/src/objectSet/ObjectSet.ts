@@ -60,10 +60,11 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
   readonly fetchPage: <
     L extends PropertyKeys<Q>,
     R extends boolean,
+    U extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
   >(
-    args?: FetchPageArgs<Q, L, R, A, S>,
+    args?: FetchPageArgs<Q, L, R, A, S, U>,
   ) => Promise<
     PageResult<
       PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S>>

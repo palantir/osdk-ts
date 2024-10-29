@@ -93,28 +93,34 @@ async function fetchInterfacePage<
   args: FetchPageArgs<Q, L, R, any, S>,
   objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R, S>> {
-  const result = await OntologiesV2.OntologyInterfaces
-    .search(
-      addUserAgentAndRequestContextHeaders(client, interfaceType),
-      await client.ontologyRid,
+  if (args.$__EXPERIMENTAL_useUnstableInterfaces) {
+    // Use new unstable APIs
+    return undefined as any;
+  } else {
+    const result = await OntologiesV2.OntologyInterfaces
+      .search(
+        addUserAgentAndRequestContextHeaders(client, interfaceType),
+        await client.ontologyRid,
+        interfaceType.apiName,
+        applyFetchArgs<SearchObjectsForInterfaceRequest>(args, {
+          augmentedProperties: args.$augment ?? {},
+          augmentedSharedPropertyTypes: {},
+          otherInterfaceTypes: [],
+          selectedObjectTypes: args.$__EXPERIMENTAL_selectedObjectTypes ?? [],
+          selectedSharedPropertyTypes: args.$select as undefined | string[]
+            ?? [],
+          where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
+        }),
+        { preview: true },
+      );
+    result.data = await convertWireToOsdkObjects(
+      client,
+      result.data as OntologyObjectV2[], // drop readonly
       interfaceType.apiName,
-      applyFetchArgs<SearchObjectsForInterfaceRequest>(args, {
-        augmentedProperties: args.$augment ?? {},
-        augmentedSharedPropertyTypes: {},
-        otherInterfaceTypes: [],
-        selectedObjectTypes: args.$__EXPERIMENTAL_selectedObjectTypes ?? [],
-        selectedSharedPropertyTypes: args.$select as undefined | string[] ?? [],
-        where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
-      }),
-      { preview: true },
+      !args.$includeRid,
     );
-  result.data = await convertWireToOsdkObjects(
-    client,
-    result.data as OntologyObjectV2[], // drop readonly
-    interfaceType.apiName,
-    !args.$includeRid,
-  );
-  return result as any;
+    return result as any;
+  }
 }
 
 /** @internal */

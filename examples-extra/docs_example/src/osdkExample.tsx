@@ -135,6 +135,9 @@ export async function osdkObjectSetExample() {
     $select: ["employeeId", "fullName", "startDate"],
     $orderBy: { "startDate": "asc" },
     $pageSize: 10,
+    // @ts-expect-error
+    $augment: { "Employee": [] },
+    $__EXPERIMENTAL_useUnstableInterfaces: true,
   });
 
   /**

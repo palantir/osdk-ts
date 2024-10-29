@@ -58,7 +58,8 @@ export interface FetchPageArgs<
   R extends boolean = false,
   A extends Augments = {},
   S extends NullabilityAdherence = NullabilityAdherence.Default,
-> extends AsyncIterArgs<Q, K, R, A, S> {
+  U extends boolean = false,
+> extends AsyncIterArgs<Q, K, R, A, S, U> {
   $nextPageToken?: string;
   $pageSize?: number;
 }
@@ -69,9 +70,11 @@ export interface AsyncIterArgs<
   R extends boolean = false,
   A extends Augments = {},
   S extends NullabilityAdherence = NullabilityAdherence.Default,
+  U extends boolean = false,
 > extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
-  $augment?: A;
+  $augment?: U extends true ? never : A;
   $__EXPERIMENTAL_selectedObjectTypes?: string[];
+  $__EXPERIMENTAL_useUnstableInterfaces?: U;
 }
 
 export type Augment<
