@@ -1,5 +1,22 @@
 # @osdk/foundry-sdk-generator
 
+## 2.1.0-beta.5
+
+### Minor Changes
+
+- 0beaf9d: Generated packages should have proper package.json
+- 0beaf9d: Generated packages now use ^ dependencies on @osdk/api and @osdk/client
+
+### Patch Changes
+
+- Updated dependencies [027db73]
+- Updated dependencies [963addb]
+- Updated dependencies [fa02ebf]
+  - @osdk/generator@2.1.0-beta.5
+  - @osdk/shared.net@2.1.0-beta.1
+  - @osdk/client@2.1.0-beta.5
+  - @osdk/api@2.1.0-beta.5
+
 ## 2.1.0-beta.4
 
 ### Patch Changes

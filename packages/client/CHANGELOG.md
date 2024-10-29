@@ -1,5 +1,22 @@
 # @osdk/client
 
+## 2.1.0-beta.5
+
+### Minor Changes
+
+- fa02ebf: Adds SLS dependency for object-set-watcher API
+
+### Patch Changes
+
+- Updated dependencies [963addb]
+- Updated dependencies [2b35ed4]
+  - @osdk/shared.client.impl@1.1.0-beta.1
+  - @osdk/shared.net.errors@2.1.0-beta.0
+  - @osdk/client.unstable@2.1.0-beta.5
+  - @osdk/shared.net.fetch@1.1.0-beta.0
+  - @osdk/api@2.1.0-beta.5
+  - @osdk/generator-converters@2.1.0-beta.5
+
 ## 2.1.0-beta.4
 
 ### Minor Changes

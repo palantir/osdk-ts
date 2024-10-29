@@ -1,5 +1,18 @@
 # @osdk/shared.net
 
+## 2.1.0-beta.1
+
+### Minor Changes
+
+- 963addb: Include API error info in CLI error messages
+
+### Patch Changes
+
+- Updated dependencies [963addb]
+  - @osdk/shared.client.impl@1.1.0-beta.1
+  - @osdk/shared.net.errors@2.1.0-beta.0
+  - @osdk/shared.net.fetch@1.1.0-beta.0
+
 ## 2.1.0-beta.0
 
 ### Minor Changes
