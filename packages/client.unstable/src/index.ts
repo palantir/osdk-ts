@@ -27,6 +27,7 @@ export type {
 export type { LinkTypeMetadata } from "./generated/ontology-metadata/api/LinkTypeMetadata.js";
 export type { LoadAllOntologiesResponse } from "./generated/ontology-metadata/api/LoadAllOntologiesResponse.js";
 export type { ObjectType } from "./generated/ontology-metadata/api/ObjectType.js";
+export type { StructFieldType } from "./generated/ontology-metadata/api/StructFieldType.js";
 export type { Type } from "./generated/ontology-metadata/api/Type.js";
 export type { SharedPropertyTypeGothamMapping } from "./generated/ontology-metadata/api/typemapping/SharedPropertyTypeGothamMapping.js";
 
@@ -56,6 +57,8 @@ export type {
   OntologyIrPackagedValueTypeMetadata,
   OntologyIrSharedPropertyType,
   OntologyIrSharedPropertyTypeBlockDataV2,
+  OntologyIrStructFieldType,
+  OntologyIrType,
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
 } from "./blockDataIr.js";

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ArrayPropertyType } from "./generated/ontology-metadata/api/ArrayPropertyType.js";
 import type {
   InterfaceTypeBlockDataV2,
   OntologyBlockDataV2,
@@ -22,6 +23,13 @@ import type {
 import type { InterfaceLinkType } from "./generated/ontology-metadata/api/InterfaceLinkType.js";
 import type { InterfaceType } from "./generated/ontology-metadata/api/InterfaceType.js";
 import type { SharedPropertyType } from "./generated/ontology-metadata/api/SharedPropertyType.js";
+import type { StructFieldType } from "./generated/ontology-metadata/api/StructFieldType.js";
+import type { StructPropertyType } from "./generated/ontology-metadata/api/StructPropertyType.js";
+import type {
+  Type,
+  Type_array,
+  Type_struct,
+} from "./generated/ontology-metadata/api/Type.js";
 import type { BaseType } from "./generated/type-registry/api/BaseType.js";
 import type { ExampleValue } from "./generated/type-registry/api/ExampleValue.js";
 import type { ValueTypeApiName } from "./generated/type-registry/api/ValueTypeApiName.js";
@@ -74,10 +82,33 @@ export type ApiNameValueTypeReference = {
 };
 
 export interface OntologyIrSharedPropertyType
-  extends Omit<SharedPropertyType, "rid" | "valueType">
+  extends
+    ReplaceKeys<Omit<SharedPropertyType, "rid" | "valueType">, {
+      type: OntologyIrType;
+    }>
 {
   valueType?: ApiNameValueTypeReference;
 }
+
+export type OntologyIrType = Exclude<Type, Type_struct | Type_array> | {
+  type: "struct";
+  struct: OntologyIrStructPropertyType;
+} | { type: "array"; array: OntologyIrArrayPropertyType };
+
+export type OntologyIrArrayPropertyType = ReplaceKeys<
+  ArrayPropertyType,
+  { subtype: OntologyIrType }
+>;
+
+export type OntologyIrStructPropertyType = ReplaceKeys<
+  StructPropertyType,
+  { structFields: Array<OntologyIrStructFieldType> }
+>;
+
+export type OntologyIrStructFieldType = ReplaceKeys<
+  Omit<StructFieldType, "structFieldRid">,
+  { fieldType: OntologyIrType }
+>;
 
 export interface OntologyIrInterfaceLinkType
   extends Omit<InterfaceLinkType, "rid">
