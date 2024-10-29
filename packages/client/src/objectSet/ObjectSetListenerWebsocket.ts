@@ -332,8 +332,9 @@ export class ObjectSetListenerWebsocket {
     if (this.#ws == null) {
       const { baseUrl, tokenProvider } = this.#client;
       const base = new URL(baseUrl);
-      const url =
-        `wss://${base.host}/api/v2/ontologySubscriptions/ontologies/${this.#client.ontologyRid}/streamSubscriptions`;
+      const url = `wss://${base.host}${
+        base.pathname === "/" ? "" : base.pathname
+      }/api/v2/ontologySubscriptions/ontologies/${this.#client.ontologyRid}/streamSubscriptions`;
       const token = await tokenProvider();
 
       // tokenProvider is async, there could potentially be a race to create the websocket.

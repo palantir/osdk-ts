@@ -64,7 +64,7 @@ export function createPublicOauthClient(
   postLoginPage: string = window.location.toString(),
   scopes: string[] = [],
   fetchFn: typeof globalThis.fetch = globalThis.fetch,
-  ctxPath: string = "/multipass",
+  ctxPath: string = "multipass",
 ): PublicOauthClient {
   const client: Client = { client_id, token_endpoint_auth_method: "none" };
   const authServer = createAuthorizationServer(ctxPath, url);
