@@ -48,9 +48,12 @@ export function defineInterface(
       [string, SharedPropertyType]
     >(
       ([apiName, type]) => {
-        if (typeof type === "string") {
+        if (
+          typeof type === "string"
+          || (typeof type === "object" && !("apiName" in type))
+        ) {
           invariant(
-            isSimpleType(type),
+            isPropertyTypeType(type),
             `Invalid data type ${type} for property ${apiName} on InterfaceType ${apiName}`,
           );
 
@@ -113,13 +116,14 @@ export function defineInterface(
   return ontologyDefinition.interfaceTypes[apiName] = a;
 }
 
-function isSimpleType(
-  v: string,
+function isPropertyTypeType(
+  v: PropertyTypeType,
 ): v is PropertyTypeType {
   return v === "boolean" || v === "byte"
     || v === "date" || v === "decimal" || v === "double"
     || v === "float" || v === "geopoint" || v === "geoshape"
-    || v === "integer" || v === "long" || v === "marking"
+    || v === "integer" || v === "long"
+    || (typeof v === "object" && v.type === "marking")
     || v === "short" || v === "string"
     || v === "timestamp";
 }

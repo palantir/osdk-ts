@@ -190,17 +190,20 @@ function convertSpt(
 function convertType(
   type: PropertyTypeType,
 ): Type {
-  switch (type) {
-    case "marking":
-      return { type, [type]: { markingType: "MANDATORY" } };
+  switch (true) {
+    case (typeof type === "object" && "markingType" in type):
+      return {
+        "type": type.type,
+        [type.type]: { markingType: type.markingType },
+      };
 
-    case "geopoint":
+    case (type === "geopoint"):
       return { type: "geohash", geohash: {} };
 
-    case "decimal":
+    case (type === "decimal"):
       return { type, [type]: { precision: undefined, scale: undefined } };
 
-    case "string":
+    case (type === "string"):
       return {
         type,
         [type]: {
@@ -211,7 +214,7 @@ function convertType(
         },
       };
 
-    case "mediaReference":
+    case (type === "mediaReference"):
       return {
         type: type,
         mediaReference: {},
