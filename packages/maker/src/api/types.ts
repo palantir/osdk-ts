@@ -76,9 +76,11 @@ export type PropertyTypeType =
   | PropertyTypeTypesWithoutStruct
   | {
     type: "struct";
-    structDefinition:
-      | { [api_name: string]: StructPropertyType }
-      | PropertyTypeTypesWithoutStruct;
+    structDefinition: {
+      [api_name: string]:
+        | StructPropertyType
+        | Exclude<PropertyTypeTypesWithoutStruct, MarkingPropertyType>;
+    };
   };
 
 export type PropertyTypeTypesWithoutStruct =
@@ -92,11 +94,16 @@ export type PropertyTypeTypesWithoutStruct =
   | "geoshape"
   | "integer"
   | "long"
-  | { type: "marking"; markingType: "MANDATORY" | "CBAC" }
+  | MarkingPropertyType
   | "short"
   | "string"
   | "timestamp"
   | "mediaReference";
+
+type MarkingPropertyType = {
+  type: "marking";
+  markingType: "MANDATORY" | "CBAC";
+};
 
 type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 
@@ -104,12 +111,12 @@ export interface StructPropertyType extends
   Optional<
     Omit<
       StructFieldType,
-      "fieldType" | "aliases" | "structFieldRid" | "apiName"
+      "fieldType" | "structFieldRid" | "apiName"
     >,
-    "typeClasses"
+    "typeClasses" | "aliases"
   >
 {
-  type: PropertyTypeTypesWithoutStruct;
+  fieldType: PropertyTypeTypesWithoutStruct;
 }
 
 export type ValueTypeDefinitionVersion = {

@@ -20,8 +20,11 @@ import type {
   OntologyIrOntologyBlockDataV2,
   OntologyIrSharedPropertyType,
   OntologyIrSharedPropertyTypeBlockDataV2,
+  OntologyIrStructFieldType,
+  OntologyIrType,
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
+  StructFieldType,
   Type,
 } from "@osdk/client.unstable";
 import type {
@@ -189,12 +192,54 @@ function convertSpt(
 
 function convertType(
   type: PropertyTypeType,
-): Type {
+): OntologyIrType {
   switch (true) {
     case (typeof type === "object" && "markingType" in type):
       return {
-        "type": type.type,
-        [type.type]: { markingType: type.markingType },
+        "type": "marking",
+        marking: { markingType: type.markingType },
+      };
+
+    case (typeof type === "object" && "structDefinition" in type):
+      const structFields: Array<OntologyIrStructFieldType> = new Array();
+      for (const key in type.structDefinition) {
+        const fieldTypeDefinition = type.structDefinition[key];
+        var field: OntologyIrStructFieldType;
+        if (typeof fieldTypeDefinition === "string") {
+          field = {
+            apiName: key,
+            displayMetadata: { displayName: key, description: undefined },
+            typeClasses: [],
+            aliases: [],
+            fieldType: convertType(fieldTypeDefinition),
+          };
+        } else {
+          // If it is a full form type definition then process it as such
+          if ("fieldType" in fieldTypeDefinition) {
+            field = {
+              ...fieldTypeDefinition,
+              apiName: key,
+              fieldType: convertType(fieldTypeDefinition.fieldType),
+              typeClasses: fieldTypeDefinition.typeClasses ?? [],
+              aliases: fieldTypeDefinition.aliases ?? [],
+            };
+          } else {
+            field = {
+              apiName: key,
+              displayMetadata: { displayName: key, description: undefined },
+              typeClasses: [],
+              aliases: [],
+              fieldType: convertType(fieldTypeDefinition),
+            };
+          }
+        }
+
+        structFields.push(field);
+      }
+
+      return {
+        type: "struct",
+        struct: { structFields },
       };
 
     case (type === "geopoint"):

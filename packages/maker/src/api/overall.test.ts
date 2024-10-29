@@ -250,15 +250,7 @@ describe("Ontology Defining", () => {
       it("does not let you conflict spts", () => {
         defineSharedPropertyType({
           apiName: "foo",
-          type: {
-            type: "struct",
-            structDefinition: {
-              "foo": {
-                type: "boolean",
-                displayMetadata: { displayName: "display", description: "foo" },
-              },
-            },
-          },
+          type: "string",
         });
 
         expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -1056,5 +1048,26 @@ describe("Ontology Defining", () => {
         },
       }
     `);
+  });
+
+  it("properly serializes both types of struct SPTs", () => {
+    const fooSpt = defineSharedPropertyType({
+      apiName: "fooSpt",
+      type: {
+        type: "struct",
+        structDefinition: {
+          "simpleProperty": "boolean",
+          "complexProperty": {
+            fieldType: "date",
+            displayMetadata: {
+              displayName: "complex property",
+              description: undefined,
+            },
+          },
+        },
+      },
+    });
+
+    expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(``);
   });
 });
