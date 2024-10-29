@@ -58,6 +58,16 @@ export const actionHandlers: Array<RequestHandler> = [
   ),
 
   /**
+   * Apply an Action with custom URL entrypoint
+   */
+  handleOpenApiCall(
+    OntologiesV2.Actions.apply,
+    ["ontologyApiName", "actionType"],
+    handleAction<SyncApplyActionResponseV2>,
+    "https://stack.palantir.com/foo/first/someStuff",
+  ),
+
+  /**
    * Apply a Batch Action
    */
   handleOpenApiCall(
