@@ -1068,6 +1068,77 @@ describe("Ontology Defining", () => {
       },
     });
 
-    expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(``);
+    expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+              {
+                "blockPermissionInformation": {
+                  "actionTypes": {},
+                  "linkTypes": {},
+                  "objectTypes": {},
+                },
+                "interfaceTypes": {},
+                "sharedPropertyTypes": {
+                  "com.palantir.fooSpt": {
+                    "sharedPropertyType": {
+                      "aliases": [],
+                      "apiName": "com.palantir.fooSpt",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "fooSpt",
+                        "visibility": "NORMAL",
+                      },
+                      "gothamMapping": undefined,
+                      "indexedForSearch": true,
+                      "provenance": undefined,
+                      "type": {
+                        "struct": {
+                          "structFields": [
+                            {
+                              "aliases": [],
+                              "apiName": "simpleProperty",
+                              "displayMetadata": {
+                                "description": undefined,
+                                "displayName": "simpleProperty",
+                              },
+                              "fieldType": {
+                                "boolean": {},
+                                "type": "boolean",
+                              },
+                              "typeClasses": [],
+                            },
+                            {
+                              "aliases": [],
+                              "apiName": "complexProperty",
+                              "displayMetadata": {
+                                "description": undefined,
+                                "displayName": "complex property",
+                              },
+                              "fieldType": {
+                                "date": {},
+                                "type": "date",
+                              },
+                              "typeClasses": [],
+                            },
+                          ],
+                        },
+                        "type": "struct",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                  },
+                },
+              }
+      `);
   });
 });
