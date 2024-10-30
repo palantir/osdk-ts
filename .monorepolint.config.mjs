@@ -412,6 +412,7 @@ function standardPackageRules(shared, options) {
               }),
               "browser": "./build/browser/index.js",
               "import": "./build/esm/index.js",
+              "default": "./build/browser/index.js",
             },
 
             "./*": {
@@ -420,6 +421,7 @@ function standardPackageRules(shared, options) {
               }),
               browser: "./build/browser/public/*.js",
               import: "./build/esm/public/*.js",
+              default: "./build/browser/public/*.js",
             },
           },
           publishConfig: {
