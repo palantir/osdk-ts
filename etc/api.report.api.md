@@ -190,7 +190,7 @@ export type ApplyBatchActionOptions = {
 // Warning: (ae-forgotten-export) The symbol "OrderByArg" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export interface AsyncIterArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, S extends NullabilityAdherence = NullabilityAdherence.Default> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
+export interface AsyncIterArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, A extends Augments = never, S extends NullabilityAdherence = NullabilityAdherence.Default> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
     // (undocumented)
     $__EXPERIMENTAL_selectedObjectTypes?: string[];
 }
@@ -389,7 +389,7 @@ export const DurationMapping: {
 };
 
 // @public (undocumented)
-export interface FetchPageArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, S extends NullabilityAdherence = NullabilityAdherence.Default> extends AsyncIterArgs<Q, K, R, S> {
+export interface FetchPageArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, A extends Augments = never, S extends NullabilityAdherence = NullabilityAdherence.Default> extends AsyncIterArgs<Q, K, R, A, S> {
     // (undocumented)
     $nextPageToken?: string;
     // (undocumented)
@@ -831,8 +831,8 @@ export type SelectArgToKeys<Q extends ObjectOrInterfaceDefinition, A extends Sel
 
 // @public (undocumented)
 export interface SingleLinkAccessor<T extends ObjectTypeDefinition> {
-    fetchOne: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<A extends FetchPageArgs<T, infer L, infer R, infer S> ? Osdk.Instance<T, ExtractOptions<R, S>, L> : Osdk.Instance<T>>;
-    fetchOneWithErrors: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<Result<A extends FetchPageArgs<T, infer L, infer R, infer S> ? Osdk.Instance<T, ExtractOptions<R, S>, L> : Osdk.Instance<T>>>;
+    fetchOne: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<A extends FetchPageArgs<T, infer L, infer R, any, infer S> ? Osdk.Instance<T, ExtractOptions<R, S>, L> : Osdk.Instance<T>>;
+    fetchOneWithErrors: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<Result<A extends FetchPageArgs<T, infer L, infer R, any, infer S> ? Osdk.Instance<T, ExtractOptions<R, S>, L> : Osdk.Instance<T>>>;
 }
 
 // @public

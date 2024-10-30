@@ -90,7 +90,7 @@ async function fetchInterfacePage<
 >(
   client: MinimalClient,
   interfaceType: Q,
-  args: FetchPageArgs<Q, L, R, S>,
+  args: FetchPageArgs<Q, L, R, any, S>,
   objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R, S>> {
   const result = await OntologiesV2.OntologyInterfaces
@@ -122,12 +122,13 @@ export async function fetchPageInternal<
   Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q>,
   R extends boolean,
+  A extends Augments,
   S extends NullabilityAdherence,
 >(
   client: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet,
-  args: FetchPageArgs<Q, L, R, S> = {},
+  args: FetchPageArgs<Q, L, R, A, S> = {},
 ): Promise<FetchPageResult<Q, L, R, S>> {
   if (objectType.type === "interface") {
     return await fetchInterfacePage(
@@ -151,12 +152,13 @@ export async function fetchPageWithErrorsInternal<
   Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q>,
   R extends boolean,
+  A extends Augments,
   S extends NullabilityAdherence,
 >(
   client: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet,
-  args: FetchPageArgs<Q, L, R, S> = {},
+  args: FetchPageArgs<Q, L, R, A, S> = {},
 ): Promise<Result<FetchPageResult<Q, L, R, S>>> {
   try {
     const result = await fetchPageInternal(client, objectType, objectSet, args);
@@ -185,7 +187,7 @@ export async function fetchPage<
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, S>,
+  args: FetchPageArgs<Q, L, R, any, S>,
   objectSet: ObjectSet = {
     type: "base",
     objectType: objectType["apiName"] as string,
@@ -203,7 +205,7 @@ export async function fetchPageWithErrors<
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, S>,
+  args: FetchPageArgs<Q, L, R, any, S>,
   objectSet: ObjectSet = {
     type: "base",
     objectType: objectType["apiName"] as string,
@@ -219,7 +221,7 @@ function applyFetchArgs<
     pageSize?: PageSize;
   },
 >(
-  args: FetchPageArgs<any, any, any, any>,
+  args: FetchPageArgs<any, any, any, any, any>,
   body: X,
 ): X {
   if (args?.$nextPageToken) {
@@ -251,7 +253,7 @@ export async function fetchObjectPage<
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, S>,
+  args: FetchPageArgs<Q, L, R, Augments, S>,
   objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R, S>> {
   const r = await OntologiesV2.OntologyObjectSets.load(

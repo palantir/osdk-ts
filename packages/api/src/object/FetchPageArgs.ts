@@ -56,8 +56,9 @@ export interface FetchPageArgs<
   Q extends ObjectOrInterfaceDefinition,
   K extends PropertyKeys<Q> = PropertyKeys<Q>,
   R extends boolean = false,
+  A extends Augments = never,
   S extends NullabilityAdherence = NullabilityAdherence.Default,
-> extends AsyncIterArgs<Q, K, R, S> {
+> extends AsyncIterArgs<Q, K, R, A, S> {
   $nextPageToken?: string;
   $pageSize?: number;
 }
@@ -66,6 +67,7 @@ export interface AsyncIterArgs<
   Q extends ObjectOrInterfaceDefinition,
   K extends PropertyKeys<Q> = PropertyKeys<Q>,
   R extends boolean = false,
+  A extends Augments = never,
   S extends NullabilityAdherence = NullabilityAdherence.Default,
 > extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
   $__EXPERIMENTAL_selectedObjectTypes?: string[];
