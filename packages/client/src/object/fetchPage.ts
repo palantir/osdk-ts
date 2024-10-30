@@ -99,7 +99,7 @@ async function fetchInterfacePage<
       await client.ontologyRid,
       interfaceType.apiName,
       applyFetchArgs<SearchObjectsForInterfaceRequest>(args, {
-        augmentedProperties: args.$augment ?? {},
+        augmentedProperties: {},
         augmentedSharedPropertyTypes: {},
         otherInterfaceTypes: [],
         selectedObjectTypes: args.$__EXPERIMENTAL_selectedObjectTypes ?? [],

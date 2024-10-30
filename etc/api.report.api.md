@@ -190,11 +190,9 @@ export type ApplyBatchActionOptions = {
 // Warning: (ae-forgotten-export) The symbol "OrderByArg" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export interface AsyncIterArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, A extends Augments = {}, S extends NullabilityAdherence = NullabilityAdherence.Default> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
+export interface AsyncIterArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, A extends Augments = never, S extends NullabilityAdherence = NullabilityAdherence.Default> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
     // (undocumented)
     $__EXPERIMENTAL_selectedObjectTypes?: string[];
-    // (undocumented)
-    $augment?: A;
 }
 
 // @public (undocumented)
@@ -391,7 +389,7 @@ export const DurationMapping: {
 };
 
 // @public (undocumented)
-export interface FetchPageArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, A extends Augments = {}, S extends NullabilityAdherence = NullabilityAdherence.Default> extends AsyncIterArgs<Q, K, R, A, S> {
+export interface FetchPageArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, A extends Augments = never, S extends NullabilityAdherence = NullabilityAdherence.Default> extends AsyncIterArgs<Q, K, R, A, S> {
     // (undocumented)
     $nextPageToken?: string;
     // (undocumented)
