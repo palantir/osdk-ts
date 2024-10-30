@@ -35,7 +35,7 @@ export async function fetchSingle<
   args: A,
   objectSet: ObjectSet,
 ): Promise<
-  A extends FetchPageArgs<Q, infer L, infer R, any, infer S>
+  A extends FetchPageArgs<Q, infer L, infer R, infer S>
     ? SingleOsdkResult<Q, L, R, S>
     : SingleOsdkResult<Q, any, any, any>
 > {
@@ -68,7 +68,7 @@ export async function fetchSingleWithErrors<
   objectSet: ObjectSet,
 ): Promise<
   Result<
-    A extends FetchPageArgs<Q, infer L, infer R, any, infer S>
+    A extends FetchPageArgs<Q, infer L, infer R, infer S>
       ? SingleOsdkResult<Q, L, R, S>
       : SingleOsdkResult<Q, any, any, any>
   >

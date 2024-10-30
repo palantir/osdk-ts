@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  FetchPageArgs,
-  SelectArg,
-  SelectArgToKeys,
-} from "../object/FetchPageArgs.js";
-import type { SingleOsdkResult } from "../object/FetchPageResult.js";
+import type { FetchPageArgs, SelectArg } from "../object/FetchPageArgs.js";
 import type { Result } from "../object/Result.js";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { PropertyKeys } from "../ontology/ObjectOrInterface.js";
@@ -66,7 +61,7 @@ export interface SingleLinkAccessor<
   >(
     options?: A,
   ) => Promise<
-    A extends FetchPageArgs<T, infer L, infer R, any, infer S>
+    A extends FetchPageArgs<T, infer L, infer R, infer S>
       ? Osdk.Instance<T, ExtractOptions<R, S>, L>
       : Osdk.Instance<T>
   >;
@@ -83,7 +78,7 @@ export interface SingleLinkAccessor<
     options?: A,
   ) => Promise<
     Result<
-      A extends FetchPageArgs<T, infer L, infer R, any, infer S>
+      A extends FetchPageArgs<T, infer L, infer R, infer S>
         ? Osdk.Instance<T, ExtractOptions<R, S>, L>
         : Osdk.Instance<T>
     >

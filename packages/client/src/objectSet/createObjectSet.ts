@@ -150,10 +150,9 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     asyncIter: async function*<
       L extends PropertyKeys<Q>,
       R extends boolean,
-      const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherence.Default,
     >(
-      args?: AsyncIterArgs<Q, L, R, A, S>,
+      args?: AsyncIterArgs<Q, L, R, S>,
     ): AsyncIterableIterator<SingleOsdkResult<Q, L, R, S>> {
       let $nextPageToken: string | undefined = undefined;
       do {

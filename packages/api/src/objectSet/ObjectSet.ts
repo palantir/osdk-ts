@@ -60,10 +60,9 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
   readonly fetchPage: <
     L extends PropertyKeys<Q>,
     R extends boolean,
-    const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
   >(
-    args?: FetchPageArgs<Q, L, R, A, S>,
+    args?: FetchPageArgs<Q, L, R, S>,
   ) => Promise<
     PageResult<
       PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S>>
@@ -88,10 +87,9 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
   readonly fetchPageWithErrors: <
     L extends PropertyKeys<Q>,
     R extends boolean,
-    const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
   >(
-    args?: FetchPageArgs<Q, L, R, A, S>,
+    args?: FetchPageArgs<Q, L, R, S>,
   ) => Promise<Result<PageResult<Osdk.Instance<Q, ExtractOptions<R, S>, L>>>>;
 
   /**
@@ -119,10 +117,9 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
   readonly asyncIter: <
     L extends PropertyKeys<Q>,
     R extends boolean,
-    const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
   >(
-    args?: AsyncIterArgs<Q, L, R, A, S>,
+    args?: AsyncIterArgs<Q, L, R, S>,
   ) => AsyncIterableIterator<SingleOsdkResult<Q, L, R, S>>;
 }
 
