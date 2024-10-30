@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { EXPERIMENTAL_ObjectSetListener } from "@osdk/api/unstable";
 import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
@@ -25,9 +23,9 @@ import { $Actions, MtaBus, OsdkTestObject } from "@osdk/e2e.generated.catchall";
 import { client, dsClient } from "./client.js";
 
 export async function runSubscriptionsTest() {
-  const subscription = client(__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe)
+  let counter = 0;
+  const subscription = client(OsdkTestObject)
     .subscribe(
-      client(OsdkTestObject),
       [
         "primaryKey_",
         "stringProperty",
@@ -40,6 +38,10 @@ export async function runSubscriptionsTest() {
             " changed stringProperty to ",
             object.object.stringProperty,
           );
+          if (++counter >= 3) {
+            console.log("Unsubscribing");
+            subscription.unsubscribe();
+          }
         },
         onError(err) {
           console.error("Error in subscription: ", err);
@@ -49,6 +51,8 @@ export async function runSubscriptionsTest() {
         },
         async onSuccessfulSubscription() {
           await client($Actions.createOsdkTestObject).applyAction({
+            description: "test",
+            osdk_object_name: "OsdkTestObject",
             string_property: "test",
           });
 
@@ -101,7 +105,10 @@ export async function runSubscriptionsTest() {
         console.log("Out of date");
       },
       onSuccessfulSubscription() {
-        setTimeout(mtaBusSubscription.unsubscribe, 10000);
+        setTimeout(() => {
+          console.log("Unsubscribing from MtaBus");
+          mtaBusSubscription.unsubscribe();
+        }, 10000);
       },
     },
   );
