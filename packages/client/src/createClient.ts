@@ -150,13 +150,13 @@ export function createClientInternal(
       switch (o.name) {
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks.name:
           return {
-            invoke: createBulkLinksAsyncIterFactory(
+            getBulkLinks: createBulkLinksAsyncIterFactory(
               clientCtx,
             ),
           } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet.name:
           return {
-            invoke: <T extends ObjectOrInterfaceDefinition>(
+            preexistingObjectSet: <T extends ObjectOrInterfaceDefinition>(
               definition: T,
               rid: string,
             ) => {
