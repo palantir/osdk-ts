@@ -181,7 +181,7 @@ export function createClientInternal(
           } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe.name:
           return {
-            invoke: <
+            subscribe: <
               Q extends ObjectOrInterfaceDefinition,
               const P extends PropertyKeys<Q>,
             >(
@@ -189,6 +189,7 @@ export function createClientInternal(
               properties: Array<P>,
               listener: EXPERIMENTAL_ObjectSetListener<Q, P>,
             ) => {
+              console.log("getWireObjectSet", getWireObjectSet(objectSet));
               const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
                 clientCtx,
               ).subscribe(
@@ -229,7 +230,15 @@ export function createClientInternal(
       fetchMetadata: {
         value: fetchMetadata,
       },
-    } satisfies Record<keyof Client, PropertyDescriptor>,
+      hack: {
+        value: <T extends InterfaceDefinition>(t: T) => {
+          return createObjectSet(t, clientCtx, {
+            type: "interfaceBase",
+            interfaceType: t.apiName,
+          });
+        },
+      },
+    } as any satisfies Record<keyof Client, PropertyDescriptor>,
   );
 
   return client;

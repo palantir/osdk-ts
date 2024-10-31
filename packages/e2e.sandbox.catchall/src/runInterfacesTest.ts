@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/api";
+import type { ObjectSet, Osdk } from "@osdk/api";
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/api/unstable";
 import { Employee, FooInterface } from "@osdk/e2e.generated.catchall";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
@@ -23,13 +24,36 @@ import { client } from "./client.js";
 
 export async function runInterfacesTest() {
   // this has the nice effect of faking a 'race' with the below code
-  (async () => {
-    const { data } = await client(FooInterface).fetchPage();
-    const first = data[0];
-    const e = first.$as(Employee);
-  })();
+  // (async () => {
+  //   const { data } = await client(FooInterface).fetchPage();
+  //   const first = data[0];
+  //   const e = first.$as(Employee);
+  // })();
 
-  const qqq = await client(FooInterface).where({ name: { $ne: "Patti" } });
+  // const qqq = await client(FooInterface).where({ name: { $ne: "Patti" } });
+
+  const osHacked: ObjectSet<FooInterface> = (client as any).hack(FooInterface);
+
+  console.log(client(__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe));
+  client(__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe).subscribe(osHacked, [
+    "description",
+    "name",
+  ], {
+    onChange(objectUpdate) {
+      console.log("objectUpdate:", objectUpdate);
+    },
+    onError(errors) {
+      console.log("errors:", JSON.stringify(errors, undefined, 2));
+    },
+    onOutOfDate() {
+      console.log("onOutOfDate");
+    },
+    onSuccessfulSubscription() {
+      console.log("onSuccessfulSubscription");
+    },
+  });
+
+  return;
 
   const fooLimitedToEmployees = await client(FooInterface).fetchPage({
     $__EXPERIMENTAL_selectedObjectTypes: ["Employee"],

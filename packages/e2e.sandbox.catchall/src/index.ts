@@ -34,7 +34,10 @@ const testSubscriptions = false;
 
 async function runTests() {
   try {
-    await checkUnstableBulkLinks();
+    await runInterfacesTest();
+    return;
+
+    // await checkUnstableBulkLinks();
 
     if (runOld) {
       await runLegacyExamples();

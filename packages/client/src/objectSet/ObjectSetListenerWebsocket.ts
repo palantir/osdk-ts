@@ -68,7 +68,7 @@ interface Subscription<
 > {
   listener: Required<ObjectSetListener<Q, P>>;
   objectSet: ObjectSet;
-  primaryKeyPropertyName: string;
+  // primaryKeyPropertyName: string;
   requestedProperties: Array<P>;
   requestedReferenceProperties: Array<P>;
   subscriptionId: string;
@@ -176,7 +176,7 @@ export class ObjectSetListenerWebsocket {
       globalThis.crypto ??= (await import("node:crypto")).webcrypto as any;
     }
 
-    const objDef = await this.#client.ontologyProvider.getObjectDefinition(
+    const objDef = await this.#client.ontologyProvider.getInterfaceDefinition(
       objectType.apiName,
     );
 
@@ -190,7 +190,7 @@ export class ObjectSetListenerWebsocket {
     const sub: Subscription<Q, P> = {
       listener: fillOutListener<Q, P>(listener),
       objectSet,
-      primaryKeyPropertyName: objDef.primaryKeyApiName,
+      // primaryKeyPropertyName: "",
       requestedProperties: objectProperties,
       requestedReferenceProperties: referenceProperties,
       status: "preparing",
@@ -239,6 +239,7 @@ export class ObjectSetListenerWebsocket {
       }
     } catch (error) {
       this.#logger?.error(error, "Error in #initiateSubscribe");
+      console.log(error);
       sub.listener.onError([error]);
     }
   }
@@ -281,6 +282,8 @@ export class ObjectSetListenerWebsocket {
         };
       }),
     };
+
+    console.log(JSON.stringify(subscribe, undefined, 2));
 
     if (process.env.NODE_ENV !== "production") {
       this.#logger?.trace(
@@ -436,7 +439,7 @@ export class ObjectSetListenerWebsocket {
           this.#client,
           [{
             __apiName: o.objectType,
-            __primaryKey: o.primaryKey[sub.primaryKeyPropertyName],
+            // __primaryKey: o.primaryKey[sub.primaryKeyPropertyName],
             ...o.primaryKey,
             [o.property]: o.value,
           }],
@@ -508,6 +511,7 @@ export class ObjectSetListenerWebsocket {
 
       switch (response.type) {
         case "error":
+          console.log("response.errors", response.errors);
           sub.listener.onError(response.errors);
           this.#unsubscribe(sub, "error");
           break;
