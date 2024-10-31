@@ -59,7 +59,11 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         nullable: true,
       };
     }
-
+    case "mediaReference": {
+      throw new Error(
+        `Unexpected data type, media references not supported yet`,
+      );
+    }
     default:
       const _: never = input.dataType;
       throw new Error(
@@ -97,7 +101,11 @@ function objectPropertyTypeToSdkPropertyDefinition(
         return "stringTimeseries";
       }
       return "numericTimeseries";
-
+    case "mediaReference": {
+      throw new Error(
+        `Unexpected data type, media references not supported yet`,
+      );
+    }
     default:
       const _: never = propertyType;
       throw new Error(`Unexpected data type ${JSON.stringify(propertyType)}`);

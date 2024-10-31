@@ -41,6 +41,7 @@ import type {
 import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
+import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 import {
   convertWireToOsdkObjects,
   convertWireToOsdkObjects2,
@@ -220,10 +221,7 @@ export async function fetchPage<
   client: MinimalClient,
   objectType: Q,
   args: FetchPageArgs<Q, L, R, any, S>,
-  objectSet: ObjectSet = {
-    type: "base",
-    objectType: objectType["apiName"] as string,
-  },
+  objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
 ): Promise<FetchPageResult<Q, L, R, S>> {
   return fetchPageInternal(client, objectType, objectSet, args);
 }
@@ -238,10 +236,7 @@ export async function fetchPageWithErrors<
   client: MinimalClient,
   objectType: Q,
   args: FetchPageArgs<Q, L, R, any, S>,
-  objectSet: ObjectSet = {
-    type: "base",
-    objectType: objectType["apiName"] as string,
-  },
+  objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
 ): Promise<Result<FetchPageResult<Q, L, R, S>>> {
   return fetchPageWithErrorsInternal(client, objectType, objectSet, args);
 }
