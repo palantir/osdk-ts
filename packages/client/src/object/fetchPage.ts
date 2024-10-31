@@ -124,7 +124,6 @@ async function fetchInterfacePage<
     );
     return result as any;
   }
-
   const result = await OntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
     addUserAgentAndRequestContextHeaders(client, interfaceType),
     await client.ontologyRid,
@@ -134,7 +133,6 @@ async function fetchInterfacePage<
       excludeRid: !args?.$includeRid,
     }),
   );
-  result.interfaceToObjectTypeMappings;
   return Promise.resolve({
     data: await convertWireToOsdkObjects2(
       client,

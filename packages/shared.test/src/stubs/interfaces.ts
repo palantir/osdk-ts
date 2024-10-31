@@ -28,3 +28,11 @@ export const FooInterface: InterfaceType = {
   },
   links: {},
 };
+
+export const employeeInterfaceScoped = {
+  fullName: "Santa Claus",
+  $rid:
+    "ri.phonograph2-objects.main.object.99a6fccb-f333-46d6-a07e-7725c5f18b61",
+  $primaryKey: 50050,
+  $apiName: "Employee",
+};
