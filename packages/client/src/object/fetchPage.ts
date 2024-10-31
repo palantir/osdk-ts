@@ -29,6 +29,7 @@ import type {
 } from "@osdk/api";
 import type {
   LoadObjectSetRequestV2,
+  LoadObjectSetV2MultipleObjectTypesRequest,
   ObjectSet,
   OntologyObjectV2,
   PageSize,
@@ -40,7 +41,10 @@ import type {
 import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
-import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
+import {
+  convertWireToOsdkObjects,
+  convertWireToOsdkObjects2,
+} from "./convertWireToOsdkObjects.js";
 
 export function augment<
   Q extends ObjectOrInterfaceDefinition,
@@ -93,28 +97,56 @@ async function fetchInterfacePage<
   args: FetchPageArgs<Q, L, R, any, S>,
   objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R, S>> {
-  const result = await OntologiesV2.OntologyInterfaces
-    .search(
-      addUserAgentAndRequestContextHeaders(client, interfaceType),
-      await client.ontologyRid,
+  if (args.$__UNSTABLE_useOldInterfaceApis) {
+    const result = await OntologiesV2.OntologyInterfaces
+      .search(
+        addUserAgentAndRequestContextHeaders(client, interfaceType),
+        await client.ontologyRid,
+        interfaceType.apiName,
+        applyFetchArgs<SearchObjectsForInterfaceRequest>(args, {
+          augmentedProperties: {},
+          augmentedSharedPropertyTypes: {},
+          otherInterfaceTypes: [],
+          selectedObjectTypes: args.$__EXPERIMENTAL_selectedObjectTypes ?? [],
+          selectedSharedPropertyTypes: args.$select as undefined | string[]
+            ?? [],
+          where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
+        }),
+        { preview: true },
+      );
+
+    result.data = await convertWireToOsdkObjects(
+      client,
+      result.data as OntologyObjectV2[], // drop readonly
       interfaceType.apiName,
-      applyFetchArgs<SearchObjectsForInterfaceRequest>(args, {
-        augmentedProperties: {},
-        augmentedSharedPropertyTypes: {},
-        otherInterfaceTypes: [],
-        selectedObjectTypes: args.$__EXPERIMENTAL_selectedObjectTypes ?? [],
-        selectedSharedPropertyTypes: args.$select as undefined | string[] ?? [],
-        where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
-      }),
-      { preview: true },
+      !args.$includeRid,
     );
-  result.data = await convertWireToOsdkObjects(
-    client,
-    result.data as OntologyObjectV2[], // drop readonly
-    interfaceType.apiName,
-    !args.$includeRid,
+    return result as any;
+  }
+
+  const result = await OntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
+    addUserAgentAndRequestContextHeaders(client, interfaceType),
+    await client.ontologyRid,
+    applyFetchArgs<LoadObjectSetV2MultipleObjectTypesRequest>(args, {
+      objectSet,
+      select: ((args?.$select as string[] | undefined) ?? []),
+      excludeRid: !args?.$includeRid,
+    }),
   );
-  return result as any;
+  result.interfaceToObjectTypeMappings;
+  return Promise.resolve({
+    data: await convertWireToOsdkObjects2(
+      client,
+      result.data,
+      interfaceType.apiName,
+      !args.$includeRid,
+      args.$select,
+      false,
+      result.interfaceToObjectTypeMappings,
+    ),
+    nextPageToken: result.nextPageToken,
+    totalCount: result.totalCount,
+  }) as unknown as Promise<FetchPageResult<Q, L, R, S>>;
 }
 
 /** @internal */

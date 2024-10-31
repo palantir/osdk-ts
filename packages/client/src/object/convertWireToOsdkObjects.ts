@@ -21,7 +21,11 @@ import type {
   ObjectOrInterfaceDefinition,
   Osdk,
 } from "@osdk/api";
-import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
+import type {
+  InterfaceToObjectTypeMappings,
+  InterfaceTypeApiName,
+  OntologyObjectV2,
+} from "@osdk/internal.foundry.core";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
@@ -88,6 +92,76 @@ export async function convertWireToOsdkObjects(
         ifaceDef.apiName,
         ifaceSelected,
       );
+    } else {
+      objProps = selectedProps ?? Object.keys(objectDef.properties);
+    }
+
+    conforming &&= isConforming(client, objectDef, rawObj, objProps);
+
+    if (strictNonNull === "throw" && !conforming) {
+      throw new Error(
+        "Unable to safely convert objects as some non nullable properties are null",
+      );
+    } else if (strictNonNull === "drop" && !conforming) {
+      continue;
+    }
+
+    let osdkObject = createOsdkObject(client, objectDef, rawObj);
+    if (interfaceApiName) osdkObject = osdkObject.$as(interfaceApiName);
+
+    ret.push(osdkObject);
+  }
+
+  client.logger?.debug(`END convertWireToOsdkObjects()`);
+  return ret;
+}
+
+export async function convertWireToOsdkObjects2(
+  client: MinimalClient,
+  objects: OntologyObjectV2[],
+  interfaceApiName: string | undefined,
+  forceRemoveRid: boolean = false,
+  selectedProps?: ReadonlyArray<string>,
+  strictNonNull: NullabilityAdherence = false,
+  interfaceToObjectTypeMappings: Record<
+    InterfaceTypeApiName,
+    InterfaceToObjectTypeMappings
+  > = {},
+): Promise<Osdk.Instance<ObjectOrInterfaceDefinition>[]> {
+  client.logger?.debug(`START convertWireToOsdkObjects()`);
+
+  fixObjectPropertiesInPlace(objects, forceRemoveRid);
+
+  const ret = [];
+  for (const rawObj of objects) {
+    const interfaceToObjMapping =
+      interfaceToObjectTypeMappings[interfaceApiName as InterfaceTypeApiName][
+        rawObj.$apiName
+      ];
+
+    const ifaceSelected = interfaceApiName
+      ? (selectedProps
+        ? Object.keys(interfaceToObjMapping).filter(
+          val => {
+            selectedProps?.includes(interfaceToObjMapping[val]);
+          },
+        )
+        : Object.keys(interfaceToObjMapping))
+      : undefined;
+
+    const objectDef = await client.ontologyProvider.getObjectDefinition(
+      rawObj.$apiName,
+    );
+    invariant(objectDef, `Missing definition for '${rawObj.$apiName}'`);
+
+    // default value for when we are checking an object
+    let objProps;
+
+    let conforming = true;
+    if (interfaceApiName && ifaceSelected) {
+      invariantInterfacesAsViews(objectDef, interfaceApiName, client);
+
+      objProps = ifaceSelected;
     } else {
       objProps = selectedProps ?? Object.keys(objectDef.properties);
     }
