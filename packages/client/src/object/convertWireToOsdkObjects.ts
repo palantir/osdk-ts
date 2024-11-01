@@ -128,7 +128,7 @@ export async function convertWireToOsdkObjects2(
     InterfaceToObjectTypeMappings
   > = {},
 ): Promise<Osdk.Instance<ObjectOrInterfaceDefinition>[]> {
-  client.logger?.debug(`START convertWireToOsdkObjects()`);
+  client.logger?.debug(`START convertWireToOsdkObjects2()`);
 
   fixObjectPropertiesInPlace(objects, forceRemoveRid);
 
@@ -186,7 +186,7 @@ export async function convertWireToOsdkObjects2(
     ret.push(osdkObject);
   }
 
-  client.logger?.debug(`END convertWireToOsdkObjects()`);
+  client.logger?.debug(`END convertWireToOsdkObjects2()`);
   return ret;
 }
 
