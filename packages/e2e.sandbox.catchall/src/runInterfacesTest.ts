@@ -23,17 +23,16 @@ import {
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
+import type { InterfaceObjectSet } from "../../api/build/esm/objectSet/ObjectSet.js";
 import { client } from "./client.js";
 
 export async function runInterfacesTest() {
   // this has the nice effect of faking a 'race' with the below code
-  // (async () => {
-  //   const { data } = await client(FooInterface).fetchPage({
-  //     $__UNSTABLE_useOldInterfaceApis: true,
-  //   });
-  //   const first = data[0];
-  //   const e = first.$as(Employee);
-  // })();
+  (async () => {
+    const { data } = await client(FooInterface).fetchPage();
+    const first = data[0];
+    const e = first.$as(OsdkTestObject);
+  })();
 
   console.log("hello");
   const qqq = await client(FooInterface).where({ name: { $ne: "Patti" } });
@@ -63,18 +62,12 @@ export async function runInterfacesTest() {
       $select: ["name"],
     });
 
-  // const q = client(FooInterface)
-  //   .where({ name: { $ne: "Patti" } });
-  // expectType<TypeOf<typeof q, InterfaceObjectSet<FooInterface>>>(true);
   for (const int of r.data) {
     console.log("int:", int.name, int);
     invariant(int.name);
     invariant(!(int as any).firstName);
 
-    type what = typeof int;
-    type what2 = ConvertProps<FooInterface, OsdkTestObject, "name">;
     const testObject = int.$as(OsdkTestObject);
-    type huh = typeof testObject;
     expectType<TypeOf<Osdk.Instance<OsdkTestObject>, typeof testObject>>(false);
     expectType<
       TypeOf<
