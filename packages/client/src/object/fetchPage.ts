@@ -63,8 +63,8 @@ export function objectSetToSearchJsonV2(
   expectedApiName: string,
   existingWhere: SearchJsonQueryV2 | undefined = undefined,
 ): SearchJsonQueryV2 | undefined {
-  if (objectSet.type === "base") {
-    if (objectSet.objectType !== expectedApiName) {
+  if (objectSet.type === "base" || objectSet.type === "interfaceBase") {
+    if (objectSet.type === "base" && objectSet.objectType !== expectedApiName) {
       throw new Error(
         `Expected objectSet.objectType to be ${expectedApiName}, but got ${objectSet.objectType}`,
       );

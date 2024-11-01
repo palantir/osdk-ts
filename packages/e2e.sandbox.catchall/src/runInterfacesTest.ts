@@ -23,21 +23,23 @@ import { client } from "./client.js";
 
 export async function runInterfacesTest() {
   // this has the nice effect of faking a 'race' with the below code
-  (async () => {
-    const { data } = await client(FooInterface).fetchPage();
-    const first = data[0];
-    const e = first.$as(Employee);
-  })();
+  // (async () => {
+  //   const { data } = await client(FooInterface).fetchPage({
+  //     $__UNSTABLE_useOldInterfaceApis: true,
+  //   });
+  //   const first = data[0];
+  //   const e = first.$as(Employee);
+  // })();
 
+  console.log("hello");
   const qqq = await client(FooInterface).where({ name: { $ne: "Patti" } });
 
-  const fooLimitedToEmployees = await client(FooInterface).fetchPage({
-    $__EXPERIMENTAL_selectedObjectTypes: ["Employee"],
-  });
+  const fooLimitedToEmployees = await client(FooInterface).fetchPage();
   invariant(fooLimitedToEmployees.data.length > 0);
 
   const fooLimitedToOther = await client(FooInterface).fetchPage({
     $__EXPERIMENTAL_selectedObjectTypes: ["Other"],
+    $__UNSTABLE_useOldInterfaceApis: true,
   });
   invariant(fooLimitedToOther.data.length === 0);
 
