@@ -1,5 +1,18 @@
 # @osdk/cli.cmd.typescript
 
+## 0.25.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
+### Patch Changes
+
+- Updated dependencies [25fd9f0]
+  - @osdk/cli.common@0.25.0-beta.6
+  - @osdk/generator@2.1.0-beta.6
+  - @osdk/shared.net@2.1.0-beta.2
+
 ## 0.25.0-beta.5
 
 ### Patch Changes
