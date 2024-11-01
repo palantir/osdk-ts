@@ -191,13 +191,8 @@ export type ApplyBatchActionOptions = {
 //
 // @public (undocumented)
 export interface AsyncIterArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, A extends Augments = never, S extends NullabilityAdherence = NullabilityAdherence.Default> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
-<<<<<<< HEAD
-    // (undocumented)
-    $__EXPERIMENTAL_selectedObjectTypes?: string[];
     // (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
-=======
->>>>>>> main
 }
 
 // @public (undocumented)
