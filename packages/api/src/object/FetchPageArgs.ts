@@ -70,7 +70,6 @@ export interface AsyncIterArgs<
   A extends Augments = never,
   S extends NullabilityAdherence = NullabilityAdherence.Default,
 > extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
-  $__EXPERIMENTAL_selectedObjectTypes?: string[];
 }
 
 export type Augment<

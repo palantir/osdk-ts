@@ -31,15 +31,15 @@ export async function runInterfacesTest() {
 
   const qqq = await client(FooInterface).where({ name: { $ne: "Patti" } });
 
-  const fooLimitedToEmployees = await client(FooInterface).fetchPage({
-    $__EXPERIMENTAL_selectedObjectTypes: ["Employee"],
-  });
-  invariant(fooLimitedToEmployees.data.length > 0);
+  // const fooLimitedToEmployees = await client(FooInterface).fetchPage({
+  //   $__EXPERIMENTAL_selectedObjectTypes: ["Employee"],
+  // });
+  // invariant(fooLimitedToEmployees.data.length > 0);
 
-  const fooLimitedToOther = await client(FooInterface).fetchPage({
-    $__EXPERIMENTAL_selectedObjectTypes: ["Other"],
-  });
-  invariant(fooLimitedToOther.data.length === 0);
+  // const fooLimitedToOther = await client(FooInterface).fetchPage({
+  //   $__EXPERIMENTAL_selectedObjectTypes: ["Other"],
+  // });
+  // invariant(fooLimitedToOther.data.length === 0);
 
   const r = await client(FooInterface)
     .where({ name: { $ne: "Patti" } })
