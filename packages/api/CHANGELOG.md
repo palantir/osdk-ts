@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 2.1.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- 1a89f23: Removing support for augmenting interfaces when fetching them.
+- 1b2e8c9: Adds subscribe feature directly to client
+
 ## 2.1.0-beta.5
 
 ## 2.1.0-beta.4
