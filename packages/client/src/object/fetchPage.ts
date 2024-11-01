@@ -69,6 +69,14 @@ export function objectSetToSearchJsonV2(
         `Expected objectSet.objectType to be ${expectedApiName}, but got ${objectSet.objectType}`,
       );
     }
+    if (
+      objectSet.type === "interfaceBase"
+      && objectSet.interfaceType !== expectedApiName
+    ) {
+      throw new Error(
+        `Expected objectSet.objectType to be ${expectedApiName}, but got ${objectSet.interfaceType}`,
+      );
+    }
 
     return existingWhere;
   }
