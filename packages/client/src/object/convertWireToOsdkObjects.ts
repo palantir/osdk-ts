@@ -138,11 +138,7 @@ export async function convertWireToOsdkObjects2(
       rawObj.$apiName,
     );
     invariant(objectDef, `Missing definition for '${rawObj.$apiName}'`);
-    // console.log(
-    //   "what is the mapping?",
-    //   interfaceToObjectTypeMappings[interfaceApiName as InterfaceTypeApiName],
-    // );
-    // console.log("what is the api name/", rawObj.$apiName);
+
     const interfaceToObjMapping = interfaceApiName
       ? interfaceToObjectTypeMappings[interfaceApiName as InterfaceTypeApiName][
         rawObj.$apiName
@@ -173,9 +169,7 @@ export async function convertWireToOsdkObjects2(
     } else {
       objProps = selectedProps ?? Object.keys(objectDef.properties);
     }
-    // console.log("here are our props", objProps);
 
-    // console.log("whats in here?", objectDef, rawObj, objProps);
     conforming &&= isConforming(client, objectDef, rawObj, objProps);
 
     if (strictNonNull === "throw" && !conforming) {
