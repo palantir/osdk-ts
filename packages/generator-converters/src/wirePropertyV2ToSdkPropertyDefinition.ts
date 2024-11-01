@@ -61,7 +61,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     }
     case "mediaReference": {
       throw new Error(
-        `Unexpected data type, media references not supported yet`,
+        `Media references not supported yet`,
       );
     }
     default:
@@ -103,7 +103,7 @@ function objectPropertyTypeToSdkPropertyDefinition(
       return "numericTimeseries";
     case "mediaReference": {
       throw new Error(
-        `Unexpected data type, media references not supported yet`,
+        `Media references not supported yet`,
       );
     }
     default:

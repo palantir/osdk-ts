@@ -1,5 +1,16 @@
 # @osdk/shared.net.platformapi
 
+## 0.4.0-beta.2
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
+### Patch Changes
+
+- Updated dependencies [25fd9f0]
+  - @osdk/shared.net.errors@2.1.0-beta.1
+
 ## 0.4.0-beta.1
 
 ### Patch Changes

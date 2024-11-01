@@ -1,5 +1,11 @@
 # @osdk/create-app.template.next-static-export
 
+## 2.1.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
 ## 2.1.0-beta.5
 
 ### Minor Changes

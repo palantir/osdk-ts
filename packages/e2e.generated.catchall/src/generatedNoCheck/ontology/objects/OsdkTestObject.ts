@@ -15,11 +15,13 @@ import type {
 } from '@osdk/api';
 
 export namespace OsdkTestObject {
-  export type PropertyKeys = 'primaryKey_' | 'stringProperty';
+  export type PropertyKeys = 'description' | 'osdkObjectName' | 'primaryKey_' | 'stringProperty';
 
   export type Links = {};
 
   export interface Props {
+    readonly description: $PropType['string'] | undefined;
+    readonly osdkObjectName: $PropType['string'] | undefined;
     readonly primaryKey_: $PropType['string'];
     readonly stringProperty: $PropType['string'] | undefined;
   }
@@ -64,6 +66,14 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
     primaryKeyApiName: 'primaryKey_';
     primaryKeyType: 'string';
     properties: {
+      /**
+       *   display name: 'Description'
+       */
+      description: $PropertyDef<'string', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      osdkObjectName: $PropertyDef<'string', 'nullable', 'single'>;
       /**
        *   display name: 'Primary Key'
        */

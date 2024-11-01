@@ -1,5 +1,25 @@
 # @osdk/client
 
+## 2.1.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- 1a89f23: Removing support for augmenting interfaces when fetching them.
+- 1b2e8c9: Adds subscribe feature directly to client
+
+### Patch Changes
+
+- Updated dependencies [25fd9f0]
+- Updated dependencies [1a89f23]
+- Updated dependencies [1b2e8c9]
+  - @osdk/api@2.1.0-beta.6
+  - @osdk/client.unstable@2.1.0-beta.6
+  - @osdk/generator-converters@2.1.0-beta.6
+  - @osdk/shared.client.impl@1.1.0-beta.2
+  - @osdk/shared.net.errors@2.1.0-beta.1
+  - @osdk/shared.net.fetch@1.1.0-beta.1
+
 ## 2.1.0-beta.5
 
 ### Minor Changes

@@ -45,6 +45,7 @@ import { fetchSingle, fetchSingleWithErrors } from "../object/fetchSingle.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
+import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
 function isObjectTypeDefinition(
   def: ObjectOrInterfaceDefinition,
@@ -221,6 +222,22 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         ) as Result<Osdk<Q>>;
       }
       : undefined) as ObjectSet<Q>["fetchOneWithErrors"],
+
+    subscribe: (
+      properties,
+      listener,
+    ) => {
+      const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
+        clientCtx,
+      ).subscribe(
+        objectType,
+        objectSet,
+        listener,
+        properties,
+      );
+
+      return { unsubscribe: async () => (await pendingSubscribe)() };
+    },
 
     $objectSetInternals: {
       def: objectType,
