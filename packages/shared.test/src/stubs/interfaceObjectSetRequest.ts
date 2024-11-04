@@ -19,7 +19,11 @@ import type {
   LoadObjectSetV2MultipleObjectTypesResponse,
 } from "@osdk/internal.foundry.core";
 import stableStringify from "json-stable-stringify";
-import { employeeInterfaceScoped, FooInterface } from "./interfaces.js";
+import {
+  employeeInterfaceScoped,
+  employeeInterfaceScoped2,
+  FooInterface,
+} from "./interfaces.js";
 
 const baseObjectSet: LoadObjectSetV2MultipleObjectTypesRequest = {
   objectSet: { type: "interfaceBase", interfaceType: FooInterface.apiName },
@@ -40,7 +44,7 @@ const eqSearchBody: LoadObjectSetV2MultipleObjectTypesRequest = {
     where: {
       type: "eq",
       field: "fooSpt",
-      value: "Santa Claus",
+      value: "The Grinch",
     },
   },
   select: [],
@@ -55,10 +59,18 @@ const baseObjectSetResponse: LoadObjectSetV2MultipleObjectTypesResponse = {
   totalCount: "1",
 };
 
+const equalsObjectSetResponse: LoadObjectSetV2MultipleObjectTypesResponse = {
+  data: [employeeInterfaceScoped2],
+  interfaceToObjectTypeMappings: {
+    FooInterface: { Employee: { fooSpt: "fullName" } },
+  },
+  totalCount: "1",
+};
+
 export const loadInterfaceObjectSetHandlers: {
   [key: string]: LoadObjectSetV2MultipleObjectTypesResponse;
 } = {
   [stableStringify(baseObjectSet)]: baseObjectSetResponse,
-  [stableStringify(eqSearchBody)]: baseObjectSetResponse,
+  [stableStringify(eqSearchBody)]: equalsObjectSetResponse,
   [stableStringify(baseObjectSetSelect)]: baseObjectSetResponse,
 };

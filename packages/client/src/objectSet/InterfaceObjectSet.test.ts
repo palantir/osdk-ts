@@ -69,14 +69,14 @@ describe("ObjectSet", () => {
 
   it("allows fetching by field from a interface object set - where clause", async () => {
     const whereClausedInterface = await client(FooInterface).where({
-      fooSpt: "Santa Claus",
+      fooSpt: "The Grinch",
     }).fetchPage();
 
     const interfaceObj = whereClausedInterface.data[0];
-    expect(interfaceObj.fooSpt).toEqual("Santa Claus");
+    expect(interfaceObj.fooSpt).toEqual("The Grinch");
 
     const asEmployee = interfaceObj.$as(Employee);
 
-    expect(asEmployee.fullName).toEqual("Santa Claus");
+    expect(asEmployee.fullName).toEqual("The Grinch");
   });
 });

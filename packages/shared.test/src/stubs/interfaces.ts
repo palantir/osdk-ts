@@ -36,3 +36,11 @@ export const employeeInterfaceScoped = {
   $primaryKey: 50050,
   $apiName: "Employee",
 };
+
+export const employeeInterfaceScoped2 = {
+  fullName: "The Grinch",
+  $rid:
+    "ri.phonograph2-objects.main.object.99a6fccb-f333-46d6-a07e-7725c5f18b61",
+  $primaryKey: 50052,
+  $apiName: "Employee",
+};
