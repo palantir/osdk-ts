@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-export { default as default } from "./cli/main.js";
+import type { PropertyTypeType, SharedPropertyType } from "./types.js";
 
-export { importSharedPropertyType } from "./api/defineImportSpt.js";
-export { defineInterface } from "./api/defineInterface.js";
-export { defineInterfaceLinkConstraint } from "./api/defineInterfaceLinkConstraint.js";
-export { defineSharedPropertyType } from "./api/defineSpt.js";
-export { defineValueType } from "./api/defineValueType.js";
+/**
+ * Defines a foreign shared property type you want to take as an input to your product. The typeHint field is used for OSDK generation
+ */
+export function importSharedPropertyType(
+  opts: {
+    apiName: string;
+    packageName?: string;
+    typeHint: PropertyTypeType;
+  },
+): SharedPropertyType {
+  return { apiName: opts.apiName, type: opts.typeHint };
+}
