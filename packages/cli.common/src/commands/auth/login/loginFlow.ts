@@ -156,7 +156,10 @@ function generateAuthorizeUrl(
     "code_challenge_method",
     codeChallenge.codeChallengeMethod,
   );
-  queryParams.append("scope", ["offline_access", "api:read-data"].join(" "));
+  queryParams.append(
+    "scope",
+    ["offline_access", "api:ontologies-read"].join(" "),
+  );
 
   return join(baseUrl, "multipass", "api", "oauth2", "authorize") + `?`
     + queryParams.toString();
