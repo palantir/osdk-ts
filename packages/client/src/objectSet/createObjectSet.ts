@@ -226,8 +226,8 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       : undefined) as ObjectSet<Q>["fetchOneWithErrors"],
 
     subscribe: (
-      properties,
       listener,
+      opts,
     ) => {
       const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
         clientCtx,
@@ -235,7 +235,8 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         objectType,
         objectSet,
         listener,
-        properties,
+        opts?.properties,
+        opts?.requestLatestGeotimeSeriesValues,
       );
 
       return { unsubscribe: async () => (await pendingSubscribe)() };

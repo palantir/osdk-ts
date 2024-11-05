@@ -20,7 +20,7 @@ import type {
 } from "../ontology/ObjectOrInterface.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 
-export interface EXPERIMENTAL_ObjectSetListener<
+export interface ObjectSetListener<
   O extends ObjectOrInterfaceDefinition,
   P extends PropertyKeys<O> = PropertyKeys<O>,
 > {
@@ -55,3 +55,11 @@ type ObjectUpdate<
   object: Osdk.Instance<O, never, P>;
   state: "ADDED_OR_UPDATED" | "REMOVED";
 };
+
+export interface ObjectSetListenerOptions<
+  O extends ObjectOrInterfaceDefinition,
+  P extends PropertyKeys<O> = PropertyKeys<O>,
+> {
+  properties?: Array<P>;
+  requestLatestGeotimeSeriesValues?: boolean;
+}

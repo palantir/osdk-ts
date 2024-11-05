@@ -26,15 +26,11 @@ export async function runSubscriptionsTest() {
   let counter = 0;
   const subscription = client(OsdkTestObject)
     .subscribe(
-      [
-        "primaryKey_",
-        "stringProperty",
-      ],
       {
         onChange(object) {
           console.log(
             "Object with primaryKey ",
-            object.object.primaryKey_,
+            object.object.$primaryKey,
             " changed stringProperty to ",
             object.object.stringProperty,
           );
@@ -68,18 +64,13 @@ export async function runSubscriptionsTest() {
           });
         },
       },
+      { properties: ["stringProperty"] },
     );
 
   const mtaBusSubscription = dsClient(
     __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
   ).subscribe(
     dsClient(MtaBus),
-    [
-      "nextStopId",
-      "positionId",
-      "routeId",
-      "vehicleId",
-    ],
     {
       onChange(object) {
         if (object.object.positionId != null) {
@@ -110,6 +101,9 @@ export async function runSubscriptionsTest() {
           mtaBusSubscription.unsubscribe();
         }, 10000);
       },
+    },
+    {
+      requestLatestGeotimeSeriesValues: true,
     },
   );
 }

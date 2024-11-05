@@ -41,7 +41,10 @@ import type { ExtractOptions, Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 import type { BaseObjectSet } from "./BaseObjectSet.js";
-import type { EXPERIMENTAL_ObjectSetListener } from "./EXPERIMENTAL_ObjectSetListener.js";
+import type {
+  ObjectSetListener,
+  ObjectSetListenerOptions,
+} from "./ObjectSetListener.js";
 
 export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
   extends BaseObjectSet<Q>
@@ -242,7 +245,7 @@ export interface ObjectSet<
   readonly subscribe: <
     const P extends PropertyKeys<Q>,
   >(
-    properties: Array<P>,
-    listener: EXPERIMENTAL_ObjectSetListener<Q, P>,
+    listener: ObjectSetListener<Q, P>,
+    opts?: ObjectSetListenerOptions<Q, P>,
   ) => { unsubscribe: () => void };
 }

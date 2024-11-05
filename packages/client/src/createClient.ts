@@ -186,8 +186,11 @@ export function createClientInternal(
               const P extends PropertyKeys<Q>,
             >(
               objectSet: ObjectSet<Q>,
-              properties: Array<P>,
               listener: EXPERIMENTAL_ObjectSetListener<Q, P>,
+              opts?: {
+                properties?: Array<P>;
+                requestLatestGeotimeSeriesValues?: boolean;
+              },
             ) => {
               const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
                 clientCtx,
@@ -195,7 +198,8 @@ export function createClientInternal(
                 objectSet.$objectSetInternals?.def!,
                 getWireObjectSet(objectSet),
                 listener,
-                properties,
+                opts?.properties,
+                opts?.requestLatestGeotimeSeriesValues,
               );
 
               return { unsubscribe: async () => (await pendingSubscribe)() };

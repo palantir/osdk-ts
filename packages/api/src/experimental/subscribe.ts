@@ -15,6 +15,7 @@
  */
 
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
+import type { ObjectSetListenerOptions } from "../objectSet/ObjectSetListener.js";
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
@@ -27,8 +28,8 @@ type subscribeFn = <
   const P extends PropertyKeys<Q>,
 >(
   objectSet: ObjectSet<Q>,
-  properties: Array<P>,
   listener: EXPERIMENTAL_ObjectSetListener<Q, P>,
+  opts: ObjectSetListenerOptions<Q, P>,
 ) => { unsubscribe: () => void };
 
 export const __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe: Experiment<

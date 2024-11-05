@@ -21,5 +21,5 @@ export { __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet } from "../expe
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "../experimental/subscribe.js";
 
 export type { EXPERIMENTAL_BulkLinkResult } from "../objectSet/BulkLinkResult.js";
-export type { EXPERIMENTAL_ObjectSetListener } from "../objectSet/EXPERIMENTAL_ObjectSetListener.js";
 export type { MinimalObjectSet } from "../objectSet/ObjectSet.js";
+export type { ObjectSetListener as EXPERIMENTAL_ObjectSetListener } from "../objectSet/ObjectSetListener.js";

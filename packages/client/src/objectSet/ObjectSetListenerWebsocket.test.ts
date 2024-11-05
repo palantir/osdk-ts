@@ -321,7 +321,6 @@ describe("ObjectSetListenerWebsocket", async () => {
                   objectType: Employee.apiName,
                 },
                 listener,
-                ["employeeStatus"],
               ),
 
               expectSingleSubscribeMessage(ws),
@@ -333,6 +332,10 @@ describe("ObjectSetListenerWebsocket", async () => {
 
           afterEach(() => {
             unsubscribe2();
+          });
+
+          it("successfully forwards empty array", () => {
+            expect(subReq2.requests[0].propertySet).toEqual([]);
           });
 
           it("does not trigger an out of date ", () => {
@@ -491,6 +494,7 @@ async function subscribeAndExpectWebSocket(
       },
       listener,
       ["employeeId", "employeeLocation"],
+      true,
     ),
   ]);
 
