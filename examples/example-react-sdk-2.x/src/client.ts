@@ -7,8 +7,8 @@ const url = import.meta.env.VITE_FOUNDRY_API_URL;
 const clientId = import.meta.env.VITE_FOUNDRY_CLIENT_ID;
 const redirectUrl = import.meta.env.VITE_FOUNDRY_REDIRECT_URL;
 const scopes = [
-    "api:read-data",
-    "api:write-data",
+    "api:ontologies-read",
+    "api:ontologies-write",
 ];
 
 checkEnv(url, "VITE_FOUNDRY_API_URL");

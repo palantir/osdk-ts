@@ -9,8 +9,8 @@ checkEnv(url, "VITE_FOUNDRY_API_URL");
 checkEnv(clientId, "VITE_FOUNDRY_CLIENT_ID");
 checkEnv(redirectUrl, "VITE_FOUNDRY_REDIRECT_URL");
 const scopes = [
-    "api:read-data",
-    "api:write-data",
+    "api:ontologies-read",
+    "api:ontologies-write",
 ];
 
 function checkEnv(
