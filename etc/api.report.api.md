@@ -585,7 +585,7 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED 
     // Warning: (ae-forgotten-export) The symbol "EXPERIMENTAL_ObjectSetListener" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    readonly subscribe: <Q extends ObjectOrInterfaceDefinition, const P extends PropertyKeys<Q>>(properties: Array<P>, listener: EXPERIMENTAL_ObjectSetListener<Q, P>) => {
+    readonly subscribe: <const P extends PropertyKeys<Q>>(properties: Array<P>, listener: EXPERIMENTAL_ObjectSetListener<Q, P>) => {
         unsubscribe: () => void;
     };
     readonly subtract: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
