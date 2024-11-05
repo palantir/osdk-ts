@@ -25,15 +25,40 @@ export async function promptScopes(
     return undefined;
   }
 
-  for (const scope of scopes) {
-    if (!scopeNameRegex.test(scope)) {
-      consola.fail(
-        `Scope name ${scope} can only contain letters, hyphens, underscores, and colons`,
-      );
-      // Following promptOverwrite
-      process.exit(0);
+  while (true) {
+    const allValidScopes = scopes.every(scope => scopeNameRegex.test(scope));
+    if (allValidScopes) {
+      break;
     }
+
+    const firstFailingScopeIndex = scopes.findIndex(scope =>
+      !scopeNameRegex.test(scope)
+    );
+    const failingScope = scopes[firstFailingScopeIndex];
+    consola.fail(
+      `Scope name ${failingScope} can only contain letters, hyphens, underscores, and colons`,
+    );
+    const stringScopes = await consola.prompt("Scopes:", {
+      type: "text",
+      placeholder: "api:ontologies-read api:ontologies-write",
+      default: "api:ontologies-read api:ontologies-write",
+    });
+    scopes = stringScopes.split(" ");
   }
 
-  return scopes;
+  return deduplicateScopes(scopes);
+}
+
+// Preserving the originally specified scope order
+function deduplicateScopes(scopes: string[]): string[] {
+  const dedupedScopes = [];
+  const seen = new Set();
+  for (const scope of scopes) {
+    if (seen.has(scope)) {
+      continue;
+    }
+    dedupedScopes.push(scope);
+    seen.add(scope);
+  }
+  return dedupedScopes;
 }
