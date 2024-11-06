@@ -27,9 +27,6 @@ import { bundleDependencies } from "./bundleDependencies.js";
 import { compileInMemory } from "./compileInMemory.js";
 import { generatePackageJson } from "./generatePackageJson.js";
 
-const betaDependencies: { [key: string]: string | undefined } = {
-  "@osdk/api": undefined,
-};
 const betaPeerDependencies: { [key: string]: string | undefined } = {
   "@osdk/client": undefined,
 };
@@ -46,10 +43,7 @@ export async function generatePackage(
   const { consola } = await import("consola");
 
   const packagePath = join(options.outputDir, options.packageName);
-  const resolvedDependencies = await resolveDependenciesFromFindUp(
-    betaDependencies,
-    dirname(fileURLToPath(import.meta.url)),
-  );
+
   const resolvedPeerDependencies = await resolveDependenciesFromFindUp(
     betaPeerDependencies,
     dirname(fileURLToPath(import.meta.url)),
@@ -124,7 +118,7 @@ export async function generatePackage(
       packageName: options.packageName,
       packagePath,
       packageVersion: options.packageVersion,
-      dependencies: resolvedDependencies,
+      dependencies: [],
       peerDependencies: resolvedPeerDependencies,
       beta: options.beta,
     }),

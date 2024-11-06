@@ -5,7 +5,7 @@ import type {
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-} from '@osdk/api';
+} from '@osdk/client';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createOsdkTestObject {

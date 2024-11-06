@@ -2001,13 +2001,13 @@ importers:
 
   packages/e2e.generated.api-namespace.dep:
     dependencies:
-      '@osdk/api':
-        specifier: workspace:~
-        version: link:../api
       '@osdk/client':
         specifier: workspace:~
         version: link:../client
     devDependencies:
+      '@osdk/api':
+        specifier: workspace:~
+        version: link:../api
       '@osdk/cli.cmd.typescript':
         specifier: workspace:~
         version: link:../cli.cmd.typescript

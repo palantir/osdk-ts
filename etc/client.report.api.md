@@ -154,6 +154,9 @@ export type ResultOrError<T extends object> = ({
 
 export { WhereClause }
 
+
+export * from "@osdk/api";
+
 // (No @packageDocumentation comment for this package)
 
 ```

@@ -5,7 +5,7 @@ import type {
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-} from '@osdk/api';
+} from '@osdk/client';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Todo } from '../objects/Todo.js';
 import type { Person } from '../objects/Person.js';
