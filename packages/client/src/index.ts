@@ -30,6 +30,7 @@ export type {
 export { isOk } from "@osdk/api";
 export { PalantirApiError } from "@osdk/shared.net.errors";
 
+export * from "@osdk/api";
 export { ActionValidationError } from "./actions/ActionValidationError.js";
 export type { Client } from "./Client.js";
 export { createClient } from "./createClient.js";
