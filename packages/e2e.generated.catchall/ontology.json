@@ -11,6 +11,18 @@
       "displayName": "Create Osdk Test Object",
       "status": "EXPERIMENTAL",
       "parameters": {
+        "description": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "osdk_object_name": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
         "string_property": {
           "dataType": {
             "type": "string"
@@ -203,6 +215,18 @@
         },
         "primaryKey": "primaryKey_",
         "properties": {
+          "description": {
+            "displayName": "Description",
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "osdkObjectName": {
+            "displayName": "osdkObjectName",
+            "dataType": {
+              "type": "string"
+            }
+          },
           "primaryKey_": {
             "displayName": "Primary Key",
             "dataType": {

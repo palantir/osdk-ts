@@ -171,5 +171,5 @@ async function apiFetch(
     return await response.json();
   }
 
-  return response.blob();
+  return response;
 }

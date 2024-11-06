@@ -150,13 +150,13 @@ export function createClientInternal(
       switch (o.name) {
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks.name:
           return {
-            invoke: createBulkLinksAsyncIterFactory(
+            getBulkLinks: createBulkLinksAsyncIterFactory(
               clientCtx,
             ),
           } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet.name:
           return {
-            invoke: <T extends ObjectOrInterfaceDefinition>(
+            preexistingObjectSet: <T extends ObjectOrInterfaceDefinition>(
               definition: T,
               rid: string,
             ) => {
@@ -181,7 +181,7 @@ export function createClientInternal(
           } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe.name:
           return {
-            invoke: <
+            subscribe: <
               Q extends ObjectOrInterfaceDefinition,
               const P extends PropertyKeys<Q>,
             >(
@@ -198,7 +198,7 @@ export function createClientInternal(
                 properties,
               );
 
-              return async () => (await pendingSubscribe)();
+              return { unsubscribe: async () => (await pendingSubscribe)() };
             },
           } as any;
       }

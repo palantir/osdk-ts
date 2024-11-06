@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-import type { AttachmentUpload } from "@osdk/api";
+import type { PropertyTypeType, SharedPropertyType } from "./types.js";
 
-export function isAttachmentUpload(o: any): o is AttachmentUpload {
-  return o instanceof Blob && "name" in o;
-}
-
-export function createAttachmentUpload(
-  data: Blob,
-  name: string,
-): AttachmentUpload {
-  const attachmentUpload = Object.create(data, {
-    name: { value: name },
-    size: { value: data.size },
-    type: { value: data.type },
-  });
-
-  return attachmentUpload as AttachmentUpload;
+/**
+ * Defines a foreign shared property type you want to take as an input to your product. The typeHint field is used for OSDK generation
+ */
+export function importSharedPropertyType(
+  opts: {
+    apiName: string;
+    packageName?: string;
+    typeHint: PropertyTypeType;
+  },
+): SharedPropertyType {
+  return { apiName: opts.apiName, type: opts.typeHint };
 }

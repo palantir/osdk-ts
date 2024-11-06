@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+import { importSharedPropertyType } from "./defineImportSpt.js";
 import { defineInterface } from "./defineInterface.js";
 import { defineInterfaceLinkConstraint } from "./defineInterfaceLinkConstraint.js";
 import {
@@ -1139,6 +1140,147 @@ describe("Ontology Defining", () => {
                   },
                 },
               }
+      `);
+  });
+
+  it("Adds imported SPTs only to the interface definition", () => {
+    const regularSpt = defineSharedPropertyType({
+      apiName: "foo",
+      type: { type: "marking", markingType: "CBAC" },
+    });
+
+    const importedSpt = importSharedPropertyType({
+      apiName: "bar",
+      typeHint: "string",
+    });
+
+    defineInterface({
+      apiName: "interface",
+      properties: { foo: regularSpt, bar: importedSpt },
+    });
+
+    expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+      {
+        "blockPermissionInformation": {
+          "actionTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+        },
+        "interfaceTypes": {
+          "com.palantir.interface": {
+            "interfaceType": {
+              "allExtendsInterfaces": [],
+              "allLinks": [],
+              "allProperties": [],
+              "apiName": "com.palantir.interface",
+              "displayMetadata": {
+                "description": "interface",
+                "displayName": "interface",
+                "icon": undefined,
+              },
+              "extendsInterfaces": [],
+              "links": [],
+              "properties": [
+                {
+                  "aliases": [],
+                  "apiName": "com.palantir.foo",
+                  "baseFormatter": undefined,
+                  "dataConstraints": undefined,
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "foo",
+                    "visibility": "NORMAL",
+                  },
+                  "gothamMapping": undefined,
+                  "indexedForSearch": true,
+                  "provenance": undefined,
+                  "type": {
+                    "marking": {
+                      "markingType": "CBAC",
+                    },
+                    "type": "marking",
+                  },
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE",
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE",
+                    },
+                  ],
+                  "valueType": undefined,
+                },
+                {
+                  "aliases": [],
+                  "apiName": "bar",
+                  "baseFormatter": undefined,
+                  "dataConstraints": undefined,
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "bar",
+                    "visibility": "NORMAL",
+                  },
+                  "gothamMapping": undefined,
+                  "indexedForSearch": true,
+                  "provenance": undefined,
+                  "type": {
+                    "string": {
+                      "analyzerOverride": undefined,
+                      "enableAsciiFolding": undefined,
+                      "isLongText": false,
+                      "supportsExactMatching": true,
+                    },
+                    "type": "string",
+                  },
+                  "typeClasses": [],
+                  "valueType": undefined,
+                },
+              ],
+              "status": {
+                "active": {},
+                "type": "active",
+              },
+            },
+          },
+        },
+        "sharedPropertyTypes": {
+          "com.palantir.foo": {
+            "sharedPropertyType": {
+              "aliases": [],
+              "apiName": "com.palantir.foo",
+              "baseFormatter": undefined,
+              "dataConstraints": undefined,
+              "displayMetadata": {
+                "description": undefined,
+                "displayName": "foo",
+                "visibility": "NORMAL",
+              },
+              "gothamMapping": undefined,
+              "indexedForSearch": true,
+              "provenance": undefined,
+              "type": {
+                "marking": {
+                  "markingType": "CBAC",
+                },
+                "type": "marking",
+              },
+              "typeClasses": [
+                {
+                  "kind": "render_hint",
+                  "name": "SELECTABLE",
+                },
+                {
+                  "kind": "render_hint",
+                  "name": "SORTABLE",
+                },
+              ],
+              "valueType": undefined,
+            },
+          },
+        },
+      }
       `);
   });
 });
