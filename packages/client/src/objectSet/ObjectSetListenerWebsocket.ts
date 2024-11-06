@@ -454,7 +454,11 @@ export class ObjectSetListenerWebsocket {
 
     for (const osdkObject of osdkObjectsWithReferenceUpdates) {
       if (osdkObject != null) {
-        sub.listener.onChange?.(osdkObject);
+        try {
+          sub.listener.onChange(osdkObject);
+        } catch (error) {
+          sub.listener.onError([error]);
+        }
       }
     }
 
@@ -482,7 +486,11 @@ export class ObjectSetListenerWebsocket {
 
     for (const osdkObject of osdkObjects) {
       if (osdkObject != null) {
-        sub.listener.onChange?.(osdkObject);
+        try {
+          sub.listener.onChange(osdkObject);
+        } catch (error) {
+          sub.listener.onError([error]);
+        }
       }
     }
   };
@@ -490,7 +498,11 @@ export class ObjectSetListenerWebsocket {
   #handleMessage_refreshObjectSet = (payload: RefreshObjectSet) => {
     const sub = this.#subscriptions.get(payload.id);
     invariant(sub, `Expected subscription id ${payload.id}`);
-    sub.listener.onOutOfDate();
+    try {
+      sub.listener.onOutOfDate();
+    } catch (error) {
+      sub.listener.onError([error]);
+    }
   };
 
   #handleMessage_subscribeResponses = (
@@ -532,8 +544,19 @@ export class ObjectSetListenerWebsocket {
             sub.subscriptionId = response.id;
             this.#subscriptions.set(sub.subscriptionId, sub); // future messages come by this subId
           }
-          if (shouldFireOutOfDate) sub.listener.onOutOfDate();
-          else sub.listener.onSuccessfulSubscription();
+          if (shouldFireOutOfDate) {
+            try {
+              sub.listener.onOutOfDate();
+            } catch (error) {
+              sub.listener.onError([error]);
+            }
+          } else {
+            try {
+              sub.listener.onSuccessfulSubscription();
+            } catch (error) {
+              sub.listener.onError([error]);
+            }
+          }
           break;
         default:
           const _: never = response;
