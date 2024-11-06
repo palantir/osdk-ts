@@ -26,17 +26,15 @@ export async function promptScopes(
   }
 
   while (true) {
-    const allValidScopes = scopes.every(scope => scopeNameRegex.test(scope));
+    const invalidScopes = scopes.filter(scope => !scopeNameRegex.test(scope));
+    const allValidScopes = invalidScopes.length === 0;
     if (allValidScopes) {
       break;
     }
 
-    const firstFailingScopeIndex = scopes.findIndex(scope =>
-      !scopeNameRegex.test(scope)
-    );
-    const failingScope = scopes[firstFailingScopeIndex];
+    const joinedInvalidScopes = invalidScopes.join(", ");
     consola.fail(
-      `Scope name ${failingScope} can only contain letters, hyphens, underscores, and colons`,
+      `Scopes [ ${joinedInvalidScopes} ] are invalid. Scope names can only contain letters, hyphens, underscores, and colons`,
     );
     const stringScopes = await consola.prompt("Scopes:", {
       type: "text",
