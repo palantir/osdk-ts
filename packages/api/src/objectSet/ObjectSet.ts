@@ -242,6 +242,12 @@ export interface ObjectSet<
     >
     : never;
 
+  /**
+   * Request updates when the objects in an object set are added, updated, or removed.
+   * @param listener - The handlers to be executed during the lifecycle of the subscription.
+   * @param opts - Options to modify what properties are returned on subscription updates.
+   * @returns an object containing a function to unsubscribe.
+   */
   readonly subscribe: <
     const P extends PropertyKeys<Q>,
   >(

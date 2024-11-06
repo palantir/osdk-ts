@@ -74,6 +74,7 @@ export { isOk } from "./object/Result.js";
 export type { Result } from "./object/Result.js";
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
 export type { ObjectSet } from "./objectSet/ObjectSet.js";
+export type { ObjectSetListener } from "./objectSet/ObjectSetListener.js";
 export type {
   ActionDefinition,
   ActionMetadata,
@@ -105,6 +106,7 @@ export type {
   ThreeDimensionalQueryAggregationDefinition,
   TwoDimensionalQueryAggregationDefinition,
 } from "./ontology/QueryDefinition.js";
+
 export type { WirePropertyTypes } from "./ontology/WirePropertyTypes.js";
 export type { OsdkBase, PrimaryKeyType } from "./OsdkBase.js";
 export type { OsdkObject } from "./OsdkObject.js";

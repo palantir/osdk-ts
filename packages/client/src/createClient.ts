@@ -19,13 +19,13 @@ import type {
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
+  ObjectSetListener,
   ObjectTypeDefinition,
   PropertyKeys,
   QueryDefinition,
 } from "@osdk/api";
 import type {
   Experiment,
-  EXPERIMENTAL_ObjectSetListener,
   ExperimentFns,
   MinimalObjectSet,
 } from "@osdk/api/unstable";
@@ -186,7 +186,7 @@ export function createClientInternal(
               const P extends PropertyKeys<Q>,
             >(
               objectSet: ObjectSet<Q>,
-              listener: EXPERIMENTAL_ObjectSetListener<Q, P>,
+              listener: ObjectSetListener<Q, P>,
               opts?: {
                 properties?: Array<P>;
                 requestLatestGeotimeSeriesValues?: boolean;

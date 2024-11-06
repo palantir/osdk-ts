@@ -15,12 +15,14 @@
  */
 
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
-import type { ObjectSetListenerOptions } from "../objectSet/ObjectSetListener.js";
+import type {
+  ObjectSetListener,
+  ObjectSetListenerOptions,
+} from "../objectSet/ObjectSetListener.js";
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
-import type { EXPERIMENTAL_ObjectSetListener } from "../public/unstable.js";
 import type { Experiment } from "./Experiment.js";
 
 type subscribeFn = <
@@ -28,7 +30,7 @@ type subscribeFn = <
   const P extends PropertyKeys<Q>,
 >(
   objectSet: ObjectSet<Q>,
-  listener: EXPERIMENTAL_ObjectSetListener<Q, P>,
+  listener: ObjectSetListener<Q, P>,
   opts: ObjectSetListenerOptions<Q, P>,
 ) => { unsubscribe: () => void };
 

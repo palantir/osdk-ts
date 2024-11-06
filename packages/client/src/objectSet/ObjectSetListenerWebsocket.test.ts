@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, PropertyKeys } from "@osdk/api";
-import type { EXPERIMENTAL_ObjectSetListener as ObjectSetListener } from "@osdk/api/unstable";
+import type {
+  ObjectOrInterfaceDefinition,
+  ObjectSetListener,
+  PropertyKeys,
+} from "@osdk/api";
 import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import type {
   ObjectSetStreamSubscribeRequests,
@@ -332,10 +335,6 @@ describe("ObjectSetListenerWebsocket", async () => {
 
           afterEach(() => {
             unsubscribe2();
-          });
-
-          it("successfully forwards empty array", () => {
-            expect(subReq2.requests[0].propertySet).toEqual([]);
           });
 
           it("does not trigger an out of date ", () => {

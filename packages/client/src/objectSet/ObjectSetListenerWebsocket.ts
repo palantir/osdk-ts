@@ -16,13 +16,10 @@
 
 import type {
   ObjectOrInterfaceDefinition,
+  ObjectSetListener,
   Osdk,
   PropertyKeys,
 } from "@osdk/api";
-import type {
-  __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
-  EXPERIMENTAL_ObjectSetListener as ObjectSetListener,
-} from "@osdk/api/unstable";
 import type {
   ObjectSet,
   ObjectSetStreamSubscribeRequest,
