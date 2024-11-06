@@ -43,22 +43,50 @@ declare const process: {
   };
 };
 
+interface PublicOauthClientOptions {
+  client_id: string;
+  url: string;
+  redirectUrl: string;
+  useHistory?: boolean;
+  loginPage?: string;
+  postLoginPage?: string;
+  scopes?: string[];
+  fetchFn?: typeof globalThis.fetch;
+  ctxPath?: string;
+}
+
 /**
- * @param client_id
- * @param url the base url of your foundry server
- * @param redirectUrl the url configured for redirect in the oauth configuration on the server
- * @param useHistory if true, when possible uses `history.replaceState()`, otherwise uses `window.location.assign()`
- * @param loginPage if you want a custom landing page prior to logging in, set this to that url
- * @param postLoginPage if you want to customize where you return to after a completed authentication cycle. defaults to the url when the page loaded
- * @param scopes
- * @param fetchFn
- * @param ctxPath
- * @returns {PublicOauthClient} which can be used as a token provider
+ * Creates a PublicOauthClient for authentication.
+ *
+ * @param {string | PublicOauthClientOptions} clientIdOrOptions - Either the client_id as a string or an options object
+ * @param {string} [url] - The base URL of your Foundry server
+ * @param {string} [redirectUrl] - The URL configured for redirect in the OAuth configuration on the server
+ * @param {boolean} [useHistory=true] - If true, uses `history.replaceState()`, otherwise uses `window.location.assign()`
+ * @param {string} [loginPage] - Custom landing page URL prior to logging in
+ * @param {string} [postLoginPage=window.location.toString()] - URL to return to after completed authentication cycle
+ * @param {string[]} [scopes=[]] - OAuth scopes to request. If not provided, defaults to `["api:read-data", "api:write-data"]`
+ * @param {typeof globalThis.fetch} [fetchFn=globalThis.fetch] - Custom fetch function to use for requests
+ * @param {string} [ctxPath="/multipass"] - Context path for the authorization server
+ * @returns {PublicOauthClient} A client that can be used as a token provider
  */
+export function createPublicOauthClient(
+  options: PublicOauthClientOptions,
+): PublicOauthClient;
 export function createPublicOauthClient(
   client_id: string,
   url: string,
   redirectUrl: string,
+  useHistory?: boolean,
+  loginPage?: string,
+  postLoginPage?: string,
+  scopes?: string[],
+  fetchFn?: typeof globalThis.fetch,
+  ctxPath?: string,
+): PublicOauthClient;
+export function createPublicOauthClient(
+  clientIdOrOptions: string | PublicOauthClientOptions,
+  url?: string,
+  redirectUrl?: string,
   useHistory: boolean = true,
   loginPage?: string,
   postLoginPage: string = window.location.toString(),
@@ -66,12 +94,34 @@ export function createPublicOauthClient(
   fetchFn: typeof globalThis.fetch = globalThis.fetch,
   ctxPath: string = "/multipass",
 ): PublicOauthClient {
-  const client: Client = { client_id, token_endpoint_auth_method: "none" };
-  const authServer = createAuthorizationServer(ctxPath, url);
-  const oauthHttpOptions: HttpRequestOptions = { [customFetch]: fetchFn };
+  const {
+    client_id,
+    url: baseUrl,
+    redirectUrl: redirect,
+    useHistory: useHist = true,
+    loginPage: loginPageUrl,
+    postLoginPage: postLoginPageUrl = window.location.toString(),
+    scopes: scopeList = [],
+    fetchFn: fetchFunction = globalThis.fetch,
+    ctxPath: context = "/multipass",
+  } = processOptions(
+    clientIdOrOptions,
+    url,
+    redirectUrl,
+    useHistory,
+    loginPage,
+    postLoginPage,
+    scopes,
+    fetchFn,
+    ctxPath,
+  );
 
-  if (scopes.length === 0) {
-    scopes = ["api:read-data", "api:write-data"];
+  const client: Client = { client_id, token_endpoint_auth_method: "none" };
+  const authServer = createAuthorizationServer(context, baseUrl);
+  const oauthHttpOptions: HttpRequestOptions = { [customFetch]: fetchFunction };
+
+  if (scopeList.length === 0) {
+    scopeList.push("api:read-data", "api:write-data");
   }
 
   const { makeTokenAndSaveRefresh, getToken } = common(
@@ -83,7 +133,7 @@ export function createPublicOauthClient(
   );
 
   async function go(x: string) {
-    if (useHistory) return window.history.replaceState({}, "", x);
+    if (useHist) return window.history.replaceState({}, "", x);
     else window.location.assign(x);
 
     await delay(1000);
@@ -119,7 +169,7 @@ export function createPublicOauthClient(
       );
 
       if (
-        result && window.location.pathname === new URL(redirectUrl).pathname
+        result && window.location.pathname === new URL(redirect).pathname
       ) {
         const { oldUrl } = readLocal(client);
         go(oldUrl ?? "/");
@@ -161,7 +211,7 @@ export function createPublicOauthClient(
                   state,
                 ),
               ),
-              redirectUrl,
+              redirect,
               codeVerifier,
               oauthHttpOptions,
             ),
@@ -186,12 +236,12 @@ export function createPublicOauthClient(
 
   async function initiateLoginRedirect(): Promise<void> {
     if (
-      loginPage
-      && window.location.href !== loginPage
-      && window.location.pathname !== loginPage
+      loginPageUrl
+      && window.location.href !== loginPageUrl
+      && window.location.pathname !== loginPageUrl
     ) {
-      saveLocal(client, { oldUrl: postLoginPage });
-      return await go(loginPage);
+      saveLocal(client, { oldUrl: postLoginPageUrl });
+      return await go(loginPageUrl);
     }
 
     const state = generateRandomState()!;
@@ -204,10 +254,10 @@ export function createPublicOauthClient(
       client_id,
       response_type: "code",
       state,
-      redirect_uri: redirectUrl,
+      redirect_uri: redirect,
       code_challenge: await calculatePKCECodeChallenge(codeVerifier),
       code_challenge_method: "S256",
-      scope: ["offline_access", ...scopes].join(" "),
+      scope: ["offline_access", ...scopeList].join(" "),
     })}`);
 
     // Give time for redirect to happen
@@ -226,4 +276,39 @@ export function createPublicOauthClient(
   }
 
   return getToken;
+}
+
+function processOptions(
+  clientIdOrOptions: string | PublicOauthClientOptions,
+  url?: string,
+  redirectUrl?: string,
+  useHistory: boolean = true,
+  loginPage?: string,
+  postLoginPage: string = window.location.toString(),
+  scopes: string[] = [],
+  fetchFn: typeof globalThis.fetch = globalThis.fetch,
+  ctxPath: string = "/multipass",
+): PublicOauthClientOptions {
+  if (typeof clientIdOrOptions === "object") {
+    return {
+      useHistory: true,
+      postLoginPage: window.location.toString(),
+      scopes: [],
+      fetchFn: globalThis.fetch,
+      ctxPath: "/multipass",
+      ...clientIdOrOptions,
+    };
+  } else {
+    return {
+      client_id: clientIdOrOptions,
+      url: url!,
+      redirectUrl: redirectUrl!,
+      useHistory,
+      loginPage,
+      postLoginPage,
+      scopes,
+      fetchFn,
+      ctxPath,
+    };
+  }
 }
