@@ -103,7 +103,7 @@ export function createPublicOauthClient(
     postLoginPage: postLoginPageUrl = window.location.toString(),
     scopes: scopeList = [],
     fetchFn: fetchFunction = globalThis.fetch,
-    ctxPath: context = "/multipass",
+    ctxPath: contextPath = "/multipass",
   } = processOptions(
     clientIdOrOptions,
     url,
@@ -117,7 +117,7 @@ export function createPublicOauthClient(
   );
 
   const client: Client = { client_id, token_endpoint_auth_method: "none" };
-  const authServer = createAuthorizationServer(context, baseUrl);
+  const authServer = createAuthorizationServer(contextPath, baseUrl);
   const oauthHttpOptions: HttpRequestOptions = { [customFetch]: fetchFunction };
 
   if (scopeList.length === 0) {
@@ -298,17 +298,16 @@ function processOptions(
       ctxPath: "/multipass",
       ...clientIdOrOptions,
     };
-  } else {
-    return {
-      client_id: clientIdOrOptions,
-      url: url!,
-      redirectUrl: redirectUrl!,
-      useHistory,
-      loginPage,
-      postLoginPage,
-      scopes,
-      fetchFn,
-      ctxPath,
-    };
   }
+  return {
+    client_id: clientIdOrOptions,
+    url: url!,
+    redirectUrl: redirectUrl!,
+    useHistory,
+    loginPage,
+    postLoginPage,
+    scopes,
+    fetchFn,
+    ctxPath,
+  };
 }

@@ -9,13 +9,21 @@ invariant(
 );
 invariant(import.meta.env.VITE_FOUNDRY_URL, "VITE_FOUNDRY_URL is required");
 
-const auth = createPublicOauthClient(
-  import.meta.env.VITE_FOUNDRY_CLIENT_ID,
-  // import.meta.env.VITE_FOUNDRY_URL,
-  "http://localhost:8080",
-  "http://localhost:8080/auth/callback",
-  true,
-);
+const auth = createPublicOauthClient({
+  client_id: import.meta.env.VITE_FOUNDRY_CLIENT_ID,
+  // url: import.meta.env.VITE_FOUNDRY_URL,
+  url: "http://localhost:8080",
+  redirectUrl: "http://localhost:8080/auth/callback",
+  useHistory: true,
+});
+// Alternative:
+// const auth = createPublicOauthClient(
+//   import.meta.env.VITE_FOUNDRY_CLIENT_ID,
+//   // import.meta.env.VITE_FOUNDRY_URL,
+//   "http://localhost:8080",
+//   "http://localhost:8080/auth/callback",
+//   true,
+// );
 
 export const $ = createClient(
   "http://localhost:8080",
