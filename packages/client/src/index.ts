@@ -15,22 +15,35 @@
  */
 
 export type {
+  ActionDefinition,
   ActionEditResponse,
+  ActionMetadata,
+  ActionParam,
   ActionReturnTypeForOptions,
   ActionValidationResponse,
   ApplyActionOptions,
   ApplyBatchActionOptions,
+  InterfaceDefinition,
+  ObjectMetadata,
   ObjectSet,
+  ObjectTypeDefinition,
   Osdk,
   OsdkObject,
   PageResult,
+  PropertyDef,
+  PropertyKeys,
+  PropertyValueWireToClient,
+  QueryDefinition,
+  QueryParam,
+  QueryResult,
   Result,
+  SingleLinkAccessor,
+  VersionBound,
   WhereClause,
 } from "@osdk/api";
 export { isOk } from "@osdk/api";
 export { PalantirApiError } from "@osdk/shared.net.errors";
 
-export * from "@osdk/api";
 export { ActionValidationError } from "./actions/ActionValidationError.js";
 export type { Client } from "./Client.js";
 export { createClient } from "./createClient.js";

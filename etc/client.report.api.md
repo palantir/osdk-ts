@@ -4,10 +4,10 @@
 
 ```ts
 
-import type { ActionDefinition } from '@osdk/api';
+import { ActionDefinition } from '@osdk/api';
 import { ActionEditResponse } from '@osdk/api';
-import type { ActionMetadata } from '@osdk/api';
-import type { ActionParam } from '@osdk/api';
+import { ActionMetadata } from '@osdk/api';
+import { ActionParam } from '@osdk/api';
 import { ActionReturnTypeForOptions } from '@osdk/api';
 import { ActionValidationResponse } from '@osdk/api';
 import { ApplyActionOptions } from '@osdk/api';
@@ -18,31 +18,42 @@ import type { DataValueClientToWire } from '@osdk/api';
 import type { DataValueWireToClient } from '@osdk/api';
 import type { Experiment } from '@osdk/api/unstable';
 import type { ExperimentFns } from '@osdk/api/unstable';
-import type { InterfaceDefinition } from '@osdk/api';
+import { InterfaceDefinition } from '@osdk/api';
 import type { InterfaceMetadata } from '@osdk/api';
 import { isOk } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/api/unstable';
-import type { ObjectMetadata } from '@osdk/api';
+import { ObjectMetadata } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
 import { ObjectSet } from '@osdk/api';
 import type { ObjectSetQueryDataType } from '@osdk/api';
-import type { ObjectTypeDefinition } from '@osdk/api';
+import { ObjectTypeDefinition } from '@osdk/api';
 import { Osdk } from '@osdk/api';
 import { OsdkObject } from '@osdk/api';
 import { PageResult } from '@osdk/api';
 import { PalantirApiError } from '@osdk/shared.net.errors';
+import { PropertyDef } from '@osdk/api';
+import { PropertyKeys } from '@osdk/api';
+import { PropertyValueWireToClient } from '@osdk/api';
 import type { QueryDataTypeDefinition } from '@osdk/api';
-import type { QueryDefinition } from '@osdk/api';
+import { QueryDefinition } from '@osdk/api';
 import type { QueryMetadata } from '@osdk/api';
-import type { QueryParam } from '@osdk/api';
-import type { QueryResult } from '@osdk/api';
+import { QueryParam } from '@osdk/api';
+import { QueryResult } from '@osdk/api';
 import { Result } from '@osdk/api';
 import type { SharedClient } from '@osdk/shared.client2';
 import type { SharedClient as SharedClient_2 } from '@osdk/shared.client';
 import type { SharedClientContext } from '@osdk/shared.client2';
+import { SingleLinkAccessor } from '@osdk/api';
+import { VersionBound } from '@osdk/api';
 import { WhereClause } from '@osdk/api';
 
+export { ActionDefinition }
+
 export { ActionEditResponse }
+
+export { ActionMetadata }
+
+export { ActionParam }
 
 export { ActionReturnTypeForOptions }
 
@@ -99,6 +110,8 @@ export const createClient: (baseUrl: string, ontologyRid: string | Promise<strin
 // @public
 export function createPlatformClient(baseUrl: string, tokenProvider: () => Promise<string>, options?: undefined, fetchFn?: typeof globalThis.fetch): PlatformClient;
 
+export { InterfaceDefinition }
+
 export { isOk }
 
 // @public (undocumented)
@@ -126,7 +139,11 @@ export interface Logger {
     warn: LogFn;
 }
 
+export { ObjectMetadata }
+
 export { ObjectSet }
+
+export { ObjectTypeDefinition }
 
 export { Osdk }
 
@@ -140,6 +157,18 @@ export { PalantirApiError }
 export interface PlatformClient extends SharedClientContext {
 }
 
+export { PropertyDef }
+
+export { PropertyKeys }
+
+export { PropertyValueWireToClient }
+
+export { QueryDefinition }
+
+export { QueryParam }
+
+export { QueryResult }
+
 export { Result }
 
 // @public (undocumented)
@@ -152,10 +181,11 @@ export type ResultOrError<T extends object> = ({
     err?: unknown;
 };
 
+export { SingleLinkAccessor }
+
+export { VersionBound }
+
 export { WhereClause }
-
-
-export * from "@osdk/api";
 
 // (No @packageDocumentation comment for this package)
 
