@@ -1,5 +1,18 @@
 # @osdk/maker
 
+## 0.9.0-beta.7
+
+### Minor Changes
+
+- cd8d657: Support importing foreign SPTs
+- 9018dc2: Updating platform api dependencies.
+
+### Patch Changes
+
+- Updated dependencies [27866a8]
+- Updated dependencies [31e7d70]
+  - @osdk/api@2.1.0-beta.7
+
 ## 0.9.0-beta.6
 
 ### Minor Changes

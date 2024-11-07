@@ -1,5 +1,7 @@
 # @osdk/create-app.template.tutorial-todo-app
 
+## 2.1.0-beta.7
+
 ## 2.1.0-beta.6
 
 ### Minor Changes
