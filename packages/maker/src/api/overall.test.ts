@@ -1185,7 +1185,14 @@ describe("Ontology Defining", () => {
                   "aliases": [],
                   "apiName": "com.palantir.foo",
                   "baseFormatter": undefined,
-                  "dataConstraints": undefined,
+                  "dataConstraints": {
+                    "nullability": undefined,
+                    "nullabilityV2": {
+                      "noEmptyCollections": true,
+                      "noNulls": true,
+                    },
+                    "propertyTypeConstraints": [],
+                  },
                   "displayMetadata": {
                     "description": undefined,
                     "displayName": "foo",
@@ -1251,7 +1258,14 @@ describe("Ontology Defining", () => {
               "aliases": [],
               "apiName": "com.palantir.foo",
               "baseFormatter": undefined,
-              "dataConstraints": undefined,
+              "dataConstraints": {
+                "nullability": undefined,
+                "nullabilityV2": {
+                  "noEmptyCollections": true,
+                  "noNulls": true,
+                },
+                "propertyTypeConstraints": [],
+              },
               "displayMetadata": {
                 "description": undefined,
                 "displayName": "foo",
