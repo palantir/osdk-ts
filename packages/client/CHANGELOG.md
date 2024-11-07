@@ -1,5 +1,22 @@
 # @osdk/client
 
+## 2.1.0-beta.7
+
+### Minor Changes
+
+- 27866a8: Removing interface argument for selecting object types. This is not supported in the new apis, and is not being used internally anywhere with the old apis.
+- 0cd1603: Fixes AttachmentUpload for browser contexts
+- 9018dc2: Updating platform api dependencies.
+
+### Patch Changes
+
+- Updated dependencies [27866a8]
+- Updated dependencies [9018dc2]
+- Updated dependencies [31e7d70]
+  - @osdk/api@2.1.0-beta.7
+  - @osdk/generator-converters@2.1.0-beta.7
+  - @osdk/client.unstable@2.1.0-beta.7
+
 ## 2.1.0-beta.6
 
 ### Minor Changes
