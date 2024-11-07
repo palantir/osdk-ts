@@ -169,7 +169,7 @@ function convertSpt(
     | undefined = (typeof type === "object" && type.type === "marking")
       ? {
         propertyTypeConstraints: [],
-        nullability: undefined,
+        nullability: "NO_EXPLICIT_NULLS",
         nullabilityV2: { noEmptyCollections: true, noNulls: true },
       }
       : undefined;
