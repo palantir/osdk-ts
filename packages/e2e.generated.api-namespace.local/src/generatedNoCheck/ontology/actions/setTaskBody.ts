@@ -5,7 +5,7 @@ import type {
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-} from '@osdk/api';
+} from '@osdk/client';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Task as $Imported$com$example$dep$Task } from '@osdk/e2e.generated.api-namespace.dep';
 

@@ -164,6 +164,15 @@ function convertSpt(
     valueType,
   }: SharedPropertyType,
 ): OntologyIrSharedPropertyType {
+  const dataConstraint:
+    | OntologyIrSharedPropertyType["dataConstraints"]
+    | undefined = (typeof type === "object" && type.type === "marking")
+      ? {
+        propertyTypeConstraints: [],
+        nullability: undefined,
+        nullabilityV2: { noEmptyCollections: true, noNulls: true },
+      }
+      : undefined;
   return {
     apiName,
     displayMetadata: {
@@ -181,7 +190,7 @@ function convertSpt(
       : convertType(type),
     aliases: [],
     baseFormatter: undefined,
-    dataConstraints: undefined,
+    dataConstraints: dataConstraint,
     gothamMapping: gothamMapping,
     indexedForSearch: true,
     provenance: undefined,

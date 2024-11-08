@@ -109,6 +109,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         ontology.interfaceTypes.Bar,
         ontology,
         true,
+        true,
       ),
       {
         parser: "typescript",
@@ -200,6 +201,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         ontology.interfaceTypes.Foo as EnhancedInterfaceType,
         ontology,
         true,
+        true,
       ),
       {
         parser: "typescript",
@@ -290,6 +292,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
       __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
         ontology.interfaceTypes.Foo as EnhancedInterfaceType,
         ontology,
+        true,
         true,
       ),
       {

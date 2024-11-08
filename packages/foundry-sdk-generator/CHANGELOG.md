@@ -1,5 +1,21 @@
 # @osdk/foundry-sdk-generator
 
+## 2.1.0-beta.7
+
+### Minor Changes
+
+- 9018dc2: Updating platform api dependencies.
+
+### Patch Changes
+
+- Updated dependencies [27866a8]
+- Updated dependencies [0cd1603]
+- Updated dependencies [9018dc2]
+- Updated dependencies [31e7d70]
+  - @osdk/client@2.1.0-beta.7
+  - @osdk/api@2.1.0-beta.7
+  - @osdk/generator@2.1.0-beta.7
+
 ## 2.1.0-beta.6
 
 ### Minor Changes

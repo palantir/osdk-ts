@@ -1,5 +1,12 @@
 # @osdk/api
 
+## 2.1.0-beta.7
+
+### Minor Changes
+
+- 27866a8: Removing interface argument for selecting object types. This is not supported in the new apis, and is not being used internally anywhere with the old apis.
+- 31e7d70: Fixes extra generic
+
 ## 2.1.0-beta.6
 
 ### Minor Changes
