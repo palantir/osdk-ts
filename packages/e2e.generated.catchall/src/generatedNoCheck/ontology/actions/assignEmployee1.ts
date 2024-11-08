@@ -5,7 +5,7 @@ import type {
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-} from '@osdk/api';
+} from '@osdk/client';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
 import type { Venture } from '../objects/Venture.js';
