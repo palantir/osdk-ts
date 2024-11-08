@@ -70,5 +70,4 @@ export interface ObjectSetListenerOptions<
   P extends PropertyKeys<O> = PropertyKeys<O>,
 > {
   properties?: Array<P>;
-  requestLatestGeotimeSeriesValues?: boolean;
 }

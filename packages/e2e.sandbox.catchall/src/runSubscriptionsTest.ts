@@ -102,8 +102,5 @@ export async function runSubscriptionsTest() {
         }, 10000);
       },
     },
-    {
-      requestLatestGeotimeSeriesValues: true,
-    },
   );
 }

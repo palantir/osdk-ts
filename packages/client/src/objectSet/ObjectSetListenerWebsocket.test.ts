@@ -212,13 +212,17 @@ describe("ObjectSetListenerWebsocket", async () => {
         expect(ws.send).not.toHaveBeenCalled();
       });
 
-      it("currently requests regular object properties", () => {
+      it("correctly requests regular object properties", () => {
         expect(subReq1.requests[0].propertySet).toEqual([
           "employeeId",
+          "fullName",
+          "office",
+          "startDate",
+          "employeeStatus",
         ]);
       });
 
-      it("currently requests reference backed properties", () => {
+      it("correctly requests reference backed properties", () => {
         expect(subReq1.requests[0].referenceSet).toEqual(["employeeLocation"]);
       });
 
@@ -313,28 +317,31 @@ describe("ObjectSetListenerWebsocket", async () => {
           let unsubscribe2: () => void;
           let subReq2: ObjectSetStreamSubscribeRequests;
           beforeEach(async () => {
-            [unsubscribe2, subReq2] = await Promise.all([
-              client.subscribe(
-                {
-                  type: "object",
-                  apiName: "Employee",
-                },
-                {
-                  type: "base",
-                  objectType: Employee.apiName,
-                },
-                listener,
-              ),
+            unsubscribe2 = await client.subscribe(
+              {
+                type: "object",
+                apiName: "Employee",
+              },
+              {
+                type: "base",
+                objectType: Employee.apiName,
+              },
+              listener,
+              ["employeeId"],
+            );
 
-              expectSingleSubscribeMessage(ws),
-            ]);
-            rootLogger.fatal({ subReq2 });
+            subReq2 = await expectSingleSubscribeMessage(ws);
 
             respondSuccessToSubscribe(ws, subReq2);
           });
 
           afterEach(() => {
             unsubscribe2();
+          });
+
+          it("only requests requested properties", () => {
+            expect(subReq2.requests[1].propertySet).toEqual(["employeeId"]);
+            expect(subReq2.requests[1].referenceSet).toEqual([]);
           });
 
           it("does not trigger an out of date ", () => {
@@ -492,8 +499,6 @@ async function subscribeAndExpectWebSocket(
         objectType: Employee.apiName,
       },
       listener,
-      ["employeeId", "employeeLocation"],
-      true,
     ),
   ]);
 

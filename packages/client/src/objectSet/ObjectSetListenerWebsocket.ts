@@ -166,7 +166,6 @@ export class ObjectSetListenerWebsocket {
     objectSet: ObjectSet,
     listener: ObjectSetListener<Q, P>,
     properties: Array<P> = [],
-    requestReferenceProperties: boolean = false,
   ): Promise<() => void> {
     if (process.env.TARGET !== "browser") {
       // Node 18 does not expose 'crypto' on globalThis, so we need to do it ourselves. This
@@ -178,13 +177,15 @@ export class ObjectSetListenerWebsocket {
       objectType.apiName,
     );
 
+    if (properties.length === 0) {
+      properties = Object.keys(objDef.properties) as Array<P>;
+    }
+
     const objectProperties = properties.filter((p) =>
       objDef.properties[p].type !== "geotimeSeriesReference"
-      || !requestReferenceProperties
     );
     const referenceProperties = properties.filter((p) =>
       objDef.properties[p].type === "geotimeSeriesReference"
-      && requestReferenceProperties
     );
 
     const sub: Subscription<Q, P> = {

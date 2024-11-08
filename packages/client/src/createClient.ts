@@ -189,7 +189,6 @@ export function createClientInternal(
               listener: ObjectSetListener<Q, P>,
               opts?: {
                 properties?: Array<P>;
-                requestLatestGeotimeSeriesValues?: boolean;
               },
             ) => {
               const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
@@ -199,7 +198,6 @@ export function createClientInternal(
                 getWireObjectSet(objectSet),
                 listener,
                 opts?.properties,
-                opts?.requestLatestGeotimeSeriesValues,
               );
 
               return { unsubscribe: async () => (await pendingSubscribe)() };

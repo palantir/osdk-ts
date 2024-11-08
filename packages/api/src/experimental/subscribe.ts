@@ -31,7 +31,7 @@ type subscribeFn = <
 >(
   objectSet: ObjectSet<Q>,
   listener: ObjectSetListener<Q, P>,
-  opts: ObjectSetListenerOptions<Q, P>,
+  opts?: ObjectSetListenerOptions<Q, P>,
 ) => { unsubscribe: () => void };
 
 export const __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe: Experiment<

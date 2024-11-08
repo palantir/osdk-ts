@@ -236,7 +236,6 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         objectSet,
         listener,
         opts?.properties,
-        opts?.requestLatestGeotimeSeriesValues,
       );
 
       return { unsubscribe: async () => (await pendingSubscribe)() };
