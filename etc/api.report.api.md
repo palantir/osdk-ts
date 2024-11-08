@@ -582,7 +582,6 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED 
     readonly fetchOneWithErrors: Q extends ObjectTypeDefinition ? <L extends PropertyKeys<Q>, R extends boolean, S extends false | "throw" = NullabilityAdherence.Default>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<Result<Osdk.Instance<Q, ExtractOptions<R, S>, L>>> : never;
     readonly intersect: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
     readonly pivotTo: <L extends LinkNames<Q>>(type: L) => CompileTimeMetadata<LinkedType<Q, L>>["objectSet"];
-    // Warning: (ae-forgotten-export) The symbol "ObjectSetListenerOptions" needs to be exported by the entry point index.d.ts
     readonly subscribe: <const P extends PropertyKeys<Q>>(listener: ObjectSetListener<Q, P>, opts?: ObjectSetListenerOptions<Q, P>) => {
         unsubscribe: () => void;
     };
@@ -597,6 +596,15 @@ export interface ObjectSetListener<O extends ObjectOrInterfaceDefinition, P exte
     onError?: (errors: Array<any>) => void;
     onOutOfDate?: () => void;
     onSuccessfulSubscription?: () => void;
+}
+
+// Warning: (tsdoc-undefined-tag) The TSDoc tag "@property" is not defined in this configuration
+// Warning: (tsdoc-undefined-tag) The TSDoc tag "@property" is not defined in this configuration
+//
+// @public
+export interface ObjectSetListenerOptions<O extends ObjectOrInterfaceDefinition, P extends PropertyKeys<O> = PropertyKeys<O>> {
+    // (undocumented)
+    properties?: Array<P>;
 }
 
 // @public (undocumented)
@@ -967,8 +975,6 @@ export type WirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "
 //
 // src/aggregate/AggregateOpts.ts:26:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:26:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
-// src/objectSet/ObjectSetListener.ts:62:4 - (tsdoc-undefined-tag) The TSDoc tag "@property" is not defined in this configuration
-// src/objectSet/ObjectSetListener.ts:65:4 - (tsdoc-undefined-tag) The TSDoc tag "@property" is not defined in this configuration
 
 // (No @packageDocumentation comment for this package)
 

@@ -20,6 +20,7 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectSetListener,
+  ObjectSetListenerOptions,
   ObjectTypeDefinition,
   PropertyKeys,
   QueryDefinition,
@@ -187,9 +188,7 @@ export function createClientInternal(
             >(
               objectSet: ObjectSet<Q>,
               listener: ObjectSetListener<Q, P>,
-              opts?: {
-                properties?: Array<P>;
-              },
+              opts?: ObjectSetListenerOptions<Q, P>,
             ) => {
               const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
                 clientCtx,
