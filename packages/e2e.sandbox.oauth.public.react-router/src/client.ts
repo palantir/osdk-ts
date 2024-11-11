@@ -34,7 +34,7 @@ export const publicOauthClient = createPublicOauthClient(
   // where to redirect after login, defaults to "page before redirect"
   /* post login page */ undefined,
   //
-  // Scopes to use, defaults to: ["api:read-data", "api:write-data"],
+  // Scopes to use, defaults to: ["api:ontologies-read", "api:ontologies-write"],
   /* scopes */ undefined,
 );
 
