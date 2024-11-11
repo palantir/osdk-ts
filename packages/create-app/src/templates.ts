@@ -47,6 +47,7 @@ export interface TemplateContext {
   osdkPackage: string;
   clientVersion: string;
   corsProxy: boolean;
+  scopes: string[] | undefined;
 }
 
 const getPackageFiles =

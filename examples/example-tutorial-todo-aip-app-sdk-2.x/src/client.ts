@@ -8,6 +8,10 @@ const redirectUrl = import.meta.env.VITE_FOUNDRY_REDIRECT_URL;
 checkEnv(url, "VITE_FOUNDRY_API_URL");
 checkEnv(clientId, "VITE_FOUNDRY_CLIENT_ID");
 checkEnv(redirectUrl, "VITE_FOUNDRY_REDIRECT_URL");
+const scopes = [
+    "api:ontologies-read",
+    "api:ontologies-write",
+];
 
 function checkEnv(
   value: string | undefined,
@@ -25,6 +29,10 @@ const auth = createPublicOauthClient(
   clientId,
   url,
   redirectUrl,
+  true,
+  undefined,
+  window.location.toString(),
+  scopes,
 );
 
 const client = createClient(
