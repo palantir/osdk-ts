@@ -25,6 +25,10 @@ const client = new FoundryClient({
     clientId,
     url,
     redirectUrl,
+    scopes: [
+        "api:ontologies-read",
+        "api:ontologies-write",
+    ],
   }),
 });
 

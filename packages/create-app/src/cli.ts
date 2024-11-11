@@ -27,6 +27,7 @@ import { promptOsdkPackage } from "./prompts/promptOsdkPackage.js";
 import { promptOsdkRegistryUrl } from "./prompts/promptOsdkRegistryUrl.js";
 import { promptOverwrite } from "./prompts/promptOverwrite.js";
 import { promptProject } from "./prompts/promptProject.js";
+import { promptScopes } from "./prompts/promptScopes.js";
 import { promptSdkVersion } from "./prompts/promptSdkVersion.js";
 import { promptTemplate } from "./prompts/promptTemplate.js";
 import { run } from "./run.js";
@@ -46,6 +47,7 @@ interface CliArgs {
   osdkPackage?: string;
   osdkRegistryUrl?: string;
   corsProxy?: boolean;
+  scopes?: string[];
 }
 
 export async function cli(args: string[] = process.argv): Promise<void> {
@@ -114,6 +116,12 @@ export async function cli(args: string[] = process.argv): Promise<void> {
             type: "boolean",
             describe:
               "Include a CORS proxy for Foundry API requests during local development",
+          })
+          .option("scopes", {
+            type: "string",
+            array: true,
+            describe:
+              "List of client-side scopes to be used when creating a client",
           }),
     );
 
@@ -132,6 +140,7 @@ export async function cli(args: string[] = process.argv): Promise<void> {
   const osdkPackage: string = await promptOsdkPackage(parsed);
   const osdkRegistryUrl: string = await promptOsdkRegistryUrl(parsed);
   const corsProxy: boolean = await promptCorsProxy(parsed);
+  const scopes: string[] | undefined = await promptScopes(parsed);
 
   await run({
     project,
@@ -145,5 +154,6 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     osdkPackage,
     osdkRegistryUrl,
     corsProxy,
+    scopes,
   });
 }
