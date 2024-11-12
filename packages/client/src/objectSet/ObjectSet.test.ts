@@ -28,6 +28,7 @@ import type {
 import { isOk } from "@osdk/api";
 import {
   $ontologyRid,
+  BarInterface,
   Employee,
   FooInterface,
   Office,
@@ -302,6 +303,19 @@ describe("ObjectSet", () => {
       employeeId: { $in: ids },
     });
     expect(objectSet).toBeDefined();
+  });
+
+  it("does not allow arbitrary keys when no properties", () => {
+    const ids: ReadonlyArray<number> = [50030, 50031];
+    client(Employee).where({
+      // @ts-expect-error
+      employeeIdNonExistent: { $in: ids },
+    });
+
+    client(BarInterface).where({
+      // @ts-expect-error
+      nonExistentProp: "",
+    });
   });
 
   describe.each(["fetchPage", "fetchPageWithErrors"] as const)("%s", (k) => {

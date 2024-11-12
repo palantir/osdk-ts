@@ -23,6 +23,7 @@ import type {
   CompileTimeMetadata,
   ObjectMetadata,
 } from "../ontology/ObjectTypeDefinition.js";
+import type { IsNever } from "../OsdkObjectFrom.js";
 
 export type PossibleWhereClauseFilters =
   | "$gt"
@@ -194,6 +195,6 @@ export type WhereClause<
   | OrWhereClause<T>
   | AndWhereClause<T>
   | NotWhereClause<T>
-  | {
+  | (IsNever<PropertyKeys<T>> extends true ? Record<string, never> : {
     [P in PropertyKeys<T>]?: FilterFor<CompileTimeMetadata<T>["properties"][P]>;
-  };
+  });
