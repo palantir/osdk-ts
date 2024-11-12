@@ -1,5 +1,19 @@
 # @osdk/client
 
+## 2.1.0-beta.8
+
+### Minor Changes
+
+- 9f3807c: Allows $in to take a readonly array
+- 71dfb4c: Now export all api shapes from client, so use that dependency instead.
+
+### Patch Changes
+
+- Updated dependencies [9f3807c]
+  - @osdk/api@2.1.0-beta.8
+  - @osdk/generator-converters@2.1.0-beta.8
+  - @osdk/client.unstable@2.1.0-beta.8
+
 ## 2.1.0-beta.7
 
 ### Minor Changes
