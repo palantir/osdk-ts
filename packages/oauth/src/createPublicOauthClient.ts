@@ -97,14 +97,14 @@ export function createPublicOauthClient(
  * Creates a PublicOauthClient for authentication.
  *
  * @param {string} clientId - The client_id from the OAuth configuration on the server
- * @param {string} [url] - The base URL of your Foundry server
- * @param {string} [redirectUrl] - The URL configured for redirect in the OAuth configuration on the server
- * @param {boolean} [useHistory=true] - If true, uses `history.replaceState()`, otherwise uses `window.location.assign()`
- * @param {string} [loginPage] - Custom landing page URL prior to logging in
- * @param {string} [postLoginPage=window.location.toString()] - URL to return to after completed authentication cycle
- * @param {string[]} [scopes=[]] - OAuth scopes to request. If not provided, defaults to `["api:read-data", "api:write-data"]`
- * @param {typeof globalThis.fetch} [fetchFn=globalThis.fetch] - Custom fetch function to use for requests
- * @param {string} [ctxPath="/multipass"] - Context path for the authorization server
+ * @param {string} url - The base URL of your Foundry server
+ * @param {string} redirectUrl - The URL configured for redirect in the OAuth configuration on the server
+ * @param {boolean} useHistory - If true, uses `history.replaceState()`, otherwise uses `window.location.assign()` (defaults to true)
+ * @param {string} loginPage - Custom landing page URL prior to logging in
+ * @param {string} postLoginPage - URL to return to after completed authentication cycle (defaults to `window.location.toString()`)
+ * @param {string[]} scopes - OAuth scopes to request. If not provided, defaults to `["api:read-data", "api:write-data"]`
+ * @param {typeof globalThis.fetch} fetchFn - Custom fetch function to use for requests (defaults to `globalThis.fetch`)
+ * @param {string} ctxPath - Context path for the authorization server (defaults to "/multipass")
  * @returns {PublicOauthClient} A client that can be used as a token provider
  */
 export function createPublicOauthClient(
