@@ -2961,6 +2961,12 @@ importers:
         specifier: ~5.5.4
         version: 5.5.4
 
+  tests/oauth:
+    dependencies:
+      '@osdk/oauth':
+        specifier: workspace:~
+        version: link:../../packages/oauth
+
   tests/verify-fallback-package-v2:
     dependencies:
       '@osdk/api':

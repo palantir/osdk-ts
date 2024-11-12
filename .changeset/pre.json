@@ -56,6 +56,7 @@
     "@osdk/foundry-sdk-generator": "2.0.0",
     "@osdk/tool.release": "0.5.0",
     "@osdk/version-updater": "0.0.0",
+    "@osdk/tests.oauth": "0.0.1",
     "@osdk/tests.verify-fallback-package-v2": "0.0.3",
     "@osdk/examples.next-static-export-sdk-1.x": "0.0.0",
     "@osdk/examples.react-sdk-1.x": "0.0.0",

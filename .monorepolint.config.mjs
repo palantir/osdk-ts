@@ -65,6 +65,7 @@ const privatePackages = [
   "@osdk/monorepo.*",
   "@osdk/platform-sdk-generator",
   "@osdk/shared.test",
+  "@osdk/tests.oauth",
   "@osdk/tests.verify-fallback-package-v2",
   "@osdk/tool.*",
   "@osdk/version-updater",
