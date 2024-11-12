@@ -1,5 +1,37 @@
 # @osdk/example-generator
 
+## 0.9.0-beta.6
+
+### Patch Changes
+
+- @osdk/create-app@2.1.0-beta.7
+
+## 0.9.0-beta.5
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
+### Patch Changes
+
+- Updated dependencies [25fd9f0]
+  - @osdk/create-app@2.1.0-beta.6
+
+## 0.9.0-beta.4
+
+### Minor Changes
+
+- 62a3d1f: Use fixed versions for create-app client and oauth deps
+- 35efba7: Upgraded to eslint 9
+- 4849ae2: internal create-app code is codegen'd
+
+### Patch Changes
+
+- Updated dependencies [62a3d1f]
+- Updated dependencies [be9a9ff]
+- Updated dependencies [4849ae2]
+  - @osdk/create-app@2.1.0-beta.5
+
 ## 0.9.0-beta.3
 
 ### Patch Changes

@@ -38,6 +38,7 @@ export async function generatePerActionDataFiles(
     outDir: rootOutDir,
     importExt = "",
     ontology: enhancedOntology,
+    forInternalUse = false,
   }: Pick<
     GenerateContext,
     | "sanitizedOntology"
@@ -45,6 +46,7 @@ export async function generatePerActionDataFiles(
     | "outDir"
     | "importExt"
     | "ontology"
+    | "forInternalUse"
   >,
 ) {
   const outDir = path.join(rootOutDir, "ontology", "actions");
@@ -273,7 +275,7 @@ export async function generatePerActionDataFiles(
             ActionReturnTypeForOptions,
             ApplyActionOptions,
             ApplyBatchActionOptions,
-          } from "@osdk/api";
+          } from "${forInternalUse ? "@osdk/api" : "@osdk/client"}";
           import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
           ${imports}
 

@@ -1,5 +1,20 @@
 # @osdk/cli
 
+## 0.25.0-beta.7
+
+## 0.25.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
+## 0.25.0-beta.5
+
+### Minor Changes
+
+- 963addb: Include API error info in CLI error messages
+- 4c93ac5: Allow configuring uploadOnly through foundry.config.json
+
 ## 0.25.0-beta.4
 
 ## 0.25.0-beta.3

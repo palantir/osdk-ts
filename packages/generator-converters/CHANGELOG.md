@@ -1,5 +1,36 @@
 # @osdk/generator-converters
 
+## 2.1.0-beta.7
+
+### Minor Changes
+
+- 9018dc2: Updating platform api dependencies.
+
+### Patch Changes
+
+- Updated dependencies [27866a8]
+- Updated dependencies [31e7d70]
+  - @osdk/api@2.1.0-beta.7
+
+## 2.1.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
+### Patch Changes
+
+- Updated dependencies [25fd9f0]
+- Updated dependencies [1a89f23]
+- Updated dependencies [1b2e8c9]
+  - @osdk/api@2.1.0-beta.6
+
+## 2.1.0-beta.5
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.5
+
 ## 2.1.0-beta.4
 
 ### Patch Changes

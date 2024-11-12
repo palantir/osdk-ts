@@ -1,5 +1,23 @@
 # @osdk/shared.net.fetch
 
+## 1.1.0-beta.1
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
+### Patch Changes
+
+- Updated dependencies [25fd9f0]
+  - @osdk/shared.net.errors@2.1.0-beta.1
+
+## 1.1.0-beta.0
+
+### Patch Changes
+
+- Updated dependencies [963addb]
+  - @osdk/shared.net.errors@2.1.0-beta.0
+
 ## 1.0.0
 
 ### Major Changes

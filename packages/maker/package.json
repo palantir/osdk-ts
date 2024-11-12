@@ -1,6 +1,6 @@
 {
   "name": "@osdk/maker",
-  "version": "0.9.0-beta.4",
+  "version": "0.9.0-beta.7",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -9,11 +9,13 @@
   "exports": {
     ".": {
       "browser": "./build/browser/index.js",
-      "import": "./build/esm/index.js"
+      "import": "./build/esm/index.js",
+      "default": "./build/browser/index.js"
     },
     "./*": {
       "browser": "./build/browser/public/*.js",
-      "import": "./build/esm/public/*.js"
+      "import": "./build/esm/public/*.js",
+      "default": "./build/browser/public/*.js"
     }
   },
   "scripts": {
@@ -35,7 +37,7 @@
   },
   "devDependencies": {
     "@osdk/client.unstable": "workspace:~",
-    "@osdk/internal.foundry.core": "2.2.0",
+    "@osdk/internal.foundry.core": "2.3.0",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",

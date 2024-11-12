@@ -1,5 +1,22 @@
 # @osdk/api
 
+## 2.1.0-beta.7
+
+### Minor Changes
+
+- 27866a8: Removing interface argument for selecting object types. This is not supported in the new apis, and is not being used internally anywhere with the old apis.
+- 31e7d70: Fixes extra generic
+
+## 2.1.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- 1a89f23: Removing support for augmenting interfaces when fetching them.
+- 1b2e8c9: Adds subscribe feature directly to client
+
+## 2.1.0-beta.5
+
 ## 2.1.0-beta.4
 
 ### Minor Changes

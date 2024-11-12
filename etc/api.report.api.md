@@ -190,11 +190,7 @@ export type ApplyBatchActionOptions = {
 // Warning: (ae-forgotten-export) The symbol "OrderByArg" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export interface AsyncIterArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, A extends Augments = {}, S extends NullabilityAdherence = NullabilityAdherence.Default> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
-    // (undocumented)
-    $__EXPERIMENTAL_selectedObjectTypes?: string[];
-    // (undocumented)
-    $augment?: A;
+export interface AsyncIterArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, A extends Augments = never, S extends NullabilityAdherence = NullabilityAdherence.Default> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
 }
 
 // @public (undocumented)
@@ -391,7 +387,7 @@ export const DurationMapping: {
 };
 
 // @public (undocumented)
-export interface FetchPageArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, A extends Augments = {}, S extends NullabilityAdherence = NullabilityAdherence.Default> extends AsyncIterArgs<Q, K, R, A, S> {
+export interface FetchPageArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, A extends Augments = never, S extends NullabilityAdherence = NullabilityAdherence.Default> extends AsyncIterArgs<Q, K, R, A, S> {
     // (undocumented)
     $nextPageToken?: string;
     // (undocumented)
@@ -586,6 +582,12 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED 
     readonly fetchOneWithErrors: Q extends ObjectTypeDefinition ? <L extends PropertyKeys<Q>, R extends boolean, S extends false | "throw" = NullabilityAdherence.Default>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<Result<Osdk.Instance<Q, ExtractOptions<R, S>, L>>> : never;
     readonly intersect: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
     readonly pivotTo: <L extends LinkNames<Q>>(type: L) => CompileTimeMetadata<LinkedType<Q, L>>["objectSet"];
+    // Warning: (ae-forgotten-export) The symbol "EXPERIMENTAL_ObjectSetListener" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    readonly subscribe: <const P extends PropertyKeys<Q>>(properties: Array<P>, listener: EXPERIMENTAL_ObjectSetListener<Q, P>) => {
+        unsubscribe: () => void;
+    };
     readonly subtract: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
     readonly union: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
 }

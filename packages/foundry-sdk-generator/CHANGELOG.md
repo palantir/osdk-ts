@@ -1,5 +1,54 @@
 # @osdk/foundry-sdk-generator
 
+## 2.1.0-beta.7
+
+### Minor Changes
+
+- 9018dc2: Updating platform api dependencies.
+
+### Patch Changes
+
+- Updated dependencies [27866a8]
+- Updated dependencies [0cd1603]
+- Updated dependencies [9018dc2]
+- Updated dependencies [31e7d70]
+  - @osdk/client@2.1.0-beta.7
+  - @osdk/api@2.1.0-beta.7
+  - @osdk/generator@2.1.0-beta.7
+
+## 2.1.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
+### Patch Changes
+
+- Updated dependencies [25fd9f0]
+- Updated dependencies [1a89f23]
+- Updated dependencies [1b2e8c9]
+  - @osdk/api@2.1.0-beta.6
+  - @osdk/client@2.1.0-beta.6
+  - @osdk/generator@2.1.0-beta.6
+  - @osdk/shared.net@2.1.0-beta.2
+
+## 2.1.0-beta.5
+
+### Minor Changes
+
+- 0beaf9d: Generated packages should have proper package.json
+- 0beaf9d: Generated packages now use ^ dependencies on @osdk/api and @osdk/client
+
+### Patch Changes
+
+- Updated dependencies [027db73]
+- Updated dependencies [963addb]
+- Updated dependencies [fa02ebf]
+  - @osdk/generator@2.1.0-beta.5
+  - @osdk/shared.net@2.1.0-beta.1
+  - @osdk/client@2.1.0-beta.5
+  - @osdk/api@2.1.0-beta.5
+
 ## 2.1.0-beta.4
 
 ### Patch Changes

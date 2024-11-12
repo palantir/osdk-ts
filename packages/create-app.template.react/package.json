@@ -1,7 +1,7 @@
 {
   "name": "@osdk/create-app.template.react",
   "private": true,
-  "version": "0.20.0-beta.3",
+  "version": "2.1.0-beta.7",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -10,11 +10,13 @@
   "exports": {
     ".": {
       "browser": "./build/browser/index.js",
-      "import": "./build/esm/index.js"
+      "import": "./build/esm/index.js",
+      "default": "./build/browser/index.js"
     },
     "./*": {
       "browser": "./build/browser/public/*.js",
-      "import": "./build/esm/public/*.js"
+      "import": "./build/esm/public/*.js",
+      "default": "./build/browser/public/*.js"
     }
   },
   "scripts": {

@@ -1,5 +1,19 @@
 # @osdk/create-app.template.tutorial-todo-app
 
+## 2.1.0-beta.7
+
+## 2.1.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
+## 2.1.0-beta.5
+
+### Minor Changes
+
+- 35efba7: Upgraded to eslint 9
+
 ## 0.20.0-beta.3
 
 ## 0.20.0-beta.2

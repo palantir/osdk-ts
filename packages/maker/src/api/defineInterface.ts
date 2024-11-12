@@ -66,7 +66,7 @@ export function defineInterface(
           return [apiName, spt];
         } else {
           invariant(
-            namespace + apiName === type.apiName,
+            namespace + apiName === type.apiName || apiName === type.apiName,
             `property key and it's apiName must be identical. ${
               JSON.stringify({ key: apiName, apiName: type.apiName })
             }`,

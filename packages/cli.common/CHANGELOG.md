@@ -1,5 +1,15 @@
 # @osdk/cli.common
 
+## 0.25.0-beta.7
+
+## 0.25.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
+## 0.25.0-beta.5
+
 ## 0.25.0-beta.4
 
 ## 0.25.0-beta.3
