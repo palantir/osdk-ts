@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.1.0-beta.8
+
+### Minor Changes
+
+- 9f3807c: Allows $in to take a readonly array
+
 ## 2.1.0-beta.7
 
 ### Minor Changes
