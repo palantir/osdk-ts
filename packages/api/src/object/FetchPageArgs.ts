@@ -56,7 +56,7 @@ export interface FetchPageArgs<
   Q extends ObjectOrInterfaceDefinition,
   K extends PropertyKeys<Q> = PropertyKeys<Q>,
   R extends boolean = false,
-  A extends Augments = {},
+  A extends Augments = never,
   S extends NullabilityAdherence = NullabilityAdherence.Default,
 > extends AsyncIterArgs<Q, K, R, A, S> {
   $nextPageToken?: string;
@@ -67,11 +67,9 @@ export interface AsyncIterArgs<
   Q extends ObjectOrInterfaceDefinition,
   K extends PropertyKeys<Q> = PropertyKeys<Q>,
   R extends boolean = false,
-  A extends Augments = {},
+  A extends Augments = never,
   S extends NullabilityAdherence = NullabilityAdherence.Default,
 > extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
-  $augment?: A;
-  $__EXPERIMENTAL_selectedObjectTypes?: string[];
 }
 
 export type Augment<
@@ -80,13 +78,3 @@ export type Augment<
 > = { [K in CompileTimeMetadata<X>["apiName"]]: T[] };
 
 export type Augments = Record<string, string[]>;
-
-export interface FetchInterfacePageArgs<
-  Q extends InterfaceDefinition,
-  K extends PropertyKeys<Q> = PropertyKeys<Q>,
-  R extends boolean = false,
-> extends SelectArg<Q, K, R>, OrderByArg<Q, PropertyKeys<Q>> {
-  $nextPageToken?: string;
-  $pageSize?: number;
-  $augment?: Augments;
-}

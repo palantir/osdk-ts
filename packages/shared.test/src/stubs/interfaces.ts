@@ -28,3 +28,13 @@ export const FooInterface: InterfaceType = {
   },
   links: {},
 };
+
+export const BarInterface: InterfaceType = {
+  apiName: "BarInterface",
+  description: "Interface for Bar",
+  displayName: "Bar Interface",
+  rid: "ri.interface.main.interface.2",
+  extendsInterfaces: [],
+  properties: {},
+  links: {},
+};

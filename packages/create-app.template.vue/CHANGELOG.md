@@ -1,5 +1,23 @@
 # @osdk/create-app.template.vue
 
+## 2.1.0-beta.8
+
+### Minor Changes
+
+- 0e1a2e3: Add the scopes option to OSDK CLI and update all example generators to include the scopes if provided, else, hide the scopes to avoid confusion
+
+## 2.1.0-beta.7
+
+## 2.1.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
+## 2.1.0-beta.5
+
+## 0.20.0-beta.3
+
 ## 0.20.0-beta.2
 
 ## 0.20.0-beta.1

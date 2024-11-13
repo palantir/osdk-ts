@@ -120,12 +120,14 @@ export function createClientInternal(
       | ObjectOrInterfaceDefinition
       | ActionDefinition<any>
       | QueryDefinition<any>
-      | Experiment<"2.0.8">,
+      | Experiment<"2.0.8">
+      | Experiment<"2.1.0">,
   >(o: T): T extends ObjectTypeDefinition ? ObjectSet<T>
     : T extends InterfaceDefinition ? MinimalObjectSet<T>
     : T extends ActionDefinition<any> ? ActionSignatureFromDef<T>
     : T extends QueryDefinition<any> ? QuerySignatureFromDef<T>
-    : T extends Experiment<"2.0.8"> ? { invoke: ExperimentFns<T> }
+    : T extends Experiment<"2.0.8"> | Experiment<"2.1.0">
+      ? { invoke: ExperimentFns<T> }
     : never
   {
     if (o.type === "object" || o.type === "interface") {
@@ -148,13 +150,13 @@ export function createClientInternal(
       switch (o.name) {
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks.name:
           return {
-            invoke: createBulkLinksAsyncIterFactory(
+            getBulkLinks: createBulkLinksAsyncIterFactory(
               clientCtx,
             ),
           } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet.name:
           return {
-            invoke: <T extends ObjectOrInterfaceDefinition>(
+            preexistingObjectSet: <T extends ObjectOrInterfaceDefinition>(
               definition: T,
               rid: string,
             ) => {
@@ -179,7 +181,7 @@ export function createClientInternal(
           } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe.name:
           return {
-            invoke: <
+            subscribe: <
               Q extends ObjectOrInterfaceDefinition,
               const P extends PropertyKeys<Q>,
             >(
@@ -196,7 +198,7 @@ export function createClientInternal(
                 properties,
               );
 
-              return async () => (await pendingSubscribe)();
+              return { unsubscribe: async () => (await pendingSubscribe)() };
             },
           } as any;
       }

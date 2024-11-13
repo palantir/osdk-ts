@@ -1,5 +1,17 @@
 # @osdk/oauth
 
+## 1.1.0-beta.1
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
+## 1.1.0-beta.0
+
+### Minor Changes
+
+- d12c92b: Fixes process.env.NODE_ENV handling
+
 ## 1.0.0
 
 ### Major Changes

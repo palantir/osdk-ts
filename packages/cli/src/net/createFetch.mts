@@ -61,9 +61,12 @@ function handleFetchError(e: unknown): Promise<Response> {
     tip = "Check your token is valid and has not expired or been disabled";
   } else if (e.statusCode === 403) {
     tip = "Check your token has the required scopes for this operation";
+  } else if (e.statusCode === 404) {
+    tip =
+      "The resource may not exist or your token may not have the required scopes to load it";
   }
 
-  let message = e.message;
+  let message;
   if (e.errorName === "CannotDeleteDeployedVersion") {
     message = "The site version to delete is live and cannot be deleted";
     tip = "Run the `site version set` command to change the live site version";
@@ -73,6 +76,17 @@ function handleFetchError(e: unknown): Promise<Response> {
     message = "The site version already exists";
   } else if (e.errorName === "VersionNotFound") {
     message = "The site version could not be found";
+  } else {
+    const { errorCode, errorName, errorInstanceId, parameters } = e;
+    // Include extra info about the original API error in CLI error messages
+    // https://www.palantir.com/docs/foundry/api/general/overview/errors/
+    message = `${e.message}\n\n${
+      JSON.stringify(
+        { errorCode, errorName, errorInstanceId, parameters },
+        null,
+        2,
+      )
+    }`;
   }
 
   throw new ExitProcessError(1, message, tip, e);

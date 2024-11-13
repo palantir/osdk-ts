@@ -11,11 +11,13 @@
   "exports": {
     ".": {
       "browser": "./build/browser/index.js",
-      "import": "./build/esm/index.js"
+      "import": "./build/esm/index.js",
+      "default": "./build/browser/index.js"
     },
     "./*": {
       "browser": "./build/browser/public/*.js",
-      "import": "./build/esm/public/*.js"
+      "import": "./build/esm/public/*.js",
+      "default": "./build/browser/public/*.js"
     }
   },
   "scripts": {
@@ -28,7 +30,7 @@
     "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
-    "@osdk/api": "workspace:~"
+    "@osdk/client": "workspace:~"
   },
   "peerDependencies": {
     "@osdk/api": "workspace:~",
@@ -42,7 +44,7 @@
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
     "tslib": "^2.6.3",
-    "typescript": "^5.5.4"
+    "typescript": "~5.5.4"
   },
   "publishConfig": {
     "access": "public"

@@ -29,14 +29,14 @@ type subscribeFn = <
   objectSet: ObjectSet<Q>,
   properties: Array<P>,
   listener: EXPERIMENTAL_ObjectSetListener<Q, P>,
-) => () => unknown;
+) => { unsubscribe: () => void };
 
 export const __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe: Experiment<
-  "2.0.8",
+  "2.1.0",
   "__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe",
   { subscribe: subscribeFn }
 > = {
   name: "__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe",
   type: "experiment",
-  version: "2.0.8",
+  version: "2.1.0",
 };

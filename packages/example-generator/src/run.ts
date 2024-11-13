@@ -84,6 +84,7 @@ async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
       osdkRegistryUrl:
         "https://fake.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
       corsProxy: false,
+      scopes: ["api:ontologies-read", "api:ontologies-write"],
     });
 
     for (const mutator of MUTATORS) {
@@ -263,15 +264,19 @@ const UPDATE_PACKAGE_JSON: Mutator = {
       "\"@osdk/e2e.generated.catchall\": \"latest\"",
       "\"@osdk/e2e.generated.catchall\": \"workspace:*\"",
     ).replace(
+      // Use locally generated SDK in the monorepo
+      /"@osdk\/client": "[\^~].*?"/,
+      `"@osdk/client": "workspace:*"`,
+    ).replace(
+      // Use locally generated SDK in the monorepo
+      /"@osdk\/oauth": "\^.*?"/,
+      `"@osdk/oauth": "workspace:*"`,
+    ).replace(
       // Follow monorepo package naming convention
       `"name": "${sdkVersionedTemplateExampleId(template, sdkVersion)}"`,
       `"name": "@osdk/examples.${
         sdkVersionedTemplateCanonicalId(template, sdkVersion)
       }"`,
-    ).replace(
-      // Monorepo uses eslint 9 whereas templates are still on eslint 8
-      "\"lint\": \"eslint",
-      "\"lint\": \"ESLINT_USE_FLAT_CONFIG=false eslint",
     ),
   }),
 };

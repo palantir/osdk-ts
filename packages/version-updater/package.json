@@ -12,11 +12,13 @@
   "exports": {
     ".": {
       "browser": "./build/browser/index.js",
-      "import": "./build/esm/index.js"
+      "import": "./build/esm/index.js",
+      "default": "./build/browser/index.js"
     },
     "./*": {
       "browser": "./build/browser/public/*.js",
-      "import": "./build/esm/public/*.js"
+      "import": "./build/esm/public/*.js",
+      "default": "./build/browser/public/*.js"
     }
   },
   "scripts": {
@@ -37,7 +39,7 @@
     "consola": "^3.2.3",
     "find-up": "^7.0.0",
     "semver": "^7.6.3",
-    "typescript": "^5.5.4"
+    "typescript": "~5.5.4"
   },
   "publishConfig": {
     "access": "public"

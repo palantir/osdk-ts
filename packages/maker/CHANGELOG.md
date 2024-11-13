@@ -1,5 +1,62 @@
 # @osdk/maker
 
+## 0.9.0-beta.8
+
+### Minor Changes
+
+- b8a1a58: Add nullability to markings because of course they need to be nullable. This sucks in the data model, I should talk to the ontology team about this.
+
+### Patch Changes
+
+- Updated dependencies [9f3807c]
+  - @osdk/api@2.1.0-beta.8
+
+## 0.9.0-beta.7
+
+### Minor Changes
+
+- cd8d657: Support importing foreign SPTs
+- 9018dc2: Updating platform api dependencies.
+
+### Patch Changes
+
+- Updated dependencies [27866a8]
+- Updated dependencies [31e7d70]
+  - @osdk/api@2.1.0-beta.7
+
+## 0.9.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
+### Patch Changes
+
+- Updated dependencies [25fd9f0]
+- Updated dependencies [1a89f23]
+- Updated dependencies [1b2e8c9]
+  - @osdk/api@2.1.0-beta.6
+
+## 0.9.0-beta.5
+
+### Minor Changes
+
+- b0544d4: Add additional marking configuration
+- 2b35ed4: Structs in maker package
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.5
+
+## 0.9.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [0dc40b0]
+- Updated dependencies [1dc0228]
+- Updated dependencies [d3b3f35]
+  - @osdk/api@2.1.0-beta.4
+
 ## 0.9.0-beta.3
 
 ### Minor Changes

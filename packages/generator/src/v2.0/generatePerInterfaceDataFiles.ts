@@ -23,7 +23,7 @@ import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "./UNSTABLE_wireI
 
 /** @internal */
 export async function generatePerInterfaceDataFiles(
-  { fs, outDir, ontology, importExt }: GenerateContext,
+  { fs, outDir, ontology, importExt, forInternalUse }: GenerateContext,
 ) {
   const interfacesDir = path.join(outDir, "ontology", "interfaces");
   await fs.mkdir(interfacesDir, {
@@ -36,13 +36,16 @@ export async function generatePerInterfaceDataFiles(
     await fs.writeFile(
       path.join(interfacesDir, `${obj.shortApiName}.ts`),
       await formatTs(`
-        import type { PropertyDef as $PropertyDef } from "@osdk/api";
+        import type { PropertyDef as $PropertyDef } from "${
+        forInternalUse ? "@osdk/api" : "@osdk/client"
+      }";
         import { $osdkMetadata } from "../../OntologyMetadata${importExt}";
       ${
         __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
           obj,
           ontology,
           true,
+          forInternalUse,
         )
       }
     `),

@@ -10,11 +10,13 @@
   "exports": {
     ".": {
       "browser": "./build/browser/index.js",
-      "import": "./build/esm/index.js"
+      "import": "./build/esm/index.js",
+      "default": "./build/browser/index.js"
     },
     "./*": {
       "browser": "./build/browser/public/*.js",
-      "import": "./build/esm/public/*.js"
+      "import": "./build/esm/public/*.js",
+      "default": "./build/browser/public/*.js"
     }
   },
   "scripts": {
@@ -43,7 +45,7 @@
     "@osdk/monorepo.tsup": "workspace:~",
     "@types/node": "^18.0.0",
     "ts-expect": "^1.3.0",
-    "typescript": "^5.5.4"
+    "typescript": "~5.5.4"
   },
   "publishConfig": {
     "access": "public"

@@ -1,0 +1,35 @@
+{
+  "name": "@osdk/examples.next-static-export-sdk-2.x",
+  "private": true,
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev -p 8080",
+    "lint": "next lint",
+    "start": "next start",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@osdk/client": "workspace:*",
+    "@osdk/e2e.generated.catchall": "workspace:*",
+    "@osdk/oauth": "workspace:*",
+    "next": "^15.0.1",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "@next/env": "^15.0.1",
+    "@types/node": "^20.17.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "eslint": "^9.13.0",
+    "eslint-config-next": "^15.0.1",
+    "typescript": "~5.5.4",
+    "vitest": "^2.1.3"
+  }
+}

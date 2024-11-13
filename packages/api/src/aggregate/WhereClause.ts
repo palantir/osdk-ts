@@ -23,6 +23,7 @@ import type {
   CompileTimeMetadata,
   ObjectMetadata,
 } from "../ontology/ObjectTypeDefinition.js";
+import type { IsNever } from "../OsdkObjectFrom.js";
 import type { ArrayFilter } from "./ArrayFilter.js";
 import type { BaseFilter } from "./BaseFilter.js";
 import type { BooleanFilter } from "./BooleanFilter.js";
@@ -161,8 +162,10 @@ export type WhereClause<
   | OrWhereClause<T>
   | AndWhereClause<T>
   | NotWhereClause<T>
-  | {
-    [P in keyof CompileTimeMetadata<T>["properties"]]?: FilterFor<
-      CompileTimeMetadata<T>["properties"][P]
-    >;
-  };
+  | (IsNever<CompileTimeMetadata<T>["properties"]> extends true
+    ? Record<string, never>
+    : {
+      [P in keyof CompileTimeMetadata<T>["properties"]]?: FilterFor<
+        CompileTimeMetadata<T>["properties"][P]
+      >;
+    });

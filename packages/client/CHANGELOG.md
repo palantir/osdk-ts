@@ -1,5 +1,91 @@
 # @osdk/client
 
+## 2.1.0-beta.8
+
+### Minor Changes
+
+- 9f3807c: Allows $in to take a readonly array
+- 71dfb4c: Now export all api shapes from client, so use that dependency instead.
+
+### Patch Changes
+
+- Updated dependencies [9f3807c]
+  - @osdk/api@2.1.0-beta.8
+  - @osdk/generator-converters@2.1.0-beta.8
+  - @osdk/client.unstable@2.1.0-beta.8
+
+## 2.1.0-beta.7
+
+### Minor Changes
+
+- 27866a8: Removing interface argument for selecting object types. This is not supported in the new apis, and is not being used internally anywhere with the old apis.
+- 0cd1603: Fixes AttachmentUpload for browser contexts
+- 9018dc2: Updating platform api dependencies.
+
+### Patch Changes
+
+- Updated dependencies [27866a8]
+- Updated dependencies [9018dc2]
+- Updated dependencies [31e7d70]
+  - @osdk/api@2.1.0-beta.7
+  - @osdk/generator-converters@2.1.0-beta.7
+  - @osdk/client.unstable@2.1.0-beta.7
+
+## 2.1.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- 1a89f23: Removing support for augmenting interfaces when fetching them.
+- 1b2e8c9: Adds subscribe feature directly to client
+
+### Patch Changes
+
+- Updated dependencies [25fd9f0]
+- Updated dependencies [1a89f23]
+- Updated dependencies [1b2e8c9]
+  - @osdk/api@2.1.0-beta.6
+  - @osdk/client.unstable@2.1.0-beta.6
+  - @osdk/generator-converters@2.1.0-beta.6
+  - @osdk/shared.client.impl@1.1.0-beta.2
+  - @osdk/shared.net.errors@2.1.0-beta.1
+  - @osdk/shared.net.fetch@1.1.0-beta.1
+
+## 2.1.0-beta.5
+
+### Minor Changes
+
+- fa02ebf: Adds SLS dependency for object-set-watcher API
+
+### Patch Changes
+
+- Updated dependencies [963addb]
+- Updated dependencies [2b35ed4]
+  - @osdk/shared.client.impl@1.1.0-beta.1
+  - @osdk/shared.net.errors@2.1.0-beta.0
+  - @osdk/client.unstable@2.1.0-beta.5
+  - @osdk/shared.net.fetch@1.1.0-beta.0
+  - @osdk/api@2.1.0-beta.5
+  - @osdk/generator-converters@2.1.0-beta.5
+
+## 2.1.0-beta.4
+
+### Minor Changes
+
+- 0dc40b0: Remove experimental non null for now.
+- d12c92b: Fixes process.env.NODE_ENV handling
+- 1dc0228: Change experimental code style to prevent future breaks
+- d3b3f35: Add's onSuccessfulSubscribe handler to subscribe functionality
+
+### Patch Changes
+
+- Updated dependencies [0dc40b0]
+- Updated dependencies [1dc0228]
+- Updated dependencies [d3b3f35]
+  - @osdk/api@2.1.0-beta.4
+  - @osdk/generator-converters@2.1.0-beta.4
+  - @osdk/client.unstable@2.1.0-beta.4
+
 ## 2.1.0-beta.3
 
 ### Minor Changes

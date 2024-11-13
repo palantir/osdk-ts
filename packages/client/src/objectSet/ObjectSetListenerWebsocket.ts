@@ -15,10 +15,8 @@
  */
 
 import type {
-  GeotimeSeriesProperty,
   ObjectOrInterfaceDefinition,
   Osdk,
-  OsdkBase,
   PropertyKeys,
 } from "@osdk/api";
 import type {
@@ -42,7 +40,6 @@ import type { Logger } from "../Logger.js";
 import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
 
-const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const MINIMUM_RECONNECT_DELAY_MS = 5 * 1000;
 
 /** Noop function to reduce conditional checks */
@@ -59,9 +56,10 @@ function fillOutListener<
     onChange = doNothing,
     onError = doNothing,
     onOutOfDate = doNothing,
+    onSuccessfulSubscription = doNothing,
   }: ObjectSetListener<Q, P>,
 ): Required<ObjectSetListener<Q, P>> {
-  return { onChange, onError, onOutOfDate };
+  return { onChange, onError, onOutOfDate, onSuccessfulSubscription };
 }
 
 interface Subscription<
@@ -73,7 +71,6 @@ interface Subscription<
   primaryKeyPropertyName: string;
   requestedProperties: Array<P>;
   requestedReferenceProperties: Array<P>;
-  expiry?: ReturnType<typeof setTimeout>;
   subscriptionId: string;
   isReady?: boolean;
   status:
@@ -104,7 +101,6 @@ export class ObjectSetListenerWebsocket {
     ClientCacheKey,
     ObjectSetListenerWebsocket
   >();
-  readonly OBJECT_SET_EXPIRY_MS: number;
   readonly MINIMUM_RECONNECT_DELAY_MS: number;
 
   // FIXME
@@ -150,11 +146,9 @@ export class ObjectSetListenerWebsocket {
   constructor(
     client: MinimalClient,
     {
-      objectSetExpiryMs = ONE_DAY_MS,
       minimumReconnectDelayMs = MINIMUM_RECONNECT_DELAY_MS,
     } = {},
   ) {
-    this.OBJECT_SET_EXPIRY_MS = objectSetExpiryMs;
     this.MINIMUM_RECONNECT_DELAY_MS = minimumReconnectDelayMs;
     this.#client = client;
     this.#logger = client.logger?.child({}, {
@@ -226,17 +220,9 @@ export class ObjectSetListenerWebsocket {
    * @returns
    */
   async #initiateSubscribe(sub: Subscription<any, any>) {
-    if (process?.env?.NODE_ENV !== "production") {
+    if (process.env.NODE_ENV !== "production") {
       this.#logger?.trace("#initiateSubscribe()");
     }
-    if (sub.expiry) {
-      clearTimeout(sub.expiry);
-    }
-    // expiry is tied to the temporary object set, which is set to `timeToLive: "ONE_DAY"`
-    // in `#createTemporaryObjectSet`. They should be in sync
-    sub.expiry = setTimeout(() => this.#expire(sub), this.OBJECT_SET_EXPIRY_MS);
-
-    const ontologyRid = await this.#client.ontologyRid;
 
     try {
       await this.#ensureWebsocket();
@@ -258,7 +244,7 @@ export class ObjectSetListenerWebsocket {
   }
 
   #sendSubscribeMessage() {
-    if (process?.env?.NODE_ENV !== "production") {
+    if (process.env.NODE_ENV !== "production") {
       this.#logger?.trace("#sendSubscribeMessage()");
     }
     // If two calls to `.subscribe()` happen at once (or if the connection is reset),
@@ -267,7 +253,7 @@ export class ObjectSetListenerWebsocket {
     const readySubs = [...this.#subscriptions.values()].filter(isReady);
 
     if (readySubs.length === 0) {
-      if (process?.env?.NODE_ENV !== "production") {
+      if (process.env.NODE_ENV !== "production") {
         this.#logger?.trace(
           "#sendSubscribeMessage(): aborting due to no ready subscriptions",
         );
@@ -296,23 +282,13 @@ export class ObjectSetListenerWebsocket {
       }),
     };
 
-    if (process?.env?.NODE_ENV !== "production") {
+    if (process.env.NODE_ENV !== "production") {
       this.#logger?.trace(
         { payload: subscribe },
         "sending subscribe message",
       );
     }
     this.#ws?.send(JSON.stringify(subscribe));
-  }
-
-  #expire(sub: Subscription<any, any>) {
-    if (process?.env?.NODE_ENV !== "production") {
-      this.#logger?.trace({ subscription: sub }, "#expire()");
-    }
-    // the temporary ObjectSet has expired, we should re-subscribe which will cause the
-    // listener to get an onOutOfDate message when it becomes subscribed again
-    sub.status = "expired";
-    this.#initiateSubscribe(sub);
   }
 
   #unsubscribe<Q extends ObjectOrInterfaceDefinition>(
@@ -323,16 +299,11 @@ export class ObjectSetListenerWebsocket {
       // if we are already done, we don't need to do anything
       return;
     }
-
     sub.status = newStatus;
     // make sure listeners do nothing now
     sub.listener = fillOutListener<Q, any>({});
-    if (sub.expiry) {
-      clearTimeout(sub.expiry);
-      sub.expiry = undefined;
-    }
     this.#subscriptions.delete(sub.subscriptionId);
-
+    this.#sendSubscribeMessage();
     // If we have no more subscriptions, we can disconnect the websocket
     // however we should wait a bit to see if we get any more subscriptions.
     // For example, when switching between react views, you may unsubscribe
@@ -382,7 +353,7 @@ export class ObjectSetListenerWebsocket {
 
         // we again may have lost the race after our minimum backoff time
         if (this.#ws == null) {
-          if (process?.env?.NODE_ENV !== "production") {
+          if (process.env.NODE_ENV !== "production") {
             this.#logger?.trace("Creating websocket");
           }
           this.#ws = new WebSocket(url, [`Bearer-${token}`]);
@@ -424,7 +395,7 @@ export class ObjectSetListenerWebsocket {
 
   #onMessage = async (message: WebSocket.MessageEvent) => {
     const data = JSON.parse(message.data.toString()) as StreamMessage;
-    if (process?.env?.NODE_ENV !== "production") {
+    if (process.env.NODE_ENV !== "production") {
       this.#logger?.trace({ payload: data }, "received message from ws");
     }
     switch (data.type) {
@@ -451,7 +422,7 @@ export class ObjectSetListenerWebsocket {
     payload: ObjectSetUpdates,
   ) => {
     const sub = this.#subscriptions.get(payload.id);
-    invariant(sub, `Expected subscription id ${payload.id}`);
+    if (sub == null) return;
 
     const objectUpdates = payload.updates.filter((update) =>
       update.type === "object"
@@ -551,7 +522,7 @@ export class ObjectSetListenerWebsocket {
           const shouldFireOutOfDate = sub.status === "expired"
             || sub.status === "reconnecting";
 
-          if (process?.env?.NODE_ENV !== "production") {
+          if (process.env.NODE_ENV !== "production") {
             this.#logger?.trace({ shouldFireOutOfDate }, "success");
           }
           sub.status = "subscribed";
@@ -562,7 +533,7 @@ export class ObjectSetListenerWebsocket {
             this.#subscriptions.set(sub.subscriptionId, sub); // future messages come by this subId
           }
           if (shouldFireOutOfDate) sub.listener.onOutOfDate();
-
+          else sub.listener.onSuccessfulSubscription();
           break;
         default:
           const _: never = response;
@@ -579,7 +550,7 @@ export class ObjectSetListenerWebsocket {
   }
 
   #onClose = (event: WebSocket.CloseEvent) => {
-    if (process?.env?.NODE_ENV !== "production") {
+    if (process.env.NODE_ENV !== "production") {
       this.#logger?.trace({ event }, "Received close event from ws", event);
     }
     // TODO we should probably throttle this so we don't abuse the backend
@@ -603,7 +574,7 @@ export class ObjectSetListenerWebsocket {
 
     // if we have any listeners that are still depending on us, go ahead and reopen the websocket
     if (this.#subscriptions.size > 0) {
-      if (process?.env?.NODE_ENV !== "production") {
+      if (process.env.NODE_ENV !== "production") {
         for (const s of this.#subscriptions.values()) {
           invariant(
             s.status !== "done" && s.status !== "error",

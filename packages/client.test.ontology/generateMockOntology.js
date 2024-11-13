@@ -57,4 +57,8 @@ await generateClientSdkVersionTwoPointZero(
   },
   outDir,
   "module",
+  undefined,
+  undefined,
+  undefined,
+  true,
 );

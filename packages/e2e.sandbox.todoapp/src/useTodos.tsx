@@ -167,7 +167,7 @@ function updateOne<T extends { $primaryKey: Q }, Q>(
 /** disabling for now */
 export function useSubscribe(mutate: KeyedMutator<SimpleTodo[]>) {
   useEffect(() => {
-    const unsubscribe = $(__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe)
+    const subscription = $(__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe)
       .subscribe(
         $(MyOsdk.Todo),
         [
@@ -243,7 +243,7 @@ export function useSubscribe(mutate: KeyedMutator<SimpleTodo[]>) {
       );
 
     return function() {
-      unsubscribe();
+      subscription.unsubscribe();
     };
   }, [mutate]);
 }

@@ -15,8 +15,9 @@
  */
 
 import { consola } from "../consola.js";
+import { TEMPLATES } from "../generatedNoCheck/templates.js";
 import { green } from "../highlight.js";
-import { type Template, TEMPLATES } from "../templates.js";
+import type { Template } from "../templates.js";
 
 export async function promptTemplate(
   parsed: { template?: string; beta?: boolean },

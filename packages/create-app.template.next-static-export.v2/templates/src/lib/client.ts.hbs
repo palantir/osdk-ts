@@ -1,0 +1,60 @@
+import type { Client } from "@osdk/client";
+import type { PublicOauthClient } from "@osdk/oauth";
+import { createClient } from "@osdk/client";
+import { $ontologyRid } from "{{osdkPackage}}";
+import { createPublicOauthClient } from "@osdk/oauth";
+
+const url = process.env.NEXT_PUBLIC_FOUNDRY_API_URL;
+const clientId = process.env.NEXT_PUBLIC_FOUNDRY_CLIENT_ID;
+const redirectUrl = process.env.NEXT_PUBLIC_FOUNDRY_REDIRECT_URL;
+checkEnv(url, "NEXT_PUBLIC_FOUNDRY_API_URL");
+checkEnv(clientId, "NEXT_PUBLIC_FOUNDRY_CLIENT_ID");
+checkEnv(redirectUrl, "NEXT_PUBLIC_FOUNDRY_REDIRECT_URL");
+{{#if scopes}}
+const scopes = [
+  {{#each scopes}}
+    "{{this}}",
+  {{/each}}
+];
+{{/if}}
+
+function checkEnv(
+  value: string | undefined,
+  name: string,
+): asserts value is string {
+  if (value == null) {
+    throw new Error(`Missing environment variable: ${name}`);
+  }
+}
+
+// Lazily configure the auth and client to prevent them from being used in pre-rendering
+let auth: PublicOauthClient | null = null;
+let client: Client | null = null;
+
+export const getAuth = () => {
+  if (auth == null) {
+    auth = createPublicOauthClient(
+      clientId,
+      url,
+      redirectUrl,
+      {{#if scopes}}
+      true,
+      undefined,
+      window.location.toString(),
+      scopes,
+      {{/if}}
+    );
+  }
+  return auth;
+}
+
+export const getClient = () => {
+  if (client == null) {
+    client = createClient(
+      url,
+      $ontologyRid,
+      getAuth(),
+    );
+  }
+  return client;
+}

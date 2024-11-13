@@ -1,5 +1,70 @@
 # @osdk/generator
 
+## 2.1.0-beta.8
+
+### Minor Changes
+
+- 71dfb4c: Now export all api shapes from client, so use that dependency instead.
+
+### Patch Changes
+
+- Updated dependencies [9f3807c]
+  - @osdk/api@2.1.0-beta.8
+  - @osdk/generator-converters@2.1.0-beta.8
+
+## 2.1.0-beta.7
+
+### Minor Changes
+
+- 9018dc2: Updating platform api dependencies.
+
+### Patch Changes
+
+- Updated dependencies [27866a8]
+- Updated dependencies [9018dc2]
+- Updated dependencies [31e7d70]
+  - @osdk/api@2.1.0-beta.7
+  - @osdk/generator-converters@2.1.0-beta.7
+
+## 2.1.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
+### Patch Changes
+
+- Updated dependencies [25fd9f0]
+- Updated dependencies [1a89f23]
+- Updated dependencies [1b2e8c9]
+  - @osdk/api@2.1.0-beta.6
+  - @osdk/generator-converters@2.1.0-beta.6
+
+## 2.1.0-beta.5
+
+### Minor Changes
+
+- 027db73: Fixes generation for interfaces with no properties
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.5
+- @osdk/generator-converters@2.1.0-beta.5
+
+## 2.1.0-beta.4
+
+### Minor Changes
+
+- 0dc40b0: Remove experimental non null for now.
+
+### Patch Changes
+
+- Updated dependencies [0dc40b0]
+- Updated dependencies [1dc0228]
+- Updated dependencies [d3b3f35]
+  - @osdk/api@2.1.0-beta.4
+  - @osdk/generator-converters@2.1.0-beta.4
+
 ## 2.1.0-beta.3
 
 ### Minor Changes

@@ -37,8 +37,8 @@ import type { PublicOauthClient } from "./PublicOauthClient.js";
 import { throwIfError } from "./throwIfError.js";
 import type { Token } from "./Token.js";
 
-declare const process: undefined | {
-  env?: {
+declare const process: {
+  env: {
     NODE_ENV: "production" | "development";
   };
 };
@@ -126,7 +126,7 @@ export function createPublicOauthClient(
       }
       return result;
     } catch (e) {
-      if (process?.env?.NODE_ENV !== "production") {
+      if (process.env.NODE_ENV !== "production") {
         // eslint-disable-next-line no-console
         console.warn(
           "Failed to get OAuth2 refresh token. Removing refresh token",
@@ -173,7 +173,7 @@ export function createPublicOauthClient(
       go(oldUrl);
       return ret;
     } catch (e) {
-      if (process?.env?.NODE_ENV !== "production") {
+      if (process.env.NODE_ENV !== "production") {
         // eslint-disable-next-line no-console
         console.warn(
           "Failed to get OAuth2 token using PKCE, removing PKCE and starting a new auth flow",

@@ -1,5 +1,33 @@
 # @osdk/create-app
 
+## 2.1.0-beta.8
+
+### Minor Changes
+
+- 0e1a2e3: Add the scopes option to OSDK CLI and update all example generators to include the scopes if provided, else, hide the scopes to avoid confusion
+
+## 2.1.0-beta.7
+
+## 2.1.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
+## 2.1.0-beta.5
+
+### Minor Changes
+
+- 62a3d1f: Use fixed versions for create-app client and oauth deps
+- be9a9ff: Update dependencies for next apps and lock in typescript version
+- 4849ae2: internal create-app code is codegen'd
+
+## 0.20.0-beta.3
+
+### Minor Changes
+
+- 51b270d: Support 2.0 syntax in Next and Vue templates
+
 ## 0.20.0-beta.2
 
 ### Minor Changes

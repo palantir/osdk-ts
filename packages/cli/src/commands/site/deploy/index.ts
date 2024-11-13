@@ -38,6 +38,7 @@ const command: CommandModule<
     const directory = siteConfig?.directory;
     const autoVersion = siteConfig?.autoVersion;
     const gitTagPrefix = autoVersion?.tagPrefix;
+    const uploadOnly = siteConfig?.uploadOnly;
 
     return argv
       .options({
@@ -51,7 +52,7 @@ const command: CommandModule<
         uploadOnly: {
           type: "boolean",
           description: "Upload new site version only without setting as live",
-          default: false,
+          default: uploadOnly ?? false,
         },
         version: {
           type: "string",

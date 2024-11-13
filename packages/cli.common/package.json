@@ -1,7 +1,7 @@
 {
   "name": "@osdk/cli.common",
   "private": true,
-  "version": "0.25.0-beta.3",
+  "version": "0.25.0-beta.8",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -10,11 +10,13 @@
   "exports": {
     ".": {
       "browser": "./build/browser/index.js",
-      "import": "./build/esm/index.js"
+      "import": "./build/esm/index.js",
+      "default": "./build/browser/index.js"
     },
     "./*": {
       "browser": "./build/browser/public/*.js",
-      "import": "./build/esm/public/*.js"
+      "import": "./build/esm/public/*.js",
+      "default": "./build/browser/public/*.js"
     }
   },
   "scripts": {
@@ -38,7 +40,7 @@
     "@types/node": "^18.0.0",
     "@types/semver": "^7.5.8",
     "@types/yargs": "^17.0.29",
-    "typescript": "^5.5.4"
+    "typescript": "~5.5.4"
   },
   "publishConfig": {
     "access": "public"

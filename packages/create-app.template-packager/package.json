@@ -1,7 +1,7 @@
 {
   "name": "@osdk/create-app.template-packager",
   "private": true,
-  "version": "0.1.0",
+  "version": "2.1.0-beta.8",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -10,11 +10,13 @@
   "exports": {
     ".": {
       "browser": "./build/browser/index.js",
-      "import": "./build/esm/index.js"
+      "import": "./build/esm/index.js",
+      "default": "./build/browser/index.js"
     },
     "./*": {
       "browser": "./build/browser/public/*.js",
-      "import": "./build/esm/public/*.js"
+      "import": "./build/esm/public/*.js",
+      "default": "./build/browser/public/*.js"
     }
   },
   "scripts": {
@@ -39,7 +41,7 @@
     "@types/tmp": "^0.2.6",
     "@types/yargs": "^17.0.29",
     "tmp": "^0.2.3",
-    "typescript": "^5.5.4"
+    "typescript": "~5.5.4"
   },
   "publishConfig": {
     "access": "public"

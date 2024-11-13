@@ -1,7 +1,7 @@
 {
   "name": "@osdk/tool.release",
   "private": true,
-  "version": "0.5.0",
+  "version": "0.6.0-beta.1",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -10,11 +10,13 @@
   "exports": {
     ".": {
       "browser": "./build/browser/index.js",
-      "import": "./build/esm/index.js"
+      "import": "./build/esm/index.js",
+      "default": "./build/browser/index.js"
     },
     "./*": {
       "browser": "./build/browser/public/*.js",
-      "import": "./build/esm/public/*.js"
+      "import": "./build/esm/public/*.js",
+      "default": "./build/browser/public/*.js"
     }
   },
   "scripts": {
@@ -61,7 +63,7 @@
     "@types/node": "^20.12.7",
     "@types/semver": "^7.5.8",
     "@types/yargs": "^17.0.32",
-    "typescript": "^5.5.4",
+    "typescript": "~5.5.4",
     "vitest": "^2.1.2"
   },
   "publishConfig": {

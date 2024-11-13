@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { changeVersionPrefix } from "@osdk/generator-utils";
 import { findUpSync } from "find-up";
 import Handlebars from "handlebars";
 import fs from "node:fs";
@@ -41,6 +42,7 @@ interface RunArgs {
   osdkPackage: string;
   osdkRegistryUrl: string;
   corsProxy: boolean;
+  scopes: string[] | undefined;
 }
 
 export async function run(
@@ -56,6 +58,7 @@ export async function run(
     osdkPackage,
     osdkRegistryUrl,
     corsProxy,
+    scopes,
   }: RunArgs,
 ): Promise<void> {
   consola.log("");
@@ -105,11 +108,28 @@ export async function run(
     );
   }
 
+  const ourPackageJsonPath = findUpSync("package.json", {
+    cwd: fileURLToPath(import.meta.url),
+  });
+
+  const ourPackageJsonVersion: string | undefined = ourPackageJsonPath
+    ? JSON.parse(fs.readFileSync(ourPackageJsonPath, "utf-8")).version
+    : undefined;
+
+  const clientVersion = process.env.PACKAGE_CLIENT_VERSION
+    ?? ourPackageJsonVersion;
+
+  if (clientVersion === undefined) {
+    throw new Error("Could not determine current @osdk/client version");
+  }
+
   const templateContext: TemplateContext = {
     project,
     foundryUrl,
     osdkPackage,
     corsProxy,
+    clientVersion: changeVersionPrefix(clientVersion, "^"),
+    scopes,
   };
   const processFiles = function(dir: string) {
     fs.readdirSync(dir).forEach(function(file) {

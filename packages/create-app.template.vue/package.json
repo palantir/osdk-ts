@@ -1,7 +1,7 @@
 {
   "name": "@osdk/create-app.template.vue",
   "private": true,
-  "version": "0.20.0-beta.2",
+  "version": "2.1.0-beta.8",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -10,11 +10,13 @@
   "exports": {
     ".": {
       "browser": "./build/browser/index.js",
-      "import": "./build/esm/index.js"
+      "import": "./build/esm/index.js",
+      "default": "./build/browser/index.js"
     },
     "./*": {
       "browser": "./build/browser/public/*.js",
-      "import": "./build/esm/public/*.js"
+      "import": "./build/esm/public/*.js",
+      "default": "./build/browser/public/*.js"
     }
   },
   "scripts": {
@@ -36,7 +38,7 @@
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
     "@vitejs/plugin-vue": "^5.1.4",
-    "typescript": "^5.5.4",
+    "typescript": "~5.5.4",
     "vite": "^5.4.8",
     "vitest": "^2.1.2",
     "vue-tsc": "^2.1.6"
