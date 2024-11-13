@@ -1,5 +1,7 @@
 # @osdk/create-app.template.next-static-export.v2
 
+## 2.1.0-beta.9
+
 ## 2.1.0-beta.8
 
 ### Minor Changes
