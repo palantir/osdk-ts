@@ -116,6 +116,9 @@ export async function convertWireToOsdkObjects(
   return ret;
 }
 
+/**
+ * @internal
+ */
 export async function convertWireToOsdkObjects2(
   client: MinimalClient,
   objects: OntologyObjectV2[],
