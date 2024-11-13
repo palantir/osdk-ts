@@ -949,9 +949,9 @@ export interface VersionBound<V extends VersionString<any, any, any>> {
 // Warning: (ae-forgotten-export) The symbol "FilterFor" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T> | AndWhereClause<T> | NotWhereClause<T> | {
+export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T> | AndWhereClause<T> | NotWhereClause<T> | (IsNever<PropertyKeys<T>> extends true ? Record<string, never> : {
     [P in PropertyKeys<T>]?: FilterFor<CompileTimeMetadata<T>["properties"][P]>;
-};
+});
 
 // @public (undocumented)
 export type WirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "numericTimeseries" | "stringTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
