@@ -24,6 +24,7 @@ import type {
   ObjectMetadata,
 } from "../ontology/ObjectTypeDefinition.js";
 import type { ArrayFilter } from "./ArrayFilter.js";
+import type { BaseFilter } from "./BaseFilter.js";
 import type { BooleanFilter } from "./BooleanFilter.js";
 import type { DatetimeFilter } from "./DatetimeFilter.js";
 import type { GeoFilter } from "./GeoFilter.js";
@@ -131,7 +132,10 @@ type FilterFor<PD extends ObjectMetadata.Property> = PD["multiplicity"] extends
     : PD["type"] extends "geopoint" | "geoshape" ? GeoFilter
     : PD["type"] extends "datetime" | "timestamp" ? DatetimeFilter
     : PD["type"] extends "boolean" ? BooleanFilter
-    : NumberFilter); // FIXME we need to represent all types
+    : PD["type"] extends
+      "double" | "integer" | "long" | "float" | "decimal" | "byte"
+      ? NumberFilter
+    : BaseFilter<string>); // FIXME we need to represent all types
 
 export interface AndWhereClause<
   T extends ObjectOrInterfaceDefinition,

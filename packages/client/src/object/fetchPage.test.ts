@@ -168,6 +168,50 @@ describe(fetchPage, () => {
     );
   });
 
+  it("where clause keys correctly typed", () => {
+    const client = createMinimalClient(
+      metadata,
+      "https://foo",
+      async () => "",
+    );
+    const objectSet = createObjectSet(Todo, client);
+    const objectSetWithSpecialPropertyTypes = createObjectSet(Employee, client);
+
+    expectTypeOf(objectSet.where).toBeCallableWith({
+      $and: [{ id: { $gt: 2 } }, { id: { $lte: 2 } }],
+    });
+    expectTypeOf(objectSet.where).toBeCallableWith({
+      // @ts-expect-error
+      id: { $gt: 2, $lte: 2 },
+    });
+
+    // We used to default to number filters for other types, like geotimeseries reference and timeseries. These tests will make sure
+    // we don't do that anymore
+    expectTypeOf(objectSetWithSpecialPropertyTypes.where).toBeCallableWith({
+      $and: [
+        { employeeLocation: { $eq: "myLocation" } },
+        {
+          employeeLocation: { $ne: "notMyLocation" },
+        },
+        { employeeLocation: { $isNull: false } },
+        // @ts-expect-error
+        { employeeLocation: { $gt: 5 } },
+      ],
+    });
+
+    expectTypeOf(objectSetWithSpecialPropertyTypes.where).toBeCallableWith({
+      $and: [
+        { employeeStatus: { $eq: "myStatus" } },
+        {
+          employeeLocation: { $ne: "notMyStatus" },
+        },
+        { employeeLocation: { $isNull: false } },
+        // @ts-expect-error
+        { employeeLocation: { $lte: 5 } },
+      ],
+    });
+  });
+
   describe("includeRid", () => {
     it("properly returns the correct string for includeRid", () => {
       expectTypeOf<Awaited<FetchPageResult<TodoDef, "text", false, "throw">>>()
