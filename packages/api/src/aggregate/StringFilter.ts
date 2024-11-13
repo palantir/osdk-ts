@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { BaseFilter, CatchThemAll } from "./BaseFilter.js";
+import type { BaseFilterOptions, CatchThemAll } from "./BaseFilter.js";
 import type { Just } from "./Just.js";
 
-interface StringFilterOptions extends BaseFilter<string> {
+interface StringFilterOptions extends BaseFilterOptions<string> {
   "$startsWith": string;
   "$containsAllTermsInOrder": string;
   "$containsAnyTerm": string;

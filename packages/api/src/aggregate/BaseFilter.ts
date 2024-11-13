@@ -14,19 +14,27 @@
  * limitations under the License.
  */
 
-export type BaseFilter<T> = {
+import type { Just } from "./Just.js";
+
+export type BaseFilterOptions<T> = {
   "$eq": T;
   "$ne": T;
   "$isNull": boolean;
   "$in": ReadonlyArray<T>;
 };
 
-/** @internal */
-export type BaseFilterTestSeam<T> =
-  | Pick<BaseFilter<T>, "$eq">
-  | Pick<BaseFilter<T>, "$in">
-  | Pick<BaseFilter<T>, "$ne">
-  | Pick<BaseFilter<T>, "$isNull">;
+export namespace BaseFilter {
+  export interface $eq<T> extends Just<"$eq", BaseFilterOptions<T>> {}
+  export interface $ne<T> extends Just<"$ne", BaseFilterOptions<T>> {}
+  export interface $in<T> extends Just<"$in", BaseFilterOptions<T>> {}
+  export interface $isNull<T> extends Just<"$isNull", BaseFilterOptions<T>> {}
+}
+
+export type BaseFilter<T> =
+  | BaseFilter.$eq<T>
+  | BaseFilter.$ne<T>
+  | BaseFilter.$in<T>
+  | BaseFilter.$isNull<T>;
 
 /** @internal */
 export type CatchThemAll<T> = CatchThemAllInternal<T, keyof T>;

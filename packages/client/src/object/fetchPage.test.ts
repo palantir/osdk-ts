@@ -24,7 +24,7 @@ import type {
   SelectArgToKeys,
 } from "@osdk/api";
 import type { FooInterface } from "@osdk/client.test.ontology";
-import { Todo } from "@osdk/client.test.ontology";
+import { Employee, Todo } from "@osdk/client.test.ontology";
 import type { SearchJsonQueryV2 } from "@osdk/internal.foundry.core";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
@@ -194,6 +194,8 @@ describe(fetchPage, () => {
           employeeLocation: { $ne: "notMyLocation" },
         },
         { employeeLocation: { $isNull: false } },
+        // @ts-expect-error
+        { employeeLocation: { $isNull: false, $eq: "myLocation" } },
         // @ts-expect-error
         { employeeLocation: { $gt: 5 } },
       ],

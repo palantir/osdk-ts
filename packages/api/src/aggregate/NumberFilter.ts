@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { BaseFilter, CatchThemAll } from "./BaseFilter.js";
+import type { BaseFilterOptions, CatchThemAll } from "./BaseFilter.js";
 import type { Just } from "./Just.js";
 
-interface NumberFilterOptions extends BaseFilter<number> {
+interface NumberFilterOptions extends BaseFilterOptions<number> {
   "$gt": number;
   "$gte": number;
   "$lt": number;

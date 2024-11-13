@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { BaseFilter, CatchThemAll } from "./BaseFilter.js";
+import type { BaseFilterOptions, CatchThemAll } from "./BaseFilter.js";
 import type { Just } from "./Just.js";
 
-interface BooleanFilterOptions extends BaseFilter<boolean> {}
+interface BooleanFilterOptions extends BaseFilterOptions<boolean> {}
 
 export namespace BooleanFilter {
   export interface $eq extends Just<"$eq", BooleanFilterOptions> {}

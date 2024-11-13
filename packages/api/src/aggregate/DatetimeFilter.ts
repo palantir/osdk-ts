@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { BaseFilter, CatchThemAll } from "./BaseFilter.js";
+import type { BaseFilterOptions, CatchThemAll } from "./BaseFilter.js";
 import type { Just } from "./Just.js";
 
-export interface DatetimeFilterOptions extends BaseFilter<string> {
+export interface DatetimeFilterOptions extends BaseFilterOptions<string> {
   "$gt": string;
   "$gte": string;
   "$lt": string;
