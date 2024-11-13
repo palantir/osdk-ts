@@ -46,7 +46,11 @@ export async function generatePerObjectDataFiles(
     await fs.writeFile(
       outFilePath,
       await formatTs(`
-        import type { PropertyDef as $PropertyDef } from "@osdk/api";
+        import type { PropertyDef as $PropertyDef } from "${
+        ctx.forInternalUse
+          ? "@osdk/api"
+          : "@osdk/client"
+      }";
         import { $osdkMetadata } from "../../OntologyMetadata${importExt}";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
         ${wireObjectTypeV2ToSdkObjectConstV2(obj.raw, ctx, relPath)}

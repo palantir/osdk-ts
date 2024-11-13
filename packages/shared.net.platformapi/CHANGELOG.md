@@ -1,5 +1,11 @@
 # @osdk/shared.net.platformapi
 
+## 0.4.0-beta.3
+
+### Minor Changes
+
+- af2a390: Return type of binary data changed to response
+
 ## 0.4.0-beta.2
 
 ### Minor Changes

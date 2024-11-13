@@ -587,7 +587,7 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED 
     // Warning: (ae-forgotten-export) The symbol "EXPERIMENTAL_ObjectSetListener" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    readonly subscribe: <Q extends ObjectOrInterfaceDefinition, const P extends PropertyKeys<Q>>(properties: Array<P>, listener: EXPERIMENTAL_ObjectSetListener<Q, P>) => {
+    readonly subscribe: <const P extends PropertyKeys<Q>>(properties: Array<P>, listener: EXPERIMENTAL_ObjectSetListener<Q, P>) => {
         unsubscribe: () => void;
     };
     readonly subtract: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
@@ -951,9 +951,9 @@ export interface VersionBound<V extends VersionString<any, any, any>> {
 // Warning: (ae-forgotten-export) The symbol "FilterFor" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T> | AndWhereClause<T> | NotWhereClause<T> | {
+export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T> | AndWhereClause<T> | NotWhereClause<T> | (IsNever<PropertyKeys<T>> extends true ? Record<string, never> : {
     [P in PropertyKeys<T>]?: FilterFor<CompileTimeMetadata<T>["properties"][P]>;
-};
+});
 
 // @public (undocumented)
 export type WirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "numericTimeseries" | "stringTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";

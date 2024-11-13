@@ -240,7 +240,6 @@ export interface ObjectSet<
     : never;
 
   readonly subscribe: <
-    Q extends ObjectOrInterfaceDefinition,
     const P extends PropertyKeys<Q>,
   >(
     properties: Array<P>,

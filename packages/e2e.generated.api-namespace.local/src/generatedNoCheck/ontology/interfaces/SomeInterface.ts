@@ -1,4 +1,4 @@
-import type { PropertyDef as $PropertyDef } from '@osdk/api';
+import type { PropertyDef as $PropertyDef } from '@osdk/client';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 import type {
@@ -6,7 +6,7 @@ import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
-} from '@osdk/api';
+} from '@osdk/client';
 
 export type OsdkObjectLinks$SomeInterface = {};
 

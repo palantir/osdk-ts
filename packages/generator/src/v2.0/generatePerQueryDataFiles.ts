@@ -39,12 +39,14 @@ export async function generatePerQueryDataFilesV2(
     outDir: rootOutDir,
     ontology,
     importExt = "",
+    forInternalUse = false,
   }: Pick<
     GenerateContext,
     | "fs"
     | "outDir"
     | "importExt"
     | "ontology"
+    | "forInternalUse"
   >,
   v2: boolean,
 ) {
@@ -60,6 +62,7 @@ export async function generatePerQueryDataFilesV2(
         query,
         importExt,
         ontology,
+        forInternalUse,
       );
     }),
   );
@@ -88,6 +91,7 @@ async function generateV2QueryFile(
   query: EnhancedQuery,
   importExt: string,
   ontology: EnhancedOntologyDefinition,
+  forInternalUse: boolean,
 ) {
   const relFilePath = path.join(relOutDir, `${query.shortApiName}.ts`);
   const objectTypes = getObjectTypeApiNamesFromQuery(query);
@@ -116,8 +120,9 @@ async function generateV2QueryFile(
   await fs.writeFile(
     path.join(outDir, `${query.shortApiName}.ts`),
     await formatTs(`
-        import type { QueryDefinition , VersionBound} from "@osdk/api";
-        import type { QueryParam, QueryResult } from "@osdk/api";
+        import type { QueryDefinition , QueryParam, QueryResult, VersionBound} from "${
+      forInternalUse ? "@osdk/api" : "@osdk/client"
+    }";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
         import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
         ${importObjects}

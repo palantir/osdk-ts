@@ -44,3 +44,12 @@ export const employeeInterfaceScoped2 = {
   $primaryKey: 50052,
   $apiName: "Employee",
 };
+export const BarInterface: InterfaceType = {
+  apiName: "BarInterface",
+  description: "Interface for Bar",
+  displayName: "Bar Interface",
+  rid: "ri.interface.main.interface.2",
+  extendsInterfaces: [],
+  properties: {},
+  links: {},
+};
