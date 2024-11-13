@@ -293,6 +293,14 @@ describe("ObjectSet", () => {
     }
   });
 
+  it("allows $in filter with ReadonlyArrays", () => {
+    const ids: ReadonlyArray<number> = [50030, 50031];
+    const objectSet = client(Employee).where({
+      employeeId: { $in: ids },
+    });
+    expect(objectSet).toBeDefined();
+  });
+
   describe.each(["fetchPage", "fetchPageWithErrors"] as const)("%s", (k) => {
     // describe("strictNonNull: \"drop\"", () => {
     //   describe("includeRid: true", () => {
