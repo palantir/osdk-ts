@@ -26,7 +26,6 @@ import {
   refreshTokenGrantRequest,
   validateAuthResponse,
 } from "oauth4webapi";
-import invariant from "tiny-invariant";
 import {
   common,
   createAuthorizationServer,
@@ -37,6 +36,7 @@ import {
 import type { PublicOauthClient } from "./PublicOauthClient.js";
 import { throwIfError } from "./throwIfError.js";
 import type { Token } from "./Token.js";
+import { processOptionsAndAssignDefaults } from "./utils.js";
 
 declare const process: {
   env: {
@@ -45,7 +45,7 @@ declare const process: {
   };
 };
 
-interface PublicOauthClientOptions {
+export interface PublicOauthClientOptions {
   /**
    * If true, uses `history.replaceState()`, otherwise uses `window.location.assign()` (defaults to true)
    */
@@ -129,30 +129,23 @@ export function createPublicOauthClient(
   fetchFn?: typeof globalThis.fetch,
   ctxPath?: string,
 ): PublicOauthClient {
-  if (typeof useHistory === "object") {
-    invariant(
-      !loginPage && !postLoginPage && !scopes && !fetchFn && !ctxPath,
-      "If useHistory is an object, other options should not be provided",
-    );
-    ({
-      useHistory,
-      loginPage,
-      postLoginPage,
-      scopes,
-      fetchFn,
-      ctxPath,
-    } = useHistory);
-  }
-
-  invariant(url, "url is required");
-  invariant(redirect_uri, "redirectUrl is required");
-
-  // Assign defaults
-  useHistory ??= true;
-  scopes ??= ["api:read-data", "api:write-data"];
-  postLoginPage ||= window.location.toString();
-  fetchFn ??= globalThis.fetch;
-  ctxPath ??= "/multipass";
+  ({
+    useHistory,
+    loginPage,
+    postLoginPage,
+    scopes,
+    fetchFn,
+    ctxPath,
+  } = processOptionsAndAssignDefaults(
+    url,
+    redirect_uri,
+    useHistory,
+    loginPage,
+    postLoginPage,
+    scopes,
+    fetchFn,
+    ctxPath,
+  ));
 
   const client: Client = { client_id, token_endpoint_auth_method: "none" };
   const authServer = createAuthorizationServer(ctxPath, url);

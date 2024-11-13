@@ -14,28 +14,26 @@
  * limitations under the License.
  */
 
-import type { PublicOauthClient } from "@osdk/oauth";
 import { createPublicOauthClient } from "@osdk/oauth";
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import * as utilsModule from "../utils.js";
 
 const FOUNDRY_CLIENT_ID = "example-foundry-client-id";
 const FOUNDRY_URL = "http://example-foundry-url.com";
+const REDIRECT_URI = "http://localhost:8080/auth/callback";
 
 vi.stubGlobal("window", {
   location: {
-    toString: vi.fn(),
+    toString: vi.fn().mockReturnValue("http://example.com"),
   },
 });
 
 describe("createPublicOauthClient", () => {
-  let authClient: PublicOauthClient;
-  let authClientWithOptions: PublicOauthClient;
-
-  beforeAll(() => {
-    authClient = createPublicOauthClient(
+  it("should create a client with options array", () => {
+    const authClient = createPublicOauthClient(
       FOUNDRY_CLIENT_ID,
       FOUNDRY_URL,
-      "http://localhost:8080/auth/callback",
+      REDIRECT_URI,
       true,
       undefined,
       undefined,
@@ -44,28 +42,78 @@ describe("createPublicOauthClient", () => {
       undefined,
     );
 
-    authClientWithOptions = createPublicOauthClient(
+    expect(authClient).toBeDefined();
+  });
+
+  it("should create a client with options object", () => {
+    const authClientWithOptions = createPublicOauthClient(
       FOUNDRY_CLIENT_ID,
       FOUNDRY_URL,
-      "http://localhost:8080/auth/callback",
+      REDIRECT_URI,
       {
         useHistory: true,
         fetchFn: fetch,
       },
     );
-  });
-
-  it("should create a client with options array", () => {
-    expect(authClient).toBeDefined();
-  });
-
-  it("should create a client with options object", () => {
     expect(authClientWithOptions).toBeDefined();
   });
 
-  // TODO: need a better way to check all the options have resulted in an identical client
-  // but currently this check will fail because it just compares the functions which isn't what we want.
-  // it("should create identical client for with options array and object", () => {
-  //   expect(authClient).toBe(authClientWithOptions);
-  // });
+  it("should return the same processed options for both client creation methods", () => {
+    const processSpy = vi.spyOn(utilsModule, "processOptionsAndAssignDefaults");
+
+    const authClient = createPublicOauthClient(
+      FOUNDRY_CLIENT_ID,
+      FOUNDRY_URL,
+      REDIRECT_URI,
+      true,
+      undefined,
+      undefined,
+      undefined,
+      fetch,
+      undefined,
+    );
+
+    expect(authClient).toBeDefined();
+
+    const authClientWithOptions = createPublicOauthClient(
+      FOUNDRY_CLIENT_ID,
+      FOUNDRY_URL,
+      REDIRECT_URI,
+      {
+        useHistory: true,
+        fetchFn: fetch,
+      },
+    );
+
+    expect(authClientWithOptions).toBeDefined();
+
+    expect(processSpy).toHaveBeenCalledTimes(2);
+
+    const [call1Args, call2Args] = processSpy.mock.calls;
+
+    expect(call1Args).toEqual([
+      FOUNDRY_URL,
+      REDIRECT_URI,
+      true,
+      undefined,
+      undefined,
+      undefined,
+      fetch,
+      undefined,
+    ]);
+
+    expect(call2Args).toEqual([
+      FOUNDRY_URL,
+      REDIRECT_URI,
+      { useHistory: true, fetchFn: fetch },
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+    ]);
+
+    const [result1, result2] = processSpy.mock.results;
+    expect(result1.value).toEqual(result2.value);
+  });
 });
