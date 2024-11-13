@@ -189,7 +189,7 @@ describe(modernToLegacyWhereClause, () => {
 
         expect(r).toMatchInlineSnapshot(`
           {
-            "field": "prop",
+            "field": "a.prop",
             "type": "eq",
             "value": 5,
           }
