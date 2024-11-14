@@ -53,9 +53,13 @@ export const extractDateInUTC = (date: Date) => {
  * @returns The date part of a ISO 8601 formatted date time string
  */
 export const extractDateInLocalTime = (date: Date) => {
-  const offsetMs = date.getTimezoneOffset() * 60 * 1000;
-
-  return new Date(date.getTime() - offsetMs).toISOString().split(
+  return generateOffsetUtcString(date).split(
     "T",
   )[0];
+};
+
+/** @internal */
+export const generateOffsetUtcString = (date: Date) => {
+  const offsetMs = date.getTimezoneOffset() * 60 * 1000;
+  return new Date(date.getTime() - offsetMs).toISOString();
 };

@@ -28,6 +28,7 @@ import {
   extractDate,
   extractDateInLocalTime,
   extractDateInUTC,
+  generateOffsetUtcString,
 } from "./datetimeConverters.js";
 
 describe("test datetime converters", () => {
@@ -80,6 +81,17 @@ describe("test datetime converters", () => {
       const result = extractDateInLocalTime(date);
       expect(result).toBe("2020-12-31");
     });
+
+    describe("test generating ISO String", () => {
+      it("should return a correct ISO 8601 string that is offset correctly", () => {
+        const date = new Date("2021-01-01T00:00:00.000Z");
+        expect(date.getDate()).toBe(31);
+
+        const result = generateOffsetUtcString(date);
+        expect(result).toBe("2020-12-31T19:00:00.000Z");
+      });
+    });
+
     it("should return the date in local time given Date constructed with UTC time", () => {
       const date = new Date("2021-01-01T00:00:00.000Z");
       expect(date.getDate()).toBe(31);
