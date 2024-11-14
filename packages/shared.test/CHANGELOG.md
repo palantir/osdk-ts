@@ -1,5 +1,16 @@
 # @osdk/shared.test
 
+## 2.1.0-beta.9
+
+### Minor Changes
+
+- acbfab9: Fixes where clauses for interfaces with no properties.
+
+### Patch Changes
+
+- Updated dependencies [acbfab9]
+  - @osdk/api@2.1.0-beta.9
+
 ## 2.1.0-beta.8
 
 ### Patch Changes
