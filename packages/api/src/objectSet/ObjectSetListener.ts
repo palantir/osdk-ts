@@ -61,9 +61,6 @@ type ObjectUpdate<
  *
  * @property properties - The properties to request a subscription for. Requesting specific properties limits the possible properties
  * that can be returned from the subscription. If not provided, all properties will be requested and potentially be returned on updates.
- *
- * @property requestLatestGeotimeSeriesValues - If true, any geotime series properties will be updated with the latest values. This can
- * reduce performance and should be used only if needed.
  */
 export interface ObjectSetListenerOptions<
   O extends ObjectOrInterfaceDefinition,
