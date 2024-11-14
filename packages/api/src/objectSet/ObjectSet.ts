@@ -18,6 +18,7 @@ import type { AggregateOpts } from "../aggregate/AggregateOpts.js";
 import type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } from "../aggregate/AggregateOptsThatErrors.js";
 import type { AggregationsResults } from "../aggregate/AggregationsResults.js";
 import type { WhereClause } from "../aggregate/WhereClause.js";
+import type { DeriveClause } from "../derive/DeriveClause.js";
 import type {
   AsyncIterArgs,
   Augments,
@@ -245,4 +246,6 @@ export interface ObjectSet<
     properties: Array<P>,
     listener: EXPERIMENTAL_ObjectSetListener<Q, P>,
   ) => { unsubscribe: () => void };
+
+  readonly derive: (clause: DeriveClause<Q>) => this;
 }

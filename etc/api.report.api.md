@@ -337,6 +337,11 @@ export interface DataValueWireToClient {
 }
 
 // @public (undocumented)
+export type DeriveClause<T extends ObjectOrInterfaceDefinition> = {
+    [key: ValidDerivedPropertyKeys<T>]: NativePropertyDef<T> | CalculatedProperty<T> | SelectedProperty<T>;
+};
+
+// @public (undocumented)
 export const DistanceUnitMapping: {
     centimeter: "CENTIMETERS";
     centimeters: "CENTIMETERS";
@@ -578,6 +583,8 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED 
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     readonly aggregate: <AO extends AggregateOpts<Q>>(req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>) => Promise<AggregationsResults<Q, AO>>;
+    // (undocumented)
+    readonly derive: (clause: DeriveClause<Q>) => this;
     readonly fetchOne: Q extends ObjectTypeDefinition ? <const L extends PropertyKeys<Q>, const R extends boolean, const S extends false | "throw" = NullabilityAdherence.Default>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<Osdk.Instance<Q, ExtractOptions<R, S>, L>> : never;
     readonly fetchOneWithErrors: Q extends ObjectTypeDefinition ? <L extends PropertyKeys<Q>, R extends boolean, S extends false | "throw" = NullabilityAdherence.Default>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<Result<Osdk.Instance<Q, ExtractOptions<R, S>, L>>> : never;
     readonly intersect: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
@@ -960,6 +967,10 @@ export type WirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "
 //
 // src/aggregate/AggregateOpts.ts:26:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:26:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
+// src/derive/DeriveClause.ts:125:3 - (ae-forgotten-export) The symbol "ValidDerivedPropertyKeys" needs to be exported by the entry point index.d.ts
+// src/derive/DeriveClause.ts:125:3 - (ae-forgotten-export) The symbol "NativePropertyDef" needs to be exported by the entry point index.d.ts
+// src/derive/DeriveClause.ts:125:3 - (ae-forgotten-export) The symbol "CalculatedProperty" needs to be exported by the entry point index.d.ts
+// src/derive/DeriveClause.ts:125:3 - (ae-forgotten-export) The symbol "SelectedProperty" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

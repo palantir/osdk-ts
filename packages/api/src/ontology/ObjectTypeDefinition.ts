@@ -119,7 +119,7 @@ export interface ObjectTypeDefinition {
 }
 
 export type ObjectTypeLinkKeysFrom2<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
 > =
   & keyof CompileTimeMetadata<Q>["links"]
   & string;

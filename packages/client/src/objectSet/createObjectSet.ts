@@ -241,6 +241,10 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       return { unsubscribe: async () => (await pendingSubscribe)() };
     },
 
+    derive: (clause) => {
+      return clientCtx.objectSetFactory(objectType, clientCtx, {} as any);
+    },
+
     $objectSetInternals: {
       def: objectType,
     },
