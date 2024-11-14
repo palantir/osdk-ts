@@ -59,7 +59,10 @@ describe("createPublicOauthClient", () => {
   });
 
   it("should return the same processed options for both client creation methods", () => {
-    const processSpy = vi.spyOn(utilsModule, "processOptionsAndAssignDefaults");
+    const processOptionsAndAssignDefaultsSpy = vi.spyOn(
+      utilsModule,
+      "processOptionsAndAssignDefaults",
+    );
 
     const authClient = createPublicOauthClient(
       FOUNDRY_CLIENT_ID,
@@ -74,6 +77,7 @@ describe("createPublicOauthClient", () => {
     );
 
     expect(authClient).toBeDefined();
+    expect(processOptionsAndAssignDefaultsSpy).toHaveBeenCalledTimes(1);
 
     const authClientWithOptions = createPublicOauthClient(
       FOUNDRY_CLIENT_ID,
@@ -86,10 +90,10 @@ describe("createPublicOauthClient", () => {
     );
 
     expect(authClientWithOptions).toBeDefined();
+    expect(processOptionsAndAssignDefaultsSpy).toHaveBeenCalledTimes(2);
 
-    expect(processSpy).toHaveBeenCalledTimes(2);
-
-    const [call1Args, call2Args] = processSpy.mock.calls;
+    const [call1Args, call2Args] =
+      processOptionsAndAssignDefaultsSpy.mock.calls;
 
     expect(call1Args).toEqual([
       FOUNDRY_URL,
@@ -113,7 +117,7 @@ describe("createPublicOauthClient", () => {
       undefined,
     ]);
 
-    const [result1, result2] = processSpy.mock.results;
+    const [result1, result2] = processOptionsAndAssignDefaultsSpy.mock.results;
     expect(result1.value).toEqual(result2.value);
   });
 });
