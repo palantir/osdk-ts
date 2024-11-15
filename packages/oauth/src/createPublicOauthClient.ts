@@ -181,6 +181,7 @@ export function createPublicOauthClient(
         );
       }
       removeLocal(client);
+      throw e;
     }
   }
 
