@@ -745,6 +745,8 @@ export interface PropertyValueWireToClient {
     // (undocumented)
     numericTimeseries: TimeSeriesProperty<number>;
     // (undocumented)
+    sensorTimeseries: TimeSeriesProperty<string>;
+    // (undocumented)
     short: number;
     // (undocumented)
     string: string;
@@ -954,7 +956,7 @@ export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T
 });
 
 // @public (undocumented)
-export type WirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "numericTimeseries" | "stringTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
+export type WirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
 
 // Warnings were encountered during analysis:
 //

@@ -112,6 +112,11 @@ function convertType(
         type: "timeseries",
       };
 
+    case t.type === "sensorTimeseries":
+      return {
+        type: "timeseries",
+      };
+
     case t.type === "datetime":
       return {
         type: "timestamp",

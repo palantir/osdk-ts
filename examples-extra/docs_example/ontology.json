@@ -332,7 +332,7 @@
             "description": "TimeSeries of the status of the employee",
             "dataType": {
               "type": "timeseries",
-              "itemType": "string"
+              "itemType": { "type": "string" }
             }
           }
         },
