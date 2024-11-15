@@ -21,9 +21,8 @@ import type {
 import type {
   CompileTimeMetadata,
   ObjectMetadata,
-  ObjectTypeDefinition,
-  ObjectTypeLinkKeysFrom2,
 } from "../ontology/ObjectTypeDefinition.js";
+import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 
 // TODO: Store derived properties
 
@@ -93,7 +92,7 @@ type CalculatedProperty<T extends ObjectOrInterfaceDefinition> =
 
 type SelectedProperty<
   T extends ObjectOrInterfaceDefinition,
-  U extends ObjectTypeLinkKeysFrom2<T> = ObjectTypeLinkKeysFrom2<T>,
+  U extends LinkNames<T> = LinkNames<T>,
 > = {
   [
     K in U as CompileTimeMetadata<T>["links"][K] extends
@@ -101,18 +100,17 @@ type SelectedProperty<
         M extends false ? K : never
       )
       : never
-  ]: CompileTimeMetadata<T>["links"][K] extends
-    ObjectMetadata.Link<infer M, infer _> ? PropertyKeys<M> : never;
+  ]: PropertyKeys<LinkedType<T, K>>;
 };
 
 type AggregateOperations<T extends ObjectOrInterfaceDefinition> = {
-  $count: ObjectTypeLinkKeysFrom2<T>;
-  $sum: ObjectTypeLinkKeysFrom2<T>;
-  $min: ObjectTypeLinkKeysFrom2<T>;
-  $max: ObjectTypeLinkKeysFrom2<T>;
-  $avg: ObjectTypeLinkKeysFrom2<T>;
-  $approximateDistinct: ObjectTypeLinkKeysFrom2<T>;
-  $exactDistinct: ObjectTypeLinkKeysFrom2<T>;
+  $count: LinkNames<T>;
+  $sum: LinkNames<T>;
+  $min: LinkNames<T>;
+  $max: LinkNames<T>;
+  $avg: LinkNames<T>;
+  $approximateDistinct: LinkNames<T>;
+  $exactDistinct: LinkNames<T>;
 };
 
 namespace AggregatedProperty {
