@@ -17,6 +17,7 @@
 import type {
   AsyncParameterValueMap,
   HostMessage,
+  IFoundryViewClient,
   ParameterConfig,
   ParameterValueMap,
   ViewMessage,
@@ -35,9 +36,11 @@ interface FoundryViewProps<CONFIG extends ParameterConfig> {
 /**
  * Handles subscribing to messages from the host Foundry UI and updating the view's parameter values accordingly via React context
  */
-export const FoundryView = <CONFIG extends ParameterConfig>(
-  { children, initialValues, onMessage }: FoundryViewProps<CONFIG>,
-): React.ReactElement<FoundryViewProps<CONFIG>> => {
+export const FoundryView = <CONFIG extends ParameterConfig>({
+  children,
+  initialValues,
+  onMessage,
+}: FoundryViewProps<CONFIG>): React.ReactElement<FoundryViewProps<CONFIG>> => {
   const client = useMemo(() => new FoundryViewClient<CONFIG>(), []);
   const [parameterValues, setParameterValues] = React.useState<
     AsyncParameterValueMap<CONFIG>
@@ -57,13 +60,11 @@ export const FoundryView = <CONFIG extends ParameterConfig>(
     };
   }, []);
 
-  const handleEmitEvent = useCallback((message: ViewMessage<CONFIG>) => {
-    client.sendMessage(message);
-  }, []);
   return (
     <FoundryViewContext.Provider
       value={{
-        emitEvent: handleEmitEvent,
+        emitEvent: client.emit,
+        sendReady: client.ready,
         parameterValues,
         // Unfortunately the context is statically defined so we can't use the generic type, hence the cast
       } as FoundryViewClientContext<ParameterConfig>}

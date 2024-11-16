@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-import {
-  type HostMessage,
-  META_TAG_HOST_ORIGIN,
-  type ParameterConfig,
-  type ParameterId,
-  type ViewMessage,
+import type {
+  HostMessage,
+  ParameterConfig,
+  ViewEmitEventMessage,
+  ViewMessage,
 } from "@osdk/views-api.unstable";
+import { META_TAG_HOST_ORIGIN } from "@osdk/views-api.unstable";
 
 type FoundryHostEventListener<CONFIG extends ParameterConfig> = (
   event: MessageEvent<HostMessage<CONFIG>>,
 ) => void;
 
 export interface IFoundryViewClient<CONFIG extends ParameterConfig> {
-  subscribe: (listener: FoundryHostEventListener<CONFIG>) => void;
-  unsubscribe: () => void;
-  sendMessage: (message: ViewMessage<CONFIG>) => void;
+  ready: () => void;
+  emit: (
+    message: Extract<ViewMessage<CONFIG>, ViewEmitEventMessage<CONFIG>>,
+  ) => void;
 }
 
 export class FoundryViewClient<CONFIG extends ParameterConfig>
@@ -60,9 +61,13 @@ export class FoundryViewClient<CONFIG extends ParameterConfig>
       );
     }
     this.hostOrigin = hostOrigin;
-    this.sendMessage({
-      type: "view.ready",
-    });
+  }
+
+  /**
+   * Notifies the host that this client is ready to receive the first parameter values
+   */
+  public ready() {
+    this.sendMessage({ type: "view.ready" });
   }
 
   public subscribe(listener: FoundryHostEventListener<CONFIG>) {
@@ -86,7 +91,16 @@ export class FoundryViewClient<CONFIG extends ParameterConfig>
     window.removeEventListener("message", this.listener);
   }
 
-  public sendMessage(message: ViewMessage<CONFIG>) {
+  /**
+   * Emits an event to the parent frame
+   */
+  public emit(
+    message: Extract<ViewMessage<CONFIG>, ViewEmitEventMessage<CONFIG>>,
+  ) {
+    this.sendMessage(message);
+  }
+
+  private sendMessage(message: ViewMessage<CONFIG>) {
     this.parentWindow.postMessage(message, this.hostOrigin);
   }
 }

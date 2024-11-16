@@ -35,12 +35,17 @@ export {
 export { META_TAG_HOST_ORIGIN } from "./metaTags.js";
 export type {
   ArrayParameterValue,
+  BooleanArrayValue,
   BooleanParameterValue,
+  DateArrayValue,
   DateParameterValue,
+  NumericArrayValue,
   NumericParameterValue,
   ParameterValue,
   ParameterValueType,
+  StringArrayValue,
   StringParameterValue,
+  TimestampArrayValue,
   TimestampParameterValue,
 } from "./parameters.js";
 export type {

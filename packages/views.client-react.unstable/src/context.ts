@@ -22,7 +22,8 @@ import type {
 import React, { useContext } from "react";
 
 export interface FoundryViewClientContext<CONFIG extends ParameterConfig> {
-  emitEvent: IFoundryViewClient<CONFIG>["sendMessage"];
+  emitEvent: IFoundryViewClient<CONFIG>["emit"];
+  sendReady: IFoundryViewClient<CONFIG>["ready"];
   parameterValues: AsyncParameterValueMap<CONFIG>;
 }
 
@@ -30,6 +31,7 @@ export const FoundryViewContext = React.createContext<
   FoundryViewClientContext<ParameterConfig>
 >({
   emitEvent: () => {},
+  sendReady: () => {},
   parameterValues: {},
 });
 

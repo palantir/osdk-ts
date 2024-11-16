@@ -9,12 +9,17 @@ import {
   Skeleton,
   Table,
 } from "@radix-ui/themes";
-import React from "react";
+import React, { useEffect } from "react";
 import type MainParameters from "./main.parameters.js";
 
 export const App: React.FC = () => {
-  const { parameterValues } = useFoundryViewContext<typeof MainParameters>();
+  const { parameterValues, sendReady } = useFoundryViewContext<
+    typeof MainParameters
+  >();
   const { headerText, showWarning } = parameterValues;
+  useEffect(() => {
+    sendReady();
+  }, []);
   return (
     <Box>
       <Container size="1">
