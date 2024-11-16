@@ -1,6 +1,6 @@
 import type { ViewConfig } from "@osdk/views-client.unstable";
 
-const MainConfig = {
+export default {
   parameters: {
     headerText: {
       displayName: "Widget title",
@@ -27,4 +27,3 @@ const MainConfig = {
     },
   },
 } as const satisfies ViewConfig;
-export default MainConfig;

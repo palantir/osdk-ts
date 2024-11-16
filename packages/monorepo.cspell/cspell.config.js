@@ -144,6 +144,10 @@ const cspell = {
         // Used in a stub
         "Clooney",
       ],
+      ignoreWords: [
+        // it's an NPM package
+        "escodegen",
+      ],
     },
     {
       filename: "**/*.test.{mts,cts,ts,tsx}",
