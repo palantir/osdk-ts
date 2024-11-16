@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ParameterConfig,
-  ParameterDefinition,
-} from "@osdk/views-api.unstable";
+import type { ParameterDefinition } from "./config.js";
 
 export interface ViewManifest {
   views: Record<string, ViewConfig>;
@@ -30,7 +27,3 @@ export interface ViewConfig {
   entrypointCss?: string[];
   parameters: Record<string, ParameterDefinition>;
 }
-
-export const BaseConfig: ParameterConfig = {
-  parameters: {},
-};

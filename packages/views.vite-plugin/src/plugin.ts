@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import type { ParameterConfig } from "@osdk/views-api.unstable";
+import type {
+  ParameterConfig,
+  ViewConfig,
+  ViewManifest,
+} from "@osdk/views-api.unstable";
 import escodegen from "escodegen";
 import type { ObjectExpression } from "estree";
 import fs from "fs-extra";
 import path from "node:path";
 import type { Plugin } from "vite";
-import { type ViewConfig, type ViewManifest } from "./manifest.js";
 
 export interface Options {
   /**
