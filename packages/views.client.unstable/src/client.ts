@@ -33,8 +33,9 @@ export interface FoundryViewClient<CONFIG extends ParameterConfig> {
   /**
    * Emits an event to the parent frame
    */
-  emit: (
-    message: Extract<ViewMessage<CONFIG>, ViewMessage.EmitEvent<CONFIG>>,
+  emit: <M extends Extract<ViewMessage<CONFIG>, ViewMessage.EmitEvent<CONFIG>>>(
+    type: M["type"],
+    message: M["payload"],
   ) => void;
 
   /**
@@ -89,7 +90,12 @@ export function createFoundryViewClient<
   return {
     hostEventTarget,
     ready: () => {
-      sendMessage({ type: "view.ready", apiVersion: HostMessage.Version });
+      sendMessage({
+        type: "view.ready",
+        payload: {
+          apiVersion: HostMessage.Version,
+        },
+      });
     },
     subscribe: () => {
       window.addEventListener("message", (event) => {
@@ -103,10 +109,11 @@ export function createFoundryViewClient<
     unsubscribe: () => {
       window.removeEventListener("message", listenForHostMessages);
     },
-    emit: (
-      message: Extract<ViewMessage<CONFIG>, ViewMessage.EmitEvent<CONFIG>>,
-    ) => {
-      sendMessage(message);
+    emit: (type, payload) => {
+      sendMessage({
+        type,
+        payload,
+      });
     },
   };
 }

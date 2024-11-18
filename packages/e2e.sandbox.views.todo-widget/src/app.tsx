@@ -1,6 +1,7 @@
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import {
   Box,
+  Button,
   Callout,
   Container,
   Flex,
@@ -8,16 +9,27 @@ import {
   Skeleton,
   Table,
 } from "@radix-ui/themes";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useFoundryContext } from "./context.js";
 
 export const App: React.FC = () => {
-  const { parameterValues, hostEventTarget } = useFoundryContext();
+  const { parameterValues, hostEventTarget, emitEvent } = useFoundryContext();
   const { headerText, showWarning } = parameterValues;
 
   useEffect(() => {
     hostEventTarget.addEventListener("host.update-parameters", (event) => {
       console.log("Received event:", event);
+    });
+  }, []);
+
+  const handleAddRow = useCallback(() => {
+    emitEvent("view.emit-event", {
+      eventId: "todo",
+      parameterUpdates: {
+        todoItems: [
+          "New item",
+        ],
+      },
     });
   }, []);
 
@@ -66,6 +78,7 @@ export const App: React.FC = () => {
               </Table.Row>
             </Table.Body>
           </Table.Root>
+          <Button onClick={handleAddRow}>Add row</Button>
         </Flex>
       </Container>
     </Box>

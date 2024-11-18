@@ -32,9 +32,13 @@ export namespace ViewMessage {
 
     export interface EmitEvent<CONFIG extends ParameterConfig> {
       eventId: string;
-      parameterUpdates: ParameterValueMap<CONFIG>;
+      parameterUpdates: Partial<ParameterValueMap<CONFIG>>;
     }
   }
+
+  export type Payload<CONFIG extends ParameterConfig> =
+    | Payload.Ready
+    | Payload.EmitEvent<CONFIG>;
 
   /**
    * Emit when the child view is ready to start receiving messages from the host Foundry UI
