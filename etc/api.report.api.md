@@ -598,9 +598,6 @@ export interface ObjectSetListener<O extends ObjectOrInterfaceDefinition, P exte
     onSuccessfulSubscription?: () => void;
 }
 
-// Warning: (tsdoc-undefined-tag) The TSDoc tag "@property" is not defined in this configuration
-// Warning: (tsdoc-undefined-tag) The TSDoc tag "@property" is not defined in this configuration
-//
 // @public
 export interface ObjectSetListenerOptions<O extends ObjectOrInterfaceDefinition, P extends PropertyKeys<O> = PropertyKeys<O>> {
     // (undocumented)

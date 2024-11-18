@@ -59,7 +59,7 @@ type ObjectUpdate<
 /**
  * Options for subscribing to an ObjectSet.
  *
- * @property properties - The properties to request a subscription for. Requesting specific properties limits the possible properties
+ * properties - The properties to request a subscription for. Requesting specific properties limits the possible properties
  * that can be returned from the subscription. If not provided, all properties will be requested and potentially be returned on updates.
  */
 export interface ObjectSetListenerOptions<
