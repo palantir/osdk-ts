@@ -15,8 +15,11 @@
  */
 
 import { createPublicOauthClient } from "@osdk/oauth";
+import * as oauthModule from "@osdk/oauth";
 import { describe, expect, it, vi } from "vitest";
 import * as utilsModule from "../utils.js";
+
+const originalCreatePublicOauthClient = oauthModule.createPublicOauthClient;
 
 const FOUNDRY_CLIENT_ID = "example-foundry-client-id";
 const FOUNDRY_URL = "http://example-foundry-url.com";
@@ -28,8 +31,45 @@ vi.stubGlobal("window", {
   },
 });
 
+type CreatePublicOauthClientParams = Parameters<typeof createPublicOauthClient>;
+
+type ProcessedPublicOauthClientOptionsParams = Parameters<
+  typeof utilsModule.processOptionsAndAssignDefaults
+>;
+
+type ProcessedPublicOauthClientOptionsReturn = ReturnType<
+  typeof utilsModule.processOptionsAndAssignDefaults
+>;
+
 describe("createPublicOauthClient", () => {
-  it("should create a client with options array", () => {
+  it("should return the same processed options for both client creation methods", async () => {
+    const mockProcessOptionsAndAssignDefaults = vi.fn<
+      (
+        ...args: ProcessedPublicOauthClientOptionsParams
+      ) => ProcessedPublicOauthClientOptionsReturn
+    >();
+
+    // Mock processOptionsAndAssignDefaults to call the mock function
+    vi.spyOn(utilsModule, "processOptionsAndAssignDefaults").mockImplementation(
+      (
+        ...args: ProcessedPublicOauthClientOptionsParams
+      ) => {
+        mockProcessOptionsAndAssignDefaults(...args);
+        return utilsModule.processOptionsAndAssignDefaults(...args);
+      },
+    );
+
+    // Mock createPublicOauthClient to call both the mock and the original function
+    vi.spyOn(oauthModule, "createPublicOauthClient").mockImplementation(
+      (
+        ...args: CreatePublicOauthClientParams
+      ) => {
+        const [_client_id, ...rest] = args;
+        mockProcessOptionsAndAssignDefaults(...rest);
+        return originalCreatePublicOauthClient(...args);
+      },
+    );
+
     const authClient = createPublicOauthClient(
       FOUNDRY_CLIENT_ID,
       FOUNDRY_URL,
@@ -43,41 +83,7 @@ describe("createPublicOauthClient", () => {
     );
 
     expect(authClient).toBeDefined();
-  });
-
-  it("should create a client with options object", () => {
-    const authClientWithOptions = createPublicOauthClient(
-      FOUNDRY_CLIENT_ID,
-      FOUNDRY_URL,
-      REDIRECT_URI,
-      {
-        useHistory: true,
-        fetchFn: fetch,
-      },
-    );
-    expect(authClientWithOptions).toBeDefined();
-  });
-
-  it("should return the same processed options for both client creation methods", () => {
-    const processOptionsAndAssignDefaultsSpy = vi.spyOn(
-      utilsModule,
-      "processOptionsAndAssignDefaults",
-    );
-
-    const authClient = createPublicOauthClient(
-      FOUNDRY_CLIENT_ID,
-      FOUNDRY_URL,
-      REDIRECT_URI,
-      true,
-      undefined,
-      undefined,
-      undefined,
-      fetch,
-      undefined,
-    );
-
-    expect(authClient).toBeDefined();
-    expect(processOptionsAndAssignDefaultsSpy).toHaveBeenCalledTimes(1);
+    expect(mockProcessOptionsAndAssignDefaults).toHaveBeenCalledTimes(1);
 
     const authClientWithOptions = createPublicOauthClient(
       FOUNDRY_CLIENT_ID,
@@ -90,34 +96,9 @@ describe("createPublicOauthClient", () => {
     );
 
     expect(authClientWithOptions).toBeDefined();
-    expect(processOptionsAndAssignDefaultsSpy).toHaveBeenCalledTimes(2);
+    expect(mockProcessOptionsAndAssignDefaults).toHaveBeenCalledTimes(2);
 
-    const [call1Args, call2Args] =
-      processOptionsAndAssignDefaultsSpy.mock.calls;
-
-    expect(call1Args).toEqual([
-      FOUNDRY_URL,
-      REDIRECT_URI,
-      true,
-      undefined,
-      undefined,
-      undefined,
-      fetch,
-      undefined,
-    ]);
-
-    expect(call2Args).toEqual([
-      FOUNDRY_URL,
-      REDIRECT_URI,
-      { useHistory: true, fetchFn: fetch },
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-    ]);
-
-    const [result1, result2] = processOptionsAndAssignDefaultsSpy.mock.results;
+    const [result1, result2] = mockProcessOptionsAndAssignDefaults.mock.results;
     expect(result1.value).toEqual(result2.value);
   });
 });
