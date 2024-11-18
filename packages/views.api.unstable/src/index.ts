@@ -23,7 +23,10 @@ export type {
   ParameterValueMap,
   ViewConfig,
 } from "./config.js";
-export type { ViewConfig, ViewManifest } from "./manifest.js";
+export type { ViewManifestConfig, ViewManifest } from "./manifest.js";
+export {
+  MANIFEST_FILE_LOCATION,
+} from "./manifest.js";
 export {
   HostMessage,
   isHostParametersUpdatedMessage,

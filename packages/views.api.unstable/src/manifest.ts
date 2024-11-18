@@ -17,13 +17,15 @@
 import type { ParameterDefinition } from "./config.js";
 
 export interface ViewManifest {
-  views: Record<string, ViewConfig>;
+  views: Record<string, ViewManifestConfig>;
 }
 
-export interface ViewConfig {
+export interface ViewManifestConfig {
   rid: string;
   version: string;
   entrypointJs: string[];
   entrypointCss?: string[];
   parameters: Record<string, ParameterDefinition>;
 }
+
+export const MANIFEST_FILE_LOCATION = ".palantir/view-config.json";

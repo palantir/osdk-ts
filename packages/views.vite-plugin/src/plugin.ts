@@ -185,7 +185,7 @@ export function FoundryViewVitePlugin(options: Options = {}): Plugin {
             entrypointCss: chunk.viteMetadata?.importedCss.size
               ? [...chunk.viteMetadata.importedCss]
               : [],
-            rid: "todo",
+            rid: packageJsonFile.foundry?.views?.rid ?? "unknown",
             version: packageJsonFile.version ?? "0.0.0",
             parameters: chunk.facadeModuleId != null
               ? entrypointFileIdToParameterMap[chunk.facadeModuleId]
