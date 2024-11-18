@@ -1,5 +1,12 @@
 # @osdk/shared.net.fetch
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies [ac00412]
+  - @osdk/shared.net.errors@2.0.1
+
 ## 1.0.0
 
 ### Major Changes

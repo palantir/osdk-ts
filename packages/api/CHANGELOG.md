@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.0.10
+
+### Patch Changes
+
+- eae3b9e: Allows $in to take a readonly array
+
 ## 2.0.9
 
 ## 2.0.8
