@@ -27,6 +27,10 @@ const isoRegex =
  */
 export const extractDate = (dateTime: string) => {
   invariant(
+    dateTime.length < 33,
+    "Invalid date format. Provided input is too long.",
+  );
+  invariant(
     isoRegex.test(dateTime),
     `Invalid date format. Expected ISO 8601 format, but received ${dateTime}`,
   );
