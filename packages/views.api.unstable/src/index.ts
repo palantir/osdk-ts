@@ -16,9 +16,11 @@
 
 export type {
   AsyncParameterValueMap,
-  ParameterConfig,
+  EventId,
+  EventParameterValueMap,
   ParameterId,
   ParameterValueMap,
+  ViewConfig,
 } from "./config.js";
 export {
   HostMessage,

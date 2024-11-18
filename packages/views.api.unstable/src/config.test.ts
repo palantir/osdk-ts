@@ -17,13 +17,16 @@
 import { describe, expectTypeOf, it } from "vitest";
 import type {
   AsyncParameterValueMap,
-  ParameterConfig,
+  EventId,
+  EventParameterIdList,
+  EventParameterValueMap,
   ParameterId,
   ParameterValueMap,
+  ViewConfig,
 } from "./config.js";
 import type { ParameterValue } from "./parameters.js";
 
-describe("ParameterConfig", () => {
+describe("ViewConfig", () => {
   describe("ParameterConfigId", () => {
     it("should be able to infer the type of the parameter ID", () => {
       const test = {
@@ -37,7 +40,8 @@ describe("ParameterConfig", () => {
             type: "string",
           },
         },
-      } as const satisfies ParameterConfig;
+        events: {},
+      } as const satisfies ViewConfig;
       expectTypeOf<ParameterId<typeof test>>().toEqualTypeOf<
         "test" | "test2"
       >();
@@ -55,7 +59,8 @@ describe("ParameterConfig", () => {
             type: "string",
           },
         },
-      } as const satisfies ParameterConfig;
+        events: {},
+      } as const satisfies ViewConfig;
       expectTypeOf<AsyncParameterValueMap<typeof test>>().toMatchTypeOf<{
         test: ParameterValue.Boolean;
         test2: ParameterValue.String;
@@ -80,7 +85,8 @@ describe("ParameterConfig", () => {
             type: "number",
           },
         },
-      } as const satisfies ParameterConfig;
+        events: {},
+      } as const satisfies ViewConfig;
       expectTypeOf<AsyncParameterValueMap<typeof test>>().toMatchTypeOf<{
         test: ParameterValue.BooleanArray;
         test2: ParameterValue.StringArray;
@@ -106,11 +112,140 @@ describe("ParameterConfig", () => {
             type: "number",
           },
         },
-      } as const satisfies ParameterConfig;
+        events: {},
+      } as const satisfies ViewConfig;
       expectTypeOf<ParameterValueMap<typeof test>>().toMatchTypeOf<{
         test: boolean[];
         test2: string[];
         test3: number;
+      }>();
+    });
+
+    it("should construct a type safe map of events that reference parameters", () => {
+      const test = {
+        parameters: {
+          test: {
+            displayName: "Testing",
+            type: "array",
+            subType: "boolean",
+          },
+          test2: {
+            displayName: "Testing 2",
+            type: "array",
+            subType: "string",
+          },
+          test3: {
+            displayName: "Testing 3",
+            type: "number",
+          },
+        },
+        events: {
+          myEvent: {
+            displayName: "My Event",
+            parameterIds: ["test"],
+          },
+        },
+      } as const satisfies ViewConfig;
+      expectTypeOf<
+        EventParameterIdList<typeof test, "myEvent">
+      >().toMatchTypeOf<["test"]>();
+    });
+
+    it("will not extract an event that references a parameter ID that doesn't exist", () => {
+      const test = {
+        parameters: {
+          test: {
+            displayName: "Testing",
+            type: "array",
+            subType: "boolean",
+          },
+          test2: {
+            displayName: "Testing 2",
+            type: "array",
+            subType: "string",
+          },
+          test3: {
+            displayName: "Testing 3",
+            type: "number",
+          },
+        },
+        events: {
+          myEvent: {
+            displayName: "My Event",
+            parameterIds: ["test4"],
+          },
+        },
+      } as const satisfies ViewConfig;
+      expectTypeOf<
+        // @ts-expect-error
+        EventParameterIdList<typeof test, "myEvent">
+      >().toMatchTypeOf<never>();
+    });
+
+    it("should extract event IDs correctly", () => {
+      const test = {
+        parameters: {
+          test: {
+            displayName: "Testing",
+            type: "array",
+            subType: "boolean",
+          },
+          test2: {
+            displayName: "Testing 2",
+            type: "array",
+            subType: "string",
+          },
+          test3: {
+            displayName: "Testing 3",
+            type: "number",
+          },
+        },
+        events: {
+          myEvent: {
+            displayName: "My Event",
+            parameterIds: ["test", "test2"],
+          },
+          myEvent2: {
+            displayName: "My second event",
+            parameterIds: [],
+          },
+        },
+      } as const satisfies ViewConfig;
+      expectTypeOf<EventId<typeof test>>().toEqualTypeOf<
+        "myEvent" | "myEvent2"
+      >();
+    });
+
+    it("should extract an event to the parameter values", () => {
+      const test = {
+        parameters: {
+          test: {
+            displayName: "Testing",
+            type: "array",
+            subType: "boolean",
+          },
+          test2: {
+            displayName: "Testing 2",
+            type: "array",
+            subType: "string",
+          },
+          test3: {
+            displayName: "Testing 3",
+            type: "number",
+          },
+        },
+        events: {
+          myEvent: {
+            displayName: "My Event",
+            parameterIds: ["test", "test2"],
+          },
+        },
+      } as const satisfies ViewConfig;
+      expectTypeOf<
+        EventParameterValueMap<typeof test, "myEvent">
+      >().toMatchTypeOf<{
+        test: boolean[];
+        test2: string[];
       }>();
     });
   });

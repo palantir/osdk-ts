@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { AsyncParameterValueMap, ParameterConfig } from "../config.js";
+import type { AsyncParameterValueMap, ViewConfig } from "../config.js";
 
 // Interfaces and type guards for messages passed from the host Foundry UI to the child view
 interface HostBaseMessage<T extends string, P = unknown> {
@@ -27,26 +27,28 @@ export namespace HostMessage {
   export type Version = typeof Version;
 
   export namespace Payload {
-    export type UpdateParameters<CONFIG extends ParameterConfig> = {
+    export type UpdateParameters<CONFIG extends ViewConfig> = {
       parameters: AsyncParameterValueMap<CONFIG>;
     };
   }
 
-  export type UpdateParameters<CONFIG extends ParameterConfig> =
-    HostBaseMessage<"host.update-parameters", Payload.UpdateParameters<CONFIG>>;
+  export type UpdateParameters<CONFIG extends ViewConfig> = HostBaseMessage<
+    "host.update-parameters",
+    Payload.UpdateParameters<CONFIG>
+  >;
 }
 
 // Union type
-export type HostMessage<CONFIG extends ParameterConfig> =
+export type HostMessage<CONFIG extends ViewConfig> =
   HostMessage.UpdateParameters<CONFIG>;
 
-export function isHostParametersUpdatedMessage<CONFIG extends ParameterConfig>(
+export function isHostParametersUpdatedMessage<CONFIG extends ViewConfig>(
   event: HostMessage<CONFIG>,
 ): event is HostMessage.UpdateParameters<CONFIG> {
   return event.type === "host.update-parameters";
 }
 
-type HostMessageVisitor<CONFIG extends ParameterConfig> =
+type HostMessageVisitor<CONFIG extends ViewConfig> =
   & {
     [T in HostMessage<CONFIG>["type"]]: (
       payload: Extract<HostMessage<CONFIG>, { type: T }> extends {
@@ -62,7 +64,7 @@ type HostMessageVisitor<CONFIG extends ParameterConfig> =
 /**
  * Strongly typed visitor to handle every type of host message
  */
-export function visitHostMessage<CONFIG extends ParameterConfig>(
+export function visitHostMessage<CONFIG extends ViewConfig>(
   message: HostMessage<CONFIG>,
   visitor: HostMessageVisitor<CONFIG>,
 ) {

@@ -24,11 +24,9 @@ export const App: React.FC = () => {
 
   const handleAddRow = useCallback(() => {
     emitEvent("view.emit-event", {
-      eventId: "todo",
+      eventId: "updateHeader",
       parameterUpdates: {
-        todoItems: [
-          "New item",
-        ],
+        headerText: "Hello again!",
       },
     });
   }, []);

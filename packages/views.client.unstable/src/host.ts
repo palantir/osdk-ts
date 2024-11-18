@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-import type { HostMessage, ParameterConfig } from "@osdk/views-api.unstable";
+import type { HostMessage, ViewConfig } from "@osdk/views-api.unstable";
 
 export interface HostMessageEventListener<
-  CONFIG extends ParameterConfig,
+  CONFIG extends ViewConfig,
   M extends HostMessage<CONFIG>,
 > extends EventListener {
   (event: CustomEvent<M["payload"]>): void;
 }
 
 export interface HostMessageEventListenerObject<
-  CONFIG extends ParameterConfig,
+  CONFIG extends ViewConfig,
   M extends HostMessage<CONFIG>,
 > extends EventListenerObject {
   handleEvent(object: CustomEvent<M["payload"]>): void;
 }
 
 export class FoundryHostEventTarget<
-  CONFIG extends ParameterConfig,
+  CONFIG extends ViewConfig,
 > extends EventTarget {
   addEventListener<M extends HostMessage<CONFIG>>(
     type: M["type"],

@@ -15,8 +15,9 @@
  */
 
 import {
+  type EventId,
   HostMessage,
-  type ParameterConfig,
+  type ViewConfig,
   type ViewMessage,
   visitHostMessage,
 } from "@osdk/views-api.unstable";
@@ -24,7 +25,7 @@ import { META_TAG_HOST_ORIGIN } from "@osdk/views-api.unstable";
 import invariant from "tiny-invariant";
 import { FoundryHostEventTarget } from "./host.js";
 
-export interface FoundryViewClient<CONFIG extends ParameterConfig> {
+export interface FoundryViewClient<CONFIG extends ViewConfig> {
   /**
    * Notifies the host that this client is ready to receive the first parameter values
    */
@@ -35,7 +36,7 @@ export interface FoundryViewClient<CONFIG extends ParameterConfig> {
    */
   emit: <M extends Extract<ViewMessage<CONFIG>, ViewMessage.EmitEvent<CONFIG>>>(
     type: M["type"],
-    message: M["payload"],
+    payload: M["payload"],
   ) => void;
 
   /**
@@ -55,7 +56,7 @@ export interface FoundryViewClient<CONFIG extends ParameterConfig> {
 }
 
 export function createFoundryViewClient<
-  CONFIG extends ParameterConfig,
+  CONFIG extends ViewConfig,
 >(): FoundryViewClient<CONFIG> {
   invariant(window.top, "[FoundryViewClient] Must be run in an iframe");
   const parentWindow = window.top;
@@ -110,10 +111,7 @@ export function createFoundryViewClient<
       window.removeEventListener("message", listenForHostMessages);
     },
     emit: (type, payload) => {
-      sendMessage({
-        type,
-        payload,
-      });
+      sendMessage({ type, payload });
     },
   };
 }

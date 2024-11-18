@@ -6,7 +6,7 @@ import { Theme } from "@radix-ui/themes";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./app.js";
-import MainParameters from "./main.parameters.js";
+import MainConfig from "./main.parameters.js";
 
 const root = document.querySelector("body")!;
 
@@ -14,7 +14,7 @@ createRoot(root).render(
   (
     <Theme>
       <FoundryView
-        config={MainParameters}
+        config={MainConfig}
       >
         <App />
       </FoundryView>
