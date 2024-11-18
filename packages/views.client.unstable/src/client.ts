@@ -14,93 +14,99 @@
  * limitations under the License.
  */
 
-import type {
+import {
   HostMessage,
-  ParameterConfig,
-  ViewEmitEventMessage,
-  ViewMessage,
+  type ParameterConfig,
+  type ViewMessage,
+  visitHostMessage,
 } from "@osdk/views-api.unstable";
 import { META_TAG_HOST_ORIGIN } from "@osdk/views-api.unstable";
+import invariant from "tiny-invariant";
+import { FoundryHostEventTarget } from "./host.js";
 
-type FoundryHostEventListener<CONFIG extends ParameterConfig> = (
-  event: MessageEvent<HostMessage<CONFIG>>,
-) => void;
-
-export interface IFoundryViewClient<CONFIG extends ParameterConfig> {
-  ready: () => void;
-  emit: (
-    message: Extract<ViewMessage<CONFIG>, ViewEmitEventMessage<CONFIG>>,
-  ) => void;
-}
-
-export class FoundryViewClient<CONFIG extends ParameterConfig>
-  implements IFoundryViewClient<CONFIG>
-{
-  private listener: FoundryHostEventListener<CONFIG> | undefined = undefined;
-  private parentWindow: Window;
-  private hostOrigin: string;
-
-  constructor() {
-    if (window.top == null) {
-      throw new Error("[FoundryViewClient] Must be run in an iframe");
-    }
-    this.parentWindow = window.top;
-    const metaTag = document.querySelector(
-      `meta[name="${META_TAG_HOST_ORIGIN}"]`,
-    );
-    if (metaTag == null) {
-      throw new Error(
-        "[FoundryViewClient] Missing host origin meta tag "
-          + META_TAG_HOST_ORIGIN,
-      );
-    }
-    const hostOrigin = metaTag.getAttribute("content");
-    if (hostOrigin == null) {
-      throw new Error(
-        "[FoundryViewClient] Missing host origin meta tag content",
-      );
-    }
-    this.hostOrigin = hostOrigin;
-  }
-
+export interface FoundryViewClient<CONFIG extends ParameterConfig> {
   /**
    * Notifies the host that this client is ready to receive the first parameter values
    */
-  public ready() {
-    this.sendMessage({ type: "view.ready" });
-  }
-
-  public subscribe(listener: FoundryHostEventListener<CONFIG>) {
-    this.listener = listener;
-    window.addEventListener("message", (event) => {
-      if (event.origin !== this.hostOrigin) {
-        // Reject messages that aren't coming from the configured host
-        return;
-      }
-      if (this.listener == null) {
-        return;
-      }
-      this.listener(event);
-    });
-  }
-
-  public unsubscribe() {
-    if (this.listener == null) {
-      return;
-    }
-    window.removeEventListener("message", this.listener);
-  }
+  ready: () => void;
 
   /**
    * Emits an event to the parent frame
    */
-  public emit(
-    message: Extract<ViewMessage<CONFIG>, ViewEmitEventMessage<CONFIG>>,
-  ) {
-    this.sendMessage(message);
-  }
+  emit: (
+    message: Extract<ViewMessage<CONFIG>, ViewMessage.EmitEvent<CONFIG>>,
+  ) => void;
 
-  private sendMessage(message: ViewMessage<CONFIG>) {
-    this.parentWindow.postMessage(message, this.hostOrigin);
-  }
+  /**
+   * Subscribes to events from the host, invoking the listener when a message is received
+   */
+  subscribe: () => void;
+
+  /**
+   * Unsubscribes a previously subscribed listener from host events, if one exists
+   */
+  unsubscribe: () => void;
+
+  /**
+   * Event targets on which you can subscribe to specific host messages
+   */
+  hostEventTarget: FoundryHostEventTarget<CONFIG>;
+}
+
+export function createFoundryViewClient<
+  CONFIG extends ParameterConfig,
+>(): FoundryViewClient<CONFIG> {
+  invariant(window.top, "[FoundryViewClient] Must be run in an iframe");
+  const parentWindow = window.top;
+  const metaTag = document.querySelector(
+    `meta[name="${META_TAG_HOST_ORIGIN}"]`,
+  );
+  invariant(
+    metaTag,
+    "[FoundryViewClient] Missing host origin meta tag " + META_TAG_HOST_ORIGIN,
+  );
+  const hostOrigin = metaTag.getAttribute("content");
+  invariant(
+    hostOrigin,
+    "[FoundryViewClient] Missing host origin meta tag content",
+  );
+  const hostEventTarget = new FoundryHostEventTarget<CONFIG>();
+
+  const listenForHostMessages = (event: MessageEvent<HostMessage<CONFIG>>) => {
+    visitHostMessage(event.data, {
+      "host.update-parameters": (payload) => {
+        hostEventTarget.dispatchEventMessage("host.update-parameters", payload);
+      },
+      _unknown: () => {
+        // Do nothing
+      },
+    });
+  };
+  const sendMessage = (message: ViewMessage<CONFIG>) => {
+    parentWindow.postMessage(message, hostOrigin);
+  };
+
+  return {
+    hostEventTarget,
+    ready: () => {
+      sendMessage({ type: "view.ready", apiVersion: HostMessage.Version });
+    },
+    subscribe: () => {
+      window.addEventListener("message", (event) => {
+        if (event.origin !== hostOrigin) {
+          // Reject messages that aren't coming from the configured host
+          return;
+        }
+        listenForHostMessages(event);
+      });
+    },
+    unsubscribe: () => {
+      window.removeEventListener("message", listenForHostMessages);
+    },
+    emit: (
+      message: Extract<ViewMessage<CONFIG>, ViewMessage.EmitEvent<CONFIG>>,
+    ) => {
+      sendMessage(message);
+    },
+  };
 }

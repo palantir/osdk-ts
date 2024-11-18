@@ -17,17 +17,61 @@
 import type { AsyncParameterValueMap, ParameterConfig } from "../config.js";
 
 // Interfaces and type guards for messages passed from the host Foundry UI to the child view
-
-export interface HostParametersUpdatedMessage<CONFIG extends ParameterConfig> {
-  type: "host.update-parameters";
-  parameters: AsyncParameterValueMap<CONFIG>;
+interface HostBaseMessage<T extends string, P = unknown> {
+  type: T;
+  payload: P;
 }
 
+export namespace HostMessage {
+  export const Version = "0.1.0";
+  export type Version = typeof Version;
+
+  export namespace Payload {
+    export type UpdateParameters<CONFIG extends ParameterConfig> = {
+      parameters: AsyncParameterValueMap<CONFIG>;
+    };
+  }
+
+  export type UpdateParameters<CONFIG extends ParameterConfig> =
+    HostBaseMessage<"host.update-parameters", Payload.UpdateParameters<CONFIG>>;
+}
+
+// Union type
 export type HostMessage<CONFIG extends ParameterConfig> =
-  HostParametersUpdatedMessage<CONFIG>;
+  HostMessage.UpdateParameters<CONFIG>;
 
 export function isHostParametersUpdatedMessage<CONFIG extends ParameterConfig>(
   event: HostMessage<CONFIG>,
-): event is HostParametersUpdatedMessage<CONFIG> {
+): event is HostMessage.UpdateParameters<CONFIG> {
   return event.type === "host.update-parameters";
+}
+
+type HostMessageVisitor<CONFIG extends ParameterConfig> =
+  & {
+    [T in HostMessage<CONFIG>["type"]]: (
+      payload: Extract<HostMessage<CONFIG>, { type: T }> extends {
+        payload: infer P;
+      } ? P
+        : never,
+    ) => void;
+  }
+  & {
+    _unknown: (type: string) => void;
+  };
+
+/**
+ * Strongly typed visitor to handle every type of host message
+ */
+export function visitHostMessage<CONFIG extends ParameterConfig>(
+  message: HostMessage<CONFIG>,
+  visitor: HostMessageVisitor<CONFIG>,
+) {
+  const { type, payload } = message;
+  const handler = visitor[type];
+  if (handler) {
+    // Typescript creates an & of the parameters instead of a union
+    (handler as any)(payload);
+  } else {
+    visitor._unknown(type);
+  }
 }

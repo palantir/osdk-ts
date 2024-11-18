@@ -14,35 +14,24 @@
  * limitations under the License.
  */
 
-export {
-  type ArrayParameterValue,
-  type AsyncFailedValue,
-  type AsyncLoadedValue,
-  type AsyncLoadingValue,
-  type AsyncNotStartedLoadingValue,
-  type AsyncParameterValueMap,
-  type AsyncReloadingValue,
-  type AsyncValue,
-  type BooleanArrayValue,
-  type BooleanParameterValue,
-  type DateArrayValue,
-  type DateParameterValue,
-  type HostMessage,
-  type HostParametersUpdatedMessage,
-  isHostParametersUpdatedMessage,
-  type NumericArrayValue,
-  type NumericParameterValue,
-  type ParameterConfig,
-  type ParameterId,
-  type ParameterValue,
-  type ParameterValueMap,
-  type ParameterValueType,
-  type StringArrayValue,
-  type StringParameterValue,
-  type TimestampArrayValue,
-  type TimestampParameterValue,
-  type ViewEmitEventMessage,
-  type ViewMessage,
-  type ViewReadyMessage,
+export type {
+  AsyncFailedValue,
+  AsyncLoadedValue,
+  AsyncLoadingValue,
+  AsyncNotStartedLoadingValue,
+  AsyncParameterValueMap,
+  AsyncReloadingValue,
+  AsyncValue,
+  ParameterConfig,
+  ParameterId,
+  ParameterValue,
+  ParameterValueMap,
+  ViewMessage,
 } from "@osdk/views-api.unstable";
-export { FoundryViewClient, type IFoundryViewClient } from "./client.js";
+export {
+  HostMessage,
+  isHostParametersUpdatedMessage,
+} from "@osdk/views-api.unstable";
+export { createFoundryViewClient } from "./client.js";
+export type { FoundryViewClient } from "./client.js";
+export { FoundryHostEventTarget } from "./host.js";

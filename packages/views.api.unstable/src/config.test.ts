@@ -21,13 +21,7 @@ import type {
   ParameterId,
   ParameterValueMap,
 } from "./config.js";
-import type {
-  BooleanArrayValue,
-  BooleanParameterValue,
-  NumericParameterValue,
-  StringArrayValue,
-  StringParameterValue,
-} from "./parameters.js";
+import type { ParameterValue } from "./parameters.js";
 
 describe("ParameterConfig", () => {
   describe("ParameterConfigId", () => {
@@ -63,8 +57,8 @@ describe("ParameterConfig", () => {
         },
       } as const satisfies ParameterConfig;
       expectTypeOf<AsyncParameterValueMap<typeof test>>().toMatchTypeOf<{
-        test: BooleanParameterValue;
-        test2: StringParameterValue;
+        test: ParameterValue.Boolean;
+        test2: ParameterValue.String;
       }>();
     });
 
@@ -88,9 +82,9 @@ describe("ParameterConfig", () => {
         },
       } as const satisfies ParameterConfig;
       expectTypeOf<AsyncParameterValueMap<typeof test>>().toMatchTypeOf<{
-        test: BooleanArrayValue;
-        test2: StringArrayValue;
-        test3: NumericParameterValue;
+        test: ParameterValue.BooleanArray;
+        test2: ParameterValue.StringArray;
+        test3: ParameterValue.Number;
       }>();
     });
 

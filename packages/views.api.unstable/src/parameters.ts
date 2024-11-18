@@ -35,46 +35,40 @@ export interface AbstractParameterValue<T extends PrimitiveParameterType> {
   value: AsyncValue<PrimitiveParameterTypes[T]>;
 }
 
-export type StringParameterValue = AbstractParameterValue<"string">;
-export type NumericParameterValue = AbstractParameterValue<"number">;
-export type BooleanParameterValue = AbstractParameterValue<"boolean">;
-export type DateParameterValue = AbstractParameterValue<"date">;
-export type TimestampParameterValue = AbstractParameterValue<"timestamp">;
-export type PrimitiveParameterValue =
-  | StringParameterValue
-  | NumericParameterValue
-  | BooleanParameterValue
-  | DateParameterValue
-  | TimestampParameterValue;
-
 export interface GenericArrayParameterValue<T extends PrimitiveParameterType> {
   type: "array";
   subType: T;
   value: AsyncValue<PrimitiveParameterTypes[T][]>;
 }
 
-export type StringArrayValue = GenericArrayParameterValue<"string">;
-export type NumericArrayValue = GenericArrayParameterValue<"number">;
-export type BooleanArrayValue = GenericArrayParameterValue<"boolean">;
-export type DateArrayValue = GenericArrayParameterValue<"date">;
-export type TimestampArrayValue = GenericArrayParameterValue<"timestamp">;
-
-export type ArrayParameterValue =
-  | StringArrayValue
-  | NumericArrayValue
-  | BooleanArrayValue
-  | DateArrayValue
-  | TimestampArrayValue;
-
 /**
  * Wire format of parameter values that will be sent through postMessage events to custom views.
  */
-export type ParameterValue =
-  | StringParameterValue
-  | NumericParameterValue
-  | DateParameterValue
-  | BooleanParameterValue
-  | TimestampParameterValue
-  | ArrayParameterValue;
+export namespace ParameterValue {
+  export type String = AbstractParameterValue<"string">;
+  export type Number = AbstractParameterValue<"number">;
+  export type Boolean = AbstractParameterValue<"boolean">;
+  export type Date = AbstractParameterValue<"date">;
+  export type Timestamp = AbstractParameterValue<"timestamp">;
 
-export type ParameterValueType = ParameterValue["type"];
+  export type StringArray = GenericArrayParameterValue<"string">;
+  export type NumberArray = GenericArrayParameterValue<"number">;
+  export type BooleanArray = GenericArrayParameterValue<"boolean">;
+  export type DateArray = GenericArrayParameterValue<"date">;
+  export type TimestampArray = GenericArrayParameterValue<"timestamp">;
+  export type Array =
+    | StringArray
+    | NumberArray
+    | BooleanArray
+    | DateArray
+    | TimestampArray;
+
+  export type Type = ParameterValue["type"];
+}
+export type ParameterValue =
+  | ParameterValue.String
+  | ParameterValue.Number
+  | ParameterValue.Boolean
+  | ParameterValue.Date
+  | ParameterValue.Timestamp
+  | ParameterValue.Array;

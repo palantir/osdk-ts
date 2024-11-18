@@ -16,4 +16,4 @@
 
 export { FoundryView } from "./client.js";
 export { useFoundryViewContext } from "./context.js";
-export { initializeParameters } from "./utils/initializeParameters.js";
+export type { FoundryViewClientContext } from "./context.js";

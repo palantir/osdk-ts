@@ -21,33 +21,18 @@ export type {
   ParameterValueMap,
 } from "./config.js";
 export {
-  type HostMessage,
-  type HostParametersUpdatedMessage,
+  HostMessage,
   isHostParametersUpdatedMessage,
+  visitHostMessage,
 } from "./messages/hostMessages.js";
 export {
   isViewEmitEventMessage,
   isViewReadyMessage,
-  type ViewEmitEventMessage,
-  type ViewMessage,
-  type ViewReadyMessage,
+  visitViewMessage,
 } from "./messages/viewMessages.js";
+export type { ViewMessage } from "./messages/viewMessages.js";
 export { META_TAG_HOST_ORIGIN } from "./metaTags.js";
-export type {
-  ArrayParameterValue,
-  BooleanArrayValue,
-  BooleanParameterValue,
-  DateArrayValue,
-  DateParameterValue,
-  NumericArrayValue,
-  NumericParameterValue,
-  ParameterValue,
-  ParameterValueType,
-  StringArrayValue,
-  StringParameterValue,
-  TimestampArrayValue,
-  TimestampParameterValue,
-} from "./parameters.js";
+export type { ParameterValue } from "./parameters.js";
 export type {
   AsyncFailedValue,
   AsyncLoadedValue,

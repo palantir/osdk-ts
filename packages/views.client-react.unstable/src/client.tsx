@@ -16,21 +16,28 @@
 
 import type {
   AsyncParameterValueMap,
-  HostMessage,
-  IFoundryViewClient,
   ParameterConfig,
-  ParameterValueMap,
-  ViewMessage,
 } from "@osdk/views-client.unstable";
-import { FoundryViewClient } from "@osdk/views-client.unstable";
-import React, { useCallback, useEffect, useMemo } from "react";
+import { createFoundryViewClient } from "@osdk/views-client.unstable";
+import React, { useEffect, useMemo } from "react";
 import type { FoundryViewClientContext } from "./context.js";
 import { FoundryViewContext } from "./context.js";
+import { initializeParameters } from "./utils/initializeParameters.js";
 
 interface FoundryViewProps<CONFIG extends ParameterConfig> {
   children: React.ReactNode;
-  initialValues: AsyncParameterValueMap<CONFIG>;
-  onMessage?: (message: HostMessage<CONFIG>) => void;
+
+  /**
+   * Parameter configuration for the view
+   */
+  config: CONFIG;
+
+  /**
+   * Customize what the initial value of each parameter should be
+   *
+   * @default Sets all parameters to the "not-started" loading state
+   */
+  initialValues?: AsyncParameterValueMap<CONFIG>;
 }
 
 /**
@@ -38,23 +45,26 @@ interface FoundryViewProps<CONFIG extends ParameterConfig> {
  */
 export const FoundryView = <CONFIG extends ParameterConfig>({
   children,
+  config,
   initialValues,
-  onMessage,
 }: FoundryViewProps<CONFIG>): React.ReactElement<FoundryViewProps<CONFIG>> => {
-  const client = useMemo(() => new FoundryViewClient<CONFIG>(), []);
+  const client = useMemo(() => createFoundryViewClient<CONFIG>(), []);
   const [parameterValues, setParameterValues] = React.useState<
     AsyncParameterValueMap<CONFIG>
-  >(initialValues);
+  >(initialValues ?? initializeParameters(config, "not-started"));
+
   useEffect(() => {
-    client.subscribe((event) => {
-      if (event.data.type === "host.update-parameters") {
+    client.subscribe();
+    client.hostEventTarget.addEventListener(
+      "host.update-parameters",
+      (payload) => {
         setParameterValues((currentParameters) => ({
           ...currentParameters,
-          ...event.data.parameters,
+          ...payload,
         }));
-      }
-      onMessage?.(event.data);
-    });
+      },
+    );
+    client.ready();
     return () => {
       client.unsubscribe();
     };
@@ -64,7 +74,7 @@ export const FoundryView = <CONFIG extends ParameterConfig>({
     <FoundryViewContext.Provider
       value={{
         emitEvent: client.emit,
-        sendReady: client.ready,
+        hostEventTarget: client.hostEventTarget,
         parameterValues,
         // Unfortunately the context is statically defined so we can't use the generic type, hence the cast
       } as FoundryViewClientContext<ParameterConfig>}

@@ -15,7 +15,7 @@
  */
 
 import { describe, expectTypeOf, it } from "vitest";
-import type { ArrayParameterValue } from "./parameters.js";
+import type { ParameterValue } from "./parameters.js";
 
 describe("Parameters", () => {
   describe("ArrayParameterValue", () => {
@@ -31,7 +31,7 @@ describe("Parameters", () => {
   });
 });
 
-function testStringTypeNarrowing(array: ArrayParameterValue) {
+function testStringTypeNarrowing(array: ParameterValue.Array) {
   if (array.subType === "string" && array.value.type === "loaded") {
     return array.value.value;
   }

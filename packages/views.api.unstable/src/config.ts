@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ArrayParameterValue,
-  ParameterValue,
-  PrimitiveParameterType,
-} from "./parameters.js";
+import type { ParameterValue, PrimitiveParameterType } from "./parameters.js";
 import type { AsyncValue } from "./utils/asyncValue.js";
 
 interface PrimitiveParameterDefinition<T extends PrimitiveParameterType> {
@@ -26,7 +22,7 @@ interface PrimitiveParameterDefinition<T extends PrimitiveParameterType> {
   displayName: string;
 }
 interface ArrayParameterDefinition<S extends PrimitiveParameterType> {
-  type: ArrayParameterValue["type"];
+  type: ParameterValue.Array["type"];
   displayName: string;
   subType: S;
 }
@@ -49,8 +45,10 @@ export type ParameterId<T extends ParameterConfig> = keyof T["parameters"];
 export type AsyncParameterValueMap<T extends ParameterConfig> = {
   [K in ParameterId<T>]: T["parameters"][K] extends ArrayParameterDefinition<
     infer S
-  > ? Extract<
-      ArrayParameterValue,
+  >
+    // If it's an array, pull out the subtype correctly
+    ? Extract<
+      ParameterValue.Array,
       { type: T["parameters"][K]["type"]; subType: S }
     >["value"] extends AsyncValue<infer P> ? {
         type: "array";
@@ -72,7 +70,7 @@ export type ParameterValueMap<T extends ParameterConfig> = {
   [K in ParameterId<T>]: T["parameters"][K] extends ArrayParameterDefinition<
     infer S
   > ? Extract<
-      ArrayParameterValue,
+      ParameterValue.Array,
       { type: T["parameters"][K]["type"]; subType: S }
     >["value"] extends AsyncValue<infer P> ? P
     : never

@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import type {
-  AsyncParameterValueMap,
-  IFoundryViewClient,
-  ParameterConfig,
+import {
+  type AsyncParameterValueMap,
+  FoundryHostEventTarget,
+  type FoundryViewClient,
+  type ParameterConfig,
 } from "@osdk/views-client.unstable";
 import React, { useContext } from "react";
 
 export interface FoundryViewClientContext<CONFIG extends ParameterConfig> {
-  emitEvent: IFoundryViewClient<CONFIG>["emit"];
-  sendReady: IFoundryViewClient<CONFIG>["ready"];
+  emitEvent: FoundryViewClient<CONFIG>["emit"];
+  hostEventTarget: FoundryHostEventTarget<CONFIG>;
   parameterValues: AsyncParameterValueMap<CONFIG>;
 }
 
@@ -31,7 +32,7 @@ export const FoundryViewContext = React.createContext<
   FoundryViewClientContext<ParameterConfig>
 >({
   emitEvent: () => {},
-  sendReady: () => {},
+  hostEventTarget: new FoundryHostEventTarget<ParameterConfig>(),
   parameterValues: {},
 });
 
@@ -40,4 +41,14 @@ export const FoundryViewContext = React.createContext<
  */
 export function useFoundryViewContext<CONFIG extends ParameterConfig>() {
   return useContext(FoundryViewContext) as FoundryViewClientContext<CONFIG>;
+}
+
+export namespace useFoundryViewContext {
+  export function withTypes<
+    CONFIG extends ParameterConfig,
+  >(): () => FoundryViewClientContext<CONFIG> {
+    return () => {
+      return useFoundryViewContext<CONFIG>();
+    };
+  }
 }

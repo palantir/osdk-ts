@@ -15,37 +15,80 @@
  */
 
 import type { ParameterConfig, ParameterValueMap } from "../config.js";
+import type { HostMessage } from "./hostMessages.js";
 
 // Interfaces and type guards for messages passed from the child view to the host Foundry UI
 
-/**
- * Emit when the child view is ready to start receiving messages from the host Foundry UI
- */
-export interface ViewReadyMessage {
-  type: "view.ready";
+interface ViewBaseMessage<T extends string, P = unknown> {
+  type: T;
+  payload: P;
 }
+
+export namespace ViewMessage {
+  export namespace Payload {
+    export interface Ready {
+      apiVersion: HostMessage.Version;
+    }
+
+    export interface EmitEvent<CONFIG extends ParameterConfig> {
+      eventId: string;
+      parameterUpdates: ParameterValueMap<CONFIG>;
+    }
+  }
+
+  /**
+   * Emit when the child view is ready to start receiving messages from the host Foundry UI
+   */
+  export type Ready = ViewBaseMessage<"view.ready", Payload.Ready>;
+
+  /**
+   * Event payload that the child view sends to the host Foundry UI
+   */
+  export type EmitEvent<CONFIG extends ParameterConfig> = ViewBaseMessage<
+    "view.emit-event",
+    Payload.EmitEvent<CONFIG>
+  >;
+}
+
+export type ViewMessage<CONFIG extends ParameterConfig> =
+  | ViewMessage.Ready
+  | ViewMessage.EmitEvent<CONFIG>;
 
 export function isViewReadyMessage<CONFIG extends ParameterConfig>(
   event: ViewMessage<CONFIG>,
-): event is ViewReadyMessage {
+): event is ViewMessage.Ready {
   return event.type === "view.ready";
-}
-
-/**
- * Event payload that the child view sends to the host Foundry UI
- */
-export interface ViewEmitEventMessage<CONFIG extends ParameterConfig> {
-  type: "view.emit-event";
-  eventId: string;
-  parameterUpdates: ParameterValueMap<CONFIG>;
 }
 
 export function isViewEmitEventMessage<CONFIG extends ParameterConfig>(
   event: ViewMessage<CONFIG>,
-): event is ViewEmitEventMessage<CONFIG> {
+): event is ViewMessage.EmitEvent<CONFIG> {
   return event.type === "view.emit-event";
 }
 
-export type ViewMessage<CONFIG extends ParameterConfig> =
-  | ViewReadyMessage
-  | ViewEmitEventMessage<CONFIG>;
+type ViewMessageVisitor<CONFIG extends ParameterConfig> =
+  & {
+    [T in ViewMessage<CONFIG>["type"]]: (
+      payload: Extract<ViewMessage<CONFIG>, { type: T }> extends {
+        payload: infer P;
+      } ? P
+        : never,
+    ) => void;
+  }
+  & {
+    _unknown: (type: string) => void;
+  };
+
+export function visitViewMessage<CONFIG extends ParameterConfig>(
+  message: ViewMessage<CONFIG>,
+  visitor: ViewMessageVisitor<CONFIG>,
+) {
+  const { type, payload } = message;
+  const handler = visitor[type];
+  if (handler) {
+    // Typescript creates an & of the parameters instead of a union
+    (handler as any)(payload);
+  } else {
+    visitor._unknown(type);
+  }
+}

@@ -1,4 +1,3 @@
-import { useFoundryViewContext } from "@osdk/views-client-react.unstable";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import {
   Box,
@@ -10,16 +9,18 @@ import {
   Table,
 } from "@radix-ui/themes";
 import React, { useEffect } from "react";
-import type MainParameters from "./main.parameters.js";
+import { useFoundryContext } from "./context.js";
 
 export const App: React.FC = () => {
-  const { parameterValues, sendReady } = useFoundryViewContext<
-    typeof MainParameters
-  >();
+  const { parameterValues, hostEventTarget } = useFoundryContext();
   const { headerText, showWarning } = parameterValues;
+
   useEffect(() => {
-    sendReady();
+    hostEventTarget.addEventListener("host.update-parameters", (event) => {
+      console.log("Received event:", event);
+    });
   }, []);
+
   return (
     <Box>
       <Container size="1">
