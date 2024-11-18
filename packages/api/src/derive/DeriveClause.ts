@@ -40,10 +40,7 @@ type SingleKeyMap<T extends string, R> =
   }
   & { [K in string]: K extends T ? R : never };
 
-type NativePropertyDef<T extends ObjectOrInterfaceDefinition> = SingleKeyMap<
-  string,
-  PropertyKeys<T>
->;
+type NativePropertyDef<T extends ObjectOrInterfaceDefinition> = PropertyKeys<T>;
 
 // TODO: Numeric PKeys only
 

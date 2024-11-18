@@ -36,6 +36,7 @@ import type {
 import type {
   CompileTimeMetadata,
   ObjectTypeDefinition,
+  PropertyDef,
 } from "../ontology/ObjectTypeDefinition.js";
 import type { PrimaryKeyType } from "../OsdkBase.js";
 import type { ExtractOptions, Osdk } from "../OsdkObjectFrom.js";
@@ -44,9 +45,9 @@ import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 import type { BaseObjectSet } from "./BaseObjectSet.js";
 import type { EXPERIMENTAL_ObjectSetListener } from "./EXPERIMENTAL_ObjectSetListener.js";
 
-export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
-  extends BaseObjectSet<Q>
-{
+export interface MinimalObjectSet<
+  Q extends ObjectOrInterfaceDefinition,
+> extends BaseObjectSet<Q> {
   /**
    * Gets a page of objects of this type, with a result wrapper
    * @param args - Args to specify next page token and page size, if applicable
@@ -247,5 +248,43 @@ export interface ObjectSet<
     listener: EXPERIMENTAL_ObjectSetListener<Q, P>,
   ) => { unsubscribe: () => void };
 
-  readonly derive: (clause: DeriveClause<Q>) => this;
+  readonly derive: <
+    D extends DeriveClause<Q>,
+    P extends keyof D,
+  >(
+    clause: D,
+  ) => ObjectSet<
+    DerivedPropertyExtendedObjectDefinition<
+      Q,
+      P
+    >
+  >;
+
+  readonly test: (
+    clause: TClause<Q>,
+  ) => ObjectSet<
+    DerivedPropertyExtendedObjectDefinition<
+      Q,
+      "hi"
+    >
+  >;
+
+  readonly test2: (clause: TClause2<Q>) => this;
 }
+
+type DerivedPropertyExtendedObjectDefinition<
+  K extends ObjectOrInterfaceDefinition,
+  D extends any,
+> = {
+  __DefinitionMetadata: {
+    properties: { [T in Extract<D, string>]: PropertyDef<"string"> };
+  };
+} & K;
+
+type TClause<T extends ObjectOrInterfaceDefinition> = {
+  new: any;
+};
+
+type TClause2<T extends ObjectOrInterfaceDefinition> = {
+  new: Array<keyof NonNullable<T["__DefinitionMetadata"]>["properties"]>;
+};

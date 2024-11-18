@@ -18,6 +18,7 @@ import type {
   AsyncIterArgs,
   Augments,
   BaseObjectSet,
+  DeriveClause,
   FetchPageResult,
   LinkedType,
   LinkNames,
@@ -27,6 +28,7 @@ import type {
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
+  PropertyDef,
   PropertyKeys,
   Result,
   SelectArg,
@@ -34,6 +36,7 @@ import type {
 } from "@osdk/api";
 import type { MinimalObjectSet } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
+import { object } from "zod";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { aggregate } from "../object/aggregate.js";
@@ -69,6 +72,20 @@ const objectSetDefinitions = new WeakMap<
   any,
   WireObjectSet
 >();
+
+type ExtendedObjectDef<
+  T extends ObjectOrInterfaceDefinition,
+  P extends PropertyDef<any>,
+  S extends string,
+> = Omit<ObjectOrInterfaceDefinition, "__DefinitionMetadata"> & {
+  __DefinitionMetadata?:
+    & Omit<ObjectOrInterfaceDefinition["__DefinitionMetadata"], "properties">
+    & {
+      properties:
+        & NonNullable<T["__DefinitionMetadata"]>["properties"]
+        & { [derivedPropertyName in S]: P };
+    };
+};
 
 /** @internal */
 export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
@@ -242,13 +259,47 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     },
 
     derive: (clause) => {
-      return clientCtx.objectSetFactory(objectType, clientCtx, {} as any);
+      return clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        objectSet,
+      );
+    },
+
+    test: (clause) => {
+      return clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        objectSet,
+      );
+    },
+
+    test2: (clause) => {
+      return clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        objectSet,
+      );
     },
 
     $objectSetInternals: {
       def: objectType,
     },
   };
+
+  function createObjectTypeWithNewProperties(
+    objectType: Q,
+    clause: DeriveClause<Q>,
+  ): ObjectOrInterfaceDefinition {
+    for (const propertyName in Object.keys(clause)) {
+      return objectType as ExtendedObjectDef<
+        Q,
+        PropertyDef<"string">,
+        "a"
+      > as ObjectOrInterfaceDefinition;
+    }
+    return {} as any;
+  }
 
   function createSearchAround<L extends LinkNames<Q>>(link: L) {
     return () => {
