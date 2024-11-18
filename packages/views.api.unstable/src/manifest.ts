@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ParameterDefinition } from "./config.js";
+import type {
+  EventDefinition,
+  ParameterConfig,
+  ParameterDefinition,
+} from "./config.js";
 
 export interface ViewManifest {
   views: Record<string, ViewManifestConfig>;
@@ -26,6 +30,7 @@ export interface ViewManifestConfig {
   entrypointJs: string[];
   entrypointCss?: string[];
   parameters: Record<string, ParameterDefinition>;
+  events: Record<string, EventDefinition<ParameterConfig>>;
 }
 
 export const MANIFEST_FILE_LOCATION = ".palantir/view-config.json";

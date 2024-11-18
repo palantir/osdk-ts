@@ -15,9 +15,9 @@
  */
 
 import type {
-  ParameterConfig,
   ViewConfig,
   ViewManifest,
+  ViewManifestConfig,
 } from "@osdk/views-api.unstable";
 import escodegen from "escodegen";
 import type { ObjectExpression } from "estree";
@@ -40,7 +40,7 @@ export function FoundryViewVitePlugin(options: Options = {}): Plugin {
   const jsSourceFileToEntrypointMap: Record<string, string> = {};
   const fileIdToSourceFileMap: Record<string, string> = {};
   const parameterSourceFileToEntrypointMap: Record<string, string> = {};
-  const entrypointFileIdToParameterMap: Record<string, ParameterConfig> = {};
+  const entrypointFileIdToParameterMap: Record<string, ViewConfig> = {};
 
   return {
     name: "@osdk:view-manifest",
@@ -111,7 +111,7 @@ export function FoundryViewVitePlugin(options: Options = {}): Plugin {
       );
       if (defaultExport == null) {
         throw new Error(
-          "Parameter config object must be the default export in the file",
+          "View config object must be the default export in the file",
         );
       }
 
@@ -121,8 +121,9 @@ export function FoundryViewVitePlugin(options: Options = {}): Plugin {
        * };
        */
       if (defaultExport.declaration.type === "ObjectExpression") {
-        entrypointFileIdToParameterMap[parameterEntrypoint] =
-          extractParameterConfig(defaultExport.declaration);
+        entrypointFileIdToParameterMap[parameterEntrypoint] = extractViewConfig(
+          defaultExport.declaration,
+        );
         return;
       }
 
@@ -160,7 +161,7 @@ export function FoundryViewVitePlugin(options: Options = {}): Plugin {
             );
             if (variableDeclarator?.init?.type === "ObjectExpression") {
               entrypointFileIdToParameterMap[parameterEntrypoint] =
-                extractParameterConfig(variableDeclarator?.init);
+                extractViewConfig(variableDeclarator?.init);
               return;
             }
           }
@@ -180,7 +181,7 @@ export function FoundryViewVitePlugin(options: Options = {}): Plugin {
       for (const file in bundle) {
         const chunk = bundle[file];
         if (chunk.type === "chunk" && chunk.isEntry) {
-          const viewConfig: ViewConfig = {
+          const viewConfig: ViewManifestConfig = {
             entrypointJs: [chunk.fileName],
             entrypointCss: chunk.viteMetadata?.importedCss.size
               ? [...chunk.viteMetadata.importedCss]
@@ -190,6 +191,10 @@ export function FoundryViewVitePlugin(options: Options = {}): Plugin {
             parameters: chunk.facadeModuleId != null
               ? entrypointFileIdToParameterMap[chunk.facadeModuleId]
                 .parameters
+              : {},
+            events: chunk.facadeModuleId != null
+              ? entrypointFileIdToParameterMap[chunk.facadeModuleId]
+                .events
               : {},
           };
           viewConfigManifest.views[chunk.name] = viewConfig;
@@ -205,18 +210,22 @@ export function FoundryViewVitePlugin(options: Options = {}): Plugin {
   };
 }
 
-function extractParameterConfig(objectExpression: ObjectExpression) {
+function extractViewConfig(objectExpression: ObjectExpression) {
   // Convert from AST -> JS string
-  let parameterConfigString = escodegen.generate(objectExpression);
+  let viewConfigString = escodegen.generate(objectExpression);
   // The output JS string is not valid JSON, so we force it into JSON that we can parse
-  parameterConfigString = parameterConfigString.replace(
+  viewConfigString = viewConfigString.replace(
     /([^\s:]+):/g,
     "\"$1\":",
   );
-  parameterConfigString = parameterConfigString.replace(
+  viewConfigString = viewConfigString.replace(
     /: '(.+)'/g,
     ": \"$1\"",
   );
+  viewConfigString = viewConfigString.replace(
+    /: \['(.+)'\]/g,
+    ": [\"$1\"]",
+  );
 
-  return JSON.parse(parameterConfigString);
+  return JSON.parse(viewConfigString);
 }
