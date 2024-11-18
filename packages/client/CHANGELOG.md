@@ -1,5 +1,20 @@
 # @osdk/client
 
+## 2.0.10
+
+### Patch Changes
+
+- fa5119a: Fixes AttachmentUpload for browser contexts
+- eae3b9e: Allows $in to take a readonly array
+- Updated dependencies [ac00412]
+- Updated dependencies [eae3b9e]
+  - @osdk/shared.client.impl@1.0.4
+  - @osdk/shared.net.errors@2.0.1
+  - @osdk/api@2.0.10
+  - @osdk/shared.net.fetch@1.0.1
+  - @osdk/generator-converters@2.0.10
+  - @osdk/client.unstable@2.0.10
+
 ## 2.0.9
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @osdk/cli
 
+## 0.24.10
+
+### Patch Changes
+
+- ac00412: Include API error info in CLI error messages
+- 4aa621a: Allow configuring uploadOnly through foundry.config.json
+
 ## 0.24.9
 
 ## 0.24.8

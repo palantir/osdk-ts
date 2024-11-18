@@ -1,5 +1,15 @@
 # @osdk/shared.net
 
+## 2.0.4
+
+### Patch Changes
+
+- ac00412: Include API error info in CLI error messages
+- Updated dependencies [ac00412]
+  - @osdk/shared.client.impl@1.0.4
+  - @osdk/shared.net.errors@2.0.1
+  - @osdk/shared.net.fetch@1.0.1
+
 ## 2.0.3
 
 ### Patch Changes

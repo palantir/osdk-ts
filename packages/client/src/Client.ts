@@ -93,7 +93,7 @@ export interface Client extends SharedClient, OldSharedClient {
 export const additionalContext = Symbol("additionalContext");
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
-const MaxOsdkVersion = "2.0.9";
+const MaxOsdkVersion = "2.0.10";
 // END: THIS IS GENERATED CODE. DO NOT EDIT.
 export type MaxOsdkVersion = typeof MaxOsdkVersion;
 const ErrorMessage = Symbol("ErrorMessage");

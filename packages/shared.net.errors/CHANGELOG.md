@@ -1,5 +1,11 @@
 # @osdk/shared.net.errors
 
+## 2.0.1
+
+### Patch Changes
+
+- ac00412: Include API error info in CLI error messages
+
 ## 2.0.0
 
 ### Major Changes
