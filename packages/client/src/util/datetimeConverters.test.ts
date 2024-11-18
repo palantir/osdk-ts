@@ -43,10 +43,10 @@ describe("test datetime converters", () => {
   describe("test extractDate", () => {
     it("should error if the date is not in UTC format", () => {
       expect(() => extractDate("2021-01-01")).toThrowError(
-        "Invalid date format. Expected ISO 8601 format, but received: 2021-01-01",
+        "Invariant failed: Invalid date format. Expected ISO 8601 format, but received 2021-01-01",
       );
       expect(() => extractDate("2021-01-01T00:0000.000Z")).toThrowError(
-        "Invalid date format. Expected ISO 8601 format, but received: 2021-01-01",
+        "Invariant failed: Invalid date format. Expected ISO 8601 format, but received 2021-01-01",
       );
     });
 

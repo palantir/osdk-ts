@@ -14,52 +14,51 @@
  * limitations under the License.
  */
 
+import invariant from "tiny-invariant";
+
 const isoRegex =
   /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?$/;
 
 /**
  * Extracts the date from a ISO 8601 formatted date time string. Throws if the input is not in the correct format.
+ *
  * @param dateTime An ISO 8601 formatted date time string
  * @returns The date part of the input string
  */
 export const extractDate = (dateTime: string) => {
-  if (!isoRegex.test(dateTime)) {
-    throw new Error(
-      `Invalid date format. Expected ISO 8601 format, but received: ${dateTime}`,
-    );
-  }
-
-  return dateTime.split(
-    "T",
-  )[0];
+  invariant(
+    isoRegex.test(dateTime),
+    `Invalid date format. Expected ISO 8601 format, but received ${dateTime}`,
+  );
+  return extractDateFromIsoString(dateTime);
 };
 
 /**
  * Generates a string representation of the input date (YYYY-MM-DD). The resulting date string reflects the given date in UTC time.
+ *
  * @param date
  * @returns The date part of a ISO 8601 formatted date time string
  */
 export const extractDateInUTC = (date: Date) => {
-  const inputDate = new Date(date);
-
-  return inputDate.toISOString().split(
-    "T",
-  )[0];
+  return extractDateFromIsoString(date.toISOString());
 };
 
 /**
  * Generates a string representation of the input date (YYYY-MM-DD). The resulting date string reflects the given date in the local time zone.
+ *
  * @param date
  * @returns The date part of a ISO 8601 formatted date time string
  */
 export const extractDateInLocalTime = (date: Date) => {
-  return generateOffsetUtcString(date).split(
-    "T",
-  )[0];
+  return extractDateFromIsoString(generateOffsetUtcString(date));
 };
 
 /** @internal */
 export const generateOffsetUtcString = (date: Date) => {
   const offsetMs = date.getTimezoneOffset() * 60 * 1000;
   return new Date(date.getTime() - offsetMs).toISOString();
+};
+
+const extractDateFromIsoString = (dateTime: string) => {
+  return dateTime.split("T")[0];
 };
