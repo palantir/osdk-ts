@@ -1,5 +1,22 @@
 # @osdk/client
 
+## 2.1.0-beta.10
+
+### Minor Changes
+
+- 11a05cc: Updated subscribe api to make requesting properties optional
+- 14624f7: Supports custom formatters in browser
+- 11088aa: Fix where clause types so we don't accept more than one key in the clauses.
+- d88fdb9: Adds methods to extract date strings from Dates and ISO-8601 strings
+
+### Patch Changes
+
+- Updated dependencies [11a05cc]
+- Updated dependencies [11088aa]
+  - @osdk/api@2.1.0-beta.10
+  - @osdk/generator-converters@2.1.0-beta.10
+  - @osdk/client.unstable@2.1.0-beta.10
+
 ## 2.1.0-beta.9
 
 ### Minor Changes
