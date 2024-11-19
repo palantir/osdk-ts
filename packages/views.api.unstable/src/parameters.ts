@@ -28,7 +28,7 @@ type PrimitiveParameterTypes = {
   /** Formatted as an ISO datetime string */
   timestamp: string;
 };
-export type PrimitiveParameterType = keyof PrimitiveParameterTypes;
+type PrimitiveParameterType = keyof PrimitiveParameterTypes;
 
 export interface AbstractParameterValue<T extends PrimitiveParameterType> {
   type: T;
@@ -64,6 +64,7 @@ export namespace ParameterValue {
     | TimestampArray;
 
   export type Type = ParameterValue["type"];
+  export type PrimitiveType = PrimitiveParameterType;
 }
 export type ParameterValue =
   | ParameterValue.String

@@ -22,6 +22,7 @@ describe("ViewMessages", () => {
   describe("EmitEvent", () => {
     it("should emit an event with the correct payload", () => {
       const test = {
+        rid: "ri.viewregistry..view.0000-0000-0000-0000",
         parameters: {
           test: {
             displayName: "Testing",
@@ -69,6 +70,7 @@ describe("ViewMessages", () => {
 
     it("should be able to assign specific events to the union", () => {
       const test = {
+        rid: "ri.viewregistry..view.0000-0000-0000-0000",
         parameters: {
           test: {
             displayName: "Testing",

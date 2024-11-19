@@ -1,6 +1,7 @@
 import type { ViewConfig } from "@osdk/views-client.unstable";
 
 export default {
+  rid: "ri.viewregistry..view.0000-0000-0000-0000",
   parameters: {
     headerText: {
       displayName: "Widget title",

@@ -180,22 +180,28 @@ export function FoundryViewVitePlugin(options: Options = {}): Plugin {
       // This is inspired by vite's own manifest plugin, but we only care about entrypoints
       for (const file in bundle) {
         const chunk = bundle[file];
-        if (chunk.type === "chunk" && chunk.isEntry) {
+        if (
+          chunk.type === "chunk" && chunk.isEntry
+          && chunk.facadeModuleId != null
+        ) {
+          if (entrypointFileIdToParameterMap[chunk.facadeModuleId] == null) {
+            throw new Error(
+              "Missing parameter configuration for entrypoint: "
+                + chunk.fileName,
+            );
+          }
           const viewConfig: ViewManifestConfig = {
             entrypointJs: [chunk.fileName],
             entrypointCss: chunk.viteMetadata?.importedCss.size
               ? [...chunk.viteMetadata.importedCss]
               : [],
-            rid: packageJsonFile.foundry?.views?.rid ?? "unknown",
+            rid: entrypointFileIdToParameterMap[chunk.facadeModuleId].rid,
             version: packageJsonFile.version ?? "0.0.0",
-            parameters: chunk.facadeModuleId != null
-              ? entrypointFileIdToParameterMap[chunk.facadeModuleId]
-                .parameters
-              : {},
-            events: chunk.facadeModuleId != null
-              ? entrypointFileIdToParameterMap[chunk.facadeModuleId]
-                .events
-              : {},
+            parameters:
+              entrypointFileIdToParameterMap[chunk.facadeModuleId].parameters
+                ?? {},
+            events: entrypointFileIdToParameterMap[chunk.facadeModuleId].events
+              ?? {},
           };
           viewConfigManifest.views[chunk.name] = viewConfig;
         }

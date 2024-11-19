@@ -147,6 +147,8 @@ const cspell = {
       ignoreWords: [
         // it's an NPM package
         "escodegen",
+        // used in a RID template literal string
+        "viewregistry",
       ],
     },
     {
