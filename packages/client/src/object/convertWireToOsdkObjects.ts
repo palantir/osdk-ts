@@ -21,7 +21,11 @@ import type {
   ObjectOrInterfaceDefinition,
   Osdk,
 } from "@osdk/api";
-import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
+import type {
+  InterfaceToObjectTypeMappings,
+  InterfaceTypeApiName,
+  OntologyObjectV2,
+} from "@osdk/internal.foundry.core";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
@@ -109,6 +113,83 @@ export async function convertWireToOsdkObjects(
   }
 
   client.logger?.debug(`END convertWireToOsdkObjects()`);
+  return ret;
+}
+
+/**
+ * @internal
+ */
+export async function convertWireToOsdkObjects2(
+  client: MinimalClient,
+  objects: OntologyObjectV2[],
+  interfaceApiName: string | undefined,
+  forceRemoveRid: boolean = false,
+  selectedProps?: ReadonlyArray<string>,
+  strictNonNull: NullabilityAdherence = false,
+  interfaceToObjectTypeMappings: Record<
+    InterfaceTypeApiName,
+    InterfaceToObjectTypeMappings
+  > = {},
+): Promise<Osdk.Instance<ObjectOrInterfaceDefinition>[]> {
+  client.logger?.debug(`START convertWireToOsdkObjects2()`);
+
+  fixObjectPropertiesInPlace(objects, forceRemoveRid);
+
+  const ret = [];
+  for (const rawObj of objects) {
+    const objectDef = await client.ontologyProvider.getObjectDefinition(
+      rawObj.$apiName,
+    );
+    invariant(objectDef, `Missing definition for '${rawObj.$apiName}'`);
+
+    const interfaceToObjMapping = interfaceApiName
+      ? interfaceToObjectTypeMappings[interfaceApiName as InterfaceTypeApiName][
+        rawObj.$apiName
+      ]
+      : undefined;
+
+    const ifaceSelected = interfaceApiName && interfaceToObjMapping
+      ? (selectedProps
+        ? Object.keys(interfaceToObjMapping).filter(
+          val => {
+            selectedProps?.includes(interfaceToObjMapping[val]);
+          },
+        )
+        : [
+          ...Object.values(interfaceToObjMapping),
+          objectDef.primaryKeyApiName,
+        ])
+      : undefined;
+
+    // default value for when we are checking an object
+    let objProps;
+
+    let conforming = true;
+    if (interfaceApiName && ifaceSelected) {
+      invariantInterfacesAsViews(objectDef, interfaceApiName, client);
+
+      objProps = ifaceSelected;
+    } else {
+      objProps = selectedProps ?? Object.keys(objectDef.properties);
+    }
+
+    conforming &&= isConforming(client, objectDef, rawObj, objProps);
+
+    if (strictNonNull === "throw" && !conforming) {
+      throw new Error(
+        "Unable to safely convert objects as some non nullable properties are null",
+      );
+    } else if (strictNonNull === "drop" && !conforming) {
+      continue;
+    }
+
+    let osdkObject = createOsdkObject(client, objectDef, rawObj);
+    if (interfaceApiName) osdkObject = osdkObject.$as(interfaceApiName);
+
+    ret.push(osdkObject);
+  }
+
+  client.logger?.debug(`END convertWireToOsdkObjects2()`);
   return ret;
 }
 
@@ -220,15 +301,15 @@ function fixObjectPropertiesInPlace(
     }
 
     // Backend returns as __apiName but we want to stick to $ structure
-    obj.$apiName = obj.__apiName;
+    obj.$apiName ??= obj.__apiName;
 
     // for now these are the same but when we start doing interface projections the $objectType will always be underlying and
     // the $apiName will be for the current view (in current designs)
-    obj.$objectType = obj.__apiName;
+    obj.$objectType = obj.$apiName;
 
     // copying over for now as its always returned. In the future, this should just be inferred from underlying
-    obj.$primaryKey = obj.__primaryKey;
-    obj.$title = obj.__title;
+    obj.$primaryKey ??= obj.__primaryKey;
+    obj.$title ??= obj.__title;
 
     // we don't want people to use these
     delete obj.__apiName;

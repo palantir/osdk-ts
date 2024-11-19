@@ -35,6 +35,7 @@ import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegac
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import type { ArrayElement } from "../util/ArrayElement.js";
+import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 
 /** @internal */
 export async function aggregate<
@@ -43,12 +44,10 @@ export async function aggregate<
 >(
   clientCtx: MinimalClient,
   objectType: Q,
-  objectSet: ObjectSet = {
-    type: "base",
-    objectType: objectType["apiName"] as string,
-  },
+  objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
   req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
 ): Promise<AggregationsResults<Q, AO>> {
+  const resolvedObjectSet = resolveBaseObjectSetType(objectType);
   const body: AggregateObjectsRequestV2 = {
     aggregation: modernToLegacyAggregationClause<AO["$select"]>(
       req.$select,

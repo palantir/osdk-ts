@@ -24,6 +24,7 @@ import {
   ontologyMetadataEndpoint,
   queryHandlers,
 } from "./handlers/index.js";
+import { interfaceObjectSetHandlers } from "./handlers/loadInterfaceObjectSetEndpoints.js";
 
 export const apiServer: SetupServer = setupServer(
   ...loadObjectsEndpoints,
@@ -32,4 +33,5 @@ export const apiServer: SetupServer = setupServer(
   ...actionHandlers,
   ...queryHandlers,
   ...ontologyMetadataEndpoint,
+  ...interfaceObjectSetHandlers,
 );
