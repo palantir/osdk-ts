@@ -1,6 +1,6 @@
 {
   "name": "@osdk/views-api.unstable",
-  "version": "0.0.2",
+  "version": "0.0.0",
   "description": "API contract between Foundry UIs that can embed custom views and the custom views themselves",
   "access": "public",
   "license": "Apache-2.0",
