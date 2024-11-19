@@ -319,6 +319,40 @@ describe("ObjectSet", () => {
     });
   });
 
+  it("type checking containsallterm and containsanyterm", () => {
+    const ids: ReadonlyArray<number> = [50030, 50031];
+    client(Employee).where({
+      $or: [{ fullName: { $containsAllTerms: "John Smith" } }, {
+        office: { $containsAllTerms: { term: "NYC DC" } },
+      }, {
+        fullName: {
+          $containsAllTerms: { term: "John Smith", fuzzySearch: false },
+        },
+      }, {
+        // @ts-expect-error
+        fullName: { $containsAllTerms: { fuzzySearch: false } },
+      }],
+    });
+
+    client(Employee).where({
+      $or: [{ fullName: { $containsAnyTerm: "John Smith" } }, {
+        office: { $containsAnyTerm: { term: "NYC DC" } },
+      }, {
+        fullName: {
+          $containsAnyTerm: { term: "John Smith", fuzzySearch: false },
+        },
+      }, {
+        // @ts-expect-error
+        fullName: { $containsAnyTerm: { fuzzySearch: false } },
+      }],
+    });
+
+    client(BarInterface).where({
+      // @ts-expect-error
+      nonExistentProp: "",
+    });
+  });
+
   describe.each(["fetchPage", "fetchPageWithErrors"] as const)("%s", (k) => {
     // describe("strictNonNull: \"drop\"", () => {
     //   describe("includeRid: true", () => {

@@ -7,3 +7,5 @@ Packag
 querydoesnotexist
 unstubAllEnvs
 geotimeseries
+containsallterm
+containsanyterm

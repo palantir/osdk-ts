@@ -17,11 +17,11 @@
 import type { BaseFilterOptions, CatchThemAll } from "./BaseFilter.js";
 import type { Just } from "./Just.js";
 
-interface StringFilterOptions extends BaseFilterOptions<string> {
+export interface StringFilterOptions extends BaseFilterOptions<string> {
   "$startsWith": string;
   "$containsAllTermsInOrder": string;
-  "$containsAnyTerm": string;
-  "$containsAllTerms": string;
+  "$containsAnyTerm": string | { term: string; fuzzySearch?: boolean };
+  "$containsAllTerms": string | { term: string; fuzzySearch?: boolean };
   "$in": ReadonlyArray<string>;
 }
 
