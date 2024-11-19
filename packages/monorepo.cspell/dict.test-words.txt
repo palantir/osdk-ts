@@ -5,4 +5,5 @@ doesnotexist
 objectdoesnotexist
 Packag
 querydoesnotexist
+unstub
 unstubAllEnvs
