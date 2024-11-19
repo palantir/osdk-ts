@@ -3,18 +3,21 @@ import {
   Box,
   Button,
   Callout,
+  Checkbox,
   Container,
   Flex,
   Heading,
   Skeleton,
   Table,
+  TextField,
 } from "@radix-ui/themes";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useFoundryContext } from "./context.js";
 
 export const App: React.FC = () => {
   const { parameterValues, hostEventTarget, emitEvent } = useFoundryContext();
-  const { headerText, showWarning } = parameterValues;
+  const [newTodoItem, setNewTodoItem] = useState("");
+  const { headerText, showWarning, todoItems } = parameterValues;
 
   useEffect(() => {
     hostEventTarget.addEventListener("host.update-parameters", (event) => {
@@ -22,14 +25,27 @@ export const App: React.FC = () => {
     });
   }, []);
 
-  const handleAddRow = useCallback(() => {
+  const handleAddTodoItem = useCallback(() => {
     emitEvent("view.emit-event", {
-      eventId: "updateHeader",
+      eventId: "updateTodoItems",
       parameterUpdates: {
-        headerText: "Hello again!",
+        todoItems: [
+          ...(todoItems.value.type === "loaded"
+            ? todoItems.value.value ?? []
+            : []),
+          newTodoItem,
+        ],
       },
     });
+    setNewTodoItem("");
   }, []);
+
+  const handleNewTodoItemChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setNewTodoItem(event.target.value);
+    },
+    [],
+  );
 
   return (
     <Box>
@@ -54,29 +70,71 @@ export const App: React.FC = () => {
           <Table.Root>
             <Table.Header>
               <Table.Row>
-                <Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Group</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Finished</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Item</Table.ColumnHeaderCell>
               </Table.Row>
             </Table.Header>
 
             <Table.Body>
+              {(todoItems.value.type === "loading"
+                || todoItems.value.type === "not-started") && (
+                <>
+                  <Table.Row>
+                    <Table.Cell>
+                      <Skeleton>
+                        <Checkbox />
+                      </Skeleton>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Skeleton>Loading cell</Skeleton>
+                    </Table.Cell>
+                  </Table.Row>
+                  <Table.Row>
+                    <Table.Cell>
+                      <Skeleton>
+                        <Checkbox />
+                      </Skeleton>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Skeleton>Loading cell</Skeleton>
+                    </Table.Cell>
+                  </Table.Row>
+                </>
+              )}
+              {todoItems.value.type === "loaded"
+                && todoItems.value.value?.map((item, index) => (
+                  <Table.Row key={index}>
+                    <Table.Cell>
+                      <Skeleton>
+                        <Checkbox />
+                      </Skeleton>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Skeleton>{item}</Skeleton>
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
+              {todoItems.value.type === "loaded"
+                && (todoItems.value.value ?? []).length === 0 && (
+                <Table.Row>
+                  <Table.Cell colSpan={2}>No items yet</Table.Cell>
+                </Table.Row>
+              )}
               <Table.Row>
-                <Table.Cell>example@example.com</Table.Cell>
-                <Table.Cell>Developer</Table.Cell>
-              </Table.Row>
-
-              <Table.Row>
-                <Table.Cell>example2@example.com</Table.Cell>
-                <Table.Cell>Admin</Table.Cell>
-              </Table.Row>
-
-              <Table.Row>
-                <Table.Cell>example3@example.com</Table.Cell>
-                <Table.Cell>Developer</Table.Cell>
+                <Table.Cell colSpan={2}>
+                  <Flex gap="2">
+                    <TextField.Root
+                      value={newTodoItem}
+                      onChange={handleNewTodoItemChange}
+                      size="2"
+                      placeholder="Add item…"
+                    />
+                    <Button onClick={handleAddTodoItem}>Add item</Button>
+                  </Flex>
+                </Table.Cell>
               </Table.Row>
             </Table.Body>
           </Table.Root>
-          <Button onClick={handleAddRow}>Add row</Button>
         </Flex>
       </Container>
     </Box>

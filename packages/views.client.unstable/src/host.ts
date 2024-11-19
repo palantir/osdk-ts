@@ -19,14 +19,14 @@ import type { HostMessage, ViewConfig } from "@osdk/views-api.unstable";
 export interface HostMessageEventListener<
   CONFIG extends ViewConfig,
   M extends HostMessage<CONFIG>,
-> extends EventListener {
+> {
   (event: CustomEvent<M["payload"]>): void;
 }
 
 export interface HostMessageEventListenerObject<
   CONFIG extends ViewConfig,
   M extends HostMessage<CONFIG>,
-> extends EventListenerObject {
+> {
   handleEvent(object: CustomEvent<M["payload"]>): void;
 }
 
@@ -41,7 +41,7 @@ export class FoundryHostEventTarget<
       | null,
     options?: AddEventListenerOptions | boolean,
   ): void {
-    super.addEventListener(type, callback, options);
+    super.addEventListener(type, callback as EventListener, options);
   }
 
   removeEventListener<M extends HostMessage<CONFIG>>(
@@ -52,7 +52,7 @@ export class FoundryHostEventTarget<
       | null,
     options?: EventListenerOptions | boolean,
   ): void {
-    super.removeEventListener(type, callback, options);
+    super.removeEventListener(type, callback as EventListener, options);
   }
 
   public dispatchEventMessage<M extends HostMessage<CONFIG>>(

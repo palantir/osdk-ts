@@ -67,7 +67,7 @@ export function createFoundryViewClient<
     metaTag,
     "[FoundryViewClient] Missing host origin meta tag " + META_TAG_HOST_ORIGIN,
   );
-  const hostOrigin = metaTag.getAttribute("content");
+  const hostOrigin = "https://" + metaTag.getAttribute("content");
   invariant(
     hostOrigin,
     "[FoundryViewClient] Missing host origin meta tag content",
