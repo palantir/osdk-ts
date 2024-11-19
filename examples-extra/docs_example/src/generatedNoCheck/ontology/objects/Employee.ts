@@ -25,7 +25,7 @@ export namespace Employee {
   export interface Props {
     readonly class: $PropType['string'] | undefined;
     readonly employeeId: $PropType['integer'];
-    readonly employeeStatus: $PropType['numericTimeseries'] | undefined;
+    readonly employeeStatus: $PropType['sensorTimeseries'] | undefined;
     readonly fullName: $PropType['string'] | undefined;
     readonly office: $PropType['integer'] | undefined;
     readonly startDate: $PropType['datetime'] | undefined;
@@ -84,7 +84,7 @@ export interface Employee extends $ObjectTypeDefinition {
       /**
        *   description: TimeSeries of the status of the employee
        */
-      employeeStatus: $PropertyDef<'numericTimeseries', 'nullable', 'single'>;
+      employeeStatus: $PropertyDef<'sensorTimeseries', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */

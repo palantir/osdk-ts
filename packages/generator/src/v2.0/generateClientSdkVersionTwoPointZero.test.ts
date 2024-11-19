@@ -261,11 +261,13 @@ const referencedOntology = {
             "dataType": {
               "type": "string",
             },
+            "rid": "ridForTaskId",
           },
           "body": {
             "dataType": {
               "type": "string",
             },
+            "rid": "ridForBody",
           },
         },
         "status": "ACTIVE",
@@ -291,6 +293,7 @@ const referencedOntology = {
           rid: "idk",
         },
       },
+      implementedByObjectTypes: [],
       links: {},
     },
   },
@@ -363,11 +366,13 @@ const referencingOntology = {
             dataType: {
               type: "integer",
             },
+            rid: "rid",
           },
           "body": {
             dataType: {
               type: "string",
             },
+            "rid": "rid",
           },
         },
         rid: "ridForThing",
@@ -391,11 +396,13 @@ const referencingOntology = {
             dataType: {
               type: "integer",
             },
+            rid: "rid",
           },
           "body": {
             dataType: {
               type: "string",
             },
+            rid: "rid",
           },
         },
         rid: "theRid",

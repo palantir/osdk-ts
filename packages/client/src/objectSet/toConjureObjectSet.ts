@@ -77,6 +77,8 @@ export function toConjureObjectSet(
     case "asBaseObjectTypes":
     case "asType":
     case "interfaceBase":
+    case "withProperties":
+    case "methodInput":
       throw new Error("not implemented");
   }
 }
