@@ -89,15 +89,14 @@ type CalculatedProperty<T extends ObjectOrInterfaceDefinition> =
 
 type SelectedProperty<
   T extends ObjectOrInterfaceDefinition,
-  U extends LinkNames<T> = LinkNames<T>,
 > = {
   [
-    K in U as CompileTimeMetadata<T>["links"][K] extends
+    K in LinkNames<T> as CompileTimeMetadata<T>["links"][K] extends
       ObjectMetadata.Link<infer _, infer M> ? (
         M extends false ? K : never
       )
       : never
-  ]: PropertyKeys<LinkedType<T, K>>;
+  ]: PropertyKeys<LinkedType<T, K>> | never;
 };
 
 type AggregateOperations<T extends ObjectOrInterfaceDefinition> = {
