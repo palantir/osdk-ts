@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import type {
-  ViewConfig,
-  ViewManifest,
-  ViewManifestConfig,
+import {
+  MANIFEST_FILE_LOCATION,
+  type ViewConfig,
+  type ViewManifest,
+  type ViewManifestConfig,
 } from "@osdk/views-api.unstable";
 import escodegen from "escodegen";
 import type { ObjectExpression } from "estree";
@@ -32,6 +33,8 @@ export interface Options {
   packageJsonPath?: string;
 }
 
+const CONFIG_FILE_SUFFIX = ".config";
+
 export function FoundryViewVitePlugin(options: Options = {}): Plugin {
   const { packageJsonPath = path.join(process.cwd(), "package.json") } =
     options;
@@ -39,19 +42,19 @@ export function FoundryViewVitePlugin(options: Options = {}): Plugin {
   const entrypointFileIds: string[] = [];
   const jsSourceFileToEntrypointMap: Record<string, string> = {};
   const fileIdToSourceFileMap: Record<string, string> = {};
-  const parameterSourceFileToEntrypointMap: Record<string, string> = {};
-  const entrypointFileIdToParameterMap: Record<string, ViewConfig> = {};
+  const configSourceFileToEntrypointMap: Record<string, string> = {};
+  const entrypointFileIdToConfigMap: Record<string, ViewConfig> = {};
 
   return {
     name: "@osdk:view-manifest",
     enforce: "pre",
-    // Look for .parameters.(j|t)s files that are imported from an entrypoint JS file
+    // Look for .config.(j|t)s files that are imported from an entrypoint JS file
     resolveId: (source, importer, options) => {
       if (options.isEntry) {
         entrypointFileIds.push(source);
       } else if (importer != null) {
         if (entrypointFileIds.includes(importer)) {
-          // This is a JS entrypoint, save it so we can look for a parameters file that it imports
+          // This is a JS entrypoint, save it so we can look for a config file that it imports
           jsSourceFileToEntrypointMap[source] = importer;
           return;
         }
@@ -65,9 +68,9 @@ export function FoundryViewVitePlugin(options: Options = {}): Plugin {
         }
         const extension = path.extname(source);
         const filename = path.basename(source, extension);
-        if (filename.endsWith(".parameters")) {
+        if (filename.endsWith(CONFIG_FILE_SUFFIX)) {
           // We found a .parameters file that's imported from an entrypoint JS file, save it
-          parameterSourceFileToEntrypointMap[filename] = entrypoint;
+          configSourceFileToEntrypointMap[filename] = entrypoint;
         }
       }
     },
@@ -81,37 +84,36 @@ export function FoundryViewVitePlugin(options: Options = {}): Plugin {
         return;
       }
 
-      const parameterSourceFile = Object.keys(
-        parameterSourceFileToEntrypointMap,
+      const configSourceFile = Object.keys(
+        configSourceFileToEntrypointMap,
       ).find((src) =>
-        // Drop any extensions in the import of the parameters file
+        // Drop any extensions in the import of the config file, e.g. in import "./main.config.js", we just want `main.config`
         RegExp(`${src.replaceAll(".", "\\.")}\\.(\\w+)$`).test(id)
       );
-      if (parameterSourceFile != null) {
-        // We now have the absolute path of the .parameters file
-        fileIdToSourceFileMap[id] = parameterSourceFile;
+      if (configSourceFile != null) {
+        // We now have the absolute path of the .config file, save it for later
+        fileIdToSourceFileMap[id] = configSourceFile;
         return;
       }
     },
-    // If this parsed module is a parameters file, then we hook into the produced AST to save off the parameters
+    // If this parsed module is a config file, then we hook into the produced AST to save off the config
     moduleParsed: (moduleInfo) => {
       const sourceFile = fileIdToSourceFileMap[moduleInfo.id];
       if (sourceFile == null) {
         return;
       }
-      const parameterEntrypoint =
-        parameterSourceFileToEntrypointMap[sourceFile];
-      if (parameterEntrypoint == null) {
+      const entrypointForConfig = configSourceFileToEntrypointMap[sourceFile];
+      if (entrypointForConfig == null) {
         return;
       }
 
-      // Lightly traverse the AST of the parameters file to extract out the actual object
+      // Lightly traverse the AST of the config file to extract out the actual object
       const defaultExport = moduleInfo.ast?.body.find(
         (node) => node.type === "ExportDefaultDeclaration",
       );
       if (defaultExport == null) {
         throw new Error(
-          "View config object must be the default export in the file",
+          "View config object must be the default export in " + moduleInfo.id,
         );
       }
 
@@ -121,7 +123,7 @@ export function FoundryViewVitePlugin(options: Options = {}): Plugin {
        * };
        */
       if (defaultExport.declaration.type === "ObjectExpression") {
-        entrypointFileIdToParameterMap[parameterEntrypoint] = extractViewConfig(
+        entrypointFileIdToConfigMap[entrypointForConfig] = extractViewConfig(
           defaultExport.declaration,
         );
         return;
@@ -160,12 +162,16 @@ export function FoundryViewVitePlugin(options: Options = {}): Plugin {
                 && declarator.id.name === variableName,
             );
             if (variableDeclarator?.init?.type === "ObjectExpression") {
-              entrypointFileIdToParameterMap[parameterEntrypoint] =
+              entrypointFileIdToConfigMap[entrypointForConfig] =
                 extractViewConfig(variableDeclarator?.init);
               return;
             }
           }
         }
+
+        throw new Error(
+          `Could not find view configuration object in ${moduleInfo.id}. Ensure that the default export is a view configuration object of type ViewConfig`,
+        );
       }
 
       // todo: deal with common JS
@@ -177,16 +183,16 @@ export function FoundryViewVitePlugin(options: Options = {}): Plugin {
         views: {},
       };
 
-      // This is inspired by vite's own manifest plugin, but we only care about entrypoints
+      // This is inspired by vite's native manifest plugin, but we only care about entrypoints
       for (const file in bundle) {
         const chunk = bundle[file];
         if (
           chunk.type === "chunk" && chunk.isEntry
           && chunk.facadeModuleId != null
         ) {
-          if (entrypointFileIdToParameterMap[chunk.facadeModuleId] == null) {
+          if (entrypointFileIdToConfigMap[chunk.facadeModuleId] == null) {
             throw new Error(
-              "Missing parameter configuration for entrypoint: "
+              "Missing view configuration for entrypoint: "
                 + chunk.fileName,
             );
           }
@@ -195,12 +201,12 @@ export function FoundryViewVitePlugin(options: Options = {}): Plugin {
             entrypointCss: chunk.viteMetadata?.importedCss.size
               ? [...chunk.viteMetadata.importedCss]
               : [],
-            rid: entrypointFileIdToParameterMap[chunk.facadeModuleId].rid,
+            rid: entrypointFileIdToConfigMap[chunk.facadeModuleId].rid,
             version: packageJsonFile.version ?? "0.0.0",
             parameters:
-              entrypointFileIdToParameterMap[chunk.facadeModuleId].parameters
+              entrypointFileIdToConfigMap[chunk.facadeModuleId].parameters
                 ?? {},
-            events: entrypointFileIdToParameterMap[chunk.facadeModuleId].events
+            events: entrypointFileIdToConfigMap[chunk.facadeModuleId].events
               ?? {},
           };
           viewConfigManifest.views[chunk.name] = viewConfig;
@@ -208,7 +214,7 @@ export function FoundryViewVitePlugin(options: Options = {}): Plugin {
       }
 
       this.emitFile({
-        fileName: ".palantir/view-config.json",
+        fileName: MANIFEST_FILE_LOCATION,
         type: "asset",
         source: JSON.stringify(viewConfigManifest, null, 2),
       });
@@ -219,15 +225,20 @@ export function FoundryViewVitePlugin(options: Options = {}): Plugin {
 function extractViewConfig(objectExpression: ObjectExpression) {
   // Convert from AST -> JS string
   let viewConfigString = escodegen.generate(objectExpression);
-  // The output JS string is not valid JSON, so we force it into JSON that we can parse
+  // The output JS string is not valid JSON, so we force it into JSON that we can then print out into a JSON file
+
+  // Wrap keys in double quotes
   viewConfigString = viewConfigString.replace(
     /([^\s:]+):/g,
     "\"$1\":",
   );
+  // Convert single quote string values to double quotes
   viewConfigString = viewConfigString.replace(
     /: '(.+)'/g,
     ": \"$1\"",
   );
+
+  // Convert single quote string values in arrays to double quotes
   viewConfigString = viewConfigString.replace(
     /: \['(.+)'\]/g,
     ": [\"$1\"]",

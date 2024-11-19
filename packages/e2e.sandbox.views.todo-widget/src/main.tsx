@@ -6,7 +6,7 @@ import { Theme } from "@radix-ui/themes";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./app.js";
-import MainConfig from "./main.parameters.js";
+import MainConfig from "./main.config.js";
 
 const root = document.querySelector("body")!;
 
