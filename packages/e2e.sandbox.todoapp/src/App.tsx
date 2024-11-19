@@ -7,6 +7,9 @@ function App() {
   const { todos, isLoading, toggleComplete, error, isValidating, createTodo } =
     useTodos();
 
+  if (todos) {
+    console.log(todos[0]);
+  }
   return (
     <main className="flex min-h-screen flex-col items-center p-24 ">
       <h1 className="mb-6 text-xl">Todos</h1>
