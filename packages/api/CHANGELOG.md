@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.1.0-beta.9
+
+### Minor Changes
+
+- acbfab9: Fixes where clauses for interfaces with no properties.
+
 ## 2.1.0-beta.8
 
 ### Minor Changes
