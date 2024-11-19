@@ -238,5 +238,5 @@ function handleWherePair(
   };
 }
 
-type DropDollarSign<T extends `$${string}`> = T extends `$${infer U}` ? U
+export type DropDollarSign<T extends `$${string}`> = T extends `$${infer U}` ? U
   : never;

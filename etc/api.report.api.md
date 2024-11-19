@@ -338,7 +338,7 @@ export interface DataValueWireToClient {
 
 // @public (undocumented)
 export type DeriveClause<T extends ObjectOrInterfaceDefinition> = {
-    [key: ValidDerivedPropertyKeys<T>]: NativePropertyDef<T> | CalculatedProperty<T> | SelectedProperty<T>;
+    [key: ValidDerivedPropertyKeys<T>]: NativePropertyDef<T> | CalculatedProperty<T> | SelectedProperty<T> | AggregatedProperty<T>;
 };
 
 // @public (undocumented)
@@ -596,6 +596,14 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED 
         unsubscribe: () => void;
     };
     readonly subtract: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
+    // Warning: (ae-forgotten-export) The symbol "TClause" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    readonly test: (clause: TClause<Q>) => this;
+    // Warning: (ae-forgotten-export) The symbol "TClause2" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    readonly test2: (clause: TClause2<Q>) => this;
     readonly union: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
 }
 
@@ -967,10 +975,11 @@ export type WirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "
 //
 // src/aggregate/AggregateOpts.ts:26:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:26:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
-// src/derive/DeriveClause.ts:125:3 - (ae-forgotten-export) The symbol "ValidDerivedPropertyKeys" needs to be exported by the entry point index.d.ts
-// src/derive/DeriveClause.ts:125:3 - (ae-forgotten-export) The symbol "NativePropertyDef" needs to be exported by the entry point index.d.ts
-// src/derive/DeriveClause.ts:125:3 - (ae-forgotten-export) The symbol "CalculatedProperty" needs to be exported by the entry point index.d.ts
-// src/derive/DeriveClause.ts:125:3 - (ae-forgotten-export) The symbol "SelectedProperty" needs to be exported by the entry point index.d.ts
+// src/derive/DeriveClause.ts:149:3 - (ae-forgotten-export) The symbol "ValidDerivedPropertyKeys" needs to be exported by the entry point index.d.ts
+// src/derive/DeriveClause.ts:149:3 - (ae-forgotten-export) The symbol "NativePropertyDef" needs to be exported by the entry point index.d.ts
+// src/derive/DeriveClause.ts:149:3 - (ae-forgotten-export) The symbol "CalculatedProperty" needs to be exported by the entry point index.d.ts
+// src/derive/DeriveClause.ts:149:3 - (ae-forgotten-export) The symbol "SelectedProperty" needs to be exported by the entry point index.d.ts
+// src/derive/DeriveClause.ts:149:3 - (ae-forgotten-export) The symbol "AggregatedProperty" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

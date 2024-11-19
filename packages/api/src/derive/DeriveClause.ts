@@ -102,12 +102,15 @@ type SelectedProperty<
 
 type AggregateOperations<T extends ObjectOrInterfaceDefinition> = {
   $count: LinkNames<T>;
-  $sum: LinkNames<T>;
-  $min: LinkNames<T>;
-  $max: LinkNames<T>;
-  $avg: LinkNames<T>;
-  $approximateDistinct: LinkNames<T>;
-  $exactDistinct: LinkNames<T>;
+  $sum: SelectedProperty<T>;
+  $min: SelectedProperty<T>;
+  $max: SelectedProperty<T>;
+  $avg: SelectedProperty<T>;
+  $approximateDistinct: SelectedProperty<T>;
+  $exactDistinct: SelectedProperty<T>;
+  $approximatePercentile: SelectedProperty<T>;
+  $collectToSet: SelectedProperty<T>; // Alternative syntax: .derive({"rdpName": {$collectToSet: "linkName", limit?: 100},)
+  $collectToList: SelectedProperty<T>;
 };
 
 namespace AggregatedProperty {
@@ -132,6 +135,16 @@ namespace AggregatedProperty {
   export interface $exactDistinct<T extends ObjectOrInterfaceDefinition>
     extends Just<"$exactDistinct", AggregateOperations<T>>
   {}
+  export interface $approximatePercentile<T extends ObjectOrInterfaceDefinition>
+    extends Just<"$approximatePercentile", AggregateOperations<T>>
+  {}
+  export interface $collectToSet<T extends ObjectOrInterfaceDefinition>
+    extends Just<"$collectToSet", AggregateOperations<T>>
+  {}
+  export interface $collectToList<T extends ObjectOrInterfaceDefinition>
+    extends Just<"$collectToList", AggregateOperations<T>>
+  {
+  }
 }
 
 type AggregatedProperty<T extends ObjectOrInterfaceDefinition> =
@@ -147,8 +160,8 @@ type ValidDerivedPropertyKeys<T extends ObjectOrInterfaceDefinition> = string;
 
 export type DeriveClause<T extends ObjectOrInterfaceDefinition> = {
   [key: ValidDerivedPropertyKeys<T>]:
-    | NativePropertyDef<T>
-    | CalculatedProperty<T>
-    | SelectedProperty<T>
-    | AggregatedProperty<T>;
+    | NativePropertyDef<T> // .derive({"rdpName": "nativePropName"})
+    | CalculatedProperty<T> // .derive({"rdpName": {$add: [1, "nativePropName"]}})
+    | SelectedProperty<T> // .derive({"rdpName": {"linkName": "linkPropertyName"}})
+    | AggregatedProperty<T>; // .derive({"rdpName": {$count: "linkName"}}) .derive({"rdpName": {$sum: {"linkName": "linkPropertyName"}})})
 };

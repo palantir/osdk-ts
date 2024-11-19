@@ -250,41 +250,21 @@ export interface ObjectSet<
 
   readonly derive: <
     D extends DeriveClause<Q>,
-    P extends keyof D,
   >(
     clause: D,
   ) => ObjectSet<
     DerivedPropertyExtendedObjectDefinition<
       Q,
-      P
+      D
     >
   >;
-
-  readonly test: (
-    clause: TClause<Q>,
-  ) => ObjectSet<
-    DerivedPropertyExtendedObjectDefinition<
-      Q,
-      "hi"
-    >
-  >;
-
-  readonly test2: (clause: TClause2<Q>) => this;
 }
 
 type DerivedPropertyExtendedObjectDefinition<
   K extends ObjectOrInterfaceDefinition,
-  D extends any,
+  D extends DeriveClause<K>,
 > = {
   __DefinitionMetadata: {
-    properties: { [T in Extract<D, string>]: PropertyDef<"string"> };
+    properties: { [T in Extract<keyof D, string>]: PropertyDef<"integer"> };
   };
 } & K;
-
-type TClause<T extends ObjectOrInterfaceDefinition> = {
-  new: any;
-};
-
-type TClause2<T extends ObjectOrInterfaceDefinition> = {
-  new: Array<keyof NonNullable<T["__DefinitionMetadata"]>["properties"]>;
-};

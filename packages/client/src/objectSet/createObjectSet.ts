@@ -35,8 +35,14 @@ import type {
   SingleOsdkResult,
 } from "@osdk/api";
 import type { MinimalObjectSet } from "@osdk/api/unstable";
-import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
+import type {
+  DerivedPropertyDefinition,
+  ObjectSet as WireObjectSet,
+  ObjectSetWithPropertiesType,
+} from "@osdk/internal.foundry.core";
+import invariant from "tiny-invariant";
 import { object } from "zod";
+import { createWithPropertyObjectSet } from "../internal/conversions/deriveClauseToWireDefinition.js";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { aggregate } from "../object/aggregate.js";
@@ -72,20 +78,6 @@ const objectSetDefinitions = new WeakMap<
   any,
   WireObjectSet
 >();
-
-type ExtendedObjectDef<
-  T extends ObjectOrInterfaceDefinition,
-  P extends PropertyDef<any>,
-  S extends string,
-> = Omit<ObjectOrInterfaceDefinition, "__DefinitionMetadata"> & {
-  __DefinitionMetadata?:
-    & Omit<ObjectOrInterfaceDefinition["__DefinitionMetadata"], "properties">
-    & {
-      properties:
-        & NonNullable<T["__DefinitionMetadata"]>["properties"]
-        & { [derivedPropertyName in S]: P };
-    };
-};
 
 /** @internal */
 export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
@@ -262,23 +254,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       return clientCtx.objectSetFactory(
         objectType,
         clientCtx,
-        objectSet,
-      );
-    },
-
-    test: (clause) => {
-      return clientCtx.objectSetFactory(
-        objectType,
-        clientCtx,
-        objectSet,
-      );
-    },
-
-    test2: (clause) => {
-      return clientCtx.objectSetFactory(
-        objectType,
-        clientCtx,
-        objectSet,
+        createWithPropertyObjectSet(objectType, clause),
       );
     },
 
@@ -286,20 +262,6 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       def: objectType,
     },
   };
-
-  function createObjectTypeWithNewProperties(
-    objectType: Q,
-    clause: DeriveClause<Q>,
-  ): ObjectOrInterfaceDefinition {
-    for (const propertyName in Object.keys(clause)) {
-      return objectType as ExtendedObjectDef<
-        Q,
-        PropertyDef<"string">,
-        "a"
-      > as ObjectOrInterfaceDefinition;
-    }
-    return {} as any;
-  }
 
   function createSearchAround<L extends LinkNames<Q>>(link: L) {
     return () => {
@@ -343,3 +305,6 @@ async function createWithPk(
   };
   return withPk;
 }
+
+type DropDollarSign<T extends `$${string}`> = T extends `$${infer U}` ? U
+  : never;
