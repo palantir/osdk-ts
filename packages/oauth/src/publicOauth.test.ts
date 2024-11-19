@@ -284,6 +284,7 @@ describe(createPublicOauthClient, () => {
                 `@osdk/oauth : refresh : ${clientArgs.clientId}`,
                 JSON.stringify({ oldUrl: window.location.toString() }),
               );
+
               expect(mockWindow.history.replaceState).toHaveBeenCalledWith(
                 {},
                 "",
@@ -321,24 +322,6 @@ describe(createPublicOauthClient, () => {
 
       if (initialLocalState.codeVerifier) {
         it("tries to auth with return results", async () => {
-          const OLD_URL = "https://someoldurl.local";
-          const ACCESS_TOKEN = "an access token";
-          vi.mocked(commonJs.readLocal).mockImplementation(() => {
-            return {
-              codeVerifier: "hi",
-              state: "mom",
-              oldUrl: OLD_URL,
-            };
-          });
-
-          hoistedMocks.makeTokenAndSaveRefresh.mockImplementation(
-            () => ({
-              access_token: ACCESS_TOKEN,
-              expires_at: Date.now(),
-              expires_in: 10000,
-            }),
-          );
-
           await expect(client()).resolves.toEqual(ACCESS_TOKEN);
           expect(hoistedMocks.makeTokenAndSaveRefresh).toHaveBeenCalledTimes(
             1,
@@ -352,33 +335,22 @@ describe(createPublicOauthClient, () => {
           expect(mockWindow.history.replaceState).toBeCalledWith(
             expect.anything(),
             expect.anything(),
-            OLD_URL,
+            initialLocalState.oldUrl,
           );
         });
       }
 
       if (initialLocalState.refresh_token) {
         it("refreshes", async () => {
-          vi.mocked(commonJs.readLocal).mockImplementation((...args) => ({
-            refresh_token: "a-refresh-token",
-          }));
-
-          const ACCESS_TOKEN = "hi-mom";
-          hoistedMocks.makeTokenAndSaveRefresh.mockImplementation(() => ({
-            access_token: ACCESS_TOKEN,
-            expires_at: Date.now(),
-            expires_in: 10000,
-          }));
-
           await expect(client()).resolves.toEqual(ACCESS_TOKEN);
 
-          expect(hoistedMocks.makeTokenAndSaveRefresh.mock.calls[0])
-            .toEqual(
-              expect.arrayContaining([
-                expect.anything(),
-                "refresh",
-              ]),
-            );
+          expect(hoistedMocks.makeTokenAndSaveRefresh).toHaveBeenCalledTimes(
+            1,
+          );
+          expect(hoistedMocks.makeTokenAndSaveRefresh).toHaveBeenCalledWith(
+            undefined, // this is only because we didn't mock out the internals
+            "refresh",
+          );
         });
       }
     });
