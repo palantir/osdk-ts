@@ -8,3 +8,4 @@ querydoesnotexist
 unstubAllEnvs
 interfacers
 Claused
+geotimeseries
