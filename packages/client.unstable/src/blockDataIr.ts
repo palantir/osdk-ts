@@ -164,7 +164,7 @@ export type OntologyIrValueTypeBlockData = {
 };
 
 export type ImportedTypes = {
-  sharedPropertyTypes: Set<ImportedSharedPropertyTypes>;
+  sharedPropertyTypes: ImportedSharedPropertyTypes[];
 };
 
 export type ImportedSharedPropertyTypes = {
