@@ -24,7 +24,7 @@ import type {
 } from "@osdk/internal.foundry.core";
 import invariant from "tiny-invariant";
 
-export function createWithPropertyObjectSet<
+export function deriveClauseToWireDefinition<
   Q extends ObjectOrInterfaceDefinition,
 >(
   clause: DeriveClause<Q>,
@@ -39,31 +39,40 @@ export function createWithPropertyObjectSet<
       // native property def
       throw new Error("Unsupported filter");
     }
+
     invariant(Object.keys(def).length === 1, "only one key allowed");
-    const calculatedKeys: string[] = [];
-    const aggregateKeys: string[] = [];
+    const calculateKeys = [
+      "$add",
+      "$divide",
+      "$multiply",
+      "$subtract",
+      "$negate",
+      "$abs",
+    ];
+    const aggregateKeys = [
+      "$avg",
+      "$max",
+      "$min",
+      "$sum",
+      "$approximateDistinct",
+      "$exactDistinct",
+    ];
     const [key, definition] = Object.entries(def)[0];
 
-    if (calculatedKeys.includes(key)) {
+    if (calculateKeys.includes(key)) {
       throw new Error("Unsupported filter");
     } else if (aggregateKeys.includes(key)) {
-      const [aggregationTypeDollarSign, aggregation] =
-        Object.entries(definition)[0];
-      invariant(aggregation != null && typeof aggregation === "object");
-      const [linkName, linkPropertyName] = Object.entries(aggregation)[0];
+      const [linkName, linkPropertyName] = Object.entries(definition)[0];
       invariant(
         linkPropertyName != null && typeof linkPropertyName === "string",
       );
-      const aggregationType = aggregationTypeDollarSign.substring(
+      const aggregationType = key.substring(
         1,
       ) as SelectedPropertyOperation["type"];
-      invariant(
-        aggregation != null && typeof aggregation === "object"
-          && Object.keys(aggregation).length === 1,
-      );
+
       switch (aggregationType) {
         case "approximatePercentile":
-          derivedPropertyDefinitions["name"] = {
+          derivedPropertyDefinitions[name] = {
             type: "selection",
             objectSet: {
               type: "searchAround",
@@ -79,7 +88,7 @@ export function createWithPropertyObjectSet<
           break;
         case "collectList":
         case "collectSet":
-          derivedPropertyDefinitions["name"] = {
+          derivedPropertyDefinitions[name] = {
             type: "selection",
             objectSet: {
               type: "searchAround",
@@ -94,46 +103,50 @@ export function createWithPropertyObjectSet<
           };
           break;
         default:
-          invariant(aggregation != null && typeof aggregation === "string");
-          derivedPropertyDefinitions["name"] = {
+          derivedPropertyDefinitions[name] = {
             type: "selection",
             objectSet: {
               type: "searchAround",
               objectSet,
-              link: aggregation,
+              link: linkName,
             },
             operation: {
               type: aggregationType,
-              selectedPropertyApiName: aggregation,
+              selectedPropertyApiName: linkPropertyName,
             },
           };
       }
-    } else {
-      const [linkName, linkPropertyName] = Object.entries(definition)[0];
-      invariant(
-        linkPropertyName != null && typeof linkPropertyName === "string",
-        "linkPropertyName must be a string",
-      );
-      derivedPropertyDefinitions["name"] = {
+    } else if (key === "$count") {
+      derivedPropertyDefinitions[name] = {
         type: "selection",
         objectSet: {
           type: "searchAround",
           objectSet,
-          link: linkName,
+          link: definition,
+        },
+        operation: {
+          type: "count",
+        },
+      };
+    } else {
+      // Selected Property
+      invariant(
+        definition != null && typeof definition === "string",
+        "linkPropertyName must be a string",
+      );
+      derivedPropertyDefinitions[name] = {
+        type: "selection",
+        objectSet: {
+          type: "searchAround",
+          objectSet,
+          link: key,
         },
         operation: {
           type: "get",
-          selectedPropertyApiName: linkPropertyName,
+          selectedPropertyApiName: definition,
         },
       };
     }
   }
-  const objectSetWithProperties: ObjectSetWithPropertiesType & {
-    type: "withProperties";
-  } = {
-    objectSet,
-    derivedProperties: derivedPropertyDefinitions,
-    type: "withProperties",
-  };
-  return objectSetWithProperties;
+  return derivedPropertyDefinitions;
 }

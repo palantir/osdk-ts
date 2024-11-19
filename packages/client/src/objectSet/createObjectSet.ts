@@ -42,7 +42,7 @@ import type {
 } from "@osdk/internal.foundry.core";
 import invariant from "tiny-invariant";
 import { object } from "zod";
-import { createWithPropertyObjectSet } from "../internal/conversions/deriveClauseToWireDefinition.js";
+import { deriveClauseToWireDefinition } from "../internal/conversions/deriveClauseToWireDefinition.js";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { aggregate } from "../object/aggregate.js";
@@ -254,7 +254,11 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       return clientCtx.objectSetFactory(
         objectType,
         clientCtx,
-        createWithPropertyObjectSet(clause, objectSet),
+        {
+          type: "withProperties",
+          derivedProperties: deriveClauseToWireDefinition(clause, objectSet),
+          objectSet,
+        },
       );
     },
 

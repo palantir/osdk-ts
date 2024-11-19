@@ -48,6 +48,7 @@ type NumericOperationArgs<T extends ObjectOrInterfaceDefinition> =
   | number
   | PropertyKeys<T>
   | CalculatedProperty<T>;
+
 interface NumericOperations<T extends ObjectOrInterfaceDefinition> {
   $add: Array<NumericOperationArgs<T>>;
   $subtract: Array<NumericOperationArgs<T>>;
@@ -96,7 +97,7 @@ type SelectedProperty<
         M extends false ? K : never
       )
       : never
-  ]: PropertyKeys<LinkedType<T, K>> | never;
+  ]: PropertyKeys<LinkedType<T, K>>;
 };
 
 type AggregateOperations<T extends ObjectOrInterfaceDefinition> = {
