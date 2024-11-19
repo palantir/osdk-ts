@@ -27,15 +27,18 @@ export namespace HostMessage {
   export type Version = typeof Version;
 
   export namespace Payload {
-    export type UpdateParameters<CONFIG extends ViewConfig> = {
+    export interface UpdateParameters<CONFIG extends ViewConfig> {
       parameters: AsyncParameterValueMap<CONFIG>;
-    };
+    }
   }
 
-  export type UpdateParameters<CONFIG extends ViewConfig> = HostBaseMessage<
-    "host.update-parameters",
-    Payload.UpdateParameters<CONFIG>
-  >;
+  export interface UpdateParameters<CONFIG extends ViewConfig>
+    extends
+      HostBaseMessage<
+        "host.update-parameters",
+        Payload.UpdateParameters<CONFIG>
+      >
+  {}
 }
 
 // Union type
