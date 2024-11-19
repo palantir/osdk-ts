@@ -283,4 +283,27 @@ describe(fetchPage, () => {
         }>();
     });
   });
+  describe("derived properties", () => {
+    it.fails("works with derived properties", () => {
+      const client = createMinimalClient(
+        metadata,
+        "https://foo",
+        async () => "",
+      );
+
+      // Checks newProperty is on type
+      const objectSet = createObjectSet(Employee, client).derive({
+        // @ts-expect-error
+        newProperty: { "lead": "fullName" },
+      }).where({
+        newProperty: { $gt: 2 },
+      });
+
+      // Doesn't work right now, don't have finalized spec
+      const wireObjectSet = getWireObjectSet(objectSet);
+
+      expect(objectSetToSearchJsonV2(wireObjectSet, "Todo", undefined))
+        .toMatchInlineSnapshot(``);
+    });
+  });
 });

@@ -67,6 +67,7 @@ export function defineObject(
       properties: {
         [opts.primaryKey.apiName]: {
           dataType: convertType(opts.primaryKey),
+          rid: "rid",
         },
       },
       rid: "PLACEHOLDER",
@@ -109,6 +110,11 @@ function convertType(
         itemType: {
           type: "double",
         },
+        type: "timeseries",
+      };
+
+    case t.type === "sensorTimeseries":
+      return {
         type: "timeseries",
       };
 

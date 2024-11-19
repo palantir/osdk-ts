@@ -18,6 +18,7 @@ import type { AggregateOpts } from "../aggregate/AggregateOpts.js";
 import type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } from "../aggregate/AggregateOptsThatErrors.js";
 import type { AggregationsResults } from "../aggregate/AggregationsResults.js";
 import type { WhereClause } from "../aggregate/WhereClause.js";
+import type { DeriveClause } from "../derive/DeriveClause.js";
 import type {
   AsyncIterArgs,
   Augments,
@@ -35,6 +36,7 @@ import type {
 import type {
   CompileTimeMetadata,
   ObjectTypeDefinition,
+  PropertyDef,
 } from "../ontology/ObjectTypeDefinition.js";
 import type { PrimaryKeyType } from "../OsdkBase.js";
 import type { ExtractOptions, Osdk } from "../OsdkObjectFrom.js";
@@ -46,9 +48,9 @@ import type {
   ObjectSetListenerOptions,
 } from "./ObjectSetListener.js";
 
-export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
-  extends BaseObjectSet<Q>
-{
+export interface MinimalObjectSet<
+  Q extends ObjectOrInterfaceDefinition,
+> extends BaseObjectSet<Q> {
   /**
    * Gets a page of objects of this type, with a result wrapper
    * @param args - Args to specify next page token and page size, if applicable
@@ -254,4 +256,24 @@ export interface ObjectSet<
     listener: ObjectSetListener<Q, P>,
     opts?: ObjectSetListenerOptions<Q, P>,
   ) => { unsubscribe: () => void };
+
+  readonly derive: <
+    D extends DeriveClause<Q>,
+  >(
+    clause: D,
+  ) => ObjectSet<
+    DerivedPropertyExtendedObjectDefinition<
+      Q,
+      D
+    >
+  >;
 }
+
+type DerivedPropertyExtendedObjectDefinition<
+  K extends ObjectOrInterfaceDefinition,
+  D extends DeriveClause<K>,
+> = {
+  __DefinitionMetadata: {
+    properties: { [T in Extract<keyof D, string>]: PropertyDef<"integer"> };
+  };
+} & K;

@@ -86,6 +86,7 @@ export const TodoWireOntology = {
             dataType: {
               type: "integer",
             },
+            rid: "rid",
           },
           body: {
             dataType: {
@@ -93,11 +94,13 @@ export const TodoWireOntology = {
             },
             description: "The text of the todo",
             displayName: "Body",
+            rid: "rid",
           },
           complete: {
             dataType: {
               type: "boolean",
             },
+            rid: "rid",
           },
         },
         status: "ACTIVE",
@@ -136,6 +139,7 @@ export const TodoWireOntology = {
             dataType: {
               type: "string",
             },
+            rid: "rid",
           },
         },
 
@@ -208,6 +212,7 @@ export const TodoWireOntology = {
       displayName: "Sum Interface",
       extendsInterfaces: [],
       links: {},
+      implementedByObjectTypes: [],
     },
   },
   sharedPropertyTypes: {

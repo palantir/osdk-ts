@@ -27,6 +27,7 @@ export const FooInterface: InterfaceType = {
     fooSpt,
   },
   links: {},
+  implementedByObjectTypes: [],
 };
 
 export const BarInterface: InterfaceType = {
@@ -37,4 +38,5 @@ export const BarInterface: InterfaceType = {
   extendsInterfaces: [],
   properties: {},
   links: {},
+  implementedByObjectTypes: [],
 };

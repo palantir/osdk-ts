@@ -31,9 +31,13 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {
-          primaryKey: { dataType: { type: "string" } },
-          otherKey: { nullable: false, dataType: { type: "string" } },
-          defaulted: { dataType: { type: "string" } },
+          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+          otherKey: {
+            nullable: false,
+            dataType: { type: "string" },
+            rid: "rid",
+          },
+          defaulted: { dataType: { type: "string" }, rid: "rid" },
         },
         rid: "rid",
         status: "ACTIVE",

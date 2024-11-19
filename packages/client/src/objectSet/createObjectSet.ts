@@ -18,6 +18,7 @@ import type {
   AsyncIterArgs,
   Augments,
   BaseObjectSet,
+  DeriveClause,
   FetchPageResult,
   LinkedType,
   LinkNames,
@@ -27,13 +28,21 @@ import type {
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
+  PropertyDef,
   PropertyKeys,
   Result,
   SelectArg,
   SingleOsdkResult,
 } from "@osdk/api";
 import type { MinimalObjectSet } from "@osdk/api/unstable";
-import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
+import type {
+  DerivedPropertyDefinition,
+  ObjectSet as WireObjectSet,
+  ObjectSetWithPropertiesType,
+} from "@osdk/internal.foundry.core";
+import invariant from "tiny-invariant";
+import { object } from "zod";
+import { deriveClauseToWireDefinition } from "../internal/conversions/deriveClauseToWireDefinition.js";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { aggregate } from "../object/aggregate.js";
@@ -241,6 +250,18 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       return { unsubscribe: async () => (await pendingSubscribe)() };
     },
 
+    derive: (clause) => {
+      return clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        {
+          type: "withProperties",
+          derivedProperties: deriveClauseToWireDefinition(clause, objectSet),
+          objectSet,
+        },
+      );
+    },
+
     $objectSetInternals: {
       def: objectType,
     },
@@ -288,3 +309,6 @@ async function createWithPk(
   };
   return withPk;
 }
+
+type DropDollarSign<T extends `$${string}`> = T extends `$${infer U}` ? U
+  : never;
