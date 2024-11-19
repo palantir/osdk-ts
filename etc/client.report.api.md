@@ -110,6 +110,21 @@ export const createClient: (baseUrl: string, ontologyRid: string | Promise<strin
 // @public
 export function createPlatformClient(baseUrl: string, tokenProvider: () => Promise<string>, options?: undefined, fetchFn?: typeof globalThis.fetch): PlatformClient;
 
+// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+//
+// @public
+export const extractDate: (dateTime: string) => string;
+
+// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+//
+// @public
+export const extractDateInLocalTime: (date: Date) => string;
+
+// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+//
+// @public
+export const extractDateInUTC: (date: Date) => string;
+
 export { InterfaceDefinition }
 
 export { isOk }
