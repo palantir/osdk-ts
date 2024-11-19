@@ -1,6 +1,6 @@
-import type { ParameterConfig } from "@osdk/views-client.unstable";
+import type { ViewConfig } from "@osdk/views-client.unstable";
 
-const MainParameters = {
+const MainConfig = {
   parameters: {
     headerText: {
       displayName: "Widget title",
@@ -16,5 +16,15 @@ const MainParameters = {
       subType: "string",
     },
   },
-} as const satisfies ParameterConfig;
-export default MainParameters;
+  events: {
+    updateHeader: {
+      displayName: "Update header",
+      parameterIds: ["headerText"],
+    },
+    updateTodoItems: {
+      displayName: "Update todo items",
+      parameterIds: ["todoItems"],
+    },
+  },
+} as const satisfies ViewConfig;
+export default MainConfig;

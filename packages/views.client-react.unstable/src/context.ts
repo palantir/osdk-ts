@@ -16,36 +16,46 @@
 
 import {
   type AsyncParameterValueMap,
+  type EventId,
   FoundryHostEventTarget,
-  type FoundryViewClient,
-  type ParameterConfig,
+  type ViewConfig,
+  type ViewMessage,
 } from "@osdk/views-client.unstable";
 import React, { useContext } from "react";
 
-export interface FoundryViewClientContext<CONFIG extends ParameterConfig> {
-  emitEvent: FoundryViewClient<CONFIG>["emit"];
+export interface FoundryViewClientContext<
+  CONFIG extends ViewConfig<{ parameters: CONFIG["parameters"] }>,
+> {
+  emitEvent: <
+    M extends Extract<ViewMessage<CONFIG>, ViewMessage.EmitEvent<CONFIG>>,
+  >(
+    type: M["type"],
+    payload: M["payload"],
+  ) => void;
   hostEventTarget: FoundryHostEventTarget<CONFIG>;
   parameterValues: AsyncParameterValueMap<CONFIG>;
 }
 
 export const FoundryViewContext = React.createContext<
-  FoundryViewClientContext<ParameterConfig>
+  FoundryViewClientContext<ViewConfig>
 >({
   emitEvent: () => {},
-  hostEventTarget: new FoundryHostEventTarget<ParameterConfig>(),
+  hostEventTarget: new FoundryHostEventTarget<ViewConfig>(),
   parameterValues: {},
 });
 
 /**
  * @returns The current FoundryViewClientContext, in the context of your specific parameter configuration
  */
-export function useFoundryViewContext<CONFIG extends ParameterConfig>() {
+export function useFoundryViewContext<
+  CONFIG extends ViewConfig<{ parameters: CONFIG["parameters"] }>,
+>() {
   return useContext(FoundryViewContext) as FoundryViewClientContext<CONFIG>;
 }
 
 export namespace useFoundryViewContext {
   export function withTypes<
-    CONFIG extends ParameterConfig,
+    CONFIG extends ViewConfig<{ parameters: CONFIG["parameters"] }>,
   >(): () => FoundryViewClientContext<CONFIG> {
     return () => {
       return useFoundryViewContext<CONFIG>();

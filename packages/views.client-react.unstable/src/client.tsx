@@ -16,7 +16,7 @@
 
 import type {
   AsyncParameterValueMap,
-  ParameterConfig,
+  ViewConfig,
 } from "@osdk/views-client.unstable";
 import { createFoundryViewClient } from "@osdk/views-client.unstable";
 import React, { useEffect, useMemo } from "react";
@@ -24,7 +24,9 @@ import type { FoundryViewClientContext } from "./context.js";
 import { FoundryViewContext } from "./context.js";
 import { initializeParameters } from "./utils/initializeParameters.js";
 
-interface FoundryViewProps<CONFIG extends ParameterConfig> {
+interface FoundryViewProps<
+  CONFIG extends ViewConfig<{ parameters: CONFIG["parameters"] }>,
+> {
   children: React.ReactNode;
 
   /**
@@ -43,7 +45,9 @@ interface FoundryViewProps<CONFIG extends ParameterConfig> {
 /**
  * Handles subscribing to messages from the host Foundry UI and updating the view's parameter values accordingly via React context
  */
-export const FoundryView = <CONFIG extends ParameterConfig>({
+export const FoundryView = <
+  CONFIG extends ViewConfig<{ parameters: CONFIG["parameters"] }>,
+>({
   children,
   config,
   initialValues,
@@ -77,7 +81,9 @@ export const FoundryView = <CONFIG extends ParameterConfig>({
         hostEventTarget: client.hostEventTarget,
         parameterValues,
         // Unfortunately the context is statically defined so we can't use the generic type, hence the cast
-      } as FoundryViewClientContext<ParameterConfig>}
+      } as FoundryViewClientContext<
+        ViewConfig<{ parameters: CONFIG["parameters"] }>
+      >}
     >
       {children}
     </FoundryViewContext.Provider>

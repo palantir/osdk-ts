@@ -22,10 +22,12 @@ export type {
   AsyncParameterValueMap,
   AsyncReloadingValue,
   AsyncValue,
-  ParameterConfig,
+  EventId,
+  EventParameterValueMap,
   ParameterId,
   ParameterValue,
   ParameterValueMap,
+  ViewConfig,
   ViewMessage,
 } from "@osdk/views-api.unstable";
 export {

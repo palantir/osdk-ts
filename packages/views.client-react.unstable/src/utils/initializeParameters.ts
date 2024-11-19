@@ -16,13 +16,13 @@
 
 import type {
   AsyncParameterValueMap,
-  ParameterConfig,
+  ViewConfig,
 } from "@osdk/views-client.unstable";
 
 /**
  * Utility function to initialize a map of parameter values to either a loading or not-started loading state
  */
-export function initializeParameters<CONFIG extends ParameterConfig>(
+export function initializeParameters<CONFIG extends ViewConfig>(
   config: CONFIG,
   initialLoadingState: "loading" | "not-started",
 ): AsyncParameterValueMap<CONFIG> {
