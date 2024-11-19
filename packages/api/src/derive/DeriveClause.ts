@@ -88,6 +88,7 @@ type CalculatedProperty<T extends ObjectOrInterfaceDefinition> =
   | CalculatedProperty.$negate<T>
   | CalculatedProperty.$abs<T>;
 
+// TODO: Require only one key and allow only one key(currently requires all links)
 type SelectedProperty<
   T extends ObjectOrInterfaceDefinition,
 > = {
@@ -113,6 +114,7 @@ type AggregateOperations<T extends ObjectOrInterfaceDefinition> = {
   $collectToList: SelectedProperty<T>;
 };
 
+// TODO: Allow for added properties for $approximatePercentile, $collectToSet, $collectToList
 namespace AggregatedProperty {
   export interface $count<T extends ObjectOrInterfaceDefinition>
     extends Just<"$count", AggregateOperations<T>>

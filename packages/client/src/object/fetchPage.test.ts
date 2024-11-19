@@ -24,7 +24,7 @@ import type {
   SelectArgToKeys,
 } from "@osdk/api";
 import type { FooInterface } from "@osdk/client.test.ontology";
-import { Todo } from "@osdk/client.test.ontology";
+import { Employee, Todo } from "@osdk/client.test.ontology";
 import type { SearchJsonQueryV2 } from "@osdk/internal.foundry.core";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
@@ -235,6 +235,29 @@ describe(fetchPage, () => {
           nextPageToken: string | undefined;
           totalCount: string;
         }>();
+    });
+  });
+  describe("derived properties", () => {
+    it.fails("works with derived properties", () => {
+      const client = createMinimalClient(
+        metadata,
+        "https://foo",
+        async () => "",
+      );
+
+      // Checks newProperty is on type
+      const objectSet = createObjectSet(Employee, client).derive({
+        // @ts-expect-error
+        newProperty: { "lead": "fullName" },
+      }).where({
+        newProperty: { $gt: 2 },
+      });
+
+      // Doesn't work right now, don't have finalized spec
+      const wireObjectSet = getWireObjectSet(objectSet);
+
+      expect(objectSetToSearchJsonV2(wireObjectSet, "Todo", undefined))
+        .toMatchInlineSnapshot(``);
     });
   });
 });

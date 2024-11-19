@@ -34,13 +34,13 @@ export function deriveClauseToWireDefinition<
     DerivedPropertyApiName,
     DerivedPropertyDefinition
   > = {};
-  for (const [name, def] of Object.entries(clause)) {
-    if (typeof def === "string") {
+  for (const [name, value] of Object.entries(clause)) {
+    if (typeof value === "string") {
       // native property def
       throw new Error("Unsupported filter");
     }
 
-    invariant(Object.keys(def).length === 1, "only one key allowed");
+    invariant(Object.keys(value).length === 1, "only one key allowed");
     const calculateKeys = [
       "$add",
       "$divide",
@@ -57,7 +57,7 @@ export function deriveClauseToWireDefinition<
       "$approximateDistinct",
       "$exactDistinct",
     ];
-    const [key, definition] = Object.entries(def)[0];
+    const [key, definition] = Object.entries(value)[0];
 
     if (calculateKeys.includes(key)) {
       throw new Error("Unsupported filter");
@@ -82,7 +82,7 @@ export function deriveClauseToWireDefinition<
             operation: {
               type: aggregationType,
               selectedPropertyApiName: linkPropertyName,
-              approximatePercentile: 2,
+              approximatePercentile: 2, /// Currently hardcoded
             },
           };
           break;
@@ -98,7 +98,7 @@ export function deriveClauseToWireDefinition<
             operation: {
               type: aggregationType,
               selectedPropertyApiName: linkPropertyName,
-              limit: 100,
+              limit: 100, // Currently hardcoded
             },
           };
           break;
