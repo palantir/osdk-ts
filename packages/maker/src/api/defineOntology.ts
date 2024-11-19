@@ -15,6 +15,7 @@
  */
 
 import type {
+  OntologyIr,
   OntologyIrInterfaceType,
   OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrOntologyBlockDataV2,
@@ -41,7 +42,7 @@ export let ontologyDefinition: Ontology;
 export let namespace: string;
 
 type OntologyAndValueTypeIrs = {
-  ontology: OntologyIrOntologyBlockDataV2;
+  ontology: OntologyIr;
   valueType: OntologyIrValueTypeBlockData;
 };
 
@@ -57,6 +58,9 @@ export async function defineOntology(
     interfaceTypes: {},
     sharedPropertyTypes: {},
     valueTypes: {},
+    importedTypes: {
+      sharedPropertyTypes: new Set(),
+    },
   };
 
   try {
@@ -100,32 +104,39 @@ function convertOntologyToValueTypeIr(
 
 function convertToWireOntologyIr(
   ontology: Ontology,
-): OntologyIrOntologyBlockDataV2 {
+): OntologyIr {
   return {
-    sharedPropertyTypes: Object.fromEntries(
-      Object.entries(
-        ontology.sharedPropertyTypes,
-      )
-        .map<[string, OntologyIrSharedPropertyTypeBlockDataV2]>((
-          [apiName, spt],
-        ) => [apiName, { sharedPropertyType: convertSpt(spt) }]),
-    ),
-    interfaceTypes: Object.fromEntries(
-      Object.entries(
-        ontology.interfaceTypes,
-      )
-        .map<[string, OntologyIrInterfaceTypeBlockDataV2]>(
-          ([apiName, interfaceType]) => {
-            return [apiName, {
-              interfaceType: convertInterface(interfaceType),
-            }];
-          },
-        ),
-    ),
-    blockPermissionInformation: {
-      actionTypes: {},
-      linkTypes: {},
-      objectTypes: {},
+    blockData: {
+      sharedPropertyTypes: Object.fromEntries(
+        Object.entries(
+          ontology.sharedPropertyTypes,
+        )
+          .map<[string, OntologyIrSharedPropertyTypeBlockDataV2]>((
+            [apiName, spt],
+          ) => [apiName, { sharedPropertyType: convertSpt(spt) }]),
+      ),
+      interfaceTypes: Object.fromEntries(
+        Object.entries(
+          ontology.interfaceTypes,
+        )
+          .map<[string, OntologyIrInterfaceTypeBlockDataV2]>(
+            ([apiName, interfaceType]) => {
+              return [apiName, {
+                interfaceType: convertInterface(interfaceType),
+              }];
+            },
+          ),
+      ),
+      blockPermissionInformation: {
+        actionTypes: {},
+        linkTypes: {},
+        objectTypes: {},
+      },
+    },
+    importedTypes: {
+      sharedPropertyTypes: Array.from(
+        ontology.importedTypes.sharedPropertyTypes,
+      ),
     },
   };
 }
@@ -144,7 +155,7 @@ function convertInterface(
   };
 }
 
-export function dumpOntologyFullMetadata(): OntologyIrOntologyBlockDataV2 {
+export function dumpOntologyFullMetadata(): OntologyIr {
   return convertToWireOntologyIr(ontologyDefinition);
 }
 

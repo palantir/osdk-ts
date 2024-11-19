@@ -50,6 +50,9 @@ export type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVe
 
 export type {
   ApiNameValueTypeReference,
+  ImportedSharedPropertyTypes,
+  ImportedTypes,
+  OntologyIr,
   OntologyIrInterfaceType,
   OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrOntologyBlockDataV2,
