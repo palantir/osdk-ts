@@ -128,9 +128,12 @@ export function createWithPropertyObjectSet<
       };
     }
   }
-  const objectSetWithProperties: ObjectSetWithPropertiesType = {
+  const objectSetWithProperties: ObjectSetWithPropertiesType & {
+    type: "withProperties";
+  } = {
     objectSet,
     derivedProperties: derivedPropertyDefinitions,
+    type: "withProperties",
   };
   return objectSetWithProperties;
 }

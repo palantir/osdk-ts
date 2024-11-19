@@ -254,7 +254,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       return clientCtx.objectSetFactory(
         objectType,
         clientCtx,
-        createWithPropertyObjectSet(objectType, clause),
+        createWithPropertyObjectSet(clause, objectSet),
       );
     },
 
