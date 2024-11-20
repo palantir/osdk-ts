@@ -38,7 +38,7 @@ export const App: React.FC = () => {
       },
     });
     setNewTodoItem("");
-  }, []);
+  }, [newTodoItem]);
 
   const handleNewTodoItemChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,13 +105,9 @@ export const App: React.FC = () => {
                 && todoItems.value.value?.map((item, index) => (
                   <Table.Row key={index}>
                     <Table.Cell>
-                      <Skeleton>
-                        <Checkbox />
-                      </Skeleton>
+                      <Checkbox />
                     </Table.Cell>
-                    <Table.Cell>
-                      <Skeleton>{item}</Skeleton>
-                    </Table.Cell>
+                    <Table.Cell>{item}</Table.Cell>
                   </Table.Row>
                 ))}
               {todoItems.value.type === "loaded"
