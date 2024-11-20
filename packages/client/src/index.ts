@@ -58,3 +58,5 @@ export {
   extractDateInLocalTime,
   extractDateInUTC,
 } from "./util/datetimeConverters.js";
+
+export { consolidateOsdkObject } from "./util/consolidateOsdkObject.js";

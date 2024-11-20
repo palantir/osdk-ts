@@ -1,4 +1,4 @@
-import { createClient } from "@osdk/client";
+import { consolidateOsdkObject, createClient, Osdk } from "@osdk/client";
 import {
   $ontologyRid,
   Employee,
@@ -182,4 +182,53 @@ export async function osdkObjectSetExample() {
     unionObjectSet,
     subtractObjectSet,
   );
+
+  /**
+   * SUBSCRIPTIONS
+   */
+
+  const objects: Record<string, Osdk.Instance<Employee, never, "employeeId">> =
+    {};
+
+  const subscription = client(Employee).subscribe({
+    onChange: (update) => {
+      if (update.state === "ADDED_OR_UPDATED") {
+        console.log(
+          `Employee with primary key ${update.object.$primaryKey} was added or updated`,
+        );
+
+        objects[update.object.$primaryKey] = consolidateOsdkObject(
+          objects[update.object.$primaryKey],
+          update.object,
+        );
+      } else if (update.state === "REMOVED") {
+        console.log(
+          `Employee with primary key ${update.object.$primaryKey} was deleted`,
+        );
+
+        delete objects[update.object.$primaryKey];
+      }
+    },
+    onOutOfDate: async () => {
+      console.log("Object Set Out of Date. Reloading Object Set");
+
+      for await (const obj of client(Employee).asyncIter()) {
+        objects[obj.$primaryKey] = obj;
+      }
+    },
+    onSuccessfulSubscription() {
+      console.log("Subscription successful");
+      setTimeout(() => {
+        subscription.unsubscribe();
+      }, 10000);
+    },
+    onError(err) {
+      console.error("Error in subscription and subscription closed", err);
+    },
+    // The properties that will be returned in updates can optionally be specified below. Updates may still be sent for properties not specified here,
+    // and not all properties may be returned.
+  }, { properties: ["employeeId"] });
+
+  // An empty subscription will request all properties
+  client(Employee).subscribe({ onChange: () => {} });
 }

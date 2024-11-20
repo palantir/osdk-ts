@@ -23,6 +23,7 @@ import type { InterfaceMetadata } from '@osdk/api';
 import { isOk } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/api/unstable';
 import { ObjectMetadata } from '@osdk/api';
+import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
 import { ObjectSet } from '@osdk/api';
 import type { ObjectSetQueryDataType } from '@osdk/api';
@@ -93,6 +94,9 @@ export interface Client extends SharedClient, SharedClient_2 {
     // (undocumented)
     fetchMetadata<Q extends (ObjectTypeDefinition | InterfaceDefinition | ActionDefinition<any> | QueryDefinition<any>)>(o: Q): Promise<Q extends ObjectTypeDefinition ? ObjectMetadata : Q extends InterfaceDefinition ? InterfaceMetadata : Q extends ActionDefinition<any> ? ActionMetadata : Q extends QueryDefinition<any> ? QueryMetadata : never>;
 }
+
+// @public (undocumented)
+export function consolidateOsdkObject<T extends Osdk.Instance<V, any, any>, U extends Osdk.Instance<V, any, any>, V extends ObjectOrInterfaceDefinition>(oldObject: T | undefined, upToDateObject: U): U;
 
 // @public (undocumented)
 export function createAttachmentUpload(data: Blob, name: string): AttachmentUpload;
