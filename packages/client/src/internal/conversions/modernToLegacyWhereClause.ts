@@ -15,12 +15,12 @@
  */
 
 import type {
-  GeoFilter_Intersects,
-  GeoFilter_Within,
+  GeoFilterOptions,
   ObjectOrInterfaceDefinition,
   PossibleWhereClauseFilters,
   WhereClause,
 } from "@osdk/api";
+
 import { DistanceUnitMapping } from "@osdk/api";
 
 import type { SearchJsonQueryV2 } from "@osdk/internal.foundry.core";
@@ -182,7 +182,7 @@ function handleWherePair(
   }
 
   if (firstKey === "$within") {
-    const withinBody = filter[firstKey] as GeoFilter_Within["$within"];
+    const withinBody = filter[firstKey] as GeoFilterOptions["$within"];
 
     if (Array.isArray(withinBody)) {
       return makeGeoFilterBbox(field, withinBody, firstKey);
@@ -217,8 +217,7 @@ function handleWherePair(
     }
   }
   if (firstKey === "$intersects") {
-    const intersectsBody =
-      filter[firstKey] as GeoFilter_Intersects["$intersects"];
+    const intersectsBody = filter[firstKey] as GeoFilterOptions["$intersects"];
     if (Array.isArray(intersectsBody)) {
       return makeGeoFilterBbox(field, intersectsBody, firstKey);
     } else if ("$bbox" in intersectsBody && intersectsBody.$bbox != null) {
