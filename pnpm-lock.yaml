@@ -2288,14 +2288,14 @@ importers:
         specifier: ^5.4.8
         version: 5.4.8(@types/node@22.7.9)
 
-  packages/e2e.sandbox.views.todo-widget:
+  packages/e2e.sandbox.todowidget:
     dependencies:
-      '@osdk/views-client-react.unstable':
+      '@osdk/widget-client-react.unstable':
         specifier: workspace:~
-        version: link:../views.client-react.unstable
-      '@osdk/views-client.unstable':
+        version: link:../widget.client-react.unstable
+      '@osdk/widget-client.unstable':
         specifier: workspace:~
-        version: link:../views.client.unstable
+        version: link:../widget.client.unstable
       '@radix-ui/react-icons':
         specifier: ^1.3.1
         version: 1.3.2(react@18.3.1)
@@ -2318,9 +2318,9 @@ importers:
       '@osdk/monorepo.tsup':
         specifier: workspace:~
         version: link:../monorepo.tsup
-      '@osdk/views-manifest-vite-plugin':
+      '@osdk/widget-manifest-vite-plugin':
         specifier: workspace:~
-        version: link:../views.vite-plugin
+        version: link:../widget.vite-plugin
       '@types/react':
         specifier: ^18
         version: 18.3.12
@@ -3016,7 +3016,7 @@ importers:
         specifier: ~5.5.4
         version: 5.5.4
 
-  packages/views.api.unstable:
+  packages/widget.api.unstable:
     devDependencies:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
@@ -3034,7 +3034,7 @@ importers:
         specifier: ~5.5.4
         version: 5.5.4
 
-  packages/views.client-react.unstable:
+  packages/widget.client-react.unstable:
     devDependencies:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
@@ -3045,9 +3045,9 @@ importers:
       '@osdk/monorepo.tsup':
         specifier: workspace:~
         version: link:../monorepo.tsup
-      '@osdk/views-client.unstable':
+      '@osdk/widget-client.unstable':
         specifier: workspace:~
-        version: link:../views.client.unstable
+        version: link:../widget.client.unstable
       '@types/react':
         specifier: ^18.3.12
         version: 18.3.12
@@ -3067,11 +3067,11 @@ importers:
         specifier: ~5.5.4
         version: 5.5.4
 
-  packages/views.client.unstable:
+  packages/widget.client.unstable:
     dependencies:
-      '@osdk/views-api.unstable':
+      '@osdk/widget-api.unstable':
         specifier: workspace:~
-        version: link:../views.api.unstable
+        version: link:../widget.api.unstable
       tiny-invariant:
         specifier: ^1.3.1
         version: 1.3.3
@@ -3092,11 +3092,11 @@ importers:
         specifier: ~5.5.4
         version: 5.5.4
 
-  packages/views.vite-plugin:
+  packages/widget.vite-plugin:
     dependencies:
-      '@osdk/views-api.unstable':
+      '@osdk/widget-api.unstable':
         specifier: workspace:~
-        version: link:../views.api.unstable
+        version: link:../widget.api.unstable
       escodegen:
         specifier: ^2.1.0
         version: 2.1.0
