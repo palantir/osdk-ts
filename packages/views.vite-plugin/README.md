@@ -148,14 +148,14 @@ This vite plugin will then discover both entrypoints and output a combined `.pal
       "entrypointJs": [
         "assets/main-D7Z1E0qk.js"
       ],
-      "entrypointCss": [],
+      "entrypointCss": []
       // Rest of config
     },
     "second": {
       "entrypointJs": [
         "assets/second-CULz-_Ck.js"
       ],
-      "entrypointCss": [],
+      "entrypointCss": []
       // Rest of config
     }
   }
