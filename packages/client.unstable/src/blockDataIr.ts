@@ -42,6 +42,11 @@ export type InterfaceTypeApiName = string;
 export type ObjectTypeFieldApiName = string;
 export type InterfaceLinkTypeApiName = string;
 
+export interface OntologyIr {
+  blockData: OntologyIrOntologyBlockDataV2;
+  importedTypes: ImportedTypes;
+}
+
 export interface OntologyIrOntologyBlockDataV2 extends
   ReplaceKeys<
     Omit<
@@ -156,4 +161,13 @@ export type OntologyIrValueTypeBlockDataEntry = {
 
 export type OntologyIrValueTypeBlockData = {
   valueTypes: OntologyIrValueTypeBlockDataEntry[];
+};
+
+export type ImportedTypes = {
+  sharedPropertyTypes: ImportedSharedPropertyTypes[];
+};
+
+export type ImportedSharedPropertyTypes = {
+  apiName: string;
+  packageName: string;
 };

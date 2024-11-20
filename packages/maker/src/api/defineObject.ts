@@ -67,6 +67,7 @@ export function defineObject(
       properties: {
         [opts.primaryKey.apiName]: {
           dataType: convertType(opts.primaryKey),
+          rid: "rid",
         },
       },
       rid: "PLACEHOLDER",

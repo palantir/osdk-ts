@@ -19,13 +19,14 @@ import type {
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
+  ObjectSetListener,
+  ObjectSetListenerOptions,
   ObjectTypeDefinition,
   PropertyKeys,
   QueryDefinition,
 } from "@osdk/api";
 import type {
   Experiment,
-  EXPERIMENTAL_ObjectSetListener,
   ExperimentFns,
   MinimalObjectSet,
 } from "@osdk/api/unstable";
@@ -186,8 +187,8 @@ export function createClientInternal(
               const P extends PropertyKeys<Q>,
             >(
               objectSet: ObjectSet<Q>,
-              properties: Array<P>,
-              listener: EXPERIMENTAL_ObjectSetListener<Q, P>,
+              listener: ObjectSetListener<Q, P>,
+              opts?: ObjectSetListenerOptions<Q, P>,
             ) => {
               const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
                 clientCtx,
@@ -195,7 +196,7 @@ export function createClientInternal(
                 objectSet.$objectSetInternals?.def!,
                 getWireObjectSet(objectSet),
                 listener,
-                properties,
+                opts?.properties,
               );
 
               return { unsubscribe: async () => (await pendingSubscribe)() };

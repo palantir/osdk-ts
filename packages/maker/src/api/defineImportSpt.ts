@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import invariant from "tiny-invariant";
+import { ontologyDefinition } from "./defineOntology.js";
 import type { PropertyTypeType, SharedPropertyType } from "./types.js";
 
 /**
@@ -26,5 +28,23 @@ export function importSharedPropertyType(
     typeHint: PropertyTypeType;
   },
 ): SharedPropertyType {
-  return { apiName: opts.apiName, type: opts.typeHint };
+  const { apiName, packageName, typeHint } = opts;
+  if (packageName !== undefined) {
+    ontologyDefinition.importedTypes.sharedPropertyTypes.push({
+      apiName,
+      packageName,
+    });
+    invariant(
+      !packageName.endsWith("."),
+      "Package name format invalid ends with period",
+    );
+
+    invariant(
+      packageName.match("[A-Z]") == null,
+      "Package name includes upper case characters",
+    );
+
+    return { apiName: packageName + "." + apiName, type: typeHint };
+  }
+  return { apiName: apiName, type: typeHint };
 }

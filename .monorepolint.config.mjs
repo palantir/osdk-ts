@@ -37,12 +37,14 @@ const DELETE_SCRIPT_ENTRY = { options: [undefined], fixValue: undefined };
 const nonStandardPackages = [
   "@osdk/e2e.generated.1.1.x",
   "@osdk/e2e.sandbox.todoapp",
+  "@osdk/e2e.sandbox.views.todo-widget", // uses react
   "@osdk/e2e.sandbox.oauth.public.react-router",
   "@osdk/examples.*",
   "@osdk/foundry-sdk-generator",
   "@osdk/e2e.test.foundry-sdk-generator",
   "@osdk/monorepo.*", // internal monorepo packages
   "@osdk/tests.*",
+  "@osdk/views-client-react.unstable", // uses react
   // removed the following from the repo to avoid it being edited
   // "@osdk/shared.client2", // hand written package that only exposes a symbol
 ];
