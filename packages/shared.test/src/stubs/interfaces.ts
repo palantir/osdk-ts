@@ -27,6 +27,7 @@ export const FooInterface: InterfaceType = {
     fooSpt,
   },
   links: {},
+  implementedByObjectTypes: [],
 };
 
 export const employeeInterfaceScoped = {
@@ -52,4 +53,5 @@ export const BarInterface: InterfaceType = {
   extendsInterfaces: [],
   properties: {},
   links: {},
+  implementedByObjectTypes: [],
 };
