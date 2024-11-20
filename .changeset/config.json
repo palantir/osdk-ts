@@ -17,10 +17,10 @@
     ],
     ["@osdk/cli", "@osdk/cli.*"],
     [
-      "@osdk/views-api.unstable",
-      "@osdk/views-client.unstable",
-      "@osdk/views-client-react.unstable",
-      "@osdk/views-manifest-vite-plugin"
+      "@osdk/widget-api.unstable",
+      "@osdk/widget-client.unstable",
+      "@osdk/widget-client-react.unstable",
+      "@osdk/widget-manifest-vite-plugin"
     ]
   ],
   "linked": [],
