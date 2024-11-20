@@ -20,7 +20,6 @@ import type {
   PossibleWhereClauseFilters,
   WhereClause,
 } from "@osdk/api";
-
 import { DistanceUnitMapping } from "@osdk/api";
 
 import type { SearchJsonQueryV2 } from "@osdk/internal.foundry.core";
