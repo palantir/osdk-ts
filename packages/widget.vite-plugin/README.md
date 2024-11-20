@@ -22,7 +22,9 @@ The `@osdk/widget-client` package exports a `WidgetConfig` type so that you can 
 
 ```js
 // main.config.ts
-export default {
+import { defineConfig } from "@osdk/widget-client";
+
+export default defineConfig({
   rid: "<FILL IN RID>", // This is the RID of the Foundry widget this code will publish to
   parameters: {
     headerText: {
@@ -49,7 +51,7 @@ export default {
       parameterIds: ["todoItems"],
     },
   },
-} as const satisfies WidgetConfig;
+});
 ```
 
 ## Importing the configuration
