@@ -73,7 +73,7 @@ export async function generatePackage(
   );
 
   const compilerOutput = compileInMemory(inMemoryFileSystem, {
-    esm: options.beta,
+    esm: true,
   });
   compilerOutput.diagnostics.forEach(d =>
     consola.error(`Error compiling file`, d.file?.fileName, d.messageText)
