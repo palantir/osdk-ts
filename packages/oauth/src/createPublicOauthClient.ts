@@ -72,7 +72,7 @@ export interface PublicOauthClientOptions {
   fetchFn?: typeof globalThis.fetch;
 
   /**
-   * Context path for the authorization server (defaults to "/multipass")
+   * Context path for the authorization server (defaults to "multipass")
    */
   ctxPath?: string;
 }
@@ -104,7 +104,7 @@ export function createPublicOauthClient(
  * @param {string} postLoginPage - URL to return to after completed authentication cycle (defaults to `window.location.toString()`)
  * @param {string[]} scopes - OAuth scopes to request. If not provided, defaults to `["api:read-data", "api:write-data"]`
  * @param {typeof globalThis.fetch} fetchFn - Custom fetch function to use for requests (defaults to `globalThis.fetch`)
- * @param {string} ctxPath - Context path for the authorization server (defaults to "/multipass")
+ * @param {string} ctxPath - Context path for the authorization server (defaults to "multipass")
  * @returns {PublicOauthClient} A client that can be used as a token provider
  */
 export function createPublicOauthClient(
