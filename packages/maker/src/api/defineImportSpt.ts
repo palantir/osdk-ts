@@ -30,7 +30,7 @@ export function importSharedPropertyType(
 ): SharedPropertyType {
   const { apiName, packageName, typeHint } = opts;
   if (packageName !== undefined) {
-    ontologyDefinition.importedTypes.sharedPropertyTypes.add({
+    ontologyDefinition.importedTypes.sharedPropertyTypes.push({
       apiName,
       packageName,
     });

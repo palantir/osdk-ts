@@ -59,7 +59,7 @@ export async function defineOntology(
     sharedPropertyTypes: {},
     valueTypes: {},
     importedTypes: {
-      sharedPropertyTypes: new Set(),
+      sharedPropertyTypes: [],
     },
   };
 
@@ -133,11 +133,7 @@ function convertToWireOntologyIr(
         objectTypes: {},
       },
     },
-    importedTypes: {
-      sharedPropertyTypes: Array.from(
-        ontology.importedTypes.sharedPropertyTypes,
-      ),
-    },
+    importedTypes: ontology.importedTypes,
   };
 }
 
