@@ -69,7 +69,7 @@ export function FoundryViewVitePlugin(options: Options = {}): Plugin {
         const extension = path.extname(source);
         const filename = path.basename(source, extension);
         if (filename.endsWith(CONFIG_FILE_SUFFIX)) {
-          // We found a .parameters file that's imported from an entrypoint JS file, save it
+          // We found a .config file that's imported from an entrypoint JS file, save it
           configSourceFileToEntrypointMap[filename] = entrypoint;
         }
       }
@@ -168,13 +168,11 @@ export function FoundryViewVitePlugin(options: Options = {}): Plugin {
             }
           }
         }
-
-        throw new Error(
-          `Could not find view configuration object in ${moduleInfo.id}. Ensure that the default export is a view configuration object of type ViewConfig`,
-        );
       }
 
       // todo: deal with common JS
+      // If the config file doesn't have what we're looking for, we ignore it. Failure to find any .config.js
+      // file of the shape we want will be handled in generateBundle
     },
     // We hook into the produced bundle information to generate a view configuration file that includes both the entrypoint info and any inferred parameter information.
     generateBundle(options, bundle) {
@@ -193,8 +191,7 @@ export function FoundryViewVitePlugin(options: Options = {}): Plugin {
         ) {
           if (entrypointFileIdToConfigMap[chunk.facadeModuleId] == null) {
             throw new Error(
-              "Missing view configuration for entrypoint: "
-                + chunk.fileName,
+              `Could not find view configuration object for entrypoint ${chunk.fileName}. Ensure that the default export of your imported *.${CONFIG_FILE_SUFFIX}.js file is a view configuration object of type ViewConfig`,
             );
           }
           const viewConfig: ViewManifestConfig = {
