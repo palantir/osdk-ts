@@ -29,6 +29,7 @@ export type WirePropertyTypes =
   | "marking"
   | "numericTimeseries"
   | "stringTimeseries"
+  | "sensorTimeseries"
   | "attachment"
   | "geopoint"
   | "geoshape"

@@ -1,5 +1,31 @@
 # @osdk/maker
 
+## 0.9.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [11a05cc]
+- Updated dependencies [11088aa]
+  - @osdk/api@2.1.0-beta.10
+
+## 0.9.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [acbfab9]
+  - @osdk/api@2.1.0-beta.9
+
+## 0.9.0-beta.8
+
+### Minor Changes
+
+- b8a1a58: Add nullability to markings because of course they need to be nullable. This sucks in the data model, I should talk to the ontology team about this.
+
+### Patch Changes
+
+- Updated dependencies [9f3807c]
+  - @osdk/api@2.1.0-beta.8
+
 ## 0.9.0-beta.7
 
 ### Minor Changes

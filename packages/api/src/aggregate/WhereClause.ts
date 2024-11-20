@@ -23,6 +23,14 @@ import type {
   CompileTimeMetadata,
   ObjectMetadata,
 } from "../ontology/ObjectTypeDefinition.js";
+import type { IsNever } from "../OsdkObjectFrom.js";
+import type { ArrayFilter } from "./ArrayFilter.js";
+import type { BaseFilter, BaseFilterOptions } from "./BaseFilter.js";
+import type { BooleanFilter } from "./BooleanFilter.js";
+import type { DatetimeFilter } from "./DatetimeFilter.js";
+import type { GeoFilter } from "./GeoFilter.js";
+import type { NumberFilter } from "./NumberFilter.js";
+import type { StringFilter } from "./StringFilter.js";
 
 export type PossibleWhereClauseFilters =
   | "$gt"
@@ -40,44 +48,6 @@ export type PossibleWhereClauseFilters =
   | "$containsAllTermsInOrder"
   | "$containsAnyTerm"
   | "$containsAllTerms";
-
-// We need to conditional here to force the union to be distributed
-type MakeFilter<K extends PossibleWhereClauseFilters, V> = K extends string ? {
-    [k in K]: V;
-  }
-  : never;
-
-type BaseFilter<T> =
-  | T
-  | MakeFilter<"$eq" | "$ne", T>
-  | MakeFilter<"$in", ReadonlyArray<T>>
-  | MakeFilter<"$isNull", boolean>;
-
-type StringFilter =
-  | BaseFilter<string>
-  | MakeFilter<
-    | "$startsWith"
-    | "$containsAllTermsInOrder"
-    | "$containsAnyTerm"
-    | "$containsAllTerms",
-    string
-  >;
-type NumberFilter =
-  | BaseFilter<number>
-  | MakeFilter<"$gt" | "$gte" | "$lt" | "$lte", number>;
-
-type DatetimeFilter =
-  | BaseFilter<string>
-  | MakeFilter<"$gt" | "$gte" | "$lt" | "$lte", string>;
-
-type BooleanFilter =
-  | boolean
-  | MakeFilter<"$eq" | "$ne", boolean>
-  | MakeFilter<"$isNull", boolean>;
-
-type ArrayFilter<T> =
-  | MakeFilter<"$contains", T>
-  | MakeFilter<"$isNull", boolean>;
 
 // the value side of this needs to match DistanceUnit from @osdk/internal.foundry but we don't
 // want the dependency
@@ -152,11 +122,6 @@ export type GeoFilter_Intersects = {
     | Polygon;
 };
 
-export type GeoFilter =
-  | GeoFilter_Within
-  | GeoFilter_Intersects
-  | MakeFilter<"$isNull", boolean>;
-
 type FilterFor<PD extends ObjectMetadata.Property> = PD["multiplicity"] extends
   true
   ? (PD["type"] extends
@@ -168,7 +133,10 @@ type FilterFor<PD extends ObjectMetadata.Property> = PD["multiplicity"] extends
     : PD["type"] extends "geopoint" | "geoshape" ? GeoFilter
     : PD["type"] extends "datetime" | "timestamp" ? DatetimeFilter
     : PD["type"] extends "boolean" ? BooleanFilter
-    : NumberFilter); // FIXME we need to represent all types
+    : PD["type"] extends
+      "double" | "integer" | "long" | "float" | "decimal" | "byte"
+      ? NumberFilter
+    : BaseFilter<string>); // FIXME we need to represent all types
 
 export interface AndWhereClause<
   T extends ObjectOrInterfaceDefinition,
@@ -194,6 +162,10 @@ export type WhereClause<
   | OrWhereClause<T>
   | AndWhereClause<T>
   | NotWhereClause<T>
-  | {
-    [P in PropertyKeys<T>]?: FilterFor<CompileTimeMetadata<T>["properties"][P]>;
-  };
+  | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true
+    ? Record<string, never>
+    : {
+      [P in keyof CompileTimeMetadata<T>["properties"]]?: FilterFor<
+        CompileTimeMetadata<T>["properties"][P]
+      >;
+    });

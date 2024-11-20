@@ -1,5 +1,41 @@
 # @osdk/foundry-sdk-generator
 
+## 2.1.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [11a05cc]
+- Updated dependencies [14624f7]
+- Updated dependencies [11088aa]
+- Updated dependencies [d88fdb9]
+  - @osdk/client@2.1.0-beta.10
+  - @osdk/api@2.1.0-beta.10
+  - @osdk/generator@2.1.0-beta.10
+
+## 2.1.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [acbfab9]
+  - @osdk/client@2.1.0-beta.9
+  - @osdk/api@2.1.0-beta.9
+  - @osdk/generator@2.1.0-beta.9
+
+## 2.1.0-beta.8
+
+### Minor Changes
+
+- 3dc9676: Explicitly label package.json as type module now.
+- 71dfb4c: Now export all api shapes from client, so use that dependency instead.
+
+### Patch Changes
+
+- Updated dependencies [9f3807c]
+- Updated dependencies [71dfb4c]
+  - @osdk/client@2.1.0-beta.8
+  - @osdk/api@2.1.0-beta.8
+  - @osdk/generator@2.1.0-beta.8
+
 ## 2.1.0-beta.7
 
 ### Minor Changes

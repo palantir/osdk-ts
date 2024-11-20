@@ -19,7 +19,7 @@ import type {
   OntologyFullMetadata,
 } from "@osdk/internal.foundry.core";
 import { actionTypes, ActionTypeWithUnsupportedTypes } from "./actionsTypes.js";
-import { FooInterface } from "./interfaces.js";
+import { BarInterface, FooInterface } from "./interfaces.js";
 import { objectTypesWithLinkTypes } from "./objectTypesWithLinkTypes.js";
 import { queryTypes } from "./queryTypes.js";
 import { fooSpt } from "./spts.js";
@@ -52,6 +52,7 @@ export const fullOntology: OntologyFullMetadata = {
   ),
   interfaceTypes: {
     FooInterface,
+    BarInterface,
   },
   sharedPropertyTypes: {
     fooSpt,

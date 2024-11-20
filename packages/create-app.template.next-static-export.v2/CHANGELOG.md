@@ -1,5 +1,15 @@
 # @osdk/create-app.template.next-static-export.v2
 
+## 2.1.0-beta.10
+
+## 2.1.0-beta.9
+
+## 2.1.0-beta.8
+
+### Minor Changes
+
+- 0e1a2e3: Add the scopes option to OSDK CLI and update all example generators to include the scopes if provided, else, hide the scopes to avoid confusion
+
 ## 2.1.0-beta.7
 
 ## 2.1.0-beta.6

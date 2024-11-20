@@ -1,5 +1,24 @@
 # @osdk/api
 
+## 2.1.0-beta.10
+
+### Minor Changes
+
+- 11a05cc: Updated subscribe api to make requesting properties optional
+- 11088aa: Fix where clause types so we don't accept more than one key in the clauses.
+
+## 2.1.0-beta.9
+
+### Minor Changes
+
+- acbfab9: Fixes where clauses for interfaces with no properties.
+
+## 2.1.0-beta.8
+
+### Minor Changes
+
+- 9f3807c: Allows $in to take a readonly array
+
 ## 2.1.0-beta.7
 
 ### Minor Changes
