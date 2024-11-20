@@ -98,3 +98,66 @@ createRoot(root).render(
 ```
 
 Then the vite plugin will automatically find `src/main.config.ts` file and produce a `.palantir/view-config.json` file in the configured output directory of your vite config. If you don't actually need the config object in your code, you can also just have a simple import statement like `import "./main.config.js";` to get the plugin to find it.
+
+## Multiple entrypoints
+
+You can configure vite and this plugin to output multiple views simultaneously. Vite's entrypoints are based on HTML files, so to add more entrypoints, first add another HTML file:
+
+```
+src/
+  main.tsx
+  main.config.ts
+  second.tsx        // Imported by second.html 
+  second.config.ts  // Imported by second.tsx
+index.html
+second.html         // Second entrypoint
+```
+
+And then in your vite config, you will need to configure the [`build.rollupOptions.input`](https://rollupjs.org/configuration-options/#input) option to discover both entrypoints:
+
+```js
+import viewManifestPlugin from "@osdk/views-manifest-vite-plugin";
+import react from "@vitejs/plugin-react";
+import { fileURLToPath } from "node:url";
+import { defineConfig } from "vite";
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react(), viewManifestPlugin()],
+  server: {
+    port: 8080,
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        main: fileURLToPath(new URL("./index.html", import.meta.url)),
+        second: fileURLToPath(new URL("./second.html", import.meta.url)),
+      },
+    },
+  },
+});
+```
+
+This vite plugin will then discover both entrypoints and output a combined `.palantir/views.config.json` file like so:
+
+```json
+{
+  "version": "1.0.0",
+  "views": {
+    "main": {
+      "entrypointJs": [
+        "assets/main-D7Z1E0qk.js"
+      ],
+      "entrypointCss": [],
+      // Rest of config
+    },
+    "second": {
+      "entrypointJs": [
+        "assets/second-CULz-_Ck.js"
+      ],
+      "entrypointCss": [],
+      // Rest of config
+    }
+  }
+}
+```

@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  EventId,
-  EventParameterValueMap,
-  ParameterValueMap,
-  ViewConfig,
-} from "../config.js";
+import type { EventId, EventParameterValueMap, ViewConfig } from "../config.js";
 import type { HostMessage } from "./hostMessages.js";
 
 // Interfaces and type guards for messages passed from the child view to the host Foundry UI

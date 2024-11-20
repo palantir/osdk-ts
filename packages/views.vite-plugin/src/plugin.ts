@@ -180,6 +180,7 @@ export function FoundryViewVitePlugin(options: Options = {}): Plugin {
     generateBundle(options, bundle) {
       const packageJsonFile = fs.readJSONSync(packageJsonPath);
       const viewConfigManifest: ViewManifest = {
+        version: "1.0.0",
         views: {},
       };
 

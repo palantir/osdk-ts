@@ -23,7 +23,7 @@ interface HostBaseMessage<T extends string, P = unknown> {
 }
 
 export namespace HostMessage {
-  export const Version = "0.1.0";
+  export const Version = "1.0.0";
   export type Version = typeof Version;
 
   export namespace Payload {

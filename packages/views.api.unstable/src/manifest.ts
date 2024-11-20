@@ -20,17 +20,47 @@ import type {
   ParameterDefinition,
 } from "./config.js";
 
-export interface ViewManifest {
-  views: Record<string, ViewManifestConfig>;
+export interface ViewManifestV1 {
+  version: "1.0.0";
+
+  /**
+   * Set of views that are available to be rendered.
+   * The key can be arbitrary, and is usually the name of your entrypoint, e.g. "main"
+   */
+  views: Record<string, ViewManifestConfigV1>;
 }
 
-export interface ViewManifestConfig {
+export interface ViewManifestConfigV1 {
+  /**
+   * RID of the view that this view corresponds to
+   */
   rid: string;
+
+  /**
+   * The version of the view to publish as
+   */
   version: string;
+
+  /**
+   * List of entrypoint JS files to be loaded, in order. These will be placed on the page in script tags
+   */
   entrypointJs: string[];
+
+  /**
+   * Any CSS files to be loaded, in order.
+   * @optional
+   */
   entrypointCss?: string[];
+
+  /**
+   * The map of parameter IDs to their definition
+   */
   parameters: Record<string, ParameterDefinition>;
+
+  /**
+   * The map of events to their definition. Any parameter IDs referenced must be defined in the `parameters` field
+   */
   events: Record<string, EventDefinition<ParameterConfig>>;
 }
 
-export const MANIFEST_FILE_LOCATION = ".palantir/view-config.json";
+export const MANIFEST_FILE_LOCATION = ".palantir/views.config.json";
