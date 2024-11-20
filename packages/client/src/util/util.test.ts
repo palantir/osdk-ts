@@ -20,7 +20,7 @@ import { describe, expect, expectTypeOf, it } from "vitest";
 import { consolidateOsdkObject } from "./consolidateOsdkObject.js";
 
 describe(consolidateOsdkObject, () => {
-  it("combines two objects", () => {
+  it("combines two objects where new object is scoped to less props", () => {
     const oldObject: Osdk.Instance<Todo, never, "text"> = {
       $apiName: "Todo",
       $objectType: "type",
@@ -41,6 +41,40 @@ describe(consolidateOsdkObject, () => {
     const result = consolidateOsdkObject(oldObject, upToDateObject);
 
     expectTypeOf(result).toEqualTypeOf<Osdk.Instance<Todo>>();
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "$apiName": "Todo",
+        "$objectType": "type",
+        "$primaryKey": 1,
+        "$title": "Employee",
+        "id": 1,
+        "text": "hi",
+      }
+    `);
+  });
+
+  it("combines two objects where new object is scoped to more props", () => {
+    const oldObject: Osdk.Instance<Todo> = {
+      $apiName: "Todo",
+      $objectType: "type",
+      $primaryKey: 1,
+      $title: "Employee",
+      id: 3,
+      text: "text",
+    } as any;
+
+    const upToDateObject: Osdk.Instance<Todo, never, "id"> = {
+      $apiName: "Todo",
+      $objectType: "type",
+      $primaryKey: 1,
+      $title: "Employee",
+      id: 1,
+    } as any;
+
+    const result = consolidateOsdkObject(oldObject, upToDateObject);
+
+    expectTypeOf(result).toEqualTypeOf<Osdk.Instance<Todo, never, "id">>();
 
     expect(result).toMatchInlineSnapshot(`
       {

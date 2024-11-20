@@ -21,17 +21,14 @@ export function consolidateOsdkObject<
   U extends Osdk.Instance<V, any, any>,
   V extends ObjectOrInterfaceDefinition,
 >(
-  oldObject: T | undefined,
+  oldObject: T,
   upToDateObject: U,
-): U {
-  if (!oldObject) {
-    return upToDateObject;
-  }
-  const combinedObject = oldObject as any;
+): T {
+  const combinedObject = oldObject;
 
-  for (const key in upToDateObject) {
+  for (const key in combinedObject) {
     if (upToDateObject.hasOwnProperty(key)) {
-      combinedObject[key] = upToDateObject[key];
+      combinedObject[key] = upToDateObject[key] as any;
     }
   }
 
