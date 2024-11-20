@@ -59,9 +59,7 @@ export const FoundryWidgetContext = React.createContext<
 export function useFoundryWidgetContext<
   C extends WidgetConfig<C["parameters"]>,
 >() {
-  return useContext(
-    FoundryWidgetContext,
-  ) as any as FoundryWidgetClientContext<C>;
+  return useContext(FoundryWidgetContext) as FoundryWidgetClientContext<C>;
 }
 
 export namespace useFoundryWidgetContext {

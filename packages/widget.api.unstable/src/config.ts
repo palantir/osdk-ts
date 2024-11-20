@@ -67,14 +67,13 @@ export type AsyncParameterValueMap<C extends WidgetConfig<C["parameters"]>> = {
         value: AsyncValue<P>;
       }
     : never
-    : C["parameters"][K] extends PrimitiveParameterDefinition<infer S>
-      ? Extract<ParameterValue, { type: S }>["value"] extends AsyncValue<
-        infer P
-      > ? {
-          type: S;
-          value: AsyncValue<P>;
-        }
-      : never
+    : Extract<
+      ParameterValue,
+      { type: C["parameters"][K]["type"] }
+    >["value"] extends AsyncValue<infer P> ? {
+        type: C["parameters"][K]["type"];
+        value: AsyncValue<P>;
+      }
     : never;
 };
 
@@ -91,11 +90,10 @@ export type ParameterValueMap<C extends WidgetConfig<C["parameters"]>> = {
       { type: C["parameters"][K]["type"]; subType: S }
     >["value"] extends AsyncValue<infer P> ? P
     : never
-    : C["parameters"][K] extends PrimitiveParameterDefinition<infer S>
-      ? Extract<ParameterValue, { type: S }>["value"] extends AsyncValue<
-        infer P
-      > ? P
-      : never
+    : Extract<
+      ParameterValue,
+      { type: C["parameters"][K]["type"] }
+    >["value"] extends AsyncValue<infer P> ? P
     : never;
 };
 

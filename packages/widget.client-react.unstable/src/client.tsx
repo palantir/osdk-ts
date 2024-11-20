@@ -154,10 +154,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
       value={{
         emitEvent: client.emitEvent,
         hostEventTarget: client.hostEventTarget,
-        asyncParameterValues:
-          asyncParameterValues as unknown as AsyncParameterValueMap<
-            WidgetConfig<ParameterConfig>
-          >,
+        asyncParameterValues,
         parameterValues: allParameterValues.type === "not-started"
             || allParameterValues.type === "loading"
           ? {}
