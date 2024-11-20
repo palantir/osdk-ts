@@ -64,7 +64,7 @@ export const FoundryView = <
       (payload) => {
         setParameterValues((currentParameters) => ({
           ...currentParameters,
-          ...payload,
+          ...payload.detail.parameters,
         }));
       },
     );

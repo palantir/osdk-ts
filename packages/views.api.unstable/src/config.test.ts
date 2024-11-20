@@ -30,6 +30,7 @@ describe("ViewConfig", () => {
   describe("ParameterConfigId", () => {
     it("should be able to infer the type of the parameter ID", () => {
       const test = {
+        rid: "ri.viewregistry..view.0000-0000-0000-0000",
         parameters: {
           test: {
             displayName: "Testing",
@@ -49,6 +50,7 @@ describe("ViewConfig", () => {
 
     it("should construct a type safe map of async parameter values", () => {
       const test = {
+        rid: "ri.viewregistry..view.0000-0000-0000-0000",
         parameters: {
           test: {
             displayName: "Testing",
@@ -69,6 +71,7 @@ describe("ViewConfig", () => {
 
     it("should construct a type safe map of async parameter values with arrays", () => {
       const test = {
+        rid: "ri.viewregistry..view.0000-0000-0000-0000",
         parameters: {
           test: {
             displayName: "Testing",
@@ -96,6 +99,7 @@ describe("ViewConfig", () => {
 
     it("should construct a type safe map of parameter values", () => {
       const test = {
+        rid: "ri.viewregistry..view.0000-0000-0000-0000",
         parameters: {
           test: {
             displayName: "Testing",
@@ -123,6 +127,7 @@ describe("ViewConfig", () => {
 
     it("should construct a type safe map of events that reference parameters", () => {
       const test = {
+        rid: "ri.viewregistry..view.0000-0000-0000-0000",
         parameters: {
           test: {
             displayName: "Testing",
@@ -153,6 +158,7 @@ describe("ViewConfig", () => {
 
     it("will not extract an event that references a parameter ID that doesn't exist", () => {
       const test = {
+        rid: "ri.viewregistry..view.0000-0000-0000-0000",
         parameters: {
           test: {
             displayName: "Testing",
@@ -184,6 +190,7 @@ describe("ViewConfig", () => {
 
     it("should extract event IDs correctly", () => {
       const test = {
+        rid: "ri.viewregistry..view.0000-0000-0000-0000",
         parameters: {
           test: {
             displayName: "Testing",
@@ -218,6 +225,7 @@ describe("ViewConfig", () => {
 
     it("should extract an event to the parameter values", () => {
       const test = {
+        rid: "ri.viewregistry..view.0000-0000-0000-0000",
         parameters: {
           test: {
             displayName: "Testing",
@@ -247,6 +255,35 @@ describe("ViewConfig", () => {
         test: boolean[];
         test2: string[];
       }>();
+    });
+
+    it("should not allow invalid RIDs", () => {
+      const test = {
+        // @ts-expect-error
+        rid: "ri.asdf..view.0000-0000-0000-0000",
+        parameters: {
+          test: {
+            displayName: "Testing",
+            type: "array",
+            subType: "boolean",
+          },
+          test2: {
+            displayName: "Testing 2",
+            type: "array",
+            subType: "string",
+          },
+          test3: {
+            displayName: "Testing 3",
+            type: "number",
+          },
+        },
+        events: {
+          myEvent: {
+            displayName: "My Event",
+            parameterIds: ["test", "test2"],
+          },
+        },
+      } as const satisfies ViewConfig;
     });
   });
 });

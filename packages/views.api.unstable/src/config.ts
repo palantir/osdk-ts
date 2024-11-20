@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import type { ParameterValue, PrimitiveParameterType } from "./parameters.js";
+import type { ParameterValue } from "./parameters.js";
 import type { AsyncValue } from "./utils/asyncValue.js";
 
-interface PrimitiveParameterDefinition<T extends PrimitiveParameterType> {
+interface PrimitiveParameterDefinition<T extends ParameterValue.PrimitiveType> {
   type: T;
   displayName: string;
 }
-interface ArrayParameterDefinition<S extends PrimitiveParameterType> {
+interface ArrayParameterDefinition<S extends ParameterValue.PrimitiveType> {
   type: ParameterValue.Array["type"];
   displayName: string;
   subType: S;
 }
 export type ParameterDefinition =
-  | PrimitiveParameterDefinition<PrimitiveParameterType>
-  | ArrayParameterDefinition<PrimitiveParameterType>;
+  | PrimitiveParameterDefinition<ParameterValue.PrimitiveType>
+  | ArrayParameterDefinition<ParameterValue.PrimitiveType>;
 
 export interface EventDefinition<CONFIG extends ParameterConfig> {
   displayName: string;
@@ -42,13 +42,17 @@ export interface ParameterConfig {
 export type ViewConfig<PARAMS extends ParameterConfig = ParameterConfig> =
   & ParameterConfig
   & {
+    rid: `ri.viewregistry.${string}.view.${string}`;
     events: { [eventId: string]: EventDefinition<PARAMS> };
   };
 
 /**
  * Extracts the parameter ID strings as types from the given ParameterConfig.
  */
-export type ParameterId<T extends ParameterConfig> = keyof T["parameters"];
+export type ParameterId<T extends ParameterConfig = ParameterConfig> = Extract<
+  keyof T["parameters"],
+  string
+>;
 
 /**
  * Extracts a map of parameter IDs to their async-wrapped value types from the given ParameterConfig.
