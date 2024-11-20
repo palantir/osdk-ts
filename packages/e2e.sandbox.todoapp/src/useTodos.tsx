@@ -1,5 +1,4 @@
 import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
-import { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "@osdk/api/unstable";
 import { ActionValidationError } from "@osdk/client";
 import { useCallback, useEffect } from "react";
 import type { KeyedMutator } from "swr";
@@ -167,14 +166,8 @@ function updateOne<T extends { $primaryKey: Q }, Q>(
 /** disabling for now */
 export function useSubscribe(mutate: KeyedMutator<SimpleTodo[]>) {
   useEffect(() => {
-    const subscription = $(__EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe)
+    const subscription = $(MyOsdk.Todo)
       .subscribe(
-        $(MyOsdk.Todo),
-        [
-          "id",
-          "isComplete",
-          "title",
-        ],
         {
           onChange(objectUpdate) {
             // index incoming objects by apiName and then by pk value

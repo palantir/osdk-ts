@@ -26,6 +26,7 @@ import {
   refreshTokenGrantRequest,
   validateAuthResponse,
 } from "oauth4webapi";
+import invariant from "tiny-invariant";
 import {
   common,
   createAuthorizationServer,

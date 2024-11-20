@@ -10,6 +10,10 @@ const redirectUrl = process.env.NEXT_PUBLIC_FOUNDRY_REDIRECT_URL;
 checkEnv(url, "NEXT_PUBLIC_FOUNDRY_API_URL");
 checkEnv(clientId, "NEXT_PUBLIC_FOUNDRY_CLIENT_ID");
 checkEnv(redirectUrl, "NEXT_PUBLIC_FOUNDRY_REDIRECT_URL");
+const scopes = [
+    "api:ontologies-read",
+    "api:ontologies-write",
+];
 
 function checkEnv(
   value: string | undefined,
@@ -30,6 +34,10 @@ export const getAuth = () => {
       clientId,
       url,
       redirectUrl,
+      true,
+      undefined,
+      window.location.toString(),
+      scopes,
     );
   }
   return auth;

@@ -1,5 +1,32 @@
 # @osdk/cli.cmd.typescript
 
+## 0.25.0-beta.9
+
+### Patch Changes
+
+- @osdk/generator@2.1.0-beta.9
+- @osdk/cli.common@0.25.0-beta.9
+
+## 0.25.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [71dfb4c]
+  - @osdk/generator@2.1.0-beta.8
+  - @osdk/cli.common@0.25.0-beta.8
+
+## 0.25.0-beta.7
+
+### Minor Changes
+
+- 9018dc2: Updating platform api dependencies.
+
+### Patch Changes
+
+- Updated dependencies [9018dc2]
+  - @osdk/generator@2.1.0-beta.7
+  - @osdk/cli.common@0.25.0-beta.7
+
 ## 0.25.0-beta.6
 
 ### Minor Changes

@@ -1,5 +1,36 @@
 # @osdk/maker
 
+## 0.9.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [acbfab9]
+  - @osdk/api@2.1.0-beta.9
+
+## 0.9.0-beta.8
+
+### Minor Changes
+
+- b8a1a58: Add nullability to markings because of course they need to be nullable. This sucks in the data model, I should talk to the ontology team about this.
+
+### Patch Changes
+
+- Updated dependencies [9f3807c]
+  - @osdk/api@2.1.0-beta.8
+
+## 0.9.0-beta.7
+
+### Minor Changes
+
+- cd8d657: Support importing foreign SPTs
+- 9018dc2: Updating platform api dependencies.
+
+### Patch Changes
+
+- Updated dependencies [27866a8]
+- Updated dependencies [31e7d70]
+  - @osdk/api@2.1.0-beta.7
+
 ## 0.9.0-beta.6
 
 ### Minor Changes

@@ -15,16 +15,30 @@
  */
 
 export type {
+  ActionDefinition,
   ActionEditResponse,
+  ActionMetadata,
+  ActionParam,
   ActionReturnTypeForOptions,
   ActionValidationResponse,
   ApplyActionOptions,
   ApplyBatchActionOptions,
+  InterfaceDefinition,
+  ObjectMetadata,
   ObjectSet,
+  ObjectTypeDefinition,
   Osdk,
   OsdkObject,
   PageResult,
+  PropertyDef,
+  PropertyKeys,
+  PropertyValueWireToClient,
+  QueryDefinition,
+  QueryParam,
+  QueryResult,
   Result,
+  SingleLinkAccessor,
+  VersionBound,
   WhereClause,
 } from "@osdk/api";
 export { isOk } from "@osdk/api";
@@ -38,3 +52,9 @@ export type { PlatformClient } from "./createPlatformClient.js";
 export type { Logger } from "./Logger.js";
 export { createAttachmentUpload } from "./object/AttachmentUpload.js";
 export type { ResultOrError } from "./ResultOrError.js";
+
+export {
+  extractDate,
+  extractDateInLocalTime,
+  extractDateInUTC,
+} from "./util/datetimeConverters.js";

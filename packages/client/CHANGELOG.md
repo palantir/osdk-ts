@@ -1,5 +1,49 @@
 # @osdk/client
 
+## 2.1.0-beta.9
+
+### Minor Changes
+
+- acbfab9: Fixes where clauses for interfaces with no properties.
+
+### Patch Changes
+
+- Updated dependencies [acbfab9]
+  - @osdk/api@2.1.0-beta.9
+  - @osdk/generator-converters@2.1.0-beta.9
+  - @osdk/client.unstable@2.1.0-beta.9
+
+## 2.1.0-beta.8
+
+### Minor Changes
+
+- 9f3807c: Allows $in to take a readonly array
+- 71dfb4c: Now export all api shapes from client, so use that dependency instead.
+
+### Patch Changes
+
+- Updated dependencies [9f3807c]
+  - @osdk/api@2.1.0-beta.8
+  - @osdk/generator-converters@2.1.0-beta.8
+  - @osdk/client.unstable@2.1.0-beta.8
+
+## 2.1.0-beta.7
+
+### Minor Changes
+
+- 27866a8: Removing interface argument for selecting object types. This is not supported in the new apis, and is not being used internally anywhere with the old apis.
+- 0cd1603: Fixes AttachmentUpload for browser contexts
+- 9018dc2: Updating platform api dependencies.
+
+### Patch Changes
+
+- Updated dependencies [27866a8]
+- Updated dependencies [9018dc2]
+- Updated dependencies [31e7d70]
+  - @osdk/api@2.1.0-beta.7
+  - @osdk/generator-converters@2.1.0-beta.7
+  - @osdk/client.unstable@2.1.0-beta.7
+
 ## 2.1.0-beta.6
 
 ### Minor Changes

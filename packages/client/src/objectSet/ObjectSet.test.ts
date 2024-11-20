@@ -25,9 +25,10 @@ import type {
   PropertyKeys,
   Result,
 } from "@osdk/api";
-import { isOk } from "@osdk/api";
+import { isOk, WhereClause } from "@osdk/api";
 import {
   $ontologyRid,
+  BarInterface,
   Employee,
   FooInterface,
   Office,
@@ -43,6 +44,7 @@ import {
 } from "vitest";
 import type {
   ApiNameAsString,
+  IsNever,
   JustProps,
   PropMapToInterface,
   PropMapToObject,
@@ -294,6 +296,27 @@ describe("ObjectSet", () => {
       }
       expect(iter).toEqual(2);
     }
+  });
+
+  it("allows $in filter with ReadonlyArrays", () => {
+    const ids: ReadonlyArray<number> = [50030, 50031];
+    const objectSet = client(Employee).where({
+      employeeId: { $in: ids },
+    });
+    expect(objectSet).toBeDefined();
+  });
+
+  it("does not allow arbitrary keys when no properties", () => {
+    const ids: ReadonlyArray<number> = [50030, 50031];
+    client(Employee).where({
+      // @ts-expect-error
+      employeeIdNonExistent: { $in: ids },
+    });
+
+    client(BarInterface).where({
+      // @ts-expect-error
+      nonExistentProp: "",
+    });
   });
 
   describe.each(["fetchPage", "fetchPageWithErrors"] as const)("%s", (k) => {

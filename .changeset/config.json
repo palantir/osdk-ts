@@ -15,7 +15,12 @@
       "@osdk/generator-utils",
       "@osdk/generator"
     ],
-    ["@osdk/cli", "@osdk/cli.*"]
+    ["@osdk/cli", "@osdk/cli.*"],
+    [
+      "@osdk/views-api.unstable",
+      "@osdk/views-client.unstable",
+      "@osdk/views-client-react.unstable"
+    ]
   ],
   "linked": [],
   "access": "restricted",

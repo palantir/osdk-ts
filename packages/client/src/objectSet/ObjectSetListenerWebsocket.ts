@@ -16,13 +16,10 @@
 
 import type {
   ObjectOrInterfaceDefinition,
+  ObjectSetListener,
   Osdk,
   PropertyKeys,
 } from "@osdk/api";
-import type {
-  __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
-  EXPERIMENTAL_ObjectSetListener as ObjectSetListener,
-} from "@osdk/api/unstable";
 import type {
   ObjectSet,
   ObjectSetStreamSubscribeRequest,
@@ -168,7 +165,7 @@ export class ObjectSetListenerWebsocket {
     objectType: ObjectOrInterfaceDefinition,
     objectSet: ObjectSet,
     listener: ObjectSetListener<Q, P>,
-    properties: Array<P>,
+    properties: Array<P> = [],
   ): Promise<() => void> {
     if (process.env.TARGET !== "browser") {
       // Node 18 does not expose 'crypto' on globalThis, so we need to do it ourselves. This
@@ -179,6 +176,10 @@ export class ObjectSetListenerWebsocket {
     const objDef = await this.#client.ontologyProvider.getObjectDefinition(
       objectType.apiName,
     );
+
+    if (properties.length === 0) {
+      properties = Object.keys(objDef.properties) as Array<P>;
+    }
 
     const objectProperties = properties.filter((p) =>
       objDef.properties[p].type !== "geotimeSeriesReference"

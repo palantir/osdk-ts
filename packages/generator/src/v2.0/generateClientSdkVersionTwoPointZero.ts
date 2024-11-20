@@ -36,6 +36,7 @@ export async function generateClientSdkVersionTwoPointZero(
   externalObjects: Map<string, string> = new Map(),
   externalInterfaces: Map<string, string> = new Map(),
   externalSpts: Map<string, string> = new Map(),
+  forInternalUse: boolean = false,
 ) {
   const importExt = packageType === "module" ? ".js" : "";
 
@@ -61,6 +62,7 @@ export async function generateClientSdkVersionTwoPointZero(
     importExt,
     fs,
     outDir,
+    forInternalUse,
   };
 
   await generateRootIndexTsFile(ctx);

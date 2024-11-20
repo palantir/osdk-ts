@@ -20,7 +20,7 @@ import type {
 } from "../ontology/ObjectOrInterface.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 
-export interface EXPERIMENTAL_ObjectSetListener<
+export interface ObjectSetListener<
   O extends ObjectOrInterfaceDefinition,
   P extends PropertyKeys<O> = PropertyKeys<O>,
 > {
@@ -55,3 +55,16 @@ type ObjectUpdate<
   object: Osdk.Instance<O, never, P>;
   state: "ADDED_OR_UPDATED" | "REMOVED";
 };
+
+/**
+ * Options for subscribing to an ObjectSet.
+ *
+ * properties - The properties to request a subscription for. Requesting specific properties limits the possible properties
+ * that can be returned from the subscription. If not provided, all properties will be requested and potentially be returned on updates.
+ */
+export interface ObjectSetListenerOptions<
+  O extends ObjectOrInterfaceDefinition,
+  P extends PropertyKeys<O> = PropertyKeys<O>,
+> {
+  properties?: Array<P>;
+}

@@ -245,8 +245,15 @@
         "visibility": "NORMAL"
       },
       "linkTypes": [],
-      "implementsInterfaces": [],
-      "implementsInterfaces2": {},
+      "implementsInterfaces": ["FooInterface"],
+      "implementsInterfaces2": {
+        "FooInterface": {
+          "properties": {
+            "name": "osdkObjectName",
+            "description": "description"
+          }
+        }
+      },
       "sharedPropertyTypeMapping": {}
     },
     "WeatherStation": {
