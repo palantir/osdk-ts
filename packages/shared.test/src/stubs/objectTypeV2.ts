@@ -30,7 +30,7 @@ export const employeeObjectType: ObjectTypeV2 = {
       dataType: {
         type: "integer",
       },
-      rid: "rid,",
+      rid: "rid",
     },
     fullName: {
       dataType: {
