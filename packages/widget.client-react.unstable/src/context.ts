@@ -39,8 +39,10 @@ export interface FoundryWidgetClientContext<
   /**
    * Convenience object that aggregates the value of all parameters, accounting for their loading states
    */
-  parameterValues: Partial<ParameterValueMap<C>>;
-  parameterLoadingState: AsyncValue<ParameterValueMap<C>>["type"];
+  parameters: {
+    values: Partial<ParameterValueMap<C>>;
+    state: AsyncValue<ParameterValueMap<C>>["type"];
+  };
 }
 
 export const FoundryWidgetContext = React.createContext<
@@ -49,8 +51,10 @@ export const FoundryWidgetContext = React.createContext<
   emitEvent: () => {},
   hostEventTarget: new FoundryHostEventTarget<WidgetConfig<ParameterConfig>>(),
   asyncParameterValues: {},
-  parameterValues: {},
-  parameterLoadingState: "not-started",
+  parameters: {
+    state: "not-started",
+    values: {},
+  },
 });
 
 /**

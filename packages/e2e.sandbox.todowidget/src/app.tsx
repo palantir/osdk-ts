@@ -15,9 +15,8 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useWidgetContext } from "./context.js";
 
 export const App: React.FC = () => {
-  const { parameterValues, parameterLoadingState, hostEventTarget, emitEvent } =
-    useWidgetContext();
-  const { headerText, todoItems, showWarning } = parameterValues;
+  const { parameters, hostEventTarget, emitEvent } = useWidgetContext();
+  const { headerText, todoItems, showWarning } = parameters.values;
   const [newTodoItem, setNewTodoItem] = useState("");
 
   useEffect(() => {
@@ -47,12 +46,12 @@ export const App: React.FC = () => {
       <Container size="1">
         <Flex p="5" direction="column" gap="2">
           <Heading size="4">
-            {parameterLoadingState === "loading"
-                || parameterLoadingState === "not-started"
+            {parameters.state === "loading"
+                || parameters.state === "not-started"
               ? <Skeleton>Hello, world!</Skeleton>
               : headerText}
           </Heading>
-          {parameterLoadingState === "loaded" && showWarning && (
+          {parameters.state === "loaded" && showWarning && (
             <Callout.Root size="1" color="orange" variant="soft">
               <Callout.Icon>
                 <ExclamationTriangleIcon />
@@ -69,8 +68,8 @@ export const App: React.FC = () => {
             </Table.Header>
 
             <Table.Body>
-              {(parameterLoadingState === "loading"
-                || parameterLoadingState === "not-started") && (
+              {(parameters.state === "loading"
+                || parameters.state === "not-started") && (
                 <>
                   <Table.Row>
                     <Table.Cell>
@@ -94,7 +93,7 @@ export const App: React.FC = () => {
                   </Table.Row>
                 </>
               )}
-              {parameterLoadingState === "loaded"
+              {parameters.state === "loaded"
                 && todoItems?.map((item, index) => (
                   <Table.Row key={index}>
                     <Table.Cell>
@@ -103,7 +102,7 @@ export const App: React.FC = () => {
                     <Table.Cell>{item}</Table.Cell>
                   </Table.Row>
                 ))}
-              {parameterLoadingState === "loaded"
+              {parameters.state === "loaded"
                 && (todoItems ?? []).length === 0 && (
                 <Table.Row>
                   <Table.Cell colSpan={2}>No items yet</Table.Cell>

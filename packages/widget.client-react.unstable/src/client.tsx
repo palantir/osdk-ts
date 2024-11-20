@@ -155,11 +155,13 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
         emitEvent: client.emitEvent,
         hostEventTarget: client.hostEventTarget,
         asyncParameterValues,
-        parameterValues: allParameterValues.type === "not-started"
-            || allParameterValues.type === "loading"
-          ? {}
-          : allParameterValues.value,
-        parameterLoadingState: allParameterValues.type,
+        parameters: {
+          values: allParameterValues.type === "not-started"
+              || allParameterValues.type === "loading"
+            ? {}
+            : allParameterValues.value,
+          state: allParameterValues.type,
+        },
         // Unfortunately the context is statically defined so we can't use the generic type, hence the cast
       } as FoundryWidgetClientContext<WidgetConfig<ParameterConfig>>}
     >

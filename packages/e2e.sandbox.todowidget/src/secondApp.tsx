@@ -11,10 +11,10 @@ import {
 import React, { useEffect } from "react";
 import type Config from "./second.config.js";
 
+const useWidgetContext = useFoundryWidgetContext.withTypes<typeof Config>();
 export const App: React.FC = () => {
-  const { parameterValues, parameterLoadingState, hostEventTarget } =
-    useFoundryWidgetContext.withTypes<typeof Config>()();
-  const { headerText, showWarning } = parameterValues;
+  const { parameters, hostEventTarget } = useWidgetContext();
+  const { headerText, showWarning } = parameters.values;
 
   useEffect(() => {
     hostEventTarget.addEventListener("host.update-parameters", (event) => {
@@ -27,12 +27,12 @@ export const App: React.FC = () => {
       <Container size="1">
         <Flex p="5" direction="column" gap="2">
           <Heading size="4">
-            {parameterLoadingState === "loading"
-                || parameterLoadingState === "not-started"
+            {parameters.state === "loading"
+                || parameters.state === "not-started"
               ? <Skeleton>Hello, world!</Skeleton>
               : headerText}
           </Heading>
-          {parameterLoadingState === "loaded" && showWarning && (
+          {parameters.state === "loaded" && showWarning && (
             <Callout.Root size="1" color="orange" variant="soft">
               <Callout.Icon>
                 <ExclamationTriangleIcon />
