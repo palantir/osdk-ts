@@ -1971,6 +1971,146 @@ importers:
         specifier: ^2.1.6
         version: 2.1.6(typescript@5.5.4)
 
+  packages/create-widget:
+    dependencies:
+      consola:
+        specifier: ^3.2.3
+        version: 3.2.3
+      find-up:
+        specifier: ^7.0.0
+        version: 7.0.0
+      handlebars:
+        specifier: ^4.7.8
+        version: 4.7.8
+      yargs:
+        specifier: ^17.7.2
+        version: 17.7.2
+    devDependencies:
+      '@osdk/create-widget.template.react':
+        specifier: workspace:*
+        version: link:../create-widget.template.react
+      '@osdk/generator-utils':
+        specifier: workspace:*
+        version: link:../generator-utils
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@osdk/monorepo.tsup':
+        specifier: workspace:~
+        version: link:../monorepo.tsup
+      '@types/node':
+        specifier: ^18.0.0
+        version: 18.17.15
+      '@types/tmp':
+        specifier: ^0.2.6
+        version: 0.2.6
+      '@types/yargs':
+        specifier: ^17.0.29
+        version: 17.0.32
+      dedent:
+        specifier: 1.5.3
+        version: 1.5.3
+      redent:
+        specifier: ^4.0.0
+        version: 4.0.0
+      tmp:
+        specifier: ^0.2.3
+        version: 0.2.3
+      typescript:
+        specifier: ~5.5.4
+        version: 5.5.4
+
+  packages/create-widget.template.react:
+    dependencies:
+      '@osdk/widget-client-react.unstable':
+        specifier: workspace:~
+        version: link:../widget.client-react.unstable
+      '@osdk/widget-client.unstable':
+        specifier: workspace:~
+        version: link:../widget.client.unstable
+      react:
+        specifier: ^18
+        version: 18.3.1
+      react-dom:
+        specifier: ^18
+        version: 18.3.1(react@18.3.1)
+      react-router-dom:
+        specifier: ^6.23.1
+        version: 6.23.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+    devDependencies:
+      '@eslint/compat':
+        specifier: ^1.2.1
+        version: 1.2.1(eslint@9.13.0(jiti@1.21.6))
+      '@eslint/js':
+        specifier: ^9.13.0
+        version: 9.13.0
+      '@osdk/create-app.template-packager':
+        specifier: workspace:~
+        version: link:../create-app.template-packager
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@osdk/monorepo.tsup':
+        specifier: workspace:~
+        version: link:../monorepo.tsup
+      '@osdk/widget-manifest-vite-plugin':
+        specifier: workspace:~
+        version: link:../widget.vite-plugin
+      '@types/react':
+        specifier: ^18
+        version: 18.3.12
+      '@types/react-dom':
+        specifier: ^18
+        version: 18.3.1
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^8.11.0
+        version: 8.11.0(@typescript-eslint/parser@8.11.0(eslint@9.13.0(jiti@1.21.6))(typescript@5.5.4))(eslint@9.13.0(jiti@1.21.6))(typescript@5.5.4)
+      '@typescript-eslint/parser':
+        specifier: ^8.11.0
+        version: 8.11.0(eslint@9.13.0(jiti@1.21.6))(typescript@5.5.4)
+      '@vitejs/plugin-react':
+        specifier: ^4.2.0
+        version: 4.2.1(vite@5.4.8(@types/node@22.7.9))
+      eslint:
+        specifier: ^9.13.0
+        version: 9.13.0(jiti@1.21.6)
+      eslint-plugin-import:
+        specifier: ^2.31.0
+        version: 2.31.0(@typescript-eslint/parser@8.11.0(eslint@9.13.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.11.0(eslint@9.7.0)(typescript@5.5.4))(eslint-plugin-import@2.31.0)(eslint@9.7.0))(eslint@9.13.0(jiti@1.21.6))
+      eslint-plugin-jsx-a11y:
+        specifier: ^6.10.1
+        version: 6.10.1(eslint@9.13.0(jiti@1.21.6))
+      eslint-plugin-react:
+        specifier: ^7.37.2
+        version: 7.37.2(eslint@9.13.0(jiti@1.21.6))
+      eslint-plugin-react-hooks:
+        specifier: ^5.0.0
+        version: 5.0.0(eslint@9.13.0(jiti@1.21.6))
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.14
+        version: 0.4.14(eslint@9.13.0(jiti@1.21.6))
+      globals:
+        specifier: ^15.11.0
+        version: 15.11.0
+      typescript:
+        specifier: ~5.5.4
+        version: 5.5.4
+      typescript-eslint:
+        specifier: ^8.11.0
+        version: 8.11.0(eslint@9.13.0(jiti@1.21.6))(typescript@5.5.4)
+      vite:
+        specifier: ^5.4.8
+        version: 5.4.8(@types/node@22.7.9)
+      vitest:
+        specifier: ^2.1.2
+        version: 2.1.3(@types/node@22.7.9)
+
   packages/e2e.generated.1.1.x:
     dependencies:
       '@osdk/api':
@@ -11806,7 +11946,7 @@ snapshots:
 
   '@types/readdir-glob@1.1.3':
     dependencies:
-      '@types/node': 22.7.9
+      '@types/node': 20.17.0
 
   '@types/resolve@1.20.2': {}
 

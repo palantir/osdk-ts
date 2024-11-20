@@ -9,12 +9,15 @@ export default defineConfig({
   server: {
     port: 8080,
   },
-  build: {
-    rollupOptions: {
-      input: {
-        main: fileURLToPath(new URL("./index.html", import.meta.url)),
-        second: fileURLToPath(new URL("./second.html", import.meta.url)),
-      },
-    },
-  },
+  // build: {
+  //   rollupOptions: {
+  //     input: {
+  //       main: fileURLToPath(new URL("./index.html", import.meta.url)),
+  //       second: fileURLToPath(new URL("./second.html", import.meta.url)),
+  //     },
+  //     output: {
+  //       esModule: false,
+  //     },
+  //   },
+  // },
 });

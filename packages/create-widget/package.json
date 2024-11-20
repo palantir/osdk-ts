@@ -1,0 +1,72 @@
+{
+  "name": "@osdk/create-widget",
+  "version": "0.0.0",
+  "description": "",
+  "access": "public",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "exports": {
+    ".": {
+      "browser": "./build/browser/index.js",
+      "import": "./build/esm/index.js",
+      "default": "./build/browser/index.js"
+    },
+    "./*": {
+      "browser": "./build/browser/public/*.js",
+      "import": "./build/esm/public/*.js",
+      "default": "./build/browser/public/*.js"
+    }
+  },
+  "scripts": {
+    "check-attw": "monorepo.tool.attw esm",
+    "check-spelling": "cspell --quiet .",
+    "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "codegen": "node codegen.mjs",
+    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "test": "vitest run --pool=forks",
+    "test:watch": "vitest",
+    "transpile": "monorepo.tool.transpile tsup"
+  },
+  "dependencies": {
+    "consola": "^3.2.3",
+    "find-up": "^7.0.0",
+    "handlebars": "^4.7.8",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@osdk/create-widget.template.react": "workspace:*",
+    "@osdk/generator-utils": "workspace:*",
+    "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/monorepo.tsup": "workspace:~",
+    "@types/node": "^18.0.0",
+    "@types/tmp": "^0.2.6",
+    "@types/yargs": "^17.0.29",
+    "dedent": "1.5.3",
+    "redent": "^4.0.0",
+    "tmp": "^0.2.3",
+    "typescript": "~5.5.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "create-osdk-widget": "bin/createWidget.mjs"
+  },
+  "files": [
+    "build/cjs",
+    "build/esm",
+    "build/browser",
+    "CHANGELOG.md",
+    "package.json",
+    "templates",
+    "*.d.ts"
+  ],
+  "module": "./build/esm/index.js",
+  "types": "./build/esm/index.d.ts",
+  "type": "module"
+}
