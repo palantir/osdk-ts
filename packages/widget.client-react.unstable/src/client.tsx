@@ -71,42 +71,50 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
           ...payload.detail.parameters,
         }));
         setAllParameterValues((currentParameters) => {
-          const [aggregatedLoadedState, firstError]: [
-            AsyncValue<any>["type"],
-            Error,
-          ] = Object.values(payload.detail.parameters).reduce(
-            ([acc, error], value) => {
-              // If any fails, consider the whole thing failed
-              if (value.type === "failed") {
-                return ["failed", error ?? value.error];
-              }
-              // If any is loading, consider all of it loading unless we have failed somewhere
-              if (value.type === "loading" && acc !== "failed") {
-                return ["loading", error];
-              }
-              // If any is reloading, consider it loading unless something is failed or loading for the first time
-              if (
-                value.type === "reloading"
-                && acc !== "failed"
-                && acc !== "loading"
-              ) {
-                return ["reloading", error];
-              }
-              if (
-                value.type === "not-started"
-                && acc !== "failed"
-                && acc !== "loading"
-                && acc !== "reloading"
-              ) {
-                return ["not-started", error];
-              }
-              if (value.type === "loaded" && acc === "loaded") {
-                return ["loaded", error];
-              }
-              return acc;
-            },
-            ["loaded", undefined],
-          );
+          let aggregatedLoadedState: AsyncValue<any>["type"] = "loaded";
+          let firstError: Error | undefined;
+          const newParameterValues: ParameterValueMap<
+            WidgetConfig<ParameterConfig>
+          > = {};
+          for (const key in payload.detail.parameters) {
+            const value = payload.detail.parameters[key].value;
+            // If any fails, consider the whole thing failed
+            if (value.type === "failed") {
+              aggregatedLoadedState = "failed";
+              firstError = firstError ?? value.error;
+              newParameterValues[key as any] = value.value as any;
+              continue;
+            }
+            // If any is loading, consider all of it loading unless we have failed somewhere
+            if (
+              value.type === "loading" && aggregatedLoadedState !== "failed"
+            ) {
+              aggregatedLoadedState = "loading";
+              continue;
+            }
+            // If any is reloading, consider it loading unless something is failed or loading for the first time
+            if (
+              value.type === "reloading"
+              && aggregatedLoadedState !== "failed"
+              && aggregatedLoadedState !== "loading"
+            ) {
+              aggregatedLoadedState = "reloading";
+              newParameterValues[key as any] = value.value as any;
+              continue;
+            }
+            if (
+              value.type === "not-started"
+              && aggregatedLoadedState !== "failed"
+              && aggregatedLoadedState !== "loading"
+              && aggregatedLoadedState !== "reloading"
+            ) {
+              aggregatedLoadedState = "not-started";
+            }
+
+            if (value.type === "loaded") {
+              newParameterValues[key as any] = value.value as any;
+            }
+          }
           const currentParameterValue = currentParameters.type !== "not-started"
               && currentParameters.type !== "loading"
             ? currentParameters.value
@@ -117,21 +125,13 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
           ) {
             const updatedValue = {
               ...currentParameterValue,
-              ...Object.fromEntries(
-                Object.entries(payload.detail.parameters)
-                  .filter(
-                    ([, payloadParam]) =>
-                      payloadParam.type !== "not-started"
-                      && payloadParam.type !== "loading",
-                  )
-                  .map(([key, payloadParam]) => [key, payloadParam.value]),
-              ),
+              ...newParameterValues,
             } as ParameterValueMap<C>;
             return aggregatedLoadedState === "failed"
               ? {
                 type: aggregatedLoadedState,
                 value: updatedValue,
-                error: firstError,
+                error: firstError ?? new Error("Failed to load parameters"),
               }
               : {
                 type: aggregatedLoadedState,

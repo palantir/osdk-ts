@@ -32,7 +32,7 @@ export interface AsyncReloadingValue<V> {
   value: V | undefined;
 }
 
-export interface AsyncFailedValue<V, E = unknown> {
+export interface AsyncFailedValue<V, E = Error> {
   type: "failed";
   error: E;
   value: V | undefined;
@@ -44,7 +44,7 @@ export interface AsyncFailedValue<V, E = unknown> {
  * The expected lifecycle is:
  *    not-started -> loading -> loaded or failed -> reloading -> ....
  */
-export type AsyncValue<V, E = unknown> =
+export type AsyncValue<V, E = Error> =
   | AsyncNotStartedLoadingValue
   | AsyncLoadingValue
   | AsyncLoadedValue<V>
