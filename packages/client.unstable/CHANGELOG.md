@@ -1,5 +1,7 @@
 # @osdk/client.unstable
 
+## 2.1.0-beta.10
+
 ## 2.1.0-beta.9
 
 ## 2.1.0-beta.8

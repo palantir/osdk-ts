@@ -1,5 +1,12 @@
 # @osdk/api
 
+## 2.1.0-beta.10
+
+### Minor Changes
+
+- 11a05cc: Updated subscribe api to make requesting properties optional
+- 11088aa: Fix where clause types so we don't accept more than one key in the clauses.
+
 ## 2.1.0-beta.9
 
 ### Minor Changes
