@@ -255,29 +255,39 @@ const UPDATE_PACKAGE_JSON: Mutator = {
   filePattern: "package.json",
   mutate: (template, content, sdkVersion) => ({
     type: "modify",
-    newContent: content.replace(
-      // Use locally generated SDK in the monorepo
-      "\"@osdk/e2e.generated.1.1.x\": \"latest\"",
-      "\"@osdk/e2e.generated.1.1.x\": \"workspace:*\"",
-    ).replace(
-      // Use locally generated SDK in the monorepo
-      "\"@osdk/e2e.generated.catchall\": \"latest\"",
-      "\"@osdk/e2e.generated.catchall\": \"workspace:*\"",
-    ).replace(
-      // Use locally generated SDK in the monorepo
-      /"@osdk\/client": "[\^~].*?"/,
-      `"@osdk/client": "workspace:*"`,
-    ).replace(
-      // Use locally generated SDK in the monorepo
-      /"@osdk\/oauth": "\^.*?"/,
-      `"@osdk/oauth": "workspace:*"`,
-    ).replace(
-      // Follow monorepo package naming convention
-      `"name": "${sdkVersionedTemplateExampleId(template, sdkVersion)}"`,
-      `"name": "@osdk/examples.${
-        sdkVersionedTemplateCanonicalId(template, sdkVersion)
-      }"`,
-    ),
+    newContent: content
+      .replace(
+        // Use locally generated SDK in the monorepo
+        "\"@osdk/e2e.generated.1.1.x\": \"latest\"",
+        "\"@osdk/e2e.generated.1.1.x\": \"workspace:*\"",
+      )
+      .replace(
+        // Use locally generated SDK in the monorepo
+        "\"@osdk/e2e.generated.catchall\": \"latest\"",
+        "\"@osdk/e2e.generated.catchall\": \"workspace:*\"",
+      )
+      .replace(
+        // Use locally generated SDK in the monorepo
+        /"@osdk\/client": "[\^~].*?"/,
+        `"@osdk/client": "workspace:*"`,
+      )
+      .replace(
+        // Use locally generated SDK in the monorepo
+        /"@osdk\/react": "[\^~].*?"/,
+        `"@osdk/react": "workspace:*"`,
+      )
+      .replace(
+        // Use locally generated SDK in the monorepo
+        /"@osdk\/oauth": "\^.*?"/,
+        `"@osdk/oauth": "workspace:*"`,
+      )
+      .replace(
+        // Follow monorepo package naming convention
+        `"name": "${sdkVersionedTemplateExampleId(template, sdkVersion)}"`,
+        `"name": "@osdk/examples.${
+          sdkVersionedTemplateCanonicalId(template, sdkVersion)
+        }"`,
+      ),
   }),
 };
 

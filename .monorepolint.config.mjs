@@ -282,6 +282,7 @@ const formattedGeneratorHelper = (contents, ext) => async (context) => {
  *   outDir: string
  *   commonjs?: boolean
  *   singlePackageName?: string
+ *   react?: boolean
  * }} opts
  * @returns {Parameters<import("@monorepolint/rules")["standardTsconfig"]>[0]["options"]}
  */
@@ -299,6 +300,7 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
           : {}),
         rootDir: "src",
         outDir: opts.outDir,
+        ...(opts.react ? { jsx: "react" } : {}),
         ...(
           opts.singlePackageName
             ? {
@@ -342,6 +344,7 @@ function standardPackageRules(shared, options) {
           customTsconfigExcludes: options.customTsconfigExcludes,
           skipTsconfigReferences: options.skipTsconfigReferences,
           outDir: "build/esm",
+          react: options.vitestEnvironment === "happy-dom",
         },
       ),
     }),
