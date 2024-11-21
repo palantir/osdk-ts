@@ -28,15 +28,15 @@
     "transpile": "monorepo.tool.transpile"
   },
   "peerDependencies": {
-    "@osdk/api": "^2.0.9 || 2.0.8-rc.3",
-    "@osdk/client": "^2.0.9 || 2.0.8-rc.3",
+    "@osdk/api": "^2.0.9",
+    "@osdk/client": "^2.0.9",
     "@types/react": "^18",
     "react": "^17 || ^18",
     "react-dom": "^17 || ^18"
   },
   "devDependencies": {
-    "@osdk/api": "2.0.9",
-    "@osdk/client": "2.0.9",
+    "@osdk/api": "workspace:*",
+    "@osdk/client": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",

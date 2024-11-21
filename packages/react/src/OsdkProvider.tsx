@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
-export { OsdkProvider } from "./OsdkProvider.js";
-export { useCombinedPages } from "./useCombinedPages.js";
-export { useOsdkClient } from "./useOsdkClient.js";
+import type { Client } from "@osdk/client";
+import React from "react";
+import { OsdkContext } from "./OsdkContext.js";
+
+export function OsdkProvider({
+  children,
+  client,
+}: {
+  children: React.ReactNode;
+  client: Client;
+}) {
+  return (
+    <OsdkContext.Provider value={{ client }}>{children}</OsdkContext.Provider>
+  );
+}
