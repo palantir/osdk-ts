@@ -17,7 +17,6 @@
 import type {
   Augment,
   Augments,
-  CompileTimeMetadata,
   FetchPageArgs,
   FetchPageResult,
   InterfaceDefinition,
@@ -42,10 +41,6 @@ import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
-import {
-  convertWireToOsdkObjects,
-  convertWireToOsdkObjects2,
-} from "./convertWireToOsdkObjects.js";
 
 export function augment<
   Q extends ObjectOrInterfaceDefinition,
@@ -124,7 +119,7 @@ async function fetchInterfacePage<
         { preview: true },
       );
 
-    result.data = await convertWireToOsdkObjects(
+    result.data = await client.objectFactory(
       client,
       result.data as OntologyObjectV2[], // drop readonly
       interfaceType.apiName,
@@ -142,7 +137,7 @@ async function fetchInterfacePage<
     }),
   );
   return Promise.resolve({
-    data: await convertWireToOsdkObjects2(
+    data: await client.objectFactory2(
       client,
       result.data,
       interfaceType.apiName,
@@ -301,7 +296,7 @@ export async function fetchObjectPage<
   );
 
   return Promise.resolve({
-    data: await convertWireToOsdkObjects(
+    data: await client.objectFactory(
       client,
       r.data as OntologyObjectV2[],
       undefined,

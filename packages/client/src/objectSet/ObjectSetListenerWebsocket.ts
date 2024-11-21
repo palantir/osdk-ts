@@ -467,7 +467,7 @@ export class ObjectSetListenerWebsocket {
         delete o.object[key];
       }
 
-      const osdkObjectArray = await convertWireToOsdkObjects(
+      const osdkObjectArray = await this.#client.objectFactory(
         this.#client,
         [o.object],
         undefined,
