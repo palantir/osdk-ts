@@ -245,8 +245,14 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
               imports.includes(chunk.fileName)
               && chunk.viteMetadata?.importedCss.size
             ) {
+              const existingCssFiles =
+                widgetConfigManifest.widgets[entrypointName].entrypointCss?.map(
+                  ({ path }) => path,
+                ) ?? [];
               widgetConfigManifest.widgets[entrypointName].entrypointCss?.push(
-                ...[...chunk.viteMetadata.importedCss].map((css) => ({
+                ...[...chunk.viteMetadata.importedCss].filter(css =>
+                  !existingCssFiles.includes(css)
+                ).map((css) => ({
                   path: css,
                 })),
               );
