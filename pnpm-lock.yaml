@@ -2833,9 +2833,6 @@ importers:
       '@osdk/monorepo.tsup':
         specifier: workspace:~
         version: link:../monorepo.tsup
-      '@osdk/shared.test':
-        specifier: workspace:~
-        version: link:../shared.test
       typescript:
         specifier: ~5.5.4
         version: 5.5.4
