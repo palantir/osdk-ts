@@ -32,7 +32,7 @@ export type ParameterDefinition =
 
 export interface EventDefinition<P extends ParameterConfig> {
   displayName: string;
-  parameterIds: Array<ParameterId<P>>;
+  parameterUpdateIds: Array<ParameterId<P>>;
 }
 
 export type ParameterConfig = Record<string, ParameterDefinition>;
@@ -107,8 +107,8 @@ export type EventId<C extends WidgetConfig<C["parameters"]>> =
 export type EventParameterIdList<
   C extends WidgetConfig<C["parameters"]>,
   K extends EventId<C>,
-> = C["events"][K]["parameterIds"] extends Array<ParameterId<C["parameters"]>>
-  ? C["events"][K]["parameterIds"]
+> = C["events"][K]["parameterUpdateIds"] extends
+  Array<ParameterId<C["parameters"]>> ? C["events"][K]["parameterUpdateIds"]
   : never;
 
 /**

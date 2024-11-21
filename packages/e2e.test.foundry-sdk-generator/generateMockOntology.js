@@ -31,19 +31,22 @@ async function setup() {
 
   const testAppDir = path.join(dir, "@test-app");
   const testApp2Dir = path.join(dir, "@test-app2");
+  const testApp2BetaDir = path.join(dir, "@test-app2-beta");
 
   await rmRf(testAppDir);
   await rmRf(testApp2Dir);
+  await rmRf(testApp2BetaDir);
 
   await safeStat(testAppDir, "should not exist");
   await safeStat(testApp2Dir, "should not exist");
+  await safeStat(testApp2BetaDir, "should not exist");
 
   await fs.mkdir(dir, { recursive: true });
 
   const generatePackageCommand = new GeneratePackageCommand();
 
-  await generatePackageCommand.handler({
-    packageName: "@test-app2/osdk",
+  /** @type Parameters<typeof generatePackageCommand["handler"][0]>  */
+  const baseArgs = {
     packageVersion: "0.0.1",
     outputDir: dir,
     authToken: "myAccessToken",
@@ -74,14 +77,26 @@ async function setup() {
     interfaceTypes: [
       "FooInterface",
     ],
-    beta: true,
     linkTypes: ["employee.peeps", "employee.lead", "employee.officeLink"],
     palantirOnlyTest: true,
     _: [],
     $0: "",
+  };
+
+  await generatePackageCommand.handler({
+    ...baseArgs,
+    packageName: "@test-app2/osdk",
+    beta: false,
+  });
+
+  await generatePackageCommand.handler({
+    ...baseArgs,
+    packageName: "@test-app2-beta/osdk",
+    beta: true,
   });
 
   await safeStat(testApp2Dir, "should exist");
+  await safeStat(testApp2BetaDir, "should exist");
 }
 
 export async function teardown() {

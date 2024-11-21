@@ -213,9 +213,14 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
             );
           }
           const widgetConfig: WidgetManifestConfig = {
-            entrypointJs: [chunk.fileName],
+            entrypointJs: [{
+              path: chunk.fileName,
+              type: "module",
+            }],
             entrypointCss: chunk.viteMetadata?.importedCss.size
-              ? [...chunk.viteMetadata.importedCss]
+              ? [...chunk.viteMetadata.importedCss].map((css) => ({
+                path: css,
+              }))
               : [],
             rid: entrypointFileIdToConfigMap[chunk.facadeModuleId].rid,
             version: packageJsonFile.version ?? "0.0.0",

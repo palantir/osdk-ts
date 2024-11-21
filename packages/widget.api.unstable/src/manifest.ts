@@ -44,13 +44,22 @@ export interface WidgetManifestConfigV1 {
   /**
    * List of entrypoint JS files to be loaded, in order. These will be placed on the page in script tags
    */
-  entrypointJs: string[];
+  entrypointJs: Array<{
+    /** Relative path of the JS file to load */
+    path: string;
+
+    /** The type to use in the script tag when loading this JS file */
+    type: "module" | "text/javascript";
+  }>;
 
   /**
    * Any CSS files to be loaded, in order.
    * @optional
    */
-  entrypointCss?: string[];
+  entrypointCss?: Array<{
+    /** Relative path of the CSS file to load */
+    path: string;
+  }>;
 
   /**
    * The map of parameter IDs to their definition
