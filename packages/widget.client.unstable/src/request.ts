@@ -32,9 +32,9 @@ export function serializeRequest(
     id,
     url: input,
     method: init?.method ?? "GET",
-    headers: Object.fromEntries([
+    headers: [
       ...new Headers(init?.headers ?? {}).entries(),
-    ]),
+    ],
     body: body as any,
   };
 }

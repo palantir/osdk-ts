@@ -52,7 +52,7 @@ export namespace WidgetMessage {
       id: string;
       url: string;
       method: string;
-      headers: Record<string, string>;
+      headers: Record<string, string> | [string, string][];
       body?: string;
     }
   }
