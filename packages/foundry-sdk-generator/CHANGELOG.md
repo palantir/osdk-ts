@@ -1,5 +1,17 @@
 # @osdk/foundry-sdk-generator
 
+## 2.1.0-beta.12
+
+### Minor Changes
+
+- 71b5a9d: Packages generated with foundry-sdk-generator are now properly esm
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.12
+- @osdk/client@2.1.0-beta.12
+- @osdk/generator@2.1.0-beta.12
+
 ## 2.1.0-beta.11
 
 ### Minor Changes
