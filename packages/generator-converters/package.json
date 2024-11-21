@@ -1,6 +1,6 @@
 {
   "name": "@osdk/generator-converters",
-  "version": "2.1.0-beta.12",
+  "version": "2.1.0-beta.13",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
-    "@osdk/internal.foundry.core": "2.5.0"
+    "@osdk/internal.foundry.core": "2.6.0-beta.0"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",

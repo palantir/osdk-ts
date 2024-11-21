@@ -9,3 +9,4 @@ unstubAllEnvs
 interfacers
 Claused
 geotimeseries
+palantircustom

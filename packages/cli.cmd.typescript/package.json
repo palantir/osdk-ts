@@ -1,7 +1,7 @@
 {
   "name": "@osdk/cli.cmd.typescript",
   "private": true,
-  "version": "0.25.0-beta.12",
+  "version": "0.25.0-beta.13",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -32,8 +32,8 @@
     "@arethetypeswrong/cli": "^0.15.2",
     "@osdk/cli.common": "workspace:~",
     "@osdk/generator": "workspace:~",
-    "@osdk/internal.foundry.core": "2.5.0",
-    "@osdk/internal.foundry.ontologiesv2": "2.5.0",
+    "@osdk/internal.foundry.core": "2.6.0-beta.0",
+    "@osdk/internal.foundry.ontologiesv2": "2.6.0-beta.0",
     "@osdk/shared.net": "workspace:~",
     "consola": "^3.2.3",
     "fast-deep-equal": "^3.1.3",
