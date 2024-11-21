@@ -2818,31 +2818,6 @@ importers:
         specifier: ~5.5.4
         version: 5.5.4
 
-  packages/shared.net.platformapi:
-    dependencies:
-      '@osdk/shared.client':
-        specifier: ^1.0.1
-        version: 1.0.1
-      '@osdk/shared.client2':
-        specifier: ^1.0.0
-        version: 1.0.0
-      '@osdk/shared.net.errors':
-        specifier: workspace:~
-        version: link:../shared.net.errors
-    devDependencies:
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      typescript:
-        specifier: ~5.5.4
-        version: 5.5.4
-
   packages/shared.test:
     dependencies:
       '@osdk/api':
@@ -4438,6 +4413,9 @@ packages:
   '@osdk/foundry.core@2.1.0':
     resolution: {integrity: sha512-9tFOHtkqOWj8JmbLoeGOTpfIofH9YZdX03EohmfZRFcOS8ElOkd/IzzhihYHXr2dpQcfJPizD1EXYTo+Pr2Mpg==}
 
+  '@osdk/foundry.core@2.5.0':
+    resolution: {integrity: sha512-LV+m6/3Y+Q0lN16PAwQvoWtutY0xXdntuwOQjMR2ZqdLRlZOK2KSvfwNZnX4q8EKuvF1mJC8iaTtWh3lChpU1Q==}
+
   '@osdk/foundry.core@2.6.0-beta.0':
     resolution: {integrity: sha512-p40EorhoA5ZGNg1gwY6CC9lLWksjgvxHJrxBVRKWNVsM4+dzJ2a7CwcF5fbwUh9wFppO8oo8MQfCAMUWCZM4TQ==}
 
@@ -4455,6 +4433,9 @@ packages:
 
   '@osdk/foundry.functions@2.1.0':
     resolution: {integrity: sha512-9+GqmbACkaXtPtKBq8dAGlERgV5kbfiosxUSnCTmrZvhful6DigfTDkFnGMJapsyeSEPf62UuSf8zrKlJl8Hhw==}
+
+  '@osdk/foundry.geo@2.5.0':
+    resolution: {integrity: sha512-kL615eqHvn1MkP0le2r6vx/ub+lit5bKdmoWNRELMqi9s2BlLuoKAQW5H9YDQPqhHuJDjrBJAWiviOin9mUKqw==}
 
   '@osdk/foundry.geo@2.6.0-beta.0':
     resolution: {integrity: sha512-4heBmmZkg+x2wnwIWkKYnrLVCNOLf+f13GwReAJcu4GtsoNj/sfQ+5HjR3Aqe6JAxw5vM//QDfaLdQ521mOdQA==}
@@ -4545,6 +4526,9 @@ packages:
 
   '@osdk/shared.net.platformapi@0.3.2':
     resolution: {integrity: sha512-tei6AiSXI7We6dhm7CbyCAAu9ruhAahFmCsLOG4Wwsropyx8uWpH3+f8InB1fxOTSGcaX2Vt2nr7IzEdTuEEgQ==}
+
+  '@osdk/shared.net.platformapi@1.1.0':
+    resolution: {integrity: sha512-386O8rYgxFAmhdwrPydTDTQZPvu7yLc4+kDiW/Xq+EbOzpNPfGR9x/YlCu6Q5YvSPZ4zWv5nApOPCw/nL6TQsg==}
 
   '@osdk/shared.net.platformapi@1.2.0-beta.0':
     resolution: {integrity: sha512-6rvYl+CdCXv+2EIAuE0XugNgTybh8N38i0SLitKmDxu4MgGVuCHfBIFo/klRhLx5fLLsmlShBb/F7mPDnY3A/A==}
@@ -10644,6 +10628,13 @@ snapshots:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.net.platformapi': 0.3.2
 
+  '@osdk/foundry.core@2.5.0':
+    dependencies:
+      '@osdk/foundry.geo': 2.5.0
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client2': 1.0.0
+      '@osdk/shared.net.platformapi': 1.1.0
+
   '@osdk/foundry.core@2.6.0-beta.0':
     dependencies:
       '@osdk/foundry.geo': 2.6.0-beta.0
@@ -10684,6 +10675,12 @@ snapshots:
       '@osdk/foundry.core': 2.1.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.net.platformapi': 0.3.2
+
+  '@osdk/foundry.geo@2.5.0':
+    dependencies:
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client2': 1.0.0
+      '@osdk/shared.net.platformapi': 1.1.0
 
   '@osdk/foundry.geo@2.6.0-beta.0':
     dependencies:
@@ -10860,6 +10857,12 @@ snapshots:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.errors': 2.0.0
+
+  '@osdk/shared.net.platformapi@1.1.0':
+    dependencies:
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client2': 1.0.0
+      '@osdk/shared.net.errors': 2.0.1
 
   '@osdk/shared.net.platformapi@1.2.0-beta.0':
     dependencies:
