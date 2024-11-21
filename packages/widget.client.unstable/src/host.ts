@@ -16,51 +16,55 @@
 
 import type { HostMessage, WidgetConfig } from "@osdk/widget-api.unstable";
 
-export interface HostMessageEventListener<
-  C extends WidgetConfig<C["parameters"]>,
-  M extends HostMessage<C>,
-> {
-  (event: CustomEvent<M["payload"]>): void;
+export interface HostMessageEventListener<P extends HostMessage.Payload> {
+  (event: CustomEvent<P>): void;
 }
 
-export interface HostMessageEventListenerObject<
-  C extends WidgetConfig<C["parameters"]>,
-  M extends HostMessage<C>,
-> {
-  handleEvent(object: CustomEvent<M["payload"]>): void;
+export interface HostMessageEventListenerObject<P extends HostMessage.Payload> {
+  handleEvent(object: CustomEvent<P>): void;
 }
 
 export class FoundryHostEventTarget<
   C extends WidgetConfig<C["parameters"]>,
 > extends EventTarget {
-  addEventListener<M extends HostMessage<C>>(
-    type: M["type"],
+  addEventListener<T extends HostMessage<C>["type"]>(
+    type: T,
     callback:
-      | HostMessageEventListener<C, M>
-      | HostMessageEventListenerObject<C, M>
+      | HostMessageEventListener<
+        Extract<HostMessage<C>, { type: T }>["payload"]
+      >
+      | HostMessageEventListenerObject<
+        Extract<HostMessage<C>, { type: T }>["payload"]
+      >
       | null,
     options?: AddEventListenerOptions | boolean,
   ): void {
     super.addEventListener(type, callback as EventListener, options);
   }
 
-  removeEventListener<M extends HostMessage<C>>(
-    type: M["type"],
+  removeEventListener<T extends HostMessage<C>["type"]>(
+    type: T,
     callback:
-      | HostMessageEventListener<C, M>
-      | HostMessageEventListenerObject<C, M>
+      | HostMessageEventListener<
+        Extract<HostMessage<C>, { type: T }>["payload"]
+      >
+      | HostMessageEventListenerObject<
+        Extract<HostMessage<C>, { type: T }>["payload"]
+      >
       | null,
     options?: EventListenerOptions | boolean,
   ): void {
     super.removeEventListener(type, callback as EventListener, options);
   }
 
-  public dispatchEventMessage<M extends HostMessage<C>>(
-    type: M["type"],
-    payload: M["payload"],
+  public dispatchEventMessage<T extends HostMessage<C>["type"]>(
+    type: T,
+    payload: Extract<HostMessage<C>, { type: T }>["payload"],
   ) {
     this.dispatchEvent(
-      new CustomEvent<M["payload"]>(type, { detail: payload }),
+      new CustomEvent<HostMessage.Payload>(type, {
+        detail: payload,
+      }),
     );
   }
 }

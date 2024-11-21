@@ -43,11 +43,24 @@ export namespace WidgetMessage {
 
     export type EmitEvent<C extends WidgetConfig<C["parameters"]>> =
       EmitEventIdMap<C>[EventId<C>];
+
+    /**
+     * Temporary fetch proxy
+     * Will be removed in favor of server side proxy
+     */
+    export interface _unstable_FetchRequest {
+      id: string;
+      url: string;
+      method: string;
+      headers: Record<string, string>;
+      body?: string;
+    }
   }
 
   export type Payload<C extends WidgetConfig<C["parameters"]>> =
     | Payload.Ready
-    | Payload.EmitEvent<C>;
+    | Payload.EmitEvent<C>
+    | Payload._unstable_FetchRequest;
 
   /**
    * Emit when the widget is ready to start receiving messages from the host Foundry UI
@@ -62,11 +75,23 @@ export namespace WidgetMessage {
   export interface EmitEvent<C extends WidgetConfig<C["parameters"]>>
     extends WidgetBaseMessage<"widget.emit-event", Payload.EmitEvent<C>>
   {}
+
+  /**
+   * Temporary fetch proxy
+   * Will be removed in favor of server side proxy
+   */
+  export interface _unstable_FetchRequest extends
+    WidgetBaseMessage<
+      "widget._unstable_fetch-request",
+      Payload._unstable_FetchRequest
+    >
+  {}
 }
 
 export type WidgetMessage<C extends WidgetConfig<C["parameters"]>> =
   | WidgetMessage.Ready
-  | WidgetMessage.EmitEvent<C>;
+  | WidgetMessage.EmitEvent<C>
+  | WidgetMessage._unstable_FetchRequest;
 
 export function isWidgetReadyMessage<C extends WidgetConfig<C["parameters"]>>(
   event: WidgetMessage<C>,
@@ -78,6 +103,12 @@ export function isWidgetEmitEventMessage<
   C extends WidgetConfig<C["parameters"]>,
 >(event: WidgetMessage<C>): event is WidgetMessage.EmitEvent<C> {
   return event.type === "widget.emit-event";
+}
+
+export function _unstable_isWidgetFetchMessage<
+  C extends WidgetConfig<C["parameters"]>,
+>(event: WidgetMessage<C>): event is WidgetMessage._unstable_FetchRequest {
+  return event.type === "widget._unstable_fetch-request";
 }
 
 type WidgetMessageVisitor<C extends WidgetConfig<C["parameters"]>> =
