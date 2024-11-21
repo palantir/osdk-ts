@@ -135,7 +135,7 @@ importers:
         version: 8.11.0(eslint@9.7.0)(typescript@5.5.4)
       vitest:
         specifier: ^2.1.2
-        version: 2.1.2(@types/node@22.7.9)
+        version: 2.1.2(@types/node@22.7.9)(happy-dom@15.11.6)
 
   examples-extra/docs_example:
     dependencies:
@@ -251,7 +251,7 @@ importers:
         version: 5.5.4
       vitest:
         specifier: ^2.1.3
-        version: 2.1.3(@types/node@20.17.0)
+        version: 2.1.3(@types/node@20.17.0)(happy-dom@15.11.6)
 
   examples/example-next-static-export-sdk-2.x:
     dependencies:
@@ -297,7 +297,7 @@ importers:
         version: 5.5.4
       vitest:
         specifier: ^2.1.3
-        version: 2.1.3(@types/node@20.17.0)
+        version: 2.1.3(@types/node@20.17.0)(happy-dom@15.11.6)
 
   examples/example-react-sdk-1.x:
     dependencies:
@@ -367,7 +367,7 @@ importers:
         version: 5.4.8(@types/node@22.7.9)
       vitest:
         specifier: ^2.1.2
-        version: 2.1.2(@types/node@22.7.9)
+        version: 2.1.2(@types/node@22.7.9)(happy-dom@15.11.6)
 
   examples/example-react-sdk-2.x:
     dependencies:
@@ -452,7 +452,7 @@ importers:
         version: 5.4.8(@types/node@22.7.9)
       vitest:
         specifier: ^2.1.2
-        version: 2.1.2(@types/node@22.7.9)
+        version: 2.1.2(@types/node@22.7.9)(happy-dom@15.11.6)
 
   examples/example-tutorial-todo-aip-app-sdk-1.x:
     dependencies:
@@ -522,7 +522,7 @@ importers:
         version: 5.4.8(@types/node@22.7.9)
       vitest:
         specifier: ^2.1.2
-        version: 2.1.2(@types/node@22.7.9)
+        version: 2.1.2(@types/node@22.7.9)(happy-dom@15.11.6)
 
   examples/example-tutorial-todo-aip-app-sdk-2.x:
     dependencies:
@@ -598,7 +598,7 @@ importers:
         version: 5.4.8(@types/node@22.7.9)
       vitest:
         specifier: ^2.0.5
-        version: 2.1.2(@types/node@22.7.9)
+        version: 2.1.2(@types/node@22.7.9)(happy-dom@15.11.6)
 
   examples/example-tutorial-todo-app-sdk-1.x:
     dependencies:
@@ -668,7 +668,7 @@ importers:
         version: 5.4.8(@types/node@22.7.9)
       vitest:
         specifier: ^2.1.2
-        version: 2.1.2(@types/node@22.7.9)
+        version: 2.1.2(@types/node@22.7.9)(happy-dom@15.11.6)
 
   examples/example-tutorial-todo-app-sdk-2.x:
     dependencies:
@@ -744,7 +744,7 @@ importers:
         version: 5.4.8(@types/node@22.7.9)
       vitest:
         specifier: ^2.0.5
-        version: 2.1.2(@types/node@22.7.9)
+        version: 2.1.2(@types/node@22.7.9)(happy-dom@15.11.6)
 
   examples/example-vue-sdk-1.x:
     dependencies:
@@ -769,7 +769,7 @@ importers:
         version: 5.4.8(@types/node@22.7.9)
       vitest:
         specifier: ^2.1.2
-        version: 2.1.2(@types/node@22.7.9)
+        version: 2.1.2(@types/node@22.7.9)(happy-dom@15.11.6)
       vue-tsc:
         specifier: ^2.1.6
         version: 2.1.6(typescript@5.5.4)
@@ -806,7 +806,7 @@ importers:
         version: 5.4.8(@types/node@22.7.9)
       vitest:
         specifier: ^2.1.2
-        version: 2.1.2(@types/node@22.7.9)
+        version: 2.1.2(@types/node@22.7.9)(happy-dom@15.11.6)
       vue-tsc:
         specifier: ^2.1.6
         version: 2.1.6(typescript@5.5.4)
@@ -1363,7 +1363,7 @@ importers:
         version: 5.5.4
       vitest:
         specifier: ^2.1.3
-        version: 2.1.3(@types/node@20.17.0)
+        version: 2.1.3(@types/node@20.17.0)(happy-dom@15.11.6)
 
   packages/create-app.template.next-static-export.v2:
     dependencies:
@@ -1412,7 +1412,7 @@ importers:
         version: 5.5.4
       vitest:
         specifier: ^2.1.3
-        version: 2.1.3(@types/node@20.17.0)
+        version: 2.1.3(@types/node@20.17.0)(happy-dom@15.11.6)
 
   packages/create-app.template.react:
     dependencies:
@@ -1491,7 +1491,7 @@ importers:
         version: 5.4.8(@types/node@22.7.9)
       vitest:
         specifier: ^2.1.2
-        version: 2.1.2(@types/node@22.7.9)
+        version: 2.1.2(@types/node@22.7.9)(happy-dom@15.11.6)
 
   packages/create-app.template.react.beta:
     dependencies:
@@ -1579,7 +1579,7 @@ importers:
         version: 5.4.8(@types/node@22.7.4)
       vitest:
         specifier: ^2.1.2
-        version: 2.1.2(@types/node@22.7.4)
+        version: 2.1.2(@types/node@22.7.4)(happy-dom@15.11.6)
 
   packages/create-app.template.tutorial-todo-aip-app:
     dependencies:
@@ -1658,7 +1658,7 @@ importers:
         version: 5.4.8(@types/node@22.7.9)
       vitest:
         specifier: ^2.1.2
-        version: 2.1.2(@types/node@22.7.9)
+        version: 2.1.2(@types/node@22.7.9)(happy-dom@15.11.6)
 
   packages/create-app.template.tutorial-todo-aip-app.beta:
     dependencies:
@@ -1737,7 +1737,7 @@ importers:
         version: 5.4.8(@types/node@22.7.9)
       vitest:
         specifier: ^2.0.5
-        version: 2.1.2(@types/node@22.7.9)
+        version: 2.1.2(@types/node@22.7.9)(happy-dom@15.11.6)
 
   packages/create-app.template.tutorial-todo-app:
     dependencies:
@@ -1816,7 +1816,7 @@ importers:
         version: 5.4.8(@types/node@22.7.9)
       vitest:
         specifier: ^2.1.2
-        version: 2.1.2(@types/node@22.7.9)
+        version: 2.1.2(@types/node@22.7.9)(happy-dom@15.11.6)
 
   packages/create-app.template.tutorial-todo-app.beta:
     dependencies:
@@ -1895,7 +1895,7 @@ importers:
         version: 5.4.8(@types/node@22.7.9)
       vitest:
         specifier: ^2.0.5
-        version: 2.1.2(@types/node@22.7.9)
+        version: 2.1.2(@types/node@22.7.9)(happy-dom@15.11.6)
 
   packages/create-app.template.vue:
     dependencies:
@@ -1929,7 +1929,7 @@ importers:
         version: 5.4.8(@types/node@22.7.9)
       vitest:
         specifier: ^2.1.2
-        version: 2.1.2(@types/node@22.7.9)
+        version: 2.1.2(@types/node@22.7.9)(happy-dom@15.11.6)
       vue-tsc:
         specifier: ^2.1.6
         version: 2.1.6(typescript@5.5.4)
@@ -1966,7 +1966,7 @@ importers:
         version: 5.4.8(@types/node@22.7.9)
       vitest:
         specifier: ^2.1.2
-        version: 2.1.2(@types/node@22.7.9)
+        version: 2.1.2(@types/node@22.7.9)(happy-dom@15.11.6)
       vue-tsc:
         specifier: ^2.1.6
         version: 2.1.6(typescript@5.5.4)
@@ -2210,7 +2210,7 @@ importers:
         version: 5.4.8(@types/node@22.7.9)
       vitest:
         specifier: ^2.1.2
-        version: 2.1.2(@types/node@22.7.9)
+        version: 2.1.2(@types/node@22.7.9)(happy-dom@15.11.6)
 
   packages/e2e.sandbox.todoapp:
     dependencies:
@@ -2344,7 +2344,7 @@ importers:
         version: 5.4.8(@types/node@22.7.9)
       vitest:
         specifier: ^2.1.2
-        version: 2.1.3(@types/node@22.7.9)
+        version: 2.1.3(@types/node@22.7.9)(happy-dom@15.11.6)
 
   packages/e2e.test.foundry-sdk-generator:
     dependencies:
@@ -2555,7 +2555,7 @@ importers:
         version: 5.5.4
       vitest:
         specifier: ^2.1.2
-        version: 2.1.2(@types/node@18.17.15)
+        version: 2.1.2(@types/node@18.17.15)(happy-dom@15.11.6)
 
   packages/generator-converters:
     dependencies:
@@ -2583,7 +2583,7 @@ importers:
         version: 5.5.4
       vitest:
         specifier: ^2.1.2
-        version: 2.1.2(@types/node@22.7.9)
+        version: 2.1.2(@types/node@22.7.9)(happy-dom@15.11.6)
 
   packages/generator-utils:
     dependencies:
@@ -2660,7 +2660,7 @@ importers:
         version: 5.5.4
       vitest:
         specifier: ^2.1.2
-        version: 2.1.2(@types/node@22.7.9)
+        version: 2.1.2(@types/node@22.7.9)(happy-dom@15.11.6)
 
   packages/monorepo.api-extractor: {}
 
@@ -2718,6 +2718,46 @@ importers:
       jest-extended:
         specifier: ^4.0.2
         version: 4.0.2
+      typescript:
+        specifier: ~5.5.4
+        version: 5.5.4
+
+  packages/react:
+    dependencies:
+      react-dom:
+        specifier: ^17 || ^18
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@osdk/api':
+        specifier: 2.0.9
+        version: 2.0.9
+      '@osdk/client':
+        specifier: 2.0.9
+        version: 2.0.9
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@osdk/monorepo.tsup':
+        specifier: workspace:~
+        version: link:../monorepo.tsup
+      '@testing-library/react':
+        specifier: ^16.0.1
+        version: 16.0.1(@testing-library/dom@10.4.0)(@types/react-dom@18.3.1)(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@types/react':
+        specifier: ^18.3.12
+        version: 18.3.12
+      happy-dom:
+        specifier: ^15.7.4
+        version: 15.11.6
+      p-defer:
+        specifier: ^4.0.1
+        version: 4.0.1
+      react:
+        specifier: ^18.0.0
+        version: 18.3.1
       typescript:
         specifier: ~5.5.4
         version: 5.5.4
@@ -2971,7 +3011,7 @@ importers:
         version: 5.5.4
       vitest:
         specifier: ^2.1.2
-        version: 2.1.2(@types/node@20.14.10)
+        version: 2.1.2(@types/node@20.14.10)(happy-dom@15.11.6)
 
   packages/version-updater:
     devDependencies:
@@ -4407,6 +4447,18 @@ packages:
   '@osdk/api@1.9.1':
     resolution: {integrity: sha512-a67IMGvlLYkGDsO0Dja9J+vTzWfshn6xAICZlv3d12ys71YvMoTA6kKUgiMrec+cC0vp4R3IE3ESlczsfiJ/iQ==}
 
+  '@osdk/api@2.0.9':
+    resolution: {integrity: sha512-H5xnuONybaHTq8AZOXi5NV96yEbfy7bGXoa9sgDOvOJoaK8VgZimf1WDTEmL4Na5vzTZorqjZ37PpGd0cqs87w==}
+
+  '@osdk/client.unstable.osw@0.2.0':
+    resolution: {integrity: sha512-BPE+adWcHw/3V9SjMLbHlHVdMRhC+ZxPMqjj1FY/i1BhS+oCj3n1IsEp+AzFAj2yTaYUswuybKjW9iIPnKcEMA==}
+
+  '@osdk/client.unstable@2.0.9':
+    resolution: {integrity: sha512-cXDOLhlkyKEhKGeQxgHddVmTJ2rDexfURBfp06Wz9+nPli0sHU3T48EbhYrGPKI+tj4tM6qpKFKPTktEQBn1PQ==}
+
+  '@osdk/client@2.0.9':
+    resolution: {integrity: sha512-6O30f1PDoPNE//VGQP9wsq1mAxlSuEi1M9bJVji49KxhkpUHZsr7pn4mZnunfP8PdYmVr9tnE5FMaCWFcc2Iqg==}
+
   '@osdk/foundry.admin@2.1.0':
     resolution: {integrity: sha512-PSepSLbxzddudaXcWa5b2eCpFSKl2GHfcZhvY3+yHImqFqcjXpnJakS0un3DfZvjjrY8MCMHXjbJYzTvwFyFTg==}
 
@@ -4464,8 +4516,14 @@ packages:
   '@osdk/gateway@2.4.1':
     resolution: {integrity: sha512-RHwTFQ2dGKbu25YwjukRKQj9CzoO3xdueSEetIkfCuuHvOLOlIUAJsjj+j7UV96MzsbefAcsQyJC+PqENdU57w==}
 
+  '@osdk/generator-converters@2.0.9':
+    resolution: {integrity: sha512-W0hoQ9pqCLKBne8HKd0dD3d4W5YXecNT3lc7Tw96lvpLzLc1dFEm4dPIW6SeGpVWjndBfyM4gsN3qyHqG+edDA==}
+
   '@osdk/internal.foundry.core@0.2.0':
     resolution: {integrity: sha512-+It/huASzz4nK/kNVw+hILo2wapzE2ZfptIiem6iEt19KEQVtw/fqJ2VRGMUEop0Q4+rT3VLHdqkNxq5nSUzdA==}
+
+  '@osdk/internal.foundry.core@2.2.0':
+    resolution: {integrity: sha512-lGwuNYUnI8qTvv6vqLyDn6/nR+C+7xHpUpLwi71uEf0t0nzlfM/03qGCDFR5UrqpyQIsQnV2H7m9gr7W3Q7SCw==}
 
   '@osdk/internal.foundry.core@2.6.0-beta.0':
     resolution: {integrity: sha512-uVQ/JBjFcSkICFiFvZhHoXMGUUhag68/4b+ILT9zhz0zsD0cq9cbHU6nHxZQxlfPoZ1AyA+dAYwTrhacYExzag==}
@@ -4475,6 +4533,9 @@ packages:
 
   '@osdk/internal.foundry.geo@0.1.0':
     resolution: {integrity: sha512-6NbTIEos7LdderlnDj/kTqFSlAjgZe8gkXAqTYWSipRP6UqKRDPwYeOcnMIR4wHZwNblxGohgY6IELvAM2exoA==}
+
+  '@osdk/internal.foundry.geo@2.2.0':
+    resolution: {integrity: sha512-LBWgHq+7i1wACwrSfgalioe7g2hgyCPwtwYsLDVC3C/WhUIHDDte/LFwaC4theKCeej5NJCzJsSD4XgT08NFOg==}
 
   '@osdk/internal.foundry.geo@2.6.0-beta.0':
     resolution: {integrity: sha512-VlFfeGFCvNaIQUvs6pqBn3qXbBY1ubQ1EiGQzlEwY5rDKRnanuxPyvZCo17CGIH18t/Bt4TvqRIHhzHNHJdKwQ==}
@@ -4488,6 +4549,9 @@ packages:
   '@osdk/internal.foundry.ontologiesv2@0.2.0':
     resolution: {integrity: sha512-UUxcwGCfiX1+kvYrWgYxWe1JxttZk7X16XwrRUr8qLKjUTgqLXOvNMq6XtzfytQ7J/nOfbfcjxHBM2LNQwudag==}
 
+  '@osdk/internal.foundry.ontologiesv2@2.2.0':
+    resolution: {integrity: sha512-C2rO+L1OjjOXf/nuMr0cuTQ7nl88HhShM/MR5EAuNlTk9IA7QiSrZHCyUVl7gFS02f16uV93WVaBYgU+fAm4qg==}
+
   '@osdk/internal.foundry.ontologiesv2@2.6.0-beta.0':
     resolution: {integrity: sha512-fiGdAnHqBvGb3ESnV5+UAAXxxlbMMMWRxKzUSg2ZFlKZRoWkEGlVr0hH9XVSa0flaHj97XUQnwRQGhOe6Rggwg==}
 
@@ -4499,6 +4563,9 @@ packages:
 
   '@osdk/shared.client.impl@0.1.0':
     resolution: {integrity: sha512-mNpUkkwnDuPK3LNgilQ0uaUUstrTZ/gqNejSil0Q7Zd+Nq05sAmuyiC6a+5el6p1zByzv+XthQAnJF5Nwcuoag==}
+
+  '@osdk/shared.client.impl@1.0.4':
+    resolution: {integrity: sha512-aB0q01vgSqN2KNjFrBEgPEa3IwJJ74RfHPCiUwdlnodQSWXBqCzTzCXrG2o3q35GddxpzVv2ncpcwHsZatEmEg==}
 
   '@osdk/shared.client2@1.0.0':
     resolution: {integrity: sha512-AZiDypfNrsH/men2mB12KDQM8t5iGyUI7QO2BTpgQ1pNKgwdILUY/xBsNEAUCnp0eYqSuPI1puJuJB2xogMDHA==}
@@ -4520,6 +4587,9 @@ packages:
 
   '@osdk/shared.net.fetch@0.1.0':
     resolution: {integrity: sha512-YQXAy2ZcBRtI12/Yrivj7Yf33NYg9EQs0FX2uCGeSapkLqb8hQH7VBgTdDWXMJIJeUdIgANg0+DmWckNIY9DDQ==}
+
+  '@osdk/shared.net.fetch@1.0.1':
+    resolution: {integrity: sha512-fN4iNbHqXbNkqiIanXsJ7xxIg/PxQPb6PZFpuPWkYG71w2kiPDKkvQiSXHjpcWsQkJvczi52bwNHq8ijyMgbDQ==}
 
   '@osdk/shared.net.platformapi@0.3.1':
     resolution: {integrity: sha512-5pJH/5abA2zm59SqJG5cLnZM/VKjTg/K/ULqlZun1K067rbIVt0G96+y84PbyE0nPgneCl9LSlbiA/hzt9KgCg==}
@@ -5332,6 +5402,25 @@ packages:
   '@swc/helpers@0.5.13':
     resolution: {integrity: sha512-UoKGxQ3r5kYI9dALKJapMmuK+1zWM/H17Z1+iwnNmzcJRnfFuevZs375TA5rW31pu4BS4NoSy1fRsexDXfWn5w==}
 
+  '@testing-library/dom@10.4.0':
+    resolution: {integrity: sha512-pemlzrSESWbdAloYml3bAJMEfNh1Z7EduzqPKprCH5S341frlpYnUEW0H72dLxa6IsYr+mPno20GiSm+h9dEdQ==}
+    engines: {node: '>=18'}
+
+  '@testing-library/react@16.0.1':
+    resolution: {integrity: sha512-dSmwJVtJXmku+iocRhWOUFbrERC76TX2Mnf0ATODz8brzAZrMBbzLwQixlBSanZxR6LddK3eiwpSFZgDET1URg==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@testing-library/dom': ^10.0.0
+      '@types/react': ^18.0.0
+      '@types/react-dom': ^18.0.0
+      react: ^18.0.0
+      react-dom: ^18.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+
   '@ts-morph/common@0.20.0':
     resolution: {integrity: sha512-7uKjByfbPpwuzkstL3L5MQyuXPSKdoNG93Fmi2JoDcTf3pEP731JdRFAduRVkOs8oqxPsXKA+ScrWkdQ8t/I+Q==}
 
@@ -5352,6 +5441,9 @@ packages:
 
   '@types/argparse@1.0.38':
     resolution: {integrity: sha512-ebDJ9b0e702Yr7pWgB0jzm+CX4Srzz8RcXtLJDJB+BSccqMa36uyH/zUsSYao5+BD1ytv3k3rPYCq4mAE1hsXA==}
+
+  '@types/aria-query@5.0.4':
+    resolution: {integrity: sha512-rfT93uj5s0PRL7EzccGMs3brplhcrghnDoV26NqKhCAS1hVo+WdNsPvE/yb6ilfr5hi2MEk6d5EWJTKdxg8jVw==}
 
   '@types/aws-lambda@8.10.138':
     resolution: {integrity: sha512-71EHMl70TPWIAsFuHd85NHq6S6T2OOjiisPTrH7RgcjzpJpPh4RQJv7PvVvIxc6PIp8CLV7F9B+TdjcAES5vcA==}
@@ -5783,6 +5875,9 @@ packages:
   aria-hidden@1.2.4:
     resolution: {integrity: sha512-y+CcFFwelSXpLZk/7fMB2mUbGtX9lKycf1MWJ7CaTIERyitVlyQx6C+sxcROU2BAJ24OiZyK+8wj2i8AlBoS3A==}
     engines: {node: '>=10'}
+
+  aria-query@5.3.0:
+    resolution: {integrity: sha512-b0P0sZPKtyu8HkeRAfCq0IfURZK+SuwMjY1UXGBU27wpAiTwQAIlq56IbIO+ytk/JjS1fMR14ee5WBBfKi5J6A==}
 
   aria-query@5.3.2:
     resolution: {integrity: sha512-COROpnaoap1E2F000S62r6A60uHZnmlvomhfyT2DlTcrY1OrBKn2UhH7qn5wTC9zMvD0AY7csdPSNwKP+7WiQw==}
@@ -6302,6 +6397,10 @@ packages:
     resolution: {integrity: sha512-2NJozoOHQ4NuZuVIr5CWd0iiLVIRSDepakaovIN+9eIDHEhdCAEvSy2cuf1DCrPPQLvHmbqTHODlhHg8UCy4zw==}
     engines: {node: '>=16'}
 
+  dequal@2.0.3:
+    resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
+    engines: {node: '>=6'}
+
   detect-indent@6.1.0:
     resolution: {integrity: sha512-reYkTUJAZb9gUuZ2RvVCNhVHdg62RHnJ7WJl8ftMi4diZ6NWlciOzQN88pUhSELEwflJht4oQDv0F0BMlwaYtA==}
     engines: {node: '>=8'}
@@ -6337,6 +6436,9 @@ packages:
   doctrine@2.1.0:
     resolution: {integrity: sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==}
     engines: {node: '>=0.10.0'}
+
+  dom-accessibility-api@0.5.16:
+    resolution: {integrity: sha512-X7BJ2yElsnOJ30pZF4uIIDfBEVgF4XEBxL9Bxhy6dnrm5hkzqmsWHGTiHqRiITNhMyFLyAiWndIJP7Z1NTteDg==}
 
   dprint@0.47.2:
     resolution: {integrity: sha512-geUcVIIrmLaY+YtuOl4gD7J/QCjsXZa5gUqre9sO6cgH0X/Fa9heBN3l/AWVII6rKPw45ATuCSDWz1pyO+HkPQ==}
@@ -6945,6 +7047,10 @@ packages:
     engines: {node: '>=0.4.7'}
     hasBin: true
 
+  happy-dom@15.11.6:
+    resolution: {integrity: sha512-elX7iUTu+5+3b2+NGQc0L3eWyq9jKhuJJ4GpOMxxT/c2pg9O3L5H3ty2VECX0XXZgRmmRqXyOK8brA2hDI6LsQ==}
+    engines: {node: '>=18.0.0'}
+
   has-bigints@1.0.2:
     resolution: {integrity: sha512-tSvCKtBr9lkF0Ex0aQiP9N+OpV4zi2r/Nee5VkRDbaqv35RLYMzbwQfFSZZH0kR+Rd6302UJZ2p/bJCEoR3VoQ==}
 
@@ -7500,6 +7606,10 @@ packages:
     resolution: {integrity: sha512-zobTr7akeGHnv7eBOXcRgMeCP6+uyYsczwmeRCauvpvaAltgNyTbLH/+VaEAPUeWBT+1GuNmz4wC/6jtQzbbVA==}
     engines: {node: '>=12'}
 
+  lz-string@1.5.0:
+    resolution: {integrity: sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==}
+    hasBin: true
+
   magic-string@0.30.11:
     resolution: {integrity: sha512-+Wri9p0QHMy+545hKww7YAu5NyzF8iomPL/RQazugQ9+Ez4Ic3mERMd8ZTX5rfK944j+560ZJi8iAwgak1Ac7A==}
 
@@ -8016,6 +8126,10 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
 
+  pretty-format@27.5.1:
+    resolution: {integrity: sha512-Qb1gy5OrP5+zDf2Bvnzdl3jsTf1qXVMazbvCoKhtKqVs4/YK4ozX4gKQJJVyNe+cajNPn0KoC0MC3FUmaHWEmQ==}
+    engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
+
   pretty-format@29.7.0:
     resolution: {integrity: sha512-Pdlw/oPxN+aXdmM9R00JVC9WVFoCLTKJvDVLgmJ+qAffBMxsV85l/Lu7sNx4zSzPyoL2euImuEwHhOXdEgNFZQ==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -8079,6 +8193,9 @@ packages:
 
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
+
+  react-is@17.0.2:
+    resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
 
   react-is@18.2.0:
     resolution: {integrity: sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==}
@@ -9070,6 +9187,14 @@ packages:
 
   webidl-conversions@4.0.2:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
+
+  webidl-conversions@7.0.0:
+    resolution: {integrity: sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==}
+    engines: {node: '>=12'}
+
+  whatwg-mimetype@3.0.0:
+    resolution: {integrity: sha512-nt+N2dzIutVRxARx1nghPKGv1xHikU7HKdfafKkLNLindmPU/ch3U31NOCGGA/dmPcmb1VlofO0vnKAcsm0o/Q==}
+    engines: {node: '>=12'}
 
   whatwg-url@7.1.0:
     resolution: {integrity: sha512-WUu7Rg1DroM7oQvGWfOiAK21n74Gg+T4elXEQYkOhtyLeWiJFoOGLXPKI/9gzIie9CtwVLm8wtw6YJdKyxSjeg==}
@@ -10567,6 +10692,47 @@ snapshots:
       fetch-retry: 6.0.0
       tiny-invariant: 1.3.3
 
+  '@osdk/api@2.0.9':
+    dependencies:
+      '@types/geojson': 7946.0.14
+      fetch-retry: 6.0.0
+      tiny-invariant: 1.3.3
+      type-fest: 4.18.2
+
+  '@osdk/client.unstable.osw@0.2.0':
+    dependencies:
+      conjure-lite: 0.4.4
+
+  '@osdk/client.unstable@2.0.9':
+    dependencies:
+      conjure-lite: 0.4.4
+
+  '@osdk/client@2.0.9':
+    dependencies:
+      '@osdk/api': 2.0.9
+      '@osdk/client.unstable': 2.0.9
+      '@osdk/client.unstable.osw': 0.2.0
+      '@osdk/generator-converters': 2.0.9
+      '@osdk/internal.foundry.core': 2.2.0
+      '@osdk/internal.foundry.ontologiesv2': 2.2.0
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client.impl': 1.0.4
+      '@osdk/shared.client2': 1.0.0
+      '@osdk/shared.net.errors': 2.0.1
+      '@osdk/shared.net.fetch': 1.0.1
+      '@types/geojson': 7946.0.14
+      conjure-lite: 0.4.4
+      fast-deep-equal: 3.1.3
+      fetch-retry: 6.0.0
+      find-up: 7.0.0
+      isomorphic-ws: 5.0.0(ws@8.18.0)
+      tiny-invariant: 1.3.3
+      type-fest: 4.18.2
+      ws: 8.18.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
   '@osdk/foundry.admin@2.1.0':
     dependencies:
       '@osdk/foundry.core': 2.1.0
@@ -10698,10 +10864,22 @@ snapshots:
       fetch-retry: 6.0.0
       tiny-invariant: 1.3.3
 
+  '@osdk/generator-converters@2.0.9':
+    dependencies:
+      '@osdk/api': 2.0.9
+      '@osdk/internal.foundry.core': 2.2.0
+
   '@osdk/internal.foundry.core@0.2.0':
     dependencies:
       '@osdk/internal.foundry.geo': 0.1.0
       '@osdk/shared.client': 1.0.1
+      '@osdk/shared.net.platformapi': 0.3.2
+
+  '@osdk/internal.foundry.core@2.2.0':
+    dependencies:
+      '@osdk/internal.foundry.geo': 2.2.0
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 0.3.2
 
   '@osdk/internal.foundry.core@2.6.0-beta.0':
@@ -10720,6 +10898,12 @@ snapshots:
   '@osdk/internal.foundry.geo@0.1.0':
     dependencies:
       '@osdk/shared.client': 1.0.1
+      '@osdk/shared.net.platformapi': 0.3.2
+
+  '@osdk/internal.foundry.geo@2.2.0':
+    dependencies:
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 0.3.2
 
   '@osdk/internal.foundry.geo@2.6.0-beta.0':
@@ -10745,6 +10929,13 @@ snapshots:
     dependencies:
       '@osdk/internal.foundry.core': 0.2.0
       '@osdk/shared.client': 1.0.1
+      '@osdk/shared.net.platformapi': 0.3.2
+
+  '@osdk/internal.foundry.ontologiesv2@2.2.0':
+    dependencies:
+      '@osdk/internal.foundry.core': 2.2.0
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 0.3.2
 
   '@osdk/internal.foundry.ontologiesv2@2.6.0-beta.0':
@@ -10780,6 +10971,13 @@ snapshots:
       '@osdk/shared.net.errors': 1.1.0
       '@osdk/shared.net.fetch': 0.1.0
 
+  '@osdk/shared.client.impl@1.0.4':
+    dependencies:
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client2': 1.0.0
+      '@osdk/shared.net.errors': 2.0.1
+      '@osdk/shared.net.fetch': 1.0.1
+
   '@osdk/shared.client2@1.0.0': {}
 
   '@osdk/shared.client@0.0.0': {}
@@ -10795,6 +10993,11 @@ snapshots:
   '@osdk/shared.net.fetch@0.1.0':
     dependencies:
       '@osdk/shared.net.errors': 1.1.0
+      fetch-retry: 6.0.0
+
+  '@osdk/shared.net.fetch@1.0.1':
+    dependencies:
+      '@osdk/shared.net.errors': 2.0.1
       fetch-retry: 6.0.0
 
   '@osdk/shared.net.platformapi@0.3.1':
@@ -11660,6 +11863,27 @@ snapshots:
     dependencies:
       tslib: 2.7.0
 
+  '@testing-library/dom@10.4.0':
+    dependencies:
+      '@babel/code-frame': 7.24.7
+      '@babel/runtime': 7.24.5
+      '@types/aria-query': 5.0.4
+      aria-query: 5.3.0
+      chalk: 4.1.2
+      dom-accessibility-api: 0.5.16
+      lz-string: 1.5.0
+      pretty-format: 27.5.1
+
+  '@testing-library/react@16.0.1(@testing-library/dom@10.4.0)(@types/react-dom@18.3.1)(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@babel/runtime': 7.24.5
+      '@testing-library/dom': 10.4.0
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    optionalDependencies:
+      '@types/react': 18.3.12
+      '@types/react-dom': 18.3.1
+
   '@ts-morph/common@0.20.0':
     dependencies:
       fast-glob: 3.3.2
@@ -11680,6 +11904,8 @@ snapshots:
       '@types/readdir-glob': 1.1.3
 
   '@types/argparse@1.0.38': {}
+
+  '@types/aria-query@5.0.4': {}
 
   '@types/aws-lambda@8.10.138': {}
 
@@ -12295,6 +12521,10 @@ snapshots:
     dependencies:
       tslib: 2.7.0
 
+  aria-query@5.3.0:
+    dependencies:
+      dequal: 2.0.3
+
   aria-query@5.3.2: {}
 
   array-buffer-byte-length@1.0.1:
@@ -12845,6 +13075,8 @@ snapshots:
 
   delay@6.0.0: {}
 
+  dequal@2.0.3: {}
+
   detect-indent@6.1.0: {}
 
   detect-libc@2.0.3:
@@ -12872,6 +13104,8 @@ snapshots:
   doctrine@2.1.0:
     dependencies:
       esutils: 2.0.3
+
+  dom-accessibility-api@0.5.16: {}
 
   dprint@0.47.2:
     optionalDependencies:
@@ -13820,6 +14054,12 @@ snapshots:
     optionalDependencies:
       uglify-js: 3.18.0
 
+  happy-dom@15.11.6:
+    dependencies:
+      entities: 4.5.0
+      webidl-conversions: 7.0.0
+      whatwg-mimetype: 3.0.0
+
   has-bigints@1.0.2: {}
 
   has-flag@3.0.0: {}
@@ -14294,6 +14534,8 @@ snapshots:
       yallist: 4.0.0
 
   luxon@3.4.4: {}
+
+  lz-string@1.5.0: {}
 
   magic-string@0.30.11:
     dependencies:
@@ -14788,6 +15030,12 @@ snapshots:
 
   prettier@3.2.5: {}
 
+  pretty-format@27.5.1:
+    dependencies:
+      ansi-regex: 5.0.1
+      ansi-styles: 5.2.0
+      react-is: 17.0.2
+
   pretty-format@29.7.0:
     dependencies:
       '@jest/schemas': 29.6.3
@@ -14849,6 +15097,8 @@ snapshots:
       scheduler: 0.23.2
 
   react-is@16.13.1: {}
+
+  react-is@17.0.2: {}
 
   react-is@18.2.0: {}
 
@@ -15967,7 +16217,7 @@ snapshots:
       '@types/node': 22.7.9
       fsevents: 2.3.3
 
-  vitest@2.1.2(@types/node@18.17.15):
+  vitest@2.1.2(@types/node@18.17.15)(happy-dom@15.11.6):
     dependencies:
       '@vitest/expect': 2.1.2
       '@vitest/mocker': 2.1.2(@vitest/spy@2.1.2)(vite@5.4.8(@types/node@18.17.15))
@@ -15990,6 +16240,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 18.17.15
+      happy-dom: 15.11.6
     transitivePeerDependencies:
       - less
       - lightningcss
@@ -16001,7 +16252,7 @@ snapshots:
       - supports-color
       - terser
 
-  vitest@2.1.2(@types/node@20.14.10):
+  vitest@2.1.2(@types/node@20.14.10)(happy-dom@15.11.6):
     dependencies:
       '@vitest/expect': 2.1.2
       '@vitest/mocker': 2.1.2(@vitest/spy@2.1.2)(vite@5.4.8(@types/node@20.14.10))
@@ -16024,6 +16275,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 20.14.10
+      happy-dom: 15.11.6
     transitivePeerDependencies:
       - less
       - lightningcss
@@ -16035,7 +16287,7 @@ snapshots:
       - supports-color
       - terser
 
-  vitest@2.1.2(@types/node@22.7.4):
+  vitest@2.1.2(@types/node@22.7.4)(happy-dom@15.11.6):
     dependencies:
       '@vitest/expect': 2.1.2
       '@vitest/mocker': 2.1.2(@vitest/spy@2.1.2)(vite@5.4.8(@types/node@22.7.4))
@@ -16058,6 +16310,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 22.7.4
+      happy-dom: 15.11.6
     transitivePeerDependencies:
       - less
       - lightningcss
@@ -16069,7 +16322,7 @@ snapshots:
       - supports-color
       - terser
 
-  vitest@2.1.2(@types/node@22.7.9):
+  vitest@2.1.2(@types/node@22.7.9)(happy-dom@15.11.6):
     dependencies:
       '@vitest/expect': 2.1.2
       '@vitest/mocker': 2.1.2(@vitest/spy@2.1.2)(vite@5.4.8(@types/node@22.7.9))
@@ -16092,6 +16345,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 22.7.9
+      happy-dom: 15.11.6
     transitivePeerDependencies:
       - less
       - lightningcss
@@ -16103,7 +16357,7 @@ snapshots:
       - supports-color
       - terser
 
-  vitest@2.1.3(@types/node@20.17.0):
+  vitest@2.1.3(@types/node@20.17.0)(happy-dom@15.11.6):
     dependencies:
       '@vitest/expect': 2.1.3
       '@vitest/mocker': 2.1.3(@vitest/spy@2.1.3)(vite@5.4.8(@types/node@20.17.0))
@@ -16126,6 +16380,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 20.17.0
+      happy-dom: 15.11.6
     transitivePeerDependencies:
       - less
       - lightningcss
@@ -16137,7 +16392,7 @@ snapshots:
       - supports-color
       - terser
 
-  vitest@2.1.3(@types/node@22.7.9):
+  vitest@2.1.3(@types/node@22.7.9)(happy-dom@15.11.6):
     dependencies:
       '@vitest/expect': 2.1.3
       '@vitest/mocker': 2.1.3(@vitest/spy@2.1.3)(vite@5.4.8(@types/node@22.7.9))
@@ -16160,6 +16415,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 22.7.9
+      happy-dom: 15.11.6
     transitivePeerDependencies:
       - less
       - lightningcss
@@ -16198,6 +16454,10 @@ snapshots:
       typescript: 5.5.4
 
   webidl-conversions@4.0.2: {}
+
+  webidl-conversions@7.0.0: {}
+
+  whatwg-mimetype@3.0.0: {}
 
   whatwg-url@7.1.0:
     dependencies:
