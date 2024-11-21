@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 2.1.0-beta.13
+
+### Minor Changes
+
+- c4f88a8: Removes circular dependency that may upset legacy tools like react-native
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.13
+- @osdk/client.unstable@2.1.0-beta.13
+- @osdk/generator-converters@2.1.0-beta.13
+
 ## 2.1.0-beta.12
 
 ### Patch Changes

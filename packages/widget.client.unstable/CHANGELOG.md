@@ -1,5 +1,19 @@
 # @osdk/widget-client.unstable
 
+## 0.1.0-beta.1
+
+### Minor Changes
+
+- 21d2dd1: Add fetch proxy
+
+### Patch Changes
+
+- Updated dependencies [21d2dd1]
+- Updated dependencies [7c13070]
+- Updated dependencies [c4f88a8]
+  - @osdk/widget-api.unstable@0.1.0-beta.1
+  - @osdk/client@2.1.0-beta.13
+
 ## 0.1.0-beta.0
 
 ### Minor Changes
