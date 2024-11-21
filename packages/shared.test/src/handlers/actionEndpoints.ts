@@ -64,7 +64,7 @@ export const actionHandlers: Array<RequestHandler> = [
     OntologiesV2.Actions.apply,
     ["ontologyApiName", "actionType"],
     handleAction<SyncApplyActionResponseV2>,
-    "https://stack.palantir.com/foo/first/someStuff",
+    "https://stack.palantirCustom.com/foo/first/someStuff/",
   ),
 
   /**

@@ -157,6 +157,17 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
       );
     },
   ),
+  handleOpenApiCall(
+    OntologiesV2.ObjectTypesV2.getFullMetadata,
+    ["ontologyApiName", "objectTypeApiName"],
+    async (req) => {
+      return getObjectDef(
+        req.params.ontologyApiName,
+        req.params.objectTypeApiName,
+      );
+    },
+    "https://stack.palantirCustom.com/foo/first/someStuff/",
+  ),
 
   handleOpenApiCall(
     OntologiesV2.ActionTypesV2.get,
@@ -266,6 +277,40 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
         fullOntology.interfaceTypes[req.params.interfaceType]
       );
     },
+  ),
+  handleOpenApiCall(
+    OntologiesV2.OntologyInterfaces.get,
+    ["ontologyApiName", "interfaceType"],
+    async (req) => {
+      // will throw if bad name
+      getOntology(req.params.ontologyApiName as string);
+
+      const interfaceType = req.params.interfaceType;
+      if (typeof interfaceType !== "string") {
+        throw new OpenApiCallError(
+          400,
+          InvalidRequest("Invalid parameter objectType"),
+        );
+      }
+
+      if (
+        fullOntology.interfaceTypes[req.params.interfaceType]
+          === undefined
+      ) {
+        throw new OpenApiCallError(
+          404,
+          ObjectNotFoundError(
+            req.params.interfaceType as string,
+            "",
+          ),
+        );
+      }
+
+      return (
+        fullOntology.interfaceTypes[req.params.interfaceType]
+      );
+    },
+    "https://stack.palantirCustom.com/foo/first/someStuff/",
   ),
 
   rest.post(

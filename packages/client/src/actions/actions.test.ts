@@ -58,7 +58,7 @@ describe("actions", () => {
       async () => "myAccessToken",
     );
     customEntryPointClient = createClient(
-      "https://stack.palantir.com/foo/first/someStuff",
+      "https://stack.palantirCustom.com/foo/first/someStuff",
       $ontologyRid,
       async () => "myAccessToken",
     );
@@ -132,6 +132,9 @@ describe("actions", () => {
   });
 
   it("returns validation directly on validateOnly mode, with custom entry point in URL", async () => {
+    apiServer.events.on("request:start", ({ request }) => {
+      console.log("Outgoing:", request.method, request.url);
+    });
     const result = await customEntryPointClient(moveOffice).applyAction({
       officeId: "SEA",
       newAddress: "456 Pike Place",

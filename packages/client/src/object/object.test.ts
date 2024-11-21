@@ -18,6 +18,7 @@ import type { Osdk, PropertyKeys } from "@osdk/api";
 import { $Objects, $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import { apiServer, stubData, withoutRid } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { custom } from "zod";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
@@ -36,11 +37,17 @@ function asV2Object(o: any, includeRid?: boolean) {
 describe("OsdkObject", () => {
   describe("link", () => {
     let client: Client;
+    let customEntryPointClient: Client;
 
     beforeAll(async () => {
       apiServer.listen();
       client = createClient(
         "https://stack.palantir.com",
+        $ontologyRid,
+        async () => "myAccessToken",
+      );
+      customEntryPointClient = createClient(
+        "https://stack.palantirCustom.com/foo/first/someStuff",
         $ontologyRid,
         async () => "myAccessToken",
       );
@@ -52,6 +59,31 @@ describe("OsdkObject", () => {
 
     it("loads an employee", async () => {
       const result = await client(Employee).where({
+        employeeId: stubData.employee1.employeeId,
+      }).fetchPage();
+
+      // we should get the employee we requested
+      const employee = result.data[0];
+      expect(JSON.stringify(employee)).toBeDefined();
+      expect(employee).toMatchObject({
+        "$apiName": "Employee",
+        "$objectType": "Employee",
+        "$primaryKey": 50030,
+        "class": "Red",
+        "employeeId": 50030,
+        "employeeStatus": expect.anything(),
+        "fullName": "John Doe",
+        "office": "NYC",
+        "startDate": "2019-01-01",
+      });
+
+      employee.startDate;
+
+      // it should have the prototype that we assign at hydration time
+      expect(Object.keys(employee.$link.lead)).toBeDefined();
+    });
+    it("loads an employee with custom client", async () => {
+      const result = await customEntryPointClient(Employee).where({
         employeeId: stubData.employee1.employeeId,
       }).fetchPage();
 
@@ -137,6 +169,7 @@ describe("OsdkObject", () => {
       expect(peep.employeeId).toBeDefined();
       expect((peep as any).employeeStatus).toBeUndefined();
     });
+
     it("gives $rid access when requested", async () => {
       const result = await client(Employee).where({
         employeeId: stubData.employee1.employeeId,
