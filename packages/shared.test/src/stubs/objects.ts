@@ -29,6 +29,7 @@ export const employee1 = {
   class: "Red",
   startDate: "2019-01-01",
   employeeStatus: "TimeSeries<String>",
+  employeeSensor: "TimeSeries<>",
   employeeLocation: "GeotimeSeriesReferencePlaceholder",
 };
 
@@ -44,6 +45,7 @@ export const employee2 = {
   class: "Blue",
   startDate: "2012-02-12",
   employeeStatus: "TimeSeries<String>",
+  employeeSensor: "TimeSeries<>",
   employeeLocation: "GeotimeSeriesReferencePlaceholder",
 };
 
@@ -59,6 +61,7 @@ export const employee3 = {
   class: "Red",
   startDate: "2015-05-15",
   employeeStatus: "TimeSeries<String>",
+  employeeSensor: "TimeSeries<>",
   employeeLocation: "GeotimeSeriesReferencePlaceholder",
 };
 
@@ -74,6 +77,7 @@ export const employeeFailsStrict = {
   class: "Red",
   startDate: "2015-05-15",
   employeeStatus: "TimeSeries<String>",
+  employeeSensor: "TimeSeries<>",
   employeeLocation: "GeotimeSeriesReferencePlaceholder",
 };
 
