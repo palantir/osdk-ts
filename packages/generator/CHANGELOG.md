@@ -1,5 +1,25 @@
 # @osdk/generator
 
+## 2.1.0-beta.12
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.12
+- @osdk/generator-converters@2.1.0-beta.12
+
+## 2.1.0-beta.11
+
+### Minor Changes
+
+- bc1761c: Update platform API dependencies.
+
+### Patch Changes
+
+- Updated dependencies [bc1761c]
+- Updated dependencies [9298f75]
+  - @osdk/generator-converters@2.1.0-beta.11
+  - @osdk/api@2.1.0-beta.11
+
 ## 2.1.0-beta.10
 
 ### Patch Changes

@@ -42,11 +42,11 @@ describe("WidgetMessages", () => {
         events: {
           myEvent: {
             displayName: "My Event",
-            parameterIds: ["test"],
+            parameterUpdateIds: ["test"],
           },
           myEvent2: {
             displayName: "My Event 2",
-            parameterIds: ["test", "test2"],
+            parameterUpdateIds: ["test", "test2"],
           },
         },
       });
@@ -90,11 +90,11 @@ describe("WidgetMessages", () => {
         events: {
           myEvent: {
             displayName: "My Event",
-            parameterIds: ["test"],
+            parameterUpdateIds: ["test"],
           },
           myEvent2: {
             displayName: "My Event 2",
-            parameterIds: ["test", "test2"],
+            parameterUpdateIds: ["test", "test2"],
           },
         },
       });

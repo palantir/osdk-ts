@@ -44,11 +44,11 @@ export default defineConfig({
   events: {
     updateHeader: {
       displayName: "Update header",
-      parameterIds: ["headerText"],
+      parameterUpdateIds: ["headerText"],
     },
     updateTodoItems: {
       displayName: "Update todo items",
-      parameterIds: ["todoItems"],
+      parameterUpdateIds: ["todoItems"],
     },
   },
 });

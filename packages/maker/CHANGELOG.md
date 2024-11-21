@@ -1,5 +1,24 @@
 # @osdk/maker
 
+## 0.9.0-beta.12
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.12
+
+## 0.9.0-beta.11
+
+### Minor Changes
+
+- bc1761c: Update platform API dependencies.
+- caf1abc: Support generating linked products for marketplace
+
+### Patch Changes
+
+- Updated dependencies [bc1761c]
+- Updated dependencies [9298f75]
+  - @osdk/api@2.1.0-beta.11
+
 ## 0.9.0-beta.10
 
 ### Patch Changes
