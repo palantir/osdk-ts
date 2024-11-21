@@ -2430,6 +2430,12 @@ importers:
 
   packages/e2e.sandbox.todowidget:
     dependencies:
+      '@osdk/client':
+        specifier: workspace:~
+        version: link:../client
+      '@osdk/foundry.datasets':
+        specifier: ~2.5.0
+        version: 2.5.0
       '@osdk/widget-client-react.unstable':
         specifier: workspace:~
         version: link:../widget.client-react.unstable
@@ -3176,6 +3182,9 @@ importers:
 
   packages/widget.client-react.unstable:
     devDependencies:
+      '@osdk/client':
+        specifier: workspace:~
+        version: link:../client
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -3216,6 +3225,9 @@ importers:
         specifier: ^1.3.1
         version: 1.3.3
     devDependencies:
+      '@osdk/client':
+        specifier: workspace:~
+        version: link:../client
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -4572,8 +4584,14 @@ packages:
   '@osdk/foundry.datasets@2.1.0':
     resolution: {integrity: sha512-cqQAhiC+w/775SlifFV7yyvlQxMM8VKuRrSgXy93CCyI4W73jWEwS9+/PtKPXVa48T3G9bql8FckaIuwlknQfA==}
 
+  '@osdk/foundry.datasets@2.5.0':
+    resolution: {integrity: sha512-W82xleLQgQFUTVnAQS54n26xUFEALayotl1f3LGeRLN6r+2G1dNp+UgRU7/IHc/xzOqgulEOGwwr6ENFcsNP2A==}
+
   '@osdk/foundry.filesystem@2.1.0':
     resolution: {integrity: sha512-poFV7GAOaHXpy2rokEvSERDtl7rWECwhrZ7aTT0+I6aHHOZ7k0VKjWOADGa75n78RAVriR8nE+BkYMYK1V9Zpg==}
+
+  '@osdk/foundry.filesystem@2.5.0':
+    resolution: {integrity: sha512-SJKZSfBc7CroyoIVW3D2SpVyaCCnhv8onzIwHcJWOnufFgSbQ3kqyWoqNiStGlymmnoSbniK3rfUFFYeUbxhDQ==}
 
   '@osdk/foundry.functions@2.1.0':
     resolution: {integrity: sha512-9+GqmbACkaXtPtKBq8dAGlERgV5kbfiosxUSnCTmrZvhful6DigfTDkFnGMJapsyeSEPf62UuSf8zrKlJl8Hhw==}
@@ -10780,11 +10798,26 @@ snapshots:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.net.platformapi': 0.3.2
 
+  '@osdk/foundry.datasets@2.5.0':
+    dependencies:
+      '@osdk/foundry.core': 2.5.0
+      '@osdk/foundry.filesystem': 2.5.0
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client2': 1.0.0
+      '@osdk/shared.net.platformapi': 1.1.0
+
   '@osdk/foundry.filesystem@2.1.0':
     dependencies:
       '@osdk/foundry.core': 2.1.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.net.platformapi': 0.3.2
+
+  '@osdk/foundry.filesystem@2.5.0':
+    dependencies:
+      '@osdk/foundry.core': 2.5.0
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client2': 1.0.0
+      '@osdk/shared.net.platformapi': 1.1.0
 
   '@osdk/foundry.functions@2.1.0':
     dependencies:

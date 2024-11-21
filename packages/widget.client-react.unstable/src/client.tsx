@@ -153,13 +153,11 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
     <FoundryWidgetContext.Provider
       value={{
         emitEvent: client.emitEvent,
+        createOntologyClient: client.createOntologyClient,
         hostEventTarget: client.hostEventTarget,
         asyncParameterValues,
         parameters: {
-          values: allParameterValues.type === "not-started"
-              || allParameterValues.type === "loading"
-            ? {}
-            : allParameterValues.value,
+          values: allParameterValues.value ?? {},
           state: allParameterValues.type,
         },
         // Unfortunately the context is statically defined so we can't use the generic type, hence the cast
