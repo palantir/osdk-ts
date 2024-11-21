@@ -199,12 +199,15 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
         widgets: {},
       };
 
+      const entrypointImports: { [chunkName: string]: string[] } = {};
       // This is inspired by vite's native manifest plugin, but we only care about entrypoints
       for (const file in bundle) {
         const chunk = bundle[file];
+        if (chunk.type !== "chunk") {
+          continue;
+        }
         if (
-          chunk.type === "chunk"
-          && chunk.isEntry
+          chunk.isEntry
           && chunk.facadeModuleId != null
         ) {
           if (entrypointFileIdToConfigMap[chunk.facadeModuleId] == null) {
@@ -231,6 +234,24 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
               ?? {},
           };
           widgetConfigManifest.widgets[chunk.name] = widgetConfig;
+          entrypointImports[chunk.name] = chunk.imports;
+        } else {
+          // Check if it's an imported chunk, since any CSS files we will need to put on the page for them
+          // JS files will get imported on their own
+          for (
+            const [entrypointName, imports] of Object.entries(entrypointImports)
+          ) {
+            if (
+              imports.includes(chunk.fileName)
+              && chunk.viteMetadata?.importedCss.size
+            ) {
+              widgetConfigManifest.widgets[entrypointName].entrypointCss?.push(
+                ...[...chunk.viteMetadata.importedCss].map((css) => ({
+                  path: css,
+                })),
+              );
+            }
+          }
         }
       }
 
