@@ -15,7 +15,7 @@ const Config = defineConfig({
   events: {
     updateHeader: {
       displayName: "Update header",
-      parameterIds: ["headerText"],
+      parameterUpdateIds: ["headerText"],
     },
   },
 });
