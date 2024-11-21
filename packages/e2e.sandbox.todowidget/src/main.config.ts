@@ -1,7 +1,7 @@
 import { defineConfig } from "@osdk/widget-client.unstable";
 
 export default defineConfig({
-  rid: "ri.viewregistry..view.0000-0000-0000-0000",
+  rid: "ri.viewregistry..view.322ac3f9-08f8-456d-80a8-ceb49e145f62",
   parameters: {
     headerText: {
       displayName: "Widget title",

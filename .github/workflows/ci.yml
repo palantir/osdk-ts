@@ -108,3 +108,20 @@ jobs:
       - name: Verify nothing added
         run: u="$(git ls-files --others --exclude-standard)" && test -z "$u"
 
+      - name: TEMPORARY - pnpm pack API package for use
+        run: cd packages/widget.api.unstable && pnpm pack
+      - name: Archive NPM packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-packages
+          path: |
+            packages/widget.api.unstable/osdk-widget-api.unstable-*.tgz
+      - name: TEMPORARY - zip e2e bundle for use
+        run: cd packages/e2e.sandbox.todowidget && zip -r e2e.sandbox.todowidget.zip dist/
+      - name: Archive E2E bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-bundle
+          path: |
+            packages/e2e.sandbox.todowidget/e2e.sandbox.todowidget.zip
+
