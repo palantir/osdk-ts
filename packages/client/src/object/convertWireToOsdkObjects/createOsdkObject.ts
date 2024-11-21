@@ -191,7 +191,8 @@ export function createOsdkObject<
           ) {
             return new TimeSeriesPropertyImpl<
               (typeof propDef)["type"] extends "numericTimeseries" ? number
-                : string
+                : (typeof propDef)["type"] extends "stringTimeseries" ? string
+                : number | string
             >(
               client,
               objectDef.apiName,
