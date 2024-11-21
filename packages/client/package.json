@@ -62,7 +62,7 @@
     "@osdk/shared.test": "workspace:~",
     "@types/geojson": "^7946.0.14",
     "@types/ws": "^8.5.11",
-    "execa": "^9.3.0",
+    "execa": "^9.5.1",
     "jest-extended": "^4.0.2",
     "msw": "^2.3.4",
     "p-defer": "^4.0.1",
