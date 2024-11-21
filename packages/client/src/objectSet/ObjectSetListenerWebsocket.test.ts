@@ -78,7 +78,7 @@ const rootLogger = await vi.hoisted(async (): Promise<Logger> => {
 // make local uses of WebSocket typed right
 const MockedWebSocket = ImportedWebSocket as unknown as MockedWebSocket;
 
-const STACK = "https://stack.palantir.com/some/stuff/first/";
+const STACK = "https://stack.palantirCustom.com/foo/first/someStuff/";
 
 vi.mock("isomorphic-ws", async (importOriginal) => {
   const original = await importOriginal<
