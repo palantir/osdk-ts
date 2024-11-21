@@ -17,7 +17,7 @@
 import type { BaseFilterOptions, CatchThemAll } from "./BaseFilter.js";
 import type { Just } from "./Just.js";
 
-export interface StringFilterOptions extends BaseFilterOptions<string> {
+interface StringFilterOptions extends BaseFilterOptions<string> {
   "$startsWith": string;
   "$containsAllTermsInOrder": string;
   "$containsAnyTerm": string | { term: string; fuzzySearch?: boolean };
