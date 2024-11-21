@@ -332,12 +332,7 @@ export class ObjectSetListenerWebsocket {
   async #ensureWebsocket() {
     if (this.#ws == null) {
       const { baseUrl, tokenProvider } = this.#client;
-      const base = new URL(baseUrl);
-      const url = new URL(
-        `api/v2/ontologySubscriptions/ontologies/${this.#client.ontologyRid}/streamSubscriptions`,
-        base,
-      );
-      url.protocol = url.protocol.replace("https", "wss");
+      const url = constructWebsocketUrl(baseUrl, this.#client.ontologyRid);
 
       const token = await tokenProvider();
 
@@ -595,4 +590,18 @@ export class ObjectSetListenerWebsocket {
       this.#ensureWebsocket();
     }
   };
+}
+
+/** @internal */
+export function constructWebsocketUrl(
+  baseUrl: string,
+  ontologyRid: string | Promise<string>,
+) {
+  const base = new URL(baseUrl);
+  const url = new URL(
+    `api/v2/ontologySubscriptions/ontologies/${ontologyRid}/streamSubscriptions`,
+    base,
+  );
+  url.protocol = url.protocol.replace("https", "wss");
+  return url;
 }

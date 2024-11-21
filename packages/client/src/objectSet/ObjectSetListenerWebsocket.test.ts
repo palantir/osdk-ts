@@ -45,7 +45,10 @@ import { z } from "zod";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { Logger } from "../Logger.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
+import {
+  constructWebsocketUrl,
+  ObjectSetListenerWebsocket,
+} from "./ObjectSetListenerWebsocket.js";
 
 // it needs to be hoisted because its referenced from our mocked WebSocket
 // which must be hoisted to work
@@ -378,6 +381,13 @@ describe("ObjectSetListenerWebsocket", async () => {
           expect(listener.onOutOfDate).not.toHaveBeenCalled();
           expect(listener.onChange).not.toHaveBeenCalled();
           expect(listener.onError).not.toHaveBeenCalled();
+        });
+
+        it("should create url correctly", () => {
+          expect(constructWebsocketUrl(STACK, "ontologyRid1").toString())
+            .toEqual(
+              "wss://stack.palantircustom.com/foo/first/someStuff/api/v2/ontologySubscriptions/ontologies/ontologyRid1/streamSubscriptions",
+            );
         });
       });
     });
