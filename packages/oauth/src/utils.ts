@@ -62,6 +62,6 @@ export function processOptionsAndAssignDefaults(
     postLoginPage: options.postLoginPage || window.location.toString(),
     scopes: options.scopes ?? ["api:read-data", "api:write-data"],
     fetchFn: options.fetchFn ?? globalThis.fetch,
-    ctxPath: options.ctxPath ?? "/multipass",
+    ctxPath: options.ctxPath ?? "multipass",
   };
 }

@@ -39,7 +39,7 @@ export function createConfidentialOauthClient(
   url: string,
   scopes: string[] = ["api:read-data", "api:write-data"],
   fetchFn: typeof globalThis.fetch = globalThis.fetch,
-  ctxPath: string = "/multipass",
+  ctxPath: string = "multipass",
 ): ConfidentialOauthClient {
   const client: Client = { client_id, client_secret };
   const authServer = createAuthorizationServer(ctxPath, url);
