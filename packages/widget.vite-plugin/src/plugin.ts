@@ -212,7 +212,16 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
               `Could not find widget configuration object for entrypoint ${chunk.fileName}. Ensure that the default export of your imported *.${CONFIG_FILE_SUFFIX}.js file is a widget configuration object as returned by defineConfig()`,
             );
           }
+          if (
+            entrypointFileIdToConfigMap[chunk.facadeModuleId].type
+              !== "workshop"
+          ) {
+            throw new Error(
+              `Unsupported widget type for entrypoint ${chunk.fileName}. Only "workshop" widgets are supported`,
+            );
+          }
           const widgetConfig: WidgetManifestConfig = {
+            type: "workshopWidgetV1",
             entrypointJs: [{
               path: chunk.fileName,
               type: "module",

@@ -32,6 +32,11 @@ export interface WidgetManifestV1 {
 
 export interface WidgetManifestConfigV1 {
   /**
+   * The target Foundry UI that this widget is intended to be used in
+   */
+  type: "workshopWidgetV1";
+
+  /**
    * RID of the widget that this config corresponds to
    */
   rid: string;

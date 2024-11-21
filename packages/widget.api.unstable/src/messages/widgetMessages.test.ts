@@ -22,6 +22,7 @@ describe("WidgetMessages", () => {
   describe("EmitEvent", () => {
     it("should emit an event with the correct payload", () => {
       const test = defineConfig({
+        type: "workshop",
         rid: "ri.viewregistry..view.0000-0000-0000-0000",
         parameters: {
           test: {
@@ -70,6 +71,7 @@ describe("WidgetMessages", () => {
 
     it("should be able to assign specific events to the union", () => {
       const test = defineConfig({
+        type: "workshop",
         rid: "ri.viewregistry..view.0000-0000-0000-0000",
         parameters: {
           test: {
