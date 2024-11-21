@@ -18,7 +18,6 @@ import type { Osdk, PropertyKeys } from "@osdk/api";
 import { $Objects, $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import { apiServer, stubData, withoutRid } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { custom } from "zod";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
@@ -169,7 +168,6 @@ describe("OsdkObject", () => {
       expect(peep.employeeId).toBeDefined();
       expect((peep as any).employeeStatus).toBeUndefined();
     });
-
     it("gives $rid access when requested", async () => {
       const result = await client(Employee).where({
         employeeId: stubData.employee1.employeeId,

@@ -99,7 +99,7 @@ async function apiFetch(
   requestMediaType?: string,
   responseMediaType?: string,
 ) {
-  const url = new URL(`api${endpointPath}`, clientCtx.baseUrl);
+  const url = new URL(`/api${endpointPath}`, clientCtx.baseUrl);
   for (const [key, value] of Object.entries(queryArguments || {})) {
     if (value == null) {
       continue;

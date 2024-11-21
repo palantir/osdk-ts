@@ -39,7 +39,6 @@ import {
   expectTypeOf,
   it,
 } from "vitest";
-import { custom } from "zod";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createAttachmentUpload } from "../object/AttachmentUpload.js";
