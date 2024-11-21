@@ -32,20 +32,11 @@ export function serializeRequest(
     id,
     url: input,
     method: init?.method ?? "GET",
-    headers: serializeHeaders(init?.headers),
+    headers: Object.fromEntries([
+      ...new Headers(init?.headers ?? {}).entries(),
+    ]),
     body: body as any,
   };
-}
-
-function serializeHeaders(headers: HeadersInit | undefined) {
-  if (headers === undefined || !(headers instanceof Headers)) {
-    throw new Error("Header object not found");
-  }
-  const serialized: Record<string, string> = {};
-  for (const key of headers.keys()) {
-    serialized[key] = headers.get(key)!;
-  }
-  return serialized;
 }
 
 export function deserializeResponse(

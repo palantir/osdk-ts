@@ -43,7 +43,7 @@ describe("FoundryHostEventTarget", () => {
       events: {
         myEvent: {
           displayName: "My Event",
-          parameterIds: ["test"],
+          parameterUpdateIds: ["test"],
         },
       },
     });
@@ -87,7 +87,7 @@ describe("FoundryHostEventTarget", () => {
       events: {
         myEvent: {
           displayName: "My Event",
-          parameterIds: ["test"],
+          parameterUpdateIds: ["test"],
         },
       },
     });
@@ -117,7 +117,7 @@ describe("FoundryHostEventTarget", () => {
       events: {
         myEvent: {
           displayName: "My Event",
-          parameterIds: ["test"],
+          parameterUpdateIds: ["test"],
         },
       },
     });

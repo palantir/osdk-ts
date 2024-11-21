@@ -31,10 +31,10 @@ export class FoundryHostEventTarget<
     type: T,
     callback:
       | HostMessageEventListener<
-        Extract<HostMessage<C>, { type: T }>["payload"]
+        (HostMessage<C> & { type: T })["payload"]
       >
       | HostMessageEventListenerObject<
-        Extract<HostMessage<C>, { type: T }>["payload"]
+        (HostMessage<C> & { type: T })["payload"]
       >
       | null,
     options?: AddEventListenerOptions | boolean,
@@ -46,10 +46,10 @@ export class FoundryHostEventTarget<
     type: T,
     callback:
       | HostMessageEventListener<
-        Extract<HostMessage<C>, { type: T }>["payload"]
+        (HostMessage<C> & { type: T })["payload"]
       >
       | HostMessageEventListenerObject<
-        Extract<HostMessage<C>, { type: T }>["payload"]
+        (HostMessage<C> & { type: T })["payload"]
       >
       | null,
     options?: EventListenerOptions | boolean,
@@ -59,7 +59,7 @@ export class FoundryHostEventTarget<
 
   public dispatchEventMessage<T extends HostMessage<C>["type"]>(
     type: T,
-    payload: Extract<HostMessage<C>, { type: T }>["payload"],
+    payload: (HostMessage<C> & { type: T })["payload"],
   ) {
     this.dispatchEvent(
       new CustomEvent<HostMessage.Payload>(type, {
