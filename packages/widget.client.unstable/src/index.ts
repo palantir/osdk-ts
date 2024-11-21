@@ -32,6 +32,7 @@ export type {
 } from "@osdk/widget-api.unstable";
 export {
   defineConfig,
+  hasValue,
   HostMessage,
   isHostParametersUpdatedMessage,
 } from "@osdk/widget-api.unstable";

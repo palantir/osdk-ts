@@ -50,3 +50,17 @@ export type AsyncValue<V, E = Error> =
   | AsyncLoadedValue<V>
   | AsyncReloadingValue<V>
   | AsyncFailedValue<V, E>;
+
+/**
+ * Convenience type guard to determine whether the async value has a loaded value
+ */
+export function hasValue<V, E = Error>(
+  asyncValue: AsyncValue<V, E>,
+): asyncValue is
+  | AsyncLoadedValue<V>
+  | AsyncReloadingValue<V>
+  | AsyncFailedValue<V, E>
+{
+  return asyncValue.type === "loaded" || asyncValue.type === "reloading"
+    || asyncValue.type === "failed";
+}

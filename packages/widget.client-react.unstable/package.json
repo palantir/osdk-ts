@@ -29,6 +29,7 @@
     "transpile": "monorepo.tool.transpile"
   },
   "peerDependencies": {
+    "@osdk/client": "^2",
     "@osdk/widget-client.unstable": "^0.1.0",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -36,6 +37,7 @@
     "react-dom": "18"
   },
   "devDependencies": {
+    "@osdk/client": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",

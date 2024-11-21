@@ -7,6 +7,10 @@ export default defineConfig({
       displayName: "Widget title",
       type: "string",
     },
+    datasetRid: {
+      displayName: "Dataset RID",
+      type: "string",
+    },
     showWarning: {
       displayName: "Show warning callout",
       type: "boolean",

@@ -37,6 +37,7 @@ export {
   visitHostMessage,
 } from "./messages/hostMessages.js";
 export {
+  _unstable_isWidgetFetchMessage,
   isWidgetEmitEventMessage,
   isWidgetReadyMessage,
   visitWidgetMessage,
@@ -52,3 +53,4 @@ export type {
   AsyncReloadingValue,
   AsyncValue,
 } from "./utils/asyncValue.js";
+export { hasValue } from "./utils/asyncValue.js";

@@ -1,4 +1,7 @@
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import type { Dataset } from "@osdk/foundry.datasets";
+import { Datasets } from "@osdk/foundry.datasets";
+import { type AsyncValue, hasValue } from "@osdk/widget-client.unstable";
+import { ExclamationTriangleIcon, TableIcon } from "@radix-ui/react-icons";
 import {
   Box,
   Button,
@@ -11,19 +14,55 @@ import {
   Table,
   TextField,
 } from "@radix-ui/themes";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useWidgetContext } from "./context.js";
 
 export const App: React.FC = () => {
-  const { parameters, hostEventTarget, emitEvent } = useWidgetContext();
-  const { headerText, todoItems, showWarning } = parameters.values;
+  const { parameters, hostEventTarget, emitEvent, createOntologyClient } =
+    useWidgetContext();
+  const { headerText, todoItems, showWarning, datasetRid } = parameters.values;
   const [newTodoItem, setNewTodoItem] = useState("");
+  const [dataset, setDataset] = useState<AsyncValue<Dataset>>({
+    type: "not-started",
+  });
+  const client = useMemo(
+    () => createOntologyClient("ri.ontology.main.ontology.0000-0000-0000-0000"),
+    [createOntologyClient],
+  );
 
   useEffect(() => {
     hostEventTarget.addEventListener("host.update-parameters", (event) => {
       console.log("Received event:", event);
     });
   }, []);
+
+  useEffect(() => {
+    if (datasetRid != null) {
+      setDataset((prevDataset) => {
+        if (prevDataset.type !== "not-started") {
+          return {
+            type: "reloading",
+            value: prevDataset.type !== "loading"
+              ? prevDataset.value
+              : undefined,
+          };
+        }
+        return { type: "loading" };
+      });
+      Datasets.get(client, datasetRid).then((dataset) => {
+        setDataset({
+          type: "loaded",
+          value: dataset,
+        });
+      }).catch((error) => {
+        setDataset(prevDataset => ({
+          type: "failed",
+          error: error as Error,
+          value: hasValue(prevDataset) ? prevDataset.value : undefined,
+        }));
+      });
+    }
+  }, [datasetRid]);
 
   const handleAddTodoItem = useCallback(() => {
     emitEvent("updateTodoItems", {
@@ -59,6 +98,19 @@ export const App: React.FC = () => {
               <Callout.Text>This is a data warning</Callout.Text>
             </Callout.Root>
           )}
+          <Heading size="2">
+            {dataset.type === "loading" || dataset.type === "reloading"
+              ? <Skeleton>Loading dataset…</Skeleton>
+              : dataset.type === "loaded"
+              ? (
+                <>
+                  <TableIcon /> {dataset.value?.name}
+                </>
+              )
+              : dataset.type === "failed"
+              ? "Failed to load dataset"
+              : "No dataset loaded"}
+          </Heading>
           <Table.Root>
             <Table.Header>
               <Table.Row>
