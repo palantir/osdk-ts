@@ -230,9 +230,6 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
         propertyName: req.params.propertyName,
       };
 
-      // eslint-disable-next-line no-console
-      console.log("im here: ", pointParams);
-
       const firstPointResp =
         firstPointRequestHandlers[JSON.stringify(pointParams)];
       if (
