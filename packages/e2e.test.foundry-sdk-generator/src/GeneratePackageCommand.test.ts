@@ -22,27 +22,34 @@ import { describe, expect, it } from "vitest";
 
 describe("Generate Package Command", () => {
   // ensure that we do not break backcompat by retaining our scripts export that links to the bundled types and esm output
-  it("has a public scripts export", async () => {
-    const generatedPath = path.join(
-      path.dirname(fileURLToPath(import.meta.url)),
-      "generatedNoCheck",
-      "@test-app2",
-      "osdk",
-    );
-    const packagePath = path.join(generatedPath, "package.json");
+  it.each(["@test-app2", "@test-app2-beta"])(
+    "has a public scripts export for %s",
+    async (scope) => {
+      const generatedPath = path.join(
+        path.dirname(fileURLToPath(import.meta.url)),
+        "generatedNoCheck",
+        scope,
+        "osdk",
+      );
+      const packagePath = path.join(generatedPath, "package.json");
 
-    const packageJson = JSON.parse(await fs.readFile(packagePath, "utf-8"));
+      const packageJson = JSON.parse(await fs.readFile(packagePath, "utf-8"));
 
-    const scriptsExport = packageJson["exports"]?.["."]?.["script"];
-    expect(scriptsExport).toMatchInlineSnapshot(`
-      {
+      const scriptsExport = packageJson["exports"]?.["."]?.["script"];
+      expect(scriptsExport).toEqual({
         "default": "./dist/bundle/index.esm.js",
         "types": "./dist/bundle/index.d.ts",
-      }
-    `);
+      });
 
-    const esmPath = path.join(generatedPath, scriptsExport.default);
+      const esmPath = path.join(generatedPath, scriptsExport.default);
 
-    expect(existsSync(esmPath), esmPath).toBe(true);
-  });
+      expect(existsSync(esmPath), esmPath).toBe(true);
+
+      const contents = await fs.readFile(
+        path.join(generatedPath, "index.js"),
+        "utf-8",
+      );
+      expect(contents).not.toContain("Object.defineProperty(exports,");
+    },
+  );
 });
