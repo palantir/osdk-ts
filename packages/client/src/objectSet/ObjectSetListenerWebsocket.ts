@@ -333,9 +333,12 @@ export class ObjectSetListenerWebsocket {
     if (this.#ws == null) {
       const { baseUrl, tokenProvider } = this.#client;
       const base = new URL(baseUrl);
-      const url = `wss://${base.host}${
-        base.pathname === "/" ? "" : base.pathname
-      }/api/v2/ontologySubscriptions/ontologies/${this.#client.ontologyRid}/streamSubscriptions`;
+      const url = new URL(
+        `api/v2/ontologySubscriptions/ontologies/${this.#client.ontologyRid}/streamSubscriptions`,
+        base,
+      );
+      url.protocol = url.protocol.replace("https", "wss");
+
       const token = await tokenProvider();
 
       // tokenProvider is async, there could potentially be a race to create the websocket.

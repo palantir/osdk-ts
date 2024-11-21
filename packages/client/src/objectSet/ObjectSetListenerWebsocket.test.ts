@@ -78,7 +78,7 @@ const rootLogger = await vi.hoisted(async (): Promise<Logger> => {
 // make local uses of WebSocket typed right
 const MockedWebSocket = ImportedWebSocket as unknown as MockedWebSocket;
 
-const STACK = "https://stack.palantir.com";
+const STACK = "https://stack.palantir.com/some/stuff/first/";
 
 vi.mock("isomorphic-ws", async (importOriginal) => {
   const original = await importOriginal<
@@ -129,7 +129,6 @@ describe("ObjectSetListenerWebsocket", async () => {
         async () => "myAccessToken",
         { logger: rootLogger },
       );
-
       client = new ObjectSetListenerWebsocket({
         ...minimalClient,
         logger: rootLogger.child({ oslwInst: oslwInst++ }),
