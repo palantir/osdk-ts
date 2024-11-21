@@ -82,7 +82,7 @@ export namespace WidgetMessage {
    */
   export interface _unstable_FetchRequest extends
     WidgetBaseMessage<
-      "widget._unstable_fetch-request",
+      "widget._unstable.fetch-request",
       Payload._unstable_FetchRequest
     >
   {}
@@ -108,7 +108,7 @@ export function isWidgetEmitEventMessage<
 export function _unstable_isWidgetFetchMessage<
   C extends WidgetConfig<C["parameters"]>,
 >(event: WidgetMessage<C>): event is WidgetMessage._unstable_FetchRequest {
-  return event.type === "widget._unstable_fetch-request";
+  return event.type === "widget._unstable.fetch-request";
 }
 
 type WidgetMessageVisitor<C extends WidgetConfig<C["parameters"]>> =

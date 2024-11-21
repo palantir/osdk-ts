@@ -122,10 +122,6 @@ export function createFoundryWidgetClient<
     init?: RequestInit | undefined,
   ) => {
     const requestId = Math.random().toString(36).substring(7);
-    sendMessageToHost({
-      type: "widget._unstable_fetch-request",
-      payload: serializeRequest(requestId, input, init),
-    });
 
     return new Promise<Response>((resolve, reject: (error: Error) => void) => {
       function handleMessage(event: MessageEvent) {
@@ -151,8 +147,11 @@ export function createFoundryWidgetClient<
           },
         });
       }
-
       window.addEventListener("message", handleMessage);
+      sendMessageToHost({
+        type: "widget._unstable.fetch-request",
+        payload: serializeRequest(requestId, input, init),
+      });
     });
   };
 

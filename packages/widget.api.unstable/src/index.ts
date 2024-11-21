@@ -53,4 +53,3 @@ export type {
   AsyncReloadingValue,
   AsyncValue,
 } from "./utils/asyncValue.js";
-export { hasValue } from "./utils/asyncValue.js";

@@ -21,10 +21,7 @@ import type {
   ParameterValueMap,
   WidgetConfig,
 } from "@osdk/widget-client.unstable";
-import {
-  createFoundryWidgetClient,
-  hasValue,
-} from "@osdk/widget-client.unstable";
+import { createFoundryWidgetClient } from "@osdk/widget-client.unstable";
 import React, { useEffect, useMemo } from "react";
 import type { FoundryWidgetClientContext } from "./context.js";
 import { FoundryWidgetContext } from "./context.js";
@@ -160,7 +157,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
         hostEventTarget: client.hostEventTarget,
         asyncParameterValues,
         parameters: {
-          values: hasValue(allParameterValues) ? allParameterValues.value : {},
+          values: allParameterValues.value ?? {},
           state: allParameterValues.type,
         },
         // Unfortunately the context is statically defined so we can't use the generic type, hence the cast

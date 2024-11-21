@@ -1,6 +1,6 @@
 import type { Dataset } from "@osdk/foundry.datasets";
 import { Datasets } from "@osdk/foundry.datasets";
-import { type AsyncValue, hasValue } from "@osdk/widget-client.unstable";
+import { type AsyncValue } from "@osdk/widget-client.unstable";
 import { ExclamationTriangleIcon, TableIcon } from "@radix-ui/react-icons";
 import {
   Box,
@@ -12,6 +12,7 @@ import {
   Heading,
   Skeleton,
   Table,
+  Text,
   TextField,
 } from "@radix-ui/themes";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -42,9 +43,7 @@ export const App: React.FC = () => {
         if (prevDataset.type !== "not-started") {
           return {
             type: "reloading",
-            value: prevDataset.type !== "loading"
-              ? prevDataset.value
-              : undefined,
+            value: prevDataset.value,
           };
         }
         return { type: "loading" };
@@ -58,7 +57,7 @@ export const App: React.FC = () => {
         setDataset(prevDataset => ({
           type: "failed",
           error: error as Error,
-          value: hasValue(prevDataset) ? prevDataset.value : undefined,
+          value: prevDataset.value,
         }));
       });
     }
@@ -108,7 +107,11 @@ export const App: React.FC = () => {
                 </>
               )
               : dataset.type === "failed"
-              ? "Failed to load dataset"
+              ? (
+                <Text>
+                  <ExclamationTriangleIcon /> Failed to load dataset
+                </Text>
+              )
               : "No dataset loaded"}
           </Heading>
           <Table.Root>
@@ -121,7 +124,8 @@ export const App: React.FC = () => {
 
             <Table.Body>
               {(parameters.state === "loading"
-                || parameters.state === "not-started") && (
+                || parameters.state === "not-started"
+                || parameters.state === "reloading") && (
                 <>
                   <Table.Row>
                     <Table.Cell>

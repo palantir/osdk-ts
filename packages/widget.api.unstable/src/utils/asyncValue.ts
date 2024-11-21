@@ -16,20 +16,26 @@
 
 export interface AsyncNotStartedLoadingValue {
   type: "not-started";
+  value?: never;
+  error?: never;
 }
 
 export interface AsyncLoadingValue {
   type: "loading";
+  value?: never;
+  error?: never;
 }
 
 export interface AsyncLoadedValue<V> {
   type: "loaded";
   value: V | undefined;
+  error?: never;
 }
 
 export interface AsyncReloadingValue<V> {
   type: "reloading";
   value: V | undefined;
+  error?: never;
 }
 
 export interface AsyncFailedValue<V, E = Error> {
@@ -50,17 +56,3 @@ export type AsyncValue<V, E = Error> =
   | AsyncLoadedValue<V>
   | AsyncReloadingValue<V>
   | AsyncFailedValue<V, E>;
-
-/**
- * Convenience type guard to determine whether the async value has a loaded value
- */
-export function hasValue<V, E = Error>(
-  asyncValue: AsyncValue<V, E>,
-): asyncValue is
-  | AsyncLoadedValue<V>
-  | AsyncReloadingValue<V>
-  | AsyncFailedValue<V, E>
-{
-  return asyncValue.type === "loaded" || asyncValue.type === "reloading"
-    || asyncValue.type === "failed";
-}

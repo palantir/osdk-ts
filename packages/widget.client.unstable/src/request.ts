@@ -39,7 +39,7 @@ export function serializeRequest(
 
 function serializeHeaders(headers: HeadersInit | undefined) {
   if (headers === undefined || !(headers instanceof Headers)) {
-    return {};
+    throw new Error("Header object not found");
   }
   const serialized: Record<string, string> = {};
   for (const key of headers.keys()) {
