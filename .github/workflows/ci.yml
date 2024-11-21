@@ -145,7 +145,7 @@ jobs:
 
       - name: Setup Verdaccio
         run: |
-          echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
+          npx npm-auth-to-token -u verdaccio -p fake -e fake@palantir.com -r http://localhost:4873
           npm config set registry http://localhost:4873
 
       - name: Faux Release
