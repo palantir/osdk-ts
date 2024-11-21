@@ -30,11 +30,14 @@ export type {
 } from "./manifest.js";
 export { MANIFEST_FILE_LOCATION } from "./manifest.js";
 export {
+  _unstable_isHostFetchResponseFailedMessage,
+  _unstable_isHostFetchResponseSuccessMessage,
   HostMessage,
   isHostParametersUpdatedMessage,
   visitHostMessage,
 } from "./messages/hostMessages.js";
 export {
+  _unstable_isWidgetFetchMessage,
   isWidgetEmitEventMessage,
   isWidgetReadyMessage,
   visitWidgetMessage,
