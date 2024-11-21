@@ -16,9 +16,10 @@
 
 import type { OntologyFullMetadata } from "@osdk/internal.foundry.core";
 import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
-import type { RequestHandler } from "msw";
+import type { HttpResponseResolver, PathParams, RequestHandler } from "msw";
 import { http as rest, HttpResponse } from "msw";
 import invariant from "tiny-invariant";
+import type { BaseAPIError } from "../BaseError.js";
 import {
   ActionNotFoundError,
   InvalidRequest,
@@ -34,6 +35,7 @@ import {
   fullOntology,
 } from "../stubs/ontologies.js";
 import { authHandlerMiddleware } from "./commonHandlers.js";
+import type { ExtractBody, ExtractResponse } from "./util/handleOpenApiCall.js";
 import {
   handleOpenApiCall,
   OpenApiCallError,
@@ -248,68 +250,13 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
   handleOpenApiCall(
     OntologiesV2.OntologyInterfaces.get,
     ["ontologyApiName", "interfaceType"],
-    async (req) => {
-      // will throw if bad name
-      getOntology(req.params.ontologyApiName as string);
-
-      const interfaceType = req.params.interfaceType;
-      if (typeof interfaceType !== "string") {
-        throw new OpenApiCallError(
-          400,
-          InvalidRequest("Invalid parameter objectType"),
-        );
-      }
-
-      if (
-        fullOntology.interfaceTypes[req.params.interfaceType]
-          === undefined
-      ) {
-        throw new OpenApiCallError(
-          404,
-          ObjectNotFoundError(
-            req.params.interfaceType as string,
-            "",
-          ),
-        );
-      }
-
-      return (
-        fullOntology.interfaceTypes[req.params.interfaceType]
-      );
-    },
+    handleInterfaceGet,
   ),
+
   handleOpenApiCall(
     OntologiesV2.OntologyInterfaces.get,
     ["ontologyApiName", "interfaceType"],
-    async (req) => {
-      // will throw if bad name
-      getOntology(req.params.ontologyApiName as string);
-
-      const interfaceType = req.params.interfaceType;
-      if (typeof interfaceType !== "string") {
-        throw new OpenApiCallError(
-          400,
-          InvalidRequest("Invalid parameter objectType"),
-        );
-      }
-
-      if (
-        fullOntology.interfaceTypes[req.params.interfaceType]
-          === undefined
-      ) {
-        throw new OpenApiCallError(
-          404,
-          ObjectNotFoundError(
-            req.params.interfaceType as string,
-            "",
-          ),
-        );
-      }
-
-      return (
-        fullOntology.interfaceTypes[req.params.interfaceType]
-      );
-    },
+    handleInterfaceGet,
     "https://stack.palantirCustom.com/foo/first/someStuff/",
   ),
 
@@ -580,3 +527,41 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
     ),
   ),
 ];
+
+async function handleInterfaceGet(
+  req: Parameters<
+    HttpResponseResolver<
+      PathParams<string>,
+      ExtractBody<typeof OntologiesV2.OntologyInterfaces.get>,
+      ExtractResponse<typeof OntologiesV2.OntologyInterfaces.get> | BaseAPIError
+    >
+  >[0],
+) {
+  // will throw if bad name
+  getOntology(req.params.ontologyApiName as string);
+
+  const interfaceType = req.params.interfaceType;
+  if (typeof interfaceType !== "string") {
+    throw new OpenApiCallError(
+      400,
+      InvalidRequest("Invalid parameter objectType"),
+    );
+  }
+
+  if (
+    fullOntology.interfaceTypes[interfaceType]
+      === undefined
+  ) {
+    throw new OpenApiCallError(
+      404,
+      ObjectNotFoundError(
+        req.params.interfaceType as string,
+        "",
+      ),
+    );
+  }
+
+  return (
+    fullOntology.interfaceTypes[interfaceType]
+  );
+}
