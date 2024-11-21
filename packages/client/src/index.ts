@@ -38,3 +38,9 @@ export type { PlatformClient } from "./createPlatformClient.js";
 export type { Logger } from "./Logger.js";
 export { createAttachmentUpload } from "./object/AttachmentUpload.js";
 export type { ResultOrError } from "./ResultOrError.js";
+
+export {
+  extractDate,
+  extractDateInLocalTime,
+  extractDateInUTC,
+} from "./util/datetimeConverters.js";
