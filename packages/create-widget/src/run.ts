@@ -143,7 +143,7 @@ export async function run({
   fs.writeFileSync(path.join(root, ".npmrc"), npmRc);
   const foundryConfigJson = generateFoundryConfigJson({
     foundryUrl,
-    application: widget,
+    widget: widget,
     directory: template.buildDirectory,
   });
   fs.writeFileSync(path.join(root, "foundry.config.json"), foundryConfigJson);

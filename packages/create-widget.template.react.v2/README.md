@@ -1,4 +1,4 @@
-# @osdk/create-widget.template.react
+# @osdk/create-widget.template.react.v2
 
 This package contains templates for `@osdk/create-widget`.
 

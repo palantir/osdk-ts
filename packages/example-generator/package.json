@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@osdk/create-app": "workspace:~",
+    "@osdk/create-widget": "workspace:~",
     "consola": "^3.2.3",
     "dir-compare": "^5.0.0",
     "find-up": "^7.0.0",

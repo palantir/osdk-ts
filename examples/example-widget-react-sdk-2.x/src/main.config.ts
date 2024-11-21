@@ -1,15 +1,12 @@
 import { defineConfig } from "@osdk/widget-client.unstable";
 
 export default defineConfig({
-  rid: "{{widgetRid}}",
+  type: "workshop",
+  rid: "ri.viewregistry.main.view.fake",
   parameters: {
     headerText: {
       displayName: "Widget title",
       type: "string",
-    },
-    showWarning: {
-      displayName: "Show warning callout",
-      type: "boolean",
     },
     todoItems: {
       displayName: "Todo items",
@@ -20,11 +17,11 @@ export default defineConfig({
   events: {
     updateHeader: {
       displayName: "Update header",
-      parameterIds: ["headerText"],
+      parameterUpdateIds: ["headerText"],
     },
     updateTodoItems: {
       displayName: "Update todo items",
-      parameterIds: ["todoItems"],
+      parameterUpdateIds: ["todoItems"],
     },
   },
 });
