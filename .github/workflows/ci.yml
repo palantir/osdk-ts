@@ -108,3 +108,48 @@ jobs:
       - name: Verify nothing added
         run: u="$(git ls-files --others --exclude-standard)" && test -z "$u"
 
+  e2e:
+    name: E2E Tests
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+
+    services:
+      verdaccio:
+        image: verdaccio/verdaccio
+        # options: >-
+        #   --health-cmd "curl -f http://localhost:4873/"
+        #   --health-interval 5s
+
+        ports:
+          - 4873:4873
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Transpile # the build step will catch lint and co errors
+        run: pnpm exec turbo transpile
+
+      - name: Setup Verdaccio
+        run: |
+          echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
+          npm config set registry http://localhost:4873
+
+      - name: Faux Release
+        run: pnpm exec changeset version
+
+      - name: Faux Publish
+        run: pnpm publish -r --no-git-checks
