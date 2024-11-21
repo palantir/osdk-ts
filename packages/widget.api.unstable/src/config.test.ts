@@ -147,7 +147,7 @@ describe("WidgetConfig", () => {
         events: {
           myEvent: {
             displayName: "My Event",
-            parameterIds: ["test"],
+            parameterUpdateIds: ["test"],
           },
         },
       });
@@ -178,7 +178,7 @@ describe("WidgetConfig", () => {
         events: {
           myEvent: {
             displayName: "My Event",
-            parameterIds: ["test4"],
+            parameterUpdateIds: ["test4"],
           },
         },
       });
@@ -210,11 +210,11 @@ describe("WidgetConfig", () => {
         events: {
           myEvent: {
             displayName: "My Event",
-            parameterIds: ["test", "test2"],
+            parameterUpdateIds: ["test", "test2"],
           },
           myEvent2: {
             displayName: "My second event",
-            parameterIds: [],
+            parameterUpdateIds: [],
           },
         },
       });
@@ -245,7 +245,7 @@ describe("WidgetConfig", () => {
         events: {
           myEvent: {
             displayName: "My Event",
-            parameterIds: ["test", "test2"],
+            parameterUpdateIds: ["test", "test2"],
           },
         },
       });
@@ -280,7 +280,7 @@ describe("WidgetConfig", () => {
         events: {
           myEvent: {
             displayName: "My Event",
-            parameterIds: ["test", "test2"],
+            parameterUpdateIds: ["test", "test2"],
           },
         },
       });
