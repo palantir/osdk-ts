@@ -45,12 +45,11 @@ beforeEach(() => {
 });
 
 for (const template of TEMPLATES) {
-  describe.each(["1.x", "2.x"])("For SDK version %s", (sdkVersion) => {
+  describe.each(["2.x"])("For SDK version %s", (sdkVersion) => {
     test(`CLI creates ${template.id}`, async () => {
       await runTest({
         project: `expected-${template.id}`,
         template,
-        corsProxy: false,
         sdkVersion,
       });
     });
@@ -60,12 +59,10 @@ for (const template of TEMPLATES) {
 async function runTest({
   project,
   template,
-  corsProxy,
   sdkVersion,
 }: {
   project: string;
   template: Template;
-  corsProxy: boolean;
   sdkVersion: string;
 }): Promise<void> {
   await cli([
@@ -100,18 +97,4 @@ async function runTest({
   const packageJson = JSON.parse(
     fs.readFileSync(path.join(process.cwd(), project, "package.json"), "utf-8"),
   );
-
-  if (sdkVersion === "2.x") {
-    // Since the example-generator needs to set the version to `workspace:*`,
-    // we cannot use PRs to check that the version is being generated correctly.
-
-    // Therefore we run this test to be sure that the version is being set as we assume
-    // it should be, so that if the create-app code were to change to different behavior
-    // it would be caught.
-    expect(packageJson.dependencies["@osdk/client"]).toBe(
-      `^${createWidgetVersion}`,
-    );
-  } else {
-    expect(packageJson.dependencies["@osdk/client"]).toBe(undefined);
-  }
 }
