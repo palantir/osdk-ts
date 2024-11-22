@@ -34,7 +34,7 @@ export function createAttachmentFromRid(
       return OntologiesV2.Attachments.read(
         client,
         rid,
-      ) as Promise<Blob>;
+      );
     },
     async fetchMetadata() {
       const r = await OntologiesV2.Attachments.get(client, rid);
