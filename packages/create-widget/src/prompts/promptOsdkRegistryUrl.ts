@@ -24,7 +24,7 @@ export async function promptOsdkRegistryUrl({
 }): Promise<string> {
   while (
     osdkRegistryUrl == null
-    || !/^https:\/\/[^/]+\/artifacts\/api\/repositories\/ri\.artifacts\.[^/]+\/contents\/release\/npm\/?$/
+    || !/^https:\/\/[^/]+\/artifacts\/api\/repositories\/ri\.[^/]+\/contents\/release\/npm\/?$/
       .test(
         osdkRegistryUrl,
       )

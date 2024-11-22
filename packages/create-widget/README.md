@@ -29,7 +29,7 @@ npx @osdk/create-widget [project] [--<option>]
 | ----------------- | ------------------------------------------------------------- |
 | --overwrite       | Overwrite project directory if already exists [boolean]       |
 | --template        | Template name to use [string]                                 |
-| --sdkVersion      | The SDK version to use (1.x or 2.x), defaults to 1.x [string] |
+| --sdkVersion      | The SDK version to use (1.x or 2.x), defaults to 2.x [string] |
 | --foundryUrl      | URL for the Foundry stack [string]                            |
 | --widget          | Widget resource identifier (rid) [string]                     |
 | --osdkPackage     | OSDK package name for application [string]                    |
