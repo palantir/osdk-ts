@@ -45,7 +45,10 @@ import { z } from "zod";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { Logger } from "../Logger.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
+import {
+  constructWebsocketUrl,
+  ObjectSetListenerWebsocket,
+} from "./ObjectSetListenerWebsocket.js";
 
 // it needs to be hoisted because its referenced from our mocked WebSocket
 // which must be hoisted to work
@@ -78,7 +81,7 @@ const rootLogger = await vi.hoisted(async (): Promise<Logger> => {
 // make local uses of WebSocket typed right
 const MockedWebSocket = ImportedWebSocket as unknown as MockedWebSocket;
 
-const STACK = "https://stack.palantir.com";
+const STACK = "https://stack.palantirCustom.com/foo/first/someStuff/";
 
 vi.mock("isomorphic-ws", async (importOriginal) => {
   const original = await importOriginal<
@@ -129,7 +132,6 @@ describe("ObjectSetListenerWebsocket", async () => {
         async () => "myAccessToken",
         { logger: rootLogger },
       );
-
       client = new ObjectSetListenerWebsocket({
         ...minimalClient,
         logger: rootLogger.child({ oslwInst: oslwInst++ }),
@@ -219,6 +221,7 @@ describe("ObjectSetListenerWebsocket", async () => {
           "office",
           "startDate",
           "employeeStatus",
+          "employeeSensor",
         ]);
       });
 
@@ -379,6 +382,13 @@ describe("ObjectSetListenerWebsocket", async () => {
           expect(listener.onOutOfDate).not.toHaveBeenCalled();
           expect(listener.onChange).not.toHaveBeenCalled();
           expect(listener.onError).not.toHaveBeenCalled();
+        });
+
+        it("should create url correctly", () => {
+          expect(constructWebsocketUrl(STACK, "ontologyRid1").toString())
+            .toEqual(
+              "wss://stack.palantircustom.com/foo/first/someStuff/api/v2/ontologySubscriptions/ontologies/ontologyRid1/streamSubscriptions",
+            );
         });
       });
     });

@@ -191,11 +191,13 @@ export type ApplyBatchActionOptions = {
 //
 // @public (undocumented)
 export interface AsyncIterArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, A extends Augments = never, S extends NullabilityAdherence = NullabilityAdherence.Default> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
+    // (undocumented)
+    $__UNSTABLE_useOldInterfaceApis?: boolean;
 }
 
 // @public (undocumented)
 export interface Attachment {
-    fetchContents(): Promise<Blob>;
+    fetchContents(): Promise<Response>;
     // Warning: (ae-forgotten-export) The symbol "AttachmentMetadata" needs to be exported by the entry point index.d.ts
     fetchMetadata(): Promise<AttachmentMetadata>;
     // (undocumented)
@@ -757,6 +759,8 @@ export interface PropertyValueWireToClient {
     // (undocumented)
     numericTimeseries: TimeSeriesProperty<number>;
     // (undocumented)
+    sensorTimeseries: TimeSeriesProperty<string | number>;
+    // (undocumented)
     short: number;
     // (undocumented)
     string: string;
@@ -966,7 +970,7 @@ export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T
 });
 
 // @public (undocumented)
-export type WirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "numericTimeseries" | "stringTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
+export type WirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
 
 // Warnings were encountered during analysis:
 //

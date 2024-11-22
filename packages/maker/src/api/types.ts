@@ -18,6 +18,7 @@ import type {
   ApiNameValueTypeReference,
   BaseType,
   ExampleValue,
+  ImportedTypes,
   OntologyIrInterfaceType,
   SharedPropertyTypeGothamMapping,
   StructFieldType,
@@ -40,6 +41,7 @@ export interface Ontology extends
   interfaceTypes: Record<string, InterfaceType>;
   sharedPropertyTypes: Record<string, SharedPropertyType>;
   valueTypes: Record<string, ValueTypeDefinitionVersion[]>;
+  importedTypes: ImportedTypes;
 }
 
 export interface InterfaceType extends

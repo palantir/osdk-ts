@@ -36,11 +36,17 @@ function asV2Object(o: any, includeRid?: boolean) {
 describe("OsdkObject", () => {
   describe("link", () => {
     let client: Client;
+    let customEntryPointClient: Client;
 
     beforeAll(async () => {
       apiServer.listen();
       client = createClient(
         "https://stack.palantir.com",
+        $ontologyRid,
+        async () => "myAccessToken",
+      );
+      customEntryPointClient = createClient(
+        "https://stack.palantirCustom.com/foo/first/someStuff",
         $ontologyRid,
         async () => "myAccessToken",
       );
@@ -52,6 +58,31 @@ describe("OsdkObject", () => {
 
     it("loads an employee", async () => {
       const result = await client(Employee).where({
+        employeeId: stubData.employee1.employeeId,
+      }).fetchPage();
+
+      // we should get the employee we requested
+      const employee = result.data[0];
+      expect(JSON.stringify(employee)).toBeDefined();
+      expect(employee).toMatchObject({
+        "$apiName": "Employee",
+        "$objectType": "Employee",
+        "$primaryKey": 50030,
+        "class": "Red",
+        "employeeId": 50030,
+        "employeeStatus": expect.anything(),
+        "fullName": "John Doe",
+        "office": "NYC",
+        "startDate": "2019-01-01",
+      });
+
+      employee.startDate;
+
+      // it should have the prototype that we assign at hydration time
+      expect(Object.keys(employee.$link.lead)).toBeDefined();
+    });
+    it("loads an employee with custom client", async () => {
+      const result = await customEntryPointClient(Employee).where({
         employeeId: stubData.employee1.employeeId,
       }).fetchPage();
 

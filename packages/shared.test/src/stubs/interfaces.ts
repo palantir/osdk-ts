@@ -27,8 +27,24 @@ export const FooInterface: InterfaceType = {
     fooSpt,
   },
   links: {},
+  implementedByObjectTypes: [],
 };
 
+export const employeeInterfaceScoped = {
+  fullName: "Santa Claus",
+  $rid:
+    "ri.phonograph2-objects.main.object.99a6fccb-f333-46d6-a07e-7725c5f18b61",
+  $primaryKey: 50050,
+  $apiName: "Employee",
+};
+
+export const employeeInterfaceScoped2 = {
+  fullName: "The Grinch",
+  $rid:
+    "ri.phonograph2-objects.main.object.99a6fccb-f333-46d6-a07e-7725c5f18b61",
+  $primaryKey: 50052,
+  $apiName: "Employee",
+};
 export const BarInterface: InterfaceType = {
   apiName: "BarInterface",
   description: "Interface for Bar",
@@ -37,4 +53,5 @@ export const BarInterface: InterfaceType = {
   extendsInterfaces: [],
   properties: {},
   links: {},
+  implementedByObjectTypes: [],
 };

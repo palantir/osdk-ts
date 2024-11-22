@@ -36,6 +36,11 @@ const pointPrimaryKey3: string = JSON.stringify({
   propertyName: "employeeStatus",
 });
 
+const pointPrimaryKey4: string = JSON.stringify({
+  primaryKey: "50030",
+  propertyName: "employeeSensor",
+});
+
 const timeSeriesPoint1: TimeSeriesPoint = {
   time: "2012-02-12",
   value: 10,
@@ -49,6 +54,11 @@ const timeSeriesPoint2: TimeSeriesPoint = {
 const timeSeriesPoint3: TimeSeriesPoint = {
   time: "2014-04-14",
   value: 30,
+};
+
+const timeSeriesPoint4: TimeSeriesPoint = {
+  time: "2015-05-15",
+  value: 40,
 };
 
 const noBodyRequest: StreamTimeSeriesPointsRequest = {
@@ -110,12 +120,14 @@ export const firstPointRequestHandlers: Record<string, TimeSeriesPoint> = {
   [pointPrimaryKey1]: timeSeriesPoint1,
   [pointPrimaryKey2]: timeSeriesPoint2,
   [pointPrimaryKey3]: timeSeriesPoint3,
+  [pointPrimaryKey4]: timeSeriesPoint4,
 };
 
 export const lastPointRequestHandlers: Record<string, TimeSeriesPoint> = {
   [pointPrimaryKey1]: timeSeriesPoint3,
   [pointPrimaryKey2]: timeSeriesPoint2,
   [pointPrimaryKey3]: timeSeriesPoint1,
+  [pointPrimaryKey4]: timeSeriesPoint3,
 };
 
 export const streamPointsRequestHandlers: Record<

@@ -1,5 +1,12 @@
 # @osdk/oauth
 
+## 1.1.0-beta.2
+
+### Minor Changes
+
+- 33590c7: Add tests for createPublicOauthClient overload
+- e00bb29: Overload createPublicOauthClient to support object of options
+
 ## 1.1.0-beta.1
 
 ### Minor Changes

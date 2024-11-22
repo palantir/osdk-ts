@@ -1,5 +1,58 @@
 # @osdk/client
 
+## 2.1.0-beta.13
+
+### Minor Changes
+
+- c4f88a8: Removes circular dependency that may upset legacy tools like react-native
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.13
+- @osdk/client.unstable@2.1.0-beta.13
+- @osdk/generator-converters@2.1.0-beta.13
+
+## 2.1.0-beta.12
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.12
+- @osdk/client.unstable@2.1.0-beta.12
+- @osdk/generator-converters@2.1.0-beta.12
+
+## 2.1.0-beta.11
+
+### Minor Changes
+
+- bc1761c: Update platform API dependencies.
+- 9298f75: Using new interface APIs for backend.
+
+### Patch Changes
+
+- Updated dependencies [bc1761c]
+- Updated dependencies [9298f75]
+- Updated dependencies [caf1abc]
+  - @osdk/generator-converters@2.1.0-beta.11
+  - @osdk/api@2.1.0-beta.11
+  - @osdk/client.unstable@2.1.0-beta.11
+
+## 2.1.0-beta.10
+
+### Minor Changes
+
+- 11a05cc: Updated subscribe api to make requesting properties optional
+- 14624f7: Supports custom formatters in browser
+- 11088aa: Fix where clause types so we don't accept more than one key in the clauses.
+- d88fdb9: Adds methods to extract date strings from Dates and ISO-8601 strings
+
+### Patch Changes
+
+- Updated dependencies [11a05cc]
+- Updated dependencies [11088aa]
+  - @osdk/api@2.1.0-beta.10
+  - @osdk/generator-converters@2.1.0-beta.10
+  - @osdk/client.unstable@2.1.0-beta.10
+
 ## 2.1.0-beta.9
 
 ### Minor Changes

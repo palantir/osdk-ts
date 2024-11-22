@@ -53,6 +53,20 @@ describe("Timeseries", () => {
     expect(point?.value).toEqual(30);
   });
 
+  it("get last and first points works with sensor object", async () => {
+    const employee = await client(Employee).fetchOne(50030);
+    expect(employee.$primaryKey).toEqual(50030);
+
+    const firstPoint = await employee.employeeSensor?.getFirstPoint();
+    const lastPoint = await employee.employeeSensor?.getLastPoint();
+
+    expect(firstPoint?.time).toEqual("2015-05-15");
+    expect(firstPoint?.value).toEqual(40);
+
+    expect(lastPoint?.time).toEqual("2014-04-14");
+    expect(lastPoint?.value).toEqual(30);
+  });
+
   it("getAll points with before works", async () => {
     const employee = await client(Employee).fetchOne(50030);
     expect(employee.$primaryKey).toEqual(50030);

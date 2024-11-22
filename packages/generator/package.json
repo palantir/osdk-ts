@@ -1,6 +1,6 @@
 {
   "name": "@osdk/generator",
-  "version": "2.1.0-beta.9",
+  "version": "2.1.0-beta.13",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -33,7 +33,7 @@
   "dependencies": {
     "@osdk/api": "workspace:~",
     "@osdk/generator-converters": "workspace:~",
-    "@osdk/internal.foundry.core": "2.3.0",
+    "@osdk/internal.foundry.core": "2.6.0-beta.1",
     "fast-deep-equal": "^3.1.3",
     "fetch-retry": "^6.0.0",
     "prettier": "^3.0.3",

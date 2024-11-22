@@ -1,5 +1,52 @@
 # @osdk/foundry-sdk-generator
 
+## 2.1.0-beta.13
+
+### Patch Changes
+
+- Updated dependencies [c4f88a8]
+  - @osdk/client@2.1.0-beta.13
+  - @osdk/api@2.1.0-beta.13
+  - @osdk/generator@2.1.0-beta.13
+
+## 2.1.0-beta.12
+
+### Minor Changes
+
+- 71b5a9d: Packages generated with foundry-sdk-generator are now properly esm
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.12
+- @osdk/client@2.1.0-beta.12
+- @osdk/generator@2.1.0-beta.12
+
+## 2.1.0-beta.11
+
+### Minor Changes
+
+- bc1761c: Update platform API dependencies.
+
+### Patch Changes
+
+- Updated dependencies [bc1761c]
+- Updated dependencies [9298f75]
+  - @osdk/generator@2.1.0-beta.11
+  - @osdk/client@2.1.0-beta.11
+  - @osdk/api@2.1.0-beta.11
+
+## 2.1.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [11a05cc]
+- Updated dependencies [14624f7]
+- Updated dependencies [11088aa]
+- Updated dependencies [d88fdb9]
+  - @osdk/client@2.1.0-beta.10
+  - @osdk/api@2.1.0-beta.10
+  - @osdk/generator@2.1.0-beta.10
+
 ## 2.1.0-beta.9
 
 ### Patch Changes

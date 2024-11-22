@@ -1,5 +1,17 @@
 # @osdk/client.unstable
 
+## 2.1.0-beta.13
+
+## 2.1.0-beta.12
+
+## 2.1.0-beta.11
+
+### Minor Changes
+
+- caf1abc: Support generating linked products for marketplace
+
+## 2.1.0-beta.10
+
 ## 2.1.0-beta.9
 
 ## 2.1.0-beta.8

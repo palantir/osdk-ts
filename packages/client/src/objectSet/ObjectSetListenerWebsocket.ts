@@ -332,9 +332,8 @@ export class ObjectSetListenerWebsocket {
   async #ensureWebsocket() {
     if (this.#ws == null) {
       const { baseUrl, tokenProvider } = this.#client;
-      const base = new URL(baseUrl);
-      const url =
-        `wss://${base.host}/api/v2/ontologySubscriptions/ontologies/${this.#client.ontologyRid}/streamSubscriptions`;
+      const url = constructWebsocketUrl(baseUrl, this.#client.ontologyRid);
+
       const token = await tokenProvider();
 
       // tokenProvider is async, there could potentially be a race to create the websocket.
@@ -467,7 +466,7 @@ export class ObjectSetListenerWebsocket {
         delete o.object[key];
       }
 
-      const osdkObjectArray = await convertWireToOsdkObjects(
+      const osdkObjectArray = await this.#client.objectFactory(
         this.#client,
         [o.object],
         undefined,
@@ -591,4 +590,18 @@ export class ObjectSetListenerWebsocket {
       this.#ensureWebsocket();
     }
   };
+}
+
+/** @internal */
+export function constructWebsocketUrl(
+  baseUrl: string,
+  ontologyRid: string | Promise<string>,
+) {
+  const base = new URL(baseUrl);
+  const url = new URL(
+    `api/v2/ontologySubscriptions/ontologies/${ontologyRid}/streamSubscriptions`,
+    base,
+  );
+  url.protocol = url.protocol.replace("https", "wss");
+  return url;
 }

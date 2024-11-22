@@ -245,8 +245,15 @@
         "visibility": "NORMAL"
       },
       "linkTypes": [],
-      "implementsInterfaces": [],
-      "implementsInterfaces2": {},
+      "implementsInterfaces": ["FooInterface"],
+      "implementsInterfaces2": {
+        "FooInterface": {
+          "properties": {
+            "name": "osdkObjectName",
+            "description": "description"
+          }
+        }
+      },
       "sharedPropertyTypeMapping": {}
     },
     "WeatherStation": {
@@ -533,6 +540,56 @@
         },
         "titleProperty": "id",
         "pluralDisplayName": "Dherlihy Complex Objects"
+      },
+      "linkTypes": []
+    },
+    "SotSensor": {
+      "objectType": {
+        "apiName": "SotSensor",
+        "primaryKey": "seriesId",
+        "displayName": "SOT-Sensor",
+        "description": "SOT-Sensor",
+        "properties": {
+          "isEnum": {
+            "displayName": "Is Enum",
+            "dataType": {
+              "type": "boolean"
+            }
+          },
+          "timeSeriesProperty": {
+            "displayName": "Time Series Property",
+            "dataType": {
+              "type": "timeseries"
+            }
+          },
+          "sensorName": {
+            "displayName": "Sensor Name",
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "seriesId": {
+            "displayName": "Series Id",
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "wellId": {
+            "displayName": "Well Id",
+            "dataType": {
+              "type": "string"
+            }
+          }
+        },
+        "status": "ACTIVE",
+        "rid": "rid.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "sotsensor",
+          "color": "color"
+        },
+        "titleProperty": "seriesId",
+        "pluralDisplayName": "SOT-Sensors"
       },
       "linkTypes": []
     },

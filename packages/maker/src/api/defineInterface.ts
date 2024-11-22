@@ -65,8 +65,12 @@ export function defineInterface(
           });
           return [apiName, spt];
         } else {
+          const unNamespacedTypeApiName = type.apiName.slice(
+            type.apiName.lastIndexOf(".") + 1,
+          );
           invariant(
-            namespace + apiName === type.apiName || apiName === type.apiName,
+            namespace + apiName === type.apiName
+              || apiName === unNamespacedTypeApiName,
             `property key and it's apiName must be identical. ${
               JSON.stringify({ key: apiName, apiName: type.apiName })
             }`,

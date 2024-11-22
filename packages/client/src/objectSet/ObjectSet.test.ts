@@ -160,6 +160,7 @@ describe("ObjectSet", () => {
         class: "Red",
         employeeId: 50030,
         employeeStatus: expect.anything(),
+        employeeSensor: expect.anything(),
         fullName: "John Doe",
         office: "NYC",
         startDate: "2019-01-01",
@@ -173,6 +174,7 @@ describe("ObjectSet", () => {
         class: "Blue",
         employeeId: 50031,
         employeeStatus: expect.anything(),
+        employeeSensor: expect.anything(),
         fullName: "Jane Doe",
         office: "SEA",
         startDate: "2012-02-12",
@@ -186,6 +188,7 @@ describe("ObjectSet", () => {
         class: "Red",
         employeeId: 50032,
         employeeStatus: expect.anything(),
+        employeeSensor: expect.anything(),
         fullName: "Jack Smith",
         office: "LON",
         startDate: "2015-05-15",
@@ -527,6 +530,7 @@ describe("ObjectSet", () => {
             | "employeeStatus"
             | "startDate"
             | "employeeLocation"
+            | "employeeSensor"
           >();
 
         expectTypeOf<

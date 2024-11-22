@@ -142,7 +142,7 @@ describe("Ontology Defining", () => {
           },
         });
 
-        expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+        expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
           {
             "blockPermissionInformation": {
               "actionTypes": {},
@@ -254,7 +254,7 @@ describe("Ontology Defining", () => {
           type: "string",
         });
 
-        expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+        expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
           {
             "blockPermissionInformation": {
               "actionTypes": {},
@@ -331,7 +331,7 @@ describe("Ontology Defining", () => {
         extends: [parentInterface],
       });
 
-      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+      expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
         {
           "blockPermissionInformation": {
             "actionTypes": {},
@@ -545,7 +545,7 @@ describe("Ontology Defining", () => {
         extends: ["parentInterface"],
       });
 
-      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+      expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
         {
           "blockPermissionInformation": {
             "actionTypes": {},
@@ -762,7 +762,7 @@ describe("Ontology Defining", () => {
         apiName: "singleLink",
       });
 
-      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+      expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
         {
           "blockPermissionInformation": {
             "actionTypes": {},
@@ -837,7 +837,7 @@ describe("Ontology Defining", () => {
         apiName: "manyLink",
       });
 
-      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+      expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
         {
           "blockPermissionInformation": {
             "actionTypes": {},
@@ -939,7 +939,7 @@ describe("Ontology Defining", () => {
       icon: { color: "#00000", locator: "airplane" },
     });
 
-    expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+    expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
       {
         "blockPermissionInformation": {
           "actionTypes": {},
@@ -1069,7 +1069,7 @@ describe("Ontology Defining", () => {
       },
     });
 
-    expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+    expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
               {
                 "blockPermissionInformation": {
                   "actionTypes": {},
@@ -1152,6 +1152,7 @@ describe("Ontology Defining", () => {
     const importedSpt = importSharedPropertyType({
       apiName: "bar",
       typeHint: "string",
+      packageName: "com.palantir.bar",
     });
 
     defineInterface({
@@ -1159,7 +1160,7 @@ describe("Ontology Defining", () => {
       properties: { foo: regularSpt, bar: importedSpt },
     });
 
-    expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+    expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
       {
         "blockPermissionInformation": {
           "actionTypes": {},
@@ -1186,7 +1187,7 @@ describe("Ontology Defining", () => {
                   "apiName": "com.palantir.foo",
                   "baseFormatter": undefined,
                   "dataConstraints": {
-                    "nullability": undefined,
+                    "nullability": "NO_EXPLICIT_NULLS",
                     "nullabilityV2": {
                       "noEmptyCollections": true,
                       "noNulls": true,
@@ -1221,12 +1222,12 @@ describe("Ontology Defining", () => {
                 },
                 {
                   "aliases": [],
-                  "apiName": "bar",
+                  "apiName": "com.palantir.bar.bar",
                   "baseFormatter": undefined,
                   "dataConstraints": undefined,
                   "displayMetadata": {
                     "description": undefined,
-                    "displayName": "bar",
+                    "displayName": "com.palantir.bar.bar",
                     "visibility": "NORMAL",
                   },
                   "gothamMapping": undefined,
@@ -1259,7 +1260,7 @@ describe("Ontology Defining", () => {
               "apiName": "com.palantir.foo",
               "baseFormatter": undefined,
               "dataConstraints": {
-                "nullability": undefined,
+                "nullability": "NO_EXPLICIT_NULLS",
                 "nullabilityV2": {
                   "noEmptyCollections": true,
                   "noNulls": true,
@@ -1296,5 +1297,16 @@ describe("Ontology Defining", () => {
         },
       }
       `);
+
+    expect(dumpOntologyFullMetadata().importedTypes).toMatchInlineSnapshot(`
+       {
+         "sharedPropertyTypes": [
+           {
+             "apiName": "bar",
+             "packageName": "com.palantir.bar",
+           },
+         ],
+       }
+    `);
   });
 });

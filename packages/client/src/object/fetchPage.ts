@@ -17,7 +17,6 @@
 import type {
   Augment,
   Augments,
-  CompileTimeMetadata,
   FetchPageArgs,
   FetchPageResult,
   InterfaceDefinition,
@@ -29,6 +28,7 @@ import type {
 } from "@osdk/api";
 import type {
   LoadObjectSetRequestV2,
+  LoadObjectSetV2MultipleObjectTypesRequest,
   ObjectSet,
   OntologyObjectV2,
   PageSize,
@@ -40,7 +40,7 @@ import type {
 import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
-import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
+import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 
 export function augment<
   Q extends ObjectOrInterfaceDefinition,
@@ -58,10 +58,18 @@ export function objectSetToSearchJsonV2(
   expectedApiName: string,
   existingWhere: SearchJsonQueryV2 | undefined = undefined,
 ): SearchJsonQueryV2 | undefined {
-  if (objectSet.type === "base") {
-    if (objectSet.objectType !== expectedApiName) {
+  if (objectSet.type === "base" || objectSet.type === "interfaceBase") {
+    if (objectSet.type === "base" && objectSet.objectType !== expectedApiName) {
       throw new Error(
         `Expected objectSet.objectType to be ${expectedApiName}, but got ${objectSet.objectType}`,
+      );
+    }
+    if (
+      objectSet.type === "interfaceBase"
+      && objectSet.interfaceType !== expectedApiName
+    ) {
+      throw new Error(
+        `Expected objectSet.objectType to be ${expectedApiName}, but got ${objectSet.interfaceType}`,
       );
     }
 
@@ -93,28 +101,55 @@ async function fetchInterfacePage<
   args: FetchPageArgs<Q, L, R, any, S>,
   objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R, S>> {
-  const result = await OntologiesV2.OntologyInterfaces
-    .search(
-      addUserAgentAndRequestContextHeaders(client, interfaceType),
-      await client.ontologyRid,
+  if (args.$__UNSTABLE_useOldInterfaceApis) {
+    const result = await OntologiesV2.OntologyInterfaces
+      .search(
+        addUserAgentAndRequestContextHeaders(client, interfaceType),
+        await client.ontologyRid,
+        interfaceType.apiName,
+        applyFetchArgs<SearchObjectsForInterfaceRequest>(args, {
+          augmentedProperties: {},
+          augmentedSharedPropertyTypes: {},
+          otherInterfaceTypes: [],
+          selectedObjectTypes: [],
+          selectedSharedPropertyTypes: args.$select as undefined | string[]
+            ?? [],
+          where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
+        }),
+        { preview: true },
+      );
+
+    result.data = await client.objectFactory(
+      client,
+      result.data as OntologyObjectV2[], // drop readonly
       interfaceType.apiName,
-      applyFetchArgs<SearchObjectsForInterfaceRequest>(args, {
-        augmentedProperties: {},
-        augmentedSharedPropertyTypes: {},
-        otherInterfaceTypes: [],
-        selectedObjectTypes: [],
-        selectedSharedPropertyTypes: args.$select as undefined | string[] ?? [],
-        where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
-      }),
-      { preview: true },
+      !args.$includeRid,
     );
-  result.data = await convertWireToOsdkObjects(
-    client,
-    result.data as OntologyObjectV2[], // drop readonly
-    interfaceType.apiName,
-    !args.$includeRid,
+    return result as any;
+  }
+  const result = await OntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
+    addUserAgentAndRequestContextHeaders(client, interfaceType),
+    await client.ontologyRid,
+    applyFetchArgs<LoadObjectSetV2MultipleObjectTypesRequest>(args, {
+      objectSet,
+      select: ((args?.$select as string[] | undefined) ?? []),
+      excludeRid: !args?.$includeRid,
+    }),
+    { preview: true },
   );
-  return result as any;
+  return Promise.resolve({
+    data: await client.objectFactory2(
+      client,
+      result.data,
+      interfaceType.apiName,
+      !args.$includeRid,
+      args.$select,
+      false,
+      result.interfaceToObjectTypeMappings,
+    ),
+    nextPageToken: result.nextPageToken,
+    totalCount: result.totalCount,
+  }) as unknown as Promise<FetchPageResult<Q, L, R, S>>;
 }
 
 /** @internal */
@@ -188,10 +223,7 @@ export async function fetchPage<
   client: MinimalClient,
   objectType: Q,
   args: FetchPageArgs<Q, L, R, any, S>,
-  objectSet: ObjectSet = {
-    type: "base",
-    objectType: objectType["apiName"] as string,
-  },
+  objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
 ): Promise<FetchPageResult<Q, L, R, S>> {
   return fetchPageInternal(client, objectType, objectSet, args);
 }
@@ -206,10 +238,7 @@ export async function fetchPageWithErrors<
   client: MinimalClient,
   objectType: Q,
   args: FetchPageArgs<Q, L, R, any, S>,
-  objectSet: ObjectSet = {
-    type: "base",
-    objectType: objectType["apiName"] as string,
-  },
+  objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
 ): Promise<Result<FetchPageResult<Q, L, R, S>>> {
   return fetchPageWithErrorsInternal(client, objectType, objectSet, args);
 }
@@ -268,7 +297,7 @@ export async function fetchObjectPage<
   );
 
   return Promise.resolve({
-    data: await convertWireToOsdkObjects(
+    data: await client.objectFactory(
       client,
       r.data as OntologyObjectV2[],
       undefined,
