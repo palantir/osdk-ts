@@ -15,5 +15,4 @@
  */
 
 export { OsdkProvider } from "./OsdkProvider.js";
-export { useCombinedPages } from "./useCombinedPages.js";
 export { useOsdkClient } from "./useOsdkClient.js";
