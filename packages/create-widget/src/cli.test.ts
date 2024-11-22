@@ -23,9 +23,9 @@ import { cli } from "./cli.js";
 import { TEMPLATES } from "./generatedNoCheck/templates.js";
 import type { Template } from "./templates.js";
 
-let createAppVersion: string;
+let createWidgetVersion: string;
 beforeAll(() => {
-  createAppVersion = JSON.parse(
+  createWidgetVersion = JSON.parse(
     fs.readFileSync(
       path.join(dirname(fileURLToPath(import.meta.url)), "..", "package.json"),
       "utf-8",
@@ -54,15 +54,6 @@ for (const template of TEMPLATES) {
         sdkVersion,
       });
     });
-
-    test(`CLI creates ${template.id} with CORS proxy`, async () => {
-      await runTest({
-        project: `expected-${template.id}-cors-proxy`,
-        template,
-        corsProxy: true,
-        sdkVersion,
-      });
-    });
   });
 }
 
@@ -86,18 +77,12 @@ async function runTest({
     template.id,
     "--foundryUrl",
     "https://example.palantirfoundry.com",
-    "--applicationUrl",
-    "https://app.example.palantirfoundry.com",
-    "--application",
-    "ri.third-party-applications.main.application.fake",
-    "--clientId",
-    "123",
+    "--widget",
+    "ri.viewregistry.main.view.fake",
     "--osdkPackage",
-    "@fake/sdk",
+    "@custom-widget/sdk",
     "--osdkRegistryUrl",
     "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
-    "--corsProxy",
-    corsProxy.toString(),
     "--sdkVersion",
     sdkVersion,
   ]);
@@ -124,7 +109,7 @@ async function runTest({
     // it should be, so that if the create-app code were to change to different behavior
     // it would be caught.
     expect(packageJson.dependencies["@osdk/client"]).toBe(
-      `^${createAppVersion}`,
+      `^${createWidgetVersion}`,
     );
   } else {
     expect(packageJson.dependencies["@osdk/client"]).toBe(undefined);
