@@ -229,6 +229,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
         primaryKey: req.params.primaryKey,
         propertyName: req.params.propertyName,
       };
+
       const firstPointResp =
         firstPointRequestHandlers[JSON.stringify(pointParams)];
       if (

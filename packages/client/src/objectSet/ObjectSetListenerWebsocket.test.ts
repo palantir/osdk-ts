@@ -221,6 +221,7 @@ describe("ObjectSetListenerWebsocket", async () => {
           "office",
           "startDate",
           "employeeStatus",
+          "employeeSensor",
         ]);
       });
 

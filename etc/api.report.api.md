@@ -759,7 +759,7 @@ export interface PropertyValueWireToClient {
     // (undocumented)
     numericTimeseries: TimeSeriesProperty<number>;
     // (undocumented)
-    sensorTimeseries: TimeSeriesProperty<string>;
+    sensorTimeseries: TimeSeriesProperty<string | number>;
     // (undocumented)
     short: number;
     // (undocumented)
