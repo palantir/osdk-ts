@@ -135,6 +135,7 @@ async function fetchInterfacePage<
       select: ((args?.$select as string[] | undefined) ?? []),
       excludeRid: !args?.$includeRid,
     }),
+    { preview: true },
   );
   return Promise.resolve({
     data: await client.objectFactory2(
