@@ -197,7 +197,7 @@ export interface AsyncIterArgs<Q extends ObjectOrInterfaceDefinition, K extends 
 
 // @public (undocumented)
 export interface Attachment {
-    fetchContents(): Promise<Blob>;
+    fetchContents(): Promise<Response>;
     // Warning: (ae-forgotten-export) The symbol "AttachmentMetadata" needs to be exported by the entry point index.d.ts
     fetchMetadata(): Promise<AttachmentMetadata>;
     // (undocumented)

@@ -598,11 +598,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
         attachmentContentRequest[attachmentRid];
 
       if (getAttachmentContentResponse) {
-        const blob = new Blob(
-          [JSON.stringify(getAttachmentContentResponse)],
-          { type: "application/json" },
-        );
-        return blob;
+        return new Response(JSON.stringify(getAttachmentContentResponse));
       }
 
       throw new OpenApiCallError(404, AttachmentNotFoundError);
@@ -638,11 +634,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       const getAttachmentContentResponse =
         attachmentContentRequest[propertyName];
       if (getAttachmentContentResponse) {
-        const blob = new Blob(
-          [JSON.stringify(getAttachmentContentResponse)],
-          { type: "application/json" },
-        );
-        return blob;
+        return new Response(JSON.stringify(getAttachmentContentResponse));
       }
 
       throw new OpenApiCallError(404, AttachmentNotFoundError);
@@ -704,11 +696,7 @@ async function handleStreamValues(
       || req.params.ontologyApiName === defaultOntology.rid)
     && req.params.objectType === employeeObjectType.apiName
   ) {
-    const blob = new Blob(
-      [JSON.stringify(streamPointsResp)],
-      { type: "application/json" },
-    );
-    return blob;
+    return new Response(JSON.stringify(streamPointsResp));
   }
   throw new OpenApiCallError(400, InvalidRequest("Invalid request"));
 }

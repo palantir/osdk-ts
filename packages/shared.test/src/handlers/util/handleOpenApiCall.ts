@@ -128,8 +128,10 @@ export function handleOpenApiCall<
             info as any,
           );
 
-          if (result instanceof Blob) {
-            return new HttpResponse(result) as StrictResponse<DefaultBodyType>;
+          if (result instanceof Response) {
+            return new HttpResponse(result.body) as StrictResponse<
+              DefaultBodyType
+            >;
           }
           return HttpResponse.json(
             result,
