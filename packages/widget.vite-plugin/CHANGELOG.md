@@ -1,6 +1,6 @@
 # @osdk/widget-manifest-vite-plugin
 
-## 0.1.0-beta.2
+## 0.1.0
 
 ### Minor Changes
 

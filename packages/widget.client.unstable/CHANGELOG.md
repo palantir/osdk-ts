@@ -1,6 +1,6 @@
 # @osdk/widget-client.unstable
 
-## 0.1.0-beta.2
+## 0.1.0
 
 ### Patch Changes
 
