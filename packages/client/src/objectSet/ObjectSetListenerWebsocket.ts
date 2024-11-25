@@ -35,7 +35,10 @@ import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
 import type { Logger } from "../Logger.js";
 import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
-import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
+import {
+  convertWireToOsdkObjects,
+  convertWireToOsdkObjects2,
+} from "../object/convertWireToOsdkObjects.js";
 
 const MINIMUM_RECONNECT_DELAY_MS = 5 * 1000;
 
@@ -65,7 +68,8 @@ interface Subscription<
 > {
   listener: Required<ObjectSetListener<Q, P>>;
   objectSet: ObjectSet;
-  primaryKeyPropertyName: string;
+  interfaceApiName?: string;
+  primaryKeyPropertyName?: string;
   requestedProperties: Array<P>;
   requestedReferenceProperties: Array<P>;
   subscriptionId: string;
@@ -173,9 +177,13 @@ export class ObjectSetListenerWebsocket {
       globalThis.crypto ??= (await import("node:crypto")).webcrypto as any;
     }
 
-    const objDef = await this.#client.ontologyProvider.getObjectDefinition(
-      objectType.apiName,
-    );
+    const objDef = objectType.type === "object"
+      ? await this.#client.ontologyProvider.getObjectDefinition(
+        objectType.apiName,
+      )
+      : await this.#client.ontologyProvider.getInterfaceDefinition(
+        objectType.apiName,
+      );
 
     if (properties.length === 0) {
       properties = Object.keys(objDef.properties) as Array<P>;
@@ -191,13 +199,18 @@ export class ObjectSetListenerWebsocket {
     const sub: Subscription<Q, P> = {
       listener: fillOutListener<Q, P>(listener),
       objectSet,
-      primaryKeyPropertyName: objDef.primaryKeyApiName,
+      primaryKeyPropertyName: objDef.type === "interface"
+        ? undefined
+        : objDef.primaryKeyApiName,
       requestedProperties: objectProperties,
       requestedReferenceProperties: referenceProperties,
       status: "preparing",
       // Since we don't have a real subscription id yet but we need to keep
       // track of this reference, we can just use a random uuid.
       subscriptionId: `TMP-${crypto.randomUUID()}`,
+      interfaceApiName: objDef.type === "interface"
+        ? objDef.apiName
+        : undefined,
     };
 
     this.#subscriptions.set(sub.subscriptionId, sub);
@@ -273,12 +286,19 @@ export class ObjectSetListenerWebsocket {
     const subscribe: ObjectSetStreamSubscribeRequests = {
       id,
       requests: readySubs.map<ObjectSetStreamSubscribeRequest>((
-        { objectSet, requestedProperties, requestedReferenceProperties },
+        {
+          objectSet,
+          requestedProperties,
+          requestedReferenceProperties,
+          interfaceApiName,
+        },
       ) => {
         return {
           objectSet: objectSet,
-          propertySet: requestedProperties,
-          referenceSet: requestedReferenceProperties,
+          propertySet: interfaceApiName == null ? requestedProperties : [],
+          referenceSet: interfaceApiName == null
+            ? requestedReferenceProperties
+            : [],
         };
       }),
     };
@@ -432,15 +452,17 @@ export class ObjectSetListenerWebsocket {
     );
     const osdkObjectsWithReferenceUpdates = await Promise.all(
       referenceUpdates.map(async (o) => {
-        const osdkObjectArray = await convertWireToOsdkObjects(
+        const osdkObjectArray = await this.#client.objectFactory(
           this.#client,
           [{
             __apiName: o.objectType,
-            __primaryKey: o.primaryKey[sub.primaryKeyPropertyName],
+            __primaryKey: sub.primaryKeyPropertyName != null
+              ? o.primaryKey[sub.primaryKeyPropertyName]
+              : undefined,
             ...o.primaryKey,
             [o.property]: o.value,
           }],
-          undefined,
+          sub.interfaceApiName,
         ) as Array<Osdk.Instance<any, never, any>>;
         const singleOsdkObject = osdkObjectArray[0] ?? undefined;
         return singleOsdkObject != null
@@ -465,11 +487,10 @@ export class ObjectSetListenerWebsocket {
       for (const key of keysToDelete) {
         delete o.object[key];
       }
-
       const osdkObjectArray = await this.#client.objectFactory(
         this.#client,
         [o.object],
-        undefined,
+        sub.interfaceApiName,
       ) as Array<Osdk.Instance<any, never, any>>;
       const singleOsdkObject = osdkObjectArray[0] ?? undefined;
       return singleOsdkObject != null
