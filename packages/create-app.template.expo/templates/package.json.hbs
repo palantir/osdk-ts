@@ -1,0 +1,26 @@
+{
+  "name": "{{project}}",
+  "private": true,
+  "main": "expo-router/entry",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "expo start --port 8080",
+    "reset-project": "node ./scripts/reset-project.js",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web --port 8080",
+    "test": "jest --watchAll",
+    "lint": "expo lint",
+    "build": "tsc && vite build"
+  },
+  "dependencies": {
+    "{{osdkPackage}}": "latest",
+    "@osdk/client": "{{clientVersion}}",
+    "@osdk/oauth": "^1.0.0",
+    "@osdk/react": "^0.2.1",
+  },
+  "devDependencies": {
+    "@types/node": "latest"
+  }
+}
