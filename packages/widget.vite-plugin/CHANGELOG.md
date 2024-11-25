@@ -1,5 +1,15 @@
 # @osdk/widget-manifest-vite-plugin
 
+## 0.1.0-beta.2
+
+### Minor Changes
+
+- 55db99e: Fix listing entrypoint CSS files for imported chunks
+
+### Patch Changes
+
+- @osdk/widget-api.unstable@0.1.0-beta.2
+
 ## 0.1.0-beta.1
 
 ### Minor Changes
