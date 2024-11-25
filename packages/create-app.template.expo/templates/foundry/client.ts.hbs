@@ -1,7 +1,7 @@
 import { Client, createClient, createPlatformClient, PlatformClient } from '@osdk/client';
-import { FOUNDRY_URL, ONTOLOGY_RID } from './osdkConst';
+import { FOUNDRY_URL } from './osdkConst';
 import { getValidAuthToken } from './Auth';
-import { $ontologyRid } from '@osdk-sample-app-20/sdk';
+import { $ontologyRid } from "{{osdkPackage}}";
 
 
 export const client: Client = createClient(
