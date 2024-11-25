@@ -1,0 +1,78 @@
+{
+  "name": "@osdk/create-app.template.expo",
+  "private": true,
+  "version": "2.1.0-beta.14",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "exports": {
+    ".": {
+      "browser": "./build/browser/index.js",
+      "import": "./build/esm/index.js",
+      "default": "./build/browser/index.js"
+    },
+    "./*": {
+      "browser": "./build/browser/public/*.js",
+      "import": "./build/esm/public/*.js",
+      "default": "./build/browser/public/*.js"
+    }
+  },
+  "scripts": {
+    "check-attw": "monorepo.tool.attw esm",
+    "check-spelling": "cspell --quiet .",
+    "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "codegen": "create-app.template-packager",
+    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "transpile": "monorepo.tool.transpile"
+  },
+  "dependencies": {
+    "react": "^18",
+    "react-dom": "^18",
+    "react-router-dom": "^6.23.1"
+  },
+  "devDependencies": {
+    "@eslint/compat": "^1.2.1",
+    "@eslint/js": "^9.13.0",
+    "@osdk/create-app.template-packager": "workspace:~",
+    "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/monorepo.tsup": "workspace:~",
+    "@types/eslint-plugin-jsx-a11y": "^6.9.0",
+    "@types/node": "^22.7.4",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@typescript-eslint/eslint-plugin": "^8.11.0",
+    "@typescript-eslint/parser": "^8.11.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "eslint": "^9.13.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jsx-a11y": "^6.10.1",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.14",
+    "globals": "^15.11.0",
+    "typescript": "~5.5.4",
+    "typescript-eslint": "^8.11.0",
+    "vite": "^5.4.8",
+    "vitest": "^2.1.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "build/cjs",
+    "build/esm",
+    "build/browser",
+    "CHANGELOG.md",
+    "package.json",
+    "templates",
+    "*.d.ts"
+  ],
+  "module": "./build/esm/index.js",
+  "types": "./build/esm/index.d.ts",
+  "type": "module"
+}
