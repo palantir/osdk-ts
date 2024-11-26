@@ -1,5 +1,16 @@
 # @osdk/widget-manifest-vite-plugin
 
+## 0.2.0-beta.0
+
+### Minor Changes
+
+- e4839b9: Add target type to widget manifest
+
+### Patch Changes
+
+- Updated dependencies [e4839b9]
+  - @osdk/widget-api.unstable@0.2.0-beta.0
+
 ## 0.1.0
 
 ### Minor Changes
