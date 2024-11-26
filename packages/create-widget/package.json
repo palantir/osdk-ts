@@ -1,7 +1,8 @@
 {
-  "name": "@osdk/example-generator",
-  "private": true,
-  "version": "0.9.0-beta.13",
+  "name": "@osdk/create-widget",
+  "version": "0.0.0",
+  "description": "",
+  "access": "public",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -23,37 +24,38 @@
     "check-attw": "monorepo.tool.attw esm",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "codegen": "node codegen.mjs",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-    "generate": "./bin/exampleGenerator.mjs ../../examples",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --pool=forks",
-    "transpile": "monorepo.tool.transpile"
+    "test:watch": "vitest",
+    "transpile": "monorepo.tool.transpile tsup"
   },
   "dependencies": {
-    "@osdk/create-app": "workspace:~",
-    "@osdk/create-widget": "workspace:~",
     "consola": "^3.2.3",
-    "dir-compare": "^5.0.0",
     "find-up": "^7.0.0",
-    "globby": "^14.0.1",
-    "jest-diff": "^29.7.0",
-    "tmp": "^0.2.3",
+    "handlebars": "^4.7.8",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
+    "@osdk/create-widget.template.react.v2": "workspace:*",
+    "@osdk/generator-utils": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
     "@types/node": "^18.0.0",
     "@types/tmp": "^0.2.6",
     "@types/yargs": "^17.0.29",
+    "dedent": "1.5.3",
+    "redent": "^4.0.0",
+    "tmp": "^0.2.3",
     "typescript": "~5.5.4"
   },
   "publishConfig": {
     "access": "public"
   },
   "bin": {
-    "example-generator": "./bin/exampleGenerator.mjs"
+    "create-osdk-widget": "bin/createWidget.mjs"
   },
   "files": [
     "build/cjs",
