@@ -49,7 +49,7 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     .help()
     .command(
       "$0 [project] [--<option>]",
-      "Create a new OSDK application based on framework templates. Information may be provided through options to skip interactive prompts.",
+      "Create a new OSDK widget based on framework templates. Information may be provided through options to skip interactive prompts.",
       (yargs) =>
         yargs
           .positional("project", {
