@@ -185,16 +185,25 @@ export class ObjectSetListenerWebsocket {
         objectType.apiName,
       );
 
-    if (properties.length === 0) {
-      properties = Object.keys(objDef.properties) as Array<P>;
-    }
+    let objectProperties: Array<P> = [];
+    let referenceProperties: Array<P> = [];
 
-    const objectProperties = properties.filter((p) =>
-      objDef.properties[p].type !== "geotimeSeriesReference"
-    );
-    const referenceProperties = properties.filter((p) =>
-      objDef.properties[p].type === "geotimeSeriesReference"
-    );
+    if (objectType.type === "object") {
+      if (properties.length === 0) {
+        properties = Object.keys(objDef.properties) as Array<P>;
+      }
+
+      objectProperties = properties.filter((p) =>
+        objDef.properties[p].type !== "geotimeSeriesReference"
+      );
+
+      referenceProperties = properties.filter((p) =>
+        objDef.properties[p].type === "geotimeSeriesReference"
+      );
+    } else {
+      objectProperties = [];
+      referenceProperties = properties;
+    }
 
     const sub: Subscription<Q, P> = {
       listener: fillOutListener<Q, P>(listener),
@@ -208,9 +217,9 @@ export class ObjectSetListenerWebsocket {
       // Since we don't have a real subscription id yet but we need to keep
       // track of this reference, we can just use a random uuid.
       subscriptionId: `TMP-${crypto.randomUUID()}`,
-      interfaceApiName: objDef.type === "interface"
-        ? objDef.apiName
-        : undefined,
+      interfaceApiName: objDef.type === "object"
+        ? undefined
+        : objDef.apiName,
     };
 
     this.#subscriptions.set(sub.subscriptionId, sub);
@@ -295,10 +304,8 @@ export class ObjectSetListenerWebsocket {
       ) => {
         return {
           objectSet: objectSet,
-          propertySet: interfaceApiName == null ? requestedProperties : [],
-          referenceSet: interfaceApiName == null
-            ? requestedReferenceProperties
-            : [],
+          propertySet: requestedProperties,
+          referenceSet: requestedReferenceProperties,
         };
       }),
     };
