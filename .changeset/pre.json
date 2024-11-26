@@ -78,7 +78,10 @@
     "@osdk/widget-client.unstable": "0.0.0",
     "@osdk/widget-manifest-vite-plugin": "0.0.0",
     "@osdk/e2e.sandbox.todowidget": "0.1.0-beta.1",
-    "@osdk/react": "0.2.1"
+    "@osdk/react": "0.2.1",
+    "@osdk/examples.widget-react-sdk-2.x": "0.0.0",
+    "@osdk/create-widget": "0.0.0",
+    "@osdk/create-widget.template.react.v2": "0.0.0"
   },
   "changesets": [
     "blue-tips-heal",
@@ -95,6 +98,7 @@
     "eighty-bulldogs-sniff",
     "eighty-kangaroos-sing",
     "eleven-kids-battle",
+    "eleven-pants-trade",
     "empty-poems-hug",
     "famous-terms-attend",
     "fast-garlics-stare",
@@ -103,6 +107,7 @@
     "fifty-maps-sniff",
     "fifty-wombats-hunt",
     "fluffy-carpets-sort",
+    "forty-ligers-scream",
     "four-boxes-drum",
     "gold-badgers-tell",
     "great-shoes-dream",
@@ -159,6 +164,7 @@
     "spicy-fishes-matter",
     "spotty-feet-beg",
     "sweet-ants-pull",
+    "sweet-dryers-build",
     "tasty-rats-sparkle",
     "thick-coins-wink",
     "thirty-falcons-crash",
