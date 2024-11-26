@@ -1,4 +1,4 @@
-# @osdk/create-app.template.expo
+# @osdk/create-app.template.expo.v2
 
 This package contains templates for `@osdk/create-app`.
 

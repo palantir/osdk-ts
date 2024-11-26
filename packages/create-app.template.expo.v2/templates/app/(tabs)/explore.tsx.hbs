@@ -12,9 +12,10 @@ export default function TabTwoScreen() {
   const objectApiNames = Object.keys($Objects);
   const actionApiNames = Object.keys($Actions);
   const queryApiNames = Object.keys($Queries);
+  const colors = { light: '#D0D0D0', dark: '#353636' };
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
+      headerBackgroundColor={colors}
       headerImage={
         <IconSymbol
           size={310}
@@ -85,7 +86,7 @@ export default function TabTwoScreen() {
             <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
             different screen densities
           </ThemedText>
-          <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
+          <Image source={require('@/assets/images/react-logo.png')} style={styles.alignToCenter} />
           <ExternalLink href="https://reactnative.dev/docs/images">
             <ThemedText type="link">Learn more</ThemedText>
           </ExternalLink>
@@ -93,7 +94,7 @@ export default function TabTwoScreen() {
         <Collapsible title="Custom fonts">
           <ThemedText>
             Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-            <ThemedText style={{ fontFamily: 'SpaceMono' }}>
+            <ThemedText style={styles.font}>
               custom fonts such as this one.
             </ThemedText>
           </ThemedText>
@@ -148,5 +149,11 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 10,
     gap: 8,
+  },
+  alignToCenter: {
+    alignSelf: 'center',
+  },
+  font: {
+    fontFamily: 'space-mono',
   },
 });
