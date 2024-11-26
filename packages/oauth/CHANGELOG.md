@@ -1,5 +1,20 @@
 # @osdk/oauth
 
+## 1.1.0-beta.3
+
+### Minor Changes
+
+- 91cfa3a: Fixing url parsing for client.
+- d501104: Adds unit testing of public oauth flow
+- 91cfa3a: Fixing URL parsing for custom entry points.
+
+## 1.1.0-beta.2
+
+### Minor Changes
+
+- 33590c7: Add tests for createPublicOauthClient overload
+- e00bb29: Overload createPublicOauthClient to support object of options
+
 ## 1.1.0-beta.1
 
 ### Minor Changes

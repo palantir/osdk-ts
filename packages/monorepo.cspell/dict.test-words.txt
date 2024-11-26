@@ -5,5 +5,11 @@ doesnotexist
 objectdoesnotexist
 Packag
 querydoesnotexist
+unstub
 unstubAllEnvs
+interfacers
+Claused
 geotimeseries
+containsallterm
+containsanyterm
+palantircustom

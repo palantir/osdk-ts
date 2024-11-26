@@ -15,6 +15,7 @@
  */
 
 import { Task } from "@osdk/client.test.ontology";
+import * as SharedClientContext from "@osdk/shared.client.impl";
 import { mockFetchResponse, MockOntology } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -65,6 +66,47 @@ describe(createClient, () => {
           .split(" "),
         USER_AGENT,
       ]);
+    });
+  });
+
+  describe("check url formatting", () => {
+    it("urls are correctly formatted", async () => {
+      const spy = vi.spyOn(SharedClientContext, "createSharedClientContext");
+      createClient(
+        "https://mock.com",
+        MockOntology.metadata.ontologyRid,
+        async () => "Token",
+        undefined,
+        fetchFunction,
+      );
+      expect(spy.mock.calls[0][0]).toBe("https://mock.com/");
+
+      createClient(
+        "https://mock1.com/",
+        MockOntology.metadata.ontologyRid,
+        async () => "Token",
+        undefined,
+        fetchFunction,
+      );
+      expect(spy.mock.calls[1][0]).toBe("https://mock1.com/");
+
+      createClient(
+        "https://mock2.com/stuff/first/foo",
+        MockOntology.metadata.ontologyRid,
+        async () => "Token",
+        undefined,
+        fetchFunction,
+      );
+      expect(spy.mock.calls[2][0]).toBe("https://mock2.com/stuff/first/foo/");
+
+      createClient(
+        "https://mock3.com/stuff/first/foo/",
+        MockOntology.metadata.ontologyRid,
+        async () => "Token",
+        undefined,
+        fetchFunction,
+      );
+      expect(spy.mock.calls[3][0]).toBe("https://mock3.com/stuff/first/foo/");
     });
   });
 });

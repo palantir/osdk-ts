@@ -1,7 +1,7 @@
 ---
-"@osdk/views-client-react.unstable": minor
-"@osdk/views-client.unstable": minor
-"@osdk/views-api.unstable": minor
+"@osdk/widget-client-react.unstable": minor
+"@osdk/widget-client.unstable": minor
+"@osdk/widget-api.unstable": minor
 ---
 
 Add initial views API

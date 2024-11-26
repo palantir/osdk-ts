@@ -611,6 +611,100 @@ describe(modernToLegacyWhereClause, () => {
         }
       `);
       });
+      it("converts $containsAllTerms correctly if using new type", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: { $containsAllTerms: { term: "test", fuzzySearch: true } },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "fuzzy": true,
+          "type": "containsAllTerms",
+          "value": "test",
+        }
+      `);
+
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: { $containsAllTerms: { term: "test", fuzzySearch: false } },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "fuzzy": false,
+          "type": "containsAllTerms",
+          "value": "test",
+        }
+      `);
+
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: { $containsAllTerms: { term: "test" } },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "fuzzy": false,
+          "type": "containsAllTerms",
+          "value": "test",
+        }
+      `);
+      });
+
+      it("converts $containsAllTerms correctly if using old type", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: { $containsAllTerms: "test" },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "fuzzy": false,
+          "type": "containsAllTerms",
+          "value": "test",
+        }
+      `);
+      });
+      it("converts $containsAnyTerm correctly if using new type", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: { $containsAnyTerm: { term: "test", fuzzySearch: true } },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "fuzzy": true,
+          "type": "containsAnyTerm",
+          "value": "test",
+        }
+      `);
+
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: { $containsAnyTerm: { term: "test", fuzzySearch: false } },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "fuzzy": false,
+          "type": "containsAnyTerm",
+          "value": "test",
+        }
+      `);
+
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: { $containsAnyTerm: { term: "test" } },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "fuzzy": false,
+          "type": "containsAnyTerm",
+          "value": "test",
+        }
+      `);
+      });
+
+      it("converts $containsAnyTerm correctly if using old type", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: { $containsAnyTerm: "test" },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "fuzzy": false,
+          "type": "containsAnyTerm",
+          "value": "test",
+        }
+      `);
+      });
     });
 
     describe("multiple checks", () => {

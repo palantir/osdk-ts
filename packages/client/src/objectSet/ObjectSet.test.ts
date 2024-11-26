@@ -160,6 +160,7 @@ describe("ObjectSet", () => {
         class: "Red",
         employeeId: 50030,
         employeeStatus: expect.anything(),
+        employeeSensor: expect.anything(),
         fullName: "John Doe",
         office: "NYC",
         startDate: "2019-01-01",
@@ -173,6 +174,7 @@ describe("ObjectSet", () => {
         class: "Blue",
         employeeId: 50031,
         employeeStatus: expect.anything(),
+        employeeSensor: expect.anything(),
         fullName: "Jane Doe",
         office: "SEA",
         startDate: "2012-02-12",
@@ -186,6 +188,7 @@ describe("ObjectSet", () => {
         class: "Red",
         employeeId: 50032,
         employeeStatus: expect.anything(),
+        employeeSensor: expect.anything(),
         fullName: "Jack Smith",
         office: "LON",
         startDate: "2015-05-15",
@@ -311,6 +314,40 @@ describe("ObjectSet", () => {
     client(Employee).where({
       // @ts-expect-error
       employeeIdNonExistent: { $in: ids },
+    });
+
+    client(BarInterface).where({
+      // @ts-expect-error
+      nonExistentProp: "",
+    });
+  });
+
+  it("type checking containsallterm and containsanyterm", () => {
+    const ids: ReadonlyArray<number> = [50030, 50031];
+    client(Employee).where({
+      $or: [{ fullName: { $containsAllTerms: "John Smith" } }, {
+        office: { $containsAllTerms: { term: "NYC DC" } },
+      }, {
+        fullName: {
+          $containsAllTerms: { term: "John Smith", fuzzySearch: false },
+        },
+      }, {
+        // @ts-expect-error
+        fullName: { $containsAllTerms: { fuzzySearch: false } },
+      }],
+    });
+
+    client(Employee).where({
+      $or: [{ fullName: { $containsAnyTerm: "John Smith" } }, {
+        office: { $containsAnyTerm: { term: "NYC DC" } },
+      }, {
+        fullName: {
+          $containsAnyTerm: { term: "John Smith", fuzzySearch: false },
+        },
+      }, {
+        // @ts-expect-error
+        fullName: { $containsAnyTerm: { fuzzySearch: false } },
+      }],
     });
 
     client(BarInterface).where({
@@ -493,6 +530,7 @@ describe("ObjectSet", () => {
             | "employeeStatus"
             | "startDate"
             | "employeeLocation"
+            | "employeeSensor"
           >();
 
         expectTypeOf<

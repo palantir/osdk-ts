@@ -30,11 +30,13 @@ export const employeeObjectType: ObjectTypeV2 = {
       dataType: {
         type: "integer",
       },
+      rid: "rid",
     },
     fullName: {
       dataType: {
         type: "string",
       },
+      rid: "rid",
     },
     office: {
       description:
@@ -42,6 +44,7 @@ export const employeeObjectType: ObjectTypeV2 = {
       dataType: {
         type: "string",
       },
+      rid: "rid",
     },
     startDate: {
       description:
@@ -49,6 +52,7 @@ export const employeeObjectType: ObjectTypeV2 = {
       dataType: {
         type: "date",
       },
+      rid: "rid",
     },
     employeeStatus: {
       description: "TimeSeries of the status of the employee",
@@ -58,12 +62,21 @@ export const employeeObjectType: ObjectTypeV2 = {
           type: "string",
         },
       },
+      rid: "rid",
+    },
+    employeeSensor: {
+      description: "TimeSeries sensor of the status of the employee",
+      dataType: {
+        type: "timeseries",
+      },
+      rid: "rid",
     },
     employeeLocation: {
       description: "Geotime series reference of the location of the employee",
       dataType: {
         type: "geotimeSeriesReference",
       },
+      rid: "rid",
     },
   },
   rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
@@ -83,23 +96,27 @@ export const officeObjectType: ObjectTypeV2 = {
       dataType: {
         type: "string",
       },
+      rid: "rid",
     },
     entrance: {
       dataType: {
         type: "geopoint",
       },
+      rid: "rid",
     },
     occupiedArea: {
       description: "The occupied area of the Office",
       dataType: {
         type: "geoshape",
       },
+      rid: "rid",
     },
     name: {
       description: "The Name of the Office",
       dataType: {
         type: "string",
       },
+      rid: "rid",
     },
   },
   rid: "ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45",
@@ -119,11 +136,13 @@ export const equipmentObjectType: ObjectTypeV2 = {
       dataType: {
         type: "string",
       },
+      rid: "rid",
     },
     type: {
       dataType: {
         type: "string",
       },
+      rid: "rid",
     },
   },
   rid: "ri.ontology.main.object-type.808ac022-89eb-4591-8b7e-1a912b9efb45",
@@ -143,11 +162,13 @@ export const objectTypeWithTimestampPrimaryKey: ObjectTypeV2 = {
       dataType: {
         type: "timestamp",
       },
+      rid: "rid",
     },
     value: {
       dataType: {
         type: "string",
       },
+      rid: "rid",
     },
   },
   rid: "ri.ontology.main.object-type.32bb9402-9cab-4705-81bb-edb65a4a6806",
@@ -167,81 +188,97 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
       dataType: {
         type: "integer",
       },
+      rid: "rid",
     },
     string: {
       dataType: {
         type: "string",
       },
+      rid: "rid",
     },
     boolean: {
       dataType: {
         type: "boolean",
       },
+      rid: "rid",
     },
     date: {
       dataType: {
         type: "date",
       },
+      rid: "rid",
     },
     dateTime: {
       dataType: {
         type: "timestamp",
       },
+      rid: "rid",
     },
     decimal: {
       dataType: {
         type: "decimal",
       },
+      rid: "rid",
     },
     integer: {
       dataType: {
         type: "integer",
       },
+      rid: "rid",
     },
     long: {
       dataType: {
         type: "long",
       },
+      rid: "rid",
     },
     short: {
       dataType: {
         type: "short",
       },
+      rid: "rid",
     },
     float: {
       dataType: {
         type: "float",
       },
+      rid: "rid",
     },
     double: {
       dataType: {
         type: "double",
       },
+      rid: "rid",
     },
     byte: {
       dataType: {
         type: "byte",
       },
+      rid: "rid",
     },
     attachment: {
       dataType: {
         type: "attachment",
       },
+      rid: "rid",
     },
     attachment2: {
       dataType: {
         type: "attachment",
       },
+      rid: "rid",
     },
     geoPoint: {
       dataType: {
         type: "geopoint",
       },
+      rid: "rid",
     },
     geoShape: {
       dataType: {
         type: "geoshape",
       },
+      rid: "rid",
     },
     stringArray: {
       dataType: {
@@ -250,6 +287,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
           type: "string",
         },
       },
+      rid: "rid",
     },
     booleanArray: {
       dataType: {
@@ -258,6 +296,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
           type: "boolean",
         },
       },
+      rid: "rid",
     },
     dateArray: {
       dataType: {
@@ -266,6 +305,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
           type: "date",
         },
       },
+      rid: "rid",
     },
     dateTimeArray: {
       dataType: {
@@ -274,6 +314,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
           type: "timestamp",
         },
       },
+      rid: "rid",
     },
     decimalArray: {
       dataType: {
@@ -282,6 +323,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
           type: "decimal",
         },
       },
+      rid: "rid",
     },
     integerArray: {
       dataType: {
@@ -290,6 +332,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
           type: "integer",
         },
       },
+      rid: "rid",
     },
     longArray: {
       dataType: {
@@ -298,6 +341,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
           type: "long",
         },
       },
+      rid: "rid",
     },
     shortArray: {
       dataType: {
@@ -306,6 +350,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
           type: "short",
         },
       },
+      rid: "rid",
     },
     floatArray: {
       dataType: {
@@ -314,6 +359,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
           type: "float",
         },
       },
+      rid: "rid",
     },
     doubleArray: {
       dataType: {
@@ -322,6 +368,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
           type: "double",
         },
       },
+      rid: "rid",
     },
     byteArray: {
       dataType: {
@@ -330,6 +377,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
           type: "byte",
         },
       },
+      rid: "rid",
     },
     attachmentArray: {
       dataType: {
@@ -338,6 +386,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
           type: "attachment",
         },
       },
+      rid: "rid",
     },
     geoPointArray: {
       dataType: {
@@ -346,6 +395,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
           type: "geopoint",
         },
       },
+      rid: "rid",
     },
     geoShapeArray: {
       dataType: {
@@ -354,6 +404,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
           type: "geoshape",
         },
       },
+      rid: "rid",
     },
   },
   rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
@@ -379,9 +430,13 @@ export const taskObjectType: ObjectTypeV2 = {
       dataType: {
         type: "integer",
       },
+      rid: "rid",
     },
 
-    name: { dataType: { type: "string" } },
+    name: {
+      dataType: { type: "string" },
+      rid: "rid",
+    },
   },
   status: "ACTIVE",
   rid: "ri.task",
@@ -399,11 +454,13 @@ export const todoObjectType: ObjectTypeV2 = {
       dataType: {
         type: "integer",
       },
+      rid: "rid",
     },
     text: {
       dataType: {
         type: "string",
       },
+      rid: "rid",
     },
   },
   rid: "ri.todo",
@@ -422,11 +479,13 @@ export const personObjectType: ObjectTypeV2 = {
       dataType: {
         type: "integer",
       },
+      rid: "rid",
     },
     name: {
       dataType: {
         type: "string",
       },
+      rid: "rid",
     },
   },
   rid: "ri.person",

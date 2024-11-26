@@ -88,12 +88,21 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
               "dataType": {
                 "type": "integer",
               },
+              "rid": "rid",
             },
             "employeeLocation": {
               "dataType": {
                 "type": "geotimeSeriesReference",
               },
               "description": "Geotime series reference of the location of the employee",
+              "rid": "rid",
+            },
+            "employeeSensor": {
+              "dataType": {
+                "type": "timeseries",
+              },
+              "description": "TimeSeries sensor of the status of the employee",
+              "rid": "rid",
             },
             "employeeStatus": {
               "dataType": {
@@ -103,11 +112,13 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
                 "type": "timeseries",
               },
               "description": "TimeSeries of the status of the employee",
+              "rid": "rid",
             },
             "fullName": {
               "dataType": {
                 "type": "string",
               },
+              "rid": "rid",
             },
             "office": {
               "dataType": {
@@ -115,12 +126,14 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
               },
               "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
  This is some more text.",
+              "rid": "rid",
             },
             "startDate": {
               "dataType": {
                 "type": "date",
               },
               "description": "The date the employee was hired (most recently, if they were re-hired)",
+              "rid": "rid",
             },
           },
           "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
@@ -152,23 +165,27 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
               "dataType": {
                 "type": "geopoint",
               },
+              "rid": "rid",
             },
             "name": {
               "dataType": {
                 "type": "string",
               },
               "description": "The Name of the Office",
+              "rid": "rid",
             },
             "occupiedArea": {
               "dataType": {
                 "type": "geoshape",
               },
               "description": "The occupied area of the Office",
+              "rid": "rid",
             },
             "officeId": {
               "dataType": {
                 "type": "string",
               },
+              "rid": "rid",
             },
           },
           "rid": "ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45",
@@ -261,12 +278,21 @@ exports[`Load Ontologies Metadata > Loads object and action types without link t
               "dataType": {
                 "type": "integer",
               },
+              "rid": "rid",
             },
             "employeeLocation": {
               "dataType": {
                 "type": "geotimeSeriesReference",
               },
               "description": "Geotime series reference of the location of the employee",
+              "rid": "rid",
+            },
+            "employeeSensor": {
+              "dataType": {
+                "type": "timeseries",
+              },
+              "description": "TimeSeries sensor of the status of the employee",
+              "rid": "rid",
             },
             "employeeStatus": {
               "dataType": {
@@ -276,11 +302,13 @@ exports[`Load Ontologies Metadata > Loads object and action types without link t
                 "type": "timeseries",
               },
               "description": "TimeSeries of the status of the employee",
+              "rid": "rid",
             },
             "fullName": {
               "dataType": {
                 "type": "string",
               },
+              "rid": "rid",
             },
             "office": {
               "dataType": {
@@ -288,12 +316,14 @@ exports[`Load Ontologies Metadata > Loads object and action types without link t
               },
               "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
  This is some more text.",
+              "rid": "rid",
             },
             "startDate": {
               "dataType": {
                 "type": "date",
               },
               "description": "The date the employee was hired (most recently, if they were re-hired)",
+              "rid": "rid",
             },
           },
           "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",

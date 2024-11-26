@@ -21,6 +21,10 @@ import type {
   MinimalClient,
   MinimalClientParams,
 } from "./MinimalClientContext.js";
+import {
+  convertWireToOsdkObjects,
+  convertWireToOsdkObjects2,
+} from "./object/convertWireToOsdkObjects.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import {
@@ -52,15 +56,20 @@ export function createMinimalClient(
       throw new Error(`Invalid stack URL: ${baseUrl}${hint}`);
     }
   }
-
+  const processedBaseUrl = new URL(baseUrl);
+  processedBaseUrl.pathname += processedBaseUrl.pathname.endsWith("/")
+    ? ""
+    : "/";
   const minimalClient: MinimalClient = {
     ...createSharedClientContext(
-      baseUrl,
+      processedBaseUrl.toString(),
       tokenProvider,
       USER_AGENT,
       fetchFn,
     ),
     objectSetFactory,
+    objectFactory: convertWireToOsdkObjects,
+    objectFactory2: convertWireToOsdkObjects2,
     ontologyRid: metadata.ontologyRid,
     logger: options.logger,
     clientCacheKey: {} as ClientCacheKey,

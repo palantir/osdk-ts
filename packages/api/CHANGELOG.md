@@ -1,5 +1,30 @@
 # @osdk/api
 
+## 2.1.0-beta.14
+
+### Minor Changes
+
+- 0c56d21: Exposing fuzzy searching.
+- 6b6c8a1: Updates gateway endpoints and changes fetchContents for attachments to return a response
+
+## 2.1.0-beta.13
+
+## 2.1.0-beta.12
+
+## 2.1.0-beta.11
+
+### Minor Changes
+
+- bc1761c: Update platform API dependencies.
+- 9298f75: Using new interface APIs for backend.
+
+## 2.1.0-beta.10
+
+### Minor Changes
+
+- 11a05cc: Updated subscribe api to make requesting properties optional
+- 11088aa: Fix where clause types so we don't accept more than one key in the clauses.
+
 ## 2.1.0-beta.9
 
 ### Minor Changes

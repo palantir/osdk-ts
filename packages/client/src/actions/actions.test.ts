@@ -47,11 +47,17 @@ import { remapActionResponse } from "./applyAction.js";
 
 describe("actions", () => {
   let client: Client;
+  let customEntryPointClient: Client;
 
   beforeAll(async () => {
     apiServer.listen();
     client = createClient(
       "https://stack.palantir.com",
+      $ontologyRid,
+      async () => "myAccessToken",
+    );
+    customEntryPointClient = createClient(
+      "https://stack.palantirCustom.com/foo/first/someStuff",
       $ontologyRid,
       async () => "myAccessToken",
     );
@@ -107,6 +113,25 @@ describe("actions", () => {
 
   it("returns validation directly on validateOnly mode", async () => {
     const result = await client(moveOffice).applyAction({
+      officeId: "SEA",
+      newAddress: "456 Pike Place",
+      newCapacity: 40,
+    }, {
+      $validateOnly: true,
+    });
+    expectTypeOf<typeof result>().toEqualTypeOf<ActionValidationResponse>();
+
+    expect(result).toMatchInlineSnapshot(`
+        {
+          "parameters": {},
+          "result": "INVALID",
+          "submissionCriteria": [],
+        }
+      `);
+  });
+
+  it("returns validation directly on validateOnly mode, with custom entry point in URL", async () => {
+    const result = await customEntryPointClient(moveOffice).applyAction({
       officeId: "SEA",
       newAddress: "456 Pike Place",
       newCapacity: 40,
