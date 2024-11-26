@@ -240,7 +240,7 @@ export class ObjectSetListenerWebsocket {
       }
     } catch (error) {
       this.#logger?.error(error, "Error in #initiateSubscribe");
-      sub.listener.onError([error]);
+      sub.listener.onError({ subscriptionClosed: true, error });
     }
   }
 
@@ -454,7 +454,12 @@ export class ObjectSetListenerWebsocket {
 
     for (const osdkObject of osdkObjectsWithReferenceUpdates) {
       if (osdkObject != null) {
-        sub.listener.onChange?.(osdkObject);
+        try {
+          sub.listener.onChange?.(osdkObject);
+        } catch (error) {
+          this.#logger?.error(error, "Error in onChange callback");
+          sub.listener.onError({ subscriptionClosed: false, error });
+        }
       }
     }
 
@@ -482,7 +487,12 @@ export class ObjectSetListenerWebsocket {
 
     for (const osdkObject of osdkObjects) {
       if (osdkObject != null) {
-        sub.listener.onChange?.(osdkObject);
+        try {
+          sub.listener.onChange?.(osdkObject);
+        } catch (error) {
+          this.#logger?.error(error, "Error in onChange callback");
+          sub.listener.onError({ subscriptionClosed: false, error });
+        }
       }
     }
   };
@@ -490,6 +500,12 @@ export class ObjectSetListenerWebsocket {
   #handleMessage_refreshObjectSet = (payload: RefreshObjectSet) => {
     const sub = this.#subscriptions.get(payload.id);
     invariant(sub, `Expected subscription id ${payload.id}`);
+    try {
+      sub.listener.onOutOfDate();
+    } catch (error) {
+      this.#logger?.error(error, "Error in onOutOfDate callback");
+      sub.listener.onError({ subscriptionClosed: false, error });
+    }
     sub.listener.onOutOfDate();
   };
 
@@ -508,7 +524,10 @@ export class ObjectSetListenerWebsocket {
 
       switch (response.type) {
         case "error":
-          sub.listener.onError(response.errors);
+          sub.listener.onError({
+            subscriptionClosed: true,
+            error: response.errors,
+          });
           this.#unsubscribe(sub, "error");
           break;
 
@@ -532,12 +551,19 @@ export class ObjectSetListenerWebsocket {
             sub.subscriptionId = response.id;
             this.#subscriptions.set(sub.subscriptionId, sub); // future messages come by this subId
           }
-          if (shouldFireOutOfDate) sub.listener.onOutOfDate();
-          else sub.listener.onSuccessfulSubscription();
+          try {
+            if (shouldFireOutOfDate) sub.listener.onOutOfDate();
+            else sub.listener.onSuccessfulSubscription();
+          } catch (error) {
+            this.#logger?.error(
+              error,
+              "Error in onOutOfDate or onSuccessfulSubscription callback",
+            );
+            sub.listener.onError({ subscriptionClosed: false, error });
+          }
           break;
         default:
-          const _: never = response;
-          sub.listener.onError(response);
+          sub.listener.onError({ error: response, subscriptionClosed: true });
       }
     }
   };
@@ -545,7 +571,7 @@ export class ObjectSetListenerWebsocket {
   #handleMessage_subscriptionClosed(payload: SubscriptionClosed) {
     const sub = this.#subscriptions.get(payload.id);
     invariant(sub, `Expected subscription id ${payload.id}`);
-    sub.listener.onError([payload.cause]);
+    sub.listener.onError({ subscriptionClosed: true, error: payload.cause });
     this.#unsubscribe(sub, "error");
   }
 
