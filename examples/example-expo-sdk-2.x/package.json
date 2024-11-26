@@ -80,6 +80,5 @@
     "vite": "^5.4.8",
     "vitest": "^2.1.2"
   },
-  "main": "expo-router/entry",
-  "type": "module"
+  "main": "expo-router/entry"
 }
