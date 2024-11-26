@@ -21,6 +21,7 @@ export {
   OsdkTestObject,
   Person,
   RhemmingsObjectWithGtsrProperty2,
+  SotSensor,
   Todo,
   Venture,
   WeatherStation,

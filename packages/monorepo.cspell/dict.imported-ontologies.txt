@@ -2,3 +2,4 @@ amishsSyncGroup
 qTAPT
 Emailable
 mmsi
+sotsensor

@@ -64,6 +64,13 @@ export const employeeObjectType: ObjectTypeV2 = {
       },
       rid: "rid",
     },
+    employeeSensor: {
+      description: "TimeSeries sensor of the status of the employee",
+      dataType: {
+        type: "timeseries",
+      },
+      rid: "rid",
+    },
     employeeLocation: {
       description: "Geotime series reference of the location of the employee",
       dataType: {
