@@ -13,7 +13,7 @@ const MAPPING = {
   'paperplane.fill': 'send',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
-  'login.fill': 'login',
+  'lock.shield.fill': 'login'
 } as Partial<
   Record<
     import('expo-symbols').SymbolViewProps['name'],
@@ -37,7 +37,7 @@ export function IconSymbol({
   name: IconSymbolName;
   size?: number;
   color: string | OpaqueColorValue;
-  style?: StyleProp<ViewStyle>;
+  style?: Omit<StyleProp<ViewStyle>, "string">;
   weight?: SymbolWeight;
 }) {
   return <MaterialIcons color={color} size={size} name={MAPPING[name]} style={style} />;

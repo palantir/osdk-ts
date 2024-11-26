@@ -31,7 +31,7 @@ export default function TabLayout() {
         name="login"
         options={{
           title: 'Login',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="login.fill" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="lock.shield.fill" color={color} />,
         }}
       />
       <Tabs.Screen

@@ -65,6 +65,7 @@
     "@typescript-eslint/parser": "^8.11.0",
     "@vitejs/plugin-react": "^4.2.0",
     "eslint": "^9.13.0",
+    "eslint-config-expo": "~8.0.1",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-jsx-a11y": "^6.10.1",
     "eslint-plugin-prettier": "^5.2.1",

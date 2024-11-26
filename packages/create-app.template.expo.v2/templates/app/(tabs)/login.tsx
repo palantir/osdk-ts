@@ -34,7 +34,6 @@ export default function Login() {
 
   useEffect(() => {
     if (response?.type === 'success') {
-      const { code } = response.params;
     }
   }, [response]);
 
@@ -60,7 +59,7 @@ export default function Login() {
           });
         }
       );
-  } , [promptAsync, router, request]);
+    } , [promptAsync, redirectUri, request?.codeVerifier, router]);
   
   return (
       <ThemedView style={styles.loginContainer}>
