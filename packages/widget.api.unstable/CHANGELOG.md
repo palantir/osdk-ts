@@ -1,6 +1,6 @@
 # @osdk/widget-api.unstable
 
-## 0.2.0-beta.0
+## 0.2.0
 
 ### Minor Changes
 
