@@ -245,12 +245,17 @@
         "visibility": "NORMAL"
       },
       "linkTypes": [],
-      "implementsInterfaces": ["FooInterface"],
+      "implementsInterfaces": ["FooInterface", "OsdkTestInterface"],
       "implementsInterfaces2": {
         "FooInterface": {
           "properties": {
             "name": "osdkObjectName",
             "description": "description"
+          }
+        },
+        "OsdkTestInterface": {
+          "properties": {
+            "objectDescription": "description"
           }
         }
       },
@@ -1293,6 +1298,22 @@
       "properties": {
       },
       "rid": "ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b",
+      "status": "ACTIVE"
+    },
+    "OsdkTestInterface": {
+      "apiName": "OsdkTestInterface",
+      "displayName": "OsdkTestInterface",
+      "description": "OsdkTestInterface",
+      "properties": {
+        "objectDescription": {
+          "rid": "ri.ontology.main.shared-property.751ed7ee-5d2c-41a1-bf60-9cbef5623f23",
+          "apiName": "objectDescription",
+          "dataType": {
+            "type": "string"
+          }
+        }
+      },
+      "rid": "ri.ontology.main.interface.06c534fd-4f68-44d9-b268-72729a47eaab",
       "status": "ACTIVE"
     }
   },
