@@ -16,6 +16,11 @@
 
 import type { Template } from "@osdk/create-app";
 import { run as runCreateApp, TEMPLATES } from "@osdk/create-app";
+import type { Template as WidgetTemplate } from "@osdk/create-widget";
+import {
+  run as runCreateWidget,
+  TEMPLATES as WIDGET_TEMPLATES,
+} from "@osdk/create-widget";
 import { consola } from "consola";
 import { compareSync } from "dir-compare";
 import { findUp } from "find-up";
@@ -87,29 +92,62 @@ async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
       scopes: ["api:ontologies-read", "api:ontologies-write"],
     });
 
-    for (const mutator of MUTATORS) {
-      const matches = await globby(
-        mutator.filePattern,
-        { cwd: path.join(tmpDir.name, exampleId) },
+    await mutateFiles(tmpDir, exampleId, template, sdkVersion);
+  }
+
+  for (
+    const [template, sdkVersion] of templatesWithSdkVersions(WIDGET_TEMPLATES)
+  ) {
+    const exampleId = sdkVersionedTemplateExampleId(template, sdkVersion);
+    const osdkPackage = sdkVersion === "2.x"
+      ? "@osdk/e2e.generated.catchall"
+      : "@osdk/e2e.generated.1.1.x";
+    consola.info(
+      `Generating example ${exampleId} using osdkPackage ${osdkPackage}`,
+    );
+    await runCreateWidget({
+      project: exampleId,
+      overwrite: true,
+      template,
+      sdkVersion,
+      foundryUrl: "https://fake.palantirfoundry.com",
+      widget: "ri.viewregistry.main.view.fake",
+      osdkPackage,
+      osdkRegistryUrl:
+        "https://fake.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
+    });
+    await mutateFiles(tmpDir, exampleId, template, sdkVersion);
+  }
+}
+
+async function mutateFiles(
+  tmpDir: tmp.DirResult,
+  exampleId: string,
+  template: Template | WidgetTemplate,
+  sdkVersion: SdkVersion,
+) {
+  for (const mutator of MUTATORS) {
+    const matches = await globby(
+      mutator.filePattern,
+      { cwd: path.join(tmpDir.name, exampleId) },
+    );
+    for (const match of matches) {
+      const filePath = path.join(tmpDir.name, exampleId, match);
+      const result = mutator.mutate(
+        template,
+        fs.readFileSync(filePath, "utf-8"),
+        sdkVersion,
       );
-      for (const match of matches) {
-        const filePath = path.join(tmpDir.name, exampleId, match);
-        const result = mutator.mutate(
-          template,
-          fs.readFileSync(filePath, "utf-8"),
-          sdkVersion,
-        );
-        switch (result.type) {
-          case "modify":
-            fs.writeFileSync(filePath, result.newContent);
-            break;
-          case "delete":
-            fs.rmSync(filePath);
-            break;
-          default:
-            const unknown: never = result;
-            throw new Error(`Unknown mutator type: ${unknown}`);
-        }
+      switch (result.type) {
+        case "modify":
+          fs.writeFileSync(filePath, result.newContent);
+          break;
+        case "delete":
+          fs.rmSync(filePath);
+          break;
+        default:
+          const unknown: never = result;
+          throw new Error(`Unknown mutator type: ${unknown}`);
       }
     }
   }
@@ -216,6 +254,16 @@ async function copyExamples(
 ): Promise<void> {
   consola.info("Copying generated packages to output directory");
   for (const [template, sdkVersion] of templatesWithSdkVersions(TEMPLATES)) {
+    const exampleId = sdkVersionedTemplateExampleId(template, sdkVersion);
+    const exampleOutputPath = path.join(resolvedOutput, exampleId);
+    const exampleTmpPath = path.join(tmpDir.name, exampleId);
+    fs.rmSync(exampleOutputPath, { recursive: true, force: true });
+    fs.mkdirSync(exampleOutputPath, { recursive: true });
+    fs.cpSync(exampleTmpPath, exampleOutputPath, { recursive: true });
+  }
+  for (
+    const [template, sdkVersion] of templatesWithSdkVersions(WIDGET_TEMPLATES)
+  ) {
     const exampleId = sdkVersionedTemplateExampleId(template, sdkVersion);
     const exampleOutputPath = path.join(resolvedOutput, exampleId);
     const exampleTmpPath = path.join(tmpDir.name, exampleId);

@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 2.1.0-beta.15
+
+### Minor Changes
+
+- 1c59d93: Allows interfaces to be used with subscribe
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.15
+- @osdk/client.unstable@2.1.0-beta.15
+- @osdk/generator-converters@2.1.0-beta.15
+
 ## 2.1.0-beta.14
 
 ### Minor Changes
