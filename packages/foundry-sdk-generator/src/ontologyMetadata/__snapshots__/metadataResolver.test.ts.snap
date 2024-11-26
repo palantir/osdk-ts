@@ -97,6 +97,13 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
               "description": "Geotime series reference of the location of the employee",
               "rid": "rid",
             },
+            "employeeSensor": {
+              "dataType": {
+                "type": "timeseries",
+              },
+              "description": "TimeSeries sensor of the status of the employee",
+              "rid": "rid",
+            },
             "employeeStatus": {
               "dataType": {
                 "itemType": {
@@ -278,6 +285,13 @@ exports[`Load Ontologies Metadata > Loads object and action types without link t
                 "type": "geotimeSeriesReference",
               },
               "description": "Geotime series reference of the location of the employee",
+              "rid": "rid",
+            },
+            "employeeSensor": {
+              "dataType": {
+                "type": "timeseries",
+              },
+              "description": "TimeSeries sensor of the status of the employee",
               "rid": "rid",
             },
             "employeeStatus": {

@@ -1,5 +1,14 @@
 # @osdk/widget-api.unstable
 
+## 0.1.0
+
+## 0.1.0-beta.1
+
+### Minor Changes
+
+- 21d2dd1: Add fetch proxy
+- 7c13070: Change manifest to support script types for entrypoint JS
+
 ## 0.1.0-beta.0
 
 ### Minor Changes

@@ -23,7 +23,7 @@ export interface Attachment {
   /**
    * Fetches actual content of attachment in Blob form
    */
-  fetchContents(): Promise<Blob>;
+  fetchContents(): Promise<Response>;
 }
 /**
  * This interface should also accept the File object from

@@ -30,7 +30,6 @@
 "@osdk/shared.net": patch
 "@osdk/shared.net.errors": patch
 "@osdk/shared.net.fetch": patch
-"@osdk/shared.net.platformapi": patch
 "@osdk/shared.test": patch
 "@osdk/tool.release": patch
 ---

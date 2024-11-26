@@ -1,5 +1,24 @@
 # @osdk/maker
 
+## 0.9.0-beta.14
+
+### Minor Changes
+
+- 91cfa3a: Fixing url parsing for client.
+- 6b6c8a1: Updates gateway endpoints and changes fetchContents for attachments to return a response
+
+### Patch Changes
+
+- Updated dependencies [0c56d21]
+- Updated dependencies [6b6c8a1]
+  - @osdk/api@2.1.0-beta.14
+
+## 0.9.0-beta.13
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.13
+
 ## 0.9.0-beta.12
 
 ### Patch Changes

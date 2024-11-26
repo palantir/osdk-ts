@@ -1,5 +1,26 @@
 # @osdk/cli.cmd.typescript
 
+## 0.25.0-beta.14
+
+### Minor Changes
+
+- 91cfa3a: Fixing url parsing for client.
+- 6b6c8a1: Updates gateway endpoints and changes fetchContents for attachments to return a response
+
+### Patch Changes
+
+- Updated dependencies [91cfa3a]
+- Updated dependencies [6b6c8a1]
+  - @osdk/generator@2.1.0-beta.14
+  - @osdk/cli.common@0.25.0-beta.14
+
+## 0.25.0-beta.13
+
+### Patch Changes
+
+- @osdk/generator@2.1.0-beta.13
+- @osdk/cli.common@0.25.0-beta.13
+
 ## 0.25.0-beta.12
 
 ### Patch Changes

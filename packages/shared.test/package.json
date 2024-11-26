@@ -1,7 +1,7 @@
 {
   "name": "@osdk/shared.test",
   "private": true,
-  "version": "2.1.0-beta.12",
+  "version": "2.1.0-beta.14",
   "description": "",
   "access": "private",
   "license": "Apache-2.0",
@@ -31,10 +31,10 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
-    "@osdk/internal.foundry.core": "2.5.0",
-    "@osdk/internal.foundry.geo": "2.5.0",
-    "@osdk/internal.foundry.ontologies": "2.5.0",
-    "@osdk/internal.foundry.ontologiesv2": "2.5.0",
+    "@osdk/internal.foundry.core": "2.6.0-beta.1",
+    "@osdk/internal.foundry.geo": "2.6.0-beta.1",
+    "@osdk/internal.foundry.ontologies": "2.6.0-beta.1",
+    "@osdk/internal.foundry.ontologiesv2": "2.6.0-beta.1",
     "fetch-retry": "^6.0.0",
     "json-stable-stringify": "^1.1.1",
     "msw": "^2.3.4",

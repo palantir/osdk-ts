@@ -99,8 +99,10 @@ function objectPropertyTypeToSdkPropertyDefinition(
     case "timeseries":
       if (propertyType.itemType?.type === "string") {
         return "stringTimeseries";
-      }
-      return "numericTimeseries";
+      } else if (propertyType.itemType?.type === "double") {
+        return "numericTimeseries";
+      } else return "sensorTimeseries";
+
     case "mediaReference": {
       throw new Error(
         `Media references not supported yet`,
