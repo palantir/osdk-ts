@@ -258,7 +258,6 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
                   authorization: `Bearer ${process.env.FOUNDRY_TOKEN}`,
                   accept: "application/json",
                   "content-type": "application/json",
-                  "x-b3-sampled": "1",
                 },
               },
             )
