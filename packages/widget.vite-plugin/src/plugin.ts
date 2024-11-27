@@ -263,7 +263,7 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
               },
             )
               .then((devResponse) => {
-                if (devResponse.status === 200) {
+                if (devResponse.status === 200 || devResponse.status === 204) {
                   res.setHeader("Content-Type", "application/json");
                   res.end(
                     JSON.stringify({
@@ -272,10 +272,10 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
                     }),
                   );
                 } else {
-                  res.statusCode = 500;
+                  res.statusCode = devResponse.status;
                   res.statusMessage =
                     `Unable to start dev mode in Foundry (see terminal for more): ${devResponse.statusText}`;
-                  devResponse.json().then((err) => {
+                  devResponse.text().then((err) => {
                     config?.logger.error(err);
                     res.end();
                   });
