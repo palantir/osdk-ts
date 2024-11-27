@@ -94,7 +94,9 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
 
         config?.logger.info(
           `  ${color.green("➜")}  ${
-            color.bold("Click to enter developer mode for your widget")
+            color.bold(
+              "Click to enter developer mode for your widget",
+            )
           }: ${
             colorUrl(
               `${localhostUrl}${server.config.base ?? "/"}${SETUP_PATH}`,
@@ -272,7 +274,7 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
                 } else {
                   res.statusCode = 500;
                   res.statusMessage =
-                    `Unable to start dev mode in Foundry: ${devResponse.statusText}`;
+                    `Unable to start dev mode in Foundry (see terminal for more): ${devResponse.statusText}`;
                   devResponse.json().then((err) => {
                     config?.logger.error(err);
                     res.end();
