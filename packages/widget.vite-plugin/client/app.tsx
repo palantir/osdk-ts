@@ -30,6 +30,7 @@ export const App: React.FC = () => {
       .then((res) => res.json())
       .then(({ entrypoints }: { entrypoints: string[] }) => {
         setEntrypointPaths(entrypoints);
+        // Poll the manifest endpoint until all entrypoints have JS files listed for them
         let poll = window.setInterval(() => {
           fetch("./manifest")
             .then((res) => res.json())
@@ -46,7 +47,9 @@ export const App: React.FC = () => {
               if (clearInterval) {
                 window.clearInterval(poll);
                 setLoading({ state: "loading" });
+                // Tell the vite server to start dev mode for the specified entrypoint
                 fetch("./finish", {
+                  // TODO: Actually handle multiple entrypoints
                   body: JSON.stringify({ entrypoint: entrypoints[0] }),
                   method: "POST",
                 }).then((res) => {
@@ -97,6 +100,7 @@ export const App: React.FC = () => {
           description={loading.error}
         />
       )}
+      {/* To load the entrypoint info, we have to actually load it in the browser to get vite to follow the module graph. Since we know these files will fail, we just load them in iframes set to display: none to trigger the load hook in vite */}
       {entrypointPaths.map((entrypointPath) => (
         <iframe key={entrypointPath} src={`/${entrypointPath}`} />
       ))}

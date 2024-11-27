@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export const SETUP_PATH = ".palantir/setup";
+export const PALANTIR_PATH = ".palantir";
+export const SETUP_PATH = `${PALANTIR_PATH}/setup`;

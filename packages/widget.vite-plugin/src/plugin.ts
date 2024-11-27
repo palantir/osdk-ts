@@ -29,7 +29,7 @@ import { fileURLToPath } from "node:url";
 import color from "picocolors";
 import sirv from "sirv";
 import type { Plugin, ResolvedConfig, ViteDevServer } from "vite";
-import { SETUP_PATH } from "./constants.js";
+import { PALANTIR_PATH, SETUP_PATH } from "./constants.js";
 
 export const DIR_DIST = typeof __dirname !== "undefined"
   ? __dirname
@@ -83,6 +83,7 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
         }
       }
 
+      // Append the URL that we want developers to click on to enable dev mode to the vite output on server start
       server.printUrls = () => {
         _print();
 
@@ -92,14 +93,19 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
           );
 
         config?.logger.info(
-          `  ${color.green("➜")}  ${color.bold("Foundry developer mode")}: ${
-            colorUrl(`${localhostUrl}${server.config.base ?? "/"}${SETUP_PATH}`)
+          `  ${color.green("➜")}  ${
+            color.bold("Click to enter developer mode for your widget")
+          }: ${
+            colorUrl(
+              `${localhostUrl}${server.config.base ?? "/"}${SETUP_PATH}`,
+            )
           }`,
         );
       };
 
+      // Queried by our setup page to get the list of entrypoints
       server.middlewares.use(
-        `${server.config.base ?? "/"}.palantir/entrypoints`,
+        `${server.config.base ?? "/"}${PALANTIR_PATH}/entrypoints`,
         (req, res) => {
           res.setHeader("Content-Type", "application/json");
           // We need to turn the entrypoint files to relative paths
@@ -112,8 +118,10 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
           );
         },
       );
+
+      // Polled by our setup page to check that a manifest has been generated
       server.middlewares.use(
-        `${server.config.base ?? "/"}.palantir/manifest`,
+        `${server.config.base ?? "/"}${PALANTIR_PATH}/manifest`,
         (req, res) => {
           res.setHeader("Content-Type", "application/json");
           res.end(
@@ -130,8 +138,10 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
           );
         },
       );
+
+      // Called by the setup page to start dev mode in Foundry, which queries the appropriate service on the Foundry instance configured in foundry.config.json
       server.middlewares.use(
-        `${server.config.base ?? "/"}.palantir/finish`,
+        `${server.config.base ?? "/"}${PALANTIR_PATH}/finish`,
         (req, res) => {
           if (req.method !== "POST") {
             res.statusCode = 400;
