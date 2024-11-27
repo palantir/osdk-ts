@@ -1,0 +1,11 @@
+{
+    "foundryUrl": "https://fake.palantirfoundry.com/",
+    "widget": {
+      "rid": "ri.viewregistry..view.fake",
+      "directory": "./dist",
+      "autoVersion": {
+        "type": "git-describe",
+        "tagPrefix": ""
+      }
+    }
+  }
