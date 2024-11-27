@@ -45,6 +45,7 @@ const nonStandardPackages = [
   "@osdk/monorepo.*", // internal monorepo packages
   "@osdk/tests.*",
   "@osdk/widget-client-react.unstable", // uses react
+  "@osdk/widget-manifest-vite-plugin", // has a vite-bundled app + react
   // removed the following from the repo to avoid it being edited
   // "@osdk/shared.client2", // hand written package that only exposes a symbol
 ];
