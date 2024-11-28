@@ -1,7 +1,7 @@
 {
   "name": "@osdk/example-generator",
   "private": true,
-  "version": "0.9.0-beta.3",
+  "version": "0.9.0-beta.14",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -10,25 +10,28 @@
   "exports": {
     ".": {
       "browser": "./build/browser/index.js",
-      "import": "./build/esm/index.js"
+      "import": "./build/esm/index.js",
+      "default": "./build/browser/index.js"
     },
     "./*": {
       "browser": "./build/browser/public/*.js",
-      "import": "./build/esm/public/*.js"
+      "import": "./build/esm/public/*.js",
+      "default": "./build/browser/public/*.js"
     }
   },
   "scripts": {
-    "check": "./bin/exampleGenerator.mjs ../../examples --check",
     "check-attw": "monorepo.tool.attw esm",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "generate": "./bin/exampleGenerator.mjs ../../examples",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "test": "vitest run --pool=forks",
     "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
     "@osdk/create-app": "workspace:~",
+    "@osdk/create-widget": "workspace:~",
     "consola": "^3.2.3",
     "dir-compare": "^5.0.0",
     "find-up": "^7.0.0",

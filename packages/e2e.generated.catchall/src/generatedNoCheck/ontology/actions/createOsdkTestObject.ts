@@ -5,12 +5,22 @@ import type {
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-} from '@osdk/api';
+} from '@osdk/client';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createOsdkTestObject {
   // Represents the definition of the parameters for the action
   export type ParamsDefinition = {
+    description: {
+      multiplicity: false;
+      nullable: false;
+      type: 'string';
+    };
+    osdk_object_name: {
+      multiplicity: false;
+      nullable: false;
+      type: 'string';
+    };
     string_property: {
       multiplicity: false;
       nullable: false;
@@ -19,6 +29,10 @@ export namespace createOsdkTestObject {
   };
 
   export interface Params {
+    readonly description: ActionParam.PrimitiveType<'string'>;
+
+    readonly osdk_object_name: ActionParam.PrimitiveType<'string'>;
+
     readonly string_property: ActionParam.PrimitiveType<'string'>;
   }
 
@@ -37,6 +51,8 @@ export namespace createOsdkTestObject {
 }
 
 /**
+ * @param {ActionParam.PrimitiveType<"string">} description
+ * @param {ActionParam.PrimitiveType<"string">} osdk_object_name
  * @param {ActionParam.PrimitiveType<"string">} string_property
  */
 export interface createOsdkTestObject extends ActionDefinition<createOsdkTestObject.Signatures> {

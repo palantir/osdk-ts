@@ -1,5 +1,112 @@
 # @osdk/maker
 
+## 0.9.0-beta.15
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.15
+
+## 0.9.0-beta.14
+
+### Minor Changes
+
+- 91cfa3a: Fixing url parsing for client.
+- 6b6c8a1: Updates gateway endpoints and changes fetchContents for attachments to return a response
+
+### Patch Changes
+
+- Updated dependencies [0c56d21]
+- Updated dependencies [6b6c8a1]
+  - @osdk/api@2.1.0-beta.14
+
+## 0.9.0-beta.13
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.13
+
+## 0.9.0-beta.12
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.12
+
+## 0.9.0-beta.11
+
+### Minor Changes
+
+- bc1761c: Update platform API dependencies.
+- caf1abc: Support generating linked products for marketplace
+
+### Patch Changes
+
+- Updated dependencies [bc1761c]
+- Updated dependencies [9298f75]
+  - @osdk/api@2.1.0-beta.11
+
+## 0.9.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [11a05cc]
+- Updated dependencies [11088aa]
+  - @osdk/api@2.1.0-beta.10
+
+## 0.9.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [acbfab9]
+  - @osdk/api@2.1.0-beta.9
+
+## 0.9.0-beta.8
+
+### Minor Changes
+
+- b8a1a58: Add nullability to markings because of course they need to be nullable. This sucks in the data model, I should talk to the ontology team about this.
+
+### Patch Changes
+
+- Updated dependencies [9f3807c]
+  - @osdk/api@2.1.0-beta.8
+
+## 0.9.0-beta.7
+
+### Minor Changes
+
+- cd8d657: Support importing foreign SPTs
+- 9018dc2: Updating platform api dependencies.
+
+### Patch Changes
+
+- Updated dependencies [27866a8]
+- Updated dependencies [31e7d70]
+  - @osdk/api@2.1.0-beta.7
+
+## 0.9.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
+### Patch Changes
+
+- Updated dependencies [25fd9f0]
+- Updated dependencies [1a89f23]
+- Updated dependencies [1b2e8c9]
+  - @osdk/api@2.1.0-beta.6
+
+## 0.9.0-beta.5
+
+### Minor Changes
+
+- b0544d4: Add additional marking configuration
+- 2b35ed4: Structs in maker package
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.5
+
 ## 0.9.0-beta.4
 
 ### Patch Changes

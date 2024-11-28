@@ -59,7 +59,11 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         nullable: true,
       };
     }
-
+    case "mediaReference": {
+      throw new Error(
+        `Media references not supported yet`,
+      );
+    }
     default:
       const _: never = input.dataType;
       throw new Error(
@@ -93,11 +97,17 @@ function objectPropertyTypeToSdkPropertyDefinition(
     case "array":
       return objectPropertyTypeToSdkPropertyDefinition(propertyType.subType);
     case "timeseries":
-      if (propertyType.itemType.type === "string") {
+      if (propertyType.itemType?.type === "string") {
         return "stringTimeseries";
-      }
-      return "numericTimeseries";
+      } else if (propertyType.itemType?.type === "double") {
+        return "numericTimeseries";
+      } else return "sensorTimeseries";
 
+    case "mediaReference": {
+      throw new Error(
+        `Media references not supported yet`,
+      );
+    }
     default:
       const _: never = propertyType;
       throw new Error(`Unexpected data type ${JSON.stringify(propertyType)}`);

@@ -1,5 +1,109 @@
 # @osdk/cli.cmd.typescript
 
+## 0.25.0-beta.15
+
+### Patch Changes
+
+- @osdk/generator@2.1.0-beta.15
+- @osdk/cli.common@0.25.0-beta.15
+
+## 0.25.0-beta.14
+
+### Minor Changes
+
+- 91cfa3a: Fixing url parsing for client.
+- 6b6c8a1: Updates gateway endpoints and changes fetchContents for attachments to return a response
+
+### Patch Changes
+
+- Updated dependencies [91cfa3a]
+- Updated dependencies [6b6c8a1]
+  - @osdk/generator@2.1.0-beta.14
+  - @osdk/cli.common@0.25.0-beta.14
+
+## 0.25.0-beta.13
+
+### Patch Changes
+
+- @osdk/generator@2.1.0-beta.13
+- @osdk/cli.common@0.25.0-beta.13
+
+## 0.25.0-beta.12
+
+### Patch Changes
+
+- @osdk/generator@2.1.0-beta.12
+- @osdk/cli.common@0.25.0-beta.12
+
+## 0.25.0-beta.11
+
+### Minor Changes
+
+- bc1761c: Update platform API dependencies.
+
+### Patch Changes
+
+- Updated dependencies [bc1761c]
+  - @osdk/generator@2.1.0-beta.11
+  - @osdk/cli.common@0.25.0-beta.11
+
+## 0.25.0-beta.10
+
+### Patch Changes
+
+- @osdk/generator@2.1.0-beta.10
+- @osdk/cli.common@0.25.0-beta.10
+
+## 0.25.0-beta.9
+
+### Patch Changes
+
+- @osdk/generator@2.1.0-beta.9
+- @osdk/cli.common@0.25.0-beta.9
+
+## 0.25.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [71dfb4c]
+  - @osdk/generator@2.1.0-beta.8
+  - @osdk/cli.common@0.25.0-beta.8
+
+## 0.25.0-beta.7
+
+### Minor Changes
+
+- 9018dc2: Updating platform api dependencies.
+
+### Patch Changes
+
+- Updated dependencies [9018dc2]
+  - @osdk/generator@2.1.0-beta.7
+  - @osdk/cli.common@0.25.0-beta.7
+
+## 0.25.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
+### Patch Changes
+
+- Updated dependencies [25fd9f0]
+  - @osdk/cli.common@0.25.0-beta.6
+  - @osdk/generator@2.1.0-beta.6
+  - @osdk/shared.net@2.1.0-beta.2
+
+## 0.25.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [027db73]
+- Updated dependencies [963addb]
+  - @osdk/generator@2.1.0-beta.5
+  - @osdk/shared.net@2.1.0-beta.1
+  - @osdk/cli.common@0.25.0-beta.5
+
 ## 0.25.0-beta.4
 
 ### Patch Changes

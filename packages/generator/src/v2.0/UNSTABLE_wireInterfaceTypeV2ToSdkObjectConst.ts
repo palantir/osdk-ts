@@ -38,6 +38,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
   interfaceDef: EnhancedInterfaceType,
   ontology: EnhancedOntologyDefinition,
   v2: boolean = false,
+  forInternalUse: boolean = false,
 ) {
   const definition = deleteUndefineds(
     __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
@@ -124,13 +125,13 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
     }
   }
 
-  function getV2Types() {
+  function getV2Types(forInternalUse: boolean = false) {
     return `import type {
       InterfaceDefinition as $InterfaceDefinition,
       ObjectSet as $ObjectSet, 
       Osdk as $Osdk,
       PropertyValueWireToClient as $PropType,
-    } from "@osdk/api";
+    } from "${forInternalUse ? "@osdk/api" : "@osdk/client"}";
     
         ${
       Object.keys(definition.links).length === 0
@@ -183,7 +184,7 @@ ${
   const imports: string[] = [];
   definition;
   return `${imports.join("\n")}
-    ${v2 ? getV2Types() : ""}
+    ${v2 ? getV2Types(forInternalUse) : ""}
 
     export const ${interfaceDef.shortApiName}: ${interfaceDef.shortApiName} = {
       type: "interface",

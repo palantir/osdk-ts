@@ -43,7 +43,9 @@ import {
 } from "../object/fetchPage.js";
 import { fetchSingle, fetchSingleWithErrors } from "../object/fetchSingle.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
+import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
+import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
 function isObjectTypeDefinition(
   def: ObjectOrInterfaceDefinition,
@@ -73,10 +75,7 @@ const objectSetDefinitions = new WeakMap<
 export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   objectType: Q,
   clientCtx: MinimalClient,
-  objectSet: WireObjectSet = {
-    type: "base",
-    objectType: objectType["apiName"] as string,
-  },
+  objectSet: WireObjectSet = resolveBaseObjectSetType(objectType),
 ): ObjectSet<Q> {
   const base: ObjectSet<Q> = {
     aggregate: (aggregate<Q, any>).bind(
@@ -223,6 +222,22 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         ) as Result<Osdk<Q>>;
       }
       : undefined) as ObjectSet<Q>["fetchOneWithErrors"],
+
+    subscribe: (
+      listener,
+      opts,
+    ) => {
+      const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
+        clientCtx,
+      ).subscribe(
+        objectType,
+        objectSet,
+        listener,
+        opts?.properties,
+      );
+
+      return { unsubscribe: async () => (await pendingSubscribe)() };
+    },
 
     $objectSetInternals: {
       def: objectType,

@@ -7,7 +7,7 @@ export {
   editOsdkTestObject,
 } from './ontology/actions.js';
 export * as $Actions from './ontology/actions.js';
-export { FooInterface } from './ontology/interfaces.js';
+export { FooInterface, InterfaceNoProps, OsdkTestInterface } from './ontology/interfaces.js';
 export * as $Interfaces from './ontology/interfaces.js';
 export {
   BoundariesUsState,
@@ -21,6 +21,7 @@ export {
   OsdkTestObject,
   Person,
   RhemmingsObjectWithGtsrProperty2,
+  SotSensor,
   Todo,
   Venture,
   WeatherStation,

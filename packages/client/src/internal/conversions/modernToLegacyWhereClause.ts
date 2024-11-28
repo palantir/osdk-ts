@@ -231,6 +231,19 @@ function handleWherePair(
     }
   }
 
+  if (firstKey === "$containsAllTerms" || firstKey === "$containsAnyTerm") {
+    return {
+      type: firstKey.substring(1) as DropDollarSign<typeof firstKey>,
+      field,
+      value: typeof filter[firstKey] === "string"
+        ? filter[firstKey]
+        : filter[firstKey]["term"],
+      fuzzy: typeof filter[firstKey] === "string"
+        ? false
+        : filter[firstKey]["fuzzySearch"] ?? false,
+    };
+  }
+
   return {
     type: firstKey.substring(1) as DropDollarSign<typeof firstKey>,
     field,

@@ -73,6 +73,65 @@ const objectPrototypeCache = createClientCache(
   },
 );
 
+if (process.env.NODE_ENV !== "production") {
+  const installed = Symbol();
+  const gw: any = typeof window === "undefined" ? global : window;
+  if (!(installed in gw)) {
+    gw[installed] = true;
+
+    gw.devtoolsFormatters ??= [];
+    gw.devtoolsFormatters.push({
+      header: function(object: any) {
+        const raw = object[RawObject];
+        if (raw == null) return null;
+
+        return [
+          "div",
+          {},
+
+          `Osdk.Instance<${raw.$apiName}> { $primaryKey:`,
+          ["object", { object: raw.$primaryKey }],
+          `, $title:`,
+          ["object", { object: raw.$title }],
+          `, ... }`,
+        ];
+      },
+      hasBody: function(object: any) {
+        return object[RawObject] != null;
+      },
+      body: function(object: any) {
+        const raw = object[RawObject];
+        if (raw == null) return null;
+
+        return [
+          "ol",
+          {
+            style: `
+            list-style-type: none;
+            padding-left: 0;
+            margin-top: 0;
+            margin-left: 18px
+          `,
+          },
+          ["li", {}, "$raw:", ["object", { object: raw }]],
+          // ...Object.keys(raw).map(key => {
+          //   return [
+          //     "li",
+          //     {},
+          //     [
+          //       "span",
+          //       { style: "color: #888888" },
+          //       `${key}: `,
+          //     ],
+          //     ["object", { object: raw[key] }], // ["span", {}, `${key}: `]],
+          //   ];
+          // }),
+        ];
+      },
+    });
+  }
+}
+
 /** @internal */
 export function createOsdkObject<
   Q extends FetchedObjectTypeDefinition,
@@ -128,10 +187,12 @@ export function createOsdkObject<
           if (
             propDef.type === "numericTimeseries"
             || propDef.type === "stringTimeseries"
+            || propDef.type === "sensorTimeseries"
           ) {
             return new TimeSeriesPropertyImpl<
               (typeof propDef)["type"] extends "numericTimeseries" ? number
-                : string
+                : (typeof propDef)["type"] extends "stringTimeseries" ? string
+                : number | string
             >(
               client,
               objectDef.apiName,

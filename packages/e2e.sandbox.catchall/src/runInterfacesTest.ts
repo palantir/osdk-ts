@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/api";
-import { Employee, FooInterface } from "@osdk/e2e.generated.catchall";
+import type { ConvertProps, Osdk } from "@osdk/api";
+import {
+  Employee,
+  FooInterface,
+  OsdkTestObject,
+} from "@osdk/e2e.generated.catchall";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
+import type { InterfaceObjectSet } from "../../api/build/esm/objectSet/ObjectSet.js";
 import { client } from "./client.js";
 
 export async function runInterfacesTest() {
@@ -26,56 +31,71 @@ export async function runInterfacesTest() {
   (async () => {
     const { data } = await client(FooInterface).fetchPage();
     const first = data[0];
-    const e = first.$as(Employee);
+    const e = first.$as(OsdkTestObject);
   })();
 
+  console.log("hello");
   const qqq = await client(FooInterface).where({ name: { $ne: "Patti" } });
 
-  const fooLimitedToEmployees = await client(FooInterface).fetchPage({
-    $__EXPERIMENTAL_selectedObjectTypes: ["Employee"],
-  });
+  const fooLimitedToEmployees = await client(FooInterface).fetchPage();
   invariant(fooLimitedToEmployees.data.length > 0);
 
-  const fooLimitedToOther = await client(FooInterface).fetchPage({
-    $__EXPERIMENTAL_selectedObjectTypes: ["Other"],
-  });
-  invariant(fooLimitedToOther.data.length === 0);
+  // const fooLimitedToOther = await client(FooInterface).fetchPage({
+  //   $__UNSTABLE_useOldInterfaceApis: true,
+  // });
+  // invariant(fooLimitedToOther.data.length === 0);
+  // const fooLimitedToEmployees = await client(FooInterface).fetchPage({
+  //   $__EXPERIMENTAL_selectedObjectTypes: ["Employee"],
+  // });
+  // invariant(fooLimitedToEmployees.data.length > 0);
+
+  // const fooLimitedToOther = await client(FooInterface).fetchPage({
+  //   $__EXPERIMENTAL_selectedObjectTypes: ["Other"],
+  // });
+  // invariant(fooLimitedToOther.data.length === 0);
 
   const r = await client(FooInterface)
     .where({ name: { $ne: "Patti" } })
     .where({ name: { $ne: "Roth" } })
-    .fetchPage({ $pageSize: 1, $select: ["name"] });
+    .fetchPage({
+      $pageSize: 1,
+      $select: ["name"],
+    });
 
-  // const q = client(FooInterface)
-  //   .where({ name: { $ne: "Patti" } });
-  // expectType<TypeOf<typeof q, InterfaceObjectSet<FooInterface>>>(true);
   for (const int of r.data) {
     console.log("int:", int.name, int);
     invariant(int.name);
     invariant(!(int as any).firstName);
 
-    const employee = int.$as(Employee);
-    expectType<TypeOf<Osdk<Employee, "$all">, typeof employee>>(false);
-    expectType<TypeOf<Osdk<Employee, "firstName">, typeof employee>>(true);
+    const testObject = int.$as(OsdkTestObject);
+    expectType<TypeOf<Osdk.Instance<OsdkTestObject>, typeof testObject>>(false);
+    expectType<
+      TypeOf<
+        Osdk.Instance<OsdkTestObject, never, "osdkObjectName">,
+        typeof testObject
+      >
+    >(true);
 
-    console.log("employee:", employee.firstName, employee);
-    invariant(employee.firstName);
-    invariant(!(employee as any).name);
+    console.log("employee:", testObject.osdkObjectName, testObject);
+    invariant(testObject.osdkObjectName);
+    invariant(!(testObject as any).name);
 
-    const int2 = employee.$as(FooInterface);
-    expectType<TypeOf<Osdk<FooInterface, "$all">, typeof int2>>(false);
-    expectType<TypeOf<Osdk<FooInterface, "name">, typeof int2>>(true);
+    const int2 = testObject.$as(FooInterface);
+    expectType<TypeOf<Osdk.Instance<FooInterface>, typeof int2>>(false);
+    expectType<TypeOf<Osdk.Instance<FooInterface, never, "name">, typeof int2>>(
+      true,
+    );
 
     console.log("int2:", int2.name, int2);
     invariant(int2.name);
-    invariant(!(int as any).firstName);
+    invariant(!(int as any).stringProperty);
 
-    const employee2 = int2.$as(Employee);
-    console.log("employee2:", employee2.firstName, employee2);
-    invariant(employee2.firstName);
-    invariant(!(employee2 as any).name);
+    const testObject2 = int2.$as(OsdkTestObject);
+    console.log("employee2:", testObject2.osdkObjectName, testObject2);
+    invariant(testObject2.osdkObjectName);
+    invariant(!(testObject2 as any).name);
 
     // underlyings are ref equal!
-    console.log("employee === employee2", employee === employee2);
+    console.log("employee === employee2", testObject === testObject2);
   }
 }

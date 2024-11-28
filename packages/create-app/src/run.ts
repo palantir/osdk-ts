@@ -42,6 +42,7 @@ interface RunArgs {
   osdkPackage: string;
   osdkRegistryUrl: string;
   corsProxy: boolean;
+  scopes: string[] | undefined;
 }
 
 export async function run(
@@ -57,6 +58,7 @@ export async function run(
     osdkPackage,
     osdkRegistryUrl,
     corsProxy,
+    scopes,
   }: RunArgs,
 ): Promise<void> {
   consola.log("");
@@ -127,6 +129,7 @@ export async function run(
     osdkPackage,
     corsProxy,
     clientVersion: changeVersionPrefix(clientVersion, "^"),
+    scopes,
   };
   const processFiles = function(dir: string) {
     fs.readdirSync(dir).forEach(function(file) {

@@ -1,7 +1,7 @@
 {
   "name": "@osdk/tool.release",
   "private": true,
-  "version": "0.6.0-beta.0",
+  "version": "0.6.0-beta.1",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -10,11 +10,13 @@
   "exports": {
     ".": {
       "browser": "./build/browser/index.js",
-      "import": "./build/esm/index.js"
+      "import": "./build/esm/index.js",
+      "default": "./build/browser/index.js"
     },
     "./*": {
       "browser": "./build/browser/public/*.js",
-      "import": "./build/esm/public/*.js"
+      "import": "./build/esm/public/*.js",
+      "default": "./build/browser/public/*.js"
     }
   },
   "scripts": {
@@ -28,14 +30,14 @@
   },
   "dependencies": {
     "@actions/exec": "^1.1.1",
-    "@changesets/apply-release-plan": "^7.0.4",
-    "@changesets/assemble-release-plan": "^6.0.3",
+    "@changesets/apply-release-plan": "^7.0.6",
+    "@changesets/assemble-release-plan": "^6.0.5",
     "@changesets/changelog-git": "^0.2.0",
-    "@changesets/config": "^3.0.2",
-    "@changesets/git": "^3.0.0",
-    "@changesets/pre": "^2.0.0",
-    "@changesets/read": "^0.6.0",
-    "@changesets/release-utils": "^0.2.0",
+    "@changesets/config": "^3.0.4",
+    "@changesets/git": "^3.0.2",
+    "@changesets/pre": "^2.0.1",
+    "@changesets/read": "^0.6.2",
+    "@changesets/release-utils": "^0.2.2",
     "@manypkg/get-packages": "^1.1.3",
     "@octokit/core": "^6.1.2",
     "@octokit/plugin-throttling": "^9.3.0",

@@ -48,6 +48,7 @@ export async function generatePackageJson(options: {
     },
     dependencies: packageDeps,
     peerDependencies: packagePeerDeps,
+    type: "module",
   };
 
   await writeFile(

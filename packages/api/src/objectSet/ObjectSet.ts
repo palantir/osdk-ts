@@ -41,6 +41,10 @@ import type { ExtractOptions, Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 import type { BaseObjectSet } from "./BaseObjectSet.js";
+import type {
+  ObjectSetListener,
+  ObjectSetListenerOptions,
+} from "./ObjectSetListener.js";
 
 export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
   extends BaseObjectSet<Q>
@@ -237,4 +241,17 @@ export interface ObjectSet<
       Result<Osdk.Instance<Q, ExtractOptions<R, S>, L>>
     >
     : never;
+
+  /**
+   * Request updates when the objects in an object set are added, updated, or removed.
+   * @param listener - The handlers to be executed during the lifecycle of the subscription.
+   * @param opts - Options to modify what properties are returned on subscription updates.
+   * @returns an object containing a function to unsubscribe.
+   */
+  readonly subscribe: <
+    const P extends PropertyKeys<Q>,
+  >(
+    listener: ObjectSetListener<Q, P>,
+    opts?: ObjectSetListenerOptions<Q, P>,
+  ) => { unsubscribe: () => void };
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DherlihyComplexObject } from "@osdk/e2e.generated.catchall";
+import { DherlihyComplexObject, SotSensor } from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
 
 export async function runTimeseriesTest() {
@@ -39,4 +39,9 @@ export async function runTimeseriesTest() {
   ) {
     console.log(point);
   }
+
+  const sensorResult = await client(SotSensor).fetchOne("well_3_pressure");
+
+  const firstPoint = await sensorResult.timeSeriesProperty?.getFirstPoint();
+  console.log("sensor point: ", firstPoint);
 }

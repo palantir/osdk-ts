@@ -1,5 +1,39 @@
 # @osdk/client.unstable
 
+## 2.1.0-beta.15
+
+## 2.1.0-beta.14
+
+## 2.1.0-beta.13
+
+## 2.1.0-beta.12
+
+## 2.1.0-beta.11
+
+### Minor Changes
+
+- caf1abc: Support generating linked products for marketplace
+
+## 2.1.0-beta.10
+
+## 2.1.0-beta.9
+
+## 2.1.0-beta.8
+
+## 2.1.0-beta.7
+
+## 2.1.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
+## 2.1.0-beta.5
+
+### Minor Changes
+
+- 2b35ed4: Structs in maker package
+
 ## 2.1.0-beta.4
 
 ## 2.1.0-beta.3

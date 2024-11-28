@@ -15,13 +15,17 @@
  */
 
 import type {
+  OntologyIr,
   OntologyIrInterfaceType,
   OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrOntologyBlockDataV2,
   OntologyIrSharedPropertyType,
   OntologyIrSharedPropertyTypeBlockDataV2,
+  OntologyIrStructFieldType,
+  OntologyIrType,
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
+  StructFieldType,
   Type,
 } from "@osdk/client.unstable";
 import type {
@@ -38,7 +42,7 @@ export let ontologyDefinition: Ontology;
 export let namespace: string;
 
 type OntologyAndValueTypeIrs = {
-  ontology: OntologyIrOntologyBlockDataV2;
+  ontology: OntologyIr;
   valueType: OntologyIrValueTypeBlockData;
 };
 
@@ -54,6 +58,9 @@ export async function defineOntology(
     interfaceTypes: {},
     sharedPropertyTypes: {},
     valueTypes: {},
+    importedTypes: {
+      sharedPropertyTypes: [],
+    },
   };
 
   try {
@@ -97,33 +104,36 @@ function convertOntologyToValueTypeIr(
 
 function convertToWireOntologyIr(
   ontology: Ontology,
-): OntologyIrOntologyBlockDataV2 {
+): OntologyIr {
   return {
-    sharedPropertyTypes: Object.fromEntries(
-      Object.entries(
-        ontology.sharedPropertyTypes,
-      )
-        .map<[string, OntologyIrSharedPropertyTypeBlockDataV2]>((
-          [apiName, spt],
-        ) => [apiName, { sharedPropertyType: convertSpt(spt) }]),
-    ),
-    interfaceTypes: Object.fromEntries(
-      Object.entries(
-        ontology.interfaceTypes,
-      )
-        .map<[string, OntologyIrInterfaceTypeBlockDataV2]>(
-          ([apiName, interfaceType]) => {
-            return [apiName, {
-              interfaceType: convertInterface(interfaceType),
-            }];
-          },
-        ),
-    ),
-    blockPermissionInformation: {
-      actionTypes: {},
-      linkTypes: {},
-      objectTypes: {},
+    blockData: {
+      sharedPropertyTypes: Object.fromEntries(
+        Object.entries(
+          ontology.sharedPropertyTypes,
+        )
+          .map<[string, OntologyIrSharedPropertyTypeBlockDataV2]>((
+            [apiName, spt],
+          ) => [apiName, { sharedPropertyType: convertSpt(spt) }]),
+      ),
+      interfaceTypes: Object.fromEntries(
+        Object.entries(
+          ontology.interfaceTypes,
+        )
+          .map<[string, OntologyIrInterfaceTypeBlockDataV2]>(
+            ([apiName, interfaceType]) => {
+              return [apiName, {
+                interfaceType: convertInterface(interfaceType),
+              }];
+            },
+          ),
+      ),
+      blockPermissionInformation: {
+        actionTypes: {},
+        linkTypes: {},
+        objectTypes: {},
+      },
     },
+    importedTypes: ontology.importedTypes,
   };
 }
 
@@ -141,7 +151,7 @@ function convertInterface(
   };
 }
 
-export function dumpOntologyFullMetadata(): OntologyIrOntologyBlockDataV2 {
+export function dumpOntologyFullMetadata(): OntologyIr {
   return convertToWireOntologyIr(ontologyDefinition);
 }
 
@@ -161,6 +171,15 @@ function convertSpt(
     valueType,
   }: SharedPropertyType,
 ): OntologyIrSharedPropertyType {
+  const dataConstraint:
+    | OntologyIrSharedPropertyType["dataConstraints"]
+    | undefined = (typeof type === "object" && type.type === "marking")
+      ? {
+        propertyTypeConstraints: [],
+        nullability: "NO_EXPLICIT_NULLS",
+        nullabilityV2: { noEmptyCollections: true, noNulls: true },
+      }
+      : undefined;
   return {
     apiName,
     displayMetadata: {
@@ -178,7 +197,7 @@ function convertSpt(
       : convertType(type),
     aliases: [],
     baseFormatter: undefined,
-    dataConstraints: undefined,
+    dataConstraints: dataConstraint,
     gothamMapping: gothamMapping,
     indexedForSearch: true,
     provenance: undefined,
@@ -189,18 +208,63 @@ function convertSpt(
 
 function convertType(
   type: PropertyTypeType,
-): Type {
-  switch (type) {
-    case "marking":
-      return { type, [type]: { markingType: "MANDATORY" } };
+): OntologyIrType {
+  switch (true) {
+    case (typeof type === "object" && "markingType" in type):
+      return {
+        "type": "marking",
+        marking: { markingType: type.markingType },
+      };
 
-    case "geopoint":
+    case (typeof type === "object" && "structDefinition" in type):
+      const structFields: Array<OntologyIrStructFieldType> = new Array();
+      for (const key in type.structDefinition) {
+        const fieldTypeDefinition = type.structDefinition[key];
+        var field: OntologyIrStructFieldType;
+        if (typeof fieldTypeDefinition === "string") {
+          field = {
+            apiName: key,
+            displayMetadata: { displayName: key, description: undefined },
+            typeClasses: [],
+            aliases: [],
+            fieldType: convertType(fieldTypeDefinition),
+          };
+        } else {
+          // If it is a full form type definition then process it as such
+          if ("fieldType" in fieldTypeDefinition) {
+            field = {
+              ...fieldTypeDefinition,
+              apiName: key,
+              fieldType: convertType(fieldTypeDefinition.fieldType),
+              typeClasses: fieldTypeDefinition.typeClasses ?? [],
+              aliases: fieldTypeDefinition.aliases ?? [],
+            };
+          } else {
+            field = {
+              apiName: key,
+              displayMetadata: { displayName: key, description: undefined },
+              typeClasses: [],
+              aliases: [],
+              fieldType: convertType(fieldTypeDefinition),
+            };
+          }
+        }
+
+        structFields.push(field);
+      }
+
+      return {
+        type: "struct",
+        struct: { structFields },
+      };
+
+    case (type === "geopoint"):
       return { type: "geohash", geohash: {} };
 
-    case "decimal":
+    case (type === "decimal"):
       return { type, [type]: { precision: undefined, scale: undefined } };
 
-    case "string":
+    case (type === "string"):
       return {
         type,
         [type]: {
@@ -211,7 +275,7 @@ function convertType(
         },
       };
 
-    case "mediaReference":
+    case (type === "mediaReference"):
       return {
         type: type,
         mediaReference: {},

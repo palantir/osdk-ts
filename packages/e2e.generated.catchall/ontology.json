@@ -11,6 +11,18 @@
       "displayName": "Create Osdk Test Object",
       "status": "EXPERIMENTAL",
       "parameters": {
+        "description": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "osdk_object_name": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
         "string_property": {
           "dataType": {
             "type": "string"
@@ -203,6 +215,18 @@
         },
         "primaryKey": "primaryKey_",
         "properties": {
+          "description": {
+            "displayName": "Description",
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "osdkObjectName": {
+            "displayName": "osdkObjectName",
+            "dataType": {
+              "type": "string"
+            }
+          },
           "primaryKey_": {
             "displayName": "Primary Key",
             "dataType": {
@@ -221,8 +245,20 @@
         "visibility": "NORMAL"
       },
       "linkTypes": [],
-      "implementsInterfaces": [],
-      "implementsInterfaces2": {},
+      "implementsInterfaces": ["FooInterface", "OsdkTestInterface"],
+      "implementsInterfaces2": {
+        "FooInterface": {
+          "properties": {
+            "name": "osdkObjectName",
+            "description": "description"
+          }
+        },
+        "OsdkTestInterface": {
+          "properties": {
+            "objectDescription": "description"
+          }
+        }
+      },
       "sharedPropertyTypeMapping": {}
     },
     "WeatherStation": {
@@ -509,6 +545,56 @@
         },
         "titleProperty": "id",
         "pluralDisplayName": "Dherlihy Complex Objects"
+      },
+      "linkTypes": []
+    },
+    "SotSensor": {
+      "objectType": {
+        "apiName": "SotSensor",
+        "primaryKey": "seriesId",
+        "displayName": "SOT-Sensor",
+        "description": "SOT-Sensor",
+        "properties": {
+          "isEnum": {
+            "displayName": "Is Enum",
+            "dataType": {
+              "type": "boolean"
+            }
+          },
+          "timeSeriesProperty": {
+            "displayName": "Time Series Property",
+            "dataType": {
+              "type": "timeseries"
+            }
+          },
+          "sensorName": {
+            "displayName": "Sensor Name",
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "seriesId": {
+            "displayName": "Series Id",
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "wellId": {
+            "displayName": "Well Id",
+            "dataType": {
+              "type": "string"
+            }
+          }
+        },
+        "status": "ACTIVE",
+        "rid": "rid.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "sotsensor",
+          "color": "color"
+        },
+        "titleProperty": "seriesId",
+        "pluralDisplayName": "SOT-Sensors"
       },
       "linkTypes": []
     },
@@ -1204,8 +1290,34 @@
       },
       "rid": "ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b",
       "status": "ACTIVE"
+    },
+    "InterfaceNoProps": {
+      "apiName": "InterfaceNoProps",
+      "displayName": "FInterfaceNoProps",
+      "description": "Its a Foo.",
+      "properties": {
+      },
+      "rid": "ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b",
+      "status": "ACTIVE"
+    },
+    "OsdkTestInterface": {
+      "apiName": "OsdkTestInterface",
+      "displayName": "OsdkTestInterface",
+      "description": "OsdkTestInterface",
+      "properties": {
+        "objectDescription": {
+          "rid": "ri.ontology.main.shared-property.751ed7ee-5d2c-41a1-bf60-9cbef5623f23",
+          "apiName": "objectDescription",
+          "dataType": {
+            "type": "string"
+          }
+        }
+      },
+      "rid": "ri.ontology.main.interface.06c534fd-4f68-44d9-b268-72729a47eaab",
+      "status": "ACTIVE"
     }
   },
+
   "sharedPropertyTypes": {
     "name": {
       "rid": "ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d6",

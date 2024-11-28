@@ -79,6 +79,8 @@ function actionPropertyToSdkPropertyDefinition(
       return { type: "object", object: parameterType.objectTypeApiName };
     case "array":
       return actionPropertyToSdkPropertyDefinition(parameterType.subType);
+    default:
+      throw new Error(`Unsupported action parameter type: ${parameterType}`);
   }
 }
 
