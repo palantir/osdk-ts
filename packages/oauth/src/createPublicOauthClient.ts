@@ -71,7 +71,7 @@ export function createPublicOauthClient(
   const oauthHttpOptions: HttpRequestOptions = { [customFetch]: fetchFn };
 
   if (scopes.length === 0) {
-    scopes = ["api:read-data", "api:write-data"];
+    scopes = ["api:ontologies-read", "api:ontologies-write"];
   }
 
   const { makeTokenAndSaveRefresh, getToken } = common(
