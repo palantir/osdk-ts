@@ -19,10 +19,16 @@ import type {
   DataConstraint,
   DataConstraintWrapper,
   FailureMessage,
+  ValueTypeDataConstraint,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
+import { an } from "vitest/dist/chunks/reporters.DAfKSDh5.js";
 import { ontologyDefinition } from "./defineOntology.js";
-import type { ValueTypeDefinitionVersion } from "./types.js";
+import type {
+  PropertyTypeType,
+  ValueTypeDefinitionVersion,
+  ValueTypeType,
+} from "./types.js";
 
 type ZipBaseAndConstraint<Base, Constraint> = {
   [PropertyType in (BaseType["type"] & DataConstraint["type"])]: Base extends
@@ -39,40 +45,107 @@ type ZipBaseAndConstraint<Base, Constraint> = {
 
 type MappedZip = ZipBaseAndConstraint<BaseType, DataConstraint>;
 
-type TypeAndConstraints = MappedZip[keyof MappedZip];
+type TypeNames = ValueTypeType["type"];
+
+type ValueTypeDefinitionBacking = {
+  [Type in ValueTypeType["type"] & DataConstraint["type"]]: {
+    baseType: { "type": Extract<ValueTypeType, { type: Type }>["value"] } & {
+      constraints: {
+        constraint: Extract<
+          DataConstraint,
+          { type: Type }
+        >[keyof Omit<Extract<DataConstraint, { type: Type }>, "type">];
+        failureMessage?: FailureMessage;
+      }[];
+    };
+  };
+};
+
+type NewValueTypeDefinitionBacking = {
+  [Type in ValueTypeType as Type["type"]]: {
+    type: Type["value"];
+    constraints?: Type["constraints"];
+  };
+};
+type NewValueTypeDefinition =
+  NewValueTypeDefinitionBacking[keyof NewValueTypeDefinitionBacking];
+
+function convertValueTypeTypeToBaseType(
+  valueType: ValueTypeType["value"],
+): BaseType {
+  if (typeof valueType === "string") {
+  }
+  switch (true) {
+    case (typeof valueType === "object" && valueType.type === "array"):
+      return {
+        type: "array",
+        array: {
+          elementType: convertValueTypeTypeToBaseType(valueType.elementType),
+        },
+      };
+    case (typeof valueType === "object" && valueType.type === "struct"):
+      return {
+        type: "structV2",
+        structV2: {
+          fields: valueType.fields.map(field => ({
+            identifier: field.identifier,
+            baseType: convertValueTypeTypeToBaseType(field.baseType),
+          })),
+        },
+      };
+    case (typeof valueType === "object" && valueType.type === "map"):
+      return {
+        type: "map",
+        map: {
+          keyType: convertValueTypeTypeToBaseType(valueType.keyType),
+          valueType: convertValueTypeTypeToBaseType(valueType.valueType),
+        },
+      };
+    case (typeof valueType === "object" && valueType.type === "optional"):
+      return {
+        type: "optional",
+        optional: {
+          wrappedType: convertValueTypeTypeToBaseType(valueType.wrappedType),
+        },
+      };
+    case (typeof valueType === "string"):
+      return { type: valueType, [valueType]: {} } as any;
+    default:
+      throw new Error("Invalid ValueTypeType");
+  }
+}
+
 export function defineValueType(
   opts: {
     apiName: string;
     displayName: string;
     description?: string;
-    typeAndConstraints: TypeAndConstraints;
+    type: NewValueTypeDefinition;
     version: string;
   },
 ): ValueTypeDefinitionVersion {
-  const { apiName, displayName, description, typeAndConstraints, version } =
-    opts;
+  const { apiName, displayName, description, type, version } = opts;
   const semverValidation =
     /^((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/;
   invariant(semverValidation.test(version), "Version is not a valid semver");
 
+  const typeName: TypeNames = typeof type.type === "string"
+    ? type.type
+    : type.type.type === "struct"
+    ? "structV2"
+    : type.type.type;
   // These suck but TS doesn't understand the relationship from the key of the base type to the type string
-  const constraints = typeAndConstraints.constraints
-    ? typeAndConstraints.constraints.map(constraint => {
-      return {
-        constraint: {
-          [Object.keys(constraint["constraint"])[0]]:
-            Object.keys(constraint["constraint"])[0],
-          ...constraint,
-        } as DataConstraintWrapper,
+  const constraints = type.constraints
+    ? type.constraints.map<ValueTypeDataConstraint>(constraint => {
+      const output: any = {
+        constraint: { type: typeName, [typeName]: constraint.constraint },
+        failureMessage: constraint.failureMessage,
       };
+      return { constraint: output as DataConstraintWrapper };
     })
     : [];
 
-  const baseType = {
-    [Object.keys(typeAndConstraints.baseType)[0]]:
-      Object.keys(typeAndConstraints.baseType)[0],
-    ...typeAndConstraints.baseType,
-  } as BaseType;
+  const baseType: BaseType = convertValueTypeTypeToBaseType(type.type);
 
   const vt: ValueTypeDefinitionVersion = {
     apiName,
