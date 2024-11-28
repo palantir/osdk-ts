@@ -25,8 +25,15 @@ import escodegen from "escodegen";
 import type { ObjectExpression } from "estree";
 import fs from "fs-extra";
 import path from "node:path";
-import type { Plugin } from "vite";
+import { fileURLToPath } from "node:url";
+import color from "picocolors";
+import sirv from "sirv";
+import type { Plugin, ResolvedConfig, ViteDevServer } from "vite";
+import { PALANTIR_PATH, SETUP_PATH } from "./constants.js";
 
+export const DIR_DIST = typeof __dirname !== "undefined"
+  ? __dirname
+  : path.dirname(fileURLToPath(import.meta.url));
 export interface Options {
   /**
    * By default, looks in the directory from which vite is invoked
@@ -40,8 +47,9 @@ const DEFINE_CONFIG_FUNCTION = "defineConfig";
 export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
   const { packageJsonPath = path.join(process.cwd(), "package.json") } =
     options;
+  const baseDir = path.dirname(packageJsonPath);
 
-  const entrypointFileIds: string[] = [];
+  const entrypointToJsSourceFileMap: Record<string, Set<string>> = {};
   const jsSourceFileToEntrypointMap: Record<string, string> = {};
   const fileIdToSourceFileMap: Record<string, string> = {};
   const configSourceFileToEntrypointMap: Record<string, string> = {};
@@ -49,17 +57,283 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
     string,
     WidgetConfig<ParameterConfig>
   > = {};
+  let devServer: ViteDevServer | undefined;
+  let config: ResolvedConfig | undefined;
 
   return {
     name: "@osdk:widget-manifest",
     enforce: "pre",
+    configResolved: (_config) => {
+      config = _config;
+    },
+    configureServer(server) {
+      devServer = server;
+
+      const _print = server.printUrls;
+      let localhostUrl = `${
+        config?.server.https ? "https" : "http"
+      }://localhost:${config?.server.port ?? "80"}`;
+      const url = server.resolvedUrls?.local[0];
+      if (url) {
+        try {
+          const u = new URL(url);
+          localhostUrl = `${u.protocol}//${u.host}`;
+        } catch (error) {
+          config?.logger.warn(`Parse resolved url failed: ${error}`);
+        }
+      }
+
+      // Append the URL that we want developers to click on to enable dev mode to the vite output on server start
+      server.printUrls = () => {
+        _print();
+
+        const colorUrl = (url: string) =>
+          color.green(
+            url.replace(/:(\d+)\//, (_, port) => `:${color.bold(port)}/`),
+          );
+
+        config?.logger.info(
+          `  ${color.green("➜")}  ${
+            color.bold(
+              "Click to enter developer mode for your widget",
+            )
+          }: ${
+            colorUrl(
+              `${localhostUrl}${server.config.base ?? "/"}${SETUP_PATH}`,
+            )
+          }`,
+        );
+      };
+
+      // Queried by our setup page to get the list of entrypoints
+      server.middlewares.use(
+        `${server.config.base ?? "/"}${PALANTIR_PATH}/entrypoints`,
+        (req, res) => {
+          res.setHeader("Content-Type", "application/json");
+          // We need to turn the entrypoint files to relative paths
+          res.end(
+            JSON.stringify({
+              entrypoints: Object.keys(entrypointToJsSourceFileMap).map((id) =>
+                path.relative(baseDir, id)
+              ),
+            }),
+          );
+        },
+      );
+
+      // Polled by our setup page to check that a manifest has been generated
+      server.middlewares.use(
+        `${server.config.base ?? "/"}${PALANTIR_PATH}/manifest`,
+        (req, res) => {
+          res.setHeader("Content-Type", "application/json");
+          res.end(
+            JSON.stringify({
+              manifest: Object.fromEntries(
+                Object.entries(entrypointToJsSourceFileMap).map(
+                  ([entrypoint, sourceFiles]) => [
+                    path.relative(baseDir, entrypoint),
+                    [...sourceFiles],
+                  ],
+                ),
+              ),
+            }),
+          );
+        },
+      );
+
+      // Called by the setup page to start dev mode in Foundry, which queries the appropriate service on the Foundry instance configured in foundry.config.json
+      server.middlewares.use(
+        `${server.config.base ?? "/"}${PALANTIR_PATH}/finish`,
+        (req, res) => {
+          if (req.method !== "POST") {
+            res.statusCode = 400;
+            res.statusMessage = "Method not allowed";
+            res.end();
+            return;
+          }
+
+          let body = "";
+          req.on("readable", () => {
+            const readResult = req.read();
+            if (readResult != null) {
+              body += readResult;
+            }
+          });
+          req.on("end", () => {
+            if (body.length === 0) {
+              res.statusCode = 400;
+              res.statusMessage =
+                "Bad request: Expected { \"entrypoint\": \"<relativeEntrypointFileName>\" }, received nothing";
+              res.end();
+              return;
+            }
+            let request: { entrypoint: string };
+            try {
+              request = JSON.parse(body);
+            } catch (error) {
+              res.statusCode = 400;
+              res.statusMessage =
+                "Bad request: Expected { \"entrypoint\": \"<relativeEntrypointFileName>\" }, received "
+                + body;
+              res.end();
+              return;
+            }
+
+            const entrypointFileName = path.join(baseDir, request.entrypoint);
+            if (entrypointToJsSourceFileMap[entrypointFileName] == null) {
+              res.statusCode = 400;
+              res.statusMessage =
+                `Entrypoint ${request.entrypoint} not found. It may have not been loaded?`;
+              res.end();
+              return;
+            }
+
+            const foundryConfigJsonPath = path.join(
+              baseDir,
+              "foundry.config.json",
+            );
+            if (!fs.existsSync(foundryConfigJsonPath)) {
+              res.statusCode = 500;
+              res.statusMessage = "foundry.config.json file not found.";
+              res.end();
+              return;
+            }
+
+            if (process.env.FOUNDRY_TOKEN == null) {
+              res.statusCode = 500;
+              res.statusMessage =
+                "FOUNDRY_TOKEN environment variable not found, unable to start dev mode.";
+              res.end();
+              return;
+            }
+
+            const foundryConfig = fs.readJSONSync(foundryConfigJsonPath);
+            if (foundryConfig.foundryUrl == null) {
+              res.statusCode = 500;
+              res.statusMessage =
+                "foundry.config.json is missing the \"foundryUrl\" field, unable to start dev mode.";
+              res.end();
+              return;
+            }
+
+            let url: URL;
+            try {
+              url = new URL(foundryConfig.foundryUrl);
+            } catch (error) {
+              res.statusCode = 500;
+              res.statusMessage =
+                `"foundryUrl" in foundry.config.json is invalid, found: ${foundryConfig.foundryUrl}`;
+              res.end();
+              return;
+            }
+
+            if (foundryConfig.widget?.rid == null) {
+              res.statusCode = 500;
+              res.statusMessage =
+                "foundry.config.json is missing the \"widget.rid\" field, unable to start dev mode.";
+              res.end();
+              return;
+            }
+
+            // TODO: Actually handle the widget RID from within the config, which will require somehow parsing the config
+            // Unfortunately, moduleParsed is not called during vite's dev mode for performance reasons, so the config file
+            // will need to be parsed/read a different way
+            fetch(
+              `${url.origin}/view-registry/api/dev-mode/${foundryConfig.widget.rid}/settings`,
+              {
+                body: JSON.stringify({
+                  entrypointJs: [
+                    ...entrypointToJsSourceFileMap[entrypointFileName],
+                  ].map((file) => ({
+                    scriptType: {
+                      type: "module",
+                      module: {},
+                    },
+                    filePath: `${localhostUrl}${file}`,
+                  })),
+                  entrypointCss: [],
+                }),
+                method: "POST",
+                headers: {
+                  authorization: `Bearer ${process.env.FOUNDRY_TOKEN}`,
+                  accept: "application/json",
+                  "content-type": "application/json",
+                },
+              },
+            )
+              .then((devResponse) => {
+                if (devResponse.status === 200 || devResponse.status === 204) {
+                  res.setHeader("Content-Type", "application/json");
+                  res.end(
+                    JSON.stringify({
+                      redirectUrl:
+                        `${url.origin}/workspace/custom-views/preview/${foundryConfig.widget.rid}`,
+                    }),
+                  );
+                } else {
+                  res.statusCode = devResponse.status;
+                  res.statusMessage =
+                    `Unable to start dev mode in Foundry (see terminal for more): ${devResponse.statusText}`;
+                  devResponse.text().then((err) => {
+                    config?.logger.error(err);
+                    res.end();
+                  });
+                }
+              })
+              .catch((error) => {
+                res.statusCode = 500;
+                res.statusMessage =
+                  `Unable to start dev mode in Foundry: ${error.message}`;
+                res.end();
+              });
+          });
+        },
+      );
+
+      server.middlewares.use(
+        `${server.config.base ?? "/"}${SETUP_PATH}`,
+        sirv(path.resolve(DIR_DIST, "../client"), {
+          single: true,
+          dev: true,
+        }),
+      );
+    },
+    async buildStart(options) {
+      if (devServer != null) {
+        // Save off what all the entrypoint files are for generating a manifest for dev mode
+        if (Array.isArray(options.input)) {
+          Object.assign(
+            entrypointToJsSourceFileMap,
+            Object.fromEntries(
+              options.input.map((entrypoint) => [entrypoint, new Set()]),
+            ),
+          );
+        } else if (options.input != null) {
+          Object.assign(
+            entrypointToJsSourceFileMap,
+            Object.values(options.input).map((entrypoint) => [
+              entrypoint,
+              new Set(),
+            ]),
+          );
+        } else {
+          // Couldn't find any defined entrypoints, assume index.html
+          // TODO: Crib from https://github.com/wesbos/vite-plugin-list-directory-contents/blob/main/plugin.ts#L19 and actually look for all HTML files manually instead
+          entrypointToJsSourceFileMap[path.join(baseDir, "index.html")] =
+            new Set();
+        }
+      }
+    },
     // Look for .config.(j|t)s files that are imported from an entrypoint JS file
     resolveId: (source, importer, options) => {
       if (options.isEntry) {
-        entrypointFileIds.push(source);
+        if (entrypointToJsSourceFileMap[source] == null) {
+          entrypointToJsSourceFileMap[source] = new Set();
+        }
       } else if (importer != null) {
-        if (entrypointFileIds.includes(importer)) {
+        if (entrypointToJsSourceFileMap[importer] != null) {
           // This is a JS entrypoint, save it so we can look for a config file that it imports
+          entrypointToJsSourceFileMap[importer].add(source);
           jsSourceFileToEntrypointMap[source] = importer;
           return;
         }
@@ -206,20 +480,28 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
         if (chunk.type !== "chunk") {
           continue;
         }
-        if (
-          chunk.isEntry
-          && chunk.facadeModuleId != null
-        ) {
+        if (chunk.isEntry && chunk.facadeModuleId != null) {
           if (entrypointFileIdToConfigMap[chunk.facadeModuleId] == null) {
             throw new Error(
               `Could not find widget configuration object for entrypoint ${chunk.fileName}. Ensure that the default export of your imported *.${CONFIG_FILE_SUFFIX}.js file is a widget configuration object as returned by defineConfig()`,
             );
           }
+          if (
+            entrypointFileIdToConfigMap[chunk.facadeModuleId].type
+              !== "workshop"
+          ) {
+            throw new Error(
+              `Unsupported widget type for entrypoint ${chunk.fileName}. Only "workshop" widgets are supported`,
+            );
+          }
           const widgetConfig: WidgetManifestConfig = {
-            entrypointJs: [{
-              path: chunk.fileName,
-              type: "module",
-            }],
+            type: "workshopWidgetV1",
+            entrypointJs: [
+              {
+                path: chunk.fileName,
+                type: "module",
+              },
+            ],
             entrypointCss: chunk.viteMetadata?.importedCss.size
               ? [...chunk.viteMetadata.importedCss].map((css) => ({
                 path: css,
@@ -239,7 +521,9 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
           // Check if it's an imported chunk, since any CSS files we will need to put on the page for them
           // JS files will get imported on their own
           for (
-            const [entrypointName, imports] of Object.entries(entrypointImports)
+            const [entrypointName, imports] of Object.entries(
+              entrypointImports,
+            )
           ) {
             if (
               imports.includes(chunk.fileName)
@@ -250,11 +534,11 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
                   ({ path }) => path,
                 ) ?? [];
               widgetConfigManifest.widgets[entrypointName].entrypointCss?.push(
-                ...[...chunk.viteMetadata.importedCss].filter(css =>
-                  !existingCssFiles.includes(css)
-                ).map((css) => ({
-                  path: css,
-                })),
+                ...[...chunk.viteMetadata.importedCss]
+                  .filter((css) => !existingCssFiles.includes(css))
+                  .map((css) => ({
+                    path: css,
+                  })),
               );
             }
           }

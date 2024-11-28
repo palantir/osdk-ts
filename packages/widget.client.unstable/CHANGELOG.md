@@ -1,5 +1,31 @@
 # @osdk/widget-client.unstable
 
+## 0.2.0
+
+### Minor Changes
+
+- e4839b9: Add target type to widget manifest
+
+### Patch Changes
+
+- Updated dependencies [1c59d93]
+- Updated dependencies [e4839b9]
+  - @osdk/client@2.1.0-beta.15
+  - @osdk/widget-api.unstable@0.2.0-beta.0
+
+## 0.1.0
+
+### Patch Changes
+
+- Updated dependencies [0a7c747]
+- Updated dependencies [91cfa3a]
+- Updated dependencies [015279b]
+- Updated dependencies [91cfa3a]
+- Updated dependencies [0c56d21]
+- Updated dependencies [6b6c8a1]
+  - @osdk/client@2.1.0-beta.14
+  - @osdk/widget-api.unstable@0.1.0-beta.2
+
 ## 0.1.0-beta.1
 
 ### Minor Changes

@@ -1,5 +1,14 @@
 # @osdk/api
 
+## 2.1.0-beta.15
+
+## 2.1.0-beta.14
+
+### Minor Changes
+
+- 0c56d21: Exposing fuzzy searching.
+- 6b6c8a1: Updates gateway endpoints and changes fetchContents for attachments to return a response
+
 ## 2.1.0-beta.13
 
 ## 2.1.0-beta.12

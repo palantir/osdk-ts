@@ -23,6 +23,7 @@ import { FoundryHostEventTarget } from "./host.js";
 describe("FoundryHostEventTarget", () => {
   it("should narrow the event payload based on host message type for addEventListener", () => {
     const test = defineConfig({
+      type: "workshop",
       rid: "ri.viewregistry..view.0000-0000-0000-0000",
       parameters: {
         test: {
@@ -67,6 +68,7 @@ describe("FoundryHostEventTarget", () => {
 
   it("should narrow the event payload based on host message type for removeEventListener", () => {
     const test = defineConfig({
+      type: "workshop",
       rid: "ri.viewregistry..view.0000-0000-0000-0000",
       parameters: {
         test: {
@@ -106,6 +108,7 @@ describe("FoundryHostEventTarget", () => {
 
   it("should narrow the event payload when dispatching an event", () => {
     const test = defineConfig({
+      type: "workshop",
       rid: "ri.viewregistry..view.0000-0000-0000-0000",
       parameters: {
         test: {

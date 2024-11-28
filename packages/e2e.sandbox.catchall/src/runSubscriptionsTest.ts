@@ -19,7 +19,12 @@ import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
   __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
 } from "@osdk/api/unstable";
-import { $Actions, MtaBus, OsdkTestObject } from "@osdk/e2e.generated.catchall";
+import {
+  $Actions,
+  MtaBus,
+  OsdkTestInterface,
+  OsdkTestObject,
+} from "@osdk/e2e.generated.catchall";
 import { client, dsClient } from "./client.js";
 
 export async function runSubscriptionsTest() {
@@ -66,6 +71,28 @@ export async function runSubscriptionsTest() {
       },
       { properties: ["stringProperty"] },
     );
+
+  const interfaceSubscription = client(OsdkTestInterface).subscribe({
+    onChange(object) {
+      console.log(
+        "Interface with primaryKey ",
+        object.object.$primaryKey,
+        " changed objectDescription to ",
+        object.object.objectDescription,
+      );
+    },
+    async onSuccessfulSubscription() {
+      console.log("Successfully subscribed to OsdkTestInterface");
+      await client($Actions.createOsdkTestObject).applyAction({
+        description: "test",
+        osdk_object_name: "OsdkTestObject",
+        string_property: "test",
+      });
+    },
+    onError(err) {
+      console.error("Error in interface subscription: ", err);
+    },
+  });
 
   const mtaBusSubscription = dsClient(
     __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
