@@ -24,4 +24,3 @@
    > Full docs on the `changesets` tool can be found at the [changesets/changesets github repo](https://github.com/changesets/changesets).
 7. If you're curious what the final build output might look like you can run `pnpm build` from root.
 8. Run all lint rules and tests with `pnpm check` from root.
-hi
