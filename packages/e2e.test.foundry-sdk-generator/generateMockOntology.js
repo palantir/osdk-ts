@@ -18,15 +18,15 @@
 import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePackageCommand } from "@osdk/foundry-sdk-generator";
 import { apiServer } from "@osdk/shared.test";
 import * as fs from "node:fs/promises";
+import { tmpdir } from "node:os";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const dir = path.join(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "src",
-  "generatedNoCheck",
-);
 async function setup() {
+  const dir = await fs.mkdtemp(
+    path.join(tmpdir(), "osdk-e2e-foundry-sdk-generator-"),
+  );
+
   apiServer.listen();
 
   const testAppDir = path.join(dir, "@test-app");
@@ -97,6 +97,14 @@ async function setup() {
 
   await safeStat(testApp2Dir, "should exist");
   await safeStat(testApp2BetaDir, "should exist");
+
+  const finalOutDir = path.join(
+    path.dirname(fileURLToPath(import.meta.url)),
+    "src",
+    "generatedNoCheck",
+  );
+
+  fs.cp(dir, finalOutDir, { recursive: true });
 }
 
 export async function teardown() {

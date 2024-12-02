@@ -20,6 +20,7 @@ import {
   createProgram,
   createSourceFile,
   ModuleKind,
+  ModuleResolutionKind,
   ScriptTarget,
 } from "typescript";
 
@@ -30,12 +31,12 @@ export interface CompilerOutput {
 
 export function compileInMemory(
   files: { [fileName: string]: string },
-  opts?: { esm?: boolean },
 ) {
   const inMemoryOutputFileSystem: { [fileName: string]: string } = {};
   const compilerOptions: CompilerOptions = {
-    module: opts?.esm ? ModuleKind.NodeNext : ModuleKind.CommonJS,
-    target: ScriptTarget.ES2019,
+    module: ModuleKind.NodeNext,
+    target: ScriptTarget.ES2020,
+    moduleResolution: ModuleResolutionKind.NodeNext,
     declaration: true,
     skipLibCheck: true,
   };
