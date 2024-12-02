@@ -1,1 +1,8 @@
+forwardslash
+Nativewind
 osdk
+paperplane
+Pressable
+Tamagui
+unistyles
+haptics
