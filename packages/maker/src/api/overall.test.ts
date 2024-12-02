@@ -38,11 +38,9 @@ describe("Ontology Defining", () => {
         defineValueType({
           apiName: "apiName",
           displayName: "displayName",
-          typeAndConstraints: {
-            baseType: { boolean: {} },
-            constraints: [{
-              constraint: { boolean: { allowedValues: ["TRUE_VALUE"] } },
-            }],
+          type: {
+            "type": "boolean",
+            constraints: [{ constraint: { "allowedValues": ["TRUE_VALUE"] } }],
           },
           version: "not a version",
         })
@@ -54,55 +52,55 @@ describe("Ontology Defining", () => {
       defineValueType({
         apiName: "apiName",
         displayName: "displayName",
-        typeAndConstraints: {
-          baseType: { boolean: {} },
-          constraints: [{
-            constraint: { boolean: { allowedValues: ["TRUE_VALUE"] } },
-          }],
+        type: {
+          "type": "boolean",
+          constraints: [{ constraint: { "allowedValues": ["TRUE_VALUE"] } }],
         },
         version: "0.1.0",
       });
       expect(dumpValueTypeWireType()).toMatchInlineSnapshot(`
+ {
+   "valueTypes": [
+     {
+       "metadata": {
+         "apiName": "apiName",
+         "displayMetadata": {
+           "description": "",
+           "displayName": "displayName",
+         },
+         "status": {
+           "active": {},
+           "type": "active",
+         },
+       },
+       "versions": [
          {
-            "valueTypes": [
-              {
-                "metadata": {
-                  "apiName": "apiName",
-                  "displayMetadata": {
-                    "description": "",
-                    "displayName": "displayName",
-                  },
-                  "status": {
-                    "active": {},
-                    "type": "active",
-                  },
-                },
-                "versions": [
-                  {
-                    "baseType": {
-                      "boolean": {},
-                    },
-                    "constraints": [
-                      {
-                        "constraint": {
-                          "boolean": "boolean",
-                          "constraint": {
-                            "boolean": {
-                              "allowedValues": [
-                                "TRUE_VALUE",
-                              ],
-                            },
-                          },
-                        },
-                      },
-                    ],
-                    "exampleValues": [],
-                    "version": "0.1.0",
-                  },
-                ],
-              },
-            ],
-          }
+           "baseType": {
+             "boolean": {},
+             "type": "boolean",
+           },
+           "constraints": [
+             {
+               "constraint": {
+                 "constraint": {
+                   "boolean": {
+                     "allowedValues": [
+                       "TRUE_VALUE",
+                     ],
+                   },
+                   "type": "boolean",
+                 },
+                 "failureMessage": undefined,
+               },
+             },
+           ],
+           "exampleValues": [],
+           "version": "0.1.0",
+         },
+       ],
+     },
+   ],
+ }
         `);
     });
     defineOntology("com.palantir.", () => {});
