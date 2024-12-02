@@ -55,6 +55,8 @@ export async function generatePackageJson(options: {
     join(options.packagePath, "package.json"),
     JSON.stringify(packageJson, undefined, 4),
   );
+
+  return packageJson;
 }
 
 function constructDependencies(
