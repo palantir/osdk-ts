@@ -37,7 +37,7 @@ export function createConfidentialOauthClient(
   client_id: string,
   client_secret: string,
   url: string,
-  scopes: string[] = ["api:read-data", "api:write-data"],
+  scopes: string[] = ["api:ontologies-read", "api:ontologies-write"],
   fetchFn: typeof globalThis.fetch = globalThis.fetch,
   ctxPath: string = "multipass",
 ): ConfidentialOauthClient {
