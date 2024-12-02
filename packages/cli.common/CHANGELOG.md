@@ -1,5 +1,11 @@
 # @osdk/cli.common
 
+## 0.25.0-beta.16
+
+### Minor Changes
+
+- e968bc0: Use api:ontologies-X instead of api:X-data
+
 ## 0.25.0-beta.15
 
 ## 0.25.0-beta.14

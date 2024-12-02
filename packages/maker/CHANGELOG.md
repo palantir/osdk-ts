@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.9.0-beta.16
+
+### Minor Changes
+
+- 0a4f131: Fix value types so they actually serialize correctly.
+- 8e5e49a: Add optional link constraints
+
+### Patch Changes
+
+- Updated dependencies [e5fe7c0]
+  - @osdk/api@2.1.0-beta.16
+
 ## 0.9.0-beta.15
 
 ### Patch Changes

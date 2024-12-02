@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.1.0-beta.16
+
+### Minor Changes
+
+- e5fe7c0: Adds experimental method to convert an object set into RID
+
 ## 2.1.0-beta.15
 
 ## 2.1.0-beta.14
