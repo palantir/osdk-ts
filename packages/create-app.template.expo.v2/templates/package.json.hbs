@@ -5,13 +5,14 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start --port 8080",
+    "dev": "expo start --port 8080",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web --port 8080",
     "test": "jest --watchAll",
     "lint": "expo lint",
-    "build": "tsc && vite build"
+    "build": "expo export -p web"
   },
   "dependencies": {
     "{{osdkPackage}}": "latest",

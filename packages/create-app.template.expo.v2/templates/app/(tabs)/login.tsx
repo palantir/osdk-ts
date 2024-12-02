@@ -8,12 +8,9 @@ import {
   useAuthRequest,
 } from "expo-auth-session";
 import { useRouter } from "expo-router";
-import * as WebBrowser from "expo-web-browser";
 import { useCallback, useEffect, useMemo } from "react";
 import React from "react";
 import { Button, StyleSheet } from "react-native";
-
-WebBrowser.maybeCompleteAuthSession();
 
 // Endpoint
 const discovery = {
