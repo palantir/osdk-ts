@@ -28,6 +28,7 @@ type Many = {
   toOne?: never;
   displayName?: string;
   description?: string;
+  required?: boolean;
 };
 type One = {
   apiName: string;
@@ -36,6 +37,7 @@ type One = {
   toMany?: never;
   displayName?: string;
   description?: string;
+  required?: boolean;
 };
 
 export function defineInterfaceLinkConstraint(
@@ -53,7 +55,7 @@ export function defineInterfaceLinkConstraint(
     cardinality: linkDef.toMany ? "MANY" : "SINGLE",
     linkedEntityTypeId: getLinkedType(linkDef.toMany ?? linkDef.toOne),
     metadata: fromLinkMeta,
-    required: true, // TODO: expose this?
+    required: linkDef.required ?? true,
   });
 }
 
