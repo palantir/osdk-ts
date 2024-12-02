@@ -2,6 +2,12 @@
 
 This project was generated with [`@osdk/create-app`](https://www.npmjs.com/package/@osdk/create-app) and demonstrates using the Ontology SDK package `{{osdkPackage}}` with Expo. Check out the [Expo](https://expo.dev) docs for further configuration.
 
+## Settings OAuth & scopes
+
+   Expo project requires a different redirect url setup then standard web applications.
+   Make sure you set `http://localhost:8080` without the following path `/auth/callback` in the OAuth & Setting page on your Dev Console applications.
+   Similar, when you setup production site using Web Hosing set the redirect url in OAuth & Setting page to something like `https://<SUB-DOMAIN>.<YOUR DOMAIN>.palantirfoundry.com`
+
 ## Get started
 
 1. Install dependencies

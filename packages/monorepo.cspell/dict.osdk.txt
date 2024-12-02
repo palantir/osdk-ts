@@ -1,8 +1,9 @@
 forwardslash
+haptics
 Nativewind
 osdk
+palantirfoundry
 paperplane
 Pressable
 Tamagui
 unistyles
-haptics
