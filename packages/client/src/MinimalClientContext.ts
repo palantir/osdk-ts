@@ -16,6 +16,10 @@
 
 import type { SharedClientContext } from "@osdk/shared.client2";
 import type { Logger } from "./Logger.js";
+import type {
+  convertWireToOsdkObjects,
+  convertWireToOsdkObjects2,
+} from "./object/convertWireToOsdkObjects.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import type { OntologyProvider } from "./ontology/OntologyProvider.js";
 
@@ -33,6 +37,11 @@ export interface MinimalClient extends SharedClientContext {
   logger?: Logger;
   /** @internal */
   objectSetFactory: ObjectSetFactory<any, any>;
+  /** @internal */
+  objectFactory: typeof convertWireToOsdkObjects;
+  /** @internal */
+  objectFactory2: typeof convertWireToOsdkObjects2;
+
   clientCacheKey: ClientCacheKey;
   requestContext: RequestContext;
 }

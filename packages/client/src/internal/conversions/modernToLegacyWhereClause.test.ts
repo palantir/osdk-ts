@@ -26,10 +26,18 @@ describe(modernToLegacyWhereClause, () => {
   describe("api namespaces", () => {
     describe("interfaces", () => {
       it("properly converts shortname to fqApiName", () => {
-        const T: ObjectOrInterfaceDefinition = {
+        const T = {
           type: "interface",
           apiName: "a.Foo",
-        };
+          __DefinitionMetadata: {
+            type: "interface",
+            properties: { "prop": { type: "integer" } },
+            apiName: "a.Foo",
+            displayName: "",
+            links: {},
+            rid: "",
+          },
+        } as const satisfies ObjectOrInterfaceDefinition;
 
         const r = modernToLegacyWhereClause({
           prop: 5,
@@ -45,10 +53,22 @@ describe(modernToLegacyWhereClause, () => {
       });
 
       it("properly does not convert when interface has no apiNamespace", () => {
-        const T: ObjectOrInterfaceDefinition = {
+        const T = {
           type: "interface",
           apiName: "Foo",
-        };
+          __DefinitionMetadata: {
+            type: "interface",
+            properties: {
+              "foo": { type: "integer" },
+              "b.prop": { type: "integer" },
+              "prop": { type: "integer" },
+            },
+            apiName: "Foo",
+            displayName: "",
+            links: {},
+            rid: "",
+          },
+        } as const satisfies ObjectOrInterfaceDefinition;
 
         const r = modernToLegacyWhereClause({
           "b.prop": 5,
@@ -75,10 +95,22 @@ describe(modernToLegacyWhereClause, () => {
       });
 
       it("gracefully handles redundant apiNamespace in property", () => {
-        const T: ObjectOrInterfaceDefinition = {
+        const T = {
           type: "interface",
           apiName: "a.Foo",
-        };
+          __DefinitionMetadata: {
+            type: "interface",
+            properties: {
+              "a.foo": { type: "integer" },
+              "b.prop": { type: "integer" },
+              "prop": { type: "integer" },
+            },
+            apiName: "a.Foo",
+            displayName: "",
+            links: {},
+            rid: "",
+          },
+        } as const satisfies ObjectOrInterfaceDefinition;
 
         const r = modernToLegacyWhereClause({
           "b.prop": 5,
@@ -105,10 +137,22 @@ describe(modernToLegacyWhereClause, () => {
       });
 
       it("properly does not convert different apiNamespaces", () => {
-        const T: ObjectOrInterfaceDefinition = {
+        const T = {
           type: "interface",
           apiName: "a.Foo",
-        };
+          __DefinitionMetadata: {
+            type: "interface",
+            properties: {
+              "a.foo": { type: "integer" },
+              "b.prop": { type: "integer" },
+              "prop": { type: "integer" },
+            },
+            apiName: "a.Foo",
+            displayName: "",
+            links: {},
+            rid: "",
+          },
+        } as const satisfies ObjectOrInterfaceDefinition;
 
         expect(modernToLegacyWhereClause({
           "b.prop": 5,
@@ -124,18 +168,28 @@ describe(modernToLegacyWhereClause, () => {
 
     describe("objects", () => {
       it("does not convert object short property names to fq", () => {
-        const T: ObjectOrInterfaceDefinition = {
-          type: "object",
+        const T = {
+          type: "interface",
           apiName: "a.Foo",
-        };
-
+          __DefinitionMetadata: {
+            type: "interface",
+            properties: {
+              "a.foo": { type: "integer" },
+              "prop": { type: "integer" },
+            },
+            apiName: "a.Foo",
+            displayName: "",
+            links: {},
+            rid: "",
+          },
+        } as const satisfies ObjectOrInterfaceDefinition;
         const r = modernToLegacyWhereClause({
           prop: 5,
         }, T);
 
         expect(r).toMatchInlineSnapshot(`
           {
-            "field": "prop",
+            "field": "a.prop",
             "type": "eq",
             "value": 5,
           }
@@ -554,6 +608,100 @@ describe(modernToLegacyWhereClause, () => {
             "type": "eq",
             "value": 5,
           },
+        }
+      `);
+      });
+      it("converts $containsAllTerms correctly if using new type", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: { $containsAllTerms: { term: "test", fuzzySearch: true } },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "fuzzy": true,
+          "type": "containsAllTerms",
+          "value": "test",
+        }
+      `);
+
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: { $containsAllTerms: { term: "test", fuzzySearch: false } },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "fuzzy": false,
+          "type": "containsAllTerms",
+          "value": "test",
+        }
+      `);
+
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: { $containsAllTerms: { term: "test" } },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "fuzzy": false,
+          "type": "containsAllTerms",
+          "value": "test",
+        }
+      `);
+      });
+
+      it("converts $containsAllTerms correctly if using old type", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: { $containsAllTerms: "test" },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "fuzzy": false,
+          "type": "containsAllTerms",
+          "value": "test",
+        }
+      `);
+      });
+      it("converts $containsAnyTerm correctly if using new type", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: { $containsAnyTerm: { term: "test", fuzzySearch: true } },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "fuzzy": true,
+          "type": "containsAnyTerm",
+          "value": "test",
+        }
+      `);
+
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: { $containsAnyTerm: { term: "test", fuzzySearch: false } },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "fuzzy": false,
+          "type": "containsAnyTerm",
+          "value": "test",
+        }
+      `);
+
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: { $containsAnyTerm: { term: "test" } },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "fuzzy": false,
+          "type": "containsAnyTerm",
+          "value": "test",
+        }
+      `);
+      });
+
+      it("converts $containsAnyTerm correctly if using old type", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: { $containsAnyTerm: "test" },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "fuzzy": false,
+          "type": "containsAnyTerm",
+          "value": "test",
         }
       `);
       });

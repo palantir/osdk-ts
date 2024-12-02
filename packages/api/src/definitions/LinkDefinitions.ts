@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  FetchPageArgs,
-  SelectArg,
-  SelectArgToKeys,
-} from "../object/FetchPageArgs.js";
-import type { SingleOsdkResult } from "../object/FetchPageResult.js";
+import type { FetchPageArgs, SelectArg } from "../object/FetchPageArgs.js";
 import type { Result } from "../object/Result.js";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { PropertyKeys } from "../ontology/ObjectOrInterface.js";

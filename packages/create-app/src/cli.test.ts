@@ -20,8 +20,8 @@ import { fileURLToPath } from "node:url";
 import { dirSync } from "tmp";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { cli } from "./cli.js";
+import { TEMPLATES } from "./generatedNoCheck/templates.js";
 import type { Template } from "./templates.js";
-import { TEMPLATES } from "./templates.js";
 
 let createAppVersion: string;
 beforeAll(() => {

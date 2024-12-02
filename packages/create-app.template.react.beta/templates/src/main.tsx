@@ -1,24 +1,14 @@
+import { OsdkProvider } from "@osdk/react";
 import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import AuthCallback from "./AuthCallback";
-import Home from "./Home";
+import { RouterProvider } from "react-router-dom";
+import createClientAndAuth from "./createClientAndAuth";
 import "./index.css";
+import { router } from "./router";
 
-const router = createBrowserRouter(
-  [
-    {
-      path: "/",
-      element: <Home />,
-    },
-    {
-      // This is the route defined in your application's redirect URL
-      path: "/auth/callback",
-      element: <AuthCallback />,
-    },
-  ],
-  { basename: import.meta.env.BASE_URL },
-);
+const { client } = createClientAndAuth();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <RouterProvider router={router} />,
+  <OsdkProvider client={client}>
+    <RouterProvider router={router} />,
+  </OsdkProvider>,
 );

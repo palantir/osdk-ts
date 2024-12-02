@@ -24,7 +24,11 @@ export function createAttachmentUpload(
   data: Blob,
   name: string,
 ): AttachmentUpload {
-  const attachmentUpload = Object.create(data, { name: { value: name } });
+  const attachmentUpload = Object.create(data, {
+    name: { value: name },
+    size: { value: data.size },
+    type: { value: data.type },
+  });
 
   return attachmentUpload as AttachmentUpload;
 }

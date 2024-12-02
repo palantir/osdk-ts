@@ -16,6 +16,7 @@
 
 export { default as default } from "./cli/main.js";
 
+export { importSharedPropertyType } from "./api/defineImportSpt.js";
 export { defineInterface } from "./api/defineInterface.js";
 export { defineInterfaceLinkConstraint } from "./api/defineInterfaceLinkConstraint.js";
 export { defineSharedPropertyType } from "./api/defineSpt.js";

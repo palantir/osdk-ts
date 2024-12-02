@@ -190,16 +190,14 @@ export type ApplyBatchActionOptions = {
 // Warning: (ae-forgotten-export) The symbol "OrderByArg" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export interface AsyncIterArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, A extends Augments = {}, S extends NullabilityAdherence = NullabilityAdherence.Default> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
+export interface AsyncIterArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, A extends Augments = never, S extends NullabilityAdherence = NullabilityAdherence.Default> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
     // (undocumented)
-    $__EXPERIMENTAL_selectedObjectTypes?: string[];
-    // (undocumented)
-    $augment?: A;
+    $__UNSTABLE_useOldInterfaceApis?: boolean;
 }
 
 // @public (undocumented)
 export interface Attachment {
-    fetchContents(): Promise<Blob>;
+    fetchContents(): Promise<Response>;
     // Warning: (ae-forgotten-export) The symbol "AttachmentMetadata" needs to be exported by the entry point index.d.ts
     fetchMetadata(): Promise<AttachmentMetadata>;
     // (undocumented)
@@ -391,7 +389,7 @@ export const DurationMapping: {
 };
 
 // @public (undocumented)
-export interface FetchPageArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, A extends Augments = {}, S extends NullabilityAdherence = NullabilityAdherence.Default> extends AsyncIterArgs<Q, K, R, A, S> {
+export interface FetchPageArgs<Q extends ObjectOrInterfaceDefinition, K extends PropertyKeys<Q> = PropertyKeys<Q>, R extends boolean = false, A extends Augments = never, S extends NullabilityAdherence = NullabilityAdherence.Default> extends AsyncIterArgs<Q, K, R, A, S> {
     // (undocumented)
     $nextPageToken?: string;
     // (undocumented)
@@ -586,8 +584,26 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED 
     readonly fetchOneWithErrors: Q extends ObjectTypeDefinition ? <L extends PropertyKeys<Q>, R extends boolean, S extends false | "throw" = NullabilityAdherence.Default>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<Result<Osdk.Instance<Q, ExtractOptions<R, S>, L>>> : never;
     readonly intersect: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
     readonly pivotTo: <L extends LinkNames<Q>>(type: L) => CompileTimeMetadata<LinkedType<Q, L>>["objectSet"];
+    readonly subscribe: <const P extends PropertyKeys<Q>>(listener: ObjectSetListener<Q, P>, opts?: ObjectSetListenerOptions<Q, P>) => {
+        unsubscribe: () => void;
+    };
     readonly subtract: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
     readonly union: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
+}
+
+// @public (undocumented)
+export interface ObjectSetListener<O extends ObjectOrInterfaceDefinition, P extends PropertyKeys<O> = PropertyKeys<O>> {
+    // Warning: (ae-forgotten-export) The symbol "ObjectUpdate" needs to be exported by the entry point index.d.ts
+    onChange?: (objectUpdate: ObjectUpdate<O, P>) => void;
+    onError?: (errors: Array<any>) => void;
+    onOutOfDate?: () => void;
+    onSuccessfulSubscription?: () => void;
+}
+
+// @public
+export interface ObjectSetListenerOptions<O extends ObjectOrInterfaceDefinition, P extends PropertyKeys<O> = PropertyKeys<O>> {
+    // (undocumented)
+    properties?: Array<P>;
 }
 
 // @public (undocumented)
@@ -742,6 +758,8 @@ export interface PropertyValueWireToClient {
     marking: string;
     // (undocumented)
     numericTimeseries: TimeSeriesProperty<number>;
+    // (undocumented)
+    sensorTimeseries: TimeSeriesProperty<string | number>;
     // (undocumented)
     short: number;
     // (undocumented)
@@ -947,12 +965,12 @@ export interface VersionBound<V extends VersionString<any, any, any>> {
 // Warning: (ae-forgotten-export) The symbol "FilterFor" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T> | AndWhereClause<T> | NotWhereClause<T> | {
-    [P in PropertyKeys<T>]?: FilterFor<CompileTimeMetadata<T>["properties"][P]>;
-};
+export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T> | AndWhereClause<T> | NotWhereClause<T> | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true ? Record<string, never> : {
+    [P in keyof CompileTimeMetadata<T>["properties"]]?: FilterFor<CompileTimeMetadata<T>["properties"][P]>;
+});
 
 // @public (undocumented)
-export type WirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "numericTimeseries" | "stringTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
+export type WirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
 
 // Warnings were encountered during analysis:
 //

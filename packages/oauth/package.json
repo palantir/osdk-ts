@@ -1,6 +1,6 @@
 {
   "name": "@osdk/oauth",
-  "version": "1.1.0-beta.0",
+  "version": "1.1.0-beta.3",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -9,11 +9,13 @@
   "exports": {
     ".": {
       "browser": "./build/browser/index.js",
-      "import": "./build/esm/index.js"
+      "import": "./build/esm/index.js",
+      "default": "./build/browser/index.js"
     },
     "./*": {
       "browser": "./build/browser/public/*.js",
-      "import": "./build/esm/public/*.js"
+      "import": "./build/esm/public/*.js",
+      "default": "./build/browser/public/*.js"
     }
   },
   "scripts": {

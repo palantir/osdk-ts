@@ -39,6 +39,27 @@ describe("loadFoundryConfig", () => {
         autoVersion: {
           type: "git-describe",
         },
+        uploadOnly: true,
+      },
+    };
+
+    vi.mocked(fsPromises.readFile).mockResolvedValue(
+      JSON.stringify(correctConfig),
+    );
+    await expect(loadFoundryConfig()).resolves.toEqual({
+      configFilePath: "/path/foundry.config.json",
+      foundryConfig: {
+        ...correctConfig,
+      },
+    });
+  });
+
+  it("should load and parse the configuration file correctly without optionals", async () => {
+    const correctConfig = {
+      foundryUrl: "http://localhost",
+      site: {
+        application: "test-app",
+        directory: "/test/directory",
       },
     };
 
@@ -89,7 +110,26 @@ describe("loadFoundryConfig", () => {
     );
 
     await expect(loadFoundryConfig()).rejects.toThrow(
-      "The configuration file does not match",
+      "The configuration file does not match the expected schema: data/site/autoVersion must have required property 'type'",
+    );
+  });
+
+  it("should throw an error if uploadOnly isn't a boolean", async () => {
+    const inCorrectConfig = {
+      foundryUrl: "http://localhost",
+      site: {
+        application: "test-app",
+        directory: "/test/directory",
+        uploadOnly: 123,
+      },
+    };
+
+    vi.mocked(fsPromises.readFile).mockResolvedValue(
+      JSON.stringify(inCorrectConfig),
+    );
+
+    await expect(loadFoundryConfig()).rejects.toThrow(
+      "The configuration file does not match the expected schema: data/site/uploadOnly must be boolean",
     );
   });
 

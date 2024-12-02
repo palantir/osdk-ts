@@ -1,5 +1,102 @@
 # @osdk/generator-converters
 
+## 2.1.0-beta.15
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.15
+
+## 2.1.0-beta.14
+
+### Minor Changes
+
+- 0a7c747: Add support for timeseries sensors.
+- 91cfa3a: Fixing url parsing for client.
+- 6b6c8a1: Updates gateway endpoints and changes fetchContents for attachments to return a response
+
+### Patch Changes
+
+- Updated dependencies [0c56d21]
+- Updated dependencies [6b6c8a1]
+  - @osdk/api@2.1.0-beta.14
+
+## 2.1.0-beta.13
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.13
+
+## 2.1.0-beta.12
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.12
+
+## 2.1.0-beta.11
+
+### Minor Changes
+
+- bc1761c: Update platform API dependencies.
+
+### Patch Changes
+
+- Updated dependencies [bc1761c]
+- Updated dependencies [9298f75]
+  - @osdk/api@2.1.0-beta.11
+
+## 2.1.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [11a05cc]
+- Updated dependencies [11088aa]
+  - @osdk/api@2.1.0-beta.10
+
+## 2.1.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [acbfab9]
+  - @osdk/api@2.1.0-beta.9
+
+## 2.1.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [9f3807c]
+  - @osdk/api@2.1.0-beta.8
+
+## 2.1.0-beta.7
+
+### Minor Changes
+
+- 9018dc2: Updating platform api dependencies.
+
+### Patch Changes
+
+- Updated dependencies [27866a8]
+- Updated dependencies [31e7d70]
+  - @osdk/api@2.1.0-beta.7
+
+## 2.1.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
+### Patch Changes
+
+- Updated dependencies [25fd9f0]
+- Updated dependencies [1a89f23]
+- Updated dependencies [1b2e8c9]
+  - @osdk/api@2.1.0-beta.6
+
+## 2.1.0-beta.5
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.5
+
 ## 2.1.0-beta.4
 
 ### Patch Changes

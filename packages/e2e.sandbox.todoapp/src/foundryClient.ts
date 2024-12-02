@@ -14,7 +14,7 @@ const auth = createPublicOauthClient(
   // import.meta.env.VITE_FOUNDRY_URL,
   "http://localhost:8080",
   "http://localhost:8080/auth/callback",
-  true,
+  { useHistory: true },
 );
 
 export const $ = createClient(

@@ -1,5 +1,172 @@
 # @osdk/client
 
+## 2.1.0-beta.15
+
+### Minor Changes
+
+- 1c59d93: Allows interfaces to be used with subscribe
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.15
+- @osdk/client.unstable@2.1.0-beta.15
+- @osdk/generator-converters@2.1.0-beta.15
+
+## 2.1.0-beta.14
+
+### Minor Changes
+
+- 0a7c747: Add support for timeseries sensors.
+- 91cfa3a: Fixing url parsing for client.
+- 015279b: Fix use of new interfaces api with preview flag.
+- 91cfa3a: Fixing URL parsing for custom entry points.
+- 0c56d21: Exposing fuzzy searching.
+- 6b6c8a1: Updates gateway endpoints and changes fetchContents for attachments to return a response
+
+### Patch Changes
+
+- Updated dependencies [0a7c747]
+- Updated dependencies [91cfa3a]
+- Updated dependencies [0c56d21]
+- Updated dependencies [6b6c8a1]
+  - @osdk/generator-converters@2.1.0-beta.14
+  - @osdk/api@2.1.0-beta.14
+  - @osdk/client.unstable@2.1.0-beta.14
+
+## 2.1.0-beta.13
+
+### Minor Changes
+
+- c4f88a8: Removes circular dependency that may upset legacy tools like react-native
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.13
+- @osdk/client.unstable@2.1.0-beta.13
+- @osdk/generator-converters@2.1.0-beta.13
+
+## 2.1.0-beta.12
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.12
+- @osdk/client.unstable@2.1.0-beta.12
+- @osdk/generator-converters@2.1.0-beta.12
+
+## 2.1.0-beta.11
+
+### Minor Changes
+
+- bc1761c: Update platform API dependencies.
+- 9298f75: Using new interface APIs for backend.
+
+### Patch Changes
+
+- Updated dependencies [bc1761c]
+- Updated dependencies [9298f75]
+- Updated dependencies [caf1abc]
+  - @osdk/generator-converters@2.1.0-beta.11
+  - @osdk/api@2.1.0-beta.11
+  - @osdk/client.unstable@2.1.0-beta.11
+
+## 2.1.0-beta.10
+
+### Minor Changes
+
+- 11a05cc: Updated subscribe api to make requesting properties optional
+- 14624f7: Supports custom formatters in browser
+- 11088aa: Fix where clause types so we don't accept more than one key in the clauses.
+- d88fdb9: Adds methods to extract date strings from Dates and ISO-8601 strings
+
+### Patch Changes
+
+- Updated dependencies [11a05cc]
+- Updated dependencies [11088aa]
+  - @osdk/api@2.1.0-beta.10
+  - @osdk/generator-converters@2.1.0-beta.10
+  - @osdk/client.unstable@2.1.0-beta.10
+
+## 2.1.0-beta.9
+
+### Minor Changes
+
+- acbfab9: Fixes where clauses for interfaces with no properties.
+
+### Patch Changes
+
+- Updated dependencies [acbfab9]
+  - @osdk/api@2.1.0-beta.9
+  - @osdk/generator-converters@2.1.0-beta.9
+  - @osdk/client.unstable@2.1.0-beta.9
+
+## 2.1.0-beta.8
+
+### Minor Changes
+
+- 9f3807c: Allows $in to take a readonly array
+- 71dfb4c: Now export all api shapes from client, so use that dependency instead.
+
+### Patch Changes
+
+- Updated dependencies [9f3807c]
+  - @osdk/api@2.1.0-beta.8
+  - @osdk/generator-converters@2.1.0-beta.8
+  - @osdk/client.unstable@2.1.0-beta.8
+
+## 2.1.0-beta.7
+
+### Minor Changes
+
+- 27866a8: Removing interface argument for selecting object types. This is not supported in the new apis, and is not being used internally anywhere with the old apis.
+- 0cd1603: Fixes AttachmentUpload for browser contexts
+- 9018dc2: Updating platform api dependencies.
+
+### Patch Changes
+
+- Updated dependencies [27866a8]
+- Updated dependencies [9018dc2]
+- Updated dependencies [31e7d70]
+  - @osdk/api@2.1.0-beta.7
+  - @osdk/generator-converters@2.1.0-beta.7
+  - @osdk/client.unstable@2.1.0-beta.7
+
+## 2.1.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- 1a89f23: Removing support for augmenting interfaces when fetching them.
+- 1b2e8c9: Adds subscribe feature directly to client
+
+### Patch Changes
+
+- Updated dependencies [25fd9f0]
+- Updated dependencies [1a89f23]
+- Updated dependencies [1b2e8c9]
+  - @osdk/api@2.1.0-beta.6
+  - @osdk/client.unstable@2.1.0-beta.6
+  - @osdk/generator-converters@2.1.0-beta.6
+  - @osdk/shared.client.impl@1.1.0-beta.2
+  - @osdk/shared.net.errors@2.1.0-beta.1
+  - @osdk/shared.net.fetch@1.1.0-beta.1
+
+## 2.1.0-beta.5
+
+### Minor Changes
+
+- fa02ebf: Adds SLS dependency for object-set-watcher API
+
+### Patch Changes
+
+- Updated dependencies [963addb]
+- Updated dependencies [2b35ed4]
+  - @osdk/shared.client.impl@1.1.0-beta.1
+  - @osdk/shared.net.errors@2.1.0-beta.0
+  - @osdk/client.unstable@2.1.0-beta.5
+  - @osdk/shared.net.fetch@1.1.0-beta.0
+  - @osdk/api@2.1.0-beta.5
+  - @osdk/generator-converters@2.1.0-beta.5
+
 ## 2.1.0-beta.4
 
 ### Minor Changes

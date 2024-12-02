@@ -29,9 +29,9 @@ import { stringify } from "../util/stringify.js";
 /** @internal */
 export function wireObjectTypeV2ToSdkObjectConstV2(
   wireObject: ObjectTypeFullMetadata,
-  { ontology }: Pick<
+  { ontology, forInternalUse }: Pick<
     GenerateContext,
-    "ontology"
+    "ontology" | "forInternalUse"
   >,
   currentFilePath: string,
 ) {
@@ -75,19 +75,22 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
     propertyKeysIdentifier,
   };
 
-  function getV2Types(object: EnhancedObjectType) {
+  function getV2Types(
+    object: EnhancedObjectType,
+    forInternalUse: boolean = false,
+  ) {
     return `import type {
       PropertyKeys as $PropertyKeys,  
       ObjectTypeDefinition as $ObjectTypeDefinition,
       ObjectMetadata as $ObjectMetadata,
-    } from "@osdk/api";
+    } from "${forInternalUse ? "@osdk/api" : "@osdk/client"}";
      import type {
       ObjectSet as $ObjectSet, 
       Osdk as $Osdk,
       OsdkObject as $OsdkObject,
       PropertyValueWireToClient as $PropType,
       SingleLinkAccessor  as $SingleLinkAccessor,
-    } from "@osdk/api";
+    } from "${forInternalUse ? "@osdk/api" : "@osdk/client"}";
 
 
     export namespace ${object.shortApiName} {
@@ -118,7 +121,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
     true,
   );
 
-  return `${imports}${getV2Types(object)}
+  return `${imports}${getV2Types(object, forInternalUse)}
 
     export const ${object.shortApiName}: ${objectDefIdentifier}
     = {
@@ -346,9 +349,12 @@ ${
 export function createPropertyKeys(
   type: EnhancedObjectType | EnhancedInterfaceType,
 ) {
+  const properties = Object.keys(type.getCleanedUpDefinition(true).properties);
   return `export type PropertyKeys = ${
-    Object.keys(type.getCleanedUpDefinition(true).properties).map(
-      (a) => maybeStripNamespace(type, a),
-    ).map(a => `"${a}"`).join("|")
+    properties.length === 0
+      ? "never"
+      : properties.map(
+        (a) => maybeStripNamespace(type, a),
+      ).map(a => `"${a}"`).join("|")
   };`;
 }

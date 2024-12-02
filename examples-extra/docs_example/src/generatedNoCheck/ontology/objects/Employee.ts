@@ -1,18 +1,18 @@
-import type { PropertyDef as $PropertyDef } from '@osdk/api';
+import type { PropertyDef as $PropertyDef } from '@osdk/client';
 import { $osdkMetadata } from '../../OntologyMetadata';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import type {
   PropertyKeys as $PropertyKeys,
   ObjectTypeDefinition as $ObjectTypeDefinition,
   ObjectMetadata as $ObjectMetadata,
-} from '@osdk/api';
+} from '@osdk/client';
 import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
-} from '@osdk/api';
+} from '@osdk/client';
 
 export namespace Employee {
   export type PropertyKeys = 'employeeId' | 'class' | 'fullName' | 'office' | 'startDate' | 'employeeStatus';
@@ -25,7 +25,7 @@ export namespace Employee {
   export interface Props {
     readonly class: $PropType['string'] | undefined;
     readonly employeeId: $PropType['integer'];
-    readonly employeeStatus: $PropType['numericTimeseries'] | undefined;
+    readonly employeeStatus: $PropType['stringTimeseries'] | undefined;
     readonly fullName: $PropType['string'] | undefined;
     readonly office: $PropType['integer'] | undefined;
     readonly startDate: $PropType['datetime'] | undefined;
@@ -84,7 +84,7 @@ export interface Employee extends $ObjectTypeDefinition {
       /**
        *   description: TimeSeries of the status of the employee
        */
-      employeeStatus: $PropertyDef<'numericTimeseries', 'nullable', 'single'>;
+      employeeStatus: $PropertyDef<'stringTimeseries', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */

@@ -1,25 +1,27 @@
-import type { PropertyDef as $PropertyDef } from '@osdk/api';
+import type { PropertyDef as $PropertyDef } from '@osdk/client';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
   PropertyKeys as $PropertyKeys,
   ObjectTypeDefinition as $ObjectTypeDefinition,
   ObjectMetadata as $ObjectMetadata,
-} from '@osdk/api';
+} from '@osdk/client';
 import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
-} from '@osdk/api';
+} from '@osdk/client';
 
 export namespace OsdkTestObject {
-  export type PropertyKeys = 'primaryKey_' | 'stringProperty';
+  export type PropertyKeys = 'description' | 'osdkObjectName' | 'primaryKey_' | 'stringProperty';
 
   export type Links = {};
 
   export interface Props {
+    readonly description: $PropType['string'] | undefined;
+    readonly osdkObjectName: $PropType['string'] | undefined;
     readonly primaryKey_: $PropType['string'];
     readonly stringProperty: $PropType['string'] | undefined;
   }
@@ -56,14 +58,38 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
       color: '#4C90F0';
       name: 'cube';
     };
-    implements: [];
-    interfaceMap: {};
-    inverseInterfaceMap: {};
+    implements: ['FooInterface', 'OsdkTestInterface'];
+    interfaceMap: {
+      FooInterface: {
+        name: 'osdkObjectName';
+        description: 'description';
+      };
+      OsdkTestInterface: {
+        objectDescription: 'description';
+      };
+    };
+    inverseInterfaceMap: {
+      FooInterface: {
+        osdkObjectName: 'name';
+        description: 'description';
+      };
+      OsdkTestInterface: {
+        description: 'objectDescription';
+      };
+    };
     links: {};
     pluralDisplayName: 'Osdk Test Objects';
     primaryKeyApiName: 'primaryKey_';
     primaryKeyType: 'string';
     properties: {
+      /**
+       *   display name: 'Description'
+       */
+      description: $PropertyDef<'string', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      osdkObjectName: $PropertyDef<'string', 'nullable', 'single'>;
       /**
        *   display name: 'Primary Key'
        */

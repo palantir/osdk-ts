@@ -119,6 +119,13 @@ describe("FetchMetadata", () => {
             "nullable": true,
             "type": "geotimeSeriesReference",
           },
+          "employeeSensor": {
+            "description": "TimeSeries sensor of the status of the employee",
+            "displayName": undefined,
+            "multiplicity": false,
+            "nullable": true,
+            "type": "sensorTimeseries",
+          },
           "employeeStatus": {
             "description": "TimeSeries of the status of the employee",
             "displayName": undefined,

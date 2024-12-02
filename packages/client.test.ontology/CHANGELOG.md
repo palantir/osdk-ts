@@ -1,5 +1,92 @@
 # @osdk/client.test.ontology
 
+## 2.1.0-beta.15
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.15
+
+## 2.1.0-beta.14
+
+### Patch Changes
+
+- Updated dependencies [0c56d21]
+- Updated dependencies [6b6c8a1]
+  - @osdk/api@2.1.0-beta.14
+
+## 2.1.0-beta.13
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.13
+
+## 2.1.0-beta.12
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.12
+
+## 2.1.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [bc1761c]
+- Updated dependencies [9298f75]
+  - @osdk/api@2.1.0-beta.11
+
+## 2.1.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [11a05cc]
+- Updated dependencies [11088aa]
+  - @osdk/api@2.1.0-beta.10
+
+## 2.1.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [acbfab9]
+  - @osdk/api@2.1.0-beta.9
+
+## 2.1.0-beta.8
+
+### Minor Changes
+
+- 71dfb4c: Now export all api shapes from client, so use that dependency instead.
+
+### Patch Changes
+
+- Updated dependencies [9f3807c]
+  - @osdk/api@2.1.0-beta.8
+
+## 2.1.0-beta.7
+
+### Patch Changes
+
+- Updated dependencies [27866a8]
+- Updated dependencies [31e7d70]
+  - @osdk/api@2.1.0-beta.7
+
+## 2.1.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
+### Patch Changes
+
+- Updated dependencies [25fd9f0]
+- Updated dependencies [1a89f23]
+- Updated dependencies [1b2e8c9]
+  - @osdk/api@2.1.0-beta.6
+
+## 2.1.0-beta.5
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.5
+
 ## 2.1.0-beta.4
 
 ### Patch Changes

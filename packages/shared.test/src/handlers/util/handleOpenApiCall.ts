@@ -80,6 +80,7 @@ export function handleOpenApiCall<
       >
     >[0],
   ) => ExtractResponse<X> | Promise<ExtractResponse<X>>,
+  baseUrl: string = "https://stack.palantir.com/",
 ): HttpHandler {
   let captured: {
     method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
@@ -107,7 +108,7 @@ export function handleOpenApiCall<
         blob: () => new Blob(),
       };
     },
-    baseUrl: "https://stack.palantir.com/",
+    baseUrl,
   };
 
   // we don't care about the promise here, we are just building the url
@@ -127,8 +128,10 @@ export function handleOpenApiCall<
             info as any,
           );
 
-          if (result instanceof Blob) {
-            return new HttpResponse(result) as StrictResponse<DefaultBodyType>;
+          if (result instanceof Response) {
+            return new HttpResponse(result.body) as StrictResponse<
+              DefaultBodyType
+            >;
           }
           return HttpResponse.json(
             result,

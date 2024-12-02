@@ -1,5 +1,61 @@
 # @osdk/api
 
+## 2.1.0-beta.15
+
+## 2.1.0-beta.14
+
+### Minor Changes
+
+- 0c56d21: Exposing fuzzy searching.
+- 6b6c8a1: Updates gateway endpoints and changes fetchContents for attachments to return a response
+
+## 2.1.0-beta.13
+
+## 2.1.0-beta.12
+
+## 2.1.0-beta.11
+
+### Minor Changes
+
+- bc1761c: Update platform API dependencies.
+- 9298f75: Using new interface APIs for backend.
+
+## 2.1.0-beta.10
+
+### Minor Changes
+
+- 11a05cc: Updated subscribe api to make requesting properties optional
+- 11088aa: Fix where clause types so we don't accept more than one key in the clauses.
+
+## 2.1.0-beta.9
+
+### Minor Changes
+
+- acbfab9: Fixes where clauses for interfaces with no properties.
+
+## 2.1.0-beta.8
+
+### Minor Changes
+
+- 9f3807c: Allows $in to take a readonly array
+
+## 2.1.0-beta.7
+
+### Minor Changes
+
+- 27866a8: Removing interface argument for selecting object types. This is not supported in the new apis, and is not being used internally anywhere with the old apis.
+- 31e7d70: Fixes extra generic
+
+## 2.1.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- 1a89f23: Removing support for augmenting interfaces when fetching them.
+- 1b2e8c9: Adds subscribe feature directly to client
+
+## 2.1.0-beta.5
+
 ## 2.1.0-beta.4
 
 ### Minor Changes

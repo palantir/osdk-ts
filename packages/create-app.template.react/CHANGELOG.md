@@ -1,5 +1,39 @@
 # @osdk/create-app.template.react
 
+## 2.1.0-beta.15
+
+## 2.1.0-beta.14
+
+## 2.1.0-beta.13
+
+## 2.1.0-beta.12
+
+## 2.1.0-beta.11
+
+## 2.1.0-beta.10
+
+## 2.1.0-beta.9
+
+## 2.1.0-beta.8
+
+### Minor Changes
+
+- 0e1a2e3: Add the scopes option to OSDK CLI and update all example generators to include the scopes if provided, else, hide the scopes to avoid confusion
+
+## 2.1.0-beta.7
+
+## 2.1.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
+## 2.1.0-beta.5
+
+### Minor Changes
+
+- 35efba7: Upgraded to eslint 9
+
 ## 0.20.0-beta.3
 
 ## 0.20.0-beta.2

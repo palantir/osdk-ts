@@ -15,6 +15,6 @@
  */
 
 export { cli } from "./cli.js";
+export { TEMPLATES } from "./generatedNoCheck/templates.js";
 export { run } from "./run.js";
-export { TEMPLATES } from "./templates.js";
 export type { Template } from "./templates.js";

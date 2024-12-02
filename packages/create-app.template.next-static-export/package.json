@@ -1,7 +1,7 @@
 {
   "name": "@osdk/create-app.template.next-static-export",
   "private": true,
-  "version": "0.20.0-beta.3",
+  "version": "2.1.0-beta.15",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -10,11 +10,13 @@
   "exports": {
     ".": {
       "browser": "./build/browser/index.js",
-      "import": "./build/esm/index.js"
+      "import": "./build/esm/index.js",
+      "default": "./build/browser/index.js"
     },
     "./*": {
       "browser": "./build/browser/public/*.js",
-      "import": "./build/esm/public/*.js"
+      "import": "./build/esm/public/*.js",
+      "default": "./build/browser/public/*.js"
     }
   },
   "scripts": {
@@ -27,12 +29,12 @@
     "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
-    "next": "^14.2.16",
+    "next": "^15.0.1",
     "react": "^18",
     "react-dom": "^18"
   },
   "devDependencies": {
-    "@next/env": "^14.2.16",
+    "@next/env": "^15.0.1",
     "@osdk/create-app.template-packager": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
@@ -40,8 +42,8 @@
     "@types/node": "^20.17.0",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "eslint": "^8.57.1",
-    "eslint-config-next": "^14.2.16",
+    "eslint": "^9.13.0",
+    "eslint-config-next": "^15.0.1",
     "typescript": "~5.5.4",
     "vitest": "^2.1.3"
   },

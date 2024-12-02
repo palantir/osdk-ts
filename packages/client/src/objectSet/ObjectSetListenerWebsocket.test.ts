@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, PropertyKeys } from "@osdk/api";
-import type { EXPERIMENTAL_ObjectSetListener as ObjectSetListener } from "@osdk/api/unstable";
+import type {
+  ObjectOrInterfaceDefinition,
+  ObjectSetListener,
+  PropertyKeys,
+} from "@osdk/api";
 import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import type {
   ObjectSetStreamSubscribeRequests,
@@ -42,7 +45,10 @@ import { z } from "zod";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { Logger } from "../Logger.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
+import {
+  constructWebsocketUrl,
+  ObjectSetListenerWebsocket,
+} from "./ObjectSetListenerWebsocket.js";
 
 // it needs to be hoisted because its referenced from our mocked WebSocket
 // which must be hoisted to work
@@ -75,7 +81,7 @@ const rootLogger = await vi.hoisted(async (): Promise<Logger> => {
 // make local uses of WebSocket typed right
 const MockedWebSocket = ImportedWebSocket as unknown as MockedWebSocket;
 
-const STACK = "https://stack.palantir.com";
+const STACK = "https://stack.palantirCustom.com/foo/first/someStuff/";
 
 vi.mock("isomorphic-ws", async (importOriginal) => {
   const original = await importOriginal<
@@ -126,7 +132,6 @@ describe("ObjectSetListenerWebsocket", async () => {
         async () => "myAccessToken",
         { logger: rootLogger },
       );
-
       client = new ObjectSetListenerWebsocket({
         ...minimalClient,
         logger: rootLogger.child({ oslwInst: oslwInst++ }),
@@ -209,13 +214,18 @@ describe("ObjectSetListenerWebsocket", async () => {
         expect(ws.send).not.toHaveBeenCalled();
       });
 
-      it("currently requests regular object properties", () => {
+      it("correctly requests regular object properties", () => {
         expect(subReq1.requests[0].propertySet).toEqual([
           "employeeId",
+          "fullName",
+          "office",
+          "startDate",
+          "employeeStatus",
+          "employeeSensor",
         ]);
       });
 
-      it("currently requests reference backed properties", () => {
+      it("correctly requests reference backed properties", () => {
         expect(subReq1.requests[0].referenceSet).toEqual(["employeeLocation"]);
       });
 
@@ -310,29 +320,31 @@ describe("ObjectSetListenerWebsocket", async () => {
           let unsubscribe2: () => void;
           let subReq2: ObjectSetStreamSubscribeRequests;
           beforeEach(async () => {
-            [unsubscribe2, subReq2] = await Promise.all([
-              client.subscribe(
-                {
-                  type: "object",
-                  apiName: "Employee",
-                },
-                {
-                  type: "base",
-                  objectType: Employee.apiName,
-                },
-                listener,
-                ["employeeStatus"],
-              ),
+            unsubscribe2 = await client.subscribe(
+              {
+                type: "object",
+                apiName: "Employee",
+              },
+              {
+                type: "base",
+                objectType: Employee.apiName,
+              },
+              listener,
+              ["employeeId"],
+            );
 
-              expectSingleSubscribeMessage(ws),
-            ]);
-            rootLogger.fatal({ subReq2 });
+            subReq2 = await expectSingleSubscribeMessage(ws);
 
             respondSuccessToSubscribe(ws, subReq2);
           });
 
           afterEach(() => {
             unsubscribe2();
+          });
+
+          it("only requests requested properties", () => {
+            expect(subReq2.requests[1].propertySet).toEqual(["employeeId"]);
+            expect(subReq2.requests[1].referenceSet).toEqual([]);
           });
 
           it("does not trigger an out of date ", () => {
@@ -370,6 +382,13 @@ describe("ObjectSetListenerWebsocket", async () => {
           expect(listener.onOutOfDate).not.toHaveBeenCalled();
           expect(listener.onChange).not.toHaveBeenCalled();
           expect(listener.onError).not.toHaveBeenCalled();
+        });
+
+        it("should create url correctly", () => {
+          expect(constructWebsocketUrl(STACK, "ontologyRid1").toString())
+            .toEqual(
+              "wss://stack.palantircustom.com/foo/first/someStuff/api/v2/ontologySubscriptions/ontologies/ontologyRid1/streamSubscriptions",
+            );
         });
       });
     });
@@ -490,7 +509,6 @@ async function subscribeAndExpectWebSocket(
         objectType: Employee.apiName,
       },
       listener,
-      ["employeeId", "employeeLocation"],
     ),
   ]);
 

@@ -1,5 +1,153 @@
 # @osdk/foundry-sdk-generator
 
+## 2.1.0-beta.15
+
+### Patch Changes
+
+- Updated dependencies [1c59d93]
+  - @osdk/client@2.1.0-beta.15
+  - @osdk/api@2.1.0-beta.15
+  - @osdk/generator@2.1.0-beta.15
+
+## 2.1.0-beta.14
+
+### Minor Changes
+
+- 91cfa3a: Fixing url parsing for client.
+- 6b6c8a1: Updates gateway endpoints and changes fetchContents for attachments to return a response
+
+### Patch Changes
+
+- Updated dependencies [0a7c747]
+- Updated dependencies [91cfa3a]
+- Updated dependencies [015279b]
+- Updated dependencies [91cfa3a]
+- Updated dependencies [0c56d21]
+- Updated dependencies [6b6c8a1]
+  - @osdk/client@2.1.0-beta.14
+  - @osdk/generator@2.1.0-beta.14
+  - @osdk/api@2.1.0-beta.14
+
+## 2.1.0-beta.13
+
+### Patch Changes
+
+- Updated dependencies [c4f88a8]
+  - @osdk/client@2.1.0-beta.13
+  - @osdk/api@2.1.0-beta.13
+  - @osdk/generator@2.1.0-beta.13
+
+## 2.1.0-beta.12
+
+### Minor Changes
+
+- 71b5a9d: Packages generated with foundry-sdk-generator are now properly esm
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.12
+- @osdk/client@2.1.0-beta.12
+- @osdk/generator@2.1.0-beta.12
+
+## 2.1.0-beta.11
+
+### Minor Changes
+
+- bc1761c: Update platform API dependencies.
+
+### Patch Changes
+
+- Updated dependencies [bc1761c]
+- Updated dependencies [9298f75]
+  - @osdk/generator@2.1.0-beta.11
+  - @osdk/client@2.1.0-beta.11
+  - @osdk/api@2.1.0-beta.11
+
+## 2.1.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [11a05cc]
+- Updated dependencies [14624f7]
+- Updated dependencies [11088aa]
+- Updated dependencies [d88fdb9]
+  - @osdk/client@2.1.0-beta.10
+  - @osdk/api@2.1.0-beta.10
+  - @osdk/generator@2.1.0-beta.10
+
+## 2.1.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [acbfab9]
+  - @osdk/client@2.1.0-beta.9
+  - @osdk/api@2.1.0-beta.9
+  - @osdk/generator@2.1.0-beta.9
+
+## 2.1.0-beta.8
+
+### Minor Changes
+
+- 3dc9676: Explicitly label package.json as type module now.
+- 71dfb4c: Now export all api shapes from client, so use that dependency instead.
+
+### Patch Changes
+
+- Updated dependencies [9f3807c]
+- Updated dependencies [71dfb4c]
+  - @osdk/client@2.1.0-beta.8
+  - @osdk/api@2.1.0-beta.8
+  - @osdk/generator@2.1.0-beta.8
+
+## 2.1.0-beta.7
+
+### Minor Changes
+
+- 9018dc2: Updating platform api dependencies.
+
+### Patch Changes
+
+- Updated dependencies [27866a8]
+- Updated dependencies [0cd1603]
+- Updated dependencies [9018dc2]
+- Updated dependencies [31e7d70]
+  - @osdk/client@2.1.0-beta.7
+  - @osdk/api@2.1.0-beta.7
+  - @osdk/generator@2.1.0-beta.7
+
+## 2.1.0-beta.6
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
+### Patch Changes
+
+- Updated dependencies [25fd9f0]
+- Updated dependencies [1a89f23]
+- Updated dependencies [1b2e8c9]
+  - @osdk/api@2.1.0-beta.6
+  - @osdk/client@2.1.0-beta.6
+  - @osdk/generator@2.1.0-beta.6
+  - @osdk/shared.net@2.1.0-beta.2
+
+## 2.1.0-beta.5
+
+### Minor Changes
+
+- 0beaf9d: Generated packages should have proper package.json
+- 0beaf9d: Generated packages now use ^ dependencies on @osdk/api and @osdk/client
+
+### Patch Changes
+
+- Updated dependencies [027db73]
+- Updated dependencies [963addb]
+- Updated dependencies [fa02ebf]
+  - @osdk/generator@2.1.0-beta.5
+  - @osdk/shared.net@2.1.0-beta.1
+  - @osdk/client@2.1.0-beta.5
+  - @osdk/api@2.1.0-beta.5
+
 ## 2.1.0-beta.4
 
 ### Patch Changes

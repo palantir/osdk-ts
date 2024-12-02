@@ -144,6 +144,14 @@ const cspell = {
         // Used in a stub
         "Clooney",
       ],
+      ignoreWords: [
+        // it's an NPM package
+        "escodegen",
+        "blueprintjs",
+        "picocolors",
+        // used in a RID template literal string
+        "viewregistry",
+      ],
     },
     {
       filename: "**/*.test.{mts,cts,ts,tsx}",

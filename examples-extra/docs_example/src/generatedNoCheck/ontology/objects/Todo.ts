@@ -1,18 +1,18 @@
-import type { PropertyDef as $PropertyDef } from '@osdk/api';
+import type { PropertyDef as $PropertyDef } from '@osdk/client';
 import { $osdkMetadata } from '../../OntologyMetadata';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import type {
   PropertyKeys as $PropertyKeys,
   ObjectTypeDefinition as $ObjectTypeDefinition,
   ObjectMetadata as $ObjectMetadata,
-} from '@osdk/api';
+} from '@osdk/client';
 import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
-} from '@osdk/api';
+} from '@osdk/client';
 
 export namespace Todo {
   export type PropertyKeys = 'id' | 'title' | 'isComplete';
