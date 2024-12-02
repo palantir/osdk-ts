@@ -1,13 +1,17 @@
-import { useCallback, useEffect, useMemo } from 'react';
-import * as WebBrowser from 'expo-web-browser';
-import { exchangeCodeAsync, makeRedirectUri, useAuthRequest } from 'expo-auth-session';
-import { Button,  StyleSheet } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import React from 'react';
-import { CLIENT_ID, FOUNDRY_URL } from '@/foundry/osdkConst';
-import { useRouter } from 'expo-router';
-import { setAuthToken } from '@/foundry/Auth';
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { setAuthToken } from "@/foundry/Auth";
+import { CLIENT_ID, FOUNDRY_URL } from "@/foundry/osdkConst";
+import {
+  exchangeCodeAsync,
+  makeRedirectUri,
+  useAuthRequest,
+} from "expo-auth-session";
+import { useRouter } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
+import { useCallback, useEffect, useMemo } from "react";
+import React from "react";
+import { Button, StyleSheet } from "react-native";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -19,9 +23,10 @@ const discovery = {
 
 export default function Login() {
   const router = useRouter();
-  const redirectUri = useMemo(() => makeRedirectUri({
-    path: '',
-  }), []);
+  const redirectUri = useMemo(() =>
+    makeRedirectUri({
+      path: "",
+    }), []);
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: CLIENT_ID,
@@ -29,61 +34,63 @@ export default function Login() {
       redirectUri,
       usePKCE: true,
     },
-    discovery
+    discovery,
   );
 
   useEffect(() => {
-    if (response?.type === 'success') {
+    if (response?.type === "success") {
     }
   }, [response]);
 
   const onLogin = useCallback(async () => {
     promptAsync().then((codeResponse) => {
-        if (codeResponse.type !== 'success') {
-          return;
-        }
-        exchangeCodeAsync(
-          {
-            clientId: CLIENT_ID,
-            code: codeResponse.params.code,
-            redirectUri,
-            extraParams: request?.codeVerifier 
+      if (codeResponse.type !== "success") {
+        return;
+      }
+      exchangeCodeAsync(
+        {
+          clientId: CLIENT_ID,
+          code: codeResponse.params.code,
+          redirectUri,
+          extraParams: request?.codeVerifier
             ? {
-              code_verifier: request.codeVerifier
-            } : undefined,
-          },
-          discovery
-        ).then( async (tokenResponse) => {
-            setAuthToken(tokenResponse);
-            router.navigate('/(tabs)/explore');
-          });
-        }
-      );
-    } , [promptAsync, redirectUri, request?.codeVerifier, router]);
-  
-  return (
-      <ThemedView style={styles.loginContainer}>
-          <ThemedView style={styles.loginControls}>
-              <Button
-                  title="Login"
-                  onPress={onLogin} />
-              <ThemedText type={'subtitle'} style={styles.loginSubTitle}>Powered by Palantir</ThemedText>
-          </ThemedView>
-      </ThemedView>
-);
-}
+              code_verifier: request.codeVerifier,
+            }
+            : undefined,
+        },
+        discovery,
+      ).then(async (tokenResponse) => {
+        setAuthToken(tokenResponse);
+        router.navigate("/(tabs)/explore");
+      });
+    });
+  }, [promptAsync, redirectUri, request?.codeVerifier, router]);
 
+  return (
+    <ThemedView style={styles.loginContainer}>
+      <ThemedView style={styles.loginControls}>
+        <Button
+          title="Login"
+          onPress={onLogin}
+        />
+        <ThemedText type={"subtitle"} style={styles.loginSubTitle}>
+          Powered by Palantir
+        </ThemedText>
+      </ThemedView>
+    </ThemedView>
+  );
+}
 
 const styles = StyleSheet.create({
   loginContainer: {
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      gap: 10,
-      padding: 10,
-      width: "100%",
-      height: "100%",
-      backgroundColor: "white",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    gap: 10,
+    padding: 10,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "white",
   },
   loginControls: {
     display: "flex",
@@ -102,6 +109,6 @@ const styles = StyleSheet.create({
     width: 290,
     bottom: 0,
     left: 0,
-    position: 'absolute',
+    position: "absolute",
   },
 });
