@@ -1,5 +1,5 @@
 ---
-"@osdk/tmp-foundry-sdk-generator": patch
+"@osdk/foundry-sdk-generator": patch
 "@osdk/cli.cmd.typescript": patch
 "@osdk/shared.client.impl": patch
 "@osdk/shared.net": patch
