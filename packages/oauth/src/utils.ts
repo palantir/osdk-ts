@@ -60,7 +60,7 @@ export function processOptionsAndAssignDefaults(
     useHistory: options.useHistory ?? true,
     loginPage: options.loginPage,
     postLoginPage: options.postLoginPage || window.location.toString(),
-    scopes: options.scopes ?? ["api:read-data", "api:write-data"],
+    scopes: options.scopes ?? ["api:ontologies-read", "api:ontologies-write"],
     fetchFn: options.fetchFn ?? globalThis.fetch,
     ctxPath: options.ctxPath ?? "multipass",
   };

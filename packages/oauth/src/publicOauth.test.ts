@@ -312,7 +312,8 @@ describe(createPublicOauthClient, () => {
                 redirect_uri: clientArgs.redirectUrl,
                 response_type: "code",
                 code_challenge_method: "S256",
-                scope: "offline_access api:read-data api:write-data",
+                scope:
+                  "offline_access api:ontologies-read api:ontologies-write",
                 state: expect.any(String),
               }),
             );
