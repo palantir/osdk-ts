@@ -1,5 +1,18 @@
 # @osdk/foundry-sdk-generator
 
+## 2.1.0-beta.16
+
+### Minor Changes
+
+- 3a85529: Generated SDKS produce valid ESM packages
+
+### Patch Changes
+
+- Updated dependencies [e5fe7c0]
+  - @osdk/client@2.1.0-beta.16
+  - @osdk/api@2.1.0-beta.16
+  - @osdk/generator@2.1.0-beta.16
+
 ## 2.1.0-beta.15
 
 ### Patch Changes
