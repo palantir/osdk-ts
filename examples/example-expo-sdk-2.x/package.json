@@ -1,36 +1,30 @@
 {
-  "name": "@osdk/create-app.template.expo.v2",
+  "name": "@osdk/examples.expo-sdk-2.x",
   "private": true,
-  "version": "2.1.0-beta.15",
+  "version": "1.0.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/palantir/osdk-ts.git"
   },
-  "exports": {
-    ".": {
-      "browser": "./build/browser/index.js",
-      "import": "./build/esm/index.js",
-      "default": "./build/browser/index.js"
-    },
-    "./*": {
-      "browser": "./build/browser/public/*.js",
-      "import": "./build/esm/public/*.js",
-      "default": "./build/browser/public/*.js"
-    }
-  },
   "scripts": {
-    "check-attw": "monorepo.tool.attw esm",
-    "check-spelling": "cspell --quiet .",
-    "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "codegen": "create-app.template-packager",
-    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "transpile": "monorepo.tool.transpile"
+    "android": "expo start --android",
+    "build": "expo export -p web",
+    "dev": "expo start --port 8080",
+    "ios": "expo start --ios",
+    "lint": "expo lint",
+    "reset-project": "node ./scripts/reset-project.js",
+    "start": "expo start --port 8080",
+    "test": "jest --watchAll",
+    "web": "expo start --web --port 8080"
   },
   "dependencies": {
     "@babel/runtime": "^7.26.0",
     "@expo/vector-icons": "^14.0.2",
+    "@osdk/client": "workspace:*",
+    "@osdk/e2e.generated.catchall": "workspace:*",
+    "@osdk/oauth": "workspace:*",
+    "@osdk/react": "workspace:*",
     "@react-navigation/bottom-tabs": "^7.0.0",
     "@react-navigation/elements": "^2.2.4",
     "@react-navigation/native": "^7.0.0",
@@ -64,10 +58,6 @@
     "@babel/core": "^7.26.0",
     "@eslint/compat": "^1.2.1",
     "@eslint/js": "^9.13.0",
-    "@osdk/create-app.template-packager": "workspace:~",
-    "@osdk/monorepo.api-extractor": "workspace:~",
-    "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~",
     "@types/eslint-plugin-jsx-a11y": "^6.9.0",
     "@types/jest": "^29.5.12",
     "@types/node": "^22.7.4",
@@ -94,19 +84,8 @@
     "vite": "^5.4.8",
     "vitest": "^2.1.2"
   },
-  "publishConfig": {
-    "access": "public"
-  },
-  "files": [
-    "build/cjs",
-    "build/esm",
-    "build/browser",
-    "CHANGELOG.md",
-    "package.json",
-    "templates",
-    "*.d.ts"
-  ],
-  "module": "./build/esm/index.js",
-  "types": "./build/esm/index.d.ts",
-  "type": "module"
+  "main": "expo-router/entry",
+  "overrides": {
+    "@osdk/client": "^2.1.0-beta.16"
+  }
 }
