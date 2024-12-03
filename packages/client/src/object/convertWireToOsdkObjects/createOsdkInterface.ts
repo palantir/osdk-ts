@@ -44,10 +44,10 @@ export function createOsdkInterface<
   underlying: Osdk<Q> & ObjectHolder<Q>,
   interfaceDef: InterfaceMetadata,
 ) {
-  const interfaceHolder: InterfaceHolderOwnProps<Q> = {
-    [UnderlyingOsdkObject]: underlying,
-    [InterfaceDefRef]: interfaceDef,
-  };
+  const interfaceHolder: InterfaceHolderOwnProps<Q> = Object.create(null, {
+    [UnderlyingOsdkObject]: { value: underlying },
+    [InterfaceDefRef]: { value: interfaceDef },
+  });
 
   const handler = handlerCache.get(interfaceDef);
 
@@ -67,12 +67,20 @@ function createInterfaceProxyHandler(
       const objDef = underlying[ObjectDefRef];
 
       switch (p) {
+        case UnderlyingOsdkObject:
+        case InterfaceDefRef:
+          return Reflect.getOwnPropertyDescriptor(target, p);
+
         case "$primaryKey":
         case "$title":
         case "$objectType":
         case "$rid":
-          return underlying[p] != null
-            ? Reflect.getOwnPropertyDescriptor(underlying, p)
+          return p in underlying
+            ? {
+              value: underlying[p],
+              configurable: true,
+              enumerable: true,
+            }
             : undefined;
 
         case "$apiName":
@@ -123,6 +131,8 @@ function createInterfaceProxyHandler(
         "$primaryKey",
         ...(underlying["$rid"] ? ["$rid"] : []),
         "$title",
+        UnderlyingOsdkObject,
+        InterfaceDefRef,
         ...propNames,
       ];
     },

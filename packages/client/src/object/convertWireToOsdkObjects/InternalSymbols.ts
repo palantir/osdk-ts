@@ -42,11 +42,6 @@ export const ClientRef = Symbol(
   process.env.MODE !== "production" ? "ClientRef" : undefined,
 );
 
-/** @internal */
-export const CachedPropertiesRef = Symbol(
-  process.env.MODE !== "production" ? "CachedProperties" : undefined,
-);
-
 export interface HolderBase<T extends ObjectOrInterfaceDefinition> {
   [UnderlyingOsdkObject]: OsdkBase<any>;
   [ObjectDefRef]?: T;

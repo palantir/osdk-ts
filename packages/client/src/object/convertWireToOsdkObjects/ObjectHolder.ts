@@ -21,7 +21,6 @@ import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvide
 import type { DollarAsFn } from "./getDollarAs.js";
 import type { get$link } from "./getDollarLink.js";
 import type {
-  CachedPropertiesRef,
   ClientRef,
   ObjectDefRef,
   RawObject,
@@ -34,12 +33,10 @@ export interface ObjectHolderPrototypeOwnProps {
   readonly [ClientRef]: MinimalClient;
   readonly "$as": DollarAsFn;
   readonly "$link": ReturnType<typeof get$link>;
-  readonly "$updateInternalValues": (newValues: Record<string, any>) => void;
 }
 /** @internal */
 export interface ObjectHolderOwnProperties {
   [RawObject]: OntologyObjectV2;
-  [CachedPropertiesRef]: Map<string | symbol, any>;
 }
 
 /** @internal */

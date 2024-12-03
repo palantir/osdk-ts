@@ -219,6 +219,7 @@ describe("ObjectSetListenerWebsocket", async () => {
           "employeeId",
           "fullName",
           "office",
+          "class",
           "startDate",
           "employeeStatus",
           "employeeSensor",
@@ -278,6 +279,8 @@ describe("ObjectSetListenerWebsocket", async () => {
               "object": {
                 "$apiName": "Employee",
                 "$objectType": "Employee",
+                "$primaryKey": undefined,
+                "$title": undefined,
                 "employeeId": 1,
               },
               "state": "ADDED_OR_UPDATED",
@@ -297,6 +300,7 @@ describe("ObjectSetListenerWebsocket", async () => {
                 "$apiName": "Employee",
                 "$objectType": "Employee",
                 "$primaryKey": "12345",
+                "$title": undefined,
                 "employeeId": "12345",
                 "employeeLocation": GeotimeSeriesPropertyImpl {
                   "lastFetchedValue": {
