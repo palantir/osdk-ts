@@ -1,5 +1,15 @@
 # @osdk/widget-manifest-vite-plugin
 
+## 0.3.0-beta.1
+
+### Minor Changes
+
+- 91a54a3: Support basic manifest in vite serve mode
+
+### Patch Changes
+
+- @osdk/widget-api.unstable@0.3.0-beta.1
+
 ## 0.2.0
 
 ### Minor Changes

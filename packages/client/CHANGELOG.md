@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.1.0-beta.16
+
+### Minor Changes
+
+- e5fe7c0: Adds experimental method to convert an object set into RID
+
+### Patch Changes
+
+- Updated dependencies [e5fe7c0]
+  - @osdk/api@2.1.0-beta.16
+  - @osdk/generator-converters@2.1.0-beta.16
+  - @osdk/client.unstable@2.1.0-beta.16
+
 ## 2.1.0-beta.15
 
 ### Minor Changes

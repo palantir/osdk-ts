@@ -72,9 +72,23 @@ export async function generatePackage(
     ontologyInfo.externalInterfaces,
   );
 
-  const compilerOutput = compileInMemory(inMemoryFileSystem, {
-    esm: true,
+  // actually write file plus save contents
+  const contents = await generatePackageJson({
+    packageName: options.packageName,
+    packagePath,
+    packageVersion: options.packageVersion,
+    dependencies: [],
+    peerDependencies: resolvedPeerDependencies,
+    beta: options.beta,
   });
+
+  // writes to in memory fs that the compiler will read from
+  await hostFs.writeFile(
+    join(packagePath, "package.json"),
+    JSON.stringify(contents),
+  );
+
+  const compilerOutput = compileInMemory(inMemoryFileSystem);
   compilerOutput.diagnostics.forEach(d =>
     consola.error(`Error compiling file`, d.file?.fileName, d.messageText)
   );
@@ -114,14 +128,6 @@ export async function generatePackage(
       bundleDts,
       { flag: "w" },
     ),
-    generatePackageJson({
-      packageName: options.packageName,
-      packagePath,
-      packageVersion: options.packageVersion,
-      dependencies: [],
-      peerDependencies: resolvedPeerDependencies,
-      beta: options.beta,
-    }),
   ]);
 
   const absolutePackagePath = isAbsolute(options.outputDir)

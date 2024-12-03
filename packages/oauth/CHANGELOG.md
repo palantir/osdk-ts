@@ -1,5 +1,11 @@
 # @osdk/oauth
 
+## 1.1.0-beta.4
+
+### Minor Changes
+
+- e968bc0: Use api:ontologies-X instead of api:X-data
+
 ## 1.1.0-beta.3
 
 ### Minor Changes
