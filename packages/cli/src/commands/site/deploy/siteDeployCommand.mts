@@ -23,6 +23,7 @@ import { colorize } from "consola/utils";
 import * as fs from "node:fs";
 import path from "node:path";
 import { Readable } from "node:stream";
+import prettyBytes from "pretty-bytes";
 import { autoVersion as findAutoVersion } from "../../../util/autoVersion.js";
 import type { AutoVersionConfig } from "../../../util/config.js";
 import { loadToken } from "../../../util/token.js";
@@ -125,8 +126,10 @@ function logArchiveStats(archive: archiver.Archiver): void {
     };
   });
   archive.on("finish", () => {
-    consola.debug(
-      `Zipped ${archiveStats.fileCount} files and ${archiveStats.bytes} bytes`,
+    consola.info(
+      `Zipped ${
+        prettyBytes(archiveStats.bytes, { binary: true })
+      } total over ${archiveStats.fileCount} files`,
     );
   });
 }
