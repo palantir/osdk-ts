@@ -197,10 +197,8 @@ export async function osdkObjectSetExample() {
           `Employee with primary key ${update.object.$primaryKey} was added or updated`,
         );
 
-        objects[update.object.$primaryKey] = consolidateOsdkObject(
-          objects[update.object.$primaryKey],
-          update.object,
-        );
+        objects[update.object.$primaryKey] = objects[update.object.$primaryKey]
+          .$cloneAndUpdate(update.object as any);
       } else if (update.state === "REMOVED") {
         console.log(
           `Employee with primary key ${update.object.$primaryKey} was deleted`,
