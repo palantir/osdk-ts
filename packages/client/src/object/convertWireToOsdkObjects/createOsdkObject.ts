@@ -61,6 +61,7 @@ const objectPrototypeCache = createClientCache(
             this: ObjectHolder<typeof objectDef>,
             newValues: Record<string, any>,
           ) {
+            objectPrototypeCache.get(client, objectDef);
             this[RawObject] = Object.assign(
               {},
               this[RawObject],
@@ -68,7 +69,28 @@ const objectPrototypeCache = createClientCache(
             );
           },
         },
-      } satisfies PropertyDescriptorRecord<ObjectHolderPrototypeOwnProps>,
+        "$cloneAndUpdate": {
+          value: function(
+            this: ObjectHolder<typeof objectDef>,
+            newValues: any,
+          ) {
+            const filteredSource = Object.keys(newValues[RawObject])
+              .filter(key => Object.keys(this[RawObject]).includes(key))
+              .reduce((obj, key) => {
+                obj[key] = newValues[RawObject][key];
+                return obj;
+              }, {} as Record<string, any>);
+
+            return createOsdkObject(
+              client,
+              objectDef,
+              Object.assign({}, this[RawObject], filteredSource),
+            );
+          },
+        },
+      } satisfies PropertyDescriptorRecord<
+        ObjectHolderPrototypeOwnProps
+      >,
     );
   },
 );

@@ -96,7 +96,7 @@ export interface Client extends SharedClient, SharedClient_2 {
 }
 
 // @public (undocumented)
-export function consolidateOsdkObject<T extends Osdk.Instance<V, any, any>, U extends Osdk.Instance<V, any, any>, V extends ObjectOrInterfaceDefinition>(oldObject: T | undefined, upToDateObject: U): U;
+export function consolidateOsdkObject<T extends Osdk.Instance<V, any, any>, U extends Osdk.Instance<V, any, any>, V extends ObjectOrInterfaceDefinition>(oldObject: T, upToDateObject: U): T;
 
 // @public (undocumented)
 export function createAttachmentUpload(data: Blob, name: string): AttachmentUpload;

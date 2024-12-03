@@ -24,13 +24,7 @@ export function consolidateOsdkObject<
   oldObject: T,
   upToDateObject: U,
 ): T {
-  const combinedObject = oldObject;
-
-  for (const key in combinedObject) {
-    if (upToDateObject.hasOwnProperty(key)) {
-      combinedObject[key] = upToDateObject[key] as any;
-    }
-  }
-
-  return combinedObject;
+  return oldObject.$cloneAndUpdate(
+    upToDateObject.$internalValues,
+  ) as T;
 }

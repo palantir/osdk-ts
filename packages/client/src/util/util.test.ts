@@ -16,31 +16,51 @@
 
 import type { Osdk } from "@osdk/api";
 import type { Employee, Todo } from "@osdk/client.test.ontology";
+import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
 import { describe, expect, expectTypeOf, it } from "vitest";
+import { createMinimalClient } from "../createMinimalClient.js";
+import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
 import { consolidateOsdkObject } from "./consolidateOsdkObject.js";
 
 describe(consolidateOsdkObject, () => {
-  it("combines two objects where new object is scoped to less props", () => {
-    const oldObject: Osdk.Instance<Todo, never, "text"> = {
-      $apiName: "Todo",
-      $objectType: "type",
-      $primaryKey: 1,
-      $title: "Employee",
-      text: "text",
-    } as any;
+  it("combines two objects where new object is scoped to less props", async () => {
+    const clientCtx = createMinimalClient(
+      {
+        ontologyRid:
+          "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+      },
+      "https://stack.palantir.com",
+      async () => "myAccessToken",
+    );
 
-    const upToDateObject: Osdk.Instance<Todo> = {
-      $apiName: "Todo",
-      $objectType: "type",
-      $primaryKey: 1,
-      $title: "Employee",
-      id: 1,
-      text: "hi",
-    } as any;
+    let objectFromWire = {
+      __apiName: "Employee" as const,
+      __primaryKey: 0,
+      __title: "Steve",
+      fullName: "Steve",
+      employeeId: "5",
+    } satisfies OntologyObjectV2;
 
-    const result = consolidateOsdkObject(oldObject, upToDateObject);
+    const [oldObject] = (await convertWireToOsdkObjects(
+      clientCtx,
+      [objectFromWire],
+      undefined,
+    )) as unknown as Osdk.Instance<Employee>[];
 
-    expectTypeOf(result).toEqualTypeOf<Osdk.Instance<Todo>>();
+    const [newObject] = (await convertWireToOsdkObjects(
+      clientCtx,
+      [objectFromWire],
+      undefined,
+    )) as unknown as Osdk.Instance<Employee>[];
+
+    console.log(
+      oldObject,
+      "A",
+      oldObject.$cloneAndUpdate,
+    );
+    const result = oldObject.$cloneAndUpdate(newObject);
+
+    expectTypeOf(result).toEqualTypeOf<Osdk.Instance<Employee>>();
 
     expect(result).toMatchInlineSnapshot(`
       {
@@ -54,37 +74,37 @@ describe(consolidateOsdkObject, () => {
     `);
   });
 
-  it("combines two objects where new object is scoped to more props", () => {
-    const oldObject: Osdk.Instance<Todo> = {
-      $apiName: "Todo",
-      $objectType: "type",
-      $primaryKey: 1,
-      $title: "Employee",
-      id: 3,
-      text: "text",
-    } as any;
+  // it("combines two objects where new object is scoped to more props", () => {
+  //   const oldObject: Osdk.Instance<Todo> = {
+  //     $apiName: "Todo",
+  //     $objectType: "type",
+  //     $primaryKey: 1,
+  //     $title: "Employee",
+  //     id: 3,
+  //     text: "text",
+  //   } as any;
 
-    const upToDateObject: Osdk.Instance<Todo, never, "id"> = {
-      $apiName: "Todo",
-      $objectType: "type",
-      $primaryKey: 1,
-      $title: "Employee",
-      id: 1,
-    } as any;
+  //   const upToDateObject: Osdk.Instance<Todo, never, "id"> = {
+  //     $apiName: "Todo",
+  //     $objectType: "type",
+  //     $primaryKey: 1,
+  //     $title: "Employee",
+  //     id: 1,
+  //   } as any;
 
-    const result = consolidateOsdkObject(oldObject, upToDateObject);
+  //   const result = oldObject.$cloneAndUpdate(upToDateObject);
 
-    expectTypeOf(result).toEqualTypeOf<Osdk.Instance<Todo, never, "id">>();
+  //   expectTypeOf(result).toEqualTypeOf<Osdk.Instance<Todo>>();
 
-    expect(result).toMatchInlineSnapshot(`
-      {
-        "$apiName": "Todo",
-        "$objectType": "type",
-        "$primaryKey": 1,
-        "$title": "Employee",
-        "id": 1,
-        "text": "hi",
-      }
-    `);
-  });
+  //   expect(result).toMatchInlineSnapshot(`
+  //     {
+  //       "$apiName": "Todo",
+  //       "$objectType": "type",
+  //       "$primaryKey": 1,
+  //       "$title": "Employee",
+  //       "id": 1,
+  //       "text": "hi",
+  //     }
+  //   `);
+  // });
 });

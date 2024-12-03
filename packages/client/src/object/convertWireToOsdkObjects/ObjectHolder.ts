@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/api";
+import type { Osdk, OsdkBase } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import type { DollarAsFn } from "./getDollarAs.js";
 import type { get$link } from "./getDollarLink.js";
+import type { InterfaceHolder } from "./InterfaceHolder.js";
 import type {
   CachedPropertiesRef,
   ClientRef,
@@ -35,7 +36,16 @@ export interface ObjectHolderPrototypeOwnProps {
   readonly "$as": DollarAsFn;
   readonly "$link": ReturnType<typeof get$link>;
   readonly "$updateInternalValues": (newValues: Record<string, any>) => void;
+  readonly "$cloneAndUpdate": CloneAndUpdateFn;
 }
+
+type CloneAndUpdateFn = <
+  Q extends FetchedObjectTypeDefinition,
+  T extends Osdk.Instance<Q, any, any>,
+>(
+  newDef: T,
+) => OsdkBase<any>;
+
 /** @internal */
 export interface ObjectHolderOwnProperties {
   [RawObject]: OntologyObjectV2;
