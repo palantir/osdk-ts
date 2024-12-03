@@ -12,7 +12,6 @@
     "build": "expo export -p web",
     "dev": "expo start --port 8080",
     "ios": "expo start --ios",
-    "lint": "expo lint",
     "reset-project": "node ./scripts/reset-project.js",
     "start": "expo start --port 8080",
     "test": "jest --watchAll",
