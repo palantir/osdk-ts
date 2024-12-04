@@ -23,25 +23,26 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import type {
+  DerivedPropertyDefinition,
   ObjectSet as WireObjectSet,
   ObjectSetSearchAroundType,
+  SelectedPropertyDefinition,
+  SelectedPropertyOperation,
 } from "@osdk/internal.foundry.core";
+import invariant from "tiny-invariant";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import { MinimalClient } from "../MinimalClientContext.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 
-export type OsdkDerivedPropertyDefinition = {
-  type: "osdkDerivedProperty";
-  derivedPropertyDefinition: any;
-  dpType: "aggregate" | "select";
-  propertyName?: string;
-  opt?: any;
+export type DerivedPropertyDefinition2 = {
+  marker: unknown;
 };
 
 /** @internal */
 export function createDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>(
   objectType: Q,
   objectSet: WireObjectSet,
+  definitionMap: WeakMap<any, DerivedPropertyDefinition>,
 ): DeriveObjectSet<Q> {
   const base: DeriveObjectSet<Q> = {
     pivotTo: (link) => {
@@ -49,33 +50,58 @@ export function createDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>(
         type: "searchAround",
         objectSet,
         link,
-      }) as any;
+      }, definitionMap) as any;
     },
     where: (clause) => {
       return createDeriveObjectSet(objectType, {
         type: "filter",
         objectSet: objectSet,
         where: modernToLegacyWhereClause(clause, objectType),
-      });
+      }, definitionMap);
     },
     aggregate: (aggregation: string, opt) => {
-      const def: OsdkDerivedPropertyDefinition = {
-        type: "osdkDerivedProperty",
-        derivedPropertyDefinition: objectSet,
-        propertyName: aggregation.split(":")[0],
-        dpType: "aggregate",
-        opt,
-      };
-      return def;
+      const definitionId = globalThis.crypto.randomUUID();
+      const splitAggregation = aggregation.split(":");
+      invariant(splitAggregation.length === 2, "Invalid aggregation format");
+      const [aggregationPropertyName, aggregationOperation] = splitAggregation;
+      let aggregationOperationDefinition: SelectedPropertyOperation;
+      switch (aggregationOperation) {
+        case "$count":
+          aggregationOperationDefinition = {
+            type: "count",
+          };
+          break;
+        case "sum":
+        case "avg":
+        case "min":
+        case "max":
+        case "exactDistinct":
+        case "approximateDistinct":
+          aggregationOperationDefinition = {
+            type: aggregationOperation,
+            selectedPropertyApiName: aggregationPropertyName,
+          };
+        default:
+          invariant(false, "Invalid aggregation operation");
+      }
+      definitionMap.set(definitionId, {
+        type: "selection",
+        objectSet: objectSet,
+        operation: aggregationOperationDefinition,
+      });
+      return { marker: definitionId };
     },
     selectProperty: (name) => {
-      const def: OsdkDerivedPropertyDefinition = {
-        type: "osdkDerivedProperty",
-        derivedPropertyDefinition: objectSet,
-        propertyName: name,
-        dpType: "select",
-      };
-      return def;
+      const definitionId = globalThis.crypto.randomUUID();
+      definitionMap.set(definitionId, {
+        type: "selection",
+        objectSet: objectSet,
+        operation: {
+          type: "get",
+          selectedPropertyApiName: name,
+        },
+      });
+      return { marker: definitionId };
     },
   };
 

@@ -23,13 +23,8 @@ import type {
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 
-export type OsdkDerivedPropertyDefinition = {
-  type: "osdkDerivedProperty";
-  derivedPropertyDefinition: any;
-  dpType: "aggregate" | "select";
-  linkName?: string;
-  propertyName?: string;
-  opt?: number;
+export type DerivedPropertyDefinition = {
+  marker: unknown;
 };
 
 export interface BaseDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>
@@ -63,7 +58,7 @@ interface AggregatableDeriveObjectSet<
   readonly aggregate: (
     aggregationSpecifier: ValidAggregationKeys<Q>,
     opts?: { limit: number },
-  ) => OsdkDerivedPropertyDefinition;
+  ) => DerivedPropertyDefinition;
 }
 
 interface SingleLinkDeriveObjectSet<
@@ -71,7 +66,7 @@ interface SingleLinkDeriveObjectSet<
 > extends AggregatableDeriveObjectSet<Q>, BaseDeriveObjectSet<Q> {
   readonly selectProperty: (
     propertyName: PropertyKeys<Q>,
-  ) => OsdkDerivedPropertyDefinition;
+  ) => DerivedPropertyDefinition;
 }
 
 interface ManyLinkDeriveObjectSet<

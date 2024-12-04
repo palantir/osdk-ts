@@ -17,7 +17,7 @@
 import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
 import type {
   BaseDeriveObjectSet,
-  OsdkDerivedPropertyDefinition,
+  DerivedPropertyDefinition,
 } from "./DeriveObjectSet.js";
 
 type ValidDerivedPropertyKeys<Q extends ObjectOrInterfaceDefinition> = string;
@@ -25,5 +25,5 @@ type ValidDerivedPropertyKeys<Q extends ObjectOrInterfaceDefinition> = string;
 export type DeriveClause<Q extends ObjectOrInterfaceDefinition> = {
   [key: ValidDerivedPropertyKeys<Q>]: (
     baseObjectSet: BaseDeriveObjectSet<Q>,
-  ) => OsdkDerivedPropertyDefinition;
+  ) => DerivedPropertyDefinition;
 };

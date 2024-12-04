@@ -33,7 +33,10 @@ import type {
   SingleOsdkResult,
 } from "@osdk/api";
 import type { MinimalObjectSet } from "@osdk/api/unstable";
-import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
+import type {
+  DerivedPropertyDefinition,
+  ObjectSet as WireObjectSet,
+} from "@osdk/internal.foundry.core";
 import { createDeriveObjectSet } from "../derivedProperties/createDerivedObjectSet.js";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -241,16 +244,26 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     },
 
     withProperties: (clause) => {
-      const derivedObjectDefName = Object.keys(clause)[0];
-      const def = clause[derivedObjectDefName](
-        createDeriveObjectSet(objectType, { type: "methodInput" }),
-      );
+      const definitionMap = new WeakMap<any, DerivedPropertyDefinition>();
+
+      const derivedProperties: Record<string, DerivedPropertyDefinition> = {};
+      for (const [key] of Object.keys(clause)) {
+        const derivedPropertyDefinition = clause[key](createDeriveObjectSet(
+          objectType,
+          { type: "methodInput" },
+          definitionMap,
+        ));
+        derivedProperties[key] = definitionMap.get(
+          derivedPropertyDefinition.marker,
+        )!;
+      }
+
       return clientCtx.objectSetFactory(
         objectType,
         clientCtx,
         {
           type: "withProperties",
-          derivedProperties: def.derivedPropertyDefinition,
+          derivedProperties: derivedProperties,
           objectSet: objectSet,
         },
       );
