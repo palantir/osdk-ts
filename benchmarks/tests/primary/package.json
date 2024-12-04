@@ -19,7 +19,7 @@
     "isomorphic-ws": "*"
   },
   "devDependencies": {
-    "@types/node": "^18.0.0",
+    "@types/node": "^22",
     "cli-progress": "^3.12.0",
     "esbuild": "^0.24.0",
     "execa": "^9.5.1",
