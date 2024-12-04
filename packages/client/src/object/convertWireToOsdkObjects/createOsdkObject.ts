@@ -56,11 +56,7 @@ const basePropDefs = {
   },
   "$link": {
     get: function(this: InternalOsdkInstance & ObjectHolder<any>) {
-      return get$link({
-        [UnderlyingOsdkObject]: this as any,
-        [ObjectDefRef]: this[ObjectDefRef],
-        [ClientRef]: this[ClientRef],
-      } as ObjectHolder<any>);
+      return get$link(this);
     },
   },
 };
