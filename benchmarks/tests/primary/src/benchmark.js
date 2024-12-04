@@ -26,8 +26,8 @@ import { fixDirname } from "./helpers.js";
 
 fixDirname(import.meta);
 
-const WARMUP_ITERATIONS = 5;
-const ITERATIONS = 15;
+const WARMUP_ITERATIONS = 1;
+const ITERATIONS = 10;
 
 async function main() {
   const multiBar = new cliProgress.MultiBar(
@@ -39,6 +39,7 @@ async function main() {
   );
 
   const tests = [
+    "createObjects.js",
     "import.createClient.esbuild.js",
     "import.createClient.js",
     "noop.js",
@@ -110,23 +111,65 @@ async function main() {
  * @returns {Promise<import("./types.js").Result>}
  */
 async function runTest(test) {
-  const subprocess = execaNode({
-    nodeOptions: [
-      "--allow-natives-syntax",
-      "--expose-gc",
-      "--max-old-space-size=10",
-    ],
-    ipc: true,
-  })`${path.join(import.meta.dirname, "tests", test)}`;
-  await subprocess.sendMessage({ "type": "start" });
+  const closeSidecar = await createSidecar(test);
 
-  /** @type {import("./types.js").Result} */
-  const response = /** @type any */ (await subprocess.getOneMessage());
-  invariant(
-    response.type === "result" && "time" in response && "heapUsed" in response
-      && "rss" in response,
-  );
-  return response;
+  try {
+    const subprocess = execaNode({
+      nodeOptions: [
+        "--allow-natives-syntax",
+        "--expose-gc",
+        // "--max-old-space-size=10",
+      ],
+      ipc: true,
+    })`${path.join(import.meta.dirname, "tests", test)}`;
+    try {
+      await subprocess.sendMessage({ "type": "start" });
+
+      /** @type {import("./types.js").Result} */
+      const response = /** @type any */ (await subprocess.getOneMessage());
+      invariant(
+        response.type === "result" && "time" in response
+          && "heapUsed" in response
+          && "rss" in response,
+      );
+      return response;
+    } catch (e) {
+      console.log(e);
+      console.log((await subprocess).code);
+      // console.log(subprocess.stdout);
+      // console.log(subprocess.stderr);
+      throw e;
+    }
+  } finally {
+    if (closeSidecar) {
+      await closeSidecar();
+    }
+  }
 }
 
 main();
+
+async function createSidecar(test) {
+  const sidecarPath = path.join(import.meta.dirname, "sidecars", test);
+
+  const createSidecar = await fileExists(sidecarPath)
+    ? (await import(sidecarPath)).default
+    : undefined;
+
+  /** @type {undefined | (() => Promise<void>)} */
+  const closeSidecar = createSidecar ? await createSidecar() : undefined;
+  return closeSidecar;
+}
+
+async function fileExists(filePath) {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch (err) {
+    if (err.code === "ENOENT") {
+      return false;
+    } else {
+      throw err; // Rethrow other errors
+    }
+  }
+}
