@@ -23,6 +23,32 @@ import type {
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 
+export type OsdkDerivedPropertyDefinition = {
+  type: "osdkDerivedProperty";
+  derivedPropertyDefinition: any;
+  dpType: "aggregate" | "select";
+  linkName?: string;
+  propertyName?: string;
+  opt?: number;
+};
+
+export interface BaseDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>
+  extends FilterableDeriveObjectSet<Q>
+{
+  readonly pivotTo: <L extends LinkNames<Q>>(
+    type: L,
+  ) => NonNullable<CompileTimeMetadata<Q>["links"][L]["multiplicity"]> extends
+    false ? SingleLinkDeriveObjectSet<LinkedType<Q, L>>
+    : ManyLinkDeriveObjectSet<LinkedType<Q, L>>;
+}
+
+export interface DeriveObjectSet<Q extends ObjectOrInterfaceDefinition>
+  extends
+    BaseDeriveObjectSet<Q>,
+    AggregatableDeriveObjectSet<Q>,
+    SingleLinkDeriveObjectSet<Q>
+{}
+
 interface FilterableDeriveObjectSet<
   Q extends ObjectOrInterfaceDefinition,
 > {
@@ -37,26 +63,18 @@ interface AggregatableDeriveObjectSet<
   readonly aggregate: (
     aggregationSpecifier: ValidAggregationKeys<Q>,
     opts?: { limit: number },
-  ) => any;
-}
-
-export interface BaseDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>
-  extends FilterableDeriveObjectSet<Q>
-{
-  readonly pivotTo: <L extends LinkNames<Q>>(
-    type: L,
-  ) => NonNullable<CompileTimeMetadata<Q>["links"][L]["multiplicity"]> extends
-    false ? SingleLinkDeriveObjectSet<LinkedType<Q, L>>
-    : ManyLinkDeriveObjectSet<LinkedType<Q, L>>;
+  ) => OsdkDerivedPropertyDefinition;
 }
 
 interface SingleLinkDeriveObjectSet<
   Q extends ObjectOrInterfaceDefinition,
 > extends AggregatableDeriveObjectSet<Q>, BaseDeriveObjectSet<Q> {
-  readonly selectProperty: (propertyName: PropertyKeys<Q>) => any;
+  readonly selectProperty: (
+    propertyName: PropertyKeys<Q>,
+  ) => OsdkDerivedPropertyDefinition;
 }
 
-export interface ManyLinkDeriveObjectSet<
+interface ManyLinkDeriveObjectSet<
   Q extends ObjectOrInterfaceDefinition,
 > extends AggregatableDeriveObjectSet<Q> {
   readonly pivotTo: <L extends LinkNames<Q>>(

@@ -286,6 +286,15 @@ describe("ObjectSet", () => {
     }
   });
 
+  it("rdp", async () => {
+    const employeeResult = await client(Employee).withProperties({
+      "name": (base) => {
+        return base.pivotTo("lead").aggregate("employeeId:avg");
+      },
+    }).where({ "name": { "$eq": 1 } }).fetchPage();
+    console.log(employeeResult);
+  });
+
   it(" object set union works with fetchPageWithErrors", async () => {
     const objectSet = client(Employee);
     const unionedObjectSet = objectSet.union(objectSet);

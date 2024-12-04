@@ -34,6 +34,7 @@ import type {
 } from "@osdk/api";
 import type { MinimalObjectSet } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
+import { createDeriveObjectSet } from "../derivedProperties/createDerivedObjectSet.js";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { aggregate } from "../object/aggregate.js";
@@ -240,7 +241,19 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     },
 
     withProperties: (clause) => {
-      return clientCtx.objectSetFactory(objectType, clientCtx, objectSet);
+      const derivedObjectDefName = Object.keys(clause)[0];
+      const def = clause[derivedObjectDefName](
+        createDeriveObjectSet(objectType, { type: "methodInput" }),
+      );
+      return clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        {
+          type: "withProperties",
+          derivedProperties: def.derivedPropertyDefinition,
+          objectSet: objectSet,
+        },
+      );
     },
 
     $objectSetInternals: {
