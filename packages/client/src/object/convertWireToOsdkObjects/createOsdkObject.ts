@@ -27,13 +27,11 @@ import { get$link } from "./getDollarLink.js";
 import {
   ClientRef,
   ObjectDefRef,
-  RawObject,
   UnderlyingOsdkObject,
 } from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
 
 interface InternalOsdkInstance {
-  [RawObject]: OntologyObjectV2;
   [ObjectDefRef]: FetchedObjectTypeDefinition;
   [ClientRef]: MinimalClient;
 }
@@ -62,7 +60,6 @@ const basePropDefs = {
         [UnderlyingOsdkObject]: this as any,
         [ObjectDefRef]: this[ObjectDefRef],
         [ClientRef]: this[ClientRef],
-        [RawObject]: this[RawObject],
       } as ObjectHolder<any>);
     },
   },
@@ -78,18 +75,13 @@ export function createOsdkObject<
 ): Osdk<ObjectTypeDefinition, any> {
   // updates the object's "hidden class/map".
   Object.defineProperties(rawObj, {
-    [ObjectDefRef]: { value: objectDef, enumerable: false },
-    [ClientRef]: { value: client, enumerable: false },
-    [RawObject]: {
-      value: rawObj,
-      enumerable: false,
-    },
-    ...basePropDefs,
-
     [UnderlyingOsdkObject]: {
       enumerable: false,
       value: rawObj,
     },
+    [ObjectDefRef]: { value: objectDef, enumerable: false },
+    [ClientRef]: { value: client, enumerable: false },
+    ...basePropDefs,
   });
 
   // Assign the special values
@@ -98,9 +90,6 @@ export function createOsdkObject<
       propKey in objectDef.properties
       && specialPropertyTypes.has(objectDef.properties[propKey].type)
     ) {
-      const rawValue = rawObj[propKey as any];
-      const propDef = objectDef.properties[propKey as any];
-
       rawObj[propKey] = createSpecialProperty(
         client,
         objectDef,

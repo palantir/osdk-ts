@@ -31,12 +31,6 @@ export const InterfaceDefRef = Symbol(
   process.env.MODE !== "production" ? "InterfaceDefinition" : undefined,
 );
 
-/** A symbol for getting the raw data object off of the holder an osdk object proxy points to */
-/** @internal */
-export const RawObject = Symbol(
-  process.env.MODE !== "production" ? "RawObject" : undefined,
-);
-
 /** @internal */
 export const ClientRef = Symbol(
   process.env.MODE !== "production" ? "ClientRef" : undefined,

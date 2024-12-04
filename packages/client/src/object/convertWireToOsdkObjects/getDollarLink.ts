@@ -23,11 +23,12 @@ import type {
 } from "@osdk/api";
 import { getWireObjectSet } from "../../objectSet/createObjectSet.js";
 import { fetchSingle, fetchSingleWithErrors } from "../fetchSingle.js";
-import { ClientRef, ObjectDefRef, RawObject } from "./InternalSymbols.js";
-import type {
-  ObjectHolder,
-  ObjectHolderOwnProperties,
-} from "./ObjectHolder.js";
+import {
+  ClientRef,
+  ObjectDefRef,
+  UnderlyingOsdkObject,
+} from "./InternalSymbols.js";
+import type { ObjectHolder } from "./ObjectHolder.js";
 
 /** @internal */
 export function get$link(
@@ -43,7 +44,7 @@ const DollarLinkProxyHandler: ProxyHandler<ObjectHolder<any>> = {
     const {
       [ObjectDefRef]: objDef,
       [ClientRef]: client,
-      [RawObject]: rawObj,
+      [UnderlyingOsdkObject]: rawObj,
     } = target;
     const linkDef = objDef.links[p as string];
     if (linkDef == null) {
@@ -80,7 +81,7 @@ const DollarLinkProxyHandler: ProxyHandler<ObjectHolder<any>> = {
 
   ownKeys(
     target: ObjectHolder<any>,
-  ): ArrayLike<keyof ObjectHolderOwnProperties | string> {
+  ): ArrayLike<keyof ObjectHolder<any> | string> {
     return [...Object.keys(target[ObjectDefRef].links)];
   },
 
