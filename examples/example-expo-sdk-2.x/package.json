@@ -14,7 +14,7 @@
     "ios": "expo start --ios",
     "reset-project": "node ./scripts/reset-project.js",
     "start": "expo start --port 8080",
-    "test": "jest --watchAll",
+    "test": "vitest run --passWithNoTests",
     "web": "expo start --web --port 8080"
   },
   "dependencies": {
