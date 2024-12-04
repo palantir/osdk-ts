@@ -2,4 +2,4 @@
 "@osdk/react": patch
 ---
 
-Fixes dependencies for other packages
+Adjusts dependencies on @osdk/client and @osdk/api to work with prerelease packages
