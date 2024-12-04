@@ -78,7 +78,7 @@ const loadMetadataResponse = {
       f: { dataType: { type: "string" } },
       g: { dataType: { type: "string" } },
     },
-    rid: "ri.objectrid",
+    rid: "ri.object.rid",
     titleProperty: "id",
   },
   linkTypes: [],
