@@ -28,8 +28,8 @@
     "transpile": "monorepo.tool.transpile"
   },
   "peerDependencies": {
-    "@osdk/api": "^2.0.9",
-    "@osdk/client": "^2.0.9",
+    "@osdk/api": "*",
+    "@osdk/client": "*",
     "@types/react": "^18",
     "react": "^17 || ^18",
     "react-dom": "^17 || ^18"

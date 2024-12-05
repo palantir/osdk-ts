@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * Fetches the given URL, converting the body to JSON, setting the Content-Type header to application/json,
- * and calling .json() on the response.
- */
-/** @deprecated */
-export type FetchAsJsonFn = (
-  url: URL,
-  requestInit: Omit<RequestInit, "body"> & { body?: object | undefined },
-) => Promise<any>;
+import { createClient } from "@osdk/client";
+
+export { createClient };

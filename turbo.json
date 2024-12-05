@@ -143,6 +143,19 @@
       "dependsOn": ["transpile", "typecheck"]
     },
 
+    "bundle": {
+      "dependsOn": ["bundle:esbuild"]
+    },
+
+    "bundle:esbuild": {
+      "outputs": ["build/esbuild/**"],
+      "dependsOn": ["transpile", "typecheck"]
+    },
+
+    "benchmark": {
+      "dependsOn": ["bundle"]
+    },
+
     "@osdk/e2e.sandbox.todoapp#build": {
       "inputs": ["src/**/*", "vite.config.ts", "postcss.config.js", "tailwind.config.js"],
       "dependsOn": ["transpile", "typecheck"]
