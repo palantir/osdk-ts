@@ -85,6 +85,6 @@
   },
   "main": "expo-router/entry",
   "overrides": {
-    "@osdk/client": "^2.1.0-beta.16"
+    "@osdk/client": "2.1.0-beta.16"
   }
 }
