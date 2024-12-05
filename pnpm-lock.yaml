@@ -1024,9 +1024,12 @@ importers:
       '@osdk/monorepo.tsup':
         specifier: workspace:~
         version: link:../monorepo.tsup
-      '@osdk/shared.net':
+      '@osdk/shared.net.errors':
         specifier: workspace:~
-        version: link:../shared.net
+        version: link:../shared.net.errors
+      '@osdk/shared.net.fetch':
+        specifier: workspace:~
+        version: link:../shared.net.fetch
       '@types/archiver':
         specifier: ^6.0.2
         version: 6.0.2
@@ -1066,9 +1069,9 @@ importers:
       '@osdk/internal.foundry.ontologiesv2':
         specifier: 2.6.0-beta.1
         version: 2.6.0-beta.1
-      '@osdk/shared.net':
+      '@osdk/shared.client.impl':
         specifier: workspace:~
-        version: link:../shared.net
+        version: link:../shared.client.impl
       consola:
         specifier: ^3.2.3
         version: 3.2.3
@@ -2729,9 +2732,9 @@ importers:
       '@osdk/internal.foundry.ontologiesv2':
         specifier: 2.6.0-beta.1
         version: 2.6.0-beta.1
-      '@osdk/shared.net':
+      '@osdk/shared.client.impl':
         specifier: workspace:*
-        version: link:../shared.net
+        version: link:../shared.client.impl
       '@rollup/plugin-commonjs':
         specifier: 28.0.0
         version: 28.0.0(rollup@3.29.5)
@@ -2778,9 +2781,6 @@ importers:
       '@osdk/monorepo.tsup':
         specifier: workspace:~
         version: link:../monorepo.tsup
-      '@osdk/shared.client.impl':
-        specifier: workspace:~
-        version: link:../shared.client.impl
       '@osdk/shared.test':
         specifier: workspace:~
         version: link:../shared.test
