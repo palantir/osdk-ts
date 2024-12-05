@@ -22,6 +22,7 @@ import type {
 } from "../ontology/ObjectOrInterface.js";
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
+import type { ValidDeriveAggregationKeys } from "./DeriveAggregations.js";
 import type { DerivedPropertyDefinition } from "./DeriveClause.js";
 
 export interface BaseDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>
@@ -49,11 +50,30 @@ interface FilterableDeriveObjectSet<
   ) => this;
 }
 
+export type StringDeriveAggregateOption =
+  | "approximateDistinct"
+  | "exactDistinct"
+  | "collectToSet"
+  | "collectToList";
+export type NumericDeriveAggregateOption =
+  | "min"
+  | "max"
+  | "sum"
+  | "avg"
+  | "collectToSet"
+  | "collectToList"
+  | "approximateDistinct"
+  | "exactDistinct";
+
 interface AggregatableDeriveObjectSet<
   Q extends ObjectOrInterfaceDefinition,
 > extends FilterableDeriveObjectSet<Q> {
   readonly aggregate: (
-    aggregationSpecifier: ValidAggregationKeys<Q>,
+    aggregationSpecifier: ValidAggregationKeys<
+      Q,
+      StringDeriveAggregateOption,
+      NumericDeriveAggregateOption
+    >,
     opts?: { limit: number },
   ) => DerivedPropertyDefinition;
 }

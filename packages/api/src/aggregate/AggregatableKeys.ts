@@ -36,14 +36,19 @@ type AGG_FOR_TYPE<T> = number extends T ? NumericAggregateOption
 
 export type ValidAggregationKeys<
   Q extends ObjectOrInterfaceDefinition,
+  StringOptions extends string = StringAggregateOption,
+  NumericOptions extends string = NumericAggregateOption,
 > = keyof (
   & {
     [
-      KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<
+      KK in AggregatableKeys<Q> as `${KK & string}:${number extends
         PropertyValueClientToWire[
           CompileTimeMetadata<Q>["properties"][KK]["type"]
-        ]
-      >}`
+        ] ? NumericOptions
+        : string extends PropertyValueClientToWire[
+          CompileTimeMetadata<Q>["properties"][KK]["type"]
+        ] ? StringOptions
+        : never}`
     ]?: any;
   }
   & { $count?: any }
