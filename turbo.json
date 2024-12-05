@@ -143,17 +143,21 @@
       "dependsOn": ["transpile", "typecheck"]
     },
 
-    "bundle": {
-      "dependsOn": ["bundle:esbuild"]
-    },
-
-    "bundle:esbuild": {
-      "outputs": ["build/esbuild/**"],
+    "benchmark:bundle:esbuild": {
+      "outputs": ["build/benchmark/bundler/esbuild/**"],
       "dependsOn": ["transpile", "typecheck"]
     },
 
-    "benchmark": {
-      "dependsOn": ["bundle"]
+    "benchmark-parallel": {
+      "dependsOn": ["benchmark:bundle:esbuild"],
+      "outputs": ["build/benchmark/parallel/**"],
+      "inputs": ["src/**/*"]
+    },
+
+    "benchmark-serial": {
+      "dependsOn": ["^benchmark-parallel"],
+      "outputs": ["build/benchmark/serial/**"],
+      "inputs": ["src/**/*"]
     },
 
     "@osdk/e2e.sandbox.todoapp#build": {

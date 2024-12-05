@@ -14,16 +14,8 @@
  * limitations under the License.
  */
 
-// @ts-check
-
-import { createMemoryTest } from "../helpers.js";
-
-const r = await createMemoryTest(async () => {
-  const { createClient } = await import("../bundle.js");
-
-  // return from main so that node doesn't evict early.
-  return createClient;
-});
-
-// eslint-disable-next-line no-console
-console.log(r);
+export { neverOptimizeFunction } from "@osdk/benchmarks.lib.v8";
+export { createMemoryTest } from "./createMemoryTest.js";
+export { fixDirname } from "./fixDirname.js";
+export { multiGc } from "./multiGc.js";
+export { timeIt } from "./timeIt.js";

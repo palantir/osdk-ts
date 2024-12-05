@@ -1,0 +1,26 @@
+{
+  "name": "@osdk/benchmarks.bundles.simple",
+  "private": true,
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "scripts": {
+    "bundle:esbuild": "benchmarks.lib.bundler-esbuild"
+  },
+  "dependencies": {
+    "@osdk/client": "workspace:*",
+    "@osdk/oauth": "workspace:*"
+  },
+  "peerDependencies": {
+    "fetch-retry": "*",
+    "isomorphic-ws": "*"
+  },
+  "devDependencies": {
+    "@osdk/benchmarks.lib.bundler-esbuild": "workspace:*",
+    "esbuild": "^0.24.0"
+  },
+  "type": "module"
+}

@@ -19,6 +19,7 @@ pypi
 retryable
 rsort
 semver
+stdev
 streamutils
 struct
 structs
