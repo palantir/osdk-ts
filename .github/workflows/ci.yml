@@ -108,37 +108,6 @@ jobs:
       - name: Verify nothing added
         run: u="$(git ls-files --others --exclude-standard)" && test -z "$u"
 
-  benchmark:
-    name: Benchmark
-    timeout-minutes: 15
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-
-      - uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Run benchmarks
-        run: pnpm exec turbo run benchmarks-parallel
-
-      - name: Save benchmark data
-        uses: actions/upload-artifact@v4
-        with:
-          name: bundle-stats-head
-          path: benchmarks/bundles/*/build/benchmark/bundler/esbuild/stats.json
-
-
   e2e:
     name: E2E Tests
     timeout-minutes: 15
