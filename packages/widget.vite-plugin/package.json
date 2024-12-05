@@ -1,6 +1,6 @@
 {
   "name": "@osdk/widget-manifest-vite-plugin",
-  "version": "0.3.0-beta.2",
+  "version": "0.3.0-beta.3",
   "description": "A vite plugin that will extract parameter definitions from TS/JS files + entrypoint info into a manifest file to be uploaded to Foundry ",
   "access": "public",
   "license": "Apache-2.0",
