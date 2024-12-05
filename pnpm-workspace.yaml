@@ -4,3 +4,4 @@ packages:
   - "examples-extra/*"
   - "examples-extra/basic/*"
   - "tests/*"
+  - "benchmarks/*/*"
