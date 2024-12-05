@@ -1,5 +1,11 @@
 # @osdk/create-app.template.react
 
+## 2.1.0-beta.17
+
+### Minor Changes
+
+- 1f7e0a1: "Fixes dependency on OSDK"
+
 ## 2.1.0-beta.16
 
 ## 2.1.0-beta.15

@@ -81,7 +81,8 @@
     "@osdk/react": "0.2.1",
     "@osdk/examples.widget-react-sdk-2.x": "0.0.0",
     "@osdk/create-widget": "0.0.0",
-    "@osdk/create-widget.template.react.v2": "0.0.0"
+    "@osdk/create-widget.template.react.v2": "0.0.0",
+    "@osdk/benchmarks.primary": "0.0.0"
   },
   "changesets": [
     "blue-tips-heal",
@@ -94,6 +95,7 @@
     "cyan-suns-study",
     "dirty-lions-drive",
     "dirty-snails-punch",
+    "dry-foxes-fly",
     "dull-cherries-pay",
     "eighty-bulldogs-sniff",
     "eighty-kangaroos-sing",
@@ -125,9 +127,11 @@
     "long-rats-end",
     "lovely-eels-attend",
     "lovely-llamas-rescue",
+    "lovely-news-talk",
     "lucky-coins-breathe",
     "metal-parents-march",
     "mighty-mugs-clean",
+    "modern-spiders-sleep",
     "odd-fans-destroy",
     "old-clouds-wink",
     "olive-items-retire",
@@ -153,6 +157,7 @@
     "selfish-suits-thank",
     "seven-knives-hug",
     "shiny-bananas-knock",
+    "shiny-suns-cover",
     "short-bikes-fold",
     "shy-bees-fly",
     "shy-worms-share",
