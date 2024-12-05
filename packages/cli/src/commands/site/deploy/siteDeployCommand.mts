@@ -58,7 +58,7 @@ export default async function siteDeployCommand(
   if (typeof selectedVersion === "string") {
     siteVersion = selectedVersion;
   } else {
-    siteVersion = await findAutoVersion(selectedVersion.tagPrefix);
+    siteVersion = await findAutoVersion(selectedVersion);
     consola.info(
       `Auto version inferred next version to be: ${siteVersion}`,
     );

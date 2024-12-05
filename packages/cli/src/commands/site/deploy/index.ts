@@ -37,7 +37,9 @@ const command: CommandModule<
     const siteConfig: SiteConfig | undefined = config?.foundryConfig.site;
     const directory = siteConfig?.directory;
     const autoVersion = siteConfig?.autoVersion;
-    const gitTagPrefix = autoVersion?.tagPrefix;
+    const gitTagPrefix = autoVersion?.type === "git-describe"
+      ? autoVersion.tagPrefix
+      : undefined;
     const uploadOnly = siteConfig?.uploadOnly;
 
     return argv
@@ -64,7 +66,7 @@ const command: CommandModule<
         autoVersion: {
           coerce: (autoVersion) => autoVersion as AutoVersionConfigType,
           type: "string",
-          choices: ["git-describe"],
+          choices: ["git-describe", "package-json"],
           description: "Enable auto versioning",
           ...(autoVersion != null)
             ? { default: autoVersion.type }
@@ -121,9 +123,12 @@ const command: CommandModule<
         }
 
         const autoVersionType = args.autoVersion ?? autoVersion;
-        if (autoVersionType !== "git-describe") {
+        if (
+          autoVersionType !== "git-describe"
+          && autoVersionType !== "package-json"
+        ) {
           throw new YargsCheckError(
-            `Only 'git-describe' is supported for autoVersion`,
+            `Only 'git-describe' and 'package-json' are supported for autoVersion`,
           );
         }
 
