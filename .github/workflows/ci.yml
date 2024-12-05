@@ -138,69 +138,6 @@ jobs:
           name: bundle-stats-head
           path: benchmarks/bundles/*/build/benchmark/bundler/esbuild/stats.json
 
-  benchmark-base:
-    name: Benchmark Base
-    timeout-minutes: 15
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-          ref: $GITHUB_BASE_REF
-
-      - uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Run benchmarks
-        run: pnpm exec turbo run benchmarks-parallel
-
-      - name: Save benchmark data
-        uses: actions/upload-artifact@v4
-        with:
-          name: bundle-stats-base
-          path: benchmarks/bundles/*/build/benchmark/bundler/esbuild/stats.json
-
-  benchmark-compare:
-    name: Benchmark Compare
-    timeout-minutes: 15
-    runs-on: ubuntu-latest
-    needs: [benchmark, benchmark-base]
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-
-      - uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Download benchmark data
-        uses: actions/download-artifact@v4
-        with:
-          name: bundle-stats-*
-          path: artifacts
-      
-      - name: Show artifacts
-        run: ls -R artifacts
-
-
 
   e2e:
     name: E2E Tests
