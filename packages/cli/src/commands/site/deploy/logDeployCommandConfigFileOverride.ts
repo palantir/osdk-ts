@@ -38,7 +38,8 @@ export async function logDeployCommandConfigFileOverride(
   }
 
   if (
-    config?.autoVersion?.tagPrefix != null
+    config?.autoVersion?.type === "git-describe"
+    && config.autoVersion.tagPrefix != null
     && args.gitTagPrefix != null
     && args.gitTagPrefix !== config.autoVersion.tagPrefix
   ) {

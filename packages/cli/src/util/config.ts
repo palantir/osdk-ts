@@ -23,7 +23,12 @@ export interface GitDescribeAutoVersionConfig {
   type: "git-describe";
   tagPrefix?: string;
 }
-export type AutoVersionConfig = GitDescribeAutoVersionConfig;
+export interface PackageJsonAutoVersionConfig {
+  type: "package-json";
+}
+export type AutoVersionConfig =
+  | GitDescribeAutoVersionConfig
+  | PackageJsonAutoVersionConfig;
 export type AutoVersionConfigType = AutoVersionConfig["type"];
 export interface SiteConfig {
   application: string;
@@ -63,6 +68,11 @@ const CONFIG_FILE_SCHEMA: JSONSchemaType<FoundryConfig> = {
               properties: {
                 type: { const: "git-describe", type: "string" },
                 tagPrefix: { type: "string", nullable: true },
+              },
+            },
+            {
+              properties: {
+                type: { const: "package-json", type: "string" },
               },
             },
           ],

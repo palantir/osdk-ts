@@ -74,6 +74,29 @@ describe("loadFoundryConfig", () => {
     });
   });
 
+  it("should load and parse package.json auto version strategy", async () => {
+    const correctConfig = {
+      foundryUrl: "http://localhost",
+      site: {
+        application: "test-app",
+        directory: "/test/directory",
+        autoVersion: {
+          type: "package-json",
+        },
+      },
+    };
+
+    vi.mocked(fsPromises.readFile).mockResolvedValue(
+      JSON.stringify(correctConfig),
+    );
+    await expect(loadFoundryConfig()).resolves.toEqual({
+      configFilePath: "/path/foundry.config.json",
+      foundryConfig: {
+        ...correctConfig,
+      },
+    });
+  });
+
   it("should throw an error if autoVersion type isn't allowed", async () => {
     const inCorrectConfig = {
       foundryUrl: "http://localhost",
@@ -110,7 +133,7 @@ describe("loadFoundryConfig", () => {
     );
 
     await expect(loadFoundryConfig()).rejects.toThrow(
-      "The configuration file does not match the expected schema: data/site/autoVersion must have required property 'type'",
+      "The configuration file does not match the expected schema: data/site/autoVersion must match exactly one schema in oneOf",
     );
   });
 
