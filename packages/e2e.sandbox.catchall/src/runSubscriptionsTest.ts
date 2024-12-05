@@ -31,7 +31,7 @@ import { client, dsClient } from "./client.js";
 export async function runSubscriptionsTest() {
   client(Employee).withProperties({
     "em": (a) => {
-      return a.pivotTo("ventures").aggregate("ventureId:exactDistinct");
+      return a.pivotTo("lead").aggregate("employeeNumber:approximateDistinct");
     },
   }).where({ "adUsername": { "$eq": "11" } }).fetchPage();
   let counter = 0;

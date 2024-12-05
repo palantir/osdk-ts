@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ValidAggregationKeys } from "../aggregate/AggregatableKeys.js";
 import type { WhereClause } from "../aggregate/WhereClause.js";
 import type {
   ObjectOrInterfaceDefinition,
@@ -21,7 +22,6 @@ import type {
 } from "../ontology/ObjectOrInterface.js";
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
-import type { ValidDeriveAggregationKeys } from "./DeriveAggregations.js";
 import type { DerivedPropertyDefinition } from "./DeriveClause.js";
 
 export interface BaseDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>
@@ -53,7 +53,7 @@ interface AggregatableDeriveObjectSet<
   Q extends ObjectOrInterfaceDefinition,
 > extends FilterableDeriveObjectSet<Q> {
   readonly aggregate: (
-    aggregationSpecifier: ValidDeriveAggregationKeys<Q>,
+    aggregationSpecifier: ValidAggregationKeys<Q>,
     opts?: { limit: number },
   ) => DerivedPropertyDefinition;
 }

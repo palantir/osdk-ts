@@ -218,6 +218,17 @@ export type Augment<X extends ObjectOrInterfaceDefinition, T extends string> = {
 // @public (undocumented)
 export type Augments = Record<string, string[]>;
 
+// Warning: (ae-forgotten-export) The symbol "FilterableDeriveObjectSet" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export interface BaseDeriveObjectSet<Q extends ObjectOrInterfaceDefinition> extends FilterableDeriveObjectSet<Q> {
+    // Warning: (ae-forgotten-export) The symbol "SingleLinkDeriveObjectSet" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "ManyLinkDeriveObjectSet" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    readonly pivotTo: <L extends LinkNames<Q>>(type: L) => NonNullable<CompileTimeMetadata<Q>["links"][L]["multiplicity"]> extends false ? SingleLinkDeriveObjectSet<LinkedType<Q, L>> : ManyLinkDeriveObjectSet<LinkedType<Q, L>>;
+}
+
 // @public (undocumented)
 export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
     // (undocumented)
@@ -336,6 +347,12 @@ export interface DataValueWireToClient {
         key: AllowedBucketKeyTypes;
         value: AllowedBucketTypes;
     }[];
+}
+
+// Warning: (ae-forgotten-export) The symbol "AggregatableDeriveObjectSet" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export interface DeriveObjectSet<Q extends ObjectOrInterfaceDefinition> extends BaseDeriveObjectSet<Q>, AggregatableDeriveObjectSet<Q>, SingleLinkDeriveObjectSet<Q> {
 }
 
 // @public (undocumented)
@@ -589,6 +606,11 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED 
     };
     readonly subtract: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
     readonly union: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
+    // Warning: (ae-forgotten-export) The symbol "DeriveClause" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "DerivedPropertyExtendedObjectDefinition" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    readonly withProperties: <D extends DeriveClause<Q>>(clause: D) => ObjectSet<DerivedPropertyExtendedObjectDefinition<Q, D>>;
 }
 
 // @public (undocumented)
