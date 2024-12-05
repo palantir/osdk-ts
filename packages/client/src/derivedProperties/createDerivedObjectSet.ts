@@ -35,14 +35,14 @@ import { MinimalClient } from "../MinimalClientContext.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 
 export type DerivedPropertyDefinition2 = {
-  marker: unknown;
+  definitionId: unknown;
 };
 
 /** @internal */
 export function createDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>(
   objectType: Q,
   objectSet: WireObjectSet,
-  definitionMap: WeakMap<any, DerivedPropertyDefinition>,
+  definitionMap: Map<any, DerivedPropertyDefinition>,
 ): DeriveObjectSet<Q> {
   const base: DeriveObjectSet<Q> = {
     pivotTo: (link) => {
@@ -81,15 +81,19 @@ export function createDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>(
             type: aggregationOperation,
             selectedPropertyApiName: aggregationPropertyName,
           };
+          break;
         default:
-          invariant(false, "Invalid aggregation operation");
+          invariant(
+            false,
+            "Invalid aggregation operation " + aggregationOperation,
+          );
       }
       definitionMap.set(definitionId, {
         type: "selection",
         objectSet: objectSet,
         operation: aggregationOperationDefinition,
       });
-      return { marker: definitionId };
+      return { definitionId: definitionId };
     },
     selectProperty: (name) => {
       const definitionId = globalThis.crypto.randomUUID();
@@ -101,7 +105,7 @@ export function createDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>(
           selectedPropertyApiName: name,
         },
       });
-      return { marker: definitionId };
+      return { definitionId: definitionId };
     },
   };
 

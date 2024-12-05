@@ -244,17 +244,18 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     },
 
     withProperties: (clause) => {
-      const definitionMap = new WeakMap<any, DerivedPropertyDefinition>();
+      const definitionMap = new Map<any, DerivedPropertyDefinition>();
 
       const derivedProperties: Record<string, DerivedPropertyDefinition> = {};
-      for (const [key] of Object.keys(clause)) {
-        const derivedPropertyDefinition = clause[key](createDeriveObjectSet(
-          objectType,
-          { type: "methodInput" },
-          definitionMap,
-        ));
+      for (const key of Object.keys(clause)) {
+        const derivedPropertyDefinition = clause
+          [key](createDeriveObjectSet(
+            objectType,
+            { type: "methodInput" },
+            definitionMap,
+          ));
         derivedProperties[key] = definitionMap.get(
-          derivedPropertyDefinition.marker,
+          derivedPropertyDefinition.definitionId,
         )!;
       }
 

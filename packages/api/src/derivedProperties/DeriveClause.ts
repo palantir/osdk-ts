@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
 import type {
-  BaseDeriveObjectSet,
-  DerivedPropertyDefinition,
-} from "./DeriveObjectSet.js";
+  ObjectOrInterfaceDefinition,
+} from "../ontology/ObjectOrInterface.js";
+import type { BaseDeriveObjectSet } from "./DeriveObjectSet.js";
 
-type ValidDerivedPropertyKeys<Q extends ObjectOrInterfaceDefinition> = string;
+export type DerivedPropertyDefinition = {
+  definitionId: unknown;
+};
 
 export type DeriveClause<Q extends ObjectOrInterfaceDefinition> = {
-  [key: ValidDerivedPropertyKeys<Q>]: (
+  [key: string]: (
     baseObjectSet: BaseDeriveObjectSet<Q>,
   ) => DerivedPropertyDefinition;
 };

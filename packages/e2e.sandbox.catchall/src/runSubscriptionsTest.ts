@@ -21,6 +21,7 @@ import {
 } from "@osdk/api/unstable";
 import {
   $Actions,
+  Employee,
   MtaBus,
   OsdkTestInterface,
   OsdkTestObject,
@@ -28,6 +29,11 @@ import {
 import { client, dsClient } from "./client.js";
 
 export async function runSubscriptionsTest() {
+  client(Employee).withProperties({
+    "em": (a) => {
+      return a.pivotTo("ventures").aggregate("ventureId:exactDistinct");
+    },
+  }).where({ "adUsername": { "$eq": "11" } }).fetchPage();
   let counter = 0;
   const subscription = client(OsdkTestObject)
     .subscribe(

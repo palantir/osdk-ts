@@ -14,3 +14,43 @@
  * limitations under the License.
  */
 
+import type { AggregatableKeys } from "../aggregate/AggregatableKeys.js";
+import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
+import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
+import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
+
+type BaseAggregateOption =
+  | "collectToSet"
+  | "collectToList"
+  | "approximateDistinct"
+  | "exactDistinct";
+
+/* @internal */
+export type StringAggregateOption = BaseAggregateOption;
+/* @internal */
+export type NumericAggregateOption =
+  | BaseAggregateOption
+  | "min"
+  | "max"
+  | "sum"
+  | "avg";
+
+type AGG_FOR_TYPE<T> = number extends T ? NumericAggregateOption
+  : string extends T ? StringAggregateOption
+  : never;
+
+/* @internal */
+export type ValidDeriveAggregationKeys<
+  Q extends ObjectOrInterfaceDefinition,
+> = keyof (
+  & {
+    [
+      KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<
+        PropertyValueClientToWire[
+          CompileTimeMetadata<Q>["properties"][KK]["type"]
+        ]
+      >}`
+    ]?: any;
+  }
+  & { $count?: any }
+);
