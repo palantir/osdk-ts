@@ -65,6 +65,23 @@ export const employee3 = {
   employeeLocation: "GeotimeSeriesReferencePlaceholder",
 };
 
+export const employee4withDerived = {
+  __rid:
+    "ri.phonograph2-objects.main.object.b9a0b2b0-0a2b-0b8b-9e4b-a9a9b9a0b9a0",
+  __primaryKey: 50035,
+  __apiName: "Employee",
+  __title: "Jack Smith",
+  employeeId: 50035,
+  fullName: "Jack Smith",
+  office: "LON",
+  class: "Red",
+  startDate: "2015-05-15",
+  derivedPropertyName: 1,
+  employeeStatus: "TimeSeries<String>",
+  employeeSensor: "TimeSeries<>",
+  employeeLocation: "GeotimeSeriesReferencePlaceholder",
+};
+
 export const employeeFailsStrict = {
   __rid:
     "ri.phonograph2-objects.main.object.b9a0b2b0-0a2b-0b8b-9e4b-a9a9b9a0b9a0",
@@ -199,6 +216,7 @@ export const objectLoadResponseMap: {
     [employee1.__primaryKey.toString()]: employee1,
     [employee2.__primaryKey.toString()]: employee2,
     [employee3.__primaryKey.toString()]: employee3,
+    [employee4withDerived.__primaryKey.toString()]: employee4withDerived,
     [employeeFailsStrict.__primaryKey.toString()]: employeeFailsStrict,
   },
   Office: {
