@@ -8,7 +8,7 @@
     "url": "https://github.com/palantir/osdk-ts.git"
   },
   "scripts": {
-    "bundle:esbuild": "benchmarks.lib.bundler-esbuild"
+    "benchmark-parallel": "benchmarks.lib.bundler-esbuild"
   },
   "dependencies": {
     "@osdk/client": "workspace:*",

@@ -57,8 +57,6 @@ export async function build(dirPath: string) {
             ? { platform: "node", target: "node18" }
             : {
               platform: "browser",
-              // this `conditions` entry SHOULD NOT exist if we have all of our configs right
-              conditions: ["import"],
             }),
           outfile: path.join(
             baseOutDir,
