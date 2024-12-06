@@ -1,7 +1,7 @@
 {
   "name": "@osdk/create-widget.template.react.v2",
   "private": true,
-  "version": "0.3.0-beta.1",
+  "version": "0.3.0-beta.3",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

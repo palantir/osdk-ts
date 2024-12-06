@@ -1,5 +1,14 @@
 # @osdk/cli
 
+## 0.25.0-beta.18
+
+## 0.25.0-beta.17
+
+### Minor Changes
+
+- 1b60b3d: Packages use more specific versions instead of indirection through shared.net
+- b42399b: Site version and file limit custom error message and tips
+
 ## 0.25.0-beta.16
 
 ## 0.25.0-beta.15

@@ -1,5 +1,17 @@
 # @osdk/widget-manifest-vite-plugin
 
+## 0.3.0-beta.3
+
+### Patch Changes
+
+- @osdk/widget-api.unstable@0.3.0-beta.3
+
+## 0.3.0-beta.2
+
+### Patch Changes
+
+- @osdk/widget-api.unstable@0.3.0-beta.2
+
 ## 0.3.0-beta.1
 
 ### Minor Changes

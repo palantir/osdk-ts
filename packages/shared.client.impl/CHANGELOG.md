@@ -1,5 +1,11 @@
 # @osdk/shared.client.impl
 
+## 1.1.0-beta.3
+
+### Minor Changes
+
+- 1b60b3d: Packages use more specific versions instead of indirection through shared.net
+
 ## 1.1.0-beta.2
 
 ### Minor Changes

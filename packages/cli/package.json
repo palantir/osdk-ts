@@ -1,6 +1,6 @@
 {
   "name": "@osdk/cli",
-  "version": "0.25.0-beta.16",
+  "version": "0.25.0-beta.18",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -48,7 +48,8 @@
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
-    "@osdk/shared.net": "workspace:~",
+    "@osdk/shared.net.errors": "workspace:~",
+    "@osdk/shared.net.fetch": "workspace:~",
     "@types/archiver": "^6.0.2",
     "@types/ngeohash": "^0.6.8",
     "@types/node": "^18.0.0",

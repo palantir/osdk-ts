@@ -15,11 +15,11 @@
  */
 
 import { ExitProcessError } from "@osdk/cli.common";
+import { PalantirApiError } from "@osdk/shared.net.errors";
 import {
   createFetchHeaderMutator,
   createFetchOrThrow,
-  PalantirApiError,
-} from "@osdk/shared.net";
+} from "@osdk/shared.net.fetch";
 import { consola } from "consola";
 import prettyBytes from "pretty-bytes";
 import { USER_AGENT } from "./UserAgent.js";

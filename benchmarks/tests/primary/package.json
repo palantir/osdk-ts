@@ -1,0 +1,32 @@
+{
+  "name": "@osdk/benchmarks.primary",
+  "private": true,
+  "version": "0.1.0-beta.1",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "scripts": {
+    "benchmark": "node --allow-natives-syntax src/benchmark.js",
+    "bundle:esbuild": "esbuild src/bundle.js --bundle  --platform=node --target=node18 --format=esm --outfile=build/esbuild/bundle.js --external:isomorphic-ws --external:fetch-retry"
+  },
+  "dependencies": {
+    "@osdk/client": "workspace:*"
+  },
+  "peerDependencies": {
+    "fetch-retry": "*",
+    "isomorphic-ws": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "cli-progress": "^3.12.0",
+    "esbuild": "^0.24.0",
+    "execa": "^9.5.1",
+    "express": "^4.21.1",
+    "fast-deep-equal": "3.1.3",
+    "mathjs": "^14.0.0",
+    "tiny-invariant": "^1.3.3"
+  },
+  "type": "module"
+}
