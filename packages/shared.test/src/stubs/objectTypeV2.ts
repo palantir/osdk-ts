@@ -406,6 +406,12 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
       },
       rid: "rid",
     },
+    mediaReference: {
+      dataType: {
+        type: "mediaReference",
+      },
+      rid: "rid",
+    },
   },
   rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
   status: "ACTIVE",
