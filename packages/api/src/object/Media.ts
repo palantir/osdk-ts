@@ -16,15 +16,19 @@
 
 export interface Media {
   /**
-   * Fetches metadata for an media
+   * Fetches metadata for media property
    */
   fetchMetadata(): Promise<MediaMetadata>;
   /**
-   * Fetches actual content of media in Blob form
+   * Fetches actual content of a media properties
    */
   fetchContents(): Promise<Response>;
 }
 
+/**
+ * Metadata of a media item
+ * @param
+ */
 export interface MediaMetadata {
   path?: string;
   sizeBytes: number;
