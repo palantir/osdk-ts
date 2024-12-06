@@ -53,7 +53,6 @@ fs.writeFileSync(
       ]);
       const v2Name = findPackageName([
         `@osdk/create-widget.template.${template.id}.v2`,
-        `@osdk/create-widget.template.${template.id}.beta`,
         `@osdk/create-widget.template.${template.id}`,
       ]);
       return dedent`

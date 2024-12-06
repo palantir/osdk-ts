@@ -1,4 +1,4 @@
-# @osdk/create-app.template.tutorial-todo-app.beta
+# @osdk/create-app.template.tutorial-todo-app.v2
 
 ## 2.1.0-beta.18
 
