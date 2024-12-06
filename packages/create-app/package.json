@@ -38,6 +38,7 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
+    "@osdk/create-app.template.expo.v2": "workspace:*",
     "@osdk/create-app.template.next-static-export": "workspace:*",
     "@osdk/create-app.template.next-static-export.v2": "workspace:*",
     "@osdk/create-app.template.react": "workspace:*",

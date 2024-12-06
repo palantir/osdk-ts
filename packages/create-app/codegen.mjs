@@ -29,6 +29,12 @@ export const TEMPLATES = [
     buildDirectory: "./dist",
   },
   {
+    id: "expo",
+    label: "Expo",
+    envPrefix: "EXPO_PUBLIC_",
+    buildDirectory: "./dist",
+  },
+  {
     id: "vue",
     label: "Vue",
     envPrefix: "VITE_",
