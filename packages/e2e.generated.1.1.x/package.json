@@ -35,7 +35,7 @@
   },
   "peerDependencies": {
     "@osdk/api": "^1.10.0-beta.1",
-    "@osdk/legacy-client": "^2.6.0-beta.1"
+    "@osdk/legacy-client": "^2.7.0"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.15.2",

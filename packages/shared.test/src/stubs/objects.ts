@@ -179,6 +179,7 @@ export const objectWithAllPropertyTypes1: OntologyObjectV2 = {
       type: "Polygon",
     },
   ],
+  mediaReference: "MediaReferencePlaceholder",
 };
 
 export const objectWithAllPropertyTypesEmptyEntries = {

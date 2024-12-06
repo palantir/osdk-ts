@@ -29,6 +29,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "integer":
     case "string":
     case "byte":
+    case "cipherText":
     case "decimal":
     case "double":
     case "float":
@@ -37,6 +38,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "boolean":
     case "date":
     case "attachment":
+    case "mediaReference":
     case "geopoint":
     case "geoshape":
     case "timestamp":
@@ -58,11 +60,6 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         type: objectPropertyTypeToSdkPropertyDefinition(input.dataType),
         nullable: true,
       };
-    }
-    case "mediaReference": {
-      throw new Error(
-        `Media references not supported yet`,
-      );
     }
     default:
       const _: never = input.dataType;
@@ -91,6 +88,7 @@ function objectPropertyTypeToSdkPropertyDefinition(
     case "timestamp":
     case "marking":
     case "geotimeSeriesReference":
+    case "mediaReference":
       return propertyType.type;
     case "date":
       return "datetime";
@@ -102,10 +100,9 @@ function objectPropertyTypeToSdkPropertyDefinition(
       } else if (propertyType.itemType?.type === "double") {
         return "numericTimeseries";
       } else return "sensorTimeseries";
-
-    case "mediaReference": {
+    case "cipherText": {
       throw new Error(
-        `Media references not supported yet`,
+        `Cipher text not supported yet`,
       );
     }
     default:
