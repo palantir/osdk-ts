@@ -1,6 +1,6 @@
 ---
-"@osdk/create-app.template.tutorial-todo-aip-app.beta": minor
-"@osdk/create-app.template.tutorial-todo-app.beta": minor
+"@osdk/create-app.template.tutorial-todo-aip-app.v2": minor
+"@osdk/create-app.template.tutorial-todo-app.v2": minor
 "@osdk/create-app": minor
 ---
 
