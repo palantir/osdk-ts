@@ -262,7 +262,7 @@ export class ObjectSetListenerWebsocket {
       }
     } catch (error) {
       this.#logger?.error(error, "Error in #initiateSubscribe");
-      sub.listener.onError([error]);
+      this.#tryCatchOnError(sub, true, error);
     }
   }
 
@@ -483,7 +483,12 @@ export class ObjectSetListenerWebsocket {
 
     for (const osdkObject of osdkObjectsWithReferenceUpdates) {
       if (osdkObject != null) {
-        sub.listener.onChange?.(osdkObject);
+        try {
+          sub.listener.onChange?.(osdkObject);
+        } catch (error) {
+          this.#logger?.error(error, "Error in onChange callback");
+          this.#tryCatchOnError(sub, false, error);
+        }
       }
     }
 
@@ -510,7 +515,12 @@ export class ObjectSetListenerWebsocket {
 
     for (const osdkObject of osdkObjects) {
       if (osdkObject != null) {
-        sub.listener.onChange?.(osdkObject);
+        try {
+          sub.listener.onChange?.(osdkObject);
+        } catch (error) {
+          this.#logger?.error(error, "Error in onChange callback");
+          this.#tryCatchOnError(sub, false, error);
+        }
       }
     }
   };
@@ -518,6 +528,12 @@ export class ObjectSetListenerWebsocket {
   #handleMessage_refreshObjectSet = (payload: RefreshObjectSet) => {
     const sub = this.#subscriptions.get(payload.id);
     invariant(sub, `Expected subscription id ${payload.id}`);
+    try {
+      sub.listener.onOutOfDate();
+    } catch (error) {
+      this.#logger?.error(error, "Error in onOutOfDate callback");
+      this.#tryCatchOnError(sub, false, error);
+    }
     sub.listener.onOutOfDate();
   };
 
@@ -536,7 +552,7 @@ export class ObjectSetListenerWebsocket {
 
       switch (response.type) {
         case "error":
-          sub.listener.onError(response.errors);
+          this.#tryCatchOnError(sub, true, response.errors);
           this.#unsubscribe(sub, "error");
           break;
 
@@ -560,12 +576,19 @@ export class ObjectSetListenerWebsocket {
             sub.subscriptionId = response.id;
             this.#subscriptions.set(sub.subscriptionId, sub); // future messages come by this subId
           }
-          if (shouldFireOutOfDate) sub.listener.onOutOfDate();
-          else sub.listener.onSuccessfulSubscription();
+          try {
+            if (shouldFireOutOfDate) sub.listener.onOutOfDate();
+            else sub.listener.onSuccessfulSubscription();
+          } catch (error) {
+            this.#logger?.error(
+              error,
+              "Error in onOutOfDate or onSuccessfulSubscription callback",
+            );
+            this.#tryCatchOnError(sub, false, error);
+          }
           break;
         default:
-          const _: never = response;
-          sub.listener.onError(response);
+          this.#tryCatchOnError(sub, true, response);
       }
     }
   };
@@ -573,7 +596,7 @@ export class ObjectSetListenerWebsocket {
   #handleMessage_subscriptionClosed(payload: SubscriptionClosed) {
     const sub = this.#subscriptions.get(payload.id);
     invariant(sub, `Expected subscription id ${payload.id}`);
-    sub.listener.onError([payload.cause]);
+    this.#tryCatchOnError(sub, true, payload.cause);
     this.#unsubscribe(sub, "error");
   }
 
@@ -616,6 +639,38 @@ export class ObjectSetListenerWebsocket {
       }
 
       this.#ensureWebsocket();
+    }
+  };
+
+  #tryCatchOnError = (
+    sub: Subscription<any, any>,
+    subscriptionClosed: boolean,
+    error: any,
+  ) => {
+    try {
+      sub.listener.onError({ subscriptionClosed: subscriptionClosed, error });
+    } catch (onErrorError) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `Error encountered in an onError callback for an OSDK subscription`,
+        onErrorError,
+      );
+      // eslint-disable-next-line no-console
+      console.error(
+        `This onError call was triggered by an error in another callback`,
+        error,
+      );
+      // eslint-disable-next-line no-console
+      console.error(
+        `The subscription has been closed.`,
+        error,
+      );
+
+      if (!subscriptionClosed) {
+        this.#logger?.error(error, "Error in onError callback");
+        this.#unsubscribe(sub, "error");
+        this.#tryCatchOnError(sub, true, onErrorError);
+      }
     }
   };
 }
