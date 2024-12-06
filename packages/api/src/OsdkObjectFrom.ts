@@ -203,6 +203,16 @@ export namespace Osdk {
         OPTIONS,
         ConvertProps<Q, NEW_Q, P>
       >;
+      readonly $cloneAndUpdate: <
+        T extends Osdk.Instance<Q, any, L>,
+        L extends PropertyKeys<Q>,
+      >(
+        newObject: T,
+      ) => Osdk.Instance<
+        Q,
+        OPTIONS,
+        P
+      >;
     }
     // We are hiding the $rid field if it wasn't requested as we want to discourage its use
     & (IsNever<OPTIONS> extends true ? {}

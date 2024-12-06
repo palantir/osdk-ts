@@ -655,6 +655,7 @@ export namespace Osdk {
             linksType?: any;
         } ? Q["linksType"] : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q> : never;
         readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P>>;
+        readonly $cloneAndUpdate: <O extends PropertyKeys<Q>, T extends Osdk.Instance<Q, any, O>>(newObject: T) => Osdk.Instance<Q, OPTIONS, P>;
     } & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
         readonly $rid: string;
     } : {});
