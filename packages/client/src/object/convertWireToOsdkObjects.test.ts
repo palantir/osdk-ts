@@ -150,6 +150,23 @@ describe("convertWireToOsdkObjects", () => {
     expect(emptyAttachmentArray).toBeUndefined();
   });
 
+  it("creates immutable objects", async () => {
+    const employees = await client(Employee).fetchPage();
+    expect(employees.data.length).toBeGreaterThanOrEqual(2);
+    const [a, b] = employees.data;
+
+    expect(a).toBeDefined();
+    expect(() => {
+      (a as any).somePropertyThatShouldNotExist = 5;
+    }).toThrow();
+
+    const objAsFoo = a.$as(FooInterface);
+    expect(objAsFoo).toBeDefined();
+    expect(() => {
+      (objAsFoo as any).somePropertyThatShouldNotExist = 5;
+    }).toThrow();
+  });
+
   it("works even with unknown apiNames - old", async () => {
     const clientCtx = createMinimalClient(
       { ontologyRid: $ontologyRid },
