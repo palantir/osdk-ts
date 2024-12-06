@@ -42,12 +42,12 @@ export const get$as = createSimpleCache<
 const osdkObjectToInterfaceView = createSimpleCache(
   new WeakMap<
     OsdkBase<any>,
-    Map<string, OsdkBase<any>>
+    Map<string, WeakRef<OsdkBase<any>>>
   >(),
   () =>
     new Map<
       /* interface api name */ string,
-      /* $as'd object */ OsdkBase<any>
+      /* $as'd object */ WeakRef<OsdkBase<any>>
     >(),
 );
 
@@ -55,6 +55,7 @@ function $asFactory(
   objDef: FetchedObjectTypeDefinition,
 ): DollarAsFn {
   // We use the exact same logic for both the interface rep and the underlying rep
+
   return function $as<
     NEW_Q extends ObjectOrInterfaceDefinition,
   >(
@@ -98,13 +99,13 @@ function $asFactory(
 
     const existing = osdkObjectToInterfaceView
       .get(underlying)
-      .get(targetInterfaceApiName);
+      .get(targetInterfaceApiName)?.deref();
     if (existing) return existing;
 
     const osdkInterface = createOsdkInterface(underlying, def.def);
     osdkObjectToInterfaceView.get(underlying).set(
       targetInterfaceApiName,
-      osdkInterface,
+      new WeakRef(osdkInterface),
     );
     return osdkInterface;
   };
