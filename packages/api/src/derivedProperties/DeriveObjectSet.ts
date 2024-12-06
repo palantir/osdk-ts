@@ -20,9 +20,11 @@ import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
-import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
+import type {
+  CompileTimeMetadata,
+  PropertyDef,
+} from "../ontology/ObjectTypeDefinition.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
-import type { ValidDeriveAggregationKeys } from "./DeriveAggregations.js";
 import type { DerivedPropertyDefinition } from "./DeriveClause.js";
 
 export interface BaseDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>
@@ -68,22 +70,24 @@ export type NumericDeriveAggregateOption =
 interface AggregatableDeriveObjectSet<
   Q extends ObjectOrInterfaceDefinition,
 > extends FilterableDeriveObjectSet<Q> {
-  readonly aggregate: (
-    aggregationSpecifier: ValidAggregationKeys<
+  readonly aggregate: <
+    V extends ValidAggregationKeys<
       Q,
       StringDeriveAggregateOption,
       NumericDeriveAggregateOption
     >,
+  >(
+    aggregationSpecifier: V,
     opts?: { limit: number },
-  ) => DerivedPropertyDefinition;
+  ) => DerivedPropertyDefinition<PropertyDef<"integer">>;
 }
 
 interface SingleLinkDeriveObjectSet<
   Q extends ObjectOrInterfaceDefinition,
 > extends AggregatableDeriveObjectSet<Q>, BaseDeriveObjectSet<Q> {
-  readonly selectProperty: (
-    propertyName: PropertyKeys<Q>,
-  ) => DerivedPropertyDefinition;
+  readonly selectProperty: <R extends PropertyKeys<Q>>(
+    propertyName: R,
+  ) => DerivedPropertyDefinition<CompileTimeMetadata<Q>["properties"][R]>;
 }
 
 interface ManyLinkDeriveObjectSet<

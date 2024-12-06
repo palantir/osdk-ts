@@ -35,6 +35,7 @@ import type {
 } from "../ontology/ObjectOrInterface.js";
 import type {
   CompileTimeMetadata,
+  ObjectMetadata,
   ObjectTypeDefinition,
   PropertyDef,
 } from "../ontology/ObjectTypeDefinition.js";
@@ -258,7 +259,8 @@ export interface ObjectSet<
   ) => { unsubscribe: () => void };
 
   readonly withProperties: <
-    D extends DeriveClause<Q>,
+    D extends DeriveClause<Q, any>,
+    P extends ObjectMetadata.Property,
   >(
     clause: D,
   ) => ObjectSet<
@@ -271,9 +273,11 @@ export interface ObjectSet<
 
 type DerivedPropertyExtendedObjectDefinition<
   K extends ObjectOrInterfaceDefinition,
-  D extends DeriveClause<K>,
+  D extends DeriveClause<K, any>,
 > = {
   __DefinitionMetadata: {
-    properties: { [T in Extract<keyof D, string>]: PropertyDef<"integer"> };
+    properties: {
+      [T in Extract<keyof D, string>]: ReturnType<D[T]>;
+    };
   };
 } & K;

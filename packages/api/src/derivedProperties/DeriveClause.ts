@@ -17,14 +17,24 @@
 import type {
   ObjectOrInterfaceDefinition,
 } from "../ontology/ObjectOrInterface.js";
+import type {
+  ObjectMetadata,
+  PropertyDef,
+} from "../ontology/ObjectTypeDefinition.js";
 import type { BaseDeriveObjectSet } from "./DeriveObjectSet.js";
 
-export type DerivedPropertyDefinition = {
+export type DerivedPropertyDefinition<
+  T extends ObjectMetadata.Property,
+> = {
   definitionId: unknown;
+  type: T;
 };
 
-export type DeriveClause<Q extends ObjectOrInterfaceDefinition> = {
+export type DeriveClause<
+  Q extends ObjectOrInterfaceDefinition,
+  P extends ObjectMetadata.Property,
+> = {
   [key: string]: (
     baseObjectSet: BaseDeriveObjectSet<Q>,
-  ) => DerivedPropertyDefinition;
+  ) => DerivedPropertyDefinition<P>;
 };

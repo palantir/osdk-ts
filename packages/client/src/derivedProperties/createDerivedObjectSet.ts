@@ -34,10 +34,6 @@ import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegac
 import { MinimalClient } from "../MinimalClientContext.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 
-export type DerivedPropertyDefinition2 = {
-  definitionId: unknown;
-};
-
 /** @internal */
 export function createDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>(
   objectType: Q,
@@ -93,7 +89,7 @@ export function createDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>(
         objectSet: objectSet,
         operation: aggregationOperationDefinition,
       });
-      return { definitionId: definitionId };
+      return { definitionId: definitionId, type: { type: "integer" } as any };
     },
     selectProperty: (name) => {
       const definitionId = globalThis.crypto.randomUUID();
@@ -105,7 +101,7 @@ export function createDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>(
           selectedPropertyApiName: name,
         },
       });
-      return { definitionId: definitionId };
+      return { definitionId: definitionId, type: { type: "integer" } as any };
     },
   };
 

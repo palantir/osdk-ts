@@ -15,11 +15,11 @@
  */
 
 import type {
-  Augments,
   CompileTimeMetadata,
   ConvertProps,
-  FetchPageArgs,
+  DeriveClause,
   InterfaceDefinition,
+  ObjectMetadata,
   ObjectSet,
   Osdk,
   PropertyKeys,
@@ -33,6 +33,7 @@ import {
   FooInterface,
   Office,
 } from "@osdk/client.test.ontology";
+import type { DerivedPropertyDefinition } from "@osdk/internal.foundry.core";
 import { apiServer, stubData } from "@osdk/shared.test";
 import {
   afterAll,
@@ -44,13 +45,13 @@ import {
 } from "vitest";
 import type {
   ApiNameAsString,
-  IsNever,
   JustProps,
   PropMapToInterface,
   PropMapToObject,
 } from "../../../api/build/esm/OsdkObjectFrom.js";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
+import { createDeriveObjectSet } from "../derivedProperties/createDerivedObjectSet.js";
 
 describe("ObjectSet", () => {
   let client: Client;
@@ -286,15 +287,6 @@ describe("ObjectSet", () => {
     }
   });
 
-  it("rdp", async () => {
-    const employeeResult = await client(Employee).withProperties({
-      "name": (base) => {
-        return base.pivotTo("lead").aggregate("employeeId:avg");
-      },
-    }).where({ "name": { "$eq": 1 } }).fetchPage();
-    console.log(employeeResult);
-  });
-
   it(" object set union works with fetchPageWithErrors", async () => {
     const objectSet = client(Employee);
     const unionedObjectSet = objectSet.union(objectSet);
@@ -441,6 +433,134 @@ describe("ObjectSet", () => {
             Osdk<Employee, "$all" | "$notStrict">
           >();
         });
+      });
+    });
+  });
+
+  describe("Derived Properties Object Set", () => {
+    it("does not allow aggregate or selectProperty before a link type is selected", () => {
+      client(Employee).withProperties({
+        // @ts-expect-error
+        "derivedPropertyName": (base) => base.aggregate("derivedObjectSet"),
+      });
+
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          // @ts-expect-error
+          base.selectProperty("derivedObjectSet"),
+      });
+    });
+
+    it("does not allow selectProperty when a many link was selected at any point", () => {
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) => {
+          // @ts-expect-error
+          base.pivotTo("peeps").selectProperty("employeeId");
+
+          // @ts-expect-error
+          base.pivotTo("lead").pivotTo("peeps").selectProperty("employeeId");
+
+          return base.pivotTo("lead").selectProperty("employeeId");
+        },
+      });
+    });
+
+    it("correctly narrows types of aggregate function", () => {
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) => {
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("notAProperty:sum");
+
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate(":avg");
+
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("employeeId:notAnOp");
+
+          return base.pivotTo("lead").aggregate("employeeId:sum");
+        },
+      });
+    });
+
+    it("correctly narrows types of selectProperty function", () => {
+      const objectSet = client(Employee).withProperties({
+        "derivedPropertyName": (base) => {
+          // @ts-expect-error
+          base.pivotTo("lead").selectProperty("notAProperty");
+
+          return base.pivotTo("lead").selectProperty("employeeStatus");
+        },
+      });
+    });
+
+    it("propagates derived property type to future object set operations with correct types", () => {
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").aggregate("employeeId:sum"),
+        // SHOULD REMOVE, TYPE SHOULD BE ACCURATE
+        // @ts-expect-error
+      }).where({ "derivedPropertyName": { "$eq": 3 } });
+
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").aggregate("employeeId:collectToSet"),
+        // SHOULD REMOVE, TYPE SHOULD BE ACCURATE
+        // @ts-expect-error
+      }).where({ "derivedPropertyName": { "$eq": [1, 2, 3] } });
+
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("employeeId"),
+        // SHOULD REMOVE, TYPE SHOULD BE ACCURATE
+        // @ts-expect-error
+      }).where({ "derivedPropertyName": { "$eq": 3 } });
+
+      // Other properties are consistently types
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("employeeId"),
+      }).where({ "fullName": { "$eq": "A" } });
+
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("employeeId"),
+      }).where({ "employeeId": { "$eq": 2 } });
+    });
+
+    it("allows fetching derived properties with correctly typed Osdk.Instance types", async () => {
+      const objectSet = client(Employee).fetchOne(50030);
+    });
+
+    describe("withPropertiesObjectSet", () => {
+      it("correctly creates basic object set with derived properties", () => {
+        const map = new Map<string, DerivedPropertyDefinition>();
+        const deriveObjectSet = createDeriveObjectSet(Employee, {
+          type: "methodInput",
+        }, map);
+
+        const clause: DeriveClause<Employee, ObjectMetadata.Property> = {
+          "derivedPropertyName": (base) =>
+            base.pivotTo("lead").selectProperty("employeeId"),
+        };
+
+        const result = clause["derivedPropertyName"](deriveObjectSet);
+        const definition = map.get(result.definitionId as string);
+        expect(definition).toMatchInlineSnapshot(`
+          {
+            "objectSet": {
+              "link": "lead",
+              "objectSet": {
+                "type": "methodInput",
+              },
+              "type": "searchAround",
+            },
+            "operation": {
+              "selectedPropertyApiName": "employeeId",
+              "type": "get",
+            },
+            "type": "selection",
+          }
+        `);
       });
     });
   });
