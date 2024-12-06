@@ -23,7 +23,9 @@ import auth from "./commands/auth/index.js";
 import site from "./commands/site/index.js";
 import { logConfigFileMiddleware } from "./yargs/logConfigFileMiddleware.js";
 
-export async function cli(args: string[] = process.argv) {
+export async function cli(args: string[] = process.argv): Promise<
+  Record<string, unknown> | undefined
+> {
   consola.info(
     `Palantir OSDK CLI ${process.env.PACKAGE_VERSION}\n`,
   );

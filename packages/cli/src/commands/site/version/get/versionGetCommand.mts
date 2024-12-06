@@ -21,7 +21,7 @@ import type { VersionGetArgs } from "./VersionGetArgs.js";
 
 export default async function versionGetCommand(
   { foundryUrl, application, token, tokenFile }: VersionGetArgs,
-) {
+): Promise<void> {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);

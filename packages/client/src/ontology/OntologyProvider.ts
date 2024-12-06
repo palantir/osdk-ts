@@ -22,7 +22,7 @@ import type {
 } from "@osdk/api";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
-export const InterfaceDefinitions = Symbol(
+export const InterfaceDefinitions: unique symbol = Symbol(
   process.env.MODE !== "production" ? "InterfaceDefinitions" : undefined,
 );
 
