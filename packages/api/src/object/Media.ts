@@ -20,7 +20,7 @@ export interface Media {
    */
   fetchMetadata(): Promise<MediaMetadata>;
   /**
-   * Fetches actual content of a media properties
+   * Fetches content of a media property
    */
   fetchContents(): Promise<Response>;
 }
