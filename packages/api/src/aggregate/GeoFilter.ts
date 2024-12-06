@@ -18,7 +18,7 @@ import type { BBox, Point, Polygon } from "geojson";
 import type { Just } from "./Just.js";
 import type { DistanceUnitMapping } from "./WhereClause.js";
 
-interface GeoFilterOptions {
+export interface GeoFilterOptions {
   "$within":
     | {
       $distance: [number, keyof typeof DistanceUnitMapping];
