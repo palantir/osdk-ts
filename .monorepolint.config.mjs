@@ -424,6 +424,7 @@ function standardPackageRules(shared, options) {
               ...(options.esmOnly ? {} : {
                 "require": "./build/cjs/index.cjs",
               }),
+              "module": "./build/browser/index.js",
               "browser": "./build/browser/index.js",
               "import": "./build/esm/index.js",
               "default": "./build/browser/index.js",
@@ -433,6 +434,7 @@ function standardPackageRules(shared, options) {
               ...(options.esmOnly ? {} : {
                 require: "./build/cjs/public/*.cjs",
               }),
+              module: "./build/browser/public/*.js",
               browser: "./build/browser/public/*.js",
               import: "./build/esm/public/*.js",
               default: "./build/browser/public/*.js",
