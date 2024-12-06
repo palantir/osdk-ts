@@ -52,8 +52,7 @@ describe(createOsdkInterface, () => {
         status: "ACTIVE",
       } satisfies FetchedObjectTypeDefinition,
     };
-    // underlying: Osdk<Q> & ObjectHolder<Q>,
-    // interfaceDef: InterfaceMetadata,
+
     const iface = createOsdkInterface(underlying as any, {
       "apiName": "IFoo",
       displayName: "",
@@ -114,8 +113,7 @@ describe(createOsdkInterface, () => {
         status: "ACTIVE",
       } satisfies FetchedObjectTypeDefinition,
     };
-    // underlying: Osdk<Q> & ObjectHolder<Q>,
-    // interfaceDef: InterfaceMetadata,
+
     const iface = createOsdkInterface(underlying as any, {
       "apiName": "a.IFoo",
       displayName: "",
@@ -176,8 +174,7 @@ describe(createOsdkInterface, () => {
         status: "ACTIVE",
       } satisfies FetchedObjectTypeDefinition,
     };
-    // underlying: Osdk<Q> & ObjectHolder<Q>,
-    // interfaceDef: InterfaceMetadata,
+
     const iface = createOsdkInterface(underlying as any, {
       "apiName": "a.IFoo",
       displayName: "",

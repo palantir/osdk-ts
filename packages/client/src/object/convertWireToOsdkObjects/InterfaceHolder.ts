@@ -23,15 +23,9 @@ import type {
 import type { ObjectHolder } from "./ObjectHolder.js";
 
 /** @internal */
-export interface InterfaceHolderOwnProps<
+export interface InterfaceHolder<
   Q extends FetchedObjectTypeDefinition,
 > {
   [UnderlyingOsdkObject]: Osdk<Q> & ObjectHolder<Q>;
   [InterfaceDefRef]: InterfaceMetadata;
-}
-
-/** @internal */
-export interface InterfaceHolder<
-  Q extends FetchedObjectTypeDefinition,
-> extends InterfaceHolderOwnProps<Q> {
 }

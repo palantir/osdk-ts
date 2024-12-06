@@ -64,6 +64,7 @@ describe("convertWireToOsdkObjects", () => {
 
     expect(Object.keys(employee).sort()).toEqual([
       "employeeId",
+      "$title",
       "fullName",
       "office",
       "class",
@@ -225,128 +226,6 @@ describe("convertWireToOsdkObjects", () => {
     const prototypeAfter = Object.getPrototypeOf(object2);
 
     expect(prototypeBefore).not.toBe(prototypeAfter);
-  });
-
-  it("updates interface when underlying changes - old", async () => {
-    const clientCtx = createMinimalClient(
-      { ontologyRid: $ontologyRid },
-      "https://stack.palantir.com",
-      async () => "myAccessToken",
-    );
-
-    let objectFromWire = {
-      __apiName: "Employee" as const,
-      __primaryKey: 0,
-      __title: "Steve",
-      fullName: "Steve",
-      employeeId: "5",
-    } satisfies OntologyObjectV2;
-
-    const [obj] = (await convertWireToOsdkObjects(
-      clientCtx,
-      [objectFromWire],
-      undefined,
-    )) as unknown as Osdk<Employee>[];
-
-    expect(obj.fullName).toEqual("Steve");
-    expect(Object.keys(obj).sort()).toEqual([
-      "$apiName",
-      "$objectType",
-      "$primaryKey",
-      "$title",
-      "employeeId",
-      "fullName",
-    ].sort());
-
-    const objAsFoo = obj.$as(FooInterface);
-    expect(objAsFoo).toMatchObject({
-      fooSpt: obj.fullName,
-      $apiName: FooInterface.apiName,
-      $primaryKey: obj.$primaryKey,
-      $objectType: obj.$objectType,
-      $title: obj.$title,
-    });
-
-    console.log(obj);
-    console.log(objAsFoo);
-
-    (obj as any).$updateInternalValues({
-      fullName: "Bob",
-    });
-    expect(obj.fullName).toEqual("Bob");
-    expect(objAsFoo.fooSpt).toEqual(obj.fullName);
-
-    expect(Object.keys(objAsFoo).sort()).toEqual([
-      "$apiName",
-      "$objectType",
-      "$primaryKey",
-      "$title",
-      "fooSpt",
-    ].sort());
-
-    expect(obj).toBe(objAsFoo.$as(Employee));
-    expect(objAsFoo).toBe(obj.$as(FooInterface));
-  });
-
-  it("updates interface when underlying changes - new", async () => {
-    const clientCtx = createMinimalClient(
-      { ontologyRid: $ontologyRid },
-      "https://stack.palantir.com",
-      async () => "myAccessToken",
-    );
-
-    let objectFromWire = {
-      __apiName: "Employee" as const,
-      __primaryKey: 0,
-      __title: "Steve",
-      fullName: "Steve",
-      employeeId: "5",
-    } satisfies OntologyObjectV2;
-
-    const [obj] = (await convertWireToOsdkObjects2(
-      clientCtx,
-      [objectFromWire],
-      undefined,
-    )) as unknown as Osdk<Employee>[];
-
-    expect(obj.fullName).toEqual("Steve");
-    expect(Object.keys(obj).sort()).toEqual([
-      "$apiName",
-      "$objectType",
-      "$primaryKey",
-      "$title",
-      "employeeId",
-      "fullName",
-    ].sort());
-
-    const objAsFoo = obj.$as(FooInterface);
-    expect(objAsFoo).toMatchObject({
-      fooSpt: obj.fullName,
-      $apiName: FooInterface.apiName,
-      $primaryKey: obj.$primaryKey,
-      $objectType: obj.$objectType,
-      $title: obj.$title,
-    });
-
-    console.log(obj);
-    console.log(objAsFoo);
-
-    (obj as any).$updateInternalValues({
-      fullName: "Bob",
-    });
-    expect(obj.fullName).toEqual("Bob");
-    expect(objAsFoo.fooSpt).toEqual(obj.fullName);
-
-    expect(Object.keys(objAsFoo).sort()).toEqual([
-      "$apiName",
-      "$objectType",
-      "$primaryKey",
-      "$title",
-      "fooSpt",
-    ].sort());
-
-    expect(obj).toBe(objAsFoo.$as(Employee));
-    expect(objAsFoo).toBe(obj.$as(FooInterface));
   });
 
   it("reconstitutes interfaces properly without rid - old", async () => {

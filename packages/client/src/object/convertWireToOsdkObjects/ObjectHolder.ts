@@ -15,36 +15,21 @@
  */
 
 import type { Osdk } from "@osdk/api";
-import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import type { DollarAsFn } from "./getDollarAs.js";
 import type { get$link } from "./getDollarLink.js";
 import type {
-  CachedPropertiesRef,
   ClientRef,
   ObjectDefRef,
-  RawObject,
   UnderlyingOsdkObject,
 } from "./InternalSymbols.js";
 
 /** @internal */
-export interface ObjectHolderPrototypeOwnProps {
+export interface ObjectHolder<Q extends FetchedObjectTypeDefinition> {
+  readonly [UnderlyingOsdkObject]: Osdk<Q>;
   readonly [ObjectDefRef]: FetchedObjectTypeDefinition;
   readonly [ClientRef]: MinimalClient;
   readonly "$as": DollarAsFn;
   readonly "$link": ReturnType<typeof get$link>;
-  readonly "$updateInternalValues": (newValues: Record<string, any>) => void;
-}
-/** @internal */
-export interface ObjectHolderOwnProperties {
-  [RawObject]: OntologyObjectV2;
-  [CachedPropertiesRef]: Map<string | symbol, any>;
-}
-
-/** @internal */
-export interface ObjectHolder<Q extends FetchedObjectTypeDefinition>
-  extends ObjectHolderPrototypeOwnProps, ObjectHolderOwnProperties
-{
-  [UnderlyingOsdkObject]: Osdk<Q>;
 }
