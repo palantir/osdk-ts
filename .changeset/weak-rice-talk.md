@@ -1,11 +1,11 @@
 ---
-"@osdk/create-app.template.tutorial-todo-aip-app.beta": minor
-"@osdk/create-app.template.tutorial-todo-app.beta": minor
+"@osdk/create-app.template.tutorial-todo-aip-app.v2": minor
+"@osdk/create-app.template.tutorial-todo-app.v2": minor
 "@osdk/create-app.template.next-static-export.v2": minor
 "@osdk/create-app.template.tutorial-todo-aip-app": minor
 "@osdk/create-app.template.next-static-export": minor
 "@osdk/create-app.template.tutorial-todo-app": minor
-"@osdk/create-app.template.react.beta": minor
+"@osdk/create-app.template.react.v2": minor
 "@osdk/create-app.template.vue.v2": minor
 "@osdk/create-app.template.react": minor
 "@osdk/create-app.template.vue": minor

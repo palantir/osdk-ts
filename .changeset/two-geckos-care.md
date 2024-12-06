@@ -1,5 +1,5 @@
 ---
-"@osdk/create-app.template.react.beta": patch
+"@osdk/create-app.template.react.v2": patch
 ---
 
 update dev dependencies
