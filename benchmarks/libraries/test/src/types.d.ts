@@ -18,7 +18,7 @@ declare module "ora-progress-bar" {
   class ProgressBar {
     constructor(text: string, total: number);
     progress: (value?: number) => void;
-    updateProgress: (newProges: number) => void;
+    updateProgress: (newProgress: number) => void;
     fail: (text?: string) => void;
     succeed: (text?: string) => void;
   }
