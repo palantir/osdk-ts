@@ -16,6 +16,7 @@
 
 import type * as api from "@osdk/api";
 import type {
+  ObjectPropertyType,
   ObjectTypeFullMetadata,
   PropertyV2,
 } from "@osdk/internal.foundry.core";
@@ -88,8 +89,7 @@ function convertType(
   t: api.ObjectMetadata.Property & {
     apiName: string;
   },
-  // TODO: ssanjay fix return type
-): any {
+): PropertyV2["dataType"] {
   switch (true) {
     case t.multiplicity === true:
       return {
@@ -123,7 +123,15 @@ function convertType(
       return {
         type: "timestamp",
       };
-
+    case typeof t.type === "object": {
+      return {
+        type: "struct",
+        structFieldTypes: Object.entries(t.type).map(([apiName, dataType]) => ({
+          apiName,
+          dataType: { type: dataType } as ObjectPropertyType,
+        })),
+      };
+    }
     default:
       return {
         type: t.type,
