@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
+import type {
+  getWirePropertyValueFromClient,
+  PropertyValueClientToWire,
+} from "../mapping/PropertyValueMapping.js";
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
@@ -40,9 +43,9 @@ export type ValidAggregationKeys<
   & {
     [
       KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<
-        PropertyValueClientToWire[
+        getWirePropertyValueFromClient<
           CompileTimeMetadata<Q>["properties"][KK]["type"]
-        ]
+        >
       >}`
     ]?: any;
   }

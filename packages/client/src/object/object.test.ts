@@ -185,6 +185,7 @@ describe("OsdkObject", () => {
     it("objects are enumerable in an sdk", async () => {
       const objects = Object.keys($Objects);
       expect(objects.sort()).toStrictEqual([
+        "BgaoNflPlayer",
         "Employee",
         "ObjectWithTimestampPrimaryKey",
         "Office",

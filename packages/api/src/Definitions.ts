@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { PropertyValueWireToClient } from "./mapping/PropertyValueMapping.js";
+import type {
+  getClientPropertyValueFromWire,
+  PropertyValueWireToClient,
+} from "./mapping/PropertyValueMapping.js";
 import type { ObjectMetadata } from "./ontology/ObjectTypeDefinition.js";
 
 type MaybeArray<T extends { multiplicity?: boolean | undefined }, U> =
@@ -34,12 +37,16 @@ type Converted<T> = T extends Array<any> ? T[1] : T;
 export type OsdkObjectPropertyType<
   T extends ObjectMetadata.Property,
   STRICTLY_ENFORCE_NULLABLE extends boolean = true,
-> = STRICTLY_ENFORCE_NULLABLE extends false
-  ? MaybeArray<T, Converted<PropertyValueWireToClient[T["type"]]>> | undefined
+> = STRICTLY_ENFORCE_NULLABLE extends false ?
+    | MaybeArray<T, Converted<getClientPropertyValueFromWire<T["type"]>>>
+    | undefined
   : MaybeNullable<
     T,
-    MaybeArray<T, Converted<PropertyValueWireToClient[T["type"]]>>
+    MaybeArray<T, Converted<getClientPropertyValueFromWire<T["type"]>>>
   >;
 
 export type OsdkObjectRawPropertyType<T extends ObjectMetadata.Property> =
-  MaybeNullable<T, MaybeArray<T, Raw<PropertyValueWireToClient[T["type"]]>>>;
+  MaybeNullable<
+    T,
+    MaybeArray<T, Raw<getClientPropertyValueFromWire<T["type"]>>>
+  >;

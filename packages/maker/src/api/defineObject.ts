@@ -88,7 +88,8 @@ function convertType(
   t: api.ObjectMetadata.Property & {
     apiName: string;
   },
-): PropertyV2["dataType"] {
+  // TODO: ssanjay fix return type
+): any {
   switch (true) {
     case t.multiplicity === true:
       return {
