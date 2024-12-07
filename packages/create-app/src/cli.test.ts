@@ -44,8 +44,9 @@ beforeEach(() => {
   };
 });
 
-for (const template of TEMPLATES) {
-  describe.each(["1.x", "2.x"])("For SDK version %s", (sdkVersion) => {
+describe.each(TEMPLATES)("template $id", (template) => {
+  const supportedVersions = Object.keys(template.files);
+  describe.each(supportedVersions)("For SDK version %s", (sdkVersion) => {
     test(`CLI creates ${template.id}`, async () => {
       await runTest({
         project: `expected-${template.id}`,
@@ -64,7 +65,7 @@ for (const template of TEMPLATES) {
       });
     });
   });
-}
+});
 
 async function runTest(
   { project, template, corsProxy, sdkVersion }: {

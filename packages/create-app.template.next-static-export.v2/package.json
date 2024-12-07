@@ -1,7 +1,7 @@
 {
   "name": "@osdk/create-app.template.next-static-export.v2",
   "private": true,
-  "version": "2.1.0-beta.17",
+  "version": "2.1.0-beta.18",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -42,7 +42,7 @@
     "@types/node": "^20.17.0",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "eslint": "^9.13.0",
+    "eslint": "^9.15.0",
     "eslint-config-next": "^15.0.1",
     "typescript": "~5.5.4",
     "vitest": "^2.1.3"

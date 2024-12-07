@@ -1,5 +1,13 @@
 # @osdk/create-widget.template.react.v2
 
+## 0.3.0-beta.3
+
+### Patch Changes
+
+- @osdk/client@2.1.0-beta.18
+- @osdk/widget-client.unstable@0.3.0-beta.3
+- @osdk/widget-client-react.unstable@0.3.0-beta.3
+
 ## 0.3.0-beta.2
 
 ### Patch Changes

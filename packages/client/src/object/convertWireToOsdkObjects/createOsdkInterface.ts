@@ -127,6 +127,10 @@ function createInterfaceProxyHandler(
       ];
     },
 
+    set() {
+      return false;
+    },
+
     get(target, p) {
       const underlying = target[UnderlyingOsdkObject];
       switch (p) {
