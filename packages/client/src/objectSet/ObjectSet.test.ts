@@ -29,6 +29,7 @@ import { isOk, WhereClause } from "@osdk/api";
 import {
   $ontologyRid,
   BarInterface,
+  BgaoNflPlayer,
   Employee,
   FooInterface,
   Office,
@@ -205,6 +206,39 @@ describe("ObjectSet", () => {
       Osdk<Employee, PropertyKeys<Employee>>
     >;
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
+  });
+
+  it("check struct parsing", async () => {
+    const player = await client(BgaoNflPlayer).fetchOne(
+      "tkelce",
+    );
+    expectTypeOf<typeof player>().toMatchTypeOf<
+      Osdk<BgaoNflPlayer, PropertyKeys<BgaoNflPlayer>>
+    >;
+
+    expectTypeOf<typeof player.address.addressLine1>().toMatchTypeOf<
+      string | undefined
+    >;
+    expect(player.address.addressLine1).toEqual("15 Muppets Lane");
+    expectTypeOf<typeof player.address.addressLine2>().toMatchTypeOf<
+      string | undefined
+    >;
+    expect(player.address.addressLine2).toEqual("Resort No 4");
+
+    expectTypeOf<typeof player.address.city>().toMatchTypeOf<
+      string | undefined
+    >;
+    expect(player.address.city).toEqual("Memphis");
+    expectTypeOf<typeof player.address.state>().toMatchTypeOf<
+      string | undefined
+    >;
+    expect(player.address.state).toEqual("TN");
+    expectTypeOf<typeof player.address.zipCode>().toMatchTypeOf<
+      number | undefined
+    >;
+    expect(player.address.zipCode).toEqual(11100);
+    expect(player.$primaryKey).toEqual(stubData.travisPlayer.__primaryKey);
+    expect(player.address).toEqual(stubData.travisPlayer.address);
   });
 
   it("allows fetching by PK from a base object set - fetchOneWithErrors", async () => {

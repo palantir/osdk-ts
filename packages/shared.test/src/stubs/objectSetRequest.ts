@@ -27,8 +27,10 @@ import {
   nycOffice,
   objectWithAllPropertyTypes1,
   objectWithAllPropertyTypesEmptyEntries,
+  travisPlayer,
 } from "./objects.js";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
+import { BGaoNflPlayerObjectType } from "./objectTypeV2.js";
 
 const baseObjectSet: LoadObjectSetRequestV2 = {
   objectSet: { type: "base", objectType: employeeObjectType.apiName },
@@ -102,6 +104,19 @@ const eqSearchBody2: LoadObjectSetRequestV2 = {
       type: "eq",
       field: "employeeId",
       value: 50031,
+    },
+  },
+  select: [],
+};
+
+const eqSearchBody3: LoadObjectSetRequestV2 = {
+  objectSet: {
+    type: "filter",
+    objectSet: { type: "base", objectType: BGaoNflPlayerObjectType.apiName },
+    where: {
+      type: "eq",
+      field: BGaoNflPlayerObjectType.primaryKey,
+      value: "tkelce",
     },
   },
   select: [],
@@ -469,4 +484,5 @@ export const loadObjectSetRequestHandlers: {
   [stableStringify(employee1LeadSearchAround)]: [employee2],
   [stableStringify(employee2ToPeepsSearchAround)]: [employee1, employee2],
   [stableStringify(employee2ToToEmployee1PeepByPk)]: [employee1],
+  [stableStringify(eqSearchBody3)]: [travisPlayer],
 };

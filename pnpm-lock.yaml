@@ -423,7 +423,7 @@ importers:
         version: 29.7.0(@types/node@22.10.1)(ts-node@10.9.2(@types/node@22.10.1)(typescript@5.5.4))
       jest-expo:
         specifier: ~52.0.2
-        version: 52.0.2(@babel/core@7.26.0)(expo@52.0.11(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@expo/metro-runtime@4.0.0(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1)))(graphql@16.8.1)(react-native-webview@13.12.2(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(jest@29.7.0(@types/node@22.10.1)(ts-node@10.9.2(@types/node@22.10.1)(typescript@5.5.4)))(react-dom@18.3.1(react@18.3.1))(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)(webpack@5.96.1)
+        version: 52.0.2(@babel/core@7.26.0)(expo@52.0.11(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@expo/metro-runtime@4.0.0(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1)))(graphql@16.8.1)(react-native-webview@13.12.2(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(jest@29.7.0(@types/node@22.10.1)(ts-node@10.9.2(@types/node@22.10.1)(typescript@5.5.4)))(react-dom@18.3.1(react@18.3.1))(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)(webpack@5.96.1(esbuild@0.23.0))
       react-test-renderer:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
@@ -1254,11 +1254,11 @@ importers:
         specifier: workspace:~
         version: link:../generator
       '@osdk/internal.foundry.core':
-        specifier: 2.6.0-beta.1
-        version: 2.6.0-beta.1
+        specifier: 2.8.0
+        version: 2.8.0
       '@osdk/internal.foundry.ontologiesv2':
-        specifier: 2.6.0-beta.1
-        version: 2.6.0-beta.1
+        specifier: 2.8.0
+        version: 2.8.0
       '@osdk/shared.client.impl':
         specifier: workspace:~
         version: link:../shared.client.impl
@@ -1346,11 +1346,11 @@ importers:
         specifier: workspace:*
         version: link:../generator-converters
       '@osdk/internal.foundry.core':
-        specifier: 2.6.0-beta.1
-        version: 2.6.0-beta.1
+        specifier: 2.8.0
+        version: 2.8.0
       '@osdk/internal.foundry.ontologiesv2':
-        specifier: 2.6.0-beta.1
-        version: 2.6.0-beta.1
+        specifier: 2.8.0
+        version: 2.8.0
       '@osdk/shared.client':
         specifier: ^1.0.1
         version: 1.0.1
@@ -1816,7 +1816,7 @@ importers:
         version: 29.7.0(@types/node@22.10.0)(ts-node@10.9.2(@types/node@22.10.0)(typescript@5.5.4))
       jest-expo:
         specifier: ~52.0.2
-        version: 52.0.2(@babel/core@7.26.0)(expo@52.0.11(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@expo/metro-runtime@4.0.0(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1)))(graphql@16.8.1)(react-native-webview@13.12.2(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(jest@29.7.0(@types/node@22.10.0)(ts-node@10.9.2(@types/node@22.10.0)(typescript@5.5.4)))(react-dom@18.3.1(react@18.3.1))(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)(webpack@5.96.1)
+        version: 52.0.2(@babel/core@7.26.0)(expo@52.0.11(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@expo/metro-runtime@4.0.0(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1)))(graphql@16.8.1)(react-native-webview@13.12.2(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(jest@29.7.0(@types/node@22.10.0)(ts-node@10.9.2(@types/node@22.10.0)(typescript@5.5.4)))(react-dom@18.3.1(react@18.3.1))(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)(webpack@5.96.1(esbuild@0.23.0))
       react-test-renderer:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
@@ -3098,23 +3098,23 @@ importers:
         specifier: workspace:*
         version: link:../client
       '@osdk/foundry.core':
-        specifier: 2.6.0-beta.1
-        version: 2.6.0-beta.1
+        specifier: 2.8.0
+        version: 2.8.0
       '@osdk/foundry.thirdpartyapplications':
-        specifier: 2.6.0-beta.1
-        version: 2.6.0-beta.1
+        specifier: 2.8.0
+        version: 2.8.0
       '@osdk/generator':
         specifier: workspace:*
         version: link:../generator
       '@osdk/internal.foundry.core':
-        specifier: 2.6.0-beta.1
-        version: 2.6.0-beta.1
+        specifier: 2.8.0
+        version: 2.8.0
       '@osdk/internal.foundry.ontologies':
-        specifier: 2.6.0-beta.1
-        version: 2.6.0-beta.1
+        specifier: 2.8.0
+        version: 2.8.0
       '@osdk/internal.foundry.ontologiesv2':
-        specifier: 2.6.0-beta.1
-        version: 2.6.0-beta.1
+        specifier: 2.8.0
+        version: 2.8.0
       '@osdk/shared.client.impl':
         specifier: workspace:*
         version: link:../shared.client.impl
@@ -3183,8 +3183,8 @@ importers:
         specifier: workspace:~
         version: link:../generator-converters
       '@osdk/internal.foundry.core':
-        specifier: 2.6.0-beta.1
-        version: 2.6.0-beta.1
+        specifier: 2.8.0
+        version: 2.8.0
       fast-deep-equal:
         specifier: ^3.1.3
         version: 3.1.3
@@ -3229,8 +3229,8 @@ importers:
         specifier: workspace:~
         version: link:../api
       '@osdk/internal.foundry.core':
-        specifier: 2.6.0-beta.1
-        version: 2.6.0-beta.1
+        specifier: 2.8.0
+        version: 2.8.0
     devDependencies:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
@@ -3307,8 +3307,8 @@ importers:
         specifier: workspace:~
         version: link:../client.unstable
       '@osdk/internal.foundry.core':
-        specifier: 2.6.0-beta.1
-        version: 2.6.0-beta.1
+        specifier: 2.8.0
+        version: 2.8.0
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -3530,17 +3530,17 @@ importers:
         specifier: workspace:~
         version: link:../api
       '@osdk/internal.foundry.core':
-        specifier: 2.6.0-beta.1
-        version: 2.6.0-beta.1
+        specifier: 2.8.0
+        version: 2.8.0
       '@osdk/internal.foundry.geo':
-        specifier: 2.6.0-beta.1
-        version: 2.6.0-beta.1
+        specifier: 2.8.0
+        version: 2.8.0
       '@osdk/internal.foundry.ontologies':
-        specifier: 2.6.0-beta.1
-        version: 2.6.0-beta.1
+        specifier: 2.8.0
+        version: 2.8.0
       '@osdk/internal.foundry.ontologiesv2':
-        specifier: 2.6.0-beta.1
-        version: 2.6.0-beta.1
+        specifier: 2.8.0
+        version: 2.8.0
       fetch-retry:
         specifier: ^6.0.0
         version: 6.0.0
@@ -6212,8 +6212,8 @@ packages:
   '@osdk/foundry.core@2.5.0':
     resolution: {integrity: sha512-LV+m6/3Y+Q0lN16PAwQvoWtutY0xXdntuwOQjMR2ZqdLRlZOK2KSvfwNZnX4q8EKuvF1mJC8iaTtWh3lChpU1Q==}
 
-  '@osdk/foundry.core@2.6.0-beta.1':
-    resolution: {integrity: sha512-4/nX4we3w3oM57Y2THeNfZtQtZAwP8bniGTfL/5xAIhvYfFbTFkh7LhsLglym7LIfGEISu+pu9zYHT4O82JfZQ==}
+  '@osdk/foundry.core@2.8.0':
+    resolution: {integrity: sha512-Q7ubdwbRKIv6CC1ePwd0boIwp2Zp8yHHrniNsa/AqmgIT7+tC+8XKirOa/6ok4OooOUmpk1ufwZZUjjsYe1xPg==}
 
   '@osdk/foundry.datasets@2.1.0':
     resolution: {integrity: sha512-cqQAhiC+w/775SlifFV7yyvlQxMM8VKuRrSgXy93CCyI4W73jWEwS9+/PtKPXVa48T3G9bql8FckaIuwlknQfA==}
@@ -6233,8 +6233,8 @@ packages:
   '@osdk/foundry.geo@2.5.0':
     resolution: {integrity: sha512-kL615eqHvn1MkP0le2r6vx/ub+lit5bKdmoWNRELMqi9s2BlLuoKAQW5H9YDQPqhHuJDjrBJAWiviOin9mUKqw==}
 
-  '@osdk/foundry.geo@2.6.0-beta.1':
-    resolution: {integrity: sha512-gOb17fWCk8PulqltSz0gmoHgD0TkdKdGYBE09WSsaYDJLxQSwTvPjwWHNZqZFwpHJWfrH33qiCugrF62PKcNOw==}
+  '@osdk/foundry.geo@2.8.0':
+    resolution: {integrity: sha512-BBvP1ZHfrkA8VWHHvBPwqmhzgTA+Hh9skZNCrU79t2YMyf+MqJQM1tMi9Di8SzqXAF7sxbUtQFCp7H4W/9Bcbw==}
 
   '@osdk/foundry.ontologies@2.1.0':
     resolution: {integrity: sha512-CypiwtfyKXDIJU2S5tKkVuo7KRRIUQ42bWkUX94vDisqIkgJavMjVO+bevAcJ2sOkaGxbx8acjN1g7yOTdj+Wg==}
@@ -6251,8 +6251,8 @@ packages:
   '@osdk/foundry.thirdpartyapplications@2.1.0':
     resolution: {integrity: sha512-xEu8PNb4f54JF1FgWJ+wJicqWtWMXQbvLXIdpwMLBEv5HtCXySvwYB0QChAhJbDxSfL0HP/e2VGF24VzkRzeKg==}
 
-  '@osdk/foundry.thirdpartyapplications@2.6.0-beta.1':
-    resolution: {integrity: sha512-5Vp68+oc8HCZaEEz2GEv+0w3bRqb+Ka3CYV4yl76q0CcWL6N1ELXH3RakplhEA3KSVi0NJ6KoukINrBd8kC39A==}
+  '@osdk/foundry.thirdpartyapplications@2.8.0':
+    resolution: {integrity: sha512-ie0j7is02dMb3K0KyopedQOFemNG70eNWbdab5FG1jAWcAqh13dV0QaaCXdlfm3OCHbPaFRyeBLZt+rO+JMY4A==}
 
   '@osdk/foundry@2.1.0':
     resolution: {integrity: sha512-F8xKprD8L00pfyreByzyqvTX3q4txEFnXziUW14o1K5Q+dWolUfL79ReRSSTRZ+R7A6yIDd2WZOWb4m9ee58LA==}
@@ -6263,8 +6263,8 @@ packages:
   '@osdk/internal.foundry.core@0.2.0':
     resolution: {integrity: sha512-+It/huASzz4nK/kNVw+hILo2wapzE2ZfptIiem6iEt19KEQVtw/fqJ2VRGMUEop0Q4+rT3VLHdqkNxq5nSUzdA==}
 
-  '@osdk/internal.foundry.core@2.6.0-beta.1':
-    resolution: {integrity: sha512-zkxWo4Hdwrzz1IjFqvEg5s0dyrGszJw0wdGdSMZmsUICQtCA1k1DyGntKTVEY/76MSKTRCdIMlhTnT7WTiFTMA==}
+  '@osdk/internal.foundry.core@2.8.0':
+    resolution: {integrity: sha512-Qb12ztwkizw/zoS0JZGKmQwxoQPYxf2NrFL2zRnUIHItjOBemQhaPKU+0ku8hx+/z2VqSVifLRqrrSuSg6dKjA==}
 
   '@osdk/internal.foundry.datasets@0.2.0':
     resolution: {integrity: sha512-U1adaMni2PDMuF5S5ql4jzRY1drah10besAsO6rO3jkbcP+ISGja14t8161oAjKNiECFYT+CtTNhjyp4E3Xe2w==}
@@ -6272,20 +6272,20 @@ packages:
   '@osdk/internal.foundry.geo@0.1.0':
     resolution: {integrity: sha512-6NbTIEos7LdderlnDj/kTqFSlAjgZe8gkXAqTYWSipRP6UqKRDPwYeOcnMIR4wHZwNblxGohgY6IELvAM2exoA==}
 
-  '@osdk/internal.foundry.geo@2.6.0-beta.1':
-    resolution: {integrity: sha512-tXi6dFLbOhmeFfmnGrNdZX2Zq8Fi1IONId1C+6l2y0WucSXfWrBR6qIfcw2+fgPDkO9TT9aExce8N9kBzj0ejA==}
+  '@osdk/internal.foundry.geo@2.8.0':
+    resolution: {integrity: sha512-rVpKWPZdSs40YqBrrpzieM+2psg/2PfPFCAQuuluqjAYQ7F4RSfpvwpZRfo4DHFDA3JYRBp7N2LBCv3hEopfNg==}
 
   '@osdk/internal.foundry.ontologies@0.2.0':
     resolution: {integrity: sha512-tAJtBupT5VShN9Q7XJ+bsx+3SeTle+l7kRuaYvVkfUvju1yxzHvhmJWyYHbnPpa4fFwZUVclcHI4NwNkbNK9cQ==}
 
-  '@osdk/internal.foundry.ontologies@2.6.0-beta.1':
-    resolution: {integrity: sha512-prS1K/rsODTQO5a25FoATAyMSYCEzJQfk2rPFvTX5XvQK1k1N2C6WNdIsJskRz61hSDh6SwFfdaXRAbFT1bpsg==}
+  '@osdk/internal.foundry.ontologies@2.8.0':
+    resolution: {integrity: sha512-iSPFKesgInWp5isWVWXDdng9oEWCn+AAPQYgJ6HrlrAriE+vON7MGXUJ34Qj5QR/yti3EHObERCz4ebS/1jJYA==}
 
   '@osdk/internal.foundry.ontologiesv2@0.2.0':
     resolution: {integrity: sha512-UUxcwGCfiX1+kvYrWgYxWe1JxttZk7X16XwrRUr8qLKjUTgqLXOvNMq6XtzfytQ7J/nOfbfcjxHBM2LNQwudag==}
 
-  '@osdk/internal.foundry.ontologiesv2@2.6.0-beta.1':
-    resolution: {integrity: sha512-bINbZdrqPUq8RUW+ViRENkVmFUxG9X3yn3lefZsG7lhVMTiYp7UpVJhYZh4qw0uSjcyUgwcyA53IpsoTjPYuWA==}
+  '@osdk/internal.foundry.ontologiesv2@2.8.0':
+    resolution: {integrity: sha512-+jg2xn5XRBMvXu/us7jyJnfuVD9VJRGLlRvP314b/SjfNkvm+3rpamZ6Di0hwL53EIePpsOFgpXl+Vf5iZ32pA==}
 
   '@osdk/internal.foundry@0.5.0':
     resolution: {integrity: sha512-mCxhEnzOkLde+3h7noVi9V+p1gh7kEzwquLXjGRJ2Ad8nDAyCxJRFkLpnzvsfjGHYrzgk2tZIuzjoQ0I7TlGaw==}
@@ -6320,8 +6320,8 @@ packages:
   '@osdk/shared.net.platformapi@1.1.0':
     resolution: {integrity: sha512-386O8rYgxFAmhdwrPydTDTQZPvu7yLc4+kDiW/Xq+EbOzpNPfGR9x/YlCu6Q5YvSPZ4zWv5nApOPCw/nL6TQsg==}
 
-  '@osdk/shared.net.platformapi@1.2.0-beta.1':
-    resolution: {integrity: sha512-mMET8u54It/bJgK4MMim15iwifWLFsN+qzKM+v6t9IaE+jytFqrHmtM7DYsCeGxC1HKs4fbyf8iLFCbNDL5/5g==}
+  '@osdk/shared.net.platformapi@1.2.0':
+    resolution: {integrity: sha512-DbGitmb9/Cu9ok+hMUggo9l4coFWBidyu2Jn4w390hrjffHikT6pXk0q3XhaVT6WItHaEu32Jv2MYOyCrZrpQQ==}
 
   '@osdk/shared.net@1.12.1':
     resolution: {integrity: sha512-uJE124K3O21A1Of2TdOqMHBfrIYshcDSLr5em4v1vNZZGSsSCYUYGo5vvkS6vzUVDA2xSn/Uf2FgdzX6BWxIhQ==}
@@ -16884,12 +16884,12 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.1.0
 
-  '@osdk/foundry.core@2.6.0-beta.1':
+  '@osdk/foundry.core@2.8.0':
     dependencies:
-      '@osdk/foundry.geo': 2.6.0-beta.1
+      '@osdk/foundry.geo': 2.8.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.2.0-beta.1
+      '@osdk/shared.net.platformapi': 1.2.0
 
   '@osdk/foundry.datasets@2.1.0':
     dependencies:
@@ -16931,11 +16931,11 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.1.0
 
-  '@osdk/foundry.geo@2.6.0-beta.1':
+  '@osdk/foundry.geo@2.8.0':
     dependencies:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.2.0-beta.1
+      '@osdk/shared.net.platformapi': 1.2.0
 
   '@osdk/foundry.ontologies@2.1.0':
     dependencies:
@@ -16970,12 +16970,12 @@ snapshots:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.net.platformapi': 0.3.2
 
-  '@osdk/foundry.thirdpartyapplications@2.6.0-beta.1':
+  '@osdk/foundry.thirdpartyapplications@2.8.0':
     dependencies:
-      '@osdk/foundry.core': 2.6.0-beta.1
+      '@osdk/foundry.core': 2.8.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.2.0-beta.1
+      '@osdk/shared.net.platformapi': 1.2.0
 
   '@osdk/foundry@2.1.0':
     dependencies:
@@ -17003,12 +17003,12 @@ snapshots:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.net.platformapi': 0.3.2
 
-  '@osdk/internal.foundry.core@2.6.0-beta.1':
+  '@osdk/internal.foundry.core@2.8.0':
     dependencies:
-      '@osdk/internal.foundry.geo': 2.6.0-beta.1
+      '@osdk/internal.foundry.geo': 2.8.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.2.0-beta.1
+      '@osdk/shared.net.platformapi': 1.2.0
 
   '@osdk/internal.foundry.datasets@0.2.0':
     dependencies:
@@ -17021,11 +17021,11 @@ snapshots:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.net.platformapi': 0.3.2
 
-  '@osdk/internal.foundry.geo@2.6.0-beta.1':
+  '@osdk/internal.foundry.geo@2.8.0':
     dependencies:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.2.0-beta.1
+      '@osdk/shared.net.platformapi': 1.2.0
 
   '@osdk/internal.foundry.ontologies@0.2.0':
     dependencies:
@@ -17033,12 +17033,12 @@ snapshots:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.net.platformapi': 0.3.2
 
-  '@osdk/internal.foundry.ontologies@2.6.0-beta.1':
+  '@osdk/internal.foundry.ontologies@2.8.0':
     dependencies:
-      '@osdk/internal.foundry.core': 2.6.0-beta.1
+      '@osdk/internal.foundry.core': 2.8.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.2.0-beta.1
+      '@osdk/shared.net.platformapi': 1.2.0
 
   '@osdk/internal.foundry.ontologiesv2@0.2.0':
     dependencies:
@@ -17046,12 +17046,12 @@ snapshots:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.net.platformapi': 0.3.2
 
-  '@osdk/internal.foundry.ontologiesv2@2.6.0-beta.1':
+  '@osdk/internal.foundry.ontologiesv2@2.8.0':
     dependencies:
-      '@osdk/internal.foundry.core': 2.6.0-beta.1
+      '@osdk/internal.foundry.core': 2.8.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.2.0-beta.1
+      '@osdk/shared.net.platformapi': 1.2.0
 
   '@osdk/internal.foundry@0.5.0':
     dependencies:
@@ -17106,7 +17106,7 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.errors': 2.0.1
 
-  '@osdk/shared.net.platformapi@1.2.0-beta.1':
+  '@osdk/shared.net.platformapi@1.2.0':
     dependencies:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
@@ -20681,8 +20681,8 @@ snapshots:
       '@typescript-eslint/parser': 8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4)
       eslint: 9.16.0(jiti@1.21.6)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0)(eslint@9.16.0(jiti@1.21.6))
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-plugin-import@2.31.0)(eslint@9.16.0(jiti@1.21.6)))(eslint@9.16.0(jiti@1.21.6))
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-plugin-import@2.31.0)(eslint@9.16.0(jiti@1.21.6)))(eslint@9.16.0(jiti@1.21.6)))(eslint@9.16.0(jiti@1.21.6))
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@9.16.0(jiti@1.21.6))
       eslint-plugin-jsx-a11y: 6.10.1(eslint@9.16.0(jiti@1.21.6))
       eslint-plugin-react: 7.37.2(eslint@9.16.0(jiti@1.21.6))
       eslint-plugin-react-hooks: 5.0.0(eslint@9.16.0(jiti@1.21.6))
@@ -20700,13 +20700,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0)(eslint@9.16.0(jiti@1.21.6)):
+  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-plugin-import@2.31.0)(eslint@9.16.0(jiti@1.21.6)))(eslint@9.16.0(jiti@1.21.6)))(eslint@9.16.0(jiti@1.21.6)):
     dependencies:
       debug: 4.3.7
       enhanced-resolve: 5.16.1
       eslint: 9.16.0(jiti@1.21.6)
-      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0)(eslint@9.16.0(jiti@1.21.6)))(eslint@9.16.0(jiti@1.21.6))
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-plugin-import@2.31.0)(eslint@9.16.0(jiti@1.21.6)))(eslint@9.16.0(jiti@1.21.6))
+      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-plugin-import@2.31.0)(eslint@9.16.0(jiti@1.21.6)))(eslint@9.16.0(jiti@1.21.6)))(eslint@9.16.0(jiti@1.21.6)))(eslint@9.16.0(jiti@1.21.6))
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@9.16.0(jiti@1.21.6))
       fast-glob: 3.3.2
       get-tsconfig: 4.7.5
       is-core-module: 2.15.1
@@ -20796,14 +20796,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0)(eslint@9.16.0(jiti@1.21.6)))(eslint@9.16.0(jiti@1.21.6)):
+  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-plugin-import@2.31.0)(eslint@9.16.0(jiti@1.21.6)))(eslint@9.16.0(jiti@1.21.6)))(eslint@9.16.0(jiti@1.21.6)))(eslint@9.16.0(jiti@1.21.6)):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
       '@typescript-eslint/parser': 8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4)
       eslint: 9.16.0(jiti@1.21.6)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0)(eslint@9.16.0(jiti@1.21.6))
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-plugin-import@2.31.0)(eslint@9.16.0(jiti@1.21.6)))(eslint@9.16.0(jiti@1.21.6)))(eslint@9.16.0(jiti@1.21.6))
     transitivePeerDependencies:
       - supports-color
 
@@ -20923,35 +20923,6 @@ snapshots:
       tsconfig-paths: 3.15.0
     optionalDependencies:
       '@typescript-eslint/parser': 8.15.0(eslint@9.13.0(jiti@1.21.6))(typescript@5.5.4)
-    transitivePeerDependencies:
-      - eslint-import-resolver-typescript
-      - eslint-import-resolver-webpack
-      - supports-color
-
-  eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-plugin-import@2.31.0)(eslint@9.16.0(jiti@1.21.6)))(eslint@9.16.0(jiti@1.21.6)):
-    dependencies:
-      '@rtsao/scc': 1.1.0
-      array-includes: 3.1.8
-      array.prototype.findlastindex: 1.2.5
-      array.prototype.flat: 1.3.2
-      array.prototype.flatmap: 1.3.2
-      debug: 3.2.7
-      doctrine: 2.1.0
-      eslint: 9.16.0(jiti@1.21.6)
-      eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4))(eslint-plugin-import@2.31.0)(eslint@9.16.0(jiti@1.21.6)))(eslint@9.16.0(jiti@1.21.6))
-      hasown: 2.0.2
-      is-core-module: 2.15.1
-      is-glob: 4.0.3
-      minimatch: 3.1.2
-      object.fromentries: 2.0.8
-      object.groupby: 1.0.3
-      object.values: 1.2.0
-      semver: 6.3.1
-      string.prototype.trimend: 1.0.8
-      tsconfig-paths: 3.15.0
-    optionalDependencies:
-      '@typescript-eslint/parser': 8.15.0(eslint@9.16.0(jiti@1.21.6))(typescript@5.5.4)
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
@@ -22688,7 +22659,7 @@ snapshots:
       jest-mock: 29.7.0
       jest-util: 29.7.0
 
-  jest-expo@52.0.2(@babel/core@7.26.0)(expo@52.0.11(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@expo/metro-runtime@4.0.0(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1)))(graphql@16.8.1)(react-native-webview@13.12.2(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(jest@29.7.0(@types/node@22.10.0)(ts-node@10.9.2(@types/node@22.10.0)(typescript@5.5.4)))(react-dom@18.3.1(react@18.3.1))(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)(webpack@5.96.1):
+  jest-expo@52.0.2(@babel/core@7.26.0)(expo@52.0.11(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@expo/metro-runtime@4.0.0(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1)))(graphql@16.8.1)(react-native-webview@13.12.2(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(jest@29.7.0(@types/node@22.10.0)(ts-node@10.9.2(@types/node@22.10.0)(typescript@5.5.4)))(react-dom@18.3.1(react@18.3.1))(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)(webpack@5.96.1(esbuild@0.23.0)):
     dependencies:
       '@expo/config': 10.0.5
       '@expo/json-file': 9.0.0
@@ -22705,7 +22676,7 @@ snapshots:
       json5: 2.2.3
       lodash: 4.17.21
       react-native: 0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1)
-      react-server-dom-webpack: 19.0.0-rc-6230622a1a-20240610(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(webpack@5.96.1)
+      react-server-dom-webpack: 19.0.0-rc-6230622a1a-20240610(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(webpack@5.96.1(esbuild@0.23.0))
       react-test-renderer: 18.3.1(react@18.3.1)
       server-only: 0.0.1
       stacktrace-js: 2.0.2
@@ -22721,7 +22692,7 @@ snapshots:
       - utf-8-validate
       - webpack
 
-  jest-expo@52.0.2(@babel/core@7.26.0)(expo@52.0.11(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@expo/metro-runtime@4.0.0(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1)))(graphql@16.8.1)(react-native-webview@13.12.2(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(jest@29.7.0(@types/node@22.10.1)(ts-node@10.9.2(@types/node@22.10.1)(typescript@5.5.4)))(react-dom@18.3.1(react@18.3.1))(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)(webpack@5.96.1):
+  jest-expo@52.0.2(@babel/core@7.26.0)(expo@52.0.11(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@expo/metro-runtime@4.0.0(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1)))(graphql@16.8.1)(react-native-webview@13.12.2(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(jest@29.7.0(@types/node@22.10.1)(ts-node@10.9.2(@types/node@22.10.1)(typescript@5.5.4)))(react-dom@18.3.1(react@18.3.1))(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)(webpack@5.96.1(esbuild@0.23.0)):
     dependencies:
       '@expo/config': 10.0.5
       '@expo/json-file': 9.0.0
@@ -22738,7 +22709,7 @@ snapshots:
       json5: 2.2.3
       lodash: 4.17.21
       react-native: 0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(react@18.3.1)
-      react-server-dom-webpack: 19.0.0-rc-6230622a1a-20240610(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(webpack@5.96.1)
+      react-server-dom-webpack: 19.0.0-rc-6230622a1a-20240610(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(webpack@5.96.1(esbuild@0.23.0))
       react-test-renderer: 18.3.1(react@18.3.1)
       server-only: 0.0.1
       stacktrace-js: 2.0.2
@@ -24614,13 +24585,13 @@ snapshots:
       '@remix-run/router': 1.16.1
       react: 18.3.1
 
-  react-server-dom-webpack@19.0.0-rc-6230622a1a-20240610(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(webpack@5.96.1):
+  react-server-dom-webpack@19.0.0-rc-6230622a1a-20240610(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(webpack@5.96.1(esbuild@0.23.0)):
     dependencies:
       acorn-loose: 8.4.0
       neo-async: 2.6.2
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-      webpack: 5.96.1
+      webpack: 5.96.1(esbuild@0.23.0)
 
   react-shallow-renderer@16.15.0(react@18.3.1):
     dependencies:
@@ -25557,14 +25528,16 @@ snapshots:
       ansi-escapes: 4.3.2
       supports-hyperlinks: 2.3.0
 
-  terser-webpack-plugin@5.3.10(webpack@5.96.1):
+  terser-webpack-plugin@5.3.10(esbuild@0.23.0)(webpack@5.96.1(esbuild@0.23.0)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.25
       jest-worker: 27.5.1
       schema-utils: 3.3.0
       serialize-javascript: 6.0.2
       terser: 5.36.0
-      webpack: 5.96.1
+      webpack: 5.96.1(esbuild@0.23.0)
+    optionalDependencies:
+      esbuild: 0.23.0
 
   terser@5.36.0:
     dependencies:
@@ -26470,7 +26443,7 @@ snapshots:
 
   webpack-sources@3.2.3: {}
 
-  webpack@5.96.1:
+  webpack@5.96.1(esbuild@0.23.0):
     dependencies:
       '@types/eslint-scope': 3.7.7
       '@types/estree': 1.0.6
@@ -26492,7 +26465,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 3.3.0
       tapable: 2.2.1
-      terser-webpack-plugin: 5.3.10(webpack@5.96.1)
+      terser-webpack-plugin: 5.3.10(esbuild@0.23.0)(webpack@5.96.1(esbuild@0.23.0))
       watchpack: 2.4.2
       webpack-sources: 3.2.3
     transitivePeerDependencies:

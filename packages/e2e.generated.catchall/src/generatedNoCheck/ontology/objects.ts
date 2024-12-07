@@ -1,3 +1,4 @@
+export { BgaoNflPlayer } from './objects/BgaoNflPlayer.js';
 export { BoundariesUsState } from './objects/BoundariesUsState.js';
 export { BuilderDeploymentState } from './objects/BuilderDeploymentState.js';
 export { DherlihyComplexObject } from './objects/DherlihyComplexObject.js';

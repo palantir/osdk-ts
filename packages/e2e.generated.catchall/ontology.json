@@ -510,6 +510,89 @@
       },
       "linkTypes": []
     },
+    "BgaoNflPlayer": {
+      "objectType": {
+        "apiName": "BgaoNflPlayer",
+        "primaryKey": "id",
+        "displayName": "BgaoNflPlayer",
+        "description": "BgaoNflPlayer",
+        "properties": {
+          "id": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "gamesPlayed": {
+            "dataType": {
+              "type": "integer"
+            }
+          },
+          "name": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "number": {
+            "dataType": {
+              "type": "integer"
+            }
+          },
+          "wikiUrl": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "address": {
+            "dataType": {
+              "type": "struct",
+              "structFieldTypes": [
+                {
+                  "apiName": "addressLine1",
+                  "dataType": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "apiName": "addressLine2",
+                  "dataType": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "apiName": "city",
+                  "dataType": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "apiName": "state",
+                  "dataType": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "apiName": "zipCode",
+                  "dataType": {
+                    "type": "integer"
+                  }
+                }
+              ]
+            }
+          }
+        },
+
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "traffic",
+          "color": "color"
+        },
+        "titleProperty": "entityId",
+        "pluralDisplayName": "GtfsTripTrackObject"
+      },
+      "linkTypes": []
+    },
     "DherlihyComplexObject": {
       "objectType": {
         "apiName": "DherlihyComplexObject",
