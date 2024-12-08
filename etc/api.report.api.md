@@ -768,6 +768,8 @@ export interface PropertyValueWireToClient {
     stringTimeseries: TimeSeriesProperty<string>;
     // (undocumented)
     timestamp: string;
+    // (undocumented)
+    unknown: never;
 }
 
 // Warning: (ae-forgotten-export) The symbol "PrimitiveDataType" needs to be exported by the entry point index.d.ts
@@ -970,7 +972,7 @@ export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T
 });
 
 // @public (undocumented)
-export type WirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
+export type WirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference" | "unknown";
 
 // Warnings were encountered during analysis:
 //

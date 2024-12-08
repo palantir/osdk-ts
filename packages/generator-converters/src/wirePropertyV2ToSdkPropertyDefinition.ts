@@ -20,6 +20,7 @@ import type {
   PropertyV2,
   SharedPropertyType,
 } from "@osdk/internal.foundry.core";
+import { consola } from "consola";
 
 export function wirePropertyV2ToSdkPropertyDefinition(
   input: (PropertyV2 | SharedPropertyType) & { nullable?: boolean },
@@ -59,16 +60,33 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         nullable: true,
       };
     }
-    case "mediaReference": {
-      throw new Error(
-        `Media references not supported yet`,
+    case "mediaReference":
+    case "struct":
+    case "cipherText": {
+      consola.info(
+        `${
+          JSON.stringify(input.dataType.type)
+        } is not a supported property type`,
       );
+      return {
+        displayName: input.displayName,
+        multiplicity: false,
+        description: input.description,
+        type: objectPropertyTypeToSdkPropertyDefinition(input.dataType),
+        nullable: true,
+      };
     }
     default:
-      const _: never = input.dataType;
-      throw new Error(
-        `Unexpected data type ${JSON.stringify(input.dataType)}`,
+      consola.info(
+        `${JSON.stringify(input.dataType)} is not a supported property type`,
       );
+      return {
+        displayName: input.displayName,
+        multiplicity: false,
+        description: input.description,
+        type: objectPropertyTypeToSdkPropertyDefinition(input.dataType),
+        nullable: true,
+      };
   }
 }
 
@@ -103,13 +121,18 @@ function objectPropertyTypeToSdkPropertyDefinition(
         return "numericTimeseries";
       } else return "sensorTimeseries";
 
-    case "mediaReference": {
-      throw new Error(
-        `Media references not supported yet`,
+    case "mediaReference":
+    case "cipherText":
+    case "struct": {
+      consola.info(
+        `${JSON.stringify(propertyType)} is not a supported property type`,
       );
+      return "unknown";
     }
     default:
-      const _: never = propertyType;
-      throw new Error(`Unexpected data type ${JSON.stringify(propertyType)}`);
+      consola.info(
+        `${JSON.stringify(propertyType)} is not a supported property type`,
+      );
+      return "unknown";
   }
 }

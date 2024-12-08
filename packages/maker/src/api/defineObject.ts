@@ -126,7 +126,7 @@ function convertType(
     default:
       return {
         type: t.type,
-      };
+      } as PropertyV2["dataType"];
   }
 
   invariant(false);
