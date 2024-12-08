@@ -33,4 +33,5 @@ export type WirePropertyTypes =
   | "attachment"
   | "geopoint"
   | "geoshape"
-  | "geotimeSeriesReference";
+  | "geotimeSeriesReference"
+  | "unknown";

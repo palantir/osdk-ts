@@ -44,6 +44,8 @@ export interface PropertyValueWireToClient {
   stringTimeseries: TimeSeriesProperty<string>;
   sensorTimeseries: TimeSeriesProperty<string | number>;
   geotimeSeriesReference: GeotimeSeriesProperty<GeoJSON.Point>;
+
+  unknown: never;
 }
 
 /**
@@ -70,4 +72,6 @@ export interface PropertyValueClientToWire {
   stringTimeseries: TimeSeriesProperty<string>;
   sensorTimeseries: TimeSeriesProperty<string | number>;
   geotimeSeriesReference: GeotimeSeriesProperty<GeoJSON.Point>;
+
+  unknown: never;
 }
