@@ -55,6 +55,7 @@ interface FilterableDeriveObjectSet<
 export type StringDeriveAggregateOption =
   | "approximateDistinct"
   | "exactDistinct"
+  | "approximatePercentile"
   | "collectToSet"
   | "collectToList";
 export type NumericDeriveAggregateOption =
@@ -65,7 +66,8 @@ export type NumericDeriveAggregateOption =
   | "collectToSet"
   | "collectToList"
   | "approximateDistinct"
-  | "exactDistinct";
+  | "exactDistinct"
+  | "approximatePercentile";
 
 interface AggregatableDeriveObjectSet<
   Q extends ObjectOrInterfaceDefinition,
@@ -78,8 +80,24 @@ interface AggregatableDeriveObjectSet<
     >,
   >(
     aggregationSpecifier: V,
-    opts?: { limit: number },
-  ) => DerivedPropertyDefinition<PropertyDef<"integer">>;
+    opts?: V extends `${any}:${infer P}`
+      ? P extends "collectToSet" | "collectToList" ? { limit: number }
+      : P extends "approximatePercentile" ? { percentile: number }
+      : never
+      : never,
+  ) => DerivedPropertyDefinition<
+    V extends `${infer N}:${infer P}` ? P extends
+        | "collectToList"
+        | "collectToSet" ? PropertyDef<
+          CompileTimeMetadata<Q>["properties"][N]["type"],
+          "nullable",
+          "array"
+        >
+      : P extends "approximateDistinct" | "exactDistinct" | "$count"
+        ? PropertyDef<"integer">
+      : PropertyDef<"double">
+      : never
+  >;
 }
 
 interface SingleLinkDeriveObjectSet<

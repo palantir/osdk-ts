@@ -349,6 +349,17 @@ export interface DataValueWireToClient {
     }[];
 }
 
+// @public (undocumented)
+export type DeriveClause<Q extends ObjectOrInterfaceDefinition> = {
+    [key: string]: (baseObjectSet: BaseDeriveObjectSet<Q>) => DerivedPropertyDefinition<ObjectMetadata.Property>;
+};
+
+// @public (undocumented)
+export type DerivedPropertyDefinition<T extends ObjectMetadata.Property> = {
+    definitionId: unknown;
+    type: T;
+};
+
 // Warning: (ae-forgotten-export) The symbol "AggregatableDeriveObjectSet" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -606,7 +617,6 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED 
     };
     readonly subtract: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
     readonly union: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
-    // Warning: (ae-forgotten-export) The symbol "DeriveClause" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "DerivedPropertyExtendedObjectDefinition" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -963,12 +973,13 @@ export type TimeSeriesQuery = {
 // @public (undocumented)
 export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<"date" | "double" | "timestamp">;
 
-// Warning: (ae-forgotten-export) The symbol "AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "StringAggregateOption" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "NumericAggregateOption" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "PropertyValueClientToWire" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type ValidAggregationKeys<Q extends ObjectOrInterfaceDefinition> = keyof ({
-    [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<PropertyValueClientToWire[CompileTimeMetadata<Q>["properties"][KK]["type"]]>}`]?: any;
+export type ValidAggregationKeys<Q extends ObjectOrInterfaceDefinition, StringOptions extends string = StringAggregateOption, NumericOptions extends string = NumericAggregateOption> = keyof ({
+    [KK in AggregatableKeys<Q> as `${KK & string}:${number extends PropertyValueClientToWire[CompileTimeMetadata<Q>["properties"][KK]["type"]] ? NumericOptions : string extends PropertyValueClientToWire[CompileTimeMetadata<Q>["properties"][KK]["type"]] ? StringOptions : never}`]?: any;
 } & {
     $count?: any;
 });

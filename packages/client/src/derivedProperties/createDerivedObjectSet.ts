@@ -55,7 +55,7 @@ export function createDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>(
         where: modernToLegacyWhereClause(clause, objectType),
       }, definitionMap);
     },
-    aggregate: (aggregation: string, opt) => {
+    aggregate: (aggregation: string, opt: any) => {
       const definitionId = globalThis.crypto.randomUUID();
       const splitAggregation = aggregation.split(":");
       invariant(splitAggregation.length === 2, "Invalid aggregation format");
@@ -76,6 +76,24 @@ export function createDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>(
           aggregationOperationDefinition = {
             type: aggregationOperation,
             selectedPropertyApiName: aggregationPropertyName,
+          };
+          break;
+        case "approximatePercentile":
+          aggregationOperationDefinition = {
+            type: "approximatePercentile",
+            selectedPropertyApiName: aggregationPropertyName,
+            approximatePercentile: opt?.percentile ?? .5,
+          };
+          break;
+        case "collectToSet":
+        case "collectToList":
+          const collectionType = aggregationOperation === "collectToSet"
+            ? "collectSet"
+            : "collectList";
+          aggregationOperationDefinition = {
+            type: collectionType,
+            selectedPropertyApiName: aggregationPropertyName,
+            limit: opt?.limit ?? 100,
           };
           break;
         default:

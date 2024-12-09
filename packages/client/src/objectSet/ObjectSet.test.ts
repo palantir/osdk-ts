@@ -440,14 +440,15 @@ describe("ObjectSet", () => {
   describe("Derived Properties Object Set", () => {
     it("does not allow aggregate or selectProperty before a link type is selected", () => {
       client(Employee).withProperties({
-        // @ts-expect-error
-        "derivedPropertyName": (base) => base.aggregate("derivedObjectSet"),
+        "derivedPropertyName": (base) =>
+          // @ts-expect-error
+          base.aggregate("employeeId:exactDistinct"),
       });
 
       client(Employee).withProperties({
         "derivedPropertyName": (base) =>
           // @ts-expect-error
-          base.selectProperty("derivedObjectSet"),
+          base.selectProperty("employeeId"),
       });
     });
 
@@ -465,7 +466,8 @@ describe("ObjectSet", () => {
       });
     });
 
-    it("correctly narrows types of aggregate function", () => {
+    // Executed code fails since we're providing bad strings to the function
+    it.fails("correctly narrows types of aggregate function", () => {
       client(Employee).withProperties({
         "derivedPropertyName": (base) => {
           // @ts-expect-error
@@ -483,7 +485,7 @@ describe("ObjectSet", () => {
     });
 
     it("correctly narrows types of selectProperty function", () => {
-      const objectSet = client(Employee).withProperties({
+      client(Employee).withProperties({
         "derivedPropertyName": (base) => {
           // @ts-expect-error
           base.pivotTo("lead").selectProperty("notAProperty");
@@ -497,25 +499,44 @@ describe("ObjectSet", () => {
       client(Employee).withProperties({
         "derivedPropertyName": (base) =>
           base.pivotTo("lead").aggregate("employeeId:sum"),
-        // SHOULD REMOVE, TYPE SHOULD BE ACCURATE
-        // @ts-expect-error
       }).where({ "derivedPropertyName": { "$eq": 3 } });
+
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").aggregate("employeeId:collectToList"),
+      }).where({ "derivedPropertyName": { "$isNull": false } })
+        // @ts-expect-error
+        .where({ "derivedPropertyName": { "$eq": [1, 2] } });
 
       client(Employee).withProperties({
         "derivedPropertyName": (base) =>
           base.pivotTo("lead").aggregate("employeeId:collectToSet"),
-        // SHOULD REMOVE, TYPE SHOULD BE ACCURATE
+      }).where({ "derivedPropertyName": { "$isNull": false } })
         // @ts-expect-error
-      }).where({ "derivedPropertyName": { "$eq": [1, 2, 3] } });
+        .where({ "derivedPropertyName": { "$eq": [1, 2] } });
 
       client(Employee).withProperties({
         "derivedPropertyName": (base) =>
           base.pivotTo("lead").selectProperty("employeeId"),
-        // SHOULD REMOVE, TYPE SHOULD BE ACCURATE
-        // @ts-expect-error
       }).where({ "derivedPropertyName": { "$eq": 3 } });
 
-      // Other properties are consistently types
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("startDate"),
+      }).where({ "derivedPropertyName": { "$eq": "datetimeFilter" } });
+    });
+
+    it("correctly types multiple property definitions in one clause", () => {
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").aggregate("employeeId:sum"),
+        "derivedPropertyName2": (base) =>
+          base.pivotTo("lead").selectProperty("fullName"),
+      }).where({ "derivedPropertyName": { "$eq": 3 } })
+        .where({ "derivedPropertyName2": { "$eq": "name" } });
+    });
+
+    it("ensures other properties are consistently typed", () => {
       client(Employee).withProperties({
         "derivedPropertyName": (base) =>
           base.pivotTo("lead").selectProperty("employeeId"),
@@ -528,7 +549,11 @@ describe("ObjectSet", () => {
     });
 
     it("allows fetching derived properties with correctly typed Osdk.Instance types", async () => {
-      const objectSet = client(Employee).fetchOne(50030);
+      const objectWithRdp = await client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("employeeId"),
+      }).fetchOne(50035);
+      expect(objectWithRdp.derivedPropertyName).toBe(1);
     });
 
     describe("withPropertiesObjectSet", () => {
@@ -538,7 +563,7 @@ describe("ObjectSet", () => {
           type: "methodInput",
         }, map);
 
-        const clause: DeriveClause<Employee, ObjectMetadata.Property> = {
+        const clause: DeriveClause<Employee> = {
           "derivedPropertyName": (base) =>
             base.pivotTo("lead").selectProperty("employeeId"),
         };
@@ -557,6 +582,69 @@ describe("ObjectSet", () => {
             "operation": {
               "selectedPropertyApiName": "employeeId",
               "type": "get",
+            },
+            "type": "selection",
+          }
+        `);
+      });
+
+      it("correctly handles multiple definitions in one clause", () => {
+        const map = new Map<string, DerivedPropertyDefinition>();
+        const deriveObjectSet = createDeriveObjectSet(Employee, {
+          type: "methodInput",
+        }, map);
+
+        const clause: DeriveClause<Employee> = {
+          "derivedPropertyName": (base) =>
+            base.pivotTo("lead").aggregate("startDate:approximatePercentile", {
+              percentile: 0.5,
+            }),
+
+          "secondaryDerivedPropertyName": (base) =>
+            base.pivotTo("lead").aggregate("fullName:collectToSet", {
+              limit: 10,
+            }),
+        };
+
+        const result = clause["derivedPropertyName"](deriveObjectSet);
+        const definition = map.get(result.definitionId as string);
+
+        const secondResult = clause["secondaryDerivedPropertyName"](
+          deriveObjectSet,
+        );
+        const secondDefinition = map.get(secondResult.definitionId as string);
+
+        expect(definition).toMatchInlineSnapshot(`
+          {
+            "objectSet": {
+              "link": "lead",
+              "objectSet": {
+                "type": "methodInput",
+              },
+              "type": "searchAround",
+            },
+            "operation": {
+              "approximatePercentile": 0.5,
+              "selectedPropertyApiName": "startDate",
+              "type": "approximatePercentile",
+            },
+            "type": "selection",
+          }
+        `);
+
+        expect(secondDefinition).toMatchInlineSnapshot(`
+          {
+            "objectSet": {
+              "link": "lead",
+              "objectSet": {
+                "type": "methodInput",
+              },
+              "type": "searchAround",
+            },
+            "operation": {
+              "limit": 10,
+              "selectedPropertyApiName": "fullName",
+              "type": "collectSet",
             },
             "type": "selection",
           }

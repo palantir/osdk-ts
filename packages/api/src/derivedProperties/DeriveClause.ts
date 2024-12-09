@@ -32,9 +32,8 @@ export type DerivedPropertyDefinition<
 
 export type DeriveClause<
   Q extends ObjectOrInterfaceDefinition,
-  P extends ObjectMetadata.Property,
 > = {
   [key: string]: (
     baseObjectSet: BaseDeriveObjectSet<Q>,
-  ) => DerivedPropertyDefinition<P>;
+  ) => DerivedPropertyDefinition<ObjectMetadata.Property>;
 };

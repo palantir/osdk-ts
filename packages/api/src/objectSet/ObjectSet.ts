@@ -18,7 +18,10 @@ import type { AggregateOpts } from "../aggregate/AggregateOpts.js";
 import type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } from "../aggregate/AggregateOptsThatErrors.js";
 import type { AggregationsResults } from "../aggregate/AggregationsResults.js";
 import type { WhereClause } from "../aggregate/WhereClause.js";
-import type { DeriveClause } from "../derivedProperties/DeriveClause.js";
+import type {
+  DeriveClause,
+  DerivedPropertyDefinition,
+} from "../derivedProperties/DeriveClause.js";
 import type {
   AsyncIterArgs,
   Augments,
@@ -259,8 +262,7 @@ export interface ObjectSet<
   ) => { unsubscribe: () => void };
 
   readonly withProperties: <
-    D extends DeriveClause<Q, any>,
-    P extends ObjectMetadata.Property,
+    D extends DeriveClause<Q>,
   >(
     clause: D,
   ) => ObjectSet<
@@ -273,11 +275,13 @@ export interface ObjectSet<
 
 type DerivedPropertyExtendedObjectDefinition<
   K extends ObjectOrInterfaceDefinition,
-  D extends DeriveClause<K, any>,
+  D extends DeriveClause<K>,
 > = {
   __DefinitionMetadata: {
     properties: {
-      [T in Extract<keyof D, string>]: ReturnType<D[T]>;
+      [T in Extract<keyof D, string>]: D[T] extends
+        (baseObjectSet: any) => DerivedPropertyDefinition<infer P> ? P
+        : never;
     };
   };
 } & K;
