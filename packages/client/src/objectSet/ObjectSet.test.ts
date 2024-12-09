@@ -529,6 +529,12 @@ describe("ObjectSet", () => {
       client(Employee).withProperties({
         "derivedPropertyName": (base) =>
           base.pivotTo("lead").aggregate("employeeId:sum"),
+        // @ts-expect-error
+      }).where({ "notAProperty": { "$eq": 3 } });
+
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").aggregate("employeeId:sum"),
       }).where({ "derivedPropertyName": { "$eq": 3 } });
 
       client(Employee).withProperties({
