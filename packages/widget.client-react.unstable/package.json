@@ -1,6 +1,6 @@
 {
   "name": "@osdk/widget-client-react.unstable",
-  "version": "0.3.0-beta.3",
+  "version": "1.0.0",
   "description": "Wrapper around @osdk/widget-client",
   "access": "public",
   "license": "Apache-2.0",
@@ -30,7 +30,7 @@
   },
   "peerDependencies": {
     "@osdk/client": "^2",
-    "@osdk/widget-client.unstable": "^0.1.0",
+    "@osdk/widget-client.unstable": "workspace:~",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "react": "^18",
