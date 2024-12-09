@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-import type {
-  GeotimeSeriesProperty,
-  ObjectTypeDefinition,
-  Osdk,
-  TimeSeriesPoint,
-} from "@osdk/api";
+import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
-import { OntologiesV2 } from "@osdk/internal.foundry.ontologiesv2";
 import { createAttachmentFromRid } from "../../createAttachmentFromRid.js";
 import { GeotimeSeriesPropertyImpl } from "../../createGeotimeSeriesProperty.js";
+import { MediaPropertyImpl } from "../../createMediaProperty.js";
 import { TimeSeriesPropertyImpl } from "../../createTimeseriesProperty.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
@@ -222,6 +217,15 @@ export function createOsdkObject<
             );
             target[CachedPropertiesRef].set(p, geotimeProp);
             return geotimeProp;
+          }
+          if (propDef.type === "mediaReference") {
+            return new MediaPropertyImpl({
+              client,
+              objectApiName: objectDef.apiName,
+              primaryKey:
+                target[RawObject][objectDef.primaryKeyApiName as string],
+              propertyName: p as string,
+            });
           }
         }
         return rawValue;
