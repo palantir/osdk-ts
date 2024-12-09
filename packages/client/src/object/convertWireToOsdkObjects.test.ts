@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Attachment, Osdk, PropertyKeys , Media } from "@osdk/api";
+import type { Attachment, Media, Osdk, PropertyKeys } from "@osdk/api";
 import {
   $ontologyRid,
   Employee,
