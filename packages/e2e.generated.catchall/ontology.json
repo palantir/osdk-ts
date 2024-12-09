@@ -681,6 +681,76 @@
       },
       "linkTypes": []
     },
+    "McAirportStruct": {
+      "objectType": {
+        "apiName": "McAirportStruct",
+        "primaryKey": "airportName",
+        "displayName": "McAirportStruct",
+        "description": "McAirportStruct",
+        "properties": {
+          "airportName": {
+            "displayName": "Airport Name",
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "city": {
+            "displayName": "City",
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "airportStruct": {
+            "displayName": "Airport Struct",
+            "dataType": {
+              "type": "struct",
+              "structFieldTypes": [
+                {
+                  "apiName": "code",
+                  "dataType": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "apiName": "geoHash",
+                  "dataType": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "apiName": "timestamp",
+                  "dataType": {
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          },
+          "state": {
+            "displayName": "State",
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "originDate": {
+            "displayName": "Origin Date",
+            "dataType": {
+              "type": "timestamp"
+            }
+          }
+        },
+        "status": "ACTIVE",
+        "rid": "rid.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "mcAirportStruct",
+          "color": "color"
+        },
+        "titleProperty": "airportName",
+        "pluralDisplayName": "McAirportStructs"
+      },
+      "linkTypes": []
+    },
     "BuilderDeploymentState": {
       "objectType": {
         "apiName": "BuilderDeploymentState",

@@ -215,28 +215,46 @@ describe("ObjectSet", () => {
     expectTypeOf<typeof player>().toMatchTypeOf<
       Osdk<BgaoNflPlayer, PropertyKeys<BgaoNflPlayer>>
     >;
+    expectTypeOf<typeof player.address>().toMatchTypeOf<
+      {
+        addressLine1: string | undefined;
+        addressLine2: string | undefined;
+        city: string | undefined;
+        state: string | undefined;
+        zipCode: number | undefined;
+      } | undefined
+    >;
 
-    expectTypeOf<typeof player.address.addressLine1>().toMatchTypeOf<
+    const address1 = player.address!.addressLine1;
+    expectTypeOf<typeof address1>().toMatchTypeOf<
       string | undefined
     >;
-    expect(player.address.addressLine1).toEqual("15 Muppets Lane");
-    expectTypeOf<typeof player.address.addressLine2>().toMatchTypeOf<
-      string | undefined
-    >;
-    expect(player.address.addressLine2).toEqual("Resort No 4");
+    expect(address1).toEqual("15 Muppets Lane");
 
-    expectTypeOf<typeof player.address.city>().toMatchTypeOf<
+    const address2 = player.address?.addressLine2;
+    expectTypeOf<typeof address2>().toMatchTypeOf<
       string | undefined
     >;
-    expect(player.address.city).toEqual("Memphis");
-    expectTypeOf<typeof player.address.state>().toMatchTypeOf<
+    expect(address2).toEqual("Resort No 4");
+
+    const city = player.address?.city;
+    expectTypeOf<typeof city>().toMatchTypeOf<
       string | undefined
     >;
-    expect(player.address.state).toEqual("TN");
-    expectTypeOf<typeof player.address.zipCode>().toMatchTypeOf<
+    expect(city).toEqual("Memphis");
+
+    const state = player.address?.state;
+    expectTypeOf<typeof state>().toMatchTypeOf<
+      string | undefined
+    >;
+    expect(state).toEqual("TN");
+
+    const zipCode = player.address?.zipCode;
+    expectTypeOf<typeof zipCode>().toMatchTypeOf<
       number | undefined
     >;
-    expect(player.address.zipCode).toEqual(11100);
+    expect(zipCode).toEqual(11100);
+
     expect(player.$primaryKey).toEqual(stubData.travisPlayer.__primaryKey);
     expect(player.address).toEqual(stubData.travisPlayer.address);
   });

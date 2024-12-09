@@ -17,6 +17,7 @@ export {
   Employee,
   FintrafficAis,
   GtfsTripTrackObject,
+  McAirportStruct,
   MtaBus,
   ObjectTypeWithAllPropertyTypes,
   OsdkTestObject,

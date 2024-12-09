@@ -228,18 +228,17 @@ ${
             // after we convert everything over we can do this:
             // !strict || propertyDefinition.nullable ? "?" : ""
             ""}`,
-          typeof propertyDefinition.type === "object"
+          (typeof propertyDefinition.type === "object"
             ? `${remapStructType(propertyDefinition.type)}`
-            : `$PropType[${JSON.stringify(propertyDefinition.type)}]${
-              propertyDefinition.multiplicity ? "[]" : ""
-            }${
-              propertyDefinition.nullable
-                || (!strict
-                  && !(definition.type === "object"
-                    && definition.primaryKeyApiName === apiName))
-                ? `| undefined`
-                : ""
-            }`,
+            : `$PropType[${JSON.stringify(propertyDefinition.type)}]`)
+          + `${propertyDefinition.multiplicity ? "[]" : ""}${
+            propertyDefinition.nullable
+              || (!strict
+                && !(definition.type === "object"
+                  && definition.primaryKeyApiName === apiName))
+              ? `| undefined`
+              : ""
+          }`,
         ] as [string, string];
       },
     })

@@ -20,13 +20,15 @@ export namespace BgaoNflPlayer {
   export type Links = {};
 
   export interface Props {
-    readonly address: {
-      addressLine1: $PropType['string'] | undefined;
-      addressLine2: $PropType['string'] | undefined;
-      city: $PropType['string'] | undefined;
-      state: $PropType['string'] | undefined;
-      zipCode: $PropType['integer'] | undefined;
-    };
+    readonly address:
+      | {
+          addressLine1: $PropType['string'] | undefined;
+          addressLine2: $PropType['string'] | undefined;
+          city: $PropType['string'] | undefined;
+          state: $PropType['string'] | undefined;
+          zipCode: $PropType['integer'] | undefined;
+        }
+      | undefined;
     readonly gamesPlayed: $PropType['integer'] | undefined;
     readonly id: $PropType['string'];
     readonly name: $PropType['string'] | undefined;

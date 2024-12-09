@@ -5,6 +5,7 @@ export { DherlihyComplexObject } from './objects/DherlihyComplexObject.js';
 export { Employee } from './objects/Employee.js';
 export { FintrafficAis } from './objects/FintrafficAis.js';
 export { GtfsTripTrackObject } from './objects/GtfsTripTrackObject.js';
+export { McAirportStruct } from './objects/McAirportStruct.js';
 export { MtaBus } from './objects/MtaBus.js';
 export { ObjectTypeWithAllPropertyTypes } from './objects/ObjectTypeWithAllPropertyTypes.js';
 export { OsdkTestObject } from './objects/OsdkTestObject.js';
