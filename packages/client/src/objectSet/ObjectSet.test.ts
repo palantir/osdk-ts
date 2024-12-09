@@ -524,6 +524,7 @@ describe("ObjectSet", () => {
 
         expectTypeOf<JustProps<Employee, "$all">>()
           .toEqualTypeOf<
+            | "class"
             | "fullName"
             | "office"
             | "employeeId"

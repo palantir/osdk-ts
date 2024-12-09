@@ -23,77 +23,52 @@ import type {
 } from "@osdk/api";
 import { getWireObjectSet } from "../../objectSet/createObjectSet.js";
 import { fetchSingle, fetchSingleWithErrors } from "../fetchSingle.js";
-import { ClientRef, ObjectDefRef, RawObject } from "./InternalSymbols.js";
-import type {
-  ObjectHolder,
-  ObjectHolderOwnProperties,
-} from "./ObjectHolder.js";
+import {
+  ClientRef,
+  ObjectDefRef,
+  UnderlyingOsdkObject,
+} from "./InternalSymbols.js";
+import type { ObjectHolder } from "./ObjectHolder.js";
 
 /** @internal */
 export function get$link(
   holder: ObjectHolder<any>,
 ): OsdkObjectLinksObject<any> {
-  return new Proxy(holder, DollarLinkProxyHandler) as
-    & ObjectHolder<any>
-    & OsdkObjectLinksObject<any>;
+  const client = holder[ClientRef];
+  const objDef = holder[ObjectDefRef];
+  const rawObj = holder[UnderlyingOsdkObject];
+  return Object.freeze(Object.fromEntries(
+    Object.keys(objDef.links).map(
+      (linkName) => {
+        const linkDef = objDef.links[linkName as keyof typeof objDef.links];
+        const objectSet =
+          (client.objectSetFactory(objDef, client) as ObjectSet<any>)
+            .where({
+              [objDef.primaryKeyApiName]: rawObj.$primaryKey,
+            } as WhereClause<ObjectTypeDefinition>)
+            .pivotTo(linkName);
+
+        const value = !linkDef.multiplicity
+          ? {
+            fetchOne: <A extends SelectArg<any>>(options?: A) =>
+              fetchSingle(
+                client,
+                objDef,
+                options ?? {},
+                getWireObjectSet(objectSet),
+              ),
+            fetchOneWithErrors: <A extends SelectArg<any>>(options?: A) =>
+              fetchSingleWithErrors(
+                client,
+                objDef,
+                options ?? {},
+                getWireObjectSet(objectSet),
+              ),
+          }
+          : objectSet;
+
+        return [linkName, value];
+      },
+    ),
+  ));
 }
-
-const DollarLinkProxyHandler: ProxyHandler<ObjectHolder<any>> = {
-  get(target: ObjectHolder<any>, p: string | symbol) {
-    const {
-      [ObjectDefRef]: objDef,
-      [ClientRef]: client,
-      [RawObject]: rawObj,
-    } = target;
-    const linkDef = objDef.links[p as string];
-    if (linkDef == null) {
-      return;
-    }
-    const objectSet =
-      (client.objectSetFactory(objDef, client) as ObjectSet<any>)
-        .where({
-          [objDef.primaryKeyApiName]: rawObj.$primaryKey,
-        } as WhereClause<ObjectTypeDefinition>)
-        .pivotTo(p as string);
-
-    if (!linkDef.multiplicity) {
-      return {
-        fetchOne: <A extends SelectArg<any>>(options?: A) =>
-          fetchSingle(
-            client,
-            objDef,
-            options ?? {},
-            getWireObjectSet(objectSet),
-          ),
-        fetchOneWithErrors: <A extends SelectArg<any>>(options?: A) =>
-          fetchSingleWithErrors(
-            client,
-            objDef,
-            options ?? {},
-            getWireObjectSet(objectSet),
-          ),
-      };
-    } else {
-      return objectSet;
-    }
-  },
-
-  ownKeys(
-    target: ObjectHolder<any>,
-  ): ArrayLike<keyof ObjectHolderOwnProperties | string> {
-    return [...Object.keys(target[ObjectDefRef].links)];
-  },
-
-  getOwnPropertyDescriptor(
-    target: ObjectHolder<any>,
-    p: string | symbol,
-  ): PropertyDescriptor | undefined {
-    if (target[ObjectDefRef].links[p as any]) {
-      return {
-        enumerable: true,
-        configurable: true, // fixme
-        writable: false,
-      };
-    }
-  },
-};
