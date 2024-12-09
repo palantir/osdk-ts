@@ -1,0 +1,15 @@
+{
+  "name": "@osdk/benchmarks.memtests.create-objects",
+  "private": true,
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "scripts": {
+    "benchmark-serial": "benchmarks.lib.test mem-test"
+  },
+  "dependencies": {
+    "@osdk/benchmarks.lib.test": "workspace:*",
+    "@osdk/client": "workspace:*",
+    "express": "^4.21.1"
+  },
+  "type": "module"
+}
