@@ -275,7 +275,6 @@ async function getRequiredDefinitions(
     case "float":
     case "integer":
     case "long":
-    case "object":
     case "string":
     case "threeDimensionalAggregation":
     case "timestamp":

@@ -51,7 +51,10 @@ export default {
     ], {});
 
     const mrlCommands = mrlFiles.length > 0
-      ? ["monorepolint check --verbose", `dprint fmt ${mrlFiles.join(" ")}`]
+      ? [
+        "monorepolint check --verbose",
+        `dprint fmt ${mrlFiles.join(" ")} --allow-no-files`,
+      ]
       : [];
 
     return [...mrlCommands];
