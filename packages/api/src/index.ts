@@ -29,6 +29,7 @@ export type { AggregationResultsWithGroups } from "./aggregate/AggregationResult
 export type { AggregationResultsWithoutGroups } from "./aggregate/AggregationResultsWithoutGroups.js";
 export type { AggregationClause } from "./aggregate/AggregationsClause.js";
 export type { AggregationsResults } from "./aggregate/AggregationsResults.js";
+export type { GeoFilterOptions } from "./aggregate/GeoFilter.js";
 export { DistanceUnitMapping } from "./aggregate/WhereClause.js";
 export type {
   GeoFilter_Intersects,
