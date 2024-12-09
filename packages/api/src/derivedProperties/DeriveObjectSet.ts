@@ -52,22 +52,23 @@ interface FilterableDeriveObjectSet<
   ) => this;
 }
 
-export type StringDeriveAggregateOption =
+type CollectAggregations = "collectSet" | "collectList";
+
+type BaseDeriveAggregations =
   | "approximateDistinct"
   | "exactDistinct"
-  | "approximatePercentile"
-  | "collectToSet"
-  | "collectToList";
+  | "approximatePercentile";
+
+export type StringDeriveAggregateOption =
+  | BaseDeriveAggregations
+  | CollectAggregations;
 export type NumericDeriveAggregateOption =
   | "min"
   | "max"
   | "sum"
   | "avg"
-  | "collectToSet"
-  | "collectToList"
-  | "approximateDistinct"
-  | "exactDistinct"
-  | "approximatePercentile";
+  | BaseDeriveAggregations
+  | CollectAggregations;
 
 interface AggregatableDeriveObjectSet<
   Q extends ObjectOrInterfaceDefinition,
@@ -81,14 +82,13 @@ interface AggregatableDeriveObjectSet<
   >(
     aggregationSpecifier: V,
     opts?: V extends `${any}:${infer P}`
-      ? P extends "collectToSet" | "collectToList" ? { limit: number }
+      ? P extends CollectAggregations ? { limit: number }
       : P extends "approximatePercentile" ? { percentile: number }
       : never
       : never,
   ) => DerivedPropertyDefinition<
-    V extends `${infer N}:${infer P}` ? P extends
-        | "collectToList"
-        | "collectToSet" ? PropertyDef<
+    V extends `${infer N}:${infer P}`
+      ? P extends CollectAggregations ? PropertyDef<
           CompileTimeMetadata<Q>["properties"][N]["type"],
           "nullable",
           "array"

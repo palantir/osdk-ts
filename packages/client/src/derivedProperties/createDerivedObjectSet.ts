@@ -85,13 +85,10 @@ export function createDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>(
             approximatePercentile: opt?.percentile ?? .5,
           };
           break;
-        case "collectToSet":
-        case "collectToList":
-          const collectionType = aggregationOperation === "collectToSet"
-            ? "collectSet"
-            : "collectList";
+        case "collectSet":
+        case "collectList":
           aggregationOperationDefinition = {
-            type: collectionType,
+            type: aggregationOperation,
             selectedPropertyApiName: aggregationPropertyName,
             limit: opt?.limit ?? 100,
           };

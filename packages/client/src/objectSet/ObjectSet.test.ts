@@ -479,7 +479,37 @@ describe("ObjectSet", () => {
           // @ts-expect-error
           base.pivotTo("lead").aggregate("employeeId:notAnOp");
 
+          base.pivotTo("lead").aggregate("employeeId:collectList");
+
           return base.pivotTo("lead").aggregate("employeeId:sum");
+        },
+      });
+    });
+
+    // Executed code fails since we're providing bad strings to the function
+    it("correctly narrows types of options for aggregate functions", () => {
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) => {
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("employeeId:approximateDistinct", {
+            limit: 1,
+          });
+
+          base.pivotTo("lead").aggregate("employeeId:collectList", {
+            limit: 1,
+          });
+
+          base.pivotTo("lead").aggregate("employeeId:collectSet", { limit: 1 });
+
+          base.pivotTo("lead").aggregate("employeeId:collectList", {
+            // @ts-expect-error
+            percentile: 1,
+          });
+
+          return base.pivotTo("lead").aggregate(
+            "employeeId:approximatePercentile",
+            { percentile: 0.5 },
+          );
         },
       });
     });
@@ -503,14 +533,14 @@ describe("ObjectSet", () => {
 
       client(Employee).withProperties({
         "derivedPropertyName": (base) =>
-          base.pivotTo("lead").aggregate("employeeId:collectToList"),
+          base.pivotTo("lead").aggregate("employeeId:collectList"),
       }).where({ "derivedPropertyName": { "$isNull": false } })
         // @ts-expect-error
         .where({ "derivedPropertyName": { "$eq": [1, 2] } });
 
       client(Employee).withProperties({
         "derivedPropertyName": (base) =>
-          base.pivotTo("lead").aggregate("employeeId:collectToSet"),
+          base.pivotTo("lead").aggregate("employeeId:collectSet"),
       }).where({ "derivedPropertyName": { "$isNull": false } })
         // @ts-expect-error
         .where({ "derivedPropertyName": { "$eq": [1, 2] } });
@@ -601,7 +631,7 @@ describe("ObjectSet", () => {
             }),
 
           "secondaryDerivedPropertyName": (base) =>
-            base.pivotTo("lead").aggregate("fullName:collectToSet", {
+            base.pivotTo("lead").aggregate("fullName:collectSet", {
               limit: 10,
             }),
         };
