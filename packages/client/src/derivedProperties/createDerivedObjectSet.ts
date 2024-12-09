@@ -34,6 +34,8 @@ import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegac
 import { MinimalClient } from "../MinimalClientContext.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 
+let idCounter = 0;
+
 /** @internal */
 export function createDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>(
   objectType: Q,
@@ -56,7 +58,7 @@ export function createDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>(
       }, definitionMap);
     },
     aggregate: (aggregation: string, opt: any) => {
-      const definitionId = globalThis.crypto.randomUUID();
+      const definitionId = idCounter++;
       const splitAggregation = aggregation.split(":");
       invariant(splitAggregation.length === 2, "Invalid aggregation format");
       const [aggregationPropertyName, aggregationOperation] = splitAggregation;
