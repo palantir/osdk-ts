@@ -56,7 +56,30 @@ export type TimeseriesDurationUnits =
   | "SECONDS"
   | "MILLISECONDS";
 
-export const TimeseriesDurationMapping = {
+export const TimeseriesDurationMapping: {
+  sec: "SECONDS";
+  seconds: "SECONDS";
+  min: "MINUTES";
+  minute: "MINUTES";
+  minutes: "MINUTES";
+  hr: "HOURS";
+  hrs: "HOURS";
+  hour: "HOURS";
+  hours: "HOURS";
+  day: "DAYS";
+  days: "DAYS";
+  wk: "WEEKS";
+  week: "WEEKS";
+  weeks: "WEEKS";
+  mos: "MONTHS";
+  month: "MONTHS";
+  months: "MONTHS";
+  yr: "YEARS";
+  year: "YEARS";
+  years: "YEARS";
+  ms: "MILLISECONDS";
+  milliseconds: "MILLISECONDS";
+} = {
   "ms": "MILLISECONDS",
   "milliseconds": "MILLISECONDS",
   ...TimeDurationMapping,

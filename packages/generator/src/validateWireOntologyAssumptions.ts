@@ -19,7 +19,7 @@ import type { WireOntologyDefinition } from "./WireOntologyDefinition.js";
 
 export function validateWireOntologyAssumptions(
   ontology: WireOntologyDefinition,
-) {
+): void {
   invariantNotStartWithDollarSign(ontology.ontology.apiName);
 
   for (const [objectKey, objectType] of Object.entries(ontology.objectTypes)) {

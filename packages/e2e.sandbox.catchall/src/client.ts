@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Client } from "@osdk/client";
+import type { Client, PlatformClient } from "@osdk/client";
 import { createClient, createPlatformClient } from "@osdk/client";
 import invariant from "tiny-invariant";
 import { logger } from "./logger.js";
@@ -45,7 +45,7 @@ export const dsClient: Client = createClient(
  * Generally consumers wont need this and will use their createClient() but
  * I want to use this to be sure everything works.
  */
-export const platformClient = createPlatformClient(
+export const platformClient: PlatformClient = createPlatformClient(
   process.env.FOUNDRY_STACK,
   async () => process.env.FOUNDRY_USER_TOKEN!,
 );

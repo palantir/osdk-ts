@@ -19,7 +19,7 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import serialize from "serialize-javascript";
 
-export async function cli() {
+export async function cli(): Promise<void> {
   const extsToString = new Set([".html", ".cjs", ".hbs", ".gitignore", ".tsx"]);
 
   const templatesDir = await findUp("templates", { type: "directory" });
@@ -33,7 +33,7 @@ export async function cli() {
   );
 
   let result =
-    "export const files = new Map<string, {type: 'base64', body: string} | {type: 'raw', body: string}>([\n";
+    "export const files: Map<string, {type: 'base64', body: string} | {type: 'raw', body: string}> = new Map([\n";
 
   const processFiles = async function(dir: string, baseDir: string) {
     for (const filename of await fs.readdir(dir)) {

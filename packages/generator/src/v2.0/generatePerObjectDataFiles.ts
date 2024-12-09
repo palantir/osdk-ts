@@ -25,7 +25,7 @@ import {
 
 export async function generatePerObjectDataFiles(
   ctx: GenerateContext,
-) {
+): Promise<void> {
   const {
     fs,
     outDir,
