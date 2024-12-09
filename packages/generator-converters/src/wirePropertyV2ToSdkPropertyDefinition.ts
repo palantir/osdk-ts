@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectMetadata, WirePropertyTypes } from "@osdk/api";
+import type {
+  ObjectMetadata,
+  SimpleWirePropertyTypes,
+  WirePropertyTypes,
+} from "@osdk/api";
 import type {
   ObjectPropertyType,
   PropertyV2,
@@ -43,6 +47,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "timeseries":
     case "marking":
     case "geotimeSeriesReference":
+    case "struct":
       return {
         displayName: input.displayName,
         multiplicity: false,
@@ -59,9 +64,10 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         nullable: true,
       };
     }
+    case "cipherText":
     case "mediaReference": {
       throw new Error(
-        `Media references not supported yet`,
+        `${input.dataType.type} not supported yet`,
       );
     }
     default:
@@ -102,10 +108,23 @@ function objectPropertyTypeToSdkPropertyDefinition(
       } else if (propertyType.itemType?.type === "double") {
         return "numericTimeseries";
       } else return "sensorTimeseries";
+    case "struct": {
+      return propertyType.structFieldTypes.reduce(
+        (structMap: Record<string, SimpleWirePropertyTypes>, structField) => {
+          structMap[structField.apiName] =
+            objectPropertyTypeToSdkPropertyDefinition(
+              structField.dataType,
+            ) as SimpleWirePropertyTypes;
+          return structMap;
+        },
+        {},
+      );
+    }
 
-    case "mediaReference": {
+    case "mediaReference":
+    case "cipherText": {
       throw new Error(
-        `Media references not supported yet`,
+        `${propertyType.type} not supported yet`,
       );
     }
     default:

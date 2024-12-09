@@ -25,6 +25,7 @@ import {
   peepsLinkType,
 } from "./linkTypes.js";
 import {
+  BGaoNflPlayerObjectType,
   employeeObjectType,
   equipmentObjectType,
   objectTypeWithAllPropertyTypes,
@@ -124,6 +125,14 @@ export const personWithLinkTypes: ObjectTypeFullMetadata = {
   sharedPropertyTypeMapping: {},
 };
 
+export const bGaoNflPlayerWithLinkTypes: ObjectTypeFullMetadata = {
+  objectType: BGaoNflPlayerObjectType,
+  linkTypes: [],
+  implementsInterfaces: [],
+  implementsInterfaces2: {},
+  sharedPropertyTypeMapping: {},
+};
+
 export const objectTypesWithLinkTypes: {
   [objectTypeApiName: string]: ObjectTypeFullMetadata;
 } = {
@@ -138,4 +147,5 @@ export const objectTypesWithLinkTypes: {
   [todoObjectType.apiName]: todoWithLinkTypes,
   [taskObjectType.apiName]: taskWithLinkTypes,
   [personObjectType.apiName]: personWithLinkTypes,
+  [BGaoNflPlayerObjectType.apiName]: bGaoNflPlayerWithLinkTypes,
 };
