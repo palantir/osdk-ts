@@ -199,6 +199,7 @@ const cspell = {
         "Hemsworth",
         "underlyings",
         "Dherlihy",
+        "Mnayan",
       ],
     },
   ],

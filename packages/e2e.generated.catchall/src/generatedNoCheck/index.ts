@@ -16,6 +16,7 @@ export {
   Employee,
   FintrafficAis,
   GtfsTripTrackObject,
+  MnayanOsdkMediaObject,
   MtaBus,
   ObjectTypeWithAllPropertyTypes,
   OsdkTestObject,
