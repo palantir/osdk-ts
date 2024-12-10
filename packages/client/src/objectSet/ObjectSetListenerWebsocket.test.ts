@@ -219,6 +219,7 @@ describe("ObjectSetListenerWebsocket", async () => {
           "employeeId",
           "fullName",
           "office",
+          "class",
           "startDate",
           "employeeStatus",
           "employeeSensor",
@@ -258,6 +259,25 @@ describe("ObjectSetListenerWebsocket", async () => {
         });
       });
 
+      describe("correctly try catches errors in handlers", () => {
+        beforeEach(() => {
+          listener.onSuccessfulSubscription.mockImplementationOnce(() => {
+            throw new Error("I am an error");
+          });
+          respondSuccessToSubscribe(ws, subReq1);
+        });
+        afterEach(() => {
+          listener.onSuccessfulSubscription.mockReset();
+        });
+
+        it("should call onError", async () => {
+          expect(listener.onError).toHaveBeenCalled();
+          expect(listener.onError.mock.calls[0][0].subscriptionClosed).toBe(
+            false,
+          );
+        });
+      });
+
       describe("successfully subscribed", () => {
         beforeEach(() => {
           respondSuccessToSubscribe(ws, subReq1);
@@ -278,6 +298,8 @@ describe("ObjectSetListenerWebsocket", async () => {
               "object": {
                 "$apiName": "Employee",
                 "$objectType": "Employee",
+                "$primaryKey": undefined,
+                "$title": undefined,
                 "employeeId": 1,
               },
               "state": "ADDED_OR_UPDATED",
@@ -297,6 +319,7 @@ describe("ObjectSetListenerWebsocket", async () => {
                 "$apiName": "Employee",
                 "$objectType": "Employee",
                 "$primaryKey": "12345",
+                "$title": undefined,
                 "employeeId": "12345",
                 "employeeLocation": GeotimeSeriesPropertyImpl {
                   "lastFetchedValue": {
