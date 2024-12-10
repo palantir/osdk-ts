@@ -691,11 +691,11 @@ export type OsdkObjectLinksObject<O extends ObjectTypeDefinition> = ObjectTypeLi
 // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
 // Warning: (ae-forgotten-export) The symbol "MaybeArray" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "Converted" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "getClientPropertyValueFromWire" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "GetClientPropertyValueFromWire" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MaybeNullable" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type OsdkObjectPropertyType<T extends ObjectMetadata.Property, STRICTLY_ENFORCE_NULLABLE extends boolean = true> = STRICTLY_ENFORCE_NULLABLE extends false ? MaybeArray<T, Converted<getClientPropertyValueFromWire<T["type"]>>> | undefined : MaybeNullable<T, MaybeArray<T, Converted<getClientPropertyValueFromWire<T["type"]>>>>;
+export type OsdkObjectPropertyType<T extends ObjectMetadata.Property, STRICTLY_ENFORCE_NULLABLE extends boolean = true> = STRICTLY_ENFORCE_NULLABLE extends false ? MaybeArray<T, Converted<GetClientPropertyValueFromWire<T["type"]>>> | undefined : MaybeNullable<T, MaybeArray<T, Converted<GetClientPropertyValueFromWire<T["type"]>>>>;
 
 // @public (undocumented)
 export interface PageResult<T> {
@@ -946,11 +946,11 @@ export type TimeSeriesQuery = {
 export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<"date" | "double" | "timestamp">;
 
 // Warning: (ae-forgotten-export) The symbol "AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "getWirePropertyValueFromClient" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "GetWirePropertyValueFromClient" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type ValidAggregationKeys<Q extends ObjectOrInterfaceDefinition> = keyof ({
-    [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<getWirePropertyValueFromClient<CompileTimeMetadata<Q>["properties"][KK]["type"]>>}`]?: any;
+    [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<GetWirePropertyValueFromClient<CompileTimeMetadata<Q>["properties"][KK]["type"]>>}`]?: any;
 } & {
     $count?: any;
 });
