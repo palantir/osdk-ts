@@ -188,7 +188,7 @@ describe("ObjectSetListenerWebsocket", async () => {
           listener,
         );
 
-        subReq1 = await expectSingleSubscribeMessage(ws);
+        subReq1 = await expectSubscribeMessages(ws, 2);
       });
 
       afterEach(() => {
@@ -211,7 +211,7 @@ describe("ObjectSetListenerWebsocket", async () => {
         respondSuccessToSubscribe(ws, subReq1);
         // actually this is broken FIXME
         unsubscribe();
-        expect(ws.send).not.toHaveBeenCalled();
+        expect(ws.send).toHaveBeenCalledTimes(1);
       });
 
       it("correctly requests regular object properties", () => {
@@ -247,7 +247,7 @@ describe("ObjectSetListenerWebsocket", async () => {
 
           describe("subscribe and respond", () => {
             beforeEach(async () => {
-              const subReq2 = await expectSingleSubscribeMessage(ws);
+              const subReq2 = await expectSubscribeMessages(ws);
               respondSuccessToSubscribe(ws, subReq2);
             });
 
@@ -333,7 +333,7 @@ describe("ObjectSetListenerWebsocket", async () => {
               ["employeeId"],
             );
 
-            subReq2 = await expectSingleSubscribeMessage(ws);
+            subReq2 = await expectSubscribeMessages(ws);
 
             respondSuccessToSubscribe(ws, subReq2);
           });
@@ -367,7 +367,7 @@ describe("ObjectSetListenerWebsocket", async () => {
               ]);
               setWebSocketState(ws, "open");
 
-              const subReq2 = await expectSingleSubscribeMessage(ws);
+              const subReq2 = await expectSubscribeMessages(ws);
               respondSuccessToSubscribe(ws, subReq2);
             });
 
@@ -487,10 +487,22 @@ function expectEqualRemoveAndAddListeners(ws: MockedWebSocket) {
   );
 }
 
-async function expectSingleSubscribeMessage(
+async function expectSubscribeMessages(
+  ws: MockedWebSocket,
+  times: number = 1,
+): Promise<ObjectSetStreamSubscribeRequests> {
+  return await vi.waitFor(() => {
+    expect(ws.send).toBeCalledTimes(times);
+    const result = JSON.parse(ws.send.mock.lastCall![0].toString());
+    ws.send.mockClear();
+    return result;
+  });
+}
+
+async function expectTwoSubscribeMessages(
   ws: MockedWebSocket,
 ): Promise<ObjectSetStreamSubscribeRequests> {
-  return await consumeSingleSend(ws);
+  return await consumeDoubleSend(ws);
 }
 
 async function subscribeAndExpectWebSocket(
@@ -535,8 +547,11 @@ async function expectWebSocketConstructed(): Promise<MockedWebSocket> {
 }
 
 async function consumeSingleSend(ws: any) {
+}
+
+async function consumeDoubleSend(ws: any) {
   return await vi.waitFor(() => {
-    expect(ws.send).toBeCalledTimes(1);
+    expect(ws.send).toBeCalledTimes(2);
     const result = JSON.parse(ws.send.mock.lastCall![0].toString());
     ws.send.mockClear();
     return result;
