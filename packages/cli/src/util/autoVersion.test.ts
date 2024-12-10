@@ -14,23 +14,41 @@
  * limitations under the License.
  */
 
+import { findUp } from "find-up";
 import { exec } from "node:child_process";
+import { promises as fsPromises } from "node:fs";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
 import { autoVersion } from "./autoVersion.js";
 
+vi.mock("find-up");
 vi.mock("node:child_process");
+vi.mock("node:fs");
 const execAsync = promisify(exec);
 
 describe("autoVersion", () => {
   const execMock = vi.mocked(execAsync);
   const execReturnValue = (out: string) => ({ stdout: out, stderr: "" });
 
+  it("should return a valid SemVer version from package.json", async () => {
+    const validPackageJsonVersion = "1.2.3";
+    vi.mocked(findUp).mockResolvedValue("/path/package.json");
+    vi.mocked(fsPromises.readFile).mockResolvedValue(
+      JSON.stringify({ version: validPackageJsonVersion }),
+    );
+    const version = await autoVersion({
+      type: "package-json",
+    });
+    expect(version).toBe("1.2.3");
+  });
+
   it("should return a valid SemVer version from git describe", async () => {
     const validGitVersion = "1.2.3";
     execMock.mockResolvedValue(execReturnValue(validGitVersion));
 
-    const version = await autoVersion();
+    const version = await autoVersion({
+      type: "git-describe",
+    });
     expect(version).toBe("1.2.3");
   });
 
@@ -38,7 +56,9 @@ describe("autoVersion", () => {
     const validGitVersion = "v1.2.3";
     execMock.mockResolvedValue(execReturnValue(validGitVersion));
 
-    const version = await autoVersion();
+    const version = await autoVersion({
+      type: "git-describe",
+    });
     expect(version).toBe("1.2.3");
   });
 
@@ -46,7 +66,10 @@ describe("autoVersion", () => {
     const validGitVersion = "@package@1.2.3";
     execMock.mockResolvedValue(execReturnValue(validGitVersion));
 
-    const version = await autoVersion("@package@");
+    const version = await autoVersion({
+      type: "git-describe",
+      tagPrefix: "@package@",
+    });
     expect(version).toBe("1.2.3");
   });
 
@@ -54,7 +77,10 @@ describe("autoVersion", () => {
     const validGitVersion = "1.2.3-package";
     execMock.mockResolvedValue(execReturnValue(validGitVersion));
 
-    const version = await autoVersion("-package");
+    const version = await autoVersion({
+      type: "git-describe",
+      tagPrefix: "@package@",
+    });
     expect(version).toBe("1.2.3-package");
   });
 
@@ -62,7 +88,9 @@ describe("autoVersion", () => {
     const nonSemVerGitVersion = "not-semver";
     execMock.mockResolvedValue(execReturnValue(nonSemVerGitVersion));
 
-    await expect(autoVersion()).rejects.toThrowError();
+    await expect(autoVersion({
+      type: "git-describe",
+    })).rejects.toThrowError();
   });
 
   it("should throw an error if git isn't found", async () => {
@@ -70,7 +98,9 @@ describe("autoVersion", () => {
       throw new Error("Command not found");
     });
 
-    await expect(autoVersion()).rejects.toThrowError(
+    await expect(autoVersion({
+      type: "git-describe",
+    })).rejects.toThrowError(
       "git is not installed",
     );
   });
@@ -80,7 +110,9 @@ describe("autoVersion", () => {
       throw new Error("fatal: not a git repository");
     });
 
-    await expect(autoVersion()).rejects.toThrowError(
+    await expect(autoVersion({
+      type: "git-describe",
+    })).rejects.toThrowError(
       "the current directory is not a git repository",
     );
   });
@@ -90,7 +122,9 @@ describe("autoVersion", () => {
       throw new Error("fatal: no names found, cannot describe anything.");
     });
 
-    await expect(autoVersion()).rejects.toThrowError(
+    await expect(autoVersion({
+      type: "git-describe",
+    })).rejects.toThrowError(
       "no matching tags were found.",
     );
   });

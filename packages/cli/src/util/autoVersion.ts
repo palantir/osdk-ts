@@ -15,8 +15,11 @@
  */
 
 import { ExitProcessError, isValidSemver } from "@osdk/cli.common";
+import { findUp } from "find-up";
 import { exec } from "node:child_process";
+import { promises as fsPromises } from "node:fs";
 import { promisify } from "node:util";
+import type { AutoVersionConfig } from "./config.js";
 
 /**
  * Gets the version string using git describe. If the @param tagPrefix is empty, git describe will return the
@@ -25,20 +28,53 @@ import { promisify } from "node:util";
  * @returns A promise that resolves to the version string.
  * @throws An error if the version string is not SemVer compliant or if the version cannot be determined.
  */
-export async function autoVersion(tagPrefix: string = ""): Promise<string> {
+export async function autoVersion(config: AutoVersionConfig): Promise<string> {
+  switch (config.type) {
+    case "git-describe":
+      return gitDescribeAutoVersion(config.tagPrefix);
+    case "package-json":
+      return packageJsonAutoVersion();
+    default:
+      const value: never = config;
+      throw new Error(
+        `Unexpected auto version config: (${JSON.stringify(value)})`,
+      );
+  }
+}
+
+async function gitDescribeAutoVersion(tagPrefix: string = ""): Promise<string> {
   const [matchPrefix, prefixRegex] = tagPrefix !== ""
     ? [tagPrefix, new RegExp(`^${tagPrefix}`)]
     : [undefined, new RegExp(`^v?`)];
 
   const gitVersion = await gitDescribe(matchPrefix);
   const version = gitVersion.trim().replace(prefixRegex, "");
-  if (!isValidSemver(version)) {
+  validateVersion(version);
+  return version;
+}
+
+async function packageJsonAutoVersion(): Promise<string> {
+  const packageJsonPath = await findUp("package.json");
+  if (!packageJsonPath) {
     throw new ExitProcessError(
       2,
-      `The version string ${version} is not SemVer compliant.`,
+      `Couldn't find package.json file in the current working directory or its parents: ${process.cwd()}`,
     );
   }
 
+  let packageJson;
+  try {
+    const fileContent = await fsPromises.readFile(packageJsonPath, "utf-8");
+    packageJson = JSON.parse(fileContent);
+  } catch (error) {
+    throw new ExitProcessError(
+      2,
+      `Couldn't read or parse package.json file ${packageJsonPath}. Error: ${error}`,
+    );
+  }
+
+  const version = packageJson.version;
+  validateVersion(version);
   return version;
 }
 
@@ -100,4 +136,13 @@ async function gitDescribe(matchPrefix: string | undefined): Promise<string> {
   }
 
   return gitVersion;
+}
+
+function validateVersion(version: string): void {
+  if (!isValidSemver(version)) {
+    throw new ExitProcessError(
+      2,
+      `The version string ${version} is not SemVer compliant.`,
+    );
+  }
 }

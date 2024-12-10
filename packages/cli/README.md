@@ -80,12 +80,14 @@ Auto Version options
 
 | Option         | Description                                                                                                                                                         |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| --autoVersion  | Enable auto versioning [string][choices: "git-describe"]                                                                                                            |
+| --autoVersion  | Enable auto versioning [string][choices: "git-describe", "package-json"]                                                                                            |
 | --gitTagPrefix | Prefix to match git tags on when 'git-describe' auto versioning is used. If not provided, all tags are matched and the prefix 'v ' is stripped if present. [string] |
 
 `--version` and `--autoVersion` are mutually exclusive and only one can be passed.
 
 If `git-describe` is used for `--autoVersion`, the CLI will try to infer the version by running the `git describe` command with optionally `--match=<gitTagPrefix>` set if `--gitTagPrefix` is passed.
+
+If `package-json` is used for `--autoVersion`, the CLI will try to infer the version by looking at the `version` field of the nearest `package.json` file. The current working directory will be traversed up to the root directory and the first `package.json` file, if found, will be used.
 
 ### `version` subcommand
 
