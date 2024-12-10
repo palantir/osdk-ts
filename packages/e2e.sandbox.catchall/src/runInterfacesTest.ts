@@ -16,6 +16,7 @@
 
 import type { ConvertProps, Osdk } from "@osdk/api";
 import {
+  BgaoNflPlayer,
   Employee,
   FooInterface,
   OsdkTestObject,
