@@ -12,6 +12,7 @@ export * as $Interfaces from './ontology/interfaces.js';
 export {
   BoundariesUsState,
   BuilderDeploymentState,
+  Country_1,
   DherlihyComplexObject,
   Employee,
   FintrafficAis,
@@ -22,6 +23,7 @@ export {
   Person,
   RhemmingsObjectWithGtsrProperty2,
   SotSensor,
+  StateTerritory,
   Todo,
   Venture,
   WeatherStation,

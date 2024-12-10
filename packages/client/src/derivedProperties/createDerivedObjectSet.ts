@@ -60,15 +60,13 @@ export function createDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>(
     aggregate: (aggregation: string, opt: any) => {
       const definitionId = idCounter++;
       const splitAggregation = aggregation.split(":");
-      invariant(splitAggregation.length === 2, "Invalid aggregation format");
+      invariant(
+        splitAggregation.length === 2 || splitAggregation[0] === "$count",
+        "Invalid aggregation format",
+      );
       const [aggregationPropertyName, aggregationOperation] = splitAggregation;
       let aggregationOperationDefinition: SelectedPropertyOperation;
       switch (aggregationOperation) {
-        case "$count":
-          aggregationOperationDefinition = {
-            type: "count",
-          };
-          break;
         case "sum":
         case "avg":
         case "min":
@@ -95,6 +93,13 @@ export function createDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>(
             limit: opt?.limit ?? 100,
           };
           break;
+        case undefined:
+          if (aggregationPropertyName === "$count") {
+            aggregationOperationDefinition = {
+              type: "count",
+            };
+            break;
+          }
         default:
           invariant(
             false,
