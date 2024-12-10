@@ -694,10 +694,11 @@ export type OsdkObjectLinksObject<O extends ObjectTypeDefinition> = ObjectTypeLi
 // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
 // Warning: (ae-forgotten-export) The symbol "MaybeArray" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "Converted" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "getClientPropertyValueFromWire" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MaybeNullable" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type OsdkObjectPropertyType<T extends ObjectMetadata.Property, STRICTLY_ENFORCE_NULLABLE extends boolean = true> = STRICTLY_ENFORCE_NULLABLE extends false ? MaybeArray<T, Converted<PropertyValueWireToClient[T["type"]]>> | undefined : MaybeNullable<T, MaybeArray<T, Converted<PropertyValueWireToClient[T["type"]]>>>;
+export type OsdkObjectPropertyType<T extends ObjectMetadata.Property, STRICTLY_ENFORCE_NULLABLE extends boolean = true> = STRICTLY_ENFORCE_NULLABLE extends false ? MaybeArray<T, Converted<getClientPropertyValueFromWire<T["type"]>>> | undefined : MaybeNullable<T, MaybeArray<T, Converted<getClientPropertyValueFromWire<T["type"]>>>>;
 
 // @public (undocumented)
 export interface PageResult<T> {
@@ -771,6 +772,8 @@ export interface PropertyValueWireToClient {
     stringTimeseries: TimeSeriesProperty<string>;
     // (undocumented)
     timestamp: string;
+    // (undocumented)
+    unknown: never;
 }
 
 // Warning: (ae-forgotten-export) The symbol "PrimitiveDataType" needs to be exported by the entry point index.d.ts
@@ -851,6 +854,9 @@ export interface SelectArg<Q extends ObjectOrInterfaceDefinition, L extends Prop
 
 // @public (undocumented)
 export type SelectArgToKeys<Q extends ObjectOrInterfaceDefinition, A extends SelectArg<Q, any, any>> = A extends SelectArg<Q, never> ? PropertyKeys<Q> : A["$select"] extends readonly string[] ? A["$select"][number] : PropertyKeys<Q>;
+
+// @public (undocumented)
+export type SimpleWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference" | "unknown";
 
 // @public (undocumented)
 export interface SingleLinkAccessor<T extends ObjectTypeDefinition> {
@@ -945,11 +951,11 @@ export type TimeSeriesQuery = {
 export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<"date" | "double" | "timestamp">;
 
 // Warning: (ae-forgotten-export) The symbol "AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "PropertyValueClientToWire" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "getWirePropertyValueFromClient" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type ValidAggregationKeys<Q extends ObjectOrInterfaceDefinition> = keyof ({
-    [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<PropertyValueClientToWire[CompileTimeMetadata<Q>["properties"][KK]["type"]]>}`]?: any;
+    [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<getWirePropertyValueFromClient<CompileTimeMetadata<Q>["properties"][KK]["type"]>>}`]?: any;
 } & {
     $count?: any;
 });
@@ -973,7 +979,7 @@ export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T
 });
 
 // @public (undocumented)
-export type WirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
+export type WirePropertyTypes = SimpleWirePropertyTypes | Record<string, SimpleWirePropertyTypes>;
 
 // Warnings were encountered during analysis:
 //

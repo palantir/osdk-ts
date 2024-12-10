@@ -44,7 +44,16 @@ export interface PropertyValueWireToClient {
   stringTimeseries: TimeSeriesProperty<string>;
   sensorTimeseries: TimeSeriesProperty<string | number>;
   geotimeSeriesReference: GeotimeSeriesProperty<GeoJSON.Point>;
+
+  unknown: never;
 }
+
+export type getClientPropertyValueFromWire<
+  T extends
+    | keyof PropertyValueWireToClient
+    | Record<string, keyof PropertyValueWireToClient>,
+> = T extends keyof PropertyValueWireToClient ? PropertyValueWireToClient[T]
+  : T;
 
 /**
  * Map from the PropertyDefinition type to the typescript type that we accept
@@ -70,4 +79,12 @@ export interface PropertyValueClientToWire {
   stringTimeseries: TimeSeriesProperty<string>;
   sensorTimeseries: TimeSeriesProperty<string | number>;
   geotimeSeriesReference: GeotimeSeriesProperty<GeoJSON.Point>;
+
+  unknown: never;
 }
+export type getWirePropertyValueFromClient<
+  T extends
+    | keyof PropertyValueClientToWire
+    | Record<string, keyof PropertyValueClientToWire>,
+> = T extends keyof PropertyValueClientToWire ? PropertyValueClientToWire[T]
+  : T;

@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import type { ObjectMetadata, WirePropertyTypes } from "@osdk/api";
+import type {
+  ObjectMetadata,
+  SimpleWirePropertyTypes,
+  WirePropertyTypes,
+} from "@osdk/api";
 import type {
   ObjectPropertyType,
   PropertyV2,
   SharedPropertyType,
 } from "@osdk/internal.foundry.core";
+import { consola } from "consola";
 
 export function wirePropertyV2ToSdkPropertyDefinition(
   input: (PropertyV2 | SharedPropertyType) & { nullable?: boolean },
@@ -43,6 +48,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "timeseries":
     case "marking":
     case "geotimeSeriesReference":
+    case "struct":
       return {
         displayName: input.displayName,
         multiplicity: false,
@@ -59,16 +65,33 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         nullable: true,
       };
     }
-    case "mediaReference": {
-      throw new Error(
-        `Media references not supported yet`,
+
+    case "mediaReference":
+    case "cipherText": {
+      consola.info(
+        `${
+          JSON.stringify(input.dataType.type)
+        } is not a supported property type`,
       );
+      return {
+        displayName: input.displayName,
+        multiplicity: false,
+        description: input.description,
+        type: objectPropertyTypeToSdkPropertyDefinition(input.dataType),
+        nullable: true,
+      };
     }
     default:
-      const _: never = input.dataType;
-      throw new Error(
-        `Unexpected data type ${JSON.stringify(input.dataType)}`,
+      consola.info(
+        `${JSON.stringify(input.dataType)} is not a supported property type`,
       );
+      return {
+        displayName: input.displayName,
+        multiplicity: false,
+        description: input.description,
+        type: objectPropertyTypeToSdkPropertyDefinition(input.dataType),
+        nullable: true,
+      };
   }
 }
 
@@ -102,14 +125,30 @@ function objectPropertyTypeToSdkPropertyDefinition(
       } else if (propertyType.itemType?.type === "double") {
         return "numericTimeseries";
       } else return "sensorTimeseries";
-
-    case "mediaReference": {
-      throw new Error(
-        `Media references not supported yet`,
+    case "struct": {
+      return propertyType.structFieldTypes.reduce(
+        (structMap: Record<string, SimpleWirePropertyTypes>, structField) => {
+          structMap[structField.apiName] =
+            objectPropertyTypeToSdkPropertyDefinition(
+              structField.dataType,
+            ) as SimpleWirePropertyTypes;
+          return structMap;
+        },
+        {},
       );
     }
+
+    case "mediaReference":
+    case "cipherText": {
+      consola.info(
+        `${JSON.stringify(propertyType)} is not a supported property type`,
+      );
+      return "unknown";
+    }
     default:
-      const _: never = propertyType;
-      throw new Error(`Unexpected data type ${JSON.stringify(propertyType)}`);
+      consola.info(
+        `${JSON.stringify(propertyType)} is not a supported property type`,
+      );
+      return "unknown";
   }
 }
