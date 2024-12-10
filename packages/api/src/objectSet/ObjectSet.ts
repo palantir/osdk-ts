@@ -19,9 +19,9 @@ import type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } f
 import type { AggregationsResults } from "../aggregate/AggregationsResults.js";
 import type { WhereClause } from "../aggregate/WhereClause.js";
 import type {
-  DeriveClause,
-  DerivedPropertyDefinition,
-} from "../derivedProperties/DeriveClause.js";
+  WithPropertiesClause,
+  WithPropertyDefinition,
+} from "../derivedProperties/WithPropertiesClause.js";
 import type { PropertyValueWireToClient } from "../mapping/PropertyValueMapping.js";
 import type {
   AsyncIterArgs,
@@ -263,30 +263,30 @@ export interface ObjectSet<
   ) => { unsubscribe: () => void };
 
   readonly withProperties: <
-    D extends DeriveClause<Q>,
+    D extends WithPropertiesClause<Q>,
   >(
     clause: D,
   ) => ObjectSet<
-    DerivedPropertyExtendedObjectDefinition<
+    WithPropertiesObjectDefinition<
       Q,
       D
     >
   >;
 }
 
-type DerivedPropertyExtendedObjectDefinition<
+type WithPropertiesObjectDefinition<
   K extends ObjectOrInterfaceDefinition,
-  D extends DeriveClause<K>,
+  D extends WithPropertiesClause<K>,
 > = {
   __DefinitionMetadata: {
     properties: {
       [T in Extract<keyof D, string>]: D[T] extends
-        (baseObjectSet: any) => DerivedPropertyDefinition<infer P> ? P
+        (baseObjectSet: any) => WithPropertyDefinition<infer P> ? P
         : never;
     };
     props: {
       [T in Extract<keyof D, string>]: D[T] extends
-        (baseObjectSet: any) => DerivedPropertyDefinition<infer P>
+        (baseObjectSet: any) => WithPropertyDefinition<infer P>
         ? P extends PropertyDef<infer A, any, any>
           ? PropertyValueWireToClient[A]
         : never

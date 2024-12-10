@@ -17,13 +17,13 @@
 import type {
   CompileTimeMetadata,
   ConvertProps,
-  DeriveClause,
   InterfaceDefinition,
   ObjectMetadata,
   ObjectSet,
   Osdk,
   PropertyKeys,
   Result,
+  WithPropertiesClause,
 } from "@osdk/api";
 import { isOk, WhereClause } from "@osdk/api";
 import {
@@ -51,7 +51,7 @@ import type {
 } from "../../../api/build/esm/OsdkObjectFrom.js";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import { createDeriveObjectSet } from "../derivedProperties/createDerivedObjectSet.js";
+import { createWithPropertiesObjectSet } from "../derivedProperties/createWithPropertiesObjectSet.js";
 
 describe("ObjectSet", () => {
   let client: Client;
@@ -597,11 +597,11 @@ describe("ObjectSet", () => {
     describe("withPropertiesObjectSet", () => {
       it("correctly creates basic object set with derived properties", () => {
         const map = new Map<string, DerivedPropertyDefinition>();
-        const deriveObjectSet = createDeriveObjectSet(Employee, {
+        const deriveObjectSet = createWithPropertiesObjectSet(Employee, {
           type: "methodInput",
         }, map);
 
-        const clause: DeriveClause<Employee> = {
+        const clause: WithPropertiesClause<Employee> = {
           "derivedPropertyName": (base) =>
             base.pivotTo("lead").selectProperty("employeeId"),
         };
@@ -628,11 +628,11 @@ describe("ObjectSet", () => {
 
       it("correctly handles multiple definitions in one clause", () => {
         const map = new Map<string, DerivedPropertyDefinition>();
-        const deriveObjectSet = createDeriveObjectSet(Employee, {
+        const deriveObjectSet = createWithPropertiesObjectSet(Employee, {
           type: "methodInput",
         }, map);
 
-        const clause: DeriveClause<Employee> = {
+        const clause: WithPropertiesClause<Employee> = {
           "derivedPropertyName": (base) =>
             base.pivotTo("lead").aggregate("startDate:approximatePercentile", {
               percentile: 0.5,

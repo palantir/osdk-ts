@@ -21,19 +21,19 @@ import type {
   ObjectMetadata,
   PropertyDef,
 } from "../ontology/ObjectTypeDefinition.js";
-import type { BaseDeriveObjectSet } from "./DeriveObjectSet.js";
+import type { BaseWithPropertyObjectSet } from "./WithPropertyObjectSet.js";
 
-export type DerivedPropertyDefinition<
+export type WithPropertyDefinition<
   T extends ObjectMetadata.Property,
 > = {
   definitionId: unknown;
   type: T;
 };
 
-export type DeriveClause<
+export type WithPropertiesClause<
   Q extends ObjectOrInterfaceDefinition,
 > = {
   [key: string]: (
-    baseObjectSet: BaseDeriveObjectSet<Q>,
-  ) => DerivedPropertyDefinition<ObjectMetadata.Property>;
+    baseObjectSet: BaseWithPropertyObjectSet<Q>,
+  ) => WithPropertyDefinition<ObjectMetadata.Property>;
 };

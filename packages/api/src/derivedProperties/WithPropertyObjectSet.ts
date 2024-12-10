@@ -25,24 +25,24 @@ import type {
   PropertyDef,
 } from "../ontology/ObjectTypeDefinition.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
-import type { DerivedPropertyDefinition } from "./DeriveClause.js";
+import type { WithPropertyDefinition } from "./WithPropertiesClause.js";
 
-export interface BaseDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>
-  extends FilterableDeriveObjectSet<Q>
-{
+export interface WithPropertyObjectSet<Q extends ObjectOrInterfaceDefinition>
+  extends
+    BaseWithPropertyObjectSet<Q>,
+    AggregatableWithPropertyObjectSet<Q>,
+    SingleLinkWithPropertyObjectSet<Q>
+{}
+
+export interface BaseWithPropertyObjectSet<
+  Q extends ObjectOrInterfaceDefinition,
+> extends FilterableDeriveObjectSet<Q> {
   readonly pivotTo: <L extends LinkNames<Q>>(
     type: L,
   ) => NonNullable<CompileTimeMetadata<Q>["links"][L]["multiplicity"]> extends
-    false ? SingleLinkDeriveObjectSet<LinkedType<Q, L>>
-    : ManyLinkDeriveObjectSet<LinkedType<Q, L>>;
+    false ? SingleLinkWithPropertyObjectSet<LinkedType<Q, L>>
+    : ManyLinkWithPropertyObjectSet<LinkedType<Q, L>>;
 }
-
-export interface DeriveObjectSet<Q extends ObjectOrInterfaceDefinition>
-  extends
-    BaseDeriveObjectSet<Q>,
-    AggregatableDeriveObjectSet<Q>,
-    SingleLinkDeriveObjectSet<Q>
-{}
 
 interface FilterableDeriveObjectSet<
   Q extends ObjectOrInterfaceDefinition,
@@ -54,23 +54,24 @@ interface FilterableDeriveObjectSet<
 
 type CollectAggregations = "collectSet" | "collectList";
 
-type BaseDeriveAggregations =
+type BaseAggregations =
   | "approximateDistinct"
   | "exactDistinct"
   | "approximatePercentile";
 
-export type StringDeriveAggregateOption =
-  | BaseDeriveAggregations
+type StringDeriveAggregateOption =
+  | BaseAggregations
   | CollectAggregations;
-export type NumericDeriveAggregateOption =
+
+type NumericDeriveAggregateOption =
   | "min"
   | "max"
   | "sum"
   | "avg"
-  | BaseDeriveAggregations
+  | BaseAggregations
   | CollectAggregations;
 
-interface AggregatableDeriveObjectSet<
+interface AggregatableWithPropertyObjectSet<
   Q extends ObjectOrInterfaceDefinition,
 > extends FilterableDeriveObjectSet<Q> {
   readonly aggregate: <
@@ -86,7 +87,7 @@ interface AggregatableDeriveObjectSet<
       : P extends "approximatePercentile" ? { percentile: number }
       : never
       : never,
-  ) => DerivedPropertyDefinition<
+  ) => WithPropertyDefinition<
     V extends `${infer N}:${infer P}`
       ? P extends CollectAggregations ? PropertyDef<
           CompileTimeMetadata<Q>["properties"][N]["type"],
@@ -101,18 +102,18 @@ interface AggregatableDeriveObjectSet<
   >;
 }
 
-interface SingleLinkDeriveObjectSet<
+interface SingleLinkWithPropertyObjectSet<
   Q extends ObjectOrInterfaceDefinition,
-> extends AggregatableDeriveObjectSet<Q>, BaseDeriveObjectSet<Q> {
+> extends AggregatableWithPropertyObjectSet<Q>, BaseWithPropertyObjectSet<Q> {
   readonly selectProperty: <R extends PropertyKeys<Q>>(
     propertyName: R,
-  ) => DerivedPropertyDefinition<CompileTimeMetadata<Q>["properties"][R]>;
+  ) => WithPropertyDefinition<CompileTimeMetadata<Q>["properties"][R]>;
 }
 
-interface ManyLinkDeriveObjectSet<
+interface ManyLinkWithPropertyObjectSet<
   Q extends ObjectOrInterfaceDefinition,
-> extends AggregatableDeriveObjectSet<Q> {
+> extends AggregatableWithPropertyObjectSet<Q> {
   readonly pivotTo: <L extends LinkNames<Q>>(
     type: L,
-  ) => ManyLinkDeriveObjectSet<LinkedType<Q, L>>;
+  ) => ManyLinkWithPropertyObjectSet<LinkedType<Q, L>>;
 }

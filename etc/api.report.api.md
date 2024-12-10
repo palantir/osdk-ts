@@ -218,17 +218,6 @@ export type Augment<X extends ObjectOrInterfaceDefinition, T extends string> = {
 // @public (undocumented)
 export type Augments = Record<string, string[]>;
 
-// Warning: (ae-forgotten-export) The symbol "FilterableDeriveObjectSet" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
-export interface BaseDeriveObjectSet<Q extends ObjectOrInterfaceDefinition> extends FilterableDeriveObjectSet<Q> {
-    // Warning: (ae-forgotten-export) The symbol "SingleLinkDeriveObjectSet" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "ManyLinkDeriveObjectSet" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    readonly pivotTo: <L extends LinkNames<Q>>(type: L) => NonNullable<CompileTimeMetadata<Q>["links"][L]["multiplicity"]> extends false ? SingleLinkDeriveObjectSet<LinkedType<Q, L>> : ManyLinkDeriveObjectSet<LinkedType<Q, L>>;
-}
-
 // @public (undocumented)
 export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
     // (undocumented)
@@ -347,23 +336,6 @@ export interface DataValueWireToClient {
         key: AllowedBucketKeyTypes;
         value: AllowedBucketTypes;
     }[];
-}
-
-// @public (undocumented)
-export type DeriveClause<Q extends ObjectOrInterfaceDefinition> = {
-    [key: string]: (baseObjectSet: BaseDeriveObjectSet<Q>) => DerivedPropertyDefinition<ObjectMetadata.Property>;
-};
-
-// @public (undocumented)
-export type DerivedPropertyDefinition<T extends ObjectMetadata.Property> = {
-    definitionId: unknown;
-    type: T;
-};
-
-// Warning: (ae-forgotten-export) The symbol "AggregatableDeriveObjectSet" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
-export interface DeriveObjectSet<Q extends ObjectOrInterfaceDefinition> extends BaseDeriveObjectSet<Q>, AggregatableDeriveObjectSet<Q>, SingleLinkDeriveObjectSet<Q> {
 }
 
 // @public (undocumented)
@@ -617,10 +589,10 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED 
     };
     readonly subtract: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
     readonly union: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
-    // Warning: (ae-forgotten-export) The symbol "DerivedPropertyExtendedObjectDefinition" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "WithPropertiesObjectDefinition" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    readonly withProperties: <D extends DeriveClause<Q>>(clause: D) => ObjectSet<DerivedPropertyExtendedObjectDefinition<Q, D>>;
+    readonly withProperties: <D extends WithPropertiesClause<Q>>(clause: D) => ObjectSet<WithPropertiesObjectDefinition<Q, D>>;
 }
 
 // @public (undocumented)
@@ -1005,10 +977,29 @@ export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T
 // @public (undocumented)
 export type WirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
 
+// @public (undocumented)
+export type WithPropertiesClause<Q extends ObjectOrInterfaceDefinition> = {
+    [key: string]: (baseObjectSet: BaseWithPropertyObjectSet<Q>) => WithPropertyDefinition<ObjectMetadata.Property>;
+};
+
+// @public (undocumented)
+export type WithPropertyDefinition<T extends ObjectMetadata.Property> = {
+    definitionId: unknown;
+    type: T;
+};
+
+// Warning: (ae-forgotten-export) The symbol "AggregatableWithPropertyObjectSet" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "SingleLinkWithPropertyObjectSet" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export interface WithPropertyObjectSet<Q extends ObjectOrInterfaceDefinition> extends BaseWithPropertyObjectSet<Q>, AggregatableWithPropertyObjectSet<Q>, SingleLinkWithPropertyObjectSet<Q> {
+}
+
 // Warnings were encountered during analysis:
 //
 // src/aggregate/AggregateOpts.ts:26:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:26:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
+// src/derivedProperties/WithPropertiesClause.ts:36:3 - (ae-forgotten-export) The symbol "BaseWithPropertyObjectSet" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

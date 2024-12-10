@@ -42,13 +42,12 @@ export type {
   SingleLinkAccessor,
 } from "./definitions/LinkDefinitions.js";
 export type {
-  DeriveClause,
-  DerivedPropertyDefinition,
-} from "./derivedProperties/DeriveClause.js";
+  WithPropertiesClause,
+  WithPropertyDefinition,
+} from "./derivedProperties/WithPropertiesClause.js";
 export type {
-  BaseDeriveObjectSet,
-  DeriveObjectSet,
-} from "./derivedProperties/DeriveObjectSet.js";
+  WithPropertyObjectSet,
+} from "./derivedProperties/WithPropertyObjectSet.js";
 
 export { DurationMapping } from "./groupby/GroupByClause.js";
 export type {

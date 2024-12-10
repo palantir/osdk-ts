@@ -15,7 +15,6 @@
  */
 
 import { Country_1, StateTerritory } from "@osdk/e2e.generated.catchall";
-import { basename } from "path";
 import { client } from "./client.js";
 
 export async function runWithPropertiesTest() {

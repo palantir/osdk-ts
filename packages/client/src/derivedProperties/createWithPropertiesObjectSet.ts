@@ -15,43 +15,37 @@
  */
 
 import type {
-  CompileTimeMetadata,
-  DeriveObjectSet,
-  LinkedType,
-  LinkNames,
   ObjectOrInterfaceDefinition,
-  WhereClause,
+  WithPropertyObjectSet,
 } from "@osdk/api";
 import type {
   DerivedPropertyDefinition,
   ObjectSet as WireObjectSet,
-  ObjectSetSearchAroundType,
-  SelectedPropertyDefinition,
   SelectedPropertyOperation,
 } from "@osdk/internal.foundry.core";
 import invariant from "tiny-invariant";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
-import { MinimalClient } from "../MinimalClientContext.js";
-import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 
 let idCounter = 0;
 
 /** @internal */
-export function createDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>(
+export function createWithPropertiesObjectSet<
+  Q extends ObjectOrInterfaceDefinition,
+>(
   objectType: Q,
   objectSet: WireObjectSet,
   definitionMap: Map<any, DerivedPropertyDefinition>,
-): DeriveObjectSet<Q> {
-  const base: DeriveObjectSet<Q> = {
+): WithPropertyObjectSet<Q> {
+  const base: WithPropertyObjectSet<Q> = {
     pivotTo: (link) => {
-      return createDeriveObjectSet(objectType, {
+      return createWithPropertiesObjectSet(objectType, {
         type: "searchAround",
         objectSet,
         link,
       }, definitionMap) as any;
     },
     where: (clause) => {
-      return createDeriveObjectSet(objectType, {
+      return createWithPropertiesObjectSet(objectType, {
         type: "filter",
         objectSet: objectSet,
         where: modernToLegacyWhereClause(clause, objectType),
@@ -127,7 +121,5 @@ export function createDeriveObjectSet<Q extends ObjectOrInterfaceDefinition>(
     },
   };
 
-  // we are using a type assertion because the marker symbol defined in BaseObjectSet isn't actually used
-  // at runtime.
   return base;
 }
