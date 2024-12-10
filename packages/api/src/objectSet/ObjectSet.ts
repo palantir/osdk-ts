@@ -22,6 +22,7 @@ import type {
   DeriveClause,
   DerivedPropertyDefinition,
 } from "../derivedProperties/DeriveClause.js";
+import type { PropertyValueWireToClient } from "../mapping/PropertyValueMapping.js";
 import type {
   AsyncIterArgs,
   Augments,
@@ -281,6 +282,14 @@ type DerivedPropertyExtendedObjectDefinition<
     properties: {
       [T in Extract<keyof D, string>]: D[T] extends
         (baseObjectSet: any) => DerivedPropertyDefinition<infer P> ? P
+        : never;
+    };
+    props: {
+      [T in Extract<keyof D, string>]: D[T] extends
+        (baseObjectSet: any) => DerivedPropertyDefinition<infer P>
+        ? P extends PropertyDef<infer A, any, any>
+          ? PropertyValueWireToClient[A]
+        : never
         : never;
     };
   };

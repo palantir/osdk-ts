@@ -589,6 +589,8 @@ describe("ObjectSet", () => {
         "derivedPropertyName": (base) =>
           base.pivotTo("lead").selectProperty("employeeId"),
       }).fetchOne(50035);
+
+      expectTypeOf(objectWithRdp.derivedPropertyName).toEqualTypeOf<number>();
       expect(objectWithRdp.derivedPropertyName).toBe(1);
     });
 

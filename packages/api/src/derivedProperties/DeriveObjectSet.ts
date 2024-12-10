@@ -96,6 +96,7 @@ interface AggregatableDeriveObjectSet<
       : P extends "approximateDistinct" | "exactDistinct" | "$count"
         ? PropertyDef<"integer">
       : PropertyDef<"double">
+      : V extends "$count" ? PropertyDef<"integer">
       : never
   >;
 }
