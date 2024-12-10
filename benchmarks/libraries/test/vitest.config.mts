@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-// @ts-check
+import { configDefaults, defineConfig } from "vitest/config";
 
-import { createMemoryTest } from "../helpers.js";
-
-const r = await createMemoryTest(async () => {
-  const { createClient } = await import("../../build/esbuild/bundle.js");
-
-  // return from main so that node doesn't evict early.
-  return createClient;
+export default defineConfig({
+  test: {
+    pool: "forks",
+    exclude: [...configDefaults.exclude, "**/build/**/*"],
+  },
 });
-
-// eslint-disable-next-line no-console
-console.log(r);

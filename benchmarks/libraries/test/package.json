@@ -1,0 +1,67 @@
+{
+  "name": "@osdk/benchmarks.lib.test",
+  "private": true,
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "exports": {
+    ".": {
+      "browser": "./build/browser/index.js",
+      "import": "./build/esm/index.js",
+      "default": "./build/browser/index.js"
+    },
+    "./*": {
+      "browser": "./build/browser/public/*.js",
+      "import": "./build/esm/public/*.js",
+      "default": "./build/browser/public/*.js"
+    }
+  },
+  "scripts": {
+    "check-attw": "monorepo.tool.attw esm",
+    "check-spelling": "cspell --quiet .",
+    "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "transpile": "monorepo.tool.transpile"
+  },
+  "dependencies": {
+    "@osdk/benchmarks.lib.v8": "workspace:*",
+    "@stdlib/stats-base-mean": "^0.2.2",
+    "@stdlib/stats-base-stdev": "^0.2.2",
+    "cli-progress": "^3.12.0",
+    "execa": "^9.5.1",
+    "fast-deep-equal": "^3.1.3",
+    "ora-progress-bar": "^1.2.1",
+    "p-locate": "^6.0.0",
+    "tiny-invariant": "^1.3.3",
+    "v8-natives": "^1.2.5",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/monorepo.tsup": "workspace:~",
+    "@types/node": "^22",
+    "@types/yargs": "^17.0.33",
+    "typescript": "~5.5.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": "./bin/benchmarks.lib.test.js",
+  "files": [
+    "build/cjs",
+    "build/esm",
+    "build/browser",
+    "CHANGELOG.md",
+    "package.json",
+    "templates",
+    "*.d.ts"
+  ],
+  "module": "./build/esm/index.js",
+  "types": "./build/esm/index.d.ts",
+  "type": "module"
+}
