@@ -15,7 +15,7 @@
  */
 
 import type {
-  getWirePropertyValueFromClient,
+  GetWirePropertyValueFromClient,
   PropertyValueClientToWire,
 } from "../mapping/PropertyValueMapping.js";
 import type {
@@ -43,7 +43,7 @@ export type ValidAggregationKeys<
   & {
     [
       KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<
-        getWirePropertyValueFromClient<
+        GetWirePropertyValueFromClient<
           CompileTimeMetadata<Q>["properties"][KK]["type"]
         >
       >}`

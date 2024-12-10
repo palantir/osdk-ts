@@ -40,7 +40,6 @@ import {
   type Mock,
   vi,
 } from "vitest";
-import type { getWirePropertyValueFromClient } from "../../../api/build/esm/mapping/PropertyValueMapping.js";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";

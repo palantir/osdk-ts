@@ -15,7 +15,7 @@
  */
 
 import type {
-  getClientPropertyValueFromWire,
+  GetClientPropertyValueFromWire,
   PropertyValueWireToClient,
 } from "./mapping/PropertyValueMapping.js";
 import type { ObjectMetadata } from "./ontology/ObjectTypeDefinition.js";
@@ -38,15 +38,15 @@ export type OsdkObjectPropertyType<
   T extends ObjectMetadata.Property,
   STRICTLY_ENFORCE_NULLABLE extends boolean = true,
 > = STRICTLY_ENFORCE_NULLABLE extends false ?
-    | MaybeArray<T, Converted<getClientPropertyValueFromWire<T["type"]>>>
+    | MaybeArray<T, Converted<GetClientPropertyValueFromWire<T["type"]>>>
     | undefined
   : MaybeNullable<
     T,
-    MaybeArray<T, Converted<getClientPropertyValueFromWire<T["type"]>>>
+    MaybeArray<T, Converted<GetClientPropertyValueFromWire<T["type"]>>>
   >;
 
 export type OsdkObjectRawPropertyType<T extends ObjectMetadata.Property> =
   MaybeNullable<
     T,
-    MaybeArray<T, Raw<getClientPropertyValueFromWire<T["type"]>>>
+    MaybeArray<T, Raw<GetClientPropertyValueFromWire<T["type"]>>>
   >;
