@@ -259,6 +259,25 @@ describe("ObjectSetListenerWebsocket", async () => {
         });
       });
 
+      describe("correctly try catches errors in handlers", () => {
+        beforeEach(() => {
+          listener.onSuccessfulSubscription.mockImplementationOnce(() => {
+            throw new Error("I am an error");
+          });
+          respondSuccessToSubscribe(ws, subReq1);
+        });
+        afterEach(() => {
+          listener.onSuccessfulSubscription.mockReset();
+        });
+
+        it("should call onError", async () => {
+          expect(listener.onError).toHaveBeenCalled();
+          expect(listener.onError.mock.calls[0][0].subscriptionClosed).toBe(
+            false,
+          );
+        });
+      });
+
       describe("successfully subscribed", () => {
         beforeEach(() => {
           respondSuccessToSubscribe(ws, subReq1);
