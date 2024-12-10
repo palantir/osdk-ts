@@ -19,6 +19,10 @@ import type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } f
 import type { AggregationsResults } from "../aggregate/AggregationsResults.js";
 import type { WhereClause } from "../aggregate/WhereClause.js";
 import type {
+  DeriveClause,
+  DerivedPropertyDefinition,
+} from "../derivedProperties/DeriveClause.js";
+import type {
   AsyncIterArgs,
   Augments,
   FetchPageArgs,
@@ -34,7 +38,9 @@ import type {
 } from "../ontology/ObjectOrInterface.js";
 import type {
   CompileTimeMetadata,
+  ObjectMetadata,
   ObjectTypeDefinition,
+  PropertyDef,
 } from "../ontology/ObjectTypeDefinition.js";
 import type { PrimaryKeyType } from "../OsdkBase.js";
 import type { ExtractOptions, Osdk } from "../OsdkObjectFrom.js";
@@ -254,4 +260,28 @@ export interface ObjectSet<
     listener: ObjectSetListener<Q, P>,
     opts?: ObjectSetListenerOptions<Q, P>,
   ) => { unsubscribe: () => void };
+
+  readonly withProperties: <
+    D extends DeriveClause<Q>,
+  >(
+    clause: D,
+  ) => ObjectSet<
+    DerivedPropertyExtendedObjectDefinition<
+      Q,
+      D
+    >
+  >;
 }
+
+type DerivedPropertyExtendedObjectDefinition<
+  K extends ObjectOrInterfaceDefinition,
+  D extends DeriveClause<K>,
+> = {
+  __DefinitionMetadata: {
+    properties: {
+      [T in Extract<keyof D, string>]: D[T] extends
+        (baseObjectSet: any) => DerivedPropertyDefinition<infer P> ? P
+        : never;
+    };
+  };
+} & K;
