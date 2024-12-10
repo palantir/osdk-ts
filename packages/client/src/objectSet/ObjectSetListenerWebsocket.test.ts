@@ -499,12 +499,6 @@ async function expectSubscribeMessages(
   });
 }
 
-async function expectTwoSubscribeMessages(
-  ws: MockedWebSocket,
-): Promise<ObjectSetStreamSubscribeRequests> {
-  return await consumeDoubleSend(ws);
-}
-
 async function subscribeAndExpectWebSocket(
   client: ObjectSetListenerWebsocket,
   listener: MockedListener,
@@ -544,18 +538,6 @@ async function expectWebSocketConstructed(): Promise<MockedWebSocket> {
   expect(MockedWebSocket).toHaveBeenCalledTimes(0);
 
   return ws;
-}
-
-async function consumeSingleSend(ws: any) {
-}
-
-async function consumeDoubleSend(ws: any) {
-  return await vi.waitFor(() => {
-    expect(ws.send).toBeCalledTimes(2);
-    const result = JSON.parse(ws.send.mock.lastCall![0].toString());
-    ws.send.mockClear();
-    return result;
-  });
 }
 
 function createMockWebSocketConstructor(
