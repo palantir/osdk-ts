@@ -38,4 +38,38 @@ describe("Object definitions", () => {
         Attachment[]
       >();
   });
+  it("correctly maps struct types", () => {
+    const structType = {
+      type: {
+        integerField: "integer",
+        floatField: "float",
+        attachment: "attachment",
+      },
+    } as const;
+
+    const structTypeArray = {
+      type: {
+        integerField: "integer",
+        floatField: "float",
+        attachment: "attachment",
+      },
+      multiplicity: true,
+    } as const;
+    expectTypeOf<OsdkObjectPropertyType<typeof structType>>().toEqualTypeOf<
+      {
+        readonly integerField: number;
+        readonly floatField: number;
+        readonly attachment: Attachment;
+      }
+    >();
+
+    expectTypeOf<OsdkObjectPropertyType<typeof structTypeArray>>()
+      .toEqualTypeOf<
+        {
+          readonly integerField: number;
+          readonly floatField: number;
+          readonly attachment: Attachment;
+        }[]
+      >();
+  });
 });
