@@ -589,6 +589,10 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED 
     };
     readonly subtract: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
     readonly union: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
+    // Warning: (ae-forgotten-export) The symbol "WithPropertiesObjectDefinition" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    readonly withProperties: <D extends WithPropertiesClause<Q>>(clause: D) => ObjectSet<WithPropertiesObjectDefinition<Q, D>>;
 }
 
 // @public (undocumented)
@@ -944,12 +948,13 @@ export type TimeSeriesQuery = {
 // @public (undocumented)
 export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<"date" | "double" | "timestamp">;
 
-// Warning: (ae-forgotten-export) The symbol "AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "StringAggregateOption" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "NumericAggregateOption" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "PropertyValueClientToWire" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type ValidAggregationKeys<Q extends ObjectOrInterfaceDefinition> = keyof ({
-    [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<PropertyValueClientToWire[CompileTimeMetadata<Q>["properties"][KK]["type"]]>}`]?: any;
+export type ValidAggregationKeys<Q extends ObjectOrInterfaceDefinition, StringOptions extends string = StringAggregateOption, NumericOptions extends string = NumericAggregateOption> = keyof ({
+    [KK in AggregatableKeys<Q> as `${KK & string}:${number extends PropertyValueClientToWire[CompileTimeMetadata<Q>["properties"][KK]["type"]] ? NumericOptions : string extends PropertyValueClientToWire[CompileTimeMetadata<Q>["properties"][KK]["type"]] ? StringOptions : never}`]?: any;
 } & {
     $count?: any;
 });
@@ -975,10 +980,29 @@ export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T
 // @public (undocumented)
 export type WirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
 
+// @public (undocumented)
+export type WithPropertiesClause<Q extends ObjectOrInterfaceDefinition> = {
+    [key: string]: (baseObjectSet: BaseWithPropertyObjectSet<Q>) => WithPropertyDefinition<ObjectMetadata.Property>;
+};
+
+// @public (undocumented)
+export type WithPropertyDefinition<T extends ObjectMetadata.Property> = {
+    definitionId: unknown;
+    type: T;
+};
+
+// Warning: (ae-forgotten-export) The symbol "AggregatableWithPropertyObjectSet" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "SingleLinkWithPropertyObjectSet" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export interface WithPropertyObjectSet<Q extends ObjectOrInterfaceDefinition> extends BaseWithPropertyObjectSet<Q>, AggregatableWithPropertyObjectSet<Q>, SingleLinkWithPropertyObjectSet<Q> {
+}
+
 // Warnings were encountered during analysis:
 //
 // src/aggregate/AggregateOpts.ts:26:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:26:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
+// src/derivedProperties/WithPropertiesClause.ts:36:3 - (ae-forgotten-export) The symbol "BaseWithPropertyObjectSet" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

@@ -15,15 +15,15 @@
  */
 
 import type {
-  Augments,
   CompileTimeMetadata,
   ConvertProps,
-  FetchPageArgs,
   InterfaceDefinition,
+  ObjectMetadata,
   ObjectSet,
   Osdk,
   PropertyKeys,
   Result,
+  WithPropertiesClause,
 } from "@osdk/api";
 import { isOk, WhereClause } from "@osdk/api";
 import {
@@ -33,6 +33,7 @@ import {
   FooInterface,
   Office,
 } from "@osdk/client.test.ontology";
+import type { DerivedPropertyDefinition } from "@osdk/internal.foundry.core";
 import { apiServer, stubData } from "@osdk/shared.test";
 import {
   afterAll,
@@ -44,13 +45,13 @@ import {
 } from "vitest";
 import type {
   ApiNameAsString,
-  IsNever,
   JustProps,
   PropMapToInterface,
   PropMapToObject,
 } from "../../../api/build/esm/OsdkObjectFrom.js";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
+import { createWithPropertiesObjectSet } from "../derivedProperties/createWithPropertiesObjectSet.js";
 
 describe("ObjectSet", () => {
   let client: Client;
@@ -432,6 +433,260 @@ describe("ObjectSet", () => {
             Osdk<Employee, "$all" | "$notStrict">
           >();
         });
+      });
+    });
+  });
+
+  describe("Derived Properties Object Set", () => {
+    it("does not allow aggregate or selectProperty before a link type is selected", () => {
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          // @ts-expect-error
+          base.aggregate("employeeId:exactDistinct"),
+      });
+
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          // @ts-expect-error
+          base.selectProperty("employeeId"),
+      });
+    });
+
+    it("does not allow selectProperty when a many link was selected at any point", () => {
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) => {
+          // @ts-expect-error
+          base.pivotTo("peeps").selectProperty("employeeId");
+
+          // @ts-expect-error
+          base.pivotTo("lead").pivotTo("peeps").selectProperty("employeeId");
+
+          return base.pivotTo("lead").selectProperty("employeeId");
+        },
+      });
+    });
+
+    // Executed code fails since we're providing bad strings to the function
+    it.fails("correctly narrows types of aggregate function", () => {
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) => {
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("notAProperty:sum");
+
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate(":avg");
+
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("employeeId:notAnOp");
+
+          base.pivotTo("lead").aggregate("employeeId:collectList");
+
+          return base.pivotTo("lead").aggregate("employeeId:sum");
+        },
+      });
+    });
+
+    // Executed code fails since we're providing bad strings to the function
+    it("correctly narrows types of options for aggregate functions", () => {
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) => {
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("employeeId:approximateDistinct", {
+            limit: 1,
+          });
+
+          base.pivotTo("lead").aggregate("employeeId:collectList", {
+            limit: 1,
+          });
+
+          base.pivotTo("lead").aggregate("employeeId:collectSet", { limit: 1 });
+
+          base.pivotTo("lead").aggregate("employeeId:collectList", {
+            // @ts-expect-error
+            percentile: 1,
+          });
+
+          return base.pivotTo("lead").aggregate(
+            "employeeId:approximatePercentile",
+            { percentile: 0.5 },
+          );
+        },
+      });
+    });
+
+    it("correctly narrows types of selectProperty function", () => {
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) => {
+          // @ts-expect-error
+          base.pivotTo("lead").selectProperty("notAProperty");
+
+          return base.pivotTo("lead").selectProperty("employeeStatus");
+        },
+      });
+    });
+
+    it("propagates derived property type to future object set operations with correct types", () => {
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").aggregate("employeeId:sum"),
+        // @ts-expect-error
+      }).where({ "notAProperty": { "$eq": 3 } });
+
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").aggregate("employeeId:sum"),
+      }).where({ "derivedPropertyName": { "$eq": 3 } });
+
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").aggregate("employeeId:collectList"),
+      }).where({ "derivedPropertyName": { "$isNull": false } })
+        // @ts-expect-error
+        .where({ "derivedPropertyName": { "$eq": [1, 2] } });
+
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").aggregate("employeeId:collectSet"),
+      }).where({ "derivedPropertyName": { "$isNull": false } })
+        // @ts-expect-error
+        .where({ "derivedPropertyName": { "$eq": [1, 2] } });
+
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("employeeId"),
+      }).where({ "derivedPropertyName": { "$eq": 3 } });
+
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("startDate"),
+      }).where({ "derivedPropertyName": { "$eq": "datetimeFilter" } });
+    });
+
+    it("correctly types multiple property definitions in one clause", () => {
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").aggregate("employeeId:sum"),
+        "derivedPropertyName2": (base) =>
+          base.pivotTo("lead").selectProperty("fullName"),
+      }).where({ "derivedPropertyName": { "$eq": 3 } })
+        .where({ "derivedPropertyName2": { "$eq": "name" } });
+    });
+
+    it("ensures other properties are consistently typed", () => {
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("employeeId"),
+      }).where({ "fullName": { "$eq": "A" } });
+
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("employeeId"),
+      }).where({ "employeeId": { "$eq": 2 } });
+    });
+
+    it("allows fetching derived properties with correctly typed Osdk.Instance types", async () => {
+      const objectWithRdp = await client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("employeeId"),
+      }).fetchOne(50035);
+
+      expectTypeOf(objectWithRdp.derivedPropertyName).toEqualTypeOf<number>();
+      expect(objectWithRdp.derivedPropertyName).toBe(1);
+    });
+
+    describe("withPropertiesObjectSet", () => {
+      it("correctly creates basic object set with derived properties", () => {
+        const map = new Map<string, DerivedPropertyDefinition>();
+        const deriveObjectSet = createWithPropertiesObjectSet(Employee, {
+          type: "methodInput",
+        }, map);
+
+        const clause: WithPropertiesClause<Employee> = {
+          "derivedPropertyName": (base) =>
+            base.pivotTo("lead").selectProperty("employeeId"),
+        };
+
+        const result = clause["derivedPropertyName"](deriveObjectSet);
+        const definition = map.get(result.definitionId as string);
+        expect(definition).toMatchInlineSnapshot(`
+          {
+            "objectSet": {
+              "link": "lead",
+              "objectSet": {
+                "type": "methodInput",
+              },
+              "type": "searchAround",
+            },
+            "operation": {
+              "selectedPropertyApiName": "employeeId",
+              "type": "get",
+            },
+            "type": "selection",
+          }
+        `);
+      });
+
+      it("correctly handles multiple definitions in one clause", () => {
+        const map = new Map<string, DerivedPropertyDefinition>();
+        const deriveObjectSet = createWithPropertiesObjectSet(Employee, {
+          type: "methodInput",
+        }, map);
+
+        const clause: WithPropertiesClause<Employee> = {
+          "derivedPropertyName": (base) =>
+            base.pivotTo("lead").aggregate("startDate:approximatePercentile", {
+              percentile: 0.5,
+            }),
+
+          "secondaryDerivedPropertyName": (base) =>
+            base.pivotTo("lead").aggregate("fullName:collectSet", {
+              limit: 10,
+            }),
+        };
+
+        const result = clause["derivedPropertyName"](deriveObjectSet);
+        const definition = map.get(result.definitionId as string);
+
+        const secondResult = clause["secondaryDerivedPropertyName"](
+          deriveObjectSet,
+        );
+        const secondDefinition = map.get(secondResult.definitionId as string);
+
+        expect(definition).toMatchInlineSnapshot(`
+          {
+            "objectSet": {
+              "link": "lead",
+              "objectSet": {
+                "type": "methodInput",
+              },
+              "type": "searchAround",
+            },
+            "operation": {
+              "approximatePercentile": 0.5,
+              "selectedPropertyApiName": "startDate",
+              "type": "approximatePercentile",
+            },
+            "type": "selection",
+          }
+        `);
+
+        expect(secondDefinition).toMatchInlineSnapshot(`
+          {
+            "objectSet": {
+              "link": "lead",
+              "objectSet": {
+                "type": "methodInput",
+              },
+              "type": "searchAround",
+            },
+            "operation": {
+              "limit": 10,
+              "selectedPropertyApiName": "fullName",
+              "type": "collectSet",
+            },
+            "type": "selection",
+          }
+        `);
       });
     });
   });

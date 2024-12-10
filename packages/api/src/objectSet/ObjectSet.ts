@@ -19,6 +19,11 @@ import type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } f
 import type { AggregationsResults } from "../aggregate/AggregationsResults.js";
 import type { WhereClause } from "../aggregate/WhereClause.js";
 import type {
+  WithPropertiesClause,
+  WithPropertyDefinition,
+} from "../derivedProperties/WithPropertiesClause.js";
+import type { PropertyValueWireToClient } from "../mapping/PropertyValueMapping.js";
+import type {
   AsyncIterArgs,
   Augments,
   FetchPageArgs,
@@ -34,7 +39,9 @@ import type {
 } from "../ontology/ObjectOrInterface.js";
 import type {
   CompileTimeMetadata,
+  ObjectMetadata,
   ObjectTypeDefinition,
+  PropertyDef,
 } from "../ontology/ObjectTypeDefinition.js";
 import type { PrimaryKeyType } from "../OsdkBase.js";
 import type { ExtractOptions, Osdk } from "../OsdkObjectFrom.js";
@@ -254,4 +261,36 @@ export interface ObjectSet<
     listener: ObjectSetListener<Q, P>,
     opts?: ObjectSetListenerOptions<Q, P>,
   ) => { unsubscribe: () => void };
+
+  readonly withProperties: <
+    D extends WithPropertiesClause<Q>,
+  >(
+    clause: D,
+  ) => ObjectSet<
+    WithPropertiesObjectDefinition<
+      Q,
+      D
+    >
+  >;
 }
+
+type WithPropertiesObjectDefinition<
+  K extends ObjectOrInterfaceDefinition,
+  D extends WithPropertiesClause<K>,
+> = {
+  __DefinitionMetadata: {
+    properties: {
+      [T in Extract<keyof D, string>]: D[T] extends
+        (baseObjectSet: any) => WithPropertyDefinition<infer P> ? P
+        : never;
+    };
+    props: {
+      [T in Extract<keyof D, string>]: D[T] extends
+        (baseObjectSet: any) => WithPropertyDefinition<infer P>
+        ? P extends PropertyDef<infer A, any, any>
+          ? PropertyValueWireToClient[A]
+        : never
+        : never;
+    };
+  };
+} & K;
