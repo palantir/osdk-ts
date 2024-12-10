@@ -19,7 +19,7 @@ import type { QueryDataType } from "@osdk/internal.foundry.core";
 export function getObjectTypesFromQueryDataType(
   dataType: QueryDataType,
   types: Set<string>,
-) {
+): void {
   switch (dataType.type) {
     case "array":
     case "set":

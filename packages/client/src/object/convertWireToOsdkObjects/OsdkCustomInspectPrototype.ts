@@ -23,8 +23,14 @@ import {
   UnderlyingOsdkObject,
 } from "./InternalSymbols.js";
 
-export const OsdkCustomInspectPrototype = Object.create(null, {
-  [Symbol.for("nodejs.util.inspect.custom")]: { value: customInspect },
+const nodejsUtilInspectCustom: unique symbol = Symbol.for(
+  "nodejs.util.inspect.custom",
+);
+
+export const OsdkCustomInspectPrototype: {
+  [nodejsUtilInspectCustom]: typeof customInspect;
+} = Object.create(null, {
+  [nodejsUtilInspectCustom]: { value: customInspect },
 });
 
 /**
@@ -42,7 +48,7 @@ function customInspect(
   _depth: number,
   options: InspectOptionsStylized,
   localInspect: typeof inspect,
-) {
+): string {
   const newOptions = {
     ...options,
     depth: options.depth == null ? null : options.depth - 1,

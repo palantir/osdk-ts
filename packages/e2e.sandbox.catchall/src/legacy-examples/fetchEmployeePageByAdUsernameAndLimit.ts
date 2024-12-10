@@ -24,7 +24,7 @@ import invariant from "tiny-invariant";
 export async function fetchEmployeePageByAdUsernameAndLimit(
   client: Client,
   adUsername: string,
-) {
+): Promise<void> {
   const result = await client(Employee).where({
     $and: [
       { adUsername },

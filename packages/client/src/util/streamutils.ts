@@ -20,7 +20,7 @@ const OBJECT_CLOSE_CHAR_CODE = 125; // '}'
 
 export async function* parseStreamedResponse(
   asyncIterable: AsyncIterable<Uint8Array>,
-) {
+): AsyncGenerator<any, void, unknown> {
   const utf8decoder = new TextDecoder("utf-8");
 
   let parsedStart = false;
@@ -114,7 +114,7 @@ function combineAndParse(
 
 export async function* iterateReadableStream(
   readableStream: ReadableStreamDefaultReader<Uint8Array>,
-) {
+): AsyncGenerator<Uint8Array, void, unknown> {
   let res = await readableStream.read();
   while (!res.done) {
     yield res.value;

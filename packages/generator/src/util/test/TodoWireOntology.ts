@@ -16,7 +16,7 @@
 
 import type { WireOntologyDefinition } from "../../WireOntologyDefinition.js";
 
-export const TodoWireOntology = {
+export const TodoWireOntology: WireOntologyDefinition = {
   ontology: {
     rid: "ridHere",
     apiName: "OntologyApiName",
@@ -226,4 +226,4 @@ export const TodoWireOntology = {
       rid: "idk2",
     },
   },
-} satisfies WireOntologyDefinition;
+} as const satisfies WireOntologyDefinition;

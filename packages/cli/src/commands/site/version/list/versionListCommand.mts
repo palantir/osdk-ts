@@ -22,7 +22,7 @@ import type { VersionListArgs } from "./VersionListArgs.js";
 
 export default async function versionListCommand(
   { foundryUrl, application, token, tokenFile }: VersionListArgs,
-) {
+): Promise<void> {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);

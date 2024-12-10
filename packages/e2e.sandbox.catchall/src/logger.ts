@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import type { Logger } from "pino";
 import { pino } from "pino";
 import PinoPretty from "pino-pretty";
 
-export const logger = pino(
+export const logger: Logger = pino(
   { level: "debug" },
   PinoPretty.build({ sync: true }),
 );
