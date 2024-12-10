@@ -18,7 +18,7 @@ import type { Media } from "@osdk/api";
 import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "./MinimalClientContext.js";
 
-export class MediaPropertyImpl implements Media {
+export class MediaReferencePropertyImpl implements Media {
   #triplet: [string, any, string];
   #client: MinimalClient;
 

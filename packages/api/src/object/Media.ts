@@ -16,18 +16,17 @@
 
 export interface Media {
   /**
-   * Fetches metadata for media property
+   * Fetches metadata for media reference property
    */
   fetchMetadata(): Promise<MediaMetadata>;
   /**
-   * Fetches content of a media property
+   * Fetches content of a media reference property
    */
   fetchContents(): Promise<Response>;
 }
 
 /**
  * Metadata of a media item
- * @param
  */
 export interface MediaMetadata {
   path?: string;

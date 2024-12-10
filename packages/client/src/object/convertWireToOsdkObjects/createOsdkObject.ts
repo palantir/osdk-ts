@@ -18,7 +18,7 @@ import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
 import { createAttachmentFromRid } from "../../createAttachmentFromRid.js";
 import { GeotimeSeriesPropertyImpl } from "../../createGeotimeSeriesProperty.js";
-import { MediaPropertyImpl } from "../../createMediaProperty.js";
+import { MediaReferencePropertyImpl } from "../../createMediaReferenceProperty.js";
 import { TimeSeriesPropertyImpl } from "../../createTimeseriesProperty.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
@@ -219,7 +219,7 @@ export function createOsdkObject<
             return geotimeProp;
           }
           if (propDef.type === "mediaReference") {
-            return new MediaPropertyImpl({
+            return new MediaReferencePropertyImpl({
               client,
               objectApiName: objectDef.apiName,
               primaryKey:
