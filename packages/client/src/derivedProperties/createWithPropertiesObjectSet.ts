@@ -108,7 +108,7 @@ export function createWithPropertiesObjectSet<
       return { definitionId: definitionId, type: { type: "integer" } as any };
     },
     selectProperty: (name) => {
-      const definitionId = globalThis.crypto.randomUUID();
+      const definitionId = idCounter++;
       definitionMap.set(definitionId, {
         type: "selection",
         objectSet: objectSet,
