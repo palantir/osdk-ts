@@ -21,6 +21,7 @@ import {
   PalantirApiError,
 } from "@osdk/shared.net";
 import { consola } from "consola";
+import prettyBytes from "pretty-bytes";
 import { USER_AGENT } from "./UserAgent.js";
 
 export function createFetch(
@@ -76,6 +77,39 @@ function handleFetchError(e: unknown): Promise<Response> {
     message = "The site version already exists";
   } else if (e.errorName === "VersionNotFound") {
     message = "The site version could not be found";
+  } else if (e.errorName === "VersionLimitExceeded") {
+    const { versionLimit } = e.parameters ?? {};
+    const versionLimitPart = versionLimit != null
+      ? ` (Limit: ${versionLimit} versions)`
+      : "";
+    message = `The site contains too many versions${versionLimitPart}`;
+    tip =
+      "Run the `site version delete` command to delete an old version and try again";
+  } else if (e.errorName === "FileCountLimitExceeded") {
+    const { fileCountLimit } = e.parameters ?? {};
+    const fileCountLimitPart = fileCountLimit != null
+      ? ` (Limit: ${fileCountLimit} files)`
+      : "";
+    message = `The .zip file contains too many files${fileCountLimitPart}`;
+    tip =
+      "Reduce the number of files in the production build to below the limit";
+  } else if (e.errorName === "FileSizeLimitExceeded") {
+    const { currentFilePath, currentFileSizeBytes, fileSizeBytesLimit } =
+      e.parameters ?? {};
+    const currentFilePathPart = currentFilePath != null
+      ? ` "${currentFilePath}"`
+      : "";
+    const currentFileSizePart = currentFileSizeBytes != null
+      ? ` (${prettyBytes(parseInt(currentFileSizeBytes), { binary: true })})`
+      : "";
+    const fileSizeLimitPart = fileSizeBytesLimit != null
+      ? ` (Limit: ${
+        prettyBytes(parseInt(fileSizeBytesLimit), { binary: true })
+      })`
+      : "";
+    message =
+      `The .zip file contains a file${currentFilePathPart}${currentFileSizePart} that is too large${fileSizeLimitPart}`;
+    tip = "Ensure all files in the production build are below the size limit";
   } else {
     const { errorCode, errorName, errorInstanceId, parameters } = e;
     // Include extra info about the original API error in CLI error messages

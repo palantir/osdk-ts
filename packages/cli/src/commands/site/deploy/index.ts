@@ -78,6 +78,17 @@ const command: CommandModule<
             ? { default: gitTagPrefix }
             : {},
         },
+        snapshot: {
+          type: "boolean",
+          description:
+            "Upload a snapshot version only with automatic retention",
+          default: false,
+        },
+        snapshotId: {
+          type: "string",
+          description:
+            "Optional id to associate with snapshot version as an alias",
+        },
       })
       .group(
         ["directory", "version", "uploadOnly"],
@@ -86,6 +97,10 @@ const command: CommandModule<
       .group(
         ["autoVersion", "gitTagPrefix"],
         "Auto Version Options",
+      )
+      .group(
+        ["snapshot", "snapshotId"],
+        "Snapshot Options",
       )
       .check((args) => {
         // This is required because we can't use demandOption with conflicts. conflicts protects us against the case where both are provided.
@@ -117,6 +132,18 @@ const command: CommandModule<
         if (gitTagPrefixValue != null && autoVersionType !== "git-describe") {
           throw new YargsCheckError(
             `--gitTagPrefix is only supported when --autoVersion=git-describe`,
+          );
+        }
+
+        if (args.uploadOnly && args.snapshot) {
+          throw new YargsCheckError(
+            `--uploadOnly and --snapshot cannot be enabled together`,
+          );
+        }
+
+        if (args.snapshotId != null && !args.snapshot) {
+          throw new YargsCheckError(
+            "--snapshotId is only supported when --snapshot is enabled",
           );
         }
 

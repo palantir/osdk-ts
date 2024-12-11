@@ -23,4 +23,6 @@ export interface SiteDeployArgs extends CommonSiteArgs {
   uploadOnly: boolean;
   autoVersion?: AutoVersionConfigType;
   gitTagPrefix?: string;
+  snapshot: boolean;
+  snapshotId?: string;
 }
