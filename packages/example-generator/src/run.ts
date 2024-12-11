@@ -163,7 +163,10 @@ async function fixMonorepolint(tmpDir: tmp.DirResult): Promise<void> {
     process.exit(1);
   }
   process.chdir(path.dirname(mrlConfig));
-  const mrlPaths = templatesWithSdkVersions(TEMPLATES).map((
+  const mrlPaths = [
+    ...templatesWithSdkVersions(TEMPLATES),
+    ...templatesWithSdkVersions(WIDGET_TEMPLATES),
+  ].map((
     [template, sdkVersion],
   ) =>
     path.join(
@@ -185,7 +188,12 @@ async function checkExamples(
   resolvedOutput: string,
   tmpDir: tmp.DirResult,
 ): Promise<void> {
-  for (const [template, sdkVersion] of templatesWithSdkVersions(TEMPLATES)) {
+  for (
+    const [template, sdkVersion] of [
+      ...templatesWithSdkVersions(TEMPLATES),
+      ...templatesWithSdkVersions(WIDGET_TEMPLATES),
+    ]
+  ) {
     const exampleId = sdkVersionedTemplateExampleId(template, sdkVersion);
     consola.info(`Checking contents of ${exampleId}`);
     // realpath because globby in .gitignore filter requires symlinks in tmp directory to be resolved
@@ -253,16 +261,11 @@ async function copyExamples(
   tmpDir: tmp.DirResult,
 ): Promise<void> {
   consola.info("Copying generated packages to output directory");
-  for (const [template, sdkVersion] of templatesWithSdkVersions(TEMPLATES)) {
-    const exampleId = sdkVersionedTemplateExampleId(template, sdkVersion);
-    const exampleOutputPath = path.join(resolvedOutput, exampleId);
-    const exampleTmpPath = path.join(tmpDir.name, exampleId);
-    fs.rmSync(exampleOutputPath, { recursive: true, force: true });
-    fs.mkdirSync(exampleOutputPath, { recursive: true });
-    fs.cpSync(exampleTmpPath, exampleOutputPath, { recursive: true });
-  }
   for (
-    const [template, sdkVersion] of templatesWithSdkVersions(WIDGET_TEMPLATES)
+    const [template, sdkVersion] of [
+      ...templatesWithSdkVersions(TEMPLATES),
+      ...templatesWithSdkVersions(WIDGET_TEMPLATES),
+    ]
   ) {
     const exampleId = sdkVersionedTemplateExampleId(template, sdkVersion);
     const exampleOutputPath = path.join(resolvedOutput, exampleId);
@@ -347,10 +350,36 @@ const UPDATE_README: Mutator = {
   }),
 };
 
+const UPDATE_WIDGET_FOUNDRY_CONFIG_JSON: Mutator = {
+  filePattern: "foundry.config.json",
+  mutate: (template, content, _sdkVersion) => {
+    if (!WIDGET_TEMPLATES.find(t => t.id === template.id)) {
+      return {
+        type: "modify",
+        newContent: content,
+      };
+    }
+    // Use package-json auto version strategy in vite manifest
+    return {
+      type: "modify",
+      newContent: content.replace(
+        `{
+      "type": "git-describe",
+      "tagPrefix": ""
+    }`,
+        `{
+      "type": "package-json"
+    }`,
+      ),
+    };
+  },
+};
+
 const MUTATORS: Mutator[] = [
   DELETE_NPM_RC,
   UPDATE_PACKAGE_JSON,
   UPDATE_README,
+  UPDATE_WIDGET_FOUNDRY_CONFIG_JSON,
 ];
 
 function templateCanonicalId(template: Template): string {

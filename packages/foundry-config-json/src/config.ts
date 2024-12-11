@@ -138,10 +138,14 @@ const FOUNDRY_CONFIG_SCHEMA: {
  * @throws Will throw an error if the configuration file is found but cannot be read or parsed.
  */
 export async function loadFoundryConfig(
+  type: "site",
+): Promise<LoadedFoundryConfig<"site"> | undefined>;
+export async function loadFoundryConfig(
+  type: "widget",
+): Promise<LoadedFoundryConfig<"widget"> | undefined>;
+export async function loadFoundryConfig(
   type: "site" | "widget",
-): Promise<
-  LoadedFoundryConfig<typeof type> | undefined
-> {
+): Promise<LoadedFoundryConfig<typeof type> | undefined> {
   const ajvModule = await import("ajv");
   const Ajv = ajvModule.default.default; // https://github.com/ajv-validator/ajv/issues/2132
   const ajv = new Ajv({ allErrors: true });
