@@ -41,6 +41,7 @@ const specialPropertyTypes = new Set(
   [
     "attachment",
     "geotimeSeriesReference",
+    "mediaReference",
     "numericTimeseries",
     "stringTimeseries",
     "sensorTimeseries",
