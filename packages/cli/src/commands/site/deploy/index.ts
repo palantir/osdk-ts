@@ -33,7 +33,8 @@ const command: CommandModule<
   command: "deploy",
   describe: "Deploy a new site version",
   builder: async (argv) => {
-    const config: LoadedFoundryConfig | undefined = await configLoader();
+    const config: LoadedFoundryConfig<"site"> | undefined =
+      await configLoader();
     const siteConfig: SiteConfig | undefined = config?.foundryConfig.site;
     const directory = siteConfig?.directory;
     const autoVersion = siteConfig?.autoVersion;
