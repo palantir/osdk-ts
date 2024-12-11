@@ -84,6 +84,13 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
           "pluralDisplayName": "Employees",
           "primaryKey": "employeeId",
           "properties": {
+            "class": {
+              "dataType": {
+                "type": "string",
+              },
+              "description": "",
+              "rid": "rid",
+            },
             "employeeId": {
               "dataType": {
                 "type": "integer",
@@ -274,6 +281,13 @@ exports[`Load Ontologies Metadata > Loads object and action types without link t
           "pluralDisplayName": "Employees",
           "primaryKey": "employeeId",
           "properties": {
+            "class": {
+              "dataType": {
+                "type": "string",
+              },
+              "description": "",
+              "rid": "rid",
+            },
             "employeeId": {
               "dataType": {
                 "type": "integer",

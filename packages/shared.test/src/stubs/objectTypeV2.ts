@@ -46,6 +46,13 @@ export const employeeObjectType: ObjectTypeV2 = {
       },
       rid: "rid",
     },
+    class: {
+      description: "",
+      dataType: {
+        type: "string",
+      },
+      rid: "rid",
+    },
     startDate: {
       description:
         "The date the employee was hired (most recently, if they were re-hired)",

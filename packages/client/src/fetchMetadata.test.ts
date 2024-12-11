@@ -105,6 +105,13 @@ describe("FetchMetadata", () => {
         "primaryKeyApiName": "employeeId",
         "primaryKeyType": "integer",
         "properties": {
+          "class": {
+            "description": "",
+            "displayName": undefined,
+            "multiplicity": false,
+            "nullable": true,
+            "type": "string",
+          },
           "employeeId": {
             "description": undefined,
             "displayName": undefined,
