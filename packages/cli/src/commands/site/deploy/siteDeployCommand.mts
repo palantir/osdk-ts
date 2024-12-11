@@ -18,6 +18,8 @@ import { consola } from "consola";
 
 import { createInternalClientContext, thirdPartyApplications } from "#net";
 import { ExitProcessError } from "@osdk/cli.common";
+import type { AutoVersionConfig } from "@osdk/foundry-config-json";
+import { autoVersion, AutoVersionError } from "@osdk/foundry-config-json";
 import archiver from "archiver";
 import { colorize } from "consola/utils";
 import * as fs from "node:fs";
@@ -26,8 +28,6 @@ import { Readable } from "node:stream";
 import prettyBytes from "pretty-bytes";
 import type { InternalClientContext } from "../../../net/internalClientContext.mjs";
 import type { ThirdPartyAppRid } from "../../../net/ThirdPartyAppRid.js";
-import { autoVersion as findAutoVersion } from "../../../util/autoVersion.js";
-import type { AutoVersionConfig } from "../../../util/config.js";
 import { loadToken } from "../../../util/token.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
@@ -123,6 +123,18 @@ export default async function siteDeployCommand(
         `https://${domain}/.system/preview?previewVersion=${siteVersion}`,
       );
     }
+  }
+}
+
+async function findAutoVersion(config: AutoVersionConfig): Promise<string> {
+  try {
+    return await autoVersion(config);
+  } catch (e) {
+    throw new ExitProcessError(
+      2,
+      e instanceof Error ? e.message : undefined,
+      e instanceof AutoVersionError ? e.tip : undefined,
+    );
   }
 }
 

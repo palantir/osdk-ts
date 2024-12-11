@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-import { ExitProcessError, isValidSemver } from "@osdk/cli.common";
 import { findUp } from "find-up";
 import { exec } from "node:child_process";
 import { promises as fsPromises } from "node:fs";
 import { promisify } from "node:util";
+import { valid } from "semver";
 import type { AutoVersionConfig } from "./config.js";
+
+export class AutoVersionError extends Error {
+  constructor(
+    public readonly msg: string,
+    public readonly tip?: string,
+  ) {
+    super(msg);
+  }
+}
 
 /**
  * Gets the version string using git describe. If the @param tagPrefix is empty, git describe will return the
@@ -56,8 +65,7 @@ async function gitDescribeAutoVersion(tagPrefix: string = ""): Promise<string> {
 async function packageJsonAutoVersion(): Promise<string> {
   const packageJsonPath = await findUp("package.json");
   if (!packageJsonPath) {
-    throw new ExitProcessError(
-      2,
+    throw new AutoVersionError(
       `Couldn't find package.json file in the current working directory or its parents: ${process.cwd()}`,
     );
   }
@@ -67,8 +75,7 @@ async function packageJsonAutoVersion(): Promise<string> {
     const fileContent = await fsPromises.readFile(packageJsonPath, "utf-8");
     packageJson = JSON.parse(fileContent);
   } catch (error) {
-    throw new ExitProcessError(
-      2,
+    throw new AutoVersionError(
       `Couldn't read or parse package.json file ${packageJsonPath}. Error: ${error}`,
     );
   }
@@ -98,8 +105,7 @@ async function gitDescribe(matchPrefix: string | undefined): Promise<string> {
         || errorMessage.includes("command not found")
         || errorMessage.includes("no such file or directory")
       ) {
-        throw new ExitProcessError(
-          2,
+        throw new AutoVersionError(
           "Unable to determine auto version using git-describe as git is not installed or found in the PATH.",
           `You can set up git and try again or supply a --version option to set the version manually`,
         );
@@ -108,8 +114,7 @@ async function gitDescribe(matchPrefix: string | undefined): Promise<string> {
       if (
         errorMessage.includes("fatal: not a git repository")
       ) {
-        throw new ExitProcessError(
-          2,
+        throw new AutoVersionError(
           `Unable to determine auto version using git-describe as the current directory is not a git repository.`,
           `You can run the command in a git repository and try again or supply a --version option to set the version manually`,
         );
@@ -120,16 +125,14 @@ async function gitDescribe(matchPrefix: string | undefined): Promise<string> {
           "fatal: no names found, cannot describe anything.",
         )
       ) {
-        throw new ExitProcessError(
-          2,
+        throw new AutoVersionError(
           `Unable to determine auto version using git-describe as no matching tags were found.`,
           `You can create a tag matching the configured tag prefix and try again or supply a --version option to set the version manually`,
         );
       }
     }
 
-    throw new ExitProcessError(
-      2,
+    throw new AutoVersionError(
       `Unable to determine auto version using git-describe: ${error}.`,
       `You can supply a --version option to set the version manually`,
     );
@@ -139,9 +142,8 @@ async function gitDescribe(matchPrefix: string | undefined): Promise<string> {
 }
 
 function validateVersion(version: string): void {
-  if (!isValidSemver(version)) {
-    throw new ExitProcessError(
-      2,
+  if (valid(version) == null) {
+    throw new AutoVersionError(
       `The version string ${version} is not SemVer compliant.`,
     );
   }

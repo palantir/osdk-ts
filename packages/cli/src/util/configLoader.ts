@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-import type { LoadedFoundryConfig } from "./config.js";
-import { loadFoundryConfig } from "./config.js";
+import { ExitProcessError } from "@osdk/cli.common";
+import type { LoadedFoundryConfig } from "@osdk/foundry-config-json";
+import { loadFoundryConfig } from "@osdk/foundry-config-json";
 
 let configPromise: Promise<LoadedFoundryConfig | undefined> | undefined =
   undefined;
 
 function getConfig(): Promise<LoadedFoundryConfig | undefined> {
   if (configPromise == null) {
-    configPromise = loadFoundryConfig();
+    try {
+      configPromise = loadFoundryConfig();
+    } catch (e) {
+      throw new ExitProcessError(2, e instanceof Error ? e.message : undefined);
+    }
   }
   return configPromise;
 }
