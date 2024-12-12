@@ -1,0 +1,34 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Generator > Generator stuff 1`] = `
+"declare module "my-package/my/path/to/file" {
+import { Foo } from "my.module.foo";
+import { Bar } from "my.module.bar";
+import { A, B } from "my.module.shared";
+import type { C, D } from "my.module.shared";
+import { localA } from "my-package/my/local/path/to/a";
+
+
+      
+
+          export const foo: Foo;
+export type LocalFoo = "Faux";
+export interface LocalBar {foo: LocalFoo } ";
+
+    }"
+`;
+
+exports[`Generator > Generator stuff 2`] = `
+{
+  "my/path/to/file.js": "
+    import { Foo } from "my.module.foo";
+import { Bar } from "my.module.bar";
+import { A, B } from "my.module.shared";
+import { localA } from "../../local/path/to/a.js";
+
+    
+    export const foo = { bar: string };
+
+    ",
+}
+`;

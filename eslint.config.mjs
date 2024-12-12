@@ -243,6 +243,7 @@ export default tseslint.config(
       "google-font-mocked-response.js",
       ".lintstagedrc.mjs",
       "tests/",
+      "packages/*/test-snapshots",
     ],
   },
 );

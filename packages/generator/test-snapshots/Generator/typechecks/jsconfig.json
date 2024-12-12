@@ -1,0 +1,1 @@
+{ "compilerOptions": { "module": "Node16", "checkJs": true, "noEmit": true } }
