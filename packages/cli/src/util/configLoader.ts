@@ -23,11 +23,9 @@ let configPromise: Promise<LoadedFoundryConfig | undefined> | undefined =
 
 function getConfig(): Promise<LoadedFoundryConfig | undefined> {
   if (configPromise == null) {
-    try {
-      configPromise = loadFoundryConfig();
-    } catch (e) {
+    configPromise = loadFoundryConfig().catch((e) => {
       throw new ExitProcessError(2, e instanceof Error ? e.message : undefined);
-    }
+    });
   }
   return configPromise;
 }
