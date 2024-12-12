@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import type { AutoVersionConfigType } from "@osdk/foundry-config-json";
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
-
-export interface SiteDeployArgs extends CommonSiteArgs {
-  version?: string;
-  directory: string;
-  uploadOnly: boolean;
-  autoVersion?: AutoVersionConfigType;
-  gitTagPrefix?: string;
-  snapshot: boolean;
-  snapshotId?: string;
-}
+export { autoVersion, AutoVersionError } from "./autoVersion.js";
+export { loadFoundryConfig } from "./config.js";
+export type {
+  AutoVersionConfig,
+  AutoVersionConfigType,
+  FoundryConfig,
+  GitDescribeAutoVersionConfig,
+  LoadedFoundryConfig,
+  PackageJsonAutoVersionConfig,
+  SiteConfig,
+} from "./config.js";

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ExitProcessError } from "@osdk/cli.common";
 import type { JSONSchemaType } from "ajv";
 import { promises as fsPromises } from "node:fs";
 import { extname } from "node:path";
@@ -109,15 +108,13 @@ export async function loadFoundryConfig(): Promise<
       const fileContent = await fsPromises.readFile(configFilePath, "utf-8");
       foundryConfig = parseConfigFile(fileContent, configFilePath);
     } catch (error) {
-      throw new ExitProcessError(
-        2,
+      throw new Error(
         `Couldn't read or parse config file ${configFilePath}. Error: ${error}`,
       );
     }
 
     if (!validate(foundryConfig)) {
-      throw new ExitProcessError(
-        2,
+      throw new Error(
         `The configuration file does not match the expected schema: ${
           ajv.errorsText(validate.errors)
         }`,
@@ -139,8 +136,7 @@ function parseConfigFile(
     case ".json":
       return JSON.parse(fileContent);
     default:
-      throw new ExitProcessError(
-        2,
+      throw new Error(
         `Unsupported file extension: ${extension} for config file.`,
       );
   }

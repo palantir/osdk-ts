@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import type { FoundryConfig } from "@osdk/foundry-config-json";
 import { consola } from "consola";
 import type { Arguments } from "yargs";
-import type { FoundryConfig } from "../../util/config.js";
 import type { CommonSiteArgs } from "./CommonSiteArgs.js";
 
 export async function logSiteCommandConfigFileOverride(

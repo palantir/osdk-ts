@@ -15,12 +15,12 @@
  */
 
 import { isValidSemver, YargsCheckError } from "@osdk/cli.common";
-import type { CommandModule } from "yargs";
 import type {
   AutoVersionConfigType,
   LoadedFoundryConfig,
   SiteConfig,
-} from "../../../util/config.js";
+} from "@osdk/foundry-config-json";
+import type { CommandModule } from "yargs";
 import configLoader from "../../../util/configLoader.js";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
 import { logDeployCommandConfigFileOverride } from "./logDeployCommandConfigFileOverride.js";
