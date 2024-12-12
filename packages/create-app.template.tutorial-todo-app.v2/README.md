@@ -1,4 +1,4 @@
-# @osdk/create-app.template.tutorial-todo-aip-app.beta
+# @osdk/create-app.template.tutorial-todo-app.v2
 
 This package contains templates for `@osdk/create-app`.
 
