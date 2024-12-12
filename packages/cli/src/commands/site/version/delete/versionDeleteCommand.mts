@@ -24,7 +24,7 @@ import type { VersionDeleteArgs } from "./VersionDeleteArgs.js";
 export default async function versionDeleteCommand(
   { version, yes, application, foundryUrl, token, tokenFile }:
     VersionDeleteArgs,
-) {
+): Promise<void> {
   if (!yes) {
     const confirmed = await consola.prompt(
       `Are you sure you want to delete the version ${version}?\n${

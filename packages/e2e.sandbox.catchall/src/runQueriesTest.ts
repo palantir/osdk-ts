@@ -20,7 +20,7 @@ import {
 } from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
 
-export async function runQueriesTest() {
+export async function runQueriesTest(): Promise<void> {
   const result = await client(getNamesOfCustomersFromCountry).executeFunction({
     country: "Denmark",
   });

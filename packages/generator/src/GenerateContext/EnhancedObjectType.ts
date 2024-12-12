@@ -26,11 +26,11 @@ export class EnhancedObjectType extends EnhancedBase<ObjectTypeFullMetadata> {
     super(common, raw, raw.objectType.apiName, "./ontology/objects");
   }
 
-  getDefinitionIdentifier(v2: boolean) {
+  getDefinitionIdentifier(v2: boolean): string {
     return v2 ? `${this.shortApiName}` : `${this.shortApiName}Def`;
   }
 
-  getImportedDefinitionIdentifier(v2: boolean) {
+  getImportedDefinitionIdentifier(v2: boolean): string {
     return this.getDefinitionIdentifier(v2);
   }
 

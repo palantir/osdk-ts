@@ -16,7 +16,10 @@
 
 import * as ts from "typescript";
 
-export function compileThis(files: Record<string, string>, basePath: string) {
+export function compileThis(
+  files: Record<string, string>,
+  basePath: string,
+): readonly ts.Diagnostic[] {
   const compilerOptions: ts.CompilerOptions = {
     noEmit: true,
     target: ts.ScriptTarget.ES2020,

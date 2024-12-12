@@ -31,7 +31,12 @@ export interface CompilerOutput {
 
 export function compileInMemory(
   files: { [fileName: string]: string },
-) {
+): {
+  files: {
+    [fileName: string]: string;
+  };
+  diagnostics: readonly Diagnostic[];
+} {
   const inMemoryOutputFileSystem: { [fileName: string]: string } = {};
   const compilerOptions: CompilerOptions = {
     module: ModuleKind.NodeNext,

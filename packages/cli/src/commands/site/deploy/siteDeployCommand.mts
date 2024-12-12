@@ -49,7 +49,7 @@ export default async function siteDeployCommand(
     token,
     tokenFile,
   }: SiteDeployInternalArgs,
-) {
+): Promise<void> {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
