@@ -3231,6 +3231,9 @@ importers:
       '@osdk/internal.foundry.core':
         specifier: 2.8.0
         version: 2.8.0
+      consola:
+        specifier: ^3.2.3
+        version: 3.2.3
     devDependencies:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
