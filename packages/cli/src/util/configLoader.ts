@@ -18,17 +18,48 @@ import { ExitProcessError } from "@osdk/cli.common";
 import type { LoadedFoundryConfig } from "@osdk/foundry-config-json";
 import { loadFoundryConfig } from "@osdk/foundry-config-json";
 
-let configPromise:
+let siteConfigPromise:
   | Promise<LoadedFoundryConfig<"site"> | undefined>
   | undefined = undefined;
+let widgetConfigPromise:
+  | Promise<LoadedFoundryConfig<"widget"> | undefined>
+  | undefined = undefined;
 
-function getConfig(): Promise<LoadedFoundryConfig<"site"> | undefined> {
-  if (configPromise == null) {
-    configPromise = loadFoundryConfig("site").catch((e) => {
+function getConfig(
+  type: "site",
+): Promise<LoadedFoundryConfig<"site"> | undefined>;
+function getConfig(
+  type: "widget",
+): Promise<LoadedFoundryConfig<"widget"> | undefined>;
+function getConfig(
+  type: "site" | "widget",
+): Promise<LoadedFoundryConfig<"site" | "widget"> | undefined>;
+function getConfig(
+  type: "site" | "widget",
+): Promise<LoadedFoundryConfig<"site" | "widget"> | undefined> {
+  if (type === "site") {
+    return getSiteConfig();
+  } else {
+    return getWidgetConfig();
+  }
+}
+
+function getSiteConfig(): Promise<LoadedFoundryConfig<"site"> | undefined> {
+  if (siteConfigPromise == null) {
+    siteConfigPromise = loadFoundryConfig("site").catch((e) => {
       throw new ExitProcessError(2, e instanceof Error ? e.message : undefined);
     });
   }
-  return configPromise;
+  return siteConfigPromise;
+}
+
+function getWidgetConfig(): Promise<LoadedFoundryConfig<"widget"> | undefined> {
+  if (widgetConfigPromise == null) {
+    widgetConfigPromise = loadFoundryConfig("widget").catch((e) => {
+      throw new ExitProcessError(2, e instanceof Error ? e.message : undefined);
+    });
+  }
+  return widgetConfigPromise;
 }
 
 export default getConfig;

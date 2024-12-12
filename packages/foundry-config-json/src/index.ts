@@ -24,4 +24,5 @@ export type {
   LoadedFoundryConfig,
   PackageJsonAutoVersionConfig,
   SiteConfig,
+  WidgetConfig,
 } from "./config.js";
