@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-// @ts-check
+export function timeIt<T>(fn: () => T): { result: T; time: number } {
+  const start = process.hrtime.bigint();
 
-import { createMemoryTest, neverOptimizeFunction } from "../helpers.js";
+  const result = fn();
 
-const r = await createMemoryTest(neverOptimizeFunction(async () => {
-  return Math.random();
-}));
+  const end = process.hrtime.bigint();
 
-// eslint-disable-next-line no-console
-console.log(r);
+  return {
+    result,
+    time: Number((Number(end - start) / 1000000).toFixed(2)),
+  };
+}
