@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  LoadObjectSetRequestV2,
-  LoadObjectSetResponseV2,
-} from "@osdk/internal.foundry.core";
+import type { LoadObjectSetResponseV2 } from "@osdk/internal.foundry.core";
 import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import stableStringify from "json-stable-stringify";
 import type { HttpResponseResolver, PathParams, RequestHandler } from "msw";

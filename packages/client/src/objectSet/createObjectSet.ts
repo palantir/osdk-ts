@@ -17,7 +17,6 @@
 import type {
   AsyncIterArgs,
   Augments,
-  BaseObjectSet,
   FetchPageResult,
   LinkedType,
   LinkNames,

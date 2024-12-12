@@ -19,6 +19,7 @@
 import * as typescriptEslintParser from "@typescript-eslint/parser";
 import originalHeaderPlugin from "eslint-plugin-header";
 import * as importPlugin from "eslint-plugin-import";
+import unusedImports from "eslint-plugin-unused-imports";
 import * as tseslint from "typescript-eslint";
 
 export default tseslint.config(
@@ -31,6 +32,7 @@ export default tseslint.config(
     plugins: {
       header: getHeaderPlugin(),
       import: importPlugin,
+      "unused-imports": unusedImports,
     },
     languageOptions: {
       parser: typescriptEslintParser,
@@ -88,6 +90,8 @@ export default tseslint.config(
       "import/no-unresolved": "off",
       "import/no-named-as-default": "off", // this used to be an error but the plugin isnt updated for 9
       "no-console": "error",
+
+      "unused-imports/no-unused-imports": "error",
     },
     settings: {
       "import/parsers": {

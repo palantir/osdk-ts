@@ -15,8 +15,6 @@
  */
 
 import type {
-  StreamTimeSeriesPointsRequest,
-  StreamTimeSeriesPointsResponse,
   StreamTimeSeriesValuesRequest,
   StreamTimeSeriesValuesResponse,
   TimeSeriesPoint,

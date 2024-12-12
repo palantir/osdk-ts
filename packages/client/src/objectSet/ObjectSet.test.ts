@@ -15,17 +15,15 @@
  */
 
 import type {
-  Augments,
   CompileTimeMetadata,
   ConvertProps,
-  FetchPageArgs,
   InterfaceDefinition,
   ObjectSet,
   Osdk,
   PropertyKeys,
   Result,
 } from "@osdk/api";
-import { isOk, WhereClause } from "@osdk/api";
+import { isOk } from "@osdk/api";
 import {
   $ontologyRid,
   BarInterface,
@@ -44,7 +42,6 @@ import {
 } from "vitest";
 import type {
   ApiNameAsString,
-  IsNever,
   JustProps,
   PropMapToInterface,
   PropMapToObject,

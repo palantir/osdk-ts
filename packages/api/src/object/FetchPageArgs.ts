@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition } from "../ontology/InterfaceDefinition.js";
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
