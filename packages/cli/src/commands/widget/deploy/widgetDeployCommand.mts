@@ -99,9 +99,9 @@ async function findWidgetVersion(
   } catch (e) {
     throw new ExitProcessError(
       2,
-      `Unable to process manifest at ${MANIFEST_FILE_LOCATION}`,
-      undefined,
-      e instanceof Error ? e : undefined,
+      `Unable to process manifest at ${MANIFEST_FILE_LOCATION}${
+        e instanceof Error ? `: ${e.message}` : ""
+      }`,
     );
   }
 }
@@ -148,8 +148,7 @@ async function publishManifest(
       headers: {
         "Content-Type": "application/json",
       },
-      duplex: "half", // Node hates me
-    } satisfies RequestInit & { duplex: "half" } as any,
+    },
   );
 }
 
