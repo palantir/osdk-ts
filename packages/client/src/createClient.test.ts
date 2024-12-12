@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from "@osdk/api/unstable";
 import { Task } from "@osdk/client.test.ontology";
 import * as SharedClientContext from "@osdk/shared.client.impl";
 import { mockFetchResponse, MockOntology } from "@osdk/shared.test";
