@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  afterAll,
-  beforeAll,
-  describe,
-  expect,
-  expectTypeOf,
-  it,
-} from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { createAuthorizationServer } from "./common.js";
 

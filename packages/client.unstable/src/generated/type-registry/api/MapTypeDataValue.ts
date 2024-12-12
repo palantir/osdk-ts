@@ -15,8 +15,6 @@
  */
 
 import type { BaseTypeDataValue } from "./BaseTypeDataValue.js";
-import type { BinaryTypeDataValue } from "./BinaryTypeDataValue.js";
-import type { BooleanTypeDataValue } from "./BooleanTypeDataValue.js";
 import type { ByteTypeDataValue } from "./ByteTypeDataValue.js";
 import type { DateTypeDataValue } from "./DateTypeDataValue.js";
 import type { DecimalTypeDataValue } from "./DecimalTypeDataValue.js";

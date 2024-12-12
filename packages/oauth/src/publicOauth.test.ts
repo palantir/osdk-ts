@@ -26,7 +26,6 @@ import {
   vi,
 } from "vitest";
 
-import crypto from "node:crypto";
 import * as commonJs from "./common.js";
 import { LocalStorageState } from "./common.js";
 import { createPublicOauthClient } from "./createPublicOauthClient.js";

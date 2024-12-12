@@ -15,10 +15,7 @@
  */
 
 import type { OsdkMetadata } from "../OsdkMetadata.js";
-import type {
-  ObjectTypeDefinition,
-  ReleaseStatus,
-} from "./ObjectTypeDefinition.js";
+import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
 
 export interface QueryMetadata {
   type: "query";

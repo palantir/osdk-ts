@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getYargsBase, isValidSemver, YargsCheckError } from "@osdk/cli.common";
+import { isValidSemver, YargsCheckError } from "@osdk/cli.common";
 import type { CommandModule } from "yargs";
 import type {
   AutoVersionConfigType,

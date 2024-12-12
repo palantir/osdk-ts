@@ -16,7 +16,6 @@
 
 import type { ObjectMetadata } from "@osdk/api";
 import type {
-  Icon,
   ObjectTypeFullMetadata,
   PropertyApiName,
   PropertyV2,
