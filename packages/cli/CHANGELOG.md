@@ -1,5 +1,12 @@
 # @osdk/cli
 
+## 0.24.11
+
+### Patch Changes
+
+- a429201: Support site snapshot upload
+- a429201: Site version and file limit custom error message and tips
+
 ## 0.24.10
 
 ### Patch Changes
