@@ -16,7 +16,6 @@
 
 import type { CliCommonArgs } from "@osdk/cli.common";
 import { YargsCheckError } from "@osdk/cli.common";
-import type { LoadedFoundryConfig } from "@osdk/foundry-config-json";
 import type { CommandModule } from "yargs";
 import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
 import configLoader from "../../util/configLoader.js";

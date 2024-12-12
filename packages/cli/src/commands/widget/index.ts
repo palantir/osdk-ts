@@ -15,7 +15,6 @@
  */
 
 import { type CliCommonArgs, YargsCheckError } from "@osdk/cli.common";
-import { consola } from "consola";
 import type { CommandModule } from "yargs";
 import type { WidgetRid } from "../../net/WidgetRid.js";
 import configLoader from "../../util/configLoader.js";
@@ -23,14 +22,13 @@ import { logConfigFileMiddleware } from "../../yargs/logConfigFileMiddleware.js"
 import type { CommonWidgetArgs } from "./CommonWidgetArgs.js";
 import deploy from "./deploy/index.js";
 import { logWidgetCommandConfigFileOverride } from "./logWidgetCommandConfigFileOverride.js";
+import version from "./version/index.js";
 
 const command: CommandModule<CliCommonArgs, CommonWidgetArgs> = {
   command: "widget",
   describe: "Manage your widget",
   builder: async (argv) => {
     const config = await configLoader("widget");
-    // TODO: remove
-    consola.info(config);
     const rid = config?.foundryConfig.widget.rid;
     const foundryUrl = config?.foundryConfig.foundryUrl;
     return argv.options({
@@ -65,7 +63,7 @@ const command: CommandModule<CliCommonArgs, CommonWidgetArgs> = {
         ["rid", "foundryUrl", "token", "tokenFile"],
         "Common Options",
       )
-      // .command(version)
+      .command(version)
       .command(deploy)
       .check((args) => {
         if (!args.foundryUrl.startsWith("https://")) {

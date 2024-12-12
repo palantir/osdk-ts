@@ -17,7 +17,6 @@
 import { isValidSemver, YargsCheckError } from "@osdk/cli.common";
 import type {
   AutoVersionConfigType,
-  LoadedFoundryConfig,
   SiteConfig,
 } from "@osdk/foundry-config-json";
 import type { CommandModule } from "yargs";
