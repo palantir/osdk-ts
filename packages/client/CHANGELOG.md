@@ -1,5 +1,14 @@
 # @osdk/client
 
+## 2.0.11
+
+### Patch Changes
+
+- c0b8206: Adds methods to extract date strings from Dates and ISO-8601 strings
+  - @osdk/api@2.0.11
+  - @osdk/client.unstable@2.0.11
+  - @osdk/generator-converters@2.0.11
+
 ## 2.0.10
 
 ### Patch Changes
