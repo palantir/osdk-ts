@@ -14,19 +14,4 @@
  * limitations under the License.
  */
 
-import { consola } from "consola";
-import getConfig from "../util/configLoader.js";
-
-let firstTime = true;
-export async function logConfigFileMiddleware(type: "site" | "widget"): Promise<void> {
-  if (firstTime) {
-    firstTime = false;
-    const config = getConfig(type);
-    const configFilePath = (await config)?.configFilePath;
-    if (configFilePath) {
-      consola.debug(
-        `Using configuration from file: "${configFilePath}"`,
-      );
-    }
-  }
-}
+export type WidgetRid = `ri.viewregistry..view.${string}`;

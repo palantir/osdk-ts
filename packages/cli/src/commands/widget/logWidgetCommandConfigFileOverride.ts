@@ -14,19 +14,27 @@
  * limitations under the License.
  */
 
+import type { FoundryConfig } from "@osdk/foundry-config-json";
 import { consola } from "consola";
-import getConfig from "../util/configLoader.js";
+import type { Arguments } from "yargs";
+import type { CommonWidgetArgs } from "./CommonWidgetArgs.js";
 
-let firstTime = true;
-export async function logConfigFileMiddleware(type: "site" | "widget"): Promise<void> {
-  if (firstTime) {
-    firstTime = false;
-    const config = getConfig(type);
-    const configFilePath = (await config)?.configFilePath;
-    if (configFilePath) {
-      consola.debug(
-        `Using configuration from file: "${configFilePath}"`,
-      );
-    }
+export async function logWidgetCommandConfigFileOverride(
+  args: Arguments<CommonWidgetArgs>,
+  config: FoundryConfig<"widget"> | undefined,
+) {
+  if (
+    config?.widget.rid != null
+    && args.rid !== config.widget.rid
+  ) {
+    consola.debug(
+      `Overriding "rid" from config file with ${args.rid}`,
+    );
+  }
+
+  if (config?.foundryUrl != null && args.foundryUrl !== config.foundryUrl) {
+    consola.debug(
+      `Overriding "foundryUrl" from config file with ${args.foundryUrl}`,
+    );
   }
 }

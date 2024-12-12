@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-import { consola } from "consola";
-import getConfig from "../util/configLoader.js";
+import type { CliCommonArgs } from "@osdk/cli.common";
+import type { WidgetRid } from "../../net/WidgetRid.js";
 
-let firstTime = true;
-export async function logConfigFileMiddleware(type: "site" | "widget"): Promise<void> {
-  if (firstTime) {
-    firstTime = false;
-    const config = getConfig(type);
-    const configFilePath = (await config)?.configFilePath;
-    if (configFilePath) {
-      consola.debug(
-        `Using configuration from file: "${configFilePath}"`,
-      );
-    }
-  }
+export interface CommonWidgetArgs extends CliCommonArgs {
+  rid: WidgetRid;
+  foundryUrl: string;
+  token?: string;
+  tokenFile?: string;
 }

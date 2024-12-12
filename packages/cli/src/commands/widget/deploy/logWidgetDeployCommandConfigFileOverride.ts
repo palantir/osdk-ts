@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
+import type { WidgetConfig } from "@osdk/foundry-config-json";
 import { consola } from "consola";
-import getConfig from "../util/configLoader.js";
+import type { Arguments } from "yargs";
+import type { WidgetDeployArgs } from "./WidgetDeployArgs.js";
 
-let firstTime = true;
-export async function logConfigFileMiddleware(type: "site" | "widget"): Promise<void> {
-  if (firstTime) {
-    firstTime = false;
-    const config = getConfig(type);
-    const configFilePath = (await config)?.configFilePath;
-    if (configFilePath) {
-      consola.debug(
-        `Using configuration from file: "${configFilePath}"`,
-      );
-    }
+export async function logWidgetDeployCommandConfigFileOverride(
+  args: Arguments<WidgetDeployArgs>,
+  config: WidgetConfig | undefined,
+) {
+  if (config?.directory != null && args.directory !== config.directory) {
+    consola.debug(
+      `Overriding "directory" from config file with ${args.directory}`,
+    );
   }
 }

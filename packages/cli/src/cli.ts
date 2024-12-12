@@ -21,7 +21,7 @@ import { consola } from "consola";
 import type { Argv } from "yargs";
 import auth from "./commands/auth/index.js";
 import site from "./commands/site/index.js";
-import { logConfigFileMiddleware } from "./yargs/logConfigFileMiddleware.js";
+import widget from "./commands/widget/index.js";
 
 export async function cli(args: string[] = process.argv): Promise<
   Record<string, unknown> | undefined
@@ -35,7 +35,6 @@ export async function cli(args: string[] = process.argv): Promise<
   // Special handling where failures happen before yargs does its error handling within .fail
   try {
     return await base
-      .middleware(logConfigFileMiddleware)
       .command(site)
       .command({
         command: "unstable",
@@ -45,6 +44,7 @@ export async function cli(args: string[] = process.argv): Promise<
           return argv
             .command(typescript)
             .command(auth)
+            .command(widget)
             .demandCommand();
         },
         handler: (_args) => {},

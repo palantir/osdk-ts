@@ -1208,6 +1208,9 @@ importers:
       '@osdk/shared.net.fetch':
         specifier: workspace:~
         version: link:../shared.net.fetch
+      '@osdk/widget-api.unstable':
+        specifier: workspace:~
+        version: link:../widget.api.unstable
       '@types/archiver':
         specifier: ^6.0.2
         version: 6.0.2

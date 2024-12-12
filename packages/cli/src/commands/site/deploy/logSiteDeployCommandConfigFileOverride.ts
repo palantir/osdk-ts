@@ -19,7 +19,7 @@ import { consola } from "consola";
 import type { Arguments } from "yargs";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
-export async function logDeployCommandConfigFileOverride(
+export async function logSiteDeployCommandConfigFileOverride(
   args: Arguments<SiteDeployArgs>,
   config: SiteConfig | undefined,
 ): Promise<void> {
