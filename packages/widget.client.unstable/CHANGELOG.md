@@ -1,5 +1,24 @@
 # @osdk/widget-client.unstable
 
+## 2.0.0-beta.4
+
+### Major Changes
+
+- 5a4ebd7: Bump unstable widget packages to v1 to avoid undesired v0.x version behavior
+
+### Patch Changes
+
+- Updated dependencies [5a4ebd7]
+- Updated dependencies [cddc196]
+- Updated dependencies [720218d]
+- Updated dependencies [eb27b54]
+- Updated dependencies [27f0f77]
+- Updated dependencies [a7a4aef]
+- Updated dependencies [6671a39]
+- Updated dependencies [a6c320d]
+  - @osdk/widget-api.unstable@2.0.0-beta.4
+  - @osdk/client@2.1.0-beta.19
+
 ## 0.3.0-beta.3
 
 ### Patch Changes
