@@ -74,7 +74,7 @@ export class MetadataClient {
 
   constructor(client: MinimalClient) {
     this.#client = client;
-    this.#ctx = makeConjureContext(client, "/ontology-metadata/api");
+    this.#ctx = makeConjureContext(client, "ontology-metadata/api");
     this.#client.ontologyProvider.getObjectDefinition;
 
     this.#logger = this.#client.logger?.child({

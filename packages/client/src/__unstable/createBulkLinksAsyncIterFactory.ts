@@ -111,7 +111,7 @@ export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
     const bulkLinksIter = pageRequestAsAsyncIter(
       getBulkLinksPage.bind(
         undefined,
-        makeConjureContext(ctx, "/object-set-service/api"),
+        makeConjureContext(ctx, "object-set-service/api"),
       ),
       getResults,
       applyPageToken,
