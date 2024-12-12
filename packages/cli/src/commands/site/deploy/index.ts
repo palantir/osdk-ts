@@ -17,13 +17,12 @@
 import { isValidSemver, YargsCheckError } from "@osdk/cli.common";
 import type {
   AutoVersionConfigType,
-  LoadedFoundryConfig,
   SiteConfig,
 } from "@osdk/foundry-config-json";
 import type { CommandModule } from "yargs";
 import configLoader from "../../../util/configLoader.js";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
-import { logDeployCommandConfigFileOverride } from "./logDeployCommandConfigFileOverride.js";
+import { logSiteDeployCommandConfigFileOverride } from "./logSiteDeployCommandConfigFileOverride.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
 const command: CommandModule<
@@ -33,8 +32,7 @@ const command: CommandModule<
   command: "deploy",
   describe: "Deploy a new site version",
   builder: async (argv) => {
-    const config: LoadedFoundryConfig<"site"> | undefined =
-      await configLoader();
+    const config = await configLoader("site");
     const siteConfig: SiteConfig | undefined = config?.foundryConfig.site;
     const directory = siteConfig?.directory;
     const autoVersion = siteConfig?.autoVersion;
@@ -134,7 +132,6 @@ const command: CommandModule<
         }
 
         const gitTagPrefixValue = args.gitTagPrefix ?? gitTagPrefix;
-        // Future proofing for when we support other autoVersion types
         if (gitTagPrefixValue != null && autoVersionType !== "git-describe") {
           throw new YargsCheckError(
             `--gitTagPrefix is only supported when --autoVersion=git-describe`,
@@ -155,7 +152,7 @@ const command: CommandModule<
 
         return true;
       }).middleware((args) =>
-        logDeployCommandConfigFileOverride(
+        logSiteDeployCommandConfigFileOverride(
           args,
           siteConfig,
         )

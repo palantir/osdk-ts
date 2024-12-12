@@ -15,31 +15,20 @@
  */
 
 import type { CommandModule } from "yargs";
-import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
-import type { VersionDeleteArgs } from "./VersionDeleteArgs.js";
+import type { CommonWidgetArgs } from "../../CommonWidgetArgs.js";
+import type { VersionListArgs } from "./VersionListArgs.js";
 
 const command: CommandModule<
-  CommonSiteArgs,
-  VersionDeleteArgs
+  CommonWidgetArgs,
+  VersionListArgs
 > = {
-  command: "delete <version>",
-  describe: "Delete site version",
+  command: "list",
+  describe: "List widget versions",
   builder: (argv) => {
-    return argv
-      .positional("version", {
-        type: "string",
-        demandOption: true,
-        description: "Version to delete",
-      })
-      .option("yes", {
-        alias: "y",
-        type: "boolean",
-        description: "Automatically confirm destructive changes",
-      })
-      .group(["yes"], "Delete Options");
+    return argv;
   },
   handler: async (args) => {
-    const command = await import("./versionDeleteCommand.mjs");
+    const command = await import("./versionListCommand.mjs");
     await command.default(args);
   },
 };

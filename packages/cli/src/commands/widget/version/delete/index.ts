@@ -15,15 +15,15 @@
  */
 
 import type { CommandModule } from "yargs";
-import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
+import type { CommonWidgetArgs } from "../../CommonWidgetArgs.js";
 import type { VersionDeleteArgs } from "./VersionDeleteArgs.js";
 
 const command: CommandModule<
-  CommonSiteArgs,
+  CommonWidgetArgs,
   VersionDeleteArgs
 > = {
   command: "delete <version>",
-  describe: "Delete site version",
+  describe: "Delete widget version",
   builder: (argv) => {
     return argv
       .positional("version", {

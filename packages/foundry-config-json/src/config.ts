@@ -167,7 +167,7 @@ export async function loadFoundryConfig(
 
     if (!validate(foundryConfig)) {
       throw new Error(
-        `The configuration file does not match the expected schema: ${
+        `The configuration file ${configFilePath} does not match the expected schema: ${
           ajv.errorsText(validate.errors)
         }`,
       );
