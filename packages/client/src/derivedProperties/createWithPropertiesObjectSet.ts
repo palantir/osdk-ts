@@ -42,7 +42,7 @@ export function createWithPropertiesObjectSet<
         type: "searchAround",
         objectSet,
         link,
-      }, definitionMap) as any;
+      }, definitionMap);
     },
     where: (clause) => {
       return createWithPropertiesObjectSet(objectType, {
@@ -100,16 +100,19 @@ export function createWithPropertiesObjectSet<
             "Invalid aggregation operation " + aggregationOperation,
           );
       }
-      definitionMap.set(definitionId, {
+      definitionMap.set(definitionId.toString(), {
         type: "selection",
         objectSet: objectSet,
         operation: aggregationOperationDefinition,
       });
-      return { definitionId: definitionId, type: { type: "integer" } as any };
+      return {
+        definitionId: definitionId.toString(),
+        type: {} as any,
+      };
     },
     selectProperty: (name) => {
       const definitionId = idCounter++;
-      definitionMap.set(definitionId, {
+      definitionMap.set(definitionId.toString(), {
         type: "selection",
         objectSet: objectSet,
         operation: {
@@ -117,7 +120,10 @@ export function createWithPropertiesObjectSet<
           selectedPropertyApiName: name,
         },
       });
-      return { definitionId: definitionId, type: { type: "integer" } as any };
+      return {
+        definitionId: definitionId.toString(),
+        type: {} as any,
+      };
     },
   };
 

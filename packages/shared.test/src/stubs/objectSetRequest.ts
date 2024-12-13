@@ -24,6 +24,7 @@ import {
   employee2,
   employee3,
   employee4withDerived,
+  employee5withUndefinedDerived,
   employeeFailsStrict,
   nycOffice,
   objectWithAllPropertyTypes1,
@@ -104,6 +105,32 @@ const derivedPropertyBody: LoadObjectSetRequestV2 = {
     },
     type: "filter",
     where: { "field": "employeeId", "type": "eq", "value": 50035 },
+  },
+  select: [],
+};
+
+const derivedPropertyBodyUndefinedValue: LoadObjectSetRequestV2 = {
+  objectSet: {
+    objectSet: {
+      derivedProperties: {
+        derivedPropertyName: {
+          objectSet: {
+            link: "lead",
+            objectSet: { type: "methodInput" },
+            type: "searchAround",
+          },
+          operation: {
+            selectedPropertyApiName: "employeeId",
+            type: "get",
+          },
+          type: "selection",
+        },
+      },
+      objectSet: { "objectType": "Employee", "type": "base" },
+      type: "withProperties",
+    },
+    type: "filter",
+    where: { "field": "employeeId", "type": "eq", "value": 50036 },
   },
   select: [],
 };
@@ -473,6 +500,9 @@ export const loadObjectSetRequestHandlers: {
   [stableStringify(intersectedObjectSet)]: [employee3],
   [stableStringify(subtractedObjectSet)]: [employee2, employee3],
   [stableStringify(derivedPropertyBody)]: [employee4withDerived],
+  [stableStringify(derivedPropertyBodyUndefinedValue)]: [
+    employee5withUndefinedDerived,
+  ],
   [stableStringify(eqSearchBody)]: [employee1],
   [stableStringify(eqSearchBody2)]: [employee2],
   [stableStringify(eqSearchBodyBadObject)]: [employeeFailsStrict],

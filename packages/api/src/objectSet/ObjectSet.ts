@@ -288,7 +288,7 @@ type WithPropertiesObjectDefinition<
       [T in Extract<keyof D, string>]: D[T] extends
         (baseObjectSet: any) => WithPropertyDefinition<infer P>
         ? P extends PropertyDef<infer A, any, any>
-          ? PropertyValueWireToClient[A]
+          ? PropertyValueWireToClient[A] | undefined
         : never
         : never;
     };

@@ -466,6 +466,19 @@ describe("ObjectSet", () => {
       });
     });
 
+    it("enforces a return only of correct type", () => {
+      client(Employee).withProperties({
+        // @ts-expect-error
+        "derivedPropertyName": (base) => {
+          return base.pivotTo("peeps");
+        },
+        // @ts-expect-error
+        "derivedPropertyName2": (base) => {
+          return { incorrect: "type" };
+        },
+      });
+    });
+
     // Executed code fails since we're providing bad strings to the function
     it.fails("correctly narrows types of aggregate function", () => {
       client(Employee).withProperties({
@@ -478,6 +491,9 @@ describe("ObjectSet", () => {
 
           // @ts-expect-error
           base.pivotTo("lead").aggregate("employeeId:notAnOp");
+
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("");
 
           base.pivotTo("lead").aggregate("employeeId:collectList");
 
@@ -590,8 +606,17 @@ describe("ObjectSet", () => {
           base.pivotTo("lead").selectProperty("employeeId"),
       }).fetchOne(50035);
 
-      expectTypeOf(objectWithRdp.derivedPropertyName).toEqualTypeOf<number>();
+      expectTypeOf(objectWithRdp.derivedPropertyName).toEqualTypeOf<
+        number | undefined
+      >();
       expect(objectWithRdp.derivedPropertyName).toBe(1);
+
+      const objectWithUndefinedRdp = await client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("employeeId"),
+      }).fetchOne(50036);
+
+      expect(objectWithUndefinedRdp.derivedPropertyName).toBeUndefined();
     });
 
     describe("withPropertiesObjectSet", () => {
@@ -607,7 +632,7 @@ describe("ObjectSet", () => {
         };
 
         const result = clause["derivedPropertyName"](deriveObjectSet);
-        const definition = map.get(result.definitionId as string);
+        const definition = map.get(result.definitionId);
         expect(definition).toMatchInlineSnapshot(`
           {
             "objectSet": {
@@ -645,12 +670,12 @@ describe("ObjectSet", () => {
         };
 
         const result = clause["derivedPropertyName"](deriveObjectSet);
-        const definition = map.get(result.definitionId as string);
+        const definition = map.get(result.definitionId);
 
         const secondResult = clause["secondaryDerivedPropertyName"](
           deriveObjectSet,
         );
-        const secondDefinition = map.get(secondResult.definitionId as string);
+        const secondDefinition = map.get(secondResult.definitionId);
 
         expect(definition).toMatchInlineSnapshot(`
           {

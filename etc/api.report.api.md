@@ -984,7 +984,7 @@ export type WithPropertiesClause<Q extends ObjectOrInterfaceDefinition> = {
 
 // @public (undocumented)
 export type WithPropertyDefinition<T extends ObjectMetadata.Property> = {
-    definitionId: unknown;
+    definitionId: string;
     type: T;
 };
 

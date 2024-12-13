@@ -52,28 +52,28 @@ interface FilterableDeriveObjectSet<
   ) => this;
 }
 
-type CollectAggregations = "collectSet" | "collectList";
+type CollectDeriveAggregations = "collectSet" | "collectList";
 
-type BaseAggregations =
+type BaseDeriveAggregations =
   | "approximateDistinct"
   | "exactDistinct"
   | "approximatePercentile";
 
 type StringDeriveAggregateOption =
-  | BaseAggregations
-  | CollectAggregations;
+  | BaseDeriveAggregations
+  | CollectDeriveAggregations;
 
 type NumericDeriveAggregateOption =
   | "min"
   | "max"
   | "sum"
   | "avg"
-  | BaseAggregations
-  | CollectAggregations;
+  | BaseDeriveAggregations
+  | CollectDeriveAggregations;
 
 interface AggregatableWithPropertyObjectSet<
   Q extends ObjectOrInterfaceDefinition,
-> extends FilterableDeriveObjectSet<Q> {
+> {
   readonly aggregate: <
     V extends ValidAggregationKeys<
       Q,
@@ -83,13 +83,13 @@ interface AggregatableWithPropertyObjectSet<
   >(
     aggregationSpecifier: V,
     opts?: V extends `${any}:${infer P}`
-      ? P extends CollectAggregations ? { limit: number }
+      ? P extends CollectDeriveAggregations ? { limit: number }
       : P extends "approximatePercentile" ? { percentile: number }
       : never
       : never,
   ) => WithPropertyDefinition<
     V extends `${infer N}:${infer P}`
-      ? P extends CollectAggregations ? PropertyDef<
+      ? P extends CollectDeriveAggregations ? PropertyDef<
           CompileTimeMetadata<Q>["properties"][N]["type"],
           "nullable",
           "array"
@@ -104,7 +104,11 @@ interface AggregatableWithPropertyObjectSet<
 
 interface SingleLinkWithPropertyObjectSet<
   Q extends ObjectOrInterfaceDefinition,
-> extends AggregatableWithPropertyObjectSet<Q>, BaseWithPropertyObjectSet<Q> {
+> extends
+  AggregatableWithPropertyObjectSet<Q>,
+  FilterableDeriveObjectSet<Q>,
+  BaseWithPropertyObjectSet<Q>
+{
   readonly selectProperty: <R extends PropertyKeys<Q>>(
     propertyName: R,
   ) => WithPropertyDefinition<CompileTimeMetadata<Q>["properties"][R]>;
@@ -112,7 +116,7 @@ interface SingleLinkWithPropertyObjectSet<
 
 interface ManyLinkWithPropertyObjectSet<
   Q extends ObjectOrInterfaceDefinition,
-> extends AggregatableWithPropertyObjectSet<Q> {
+> extends AggregatableWithPropertyObjectSet<Q>, FilterableDeriveObjectSet<Q> {
   readonly pivotTo: <L extends LinkNames<Q>>(
     type: L,
   ) => ManyLinkWithPropertyObjectSet<LinkedType<Q, L>>;
