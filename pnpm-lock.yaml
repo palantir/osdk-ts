@@ -1077,9 +1077,9 @@ importers:
       '@eslint/js':
         specifier: ^9.13.0
         version: 9.15.0
-      '@osdk/widget-manifest-vite-plugin':
+      '@osdk/widget.vite-plugin.unstable':
         specifier: workspace:~
-        version: link:../../packages/widget.vite-plugin
+        version: link:../../packages/widget.vite-plugin.unstable
       '@types/react':
         specifier: ^18
         version: 18.3.12
@@ -2585,9 +2585,9 @@ importers:
       '@osdk/monorepo.tsup':
         specifier: workspace:~
         version: link:../monorepo.tsup
-      '@osdk/widget-manifest-vite-plugin':
+      '@osdk/widget.vite-plugin.unstable':
         specifier: workspace:~
-        version: link:../widget.vite-plugin
+        version: link:../widget.vite-plugin.unstable
       '@types/react':
         specifier: ^18
         version: 18.3.12
@@ -2990,9 +2990,9 @@ importers:
       '@osdk/monorepo.tsup':
         specifier: workspace:~
         version: link:../monorepo.tsup
-      '@osdk/widget-manifest-vite-plugin':
+      '@osdk/widget.vite-plugin.unstable':
         specifier: workspace:~
-        version: link:../widget.vite-plugin
+        version: link:../widget.vite-plugin.unstable
       '@types/react':
         specifier: ^18
         version: 18.3.12
@@ -3816,7 +3816,7 @@ importers:
         specifier: ~5.5.4
         version: 5.5.4
 
-  packages/widget.vite-plugin:
+  packages/widget.vite-plugin.unstable:
     dependencies:
       '@osdk/widget-api.unstable':
         specifier: workspace:~
@@ -15137,7 +15137,7 @@ snapshots:
       react-transition-group: 4.4.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-uid: 2.3.3(@types/react@18.3.12)(react@18.3.1)
       tslib: 2.6.3
-      use-sync-external-store: 1.2.0(react@18.3.1)
+      use-sync-external-store: 1.2.2(react@18.3.1)
     optionalDependencies:
       '@types/react': 18.3.12
 

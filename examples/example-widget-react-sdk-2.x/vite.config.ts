@@ -1,4 +1,4 @@
-import widgetManifestPlugin from "@osdk/widget-manifest-vite-plugin";
+import widgetManifestPlugin from "@osdk/widget.vite-plugin.unstable";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
