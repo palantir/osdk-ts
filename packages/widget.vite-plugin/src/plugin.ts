@@ -257,39 +257,39 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
               return;
             }
 
-            const settingsResponse = await setWidgetSettings(
-              // TODO: Actually handle the widget RID from within the config, which will require somehow parsing the config
-              // Unfortunately, moduleParsed is not called during vite's dev mode for performance reasons, so the config file
-              // will need to be parsed/read a different way
-              foundryConfig.widget.rid,
-              foundryUrl,
-              localhostUrl,
-              entrypointToJsSourceFileMap,
-              entrypointFileName,
-            );
-            if (
-              settingsResponse.status !== 200
-            ) {
-              res.statusCode = settingsResponse.status;
-              res.statusMessage =
-                `Unable to set widget settings in Foundry: ${settingsResponse.statusText}`;
-              settingsResponse.text().then((err) => {
-                config?.logger.error(err);
-                res.end();
-              });
-              return;
-            }
-
-            const enableResponse = await enableDevMode(foundryUrl);
-            if (enableResponse.status !== 200) {
-              res.statusCode = enableResponse.status;
-              res.statusMessage =
-                `Unable to start dev mode in Foundry: ${enableResponse.statusText}`;
-              res.end();
-              return;
-            }
-
             try {
+              const settingsResponse = await setWidgetSettings(
+                // TODO: Actually handle the widget RID from within the config, which will require somehow parsing the config
+                // Unfortunately, moduleParsed is not called during vite's dev mode for performance reasons, so the config file
+                // will need to be parsed/read a different way
+                foundryConfig.widget.rid,
+                foundryUrl,
+                localhostUrl,
+                entrypointToJsSourceFileMap,
+                entrypointFileName,
+              );
+              if (
+                settingsResponse.status !== 200
+              ) {
+                res.statusCode = settingsResponse.status;
+                res.statusMessage =
+                  `Unable to set widget settings in Foundry: ${settingsResponse.statusText}`;
+                settingsResponse.text().then((err) => {
+                  config?.logger.error(err);
+                  res.end();
+                });
+                return;
+              }
+
+              const enableResponse = await enableDevMode(foundryUrl);
+              if (enableResponse.status !== 200) {
+                res.statusCode = enableResponse.status;
+                res.statusMessage =
+                  `Unable to start dev mode in Foundry: ${enableResponse.statusText}`;
+                res.end();
+                return;
+              }
+
               res.setHeader("Content-Type", "application/json");
               res.end(
                 JSON.stringify({
