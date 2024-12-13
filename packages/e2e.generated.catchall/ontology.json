@@ -548,6 +548,41 @@
       },
       "linkTypes": []
     },
+    "MnayanOsdkMediaObject": {
+      "objectType": {
+        "apiName": "MnayanOsdkMediaObject",
+        "primaryKey": "id",
+        "displayName": "MnayanOSDKMediaObject",
+        "description": "Media OT for OSDK e2e testing",
+        "properties": {
+          "id": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "path": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "mediaReference": {
+            "dataType": {
+              "type": "mediaReference"
+            }
+          }
+        },
+        "status": "ACTIVE",
+        "rid": "rid.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "object",
+          "color": "color"
+        },
+        "titleProperty": "path",
+        "pluralDisplayName": "Mnayan OSDKMedia Objects"
+      },
+      "linkTypes": []
+    },
     "SotSensor": {
       "objectType": {
         "apiName": "SotSensor",

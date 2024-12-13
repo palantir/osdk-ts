@@ -45,6 +45,7 @@ export function wirePropertyV2ToSdkPrimaryKeyTypeDefinition(
     case "marking":
     case "float":
     case "geotimeSeriesReference":
+    case "cipherText":
     case "mediaReference":
       throw new Error(
         `Type not supported for primaryKey: ${input.dataType.type}`,
