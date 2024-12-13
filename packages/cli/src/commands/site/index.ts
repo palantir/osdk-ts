@@ -29,7 +29,8 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
   command: "site",
   describe: "Manage your site",
   builder: async (argv) => {
-    const config: LoadedFoundryConfig | undefined = await configLoader();
+    const config: LoadedFoundryConfig<"site"> | undefined =
+      await configLoader();
     const application = config?.foundryConfig.site.application;
     const foundryUrl = config?.foundryConfig.foundryUrl;
     return argv

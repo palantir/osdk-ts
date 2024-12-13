@@ -4,8 +4,7 @@
     "rid": "ri.viewregistry.main.view.fake",
     "directory": "./dist",
     "autoVersion": {
-      "type": "git-describe",
-      "tagPrefix": ""
+      "type": "package-json"
     }
   }
 }
