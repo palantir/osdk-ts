@@ -205,7 +205,9 @@ export interface Attachment {
 }
 
 // @public
-export interface AttachmentUpload extends Blob {
+export interface AttachmentUpload {
+    // (undocumented)
+    readonly data: Blob;
     // (undocumented)
     readonly name: string;
 }
