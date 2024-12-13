@@ -16,3 +16,4 @@
 
 export const PALANTIR_PATH = ".palantir";
 export const SETUP_PATH = `${PALANTIR_PATH}/setup`;
+export const VITE_INJECTIONS = `${PALANTIR_PATH}/vite-injections.js`;
