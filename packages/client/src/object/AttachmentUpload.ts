@@ -17,7 +17,7 @@
 import type { AttachmentUpload } from "@osdk/api";
 
 export function isAttachmentUpload(o: any): o is AttachmentUpload {
-  return Object.hasOwn(o, "name") && Object.hasOwn(o, "data")
+  return typeof o === `object` && "name" in o && "data" in o
     && o.data instanceof Blob;
 }
 
