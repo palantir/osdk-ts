@@ -499,3 +499,84 @@ export const personObjectType: ObjectTypeV2 = {
   status: "ACTIVE",
   titleProperty: "name",
 };
+
+export const BGaoNflPlayerObjectType: ObjectTypeV2 = {
+  apiName: "BgaoNflPlayer",
+  displayName: "id",
+  pluralDisplayName: "BgaoNflPlayers",
+  icon: { type: "blueprint", color: "blue", name: "box" },
+  primaryKey: "id",
+  properties: {
+    id: {
+      dataType: {
+        type: "string",
+      },
+      rid: "rid",
+    },
+    gamesPlayed: {
+      dataType: {
+        type: "integer",
+      },
+      rid: "rid",
+    },
+    name: {
+      dataType: {
+        type: "string",
+      },
+      rid: "rid",
+    },
+    number: {
+      dataType: {
+        type: "integer",
+      },
+      rid: "rid",
+    },
+    wikiUrl: {
+      dataType: {
+        type: "string",
+      },
+      rid: "rid",
+    },
+    address: {
+      dataType: {
+        type: "struct",
+        structFieldTypes: [
+          {
+            apiName: "addressLine1",
+            dataType: {
+              type: "string",
+            },
+          },
+          {
+            apiName: "addressLine2",
+            dataType: {
+              type: "string",
+            },
+          },
+          {
+            apiName: "city",
+            dataType: {
+              type: "string",
+            },
+          },
+          {
+            apiName: "state",
+            dataType: {
+              type: "string",
+            },
+          },
+          {
+            apiName: "zipCode",
+            dataType: {
+              type: "integer",
+            },
+          },
+        ],
+      },
+      rid: "rid",
+    },
+  },
+  rid: "ri.nflplayer",
+  status: "ACTIVE",
+  titleProperty: "name",
+};
