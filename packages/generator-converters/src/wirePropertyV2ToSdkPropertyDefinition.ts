@@ -80,9 +80,10 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     }
     default:
       const _: never = input.dataType;
-      throw new Error(
-        `Unexpected data type ${JSON.stringify(input.dataType)}`,
+      consola.info(
+        `${JSON.stringify(input.dataType)} is not a supported dataType`,
       );
+      return undefined;
   }
 }
 
