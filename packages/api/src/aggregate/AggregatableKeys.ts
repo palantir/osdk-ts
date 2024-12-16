@@ -16,7 +16,6 @@
 
 import type {
   GetWirePropertyValueFromClient,
-  PropertyValueClientToWire,
 } from "../mapping/PropertyValueMapping.js";
 import type {
   ObjectOrInterfaceDefinition,

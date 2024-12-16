@@ -17,10 +17,7 @@
 import type {
   AggregateOpts,
   AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-  CompileTimeMetadata,
   GroupByClause,
-  ObjectOrInterfaceDefinition,
-  PropertyKeys,
   ValidAggregationKeys,
 } from "@osdk/api";
 import type { Employee } from "@osdk/client.test.ontology";
