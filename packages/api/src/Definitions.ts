@@ -16,7 +16,6 @@
 
 import type {
   GetClientPropertyValueFromWire,
-  PropertyValueWireToClient,
 } from "./mapping/PropertyValueMapping.js";
 import type { ObjectMetadata } from "./ontology/ObjectTypeDefinition.js";
 
