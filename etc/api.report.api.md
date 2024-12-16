@@ -945,13 +945,12 @@ export type TimeSeriesQuery = {
 // @public (undocumented)
 export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<"date" | "double" | "timestamp">;
 
-// Warning: (ae-forgotten-export) The symbol "StringAggregateOption" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "NumericAggregateOption" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "PropertyValueClientToWire" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type ValidAggregationKeys<Q extends ObjectOrInterfaceDefinition, StringOptions extends string = StringAggregateOption, NumericOptions extends string = NumericAggregateOption> = keyof ({
-    [KK in AggregatableKeys<Q> as `${KK & string}:${number extends PropertyValueClientToWire[CompileTimeMetadata<Q>["properties"][KK]["type"]] ? NumericOptions : string extends PropertyValueClientToWire[CompileTimeMetadata<Q>["properties"][KK]["type"]] ? StringOptions : never}`]?: any;
+export type ValidAggregationKeys<Q extends ObjectOrInterfaceDefinition, R extends "aggregate" | "withPropertiesAggregate" = "aggregate"> = keyof ({
+    [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<PropertyValueClientToWire[CompileTimeMetadata<Q>["properties"][KK]["type"]], R extends "aggregate" ? true : false>}`]?: any;
 } & {
     $count?: any;
 });

@@ -51,19 +51,18 @@ interface FilterableDeriveObjectSet<
     clause: WhereClause<Q>,
   ) => this;
 }
+export type CollectDeriveAggregations = "collectSet" | "collectList";
 
-type CollectDeriveAggregations = "collectSet" | "collectList";
-
-type BaseDeriveAggregations =
+export type BaseDeriveAggregations =
   | "approximateDistinct"
   | "exactDistinct"
   | "approximatePercentile";
 
-type StringDeriveAggregateOption =
+export type StringDeriveAggregateOption =
   | BaseDeriveAggregations
   | CollectDeriveAggregations;
 
-type NumericDeriveAggregateOption =
+export type NumericDeriveAggregateOption =
   | "min"
   | "max"
   | "sum"
@@ -77,8 +76,7 @@ interface AggregatableWithPropertyObjectSet<
   readonly aggregate: <
     V extends ValidAggregationKeys<
       Q,
-      StringDeriveAggregateOption,
-      NumericDeriveAggregateOption
+      "withPropertiesAggregate"
     >,
   >(
     aggregationSpecifier: V,
