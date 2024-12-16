@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import type {
+  NumericDeriveAggregateOption,
+  StringDeriveAggregateOption,
+} from "../derivedProperties/WithPropertyObjectSet.js";
 import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
 import type {
   ObjectOrInterfaceDefinition,
@@ -30,19 +34,23 @@ export type NumericAggregateOption =
   | "approximateDistinct"
   | "exactDistinct";
 
-type AGG_FOR_TYPE<T> = number extends T ? NumericAggregateOption
-  : string extends T ? StringAggregateOption
+type AGG_FOR_TYPE<T, U extends boolean> = number extends T
+  ? U extends true ? NumericAggregateOption : NumericDeriveAggregateOption
+  : string extends T
+    ? U extends true ? StringAggregateOption : StringDeriveAggregateOption
   : never;
 
 export type ValidAggregationKeys<
   Q extends ObjectOrInterfaceDefinition,
+  R extends "aggregate" | "withPropertiesAggregate" = "aggregate",
 > = keyof (
   & {
     [
       KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<
         PropertyValueClientToWire[
           CompileTimeMetadata<Q>["properties"][KK]["type"]
-        ]
+        ],
+        R extends "aggregate" ? true : false
       >}`
     ]?: any;
   }
