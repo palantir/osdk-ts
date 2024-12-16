@@ -24,11 +24,18 @@ import type {
   PropertyV2,
   SharedPropertyType,
 } from "@osdk/internal.foundry.core";
+import { consola } from "consola";
 
 export function wirePropertyV2ToSdkPropertyDefinition(
   input: (PropertyV2 | SharedPropertyType) & { nullable?: boolean },
   isNullable: boolean = true,
-): ObjectMetadata.Property {
+): ObjectMetadata.Property | undefined {
+  const sdkPropDefinition = objectPropertyTypeToSdkPropertyDefinition(
+    input.dataType,
+  );
+  if (sdkPropDefinition == null) {
+    return undefined;
+  }
   switch (input.dataType.type) {
     case "integer":
     case "string":
@@ -52,7 +59,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         displayName: input.displayName,
         multiplicity: false,
         description: input.description,
-        type: objectPropertyTypeToSdkPropertyDefinition(input.dataType),
+        type: sdkPropDefinition,
         nullable: input.nullable == null ? isNullable : input.nullable,
       };
     case "array": {
@@ -60,15 +67,16 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         displayName: input.displayName,
         multiplicity: true,
         description: input.description,
-        type: objectPropertyTypeToSdkPropertyDefinition(input.dataType),
+        type: sdkPropDefinition,
         nullable: true,
       };
     }
     case "cipherText":
     case "mediaReference": {
-      throw new Error(
-        `${input.dataType.type} not supported yet`,
+      consola.info(
+        `${JSON.stringify(input.dataType.type)} is not a supported dataType`,
       );
+      return undefined;
     }
     default:
       const _: never = input.dataType;
@@ -80,7 +88,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
 
 function objectPropertyTypeToSdkPropertyDefinition(
   propertyType: ObjectPropertyType,
-): WirePropertyTypes {
+): WirePropertyTypes | undefined {
   switch (propertyType.type) {
     case "integer":
     case "string":
@@ -123,12 +131,17 @@ function objectPropertyTypeToSdkPropertyDefinition(
 
     case "mediaReference":
     case "cipherText": {
-      throw new Error(
-        `${propertyType.type} not supported yet`,
+      consola.info(
+        `${JSON.stringify(propertyType.type)} is not a supported propertyType`,
       );
+      return undefined;
     }
-    default:
+    default: {
       const _: never = propertyType;
-      throw new Error(`Unexpected data type ${JSON.stringify(propertyType)}`);
+      consola.info(
+        `${JSON.stringify(propertyType)} is not a supported propertyType`,
+      );
+      return undefined;
+    }
   }
 }
