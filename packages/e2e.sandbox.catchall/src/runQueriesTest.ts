@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  $Queries,
-  getNamesOfCustomersFromCountry,
-} from "@osdk/e2e.generated.catchall";
+import { getNamesOfCustomersFromCountry } from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
 
 export async function runQueriesTest() {

@@ -1,5 +1,15 @@
 # @osdk/api
 
+## 2.1.0-beta.19
+
+### Minor Changes
+
+- cddc196: Try-catches handlers called during subscription
+
+## 2.1.0-beta.18
+
+## 2.1.0-beta.17
+
 ## 2.1.0-beta.16
 
 ### Minor Changes

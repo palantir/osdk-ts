@@ -1,5 +1,42 @@
 # @osdk/client
 
+## 2.1.0-beta.19
+
+### Minor Changes
+
+- cddc196: Try-catches handlers called during subscription
+- 720218d: OSDK Client no longer uses javascript proxies for its objects. This results in a 13% increase in construction time but at 1kb per object reduction in memory
+- eb27b54: Fix URL for experimental method
+- 27f0f77: Interface instances are immutable just like object instances
+- a7a4aef: Removes dependency on crypto
+- 6671a39: Upgrade execa where used
+- a6c320d: Internal optimization to reduce memory usage for unused interface objects
+
+### Patch Changes
+
+- Updated dependencies [cddc196]
+  - @osdk/api@2.1.0-beta.19
+  - @osdk/generator-converters@2.1.0-beta.19
+  - @osdk/client.unstable@2.1.0-beta.19
+
+## 2.1.0-beta.18
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.18
+- @osdk/client.unstable@2.1.0-beta.18
+- @osdk/generator-converters@2.1.0-beta.18
+
+## 2.1.0-beta.17
+
+### Patch Changes
+
+- Updated dependencies [1b60b3d]
+  - @osdk/shared.client.impl@1.1.0-beta.3
+  - @osdk/api@2.1.0-beta.17
+  - @osdk/client.unstable@2.1.0-beta.17
+  - @osdk/generator-converters@2.1.0-beta.17
+
 ## 2.1.0-beta.16
 
 ### Minor Changes

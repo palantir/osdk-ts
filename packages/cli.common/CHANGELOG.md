@@ -1,5 +1,15 @@
 # @osdk/cli.common
 
+## 0.25.0-beta.19
+
+### Minor Changes
+
+- cf9dcbe: Split out @osdk/foundry-config-json package
+
+## 0.25.0-beta.18
+
+## 0.25.0-beta.17
+
 ## 0.25.0-beta.16
 
 ### Minor Changes

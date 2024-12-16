@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { execa, execaNode } from "execa";
+import { execa } from "execa";
 import { describe, expect, it } from "vitest";
 
 describe("foundry-sdk-generator", () => {

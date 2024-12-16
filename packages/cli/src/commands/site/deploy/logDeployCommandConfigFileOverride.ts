@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import type { SiteConfig } from "@osdk/foundry-config-json";
 import { consola } from "consola";
 import type { Arguments } from "yargs";
-import type { SiteConfig } from "../../../util/config.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
 export async function logDeployCommandConfigFileOverride(
@@ -38,7 +38,8 @@ export async function logDeployCommandConfigFileOverride(
   }
 
   if (
-    config?.autoVersion?.tagPrefix != null
+    config?.autoVersion?.type === "git-describe"
+    && config.autoVersion.tagPrefix != null
     && args.gitTagPrefix != null
     && args.gitTagPrefix !== config.autoVersion.tagPrefix
   ) {

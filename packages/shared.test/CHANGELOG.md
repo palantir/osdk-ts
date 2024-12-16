@@ -1,5 +1,24 @@
 # @osdk/shared.test
 
+## 2.1.0-beta.19
+
+### Patch Changes
+
+- Updated dependencies [cddc196]
+  - @osdk/api@2.1.0-beta.19
+
+## 2.1.0-beta.18
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.18
+
+## 2.1.0-beta.17
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.17
+
 ## 2.1.0-beta.16
 
 ### Patch Changes

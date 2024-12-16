@@ -16,68 +16,20 @@
 
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import type { SharedClientContext } from "@osdk/shared.client2";
-import { PalantirApiError } from "@osdk/shared.net.errors";
-import {
-  createFetchHeaderMutator,
-  createFetchOrThrow,
-  createRetryingFetch,
-} from "@osdk/shared.net.fetch";
 
 /**
  * The goal of the thin client is to provide a way to tree shake as much as possible.
  */
 
+/**
+ * @deprecated use `createSharedClientContext` from `@osdk/shared.client.impl` instead
+ */
 export function createClientContext(
   baseUrl: string,
   tokenProvider: () => Promise<string> | string,
   userAgent: string,
   fetchFn: typeof globalThis.fetch = fetch,
 ): SharedClientContext {
-  if (baseUrl.length === 0) {
-    throw new Error("baseUrl cannot be empty");
-  }
-
-  const retryingFetchWithAuthOrThrow = createFetchHeaderMutator(
-    createRetryingFetch(createFetchOrThrow(fetchFn)),
-    async (headers) => {
-      const token = await tokenProvider();
-      headers.set("Authorization", `Bearer ${token}`);
-
-      headers.set(
-        "Fetch-User-Agent",
-        [
-          headers.get("Fetch-User-Agent"),
-          userAgent,
-        ].filter(x => x && x?.length > 0).join(" "),
-      );
-      return headers;
-    },
-  );
-
-  // because this is async await it preserves stack traces, which the retrying fetch does not
-  const fetchWrapper = async (
-    input: RequestInfo | URL,
-    init?: RequestInit | undefined,
-  ) => {
-    try {
-      return await retryingFetchWithAuthOrThrow(input, init);
-    } catch (e: any) {
-      const betterError = (e instanceof PalantirApiError)
-        ? new PalantirApiError(
-          e.message,
-          e.errorName,
-          e.errorCode,
-          e.statusCode,
-          e.errorInstanceId,
-          e.parameters,
-        )
-        : new Error("Captured stack trace for error: " + e.message ?? e);
-
-      (betterError as any).cause = e;
-      throw betterError;
-    }
-  };
-
   return createSharedClientContext(
     baseUrl,
     async () => await tokenProvider(),

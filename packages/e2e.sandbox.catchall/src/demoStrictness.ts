@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/api";
-import {
-  BoundariesUsState,
-  Employee,
-  FooInterface,
-} from "@osdk/e2e.generated.catchall";
+import { BoundariesUsState } from "@osdk/e2e.generated.catchall";
 import { expectType } from "ts-expect";
 import { client } from "./client.js";
 

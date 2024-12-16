@@ -20,8 +20,6 @@ import invariant from "tiny-invariant";
 import { extractNamespace } from "../GenerateContext/EnhancedBase.js";
 import { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
-import { ForeignType } from "../GenerateContext/ForeignType.js";
-import { propertyJsdoc } from "../shared/propertyJsdoc.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
 import type { Identifiers } from "./wireObjectTypeV2ToSdkObjectConstV2.js";

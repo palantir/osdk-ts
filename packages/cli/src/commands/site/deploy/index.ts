@@ -15,12 +15,12 @@
  */
 
 import { isValidSemver, YargsCheckError } from "@osdk/cli.common";
-import type { CommandModule } from "yargs";
 import type {
   AutoVersionConfigType,
   LoadedFoundryConfig,
   SiteConfig,
-} from "../../../util/config.js";
+} from "@osdk/foundry-config-json";
+import type { CommandModule } from "yargs";
 import configLoader from "../../../util/configLoader.js";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
 import { logDeployCommandConfigFileOverride } from "./logDeployCommandConfigFileOverride.js";
@@ -37,7 +37,9 @@ const command: CommandModule<
     const siteConfig: SiteConfig | undefined = config?.foundryConfig.site;
     const directory = siteConfig?.directory;
     const autoVersion = siteConfig?.autoVersion;
-    const gitTagPrefix = autoVersion?.tagPrefix;
+    const gitTagPrefix = autoVersion?.type === "git-describe"
+      ? autoVersion.tagPrefix
+      : undefined;
     const uploadOnly = siteConfig?.uploadOnly;
 
     return argv
@@ -64,7 +66,7 @@ const command: CommandModule<
         autoVersion: {
           coerce: (autoVersion) => autoVersion as AutoVersionConfigType,
           type: "string",
-          choices: ["git-describe"],
+          choices: ["git-describe", "package-json"],
           description: "Enable auto versioning",
           ...(autoVersion != null)
             ? { default: autoVersion.type }
@@ -78,6 +80,17 @@ const command: CommandModule<
             ? { default: gitTagPrefix }
             : {},
         },
+        snapshot: {
+          type: "boolean",
+          description:
+            "Upload a snapshot version only with automatic retention",
+          default: false,
+        },
+        snapshotId: {
+          type: "string",
+          description:
+            "Optional id to associate with snapshot version as an alias",
+        },
       })
       .group(
         ["directory", "version", "uploadOnly"],
@@ -86,6 +99,10 @@ const command: CommandModule<
       .group(
         ["autoVersion", "gitTagPrefix"],
         "Auto Version Options",
+      )
+      .group(
+        ["snapshot", "snapshotId"],
+        "Snapshot Options",
       )
       .check((args) => {
         // This is required because we can't use demandOption with conflicts. conflicts protects us against the case where both are provided.
@@ -106,9 +123,12 @@ const command: CommandModule<
         }
 
         const autoVersionType = args.autoVersion ?? autoVersion;
-        if (autoVersionType !== "git-describe") {
+        if (
+          autoVersionType !== "git-describe"
+          && autoVersionType !== "package-json"
+        ) {
           throw new YargsCheckError(
-            `Only 'git-describe' is supported for autoVersion`,
+            `Only 'git-describe' and 'package-json' are supported for autoVersion`,
           );
         }
 
@@ -117,6 +137,18 @@ const command: CommandModule<
         if (gitTagPrefixValue != null && autoVersionType !== "git-describe") {
           throw new YargsCheckError(
             `--gitTagPrefix is only supported when --autoVersion=git-describe`,
+          );
+        }
+
+        if (args.uploadOnly && args.snapshot) {
+          throw new YargsCheckError(
+            `--uploadOnly and --snapshot cannot be enabled together`,
+          );
+        }
+
+        if (args.snapshotId != null && !args.snapshot) {
+          throw new YargsCheckError(
+            "--snapshotId is only supported when --snapshot is enabled",
           );
         }
 

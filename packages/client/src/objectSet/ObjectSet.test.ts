@@ -25,7 +25,7 @@ import type {
   Result,
   WithPropertiesClause,
 } from "@osdk/api";
-import { isOk, WhereClause } from "@osdk/api";
+import { isOk } from "@osdk/api";
 import {
   $ontologyRid,
   BarInterface,
@@ -804,6 +804,7 @@ describe("ObjectSet", () => {
 
         expectTypeOf<JustProps<Employee, "$all">>()
           .toEqualTypeOf<
+            | "class"
             | "fullName"
             | "office"
             | "employeeId"

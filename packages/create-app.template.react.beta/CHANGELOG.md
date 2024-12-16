@@ -1,5 +1,23 @@
 # @osdk/create-app.template.react
 
+## 2.1.0-beta.19
+
+### Minor Changes
+
+- 6671a39: Upgrade execa where used
+
+## 2.1.0-beta.18
+
+### Minor Changes
+
+- 425dda2: Fixes create-app template for beta versions
+
+## 2.1.0-beta.17
+
+### Minor Changes
+
+- 1f7e0a1: "Fixes dependency on OSDK"
+
 ## 2.1.0-beta.16
 
 ## 2.1.0-beta.15

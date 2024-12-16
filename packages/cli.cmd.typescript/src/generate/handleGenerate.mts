@@ -24,7 +24,7 @@ import {
 } from "@osdk/generator";
 import type { OntologyIdentifier } from "@osdk/internal.foundry.core";
 import { OntologiesV2 } from "@osdk/internal.foundry.ontologiesv2";
-import { createClientContext } from "@osdk/shared.net";
+import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { consola } from "consola";
 import deepEqual from "fast-deep-equal";
 import { findUp } from "find-up";
@@ -77,9 +77,9 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
     foundryUrl,
     verbose: 0,
   });
-  const ctx = createClientContext(
+  const ctx = createSharedClientContext(
     args.foundryUrl!,
-    () => token.access_token,
+    async () => token.access_token,
     USER_AGENT,
   );
 

@@ -599,7 +599,10 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED 
 export interface ObjectSetListener<O extends ObjectOrInterfaceDefinition, P extends PropertyKeys<O> = PropertyKeys<O>> {
     // Warning: (ae-forgotten-export) The symbol "ObjectUpdate" needs to be exported by the entry point index.d.ts
     onChange?: (objectUpdate: ObjectUpdate<O, P>) => void;
-    onError?: (errors: Array<any>) => void;
+    onError?: (errors: {
+        subscriptionClosed: boolean;
+        error: any;
+    }) => void;
     onOutOfDate?: () => void;
     onSuccessfulSubscription?: () => void;
 }

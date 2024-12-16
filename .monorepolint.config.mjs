@@ -48,6 +48,7 @@ const nonStandardPackages = [
   "@osdk/widget-manifest-vite-plugin", // has a vite-bundled app + react
   // removed the following from the repo to avoid it being edited
   // "@osdk/shared.client2", // hand written package that only exposes a symbol
+  "@osdk/benchmarks.*",
 ];
 
 // Packages that should have the `check-api` task installed
@@ -66,12 +67,14 @@ const privatePackages = [
   "@osdk/e2e.*",
   "@osdk/example-generator",
   "@osdk/examples.*",
+  "@osdk/foundry-config-json",
   "@osdk/monorepo.*",
   "@osdk/platform-sdk-generator",
   "@osdk/shared.test",
   "@osdk/tests.verify-fallback-package-v2",
   "@osdk/tool.*",
   "@osdk/version-updater",
+  "@osdk/benchmarks.*",
 ];
 
 const consumerCliPackages = [

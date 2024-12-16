@@ -18,23 +18,23 @@ import { consola } from "consola";
 
 import { createInternalClientContext, thirdPartyApplications } from "#net";
 import { ExitProcessError } from "@osdk/cli.common";
+import type { AutoVersionConfig } from "@osdk/foundry-config-json";
+import { autoVersion, AutoVersionError } from "@osdk/foundry-config-json";
 import archiver from "archiver";
 import { colorize } from "consola/utils";
 import * as fs from "node:fs";
 import path from "node:path";
 import { Readable } from "node:stream";
 import prettyBytes from "pretty-bytes";
-import { autoVersion as findAutoVersion } from "../../../util/autoVersion.js";
-import type { AutoVersionConfig } from "../../../util/config.js";
+import type { InternalClientContext } from "../../../net/internalClientContext.mjs";
+import type { ThirdPartyAppRid } from "../../../net/ThirdPartyAppRid.js";
 import { loadToken } from "../../../util/token.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
 interface SiteDeployInternalArgs
-  extends Omit<SiteDeployArgs, "version" | "autoVersion">
+  extends Omit<SiteDeployArgs, "version" | "autoVersion" | "gitTagPrefix">
 {
   selectedVersion: string | AutoVersionConfig;
-  directory: string;
-  uploadOnly: boolean;
 }
 
 export default async function siteDeployCommand(
@@ -43,6 +43,8 @@ export default async function siteDeployCommand(
     application,
     foundryUrl,
     uploadOnly,
+    snapshot,
+    snapshotId,
     directory,
     token,
     tokenFile,
@@ -56,7 +58,7 @@ export default async function siteDeployCommand(
   if (typeof selectedVersion === "string") {
     siteVersion = selectedVersion;
   } else {
-    siteVersion = await findAutoVersion(selectedVersion.tagPrefix);
+    siteVersion = await findAutoVersion(selectedVersion);
     consola.info(
       `Auto version inferred next version to be: ${siteVersion}`,
     );
@@ -75,17 +77,24 @@ export default async function siteDeployCommand(
   const archive = archiver("zip").directory(directory, false);
   logArchiveStats(archive);
 
-  consola.start("Uploading site files");
-  await Promise.all([
-    thirdPartyApplications.uploadVersion(
+  if (snapshot) {
+    await uploadSnapshot(
       clientCtx,
       application,
       siteVersion,
-      Readable.toWeb(archive) as ReadableStream<any>, // This cast is because the dom fetch doesn't align type wise with streams
-    ),
-    archive.finalize(),
-  ]);
-  consola.success("Upload complete");
+      snapshotId ?? "",
+      archive,
+    );
+    consola.info("Snapshot mode enabled, skipping deployment");
+    return;
+  }
+
+  await upload(
+    clientCtx,
+    application,
+    siteVersion,
+    archive,
+  );
 
   if (!uploadOnly) {
     const website = await thirdPartyApplications.deployWebsite(
@@ -107,7 +116,7 @@ export default async function siteDeployCommand(
       application,
     );
     const domain = website?.subdomains[0];
-    consola.debug("Upload only mode enabled, skipping deployment");
+    consola.info("Upload only mode enabled, skipping deployment");
     if (domain != null) {
       logSiteLink(
         "Preview link:",
@@ -115,6 +124,58 @@ export default async function siteDeployCommand(
       );
     }
   }
+}
+
+async function findAutoVersion(config: AutoVersionConfig): Promise<string> {
+  try {
+    return await autoVersion(config);
+  } catch (e) {
+    throw new ExitProcessError(
+      2,
+      e instanceof Error ? e.message : undefined,
+      e instanceof AutoVersionError ? e.tip : undefined,
+    );
+  }
+}
+
+async function uploadSnapshot(
+  clientCtx: InternalClientContext,
+  application: ThirdPartyAppRid,
+  siteVersion: string,
+  snapshotId: string,
+  archive: archiver.Archiver,
+): Promise<void> {
+  consola.start("Uploading snapshot site files");
+  await Promise.all([
+    thirdPartyApplications.uploadSnapshotVersion(
+      clientCtx,
+      application,
+      siteVersion,
+      snapshotId,
+      Readable.toWeb(archive) as ReadableStream<any>, // This cast is because the dom fetch doesn't align type wise with streams
+    ),
+    archive.finalize(),
+  ]);
+  consola.success("Snapshot upload complete");
+}
+
+async function upload(
+  clientCtx: InternalClientContext,
+  application: ThirdPartyAppRid,
+  siteVersion: string,
+  archive: archiver.Archiver,
+): Promise<void> {
+  consola.start("Uploading site files");
+  await Promise.all([
+    thirdPartyApplications.uploadVersion(
+      clientCtx,
+      application,
+      siteVersion,
+      Readable.toWeb(archive) as ReadableStream<any>, // This cast is because the dom fetch doesn't align type wise with streams
+    ),
+    archive.finalize(),
+  ]);
+  consola.success("Upload complete");
 }
 
 function logArchiveStats(archive: archiver.Archiver): void {

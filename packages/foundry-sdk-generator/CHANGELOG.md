@@ -1,5 +1,42 @@
 # @osdk/foundry-sdk-generator
 
+## 2.1.0-beta.19
+
+### Patch Changes
+
+- Updated dependencies [cddc196]
+- Updated dependencies [720218d]
+- Updated dependencies [eb27b54]
+- Updated dependencies [27f0f77]
+- Updated dependencies [a7a4aef]
+- Updated dependencies [6671a39]
+- Updated dependencies [a6c320d]
+  - @osdk/client@2.1.0-beta.19
+  - @osdk/api@2.1.0-beta.19
+  - @osdk/generator@2.1.0-beta.19
+
+## 2.1.0-beta.18
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.18
+- @osdk/client@2.1.0-beta.18
+- @osdk/generator@2.1.0-beta.18
+
+## 2.1.0-beta.17
+
+### Minor Changes
+
+- 1b60b3d: Packages use more specific versions instead of indirection through shared.net
+
+### Patch Changes
+
+- Updated dependencies [1b60b3d]
+  - @osdk/shared.client.impl@1.1.0-beta.3
+  - @osdk/client@2.1.0-beta.17
+  - @osdk/api@2.1.0-beta.17
+  - @osdk/generator@2.1.0-beta.17
+
 ## 2.1.0-beta.16
 
 ### Minor Changes

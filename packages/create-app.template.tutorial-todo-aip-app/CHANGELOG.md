@@ -1,5 +1,15 @@
 # @osdk/create-app.template.tutorial-todo-aip-app
 
+## 2.1.0-beta.19
+
+### Minor Changes
+
+- 6671a39: Upgrade execa where used
+
+## 2.1.0-beta.18
+
+## 2.1.0-beta.17
+
 ## 2.1.0-beta.16
 
 ## 2.1.0-beta.15

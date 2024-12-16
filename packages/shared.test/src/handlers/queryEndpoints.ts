@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { ListQueryTypesResponseV2 } from "@osdk/internal.foundry.core";
 import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { RequestHandler } from "msw";
 import { InvalidRequest, QueryNotFoundError } from "../errors.js";

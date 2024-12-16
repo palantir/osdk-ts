@@ -24,7 +24,6 @@ import type {
   OntologyIrInterfaceType,
   SharedPropertyTypeGothamMapping,
   StructFieldType,
-  Type,
   ValueTypeApiName,
   ValueTypeDataConstraint,
   ValueTypeDisplayMetadata,

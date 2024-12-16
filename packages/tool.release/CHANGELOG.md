@@ -1,5 +1,11 @@
 # @osdk/tool.release
 
+## 0.6.0-beta.2
+
+### Minor Changes
+
+- 6671a39: Upgrade execa where used
+
 ## 0.6.0-beta.1
 
 ### Minor Changes

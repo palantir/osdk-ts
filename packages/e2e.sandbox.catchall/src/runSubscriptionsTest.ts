@@ -15,8 +15,6 @@
  */
 
 import {
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
   __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
 } from "@osdk/api/unstable";
 import {

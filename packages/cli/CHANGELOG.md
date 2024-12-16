@@ -1,5 +1,22 @@
 # @osdk/cli
 
+## 0.25.0-beta.19
+
+### Minor Changes
+
+- 2ffa338: Support site snapshot upload
+- cf9dcbe: Split out @osdk/foundry-config-json package
+- a39ef6a: Add package.json auto version strategy
+
+## 0.25.0-beta.18
+
+## 0.25.0-beta.17
+
+### Minor Changes
+
+- 1b60b3d: Packages use more specific versions instead of indirection through shared.net
+- b42399b: Site version and file limit custom error message and tips
+
 ## 0.25.0-beta.16
 
 ## 0.25.0-beta.15

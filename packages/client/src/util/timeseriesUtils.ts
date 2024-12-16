@@ -15,9 +15,8 @@
  */
 
 import type { TimeSeriesQuery } from "@osdk/api";
-import { TimeseriesDurationMapping, TimeSeriesPoint } from "@osdk/api";
+import { TimeseriesDurationMapping } from "@osdk/api";
 import type { TimeRange } from "@osdk/internal.foundry.core";
-import invariant from "tiny-invariant";
 import { iterateReadableStream, parseStreamedResponse } from "./streamutils.js";
 
 export function getTimeRange(body: TimeSeriesQuery): TimeRange {

@@ -35,10 +35,6 @@ import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
 import type { Logger } from "../Logger.js";
 import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
-import {
-  convertWireToOsdkObjects,
-  convertWireToOsdkObjects2,
-} from "../object/convertWireToOsdkObjects.js";
 
 const MINIMUM_RECONNECT_DELAY_MS = 5 * 1000;
 
@@ -141,6 +137,11 @@ export class ObjectSetListenerWebsocket {
     string,
     Subscription<any, any>
   >();
+
+  #endedSubscriptions = new Set<
+    string
+  >();
+
   #maybeDisconnectTimeout: ReturnType<typeof setTimeout> | undefined;
 
   // DO NOT CONSTRUCT DIRECTLY. ONLY EXPOSED AS A TESTING SEAM
@@ -171,12 +172,6 @@ export class ObjectSetListenerWebsocket {
     listener: ObjectSetListener<Q, P>,
     properties: Array<P> = [],
   ): Promise<() => void> {
-    if (process.env.TARGET !== "browser") {
-      // Node 18 does not expose 'crypto' on globalThis, so we need to do it ourselves. This
-      // will not be needed after our minimum version is 19 or greater.
-      globalThis.crypto ??= (await import("node:crypto")).webcrypto as any;
-    }
-
     const objDef = objectType.type === "object"
       ? await this.#client.ontologyProvider.getObjectDefinition(
         objectType.apiName,
@@ -216,7 +211,7 @@ export class ObjectSetListenerWebsocket {
       status: "preparing",
       // Since we don't have a real subscription id yet but we need to keep
       // track of this reference, we can just use a random uuid.
-      subscriptionId: `TMP-${crypto.randomUUID()}`,
+      subscriptionId: `TMP-${nextUuid()}}`,
       interfaceApiName: objDef.type === "object"
         ? undefined
         : objDef.apiName,
@@ -262,7 +257,7 @@ export class ObjectSetListenerWebsocket {
       }
     } catch (error) {
       this.#logger?.error(error, "Error in #initiateSubscribe");
-      sub.listener.onError([error]);
+      this.#tryCatchOnError(sub, true, error);
     }
   }
 
@@ -275,18 +270,7 @@ export class ObjectSetListenerWebsocket {
     // so we filter those out.
     const readySubs = [...this.#subscriptions.values()].filter(isReady);
 
-    if (readySubs.length === 0) {
-      if (process.env.NODE_ENV !== "production") {
-        this.#logger?.trace(
-          "#sendSubscribeMessage(): aborting due to no ready subscriptions",
-        );
-      }
-
-      return;
-    }
-
-    // Assumes the node 18 crypto fallback to globalThis in `subscribe` has happened.
-    const id = crypto.randomUUID();
+    const id = nextUuid();
     // responses come back as an array of subIds, so we need to know the sources
     this.#pendingSubscriptions.set(id, readySubs);
 
@@ -327,11 +311,16 @@ export class ObjectSetListenerWebsocket {
       // if we are already done, we don't need to do anything
       return;
     }
+
     sub.status = newStatus;
+
     // make sure listeners do nothing now
     sub.listener = fillOutListener<Q, any>({});
+
     this.#subscriptions.delete(sub.subscriptionId);
+    this.#endedSubscriptions.add(sub.subscriptionId);
     this.#sendSubscribeMessage();
+
     // If we have no more subscriptions, we can disconnect the websocket
     // however we should wait a bit to see if we get any more subscriptions.
     // For example, when switching between react views, you may unsubscribe
@@ -483,7 +472,12 @@ export class ObjectSetListenerWebsocket {
 
     for (const osdkObject of osdkObjectsWithReferenceUpdates) {
       if (osdkObject != null) {
-        sub.listener.onChange?.(osdkObject);
+        try {
+          sub.listener.onChange?.(osdkObject);
+        } catch (error) {
+          this.#logger?.error(error, "Error in onChange callback");
+          this.#tryCatchOnError(sub, false, error);
+        }
       }
     }
 
@@ -510,7 +504,12 @@ export class ObjectSetListenerWebsocket {
 
     for (const osdkObject of osdkObjects) {
       if (osdkObject != null) {
-        sub.listener.onChange?.(osdkObject);
+        try {
+          sub.listener.onChange?.(osdkObject);
+        } catch (error) {
+          this.#logger?.error(error, "Error in onChange callback");
+          this.#tryCatchOnError(sub, false, error);
+        }
       }
     }
   };
@@ -518,6 +517,12 @@ export class ObjectSetListenerWebsocket {
   #handleMessage_refreshObjectSet = (payload: RefreshObjectSet) => {
     const sub = this.#subscriptions.get(payload.id);
     invariant(sub, `Expected subscription id ${payload.id}`);
+    try {
+      sub.listener.onOutOfDate();
+    } catch (error) {
+      this.#logger?.error(error, "Error in onOutOfDate callback");
+      this.#tryCatchOnError(sub, false, error);
+    }
     sub.listener.onOutOfDate();
   };
 
@@ -536,7 +541,7 @@ export class ObjectSetListenerWebsocket {
 
       switch (response.type) {
         case "error":
-          sub.listener.onError(response.errors);
+          this.#tryCatchOnError(sub, true, response.errors);
           this.#unsubscribe(sub, "error");
           break;
 
@@ -560,20 +565,28 @@ export class ObjectSetListenerWebsocket {
             sub.subscriptionId = response.id;
             this.#subscriptions.set(sub.subscriptionId, sub); // future messages come by this subId
           }
-          if (shouldFireOutOfDate) sub.listener.onOutOfDate();
-          else sub.listener.onSuccessfulSubscription();
+          try {
+            if (shouldFireOutOfDate) sub.listener.onOutOfDate();
+            else sub.listener.onSuccessfulSubscription();
+          } catch (error) {
+            this.#logger?.error(
+              error,
+              "Error in onOutOfDate or onSuccessfulSubscription callback",
+            );
+            this.#tryCatchOnError(sub, false, error);
+          }
           break;
         default:
-          const _: never = response;
-          sub.listener.onError(response);
+          this.#tryCatchOnError(sub, true, response);
       }
     }
   };
 
   #handleMessage_subscriptionClosed(payload: SubscriptionClosed) {
     const sub = this.#subscriptions.get(payload.id);
+    if (sub == null && this.#endedSubscriptions.has(payload.id)) return;
     invariant(sub, `Expected subscription id ${payload.id}`);
-    sub.listener.onError([payload.cause]);
+    this.#tryCatchOnError(sub, true, payload.cause);
     this.#unsubscribe(sub, "error");
   }
 
@@ -618,6 +631,38 @@ export class ObjectSetListenerWebsocket {
       this.#ensureWebsocket();
     }
   };
+
+  #tryCatchOnError = (
+    sub: Subscription<any, any>,
+    subscriptionClosed: boolean,
+    error: any,
+  ) => {
+    try {
+      sub.listener.onError({ subscriptionClosed: subscriptionClosed, error });
+    } catch (onErrorError) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `Error encountered in an onError callback for an OSDK subscription`,
+        onErrorError,
+      );
+      // eslint-disable-next-line no-console
+      console.error(
+        `This onError call was triggered by an error in another callback`,
+        error,
+      );
+      // eslint-disable-next-line no-console
+      console.error(
+        `The subscription has been closed.`,
+        error,
+      );
+
+      if (!subscriptionClosed) {
+        this.#logger?.error(error, "Error in onError callback");
+        this.#unsubscribe(sub, "error");
+        this.#tryCatchOnError(sub, true, onErrorError);
+      }
+    }
+  };
 }
 
 /** @internal */
@@ -632,4 +677,12 @@ export function constructWebsocketUrl(
   );
   url.protocol = url.protocol.replace("https", "wss");
   return url;
+}
+
+let uuidCounter = 0;
+
+function nextUuid() {
+  return `00000000-0000-0000-0000-${
+    (uuidCounter++).toString().padStart(12, "0")
+  }`;
 }

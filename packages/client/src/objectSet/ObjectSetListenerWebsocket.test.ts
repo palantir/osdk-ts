@@ -188,7 +188,7 @@ describe("ObjectSetListenerWebsocket", async () => {
           listener,
         );
 
-        subReq1 = await expectSingleSubscribeMessage(ws);
+        subReq1 = await expectSubscribeMessages(ws, 2);
       });
 
       afterEach(() => {
@@ -211,7 +211,7 @@ describe("ObjectSetListenerWebsocket", async () => {
         respondSuccessToSubscribe(ws, subReq1);
         // actually this is broken FIXME
         unsubscribe();
-        expect(ws.send).not.toHaveBeenCalled();
+        expect(ws.send).toHaveBeenCalledTimes(1);
       });
 
       it("correctly requests regular object properties", () => {
@@ -219,6 +219,7 @@ describe("ObjectSetListenerWebsocket", async () => {
           "employeeId",
           "fullName",
           "office",
+          "class",
           "startDate",
           "employeeStatus",
           "employeeSensor",
@@ -247,7 +248,7 @@ describe("ObjectSetListenerWebsocket", async () => {
 
           describe("subscribe and respond", () => {
             beforeEach(async () => {
-              const subReq2 = await expectSingleSubscribeMessage(ws);
+              const subReq2 = await expectSubscribeMessages(ws);
               respondSuccessToSubscribe(ws, subReq2);
             });
 
@@ -255,6 +256,25 @@ describe("ObjectSetListenerWebsocket", async () => {
               expect(listener.onOutOfDate).not.toHaveBeenCalled();
             });
           });
+        });
+      });
+
+      describe("correctly try catches errors in handlers", () => {
+        beforeEach(() => {
+          listener.onSuccessfulSubscription.mockImplementationOnce(() => {
+            throw new Error("I am an error");
+          });
+          respondSuccessToSubscribe(ws, subReq1);
+        });
+        afterEach(() => {
+          listener.onSuccessfulSubscription.mockReset();
+        });
+
+        it("should call onError", async () => {
+          expect(listener.onError).toHaveBeenCalled();
+          expect(listener.onError.mock.calls[0][0].subscriptionClosed).toBe(
+            false,
+          );
         });
       });
 
@@ -278,6 +298,8 @@ describe("ObjectSetListenerWebsocket", async () => {
               "object": {
                 "$apiName": "Employee",
                 "$objectType": "Employee",
+                "$primaryKey": undefined,
+                "$title": undefined,
                 "employeeId": 1,
               },
               "state": "ADDED_OR_UPDATED",
@@ -297,6 +319,7 @@ describe("ObjectSetListenerWebsocket", async () => {
                 "$apiName": "Employee",
                 "$objectType": "Employee",
                 "$primaryKey": "12345",
+                "$title": undefined,
                 "employeeId": "12345",
                 "employeeLocation": GeotimeSeriesPropertyImpl {
                   "lastFetchedValue": {
@@ -333,7 +356,7 @@ describe("ObjectSetListenerWebsocket", async () => {
               ["employeeId"],
             );
 
-            subReq2 = await expectSingleSubscribeMessage(ws);
+            subReq2 = await expectSubscribeMessages(ws);
 
             respondSuccessToSubscribe(ws, subReq2);
           });
@@ -367,7 +390,7 @@ describe("ObjectSetListenerWebsocket", async () => {
               ]);
               setWebSocketState(ws, "open");
 
-              const subReq2 = await expectSingleSubscribeMessage(ws);
+              const subReq2 = await expectSubscribeMessages(ws);
               respondSuccessToSubscribe(ws, subReq2);
             });
 
@@ -487,10 +510,16 @@ function expectEqualRemoveAndAddListeners(ws: MockedWebSocket) {
   );
 }
 
-async function expectSingleSubscribeMessage(
+async function expectSubscribeMessages(
   ws: MockedWebSocket,
+  times: number = 1,
 ): Promise<ObjectSetStreamSubscribeRequests> {
-  return await consumeSingleSend(ws);
+  return await vi.waitFor(() => {
+    expect(ws.send).toBeCalledTimes(times);
+    const result = JSON.parse(ws.send.mock.lastCall![0].toString());
+    ws.send.mockClear();
+    return result;
+  });
 }
 
 async function subscribeAndExpectWebSocket(
@@ -532,15 +561,6 @@ async function expectWebSocketConstructed(): Promise<MockedWebSocket> {
   expect(MockedWebSocket).toHaveBeenCalledTimes(0);
 
   return ws;
-}
-
-async function consumeSingleSend(ws: any) {
-  return await vi.waitFor(() => {
-    expect(ws.send).toBeCalledTimes(1);
-    const result = JSON.parse(ws.send.mock.lastCall![0].toString());
-    ws.send.mockClear();
-    return result;
-  });
 }
 
 function createMockWebSocketConstructor(

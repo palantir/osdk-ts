@@ -16,8 +16,6 @@
 
 import { type Client, createClient } from "@osdk/client";
 import {
-  _unstable_isHostFetchResponseFailedMessage,
-  _unstable_isHostFetchResponseSuccessMessage,
   HostMessage,
   visitHostMessage,
   type WidgetConfig,

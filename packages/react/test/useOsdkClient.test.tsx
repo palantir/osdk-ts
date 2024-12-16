@@ -15,8 +15,7 @@
  */
 
 import type { Client } from "@osdk/client";
-import { act, renderHook } from "@testing-library/react";
-import pDefer from "p-defer";
+import { renderHook } from "@testing-library/react";
 import * as React from "react";
 import { describe, expect, it, vitest } from "vitest";
 import { OsdkContext } from "../src/OsdkContext.js";

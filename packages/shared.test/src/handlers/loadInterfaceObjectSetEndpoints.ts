@@ -19,7 +19,6 @@ import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import stableStringify from "json-stable-stringify";
 import type { RequestHandler } from "msw";
 import { InvalidRequest } from "../errors.js";
-import { filterObjectsProperties } from "../filterObjects.js";
 import { loadInterfaceObjectSetHandlers } from "../stubs/interfaceObjectSetRequest.js";
 import { defaultOntology } from "../stubs/ontologies.js";
 import {
