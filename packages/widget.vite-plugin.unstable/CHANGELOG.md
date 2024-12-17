@@ -1,4 +1,4 @@
-# @osdk/widget-manifest-vite-plugin
+# @osdk/widget.vite-plugin.unstable
 
 ## 2.0.0-beta.4
 
