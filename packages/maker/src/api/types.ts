@@ -21,6 +21,7 @@ import type {
   ExampleValue,
   FailureMessage,
   ImportedTypes,
+  InterfaceTypeRid,
   InterfaceTypeStatus,
   InterfaceTypeStatus_active,
   InterfaceTypeStatus_deprecated,
@@ -49,6 +50,7 @@ export interface Ontology extends
   importedTypes: ImportedTypes;
 }
 export type {
+  InterfaceTypeRid,
   InterfaceTypeStatus,
   InterfaceTypeStatus_active,
   InterfaceTypeStatus_deprecated,

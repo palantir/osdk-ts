@@ -20,13 +20,23 @@ import { defineSharedPropertyType } from "./defineSpt.js";
 import type { BlueprintIcon } from "./iconNames.js";
 import type {
   InterfaceType,
+  InterfaceTypeRid,
   InterfaceTypeStatus,
   InterfaceTypeStatus_active,
-  InterfaceTypeStatus_deprecated,
   InterfaceTypeStatus_experimental,
   PropertyTypeType,
   SharedPropertyType,
 } from "./types.js";
+
+/**
+ * This status indicates that the interface is reaching the end of its life and will be removed as per the
+ * deadline specified.
+ */
+export interface DeprecatedInterfaceTypeStatus {
+  message: string;
+  deadline: string;
+  replacedBy: InterfaceTypeRid | undefined;
+}
 
 export function defineInterface(
   opts: {
@@ -109,6 +119,13 @@ export function defineInterface(
     ? mapStringToStatus(opts.status)
     : opts.status ?? { type: "active", active: {} };
 
+  invariant(
+    status.type !== "deprecated"
+      || (status.deprecated && status.deprecated.message
+        && status.deprecated.deadline),
+    `Deprecated status must include message, deadline, and replacedBy properties.`,
+  );
+
   const a: InterfaceType = {
     apiName,
     displayMetadata: {
@@ -152,10 +169,9 @@ function mapStringToStatus(status: string): InterfaceTypeStatus {
     case "active":
       return { type: "active", active: {} as InterfaceTypeStatus_active };
     case "deprecated":
-      return {
-        type: "deprecated",
-        deprecated: {} as InterfaceTypeStatus_deprecated,
-      };
+      throw new Error(
+        `Deprecated status must be fully specified with message, deadline, and replacedBy properties.`,
+      );
     default:
       throw new Error(`Invalid status type: ${status}`);
   }
