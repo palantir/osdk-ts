@@ -49,6 +49,13 @@ export type { ValueTypeStatus } from "./generated/type-registry/api/ValueTypeSta
 export type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVersion.js";
 
 export type {
+  InterfaceTypeStatus,
+  InterfaceTypeStatus_active,
+  InterfaceTypeStatus_deprecated,
+  InterfaceTypeStatus_experimental,
+} from "./generated/ontology-metadata/api/InterfaceTypeStatus.js";
+
+export type {
   ApiNameValueTypeReference,
   ImportedSharedPropertyTypes,
   ImportedTypes,

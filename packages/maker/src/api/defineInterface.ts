@@ -23,7 +23,6 @@ import type {
   InterfaceTypeStatus,
   InterfaceTypeStatus_active,
   InterfaceTypeStatus_deprecated,
-  InterfaceTypeStatus_example,
   InterfaceTypeStatus_experimental,
   PropertyTypeType,
   SharedPropertyType,
@@ -150,8 +149,6 @@ function mapStringToStatus(status: string): InterfaceTypeStatus {
         type: "experimental",
         experimental: {} as InterfaceTypeStatus_experimental,
       };
-    case "example":
-      return { type: "example", example: {} as InterfaceTypeStatus_example };
     case "active":
       return { type: "active", active: {} as InterfaceTypeStatus_active };
     case "deprecated":

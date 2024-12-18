@@ -24,7 +24,6 @@ import type {
   InterfaceTypeStatus,
   InterfaceTypeStatus_active,
   InterfaceTypeStatus_deprecated,
-  InterfaceTypeStatus_example,
   InterfaceTypeStatus_experimental,
   OntologyIrInterfaceType,
   SharedPropertyTypeGothamMapping,
@@ -53,7 +52,6 @@ export type {
   InterfaceTypeStatus,
   InterfaceTypeStatus_active,
   InterfaceTypeStatus_deprecated,
-  InterfaceTypeStatus_example,
   InterfaceTypeStatus_experimental,
 };
 
