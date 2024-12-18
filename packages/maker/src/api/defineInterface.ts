@@ -20,7 +20,6 @@ import { defineSharedPropertyType } from "./defineSpt.js";
 import type { BlueprintIcon } from "./iconNames.js";
 import type {
   InterfaceType,
-  InterfaceTypeRid,
   InterfaceTypeStatus,
   InterfaceTypeStatus_active,
   InterfaceTypeStatus_experimental,
@@ -35,7 +34,6 @@ import type {
 export interface DeprecatedInterfaceTypeStatus {
   message: string;
   deadline: string;
-  replacedBy: InterfaceTypeRid | undefined;
 }
 
 export function defineInterface(
