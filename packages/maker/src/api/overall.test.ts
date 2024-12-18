@@ -27,6 +27,8 @@ import { defineSharedPropertyType } from "./defineSpt.js";
 import { defineValueType } from "./defineValueType.js";
 import type {
   InterfaceType,
+  InterfaceTypeRid,
+  InterfaceTypeStatus_deprecated,
   InterfaceTypeStatus_experimental,
 } from "./types.js";
 
@@ -1319,8 +1321,21 @@ describe("Ontology Defining", () => {
   it("sets interface status from opts as typed", () => {
     const customStatus = {
       type: "experimental",
-      experimental: {} as InterfaceTypeStatus_experimental,
-    };
+      experimental: {},
+    } as InterfaceTypeStatus_experimental;
+    const result = defineInterface({ apiName: "Foo", status: customStatus });
+    expect(result.status).toEqual(customStatus);
+  });
+
+  it("sets interface status as deprecated from opts as typed", () => {
+    const customStatus = {
+      type: "deprecated",
+      deprecated: {
+        message: "foo",
+        deadline: "foo",
+        replacedBy: "foo" as InterfaceTypeRid,
+      },
+    } as InterfaceTypeStatus_deprecated;
     const result = defineInterface({ apiName: "Foo", status: customStatus });
     expect(result.status).toEqual(customStatus);
   });
