@@ -523,7 +523,6 @@ export class ObjectSetListenerWebsocket {
       this.#logger?.error(error, "Error in onOutOfDate callback");
       this.#tryCatchOnError(sub, false, error);
     }
-    sub.listener.onOutOfDate();
   };
 
   #handleMessage_subscribeResponses = (
