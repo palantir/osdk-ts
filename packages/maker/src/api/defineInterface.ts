@@ -20,6 +20,11 @@ import { defineSharedPropertyType } from "./defineSpt.js";
 import type { BlueprintIcon } from "./iconNames.js";
 import type {
   InterfaceType,
+  InterfaceTypeStatus,
+  InterfaceTypeStatus_active,
+  InterfaceTypeStatus_deprecated,
+  InterfaceTypeStatus_example,
+  InterfaceTypeStatus_experimental,
   PropertyTypeType,
   SharedPropertyType,
 } from "./types.js";
@@ -30,10 +35,12 @@ export function defineInterface(
     displayName?: string;
     description?: string;
     icon?: { locator: BlueprintIcon; color: string };
+    status?: string | InterfaceTypeStatus;
     properties?: Record<
       string,
       SharedPropertyType | PropertyTypeType
     >;
+
     extends?: InterfaceType | InterfaceType[] | string | string[];
   },
 ): InterfaceType {
@@ -99,6 +106,10 @@ export function defineInterface(
     }
   }
 
+  const status: InterfaceTypeStatus = typeof opts.status === "string"
+    ? mapStringToStatus(opts.status)
+    : opts.status ?? { type: "active", active: {} };
+
   const a: InterfaceType = {
     apiName,
     displayMetadata: {
@@ -114,7 +125,7 @@ export function defineInterface(
     extendsInterfaces: extendsInterfaces,
     links: [],
     properties,
-    status: { type: "active", active: {} },
+    status: status,
   };
 
   return ontologyDefinition.interfaceTypes[apiName] = a;
@@ -130,4 +141,25 @@ function isPropertyTypeType(
     || (typeof v === "object" && v.type === "marking")
     || v === "short" || v === "string"
     || v === "timestamp";
+}
+
+function mapStringToStatus(status: string): InterfaceTypeStatus {
+  switch (status) {
+    case "experimental":
+      return {
+        type: "experimental",
+        experimental: {} as InterfaceTypeStatus_experimental,
+      };
+    case "example":
+      return { type: "example", example: {} as InterfaceTypeStatus_example };
+    case "active":
+      return { type: "active", active: {} as InterfaceTypeStatus_active };
+    case "deprecated":
+      return {
+        type: "deprecated",
+        deprecated: {} as InterfaceTypeStatus_deprecated,
+      };
+    default:
+      throw new Error(`Invalid status type: ${status}`);
+  }
 }

@@ -21,6 +21,11 @@ import type {
   ExampleValue,
   FailureMessage,
   ImportedTypes,
+  InterfaceTypeStatus,
+  InterfaceTypeStatus_active,
+  InterfaceTypeStatus_deprecated,
+  InterfaceTypeStatus_example,
+  InterfaceTypeStatus_experimental,
   OntologyIrInterfaceType,
   SharedPropertyTypeGothamMapping,
   StructFieldType,
@@ -44,6 +49,13 @@ export interface Ontology extends
   valueTypes: Record<string, ValueTypeDefinitionVersion[]>;
   importedTypes: ImportedTypes;
 }
+export type {
+  InterfaceTypeStatus,
+  InterfaceTypeStatus_active,
+  InterfaceTypeStatus_deprecated,
+  InterfaceTypeStatus_example,
+  InterfaceTypeStatus_experimental,
+};
 
 export interface InterfaceType extends
   Omit<
@@ -57,6 +69,7 @@ export interface InterfaceType extends
   >
 {
   properties: Record<string, SharedPropertyType>;
+  status: InterfaceTypeStatus;
 }
 
 export interface PropertyType {

@@ -25,7 +25,10 @@ import {
 } from "./defineOntology.js";
 import { defineSharedPropertyType } from "./defineSpt.js";
 import { defineValueType } from "./defineValueType.js";
-import type { InterfaceType } from "./types.js";
+import type {
+  InterfaceType,
+  InterfaceTypeStatus_experimental,
+} from "./types.js";
 
 describe("Ontology Defining", () => {
   beforeEach(() => {
@@ -1306,5 +1309,32 @@ describe("Ontology Defining", () => {
          ],
        }
     `);
+  });
+
+  it("defaults interface status to active", () => {
+    const result = defineInterface({ apiName: "Foo" });
+    expect(result.status).toEqual({ type: "active", active: {} });
+  });
+
+  it("sets interface status from opts as typed", () => {
+    const customStatus = {
+      type: "experimental",
+      experimental: {} as InterfaceTypeStatus_experimental,
+    };
+    const result = defineInterface({ apiName: "Foo", status: customStatus });
+    expect(result.status).toEqual(customStatus);
+  });
+
+  it("sets interface status from opts as string", () => {
+    const customStatusString = "experimental";
+    const customStatusTyped = {
+      type: "experimental",
+      experimental: {} as InterfaceTypeStatus_experimental,
+    };
+    const result = defineInterface({
+      apiName: "Foo",
+      status: customStatusString,
+    });
+    expect(result.status).toEqual(customStatusTyped);
   });
 });
