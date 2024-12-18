@@ -21,20 +21,14 @@ import type { BlueprintIcon } from "./iconNames.js";
 import type {
   InterfaceType,
   InterfaceTypeStatus,
-  InterfaceTypeStatus_active,
-  InterfaceTypeStatus_experimental,
   PropertyTypeType,
   SharedPropertyType,
 } from "./types.js";
 
-/**
- * This status indicates that the interface is reaching the end of its life and will be removed as per the
- * deadline specified.
- */
-export interface DeprecatedInterfaceTypeStatus {
-  message: string;
-  deadline: string;
-}
+type SimplifiedInterfaceTypeStatus =
+  | { type: "deprecated"; message: string; deadline: string }
+  | { type: "active" }
+  | { type: "experimental" };
 
 export function defineInterface(
   opts: {
@@ -42,7 +36,7 @@ export function defineInterface(
     displayName?: string;
     description?: string;
     icon?: { locator: BlueprintIcon; color: string };
-    status?: string | InterfaceTypeStatus;
+    status?: SimplifiedInterfaceTypeStatus;
     properties?: Record<
       string,
       SharedPropertyType | PropertyTypeType
@@ -113,15 +107,14 @@ export function defineInterface(
     }
   }
 
-  const status: InterfaceTypeStatus = typeof opts.status === "string"
-    ? mapStringToStatus(opts.status)
-    : opts.status ?? { type: "active", active: {} };
+  const status: InterfaceTypeStatus = mapSimplifiedStatusToInterfaceTypeStatus(
+    opts.status ?? { type: "active" },
+  );
 
   invariant(
     status.type !== "deprecated"
-      || (status.deprecated && status.deprecated.message
-        && status.deprecated.deadline),
-    `Deprecated status must include message, deadline, and replacedBy properties.`,
+      || (status.deprecated.message && status.deprecated.deadline),
+    `Deprecated status must include message and deadline properties.`,
   );
 
   const a: InterfaceType = {
@@ -157,20 +150,30 @@ function isPropertyTypeType(
     || v === "timestamp";
 }
 
-function mapStringToStatus(status: string): InterfaceTypeStatus {
-  switch (status) {
+function mapSimplifiedStatusToInterfaceTypeStatus(
+  status: SimplifiedInterfaceTypeStatus,
+): InterfaceTypeStatus {
+  switch (status.type) {
+    case "deprecated":
+      return {
+        type: "deprecated",
+        deprecated: {
+          message: status.message,
+          deadline: status.deadline,
+          replacedBy: undefined,
+        },
+      };
+    case "active":
+      return {
+        type: "active",
+        active: {},
+      };
     case "experimental":
       return {
         type: "experimental",
-        experimental: {} as InterfaceTypeStatus_experimental,
+        experimental: {},
       };
-    case "active":
-      return { type: "active", active: {} as InterfaceTypeStatus_active };
-    case "deprecated":
-      throw new Error(
-        `Deprecated status must be fully specified with message, deadline, and replacedBy properties.`,
-      );
     default:
-      throw new Error(`Invalid status type: ${status}`);
+      throw new Error(`Invalid status type: ${(status as any).type}`);
   }
 }

@@ -1317,37 +1317,30 @@ describe("Ontology Defining", () => {
     expect(result.status).toEqual({ type: "active", active: {} });
   });
 
-  it("sets interface status from opts as typed", () => {
-    const customStatus = {
+  it("sets interface status as experimental from opts as typed", () => {
+    const experimentalStatus = {
       type: "experimental",
       experimental: {},
     } as InterfaceTypeStatus_experimental;
-    const result = defineInterface({ apiName: "Foo", status: customStatus });
-    expect(result.status).toEqual(customStatus);
+    const result = defineInterface({
+      apiName: "Foo",
+      status: { type: "experimental" },
+    });
+    expect(result.status).toEqual(experimentalStatus);
   });
 
   it("sets interface status as deprecated from opts as typed", () => {
-    const customStatus = {
+    const deprecatedStatus = {
       type: "deprecated",
       deprecated: {
         message: "foo",
         deadline: "foo",
       },
     } as InterfaceTypeStatus_deprecated;
-    const result = defineInterface({ apiName: "Foo", status: customStatus });
-    expect(result.status).toEqual(customStatus);
-  });
-
-  it("sets interface status from opts as string", () => {
-    const customStatusString = "experimental";
-    const customStatusTyped = {
-      type: "experimental",
-      experimental: {} as InterfaceTypeStatus_experimental,
-    };
     const result = defineInterface({
       apiName: "Foo",
-      status: customStatusString,
+      status: { type: "deprecated", message: "foo", deadline: "foo" },
     });
-    expect(result.status).toEqual(customStatusTyped);
+    expect(result.status).toEqual(deprecatedStatus);
   });
 });
