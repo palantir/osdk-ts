@@ -17,10 +17,7 @@
 import type {
   ObjectOrInterfaceDefinition,
 } from "../ontology/ObjectOrInterface.js";
-import type {
-  ObjectMetadata,
-  PropertyDef,
-} from "../ontology/ObjectTypeDefinition.js";
+import type { ObjectMetadata } from "../ontology/ObjectTypeDefinition.js";
 import type { BaseWithPropertyObjectSet } from "./WithPropertyObjectSet.js";
 
 export type WithPropertyDefinition<

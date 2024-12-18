@@ -18,7 +18,6 @@ import type {
   CompileTimeMetadata,
   ConvertProps,
   InterfaceDefinition,
-  ObjectMetadata,
   ObjectSet,
   Osdk,
   PropertyKeys,

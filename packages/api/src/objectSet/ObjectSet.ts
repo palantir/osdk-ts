@@ -39,7 +39,6 @@ import type {
 } from "../ontology/ObjectOrInterface.js";
 import type {
   CompileTimeMetadata,
-  ObjectMetadata,
   ObjectTypeDefinition,
   PropertyDef,
 } from "../ontology/ObjectTypeDefinition.js";

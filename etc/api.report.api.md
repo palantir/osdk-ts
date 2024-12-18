@@ -1001,7 +1001,7 @@ export interface WithPropertyObjectSet<Q extends ObjectOrInterfaceDefinition> ex
 //
 // src/aggregate/AggregateOpts.ts:26:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:26:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
-// src/derivedProperties/WithPropertiesClause.ts:36:3 - (ae-forgotten-export) The symbol "BaseWithPropertyObjectSet" needs to be exported by the entry point index.d.ts
+// src/derivedProperties/WithPropertiesClause.ts:33:3 - (ae-forgotten-export) The symbol "BaseWithPropertyObjectSet" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
