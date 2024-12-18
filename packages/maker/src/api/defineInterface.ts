@@ -132,7 +132,7 @@ export function defineInterface(
     extendsInterfaces: extendsInterfaces,
     links: [],
     properties,
-    status: status,
+    status,
   };
 
   return ontologyDefinition.interfaceTypes[apiName] = a;
