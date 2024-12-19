@@ -330,6 +330,21 @@ const UPDATE_PACKAGE_JSON: Mutator = {
         `"@osdk/oauth": "workspace:*"`,
       )
       .replace(
+        // Use locally generated SDK in the monorepo
+        /"@osdk\/widget-client-react.unstable": "\^.*?"/,
+        `"@osdk/widget-client-react.unstable": "workspace:*"`,
+      )
+      .replace(
+        // Use locally generated SDK in the monorepo
+        /"@osdk\/widget-client.unstable": "\^.*?"/,
+        `"@osdk/widget-client.unstable": "workspace:*"`,
+      )
+      .replace(
+        // Use locally generated SDK in the monorepo
+        /"@osdk\/widget.vite-plugin.unstable": "\^.*?"/,
+        `"@osdk/widget.vite-plugin.unstable": "workspace:*"`,
+      )
+      .replace(
         // Follow monorepo package naming convention
         `"name": "${sdkVersionedTemplateExampleId(template, sdkVersion)}"`,
         `"name": "@osdk/examples.${
