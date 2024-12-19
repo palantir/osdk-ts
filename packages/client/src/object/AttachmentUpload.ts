@@ -17,18 +17,13 @@
 import type { AttachmentUpload } from "@osdk/api";
 
 export function isAttachmentUpload(o: any): o is AttachmentUpload {
-  return o instanceof Blob && "name" in o;
+  return typeof o === `object` && "name" in o && "data" in o
+    && o.data instanceof Blob;
 }
 
 export function createAttachmentUpload(
   data: Blob,
   name: string,
 ): AttachmentUpload {
-  const attachmentUpload = Object.create(data, {
-    name: { value: name },
-    size: { value: data.size },
-    type: { value: data.type },
-  });
-
-  return attachmentUpload as AttachmentUpload;
+  return { data, name };
 }

@@ -52,7 +52,7 @@ export async function toDataValueQueries(
       if (isAttachmentUpload(value)) {
         const attachment = await OntologiesV2.Attachments.upload(
           client,
-          value,
+          value.data,
           {
             filename: value.name,
           },
