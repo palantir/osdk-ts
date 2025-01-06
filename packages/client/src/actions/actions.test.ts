@@ -243,8 +243,8 @@ describe("actions", () => {
 
     const attachment = createAttachmentUpload(blob, "file1.txt");
 
-    // The File constructor is only available in Node 19.2.0 and above (https://developer.mozilla.org/en-US/docs/Web/API/File)
-    const fileAttachment = new File([blob], "file1.txt");
+    // Mimics the Web file API (https://developer.mozilla.org/en-US/docs/Web/API/File). The File constructor is only available in Node 19.2.0 and above
+    const fileAttachment = Object.assign(blob, { name: "file1.txt" });
 
     const result = await client(actionTakesAttachment).applyAction({
       attachment,
@@ -256,6 +256,9 @@ describe("actions", () => {
 
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
     expect(result).toBeUndefined();
+
+    expectTypeOf<typeof result2>().toEqualTypeOf<undefined>();
+    expect(result2).toBeUndefined();
   });
   it("conditionally returns edits in batch mode", async () => {
     const result = await client(moveOffice).batchApplyAction([

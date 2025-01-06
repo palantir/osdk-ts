@@ -153,7 +153,7 @@ describe(toDataValue, () => {
   });
 
   it("converts file attachment uploads correctly", async () => {
-    // This test relies on the File class which is only available for Node 20 and some versions of Node 19 and above.
+    // Mimics the Web file API (https://developer.mozilla.org/en-US/docs/Web/API/File). The File constructor is only available in Node 19.2.0 and above
     const file = new File(
       [
         stubData
