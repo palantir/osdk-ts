@@ -27,6 +27,7 @@ import { isOk } from "@osdk/api";
 import {
   $ontologyRid,
   BarInterface,
+  BgaoNflPlayer,
   Employee,
   FooInterface,
   Office,
@@ -202,6 +203,57 @@ describe("ObjectSet", () => {
       Osdk<Employee, PropertyKeys<Employee>>
     >;
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
+  });
+
+  it("check struct parsing", async () => {
+    const player = await client(BgaoNflPlayer).fetchOne(
+      "tkelce",
+    );
+    expectTypeOf<typeof player>().toMatchTypeOf<
+      Osdk<BgaoNflPlayer, PropertyKeys<BgaoNflPlayer>>
+    >;
+    expectTypeOf<typeof player.address>().toMatchTypeOf<
+      {
+        addressLine1: string | undefined;
+        addressLine2: string | undefined;
+        city: string | undefined;
+        state: string | undefined;
+        zipCode: number | undefined;
+      } | undefined
+    >;
+
+    const address1 = player.address!.addressLine1;
+    expectTypeOf<typeof address1>().toMatchTypeOf<
+      string | undefined
+    >;
+    expect(address1).toEqual("15 Muppets Lane");
+
+    const address2 = player.address?.addressLine2;
+    expectTypeOf<typeof address2>().toMatchTypeOf<
+      string | undefined
+    >;
+    expect(address2).toEqual("Resort No 4");
+
+    const city = player.address?.city;
+    expectTypeOf<typeof city>().toMatchTypeOf<
+      string | undefined
+    >;
+    expect(city).toEqual("Memphis");
+
+    const state = player.address?.state;
+    expectTypeOf<typeof state>().toMatchTypeOf<
+      string | undefined
+    >;
+    expect(state).toEqual("TN");
+
+    const zipCode = player.address?.zipCode;
+    expectTypeOf<typeof zipCode>().toMatchTypeOf<
+      number | undefined
+    >;
+    expect(zipCode).toEqual(11100);
+
+    expect(player.$primaryKey).toEqual(stubData.travisPlayer.__primaryKey);
+    expect(player.address).toEqual(stubData.travisPlayer.address);
   });
 
   it("allows fetching by PK from a base object set - fetchOneWithErrors", async () => {

@@ -1,5 +1,38 @@
 # @osdk/foundry-sdk-generator
 
+## 2.1.0-beta.20
+
+### Minor Changes
+
+- 9d35a1f: Remove unused imports
+- abfe4b3: Add support for reading struct properties.
+
+### Patch Changes
+
+- Updated dependencies [b773513]
+- Updated dependencies [9d35a1f]
+- Updated dependencies [abfe4b3]
+- Updated dependencies [c537e2d]
+- Updated dependencies [bf0e3b4]
+  - @osdk/client@2.1.0-beta.20
+  - @osdk/generator@2.1.0-beta.20
+  - @osdk/api@2.1.0-beta.20
+
+## 2.1.0-beta.19
+
+### Patch Changes
+
+- Updated dependencies [cddc196]
+- Updated dependencies [720218d]
+- Updated dependencies [eb27b54]
+- Updated dependencies [27f0f77]
+- Updated dependencies [a7a4aef]
+- Updated dependencies [6671a39]
+- Updated dependencies [a6c320d]
+  - @osdk/client@2.1.0-beta.19
+  - @osdk/api@2.1.0-beta.19
+  - @osdk/generator@2.1.0-beta.19
+
 ## 2.1.0-beta.18
 
 ### Patch Changes
