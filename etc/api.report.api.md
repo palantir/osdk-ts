@@ -204,7 +204,7 @@ export interface Attachment {
     rid: string;
 }
 
-// @public
+// @public (undocumented)
 export interface AttachmentUpload {
     // (undocumented)
     readonly data: Blob;

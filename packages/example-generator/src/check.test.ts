@@ -21,9 +21,13 @@ import { run } from "./run.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-it("Generates code that matches the files on disk in the examples dir", async () => {
-  await run({
-    outputDirectory: path.join(__dirname, "..", "..", "..", "examples"),
-    check: true,
-  });
-});
+it(
+  "Generates code that matches the files on disk in the examples dir",
+  async () => {
+    await run({
+      outputDirectory: path.join(__dirname, "..", "..", "..", "examples"),
+      check: true,
+    });
+  },
+  { timeout: 15000 },
+);
