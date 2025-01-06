@@ -1,5 +1,20 @@
 # @osdk/maker
 
+## 0.9.0-beta.20
+
+### Minor Changes
+
+- 9d35a1f: Remove unused imports
+- abfe4b3: Add support for reading struct properties.
+- 06e66dc: Making interface type status configurable
+
+### Patch Changes
+
+- Updated dependencies [9d35a1f]
+- Updated dependencies [abfe4b3]
+- Updated dependencies [c537e2d]
+  - @osdk/api@2.1.0-beta.20
+
 ## 0.9.0-beta.19
 
 ### Patch Changes

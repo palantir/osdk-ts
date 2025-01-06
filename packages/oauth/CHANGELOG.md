@@ -1,5 +1,11 @@
 # @osdk/oauth
 
+## 1.1.0-beta.5
+
+### Minor Changes
+
+- 9d35a1f: Remove unused imports
+
 ## 1.1.0-beta.4
 
 ### Minor Changes

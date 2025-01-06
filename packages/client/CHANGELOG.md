@@ -1,5 +1,25 @@
 # @osdk/client
 
+## 2.1.0-beta.20
+
+### Minor Changes
+
+- b773513: Fix onOutOfDate handler from being fired twice
+- 9d35a1f: Remove unused imports
+- abfe4b3: Add support for reading struct properties.
+- c537e2d: Remove unused imports.
+
+### Patch Changes
+
+- Updated dependencies [9d35a1f]
+- Updated dependencies [abfe4b3]
+- Updated dependencies [c537e2d]
+- Updated dependencies [bf0e3b4]
+- Updated dependencies [06e66dc]
+  - @osdk/generator-converters@2.1.0-beta.20
+  - @osdk/client.unstable@2.1.0-beta.20
+  - @osdk/api@2.1.0-beta.20
+
 ## 2.1.0-beta.19
 
 ### Minor Changes

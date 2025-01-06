@@ -1,5 +1,12 @@
 # @osdk/create-widget.template.react.v2
 
+## 2.0.0-beta.5
+
+### Minor Changes
+
+- adf3b12: Rename @osdk/widget-manifest-vite-plugin to @osdk/widget.vite-plugin.unstable
+- 23754dd: Correct widget template package dependency versions
+
 ## 2.0.0-beta.4
 
 ### Patch Changes
