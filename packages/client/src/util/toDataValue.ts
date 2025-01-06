@@ -59,6 +59,17 @@ export async function toDataValue(
     return await toDataValue(attachment.rid, client);
   }
 
+  if (typeof value === "object" && value instanceof Blob && "name" in value) {
+    const attachment = await OntologiesV2.Attachments.upload(
+      client,
+      value,
+      {
+        filename: value.name as string,
+      },
+    );
+    return await toDataValue(attachment.rid, client);
+  }
+
   // objects just send the JSON'd primaryKey
   if (isOntologyObjectV2(value)) {
     return await toDataValue(value.__primaryKey, client);

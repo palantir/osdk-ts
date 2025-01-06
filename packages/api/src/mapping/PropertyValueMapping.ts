@@ -50,7 +50,7 @@ export interface PropertyValueWireToClient {
  * Map from the PropertyDefinition type to the typescript type that we accept
  */
 export interface PropertyValueClientToWire {
-  attachment: string | AttachmentUpload;
+  attachment: string | AttachmentUpload | Blob & { readonly name: string };
   boolean: boolean;
   byte: number;
   datetime: string;

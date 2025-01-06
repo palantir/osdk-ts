@@ -141,11 +141,28 @@ describe(toDataValue, () => {
     expect(definitionConversion).toMatchInlineSnapshot(expected);
   });
 
-  it("converts attachment uploads correctly", async () => {
+  it("converts blob attachment uploads correctly", async () => {
     const blob =
       stubData.attachmentUploadRequestBody[stubData.localAttachment1.filename];
     const attachmentUpload = createAttachmentUpload(blob, "file1.txt");
     const converted = await toDataValue(attachmentUpload, clientCtx);
+
+    expect(converted).toEqual(
+      "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
+    );
+  });
+
+  it("converts file attachment uploads correctly", async () => {
+    // This test relies on the File class which is only available for Node 20 and some versions of Node 19 and above.
+    const file = new File(
+      [
+        stubData
+          .attachmentUploadRequestBody[stubData.localAttachment1.filename],
+      ],
+      "file1.txt",
+    );
+
+    const converted = await toDataValue(file, clientCtx);
 
     expect(converted).toEqual(
       "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",

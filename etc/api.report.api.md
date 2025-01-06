@@ -245,7 +245,9 @@ export type ConvertProps<FROM extends ObjectOrInterfaceDefinition, TO extends Va
 // @public
 export interface DataValueClientToWire {
     // (undocumented)
-    attachment: string | AttachmentUpload;
+    attachment: string | AttachmentUpload | Blob & {
+        readonly name: string;
+    };
     // (undocumented)
     boolean: boolean;
     // (undocumented)

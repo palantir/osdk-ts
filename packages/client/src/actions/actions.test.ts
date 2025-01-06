@@ -217,10 +217,24 @@ describe("actions", () => {
       typeof clientBoundBatchActionTakesAttachment
     >[0];
 
-    expectTypeOf<{ attachment: string | AttachmentUpload }>().toMatchTypeOf<
+    expectTypeOf<
+      {
+        attachment:
+          | string
+          | AttachmentUpload
+          | Blob & { readonly name: string };
+      }
+    >().toMatchTypeOf<
       InferredParamType
     >();
-    expectTypeOf<{ attachment: string | AttachmentUpload }[]>().toMatchTypeOf<
+    expectTypeOf<
+      {
+        attachment:
+          | string
+          | AttachmentUpload
+          | Blob & { readonly name: string };
+      }[]
+    >().toMatchTypeOf<
       InferredBatchParamType
     >();
 
@@ -228,8 +242,16 @@ describe("actions", () => {
       stubData.attachmentUploadRequestBody[stubData.localAttachment1.filename];
 
     const attachment = createAttachmentUpload(blob, "file1.txt");
+
+    // The File constructor is only available in Node 19.2.0 and above (https://developer.mozilla.org/en-US/docs/Web/API/File)
+    const fileAttachment = new File([blob], "file1.txt");
+
     const result = await client(actionTakesAttachment).applyAction({
       attachment,
+    });
+
+    const result2 = await client(actionTakesAttachment).applyAction({
+      attachment: fileAttachment,
     });
 
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
