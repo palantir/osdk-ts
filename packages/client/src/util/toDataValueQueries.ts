@@ -60,6 +60,19 @@ export async function toDataValueQueries(
         return attachment.rid;
       }
 
+      if (
+        typeof value === "object" && value instanceof Blob && "name" in value
+      ) {
+        const attachment = await OntologiesV2.Attachments.upload(
+          client,
+          value,
+          {
+            filename: value.name as string,
+          },
+        );
+        return attachment.rid;
+      }
+
       // If it's not an upload, it's just an attachment rid string which we can pass through
       return value;
     }
