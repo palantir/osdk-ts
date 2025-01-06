@@ -1,5 +1,16 @@
 # @osdk/widget.vite-plugin.unstable
 
+## 2.0.0-beta.5
+
+### Minor Changes
+
+- e1649c2: Handle Vite plugin injections in Custom Widget Vite plugin
+- adf3b12: Rename @osdk/widget-manifest-vite-plugin to @osdk/widget.vite-plugin.unstable
+
+### Patch Changes
+
+- @osdk/widget-api.unstable@2.0.0-beta.5
+
 ## 2.0.0-beta.4
 
 ### Patch Changes

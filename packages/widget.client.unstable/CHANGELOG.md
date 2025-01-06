@@ -1,5 +1,20 @@
 # @osdk/widget-client.unstable
 
+## 2.0.0-beta.5
+
+### Minor Changes
+
+- 9d35a1f: Remove unused imports
+
+### Patch Changes
+
+- Updated dependencies [b773513]
+- Updated dependencies [9d35a1f]
+- Updated dependencies [abfe4b3]
+- Updated dependencies [c537e2d]
+  - @osdk/client@2.1.0-beta.20
+  - @osdk/widget-api.unstable@2.0.0-beta.5
+
 ## 2.0.0-beta.4
 
 ### Major Changes
