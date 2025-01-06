@@ -154,12 +154,9 @@ describe(toDataValue, () => {
 
   it("converts file attachment uploads correctly", async () => {
     // Mimics the Web file API (https://developer.mozilla.org/en-US/docs/Web/API/File). The File constructor is only available in Node 19.2.0 and above
-    const file = new File(
-      [
-        stubData
-          .attachmentUploadRequestBody[stubData.localAttachment1.filename],
-      ],
-      "file1.txt",
+    const file = Object.assign(
+      stubData.attachmentUploadRequestBody[stubData.localAttachment1.filename],
+      { name: "file1.txt" },
     );
 
     const converted = await toDataValue(file, clientCtx);
