@@ -107,7 +107,10 @@ export type {
   ThreeDimensionalQueryAggregationDefinition,
   TwoDimensionalQueryAggregationDefinition,
 } from "./ontology/QueryDefinition.js";
-export type { WirePropertyTypes } from "./ontology/WirePropertyTypes.js";
+export type {
+  SimpleWirePropertyTypes,
+  WirePropertyTypes,
+} from "./ontology/WirePropertyTypes.js";
 export type { OsdkBase, PrimaryKeyType } from "./OsdkBase.js";
 export type { OsdkObject } from "./OsdkObject.js";
 export type { ConvertProps, Osdk } from "./OsdkObjectFrom.js";

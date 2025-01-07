@@ -16,7 +16,6 @@
 
 import type { ObjectMetadata } from "@osdk/api";
 import type {
-  Icon,
   ObjectTypeFullMetadata,
   PropertyApiName,
   PropertyV2,
@@ -83,7 +82,7 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
           value,
           !(v2 && objectTypeWithLink.objectType.primaryKey === key),
         ),
-      ]),
+      ]).filter(([key, value]) => value != null),
     ),
     implements: objectTypeWithLink.implementsInterfaces as string[],
     interfaceMap,

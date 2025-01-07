@@ -18,15 +18,12 @@ import type {
   OntologyIr,
   OntologyIrInterfaceType,
   OntologyIrInterfaceTypeBlockDataV2,
-  OntologyIrOntologyBlockDataV2,
   OntologyIrSharedPropertyType,
   OntologyIrSharedPropertyTypeBlockDataV2,
   OntologyIrStructFieldType,
   OntologyIrType,
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
-  StructFieldType,
-  Type,
 } from "@osdk/client.unstable";
 import type {
   InterfaceType,

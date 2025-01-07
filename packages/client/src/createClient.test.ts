@@ -19,8 +19,10 @@ import * as SharedClientContext from "@osdk/shared.client.impl";
 import { mockFetchResponse, MockOntology } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { metadataCacheClient } from "./__unstable/ConjureSupport.js";
 import type { Client } from "./Client.js";
 import { createClient } from "./createClient.js";
+import * as MakeConjureContext from "./ontology/makeConjureContext.js";
 import { USER_AGENT } from "./util/UserAgent.js";
 
 describe(createClient, () => {
@@ -72,7 +74,7 @@ describe(createClient, () => {
   describe("check url formatting", () => {
     it("urls are correctly formatted", async () => {
       const spy = vi.spyOn(SharedClientContext, "createSharedClientContext");
-      createClient(
+      const client = createClient(
         "https://mock.com",
         MockOntology.metadata.ontologyRid,
         async () => "Token",
@@ -107,6 +109,23 @@ describe(createClient, () => {
         fetchFunction,
       );
       expect(spy.mock.calls[3][0]).toBe("https://mock3.com/stuff/first/foo/");
+
+      const conjureContextSpy = vi.spyOn(
+        MakeConjureContext,
+        "makeConjureContext",
+      );
+
+      metadataCacheClient(
+        {
+          baseUrl: "https://mock4.com/",
+          ontologyProvider: { getObjectDefinition: async () => ({}) },
+        } as any,
+      );
+
+      expect(
+        conjureContextSpy.mock.results[0].value["baseUrl"]
+          + conjureContextSpy.mock.results[0].value["servicePath"],
+      ).toBe("https://mock4.com/ontology-metadata/api");
     });
   });
 });

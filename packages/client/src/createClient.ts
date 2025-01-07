@@ -37,10 +37,7 @@ import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
   __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
 } from "@osdk/api/unstable";
-import {
-  OntologiesV2,
-  OntologyObjectSets,
-} from "@osdk/internal.foundry.ontologiesv2";
+import { OntologyObjectSets } from "@osdk/internal.foundry.ontologiesv2";
 import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.client";
 import { symbolClientContext } from "@osdk/shared.client2";
 import { createBulkLinksAsyncIterFactory } from "./__unstable/createBulkLinksAsyncIterFactory.js";

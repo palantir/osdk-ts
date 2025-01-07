@@ -17,7 +17,6 @@
 import type { BBox, Point, Polygon } from "geojson";
 import type {
   ObjectOrInterfaceDefinition,
-  PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
 import type {
   CompileTimeMetadata,
@@ -25,7 +24,7 @@ import type {
 } from "../ontology/ObjectTypeDefinition.js";
 import type { IsNever } from "../OsdkObjectFrom.js";
 import type { ArrayFilter } from "./ArrayFilter.js";
-import type { BaseFilter, BaseFilterOptions } from "./BaseFilter.js";
+import type { BaseFilter } from "./BaseFilter.js";
 import type { BooleanFilter } from "./BooleanFilter.js";
 import type { DatetimeFilter } from "./DatetimeFilter.js";
 import type { GeoFilter } from "./GeoFilter.js";

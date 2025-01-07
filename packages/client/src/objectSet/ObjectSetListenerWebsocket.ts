@@ -35,10 +35,6 @@ import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
 import type { Logger } from "../Logger.js";
 import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
-import {
-  convertWireToOsdkObjects,
-  convertWireToOsdkObjects2,
-} from "../object/convertWireToOsdkObjects.js";
 
 const MINIMUM_RECONNECT_DELAY_MS = 5 * 1000;
 
@@ -527,7 +523,6 @@ export class ObjectSetListenerWebsocket {
       this.#logger?.error(error, "Error in onOutOfDate callback");
       this.#tryCatchOnError(sub, false, error);
     }
-    sub.listener.onOutOfDate();
   };
 
   #handleMessage_subscribeResponses = (
