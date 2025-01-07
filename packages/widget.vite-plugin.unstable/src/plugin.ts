@@ -268,7 +268,7 @@ export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
               res.end(
                 JSON.stringify({
                   redirectUrl:
-                    `${foundryUrl.origin}/workspace/custom-views/preview/${foundryConfig.foundryConfig.widget.rid}`,
+                    `${foundryUrl.origin}/workspace/custom-widgets/preview/${foundryConfig.foundryConfig.widget.rid}`,
                 }),
               );
             } catch (error: any) {
@@ -588,7 +588,7 @@ function setWidgetSettings(
     entrypointCss: [],
   };
   return fetch(
-    `${foundryUrl.origin}/view-registry/api/dev-mode/settings/${widgetRid}`,
+    `${foundryUrl.origin}/widget-registry/api/dev-mode/settings/${widgetRid}`,
     {
       body: JSON.stringify(widgetDevModeSettings),
       method: "PUT",
@@ -602,7 +602,7 @@ function setWidgetSettings(
 }
 
 function enableDevMode(foundryUrl: URL) {
-  return fetch(`${foundryUrl.origin}/view-registry/api/dev-mode/enable`, {
+  return fetch(`${foundryUrl.origin}/widget-registry/api/dev-mode/enable`, {
     method: "POST",
     headers: {
       authorization: `Bearer ${process.env.FOUNDRY_TOKEN}`,
