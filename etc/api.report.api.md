@@ -204,8 +204,10 @@ export interface Attachment {
     rid: string;
 }
 
-// @public
-export interface AttachmentUpload extends Blob {
+// @public (undocumented)
+export interface AttachmentUpload {
+    // (undocumented)
+    readonly data: Blob;
     // (undocumented)
     readonly name: string;
 }
@@ -243,7 +245,9 @@ export type ConvertProps<FROM extends ObjectOrInterfaceDefinition, TO extends Va
 // @public
 export interface DataValueClientToWire {
     // (undocumented)
-    attachment: string | AttachmentUpload;
+    attachment: string | AttachmentUpload | Blob & {
+        readonly name: string;
+    };
     // (undocumented)
     boolean: boolean;
     // (undocumented)

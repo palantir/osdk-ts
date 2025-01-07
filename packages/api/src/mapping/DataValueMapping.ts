@@ -50,7 +50,7 @@ export interface DataValueWireToClient {
  * Map from the DataValue type to the typescript type that we accept
  */
 export interface DataValueClientToWire {
-  attachment: string | AttachmentUpload;
+  attachment: string | AttachmentUpload | Blob & { readonly name: string };
   boolean: boolean;
   byte: number;
   datetime: string;
