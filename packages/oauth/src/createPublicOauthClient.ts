@@ -15,7 +15,7 @@
  */
 
 import delay from "delay";
-import type { Client, HttpRequestOptions } from "oauth4webapi";
+import type { HttpRequestOptions } from "oauth4webapi";
 import {
   authorizationCodeGrantRequest,
   calculatePKCECodeChallenge,
@@ -33,6 +33,7 @@ import {
   removeLocal,
   saveLocal,
 } from "./common.js";
+import type { EnhancedOauthClient } from "./EnhancedOauthClient.js";
 import type { PublicOauthClient } from "./PublicOauthClient.js";
 import { throwIfError } from "./throwIfError.js";
 import type { Token } from "./Token.js";
@@ -75,6 +76,11 @@ export interface PublicOauthClientOptions {
    * Context path for the authorization server (defaults to "multipass")
    */
   ctxPath?: string;
+
+  /**
+   * Allows for an additional value to be appended to the local storage key for the refresh token.
+   */
+  refreshTokenMarker?: string;
 }
 
 /**
@@ -129,6 +135,7 @@ export function createPublicOauthClient(
   fetchFn?: typeof globalThis.fetch,
   ctxPath?: string,
 ): PublicOauthClient {
+  let refreshTokenMarker: string | undefined;
   ({
     useHistory,
     loginPage,
@@ -136,6 +143,7 @@ export function createPublicOauthClient(
     scopes,
     fetchFn,
     ctxPath,
+    refreshTokenMarker,
   } = processOptionsAndAssignDefaults(
     url,
     redirect_uri,
@@ -147,7 +155,11 @@ export function createPublicOauthClient(
     ctxPath,
   ));
 
-  const client: Client = { client_id, token_endpoint_auth_method: "none" };
+  const client: EnhancedOauthClient = {
+    client_id,
+    token_endpoint_auth_method: "none",
+    $refreshTokenMarker: refreshTokenMarker,
+  };
   const authServer = createAuthorizationServer(ctxPath, url);
   const oauthHttpOptions: HttpRequestOptions = { [customFetch]: fetchFn };
 
