@@ -16,7 +16,6 @@
 
 import type {
   AuthorizationServer,
-  Client,
   HttpRequestOptions,
   OAuth2TokenEndpointResponse,
 } from "oauth4webapi";
@@ -24,6 +23,7 @@ import { processRevocationResponse, revocationRequest } from "oauth4webapi";
 import invariant from "tiny-invariant";
 import { TypedEventTarget } from "typescript-event-target";
 import type { BaseOauthClient, Events } from "./BaseOauthClient.js";
+import type { EnhancedOauthClient } from "./EnhancedOauthClient.js";
 import { throwIfError } from "./throwIfError.js";
 import type { Token } from "./Token.js";
 
@@ -71,51 +71,63 @@ export type SessionStorageState =
     oldUrl?: never;
   };
 
-export function saveLocal(client: Client, x: LocalStorageState): void {
+function localStorageKey(client: EnhancedOauthClient) {
+  return `@osdk/oauth : refresh : ${client.client_id}${
+    client.$refreshTokenMarker ? ` : ${client.$refreshTokenMarker}` : ""
+  }`;
+}
+
+export function saveLocal(
+  client: EnhancedOauthClient,
+  x: LocalStorageState,
+): void {
   // MUST `localStorage?` as nodejs does not have localStorage
   globalThis.localStorage?.setItem(
-    `@osdk/oauth : refresh : ${client.client_id}`,
+    localStorageKey(client),
     JSON.stringify(x),
   );
 }
 
-export function removeLocal(client: Client): void {
+export function removeLocal(client: EnhancedOauthClient): void {
   // MUST `localStorage?` as nodejs does not have localStorage
   globalThis.localStorage?.removeItem(
-    `@osdk/oauth : refresh : ${client.client_id}`,
+    localStorageKey(client),
   );
 }
 
-export function readLocal(client: Client): LocalStorageState {
+export function readLocal(client: EnhancedOauthClient): LocalStorageState {
   return JSON.parse(
     // MUST `localStorage?` as nodejs does not have localStorage
     globalThis.localStorage?.getItem(
-      `@osdk/oauth : refresh : ${client.client_id}`,
+      localStorageKey(client),
     )
       ?? "{}",
   );
 }
 
-export function saveSession(client: Client, x: SessionStorageState) {
+export function saveSession(
+  client: EnhancedOauthClient,
+  x: SessionStorageState,
+) {
   // MUST `sessionStorage?` as nodejs does not have sessionStorage
   globalThis.sessionStorage?.setItem(
-    `@osdk/oauth : refresh : ${client.client_id}`,
+    localStorageKey(client),
     JSON.stringify(x),
   );
 }
 
-export function removeSession(client: Client) {
+export function removeSession(client: EnhancedOauthClient) {
   // MUST `sessionStorage?` as nodejs does not have sessionStorage
   globalThis.sessionStorage?.removeItem(
-    `@osdk/oauth : refresh : ${client.client_id}`,
+    localStorageKey(client),
   );
 }
 
-export function readSession(client: Client): SessionStorageState {
+export function readSession(client: EnhancedOauthClient): SessionStorageState {
   return JSON.parse(
     // MUST `sessionStorage?` as nodejs does not have sessionStorage
     globalThis.sessionStorage?.getItem(
-      `@osdk/oauth : refresh : ${client.client_id}`,
+      localStorageKey(client),
     )
       ?? "{}",
   );
@@ -124,7 +136,7 @@ export function readSession(client: Client): SessionStorageState {
 export function common<
   R extends undefined | (() => Promise<Token | undefined>),
 >(
-  client: Client,
+  client: EnhancedOauthClient,
   as: AuthorizationServer,
   _signIn: () => Promise<Token>,
   oauthHttpOptions: HttpRequestOptions,
@@ -255,7 +267,7 @@ export function createAuthorizationServer(
     | "revocation_endpoint"
   >
 > {
-  const issuer = `${new URL(ctxPath, url)}`;
+  const issuer = `${new URL(ctxPath, url + "/")}`;
   return {
     token_endpoint: `${issuer}/api/oauth2/token`,
     authorization_endpoint: `${issuer}/api/oauth2/authorize`,

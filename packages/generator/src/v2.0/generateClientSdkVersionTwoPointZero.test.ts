@@ -520,6 +520,7 @@ describe("generator", () => {
       export * as $Objects from './ontology/objects';
       export { getCount, returnsTodo } from './ontology/queries';
       export * as $Queries from './ontology/queries';
+      export { $osdkMetadata } from './OntologyMetadata';
       export { $ontologyRid } from './OntologyMetadata';
       ",
         "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos';
@@ -1138,6 +1139,7 @@ describe("generator", () => {
         export * as $Objects from './ontology/objects.js';
         export { getCount, returnsTodo } from './ontology/queries.js';
         export * as $Queries from './ontology/queries.js';
+        export { $osdkMetadata } from './OntologyMetadata.js';
         export { $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos.js';
@@ -2088,6 +2090,7 @@ describe("generator", () => {
         export * as $Objects from './ontology/objects.js';
         export {} from './ontology/queries.js';
         export * as $Queries from './ontology/queries.js';
+        export { $osdkMetadata } from './OntologyMetadata.js';
         export { $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export {};
