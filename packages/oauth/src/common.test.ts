@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { readLocal, removeLocal, saveLocal } from "./common.js";
 
 describe("local functions", () => {
@@ -24,6 +24,10 @@ describe("local functions", () => {
       removeItem: vi.fn(),
       getItem: vi.fn(),
     });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it("should use the old style keys when there is no refresh token marker", () => {
