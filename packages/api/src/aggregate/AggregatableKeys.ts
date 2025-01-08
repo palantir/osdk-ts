@@ -15,8 +15,8 @@
  */
 
 import type {
-  NumericDeriveAggregateOption,
-  StringDeriveAggregateOption,
+  NumericWithPropAggregateOption,
+  StringWithPropAggregateOption,
 } from "../derivedProperties/WithPropertyObjectSet.js";
 import type {
   GetWirePropertyValueFromClient,
@@ -37,9 +37,9 @@ export type NumericAggregateOption =
   | "exactDistinct";
 
 type AGG_FOR_TYPE<T, U extends boolean> = number extends T
-  ? U extends true ? NumericAggregateOption : NumericDeriveAggregateOption
+  ? U extends true ? NumericAggregateOption : NumericWithPropAggregateOption
   : string extends T
-    ? U extends true ? StringAggregateOption : StringDeriveAggregateOption
+    ? U extends true ? StringAggregateOption : StringWithPropAggregateOption
   : never;
 
 export type ValidAggregationKeys<
