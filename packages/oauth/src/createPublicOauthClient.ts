@@ -15,7 +15,7 @@
  */
 
 import delay from "delay";
-import type { HttpRequestOptions } from "oauth4webapi";
+import type { Client, HttpRequestOptions } from "oauth4webapi";
 import {
   authorizationCodeGrantRequest,
   calculatePKCECodeChallenge,
@@ -36,7 +36,6 @@ import {
   saveLocal,
   saveSession,
 } from "./common.js";
-import type { EnhancedOauthClient } from "./EnhancedOauthClient.js";
 import type { PublicOauthClient } from "./PublicOauthClient.js";
 import { throwIfError } from "./throwIfError.js";
 import type { Token } from "./Token.js";
@@ -158,10 +157,9 @@ export function createPublicOauthClient(
     ctxPath,
   ));
 
-  const client: EnhancedOauthClient = {
+  const client: Client = {
     client_id,
     token_endpoint_auth_method: "none",
-    $refreshTokenMarker: refreshTokenMarker,
   };
   const authServer = createAuthorizationServer(ctxPath, url);
   const oauthHttpOptions: HttpRequestOptions = { [customFetch]: fetchFn };
@@ -172,6 +170,7 @@ export function createPublicOauthClient(
     _signIn,
     oauthHttpOptions,
     maybeRefresh.bind(globalThis, true),
+    refreshTokenMarker,
   );
 
   // as an arrow function, `useHistory` is known to be a boolean
@@ -188,8 +187,10 @@ export function createPublicOauthClient(
   async function maybeRefresh(
     expectRefreshToken?: boolean,
   ): Promise<Token | undefined> {
-    const { refresh_token } = readLocal(client);
-    if (!refresh_token) {
+    const { refresh_token, refreshTokenMarker: lastRefreshTokenMarker } =
+      readLocal(client);
+
+    if (!refresh_token || lastRefreshTokenMarker !== refreshTokenMarker) {
       if (expectRefreshToken) throw new Error("No refresh token found");
       return;
     }

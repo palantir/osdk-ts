@@ -16,6 +16,7 @@
 
 import type {
   AuthorizationServer,
+  Client,
   HttpRequestOptions,
   OAuth2TokenEndpointResponse,
 } from "oauth4webapi";
@@ -23,7 +24,6 @@ import { processRevocationResponse, revocationRequest } from "oauth4webapi";
 import invariant from "tiny-invariant";
 import { TypedEventTarget } from "typescript-event-target";
 import type { BaseOauthClient, Events } from "./BaseOauthClient.js";
-import type { EnhancedOauthClient } from "./EnhancedOauthClient.js";
 import { throwIfError } from "./throwIfError.js";
 import type { Token } from "./Token.js";
 
@@ -49,7 +49,10 @@ declare const process: {
   env: Record<string, string | undefined>;
 };
 
-export type LocalStorageState = { refresh_token?: string };
+export interface LocalStorageState {
+  refresh_token?: string;
+  refreshTokenMarker?: string;
+}
 
 export type SessionStorageState =
   // when we are going to the login page
@@ -71,16 +74,11 @@ export type SessionStorageState =
     oldUrl?: never;
   };
 
-function localStorageKey(client: EnhancedOauthClient) {
-  return `@osdk/oauth : refresh : ${client.client_id}${
-    client.$refreshTokenMarker ? ` : ${client.$refreshTokenMarker}` : ""
-  }`;
+function localStorageKey(client: Client) {
+  return `@osdk/oauth : refresh : ${client.client_id}`;
 }
 
-export function saveLocal(
-  client: EnhancedOauthClient,
-  x: LocalStorageState,
-): void {
+export function saveLocal(client: Client, x: LocalStorageState) {
   // MUST `localStorage?` as nodejs does not have localStorage
   globalThis.localStorage?.setItem(
     localStorageKey(client),
@@ -88,14 +86,14 @@ export function saveLocal(
   );
 }
 
-export function removeLocal(client: EnhancedOauthClient): void {
+export function removeLocal(client: Client) {
   // MUST `localStorage?` as nodejs does not have localStorage
   globalThis.localStorage?.removeItem(
     localStorageKey(client),
   );
 }
 
-export function readLocal(client: EnhancedOauthClient): LocalStorageState {
+export function readLocal(client: Client): LocalStorageState {
   return JSON.parse(
     // MUST `localStorage?` as nodejs does not have localStorage
     globalThis.localStorage?.getItem(
@@ -105,10 +103,7 @@ export function readLocal(client: EnhancedOauthClient): LocalStorageState {
   );
 }
 
-export function saveSession(
-  client: EnhancedOauthClient,
-  x: SessionStorageState,
-) {
+export function saveSession(client: Client, x: SessionStorageState) {
   // MUST `sessionStorage?` as nodejs does not have sessionStorage
   globalThis.sessionStorage?.setItem(
     localStorageKey(client),
@@ -116,14 +111,14 @@ export function saveSession(
   );
 }
 
-export function removeSession(client: EnhancedOauthClient) {
+export function removeSession(client: Client) {
   // MUST `sessionStorage?` as nodejs does not have sessionStorage
   globalThis.sessionStorage?.removeItem(
     localStorageKey(client),
   );
 }
 
-export function readSession(client: EnhancedOauthClient): SessionStorageState {
+export function readSession(client: Client): SessionStorageState {
   return JSON.parse(
     // MUST `sessionStorage?` as nodejs does not have sessionStorage
     globalThis.sessionStorage?.getItem(
@@ -136,11 +131,12 @@ export function readSession(client: EnhancedOauthClient): SessionStorageState {
 export function common<
   R extends undefined | (() => Promise<Token | undefined>),
 >(
-  client: EnhancedOauthClient,
+  client: Client,
   as: AuthorizationServer,
   _signIn: () => Promise<Token>,
   oauthHttpOptions: HttpRequestOptions,
   refresh: R,
+  refreshTokenMarker: string | undefined,
 ): {
   getToken: BaseOauthClient<keyof Events & string> & { refresh: R };
   makeTokenAndSaveRefresh: (
@@ -157,7 +153,10 @@ export function common<
   ): Token {
     const { refresh_token, expires_in, access_token } = resp;
     invariant(expires_in != null);
-    saveLocal(client, { refresh_token });
+    saveLocal(client, {
+      refresh_token,
+      refreshTokenMarker,
+    });
     token = {
       refresh_token,
       expires_in,

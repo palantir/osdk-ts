@@ -65,6 +65,6 @@ export function processOptionsAndAssignDefaults(
     scopes: options.scopes ?? ["api:read-data", "api:write-data"],
     fetchFn: options.fetchFn ?? globalThis.fetch,
     ctxPath: options.ctxPath ?? "multipass",
-    refreshTokenMarker: options.ctxPath,
+    refreshTokenMarker: options.refreshTokenMarker,
   };
 }

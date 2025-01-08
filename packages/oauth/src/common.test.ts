@@ -15,7 +15,13 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { readLocal, removeLocal, saveLocal } from "./common.js";
+import {
+  common,
+  createAuthorizationServer,
+  readLocal,
+  removeLocal,
+  saveLocal,
+} from "./common.js";
 
 describe("local functions", () => {
   beforeEach(() => {
@@ -56,30 +62,41 @@ describe("local functions", () => {
     );
   });
 
-  it("should respect the refresh token marker", () => {
+  it("should save the refreshTokenMaker if it exists", () => {
     const client = {
       client_id: "hi_mom",
-      $refreshTokenMarker: "magic_marker_friend",
     };
 
-    const localStorageKey =
-      `@osdk/oauth : refresh : ${client.client_id} : ${client.$refreshTokenMarker}`;
+    const signIn = vi.fn();
+    const refresh = vi.fn();
 
-    readLocal(client);
-    removeLocal(client);
-    saveLocal(client, {});
-
-    expect(vi.mocked(globalThis.localStorage.getItem)).toBeCalledWith(
-      localStorageKey,
+    const authServer = createAuthorizationServer(
+      "multipass",
+      "https://stack.palantir.com",
     );
 
-    expect(vi.mocked(globalThis.localStorage.setItem)).toBeCalledWith(
-      localStorageKey,
-      expect.anything(),
+    const { makeTokenAndSaveRefresh } = common(
+      client,
+      authServer,
+      signIn,
+      {},
+      refresh,
+      "marker marker",
     );
 
-    expect(vi.mocked(globalThis.localStorage.removeItem)).toBeCalledWith(
-      localStorageKey,
+    makeTokenAndSaveRefresh({
+      refresh_token: "refresh",
+      access_token: "access",
+      token_type: "idk",
+      expires_in: 10_000,
+    }, "signIn");
+
+    expect(globalThis.localStorage.setItem).toBeCalledWith(
+      `@osdk/oauth : refresh : ${client.client_id}`,
+      JSON.stringify({
+        refresh_token: "refresh",
+        refreshTokenMarker: "marker marker",
+      }),
     );
   });
 });
