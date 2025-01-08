@@ -22,7 +22,7 @@ import type {
   WithPropertiesClause,
   WithPropertyDefinition,
 } from "../derivedProperties/WithPropertiesClause.js";
-import type { PropertyValueWireToClient } from "../mapping/PropertyValueMapping.js";
+import type { GetWirePropertyValueFromClient } from "../mapping/PropertyValueMapping.js";
 import type {
   AsyncIterArgs,
   Augments,
@@ -286,8 +286,11 @@ type WithPropertiesObjectDefinition<
     props: {
       [T in Extract<keyof D, string>]: D[T] extends
         (baseObjectSet: any) => WithPropertyDefinition<infer P>
-        ? P extends PropertyDef<infer A, any, any>
-          ? PropertyValueWireToClient[A] | undefined
+        ? P extends PropertyDef<infer A, any, any> ?
+            | GetWirePropertyValueFromClient<
+              A
+            >
+            | undefined
         : never
         : never;
     };

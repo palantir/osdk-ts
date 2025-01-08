@@ -18,7 +18,9 @@ import type {
   NumericDeriveAggregateOption,
   StringDeriveAggregateOption,
 } from "../derivedProperties/WithPropertyObjectSet.js";
-import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
+import type {
+  GetWirePropertyValueFromClient,
+} from "../mapping/PropertyValueMapping.js";
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
@@ -47,9 +49,9 @@ export type ValidAggregationKeys<
   & {
     [
       KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<
-        PropertyValueClientToWire[
+        GetWirePropertyValueFromClient<
           CompileTimeMetadata<Q>["properties"][KK]["type"]
-        ],
+        >,
         R extends "aggregate" ? true : false
       >}`
     ]?: any;

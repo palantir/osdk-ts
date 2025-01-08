@@ -10,6 +10,7 @@ export * as $Actions from './ontology/actions.js';
 export { FooInterface, InterfaceNoProps, OsdkTestInterface } from './ontology/interfaces.js';
 export * as $Interfaces from './ontology/interfaces.js';
 export {
+  BgaoNflPlayer,
   BoundariesUsState,
   BuilderDeploymentState,
   Country_1,
@@ -17,6 +18,7 @@ export {
   Employee,
   FintrafficAis,
   GtfsTripTrackObject,
+  McAirportStruct,
   MtaBus,
   ObjectTypeWithAllPropertyTypes,
   OsdkTestObject,

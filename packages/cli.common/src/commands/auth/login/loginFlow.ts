@@ -158,7 +158,7 @@ function generateAuthorizeUrl(
   );
   queryParams.append(
     "scope",
-    ["offline_access", "api:ontologies-read"].join(" "),
+    ["offline_access", "api:read-data"].join(" "),
   );
 
   return join(baseUrl, "multipass", "api", "oauth2", "authorize") + `?`

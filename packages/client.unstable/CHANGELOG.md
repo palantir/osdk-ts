@@ -1,5 +1,12 @@
 # @osdk/client.unstable
 
+## 2.1.0-beta.20
+
+### Minor Changes
+
+- 9d35a1f: Remove unused imports
+- 06e66dc: Making interface type status configurable
+
 ## 2.1.0-beta.19
 
 ## 2.1.0-beta.18

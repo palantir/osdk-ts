@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { autoVersion, loadFoundryConfig } from "@osdk/foundry-config-json";
 import {
   MANIFEST_FILE_LOCATION,
   type ParameterConfig,
@@ -23,7 +24,6 @@ import {
 } from "@osdk/widget-api.unstable";
 import escodegen from "escodegen";
 import type { ObjectExpression } from "estree";
-import fs from "fs-extra";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import color from "picocolors";
@@ -41,20 +41,14 @@ import { PALANTIR_PATH, SETUP_PATH, VITE_INJECTIONS } from "./constants.js";
 export const DIR_DIST = typeof __dirname !== "undefined"
   ? __dirname
   : path.dirname(fileURLToPath(import.meta.url));
-export interface Options {
-  /**
-   * By default, looks in the directory from which vite is invoked
-   */
-  packageJsonPath?: string;
-}
+export interface Options {}
 
 const CONFIG_FILE_SUFFIX = ".config";
 const DEFINE_CONFIG_FUNCTION = "defineConfig";
 
-export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
-  const { packageJsonPath = path.join(process.cwd(), "package.json") } =
-    options;
-  const baseDir = path.dirname(packageJsonPath);
+export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
+  const baseDir = process.cwd();
+  const foundryConfigPromise = loadFoundryConfig("widget");
 
   const entrypointToJsSourceFileMap: Record<string, Set<string>> = {};
   const jsSourceFileToEntrypointMap: Record<string, string> = {};
@@ -210,17 +204,6 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
               return;
             }
 
-            const foundryConfigJsonPath = path.join(
-              baseDir,
-              "foundry.config.json",
-            );
-            if (!fs.existsSync(foundryConfigJsonPath)) {
-              res.statusCode = 500;
-              res.statusMessage = "foundry.config.json file not found.";
-              res.end();
-              return;
-            }
-
             if (process.env.FOUNDRY_TOKEN == null) {
               res.statusCode = 500;
               res.statusMessage =
@@ -229,30 +212,21 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
               return;
             }
 
-            const foundryConfig = fs.readJSONSync(foundryConfigJsonPath);
-            if (foundryConfig.foundryUrl == null) {
+            const foundryConfig = await foundryConfigPromise;
+            if (foundryConfig == null) {
               res.statusCode = 500;
-              res.statusMessage =
-                "foundry.config.json is missing the \"foundryUrl\" field, unable to start dev mode.";
+              res.statusMessage = "foundry.config.json file not found.";
               res.end();
               return;
             }
 
             let foundryUrl: URL;
             try {
-              foundryUrl = new URL(foundryConfig.foundryUrl);
+              foundryUrl = new URL(foundryConfig.foundryConfig.foundryUrl);
             } catch (error) {
               res.statusCode = 500;
               res.statusMessage =
-                `"foundryUrl" in foundry.config.json is invalid, found: ${foundryConfig.foundryUrl}`;
-              res.end();
-              return;
-            }
-
-            if (foundryConfig.widget?.rid == null) {
-              res.statusCode = 500;
-              res.statusMessage =
-                "foundry.config.json is missing the \"widget.rid\" field, unable to start dev mode.";
+                `"foundryUrl" in foundry.config.json is invalid, found: ${foundryConfig.foundryConfig.foundryUrl}`;
               res.end();
               return;
             }
@@ -262,7 +236,7 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
                 // TODO: Actually handle the widget RID from within the config, which will require somehow parsing the config
                 // Unfortunately, moduleParsed is not called during vite's dev mode for performance reasons, so the config file
                 // will need to be parsed/read a different way
-                foundryConfig.widget.rid,
+                foundryConfig.foundryConfig.widget.rid,
                 foundryUrl,
                 localhostUrl,
                 entrypointToJsSourceFileMap,
@@ -294,7 +268,7 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
               res.end(
                 JSON.stringify({
                   redirectUrl:
-                    `${foundryUrl.origin}/workspace/custom-views/preview/${foundryConfig.widget.rid}`,
+                    `${foundryUrl.origin}/workspace/custom-widgets/preview/${foundryConfig.foundryConfig.widget.rid}`,
                 }),
               );
             } catch (error: any) {
@@ -483,8 +457,13 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
       // file of the shape we want will be handled in generateBundle
     },
     // We hook into the produced bundle information to generate a widget configuration file that includes both the entrypoint info and any inferred parameter information.
-    generateBundle(options, bundle) {
-      const packageJsonFile = fs.readJSONSync(packageJsonPath);
+    async generateBundle(options, bundle) {
+      const foundryConfig = await foundryConfigPromise;
+      const widgetVersion = await autoVersion(
+        foundryConfig?.foundryConfig.widget.autoVersion
+          ?? { "type": "package-json" },
+      );
+
       const widgetConfigManifest: WidgetManifest = {
         version: "1.0.0",
         widgets: {},
@@ -525,7 +504,7 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
               }))
               : [],
             rid: entrypointFileIdToConfigMap[chunk.facadeModuleId].rid,
-            version: packageJsonFile.version ?? "0.0.0",
+            version: widgetVersion,
             parameters:
               entrypointFileIdToConfigMap[chunk.facadeModuleId].parameters
                 ?? {},
@@ -609,7 +588,7 @@ function setWidgetSettings(
     entrypointCss: [],
   };
   return fetch(
-    `${foundryUrl.origin}/view-registry/api/dev-mode/settings/${widgetRid}`,
+    `${foundryUrl.origin}/widget-registry/api/dev-mode/settings/${widgetRid}`,
     {
       body: JSON.stringify(widgetDevModeSettings),
       method: "PUT",
@@ -623,7 +602,7 @@ function setWidgetSettings(
 }
 
 function enableDevMode(foundryUrl: URL) {
-  return fetch(`${foundryUrl.origin}/view-registry/api/dev-mode/enable`, {
+  return fetch(`${foundryUrl.origin}/widget-registry/api/dev-mode/enable`, {
     method: "POST",
     headers: {
       authorization: `Bearer ${process.env.FOUNDRY_TOKEN}`,

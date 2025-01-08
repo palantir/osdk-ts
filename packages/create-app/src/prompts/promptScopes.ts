@@ -38,8 +38,8 @@ export async function promptScopes(
     );
     const stringScopes = await consola.prompt("Scopes:", {
       type: "text",
-      placeholder: "api:ontologies-read api:ontologies-write",
-      default: "api:ontologies-read api:ontologies-write",
+      placeholder: "api:read-data api:write-data",
+      default: "api:read-data api:write-data",
     });
     scopes = stringScopes.split(" ");
   }
