@@ -22,12 +22,14 @@ import type {
   CompileTimeMetadata,
   ObjectMetadata,
 } from "../ontology/ObjectTypeDefinition.js";
+import type { SimpleWirePropertyTypes } from "../ontology/WirePropertyTypes.js";
 import type { IsNever } from "../OsdkObjectFrom.js";
 import type { ArrayFilter } from "./ArrayFilter.js";
 import type { BaseFilter } from "./BaseFilter.js";
 import type { BooleanFilter } from "./BooleanFilter.js";
 import type { DatetimeFilter } from "./DatetimeFilter.js";
 import type { GeoFilter } from "./GeoFilter.js";
+import type { Just } from "./Just.js";
 import type { NumberFilter } from "./NumberFilter.js";
 import type { StringFilter } from "./StringFilter.js";
 
@@ -149,6 +151,10 @@ type FilterFor<PD extends ObjectMetadata.Property> = PD["multiplicity"] extends
     ? ArrayFilter<string>
     : (PD["type"] extends boolean ? ArrayFilter<boolean>
       : ArrayFilter<number>))
+  : PD["type"] extends Record<string, SimpleWirePropertyTypes> // | { [K in keyof PD["type"]]?: FilterFor<{ "type": PD["type"][K] }> }
+    ?
+      | StructFilter<PD["type"]>
+      | BaseFilter<string>
   : (PD["type"] extends "string" ? StringFilter
     : PD["type"] extends "geopoint" | "geoshape" ? GeoFilter
     : PD["type"] extends "datetime" | "timestamp" ? DatetimeFilter
@@ -157,6 +163,13 @@ type FilterFor<PD extends ObjectMetadata.Property> = PD["multiplicity"] extends
       "double" | "integer" | "long" | "float" | "decimal" | "byte"
       ? NumberFilter
     : BaseFilter<string>); // FIXME we need to represent all types
+
+type StructFilterOpts<ST extends Record<string, SimpleWirePropertyTypes>> = {
+  [K in keyof ST]?: FilterFor<{ "type": ST[K] }>;
+};
+type StructFilter<ST extends Record<string, SimpleWirePropertyTypes>> = {
+  [K in keyof ST]: Just<K, StructFilterOpts<ST>>;
+}[keyof ST];
 
 export interface AndWhereClause<
   T extends ObjectOrInterfaceDefinition,

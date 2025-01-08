@@ -15,13 +15,17 @@
  */
 
 import type { ObjectOrInterfaceDefinition, WhereClause } from "@osdk/api";
-import { objectTypeWithAllPropertyTypes } from "@osdk/client.test.ontology";
+import {
+  BgaoNflPlayer,
+  objectTypeWithAllPropertyTypes,
+} from "@osdk/client.test.ontology";
 import type { Point } from "geojson";
 import { expectType } from "ts-expect";
 import { describe, expect, it } from "vitest";
 import { modernToLegacyWhereClause } from "./modernToLegacyWhereClause.js";
 
 type ObjAllProps = objectTypeWithAllPropertyTypes;
+type structObj = BgaoNflPlayer;
 describe(modernToLegacyWhereClause, () => {
   describe("api namespaces", () => {
     describe("interfaces", () => {
@@ -701,6 +705,45 @@ describe(modernToLegacyWhereClause, () => {
           "field": "string",
           "fuzzy": false,
           "type": "containsAnyTerm",
+          "value": "test",
+        }
+      `);
+      });
+      it("converts struct where clauses correctly", () => {
+        expect(modernToLegacyWhereClause<structObj>({
+          address: { state: { $eq: "NJ" } },
+        }, BgaoNflPlayer)).toMatchInlineSnapshot(`
+        {
+          "propertyIdentifier": {
+            "type": "structField",
+            "apiName": {
+            "propertyApiName": "address",
+            "structFieldApiName": "state",
+            }
+          },
+          "type": "eq",
+          "value": "NJ",
+        }
+      `);
+
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: { $containsAllTerms: { term: "test", fuzzySearch: false } },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "fuzzy": false,
+          "type": "containsAllTerms",
+          "value": "test",
+        }
+      `);
+
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: { $containsAllTerms: { term: "test" } },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "fuzzy": false,
+          "type": "containsAllTerms",
           "value": "test",
         }
       `);
