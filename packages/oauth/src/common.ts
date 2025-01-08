@@ -16,7 +16,6 @@
 
 import type {
   AuthorizationServer,
-  Client,
   HttpRequestOptions,
   OAuth2TokenEndpointResponse,
 } from "oauth4webapi";
@@ -24,6 +23,7 @@ import { processRevocationResponse, revocationRequest } from "oauth4webapi";
 import invariant from "tiny-invariant";
 import { TypedEventTarget } from "typescript-event-target";
 import type { BaseOauthClient, Events } from "./BaseOauthClient.js";
+import type { EnhancedOauthClient } from "./EnhancedOauthClient.js";
 import { throwIfError } from "./throwIfError.js";
 import type { Token } from "./Token.js";
 
@@ -78,26 +78,32 @@ export type LocalStorageState =
     oldUrl?: never;
   };
 
-export function saveLocal(client: Client, x: LocalStorageState) {
+function localStorageKey(client: EnhancedOauthClient) {
+  return `@osdk/oauth : refresh : ${client.client_id}${
+    client.$refreshTokenMarker ? ` : ${client.$refreshTokenMarker}` : ""
+  }`;
+}
+
+export function saveLocal(client: EnhancedOauthClient, x: LocalStorageState) {
   // MUST `localStorage?` as nodejs does not have localStorage
   globalThis.localStorage?.setItem(
-    `@osdk/oauth : refresh : ${client.client_id}`,
+    localStorageKey(client),
     JSON.stringify(x),
   );
 }
 
-export function removeLocal(client: Client) {
+export function removeLocal(client: EnhancedOauthClient) {
   // MUST `localStorage?` as nodejs does not have localStorage
   globalThis.localStorage?.removeItem(
-    `@osdk/oauth : refresh : ${client.client_id}`,
+    localStorageKey(client),
   );
 }
 
-export function readLocal(client: Client): LocalStorageState {
+export function readLocal(client: EnhancedOauthClient): LocalStorageState {
   return JSON.parse(
     // MUST `localStorage?` as nodejs does not have localStorage
     globalThis.localStorage?.getItem(
-      `@osdk/oauth : refresh : ${client.client_id}`,
+      localStorageKey(client),
     )
       ?? "{}",
   );
@@ -106,7 +112,7 @@ export function readLocal(client: Client): LocalStorageState {
 export function common<
   R extends undefined | (() => Promise<Token | undefined>),
 >(
-  client: Client,
+  client: EnhancedOauthClient,
   as: AuthorizationServer,
   _signIn: () => Promise<Token>,
   oauthHttpOptions: HttpRequestOptions,
@@ -237,7 +243,7 @@ export function createAuthorizationServer(
     | "revocation_endpoint"
   >
 > {
-  const issuer = `${new URL(ctxPath, url)}`;
+  const issuer = `${new URL(ctxPath, url + "/")}`;
   return {
     token_endpoint: `${issuer}/api/oauth2/token`,
     authorization_endpoint: `${issuer}/api/oauth2/authorize`,
