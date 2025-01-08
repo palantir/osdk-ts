@@ -86,10 +86,12 @@ export interface Client extends SharedClient, OldSharedClient {
       : never
   >;
 
+  /** @internal */
   [additionalContext]: MinimalClient;
 }
 
 // DO NOT EXPORT FROM PACKAGE
+/** @internal */
 export const additionalContext = Symbol("additionalContext");
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
