@@ -21,7 +21,7 @@ const expected = `
 {
   "foundryUrl": "https://example.palantirfoundry.com",
   "widget": {
-    "rid": "ri.viewregistry.main.view.fake",
+    "rid": "ri.widgetregistry..widget.fake",
     "directory": "./dist",
     "autoVersion": {
       "type": "git-describe",
@@ -35,7 +35,7 @@ test("it generates foundry.config.json", () => {
   expect(
     generateFoundryConfigJson({
       foundryUrl: "https://example.palantirfoundry.com",
-      widget: "ri.viewregistry.main.view.fake",
+      widget: "ri.widgetregistry..widget.fake",
       directory: "./dist",
     }),
   ).toEqual(expected);
