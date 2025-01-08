@@ -75,7 +75,7 @@ async function runTest({
     "--foundryUrl",
     "https://example.palantirfoundry.com",
     "--widget",
-    "ri.widgetregistry.main.widget.fake",
+    "ri.widgetregistry..widget.fake",
     "--osdkPackage",
     "@custom-widget/sdk",
     "--osdkRegistryUrl",
