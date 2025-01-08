@@ -65,6 +65,6 @@ export function processOptionsAndAssignDefaults(
     scopes: options.scopes ?? ["api:ontologies-read", "api:ontologies-write"],
     fetchFn: options.fetchFn ?? globalThis.fetch,
     ctxPath: options.ctxPath ?? "multipass",
-    refreshTokenMarker: options.ctxPath,
+    refreshTokenMarker: options.refreshTokenMarker,
   };
 }

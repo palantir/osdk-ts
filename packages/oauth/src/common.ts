@@ -16,6 +16,7 @@
 
 import type {
   AuthorizationServer,
+  Client,
   HttpRequestOptions,
   OAuth2TokenEndpointResponse,
 } from "oauth4webapi";
@@ -23,7 +24,6 @@ import { processRevocationResponse, revocationRequest } from "oauth4webapi";
 import invariant from "tiny-invariant";
 import { TypedEventTarget } from "typescript-event-target";
 import type { BaseOauthClient, Events } from "./BaseOauthClient.js";
-import type { EnhancedOauthClient } from "./EnhancedOauthClient.js";
 import { throwIfError } from "./throwIfError.js";
 import type { Token } from "./Token.js";
 
@@ -49,42 +49,57 @@ declare const process: {
   env: Record<string, string | undefined>;
 };
 
-export type LocalStorageState =
-  // when we are going to the login page
-  | {
-    refresh_token?: never;
-    codeVerifier?: never;
-    state?: never;
-    oldUrl: string;
-  }
-  // when we are redirecting to oauth login
-  | {
-    refresh_token?: never;
-    codeVerifier: string;
-    state: string;
-    oldUrl: string;
-  }
-  // when we have the refresh token
-  | {
-    refresh_token?: string;
-    codeVerifier?: never;
-    state?: never;
-    oldUrl?: never;
-  }
-  | {
-    refresh_token?: never;
-    codeVerifier?: never;
-    state?: never;
-    oldUrl?: never;
-  };
-
-function localStorageKey(client: EnhancedOauthClient) {
-  return `@osdk/oauth : refresh : ${client.client_id}${
-    client.$refreshTokenMarker ? ` : ${client.$refreshTokenMarker}` : ""
-  }`;
+interface BaseLocalStorageState {
+  refresh_token?: string;
+  refreshTokenMarker?: string;
+  codeVerifier?: string;
+  state?: string;
+  oldUrl?: string;
 }
 
-export function saveLocal(client: EnhancedOauthClient, x: LocalStorageState) {
+interface LoginPageRedirectLocalStorageState extends BaseLocalStorageState {
+  refresh_token?: never;
+  refreshTokenMarker?: never;
+  codeVerifier?: never;
+  state?: never;
+  oldUrl: string;
+}
+
+interface RedirectingToOauthLocalStorageState extends BaseLocalStorageState {
+  refresh_token?: never;
+  refreshTokenMarker?: never;
+  codeVerifier: string;
+  state: string;
+  oldUrl: string;
+}
+
+interface RefreshTokenLocalStorageState extends BaseLocalStorageState {
+  refresh_token?: string;
+  refreshTokenMarker?: string;
+  codeVerifier?: never;
+  state?: never;
+  oldUrl?: never;
+}
+
+interface NoRefreshTokenLocalStorageState extends BaseLocalStorageState {
+  refresh_token?: never;
+  refreshTokenMarker?: never;
+  codeVerifier?: never;
+  state?: never;
+  oldUrl?: never;
+}
+
+export type LocalStorageState =
+  | LoginPageRedirectLocalStorageState
+  | RedirectingToOauthLocalStorageState
+  | RefreshTokenLocalStorageState
+  | NoRefreshTokenLocalStorageState;
+
+function localStorageKey(client: Client) {
+  return `@osdk/oauth : refresh : ${client.client_id}`;
+}
+
+export function saveLocal(client: Client, x: LocalStorageState) {
   // MUST `localStorage?` as nodejs does not have localStorage
   globalThis.localStorage?.setItem(
     localStorageKey(client),
@@ -92,14 +107,14 @@ export function saveLocal(client: EnhancedOauthClient, x: LocalStorageState) {
   );
 }
 
-export function removeLocal(client: EnhancedOauthClient) {
+export function removeLocal(client: Client) {
   // MUST `localStorage?` as nodejs does not have localStorage
   globalThis.localStorage?.removeItem(
     localStorageKey(client),
   );
 }
 
-export function readLocal(client: EnhancedOauthClient): LocalStorageState {
+export function readLocal(client: Client): LocalStorageState {
   return JSON.parse(
     // MUST `localStorage?` as nodejs does not have localStorage
     globalThis.localStorage?.getItem(
@@ -112,11 +127,12 @@ export function readLocal(client: EnhancedOauthClient): LocalStorageState {
 export function common<
   R extends undefined | (() => Promise<Token | undefined>),
 >(
-  client: EnhancedOauthClient,
+  client: Client,
   as: AuthorizationServer,
   _signIn: () => Promise<Token>,
   oauthHttpOptions: HttpRequestOptions,
   refresh: R,
+  refreshTokenMarker: string | undefined,
 ): {
   getToken: BaseOauthClient<keyof Events & string> & { refresh: R };
   makeTokenAndSaveRefresh: (
@@ -133,7 +149,10 @@ export function common<
   ): Token {
     const { refresh_token, expires_in, access_token } = resp;
     invariant(expires_in != null);
-    saveLocal(client, { refresh_token });
+    saveLocal(client, {
+      refresh_token,
+      refreshTokenMarker,
+    });
     token = {
       refresh_token,
       expires_in,
