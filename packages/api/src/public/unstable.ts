@@ -16,6 +16,7 @@
 
 export type { Experiment, ExperimentFns } from "../experimental/Experiment.js";
 
+export { __EXPERIMENTAL__NOT_SUPPORTED_YET__createTemporaryObjectSet } from "../experimental/createTemporaryObjectSet.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from "../experimental/getBulkLinks.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet } from "../experimental/preexistingObjectSet.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "../experimental/subscribe.js";
