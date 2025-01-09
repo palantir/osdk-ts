@@ -1,5 +1,4 @@
 ---
-"@osdk/shared.net.errors": patch
 "@osdk/shared.net.fetch": patch
 ---
 
