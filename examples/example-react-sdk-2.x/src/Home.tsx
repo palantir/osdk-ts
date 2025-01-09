@@ -4,7 +4,8 @@ import Layout from "./Layout";
 // import { useOsdkClient } from "@osdk/react";
 
 function Home() {
-  //const $ = useOsdkClient();
+  // const client = useOsdkClient();
+  // See API Docs on Developer console on how to use the client object to access the ontology resource
 
   const objectApiNames = Object.keys($Objects);
   const actionApiNames = Object.keys($Actions);
