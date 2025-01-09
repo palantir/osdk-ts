@@ -26,11 +26,11 @@ type temporaryObjectSetFn = <Q extends ObjectOrInterfaceDefinition>(
 
 export const __EXPERIMENTAL__NOT_SUPPORTED_YET__createTemporaryObjectSet:
   Experiment<
-    "2.0.0",
+    "2.0.12",
     "__EXPERIMENTAL__NOT_SUPPORTED_YET__createTemporaryObjectSet",
     { createTemporaryObjectSet: temporaryObjectSetFn }
   > = {
     name: "__EXPERIMENTAL__NOT_SUPPORTED_YET__createTemporaryObjectSet",
     type: "experiment",
-    version: "2.0.0",
+    version: "2.0.12",
   };
