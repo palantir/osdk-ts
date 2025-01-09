@@ -16,6 +16,7 @@
 
 import type {
   ActionDefinition,
+  CompileTimeMetadata,
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -29,10 +30,15 @@ import type {
   MinimalObjectSet,
 } from "@osdk/api/unstable";
 import {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__createTemporaryObjectSet,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
   __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
 } from "@osdk/api/unstable";
+import {
+  OntologiesV2,
+  OntologyObjectSets,
+} from "@osdk/internal.foundry.ontologiesv2";
 import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.client";
 import { symbolClientContext } from "@osdk/shared.client2";
 import { createBulkLinksAsyncIterFactory } from "./__unstable/createBulkLinksAsyncIterFactory.js";
@@ -107,12 +113,14 @@ export function createClientInternal(
       | ObjectOrInterfaceDefinition
       | ActionDefinition<any>
       | QueryDefinition<any>
-      | Experiment<"2.0.8">,
+      | Experiment<"2.0.8">
+      | Experiment<"2.0.12">,
   >(o: T): T extends ObjectTypeDefinition ? ObjectSet<T>
     : T extends InterfaceDefinition ? MinimalObjectSet<T>
     : T extends ActionDefinition<any> ? ActionSignatureFromDef<T>
     : T extends QueryDefinition<any> ? QuerySignatureFromDef<T>
-    : T extends Experiment<"2.0.8"> ? { invoke: ExperimentFns<T> }
+    : T extends Experiment<"2.0.8"> | Experiment<"2.0.12">
+      ? { invoke: ExperimentFns<T> }
     : never
   {
     if (o.type === "object" || o.type === "interface") {
@@ -188,6 +196,25 @@ export function createClientInternal(
           } satisfies ExperimentFns<
             typeof __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe
           > as any;
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__createTemporaryObjectSet.name:
+          return {
+            createTemporaryObjectSet: async <
+              Q extends ObjectOrInterfaceDefinition,
+            >(
+              objectSet: unknown extends CompileTimeMetadata<Q>["objectSet"]
+                ? ObjectSet<Q>
+                : CompileTimeMetadata<Q>["objectSet"],
+            ) => {
+              const response = await OntologyObjectSets.createTemporary(
+                clientCtx,
+                await clientCtx.ontologyRid,
+                {
+                  objectSet: getWireObjectSet(objectSet),
+                },
+              );
+              return response.objectSetRid;
+            },
+          } as any;
       }
 
       throw new Error("not implemented");
