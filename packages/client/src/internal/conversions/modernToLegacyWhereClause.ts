@@ -81,7 +81,7 @@ export function modernToLegacyWhereClause<
 }
 
 function makeGeoFilterBbox(
-  field: string,
+  propertyIdentifier: any,
   bbox: BBox,
   filterType: "$within" | "$intersects",
 ): SearchJsonQueryV2 {
@@ -89,7 +89,7 @@ function makeGeoFilterBbox(
     type: filterType === "$within"
       ? "withinBoundingBox"
       : "intersectsBoundingBox",
-    field,
+    propertyIdentifier,
     value: {
       topLeft: {
         type: "Point",
@@ -104,13 +104,13 @@ function makeGeoFilterBbox(
 }
 
 function makeGeoFilterPolygon(
-  field: string,
+  propertyIdentifier: any,
   coordinates: Position[][],
   filterType: "intersectsPolygon" | "withinPolygon",
 ): SearchJsonQueryV2 {
   return {
     type: filterType,
-    field,
+    propertyIdentifier,
     value: {
       type: "Polygon",
       coordinates,
@@ -119,13 +119,20 @@ function makeGeoFilterPolygon(
 }
 
 function handleWherePair(
-  [field, filter]: [string, any],
+  [fieldName, filter]: [string, any],
   objectOrInterface: ObjectOrInterfaceDefinition,
-): SearchJsonQueryV2 {
+  structFieldSelector?: { propertyApiName: string; structFieldApiName: string },
+): any {
   invariant(
     filter != null,
     "Defined key values are only allowed when they are not undefined.",
   );
+
+  const propertyIdentifier = structFieldSelector != null
+    ? { type: "structField", ...structFieldSelector }
+    : undefined;
+
+  const field = structFieldSelector == null ? fieldName : undefined;
 
   if (
     typeof filter === "string" || typeof filter === "number"
@@ -133,15 +140,16 @@ function handleWherePair(
   ) {
     if (objectOrInterface.type === "interface") {
       const [objApiNamespace] = extractNamespace(objectOrInterface.apiName);
-      const [fieldApiNamespace, fieldShortName] = extractNamespace(field);
+      const [fieldApiNamespace, fieldShortName] = extractNamespace(fieldName);
 
       if (fieldApiNamespace == null && objApiNamespace != null) {
-        field = `${objApiNamespace}.${fieldShortName}`;
+        fieldName = `${objApiNamespace}.${fieldShortName}`;
       }
     }
 
     return {
       type: "eq",
+      propertyIdentifier,
       field,
       value: filter,
     };
@@ -160,11 +168,22 @@ function handleWherePair(
 
   if (!hasDollarSign) {
     // Future case for structs
-    throw new Error(
-      `Unsupported filter. Did you forget to use a $-prefixed filter? (${
-        JSON.stringify(filter)
-      })`,
+    // throw new Error(
+    //   `Unsupported filter. Did you forget to use a $-prefixed filter? (${
+    //     JSON.stringify(filter)
+    //   })`,
+    // );
+
+    const structFilter = Object.entries(filter);
+    invariant(
+      structFilter.length === 1,
+      "Cannot filter on more than one struct field in the same clause, need to use an and clause",
     );
+    const structFieldApiName = keysOfFilter[0];
+    return handleWherePair(Object.entries(filter)[0], objectOrInterface, {
+      propertyApiName: fieldName,
+      structFieldApiName,
+    });
   }
 
   const firstKey = keysOfFilter[0] as PossibleWhereClauseFilters;
@@ -175,6 +194,7 @@ function handleWherePair(
       type: "not",
       value: {
         type: "eq",
+        propertyIdentifier,
         field,
         value: filter[firstKey],
       },
@@ -185,9 +205,9 @@ function handleWherePair(
     const withinBody = filter[firstKey] as GeoFilter_Within["$within"];
 
     if (Array.isArray(withinBody)) {
-      return makeGeoFilterBbox(field, withinBody, firstKey);
+      return makeGeoFilterBbox(propertyIdentifier, withinBody, firstKey);
     } else if ("$bbox" in withinBody && withinBody.$bbox != null) {
-      return makeGeoFilterBbox(field, withinBody.$bbox, firstKey);
+      return makeGeoFilterBbox(propertyIdentifier, withinBody.$bbox, firstKey);
     } else if (
       ("$distance" in withinBody && "$of" in withinBody)
       && withinBody.$distance != null
@@ -195,6 +215,7 @@ function handleWherePair(
     ) {
       return {
         type: "withinDistanceOf",
+        propertyIdentifier,
         field,
         value: {
           center: Array.isArray(withinBody.$of)
@@ -213,27 +234,36 @@ function handleWherePair(
       const coordinates = ("$polygon" in withinBody)
         ? withinBody.$polygon
         : withinBody.coordinates;
-      return makeGeoFilterPolygon(field, coordinates, "withinPolygon");
+      return makeGeoFilterPolygon(fieldName, coordinates, "withinPolygon");
     }
   }
   if (firstKey === "$intersects") {
     const intersectsBody =
       filter[firstKey] as GeoFilter_Intersects["$intersects"];
     if (Array.isArray(intersectsBody)) {
-      return makeGeoFilterBbox(field, intersectsBody, firstKey);
+      return makeGeoFilterBbox(propertyIdentifier, intersectsBody, firstKey);
     } else if ("$bbox" in intersectsBody && intersectsBody.$bbox != null) {
-      return makeGeoFilterBbox(field, intersectsBody.$bbox, firstKey);
+      return makeGeoFilterBbox(
+        propertyIdentifier,
+        intersectsBody.$bbox,
+        firstKey,
+      );
     } else {
       const coordinates = ("$polygon" in intersectsBody)
         ? intersectsBody.$polygon
         : intersectsBody.coordinates;
-      return makeGeoFilterPolygon(field, coordinates, "intersectsPolygon");
+      return makeGeoFilterPolygon(
+        propertyIdentifier,
+        coordinates,
+        "intersectsPolygon",
+      );
     }
   }
 
   if (firstKey === "$containsAllTerms" || firstKey === "$containsAnyTerm") {
     return {
       type: firstKey.substring(1) as DropDollarSign<typeof firstKey>,
+      propertyIdentifier,
       field,
       value: typeof filter[firstKey] === "string"
         ? filter[firstKey]
@@ -246,6 +276,7 @@ function handleWherePair(
 
   return {
     type: firstKey.substring(1) as DropDollarSign<typeof firstKey>,
+    propertyIdentifier,
     field,
     value: filter[firstKey] as any,
   };

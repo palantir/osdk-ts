@@ -30,6 +30,7 @@ export async function runStructsTest() {
   const airport = await dsClient(McAirportStruct).fetchOne(
     "Ronald Reagan Washington National Airport",
   );
+  airport.airportStruct;
 
   console.log(airport.airportStruct);
   console.log(airport.airportStruct?.geoHash);
