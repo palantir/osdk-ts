@@ -38,7 +38,7 @@ export function authHandlerMiddleware<
     }
 
     try {
-      return handler(info);
+      return await handler(info);
     } catch (e) {
       if (e instanceof OpenApiCallError) {
         return HttpResponse.json(e.json, { status: e.status });

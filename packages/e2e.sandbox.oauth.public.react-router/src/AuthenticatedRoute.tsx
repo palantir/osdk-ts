@@ -12,6 +12,9 @@ function AuthenticatedRoute() {
   useEffect(() => {
     publicOauthClient().then((token) => {
       setToken(token);
+    }).catch((e: unknown) => {
+      console.error(e);
+      setToken(undefined);
     });
   }, []);
 

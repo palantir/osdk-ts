@@ -248,7 +248,7 @@ export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
                 res.statusCode = settingsResponse.status;
                 res.statusMessage =
                   `Unable to set widget settings in Foundry: ${settingsResponse.statusText}`;
-                settingsResponse.text().then((err) => {
+                await settingsResponse.text().then((err) => {
                   config?.logger.error(err);
                   res.end();
                 });
@@ -669,6 +669,7 @@ function getPluginTransformHook(
     typeof plugin.transformIndexHtml === "object"
     && "transform" in plugin.transformIndexHtml
   ) {
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     return plugin.transformIndexHtml.transform;
   }
 }

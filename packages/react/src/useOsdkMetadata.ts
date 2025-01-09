@@ -43,6 +43,9 @@ export function useOsdkMetadata<T extends ObjectOrInterfaceDefinition>(
   if (!metadata) {
     client.fetchMetadata(type).then((fetchedMetadata) => {
       setMetadata(fetchedMetadata as MetadataFor<T>);
+    }).catch((error: unknown) => {
+      // eslint-disable-next-line no-console
+      console.error("Failed to fetch metadata", error);
     });
     return { loading: true };
   }
