@@ -23,11 +23,7 @@ import type {
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import { ontologyDefinition } from "./defineOntology.js";
-import type {
-  PropertyTypeType,
-  ValueTypeDefinitionVersion,
-  ValueTypeType,
-} from "./types.js";
+import type { ValueTypeDefinitionVersion, ValueTypeType } from "./types.js";
 
 type ZipBaseAndConstraint<Base, Constraint> = {
   [PropertyType in (BaseType["type"] & DataConstraint["type"])]: Base extends

@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypeFullMetadata,
-  ObjectTypeV2,
-} from "@osdk/internal.foundry.core";
+import type { ObjectTypeFullMetadata } from "@osdk/internal.foundry.core";
 import {
   leadLinkType,
   occupants,
@@ -25,6 +22,7 @@ import {
   peepsLinkType,
 } from "./linkTypes.js";
 import {
+  BGaoNflPlayerObjectType,
   employeeObjectType,
   equipmentObjectType,
   objectTypeWithAllPropertyTypes,
@@ -124,6 +122,14 @@ export const personWithLinkTypes: ObjectTypeFullMetadata = {
   sharedPropertyTypeMapping: {},
 };
 
+export const bGaoNflPlayerWithLinkTypes: ObjectTypeFullMetadata = {
+  objectType: BGaoNflPlayerObjectType,
+  linkTypes: [],
+  implementsInterfaces: [],
+  implementsInterfaces2: {},
+  sharedPropertyTypeMapping: {},
+};
+
 export const objectTypesWithLinkTypes: {
   [objectTypeApiName: string]: ObjectTypeFullMetadata;
 } = {
@@ -138,4 +144,5 @@ export const objectTypesWithLinkTypes: {
   [todoObjectType.apiName]: todoWithLinkTypes,
   [taskObjectType.apiName]: taskWithLinkTypes,
   [personObjectType.apiName]: personWithLinkTypes,
+  [BGaoNflPlayerObjectType.apiName]: bGaoNflPlayerWithLinkTypes,
 };

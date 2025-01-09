@@ -18,7 +18,6 @@ import {
   $ontologyRid,
   Employee,
   FooInterface,
-  Office,
 } from "@osdk/client.test.ontology";
 import { apiServer } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";

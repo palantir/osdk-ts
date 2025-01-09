@@ -26,6 +26,7 @@ import { runInterfacesTest } from "./runInterfacesTest.js";
 import { runLegacyExamples } from "./runLegacyExamples.js";
 import { runMediaTest } from "./runMediaTest.js";
 import { runQueriesTest } from "./runQueriesTest.js";
+import { runStructsTest } from "./runStructsTest.js";
 import { runSubscriptionsTest } from "./runSubscriptionsTest.js";
 import { runTimeseriesTest } from "./runTimeseriesTest.js";
 import { typeChecks } from "./typeChecks.js";
@@ -71,6 +72,8 @@ async function runTests() {
     await runGeotimeSeriesReferenceTests();
 
     await runMediaTest();
+
+    await runStructsTest();
   } catch (e) {
     console.error(`Caught an error we did not expect, type: ${typeof e}`);
     console.error(e);

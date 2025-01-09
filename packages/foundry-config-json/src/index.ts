@@ -14,5 +14,14 @@
  * limitations under the License.
  */
 
-export const PALANTIR_PATH = ".palantir";
-export const SETUP_PATH = `${PALANTIR_PATH}/setup`;
+export { autoVersion, AutoVersionError } from "./autoVersion.js";
+export { loadFoundryConfig } from "./config.js";
+export type {
+  AutoVersionConfig,
+  AutoVersionConfigType,
+  FoundryConfig,
+  GitDescribeAutoVersionConfig,
+  LoadedFoundryConfig,
+  PackageJsonAutoVersionConfig,
+  SiteConfig,
+} from "./config.js";

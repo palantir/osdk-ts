@@ -150,7 +150,7 @@ const cspell = {
         "blueprintjs",
         "picocolors",
         // used in a RID template literal string
-        "viewregistry",
+        "widgetregistry",
       ],
     },
     {

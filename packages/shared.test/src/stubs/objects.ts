@@ -106,6 +106,26 @@ export const nycOffice: OntologyObjectV2 = {
   occupiedArea: officeAreaGeoJson,
 };
 
+export const travisPlayer = {
+  __rid:
+    "ri.phonograph2-objects.main.object.c0c0c3c0-c0c0-c0c0-c0c0-c0c0c0c0c0c0",
+  __primaryKey: "tkelce",
+  __apiName: "BgaoNflPlayer",
+  __title: "tkelce",
+  gamesPlayed: 171,
+  name: "Travis Kelce",
+  number: 87,
+  wikiUrl: "myKelce.com",
+  address: {
+    addressLine1: "15 Muppets Lane",
+    addressLine2: "Resort No 4",
+    city: "Memphis",
+    state: "TN",
+    zipCode: 11100,
+  },
+  id: "tkelce",
+};
+
 export const objectWithAllPropertyTypes1: OntologyObjectV2 = {
   __rid:
     "ri.phonograph2-objects.main.object.401ac022-89eb-4591-8b7e-0a912b9efb44",
@@ -211,4 +231,5 @@ export const objectLoadResponseMap: {
     [objectWithAllPropertyTypesEmptyEntries.__primaryKey.toString()]:
       objectWithAllPropertyTypesEmptyEntries,
   },
+  BgaoNflPlayer: { [travisPlayer.__primaryKey.toString()]: travisPlayer },
 };

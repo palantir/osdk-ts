@@ -1,5 +1,27 @@
 # @osdk/cli.cmd.typescript
 
+## 0.25.0-beta.20
+
+### Minor Changes
+
+- abfe4b3: Add support for reading struct properties.
+
+### Patch Changes
+
+- Updated dependencies [9d35a1f]
+- Updated dependencies [abfe4b3]
+- Updated dependencies [bf0e3b4]
+  - @osdk/generator@2.1.0-beta.20
+  - @osdk/cli.common@0.25.0-beta.20
+
+## 0.25.0-beta.19
+
+### Patch Changes
+
+- Updated dependencies [cf9dcbe]
+  - @osdk/cli.common@0.25.0-beta.19
+  - @osdk/generator@2.1.0-beta.19
+
 ## 0.25.0-beta.18
 
 ### Patch Changes

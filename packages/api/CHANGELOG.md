@@ -1,5 +1,19 @@
 # @osdk/api
 
+## 2.1.0-beta.20
+
+### Minor Changes
+
+- 9d35a1f: Remove unused imports
+- abfe4b3: Add support for reading struct properties.
+- c537e2d: Remove unused imports.
+
+## 2.1.0-beta.19
+
+### Minor Changes
+
+- cddc196: Try-catches handlers called during subscription
+
 ## 2.1.0-beta.18
 
 ## 2.1.0-beta.17

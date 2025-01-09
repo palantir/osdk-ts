@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { AutoVersionConfigType } from "../../../util/config.js";
+import type { AutoVersionConfigType } from "@osdk/foundry-config-json";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
 
 export interface SiteDeployArgs extends CommonSiteArgs {
@@ -23,4 +23,6 @@ export interface SiteDeployArgs extends CommonSiteArgs {
   uploadOnly: boolean;
   autoVersion?: AutoVersionConfigType;
   gitTagPrefix?: string;
+  snapshot: boolean;
+  snapshotId?: string;
 }

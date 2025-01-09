@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export const META_TAG_HOST_ORIGIN = "x-palantir-views-host-origin";
+export const META_TAG_HOST_ORIGIN = "x-palantir-widgets-host-origin";

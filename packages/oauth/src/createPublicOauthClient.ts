@@ -62,7 +62,7 @@ export interface PublicOauthClientOptions {
   postLoginPage?: string;
 
   /**
-   * * @param {string[]} [scopes=[]] - OAuth scopes to request. If not provided, defaults to `["api:ontologies-read", "api:ontologies-write"]`
+   * * @param {string[]} [scopes=[]] - OAuth scopes to request. If not provided, defaults to `["api:read-data", "api:write-data"]`
    */
   scopes?: string[];
 
@@ -102,7 +102,7 @@ export function createPublicOauthClient(
  * @param {boolean} useHistory - If true, uses `history.replaceState()`, otherwise uses `window.location.assign()` (defaults to true)
  * @param {string} loginPage - Custom landing page URL prior to logging in
  * @param {string} postLoginPage - URL to return to after completed authentication cycle (defaults to `window.location.toString()`)
- * @param {string[]} scopes - OAuth scopes to request. If not provided, defaults to `["api:ontologies-read", "api:ontologies-write"]`
+ * @param {string[]} scopes - OAuth scopes to request. If not provided, defaults to `["api:read-data", "api:write-data"]`
  * @param {typeof globalThis.fetch} fetchFn - Custom fetch function to use for requests (defaults to `globalThis.fetch`)
  * @param {string} ctxPath - Context path for the authorization server (defaults to "multipass")
  * @returns {PublicOauthClient} A client that can be used as a token provider

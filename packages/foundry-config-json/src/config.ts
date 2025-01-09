@@ -14,17 +14,30 @@
  * limitations under the License.
  */
 
-import { ExitProcessError } from "@osdk/cli.common";
 import type { JSONSchemaType } from "ajv";
 import { promises as fsPromises } from "node:fs";
 import { extname } from "node:path";
 
-export interface GitDescribeAutoVersionConfig {
-  type: "git-describe";
-  tagPrefix?: string;
+export interface LoadedFoundryConfig<T extends "site" | "widget"> {
+  foundryConfig: FoundryConfig<T>;
+  configFilePath: string;
 }
-export type AutoVersionConfig = GitDescribeAutoVersionConfig;
-export type AutoVersionConfigType = AutoVersionConfig["type"];
+
+export type FoundryConfig<T extends "site" | "widget"> = T extends "site"
+  ? FoundrySiteConfig
+  : T extends "widget" ? FoundryWidgetConfig
+  : never;
+
+export interface FoundrySiteConfig {
+  foundryUrl: string;
+  site: SiteConfig;
+}
+
+export interface FoundryWidgetConfig {
+  foundryUrl: string;
+  widget: WidgetConfig;
+}
+
 export interface SiteConfig {
   application: string;
   directory: string;
@@ -32,21 +45,31 @@ export interface SiteConfig {
   uploadOnly?: boolean;
 }
 
-export interface FoundryConfig {
-  foundryUrl: string;
-  site: SiteConfig;
+export interface WidgetConfig {
+  rid: string;
+  directory: string;
+  autoVersion?: AutoVersionConfig;
 }
 
-export interface LoadedFoundryConfig {
-  foundryConfig: FoundryConfig;
-  configFilePath: string;
+export type AutoVersionConfig =
+  | GitDescribeAutoVersionConfig
+  | PackageJsonAutoVersionConfig;
+export type AutoVersionConfigType = AutoVersionConfig["type"];
+
+export interface GitDescribeAutoVersionConfig {
+  type: "git-describe";
+  tagPrefix?: string;
+}
+
+export interface PackageJsonAutoVersionConfig {
+  type: "package-json";
 }
 
 const CONFIG_FILE_NAMES: string[] = [
   "foundry.config.json",
 ];
 
-const CONFIG_FILE_SCHEMA: JSONSchemaType<FoundryConfig> = {
+const FOUNDRY_SITE_CONFIG_SCHEMA = {
   type: "object",
   properties: {
     foundryUrl: { type: "string" },
@@ -65,6 +88,11 @@ const CONFIG_FILE_SCHEMA: JSONSchemaType<FoundryConfig> = {
                 tagPrefix: { type: "string", nullable: true },
               },
             },
+            {
+              properties: {
+                type: { const: "package-json", type: "string" },
+              },
+            },
           ],
           required: ["type"],
         },
@@ -75,6 +103,33 @@ const CONFIG_FILE_SCHEMA: JSONSchemaType<FoundryConfig> = {
   },
   required: ["foundryUrl", "site"],
   additionalProperties: false,
+} satisfies JSONSchemaType<FoundryConfig<"site">>;
+
+const FOUNDRY_WIDGET_CONFIG_SCHEMA = {
+  type: "object",
+  properties: {
+    foundryUrl: { type: "string" },
+    widget: {
+      type: "object",
+      properties: {
+        rid: { type: "string" },
+        directory: { type: "string" },
+        autoVersion:
+          FOUNDRY_SITE_CONFIG_SCHEMA.properties.site.properties.autoVersion,
+        uploadOnly: { type: "boolean", nullable: true },
+      },
+      required: ["rid", "directory"],
+    },
+  },
+  required: ["foundryUrl", "widget"],
+  additionalProperties: false,
+} satisfies JSONSchemaType<FoundryConfig<"widget">>;
+
+const FOUNDRY_CONFIG_SCHEMA: {
+  [P in "site" | "widget"]: JSONSchemaType<FoundryConfig<P>>;
+} = {
+  site: FOUNDRY_SITE_CONFIG_SCHEMA,
+  widget: FOUNDRY_WIDGET_CONFIG_SCHEMA,
 };
 
 /**
@@ -82,32 +137,36 @@ const CONFIG_FILE_SCHEMA: JSONSchemaType<FoundryConfig> = {
  * @returns A promise that resolves to the configuration JSON object, or undefined if not found.
  * @throws Will throw an error if the configuration file is found but cannot be read or parsed.
  */
-export async function loadFoundryConfig(): Promise<
-  LoadedFoundryConfig | undefined
-> {
+export async function loadFoundryConfig(
+  type: "site",
+): Promise<LoadedFoundryConfig<"site"> | undefined>;
+export async function loadFoundryConfig(
+  type: "widget",
+): Promise<LoadedFoundryConfig<"widget"> | undefined>;
+export async function loadFoundryConfig(
+  type: "site" | "widget",
+): Promise<LoadedFoundryConfig<typeof type> | undefined> {
   const ajvModule = await import("ajv");
   const Ajv = ajvModule.default.default; // https://github.com/ajv-validator/ajv/issues/2132
   const ajv = new Ajv({ allErrors: true });
-  const validate = ajv.compile(CONFIG_FILE_SCHEMA);
+  const validate = ajv.compile(FOUNDRY_CONFIG_SCHEMA[type]);
 
   const { findUp } = await import("find-up");
   const configFilePath = await findUp(CONFIG_FILE_NAMES);
 
   if (configFilePath) {
-    let foundryConfig: FoundryConfig;
+    let foundryConfig: FoundryConfig<typeof type>;
     try {
       const fileContent = await fsPromises.readFile(configFilePath, "utf-8");
       foundryConfig = parseConfigFile(fileContent, configFilePath);
     } catch (error) {
-      throw new ExitProcessError(
-        2,
+      throw new Error(
         `Couldn't read or parse config file ${configFilePath}. Error: ${error}`,
       );
     }
 
     if (!validate(foundryConfig)) {
-      throw new ExitProcessError(
-        2,
+      throw new Error(
         `The configuration file does not match the expected schema: ${
           ajv.errorsText(validate.errors)
         }`,
@@ -120,17 +179,16 @@ export async function loadFoundryConfig(): Promise<
   return undefined;
 }
 
-function parseConfigFile(
+function parseConfigFile<T extends "site" | "widget">(
   fileContent: string,
   configFilePath: string,
-): FoundryConfig {
+): FoundryConfig<T> {
   const extension = extname(configFilePath);
   switch (extension) {
     case ".json":
       return JSON.parse(fileContent);
     default:
-      throw new ExitProcessError(
-        2,
+      throw new Error(
         `Unsupported file extension: ${extension} for config file.`,
       );
   }

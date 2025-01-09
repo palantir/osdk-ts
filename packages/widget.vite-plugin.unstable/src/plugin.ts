@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { autoVersion, loadFoundryConfig } from "@osdk/foundry-config-json";
 import {
   MANIFEST_FILE_LOCATION,
   type ParameterConfig,
@@ -23,31 +24,31 @@ import {
 } from "@osdk/widget-api.unstable";
 import escodegen from "escodegen";
 import type { ObjectExpression } from "estree";
-import fs from "fs-extra";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import color from "picocolors";
 import sirv from "sirv";
-import type { Plugin, ResolvedConfig, ViteDevServer } from "vite";
-import { PALANTIR_PATH, SETUP_PATH } from "./constants.js";
+import type {
+  HtmlTagDescriptor,
+  IndexHtmlTransformHook,
+  IndexHtmlTransformResult,
+  Plugin,
+  ResolvedConfig,
+  ViteDevServer,
+} from "vite";
+import { PALANTIR_PATH, SETUP_PATH, VITE_INJECTIONS } from "./constants.js";
 
 export const DIR_DIST = typeof __dirname !== "undefined"
   ? __dirname
   : path.dirname(fileURLToPath(import.meta.url));
-export interface Options {
-  /**
-   * By default, looks in the directory from which vite is invoked
-   */
-  packageJsonPath?: string;
-}
+export interface Options {}
 
 const CONFIG_FILE_SUFFIX = ".config";
 const DEFINE_CONFIG_FUNCTION = "defineConfig";
 
-export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
-  const { packageJsonPath = path.join(process.cwd(), "package.json") } =
-    options;
-  const baseDir = path.dirname(packageJsonPath);
+export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
+  const baseDir = process.cwd();
+  const foundryConfigPromise = loadFoundryConfig("widget");
 
   const entrypointToJsSourceFileMap: Record<string, Set<string>> = {};
   const jsSourceFileToEntrypointMap: Record<string, string> = {};
@@ -141,6 +142,21 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
         },
       );
 
+      server.middlewares.use(
+        `${server.config.base ?? "/"}${VITE_INJECTIONS}`,
+        async (req, res) => {
+          if (devServer == null) {
+            res.statusCode = 500;
+            res.statusMessage = "Vite server not found.";
+            res.end();
+            return;
+          }
+          res.setHeader("Access-Control-Allow-Origin", "*");
+          res.setHeader("Content-Type", "application/javascript");
+          res.end(await extractInjectedScripts(devServer));
+        },
+      );
+
       // Called by the setup page to start dev mode in Foundry, which queries the appropriate service on the Foundry instance configured in foundry.config.json
       server.middlewares.use(
         `${server.config.base ?? "/"}${PALANTIR_PATH}/finish`,
@@ -159,7 +175,7 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
               body += readResult;
             }
           });
-          req.on("end", () => {
+          req.on("end", async () => {
             if (body.length === 0) {
               res.statusCode = 400;
               res.statusMessage =
@@ -188,17 +204,6 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
               return;
             }
 
-            const foundryConfigJsonPath = path.join(
-              baseDir,
-              "foundry.config.json",
-            );
-            if (!fs.existsSync(foundryConfigJsonPath)) {
-              res.statusCode = 500;
-              res.statusMessage = "foundry.config.json file not found.";
-              res.end();
-              return;
-            }
-
             if (process.env.FOUNDRY_TOKEN == null) {
               res.statusCode = 500;
               res.statusMessage =
@@ -207,85 +212,71 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
               return;
             }
 
-            const foundryConfig = fs.readJSONSync(foundryConfigJsonPath);
-            if (foundryConfig.foundryUrl == null) {
+            const foundryConfig = await foundryConfigPromise;
+            if (foundryConfig == null) {
               res.statusCode = 500;
-              res.statusMessage =
-                "foundry.config.json is missing the \"foundryUrl\" field, unable to start dev mode.";
+              res.statusMessage = "foundry.config.json file not found.";
               res.end();
               return;
             }
 
-            let url: URL;
+            let foundryUrl: URL;
             try {
-              url = new URL(foundryConfig.foundryUrl);
+              foundryUrl = new URL(foundryConfig.foundryConfig.foundryUrl);
             } catch (error) {
               res.statusCode = 500;
               res.statusMessage =
-                `"foundryUrl" in foundry.config.json is invalid, found: ${foundryConfig.foundryUrl}`;
+                `"foundryUrl" in foundry.config.json is invalid, found: ${foundryConfig.foundryConfig.foundryUrl}`;
               res.end();
               return;
             }
 
-            if (foundryConfig.widget?.rid == null) {
+            try {
+              const settingsResponse = await setWidgetSettings(
+                // TODO: Actually handle the widget RID from within the config, which will require somehow parsing the config
+                // Unfortunately, moduleParsed is not called during vite's dev mode for performance reasons, so the config file
+                // will need to be parsed/read a different way
+                foundryConfig.foundryConfig.widget.rid,
+                foundryUrl,
+                localhostUrl,
+                entrypointToJsSourceFileMap,
+                entrypointFileName,
+              );
+              if (
+                settingsResponse.status !== 200
+              ) {
+                res.statusCode = settingsResponse.status;
+                res.statusMessage =
+                  `Unable to set widget settings in Foundry: ${settingsResponse.statusText}`;
+                settingsResponse.text().then((err) => {
+                  config?.logger.error(err);
+                  res.end();
+                });
+                return;
+              }
+
+              const enableResponse = await enableDevMode(foundryUrl);
+              if (enableResponse.status !== 200) {
+                res.statusCode = enableResponse.status;
+                res.statusMessage =
+                  `Unable to start dev mode in Foundry: ${enableResponse.statusText}`;
+                res.end();
+                return;
+              }
+
+              res.setHeader("Content-Type", "application/json");
+              res.end(
+                JSON.stringify({
+                  redirectUrl:
+                    `${foundryUrl.origin}/workspace/custom-widgets/preview/${foundryConfig.foundryConfig.widget.rid}`,
+                }),
+              );
+            } catch (error: any) {
               res.statusCode = 500;
               res.statusMessage =
-                "foundry.config.json is missing the \"widget.rid\" field, unable to start dev mode.";
+                `Unable to start dev mode in Foundry: ${error.message}`;
               res.end();
-              return;
             }
-
-            // TODO: Actually handle the widget RID from within the config, which will require somehow parsing the config
-            // Unfortunately, moduleParsed is not called during vite's dev mode for performance reasons, so the config file
-            // will need to be parsed/read a different way
-            fetch(
-              `${url.origin}/view-registry/api/dev-mode/${foundryConfig.widget.rid}/settings`,
-              {
-                body: JSON.stringify({
-                  entrypointJs: [
-                    ...entrypointToJsSourceFileMap[entrypointFileName],
-                  ].map((file) => ({
-                    scriptType: {
-                      type: "module",
-                      module: {},
-                    },
-                    filePath: `${localhostUrl}${file}`,
-                  })),
-                  entrypointCss: [],
-                }),
-                method: "POST",
-                headers: {
-                  authorization: `Bearer ${process.env.FOUNDRY_TOKEN}`,
-                  accept: "application/json",
-                  "content-type": "application/json",
-                },
-              },
-            )
-              .then((devResponse) => {
-                if (devResponse.status === 200 || devResponse.status === 204) {
-                  res.setHeader("Content-Type", "application/json");
-                  res.end(
-                    JSON.stringify({
-                      redirectUrl:
-                        `${url.origin}/workspace/custom-views/preview/${foundryConfig.widget.rid}`,
-                    }),
-                  );
-                } else {
-                  res.statusCode = devResponse.status;
-                  res.statusMessage =
-                    `Unable to start dev mode in Foundry (see terminal for more): ${devResponse.statusText}`;
-                  devResponse.text().then((err) => {
-                    config?.logger.error(err);
-                    res.end();
-                  });
-                }
-              })
-              .catch((error) => {
-                res.statusCode = 500;
-                res.statusMessage =
-                  `Unable to start dev mode in Foundry: ${error.message}`;
-                res.end();
-              });
           });
         },
       );
@@ -466,8 +457,13 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
       // file of the shape we want will be handled in generateBundle
     },
     // We hook into the produced bundle information to generate a widget configuration file that includes both the entrypoint info and any inferred parameter information.
-    generateBundle(options, bundle) {
-      const packageJsonFile = fs.readJSONSync(packageJsonPath);
+    async generateBundle(options, bundle) {
+      const foundryConfig = await foundryConfigPromise;
+      const widgetVersion = await autoVersion(
+        foundryConfig?.foundryConfig.widget.autoVersion
+          ?? { "type": "package-json" },
+      );
+
       const widgetConfigManifest: WidgetManifest = {
         version: "1.0.0",
         widgets: {},
@@ -508,7 +504,7 @@ export function FoundryWidgetVitePlugin(options: Options = {}): Plugin {
               }))
               : [],
             rid: entrypointFileIdToConfigMap[chunk.facadeModuleId].rid,
-            version: packageJsonFile.version ?? "0.0.0",
+            version: widgetVersion,
             parameters:
               entrypointFileIdToConfigMap[chunk.facadeModuleId].parameters
                 ?? {},
@@ -571,4 +567,108 @@ function extractWidgetConfig(objectExpression: ObjectExpression) {
   );
 
   return JSON.parse(widgetConfigString);
+}
+
+function setWidgetSettings(
+  widgetRid: string,
+  foundryUrl: URL,
+  localhostUrl: string,
+  entrypointToJsSourceFileMap: Record<string, Set<string>>,
+  entrypointFileName: string,
+) {
+  const widgetDevModeSettings = {
+    entrypointJs: [
+      `/${VITE_INJECTIONS}`,
+      "/@vite/client",
+      ...entrypointToJsSourceFileMap[entrypointFileName],
+    ].map((file) => ({
+      filePath: `${localhostUrl}${file}`,
+      scriptType: { type: "module", module: {} },
+    })),
+    entrypointCss: [],
+  };
+  return fetch(
+    `${foundryUrl.origin}/widget-registry/api/dev-mode/settings/${widgetRid}`,
+    {
+      body: JSON.stringify(widgetDevModeSettings),
+      method: "PUT",
+      headers: {
+        authorization: `Bearer ${process.env.FOUNDRY_TOKEN}`,
+        accept: "application/json",
+        "content-type": "application/json",
+      },
+    },
+  );
+}
+
+function enableDevMode(foundryUrl: URL) {
+  return fetch(`${foundryUrl.origin}/widget-registry/api/dev-mode/enable`, {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${process.env.FOUNDRY_TOKEN}`,
+      accept: "application/json",
+    },
+  });
+}
+
+/**
+ * Extracts inline scripts injected by Vite plugins during HTML transformation.
+ *
+ * Vite plugins can inject scripts into the HTML entrypoint. This function captures
+ * those injections, specifically inline scripts, which are needed for our server-side
+ * rendered pages. It calls the `transformIndexHtml` hook on each plugin, collects
+ * the script descriptors, and returns the concatenated inline script contents.
+ *
+ * See documentation: https://vite.dev/guide/api-plugin#transformindexhtml
+ */
+async function extractInjectedScripts(
+  devServer: ViteDevServer,
+): Promise<string> {
+  const pluginTransforms = (devServer?.pluginContainer.plugins ?? [])
+    .map(getPluginTransformHook)
+    .filter((hook): hook is IndexHtmlTransformHook => hook != null);
+  const transformResults: Array<IndexHtmlTransformResult | undefined> =
+    await Promise.all(
+      pluginTransforms.map(async (transformHook) => {
+        // The parameters to the transform hook are not used in the cases we currently support
+        const result = await transformHook("", { path: "", filename: "" });
+        return result ?? undefined;
+      }),
+    );
+
+  // We are only interested in extracting scripts that Vite would usually inject as inline scripts
+  const inlineScriptDescriptors: HtmlTagDescriptor[] = transformResults
+    .filter((result): result is HtmlTagDescriptor[] =>
+      result != null && typeof result !== "string"
+    )
+    .flat()
+    .filter((descriptor: HtmlTagDescriptor) =>
+      descriptor.tag === "script" && typeof descriptor.children === "string"
+    );
+
+  return inlineScriptDescriptors.map((descriptor) => descriptor.children).join(
+    "\n",
+  );
+}
+
+/**
+ * The Vite plugin API for transformIndexHtml supports a few different formats,
+ * all which ultimately resolve to the function that we want to call.
+ */
+function getPluginTransformHook(
+  plugin: Plugin<unknown>,
+): IndexHtmlTransformHook | undefined {
+  if (typeof plugin.transformIndexHtml === "function") {
+    return plugin.transformIndexHtml;
+  } else if (
+    typeof plugin.transformIndexHtml === "object"
+    && "handler" in plugin.transformIndexHtml
+  ) {
+    return plugin.transformIndexHtml.handler;
+  } else if (
+    typeof plugin.transformIndexHtml === "object"
+    && "transform" in plugin.transformIndexHtml
+  ) {
+    return plugin.transformIndexHtml.transform;
+  }
 }

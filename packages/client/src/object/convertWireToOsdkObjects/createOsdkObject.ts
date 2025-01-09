@@ -86,6 +86,7 @@ export function createOsdkObject<
   for (const propKey of Object.keys(rawObj)) {
     if (
       propKey in objectDef.properties
+      && typeof (objectDef.properties[propKey].type) === "string"
       && specialPropertyTypes.has(objectDef.properties[propKey].type)
     ) {
       rawObj[propKey] = createSpecialProperty(
@@ -109,7 +110,10 @@ function createSpecialProperty(
   const rawValue = rawObject[p as any];
   const propDef = objectDef.properties[p as any];
   if (process.env.NODE_ENV !== "production") {
-    invariant(propDef != null && specialPropertyTypes.has(propDef.type));
+    invariant(
+      propDef != null && typeof propDef.type === "string"
+        && specialPropertyTypes.has(propDef.type),
+    );
   }
   {
     {
