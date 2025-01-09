@@ -43,12 +43,14 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
       }
 
       let body;
+
       try {
         body = await response.json();
       } catch (e) {
         throw convertError(
           e,
           "A network error occurred while reading response",
+          response,
         );
       }
 
@@ -69,7 +71,17 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
 function convertError(
   e: any,
   msgIfNotError: string = "An unknown error occurred",
+  response?: Response,
 ) {
+  if (response?.status && response.statusText) {
+    // Catches errors like 429 where there is no response body but a code is returned
+    return new UnknownError(
+      `Failed to fetch ${response.status} ${response.statusText} causing ${e.message}`,
+      response.statusText,
+      e,
+      response.status,
+    );
+  }
   if (e instanceof Error) {
     return new UnknownError(e.message, "UNKNOWN", e);
   }
