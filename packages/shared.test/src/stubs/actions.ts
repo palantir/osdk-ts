@@ -160,6 +160,13 @@ export const actionRequestWithAttachmentUpload: ApplyActionRequestV2 = {
   },
 };
 
+export const actionRequestWithInterface: ApplyActionRequestV2 = {
+  options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
+  parameters: {
+    deletedInterface: { objectTypeApiName: "Employee", primaryKeyValue: 1 },
+  },
+};
+
 export const actionRequestMoveOfficeBatch: BatchApplyActionRequestV2 = {
   requests: [{
     parameters: {
@@ -367,5 +374,8 @@ export const actionResponseMap: {
   actionTakesAttachment: {
     [stableStringify(actionRequestWithAttachment)]: actionResponse,
     [stableStringify(actionRequestWithAttachmentUpload)]: actionResponse,
+  },
+  deleteFooInterface: {
+    [stableStringify(actionRequestWithInterface)]: actionResponse,
   },
 };

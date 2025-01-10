@@ -15,6 +15,7 @@
  */
 
 import type { OsdkMetadata } from "../OsdkMetadata.js";
+import type { InterfaceDefinition } from "./InterfaceDefinition.js";
 import type {
   ObjectTypeDefinition,
   ReleaseStatus,
@@ -43,7 +44,8 @@ export namespace ActionMetadata {
     type:
       | ValidBaseActionParameterTypes
       | DataType.Object<any>
-      | DataType.ObjectSet<any>;
+      | DataType.ObjectSet<any>
+      | DataType.Interface<any>;
     description?: string;
     multiplicity?: boolean;
     nullable?: boolean;
@@ -56,6 +58,12 @@ export namespace ActionMetadata {
       __OsdkTargetType?: T_Target;
       type: "object";
       object: T_Target["apiName"];
+    }
+
+    export interface Interface<T_Target extends InterfaceDefinition = never> {
+      __OsdkTargetType?: T_Target;
+      type: "interface";
+      interface: T_Target["apiName"];
     }
 
     export interface ObjectSet<

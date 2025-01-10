@@ -60,6 +60,15 @@ export namespace ActionMetadata {
     // (undocumented)
     export namespace DataType {
         // (undocumented)
+        export interface Interface<T_Target extends InterfaceDefinition = never> {
+            // (undocumented)
+            __OsdkTargetType?: T_Target;
+            // (undocumented)
+            interface: T_Target["apiName"];
+            // (undocumented)
+            type: "interface";
+        }
+        // (undocumented)
         export interface Object<T_Target extends ObjectTypeDefinition = never> {
             // (undocumented)
             __OsdkTargetType?: T_Target;
@@ -89,12 +98,16 @@ export namespace ActionMetadata {
         // Warning: (ae-forgotten-export) The symbol "ValidBaseActionParameterTypes" needs to be exported by the entry point index.d.ts
         //
         // (undocumented)
-        type: ValidBaseActionParameterTypes | DataType.Object<any> | DataType.ObjectSet<any>;
+        type: ValidBaseActionParameterTypes | DataType.Object<any> | DataType.ObjectSet<any> | DataType.Interface<any>;
     }
 }
 
 // @public
 export namespace ActionParam {
+    export type InterfaceType<T extends InterfaceDefinition> = {
+        $objectType: string;
+        $primaryKey: string | number;
+    };
     export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
     // Warning: (ae-forgotten-export) The symbol "OsdkObjectPrimaryKeyType" needs to be exported by the entry point index.d.ts
     export type ObjectType<T extends ObjectTypeDefinition> = OsdkBase<T> | OsdkObjectPrimaryKeyType<T>;

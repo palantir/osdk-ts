@@ -101,6 +101,13 @@ export async function generatePerActionDataFiles(
                     return `ActionMetadata.DataType.ObjectSet<${
                       obj.getImportedDefinitionIdentifier(true)
                     }>`;
+                  } else if (type.type === "interface") {
+                    const obj = enhancedOntology.requireInterfaceType(
+                      type.interface,
+                    );
+                    return `ActionMetadata.DataType.Interface<${
+                      obj.getImportedDefinitionIdentifier(true)
+                    }>`;
                   }
                   return undefined;
                 },
@@ -126,6 +133,11 @@ export async function generatePerActionDataFiles(
         } else if (input.type === "objectSet") {
           return `ActionParam.ObjectSetType<${
             enhancedOntology.requireObjectType(input.objectSet)
+              .getImportedDefinitionIdentifier(true)
+          }>`;
+        } else if (input.type === "interface") {
+          return `ActionParam.InterfaceType<${
+            enhancedOntology.requireInterfaceType(input.interface)
               .getImportedDefinitionIdentifier(true)
           }>`;
         }
@@ -236,6 +248,15 @@ export async function generatePerActionDataFiles(
             );
           }
         }
+        if (p.dataType.type === "interfaceObject") {
+          if (p.dataType.interfaceTypeApiName) {
+            referencedObjectDefs.add(
+              enhancedOntology.requireInterfaceType(
+                p.dataType.interfaceTypeApiName,
+              ),
+            );
+          }
+        }
         if (
           p.dataType.type === "array"
           && (p.dataType.subType.type === "object"
@@ -252,6 +273,18 @@ export async function generatePerActionDataFiles(
             referencedObjectDefs.add(
               enhancedOntology.requireObjectType(
                 p.dataType.subType.objectTypeApiName,
+              ),
+            );
+          }
+        }
+        if (
+          p.dataType.type === "array"
+          && (p.dataType.subType.type === "interfaceObject")
+        ) {
+          if (p.dataType.subType.interfaceTypeApiName) {
+            referencedObjectDefs.add(
+              enhancedOntology.requireObjectType(
+                p.dataType.subType.interfaceTypeApiName,
               ),
             );
           }
