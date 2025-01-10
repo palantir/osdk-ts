@@ -18,13 +18,17 @@ export interface ITask {
 }
 
 function useProjects() {
-  const { data, isLoading, isValidating, error, mutate } = useSWR<IProject[]>("projects", async () => {
-    // Try to implement this with the Ontology SDK!
-    const projectsList: IProject[] = (await Mocks.getProjects()).map((project) => ({
-      ...project,
-    }));
-    return projectsList;
-    }
+  const { data, isLoading, isValidating, error, mutate } = useSWR<IProject[]>(
+    "projects",
+    async () => {
+      // Try to implement this with the Ontology SDK!
+      const projectsList: IProject[] = (await Mocks.getProjects()).map((
+        project,
+      ) => ({
+        ...project,
+      }));
+      return projectsList;
+    },
   );
 
   const createProject: (name: string) => Promise<IProject["$primaryKey"]> =

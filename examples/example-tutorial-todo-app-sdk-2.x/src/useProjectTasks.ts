@@ -11,8 +11,8 @@ export function useProjectTasks(project: IProject | undefined) {
       if (project == null) {
         return [];
       }
-      return (await Mocks.getProjectTasks(project.$primaryKey))
-    }
+      return (await Mocks.getProjectTasks(project.$primaryKey));
+    },
   );
 
   const createTask: (

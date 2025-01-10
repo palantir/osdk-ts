@@ -3,7 +3,6 @@ import Dialog from "./Dialog";
 import { IProject } from "./useProjects";
 import { useProjectTasks } from "./useProjectTasks";
 
-
 interface CreateTaskDialogProps {
   project: IProject;
   isOpen: boolean;

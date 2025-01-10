@@ -5,7 +5,7 @@ const projects: IProject[] = [
     $apiName: "MockProject",
     $primaryKey: "1",
     id: "1",
-    name: "Mock project"
+    name: "Mock project",
   },
   {
     $apiName: "MockProject",
@@ -16,36 +16,35 @@ const projects: IProject[] = [
 ];
 
 const tasks: ITask[] = [
-    {
-      $apiName: "MockTask",
-      $primaryKey: "1",
-      id: "1",
-      title: "Try to",
-      projectId: "1",
-    },
-    {
-      $apiName: "MockTask",
-      $primaryKey: "2",
-      id: "2",
-      title: "Implement this",
-      projectId: "1",
-    },
-    {
-      $apiName: "MockTask",
-      $primaryKey: "3",
-      id: "3",
-      title: "With the Ontology SDK!",
-      projectId: "1",
-    },
-    {
-      $apiName: "MockTask",
-      $primaryKey: "4",
-      id: "4",
-      title: "More tasks here",
-      projectId: "2",
-    },
-  ]
-
+  {
+    $apiName: "MockTask",
+    $primaryKey: "1",
+    id: "1",
+    title: "Try to",
+    projectId: "1",
+  },
+  {
+    $apiName: "MockTask",
+    $primaryKey: "2",
+    id: "2",
+    title: "Implement this",
+    projectId: "1",
+  },
+  {
+    $apiName: "MockTask",
+    $primaryKey: "3",
+    id: "3",
+    title: "With the Ontology SDK!",
+    projectId: "1",
+  },
+  {
+    $apiName: "MockTask",
+    $primaryKey: "4",
+    id: "4",
+    title: "More tasks here",
+    projectId: "2",
+  },
+];
 
 async function delay(): Promise<void> {
   return new Promise((resolve) =>
@@ -107,7 +106,13 @@ async function createTask({
     throw new Error(`Project ${projectId} not found!`);
   }
   const id = randomId();
-  tasks.unshift({ $apiName: "MockTask", $primaryKey: id, id, title, projectId });
+  tasks.unshift({
+    $apiName: "MockTask",
+    $primaryKey: id,
+    id,
+    title,
+    projectId,
+  });
   return id;
 }
 
@@ -115,8 +120,8 @@ async function deleteTask(id: string): Promise<void> {
   await delay();
   const idx = tasks.findIndex((t) => t.projectId === id);
   if (idx !== -1) {
-      tasks.splice(idx, 1);
-    }
+    tasks.splice(idx, 1);
+  }
 }
 
 const Mocks = {
