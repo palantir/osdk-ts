@@ -166,10 +166,13 @@ const archetypeRules = archetypes(
       skipTypes: true,
     },
   )
+  .addArchetype("cli components", ["@osdk/cli.*"], {
+    ...INTERNAL_LIBRARY_RULES,
+    private: false,
+  })
   .addArchetype(
     "internal libraries / templates",
     [
-      "@osdk/cli.*",
       "@osdk/client.test.ontology",
       "@osdk/create-app.template.*",
       "@osdk/create-widget.template.*",

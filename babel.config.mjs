@@ -18,6 +18,7 @@ import { findUp } from "find-up";
 import { readFile } from "fs/promises";
 import * as path from "node:path";
 
+process.env.STABLE_PACKAGE_CLIENT_VERSION = "~2.0.11";
 process.env.PACKAGE_VERSION = await readPackageVersion(process.cwd());
 process.env.PACKAGE_API_VERSION = await readPackageVersion("packages/api");
 process.env.PACKAGE_CLIENT_VERSION = await readPackageVersion(
@@ -40,6 +41,7 @@ const config = function(api) {
           "PACKAGE_API_VERSION",
           "PACKAGE_CLIENT_VERSION",
           "PACKAGE_CLI_VERSION",
+          "STABLE_PACKAGE_CLIENT_VERSION",
           "TARGET",
           "MODE",
         ],

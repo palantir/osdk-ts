@@ -14,6 +14,8 @@ import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
+const STABLE_PACKAGE_CLIENT_VERSION = "~2.0.11";
+
 await yargs(hideBin(process.argv))
   .command("*", "default command", (argv) => {
     return argv
@@ -180,6 +182,7 @@ async function transpileWithTsup(format, target) {
       PACKAGE_API_VERSION,
       PACKAGE_CLIENT_VERSION,
       PACKAGE_CLI_VERSION,
+      STABLE_PACKAGE_CLIENT_VERSION,
       TARGET: target,
       MODE: process.env.production ? "production" : "development",
     },
@@ -245,6 +248,7 @@ async function transpileWithBabel(format, target) {
     PACKAGE_API_VERSION,
     PACKAGE_CLIENT_VERSION,
     PACKAGE_CLI_VERSION,
+    STABLE_PACKAGE_CLIENT_VERSION,
     TARGET: target,
     MODE: process.env.production ? "production" : "development",
   });

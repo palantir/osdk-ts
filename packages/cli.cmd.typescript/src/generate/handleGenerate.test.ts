@@ -15,7 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { updateVersionsIfTheyExist } from "./handleGenerate.mjs";
+import { updateVersionsIfTheyExist } from "./handleGenerate.js";
 
 describe(updateVersionsIfTheyExist, () => {
   it("should update versions if they exist", () => {

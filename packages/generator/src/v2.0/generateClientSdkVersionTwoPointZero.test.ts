@@ -22,12 +22,16 @@ import type {
 import { consola } from "consola";
 import { mkdir, readdir, rmdir, writeFile } from "fs/promises";
 import * as immer from "immer";
+import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 import { beforeEach, describe, expect, it, test, vi } from "vitest";
 import { compileThis } from "../util/test/compileThis.js";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles.js";
 import { TodoWireOntology } from "../util/test/TodoWireOntology.js";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import { generateClientSdkVersionTwoPointZero } from "./generateClientSdkVersionTwoPointZero.js";
+
+const THIS_FILE_DIR = path.dirname(fileURLToPath(import.meta.url));
 
 function changeValue<T extends Record<K, any>, K extends keyof immer.Draft<T>>(
   draft: immer.Draft<T>,
@@ -1727,10 +1731,10 @@ describe("generator", () => {
 
   test.skip("runs generator locally", async () => {
     try {
-      await rmdir(`${__dirname}/generated`, { recursive: true });
+      await rmdir(`${THIS_FILE_DIR}/generated`, { recursive: true });
     } catch (e) {
     }
-    await mkdir(`${__dirname}/generated`, { recursive: true });
+    await mkdir(`${THIS_FILE_DIR}/generated`, { recursive: true });
     await generateClientSdkVersionTwoPointZero(
       TodoWireOntology,
       "typescript-sdk/0.0.0 osdk-cli/0.0.0",
@@ -1743,7 +1747,7 @@ describe("generator", () => {
         },
         readdir: async (path) => await readdir(path),
       },
-      `${__dirname}/generated/`,
+      `${THIS_FILE_DIR}/generated/`,
     );
   });
 
