@@ -50,6 +50,7 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
           `Failed to fetch ${response.status} ${response.statusText}`,
           "UNKNOWN",
           undefined,
+          response.status,
         );
       }
 
