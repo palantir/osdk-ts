@@ -494,6 +494,23 @@ export type LinkedType<Q extends ObjectOrInterfaceDefinition, L extends LinkName
 export type LinkNames<Q extends ObjectOrInterfaceDefinition> = keyof CompileTimeMetadata<Q>["links"] & string;
 
 // @public (undocumented)
+export interface Media {
+    fetchContents(): Promise<Response>;
+    fetchMetadata(): Promise<MediaMetadata_2>;
+}
+
+// @public
+interface MediaMetadata_2 {
+    // (undocumented)
+    mediaType: string;
+    // (undocumented)
+    path?: string;
+    // (undocumented)
+    sizeBytes: number;
+}
+export { MediaMetadata_2 as MediaMetadata }
+
+// @public (undocumented)
 export type NullabilityAdherence = false | "throw" | "drop";
 
 // @public (undocumented)
@@ -765,6 +782,8 @@ export interface PropertyValueWireToClient {
     // (undocumented)
     marking: string;
     // (undocumented)
+    mediaReference: Media;
+    // (undocumented)
     numericTimeseries: TimeSeriesProperty<number>;
     // (undocumented)
     sensorTimeseries: TimeSeriesProperty<string | number>;
@@ -858,7 +877,7 @@ export interface SelectArg<Q extends ObjectOrInterfaceDefinition, L extends Prop
 export type SelectArgToKeys<Q extends ObjectOrInterfaceDefinition, A extends SelectArg<Q, any, any>> = A extends SelectArg<Q, never> ? PropertyKeys<Q> : A["$select"] extends readonly string[] ? A["$select"][number] : PropertyKeys<Q>;
 
 // @public (undocumented)
-export type SimpleWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
+export type SimpleWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
 
 // @public (undocumented)
 export interface SingleLinkAccessor<T extends ObjectTypeDefinition> {
