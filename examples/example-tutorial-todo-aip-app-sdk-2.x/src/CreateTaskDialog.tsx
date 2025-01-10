@@ -3,8 +3,8 @@ import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import css from "./CreateTaskDialog.module.css";
 import Dialog from "./Dialog";
-import { useProjectTasks } from "./useProjectTasks";
 import { IProject } from "./useProjects";
+import { useProjectTasks } from "./useProjectTasks";
 
 interface CreateTaskDialogProps {
   project: IProject;

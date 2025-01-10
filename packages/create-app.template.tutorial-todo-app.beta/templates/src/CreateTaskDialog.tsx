@@ -1,7 +1,8 @@
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import Dialog from "./Dialog";
-import { useProjectTasks } from "./useProjectTasks";
 import { IProject } from "./useProjects";
+import { useProjectTasks } from "./useProjectTasks";
+
 
 interface CreateTaskDialogProps {
   project: IProject;
