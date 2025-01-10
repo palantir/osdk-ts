@@ -198,6 +198,27 @@
           "objectTypeApiName": "Employee"
         }
       ]
+    },
+    "delete-foo-interface": {
+      "apiName": "delete-foo-interface",
+      "displayName": "Delete Foo Interface",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "deletedInterface": {
+          "dataType": {
+            "type": "interfaceObject",
+            "interfaceTypeApiName": "FooInterface"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817",
+      "operations": [
+        {
+          "type": "deleteInterfaceObject",
+          "interfaceTypeApiName": "FooInterface"
+        }
+      ]
     }
   },
   "objectTypes": {

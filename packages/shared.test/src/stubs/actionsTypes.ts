@@ -15,6 +15,7 @@
  */
 
 import type { ActionTypeV2 } from "@osdk/internal.foundry.core";
+import { FooInterface } from "./interfaces.js";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
 
 export const PromoteEmployee: ActionTypeV2 = {
@@ -282,6 +283,28 @@ export const ActionTypeWithUnsupportedTypes: ActionTypeV2 = {
   status: "ACTIVE",
 };
 
+export const ActionTakesInterface: ActionTypeV2 = {
+  apiName: "delete-foo-interface",
+  displayName: "Delete Foo Interface",
+  status: "EXPERIMENTAL",
+  parameters: {
+    deletedInterface: {
+      dataType: {
+        type: "interfaceObject",
+        interfaceTypeApiName: FooInterface.apiName,
+      },
+      required: true,
+    },
+  },
+  rid: "ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817",
+  operations: [
+    {
+      type: "deleteInterfaceObject",
+      interfaceTypeApiName: FooInterface.apiName,
+    },
+  ],
+};
+
 export const actionTypes: ActionTypeV2[] = [
   PromoteEmployee,
   PromoteEmployeeObject,
@@ -290,4 +313,5 @@ export const actionTypes: ActionTypeV2[] = [
   MoveOffice,
   ActionTakesObjectSet,
   ActionTakesAttachment,
+  ActionTakesInterface,
 ];

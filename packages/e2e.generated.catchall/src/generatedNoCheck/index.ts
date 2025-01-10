@@ -3,6 +3,7 @@ export {
   assignEmployee1,
   createOsdkTestObject,
   createTodo,
+  deleteFooInterface,
   deleteOsdkTestObject,
   editOsdkTestObject,
 } from './ontology/actions.js';

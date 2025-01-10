@@ -16,6 +16,7 @@
 
 import type { DataValueClientToWire } from "../mapping/DataValueMapping.js";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
+import type { InterfaceDefinition } from "../ontology/InterfaceDefinition.js";
 import type { ObjectTypeDefinition } from "../ontology/ObjectTypeDefinition.js";
 import type { OsdkBase } from "../OsdkBase.js";
 import type { OsdkObjectPrimaryKeyType } from "../OsdkObjectPrimaryKeyType.js";
@@ -55,6 +56,14 @@ export namespace ActionParam {
    * Helper type to convert action definition parameter object sets to typescript types
    */
   export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
+
+  /**
+   * Helper type to convert action definition parameter interface types to typescript types
+   */
+  export type InterfaceType<T extends InterfaceDefinition> = {
+    $objectType: string;
+    $primaryKey: string | number;
+  };
 }
 
 export type ActionEditResponse = ActionResults;

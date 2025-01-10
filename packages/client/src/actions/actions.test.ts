@@ -24,6 +24,7 @@ import {
   $ontologyRid,
   actionTakesAttachment,
   createOffice,
+  deleteFooInterface,
   moveOffice,
 } from "@osdk/client.test.ontology";
 import type {
@@ -260,6 +261,45 @@ describe("actions", () => {
     expectTypeOf<typeof result2>().toEqualTypeOf<undefined>();
     expect(result2).toBeUndefined();
   });
+
+  it("Accepts interfaces", async () => {
+    const clientBoundTakesInterface = client(
+      deleteFooInterface,
+    ).applyAction;
+
+    type InferredParamType = Parameters<
+      typeof clientBoundTakesInterface
+    >[0];
+
+    expectTypeOf<
+      {
+        deletedInterface: { $objectType: string; $primaryKey: string | number };
+      }
+    >().toMatchTypeOf<
+      InferredParamType
+    >();
+
+    const clientBoundBatchActionTakesInterface = client(
+      deleteFooInterface,
+    ).batchApplyAction;
+    type InferredBatchParamType = Parameters<
+      typeof clientBoundBatchActionTakesInterface
+    >[0];
+
+    expectTypeOf<{
+      deletedInterface: { $objectType: string; $primaryKey: string | number };
+    }[]>().toMatchTypeOf<InferredBatchParamType>();
+
+    const result = await client(deleteFooInterface).applyAction({
+      deletedInterface: {
+        $objectType: "Employee",
+        $primaryKey: 1,
+      },
+    });
+
+    expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
+    expect(result).toBeUndefined();
+  });
   it("conditionally returns edits in batch mode", async () => {
     const result = await client(moveOffice).batchApplyAction([
       {
@@ -443,6 +483,7 @@ describe("ActionResponse remapping", () => {
       "actionTakesObjectSet",
       "createOffice",
       "createOfficeAndEmployee",
+      "deleteFooInterface",
       "moveOffice",
       "promoteEmployee",
       "promoteEmployeeObject",
