@@ -1,11 +1,11 @@
 import { useCallback, useState } from "react";
 import css from "./CreateTaskButton.module.css";
 import CreateTaskDialog from "./CreateTaskDialog";
-import type { MockProject } from "./mocks";
 import { useProjectTasks } from "./useProjectTasks";
+import { IProject } from "./useProjects";
 
 interface CreateTaskButtonProps {
-  project: MockProject;
+  project: IProject;
   onTaskCreated: (taskId: string) => void;
 }
 

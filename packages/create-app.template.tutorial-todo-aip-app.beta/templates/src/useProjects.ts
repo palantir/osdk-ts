@@ -1,19 +1,37 @@
 import { useCallback } from "react";
 import useSWR from "swr";
-import type { MockProject } from "./mocks";
 import Mocks from "./mocks";
 
+export interface IProject {
+  $apiName: string;
+  $primaryKey: string;
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface ITask {
+  $apiName: string;
+  $primaryKey: string;
+  id: string;
+  title: string;
+  description: string;
+  projectId: string;
+}
+
 function useProjects() {
-  const { data, isLoading, isValidating, error, mutate } = useSWR<
-    MockProject[]
-  >("projects", async () => {
+  const { data, isLoading, isValidating, error, mutate } = useSWR<IProject[]>("projects", async () => {
     // Try to implement this with the Ontology SDK!
-    return Mocks.getProjects();
-  });
+    const projectsList: IProject[] = (await Mocks.getProjects()).map((project) => ({
+      ...project
+    }));
+    return projectsList;
+    }
+  );
 
   const createProject: (
     name: string,
-  ) => Promise<MockProject["$primaryKey"]> = useCallback(
+  ) => Promise<IProject["$primaryKey"]> = useCallback(
     async (name: string) => {
       // Try to implement this with the Ontology SDK!
       const id = await Mocks.createProject({ name });
@@ -24,7 +42,7 @@ function useProjects() {
   );
 
   const updateProjectDescription: (
-    project: MockProject,
+    project: IProject,
   ) => Promise<void> = useCallback(
     async (project) => {
       // Try to implement this with the Ontology SDK!
@@ -34,7 +52,7 @@ function useProjects() {
     [mutate],
   );
 
-  const deleteProject: (project: MockProject) => Promise<void> = useCallback(
+  const deleteProject: (project: IProject) => Promise<void> = useCallback(
     async (project) => {
       // Try to implement this with the Ontology SDK!
       await Mocks.deleteProject(project.$primaryKey);

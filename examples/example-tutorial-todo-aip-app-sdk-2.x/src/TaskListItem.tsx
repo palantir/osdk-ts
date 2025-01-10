@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { MockTask } from "./mocks";
 import css from "./TaskListItem.module.css";
+import { ITask } from "./useProjects";
 
 interface TaskListItemProps {
-  task: MockTask;
-  deleteTask: (task: MockTask) => Promise<void>;
+  task: ITask;
+  deleteTask: (task: ITask) => Promise<void>;
   onTaskDeleted: (taskId: string | undefined) => void;
 }
 
