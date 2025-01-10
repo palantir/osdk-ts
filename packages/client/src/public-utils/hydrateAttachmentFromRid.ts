@@ -16,25 +16,31 @@
 
 import type { Attachment } from "@osdk/api";
 import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
-import type { MinimalClient } from "./MinimalClientContext.js";
+import { additionalContext, type Client } from "../Client.js";
+import type { MinimalClient } from "../MinimalClientContext.js";
 
 /**
  * Helper function to create an attachment type from a rid
- * @param client - minimal client
- * @param rid - rid of attachment in Foundry
+ * @param client -  An OSDK client.
+ * @param rid - The rid of attachment in Foundry.
  * @returns
  */
-export function createAttachmentFromRid(
+export function hydrateAttachmentFromRid(
+  client: Client,
+  rid: string,
+): Attachment {
+  return hydrateAttachmentFromRidInternal(client[additionalContext], rid);
+}
+
+/** @internal */
+export function hydrateAttachmentFromRidInternal(
   client: MinimalClient,
   rid: string,
 ): Attachment {
   return {
     rid,
     async fetchContents() {
-      return OntologiesV2.Attachments.read(
-        client,
-        rid,
-      );
+      return OntologiesV2.Attachments.read(client, rid);
     },
     async fetchMetadata() {
       const r = await OntologiesV2.Attachments.get(client, rid);

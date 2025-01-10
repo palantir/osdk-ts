@@ -28,9 +28,9 @@ import type {
 } from "@osdk/api";
 import type { DataValue } from "@osdk/internal.foundry.core";
 import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
-import { createAttachmentFromRid } from "../createAttachmentFromRid.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
+import { hydrateAttachmentFromRidInternal } from "../public-utils/hydrateAttachmentFromRid.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import { toDataValueQueries } from "../util/toDataValueQueries.js";
@@ -144,7 +144,10 @@ async function remapQueryResponse<
     }
 
     case "attachment": {
-      return createAttachmentFromRid(client, responseValue) as QueryReturnType<
+      return hydrateAttachmentFromRidInternal(
+        client,
+        responseValue,
+      ) as QueryReturnType<
         typeof responseDataType
       >;
     }

@@ -16,7 +16,6 @@
 
 import type {
   ActionDefinition,
-  CompileTimeMetadata,
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -32,12 +31,10 @@ import type {
   MinimalObjectSet,
 } from "@osdk/api/unstable";
 import {
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__createTemporaryObjectSet,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
   __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
 } from "@osdk/api/unstable";
-import { OntologyObjectSets } from "@osdk/internal.foundry.ontologiesv2";
 import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.client";
 import { symbolClientContext } from "@osdk/shared.client2";
 import { createBulkLinksAsyncIterFactory } from "./__unstable/createBulkLinksAsyncIterFactory.js";
@@ -203,25 +200,6 @@ export function createClientInternal(
               );
 
               return { unsubscribe: async () => (await pendingSubscribe)() };
-            },
-          } as any;
-        case __EXPERIMENTAL__NOT_SUPPORTED_YET__createTemporaryObjectSet.name:
-          return {
-            createTemporaryObjectSet: async <
-              Q extends ObjectOrInterfaceDefinition,
-            >(
-              objectSet: unknown extends CompileTimeMetadata<Q>["objectSet"]
-                ? ObjectSet<Q>
-                : CompileTimeMetadata<Q>["objectSet"],
-            ) => {
-              const response = await OntologyObjectSets.createTemporary(
-                clientCtx,
-                await clientCtx.ontologyRid,
-                {
-                  objectSet: getWireObjectSet(objectSet),
-                },
-              );
-              return response.objectSetRid;
             },
           } as any;
       }
