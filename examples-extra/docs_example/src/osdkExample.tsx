@@ -1,7 +1,3 @@
-import {
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
-} from "@osdk/api/unstable";
 import { createClient } from "@osdk/client";
 import {
   $ontologyRid,
@@ -185,10 +181,5 @@ export async function osdkObjectSetExample() {
     intersectedObjectSet,
     unionObjectSet,
     subtractObjectSet,
-  );
-
-  await client(__EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid).fetchOneByRid(
-    Employee,
-    "myEmployee",
   );
 }
