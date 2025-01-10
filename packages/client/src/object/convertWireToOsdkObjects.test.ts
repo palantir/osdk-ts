@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Attachment, Osdk, PropertyKeys } from "@osdk/api";
+import type { Attachment, Media, Osdk, PropertyKeys } from "@osdk/api";
 import {
   $ontologyRid,
   Employee,
@@ -149,6 +149,31 @@ describe("convertWireToOsdkObjects", () => {
     } = withoutValues.data[0];
     expect(emptyAttachment).toBeUndefined();
     expect(emptyAttachmentArray).toBeUndefined();
+  });
+
+  it("converts media as expected", async () => {
+    const withValues = await client(
+      objectTypeWithAllPropertyTypes,
+    )
+      .where({ id: 1 })
+      .fetchPage();
+    expect(withValues.data.length).toBeGreaterThanOrEqual(1);
+
+    const { mediaReference } = withValues.data[0];
+
+    expectTypeOf(mediaReference).toMatchTypeOf<
+      Media | undefined
+    >;
+    expect(mediaReference).toBeDefined();
+
+    const withoutValues = await client(
+      objectTypeWithAllPropertyTypes,
+    ).where({ id: 2 }).fetchPage();
+
+    const {
+      mediaReference: emptyMedia,
+    } = withoutValues.data[0];
+    expect(emptyMedia).toBeUndefined();
   });
 
   it("creates immutable objects", async () => {

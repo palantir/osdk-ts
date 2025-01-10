@@ -18,6 +18,7 @@ import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
 import invariant from "tiny-invariant";
 import { GeotimeSeriesPropertyImpl } from "../../createGeotimeSeriesProperty.js";
+import { MediaReferencePropertyImpl } from "../../createMediaReferenceProperty.js";
 import { TimeSeriesPropertyImpl } from "../../createTimeseriesProperty.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
@@ -40,6 +41,7 @@ const specialPropertyTypes = new Set(
   [
     "attachment",
     "geotimeSeriesReference",
+    "mediaReference",
     "numericTimeseries",
     "stringTimeseries",
     "sensorTimeseries",
@@ -159,6 +161,14 @@ function createSpecialProperty(
                 }
                 : undefined,
             );
+          }
+          if (propDef.type === "mediaReference") {
+            return new MediaReferencePropertyImpl({
+              client,
+              objectApiName: objectDef.apiName,
+              primaryKey: rawObject[objectDef.primaryKeyApiName as string],
+              propertyName: p as string,
+            });
           }
         }
       }
