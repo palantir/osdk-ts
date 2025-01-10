@@ -18,7 +18,15 @@ import fs from "node:fs";
 import path, { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { dirSync } from "tmp";
-import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  test,
+  vi,
+} from "vitest";
 import { cli } from "./cli.js";
 import { TEMPLATES } from "./generatedNoCheck/templates.js";
 import type { Template } from "./templates.js";
@@ -47,6 +55,14 @@ beforeEach(() => {
 describe.each(TEMPLATES)("template $id", (template) => {
   const supportedVersions = Object.keys(template.files);
   describe.each(supportedVersions)("For SDK version %s", (sdkVersion) => {
+    beforeAll(() => {
+      vi.stubEnv("STABLE_PACKAGE_CLIENT_VERSION", "2.1.0-beta.20");
+    });
+
+    afterAll(() => {
+      vi.unstubAllEnvs();
+    });
+
     test(`CLI creates ${template.id}`, async () => {
       await runTest({
         project: `expected-${template.id}`,
