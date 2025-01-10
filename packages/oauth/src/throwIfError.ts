@@ -22,7 +22,9 @@ export function throwIfError<T extends IsErrorInputs>(
   result: T | OAuth2Error,
 ): Exclude<T, OAuth2Error> {
   if (isOAuth2Error(result)) {
-    throw new Error(`Failed to get token: ${result.error}`);
+    throw new Error(
+      `Failed to get token: ${result.error} ${result.error_description ?? ""}`,
+    );
   }
   return result as any;
 }
