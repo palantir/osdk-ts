@@ -27,7 +27,7 @@ import {
 } from "vitest";
 
 import * as commonJs from "./common.js";
-import { LocalStorageState } from "./common.js";
+import { LocalStorageState, SessionStorageState } from "./common.js";
 import { createPublicOauthClient } from "./createPublicOauthClient.js";
 import { PublicOauthClient } from "./PublicOauthClient.js";
 
@@ -59,6 +59,7 @@ vi.mock("./common.js", async (importOriginal) => {
       };
     }),
     readLocal: vi.spyOn(original, "readLocal"),
+    readSession: vi.spyOn(original, "readSession"),
     // vi.fn(original.readLocal),
   };
 });
@@ -87,6 +88,12 @@ describe(createPublicOauthClient, () => {
     removeItem: vi.fn(),
   };
 
+  const mockSessionStorage = {
+    setItem: vi.fn(),
+    getItem: vi.fn(),
+    removeItem: vi.fn(),
+  };
+
   beforeEach((context) => {
     vi.restoreAllMocks();
     fetchFn.mockRestore();
@@ -100,6 +107,7 @@ describe(createPublicOauthClient, () => {
   beforeAll(() => {
     vi.stubGlobal("window", mockWindow);
     vi.stubGlobal("localStorage", mockLocalStorage);
+    vi.stubGlobal("sessionStorage", mockSessionStorage);
   });
 
   afterAll(() => {
@@ -223,22 +231,34 @@ describe(createPublicOauthClient, () => {
       );
     });
 
-    describe.each<LocalStorageState>([
+    describe.each<
+      { localStorage: LocalStorageState; sessionStorage: SessionStorageState }
+    >([
       {
-        refresh_token: "a-refresh-token",
+        localStorage: {
+          refresh_token: "a-refresh-token",
+        },
+        sessionStorage: {},
       },
       {
-        codeVerifier: "hi",
-        state: "mom",
-        oldUrl: "https://someoldurl.local",
+        localStorage: {},
+        sessionStorage: {
+          codeVerifier: "hi",
+          state: "mom",
+          oldUrl: "https://someoldurl.local",
+        },
       },
-      {},
-    ])("Initial Local State: %s", (initialLocalState) => {
+      { localStorage: {}, sessionStorage: {} },
+    ])("Initial Local State: %s", (initialState) => {
       const ACCESS_TOKEN = (Math.random() + 1).toString(36).substring(7);
 
       beforeEach(() => {
         vi.mocked(commonJs.readLocal).mockImplementation(() =>
-          initialLocalState
+          initialState.localStorage
+        );
+
+        vi.mocked(commonJs.readSession).mockImplementation(() =>
+          initialState.sessionStorage
         );
 
         hoistedMocks.makeTokenAndSaveRefresh.mockImplementation(
@@ -250,7 +270,10 @@ describe(createPublicOauthClient, () => {
         );
       });
 
-      if (Object.keys(initialLocalState).length === 0) {
+      if (
+        Object.keys(initialState.localStorage).length === 0
+        && Object.keys(initialState.sessionStorage).length === 0
+      ) {
         if (should.redirectToLoginPage) {
           it("redirects to login page", async () => {
             const tokenPromise = client!();
@@ -259,7 +282,7 @@ describe(createPublicOauthClient, () => {
             if (should.redirectToLoginPage) {
               // expect save local
               await expect(tokenPromise).resolves.toBeUndefined();
-              expect(mockLocalStorage.setItem).toBeCalledWith(
+              expect(mockSessionStorage.setItem).toBeCalledWith(
                 `@osdk/oauth : refresh : ${clientArgs.clientId}`,
                 JSON.stringify({ oldUrl: window.location.toString() }),
               );
@@ -279,7 +302,7 @@ describe(createPublicOauthClient, () => {
             if (should.redirectToLoginPage) {
               // expect save local
               await expect(tokenPromise).resolves.toBeUndefined();
-              expect(mockLocalStorage.setItem).toBeCalledWith(
+              expect(mockSessionStorage.setItem).toBeCalledWith(
                 `@osdk/oauth : refresh : ${clientArgs.clientId}`,
                 JSON.stringify({ oldUrl: window.location.toString() }),
               );
@@ -319,7 +342,7 @@ describe(createPublicOauthClient, () => {
         }
       }
 
-      if (initialLocalState.codeVerifier) {
+      if (initialState.sessionStorage.codeVerifier) {
         it("tries to auth with return results", async () => {
           await expect(client()).resolves.toEqual(ACCESS_TOKEN);
           expect(hoistedMocks.makeTokenAndSaveRefresh).toHaveBeenCalledTimes(
@@ -334,12 +357,12 @@ describe(createPublicOauthClient, () => {
           expect(mockWindow.history.replaceState).toBeCalledWith(
             expect.anything(),
             expect.anything(),
-            initialLocalState.oldUrl,
+            initialState.sessionStorage.oldUrl,
           );
         });
       }
 
-      if (initialLocalState.refresh_token) {
+      if (initialState.localStorage.refresh_token) {
         it("refreshes", async () => {
           await expect(client()).resolves.toEqual(ACCESS_TOKEN);
 
