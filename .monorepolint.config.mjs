@@ -59,7 +59,6 @@ const checkApiPackages = [
 
 // Packages that should be private
 const privatePackages = [
-  "@osdk/cli.*",
   "@osdk/client.test.ontology",
   "@osdk/create-app.template-packager",
   "@osdk/create-app.template.*",

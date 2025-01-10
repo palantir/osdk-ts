@@ -22,6 +22,7 @@ import {
   generateClientSdkVersionTwoPointZero,
   getExpectedDependencies,
 } from "@osdk/generator";
+import { changeVersionPrefix } from "@osdk/generator-utils";
 import type { OntologyIdentifier } from "@osdk/internal.foundry.core";
 import { OntologiesV2 } from "@osdk/internal.foundry.ontologiesv2";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
@@ -281,8 +282,16 @@ export async function getDependencyVersions() {
   const tslibVersion = ourPackageJson.dependencies.tslib;
   const areTheTypesWrongVersion =
     ourPackageJson.dependencies["@arethetypeswrong/cli"];
-  const osdkClientVersion = `^${process.env.PACKAGE_CLIENT_VERSION}`;
-  const osdkApiVersion = `^${process.env.PACKAGE_API_VERSION}`;
+  const osdkClientVersion = changeVersionPrefix(
+    process.env.PACKAGE_CLIENT_VERSION!,
+    "^",
+  );
+
+  const osdkApiVersion = changeVersionPrefix(
+    process.env.PACKAGE_API_VERSION!,
+    "^",
+  );
+
   const osdkLegacyClientVersion =
     `^${process.env.PACKAGE_LEGACY_CLIENT_VERSION}`;
 

@@ -162,7 +162,7 @@ export const generateCommand: CommandModule<
       );
   },
   handler: async (args) => {
-    const command = await import("./handleGenerate.mjs");
+    const command = await import("./handleGenerate.js");
     await command.handleGenerate(args);
   },
 };
