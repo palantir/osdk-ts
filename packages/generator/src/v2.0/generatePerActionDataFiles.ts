@@ -257,36 +257,36 @@ export async function generatePerActionDataFiles(
             );
           }
         }
-        if (
-          p.dataType.type === "array"
-          && (p.dataType.subType.type === "object"
-            || p.dataType.subType.type === "objectSet")
-        ) {
-          if (p.dataType.subType.objectApiName) {
-            referencedObjectDefs.add(
-              enhancedOntology.requireObjectType(
-                p.dataType.subType.objectApiName,
-              ),
-            );
+        if (p.dataType.type === "array") {
+          if (
+            p.dataType.subType.type === "object"
+            || p.dataType.subType.type === "objectSet"
+          ) {
+            if (p.dataType.subType.objectApiName) {
+              referencedObjectDefs.add(
+                enhancedOntology.requireObjectType(
+                  p.dataType.subType.objectApiName,
+                ),
+              );
+            }
+            if (p.dataType.subType.objectTypeApiName) {
+              referencedObjectDefs.add(
+                enhancedOntology.requireObjectType(
+                  p.dataType.subType.objectTypeApiName,
+                ),
+              );
+            }
           }
-          if (p.dataType.subType.objectTypeApiName) {
-            referencedObjectDefs.add(
-              enhancedOntology.requireObjectType(
-                p.dataType.subType.objectTypeApiName,
-              ),
-            );
-          }
-        }
-        if (
-          p.dataType.type === "array"
-          && (p.dataType.subType.type === "interfaceObject")
-        ) {
-          if (p.dataType.subType.interfaceTypeApiName) {
-            referencedObjectDefs.add(
-              enhancedOntology.requireObjectType(
-                p.dataType.subType.interfaceTypeApiName,
-              ),
-            );
+          if (
+            p.dataType.subType.type === "interfaceObject"
+          ) {
+            if (p.dataType.subType.interfaceTypeApiName) {
+              referencedObjectDefs.add(
+                enhancedOntology.requireInterfaceType(
+                  p.dataType.subType.interfaceTypeApiName,
+                ),
+              );
+            }
           }
         }
       }
