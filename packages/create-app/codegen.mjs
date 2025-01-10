@@ -19,7 +19,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const THIS_FILE_DIR = path.dirname(fileURLToPath(import.meta.url));
 
 export const TEMPLATES = [
   {
@@ -62,14 +62,14 @@ export const TEMPLATES = [
   },
 ];
 
-const packagesDir = path.join(__dirname, "../");
+const packagesDir = path.join(THIS_FILE_DIR, "../");
 
-fs.mkdirSync(path.join(__dirname, "./src/generatedNoCheck"), {
+fs.mkdirSync(path.join(THIS_FILE_DIR, "./src/generatedNoCheck"), {
   recursive: true,
 });
 
 fs.writeFileSync(
-  path.join(__dirname, "./src/generatedNoCheck/templates.ts"),
+  path.join(THIS_FILE_DIR, "./src/generatedNoCheck/templates.ts"),
   dedent`
   // THIS FILE IS GENERATED. DO NOT MODIFY.
   // You probably want to modify ../../../codegen.mjs instead.

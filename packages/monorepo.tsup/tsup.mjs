@@ -32,6 +32,7 @@ export default async (options, ourOptions) => {
       PACKAGE_API_VERSION: await readPackageVersion("packages/api"),
       PACKAGE_CLIENT_VERSION: await readPackageVersion("packages/client"),
       PACKAGE_CLI_VERSION: await readPackageVersion("packages/cli"),
+      STABLE_PACKAGE_CLIENT_VERSION: "~2.0.11",
       TARGET: "node",
       MODE: process.env.production ? "production" : "development",
     },
@@ -39,7 +40,7 @@ export default async (options, ourOptions) => {
     silent: true,
     sourcemap: true,
     splitting: true,
-    shims: true, // so we can use __dirname in both esm and cjs
+    shims: false,
     minify: false, // !options.watch,
     onSuccess: async () => {
       console.log("👍");

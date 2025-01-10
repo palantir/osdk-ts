@@ -15,11 +15,9 @@
  */
 
 import { changeVersionPrefix } from "@osdk/generator-utils";
-import { findUpSync } from "find-up";
 import Handlebars from "handlebars";
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { consola } from "./consola.js";
 import {
   generateEnvDevelopment,
@@ -108,16 +106,9 @@ export async function run(
     );
   }
 
-  const ourPackageJsonPath = findUpSync("package.json", {
-    cwd: fileURLToPath(import.meta.url),
-  });
-
-  const ourPackageJsonVersion: string | undefined = ourPackageJsonPath
-    ? JSON.parse(fs.readFileSync(ourPackageJsonPath, "utf-8")).version
-    : undefined;
-
-  const clientVersion = process.env.PACKAGE_CLIENT_VERSION
-    ?? ourPackageJsonVersion;
+  // In the future we should try to get this information directly from NPM
+  // or maybe add it as a devDependency once it moves out of repo
+  const clientVersion = process.env.STABLE_PACKAGE_CLIENT_VERSION;
 
   if (clientVersion === undefined) {
     throw new Error("Could not determine current @osdk/client version");

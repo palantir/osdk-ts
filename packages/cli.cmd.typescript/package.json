@@ -1,6 +1,6 @@
 {
   "name": "@osdk/cli.cmd.typescript",
-  "private": true,
+  "private": false,
   "version": "0.25.0-beta.20",
   "license": "Apache-2.0",
   "repository": {
@@ -30,8 +30,9 @@
   },
   "dependencies": {
     "@arethetypeswrong/cli": "^0.15.2",
-    "@osdk/cli.common": "workspace:~",
-    "@osdk/generator": "workspace:~",
+    "@osdk/cli.common": "workspace:*",
+    "@osdk/generator": "workspace:*",
+    "@osdk/generator-utils": "workspace:*",
     "@osdk/internal.foundry.core": "2.8.0",
     "@osdk/internal.foundry.ontologiesv2": "2.8.0",
     "@osdk/shared.client.impl": "workspace:~",

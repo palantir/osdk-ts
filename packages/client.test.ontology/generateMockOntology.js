@@ -23,8 +23,8 @@ import { mkdir, readdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "url";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const outDir = join(__dirname, "src", "generatedNoCheck");
+const THIS_FILE_DIR = dirname(fileURLToPath(import.meta.url));
+const outDir = join(THIS_FILE_DIR, "src", "generatedNoCheck");
 
 try {
   rmSync(outDir, { recursive: true, force: true });
