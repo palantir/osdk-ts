@@ -20,6 +20,13 @@ import type { Client } from "../Client.js";
 import { additionalContext } from "../Client.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
 
+/**
+ * Creates an OSDK object set from a temporary object set RID.
+ * @param client An OSDK client.
+ * @param definition An OSDK object or interface definition.
+ * @param rid The RID of the temporary object set.
+ * @returns
+ */
 export function hydrateObjectSetFromRid<T extends ObjectOrInterfaceDefinition>(
   client: Client,
   definition: T,
