@@ -117,6 +117,97 @@ export default tseslint.config(
     },
   },
   //
+  // Type checking rules
+  //
+  {
+    files: [
+      "packages/*/src/**/*",
+    ],
+    extends: [
+      tseslint.configs.strictTypeCheckedOnly,
+    ],
+    rules: {
+      "@typescript-eslint/no-floating-promises": "error",
+      "@typescript-eslint/await-thenable": "error",
+      "@typescript-eslint/no-misused-promises": ["error", {
+        // this lets you pass an async function to a definition of `() => void`
+        checksVoidReturn: false,
+      }],
+      "@typescript-eslint/restrict-template-expressions": ["error", {
+        allow: [
+          { name: ["Error", "URL", "URLSearchParams"], from: "lib" },
+          "unknown",
+        ],
+        allowAny: true,
+        allowBoolean: true,
+        allowNullish: true,
+        allowNumber: true,
+        allowNever: true,
+        allowRegExp: true,
+        allowArray: true,
+      }],
+
+      // Too noisy or false positives
+      "@typescript-eslint/no-unnecessary-type-assertion": "off",
+      "@typescript-eslint/no-duplicate-type-constituents": "off",
+      "@typescript-eslint/no-unnecessary-type-arguments": "off",
+      "@typescript-eslint/no-unnecessary-condition": "off",
+      "@typescript-eslint/no-unnecessary-type-parameters": "off",
+      "@typescript-eslint/no-meaningless-void-operator": "off",
+
+      // useful but noisy (or has bad fixer)
+      "@typescript-eslint/require-await": "warn",
+      "@typescript-eslint/unbound-method": "warn",
+      "@typescript-eslint/no-unnecessary-template-expression": "warn",
+      "@typescript-eslint/no-unnecessary-boolean-literal-compare": "warn",
+      "@typescript-eslint/no-redundant-type-constituents": "warn",
+
+      // ideally these would be an error because it does catch bugs
+      // but it also requires a lot of code change right now
+      "@typescript-eslint/no-unsafe-assignment": "warn",
+      "@typescript-eslint/no-unsafe-member-access": "warn",
+      "@typescript-eslint/no-unsafe-return": "warn",
+      "@typescript-eslint/no-unsafe-argument": "warn",
+      "prefer-const": "warn",
+      "@typescript-eslint/no-unsafe-call": "warn",
+      "@typescript-eslint/no-confusing-void-expression": ["warn", {
+        ignoreArrowShorthand: true,
+        ignoreVoidOperator: true,
+      }],
+      "@typescript-eslint/restrict-plus-operands": "warn",
+      "@typescript-eslint/use-unknown-in-catch-callback-variable": "warn",
+      "@typescript-eslint/only-throw-error": "warn",
+      "@typescript-eslint/prefer-reduce-type-parameter": "warn",
+      "@typescript-eslint/prefer-promise-reject-errors": "warn",
+      "@typescript-eslint/no-base-to-string": "warn",
+    },
+    languageOptions: {
+      parser: typescriptEslintParser,
+      parserOptions: {
+        projectService: true,
+        // projectService: {
+        //   allowDefaultProject: ["*.js", "vitest.config.mts", "bin/*.mjs"],
+        // },
+        tsconfigRootDir: process.cwd(),
+      },
+    },
+  },
+  {
+    files: ["**/*.test.ts"],
+    rules: {
+      // Just trying to reduce the errors in tests
+      "@typescript-eslint/unbound-method": "warn",
+      "@typescript-eslint/no-unsafe-assignment": "warn",
+      "@typescript-eslint/no-deprecated": "warn",
+      "@typescript-eslint/no-unsafe-argument": "warn",
+      "@typescript-eslint/no-base-to-string": "warn",
+      // "@typescript-eslint/prefer-const": "warn",
+
+      // rules that should be enabled but I dont want a massive delta yet
+      "@typescript-eslint/await-thenable": "warn",
+    },
+  },
+  //
   // test files can have console.log
   //   as can examples-extra
   //

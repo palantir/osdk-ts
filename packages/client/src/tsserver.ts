@@ -195,6 +195,7 @@ export function isQuickInfoResponse(
   m: unknown,
   requestSeq?: number,
 ): m is s.protocol.QuickInfoResponse {
-  return isResponse(m) && m.command === s.protocol.CommandTypes.Quickinfo
+  return isResponse(m)
+    && m.command === s.protocol.CommandTypes.Quickinfo as string
     && (requestSeq == null || m.request_seq === requestSeq);
 }

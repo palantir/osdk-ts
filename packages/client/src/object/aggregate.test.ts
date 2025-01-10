@@ -514,7 +514,7 @@ describe("aggregate", () => {
   });
 
   it("prohibits ordered select with multiple groupBy", async () => {
-    client(Todo).aggregate(
+    await client(Todo).aggregate(
       {
         $select: {
           // @ts-expect-error

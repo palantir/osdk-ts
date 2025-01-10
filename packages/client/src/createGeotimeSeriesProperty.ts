@@ -51,7 +51,11 @@ export class GeotimeSeriesPropertyImpl<T extends GeoJSON.Point>
         await this.#client.ontologyRid,
         ...this.#triplet,
       );
-    latestPointPromise.then(latestPoint => this.lastFetchedValue = latestPoint);
+    latestPointPromise.then(
+      latestPoint => this.lastFetchedValue = latestPoint,
+      // eslint-disable-next-line no-console
+      err => void console.error(err),
+    );
     return latestPointPromise;
   }
 

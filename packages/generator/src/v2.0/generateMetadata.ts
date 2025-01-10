@@ -26,7 +26,7 @@ export async function generateOntologyMetadataFile(
   { fs, outDir, ontology, ontologyApiNamespace }: GenerateContext,
   userAgent: string,
 ) {
-  fs.writeFile(
+  await fs.writeFile(
     path.join(outDir, "OntologyMetadata.ts"),
     await formatTs(
       `

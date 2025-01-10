@@ -29,7 +29,7 @@ export async function cli(args: string[] = process.argv) {
     .version(process.env.npm_package_version!);
 
   try {
-    return base.parseAsync();
+    return await base.parseAsync();
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
