@@ -201,6 +201,100 @@
     }
   },
   "objectTypes": {
+    "StateTerritory": {
+      "objectType": {
+        "apiName": "StateTerritory",
+        "displayName": "State/Territory",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "States",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "airportStateName",
+        "properties": {
+          "airportStateName": {
+            "displayName": "airportStateName",
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "airportStateCode": {
+            "displayName": "airportStateCode",
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "country": {
+            "displayName": "country",
+            "dataType": {
+              "type": "string"
+            }
+          }
+        },
+        "rid": "ri.ontology.main.object-type.98f324e1-b8f4-42ef-aee7-5c4a1494ce5e",
+        "titleProperty": "airportStateName",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [{
+        "apiName": "country1",
+        "cardinality": "ONE",
+        "displayName": "State Country",
+        "objectTypeApiName": "Country_1",
+        "status": "ACTIVE",
+        "foreignKeyPropertyApiName": "airportCountryName"
+      }],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {
+      },
+      "sharedPropertyTypeMapping": {}
+    },
+    "Country_1": {
+      "objectType": {
+        "apiName": "Country_1",
+        "displayName": "Country",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "Countries",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "airportCountryName",
+        "properties": {
+          "airportCountryName": {
+            "displayName": "airportCountryName",
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "airportCountryIsoCode": {
+            "displayName": "airportCountryIsoCode",
+            "dataType": {
+              "type": "string"
+            }
+          }
+        },
+        "rid": "ri.ontology.main.object-type.0a276176-8d93-489e-93b4-77673de56b9e",
+        "titleProperty": "airportCountryName",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [{
+        "apiName": "stateTerritory",
+        "cardinality": "MANY",
+        "displayName": "State Country",
+        "objectTypeApiName": "StateTerritory",
+        "status": "ACTIVE",
+        "foreignKeyPropertyApiName": "airportStateName"
+      }],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {
+      },
+      "sharedPropertyTypeMapping": {}
+    },
     "OsdkTestObject": {
       "objectType": {
         "apiName": "OsdkTestObject",

@@ -593,6 +593,10 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED 
     };
     readonly subtract: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
     readonly union: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
+    // Warning: (ae-forgotten-export) The symbol "WithPropertiesObjectDefinition" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    readonly withProperties: <D extends WithPropertiesClause<Q>>(clause: D) => ObjectSet<WithPropertiesObjectDefinition<Q, D>>;
 }
 
 // @public (undocumented)
@@ -956,8 +960,8 @@ export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<"d
 // Warning: (ae-forgotten-export) The symbol "GetWirePropertyValueFromClient" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type ValidAggregationKeys<Q extends ObjectOrInterfaceDefinition> = keyof ({
-    [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<GetWirePropertyValueFromClient<CompileTimeMetadata<Q>["properties"][KK]["type"]>>}`]?: any;
+export type ValidAggregationKeys<Q extends ObjectOrInterfaceDefinition, R extends "aggregate" | "withPropertiesAggregate" = "aggregate"> = keyof ({
+    [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<GetWirePropertyValueFromClient<CompileTimeMetadata<Q>["properties"][KK]["type"]>, R extends "aggregate" ? true : false>}`]?: any;
 } & {
     $count?: any;
 });
@@ -983,10 +987,29 @@ export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T
 // @public (undocumented)
 export type WirePropertyTypes = SimpleWirePropertyTypes | Record<string, SimpleWirePropertyTypes>;
 
+// @public (undocumented)
+export type WithPropertiesClause<Q extends ObjectOrInterfaceDefinition> = {
+    [key: string]: (baseObjectSet: BaseWithPropertyObjectSet<Q>) => WithPropertyDefinition<ObjectMetadata.Property>;
+};
+
+// @public (undocumented)
+export type WithPropertyDefinition<T extends ObjectMetadata.Property> = {
+    definitionId: string;
+    type: T;
+};
+
+// Warning: (ae-forgotten-export) The symbol "AggregatableWithPropertyObjectSet" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "SingleLinkWithPropertyObjectSet" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export interface WithPropertyObjectSet<Q extends ObjectOrInterfaceDefinition> extends BaseWithPropertyObjectSet<Q>, AggregatableWithPropertyObjectSet<Q>, SingleLinkWithPropertyObjectSet<Q> {
+}
+
 // Warnings were encountered during analysis:
 //
 // src/aggregate/AggregateOpts.ts:26:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:26:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
+// src/derivedProperties/WithPropertiesClause.ts:33:3 - (ae-forgotten-export) The symbol "BaseWithPropertyObjectSet" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

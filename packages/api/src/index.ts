@@ -41,6 +41,14 @@ export type {
   OsdkObjectLinksObject,
   SingleLinkAccessor,
 } from "./definitions/LinkDefinitions.js";
+export type {
+  WithPropertiesClause,
+  WithPropertyDefinition,
+} from "./derivedProperties/WithPropertiesClause.js";
+export type {
+  WithPropertyObjectSet,
+} from "./derivedProperties/WithPropertyObjectSet.js";
+
 export { DurationMapping } from "./groupby/GroupByClause.js";
 export type {
   AllGroupByValues,
