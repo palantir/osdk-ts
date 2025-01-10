@@ -1,7 +1,16 @@
 import { useCallback } from "react";
 import useSWR from "swr";
 import Mocks from "./mocks";
-import { IProject, ITask } from "./useProjects";
+import { IProject } from "./useProjects";
+
+export interface ITask {
+  $apiName: string;
+  $primaryKey: string;
+  id: string;
+  title: string;
+  description: string;
+  projectId: string;
+}
 
 export function useProjectTasks(project: IProject | undefined) {
   const { data, isLoading, isValidating, error, mutate } = useSWR<ITask[]>(

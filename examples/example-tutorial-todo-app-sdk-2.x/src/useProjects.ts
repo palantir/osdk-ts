@@ -9,14 +9,6 @@ export interface IProject {
   name: string;
 }
 
-export interface ITask {
-  $apiName: string;
-  $primaryKey: string;
-  id: string;
-  title: string | undefined;
-  projectId: string;
-}
-
 function useProjects() {
   const { data, isLoading, isValidating, error, mutate } = useSWR<IProject[]>(
     "projects",

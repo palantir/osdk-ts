@@ -1,4 +1,5 @@
-import { IProject, ITask } from "./useProjects";
+import { IProject } from "./useProjects";
+import { ITask } from "./useProjectTasks";
 
 const projects: IProject[] = [
   {

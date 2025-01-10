@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import css from "./TaskListItem.module.css";
-import { ITask } from "./useProjects";
+import { ITask } from "./useProjectTasks";
 
 interface TaskListItemProps {
   task: ITask;
