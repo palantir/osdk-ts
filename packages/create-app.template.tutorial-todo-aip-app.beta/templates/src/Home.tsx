@@ -3,10 +3,9 @@ import CreateProjectButton from "./CreateProjectButton";
 import DeleteProjectButton from "./DeleteProjectButton";
 import css from "./Home.module.css";
 import Layout from "./Layout";
-import type { MockProject } from "./mocks";
 import { ProjectDetails } from "./ProjectDetails";
 import ProjectSelect from "./ProjectSelect";
-import useProjects from "./useProjects";
+import useProjects, { IProject } from "./useProjects";
 
 function Home() {
   const [projectId, setProjectId] = useState<string | undefined>(undefined);
@@ -15,7 +14,7 @@ function Home() {
   const project = projects?.find((p) => p.id === projectId);
 
   const handleSelectProject = useCallback(
-    (p: MockProject) => setProjectId(p.id),
+    (p: IProject) => setProjectId(p.id),
     [],
   );
 
