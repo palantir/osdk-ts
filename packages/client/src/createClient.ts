@@ -36,7 +36,6 @@ import type {
 import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
   __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
 } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
@@ -160,31 +159,6 @@ export function createClientInternal(
             getBulkLinks: createBulkLinksAsyncIterFactory(
               clientCtx,
             ),
-          } as any;
-        case __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet.name:
-          return {
-            preexistingObjectSet: <T extends ObjectOrInterfaceDefinition>(
-              definition: T,
-              rid: string,
-            ) => {
-              return createObjectSet(
-                definition,
-                client[additionalContext],
-                {
-                  type: "intersect",
-                  objectSets: [
-                    {
-                      type: "base",
-                      objectType: definition.apiName,
-                    },
-                    {
-                      type: "reference",
-                      reference: rid,
-                    },
-                  ],
-                },
-              );
-            },
           } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe.name:
           return {
