@@ -49,10 +49,7 @@ declare const process: {
   env: Record<string, string | undefined>;
 };
 
-export type LocalStorageState = // when we are going to the login page
-  {
-    refresh_token?: string;
-  };
+export type LocalStorageState = { refresh_token?: string };
 
 export type SessionStorageState =
   // when we are going to the login page
