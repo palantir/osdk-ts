@@ -3,8 +3,8 @@ import { ActionValidationError } from "@osdk/client";
 import { useCallback, useEffect } from "react";
 import type { KeyedMutator } from "swr";
 import useSWR from "swr";
-import { $ } from "./foundryClient";
-import * as MyOsdk from "./generatedNoCheck2";
+import { $ } from "./foundryClient.js";
+import * as MyOsdk from "./generatedNoCheck2/index.js";
 
 declare global {
   interface ArrayConstructor {
@@ -127,7 +127,9 @@ type OsdkPropsOnly<T extends ObjectTypeDefinition> = Omit<
   "$as" | "$link"
 >;
 
-export interface SimpleTodo extends OsdkPropsOnly<MyOsdk.Todo> {}
+export interface SimpleTodo extends OsdkPropsOnly<MyOsdk.Todo> {
+  $primaryKey: string;
+}
 
 function createFauxTodo(title: string): SimpleTodo {
   return {
