@@ -30,8 +30,11 @@ import {
   common,
   createAuthorizationServer,
   readLocal,
+  readSession,
   removeLocal,
+  removeSession,
   saveLocal,
+  saveSession,
 } from "./common.js";
 import type { PublicOauthClient } from "./PublicOauthClient.js";
 import { throwIfError } from "./throwIfError.js";
@@ -201,7 +204,7 @@ export function createPublicOauthClient(
       if (
         result && window.location.pathname === new URL(redirect_uri).pathname
       ) {
-        const { oldUrl } = readLocal(client);
+        const { oldUrl } = readSession(client);
         // don't block on the redirect
         void go(oldUrl ?? "/");
       }
@@ -222,7 +225,7 @@ export function createPublicOauthClient(
   }
 
   async function maybeHandleAuthReturn() {
-    const { codeVerifier, state, oldUrl } = readLocal(client);
+    const { state, oldUrl, codeVerifier } = readSession(client);
     if (!codeVerifier) return;
 
     try {
@@ -262,6 +265,8 @@ export function createPublicOauthClient(
         );
       }
       removeLocal(client);
+      removeSession(client);
+      throw e;
     }
   }
 
@@ -272,15 +277,17 @@ export function createPublicOauthClient(
       && window.location.href !== loginPage
       && window.location.pathname !== loginPage
     ) {
-      saveLocal(client, { oldUrl: postLoginPage });
+      saveLocal(client, {});
+      saveSession(client, { oldUrl: postLoginPage });
       await go(loginPage);
       return;
     }
 
     const state = generateRandomState()!;
     const codeVerifier = generateRandomCodeVerifier();
-    const oldUrl = readLocal(client).oldUrl ?? window.location.toString();
-    saveLocal(client, { codeVerifier, state, oldUrl });
+    const oldUrl = readSession(client).oldUrl ?? window.location.toString();
+    saveLocal(client, {});
+    saveSession(client, { codeVerifier, state, oldUrl });
 
     window.location.assign(`${authServer
       .authorization_endpoint!}?${new URLSearchParams({
