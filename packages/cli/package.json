@@ -37,15 +37,15 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@arethetypeswrong/cli": "^0.17.3",
-    "ajv": "^8.13.0",
-    "archiver": "^7.0.1",
-    "consola": "^3.2.3",
-    "open": "^10.1.0",
-    "pretty-bytes": "^6.1.1",
-    "semver": "^7.6.3",
-    "tslib": "^2.6.3",
-    "yargs": "^17.7.2"
+    "@arethetypeswrong/cli": "0.17.3",
+    "ajv": "8.13.0",
+    "archiver": "7.0.1",
+    "consola": "3.2.3",
+    "open": "10.1.0",
+    "pretty-bytes": "6.1.1",
+    "semver": "7.6.3",
+    "tslib": "2.6.3",
+    "yargs": "17.7.2"
   },
   "devDependencies": {
     "@osdk/cli.cmd.typescript": "workspace:~",
