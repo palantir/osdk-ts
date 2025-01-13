@@ -33,6 +33,7 @@
     "@osdk/monorepo.tool.typecheck": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
+    "@osdk/tools.internal": "workspace:~",
     "@types/lint-staged": "^13.3.0",
     "@typescript-eslint/parser": "^8.15.0",
     "babel-plugin-dev-expression": "^0.2.3",

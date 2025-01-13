@@ -49,6 +49,7 @@ const nonStandardPackages = [
   // removed the following from the repo to avoid it being edited
   // "@osdk/shared.client2", // hand written package that only exposes a symbol
   "@osdk/benchmarks.*",
+  "@osdk/tools.internal",
 ];
 
 // Packages that should have the `check-api` task installed

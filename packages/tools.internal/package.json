@@ -1,0 +1,48 @@
+{
+  "name": "@osdk/tools.internal",
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "exports": {
+    ".": {
+      "import": "./build/esm/index.js"
+    },
+    "./tsconfig/base.json": "./files/tsconfig/base.json"
+  },
+  "scripts": {
+    "check-attw": "./bin/check-attw.sh",
+    "check-spelling": "cspell --quiet .",
+    "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "test": "vitest run",
+    "transpile": "./bin/transpile.sh"
+  },
+  "dependencies": {
+    "@arethetypeswrong/cli": "^0.15.3",
+    "@babel/core": "^7.26.0",
+    "@babel/types": "^7.26.5",
+    "@pnpm/exportable-manifest": "^1000.0.4",
+    "@pnpm/find-workspace-dir": "^1000.0.1",
+    "@pnpm/read-project-manifest": "^1000.0.3",
+    "@pnpm/types": "^1000.1.0",
+    "@pnpm/workspace.find-packages": "^1000.0.5",
+    "@pnpm/workspace.read-manifest": "^1000.0.1",
+    "esbuild-plugin-babel": "^0.2.3",
+    "find-up": "^7.0.0",
+    "tsup": "^8.2.3"
+  },
+  "devDependencies": {
+    "@types/babel__core": "^7.20.5",
+    "@types/node": "^22.10.5"
+  },
+  "bin": {
+    "osdk-typecheck": "./bin/typecheck.sh",
+    "osdk-transpile": "./bin/transpile.sh",
+    "osdk-attw": "./bin/check-attw.sh"
+  },
+  "type": "module"
+}
