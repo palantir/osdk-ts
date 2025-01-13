@@ -15,7 +15,6 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import { OntologyObjectSets } from "@osdk/internal.foundry.ontologiesv2";
 import type { Client } from "../Client.js";
 import { additionalContext } from "../Client.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
@@ -32,7 +31,6 @@ export function hydrateObjectSetFromRid<T extends ObjectOrInterfaceDefinition>(
   definition: T,
   rid: string,
 ) {
-  OntologyObjectSets.get;
   return createObjectSet(
     definition,
     client[additionalContext],
