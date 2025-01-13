@@ -1,5 +1,11 @@
 # @osdk/shared.net.fetch
 
+## 1.1.0-beta.2
+
+### Minor Changes
+
+- 1132993: Adds better error messages for 429 errors
+
 ## 1.1.0-beta.1
 
 ### Minor Changes
