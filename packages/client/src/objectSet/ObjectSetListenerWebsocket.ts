@@ -462,7 +462,10 @@ export class ObjectSetListenerWebsocket {
           await this.#fetchInterfaceMapping(
             o.objectType,
             sub.interfaceApiName,
-          ) as any,
+          ) as Record<
+            string,
+            Record<string, Record<string, string>>
+          >,
         ) as Array<Osdk.Instance<any, never, any>>;
         const singleOsdkObject = osdkObjectArray[0] ?? undefined;
         return singleOsdkObject != null
@@ -506,7 +509,10 @@ export class ObjectSetListenerWebsocket {
         await this.#fetchInterfaceMapping(
           o.object.__apiName,
           sub.interfaceApiName,
-        ) as any,
+        ) as Record<
+          string,
+          Record<string, Record<string, string>>
+        >,
       ) as Array<Osdk.Instance<any, never, any>>;
       const singleOsdkObject = osdkObjectArray[0] ?? undefined;
       return singleOsdkObject != null
