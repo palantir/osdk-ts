@@ -38,7 +38,7 @@ import type {
 } from "vite";
 import { PALANTIR_PATH, SETUP_PATH, VITE_INJECTIONS } from "./constants.js";
 
-export const DIR_DIST = typeof __dirname !== "undefined"
+export const DIR_DIST: string = typeof __dirname !== "undefined"
   ? __dirname
   : path.dirname(fileURLToPath(import.meta.url));
 export interface Options {}
