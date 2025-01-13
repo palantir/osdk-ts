@@ -396,18 +396,16 @@ function standardPackageRules(shared, options) {
         scripts: {
           clean: "rm -rf lib dist types build tsconfig.tsbuildinfo",
           "check-spelling": "cspell --quiet .",
-          "check-attw": `monorepo.tool.attw ${
-            options.esmOnly ? "esm" : "both"
-          }`,
+          "check-attw": `osdk-attw ${options.esmOnly ? "esm" : "both"}`,
           lint: "eslint . && dprint check  --config $(find-up dprint.json)",
           "fix-lint":
             "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
           transpile: {
             options: [
-              "monorepo.tool.transpile",
-              "monorepo.tool.transpile tsup",
+              "osdk-transpile",
+              "osdk-transpile tsup",
             ],
-            fixValue: "monorepo.tool.transpile",
+            // fixValue: "monorepo.tool.transpile",
           },
           transpileWatch: DELETE_SCRIPT_ENTRY,
           typecheck: options.esmOnly
@@ -746,7 +744,7 @@ package you do so at your own risk.
       includePackages: consumerCliPackages,
       options: {
         scripts: {
-          transpile: "monorepo.tool.transpile tsup",
+          transpile: "osdk-transpile tsup",
         },
       },
     }),

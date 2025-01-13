@@ -22,7 +22,7 @@
     }
   },
   "scripts": {
-    "check-attw": "monorepo.tool.attw esm",
+    "check-attw": "osdk-attw esm",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
@@ -30,7 +30,7 @@
     "postVersioning": "./scripts/postVersioning.mjs",
     "test": "vitest run --pool=forks",
     "test:watch": "vitest",
-    "transpile": "monorepo.tool.transpile"
+    "transpile": "osdk-transpile"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",

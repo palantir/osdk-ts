@@ -20,14 +20,14 @@
     }
   },
   "scripts": {
-    "check-attw": "monorepo.tool.attw esm",
+    "check-attw": "osdk-attw esm",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "generate": "./bin/exampleGenerator.mjs ../../examples",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --pool=forks",
-    "transpile": "monorepo.tool.transpile"
+    "transpile": "osdk-transpile"
   },
   "dependencies": {
     "@osdk/create-app": "workspace:~",

@@ -21,14 +21,14 @@
   },
   "scripts": {
     "build": "tsc && vite build",
-    "check-attw": "monorepo.tool.attw esm",
+    "check-attw": "osdk-attw esm",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "dev": "vite",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "preview": "vite preview",
-    "transpile": "monorepo.tool.transpile"
+    "transpile": "osdk-transpile"
   },
   "dependencies": {
     "@osdk/client": "workspace:~",
