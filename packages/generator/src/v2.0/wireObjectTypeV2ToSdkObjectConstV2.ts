@@ -66,7 +66,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
   const osdkObjectIdentifier = `${object.shortApiName}.OsdkObject`;
 
   const identifiers: Identifiers = {
-    objectDefIdentifier: `${object.shortApiName}`,
+    objectDefIdentifier: object.shortApiName,
     osdkObjectLinksIdentifier,
     osdkObjectPropsIdentifier,
     osdkObjectStrictPropsIdentifier,
@@ -224,13 +224,11 @@ ${
     stringify(definition.properties, {
       "*": (propertyDefinition, _, apiName) => {
         return [
-          `readonly "${maybeStripNamespace(type, apiName)}"${
-            // after we convert everything over we can do this:
-            // !strict || propertyDefinition.nullable ? "?" : ""
-            ""}`,
-          `$PropType[${JSON.stringify(propertyDefinition.type)}]${
-            propertyDefinition.multiplicity ? "[]" : ""
-          }${
+          `readonly "${maybeStripNamespace(type, apiName)}"`,
+          (typeof propertyDefinition.type === "object"
+            ? remapStructType(propertyDefinition.type)
+            : `$PropType[${JSON.stringify(propertyDefinition.type)}]`)
+          + `${propertyDefinition.multiplicity ? "[]" : ""}${
             propertyDefinition.nullable
               || (!strict
                 && !(definition.type === "object"
@@ -294,7 +292,7 @@ export function createDefinition(
               `${propertyJsdoc(propertyDefinition, { apiName })}"${
                 maybeStripNamespace(object, apiName)
               }"`,
-              `$PropertyDef<"${propertyDefinition.type}", "${
+              `$PropertyDef<${JSON.stringify(propertyDefinition.type)}, "${
                 propertyDefinition.nullable ? "nullable" : "non-nullable"
               }", "${propertyDefinition.multiplicity ? "array" : "single"}">`,
             ] as [string, string],
@@ -357,4 +355,13 @@ export function createPropertyKeys(
         (a) => maybeStripNamespace(type, a),
       ).map(a => `"${a}"`).join("|")
   };`;
+}
+
+function remapStructType(structType: Record<string, any>): string {
+  let output = `{`;
+  Object.entries(structType).map(([key, value]) =>
+    output += `${key}:$PropType[${JSON.stringify(value)}]|undefined;`
+  );
+  output += "}";
+  return output;
 }

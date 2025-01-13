@@ -20,9 +20,15 @@ import { defineSharedPropertyType } from "./defineSpt.js";
 import type { BlueprintIcon } from "./iconNames.js";
 import type {
   InterfaceType,
+  InterfaceTypeStatus,
   PropertyTypeType,
   SharedPropertyType,
 } from "./types.js";
+
+type SimplifiedInterfaceTypeStatus =
+  | { type: "deprecated"; message: string; deadline: string }
+  | { type: "active" }
+  | { type: "experimental" };
 
 export function defineInterface(
   opts: {
@@ -30,10 +36,12 @@ export function defineInterface(
     displayName?: string;
     description?: string;
     icon?: { locator: BlueprintIcon; color: string };
+    status?: SimplifiedInterfaceTypeStatus;
     properties?: Record<
       string,
       SharedPropertyType | PropertyTypeType
     >;
+
     extends?: InterfaceType | InterfaceType[] | string | string[];
   },
 ): InterfaceType {
@@ -54,7 +62,9 @@ export function defineInterface(
         ) {
           invariant(
             isPropertyTypeType(type),
-            `Invalid data type ${type} for property ${apiName} on InterfaceType ${apiName}`,
+            `Invalid data type ${
+              JSON.stringify(type)
+            } for property ${apiName} on InterfaceType ${apiName}`,
           );
 
           const spt = defineSharedPropertyType({
@@ -99,6 +109,16 @@ export function defineInterface(
     }
   }
 
+  const status: InterfaceTypeStatus = mapSimplifiedStatusToInterfaceTypeStatus(
+    opts.status ?? { type: "active" },
+  );
+
+  invariant(
+    status.type !== "deprecated"
+      || (status.deprecated.message && status.deprecated.deadline),
+    `Deprecated status must include message and deadline properties.`,
+  );
+
   const a: InterfaceType = {
     apiName,
     displayMetadata: {
@@ -114,7 +134,7 @@ export function defineInterface(
     extendsInterfaces: extendsInterfaces,
     links: [],
     properties,
-    status: { type: "active", active: {} },
+    status,
   };
 
   return ontologyDefinition.interfaceTypes[apiName] = a;
@@ -130,4 +150,32 @@ function isPropertyTypeType(
     || (typeof v === "object" && v.type === "marking")
     || v === "short" || v === "string"
     || v === "timestamp";
+}
+
+function mapSimplifiedStatusToInterfaceTypeStatus(
+  status: SimplifiedInterfaceTypeStatus,
+): InterfaceTypeStatus {
+  switch (status.type) {
+    case "deprecated":
+      return {
+        type: "deprecated",
+        deprecated: {
+          message: status.message,
+          deadline: status.deadline,
+          replacedBy: undefined,
+        },
+      };
+    case "active":
+      return {
+        type: "active",
+        active: {},
+      };
+    case "experimental":
+      return {
+        type: "experimental",
+        experimental: {},
+      };
+    default:
+      throw new Error(`Invalid status type: ${(status as any).type}`);
+  }
 }

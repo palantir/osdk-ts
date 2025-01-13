@@ -16,8 +16,10 @@
 
 import type {
   ActionParameterType,
+  ObjectPropertyType,
   QueryDataType,
 } from "@osdk/internal.foundry.core";
+import { consola } from "consola";
 import { mkdir, readdir, rmdir, writeFile } from "fs/promises";
 import * as immer from "immer";
 import { beforeEach, describe, expect, it, test, vi } from "vitest";
@@ -269,6 +271,12 @@ const referencedOntology = {
             },
             "rid": "ridForBody",
           },
+          "shouldBeIgnored": {
+            "dataType": {
+              "type": "futureUnknownType",
+            } as unknown as ObjectPropertyType,
+            "rid": "ridForShouldBeIgnored",
+          },
         },
         "status": "ACTIVE",
         "rid": "ridForTask",
@@ -486,7 +494,8 @@ describe("generator", () => {
     const diagnostics = compileThis(helper.getFiles(), BASE_PATH);
     for (const q of diagnostics) {
       console.error(
-        `${q.file?.fileName}:${q.file?.getLineStarts()} ${q.messageText}`,
+        `${q.file?.fileName}:${q.file?.getLineStarts()}`,
+        q.messageText,
       );
     }
 
@@ -2048,6 +2057,8 @@ describe("generator", () => {
   });
 
   it("can generate an sdk package that is entirely a library", async () => {
+    const mockConsola = vi.spyOn(consola, "info");
+
     await expect(
       generateClientSdkVersionTwoPointZero(
         referencedOntology,
@@ -2057,6 +2068,9 @@ describe("generator", () => {
         "module",
       ),
     ).resolves.toMatchInlineSnapshot(`undefined`);
+    expect(mockConsola).toHaveBeenCalledWith(
+      `{"type":"futureUnknownType"} is not a supported propertyType`,
+    );
 
     expect(tweakedFilesForSnapshotConsistency(helper.getFiles()))
       .toMatchInlineSnapshot(`

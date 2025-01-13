@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, Osdk, PageResult } from "@osdk/api";
+import type { Osdk, PageResult } from "@osdk/api";
 import type { Client } from "@osdk/client";
 // import type { ObjectSet$Employee } from "@osdk/e2e.generated.catchall";
 import {

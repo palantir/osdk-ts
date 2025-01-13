@@ -37,6 +37,8 @@ import {
   type Mock,
   vi,
 } from "vitest";
+import type { Client } from "../Client.js";
+import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { aggregate } from "./aggregate.js";
@@ -50,6 +52,7 @@ const metadata = {
 
 let mockFetch: Mock;
 let clientCtx: MinimalClient;
+let client: Client;
 
 beforeAll(() => {
   mockFetch = vi.fn();
@@ -63,8 +66,16 @@ beforeAll(() => {
   clientCtx = createMinimalClient(
     metadata,
     "https://host.com",
-    async () => "",
+    async () => "myAccessToken",
     {},
+    mockFetch,
+  );
+
+  client = createClient(
+    "https://host.com",
+    metadata.ontologyRid,
+    async () => "",
+    undefined,
     mockFetch,
   );
 });
@@ -171,13 +182,7 @@ describe("aggregate", () => {
       >
     >(false); // subSelect should hide unused keys
 
-    const grouped = await aggregate(
-      clientCtx,
-      objectTypeWithAllPropertyTypes,
-      {
-        type: "base",
-        objectType: "ToDo",
-      },
+    const grouped = await client(objectTypeWithAllPropertyTypes).aggregate(
       {
         $select: {
           "id:approximateDistinct": "unordered",
@@ -509,13 +514,7 @@ describe("aggregate", () => {
   });
 
   it("prohibits ordered select with multiple groupBy", async () => {
-    aggregate(
-      clientCtx,
-      Todo,
-      {
-        type: "base",
-        objectType: "ToDo",
-      },
+    await client(Todo).aggregate(
       {
         $select: {
           // @ts-expect-error

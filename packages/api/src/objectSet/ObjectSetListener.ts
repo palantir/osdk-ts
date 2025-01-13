@@ -45,7 +45,7 @@ export interface ObjectSetListener<
   /**
    * There was a fatal error with the subscription process. The subscription will close or will not be established.
    */
-  onError?: (errors: Array<any>) => void;
+  onError?: (errors: { subscriptionClosed: boolean; error: any }) => void;
 }
 
 type ObjectUpdate<

@@ -27,8 +27,10 @@ import {
   nycOffice,
   objectWithAllPropertyTypes1,
   objectWithAllPropertyTypesEmptyEntries,
+  travisPlayer,
 } from "./objects.js";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
+import { BGaoNflPlayerObjectType } from "./objectTypeV2.js";
 
 const baseObjectSet: LoadObjectSetRequestV2 = {
   objectSet: { type: "base", objectType: employeeObjectType.apiName },
@@ -37,6 +39,16 @@ const baseObjectSet: LoadObjectSetRequestV2 = {
 
 const baseObjectSetSelect: LoadObjectSetRequestV2 = {
   objectSet: { type: "base", objectType: employeeObjectType.apiName },
+  select: ["fullName"],
+};
+
+const ridObjectSet: LoadObjectSetRequestV2 = {
+  objectSet: { type: "static", objects: ["ri.employee.i.look.for"] },
+  select: [],
+};
+
+const ridObjectSetSelect: LoadObjectSetRequestV2 = {
+  objectSet: { type: "static", objects: ["ri.employee.i.look.for"] },
   select: ["fullName"],
 };
 
@@ -102,6 +114,19 @@ const eqSearchBody2: LoadObjectSetRequestV2 = {
       type: "eq",
       field: "employeeId",
       value: 50031,
+    },
+  },
+  select: [],
+};
+
+const eqSearchBody3: LoadObjectSetRequestV2 = {
+  objectSet: {
+    type: "filter",
+    objectSet: { type: "base", objectType: BGaoNflPlayerObjectType.apiName },
+    where: {
+      type: "eq",
+      field: BGaoNflPlayerObjectType.primaryKey,
+      value: "tkelce",
     },
   },
   select: [],
@@ -442,6 +467,8 @@ export const loadObjectSetRequestHandlers: {
     employee3,
     employeeFailsStrict,
   ],
+  [stableStringify(ridObjectSet)]: [employee1],
+  [stableStringify(ridObjectSetSelect)]: [employee2],
   [stableStringify(unionedObjectSet)]: [employee1, employee2],
   [stableStringify(intersectedObjectSet)]: [employee3],
   [stableStringify(subtractedObjectSet)]: [employee2, employee3],
@@ -469,4 +496,5 @@ export const loadObjectSetRequestHandlers: {
   [stableStringify(employee1LeadSearchAround)]: [employee2],
   [stableStringify(employee2ToPeepsSearchAround)]: [employee1, employee2],
   [stableStringify(employee2ToToEmployee1PeepByPk)]: [employee1],
+  [stableStringify(eqSearchBody3)]: [travisPlayer],
 };

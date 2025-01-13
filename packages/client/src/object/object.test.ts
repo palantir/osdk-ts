@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Osdk, PropertyKeys } from "@osdk/api";
+import type { Osdk } from "@osdk/api";
 import { $Objects, $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import { apiServer, stubData, withoutRid } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -185,6 +185,7 @@ describe("OsdkObject", () => {
     it("objects are enumerable in an sdk", async () => {
       const objects = Object.keys($Objects);
       expect(objects.sort()).toStrictEqual([
+        "BgaoNflPlayer",
         "Employee",
         "ObjectWithTimestampPrimaryKey",
         "Office",

@@ -67,4 +67,4 @@ export async function checkUnstableBulkLinks() {
   }
 }
 
-checkUnstableBulkLinks();
+void checkUnstableBulkLinks();

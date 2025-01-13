@@ -1,5 +1,19 @@
 # @osdk/widget-api.unstable
 
+## 2.0.0-beta.6
+
+### Minor Changes
+
+- 314ae66: Move from "views" naming to "widgets"
+
+## 2.0.0-beta.5
+
+## 2.0.0-beta.4
+
+### Major Changes
+
+- 5a4ebd7: Bump unstable widget packages to v1 to avoid undesired v0.x version behavior
+
 ## 0.3.0-beta.3
 
 ## 0.3.0-beta.2

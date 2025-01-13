@@ -64,6 +64,7 @@ describe("convertWireToOsdkObjects", () => {
 
     expect(Object.keys(employee).sort()).toEqual([
       "employeeId",
+      "$title",
       "fullName",
       "office",
       "class",
@@ -179,12 +180,12 @@ describe("convertWireToOsdkObjects", () => {
       "userAgent",
     );
 
-    let object = {
+    const object = {
       __apiName: Employee.apiName,
       __primaryKey: 0,
     } as const;
     const prototypeBefore = Object.getPrototypeOf(object);
-    let object2 = await convertWireToOsdkObjects(
+    const object2 = await convertWireToOsdkObjects(
       clientCtx,
       [object],
       undefined,
@@ -209,12 +210,12 @@ describe("convertWireToOsdkObjects", () => {
       "userAgent",
     );
 
-    let object = {
+    const object = {
       __apiName: Employee.apiName,
       __primaryKey: 0,
     } as const;
     const prototypeBefore = Object.getPrototypeOf(object);
-    let object2 = await convertWireToOsdkObjects2(
+    const object2 = await convertWireToOsdkObjects2(
       clientCtx,
       [object],
       undefined,
@@ -227,128 +228,6 @@ describe("convertWireToOsdkObjects", () => {
     expect(prototypeBefore).not.toBe(prototypeAfter);
   });
 
-  it("updates interface when underlying changes - old", async () => {
-    const clientCtx = createMinimalClient(
-      { ontologyRid: $ontologyRid },
-      "https://stack.palantir.com",
-      async () => "myAccessToken",
-    );
-
-    let objectFromWire = {
-      __apiName: "Employee" as const,
-      __primaryKey: 0,
-      __title: "Steve",
-      fullName: "Steve",
-      employeeId: "5",
-    } satisfies OntologyObjectV2;
-
-    const [obj] = (await convertWireToOsdkObjects(
-      clientCtx,
-      [objectFromWire],
-      undefined,
-    )) as unknown as Osdk<Employee>[];
-
-    expect(obj.fullName).toEqual("Steve");
-    expect(Object.keys(obj).sort()).toEqual([
-      "$apiName",
-      "$objectType",
-      "$primaryKey",
-      "$title",
-      "employeeId",
-      "fullName",
-    ].sort());
-
-    const objAsFoo = obj.$as(FooInterface);
-    expect(objAsFoo).toMatchObject({
-      fooSpt: obj.fullName,
-      $apiName: FooInterface.apiName,
-      $primaryKey: obj.$primaryKey,
-      $objectType: obj.$objectType,
-      $title: obj.$title,
-    });
-
-    console.log(obj);
-    console.log(objAsFoo);
-
-    (obj as any).$updateInternalValues({
-      fullName: "Bob",
-    });
-    expect(obj.fullName).toEqual("Bob");
-    expect(objAsFoo.fooSpt).toEqual(obj.fullName);
-
-    expect(Object.keys(objAsFoo).sort()).toEqual([
-      "$apiName",
-      "$objectType",
-      "$primaryKey",
-      "$title",
-      "fooSpt",
-    ].sort());
-
-    expect(obj).toBe(objAsFoo.$as(Employee));
-    expect(objAsFoo).toBe(obj.$as(FooInterface));
-  });
-
-  it("updates interface when underlying changes - new", async () => {
-    const clientCtx = createMinimalClient(
-      { ontologyRid: $ontologyRid },
-      "https://stack.palantir.com",
-      async () => "myAccessToken",
-    );
-
-    let objectFromWire = {
-      __apiName: "Employee" as const,
-      __primaryKey: 0,
-      __title: "Steve",
-      fullName: "Steve",
-      employeeId: "5",
-    } satisfies OntologyObjectV2;
-
-    const [obj] = (await convertWireToOsdkObjects2(
-      clientCtx,
-      [objectFromWire],
-      undefined,
-    )) as unknown as Osdk<Employee>[];
-
-    expect(obj.fullName).toEqual("Steve");
-    expect(Object.keys(obj).sort()).toEqual([
-      "$apiName",
-      "$objectType",
-      "$primaryKey",
-      "$title",
-      "employeeId",
-      "fullName",
-    ].sort());
-
-    const objAsFoo = obj.$as(FooInterface);
-    expect(objAsFoo).toMatchObject({
-      fooSpt: obj.fullName,
-      $apiName: FooInterface.apiName,
-      $primaryKey: obj.$primaryKey,
-      $objectType: obj.$objectType,
-      $title: obj.$title,
-    });
-
-    console.log(obj);
-    console.log(objAsFoo);
-
-    (obj as any).$updateInternalValues({
-      fullName: "Bob",
-    });
-    expect(obj.fullName).toEqual("Bob");
-    expect(objAsFoo.fooSpt).toEqual(obj.fullName);
-
-    expect(Object.keys(objAsFoo).sort()).toEqual([
-      "$apiName",
-      "$objectType",
-      "$primaryKey",
-      "$title",
-      "fooSpt",
-    ].sort());
-
-    expect(obj).toBe(objAsFoo.$as(Employee));
-    expect(objAsFoo).toBe(obj.$as(FooInterface));
-  });
-
   it("reconstitutes interfaces properly without rid - old", async () => {
     const clientCtx = createMinimalClient(
       { ontologyRid: $ontologyRid },
@@ -356,7 +235,7 @@ describe("convertWireToOsdkObjects", () => {
       async () => "myAccessToken",
     );
 
-    let objectFromWire = {
+    const objectFromWire = {
       __apiName: "Employee" as const,
       __primaryKey: 0,
       __title: "Steve",
@@ -401,7 +280,7 @@ describe("convertWireToOsdkObjects", () => {
       async () => "myAccessToken",
     );
 
-    let objectFromWire = {
+    const objectFromWire = {
       __apiName: "Employee" as const,
       __primaryKey: 0,
       __title: "Steve",
@@ -449,7 +328,7 @@ describe("convertWireToOsdkObjects", () => {
       async () => "myAccessToken",
     );
 
-    let objectFromWire = {
+    const objectFromWire = {
       __apiName: "Employee" as const,
       __primaryKey: 0,
       __title: "Steve",
@@ -499,7 +378,7 @@ describe("convertWireToOsdkObjects", () => {
       async () => "myAccessToken",
     );
 
-    let objectFromWire = {
+    const objectFromWire = {
       __apiName: "Employee" as const,
       __primaryKey: 0,
       __title: "Steve",
@@ -549,7 +428,7 @@ describe("convertWireToOsdkObjects", () => {
 
   describe("selection keys", () => {
     it("throws when required is missing", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
       } as const;
@@ -569,7 +448,7 @@ describe("convertWireToOsdkObjects", () => {
     });
 
     it("does not throw when optional is missing", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
       } as const;
@@ -625,7 +504,7 @@ describe("convertWireToOsdkObjects", () => {
 
   describe("selection keys - new", () => {
     it("throws when required is missing", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
       } as const;
@@ -645,7 +524,7 @@ describe("convertWireToOsdkObjects", () => {
     });
 
     it("does not throw when optional is missing", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
       } as const;
@@ -701,7 +580,7 @@ describe("convertWireToOsdkObjects", () => {
 
   describe("without selection keys", () => {
     it("throws when required is missing", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
       } as const;
@@ -721,7 +600,7 @@ describe("convertWireToOsdkObjects", () => {
     });
 
     it("does not throw when required is present", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
         "employeeId": 0,
@@ -779,7 +658,7 @@ describe("convertWireToOsdkObjects", () => {
 
   describe("without selection keys - new", () => {
     it("throws when required is missing", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
       } as const;
@@ -799,7 +678,7 @@ describe("convertWireToOsdkObjects", () => {
     });
 
     it("does not throw when required is present", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
         "employeeId": 0,

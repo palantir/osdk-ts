@@ -14,123 +14,52 @@
  * limitations under the License.
  */
 
-import type {
-  GeotimeSeriesProperty,
-  ObjectTypeDefinition,
-  Osdk,
-  TimeSeriesPoint,
-} from "@osdk/api";
+import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
-import { OntologiesV2 } from "@osdk/internal.foundry.ontologiesv2";
-import { createAttachmentFromRid } from "../../createAttachmentFromRid.js";
+import invariant from "tiny-invariant";
 import { GeotimeSeriesPropertyImpl } from "../../createGeotimeSeriesProperty.js";
 import { TimeSeriesPropertyImpl } from "../../createTimeseriesProperty.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
-import { createClientCache } from "../Cache.js";
+import { hydrateAttachmentFromRidInternal } from "../../public-utils/hydrateAttachmentFromRid.js";
 import { get$as } from "./getDollarAs.js";
 import { get$link } from "./getDollarLink.js";
 import {
-  CachedPropertiesRef,
   ClientRef,
   ObjectDefRef,
-  RawObject,
   UnderlyingOsdkObject,
 } from "./InternalSymbols.js";
-import type {
-  ObjectHolder,
-  ObjectHolderPrototypeOwnProps,
-} from "./ObjectHolder.js";
-import type { PropertyDescriptorRecord } from "./PropertyDescriptorRecord.js";
+import type { ObjectHolder } from "./ObjectHolder.js";
 
-const objectPrototypeCache = createClientCache(
-  function(client, objectDef: FetchedObjectTypeDefinition) {
-    return Object.create(
-      null,
-      {
-        [ObjectDefRef]: { value: objectDef },
-        [ClientRef]: { value: client },
-        "$as": { value: get$as(objectDef) },
-        "$link": {
-          get: function(this: ObjectHolder<typeof objectDef>) {
-            return get$link(this);
-          },
-        },
-        "$updateInternalValues": {
-          value: function(
-            this: ObjectHolder<typeof objectDef>,
-            newValues: Record<string, any>,
-          ) {
-            this[RawObject] = Object.assign(
-              {},
-              this[RawObject],
-              newValues,
-            );
-          },
-        },
-      } satisfies PropertyDescriptorRecord<ObjectHolderPrototypeOwnProps>,
-    );
-  },
+interface InternalOsdkInstance {
+  [ObjectDefRef]: FetchedObjectTypeDefinition;
+  [ClientRef]: MinimalClient;
+}
+
+const specialPropertyTypes = new Set(
+  [
+    "attachment",
+    "geotimeSeriesReference",
+    "numericTimeseries",
+    "stringTimeseries",
+    "sensorTimeseries",
+  ],
 );
 
-if (process.env.NODE_ENV !== "production") {
-  const installed = Symbol();
-  const gw: any = typeof window === "undefined" ? global : window;
-  if (!(installed in gw)) {
-    gw[installed] = true;
-
-    gw.devtoolsFormatters ??= [];
-    gw.devtoolsFormatters.push({
-      header: function(object: any) {
-        const raw = object[RawObject];
-        if (raw == null) return null;
-
-        return [
-          "div",
-          {},
-
-          `Osdk.Instance<${raw.$apiName}> { $primaryKey:`,
-          ["object", { object: raw.$primaryKey }],
-          `, $title:`,
-          ["object", { object: raw.$title }],
-          `, ... }`,
-        ];
-      },
-      hasBody: function(object: any) {
-        return object[RawObject] != null;
-      },
-      body: function(object: any) {
-        const raw = object[RawObject];
-        if (raw == null) return null;
-
-        return [
-          "ol",
-          {
-            style: `
-            list-style-type: none;
-            padding-left: 0;
-            margin-top: 0;
-            margin-left: 18px
-          `,
-          },
-          ["li", {}, "$raw:", ["object", { object: raw }]],
-          // ...Object.keys(raw).map(key => {
-          //   return [
-          //     "li",
-          //     {},
-          //     [
-          //       "span",
-          //       { style: "color: #888888" },
-          //       `${key}: `,
-          //     ],
-          //     ["object", { object: raw[key] }], // ["span", {}, `${key}: `]],
-          //   ];
-          // }),
-        ];
-      },
-    });
-  }
-}
+// kept separate so we are not redefining these functions
+// every time an object is created.
+const basePropDefs = {
+  "$as": {
+    get: function(this: InternalOsdkInstance) {
+      return get$as(this[ObjectDefRef]);
+    },
+  },
+  "$link": {
+    get: function(this: InternalOsdkInstance & ObjectHolder<any>) {
+      return get$link(this);
+    },
+  },
+};
 
 /** @internal */
 export function createOsdkObject<
@@ -140,50 +69,63 @@ export function createOsdkObject<
   objectDef: Q,
   rawObj: OntologyObjectV2,
 ): Osdk<ObjectTypeDefinition, any> {
-  // We use multiple layers of prototypes to maximize reuse and also to keep
-  // [RawObject] out of `ownKeys`. This keeps the code in the proxy below simpler.
-  const objectHolderPrototype = Object.create(
-    objectPrototypeCache.get(client, objectDef),
+  // updates the object's "hidden class/map".
+  Object.defineProperties(rawObj, {
+    [UnderlyingOsdkObject]: {
+      enumerable: false,
+      value: rawObj,
+    },
+    [ObjectDefRef]: { value: objectDef, enumerable: false },
+    [ClientRef]: { value: client, enumerable: false },
+    ...basePropDefs,
+  });
+
+  // Assign the special values
+  for (const propKey of Object.keys(rawObj)) {
+    if (
+      propKey in objectDef.properties
+      && typeof (objectDef.properties[propKey].type) === "string"
+      && specialPropertyTypes.has(objectDef.properties[propKey].type)
+    ) {
+      rawObj[propKey] = createSpecialProperty(
+        client,
+        objectDef,
+        rawObj as any,
+        propKey,
+      );
+    }
+  }
+
+  return Object.freeze(rawObj) as Osdk<ObjectTypeDefinition, any>;
+}
+
+function createSpecialProperty(
+  client: MinimalClient,
+  objectDef: FetchedObjectTypeDefinition,
+  rawObject: Osdk.Instance<any>,
+  p: keyof typeof rawObject & string | symbol,
+) {
+  const rawValue = rawObject[p as any];
+  const propDef = objectDef.properties[p as any];
+  if (process.env.NODE_ENV !== "production") {
+    invariant(
+      propDef != null && typeof propDef.type === "string"
+        && specialPropertyTypes.has(propDef.type),
+    );
+  }
+  {
     {
-      [RawObject]: {
-        value: rawObj,
-        writable: true, // so we can allow updates
-      },
-      [CachedPropertiesRef]: {
-        value: new Map<string | symbol, any>(),
-        writable: true,
-      },
-    },
-  );
-
-  // we separate the holder out so we can update
-  // the underlying data without having to return a new object
-  // we also need the holder so we can customize the console.log output
-  const holder: ObjectHolder<Q> = Object.create(objectHolderPrototype);
-
-  const osdkObject: any = new Proxy(holder, {
-    ownKeys(target) {
-      return Reflect.ownKeys(target[RawObject]);
-    },
-    get(target, p, receiver) {
-      switch (p) {
-        case UnderlyingOsdkObject:
-          // effectively point back to the proxy
-          return receiver;
-      }
-
-      if (p in target) return target[p as keyof typeof target];
-
-      if (p in rawObj) {
-        const rawValue = target[RawObject][p as any];
-        const propDef = objectDef.properties[p as any];
-        if (propDef) {
+      {
+        {
           if (propDef.type === "attachment") {
             if (Array.isArray(rawValue)) {
-              return rawValue.map(a => createAttachmentFromRid(client, a.rid));
+              return rawValue.map(a =>
+                hydrateAttachmentFromRidInternal(client, a.rid)
+              );
             }
-            return createAttachmentFromRid(client, rawValue.rid);
+            return hydrateAttachmentFromRidInternal(client, rawValue.rid);
           }
+
           if (
             propDef.type === "numericTimeseries"
             || propDef.type === "stringTimeseries"
@@ -196,19 +138,16 @@ export function createOsdkObject<
             >(
               client,
               objectDef.apiName,
-              target[RawObject][objectDef.primaryKeyApiName as string],
+              rawObject[objectDef.primaryKeyApiName as string],
               p as string,
             );
           }
+
           if (propDef.type === "geotimeSeriesReference") {
-            const instance = target[CachedPropertiesRef].get(p);
-            if (instance != null) {
-              return instance;
-            }
-            const geotimeProp = new GeotimeSeriesPropertyImpl<GeoJSON.Point>(
+            return new GeotimeSeriesPropertyImpl<GeoJSON.Point>(
               client,
               objectDef.apiName,
-              target[RawObject][objectDef.primaryKeyApiName as string],
+              rawObject[objectDef.primaryKeyApiName as string],
               p as string,
               rawValue.type === "geotimeSeriesValue"
                 ? {
@@ -220,36 +159,9 @@ export function createOsdkObject<
                 }
                 : undefined,
             );
-            target[CachedPropertiesRef].set(p, geotimeProp);
-            return geotimeProp;
           }
         }
-        return rawValue;
       }
-
-      // we do not do any fall through to avoid unexpected behavior
-    },
-
-    set(target, p, newValue) {
-      // allow the prototype to update this value
-      if (p === RawObject) {
-        // symbol only exists internally so no one else can hit this
-        target[p as typeof RawObject] = newValue;
-        return true;
-      }
-      return false;
-    },
-
-    getOwnPropertyDescriptor(target, p) {
-      if (p === RawObject) {
-        return Reflect.getOwnPropertyDescriptor(target, p);
-      }
-
-      if (target[RawObject][p as string] != null) {
-        return { configurable: true, enumerable: true };
-      }
-      return undefined;
-    },
-  });
-  return osdkObject;
+    }
+  }
 }

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import type { FoundryConfig } from "@osdk/foundry-config-json";
 import { consola } from "consola";
 import type { Arguments } from "yargs";
-import type { FoundryConfig } from "../../util/config.js";
 import type { CommonSiteArgs } from "./CommonSiteArgs.js";
 
 export async function logSiteCommandConfigFileOverride(
   args: Arguments<CommonSiteArgs>,
-  config: FoundryConfig | undefined,
+  config: FoundryConfig<"site"> | undefined,
 ) {
   if (
     config?.site.application != null

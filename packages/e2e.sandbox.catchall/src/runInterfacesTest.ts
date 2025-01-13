@@ -14,28 +14,23 @@
  * limitations under the License.
  */
 
-import type { ConvertProps, Osdk } from "@osdk/api";
-import {
-  Employee,
-  FooInterface,
-  OsdkTestObject,
-} from "@osdk/e2e.generated.catchall";
+import type { Osdk } from "@osdk/api";
+import { FooInterface, OsdkTestObject } from "@osdk/e2e.generated.catchall";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
-import type { InterfaceObjectSet } from "../../api/build/esm/objectSet/ObjectSet.js";
 import { client } from "./client.js";
 
 export async function runInterfacesTest() {
   // this has the nice effect of faking a 'race' with the below code
-  (async () => {
+  void (async () => {
     const { data } = await client(FooInterface).fetchPage();
     const first = data[0];
     const e = first.$as(OsdkTestObject);
   })();
 
   console.log("hello");
-  const qqq = await client(FooInterface).where({ name: { $ne: "Patti" } });
+  const qqq = client(FooInterface).where({ name: { $ne: "Patti" } });
 
   const fooLimitedToEmployees = await client(FooInterface).fetchPage();
   invariant(fooLimitedToEmployees.data.length > 0);

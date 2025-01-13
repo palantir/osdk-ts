@@ -62,7 +62,7 @@ export interface PublicOauthClientOptions {
   postLoginPage?: string;
 
   /**
-   * * @param {string[]} [scopes=[]] - OAuth scopes to request. If not provided, defaults to `["api:ontologies-read", "api:ontologies-write"]`
+   * * @param {string[]} [scopes=[]] - OAuth scopes to request. If not provided, defaults to `["api:read-data", "api:write-data"]`
    */
   scopes?: string[];
 
@@ -102,7 +102,7 @@ export function createPublicOauthClient(
  * @param {boolean} useHistory - If true, uses `history.replaceState()`, otherwise uses `window.location.assign()` (defaults to true)
  * @param {string} loginPage - Custom landing page URL prior to logging in
  * @param {string} postLoginPage - URL to return to after completed authentication cycle (defaults to `window.location.toString()`)
- * @param {string[]} scopes - OAuth scopes to request. If not provided, defaults to `["api:ontologies-read", "api:ontologies-write"]`
+ * @param {string[]} scopes - OAuth scopes to request. If not provided, defaults to `["api:read-data", "api:write-data"]`
  * @param {typeof globalThis.fetch} fetchFn - Custom fetch function to use for requests (defaults to `globalThis.fetch`)
  * @param {string} ctxPath - Context path for the authorization server (defaults to "multipass")
  * @returns {PublicOauthClient} A client that can be used as a token provider
@@ -161,8 +161,10 @@ export function createPublicOauthClient(
 
   // as an arrow function, `useHistory` is known to be a boolean
   const go = async (x: string) => {
-    if (useHistory) return window.history.replaceState({}, "", x);
-    else window.location.assign(x);
+    if (useHistory) {
+      window.history.replaceState({}, "", x);
+      return;
+    } else window.location.assign(x);
 
     await delay(1000);
     throw new Error("Unable to redirect");
@@ -200,7 +202,8 @@ export function createPublicOauthClient(
         result && window.location.pathname === new URL(redirect_uri).pathname
       ) {
         const { oldUrl } = readLocal(client);
-        go(oldUrl ?? "/");
+        // don't block on the redirect
+        void go(oldUrl ?? "/");
       }
       return result;
     } catch (e) {
@@ -248,7 +251,7 @@ export function createPublicOauthClient(
         "signIn",
       );
 
-      go(oldUrl);
+      void go(oldUrl);
       return ret;
     } catch (e) {
       if (process.env.NODE_ENV !== "production") {
@@ -270,7 +273,8 @@ export function createPublicOauthClient(
       && window.location.pathname !== loginPage
     ) {
       saveLocal(client, { oldUrl: postLoginPage });
-      return await go(loginPage);
+      await go(loginPage);
+      return;
     }
 
     const state = generateRandomState()!;

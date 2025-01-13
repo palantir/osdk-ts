@@ -17,17 +17,10 @@
 import type {
   GeotimeSeriesProperty,
   TimeSeriesPoint,
-  TimeSeriesProperty,
   TimeSeriesQuery,
 } from "@osdk/api";
-import { TimeseriesDurationMapping } from "@osdk/api";
-import type { TimeRange } from "@osdk/internal.foundry.core";
 import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "./MinimalClientContext.js";
-import {
-  iterateReadableStream,
-  parseStreamedResponse,
-} from "./util/streamutils.js";
 import { asyncIterPointsHelper, getTimeRange } from "./util/timeseriesUtils.js";
 
 export class GeotimeSeriesPropertyImpl<T extends GeoJSON.Point>
@@ -58,7 +51,11 @@ export class GeotimeSeriesPropertyImpl<T extends GeoJSON.Point>
         await this.#client.ontologyRid,
         ...this.#triplet,
       );
-    latestPointPromise.then(latestPoint => this.lastFetchedValue = latestPoint);
+    latestPointPromise.then(
+      latestPoint => this.lastFetchedValue = latestPoint,
+      // eslint-disable-next-line no-console
+      err => void console.error(err),
+    );
     return latestPointPromise;
   }
 

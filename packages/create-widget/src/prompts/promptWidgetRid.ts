@@ -24,7 +24,7 @@ export async function promptWidgetRid({
 }): Promise<string> {
   while (
     widget == null
-    || !/^ri\.viewregistry\.[^.]*\.view\.[^.]+$/.test(widget)
+    || !/^ri\.widgetregistry\.\.widget\.[^.]+$/.test(widget)
   ) {
     if (widget != null) {
       consola.fail("Please enter a valid widget resource identifier (rid)");
@@ -32,7 +32,7 @@ export async function promptWidgetRid({
     widget = await consola.prompt(
       `Enter the widget resource identifier (rid) for your widget:\n${
         italic(
-          "(Example: ri.viewregistry.main.view.1c66b352-4e00-40d2-995d-061c9d533ace)",
+          "(Example: ri.widgetregistry..widget.1c66b352-4e00-40d2-995d-061c9d533ace)",
         )
       }`,
       { type: "text" },

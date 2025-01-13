@@ -26,7 +26,6 @@ import {
   vi,
 } from "vitest";
 
-import crypto from "node:crypto";
 import * as commonJs from "./common.js";
 import { LocalStorageState } from "./common.js";
 import { createPublicOauthClient } from "./createPublicOauthClient.js";
@@ -312,8 +311,7 @@ describe(createPublicOauthClient, () => {
                 redirect_uri: clientArgs.redirectUrl,
                 response_type: "code",
                 code_challenge_method: "S256",
-                scope:
-                  "offline_access api:ontologies-read api:ontologies-write",
+                scope: "offline_access api:read-data api:write-data",
                 state: expect.any(String),
               }),
             );

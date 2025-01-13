@@ -1,5 +1,34 @@
 # @osdk/example-generator
 
+## 0.9.0-beta.20
+
+### Minor Changes
+
+- 1dca4cb: Use @osdk/foundry-config-json in @osdk/widget.vite-plugin.unstable for shared config and auto versioning
+- 314ae66: Move from "views" naming to "widgets"
+
+### Patch Changes
+
+- Updated dependencies [314ae66]
+- Updated dependencies [3d2ba6f]
+  - @osdk/create-widget@2.0.0-beta.6
+  - @osdk/create-app@2.1.0-beta.21
+
+## 0.9.0-beta.19
+
+### Patch Changes
+
+- @osdk/create-widget@2.0.0-beta.5
+- @osdk/create-app@2.1.0-beta.20
+
+## 0.9.0-beta.18
+
+### Patch Changes
+
+- Updated dependencies [ef09e2d]
+  - @osdk/create-app@2.1.0-beta.19
+  - @osdk/create-widget@2.0.0-beta.4
+
 ## 0.9.0-beta.17
 
 ### Patch Changes

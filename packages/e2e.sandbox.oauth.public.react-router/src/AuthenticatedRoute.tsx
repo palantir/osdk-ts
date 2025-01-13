@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { publicOauthClient } from "./client.js";
 
 /**
@@ -12,6 +12,9 @@ function AuthenticatedRoute() {
   useEffect(() => {
     publicOauthClient().then((token) => {
       setToken(token);
+    }).catch((e: unknown) => {
+      console.error(e);
+      setToken(undefined);
     });
   }, []);
 

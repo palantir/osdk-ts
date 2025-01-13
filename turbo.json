@@ -27,7 +27,7 @@
         "tsconfig.json"
       ],
       "outputs": [],
-      "dependsOn": ["//#global-eslint-config", "//#dprint"]
+      "dependsOn": ["//#global-eslint-config", "//#dprint", "typecheck"]
     },
 
     /* Psuedo task to let us depend on dprint config */
@@ -185,6 +185,7 @@
       "inputs": [
         "bin/**",
         "src/**",
+        "templates/**",
         "tsup.config.js",
         "tsconfig.json",
         "tsconfig.cjs.json"

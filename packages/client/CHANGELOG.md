@@ -1,5 +1,65 @@
 # @osdk/client
 
+## 2.1.0-beta.21
+
+### Minor Changes
+
+- 3ea2e79: Creates new export for internal helper functions
+- 656f975: Fixes attachment upload inputs sending incorrect in browser contexts
+- f34b3d4: Add ability to fetch by rid, experimentally.
+- e86e91d: Internal property of Client is removed from output
+
+### Patch Changes
+
+- Updated dependencies [3ea2e79]
+- Updated dependencies [656f975]
+- Updated dependencies [f34b3d4]
+- Updated dependencies [1132993]
+  - @osdk/api@2.1.0-beta.21
+  - @osdk/shared.net.fetch@1.1.0-beta.2
+  - @osdk/generator-converters@2.1.0-beta.21
+  - @osdk/shared.client.impl@1.1.0-beta.4
+  - @osdk/client.unstable@2.1.0-beta.21
+
+## 2.1.0-beta.20
+
+### Minor Changes
+
+- b773513: Fix onOutOfDate handler from being fired twice
+- 9d35a1f: Remove unused imports
+- abfe4b3: Add support for reading struct properties.
+- c537e2d: Remove unused imports.
+
+### Patch Changes
+
+- Updated dependencies [9d35a1f]
+- Updated dependencies [abfe4b3]
+- Updated dependencies [c537e2d]
+- Updated dependencies [bf0e3b4]
+- Updated dependencies [06e66dc]
+  - @osdk/generator-converters@2.1.0-beta.20
+  - @osdk/client.unstable@2.1.0-beta.20
+  - @osdk/api@2.1.0-beta.20
+
+## 2.1.0-beta.19
+
+### Minor Changes
+
+- cddc196: Try-catches handlers called during subscription
+- 720218d: OSDK Client no longer uses javascript proxies for its objects. This results in a 13% increase in construction time but at 1kb per object reduction in memory
+- eb27b54: Fix URL for experimental method
+- 27f0f77: Interface instances are immutable just like object instances
+- a7a4aef: Removes dependency on crypto
+- 6671a39: Upgrade execa where used
+- a6c320d: Internal optimization to reduce memory usage for unused interface objects
+
+### Patch Changes
+
+- Updated dependencies [cddc196]
+  - @osdk/api@2.1.0-beta.19
+  - @osdk/generator-converters@2.1.0-beta.19
+  - @osdk/client.unstable@2.1.0-beta.19
+
 ## 2.1.0-beta.18
 
 ### Patch Changes

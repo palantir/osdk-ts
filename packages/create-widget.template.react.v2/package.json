@@ -1,7 +1,7 @@
 {
   "name": "@osdk/create-widget.template.react.v2",
   "private": true,
-  "version": "0.3.0-beta.3",
+  "version": "2.0.0-beta.6",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -29,9 +29,6 @@
     "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
-    "@osdk/client": "workspace:~",
-    "@osdk/widget-client-react.unstable": "workspace:~",
-    "@osdk/widget-client.unstable": "workspace:~",
     "@radix-ui/react-icons": "^1.3.1",
     "@radix-ui/themes": "^3.1.4",
     "react": "^18",
@@ -45,7 +42,6 @@
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
-    "@osdk/widget-manifest-vite-plugin": "workspace:~",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@typescript-eslint/eslint-plugin": "^8.11.0",

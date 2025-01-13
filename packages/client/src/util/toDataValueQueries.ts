@@ -52,9 +52,22 @@ export async function toDataValueQueries(
       if (isAttachmentUpload(value)) {
         const attachment = await OntologiesV2.Attachments.upload(
           client,
-          value,
+          value.data,
           {
             filename: value.name,
+          },
+        );
+        return attachment.rid;
+      }
+
+      if (
+        typeof value === "object" && value instanceof Blob && "name" in value
+      ) {
+        const attachment = await OntologiesV2.Attachments.upload(
+          client,
+          value,
+          {
+            filename: value.name as string,
           },
         );
         return attachment.rid;

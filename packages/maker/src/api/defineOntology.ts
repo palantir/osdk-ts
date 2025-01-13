@@ -18,15 +18,12 @@ import type {
   OntologyIr,
   OntologyIrInterfaceType,
   OntologyIrInterfaceTypeBlockDataV2,
-  OntologyIrOntologyBlockDataV2,
   OntologyIrSharedPropertyType,
   OntologyIrSharedPropertyTypeBlockDataV2,
   OntologyIrStructFieldType,
   OntologyIrType,
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
-  StructFieldType,
-  Type,
 } from "@osdk/client.unstable";
 import type {
   InterfaceType,
@@ -220,7 +217,7 @@ function convertType(
       const structFields: Array<OntologyIrStructFieldType> = new Array();
       for (const key in type.structDefinition) {
         const fieldTypeDefinition = type.structDefinition[key];
-        var field: OntologyIrStructFieldType;
+        let field: OntologyIrStructFieldType;
         if (typeof fieldTypeDefinition === "string") {
           field = {
             apiName: key,

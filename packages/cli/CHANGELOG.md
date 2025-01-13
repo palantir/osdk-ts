@@ -1,5 +1,21 @@
 # @osdk/cli
 
+## 0.25.0-beta.21
+
+### Minor Changes
+
+- 1dca4cb: Use @osdk/foundry-config-json in @osdk/widget.vite-plugin.unstable for shared config and auto versioning
+
+## 0.25.0-beta.20
+
+## 0.25.0-beta.19
+
+### Minor Changes
+
+- 2ffa338: Support site snapshot upload
+- cf9dcbe: Split out @osdk/foundry-config-json package
+- a39ef6a: Add package.json auto version strategy
+
 ## 0.25.0-beta.18
 
 ## 0.25.0-beta.17

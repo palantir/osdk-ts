@@ -24,7 +24,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-const valid = "ri.viewregistry.main.view.0000-0000-0000-0000";
+const valid = "ri.widgetregistry..widget.0000-0000-0000-0000";
 
 test("it accepts valid application rid from prompt", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce(valid);

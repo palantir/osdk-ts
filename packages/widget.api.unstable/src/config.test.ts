@@ -31,7 +31,7 @@ describe("WidgetConfig", () => {
     it("should be able to infer the type of the parameter ID", () => {
       const test = defineConfig({
         type: "workshop",
-        rid: "ri.viewregistry..view.0000-0000-0000-0000",
+        rid: "ri.widgetregistry..widget.0000-0000-0000-0000",
         parameters: {
           test: {
             displayName: "Testing",
@@ -52,7 +52,7 @@ describe("WidgetConfig", () => {
     it("should construct a type safe map of async parameter values", () => {
       const test = defineConfig({
         type: "workshop",
-        rid: "ri.viewregistry..view.0000-0000-0000-0000",
+        rid: "ri.widgetregistry..widget.0000-0000-0000-0000",
         parameters: {
           test: {
             displayName: "Testing",
@@ -74,7 +74,7 @@ describe("WidgetConfig", () => {
     it("should construct a type safe map of async parameter values with arrays", () => {
       const test = defineConfig({
         type: "workshop",
-        rid: "ri.viewregistry..view.0000-0000-0000-0000",
+        rid: "ri.widgetregistry..widget.0000-0000-0000-0000",
         parameters: {
           test: {
             displayName: "Testing",
@@ -103,7 +103,7 @@ describe("WidgetConfig", () => {
     it("should construct a type safe map of parameter values", () => {
       const test = defineConfig({
         type: "workshop",
-        rid: "ri.viewregistry..view.0000-0000-0000-0000",
+        rid: "ri.widgetregistry..widget.0000-0000-0000-0000",
         parameters: {
           test: {
             displayName: "Testing",
@@ -132,7 +132,7 @@ describe("WidgetConfig", () => {
     it("should construct a type safe map of events that reference parameters", () => {
       const test = defineConfig({
         type: "workshop",
-        rid: "ri.viewregistry..view.0000-0000-0000-0000",
+        rid: "ri.widgetregistry..widget.0000-0000-0000-0000",
         parameters: {
           test: {
             displayName: "Testing",
@@ -164,7 +164,7 @@ describe("WidgetConfig", () => {
     it("will not extract an event that references a parameter ID that doesn't exist", () => {
       const test = defineConfig({
         type: "workshop",
-        rid: "ri.viewregistry..view.0000-0000-0000-0000",
+        rid: "ri.widgetregistry..widget.0000-0000-0000-0000",
         parameters: {
           test: {
             displayName: "Testing",
@@ -197,7 +197,7 @@ describe("WidgetConfig", () => {
     it("should extract event IDs correctly", () => {
       const test = defineConfig({
         type: "workshop",
-        rid: "ri.viewregistry..view.0000-0000-0000-0000",
+        rid: "ri.widgetregistry..widget.0000-0000-0000-0000",
         parameters: {
           test: {
             displayName: "Testing",
@@ -233,7 +233,7 @@ describe("WidgetConfig", () => {
     it("should extract an event to the parameter values", () => {
       const test = defineConfig({
         type: "workshop",
-        rid: "ri.viewregistry..view.0000-0000-0000-0000",
+        rid: "ri.widgetregistry..widget.0000-0000-0000-0000",
         parameters: {
           test: {
             displayName: "Testing",
@@ -269,7 +269,7 @@ describe("WidgetConfig", () => {
       const test = defineConfig({
         type: "workshop",
         // @ts-expect-error
-        rid: "ri.asdf..view.0000-0000-0000-0000",
+        rid: "ri.asdf..widget.0000-0000-0000-0000",
         parameters: {
           test: {
             displayName: "Testing",

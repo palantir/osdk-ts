@@ -19,12 +19,14 @@ import { checkUnstableBulkLinks } from "./public/checkUnstableBulkLinks.js";
 import { runAggregationGroupByDatesTest } from "./runAggregationGroupByDatesTest.js";
 import { runAggregationsTest } from "./runAggregationsTest.js";
 import { runAssignEmployeeToVentureTest } from "./runAssignEmployeeToVentureTest.js";
+import { runFetchByRidTest } from "./runFetchByRidTest.js";
 import { runFoundrySdkClientVerificationTest } from "./runFoundrySdkClientVerificationTest.js";
 import { runGeoQueriesTest } from "./runGeoQueriesTest.js";
 import { runGeotimeSeriesReferenceTests } from "./runGeotimeSeriesTest.js";
 import { runInterfacesTest } from "./runInterfacesTest.js";
 import { runLegacyExamples } from "./runLegacyExamples.js";
 import { runQueriesTest } from "./runQueriesTest.js";
+import { runStructsTest } from "./runStructsTest.js";
 import { runSubscriptionsTest } from "./runSubscriptionsTest.js";
 import { runTimeseriesTest } from "./runTimeseriesTest.js";
 import { typeChecks } from "./typeChecks.js";
@@ -40,7 +42,7 @@ async function runTests() {
       await runLegacyExamples();
     }
     if (testSubscriptions) {
-      runSubscriptionsTest();
+      await runSubscriptionsTest();
 
       // we don't need the console flooded with additional things
       return;
@@ -68,10 +70,13 @@ async function runTests() {
     await runTimeseriesTest();
 
     await runGeotimeSeriesReferenceTests();
+
+    await runStructsTest();
+    await runFetchByRidTest();
   } catch (e) {
     console.error(`Caught an error we did not expect, type: ${typeof e}`);
     console.error(e);
   }
 }
 
-runTests();
+void runTests();
