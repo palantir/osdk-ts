@@ -25,13 +25,15 @@
     }
   },
   "scripts": {
-    "build": "tsc --project tsconfig.client.json && vite build",
+    "build": "vite build",
     "check-attw": "attw --profile esm-only --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "dev": "vite",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run",
+    "preview": "vite preview",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
@@ -72,7 +74,7 @@
     "vite-plugin"
   ],
   "files": [
-    "build/client",
+    "build/site",
     "build/esm",
     "CHANGELOG.md",
     "package.json",

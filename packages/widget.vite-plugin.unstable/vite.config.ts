@@ -28,6 +28,6 @@ export default defineConfig({
     port: 8080,
   },
   build: {
-    outDir: resolve(dirname(fileURLToPath(import.meta.url)), "./build/client"),
+    outDir: resolve(dirname(fileURLToPath(import.meta.url)), "./build/site"),
   },
 });
