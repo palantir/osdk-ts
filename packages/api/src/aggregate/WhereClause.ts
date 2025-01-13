@@ -50,7 +50,28 @@ export type PossibleWhereClauseFilters =
 
 // the value side of this needs to match DistanceUnit from @osdk/internal.foundry but we don't
 // want the dependency
-export const DistanceUnitMapping = {
+export const DistanceUnitMapping: {
+  centimeter: "CENTIMETERS";
+  centimeters: "CENTIMETERS";
+  cm: "CENTIMETERS";
+  meter: "METERS";
+  meters: "METERS";
+  m: "METERS";
+  kilometer: "KILOMETERS";
+  kilometers: "KILOMETERS";
+  km: "KILOMETERS";
+  inch: "INCHES";
+  inches: "INCHES";
+  foot: "FEET";
+  feet: "FEET";
+  yard: "YARDS";
+  yards: "YARDS";
+  mile: "MILES";
+  miles: "MILES";
+  nautical_mile: "NAUTICAL_MILES";
+  nauticalMile: "NAUTICAL_MILES";
+  "nautical miles": "NAUTICAL_MILES";
+} = {
   "centimeter": "CENTIMETERS",
   "centimeters": "CENTIMETERS",
   "cm": "CENTIMETERS",

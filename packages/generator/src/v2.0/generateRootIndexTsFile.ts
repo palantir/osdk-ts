@@ -21,7 +21,7 @@ import { formatTs } from "../util/test/formatTs.js";
 
 export async function generateRootIndexTsFile(
   { fs, outDir, importExt, ontologyApiNamespace, ontology }: GenerateContext,
-) {
+): Promise<void> {
   await fs.writeFile(
     path.join(outDir, "index.ts"),
     await formatTs(

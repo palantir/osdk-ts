@@ -21,7 +21,7 @@ import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import { client } from "./client.js";
 
-export async function runInterfacesTest() {
+export async function runInterfacesTest(): Promise<void> {
   // this has the nice effect of faking a 'race' with the below code
   void (async () => {
     const { data } = await client(FooInterface).fetchPage();

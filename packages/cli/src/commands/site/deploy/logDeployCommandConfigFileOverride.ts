@@ -22,7 +22,7 @@ import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 export async function logDeployCommandConfigFileOverride(
   args: Arguments<SiteDeployArgs>,
   config: SiteConfig | undefined,
-) {
+): Promise<void> {
   if (
     config?.autoVersion != null && args.autoVersion !== config.autoVersion.type
   ) {

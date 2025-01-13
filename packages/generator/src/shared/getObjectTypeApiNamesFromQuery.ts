@@ -20,7 +20,7 @@ import { getObjectTypesFromQueryDataType } from "./getObjectTypesFromQueryDataTy
 
 export function getObjectTypeApiNamesFromQuery(
   query: QueryTypeV2 | EnhancedQuery,
-) {
+): string[] {
   const types = new Set<string>();
 
   for (const { dataType } of Object.values(query.parameters)) {

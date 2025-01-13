@@ -240,7 +240,15 @@ export function createClientInternal(
   return client;
 }
 
-export const createClient = createClientInternal.bind(
+export const createClient: (
+  baseUrl: string,
+  ontologyRid: string | Promise<string>,
+  tokenProvider: () => Promise<string>,
+  options?: {
+    logger?: Logger;
+  } | undefined,
+  fetchFn?: typeof fetch | undefined,
+) => Client = createClientInternal.bind(
   undefined,
   createObjectSet,
 );

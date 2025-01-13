@@ -54,7 +54,30 @@ export type TimestampTimeUnits =
   | "HOURS";
 
 export type DateTimeUnits = "DAYS" | "WEEKS" | "MONTHS" | "YEARS" | "QUARTERS";
-export const DurationMapping = {
+export const DurationMapping: {
+  quarter: "QUARTERS";
+  quarters: "QUARTERS";
+  sec: "SECONDS";
+  seconds: "SECONDS";
+  min: "MINUTES";
+  minute: "MINUTES";
+  minutes: "MINUTES";
+  hr: "HOURS";
+  hrs: "HOURS";
+  hour: "HOURS";
+  hours: "HOURS";
+  day: "DAYS";
+  days: "DAYS";
+  wk: "WEEKS";
+  week: "WEEKS";
+  weeks: "WEEKS";
+  mos: "MONTHS";
+  month: "MONTHS";
+  months: "MONTHS";
+  yr: "YEARS";
+  year: "YEARS";
+  years: "YEARS";
+} = {
   ...TimeDurationMapping,
   "quarter": "QUARTERS",
   "quarters": "QUARTERS",

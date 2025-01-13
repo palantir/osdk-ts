@@ -33,7 +33,7 @@ const a = await hydrateObjectSetFromRid(
 ).fetchPage();
 
 console.log(a.data);
-export async function runGeoQueriesTest() {
+export async function runGeoQueriesTest(): Promise<void> {
   const result = await client(WeatherStation).where({
     geohash: {
       $within: {

@@ -26,15 +26,15 @@ export class EnhancedInterfaceType extends EnhancedBase<InterfaceType> {
     super(common, raw, raw.apiName, "./ontology/interfaces");
   }
 
-  getDefinitionIdentifier(v2: boolean) {
+  getDefinitionIdentifier(v2: boolean): string {
     return v2 ? this.shortApiName : `${this.shortApiName}Def`;
   }
 
-  getImportedDefinitionIdentifier(v2: boolean) {
+  getImportedDefinitionIdentifier(v2: boolean): string {
     return this.getDefinitionIdentifier(v2);
   }
 
-  get properties() {
+  get properties(): InterfaceType["properties"] {
     return this.raw.properties;
   }
 

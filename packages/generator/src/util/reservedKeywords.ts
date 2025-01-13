@@ -63,6 +63,6 @@ const reservedKeywords = new Set([
   "yield",
 ]);
 
-export function isReservedKeyword(name: string) {
+export function isReservedKeyword(name: string): boolean {
   return reservedKeywords.has(name);
 }
