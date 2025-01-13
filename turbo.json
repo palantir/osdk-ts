@@ -136,7 +136,30 @@
     },
 
     "build": {
-      "dependsOn": ["^build", "transpile", "typecheck"]
+      "dependsOn": ["transpile", "typecheck"],
+      "inputs": [
+        "src/**/*",
+
+        // default input files for vite
+        "index.html",
+        "vite.config.ts",
+        "postcss.config.js",
+        "tailwind.config.js",
+
+        // we use this internally to prevent issues with the google fonts request
+        // nextjs makes out of the box
+        "../../google-font-mocked-response.js"
+      ],
+      "outputs": [
+        // default output dir for vite
+        "dist/**",
+
+        // default output dir for nextjs
+        "out/**",
+
+        // internally chosen output dir for sanity
+        "build/site/**"
+      ]
     },
 
     "bundle": {
