@@ -492,16 +492,13 @@ export class ObjectSetListenerWebsocket {
       for (const key of keysToDelete) {
         delete o.object[key];
       }
-      const requestedProperties = Object.keys(o.object).filter((key) =>
-        !sub.requestedReferenceProperties.includes(key)
-      );
 
       const osdkObjectArray = await this.#client.objectFactory2(
         this.#client,
         [o.object],
         sub.interfaceApiName,
         false,
-        requestedProperties,
+        undefined,
         false,
         await this.#fetchInterfaceMapping(
           o.object.__apiName,
