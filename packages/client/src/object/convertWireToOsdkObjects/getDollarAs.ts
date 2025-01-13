@@ -91,7 +91,7 @@ function $asFactory(
     const def = objDef[InterfaceDefinitions][targetInterfaceApiName];
     if (!def) {
       throw new Error(
-        `Object does not implement interface '${targetMinDef}'.`,
+        `Object does not implement interface '${targetInterfaceApiName}'.`,
       );
     }
 

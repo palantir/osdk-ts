@@ -105,8 +105,10 @@ export function createClientInternal(
       throw new Error("Invalid ontology RID");
     }
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     ontologyRid.then((ontologyRid) => {
       if (!ontologyRid.startsWith("ri.")) {
+        // FIXME this promise is not await so this just shows up as an unhandled promise rejection
         throw new Error("Invalid ontology RID");
       }
     });
