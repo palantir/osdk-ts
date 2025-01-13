@@ -1,5 +1,18 @@
 # @osdk/shared.test
 
+## 2.1.0-beta.21
+
+### Minor Changes
+
+- f34b3d4: Add ability to fetch by rid, experimentally.
+
+### Patch Changes
+
+- Updated dependencies [3ea2e79]
+- Updated dependencies [656f975]
+- Updated dependencies [f34b3d4]
+  - @osdk/api@2.1.0-beta.21
+
 ## 2.1.0-beta.20
 
 ### Minor Changes

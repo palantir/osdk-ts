@@ -1,5 +1,12 @@
 # @osdk/cli.common
 
+## 0.25.0-beta.21
+
+### Minor Changes
+
+- 1dca4cb: Use @osdk/foundry-config-json in @osdk/widget.vite-plugin.unstable for shared config and auto versioning
+- 3d2ba6f: Revert api:x-read/write back to api:read/write-x
+
 ## 0.25.0-beta.20
 
 ## 0.25.0-beta.19

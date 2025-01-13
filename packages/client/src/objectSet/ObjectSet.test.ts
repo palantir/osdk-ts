@@ -24,6 +24,7 @@ import type {
   Result,
 } from "@osdk/api";
 import { isOk } from "@osdk/api";
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid } from "@osdk/api/unstable";
 import {
   $ontologyRid,
   BarInterface,
@@ -205,6 +206,32 @@ describe("ObjectSet", () => {
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
   });
 
+  it("allows fetching by rid with experimental function", async () => {
+    const employee = await client(
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
+    ).fetchOneByRid(
+      Employee,
+      "ri.employee.i.look.for",
+    );
+    expectTypeOf<typeof employee>().toMatchTypeOf<
+      Osdk<Employee, PropertyKeys<Employee>>
+    >;
+    expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
+  });
+
+  it("allows fetching by rid with experimental function, with select", async () => {
+    const employee = await client(
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
+    ).fetchOneByRid(
+      Employee,
+      "ri.employee.i.look.for",
+      { $select: ["fullName"] },
+    );
+    expectTypeOf<typeof employee>().toMatchTypeOf<
+      Osdk<Employee, "fullName">
+    >;
+    expect(employee.$primaryKey).toBe(stubData.employee2.employeeId);
+  });
   it("check struct parsing", async () => {
     const player = await client(BgaoNflPlayer).fetchOne(
       "tkelce",

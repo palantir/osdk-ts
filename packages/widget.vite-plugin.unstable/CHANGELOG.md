@@ -1,5 +1,17 @@
 # @osdk/widget.vite-plugin.unstable
 
+## 2.0.0-beta.6
+
+### Minor Changes
+
+- 1dca4cb: Use @osdk/foundry-config-json in @osdk/widget.vite-plugin.unstable for shared config and auto versioning
+- 314ae66: Move from "views" naming to "widgets"
+
+### Patch Changes
+
+- Updated dependencies [314ae66]
+  - @osdk/widget-api.unstable@2.0.0-beta.6
+
 ## 2.0.0-beta.5
 
 ### Minor Changes

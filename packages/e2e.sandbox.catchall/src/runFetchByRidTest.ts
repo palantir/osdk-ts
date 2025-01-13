@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-export type { Experiment, ExperimentFns } from "../experimental/Experiment.js";
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid } from "@osdk/api/unstable";
+import { FintrafficAis } from "@osdk/e2e.generated.catchall";
+import { dsClient } from "./client.js";
 
-export { __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid } from "../experimental/fetchOneByRid.js";
-export { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from "../experimental/getBulkLinks.js";
-export { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "../experimental/subscribe.js";
+export async function runFetchByRidTest() {
+  const result = await dsClient(
+    __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
+  ).fetchOneByRid(
+    FintrafficAis,
+    "ri.phonograph2-objects.main.object.7b74bd56-4de1-4190-9123-266ab14b0b20",
+  );
 
-export type { EXPERIMENTAL_BulkLinkResult } from "../objectSet/BulkLinkResult.js";
-export type { MinimalObjectSet } from "../objectSet/ObjectSet.js";
+  console.log(result);
+}

@@ -1,5 +1,17 @@
 # @osdk/widget-client-react.unstable
 
+## 2.0.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [3ea2e79]
+- Updated dependencies [656f975]
+- Updated dependencies [314ae66]
+- Updated dependencies [f34b3d4]
+- Updated dependencies [e86e91d]
+  - @osdk/client@2.1.0-beta.21
+  - @osdk/widget-client.unstable@2.0.0-beta.6
+
 ## 2.0.0-beta.5
 
 ### Patch Changes

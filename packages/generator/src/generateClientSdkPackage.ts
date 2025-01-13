@@ -42,7 +42,7 @@ export async function generateClientSdkPackage(
   for (const packageType of ["module", "commonjs"] as const) {
     const outDir = path.join(baseOutDir, "dist", packageType);
 
-    generateClientSdkVersionTwoPointZero(
+    await generateClientSdkVersionTwoPointZero(
       ontology,
       `typescript-sdk/${packageVersion} osdk-cli/${cliVersion}`,
       minimalFs,
@@ -71,7 +71,7 @@ export async function generateClientSdkPackage(
   await writeJson(
     minimalFs,
     path.join(baseOutDir, "package.json"),
-    await getPackageJsonContents(
+    getPackageJsonContents(
       packageName,
       packageVersion,
       dependencyVersions,
@@ -209,7 +209,7 @@ async function writeJson(
 ) {
   // consola.info(`Writing ${filePath}`);
   // consola.debug(`Writing ${filePath} with body`, body);
-  return await minimalFs.writeFile(
+  return void await minimalFs.writeFile(
     filePath,
     JSON.stringify(body, undefined, 2) + "\n",
   );

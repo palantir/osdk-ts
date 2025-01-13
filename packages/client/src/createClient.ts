@@ -17,13 +17,16 @@
 import type {
   ActionDefinition,
   InterfaceDefinition,
+  NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectSetListener,
   ObjectSetListenerOptions,
   ObjectTypeDefinition,
+  Osdk,
   PropertyKeys,
   QueryDefinition,
+  SelectArg,
 } from "@osdk/api";
 import type {
   Experiment,
@@ -31,10 +34,11 @@ import type {
   MinimalObjectSet,
 } from "@osdk/api/unstable";
 import {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
   __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
 } from "@osdk/api/unstable";
+import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
 import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.client";
 import { symbolClientContext } from "@osdk/shared.client2";
 import { createBulkLinksAsyncIterFactory } from "./__unstable/createBulkLinksAsyncIterFactory.js";
@@ -45,6 +49,7 @@ import { createMinimalClient } from "./createMinimalClient.js";
 import { fetchMetadataInternal } from "./fetchMetadata.js";
 import type { Logger } from "./Logger.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
+import { fetchSingle } from "./object/fetchSingle.js";
 import {
   createObjectSet,
   getWireObjectSet,
@@ -100,8 +105,10 @@ export function createClientInternal(
       throw new Error("Invalid ontology RID");
     }
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     ontologyRid.then((ontologyRid) => {
       if (!ontologyRid.startsWith("ri.")) {
+        // FIXME this promise is not await so this just shows up as an unhandled promise rejection
         throw new Error("Invalid ontology RID");
       }
     });
@@ -155,31 +162,6 @@ export function createClientInternal(
               clientCtx,
             ),
           } as any;
-        case __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet.name:
-          return {
-            preexistingObjectSet: <T extends ObjectOrInterfaceDefinition>(
-              definition: T,
-              rid: string,
-            ) => {
-              return createObjectSet(
-                definition,
-                client[additionalContext],
-                {
-                  type: "intersect",
-                  objectSets: [
-                    {
-                      type: "base",
-                      objectType: definition.apiName,
-                    },
-                    {
-                      type: "reference",
-                      reference: rid,
-                    },
-                  ],
-                },
-              );
-            },
-          } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe.name:
           return {
             subscribe: <
@@ -200,6 +182,28 @@ export function createClientInternal(
               );
 
               return { unsubscribe: async () => (await pendingSubscribe)() };
+            },
+          } as any;
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid.name:
+          return {
+            fetchOneByRid: async <
+              Q extends ObjectTypeDefinition,
+              const L extends PropertyKeys<Q>,
+              const R extends boolean,
+              const S extends false | "throw" = NullabilityAdherence.Default,
+            >(
+              objectType: Q,
+              rid: string,
+              options: SelectArg<Q, L, R, S>,
+            ) => {
+              return await fetchSingle(
+                clientCtx,
+                objectType,
+                options,
+                createWithRid(
+                  rid,
+                ),
+              ) as Osdk<Q>;
             },
           } as any;
       }
@@ -240,3 +244,14 @@ export const createClient = createClientInternal.bind(
   undefined,
   createObjectSet,
 );
+
+function createWithRid(
+  rid: string,
+) {
+  const withRid: WireObjectSet = {
+    type: "static",
+    "objects": [rid],
+  };
+
+  return withRid;
+}

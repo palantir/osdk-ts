@@ -164,8 +164,10 @@ export function createPublicOauthClient(
 
   // as an arrow function, `useHistory` is known to be a boolean
   const go = async (x: string) => {
-    if (useHistory) return window.history.replaceState({}, "", x);
-    else window.location.assign(x);
+    if (useHistory) {
+      window.history.replaceState({}, "", x);
+      return;
+    } else window.location.assign(x);
 
     await delay(1000);
     throw new Error("Unable to redirect");
@@ -203,7 +205,8 @@ export function createPublicOauthClient(
         result && window.location.pathname === new URL(redirect_uri).pathname
       ) {
         const { oldUrl } = readSession(client);
-        go(oldUrl ?? "/");
+        // don't block on the redirect
+        void go(oldUrl ?? "/");
       }
       return result;
     } catch (e) {
@@ -251,7 +254,7 @@ export function createPublicOauthClient(
         "signIn",
       );
 
-      go(oldUrl);
+      void go(oldUrl);
       return ret;
     } catch (e) {
       if (process.env.NODE_ENV !== "production") {
@@ -276,7 +279,8 @@ export function createPublicOauthClient(
     ) {
       saveLocal(client, {});
       saveSession(client, { oldUrl: postLoginPage });
-      return await go(loginPage);
+      await go(loginPage);
+      return;
     }
 
     const state = generateRandomState()!;

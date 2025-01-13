@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 2.1.0-beta.21
+
+### Minor Changes
+
+- 3ea2e79: Creates new export for internal helper functions
+- 656f975: Fixes attachment upload inputs sending incorrect in browser contexts
+- f34b3d4: Add ability to fetch by rid, experimentally.
+
 ## 2.1.0-beta.20
 
 ### Minor Changes

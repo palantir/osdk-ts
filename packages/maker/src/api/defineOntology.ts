@@ -217,7 +217,7 @@ function convertType(
       const structFields: Array<OntologyIrStructFieldType> = new Array();
       for (const key in type.structDefinition) {
         const fieldTypeDefinition = type.structDefinition[key];
-        var field: OntologyIrStructFieldType;
+        let field: OntologyIrStructFieldType;
         if (typeof fieldTypeDefinition === "string") {
           field = {
             apiName: key,
