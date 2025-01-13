@@ -274,6 +274,7 @@ export function createPublicOauthClient(
       && window.location.href !== loginPage
       && window.location.pathname !== loginPage
     ) {
+      saveLocal(client, {});
       saveSession(client, { oldUrl: postLoginPage });
       return await go(loginPage);
     }
