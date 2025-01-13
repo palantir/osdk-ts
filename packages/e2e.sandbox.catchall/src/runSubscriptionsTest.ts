@@ -26,6 +26,12 @@ import {
 import { client, dsClient } from "./client.js";
 
 export async function runSubscriptionsTest() {
+  normalSubscription();
+  interfaceSubscription();
+  referenceUpdateSubscription();
+}
+
+function normalSubscription() {
   let counter = 0;
   const subscription = client(OsdkTestObject)
     .subscribe(
@@ -69,7 +75,9 @@ export async function runSubscriptionsTest() {
       },
       { properties: ["stringProperty"] },
     );
+}
 
+function interfaceSubscription() {
   const interfaceSubscription = client(OsdkTestInterface).subscribe({
     onChange(object) {
       console.log(
@@ -91,7 +99,9 @@ export async function runSubscriptionsTest() {
       console.error("Error in interface subscription: ", err);
     },
   });
+}
 
+function referenceUpdateSubscription() {
   const mtaBusSubscription = dsClient(
     __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
   ).subscribe(
@@ -129,3 +139,5 @@ export async function runSubscriptionsTest() {
     },
   );
 }
+
+runSubscriptionsTest();
