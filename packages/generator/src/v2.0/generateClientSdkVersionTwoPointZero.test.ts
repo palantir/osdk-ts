@@ -303,6 +303,18 @@ const referencedOntology = {
       },
       implementedByObjectTypes: [],
       links: {},
+      allExtendsInterfaces: [],
+      allLinks: {},
+      allProperties: {
+        "com.example.dep.spt": {
+          apiName: "com.example.dep.spt",
+          dataType: {
+            type: "string",
+          },
+          displayName: "Some Property",
+          rid: "idk",
+        },
+      },
     },
   },
   "sharedPropertyTypes": {
