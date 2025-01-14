@@ -17,11 +17,11 @@ function useProjects() {
       const projectsList: IProject[] = (await Mocks.getProjects()).map((
         project,
       ) => ({
-          $apiName: project.$apiName,
-          $primaryKey: project.$primaryKey,
-          id: project.id,
-          name: project.name || "",
-        }));
+        $apiName: project.$apiName,
+        $primaryKey: project.$primaryKey,
+        id: project.id,
+        name: project.name || "",
+      }));
       return projectsList;
     },
   );
