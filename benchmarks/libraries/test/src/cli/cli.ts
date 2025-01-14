@@ -18,7 +18,6 @@
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { runBenchmark } from "./mem-test/runBenchmark.js";
-import { runTest } from "./mem-test/runTest.js";
 
 export function cli(args: ReadonlyArray<string> = hideBin(process.argv)) {
   return yargs(args).command({
