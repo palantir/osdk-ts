@@ -180,12 +180,12 @@ describe("convertWireToOsdkObjects", () => {
       "userAgent",
     );
 
-    let object = {
+    const object = {
       __apiName: Employee.apiName,
       __primaryKey: 0,
     } as const;
     const prototypeBefore = Object.getPrototypeOf(object);
-    let object2 = await convertWireToOsdkObjects(
+    const object2 = await convertWireToOsdkObjects(
       clientCtx,
       [object],
       undefined,
@@ -210,12 +210,12 @@ describe("convertWireToOsdkObjects", () => {
       "userAgent",
     );
 
-    let object = {
+    const object = {
       __apiName: Employee.apiName,
       __primaryKey: 0,
     } as const;
     const prototypeBefore = Object.getPrototypeOf(object);
-    let object2 = await convertWireToOsdkObjects2(
+    const object2 = await convertWireToOsdkObjects2(
       clientCtx,
       [object],
       undefined,
@@ -235,7 +235,7 @@ describe("convertWireToOsdkObjects", () => {
       async () => "myAccessToken",
     );
 
-    let objectFromWire = {
+    const objectFromWire = {
       __apiName: "Employee" as const,
       __primaryKey: 0,
       __title: "Steve",
@@ -280,7 +280,7 @@ describe("convertWireToOsdkObjects", () => {
       async () => "myAccessToken",
     );
 
-    let objectFromWire = {
+    const objectFromWire = {
       __apiName: "Employee" as const,
       __primaryKey: 0,
       __title: "Steve",
@@ -328,7 +328,7 @@ describe("convertWireToOsdkObjects", () => {
       async () => "myAccessToken",
     );
 
-    let objectFromWire = {
+    const objectFromWire = {
       __apiName: "Employee" as const,
       __primaryKey: 0,
       __title: "Steve",
@@ -378,7 +378,7 @@ describe("convertWireToOsdkObjects", () => {
       async () => "myAccessToken",
     );
 
-    let objectFromWire = {
+    const objectFromWire = {
       __apiName: "Employee" as const,
       __primaryKey: 0,
       __title: "Steve",
@@ -428,7 +428,7 @@ describe("convertWireToOsdkObjects", () => {
 
   describe("selection keys", () => {
     it("throws when required is missing", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
       } as const;
@@ -448,7 +448,7 @@ describe("convertWireToOsdkObjects", () => {
     });
 
     it("does not throw when optional is missing", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
       } as const;
@@ -504,7 +504,7 @@ describe("convertWireToOsdkObjects", () => {
 
   describe("selection keys - new", () => {
     it("throws when required is missing", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
       } as const;
@@ -524,7 +524,7 @@ describe("convertWireToOsdkObjects", () => {
     });
 
     it("does not throw when optional is missing", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
       } as const;
@@ -580,7 +580,7 @@ describe("convertWireToOsdkObjects", () => {
 
   describe("without selection keys", () => {
     it("throws when required is missing", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
       } as const;
@@ -600,7 +600,7 @@ describe("convertWireToOsdkObjects", () => {
     });
 
     it("does not throw when required is present", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
         "employeeId": 0,
@@ -658,7 +658,7 @@ describe("convertWireToOsdkObjects", () => {
 
   describe("without selection keys - new", () => {
     it("throws when required is missing", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
       } as const;
@@ -678,7 +678,7 @@ describe("convertWireToOsdkObjects", () => {
     });
 
     it("does not throw when required is present", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
         "employeeId": 0,

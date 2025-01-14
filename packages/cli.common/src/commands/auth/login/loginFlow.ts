@@ -112,8 +112,8 @@ export async function invokeLoginFlow(
 function generateRandomString(length = 128) {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
-  let output: string[] = [];
-  let array = new Uint8Array(1);
+  const output: string[] = [];
+  const array = new Uint8Array(1);
   const maxIndex = 256 - (256 % characters.length);
 
   while (output.length < length) {

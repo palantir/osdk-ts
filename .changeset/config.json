@@ -36,7 +36,8 @@
     "@osdk/version-updater",
     "@osdk/e2e.test.foundry-sdk-generator",
     "@osdk/e2e.generated.*",
-    "@osdk/e2e.sandbox.*"
+    "@osdk/e2e.sandbox.*",
+    "@osdk/benchmarks.*"
   ],
   "bumpVersionsWithWorkspaceProtocolOnly": true,
   "snapshot": {

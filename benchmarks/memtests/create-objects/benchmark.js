@@ -16,7 +16,10 @@
 
 // @ts-check
 
-import { createMemoryTest, neverOptimizeFunction } from "../helpers.js";
+import {
+  createMemoryTest,
+  neverOptimizeFunction,
+} from "@osdk/benchmarks.lib.test";
 
 import { createClient } from "@osdk/client";
 
@@ -40,7 +43,9 @@ const client = createClient(
 for (let i = 0; i < WARMUP_REQUESTS; i++) {
   const page = await client({ type: "object", apiName: "Employee" })
     .fetchPage();
+
   // something to keep the runtime from optimizing away the fetch
+  // eslint-disable-next-line no-console
   console.log(page.data.length);
 }
 

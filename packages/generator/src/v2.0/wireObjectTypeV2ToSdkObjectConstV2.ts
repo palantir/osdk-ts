@@ -66,7 +66,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
   const osdkObjectIdentifier = `${object.shortApiName}.OsdkObject`;
 
   const identifiers: Identifiers = {
-    objectDefIdentifier: `${object.shortApiName}`,
+    objectDefIdentifier: object.shortApiName,
     osdkObjectLinksIdentifier,
     osdkObjectPropsIdentifier,
     osdkObjectStrictPropsIdentifier,
@@ -224,12 +224,9 @@ ${
     stringify(definition.properties, {
       "*": (propertyDefinition, _, apiName) => {
         return [
-          `readonly "${maybeStripNamespace(type, apiName)}"${
-            // after we convert everything over we can do this:
-            // !strict || propertyDefinition.nullable ? "?" : ""
-            ""}`,
+          `readonly "${maybeStripNamespace(type, apiName)}"`,
           (typeof propertyDefinition.type === "object"
-            ? `${remapStructType(propertyDefinition.type)}`
+            ? remapStructType(propertyDefinition.type)
             : `$PropType[${JSON.stringify(propertyDefinition.type)}]`)
           + `${propertyDefinition.multiplicity ? "[]" : ""}${
             propertyDefinition.nullable
