@@ -32,13 +32,13 @@ export namespace setTaskBody {
 
   // Represents a fqn of the action
   export interface Signatures {
-    applyAction<P extends setTaskBody.Params, OP extends ApplyActionOptions>(
-      args: P,
+    applyAction<OP extends ApplyActionOptions>(
+      args: setTaskBody.Params,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
 
-    batchApplyAction<P extends ReadonlyArray<setTaskBody.Params>, OP extends ApplyBatchActionOptions>(
-      args: P,
+    batchApplyAction<OP extends ApplyBatchActionOptions>(
+      args: ReadonlyArray<setTaskBody.Params>,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }

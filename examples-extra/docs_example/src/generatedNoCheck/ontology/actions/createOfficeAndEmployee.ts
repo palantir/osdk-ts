@@ -71,13 +71,13 @@ export namespace createOfficeAndEmployee {
     /**
      * Create an office and employee
      */
-    applyAction<P extends createOfficeAndEmployee.Params, OP extends ApplyActionOptions>(
-      args: P,
+    applyAction<OP extends ApplyActionOptions>(
+      args: createOfficeAndEmployee.Params,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
 
-    batchApplyAction<P extends ReadonlyArray<createOfficeAndEmployee.Params>, OP extends ApplyBatchActionOptions>(
-      args: P,
+    batchApplyAction<OP extends ApplyBatchActionOptions>(
+      args: ReadonlyArray<createOfficeAndEmployee.Params>,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }

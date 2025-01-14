@@ -25,13 +25,13 @@ export namespace deleteOsdkTestObject {
 
   // Represents a fqn of the action
   export interface Signatures {
-    applyAction<P extends deleteOsdkTestObject.Params, OP extends ApplyActionOptions>(
-      args: P,
+    applyAction<OP extends ApplyActionOptions>(
+      args: deleteOsdkTestObject.Params,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
 
-    batchApplyAction<P extends ReadonlyArray<deleteOsdkTestObject.Params>, OP extends ApplyBatchActionOptions>(
-      args: P,
+    batchApplyAction<OP extends ApplyBatchActionOptions>(
+      args: ReadonlyArray<deleteOsdkTestObject.Params>,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }

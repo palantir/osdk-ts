@@ -562,13 +562,13 @@ describe("generator", () => {
           /**
            * An action which takes in an array of objects
            */
-          applyAction<P extends deleteTodos.Params, OP extends ApplyActionOptions>(
-            args: P,
+          applyAction<OP extends ApplyActionOptions>(
+            args: deleteTodos.Params,
             options?: OP,
           ): Promise<ActionReturnTypeForOptions<OP>>;
 
-          batchApplyAction<P extends ReadonlyArray<deleteTodos.Params>, OP extends ApplyBatchActionOptions>(
-            args: P,
+          batchApplyAction<OP extends ApplyBatchActionOptions>(
+            args: ReadonlyArray<deleteTodos.Params>,
             options?: OP,
           ): Promise<ActionReturnTypeForOptions<OP>>;
         }
@@ -638,13 +638,13 @@ describe("generator", () => {
           /**
            * An action which takes different types of parameters
            */
-          applyAction<P extends markTodoCompleted.Params, OP extends ApplyActionOptions>(
-            args: P,
+          applyAction<OP extends ApplyActionOptions>(
+            args: markTodoCompleted.Params,
             options?: OP,
           ): Promise<ActionReturnTypeForOptions<OP>>;
 
-          batchApplyAction<P extends ReadonlyArray<markTodoCompleted.Params>, OP extends ApplyBatchActionOptions>(
-            args: P,
+          batchApplyAction<OP extends ApplyBatchActionOptions>(
+            args: ReadonlyArray<markTodoCompleted.Params>,
             options?: OP,
           ): Promise<ActionReturnTypeForOptions<OP>>;
         }
@@ -1180,13 +1180,13 @@ describe("generator", () => {
             /**
              * An action which takes in an array of objects
              */
-            applyAction<P extends deleteTodos.Params, OP extends ApplyActionOptions>(
-              args: P,
+            applyAction<OP extends ApplyActionOptions>(
+              args: deleteTodos.Params,
               options?: OP,
             ): Promise<ActionReturnTypeForOptions<OP>>;
 
-            batchApplyAction<P extends ReadonlyArray<deleteTodos.Params>, OP extends ApplyBatchActionOptions>(
-              args: P,
+            batchApplyAction<OP extends ApplyBatchActionOptions>(
+              args: ReadonlyArray<deleteTodos.Params>,
               options?: OP,
             ): Promise<ActionReturnTypeForOptions<OP>>;
           }
@@ -1256,13 +1256,13 @@ describe("generator", () => {
             /**
              * An action which takes different types of parameters
              */
-            applyAction<P extends markTodoCompleted.Params, OP extends ApplyActionOptions>(
-              args: P,
+            applyAction<OP extends ApplyActionOptions>(
+              args: markTodoCompleted.Params,
               options?: OP,
             ): Promise<ActionReturnTypeForOptions<OP>>;
 
-            batchApplyAction<P extends ReadonlyArray<markTodoCompleted.Params>, OP extends ApplyBatchActionOptions>(
-              args: P,
+            batchApplyAction<OP extends ApplyBatchActionOptions>(
+              args: ReadonlyArray<markTodoCompleted.Params>,
               options?: OP,
             ): Promise<ActionReturnTypeForOptions<OP>>;
           }
@@ -2009,13 +2009,13 @@ describe("generator", () => {
 
             // Represents a fqn of the action
             export interface Signatures {
-              applyAction<P extends setTaskBody.Params, OP extends ApplyActionOptions>(
-                args: P,
+              applyAction<OP extends ApplyActionOptions>(
+                args: setTaskBody.Params,
                 options?: OP,
               ): Promise<ActionReturnTypeForOptions<OP>>;
 
-              batchApplyAction<P extends ReadonlyArray<setTaskBody.Params>, OP extends ApplyBatchActionOptions>(
-                args: P,
+              batchApplyAction<OP extends ApplyBatchActionOptions>(
+                args: ReadonlyArray<setTaskBody.Params>,
                 options?: OP,
               ): Promise<ActionReturnTypeForOptions<OP>>;
             }

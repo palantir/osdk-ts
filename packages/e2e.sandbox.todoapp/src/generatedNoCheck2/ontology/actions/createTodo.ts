@@ -37,13 +37,13 @@ export namespace createTodo {
     /**
      * Creates Todo
      */
-    applyAction<P extends createTodo.Params, OP extends ApplyActionOptions>(
-      args: P,
+    applyAction<OP extends ApplyActionOptions>(
+      args: createTodo.Params,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
 
-    batchApplyAction<P extends ReadonlyArray<createTodo.Params>, OP extends ApplyBatchActionOptions>(
-      args: P,
+    batchApplyAction<OP extends ApplyBatchActionOptions>(
+      args: ReadonlyArray<createTodo.Params>,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }

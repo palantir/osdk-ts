@@ -39,13 +39,13 @@ export namespace assignEmployee1 {
     /**
      * Assigns an employee to a venture
      */
-    applyAction<P extends assignEmployee1.Params, OP extends ApplyActionOptions>(
-      args: P,
+    applyAction<OP extends ApplyActionOptions>(
+      args: assignEmployee1.Params,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
 
-    batchApplyAction<P extends ReadonlyArray<assignEmployee1.Params>, OP extends ApplyBatchActionOptions>(
-      args: P,
+    batchApplyAction<OP extends ApplyBatchActionOptions>(
+      args: ReadonlyArray<assignEmployee1.Params>,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }

@@ -54,9 +54,11 @@ export async function generatePerActionDataFiles(
   await fs.mkdir(outDir, { recursive: true });
   await Promise.all(
     Object.values(enhancedOntology.actionTypes).map(async (action) => {
-      const currentFilePath = `${
-        path.join("ontology", "actions", `${action.shortApiName}.ts`)
-      }`;
+      const currentFilePath = path.join(
+        "ontology",
+        "actions",
+        `${action.shortApiName}.ts`,
+      );
 
       const uniqueApiNamesArray = extractReferencedObjectsFromAction(
         action.raw,
@@ -133,7 +135,7 @@ export async function generatePerActionDataFiles(
 
       function createV2Types() {
         const oldParamsIdentifier = `${action.shortApiName}$Params`;
-        let jsDocBlock = ["/**"];
+        const jsDocBlock = ["/**"];
         if (action.description != null) {
           jsDocBlock.push(`* ${action.description}`);
         }
@@ -157,7 +159,7 @@ export async function generatePerActionDataFiles(
                 : `${getActionParamType(ogValue.type)}`;
               jsDocBlock.push(
                 `* @param {${getActionParamType(ogValue.type)}} ${
-                  ogValue.nullable ? `[${ogKey}]` : `${ogKey}`
+                  ogValue.nullable ? `[${ogKey}]` : ogKey
                 } ${ogValue.description ?? ""} `,
               );
               return [key, value];
@@ -169,9 +171,9 @@ export async function generatePerActionDataFiles(
             // Represents a fqn of the action
             export interface Signatures {
               ${getDescriptionIfPresent(action.description)}
-              applyAction<P extends ${action.paramsIdentifier}, OP extends ApplyActionOptions>(args: P, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
+              applyAction<OP extends ApplyActionOptions>(args: ${action.paramsIdentifier}, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
            
-              batchApplyAction<P extends ReadonlyArray<${action.paramsIdentifier}>, OP extends ApplyBatchActionOptions>(args: P, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
+              batchApplyAction<OP extends ApplyBatchActionOptions>(args: ReadonlyArray<${action.paramsIdentifier}>, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
             }
   
           }

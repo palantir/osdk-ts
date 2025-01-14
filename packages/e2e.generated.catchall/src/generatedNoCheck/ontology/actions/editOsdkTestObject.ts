@@ -32,13 +32,13 @@ export namespace editOsdkTestObject {
 
   // Represents a fqn of the action
   export interface Signatures {
-    applyAction<P extends editOsdkTestObject.Params, OP extends ApplyActionOptions>(
-      args: P,
+    applyAction<OP extends ApplyActionOptions>(
+      args: editOsdkTestObject.Params,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
 
-    batchApplyAction<P extends ReadonlyArray<editOsdkTestObject.Params>, OP extends ApplyBatchActionOptions>(
-      args: P,
+    batchApplyAction<OP extends ApplyBatchActionOptions>(
+      args: ReadonlyArray<editOsdkTestObject.Params>,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }

@@ -41,13 +41,13 @@ export namespace completeTodo {
     /**
      * Completes Todo
      */
-    applyAction<P extends completeTodo.Params, OP extends ApplyActionOptions>(
-      args: P,
+    applyAction<OP extends ApplyActionOptions>(
+      args: completeTodo.Params,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
 
-    batchApplyAction<P extends ReadonlyArray<completeTodo.Params>, OP extends ApplyBatchActionOptions>(
-      args: P,
+    batchApplyAction<OP extends ApplyBatchActionOptions>(
+      args: ReadonlyArray<completeTodo.Params>,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }
