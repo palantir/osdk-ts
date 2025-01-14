@@ -30,6 +30,7 @@
     "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
+    "@osdk/foundry-config-json": "workspace:~",
     "@osdk/widget-api.unstable": "workspace:~",
     "escodegen": "^2.1.0",
     "fs-extra": "^11.2.0",
@@ -42,7 +43,6 @@
   "devDependencies": {
     "@blueprintjs/core": "^5.16.0",
     "@blueprintjs/icons": "^5.15.0",
-    "@osdk/foundry-config-json": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
