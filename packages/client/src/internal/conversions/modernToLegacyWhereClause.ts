@@ -23,7 +23,10 @@ import type {
 } from "@osdk/api";
 import { DistanceUnitMapping } from "@osdk/api";
 
-import type { SearchJsonQueryV2 } from "@osdk/internal.foundry.core";
+import type {
+  PropertyIdentifier,
+  SearchJsonQueryV2,
+} from "@osdk/internal.foundry.core";
 import type { BBox, Position } from "geojson";
 import invariant from "tiny-invariant";
 
@@ -81,15 +84,17 @@ export function modernToLegacyWhereClause<
 }
 
 function makeGeoFilterBbox(
-  propertyIdentifier: any,
   bbox: BBox,
   filterType: "$within" | "$intersects",
+  propertyIdentifier?: PropertyIdentifier,
+  field?: string,
 ): SearchJsonQueryV2 {
   return {
     type: filterType === "$within"
       ? "withinBoundingBox"
       : "intersectsBoundingBox",
     propertyIdentifier,
+    field,
     value: {
       topLeft: {
         type: "Point",
@@ -104,13 +109,15 @@ function makeGeoFilterBbox(
 }
 
 function makeGeoFilterPolygon(
-  propertyIdentifier: any,
   coordinates: Position[][],
   filterType: "intersectsPolygon" | "withinPolygon",
+  propertyIdentifier?: PropertyIdentifier,
+  field?: string,
 ): SearchJsonQueryV2 {
   return {
     type: filterType,
     propertyIdentifier,
+    field,
     value: {
       type: "Polygon",
       coordinates,
@@ -128,9 +135,10 @@ function handleWherePair(
     "Defined key values are only allowed when they are not undefined.",
   );
 
-  const propertyIdentifier = structFieldSelector != null
-    ? { type: "structField", ...structFieldSelector }
-    : undefined;
+  const propertyIdentifier: PropertyIdentifier | undefined =
+    structFieldSelector != null
+      ? { type: "structField", ...structFieldSelector }
+      : undefined;
 
   const field = structFieldSelector == null ? fieldName : undefined;
 
@@ -205,9 +213,14 @@ function handleWherePair(
     const withinBody = filter[firstKey] as GeoFilter_Within["$within"];
 
     if (Array.isArray(withinBody)) {
-      return makeGeoFilterBbox(propertyIdentifier, withinBody, firstKey);
+      return makeGeoFilterBbox(withinBody, firstKey, propertyIdentifier, field);
     } else if ("$bbox" in withinBody && withinBody.$bbox != null) {
-      return makeGeoFilterBbox(propertyIdentifier, withinBody.$bbox, firstKey);
+      return makeGeoFilterBbox(
+        withinBody.$bbox,
+        firstKey,
+        propertyIdentifier,
+        field,
+      );
     } else if (
       ("$distance" in withinBody && "$of" in withinBody)
       && withinBody.$distance != null
@@ -234,28 +247,40 @@ function handleWherePair(
       const coordinates = ("$polygon" in withinBody)
         ? withinBody.$polygon
         : withinBody.coordinates;
-      return makeGeoFilterPolygon(fieldName, coordinates, "withinPolygon");
+      return makeGeoFilterPolygon(
+        coordinates,
+        "withinPolygon",
+        propertyIdentifier,
+        fieldName,
+      );
     }
   }
   if (firstKey === "$intersects") {
     const intersectsBody =
       filter[firstKey] as GeoFilter_Intersects["$intersects"];
     if (Array.isArray(intersectsBody)) {
-      return makeGeoFilterBbox(propertyIdentifier, intersectsBody, firstKey);
+      return makeGeoFilterBbox(
+        intersectsBody,
+        firstKey,
+        propertyIdentifier,
+        field,
+      );
     } else if ("$bbox" in intersectsBody && intersectsBody.$bbox != null) {
       return makeGeoFilterBbox(
-        propertyIdentifier,
         intersectsBody.$bbox,
         firstKey,
+        propertyIdentifier,
+        field,
       );
     } else {
       const coordinates = ("$polygon" in intersectsBody)
         ? intersectsBody.$polygon
         : intersectsBody.coordinates;
       return makeGeoFilterPolygon(
-        propertyIdentifier,
         coordinates,
         "intersectsPolygon",
+        propertyIdentifier,
+        field,
       );
     }
   }
