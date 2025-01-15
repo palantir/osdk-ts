@@ -39,7 +39,7 @@ export class TimeSeriesPropertyImpl<T extends number | string>
     this.#triplet = [objectApiName, primaryKey, propertyName];
   }
 
-  public async getFirstPoint() {
+  public async getFirstPoint(): Promise<TimeSeriesPoint<T>> {
     return OntologiesV2.TimeSeriesPropertiesV2.getFirstPoint(
       this.#client,
       await this.#client.ontologyRid,
@@ -47,7 +47,7 @@ export class TimeSeriesPropertyImpl<T extends number | string>
     ) as Promise<TimeSeriesPoint<T>>;
   }
 
-  public async getLastPoint() {
+  public async getLastPoint(): Promise<TimeSeriesPoint<T>> {
     return OntologiesV2.TimeSeriesPropertiesV2.getLastPoint(
       this.#client,
       await this.#client.ontologyRid,
@@ -55,7 +55,9 @@ export class TimeSeriesPropertyImpl<T extends number | string>
     ) as Promise<TimeSeriesPoint<T>>;
   }
 
-  public async getAllPoints(query?: TimeSeriesQuery) {
+  public async getAllPoints(
+    query?: TimeSeriesQuery,
+  ): Promise<TimeSeriesPoint<T>[]> {
     const allPoints: Array<TimeSeriesPoint<T>> = [];
 
     for await (const point of this.asyncIterPoints(query)) {
@@ -66,7 +68,14 @@ export class TimeSeriesPropertyImpl<T extends number | string>
 
   public async *asyncIterPoints(
     query?: TimeSeriesQuery,
-  ) {
+  ): AsyncGenerator<
+    {
+      time: any;
+      value: T;
+    },
+    void,
+    unknown
+  > {
     const streamPointsIterator = await OntologiesV2.TimeSeriesPropertiesV2
       .streamPoints(
         this.#client,

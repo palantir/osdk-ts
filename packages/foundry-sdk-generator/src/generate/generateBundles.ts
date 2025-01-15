@@ -91,6 +91,6 @@ async function generateEsmBuild(
 export async function generateBundles(
   absolutePackagePath: string,
   packageName: string,
-) {
+): Promise<void> {
   await Promise.all([generateEsmBuild(absolutePackagePath, packageName)]);
 }

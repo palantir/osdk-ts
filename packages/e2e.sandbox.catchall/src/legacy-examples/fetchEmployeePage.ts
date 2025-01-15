@@ -19,7 +19,7 @@ import type { Client } from "@osdk/client";
 import { Employee } from "@osdk/e2e.generated.catchall";
 import { expectType } from "ts-expect";
 
-export async function fetchEmployeePage(client: Client) {
+export async function fetchEmployeePage(client: Client): Promise<void> {
   const result = await client(Employee).fetchPage();
 
   expectType<string | undefined>(""); // FIXME: this isn't strict enough of a check for below

@@ -26,6 +26,13 @@ import invariant from "tiny-invariant";
 import { server as s } from "typescript";
 import type { Logger } from "./Logger.js";
 
+type RequestFn<
+  T extends s.protocol.Request,
+  X extends s.protocol.Response = never,
+> = (
+  args: T["arguments"],
+) => Promise<{ req: T; resp: X }>;
+
 class TsServerImpl extends EventEmitter<{
   exit: [];
 }> {
@@ -40,11 +47,17 @@ class TsServerImpl extends EventEmitter<{
     this.#logger = logger;
   }
 
-  get subprocess() {
+  get subprocess():
+    | Subprocess<{
+      ipc: true;
+      serialization: "json";
+    }>
+    | undefined
+  {
     return this.#subprocess;
   }
 
-  async start() {
+  async start(): Promise<this> {
     this.#subprocess = execaNode({
       ipc: true,
       serialization: "json",
@@ -63,7 +76,7 @@ class TsServerImpl extends EventEmitter<{
     return this;
   }
 
-  stop() {
+  stop(): void {
     if (this.#subprocess?.connected) {
       this.#subprocess?.disconnect();
     }
@@ -77,19 +90,19 @@ class TsServerImpl extends EventEmitter<{
     <T extends s.protocol.Request, X extends s.protocol.Response = never>(
       command: T["command"],
       isResponse?: (m: unknown) => m is X,
-    ) =>
+    ): RequestFn<T, X> =>
     async (args: T["arguments"]): Promise<{ req: T; resp: X }> => {
       return await this.#makeRequest<T, X>(command, args, isResponse);
     };
 
-  sendOpenRequest = this.#requestFactory<s.protocol.OpenRequest>(
+  sendOpenRequest: RequestFn<s.protocol.OpenRequest> = this.#requestFactory(
     s.protocol.CommandTypes.Open,
   );
 
-  sendQuickInfoRequest = this.#requestFactory<
+  sendQuickInfoRequest: RequestFn<
     s.protocol.QuickInfoRequest,
     s.protocol.QuickInfoResponse
-  >(
+  > = this.#requestFactory(
     s.protocol.CommandTypes.Quickinfo,
     isQuickInfoResponse,
   );
@@ -195,6 +208,7 @@ export function isQuickInfoResponse(
   m: unknown,
   requestSeq?: number,
 ): m is s.protocol.QuickInfoResponse {
-  return isResponse(m) && m.command === s.protocol.CommandTypes.Quickinfo
+  return isResponse(m)
+    && m.command === s.protocol.CommandTypes.Quickinfo as string
     && (requestSeq == null || m.request_seq === requestSeq);
 }

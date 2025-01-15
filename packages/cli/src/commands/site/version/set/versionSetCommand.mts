@@ -22,7 +22,7 @@ import type { VersionSetArgs } from "./VersionSetArgs.js";
 
 export default async function versionSetCommand(
   { version, application, foundryUrl, token, tokenFile }: VersionSetArgs,
-) {
+): Promise<void> {
   consola.start(`Setting live version`);
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;

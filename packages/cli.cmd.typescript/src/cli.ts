@@ -18,7 +18,7 @@ import { ExitProcessError, getYargsBase } from "@osdk/cli.common";
 import { consola } from "consola";
 import { generateCommand } from "./generate/generate.js";
 
-export async function cli(args: string[] = process.argv) {
+export async function cli(args: string[] = process.argv): Promise<unknown> {
   consola.info(
     `Palantir OSDK CLI ${process.env.PACKAGE_VERSION}\n`,
   );

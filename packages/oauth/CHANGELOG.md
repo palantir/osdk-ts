@@ -1,5 +1,18 @@
 # @osdk/oauth
 
+## 1.1.0-beta.7
+
+### Minor Changes
+
+- 0166d14: Fixes an infinite redirect issue on some errors in the OAuth flow
+- c9da74c: Improves code quality by fixing linting errors
+
+## 1.1.0-beta.6
+
+### Minor Changes
+
+- 3d2ba6f: Revert api:x-read/write back to api:read/write-x
+
 ## 1.1.0-beta.5
 
 ### Minor Changes

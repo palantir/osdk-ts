@@ -52,7 +52,7 @@ export abstract class AbstractImportable {
     this.uniqueImportName = this.shortApiName;
   }
 
-  getImportPathRelTo = (filePath: string) => {
+  getImportPathRelTo = (filePath: string): string => {
     if (this.importPath.startsWith(".")) {
       const result = path.relative(path.dirname(filePath), this.importPath)
         .split(path.sep).join("/");

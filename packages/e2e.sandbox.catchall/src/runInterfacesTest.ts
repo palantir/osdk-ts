@@ -21,16 +21,16 @@ import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import { client } from "./client.js";
 
-export async function runInterfacesTest() {
+export async function runInterfacesTest(): Promise<void> {
   // this has the nice effect of faking a 'race' with the below code
-  (async () => {
+  void (async () => {
     const { data } = await client(FooInterface).fetchPage();
     const first = data[0];
     const e = first.$as(OsdkTestObject);
   })();
 
   console.log("hello");
-  const qqq = await client(FooInterface).where({ name: { $ne: "Patti" } });
+  const qqq = client(FooInterface).where({ name: { $ne: "Patti" } });
 
   const fooLimitedToEmployees = await client(FooInterface).fetchPage();
   invariant(fooLimitedToEmployees.data.length > 0);

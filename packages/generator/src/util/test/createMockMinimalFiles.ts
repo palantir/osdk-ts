@@ -17,7 +17,17 @@
 import { vi } from "vitest";
 import type { ReaddirFn, WriteFileFn } from "../../MinimalFs.js";
 
-export function createMockMinimalFiles() {
+export function createMockMinimalFiles(): {
+  minimalFiles: {
+    writeFile: WriteFileFn;
+    mkdir: () => Promise<void>;
+    readdir: ReaddirFn;
+  };
+  getFiles: () => {
+    [k: string]: string;
+  };
+  dumpFilesToConsole: () => void;
+} {
   const writeFile = vi.fn<WriteFileFn>(
     () => Promise.resolve(),
   );

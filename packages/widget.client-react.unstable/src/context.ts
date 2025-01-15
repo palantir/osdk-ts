@@ -50,7 +50,9 @@ export interface FoundryWidgetClientContext<
   };
 }
 
-export const FoundryWidgetContext = React.createContext<
+export const FoundryWidgetContext: React.Context<
+  FoundryWidgetClientContext<WidgetConfig<ParameterConfig>>
+> = React.createContext<
   FoundryWidgetClientContext<WidgetConfig<ParameterConfig>>
 >({
   emitEvent: () => {},

@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import type { Project, StringLiteral } from "ts-morph";
+import type { Project, SourceFile, StringLiteral } from "ts-morph";
 
-export function getModuleSourceFile(project: Project, node: StringLiteral) {
+export function getModuleSourceFile(
+  project: Project,
+  node: StringLiteral,
+): SourceFile | undefined {
   let exportSourceFile;
   try {
     exportSourceFile = project.getSourceFile(`/${node.getLiteralText()}.ts`);
@@ -34,6 +37,6 @@ export function getModuleSourceFile(project: Project, node: StringLiteral) {
   return exportSourceFile;
 }
 
-export function withoutTrailingIndex(filePath: string) {
+export function withoutTrailingIndex(filePath: string): string {
   return filePath.endsWith("/index") ? filePath.slice(0, -6) : filePath;
 }

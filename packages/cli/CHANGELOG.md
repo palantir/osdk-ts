@@ -1,5 +1,17 @@
 # @osdk/cli
 
+## 0.25.0-beta.22
+
+### Minor Changes
+
+- c9da74c: Improves code quality by fixing linting errors
+
+## 0.25.0-beta.21
+
+### Minor Changes
+
+- 1dca4cb: Use @osdk/foundry-config-json in @osdk/widget.vite-plugin.unstable for shared config and auto versioning
+
 ## 0.25.0-beta.20
 
 ## 0.25.0-beta.19
