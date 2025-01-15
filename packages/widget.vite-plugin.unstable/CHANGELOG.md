@@ -1,5 +1,16 @@
 # @osdk/widget.vite-plugin.unstable
 
+## 2.0.0-beta.7
+
+### Minor Changes
+
+- c9da74c: Improves code quality by fixing linting errors
+- 991e0d1: Fix Vite plugin @osdk/foundry-config-json dependency
+
+### Patch Changes
+
+- @osdk/widget-api.unstable@2.0.0-beta.7
+
 ## 2.0.0-beta.6
 
 ### Minor Changes

@@ -1,5 +1,7 @@
 # @osdk/create-app.template.vue
 
+## 2.1.0-beta.22
+
 ## 2.1.0-beta.21
 
 ## 2.1.0-beta.20

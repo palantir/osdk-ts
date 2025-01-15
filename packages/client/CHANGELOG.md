@@ -1,5 +1,20 @@
 # @osdk/client
 
+## 2.1.0-beta.22
+
+### Minor Changes
+
+- c9da74c: Improves code quality by fixing linting errors
+- 73fa373: Exports helper method to construct object sets from RIDs from internal utils
+
+### Patch Changes
+
+- Updated dependencies [c9da74c]
+- Updated dependencies [73fa373]
+  - @osdk/generator-converters@2.1.0-beta.22
+  - @osdk/api@2.1.0-beta.22
+  - @osdk/client.unstable@2.1.0-beta.22
+
 ## 2.1.0-beta.21
 
 ### Minor Changes
