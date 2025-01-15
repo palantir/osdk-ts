@@ -156,7 +156,8 @@ function handleWherePair(
 
     return {
       type: "eq",
-      ...(propertyIdentifier != null && { propertyIdentifier }),
+      ...(propertyIdentifier != null
+        && { ...propertyIdentifier, propertyApiName: fieldName }),
       field: fieldName,
       value: filter,
     };

@@ -35,7 +35,12 @@ describe(modernToLegacyWhereClause, () => {
           apiName: "a.Foo",
           __DefinitionMetadata: {
             type: "interface",
-            properties: { "prop": { type: "integer" } },
+            properties: {
+              "prop": { type: "integer" },
+              "prop2": {
+                type: { "innerProp1": "string", "innerProp2": "float" },
+              },
+            },
             apiName: "a.Foo",
             displayName: "",
             links: {},
@@ -44,14 +49,32 @@ describe(modernToLegacyWhereClause, () => {
         } as const satisfies ObjectOrInterfaceDefinition;
 
         const r = modernToLegacyWhereClause({
-          prop: 5,
+          $and: [
+            { prop: 5 },
+            { prop2: { innerProp1: { $eq: "myProp" } } },
+          ],
         }, T);
 
         expect(r).toMatchInlineSnapshot(`
           {
-            "field": "a.prop",
-            "type": "eq",
-            "value": 5,
+            "type": "and",
+            "value": [
+              {
+                "field": "a.prop",
+                "type": "eq",
+                "value": 5,
+              },
+              {
+                "field": undefined,
+                "propertyIdentifier": {
+                  "propertyApiName": "prop2",
+                  "structFieldApiName": "innerProp1",
+                  "type": "structField",
+                },
+                "type": "eq",
+                "value": "myProp",
+              },
+            ],
           }
         `);
       });
