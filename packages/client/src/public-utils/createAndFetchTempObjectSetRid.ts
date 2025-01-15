@@ -36,7 +36,7 @@ export async function createAndFetchTempObjectSetRid<
   client: Client,
   objectSet: unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q>
     : CompileTimeMetadata<Q>["objectSet"],
-) {
+): Promise<string> {
   const response = await OntologyObjectSets.createTemporary(
     client,
     await client[additionalContext].ontologyRid,

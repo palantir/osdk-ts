@@ -1,5 +1,11 @@
 # @osdk/create-app.template.tutorial-todo-app.beta
 
+## 2.1.0-beta.22
+
+### Minor Changes
+
+- 027c4d5: update todo sample to allow build on a lesson level
+
 ## 2.1.0-beta.21
 
 ## 2.1.0-beta.20

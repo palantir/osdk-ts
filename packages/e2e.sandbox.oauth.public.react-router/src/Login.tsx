@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import { publicOauthClient } from "./client.js";
 import Layout from "./Layout.js";
 
-function Login() {
+function Login(): React.JSX.Element {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const token = publicOauthClient.getTokenOrUndefined();

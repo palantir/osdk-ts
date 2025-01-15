@@ -96,7 +96,7 @@ export function readLocal(client: Client): LocalStorageState {
   );
 }
 
-export function saveSession(client: Client, x: SessionStorageState) {
+export function saveSession(client: Client, x: SessionStorageState): void {
   // MUST `sessionStorage?` as nodejs does not have sessionStorage
   globalThis.sessionStorage?.setItem(
     `@osdk/oauth : refresh : ${client.client_id}`,
@@ -104,7 +104,7 @@ export function saveSession(client: Client, x: SessionStorageState) {
   );
 }
 
-export function removeSession(client: Client) {
+export function removeSession(client: Client): void {
   // MUST `sessionStorage?` as nodejs does not have sessionStorage
   globalThis.sessionStorage?.removeItem(
     `@osdk/oauth : refresh : ${client.client_id}`,

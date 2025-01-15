@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.1.0-beta.22
+
+### Minor Changes
+
+- 73fa373: Exports helper method to construct object sets from RIDs from internal utils
+
 ## 2.1.0-beta.21
 
 ### Minor Changes

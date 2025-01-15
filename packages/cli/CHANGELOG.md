@@ -1,5 +1,11 @@
 # @osdk/cli
 
+## 0.25.0-beta.22
+
+### Minor Changes
+
+- c9da74c: Improves code quality by fixing linting errors
+
 ## 0.25.0-beta.21
 
 ### Minor Changes
