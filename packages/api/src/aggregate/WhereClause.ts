@@ -151,8 +151,7 @@ type FilterFor<PD extends ObjectMetadata.Property> = PD["multiplicity"] extends
     ? ArrayFilter<string>
     : (PD["type"] extends boolean ? ArrayFilter<boolean>
       : ArrayFilter<number>))
-  : PD["type"] extends Record<string, SimpleWirePropertyTypes> // | { [K in keyof PD["type"]]?: FilterFor<{ "type": PD["type"][K] }> }
-    ?
+  : PD["type"] extends Record<string, SimpleWirePropertyTypes> ?
       | StructFilter<PD["type"]>
       | BaseFilter<string>
   : (PD["type"] extends "string" ? StringFilter

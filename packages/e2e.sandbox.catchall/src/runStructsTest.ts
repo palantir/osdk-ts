@@ -30,8 +30,24 @@ export async function runStructsTest() {
   const airport = await dsClient(McAirportStruct).fetchOne(
     "Ronald Reagan Washington National Airport",
   );
-  airport.airportStruct;
 
   console.log(airport.airportStruct);
   console.log(airport.airportStruct?.geoHash);
+
+  const airportFilteredShouldHaveData = await dsClient(McAirportStruct)
+    .where({
+      $and: [{ airportStruct: { code: { $startsWith: "D" } } }, {
+        airportStruct: { timestamp: { $startsWith: "173" } },
+      }, { airportName: { $containsAnyTerm: "Reagan" } }],
+    }).fetchPage();
+  const airportFilteredShouldNotHaveData = await dsClient(McAirportStruct)
+    .where({
+      $and: [{ airportStruct: { code: { $startsWith: "B" } } }, {
+        airportStruct: { timestamp: { $startsWith: "173" } },
+      }],
+    }).fetchPage();
+  console.log("Full With Data :", airportFilteredShouldHaveData);
+  console.log(airportFilteredShouldHaveData.data[0].airportStruct);
+  console.log("Full Without Data :", airportFilteredShouldNotHaveData);
+  console.log(airportFilteredShouldNotHaveData.data[0]);
 }
