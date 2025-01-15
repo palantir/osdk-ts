@@ -137,28 +137,28 @@ function handleWherePair(
 
   const propertyIdentifier: PropertyIdentifier | undefined =
     structFieldSelector != null
-      ? { type: "structField", ...structFieldSelector }
+      ? {
+        type: "structField",
+        ...structFieldSelector,
+        propertyApiName: fullyQualifyPropName(
+          structFieldSelector.propertyApiName,
+          objectOrInterface,
+        ),
+      }
       : undefined;
-  const field = structFieldSelector == null ? fieldName : undefined;
+  const field = structFieldSelector == null
+    ? fullyQualifyPropName(fieldName, objectOrInterface)
+    : undefined;
 
   if (
     typeof filter === "string" || typeof filter === "number"
     || typeof filter === "boolean"
   ) {
-    if (objectOrInterface.type === "interface") {
-      const [objApiNamespace] = extractNamespace(objectOrInterface.apiName);
-      const [fieldApiNamespace, fieldShortName] = extractNamespace(fieldName);
-
-      if (fieldApiNamespace == null && objApiNamespace != null) {
-        fieldName = `${objApiNamespace}.${fieldShortName}`;
-      }
-    }
-
     return {
       type: "eq",
       ...(propertyIdentifier != null
         && { ...propertyIdentifier, propertyApiName: fieldName }),
-      field: fieldName,
+      field,
       value: filter,
     };
   }
@@ -302,3 +302,17 @@ function handleWherePair(
 
 type DropDollarSign<T extends `$${string}`> = T extends `$${infer U}` ? U
   : never;
+
+function fullyQualifyPropName(
+  fieldName: string,
+  objectOrInterface: ObjectOrInterfaceDefinition,
+) {
+  if (objectOrInterface.type === "interface") {
+    const [objApiNamespace] = extractNamespace(objectOrInterface.apiName);
+    const [fieldApiNamespace, fieldShortName] = extractNamespace(fieldName);
+    return (fieldApiNamespace == null && objApiNamespace != null)
+      ? `${objApiNamespace}.${fieldShortName}`
+      : fieldName;
+  }
+  return fieldName;
+}

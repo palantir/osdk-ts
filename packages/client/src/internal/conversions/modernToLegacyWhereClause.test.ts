@@ -50,7 +50,7 @@ describe(modernToLegacyWhereClause, () => {
 
         const r = modernToLegacyWhereClause({
           $and: [
-            { prop: 5 },
+            { prop: { $eq: 5 } },
             { prop2: { innerProp1: { $eq: "myProp" } } },
           ],
         }, T);
@@ -67,7 +67,7 @@ describe(modernToLegacyWhereClause, () => {
               {
                 "field": undefined,
                 "propertyIdentifier": {
-                  "propertyApiName": "prop2",
+                  "propertyApiName": "a.prop2",
                   "structFieldApiName": "innerProp1",
                   "type": "structField",
                 },
