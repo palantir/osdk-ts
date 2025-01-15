@@ -438,7 +438,7 @@ describe("ObjectSet", () => {
         address: { zipCode: { $gte: 55555 } },
       }],
     });
-    client(BgaoNflPlayer).where({
+    expectTypeOf(client(BgaoNflPlayer).where).toBeCallableWith({
       address: {
         addressLine1: { $containsAllTerms: "BLVD" },
         // @ts-expect-error

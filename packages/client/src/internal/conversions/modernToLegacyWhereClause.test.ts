@@ -89,6 +89,9 @@ describe(modernToLegacyWhereClause, () => {
               "foo": { type: "integer" },
               "b.prop": { type: "integer" },
               "prop": { type: "integer" },
+              "c.prop2": {
+                type: { "innerProp1": "string", "innerProp2": "float" },
+              },
             },
             apiName: "Foo",
             displayName: "",
@@ -100,6 +103,7 @@ describe(modernToLegacyWhereClause, () => {
         const r = modernToLegacyWhereClause({
           "b.prop": 5,
           foo: 6,
+          "c.prop2": { innerProp1: { $eq: "myProp" } },
         }, T);
 
         expect(r).toMatchInlineSnapshot(`
@@ -116,6 +120,16 @@ describe(modernToLegacyWhereClause, () => {
                 "type": "eq",
                 "value": 6,
               },
+              {
+                "field": undefined,
+                "propertyIdentifier": {
+                  "propertyApiName": "c.prop2",
+                  "structFieldApiName": "innerProp1",
+                  "type": "structField",
+                },
+                "type": "eq",
+                "value": "myProp",
+              },
             ],
           }
         `);
@@ -131,6 +145,9 @@ describe(modernToLegacyWhereClause, () => {
               "a.foo": { type: "integer" },
               "b.prop": { type: "integer" },
               "prop": { type: "integer" },
+              "c.prop2": {
+                type: { "innerProp1": "string", "innerProp2": "float" },
+              },
             },
             apiName: "a.Foo",
             displayName: "",
@@ -142,6 +159,7 @@ describe(modernToLegacyWhereClause, () => {
         const r = modernToLegacyWhereClause({
           "b.prop": 5,
           "a.foo": 6,
+          "c.prop2": { innerProp1: { $eq: "myProp" } },
         }, T);
 
         expect(r).toMatchInlineSnapshot(`
@@ -157,6 +175,16 @@ describe(modernToLegacyWhereClause, () => {
                 "field": "a.foo",
                 "type": "eq",
                 "value": 6,
+              },
+              {
+                "field": undefined,
+                "propertyIdentifier": {
+                  "propertyApiName": "c.prop2",
+                  "structFieldApiName": "innerProp1",
+                  "type": "structField",
+                },
+                "type": "eq",
+                "value": "myProp",
               },
             ],
           }
