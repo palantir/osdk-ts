@@ -174,13 +174,6 @@ function handleWherePair(
   );
 
   if (!hasDollarSign) {
-    // Future case for structs
-    // throw new Error(
-    //   `Unsupported filter. Did you forget to use a $-prefixed filter? (${
-    //     JSON.stringify(filter)
-    //   })`,
-    // );
-
     const structFilter = Object.entries(filter);
     invariant(
       structFilter.length === 1,
