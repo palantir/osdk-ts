@@ -725,27 +725,79 @@ describe(modernToLegacyWhereClause, () => {
           }
         `);
 
-        expect(modernToLegacyWhereClause<ObjAllProps>({
-          string: { $containsAllTerms: { term: "test", fuzzySearch: false } },
-        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        expect(modernToLegacyWhereClause<structObj>({
+          $and: [
+            { address: { state: { $eq: "NJ" } } },
+            { address: { city: { $containsAnyTerm: "N" } } },
+          ],
+        }, BgaoNflPlayer)).toMatchInlineSnapshot(`
         {
-          "field": "string",
-          "fuzzy": false,
-          "type": "containsAllTerms",
-          "value": "test",
+          "type": "and",
+          "value": [
+            {
+              "field": undefined,
+              "propertyIdentifier": {
+                "propertyApiName": "address",
+                "structFieldApiName": "state",
+                "type": "structField",
+              },
+              "type": "eq",
+              "value": "NJ",
+            },
+            {
+              "field": undefined,
+              "fuzzy": false,
+              "propertyIdentifier": {
+                "propertyApiName": "address",
+                "structFieldApiName": "city",
+                "type": "structField",
+              },
+              "type": "containsAnyTerm",
+              "value": "N",
+            },
+          ],
         }
       `);
 
-        expect(modernToLegacyWhereClause<ObjAllProps>({
-          string: { $containsAllTerms: { term: "test" } },
-        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
-        {
-          "field": "string",
-          "fuzzy": false,
-          "type": "containsAllTerms",
-          "value": "test",
-        }
-      `);
+        expect(modernToLegacyWhereClause<structObj>({
+          $or: [
+            { address: { state: { $eq: "NJ" } } },
+            { address: { city: { $containsAnyTerm: "N" } } },
+            { gamesPlayed: { $gt: 5 } },
+          ],
+        }, BgaoNflPlayer)).toMatchInlineSnapshot(`
+      {
+        "type": "or",
+        "value": [
+          {
+            "field": undefined,
+            "propertyIdentifier": {
+              "propertyApiName": "address",
+              "structFieldApiName": "state",
+              "type": "structField",
+            },
+            "type": "eq",
+            "value": "NJ",
+          },
+          {
+            "field": undefined,
+            "fuzzy": false,
+            "propertyIdentifier": {
+              "propertyApiName": "address",
+              "structFieldApiName": "city",
+              "type": "structField",
+            },
+            "type": "containsAnyTerm",
+            "value": "N",
+          },
+          {
+            "field": "gamesPlayed",
+            "type": "gt",
+            "value": 5,
+          },
+        ],
+      }
+    `);
       });
     });
 
