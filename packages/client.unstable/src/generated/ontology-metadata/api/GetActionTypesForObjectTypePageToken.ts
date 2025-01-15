@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 /**
- * A paging token used to fetched subsequent pages. Clients should not make any assumptions about the contents of
+ * A paging token used to fetch subsequent pages. Clients should not make any assumptions about the contents of
  * the token and it should not be parsed/modified.
  */
 export type GetActionTypesForObjectTypePageToken = string;

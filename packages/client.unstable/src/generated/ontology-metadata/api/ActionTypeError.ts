@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@
 import type { ActionTypeDoesNotHaveActionTypeLevelValidationError } from "./ActionTypeDoesNotHaveActionTypeLevelValidationError.js";
 import type { ActionTypesAlreadyExistError } from "./ActionTypesAlreadyExistError.js";
 import type { ActionTypesNotFoundError } from "./ActionTypesNotFoundError.js";
+import type { DeletingAndEditingTheSameActionTypeError } from "./DeletingAndEditingTheSameActionTypeError.js";
 import type { InlineActionTypeCannotBeReferencedByMultipleObjectTypesError } from "./InlineActionTypeCannotBeReferencedByMultipleObjectTypesError.js";
+import type { NonExistentParametersUsedInParameterPrefillError } from "./NonExistentParametersUsedInParameterPrefillError.js";
 import type { ParametersDoNotMatchParameterOrderingError } from "./ParametersDoNotMatchParameterOrderingError.js";
 import type { ParameterValidationNotFoundError } from "./ParameterValidationNotFoundError.js";
 import type { ParameterValidationReferencesLaterParametersError } from "./ParameterValidationReferencesLaterParametersError.js";
@@ -65,6 +67,17 @@ export interface ActionTypeError_parametersDoNotMatchParameterOrdering {
   parametersDoNotMatchParameterOrdering:
     ParametersDoNotMatchParameterOrderingError;
 }
+
+export interface ActionTypeError_nonExistentParametersUsedInParameterPrefill {
+  type: "nonExistentParametersUsedInParameterPrefill";
+  nonExistentParametersUsedInParameterPrefill:
+    NonExistentParametersUsedInParameterPrefillError;
+}
+
+export interface ActionTypeError_deletingAndEditingTheSameActionType {
+  type: "deletingAndEditingTheSameActionType";
+  deletingAndEditingTheSameActionType: DeletingAndEditingTheSameActionTypeError;
+}
 export type ActionTypeError =
   | ActionTypeError_versionedActionTypesNotFound
   | ActionTypeError_actionTypesNotFound
@@ -73,4 +86,6 @@ export type ActionTypeError =
   | ActionTypeError_actionTypeDoesNotHaveActionTypeLevelValidation
   | ActionTypeError_parameterValidationNotFound
   | ActionTypeError_parameterValidationReferencesLaterParameters
-  | ActionTypeError_parametersDoNotMatchParameterOrdering;
+  | ActionTypeError_parametersDoNotMatchParameterOrdering
+  | ActionTypeError_nonExistentParametersUsedInParameterPrefill
+  | ActionTypeError_deletingAndEditingTheSameActionType;

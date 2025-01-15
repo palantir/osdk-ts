@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import type { FormContent } from "../FormContent.js";
 import type { ParameterId } from "../ParameterId.js";
 import type { ParameterRid } from "../ParameterRid.js";
 import type { SectionRid } from "../SectionRid.js";
+import type { TypeGroupRid } from "../TypeGroupRid.js";
 import type { ValidationRuleModification } from "../ValidationRuleModification.js";
 import type { ValidationRuleRid } from "../ValidationRuleRid.js";
 import type { PutParameterRequestWithId } from "./PutParameterRequestWithId.js";
@@ -67,4 +68,5 @@ export interface ActionTypeModification {
   notifications: Array<ActionNotification>;
   notificationSettings: ActionNotificationSettings | undefined;
   provenance: ActionTypeProvenanceModification | undefined;
+  typeGroups: Array<TypeGroupRid>;
 }

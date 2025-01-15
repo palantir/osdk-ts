@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,13 @@
 
 import type { ConditionalOverride } from "./ConditionalOverride.js";
 import type { ParameterValidationBlock } from "./ParameterValidationBlock.js";
+import type { StructFieldConditionalValidationBlock } from "./StructFieldConditionalValidationBlock.js";
+import type { StructParameterFieldApiName } from "./types/StructParameterFieldApiName.js";
 export interface ConditionalValidationBlock {
   conditionalOverrides: Array<ConditionalOverride>;
   defaultValidation: ParameterValidationBlock;
+  structFieldValidations: Record<
+    StructParameterFieldApiName,
+    StructFieldConditionalValidationBlock
+  >;
 }

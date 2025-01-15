@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import type { GetPackagesForOwningResourcesResponse } from "../GetPackagesForOwn
 /**
  * Gets all packages owned by the specified resources. Resources which have no package associated will not have
  * a corresponding entry in the resulting set. Packages where the user does not have `ontology:discover-package`
- * will be filtered out.
+ * will be filtered out. At most 100 resources can be requested per call.
  */
 export async function getPackagesForOwningResources(
   ctx: ConjureContext,

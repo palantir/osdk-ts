@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import type { IntegerTypeDataConstraints } from "./IntegerTypeDataConstraints.js
 import type { LongTypeDataConstraints } from "./LongTypeDataConstraints.js";
 import type { ShortTypeDataConstraints } from "./ShortTypeDataConstraints.js";
 import type { StringTypeDataConstraints } from "./StringTypeDataConstraints.js";
+import type { StructTypeDataConstraints } from "./StructTypeDataConstraints.js";
 import type { TimestampTypeDataConstraints } from "./TimestampTypeDataConstraints.js";
 export interface PropertyTypeDataConstraints_array {
   type: "array";
@@ -75,6 +76,11 @@ export interface PropertyTypeDataConstraints_string {
   string: StringTypeDataConstraints;
 }
 
+export interface PropertyTypeDataConstraints_struct {
+  type: "struct";
+  struct: StructTypeDataConstraints;
+}
+
 export interface PropertyTypeDataConstraints_timestamp {
   type: "timestamp";
   timestamp: TimestampTypeDataConstraints;
@@ -90,4 +96,5 @@ export type PropertyTypeDataConstraints =
   | PropertyTypeDataConstraints_long
   | PropertyTypeDataConstraints_short
   | PropertyTypeDataConstraints_string
+  | PropertyTypeDataConstraints_struct
   | PropertyTypeDataConstraints_timestamp;

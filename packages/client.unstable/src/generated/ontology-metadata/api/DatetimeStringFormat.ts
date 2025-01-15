@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 /**
- * NOTE THAT THIS FORMAT IS DISABLED AND CANNOT BE USED.
- *
  * A valid format string composed of the following subset of patterns, taken from the java DateTimeFormatter docs:
  *
  * ```
