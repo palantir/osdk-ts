@@ -49,7 +49,7 @@ describe(modernToLegacyWhereClause, () => {
 
         expect(r).toMatchInlineSnapshot(`
           {
-            "field": "a.prop",
+            "field": "prop",
             "type": "eq",
             "value": 5,
           }
@@ -193,7 +193,7 @@ describe(modernToLegacyWhereClause, () => {
 
         expect(r).toMatchInlineSnapshot(`
           {
-            "field": "a.prop",
+            "field": "prop",
             "type": "eq",
             "value": 5,
           }
@@ -713,18 +713,17 @@ describe(modernToLegacyWhereClause, () => {
         expect(modernToLegacyWhereClause<structObj>({
           address: { state: { $eq: "NJ" } },
         }, BgaoNflPlayer)).toMatchInlineSnapshot(`
-        {
-          "propertyIdentifier": {
-            "type": "structField",
-            "apiName": {
-            "propertyApiName": "address",
-            "structFieldApiName": "state",
-            }
-          },
-          "type": "eq",
-          "value": "NJ",
-        }
-      `);
+          {
+            "field": undefined,
+            "propertyIdentifier": {
+              "propertyApiName": "address",
+              "structFieldApiName": "state",
+              "type": "structField",
+            },
+            "type": "eq",
+            "value": "NJ",
+          }
+        `);
 
         expect(modernToLegacyWhereClause<ObjAllProps>({
           string: { $containsAllTerms: { term: "test", fuzzySearch: false } },
