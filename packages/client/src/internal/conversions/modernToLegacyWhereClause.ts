@@ -139,7 +139,6 @@ function handleWherePair(
     structFieldSelector != null
       ? { type: "structField", ...structFieldSelector }
       : undefined;
-
   const field = structFieldSelector == null ? fieldName : undefined;
 
   if (
@@ -158,7 +157,7 @@ function handleWherePair(
     return {
       type: "eq",
       ...(propertyIdentifier !== undefined && { propertyIdentifier }),
-      field,
+      field: fieldName,
       value: filter,
     };
   }
