@@ -1,5 +1,18 @@
 # @osdkkit/react
 
+## 0.3.0-beta.2
+
+### Minor Changes
+
+- c9da74c: Improves code quality by fixing linting errors
+
+### Patch Changes
+
+- Updated dependencies [c9da74c]
+- Updated dependencies [73fa373]
+  - @osdk/client@2.1.0-beta.22
+  - @osdk/api@2.1.0-beta.22
+
 ## 0.3.0-beta.1
 
 ### Minor Changes
