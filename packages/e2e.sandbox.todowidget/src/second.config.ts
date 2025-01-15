@@ -1,4 +1,4 @@
-import type { WidgetConfig } from "@osdk/widget-client.unstable";
+import { defineConfig } from "@osdk/widget-client.unstable";
 
 const Config: {
   type: "workshop";
@@ -19,7 +19,7 @@ const Config: {
       parameterUpdateIds: ["headerText"];
     };
   };
-} = {
+} = defineConfig({
   type: "workshop",
   rid: "ri.widgetregistry..widget.1234-0000-0000-0000",
   parameters: {
@@ -38,6 +38,6 @@ const Config: {
       parameterUpdateIds: ["headerText"] as const,
     },
   },
-} as const satisfies WidgetConfig<any>;
+});
 
 export default Config;
