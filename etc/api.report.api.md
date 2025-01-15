@@ -593,8 +593,6 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED 
     };
     readonly subtract: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
     readonly union: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
-    // Warning: (ae-forgotten-export) The symbol "ObjectSetWithProperties" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     readonly withProperties: <D extends WithPropertiesClause<Q>>(clause: D) => ObjectSetWithProperties<Q, {
         [K in keyof D]: D[K] extends (baseObjectSet: any) => WithPropertyDefinition<infer P> ? PropertyDef<P["type"], "nullable", P["multiplicity"] extends true ? "array" : "single"> : never;
@@ -626,6 +624,11 @@ export interface ObjectSetQueryDataType<T_Target extends ObjectTypeDefinition = 
     // (undocumented)
     objectSet: string;
 }
+
+// Warning: (ae-forgotten-export) The symbol "WithPropertiesObjectDefinition" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type ObjectSetWithProperties<Q extends ObjectOrInterfaceDefinition, D extends Record<string, PropertyDef<any, any, any>>> = ObjectSet<WithPropertiesObjectDefinition<Q, D>>;
 
 // @public (undocumented)
 export interface ObjectTypeDefinition {

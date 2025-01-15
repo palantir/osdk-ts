@@ -19,7 +19,9 @@ import type {
   ConvertProps,
   InterfaceDefinition,
   ObjectSet,
+  ObjectSetWithProperties,
   Osdk,
+  PropertyDef,
   PropertyKeys,
   Result,
 } from "@osdk/api";
@@ -665,6 +667,120 @@ describe("ObjectSet", () => {
       }).fetchOne(50036);
 
       expect(objectWithUndefinedRdp.derivedPropertyName).toBeUndefined();
+    });
+
+    describe("ObjectSetWithProperties type", () => {
+      it("correctly returns the type of the object set with added properties", () => {
+        const objectSet = client(Employee).withProperties({
+          "hello": (base) => base.pivotTo("lead").selectProperty("fullName"),
+        }) satisfies ObjectSetWithProperties<
+          Employee,
+          { "hello": PropertyDef<"string", "nullable", "single"> }
+        >;
+
+        // Checks that the type is correct
+        const objectSet2 = client(Employee).withProperties({
+          "hello": (base) => base.pivotTo("lead").selectProperty("fullName"),
+          // @ts-expect-error
+        }) satisfies ObjectSetWithProperties<
+          Employee,
+          { "hello": PropertyDef<"integer", "nullable", "single"> }
+        >;
+
+        // checks that the nullability is correct
+        const objectSet3 = client(Employee).withProperties({
+          "hello": (base) => base.pivotTo("lead").selectProperty("fullName"),
+          // @ts-expect-error
+        }) satisfies ObjectSetWithProperties<
+          Employee,
+          { "hello": PropertyDef<"string", "non-nullable", "single"> }
+        >;
+      });
+
+      it("Allows specifying the type of a variable as the object set with added properties", () => {
+        let objectSet: ObjectSetWithProperties<
+          Employee,
+          { "hello": PropertyDef<"string", "nullable", "single"> }
+        >;
+
+        objectSet = client(Employee).withProperties({
+          "hello": (base) => base.pivotTo("lead").selectProperty("fullName"),
+        });
+
+        // Same type but a different variable
+        objectSet = client(Employee).withProperties({
+          "hello": (base) => base.pivotTo("lead").selectProperty("office"),
+        });
+
+        // Incorrect name
+        // @ts-expect-error
+        objectSet = client(Employee).withProperties({
+          "notTheRightName": (base) =>
+            base.pivotTo("lead").selectProperty("fullName"),
+        });
+
+        // Incorrect type
+        // @ts-expect-error
+        objectSet = client(Employee).withProperties({
+          "hello": (base) => base.pivotTo("lead").selectProperty("employeeId"),
+        });
+      });
+
+      it("Allows extracting the type of an already constructed object set", () => {
+        const objectSet = client(Employee).withProperties({
+          "hello": (base) => base.pivotTo("lead").selectProperty("fullName"),
+        });
+
+        type extractedType = typeof objectSet;
+
+        client(Employee).withProperties({
+          "hello": (base) => base.pivotTo("lead").selectProperty("fullName"),
+        }) satisfies extractedType;
+
+        const objectSet2: extractedType = client(Employee).withProperties({
+          "hello": (base) => base.pivotTo("lead").selectProperty("office"),
+        });
+
+        // Incorrect type
+        // @ts-expect-error
+        const objectSet3: extractedType = client(Employee).withProperties({
+          "hello": (base) => base.pivotTo("lead").selectProperty("employeeId"),
+        });
+
+        // Incorrect name
+        // @ts-expect-error
+        const objectSet4: extractedType = client(Employee).withProperties({
+          "notTheRightName": (base) =>
+            base.pivotTo("lead").selectProperty("fullName"),
+        });
+      });
+
+      it("ensures object sets constructed with multiple calls to withProperties are equivalent regardless of order", () => {
+        const baseObjectSet = client(Employee);
+
+        const order1 = baseObjectSet.withProperties({
+          "hello": (base) => base.pivotTo("lead").selectProperty("fullName"),
+        }).withProperties({
+          "ouch": (base) =>
+            base.pivotTo("lead").selectProperty("employeeLocation"),
+        });
+
+        const order2 = baseObjectSet.withProperties({
+          "ouch": (base) =>
+            base.pivotTo("lead").selectProperty("employeeLocation"),
+        }).withProperties({
+          "hello": (base) => base.pivotTo("lead").selectProperty("fullName"),
+        }) satisfies ObjectSetWithProperties<
+          Employee,
+          {
+            "ouch": PropertyDef<"geotimeSeriesReference", "nullable", "single">;
+            "hello": PropertyDef<"string", "nullable", "single">;
+          }
+        >;
+
+        expectTypeOf(order2).toEqualTypeOf<typeof order1>();
+        expectTypeOf(order1).toEqualTypeOf<typeof order2>();
+      });
     });
   });
 

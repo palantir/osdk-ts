@@ -27,10 +27,10 @@ describe(createWithPropertiesObjectSet, () => {
       type: "methodInput",
     }, map);
 
-    const clause: WithPropertiesClause<Employee> = {
+    const clause = {
       "derivedPropertyName": (base) =>
         base.pivotTo("lead").selectProperty("employeeId"),
-    };
+    } satisfies WithPropertiesClause<Employee>;
 
     const result = clause["derivedPropertyName"](deriveObjectSet);
     const definition = map.get(result.definitionId);
