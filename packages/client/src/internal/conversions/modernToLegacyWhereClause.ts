@@ -93,7 +93,7 @@ function makeGeoFilterBbox(
     type: filterType === "$within"
       ? "withinBoundingBox"
       : "intersectsBoundingBox",
-    ...(propertyIdentifier !== undefined && { propertyIdentifier }),
+    ...(propertyIdentifier != null && { propertyIdentifier }),
     field,
     value: {
       topLeft: {
@@ -116,7 +116,7 @@ function makeGeoFilterPolygon(
 ): SearchJsonQueryV2 {
   return {
     type: filterType,
-    ...(propertyIdentifier !== undefined && { propertyIdentifier }),
+    ...(propertyIdentifier != null && { propertyIdentifier }),
     field,
     value: {
       type: "Polygon",
@@ -156,7 +156,7 @@ function handleWherePair(
 
     return {
       type: "eq",
-      ...(propertyIdentifier !== undefined && { propertyIdentifier }),
+      ...(propertyIdentifier != null && { propertyIdentifier }),
       field: fieldName,
       value: filter,
     };
@@ -194,7 +194,7 @@ function handleWherePair(
       type: "not",
       value: {
         type: "eq",
-        ...(propertyIdentifier !== undefined && { propertyIdentifier }),
+        ...(propertyIdentifier != null && { propertyIdentifier }),
         field,
         value: filter[firstKey],
       },
@@ -220,7 +220,7 @@ function handleWherePair(
     ) {
       return {
         type: "withinDistanceOf",
-        ...(propertyIdentifier !== undefined && { propertyIdentifier }),
+        ...(propertyIdentifier != null && { propertyIdentifier }),
         field,
         value: {
           center: Array.isArray(withinBody.$of)
@@ -280,7 +280,7 @@ function handleWherePair(
   if (firstKey === "$containsAllTerms" || firstKey === "$containsAnyTerm") {
     return {
       type: firstKey.substring(1) as DropDollarSign<typeof firstKey>,
-      ...(propertyIdentifier !== undefined && { propertyIdentifier }),
+      ...(propertyIdentifier != null && { propertyIdentifier }),
       field,
       value: typeof filter[firstKey] === "string"
         ? filter[firstKey]
@@ -293,7 +293,7 @@ function handleWherePair(
 
   return {
     type: firstKey.substring(1) as DropDollarSign<typeof firstKey>,
-    ...(propertyIdentifier !== undefined && { propertyIdentifier }),
+    ...(propertyIdentifier != null && { propertyIdentifier }),
     field,
     value: filter[firstKey] as any,
   };
