@@ -291,11 +291,10 @@ type WithPropertiesObjectDefinition<
 > = {
   __DefinitionMetadata: {
     properties: {
-      [T in Extract<keyof D, string>]: D[T];
+      [T in keyof D]: D[T];
     };
     props: {
-      [T in Extract<keyof D, string>]: D[T] extends
-        PropertyDef<infer A, any, any> ?
+      [T in keyof D]: D[T] extends PropertyDef<infer A, any, any> ?
           | GetWirePropertyValueFromClient<
             A
           >

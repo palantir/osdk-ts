@@ -112,6 +112,12 @@ interface SingleLinkWithPropertyObjectSet<
   ) => WithPropertyDefinition<CompileTimeMetadata<Q>["properties"][R]>;
 }
 
+/*
+ * The ManyLinkWithPropertyObjectSet overrides the pivotTo operation because once we traverse a single link,
+ * we cannot use the "selectProperty" operation again for the entire chain. The parent pivotTo class will create
+ * this object set once the user pivots to a many link/
+ */
+
 interface ManyLinkWithPropertyObjectSet<
   Q extends ObjectOrInterfaceDefinition,
 > extends

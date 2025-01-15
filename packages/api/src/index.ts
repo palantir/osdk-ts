@@ -48,7 +48,6 @@ export type {
 export type {
   WithPropertyObjectSet,
 } from "./derivedProperties/WithPropertyObjectSet.js";
-
 export { DurationMapping } from "./groupby/GroupByClause.js";
 export type {
   AllGroupByValues,

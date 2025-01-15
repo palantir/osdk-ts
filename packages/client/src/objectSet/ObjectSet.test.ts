@@ -554,7 +554,7 @@ describe("ObjectSet", () => {
 
     // Executed code fails since we're providing bad strings to the function
     it("correctly narrows types of options for aggregate functions", () => {
-      client(Employee).withProperties({
+      const objectSet = client(Employee).withProperties({
         "derivedPropertyName": (base) => {
           // @ts-expect-error
           base.pivotTo("lead").aggregate("employeeId:approximateDistinct", {
@@ -578,6 +578,13 @@ describe("ObjectSet", () => {
           );
         },
       });
+
+      expectTypeOf(objectSet).branded.toEqualTypeOf<
+        ObjectSetWithProperties<
+          Employee,
+          { derivedPropertyName: PropertyDef<"double", "nullable", "single"> }
+        >
+      >();
     });
 
     it("correctly narrows types of selectProperty function", () => {
@@ -588,7 +595,16 @@ describe("ObjectSet", () => {
 
           return base.pivotTo("lead").selectProperty("employeeStatus");
         },
-      });
+      }) satisfies ObjectSetWithProperties<
+        Employee,
+        {
+          "derivedPropertyName": PropertyDef<
+            "stringTimeseries",
+            "nullable",
+            "single"
+          >;
+        }
+      >;
     });
 
     it("propagates derived property type to future object set operations with correct types", () => {
@@ -598,10 +614,16 @@ describe("ObjectSet", () => {
         // @ts-expect-error
       }).where({ "notAProperty": { "$eq": 3 } });
 
-      client(Employee).withProperties({
+      const numericAggregationObjectSet = client(Employee).withProperties({
         "derivedPropertyName": (base) =>
           base.pivotTo("lead").aggregate("employeeId:sum"),
       }).where({ "derivedPropertyName": { "$eq": 3 } });
+
+      expectTypeOf(numericAggregationObjectSet).branded.toEqualTypeOf<
+        ObjectSetWithProperties<Employee, {
+          derivedPropertyName: PropertyDef<"double", "nullable", "single">;
+        }>
+      >();
 
       client(Employee).withProperties({
         "derivedPropertyName": (base) =>
@@ -610,17 +632,34 @@ describe("ObjectSet", () => {
         // @ts-expect-error
         .where({ "derivedPropertyName": { "$eq": [1, 2] } });
 
-      client(Employee).withProperties({
+      const setAggregationObjectSet = client(Employee).withProperties({
         "derivedPropertyName": (base) =>
-          base.pivotTo("lead").aggregate("employeeId:collectSet"),
-      }).where({ "derivedPropertyName": { "$isNull": false } })
-        // @ts-expect-error
-        .where({ "derivedPropertyName": { "$eq": [1, 2] } });
+          base.pivotTo("lead").aggregate("fullName:collectSet"),
+      });
+      setAggregationObjectSet.where({
+        "derivedPropertyName": { "$isNull": false },
+      });
 
-      client(Employee).withProperties({
+      setAggregationObjectSet.where({
+        // @ts-expect-error
+        "derivedPropertyName": { "$eq": [1, 2] },
+      });
+      expectTypeOf(setAggregationObjectSet).branded.toEqualTypeOf<
+        ObjectSetWithProperties<Employee, {
+          derivedPropertyName: PropertyDef<"string", "nullable", "array">;
+        }>
+      >();
+
+      const selectPropertyObjectSet = client(Employee).withProperties({
         "derivedPropertyName": (base) =>
           base.pivotTo("lead").selectProperty("employeeId"),
       }).where({ "derivedPropertyName": { "$eq": 3 } });
+
+      expectTypeOf(selectPropertyObjectSet).branded.toEqualTypeOf<
+        ObjectSetWithProperties<Employee, {
+          derivedPropertyName: PropertyDef<"integer", "nullable", "single">;
+        }>
+      >();
 
       client(Employee).withProperties({
         "derivedPropertyName": (base) =>
@@ -629,13 +668,20 @@ describe("ObjectSet", () => {
     });
 
     it("correctly types multiple property definitions in one clause", () => {
-      client(Employee).withProperties({
+      const objectSet = client(Employee).withProperties({
         "derivedPropertyName": (base) =>
           base.pivotTo("lead").aggregate("employeeId:sum"),
         "derivedPropertyName2": (base) =>
           base.pivotTo("lead").selectProperty("fullName"),
       }).where({ "derivedPropertyName": { "$eq": 3 } })
         .where({ "derivedPropertyName2": { "$eq": "name" } });
+
+      expectTypeOf(objectSet).branded.toEqualTypeOf<
+        ObjectSetWithProperties<Employee, {
+          derivedPropertyName: PropertyDef<"double", "nullable", "single">;
+          derivedPropertyName2: PropertyDef<"string", "nullable", "single">;
+        }>
+      >();
     });
 
     it("ensures other properties are consistently typed", () => {
