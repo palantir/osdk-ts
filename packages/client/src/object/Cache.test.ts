@@ -218,7 +218,7 @@ describe("AsyncCache", () => {
         for (let i = 0; i < asyncCacheSpies.get.mock.calls.length; i++) {
           if (asyncCacheSpies.get.mock.calls[i][1] === key) {
             if (asyncCacheSpies.get.mock.results[i].type === "return") {
-              expect(getPromises[i]).toReject();
+              await expect(getPromises[i]).toReject();
             }
           }
         }

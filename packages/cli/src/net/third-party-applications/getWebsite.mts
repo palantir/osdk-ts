@@ -31,7 +31,7 @@ export async function getWebsite(
 
   try {
     const result = await fetch(url);
-    return result.json();
+    return await result.json();
   } catch (e) {
     // Revisit this error handling in the API
     if (

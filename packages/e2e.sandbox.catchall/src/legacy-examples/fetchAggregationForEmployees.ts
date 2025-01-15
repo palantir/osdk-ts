@@ -22,7 +22,7 @@ import { expectType } from "ts-expect";
 
 export async function fetchAggregationForEmployees(
   client: Client,
-) {
+): Promise<void> {
   const result = await client(Employee).aggregate({
     $select: {
       "locationCity:approximateDistinct": "unordered",

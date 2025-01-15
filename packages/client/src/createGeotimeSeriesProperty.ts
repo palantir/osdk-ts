@@ -51,11 +51,17 @@ export class GeotimeSeriesPropertyImpl<T extends GeoJSON.Point>
         await this.#client.ontologyRid,
         ...this.#triplet,
       );
-    latestPointPromise.then(latestPoint => this.lastFetchedValue = latestPoint);
+    latestPointPromise.then(
+      latestPoint => this.lastFetchedValue = latestPoint,
+      // eslint-disable-next-line no-console
+      err => void console.error(err),
+    );
     return latestPointPromise;
   }
 
-  public async getAllValues(query?: TimeSeriesQuery) {
+  public async getAllValues(
+    query?: TimeSeriesQuery,
+  ): Promise<TimeSeriesPoint<T>[]> {
     const allPoints: Array<TimeSeriesPoint<T>> = [];
 
     for await (const point of this.asyncIterValues(query)) {
@@ -66,7 +72,14 @@ export class GeotimeSeriesPropertyImpl<T extends GeoJSON.Point>
 
   public async *asyncIterValues(
     query?: TimeSeriesQuery,
-  ) {
+  ): AsyncGenerator<
+    {
+      time: any;
+      value: T;
+    },
+    void,
+    unknown
+  > {
     const streamPointsIterator = await OntologiesV2
       .TimeSeriesValueBankProperties.streamValues(
         this.#client,

@@ -17,12 +17,12 @@
 import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
 import invariant from "tiny-invariant";
-import { createAttachmentFromRid } from "../../createAttachmentFromRid.js";
 import { GeotimeSeriesPropertyImpl } from "../../createGeotimeSeriesProperty.js";
 import { MediaReferencePropertyImpl } from "../../createMediaReferenceProperty.js";
 import { TimeSeriesPropertyImpl } from "../../createTimeseriesProperty.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
+import { hydrateAttachmentFromRidInternal } from "../../public-utils/hydrateAttachmentFromRid.js";
 import { get$as } from "./getDollarAs.js";
 import { get$link } from "./getDollarLink.js";
 import {
@@ -121,9 +121,11 @@ function createSpecialProperty(
         {
           if (propDef.type === "attachment") {
             if (Array.isArray(rawValue)) {
-              return rawValue.map(a => createAttachmentFromRid(client, a.rid));
+              return rawValue.map(a =>
+                hydrateAttachmentFromRidInternal(client, a.rid)
+              );
             }
-            return createAttachmentFromRid(client, rawValue.rid);
+            return hydrateAttachmentFromRidInternal(client, rawValue.rid);
           }
 
           if (

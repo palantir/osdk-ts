@@ -24,7 +24,7 @@ import type { VersionUnsetArgs } from "./VersionUnsetArgs.js";
 
 export default async function versionUnsetCommand(
   { yes, application, foundryUrl, token, tokenFile }: VersionUnsetArgs,
-) {
+): Promise<void> {
   if (!yes) {
     const confirmed = await consola.prompt(
       `Are you sure you want to clear the live site version?\n${

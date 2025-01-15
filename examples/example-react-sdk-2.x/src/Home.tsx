@@ -1,39 +1,11 @@
 import { $Objects, $Actions, $Queries } from "@osdk/e2e.generated.catchall";
 import css from "./Home.module.css";
 import Layout from "./Layout";
-
 // import { useOsdkClient } from "@osdk/react";
-// import React from "react";
-// import { Osdk } from "@osdk/client";
 
 function Home() {
-
   // const client = useOsdkClient();
-  
-  // const [objects, setObjects] = React.useState<$Objects.Todo.OsdkInstance[]>();
-  // const [isLoading, setIsLoading] = React.useState(true);
-
-  // React.useEffect(() => {
-  //   client($Objects.Todo).fetchPage().then((page) => {
-  //     setObjects(page.data);
-  //     setIsLoading(false);
-  //   });
-  // }, []);
-
-  // if (isLoading) {
-  //   return <Layout>Loading...</Layout>;
-  // } else {
-  //   return (
-  //     <Layout>
-  //       <ul>
-  //       {objects?.map((o) => (
-  //         <li>{o.$primaryKey} - {o.$title}</li>
-  //       ))}
-  //       </ul>
-  //     </Layout>
-  //   )
-  // }
-
+  // See API Docs on Developer console on how to use the client object to access the ontology resource
 
   const objectApiNames = Object.keys($Objects);
   const actionApiNames = Object.keys($Actions);

@@ -44,7 +44,14 @@ export function wireQueryTypeV2ToSdkQueryMetadata(
 
 export function wireQueryTypeV2ToSdkQueryDefinitionNoParams(
   input: QueryTypeV2,
-) {
+): {
+  type: string;
+  apiName: string;
+  description: string | undefined;
+  displayName: string | undefined;
+  version: string;
+  rid: string;
+} {
   return {
     type: "query",
     apiName: input.apiName,

@@ -21,7 +21,7 @@ import {
 } from "@osdk/e2e.generated.catchall";
 import { dsClient } from "./client.js";
 
-export async function runGeotimeSeriesReferenceTests() {
+export async function runGeotimeSeriesReferenceTests(): Promise<void> {
   const result = await dsClient(FintrafficAis).fetchOne("21000000");
   console.log(result);
   console.log(result.seriesId);

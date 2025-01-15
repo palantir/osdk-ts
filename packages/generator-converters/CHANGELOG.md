@@ -1,5 +1,25 @@
 # @osdk/generator-converters
 
+## 2.1.0-beta.22
+
+### Minor Changes
+
+- c9da74c: Improves code quality by fixing linting errors
+
+### Patch Changes
+
+- Updated dependencies [73fa373]
+  - @osdk/api@2.1.0-beta.22
+
+## 2.1.0-beta.21
+
+### Patch Changes
+
+- Updated dependencies [3ea2e79]
+- Updated dependencies [656f975]
+- Updated dependencies [f34b3d4]
+  - @osdk/api@2.1.0-beta.21
+
 ## 2.1.0-beta.20
 
 ### Minor Changes

@@ -112,7 +112,7 @@ export function handleOpenApiCall<
   };
 
   // we don't care about the promise here, we are just building the url
-  openApiCall(
+  void openApiCall(
     capture as any,
     ...(names.map(n => `:${n}`) as any),
     // add a simulated blob in here in case of an upload

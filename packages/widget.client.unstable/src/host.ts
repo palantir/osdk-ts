@@ -60,7 +60,7 @@ export class FoundryHostEventTarget<
   public dispatchEventMessage<T extends HostMessage<C>["type"]>(
     type: T,
     payload: (HostMessage<C> & { type: T })["payload"],
-  ) {
+  ): void {
     this.dispatchEvent(
       new CustomEvent<HostMessage.Payload>(type, {
         detail: payload,

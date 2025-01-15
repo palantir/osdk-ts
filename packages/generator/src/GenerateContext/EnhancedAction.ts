@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionTypeV2 } from "@osdk/internal.foundry.core";
+import type { ActionTypeV2, LogicRule } from "@osdk/internal.foundry.core";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedBase } from "./EnhancedBase.js";
 
@@ -23,15 +23,15 @@ export class EnhancedAction extends EnhancedBase<ActionTypeV2> {
     super(common, raw, raw.apiName, "./ontology/actions");
   }
 
-  get description() {
+  get description(): string | undefined {
     return this.raw.description;
   }
 
-  get parameters() {
+  get parameters(): ActionTypeV2["parameters"] {
     return this.raw.parameters;
   }
 
-  get operations() {
+  get operations(): LogicRule[] {
     return this.raw.operations;
   }
 

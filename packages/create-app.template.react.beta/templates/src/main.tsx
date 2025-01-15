@@ -5,7 +5,8 @@ import createClientAndAuth from "./createClientAndAuth";
 import "./index.css";
 import { router } from "./router";
 
-const { client } = createClientAndAuth();
+const { client, auth } = createClientAndAuth();
+export { auth };
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <OsdkProvider client={client}>

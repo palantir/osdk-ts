@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth } from "./client";
+import { auth } from "./main";
 
 /**
  * Component to render at `/auth/callback`

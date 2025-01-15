@@ -26,7 +26,15 @@ export async function generatePackageJson(options: {
     { dependencyName: string; dependencyVersion: string }
   >;
   beta: boolean;
-}) {
+}): Promise<
+  {
+    name: string;
+    version: string;
+    dependencies: { [dependencyName: string]: string } | undefined;
+    peerDependencies: { [dependencyName: string]: string } | undefined;
+    type: string;
+  }
+> {
   const packageDeps = constructDependencies(options.dependencies);
   const packagePeerDeps = constructDependencies(options.peerDependencies);
 
