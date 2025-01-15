@@ -1192,7 +1192,7 @@ describe("Ontology Defining", () => {
                   "apiName": "com.palantir.foo",
                   "baseFormatter": undefined,
                   "dataConstraints": {
-                    "nullability": "NO_EXPLICIT_NULLS",
+                    "nullability": undefined,
                     "nullabilityV2": {
                       "noEmptyCollections": true,
                       "noNulls": true,
@@ -1265,7 +1265,7 @@ describe("Ontology Defining", () => {
               "apiName": "com.palantir.foo",
               "baseFormatter": undefined,
               "dataConstraints": {
-                "nullability": "NO_EXPLICIT_NULLS",
+                "nullability": undefined,
                 "nullabilityV2": {
                   "noEmptyCollections": true,
                   "noNulls": true,
