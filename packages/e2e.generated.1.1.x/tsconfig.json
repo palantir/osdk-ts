@@ -1,5 +1,5 @@
 {
-  "extends": "@osdk/monorepo.tsconfig/base.json",
+  "extends": "@osdk/monorepo.tsconfig/base-4.9.json",
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "build/esm"

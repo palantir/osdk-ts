@@ -25,7 +25,7 @@ const isoRegex =
  * @param dateTime An ISO 8601 formatted date time string
  * @returns The date part of the input string
  */
-export const extractDate = (dateTime: string) => {
+export const extractDate = (dateTime: string): string => {
   invariant(
     dateTime.length < 33,
     "Invalid date format. Provided input is too long.",
@@ -43,7 +43,7 @@ export const extractDate = (dateTime: string) => {
  * @param date
  * @returns The date part of a ISO 8601 formatted date time string
  */
-export const extractDateInUTC = (date: Date) => {
+export const extractDateInUTC = (date: Date): string => {
   return extractDateFromIsoString(date.toISOString());
 };
 
@@ -53,7 +53,7 @@ export const extractDateInUTC = (date: Date) => {
  * @param date
  * @returns The date part of a ISO 8601 formatted date time string
  */
-export const extractDateInLocalTime = (date: Date) => {
+export const extractDateInLocalTime = (date: Date): string => {
   return extractDateFromIsoString(generateOffsetUtcString(date));
 };
 

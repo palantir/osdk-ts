@@ -810,8 +810,8 @@ function rulesForPackagesWithChecKApiTask() {
       options: {
         devDependencies: {
           "@osdk/monorepo.api-extractor": "workspace:~",
-          "@microsoft/api-documenter": "^7.25.21",
-          "@microsoft/api-extractor": "^7.47.11",
+          "@microsoft/api-documenter": "^7.26.5",
+          "@microsoft/api-extractor": "^7.49.1",
         },
       },
     }),

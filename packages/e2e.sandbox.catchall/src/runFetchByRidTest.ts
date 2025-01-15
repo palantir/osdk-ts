@@ -18,7 +18,7 @@ import { __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid } from "@osdk/api/unst
 import { FintrafficAis } from "@osdk/e2e.generated.catchall";
 import { dsClient } from "./client.js";
 
-export async function runFetchByRidTest() {
+export async function runFetchByRidTest(): Promise<void> {
   const result = await dsClient(
     __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
   ).fetchOneByRid(
