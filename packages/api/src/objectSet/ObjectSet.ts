@@ -39,6 +39,7 @@ import type {
 } from "../ontology/ObjectOrInterface.js";
 import type {
   CompileTimeMetadata,
+  ObjectMetadata,
   ObjectTypeDefinition,
   PropertyDef,
 } from "../ontology/ObjectTypeDefinition.js";
@@ -265,33 +266,40 @@ export interface ObjectSet<
     D extends WithPropertiesClause<Q>,
   >(
     clause: D,
-  ) => ObjectSet<
-    WithPropertiesObjectDefinition<
-      Q,
-      D
-    >
+  ) => ObjectSetWithProperties<
+    Q,
+    {
+      [K in keyof D]: D[K] extends
+        (baseObjectSet: any) => WithPropertyDefinition<infer P> ? PropertyDef<
+          P["type"],
+          "nullable",
+          P["multiplicity"] extends true ? "array" : "single"
+        >
+        : never;
+    }
   >;
 }
 
+export type ObjectSetWithProperties<
+  Q extends ObjectOrInterfaceDefinition,
+  D extends Record<string, PropertyDef<any, any, any>>,
+> = ObjectSet<WithPropertiesObjectDefinition<Q, D>>;
+
 type WithPropertiesObjectDefinition<
   K extends ObjectOrInterfaceDefinition,
-  D extends WithPropertiesClause<K>,
+  D extends Record<string, ObjectMetadata.Property>,
 > = {
   __DefinitionMetadata: {
     properties: {
-      [T in Extract<keyof D, string>]: D[T] extends
-        (baseObjectSet: any) => WithPropertyDefinition<infer P> ? P
-        : never;
+      [T in Extract<keyof D, string>]: D[T];
     };
     props: {
       [T in Extract<keyof D, string>]: D[T] extends
-        (baseObjectSet: any) => WithPropertyDefinition<infer P>
-        ? P extends PropertyDef<infer A, any, any> ?
-            | GetWirePropertyValueFromClient<
-              A
-            >
-            | undefined
-        : never
+        PropertyDef<infer A, any, any> ?
+          | GetWirePropertyValueFromClient<
+            A
+          >
+          | undefined
         : never;
     };
   };

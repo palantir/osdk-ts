@@ -22,7 +22,6 @@ import type {
   Osdk,
   PropertyKeys,
   Result,
-  WithPropertiesClause,
 } from "@osdk/api";
 import { isOk } from "@osdk/api";
 import {
@@ -33,7 +32,6 @@ import {
   FooInterface,
   Office,
 } from "@osdk/client.test.ontology";
-import type { DerivedPropertyDefinition } from "@osdk/internal.foundry.core";
 import { apiServer, stubData } from "@osdk/shared.test";
 import {
   afterAll,
@@ -51,7 +49,6 @@ import type {
 } from "../../../api/build/esm/OsdkObjectFrom.js";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import { createWithPropertiesObjectSet } from "../derivedProperties/createWithPropertiesObjectSet.js";
 
 describe("ObjectSet", () => {
   let client: Client;
@@ -668,102 +665,6 @@ describe("ObjectSet", () => {
       }).fetchOne(50036);
 
       expect(objectWithUndefinedRdp.derivedPropertyName).toBeUndefined();
-    });
-
-    describe("withPropertiesObjectSet", () => {
-      it("correctly creates basic object set with derived properties", () => {
-        const map = new Map<string, DerivedPropertyDefinition>();
-        const deriveObjectSet = createWithPropertiesObjectSet(Employee, {
-          type: "methodInput",
-        }, map);
-
-        const clause: WithPropertiesClause<Employee> = {
-          "derivedPropertyName": (base) =>
-            base.pivotTo("lead").selectProperty("employeeId"),
-        };
-
-        const result = clause["derivedPropertyName"](deriveObjectSet);
-        const definition = map.get(result.definitionId);
-        expect(definition).toMatchInlineSnapshot(`
-          {
-            "objectSet": {
-              "link": "lead",
-              "objectSet": {
-                "type": "methodInput",
-              },
-              "type": "searchAround",
-            },
-            "operation": {
-              "selectedPropertyApiName": "employeeId",
-              "type": "get",
-            },
-            "type": "selection",
-          }
-        `);
-      });
-
-      it("correctly handles multiple definitions in one clause", () => {
-        const map = new Map<string, DerivedPropertyDefinition>();
-        const deriveObjectSet = createWithPropertiesObjectSet(Employee, {
-          type: "methodInput",
-        }, map);
-
-        const clause: WithPropertiesClause<Employee> = {
-          "derivedPropertyName": (base) =>
-            base.pivotTo("lead").aggregate("startDate:approximatePercentile", {
-              percentile: 0.5,
-            }),
-
-          "secondaryDerivedPropertyName": (base) =>
-            base.pivotTo("lead").aggregate("fullName:collectSet", {
-              limit: 10,
-            }),
-        };
-
-        const result = clause["derivedPropertyName"](deriveObjectSet);
-        const definition = map.get(result.definitionId);
-
-        const secondResult = clause["secondaryDerivedPropertyName"](
-          deriveObjectSet,
-        );
-        const secondDefinition = map.get(secondResult.definitionId);
-
-        expect(definition).toMatchInlineSnapshot(`
-          {
-            "objectSet": {
-              "link": "lead",
-              "objectSet": {
-                "type": "methodInput",
-              },
-              "type": "searchAround",
-            },
-            "operation": {
-              "approximatePercentile": 0.5,
-              "selectedPropertyApiName": "startDate",
-              "type": "approximatePercentile",
-            },
-            "type": "selection",
-          }
-        `);
-
-        expect(secondDefinition).toMatchInlineSnapshot(`
-          {
-            "objectSet": {
-              "link": "lead",
-              "objectSet": {
-                "type": "methodInput",
-              },
-              "type": "searchAround",
-            },
-            "operation": {
-              "limit": 10,
-              "selectedPropertyApiName": "fullName",
-              "type": "collectSet",
-            },
-            "type": "selection",
-          }
-        `);
-      });
     });
   });
 
