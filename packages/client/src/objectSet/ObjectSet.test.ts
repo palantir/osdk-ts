@@ -746,10 +746,31 @@ describe("ObjectSet", () => {
       it("correctly returns the type of the object set with added properties", () => {
         const objectSet = client(Employee).withProperties({
           "hello": (base) => base.pivotTo("lead").selectProperty("fullName"),
-        }) satisfies ObjectSetWithProperties<
+        });
+
+        type expectedType = ObjectSetWithProperties<
           Employee,
           { "hello": PropertyDef<"string", "nullable", "single"> }
         >;
+
+        // Ensures that the objectSet we create is correct and doubly checks that
+        // ObjectSetWithProperties is correct with the type test below this.
+        expectTypeOf(objectSet).toEqualTypeOf<expectedType>();
+
+        expectTypeOf(objectSet).toEqualTypeOf<
+          ObjectSet<
+            Employee & {
+              __DefinitionMetadata: {
+                properties: {
+                  "hello": PropertyDef<"string", "nullable", "single">;
+                };
+                props: {
+                  "hello": string | undefined;
+                };
+              };
+            }
+          >
+        >();
 
         // Checks that the type is correct
         const objectSet2 = client(Employee).withProperties({
