@@ -20,6 +20,7 @@ import type {
   ActionParameterV2,
   ActionTypeV2,
 } from "@osdk/internal.foundry.core";
+import { consola } from "consola";
 import { getModifiedEntityTypes } from "./getEditedEntities.js";
 
 export function wireActionTypeV2ToSdkActionMetadata(
@@ -52,7 +53,7 @@ function wireActionParameterV2ToSdkParameterDefinition(
     multiplicity: value.dataType.type === "array",
     type: actionPropertyToSdkPropertyDefinition(
       value.dataType.type === "array" ? value.dataType.subType : value.dataType,
-    ),
+    ).filter((value) => value != null),
     nullable: !value.required,
     description: value.description,
   };
@@ -60,7 +61,7 @@ function wireActionParameterV2ToSdkParameterDefinition(
 
 function actionPropertyToSdkPropertyDefinition(
   parameterType: ActionParameterType,
-): ActionMetadata.Parameter["type"] {
+): ActionMetadata.Parameter["type"] | undefined {
   switch (parameterType.type) {
     case "string":
     case "boolean":
@@ -80,9 +81,12 @@ function actionPropertyToSdkPropertyDefinition(
     case "array":
       return actionPropertyToSdkPropertyDefinition(parameterType.subType);
     default:
-      throw new Error(
-        `Unsupported action parameter type: ${parameterType.type}`,
+      consola.info(
+        `${
+          JSON.stringify(parameterType.type)
+        } is not a supported action parameter type`,
       );
+      return undefined;
   }
 }
 
