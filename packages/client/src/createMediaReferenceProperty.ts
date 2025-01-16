@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Media } from "@osdk/api";
+import type { Media, MediaMetadata } from "@osdk/api";
 import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "./MinimalClientContext.js";
 
@@ -33,19 +33,25 @@ export class MediaReferencePropertyImpl implements Media {
     this.#triplet = [objectApiName, primaryKey, propertyName];
   }
 
-  public async fetchContents() {
+  public async fetchContents(): Promise<Response> {
     return OntologiesV2.MediaReferenceProperties.getMediaContent(
       this.#client,
       await this.#client.ontologyRid,
       ...this.#triplet,
+      {
+        preview: true, // TODO: Can turn this back off when backend is no longer in beta.
+      },
     );
   }
 
-  public async fetchMetadata() {
+  public async fetchMetadata(): Promise<MediaMetadata> {
     const r = await OntologiesV2.MediaReferenceProperties.getMediaMetadata(
       this.#client,
       await this.#client.ontologyRid,
       ...this.#triplet,
+      {
+        preview: true, // TODO: Can turn this back off when backend is no longer in beta.
+      },
     );
     return {
       path: r.path as string,

@@ -17,7 +17,7 @@
 import { MnayanOsdkMediaObject } from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
 
-export async function runMediaTest() {
+export async function runMediaTest(): Promise<void> {
   const result = await client(MnayanOsdkMediaObject).fetchOne(
     "7c2aa4e0-9cd6-48c1-9d09-653249feb4e7",
   );
