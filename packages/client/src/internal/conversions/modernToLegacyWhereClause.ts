@@ -129,7 +129,7 @@ function handleWherePair(
   [fieldName, filter]: [string, any],
   objectOrInterface: ObjectOrInterfaceDefinition,
   structFieldSelector?: { propertyApiName: string; structFieldApiName: string },
-): any {
+): SearchJsonQueryV2 {
   invariant(
     filter != null,
     "Defined key values are only allowed when they are not undefined.",
@@ -154,10 +154,11 @@ function handleWherePair(
     typeof filter === "string" || typeof filter === "number"
     || typeof filter === "boolean"
   ) {
+    propertyIdentifier;
     return {
       type: "eq",
       ...(propertyIdentifier != null
-        && { ...propertyIdentifier, propertyApiName: fieldName }),
+        && { propertyIdentifier }),
       field,
       value: filter,
     };
