@@ -198,6 +198,46 @@
           "objectTypeApiName": "Employee"
         }
       ]
+    },
+    "create-struct-person": {
+      "apiName": "create-struct-person",
+      "description": "Create a struct",
+      "parameters": {
+        "name": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "address": {
+          "dataType": {
+            "type": "struct",
+            "structFieldTypes": [
+              {
+                "apiName": "city",
+                "dataType": {
+                  "type": "string"
+                }
+              },
+              {
+                "apiName": "state",
+                "dataType": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "required": false
+        }
+      },
+      "status": "ACTIVE",
+      "rid": "ri.a.b.c.d",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Employee"
+        }
+      ]
     }
   },
   "objectTypes": {
@@ -590,6 +630,51 @@
         },
         "titleProperty": "entityId",
         "pluralDisplayName": "GtfsTripTrackObject"
+      },
+      "linkTypes": []
+    },
+    "StructPerson": {
+      "objectType": {
+        "apiName": "StructPerson",
+        "primaryKey": "name",
+        "displayName": "StructPerson",
+        "description": "StructPerson",
+        "properties": {
+          "name": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "address": {
+            "dataType": {
+              "type": "struct",
+              "structFieldTypes": [
+                {
+                  "apiName": "city",
+                  "dataType": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "apiName": "state",
+                  "dataType": {
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          }
+        },
+
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "traffic",
+          "color": "color"
+        },
+        "titleProperty": "name",
+        "pluralDisplayName": "StructPeople"
       },
       "linkTypes": []
     },
