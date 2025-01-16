@@ -16,6 +16,7 @@
 
 import type {
   ObjectOrInterfaceDefinition,
+  WithPropertyDefinition,
   WithPropertyObjectSet,
 } from "@osdk/api";
 import type {
@@ -26,7 +27,7 @@ import type {
 import invariant from "tiny-invariant";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 
-let idCounter = 0;
+const idCounter = 0;
 
 /** @internal */
 export function createWithPropertiesObjectSet<
@@ -52,7 +53,6 @@ export function createWithPropertiesObjectSet<
       }, definitionMap);
     },
     aggregate: (aggregation: string, opt: any) => {
-      const definitionId = idCounter++;
       const splitAggregation = aggregation.split(":");
       invariant(
         splitAggregation.length === 2 || splitAggregation[0] === "$count",
@@ -100,19 +100,17 @@ export function createWithPropertiesObjectSet<
             "Invalid aggregation operation " + aggregationOperation,
           );
       }
-      definitionMap.set(definitionId.toString(), {
+      const definitionObject: WithPropertyDefinition<any> = { type: {} };
+      definitionMap.set(definitionObject, {
         type: "selection",
         objectSet: objectSet,
         operation: aggregationOperationDefinition,
       });
-      return {
-        definitionId: definitionId.toString(),
-        type: {} as any,
-      };
+      return definitionObject;
     },
     selectProperty: (name) => {
-      const definitionId = idCounter++;
-      definitionMap.set(definitionId.toString(), {
+      const definitionObject: WithPropertyDefinition<any> = { type: {} };
+      definitionMap.set(definitionObject, {
         type: "selection",
         objectSet: objectSet,
         operation: {
@@ -120,10 +118,7 @@ export function createWithPropertiesObjectSet<
           selectedPropertyApiName: name,
         },
       });
-      return {
-        definitionId: definitionId.toString(),
-        type: {} as any,
-      };
+      return definitionObject;
     },
   };
 

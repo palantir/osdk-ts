@@ -254,7 +254,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
             definitionMap,
           ));
         derivedProperties[key] = definitionMap.get(
-          derivedPropertyDefinition.definitionId,
+          derivedPropertyDefinition,
         )!;
       }
 

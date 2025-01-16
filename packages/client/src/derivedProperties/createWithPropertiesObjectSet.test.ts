@@ -22,7 +22,7 @@ import { createWithPropertiesObjectSet } from "./createWithPropertiesObjectSet.j
 
 describe(createWithPropertiesObjectSet, () => {
   it("correctly creates basic object set with derived properties", () => {
-    const map = new Map<string, DerivedPropertyDefinition>();
+    const map = new Map<any, DerivedPropertyDefinition>();
     const deriveObjectSet = createWithPropertiesObjectSet(Employee, {
       type: "methodInput",
     }, map);
@@ -33,7 +33,7 @@ describe(createWithPropertiesObjectSet, () => {
     } satisfies WithPropertiesClause<Employee>;
 
     const result = clause["derivedPropertyName"](deriveObjectSet);
-    const definition = map.get(result.definitionId);
+    const definition = map.get(result);
     expect(definition).toMatchInlineSnapshot(`
         {
           "objectSet": {
@@ -53,7 +53,7 @@ describe(createWithPropertiesObjectSet, () => {
   });
 
   it("correctly handles multiple definitions in one clause", () => {
-    const map = new Map<string, DerivedPropertyDefinition>();
+    const map = new Map<any, DerivedPropertyDefinition>();
     const deriveObjectSet = createWithPropertiesObjectSet(Employee, {
       type: "methodInput",
     }, map);
@@ -71,12 +71,12 @@ describe(createWithPropertiesObjectSet, () => {
     };
 
     const result = clause["derivedPropertyName"](deriveObjectSet);
-    const definition = map.get(result.definitionId);
+    const definition = map.get(result);
 
     const secondResult = clause["secondaryDerivedPropertyName"](
       deriveObjectSet,
     );
-    const secondDefinition = map.get(secondResult.definitionId);
+    const secondDefinition = map.get(secondResult);
 
     expect(definition).toMatchInlineSnapshot(`
         {

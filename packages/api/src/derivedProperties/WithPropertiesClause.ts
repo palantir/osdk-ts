@@ -23,7 +23,6 @@ import type { BaseWithPropertyObjectSet } from "./WithPropertyObjectSet.js";
 export type WithPropertyDefinition<
   T extends ObjectMetadata.Property,
 > = {
-  definitionId: string;
   type: T;
 };
 
