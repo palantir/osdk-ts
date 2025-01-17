@@ -17,5 +17,5 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig(async (options) =>
-  (await import("@osdk/monorepo.tsup")).default(options, {})
+  (await import("./tsup.mjs")).default(options, {})
 );
