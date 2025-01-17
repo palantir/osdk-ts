@@ -128,7 +128,7 @@ importers:
         specifier: ^8.2.3
         version: 8.2.3(@microsoft/api-extractor@7.49.1(@types/node@22.10.10))(@swc/core@1.7.39)(jiti@1.21.6)(postcss@8.5.1)(typescript@5.5.4)(yaml@2.4.5)
       turbo:
-        specifier: ^2.0.9
+        specifier: ^2.3.3
         version: 2.3.3
       typescript:
         specifier: ~5.5.4
@@ -3929,6 +3929,15 @@ importers:
       vitest:
         specifier: ^3.0.4
         version: 3.0.4(@types/node@22.10.10)(happy-dom@15.11.6)(jiti@1.21.6)(jsdom@20.0.3)(lightningcss@1.27.0)(terser@5.37.0)(yaml@2.4.5)
+
+  tests/verify-cjs-node16:
+    dependencies:
+      '@osdk/api':
+        specifier: workspace:~
+        version: link:../../packages/api
+      '@osdk/client':
+        specifier: workspace:~
+        version: link:../../packages/client
 
   tests/verify-fallback-package-v2:
     dependencies:

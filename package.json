@@ -55,7 +55,7 @@
     "micromatch": "^4.0.8",
     "tsc-absolute": "^1.0.1",
     "tsup": "^8.2.3",
-    "turbo": "^2.0.9",
+    "turbo": "^2.3.3",
     "typescript": "~5.5.4",
     "typescript-eslint": "^8.21.0",
     "vitest": "^3.0.4"
