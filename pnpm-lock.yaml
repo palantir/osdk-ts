@@ -3369,7 +3369,45 @@ importers:
 
   packages/monorepo.tool.attw: {}
 
-  packages/monorepo.tool.transpile: {}
+  packages/monorepo.tool.transpile:
+    dependencies:
+      '@babel/preset-typescript':
+        specifier: ^7.26.0
+        version: 7.26.0(@babel/core@7.26.0)
+      babel-plugin-dev-expression:
+        specifier: ^0.2.3
+        version: 0.2.3(@babel/core@7.26.0)
+      babel-plugin-minify-dead-code-elimination:
+        specifier: ^0.5.2
+        version: 0.5.2
+      esbuild-plugin-babel:
+        specifier: ^0.2.3
+        version: 0.2.3(@babel/core@7.26.0)
+      execa:
+        specifier: ^9.5.2
+        version: 9.5.2
+      find-up:
+        specifier: ^7.0.0
+        version: 7.0.0
+      oxc-transform:
+        specifier: ^0.46.0
+        version: 0.46.0
+      tiny-invariant:
+        specifier: ^1.3.3
+        version: 1.3.3
+      tsup:
+        specifier: ^8.2.3
+        version: 8.2.3(@microsoft/api-extractor@7.49.1(@types/node@18.19.74))(@swc/core@1.7.39)(jiti@1.21.6)(postcss@8.5.1)(typescript@5.7.2)(yaml@2.4.5)
+      yargs:
+        specifier: ^17.7.2
+        version: 17.7.2
+    devDependencies:
+      '@types/node':
+        specifier: ^18.19.70
+        version: 18.19.74
+      '@types/yargs':
+        specifier: ^17.0.33
+        version: 17.0.33
 
   packages/monorepo.tool.typecheck: {}
 
@@ -6436,6 +6474,46 @@ packages:
   '@osdk/shared.net@1.12.1':
     resolution: {integrity: sha512-uJE124K3O21A1Of2TdOqMHBfrIYshcDSLr5em4v1vNZZGSsSCYUYGo5vvkS6vzUVDA2xSn/Uf2FgdzX6BWxIhQ==}
 
+  '@oxc-transform/binding-darwin-arm64@0.46.0':
+    resolution: {integrity: sha512-znAzwhkpUYhdqdPqIJNX43cvjigvl9IHllYlLYb9TQQk33+zQfhRI1Rh7hnpHuL4qG8vRo3A5JkgRS0Cf65QXQ==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@oxc-transform/binding-darwin-x64@0.46.0':
+    resolution: {integrity: sha512-8cgIMoKnpa7AmV+Ggk9ka34PCNTldT8PZhVZqvJnwL1x02KrmJ6oLF1fRpBPZkAwwwoFP1WICEp2vXdn8EMMTQ==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@oxc-transform/binding-linux-arm64-gnu@0.46.0':
+    resolution: {integrity: sha512-+qjSoFtemGX9ZUBOKFMUhxeSBk3SLO+ApTyBnQC7f2PS2r9D7nuiTFHAY3QTwh1OTOGdBGkk+sd51CGrfI/e7Q==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@oxc-transform/binding-linux-arm64-musl@0.46.0':
+    resolution: {integrity: sha512-wsZ4M3jeSotpS4olQzQ/YdMoJm67JK1EckGdVBlxsiUe68qNhpdTQvQMvFvEgfiASDEn8x4kqgSePCTmjeOg0g==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@oxc-transform/binding-linux-x64-gnu@0.46.0':
+    resolution: {integrity: sha512-oOVVi8An+zvcOLhO3+buLeljpE5fb0R1Zi8DlQW92SI4rxFhSTYNY13z9NvDJtWIC0uRpSmLe666/UZsT8fiDw==}
+    cpu: [x64]
+    os: [linux]
+
+  '@oxc-transform/binding-linux-x64-musl@0.46.0':
+    resolution: {integrity: sha512-vC9EUZNVIked1QXuNAUrDg01GhNcG7MvNzpqVXjDJLmH436G2pblKrz5PUNa6DGwt707XPm31G1uxMkPDIX5Cg==}
+    cpu: [x64]
+    os: [linux]
+
+  '@oxc-transform/binding-win32-arm64-msvc@0.46.0':
+    resolution: {integrity: sha512-C2F/6LQed35yuH5KpV/XIVZoka5XhgdPuezlOi7ortTr7zXS1O0yyQDwS8KAwfEtloK6U9sf0Eusv2nRze1h4Q==}
+    cpu: [arm64]
+    os: [win32]
+
+  '@oxc-transform/binding-win32-x64-msvc@0.46.0':
+    resolution: {integrity: sha512-qcFJarJ09fq2xhSJlrYh9v0bLdrG7Hw0//uAuwPPuAoggKyYA8U1K8L4rET4cs261fM4BqqxbecHTKHxl0FzLw==}
+    cpu: [x64]
+    os: [win32]
+
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
@@ -7794,6 +7872,9 @@ packages:
 
   '@types/node@18.17.15':
     resolution: {integrity: sha512-2yrWpBk32tvV/JAd3HNHWuZn/VDN1P+72hWirHnvsvTGSqbANi+kSeuQR9yAHnbvaBvHDsoTdXV0Fe+iRtHLKA==}
+
+  '@types/node@18.19.74':
+    resolution: {integrity: sha512-HMwEkkifei3L605gFdV+/UwtpxP6JSzM+xFk2Ia6DNFSwSVBRh9qp5Tgf4lNFOMfPVuU0WnkcWpXZpgn5ufO4A==}
 
   '@types/node@20.17.14':
     resolution: {integrity: sha512-w6qdYetNL5KRBiSClK/KWai+2IMEJuAj+EujKCumalFOwXtvOXaEan9AuwcRID2IcOIAWSIfR495hBtgKlx2zg==}
@@ -9760,6 +9841,10 @@ packages:
 
   execa@9.5.1:
     resolution: {integrity: sha512-QY5PPtSonnGwhhHDNI7+3RvY285c7iuJFFB+lU+oEzMY/gEGJ808owqJsrr8Otd1E/x07po1LkUBmdAc5duPAg==}
+    engines: {node: ^18.19.0 || >=20.5.0}
+
+  execa@9.5.2:
+    resolution: {integrity: sha512-EHlpxMCpHWSAh1dgS6bVeoLAXGnJNdR93aabr4QCGbzOM73o5XmRfM/e5FUqsw3aagP8S8XEWUWFAxnRBnAF0Q==}
     engines: {node: ^18.19.0 || >=20.5.0}
 
   exit@0.1.2:
@@ -11852,6 +11937,9 @@ packages:
   outvariant@1.4.2:
     resolution: {integrity: sha512-Ou3dJ6bA/UJ5GVHxah4LnqDwZRwAmWxrG3wtrHrbGnP4RnLCtA64A4F+ae7Y8ww660JaddSoArUR5HjipWSHAQ==}
 
+  oxc-transform@0.46.0:
+    resolution: {integrity: sha512-aK0+25Myo9ohyPbAne49oNmwYkJ6/4rwpHA9k5HIb8UEUlSFFY7LaoYZ3/BNGspbHAKfv34Lu8rMH3GYmFJWpQ==}
+
   p-defer@4.0.1:
     resolution: {integrity: sha512-Mr5KC5efvAK5VUptYEIopP1bakB85k2IWXaRC0rsh1uwn1L6M0LVml8OIQ4Gudg4oyZakf7FmeRLkMMtZW1i5A==}
     engines: {node: '>=12'}
@@ -13625,6 +13713,9 @@ packages:
 
   unbox-primitive@1.0.2:
     resolution: {integrity: sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw==}
+
+  undici-types@5.26.5:
+    resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
 
   undici-types@6.19.8:
     resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
@@ -16993,6 +17084,15 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
+  '@microsoft/api-extractor-model@7.30.2(@types/node@18.19.74)':
+    dependencies:
+      '@microsoft/tsdoc': 0.15.1
+      '@microsoft/tsdoc-config': 0.17.1
+      '@rushstack/node-core-library': 5.10.2(@types/node@18.19.74)
+    transitivePeerDependencies:
+      - '@types/node'
+    optional: true
+
   '@microsoft/api-extractor-model@7.30.2(@types/node@22.10.10)':
     dependencies:
       '@microsoft/tsdoc': 0.15.1
@@ -17000,6 +17100,25 @@ snapshots:
       '@rushstack/node-core-library': 5.10.2(@types/node@22.10.10)
     transitivePeerDependencies:
       - '@types/node'
+
+  '@microsoft/api-extractor@7.49.1(@types/node@18.19.74)':
+    dependencies:
+      '@microsoft/api-extractor-model': 7.30.2(@types/node@18.19.74)
+      '@microsoft/tsdoc': 0.15.1
+      '@microsoft/tsdoc-config': 0.17.1
+      '@rushstack/node-core-library': 5.10.2(@types/node@18.19.74)
+      '@rushstack/rig-package': 0.5.3
+      '@rushstack/terminal': 0.14.5(@types/node@18.19.74)
+      '@rushstack/ts-command-line': 4.23.3(@types/node@18.19.74)
+      lodash: 4.17.21
+      minimatch: 3.0.8
+      resolve: 1.22.8
+      semver: 7.5.4
+      source-map: 0.6.1
+      typescript: 5.7.2
+    transitivePeerDependencies:
+      - '@types/node'
+    optional: true
 
   '@microsoft/api-extractor@7.49.1(@types/node@22.10.10)':
     dependencies:
@@ -17550,6 +17669,30 @@ snapshots:
       '@osdk/shared.client.impl': 0.1.0
       '@osdk/shared.net.errors': 1.1.0
       '@osdk/shared.net.fetch': 0.1.0
+
+  '@oxc-transform/binding-darwin-arm64@0.46.0':
+    optional: true
+
+  '@oxc-transform/binding-darwin-x64@0.46.0':
+    optional: true
+
+  '@oxc-transform/binding-linux-arm64-gnu@0.46.0':
+    optional: true
+
+  '@oxc-transform/binding-linux-arm64-musl@0.46.0':
+    optional: true
+
+  '@oxc-transform/binding-linux-x64-gnu@0.46.0':
+    optional: true
+
+  '@oxc-transform/binding-linux-x64-musl@0.46.0':
+    optional: true
+
+  '@oxc-transform/binding-win32-arm64-msvc@0.46.0':
+    optional: true
+
+  '@oxc-transform/binding-win32-x64-msvc@0.46.0':
+    optional: true
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
@@ -18658,6 +18801,20 @@ snapshots:
 
   '@rushstack/eslint-patch@1.10.3': {}
 
+  '@rushstack/node-core-library@5.10.2(@types/node@18.19.74)':
+    dependencies:
+      ajv: 8.13.0
+      ajv-draft-04: 1.0.0(ajv@8.13.0)
+      ajv-formats: 3.0.1(ajv@8.13.0)
+      fs-extra: 7.0.1
+      import-lazy: 4.0.0
+      jju: 1.4.0
+      resolve: 1.22.8
+      semver: 7.5.4
+    optionalDependencies:
+      '@types/node': 18.19.74
+    optional: true
+
   '@rushstack/node-core-library@5.10.2(@types/node@22.10.10)':
     dependencies:
       ajv: 8.13.0
@@ -18676,12 +18833,30 @@ snapshots:
       resolve: 1.22.8
       strip-json-comments: 3.1.1
 
+  '@rushstack/terminal@0.14.5(@types/node@18.19.74)':
+    dependencies:
+      '@rushstack/node-core-library': 5.10.2(@types/node@18.19.74)
+      supports-color: 8.1.1
+    optionalDependencies:
+      '@types/node': 18.19.74
+    optional: true
+
   '@rushstack/terminal@0.14.5(@types/node@22.10.10)':
     dependencies:
       '@rushstack/node-core-library': 5.10.2(@types/node@22.10.10)
       supports-color: 8.1.1
     optionalDependencies:
       '@types/node': 22.10.10
+
+  '@rushstack/ts-command-line@4.23.3(@types/node@18.19.74)':
+    dependencies:
+      '@rushstack/terminal': 0.14.5(@types/node@18.19.74)
+      '@types/argparse': 1.0.38
+      argparse: 1.0.10
+      string-argv: 0.3.2
+    transitivePeerDependencies:
+      - '@types/node'
+    optional: true
 
   '@rushstack/ts-command-line@4.23.3(@types/node@22.10.10)':
     dependencies:
@@ -19008,6 +19183,10 @@ snapshots:
   '@types/node@12.20.55': {}
 
   '@types/node@18.17.15': {}
+
+  '@types/node@18.19.74':
+    dependencies:
+      undici-types: 5.26.5
 
   '@types/node@20.17.14':
     dependencies:
@@ -19904,6 +20083,10 @@ snapshots:
   babel-plugin-dev-expression@0.2.3(@babel/core@7.24.9):
     dependencies:
       '@babel/core': 7.24.9
+
+  babel-plugin-dev-expression@0.2.3(@babel/core@7.26.0):
+    dependencies:
+      '@babel/core': 7.26.0
 
   babel-plugin-istanbul@6.1.1:
     dependencies:
@@ -21122,6 +21305,10 @@ snapshots:
     dependencies:
       '@babel/core': 7.24.9
 
+  esbuild-plugin-babel@0.2.3(@babel/core@7.26.0):
+    dependencies:
+      '@babel/core': 7.26.0
+
   esbuild@0.23.0:
     optionalDependencies:
       '@esbuild/aix-ppc64': 0.23.0
@@ -21874,6 +22061,21 @@ snapshots:
       strip-final-newline: 3.0.0
 
   execa@9.5.1:
+    dependencies:
+      '@sindresorhus/merge-streams': 4.0.0
+      cross-spawn: 7.0.6
+      figures: 6.1.0
+      get-stream: 9.0.1
+      human-signals: 8.0.0
+      is-plain-obj: 4.1.0
+      is-stream: 4.0.1
+      npm-run-path: 6.0.0
+      pretty-ms: 9.0.0
+      signal-exit: 4.1.0
+      strip-final-newline: 4.0.0
+      yoctocolors: 2.0.2
+
+  execa@9.5.2:
     dependencies:
       '@sindresorhus/merge-streams': 4.0.0
       cross-spawn: 7.0.6
@@ -24591,6 +24793,17 @@ snapshots:
 
   outvariant@1.4.2: {}
 
+  oxc-transform@0.46.0:
+    optionalDependencies:
+      '@oxc-transform/binding-darwin-arm64': 0.46.0
+      '@oxc-transform/binding-darwin-x64': 0.46.0
+      '@oxc-transform/binding-linux-arm64-gnu': 0.46.0
+      '@oxc-transform/binding-linux-arm64-musl': 0.46.0
+      '@oxc-transform/binding-linux-x64-gnu': 0.46.0
+      '@oxc-transform/binding-linux-x64-musl': 0.46.0
+      '@oxc-transform/binding-win32-arm64-msvc': 0.46.0
+      '@oxc-transform/binding-win32-x64-msvc': 0.46.0
+
   p-defer@4.0.1: {}
 
   p-filter@2.1.0:
@@ -26443,6 +26656,35 @@ snapshots:
 
   tslib@2.8.1: {}
 
+  tsup@8.2.3(@microsoft/api-extractor@7.49.1(@types/node@18.19.74))(@swc/core@1.7.39)(jiti@1.21.6)(postcss@8.5.1)(typescript@5.7.2)(yaml@2.4.5):
+    dependencies:
+      bundle-require: 5.0.0(esbuild@0.23.0)
+      cac: 6.7.14
+      chokidar: 3.6.0
+      consola: 3.2.3
+      debug: 4.3.7
+      esbuild: 0.23.0
+      execa: 5.1.1
+      globby: 11.1.0
+      joycon: 3.1.1
+      picocolors: 1.1.1
+      postcss-load-config: 6.0.1(jiti@1.21.6)(postcss@8.5.1)(yaml@2.4.5)
+      resolve-from: 5.0.0
+      rollup: 4.24.0
+      source-map: 0.8.0-beta.0
+      sucrase: 3.35.0
+      tree-kill: 1.2.2
+    optionalDependencies:
+      '@microsoft/api-extractor': 7.49.1(@types/node@18.19.74)
+      '@swc/core': 1.7.39
+      postcss: 8.5.1
+      typescript: 5.7.2
+    transitivePeerDependencies:
+      - jiti
+      - supports-color
+      - tsx
+      - yaml
+
   tsup@8.2.3(@microsoft/api-extractor@7.49.1(@types/node@22.10.10))(@swc/core@1.7.39)(jiti@1.21.6)(postcss@8.5.1)(typescript@5.5.4)(yaml@2.4.5):
     dependencies:
       bundle-require: 5.0.0(esbuild@0.23.0)
@@ -26630,6 +26872,8 @@ snapshots:
       has-bigints: 1.0.2
       has-symbols: 1.0.3
       which-boxed-primitive: 1.0.2
+
+  undici-types@5.26.5: {}
 
   undici-types@6.19.8: {}
 

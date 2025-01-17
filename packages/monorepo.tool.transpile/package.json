@@ -7,5 +7,21 @@
     "type": "git",
     "url": "https://github.com/palantir/osdk-ts.git"
   },
-  "bin": "./bin/transpile.sh"
+  "dependencies": {
+    "@babel/preset-typescript": "^7.26.0",
+    "babel-plugin-dev-expression": "^0.2.3",
+    "babel-plugin-minify-dead-code-elimination": "^0.5.2",
+    "esbuild-plugin-babel": "^0.2.3",
+    "execa": "^9.5.2",
+    "find-up": "^7.0.0",
+    "oxc-transform": "^0.46.0",
+    "tiny-invariant": "^1.3.3",
+    "tsup": "^8.2.3",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.70",
+    "@types/yargs": "^17.0.33"
+  },
+  "bin": "./bin/transpile2.mjs"
 }
