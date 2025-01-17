@@ -212,18 +212,20 @@
         "address": {
           "dataType": {
             "type": "struct",
-            "structFieldTypes": [
+            "fields": [
               {
-                "apiName": "city",
-                "dataType": {
+                "name": "city",
+                "fieldType": {
                   "type": "string"
-                }
+                },
+                "required": true
               },
               {
-                "apiName": "state",
-                "dataType": {
+                "name": "state",
+                "fieldType": {
                   "type": "string"
-                }
+                },
+                "required": true
               }
             ]
           },
