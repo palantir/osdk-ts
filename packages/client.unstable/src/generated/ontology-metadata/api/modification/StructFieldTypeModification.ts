@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,12 @@
 import type { ObjectTypeFieldApiName } from "../ObjectTypeFieldApiName.js";
 import type { StructFieldAlias } from "../StructFieldAlias.js";
 import type { StructFieldDisplayMetadata } from "../StructFieldDisplayMetadata.js";
-import type { Type } from "../Type.js";
 import type { TypeClass } from "../TypeClass.js";
+import type { TypeForModification } from "./TypeForModification.js";
 export interface StructFieldTypeModification {
   displayMetadata: StructFieldDisplayMetadata;
   apiName: ObjectTypeFieldApiName;
-  fieldType: Type;
+  fieldType: TypeForModification;
   aliases: Array<StructFieldAlias>;
   typeClasses: Array<TypeClass>;
 }

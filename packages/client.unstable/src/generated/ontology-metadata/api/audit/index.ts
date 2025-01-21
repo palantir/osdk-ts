@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,6 +114,8 @@ export type { OntologyMetadataServiceBulkLoadOntologyEntitiesRequestParams } fro
 export type { OntologyMetadataServiceBulkLoadOntologyEntitiesResultParams } from "./OntologyMetadataServiceBulkLoadOntologyEntitiesResultParams.js";
 export type { OntologyMetadataServiceCreateOntologyRequestParams } from "./OntologyMetadataServiceCreateOntologyRequestParams.js";
 export type { OntologyMetadataServiceCreateOntologyResultParams } from "./OntologyMetadataServiceCreateOntologyResultParams.js";
+export type { OntologyMetadataServiceGetActionTypesForInterfaceTypeRequestParams } from "./OntologyMetadataServiceGetActionTypesForInterfaceTypeRequestParams.js";
+export type { OntologyMetadataServiceGetActionTypesForInterfaceTypesResultParams } from "./OntologyMetadataServiceGetActionTypesForInterfaceTypesResultParams.js";
 export type { OntologyMetadataServiceGetActionTypesForObjectTypeRequestParams } from "./OntologyMetadataServiceGetActionTypesForObjectTypeRequestParams.js";
 export type { OntologyMetadataServiceGetActionTypesForObjectTypesResultParams } from "./OntologyMetadataServiceGetActionTypesForObjectTypesResultParams.js";
 export type { OntologyMetadataServiceGetActionTypeUsageRequestParams } from "./OntologyMetadataServiceGetActionTypeUsageRequestParams.js";
@@ -122,6 +124,8 @@ export type { OntologyMetadataServiceGetDeprecationUsageRequestParams } from "./
 export type { OntologyMetadataServiceGetDeprecationUsageResultParams } from "./OntologyMetadataServiceGetDeprecationUsageResultParams.js";
 export type { OntologyMetadataServiceGetEntityModificationHistoryRequestParams } from "./OntologyMetadataServiceGetEntityModificationHistoryRequestParams.js";
 export type { OntologyMetadataServiceGetEntityModificationHistoryResultParams } from "./OntologyMetadataServiceGetEntityModificationHistoryResultParams.js";
+export type { OntologyMetadataServiceGetEntityModificationHistoryV2RequestParams } from "./OntologyMetadataServiceGetEntityModificationHistoryV2RequestParams.js";
+export type { OntologyMetadataServiceGetEntityModificationHistoryV2ResultParams } from "./OntologyMetadataServiceGetEntityModificationHistoryV2ResultParams.js";
 export type { OntologyMetadataServiceGetFeatureConfigurationsRequestParams } from "./OntologyMetadataServiceGetFeatureConfigurationsRequestParams.js";
 export type { OntologyMetadataServiceGetFeatureConfigurationsResponseParams } from "./OntologyMetadataServiceGetFeatureConfigurationsResponseParams.js";
 export type { OntologyMetadataServiceGetLinkTypesForObjectTypesRequestParams } from "./OntologyMetadataServiceGetLinkTypesForObjectTypesRequestParams.js";
@@ -136,6 +140,8 @@ export type { OntologyMetadataServiceGetObjectTypesForSharedPropertyTypesRequest
 export type { OntologyMetadataServiceGetObjectTypesForSharedPropertyTypesResultParams } from "./OntologyMetadataServiceGetObjectTypesForSharedPropertyTypesResultParams.js";
 export type { OntologyMetadataServiceGetObjectTypesForTypeGroupsRequestParams } from "./OntologyMetadataServiceGetObjectTypesForTypeGroupsRequestParams.js";
 export type { OntologyMetadataServiceGetObjectTypesForTypeGroupsResultParams } from "./OntologyMetadataServiceGetObjectTypesForTypeGroupsResultParams.js";
+export type { OntologyMetadataServiceGetOntologyEntitiesForTypeGroupsRequestParams } from "./OntologyMetadataServiceGetOntologyEntitiesForTypeGroupsRequestParams.js";
+export type { OntologyMetadataServiceGetOntologyEntitiesForTypeGroupsResultParams } from "./OntologyMetadataServiceGetOntologyEntitiesForTypeGroupsResultParams.js";
 export type { OntologyMetadataServiceGetOntologyRidsForEntitiesRequestParams } from "./OntologyMetadataServiceGetOntologyRidsForEntitiesRequestParams.js";
 export type { OntologyMetadataServiceGetOntologyRidsForEntitiesResultParams } from "./OntologyMetadataServiceGetOntologyRidsForEntitiesResultParams.js";
 export type { OntologyMetadataServiceGetOntologySummaryRequestParams } from "./OntologyMetadataServiceGetOntologySummaryRequestParams.js";
@@ -248,10 +254,14 @@ export type { OntologyPermissionServiceGetWorkflowPermissionsRequestParams } fro
 export type { OntologyPermissionServiceGetWorkflowPermissionsResultParams } from "./OntologyPermissionServiceGetWorkflowPermissionsResultParams.js";
 export type { OntologyPermissionServiceUpdateEntityRolesRequestParams } from "./OntologyPermissionServiceUpdateEntityRolesRequestParams.js";
 export type { OntologyPermissionServiceUpdateEntityRolesResultParams } from "./OntologyPermissionServiceUpdateEntityRolesResultParams.js";
+export type { OntologyProvenanceServiceBatchGetDependentsForOntologyEntityIdentifierRequestParams } from "./OntologyProvenanceServiceBatchGetDependentsForOntologyEntityIdentifierRequestParams.js";
+export type { OntologyProvenanceServiceBatchGetDependentsOntologyEntityIdentifierResultParams } from "./OntologyProvenanceServiceBatchGetDependentsOntologyEntityIdentifierResultParams.js";
 export type { OntologyProvenanceServiceGetDependenciesRequestParams } from "./OntologyProvenanceServiceGetDependenciesRequestParams.js";
 export type { OntologyProvenanceServiceGetDependenciesResultParams } from "./OntologyProvenanceServiceGetDependenciesResultParams.js";
 export type { OntologyProvenanceServiceGetDependenciesV2RequestParams } from "./OntologyProvenanceServiceGetDependenciesV2RequestParams.js";
 export type { OntologyProvenanceServiceGetDependenciesV2ResultParams } from "./OntologyProvenanceServiceGetDependenciesV2ResultParams.js";
+export type { OntologyProvenanceServiceGetDependentsForOntologyEntityIdentifierRequestParams } from "./OntologyProvenanceServiceGetDependentsForOntologyEntityIdentifierRequestParams.js";
+export type { OntologyProvenanceServiceGetDependentsOntologyEntityIdentifierResultParams } from "./OntologyProvenanceServiceGetDependentsOntologyEntityIdentifierResultParams.js";
 export type { OntologyProvenanceServiceGetDependentsRequestParams } from "./OntologyProvenanceServiceGetDependentsRequestParams.js";
 export type { OntologyProvenanceServiceGetDependentsResultParams } from "./OntologyProvenanceServiceGetDependentsResultParams.js";
 export type { OntologyProvenanceServiceRegisterDependencyRequestParams } from "./OntologyProvenanceServiceRegisterDependencyRequestParams.js";

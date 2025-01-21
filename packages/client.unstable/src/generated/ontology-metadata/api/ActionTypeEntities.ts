@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,10 @@
 import type { InterfaceTypeRid } from "./InterfaceTypeRid.js";
 import type { LinkTypeId } from "./LinkTypeId.js";
 import type { ObjectTypeId } from "./ObjectTypeId.js";
+import type { TypeGroupRid } from "./TypeGroupRid.js";
 export interface ActionTypeEntities {
   affectedObjectTypes: Array<ObjectTypeId>;
   affectedLinkTypes: Array<LinkTypeId>;
   affectedInterfaceTypes: Array<InterfaceTypeRid>;
+  typeGroups: Array<TypeGroupRid>;
 }

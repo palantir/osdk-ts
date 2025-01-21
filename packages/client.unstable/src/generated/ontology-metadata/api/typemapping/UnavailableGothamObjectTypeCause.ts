@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { GothamObjectTypeUnavailableHasNonLabelPropertyTitleGenerators } from "./GothamObjectTypeUnavailableHasNonLabelPropertyTitleGenerators.js";
 import type { GothamObjectTypeUnavailableHasTypeGroups } from "./GothamObjectTypeUnavailableHasTypeGroups.js";
 import type { GothamObjectTypeUnavailableInTransfer } from "./GothamObjectTypeUnavailableInTransfer.js";
 import type { GothamObjectTypeUnavailableIsCoreType } from "./GothamObjectTypeUnavailableIsCoreType.js";
@@ -50,6 +51,12 @@ export interface UnavailableGothamObjectTypeCause_objectTypeUnavailableSpecified
     GothamObjectTypeUnavailableSpecifiedLabelPropertyTypeNotFound;
 }
 
+export interface UnavailableGothamObjectTypeCause_objectTypeUnavailableHasNonLabelPropertyTitleGenerators {
+  type: "objectTypeUnavailableHasNonLabelPropertyTitleGenerators";
+  objectTypeUnavailableHasNonLabelPropertyTitleGenerators:
+    GothamObjectTypeUnavailableHasNonLabelPropertyTitleGenerators;
+}
+
 export interface UnavailableGothamObjectTypeCause_objectTypeUnavailableHasTypeGroups {
   type: "objectTypeUnavailableHasTypeGroups";
   objectTypeUnavailableHasTypeGroups: GothamObjectTypeUnavailableHasTypeGroups;
@@ -72,6 +79,7 @@ export type UnavailableGothamObjectTypeCause =
   | UnavailableGothamObjectTypeCause_objectTypeUnavailableIsCoreType
   | UnavailableGothamObjectTypeCause_objectTypeUnavailableLabelPropertyCannotBeImported
   | UnavailableGothamObjectTypeCause_objectTypeUnavailableSpecifiedLabelPropertyTypeNotFound
+  | UnavailableGothamObjectTypeCause_objectTypeUnavailableHasNonLabelPropertyTitleGenerators
   | UnavailableGothamObjectTypeCause_objectTypeUnavailableHasTypeGroups
   | UnavailableGothamObjectTypeCause_objectTypeUnavailableIsNotUnrestricted
   | UnavailableGothamObjectTypeCause_objectTypeUnavailableMissingSharedPropertyType;

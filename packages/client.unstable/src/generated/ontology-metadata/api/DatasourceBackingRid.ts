@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@
  */
 
 import type { DatasetRid } from "./DatasetRid.js";
+import type { DerivedPropertiesSourceRid } from "./DerivedPropertiesSourceRid.js";
+import type { DirectSourceRid } from "./DirectSourceRid.js";
+import type { EditsOnlyRid } from "./EditsOnlyRid.js";
 import type { GeotimeSeriesIntegrationRid } from "./GeotimeSeriesIntegrationRid.js";
 import type { MediaSetRid } from "./MediaSetRid.js";
 import type { MediaSetViewRid } from "./MediaSetViewRid.js";
@@ -60,6 +63,21 @@ export interface DatasourceBackingRid_geotimeSeriesIntegrationRid {
   type: "geotimeSeriesIntegrationRid";
   geotimeSeriesIntegrationRid: GeotimeSeriesIntegrationRid;
 }
+
+export interface DatasourceBackingRid_editsOnlyRid {
+  type: "editsOnlyRid";
+  editsOnlyRid: EditsOnlyRid;
+}
+
+export interface DatasourceBackingRid_directSourceRid {
+  type: "directSourceRid";
+  directSourceRid: DirectSourceRid;
+}
+
+export interface DatasourceBackingRid_derivedPropertiesSourceRid {
+  type: "derivedPropertiesSourceRid";
+  derivedPropertiesSourceRid: DerivedPropertiesSourceRid;
+}
 /**
  * Union type to represent the different resource identifiers for Datasource(s) in load requests.
  */
@@ -71,4 +89,7 @@ export type DatasourceBackingRid =
   | DatasourceBackingRid_timeSeriesSyncRid
   | DatasourceBackingRid_mediaSetRid
   | DatasourceBackingRid_mediaSetViewRid
-  | DatasourceBackingRid_geotimeSeriesIntegrationRid;
+  | DatasourceBackingRid_geotimeSeriesIntegrationRid
+  | DatasourceBackingRid_editsOnlyRid
+  | DatasourceBackingRid_directSourceRid
+  | DatasourceBackingRid_derivedPropertiesSourceRid;

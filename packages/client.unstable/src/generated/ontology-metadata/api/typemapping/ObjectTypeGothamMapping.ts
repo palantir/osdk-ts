@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,10 @@ import type { GothamObjectIntrinsicMapping } from "./GothamObjectIntrinsicMappin
 import type { GothamObjectTypeUri } from "./GothamObjectTypeUri.js";
 import type { GothamOntologyParentType } from "./GothamOntologyParentType.js";
 import type { GothamOntologyParentTypeUri } from "./GothamOntologyParentTypeUri.js";
+import type { GothamPropertyDatasourceMapping } from "./GothamPropertyDatasourceMapping.js";
 import type { GothamPropertyIntrinsicMapping } from "./GothamPropertyIntrinsicMapping.js";
 import type { GothamPropertyIntrinsicMappingV2 } from "./GothamPropertyIntrinsicMappingV2.js";
+import type { GothamPropertyIntrinsicMappingV3 } from "./GothamPropertyIntrinsicMappingV3.js";
 import type { PropertyTypeGothamMapping } from "./PropertyTypeGothamMapping.js";
 import type { RevDbIntegrationState } from "./RevDbIntegrationState.js";
 export interface ObjectTypeGothamMapping {
@@ -39,6 +41,14 @@ export interface ObjectTypeGothamMapping {
   propertyLevelIntrinsicsV2: Record<
     PropertyTypeRid,
     GothamPropertyIntrinsicMappingV2
+  >;
+  propertyLevelIntrinsicsV3: Record<
+    PropertyTypeRid,
+    GothamPropertyIntrinsicMappingV3
+  >;
+  propertyLevelDatasources: Record<
+    PropertyTypeRid,
+    GothamPropertyDatasourceMapping
   >;
   dataSource: PropertyTypeRid | undefined;
   gothamTitleProperty: PropertyTypeRid | undefined;

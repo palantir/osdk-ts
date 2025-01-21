@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ export type { ActionLogRequirednessMetadata } from "./ActionLogRequirednessMetad
 export type { ActionLogRequirednessSetting } from "./ActionLogRequirednessSetting.js";
 export type { ActiveStorageBackend } from "./ActiveStorageBackend.js";
 export type { Alias } from "./Alias.js";
+export type { AutomaticTransformProfile } from "./AutomaticTransformProfile.js";
 export type { CombinedModificationType } from "./CombinedModificationType.js";
 export type { CombinedOntologyHistoryPageItem } from "./CombinedOntologyHistoryPageItem.js";
 export type { CombinedOntologyHistoryPageItemSummary } from "./CombinedOntologyHistoryPageItemSummary.js";
@@ -42,6 +43,7 @@ export type { EntityMigrationNotAttempted } from "./EntityMigrationNotAttempted.
 export type { EntityMigrationStage } from "./EntityMigrationStage.js";
 export type { EntityMigrationStatus } from "./EntityMigrationStatus.js";
 export type { EntityMigrationStatusModification } from "./EntityMigrationStatusModification.js";
+export type { ExtraLargeTransformProfile } from "./ExtraLargeTransformProfile.js";
 export type { GetCombinedOntologyHistoryRequest } from "./GetCombinedOntologyHistoryRequest.js";
 export type { GetCombinedOntologyHistoryResponse } from "./GetCombinedOntologyHistoryResponse.js";
 export type { LinkTypeEntityMetadata } from "./LinkTypeEntityMetadata.js";
@@ -63,8 +65,15 @@ export type { ObjectTypeAlias } from "./ObjectTypeAlias.js";
 export type { ObjectTypeEntityMetadata } from "./ObjectTypeEntityMetadata.js";
 export type { ObjectTypeEntityMetadataLoadRequest } from "./ObjectTypeEntityMetadataLoadRequest.js";
 export type { ObjectTypeEntityMetadataLoadResponse } from "./ObjectTypeEntityMetadataLoadResponse.js";
+export type { ObjectTypeIndexingSettings } from "./ObjectTypeIndexingSettings.js";
 export type { ObjectTypeSystemEntityMetadata } from "./ObjectTypeSystemEntityMetadata.js";
 export type { ObjectTypeSystemEntityMetadataModification } from "./ObjectTypeSystemEntityMetadataModification.js";
+export type { OntologyIrEditsHistory } from "./OntologyIrEditsHistory.js";
+export type { OntologyIrEditsHistoryConfig } from "./OntologyIrEditsHistoryConfig.js";
+export type { OntologyIrEditsResolutionStrategies } from "./OntologyIrEditsResolutionStrategies.js";
+export type { OntologyIrEditsResolutionStrategy } from "./OntologyIrEditsResolutionStrategy.js";
+export type { OntologyIrLinkTypeEntityMetadata } from "./OntologyIrLinkTypeEntityMetadata.js";
+export type { OntologyIrTimestampPropertyStrategy } from "./OntologyIrTimestampPropertyStrategy.js";
 export type { ReadOnlyV1V2 } from "./ReadOnlyV1V2.js";
 export type { SharedPropertyTypeAlias } from "./SharedPropertyTypeAlias.js";
 export type { SoakPeriodInformation } from "./SoakPeriodInformation.js";
@@ -76,6 +85,7 @@ export type { SystemEntityMetadataModificationRequest } from "./SystemEntityMeta
 export type { SystemEntityMetadataModificationResponse } from "./SystemEntityMetadataModificationResponse.js";
 export type { TimestampPropertyStrategy } from "./TimestampPropertyStrategy.js";
 export type { TimeWindow } from "./TimeWindow.js";
+export type { TransformProfileConfig } from "./TransformProfileConfig.js";
 export type { TransitionWindow } from "./TransitionWindow.js";
 export type { TransitionWindows } from "./TransitionWindows.js";
 

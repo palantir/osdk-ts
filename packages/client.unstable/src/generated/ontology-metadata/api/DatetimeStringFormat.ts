@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 /**
- * NOTE THAT THIS FORMAT IS DISABLED AND CANNOT BE USED.
- *
  * A valid format string composed of the following subset of patterns, taken from the java DateTimeFormatter docs:
  *
  * ```
@@ -25,6 +23,7 @@
  * y       year-of-era                 year              2004; 04
  * M       month-of-year               number/text       7; 07; Jul; July; J
  * d       day-of-month                number            10
+ * E       day-of-week                 text              Tue; Tuesday; T
  * e       localized day-of-week       number/text       2; 02; Tue; Tuesday;
  *
  * a       am-pm-of-day                text              PM

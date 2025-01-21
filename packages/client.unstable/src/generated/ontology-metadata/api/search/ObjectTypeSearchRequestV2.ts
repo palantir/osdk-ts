@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 
 import type { ObjectTypeRid } from "../ObjectTypeRid.js";
+import type { OntologyBranchRid } from "../OntologyBranchRid.js";
 import type { OntologyRid } from "../OntologyRid.js";
 import type { ObjectTypeClause } from "./ObjectTypeClause.js";
 import type { ObjectTypeFuzziness } from "./ObjectTypeFuzziness.js";
@@ -28,6 +29,7 @@ import type { ObjectTypeSort } from "./ObjectTypeSort.js";
 export interface ObjectTypeSearchRequestV2 {
   clause: ObjectTypeClause;
   ontologyRids: Array<OntologyRid>;
+  ontologyBranchRid: OntologyBranchRid | undefined;
   excludedObjectTypeRids: Array<ObjectTypeRid>;
   sort: ObjectTypeSort | undefined;
   fuzziness: ObjectTypeFuzziness | undefined;
