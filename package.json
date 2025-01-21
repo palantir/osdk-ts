@@ -29,7 +29,6 @@
     "@monorepolint/rules": "0.6.0-alpha.2",
     "@osdk/monorepo.cspell": "workspace:~",
     "@osdk/monorepo.tool.transpile": "workspace:~",
-    "@osdk/monorepo.tool.typecheck": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/lint-staged": "^13.3.0",
     "@typescript-eslint/parser": "^8.21.0",

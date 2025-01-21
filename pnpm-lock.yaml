@@ -49,9 +49,6 @@ importers:
       '@osdk/monorepo.tool.transpile':
         specifier: workspace:~
         version: link:packages/monorepo.tool.transpile
-      '@osdk/monorepo.tool.typecheck':
-        specifier: workspace:~
-        version: link:packages/monorepo.tool.typecheck
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:packages/monorepo.tsconfig
@@ -3286,8 +3283,6 @@ importers:
       '@types/yargs':
         specifier: ^17.0.33
         version: 17.0.33
-
-  packages/monorepo.tool.typecheck: {}
 
   packages/monorepo.tsconfig: {}
 
