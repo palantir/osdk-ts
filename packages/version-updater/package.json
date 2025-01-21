@@ -40,7 +40,6 @@
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~",
     "consola": "^3.2.3",
     "find-up": "^7.0.0",
     "semver": "^7.6.3",

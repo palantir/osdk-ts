@@ -72,7 +72,6 @@
     "@osdk/create-app.template-packager": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~",
     "@types/eslint-plugin-jsx-a11y": "^6.9.0",
     "@types/jest": "^29.5.12",
     "@types/node": "^22.7.4",

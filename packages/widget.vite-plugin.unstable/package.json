@@ -52,7 +52,6 @@
     "@blueprintjs/icons": "^5.15.0",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~",
     "@types/escodegen": "~0.0.10",
     "@types/estree": "^1.0.6",
     "@types/fs-extra": "^11.0.4",

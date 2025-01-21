@@ -175,7 +175,8 @@
         "transpileCjs",
         "transpileEsm",
         "transpileBrowser"
-      ]
+      ],
+      "inputs": ["bin/**"]
     },
 
     "transpileTypes": {

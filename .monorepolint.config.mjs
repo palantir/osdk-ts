@@ -387,7 +387,6 @@ function standardPackageRules(shared, options) {
       options: {
         devDependencies: {
           "@osdk/monorepo.tsconfig": "workspace:~",
-          "@osdk/monorepo.tsup": "workspace:~",
           "@osdk/monorepo.api-extractor": "workspace:~",
         },
       },

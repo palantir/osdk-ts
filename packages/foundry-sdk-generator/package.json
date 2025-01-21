@@ -62,7 +62,6 @@
     "@osdk/generator-utils": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~",
     "@osdk/shared.test": "workspace:~",
     "@types/node": "^18.0.0",
     "@types/yargs": "^17.0.29",

@@ -48,7 +48,6 @@
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~",
     "@osdk/widget.vite-plugin.unstable": "workspace:~",
     "@types/react": "^18",
     "@types/react-dom": "^18",

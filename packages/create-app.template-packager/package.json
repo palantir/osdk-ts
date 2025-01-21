@@ -40,7 +40,6 @@
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~",
     "@types/node": "^18.0.0",
     "@types/serialize-javascript": "^5.0.4",
     "@types/tmp": "^0.2.6",

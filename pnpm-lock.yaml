@@ -55,9 +55,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:packages/monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:packages/monorepo.tsup
       '@types/lint-staged':
         specifier: ^13.3.0
         version: 13.3.0
@@ -1156,9 +1153,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       ts-expect:
         specifier: ^1.3.0
         version: 1.3.0
@@ -1211,9 +1205,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@osdk/shared.net.errors':
         specifier: workspace:~
         version: link:../shared.net.errors
@@ -1284,9 +1275,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/node':
         specifier: ^18.0.0
         version: 18.17.15
@@ -1318,9 +1306,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/node':
         specifier: ^18.0.0
         version: 18.17.15
@@ -1409,9 +1394,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@osdk/shared.test':
         specifier: workspace:~
         version: link:../shared.test
@@ -1473,9 +1455,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@osdk/shared.test':
         specifier: workspace:~
         version: link:../shared.test
@@ -1495,9 +1474,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       typescript:
         specifier: ~5.5.4
         version: 5.5.4
@@ -1514,9 +1490,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       typescript:
         specifier: ~5.5.4
         version: 5.5.4
@@ -1578,9 +1551,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/node':
         specifier: ^18.0.0
         version: 18.17.15
@@ -1621,9 +1591,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/node':
         specifier: ^18.0.0
         version: 18.17.15
@@ -1754,9 +1721,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/eslint-plugin-jsx-a11y':
         specifier: ^6.9.0
         version: 6.9.0
@@ -1857,9 +1821,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/node':
         specifier: ^20.17.0
         version: 20.17.6
@@ -1906,9 +1867,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/node':
         specifier: ^20.17.0
         version: 20.17.6
@@ -1958,9 +1916,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/react':
         specifier: ^18
         version: 18.3.12
@@ -2037,9 +1992,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/eslint-plugin-jsx-a11y':
         specifier: ^6.9.0
         version: 6.9.0
@@ -2125,9 +2077,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/react':
         specifier: ^18
         version: 18.3.12
@@ -2204,9 +2153,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/react':
         specifier: ^18
         version: 18.3.12
@@ -2283,9 +2229,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/react':
         specifier: ^18
         version: 18.3.12
@@ -2362,9 +2305,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/react':
         specifier: ^18
         version: 18.3.12
@@ -2432,9 +2372,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@vitejs/plugin-vue':
         specifier: ^5.1.4
         version: 5.1.4(vite@6.0.11(@types/node@22.10.10)(jiti@1.21.6)(lightningcss@1.27.0)(terser@5.37.0)(yaml@2.4.5))(vue@3.5.11(typescript@5.5.4))
@@ -2469,9 +2406,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@vitejs/plugin-vue':
         specifier: ^5.1.4
         version: 5.1.4(vite@6.0.11(@types/node@22.10.10)(jiti@1.21.6)(lightningcss@1.27.0)(terser@5.37.0)(yaml@2.4.5))(vue@3.5.11(typescript@5.5.4))
@@ -2515,9 +2449,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/node':
         specifier: ^18.0.0
         version: 18.17.15
@@ -2573,9 +2504,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/react':
         specifier: ^18
         version: 18.3.12
@@ -2643,9 +2571,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/node':
         specifier: ^18.0.0
         version: 18.17.15
@@ -2677,9 +2602,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       typescript:
         specifier: ~5.5.4
         version: 5.5.4
@@ -2705,9 +2627,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       typescript:
         specifier: ~5.5.4
         version: 5.5.4
@@ -2733,9 +2652,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       tslib:
         specifier: ^2.6.3
         version: 2.7.0
@@ -2782,9 +2698,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/node':
         specifier: ^18.0.0
         version: 18.17.15
@@ -2816,9 +2729,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       typescript:
         specifier: ~5.5.4
         version: 5.5.4
@@ -2847,9 +2757,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/react':
         specifier: ^18
         version: 18.3.12
@@ -2978,9 +2885,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@osdk/widget.vite-plugin.unstable':
         specifier: workspace:~
         version: link:../widget.vite-plugin.unstable
@@ -3018,9 +2922,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@osdk/shared.test':
         specifier: workspace:~
         version: link:../shared.test
@@ -3064,9 +2965,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/node':
         specifier: ^18.0.0
         version: 18.17.15
@@ -3098,9 +2996,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/node':
         specifier: ^18.0.0
         version: 18.17.15
@@ -3183,9 +3078,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@osdk/shared.test':
         specifier: workspace:~
         version: link:../shared.test
@@ -3226,9 +3118,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/node':
         specifier: ^18.0.0
         version: 18.17.15
@@ -3266,9 +3155,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       ts-expect:
         specifier: ^1.3.0
         version: 1.3.0
@@ -3294,9 +3180,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/node':
         specifier: ^18.0.0
         version: 18.17.15
@@ -3343,9 +3226,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/yargs':
         specifier: ^17.0.32
         version: 17.0.32
@@ -3411,16 +3291,6 @@ importers:
 
   packages/monorepo.tsconfig: {}
 
-  packages/monorepo.tsup:
-    dependencies:
-      find-up:
-        specifier: ^7.0.0
-        version: 7.0.0
-    devDependencies:
-      tsup:
-        specifier: ^8.2.3
-        version: 8.2.3(@microsoft/api-extractor@7.49.1(@types/node@22.10.10))(@swc/core@1.7.39)(jiti@1.21.6)(postcss@8.5.1)(typescript@5.7.2)(yaml@2.4.5)
-
   packages/oauth:
     dependencies:
       delay:
@@ -3442,9 +3312,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       jest-extended:
         specifier: ^4.0.2
         version: 4.0.2(jest@29.7.0(@types/node@22.10.10))
@@ -3470,9 +3337,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@testing-library/react':
         specifier: ^16.0.1
         version: 16.0.1(@testing-library/dom@10.4.0)(@types/react-dom@18.3.1)(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -3513,9 +3377,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       typescript:
         specifier: ~5.5.4
         version: 5.5.4
@@ -3541,9 +3402,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       ts-expect:
         specifier: ^1.3.0
         version: 1.3.0
@@ -3559,9 +3417,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       typescript:
         specifier: ~5.5.4
         version: 5.5.4
@@ -3581,9 +3436,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       typescript:
         specifier: ~5.5.4
         version: 5.5.4
@@ -3624,9 +3476,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/json-stable-stringify':
         specifier: ^1.0.36
         version: 1.0.36
@@ -3721,9 +3570,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/mdast':
         specifier: 4.0.4
         version: 4.0.4
@@ -3751,9 +3597,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       consola:
         specifier: ^3.2.3
         version: 3.2.3
@@ -3775,9 +3618,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       ts-expect:
         specifier: ^1.3.0
         version: 1.3.0
@@ -3799,9 +3639,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@osdk/widget-client.unstable':
         specifier: workspace:~
         version: link:../widget.client.unstable
@@ -3842,9 +3679,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       ts-expect:
         specifier: ^1.3.0
         version: 1.3.0
@@ -3888,9 +3722,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
       '@types/escodegen':
         specifier: ~0.0.10
         version: 0.0.10
@@ -26946,35 +26777,6 @@ snapshots:
       '@swc/core': 1.7.39
       postcss: 8.5.1
       typescript: 5.5.4
-    transitivePeerDependencies:
-      - jiti
-      - supports-color
-      - tsx
-      - yaml
-
-  tsup@8.2.3(@microsoft/api-extractor@7.49.1(@types/node@22.10.10))(@swc/core@1.7.39)(jiti@1.21.6)(postcss@8.5.1)(typescript@5.7.2)(yaml@2.4.5):
-    dependencies:
-      bundle-require: 5.0.0(esbuild@0.23.0)
-      cac: 6.7.14
-      chokidar: 3.6.0
-      consola: 3.2.3
-      debug: 4.3.7
-      esbuild: 0.23.0
-      execa: 5.1.1
-      globby: 11.1.0
-      joycon: 3.1.1
-      picocolors: 1.1.1
-      postcss-load-config: 6.0.1(jiti@1.21.6)(postcss@8.5.1)(yaml@2.4.5)
-      resolve-from: 5.0.0
-      rollup: 4.24.0
-      source-map: 0.8.0-beta.0
-      sucrase: 3.35.0
-      tree-kill: 1.2.2
-    optionalDependencies:
-      '@microsoft/api-extractor': 7.49.1(@types/node@22.10.10)
-      '@swc/core': 1.7.39
-      postcss: 8.5.1
-      typescript: 5.7.2
     transitivePeerDependencies:
       - jiti
       - supports-color
