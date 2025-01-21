@@ -104,7 +104,6 @@ function convertToWireOntologyIr(
 ): OntologyIr {
   return {
     blockData: {
-      objectTypes: {},
       sharedPropertyTypes: Object.fromEntries(
         Object.entries(
           ontology.sharedPropertyTypes,
