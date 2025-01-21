@@ -204,7 +204,11 @@ function convertObject(
         visibility: objectType.visibility ?? "NORMAL",
       },
       primaryKeys: objectType.primaryKeys,
-      propertyTypes: {},
+      propertyTypes: Object.fromEntries(
+        objectType.properties?.map<[string, OntologyIrPropertyType]>(
+          val => [val.apiName, convertProperty(val)],
+        ) ?? [],
+      ),
       titlePropertyTypeRid: objectType.titlePropertyApiName,
       apiName: objectType.apiName,
       status: objectType.status ?? {

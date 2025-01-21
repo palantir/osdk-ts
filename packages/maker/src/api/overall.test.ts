@@ -18,6 +18,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { importSharedPropertyType } from "./defineImportSpt.js";
 import { defineInterface } from "./defineInterface.js";
 import { defineInterfaceLinkConstraint } from "./defineInterfaceLinkConstraint.js";
+import { defineObject } from "./defineObject.js";
 import {
   defineOntology,
   dumpOntologyFullMetadata,
@@ -1368,5 +1369,22 @@ describe("Ontology Defining", () => {
       status: { type: "deprecated", message: "foo", deadline: "foo" },
     });
     expect(result.status).toEqual(deprecatedStatus);
+  });
+
+  describe("Objects", () => {
+    it("Objects properly defined", () => {
+      const object = defineObject({
+        titlePropertyApiName: "foo",
+        displayName: "Foo",
+        pluralDisplayName: "Foo",
+        apiName: "foo",
+        primaryKeys: ["bar"],
+        properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+      });
+
+      expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+        
+        `);
+    });
   });
 });
