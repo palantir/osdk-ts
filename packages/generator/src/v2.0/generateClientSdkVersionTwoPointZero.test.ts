@@ -16,8 +16,10 @@
 
 import type {
   ActionParameterType,
+  ObjectPropertyType,
   QueryDataType,
 } from "@osdk/internal.foundry.core";
+import { consola } from "consola";
 import { mkdir, readdir, rmdir, writeFile } from "fs/promises";
 import * as immer from "immer";
 import { beforeEach, describe, expect, it, test, vi } from "vitest";
@@ -266,6 +268,11 @@ const referencedOntology = {
             "dataType": {
               "type": "string",
             },
+          },
+          "shouldBeIgnored": {
+            "dataType": {
+              "type": "futureUnknownType",
+            } as unknown as ObjectPropertyType,
           },
         },
         "status": "ACTIVE",
@@ -2035,6 +2042,8 @@ describe("generator", () => {
   });
 
   it("can generate an sdk package that is entirely a library", async () => {
+    const mockConsola = vi.spyOn(consola, "info");
+
     await expect(
       generateClientSdkVersionTwoPointZero(
         referencedOntology,
@@ -2044,6 +2053,9 @@ describe("generator", () => {
         "module",
       ),
     ).resolves.toMatchInlineSnapshot(`undefined`);
+    expect(mockConsola).toHaveBeenCalledWith(
+      `{"type":"futureUnknownType"} is not a supported propertyType`,
+    );
 
     expect(tweakedFilesForSnapshotConsistency(helper.getFiles()))
       .toMatchInlineSnapshot(`
