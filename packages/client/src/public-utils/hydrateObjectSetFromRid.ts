@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type { ObjectOrInterfaceDefinition, ObjectSet } from "@osdk/api";
 import type { Client } from "../Client.js";
 import { additionalContext } from "../Client.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
 
 /**
- * Creates an OSDK object set from a temporary object set RID.
- * @param client An OSDK client.
- * @param definition An OSDK object or interface definition.
- * @param rid The RID of the temporary object set.
- * @returns
+ * Creates an OSDK object set from an object set RID.
+ * @param client - An OSDK client.
+ * @param definition - An OSDK object or interface definition.
+ * @param rid - The RID of an object set.
+ * @returns An OSDK object set.
  */
 export function hydrateObjectSetFromRid<T extends ObjectOrInterfaceDefinition>(
   client: Client,
   definition: T,
   rid: string,
-) {
+): ObjectSet<T> {
   return createObjectSet(
     definition,
     client[additionalContext],

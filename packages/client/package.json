@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client",
-  "version": "2.1.0-beta.21",
+  "version": "2.1.0-beta.22",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -35,8 +35,8 @@
     "@osdk/api": "workspace:~",
     "@osdk/client.unstable": "workspace:*",
     "@osdk/generator-converters": "workspace:*",
-    "@osdk/internal.foundry.core": "2.8.0",
-    "@osdk/internal.foundry.ontologiesv2": "2.8.0",
+    "@osdk/internal.foundry.core": "2.9.0",
+    "@osdk/internal.foundry.ontologiesv2": "2.9.0",
     "@osdk/shared.client": "^1.0.1",
     "@osdk/shared.client.impl": "workspace:~",
     "@osdk/shared.client2": "^1.0.0",
@@ -53,8 +53,8 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
-    "@microsoft/api-documenter": "^7.25.21",
-    "@microsoft/api-extractor": "^7.47.11",
+    "@microsoft/api-documenter": "^7.26.5",
+    "@microsoft/api-extractor": "^7.49.1",
     "@osdk/client.test.ontology": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",

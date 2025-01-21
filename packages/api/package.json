@@ -1,6 +1,6 @@
 {
   "name": "@osdk/api",
-  "version": "2.1.0-beta.21",
+  "version": "2.1.0-beta.22",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -38,8 +38,8 @@
     "type-fest": "^4.18.2"
   },
   "devDependencies": {
-    "@microsoft/api-documenter": "^7.25.21",
-    "@microsoft/api-extractor": "^7.47.11",
+    "@microsoft/api-documenter": "^7.26.5",
+    "@microsoft/api-extractor": "^7.49.1",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",

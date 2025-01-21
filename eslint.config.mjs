@@ -24,7 +24,10 @@ import * as tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["**/tsup.config.bundled_*"],
+    ignores: [
+      "**/tsup.config.bundled_*",
+      "**/vitest.config.mts.timestamp-*",
+    ],
   },
   { files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"] },
   tseslint.configs.base,
