@@ -38,6 +38,32 @@
         }
       ]
     },
+    "create-media-object": {
+      "apiName": "create-media-object",
+      "displayName": "Create media object",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "path": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "media_reference": {
+          "dataType": {
+            "type": "mediaReference"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.55c19ac6-47a4-46f6-9bab-b97f9016ff92",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "MnayanOsdkMediaObject"
+        }
+      ]
+    },
     "delete-osdk-test-object": {
       "apiName": "delete-osdk-test-object",
       "displayName": "Delete Osdk Test Object",

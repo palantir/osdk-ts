@@ -69,6 +69,7 @@ function actionPropertyToSdkPropertyDefinition(
     case "integer":
     case "long":
     case "timestamp":
+    case "mediaReference":
     case "marking":
       return parameterType.type;
     case "date":

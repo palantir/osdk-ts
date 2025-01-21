@@ -53,6 +53,7 @@ export type { Logger } from "./Logger.js";
 export { createAttachmentUpload } from "./object/AttachmentUpload.js";
 export type { ResultOrError } from "./ResultOrError.js";
 
+export { createMediaUpload } from "./object/mediaUpload.js";
 export {
   extractDate,
   extractDateInLocalTime,

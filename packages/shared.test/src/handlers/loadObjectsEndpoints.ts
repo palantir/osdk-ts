@@ -49,6 +49,8 @@ import { loadRequestHandlersV2 } from "../stubs/loadRequests.js";
 import {
   mediaContentRequestHandler,
   mediaMetadataRequestHandler,
+  mediaUploadRequest,
+  mediaUploadRequestBody,
 } from "../stubs/media.js";
 import { objectLoadResponseMap } from "../stubs/objects.js";
 import {
@@ -725,6 +727,42 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       }
 
       return new Response(JSON.stringify(mediaResponse));
+    },
+  ),
+  handleOpenApiCall(
+    OntologiesV2.MediaReferenceProperties.upload,
+    [
+      "ontologyApiName",
+      "objectType",
+      "propertyName",
+    ],
+    async req => {
+      const urlObj = new URL(req.request.url);
+      const fileName = urlObj.searchParams.get("mediaItemPath");
+
+      if (
+        typeof fileName !== "string"
+        || typeof req.params.ontologyApiName !== "string"
+        || typeof req.params.objectType !== "string"
+        || typeof req.params.propertyName !== "string"
+      ) {
+        throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
+      }
+
+      const mediaUploadResponse = mediaUploadRequest[fileName];
+      const body = await req.request.arrayBuffer();
+
+      if (mediaUploadResponse) {
+        const expectedBody = mediaUploadRequestBody[fileName];
+        const expectedBodyArray = await expectedBody.arrayBuffer();
+
+        if (!areArrayBuffersEqual(body, expectedBodyArray)) {
+          throw new OpenApiCallError(400, InvalidContentTypeError);
+        }
+
+        return mediaUploadResponse;
+      }
+      throw new OpenApiCallError(400, InvalidRequest("Media not found"));
     },
   ),
 ] as const;

@@ -1,6 +1,7 @@
 export {
   actionTakesAllParameterTypes,
   assignEmployee1,
+  createMediaObject,
   createOsdkTestObject,
   createTodo,
   deleteOsdkTestObject,

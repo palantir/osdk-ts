@@ -25,6 +25,13 @@ export interface Media {
   fetchContents(): Promise<Response>;
 }
 
+export interface MediaUpload {
+  data: Blob;
+  fileName: string;
+  objectTypeApiName: string;
+  propertyApiName: string;
+}
+
 /**
  * Metadata of a media item
  */

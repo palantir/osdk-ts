@@ -15,6 +15,7 @@
  */
 
 import type { Attachment, AttachmentUpload } from "../object/Attachment.js";
+import { MediaUpload } from "../object/Media.js";
 
 /**
  * Map from the DataValue type to the typescript type that we return
@@ -34,6 +35,7 @@ export interface DataValueWireToClient {
   short: number;
   string: string;
   timestamp: string;
+  mediaReference: MediaUpload;
   twoDimensionalAggregation: {
     key: AllowedBucketKeyTypes;
     value: AllowedBucketTypes;
@@ -65,6 +67,7 @@ export interface DataValueClientToWire {
   string: string;
   timestamp: string;
   set: Set<any>;
+  mediaReference: MediaUpload;
   twoDimensionalAggregation: {
     key: AllowedBucketKeyTypes;
     value: AllowedBucketTypes;

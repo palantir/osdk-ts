@@ -18,6 +18,7 @@ import { type DataValue } from "@osdk/internal.foundry.core";
 import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { isAttachmentUpload } from "../object/AttachmentUpload.js";
+import { isMediaReference, isMediaUpload } from "../object/mediaUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
 import { isOsdkBaseObject } from "./isOsdkObject.js";
@@ -37,14 +38,35 @@ export async function toDataValue(
     // typeof null is 'object' so do this first
     return value;
   }
-
+  console.log("**** In toDataValue:", value, isMediaUpload(value));
   // arrays and sets are both sent over the wire as arrays
   if (Array.isArray(value) || value instanceof Set) {
+    console.log("*** IN ATTACHMENT UPLOAD:");
+
     const promiseArray = Array.from(
       value,
       async (innerValue) => await toDataValue(innerValue, client),
     );
     return Promise.all(promiseArray);
+  }
+
+  if (isMediaUpload(value)) {
+    const { objectTypeApiName, propertyApiName, data, fileName } = value;
+    const mediaReference = await OntologiesV2.MediaReferenceProperties.upload(
+      client,
+      await client.ontologyRid,
+      objectTypeApiName,
+      propertyApiName,
+      data,
+      {
+        mediaItemPath: fileName,
+        preview: true,
+      },
+    );
+    console.log("*** MEDIA UPLOAD CONVERTED 2:", mediaReference);
+    // TODO: Double check if we should pass directly or pass toDataValue(mediaReference, client)
+    // return mediaReference;
+    return await toDataValue(mediaReference, client);
   }
 
   // For uploads, we need to upload ourselves first to get the RID of the attachment
@@ -87,13 +109,17 @@ export async function toDataValue(
     return getWireObjectSet(value);
   }
 
+  if (isMediaReference(value)) {
+    return value;
+  }
+
   // TODO (during queries implementation)
   // two dimensional aggregation
   // three dimensional aggregation
 
   // struct
   if (typeof value === "object") {
-    return Object.entries(value).reduce(
+    const retVal = await Object.entries(value).reduce(
       async (promisedAcc, [key, structValue]) => {
         const acc = await promisedAcc;
         acc[key] = await toDataValue(structValue, client);
@@ -101,6 +127,8 @@ export async function toDataValue(
       },
       Promise.resolve({} as { [key: string]: DataValue }),
     );
+    console.log("*** Object Block:", retVal);
+    return retVal;
   }
 
   // expected to pass through - boolean, byte, date, decimal, float, double, integer, long, short, string, timestamp
