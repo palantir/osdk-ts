@@ -73,3 +73,11 @@ export type {
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
 } from "./blockDataIr.js";
+export type { OntologyIrObjectTypeBlockDataV2 } from "./generated/ontology-metadata/api/blockdata/OntologyIrObjectTypeBlockDataV2.js";
+export type { OntologyIrObjectType } from "./generated/ontology-metadata/api/OntologyIrObjectType.js";
+export type { OntologyIrObjectTypeDatasource } from "./generated/ontology-metadata/api/OntologyIrObjectTypeDatasource.js";
+export type { OntologyIrObjectTypeDatasourceDefinition } from "./generated/ontology-metadata/api/OntologyIrObjectTypeDatasourceDefinition.js";
+export type { OntologyIrObjectTypeInterfaceImplementation } from "./generated/ontology-metadata/api/OntologyIrObjectTypeInterfaceImplementation.js";
+export type { OntologyIrPropertyType } from "./generated/ontology-metadata/api/OntologyIrPropertyType.js";
+export type { PropertyTypeMappingInfo } from "./generated/ontology-metadata/api/PropertyTypeMappingInfo.js";
+export type { Visibility } from "./generated/ontology-metadata/api/Visibility.js";

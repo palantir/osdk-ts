@@ -18,6 +18,7 @@ import type { ArrayPropertyType } from "./generated/ontology-metadata/api/ArrayP
 import type {
   InterfaceTypeBlockDataV2,
   OntologyBlockDataV2,
+  OntologyIrObjectTypeBlockDataV2,
   SharedPropertyTypeBlockDataV2,
 } from "./generated/ontology-metadata/api/blockdata/index.js";
 import type { InterfaceLinkType } from "./generated/ontology-metadata/api/InterfaceLinkType.js";
@@ -52,13 +53,13 @@ export interface OntologyIrOntologyBlockDataV2 extends
     Omit<
       OntologyBlockDataV2,
       | "knownIdentifiers"
-      | "objectTypes"
       | "linkTypes"
       | "ruleSets"
       | "actionTypes"
       | "blockOutputCompassLocations"
     >,
     {
+      objectTypes: Record<string, OntologyIrObjectTypeBlockDataV2>;
       interfaceTypes: Record<string, OntologyIrInterfaceTypeBlockDataV2>;
       sharedPropertyTypes: Record<
         string,
