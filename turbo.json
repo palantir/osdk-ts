@@ -38,8 +38,8 @@
 
     "check-attw": {
       "outputLogs": "new-only",
-      "dependsOn": ["@osdk/monorepo.tool.attw#transpile", "transpile", "typecheck"],
-      "inputs": ["build/{esm,cjs,browser}", "package.json"]
+      "dependsOn": ["transpile", "typecheck"],
+      "inputs": ["build/{esm,cjs,browser,types}", "package.json"]
     },
 
     "check-spelling": {

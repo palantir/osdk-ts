@@ -46,9 +46,6 @@ importers:
       '@osdk/monorepo.cspell':
         specifier: workspace:~
         version: link:packages/monorepo.cspell
-      '@osdk/monorepo.tool.attw':
-        specifier: workspace:~
-        version: link:packages/monorepo.tool.attw
       '@osdk/monorepo.tool.transpile':
         specifier: workspace:~
         version: link:packages/monorepo.tool.transpile
@@ -2638,8 +2635,8 @@ importers:
         version: 2.5.1
     devDependencies:
       '@arethetypeswrong/cli':
-        specifier: ^0.15.2
-        version: 0.15.3
+        specifier: ^0.17.3
+        version: 0.17.3
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -3369,8 +3366,6 @@ importers:
       '@types/node':
         specifier: ^18.0.0
         version: 18.17.15
-
-  packages/monorepo.tool.attw: {}
 
   packages/monorepo.tool.transpile:
     dependencies:
@@ -11429,10 +11424,6 @@ packages:
   lower-case@2.0.2:
     resolution: {integrity: sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==}
 
-  lru-cache@10.2.2:
-    resolution: {integrity: sha512-9hp3Vp2/hFQUiIwKo8XCeFVnrg8Pk3TYNPIR7tJADKi5YfcF7vEaK7avFHTlSy3kOKYaJQaalfEo6YuXdceBOQ==}
-    engines: {node: 14 || >=16.14}
-
   lru-cache@10.4.3:
     resolution: {integrity: sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==}
 
@@ -14410,7 +14401,7 @@ snapshots:
     dependencies:
       '@arethetypeswrong/core': 0.17.3
       chalk: 4.1.2
-      cli-table3: 0.6.3
+      cli-table3: 0.6.5
       commander: 10.0.1
       marked: 9.1.6
       marked-terminal: 7.2.1(marked@9.1.6)
@@ -17400,7 +17391,7 @@ snapshots:
       '@octokit/request': 9.1.1
       '@octokit/request-error': 6.1.1
       '@octokit/types': 13.5.0
-      lru-cache: 10.2.2
+      lru-cache: 10.4.3
       universal-github-app-jwt: 2.2.0
       universal-user-agent: 7.0.2
 
@@ -20508,7 +20499,7 @@ snapshots:
       '@npmcli/fs': 3.1.1
       fs-minipass: 3.0.3
       glob: 10.4.5
-      lru-cache: 10.2.2
+      lru-cache: 10.4.3
       minipass: 7.1.2
       minipass-collect: 2.0.1
       minipass-flush: 1.0.5
@@ -23018,7 +23009,7 @@ snapshots:
 
   hosted-git-info@7.0.2:
     dependencies:
-      lru-cache: 10.2.2
+      lru-cache: 10.4.3
 
   html-encoding-sniffer@3.0.0:
     dependencies:
@@ -24339,8 +24330,6 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  lru-cache@10.2.2: {}
-
   lru-cache@10.4.3: {}
 
   lru-cache@5.1.1:
@@ -25171,12 +25160,12 @@ snapshots:
 
   path-scurry@1.10.2:
     dependencies:
-      lru-cache: 10.2.2
+      lru-cache: 10.4.3
       minipass: 7.0.4
 
   path-scurry@1.11.1:
     dependencies:
-      lru-cache: 10.2.2
+      lru-cache: 10.4.3
       minipass: 7.1.2
 
   path-to-regexp@0.1.10: {}
