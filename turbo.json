@@ -76,25 +76,24 @@
       ],
       "dependsOn": [
         "@osdk/monorepo.tsconfig#typecheck",
-        "@osdk/monorepo.tsup#typecheck",
         "^typecheck",
         "^transpile",
         "codegen"
       ]
     },
 
-    "@osdk/e2e.generated.1.1.x#transpile": {
-      "outputLogs": "new-only",
-      "dependsOn": ["@osdk/monorepo.tsup#typecheck", "@osdk/monorepo.tsconfig#typecheck", "^transpile", "codegen"],
-      "inputs": ["bin/**", "src/**", "tsup.config.js", "tsconfig.json", "tsconfig.cjs.json", "transpile.sh"],
-      "outputs": ["dist/**", "lib/**", "build/**/*.{js,cjs,js.map,cjs.map}"]
-    },
-
-    // left around for muscle memory
     "typecheck": {
       "dependsOn": [
-        "transpile"
+        "codegen",
+        "^transpileTypes"
       ]
+    },
+
+    "@osdk/tests.verify-fallback-package-v2#typecheck": {
+      "dependsOn": ["^transpileCjs"]
+    },
+    "@osdk/tests.verify-cjs-node16#typecheck": {
+      "dependsOn": ["^transpileCjs"]
     },
 
     "@osdk/monorepo.tsup#typecheck": {
@@ -106,7 +105,7 @@
       "outputLogs": "new-only",
       "inputs": ["api-extractor.json", "build/esm/**/*", "api-extractor.json"],
       "outputs": ["etc/*.report.api.md", "build/api-extractor/**/*"],
-      "dependsOn": ["typecheck", "@osdk/monorepo.api-extractor#check-api"]
+      "dependsOn": ["transpileTypes", "@osdk/monorepo.api-extractor#check-api"]
     },
 
     // Doesn't do anything, just a virtual task to depend on the base.json file
@@ -140,7 +139,7 @@
     },
 
     "build": {
-      "dependsOn": ["transpile", "typecheck"]
+      "dependsOn": ["^build", "transpile", "typecheck"]
     },
 
     "bundle": {
@@ -165,17 +164,48 @@
       "dependsOn": ["transpile", "typecheck"],
       "inputs": ["../../google-font-mocked-response.js"]
     },
+
     "transpile": {
+      "outputLogs": "new-only",
+      "dependsOn": [
+        "@osdk/monorepo.tsconfig#typecheck",
+        "^typecheck",
+        "^transpile",
+        "codegen",
+        "transpileCjs",
+        "transpileEsm",
+        "transpileBrowser"
+      ]
+    },
+
+    "transpileTypes": {
+      "outputLogs": "new-only",
+      "dependsOn": [
+        "@osdk/monorepo.tsconfig#typecheck",
+        "codegen"
+      ],
+      "inputs": [
+        "bin/**",
+        "src/**",
+        "templates/**",
+        "tsconfig.json"
+      ],
+      "outputs": [
+        "build/types/**"
+      ]
+    },
+
+    "transpileEsm": {
       "outputLogs": "new-only",
       "dependsOn": [
         "//#babel-config",
         "@osdk/monorepo.tsconfig#typecheck",
-        "@osdk/monorepo.tsup#typecheck",
-        "^typecheck",
-        "codegen",
-        "@osdk/monorepo.tsup#typecheck",
-        "@osdk/monorepo.tsconfig#typecheck",
-        "^transpile",
+
+        // Because some of these tasks bundle other projects we need to
+        // prepare their dependencies first. In the future we can decouple
+        // transpile from bundling which should allow us to remove this
+        // for everyone but the bundled packages
+        "^transpileEsm",
         "codegen"
       ],
       "inputs": [
@@ -183,20 +213,62 @@
         "src/**",
         "templates/**",
         "tsup.config.js",
-        "tsconfig.json",
-        "tsconfig.cjs.json"
+        "tsconfig.json"
       ],
       "outputs": [
-        "dist/**",
-        "lib/**",
-        "build/{esm,cjs,browser}/*"
+        "build/esm/**"
+      ]
+    },
+
+    "transpileBrowser": {
+      "outputLogs": "new-only",
+      "dependsOn": [
+        "//#babel-config",
+        "@osdk/monorepo.tsconfig#typecheck",
+        "^transpileBrowser",
+        "codegen"
+      ],
+      "inputs": [
+        "bin/**",
+        "src/**",
+        "templates/**",
+        "tsconfig.json"
+      ],
+      "outputs": [
+        "build/browser/**"
+      ]
+    },
+
+    // This one both transpiles to CJS and it creates the .d.ts files
+    // to let cjs work. As a result, we need to rely on our dependency's
+    // transpileCjs tasks too.
+    "transpileCjs": {
+      "outputLogs": "new-only",
+      "dependsOn": [
+        "//#babel-config",
+        "@osdk/monorepo.tsconfig#typecheck",
+        "^transpileCjs",
+
+        // tsup may be trying to resolve the module types and not the cjs types
+        "^transpileTypes",
+        "codegen"
+      ],
+      "inputs": [
+        "bin/**",
+        "src/**",
+        "templates/**",
+        "tsup.config.js",
+        "tsconfig.json"
+      ],
+      "outputs": [
+        "build/cjs/**"
       ]
     },
 
     "test": {
       "outputLogs": "new-only",
       "env": ["FORCE_COLOR"],
-      "dependsOn": ["transpile", "typecheck"]
+      "dependsOn": ["^transpile"]
     },
 
     "//#check-mrl": {

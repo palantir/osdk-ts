@@ -37,17 +37,13 @@ const DELETE_SCRIPT_ENTRY = { options: [undefined], fixValue: undefined };
 const nonStandardPackages = [
   "@osdk/e2e.generated.1.1.x",
   "@osdk/e2e.sandbox.todoapp",
-  "@osdk/e2e.sandbox.todowidget", // uses react
   "@osdk/e2e.sandbox.oauth.public.react-router",
   "@osdk/examples.*",
   "@osdk/foundry-sdk-generator",
   "@osdk/e2e.test.foundry-sdk-generator",
   "@osdk/monorepo.*", // internal monorepo packages
   "@osdk/tests.*",
-  "@osdk/widget-client-react.unstable", // uses react
   "@osdk/widget.vite-plugin.unstable", // has a vite-bundled app + react
-  // removed the following from the repo to avoid it being edited
-  // "@osdk/shared.client2", // hand written package that only exposes a symbol
   "@osdk/benchmarks.*",
 ];
 
@@ -80,7 +76,26 @@ const privatePackages = [
 const consumerCliPackages = [
   "@osdk/cli",
   "@osdk/create-app",
+  "@osdk/create-widget",
   "@osdk/foundry-sdk-generator",
+];
+
+const forceBundle = [
+  "@client.unstable",
+  "@client.unstable.tpsa",
+];
+
+const skipCjsAndBrowser = [
+  "@osdk/e2e.sandbox.todowidget",
+  "@osdk/e2e.sandbox.catchall",
+  "@osdk/tool.*",
+  "@osdk/create-app.template-packager",
+  "@osdk/create-app.template.*",
+  "@osdk/create-widget.template.*",
+  "@osdk/cli.*",
+  "@osdk/version-updater",
+  "@osdk/example-generator",
+  "@osdk/shared.test",
 ];
 
 const testWithHappyDomPackages = [
@@ -327,12 +342,14 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
 /**
  * @param {Omit<import("@monorepolint/config").RuleEntry<>,"options" | "id">} shared
  * @param {{
- *  esmOnly?: boolean,
  *  customTsconfigExcludes?: string[],
  *  tsVersion?: typeof LATEST_TYPESCRIPT_DEP | "^4.9.5",
  *  vitestEnvironment?: "happy-dom",
  *  skipTsconfigReferences?: boolean,
- *  aliasConsola?: boolean
+ *  aliasConsola?: boolean,
+ *  output: Record<"esm" | "cjs" | "browser", "bundle" | "normal" | undefined>
+ *  skipTypes?: boolean,
+ *  extraFiles?: string[]
  * }} options
  * @returns {import("@monorepolint/config").RuleModule[]}
  */
@@ -353,23 +370,6 @@ function standardPackageRules(shared, options) {
         },
       ),
     }),
-    ...(
-      options.esmOnly ? [] : [
-        standardTsconfig({
-          ...shared,
-
-          options: getTsconfigOptions(
-            "./tsconfig.json",
-            {
-              customTsconfigExcludes: options.customTsconfigExcludes,
-              skipTsconfigReferences: options.skipTsconfigReferences,
-              outDir: "build/cjs",
-              commonjs: true,
-            },
-          ),
-        }),
-      ]
-    ),
     ...(options.tsVersion
       ? [
         requireDependency({
@@ -396,23 +396,25 @@ function standardPackageRules(shared, options) {
         scripts: {
           clean: "rm -rf lib dist types build tsconfig.tsbuildinfo",
           "check-spelling": "cspell --quiet .",
-          "check-attw": `monorepo.tool.attw ${
-            options.esmOnly ? "esm" : "both"
-          }`,
+          "check-attw": `monorepo.tool.attw esm`,
           lint: "eslint . && dprint check  --config $(find-up dprint.json)",
           "fix-lint":
             "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-          transpile: {
-            options: [
-              "monorepo.tool.transpile",
-              "monorepo.tool.transpile tsup",
-            ],
-            fixValue: "monorepo.tool.transpile",
-          },
+          transpile: DELETE_SCRIPT_ENTRY,
+          transpileEsm: options.output.esm
+            ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t node`
+            : DELETE_SCRIPT_ENTRY,
+          transpileBrowser: options.output.browser
+            ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser`
+            : DELETE_SCRIPT_ENTRY,
+          transpileCjs: options.output.cjs === "bundle"
+            ? "monorepo.tool.transpile -f cjs -m bundle -t node"
+            : DELETE_SCRIPT_ENTRY,
           transpileWatch: DELETE_SCRIPT_ENTRY,
-          typecheck: options.esmOnly
+          transpileTypes: options.skipTypes
             ? DELETE_SCRIPT_ENTRY
-            : `monorepo.tool.typecheck ${options.esmOnly ? "esm" : "both"}`,
+            : "monorepo.tool.transpile -f esm -m types -t node",
+          typecheck: "tsc --noEmit --emitDeclarationOnly false",
         },
       },
     }),
@@ -422,30 +424,51 @@ function standardPackageRules(shared, options) {
         entries: {
           exports: {
             ".": {
-              ...(options.esmOnly ? {} : {
-                "require": "./build/cjs/index.cjs",
-              }),
-              "browser": "./build/browser/index.js",
-              "import": "./build/esm/index.js",
-              "default": "./build/browser/index.js",
+              "browser": options.output.browser
+                ? "./build/browser/index.js"
+                : undefined,
+              "import": {
+                // we generate the types for this in a separate task
+                // than transpile so they end up in different places
+                types: "./build/types/index.d.ts",
+                default: "./build/esm/index.js",
+              },
+
+              // for cjs, we generate the types next to the transpiled code
+              // so we don't need to separate anything out. TSC infers properly
+              "require": options.output.cjs
+                ? "./build/cjs/index.cjs"
+                : undefined,
+              "default": `./build/${
+                options.output.browser ? "browser" : "esm"
+              }/index.js`,
             },
 
             "./*": {
-              ...(options.esmOnly ? {} : {
-                require: "./build/cjs/public/*.cjs",
-              }),
-              browser: "./build/browser/public/*.js",
-              import: "./build/esm/public/*.js",
-              default: "./build/browser/public/*.js",
+              "browser": options.output.browser
+                ? "./build/browser/public/*.js"
+                : undefined,
+              "import": {
+                types: "./build/types/public/*.d.ts",
+                default: "./build/esm/public/*.js",
+              },
+              "require": options.output.cjs
+                ? "./build/cjs/public/*.cjs"
+                : undefined,
+              "default": `./build/${
+                options.output.browser ? "browser" : "esm"
+              }/public/*.js`,
             },
           },
           publishConfig: {
             "access": "public",
           },
           files: [
-            "build/cjs",
-            "build/esm",
-            "build/browser",
+            ...(options.extraFiles ?? []),
+            ...(options.output.cjs ? ["build/cjs"] : []),
+            ...(options.output.esm ? ["build/esm"] : []),
+            ...(options.output.browser ? ["build/browser"] : []),
+            ...(options.skipTypes ? [] : ["build/types"]),
             "CHANGELOG.md",
             "package.json",
             "templates",
@@ -454,14 +477,18 @@ function standardPackageRules(shared, options) {
             "*.d.ts",
           ],
 
-          ...(options.esmOnly ? {} : {
-            main: `./build/cjs/index.cjs`,
-          }),
+          ...(options.output.esm ? { module: `./build/esm/index.js` } : {}),
+          ...(options.output.cjs
+            ? {
+              main: "./build/cjs/index.cjs",
 
-          module: "./build/esm/index.js",
-          types: `./build/${options.esmOnly ? "esm" : "cjs"}/index.d.${
-            options.esmOnly ? "" : "c"
-          }ts`,
+              // if you are using modern tooling for ESM then your tsc isn't relying
+              // on this field (its getting types from exports or should be)
+              // so we only need to include it if we are supporting cjs for this package
+              types: "./build/cjs/index.d.cts",
+            }
+            : {}),
+
           type: "module",
         },
       },
@@ -530,34 +557,7 @@ function standardPackageRules(shared, options) {
       ...shared,
       options: {
         file: "tsup.config.js",
-        generator: formattedGeneratorHelper(
-          `
-          /*
-           * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
-           *
-           * Licensed under the Apache License, Version 2.0 (the "License");
-           * you may not use this file except in compliance with the License.
-           * You may obtain a copy of the License at
-           *
-           *     http://www.apache.org/licenses/LICENSE-2.0
-           *
-           * Unless required by applicable law or agreed to in writing, software
-           * distributed under the License is distributed on an "AS IS" BASIS,
-           * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-           * See the License for the specific language governing permissions and
-           * limitations under the License.
-           */
-
-          import { defineConfig } from "tsup";
-
-          export default defineConfig(async (options) =>
-            (await import("@osdk/monorepo.tsup")).default(options, {
-              ${options.esmOnly ? "esmOnly: true," : ""}
-          })
-          );     
-          `,
-          "js",
-        ),
+        template: undefined, // delete it
       },
     }),
   ];
@@ -622,7 +622,7 @@ NOTE: DO NOT EDIT THIS README BY HAND. It is generated by monorepolint.
     "codegen": {
       "inputs": ["templates/**/*"],
       "outputs": ["src/generatedNoCheck/**/*"],
-      "dependsOn": ["@osdk/create-app.template-packager#transpile"]
+      "dependsOn": ["@osdk/create-app.template-packager#transpileEsm"]
     }
   }
 }
@@ -634,10 +634,17 @@ NOTE: DO NOT EDIT THIS README BY HAND. It is generated by monorepolint.
       excludePackages: [
         ...nonStandardPackages,
         ...testWithHappyDomPackages,
+        ...consumerCliPackages,
+        ...forceBundle,
+        ...skipCjsAndBrowser,
       ],
     }, {
-      esmOnly: true,
       tsVersion: LATEST_TYPESCRIPT_DEP,
+      output: {
+        browser: "normal",
+        cjs: "bundle",
+        esm: "normal",
+      },
     }),
 
     ...standardPackageRules({
@@ -646,16 +653,77 @@ NOTE: DO NOT EDIT THIS README BY HAND. It is generated by monorepolint.
       ],
     }, {
       vitestEnvironment: "happy-dom",
-      esmOnly: true,
       tsVersion: LATEST_TYPESCRIPT_DEP,
+      output: {
+        browser: "normal",
+        cjs: "bundle",
+        esm: "normal",
+      },
+    }),
+
+    ...standardPackageRules({
+      includePackages: [
+        ...forceBundle,
+      ],
+    }, {
+      tsVersion: LATEST_TYPESCRIPT_DEP,
+      output: {
+        browser: "bundle",
+        cjs: "bundle",
+        esm: "bundle",
+      },
+    }),
+
+    ...standardPackageRules({
+      includePackages: [
+        ...consumerCliPackages,
+      ],
+      excludePackages: ["@osdk/foundry-sdk-generator"],
+    }, {
+      tsVersion: LATEST_TYPESCRIPT_DEP,
+      output: {
+        browser: undefined,
+        cjs: undefined,
+        esm: "bundle",
+      },
+    }),
+
+    ...standardPackageRules({
+      includePackages: [
+        ...skipCjsAndBrowser,
+      ],
+    }, {
+      tsVersion: LATEST_TYPESCRIPT_DEP,
+      output: {
+        browser: undefined,
+        cjs: undefined,
+        esm: "normal",
+      },
+    }),
+
+    ...standardPackageRules({
+      includePackages: ["@osdk/widget.vite-plugin.unstable"],
+    }, {
+      tsVersion: LATEST_TYPESCRIPT_DEP,
+      output: {
+        browser: undefined,
+        cjs: undefined,
+        esm: "normal",
+      },
+      skipTypes: true,
+      extraFiles: ["build/client"],
     }),
 
     ...standardPackageRules({
       includePackages: ["@osdk/foundry-sdk-generator"],
     }, {
-      esmOnly: true,
       tsVersion: LATEST_TYPESCRIPT_DEP,
       aliasConsola: true,
+      output: {
+        browser: undefined,
+        cjs: undefined,
+        esm: "bundle",
+      },
       customTsconfigExcludes: [
         "./src/generatedNoCheck/**/*",
       ],
@@ -667,7 +735,12 @@ NOTE: DO NOT EDIT THIS README BY HAND. It is generated by monorepolint.
     ...standardPackageRules({
       includePackages: ["@osdk/e2e.test.foundry-sdk-generator"],
     }, {
-      esmOnly: true,
+      output: {
+        browser: "normal",
+        cjs: "bundle",
+        esm: "normal",
+      },
+      skipTypes: true,
       tsVersion: LATEST_TYPESCRIPT_DEP,
       customTsconfigExcludes: [
         "./src/generatedNoCheck/**/*",
@@ -745,15 +818,6 @@ package you do so at your own risk.
       },
     }),
 
-    packageScript({
-      includePackages: consumerCliPackages,
-      options: {
-        scripts: {
-          transpile: "monorepo.tool.transpile tsup",
-        },
-      },
-    }),
-
     allLocalDepsMustNotBePrivate({
       includePackages: consumerCliPackages,
     }),
@@ -825,7 +889,7 @@ function rulesForPackagesWithChecKApiTask() {
         template: `{
   "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
   "extends": "@osdk/monorepo.api-extractor/base.json",
-  "mainEntryPointFilePath": "<projectFolder>/build/esm/index.d.ts"
+  "mainEntryPointFilePath": "<projectFolder>/build/types/index.d.ts"
 }
 `,
       },
