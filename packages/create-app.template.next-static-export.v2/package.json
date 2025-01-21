@@ -1,7 +1,7 @@
 {
   "name": "@osdk/create-app.template.next-static-export.v2",
   "private": true,
-  "version": "2.0.11",
+  "version": "2.0.12",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.0.12
+
+### Patch Changes
+
+- 99e976e: Adds experimental method to convert an object set into RID
+
 ## 2.0.11
 
 ## 2.0.10
