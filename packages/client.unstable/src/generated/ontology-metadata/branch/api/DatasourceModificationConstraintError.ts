@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,24 @@
  * limitations under the License.
  */
 
+import type { DerivedPropertyBaseTypeChangedWhenObjectTypeIsNotModifiedError } from "./DerivedPropertyBaseTypeChangedWhenObjectTypeIsNotModifiedError.js";
+import type { DerivedPropertyDefinitionDoesNotMatchSharedPropertyTypeError } from "./DerivedPropertyDefinitionDoesNotMatchSharedPropertyTypeError.js";
+import type { DerivedPropertyIncompatibleDefinitionAndForeignPropertyBaseTypeError } from "./DerivedPropertyIncompatibleDefinitionAndForeignPropertyBaseTypeError.js";
+import type { DerivedPropertyLinkDefinitionCardinalityInvalidError } from "./DerivedPropertyLinkDefinitionCardinalityInvalidError.js";
+import type { DerivedPropertyLinkDefinitionInvalidError } from "./DerivedPropertyLinkDefinitionInvalidError.js";
+import type { DerivedPropertyTypeDependOnAnotherDerivedPropertyError } from "./DerivedPropertyTypeDependOnAnotherDerivedPropertyError.js";
+import type { ForeignPropertyTypeInDerivedPropertyDefinitionNotFoundError } from "./ForeignPropertyTypeInDerivedPropertyDefinitionNotFoundError.js";
+import type { LinkTypeInDerivedPropertyDefinitionNotFoundOrDeletedError } from "./LinkTypeInDerivedPropertyDefinitionNotFoundOrDeletedError.js";
 import type { ManyToManyLinkTypeDatasourcePrimaryKeyMismatchError } from "./ManyToManyLinkTypeDatasourcePrimaryKeyMismatchError.js";
+import type { MarkingPropertiesMustBeBackedByDatasourceWithGranularPermissionsError } from "./MarkingPropertiesMustBeBackedByDatasourceWithGranularPermissionsError.js";
+import type { MarkingPropertiesMustBeReferencedInGranularPolicyError } from "./MarkingPropertiesMustBeReferencedInGranularPolicyError.js";
+import type { MarkingPropertiesMustHaveAssociatedMarkingConstraintsError } from "./MarkingPropertiesMustHaveAssociatedMarkingConstraintsError.js";
+import type { NotAllPropertyTypesAreMappedToDatasourceWithinObjectType } from "./NotAllPropertyTypesAreMappedToDatasourceWithinObjectType.js";
 import type { ObjectTypeDatasourceColumnMappingMismatchError } from "./ObjectTypeDatasourceColumnMappingMismatchError.js";
 import type { ObjectTypeDatasourceWithoutPrimaryKeyColumnError } from "./ObjectTypeDatasourceWithoutPrimaryKeyColumnError.js";
 import type { ObjectTypeWithUnmappedTitlePropertyError } from "./ObjectTypeWithUnmappedTitlePropertyError.js";
+import type { PrimaryKeyIsDerivedError } from "./PrimaryKeyIsDerivedError.js";
+import type { TitlePropertyTypeIsDerivedError } from "./TitlePropertyTypeIsDerivedError.js";
 export interface DatasourceModificationConstraintError_objectTypeDatasourceWithoutPrimaryKeyColumn {
   type: "objectTypeDatasourceWithoutPrimaryKeyColumn";
   objectTypeDatasourceWithoutPrimaryKeyColumn:
@@ -35,10 +49,92 @@ export interface DatasourceModificationConstraintError_objectTypeDatasourceColum
     ObjectTypeDatasourceColumnMappingMismatchError;
 }
 
+export interface DatasourceModificationConstraintError_notAllPropertyTypesAreMappedToDatasourceWithinObjectType {
+  type: "notAllPropertyTypesAreMappedToDatasourceWithinObjectType";
+  notAllPropertyTypesAreMappedToDatasourceWithinObjectType:
+    NotAllPropertyTypesAreMappedToDatasourceWithinObjectType;
+}
+
 export interface DatasourceModificationConstraintError_manyToManyLinkTypeDatasourcePrimaryKeyMismatch {
   type: "manyToManyLinkTypeDatasourcePrimaryKeyMismatch";
   manyToManyLinkTypeDatasourcePrimaryKeyMismatch:
     ManyToManyLinkTypeDatasourcePrimaryKeyMismatchError;
+}
+
+export interface DatasourceModificationConstraintError_primaryKeyIsDerived {
+  type: "primaryKeyIsDerived";
+  primaryKeyIsDerived: PrimaryKeyIsDerivedError;
+}
+
+export interface DatasourceModificationConstraintError_titlePropertyTypeIsDerived {
+  type: "titlePropertyTypeIsDerived";
+  titlePropertyTypeIsDerived: TitlePropertyTypeIsDerivedError;
+}
+
+export interface DatasourceModificationConstraintError_linkTypeInDerivedPropertyDefinitionNotFoundOrDeleted {
+  type: "linkTypeInDerivedPropertyDefinitionNotFoundOrDeleted";
+  linkTypeInDerivedPropertyDefinitionNotFoundOrDeleted:
+    LinkTypeInDerivedPropertyDefinitionNotFoundOrDeletedError;
+}
+
+export interface DatasourceModificationConstraintError_foreignPropertyTypeInDerivedPropertyDefinitionNotFound {
+  type: "foreignPropertyTypeInDerivedPropertyDefinitionNotFound";
+  foreignPropertyTypeInDerivedPropertyDefinitionNotFound:
+    ForeignPropertyTypeInDerivedPropertyDefinitionNotFoundError;
+}
+
+export interface DatasourceModificationConstraintError_derivedPropertyTypeDependOnAnotherDerivedProperty {
+  type: "derivedPropertyTypeDependOnAnotherDerivedProperty";
+  derivedPropertyTypeDependOnAnotherDerivedProperty:
+    DerivedPropertyTypeDependOnAnotherDerivedPropertyError;
+}
+
+export interface DatasourceModificationConstraintError_markingPropertiesMustBeBackedByDatasourceWithGranularPermissions {
+  type: "markingPropertiesMustBeBackedByDatasourceWithGranularPermissions";
+  markingPropertiesMustBeBackedByDatasourceWithGranularPermissions:
+    MarkingPropertiesMustBeBackedByDatasourceWithGranularPermissionsError;
+}
+
+export interface DatasourceModificationConstraintError_markingPropertiesMustBeReferencedInGranularPolicy {
+  type: "markingPropertiesMustBeReferencedInGranularPolicy";
+  markingPropertiesMustBeReferencedInGranularPolicy:
+    MarkingPropertiesMustBeReferencedInGranularPolicyError;
+}
+
+export interface DatasourceModificationConstraintError_markingPropertiesMustHaveAssociatedMarkingConstraints {
+  type: "markingPropertiesMustHaveAssociatedMarkingConstraints";
+  markingPropertiesMustHaveAssociatedMarkingConstraints:
+    MarkingPropertiesMustHaveAssociatedMarkingConstraintsError;
+}
+
+export interface DatasourceModificationConstraintError_derivedPropertyBaseTypeChangedWhenObjectTypeIsNotModified {
+  type: "derivedPropertyBaseTypeChangedWhenObjectTypeIsNotModified";
+  derivedPropertyBaseTypeChangedWhenObjectTypeIsNotModified:
+    DerivedPropertyBaseTypeChangedWhenObjectTypeIsNotModifiedError;
+}
+
+export interface DatasourceModificationConstraintError_derivedPropertyDefinitionDoesNotMatchSharedPropertyType {
+  type: "derivedPropertyDefinitionDoesNotMatchSharedPropertyType";
+  derivedPropertyDefinitionDoesNotMatchSharedPropertyType:
+    DerivedPropertyDefinitionDoesNotMatchSharedPropertyTypeError;
+}
+
+export interface DatasourceModificationConstraintError_derivedPropertyLinkDefinitionInvalid {
+  type: "derivedPropertyLinkDefinitionInvalid";
+  derivedPropertyLinkDefinitionInvalid:
+    DerivedPropertyLinkDefinitionInvalidError;
+}
+
+export interface DatasourceModificationConstraintError_derivedPropertyLinkDefinitionCardinalityInvalid {
+  type: "derivedPropertyLinkDefinitionCardinalityInvalid";
+  derivedPropertyLinkDefinitionCardinalityInvalid:
+    DerivedPropertyLinkDefinitionCardinalityInvalidError;
+}
+
+export interface DatasourceModificationConstraintError_derivedPropertyIncompatibleDefinitionAndForeignPropertyBaseType {
+  type: "derivedPropertyIncompatibleDefinitionAndForeignPropertyBaseType";
+  derivedPropertyIncompatibleDefinitionAndForeignPropertyBaseType:
+    DerivedPropertyIncompatibleDefinitionAndForeignPropertyBaseTypeError;
 }
 /**
  * A type representing validation errors associated with datasource modifications on a branch.
@@ -47,4 +143,18 @@ export type DatasourceModificationConstraintError =
   | DatasourceModificationConstraintError_objectTypeDatasourceWithoutPrimaryKeyColumn
   | DatasourceModificationConstraintError_objectTypeWithUnmappedTitleProperty
   | DatasourceModificationConstraintError_objectTypeDatasourceColumnMappingMismatch
-  | DatasourceModificationConstraintError_manyToManyLinkTypeDatasourcePrimaryKeyMismatch;
+  | DatasourceModificationConstraintError_notAllPropertyTypesAreMappedToDatasourceWithinObjectType
+  | DatasourceModificationConstraintError_manyToManyLinkTypeDatasourcePrimaryKeyMismatch
+  | DatasourceModificationConstraintError_primaryKeyIsDerived
+  | DatasourceModificationConstraintError_titlePropertyTypeIsDerived
+  | DatasourceModificationConstraintError_linkTypeInDerivedPropertyDefinitionNotFoundOrDeleted
+  | DatasourceModificationConstraintError_foreignPropertyTypeInDerivedPropertyDefinitionNotFound
+  | DatasourceModificationConstraintError_derivedPropertyTypeDependOnAnotherDerivedProperty
+  | DatasourceModificationConstraintError_markingPropertiesMustBeBackedByDatasourceWithGranularPermissions
+  | DatasourceModificationConstraintError_markingPropertiesMustBeReferencedInGranularPolicy
+  | DatasourceModificationConstraintError_markingPropertiesMustHaveAssociatedMarkingConstraints
+  | DatasourceModificationConstraintError_derivedPropertyBaseTypeChangedWhenObjectTypeIsNotModified
+  | DatasourceModificationConstraintError_derivedPropertyDefinitionDoesNotMatchSharedPropertyType
+  | DatasourceModificationConstraintError_derivedPropertyLinkDefinitionInvalid
+  | DatasourceModificationConstraintError_derivedPropertyLinkDefinitionCardinalityInvalid
+  | DatasourceModificationConstraintError_derivedPropertyIncompatibleDefinitionAndForeignPropertyBaseType;

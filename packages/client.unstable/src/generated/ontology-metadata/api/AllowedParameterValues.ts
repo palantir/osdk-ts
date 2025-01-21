@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,11 @@ import type { ParameterBooleanOrEmpty } from "./ParameterBooleanOrEmpty.js";
 import type { ParameterCbacMarkingOrEmpty } from "./ParameterCbacMarkingOrEmpty.js";
 import type { ParameterDateTimeRangeOrEmpty } from "./ParameterDateTimeRangeOrEmpty.js";
 import type { ParameterFreeTextOrEmpty } from "./ParameterFreeTextOrEmpty.js";
+import type { ParameterGeohashOrEmpty } from "./ParameterGeohashOrEmpty.js";
+import type { ParameterGeoshapeOrEmpty } from "./ParameterGeoshapeOrEmpty.js";
+import type { ParameterGeotimeSeriesReferenceOrEmpty } from "./ParameterGeotimeSeriesReferenceOrEmpty.js";
+import type { ParameterInterfaceObjectQueryOrEmpty } from "./ParameterInterfaceObjectQueryOrEmpty.js";
+import type { ParameterInterfacePropertyValueOrEmpty } from "./ParameterInterfacePropertyValueOrEmpty.js";
 import type { ParameterMandatoryMarkingOrEmpty } from "./ParameterMandatoryMarkingOrEmpty.js";
 import type { ParameterMediaReferenceOrEmpty } from "./ParameterMediaReferenceOrEmpty.js";
 import type { ParameterMultipassGroupOrEmpty } from "./ParameterMultipassGroupOrEmpty.js";
@@ -27,7 +32,9 @@ import type { ParameterObjectListOrEmpty } from "./ParameterObjectListOrEmpty.js
 import type { ParameterObjectPropertyValueOrEmpty } from "./ParameterObjectPropertyValueOrEmpty.js";
 import type { ParameterObjectQueryOrEmpty } from "./ParameterObjectQueryOrEmpty.js";
 import type { ParameterObjectSetRidOrEmpty } from "./ParameterObjectSetRidOrEmpty.js";
+import type { ParameterObjectTypeReferenceOrEmpty } from "./ParameterObjectTypeReferenceOrEmpty.js";
 import type { ParameterRangeOrEmpty } from "./ParameterRangeOrEmpty.js";
+import type { ParameterStructOrEmpty } from "./ParameterStructOrEmpty.js";
 import type { ParameterTimeSeriesReferenceOrEmpty } from "./ParameterTimeSeriesReferenceOrEmpty.js";
 import type { ParameterValueOneOfOrEmpty } from "./ParameterValueOneOfOrEmpty.js";
 import type { Redacted } from "./Redacted.js";
@@ -46,9 +53,19 @@ export interface AllowedParameterValues_objectQuery {
   objectQuery: ParameterObjectQueryOrEmpty;
 }
 
+export interface AllowedParameterValues_interfaceObjectQuery {
+  type: "interfaceObjectQuery";
+  interfaceObjectQuery: ParameterInterfaceObjectQueryOrEmpty;
+}
+
 export interface AllowedParameterValues_objectPropertyValue {
   type: "objectPropertyValue";
   objectPropertyValue: ParameterObjectPropertyValueOrEmpty;
+}
+
+export interface AllowedParameterValues_interfacePropertyValue {
+  type: "interfacePropertyValue";
+  interfacePropertyValue: ParameterInterfacePropertyValueOrEmpty;
 }
 
 export interface AllowedParameterValues_objectList {
@@ -106,20 +123,47 @@ export interface AllowedParameterValues_mediaReference {
   mediaReference: ParameterMediaReferenceOrEmpty;
 }
 
-export interface AllowedParameterValues_redacted {
-  type: "redacted";
-  redacted: Redacted;
+export interface AllowedParameterValues_objectTypeReference {
+  type: "objectTypeReference";
+  objectTypeReference: ParameterObjectTypeReferenceOrEmpty;
 }
 
 export interface AllowedParameterValues_timeSeriesReference {
   type: "timeSeriesReference";
   timeSeriesReference: ParameterTimeSeriesReferenceOrEmpty;
 }
+
+export interface AllowedParameterValues_geohash {
+  type: "geohash";
+  geohash: ParameterGeohashOrEmpty;
+}
+
+export interface AllowedParameterValues_geoshape {
+  type: "geoshape";
+  geoshape: ParameterGeoshapeOrEmpty;
+}
+
+export interface AllowedParameterValues_geotimeSeriesReference {
+  type: "geotimeSeriesReference";
+  geotimeSeriesReference: ParameterGeotimeSeriesReferenceOrEmpty;
+}
+
+export interface AllowedParameterValues_redacted {
+  type: "redacted";
+  redacted: Redacted;
+}
+
+export interface AllowedParameterValues_struct {
+  type: "struct";
+  struct: ParameterStructOrEmpty;
+}
 export type AllowedParameterValues =
   | AllowedParameterValues_oneOf
   | AllowedParameterValues_range
   | AllowedParameterValues_objectQuery
+  | AllowedParameterValues_interfaceObjectQuery
   | AllowedParameterValues_objectPropertyValue
+  | AllowedParameterValues_interfacePropertyValue
   | AllowedParameterValues_objectList
   | AllowedParameterValues_user
   | AllowedParameterValues_multipassGroup
@@ -131,5 +175,10 @@ export type AllowedParameterValues =
   | AllowedParameterValues_cbacMarking
   | AllowedParameterValues_mandatoryMarking
   | AllowedParameterValues_mediaReference
+  | AllowedParameterValues_objectTypeReference
+  | AllowedParameterValues_timeSeriesReference
+  | AllowedParameterValues_geohash
+  | AllowedParameterValues_geoshape
+  | AllowedParameterValues_geotimeSeriesReference
   | AllowedParameterValues_redacted
-  | AllowedParameterValues_timeSeriesReference;
+  | AllowedParameterValues_struct;

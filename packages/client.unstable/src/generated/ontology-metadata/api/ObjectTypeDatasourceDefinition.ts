@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 import type { ObjectTypeDatasetDatasource } from "./ObjectTypeDatasetDatasource.js";
 import type { ObjectTypeDatasetDatasourceV2 } from "./ObjectTypeDatasetDatasourceV2.js";
+import type { ObjectTypeDerivedPropertiesDatasource } from "./ObjectTypeDerivedPropertiesDatasource.js";
+import type { ObjectTypeDirectDatasource } from "./ObjectTypeDirectDatasource.js";
+import type { ObjectTypeEditsOnlyDatasource } from "./ObjectTypeEditsOnlyDatasource.js";
 import type { ObjectTypeGeotimeSeriesDatasource } from "./ObjectTypeGeotimeSeriesDatasource.js";
 import type { ObjectTypeMediaDatasource } from "./ObjectTypeMediaDatasource.js";
 import type { ObjectTypeMediaSetViewDatasource } from "./ObjectTypeMediaSetViewDatasource.js";
@@ -23,6 +26,7 @@ import type { ObjectTypeRestrictedStreamDatasource } from "./ObjectTypeRestricte
 import type { ObjectTypeRestrictedViewDatasource } from "./ObjectTypeRestrictedViewDatasource.js";
 import type { ObjectTypeRestrictedViewDatasourceV2 } from "./ObjectTypeRestrictedViewDatasourceV2.js";
 import type { ObjectTypeStreamDatasource } from "./ObjectTypeStreamDatasource.js";
+import type { ObjectTypeStreamDatasourceV2 } from "./ObjectTypeStreamDatasourceV2.js";
 import type { ObjectTypeTimeSeriesDatasource } from "./ObjectTypeTimeSeriesDatasource.js";
 export interface ObjectTypeDatasourceDefinition_dataset {
   type: "dataset";
@@ -32,6 +36,11 @@ export interface ObjectTypeDatasourceDefinition_dataset {
 export interface ObjectTypeDatasourceDefinition_stream {
   type: "stream";
   stream: ObjectTypeStreamDatasource;
+}
+
+export interface ObjectTypeDatasourceDefinition_streamV2 {
+  type: "streamV2";
+  streamV2: ObjectTypeStreamDatasourceV2;
 }
 
 export interface ObjectTypeDatasourceDefinition_restrictedView {
@@ -73,12 +82,28 @@ export interface ObjectTypeDatasourceDefinition_geotimeSeries {
   type: "geotimeSeries";
   geotimeSeries: ObjectTypeGeotimeSeriesDatasource;
 }
+
+export interface ObjectTypeDatasourceDefinition_editsOnly {
+  type: "editsOnly";
+  editsOnly: ObjectTypeEditsOnlyDatasource;
+}
+
+export interface ObjectTypeDatasourceDefinition_direct {
+  type: "direct";
+  direct: ObjectTypeDirectDatasource;
+}
+
+export interface ObjectTypeDatasourceDefinition_derived {
+  type: "derived";
+  derived: ObjectTypeDerivedPropertiesDatasource;
+}
 /**
  * Wrapper type for all supported object type datasource types.
  */
 export type ObjectTypeDatasourceDefinition =
   | ObjectTypeDatasourceDefinition_dataset
   | ObjectTypeDatasourceDefinition_stream
+  | ObjectTypeDatasourceDefinition_streamV2
   | ObjectTypeDatasourceDefinition_restrictedView
   | ObjectTypeDatasourceDefinition_timeSeries
   | ObjectTypeDatasourceDefinition_datasetV2
@@ -86,4 +111,7 @@ export type ObjectTypeDatasourceDefinition =
   | ObjectTypeDatasourceDefinition_restrictedStream
   | ObjectTypeDatasourceDefinition_media
   | ObjectTypeDatasourceDefinition_mediaSetView
-  | ObjectTypeDatasourceDefinition_geotimeSeries;
+  | ObjectTypeDatasourceDefinition_geotimeSeries
+  | ObjectTypeDatasourceDefinition_editsOnly
+  | ObjectTypeDatasourceDefinition_direct
+  | ObjectTypeDatasourceDefinition_derived;

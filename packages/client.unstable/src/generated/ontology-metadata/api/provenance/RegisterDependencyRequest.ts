@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { GlobalBranchRid } from "../GlobalBranchRid.js";
 import type { Dependent } from "./Dependent.js";
 import type { ProvenanceDependentOntologyEntities } from "./ProvenanceDependentOntologyEntities.js";
 import type { Tag } from "./Tag.js";
@@ -25,4 +26,5 @@ export interface RegisterDependencyRequest {
   ontologyEntities: ProvenanceDependentOntologyEntities;
   dependent: Dependent;
   tags: Array<Tag>;
+  globalBranchRid: GlobalBranchRid | undefined;
 }

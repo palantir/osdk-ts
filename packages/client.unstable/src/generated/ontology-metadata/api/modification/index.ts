@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ export type { CompassFolderRid } from "./CompassFolderRid.js";
 export type { CompassNamespaceRid } from "./CompassNamespaceRid.js";
 export type { DataConstraintsModification } from "./DataConstraintsModification.js";
 export type { DeprecatedPropertyTypeStatusModification } from "./DeprecatedPropertyTypeStatusModification.js";
+export type { DropLinkTypePeeringMetadata } from "./DropLinkTypePeeringMetadata.js";
+export type { DropObjectTypePeeringMetadata } from "./DropObjectTypePeeringMetadata.js";
 export type { EditsHistoryConfigModification } from "./EditsHistoryConfigModification.js";
 export type { EditsHistoryModification } from "./EditsHistoryModification.js";
 export type { EditsResolutionStrategyModification } from "./EditsResolutionStrategyModification.js";
@@ -37,6 +39,7 @@ export type { EntityProvenanceModification } from "./EntityProvenanceModificatio
 export type { EntityProvenanceSourceModification } from "./EntityProvenanceSourceModification.js";
 export type { EntityRid } from "./EntityRid.js";
 export type { EventMetadataModification } from "./EventMetadataModification.js";
+export type { ExamplePropertyTypeStatusModification } from "./ExamplePropertyTypeStatusModification.js";
 export type { ExperimentalPropertyTypeStatusModification } from "./ExperimentalPropertyTypeStatusModification.js";
 export type { GetEntityModificationHistoryRequest } from "./GetEntityModificationHistoryRequest.js";
 export type { GetEntityModificationHistoryResponse } from "./GetEntityModificationHistoryResponse.js";
@@ -51,12 +54,14 @@ export type { InterfaceLinkTypeImplementationModification } from "./InterfaceLin
 export type { InterfaceLinkTypeModification } from "./InterfaceLinkTypeModification.js";
 export type { InterfacePropertyImplementationModification } from "./InterfacePropertyImplementationModification.js";
 export type { InterfaceTypeModification } from "./InterfaceTypeModification.js";
+export type { IntermediaryLinkDefinitionModification } from "./IntermediaryLinkDefinitionModification.js";
 export type { LinkDefinitionModification } from "./LinkDefinitionModification.js";
 export type { LinkTypeCreate } from "./LinkTypeCreate.js";
 export type { LinkTypeDelete } from "./LinkTypeDelete.js";
 export type { LinkTypeEntityMetadataModifyRequest } from "./LinkTypeEntityMetadataModifyRequest.js";
 export type { LinkTypeModification } from "./LinkTypeModification.js";
 export type { LinkTypeModifyRequest } from "./LinkTypeModifyRequest.js";
+export type { LinkTypePeeringMetadataModification } from "./LinkTypePeeringMetadataModification.js";
 export type { LinkTypeUpdate } from "./LinkTypeUpdate.js";
 export type { LoadAllOntologiesInternalRequest } from "./LoadAllOntologiesInternalRequest.js";
 export type { LoadAllOntologiesInternalResponse } from "./LoadAllOntologiesInternalResponse.js";
@@ -86,22 +91,29 @@ export type { ObjectTypeDatasourceModificationDefinition } from "./ObjectTypeDat
 export type { ObjectTypeDatasourceModifyRequest } from "./ObjectTypeDatasourceModifyRequest.js";
 export type { ObjectTypeDatasourceUpdate } from "./ObjectTypeDatasourceUpdate.js";
 export type { ObjectTypeDelete } from "./ObjectTypeDelete.js";
+export type { ObjectTypeDerivedPropertiesDatasourceModification } from "./ObjectTypeDerivedPropertiesDatasourceModification.js";
+export type { ObjectTypeDirectDatasourceModification } from "./ObjectTypeDirectDatasourceModification.js";
+export type { ObjectTypeEditsOnlyDatasourceModification } from "./ObjectTypeEditsOnlyDatasourceModification.js";
 export type { ObjectTypeEntityMetadataModifyRequest } from "./ObjectTypeEntityMetadataModifyRequest.js";
 export type { ObjectTypeGeotimeSeriesDatasourceModification } from "./ObjectTypeGeotimeSeriesDatasourceModification.js";
+export type { ObjectTypeIndexingSettingsModification } from "./ObjectTypeIndexingSettingsModification.js";
 export type { ObjectTypeInterfaceImplementationModification } from "./ObjectTypeInterfaceImplementationModification.js";
 export type { ObjectTypeMediaDatasourceModification } from "./ObjectTypeMediaDatasourceModification.js";
 export type { ObjectTypeMediaSetViewDatasourceModification } from "./ObjectTypeMediaSetViewDatasourceModification.js";
 export type { ObjectTypeModification } from "./ObjectTypeModification.js";
 export type { ObjectTypeModifyRequest } from "./ObjectTypeModifyRequest.js";
+export type { ObjectTypePeeringMetadataModification } from "./ObjectTypePeeringMetadataModification.js";
 export type { ObjectTypeRestrictedStreamDatasourceModification } from "./ObjectTypeRestrictedStreamDatasourceModification.js";
 export type { ObjectTypeRestrictedViewDatasourceModification } from "./ObjectTypeRestrictedViewDatasourceModification.js";
 export type { ObjectTypeRestrictedViewDatasourceV2Modification } from "./ObjectTypeRestrictedViewDatasourceV2Modification.js";
 export type { ObjectTypeStreamDatasourceModification } from "./ObjectTypeStreamDatasourceModification.js";
+export type { ObjectTypeStreamDatasourceV2Modification } from "./ObjectTypeStreamDatasourceV2Modification.js";
 export type { ObjectTypeTimeSeriesDatasourceModification } from "./ObjectTypeTimeSeriesDatasourceModification.js";
 export type { ObjectTypeTraitsModification } from "./ObjectTypeTraitsModification.js";
 export type { ObjectTypeUpdate } from "./ObjectTypeUpdate.js";
 export type { OneToManyLinkDefinitionModification } from "./OneToManyLinkDefinitionModification.js";
 export type { OntologyAdminConfig } from "./OntologyAdminConfig.js";
+export type { OntologyApiNamespaceIdentifier } from "./OntologyApiNamespaceIdentifier.js";
 export type { OntologyCreateRequest } from "./OntologyCreateRequest.js";
 export type { OntologyCreateResponse } from "./OntologyCreateResponse.js";
 export type { OntologyDeleteRequest } from "./OntologyDeleteRequest.js";

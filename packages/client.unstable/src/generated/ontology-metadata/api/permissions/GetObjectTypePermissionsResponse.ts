@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 
 import type { DatasourceRid } from "../DatasourceRid.js";
+import type { OntologyPackageRid } from "../OntologyPackageRid.js";
 import type { DatasourcePermissions } from "./DatasourcePermissions.js";
 
 /**
@@ -28,4 +29,5 @@ export interface GetObjectTypePermissionsResponse {
   canUpdateRoles: boolean;
   datasourcePermissions: Record<DatasourceRid, DatasourcePermissions>;
   isEditRestrictedByDatasources: boolean;
+  packageRid: OntologyPackageRid | undefined;
 }

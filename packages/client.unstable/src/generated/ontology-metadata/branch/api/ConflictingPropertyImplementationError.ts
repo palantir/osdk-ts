@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,26 @@
  * limitations under the License.
  */
 
+import type { InterfaceTypeRidOrIdInRequest } from "../../api/InterfaceTypeRidOrIdInRequest.js";
 import type { ObjectTypeId } from "../../api/ObjectTypeId.js";
 import type { ObjectTypeRid } from "../../api/ObjectTypeRid.js";
 import type { PropertyTypeId } from "../../api/PropertyTypeId.js";
 import type { SharedPropertyTypeRidOrIdInRequest } from "../../api/SharedPropertyTypeRidOrIdInRequest.js";
 
 /**
- * When an interface and its super interface are both explicitly implemented by an object type, the
- * implementation for an inherited property on the interface must be the same as its implementation of the
- * property on the super interface.
+ * An interface property is fulfilled more than once for an interface and the multiple implementations are not
+ * the same. When an interface and its super interface are both explicitly implemented by an object type, the
+ * implementation for an inherited property on the interface must be the same as the implementation of the
+ * property for the super interface. Additionally, the implementation of two child interfaces of the same super
+ * interface must have the same implementation for any inherited properties.
  */
 export interface ConflictingPropertyImplementationError {
   objectRid: ObjectTypeRid;
-  objectId: ObjectTypeId | undefined;
+  objectTypeId: ObjectTypeId | undefined;
+  interfaceTypeRidOrIdInRequest: InterfaceTypeRidOrIdInRequest;
+  implementedInterfaceTypeRidsOrIdInRequests: Array<
+    InterfaceTypeRidOrIdInRequest
+  >;
   sharedPropertyTypeRidOrIdInRequest: SharedPropertyTypeRidOrIdInRequest;
   propertyTypeIds: Array<PropertyTypeId>;
 }

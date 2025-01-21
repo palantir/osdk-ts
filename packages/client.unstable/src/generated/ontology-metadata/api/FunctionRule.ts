@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 import type { ExperimentalDeclarativeEditInformation } from "./ExperimentalDeclarativeEditInformation.js";
 import type { FunctionInputName } from "./FunctionInputName.js";
 import type { FunctionRid } from "./FunctionRid.js";
+import type { FunctionRuleCustomExecutionMode } from "./FunctionRuleCustomExecutionMode.js";
 import type { FunctionVersion } from "./FunctionVersion.js";
 import type { LogicRuleValue } from "./LogicRuleValue.js";
 
@@ -27,6 +28,7 @@ export interface FunctionRule {
   functionRid: FunctionRid;
   functionVersion: FunctionVersion;
   functionInputValues: Record<FunctionInputName, LogicRuleValue>;
+  customExecutionMode: FunctionRuleCustomExecutionMode | undefined;
   experimentalDeclarativeEditInformation:
     | ExperimentalDeclarativeEditInformation
     | undefined;
