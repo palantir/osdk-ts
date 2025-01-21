@@ -32,9 +32,7 @@ await yargs(hideBin(process.argv))
       });
   }, async (args) => {
     try {
-      if (args.mechanism === "pure") {
-        await transpileTsc();
-      } else if (args.mechanism === "normal" && args.format === "esm") {
+      if (args.mechanism === "normal" && args.format === "esm") {
         await transpileWithBabel(args.format, args.target);
       } else if (args.mechanism === "bundle") {
         await transpileWithTsup(args.format, args.target);
@@ -63,7 +61,10 @@ async function transformTypes() {
   await rm(outDir, { recursive: true, force: true });
   await mkdir(outDir, { recursive: true });
 
-  const fileEndingsToCompile = [".ts", ".mts"];
+  const extMap = {
+    ".tsx": ".ts",
+  };
+  const fileEndingsToCompile = [".ts", ".mts", ...Object.keys(extMap)];
 
   for (
     const f of await readdir(inDir, {
@@ -106,24 +107,15 @@ async function transformTypes() {
     const destPathRightExt = path.join(
       path.dirname(destPathWrongExt),
       path.basename(destPathWrongExt, path.extname(destPathWrongExt))
-        + `.d${path.extname(destPathWrongExt)}`,
+        + `.d${
+          extMap[path.extname(destPathWrongExt)]
+            ?? path.extname(destPathWrongExt)
+        }`,
     );
 
     await mkdir(path.dirname(destPathRightExt), { recursive: true });
     await writeFile(destPathRightExt, result.code, "utf-8");
   }
-}
-
-async function transpileTsc() {
-  throw new Error("Unsupported");
-  const outDir = PURE_OUTPUT_PATH;
-
-  await rm(outDir, { recursive: true, force: true });
-  await mkdir(outDir, { recursive: true });
-  // await execa({
-  //   stdout: "inherit",
-  //   stderr: "inherit",
-  // })`pnpm exec tsc-absolute --emitDeclarationOnly false --declaration false --declarationMap false --outDir ${outDir}`;
 }
 
 /**

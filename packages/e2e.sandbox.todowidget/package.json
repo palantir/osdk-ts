@@ -25,7 +25,6 @@
   },
   "scripts": {
     "build": "tsc && vite build",
-    "check-attw": "monorepo.tool.attw esm",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "dev": "vite",

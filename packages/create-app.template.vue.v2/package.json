@@ -24,7 +24,6 @@
     }
   },
   "scripts": {
-    "check-attw": "monorepo.tool.attw esm",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "codegen": "create-app.template-packager",

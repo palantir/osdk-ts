@@ -20,14 +20,16 @@ echo "Checking extra entry points: $EXTRA_ENTRY_POINTS"
 # Don't fail on exit code.
 $ATTW --pack --format json  --entrypoints . $EXTRA_ENTRY_POINTS > build/attw.json || true 
 
-cat build/attw.json
+# Show the full ATTW for awareness (but dont error on it)
+$ATTW --pack --entrypoints . $EXTRA_ENTRY_POINTS || true
+
 # Check for errors, will be empty string if there are none.
 # shellcheck disable=SC2002
-errors=$(cat build/attw.json | jq --arg check_type "$BUILD_TYPE" '
+errors=$(cat build/attw.json | jq '
     def filterIssues($problems):
         $problems | map_values( 
             [.[] | select(
-                $check_type != "esm" or .resolutionKind != "node10" and .resolutionKind != "node16-cjs"
+                .resolutionKind != "node10"
             )] 
         ) | map_values(if . | length == 0 then empty else . end)
     ;
