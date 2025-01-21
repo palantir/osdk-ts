@@ -28,9 +28,9 @@ export const FooInterface: InterfaceType = {
   },
   links: {},
   implementedByObjectTypes: [],
-  // allProperties: { fooSpt },
-  // allExtendsInterfaces: [],
-  // allLinks: {},
+  allProperties: { fooSpt },
+  allExtendsInterfaces: [],
+  allLinks: {},
 };
 
 export const employeeInterfaceScoped = {
@@ -55,9 +55,9 @@ export const BarInterface: InterfaceType = {
   rid: "ri.interface.main.interface.2",
   extendsInterfaces: [],
   properties: {},
-  // allProperties: {},
+  allProperties: {},
   links: {},
   implementedByObjectTypes: [],
-  // allExtendsInterfaces: [],
-  // allLinks: {},
+  allExtendsInterfaces: [],
+  allLinks: {},
 };
