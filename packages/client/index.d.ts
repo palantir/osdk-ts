@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from "./build/cjs/public/unstable-do-not-use.cjs";
+export * from "./build/cjs/index.cjs";
