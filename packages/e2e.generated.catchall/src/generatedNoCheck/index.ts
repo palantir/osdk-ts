@@ -18,6 +18,7 @@ export {
   FintrafficAis,
   GtfsTripTrackObject,
   McAirportStruct,
+  MnayanOsdkMediaObject,
   MtaBus,
   ObjectTypeWithAllPropertyTypes,
   OsdkTestObject,

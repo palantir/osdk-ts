@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,22 @@
  * limitations under the License.
  */
 
-export type WirePropertyTypes =
-  | SimpleWirePropertyTypes
-  | Record<string, SimpleWirePropertyTypes>;
+export interface Media {
+  /**
+   * Fetches metadata for media reference property
+   */
+  fetchMetadata(): Promise<MediaMetadata>;
+  /**
+   * Fetches content of a media reference property
+   */
+  fetchContents(): Promise<Response>;
+}
 
-export type SimpleWirePropertyTypes =
-  | "string"
-  | "datetime"
-  | "double"
-  | "boolean"
-  | "integer"
-  | "timestamp"
-  | "short"
-  | "long"
-  | "float"
-  | "decimal"
-  | "byte"
-  | "marking"
-  | "mediaReference"
-  | "numericTimeseries"
-  | "stringTimeseries"
-  | "sensorTimeseries"
-  | "attachment"
-  | "geopoint"
-  | "geoshape"
-  | "geotimeSeriesReference";
+/**
+ * Metadata of a media item
+ */
+export interface MediaMetadata {
+  path?: string;
+  sizeBytes: number;
+  mediaType: string;
+}

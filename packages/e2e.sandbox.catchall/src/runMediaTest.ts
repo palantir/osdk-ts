@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,18 @@
  * limitations under the License.
  */
 
-export type WirePropertyTypes =
-  | SimpleWirePropertyTypes
-  | Record<string, SimpleWirePropertyTypes>;
+import { MnayanOsdkMediaObject } from "@osdk/e2e.generated.catchall";
+import { client } from "./client.js";
 
-export type SimpleWirePropertyTypes =
-  | "string"
-  | "datetime"
-  | "double"
-  | "boolean"
-  | "integer"
-  | "timestamp"
-  | "short"
-  | "long"
-  | "float"
-  | "decimal"
-  | "byte"
-  | "marking"
-  | "mediaReference"
-  | "numericTimeseries"
-  | "stringTimeseries"
-  | "sensorTimeseries"
-  | "attachment"
-  | "geopoint"
-  | "geoshape"
-  | "geotimeSeriesReference";
+export async function runMediaTest(): Promise<void> {
+  const result = await client(MnayanOsdkMediaObject).fetchOne(
+    "7c2aa4e0-9cd6-48c1-9d09-653249feb4e7",
+  );
+
+  console.log("Object id:", result?.id);
+  console.log("Object Media reference:", result?.mediaReference);
+
+  const mediaMetadata = await result.mediaReference?.fetchMetadata();
+
+  console.log(mediaMetadata);
+}
