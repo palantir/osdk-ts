@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 import type { DatasourceModificationConstraintError } from "./DatasourceModificationConstraintError.js";
 import type { ForeignKeyConstraintError } from "./ForeignKeyConstraintError.js";
 import type { FoundrySchemaConstraintError } from "./FoundrySchemaConstraintError.js";
+import type { GeotimeSeriesReferencePropertyTypeConstraintError } from "./GeotimeSeriesReferencePropertyTypeConstraintError.js";
 import type { InterfaceImplementationError } from "./InterfaceImplementationError.js";
 import type { MediaReferencePropertyTypeConstraintError } from "./MediaReferencePropertyTypeConstraintError.js";
 import type { NumberOfDatasourcesConstraintError } from "./NumberOfDatasourcesConstraintError.js";
@@ -58,6 +59,12 @@ export interface ValidationError_timeDependentPropertyTypeConstraint {
   timeDependentPropertyTypeConstraint: TimeDependentPropertyTypeConstraintError;
 }
 
+export interface ValidationError_geotimeSeriesReferencePropertyTypeConstraint {
+  type: "geotimeSeriesReferencePropertyTypeConstraint";
+  geotimeSeriesReferencePropertyTypeConstraint:
+    GeotimeSeriesReferencePropertyTypeConstraintError;
+}
+
 export interface ValidationError_datasourceModificationConstraint {
   type: "datasourceModificationConstraint";
   datasourceModificationConstraint: DatasourceModificationConstraintError;
@@ -70,4 +77,5 @@ export type ValidationError =
   | ValidationError_mediaReferencePropertyTypeConstraint
   | ValidationError_interfaceImplementationConstraint
   | ValidationError_timeDependentPropertyTypeConstraint
+  | ValidationError_geotimeSeriesReferencePropertyTypeConstraint
   | ValidationError_datasourceModificationConstraint;

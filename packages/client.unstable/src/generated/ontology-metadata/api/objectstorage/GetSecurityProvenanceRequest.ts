@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,13 @@
 
 import type { LinkTypeRid } from "../LinkTypeRid.js";
 import type { ObjectTypeRid } from "../ObjectTypeRid.js";
+import type { ObjectTypeProvenanceProperties } from "./ObjectTypeProvenanceProperties.js";
 
 /**
  * Request to load security provenance information for ObjectTypes and LinkTypes.
  */
 export interface GetSecurityProvenanceRequest {
   objectTypes: Array<ObjectTypeRid>;
+  objectTypeProvenanceProperties: ObjectTypeProvenanceProperties | undefined;
   linkTypes: Array<LinkTypeRid>;
 }

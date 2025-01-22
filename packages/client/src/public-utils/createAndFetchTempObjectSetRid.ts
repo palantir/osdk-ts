@@ -28,7 +28,7 @@ import { getWireObjectSet } from "../objectSet/createObjectSet.js";
  *
  * @param client - An OSDK client.
  * @param objectSet - The object set to fetch a RID for.
- * @returns
+ * @returns A promise that resolves to the RID of the temporary object set.
  */
 export async function createAndFetchTempObjectSetRid<
   Q extends ObjectOrInterfaceDefinition,

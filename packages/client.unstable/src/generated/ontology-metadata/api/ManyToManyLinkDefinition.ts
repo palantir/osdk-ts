@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 
 import type { LinkTypeMetadata } from "./LinkTypeMetadata.js";
+import type { LinkTypePeeringMetadata } from "./LinkTypePeeringMetadata.js";
 import type { ObjectTypeRid } from "./ObjectTypeRid.js";
 import type { PropertyTypeRid } from "./PropertyTypeRid.js";
 export interface ManyToManyLinkDefinition {
@@ -30,4 +31,5 @@ export interface ManyToManyLinkDefinition {
     PropertyTypeRid,
     PropertyTypeRid
   >;
+  peeringMetadata: LinkTypePeeringMetadata | undefined;
 }

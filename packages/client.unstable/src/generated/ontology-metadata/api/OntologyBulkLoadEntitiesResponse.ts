@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ActionTypeLoadResponseV2 } from "./ActionTypeLoadResponseV2.js";
 import type { InterfaceTypeLoadResponse } from "./InterfaceTypeLoadResponse.js";
 import type { LinkTypeLoadResponse } from "./LinkTypeLoadResponse.js";
 import type { ObjectTypeLoadResponse } from "./ObjectTypeLoadResponse.js";
@@ -32,4 +33,5 @@ export interface OntologyBulkLoadEntitiesResponse {
   sharedPropertyTypes: Array<SharedPropertyTypeLoadResponse | undefined>;
   interfaceTypes: Array<InterfaceTypeLoadResponse | undefined>;
   typeGroups: Array<TypeGroupLoadResponse | undefined>;
+  actionTypes: Array<ActionTypeLoadResponseV2 | undefined>;
 }

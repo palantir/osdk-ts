@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { InterfaceParameterPropertyValue } from "./InterfaceParameterPropertyValue.js";
 import type { ObjectParameterPropertyValue } from "./ObjectParameterPropertyValue.js";
 import type { ParameterId } from "./ParameterId.js";
 import type { ParameterLength } from "./ParameterLength.js";
@@ -34,6 +35,11 @@ export interface ConditionValue_objectParameterPropertyValue {
   objectParameterPropertyValue: ObjectParameterPropertyValue;
 }
 
+export interface ConditionValue_interfaceParameterPropertyValue {
+  type: "interfaceParameterPropertyValue";
+  interfaceParameterPropertyValue: InterfaceParameterPropertyValue;
+}
+
 export interface ConditionValue_userProperty {
   type: "userProperty";
   userProperty: UserProperty;
@@ -47,5 +53,6 @@ export type ConditionValue =
   | ConditionValue_parameterId
   | ConditionValue_staticValue
   | ConditionValue_objectParameterPropertyValue
+  | ConditionValue_interfaceParameterPropertyValue
   | ConditionValue_userProperty
   | ConditionValue_parameterLength;

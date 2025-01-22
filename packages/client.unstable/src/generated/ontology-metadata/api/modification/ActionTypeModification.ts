@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,23 @@
 
 import type { ActionApplyClientPreferences } from "../ActionApplyClientPreferences.js";
 import type { ActionLogConfiguration } from "../ActionLogConfiguration.js";
-import type { ActionLogic } from "../ActionLogic.js";
-import type { ActionNotification } from "../ActionNotification.js";
+import type { ActionLogicModification } from "../ActionLogicModification.js";
+import type { ActionNotificationModification } from "../ActionNotificationModification.js";
 import type { ActionNotificationSettings } from "../ActionNotificationSettings.js";
 import type { ActionRevert } from "../ActionRevert.js";
 import type { ActionTypeApiName } from "../ActionTypeApiName.js";
 import type { ActionTypeDisplayMetadata } from "../ActionTypeDisplayMetadata.js";
+import type { ActionTypeEntities } from "../ActionTypeEntities.js";
 import type { ActionTypeProvenanceModification } from "../ActionTypeProvenanceModification.js";
 import type { ActionTypeStatus } from "../ActionTypeStatus.js";
-import type { ActionWebhooks } from "../ActionWebhooks.js";
+import type { ActionWebhooksModification } from "../ActionWebhooksModification.js";
 import type { EditParameterRequest } from "../EditParameterRequest.js";
 import type { EditSectionRequest } from "../EditSectionRequest.js";
 import type { FormContent } from "../FormContent.js";
 import type { ParameterId } from "../ParameterId.js";
 import type { ParameterRid } from "../ParameterRid.js";
 import type { SectionRid } from "../SectionRid.js";
+import type { TypeGroupRid } from "../TypeGroupRid.js";
 import type { ValidationRuleModification } from "../ValidationRuleModification.js";
 import type { ValidationRuleRid } from "../ValidationRuleRid.js";
 import type { PutParameterRequestWithId } from "./PutParameterRequestWithId.js";
@@ -53,7 +55,7 @@ export interface ActionTypeModification {
   sectionsToUpdate: Record<SectionRid, EditSectionRequest>;
   parameterOrdering: Array<ParameterId>;
   formContentOrdering: Array<FormContent> | undefined;
-  logic: ActionLogic;
+  logic: ActionLogicModification;
   validationsToCreate: Record<
     ValidationRuleRid,
     ValidationRuleModificationWithIdInRequest
@@ -63,8 +65,10 @@ export interface ActionTypeModification {
   validationsOrdering: Array<ValidationRuleRid>;
   revert: ActionRevert | undefined;
   status: ActionTypeStatus | undefined;
-  webhooks: ActionWebhooks | undefined;
-  notifications: Array<ActionNotification>;
+  webhooks: ActionWebhooksModification | undefined;
+  notifications: Array<ActionNotificationModification>;
   notificationSettings: ActionNotificationSettings | undefined;
   provenance: ActionTypeProvenanceModification | undefined;
+  entities: ActionTypeEntities | undefined;
+  typeGroups: Array<TypeGroupRid>;
 }

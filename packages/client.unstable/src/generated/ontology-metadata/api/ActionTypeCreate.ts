@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,22 @@
 
 import type { ActionApplyClientPreferences } from "./ActionApplyClientPreferences.js";
 import type { ActionLogConfiguration } from "./ActionLogConfiguration.js";
-import type { ActionLogic } from "./ActionLogic.js";
-import type { ActionNotification } from "./ActionNotification.js";
+import type { ActionLogicModification } from "./ActionLogicModification.js";
+import type { ActionNotificationModification } from "./ActionNotificationModification.js";
 import type { ActionNotificationSettings } from "./ActionNotificationSettings.js";
 import type { ActionRevert } from "./ActionRevert.js";
 import type { ActionTypeApiName } from "./ActionTypeApiName.js";
 import type { ActionTypeDisplayMetadata } from "./ActionTypeDisplayMetadata.js";
 import type { ActionTypeProvenanceModification } from "./ActionTypeProvenanceModification.js";
 import type { ActionTypeStatus } from "./ActionTypeStatus.js";
-import type { ActionWebhooks } from "./ActionWebhooks.js";
+import type { ActionWebhooksModification } from "./ActionWebhooksModification.js";
 import type { FormContent } from "./FormContent.js";
 import type { OntologyPackageRid } from "./OntologyPackageRid.js";
 import type { ParameterId } from "./ParameterId.js";
-import type { PutParameterRequest } from "./PutParameterRequest.js";
-import type { PutSectionRequest } from "./PutSectionRequest.js";
+import type { PutParameterRequestModification } from "./PutParameterRequestModification.js";
+import type { PutSectionRequestModification } from "./PutSectionRequestModification.js";
 import type { SectionId } from "./SectionId.js";
+import type { TypeGroupRidOrIdInRequest } from "./TypeGroupRidOrIdInRequest.js";
 import type { ValidationRuleIdInRequest } from "./ValidationRuleIdInRequest.js";
 import type { ValidationRuleModification } from "./ValidationRuleModification.js";
 
@@ -40,15 +41,15 @@ import type { ValidationRuleModification } from "./ValidationRuleModification.js
 export interface ActionTypeCreate {
   apiName: ActionTypeApiName;
   displayMetadata: ActionTypeDisplayMetadata;
-  parameters: Record<ParameterId, PutParameterRequest>;
-  sections: Record<SectionId, PutSectionRequest>;
+  parameters: Record<ParameterId, PutParameterRequestModification>;
+  sections: Record<SectionId, PutSectionRequestModification>;
   parameterOrdering: Array<ParameterId>;
   formContentOrdering: Array<FormContent>;
-  logic: ActionLogic;
+  logic: ActionLogicModification;
   validations: Record<ValidationRuleIdInRequest, ValidationRuleModification>;
   validationsOrdering: Array<ValidationRuleIdInRequest>;
-  webhooks: ActionWebhooks | undefined;
-  notifications: Array<ActionNotification>;
+  webhooks: ActionWebhooksModification | undefined;
+  notifications: Array<ActionNotificationModification>;
   actionLogConfiguration: ActionLogConfiguration | undefined;
   status: ActionTypeStatus | undefined;
   actionApplyClientSettings: ActionApplyClientPreferences | undefined;
@@ -56,4 +57,5 @@ export interface ActionTypeCreate {
   revert: ActionRevert | undefined;
   packageRid: OntologyPackageRid | undefined;
   provenance: ActionTypeProvenanceModification | undefined;
+  typeGroups: Array<TypeGroupRidOrIdInRequest>;
 }
