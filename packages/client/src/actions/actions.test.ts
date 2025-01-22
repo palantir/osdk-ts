@@ -489,6 +489,7 @@ describe("ActionResponse remapping", () => {
       "moveOffice",
       "promoteEmployee",
       "promoteEmployeeObject",
+      "actionTakesMedia",
     ]);
   });
 });
