@@ -467,6 +467,7 @@ describe("ActionResponse remapping", () => {
       "actionTakesObjectSet",
       "createOffice",
       "createOfficeAndEmployee",
+      "createStructPerson",
       "moveOffice",
       "promoteEmployee",
       "promoteEmployeeObject",
