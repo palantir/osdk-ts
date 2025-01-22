@@ -221,6 +221,7 @@ export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
             }
 
             try {
+              const injectedScripts = await extractInjectedScripts(server);
               const settingsResponse = await setWidgetSettings(
                 // TODO: Actually handle the widget RID from within the config, which will require somehow parsing the config
                 // Unfortunately, moduleParsed is not called during vite's dev mode for performance reasons, so the config file
@@ -230,6 +231,7 @@ export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
                 localhostUrl,
                 entrypointToJsSourceFileMap,
                 entrypointFileName,
+                injectedScripts.scriptSources,
               );
               if (
                 settingsResponse.status !== 200
@@ -564,11 +566,12 @@ function setWidgetSettings(
   localhostUrl: string,
   entrypointToJsSourceFileMap: Record<string, Set<string>>,
   entrypointFileName: string,
+  injectedScriptSources: string[],
 ) {
   const widgetDevModeSettings = {
     entrypointJs: [
       `/${VITE_INJECTIONS}`,
-      "/@vite/client",
+      ...injectedScriptSources,
       ...entrypointToJsSourceFileMap[entrypointFileName],
     ].map((file) => ({
       filePath: `${localhostUrl}${file}`,
