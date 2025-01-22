@@ -41,7 +41,7 @@ export const localMedia1 = {
 
 export const mediaReferenceObjectTypeApi = "mediaObjectType";
 export const mediaPropertyName1: string = "mediaReference";
-export const mediaPropertyName2: string = "mediaReference1";
+export const mediaPropertyName2: string = "media-reference";
 
 export const mediaMetadataRequestHandler: Record<
   string,

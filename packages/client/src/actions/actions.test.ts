@@ -18,11 +18,13 @@ import type {
   ActionEditResponse,
   ActionValidationResponse,
   AttachmentUpload,
+  MediaUpload,
 } from "@osdk/api";
 import {
   $Actions,
   $ontologyRid,
   actionTakesAttachment,
+  actionTakesMedia,
   createOffice,
   moveOffice,
 } from "@osdk/client.test.ontology";
@@ -42,6 +44,7 @@ import {
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createAttachmentUpload } from "../object/AttachmentUpload.js";
+import { createMediaUpload } from "../object/mediaUpload.js";
 import { ActionValidationError } from "./ActionValidationError.js";
 import { remapActionResponse } from "./applyAction.js";
 
@@ -260,6 +263,46 @@ describe("actions", () => {
     expectTypeOf<typeof result2>().toEqualTypeOf<undefined>();
     expect(result2).toBeUndefined();
   });
+
+  it("Accepts media uploads", async () => {
+    const clientBoundActionTakesMedia = client(
+      actionTakesMedia,
+    ).applyAction;
+    type InferredParamType = Parameters<
+      typeof clientBoundActionTakesMedia
+    >[0];
+    const clientBoundBatchActionTakesMedia = client(
+      actionTakesAttachment,
+    ).batchApplyAction;
+    type InferredBatchParamType = Parameters<
+      typeof clientBoundBatchActionTakesMedia
+    >[0];
+
+    expectTypeOf<
+      {
+        media_reference: MediaUpload;
+      }
+    >().toMatchTypeOf<
+      InferredParamType
+    >();
+
+    const blob = stubData.mediaUploadRequestBody[stubData.localMedia1.filename];
+
+    const mediaUpload = createMediaUpload({
+      data: blob,
+      fileName: stubData.localMedia1.filename,
+      objectTypeApiName: stubData.mediaReferenceObjectTypeApi,
+      propertyApiName: stubData.mediaPropertyName2,
+    });
+
+    const result = await client(actionTakesMedia).applyAction({
+      media_reference: mediaUpload,
+    });
+
+    expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
+    expect(result).toBeUndefined();
+  });
+
   it("conditionally returns edits in batch mode", async () => {
     const result = await client(moveOffice).batchApplyAction([
       {

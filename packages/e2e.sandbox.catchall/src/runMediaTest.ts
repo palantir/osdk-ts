@@ -17,7 +17,6 @@
 import { createMediaUpload } from "@osdk/client";
 import { $Actions, MnayanOsdkMediaObject } from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
-import * as testImg from "./images/todo.png";
 
 export async function runMediaTest(): Promise<void> {
   const result = await client(MnayanOsdkMediaObject).fetchOne(
@@ -29,31 +28,28 @@ export async function runMediaTest(): Promise<void> {
 
   const mediaMetadata = await result.mediaReference?.fetchMetadata();
   const response = await result.mediaReference?.fetchContents().then(
-    response => {
+    async response => {
       if (!response.ok) {
         console.log("Error fetching data");
       } else {
         const mimeType = response.headers.get("Content-Type");
         console.log("Data mimetype:", mimeType);
+        const mediaUpload = createMediaUpload({
+          data: await response.blob(),
+          fileName: "test.png",
+          objectTypeApiName: MnayanOsdkMediaObject.apiName,
+          propertyApiName: "mediaReference",
+        });
+        console.log("Media upload:", mediaUpload);
+        const result = await client($Actions.createMediaObject).applyAction({
+          path: "test",
+          media_reference: mediaUpload,
+        }, {
+          $returnEdits: true,
+        });
       }
     },
   );
-
-  const img = await fetch("./images/todo.png").then(response =>
-    response.blob()
-  );
-
-  const mediaUpload = createMediaUpload({
-    data: img,
-    fileName: "test.png",
-    objectTypeApiName: MnayanOsdkMediaObject.apiName,
-    propertyApiName: "mediaReference",
-  });
-  console.log("Img:", mediaUpload);
-  // await client($Actions.createMediaObject).applyAction({
-  //   path: "test",
-  //   media_reference: mediaUpload,
-  // });
 
   console.log(mediaMetadata);
 }

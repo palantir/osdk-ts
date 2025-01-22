@@ -258,6 +258,22 @@ export const ActionTakesAttachment: ActionTypeV2 = {
   status: "ACTIVE",
 };
 
+export const ActionTakesMedia: ActionTypeV2 = {
+  apiName: "actionTakesMedia",
+  description: "An action which takes a mediaReference parameter",
+  parameters: {
+    media_reference: {
+      dataType: {
+        type: "mediaReference",
+      },
+      required: true,
+    },
+  },
+  rid: "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f3",
+  operations: [],
+  status: "ACTIVE",
+};
+
 export const ActionTypeWithUnsupportedTypes: ActionTypeV2 = {
   apiName: "unsupportedAction",
   description: "An unsupported action type",
@@ -290,4 +306,5 @@ export const actionTypes: ActionTypeV2[] = [
   MoveOffice,
   ActionTakesObjectSet,
   ActionTakesAttachment,
+  ActionTakesMedia,
 ];

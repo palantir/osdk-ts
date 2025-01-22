@@ -38,11 +38,8 @@ export async function toDataValue(
     // typeof null is 'object' so do this first
     return value;
   }
-  console.log("**** In toDataValue:", value, isMediaUpload(value));
   // arrays and sets are both sent over the wire as arrays
   if (Array.isArray(value) || value instanceof Set) {
-    console.log("*** IN ATTACHMENT UPLOAD:");
-
     const promiseArray = Array.from(
       value,
       async (innerValue) => await toDataValue(innerValue, client),
@@ -63,9 +60,6 @@ export async function toDataValue(
         preview: true,
       },
     );
-    console.log("*** MEDIA UPLOAD CONVERTED 2:", mediaReference);
-    // TODO: Double check if we should pass directly or pass toDataValue(mediaReference, client)
-    // return mediaReference;
     return await toDataValue(mediaReference, client);
   }
 
@@ -127,7 +121,6 @@ export async function toDataValue(
       },
       Promise.resolve({} as { [key: string]: DataValue }),
     );
-    console.log("*** Object Block:", retVal);
     return retVal;
   }
 
