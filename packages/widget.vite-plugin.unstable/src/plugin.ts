@@ -28,15 +28,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import color from "picocolors";
 import sirv from "sirv";
-import type {
-  HtmlTagDescriptor,
-  IndexHtmlTransformHook,
-  IndexHtmlTransformResult,
-  Plugin,
-  ResolvedConfig,
-  ViteDevServer,
-} from "vite";
+import type { Plugin, ResolvedConfig, ViteDevServer } from "vite";
 import { PALANTIR_PATH, SETUP_PATH, VITE_INJECTIONS } from "./constants.js";
+import { extractInjectedScripts } from "./extractInjectedScripts.js";
 
 export const DIR_DIST: string = typeof __dirname !== "undefined"
   ? __dirname
@@ -144,16 +138,11 @@ export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
 
       server.middlewares.use(
         `${server.config.base ?? "/"}${VITE_INJECTIONS}`,
-        async (req, res) => {
-          if (devServer == null) {
-            res.statusCode = 500;
-            res.statusMessage = "Vite server not found.";
-            res.end();
-            return;
-          }
+        async (_, res) => {
           res.setHeader("Access-Control-Allow-Origin", "*");
           res.setHeader("Content-Type", "application/javascript");
-          res.end(await extractInjectedScripts(devServer));
+          const injectedScripts = await extractInjectedScripts(server);
+          res.end(injectedScripts.inlineScripts.join("\n"));
         },
       );
 
@@ -609,67 +598,4 @@ function enableDevMode(foundryUrl: URL) {
       accept: "application/json",
     },
   });
-}
-
-/**
- * Extracts inline scripts injected by Vite plugins during HTML transformation.
- *
- * Vite plugins can inject scripts into the HTML entrypoint. This function captures
- * those injections, specifically inline scripts, which are needed for our server-side
- * rendered pages. It calls the `transformIndexHtml` hook on each plugin, collects
- * the script descriptors, and returns the concatenated inline script contents.
- *
- * See documentation: https://vite.dev/guide/api-plugin#transformindexhtml
- */
-async function extractInjectedScripts(
-  devServer: ViteDevServer,
-): Promise<string> {
-  const pluginTransforms = (devServer?.pluginContainer.plugins ?? [])
-    .map(getPluginTransformHook)
-    .filter((hook): hook is IndexHtmlTransformHook => hook != null);
-  const transformResults: Array<IndexHtmlTransformResult | undefined> =
-    await Promise.all(
-      pluginTransforms.map(async (transformHook) => {
-        // The parameters to the transform hook are not used in the cases we currently support
-        const result = await transformHook("", { path: "", filename: "" });
-        return result ?? undefined;
-      }),
-    );
-
-  // We are only interested in extracting scripts that Vite would usually inject as inline scripts
-  const inlineScriptDescriptors: HtmlTagDescriptor[] = transformResults
-    .filter((result): result is HtmlTagDescriptor[] =>
-      result != null && typeof result !== "string"
-    )
-    .flat()
-    .filter((descriptor: HtmlTagDescriptor) =>
-      descriptor.tag === "script" && typeof descriptor.children === "string"
-    );
-
-  return inlineScriptDescriptors.map((descriptor) => descriptor.children).join(
-    "\n",
-  );
-}
-
-/**
- * The Vite plugin API for transformIndexHtml supports a few different formats,
- * all which ultimately resolve to the function that we want to call.
- */
-function getPluginTransformHook(
-  plugin: Plugin<unknown>,
-): IndexHtmlTransformHook | undefined {
-  if (typeof plugin.transformIndexHtml === "function") {
-    return plugin.transformIndexHtml;
-  } else if (
-    typeof plugin.transformIndexHtml === "object"
-    && "handler" in plugin.transformIndexHtml
-  ) {
-    return plugin.transformIndexHtml.handler;
-  } else if (
-    typeof plugin.transformIndexHtml === "object"
-    && "transform" in plugin.transformIndexHtml
-  ) {
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    return plugin.transformIndexHtml.transform;
-  }
 }
