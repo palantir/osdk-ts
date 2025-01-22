@@ -34,3 +34,11 @@ export async function runStructsTest(): Promise<void> {
   console.log(airport.airportStruct);
   console.log(airport.airportStruct?.geoHash);
 }
+
+// Commented out so we don't keep creating objects by accident
+//   const myActionCall = await client(createStructPersonOpiTeam).applyAction({
+//     id: "James Zhang",
+//     address: { city: "NYC", state: "NY", zipcode: 10010 },
+//     age: 29,
+//   });
+// }
