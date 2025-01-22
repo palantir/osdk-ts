@@ -42,7 +42,7 @@ export async function runMediaTest(): Promise<void> {
         });
         console.log("Media upload:", mediaUpload);
         const result = await client($Actions.createMediaObject).applyAction({
-          path: "test",
+          path: "test1",
           media_reference: mediaUpload,
         }, {
           $returnEdits: true,

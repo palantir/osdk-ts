@@ -38,6 +38,7 @@ export async function toDataValue(
     // typeof null is 'object' so do this first
     return value;
   }
+
   // arrays and sets are both sent over the wire as arrays
   if (Array.isArray(value) || value instanceof Set) {
     const promiseArray = Array.from(
@@ -113,7 +114,7 @@ export async function toDataValue(
 
   // struct
   if (typeof value === "object") {
-    const retVal = await Object.entries(value).reduce(
+    return await Object.entries(value).reduce(
       async (promisedAcc, [key, structValue]) => {
         const acc = await promisedAcc;
         acc[key] = await toDataValue(structValue, client);
@@ -121,7 +122,6 @@ export async function toDataValue(
       },
       Promise.resolve({} as { [key: string]: DataValue }),
     );
-    return retVal;
   }
 
   // expected to pass through - boolean, byte, date, decimal, float, double, integer, long, short, string, timestamp

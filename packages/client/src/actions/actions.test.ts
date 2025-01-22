@@ -271,12 +271,6 @@ describe("actions", () => {
     type InferredParamType = Parameters<
       typeof clientBoundActionTakesMedia
     >[0];
-    const clientBoundBatchActionTakesMedia = client(
-      actionTakesAttachment,
-    ).batchApplyAction;
-    type InferredBatchParamType = Parameters<
-      typeof clientBoundBatchActionTakesMedia
-    >[0];
 
     expectTypeOf<
       {
@@ -483,13 +477,13 @@ describe("ActionResponse remapping", () => {
     const actions = Object.keys($Actions);
     expect(actions).toStrictEqual([
       "actionTakesAttachment",
+      "actionTakesMedia",
       "actionTakesObjectSet",
       "createOffice",
       "createOfficeAndEmployee",
       "moveOffice",
       "promoteEmployee",
       "promoteEmployeeObject",
-      "actionTakesMedia",
     ]);
   });
 });
