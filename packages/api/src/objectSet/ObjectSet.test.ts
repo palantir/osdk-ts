@@ -100,8 +100,9 @@ describe("ObjectSet", () => {
   describe(".withProperties", () => {
     const fauxObjectSet = {
       withProperties: vi.fn(() => {
-        fetchPage: vi.fn(() => Promise.resolve());
+        return fauxObjectSet;
       }),
+      fetchPage: vi.fn(() => Promise.resolve()),
     } as any as Employee.ObjectSet;
 
     test("single property", async () => {
