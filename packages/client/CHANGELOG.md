@@ -1,5 +1,16 @@
 # @osdk/client
 
+## 2.0.12
+
+### Patch Changes
+
+- 99e976e: Adds experimental method to convert an object set into RID
+- Updated dependencies [99e976e]
+- Updated dependencies [29f2eae]
+  - @osdk/api@2.0.12
+  - @osdk/generator-converters@2.0.12
+  - @osdk/client.unstable@2.0.12
+
 ## 2.0.11
 
 ### Patch Changes

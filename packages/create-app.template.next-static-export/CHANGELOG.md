@@ -1,5 +1,7 @@
 # @osdk/create-app.template.next-static-export
 
+## 2.0.12
+
 ## 2.0.11
 
 ## 2.0.10

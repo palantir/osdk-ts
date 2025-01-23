@@ -1,5 +1,13 @@
 # @osdk/generator-converters
 
+## 2.0.12
+
+### Patch Changes
+
+- 29f2eae: Ignore unknown property types.
+- Updated dependencies [99e976e]
+  - @osdk/api@2.0.12
+
 ## 2.0.11
 
 ### Patch Changes
