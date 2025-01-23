@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,9 @@
  */
 
 import type { ActionTypeRichTextComponent } from "./ActionTypeRichTextComponent.js";
+import type { AllEditedObjectsFieldMapping } from "./AllEditedObjectsFieldMapping.js";
 import type { Empty } from "./Empty.js";
+import type { InterfaceParameterPropertyValue } from "./InterfaceParameterPropertyValue.js";
 import type { ObjectParameterPropertyValue } from "./ObjectParameterPropertyValue.js";
 import type { ObjectTypeId } from "./ObjectTypeId.js";
 import type { ParameterId } from "./ParameterId.js";
@@ -29,9 +31,19 @@ export interface ActionLogValue_objectParameterPropertyValue {
   objectParameterPropertyValue: ObjectParameterPropertyValue;
 }
 
+export interface ActionLogValue_interfaceParameterPropertyValue {
+  type: "interfaceParameterPropertyValue";
+  interfaceParameterPropertyValue: InterfaceParameterPropertyValue;
+}
+
 export interface ActionLogValue_editedObjects {
   type: "editedObjects";
   editedObjects: ObjectTypeId;
+}
+
+export interface ActionLogValue_allEditedObjects {
+  type: "allEditedObjects";
+  allEditedObjects: AllEditedObjectsFieldMapping;
 }
 
 export interface ActionLogValue_actionTypeRid {
@@ -106,7 +118,9 @@ export interface ActionLogValue_summary {
 export type ActionLogValue =
   | ActionLogValue_parameterValue
   | ActionLogValue_objectParameterPropertyValue
+  | ActionLogValue_interfaceParameterPropertyValue
   | ActionLogValue_editedObjects
+  | ActionLogValue_allEditedObjects
   | ActionLogValue_actionTypeRid
   | ActionLogValue_actionRid
   | ActionLogValue_actionTypeVersion

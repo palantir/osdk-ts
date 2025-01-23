@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 import type { MissingDatasourceMigrationError } from "./MissingDatasourceMigrationError.js";
 import type { MissingDeletedPropertyTypeSchemaMigrationError } from "./MissingDeletedPropertyTypeSchemaMigrationError.js";
 import type { MissingPropertyDataTypeSchemaMigrationError } from "./MissingPropertyDataTypeSchemaMigrationError.js";
+import type { PrimaryKeyChangeMigrationError } from "./PrimaryKeyChangeMigrationError.js";
 export interface SchemaMigrationError_propertyDataType {
   type: "propertyDataType";
   propertyDataType: MissingPropertyDataTypeSchemaMigrationError;
@@ -31,7 +32,13 @@ export interface SchemaMigrationError_datasource {
   type: "datasource";
   datasource: MissingDatasourceMigrationError;
 }
+
+export interface SchemaMigrationError_primaryKeyChange {
+  type: "primaryKeyChange";
+  primaryKeyChange: PrimaryKeyChangeMigrationError;
+}
 export type SchemaMigrationError =
   | SchemaMigrationError_propertyDataType
   | SchemaMigrationError_deletedPropertyType
-  | SchemaMigrationError_datasource;
+  | SchemaMigrationError_datasource
+  | SchemaMigrationError_primaryKeyChange;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 export * as OntologyPackageService from "./OntologyPackageService.js";
 
+export type { BatchGetPackagesRequest } from "./BatchGetPackagesRequest.js";
+export type { BatchGetPackagesResponse } from "./BatchGetPackagesResponse.js";
 export type { CreatePackageRequest } from "./CreatePackageRequest.js";
 export type { CreatePackageResponse } from "./CreatePackageResponse.js";
 export type { GetPackagesForOwningResourcesRequest } from "./GetPackagesForOwningResourcesRequest.js";

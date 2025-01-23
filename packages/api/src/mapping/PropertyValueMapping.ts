@@ -15,6 +15,7 @@
  */
 
 import type { Attachment, AttachmentUpload } from "../object/Attachment.js";
+import type { Media } from "../object/Media.js";
 import type {
   GeotimeSeriesProperty,
   TimeSeriesProperty,
@@ -36,10 +37,10 @@ export interface PropertyValueWireToClient {
   integer: number;
   long: string;
   marking: string;
+  mediaReference: Media;
   short: number;
   string: string;
   timestamp: string;
-
   numericTimeseries: TimeSeriesProperty<number>;
   stringTimeseries: TimeSeriesProperty<string>;
   sensorTimeseries: TimeSeriesProperty<string | number>;
@@ -74,7 +75,7 @@ export interface PropertyValueClientToWire {
   short: number;
   string: string;
   timestamp: string;
-
+  mediaReference: Media;
   numericTimeseries: TimeSeriesProperty<number>;
   stringTimeseries: TimeSeriesProperty<string>;
   sensorTimeseries: TimeSeriesProperty<string | number>;

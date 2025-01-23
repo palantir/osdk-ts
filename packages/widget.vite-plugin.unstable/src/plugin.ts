@@ -19,36 +19,31 @@ import {
   MANIFEST_FILE_LOCATION,
   type ParameterConfig,
   type WidgetConfig,
-  type WidgetManifest,
-  type WidgetManifestConfig,
 } from "@osdk/widget-api.unstable";
-import escodegen from "escodegen";
-import type { ObjectExpression } from "estree";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import color from "picocolors";
 import sirv from "sirv";
-import type {
-  HtmlTagDescriptor,
-  IndexHtmlTransformHook,
-  IndexHtmlTransformResult,
-  Plugin,
-  ResolvedConfig,
-  ViteDevServer,
-} from "vite";
-import { PALANTIR_PATH, SETUP_PATH, VITE_INJECTIONS } from "./constants.js";
+import type { Plugin, ResolvedConfig, ViteDevServer } from "vite";
+import {
+  CONFIG_FILE_SUFFIX,
+  PALANTIR_PATH,
+  SETUP_PATH,
+  VITE_INJECTIONS,
+} from "./constants.js";
+import { extractInjectedScripts } from "./extractInjectedScripts.js";
+import { extractWidgetConfig } from "./extractWidgetConfig.js";
+import { enableDevMode, setWidgetSettings } from "./network.js";
+import { widgetSetManifest } from "./widgetSetManifest.js";
 
 export const DIR_DIST: string = typeof __dirname !== "undefined"
   ? __dirname
   : path.dirname(fileURLToPath(import.meta.url));
 export interface Options {}
 
-const CONFIG_FILE_SUFFIX = ".config";
-const DEFINE_CONFIG_FUNCTION = "defineConfig";
-
 export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
   const baseDir = process.cwd();
-  const foundryConfigPromise = loadFoundryConfig("widget");
+  const foundryConfigPromise = loadFoundryConfig("widgetSet");
 
   const entrypointToJsSourceFileMap: Record<string, Set<string>> = {};
   const jsSourceFileToEntrypointMap: Record<string, string> = {};
@@ -144,16 +139,11 @@ export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
 
       server.middlewares.use(
         `${server.config.base ?? "/"}${VITE_INJECTIONS}`,
-        async (req, res) => {
-          if (devServer == null) {
-            res.statusCode = 500;
-            res.statusMessage = "Vite server not found.";
-            res.end();
-            return;
-          }
+        async (_, res) => {
           res.setHeader("Access-Control-Allow-Origin", "*");
           res.setHeader("Content-Type", "application/javascript");
-          res.end(await extractInjectedScripts(devServer));
+          const injectedScripts = await extractInjectedScripts(server);
+          res.end(injectedScripts.inlineScripts.join("\n"));
         },
       );
 
@@ -232,15 +222,17 @@ export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
             }
 
             try {
+              const injectedScripts = await extractInjectedScripts(server);
               const settingsResponse = await setWidgetSettings(
                 // TODO: Actually handle the widget RID from within the config, which will require somehow parsing the config
                 // Unfortunately, moduleParsed is not called during vite's dev mode for performance reasons, so the config file
                 // will need to be parsed/read a different way
-                foundryConfig.foundryConfig.widget.rid,
+                foundryConfig.foundryConfig.widgetSet.rid,
                 foundryUrl,
                 localhostUrl,
                 entrypointToJsSourceFileMap,
                 entrypointFileName,
+                injectedScripts.scriptSources,
               );
               if (
                 settingsResponse.status !== 200
@@ -268,7 +260,7 @@ export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
               res.end(
                 JSON.stringify({
                   redirectUrl:
-                    `${foundryUrl.origin}/workspace/custom-widgets/preview/${foundryConfig.foundryConfig.widget.rid}`,
+                    `${foundryUrl.origin}/workspace/custom-widgets/preview/${foundryConfig.foundryConfig.widgetSet.rid}`,
                 }),
               );
             } catch (error: any) {
@@ -377,169 +369,29 @@ export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
         return;
       }
 
-      // Lightly traverse the AST of the config file to extract out the actual object
-      const defaultExport = moduleInfo.ast?.body.find(
-        (node) => node.type === "ExportDefaultDeclaration",
-      );
-      if (defaultExport == null) {
-        throw new Error(
-          "Widget configuration object must be the default export in "
-            + moduleInfo.id,
-        );
+      const widgetConfig = extractWidgetConfig(moduleInfo);
+      if (widgetConfig != null) {
+        entrypointFileIdToConfigMap[entrypointForConfig] = widgetConfig;
       }
-
-      /**
-       * export default defineConfig({
-       * })
-       */
-      if (defaultExport.declaration.type === "CallExpression") {
-        if (defaultExport.declaration.callee.type === "Identifier") {
-          if (
-            defaultExport.declaration.callee.name === DEFINE_CONFIG_FUNCTION
-            && defaultExport.declaration.arguments[0].type
-              === "ObjectExpression"
-          ) {
-            entrypointFileIdToConfigMap[entrypointForConfig] =
-              extractWidgetConfig(defaultExport.declaration.arguments[0]);
-            return;
-          }
-        }
-      }
-
-      /**
-       * const MyConfig = defineConfig({
-       * })
-       * export default MyConfig;
-       */
-      if (defaultExport.declaration.type === "Identifier") {
-        const variableName = defaultExport.declaration.name;
-        for (const node of moduleInfo.ast?.body ?? []) {
-          const declaration = node.type === "VariableDeclaration"
-            ? node
-            : node.type === "ExportNamedDeclaration"
-            ? node.declaration
-            : undefined;
-          if (
-            declaration == null
-            || declaration.type !== "VariableDeclaration"
-          ) {
-            continue;
-          }
-          if (
-            declaration.declarations.some(
-              (inner) =>
-                inner.id.type === "Identifier"
-                && inner.id.name === variableName,
-            )
-          ) {
-            const variableDeclarator = declaration.declarations.find(
-              (declarator) =>
-                declarator.id.type === "Identifier"
-                && declarator.id.name === variableName,
-            );
-            if (
-              variableDeclarator?.init?.type === "CallExpression"
-              && variableDeclarator.init.callee.type === "Identifier"
-              && variableDeclarator.init.callee.name === DEFINE_CONFIG_FUNCTION
-              && variableDeclarator.init.arguments[0].type
-                === "ObjectExpression"
-            ) {
-              entrypointFileIdToConfigMap[entrypointForConfig] =
-                extractWidgetConfig(variableDeclarator.init.arguments[0]);
-              return;
-            }
-          }
-        }
-      }
-
-      // todo: deal with common JS
-      // If the config file doesn't have what we're looking for, we ignore it. Failure to find any .config.js
-      // file of the shape we want will be handled in generateBundle
     },
     // We hook into the produced bundle information to generate a widget configuration file that includes both the entrypoint info and any inferred parameter information.
-    async generateBundle(options, bundle) {
+    async generateBundle(_, bundle) {
       const foundryConfig = await foundryConfigPromise;
-      const widgetVersion = await autoVersion(
-        foundryConfig?.foundryConfig.widget.autoVersion
+      const widgetSetVersion = await autoVersion(
+        foundryConfig?.foundryConfig.widgetSet.autoVersion
           ?? { "type": "package-json" },
       );
 
-      const widgetConfigManifest: WidgetManifest = {
-        version: "1.0.0",
-        widgets: {},
-      };
-
-      const entrypointImports: { [chunkName: string]: string[] } = {};
-      // This is inspired by vite's native manifest plugin, but we only care about entrypoints
-      for (const file in bundle) {
-        const chunk = bundle[file];
-        if (chunk.type !== "chunk") {
-          continue;
-        }
-        if (chunk.isEntry && chunk.facadeModuleId != null) {
-          if (entrypointFileIdToConfigMap[chunk.facadeModuleId] == null) {
-            throw new Error(
-              `Could not find widget configuration object for entrypoint ${chunk.fileName}. Ensure that the default export of your imported *.${CONFIG_FILE_SUFFIX}.js file is a widget configuration object as returned by defineConfig()`,
-            );
-          }
-          if (
-            entrypointFileIdToConfigMap[chunk.facadeModuleId].type
-              !== "workshop"
-          ) {
-            throw new Error(
-              `Unsupported widget type for entrypoint ${chunk.fileName}. Only "workshop" widgets are supported`,
-            );
-          }
-          const widgetConfig: WidgetManifestConfig = {
-            type: "workshopWidgetV1",
-            entrypointJs: [
-              {
-                path: chunk.fileName,
-                type: "module",
-              },
-            ],
-            entrypointCss: chunk.viteMetadata?.importedCss.size
-              ? [...chunk.viteMetadata.importedCss].map((css) => ({
-                path: css,
-              }))
-              : [],
-            rid: entrypointFileIdToConfigMap[chunk.facadeModuleId].rid,
-            version: widgetVersion,
-            parameters:
-              entrypointFileIdToConfigMap[chunk.facadeModuleId].parameters
-                ?? {},
-            events: entrypointFileIdToConfigMap[chunk.facadeModuleId].events
-              ?? {},
-          };
-          widgetConfigManifest.widgets[chunk.name] = widgetConfig;
-          entrypointImports[chunk.name] = chunk.imports;
-        } else {
-          // Check if it's an imported chunk, since any CSS files we will need to put on the page for them
-          // JS files will get imported on their own
-          for (
-            const [entrypointName, imports] of Object.entries(
-              entrypointImports,
-            )
-          ) {
-            if (
-              imports.includes(chunk.fileName)
-              && chunk.viteMetadata?.importedCss.size
-            ) {
-              const existingCssFiles =
-                widgetConfigManifest.widgets[entrypointName].entrypointCss?.map(
-                  ({ path }) => path,
-                ) ?? [];
-              widgetConfigManifest.widgets[entrypointName].entrypointCss?.push(
-                ...[...chunk.viteMetadata.importedCss]
-                  .filter((css) => !existingCssFiles.includes(css))
-                  .map((css) => ({
-                    path: css,
-                  })),
-              );
-            }
-          }
-        }
+      if (foundryConfig == null) {
+        throw new Error("foundry.config.json file not found.");
       }
+
+      const widgetConfigManifest = widgetSetManifest(
+        foundryConfig.foundryConfig.widgetSet.rid,
+        widgetSetVersion,
+        entrypointFileIdToConfigMap,
+        bundle,
+      );
 
       this.emitFile({
         fileName: MANIFEST_FILE_LOCATION,
@@ -548,128 +400,4 @@ export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
       });
     },
   };
-}
-
-function extractWidgetConfig(objectExpression: ObjectExpression) {
-  // Convert from AST -> JS string
-  let widgetConfigString = escodegen.generate(objectExpression);
-  // The output JS string is not valid JSON, so we force it into JSON that we can then print out into a JSON file
-
-  // Wrap keys in double quotes
-  widgetConfigString = widgetConfigString.replace(/([^\s:]+):/g, "\"$1\":");
-  // Convert single quote string values to double quotes
-  widgetConfigString = widgetConfigString.replace(/: '(.+)'/g, ": \"$1\"");
-
-  // Convert single quote string values in arrays to double quotes
-  widgetConfigString = widgetConfigString.replace(
-    /: \['(.+)'\]/g,
-    ": [\"$1\"]",
-  );
-
-  return JSON.parse(widgetConfigString);
-}
-
-function setWidgetSettings(
-  widgetRid: string,
-  foundryUrl: URL,
-  localhostUrl: string,
-  entrypointToJsSourceFileMap: Record<string, Set<string>>,
-  entrypointFileName: string,
-) {
-  const widgetDevModeSettings = {
-    entrypointJs: [
-      `/${VITE_INJECTIONS}`,
-      "/@vite/client",
-      ...entrypointToJsSourceFileMap[entrypointFileName],
-    ].map((file) => ({
-      filePath: `${localhostUrl}${file}`,
-      scriptType: { type: "module", module: {} },
-    })),
-    entrypointCss: [],
-  };
-  return fetch(
-    `${foundryUrl.origin}/widget-registry/api/dev-mode/settings/${widgetRid}`,
-    {
-      body: JSON.stringify(widgetDevModeSettings),
-      method: "PUT",
-      headers: {
-        authorization: `Bearer ${process.env.FOUNDRY_TOKEN}`,
-        accept: "application/json",
-        "content-type": "application/json",
-      },
-    },
-  );
-}
-
-function enableDevMode(foundryUrl: URL) {
-  return fetch(`${foundryUrl.origin}/widget-registry/api/dev-mode/enable`, {
-    method: "POST",
-    headers: {
-      authorization: `Bearer ${process.env.FOUNDRY_TOKEN}`,
-      accept: "application/json",
-    },
-  });
-}
-
-/**
- * Extracts inline scripts injected by Vite plugins during HTML transformation.
- *
- * Vite plugins can inject scripts into the HTML entrypoint. This function captures
- * those injections, specifically inline scripts, which are needed for our server-side
- * rendered pages. It calls the `transformIndexHtml` hook on each plugin, collects
- * the script descriptors, and returns the concatenated inline script contents.
- *
- * See documentation: https://vite.dev/guide/api-plugin#transformindexhtml
- */
-async function extractInjectedScripts(
-  devServer: ViteDevServer,
-): Promise<string> {
-  const pluginTransforms = (devServer?.pluginContainer.plugins ?? [])
-    .map(getPluginTransformHook)
-    .filter((hook): hook is IndexHtmlTransformHook => hook != null);
-  const transformResults: Array<IndexHtmlTransformResult | undefined> =
-    await Promise.all(
-      pluginTransforms.map(async (transformHook) => {
-        // The parameters to the transform hook are not used in the cases we currently support
-        const result = await transformHook("", { path: "", filename: "" });
-        return result ?? undefined;
-      }),
-    );
-
-  // We are only interested in extracting scripts that Vite would usually inject as inline scripts
-  const inlineScriptDescriptors: HtmlTagDescriptor[] = transformResults
-    .filter((result): result is HtmlTagDescriptor[] =>
-      result != null && typeof result !== "string"
-    )
-    .flat()
-    .filter((descriptor: HtmlTagDescriptor) =>
-      descriptor.tag === "script" && typeof descriptor.children === "string"
-    );
-
-  return inlineScriptDescriptors.map((descriptor) => descriptor.children).join(
-    "\n",
-  );
-}
-
-/**
- * The Vite plugin API for transformIndexHtml supports a few different formats,
- * all which ultimately resolve to the function that we want to call.
- */
-function getPluginTransformHook(
-  plugin: Plugin<unknown>,
-): IndexHtmlTransformHook | undefined {
-  if (typeof plugin.transformIndexHtml === "function") {
-    return plugin.transformIndexHtml;
-  } else if (
-    typeof plugin.transformIndexHtml === "object"
-    && "handler" in plugin.transformIndexHtml
-  ) {
-    return plugin.transformIndexHtml.handler;
-  } else if (
-    typeof plugin.transformIndexHtml === "object"
-    && "transform" in plugin.transformIndexHtml
-  ) {
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    return plugin.transformIndexHtml.transform;
-  }
 }

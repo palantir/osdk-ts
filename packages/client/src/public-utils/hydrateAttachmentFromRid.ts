@@ -23,7 +23,7 @@ import type { MinimalClient } from "../MinimalClientContext.js";
  * Helper function to create an attachment type from a rid
  * @param client -  An OSDK client.
  * @param rid - The rid of attachment in Foundry.
- * @returns
+ * @returns An OSDK attachment object
  */
 export function hydrateAttachmentFromRid(
   client: Client,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 
 import type { BranchId } from "../../api/BranchId.js";
+import type { GlobalBranchRid } from "../../api/GlobalBranchRid.js";
 import type { OntologyBranchRid } from "../../api/OntologyBranchRid.js";
 import type { OntologyVersion } from "../../api/OntologyVersion.js";
 import type { BranchIndexingConfig } from "./BranchIndexingConfig.js";
@@ -34,4 +35,5 @@ export interface NonDefaultOntologyBranchDetails {
   indexingConfig: BranchIndexingConfig;
   proposal: OntologyProposalV2 | undefined;
   parentBranchRid: OntologyBranchRid;
+  globalBranch: GlobalBranchRid | undefined;
 }

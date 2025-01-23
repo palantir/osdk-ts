@@ -141,6 +141,10 @@ export interface ObjectTypeWithAllPropertyTypesDef
       multiplicity: true;
       type: "geoshape";
     };
+    mediaReference: {
+      multiplicity: false;
+      type: "mediaReference";
+    };
   };
 }
 
@@ -272,6 +276,10 @@ export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypesDef =
       geoShapeArray: {
         multiplicity: true,
         type: "geoshape",
+      },
+      mediaReference: {
+        multiplicity: false,
+        type: "mediaReference",
       },
     },
     titleProperty: "id" as const,

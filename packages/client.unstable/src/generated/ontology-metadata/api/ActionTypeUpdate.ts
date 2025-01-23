@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,25 @@
 
 import type { ActionApplyClientPreferences } from "./ActionApplyClientPreferences.js";
 import type { ActionLogConfiguration } from "./ActionLogConfiguration.js";
-import type { ActionLogic } from "./ActionLogic.js";
-import type { ActionNotification } from "./ActionNotification.js";
+import type { ActionLogicModification } from "./ActionLogicModification.js";
+import type { ActionNotificationModification } from "./ActionNotificationModification.js";
 import type { ActionNotificationSettings } from "./ActionNotificationSettings.js";
 import type { ActionRevert } from "./ActionRevert.js";
 import type { ActionTypeApiName } from "./ActionTypeApiName.js";
 import type { ActionTypeDisplayMetadata } from "./ActionTypeDisplayMetadata.js";
 import type { ActionTypeProvenanceModification } from "./ActionTypeProvenanceModification.js";
 import type { ActionTypeStatus } from "./ActionTypeStatus.js";
-import type { ActionWebhooks } from "./ActionWebhooks.js";
-import type { EditParameterRequest } from "./EditParameterRequest.js";
-import type { EditSectionRequest } from "./EditSectionRequest.js";
+import type { ActionWebhooksModification } from "./ActionWebhooksModification.js";
+import type { EditParameterRequestModification } from "./EditParameterRequestModification.js";
+import type { EditSectionRequestModification } from "./EditSectionRequestModification.js";
 import type { FormContent } from "./FormContent.js";
 import type { ParameterId } from "./ParameterId.js";
 import type { ParameterRid } from "./ParameterRid.js";
-import type { PutParameterRequest } from "./PutParameterRequest.js";
-import type { PutSectionRequest } from "./PutSectionRequest.js";
+import type { PutParameterRequestModification } from "./PutParameterRequestModification.js";
+import type { PutSectionRequestModification } from "./PutSectionRequestModification.js";
 import type { SectionId } from "./SectionId.js";
 import type { SectionRid } from "./SectionRid.js";
+import type { TypeGroupRidOrIdInRequest } from "./TypeGroupRidOrIdInRequest.js";
 import type { ValidationRuleIdentifier } from "./ValidationRuleIdentifier.js";
 import type { ValidationRuleIdInRequest } from "./ValidationRuleIdInRequest.js";
 import type { ValidationRuleModification } from "./ValidationRuleModification.js";
@@ -46,15 +47,15 @@ export interface ActionTypeUpdate {
   apiName: ActionTypeApiName;
   actionLogConfiguration: ActionLogConfiguration | undefined;
   displayMetadata: ActionTypeDisplayMetadata;
-  parametersToCreate: Record<ParameterId, PutParameterRequest>;
-  sectionsToCreate: Record<SectionId, PutSectionRequest>;
+  parametersToCreate: Record<ParameterId, PutParameterRequestModification>;
+  sectionsToCreate: Record<SectionId, PutSectionRequestModification>;
   parametersToDelete: Array<ParameterRid>;
   sectionsToDelete: Array<SectionRid>;
-  parametersToUpdate: Record<ParameterRid, EditParameterRequest>;
-  sectionsToUpdate: Record<SectionRid, EditSectionRequest>;
+  parametersToUpdate: Record<ParameterRid, EditParameterRequestModification>;
+  sectionsToUpdate: Record<SectionRid, EditSectionRequestModification>;
   parameterOrdering: Array<ParameterId>;
   formContentOrdering: Array<FormContent> | undefined;
-  logic: ActionLogic;
+  logic: ActionLogicModification;
   validationsToCreate: Record<
     ValidationRuleIdInRequest,
     ValidationRuleModification
@@ -63,10 +64,11 @@ export interface ActionTypeUpdate {
   validationsToUpdate: Record<ValidationRuleRid, ValidationRuleModification>;
   validationsOrdering: Array<ValidationRuleIdentifier>;
   status: ActionTypeStatus | undefined;
-  webhooks: ActionWebhooks | undefined;
-  notifications: Array<ActionNotification>;
+  webhooks: ActionWebhooksModification | undefined;
+  notifications: Array<ActionNotificationModification>;
   actionApplyClientSettings: ActionApplyClientPreferences | undefined;
   notificationSettings: ActionNotificationSettings | undefined;
   revert: ActionRevert | undefined;
   provenance: ActionTypeProvenanceModification | undefined;
+  typeGroups: Array<TypeGroupRidOrIdInRequest>;
 }

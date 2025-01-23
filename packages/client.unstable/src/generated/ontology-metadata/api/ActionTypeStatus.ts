@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 import type { ActiveActionTypeStatus } from "./ActiveActionTypeStatus.js";
 import type { DeprecatedActionTypeStatus } from "./DeprecatedActionTypeStatus.js";
+import type { ExampleActionTypeStatus } from "./ExampleActionTypeStatus.js";
 import type { ExperimentalActionTypeStatus } from "./ExperimentalActionTypeStatus.js";
 export interface ActionTypeStatus_experimental {
   type: "experimental";
@@ -31,10 +32,16 @@ export interface ActionTypeStatus_deprecated {
   type: "deprecated";
   deprecated: DeprecatedActionTypeStatus;
 }
+
+export interface ActionTypeStatus_example {
+  type: "example";
+  example: ExampleActionTypeStatus;
+}
 /**
- * The status to indicate whether the ActionType is either Experimental, Active or Deprecated.
+ * The status to indicate whether the ActionType is either Experimental, Active, Deprecated, or Example.
  */
 export type ActionTypeStatus =
   | ActionTypeStatus_experimental
   | ActionTypeStatus_active
-  | ActionTypeStatus_deprecated;
+  | ActionTypeStatus_deprecated
+  | ActionTypeStatus_example;
