@@ -1,6 +1,6 @@
 {
   "name": "@osdk/oauth",
-  "version": "1.1.0-beta.5",
+  "version": "1.1.0-beta.7",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -24,6 +24,7 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "test": "vitest run --pool=forks",
     "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {

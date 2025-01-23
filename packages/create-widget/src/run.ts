@@ -32,7 +32,7 @@ interface RunArgs {
   template: Template;
   sdkVersion: SdkVersion;
   foundryUrl: string;
-  widget: string;
+  widgetSetRid: string;
   osdkPackage: string;
   osdkRegistryUrl: string;
 }
@@ -43,7 +43,7 @@ export async function run({
   template,
   sdkVersion,
   foundryUrl,
-  widget,
+  widgetSetRid,
   osdkPackage,
   osdkRegistryUrl,
 }: RunArgs): Promise<void> {
@@ -109,7 +109,7 @@ export async function run({
   const templateContext: TemplateContext = {
     project,
     foundryUrl,
-    widgetRid: widget,
+    widgetSetRid,
     osdkPackage,
     clientVersion: changeVersionPrefix(clientVersion, "^"),
   };
@@ -143,7 +143,7 @@ export async function run({
   fs.writeFileSync(path.join(root, ".npmrc"), npmRc);
   const foundryConfigJson = generateFoundryConfigJson({
     foundryUrl,
-    widget: widget,
+    widgetSetRid,
     directory: template.buildDirectory,
   });
   fs.writeFileSync(path.join(root, "foundry.config.json"), foundryConfigJson);

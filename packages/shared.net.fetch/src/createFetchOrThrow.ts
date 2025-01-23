@@ -46,9 +46,11 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
       try {
         body = await response.json();
       } catch (e) {
-        throw convertError(
-          e,
-          "A network error occurred while reading response",
+        throw new PalantirApiError(
+          `Failed to fetch ${response.status} ${response.statusText}`,
+          "UNKNOWN",
+          undefined,
+          response.status,
         );
       }
 

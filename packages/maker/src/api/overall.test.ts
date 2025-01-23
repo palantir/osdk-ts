@@ -32,8 +32,8 @@ import type {
 } from "./types.js";
 
 describe("Ontology Defining", () => {
-  beforeEach(() => {
-    defineOntology("com.palantir.", () => {});
+  beforeEach(async () => {
+    await defineOntology("com.palantir.", () => {});
   });
 
   describe("ValueTypes", () => {
@@ -52,7 +52,7 @@ describe("Ontology Defining", () => {
         "[Error: Invariant failed: Version is not a valid semver]",
       );
     });
-    it("Correctly serializes a value type", () => {
+    it("Correctly serializes a value type", async () => {
       defineValueType({
         apiName: "apiName",
         displayName: "displayName",
@@ -107,6 +107,9 @@ describe("Ontology Defining", () => {
  }
         `);
     });
+
+    // N.B Not sure what this is for but I don't want to break anything so I added the eslint ignore
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     defineOntology("com.palantir.", () => {});
   });
 
@@ -184,6 +187,7 @@ describe("Ontology Defining", () => {
                           "analyzerOverride": undefined,
                           "enableAsciiFolding": undefined,
                           "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
                           "supportsExactMatching": true,
                         },
                         "type": "string",
@@ -228,6 +232,7 @@ describe("Ontology Defining", () => {
                       "analyzerOverride": undefined,
                       "enableAsciiFolding": undefined,
                       "isLongText": false,
+                      "supportsEfficientLeadingWildcard": false,
                       "supportsExactMatching": true,
                     },
                     "type": "string",
@@ -284,6 +289,7 @@ describe("Ontology Defining", () => {
                       "analyzerOverride": undefined,
                       "enableAsciiFolding": undefined,
                       "isLongText": false,
+                      "supportsEfficientLeadingWildcard": false,
                       "supportsExactMatching": true,
                     },
                     "type": "string",
@@ -375,6 +381,7 @@ describe("Ontology Defining", () => {
                         "analyzerOverride": undefined,
                         "enableAsciiFolding": undefined,
                         "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
                         "supportsExactMatching": true,
                       },
                       "type": "string",
@@ -430,6 +437,7 @@ describe("Ontology Defining", () => {
                         "analyzerOverride": undefined,
                         "enableAsciiFolding": undefined,
                         "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
                         "supportsExactMatching": true,
                       },
                       "type": "string",
@@ -474,6 +482,7 @@ describe("Ontology Defining", () => {
                     "analyzerOverride": undefined,
                     "enableAsciiFolding": undefined,
                     "isLongText": false,
+                    "supportsEfficientLeadingWildcard": false,
                     "supportsExactMatching": true,
                   },
                   "type": "string",
@@ -510,6 +519,7 @@ describe("Ontology Defining", () => {
                     "analyzerOverride": undefined,
                     "enableAsciiFolding": undefined,
                     "isLongText": false,
+                    "supportsEfficientLeadingWildcard": false,
                     "supportsExactMatching": true,
                   },
                   "type": "string",
@@ -589,6 +599,7 @@ describe("Ontology Defining", () => {
                         "analyzerOverride": undefined,
                         "enableAsciiFolding": undefined,
                         "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
                         "supportsExactMatching": true,
                       },
                       "type": "string",
@@ -644,6 +655,7 @@ describe("Ontology Defining", () => {
                         "analyzerOverride": undefined,
                         "enableAsciiFolding": undefined,
                         "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
                         "supportsExactMatching": true,
                       },
                       "type": "string",
@@ -688,6 +700,7 @@ describe("Ontology Defining", () => {
                     "analyzerOverride": undefined,
                     "enableAsciiFolding": undefined,
                     "isLongText": false,
+                    "supportsEfficientLeadingWildcard": false,
                     "supportsExactMatching": true,
                   },
                   "type": "string",
@@ -724,6 +737,7 @@ describe("Ontology Defining", () => {
                     "analyzerOverride": undefined,
                     "enableAsciiFolding": undefined,
                     "isLongText": false,
+                    "supportsEfficientLeadingWildcard": false,
                     "supportsExactMatching": true,
                   },
                   "type": "string",
@@ -987,6 +1001,7 @@ describe("Ontology Defining", () => {
                       "analyzerOverride": undefined,
                       "enableAsciiFolding": undefined,
                       "isLongText": false,
+                      "supportsEfficientLeadingWildcard": false,
                       "supportsExactMatching": true,
                     },
                     "type": "string",
@@ -1031,6 +1046,7 @@ describe("Ontology Defining", () => {
                   "analyzerOverride": undefined,
                   "enableAsciiFolding": undefined,
                   "isLongText": false,
+                  "supportsEfficientLeadingWildcard": false,
                   "supportsExactMatching": true,
                 },
                 "type": "string",
@@ -1189,7 +1205,7 @@ describe("Ontology Defining", () => {
                   "apiName": "com.palantir.foo",
                   "baseFormatter": undefined,
                   "dataConstraints": {
-                    "nullability": "NO_EXPLICIT_NULLS",
+                    "nullability": undefined,
                     "nullabilityV2": {
                       "noEmptyCollections": true,
                       "noNulls": true,
@@ -1240,6 +1256,7 @@ describe("Ontology Defining", () => {
                       "analyzerOverride": undefined,
                       "enableAsciiFolding": undefined,
                       "isLongText": false,
+                      "supportsEfficientLeadingWildcard": false,
                       "supportsExactMatching": true,
                     },
                     "type": "string",
@@ -1262,7 +1279,7 @@ describe("Ontology Defining", () => {
               "apiName": "com.palantir.foo",
               "baseFormatter": undefined,
               "dataConstraints": {
-                "nullability": "NO_EXPLICIT_NULLS",
+                "nullability": undefined,
                 "nullabilityV2": {
                   "noEmptyCollections": true,
                   "noNulls": true,

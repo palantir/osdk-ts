@@ -16,7 +16,7 @@
 
 import type { WireOntologyDefinition } from "../../WireOntologyDefinition.js";
 
-export const TodoWireOntology = {
+export const TodoWireOntology: WireOntologyDefinition = {
   ontology: {
     rid: "ridHere",
     apiName: "OntologyApiName",
@@ -213,6 +213,19 @@ export const TodoWireOntology = {
       extendsInterfaces: [],
       links: {},
       implementedByObjectTypes: [],
+      allProperties: {
+        "SomeProperty": {
+          apiName: "SomeProperty",
+          description: "Some property",
+          displayName: "Sum Property",
+          dataType: {
+            type: "string",
+          },
+          rid: "idk2",
+        },
+      },
+      allExtendsInterfaces: [],
+      allLinks: {},
     },
   },
   sharedPropertyTypes: {
@@ -226,4 +239,4 @@ export const TodoWireOntology = {
       rid: "idk2",
     },
   },
-} satisfies WireOntologyDefinition;
+} as const satisfies WireOntologyDefinition;

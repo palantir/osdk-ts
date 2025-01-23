@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 
 import type { NumberFormatNotation } from "./NumberFormatNotation.js";
+import type { NumberRoundingMode } from "./NumberRoundingMode.js";
 
 /**
  * Configure standard rendering of numbers, informed by the locale. Heavily inspired by browser Intl APIs.
@@ -28,4 +29,5 @@ export interface NumberFormatBase {
   minimumSignificantDigits: number | undefined;
   maximumSignificantDigits: number | undefined;
   notation: NumberFormatNotation | undefined;
+  roundingMode: NumberRoundingMode | undefined;
 }

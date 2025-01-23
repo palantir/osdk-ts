@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
-export const PALANTIR_PATH = ".palantir";
-export const SETUP_PATH = `${PALANTIR_PATH}/setup`;
-export const VITE_INJECTIONS = `${PALANTIR_PATH}/vite-injections.js`;
+export const PALANTIR_PATH: string = ".palantir";
+export const SETUP_PATH: string = `${PALANTIR_PATH}/setup`;
+export const VITE_INJECTIONS: string = `${PALANTIR_PATH}/vite-injections.js`;
+export const CONFIG_FILE_SUFFIX = ".config";

@@ -303,6 +303,18 @@ const referencedOntology = {
       },
       implementedByObjectTypes: [],
       links: {},
+      allExtendsInterfaces: [],
+      allLinks: {},
+      allProperties: {
+        "com.example.dep.spt": {
+          apiName: "com.example.dep.spt",
+          dataType: {
+            type: "string",
+          },
+          displayName: "Some Property",
+          rid: "idk",
+        },
+      },
     },
   },
   "sharedPropertyTypes": {
@@ -494,7 +506,8 @@ describe("generator", () => {
     const diagnostics = compileThis(helper.getFiles(), BASE_PATH);
     for (const q of diagnostics) {
       console.error(
-        `${q.file?.fileName}:${q.file?.getLineStarts()} ${q.messageText}`,
+        `${q.file?.fileName}:${q.file?.getLineStarts()}`,
+        q.messageText,
       );
     }
 
@@ -519,6 +532,7 @@ describe("generator", () => {
       export * as $Objects from './ontology/objects';
       export { getCount, returnsTodo } from './ontology/queries';
       export * as $Queries from './ontology/queries';
+      export { $osdkMetadata } from './OntologyMetadata';
       export { $ontologyRid } from './OntologyMetadata';
       ",
         "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos';
@@ -1137,6 +1151,7 @@ describe("generator", () => {
         export * as $Objects from './ontology/objects.js';
         export { getCount, returnsTodo } from './ontology/queries.js';
         export * as $Queries from './ontology/queries.js';
+        export { $osdkMetadata } from './OntologyMetadata.js';
         export { $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos.js';
@@ -2087,6 +2102,7 @@ describe("generator", () => {
         export * as $Objects from './ontology/objects.js';
         export {} from './ontology/queries.js';
         export * as $Queries from './ontology/queries.js';
+        export { $osdkMetadata } from './OntologyMetadata.js';
         export { $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export {};

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,10 @@ import type { OntologyBranchRid } from "../../../api/OntologyBranchRid.js";
 
 /**
  * Endpoint get the corresponding OntologyBranchRid for a global BranchRid given by BranchService.
- * Will throw if the user doesn't have `ontology:view-branch` on the returned OntologyBranchRid or if the given
- * BranchRid does not have a corresponding OntologyBranchRid.
+ * Will throw if the given BranchRid does not have a corresponding OntologyBranchRid.
+ *
+ * Note that it is ok for services to cache the result of this map, since this mapping only encodes a rid to
+ * rid mapping. The only permission check performed in this endpoint is a check that the token is valid.
  */
 export async function getOntologyBranchRid(
   ctx: ConjureContext,

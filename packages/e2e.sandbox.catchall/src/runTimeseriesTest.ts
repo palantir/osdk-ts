@@ -17,7 +17,7 @@
 import { DherlihyComplexObject, SotSensor } from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
 
-export async function runTimeseriesTest() {
+export async function runTimeseriesTest(): Promise<void> {
   const result = await client(DherlihyComplexObject).fetchOne("a");
 
   console.log(result.id);

@@ -1,6 +1,6 @@
 {
   "name": "@osdk/widget-api.unstable",
-  "version": "2.0.0-beta.5",
+  "version": "2.0.0-beta.7",
   "description": "API contract between Foundry UIs that can embed custom widgets and the custom widgets themselves",
   "access": "public",
   "license": "Apache-2.0",
@@ -26,6 +26,7 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "test": "vitest run",
     "transpile": "monorepo.tool.transpile"
   },
   "devDependencies": {
@@ -33,7 +34,8 @@
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
     "ts-expect": "^1.3.0",
-    "typescript": "~5.5.4"
+    "typescript": "~5.5.4",
+    "vitest": "^2.1.3"
   },
   "publishConfig": {
     "access": "public"

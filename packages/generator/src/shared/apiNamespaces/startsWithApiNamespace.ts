@@ -17,7 +17,7 @@
 export function startsWithApiNamespace(
   name: string,
   ontologyApiNamespace: string | undefined,
-) {
+): boolean {
   if (ontologyApiNamespace) {
     return name.startsWith(`${ontologyApiNamespace}.`)
       && !name.slice(ontologyApiNamespace.length + 1).includes(".");

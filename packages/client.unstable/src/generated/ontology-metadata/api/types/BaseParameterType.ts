@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,12 @@ import type { DateListType } from "./DateListType.js";
 import type { DateType } from "./DateType.js";
 import type { DoubleListType } from "./DoubleListType.js";
 import type { DoubleType } from "./DoubleType.js";
+import type { GeohashListType } from "./GeohashListType.js";
+import type { GeohashType } from "./GeohashType.js";
+import type { GeoshapeListType } from "./GeoshapeListType.js";
+import type { GeoshapeType } from "./GeoshapeType.js";
+import type { GeotimeSeriesReferenceListType } from "./GeotimeSeriesReferenceListType.js";
+import type { GeotimeSeriesReferenceType } from "./GeotimeSeriesReferenceType.js";
 import type { IntegerListType } from "./IntegerListType.js";
 import type { IntegerType } from "./IntegerType.js";
 import type { InterfaceReferenceListType } from "./InterfaceReferenceListType.js";
@@ -30,6 +36,7 @@ import type { LongListType } from "./LongListType.js";
 import type { LongType } from "./LongType.js";
 import type { MarkingListType } from "./MarkingListType.js";
 import type { MarkingType } from "./MarkingType.js";
+import type { MediaReferenceListType } from "./MediaReferenceListType.js";
 import type { MediaReferenceType } from "./MediaReferenceType.js";
 import type { ObjectReferenceListType } from "./ObjectReferenceListType.js";
 import type { ObjectReferenceType } from "./ObjectReferenceType.js";
@@ -37,6 +44,8 @@ import type { ObjectSetRidType } from "./ObjectSetRidType.js";
 import type { ObjectTypeReferenceType } from "./ObjectTypeReferenceType.js";
 import type { StringListType } from "./StringListType.js";
 import type { StringType } from "./StringType.js";
+import type { StructListType } from "./StructListType.js";
+import type { StructType } from "./StructType.js";
 import type { TimeSeriesReferenceType } from "./TimeSeriesReferenceType.js";
 import type { TimestampListType } from "./TimestampListType.js";
 import type { TimestampType } from "./TimestampType.js";
@@ -88,6 +97,26 @@ export interface BaseParameterType_string {
 export interface BaseParameterType_stringList {
   type: "stringList";
   stringList: StringListType;
+}
+
+export interface BaseParameterType_geohash {
+  type: "geohash";
+  geohash: GeohashType;
+}
+
+export interface BaseParameterType_geohashList {
+  type: "geohashList";
+  geohashList: GeohashListType;
+}
+
+export interface BaseParameterType_geoshape {
+  type: "geoshape";
+  geoshape: GeoshapeType;
+}
+
+export interface BaseParameterType_geoshapeList {
+  type: "geoshapeList";
+  geoshapeList: GeoshapeListType;
 }
 
 export interface BaseParameterType_timeSeriesReference {
@@ -169,6 +198,31 @@ export interface BaseParameterType_mediaReference {
   type: "mediaReference";
   mediaReference: MediaReferenceType;
 }
+
+export interface BaseParameterType_mediaReferenceList {
+  type: "mediaReferenceList";
+  mediaReferenceList: MediaReferenceListType;
+}
+
+export interface BaseParameterType_geotimeSeriesReference {
+  type: "geotimeSeriesReference";
+  geotimeSeriesReference: GeotimeSeriesReferenceType;
+}
+
+export interface BaseParameterType_geotimeSeriesReferenceList {
+  type: "geotimeSeriesReferenceList";
+  geotimeSeriesReferenceList: GeotimeSeriesReferenceListType;
+}
+
+export interface BaseParameterType_struct {
+  type: "struct";
+  struct: StructType;
+}
+
+export interface BaseParameterType_structList {
+  type: "structList";
+  structList: StructListType;
+}
 /**
  * All of the possible types for Parameters.
  */
@@ -183,6 +237,10 @@ export type BaseParameterType =
   | BaseParameterType_doubleList
   | BaseParameterType_string
   | BaseParameterType_stringList
+  | BaseParameterType_geohash
+  | BaseParameterType_geohashList
+  | BaseParameterType_geoshape
+  | BaseParameterType_geoshapeList
   | BaseParameterType_timeSeriesReference
   | BaseParameterType_timestamp
   | BaseParameterType_timestampList
@@ -198,4 +256,9 @@ export type BaseParameterType =
   | BaseParameterType_attachmentList
   | BaseParameterType_marking
   | BaseParameterType_markingList
-  | BaseParameterType_mediaReference;
+  | BaseParameterType_mediaReference
+  | BaseParameterType_mediaReferenceList
+  | BaseParameterType_geotimeSeriesReference
+  | BaseParameterType_geotimeSeriesReferenceList
+  | BaseParameterType_struct
+  | BaseParameterType_structList;

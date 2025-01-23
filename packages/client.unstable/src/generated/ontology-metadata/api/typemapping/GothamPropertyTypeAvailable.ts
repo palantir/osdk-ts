@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 
 import type { SharedPropertyTypeModification } from "../modification/SharedPropertyTypeModification.js";
+import type { GothamPropertyValueTypesToCreate } from "./GothamPropertyValueTypesToCreate.js";
 
 /**
  * Represents a Gotham property type that is available to be imported.
@@ -22,4 +23,5 @@ import type { SharedPropertyTypeModification } from "../modification/SharedPrope
 export interface GothamPropertyTypeAvailable {
   sharedPropertyTypeModification: SharedPropertyTypeModification;
   valueTypeToCreate: any | undefined;
+  valueTypesToCreate: GothamPropertyValueTypesToCreate | undefined;
 }

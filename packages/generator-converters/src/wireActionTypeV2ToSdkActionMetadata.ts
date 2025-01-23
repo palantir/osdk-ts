@@ -85,7 +85,9 @@ function actionPropertyToSdkPropertyDefinition(
         interface: parameterType.interfaceTypeApiName,
       };
     default:
-      throw new Error(`Unsupported action parameter type: ${parameterType}`);
+      throw new Error(
+        `Unsupported action parameter type: ${parameterType.type}`,
+      );
   }
 }
 
@@ -93,7 +95,7 @@ function createModifiedEntities<K extends string>(
   addedObjects: Set<K>,
   modifiedObjects: Set<K>,
 ): ActionMetadata["modifiedEntities"] {
-  let entities = {} as Record<
+  const entities = {} as Record<
     K,
     {
       created: boolean;

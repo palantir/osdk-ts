@@ -1,6 +1,6 @@
 {
   "name": "@osdk/widget.vite-plugin.unstable",
-  "version": "2.0.0-beta.5",
+  "version": "2.0.0-beta.7",
   "description": "A vite plugin that will extract parameter definitions from TS/JS files + entrypoint info into a manifest file to be uploaded to Foundry ",
   "access": "public",
   "license": "Apache-2.0",
@@ -27,22 +27,24 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "test": "vitest run",
     "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
+    "@osdk/foundry-config-json": "workspace:~",
     "@osdk/widget-api.unstable": "workspace:~",
     "escodegen": "^2.1.0",
     "fs-extra": "^11.2.0",
+    "parse5": "^7.2.1",
     "picocolors": "^1.1.1",
     "sirv": "^3.0.0"
   },
   "peerDependencies": {
-    "vite": "^5.0.0"
+    "vite": "^6.0.11"
   },
   "devDependencies": {
     "@blueprintjs/core": "^5.16.0",
     "@blueprintjs/icons": "^5.15.0",
-    "@osdk/foundry-config-json": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
@@ -56,7 +58,8 @@
     "react-dom": "^18",
     "ts-expect": "^1.3.0",
     "typescript": "~5.5.4",
-    "vite": "^5.4.8"
+    "vite": "^6.0.11",
+    "vitest": "^2.1.3"
   },
   "publishConfig": {
     "access": "public"

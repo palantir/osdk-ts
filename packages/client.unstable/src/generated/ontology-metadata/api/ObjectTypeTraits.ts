@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 import type { ActionLogMetadata } from "./ActionLogMetadata.js";
 import type { EventMetadata } from "./EventMetadata.js";
+import type { ObjectTypePeeringMetadata } from "./ObjectTypePeeringMetadata.js";
 import type { SensorTrait } from "./SensorTrait.js";
 import type { TimeSeriesMetadata } from "./TimeSeriesMetadata.js";
 import type { WorkflowObjectTypeTraitId } from "./WorkflowObjectTypeTraitId.js";
@@ -25,6 +26,7 @@ export interface ObjectTypeTraits {
   eventMetadata: EventMetadata | undefined;
   actionLogMetadata: ActionLogMetadata | undefined;
   timeSeriesMetadata: TimeSeriesMetadata | undefined;
+  peeringMetadata: ObjectTypePeeringMetadata | undefined;
   sensorTrait: SensorTrait | undefined;
   workflowObjectTypeTraits: Record<
     WorkflowObjectTypeTraitId,

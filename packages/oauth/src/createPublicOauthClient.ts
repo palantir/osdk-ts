@@ -30,8 +30,11 @@ import {
   common,
   createAuthorizationServer,
   readLocal,
+  readSession,
   removeLocal,
+  removeSession,
   saveLocal,
+  saveSession,
 } from "./common.js";
 import type { PublicOauthClient } from "./PublicOauthClient.js";
 import { throwIfError } from "./throwIfError.js";
@@ -75,6 +78,11 @@ export interface PublicOauthClientOptions {
    * Context path for the authorization server (defaults to "multipass")
    */
   ctxPath?: string;
+
+  /**
+   * Allows for an additional value to be appended to the local storage key for the refresh token.
+   */
+  refreshTokenMarker?: string;
 }
 
 /**
@@ -129,6 +137,7 @@ export function createPublicOauthClient(
   fetchFn?: typeof globalThis.fetch,
   ctxPath?: string,
 ): PublicOauthClient {
+  let refreshTokenMarker: string | undefined;
   ({
     useHistory,
     loginPage,
@@ -136,6 +145,7 @@ export function createPublicOauthClient(
     scopes,
     fetchFn,
     ctxPath,
+    refreshTokenMarker,
   } = processOptionsAndAssignDefaults(
     url,
     redirect_uri,
@@ -147,7 +157,10 @@ export function createPublicOauthClient(
     ctxPath,
   ));
 
-  const client: Client = { client_id, token_endpoint_auth_method: "none" };
+  const client: Client = {
+    client_id,
+    token_endpoint_auth_method: "none",
+  };
   const authServer = createAuthorizationServer(ctxPath, url);
   const oauthHttpOptions: HttpRequestOptions = { [customFetch]: fetchFn };
 
@@ -157,12 +170,15 @@ export function createPublicOauthClient(
     _signIn,
     oauthHttpOptions,
     maybeRefresh.bind(globalThis, true),
+    refreshTokenMarker,
   );
 
   // as an arrow function, `useHistory` is known to be a boolean
   const go = async (x: string) => {
-    if (useHistory) return window.history.replaceState({}, "", x);
-    else window.location.assign(x);
+    if (useHistory) {
+      window.history.replaceState({}, "", x);
+      return;
+    } else window.location.assign(x);
 
     await delay(1000);
     throw new Error("Unable to redirect");
@@ -171,8 +187,10 @@ export function createPublicOauthClient(
   async function maybeRefresh(
     expectRefreshToken?: boolean,
   ): Promise<Token | undefined> {
-    const { refresh_token } = readLocal(client);
-    if (!refresh_token) {
+    const { refresh_token, refreshTokenMarker: lastRefreshTokenMarker } =
+      readLocal(client);
+
+    if (!refresh_token || lastRefreshTokenMarker !== refreshTokenMarker) {
       if (expectRefreshToken) throw new Error("No refresh token found");
       return;
     }
@@ -199,8 +217,9 @@ export function createPublicOauthClient(
       if (
         result && window.location.pathname === new URL(redirect_uri).pathname
       ) {
-        const { oldUrl } = readLocal(client);
-        go(oldUrl ?? "/");
+        const { oldUrl } = readSession(client);
+        // don't block on the redirect
+        void go(oldUrl ?? "/");
       }
       return result;
     } catch (e) {
@@ -219,7 +238,7 @@ export function createPublicOauthClient(
   }
 
   async function maybeHandleAuthReturn() {
-    const { codeVerifier, state, oldUrl } = readLocal(client);
+    const { state, oldUrl, codeVerifier } = readSession(client);
     if (!codeVerifier) return;
 
     try {
@@ -248,7 +267,7 @@ export function createPublicOauthClient(
         "signIn",
       );
 
-      go(oldUrl);
+      void go(oldUrl);
       return ret;
     } catch (e) {
       if (process.env.NODE_ENV !== "production") {
@@ -259,6 +278,8 @@ export function createPublicOauthClient(
         );
       }
       removeLocal(client);
+      removeSession(client);
+      throw e;
     }
   }
 
@@ -269,14 +290,17 @@ export function createPublicOauthClient(
       && window.location.href !== loginPage
       && window.location.pathname !== loginPage
     ) {
-      saveLocal(client, { oldUrl: postLoginPage });
-      return await go(loginPage);
+      saveLocal(client, {});
+      saveSession(client, { oldUrl: postLoginPage });
+      await go(loginPage);
+      return;
     }
 
     const state = generateRandomState()!;
     const codeVerifier = generateRandomCodeVerifier();
-    const oldUrl = readLocal(client).oldUrl ?? window.location.toString();
-    saveLocal(client, { codeVerifier, state, oldUrl });
+    const oldUrl = readSession(client).oldUrl ?? window.location.toString();
+    saveLocal(client, {});
+    saveSession(client, { codeVerifier, state, oldUrl });
 
     window.location.assign(`${authServer
       .authorization_endpoint!}?${new URLSearchParams({

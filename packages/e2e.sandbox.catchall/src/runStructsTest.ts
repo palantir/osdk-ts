@@ -17,7 +17,7 @@
 import { BgaoNflPlayer, McAirportStruct } from "@osdk/e2e.generated.catchall";
 import { dsClient } from "./client.js";
 
-export async function runStructsTest() {
+export async function runStructsTest(): Promise<void> {
   const player = await dsClient(BgaoNflPlayer).fetchOne(
     "50A409AB-C909-453A-A61A-31B51324C8E3",
   );

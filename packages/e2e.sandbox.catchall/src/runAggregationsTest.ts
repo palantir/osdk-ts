@@ -17,7 +17,7 @@
 import { BoundariesUsState } from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
 
-export async function runAggregationsTest() {
+export async function runAggregationsTest(): Promise<void> {
   const testStringClause = await client(BoundariesUsState)
     .where({
       usState: {

@@ -111,7 +111,7 @@ async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
       template,
       sdkVersion,
       foundryUrl: "https://fake.palantirfoundry.com",
-      widget: "ri.widgetregistry..widget.fake",
+      widgetSetRid: "ri.widgetregistry..widget-set.fake",
       osdkPackage,
       osdkRegistryUrl:
         "https://fake.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
@@ -217,10 +217,10 @@ async function checkExamples(
       for (const q of compareResult.diffSet ?? []) {
         if (q.state !== "equal") {
           const aPath = q.path1 && q.name1
-            ? path.join(q.path1, q.relativePath, q.name1)
+            ? path.join(q.path1, q.name1)
             : null;
           const bPath = q.path2 && q.name2
-            ? path.join(q.path2, q.relativePath, q.name2)
+            ? path.join(q.path2, q.name2)
             : null;
 
           const aContents = getContents(aPath);

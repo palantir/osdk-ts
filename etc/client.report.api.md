@@ -72,10 +72,6 @@ export { ApplyBatchActionOptions }
 
 // @public (undocumented)
 export interface Client extends SharedClient, SharedClient_2 {
-    // Warning: (ae-forgotten-export) The symbol "MinimalClient" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    [additionalContext]: MinimalClient;
     // (undocumented)
     <Q extends ObjectTypeDefinition>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
     // (undocumented)

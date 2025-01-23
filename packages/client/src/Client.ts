@@ -86,14 +86,16 @@ export interface Client extends SharedClient, OldSharedClient {
       : never
   >;
 
+  /** @internal */
   [additionalContext]: MinimalClient;
 }
 
 // DO NOT EXPORT FROM PACKAGE
-export const additionalContext = Symbol("additionalContext");
+/** @internal */
+export const additionalContext: unique symbol = Symbol("additionalContext");
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
 const MaxOsdkVersion = "2.1.0";
 // END: THIS IS GENERATED CODE. DO NOT EDIT.
 export type MaxOsdkVersion = typeof MaxOsdkVersion;
-const ErrorMessage = Symbol("ErrorMessage");
+const ErrorMessage: unique symbol = Symbol("ErrorMessage");

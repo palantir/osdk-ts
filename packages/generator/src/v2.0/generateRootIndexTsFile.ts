@@ -21,8 +21,8 @@ import { formatTs } from "../util/test/formatTs.js";
 
 export async function generateRootIndexTsFile(
   { fs, outDir, importExt, ontologyApiNamespace, ontology }: GenerateContext,
-) {
-  fs.writeFile(
+): Promise<void> {
+  await fs.writeFile(
     path.join(outDir, "index.ts"),
     await formatTs(
       `export {${
@@ -41,6 +41,7 @@ export async function generateRootIndexTsFile(
         helper(ontology.queryTypes)
       }} from "./ontology/queries${importExt}";
         export * as $Queries from "./ontology/queries${importExt}";
+        export { $osdkMetadata } from "./OntologyMetadata${importExt}";
         ${
         ontologyApiNamespace == null
           ? `export { $ontologyRid } from "./OntologyMetadata${importExt}";`

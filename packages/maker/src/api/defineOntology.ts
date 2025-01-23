@@ -173,7 +173,7 @@ function convertSpt(
     | undefined = (typeof type === "object" && type.type === "marking")
       ? {
         propertyTypeConstraints: [],
-        nullability: "NO_EXPLICIT_NULLS",
+        nullability: undefined,
         nullabilityV2: { noEmptyCollections: true, noNulls: true },
       }
       : undefined;
@@ -217,7 +217,7 @@ function convertType(
       const structFields: Array<OntologyIrStructFieldType> = new Array();
       for (const key in type.structDefinition) {
         const fieldTypeDefinition = type.structDefinition[key];
-        var field: OntologyIrStructFieldType;
+        let field: OntologyIrStructFieldType;
         if (typeof fieldTypeDefinition === "string") {
           field = {
             apiName: key,
@@ -268,6 +268,7 @@ function convertType(
           analyzerOverride: undefined,
           enableAsciiFolding: undefined,
           isLongText: false,
+          supportsEfficientLeadingWildcard: false,
           supportsExactMatching: true,
         },
       };
