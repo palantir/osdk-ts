@@ -114,7 +114,7 @@ export async function toDataValue(
 
   // struct
   if (typeof value === "object") {
-    return await Object.entries(value).reduce(
+    return Object.entries(value).reduce(
       async (promisedAcc, [key, structValue]) => {
         const acc = await promisedAcc;
         acc[key] = await toDataValue(structValue, client);
