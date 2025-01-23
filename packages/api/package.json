@@ -18,6 +18,15 @@
       "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
     },
+    "./unstable": {
+      "browser": "./build/browser/public/unstable.js",
+      "import": {
+        "types": "./build/types/public/unstable.d.ts",
+        "default": "./build/esm/public/unstable.js"
+      },
+      "require": "./build/cjs/public/unstable.cjs",
+      "default": "./build/browser/public/unstable.js"
+    },
     "./*": {
       "browser": "./build/browser/public/*.js",
       "import": {

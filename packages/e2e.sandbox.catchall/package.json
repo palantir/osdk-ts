@@ -15,6 +15,13 @@
       },
       "default": "./build/esm/index.js"
     },
+    "./checkUnstableBulkLinks": {
+      "import": {
+        "types": "./build/types/public/checkUnstableBulkLinks.d.ts",
+        "default": "./build/esm/public/checkUnstableBulkLinks.js"
+      },
+      "default": "./build/esm/public/checkUnstableBulkLinks.js"
+    },
     "./*": {
       "import": {
         "types": "./build/types/public/*.d.ts",

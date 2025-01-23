@@ -28,6 +28,7 @@ import {
   standardTsconfig,
 } from "@monorepolint/rules";
 import * as child_process from "node:child_process";
+import fs from "node:fs/promises";
 import path from "node:path";
 
 const LATEST_TYPESCRIPT_DEP = "~5.5.4";
@@ -237,6 +238,107 @@ const noPackageEntry = createRuleFactory({
   },
 });
 
+/**
+ * @param {string} dirPath
+ */
+async function dirExists(dirPath) {
+  try {
+    const stat = await fs.stat(dirPath);
+    return stat.isDirectory();
+  } catch (e) {
+    return false;
+  }
+}
+
+/**
+ * @type {import("@monorepolint/rules").RuleFactoryFn< {
+ *   browser?: boolean,
+ *   cjs?: boolean
+ * }>}
+ */
+const ourExportsConvention = createRuleFactory({
+  name: "ourExportsConvention",
+
+  check: async (context, options) => {
+    context.getPackageJson();
+    context.packageDir;
+
+    // FIXME: use context.host once mrl learns to read dirs
+    const publicPath = path.join(context.packageDir, "src", "public");
+
+    const expectedExports = {
+      exports: {
+        ".": {
+          "browser": options.browser
+            ? "./build/browser/index.js"
+            : undefined,
+          "import": {
+            // we generate the types for this in a separate task
+            // than transpile so they end up in different places
+            types: "./build/types/index.d.ts",
+            default: "./build/esm/index.js",
+          },
+
+          // for cjs, we generate the types next to the transpiled code
+          // so we don't need to separate anything out. TSC infers properly
+          "require": options.cjs
+            ? "./build/cjs/index.cjs"
+            : undefined,
+          "default": `./build/${options.browser ? "browser" : "esm"}/index.js`,
+        },
+      },
+    };
+
+    function makeExport(fileName) {
+      return {
+        ...(options.browser
+          ? { "browser": `./build/browser/public/${fileName}.js` }
+          : {}),
+
+        "import": {
+          types: `./build/types/public/${fileName}.d.ts`,
+          default: `./build/esm/public/${fileName}.js`,
+        },
+        ...(options.cjs
+          ? { "require": `./build/cjs/public/${fileName}.cjs` }
+          : {}),
+
+        "default": `./build/${
+          options.browser ? "browser" : "esm"
+        }/public/${fileName}.js`,
+      };
+    }
+
+    if (await dirExists(publicPath)) {
+      for (
+        const q of await fs.readdir(publicPath, {
+          withFileTypes: true,
+          encoding: "utf8",
+        })
+      ) {
+        if (!q.isFile()) continue;
+        if (!q.name.endsWith(".ts")) continue;
+
+        const b = path.basename(q.name, ".ts");
+        expectedExports.exports["./" + b] = makeExport(b);
+      }
+    }
+
+    // include the fallback for the * for now, as it will make development easier
+    // must come last or it will override the others
+    expectedExports.exports["./*"] = makeExport("*");
+
+    await packageEntry({
+      options: {
+        entries: {
+          exports: expectedExports.exports,
+        },
+      },
+    }).check(context);
+  },
+  validateOptions: () => {},
+});
+
 const allLocalDepsMustNotBePrivate = createRuleFactory({
   name: "allLocalDepsMustNotBePrivate",
   check: async (context) => {
@@ -421,48 +523,17 @@ function standardPackageRules(shared, options) {
         },
       },
     }),
+    ourExportsConvention({
+      ...shared,
+      options: {
+        cjs: !!options.output.cjs,
+        browser: !!options.output.browser,
+      },
+    }),
     packageEntry({
       ...shared,
       options: {
         entries: {
-          exports: {
-            ".": {
-              "browser": options.output.browser
-                ? "./build/browser/index.js"
-                : undefined,
-              "import": {
-                // we generate the types for this in a separate task
-                // than transpile so they end up in different places
-                types: "./build/types/index.d.ts",
-                default: "./build/esm/index.js",
-              },
-
-              // for cjs, we generate the types next to the transpiled code
-              // so we don't need to separate anything out. TSC infers properly
-              "require": options.output.cjs
-                ? "./build/cjs/index.cjs"
-                : undefined,
-              "default": `./build/${
-                options.output.browser ? "browser" : "esm"
-              }/index.js`,
-            },
-
-            "./*": {
-              "browser": options.output.browser
-                ? "./build/browser/public/*.js"
-                : undefined,
-              "import": {
-                types: "./build/types/public/*.d.ts",
-                default: "./build/esm/public/*.js",
-              },
-              "require": options.output.cjs
-                ? "./build/cjs/public/*.cjs"
-                : undefined,
-              "default": `./build/${
-                options.output.browser ? "browser" : "esm"
-              }/public/*.js`,
-            },
-          },
           publishConfig: {
             "access": "public",
           },

@@ -39,7 +39,7 @@
     "check-attw": {
       "outputLogs": "new-only",
       "dependsOn": ["transpile", "typecheck"],
-      "inputs": ["build/{esm,cjs,browser,types}", "package.json"]
+      "inputs": ["build/{esm,cjs,browser,types}", "package.json", "*.d.ts"]
     },
 
     "check-spelling": {
@@ -278,6 +278,7 @@
         ".monorepolint.config.mjs",
         "packages/*/package.json",
         "packages/*/tsconfig.json",
+        "packages/*/src/public/*",
         "examples/*/*/package.json",
         "examples/*/*/tsconfig.json",
         "examples-extra/*/*/package.json",
