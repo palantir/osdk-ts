@@ -20,8 +20,8 @@ import { generateFoundryConfigJson } from "./generateFoundryConfigJson.js";
 const expected = `
 {
   "foundryUrl": "https://example.palantirfoundry.com",
-  "widget": {
-    "rid": "ri.widgetregistry..widget.fake",
+  "widgetSet": {
+    "rid": "ri.widgetregistry..widget-set.fake",
     "directory": "./dist",
     "autoVersion": {
       "type": "git-describe",
@@ -35,7 +35,7 @@ test("it generates foundry.config.json", () => {
   expect(
     generateFoundryConfigJson({
       foundryUrl: "https://example.palantirfoundry.com",
-      widget: "ri.widgetregistry..widget.fake",
+      widgetSetRid: "ri.widgetregistry..widget-set.fake",
       directory: "./dist",
     }),
   ).toEqual(expected);

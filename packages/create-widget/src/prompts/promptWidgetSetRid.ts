@@ -17,26 +17,26 @@
 import { consola } from "../consola.js";
 import { italic } from "../highlight.js";
 
-export async function promptWidgetRid({
-  widget,
+export async function promptWidgetSetRid({
+  widgetSetRid,
 }: {
-  widget?: string;
+  widgetSetRid?: string;
 }): Promise<string> {
   while (
-    widget == null
-    || !/^ri\.widgetregistry\.\.widget\.[^.]+$/.test(widget)
+    widgetSetRid == null
+    || !/^ri\.widgetregistry\.\.widget-set\.[^.]+$/.test(widgetSetRid)
   ) {
-    if (widget != null) {
+    if (widgetSetRid != null) {
       consola.fail("Please enter a valid widget resource identifier (rid)");
     }
-    widget = await consola.prompt(
-      `Enter the widget resource identifier (rid) for your widget:\n${
+    widgetSetRid = await consola.prompt(
+      `Enter the resource identifier (rid) for your widget set:\n${
         italic(
-          "(Example: ri.widgetregistry..widget.1c66b352-4e00-40d2-995d-061c9d533ace)",
+          "(Example: ri.widgetregistry..widget-set.1c66b352-4e00-40d2-995d-061c9d533ace)",
         )
       }`,
       { type: "text" },
     );
   }
-  return widget;
+  return widgetSetRid;
 }
