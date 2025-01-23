@@ -93,6 +93,11 @@ function makeGeoFilterBbox(
     type: filterType === "$within"
       ? "withinBoundingBox"
       : "intersectsBoundingBox",
+    /**
+     * This is a bit ugly, but did this so that propertyIdentifier only shows up in the return object if its defined,
+     * this makes it so we don't need to go update our entire test bed either to include a field which may change in near future.
+     * Once we solidify that this is the way forward, I can remove field and clean this up
+     */
     ...(propertyIdentifier != null && { propertyIdentifier }),
     field,
     value: {
