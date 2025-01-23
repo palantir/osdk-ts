@@ -19,9 +19,7 @@ import type {
   ConvertProps,
   InterfaceDefinition,
   ObjectSet,
-  ObjectSetWithProperties,
   Osdk,
-  PropertyDef,
   PropertyKeys,
   Result,
 } from "@osdk/api";
@@ -607,9 +605,9 @@ describe("ObjectSet", () => {
       });
 
       expectTypeOf(objectSet).branded.toEqualTypeOf<
-        ObjectSetWithProperties<
+        ObjectSet<
           Employee,
-          { derivedPropertyName: PropertyDef<"double", "nullable", "single"> }
+          { derivedPropertyName: "double" | undefined }
         >
       >();
     });
@@ -622,14 +620,10 @@ describe("ObjectSet", () => {
 
           return base.pivotTo("lead").selectProperty("employeeStatus");
         },
-      }) satisfies ObjectSetWithProperties<
+      }) satisfies ObjectSet<
         Employee,
         {
-          "derivedPropertyName": PropertyDef<
-            "stringTimeseries",
-            "nullable",
-            "single"
-          >;
+          "derivedPropertyName": "stringTimeseries" | undefined;
         }
       >;
     });
@@ -647,8 +641,8 @@ describe("ObjectSet", () => {
       }).where({ "derivedPropertyName": { "$eq": 3 } });
 
       expectTypeOf(numericAggregationObjectSet).branded.toEqualTypeOf<
-        ObjectSetWithProperties<Employee, {
-          derivedPropertyName: PropertyDef<"double", "nullable", "single">;
+        ObjectSet<Employee, {
+          derivedPropertyName: "double" | undefined;
         }>
       >();
 
@@ -671,9 +665,9 @@ describe("ObjectSet", () => {
         // @ts-expect-error
         "derivedPropertyName": { "$eq": [1, 2] },
       });
-      expectTypeOf(setAggregationObjectSet).branded.toEqualTypeOf<
-        ObjectSetWithProperties<Employee, {
-          derivedPropertyName: PropertyDef<"string", "nullable", "array">;
+      expectTypeOf(setAggregationObjectSet).toEqualTypeOf<
+        ObjectSet<Employee, {
+          derivedPropertyName: "string"[] | undefined;
         }>
       >();
 
@@ -682,9 +676,9 @@ describe("ObjectSet", () => {
           base.pivotTo("lead").selectProperty("employeeId"),
       }).where({ "derivedPropertyName": { "$eq": 3 } });
 
-      expectTypeOf(selectPropertyObjectSet).branded.toEqualTypeOf<
-        ObjectSetWithProperties<Employee, {
-          derivedPropertyName: PropertyDef<"integer", "nullable", "single">;
+      expectTypeOf(selectPropertyObjectSet).toEqualTypeOf<
+        ObjectSet<Employee, {
+          derivedPropertyName: "integer";
         }>
       >();
 
@@ -703,10 +697,10 @@ describe("ObjectSet", () => {
       }).where({ "derivedPropertyName": { "$eq": 3 } })
         .where({ "derivedPropertyName2": { "$eq": "name" } });
 
-      expectTypeOf(objectSet).branded.toEqualTypeOf<
-        ObjectSetWithProperties<Employee, {
-          derivedPropertyName: PropertyDef<"double", "nullable", "single">;
-          derivedPropertyName2: PropertyDef<"string", "nullable", "single">;
+      expectTypeOf(objectSet).toEqualTypeOf<
+        ObjectSet<Employee, {
+          derivedPropertyName: "double" | undefined;
+          derivedPropertyName2: "string" | undefined;
         }>
       >();
     });
@@ -730,7 +724,7 @@ describe("ObjectSet", () => {
       }).fetchOne(50035);
 
       expectTypeOf(objectWithRdp.derivedPropertyName).toEqualTypeOf<
-        number | undefined
+        number
       >();
       expect(objectWithRdp.derivedPropertyName).toBe(1);
 
@@ -748,53 +742,36 @@ describe("ObjectSet", () => {
           "hello": (base) => base.pivotTo("lead").selectProperty("fullName"),
         });
 
-        type expectedType = ObjectSetWithProperties<
+        type expectedType = ObjectSet<
           Employee,
-          { "hello": PropertyDef<"string", "nullable", "single"> }
+          { "hello": "string" | undefined }
         >;
 
-        // Ensures that the objectSet we create is correct and doubly checks that
-        // ObjectSetWithProperties is correct with the type test below this.
         expectTypeOf(objectSet).toEqualTypeOf<expectedType>();
-
-        expectTypeOf(objectSet).toEqualTypeOf<
-          ObjectSet<
-            Employee & {
-              __DefinitionMetadata: {
-                properties: {
-                  "hello": PropertyDef<"string", "nullable", "single">;
-                };
-                props: {
-                  "hello": string | undefined;
-                };
-              };
-            }
-          >
-        >();
 
         // Checks that the type is correct
         const objectSet2 = client(Employee).withProperties({
           "hello": (base) => base.pivotTo("lead").selectProperty("fullName"),
           // @ts-expect-error
-        }) satisfies ObjectSetWithProperties<
+        }) satisfies ObjectSet<
           Employee,
-          { "hello": PropertyDef<"integer", "nullable", "single"> }
+          { "hello": "integer" | undefined }
         >;
 
         // checks that the nullability is correct
         const objectSet3 = client(Employee).withProperties({
           "hello": (base) => base.pivotTo("lead").selectProperty("fullName"),
           // @ts-expect-error
-        }) satisfies ObjectSetWithProperties<
+        }) satisfies ObjectSet<
           Employee,
-          { "hello": PropertyDef<"string", "non-nullable", "single"> }
+          { "hello": "string" }
         >;
       });
 
       it("Allows specifying the type of a variable as the object set with added properties", () => {
-        let objectSet: ObjectSetWithProperties<
+        let objectSet: ObjectSet<
           Employee,
-          { "hello": PropertyDef<"string", "nullable", "single"> }
+          { "hello": "string" | undefined }
         >;
 
         objectSet = client(Employee).withProperties({
@@ -807,8 +784,8 @@ describe("ObjectSet", () => {
         });
 
         // Incorrect name
-        // @ts-expect-error
         objectSet = client(Employee).withProperties({
+          // @ts-expect-error
           "notTheRightName": (base) =>
             base.pivotTo("lead").selectProperty("fullName"),
         });
@@ -842,8 +819,8 @@ describe("ObjectSet", () => {
         });
 
         // Incorrect name
-        // @ts-expect-error
         const objectSet4: extractedType = client(Employee).withProperties({
+          // @ts-expect-error
           "notTheRightName": (base) =>
             base.pivotTo("lead").selectProperty("fullName"),
         });
@@ -864,13 +841,14 @@ describe("ObjectSet", () => {
             base.pivotTo("lead").selectProperty("employeeLocation"),
         }).withProperties({
           "hello": (base) => base.pivotTo("lead").selectProperty("fullName"),
-        }) satisfies ObjectSetWithProperties<
-          Employee,
-          {
-            "ouch": PropertyDef<"geotimeSeriesReference", "nullable", "single">;
-            "hello": PropertyDef<"string", "nullable", "single">;
-          }
-        >;
+        });
+
+        expectTypeOf(order2).toEqualTypeOf<
+          ObjectSet<Employee, {
+            "ouch": "geotimeSeriesReference" | undefined;
+            "hello": "string" | undefined;
+          }>
+        >();
 
         expectTypeOf(order2).toEqualTypeOf<typeof order1>();
         expectTypeOf(order1).toEqualTypeOf<typeof order2>();

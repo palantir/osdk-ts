@@ -17,11 +17,11 @@
 import type {
   ObjectOrInterfaceDefinition,
 } from "../ontology/ObjectOrInterface.js";
-import type { ObjectMetadata } from "../ontology/ObjectTypeDefinition.js";
+import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { BaseWithPropertyObjectSet } from "./WithPropertyObjectSet.js";
 
 export type WithPropertyDefinition<
-  T extends ObjectMetadata.Property,
+  T extends SimplePropertyDef,
 > = {
   type: T;
 };
@@ -29,7 +29,12 @@ export type WithPropertyDefinition<
 export type WithPropertiesClause<
   Q extends ObjectOrInterfaceDefinition,
 > = {
-  [key: string]: (
-    baseObjectSet: BaseWithPropertyObjectSet<Q>,
-  ) => WithPropertyDefinition<ObjectMetadata.Property>;
+  [key: string]: DerivedSelector<Q, SimplePropertyDef>;
 };
+
+export type DerivedSelector<
+  Q extends ObjectOrInterfaceDefinition,
+  T extends SimplePropertyDef,
+> = (
+  baseObjectSet: BaseWithPropertyObjectSet<Q>,
+) => WithPropertyDefinition<T>;

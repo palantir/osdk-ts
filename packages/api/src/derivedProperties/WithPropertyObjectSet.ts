@@ -20,10 +20,8 @@ import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
-import type {
-  CompileTimeMetadata,
-  PropertyDef,
-} from "../ontology/ObjectTypeDefinition.js";
+import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
+import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 import type { WithPropertyDefinition } from "./WithPropertiesClause.js";
 
@@ -87,15 +85,12 @@ interface AggregatableWithPropertyObjectSet<
       : never,
   ) => WithPropertyDefinition<
     V extends `${infer N}:${infer P}`
-      ? P extends CollectWithPropAggregations ? PropertyDef<
-          CompileTimeMetadata<Q>["properties"][N]["type"],
-          "nullable",
-          "array"
-        >
+      ? P extends CollectWithPropAggregations
+        ? Array<CompileTimeMetadata<Q>["properties"][N]["type"]> | undefined
       : P extends "approximateDistinct" | "exactDistinct" | "$count"
-        ? PropertyDef<"integer">
-      : PropertyDef<"double">
-      : V extends "$count" ? PropertyDef<"integer">
+        ? "integer" | undefined
+      : "double" | undefined
+      : V extends "$count" ? "integer" | undefined
       : never
   >;
 }
@@ -109,7 +104,13 @@ interface SingleLinkWithPropertyObjectSet<
 {
   readonly selectProperty: <R extends PropertyKeys<Q>>(
     propertyName: R,
-  ) => WithPropertyDefinition<CompileTimeMetadata<Q>["properties"][R]>;
+  ) => WithPropertyDefinition<
+    SimplePropertyDef.Make<
+      CompileTimeMetadata<Q>["properties"][R]["type"],
+      CompileTimeMetadata<Q>["properties"][R]["nullable"],
+      CompileTimeMetadata<Q>["properties"][R]["multiplicity"]
+    >
+  >;
 }
 
 /*
