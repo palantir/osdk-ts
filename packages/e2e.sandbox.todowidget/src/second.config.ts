@@ -1,8 +1,10 @@
 import { defineConfig } from "@osdk/widget-client.unstable";
 
 const Config: {
+  id: "widgetTwo";
+  name: "Widget Two";
+  description: "Second widget";
   type: "workshop";
-  rid: "ri.widgetregistry..widget.1234-0000-0000-0000";
   parameters: {
     headerText: {
       displayName: "Widget title";
@@ -20,8 +22,10 @@ const Config: {
     };
   };
 } = defineConfig({
+  id: "widgetTwo",
+  name: "Widget Two",
+  description: "Second widget",
   type: "workshop",
-  rid: "ri.widgetregistry..widget.1234-0000-0000-0000",
   parameters: {
     headerText: {
       displayName: "Widget title",

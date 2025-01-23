@@ -26,7 +26,7 @@ export type {
 export { defineConfig } from "./config.js";
 export type {
   WidgetManifestConfigV1 as WidgetManifestConfig,
-  WidgetManifestV1 as WidgetManifest,
+  WidgetSetManifestV1 as WidgetSetManifest,
 } from "./manifest.js";
 export { MANIFEST_FILE_LOCATION } from "./manifest.js";
 export {
