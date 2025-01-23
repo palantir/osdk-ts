@@ -14,7 +14,7 @@ on:
 
 jobs:
   cspell:
-    name: Check spelling
+    name: Check speling
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
