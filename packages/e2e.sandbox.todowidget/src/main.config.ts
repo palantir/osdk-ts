@@ -1,7 +1,7 @@
 import { defineConfig } from "@osdk/widget-client.unstable";
 
 const config: {
-  id: "widget-one";
+  id: "widgetOne";
   name: "Widget One";
   description: "First widget";
   type: "workshop";
@@ -35,7 +35,7 @@ const config: {
     };
   };
 } = defineConfig({
-  id: "widget-one",
+  id: "widgetOne",
   name: "Widget One",
   description: "First widget",
   type: "workshop",

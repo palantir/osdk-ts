@@ -30,7 +30,7 @@ describe("WidgetConfig", () => {
   describe("ParameterConfigId", () => {
     it("should be able to infer the type of the parameter ID", () => {
       const test = defineConfig({
-        id: "widget-id",
+        id: "widgetId",
         name: "Widget Name",
         description: "Widget Description",
         type: "workshop",
@@ -53,7 +53,7 @@ describe("WidgetConfig", () => {
 
     it("should construct a type safe map of async parameter values", () => {
       const test = defineConfig({
-        id: "widget-id",
+        id: "widgetId",
         name: "Widget Name",
         description: "Widget Description",
         type: "workshop",
@@ -77,7 +77,7 @@ describe("WidgetConfig", () => {
 
     it("should construct a type safe map of async parameter values with arrays", () => {
       const test = defineConfig({
-        id: "widget-id",
+        id: "widgetId",
         name: "Widget Name",
         description: "Widget Description",
         type: "workshop",
@@ -108,7 +108,7 @@ describe("WidgetConfig", () => {
 
     it("should construct a type safe map of parameter values", () => {
       const test = defineConfig({
-        id: "widget-id",
+        id: "widgetId",
         name: "Widget Name",
         description: "Widget Description",
         type: "workshop",
@@ -139,7 +139,7 @@ describe("WidgetConfig", () => {
 
     it("should construct a type safe map of events that reference parameters", () => {
       const test = defineConfig({
-        id: "widget-id",
+        id: "widgetId",
         name: "Widget Name",
         description: "Widget Description",
         type: "workshop",
@@ -173,7 +173,7 @@ describe("WidgetConfig", () => {
 
     it("will not extract an event that references a parameter ID that doesn't exist", () => {
       const test = defineConfig({
-        id: "widget-id",
+        id: "widgetId",
         name: "Widget Name",
         description: "Widget Description",
         type: "workshop",
@@ -208,7 +208,7 @@ describe("WidgetConfig", () => {
 
     it("should extract event IDs correctly", () => {
       const test = defineConfig({
-        id: "widget-id",
+        id: "widgetId",
         name: "Widget Name",
         description: "Widget Description",
         type: "workshop",
@@ -246,7 +246,7 @@ describe("WidgetConfig", () => {
 
     it("should extract an event to the parameter values", () => {
       const test = defineConfig({
-        id: "widget-id",
+        id: "widgetId",
         name: "Widget Name",
         description: "Widget Description",
         type: "workshop",
