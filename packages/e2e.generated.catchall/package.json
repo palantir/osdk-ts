@@ -29,7 +29,7 @@
     }
   },
   "scripts": {
-    "check-attw": "attw --profile node16 --pack .",
+    "check-attw": "attw --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --beta true --packageType module --version dev --internal",

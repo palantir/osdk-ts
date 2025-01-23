@@ -399,9 +399,7 @@ function standardPackageRules(shared, options) {
           "check-spelling": "cspell --quiet .",
           "check-attw": options.skipAttw
             ? DELETE_SCRIPT_ENTRY
-            : `attw --profile ${
-              options.output.cjs ? "node16" : "esm-only"
-            } --pack .`,
+            : `attw${options.output.cjs ? "" : " --profile esm-only"} --pack .`,
           lint: "eslint . && dprint check  --config $(find-up dprint.json)",
           "fix-lint":
             "eslint . --fix && dprint fmt --config $(find-up dprint.json)",

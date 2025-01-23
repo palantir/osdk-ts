@@ -29,7 +29,7 @@
     }
   },
   "scripts": {
-    "check-attw": "attw --profile node16 --pack .",
+    "check-attw": "attw --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
