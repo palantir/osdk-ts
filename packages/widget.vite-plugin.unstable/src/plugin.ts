@@ -19,8 +19,8 @@ import {
   MANIFEST_FILE_LOCATION,
   type ParameterConfig,
   type WidgetConfig,
-  type WidgetManifest,
   type WidgetManifestConfig,
+  type WidgetSetManifest,
 } from "@osdk/widget-api.unstable";
 import escodegen from "escodegen";
 import type { ObjectExpression } from "estree";
@@ -42,7 +42,7 @@ const DEFINE_CONFIG_FUNCTION = "defineConfig";
 
 export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
   const baseDir = process.cwd();
-  const foundryConfigPromise = loadFoundryConfig("widget");
+  const foundryConfigPromise = loadFoundryConfig("widgetSet");
 
   const entrypointToJsSourceFileMap: Record<string, Set<string>> = {};
   const jsSourceFileToEntrypointMap: Record<string, string> = {};
@@ -226,7 +226,7 @@ export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
                 // TODO: Actually handle the widget RID from within the config, which will require somehow parsing the config
                 // Unfortunately, moduleParsed is not called during vite's dev mode for performance reasons, so the config file
                 // will need to be parsed/read a different way
-                foundryConfig.foundryConfig.widget.rid,
+                foundryConfig.foundryConfig.widgetSet.rid,
                 foundryUrl,
                 localhostUrl,
                 entrypointToJsSourceFileMap,
@@ -259,7 +259,7 @@ export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
               res.end(
                 JSON.stringify({
                   redirectUrl:
-                    `${foundryUrl.origin}/workspace/custom-widgets/preview/${foundryConfig.foundryConfig.widget.rid}`,
+                    `${foundryUrl.origin}/workspace/custom-widgets/preview/${foundryConfig.foundryConfig.widgetSet.rid}`,
                 }),
               );
             } catch (error: any) {
@@ -450,14 +450,22 @@ export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
     // We hook into the produced bundle information to generate a widget configuration file that includes both the entrypoint info and any inferred parameter information.
     async generateBundle(options, bundle) {
       const foundryConfig = await foundryConfigPromise;
-      const widgetVersion = await autoVersion(
-        foundryConfig?.foundryConfig.widget.autoVersion
+      const widgetSetVersion = await autoVersion(
+        foundryConfig?.foundryConfig.widgetSet.autoVersion
           ?? { "type": "package-json" },
       );
 
-      const widgetConfigManifest: WidgetManifest = {
-        version: "1.0.0",
-        widgets: {},
+      if (foundryConfig == null) {
+        throw new Error("foundry.config.json file not found.");
+      }
+
+      const widgetConfigManifest: WidgetSetManifest = {
+        manifestVersion: "1.0.0",
+        widgetSet: {
+          rid: foundryConfig.foundryConfig.widgetSet.rid,
+          version: widgetSetVersion,
+          widgets: {},
+        },
       };
 
       const entrypointImports: { [chunkName: string]: string[] } = {};
@@ -482,6 +490,10 @@ export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
             );
           }
           const widgetConfig: WidgetManifestConfig = {
+            id: entrypointFileIdToConfigMap[chunk.facadeModuleId].id,
+            name: entrypointFileIdToConfigMap[chunk.facadeModuleId].name,
+            description:
+              entrypointFileIdToConfigMap[chunk.facadeModuleId].description,
             type: "workshopWidgetV1",
             entrypointJs: [
               {
@@ -494,15 +506,13 @@ export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
                 path: css,
               }))
               : [],
-            rid: entrypointFileIdToConfigMap[chunk.facadeModuleId].rid,
-            version: widgetVersion,
             parameters:
               entrypointFileIdToConfigMap[chunk.facadeModuleId].parameters
                 ?? {},
             events: entrypointFileIdToConfigMap[chunk.facadeModuleId].events
               ?? {},
           };
-          widgetConfigManifest.widgets[chunk.name] = widgetConfig;
+          widgetConfigManifest.widgetSet.widgets[chunk.name] = widgetConfig;
           entrypointImports[chunk.name] = chunk.imports;
         } else {
           // Check if it's an imported chunk, since any CSS files we will need to put on the page for them
@@ -517,16 +527,18 @@ export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
               && chunk.viteMetadata?.importedCss.size
             ) {
               const existingCssFiles =
-                widgetConfigManifest.widgets[entrypointName].entrypointCss?.map(
-                  ({ path }) => path,
-                ) ?? [];
-              widgetConfigManifest.widgets[entrypointName].entrypointCss?.push(
-                ...[...chunk.viteMetadata.importedCss]
-                  .filter((css) => !existingCssFiles.includes(css))
-                  .map((css) => ({
-                    path: css,
-                  })),
-              );
+                widgetConfigManifest.widgetSet.widgets[entrypointName]
+                  .entrypointCss?.map(
+                    ({ path }) => path,
+                  ) ?? [];
+              widgetConfigManifest.widgetSet.widgets[entrypointName]
+                .entrypointCss?.push(
+                  ...[...chunk.viteMetadata.importedCss]
+                    .filter((css) => !existingCssFiles.includes(css))
+                    .map((css) => ({
+                      path: css,
+                    })),
+                );
             }
           }
         }

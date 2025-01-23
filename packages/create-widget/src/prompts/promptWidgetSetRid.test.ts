@@ -16,7 +16,7 @@
 
 import { afterEach, expect, test, vi } from "vitest";
 import { consola } from "../consola.js";
-import { promptWidgetRid } from "./promptWidgetRid.js";
+import { promptWidgetSetRid } from "./promptWidgetSetRid.js";
 
 vi.mock("../consola.js");
 
@@ -24,30 +24,30 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-const valid = "ri.widgetregistry..widget.0000-0000-0000-0000";
+const valid = "ri.widgetregistry..widget-set.0000-0000-0000-0000";
 
 test("it accepts valid application rid from prompt", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce(valid);
-  expect(await promptWidgetRid({})).toEqual(valid);
+  expect(await promptWidgetSetRid({})).toEqual(valid);
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(1);
 });
 
 test("it prompts again if answered value is invalid", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce("ri.something.else.and.fake");
   vi.mocked(consola).prompt.mockResolvedValueOnce(valid);
-  expect(await promptWidgetRid({})).toEqual(valid);
+  expect(await promptWidgetSetRid({})).toEqual(valid);
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(2);
 });
 
 test("it accepts valid initial value without prompt", async () => {
-  expect(await promptWidgetRid({ widget: valid })).toEqual(valid);
+  expect(await promptWidgetSetRid({ widgetSetRid: valid })).toEqual(valid);
   expect(vi.mocked(consola).prompt).not.toHaveBeenCalled();
 });
 
 test("it prompts if initial value is invalid", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce(valid);
   expect(
-    await promptWidgetRid({ widget: "ri.something.else.and.fake" }),
+    await promptWidgetSetRid({ widgetSetRid: "ri.something.else.and.fake" }),
   ).toEqual(valid);
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(1);
 });

@@ -25,7 +25,7 @@ import { promptOverwrite } from "./prompts/promptOverwrite.js";
 import { promptProject } from "./prompts/promptProject.js";
 import { promptSdkVersion } from "./prompts/promptSdkVersion.js";
 import { promptTemplate } from "./prompts/promptTemplate.js";
-import { promptWidgetRid } from "./prompts/promptWidgetRid.js";
+import { promptWidgetSetRid } from "./prompts/promptWidgetSetRid.js";
 import { run } from "./run.js";
 import type { SdkVersion, Template } from "./templates.js";
 
@@ -36,7 +36,7 @@ interface CliArgs {
   template?: string;
   sdkVersion?: string;
   foundryUrl?: string;
-  widget?: string;
+  widgetSetRid?: string;
   osdkPackage?: string;
   osdkRegistryUrl?: string;
 }
@@ -49,7 +49,7 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     .help()
     .command(
       "$0 [project] [--<option>]",
-      "Create a new OSDK widget based on framework templates. Information may be provided through options to skip interactive prompts.",
+      "Create a new OSDK widget set based on framework templates. Information may be provided through options to skip interactive prompts.",
       (yargs) =>
         yargs
           .positional("project", {
@@ -77,9 +77,9 @@ export async function cli(args: string[] = process.argv): Promise<void> {
             type: "string",
             describe: "URL for the Foundry stack",
           })
-          .option("widget", {
+          .option("widgetSetRid", {
             type: "string",
-            describe: "Widget resource identifier (rid)",
+            describe: "Widget set resource identifier (rid)",
           })
           .option("osdkPackage", {
             type: "string",
@@ -102,7 +102,7 @@ export async function cli(args: string[] = process.argv): Promise<void> {
   const foundryUrl: string = await promptFoundryUrl(parsed);
   const osdkPackage: string = await promptOsdkPackage(parsed);
   const osdkRegistryUrl: string = await promptOsdkRegistryUrl(parsed);
-  const widget: string = await promptWidgetRid(parsed);
+  const widgetSetRid: string = await promptWidgetSetRid(parsed);
 
   await run({
     project,
@@ -110,7 +110,7 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     template,
     sdkVersion,
     foundryUrl,
-    widget,
+    widgetSetRid,
     osdkPackage,
     osdkRegistryUrl,
   });

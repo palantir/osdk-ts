@@ -1,8 +1,10 @@
 import { defineConfig } from "@osdk/widget-client.unstable";
 
 export default defineConfig({
+  id: "widget-id",
+  name: "Custom Widget",
+  description: "And example custom widget implementation",
   type: "workshop",
-  rid: "ri.widgetregistry..widget.fake",
   parameters: {
     headerText: {
       displayName: "Widget title",
