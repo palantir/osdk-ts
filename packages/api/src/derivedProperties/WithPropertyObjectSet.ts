@@ -23,7 +23,7 @@ import type {
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
 import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
-import type { WithPropertyDefinition } from "./WithPropertiesClause.js";
+import type { Rdp } from "./Rdp.js";
 
 export interface WithPropertyObjectSet<Q extends ObjectOrInterfaceDefinition>
   extends
@@ -83,7 +83,7 @@ interface AggregatableWithPropertyObjectSet<
       : P extends "approximatePercentile" ? { percentile: number }
       : never
       : never,
-  ) => WithPropertyDefinition<
+  ) => Rdp.SelectorResult<
     V extends `${infer N}:${infer P}`
       ? P extends CollectWithPropAggregations
         ? Array<CompileTimeMetadata<Q>["properties"][N]["type"]> | undefined
@@ -104,7 +104,7 @@ interface SingleLinkWithPropertyObjectSet<
 {
   readonly selectProperty: <R extends PropertyKeys<Q>>(
     propertyName: R,
-  ) => WithPropertyDefinition<
+  ) => Rdp.SelectorResult<
     SimplePropertyDef.Make<
       CompileTimeMetadata<Q>["properties"][R]["type"],
       CompileTimeMetadata<Q>["properties"][R]["nullable"],
