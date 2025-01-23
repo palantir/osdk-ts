@@ -71,8 +71,6 @@ export async function generatePerActionDataFiles(
         wireActionTypeV2ToSdkActionMetadata(action.raw),
       );
 
-      // console.log("here is my actionDef: ", fullActionDef);
-
       function createParamsDef() {
         const entries = Object.entries(fullActionDef.parameters ?? {});
         entries.sort((a, b) => a[0].localeCompare(b[0]));
@@ -106,13 +104,6 @@ export async function generatePerActionDataFiles(
                       obj.getImportedDefinitionIdentifier(true)
                     }>`;
                   } else if (type.type === "struct") {
-                    // eslint-disable-next-line no-console
-                    console.log(
-                      "something wrong here: ",
-                      type.struct,
-                      Object.keys(type.struct),
-                      Object.entries(type.struct),
-                    );
                     return `ActionMetadata.DataType.Struct<${
                       JSON.stringify(type.struct)
                     }>`;
