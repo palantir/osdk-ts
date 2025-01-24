@@ -15,7 +15,7 @@
  */
 
 import type { Attachment, AttachmentUpload } from "../object/Attachment.js";
-import { MediaUpload } from "../object/Media.js";
+import type { MediaUpload } from "../object/Media.js";
 
 /**
  * Map from the DataValue type to the typescript type that we return

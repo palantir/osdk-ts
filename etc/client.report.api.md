@@ -21,6 +21,7 @@ import type { ExperimentFns } from '@osdk/api/unstable';
 import { InterfaceDefinition } from '@osdk/api';
 import type { InterfaceMetadata } from '@osdk/api';
 import { isOk } from '@osdk/api';
+import type { MediaUpload } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/api/unstable';
 import { ObjectMetadata } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
@@ -97,6 +98,14 @@ export function createAttachmentUpload(data: Blob, name: string): AttachmentUplo
 export const createClient: (baseUrl: string, ontologyRid: string | Promise<string>, tokenProvider: () => Promise<string>, options?: {
     logger?: Logger;
 } | undefined, fetchFn?: typeof fetch | undefined) => Client;
+
+// @public (undocumented)
+export function createMediaUpload(args: {
+    data: Blob;
+    fileName: string;
+    objectTypeApiName: string;
+    propertyApiName: string;
+}): MediaUpload;
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen

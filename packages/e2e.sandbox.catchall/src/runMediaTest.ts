@@ -40,9 +40,10 @@ export async function runMediaTest(): Promise<void> {
           objectTypeApiName: MnayanOsdkMediaObject.apiName,
           propertyApiName: "mediaReference",
         });
+
         console.log("Media upload:", mediaUpload);
         const result = await client($Actions.createMediaObject).applyAction({
-          path: "test1",
+          path: "test5",
           media_reference: mediaUpload,
         }, {
           $returnEdits: true,
