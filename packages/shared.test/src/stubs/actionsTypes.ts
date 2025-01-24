@@ -303,7 +303,6 @@ export const ActionTakesInterface: ActionTypeV2 = {
       interfaceTypeApiName: FooInterface.apiName,
     },
   ],
-  status: "ACTIVE",
 };
 
 export const ActionTakesStruct: ActionTypeV2 = {

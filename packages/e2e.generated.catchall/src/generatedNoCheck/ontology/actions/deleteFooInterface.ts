@@ -47,7 +47,7 @@ export interface deleteFooInterface extends ActionDefinition<deleteFooInterface.
     modifiedEntities: {};
     parameters: deleteFooInterface.ParamsDefinition;
     rid: 'ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817';
-    status: 'EXPERIMENTAL';
+    status: 'ACTIVE';
     type: 'action';
 
     signatures: deleteFooInterface.Signatures;
