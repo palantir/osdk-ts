@@ -300,7 +300,10 @@ describe("actions", () => {
 
     expectTypeOf<
       {
-        deletedInterface: { $objectType: string; $primaryKey: string | number };
+        deletedInterface: {
+          $objectType: "Employee" | "Person";
+          $primaryKey: string | number;
+        };
       }
     >().toMatchTypeOf<
       InferredParamType
@@ -314,7 +317,10 @@ describe("actions", () => {
     >[0];
 
     expectTypeOf<{
-      deletedInterface: { $objectType: string; $primaryKey: string | number };
+      deletedInterface: {
+        $objectType: "Employee" | "Person";
+        $primaryKey: string | number;
+      };
     }[]>().toMatchTypeOf<InferredBatchParamType>();
 
     const result = await client(deleteFooInterface).applyAction({

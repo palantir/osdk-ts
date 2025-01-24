@@ -27,7 +27,7 @@ export const FooInterface: InterfaceType = {
     fooSpt,
   },
   links: {},
-  implementedByObjectTypes: [],
+  implementedByObjectTypes: ["Employee", "Person"],
   allProperties: { fooSpt },
   allExtendsInterfaces: [],
   allLinks: {},

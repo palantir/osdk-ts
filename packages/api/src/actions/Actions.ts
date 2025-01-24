@@ -61,7 +61,10 @@ export namespace ActionParam {
    * Helper type to convert action definition parameter interface types to typescript types
    */
   export type InterfaceType<T extends InterfaceDefinition> = {
-    $objectType: string;
+    $objectType: NonNullable<T["__DefinitionMetadata"]> extends
+      { implementedBy: infer U }
+      ? (U extends ReadonlyArray<string> ? U[number] : string)
+      : string;
     $primaryKey: string | number;
   };
 
