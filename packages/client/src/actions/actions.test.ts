@@ -38,6 +38,7 @@ import {
   expect,
   expectTypeOf,
   it,
+  vi,
 } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
@@ -94,6 +95,7 @@ describe("actions", () => {
       }
     `);
 
+    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
     const undefinedResult = await client(createOffice).applyAction({
       officeId: "NYC",
       address: "123 Main Street",
@@ -104,7 +106,8 @@ describe("actions", () => {
     expect(undefinedResult).toBeUndefined();
 
     const clientCreateOffice = client(createOffice).batchApplyAction;
-    expectTypeOf<typeof clientCreateOffice>().toBeCallableWith([{
+    const clientCreateOfficeMock: typeof clientCreateOffice = vi.fn();
+    void clientCreateOfficeMock([{
       officeId: "NYC",
       address: "123 Main Street",
       capacity: 100,
