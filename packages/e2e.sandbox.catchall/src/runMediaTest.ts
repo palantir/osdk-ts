@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { createMediaUpload } from "@osdk/client";
 import { $Actions, MnayanOsdkMediaObject } from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
 
@@ -34,12 +33,12 @@ export async function runMediaTest(): Promise<void> {
       } else {
         const mimeType = response.headers.get("Content-Type");
         console.log("Data mimetype:", mimeType);
-        const mediaUpload = createMediaUpload({
+        const mediaUpload = {
           data: await response.blob(),
           fileName: "test.png",
           objectTypeApiName: MnayanOsdkMediaObject.apiName,
           propertyApiName: "mediaReference",
-        });
+        };
 
         console.log("Media upload:", mediaUpload);
         const result = await client($Actions.createMediaObject).applyAction({

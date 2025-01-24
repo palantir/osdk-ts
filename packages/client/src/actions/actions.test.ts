@@ -44,7 +44,6 @@ import {
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createAttachmentUpload } from "../object/AttachmentUpload.js";
-import { createMediaUpload } from "../object/mediaUpload.js";
 import { ActionValidationError } from "./ActionValidationError.js";
 import { remapActionResponse } from "./applyAction.js";
 
@@ -282,12 +281,12 @@ describe("actions", () => {
 
     const blob = stubData.mediaUploadRequestBody[stubData.localMedia1.filename];
 
-    const mediaUpload = createMediaUpload({
+    const mediaUpload = {
       data: blob,
       fileName: stubData.localMedia1.filename,
       objectTypeApiName: stubData.mediaReferenceObjectTypeApi,
       propertyApiName: stubData.mediaPropertyName2,
-    });
+    };
 
     const result = await client(actionTakesMedia).applyAction({
       media_reference: mediaUpload,

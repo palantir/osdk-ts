@@ -15,10 +15,7 @@
  */
 
 import { type DataValue } from "@osdk/internal.foundry.core";
-import {
-  Attachments,
-  MediaReferenceProperties,
-} from "@osdk/internal.foundry.ontologiesv2";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { isAttachmentUpload } from "../object/AttachmentUpload.js";
 import { isMediaReference, isMediaUpload } from "../object/mediaUpload.js";
@@ -53,7 +50,7 @@ export async function toDataValue(
 
   if (isMediaUpload(value)) {
     const { objectTypeApiName, propertyApiName, data, fileName } = value;
-    const mediaReference = await MediaReferenceProperties.upload(
+    const mediaReference = await OntologiesV2.MediaReferenceProperties.upload(
       client,
       await client.ontologyRid,
       objectTypeApiName,
@@ -69,7 +66,7 @@ export async function toDataValue(
 
   // For uploads, we need to upload ourselves first to get the RID of the attachment
   if (isAttachmentUpload(value)) {
-    const attachment = await Attachments.upload(
+    const attachment = await OntologiesV2.Attachments.upload(
       client,
       value.data,
       {
@@ -80,7 +77,7 @@ export async function toDataValue(
   }
 
   if (typeof value === "object" && value instanceof Blob && "name" in value) {
-    const attachment = await Attachments.upload(
+    const attachment = await OntologiesV2.Attachments.upload(
       client,
       value,
       {

@@ -23,7 +23,6 @@ import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createAttachmentUpload } from "../object/AttachmentUpload.js";
-import { createMediaUpload } from "../object/mediaUpload.js";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
 import { toDataValue } from "./toDataValue.js";
 
@@ -169,12 +168,12 @@ describe(toDataValue, () => {
 
   it("converts blob media uploads correctly", async () => {
     const data = stubData.mediaUploadRequestBody[stubData.localMedia1.filename];
-    const mediaUpload = createMediaUpload({
+    const mediaUpload = {
       data,
       fileName: stubData.localMedia1.filename,
       objectTypeApiName: stubData.mediaReferenceObjectTypeApi,
       propertyApiName: stubData.mediaPropertyName1,
-    });
+    };
     const converted = await toDataValue(mediaUpload, clientCtx);
 
     expect(converted).toEqual(
