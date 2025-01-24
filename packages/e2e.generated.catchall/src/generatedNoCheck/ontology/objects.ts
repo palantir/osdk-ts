@@ -13,6 +13,8 @@ export { OsdkTestObject } from './objects/OsdkTestObject.js';
 export { Person } from './objects/Person.js';
 export { RhemmingsObjectWithGtsrProperty2 } from './objects/RhemmingsObjectWithGtsrProperty2.js';
 export { SotSensor } from './objects/SotSensor.js';
+export { StructPerson } from './objects/StructPerson.js';
+export { StructPersonOpisTeam } from './objects/StructPersonOpisTeam.js';
 export { Todo } from './objects/Todo.js';
 export { Venture } from './objects/Venture.js';
 export { WeatherStation } from './objects/WeatherStation.js';

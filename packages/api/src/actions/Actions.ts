@@ -64,6 +64,10 @@ export namespace ActionParam {
     $objectType: string;
     $primaryKey: string | number;
   };
+
+  export type StructType<
+    T extends Record<string, keyof DataValueClientToWire>,
+  > = { [K in keyof T]: DataValueClientToWire[T[K]] };
 }
 
 export type ActionEditResponse = ActionResults;

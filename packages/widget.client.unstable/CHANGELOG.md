@@ -1,5 +1,23 @@
 # @osdk/widget-client.unstable
 
+## 2.0.0-beta.8
+
+### Minor Changes
+
+- 83e7ea3: Move from a single-widget to widget set model for custom widget libraries
+
+### Patch Changes
+
+- Updated dependencies [d794c19]
+- Updated dependencies [f0b519d]
+- Updated dependencies [7a95618]
+- Updated dependencies [62c1d63]
+- Updated dependencies [83e7ea3]
+- Updated dependencies [3fc2ee6]
+- Updated dependencies [d665147]
+  - @osdk/client@2.1.0-beta.23
+  - @osdk/widget-api.unstable@2.0.0-beta.8
+
 ## 2.0.0-beta.7
 
 ### Patch Changes

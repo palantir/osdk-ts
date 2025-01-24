@@ -515,6 +515,9 @@ function standardPackageRules(shared, options) {
               ? `\n            environment: "${options.vitestEnvironment}",`
               : ""
           }
+              fakeTimers: {
+                toFake: ["setTimeout", "clearTimeout", "Date"],
+              },
             },
           });
      

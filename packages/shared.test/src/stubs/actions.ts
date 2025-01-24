@@ -167,6 +167,14 @@ export const actionRequestWithInterface: ApplyActionRequestV2 = {
   },
 };
 
+export const actionRequestWithStruct: ApplyActionRequestV2 = {
+  options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
+  parameters: {
+    name: "testMan",
+    address: { city: "NYC", state: "NY", zipcode: 12345 },
+  },
+};
+
 export const actionRequestMoveOfficeBatch: BatchApplyActionRequestV2 = {
   requests: [{
     parameters: {
@@ -377,5 +385,8 @@ export const actionResponseMap: {
   },
   deleteFooInterface: {
     [stableStringify(actionRequestWithInterface)]: actionResponse,
+  },
+  createStructPerson: {
+    [stableStringify(actionRequestWithStruct)]: actionResponse,
   },
 };

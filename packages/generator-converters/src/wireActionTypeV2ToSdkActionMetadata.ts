@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionMetadata } from "@osdk/api";
+import type { ActionMetadata, ValidBaseActionParameterTypes } from "@osdk/api";
 import type {
   ActionParameterType,
   ActionParameterV2,
@@ -83,6 +83,22 @@ function actionPropertyToSdkPropertyDefinition(
       return {
         type: "interface",
         interface: parameterType.interfaceTypeApiName,
+      };
+    case "struct":
+      return {
+        type: "struct",
+        struct: parameterType.fields.reduce(
+          (
+            structMap: Record<string, ValidBaseActionParameterTypes>,
+            structField,
+          ) => {
+            structMap[structField.name] = actionPropertyToSdkPropertyDefinition(
+              structField.fieldType as ActionParameterType,
+            ) as ValidBaseActionParameterTypes;
+            return structMap;
+          },
+          {},
+        ),
       };
     default:
       throw new Error(

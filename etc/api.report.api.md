@@ -86,6 +86,13 @@ export namespace ActionMetadata {
             // (undocumented)
             type: "objectSet";
         }
+        // (undocumented)
+        export interface Struct<T extends Record<string, ValidBaseActionParameterTypes>> {
+            // (undocumented)
+            struct: T;
+            // (undocumented)
+            type: "struct";
+        }
     }
     // (undocumented)
     export interface Parameter<T_Target extends ObjectTypeDefinition = never> {
@@ -95,10 +102,12 @@ export namespace ActionMetadata {
         multiplicity?: boolean;
         // (undocumented)
         nullable?: boolean;
-        // Warning: (ae-forgotten-export) The symbol "ValidBaseActionParameterTypes" needs to be exported by the entry point index.d.ts
-        //
         // (undocumented)
+<<<<<<< HEAD
         type: ValidBaseActionParameterTypes | DataType.Object<any> | DataType.ObjectSet<any> | DataType.Interface<any>;
+=======
+        type: ValidBaseActionParameterTypes | DataType.Object<any> | DataType.ObjectSet<any> | DataType.Struct<any>;
+>>>>>>> main
     }
 }
 
@@ -112,6 +121,10 @@ export namespace ActionParam {
     // Warning: (ae-forgotten-export) The symbol "OsdkObjectPrimaryKeyType" needs to be exported by the entry point index.d.ts
     export type ObjectType<T extends ObjectTypeDefinition> = OsdkBase<T> | OsdkObjectPrimaryKeyType<T>;
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueClientToWire[T];
+    // (undocumented)
+    export type StructType<T extends Record<string, keyof DataValueClientToWire>> = {
+        [K in keyof T]: DataValueClientToWire[T[K]];
+    };
 }
 
 // @public (undocumented)
@@ -993,6 +1006,9 @@ export type ValidAggregationKeys<Q extends ObjectOrInterfaceDefinition> = keyof 
 } & {
     $count?: any;
 });
+
+// @public (undocumented)
+export type ValidBaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking";
 
 // Warning: (ae-forgotten-export) The symbol "VersionString" needs to be exported by the entry point index.d.ts
 //

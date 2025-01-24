@@ -1,7 +1,7 @@
 {
   "name": "@osdk/create-app.template.next-static-export",
   "private": true,
-  "version": "2.1.0-beta.22",
+  "version": "2.1.0-beta.23",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
     "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
-    "next": "^15.0.1",
+    "next": "^15.1.6",
     "react": "^18",
     "react-dom": "^18"
   },
@@ -45,7 +45,7 @@
     "eslint": "^9.15.0",
     "eslint-config-next": "^15.0.1",
     "typescript": "~5.5.4",
-    "vitest": "^2.1.3"
+    "vitest": "^3.0.4"
   },
   "publishConfig": {
     "access": "public"
