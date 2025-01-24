@@ -446,6 +446,37 @@ export type GeoFilter_Within = {
 };
 
 // @public (undocumented)
+export interface GeoFilterOptions {
+    // (undocumented)
+    "$intersects": {
+        $bbox: BBox;
+        $polygon?: never;
+    } | BBox | {
+        $polygon: Polygon["coordinates"];
+        $bbox?: never;
+    } | Polygon;
+    // (undocumented)
+    "$isNull": boolean;
+    // (undocumented)
+    "$within": {
+        $distance: [number, keyof typeof DistanceUnitMapping];
+        $of: [number, number] | Readonly<Point>;
+        $bbox?: never;
+        $polygon?: never;
+    } | {
+        $bbox: BBox;
+        $distance?: never;
+        $of?: never;
+        $polygon?: never;
+    } | BBox | {
+        $polygon: Polygon["coordinates"];
+        $bbox?: never;
+        $distance?: never;
+        $of?: never;
+    } | Polygon;
+}
+
+// @public (undocumented)
 export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
