@@ -43,7 +43,8 @@ export namespace ActionMetadata {
     type:
       | ValidBaseActionParameterTypes
       | DataType.Object<any>
-      | DataType.ObjectSet<any>;
+      | DataType.ObjectSet<any>
+      | DataType.Struct<any>;
     description?: string;
     multiplicity?: boolean;
     nullable?: boolean;
@@ -64,6 +65,13 @@ export namespace ActionMetadata {
       __OsdkTargetType?: T_Target;
       type: "objectSet";
       objectSet: T_Target["apiName"];
+    }
+
+    export interface Struct<
+      T extends Record<string, ValidBaseActionParameterTypes>,
+    > {
+      type: "struct";
+      struct: T;
     }
   }
 }

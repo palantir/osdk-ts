@@ -282,6 +282,51 @@ export const ActionTypeWithUnsupportedTypes: ActionTypeV2 = {
   status: "ACTIVE",
 };
 
+export const ActionTakesStruct: ActionTypeV2 = {
+  apiName: "createStructPerson",
+  description: "Create a struct",
+  parameters: {
+    name: {
+      dataType: {
+        type: "string",
+      },
+      required: true,
+    },
+    address: {
+      dataType: {
+        type: "struct",
+        fields: [
+          {
+            name: "city",
+            fieldType: {
+              type: "string",
+            },
+            required: true,
+          },
+          {
+            name: "state",
+            fieldType: {
+              type: "string",
+            },
+            required: true,
+          },
+          {
+            name: "zipcode",
+            fieldType: {
+              type: "integer",
+            },
+            required: true,
+          },
+        ],
+      },
+      required: false,
+    },
+  },
+  rid: "ri.ontology.main.action-type.9f24017d-cf17-4fa8-84c3-8e01e5d594f2",
+  operations: [],
+  status: "ACTIVE",
+};
+
 export const actionTypes: ActionTypeV2[] = [
   PromoteEmployee,
   PromoteEmployeeObject,
@@ -290,4 +335,5 @@ export const actionTypes: ActionTypeV2[] = [
   MoveOffice,
   ActionTakesObjectSet,
   ActionTakesAttachment,
+  ActionTakesStruct,
 ];

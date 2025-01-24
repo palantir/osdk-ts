@@ -24,6 +24,7 @@ import {
   $ontologyRid,
   actionTakesAttachment,
   createOffice,
+  createStructPerson,
   moveOffice,
 } from "@osdk/client.test.ontology";
 import type {
@@ -172,6 +173,29 @@ describe("actions", () => {
         }
       `);
     }
+  });
+
+  it("Accepts structs", async () => {
+    const clientBoundActionTakesStruct = client(createStructPerson).applyAction;
+    type InferredParamType = Parameters<
+      typeof clientBoundActionTakesStruct
+    >[0];
+    expectTypeOf<
+      {
+        name: string;
+        address: { city: string; state: string; zipcode: number };
+      }
+    >()
+      .toMatchTypeOf<
+        InferredParamType
+      >();
+
+    const result = await client(createStructPerson).applyAction({
+      name: "testMan",
+      address: { city: "NYC", state: "NY", zipcode: 12345 },
+    });
+    expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
+    expect(result).toBeUndefined();
   });
 
   it("Accepts attachments", async () => {
@@ -446,6 +470,7 @@ describe("ActionResponse remapping", () => {
       "actionTakesObjectSet",
       "createOffice",
       "createOfficeAndEmployee",
+      "createStructPerson",
       "moveOffice",
       "promoteEmployee",
       "promoteEmployeeObject",

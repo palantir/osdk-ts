@@ -55,6 +55,10 @@ export namespace ActionParam {
    * Helper type to convert action definition parameter object sets to typescript types
    */
   export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
+
+  export type StructType<
+    T extends Record<string, keyof DataValueClientToWire>,
+  > = { [K in keyof T]: DataValueClientToWire[T[K]] };
 }
 
 export type ActionEditResponse = ActionResults;

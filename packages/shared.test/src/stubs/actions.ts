@@ -160,6 +160,14 @@ export const actionRequestWithAttachmentUpload: ApplyActionRequestV2 = {
   },
 };
 
+export const actionRequestWithStruct: ApplyActionRequestV2 = {
+  options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
+  parameters: {
+    name: "testMan",
+    address: { city: "NYC", state: "NY", zipcode: 12345 },
+  },
+};
+
 export const actionRequestMoveOfficeBatch: BatchApplyActionRequestV2 = {
   requests: [{
     parameters: {
@@ -367,5 +375,9 @@ export const actionResponseMap: {
   actionTakesAttachment: {
     [stableStringify(actionRequestWithAttachment)]: actionResponse,
     [stableStringify(actionRequestWithAttachmentUpload)]: actionResponse,
+  },
+
+  createStructPerson: {
+    [stableStringify(actionRequestWithStruct)]: actionResponse,
   },
 };
