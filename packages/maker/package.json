@@ -43,7 +43,7 @@
     "@osdk/monorepo.tsup": "workspace:~",
     "@types/yargs": "^17.0.32",
     "typescript": "~5.5.4",
-    "vitest": "^2.1.2"
+    "vitest": "^3.0.4"
   },
   "publishConfig": {
     "access": "public"
