@@ -18,7 +18,7 @@
     "@osdk/client": "workspace:*",
     "@osdk/e2e.generated.catchall": "workspace:*",
     "@osdk/oauth": "workspace:*",
-    "next": "^15.0.1",
+    "next": "^15.1.2",
     "react": "^18",
     "react-dom": "^18"
   },
