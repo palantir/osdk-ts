@@ -1,5 +1,20 @@
 # @osdk/widget.vite-plugin.unstable
 
+## 2.0.0-beta.8
+
+### Minor Changes
+
+- f0b519d: Upgrade to vitest 3 and vite 6
+- 83e7ea3: Move from a single-widget to widget set model for custom widget libraries
+- 7507ed7: Upgrade to Vite v6
+
+### Patch Changes
+
+- Updated dependencies [f0b519d]
+- Updated dependencies [83e7ea3]
+  - @osdk/widget-api.unstable@2.0.0-beta.8
+  - @osdk/foundry-config-json@0.1.0-beta.2
+
 ## 2.0.0-beta.7
 
 ### Minor Changes

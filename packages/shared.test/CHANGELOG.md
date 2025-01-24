@@ -1,5 +1,19 @@
 # @osdk/shared.test
 
+## 2.1.0-beta.23
+
+### Minor Changes
+
+- d794c19: Adding support for struct action params.
+- 62c1d63: Add support for reading media reference property in OSDK.
+- d665147: Update platform sdk deps
+
+### Patch Changes
+
+- Updated dependencies [d794c19]
+- Updated dependencies [62c1d63]
+  - @osdk/api@2.1.0-beta.23
+
 ## 2.1.0-beta.22
 
 ### Minor Changes
