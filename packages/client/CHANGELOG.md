@@ -1,5 +1,27 @@
 # @osdk/client
 
+## 2.1.0-beta.23
+
+### Minor Changes
+
+- d794c19: Adding support for struct action params.
+- 7a95618: Generate new OMS APIs
+- 62c1d63: Add support for reading media reference property in OSDK.
+- 3fc2ee6: Include more descriptive JS docs for public utils
+- d665147: Update platform sdk deps
+
+### Patch Changes
+
+- Updated dependencies [d794c19]
+- Updated dependencies [f0b519d]
+- Updated dependencies [7a95618]
+- Updated dependencies [62c1d63]
+- Updated dependencies [83e7ea3]
+- Updated dependencies [d665147]
+  - @osdk/generator-converters@2.1.0-beta.23
+  - @osdk/api@2.1.0-beta.23
+  - @osdk/client.unstable@2.1.0-beta.23
+
 ## 2.1.0-beta.22
 
 ### Minor Changes

@@ -1,5 +1,12 @@
 # @osdk/api
 
+## 2.1.0-beta.23
+
+### Minor Changes
+
+- d794c19: Adding support for struct action params.
+- 62c1d63: Add support for reading media reference property in OSDK.
+
 ## 2.1.0-beta.22
 
 ### Minor Changes

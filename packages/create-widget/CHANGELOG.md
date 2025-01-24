@@ -1,5 +1,11 @@
 # @osdk/create-widget
 
+## 2.0.0-beta.8
+
+### Minor Changes
+
+- 83e7ea3: Move from a single-widget to widget set model for custom widget libraries
+
 ## 2.0.0-beta.7
 
 ## 2.0.0-beta.6

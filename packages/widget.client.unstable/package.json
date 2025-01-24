@@ -1,6 +1,6 @@
 {
   "name": "@osdk/widget-client.unstable",
-  "version": "2.0.0-beta.7",
+  "version": "2.0.0-beta.8",
   "description": "Client that sets up listeners for the custom widgets embedded into Foundry, adhering to the contract laid out in @osdk/widget-api",
   "access": "public",
   "license": "Apache-2.0",
