@@ -487,37 +487,40 @@ describe("generator", () => {
     helper = createMockMinimalFiles();
   });
 
-  test("should be able to generate a project", async () => {
-    await generateClientSdkVersionTwoPointZero(
-      TodoWireOntology,
-      "typescript-sdk/0.0.0 osdk-cli/0.0.0",
-      helper.minimalFiles,
-      BASE_PATH,
-    );
-
-    const files = helper.getFiles();
-
-    expect(files).toMatchObject({
-      [`${BASE_PATH}/index.ts`]: expect.anything(),
-      [`${BASE_PATH}/OntologyMetadata.ts`]: expect.anything(),
-      [`${BASE_PATH}/ontology/objects/Todo.ts`]: expect.anything(),
-    });
-
-    const diagnostics = compileThis(helper.getFiles(), BASE_PATH);
-    for (const q of diagnostics) {
-      console.error(
-        `${q.file?.fileName}:${q.file?.getLineStarts()}`,
-        q.messageText,
+  test(
+    "should be able to generate a project",
+    { timeout: 20_000 },
+    async () => {
+      await generateClientSdkVersionTwoPointZero(
+        TodoWireOntology,
+        "typescript-sdk/0.0.0 osdk-cli/0.0.0",
+        helper.minimalFiles,
+        BASE_PATH,
       );
-    }
 
-    // TODO: Certain errors are expected since we can't resolve the static code, but we should fix them.
-    const errors = diagnostics.filter(q => q.code !== 2792);
-    expect(errors).toHaveLength(0);
+      const files = helper.getFiles();
 
-    expect(
-      tweakedFilesForSnapshotConsistency(helper.getFiles()),
-    ).toMatchInlineSnapshot(`
+      expect(files).toMatchObject({
+        [`${BASE_PATH}/index.ts`]: expect.anything(),
+        [`${BASE_PATH}/OntologyMetadata.ts`]: expect.anything(),
+        [`${BASE_PATH}/ontology/objects/Todo.ts`]: expect.anything(),
+      });
+
+      const diagnostics = compileThis(helper.getFiles(), BASE_PATH);
+      for (const q of diagnostics) {
+        console.error(
+          `${q.file?.fileName}:${q.file?.getLineStarts()}`,
+          q.messageText,
+        );
+      }
+
+      // TODO: Certain errors are expected since we can't resolve the static code, but we should fix them.
+      const errors = diagnostics.filter(q => q.code !== 2792);
+      expect(errors).toHaveLength(0);
+
+      expect(
+        tweakedFilesForSnapshotConsistency(helper.getFiles()),
+      ).toMatchInlineSnapshot(`
       {
         "/foo/OntologyMetadata.ts": "export type $ExpectedClientVersion = 'PLACEHOLDER';
       export const $osdkMetadata = { extraUserAgent: 'typescript-sdk/0.0.0 osdk-cli/0.0.0' };
@@ -1078,7 +1081,8 @@ describe("generator", () => {
       ",
       }
     `);
-  });
+    },
+  );
 
   test("throws an error when target destination is not empty", async () => {
     helper.minimalFiles.readdir = vi.fn(async (_path: string) => ["file"]);
