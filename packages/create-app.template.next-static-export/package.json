@@ -29,7 +29,7 @@
     "transpile": "monorepo.tool.transpile"
   },
   "dependencies": {
-    "next": "^15.0.1",
+    "next": "^15.1.6",
     "react": "^18",
     "react-dom": "^18"
   },
