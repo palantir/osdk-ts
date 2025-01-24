@@ -54,9 +54,11 @@ export async function generatePerActionDataFiles(
   await fs.mkdir(outDir, { recursive: true });
   await Promise.all(
     Object.values(enhancedOntology.actionTypes).map(async (action) => {
-      const currentFilePath = `${
-        path.join("ontology", "actions", `${action.shortApiName}.ts`)
-      }`;
+      const currentFilePath = path.join(
+        "ontology",
+        "actions",
+        `${action.shortApiName}.ts`,
+      );
 
       const uniqueApiNamesArray = extractReferencedObjectsFromAction(
         action.raw,
@@ -101,6 +103,10 @@ export async function generatePerActionDataFiles(
                     return `ActionMetadata.DataType.ObjectSet<${
                       obj.getImportedDefinitionIdentifier(true)
                     }>`;
+                  } else if (type.type === "struct") {
+                    return `ActionMetadata.DataType.Struct<${
+                      JSON.stringify(type.struct)
+                    }>`;
                   }
                   return undefined;
                 },
@@ -128,12 +134,14 @@ export async function generatePerActionDataFiles(
             enhancedOntology.requireObjectType(input.objectSet)
               .getImportedDefinitionIdentifier(true)
           }>`;
+        } else if (input.type === "struct") {
+          return `ActionParam.StructType<${JSON.stringify(input.struct)}>`;
         }
       }
 
       function createV2Types() {
         const oldParamsIdentifier = `${action.shortApiName}$Params`;
-        let jsDocBlock = ["/**"];
+        const jsDocBlock = ["/**"];
         if (action.description != null) {
           jsDocBlock.push(`* ${action.description}`);
         }
@@ -157,7 +165,7 @@ export async function generatePerActionDataFiles(
                 : `${getActionParamType(ogValue.type)}`;
               jsDocBlock.push(
                 `* @param {${getActionParamType(ogValue.type)}} ${
-                  ogValue.nullable ? `[${ogKey}]` : `${ogKey}`
+                  ogValue.nullable ? `[${ogKey}]` : ogKey
                 } ${ogValue.description ?? ""} `,
               );
               return [key, value];

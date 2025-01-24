@@ -26,6 +26,7 @@ import {
   actionTakesAttachment,
   actionTakesMedia,
   createOffice,
+  createStructPerson,
   moveOffice,
 } from "@osdk/client.test.ontology";
 import type {
@@ -40,6 +41,7 @@ import {
   expect,
   expectTypeOf,
   it,
+  vi,
 } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
@@ -96,6 +98,7 @@ describe("actions", () => {
       }
     `);
 
+    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
     const undefinedResult = await client(createOffice).applyAction({
       officeId: "NYC",
       address: "123 Main Street",
@@ -106,7 +109,8 @@ describe("actions", () => {
     expect(undefinedResult).toBeUndefined();
 
     const clientCreateOffice = client(createOffice).batchApplyAction;
-    expectTypeOf<typeof clientCreateOffice>().toBeCallableWith([{
+    const clientCreateOfficeMock: typeof clientCreateOffice = vi.fn();
+    void clientCreateOfficeMock([{
       officeId: "NYC",
       address: "123 Main Street",
       capacity: 100,
@@ -171,6 +175,29 @@ describe("actions", () => {
         }
       `);
     }
+  });
+
+  it("Accepts structs", async () => {
+    const clientBoundActionTakesStruct = client(createStructPerson).applyAction;
+    type InferredParamType = Parameters<
+      typeof clientBoundActionTakesStruct
+    >[0];
+    expectTypeOf<
+      {
+        name: string;
+        address: { city: string; state: string; zipcode: number };
+      }
+    >()
+      .toMatchTypeOf<
+        InferredParamType
+      >();
+
+    const result = await client(createStructPerson).applyAction({
+      name: "testMan",
+      address: { city: "NYC", state: "NY", zipcode: 12345 },
+    });
+    expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
+    expect(result).toBeUndefined();
   });
 
   it("Accepts attachments", async () => {
@@ -480,6 +507,7 @@ describe("ActionResponse remapping", () => {
       "actionTakesObjectSet",
       "createOffice",
       "createOfficeAndEmployee",
+      "createStructPerson",
       "moveOffice",
       "promoteEmployee",
       "promoteEmployeeObject",
