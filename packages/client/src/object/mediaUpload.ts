@@ -30,5 +30,6 @@ export function isMediaReference(o: any): o is MediaReference {
   return typeof o === `object`
     && typeof o.mimeType === "string"
     && "reference" in o
+    && typeof o.reference === "object"
     && o.reference.type === "mediaSetViewItem";
 }
