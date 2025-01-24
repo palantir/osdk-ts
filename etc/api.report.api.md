@@ -1007,7 +1007,7 @@ export type ValidAggregationKeys<Q extends ObjectOrInterfaceDefinition> = keyof 
 });
 
 // @public (undocumented)
-export type ValidBaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking";
+export type ValidBaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference";
 
 // Warning: (ae-forgotten-export) The symbol "VersionString" needs to be exported by the entry point index.d.ts
 //
