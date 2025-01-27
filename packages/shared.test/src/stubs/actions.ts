@@ -160,6 +160,13 @@ export const actionRequestWithAttachmentUpload: ApplyActionRequestV2 = {
   },
 };
 
+export const actionRequestWithInterface: ApplyActionRequestV2 = {
+  options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
+  parameters: {
+    deletedInterface: { objectTypeApiName: "Employee", primaryKeyValue: 1 },
+  },
+};
+
 export const actionRequestWithStruct: ApplyActionRequestV2 = {
   options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
   parameters: {
@@ -376,7 +383,9 @@ export const actionResponseMap: {
     [stableStringify(actionRequestWithAttachment)]: actionResponse,
     [stableStringify(actionRequestWithAttachmentUpload)]: actionResponse,
   },
-
+  deleteFooInterface: {
+    [stableStringify(actionRequestWithInterface)]: actionResponse,
+  },
   createStructPerson: {
     [stableStringify(actionRequestWithStruct)]: actionResponse,
   },

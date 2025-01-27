@@ -4,5 +4,6 @@ export { createOsdkTestObject } from './actions/createOsdkTestObject.js';
 export { createStructPerson } from './actions/createStructPerson.js';
 export { createStructPersonOpiTeam } from './actions/createStructPersonOpiTeam.js';
 export { createTodo } from './actions/createTodo.js';
+export { deleteFooInterface } from './actions/deleteFooInterface.js';
 export { deleteOsdkTestObject } from './actions/deleteOsdkTestObject.js';
 export { editOsdkTestObject } from './actions/editOsdkTestObject.js';

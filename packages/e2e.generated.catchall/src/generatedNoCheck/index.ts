@@ -5,6 +5,7 @@ export {
   createStructPerson,
   createStructPersonOpiTeam,
   createTodo,
+  deleteFooInterface,
   deleteOsdkTestObject,
   editOsdkTestObject,
 } from './ontology/actions.js';

@@ -79,6 +79,11 @@ function actionPropertyToSdkPropertyDefinition(
       return { type: "object", object: parameterType.objectTypeApiName };
     case "array":
       return actionPropertyToSdkPropertyDefinition(parameterType.subType);
+    case "interfaceObject":
+      return {
+        type: "interface",
+        interface: parameterType.interfaceTypeApiName,
+      };
     case "struct":
       return {
         type: "struct",

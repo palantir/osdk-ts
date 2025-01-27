@@ -60,6 +60,15 @@ export namespace ActionMetadata {
     	// (undocumented)
     export namespace DataType {
         		// (undocumented)
+        export interface Interface<T_Target extends InterfaceDefinition = never> {
+            			// (undocumented)
+            __OsdkTargetType?: T_Target;
+            			// (undocumented)
+            interface: T_Target["apiName"];
+            			// (undocumented)
+            type: "interface";
+            		}
+        		// (undocumented)
         export interface Object<T_Target extends ObjectTypeDefinition = never> {
             			// (undocumented)
             __OsdkTargetType?: T_Target;
@@ -94,12 +103,17 @@ export namespace ActionMetadata {
         		// (undocumented)
         nullable?: boolean;
         		// (undocumented)
-        type: ValidBaseActionParameterTypes | DataType.Object<any> | DataType.ObjectSet<any> | DataType.Struct<any>;
+        type: ValidBaseActionParameterTypes | DataType.Object<any> | DataType.ObjectSet<any> | DataType.Interface<any> | DataType.Struct<any>;
         	}
 }
 
 // @public
 export namespace ActionParam {
+    	// (undocumented)
+    export type InterfaceType<T extends InterfaceDefinition> = {
+        		$objectType: NonNullable<T["__DefinitionMetadata"]> extends { implementedBy: infer U } ? (U extends ReadonlyArray<string> ? U[number] : string) : string;
+        		$primaryKey: string | number;
+        	};
     	// (undocumented)
     export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
     	// Warning: (ae-forgotten-export) The symbol "OsdkObjectPrimaryKeyType" needs to be exported by the entry point index.d.ts
@@ -527,6 +541,8 @@ export interface InterfaceDefinition {
 //
 // @public (undocumented)
 export interface InterfaceMetadata extends ObjectInterfaceBaseMetadata {
+    	// (undocumented)
+    implementedBy?: ReadonlyArray<string>;
     	// (undocumented)
     type: "interface";
 }

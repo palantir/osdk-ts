@@ -199,6 +199,28 @@
         }
       ]
     },
+    "delete-foo-interface": {
+      "apiName": "delete-foo-interface",
+      "displayName": "Delete Foo Interface",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "deletedInterface": {
+          "dataType": {
+            "type": "interfaceObject",
+            "interfaceTypeApiName": "FooInterface"
+          },
+          "required": true
+        }
+      },
+      "status": "ACTIVE",
+      "rid": "ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817",
+      "operations": [
+        {
+          "type": "deleteInterfaceObject",
+          "interfaceTypeApiName": "FooInterface"
+        }
+      ]
+    },
     "create-struct-person": {
       "apiName": "create-struct-person",
       "description": "Create a struct",
@@ -287,6 +309,7 @@
           "required": true
         }
       },
+
       "status": "ACTIVE",
       "rid": "ri.a.b.c.d",
       "operations": [
