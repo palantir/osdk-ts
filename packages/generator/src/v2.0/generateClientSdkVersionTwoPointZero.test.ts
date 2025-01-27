@@ -746,6 +746,7 @@ describe("generator", () => {
           apiName: 'SomeInterface';
           description: 'Some interface';
           displayName: 'Sum Interface';
+          implementedBy: [];
           implements: [];
           links: {};
           properties: {
@@ -1366,6 +1367,7 @@ describe("generator", () => {
             apiName: 'foo.bar.SomeInterface';
             description: 'Some interface';
             displayName: 'Sum Interface';
+            implementedBy: [];
             implements: [];
             links: {};
             properties: {
@@ -2158,6 +2160,7 @@ describe("generator", () => {
             strictProps: SomeInterface.StrictProps;
             apiName: 'com.example.dep.SomeInterface';
             displayName: 'Sum Interface';
+            implementedBy: [];
             implements: [];
             links: {};
             properties: {

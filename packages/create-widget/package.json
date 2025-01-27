@@ -10,18 +10,22 @@
   },
   "exports": {
     ".": {
-      "browser": "./build/browser/index.js",
-      "import": "./build/esm/index.js",
-      "default": "./build/browser/index.js"
+      "import": {
+        "types": "./build/types/index.d.ts",
+        "default": "./build/esm/index.js"
+      },
+      "default": "./build/esm/index.js"
     },
     "./*": {
-      "browser": "./build/browser/public/*.js",
-      "import": "./build/esm/public/*.js",
-      "default": "./build/browser/public/*.js"
+      "import": {
+        "types": "./build/types/public/*.d.ts",
+        "default": "./build/esm/public/*.js"
+      },
+      "default": "./build/esm/public/*.js"
     }
   },
   "scripts": {
-    "check-attw": "monorepo.tool.attw esm",
+    "check-attw": "attw --profile esm-only --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "codegen": "node codegen.mjs",
@@ -29,7 +33,9 @@
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --pool=forks",
     "test:watch": "vitest",
-    "transpile": "monorepo.tool.transpile tsup"
+    "transpileEsm": "monorepo.tool.transpile -f esm -m bundle -t node",
+    "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
     "consola": "^3.2.3",
@@ -42,7 +48,6 @@
     "@osdk/generator-utils": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~",
     "@types/node": "^18.0.0",
     "@types/tmp": "^0.2.6",
     "@types/yargs": "^17.0.29",
@@ -58,9 +63,8 @@
     "create-osdk-widget": "bin/createWidget.mjs"
   },
   "files": [
-    "build/cjs",
     "build/esm",
-    "build/browser",
+    "build/types",
     "CHANGELOG.md",
     "package.json",
     "templates",

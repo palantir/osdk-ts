@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { SharedClientContext as OldSharedClientContext } from "@osdk/shared.client";
 import type { SharedClientContext } from "@osdk/shared.client2";
 import { PalantirApiError } from "@osdk/shared.net.errors";
 import {
@@ -22,6 +21,9 @@ import {
   createFetchOrThrow,
   createRetryingFetch,
 } from "@osdk/shared.net.fetch";
+
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+type OldSharedClientContext = import("@osdk/shared.client").SharedClientContext;
 
 export function createSharedClientContext(
   baseUrl: string,

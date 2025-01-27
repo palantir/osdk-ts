@@ -20,6 +20,7 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 import { isAttachmentUpload } from "../object/AttachmentUpload.js";
 import { isMediaReference, isMediaUpload } from "../object/mediaUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
+import { isInterfaceActionParam } from "./interfaceUtils.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
 import { isOsdkBaseObject } from "./isOsdkObject.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
@@ -106,6 +107,13 @@ export async function toDataValue(
 
   if (isMediaReference(value)) {
     return value;
+  }
+
+  if (isInterfaceActionParam(value)) {
+    return {
+      objectTypeApiName: value.$objectType,
+      primaryKeyValue: value.$primaryKey,
+    };
   }
 
   // TODO (during queries implementation)
