@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import { changeVersionPrefix } from "@osdk/generator-utils";
-import { findUpSync } from "find-up";
 import Handlebars from "handlebars";
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { consola } from "./consola.js";
 import { generateFoundryConfigJson } from "./generate/generateFoundryConfigJson.js";
 import { generateNpmRc } from "./generate/generateNpmRc.js";
@@ -32,7 +29,7 @@ interface RunArgs {
   template: Template;
   sdkVersion: SdkVersion;
   foundryUrl: string;
-  widgetSetRid: string;
+  widgetSet: string;
   osdkPackage: string;
   osdkRegistryUrl: string;
 }
@@ -43,7 +40,7 @@ export async function run({
   template,
   sdkVersion,
   foundryUrl,
-  widgetSetRid,
+  widgetSet,
   osdkPackage,
   osdkRegistryUrl,
 }: RunArgs): Promise<void> {
@@ -91,27 +88,9 @@ export async function run({
     );
   }
 
-  const ourPackageJsonPath = findUpSync("package.json", {
-    cwd: fileURLToPath(import.meta.url),
-  });
-
-  const ourPackageJsonVersion: string | undefined = ourPackageJsonPath
-    ? JSON.parse(fs.readFileSync(ourPackageJsonPath, "utf-8")).version
-    : undefined;
-
-  const clientVersion = process.env.PACKAGE_CLIENT_VERSION
-    ?? ourPackageJsonVersion;
-
-  if (clientVersion === undefined) {
-    throw new Error("Could not determine current @osdk/client version");
-  }
-
   const templateContext: TemplateContext = {
     project,
-    foundryUrl,
-    widgetSetRid,
     osdkPackage,
-    clientVersion: changeVersionPrefix(clientVersion, "^"),
   };
   const processFiles = function(dir: string) {
     fs.readdirSync(dir).forEach(function(file) {
@@ -143,7 +122,7 @@ export async function run({
   fs.writeFileSync(path.join(root, ".npmrc"), npmRc);
   const foundryConfigJson = generateFoundryConfigJson({
     foundryUrl,
-    widgetSetRid,
+    widgetSet,
     directory: template.buildDirectory,
   });
   fs.writeFileSync(path.join(root, "foundry.config.json"), foundryConfigJson);

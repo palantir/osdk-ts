@@ -16,11 +16,11 @@
 
 export function generateFoundryConfigJson({
   foundryUrl,
-  widgetSetRid,
+  widgetSet,
   directory,
 }: {
   foundryUrl: string;
-  widgetSetRid: string;
+  widgetSet: string;
   directory: string;
 }): string {
   return (
@@ -28,7 +28,7 @@ export function generateFoundryConfigJson({
       {
         foundryUrl,
         widgetSet: {
-          rid: widgetSetRid,
+          rid: widgetSet,
           directory,
           autoVersion: {
             type: "git-describe",

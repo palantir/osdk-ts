@@ -35,7 +35,7 @@ test("it generates foundry.config.json", () => {
   expect(
     generateFoundryConfigJson({
       foundryUrl: "https://example.palantirfoundry.com",
-      widgetSetRid: "ri.widgetregistry..widget-set.fake",
+      widgetSet: "ri.widgetregistry..widget-set.fake",
       directory: "./dist",
     }),
   ).toEqual(expected);
