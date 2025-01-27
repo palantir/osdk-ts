@@ -43,7 +43,6 @@
     "@osdk/monorepo.cspell": "0.0.0",
     "@osdk/monorepo.tool.attw": "0.0.0",
     "@osdk/monorepo.tool.transpile": "0.0.0",
-    "@osdk/monorepo.tool.typecheck": "0.0.0",
     "@osdk/monorepo.tsconfig": "0.0.0",
     "@osdk/monorepo.tsup": "0.0.0",
     "@osdk/oauth": "1.0.0",

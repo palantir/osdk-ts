@@ -9,24 +9,29 @@
   },
   "exports": {
     ".": {
-      "browser": "./build/browser/index.js",
-      "import": "./build/esm/index.js",
-      "default": "./build/browser/index.js"
+      "import": {
+        "types": "./build/types/index.d.ts",
+        "default": "./build/esm/index.js"
+      },
+      "default": "./build/esm/index.js"
     },
     "./*": {
-      "browser": "./build/browser/public/*.js",
-      "import": "./build/esm/public/*.js",
-      "default": "./build/browser/public/*.js"
+      "import": {
+        "types": "./build/types/public/*.d.ts",
+        "default": "./build/esm/public/*.js"
+      },
+      "default": "./build/esm/public/*.js"
     }
   },
   "scripts": {
-    "check-attw": "monorepo.tool.attw esm",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "codegen": "create-app.template-packager",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "transpile": "monorepo.tool.transpile"
+    "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
+    "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
     "react": "^18",
@@ -39,7 +44,6 @@
     "@osdk/create-app.template-packager": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@typescript-eslint/eslint-plugin": "^8.21.0",
@@ -61,9 +65,8 @@
     "access": "public"
   },
   "files": [
-    "build/cjs",
     "build/esm",
-    "build/browser",
+    "build/types",
     "CHANGELOG.md",
     "package.json",
     "templates",
