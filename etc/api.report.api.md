@@ -561,6 +561,23 @@ export namespace ObjectMetadata {
 // @public (undocumented)
 export type ObjectOrInterfaceDefinition = ObjectTypeDefinition | InterfaceDefinition;
 
+// @public (undocumented)
+export namespace ObjectOrInterfaceDefinition {
+    // Warning: (ae-forgotten-export) The symbol "SimplePropertyDef" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export type WithRdp<K extends ObjectOrInterfaceDefinition, D extends Record<string, SimplePropertyDef>> = {
+        __DefinitionMetadata: {
+            properties: {
+                [T in keyof D]: SimplePropertyDef.ToPropertyDef<D[T]>;
+            };
+            props: {
+                [T in keyof D]: SimplePropertyDef.ToRuntimeProperty<D[T]>;
+            };
+        };
+    } & K;
+}
+
 // Warning: (ae-forgotten-export) The symbol "BaseQueryDataTypeDefinition" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -571,32 +588,28 @@ export interface ObjectQueryDataType<T_Target extends ObjectTypeDefinition = nev
     object: string;
 }
 
-// Warning: (ae-forgotten-export) The symbol "MinimalObjectSet" needs to be exported by the entry point index.d.ts
+// @public (undocumented)
+export namespace ObjectSet {
+    // (undocumented)
+    export namespace Fns {
+        // (undocumented)
+        export interface WithProperties<Q extends ObjectOrInterfaceDefinition = any, D extends Record<string, SimplePropertyDef> = {}> {
+            // (undocumented)
+            readonly withProperties: <R extends Record<string, SimplePropertyDef>>(clause: {
+                [K in keyof R]: Rdp.Selector<Q, R[K]>;
+            }) => ObjectSet<Q, {
+                [NN in keyof R | keyof D]: NN extends keyof R ? R[NN] : NN extends keyof D ? D[NN] : never;
+            }>;
+        }
+    }
+}
+
+// Warning: (ae-forgotten-export) The symbol "ObjectSetPrime" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "MergeObjectSet" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ExtractRdp" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED = any> extends MinimalObjectSet<Q> {
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    readonly aggregate: <AO extends AggregateOpts<Q>>(req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>) => Promise<AggregationsResults<Q, AO>>;
-    readonly fetchOne: Q extends ObjectTypeDefinition ? <const L extends PropertyKeys<Q>, const R extends boolean, const S extends false | "throw" = NullabilityAdherence.Default>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<Osdk.Instance<Q, ExtractOptions<R, S>, L>> : never;
-    readonly fetchOneWithErrors: Q extends ObjectTypeDefinition ? <L extends PropertyKeys<Q>, R extends boolean, S extends false | "throw" = NullabilityAdherence.Default>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<Result<Osdk.Instance<Q, ExtractOptions<R, S>, L>>> : never;
-    readonly intersect: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
-    readonly pivotTo: <L extends LinkNames<Q>>(type: L) => CompileTimeMetadata<LinkedType<Q, L>>["objectSet"];
-    readonly subscribe: <const P extends PropertyKeys<Q>>(listener: ObjectSetListener<Q, P>, opts?: ObjectSetListenerOptions<Q, P>) => {
-        unsubscribe: () => void;
-    };
-    readonly subtract: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
-    readonly union: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
-    // (undocumented)
-    readonly withProperties: <D extends WithPropertiesClause<Q>>(clause: D) => ObjectSetWithProperties<Q, {
-        [K in keyof D]: D[K] extends (baseObjectSet: any) => WithPropertyDefinition<infer P> ? PropertyDef<P["type"], "nullable", P["multiplicity"] extends true ? "array" : "single"> : never;
-    }>;
+export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, D extends ObjectSet<Q, any> | Record<string, SimplePropertyDef> = ObjectSet<Q, any>> extends ObjectSetPrime<MergeObjectSet<Q, D>>, ObjectSet.Fns.WithProperties<Q, ExtractRdp<D>> {
 }
 
 // @public (undocumented)
@@ -624,11 +637,6 @@ export interface ObjectSetQueryDataType<T_Target extends ObjectTypeDefinition = 
     // (undocumented)
     objectSet: string;
 }
-
-// Warning: (ae-forgotten-export) The symbol "WithPropertiesObjectDefinition" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
-export type ObjectSetWithProperties<Q extends ObjectOrInterfaceDefinition, D extends Record<string, PropertyDef<any, any, any>>> = ObjectSet<WithPropertiesObjectDefinition<Q, D>>;
 
 // @public (undocumented)
 export interface ObjectTypeDefinition {
@@ -850,6 +858,33 @@ export namespace QueryResult {
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueWireToClient[T];
 }
 
+// @public (undocumented)
+export namespace Rdp {
+    // Warning: (ae-forgotten-export) The symbol "BaseWithPropertyObjectSet" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export interface Builder<Q extends ObjectOrInterfaceDefinition> extends BaseWithPropertyObjectSet<Q> {
+    }
+    // (undocumented)
+    export namespace Builder {
+        // Warning: (ae-forgotten-export) The symbol "WithPropertyObjectSet" needs to be exported by the entry point index.d.ts
+        //
+        // (undocumented)
+        export interface Full<Q extends ObjectOrInterfaceDefinition> extends WithPropertyObjectSet<Q> {
+        }
+    }
+    // (undocumented)
+    export type Clause<Q extends ObjectOrInterfaceDefinition> = {
+        [key: string]: Selector<Q, SimplePropertyDef>;
+    };
+    // (undocumented)
+    export type Selector<Q extends ObjectOrInterfaceDefinition, T extends SimplePropertyDef> = (baseObjectSet: Rdp.Builder<Q>) => SelectorResult<T>;
+    // (undocumented)
+    export type SelectorResult<T extends SimplePropertyDef> = {
+        type: T;
+    };
+}
+
 // Warning: (ae-forgotten-export) The symbol "ErrorResult" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -992,28 +1027,10 @@ export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T
 // @public (undocumented)
 export type WirePropertyTypes = SimpleWirePropertyTypes | Record<string, SimpleWirePropertyTypes>;
 
-// @public (undocumented)
-export type WithPropertiesClause<Q extends ObjectOrInterfaceDefinition> = {
-    [key: string]: (baseObjectSet: BaseWithPropertyObjectSet<Q>) => WithPropertyDefinition<ObjectMetadata.Property>;
-};
-
-// @public (undocumented)
-export type WithPropertyDefinition<T extends ObjectMetadata.Property> = {
-    type: T;
-};
-
-// Warning: (ae-forgotten-export) The symbol "AggregatableWithPropertyObjectSet" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "SingleLinkWithPropertyObjectSet" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
-export interface WithPropertyObjectSet<Q extends ObjectOrInterfaceDefinition> extends BaseWithPropertyObjectSet<Q>, AggregatableWithPropertyObjectSet<Q>, SingleLinkWithPropertyObjectSet<Q> {
-}
-
 // Warnings were encountered during analysis:
 //
 // src/aggregate/AggregateOpts.ts:26:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:26:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
-// src/derivedProperties/WithPropertiesClause.ts:32:3 - (ae-forgotten-export) The symbol "BaseWithPropertyObjectSet" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

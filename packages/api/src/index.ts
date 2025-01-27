@@ -41,13 +41,7 @@ export type {
   OsdkObjectLinksObject,
   SingleLinkAccessor,
 } from "./definitions/LinkDefinitions.js";
-export type {
-  WithPropertiesClause,
-  WithPropertyDefinition,
-} from "./derivedProperties/WithPropertiesClause.js";
-export type {
-  WithPropertyObjectSet,
-} from "./derivedProperties/WithPropertyObjectSet.js";
+export type { Rdp } from "./derivedProperties/Rdp.js";
 export { DurationMapping } from "./groupby/GroupByClause.js";
 export type {
   AllGroupByValues,
@@ -80,10 +74,7 @@ export type {
 export { isOk } from "./object/Result.js";
 export type { Result } from "./object/Result.js";
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
-export type {
-  ObjectSet,
-  ObjectSetWithProperties,
-} from "./objectSet/ObjectSet.js";
+export type { ObjectSet } from "./objectSet/ObjectSet.js";
 export type { ObjectSetListener } from "./objectSet/ObjectSetListener.js";
 export type { ObjectSetListenerOptions } from "./objectSet/ObjectSetListener.js";
 export type {

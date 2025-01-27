@@ -18,11 +18,7 @@ import type { AggregateOpts } from "../aggregate/AggregateOpts.js";
 import type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } from "../aggregate/AggregateOptsThatErrors.js";
 import type { AggregationsResults } from "../aggregate/AggregationsResults.js";
 import type { WhereClause } from "../aggregate/WhereClause.js";
-import type {
-  WithPropertiesClause,
-  WithPropertyDefinition,
-} from "../derivedProperties/WithPropertiesClause.js";
-import type { GetWirePropertyValueFromClient } from "../mapping/PropertyValueMapping.js";
+import type { Rdp } from "../derivedProperties/Rdp.js";
 import type {
   AsyncIterArgs,
   Augments,
@@ -39,10 +35,9 @@ import type {
 } from "../ontology/ObjectOrInterface.js";
 import type {
   CompileTimeMetadata,
-  ObjectMetadata,
   ObjectTypeDefinition,
-  PropertyDef,
 } from "../ontology/ObjectTypeDefinition.js";
+import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { PrimaryKeyType } from "../OsdkBase.js";
 import type { ExtractOptions, Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
@@ -52,6 +47,13 @@ import type {
   ObjectSetListener,
   ObjectSetListenerOptions,
 } from "./ObjectSetListener.js";
+
+export type MergeObjectSet<
+  Q extends ObjectOrInterfaceDefinition,
+  D extends ObjectSet<Q> | Record<string, SimplePropertyDef> = {},
+> = D extends Record<string, SimplePropertyDef>
+  ? ObjectOrInterfaceDefinition.WithRdp<Q, D>
+  : Q;
 
 export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
   extends BaseObjectSet<Q>
@@ -142,9 +144,48 @@ export interface InterfaceObjectSet<
 > extends MinimalObjectSet<Q> {
 }
 
+export type ExtractRdp<
+  D extends ObjectSet<any, any> | Record<string, SimplePropertyDef>,
+> = D extends Record<string, SimplePropertyDef> ? D : {};
+
+export namespace ObjectSet {
+  export namespace Fns {
+    export interface WithProperties<
+      Q extends ObjectOrInterfaceDefinition = any,
+      D extends Record<string, SimplePropertyDef> = {},
+    > {
+      readonly withProperties: <
+        R extends Record<string, SimplePropertyDef>,
+      >(
+        clause: { [K in keyof R]: Rdp.Selector<Q, R[K]> },
+      ) => ObjectSet<
+        Q,
+        {
+          [NN in keyof R | keyof D]: NN extends keyof R ? R[NN]
+            : NN extends keyof D ? D[NN]
+            : never;
+        }
+      >;
+    }
+  }
+}
+
 export interface ObjectSet<
   Q extends ObjectOrInterfaceDefinition = any,
-  _UNUSED = any,
+  // Generated code has what is basically ObjectSet<Q> set in here
+  // but we never used it so I am repurposing it for RDP
+  D extends ObjectSet<Q, any> | Record<string, SimplePropertyDef> = ObjectSet<
+    Q,
+    any
+  >,
+> extends
+  ObjectSetPrime<MergeObjectSet<Q, D>>,
+  ObjectSet.Fns.WithProperties<Q, ExtractRdp<D>>
+{
+}
+
+interface ObjectSetPrime<
+  Q extends ObjectOrInterfaceDefinition = any,
 > extends MinimalObjectSet<Q> {
   /**
    * Aggregate on a field in an object type
@@ -170,7 +211,10 @@ export interface ObjectSet<
    * @returns aggregation results, sorted in the groups based on the groupBy clause (if applicable)
    */
   readonly aggregate: <AO extends AggregateOpts<Q>>(
-    req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
+    req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
+      Q,
+      AO
+    >,
   ) => Promise<AggregationsResults<Q, AO>>;
 
   /**
@@ -261,45 +305,4 @@ export interface ObjectSet<
     listener: ObjectSetListener<Q, P>,
     opts?: ObjectSetListenerOptions<Q, P>,
   ) => { unsubscribe: () => void };
-
-  readonly withProperties: <
-    D extends WithPropertiesClause<Q>,
-  >(
-    clause: D,
-  ) => ObjectSetWithProperties<
-    Q,
-    {
-      [K in keyof D]: D[K] extends
-        (baseObjectSet: any) => WithPropertyDefinition<infer P> ? PropertyDef<
-          P["type"],
-          "nullable",
-          P["multiplicity"] extends true ? "array" : "single"
-        >
-        : never;
-    }
-  >;
 }
-
-export type ObjectSetWithProperties<
-  Q extends ObjectOrInterfaceDefinition,
-  D extends Record<string, PropertyDef<any, any, any>>,
-> = ObjectSet<WithPropertiesObjectDefinition<Q, D>>;
-
-type WithPropertiesObjectDefinition<
-  K extends ObjectOrInterfaceDefinition,
-  D extends Record<string, ObjectMetadata.Property>,
-> = {
-  __DefinitionMetadata: {
-    properties: {
-      [T in keyof D]: D[T];
-    };
-    props: {
-      [T in keyof D]: D[T] extends PropertyDef<infer A, any, any> ?
-          | GetWirePropertyValueFromClient<
-            A
-          >
-          | undefined
-        : never;
-    };
-  };
-} & K;

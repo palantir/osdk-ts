@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectOrInterfaceDefinition,
-  WithPropertyDefinition,
-  WithPropertyObjectSet,
-} from "@osdk/api";
+import type { ObjectOrInterfaceDefinition, Rdp } from "@osdk/api";
 import type {
   DerivedPropertyDefinition,
   ObjectSet as WireObjectSet,
@@ -36,8 +32,8 @@ export function createWithPropertiesObjectSet<
   objectType: Q,
   objectSet: WireObjectSet,
   definitionMap: Map<any, DerivedPropertyDefinition>,
-): WithPropertyObjectSet<Q> {
-  const base: WithPropertyObjectSet<Q> = {
+): Rdp.Builder.Full<Q> {
+  const base: Rdp.Builder.Full<Q> = {
     pivotTo: (link) => {
       return createWithPropertiesObjectSet(objectType, {
         type: "searchAround",
@@ -100,17 +96,17 @@ export function createWithPropertiesObjectSet<
             "Invalid aggregation operation " + aggregationOperation,
           );
       }
-      const definitionObject: WithPropertyDefinition<any> = { type: {} };
-      definitionMap.set(definitionObject, {
+      const selectorResult: Rdp.SelectorResult<any> = { type: {} };
+      definitionMap.set(selectorResult, {
         type: "selection",
         objectSet: objectSet,
         operation: aggregationOperationDefinition,
       });
-      return definitionObject;
+      return selectorResult;
     },
     selectProperty: (name) => {
-      const definitionObject: WithPropertyDefinition<any> = { type: {} };
-      definitionMap.set(definitionObject, {
+      const selectorResult: Rdp.SelectorResult<any> = { type: {} };
+      definitionMap.set(selectorResult, {
         type: "selection",
         objectSet: objectSet,
         operation: {
@@ -118,7 +114,7 @@ export function createWithPropertiesObjectSet<
           selectedPropertyApiName: name,
         },
       });
-      return definitionObject;
+      return selectorResult;
     },
   };
 

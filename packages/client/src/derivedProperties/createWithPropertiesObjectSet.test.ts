@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { WithPropertiesClause } from "@osdk/api";
+import type { Rdp } from "@osdk/api";
 import { Employee } from "@osdk/client.test.ontology";
 import type { DerivedPropertyDefinition } from "@osdk/internal.foundry.core";
 import { describe, expect, it } from "vitest";
@@ -30,7 +30,7 @@ describe(createWithPropertiesObjectSet, () => {
     const clause = {
       "derivedPropertyName": (base) =>
         base.pivotTo("lead").selectProperty("employeeId"),
-    } satisfies WithPropertiesClause<Employee>;
+    } satisfies Rdp.Clause<Employee>;
 
     const result = clause["derivedPropertyName"](deriveObjectSet);
     const definition = map.get(result);
@@ -58,7 +58,7 @@ describe(createWithPropertiesObjectSet, () => {
       type: "methodInput",
     }, map);
 
-    const clause: WithPropertiesClause<Employee> = {
+    const clause: Rdp.Clause<Employee> = {
       "derivedPropertyName": (base) =>
         base.pivotTo("lead").aggregate("startDate:approximatePercentile", {
           percentile: 0.5,
