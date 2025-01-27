@@ -30,7 +30,6 @@ export type AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
       : {
         $groupBy: AO["$groupBy"];
         $select: UnorderedAggregationClause<Q>;
-        $where?: AO["$where"];
       }
   )
   : AggregateOptsThatErrors<Q, AO>;

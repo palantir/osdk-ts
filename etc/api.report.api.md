@@ -137,7 +137,6 @@ export type ActionValidationResponse = ValidateActionResponseV2;
 // @public (undocumented)
 export type AggregateOpts<Q extends ObjectOrInterfaceDefinition> = {
     	$select: UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>;
-    	$where?: WhereClause<Q>;
     	$groupBy?: GroupByClause<Q>;
 };
 
@@ -150,7 +149,6 @@ export type AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
 > = SingleKeyObject<AO["$groupBy"]> extends never ? (AO["$select"] extends UnorderedAggregationClause<Q> ? AggregateOptsThatErrors<Q, AO> : {} extends AO["$groupBy"] ? AggregateOptsThatErrors<Q, AO> : {
     	$groupBy: AO["$groupBy"];
     	$select: UnorderedAggregationClause<Q>;
-    	$where?: AO["$where"];
 }) : AggregateOptsThatErrors<Q, AO>;
 
 // @public (undocumented)
@@ -1113,8 +1111,8 @@ export type WirePropertyTypes = SimpleWirePropertyTypes | Record<string, SimpleW
 
 // Warnings were encountered during analysis:
 //
-// build/types/aggregate/AggregateOpts.d.ts:6:2 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
-// build/types/aggregate/AggregateOpts.d.ts:6:2 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
+// build/types/aggregate/AggregateOpts.d.ts:5:2 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
+// build/types/aggregate/AggregateOpts.d.ts:5:2 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
