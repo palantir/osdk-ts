@@ -1,5 +1,18 @@
 # @osdk/shared.test
 
+## 2.1.0-beta.24
+
+### Minor Changes
+
+- 03f95eb: Add support for interface params in actions.
+
+### Patch Changes
+
+- Updated dependencies [03f95eb]
+- Updated dependencies [c691c8b]
+- Updated dependencies [3c9ac22]
+  - @osdk/api@2.1.0-beta.24
+
 ## 2.1.0-beta.23
 
 ### Minor Changes
