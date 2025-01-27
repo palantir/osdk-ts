@@ -29,7 +29,7 @@
     "@osdk/client": "workspace:~"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "^0.15.2",
+    "@arethetypeswrong/cli": "^0.17.3",
     "@osdk/api": "workspace:~",
     "@osdk/cli.cmd.typescript": "workspace:~",
     "@types/core-js": "^2.5.8",

@@ -18,6 +18,7 @@
 
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "stripInternal": true
+    "stripInternal": true,
+    "jsx": "react-jsx"
   }
 }
