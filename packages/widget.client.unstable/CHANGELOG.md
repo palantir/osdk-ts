@@ -1,5 +1,19 @@
 # @osdk/widget-client.unstable
 
+## 2.0.0-beta.9
+
+### Minor Changes
+
+- c691c8b: Package now has experimental support for commonjs
+
+### Patch Changes
+
+- Updated dependencies [03f95eb]
+- Updated dependencies [c691c8b]
+- Updated dependencies [3c9ac22]
+  - @osdk/client@2.1.0-beta.24
+  - @osdk/widget-api.unstable@2.0.0-beta.9
+
 ## 2.0.0-beta.8
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @osdk/generator-utils
 
+## 2.1.0-beta.24
+
+### Minor Changes
+
+- c691c8b: Package now has experimental support for commonjs
+
 ## 2.1.0-beta.23
 
 ## 2.1.0-beta.22

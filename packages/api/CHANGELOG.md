@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 2.1.0-beta.24
+
+### Minor Changes
+
+- 03f95eb: Add support for interface params in actions.
+- c691c8b: Package now has experimental support for commonjs
+- 3c9ac22: Cleaning up where clause types.
+
 ## 2.1.0-beta.23
 
 ### Minor Changes

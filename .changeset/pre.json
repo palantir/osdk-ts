@@ -84,7 +84,8 @@
     "@osdk/benchmarks.primary": "0.0.0",
     "@osdk/examples.expo-sdk-2.x": "1.0.0",
     "@osdk/create-app.template.expo.v2": "2.1.0-beta.16",
-    "@osdk/foundry-config-json": "0.0.0"
+    "@osdk/foundry-config-json": "0.0.0",
+    "@osdk/tests.verify-cjs-node16": "0.0.3"
   },
   "changesets": [
     "big-news-thank",
@@ -131,6 +132,7 @@
     "funny-rats-tease",
     "giant-cows-play",
     "gold-badgers-tell",
+    "gorgeous-birds-wait",
     "great-shoes-dream",
     "green-kids-type",
     "happy-lizards-sneeze",
@@ -141,6 +143,7 @@
     "hip-pots-cough",
     "hot-houses-sin",
     "hungry-eagles-unite",
+    "hungry-mails-drum",
     "itchy-moons-invite",
     "kind-penguins-try",
     "lazy-meals-admire",
@@ -169,6 +172,7 @@
     "pink-wombats-cry",
     "polite-hotels-hope",
     "poor-clocks-fry",
+    "popular-ducks-rush",
     "popular-forks-knock",
     "pretty-birds-yell",
     "pretty-pumpkins-wave",
