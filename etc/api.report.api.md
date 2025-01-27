@@ -103,18 +103,16 @@ export namespace ActionMetadata {
         // (undocumented)
         nullable?: boolean;
         // (undocumented)
-<<<<<<< HEAD
-        type: ValidBaseActionParameterTypes | DataType.Object<any> | DataType.ObjectSet<any> | DataType.Interface<any>;
-=======
-        type: ValidBaseActionParameterTypes | DataType.Object<any> | DataType.ObjectSet<any> | DataType.Struct<any>;
->>>>>>> main
+        type: ValidBaseActionParameterTypes | DataType.Object<any> | DataType.ObjectSet<any> | DataType.Interface<any> | DataType.Struct<any>;
     }
 }
 
 // @public
 export namespace ActionParam {
     export type InterfaceType<T extends InterfaceDefinition> = {
-        $objectType: string;
+        $objectType: NonNullable<T["__DefinitionMetadata"]> extends {
+            implementedBy: infer U;
+        } ? (U extends ReadonlyArray<string> ? U[number] : string) : string;
         $primaryKey: string | number;
     };
     export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
@@ -504,6 +502,8 @@ export interface InterfaceDefinition {
 //
 // @public (undocumented)
 export interface InterfaceMetadata extends ObjectInterfaceBaseMetadata {
+    // (undocumented)
+    implementedBy?: ReadonlyArray<string>;
     // (undocumented)
     type: "interface";
 }
