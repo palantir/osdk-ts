@@ -64,7 +64,6 @@ const privatePackages = [
   "@osdk/e2e.*",
   "@osdk/example-generator",
   "@osdk/examples.*",
-  "@osdk/foundry-config-json",
   "@osdk/monorepo.*",
   "@osdk/platform-sdk-generator",
   "@osdk/shared.test",
