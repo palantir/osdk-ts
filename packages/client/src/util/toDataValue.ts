@@ -111,6 +111,6 @@ export async function toDataValue(
     );
   }
 
-  // expected to pass through - boolean, byte, date, decimal, float, double, integer, long, short, string, timestamp
+  // expected to pass through - boolean, byte, date, decimal, float, double, integer, long, short, string, timestamp, object type reference
   return value;
 }

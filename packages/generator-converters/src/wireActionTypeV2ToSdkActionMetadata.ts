@@ -70,6 +70,7 @@ function actionPropertyToSdkPropertyDefinition(
     case "long":
     case "timestamp":
     case "marking":
+    case "objectType":
       return parameterType.type;
     case "date":
       return "datetime";

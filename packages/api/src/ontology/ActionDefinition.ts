@@ -108,4 +108,5 @@ export type ValidBaseActionParameterTypes =
   | "datetime"
   | "timestamp"
   | "attachment"
-  | "marking";
+  | "marking"
+  | "objectType";
