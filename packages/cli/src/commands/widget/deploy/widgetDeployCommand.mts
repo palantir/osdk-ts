@@ -18,7 +18,7 @@ import { consola } from "consola";
 
 import { createInternalClientContext } from "#net";
 import { ExitProcessError } from "@osdk/cli.common";
-import type { WidgetManifest } from "@osdk/widget-api.unstable";
+import type { WidgetSetManifest } from "@osdk/widget-api.unstable";
 import { MANIFEST_FILE_LOCATION } from "@osdk/widget-api.unstable";
 import archiver from "archiver";
 import * as fs from "node:fs";
@@ -27,7 +27,7 @@ import { Readable } from "node:stream";
 import prettyBytes from "pretty-bytes";
 import { createFetch } from "../../../net/createFetch.mjs";
 import type { InternalClientContext } from "../../../net/internalClientContext.mjs";
-import type { WidgetRid } from "../../../net/WidgetRid.js";
+import type { WidgetSetRid } from "../../../net/WidgetSetRid.js";
 import { loadToken } from "../../../util/token.js";
 import type { WidgetDeployArgs } from "./WidgetDeployArgs.js";
 
@@ -39,7 +39,7 @@ export default async function widgetDeployCommand(
     token,
     tokenFile,
   }: WidgetDeployArgs,
-) {
+): Promise<void> {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
@@ -55,7 +55,7 @@ export default async function widgetDeployCommand(
     );
   }
 
-  const widgetVersion = await findWidgetVersion(rid, directory);
+  const widgetSetVersion = await findWidgetSetVersion(directory);
 
   consola.start("Zipping widget files");
   const archive = archiver("zip").directory(directory, false);
@@ -66,7 +66,7 @@ export default async function widgetDeployCommand(
     uploadVersion(
       clientCtx,
       rid,
-      widgetVersion,
+      widgetSetVersion,
       Readable.toWeb(archive) as ReadableStream<any>, // This cast is because the dom fetch doesn't align type wise with streams
     ),
     archive.finalize(),
@@ -74,12 +74,11 @@ export default async function widgetDeployCommand(
   consola.success("Upload complete");
 
   consola.start("Publishing widget manifest");
-  await publishManifest(clientCtx, rid, widgetVersion);
-  consola.success(`Deployed ${widgetVersion} successfully`);
+  await publishManifest(clientCtx, rid, widgetSetVersion);
+  consola.success(`Deployed ${widgetSetVersion} successfully`);
 }
 
-async function findWidgetVersion(
-  rid: WidgetRid,
+async function findWidgetSetVersion(
   directory: string,
 ): Promise<string> {
   try {
@@ -87,15 +86,11 @@ async function findWidgetVersion(
       path.resolve(directory, MANIFEST_FILE_LOCATION),
       "utf8",
     );
-    const manifest: WidgetManifest = JSON.parse(manifestContent);
-    const widget = Object.values(manifest.widgets).find(w => w.rid === rid);
-    if (widget == null) {
-      throw new Error(`Unable to find widget ${rid} in manifest`);
+    const manifest: WidgetSetManifest = JSON.parse(manifestContent);
+    if (manifest.widgetSet == null || manifest.widgetSet.version == null) {
+      throw new Error(`Unable to find widget set version in manifest`);
     }
-    if (widget.version == null) {
-      throw new Error(`Found widget ${rid} in manifest but missing version`);
-    }
-    return widget.version;
+    return manifest.widgetSet.version;
   } catch (e) {
     throw new ExitProcessError(
       2,
@@ -109,13 +104,13 @@ async function findWidgetVersion(
 async function uploadVersion(
   ctx: InternalClientContext,
   // TODO: make repository rid
-  widgetRid: WidgetRid,
+  widgetSetRid: WidgetSetRid,
   version: string,
   zipFile: ReadableStream | Blob | BufferSource,
 ): Promise<void> {
   const fetch = createFetch(ctx.tokenProvider);
   const url =
-    `${ctx.foundryUrl}/artifacts/api/repositories/${widgetRid}/contents/release/siteasset/versions/zip/${version}`;
+    `${ctx.foundryUrl}/artifacts/api/repositories/${widgetSetRid}/contents/release/siteasset/versions/zip/${version}`;
 
   await fetch(
     url,
@@ -133,12 +128,12 @@ async function uploadVersion(
 async function publishManifest(
   ctx: InternalClientContext,
   // TODO: make repository rid
-  widgetRid: WidgetRid,
+  widgetSetRid: WidgetSetRid,
   version: string,
 ): Promise<void> {
   const fetch = createFetch(ctx.tokenProvider);
   const url =
-    `${ctx.foundryUrl}/view-registry/api/repositories/${widgetRid}/publish-manifest`;
+    `${ctx.foundryUrl}/widget-registry/api/repositories/${widgetSetRid}/publish-manifest`;
 
   await fetch(
     url,

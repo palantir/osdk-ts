@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { WidgetConfig } from "@osdk/foundry-config-json";
+import type { WidgetSetConfig } from "@osdk/foundry-config-json";
 import { consola } from "consola";
 import type { Arguments } from "yargs";
 import type { WidgetDeployArgs } from "./WidgetDeployArgs.js";
 
-export async function logWidgetDeployCommandConfigFileOverride(
+export function logWidgetDeployCommandConfigFileOverride(
   args: Arguments<WidgetDeployArgs>,
-  config: WidgetConfig | undefined,
-) {
+  config: WidgetSetConfig | undefined,
+): void {
   if (config?.directory != null && args.directory !== config.directory) {
     consola.debug(
       `Overriding "directory" from config file with ${args.directory}`,

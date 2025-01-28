@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type WidgetRid = `ri.viewregistry..view.${string}`;
+export type WidgetSetRid = `ri.widgetregistry..widget-set.${string}`;

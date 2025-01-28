@@ -18,7 +18,9 @@ import { consola } from "consola";
 import getConfig from "../util/configLoader.js";
 
 let firstTime = true;
-export async function logConfigFileMiddleware(type: "site" | "widget"): Promise<void> {
+export async function logConfigFileMiddleware(
+  type: "site" | "widgetSet",
+): Promise<void> {
   if (firstTime) {
     firstTime = false;
     const config = getConfig(type);

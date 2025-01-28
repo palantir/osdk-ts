@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { WidgetConfig } from "@osdk/foundry-config-json";
+import type { WidgetSetConfig } from "@osdk/foundry-config-json";
 import type { CommandModule } from "yargs";
 import configLoader from "../../../util/configLoader.js";
 import type { CommonWidgetArgs } from "../CommonWidgetArgs.js";
@@ -28,9 +28,10 @@ const command: CommandModule<
   command: "deploy",
   describe: "Deploy a new widget version",
   builder: async (argv) => {
-    const config = await configLoader("widget");
-    const widgetConfig: WidgetConfig | undefined = config?.foundryConfig.widget;
-    const directory = widgetConfig?.directory;
+    const config = await configLoader("widgetSet");
+    const widgetSetConfig: WidgetSetConfig | undefined = config?.foundryConfig
+      .widgetSet;
+    const directory = widgetSetConfig?.directory;
 
     return argv
       .options({
@@ -46,7 +47,7 @@ const command: CommandModule<
         ["directory"],
         "Deploy Options",
       ).middleware((args) =>
-        logWidgetDeployCommandConfigFileOverride(args, widgetConfig)
+        logWidgetDeployCommandConfigFileOverride(args, widgetSetConfig)
       );
   },
   handler: async (args) => {

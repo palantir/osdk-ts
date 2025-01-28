@@ -15,10 +15,10 @@
  */
 
 import type { CliCommonArgs } from "@osdk/cli.common";
-import type { WidgetRid } from "../../net/WidgetRid.js";
+import type { WidgetSetRid } from "../../net/WidgetSetRid.js";
 
 export interface CommonWidgetArgs extends CliCommonArgs {
-  rid: WidgetRid;
+  rid: WidgetSetRid;
   foundryUrl: string;
   token?: string;
   tokenFile?: string;

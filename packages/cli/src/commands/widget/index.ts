@@ -16,7 +16,7 @@
 
 import { type CliCommonArgs, YargsCheckError } from "@osdk/cli.common";
 import type { CommandModule } from "yargs";
-import type { WidgetRid } from "../../net/WidgetRid.js";
+import type { WidgetSetRid } from "../../net/WidgetSetRid.js";
 import configLoader from "../../util/configLoader.js";
 import { logConfigFileMiddleware } from "../../yargs/logConfigFileMiddleware.js";
 import type { CommonWidgetArgs } from "./CommonWidgetArgs.js";
@@ -28,13 +28,13 @@ const command: CommandModule<CliCommonArgs, CommonWidgetArgs> = {
   command: "widget",
   describe: "Manage your widget",
   builder: async (argv) => {
-    const config = await configLoader("widget");
-    const rid = config?.foundryConfig.widget.rid;
+    const config = await configLoader("widgetSet");
+    const rid = config?.foundryConfig.widgetSet.rid;
     const foundryUrl = config?.foundryConfig.foundryUrl;
     return argv.options({
       rid: {
         type: "string",
-        coerce: (rid) => rid as WidgetRid,
+        coerce: (rid) => rid as WidgetSetRid,
         ...rid
           ? { default: rid }
           : { demandOption: true },
@@ -72,7 +72,7 @@ const command: CommandModule<CliCommonArgs, CommonWidgetArgs> = {
         return true;
       })
       .middleware((args) => {
-        logConfigFileMiddleware("widget");
+        void logConfigFileMiddleware("widgetSet");
         logWidgetCommandConfigFileOverride(args, config?.foundryConfig);
       })
       .demandCommand();

@@ -22,25 +22,25 @@ let siteConfigPromise:
   | Promise<LoadedFoundryConfig<"site"> | undefined>
   | undefined = undefined;
 let widgetConfigPromise:
-  | Promise<LoadedFoundryConfig<"widget"> | undefined>
+  | Promise<LoadedFoundryConfig<"widgetSet"> | undefined>
   | undefined = undefined;
 
 function getConfig(
   type: "site",
 ): Promise<LoadedFoundryConfig<"site"> | undefined>;
 function getConfig(
-  type: "widget",
-): Promise<LoadedFoundryConfig<"widget"> | undefined>;
+  type: "widgetSet",
+): Promise<LoadedFoundryConfig<"widgetSet"> | undefined>;
 function getConfig(
-  type: "site" | "widget",
-): Promise<LoadedFoundryConfig<"site" | "widget"> | undefined>;
+  type: "site" | "widgetSet",
+): Promise<LoadedFoundryConfig<"site" | "widgetSet"> | undefined>;
 function getConfig(
-  type: "site" | "widget",
-): Promise<LoadedFoundryConfig<"site" | "widget"> | undefined> {
+  type: "site" | "widgetSet",
+): Promise<LoadedFoundryConfig<"site" | "widgetSet"> | undefined> {
   if (type === "site") {
     return getSiteConfig();
   } else {
-    return getWidgetConfig();
+    return getWidgetSetConfig();
   }
 }
 
@@ -53,9 +53,11 @@ function getSiteConfig(): Promise<LoadedFoundryConfig<"site"> | undefined> {
   return siteConfigPromise;
 }
 
-function getWidgetConfig(): Promise<LoadedFoundryConfig<"widget"> | undefined> {
+function getWidgetSetConfig(): Promise<
+  LoadedFoundryConfig<"widgetSet"> | undefined
+> {
   if (widgetConfigPromise == null) {
-    widgetConfigPromise = loadFoundryConfig("widget").catch((e) => {
+    widgetConfigPromise = loadFoundryConfig("widgetSet").catch((e) => {
       throw new ExitProcessError(2, e instanceof Error ? e.message : undefined);
     });
   }

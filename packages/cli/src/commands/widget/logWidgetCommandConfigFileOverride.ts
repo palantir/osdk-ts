@@ -19,13 +19,13 @@ import { consola } from "consola";
 import type { Arguments } from "yargs";
 import type { CommonWidgetArgs } from "./CommonWidgetArgs.js";
 
-export async function logWidgetCommandConfigFileOverride(
+export function logWidgetCommandConfigFileOverride(
   args: Arguments<CommonWidgetArgs>,
-  config: FoundryConfig<"widget"> | undefined,
-) {
+  config: FoundryConfig<"widgetSet"> | undefined,
+): void {
   if (
-    config?.widget.rid != null
-    && args.rid !== config.widget.rid
+    config?.widgetSet.rid != null
+    && args.rid !== config.widgetSet.rid
   ) {
     consola.debug(
       `Overriding "rid" from config file with ${args.rid}`,

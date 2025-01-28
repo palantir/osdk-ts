@@ -18,13 +18,13 @@ import { createInternalClientContext } from "#net";
 import { consola } from "consola";
 import { createFetch } from "../../../../net/createFetch.mjs";
 import type { InternalClientContext } from "../../../../net/internalClientContext.mjs";
-import type { WidgetRid } from "../../../../net/WidgetRid.js";
+import type { WidgetSetRid } from "../../../../net/WidgetSetRid.js";
 import { loadToken } from "../../../../util/token.js";
 import type { VersionInfoArgs } from "./VersionInfoArgs.js";
 
 export default async function versionInfoCommand(
   { version, foundryUrl, rid, token, tokenFile }: VersionInfoArgs,
-) {
+): Promise<void> {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
@@ -37,12 +37,12 @@ export default async function versionInfoCommand(
 async function getViewRelease(
   ctx: InternalClientContext,
   // TODO: make repository rid
-  widgetRid: WidgetRid,
+  widgetSetRid: WidgetSetRid,
   version: string,
 ): Promise<any> {
   const fetch = createFetch(ctx.tokenProvider);
   const url =
-    `${ctx.foundryUrl}/view-registry/api/views/${widgetRid}/releases/${version}`;
+    `${ctx.foundryUrl}/widget-registry/api/widget-sets/${widgetSetRid}/releases/${version}`;
   const response = await fetch(url);
   return response.json();
 }

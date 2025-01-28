@@ -18,19 +18,19 @@ import { createInternalClientContext } from "#net";
 import { consola } from "consola";
 import { createFetch } from "../../../../net/createFetch.mjs";
 import type { InternalClientContext } from "../../../../net/internalClientContext.mjs";
-import type { WidgetRid } from "../../../../net/WidgetRid.js";
+import type { WidgetSetRid } from "../../../../net/WidgetSetRid.js";
 import { loadToken } from "../../../../util/token.js";
 import type { VersionListArgs } from "./VersionListArgs.js";
 
 export default async function versionListCommand(
   { foundryUrl, rid, token, tokenFile }: VersionListArgs,
-) {
+): Promise<void> {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
   consola.start("Fetching versions");
 
-  const response = await listViewReleases(clientCtx, rid);
+  const response = await listWidgetSetReleases(clientCtx, rid);
   if (response.releases.length === 0) {
     consola.info("No widget versions found");
     return;
@@ -40,7 +40,7 @@ export default async function versionListCommand(
 
   const semver = await import("semver");
   const sortedVersions = semver.rsort(
-    response.releases.map(v => v.version).filter(v => semver.valid(v)),
+    response.releases.map(v => v.widgetSetVersion).filter(v => semver.valid(v)),
   );
   for (const version of sortedVersions) {
     consola.log(
@@ -49,18 +49,18 @@ export default async function versionListCommand(
   }
 }
 
-async function listViewReleases(
+async function listWidgetSetReleases(
   ctx: InternalClientContext,
   // TODO: make repository rid
-  widgetRid: WidgetRid,
+  widgetSetRid: WidgetSetRid,
 ): Promise<{
   releases: Array<{
-    rid: WidgetRid;
-    version: string;
+    widgetSetRid: WidgetSetRid;
+    widgetSetVersion: string;
   }>;
 }> {
   const fetch = createFetch(ctx.tokenProvider);
-  const url = `${ctx.foundryUrl}/view-registry/api/views/${widgetRid}/releases`;
+  const url = `${ctx.foundryUrl}/widget-registry/api/widget-sets/${widgetSetRid}/releases`;
   const response = await fetch(url);
   return response.json();
 }

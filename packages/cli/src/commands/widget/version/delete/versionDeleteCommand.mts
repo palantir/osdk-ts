@@ -20,13 +20,13 @@ import { colorize } from "consola/utils";
 import { handlePromptCancel } from "../../../../consola/handlePromptCancel.js";
 import { createFetch } from "../../../../net/createFetch.mjs";
 import type { InternalClientContext } from "../../../../net/internalClientContext.mjs";
-import type { WidgetRid } from "../../../../net/WidgetRid.js";
+import type { WidgetSetRid } from "../../../../net/WidgetSetRid.js";
 import { loadToken } from "../../../../util/token.js";
 import type { VersionDeleteArgs } from "./VersionDeleteArgs.js";
 
 export default async function versionDeleteCommand(
   { version, yes, rid, foundryUrl, token, tokenFile }: VersionDeleteArgs,
-) {
+): Promise<void> {
   if (!yes) {
     const confirmed = await consola.prompt(
       `Are you sure you want to delete the version ${version}?\n${
@@ -43,21 +43,21 @@ export default async function versionDeleteCommand(
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
   // TODO: Look at type of locator and decide whether to confirm delete site version
   await Promise.all([
-    deleteViewRelease(clientCtx, rid, version),
+    deleteWidgetSetRelease(clientCtx, rid, version),
     deleteVersion(clientCtx, rid, version),
   ]);
   consola.success(`Deleted version ${version}`);
 }
 
-async function deleteViewRelease(
+async function deleteWidgetSetRelease(
   ctx: InternalClientContext,
   // TODO: make repository rid
-  widgetRid: WidgetRid,
+  widgetSetRid: WidgetSetRid,
   version: string,
 ): Promise<void> {
   const fetch = createFetch(ctx.tokenProvider);
   const url =
-    `${ctx.foundryUrl}/view-registry/api/views/${widgetRid}/releases/${version}`;
+    `${ctx.foundryUrl}/widget-registry/api/widget-sets/${widgetSetRid}/releases/${version}`;
   await fetch(
     url,
     {
@@ -69,12 +69,12 @@ async function deleteViewRelease(
 async function deleteVersion(
   ctx: InternalClientContext,
   // TODO: make repository rid
-  widgetRid: WidgetRid,
+  widgetSetRid: WidgetSetRid,
   version: string,
 ): Promise<void> {
   const fetch = createFetch(ctx.tokenProvider);
   const url =
-    `${ctx.foundryUrl}/artifacts/api/repositories/${widgetRid}/contents/release/siteasset/versions/${version}`;
+    `${ctx.foundryUrl}/artifacts/api/repositories/${widgetSetRid}/contents/release/siteasset/versions/${version}`;
 
   await fetch(
     url,
