@@ -24,7 +24,7 @@ export function createOpenApiRequest<
 >(
   basePath: string,
   fetchFn: typeof fetch,
-  contextPath: string = "/api",
+  contextPath: string = "api",
   asReadableStream?: AsReadableStream,
 ): OpenApiRequest<
   AsReadableStream extends true ? ReadableStream<Uint8Array>
@@ -41,7 +41,11 @@ export function createOpenApiRequest<
     requestMediaType?: string,
     responseMediaType?: string,
   ) {
-    const url = new URL(`${contextPath}${endpointPath}`, withHttps(basePath));
+    const withHttpsBase = withHttps(basePath);
+    const url = new URL(
+      `${contextPath}${endpointPath}`,
+      withHttpsBase.endsWith("/") ? withHttpsBase : withHttpsBase + "/",
+    );
     for (const [key, value] of Object.entries(queryArguments || {})) {
       if (value == null) {
         continue;
