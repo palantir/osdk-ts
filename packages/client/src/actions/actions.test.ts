@@ -550,6 +550,7 @@ describe("ActionResponse remapping", () => {
     expect(actions).toStrictEqual([
       "actionTakesAttachment",
       "actionTakesObjectSet",
+      "createFooInterface",
       "createOffice",
       "createOfficeAndEmployee",
       "createStructPerson",
