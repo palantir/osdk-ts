@@ -17,6 +17,7 @@
 // @ts-check
 import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePackageCommand } from "@osdk/foundry-sdk-generator";
 import { apiServer } from "@osdk/shared.test";
+import { $ } from "execa";
 import * as fs from "node:fs/promises";
 import { tmpdir } from "node:os";
 import * as path from "node:path";
@@ -98,13 +99,28 @@ async function setup() {
   await safeStat(testApp2Dir, "should exist");
   await safeStat(testApp2BetaDir, "should exist");
 
+  await $({
+    stdout: "inherit",
+    stderr: "inherit",
+  })`attw --pack ${
+    path.join(testApp2Dir, "osdk")
+  } --ignore-rules internal-resolution-error`;
+
+  await $({
+    stdout: "inherit",
+    stderr: "inherit",
+  })`attw --pack ${
+    path.join(testApp2BetaDir, "osdk")
+  } --ignore-rules internal-resolution-error`;
+
   const finalOutDir = path.join(
     path.dirname(fileURLToPath(import.meta.url)),
     "src",
     "generatedNoCheck",
   );
 
-  fs.cp(dir, finalOutDir, { recursive: true });
+  await fs.rm(finalOutDir, { recursive: true, force: true });
+  await fs.cp(dir, finalOutDir, { recursive: true });
 }
 
 export async function teardown() {
@@ -121,7 +137,7 @@ await teardown();
  */
 async function rmRf(testAppDir) {
   try {
-    await fs.rm(testAppDir, { recursive: true });
+    await fs.rm(testAppDir, { recursive: true, force: true });
   } catch (e) {
     // console.debug("rm error", e);
     // Only needed for regenerations
