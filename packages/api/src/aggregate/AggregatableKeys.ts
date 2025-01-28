@@ -17,7 +17,7 @@
 import type {
   NumericWithPropAggregateOption,
   StringWithPropAggregateOption,
-} from "../derivedProperties/WithPropertyObjectSet.js";
+} from "../derivedProperties/WithPropertiesAggregationOptions.js";
 import type {
   GetWirePropertyValueFromClient,
 } from "../mapping/PropertyValueMapping.js";

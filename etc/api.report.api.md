@@ -343,6 +343,40 @@ export interface DataValueWireToClient {
 }
 
 // @public (undocumented)
+export namespace DerivedProperty {
+    // Warning: (ae-forgotten-export) The symbol "FilterableBuilder" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export interface Builder<Q extends ObjectOrInterfaceDefinition> extends FilterableBuilder<Q> {
+        // Warning: (ae-forgotten-export) The symbol "SelectPropertyBuilder" needs to be exported by the entry point index.d.ts
+        // Warning: (ae-forgotten-export) The symbol "DefaultBuilder" needs to be exported by the entry point index.d.ts
+        //
+        // (undocumented)
+        readonly pivotTo: <L extends LinkNames<Q>>(type: L) => NonNullable<CompileTimeMetadata<Q>["links"][L]["multiplicity"]> extends false ? SelectPropertyBuilder<LinkedType<Q, L>> : DefaultBuilder<LinkedType<Q, L>>;
+    }
+    // (undocumented)
+    export namespace Builder {
+        // Warning: (ae-forgotten-export) The symbol "AggregatableBuilder" needs to be exported by the entry point index.d.ts
+        //
+        // (undocumented)
+        export interface Full<Q extends ObjectOrInterfaceDefinition> extends DerivedProperty.Builder<Q>, AggregatableBuilder<Q>, SelectPropertyBuilder<Q> {
+        }
+    }
+    // (undocumented)
+    export type Clause<Q extends ObjectOrInterfaceDefinition> = {
+        [key: string]: Selector<Q, SimplePropertyDef>;
+    };
+    // (undocumented)
+    export type Selector<Q extends ObjectOrInterfaceDefinition, T extends SimplePropertyDef> = (baseObjectSet: DerivedProperty.Builder<Q>) => SelectorResult<T>;
+    // Warning: (ae-forgotten-export) The symbol "SimplePropertyDef" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export type SelectorResult<T extends SimplePropertyDef> = {
+        type: T;
+    };
+}
+
+// @public (undocumented)
 export const DistanceUnitMapping: {
     centimeter: "CENTIMETERS";
     centimeters: "CENTIMETERS";
@@ -563,8 +597,6 @@ export type ObjectOrInterfaceDefinition = ObjectTypeDefinition | InterfaceDefini
 
 // @public (undocumented)
 export namespace ObjectOrInterfaceDefinition {
-    // Warning: (ae-forgotten-export) The symbol "SimplePropertyDef" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     export type WithRdp<K extends ObjectOrInterfaceDefinition, D extends Record<string, SimplePropertyDef>> = {
         __DefinitionMetadata: {
@@ -596,7 +628,7 @@ export namespace ObjectSet {
         export interface WithProperties<Q extends ObjectOrInterfaceDefinition = any, D extends Record<string, SimplePropertyDef> = {}> {
             // (undocumented)
             readonly withProperties: <R extends Record<string, SimplePropertyDef>>(clause: {
-                [K in keyof R]: Rdp.Selector<Q, R[K]>;
+                [K in keyof R]: DerivedProperty.Selector<Q, R[K]>;
             }) => ObjectSet<Q, {
                 [NN in keyof R | keyof D]: NN extends keyof R ? R[NN] : NN extends keyof D ? D[NN] : never;
             }>;
@@ -856,33 +888,6 @@ export namespace QueryResult {
     export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
     export type ObjectType<T extends ObjectTypeDefinition> = OsdkBase<T>;
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueWireToClient[T];
-}
-
-// @public (undocumented)
-export namespace Rdp {
-    // Warning: (ae-forgotten-export) The symbol "BaseWithPropertyObjectSet" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    export interface Builder<Q extends ObjectOrInterfaceDefinition> extends BaseWithPropertyObjectSet<Q> {
-    }
-    // (undocumented)
-    export namespace Builder {
-        // Warning: (ae-forgotten-export) The symbol "WithPropertyObjectSet" needs to be exported by the entry point index.d.ts
-        //
-        // (undocumented)
-        export interface Full<Q extends ObjectOrInterfaceDefinition> extends WithPropertyObjectSet<Q> {
-        }
-    }
-    // (undocumented)
-    export type Clause<Q extends ObjectOrInterfaceDefinition> = {
-        [key: string]: Selector<Q, SimplePropertyDef>;
-    };
-    // (undocumented)
-    export type Selector<Q extends ObjectOrInterfaceDefinition, T extends SimplePropertyDef> = (baseObjectSet: Rdp.Builder<Q>) => SelectorResult<T>;
-    // (undocumented)
-    export type SelectorResult<T extends SimplePropertyDef> = {
-        type: T;
-    };
 }
 
 // Warning: (ae-forgotten-export) The symbol "ErrorResult" needs to be exported by the entry point index.d.ts

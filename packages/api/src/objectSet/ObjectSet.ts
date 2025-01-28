@@ -18,7 +18,7 @@ import type { AggregateOpts } from "../aggregate/AggregateOpts.js";
 import type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } from "../aggregate/AggregateOptsThatErrors.js";
 import type { AggregationsResults } from "../aggregate/AggregationsResults.js";
 import type { WhereClause } from "../aggregate/WhereClause.js";
-import type { Rdp } from "../derivedProperties/Rdp.js";
+import type { DerivedProperty } from "../derivedProperties/DerivedProperty.js";
 import type {
   AsyncIterArgs,
   Augments,
@@ -157,7 +157,7 @@ export namespace ObjectSet {
       readonly withProperties: <
         R extends Record<string, SimplePropertyDef>,
       >(
-        clause: { [K in keyof R]: Rdp.Selector<Q, R[K]> },
+        clause: { [K in keyof R]: DerivedProperty.Selector<Q, R[K]> },
       ) => ObjectSet<
         Q,
         {

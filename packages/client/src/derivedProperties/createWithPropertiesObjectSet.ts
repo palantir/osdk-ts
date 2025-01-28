@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, Rdp } from "@osdk/api";
+import type { DerivedProperty, ObjectOrInterfaceDefinition } from "@osdk/api";
 import type {
   DerivedPropertyDefinition,
   ObjectSet as WireObjectSet,
@@ -32,8 +32,8 @@ export function createWithPropertiesObjectSet<
   objectType: Q,
   objectSet: WireObjectSet,
   definitionMap: Map<any, DerivedPropertyDefinition>,
-): Rdp.Builder.Full<Q> {
-  const base: Rdp.Builder.Full<Q> = {
+): DerivedProperty.Builder.Full<Q> {
+  const base: DerivedProperty.Builder.Full<Q> = {
     pivotTo: (link) => {
       return createWithPropertiesObjectSet(objectType, {
         type: "searchAround",
@@ -96,7 +96,7 @@ export function createWithPropertiesObjectSet<
             "Invalid aggregation operation " + aggregationOperation,
           );
       }
-      const selectorResult: Rdp.SelectorResult<any> = { type: {} };
+      const selectorResult: DerivedProperty.SelectorResult<any> = { type: {} };
       definitionMap.set(selectorResult, {
         type: "selection",
         objectSet: objectSet,
@@ -105,7 +105,7 @@ export function createWithPropertiesObjectSet<
       return selectorResult;
     },
     selectProperty: (name) => {
-      const selectorResult: Rdp.SelectorResult<any> = { type: {} };
+      const selectorResult: DerivedProperty.SelectorResult<any> = { type: {} };
       definitionMap.set(selectorResult, {
         type: "selection",
         objectSet: objectSet,

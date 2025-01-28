@@ -23,52 +23,58 @@ import type {
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
 import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
-import type { Rdp } from "./Rdp.js";
+import type { CollectWithPropAggregations } from "./WithPropertiesAggregationOptions.js";
 
-export interface WithPropertyObjectSet<Q extends ObjectOrInterfaceDefinition>
-  extends
-    BaseWithPropertyObjectSet<Q>,
-    AggregatableWithPropertyObjectSet<Q>,
-    SingleLinkWithPropertyObjectSet<Q>
-{}
+export namespace DerivedProperty {
+  export type SelectorResult<
+    T extends SimplePropertyDef,
+  > = {
+    type: T;
+  };
 
-export interface BaseWithPropertyObjectSet<
-  Q extends ObjectOrInterfaceDefinition,
-> extends FilterableWithPropertyObjectSet<Q> {
-  readonly pivotTo: <L extends LinkNames<Q>>(
-    type: L,
-  ) => NonNullable<CompileTimeMetadata<Q>["links"][L]["multiplicity"]> extends
-    false ? SingleLinkWithPropertyObjectSet<LinkedType<Q, L>>
-    : ManyLinkWithPropertyObjectSet<LinkedType<Q, L>>;
+  export type Clause<
+    Q extends ObjectOrInterfaceDefinition,
+  > = {
+    [key: string]: Selector<Q, SimplePropertyDef>;
+  };
+
+  export type Selector<
+    Q extends ObjectOrInterfaceDefinition,
+    T extends SimplePropertyDef,
+  > = (
+    baseObjectSet: DerivedProperty.Builder<Q>,
+  ) => SelectorResult<T>;
+
+  export interface Builder<Q extends ObjectOrInterfaceDefinition>
+    extends FilterableBuilder<Q>
+  {
+    readonly pivotTo: <L extends LinkNames<Q>>(
+      type: L,
+    ) => NonNullable<CompileTimeMetadata<Q>["links"][L]["multiplicity"]> extends
+      false ? SelectPropertyBuilder<LinkedType<Q, L>>
+      : DefaultBuilder<LinkedType<Q, L>>;
+  }
+
+  export namespace Builder {
+    export interface Full<Q extends ObjectOrInterfaceDefinition>
+      extends
+        DerivedProperty.Builder<Q>,
+        AggregatableBuilder<Q>,
+        SelectPropertyBuilder<Q>
+    {
+    }
+  }
 }
 
-interface FilterableWithPropertyObjectSet<
+interface FilterableBuilder<
   Q extends ObjectOrInterfaceDefinition,
 > {
   readonly where: (
     clause: WhereClause<Q>,
   ) => this;
 }
-export type CollectWithPropAggregations = "collectSet" | "collectList";
 
-export type BaseWithPropAggregations =
-  | "approximateDistinct"
-  | "exactDistinct"
-  | "approximatePercentile";
-
-export type StringWithPropAggregateOption =
-  | BaseWithPropAggregations
-  | CollectWithPropAggregations;
-
-export type NumericWithPropAggregateOption =
-  | "min"
-  | "max"
-  | "sum"
-  | "avg"
-  | BaseWithPropAggregations
-  | CollectWithPropAggregations;
-
-interface AggregatableWithPropertyObjectSet<
+interface AggregatableBuilder<
   Q extends ObjectOrInterfaceDefinition,
 > {
   readonly aggregate: <
@@ -83,7 +89,7 @@ interface AggregatableWithPropertyObjectSet<
       : P extends "approximatePercentile" ? { percentile: number }
       : never
       : never,
-  ) => Rdp.SelectorResult<
+  ) => DerivedProperty.SelectorResult<
     V extends `${infer N}:${infer P}`
       ? P extends CollectWithPropAggregations
         ? Array<CompileTimeMetadata<Q>["properties"][N]["type"]> | undefined
@@ -95,16 +101,21 @@ interface AggregatableWithPropertyObjectSet<
   >;
 }
 
-interface SingleLinkWithPropertyObjectSet<
+/**
+ * This is the builder that is used until we encounter a many link traversal.
+ * Once a many link traversal happens, we switch to the DefaultBuilder and the
+ * selectProperty option is no longer available.
+ */
+interface SelectPropertyBuilder<
   Q extends ObjectOrInterfaceDefinition,
 > extends
-  AggregatableWithPropertyObjectSet<Q>,
-  FilterableWithPropertyObjectSet<Q>,
-  BaseWithPropertyObjectSet<Q>
+  AggregatableBuilder<Q>,
+  FilterableBuilder<Q>,
+  DerivedProperty.Builder<Q>
 {
   readonly selectProperty: <R extends PropertyKeys<Q>>(
     propertyName: R,
-  ) => Rdp.SelectorResult<
+  ) => DerivedProperty.SelectorResult<
     SimplePropertyDef.Make<
       CompileTimeMetadata<Q>["properties"][R]["type"],
       CompileTimeMetadata<Q>["properties"][R]["nullable"],
@@ -114,18 +125,15 @@ interface SingleLinkWithPropertyObjectSet<
 }
 
 /*
- * The ManyLinkWithPropertyObjectSet overrides the pivotTo operation because once we traverse a single link,
+ * The DefaultBuilder overrides the pivotTo operation because once we traverse a single link,
  * we cannot use the "selectProperty" operation again for the entire chain. The parent pivotTo class will create
  * this object set once the user pivots to a many link/
  */
 
-interface ManyLinkWithPropertyObjectSet<
+interface DefaultBuilder<
   Q extends ObjectOrInterfaceDefinition,
-> extends
-  AggregatableWithPropertyObjectSet<Q>,
-  FilterableWithPropertyObjectSet<Q>
-{
+> extends AggregatableBuilder<Q>, FilterableBuilder<Q> {
   readonly pivotTo: <L extends LinkNames<Q>>(
     type: L,
-  ) => ManyLinkWithPropertyObjectSet<LinkedType<Q, L>>;
+  ) => DefaultBuilder<LinkedType<Q, L>>;
 }
