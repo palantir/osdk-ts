@@ -1,5 +1,13 @@
 # @osdk/widget.vite-plugin.unstable
 
+## 2.0.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [c4fdca1]
+  - @osdk/foundry-config-json@1.0.0-beta.3
+  - @osdk/widget-api.unstable@2.0.0-beta.10
+
 ## 2.0.0-beta.9
 
 ### Patch Changes
