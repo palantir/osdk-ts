@@ -64,6 +64,26 @@
         }
       ]
     },
+    "create-media-via-function": {
+      "apiName": "create-media-via-function",
+      "displayName": "Create media object via function",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "mediaItem": {
+          "dataType": {
+            "type": "mediaReference"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.55c19ac6-47a4-46f6-9bab-b97f9016ff92",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "MnayanOsdkMediaObject"
+        }
+      ]
+    },
     "delete-osdk-test-object": {
       "apiName": "delete-osdk-test-object",
       "displayName": "Delete Osdk Test Object",

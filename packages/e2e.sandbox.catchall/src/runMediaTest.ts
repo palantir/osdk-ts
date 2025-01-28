@@ -35,18 +35,24 @@ export async function runMediaTest(): Promise<void> {
         console.log("Data mimetype:", mimeType);
         const mediaUpload = {
           data: await response.blob(),
-          fileName: "test.png",
+          fileName: "test7.png",
           objectTypeApiName: MnayanOsdkMediaObject.apiName,
           propertyApiName: "mediaReference",
         };
 
         console.log("Media upload:", mediaUpload);
-        const result = await client($Actions.createMediaObject).applyAction({
-          path: "test5",
-          media_reference: mediaUpload,
-        }, {
-          $returnEdits: true,
-        });
+        // const result = await client($Actions.createMediaObject).applyAction({
+        //   path: "test6",
+        //   media_reference: mediaUpload,
+        // }, {
+        //   $returnEdits: true,
+        // });
+        const result = await client($Actions.createMediaViaFunction)
+          .applyAction({
+            mediaItem: mediaUpload,
+          }, {
+            $returnEdits: true,
+          });
       }
     },
   );
