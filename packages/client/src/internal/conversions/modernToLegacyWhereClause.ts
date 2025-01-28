@@ -22,7 +22,10 @@ import type {
 } from "@osdk/api";
 import { DistanceUnitMapping } from "@osdk/api";
 
-import type { SearchJsonQueryV2 } from "@osdk/internal.foundry.core";
+import type {
+  PropertyIdentifier,
+  SearchJsonQueryV2,
+} from "@osdk/internal.foundry.core";
 import type { BBox, Position } from "geojson";
 import invariant from "tiny-invariant";
 
@@ -80,14 +83,21 @@ export function modernToLegacyWhereClause<
 }
 
 function makeGeoFilterBbox(
-  field: string,
   bbox: BBox,
   filterType: "$within" | "$intersects",
+  propertyIdentifier?: PropertyIdentifier,
+  field?: string,
 ): SearchJsonQueryV2 {
   return {
     type: filterType === "$within"
       ? "withinBoundingBox"
       : "intersectsBoundingBox",
+    /**
+     * This is a bit ugly, but did this so that propertyIdentifier only shows up in the return object if its defined,
+     * this makes it so we don't need to go update our entire test bed either to include a field which may change in near future.
+     * Once we solidify that this is the way forward, I can remove field and clean this up
+     */
+    ...(propertyIdentifier != null && { propertyIdentifier }),
     field,
     value: {
       topLeft: {
@@ -103,12 +113,14 @@ function makeGeoFilterBbox(
 }
 
 function makeGeoFilterPolygon(
-  field: string,
   coordinates: Position[][],
   filterType: "intersectsPolygon" | "withinPolygon",
+  propertyIdentifier?: PropertyIdentifier,
+  field?: string,
 ): SearchJsonQueryV2 {
   return {
     type: filterType,
+    ...(propertyIdentifier != null && { propertyIdentifier }),
     field,
     value: {
       type: "Polygon",
@@ -118,29 +130,39 @@ function makeGeoFilterPolygon(
 }
 
 function handleWherePair(
-  [field, filter]: [string, any],
+  [fieldName, filter]: [string, any],
   objectOrInterface: ObjectOrInterfaceDefinition,
+  structFieldSelector?: { propertyApiName: string; structFieldApiName: string },
 ): SearchJsonQueryV2 {
   invariant(
     filter != null,
     "Defined key values are only allowed when they are not undefined.",
   );
 
+  const propertyIdentifier: PropertyIdentifier | undefined =
+    structFieldSelector != null
+      ? {
+        type: "structField",
+        ...structFieldSelector,
+        propertyApiName: fullyQualifyPropName(
+          structFieldSelector.propertyApiName,
+          objectOrInterface,
+        ),
+      }
+      : undefined;
+  const field = structFieldSelector == null
+    ? fullyQualifyPropName(fieldName, objectOrInterface)
+    : undefined;
+
   if (
     typeof filter === "string" || typeof filter === "number"
     || typeof filter === "boolean"
   ) {
-    if (objectOrInterface.type === "interface") {
-      const [objApiNamespace] = extractNamespace(objectOrInterface.apiName);
-      const [fieldApiNamespace, fieldShortName] = extractNamespace(field);
-
-      if (fieldApiNamespace == null && objApiNamespace != null) {
-        field = `${objApiNamespace}.${fieldShortName}`;
-      }
-    }
-
+    propertyIdentifier;
     return {
       type: "eq",
+      ...(propertyIdentifier != null
+        && { propertyIdentifier }),
       field,
       value: filter,
     };
@@ -158,12 +180,16 @@ function handleWherePair(
   );
 
   if (!hasDollarSign) {
-    // Future case for structs
-    throw new Error(
-      `Unsupported filter. Did you forget to use a $-prefixed filter? (${
-        JSON.stringify(filter)
-      })`,
+    const structFilter = Object.entries(filter);
+    invariant(
+      structFilter.length === 1,
+      "Cannot filter on more than one struct field in the same clause, need to use an and clause",
     );
+    const structFieldApiName = keysOfFilter[0];
+    return handleWherePair(Object.entries(filter)[0], objectOrInterface, {
+      propertyApiName: fieldName,
+      structFieldApiName,
+    });
   }
 
   const firstKey = keysOfFilter[0] as PossibleWhereClauseFilters;
@@ -174,6 +200,7 @@ function handleWherePair(
       type: "not",
       value: {
         type: "eq",
+        ...(propertyIdentifier != null && { propertyIdentifier }),
         field,
         value: filter[firstKey],
       },
@@ -184,9 +211,14 @@ function handleWherePair(
     const withinBody = filter[firstKey] as GeoFilterOptions["$within"];
 
     if (Array.isArray(withinBody)) {
-      return makeGeoFilterBbox(field, withinBody, firstKey);
+      return makeGeoFilterBbox(withinBody, firstKey, propertyIdentifier, field);
     } else if ("$bbox" in withinBody && withinBody.$bbox != null) {
-      return makeGeoFilterBbox(field, withinBody.$bbox, firstKey);
+      return makeGeoFilterBbox(
+        withinBody.$bbox,
+        firstKey,
+        propertyIdentifier,
+        field,
+      );
     } else if (
       ("$distance" in withinBody && "$of" in withinBody)
       && withinBody.$distance != null
@@ -194,6 +226,7 @@ function handleWherePair(
     ) {
       return {
         type: "withinDistanceOf",
+        ...(propertyIdentifier != null && { propertyIdentifier }),
         field,
         value: {
           center: Array.isArray(withinBody.$of)
@@ -212,26 +245,47 @@ function handleWherePair(
       const coordinates = ("$polygon" in withinBody)
         ? withinBody.$polygon
         : withinBody.coordinates;
-      return makeGeoFilterPolygon(field, coordinates, "withinPolygon");
+      return makeGeoFilterPolygon(
+        coordinates,
+        "withinPolygon",
+        propertyIdentifier,
+        fieldName,
+      );
     }
   }
   if (firstKey === "$intersects") {
     const intersectsBody = filter[firstKey] as GeoFilterOptions["$intersects"];
     if (Array.isArray(intersectsBody)) {
-      return makeGeoFilterBbox(field, intersectsBody, firstKey);
+      return makeGeoFilterBbox(
+        intersectsBody,
+        firstKey,
+        propertyIdentifier,
+        field,
+      );
     } else if ("$bbox" in intersectsBody && intersectsBody.$bbox != null) {
-      return makeGeoFilterBbox(field, intersectsBody.$bbox, firstKey);
+      return makeGeoFilterBbox(
+        intersectsBody.$bbox,
+        firstKey,
+        propertyIdentifier,
+        field,
+      );
     } else {
       const coordinates = ("$polygon" in intersectsBody)
         ? intersectsBody.$polygon
         : intersectsBody.coordinates;
-      return makeGeoFilterPolygon(field, coordinates, "intersectsPolygon");
+      return makeGeoFilterPolygon(
+        coordinates,
+        "intersectsPolygon",
+        propertyIdentifier,
+        field,
+      );
     }
   }
 
   if (firstKey === "$containsAllTerms" || firstKey === "$containsAnyTerm") {
     return {
       type: firstKey.substring(1) as DropDollarSign<typeof firstKey>,
+      ...(propertyIdentifier != null && { propertyIdentifier }),
       field,
       value: typeof filter[firstKey] === "string"
         ? filter[firstKey]
@@ -244,6 +298,7 @@ function handleWherePair(
 
   return {
     type: firstKey.substring(1) as DropDollarSign<typeof firstKey>,
+    ...(propertyIdentifier != null && { propertyIdentifier }),
     field,
     value: filter[firstKey] as any,
   };
@@ -251,3 +306,17 @@ function handleWherePair(
 
 type DropDollarSign<T extends `$${string}`> = T extends `$${infer U}` ? U
   : never;
+
+function fullyQualifyPropName(
+  fieldName: string,
+  objectOrInterface: ObjectOrInterfaceDefinition,
+) {
+  if (objectOrInterface.type === "interface") {
+    const [objApiNamespace] = extractNamespace(objectOrInterface.apiName);
+    const [fieldApiNamespace, fieldShortName] = extractNamespace(fieldName);
+    return (fieldApiNamespace == null && objApiNamespace != null)
+      ? `${objApiNamespace}.${fieldShortName}`
+      : fieldName;
+  }
+  return fieldName;
+}

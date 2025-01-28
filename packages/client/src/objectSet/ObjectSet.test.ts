@@ -460,6 +460,21 @@ describe("ObjectSet", () => {
     });
   });
 
+  it("type checking struct where clauses", () => {
+    expectTypeOf(client(BgaoNflPlayer).where).toBeCallableWith({
+      $and: [{ address: { city: { $eq: "NYC" } } }, {
+        address: { zipCode: { $gte: 55555 } },
+      }],
+    });
+    expectTypeOf(client(BgaoNflPlayer).where).toBeCallableWith({
+      address: {
+        addressLine1: { $containsAllTerms: "BLVD" },
+        // @ts-expect-error
+        addressLine2: { $containsAllTermsInOrder: "Apartment Number" },
+      },
+    });
+  });
+
   describe.each(["fetchPage", "fetchPageWithErrors"] as const)("%s", (k) => {
     // describe("strictNonNull: \"drop\"", () => {
     //   describe("includeRid: true", () => {
