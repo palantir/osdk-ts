@@ -1,0 +1,12 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "codegen": {
+      "outputs": ["osdk/@test-app2/**/*"],
+      "dependsOn": [
+        "@osdk/tool.generate-with-mock-ontology#transpile",
+        "^transpile"
+      ]
+    }
+  }
+}

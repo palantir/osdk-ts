@@ -102,16 +102,12 @@ async function setup() {
   await $({
     stdout: "inherit",
     stderr: "inherit",
-  })`attw --pack ${
-    path.join(testApp2Dir, "osdk")
-  } --ignore-rules internal-resolution-error`;
+  })`attw --pack ${path.join(testApp2Dir, "osdk")}`;
 
   await $({
     stdout: "inherit",
     stderr: "inherit",
-  })`attw --pack ${
-    path.join(testApp2BetaDir, "osdk")
-  } --ignore-rules internal-resolution-error`;
+  })`attw --pack ${path.join(testApp2BetaDir, "osdk")}`;
 
   const finalOutDir = path.join(
     path.dirname(fileURLToPath(import.meta.url)),
