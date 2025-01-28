@@ -44,6 +44,7 @@ export interface DataValueWireToClient {
   }[];
   struct: Record<string, any>;
   set: Set<any>;
+  objectType: string;
 }
 
 /**
@@ -74,6 +75,7 @@ export interface DataValueClientToWire {
     groups: { key: AllowedBucketKeyTypes; value: AllowedBucketTypes }[];
   }[];
   struct: Record<string, any>;
+  objectType: string;
 }
 
 export type AllowedBucketTypes = string | number | boolean;

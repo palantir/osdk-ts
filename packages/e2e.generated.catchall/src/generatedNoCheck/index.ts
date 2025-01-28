@@ -1,6 +1,7 @@
 export {
   actionTakesAllParameterTypes,
   assignEmployee1,
+  createFooInterface,
   createOsdkTestObject,
   createStructPerson,
   createStructPersonOpiTeam,
