@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.1.0-beta.25
+
+### Minor Changes
+
+- c80ca45: Add ability to create interfaces through actions now.
+
+### Patch Changes
+
+- Updated dependencies [c80ca45]
+  - @osdk/generator-converters@2.1.0-beta.25
+  - @osdk/api@2.1.0-beta.25
+  - @osdk/client.unstable@2.1.0-beta.25
+
 ## 2.1.0-beta.24
 
 ### Minor Changes

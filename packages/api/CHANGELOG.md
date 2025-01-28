@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.1.0-beta.25
+
+### Minor Changes
+
+- c80ca45: Add ability to create interfaces through actions now.
+
 ## 2.1.0-beta.24
 
 ### Minor Changes
