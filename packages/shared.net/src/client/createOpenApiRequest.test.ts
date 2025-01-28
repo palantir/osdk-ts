@@ -29,7 +29,7 @@ describe("createOpenApiRequest", () => {
     });
 
     const request = createOpenApiRequest<{ test: number }>(
-      "https://example.com",
+      "https://example.com/some/other/stuff",
       mockFetch,
     );
     const mockBody = {
@@ -51,7 +51,7 @@ describe("createOpenApiRequest", () => {
     );
 
     expect(mockFetch).toHaveBeenCalledWith(
-      "https://example.com/api/foo?query=bar&multipleValues=value1&multipleValues=value2",
+      "https://example.com/some/other/stuff/api/foo?query=bar&multipleValues=value1&multipleValues=value2",
       {
         method: "POST",
         headers: new Headers({
@@ -73,7 +73,7 @@ describe("createOpenApiRequest", () => {
     });
 
     const request = createOpenApiRequest(
-      "example.com",
+      "example.com/some/stuff/notrailing",
       mockFetch,
     );
     expect(
@@ -83,7 +83,7 @@ describe("createOpenApiRequest", () => {
     );
 
     expect(mockFetch).toHaveBeenCalledWith(
-      "https://example.com/api/foo",
+      "https://example.com/some/stuff/notrailing/api/foo",
       {
         method: "POST",
         headers: new Headers(
@@ -131,7 +131,7 @@ describe("createOpenApiRequest", () => {
       json: () => Promise.resolve({ test: 1 }),
     });
 
-    const request = createOpenApiRequest("http://localhost:8080", mockFetch);
+    const request = createOpenApiRequest("http://localhost:8080/", mockFetch);
     expect(
       await request("POST", "/foo"),
     ).toEqual(
