@@ -55,9 +55,14 @@ export type MergeObjectSet<
   ? ObjectOrInterfaceDefinition.WithRdp<Q, D>
   : Q;
 
-export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
-  extends BaseObjectSet<Q>
-{
+export interface MinimalObjectSet<
+  Q extends ObjectOrInterfaceDefinition,
+  B extends ObjectOrInterfaceDefinition = Q,
+  Y extends ObjectSet<B, any> | Record<string, SimplePropertyDef> = ObjectSet<
+    B,
+    any
+  >,
+> extends BaseObjectSet<Q> {
   /**
    * Gets a page of objects of this type, with a result wrapper
    * @param args - Args to specify next page token and page size, if applicable
@@ -79,8 +84,15 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
     args?: FetchPageArgs<Q, L, R, A, S>,
   ) => Promise<
     PageResult<
-      PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S>>
-        : Osdk.Instance<Q, ExtractOptions<R, S>, L>
+      Osdk.Instance<
+        B,
+        ExtractOptions<R, S>,
+        PropertyKeys<B> extends L ? PropertyKeys<B>
+          : Extract<L, PropertyKeys<B>>,
+        Y extends Record<string, SimplePropertyDef>
+          ? { [K in Extract<keyof Y, L>]: Y[K] }
+          : never
+      >
     >
   >;
 
@@ -105,7 +117,21 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
     S extends NullabilityAdherence = NullabilityAdherence.Default,
   >(
     args?: FetchPageArgs<Q, L, R, A, S>,
-  ) => Promise<Result<PageResult<Osdk.Instance<Q, ExtractOptions<R, S>, L>>>>;
+  ) => Promise<
+    Result<
+      PageResult<
+        Osdk.Instance<
+          B,
+          ExtractOptions<R, S>,
+          PropertyKeys<B> extends L ? PropertyKeys<B>
+            : Extract<L, PropertyKeys<B>>,
+          Y extends Record<string, SimplePropertyDef>
+            ? { [K in Extract<keyof Y, L>]: Y[K] }
+            : never
+        >
+      >
+    >
+  >;
 
   /**
    * Allows you to filter an object set with a given clause
@@ -179,14 +205,19 @@ export interface ObjectSet<
     any
   >,
 > extends
-  ObjectSetPrime<MergeObjectSet<Q, D>>,
+  ObjectSetPrime<MergeObjectSet<Q, D>, Q, D>,
   ObjectSet.Fns.WithProperties<Q, ExtractRdp<D>>
 {
 }
 
 interface ObjectSetPrime<
   Q extends ObjectOrInterfaceDefinition = any,
-> extends MinimalObjectSet<Q> {
+  B extends ObjectOrInterfaceDefinition = Q,
+  Y extends ObjectSet<B, any> | Record<string, SimplePropertyDef> = ObjectSet<
+    B,
+    any
+  >,
+> extends MinimalObjectSet<Q, B, Y> {
   /**
    * Aggregate on a field in an object type
    * @param req - an aggregation request where you can select fields and choose how to aggregate, e.g., max, min, avg, and also choose
@@ -274,8 +305,23 @@ interface ObjectSetPrime<
       const S extends false | "throw" = NullabilityAdherence.Default,
     >(
       primaryKey: PrimaryKeyType<Q>,
-      options?: SelectArg<Q, L, R, S>,
-    ) => Promise<Osdk.Instance<Q, ExtractOptions<R, S>, L>>
+      options?: SelectArg<
+        Q,
+        L,
+        R,
+        S
+      >,
+    ) => Promise<
+      Osdk.Instance<
+        B,
+        ExtractOptions<R, S>,
+        PropertyKeys<B> extends L ? PropertyKeys<B>
+          : Extract<L, PropertyKeys<B>>,
+        Y extends Record<string, SimplePropertyDef>
+          ? { [K in Extract<keyof Y, L>]: Y[K] }
+          : never
+      >
+    >
     : never;
 
   /**
@@ -287,9 +333,24 @@ interface ObjectSetPrime<
       S extends false | "throw" = NullabilityAdherence.Default,
     >(
       primaryKey: PrimaryKeyType<Q>,
-      options?: SelectArg<Q, L, R, S>,
+      options?: SelectArg<
+        Q,
+        L,
+        R,
+        S
+      >,
     ) => Promise<
-      Result<Osdk.Instance<Q, ExtractOptions<R, S>, L>>
+      Result<
+        Osdk.Instance<
+          B,
+          ExtractOptions<R, S>,
+          PropertyKeys<B> extends L ? PropertyKeys<B>
+            : Extract<L, PropertyKeys<B>>,
+          Y extends Record<string, SimplePropertyDef>
+            ? { [K in Extract<keyof Y, L>]: Y[K] }
+            : never
+        >
+      >
     >
     : never;
 

@@ -29,6 +29,7 @@ import type {
   CompileTimeMetadata,
   ObjectTypeDefinition,
 } from "./ontology/ObjectTypeDefinition.js";
+import type { SimplePropertyDef } from "./ontology/SimplePropertyDef.js";
 import type { OsdkBase } from "./OsdkBase.js";
 
 type DropDollarOptions<T extends string> = Exclude<
@@ -154,7 +155,8 @@ export type IsAny<T> = unknown extends T
 export type GetPropsKeys<
   Q extends ObjectOrInterfaceDefinition,
   P extends PropertyKeys<Q>,
-> = IsNever<P> extends true ? PropertyKeys<Q>
+  N extends boolean = false,
+> = IsNever<P> extends true ? N extends true ? never : PropertyKeys<Q>
   : IsAny<P> extends true ? PropertyKeys<Q>
   : P;
 
@@ -185,12 +187,16 @@ export namespace Osdk {
     Q extends ObjectOrInterfaceDefinition,
     OPTIONS extends never | "$rid" = never,
     P extends PropertyKeys<Q> = PropertyKeys<Q>,
+    R extends Record<string, SimplePropertyDef> = never,
   > =
     & OsdkBase<Q>
     & Pick<
       CompileTimeMetadata<Q>["props"],
-      GetPropsKeys<Q, P>
+      // If there aren't any additional properties, then we want GetPropsKeys to default to PropertyKeys<Q>
+      GetPropsKeys<Q, P, [R] extends [never] ? false : true>
     >
+    & ([R] extends [never] ? {}
+      : { [A in keyof R]: SimplePropertyDef.ToRuntimeProperty<R[A]> })
     & {
       readonly $link: Q extends { linksType?: any } ? Q["linksType"]
         : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q>

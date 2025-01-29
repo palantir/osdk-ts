@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import { describe, expectTypeOf, test, vi } from "vitest";
+import { describe, expectTypeOf, it, test, vi } from "vitest";
 import type { ObjectSet } from "./ObjectSet.js";
 
 import type {
   ObjectMetadata as $ObjectMetadata,
   ObjectSet as $ObjectSet,
   ObjectTypeDefinition as $ObjectTypeDefinition,
+  Osdk,
   PropertyDef as $PropertyDef,
+  PropertyKeys,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from "@osdk/api";
@@ -119,6 +121,13 @@ describe("ObjectSet", () => {
       >();
 
       const withAResults = await withA.fetchPage();
+
+      expectTypeOf<typeof withAResults["data"][0]>().branded.toEqualTypeOf<
+        Osdk.Instance<Employee, never, PropertyKeys<Employee>, {
+          a: "integer" | undefined;
+        }>
+      >();
+
       expectTypeOf<typeof withAResults["data"][0]["a"]>()
         .toEqualTypeOf<number | undefined>();
     });
@@ -138,6 +147,15 @@ describe("ObjectSet", () => {
       >();
 
       const withFamilyResults = await withFamily.fetchPage();
+
+      expectTypeOf<typeof withFamilyResults["data"][0]>().branded.toEqualTypeOf<
+        Osdk.Instance<Employee, never, PropertyKeys<Employee>, {
+          mom: "integer" | undefined;
+          dad: "string" | undefined;
+          sister: "string"[] | undefined;
+        }>
+      >();
+
       expectTypeOf<typeof withFamilyResults["data"][0]["mom"]>()
         .toEqualTypeOf<number | undefined>();
       expectTypeOf<typeof withFamilyResults["data"][0]["dad"]>()
@@ -165,6 +183,95 @@ describe("ObjectSet", () => {
       });
 
       test.todo("with calculated properties");
+    });
+
+    describe("Osdk.Instance", () => {
+      const withFamily = fauxObjectSet.withProperties({
+        "mom": (base) => base.pivotTo("lead").aggregate("$count"),
+        "dad": (base) => base.pivotTo("lead").selectProperty("fullName"),
+        "sister": (base) => base.pivotTo("lead").aggregate("class:collectList"),
+      });
+
+      it("Works with no select", async () => {
+        const withFamilyResults = await withFamily.fetchPage();
+
+        expectTypeOf<typeof withFamilyResults["data"][0]>().branded
+          .toEqualTypeOf<
+            Osdk.Instance<Employee, never, PropertyKeys<Employee>, {
+              mom: "integer" | undefined;
+              dad: "string" | undefined;
+              sister: "string"[] | undefined;
+            }>
+          >();
+      });
+
+      it("Works with selecting all RDPs", async () => {
+        const withFamilyResults = await withFamily.fetchPage({
+          $select: ["mom", "dad", "sister"],
+        });
+
+        expectTypeOf<typeof withFamilyResults["data"][0]>().branded
+          .toEqualTypeOf<
+            Osdk.Instance<Employee, never, never, {
+              mom: "integer" | undefined;
+              dad: "string" | undefined;
+              sister: "string"[] | undefined;
+            }>
+          >();
+      });
+
+      it("Works with selecting some RDPs", async () => {
+        const withFamilyResults = await withFamily.fetchPage({
+          $select: ["mom"],
+        });
+
+        expectTypeOf<typeof withFamilyResults["data"][0]>().branded
+          .toEqualTypeOf<
+            Osdk.Instance<Employee, never, never, {
+              mom: "integer" | undefined;
+            }>
+          >();
+      });
+
+      it("Works with selecting all non-RDP's", async () => {
+        const withFamilyResults = await withFamily.fetchPage({
+          $select: ["class", "fullName"],
+        });
+
+        expectTypeOf<typeof withFamilyResults["data"][0]>().branded
+          .toEqualTypeOf<
+            Osdk.Instance<Employee, never, PropertyKeys<Employee>, {}>
+          >();
+      });
+
+      it("Works with selecting some non-RDP's", async () => {
+        const withFamilyResults = await withFamily.fetchPage({
+          $select: ["class"],
+        });
+
+        expectTypeOf<typeof withFamilyResults["data"][0]>().branded
+          .toEqualTypeOf<
+            Osdk.Instance<Employee, never, "class", {}>
+          >();
+      });
+
+      it("Works with selecting a mix", async () => {
+        const withFamilyResults = await withFamily.fetchPage({
+          $select: ["class", "mom"],
+        });
+
+        expectTypeOf<typeof withFamilyResults["data"][0]>().branded
+          .toEqualTypeOf<
+            Osdk.Instance<
+              Employee,
+              never,
+              "class",
+              { mom: "integer" | undefined }
+            >
+          >();
+      });
+
+      type a = Osdk.Instance<Employee>;
     });
   });
 });
