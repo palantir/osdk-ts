@@ -16,7 +16,6 @@
 
 import type {
   ActionDefinition,
-  CompileTimeMetadata,
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -30,9 +29,7 @@ import type {
   MinimalObjectSet,
 } from "@osdk/api/unstable";
 import {
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__createTemporaryObjectSet,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
   __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
 } from "@osdk/api/unstable";
 import {
@@ -146,36 +143,7 @@ export function createClientInternal(
             getBulkLinks: createBulkLinksAsyncIterFactory(
               clientCtx,
             ),
-          } satisfies ExperimentFns<
-            typeof __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks
-          > as any;
-        case __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet.name:
-          return {
-            preexistingObjectSet: <T extends ObjectOrInterfaceDefinition>(
-              definition: T,
-              rid: string,
-            ) => {
-              return createObjectSet(
-                definition,
-                client[additionalContext],
-                {
-                  type: "intersect",
-                  objectSets: [
-                    {
-                      type: "base",
-                      objectType: definition.apiName,
-                    },
-                    {
-                      type: "reference",
-                      reference: rid,
-                    },
-                  ],
-                },
-              );
-            },
-          } satisfies ExperimentFns<
-            typeof __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet
-          > as any;
+          } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe.name:
           return {
             subscribe: <
@@ -192,27 +160,6 @@ export function createClientInternal(
               );
 
               return async () => (await pendingSubscribe)();
-            },
-          } satisfies ExperimentFns<
-            typeof __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe
-          > as any;
-        case __EXPERIMENTAL__NOT_SUPPORTED_YET__createTemporaryObjectSet.name:
-          return {
-            createTemporaryObjectSet: async <
-              Q extends ObjectOrInterfaceDefinition,
-            >(
-              objectSet: unknown extends CompileTimeMetadata<Q>["objectSet"]
-                ? ObjectSet<Q>
-                : CompileTimeMetadata<Q>["objectSet"],
-            ) => {
-              const response = await OntologyObjectSets.createTemporary(
-                clientCtx,
-                await clientCtx.ontologyRid,
-                {
-                  objectSet: getWireObjectSet(objectSet),
-                },
-              );
-              return response.objectSetRid;
             },
           } as any;
       }

@@ -16,10 +16,10 @@
 
 import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
-import { createAttachmentFromRid } from "../../createAttachmentFromRid.js";
 import { TimeSeriesPropertyImpl } from "../../createTimeseriesProperty.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
+import { hydrateAttachmentFromRidInternal } from "../../public-utils/hydrateAttachmentFromRid.js";
 import { createClientCache } from "../Cache.js";
 import { get$as } from "./getDollarAs.js";
 import { get$link } from "./getDollarLink.js";
@@ -109,9 +109,11 @@ export function createOsdkObject<
         if (propDef) {
           if (propDef.type === "attachment") {
             if (Array.isArray(rawValue)) {
-              return rawValue.map(a => createAttachmentFromRid(client, a.rid));
+              return rawValue.map(a =>
+                hydrateAttachmentFromRidInternal(client, a.rid)
+              );
             }
-            return createAttachmentFromRid(client, rawValue.rid);
+            return hydrateAttachmentFromRidInternal(client, rawValue.rid);
           }
           if (
             propDef.type === "numericTimeseries"
