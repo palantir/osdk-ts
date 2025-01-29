@@ -5,3 +5,4 @@ actiondoesnotexit
 unstubAllEnvs
 createSpys
 Dherlihy
+notrailing
