@@ -30,7 +30,6 @@ import type {
 } from "@osdk/api/unstable";
 import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
   __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
 } from "@osdk/api/unstable";
 import {
@@ -144,36 +143,7 @@ export function createClientInternal(
             getBulkLinks: createBulkLinksAsyncIterFactory(
               clientCtx,
             ),
-          } satisfies ExperimentFns<
-            typeof __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks
-          > as any;
-        case __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet.name:
-          return {
-            preexistingObjectSet: <T extends ObjectOrInterfaceDefinition>(
-              definition: T,
-              rid: string,
-            ) => {
-              return createObjectSet(
-                definition,
-                client[additionalContext],
-                {
-                  type: "intersect",
-                  objectSets: [
-                    {
-                      type: "base",
-                      objectType: definition.apiName,
-                    },
-                    {
-                      type: "reference",
-                      reference: rid,
-                    },
-                  ],
-                },
-              );
-            },
-          } satisfies ExperimentFns<
-            typeof __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet
-          > as any;
+          } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe.name:
           return {
             subscribe: <
