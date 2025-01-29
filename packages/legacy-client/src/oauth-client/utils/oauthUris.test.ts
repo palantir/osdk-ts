@@ -25,6 +25,19 @@ describe("OAuthUris", () => {
     expect(getTokenUri("https://stack.com")).toEqual(
       "https://stack.com/multipass/api/oauth2/token",
     );
+    expect(getTokenUri("stack.com/some/other/stuff")).toEqual(
+      "https://stack.com/some/other/stuff/multipass/api/oauth2/token",
+    );
+    expect(getTokenUri("https://stack.com/some/other/stuff")).toEqual(
+      "https://stack.com/some/other/stuff/multipass/api/oauth2/token",
+    );
+    expect(getTokenUri("stack.com/some/other/stuff/")).toEqual(
+      "https://stack.com/some/other/stuff/multipass/api/oauth2/token",
+    );
+    expect(getTokenUri("https://stack.com/some/other/stuff/")).toEqual(
+      "https://stack.com/some/other/stuff/multipass/api/oauth2/token",
+    );
+    "";
     expect(getAuthorizeUri("stack.com")).toEqual(
       "https://stack.com/multipass/api/oauth2/authorize",
     );
@@ -34,6 +47,18 @@ describe("OAuthUris", () => {
     expect(getAuthorizeUri("https://stack.com/")).toEqual(
       "https://stack.com/multipass/api/oauth2/authorize",
     );
+    expect(getAuthorizeUri("stack.com/some/other/stuff")).toEqual(
+      "https://stack.com/some/other/stuff/multipass/api/oauth2/authorize",
+    );
+    expect(getAuthorizeUri("https://stack.com/some/other/stuff")).toEqual(
+      "https://stack.com/some/other/stuff/multipass/api/oauth2/authorize",
+    );
+    expect(getAuthorizeUri("stack.com/some/other/stuff/")).toEqual(
+      "https://stack.com/some/other/stuff/multipass/api/oauth2/authorize",
+    );
+    expect(getAuthorizeUri("https://stack.com/some/other/stuff/")).toEqual(
+      "https://stack.com/some/other/stuff/multipass/api/oauth2/authorize",
+    );
     expect(getRevokeUri("stack.com")).toEqual(
       "https://stack.com/multipass/api/oauth2/revoke_token",
     );
@@ -42,6 +67,18 @@ describe("OAuthUris", () => {
     );
     expect(getRevokeUri("https://stack.com/")).toEqual(
       "https://stack.com/multipass/api/oauth2/revoke_token",
+    );
+    expect(getRevokeUri("stack.com/some/other/stuff")).toEqual(
+      "https://stack.com/some/other/stuff/multipass/api/oauth2/revoke_token",
+    );
+    expect(getRevokeUri("https://stack.com/some/other/stuff")).toEqual(
+      "https://stack.com/some/other/stuff/multipass/api/oauth2/revoke_token",
+    );
+    expect(getRevokeUri("stack.com/some/other/stuff/")).toEqual(
+      "https://stack.com/some/other/stuff/multipass/api/oauth2/revoke_token",
+    );
+    expect(getRevokeUri("https://stack.com/some/other/stuff/")).toEqual(
+      "https://stack.com/some/other/stuff/multipass/api/oauth2/revoke_token",
     );
   });
 
