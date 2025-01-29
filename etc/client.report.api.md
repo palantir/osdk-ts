@@ -12,6 +12,7 @@ import { ActionReturnTypeForOptions } from '@osdk/api';
 import { ActionValidationResponse } from '@osdk/api';
 import { ApplyActionOptions } from '@osdk/api';
 import { ApplyBatchActionOptions } from '@osdk/api';
+import { Attachment } from '@osdk/api';
 import type { AttachmentUpload } from '@osdk/api';
 import type { CompileTimeMetadata } from '@osdk/api';
 import type { DataValueClientToWire } from '@osdk/api';
@@ -69,6 +70,8 @@ export { ActionValidationResponse }
 export { ApplyActionOptions }
 
 export { ApplyBatchActionOptions }
+
+export { Attachment }
 
 // Warning: (ae-forgotten-export) The symbol "OldSharedClient" needs to be exported by the entry point index.d.ts
 //
