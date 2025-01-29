@@ -85,7 +85,7 @@ export async function apiFetch(
   requestMediaType?: string,
   responseMediaType?: string,
 ) {
-  const url = new URL(`/api${endpointPath}`, clientCtx.stack);
+  const url = parseUrl(clientCtx.stack, endpointPath);
   for (const [key, value] of Object.entries(queryArguments || {})) {
     if (value == null) {
       continue;
@@ -149,4 +149,9 @@ export async function apiFetch(
   }
 
   return response.blob();
+}
+
+export function parseUrl(baseUrl: string, endpointPath: string): URL {
+  baseUrl += baseUrl.endsWith("/") ? "" : "/";
+  return new URL(`api${endpointPath}`, baseUrl);
 }
