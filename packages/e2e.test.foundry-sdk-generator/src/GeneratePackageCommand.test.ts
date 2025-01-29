@@ -37,8 +37,8 @@ describe("Generate Package Command", () => {
 
       const scriptsExport = packageJson["exports"]?.["."]?.["script"];
       expect(scriptsExport).toEqual({
-        "default": "./dist/bundle/index.esm.js",
-        "types": "./dist/bundle/index.d.ts",
+        "types": "./dist/bundle/index.d.mts",
+        "default": "./dist/bundle/index.mjs",
       });
 
       const esmPath = path.join(generatedPath, scriptsExport.default);
@@ -46,7 +46,7 @@ describe("Generate Package Command", () => {
       expect(existsSync(esmPath), esmPath).toBe(true);
 
       const contents = await fs.readFile(
-        path.join(generatedPath, "index.js"),
+        path.join(generatedPath, "esm", "index.js"),
         "utf-8",
       );
       expect(contents).not.toContain("Object.defineProperty(exports,");

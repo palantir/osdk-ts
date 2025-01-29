@@ -1,5 +1,5 @@
 {
-  "name": "@osdk/tests.verify-cjs-node16",
+  "name": "@osdk/tests.verify-cjs-node10",
   "private": true,
   "version": "0.0.3",
   "license": "Apache-2.0",

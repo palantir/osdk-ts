@@ -41,6 +41,7 @@ export async function generatePackage(
   },
 ): Promise<void> {
   const { consola } = await import("consola");
+  let success = true;
 
   const packagePath = join(options.outputDir, options.packageName);
 
@@ -82,16 +83,47 @@ export async function generatePackage(
     beta: options.beta,
   });
 
-  // writes to in memory fs that the compiler will read from
-  await hostFs.writeFile(
-    join(packagePath, "package.json"),
-    JSON.stringify(contents),
-  );
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const compilerOutput: Record<
+    "esm" | "cjs",
+    ReturnType<typeof compileInMemory>
+  > = {} as any;
 
-  const compilerOutput = compileInMemory(inMemoryFileSystem);
-  compilerOutput.diagnostics.forEach(d =>
-    consola.error(`Error compiling file`, d.file?.fileName, d.messageText)
-  );
+  for (const type of ["esm", "cjs"] as const) {
+    // writes to in memory fs that the compiler will read from
+    await hostFs.writeFile(
+      join(packagePath, "package.json"),
+      JSON.stringify({
+        ...contents,
+        type: type === "cjs" ? "commonjs" : "module",
+      }),
+    );
+
+    compilerOutput[type] = compileInMemory(inMemoryFileSystem, type);
+    compilerOutput[type].diagnostics.forEach(d => {
+      consola.error(`Error compiling file`, d.file?.fileName, d.messageText);
+      success = false;
+    });
+
+    await mkdir(join(packagePath, "dist", "bundle"), { recursive: true });
+
+    await mkdir(join(packagePath, "esm"), { recursive: true });
+    await mkdir(join(packagePath, "cjs"), { recursive: true });
+
+    for (const [path, contents] of Object.entries(compilerOutput[type].files)) {
+      const newPath = path.replace(
+        packagePath,
+        join(packagePath, type),
+      );
+      await mkdir(dirname(newPath), { recursive: true });
+      await writeFile(newPath, contents, { flag: "w" });
+    }
+
+    void await writeFile(
+      join(packagePath, type, "package.json"),
+      JSON.stringify({ type: type === "esm" ? "module" : "commonjs" }),
+    );
+  }
 
   await mkdir(join(packagePath, "dist", "bundle"), { recursive: true });
 
@@ -107,28 +139,24 @@ export async function generatePackage(
       bundleDts = await bundleDependencies(
         [],
         options.packageName,
-        compilerOutput.files,
+        compilerOutput["esm"].files,
         undefined,
       );
     } catch (e) {
       consola.error("Failed bundling DTS", e);
+      success = false;
     }
   } else {
     consola.error(
       "Could not find node_modules directory, skipping DTS bundling",
     );
+    success = false;
   }
-
-  await Promise.all([
-    ...Object.entries(compilerOutput.files).map(async ([path, contents]) => {
-      await writeFile(path, contents, { flag: "w" });
-    }),
-    await writeFile(
-      join(packagePath, "dist", "bundle", "index.d.ts"),
-      bundleDts,
-      { flag: "w" },
-    ),
-  ]);
+  await writeFile(
+    join(packagePath, "dist", "bundle", "index.d.mts"),
+    bundleDts,
+    { flag: "w" },
+  );
 
   const absolutePackagePath = isAbsolute(options.outputDir)
     ? options.outputDir
@@ -138,5 +166,10 @@ export async function generatePackage(
     await generateBundles(absolutePackagePath, options.packageName);
   } catch (e) {
     consola.error(e);
+    success = false;
+  }
+
+  if (!success) {
+    throw new Error("Failed to generate package");
   }
 }

@@ -92,9 +92,6 @@
     "@osdk/tests.verify-fallback-package-v2#typecheck": {
       "dependsOn": ["^transpileCjs"]
     },
-    "@osdk/tests.verify-cjs-node16#typecheck": {
-      "dependsOn": ["^transpileCjs"]
-    },
 
     "@osdk/monorepo.tsup#typecheck": {
       "outputLogs": "new-only",
