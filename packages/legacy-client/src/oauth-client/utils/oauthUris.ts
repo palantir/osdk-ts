@@ -17,7 +17,7 @@
 import { replaceHttpIfNotLocalhost } from "@osdk/shared.net";
 
 const httpsProtocol = "https://";
-const baseContextPath = "/multipass";
+const baseContextPath = "multipass";
 const authorizeRequestPath = "/api/oauth2/authorize";
 const tokenRequestPath = "/api/oauth2/token";
 const revokeRequestPath = "/api/oauth2/revoke_token";
@@ -57,6 +57,9 @@ function createUri(
     requestPath.replace(/^\//, "")
   }`;
 
-  const url = new URL(resolvedPath, baseUri);
+  const url = new URL(
+    resolvedPath,
+    baseUri.endsWith("/") ? baseUri : baseUri + "/",
+  );
   return url.toString();
 }
