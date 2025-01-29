@@ -25,6 +25,7 @@ import {
   $ontologyRid,
   actionTakesAttachment,
   actionTakesMedia,
+  createFooInterface,
   createOffice,
   createStructPerson,
   deleteFooInterface,
@@ -359,7 +360,41 @@ describe("actions", () => {
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
     expect(result).toBeUndefined();
   });
+  it("Accepts object type refs", async () => {
+    const clientBoundTakesObjectType = client(
+      createFooInterface,
+    ).applyAction;
 
+    type InferredParamType = Parameters<
+      typeof clientBoundTakesObjectType
+    >[0];
+
+    expectTypeOf<
+      {
+        createdInterface: string;
+      }
+    >().toMatchTypeOf<
+      InferredParamType
+    >();
+
+    const clientBoundBatchActionTakesObjectType = client(
+      createFooInterface,
+    ).batchApplyAction;
+    type InferredBatchParamType = Parameters<
+      typeof clientBoundBatchActionTakesObjectType
+    >[0];
+
+    expectTypeOf<{
+      createdInterface: string;
+    }[]>().toMatchTypeOf<InferredBatchParamType>();
+
+    const result = await client(createFooInterface).applyAction({
+      createdInterface: "UnderlyingObject",
+    });
+
+    expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
+    expect(result).toBeUndefined();
+  });
   it("conditionally returns edits in batch mode", async () => {
     const result = await client(moveOffice).batchApplyAction([
       {
@@ -542,6 +577,7 @@ describe("ActionResponse remapping", () => {
       "actionTakesAttachment",
       "actionTakesMedia",
       "actionTakesObjectSet",
+      "createFooInterface",
       "createOffice",
       "createOfficeAndEmployee",
       "createStructPerson",

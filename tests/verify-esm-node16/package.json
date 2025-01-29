@@ -1,0 +1,23 @@
+{
+  "name": "@osdk/tests.verify-esm-node16",
+  "private": true,
+  "version": "0.0.3",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "scripts": {
+    "codegen": "generate-with-mock-ontology",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@osdk/api": "workspace:~",
+    "@osdk/client": "workspace:~",
+    "@test-app2/osdk": "link:./osdk/@test-app2/osdk"
+  },
+  "devDependencies": {
+    "@osdk/tool.generate-with-mock-ontology": "workspace:~",
+    "typescript": "~5.5.4"
+  }
+}

@@ -71,6 +71,7 @@ function actionPropertyToSdkPropertyDefinition(
     case "timestamp":
     case "mediaReference":
     case "marking":
+    case "objectType":
       return parameterType.type;
     case "date":
       return "datetime";
@@ -103,7 +104,7 @@ function actionPropertyToSdkPropertyDefinition(
       };
     default:
       throw new Error(
-        `Unsupported action parameter type: ${parameterType.type}`,
+        `Unsupported action parameter type: ${parameterType}`,
       );
   }
 }

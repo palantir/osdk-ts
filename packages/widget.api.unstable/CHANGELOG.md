@@ -1,5 +1,13 @@
 # @osdk/widget-api.unstable
 
+## 2.0.0-beta.10
+
+## 2.0.0-beta.9
+
+### Minor Changes
+
+- c691c8b: Package now has experimental support for commonjs
+
 ## 2.0.0-beta.8
 
 ### Minor Changes

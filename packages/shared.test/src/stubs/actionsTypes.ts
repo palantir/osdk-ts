@@ -321,6 +321,27 @@ export const ActionTakesInterface: ActionTypeV2 = {
   ],
 };
 
+export const ActionCreatesInterface: ActionTypeV2 = {
+  apiName: "create-foo-interface",
+  displayName: "Create Foo Interface",
+  status: "EXPERIMENTAL",
+  parameters: {
+    createdInterface: {
+      dataType: {
+        type: "objectType",
+      },
+      required: true,
+    },
+  },
+  rid: "ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817",
+  operations: [
+    {
+      "type": "createInterfaceObject",
+      "interfaceTypeApiName": "FooInterface",
+    },
+  ],
+};
+
 export const ActionTakesStruct: ActionTypeV2 = {
   apiName: "createStructPerson",
   description: "Create a struct",
@@ -377,4 +398,5 @@ export const actionTypes: ActionTypeV2[] = [
   ActionTakesMedia,
   ActionTakesInterface,
   ActionTakesStruct,
+  ActionCreatesInterface,
 ];

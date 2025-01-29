@@ -40,25 +40,26 @@ export async function runMediaTest(): Promise<void> {
         )
           .createMediaReference(
             await response.blob(),
-            "test8.png",
+            "test10.png",
             MnayanOsdkMediaObject,
             "mediaReference",
           );
 
         console.log("Media Reference:", mediaRef);
-        const result = await client($Actions.createMediaObject).applyAction({
-          path: "test8",
-          media_reference: mediaRef,
-        }, {
-          $returnEdits: true,
-        });
+        // Enable below to test creating object via non-function backed action
+        /* const result = await client($Actions.createMediaObject).applyAction({
+           path: "test9",
+           media_reference: mediaRef,
+         }, {
+           $returnEdits: true,
+         }); */
 
-        // const result = await client($Actions.createMediaViaFunction)
-        //   .applyAction({
-        //     mediaItem: mediaRef,
-        //   }, {
-        //     $returnEdits: true,
-        //   });
+        const result = await client($Actions.createMediaViaFunction)
+          .applyAction({
+            mediaItem: mediaRef,
+          }, {
+            $returnEdits: true,
+          });
       }
     },
   );

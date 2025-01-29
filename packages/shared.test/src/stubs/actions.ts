@@ -175,6 +175,13 @@ export const actionRequestWithInterface: ApplyActionRequestV2 = {
   },
 };
 
+export const actionRequestWithObjectTypeReference: ApplyActionRequestV2 = {
+  options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
+  parameters: {
+    createdInterface: "UnderlyingObject",
+  },
+};
+
 export const actionRequestWithStruct: ApplyActionRequestV2 = {
   options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
   parameters: {
@@ -399,5 +406,8 @@ export const actionResponseMap: {
   },
   createStructPerson: {
     [stableStringify(actionRequestWithStruct)]: actionResponse,
+  },
+  createFooInterface: {
+    [stableStringify(actionRequestWithObjectTypeReference)]: actionResponse,
   },
 };

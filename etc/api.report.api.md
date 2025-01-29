@@ -298,6 +298,8 @@ export interface DataValueClientToWire {
     	// (undocumented)
     null: null;
     	// (undocumented)
+    objectType: string;
+    	// (undocumented)
     set: Set<any>;
     	// (undocumented)
     short: number;
@@ -348,6 +350,8 @@ export interface DataValueWireToClient {
     mediaReference: MediaReference;
     	// (undocumented)
     null: null;
+    	// (undocumented)
+    objectType: string;
     	// (undocumented)
     set: Set<any>;
     	// (undocumented)
@@ -1109,7 +1113,7 @@ export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<"d
 export type ValidAggregationKeys<Q extends ObjectOrInterfaceDefinition> = keyof ({ [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<GetWirePropertyValueFromClient<CompileTimeMetadata<Q>["properties"][KK]["type"]>>}`]? : any } & { $count?: any });
 
 // @public (undocumented)
-export type ValidBaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference";
+export type ValidBaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "objectType";
 
 // Warning: (ae-forgotten-export) The symbol "VersionString" needs to be exported by the entry point index.d.ts
 //

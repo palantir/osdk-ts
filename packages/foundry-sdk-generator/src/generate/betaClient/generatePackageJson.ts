@@ -42,21 +42,29 @@ export async function generatePackageJson(options: {
   const packageJson = {
     name: options.packageName,
     version: options.packageVersion,
-    main: "./index.js",
-    types: "./index.d.ts",
+    main: "./cjs/index.js",
+    types: "./cjs/index.d.ts",
     exports: {
       ".": {
-        types: "./index.d.ts",
         script: {
-          types: "./dist/bundle/index.d.ts",
-          default: "./dist/bundle/index.esm.js",
+          types: "./dist/bundle/index.d.mts",
+          default: "./dist/bundle/index.mjs",
         },
-        default: "./index.js",
+        require: {
+          types: "./cjs/index.d.ts",
+          default: "./cjs/index.js",
+        },
+        import: {
+          types: "./esm/index.d.ts",
+          default: "./esm/index.js",
+        },
+        types: "./cjs/index.d.ts",
+        default: "./cjs/index.js",
       },
     },
     dependencies: packageDeps,
     peerDependencies: packagePeerDeps,
-    type: "module",
+    type: "commonjs",
   };
 
   await writeFile(
