@@ -25,6 +25,7 @@ import { runGeoQueriesTest } from "./runGeoQueriesTest.js";
 import { runGeotimeSeriesReferenceTests } from "./runGeotimeSeriesTest.js";
 import { runInterfacesTest } from "./runInterfacesTest.js";
 import { runLegacyExamples } from "./runLegacyExamples.js";
+import { runMediaTest } from "./runMediaTest.js";
 import { runQueriesTest } from "./runQueriesTest.js";
 import { runStructsTest } from "./runStructsTest.js";
 import { runSubscriptionsTest } from "./runSubscriptionsTest.js";
@@ -70,6 +71,8 @@ async function runTests() {
     await runTimeseriesTest();
 
     await runGeotimeSeriesReferenceTests();
+
+    await runMediaTest();
 
     await runStructsTest();
     await runFetchByRidTest();

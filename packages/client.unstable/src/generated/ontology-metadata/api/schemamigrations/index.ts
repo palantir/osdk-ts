@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ export type { DeleteTransitionModification } from "./DeleteTransitionModificatio
 export type { DropAllPatchesMigration } from "./DropAllPatchesMigration.js";
 export type { DropDatasourceMigration } from "./DropDatasourceMigration.js";
 export type { DropPropertyMigration } from "./DropPropertyMigration.js";
+export type { EditsWinToLatestTimestamp } from "./EditsWinToLatestTimestamp.js";
 export type { InitializationSource } from "./InitializationSource.js";
 export type { InitializePatchesMigration } from "./InitializePatchesMigration.js";
 export type { InitializePatchesMigrationModification } from "./InitializePatchesMigrationModification.js";
@@ -39,6 +40,21 @@ export type { NonRevertibleMigrationModification } from "./NonRevertibleMigratio
 export type { ObjectTypePrimaryKeyRename } from "./ObjectTypePrimaryKeyRename.js";
 export type { ObjectTypePrimaryKeyRenameModification } from "./ObjectTypePrimaryKeyRenameModification.js";
 export type { ObjectTypeSchemaTransitions } from "./ObjectTypeSchemaTransitions.js";
+export type { OntologyIrCastMigration } from "./OntologyIrCastMigration.js";
+export type { OntologyIrDropPropertyMigration } from "./OntologyIrDropPropertyMigration.js";
+export type { OntologyIrEditsWinToLatestTimestamp } from "./OntologyIrEditsWinToLatestTimestamp.js";
+export type { OntologyIrInitializationSource } from "./OntologyIrInitializationSource.js";
+export type { OntologyIrInitializePatchesMigration } from "./OntologyIrInitializePatchesMigration.js";
+export type { OntologyIrLatestTimestampToEditsWin } from "./OntologyIrLatestTimestampToEditsWin.js";
+export type { OntologyIrNonRevertibleMigration } from "./OntologyIrNonRevertibleMigration.js";
+export type { OntologyIrObjectTypePrimaryKeyRename } from "./OntologyIrObjectTypePrimaryKeyRename.js";
+export type { OntologyIrPatchBackup } from "./OntologyIrPatchBackup.js";
+export type { OntologyIrPrimaryKeyRenames } from "./OntologyIrPrimaryKeyRenames.js";
+export type { OntologyIrRenamePropertyMigration } from "./OntologyIrRenamePropertyMigration.js";
+export type { OntologyIrSchemaMigration } from "./OntologyIrSchemaMigration.js";
+export type { OntologyIrSchemaMigrationInstruction } from "./OntologyIrSchemaMigrationInstruction.js";
+export type { OntologyIrSchemaTransition } from "./OntologyIrSchemaTransition.js";
+export type { OntologyIrUpdateEditsResolutionStrategyMigration } from "./OntologyIrUpdateEditsResolutionStrategyMigration.js";
 export type { PastVersionSchemaTransitionModification } from "./PastVersionSchemaTransitionModification.js";
 export type { PatchBackup } from "./PatchBackup.js";
 export type { PermanentlyDeletePatchesMigration } from "./PermanentlyDeletePatchesMigration.js";

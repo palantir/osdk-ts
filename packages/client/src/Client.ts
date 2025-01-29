@@ -32,12 +32,14 @@ import type {
   ExperimentFns,
   MinimalObjectSet,
 } from "@osdk/api/unstable";
-import type { SharedClient as OldSharedClient } from "@osdk/shared.client";
 import type { SharedClient } from "@osdk/shared.client2";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 import type { SatisfiesSemver } from "./SatisfiesSemver.js";
+
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+type OldSharedClient = import("@osdk/shared.client").SharedClient;
 
 export type CheckVersionBound<Q> = Q extends VersionBound<infer V> ? (
     SatisfiesSemver<V, MaxOsdkVersion> extends true ? Q

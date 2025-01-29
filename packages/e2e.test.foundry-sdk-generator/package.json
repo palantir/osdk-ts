@@ -10,24 +10,34 @@
   "exports": {
     ".": {
       "browser": "./build/browser/index.js",
-      "import": "./build/esm/index.js",
+      "import": {
+        "types": "./build/types/index.d.ts",
+        "default": "./build/esm/index.js"
+      },
+      "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
     },
     "./*": {
       "browser": "./build/browser/public/*.js",
-      "import": "./build/esm/public/*.js",
+      "import": {
+        "types": "./build/types/public/*.d.ts",
+        "default": "./build/esm/public/*.js"
+      },
+      "require": "./build/cjs/public/*.cjs",
       "default": "./build/browser/public/*.js"
     }
   },
   "scripts": {
-    "check-attw": "monorepo.tool.attw esm",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "codegen": "node ./generateMockOntology.js",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --pool=forks",
-    "transpile": "monorepo.tool.transpile"
+    "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
+    "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
+    "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
     "@osdk/foundry-sdk-generator": "workspace:~",
@@ -36,7 +46,6 @@
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~",
     "@osdk/shared.test": "workspace:~",
     "typescript": "~5.5.4"
   },
@@ -52,7 +61,8 @@
     "templates",
     "*.d.ts"
   ],
+  "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
-  "types": "./build/esm/index.d.ts",
+  "types": "./build/cjs/index.d.cts",
   "type": "module"
 }

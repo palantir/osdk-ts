@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,4 +21,5 @@ export type ComparisonOperator =
   | "NOT_EQUALS"
   | "GREATER_THAN_EQUALS"
   | "GREATER_THAN"
-  | "INTERSECTS";
+  | "INTERSECTS"
+  | "IS_OF_OBJECT_TYPE";

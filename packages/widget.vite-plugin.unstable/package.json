@@ -1,6 +1,6 @@
 {
   "name": "@osdk/widget.vite-plugin.unstable",
-  "version": "2.0.0-beta.7",
+  "version": "2.0.0-beta.10",
   "description": "A vite plugin that will extract parameter definitions from TS/JS files + entrypoint info into a manifest file to be uploaded to Foundry ",
   "access": "public",
   "license": "Apache-2.0",
@@ -10,42 +10,48 @@
   },
   "exports": {
     ".": {
-      "browser": "./build/browser/index.js",
-      "import": "./build/esm/index.js",
-      "default": "./build/browser/index.js"
+      "import": {
+        "types": "./build/types/index.d.ts",
+        "default": "./build/esm/index.js"
+      },
+      "default": "./build/esm/index.js"
     },
     "./*": {
-      "browser": "./build/browser/public/*.js",
-      "import": "./build/esm/public/*.js",
-      "default": "./build/browser/public/*.js"
+      "import": {
+        "types": "./build/types/public/*.d.ts",
+        "default": "./build/esm/public/*.js"
+      },
+      "default": "./build/esm/public/*.js"
     }
   },
   "scripts": {
     "build": "tsc --project tsconfig.client.json && vite build",
-    "check-attw": "monorepo.tool.attw esm",
+    "check-attw": "attw --profile esm-only --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "transpile": "monorepo.tool.transpile"
+    "test": "vitest run",
+    "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
     "@osdk/foundry-config-json": "workspace:~",
     "@osdk/widget-api.unstable": "workspace:~",
     "escodegen": "^2.1.0",
     "fs-extra": "^11.2.0",
+    "parse5": "^7.2.1",
     "picocolors": "^1.1.1",
     "sirv": "^3.0.0"
   },
   "peerDependencies": {
-    "vite": "^5.0.0"
+    "vite": "^6.0.11"
   },
   "devDependencies": {
     "@blueprintjs/core": "^5.16.0",
     "@blueprintjs/icons": "^5.15.0",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~",
     "@types/escodegen": "~0.0.10",
     "@types/estree": "^1.0.6",
     "@types/fs-extra": "^11.0.4",
@@ -56,7 +62,8 @@
     "react-dom": "^18",
     "ts-expect": "^1.3.0",
     "typescript": "~5.5.4",
-    "vite": "^5.4.8"
+    "vite": "^6.0.11",
+    "vitest": "^3.0.4"
   },
   "publishConfig": {
     "access": "public"
@@ -66,9 +73,7 @@
   ],
   "files": [
     "build/client",
-    "build/cjs",
     "build/esm",
-    "build/browser",
     "CHANGELOG.md",
     "package.json",
     "templates",

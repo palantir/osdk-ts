@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import type { AddInterfaceRule } from "./AddInterfaceRule.js";
 import type { AddLinkRule } from "./AddLinkRule.js";
 import type { AddObjectRule } from "./AddObjectRule.js";
 import type { AddOrModifyObjectRule } from "./AddOrModifyObjectRule.js";
+import type { AddOrModifyObjectRuleV2 } from "./AddOrModifyObjectRuleV2.js";
 import type { BatchedFunctionRule } from "./BatchedFunctionRule.js";
 import type { DeleteInterfaceLinkRule } from "./DeleteInterfaceLinkRule.js";
 import type { DeleteLinkRule } from "./DeleteLinkRule.js";
@@ -34,6 +35,11 @@ export interface LogicRule_addObjectRule {
 export interface LogicRule_addOrModifyObjectRule {
   type: "addOrModifyObjectRule";
   addOrModifyObjectRule: AddOrModifyObjectRule;
+}
+
+export interface LogicRule_addOrModifyObjectRuleV2 {
+  type: "addOrModifyObjectRuleV2";
+  addOrModifyObjectRuleV2: AddOrModifyObjectRuleV2;
 }
 
 export interface LogicRule_modifyObjectRule {
@@ -88,6 +94,7 @@ export interface LogicRule_batchedFunctionRule {
 export type LogicRule =
   | LogicRule_addObjectRule
   | LogicRule_addOrModifyObjectRule
+  | LogicRule_addOrModifyObjectRuleV2
   | LogicRule_modifyObjectRule
   | LogicRule_deleteObjectRule
   | LogicRule_addInterfaceRule

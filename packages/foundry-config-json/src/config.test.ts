@@ -226,7 +226,7 @@ describe("loadFoundryConfig - site", () => {
   });
 });
 
-describe("loadFoundryConfig - widget", () => {
+describe("loadFoundryConfig - widget set", () => {
   beforeEach(() => {
     vi.mocked(findUp).mockResolvedValue("/path/foundry.config.json");
     vi.mocked(extname).mockReturnValue(".json");
@@ -235,7 +235,7 @@ describe("loadFoundryConfig - widget", () => {
   it("should load and parse the configuration file correctly", async () => {
     const correctConfig = {
       foundryUrl: "http://localhost",
-      widget: {
+      widgetSet: {
         rid: "test-rid",
         directory: "/test/directory",
         autoVersion: {
@@ -247,7 +247,7 @@ describe("loadFoundryConfig - widget", () => {
     vi.mocked(fsPromises.readFile).mockResolvedValue(
       JSON.stringify(correctConfig),
     );
-    await expect(loadFoundryConfig("widget")).resolves.toEqual({
+    await expect(loadFoundryConfig("widgetSet")).resolves.toEqual({
       configFilePath: "/path/foundry.config.json",
       foundryConfig: {
         ...correctConfig,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { InterfacePropertyNotFound } from "./InterfacePropertyNotFound.js";
 import type { InvalidDataConstraintsError } from "./InvalidDataConstraintsError.js";
 import type { InvalidIsIndexedForSearchError } from "./InvalidIsIndexedForSearchError.js";
 import type { InvalidPropertyTypeError } from "./InvalidPropertyTypeError.js";
@@ -49,10 +50,16 @@ export interface InvalidPropertyImplementationError_propertyIdNotFound {
   type: "propertyIdNotFound";
   propertyIdNotFound: MissingImplementingPropertyError;
 }
+
+export interface InvalidPropertyImplementationError_interfacePropertyNotFound {
+  type: "interfacePropertyNotFound";
+  interfacePropertyNotFound: InterfacePropertyNotFound;
+}
 export type InvalidPropertyImplementationError =
   | InvalidPropertyImplementationError_invalidPropertyType
   | InvalidPropertyImplementationError_invalidTypeClasses
   | InvalidPropertyImplementationError_invalidDataConstraints
   | InvalidPropertyImplementationError_invalidValueType
   | InvalidPropertyImplementationError_invalidIsIndexedForSearch
-  | InvalidPropertyImplementationError_propertyIdNotFound;
+  | InvalidPropertyImplementationError_propertyIdNotFound
+  | InvalidPropertyImplementationError_interfacePropertyNotFound;

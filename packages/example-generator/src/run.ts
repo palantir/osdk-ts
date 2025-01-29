@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Template } from "@osdk/create-app";
+import type { SdkVersion, Template } from "@osdk/create-app";
 import { run as runCreateApp, TEMPLATES } from "@osdk/create-app";
 import type { Template as WidgetTemplate } from "@osdk/create-widget";
 import {
@@ -32,7 +32,6 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import * as tmp from "tmp";
-import type { SdkVersion } from "../../create-app/build/esm/templates.js";
 import { gitIgnoreFilter } from "./gitIgnoreFilter.js";
 
 interface RunArgs {
@@ -111,7 +110,7 @@ async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
       template,
       sdkVersion,
       foundryUrl: "https://fake.palantirfoundry.com",
-      widget: "ri.widgetregistry..widget.fake",
+      widgetSetRid: "ri.widgetregistry..widget-set.fake",
       osdkPackage,
       osdkRegistryUrl:
         "https://fake.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",

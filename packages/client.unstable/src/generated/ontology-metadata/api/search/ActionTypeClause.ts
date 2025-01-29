@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,10 @@
  */
 
 import type { ActionTypeRid } from "../ActionTypeRid.js";
+import type { FunctionRid } from "../FunctionRid.js";
 import type { ObjectTypeRid } from "../ObjectTypeRid.js";
+import type { WebhookRid } from "../WebhookRid.js";
+import type { ActionTypePermissionModelFilter } from "./ActionTypePermissionModelFilter.js";
 import type { ActionTypeStatusFilter } from "./ActionTypeStatusFilter.js";
 import type { FullTextStringPredicate } from "./FullTextStringPredicate.js";
 import type { LogicRuleTypeFilter } from "./LogicRuleTypeFilter.js";
@@ -38,6 +41,11 @@ export interface ActionTypeClause_affectedObjectTypeRid {
 export interface ActionTypeClause_inputObjectTypeRid {
   type: "inputObjectTypeRid";
   inputObjectTypeRid: ObjectTypeRid;
+}
+
+export interface ActionTypeClause_webhookRid {
+  type: "webhookRid";
+  webhookRid: WebhookRid;
 }
 
 export interface ActionTypeClause_actionTypeApiName {
@@ -84,6 +92,21 @@ export interface ActionTypeClause_hasWebhook {
   type: "hasWebhook";
   hasWebhook: boolean;
 }
+
+export interface ActionTypeClause_hasNotification {
+  type: "hasNotification";
+  hasNotification: boolean;
+}
+
+export interface ActionTypeClause_permissionModel {
+  type: "permissionModel";
+  permissionModel: ActionTypePermissionModelFilter;
+}
+
+export interface ActionTypeClause_functionRid {
+  type: "functionRid";
+  functionRid: FunctionRid;
+}
 /**
  * Data structure to represent search query for ActionTypes. Supports filters for various ActionType features.
  */
@@ -92,6 +115,7 @@ export type ActionTypeClause =
   | ActionTypeClause_or
   | ActionTypeClause_affectedObjectTypeRid
   | ActionTypeClause_inputObjectTypeRid
+  | ActionTypeClause_webhookRid
   | ActionTypeClause_actionTypeApiName
   | ActionTypeClause_actionTypeRid
   | ActionTypeClause_actionTypeDisplayName
@@ -100,4 +124,7 @@ export type ActionTypeClause =
   | ActionTypeClause_status
   | ActionTypeClause_logicRule
   | ActionTypeClause_hasActionLog
-  | ActionTypeClause_hasWebhook;
+  | ActionTypeClause_hasWebhook
+  | ActionTypeClause_hasNotification
+  | ActionTypeClause_permissionModel
+  | ActionTypeClause_functionRid;

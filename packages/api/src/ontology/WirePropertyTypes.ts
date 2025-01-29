@@ -31,6 +31,7 @@ export type SimpleWirePropertyTypes =
   | "decimal"
   | "byte"
   | "marking"
+  | "mediaReference"
   | "numericTimeseries"
   | "stringTimeseries"
   | "sensorTimeseries"

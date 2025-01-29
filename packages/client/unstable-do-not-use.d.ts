@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from "./build/esm/public/unstable-do-not-use.js";
+export * from "./build/cjs/public/unstable-do-not-use.cjs";

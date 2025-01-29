@@ -29,6 +29,7 @@ export type { AggregationResultsWithGroups } from "./aggregate/AggregationResult
 export type { AggregationResultsWithoutGroups } from "./aggregate/AggregationResultsWithoutGroups.js";
 export type { AggregationClause } from "./aggregate/AggregationsClause.js";
 export type { AggregationsResults } from "./aggregate/AggregationsResults.js";
+export type { GeoFilterOptions } from "./aggregate/GeoFilter.js";
 export { DistanceUnitMapping } from "./aggregate/WhereClause.js";
 export type {
   GeoFilter_Intersects,
@@ -71,6 +72,7 @@ export type {
   FetchPageResult,
   SingleOsdkResult,
 } from "./object/FetchPageResult.js";
+export type { Media, MediaMetadata } from "./object/Media.js";
 export { isOk } from "./object/Result.js";
 export type { Result } from "./object/Result.js";
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
@@ -80,6 +82,7 @@ export type { ObjectSetListenerOptions } from "./objectSet/ObjectSetListener.js"
 export type {
   ActionDefinition,
   ActionMetadata,
+  ValidBaseActionParameterTypes,
 } from "./ontology/ActionDefinition.js";
 export type {
   InterfaceDefinition,

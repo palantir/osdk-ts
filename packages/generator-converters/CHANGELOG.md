@@ -1,5 +1,45 @@
 # @osdk/generator-converters
 
+## 2.1.0-beta.25
+
+### Minor Changes
+
+- c80ca45: Add ability to create interfaces through actions now.
+
+### Patch Changes
+
+- Updated dependencies [c80ca45]
+  - @osdk/api@2.1.0-beta.25
+
+## 2.1.0-beta.24
+
+### Minor Changes
+
+- 03f95eb: Add support for interface params in actions.
+- c691c8b: Package now has experimental support for commonjs
+
+### Patch Changes
+
+- Updated dependencies [03f95eb]
+- Updated dependencies [c691c8b]
+- Updated dependencies [3c9ac22]
+  - @osdk/api@2.1.0-beta.24
+
+## 2.1.0-beta.23
+
+### Minor Changes
+
+- d794c19: Adding support for struct action params.
+- f0b519d: Upgrade to vitest 3 and vite 6
+- 62c1d63: Add support for reading media reference property in OSDK.
+- d665147: Update platform sdk deps
+
+### Patch Changes
+
+- Updated dependencies [d794c19]
+- Updated dependencies [62c1d63]
+  - @osdk/api@2.1.0-beta.23
+
 ## 2.1.0-beta.22
 
 ### Minor Changes

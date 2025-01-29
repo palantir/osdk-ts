@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { InvalidDerivedForeignKeyError } from "./InvalidDerivedForeignKeyError.js";
 import type { InvalidForeignKeyTypeError } from "./InvalidForeignKeyTypeError.js";
 import type { LinkTypeReferencesInvalidForeignKeyError } from "./LinkTypeReferencesInvalidForeignKeyError.js";
 import type { LinkTypeReferencesInvalidPrimaryKeyError } from "./LinkTypeReferencesInvalidPrimaryKeyError.js";
@@ -37,6 +38,11 @@ export interface ForeignKeyConstraintError_invalidForeignKeyType {
   type: "invalidForeignKeyType";
   invalidForeignKeyType: InvalidForeignKeyTypeError;
 }
+
+export interface ForeignKeyConstraintError_invalidDerivedForeignKey {
+  type: "invalidDerivedForeignKey";
+  invalidDerivedForeignKey: InvalidDerivedForeignKeyError;
+}
 /**
  * A type representing the Validation Errors associated with link type primary/foreign key validation.
  */
@@ -44,4 +50,5 @@ export type ForeignKeyConstraintError =
   | ForeignKeyConstraintError_linkTypeReferencesInvalidPrimaryKey
   | ForeignKeyConstraintError_linkTypeReferencesInvalidForeignKey
   | ForeignKeyConstraintError_primaryAndForeignKeyTypeMismatch
-  | ForeignKeyConstraintError_invalidForeignKeyType;
+  | ForeignKeyConstraintError_invalidForeignKeyType
+  | ForeignKeyConstraintError_invalidDerivedForeignKey;

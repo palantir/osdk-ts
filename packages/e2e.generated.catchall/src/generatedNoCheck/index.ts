@@ -1,8 +1,12 @@
 export {
   actionTakesAllParameterTypes,
   assignEmployee1,
+  createFooInterface,
   createOsdkTestObject,
+  createStructPerson,
+  createStructPersonOpiTeam,
   createTodo,
+  deleteFooInterface,
   deleteOsdkTestObject,
   editOsdkTestObject,
 } from './ontology/actions.js';
@@ -19,6 +23,7 @@ export {
   FintrafficAis,
   GtfsTripTrackObject,
   McAirportStruct,
+  MnayanOsdkMediaObject,
   MtaBus,
   ObjectTypeWithAllPropertyTypes,
   OsdkTestObject,
@@ -26,6 +31,8 @@ export {
   RhemmingsObjectWithGtsrProperty2,
   SotSensor,
   StateTerritory,
+  StructPerson,
+  StructPersonOpisTeam,
   Todo,
   Venture,
   WeatherStation,
@@ -33,4 +40,5 @@ export {
 export * as $Objects from './ontology/objects.js';
 export { getNamesOfCustomersFromCountry, getTodoCount, queryTakesAllParameterTypes } from './ontology/queries.js';
 export * as $Queries from './ontology/queries.js';
+export { $osdkMetadata } from './OntologyMetadata.js';
 export { $ontologyRid } from './OntologyMetadata.js';

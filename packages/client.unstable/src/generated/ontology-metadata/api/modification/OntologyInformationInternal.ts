@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import type { ExternalMappingConfiguration } from "../typemapping/ExternalMappin
 import type { CompassNamespaceRid } from "./CompassNamespaceRid.js";
 import type { EnabledObjectStoragesStatus } from "./EnabledObjectStoragesStatus.js";
 import type { OntologyAdminConfig } from "./OntologyAdminConfig.js";
+import type { OntologyApiNamespaceIdentifier } from "./OntologyApiNamespaceIdentifier.js";
 import type { OntologyNamespace } from "./OntologyNamespace.js";
 import type { OntologyProjectRid } from "./OntologyProjectRid.js";
 
@@ -57,4 +58,5 @@ export interface OntologyInformationInternal {
   isDefaultOntologyMultiOrg: boolean;
   semanticSearchIndexingStatus: OntologyObjectTypeSemanticSearchStatus;
   enabledObjectStoragesStatus: EnabledObjectStoragesStatus;
+  ontologyApiNamespaceIdentifier: OntologyApiNamespaceIdentifier | undefined;
 }

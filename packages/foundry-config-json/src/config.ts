@@ -18,14 +18,14 @@ import type { JSONSchemaType } from "ajv";
 import { promises as fsPromises } from "node:fs";
 import { extname } from "node:path";
 
-export interface LoadedFoundryConfig<T extends "site" | "widget"> {
+export interface LoadedFoundryConfig<T extends "site" | "widgetSet"> {
   foundryConfig: FoundryConfig<T>;
   configFilePath: string;
 }
 
-export type FoundryConfig<T extends "site" | "widget"> = T extends "site"
+export type FoundryConfig<T extends "site" | "widgetSet"> = T extends "site"
   ? FoundrySiteConfig
-  : T extends "widget" ? FoundryWidgetConfig
+  : T extends "widgetSet" ? FoundryWidgetSetConfig
   : never;
 
 export interface FoundrySiteConfig {
@@ -33,9 +33,9 @@ export interface FoundrySiteConfig {
   site: SiteConfig;
 }
 
-export interface FoundryWidgetConfig {
+export interface FoundryWidgetSetConfig {
   foundryUrl: string;
-  widget: WidgetConfig;
+  widgetSet: WidgetSetConfig;
 }
 
 export interface SiteConfig {
@@ -45,7 +45,7 @@ export interface SiteConfig {
   uploadOnly?: boolean;
 }
 
-export interface WidgetConfig {
+export interface WidgetSetConfig {
   rid: string;
   directory: string;
   autoVersion?: AutoVersionConfig;
@@ -105,11 +105,11 @@ const FOUNDRY_SITE_CONFIG_SCHEMA = {
   additionalProperties: false,
 } satisfies JSONSchemaType<FoundryConfig<"site">>;
 
-const FOUNDRY_WIDGET_CONFIG_SCHEMA = {
+const FOUNDRY_WIDGET_SET_CONFIG_SCHEMA = {
   type: "object",
   properties: {
     foundryUrl: { type: "string" },
-    widget: {
+    widgetSet: {
       type: "object",
       properties: {
         rid: { type: "string" },
@@ -121,15 +121,15 @@ const FOUNDRY_WIDGET_CONFIG_SCHEMA = {
       required: ["rid", "directory"],
     },
   },
-  required: ["foundryUrl", "widget"],
+  required: ["foundryUrl", "widgetSet"],
   additionalProperties: false,
-} satisfies JSONSchemaType<FoundryConfig<"widget">>;
+} satisfies JSONSchemaType<FoundryConfig<"widgetSet">>;
 
 const FOUNDRY_CONFIG_SCHEMA: {
-  [P in "site" | "widget"]: JSONSchemaType<FoundryConfig<P>>;
+  [P in "site" | "widgetSet"]: JSONSchemaType<FoundryConfig<P>>;
 } = {
   site: FOUNDRY_SITE_CONFIG_SCHEMA,
-  widget: FOUNDRY_WIDGET_CONFIG_SCHEMA,
+  widgetSet: FOUNDRY_WIDGET_SET_CONFIG_SCHEMA,
 };
 
 /**
@@ -141,10 +141,10 @@ export async function loadFoundryConfig(
   type: "site",
 ): Promise<LoadedFoundryConfig<"site"> | undefined>;
 export async function loadFoundryConfig(
-  type: "widget",
-): Promise<LoadedFoundryConfig<"widget"> | undefined>;
+  type: "widgetSet",
+): Promise<LoadedFoundryConfig<"widgetSet"> | undefined>;
 export async function loadFoundryConfig(
-  type: "site" | "widget",
+  type: "site" | "widgetSet",
 ): Promise<LoadedFoundryConfig<typeof type> | undefined> {
   const ajvModule = await import("ajv");
   const Ajv = ajvModule.default.default; // https://github.com/ajv-validator/ajv/issues/2132
@@ -179,7 +179,7 @@ export async function loadFoundryConfig(
   return undefined;
 }
 
-function parseConfigFile<T extends "site" | "widget">(
+function parseConfigFile<T extends "site" | "widgetSet">(
   fileContent: string,
   configFilePath: string,
 ): FoundryConfig<T> {

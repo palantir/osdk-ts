@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 export type { ActionTypeClause } from "./ActionTypeClause.js";
 export type { ActionTypeFuzziness } from "./ActionTypeFuzziness.js";
+export type { ActionTypePermissionModelFilter } from "./ActionTypePermissionModelFilter.js";
 export type { ActionTypeSearchHit } from "./ActionTypeSearchHit.js";
 export type { ActionTypeSearchPageToken } from "./ActionTypeSearchPageToken.js";
 export type { ActionTypeSearchRequest } from "./ActionTypeSearchRequest.js";
@@ -40,8 +41,10 @@ export type { InterfaceTypeSortOrder } from "./InterfaceTypeSortOrder.js";
 export type { InterfaceTypeStatusFilter } from "./InterfaceTypeStatusFilter.js";
 export type { LogicRuleTypeFilter } from "./LogicRuleTypeFilter.js";
 export type { ObjectTypeClause } from "./ObjectTypeClause.js";
+export type { ObjectTypeEntityProvenanceSourceFilter } from "./ObjectTypeEntityProvenanceSourceFilter.js";
 export type { ObjectTypeExternalMappingFilter } from "./ObjectTypeExternalMappingFilter.js";
 export type { ObjectTypeFuzziness } from "./ObjectTypeFuzziness.js";
+export type { ObjectTypePermissionModelFilter } from "./ObjectTypePermissionModelFilter.js";
 export type { ObjectTypeSearchHit } from "./ObjectTypeSearchHit.js";
 export type { ObjectTypeSearchPageToken } from "./ObjectTypeSearchPageToken.js";
 export type { ObjectTypeSearchPageTokenV2 } from "./ObjectTypeSearchPageTokenV2.js";
@@ -53,6 +56,7 @@ export type { ObjectTypeSort } from "./ObjectTypeSort.js";
 export type { ObjectTypeSortBy } from "./ObjectTypeSortBy.js";
 export type { ObjectTypeSortOrder } from "./ObjectTypeSortOrder.js";
 export type { ObjectTypeStatusFilter } from "./ObjectTypeStatusFilter.js";
+export type { ObjectTypeTargetStorageBackendFilter } from "./ObjectTypeTargetStorageBackendFilter.js";
 export type { SharedPropertyTypeClause } from "./SharedPropertyTypeClause.js";
 export type { SharedPropertyTypeExternalMappingFilter } from "./SharedPropertyTypeExternalMappingFilter.js";
 export type { SharedPropertyTypeFuzziness } from "./SharedPropertyTypeFuzziness.js";

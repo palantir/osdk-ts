@@ -45,6 +45,8 @@ type BaseType<APD extends Pick<ActionMetadata.Parameter<any>, "type">> =
     ? ActionParam.ObjectType<TTargetType>
     : APD["type"] extends ActionMetadata.DataType.ObjectSet<infer TTargetType>
       ? ActionParam.ObjectSetType<TTargetType>
+    : APD["type"] extends ActionMetadata.DataType.Struct<infer TStructType>
+      ? ActionParam.StructType<TStructType>
     : APD["type"] extends keyof DataValueClientToWire
       ? ActionParam.PrimitiveType<APD["type"]>
     : never;

@@ -21,7 +21,7 @@
     }
   },
   "scripts": {
-    "check-attw": "monorepo.tool.attw both",
+    "check-attw": "attw --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
@@ -38,14 +38,14 @@
     "@osdk/legacy-client": "^2.6.0-beta.1"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "^0.15.2",
+    "@arethetypeswrong/cli": "^0.17.3",
     "@osdk/api": "^1.9.0",
     "@osdk/legacy-client": "^2.5.0",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~",
     "@types/node": "^18.0.0",
     "tslib": "^2.6.3",
+    "tsup": "^8.2.3",
     "typescript": "^4.9.5"
   },
   "publishConfig": {

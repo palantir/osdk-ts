@@ -6,4 +6,5 @@ export { Todo } from './ontology/objects';
 export * as $Objects from './ontology/objects';
 export {} from './ontology/queries';
 export * as $Queries from './ontology/queries';
+export { $osdkMetadata } from './OntologyMetadata';
 export { $ontologyRid } from './OntologyMetadata';

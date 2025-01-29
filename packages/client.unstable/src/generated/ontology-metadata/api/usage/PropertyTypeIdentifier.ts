@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
+import type { ObjectTypeFieldApiName } from "../ObjectTypeFieldApiName.js";
 import type { PropertyTypeId } from "../PropertyTypeId.js";
 import type { PropertyTypeRid } from "../PropertyTypeRid.js";
 export interface PropertyTypeIdentifier_propertyTypeId {
   type: "propertyTypeId";
   propertyTypeId: PropertyTypeId;
+}
+
+export interface PropertyTypeIdentifier_propertyTypeApiName {
+  type: "propertyTypeApiName";
+  propertyTypeApiName: ObjectTypeFieldApiName;
 }
 
 export interface PropertyTypeIdentifier_propertyTypeRid {
@@ -30,4 +36,5 @@ export interface PropertyTypeIdentifier_propertyTypeRid {
  */
 export type PropertyTypeIdentifier =
   | PropertyTypeIdentifier_propertyTypeId
+  | PropertyTypeIdentifier_propertyTypeApiName
   | PropertyTypeIdentifier_propertyTypeRid;
