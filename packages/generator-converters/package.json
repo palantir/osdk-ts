@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
-    "@osdk/internal.foundry.core": "2.9.0",
+    "@osdk/internal.foundry.core": "2.10.0",
     "consola": "^3.2.3"
   },
   "devDependencies": {

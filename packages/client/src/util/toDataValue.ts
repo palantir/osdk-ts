@@ -18,7 +18,7 @@ import { type DataValue } from "@osdk/internal.foundry.core";
 import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { isAttachmentUpload } from "../object/AttachmentUpload.js";
-import { isMediaReference, isMediaUpload } from "../object/mediaUpload.js";
+import { isMediaReference } from "../object/mediaUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import { isInterfaceActionParam } from "./interfaceUtils.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
@@ -47,22 +47,6 @@ export async function toDataValue(
       async (innerValue) => await toDataValue(innerValue, client),
     );
     return Promise.all(promiseArray);
-  }
-
-  if (isMediaUpload(value)) {
-    const { objectTypeApiName, propertyApiName, data, fileName } = value;
-    const mediaReference = await OntologiesV2.MediaReferenceProperties.upload(
-      client,
-      await client.ontologyRid,
-      objectTypeApiName,
-      propertyApiName,
-      data,
-      {
-        mediaItemPath: fileName,
-        preview: true,
-      },
-    );
-    return await toDataValue(mediaReference, client);
   }
 
   // For uploads, we need to upload ourselves first to get the RID of the attachment

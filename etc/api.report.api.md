@@ -294,7 +294,7 @@ export interface DataValueClientToWire {
     	// (undocumented)
     marking: string;
     	// (undocumented)
-    mediaReference: MediaUpload;
+    mediaReference: MediaReference;
     	// (undocumented)
     null: null;
     	// (undocumented)
@@ -345,7 +345,7 @@ export interface DataValueWireToClient {
     	// (undocumented)
     marking: string;
     	// (undocumented)
-    mediaReference: MediaUpload;
+    mediaReference: MediaReference;
     	// (undocumented)
     null: null;
     	// (undocumented)
@@ -582,16 +582,19 @@ interface MediaMetadata_2 {
 }
 export { MediaMetadata_2 as MediaMetadata }
 
-// @public (undocumented)
-export interface MediaUpload {
-    // (undocumented)
-    data: Blob;
-    // (undocumented)
-    fileName: string;
-    // (undocumented)
-    objectTypeApiName: string;
-    // (undocumented)
-    propertyApiName: string;
+// @public
+export interface MediaReference {
+    	// (undocumented)
+    mimeType: string;
+    	// (undocumented)
+    reference: {
+        		type: "mediaSetViewItem";
+        		mediaSetViewItem: {
+            			mediaItemRid: string;
+            			mediaSetRid: string;
+            			mediaSetViewRid: string;
+            		};
+        	};
 }
 
 // @public (undocumented)

@@ -166,16 +166,8 @@ describe(toDataValue, () => {
     );
   });
 
-  it("converts blob media uploads correctly", async () => {
-    const data = stubData.mediaUploadRequestBody[stubData.localMedia1.filename];
-    const mediaUpload = {
-      data,
-      fileName: stubData.localMedia1.filename,
-      objectTypeApiName: stubData.mediaReferenceObjectTypeApi,
-      propertyApiName: stubData.mediaPropertyName1,
-    };
-    const converted = await toDataValue(mediaUpload, clientCtx);
-
+  it("converts media reference correctly", async () => {
+    const converted = await toDataValue(stubData.mediaReference, clientCtx);
     expect(converted).toEqual(
       stubData.mediaReference,
     );

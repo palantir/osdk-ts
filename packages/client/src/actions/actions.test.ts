@@ -18,7 +18,7 @@ import type {
   ActionEditResponse,
   ActionValidationResponse,
   AttachmentUpload,
-  MediaUpload,
+  MediaReference,
 } from "@osdk/api";
 import {
   $Actions,
@@ -291,7 +291,7 @@ describe("actions", () => {
     expect(result2).toBeUndefined();
   });
 
-  it("Accepts media uploads", async () => {
+  it("Accepts media reference", async () => {
     const clientBoundActionTakesMedia = client(
       actionTakesMedia,
     ).applyAction;
@@ -301,23 +301,14 @@ describe("actions", () => {
 
     expectTypeOf<
       {
-        media_reference: MediaUpload;
+        media_reference: MediaReference;
       }
     >().toMatchTypeOf<
       InferredParamType
     >();
 
-    const blob = stubData.mediaUploadRequestBody[stubData.localMedia1.filename];
-
-    const mediaUpload = {
-      data: blob,
-      fileName: stubData.localMedia1.filename,
-      objectTypeApiName: stubData.mediaReferenceObjectTypeApi,
-      propertyApiName: stubData.mediaPropertyName2,
-    };
-
     const result = await client(actionTakesMedia).applyAction({
-      media_reference: mediaUpload,
+      media_reference: stubData.mediaReference,
     });
 
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();

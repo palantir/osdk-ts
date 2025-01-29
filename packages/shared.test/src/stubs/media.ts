@@ -29,9 +29,11 @@ export const mediaReference: MediaReference = {
   mimeType: "application/json",
   reference: {
     type: "mediaSetViewItem",
-    mediaItemRid: "media-item-rid",
-    mediaSetRid: "media-set-rid",
-    mediaSetViewRid: "media-set-view-rid",
+    mediaSetViewItem: {
+      mediaItemRid: "media-item-rid",
+      mediaSetRid: "media-set-rid",
+      mediaSetViewRid: "media-set-view-rid",
+    },
   },
 };
 

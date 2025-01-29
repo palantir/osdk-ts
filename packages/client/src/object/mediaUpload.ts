@@ -14,17 +14,7 @@
  * limitations under the License.
  */
 
-import type { MediaUpload } from "@osdk/api";
-import type { MediaReference } from "@osdk/internal.foundry.core";
-
-export function isMediaUpload(o: any): o is MediaUpload {
-  return typeof o === `object`
-    && "data" in o
-    && "fileName" in o
-    && "objectTypeApiName" in o
-    && "propertyApiName" in o
-    && o.data instanceof Blob;
-}
+import type { MediaReference } from "@osdk/api";
 
 export function isMediaReference(o: any): o is MediaReference {
   return typeof o === `object`
@@ -32,7 +22,9 @@ export function isMediaReference(o: any): o is MediaReference {
     && "reference" in o
     && typeof o.reference === "object"
     && o.reference.type === "mediaSetViewItem"
-    && typeof o.reference.mediaSetRid === "string"
-    && typeof o.reference.mediaSetViewRid === "string"
-    && typeof o.reference.mediaItemRid === "string";
+    && "mediaSetViewItem" in o.reference
+    && typeof o.reference.mediaSetViewItem === "object"
+    && typeof o.reference.mediaSetViewItem.mediaSetRid === "string"
+    && typeof o.reference.mediaSetViewItem.mediaSetViewRid === "string"
+    && typeof o.reference.mediaSetViewItem.mediaItemRid === "string";
 }

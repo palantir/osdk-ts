@@ -16,6 +16,7 @@
 
 export type { Experiment, ExperimentFns } from "../experimental/Experiment.js";
 
+export { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "../experimental/createMediaReference.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid } from "../experimental/fetchOneByRid.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from "../experimental/getBulkLinks.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe } from "../experimental/subscribe.js";

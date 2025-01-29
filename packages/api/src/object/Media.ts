@@ -25,11 +25,19 @@ export interface Media {
   fetchContents(): Promise<Response>;
 }
 
-export interface MediaUpload {
-  data: Blob;
-  fileName: string;
-  objectTypeApiName: string;
-  propertyApiName: string;
+/**
+ * Unique identifier of a media item in Foundry.
+ */
+export interface MediaReference {
+  mimeType: string;
+  reference: {
+    type: "mediaSetViewItem";
+    mediaSetViewItem: {
+      mediaItemRid: string;
+      mediaSetRid: string;
+      mediaSetViewRid: string;
+    };
+  };
 }
 
 /**

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
 import { $Actions, MnayanOsdkMediaObject } from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
 
@@ -33,26 +34,31 @@ export async function runMediaTest(): Promise<void> {
       } else {
         const mimeType = response.headers.get("Content-Type");
         console.log("Data mimetype:", mimeType);
-        const mediaUpload = {
-          data: await response.blob(),
-          fileName: "test7.png",
-          objectTypeApiName: MnayanOsdkMediaObject.apiName,
-          propertyApiName: "mediaReference",
-        };
 
-        console.log("Media upload:", mediaUpload);
-        // const result = await client($Actions.createMediaObject).applyAction({
-        //   path: "test6",
-        //   media_reference: mediaUpload,
-        // }, {
-        //   $returnEdits: true,
-        // });
-        const result = await client($Actions.createMediaViaFunction)
-          .applyAction({
-            mediaItem: mediaUpload,
-          }, {
-            $returnEdits: true,
-          });
+        const mediaRef = await client(
+          __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
+        )
+          .createMediaReference(
+            await response.blob(),
+            "test8.png",
+            MnayanOsdkMediaObject,
+            "mediaReference",
+          );
+
+        console.log("Media Reference:", mediaRef);
+        const result = await client($Actions.createMediaObject).applyAction({
+          path: "test8",
+          media_reference: mediaRef,
+        }, {
+          $returnEdits: true,
+        });
+
+        // const result = await client($Actions.createMediaViaFunction)
+        //   .applyAction({
+        //     mediaItem: mediaRef,
+        //   }, {
+        //     $returnEdits: true,
+        //   });
       }
     },
   );
