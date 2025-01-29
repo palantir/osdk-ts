@@ -641,7 +641,7 @@ export namespace ObjectSet {
 // Warning: (ae-forgotten-export) The symbol "ExtractRdp" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, D extends ObjectSet<Q, any> | Record<string, SimplePropertyDef> = ObjectSet<Q, any>> extends ObjectSetPrime<MergeObjectSet<Q, D>>, ObjectSet.Fns.WithProperties<Q, ExtractRdp<D>> {
+export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, D extends ObjectSet<Q, any> | Record<string, SimplePropertyDef> = ObjectSet<Q, any>> extends ObjectSetPrime<MergeObjectSet<Q, D>, Q, D>, ObjectSet.Fns.WithProperties<Q, ExtractRdp<D>> {
 }
 
 // @public (undocumented)
@@ -706,7 +706,9 @@ export namespace Osdk {
     // Warning: (ae-forgotten-export) The symbol "GetPropsKeys" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    export type Instance<Q extends ObjectOrInterfaceDefinition, OPTIONS extends never | "$rid" = never, P extends PropertyKeys<Q> = PropertyKeys<Q>> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P>> & {
+    export type Instance<Q extends ObjectOrInterfaceDefinition, OPTIONS extends never | "$rid" = never, P extends PropertyKeys<Q> = PropertyKeys<Q>, R extends Record<string, SimplePropertyDef> = never> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [never] ? false : true>> & ([R] extends [never] ? {} : {
+        [A in keyof R]: SimplePropertyDef.ToRuntimeProperty<R[A]>;
+    }) & {
         readonly $link: Q extends {
             linksType?: any;
         } ? Q["linksType"] : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q> : never;

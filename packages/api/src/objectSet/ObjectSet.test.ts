@@ -185,7 +185,7 @@ describe("ObjectSet", () => {
       test.todo("with calculated properties");
     });
 
-    describe("Osdk.Instance", () => {
+    describe("fetch functions return correct Osdk.Instance", () => {
       const withFamily = fauxObjectSet.withProperties({
         "mom": (base) => base.pivotTo("lead").aggregate("$count"),
         "dad": (base) => base.pivotTo("lead").selectProperty("fullName"),
@@ -270,8 +270,37 @@ describe("ObjectSet", () => {
             >
           >();
       });
+    });
 
-      type a = Osdk.Instance<Employee>;
+    it("allows extracting the type", () => {
+      const objectSet = fauxObjectSet.withProperties({
+        "mom": (base) => base.pivotTo("lead").aggregate("$count"),
+      });
+
+      type ObjectSetType = typeof objectSet;
+
+      expectTypeOf<ObjectSetType>().toEqualTypeOf<
+        ObjectSet<Employee, {
+          mom: "integer" | undefined;
+        }>
+      >();
+
+      const objectSet2 = fauxObjectSet.withProperties({
+        "mom": (base) => base.pivotTo("lead").aggregate("$count"),
+      }) satisfies ObjectSetType;
+    });
+
+    it("Defining the Type", () => {
+      type ObjectSetType = ObjectSet<
+        Employee,
+        {
+          mom: "integer" | undefined;
+        }
+      >;
+
+      const objectSet: ObjectSetType = fauxObjectSet.withProperties({
+        "mom": (base) => base.pivotTo("lead").aggregate("$count"),
+      });
     });
   });
 });
