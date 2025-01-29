@@ -29,23 +29,23 @@ import { createFetch } from "../../../net/createFetch.mjs";
 import type { InternalClientContext } from "../../../net/internalClientContext.mjs";
 import type { WidgetSetRid } from "../../../net/WidgetSetRid.js";
 import { loadToken } from "../../../util/token.js";
-import type { WidgetDeployArgs } from "./WidgetDeployArgs.js";
+import type { WidgetSetDeployArgs } from "./WidgetSetDeployArgs.js";
 
-export default async function widgetDeployCommand(
+export default async function widgetSetDeployCommand(
   {
     rid,
     foundryUrl,
     directory,
     token,
     tokenFile,
-  }: WidgetDeployArgs,
+  }: WidgetSetDeployArgs,
 ): Promise<void> {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
 
   consola.debug(
-    `Using directory for widget files: "${path.resolve(directory)}`,
+    `Using directory for widget set files: "${path.resolve(directory)}`,
   );
   const stat = await fs.promises.stat(directory);
   if (!stat.isDirectory()) {
@@ -57,11 +57,11 @@ export default async function widgetDeployCommand(
 
   const widgetSetVersion = await findWidgetSetVersion(directory);
 
-  consola.start("Zipping widget files");
+  consola.start("Zipping widget set files");
   const archive = archiver("zip").directory(directory, false);
   logArchiveStats(archive);
 
-  consola.start("Uploading widget files");
+  consola.start("Uploading widget set files");
   await Promise.all([
     uploadVersion(
       clientCtx,
@@ -73,7 +73,7 @@ export default async function widgetDeployCommand(
   ]);
   consola.success("Upload complete");
 
-  consola.start("Publishing widget manifest");
+  consola.start("Publishing widget set manifest");
   await publishManifest(clientCtx, rid, widgetSetVersion);
   consola.success(`Deployed ${widgetSetVersion} successfully`);
 }

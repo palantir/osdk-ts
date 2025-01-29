@@ -21,7 +21,7 @@ import { loadFoundryConfig } from "@osdk/foundry-config-json";
 let siteConfigPromise:
   | Promise<LoadedFoundryConfig<"site"> | undefined>
   | undefined = undefined;
-let widgetConfigPromise:
+let widgetSetConfigPromise:
   | Promise<LoadedFoundryConfig<"widgetSet"> | undefined>
   | undefined = undefined;
 
@@ -56,12 +56,12 @@ function getSiteConfig(): Promise<LoadedFoundryConfig<"site"> | undefined> {
 function getWidgetSetConfig(): Promise<
   LoadedFoundryConfig<"widgetSet"> | undefined
 > {
-  if (widgetConfigPromise == null) {
-    widgetConfigPromise = loadFoundryConfig("widgetSet").catch((e) => {
+  if (widgetSetConfigPromise == null) {
+    widgetSetConfigPromise = loadFoundryConfig("widgetSet").catch((e) => {
       throw new ExitProcessError(2, e instanceof Error ? e.message : undefined);
     });
   }
-  return widgetConfigPromise;
+  return widgetSetConfigPromise;
 }
 
 export default getConfig;

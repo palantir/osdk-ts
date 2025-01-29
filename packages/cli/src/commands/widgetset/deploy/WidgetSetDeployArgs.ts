@@ -14,26 +14,8 @@
  * limitations under the License.
  */
 
-import type { CommandModule } from "yargs";
-import type { CommonWidgetArgs } from "../CommonWidgetArgs.js";
-import deleteCmd from "./delete/index.js";
-import info from "./info/index.js";
-import list from "./list/index.js";
+import type { CommonWidgetSetArgs } from "../CommonWidgetSetArgs.js";
 
-const command: CommandModule<
-  CommonWidgetArgs,
-  CommonWidgetArgs
-> = {
-  command: "version",
-  describe: "Manage widget versions",
-  builder: (argv) => {
-    return argv
-      .command(list)
-      .command(info)
-      .command(deleteCmd)
-      .demandCommand();
-  },
-  handler: async (args) => {},
-};
-
-export default command;
+export interface WidgetSetDeployArgs extends CommonWidgetSetArgs {
+  directory: string;
+}

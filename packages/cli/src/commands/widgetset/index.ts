@@ -19,14 +19,14 @@ import type { CommandModule } from "yargs";
 import type { WidgetSetRid } from "../../net/WidgetSetRid.js";
 import configLoader from "../../util/configLoader.js";
 import { logConfigFileMiddleware } from "../../yargs/logConfigFileMiddleware.js";
-import type { CommonWidgetArgs } from "./CommonWidgetArgs.js";
+import type { CommonWidgetSetArgs } from "./CommonWidgetSetArgs.js";
 import deploy from "./deploy/index.js";
-import { logWidgetCommandConfigFileOverride } from "./logWidgetCommandConfigFileOverride.js";
+import { logWidgetSetCommandConfigFileOverride } from "./logWidgetSetCommandConfigFileOverride.js";
 import version from "./version/index.js";
 
-const command: CommandModule<CliCommonArgs, CommonWidgetArgs> = {
-  command: "widget",
-  describe: "Manage your widget",
+const command: CommandModule<CliCommonArgs, CommonWidgetSetArgs> = {
+  command: "widgetset",
+  describe: "Manage your widget set",
   builder: async (argv) => {
     const config = await configLoader("widgetSet");
     const rid = config?.foundryConfig.widgetSet.rid;
@@ -38,7 +38,7 @@ const command: CommandModule<CliCommonArgs, CommonWidgetArgs> = {
         ...rid
           ? { default: rid }
           : { demandOption: true },
-        description: "Widget resource identifier (rid)",
+        description: "Widget set resource identifier (rid)",
       },
       foundryUrl: {
         coerce: (foundryUrl) => foundryUrl.replace(/\/$/, ""),
@@ -73,7 +73,7 @@ const command: CommandModule<CliCommonArgs, CommonWidgetArgs> = {
       })
       .middleware((args) => {
         void logConfigFileMiddleware("widgetSet");
-        logWidgetCommandConfigFileOverride(args, config?.foundryConfig);
+        logWidgetSetCommandConfigFileOverride(args, config?.foundryConfig);
       })
       .demandCommand();
   },

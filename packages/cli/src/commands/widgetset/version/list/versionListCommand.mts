@@ -32,7 +32,7 @@ export default async function versionListCommand(
 
   const response = await listWidgetSetReleases(clientCtx, rid);
   if (response.releases.length === 0) {
-    consola.info("No widget versions found");
+    consola.info("No widget set versions found");
     return;
   }
 

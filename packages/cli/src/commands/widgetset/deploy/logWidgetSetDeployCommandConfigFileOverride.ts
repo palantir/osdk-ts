@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-import type { CommandModule } from "yargs";
-import type { CommonWidgetArgs } from "../../CommonWidgetArgs.js";
-import type { VersionListArgs } from "./VersionListArgs.js";
+import type { WidgetSetConfig } from "@osdk/foundry-config-json";
+import { consola } from "consola";
+import type { Arguments } from "yargs";
+import type { WidgetSetDeployArgs } from "./WidgetSetDeployArgs.js";
 
-const command: CommandModule<
-  CommonWidgetArgs,
-  VersionListArgs
-> = {
-  command: "list",
-  describe: "List widget versions",
-  builder: (argv) => {
-    return argv;
-  },
-  handler: async (args) => {
-    const command = await import("./versionListCommand.mjs");
-    await command.default(args);
-  },
-};
-
-export default command;
+export function logWidgetSetDeployCommandConfigFileOverride(
+  args: Arguments<WidgetSetDeployArgs>,
+  config: WidgetSetConfig | undefined,
+): void {
+  if (config?.directory != null && args.directory !== config.directory) {
+    consola.debug(
+      `Overriding "directory" from config file with ${args.directory}`,
+    );
+  }
+}

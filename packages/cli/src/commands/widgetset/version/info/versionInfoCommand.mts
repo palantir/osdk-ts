@@ -29,12 +29,12 @@ export default async function versionInfoCommand(
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
   consola.start("Loading version info");
-  const response = await getViewRelease(clientCtx, rid, version);
+  const response = await getWidgetSetRelease(clientCtx, rid, version);
   consola.success(`Loaded version info for ${version}`);
   consola.log(JSON.stringify(response, null, 2));
 }
 
-async function getViewRelease(
+async function getWidgetSetRelease(
   ctx: InternalClientContext,
   // TODO: make repository rid
   widgetSetRid: WidgetSetRid,

@@ -21,7 +21,7 @@ import { consola } from "consola";
 import type { Argv } from "yargs";
 import auth from "./commands/auth/index.js";
 import site from "./commands/site/index.js";
-import widget from "./commands/widget/index.js";
+import widgetSet from "./commands/widgetset/index.js";
 
 export async function cli(args: string[] = process.argv): Promise<
   Record<string, unknown> | undefined
@@ -40,11 +40,11 @@ export async function cli(args: string[] = process.argv): Promise<
         command: "unstable",
         aliases: ["experimental"],
         describe: "Unstable commands",
-        builder: async (argv) => {
+        builder: (argv) => {
           return argv
             .command(typescript)
             .command(auth)
-            .command(widget)
+            .command(widgetSet)
             .demandCommand();
         },
         handler: (_args) => {},

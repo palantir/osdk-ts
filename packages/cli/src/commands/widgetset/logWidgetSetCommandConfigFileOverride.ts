@@ -14,18 +14,27 @@
  * limitations under the License.
  */
 
-import type { WidgetSetConfig } from "@osdk/foundry-config-json";
+import type { FoundryConfig } from "@osdk/foundry-config-json";
 import { consola } from "consola";
 import type { Arguments } from "yargs";
-import type { WidgetDeployArgs } from "./WidgetDeployArgs.js";
+import type { CommonWidgetSetArgs } from "./CommonWidgetSetArgs.js";
 
-export function logWidgetDeployCommandConfigFileOverride(
-  args: Arguments<WidgetDeployArgs>,
-  config: WidgetSetConfig | undefined,
+export function logWidgetSetCommandConfigFileOverride(
+  args: Arguments<CommonWidgetSetArgs>,
+  config: FoundryConfig<"widgetSet"> | undefined,
 ): void {
-  if (config?.directory != null && args.directory !== config.directory) {
+  if (
+    config?.widgetSet.rid != null
+    && args.rid !== config.widgetSet.rid
+  ) {
     consola.debug(
-      `Overriding "directory" from config file with ${args.directory}`,
+      `Overriding "rid" from config file with ${args.rid}`,
+    );
+  }
+
+  if (config?.foundryUrl != null && args.foundryUrl !== config.foundryUrl) {
+    consola.debug(
+      `Overriding "foundryUrl" from config file with ${args.foundryUrl}`,
     );
   }
 }

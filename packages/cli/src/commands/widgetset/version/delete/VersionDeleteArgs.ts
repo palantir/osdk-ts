@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { CommonWidgetArgs } from "../../CommonWidgetArgs.js";
+import type { CommonWidgetSetArgs } from "../../CommonWidgetSetArgs.js";
 
-export interface VersionDeleteArgs extends CommonWidgetArgs {
+export interface VersionDeleteArgs extends CommonWidgetSetArgs {
   version: string;
   yes?: boolean;
 }

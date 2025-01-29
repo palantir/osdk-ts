@@ -15,25 +15,20 @@
  */
 
 import type { CommandModule } from "yargs";
-import type { CommonWidgetArgs } from "../../CommonWidgetArgs.js";
-import type { VersionInfoArgs } from "./VersionInfoArgs.js";
+import type { CommonWidgetSetArgs } from "../../CommonWidgetSetArgs.js";
+import type { VersionListArgs } from "./VersionListArgs.js";
 
 const command: CommandModule<
-  CommonWidgetArgs,
-  VersionInfoArgs
+  CommonWidgetSetArgs,
+  VersionListArgs
 > = {
-  command: "info <version>",
-  describe: "Load info about widget version",
+  command: "list",
+  describe: "List widget set versions",
   builder: (argv) => {
-    return argv
-      .positional("version", {
-        type: "string",
-        demandOption: true,
-        description: "Version to load",
-      });
+    return argv;
   },
   handler: async (args) => {
-    const command = await import("./versionInfoCommand.mjs");
+    const command = await import("./versionListCommand.mjs");
     await command.default(args);
   },
 };

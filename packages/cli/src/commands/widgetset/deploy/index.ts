@@ -17,16 +17,16 @@
 import type { WidgetSetConfig } from "@osdk/foundry-config-json";
 import type { CommandModule } from "yargs";
 import configLoader from "../../../util/configLoader.js";
-import type { CommonWidgetArgs } from "../CommonWidgetArgs.js";
-import { logWidgetDeployCommandConfigFileOverride } from "./logWidgetDeployCommandConfigFileOverride.js";
-import type { WidgetDeployArgs } from "./WidgetDeployArgs.js";
+import type { CommonWidgetSetArgs } from "../CommonWidgetSetArgs.js";
+import { logWidgetSetDeployCommandConfigFileOverride } from "./logWidgetSetDeployCommandConfigFileOverride.js";
+import type { WidgetSetDeployArgs } from "./WidgetSetDeployArgs.js";
 
 const command: CommandModule<
-  CommonWidgetArgs,
-  WidgetDeployArgs
+  CommonWidgetSetArgs,
+  WidgetSetDeployArgs
 > = {
   command: "deploy",
-  describe: "Deploy a new widget version",
+  describe: "Deploy a new widget set version",
   builder: async (argv) => {
     const config = await configLoader("widgetSet");
     const widgetSetConfig: WidgetSetConfig | undefined = config?.foundryConfig
@@ -37,7 +37,7 @@ const command: CommandModule<
       .options({
         directory: {
           type: "string",
-          description: "Directory containing widget files",
+          description: "Directory containing widget set files",
           ...directory
             ? { default: directory }
             : { demandOption: true },
@@ -47,11 +47,11 @@ const command: CommandModule<
         ["directory"],
         "Deploy Options",
       ).middleware((args) =>
-        logWidgetDeployCommandConfigFileOverride(args, widgetSetConfig)
+        logWidgetSetDeployCommandConfigFileOverride(args, widgetSetConfig)
       );
   },
   handler: async (args) => {
-    const command = await import("./widgetDeployCommand.mjs");
+    const command = await import("./widgetSetDeployCommand.mjs");
     await command.default(args);
   },
 };
