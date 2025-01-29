@@ -683,11 +683,11 @@ describe("ObjectSet", () => {
           base.pivotTo("lead").aggregate("employeeId:sum"),
       }).where({ "derivedPropertyName": { "$eq": 3 } });
 
-      // expectTypeOf(numericAggregationObjectSet).branded.toEqualTypeOf<
-      //   ObjectSet<Employee, {
-      //     derivedPropertyName: "double" | undefined;
-      //   }>
-      // >();
+      expectTypeOf(numericAggregationObjectSet).toEqualTypeOf<
+        ObjectSet<Employee, {
+          derivedPropertyName: "double" | undefined;
+        }>
+      >();
 
       client(Employee).withProperties({
         "derivedPropertyName": (base) =>

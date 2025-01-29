@@ -15,7 +15,6 @@
  */
 
 import { describe, expectTypeOf, it, test, vi } from "vitest";
-import type { ObjectSet } from "./ObjectSet.js";
 
 import type {
   ObjectMetadata as $ObjectMetadata,
@@ -218,6 +217,9 @@ describe("ObjectSet", () => {
               sister: "string"[] | undefined;
             }>
           >();
+
+        expectTypeOf<typeof withFamilyResults["data"][0]["mom"]>()
+          .toEqualTypeOf<number | undefined>();
       });
 
       it("Works with selecting some RDPs", async () => {
@@ -241,6 +243,10 @@ describe("ObjectSet", () => {
         expectTypeOf<typeof withFamilyResults["data"][0]>().branded
           .toEqualTypeOf<
             Osdk.Instance<Employee, never, PropertyKeys<Employee>, {}>
+          >();
+        expectTypeOf<typeof withFamilyResults["data"][0]["class"]>()
+          .toEqualTypeOf<
+            string | undefined
           >();
       });
 
@@ -279,11 +285,11 @@ describe("ObjectSet", () => {
 
       type ObjectSetType = typeof objectSet;
 
-      // expectTypeOf<ObjectSetType>().toEqualTypeOf<
-      //   ObjectSet<Employee, {
-      //     mom: "integer" | undefined;
-      //   }>
-      // >();
+      expectTypeOf<ObjectSetType>().toEqualTypeOf<
+        $ObjectSet<Employee, {
+          mom: "integer" | undefined;
+        }>
+      >();
 
       const objectSet2 = fauxObjectSet.withProperties({
         "mom": (base) => base.pivotTo("lead").aggregate("$count"),
@@ -291,16 +297,16 @@ describe("ObjectSet", () => {
     });
 
     it("Defining the Type", () => {
-      type ObjectSetType = ObjectSet<
+      type ObjectSetType = $ObjectSet<
         Employee,
         {
           mom: "integer" | undefined;
         }
       >;
 
-      // fauxObjectSet.withProperties({
-      //   "mom": (base) => base.pivotTo("lead").aggregate("$count"),
-      // }) satisfies ObjectSetType;
+      fauxObjectSet.withProperties({
+        "mom": (base) => base.pivotTo("lead").aggregate("$count"),
+      }) satisfies ObjectSetType;
     });
   });
 });
