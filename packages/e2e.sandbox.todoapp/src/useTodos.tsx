@@ -124,7 +124,7 @@ export function useTodos() {
 
 type OsdkPropsOnly<T extends ObjectTypeDefinition> = Omit<
   Osdk<T>,
-  "$as" | "$link"
+  "$as" | "$link" | "$cloneAndUpdate"
 >;
 
 export interface SimpleTodo extends OsdkPropsOnly<MyOsdk.Todo> {}
@@ -204,7 +204,7 @@ export function useSubscribe(mutate: KeyedMutator<SimpleTodo[]>) {
               }
             };
 
-            mutate((data) => {
+            void mutate((data) => {
               // update any Todos that we got a new version for
               const updated = data?.map((object) => {
                 const updateObject = getUpdate(
@@ -226,7 +226,7 @@ export function useSubscribe(mutate: KeyedMutator<SimpleTodo[]>) {
           },
 
           onOutOfDate() {
-            mutate();
+            void mutate();
           },
 
           onError(data) {
