@@ -27,7 +27,7 @@ import type { Type } from "../../api/Type.js";
  * There may be some edge cases not covered by this validation.
  *
  * Schema Migrations that are validated for include:
- * - dropAllPatches
+ * - dropAllPatches (this is the only allowed migration in case of a primary key type change)
  * - dropProperty where the propertyTypeRid matches the deleted property
  * - renameProperty where the source matches the current propertyTypeRid and the target does not match the current propertyTypeId
  */
