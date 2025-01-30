@@ -61,6 +61,31 @@ const basePropDefs = {
       return get$link(this);
     },
   },
+  "$cloneAndUpdate": {
+    value: function(
+      this: InternalOsdkInstance & ObjectHolder<any>,
+      update: Record<string, any>,
+    ) {
+      const rawObj = this[UnderlyingOsdkObject];
+      const def = this[ObjectDefRef];
+
+      if (
+        def.primaryKeyApiName in update
+        && rawObj[def.primaryKeyApiName] !== update[def.primaryKeyApiName]
+      ) {
+        throw new Error(
+          `Cannot update ${def.apiName} object with differing primary key values `,
+        );
+      }
+
+      if (def.titleProperty in update && !("$title" in update)) {
+        update.$title = update[def.titleProperty];
+      }
+
+      const newObject = { ...this[UnderlyingOsdkObject], ...update };
+      return createOsdkObject(this[ClientRef], this[ObjectDefRef], newObject);
+    },
+  },
 };
 
 /** @internal */
