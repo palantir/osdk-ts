@@ -109,4 +109,5 @@ export type ValidBaseActionParameterTypes =
   | "timestamp"
   | "attachment"
   | "marking"
+  | "mediaReference"
   | "objectType";

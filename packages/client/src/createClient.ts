@@ -34,11 +34,13 @@ import type {
   MinimalObjectSet,
 } from "@osdk/api/unstable";
 import {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
   __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
 } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.client";
 import { createBulkLinksAsyncIterFactory } from "./__unstable/createBulkLinksAsyncIterFactory.js";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
@@ -212,6 +214,28 @@ export function createClientInternal(
                   rid,
                 ),
               ) as Osdk<Q>;
+            },
+          } as any;
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference.name:
+          return {
+            createMediaReference: async (args: {
+              data: Blob;
+              fileName: string;
+              objectTypeApi: string;
+              propertyTypeApi: string;
+            }) => {
+              const { data, fileName, objectTypeApi, propertyTypeApi } = args;
+              return await OntologiesV2.MediaReferenceProperties.upload(
+                clientCtx,
+                await clientCtx.ontologyRid,
+                objectTypeApi,
+                propertyTypeApi,
+                data,
+                {
+                  mediaItemPath: fileName,
+                  preview: true,
+                },
+              );
             },
           } as any;
       }

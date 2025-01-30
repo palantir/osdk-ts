@@ -18,6 +18,7 @@ import { type DataValue } from "@osdk/internal.foundry.core";
 import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { isAttachmentUpload } from "../object/AttachmentUpload.js";
+import { isMediaReference } from "../object/mediaUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import { isInterfaceActionParam } from "./interfaceUtils.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
@@ -86,6 +87,10 @@ export async function toDataValue(
   }
   if (isObjectSet(value)) {
     return getWireObjectSet(value);
+  }
+
+  if (isMediaReference(value)) {
+    return value;
   }
 
   if (isInterfaceActionParam(value)) {

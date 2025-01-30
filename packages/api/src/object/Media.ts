@@ -26,6 +26,21 @@ export interface Media {
 }
 
 /**
+ * Unique identifier of a media item in Foundry.
+ */
+export interface MediaReference {
+  mimeType: string;
+  reference: {
+    type: "mediaSetViewItem";
+    mediaSetViewItem: {
+      mediaItemRid: string;
+      mediaSetRid: string;
+      mediaSetViewRid: string;
+    };
+  };
+}
+
+/**
  * Metadata of a media item
  */
 export interface MediaMetadata {
