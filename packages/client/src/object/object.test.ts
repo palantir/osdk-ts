@@ -209,6 +209,7 @@ export async function shouldError(client: Client): Promise<Osdk<Employee>> {
 export async function shouldError2(
   client: Client,
 ): Promise<Employee.OsdkObject> {
+  // @ts-expect-error
   return client(Employee).fetchOne(1, {
     $select: ["employeeId"],
   });

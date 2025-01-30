@@ -40,4 +40,7 @@ export namespace ObjectOrInterfaceDefinition {
 
 export type PropertyKeys<
   O extends ObjectOrInterfaceDefinition,
-> = keyof NonNullable<O["__DefinitionMetadata"]>["properties"] & string;
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> =
+  & (keyof NonNullable<O["__DefinitionMetadata"]>["properties"] | keyof RDPs)
+  & string;

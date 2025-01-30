@@ -87,7 +87,7 @@ interface FetchPage<
    * @returns a page of objects
    */
   readonly fetchPage: <
-    L extends PropertyKeys<Q> | (keyof RDPs & string),
+    L extends PropertyKeys<Q, RDPs>,
     R extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
@@ -119,7 +119,7 @@ interface FetchPage<
    * @returns a page of objects, wrapped in a result wrapper
    */
   readonly fetchPageWithErrors: <
-    L extends PropertyKeys<Q> | (keyof RDPs & string),
+    L extends PropertyKeys<Q, RDPs>,
     R extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
@@ -172,7 +172,7 @@ interface AsyncIter<
    * @returns an async iterator to load all objects
    */
   readonly asyncIter: <
-    L extends PropertyKeys<Q> | (keyof RDPs & string),
+    L extends PropertyKeys<Q, RDPs>,
     R extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
@@ -254,10 +254,7 @@ interface Aggregate<
    * @returns aggregation results, sorted in the groups based on the groupBy clause (if applicable)
    */
   readonly aggregate: <AO extends AggregateOpts<Q>>(
-    req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
-      Q,
-      AO
-    >,
+    req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
   ) => Promise<AggregationsResults<Q, AO>>;
 }
 
@@ -327,7 +324,7 @@ interface FetchOne<
    * Fetches one object with the specified primary key, without a result wrapper
    */
   readonly fetchOne: Q extends ObjectTypeDefinition ? <
-      L extends PropertyKeys<Q> | (keyof RDPs & string),
+      const L extends PropertyKeys<Q, RDPs>,
       const R extends boolean,
       const S extends false | "throw" = NullabilityAdherence.Default,
     >(
@@ -347,9 +344,9 @@ interface FetchOne<
    * Fetches one object with the specified primary key, with a result wrapper
    */
   readonly fetchOneWithErrors: Q extends ObjectTypeDefinition ? <
-      L extends PropertyKeys<Q> | (keyof RDPs & string),
-      const R extends boolean,
-      const S extends false | "throw" = NullabilityAdherence.Default,
+      L extends PropertyKeys<Q, RDPs>,
+      R extends boolean,
+      S extends false | "throw" = NullabilityAdherence.Default,
     >(
       primaryKey: PrimaryKeyType<Q>,
       options?: SelectArg<Q, L, R, S>,
