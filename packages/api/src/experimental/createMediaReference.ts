@@ -15,8 +15,6 @@
  */
 
 import type { MediaReference } from "../object/Media.js";
-import type { PropertyKeys } from "../ontology/ObjectOrInterface.js";
-import type { ObjectTypeDefinition } from "../ontology/ObjectTypeDefinition.js";
 import type { Experiment } from "./Experiment.js";
 
 /**
@@ -26,19 +24,18 @@ import type { Experiment } from "./Experiment.js";
  *
  * @param data - Data to upload as media item
  * @param fileName - Name that will be assigned as path to the uploaded media item.
- * @param objectType - Object type to which the media item will be uploaded.
- * @param propertyType - The media reference property of the corresponding object type to which the media item will be uploaded.
+ * @param objectTypeApi - Api name of the object type to which the media item will be uploaded.
+ * @param propertyTypeApi - Api name of the media reference property of the corresponding object type to which the media item will be uploaded.
  *
  * @returns media reference of the uploaded media item.
  */
-type createMediaReference = <
-  Q extends ObjectTypeDefinition,
-  const L extends PropertyKeys<Q>,
->(
-  data: Blob,
-  fileName: string,
-  objectType: Q,
-  propertyType: L,
+type createMediaReference = (
+  args: {
+    data: Blob;
+    fileName: string;
+    objectTypeApi: string;
+    propertyTypeApi: string;
+  },
 ) => Promise<MediaReference>;
 
 export const __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference:

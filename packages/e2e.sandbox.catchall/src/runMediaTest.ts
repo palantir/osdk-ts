@@ -38,12 +38,12 @@ export async function runMediaTest(): Promise<void> {
         const mediaRef = await client(
           __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
         )
-          .createMediaReference(
-            await response.blob(),
-            "test10.png",
-            MnayanOsdkMediaObject,
-            "mediaReference",
-          );
+          .createMediaReference({
+            data: await response.blob(),
+            fileName: "test13.png",
+            objectTypeApi: MnayanOsdkMediaObject.apiName,
+            propertyTypeApi: "mediaReference",
+          });
 
         console.log("Media Reference:", mediaRef);
         // Enable below to test creating object via non-function backed action
