@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-/**
- * Local overridden alias of OMS public API representation of ObjectTypeEntityMetadata. In OMS API we model
- * editsResolutionStrategies field as non-optional, but Marketplace ontology block data uploaded to
- * artifacts faces similar constraints as our internal StorageObjectTypeEntityMetadata and we need to provide
- * runtime conversion with default value.
- */
-export interface OntologyIrMarketplaceObjectTypeEntityMetadata {
-  arePatchesEnabled: boolean;
+import type { BaseFormatterReferencedPropertiesDoNotExistError } from "./BaseFormatterReferencedPropertiesDoNotExistError.js";
+export interface ObjectTypePropertyConstraintError_baseFormatterReferencedPropertiesDoNotExist {
+  type: "baseFormatterReferencedPropertiesDoNotExist";
+  baseFormatterReferencedPropertiesDoNotExist:
+    BaseFormatterReferencedPropertiesDoNotExistError;
 }
+/**
+ * A type representing the Validation Errors associated with Property Type References.
+ */
+export type ObjectTypePropertyConstraintError =
+  ObjectTypePropertyConstraintError_baseFormatterReferencedPropertiesDoNotExist;

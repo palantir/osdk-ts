@@ -21,7 +21,7 @@ import type { ActionNotificationModification } from "./ActionNotificationModific
 import type { ActionNotificationSettings } from "./ActionNotificationSettings.js";
 import type { ActionRevert } from "./ActionRevert.js";
 import type { ActionTypeApiName } from "./ActionTypeApiName.js";
-import type { ActionTypeDisplayMetadata } from "./ActionTypeDisplayMetadata.js";
+import type { ActionTypeDisplayMetadataModification } from "./ActionTypeDisplayMetadataModification.js";
 import type { ActionTypeProvenanceModification } from "./ActionTypeProvenanceModification.js";
 import type { ActionTypeStatus } from "./ActionTypeStatus.js";
 import type { ActionWebhooksModification } from "./ActionWebhooksModification.js";
@@ -40,7 +40,7 @@ import type { ValidationRuleModification } from "./ValidationRuleModification.js
  */
 export interface ActionTypeCreate {
   apiName: ActionTypeApiName;
-  displayMetadata: ActionTypeDisplayMetadata;
+  displayMetadata: ActionTypeDisplayMetadataModification;
   parameters: Record<ParameterId, PutParameterRequestModification>;
   sections: Record<SectionId, PutSectionRequestModification>;
   parameterOrdering: Array<ParameterId>;

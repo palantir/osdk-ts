@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+import type { DatasourceRid } from "../../api/DatasourceRid.js";
+import type { ObjectTypeRid } from "../../api/ObjectTypeRid.js";
+import type { PropertyTypeId } from "../../api/PropertyTypeId.js";
+
 /**
- * Local overridden alias of OMS public API representation of ObjectTypeEntityMetadata. In OMS API we model
- * editsResolutionStrategies field as non-optional, but Marketplace ontology block data uploaded to
- * artifacts faces similar constraints as our internal StorageObjectTypeEntityMetadata and we need to provide
- * runtime conversion with default value.
+ * A property specified in a property security group does not have a mapping in the datasource definition.
  */
-export interface OntologyIrMarketplaceObjectTypeEntityMetadata {
-  arePatchesEnabled: boolean;
+export interface UnmappedPropertiesInPropertySecurityGroupError {
+  objectTypeRid: ObjectTypeRid;
+  datasourceRid: DatasourceRid;
+  unmappedPropertyTypeIds: Array<PropertyTypeId>;
 }

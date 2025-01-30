@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import type { ActionTypeLogic } from "./ActionTypeLogic.js";
+import type { ActionTypeMetadataModification } from "./ActionTypeMetadataModification.js";
+
 /**
- * Local overridden alias of OMS public API representation of ObjectTypeEntityMetadata. In OMS API we model
- * editsResolutionStrategies field as non-optional, but Marketplace ontology block data uploaded to
- * artifacts faces similar constraints as our internal StorageObjectTypeEntityMetadata and we need to provide
- * runtime conversion with default value.
+ * Action type shape for requests. Ensures backend compatibility with the usePlugin LLM endpoint.
  */
-export interface OntologyIrMarketplaceObjectTypeEntityMetadata {
-  arePatchesEnabled: boolean;
+export interface ActionTypeModificationRequest {
+  actionTypeLogic: ActionTypeLogic;
+  metadata: ActionTypeMetadataModification;
 }

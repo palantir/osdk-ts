@@ -21,6 +21,7 @@ import type { DerivedPropertyLinkDefinitionCardinalityInvalidError } from "./Der
 import type { DerivedPropertyLinkDefinitionInvalidError } from "./DerivedPropertyLinkDefinitionInvalidError.js";
 import type { DerivedPropertyTypeDependOnAnotherDerivedPropertyError } from "./DerivedPropertyTypeDependOnAnotherDerivedPropertyError.js";
 import type { ForeignPropertyTypeInDerivedPropertyDefinitionNotFoundError } from "./ForeignPropertyTypeInDerivedPropertyDefinitionNotFoundError.js";
+import type { GpsPolicyColumnsFromRestrictedViewsAreMappedError } from "./GpsPolicyColumnsFromRestrictedViewsAreMappedError.js";
 import type { LinkTypeInDerivedPropertyDefinitionNotFoundOrDeletedError } from "./LinkTypeInDerivedPropertyDefinitionNotFoundOrDeletedError.js";
 import type { ManyToManyLinkTypeDatasourcePrimaryKeyMismatchError } from "./ManyToManyLinkTypeDatasourcePrimaryKeyMismatchError.js";
 import type { MarkingPropertiesMustBeBackedByDatasourceWithGranularPermissionsError } from "./MarkingPropertiesMustBeBackedByDatasourceWithGranularPermissionsError.js";
@@ -136,6 +137,12 @@ export interface DatasourceModificationConstraintError_derivedPropertyIncompatib
   derivedPropertyIncompatibleDefinitionAndForeignPropertyBaseType:
     DerivedPropertyIncompatibleDefinitionAndForeignPropertyBaseTypeError;
 }
+
+export interface DatasourceModificationConstraintError_gpsPolicyColumnsFromRestrictedViewsAreMapped {
+  type: "gpsPolicyColumnsFromRestrictedViewsAreMapped";
+  gpsPolicyColumnsFromRestrictedViewsAreMapped:
+    GpsPolicyColumnsFromRestrictedViewsAreMappedError;
+}
 /**
  * A type representing validation errors associated with datasource modifications on a branch.
  */
@@ -157,4 +164,5 @@ export type DatasourceModificationConstraintError =
   | DatasourceModificationConstraintError_derivedPropertyDefinitionDoesNotMatchSharedPropertyType
   | DatasourceModificationConstraintError_derivedPropertyLinkDefinitionInvalid
   | DatasourceModificationConstraintError_derivedPropertyLinkDefinitionCardinalityInvalid
-  | DatasourceModificationConstraintError_derivedPropertyIncompatibleDefinitionAndForeignPropertyBaseType;
+  | DatasourceModificationConstraintError_derivedPropertyIncompatibleDefinitionAndForeignPropertyBaseType
+  | DatasourceModificationConstraintError_gpsPolicyColumnsFromRestrictedViewsAreMapped;

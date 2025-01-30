@@ -15,11 +15,7 @@
  */
 
 /**
- * Local overridden alias of OMS public API representation of ObjectTypeEntityMetadata. In OMS API we model
- * editsResolutionStrategies field as non-optional, but Marketplace ontology block data uploaded to
- * artifacts faces similar constraints as our internal StorageObjectTypeEntityMetadata and we need to provide
- * runtime conversion with default value.
+ * This status indicates that the ObjectType is endorsed as a part of "core" ontology by ontology-level owners and provides even better guarantees than the Active status.
  */
-export interface OntologyIrMarketplaceObjectTypeEntityMetadata {
-  arePatchesEnabled: boolean;
+export interface EndorsedObjectTypeStatus {
 }

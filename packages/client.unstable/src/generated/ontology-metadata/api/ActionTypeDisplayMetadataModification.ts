@@ -21,9 +21,9 @@ import type { Icon } from "./Icon.js";
 import type { TypeClass } from "./TypeClass.js";
 
 /**
- * DisplayMetadata shape used in responses
+ * DisplayMetadata shape used in requests
  */
-export interface ActionTypeDisplayMetadata {
+export interface ActionTypeDisplayMetadataModification {
   displayName: string;
   description: string;
   icon: Icon | undefined;
@@ -31,5 +31,5 @@ export interface ActionTypeDisplayMetadata {
   successMessage: Array<ActionTypeRichTextComponent>;
   submitButtonDisplayMetadata: ButtonDisplayMetadata | undefined;
   undoButtonConfiguration: boolean | undefined;
-  configuration: ActionTypeDisplayMetadataConfiguration;
+  configuration: ActionTypeDisplayMetadataConfiguration | undefined;
 }
