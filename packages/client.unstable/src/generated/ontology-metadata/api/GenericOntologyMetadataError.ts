@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
+import type { SafeArg } from "./SafeArg.js";
+import type { UnsafeArg } from "./UnsafeArg.js";
+
 /**
- * Local overridden alias of OMS public API representation of ObjectTypeEntityMetadata. In OMS API we model
- * editsResolutionStrategies field as non-optional, but Marketplace ontology block data uploaded to
- * artifacts faces similar constraints as our internal StorageObjectTypeEntityMetadata and we need to provide
- * runtime conversion with default value.
+ * Represents an unexpected OntologyMetadataError thrown during the creation of the Ontology Modification Context.
  */
-export interface OntologyIrMarketplaceObjectTypeEntityMetadata {
-  arePatchesEnabled: boolean;
+export interface GenericOntologyMetadataError {
+  errorName: string;
+  httpErrorCode: number;
+  errorInstanceId: string;
+  message: string;
+  safeArgs: Array<SafeArg>;
+  unsafeArgs: Array<UnsafeArg>;
 }

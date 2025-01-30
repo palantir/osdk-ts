@@ -27,7 +27,6 @@ import type {
   InterfaceTypeStatus_experimental,
   OntologyIrInterfaceType,
   OntologyIrObjectType,
-  OntologyIrObjectTypeInterfaceImplementation,
   OntologyIrPropertyType,
   SharedPropertyTypeGothamMapping,
   StructFieldType,
@@ -75,14 +74,19 @@ export interface ObjectTypeInner extends
 {
   properties: Array<ObjectPropertyType>;
   titlePropertyApiName: string;
-  implementsInterfaces: Array<OntologyIrObjectTypeInterfaceImplementation>;
-
+  implementsInterfaces: Array<InterfaceImplementation>;
   description: string | undefined;
   icon: { locator: BlueprintIcon; color: string } | undefined;
   displayName: string;
   pluralDisplayName: string;
   visibility: Visibility;
+  editsEnabled: boolean;
 }
+
+export type InterfaceImplementation = {
+  implements: InterfaceType;
+  propertyMapping: { interfaceProperty: string; mapsTo: string }[];
+};
 
 export type ObjectType = RequiredFields<
   Partial<ObjectTypeInner>,
@@ -147,6 +151,7 @@ type TypeClass = { kind: string; name: string };
 
 export interface SharedPropertyType extends PropertyType {
   apiName: string;
+  nonNameSpacedApiName: string;
   gothamMapping?: SharedPropertyTypeGothamMapping;
 }
 

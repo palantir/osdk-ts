@@ -167,7 +167,6 @@ function convertObject(
   objectType: ObjectType,
 ): OntologyIrObjectTypeBlockDataV2 {
   const propertyDatasource: Record<string, PropertyTypeMappingInfo> = {};
-
   (objectType.properties ?? []).forEach((property) => {
     propertyDatasource[property.apiName] = {
       type: "column",
@@ -190,15 +189,17 @@ function convertObject(
     redacted: false,
   };
 
+  const implementations = objectType.implementsInterfaces ?? [];
+
   return {
     objectType: {
       displayMetadata: {
-        description: undefined,
-        displayName: "",
+        description: objectType.description,
+        displayName: objectType.displayName,
         groupDisplayName: undefined,
         icon: {
           type: "blueprint",
-          blueprint: objectType.icon ?? { locator: "cube", color: "blue" },
+          blueprint: objectType.icon ?? { locator: "cube", color: "#2D72D2" },
         },
         pluralDisplayName: objectType.pluralDisplayName,
         visibility: objectType.visibility ?? "NORMAL",
@@ -216,10 +217,20 @@ function convertObject(
         active: {},
       },
       redacted: false,
-      implementsInterfaces2: [],
+      implementsInterfaces2: implementations.map(impl => ({
+        interfaceTypeApiName: impl.implements.apiName,
+        properties: Object.fromEntries(
+          impl.propertyMapping.map(
+            mapping => [mapping.mapsTo, {
+              propertyTypeRid: namespace + mapping.interfaceProperty,
+            }],
+          ),
+        ),
+      })),
       allImplementsInterfaces: {},
     },
     datasources: [datasource],
+    entityMetadata: { arePatchesEnabled: objectType.editsEnabled ?? false },
   };
 }
 

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { GenericOntologyMetadataError } from "../../api/GenericOntologyMetadataError.js";
 import type { DatasourceModificationConstraintError } from "./DatasourceModificationConstraintError.js";
 import type { ForeignKeyConstraintError } from "./ForeignKeyConstraintError.js";
 import type { FoundrySchemaConstraintError } from "./FoundrySchemaConstraintError.js";
@@ -69,6 +70,11 @@ export interface ValidationError_datasourceModificationConstraint {
   type: "datasourceModificationConstraint";
   datasourceModificationConstraint: DatasourceModificationConstraintError;
 }
+
+export interface ValidationError_genericOntologyMetadataError {
+  type: "genericOntologyMetadataError";
+  genericOntologyMetadataError: GenericOntologyMetadataError;
+}
 export type ValidationError =
   | ValidationError_foreignKeyConstraint
   | ValidationError_foundrySchemaConstraint
@@ -78,4 +84,5 @@ export type ValidationError =
   | ValidationError_interfaceImplementationConstraint
   | ValidationError_timeDependentPropertyTypeConstraint
   | ValidationError_geotimeSeriesReferencePropertyTypeConstraint
-  | ValidationError_datasourceModificationConstraint;
+  | ValidationError_datasourceModificationConstraint
+  | ValidationError_genericOntologyMetadataError;

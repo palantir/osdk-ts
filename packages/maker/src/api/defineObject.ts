@@ -14,15 +14,122 @@
  * limitations under the License.
  */
 
-import { ontologyDefinition } from "./defineOntology.js";
-import type { ObjectType } from "./types.js";
+import invariant from "tiny-invariant";
+import { namespace, ontologyDefinition } from "./defineOntology.js";
+import type { ObjectType, SharedPropertyType } from "./types.js";
 
 export function defineObject(objectDef: ObjectType): ObjectType {
-  if (ontologyDefinition.objectTypes[objectDef.apiName] !== undefined) {
+  const apiName = namespace + objectDef.apiName;
+  const propertyApiNames = (objectDef.properties ?? []).map(val => val.apiName);
+  if (ontologyDefinition.objectTypes[apiName] !== undefined) {
     throw new Error(
       `Object type with apiName ${objectDef.apiName} is already defined`,
     );
   }
-  ontologyDefinition.objectTypes[objectDef.apiName] = objectDef;
-  return objectDef;
+  invariant(
+    propertyApiNames.includes(objectDef.titlePropertyApiName),
+    `Title property ${objectDef.titlePropertyApiName} is not defined on object ${objectDef.apiName}`,
+  );
+  invariant(
+    objectDef.primaryKeys.length !== 0,
+    `${objectDef.apiName} does not have any primary keys, objects must have at least one primary key`,
+  );
+  const nonExistentPrimaryKeys = objectDef.primaryKeys.filter(primaryKey =>
+    !objectDef.properties?.map(val => val.apiName).includes(primaryKey)
+  );
+  invariant(
+    nonExistentPrimaryKeys.length === 0,
+    `Primary key properties ${nonExistentPrimaryKeys} do not exist on object ${objectDef.apiName}`,
+  );
+
+  objectDef.implementsInterfaces?.forEach(interfaceImpl => {
+    const nonExistentInterfaceProperties: ValidationResult[] = interfaceImpl
+      .propertyMapping.map(val => val.interfaceProperty).filter(
+        interfaceProperty =>
+          interfaceImpl.implements.properties[interfaceProperty] === undefined,
+      ).map(interfaceProp => ({
+        type: "invalid",
+        reason:
+          `Interface property ${interfaceImpl.implements.apiName}.${interfaceProp} referenced in ${objectDef.apiName} object does not exist`,
+      }));
+
+    const interfaceToObjectProperties = Object.fromEntries(
+      interfaceImpl.propertyMapping.map(
+        mapping => [mapping.interfaceProperty, mapping.mapsTo],
+      ),
+    );
+    const validateProperty = (
+      interfaceProp: [string, SharedPropertyType],
+    ): ValidationResult => {
+      if (
+        interfaceProp[1].nonNameSpacedApiName in interfaceToObjectProperties
+      ) {
+        return validateInterfaceImplProperty(
+          interfaceProp[1],
+          interfaceToObjectProperties[interfaceProp[0]],
+          objectDef,
+        );
+      }
+      return {
+        type: "invalid",
+        reason: `Interface property ${interfaceImpl.implements.apiName}.${
+          interfaceProp[1].nonNameSpacedApiName
+        } not implemented by ${objectDef.apiName} object definition`,
+      };
+    };
+    const baseValidations = Object.entries(interfaceImpl.implements.properties)
+      .map<ValidationResult>(validateProperty);
+    const extendsValidations = interfaceImpl.implements.extendsInterfaces
+      .flatMap(interfaceApiName =>
+        Object.entries(
+          ontologyDefinition.interfaceTypes[interfaceApiName].properties,
+        ).map(validateProperty)
+      );
+
+    const allFailedValidations = baseValidations.concat(
+      extendsValidations,
+      nonExistentInterfaceProperties,
+    ).filter(val => val.type === "invalid");
+    invariant(
+      allFailedValidations.length === 0,
+      "\n" + allFailedValidations.map(formatValidationErrors).join("\n"),
+    );
+  });
+
+  ontologyDefinition.objectTypes[apiName] = objectDef;
+  return { ...objectDef, apiName: apiName };
+}
+
+type ValidationResult = { type: "valid" } | { type: "invalid"; reason: string };
+
+function formatValidationErrors(
+  error: { type: "invalid"; reason: string },
+): string {
+  return `Ontology Definition Error: ${error.reason}\n`;
+}
+
+function validateInterfaceImplProperty(
+  spt: SharedPropertyType,
+  mappedObjectProp: string,
+  object: ObjectType,
+): ValidationResult {
+  const objProp = object.properties?.find(prop =>
+    prop.apiName === mappedObjectProp
+  );
+  if (objProp === undefined) {
+    return {
+      type: "invalid",
+      reason:
+        `Object property mapped to interface does not exist. Object Property Mapped: ${mappedObjectProp}`,
+    };
+  }
+  if (spt.type !== objProp?.type) {
+    return {
+      type: "invalid",
+      reason:
+        `Object property type does not match the interface property it is mapped to. Interface Property: ${spt.apiName}, objectProperty: ${mappedObjectProp}`,
+    };
+  }
+
+  return { type: "valid" };
 }
