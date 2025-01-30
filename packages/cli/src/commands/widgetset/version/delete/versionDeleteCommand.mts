@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-import { createInternalClientContext } from "#net";
+import { createInternalClientContext, widgetRegistry } from "#net";
 import { consola } from "consola";
 import { colorize } from "consola/utils";
 import { handlePromptCancel } from "../../../../consola/handlePromptCancel.js";
-import { createFetch } from "../../../../net/createFetch.mjs";
-import type { InternalClientContext } from "../../../../net/internalClientContext.mjs";
+import type { StemmaRepositoryRid } from "../../../../net/StemmaRepositoryRid.js";
 import type { WidgetSetRid } from "../../../../net/WidgetSetRid.js";
 import { loadToken } from "../../../../util/token.js";
 import type { VersionDeleteArgs } from "./VersionDeleteArgs.js";
 
 export default async function versionDeleteCommand(
-  { version, yes, rid, foundryUrl, token, tokenFile }: VersionDeleteArgs,
+  { version, yes, widgetSet, foundryUrl, token, tokenFile }: VersionDeleteArgs,
 ): Promise<void> {
   if (!yes) {
     const confirmed = await consola.prompt(
@@ -41,45 +40,34 @@ export default async function versionDeleteCommand(
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
-  // TODO: Look at type of locator and decide whether to confirm delete site version
+  const widgetSetRelease = await widgetRegistry.getWidgetSetRelease(
+    clientCtx,
+    widgetSet,
+    version,
+  );
+  const repositoryRid = getRepositoryRid(widgetSetRelease);
   await Promise.all([
-    deleteWidgetSetRelease(clientCtx, rid, version),
-    deleteVersion(clientCtx, rid, version),
+    widgetRegistry.deleteWidgetSetRelease(clientCtx, widgetSet, version),
+    widgetRegistry.deleteSiteVersion(clientCtx, repositoryRid, version),
   ]);
   consola.success(`Deleted version ${version}`);
 }
 
-async function deleteWidgetSetRelease(
-  ctx: InternalClientContext,
-  // TODO: make repository rid
-  widgetSetRid: WidgetSetRid,
-  version: string,
-): Promise<void> {
-  const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/widget-registry/api/widget-sets/${widgetSetRid}/releases/${version}`;
-  await fetch(
-    url,
-    {
-      method: "DELETE",
-    },
-  );
-}
-
-async function deleteVersion(
-  ctx: InternalClientContext,
-  // TODO: make repository rid
-  widgetSetRid: WidgetSetRid,
-  version: string,
-): Promise<void> {
-  const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/artifacts/api/repositories/${widgetSetRid}/contents/release/siteasset/versions/${version}`;
-
-  await fetch(
-    url,
-    {
-      method: "DELETE",
-    },
-  );
+function getRepositoryRid(
+  widgetSetRelease: widgetRegistry.WidgetSetRelease,
+): WidgetSetRid | StemmaRepositoryRid {
+  switch (widgetSetRelease.locator.type) {
+    case "internalSitesLayout":
+      return widgetSetRelease.widgetSetRid;
+    case "externalSitesLayout":
+      return widgetSetRelease.locator.externalSitesLayout
+        .repositoryRid as StemmaRepositoryRid;
+    default:
+      const _: never = widgetSetRelease.locator;
+      throw new Error(
+        `Unknown widget set locator type ${
+          (widgetSetRelease.locator as any).type
+        }`,
+      );
+  }
 }

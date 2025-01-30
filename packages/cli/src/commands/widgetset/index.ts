@@ -29,14 +29,14 @@ const command: CommandModule<CliCommonArgs, CommonWidgetSetArgs> = {
   describe: "Manage your widget set",
   builder: async (argv) => {
     const config = await configLoader("widgetSet");
-    const rid = config?.foundryConfig.widgetSet.rid;
+    const widgetSet = config?.foundryConfig.widgetSet.rid;
     const foundryUrl = config?.foundryConfig.foundryUrl;
     return argv.options({
-      rid: {
+      widgetSet: {
         type: "string",
-        coerce: (rid) => rid as WidgetSetRid,
-        ...rid
-          ? { default: rid }
+        coerce: (widgetSet) => widgetSet as WidgetSetRid,
+        ...widgetSet
+          ? { default: widgetSet }
           : { demandOption: true },
         description: "Widget set resource identifier (rid)",
       },
@@ -60,7 +60,7 @@ const command: CommandModule<CliCommonArgs, CommonWidgetSetArgs> = {
       },
     })
       .group(
-        ["rid", "foundryUrl", "token", "tokenFile"],
+        ["widgetSet", "foundryUrl", "token", "tokenFile"],
         "Common Options",
       )
       .command(version)

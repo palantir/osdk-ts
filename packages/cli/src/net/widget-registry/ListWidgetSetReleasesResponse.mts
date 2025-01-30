@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
-export { createInternalClientContext } from "./createInternalClientContext.mjs";
-export * as thirdPartyApplications from "./third-party-applications/index.mjs";
-export * as widgetRegistry from "./widget-registry/index.mjs";
+import type { WidgetSetRelease } from "./WidgetSetRelease.mjs";
+
+export interface ListWidgetSetReleasesResponse {
+  releases: Array<WidgetSetRelease>;
+  nextPageToken?: string;
+}

@@ -23,7 +23,7 @@ const command: CommandModule<
   VersionDeleteArgs
 > = {
   command: "delete <version>",
-  describe: "Delete widget version",
+  describe: "Delete widget set version",
   builder: (argv) => {
     return argv
       .positional("version", {

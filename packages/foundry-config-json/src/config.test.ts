@@ -238,6 +238,7 @@ describe("loadFoundryConfig - widget set", () => {
       widgetSet: {
         rid: "test-rid",
         directory: "/test/directory",
+        repository: "test-repository-rid",
         autoVersion: {
           type: "git-describe",
         },

@@ -74,8 +74,8 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
         return true;
       })
       .middleware((args) => {
-        logConfigFileMiddleware("site");
-        logSiteCommandConfigFileOverride(args, config?.foundryConfig);
+        void logConfigFileMiddleware("site");
+        void logSiteCommandConfigFileOverride(args, config?.foundryConfig);
       })
       .demandCommand();
   },

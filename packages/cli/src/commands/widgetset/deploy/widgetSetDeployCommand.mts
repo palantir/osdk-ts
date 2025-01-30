@@ -14,28 +14,27 @@
  * limitations under the License.
  */
 
-import { consola } from "consola";
-
-import { createInternalClientContext } from "#net";
+import { createInternalClientContext, widgetRegistry } from "#net";
 import { ExitProcessError } from "@osdk/cli.common";
 import type { WidgetSetManifest } from "@osdk/widget-api.unstable";
 import { MANIFEST_FILE_LOCATION } from "@osdk/widget-api.unstable";
 import archiver from "archiver";
+import { consola } from "consola";
 import * as fs from "node:fs";
 import path from "node:path";
 import { Readable } from "node:stream";
 import prettyBytes from "pretty-bytes";
-import { createFetch } from "../../../net/createFetch.mjs";
-import type { InternalClientContext } from "../../../net/internalClientContext.mjs";
+import type { StemmaRepositoryRid } from "../../../net/StemmaRepositoryRid.js";
 import type { WidgetSetRid } from "../../../net/WidgetSetRid.js";
 import { loadToken } from "../../../util/token.js";
 import type { WidgetSetDeployArgs } from "./WidgetSetDeployArgs.js";
 
 export default async function widgetSetDeployCommand(
   {
-    rid,
+    widgetSet,
     foundryUrl,
     directory,
+    repository,
     token,
     tokenFile,
   }: WidgetSetDeployArgs,
@@ -56,16 +55,23 @@ export default async function widgetSetDeployCommand(
   }
 
   const widgetSetVersion = await findWidgetSetVersion(directory);
+  consola.info(`Found version from manifest: ${widgetSetVersion}`);
 
   consola.start("Zipping widget set files");
   const archive = archiver("zip").directory(directory, false);
   logArchiveStats(archive);
 
+  let deployRid: WidgetSetRid | StemmaRepositoryRid = widgetSet;
+  if (repository != null) {
+    deployRid = repository;
+    consola.debug(`Deploying to repository ${repository} for ${widgetSet}`);
+  }
+
   consola.start("Uploading widget set files");
   await Promise.all([
-    uploadVersion(
+    widgetRegistry.uploadSiteVersion(
       clientCtx,
-      rid,
+      deployRid,
       widgetSetVersion,
       Readable.toWeb(archive) as ReadableStream<any>, // This cast is because the dom fetch doesn't align type wise with streams
     ),
@@ -74,8 +80,22 @@ export default async function widgetSetDeployCommand(
   consola.success("Upload complete");
 
   consola.start("Publishing widget set manifest");
-  await publishManifest(clientCtx, rid, widgetSetVersion);
-  consola.success(`Deployed ${widgetSetVersion} successfully`);
+  try {
+    await widgetRegistry.publishManifest(
+      clientCtx,
+      deployRid,
+      widgetSetVersion,
+    );
+    consola.success(`Deployed ${widgetSetVersion} successfully`);
+  } catch (e) {
+    consola.fail("Failed to publish manifest, cleaning up");
+    await widgetRegistry.deleteSiteVersion(
+      clientCtx,
+      deployRid,
+      widgetSetVersion,
+    );
+    throw e;
+  }
 }
 
 async function findWidgetSetVersion(
@@ -100,53 +120,6 @@ async function findWidgetSetVersion(
     );
   }
 }
-
-async function uploadVersion(
-  ctx: InternalClientContext,
-  // TODO: make repository rid
-  widgetSetRid: WidgetSetRid,
-  version: string,
-  zipFile: ReadableStream | Blob | BufferSource,
-): Promise<void> {
-  const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/artifacts/api/repositories/${widgetSetRid}/contents/release/siteasset/versions/zip/${version}`;
-
-  await fetch(
-    url,
-    {
-      method: "PUT",
-      body: zipFile,
-      headers: {
-        "Content-Type": "application/octet-stream",
-      },
-      duplex: "half", // Node hates me
-    } satisfies RequestInit & { duplex: "half" } as any,
-  );
-}
-
-async function publishManifest(
-  ctx: InternalClientContext,
-  // TODO: make repository rid
-  widgetSetRid: WidgetSetRid,
-  version: string,
-): Promise<void> {
-  const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/widget-registry/api/repositories/${widgetSetRid}/publish-manifest`;
-
-  await fetch(
-    url,
-    {
-      method: "POST",
-      body: JSON.stringify({ version }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  );
-}
-
 function logArchiveStats(archive: archiver.Archiver): void {
   let archiveStats = { fileCount: 0, bytes: 0 };
   archive.on("progress", (progress) => {

@@ -25,10 +25,10 @@ export function logWidgetSetCommandConfigFileOverride(
 ): void {
   if (
     config?.widgetSet.rid != null
-    && args.rid !== config.widgetSet.rid
+    && args.widgetSet !== config.widgetSet.rid
   ) {
     consola.debug(
-      `Overriding "rid" from config file with ${args.rid}`,
+      `Overriding "rid" from config file with ${args.widgetSet}`,
     );
   }
 

@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-export { createInternalClientContext } from "./createInternalClientContext.mjs";
-export * as thirdPartyApplications from "./third-party-applications/index.mjs";
-export * as widgetRegistry from "./widget-registry/index.mjs";
+export type StemmaRepositoryRid = `ri.stemma.${string}.repository.${string}`;

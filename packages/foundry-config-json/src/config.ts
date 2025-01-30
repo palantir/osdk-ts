@@ -48,6 +48,7 @@ export interface SiteConfig {
 export interface WidgetSetConfig {
   rid: string;
   directory: string;
+  repository?: string;
   autoVersion?: AutoVersionConfig;
 }
 
@@ -114,6 +115,7 @@ const FOUNDRY_WIDGET_SET_CONFIG_SCHEMA = {
       properties: {
         rid: { type: "string" },
         directory: { type: "string" },
+        repository: { type: "string", nullable: true },
         autoVersion:
           FOUNDRY_SITE_CONFIG_SCHEMA.properties.site.properties.autoVersion,
         uploadOnly: { type: "boolean", nullable: true },
