@@ -2,6 +2,8 @@ export {
   actionTakesAllParameterTypes,
   assignEmployee1,
   createFooInterface,
+  createMediaObject,
+  createMediaViaFunction,
   createOsdkTestObject,
   createStructPerson,
   createStructPersonOpiTeam,

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { MnayanOsdkMediaObject } from "@osdk/e2e.generated.catchall";
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
+import { $Actions, MnayanOsdkMediaObject } from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
 
 export async function runMediaTest(): Promise<void> {
@@ -26,6 +27,42 @@ export async function runMediaTest(): Promise<void> {
   console.log("Object Media reference:", result?.mediaReference);
 
   const mediaMetadata = await result.mediaReference?.fetchMetadata();
+  const response = await result.mediaReference?.fetchContents().then(
+    async response => {
+      if (!response.ok) {
+        console.log("Error fetching data");
+      } else {
+        const mimeType = response.headers.get("Content-Type");
+        console.log("Data mimetype:", mimeType);
+
+        const mediaRef = await client(
+          __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
+        )
+          .createMediaReference({
+            data: await response.blob(),
+            fileName: "test13.png",
+            objectTypeApi: MnayanOsdkMediaObject.apiName,
+            propertyTypeApi: "mediaReference",
+          });
+
+        console.log("Media Reference:", mediaRef);
+        // Enable below to test creating object via non-function backed action
+        /* const result = await client($Actions.createMediaObject).applyAction({
+           path: "test9",
+           media_reference: mediaRef,
+         }, {
+           $returnEdits: true,
+         }); */
+
+        const result = await client($Actions.createMediaViaFunction)
+          .applyAction({
+            mediaItem: mediaRef,
+          }, {
+            $returnEdits: true,
+          });
+      }
+    },
+  );
 
   console.log(mediaMetadata);
 }

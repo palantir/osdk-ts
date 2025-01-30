@@ -18,11 +18,13 @@ import type {
   ActionEditResponse,
   ActionValidationResponse,
   AttachmentUpload,
+  MediaReference,
 } from "@osdk/api";
 import {
   $Actions,
   $ontologyRid,
   actionTakesAttachment,
+  actionTakesMedia,
   createFooInterface,
   createOffice,
   createStructPerson,
@@ -290,6 +292,30 @@ describe("actions", () => {
     expect(result2).toBeUndefined();
   });
 
+  it("Accepts media reference", async () => {
+    const clientBoundActionTakesMedia = client(
+      actionTakesMedia,
+    ).applyAction;
+    type InferredParamType = Parameters<
+      typeof clientBoundActionTakesMedia
+    >[0];
+
+    expectTypeOf<
+      {
+        media_reference: MediaReference;
+      }
+    >().toMatchTypeOf<
+      InferredParamType
+    >();
+
+    const result = await client(actionTakesMedia).applyAction({
+      media_reference: stubData.mediaReference,
+    });
+
+    expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
+    expect(result).toBeUndefined();
+  });
+
   it("Accepts interfaces", async () => {
     const clientBoundTakesInterface = client(
       deleteFooInterface,
@@ -549,6 +575,7 @@ describe("ActionResponse remapping", () => {
     const actions = Object.keys($Actions);
     expect(actions).toStrictEqual([
       "actionTakesAttachment",
+      "actionTakesMedia",
       "actionTakesObjectSet",
       "createFooInterface",
       "createOffice",

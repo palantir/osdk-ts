@@ -292,6 +292,8 @@ export interface DataValueClientToWire {
     	// (undocumented)
     marking: string;
     	// (undocumented)
+    mediaReference: MediaReference;
+    	// (undocumented)
     null: null;
     	// (undocumented)
     objectType: string;
@@ -342,6 +344,8 @@ export interface DataValueWireToClient {
     long: string;
     	// (undocumented)
     marking: string;
+    	// (undocumented)
+    mediaReference: MediaReference;
     	// (undocumented)
     null: null;
     	// (undocumented)
@@ -579,6 +583,21 @@ interface MediaMetadata_2 {
     sizeBytes: number;
 }
 export { MediaMetadata_2 as MediaMetadata }
+
+// @public
+export interface MediaReference {
+    	// (undocumented)
+    mimeType: string;
+    	// (undocumented)
+    reference: {
+        		type: "mediaSetViewItem";
+        		mediaSetViewItem: {
+            			mediaItemRid: string;
+            			mediaSetRid: string;
+            			mediaSetViewRid: string;
+            		};
+        	};
+}
 
 // @public (undocumented)
 export type NullabilityAdherence = false | "throw" | "drop";
@@ -1092,7 +1111,7 @@ export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<"d
 export type ValidAggregationKeys<Q extends ObjectOrInterfaceDefinition> = keyof ({ [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<GetWirePropertyValueFromClient<CompileTimeMetadata<Q>["properties"][KK]["type"]>>}`]? : any } & { $count?: any });
 
 // @public (undocumented)
-export type ValidBaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "objectType";
+export type ValidBaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "objectType";
 
 // Warning: (ae-forgotten-export) The symbol "VersionString" needs to be exported by the entry point index.d.ts
 //

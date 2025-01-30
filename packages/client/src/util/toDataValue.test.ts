@@ -165,4 +165,11 @@ describe(toDataValue, () => {
       "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
     );
   });
+
+  it("converts media reference correctly", async () => {
+    const converted = await toDataValue(stubData.mediaReference, clientCtx);
+    expect(converted).toEqual(
+      stubData.mediaReference,
+    );
+  });
 });

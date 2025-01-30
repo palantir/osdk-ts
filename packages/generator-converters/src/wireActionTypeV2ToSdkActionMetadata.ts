@@ -69,6 +69,7 @@ function actionPropertyToSdkPropertyDefinition(
     case "integer":
     case "long":
     case "timestamp":
+    case "mediaReference":
     case "marking":
     case "objectType":
       return parameterType.type;
@@ -103,7 +104,7 @@ function actionPropertyToSdkPropertyDefinition(
       };
     default:
       throw new Error(
-        `Unsupported action parameter type: ${parameterType.type}`,
+        `Unsupported action parameter type: ${JSON.stringify(parameterType)}`,
       );
   }
 }
