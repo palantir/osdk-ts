@@ -393,7 +393,6 @@ function convertType(
           isLongText: false,
           supportsEfficientLeadingWildcard: false,
           supportsExactMatching: true,
-          supportsEfficientLeadingWildcard: false,
         },
       };
 
