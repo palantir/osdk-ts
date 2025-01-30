@@ -104,7 +104,7 @@ function actionPropertyToSdkPropertyDefinition(
       };
     default:
       throw new Error(
-        `Unsupported action parameter type: ${parameterType}`,
+        `Unsupported action parameter type: ${JSON.stringify(parameterType)}`,
       );
   }
 }
