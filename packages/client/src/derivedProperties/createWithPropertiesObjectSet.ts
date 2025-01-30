@@ -32,8 +32,8 @@ export function createWithPropertiesObjectSet<
   objectType: Q,
   objectSet: WireObjectSet,
   definitionMap: Map<any, DerivedPropertyDefinition>,
-): DerivedProperty.Builder.Full<Q> {
-  const base: DerivedProperty.Builder.Full<Q> = {
+): DerivedProperty.SelectPropertyBuilder<Q, false> {
+  const base: DerivedProperty.SelectPropertyBuilder<Q, false> = {
     pivotTo: (link) => {
       return createWithPropertiesObjectSet(objectType, {
         type: "searchAround",

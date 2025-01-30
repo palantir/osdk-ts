@@ -42,31 +42,29 @@ export namespace DerivedProperty {
     Q extends ObjectOrInterfaceDefinition,
     T extends SimplePropertyDef,
   > = (
-    baseObjectSet: DerivedProperty.Builder<Q>,
+    baseObjectSet: DerivedProperty.Builder<Q, false>,
   ) => SelectorResult<T>;
 
-  export interface Builder<Q extends ObjectOrInterfaceDefinition>
-    extends FilterableBuilder<Q>
-  {
-    readonly pivotTo: <L extends LinkNames<Q>>(
-      type: L,
-    ) => NonNullable<CompileTimeMetadata<Q>["links"][L]["multiplicity"]> extends
-      false ? SelectPropertyBuilder<LinkedType<Q, L>>
-      : DefaultBuilder<LinkedType<Q, L>>;
+  export interface Builder<
+    Q extends ObjectOrInterfaceDefinition,
+    CONSTRAINED extends boolean,
+  > extends Filterable<Q>, Pivotable<Q, CONSTRAINED> {
   }
 
-  export namespace Builder {
-    export interface Full<Q extends ObjectOrInterfaceDefinition>
-      extends
-        DerivedProperty.Builder<Q>,
-        AggregatableBuilder<Q>,
-        SelectPropertyBuilder<Q>
-    {
-    }
+  export interface AggregateBuilder<
+    Q extends ObjectOrInterfaceDefinition,
+    CONSTRAINED extends boolean,
+  > extends Builder<Q, CONSTRAINED>, Aggregatable<Q> {
+  }
+
+  export interface SelectPropertyBuilder<
+    Q extends ObjectOrInterfaceDefinition,
+    CONSTRAINED extends boolean,
+  > extends AggregateBuilder<Q, CONSTRAINED>, Selectable<Q> {
   }
 }
 
-interface FilterableBuilder<
+interface Filterable<
   Q extends ObjectOrInterfaceDefinition,
 > {
   readonly where: (
@@ -74,7 +72,20 @@ interface FilterableBuilder<
   ) => this;
 }
 
-interface AggregatableBuilder<
+interface Pivotable<
+  Q extends ObjectOrInterfaceDefinition,
+  CONSTRAINED extends boolean,
+> {
+  readonly pivotTo: <L extends LinkNames<Q>>(
+    type: L,
+  ) => CONSTRAINED extends true
+    ? DerivedProperty.AggregateBuilder<LinkedType<Q, L>, true>
+    : NonNullable<CompileTimeMetadata<Q>["links"][L]["multiplicity"]> extends
+      true ? DerivedProperty.AggregateBuilder<LinkedType<Q, L>, true>
+    : DerivedProperty.SelectPropertyBuilder<LinkedType<Q, L>, false>;
+}
+
+interface Aggregatable<
   Q extends ObjectOrInterfaceDefinition,
 > {
   readonly aggregate: <
@@ -101,18 +112,7 @@ interface AggregatableBuilder<
   >;
 }
 
-/**
- * This is the builder that is used until we encounter a many link traversal.
- * Once a many link traversal happens, we switch to the DefaultBuilder and the
- * selectProperty option is no longer available.
- */
-interface SelectPropertyBuilder<
-  Q extends ObjectOrInterfaceDefinition,
-> extends
-  AggregatableBuilder<Q>,
-  FilterableBuilder<Q>,
-  DerivedProperty.Builder<Q>
-{
+interface Selectable<Q extends ObjectOrInterfaceDefinition> {
   readonly selectProperty: <R extends PropertyKeys<Q>>(
     propertyName: R,
   ) => DerivedProperty.SelectorResult<
@@ -122,18 +122,4 @@ interface SelectPropertyBuilder<
       CompileTimeMetadata<Q>["properties"][R]["multiplicity"]
     >
   >;
-}
-
-/*
- * The DefaultBuilder overrides the pivotTo operation because once we traverse a single link,
- * we cannot use the "selectProperty" operation again for the entire chain. The parent pivotTo class will create
- * this object set once the user pivots to a many link/
- */
-
-interface DefaultBuilder<
-  Q extends ObjectOrInterfaceDefinition,
-> extends AggregatableBuilder<Q>, FilterableBuilder<Q> {
-  readonly pivotTo: <L extends LinkNames<Q>>(
-    type: L,
-  ) => DefaultBuilder<LinkedType<Q, L>>;
 }

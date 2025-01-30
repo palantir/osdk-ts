@@ -375,34 +375,39 @@ export interface DataValueWireToClient {
 
 // @public (undocumented)
 export namespace DerivedProperty {
-    	// Warning: (ae-forgotten-export) The symbol "FilterableBuilder" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "Aggregatable" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    export interface Builder<Q extends ObjectOrInterfaceDefinition> extends FilterableBuilder<Q> {
-        		// Warning: (ae-forgotten-export) The symbol "SelectPropertyBuilder" needs to be exported by the entry point index.d.ts
-        // Warning: (ae-forgotten-export) The symbol "DefaultBuilder" needs to be exported by the entry point index.d.ts
-        //
-        // (undocumented)
-        readonly pivotTo: <L extends LinkNames<Q>>(type: L) => NonNullable<CompileTimeMetadata<Q>["links"][L]["multiplicity"]> extends false ? SelectPropertyBuilder<LinkedType<Q, L>> : DefaultBuilder<LinkedType<Q, L>>;
-        	}
-    	// (undocumented)
-    export namespace Builder {
-        		// Warning: (ae-forgotten-export) The symbol "AggregatableBuilder" needs to be exported by the entry point index.d.ts
-        //
-        // (undocumented)
-        export interface Full<Q extends ObjectOrInterfaceDefinition> extends DerivedProperty.Builder<Q>, AggregatableBuilder<Q>, SelectPropertyBuilder<Q> {}
-        	}
+    export interface AggregateBuilder<
+    		Q extends ObjectOrInterfaceDefinition,
+    		CONSTRAINED extends boolean
+    	> extends Builder<Q, CONSTRAINED>, Aggregatable<Q> {}
+    	// Warning: (ae-forgotten-export) The symbol "Filterable" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "Pivotable" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export interface Builder<
+    		Q extends ObjectOrInterfaceDefinition,
+    		CONSTRAINED extends boolean
+    	> extends Filterable<Q>, Pivotable<Q, CONSTRAINED> {}
     	// (undocumented)
     export type Clause<Q extends ObjectOrInterfaceDefinition> = { [key: string]: Selector<Q, SimplePropertyDef> };
     	// (undocumented)
     export type Selector<
     		Q extends ObjectOrInterfaceDefinition,
     		T extends SimplePropertyDef
-    	> = (baseObjectSet: DerivedProperty.Builder<Q>) => SelectorResult<T>;
+    	> = (baseObjectSet: DerivedProperty.Builder<Q, false>) => SelectorResult<T>;
     	// Warning: (ae-forgotten-export) The symbol "SimplePropertyDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     export type SelectorResult<T extends SimplePropertyDef> = { type: T };
+    	// Warning: (ae-forgotten-export) The symbol "Selectable" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export interface SelectPropertyBuilder<
+    		Q extends ObjectOrInterfaceDefinition,
+    		CONSTRAINED extends boolean
+    	> extends AggregateBuilder<Q, CONSTRAINED>, Selectable<Q> {}
 }
 
 // @public (undocumented)
@@ -688,7 +693,7 @@ export type ObjectOrInterfaceDefinition = ObjectTypeDefinition | InterfaceDefini
 // @public (undocumented)
 export namespace ObjectOrInterfaceDefinition {
     	// (undocumented)
-    export type WithRdp<
+    export type WithDerivedProperties<
     		K extends ObjectOrInterfaceDefinition,
     		D extends Record<string, SimplePropertyDef>
     	> = { __DefinitionMetadata: {
@@ -707,30 +712,15 @@ export interface ObjectQueryDataType<T_Target extends ObjectTypeDefinition = nev
     object: string;
 }
 
-// @public (undocumented)
-export namespace ObjectSet {
-    	// (undocumented)
-    export namespace Fns {
-        		// (undocumented)
-        export interface WithProperties<
-        			Q extends ObjectOrInterfaceDefinition = any,
-        			D extends Record<string, SimplePropertyDef> = {}
-        		> {
-            			// (undocumented)
-            readonly withProperties: <R extends Record<string, SimplePropertyDef>>(clause: { [K in keyof R] : DerivedProperty.Selector<Q, R[K]> }) => ObjectSet<Q, { [NN in keyof R | keyof D] : NN extends keyof R ? R[NN] : NN extends keyof D ? D[NN] : never }>;
-            		}
-        	}
-}
-
-// Warning: (ae-forgotten-export) The symbol "ObjectSetPrime" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "MergeObjectSet" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ObjectSetCleanedTypes" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ExtractRdp" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "MergeObjectSet" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export interface ObjectSet<
 	Q extends ObjectOrInterfaceDefinition = any,
-	D extends ObjectSet<Q, any> | Record<string, SimplePropertyDef> = ObjectSet<Q, any>
-> extends ObjectSetPrime<MergeObjectSet<Q, D>, Q, D>, ObjectSet.Fns.WithProperties<Q, ExtractRdp<D>> {}
+	UNUSED_OR_RDP extends ObjectSet<Q, any> | Record<string, SimplePropertyDef> = ObjectSet<Q, any>
+> extends ObjectSetCleanedTypes<Q, ExtractRdp<UNUSED_OR_RDP>, MergeObjectSet<Q, UNUSED_OR_RDP>> {}
 
 // @public (undocumented)
 export interface ObjectSetListener<
@@ -808,8 +798,8 @@ export namespace Osdk {
     		Q extends ObjectOrInterfaceDefinition,
     		OPTIONS extends never | "$rid" = never,
     		P extends PropertyKeys<Q> = PropertyKeys<Q>,
-    		R extends Record<string, SimplePropertyDef> = never
-    	> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [never] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
+    		R extends Record<string, SimplePropertyDef> = {}
+    	> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
         		readonly $link: Q extends { linksType?: any } ? Q["linksType"] : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q> : never;
         		readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P>>;
         	} & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? { readonly $rid: string } : {});
@@ -887,7 +877,10 @@ export interface PropertyDef<
 }
 
 // @public (undocumented)
-export type PropertyKeys<O extends ObjectOrInterfaceDefinition> = keyof NonNullable<O["__DefinitionMetadata"]>["properties"] & string;
+export type PropertyKeys<
+	O extends ObjectOrInterfaceDefinition,
+	RDPs extends Record<string, SimplePropertyDef> = {}
+> = (keyof NonNullable<O["__DefinitionMetadata"]>["properties"] | keyof RDPs) & string;
 
 // @public
 export interface PropertyValueWireToClient {
@@ -1036,10 +1029,11 @@ export interface SingleLinkAccessor<T extends ObjectTypeDefinition> {
 // @public
 export type SingleOsdkResult<
 	Q extends ObjectOrInterfaceDefinition,
-	L extends PropertyKeys<Q>,
+	L extends PropertyKeys<Q> | (keyof RDPs & string),
 	R extends boolean,
-	S extends NullabilityAdherence
-> = Osdk.Instance<Q, ExtractOptions<R, S>, L>;
+	S extends NullabilityAdherence,
+	RDPs extends Record<string, SimplePropertyDef> = {}
+> = Osdk.Instance<Q, ExtractOptions<R, S>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>;
 
 // Warning: (ae-forgotten-export) The symbol "AggregationKeyDataType" needs to be exported by the entry point index.d.ts
 //
