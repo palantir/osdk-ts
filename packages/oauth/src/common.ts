@@ -266,7 +266,7 @@ export function createAuthorizationServer(
     | "revocation_endpoint"
   >
 > {
-  const issuer = `${new URL(ctxPath, url + "/")}`;
+  const issuer = `${new URL(ctxPath, url.endsWith("/") ? url : url + "/")}`;
   return {
     token_endpoint: `${issuer}/api/oauth2/token`,
     authorization_endpoint: `${issuer}/api/oauth2/authorize`,
