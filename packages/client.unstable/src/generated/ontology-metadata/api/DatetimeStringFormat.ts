@@ -23,7 +23,6 @@
  * y       year-of-era                 year              2004; 04
  * M       month-of-year               number/text       7; 07; Jul; July; J
  * d       day-of-month                number            10
- * E       day-of-week                 text              Tue; Tuesday; T
  * e       localized day-of-week       number/text       2; 02; Tue; Tuesday;
  *
  * a       am-pm-of-day                text              PM

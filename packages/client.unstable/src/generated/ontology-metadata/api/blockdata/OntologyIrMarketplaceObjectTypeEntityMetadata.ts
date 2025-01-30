@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+import type { ActionLogRequirednessMetadata } from "../entitymetadata/ActionLogRequirednessMetadata.js";
+import type { EntityConfig } from "../entitymetadata/EntityConfig.js";
+import type { ObjectTypeAlias } from "../entitymetadata/ObjectTypeAlias.js";
+import type { OntologyIrEditsHistory } from "../entitymetadata/OntologyIrEditsHistory.js";
+import type { OntologyIrEditsResolutionStrategies } from "../entitymetadata/OntologyIrEditsResolutionStrategies.js";
+import type { OntologyIrEntityProvenance } from "../entitymetadata/provenance/OntologyIrEntityProvenance.js";
+import type { StorageBackend } from "../entitymetadata/StorageBackend.js";
+import type { OntologyIrObjectTypeGothamMapping } from "../typemapping/OntologyIrObjectTypeGothamMapping.js";
+
 /**
  * Local overridden alias of OMS public API representation of ObjectTypeEntityMetadata. In OMS API we model
  * editsResolutionStrategies field as non-optional, but Marketplace ontology block data uploaded to
@@ -21,5 +30,15 @@
  * runtime conversion with default value.
  */
 export interface OntologyIrMarketplaceObjectTypeEntityMetadata {
+  entityConfig: EntityConfig;
   arePatchesEnabled: boolean;
+  targetStorageBackend: StorageBackend;
+  redacted: boolean | undefined;
+  actionLogRequirednessMetadata: ActionLogRequirednessMetadata | undefined;
+  diffEdits: boolean;
+  gothamMapping: OntologyIrObjectTypeGothamMapping | undefined;
+  provenance: OntologyIrEntityProvenance | undefined;
+  editsResolutionStrategies: OntologyIrEditsResolutionStrategies | undefined;
+  aliases: Array<ObjectTypeAlias>;
+  editsHistory: OntologyIrEditsHistory | undefined;
 }
