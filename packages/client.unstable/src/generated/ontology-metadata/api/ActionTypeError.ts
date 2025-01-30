@@ -15,6 +15,7 @@
  */
 
 import type { ActionTypeDoesNotHaveActionTypeLevelValidationError } from "./ActionTypeDoesNotHaveActionTypeLevelValidationError.js";
+import type { ActionTypeEditingNonEditablePropertyTypeError } from "./ActionTypeEditingNonEditablePropertyTypeError.js";
 import type { ActionTypesAlreadyExistError } from "./ActionTypesAlreadyExistError.js";
 import type { ActionTypesNotFoundError } from "./ActionTypesNotFoundError.js";
 import type { DeletingAndEditingTheSameActionTypeError } from "./DeletingAndEditingTheSameActionTypeError.js";
@@ -78,6 +79,12 @@ export interface ActionTypeError_deletingAndEditingTheSameActionType {
   type: "deletingAndEditingTheSameActionType";
   deletingAndEditingTheSameActionType: DeletingAndEditingTheSameActionTypeError;
 }
+
+export interface ActionTypeError_actionTypeEditingNonEditablePropertyType {
+  type: "actionTypeEditingNonEditablePropertyType";
+  actionTypeEditingNonEditablePropertyType:
+    ActionTypeEditingNonEditablePropertyTypeError;
+}
 export type ActionTypeError =
   | ActionTypeError_versionedActionTypesNotFound
   | ActionTypeError_actionTypesNotFound
@@ -88,4 +95,5 @@ export type ActionTypeError =
   | ActionTypeError_parameterValidationReferencesLaterParameters
   | ActionTypeError_parametersDoNotMatchParameterOrdering
   | ActionTypeError_nonExistentParametersUsedInParameterPrefill
-  | ActionTypeError_deletingAndEditingTheSameActionType;
+  | ActionTypeError_deletingAndEditingTheSameActionType
+  | ActionTypeError_actionTypeEditingNonEditablePropertyType;

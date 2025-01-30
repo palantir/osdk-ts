@@ -16,15 +16,16 @@
 
 import type { ActionApplyClientPreferences } from "../ActionApplyClientPreferences.js";
 import type { ActionLogConfiguration } from "../ActionLogConfiguration.js";
-import type { ActionLogic } from "../ActionLogic.js";
-import type { ActionNotification } from "../ActionNotification.js";
+import type { ActionLogicModification } from "../ActionLogicModification.js";
+import type { ActionNotificationModification } from "../ActionNotificationModification.js";
 import type { ActionNotificationSettings } from "../ActionNotificationSettings.js";
 import type { ActionRevert } from "../ActionRevert.js";
 import type { ActionTypeApiName } from "../ActionTypeApiName.js";
 import type { ActionTypeDisplayMetadata } from "../ActionTypeDisplayMetadata.js";
+import type { ActionTypeEntities } from "../ActionTypeEntities.js";
 import type { ActionTypeProvenanceModification } from "../ActionTypeProvenanceModification.js";
 import type { ActionTypeStatus } from "../ActionTypeStatus.js";
-import type { ActionWebhooks } from "../ActionWebhooks.js";
+import type { ActionWebhooksModification } from "../ActionWebhooksModification.js";
 import type { EditParameterRequest } from "../EditParameterRequest.js";
 import type { EditSectionRequest } from "../EditSectionRequest.js";
 import type { FormContent } from "../FormContent.js";
@@ -54,7 +55,7 @@ export interface ActionTypeModification {
   sectionsToUpdate: Record<SectionRid, EditSectionRequest>;
   parameterOrdering: Array<ParameterId>;
   formContentOrdering: Array<FormContent> | undefined;
-  logic: ActionLogic;
+  logic: ActionLogicModification;
   validationsToCreate: Record<
     ValidationRuleRid,
     ValidationRuleModificationWithIdInRequest
@@ -64,9 +65,10 @@ export interface ActionTypeModification {
   validationsOrdering: Array<ValidationRuleRid>;
   revert: ActionRevert | undefined;
   status: ActionTypeStatus | undefined;
-  webhooks: ActionWebhooks | undefined;
-  notifications: Array<ActionNotification>;
+  webhooks: ActionWebhooksModification | undefined;
+  notifications: Array<ActionNotificationModification>;
   notificationSettings: ActionNotificationSettings | undefined;
   provenance: ActionTypeProvenanceModification | undefined;
+  entities: ActionTypeEntities | undefined;
   typeGroups: Array<TypeGroupRid>;
 }

@@ -18,12 +18,12 @@ import type { LogicRuleValueModification } from "./LogicRuleValueModification.js
 import type { ObjectTypeFieldApiName } from "./ObjectTypeFieldApiName.js";
 import type { ParameterId } from "./ParameterId.js";
 import type { PropertyTypeId } from "./PropertyTypeId.js";
-import type { StructFieldLogicRuleValue } from "./StructFieldLogicRuleValue.js";
+import type { StructFieldLogicRuleValueModification } from "./StructFieldLogicRuleValueModification.js";
 export interface ModifyObjectRuleModification {
   objectToModify: ParameterId;
   propertyValues: Record<PropertyTypeId, LogicRuleValueModification>;
   structFieldValues: Record<
     PropertyTypeId,
-    Record<ObjectTypeFieldApiName, StructFieldLogicRuleValue>
+    Record<ObjectTypeFieldApiName, StructFieldLogicRuleValueModification>
   >;
 }
