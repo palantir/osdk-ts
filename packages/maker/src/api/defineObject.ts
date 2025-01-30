@@ -108,6 +108,7 @@ function formatValidationErrors(
   return `Ontology Definition Error: ${error.reason}\n`;
 }
 
+// Validate that the object and the interface property match up
 function validateInterfaceImplProperty(
   spt: SharedPropertyType,
   mappedObjectProp: string,
