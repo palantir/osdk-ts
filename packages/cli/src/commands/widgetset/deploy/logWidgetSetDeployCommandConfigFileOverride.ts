@@ -28,4 +28,13 @@ export function logWidgetSetDeployCommandConfigFileOverride(
       `Overriding "directory" from config file with ${args.directory}`,
     );
   }
+
+  if (
+    config?.repository != null
+    && args.repository !== config.repository
+  ) {
+    consola.debug(
+      `Overriding "repository" from config file with ${args.repository}`,
+    );
+  }
 }
