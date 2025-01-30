@@ -113,11 +113,11 @@ describe("ObjectSet", () => {
         },
       });
 
-      // expectTypeOf(withA).branded.toEqualTypeOf<
-      //   ObjectSet<Employee, {
-      //     a: "integer" | undefined;
-      //   }>
-      // >();
+      expectTypeOf(withA).toEqualTypeOf<
+        $ObjectSet<Employee, {
+          a: "integer" | undefined;
+        }>
+      >();
 
       const withAResults = await withA.fetchPage();
 
