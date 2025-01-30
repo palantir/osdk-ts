@@ -15,7 +15,11 @@
  */
 
 import type { Osdk } from "@osdk/api";
-import { FooInterface, OsdkTestObject } from "@osdk/e2e.generated.catchall";
+import {
+  createFooInterface,
+  FooInterface,
+  OsdkTestObject,
+} from "@osdk/e2e.generated.catchall";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
@@ -93,4 +97,8 @@ export async function runInterfacesTest(): Promise<void> {
     // underlyings are ref equal!
     console.log("employee === employee2", testObject === testObject2);
   }
+
+  const result = await client(createFooInterface).applyAction({
+    createdInterface: "testObject",
+  });
 }

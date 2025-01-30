@@ -1,5 +1,45 @@
 # @osdk/foundry-sdk-generator
 
+## 2.1.0-beta.25
+
+### Patch Changes
+
+- Updated dependencies [c80ca45]
+  - @osdk/client@2.1.0-beta.25
+  - @osdk/api@2.1.0-beta.25
+  - @osdk/generator@2.1.0-beta.25
+
+## 2.1.0-beta.24
+
+### Patch Changes
+
+- Updated dependencies [03f95eb]
+- Updated dependencies [c691c8b]
+- Updated dependencies [3c9ac22]
+  - @osdk/generator@2.1.0-beta.24
+  - @osdk/client@2.1.0-beta.24
+  - @osdk/api@2.1.0-beta.24
+  - @osdk/shared.client.impl@1.1.0-beta.5
+
+## 2.1.0-beta.23
+
+### Minor Changes
+
+- d665147: Update platform sdk deps
+
+### Patch Changes
+
+- Updated dependencies [d794c19]
+- Updated dependencies [f0b519d]
+- Updated dependencies [7a95618]
+- Updated dependencies [62c1d63]
+- Updated dependencies [696c59c]
+- Updated dependencies [3fc2ee6]
+- Updated dependencies [d665147]
+  - @osdk/generator@2.1.0-beta.23
+  - @osdk/client@2.1.0-beta.23
+  - @osdk/api@2.1.0-beta.23
+
 ## 2.1.0-beta.22
 
 ### Minor Changes

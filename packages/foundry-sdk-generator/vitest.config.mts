@@ -28,5 +28,8 @@ export default defineConfig({
     },
     pool: "forks",
     exclude: [...configDefaults.exclude, "**/build/**/*"],
+    fakeTimers: {
+      toFake: ["setTimeout", "clearTimeout", "Date"],
+    },
   },
 });

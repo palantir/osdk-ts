@@ -1,5 +1,18 @@
 # @osdk/oauth
 
+## 1.1.0-beta.9
+
+### Minor Changes
+
+- c691c8b: Package now has experimental support for commonjs
+
+## 1.1.0-beta.8
+
+### Minor Changes
+
+- 02685ab: Adding return types to functions.
+- 696c59c: Enables additional metadata to be required to match a refresh token in local storage
+
 ## 1.1.0-beta.7
 
 ### Minor Changes

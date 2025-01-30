@@ -12,6 +12,7 @@ import { ActionReturnTypeForOptions } from '@osdk/api';
 import { ActionValidationResponse } from '@osdk/api';
 import { ApplyActionOptions } from '@osdk/api';
 import { ApplyBatchActionOptions } from '@osdk/api';
+import { Attachment } from '@osdk/api';
 import type { AttachmentUpload } from '@osdk/api';
 import type { CompileTimeMetadata } from '@osdk/api';
 import type { DataValueClientToWire } from '@osdk/api';
@@ -41,7 +42,7 @@ import { QueryParam } from '@osdk/api';
 import { QueryResult } from '@osdk/api';
 import { Result } from '@osdk/api';
 import type { SharedClient } from '@osdk/shared.client2';
-import type { SharedClient as SharedClient_2 } from '@osdk/shared.client';
+import { SharedClient as SharedClient_2 } from '@osdk/shared.client';
 import type { SharedClientContext } from '@osdk/shared.client2';
 import { SingleLinkAccessor } from '@osdk/api';
 import { VersionBound } from '@osdk/api';
@@ -59,8 +60,8 @@ export { ActionReturnTypeForOptions }
 
 // @public (undocumented)
 export class ActionValidationError extends Error {
-    constructor(validation: ActionValidationResponse);
-    // (undocumented)
+    	constructor(validation: ActionValidationResponse);
+    	// (undocumented)
     validation: ActionValidationResponse;
 }
 
@@ -70,23 +71,27 @@ export { ApplyActionOptions }
 
 export { ApplyBatchActionOptions }
 
+export { Attachment }
+
+// Warning: (ae-forgotten-export) The symbol "OldSharedClient" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export interface Client extends SharedClient, SharedClient_2 {
-    // (undocumented)
+export interface Client extends SharedClient, OldSharedClient {
+    	// (undocumented)
     <Q extends ObjectTypeDefinition>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
-    // (undocumented)
+    	// (undocumented)
     <Q extends (InterfaceDefinition)>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? MinimalObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
-    // Warning: (ae-forgotten-export) The symbol "ActionSignatureFromDef" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "ActionSignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     <Q extends ActionDefinition<any>>(o: Q): ActionSignatureFromDef<Q>;
-    // Warning: (ae-forgotten-export) The symbol "QuerySignatureFromDef" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "QuerySignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     <Q extends QueryDefinition<any>>(o: Q): QuerySignatureFromDef<Q>;
-    // (undocumented)
+    	// (undocumented)
     <Q extends Experiment<"2.0.8"> | Experiment<"2.1.0">>(experiment: Q): ExperimentFns<Q>;
-    // (undocumented)
+    	// (undocumented)
     fetchMetadata<Q extends (ObjectTypeDefinition | InterfaceDefinition | ActionDefinition<any> | QueryDefinition<any>)>(o: Q): Promise<Q extends ObjectTypeDefinition ? ObjectMetadata : Q extends InterfaceDefinition ? InterfaceMetadata : Q extends ActionDefinition<any> ? ActionMetadata : Q extends QueryDefinition<any> ? QueryMetadata : never>;
 }
 
@@ -94,9 +99,7 @@ export interface Client extends SharedClient, SharedClient_2 {
 export function createAttachmentUpload(data: Blob, name: string): AttachmentUpload;
 
 // @public (undocumented)
-export const createClient: (baseUrl: string, ontologyRid: string | Promise<string>, tokenProvider: () => Promise<string>, options?: {
-    logger?: Logger;
-} | undefined, fetchFn?: typeof fetch | undefined) => Client;
+export const createClient: (baseUrl: string, ontologyRid: string | Promise<string>, tokenProvider: () => Promise<string>, options?: { logger?: Logger } | undefined, fetchFn?: typeof fetch | undefined) => Client;
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
@@ -127,26 +130,26 @@ export { isOk }
 
 // @public (undocumented)
 export interface Logger {
-    // (undocumented)
+    	// (undocumented)
     child(bindings: Record<string, any>, options?: {
-        level?: string;
-        msgPrefix?: string;
-    }): Logger;
-    // (undocumented)
+        		level?: string;
+        		msgPrefix?: string;
+        	}): Logger;
+    	// (undocumented)
     debug: LogFn;
-    // (undocumented)
+    	// (undocumented)
     error: LogFn;
-    // (undocumented)
+    	// (undocumented)
     fatal: LogFn;
-    // (undocumented)
+    	// (undocumented)
     info: LogFn;
-    // (undocumented)
+    	// (undocumented)
     isLevelEnabled(level: string): boolean;
-    // Warning: (ae-forgotten-export) The symbol "LogFn" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "LogFn" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     trace: LogFn;
-    // (undocumented)
+    	// (undocumented)
     warn: LogFn;
 }
 
@@ -165,8 +168,7 @@ export { PageResult }
 export { PalantirApiError }
 
 // @public (undocumented)
-export interface PlatformClient extends SharedClientContext {
-}
+export interface PlatformClient extends SharedClientContext {}
 
 export { PropertyDef }
 
@@ -184,12 +186,12 @@ export { Result }
 
 // @public (undocumented)
 export type ResultOrError<T extends object> = ({
-    type: "ok";
-    err?: never;
+    	type: "ok";
+    	err?: never;
 } & T) | {
-    type: "err";
-    data?: never;
-    err?: unknown;
+    	type: "err";
+    	data?: never;
+    	err?: unknown;
 };
 
 export { SingleLinkAccessor }

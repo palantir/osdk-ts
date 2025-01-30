@@ -391,6 +391,7 @@ function convertType(
           analyzerOverride: undefined,
           enableAsciiFolding: undefined,
           isLongText: false,
+          supportsEfficientLeadingWildcard: false,
           supportsExactMatching: true,
           supportsEfficientLeadingWildcard: false,
         },

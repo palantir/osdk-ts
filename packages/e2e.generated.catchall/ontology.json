@@ -198,6 +198,146 @@
           "objectTypeApiName": "Employee"
         }
       ]
+    },
+    "delete-foo-interface": {
+      "apiName": "delete-foo-interface",
+      "displayName": "Delete Foo Interface",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "deletedInterface": {
+          "dataType": {
+            "type": "interfaceObject",
+            "interfaceTypeApiName": "FooInterface"
+          },
+          "required": true
+        }
+      },
+      "status": "ACTIVE",
+      "rid": "ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817",
+      "operations": [
+        {
+          "type": "deleteInterfaceObject",
+          "interfaceTypeApiName": "FooInterface"
+        }
+      ]
+    },
+    "create-foo-interface": {
+      "apiName": "create-foo-interface",
+      "displayName": "Create Foo Interface",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "createdInterface": {
+          "dataType": {
+            "type": "objectType"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817",
+      "operations": [
+        {
+          "type": "createInterfaceObject",
+          "interfaceTypeApiName": "FooInterface"
+        }
+      ]
+    },
+    "create-struct-person": {
+      "apiName": "create-struct-person",
+      "description": "Create a struct",
+      "parameters": {
+        "name": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "address": {
+          "dataType": {
+            "type": "struct",
+            "fields": [
+              {
+                "name": "city",
+                "fieldType": {
+                  "type": "string"
+                },
+                "required": true
+              },
+              {
+                "name": "state",
+                "fieldType": {
+                  "type": "string"
+                },
+                "required": true
+              }
+            ]
+          },
+          "required": false
+        }
+      },
+      "status": "ACTIVE",
+      "rid": "ri.a.b.c.d",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Employee"
+        }
+      ]
+    },
+    "create-struct-person-opi-team": {
+      "apiName": "create-struct-person-opi-team",
+      "description": "Create a struct person on the OPI team",
+      "parameters": {
+        "id": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "address": {
+          "dataType": {
+            "type": "struct",
+            "fields": [
+              {
+                "name": "city",
+                "fieldType": {
+                  "type": "string"
+                },
+                "required": true
+              },
+              {
+                "name": "state",
+                "fieldType": {
+                  "type": "string"
+                },
+                "required": true
+              },
+              {
+                "name": "zipcode",
+                "fieldType": {
+                  "type": "integer"
+                },
+                "required": true
+              }
+            ]
+          },
+          "required": false
+        },
+        "age": {
+          "dataType": {
+            "type": "integer"
+          },
+          "required": true
+        }
+      },
+
+      "status": "ACTIVE",
+      "rid": "ri.a.b.c.d",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "StructPersonOpisTeam"
+        }
+      ]
     }
   },
   "objectTypes": {
@@ -593,6 +733,107 @@
       },
       "linkTypes": []
     },
+    "StructPerson": {
+      "objectType": {
+        "apiName": "StructPerson",
+        "primaryKey": "name",
+        "displayName": "StructPerson",
+        "description": "StructPerson",
+        "properties": {
+          "name": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "address": {
+            "dataType": {
+              "type": "struct",
+              "structFieldTypes": [
+                {
+                  "apiName": "city",
+                  "dataType": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "apiName": "state",
+                  "dataType": {
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          }
+        },
+
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "traffic",
+          "color": "color"
+        },
+        "titleProperty": "name",
+        "pluralDisplayName": "StructPeople"
+      },
+      "linkTypes": []
+    },
+    "StructPersonOpisTeam": {
+      "objectType": {
+        "apiName": "StructPersonOpisTeam",
+        "primaryKey": "id",
+        "displayName": "StructPersonOpisTeam",
+        "description": "StructPersonOpisTeam",
+        "properties": {
+          "id": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "age": {
+            "dataType": {
+              "type": "integer"
+            }
+          },
+          "address": {
+            "dataType": {
+              "type": "struct",
+              "structFieldTypes": [
+                {
+                  "apiName": "city",
+                  "dataType": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "apiName": "state",
+                  "dataType": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "apiName": "zipcode",
+                  "dataType": {
+                    "type": "integer"
+                  }
+                }
+              ]
+            }
+          }
+        },
+
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "traffic",
+          "color": "color"
+        },
+        "titleProperty": "name",
+        "pluralDisplayName": "StructPeople"
+      },
+      "linkTypes": []
+    },
     "DherlihyComplexObject": {
       "objectType": {
         "apiName": "DherlihyComplexObject",
@@ -628,6 +869,41 @@
         },
         "titleProperty": "id",
         "pluralDisplayName": "Dherlihy Complex Objects"
+      },
+      "linkTypes": []
+    },
+    "MnayanOsdkMediaObject": {
+      "objectType": {
+        "apiName": "MnayanOsdkMediaObject",
+        "primaryKey": "id",
+        "displayName": "MnayanOSDKMediaObject",
+        "description": "Media OT for OSDK e2e testing",
+        "properties": {
+          "id": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "path": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "mediaReference": {
+            "dataType": {
+              "type": "mediaReference"
+            }
+          }
+        },
+        "status": "ACTIVE",
+        "rid": "rid.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "object",
+          "color": "color"
+        },
+        "titleProperty": "path",
+        "pluralDisplayName": "Mnayan OSDKMedia Objects"
       },
       "linkTypes": []
     },

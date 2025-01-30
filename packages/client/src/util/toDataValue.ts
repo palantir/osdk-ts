@@ -19,6 +19,7 @@ import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { isAttachmentUpload } from "../object/AttachmentUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
+import { isInterfaceActionParam } from "./interfaceUtils.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
 import { isOsdkBaseObject } from "./isOsdkObject.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
@@ -87,6 +88,13 @@ export async function toDataValue(
     return getWireObjectSet(value);
   }
 
+  if (isInterfaceActionParam(value)) {
+    return {
+      objectTypeApiName: value.$objectType,
+      primaryKeyValue: value.$primaryKey,
+    };
+  }
+
   // TODO (during queries implementation)
   // two dimensional aggregation
   // three dimensional aggregation
@@ -103,6 +111,6 @@ export async function toDataValue(
     );
   }
 
-  // expected to pass through - boolean, byte, date, decimal, float, double, integer, long, short, string, timestamp
+  // expected to pass through - boolean, byte, date, decimal, float, double, integer, long, short, string, timestamp, object type reference
   return value;
 }

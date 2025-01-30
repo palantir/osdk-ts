@@ -40,7 +40,6 @@ import {
 } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
 import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.client";
-import { symbolClientContext } from "@osdk/shared.client2";
 import { createBulkLinksAsyncIterFactory } from "./__unstable/createBulkLinksAsyncIterFactory.js";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import { applyAction } from "./actions/applyAction.js";
@@ -58,6 +57,15 @@ import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import { ObjectSetListenerWebsocket } from "./objectSet/ObjectSetListenerWebsocket.js";
 import { applyQuery } from "./queries/applyQuery.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
+
+// We import it this way to keep compatible with CJS. If we referenced the
+// value of `symbolClientContext` directly, then we would have to a dynamic import
+// in `createClientInternal` which would make it async and a break.
+// Since this is just a string in `@osdk/shared.client2` instead of a symbol,
+// we can safely perform this trick.
+type newSymbolClientContext =
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  typeof import("@osdk/shared.client2").symbolClientContext;
 
 class ActionInvoker<Q extends ActionDefinition<any>>
   implements ActionSignatureFromDef<Q>
@@ -218,6 +226,8 @@ export function createClientInternal(
     undefined,
     clientCtx,
   );
+
+  const symbolClientContext: newSymbolClientContext = "__osdkClientContext";
 
   const client: Client = Object.defineProperties<Client>(
     clientFn as Client,

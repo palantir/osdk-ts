@@ -20,8 +20,21 @@ import type {
   ParameterDefinition,
 } from "./config.js";
 
-export interface WidgetManifestV1 {
-  version: "1.0.0";
+export interface WidgetSetManifestV1 {
+  manifestVersion: "1.0.0";
+  widgetSet: WidgetSetManifestContentV1;
+}
+
+export interface WidgetSetManifestContentV1 {
+  /**
+   * RID of the widget set that this config corresponds to
+   */
+  rid: string;
+
+  /**
+   * The version of the widget to publish as
+   */
+  version: string;
 
   /**
    * Set of widgets that are available to be rendered.
@@ -32,19 +45,24 @@ export interface WidgetManifestV1 {
 
 export interface WidgetManifestConfigV1 {
   /**
+   * The ID of this widget. Must be unique within the widget set
+   */
+  id: string;
+
+  /**
+   * The user friendly name of this widget
+   */
+  name: string;
+
+  /**
+   * A user friendly description of this widget
+   */
+  description?: string;
+
+  /**
    * The target Foundry UI that this widget is intended to be used in
    */
   type: "workshopWidgetV1";
-
-  /**
-   * RID of the widget that this config corresponds to
-   */
-  rid: string;
-
-  /**
-   * The version of the widget to publish as
-   */
-  version: string;
 
   /**
    * List of entrypoint JS files to be loaded, in order. These will be placed on the page in script tags
