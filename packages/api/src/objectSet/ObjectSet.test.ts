@@ -25,7 +25,7 @@ import type {
   PropertyKeys,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
-} from "@osdk/api";
+} from "../index.js";
 
 namespace Employee {
   export type PropertyKeys =
@@ -98,14 +98,36 @@ const Employee: Employee = {
 };
 
 describe("ObjectSet", () => {
-  describe(".withProperties", () => {
-    const fauxObjectSet = {
-      withProperties: vi.fn(() => {
-        return fauxObjectSet;
-      }),
-      fetchPage: vi.fn(() => Promise.resolve()),
-    } as any as Employee.ObjectSet;
+  const fauxObjectSet = {
+    where: vi.fn(() => {
+      return fauxObjectSet;
+    }),
+    withProperties: vi.fn(() => {
+      return fauxObjectSet;
+    }),
+    fetchPage: vi.fn(() => Promise.resolve()),
+    asyncIter: vi.fn(() => {
+      return {};
+    }),
+  } as any as Employee.ObjectSet;
 
+  describe("normal", () => {
+    test("select none", async () => {
+      const result = await fauxObjectSet.fetchPage();
+      expectTypeOf<typeof result.data[0]>().toEqualTypeOf<
+        Osdk.Instance<Employee, never>
+      >();
+    });
+
+    test("select one", async () => {
+      const result = await fauxObjectSet.fetchPage({ "$select": ["fullName"] });
+      expectTypeOf<typeof result.data[0]>().toEqualTypeOf<
+        Osdk.Instance<Employee, never, "fullName">
+      >();
+    });
+  });
+
+  describe(".withProperties", () => {
     test("single property", async () => {
       const withA = fauxObjectSet.withProperties({
         "a": (base) => {
@@ -121,7 +143,7 @@ describe("ObjectSet", () => {
 
       const withAResults = await withA.fetchPage();
 
-      expectTypeOf<typeof withAResults["data"][0]>().branded.toEqualTypeOf<
+      expectTypeOf<typeof withAResults["data"][0]>().toEqualTypeOf<
         Osdk.Instance<Employee, never, PropertyKeys<Employee>, {
           a: "integer" | undefined;
         }>
@@ -137,7 +159,7 @@ describe("ObjectSet", () => {
         "dad": (base) => base.pivotTo("lead").selectProperty("fullName"),
         "sister": (base) => base.pivotTo("lead").aggregate("class:collectList"),
       });
-      expectTypeOf(withFamily).branded.toEqualTypeOf<
+      expectTypeOf(withFamily).toEqualTypeOf<
         $ObjectSet<Employee, {
           mom: "integer" | undefined;
           dad: "string" | undefined;
@@ -147,7 +169,7 @@ describe("ObjectSet", () => {
 
       const withFamilyResults = await withFamily.fetchPage();
 
-      expectTypeOf<typeof withFamilyResults["data"][0]>().branded.toEqualTypeOf<
+      expectTypeOf<typeof withFamilyResults["data"][0]>().toEqualTypeOf<
         Osdk.Instance<Employee, never, PropertyKeys<Employee>, {
           mom: "integer" | undefined;
           dad: "string" | undefined;
@@ -191,10 +213,38 @@ describe("ObjectSet", () => {
         "sister": (base) => base.pivotTo("lead").aggregate("class:collectList"),
       });
 
+      it("works with .where", async () => {
+        const where = withFamily.where({ "mom": 1 });
+        const whereResults = await where.fetchPage();
+
+        expectTypeOf<typeof where>().toEqualTypeOf<typeof withFamily>();
+        expectTypeOf<typeof whereResults["data"][0]>()
+          .toEqualTypeOf<
+            Osdk.Instance<Employee, never, PropertyKeys<Employee>, {
+              mom: "integer" | undefined;
+              dad: "string" | undefined;
+              sister: "string"[] | undefined;
+            }>
+          >();
+      });
+
+      it("works with .async", () => {
+        const asyncIter = withFamily.asyncIter();
+        expectTypeOf<typeof asyncIter>().toEqualTypeOf<
+          AsyncIterableIterator<
+            Osdk.Instance<Employee, never, PropertyKeys<Employee>, {
+              mom: "integer" | undefined;
+              dad: "string" | undefined;
+              sister: "string"[] | undefined;
+            }>
+          >
+        >();
+      });
+
       it("Works with no select", async () => {
         const withFamilyResults = await withFamily.fetchPage();
 
-        expectTypeOf<typeof withFamilyResults["data"][0]>().branded
+        expectTypeOf<typeof withFamilyResults["data"][0]>()
           .toEqualTypeOf<
             Osdk.Instance<Employee, never, PropertyKeys<Employee>, {
               mom: "integer" | undefined;
@@ -209,7 +259,7 @@ describe("ObjectSet", () => {
           $select: ["mom", "dad", "sister"],
         });
 
-        expectTypeOf<typeof withFamilyResults["data"][0]>().branded
+        expectTypeOf<typeof withFamilyResults["data"][0]>()
           .toEqualTypeOf<
             Osdk.Instance<Employee, never, never, {
               mom: "integer" | undefined;
@@ -227,7 +277,7 @@ describe("ObjectSet", () => {
           $select: ["mom"],
         });
 
-        expectTypeOf<typeof withFamilyResults["data"][0]>().branded
+        expectTypeOf<typeof withFamilyResults["data"][0]>()
           .toEqualTypeOf<
             Osdk.Instance<Employee, never, never, {
               mom: "integer" | undefined;
@@ -240,7 +290,7 @@ describe("ObjectSet", () => {
           $select: ["class", "fullName"],
         });
 
-        expectTypeOf<typeof withFamilyResults["data"][0]>().branded
+        expectTypeOf<typeof withFamilyResults["data"][0]>()
           .toEqualTypeOf<
             Osdk.Instance<Employee, never, PropertyKeys<Employee>, {}>
           >();
@@ -255,7 +305,7 @@ describe("ObjectSet", () => {
           $select: ["class"],
         });
 
-        expectTypeOf<typeof withFamilyResults["data"][0]>().branded
+        expectTypeOf<typeof withFamilyResults["data"][0]>()
           .toEqualTypeOf<
             Osdk.Instance<Employee, never, "class", {}>
           >();
@@ -266,7 +316,7 @@ describe("ObjectSet", () => {
           $select: ["class", "mom"],
         });
 
-        expectTypeOf<typeof withFamilyResults["data"][0]>().branded
+        expectTypeOf<typeof withFamilyResults["data"][0]>()
           .toEqualTypeOf<
             Osdk.Instance<
               Employee,

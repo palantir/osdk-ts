@@ -23,7 +23,7 @@ export type ObjectOrInterfaceDefinition =
   | InterfaceDefinition;
 
 export namespace ObjectOrInterfaceDefinition {
-  export type WithRdp<
+  export type WithDerivedProperties<
     K extends ObjectOrInterfaceDefinition,
     D extends Record<string, SimplePropertyDef>,
   > = {

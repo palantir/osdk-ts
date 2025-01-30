@@ -187,13 +187,13 @@ export namespace Osdk {
     Q extends ObjectOrInterfaceDefinition,
     OPTIONS extends never | "$rid" = never,
     P extends PropertyKeys<Q> = PropertyKeys<Q>,
-    R extends Record<string, SimplePropertyDef> = never,
+    R extends Record<string, SimplePropertyDef> = {},
   > =
     & OsdkBase<Q>
     & Pick<
       CompileTimeMetadata<Q>["props"],
       // If there aren't any additional properties, then we want GetPropsKeys to default to PropertyKeys<Q>
-      GetPropsKeys<Q, P, [R] extends [never] ? false : true>
+      GetPropsKeys<Q, P, [R] extends [{}] ? false : true>
     >
     & ([R] extends [never] ? {}
       : { [A in keyof R]: SimplePropertyDef.ToRuntimeProperty<R[A]> })
