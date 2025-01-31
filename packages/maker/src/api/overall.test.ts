@@ -1542,7 +1542,7 @@ describe("Ontology Defining", () => {
                  {
                    "datasource": {
                      "datasetV2": {
-                       "datasetRid": "foo",
+                       "datasetRid": "com.palantir.foo",
                        "propertyMapping": {
                          "bar": {
                            "column": "bar",
@@ -1556,7 +1556,7 @@ describe("Ontology Defining", () => {
                      "onlyAllowPrivilegedEdits": false,
                    },
                    "redacted": false,
-                   "rid": "ri.ontology.main.datasource.foo",
+                   "rid": "ri.ontology.main.datasource.com.palantir.foo",
                  },
                ],
                "entityMetadata": {
@@ -1564,7 +1564,7 @@ describe("Ontology Defining", () => {
                },
                "objectType": {
                  "allImplementsInterfaces": {},
-                 "apiName": "foo",
+                 "apiName": "com.palantir.foo",
                  "displayMetadata": {
                    "description": undefined,
                    "displayName": "Foo",
