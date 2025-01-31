@@ -67,14 +67,14 @@ async function runTest({
 }): Promise<void> {
   await cli([
     "npx",
-    "@osdk/create-app",
+    "@osdk/create-widget",
     project,
     "--overwrite",
     "--template",
     template.id,
     "--foundryUrl",
     "https://example.palantirfoundry.com",
-    "--widgetSetRid",
+    "--widgetSet",
     "ri.widgetregistry..widget-set.fake",
     "--osdkPackage",
     "@custom-widget/sdk",

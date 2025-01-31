@@ -40,14 +40,14 @@ test("it prompts again if answered value is invalid", async () => {
 });
 
 test("it accepts valid initial value without prompt", async () => {
-  expect(await promptWidgetSetRid({ widgetSetRid: valid })).toEqual(valid);
+  expect(await promptWidgetSetRid({ widgetSet: valid })).toEqual(valid);
   expect(vi.mocked(consola).prompt).not.toHaveBeenCalled();
 });
 
 test("it prompts if initial value is invalid", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce(valid);
   expect(
-    await promptWidgetSetRid({ widgetSetRid: "ri.something.else.and.fake" }),
+    await promptWidgetSetRid({ widgetSet: "ri.something.else.and.fake" }),
   ).toEqual(valid);
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(1);
 });

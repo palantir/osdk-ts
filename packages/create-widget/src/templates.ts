@@ -42,8 +42,5 @@ export interface Template {
 
 export interface TemplateContext {
   project: string;
-  foundryUrl: string;
   osdkPackage: string;
-  widgetSetRid: string;
-  clientVersion: string;
 }

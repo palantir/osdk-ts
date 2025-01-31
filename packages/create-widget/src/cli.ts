@@ -36,7 +36,7 @@ interface CliArgs {
   template?: string;
   sdkVersion?: string;
   foundryUrl?: string;
-  widgetSetRid?: string;
+  widgetSet?: string;
   osdkPackage?: string;
   osdkRegistryUrl?: string;
 }
@@ -77,7 +77,7 @@ export async function cli(args: string[] = process.argv): Promise<void> {
             type: "string",
             describe: "URL for the Foundry stack",
           })
-          .option("widgetSetRid", {
+          .option("widgetSet", {
             type: "string",
             describe: "Widget set resource identifier (rid)",
           })
@@ -102,7 +102,7 @@ export async function cli(args: string[] = process.argv): Promise<void> {
   const foundryUrl: string = await promptFoundryUrl(parsed);
   const osdkPackage: string = await promptOsdkPackage(parsed);
   const osdkRegistryUrl: string = await promptOsdkRegistryUrl(parsed);
-  const widgetSetRid: string = await promptWidgetSetRid(parsed);
+  const widgetSet: string = await promptWidgetSetRid(parsed);
 
   await run({
     project,
@@ -110,7 +110,7 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     template,
     sdkVersion,
     foundryUrl,
-    widgetSetRid,
+    widgetSet,
     osdkPackage,
     osdkRegistryUrl,
   });

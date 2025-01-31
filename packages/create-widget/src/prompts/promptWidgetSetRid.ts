@@ -17,19 +17,17 @@
 import { consola } from "../consola.js";
 import { italic } from "../highlight.js";
 
-export async function promptWidgetSetRid({
-  widgetSetRid,
-}: {
-  widgetSetRid?: string;
-}): Promise<string> {
+export async function promptWidgetSetRid(
+  { widgetSet }: { widgetSet?: string },
+): Promise<string> {
   while (
-    widgetSetRid == null
-    || !/^ri\.widgetregistry\.\.widget-set\.[^.]+$/.test(widgetSetRid)
+    widgetSet == null
+    || !/^ri\.widgetregistry\.\.widget-set\.[^.]+$/.test(widgetSet)
   ) {
-    if (widgetSetRid != null) {
+    if (widgetSet != null) {
       consola.fail("Please enter a valid widget resource identifier (rid)");
     }
-    widgetSetRid = await consola.prompt(
+    widgetSet = await consola.prompt(
       `Enter the resource identifier (rid) for your widget set:\n${
         italic(
           "(Example: ri.widgetregistry..widget-set.1c66b352-4e00-40d2-995d-061c9d533ace)",
@@ -38,5 +36,5 @@ export async function promptWidgetSetRid({
       { type: "text" },
     );
   }
-  return widgetSetRid;
+  return widgetSet;
 }
