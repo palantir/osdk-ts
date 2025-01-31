@@ -27,7 +27,7 @@
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-    "generate": "./bin/exampleGenerator.mjs ../../examples",
+    "generate": "STABLE_PACKAGE_CLIENT_VERSION='workspace:*' ./bin/exampleGenerator.mjs ../../examples",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --pool=forks",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
