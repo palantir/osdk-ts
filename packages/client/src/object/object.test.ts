@@ -336,6 +336,20 @@ describe("OsdkObject", () => {
       `);
     });
 
+    it("is able to clone with nothing passed in", async () => {
+      expect(employee.$clone()).toMatchObject({
+        "$apiName": "Employee",
+        "$objectType": "Employee",
+        "$primaryKey": 50031,
+        "$title": "Jane Doe",
+        "class": "Blue",
+        "employeeId": 50031,
+        "fullName": "Jane Doe",
+        "office": "SEA",
+        "startDate": "2012-02-12",
+      });
+    });
+
     it("throws when merging objects with different primary keys", async () => {
       expect(() =>
         employee.$clone({

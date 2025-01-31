@@ -124,7 +124,7 @@ export function useTodos() {
 
 type OsdkPropsOnly<T extends ObjectTypeDefinition> = Omit<
   Osdk<T>,
-  "$as" | "$link" | "$cloneAndUpdate"
+  "$as" | "$link" | "$clone"
 >;
 
 export interface SimpleTodo extends OsdkPropsOnly<MyOsdk.Todo> {}

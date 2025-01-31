@@ -205,7 +205,7 @@ export namespace Osdk {
       >;
 
       readonly $clone: (
-        updatedObject:
+        updatedObject?:
           | Osdk.Instance<Q, any, any>
           | {
             [K in PropertyKeys<Q>]?: CompileTimeMetadata<

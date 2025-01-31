@@ -64,10 +64,14 @@ const basePropDefs = {
   "$clone": {
     value: function(
       this: InternalOsdkInstance & ObjectHolder<any>,
-      update: Record<string, any>,
+      update: Record<string, any> | undefined,
     ) {
       const rawObj = this[UnderlyingOsdkObject];
       const def = this[ObjectDefRef];
+
+      if (update == null) {
+        return createOsdkObject(this[ClientRef], def, { ...rawObj });
+      }
 
       if (
         def.primaryKeyApiName in update
