@@ -26,6 +26,7 @@
   },
   "scripts": {
     "build": "vite build",
+    "check-attw": "attw --profile esm-only --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "dev": "vite",
@@ -34,6 +35,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
+    "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
@@ -75,6 +77,7 @@
   "files": [
     "build/site",
     "build/esm",
+    "build/types",
     "CHANGELOG.md",
     "package.json",
     "templates",

@@ -29,7 +29,6 @@
     }
   },
   "scripts": {
-    "check-attw": "attw --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --beta true --packageType module --version dev --internal",
@@ -61,16 +60,7 @@
     "access": "public"
   },
   "keywords": [],
-  "files": [
-    "build/cjs",
-    "build/esm",
-    "build/browser",
-    "build/types",
-    "CHANGELOG.md",
-    "package.json",
-    "templates",
-    "*.d.ts"
-  ],
+  "files": [],
   "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
   "types": "./build/cjs/index.d.cts",

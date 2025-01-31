@@ -31,18 +31,21 @@ importers:
       '@changesets/cli':
         specifier: ^2.27.10
         version: 2.27.10
+      '@monorepolint/archetypes':
+        specifier: 0.6.0-alpha.4
+        version: 0.6.0-alpha.4
       '@monorepolint/cli':
-        specifier: 0.6.0-alpha.2
-        version: 0.6.0-alpha.2
+        specifier: 0.6.0-alpha.4
+        version: 0.6.0-alpha.4
       '@monorepolint/config':
-        specifier: 0.6.0-alpha.2
-        version: 0.6.0-alpha.2
+        specifier: 0.6.0-alpha.4
+        version: 0.6.0-alpha.4
       '@monorepolint/core':
-        specifier: 0.6.0-alpha.2
-        version: 0.6.0-alpha.2
+        specifier: 0.6.0-alpha.4
+        version: 0.6.0-alpha.4
       '@monorepolint/rules':
-        specifier: 0.6.0-alpha.2
-        version: 0.6.0-alpha.2
+        specifier: 0.6.0-alpha.4
+        version: 0.6.0-alpha.4
       '@osdk/monorepo.cspell':
         specifier: workspace:~
         version: link:packages/monorepo.cspell
@@ -6054,25 +6057,29 @@ packages:
   '@microsoft/tsdoc@0.15.1':
     resolution: {integrity: sha512-4aErSrCR/On/e5G2hDP0wjooqDdauzEbIq8hIkIe5pXV0rtWJZvdCEKL0ykZxex+IxIwBp0eGeV48hQN07dXtw==}
 
-  '@monorepolint/cli@0.6.0-alpha.2':
-    resolution: {integrity: sha512-+DnymKo2dULsZYZYA3BI6aLXDxJLNcCF6EcB7hmm7JlcK02g6jW3ec6KuAN1qts2iBsZB5vv4rgDKO0IAxlTvQ==}
+  '@monorepolint/archetypes@0.6.0-alpha.4':
+    resolution: {integrity: sha512-wtEX9tCUQqs1VfkVHtzFxzO0OgGSgiQX67z8IQ6C7NAYUNhJ9qv+DACmi8YBrFjRn2yxsqI4ufwgZMwfXTru7w==}
+    engines: {node: '>=18'}
+
+  '@monorepolint/cli@0.6.0-alpha.4':
+    resolution: {integrity: sha512-IbGpgp2yJtOUQ0H6f17ljh6HzIfI/+lEzRL2QcY0NX6JmF4s2tG432qEaASYUEKvfpbNpHpWVNMaJWQGlC+UPg==}
     engines: {node: '>=18'}
     hasBin: true
 
-  '@monorepolint/config@0.6.0-alpha.2':
-    resolution: {integrity: sha512-WemQT5bEBcC1LQqhgq+8+0K2b/SweE8gpGWHlW/EyW/NW0hAZ+yTpO21up0wderKdVvHsLdoT+MgegoFD3QQww==}
+  '@monorepolint/config@0.6.0-alpha.4':
+    resolution: {integrity: sha512-ttPMZxPb93blfOF9r+qVS+ippKytsuGdvexdGU3kF0EPXnkdF/zhtHST0DbiEvza333rh9qMq7A6G1gGpFJc6g==}
     engines: {node: '>=18'}
 
-  '@monorepolint/core@0.6.0-alpha.2':
-    resolution: {integrity: sha512-jXk43OM/c+GegqGMA/r/z9UgTCWJGcfIrclW16WnjgPeNTiwEZ3KHG/MdQRI/9XRcAmXbNZDTumaCfx1FN7WXA==}
+  '@monorepolint/core@0.6.0-alpha.4':
+    resolution: {integrity: sha512-ooSsw7z4ldNkY9d533ohSbzihRAWMwKYJf5aVqZYp2bxpDrCLiBI/wLz5QIVarNO6xbMZQZKMQtTwUVBCOw+JQ==}
     engines: {node: '>=18'}
 
-  '@monorepolint/rules@0.6.0-alpha.2':
-    resolution: {integrity: sha512-rvAqLk/p2MzC07WUTw6hfopAVTDtVE8icQab2lAEZiUriQ0JcxZZs5uK3WPoEme+dIFqwqRNoLKV1JfmDz5NcA==}
+  '@monorepolint/rules@0.6.0-alpha.4':
+    resolution: {integrity: sha512-+zclf2NJIDfIa6KMVrBoxccM3jsGHI0gmTzkk9fKxFSY683BGBdHQCrrshIHx0DKjK/I+YxtJL9zu95f7VjWQg==}
     engines: {node: '>=18'}
 
-  '@monorepolint/utils@0.6.0-alpha.2':
-    resolution: {integrity: sha512-bWJcCtxi5E1zI3saj4rGM4qBOIQV+yxrZSDwevS6nlQ+oYujhESugwvxIKnZOKqt7WDI7XF+BaEHTN8JhE3TPw==}
+  '@monorepolint/utils@0.6.0-alpha.4':
+    resolution: {integrity: sha512-/hEoDUK/lw9jUy3gqJVpJzYcs5XWS3xnc0VBb+1jOdsnqNCpM2rohfPLjaCofgMh7ulvBIdeXXvtM4tci4hLTA==}
     engines: {node: '>=18'}
 
   '@mswjs/interceptors@0.29.1':
@@ -7838,6 +7845,9 @@ packages:
 
   '@types/node@22.12.0':
     resolution: {integrity: sha512-Fll2FZ1riMjNmlmJOdAyY5pUbkftXslB5DgEzlIuNaiWhXd00FhWxVC/r4yV/4wBb9JfImTu+jiSvXTkJ7F/gA==}
+
+  '@types/node@22.13.0':
+    resolution: {integrity: sha512-ClIbNe36lawluuvq3+YYhnIN2CELi+6q8NpnM7PYp4hBn/TatfboPgVSm2rwKRfnV2M+Ty9GWDFI64KEe+kysA==}
 
   '@types/node@22.9.1':
     resolution: {integrity: sha512-p8Yy/8sw1caA8CdRIQBG5tiLHmxtQKObCijiAa9Ez+d4+PRffM4054xbju0msf+cvhJpnFEeNjxmVT/0ipktrg==}
@@ -16032,7 +16042,7 @@ snapshots:
 
   '@emnapi/runtime@1.3.1':
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.6.3
     optional: true
 
   '@esbuild/aix-ppc64@0.23.0':
@@ -17188,33 +17198,44 @@ snapshots:
 
   '@microsoft/tsdoc@0.15.1': {}
 
-  '@monorepolint/cli@0.6.0-alpha.2':
+  '@monorepolint/archetypes@0.6.0-alpha.4':
     dependencies:
-      '@monorepolint/config': 0.6.0-alpha.2
-      '@monorepolint/core': 0.6.0-alpha.2
-      '@monorepolint/utils': 0.6.0-alpha.2
+      '@monorepolint/config': 0.6.0-alpha.4
+      '@monorepolint/rules': 0.6.0-alpha.4
+      find-packages: 10.0.4
+      find-up: 7.0.0
+      glob: 10.4.5
+      micromatch: 4.0.8
+      read-yaml-file: 2.1.0
+      tslib: 2.8.1
+
+  '@monorepolint/cli@0.6.0-alpha.4':
+    dependencies:
+      '@monorepolint/config': 0.6.0-alpha.4
+      '@monorepolint/core': 0.6.0-alpha.4
+      '@monorepolint/utils': 0.6.0-alpha.4
       chalk: 5.4.1
       tslib: 2.8.1
       yargs: 17.7.2
 
-  '@monorepolint/config@0.6.0-alpha.2':
+  '@monorepolint/config@0.6.0-alpha.4':
     dependencies:
-      '@monorepolint/utils': 0.6.0-alpha.2
+      '@monorepolint/utils': 0.6.0-alpha.4
       chalk: 5.4.1
       tslib: 2.8.1
 
-  '@monorepolint/core@0.6.0-alpha.2':
+  '@monorepolint/core@0.6.0-alpha.4':
     dependencies:
-      '@monorepolint/config': 0.6.0-alpha.2
-      '@monorepolint/utils': 0.6.0-alpha.2
+      '@monorepolint/config': 0.6.0-alpha.4
+      '@monorepolint/utils': 0.6.0-alpha.4
       chalk: 5.4.1
       tslib: 2.8.1
 
-  '@monorepolint/rules@0.6.0-alpha.2':
+  '@monorepolint/rules@0.6.0-alpha.4':
     dependencies:
-      '@monorepolint/config': 0.6.0-alpha.2
-      '@monorepolint/core': 0.6.0-alpha.2
-      '@monorepolint/utils': 0.6.0-alpha.2
+      '@monorepolint/config': 0.6.0-alpha.4
+      '@monorepolint/core': 0.6.0-alpha.4
+      '@monorepolint/utils': 0.6.0-alpha.4
       globby: 14.0.2
       jest-diff: 29.7.0
       resolve-package-path: 4.0.3
@@ -17222,7 +17243,7 @@ snapshots:
       semver: 7.6.3
       tslib: 2.8.1
 
-  '@monorepolint/utils@0.6.0-alpha.2':
+  '@monorepolint/utils@0.6.0-alpha.4':
     dependencies:
       find-packages: 10.0.4
       find-up: 7.0.0
@@ -19322,6 +19343,10 @@ snapshots:
     dependencies:
       undici-types: 6.20.0
 
+  '@types/node@22.13.0':
+    dependencies:
+      undici-types: 6.20.0
+
   '@types/node@22.9.1':
     dependencies:
       undici-types: 6.19.8
@@ -20125,7 +20150,7 @@ snapshots:
 
   ast-types@0.15.2:
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.6.3
 
   async-limiter@1.0.1: {}
 
@@ -20201,7 +20226,7 @@ snapshots:
   babel-plugin-jest-hoist@29.6.3:
     dependencies:
       '@babel/template': 7.25.9
-      '@babel/types': 7.26.0
+      '@babel/types': 7.26.5
       '@types/babel__core': 7.20.5
       '@types/babel__traverse': 7.20.4
 
@@ -23252,7 +23277,7 @@ snapshots:
   istanbul-lib-instrument@5.2.1:
     dependencies:
       '@babel/core': 7.26.0
-      '@babel/parser': 7.26.2
+      '@babel/parser': 7.26.5
       '@istanbuljs/schema': 0.1.3
       istanbul-lib-coverage: 3.2.2
       semver: 6.3.1
@@ -23912,7 +23937,7 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 22.12.0
+      '@types/node': 22.13.0
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -24266,7 +24291,7 @@ snapshots:
 
   lower-case@2.0.2:
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.6.3
 
   lru-cache@10.4.3: {}
 
@@ -25099,7 +25124,7 @@ snapshots:
   path-scurry@1.10.2:
     dependencies:
       lru-cache: 10.4.3
-      minipass: 7.0.4
+      minipass: 7.1.2
 
   path-scurry@1.11.1:
     dependencies:
@@ -25712,7 +25737,7 @@ snapshots:
       ast-types: 0.15.2
       esprima: 4.0.1
       source-map: 0.6.1
-      tslib: 2.8.1
+      tslib: 2.6.3
 
   redent@4.0.0:
     dependencies:
@@ -27125,11 +27150,11 @@ snapshots:
 
   upper-case-first@2.0.2:
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.6.3
 
   upper-case@2.0.2:
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.6.3
 
   uri-js@4.4.1:
     dependencies:
@@ -27143,7 +27168,7 @@ snapshots:
   use-callback-ref@1.3.2(@types/react@18.3.12)(react@18.3.1):
     dependencies:
       react: 18.3.1
-      tslib: 2.8.1
+      tslib: 2.6.3
     optionalDependencies:
       '@types/react': 18.3.12
 
@@ -27155,7 +27180,7 @@ snapshots:
     dependencies:
       detect-node-es: 1.1.0
       react: 18.3.1
-      tslib: 2.8.1
+      tslib: 2.6.3
     optionalDependencies:
       '@types/react': 18.3.12
 

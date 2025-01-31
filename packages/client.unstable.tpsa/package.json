@@ -32,9 +32,9 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
+    "transpileBrowser": "monorepo.tool.transpile -f esm -m bundle -t browser",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
-    "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
+    "transpileEsm": "monorepo.tool.transpile -f esm -m bundle -t node",
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },

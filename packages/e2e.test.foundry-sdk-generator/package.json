@@ -52,15 +52,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "files": [
-    "build/cjs",
-    "build/esm",
-    "build/browser",
-    "CHANGELOG.md",
-    "package.json",
-    "templates",
-    "*.d.ts"
-  ],
+  "files": [],
   "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
   "types": "./build/cjs/index.d.cts",
