@@ -96,7 +96,7 @@ export function defineObject(objectDef: ObjectType): ObjectType {
     );
   });
 
-  ontologyDefinition.objectTypes[apiName] = objectDef;
+  ontologyDefinition.objectTypes[apiName] = { ...objectDef, apiName: apiName };
   return { ...objectDef, apiName: apiName };
 }
 
