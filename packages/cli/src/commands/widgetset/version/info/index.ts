@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,31 +15,25 @@
  */
 
 import type { CommandModule } from "yargs";
-import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
-import type { VersionDeleteArgs } from "./VersionDeleteArgs.js";
+import type { CommonWidgetSetArgs } from "../../CommonWidgetSetArgs.js";
+import type { VersionInfoArgs } from "./VersionInfoArgs.js";
 
 const command: CommandModule<
-  CommonSiteArgs,
-  VersionDeleteArgs
+  CommonWidgetSetArgs,
+  VersionInfoArgs
 > = {
-  command: "delete <version>",
-  describe: "Delete site version",
+  command: "info <version>",
+  describe: "Load info about widget set version",
   builder: (argv) => {
     return argv
       .positional("version", {
         type: "string",
         demandOption: true,
-        description: "Version to delete",
-      })
-      .option("yes", {
-        alias: "y",
-        type: "boolean",
-        description: "Automatically confirm destructive changes",
-      })
-      .group(["yes"], "Delete Options");
+        description: "Version to load",
+      });
   },
   handler: async (args) => {
-    const command = await import("./versionDeleteCommand.mjs");
+    const command = await import("./versionInfoCommand.mjs");
     await command.default(args);
   },
 };

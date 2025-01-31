@@ -55,6 +55,7 @@
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/shared.net.errors": "workspace:~",
     "@osdk/shared.net.fetch": "workspace:~",
+    "@osdk/widget-api.unstable": "workspace:~",
     "@types/archiver": "^6.0.2",
     "@types/ngeohash": "^0.6.8",
     "@types/node": "^18.0.0",

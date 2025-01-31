@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,10 @@
  * limitations under the License.
  */
 
-import { consola } from "consola";
-import getConfig from "../util/configLoader.js";
+import type { StemmaRepositoryRid } from "../../../net/StemmaRepositoryRid.js";
+import type { CommonWidgetSetArgs } from "../CommonWidgetSetArgs.js";
 
-let firstTime = true;
-export async function logConfigFileMiddleware(
-  type: "site" | "widgetSet",
-): Promise<void> {
-  if (firstTime) {
-    firstTime = false;
-    const config = getConfig(type);
-    const configFilePath = (await config)?.configFilePath;
-    if (configFilePath) {
-      consola.debug(
-        `Using configuration from file: "${configFilePath}"`,
-      );
-    }
-  }
+export interface WidgetSetDeployArgs extends CommonWidgetSetArgs {
+  directory: string;
+  repository?: StemmaRepositoryRid;
 }
