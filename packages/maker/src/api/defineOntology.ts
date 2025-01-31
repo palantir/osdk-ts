@@ -221,8 +221,8 @@ function convertObject(
         interfaceTypeApiName: impl.implements.apiName,
         properties: Object.fromEntries(
           impl.propertyMapping.map(
-            mapping => [mapping.mapsTo, {
-              propertyTypeRid: namespace + mapping.interfaceProperty,
+            mapping => [namespace + mapping.interfaceProperty, {
+              propertyTypeRid: mapping.mapsTo,
             }],
           ),
         ),
