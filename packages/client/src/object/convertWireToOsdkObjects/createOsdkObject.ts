@@ -61,7 +61,7 @@ const basePropDefs = {
       return get$link(this);
     },
   },
-  "$cloneAndUpdate": {
+  "$clone": {
     value: function(
       this: InternalOsdkInstance & ObjectHolder<any>,
       update: Record<string, any>,

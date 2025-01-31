@@ -204,7 +204,7 @@ describe("OsdkObject", () => {
       ].sort());
     });
   });
-  describe("cloneAndUpdate", () => {
+  describe("clone", () => {
     let employee: Osdk.Instance<
       $Objects.Employee,
       never,
@@ -258,7 +258,7 @@ describe("OsdkObject", () => {
         "class" | "employeeId" | "fullName" | "office"
       >;
 
-      const mergedEmployee = employee.$cloneAndUpdate(updatedEmployee);
+      const mergedEmployee = employee.$clone(updatedEmployee);
 
       expectTypeOf(mergedEmployee).toEqualTypeOf(employee);
 
@@ -283,7 +283,7 @@ describe("OsdkObject", () => {
     });
 
     it("clones and updates an object with a record", async () => {
-      const mergedEmployee = employee.$cloneAndUpdate({
+      const mergedEmployee = employee.$clone({
         "class": "Green",
         "employeeId": 50031,
         "fullName": "John Doe",
@@ -312,7 +312,7 @@ describe("OsdkObject", () => {
     });
 
     it("correctly sets title", async () => {
-      const mergedEmployee = employee.$cloneAndUpdate({
+      const mergedEmployee = employee.$clone({
         "fullName": "Brad Pitt",
       });
 
@@ -338,7 +338,7 @@ describe("OsdkObject", () => {
 
     it("throws when merging objects with different primary keys", async () => {
       expect(() =>
-        employee.$cloneAndUpdate({
+        employee.$clone({
           "class": "Green",
           "employeeId": 50035,
         })

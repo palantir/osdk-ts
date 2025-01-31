@@ -204,7 +204,7 @@ export namespace Osdk {
         ConvertProps<Q, NEW_Q, P>
       >;
 
-      readonly $cloneAndUpdate: (
+      readonly $clone: (
         updatedObject:
           | Osdk.Instance<Q, any, any>
           | {
