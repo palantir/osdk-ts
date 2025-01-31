@@ -16,6 +16,7 @@
 
 // @ts-check
 
+import { archetypes, ifTrue } from "@monorepolint/archetypes";
 import {
   alphabeticalDependencies,
   alphabeticalScripts,
@@ -35,77 +36,219 @@ const LATEST_TYPESCRIPT_DEP = "~5.5.4";
 
 const DELETE_SCRIPT_ENTRY = { options: [undefined], fixValue: undefined };
 
-const nonStandardPackages = [
-  "@osdk/e2e.generated.1.1.x",
-  "@osdk/examples.*",
-  "@osdk/e2e.test.foundry-sdk-generator",
-  "@osdk/monorepo.*", // internal monorepo packages
-  "@osdk/tests.*",
-  "@osdk/benchmarks.*",
-];
+const OUTPUT_NORMAL =
+  /** @type {const} */ ({ browser: "normal", cjs: "bundle", esm: "normal" });
 
-// Packages that should have the `check-api` task installed
-const checkApiPackages = [
-  "@osdk/client",
-  "@osdk/api",
-];
+const OUTPUT_BUNDLE_ALL =
+  /** @type {const} */ ({ browser: "bundle", cjs: "bundle", esm: "bundle" });
 
-// Packages that should be private
-const privatePackages = [
-  "@osdk/cli.*",
-  "@osdk/client.test.ontology",
-  "@osdk/create-app.template-packager",
-  "@osdk/create-app.template.*",
-  "@osdk/create-widget.template.*",
-  "@osdk/e2e.*",
-  "@osdk/example-generator",
-  "@osdk/examples.*",
-  "@osdk/monorepo.*",
-  "@osdk/platform-sdk-generator",
-  "@osdk/shared.test",
-  "@osdk/tests.*",
-  "@osdk/tool.*",
-  "@osdk/version-updater",
-  "@osdk/benchmarks.*",
-];
+const OUTPUT_ESM_ONLY =
+  /** @type {const} */ ({ browser: undefined, cjs: undefined, esm: "normal" });
 
-// Package architypes (mutually exclusive)
+/** @type {OsdkPackageOptions}  */
+const LIBRARY_RULES = {
+  tsVersion: LATEST_TYPESCRIPT_DEP,
+  repositoryUrl: "https://github.com/palantir/osdk-ts.git",
+  output: OUTPUT_NORMAL,
+  private: false,
+  aliasConsola: false,
+};
 
-const consumerCliPackages = [
-  "@osdk/cli",
-  "@osdk/create-app",
-  "@osdk/create-widget",
-  "@osdk/foundry-sdk-generator",
-];
+/** @type {OsdkPackageOptions}  */
+const INTERNAL_LIBRARY_RULES = {
+  ...LIBRARY_RULES,
+  output: OUTPUT_ESM_ONLY,
+  skipAttw: true,
+  private: true,
+};
 
-const forceBundle = [
-  "@client.unstable",
-  "@client.unstable.tpsa",
-];
-
-const skipCjsAndBrowser = [
-  "@osdk/e2e.sandbox.catchall",
-  "@osdk/tool.*",
-  "@osdk/create-app.template-packager",
-  "@osdk/create-app.template.*",
-  "@osdk/create-widget.template.*",
-  "@osdk/cli.*",
-  "@osdk/version-updater",
-  "@osdk/example-generator",
-  "@osdk/shared.test",
-];
-
-const viteApp = [
-  "@osdk/widget.vite-plugin.unstable",
-  "@osdk/e2e.sandbox.todowidget",
-  "@osdk/e2e.sandbox.todoapp",
-  "@osdk/e2e.sandbox.oauth.public.react-router",
-];
-
-const usesReact = [
-  "@osdk/widget-client-react.unstable",
-  "@osdk/react",
-];
+const archetypeRules = archetypes(
+  standardPackageRules,
+  {
+    unmatched: "error",
+  },
+)
+  .addArchetype(
+    "checkApiPackages",
+    [
+      "@osdk/client",
+      "@osdk/api",
+    ],
+    {
+      ...LIBRARY_RULES,
+      checkApi: true,
+    },
+  )
+  .addArchetype(
+    "tests and benchmarks",
+    [
+      "@osdk/tests.*",
+      "@osdk/benchmarks.*",
+    ],
+    {
+      ...LIBRARY_RULES,
+      minimalChangesOnly: true,
+      private: true,
+    },
+  )
+  .addArchetype(
+    "minimal packages",
+    [
+      "@osdk/e2e.generated.1.1.x",
+      "@osdk/examples.*",
+      "@osdk/monorepo.*",
+    ],
+    {
+      ...LIBRARY_RULES,
+      minimalChangesOnly: true,
+      private: true,
+    },
+  )
+  .addArchetype(
+    "standardLibraries",
+    [
+      "@osdk/foundry-config-json",
+      "@osdk/generator-converters",
+      "@osdk/generator-utils",
+      "@osdk/generator",
+      "@osdk/maker",
+      "@osdk/oauth",
+      "@osdk/shared.client.impl",
+      "@osdk/shared.net.errors",
+      "@osdk/shared.net.fetch",
+      "@osdk/shared.net",
+      "@osdk/widget-api.unstable",
+      "@osdk/widget-client.unstable",
+    ],
+    {
+      ...LIBRARY_RULES,
+    },
+  )
+  .addArchetype(
+    "consumerCliPackages",
+    [
+      "@osdk/cli",
+      "@osdk/create-app",
+      "@osdk/create-widget",
+      "@osdk/foundry-sdk-generator",
+    ],
+    {
+      ...LIBRARY_RULES,
+      output: {
+        browser: undefined,
+        cjs: undefined,
+        esm: "bundle",
+      },
+      fixedDepsOnly: true,
+    },
+  )
+  .addArchetype(
+    "forceBundle",
+    [
+      "@osdk/client.unstable",
+      "@osdk/client.unstable.tpsa",
+    ],
+    {
+      ...LIBRARY_RULES,
+      output: OUTPUT_BUNDLE_ALL,
+    },
+  )
+  .addArchetype(
+    "internal clis",
+    [
+      "@osdk/create-app.template-packager",
+      "@osdk/example-generator",
+      "@osdk/tool.*",
+      "@osdk/version-updater",
+    ],
+    {
+      ...INTERNAL_LIBRARY_RULES,
+      skipTypes: true,
+    },
+  )
+  .addArchetype(
+    "internal libraries / templates",
+    [
+      "@osdk/cli.*",
+      "@osdk/client.test.ontology",
+      "@osdk/create-app.template.*",
+      "@osdk/create-widget.template.*",
+      "@osdk/shared.test",
+    ],
+    {
+      ...INTERNAL_LIBRARY_RULES,
+    },
+  )
+  .addArchetype(
+    "currentlyGeneratedSdks",
+    [
+      "@osdk/e2e.generated.catchall",
+      "@osdk/e2e.generated.api-namespace.*",
+    ],
+    {
+      ...LIBRARY_RULES,
+      skipAttw: true,
+      private: true,
+    },
+  )
+  .addArchetype(
+    "viteSandboxes",
+    [
+      "@osdk/e2e.sandbox.todowidget",
+      "@osdk/e2e.sandbox.todoapp",
+      "@osdk/e2e.sandbox.oauth.public.react-router",
+    ],
+    {
+      ...INTERNAL_LIBRARY_RULES,
+      skipTypes: true,
+      react: true,
+    },
+  )
+  .addArchetype(
+    "nodeSandboxes",
+    [
+      "@osdk/e2e.sandbox.catchall",
+      "@osdk/e2e.sandbox.oauth",
+    ],
+    {
+      ...INTERNAL_LIBRARY_RULES,
+      skipTypes: true,
+    },
+  )
+  .addArchetype(
+    "e2eTests",
+    [
+      "@osdk/e2e.test.foundry-sdk-generator",
+    ],
+    {
+      ...INTERNAL_LIBRARY_RULES,
+      output: OUTPUT_NORMAL,
+      skipTypes: true,
+    },
+  )
+  .addArchetype(
+    "vitePlugin",
+    [
+      "@osdk/widget.vite-plugin.unstable",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+      output: OUTPUT_ESM_ONLY,
+      extraPublishFiles: ["build/site"],
+    },
+  )
+  .addArchetype(
+    "reactLibrary",
+    [
+      "@osdk/widget-client-react.unstable",
+      "@osdk/react",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+    },
+  );
 
 /**
  * We don't want to allow `workspace:^` in our dependencies because our current release branch
@@ -445,20 +588,79 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
 }
 
 /**
+ * @typedef {Object} MinimalPackageOptions
+ * @property { string } repositoryUrl
+ * @property { boolean } private
+ */
+
+/**
  * @param {Omit<import("@monorepolint/config").RuleEntry<>,"options" | "id">} shared
- * @param {{
- *  customTsconfigExcludes?: string[],
- *  tsVersion?: typeof LATEST_TYPESCRIPT_DEP | "^4.9.5",
- *  react?: boolean,
- *  extraPublishFiles?: string[],
- *  vitestEnvironment?: "happy-dom",
- *  skipTsconfigReferences?: boolean,
- *  aliasConsola?: boolean,
- *  output: Record<"esm" | "cjs" | "browser", "bundle" | "normal" | undefined>
- *  skipTypes?: boolean,
- *  extraFiles?: string[],
- *  skipAttw?: boolean;
- * }} options
+ * @param {MinimalPackageOptions} options
+ * @returns {import("@monorepolint/config").RuleModule[]}
+ */
+function minimalPackageRules(shared, options) {
+  return [
+    packageEntry({
+      ...shared,
+      options: {
+        entries: {
+          license: "Apache-2.0",
+          repository: {
+            "type": "git",
+            "url": options.repositoryUrl,
+          },
+        },
+        entriesExist: ["version"],
+      },
+    }),
+    options.private
+      ? packageEntry({
+        ...shared,
+        options: {
+          entries: {
+            private: true,
+          },
+        },
+      })
+      : noPackageEntry({
+        ...shared,
+        options: {
+          entries: ["private"],
+        },
+      }),
+
+    ...ifTrue(!options.private, [
+      allLocalDepsMustNotBePrivate({
+        ...shared,
+      }),
+    ]),
+  ];
+}
+
+/**
+ * @typedef {Object} OsdkPackageOptions
+ * @property { string } repositoryUrl
+ * @property { boolean } private
+ * @property { string[] =} customTsconfigExcludes
+ * @property { typeof LATEST_TYPESCRIPT_DEP | "^4.9.5"=} tsVersion
+ * @property { boolean } [react]
+ * @property { string[] } [extraPublishFiles]
+ * @property { "happy-dom" } [vitestEnvironment]
+ * @property { boolean } [skipTsconfigReferences]
+ * @property { boolean } [aliasConsola]
+ * @property { Record<"esm" | "cjs" | "browser", "bundle" | "normal" | undefined>} output
+ * @property { boolean } [skipTypes]
+ * @property { string[] } [extraFiles]
+ * @property { boolean } [skipAttw]
+ * @property { boolean } [fixedDepsOnly]
+ * @property { boolean } [checkApi]
+ * @property { boolean } [minimalChangesOnly]
+ * @property { "vite" | undefined } [framework]
+ */
+
+/**
+ * @param {Omit<import("@monorepolint/config").RuleEntry<>,"options" | "id">} shared
+ * @param {OsdkPackageOptions} options
  * @returns {import("@monorepolint/config").RuleModule[]}
  */
 function standardPackageRules(shared, options) {
@@ -468,8 +670,36 @@ function standardPackageRules(shared, options) {
       ?? (options.react ? "happy-dom" : undefined),
     skipAttw: options.skipAttw ?? options.skipTypes,
   };
+
+  if (options.minimalChangesOnly) {
+    return minimalPackageRules(shared, options);
+  }
+
   return [
     disallowWorkspaceCaret({ ...shared }),
+
+    ...minimalPackageRules(shared, options),
+
+    ...ifTrue(options.framework === "vite", [
+      packageScript({
+        ...shared,
+        options: {
+          scripts: {
+            "build": "vite build",
+            "dev": "vite",
+            "preview": "vite preview",
+          },
+        },
+      }),
+    ]),
+
+    ...ifTrue(options.fixedDepsOnly, [
+      fixedDepsOnly({
+        ...shared,
+      }),
+    ]),
+
+    ...ifTrue(options.checkApi, checkApiRules(shared)),
 
     standardTsconfig({
       ...shared,
@@ -547,20 +777,22 @@ function standardPackageRules(shared, options) {
           publishConfig: {
             "access": "public",
           },
-          files: [
-            ...(options.extraPublishFiles ?? []),
-            ...(options.extraFiles ?? []),
-            ...(options.output.cjs ? ["build/cjs"] : []),
-            ...(options.output.esm ? ["build/esm"] : []),
-            ...(options.output.browser ? ["build/browser"] : []),
-            ...(options.skipTypes ? [] : ["build/types"]),
-            "CHANGELOG.md",
-            "package.json",
-            "templates",
+          files: !options.private
+            ? [
+              ...(options.extraPublishFiles ?? []),
+              ...(options.extraFiles ?? []),
+              ...(options.output.cjs ? ["build/cjs"] : []),
+              ...(options.output.esm ? ["build/esm"] : []),
+              ...(options.output.browser ? ["build/browser"] : []),
+              ...(options.skipTypes ? [] : ["build/types"]),
+              "CHANGELOG.md",
+              "package.json",
+              "templates",
 
-            // fallback entries for "submodule imports" in legacy projects
-            "*.d.ts",
-          ],
+              // fallback entries for "submodule imports" in legacy projects
+              "*.d.ts",
+            ]
+            : [],
 
           ...(options.output.esm ? { module: `./build/esm/index.js` } : {}),
           ...(options.output.cjs
@@ -653,14 +885,6 @@ function standardPackageRules(shared, options) {
  */
 export default {
   rules: [
-    packageEntry({
-      includePackages: ["@osdk/create-app.template.*"],
-      options: {
-        entries: {
-          private: true,
-        },
-      },
-    }),
     fileContents({
       includePackages: ["@osdk/create-app.template.*"],
       options: {
@@ -715,226 +939,7 @@ NOTE: DO NOT EDIT THIS README BY HAND. It is generated by monorepolint.
       },
     }),
 
-    ...standardPackageRules({
-      excludePackages: [
-        ...nonStandardPackages,
-        ...usesReact,
-        ...viteApp,
-        ...consumerCliPackages,
-        ...forceBundle,
-        ...skipCjsAndBrowser,
-      ],
-    }, {
-      tsVersion: LATEST_TYPESCRIPT_DEP,
-      output: {
-        browser: "normal",
-        cjs: "bundle",
-        esm: "normal",
-      },
-    }),
-
-    ...standardPackageRules({
-      includePackages: [
-        ...usesReact,
-      ],
-    }, {
-      react: true,
-      tsVersion: LATEST_TYPESCRIPT_DEP,
-      output: {
-        browser: "normal",
-        cjs: "bundle",
-        esm: "normal",
-      },
-    }),
-
-    ...standardPackageRules({
-      includePackages: [
-        ...forceBundle,
-      ],
-    }, {
-      tsVersion: LATEST_TYPESCRIPT_DEP,
-      output: {
-        browser: "bundle",
-        cjs: "bundle",
-        esm: "bundle",
-      },
-    }),
-
-    ...standardPackageRules({
-      includePackages: [
-        ...consumerCliPackages,
-      ],
-      excludePackages: ["@osdk/foundry-sdk-generator"],
-    }, {
-      tsVersion: LATEST_TYPESCRIPT_DEP,
-      output: {
-        browser: undefined,
-        cjs: undefined,
-        esm: "bundle",
-      },
-    }),
-
-    ...standardPackageRules({
-      includePackages: [
-        ...skipCjsAndBrowser,
-      ],
-    }, {
-      tsVersion: LATEST_TYPESCRIPT_DEP,
-      output: {
-        browser: undefined,
-        cjs: undefined,
-        esm: "normal",
-      },
-      skipAttw: true,
-    }),
-
-    // ...standardPackageRules({
-    //   includePackages: ["@osdk/widget.vite-plugin.unstable"],
-    // }, {
-    //   tsVersion: LATEST_TYPESCRIPT_DEP,
-    //   output: {
-    //     browser: undefined,
-    //     cjs: undefined,
-    //     esm: "normal",
-    //   },
-    //   skipTypes: true,
-    //   extraFiles: ["build/client"],
-    // }),
-
-    ...standardPackageRules({
-      includePackages: [
-        ...viteApp,
-      ],
-    }, {
-      react: true,
-      output: {
-        browser: undefined,
-        cjs: undefined,
-        esm: "normal",
-      },
-      skipTypes: true,
-      skipAttw: true,
-      tsVersion: LATEST_TYPESCRIPT_DEP,
-      extraPublishFiles: ["build/site"],
-    }),
-
-    packageScript({
-      includePackages: [...viteApp],
-      options: {
-        scripts: {
-          "build": "vite build",
-          "dev": "vite",
-          "preview": "vite preview",
-        },
-      },
-    }),
-
-    ...standardPackageRules({
-      includePackages: [
-        ...consumerCliPackages,
-      ],
-    }, {
-      tsVersion: LATEST_TYPESCRIPT_DEP,
-      aliasConsola: false,
-      output: {
-        browser: undefined,
-        cjs: undefined,
-        esm: "bundle",
-      },
-    }),
-    fixedDepsOnly({
-      includePackages: [
-        ...consumerCliPackages,
-      ],
-    }),
-
-    ...standardPackageRules({
-      includePackages: ["@osdk/e2e.test.foundry-sdk-generator"],
-    }, {
-      output: {
-        browser: "normal",
-        cjs: "bundle",
-        esm: "normal",
-      },
-      skipTypes: true,
-      tsVersion: LATEST_TYPESCRIPT_DEP,
-      skipAttw: true,
-    }),
-
-    ...rulesForPackagesWithChecKApiTask(),
-
-    packageEntry({
-      options: {
-        entries: {
-          license: "Apache-2.0",
-          repository: {
-            "type": "git",
-            "url": "https://github.com/palantir/osdk-ts.git",
-          },
-        },
-        entriesExist: ["version"],
-      },
-    }),
-
-    requireDependency({
-      includePackages: [
-        "@osdk/foundry.*",
-        "@osdk/internal.foundry.*",
-        "@osdk/foundry",
-        "@osdk/internal.foundry",
-      ],
-      options: {
-        dependencies: {
-          "@osdk/shared.client2": "^1.0.0",
-          "@osdk/shared.net.platformapi": "~1.0.0",
-        },
-      },
-    }),
-
-    packageEntry({
-      options: {
-        entries: {
-          private: true,
-        },
-      },
-      includePackages: ["@osdk/example.*", "@osdk/tests.*"],
-    }),
-
-    fileContents({
-      includePackages: ["@osdk/internal.*"],
-      options: {
-        file: "README.md",
-        template: `# WARNING
-
-This is an internal only package.
-
-We may regularly break changes in this package for our own internal uses. If you use anything from this
-package you do so at your own risk.
-
-(Also, this is a generated file. Do not change directly.)
-`,
-      },
-    }),
-
-    packageEntry({
-      includePackages: privatePackages,
-      options: {
-        entries: {
-          private: true,
-        },
-      },
-    }),
-
-    noPackageEntry({
-      excludePackages: privatePackages,
-      options: {
-        entries: ["private"],
-      },
-    }),
-
-    allLocalDepsMustNotBePrivate({
-      includePackages: consumerCliPackages,
-    }),
+    ...archetypeRules.buildRules(),
 
     alphabeticalDependencies({ includeWorkspaceRoot: true }),
     alphabeticalScripts({ includeWorkspaceRoot: true }),
@@ -974,12 +979,13 @@ package you do so at your own risk.
 
 /**
  * Rules for packages that do api checks / docs generation
+ * @param {Omit<import("@monorepolint/config").RuleEntry<>,"options" | "id">} shared
  * @returns {import("@monorepolint/config").RuleModule<any>[]}
  */
-function rulesForPackagesWithChecKApiTask() {
+function checkApiRules(shared) {
   return [
     packageScript({
-      includePackages: checkApiPackages,
+      ...shared,
       options: {
         scripts: {
           "check-api": "api-extractor run --verbose --local",
@@ -987,7 +993,7 @@ function rulesForPackagesWithChecKApiTask() {
       },
     }),
     requireDependency({
-      includePackages: checkApiPackages,
+      ...shared,
       options: {
         devDependencies: {
           "@osdk/monorepo.api-extractor": "workspace:~",
@@ -997,7 +1003,7 @@ function rulesForPackagesWithChecKApiTask() {
       },
     }),
     fileContents({
-      includePackages: checkApiPackages,
+      ...shared,
       options: {
         file: "api-extractor.json",
         template: `{
