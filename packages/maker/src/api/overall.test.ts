@@ -1583,8 +1583,8 @@ describe("Ontology Defining", () => {
                    {
                      "interfaceTypeApiName": "com.palantir.interface",
                      "properties": {
-                       "bar": {
-                         "propertyTypeRid": "com.palantir.foo",
+                       "com.palantir.foo": {
+                         "propertyTypeRid": "bar",
                        },
                      },
                    },
