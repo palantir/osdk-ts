@@ -31,7 +31,7 @@ export function defineTypeGroup(
     };
   },
 ): TypeGroup {
-  const rid = namespace + opts.rid; // TODO - this isn't right, how to generate rid?
+  const rid = namespace + opts.rid;
   invariant(
     ontologyDefinition.typeGroups[rid] === undefined,
     `Type Group ${rid} already exists`,
