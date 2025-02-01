@@ -58,6 +58,7 @@ export async function defineOntology(
     importedTypes: {
       sharedPropertyTypes: [],
     },
+    typeGroups: {},
   };
 
   try {

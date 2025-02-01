@@ -56,6 +56,8 @@ export type {
   InterfaceTypeStatus_experimental,
 } from "./generated/ontology-metadata/api/InterfaceTypeStatus.js";
 
+export type { TypeGroup } from "./generated/ontology-metadata/api/TypeGroup.js";
+
 export type {
   ApiNameValueTypeReference,
   ImportedSharedPropertyTypes,
