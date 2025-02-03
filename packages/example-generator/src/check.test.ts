@@ -19,15 +19,16 @@ import { fileURLToPath } from "node:url";
 import { it } from "vitest";
 import { run } from "./run.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const THIS_FILE_DIR = path.dirname(fileURLToPath(import.meta.url));
 
 it(
   "Generates code that matches the files on disk in the examples dir",
+  { timeout: 15_000 },
   async () => {
+    process.env.STABLE_PACKAGE_CLIENT_VERSION = "workspace:*";
     await run({
-      outputDirectory: path.join(__dirname, "..", "..", "..", "examples"),
+      outputDirectory: path.join(THIS_FILE_DIR, "..", "..", "..", "examples"),
       check: true,
     });
   },
-  { timeout: 15000 },
 );

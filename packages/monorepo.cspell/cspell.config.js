@@ -20,6 +20,7 @@
 const fs = require("fs");
 const path = require("path");
 
+// this is okay because this file is a commonjs file
 const DICT_FOLDER = __dirname;
 
 const REGEX_OSDK_PACKAGE_NAME = /@osdk\/[\w\d.\-]+/g;

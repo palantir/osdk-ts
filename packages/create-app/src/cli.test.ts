@@ -18,7 +18,15 @@ import fs from "node:fs";
 import path, { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { dirSync } from "tmp";
-import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  test,
+  vi,
+} from "vitest";
 import { cli } from "./cli.js";
 import { TEMPLATES } from "./generatedNoCheck/templates.js";
 import type { Template } from "./templates.js";
@@ -44,9 +52,20 @@ beforeEach(() => {
   };
 });
 
+const EXPECTED_CLIENT_VERSION = "2.0.11";
+
 describe.each(TEMPLATES)("template $id", (template) => {
   const supportedVersions = Object.keys(template.files);
+
   describe.each(supportedVersions)("For SDK version %s", (sdkVersion) => {
+    beforeAll(() => {
+      vi.stubEnv("STABLE_PACKAGE_CLIENT_VERSION", EXPECTED_CLIENT_VERSION);
+    });
+
+    afterAll(() => {
+      vi.unstubAllEnvs();
+    });
+
     test(`CLI creates ${template.id}`, async () => {
       await runTest({
         project: `expected-${template.id}`,
@@ -119,7 +138,7 @@ async function runTest(
     // it should be, so that if the create-app code were to change to different behavior
     // it would be caught.
     expect(packageJson.dependencies["@osdk/client"]).toBe(
-      `^${createAppVersion}`,
+      `^${EXPECTED_CLIENT_VERSION}`,
     );
   } else {
     expect(packageJson.dependencies["@osdk/client"]).toBe(

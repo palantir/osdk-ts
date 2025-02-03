@@ -16,9 +16,13 @@
 
 import commonjs from "@rollup/plugin-commonjs";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
+import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 import type { ModuleFormat, RollupBuild } from "rollup";
 import { rollup } from "rollup";
 import nodePolyfill from "rollup-plugin-polyfill-node";
+
+const THIS_FILE_DIR = path.dirname(fileURLToPath(import.meta.url));
 
 async function createRollupBuild(
   absolutePackagePath: string,
@@ -28,7 +32,7 @@ async function createRollupBuild(
 
   const { findUp } = await import("find-up");
   const nodeModulesPath = await findUp("node_modules", {
-    cwd: __dirname,
+    cwd: THIS_FILE_DIR,
     type: "directory",
   });
 
