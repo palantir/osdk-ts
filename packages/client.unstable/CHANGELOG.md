@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.1.0-beta.26
+
+### Minor Changes
+
+- 94463b6: Support objects as code
+
 ## 2.1.0-beta.25
 
 ## 2.1.0-beta.24

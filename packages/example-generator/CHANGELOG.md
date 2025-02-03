@@ -1,5 +1,17 @@
 # @osdk/example-generator
 
+## 0.9.0-beta.25
+
+### Minor Changes
+
+- d430386: Rename unstable create-widget --widgetSetRid arg to --widgetSet
+
+### Patch Changes
+
+- Updated dependencies [d430386]
+  - @osdk/create-widget@2.0.0-beta.11
+  - @osdk/create-app@2.1.0-beta.26
+
 ## 0.9.0-beta.24
 
 ### Patch Changes
