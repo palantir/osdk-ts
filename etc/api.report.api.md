@@ -389,7 +389,7 @@ export namespace DerivedProperty {
     export interface Builder<
     		Q extends ObjectOrInterfaceDefinition,
     		CONSTRAINED extends boolean
-    	> extends Filterable<Q>, Pivotable<Q, CONSTRAINED> {}
+    	> extends Filterable<Q, CONSTRAINED>, Pivotable<Q, CONSTRAINED> {}
     	// (undocumented)
     export type Clause<Q extends ObjectOrInterfaceDefinition> = { [key: string]: Selector<Q, SimplePropertyDef> };
     	// (undocumented)

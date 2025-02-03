@@ -48,7 +48,7 @@ export namespace DerivedProperty {
   export interface Builder<
     Q extends ObjectOrInterfaceDefinition,
     CONSTRAINED extends boolean,
-  > extends Filterable<Q>, Pivotable<Q, CONSTRAINED> {
+  > extends Filterable<Q, CONSTRAINED>, Pivotable<Q, CONSTRAINED> {
   }
 
   export interface AggregateBuilder<
@@ -64,18 +64,25 @@ export namespace DerivedProperty {
   }
 }
 
-interface Filterable<
-  Q extends ObjectOrInterfaceDefinition,
-> {
-  readonly where: (
-    clause: WhereClause<Q>,
-  ) => this;
-}
-
-interface Pivotable<
+type BuilderTypeFromConstraint<
   Q extends ObjectOrInterfaceDefinition,
   CONSTRAINED extends boolean,
-> {
+> = CONSTRAINED extends true ? DerivedProperty.AggregateBuilder<Q, true>
+  : DerivedProperty.SelectPropertyBuilder<Q, false>;
+
+type Filterable<
+  Q extends ObjectOrInterfaceDefinition,
+  CONSTRAINED extends boolean,
+> = {
+  readonly where: (
+    clause: WhereClause<Q>,
+  ) => BuilderTypeFromConstraint<Q, CONSTRAINED>;
+};
+
+type Pivotable<
+  Q extends ObjectOrInterfaceDefinition,
+  CONSTRAINED extends boolean,
+> = {
   readonly pivotTo: <L extends LinkNames<Q>>(
     type: L,
   ) => CONSTRAINED extends true
@@ -83,11 +90,11 @@ interface Pivotable<
     : NonNullable<CompileTimeMetadata<Q>["links"][L]["multiplicity"]> extends
       true ? DerivedProperty.AggregateBuilder<LinkedType<Q, L>, true>
     : DerivedProperty.SelectPropertyBuilder<LinkedType<Q, L>, false>;
-}
+};
 
-interface Aggregatable<
+type Aggregatable<
   Q extends ObjectOrInterfaceDefinition,
-> {
+> = {
   readonly aggregate: <
     V extends ValidAggregationKeys<
       Q,
@@ -110,9 +117,9 @@ interface Aggregatable<
       : V extends "$count" ? "integer" | undefined
       : never
   >;
-}
+};
 
-interface Selectable<Q extends ObjectOrInterfaceDefinition> {
+type Selectable<Q extends ObjectOrInterfaceDefinition> = {
   readonly selectProperty: <R extends PropertyKeys<Q>>(
     propertyName: R,
   ) => DerivedProperty.SelectorResult<
@@ -122,4 +129,4 @@ interface Selectable<Q extends ObjectOrInterfaceDefinition> {
       CompileTimeMetadata<Q>["properties"][R]["multiplicity"]
     >
   >;
-}
+};
