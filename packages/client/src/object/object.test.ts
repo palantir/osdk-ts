@@ -282,6 +282,38 @@ describe("OsdkObject", () => {
       `);
     });
 
+    it("correctly scopes up with another OSDK object", async () => {
+      const firstEmployee = { $clone: () => {} } as unknown as Osdk.Instance<
+        Employee,
+        never,
+        "class"
+      >;
+      expectTypeOf(firstEmployee.$clone(employee)).toMatchTypeOf<
+        Osdk.Instance<
+          Employee,
+          never,
+          PropertyKeys<Employee>
+        >
+      >();
+    });
+
+    it("Correctly preserves keys from original and new with distinct property key sets", async () => {
+      const firstEmployee = { $clone: () => {} } as unknown as Osdk.Instance<
+        Employee,
+        never,
+        "class"
+      >;
+      expectTypeOf(
+        firstEmployee.$clone({} as Osdk.Instance<Employee, never, "office">),
+      ).toMatchTypeOf<
+        Osdk.Instance<
+          Employee,
+          never,
+          "class" | "office"
+        >
+      >();
+    });
+
     it("clones and updates an object with a record", async () => {
       const mergedEmployee = employee.$clone({
         "class": "Green",
@@ -309,6 +341,27 @@ describe("OsdkObject", () => {
           "startDate": "2019-01-01",
         }
       `);
+    });
+
+    it("correctly scopes up with a record", async () => {
+      const firstEmployee = { $clone: () => {} } as unknown as Osdk.Instance<
+        Employee,
+        never,
+        "class"
+      >;
+      expectTypeOf(firstEmployee.$clone({
+        "class": "Green",
+        "employeeId": 50031,
+        "fullName": "John Doe",
+        "office": "SEA",
+        "startDate": "2019-01-01",
+      })).toMatchTypeOf<
+        Osdk.Instance<
+          Employee,
+          never,
+          "class" | "employeeId" | "fullName" | "office" | "startDate"
+        >
+      >();
     });
 
     it("correctly sets title", async () => {
