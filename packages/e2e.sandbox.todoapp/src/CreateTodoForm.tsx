@@ -14,7 +14,7 @@ export default function CreateTodoForm({
   const [error, setError] = useState<string>();
 
   return (
-    <div className="flex flex-shrink mb-6">
+    <div className="flex shrink mb-6">
       <form
         ref={formRef}
         onSubmit={async (evt) => {
@@ -48,7 +48,7 @@ export default function CreateTodoForm({
            dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:ring-gray-600"
         />
         <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded aria-disabled:bg-gray-300 aria-disabled:cursor-default"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm aria-disabled:bg-gray-300 aria-disabled:cursor-default"
           aria-disabled={false}
           disabled={pending}
         >
