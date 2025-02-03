@@ -150,7 +150,7 @@ describe("Load Ontologies Metadata", () => {
     expect(Object.keys(fullMetadata.queryTypes)).toHaveLength(0);
   });
 
-  it("Loads object and action types without link types", async () => {
+  it("Loads object, action, interface types without link types", async () => {
     const ontologyMetadataResolver = new OntologyMetadataResolver(
       "myAccessToken",
       "https://stack.palantir.com",
@@ -161,6 +161,7 @@ describe("Load Ontologies Metadata", () => {
         {
           objectTypesApiNamesToLoad: ["Employee"],
           actionTypesApiNamesToLoad: ["promote-employee"],
+          interfaceTypesApiNamesToLoad: ["FooInterface"],
         },
       );
 
@@ -175,6 +176,7 @@ describe("Load Ontologies Metadata", () => {
     expect(fullMetadata.objectTypes.Employee.linkTypes)
       .toHaveLength(0);
     expect(Object.keys(fullMetadata.actionTypes)).toHaveLength(1);
+    expect(Object.keys(fullMetadata.interfaceTypes)).toHaveLength(1);
     expect(ontologyDefinitions.value).toMatchSnapshot();
   });
 
@@ -204,5 +206,64 @@ describe("Load Ontologies Metadata", () => {
     expect(fullMetadata.objectTypes.Office.linkTypes).toHaveLength(0);
     expect(Object.keys(fullMetadata.actionTypes)).toHaveLength(1);
     expect(ontologyDefinitions.value).toMatchSnapshot();
+  });
+  it("Loads action types with media refs, interface props, and structs", async () => {
+    const ontologyMetadataResolver = new OntologyMetadataResolver(
+      "myAccessToken",
+      "https://stack.palantir.com",
+    );
+    const ontologyDefinitions = await ontologyMetadataResolver
+      .getWireOntologyDefinition(
+        "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+        {
+          objectTypesApiNamesToLoad: ["Employee", "Office"],
+          actionTypesApiNamesToLoad: [
+            "promote-employee",
+            "delete-foo-interface",
+            "createStructPerson",
+            "actionTakesMedia",
+          ],
+          interfaceTypesApiNamesToLoad: ["FooInterface"],
+        },
+      );
+
+    if (ontologyDefinitions.isErr()) {
+      throw new Error(ontologyDefinitions.error.join("\n"));
+    }
+
+    const fullMetadata = ontologyDefinitions.value.filteredFullMetadata;
+
+    expect(Object.keys(fullMetadata.objectTypes)).toHaveLength(2);
+    expect(Object.keys(fullMetadata.actionTypes)).toHaveLength(4);
+    expect(ontologyDefinitions.value).toMatchSnapshot();
+  });
+  it("Throws error if loading action type with missing interface type", async () => {
+    const ontologyMetadataResolver = new OntologyMetadataResolver(
+      "myAccessToken",
+      "https://stack.palantir.com",
+    );
+    const ontologyDefinitions = await ontologyMetadataResolver
+      .getWireOntologyDefinition(
+        "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+        {
+          objectTypesApiNamesToLoad: ["Employee", "Office"],
+          actionTypesApiNamesToLoad: [
+            "promote-employee",
+            "delete-foo-interface",
+            "createStructPerson",
+            "actionTakesMedia",
+          ],
+        },
+      );
+
+    if (ontologyDefinitions.isOk()) {
+      throw new Error();
+    }
+
+    expect(ontologyDefinitions.error).toMatchInlineSnapshot(`
+        [
+          "Unable to load action deleteFooInterface because it takes an unloaded interface type as a parameter: FooInterface make sure to specify it as an argument with --ontologyInterfaces FooInterface",
+        ]
+      `);
   });
 });
