@@ -1,7 +1,8 @@
+import React from "react";
 import "./App.css";
-import CreateTodoForm from "./CreateTodoForm";
-import { TodoView } from "./TodoView";
-import { useTodos } from "./useTodos";
+import CreateTodoForm from "./CreateTodoForm.js";
+import { TodoView } from "./TodoView.js";
+import { useTodos } from "./useTodos.js";
 
 function App() {
   const { todos, isLoading, toggleComplete, error, isValidating, createTodo } =

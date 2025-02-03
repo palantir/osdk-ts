@@ -26,13 +26,13 @@ export const App: React.FC = () => {
     | { state: "not-started" }
   >({ state: "not-started" });
   useEffect(() => {
-    fetch("./entrypoints")
+    void fetch("./entrypoints")
       .then((res) => res.json())
       .then(({ entrypoints }: { entrypoints: string[] }) => {
         setEntrypointPaths(entrypoints);
         // Poll the manifest endpoint until all entrypoints have JS files listed for them
-        let poll = window.setInterval(() => {
-          fetch("./manifest")
+        const poll = window.setInterval(() => {
+          void fetch("./manifest")
             .then((res) => res.json())
             .then(({ manifest }) => {
               let clearInterval = true;
@@ -48,7 +48,7 @@ export const App: React.FC = () => {
                 window.clearInterval(poll);
                 setLoading({ state: "loading" });
                 // Tell the vite server to start dev mode for the specified entrypoint
-                fetch("./finish", {
+                void fetch("./finish", {
                   // TODO: Actually handle multiple entrypoints
                   body: JSON.stringify({ entrypoint: entrypoints[0] }),
                   method: "POST",
@@ -58,7 +58,7 @@ export const App: React.FC = () => {
                   } else {
                     setLoading({ state: "success" });
                     setTimeout(() => {
-                      res
+                      void res
                         .json()
                         .then(
                           (

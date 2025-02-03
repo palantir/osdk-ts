@@ -275,7 +275,7 @@ export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
 
       server.middlewares.use(
         `${server.config.base ?? "/"}${SETUP_PATH}`,
-        sirv(path.resolve(DIR_DIST, "../client"), {
+        sirv(path.resolve(DIR_DIST, "../site"), {
           single: true,
           dev: true,
         }),

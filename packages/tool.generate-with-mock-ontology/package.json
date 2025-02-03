@@ -1,7 +1,7 @@
 {
   "name": "@osdk/tool.generate-with-mock-ontology",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.1.0-beta.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -29,7 +29,6 @@
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
-    "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
@@ -51,14 +50,7 @@
   "bin": {
     "generate-with-mock-ontology": "./bin/generate-with-mock-ontology.mjs"
   },
-  "files": [
-    "build/esm",
-    "build/types",
-    "CHANGELOG.md",
-    "package.json",
-    "templates",
-    "*.d.ts"
-  ],
+  "files": [],
   "module": "./build/esm/index.js",
   "type": "module"
 }

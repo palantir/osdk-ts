@@ -1,6 +1,6 @@
 {
   "name": "@osdk/create-app",
-  "version": "2.1.0-beta.25",
+  "version": "2.1.0-beta.26",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -38,10 +38,10 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "consola": "^3.2.3",
-    "find-up": "^7.0.0",
-    "handlebars": "^4.7.8",
-    "yargs": "^17.7.2"
+    "consola": "3.2.3",
+    "find-up": "7.0.0",
+    "handlebars": "4.7.8",
+    "yargs": "17.7.2"
   },
   "devDependencies": {
     "@osdk/create-app.template.expo.v2": "workspace:*",

@@ -1,7 +1,7 @@
 {
   "name": "@osdk/cli.cmd.typescript",
   "private": true,
-  "version": "0.25.0-beta.25",
+  "version": "0.25.0-beta.26",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -59,14 +59,7 @@
   "bin": {
     "osdk-unstable-typescript": "./bin/osdk-unstable-typescript.mjs"
   },
-  "files": [
-    "build/esm",
-    "build/types",
-    "CHANGELOG.md",
-    "package.json",
-    "templates",
-    "*.d.ts"
-  ],
+  "files": [],
   "module": "./build/esm/index.js",
   "types": "./build/esm/index.d.ts",
   "type": "module"

@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-import { dirname, join } from "path";
-import { fileURLToPath } from "url";
 import { configDefaults, defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    alias: {
-      "consola": join(
-        dirname(fileURLToPath(import.meta.url)),
-        "./src/__e2e_tests__/consola.ts",
-      ),
-    },
     pool: "forks",
     exclude: [...configDefaults.exclude, "**/build/**/*"],
     fakeTimers: {

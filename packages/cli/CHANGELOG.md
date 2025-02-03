@@ -1,5 +1,11 @@
 # @osdk/cli
 
+## 0.25.0-beta.26
+
+### Minor Changes
+
+- 8766327: CLI unstable widgetset commands
+
 ## 0.25.0-beta.25
 
 ## 0.25.0-beta.24
