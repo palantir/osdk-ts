@@ -238,6 +238,33 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       return { unsubscribe: async () => (await pendingSubscribe)() };
     },
 
+    nearestNeighbors: (
+      query,
+      numNeighbors,
+      property,
+    ) => {
+      const nearestNeighborsQuery = isTextQuery(query)
+        ? { "type": "text" as const, "value": query }
+        : { "type": "vector" as const, "value": query };
+      return clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        {
+          type: "nearestNeighbors",
+          objectSet: {
+            type: "base",
+            objectType: objectType.apiName,
+          },
+          propertyIdentifier: {
+            type: "property",
+            apiName: property,
+          },
+          numNeighbors,
+          query: nearestNeighborsQuery,
+        },
+      ) as ObjectSet<Q>;
+    },
+
     $objectSetInternals: {
       def: objectType,
     },
@@ -284,4 +311,8 @@ async function createWithPk(
     },
   };
   return withPk;
+}
+
+function isTextQuery(query: string | number[]): query is string {
+  return typeof query === "string";
 }
