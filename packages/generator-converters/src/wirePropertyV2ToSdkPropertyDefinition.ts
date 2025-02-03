@@ -56,6 +56,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "timeseries":
     case "marking":
     case "geotimeSeriesReference":
+    case "vector":
     case "struct":
       return {
         displayName: input.displayName,
@@ -107,6 +108,7 @@ function objectPropertyTypeToSdkPropertyDefinition(
     case "timestamp":
     case "marking":
     case "geotimeSeriesReference":
+    case "vector":
     case "mediaReference":
       return propertyType.type;
     case "date":
