@@ -155,6 +155,20 @@ describe("FetchMetadata", () => {
             "nullable": true,
             "type": "string",
           },
+          "skillSet": {
+            "description": "A short description of the employees skill set",
+            "displayName": undefined,
+            "multiplicity": false,
+            "nullable": true,
+            "type": "string",
+          },
+          "skillSetEmbedding": {
+            "description": "Vectorized skill set",
+            "displayName": undefined,
+            "multiplicity": false,
+            "nullable": true,
+            "type": "vector",
+          },
           "startDate": {
             "description": "The date the employee was hired (most recently, if they were re-hired)",
             "displayName": undefined,
