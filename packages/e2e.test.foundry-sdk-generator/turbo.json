@@ -6,7 +6,7 @@
     },
     "codegen": {
       "inputs": ["generateMockOntology.js"],
-      "outputs": ["src/generatedNoCheck/**/*"],
+      "outputs": ["build/codegen/**/*"],
       "dependsOn": [
         "@osdk/foundry-sdk-generator#transpile",
         "@osdk/foundry-sdk-generator#typecheck",
