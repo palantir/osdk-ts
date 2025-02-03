@@ -63,7 +63,7 @@ describe(Generator, () => {
   it("Generator stuff", () => {
     const generator = new Generator("my-package");
 
-    let file = generator
+    const file = generator
       .createFile("#my/path/to/file")
       .addNamedImport({
         name: "Foo",
@@ -180,7 +180,7 @@ function typecheckJs(x: string, y: string, basePath: string) {
 
   const configPath = path.join(basePath, "jsconfig.json");
 
-  let { config, error } = ts.readConfigFile(configPath, ts.sys.readFile);
+  const { config, error } = ts.readConfigFile(configPath, ts.sys.readFile);
   expect(error).toBeUndefined();
 
   const { fileNames, options, errors } = ts.parseJsonConfigFileContent(

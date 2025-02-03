@@ -36,39 +36,37 @@ function prefix(words: string[]) {
 }
 
 export class CodeFile {
-  imports = new Map<
+  imports: Map<
     string,
-    | {
+    {
       type: "namespace";
       localName: string;
       typeOnly: boolean;
       module: string;
-    }
-    | {
+    } | {
       type: "named";
       localName: string;
       theirName?: string;
       typeOnly: boolean;
       module: string;
     }
-  >();
+  > = new Map();
 
-  exports = new Map<
+  exports: Map<
     string,
-    | {
+    {
       type: "namespace";
       localName: string;
       typeOnly: boolean;
       module: string;
-    }
-    | {
+    } | {
       type: "named";
       localName: string;
       theirName?: string;
       typeOnly: boolean;
       module: string;
     }
-  >();
+  > = new Map();
 
   dts = "";
   js = "";
@@ -79,14 +77,14 @@ export class CodeFile {
     this.path = path.substring(1);
   }
 
-  addConst(name: string, type: string, value: string) {
+  addConst(name: string, type: string, value: string): this {
     this.compositeDts += `export const ${name}: ${type};\n`;
     this.dts += `export const ${name}: ${type};\n`;
     this.js += `export const ${name} = ${value};\n`;
     return this;
   }
 
-  addTypeOrInterface(code: string) {
+  addTypeOrInterface(code: string): this {
     this.compositeDts += `export ${code};\n`;
     this.dts += `export ${code};\n`;
     return this;
@@ -156,7 +154,7 @@ export class CodeFile {
     name: string;
     typeOnly?: boolean;
     module: string;
-  }) {
+  }): this {
     return this.#addImportExport("export", "namespace", opts);
   }
 
@@ -164,7 +162,7 @@ export class CodeFile {
     name: string;
     typeOnly?: boolean;
     module: string;
-  }) {
+  }): this {
     return this.#addImportExport("import", "namespace", opts);
   }
 
@@ -186,7 +184,7 @@ export class CodeFile {
         | "export"
         | "export type"} * as ${string} from "${string}"`,
     //   | `export {${string}} from "${string}"`,
-  ) {
+  ): this {
     if (typeof opts === "string") {
       let result =
         /^(import|export)\s+(type)?\s*{([a-zA-Z\-@ ]*?|[a-zA-Z\-@ ]*? as [a-zA-Z\-@ ]*?)} from "(.*?)";?$/
@@ -232,7 +230,15 @@ export class CodeFile {
     });
   }
 
-  generateFiles() {
+  generateFiles(): {
+    compositeDts: string;
+    js: {
+      [x: string]: string;
+    };
+    dts: {
+      [x: string]: string;
+    };
+  } {
     const organizedImports = organizeImportsExports(this.imports);
     const organizedExports = organizeImportsExports(this.exports);
 
@@ -368,7 +374,7 @@ function organizeImportsExports(
 }
 
 /** relativeTo that does not depend on nodejs */
-export function relativeTo(from: string, to: string) {
+export function relativeTo(from: string, to: string): string {
   let commonPrefix = prefix([from, to]);
   if (commonPrefix.length) {
     commonPrefix = commonPrefix.substring(0, commonPrefix.lastIndexOf("/") + 1);
