@@ -16,6 +16,7 @@
 
 export * as OntologyBranchService from "./OntologyBranchService.js";
 
+export type { BaseFormatterReferencedPropertiesDoNotExistError } from "./BaseFormatterReferencedPropertiesDoNotExistError.js";
 export type { BaseValueTypeUsageError } from "./BaseValueTypeUsageError.js";
 export type { BranchIndexingConfig } from "./BranchIndexingConfig.js";
 export type { BranchLock } from "./BranchLock.js";
@@ -50,6 +51,7 @@ export type { GeotimeSeriesDatasourceDoesNotReferenceExistingPropertiesError } f
 export type { GeotimeSeriesDatasourceDoesNotReferenceGeotimeSeriesReferencePropertiesError } from "./GeotimeSeriesDatasourceDoesNotReferenceGeotimeSeriesReferencePropertiesError.js";
 export type { GeotimeSeriesReferencePropertyTypeConstraintError } from "./GeotimeSeriesReferencePropertyTypeConstraintError.js";
 export type { GeotimeSeriesReferencePropertyTypeHasNoDatasourcesError } from "./GeotimeSeriesReferencePropertyTypeHasNoDatasourcesError.js";
+export type { GpsPolicyColumnsFromRestrictedViewsAreMappedError } from "./GpsPolicyColumnsFromRestrictedViewsAreMappedError.js";
 export type { ImplicitAndExplicitPropertyImplementationError } from "./ImplicitAndExplicitPropertyImplementationError.js";
 export type { IndexedBranchConfig } from "./IndexedBranchConfig.js";
 export type { InterfaceImplementationError } from "./InterfaceImplementationError.js";
@@ -63,6 +65,7 @@ export type { InvalidDerivedForeignKeyError } from "./InvalidDerivedForeignKeyEr
 export type { InvalidForeignKeyTypeError } from "./InvalidForeignKeyTypeError.js";
 export type { InvalidIsIndexedForSearchError } from "./InvalidIsIndexedForSearchError.js";
 export type { InvalidLinkedEntityImplementingInterfaceLinkTypeError } from "./InvalidLinkedEntityImplementingInterfaceLinkTypeError.js";
+export type { InvalidNumberOfPropertyReferencesInPropertySecurityGroupError } from "./InvalidNumberOfPropertyReferencesInPropertySecurityGroupError.js";
 export type { InvalidPropertyImplementationError } from "./InvalidPropertyImplementationError.js";
 export type { InvalidPropertyTypeError } from "./InvalidPropertyTypeError.js";
 export type { InvalidTypeClassesError } from "./InvalidTypeClassesError.js";
@@ -108,6 +111,7 @@ export type { NumberOfDatasourcesConstraintError } from "./NumberOfDatasourcesCo
 export type { ObjectTypeDatasourceColumnMappingMismatchError } from "./ObjectTypeDatasourceColumnMappingMismatchError.js";
 export type { ObjectTypeDatasourceWithoutPrimaryKeyColumnError } from "./ObjectTypeDatasourceWithoutPrimaryKeyColumnError.js";
 export type { ObjectTypeImplementsTooManyInterfacesError } from "./ObjectTypeImplementsTooManyInterfacesError.js";
+export type { ObjectTypePropertyConstraintError } from "./ObjectTypePropertyConstraintError.js";
 export type { ObjectTypePropertyIncompatibleBackingColumnTypeError } from "./ObjectTypePropertyIncompatibleBackingColumnTypeError.js";
 export type { ObjectTypesHaveNoDatasourcesError } from "./ObjectTypesHaveNoDatasourcesError.js";
 export type { ObjectTypesHaveTooManyDatasourcesError } from "./ObjectTypesHaveTooManyDatasourcesError.js";
@@ -129,6 +133,7 @@ export type { OwnerIdentifierNone } from "./OwnerIdentifierNone.js";
 export type { PrimaryAndForeignKeyTypeMismatchError } from "./PrimaryAndForeignKeyTypeMismatchError.js";
 export type { PrimaryKeyChangeMigrationError } from "./PrimaryKeyChangeMigrationError.js";
 export type { PrimaryKeyIsDerivedError } from "./PrimaryKeyIsDerivedError.js";
+export type { PropertySecurityGroupsConstraintError } from "./PropertySecurityGroupsConstraintError.js";
 export type { PropertyTypeValueTypeUsageError } from "./PropertyTypeValueTypeUsageError.js";
 export type { ProposalStatusV2 } from "./ProposalStatusV2.js";
 export type { ProposalTaskDetails } from "./ProposalTaskDetails.js";
@@ -151,6 +156,7 @@ export type { TimeDependentPropertyTypeHasNoDatasourcesError } from "./TimeDepen
 export type { TimeSeriesDatasourceDoesNotReferenceExistingPropertiesError } from "./TimeSeriesDatasourceDoesNotReferenceExistingPropertiesError.js";
 export type { TimeSeriesDatasourceDoesNotReferenceTimeDependentPropertiesError } from "./TimeSeriesDatasourceDoesNotReferenceTimeDependentPropertiesError.js";
 export type { TitlePropertyTypeIsDerivedError } from "./TitlePropertyTypeIsDerivedError.js";
+export type { UnmappedPropertiesInPropertySecurityGroupError } from "./UnmappedPropertiesInPropertySecurityGroupError.js";
 export type { ValidateOntologyBranchRequest } from "./ValidateOntologyBranchRequest.js";
 export type { ValidateOntologyBranchResponse } from "./ValidateOntologyBranchResponse.js";
 export type { ValidationError } from "./ValidationError.js";

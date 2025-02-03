@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import type { DisplayMetadataConfigurationDefaultLayout } from "./DisplayMetadataConfigurationDefaultLayout.js";
+import type { DisplayMetadataConfigurationDisplayAndFormat } from "./DisplayMetadataConfigurationDisplayAndFormat.js";
+
 /**
- * Local overridden alias of OMS public API representation of ObjectTypeEntityMetadata. In OMS API we model
- * editsResolutionStrategies field as non-optional, but Marketplace ontology block data uploaded to
- * artifacts faces similar constraints as our internal StorageObjectTypeEntityMetadata and we need to provide
- * runtime conversion with default value.
+ * Config info for rendering and configuring the layouts of the (inline) action widgets
  */
-export interface OntologyIrMarketplaceObjectTypeEntityMetadata {
-  arePatchesEnabled: boolean;
+export interface ActionTypeDisplayMetadataConfiguration {
+  defaultLayout: DisplayMetadataConfigurationDefaultLayout;
+  displayAndFormat: DisplayMetadataConfigurationDisplayAndFormat;
+  enableLayoutUserSwitch: boolean;
 }

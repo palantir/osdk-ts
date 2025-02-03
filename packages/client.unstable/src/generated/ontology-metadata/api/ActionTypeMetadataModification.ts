@@ -14,33 +14,38 @@
  * limitations under the License.
  */
 
+import type { ActionApplyClientPreferences } from "./ActionApplyClientPreferences.js";
 import type { ActionLogConfiguration } from "./ActionLogConfiguration.js";
-import type { ActionLogic } from "./ActionLogic.js";
-import type { ActionNotification } from "./ActionNotification.js";
 import type { ActionNotificationSettings } from "./ActionNotificationSettings.js";
-import type { ActionRevert } from "./ActionRevert.js";
 import type { ActionTypeApiName } from "./ActionTypeApiName.js";
 import type { ActionTypeDisplayMetadataModification } from "./ActionTypeDisplayMetadataModification.js";
+import type { ActionTypeEntities } from "./ActionTypeEntities.js";
+import type { ActionTypeRid } from "./ActionTypeRid.js";
 import type { ActionTypeStatus } from "./ActionTypeStatus.js";
-import type { ActionWebhooks } from "./ActionWebhooks.js";
+import type { ActionTypeVersion } from "./ActionTypeVersion.js";
+import type { ActionTypeProvenance } from "./entitymetadata/provenance/ActionTypeProvenance.js";
+import type { FormContent } from "./FormContent.js";
+import type { Parameter } from "./Parameter.js";
 import type { ParameterId } from "./ParameterId.js";
-import type { PutParameterRequest } from "./PutParameterRequest.js";
-import type { ValidationRule } from "./ValidationRule.js";
+import type { Section } from "./Section.js";
+import type { SectionId } from "./SectionId.js";
 
 /**
- * A PutActionTypeRequest is used to create or modify Action Types.
+ * An ActionType defines the schema of the edits that can be made to Phonograph.
  */
-export interface PutActionTypeRequest {
+export interface ActionTypeMetadataModification {
+  rid: ActionTypeRid;
   apiName: ActionTypeApiName;
+  version: ActionTypeVersion;
   displayMetadata: ActionTypeDisplayMetadataModification;
-  parameters: Record<ParameterId, PutParameterRequest>;
+  parameters: Record<ParameterId, Parameter>;
+  sections: Record<SectionId, Section>;
   parameterOrdering: Array<ParameterId>;
-  logic: ActionLogic;
-  validation: Array<ValidationRule>;
-  webhooks: ActionWebhooks | undefined;
-  notifications: Array<ActionNotification>;
+  formContentOrdering: Array<FormContent>;
   actionLogConfiguration: ActionLogConfiguration | undefined;
-  revert: ActionRevert | undefined;
-  status: ActionTypeStatus | undefined;
-  notificationSettings: ActionNotificationSettings | undefined;
+  status: ActionTypeStatus;
+  entities: ActionTypeEntities | undefined;
+  actionApplyClientSettings: ActionApplyClientPreferences | undefined;
+  notificationSettings: ActionNotificationSettings;
+  provenance: ActionTypeProvenance | undefined;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionType } from "../ActionType.js";
+import type { ActionTypeModificationRequest } from "../ActionTypeModificationRequest.js";
 
 /**
  * Request for ActionTypeDescriptionGenerator Plugin which takes in an Action Type and summarizes what the
@@ -22,5 +22,5 @@ import type { ActionType } from "../ActionType.js";
  * The plugin will generate a few suggestions that the user could then accept and save to the actionType.
  */
 export interface ActionTypeDescriptionGeneratorPluginRequest {
-  actionType: ActionType;
+  actionType: ActionTypeModificationRequest;
 }

@@ -14,129 +14,123 @@
  * limitations under the License.
  */
 
-import type * as api from "@osdk/api";
-import type {
-  ObjectPropertyType,
-  ObjectTypeFullMetadata,
-  PropertyV2,
-} from "@osdk/internal.foundry.core";
 import invariant from "tiny-invariant";
-import { ontologyDefinition } from "./defineOntology.js";
+import { namespace, ontologyDefinition } from "./defineOntology.js";
+import type { ObjectType, SharedPropertyType } from "./types.js";
 
-type Writeable<T> = {
-  -readonly [P in keyof T]: T[P] extends ReadonlyArray<infer Q> ? Array<Q>
-    : Writeable<T[P]>;
-};
+export function defineObject(objectDef: ObjectType): ObjectType {
+  const apiName = namespace + objectDef.apiName;
+  const propertyApiNames = (objectDef.properties ?? []).map(val => val.apiName);
+  if (ontologyDefinition.objectTypes[apiName] !== undefined) {
+    throw new Error(
+      `Object type with apiName ${objectDef.apiName} is already defined`,
+    );
+  }
+  invariant(
+    propertyApiNames.includes(objectDef.titlePropertyApiName),
+    `Title property ${objectDef.titlePropertyApiName} is not defined on object ${objectDef.apiName}`,
+  );
+  invariant(
+    objectDef.primaryKeys.length !== 0,
+    `${objectDef.apiName} does not have any primary keys, objects must have at least one primary key`,
+  );
+  const nonExistentPrimaryKeys = objectDef.primaryKeys.filter(primaryKey =>
+    !objectDef.properties?.map(val => val.apiName).includes(primaryKey)
+  );
+  invariant(
+    nonExistentPrimaryKeys.length === 0,
+    `Primary key properties ${nonExistentPrimaryKeys} do not exist on object ${objectDef.apiName}`,
+  );
 
-export interface ObjectType {
-  data: ObjectTypeFullMetadata;
-  linkTypes: Record<string, {
-    // hasMany: (apiName: string, t: ObjectType, {
-    //   reverse: {}
-    // })
-  }>;
+  objectDef.implementsInterfaces?.forEach(interfaceImpl => {
+    const nonExistentInterfaceProperties: ValidationResult[] = interfaceImpl
+      .propertyMapping.map(val => val.interfaceProperty).filter(
+        interfaceProperty =>
+          interfaceImpl.implements.properties[interfaceProperty] === undefined,
+      ).map(interfaceProp => ({
+        type: "invalid",
+        reason:
+          `Interface property ${interfaceImpl.implements.apiName}.${interfaceProp} referenced in ${objectDef.apiName} object does not exist`,
+      }));
+
+    const interfaceToObjectProperties = Object.fromEntries(
+      interfaceImpl.propertyMapping.map(
+        mapping => [mapping.interfaceProperty, mapping.mapsTo],
+      ),
+    );
+    const validateProperty = (
+      interfaceProp: [string, SharedPropertyType],
+    ): ValidationResult => {
+      if (
+        interfaceProp[1].nonNameSpacedApiName in interfaceToObjectProperties
+      ) {
+        return validateInterfaceImplProperty(
+          interfaceProp[1],
+          interfaceToObjectProperties[interfaceProp[0]],
+          objectDef,
+        );
+      }
+      return {
+        type: "invalid",
+        reason: `Interface property ${interfaceImpl.implements.apiName}.${
+          interfaceProp[1].nonNameSpacedApiName
+        } not implemented by ${objectDef.apiName} object definition`,
+      };
+    };
+    const baseValidations = Object.entries(interfaceImpl.implements.properties)
+      .map<ValidationResult>(validateProperty);
+    const extendsValidations = interfaceImpl.implements.extendsInterfaces
+      .flatMap(interfaceApiName =>
+        Object.entries(
+          ontologyDefinition.interfaceTypes[interfaceApiName].properties,
+        ).map(validateProperty)
+      );
+
+    const allFailedValidations = baseValidations.concat(
+      extendsValidations,
+      nonExistentInterfaceProperties,
+    ).filter(val => val.type === "invalid");
+    invariant(
+      allFailedValidations.length === 0,
+      "\n" + allFailedValidations.map(formatValidationErrors).join("\n"),
+    );
+  });
+
+  ontologyDefinition.objectTypes[apiName] = { ...objectDef, apiName: apiName };
+  return { ...objectDef, apiName: apiName };
 }
 
-export function defineObject(
-  apiName: string,
-  opts: {
-    displayName?: string;
-    pluralDisplayName?: string;
-    primaryKey: api.ObjectMetadata.Property & { apiName: string };
-    properties?: Record<
-      string,
-      | api.WirePropertyTypes
-      | api.ObjectMetadata.Property
-    >;
-  },
-): ObjectType {
-  ontologyDefinition.objectTypes[apiName] = {
-    implementsInterfaces: [],
-    implementsInterfaces2: {},
-    linkTypes: [],
-    objectType: {
-      apiName,
-      primaryKey: opts.primaryKey.apiName,
-      displayName: opts.displayName ?? apiName,
-      pluralDisplayName: opts.pluralDisplayName ?? apiName,
-      icon: {
-        color: "blue",
-        name: "cube",
-        type: "blueprint",
-      },
+type ValidationResult = { type: "valid" } | { type: "invalid"; reason: string };
 
-      properties: {
-        [opts.primaryKey.apiName]: {
-          dataType: convertType(opts.primaryKey),
-          rid: "rid",
-        },
-      },
-      rid: "PLACEHOLDER",
-      status: "ACTIVE",
-      titleProperty: opts.primaryKey.apiName,
-    },
-    sharedPropertyTypeMapping: {},
-  };
-
-  // FIXME: don't return the raw value
-  return {
-    data: ontologyDefinition.objectTypes[apiName],
-    linkTypes: {},
-  };
+function formatValidationErrors(
+  error: { type: "invalid"; reason: string },
+): string {
+  return `Ontology Definition Error: ${error.reason}\n`;
 }
 
-function convertType(
-  t: api.ObjectMetadata.Property & {
-    apiName: string;
-  },
-): PropertyV2["dataType"] {
-  switch (true) {
-    case t.multiplicity === true:
-      return {
-        type: "array",
-        subType: convertType({ ...t, multiplicity: false }),
-      };
-
-    case t.type === "stringTimeseries":
-      return {
-        itemType: {
-          type: "string",
-        },
-        type: "timeseries",
-      };
-      break;
-
-    case t.type === "numericTimeseries":
-      return {
-        itemType: {
-          type: "double",
-        },
-        type: "timeseries",
-      };
-
-    case t.type === "sensorTimeseries":
-      return {
-        type: "timeseries",
-      };
-
-    case t.type === "datetime":
-      return {
-        type: "timestamp",
-      };
-    case typeof t.type === "object": {
-      return {
-        type: "struct",
-        structFieldTypes: Object.entries(t.type).map(([apiName, dataType]) => ({
-          apiName,
-          dataType: { type: dataType } as ObjectPropertyType,
-        })),
-      };
-    }
-    default:
-      return {
-        type: t.type,
-      };
+// Validate that the object and the interface property match up
+function validateInterfaceImplProperty(
+  spt: SharedPropertyType,
+  mappedObjectProp: string,
+  object: ObjectType,
+): ValidationResult {
+  const objProp = object.properties?.find(prop =>
+    prop.apiName === mappedObjectProp
+  );
+  if (objProp === undefined) {
+    return {
+      type: "invalid",
+      reason:
+        `Object property mapped to interface does not exist. Object Property Mapped: ${mappedObjectProp}`,
+    };
+  }
+  if (spt.type !== objProp?.type) {
+    return {
+      type: "invalid",
+      reason:
+        `Object property type does not match the interface property it is mapped to. Interface Property: ${spt.apiName}, objectProperty: ${mappedObjectProp}`,
+    };
   }
 
-  invariant(false);
+  return { type: "valid" };
 }

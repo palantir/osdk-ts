@@ -131,6 +131,7 @@ export type { PartialPropertyTypeModification } from "./PartialPropertyTypeModif
 export type { PerOntologyUniqueIdentifier } from "./PerOntologyUniqueIdentifier.js";
 export type { PropertyTypeModification } from "./PropertyTypeModification.js";
 export type { PropertyTypeStatusModification } from "./PropertyTypeStatusModification.js";
+export type { PutParameterRequestModificationWithId } from "./PutParameterRequestModificationWithId.js";
 export type { PutParameterRequestWithId } from "./PutParameterRequestWithId.js";
 export type { PutSectionRequestWithId } from "./PutSectionRequestWithId.js";
 export type { ReadOnlyV1V2Modification } from "./ReadOnlyV1V2Modification.js";

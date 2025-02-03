@@ -1,4 +1,20 @@
 /*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
  * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,15 +34,21 @@ import type {
   OntologyIr,
   OntologyIrInterfaceType,
   OntologyIrInterfaceTypeBlockDataV2,
+  OntologyIrObjectTypeBlockDataV2,
+  OntologyIrObjectTypeDatasource,
+  OntologyIrPropertyType,
   OntologyIrSharedPropertyType,
   OntologyIrSharedPropertyTypeBlockDataV2,
   OntologyIrStructFieldType,
   OntologyIrType,
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
+  PropertyTypeMappingInfo,
 } from "@osdk/client.unstable";
 import type {
   InterfaceType,
+  ObjectPropertyType,
+  ObjectType,
   Ontology,
   PropertyTypeType,
   SharedPropertyType,
@@ -104,6 +126,13 @@ function convertToWireOntologyIr(
 ): OntologyIr {
   return {
     blockData: {
+      objectTypes: Object.fromEntries(
+        Object.entries(ontology.objectTypes).map<
+          [string, OntologyIrObjectTypeBlockDataV2]
+        >(([apiName, objectType]) => {
+          return [apiName, convertObject(objectType)];
+        }),
+      ),
       sharedPropertyTypes: Object.fromEntries(
         Object.entries(
           ontology.sharedPropertyTypes,
@@ -132,6 +161,100 @@ function convertToWireOntologyIr(
     },
     importedTypes: ontology.importedTypes,
   };
+}
+
+function convertObject(
+  objectType: ObjectType,
+): OntologyIrObjectTypeBlockDataV2 {
+  const propertyDatasource: Record<string, PropertyTypeMappingInfo> = {};
+  (objectType.properties ?? []).forEach((property) => {
+    propertyDatasource[property.apiName] = {
+      type: "column",
+      column: property.apiName,
+    };
+  });
+
+  const datasource: OntologyIrObjectTypeDatasource = {
+    rid: "ri.ontology.main.datasource.".concat(objectType.apiName),
+    datasource: {
+      type: "datasetV2",
+      datasetV2: {
+        datasetRid: objectType.apiName,
+        propertyMapping: propertyDatasource,
+      },
+    },
+    editsConfiguration: {
+      onlyAllowPrivilegedEdits: false,
+    },
+    redacted: false,
+  };
+
+  const implementations = objectType.implementsInterfaces ?? [];
+
+  return {
+    objectType: {
+      displayMetadata: {
+        description: objectType.description,
+        displayName: objectType.displayName,
+        groupDisplayName: undefined,
+        icon: {
+          type: "blueprint",
+          blueprint: objectType.icon ?? { locator: "cube", color: "#2D72D2" },
+        },
+        pluralDisplayName: objectType.pluralDisplayName,
+        visibility: objectType.visibility ?? "NORMAL",
+      },
+      primaryKeys: objectType.primaryKeys,
+      propertyTypes: Object.fromEntries(
+        objectType.properties?.map<[string, OntologyIrPropertyType]>(
+          val => [val.apiName, convertProperty(val)],
+        ) ?? [],
+      ),
+      titlePropertyTypeRid: objectType.titlePropertyApiName,
+      apiName: objectType.apiName,
+      status: objectType.status ?? {
+        type: "active",
+        active: {},
+      },
+      redacted: false,
+      implementsInterfaces2: implementations.map(impl => ({
+        interfaceTypeApiName: impl.implements.apiName,
+        properties: Object.fromEntries(
+          impl.propertyMapping.map(
+            mapping => [namespace + mapping.interfaceProperty, {
+              propertyTypeRid: mapping.mapsTo,
+            }],
+          ),
+        ),
+      })),
+      allImplementsInterfaces: {},
+    },
+    datasources: [datasource],
+    entityMetadata: { arePatchesEnabled: objectType.editsEnabled ?? false },
+  };
+}
+
+function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {
+  const output: OntologyIrPropertyType = {
+    apiName: property.apiName,
+    sharedPropertyTypeApiName: property.sharedPropertyType?.apiName,
+    displayMetadata: {
+      displayName: property.displayName,
+      description: property.description,
+      visibility: property.visibility ?? "NORMAL",
+    },
+    indexedForSearch: property.indexedForSearch ?? true,
+    ruleSetBinding: undefined,
+    baseFormatter: property.baseFormatter,
+    type: convertType(property.type),
+    typeClasses: property.typeClasses ?? [],
+    status: property.status ?? { type: "active", active: {} },
+    inlineAction: undefined,
+    dataConstraints: property.dataConstraints,
+    sharedPropertyTypeRid: property.sharedPropertyType?.apiName,
+    valueType: undefined,
+  };
+  return output;
 }
 
 function convertInterface(

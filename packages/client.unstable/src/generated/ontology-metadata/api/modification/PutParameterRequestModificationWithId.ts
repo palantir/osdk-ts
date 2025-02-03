@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-export { default as default } from "./cli/main.js";
+import type { ParameterId } from "../ParameterId.js";
+import type { PutParameterRequestModification } from "../PutParameterRequestModification.js";
 
-export { importSharedPropertyType } from "./api/defineImportSpt.js";
-export { defineInterface } from "./api/defineInterface.js";
-export { defineInterfaceLinkConstraint } from "./api/defineInterfaceLinkConstraint.js";
-export { defineObject } from "./api/defineObject.js";
-export { defineSharedPropertyType } from "./api/defineSpt.js";
-export { defineValueType } from "./api/defineValueType.js";
+/**
+ * Internal version of PutParameterRequestModification.
+ */
+export interface PutParameterRequestModificationWithId {
+  id: ParameterId;
+  putParameterRequest: PutParameterRequestModification;
+}
