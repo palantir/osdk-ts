@@ -31,6 +31,7 @@ import type { InterfaceDefinition } from "../ontology/InterfaceDefinition.js";
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
+  VectorPropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
 import type {
   CompileTimeMetadata,
@@ -254,4 +255,23 @@ export interface ObjectSet<
     listener: ObjectSetListener<Q, P>,
     opts?: ObjectSetListenerOptions<Q, P>,
   ) => { unsubscribe: () => void };
+
+  /**
+   * Finds the nearest neighbors for a given text or vector within the object set.
+   *
+   * @param query - Queries support either a vector matching the embedding model defined on the property, or text that is
+        automatically embedded.
+   * @param numNeighbors - The number of objects to return. If the number of documents in the objectType is less than the provided
+            value, all objects will be returned. This value is limited to 1 <= numNeighbors <= 500.
+   * @param property - The property key with a defined embedding model to search over.
+   *
+   * @returns An object set containing the `numNeighbors` nearest neighbors. To return the objects ordered by relevance and each
+   * objects associated score, specify "relevance" in the orderBy.
+ */
+
+  readonly nearestNeighbors: (
+    query: string | number[],
+    numNeighbors: number,
+    property: VectorPropertyKeys<Q>,
+  ) => this;
 }

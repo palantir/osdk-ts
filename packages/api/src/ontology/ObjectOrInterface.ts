@@ -16,11 +16,27 @@
 
 import type { InterfaceDefinition } from "./InterfaceDefinition.js";
 import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
+import type { SimpleWirePropertyTypes } from "./WirePropertyTypes.js";
 
 export type ObjectOrInterfaceDefinition =
   | ObjectTypeDefinition
   | InterfaceDefinition;
 
+type Properties<O extends ObjectOrInterfaceDefinition> = NonNullable<
+  O["__DefinitionMetadata"]
+>["properties"];
+
 export type PropertyKeys<
   O extends ObjectOrInterfaceDefinition,
-> = keyof NonNullable<O["__DefinitionMetadata"]>["properties"] & string;
+> = keyof Properties<O> & string;
+
+type VectorType = Extract<SimpleWirePropertyTypes, "vector">;
+export type VectorPropertyKeys<O extends ObjectOrInterfaceDefinition> =
+  & keyof {
+    [
+      K in keyof Properties<O> as Properties<O>[K]["type"] extends VectorType
+        ? K
+        : never
+    ]: any;
+  }
+  & string;

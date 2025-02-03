@@ -38,4 +38,5 @@ export type SimpleWirePropertyTypes =
   | "attachment"
   | "geopoint"
   | "geoshape"
-  | "geotimeSeriesReference";
+  | "geotimeSeriesReference"
+  | "vector";

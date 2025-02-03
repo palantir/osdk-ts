@@ -30,6 +30,8 @@ export type OsdkBase<
   readonly $primaryKey: PrimaryKeyType<Q>;
 
   readonly $title: string | undefined;
+
+  readonly $score?: number | undefined;
 };
 
 export type PrimaryKeyType<Q extends ObjectOrInterfaceDefinition> =
