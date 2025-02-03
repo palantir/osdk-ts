@@ -1,5 +1,27 @@
 # @osdk/client
 
+## 2.1.0-beta.26
+
+### Minor Changes
+
+- 7865cb6: Add support for search on struct properties.
+- e6fbd94: Export Attachment from client
+- 9c4efe6: Support uploading media parameters through actions
+- 44e62f6: Updating fetch for auth and other packages.
+- 94463b6: Support objects as code
+- f19da8e: Remove where clause from aggregate options. This option was never actually doing anything before as it was not passed to the backend for processing, so we are removing it to prevent future confusion.
+
+### Patch Changes
+
+- Updated dependencies [7865cb6]
+- Updated dependencies [9c4efe6]
+- Updated dependencies [44e62f6]
+- Updated dependencies [94463b6]
+- Updated dependencies [f19da8e]
+  - @osdk/api@2.1.0-beta.26
+  - @osdk/generator-converters@2.1.0-beta.26
+  - @osdk/client.unstable@2.1.0-beta.26
+
 ## 2.1.0-beta.25
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @osdk/create-widget
 
+## 2.0.0-beta.11
+
+### Minor Changes
+
+- d430386: Rename unstable create-widget --widgetSetRid arg to --widgetSet
+
 ## 2.0.0-beta.10
 
 ## 2.0.0-beta.9

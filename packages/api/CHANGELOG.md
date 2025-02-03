@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 2.1.0-beta.26
+
+### Minor Changes
+
+- 7865cb6: Add support for search on struct properties.
+- 9c4efe6: Support uploading media parameters through actions
+- f19da8e: Remove where clause from aggregate options. This option was never actually doing anything before as it was not passed to the backend for processing, so we are removing it to prevent future confusion.
+
 ## 2.1.0-beta.25
 
 ### Minor Changes
