@@ -74,7 +74,7 @@
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/eslint-plugin-jsx-a11y": "^6.9.0",
     "@types/jest": "^29.5.12",
-    "@types/node": "^22.7.4",
+    "@types/node": "^18.0.0",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-test-renderer": "^18.3.0",
