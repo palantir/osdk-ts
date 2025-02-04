@@ -1,5 +1,12 @@
 # @osdk/shared.test
 
+## 2.0.13
+
+### Patch Changes
+
+- Updated dependencies [e38a391]
+  - @osdk/api@2.0.13
+
 ## 2.0.12
 
 ### Patch Changes

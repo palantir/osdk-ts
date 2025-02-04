@@ -1,5 +1,13 @@
 # @osdk/example-generator
 
+## 0.8.6
+
+### Patch Changes
+
+- 245ce7a: Add the scopes option to OSDK CLI and update all example generators to include the scopes if provided, else, hide the scopes to avoid confusion
+- Updated dependencies [245ce7a]
+  - @osdk/create-app@2.0.13
+
 ## 0.8.5
 
 ### Patch Changes

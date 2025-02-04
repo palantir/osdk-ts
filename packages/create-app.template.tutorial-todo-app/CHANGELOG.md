@@ -1,5 +1,11 @@
 # @osdk/create-app.template.tutorial-todo-app
 
+## 2.0.13
+
+### Patch Changes
+
+- 245ce7a: Add the scopes option to OSDK CLI and update all example generators to include the scopes if provided, else, hide the scopes to avoid confusion
+
 ## 2.0.12
 
 ## 2.0.11
