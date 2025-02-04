@@ -187,10 +187,7 @@ export type AggregationsResults<
 export type AllGroupByValues = GroupByMapper[keyof GroupByMapper];
 
 // @public (undocumented)
-export type AllowedBucketKeyTypes = AllowedBucketTypes | {
-    	startValue: AllowedBucketTypes;
-    	endValue: AllowedBucketTypes;
-};
+export type AllowedBucketKeyTypes = AllowedBucketTypes | Range_2<AllowedBucketTypes>;
 
 // @public (undocumented)
 export type AllowedBucketTypes = string | number | boolean;
@@ -306,20 +303,11 @@ export interface DataValueClientToWire {
     	// (undocumented)
     struct: Record<string, any>;
     	// (undocumented)
-    threeDimensionalAggregation: {
-        		key: AllowedBucketKeyTypes;
-        		groups: {
-            			key: AllowedBucketKeyTypes;
-            			value: AllowedBucketTypes;
-            		}[];
-        	}[];
+    threeDimensionalAggregation: ThreeDimensionalAggregation<AllowedBucketKeyTypes, AllowedBucketKeyTypes, AllowedBucketTypes>;
     	// (undocumented)
     timestamp: string;
     	// (undocumented)
-    twoDimensionalAggregation: {
-        		key: AllowedBucketKeyTypes;
-        		value: AllowedBucketTypes;
-        	}[];
+    twoDimensionalAggregation: TwoDimensionalAggregation<AllowedBucketKeyTypes, AllowedBucketTypes>;
 }
 
 // @public
@@ -359,20 +347,11 @@ export interface DataValueWireToClient {
     	// (undocumented)
     struct: Record<string, any>;
     	// (undocumented)
-    threeDimensionalAggregation: {
-        		key: AllowedBucketKeyTypes;
-        		groups: {
-            			key: AllowedBucketKeyTypes;
-            			value: AllowedBucketTypes;
-            		}[];
-        	}[];
+    threeDimensionalAggregation: ThreeDimensionalAggregation<AllowedBucketKeyTypes, AllowedBucketKeyTypes, AllowedBucketTypes>;
     	// (undocumented)
     timestamp: string;
     	// (undocumented)
-    twoDimensionalAggregation: {
-        		key: AllowedBucketKeyTypes;
-        		value: AllowedBucketTypes;
-        	}[];
+    twoDimensionalAggregation: TwoDimensionalAggregation<AllowedBucketKeyTypes, AllowedBucketTypes>;
 }
 
 // @public (undocumented)
@@ -980,6 +959,16 @@ export namespace QueryResult {
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueWireToClient[T];
 }
 
+// @public (undocumented)
+type Range_2<T extends AllowedBucketTypes> = {
+    	startValue?: T;
+    	endValue: T;
+} | {
+    	startValue: T;
+    	endValue?: T;
+};
+export { Range_2 as Range }
+
 // Warning: (ae-forgotten-export) The symbol "ErrorResult" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -1020,6 +1009,19 @@ export type SingleOsdkResult<
 	R extends boolean,
 	S extends NullabilityAdherence
 > = Osdk.Instance<Q, ExtractOptions<R, S>, L>;
+
+// @public (undocumented)
+export type ThreeDimensionalAggregation<
+	T extends AllowedBucketKeyTypes,
+	U extends AllowedBucketKeyTypes,
+	V extends AllowedBucketTypes
+> = {
+    	key: T;
+    	groups: {
+        		key: U;
+        		value: V;
+        	}[];
+}[];
 
 // Warning: (ae-forgotten-export) The symbol "AggregationKeyDataType" needs to be exported by the entry point index.d.ts
 //
@@ -1100,6 +1102,15 @@ export type TimeSeriesQuery = {
     	$after?: never;
     	$unit?: never;
 };
+
+// @public (undocumented)
+export type TwoDimensionalAggregation<
+	T extends AllowedBucketKeyTypes,
+	U extends AllowedBucketTypes
+> = {
+    	key: T;
+    	value: U;
+}[];
 
 // @public (undocumented)
 export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<"date" | "double" | "timestamp">;

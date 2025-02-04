@@ -49,8 +49,6 @@ export type {
   GroupByRange,
 } from "./groupby/GroupByClause.js";
 export type {
-  AllowedBucketKeyTypes,
-  AllowedBucketTypes,
   DataValueClientToWire,
   DataValueWireToClient,
 } from "./mapping/DataValueMapping.js";
@@ -118,6 +116,21 @@ export type { OsdkBase, PrimaryKeyType } from "./OsdkBase.js";
 export type { OsdkObject } from "./OsdkObject.js";
 export type { ConvertProps, Osdk } from "./OsdkObjectFrom.js";
 export type { PageResult } from "./PageResult.js";
+export type {
+  AllowedBucketKeyTypes,
+  AllowedBucketTypes,
+  Range,
+  ThreeDimensionalAggregation,
+  TwoDimensionalAggregation,
+} from "./queries/Aggregations.js";
+export type {
+  DateISO,
+  Double,
+  Float,
+  Integer,
+  Long,
+  TimestampISO,
+} from "./queries/Primitives.js";
 export type { QueryParam, QueryResult } from "./queries/Queries.js";
 export { TimeseriesDurationMapping } from "./timeseries/timeseries.js";
 export type {

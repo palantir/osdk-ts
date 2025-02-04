@@ -16,6 +16,12 @@
 
 import type { Attachment, AttachmentUpload } from "../object/Attachment.js";
 import type { MediaReference } from "../object/Media.js";
+import type {
+  AllowedBucketKeyTypes,
+  AllowedBucketTypes,
+  ThreeDimensionalAggregation,
+  TwoDimensionalAggregation,
+} from "../queries/Aggregations.js";
 
 /**
  * Map from the DataValue type to the typescript type that we return
@@ -36,14 +42,15 @@ export interface DataValueWireToClient {
   string: string;
   timestamp: string;
   mediaReference: MediaReference;
-  twoDimensionalAggregation: {
-    key: AllowedBucketKeyTypes;
-    value: AllowedBucketTypes;
-  }[];
-  threeDimensionalAggregation: {
-    key: AllowedBucketKeyTypes;
-    groups: { key: AllowedBucketKeyTypes; value: AllowedBucketTypes }[];
-  }[];
+  twoDimensionalAggregation: TwoDimensionalAggregation<
+    AllowedBucketKeyTypes,
+    AllowedBucketTypes
+  >;
+  threeDimensionalAggregation: ThreeDimensionalAggregation<
+    AllowedBucketKeyTypes,
+    AllowedBucketKeyTypes,
+    AllowedBucketTypes
+  >;
   struct: Record<string, any>;
   set: Set<any>;
   objectType: string;
@@ -69,22 +76,15 @@ export interface DataValueClientToWire {
   timestamp: string;
   set: Set<any>;
   mediaReference: MediaReference;
-  twoDimensionalAggregation: {
-    key: AllowedBucketKeyTypes;
-    value: AllowedBucketTypes;
-  }[];
-  threeDimensionalAggregation: {
-    key: AllowedBucketKeyTypes;
-    groups: { key: AllowedBucketKeyTypes; value: AllowedBucketTypes }[];
-  }[];
+  twoDimensionalAggregation: TwoDimensionalAggregation<
+    AllowedBucketKeyTypes,
+    AllowedBucketTypes
+  >;
+  threeDimensionalAggregation: ThreeDimensionalAggregation<
+    AllowedBucketKeyTypes,
+    AllowedBucketKeyTypes,
+    AllowedBucketTypes
+  >;
   struct: Record<string, any>;
   objectType: string;
 }
-
-export type AllowedBucketTypes = string | number | boolean;
-export type AllowedBucketKeyTypes =
-  | AllowedBucketTypes
-  | {
-    startValue: AllowedBucketTypes;
-    endValue: AllowedBucketTypes;
-  };
