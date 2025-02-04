@@ -20,8 +20,10 @@ import type {
 } from "../mapping/DataValueMapping.js";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { ObjectTypeDefinition } from "../ontology/ObjectTypeDefinition.js";
+import type { TwoDimensionalQueryAggregationDefinition } from "../ontology/QueryDefinition.js";
 import type { OsdkBase } from "../OsdkBase.js";
 import type { OsdkObjectPrimaryKeyType } from "../OsdkObjectPrimaryKeyType.js";
+import type { TwoDimensionalAggregation } from "./Aggregations.js";
 
 /**
  * Helper types for converting query definition parameter types to typescript types
@@ -44,6 +46,13 @@ export namespace QueryParam {
    * Helper type to convert action definition parameter object sets to typescript types
    */
   export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
+
+  export type TwoDimensionalAggregationType<
+    T extends TwoDimensionalQueryAggregationDefinition,
+  > = TwoDimensionalAggregation<
+    DataValueClientToWire[T["keyType"]],
+    DataValueClientToWire[T["valueType"]]
+  >;
 }
 
 /**

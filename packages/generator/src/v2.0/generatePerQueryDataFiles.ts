@@ -150,7 +150,7 @@ async function generateV2QueryFile(
                 ${
                   queryParamJsDoc(paramToDef(parameter), { apiName })
                 }readonly "${apiName}"${q.nullable ? "?" : ""}`,
-                `${getQueryParamType(ontology, q, "Param")}`,
+                getQueryParamType(ontology, q, "Param"),
               ];
             },
           })
@@ -312,7 +312,7 @@ export function getQueryParamType(
                 ${type === "Param" ? "readonly " : ""}"${apiName}"${
                 p.nullable ? "?" : ""
               }`,
-              `${getQueryParamType(enhancedOntology, p, type)}`,
+              getQueryParamType(enhancedOntology, p, type),
             ];
           },
         })
