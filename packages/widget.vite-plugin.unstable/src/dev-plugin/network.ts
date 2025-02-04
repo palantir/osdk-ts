@@ -14,31 +14,37 @@
  * limitations under the License.
  */
 
-import { VITE_INJECTIONS } from "./constants.js";
+type WidgetSettings = Record<string, {
+  entrypointJs: {
+    filePath: string;
+    scriptType: { type: "module"; module: {} };
+  }[];
+  entrypointCss: string[];
+}>;
 
-export function setWidgetSettings(
-  widgetRid: string,
-  foundryUrl: URL,
-  localhostUrl: string,
-  entrypointToJsSourceFileMap: Record<string, Set<string>>,
-  entrypointFileName: string,
-  injectedScriptSources: string[],
+export function setWidgetSetSettings(
+  foundryUrl: string,
+  widgetSetRid: string,
+  widgetIdToOverrides: Record<string, string[]>,
 ): Promise<Response> {
-  const widgetDevModeSettings = {
-    entrypointJs: [
-      `/${VITE_INJECTIONS}`,
-      ...injectedScriptSources,
-      ...entrypointToJsSourceFileMap[entrypointFileName],
-    ].map((file) => ({
-      filePath: `${localhostUrl}${file}`,
-      scriptType: { type: "module", module: {} },
-    })),
-    entrypointCss: [],
-  };
+  const widgetSettings: WidgetSettings = Object.fromEntries(
+    Object.entries(widgetIdToOverrides).map(
+      ([widgetId, overrides]) => ([
+        widgetId,
+        {
+          entrypointJs: overrides.map((filePath) => ({
+            filePath,
+            scriptType: { type: "module", module: {} },
+          })),
+          entrypointCss: [],
+        },
+      ] as const),
+    ),
+  );
   return fetch(
-    `${foundryUrl.origin}/widget-registry/api/dev-mode/settings/${widgetRid}`,
+    `${foundryUrl}/widget-registry/api/dev-mode/settings/${widgetSetRid}/ids`,
     {
-      body: JSON.stringify(widgetDevModeSettings),
+      body: JSON.stringify({ widgetSettings }),
       method: "PUT",
       headers: {
         authorization: `Bearer ${process.env.FOUNDRY_TOKEN}`,
@@ -49,8 +55,8 @@ export function setWidgetSettings(
   );
 }
 
-export function enableDevMode(foundryUrl: URL): Promise<Response> {
-  return fetch(`${foundryUrl.origin}/widget-registry/api/dev-mode/enable`, {
+export function enableDevMode(foundryUrl: string): Promise<Response> {
+  return fetch(`${foundryUrl}/widget-registry/api/dev-mode/enable`, {
     method: "POST",
     headers: {
       authorization: `Bearer ${process.env.FOUNDRY_TOKEN}`,

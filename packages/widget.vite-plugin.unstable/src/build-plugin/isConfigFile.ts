@@ -14,24 +14,9 @@
  * limitations under the License.
  */
 
-import type { ResolvedConfig } from "vite";
+import { CONFIG_FILE_SUFFIX } from "../common/constants.js";
 
-/**
- * Extract a standardized list of entrypoint paths from the possible Vite config formats.
- */
-export function getEntrypointPaths(config: ResolvedConfig): string[] {
-  if (typeof config.build.lib === "string") {
-    return [config.build.lib];
-  }
-  if (Array.isArray(config.build.lib)) {
-    return config.build.lib;
-  }
-  if (config.build.lib && typeof config.build.lib === "object") {
-    // In this case we don't ca
-    return Object.values(config.build.lib.entry);
-  }
-
-  throw new Error(
-    "Widget entrypoints were not found in the expected Vite config format",
-  );
+export function isConfigFile(filePath: string): boolean {
+  const trimmedFilePath = filePath.replace(/\.[^/.]+$/, "");
+  return trimmedFilePath.endsWith(CONFIG_FILE_SUFFIX);
 }

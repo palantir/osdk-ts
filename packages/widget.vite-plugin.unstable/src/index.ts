@@ -15,8 +15,8 @@
  */
 
 import type { PluginOption } from "vite";
-import { FoundryWidgetBuildPlugin } from "./FoundryWidgetBuildPlugin.js";
-import { FoundryWidgetDevPlugin } from "./FoundryWidgetDevPlugin.js";
+import { FoundryWidgetBuildPlugin } from "./build-plugin/FoundryWidgetBuildPlugin.js";
+import { FoundryWidgetDevPlugin } from "./dev-plugin/FoundryWidgetDevPlugin.js";
 
 export default function FoundryWidgetVitePlugin(): PluginOption {
   return [FoundryWidgetDevPlugin(), FoundryWidgetBuildPlugin()];
