@@ -14,7 +14,8 @@
     "prepare": "husky install",
     "test": "FORCE_COLOR=1 turbo run test",
     "test:watch": "FORCE_COLOR=1 turbo run test:watch",
-    "typecheckAll": "tsc --build packages/* examples-extra/basic/*"
+    "typecheckAll": "tsc --build packages/* examples-extra/basic/*",
+    "e2e": "./scripts/run-e2e.sh"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.3",

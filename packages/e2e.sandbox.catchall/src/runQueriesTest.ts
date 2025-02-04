@@ -24,3 +24,5 @@ export async function runQueriesTest(): Promise<void> {
 
   console.log(result);
 }
+
+void runQueriesTest();

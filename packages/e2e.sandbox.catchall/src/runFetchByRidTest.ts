@@ -28,3 +28,5 @@ export async function runFetchByRidTest(): Promise<void> {
 
   console.log(result);
 }
+
+void runFetchByRidTest();

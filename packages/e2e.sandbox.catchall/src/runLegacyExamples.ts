@@ -30,3 +30,5 @@ export async function runLegacyExamples(): Promise<void> {
   await fetchAggregationForEmployeesGrouped(client);
   await fetchEmployeeLead(client, "bob");
 }
+
+void runLegacyExamples();

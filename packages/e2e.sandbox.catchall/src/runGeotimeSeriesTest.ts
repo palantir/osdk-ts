@@ -59,3 +59,5 @@ export async function runGeotimeSeriesReferenceTests(): Promise<void> {
 
   console.log("GTSR with no data should be undefined: ", noDataPoint);
 }
+
+void runGeotimeSeriesReferenceTests();

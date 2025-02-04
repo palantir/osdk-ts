@@ -62,3 +62,5 @@ export async function runAggregationGroupByDatesTest(): Promise<void> {
     rangedDates[0].$count,
   );
 }
+
+void runAggregationGroupByDatesTest();

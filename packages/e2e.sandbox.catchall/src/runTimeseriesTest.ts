@@ -45,3 +45,5 @@ export async function runTimeseriesTest(): Promise<void> {
   const firstPoint = await sensorResult.timeSeriesProperty?.getFirstPoint();
   console.log("sensor point: ", firstPoint);
 }
+
+void runTimeseriesTest();

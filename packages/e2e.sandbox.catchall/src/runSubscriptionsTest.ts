@@ -129,3 +129,5 @@ export async function runSubscriptionsTest(): Promise<void> {
     },
   );
 }
+
+void runSubscriptionsTest();
