@@ -5,6 +5,10 @@ import { createPublicOauthClient } from "@osdk/oauth";
 const url = import.meta.env.VITE_FOUNDRY_API_URL;
 const clientId = import.meta.env.VITE_FOUNDRY_CLIENT_ID;
 const redirectUrl = import.meta.env.VITE_FOUNDRY_REDIRECT_URL;
+const scopes = [
+    "api:ontologies-read",
+    "api:ontologies-write",
+];
 
 checkEnv(url, "VITE_FOUNDRY_API_URL");
 checkEnv(clientId, "VITE_FOUNDRY_CLIENT_ID");
@@ -23,7 +27,12 @@ export const auth = createPublicOauthClient(
   clientId,
   url,
   redirectUrl,
-  )
+  true,
+  undefined,
+  window.location.toString(),
+  scopes,
+);
+
 /**
  * Initialize the client to interact with the Ontology SDK
  */
