@@ -1,5 +1,17 @@
 # @osdk/foundry-sdk-generator
 
+## 2.1.0-beta.27
+
+### Minor Changes
+
+- c70821e: Fix generation of actions with new parameter types.
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.27
+- @osdk/client@2.1.0-beta.27
+- @osdk/generator@2.1.0-beta.27
+
 ## 2.1.0-beta.26
 
 ### Minor Changes
