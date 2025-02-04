@@ -1,5 +1,15 @@
 # @osdk/client
 
+## 2.0.13
+
+### Patch Changes
+
+- e38a391: Creates new export for internal helper functions
+- Updated dependencies [e38a391]
+  - @osdk/api@2.0.13
+  - @osdk/generator-converters@2.0.13
+  - @osdk/client.unstable@2.0.13
+
 ## 2.0.12
 
 ### Patch Changes

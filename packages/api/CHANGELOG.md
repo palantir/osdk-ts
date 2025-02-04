@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.0.13
+
+### Patch Changes
+
+- e38a391: Creates new export for internal helper functions
+
 ## 2.0.12
 
 ### Patch Changes
