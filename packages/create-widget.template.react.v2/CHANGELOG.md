@@ -1,5 +1,11 @@
 # @osdk/create-widget.template.react.v2
 
+## 2.0.0-beta.12
+
+### Minor Changes
+
+- 2bd3ba3: Fix a typo in the generated widget description
+
 ## 2.0.0-beta.11
 
 ### Minor Changes
