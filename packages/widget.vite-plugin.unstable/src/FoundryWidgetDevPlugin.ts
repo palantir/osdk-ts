@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { autoVersion, loadFoundryConfig } from "@osdk/foundry-config-json";
+import { loadFoundryConfig } from "@osdk/foundry-config-json";
 import {
-  MANIFEST_FILE_LOCATION,
   type ParameterConfig,
   type WidgetConfig,
 } from "@osdk/widget-api.unstable";
@@ -34,14 +33,13 @@ import {
 import { extractInjectedScripts } from "./extractInjectedScripts.js";
 import { extractWidgetConfig } from "./extractWidgetConfig.js";
 import { enableDevMode, setWidgetSettings } from "./network.js";
-import { widgetSetManifest } from "./widgetSetManifest.js";
 
 export const DIR_DIST: string = typeof __dirname !== "undefined"
   ? __dirname
   : path.dirname(fileURLToPath(import.meta.url));
 export interface Options {}
 
-export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
+export function FoundryWidgetDevPlugin(_options: Options = {}): Plugin {
   const baseDir = process.cwd();
   const foundryConfigPromise = loadFoundryConfig("widgetSet");
 
@@ -373,31 +371,6 @@ export function FoundryWidgetVitePlugin(_options: Options = {}): Plugin {
       if (widgetConfig != null) {
         entrypointFileIdToConfigMap[entrypointForConfig] = widgetConfig;
       }
-    },
-    // We hook into the produced bundle information to generate a widget configuration file that includes both the entrypoint info and any inferred parameter information.
-    async generateBundle(_, bundle) {
-      const foundryConfig = await foundryConfigPromise;
-      const widgetSetVersion = await autoVersion(
-        foundryConfig?.foundryConfig.widgetSet.autoVersion
-          ?? { "type": "package-json" },
-      );
-
-      if (foundryConfig == null) {
-        throw new Error("foundry.config.json file not found.");
-      }
-
-      const widgetConfigManifest = widgetSetManifest(
-        foundryConfig.foundryConfig.widgetSet.rid,
-        widgetSetVersion,
-        entrypointFileIdToConfigMap,
-        bundle,
-      );
-
-      this.emitFile({
-        fileName: MANIFEST_FILE_LOCATION,
-        type: "asset",
-        source: JSON.stringify(widgetConfigManifest, null, 2),
-      });
     },
   };
 }
