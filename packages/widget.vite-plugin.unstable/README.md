@@ -18,11 +18,11 @@ export default defineConfig({
 
 ## Defining configuration
 
-The `@osdk/widget-client` package exports a `defineConfig` helper so that you can define a configuration object in the shape that this plugin requires. You can define your config like so:
+The `@osdk/widget.client` package exports a `defineConfig` helper so that you can define a configuration object in the shape that this plugin requires. You can define your config like so:
 
 ```js
-// myWidget.config.ts
-import { defineConfig } from "@osdk/widget-client";
+// main.config.ts
+import { defineConfig } from "@osdk/widget.client";
 
 export default defineConfig({
   id: "<Widget ID>", // The unique identifier of the widget with your project
@@ -57,7 +57,7 @@ export default defineConfig({
 });
 ```
 
-To be able to build your manifest and run developer mode, we require some configuration for your target widget set, and the stack you'll be deploying to. This plugin requires a `foundry.config.json` file to be present containing this information, like so:
+To be able to build your manifest and run developer mode, we require some configuration for your target widget set, and the stack you'll be deploying to. This plugin requires a `foundry.config.json` file to be present containing this information (auto-generated when using `@osdk/create-widget`), like so:
 
 ```json
 {
@@ -96,7 +96,7 @@ And in `index.html`, you import `main.tsx`:
 Import your configuration file in `src/main.tsx` so the vite plugin will discover it:
 
 ```js
-import { FoundryWidget } from "@osdk/widget-client-react";
+import { FoundryWidget } from "@osdk/widget.client-react";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./app.js";
@@ -110,7 +110,7 @@ createRoot(root).render(
 );
 ```
 
-Then the vite plugin will automatically find `src/main.config.ts` file and produce a `.palantir/widget-config.json` file in the configured output directory of your vite config. If you don't actually need the config object in your code, you can also just have a simple import statement like `import "./main.config.js";` so that the plugin can find it.
+Then the vite plugin will automatically find `src/main.config.ts` file and produce a `.palantir/widgets.config.json` file in the configured output directory of your vite config. If you don't actually need the config object in your code, you can also just have a simple import statement like `import "./main.config.js";` so that the plugin can find it.
 
 ## Multiple entrypoints
 
@@ -173,5 +173,3 @@ This vite plugin will then discover both entrypoints and output a combined `.pal
 ## Developer mode
 
 The vite plugin also automatically configures developer mode so that you can preview the changes you make locally live on your Foundry environment. For developer mode to work, make sure you set a `FOUNDRY_TOKEN` environment variable that has a token with access to your Foundry stack.
-
-1. Have a `foundry.config.json` in the root of your project (where you run vite from), with at minimum the following contents:
