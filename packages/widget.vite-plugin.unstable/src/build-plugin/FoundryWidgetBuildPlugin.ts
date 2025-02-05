@@ -16,7 +16,7 @@
 
 import type { LoadedFoundryConfig } from "@osdk/foundry-config-json";
 import { autoVersion, loadFoundryConfig } from "@osdk/foundry-config-json";
-import type { ParameterConfig, WidgetConfig } from "@osdk/widge.api.unstable";
+import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api.unstable";
 import { MANIFEST_FILE_LOCATION } from "@osdk/widget.api.unstable";
 import type { Plugin } from "vite";
 import { extractWidgetConfig } from "../common/extractWidgetConfig.js";
