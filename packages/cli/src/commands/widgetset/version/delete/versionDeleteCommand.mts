@@ -45,23 +45,29 @@ export default async function versionDeleteCommand(
     widgetSet,
     version,
   );
-  const repositoryRid = getRepositoryRid(widgetSetRelease);
+  const { repositoryRid, siteVersion } = getSiteLocator(widgetSetRelease);
   await Promise.all([
     widgetRegistry.deleteWidgetSetRelease(clientCtx, widgetSet, version),
-    widgetRegistry.deleteSiteVersion(clientCtx, repositoryRid, version),
+    widgetRegistry.deleteSiteVersion(clientCtx, repositoryRid, siteVersion),
   ]);
   consola.success(`Deleted version ${version}`);
 }
 
-function getRepositoryRid(
+function getSiteLocator(
   widgetSetRelease: widgetRegistry.WidgetSetRelease,
-): WidgetSetRid | StemmaRepositoryRid {
+): { repositoryRid: WidgetSetRid | StemmaRepositoryRid; siteVersion: string } {
   switch (widgetSetRelease.locator.type) {
     case "internalSitesLayout":
-      return widgetSetRelease.widgetSetRid;
+      return {
+        repositoryRid: widgetSetRelease.widgetSetRid,
+        siteVersion: widgetSetRelease.locator.internalSitesLayout.version,
+      };
     case "externalSitesLayout":
-      return widgetSetRelease.locator.externalSitesLayout
-        .repositoryRid as StemmaRepositoryRid;
+      return {
+        repositoryRid: widgetSetRelease.locator.externalSitesLayout
+          .repositoryRid as StemmaRepositoryRid,
+        siteVersion: widgetSetRelease.locator.externalSitesLayout.version,
+      };
     default:
       const _: never = widgetSetRelease.locator;
       throw new Error(
