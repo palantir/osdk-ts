@@ -35,7 +35,7 @@ export function FoundryWidgetBuildPlugin(): Plugin {
      * Attempt to parse any module that looks like a widget configuration file, storing the result
      * to be matched to entrypoints later.
      */
-    moduleParsed: (moduleInfo) => {
+    moduleParsed(moduleInfo) {
       if (!isConfigFile(moduleInfo.id)) {
         return;
       }

@@ -145,6 +145,8 @@ export function FoundryWidgetDevPlugin(): Plugin {
     resolveId(source, importer) {
       // In dev mode all entrypoints have a generic HTML importer value
       if (importer?.endsWith("index.html") && !source.includes("@fs")) {
+        // Store the fully resolved path and the relative path, as we need the former for mapping
+        // config files to entrypoints and the latter as a dev mode override script
         codeEntrypoints[getFullSourcePath(source.slice(1), importer)] = source;
       }
 
@@ -176,9 +178,9 @@ export function FoundryWidgetDevPlugin(): Plugin {
 }
 
 function getLocalhostUrl(server: ViteDevServer): string {
-  return `${server.config.server.https ? "https" : "http"}://localhost:${
-    server.config.server.port ?? "80"
-  }`;
+  return `${
+    server.config.server.https ? "https" : "http"
+  }://localhost:${server.config.server.port}`;
 }
 
 /**
