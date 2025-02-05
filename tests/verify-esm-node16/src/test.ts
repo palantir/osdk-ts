@@ -1,6 +1,17 @@
 import * as Client from "@osdk/client";
+import * as oauth from "@osdk/oauth";
 import * as sdk from "@test-app2/osdk";
-Client.createClient({} as any, "", async () => "");
+
+globalThis.window ??= {
+  location: "",
+} as any;
+
+const client = oauth.createPublicOauthClient(
+  "asdf",
+  "https://localhost",
+  "https://localhost",
+);
+Client.createClient("https://localhsot:8080", "ri.foo.bar", client);
 
 import * as Api from "@osdk/api";
 type Q = Api.InterfaceMetadata;
