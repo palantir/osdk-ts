@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import "@blueprintjs/core/lib/css/blueprint.css";
-import "./main.css";
-
-import { createRoot } from "react-dom/client";
-import { App } from "./app.js";
-
-const root = document.querySelector("body")!;
-
-createRoot(root).render(
-  <App />,
-);
+/**
+ * Users may import `.js` files in their code, where the source file is actually a `.ts`, `.tsx`, or
+ * `.jsx` file on disk. This standardizes these file extension to `.js` so that we can match imports
+ * to source files.
+ */
+export function standardizeFileExtension(file: string): string {
+  return file.replace(/\.[jt]sx?$/, ".js");
+}

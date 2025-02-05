@@ -22,16 +22,17 @@ import type { Rollup } from "vite";
 const DEFINE_CONFIG_FUNCTION = "defineConfig";
 
 export function extractWidgetConfig(
-  moduleInfo: Rollup.ModuleInfo,
+  moduleId: string,
+  ast: Rollup.ProgramNode | null,
 ): WidgetConfig<ParameterConfig> | undefined {
   // Lightly traverse the AST of the config file to extract out the actual object
-  const defaultExport = moduleInfo.ast?.body.find(
+  const defaultExport = ast?.body.find(
     (node) => node.type === "ExportDefaultDeclaration",
   );
   if (defaultExport == null) {
     throw new Error(
       "Widget configuration object must be the default export in "
-        + moduleInfo.id,
+        + moduleId,
     );
   }
 
@@ -55,7 +56,7 @@ export function extractWidgetConfig(
    */
   if (defaultExport.declaration.type === "Identifier") {
     const variableName = defaultExport.declaration.name;
-    for (const node of moduleInfo.ast?.body ?? []) {
+    for (const node of ast?.body ?? []) {
       const declaration = node.type === "VariableDeclaration"
         ? node
         : node.type === "ExportNamedDeclaration"
@@ -111,5 +112,5 @@ function parseWidgetConfig(
     ": [\"$1\"]",
   );
 
-  return JSON.parse(widgetConfigString);
+  return JSON.parse(widgetConfigString) as WidgetConfig<ParameterConfig>;
 }

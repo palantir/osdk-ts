@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-import "@blueprintjs/core/lib/css/blueprint.css";
-import "./main.css";
-
-import { createRoot } from "react-dom/client";
-import { App } from "./app.js";
-
-const root = document.querySelector("body")!;
-
-createRoot(root).render(
-  <App />,
-);
+export const PALANTIR_PATH: string = ".palantir";
+export const SETUP_PATH: string = `${PALANTIR_PATH}/setup`;
+export const ENTRYPOINTS_PATH: string = `${PALANTIR_PATH}/entrypoints`;
+export const VITE_INJECTIONS_PATH: string =
+  `${PALANTIR_PATH}/vite-injections.js`;
+export const CONFIG_FILE_SUFFIX = ".config";
