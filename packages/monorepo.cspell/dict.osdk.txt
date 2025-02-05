@@ -9,3 +9,4 @@ Tamagui
 unistyles
 siteasset
 widgetset
+widgetregistry
