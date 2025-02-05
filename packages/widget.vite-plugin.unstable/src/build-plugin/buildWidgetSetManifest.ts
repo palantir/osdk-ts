@@ -19,7 +19,7 @@ import type {
   WidgetConfig,
   WidgetManifestConfig,
   WidgetSetManifest,
-} from "@osdk/widget-api.unstable";
+} from "@osdk/widget.api.unstable";
 import type { Rollup } from "vite";
 import { standardizeFileExtension } from "../common/standardizeFileExtension.js";
 import { isConfigFile } from "./isConfigFile.js";

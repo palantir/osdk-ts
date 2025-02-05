@@ -1,4 +1,6 @@
-# @osdk/widget-api.unstable
+# @osdk/widget.api.unstable
+
+## 2.0.0-beta.12
 
 ## 2.0.0-beta.11
 

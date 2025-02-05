@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ParameterConfig, WidgetConfig } from "@osdk/widget-api.unstable";
+import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api.unstable";
 import escodegen from "escodegen";
 import type { ObjectExpression } from "estree";
 import type { Rollup } from "vite";

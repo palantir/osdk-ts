@@ -1,7 +1,7 @@
 {
   "name": "@osdk/example-generator",
   "private": true,
-  "version": "0.9.0-beta.25",
+  "version": "0.9.0-beta.26",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

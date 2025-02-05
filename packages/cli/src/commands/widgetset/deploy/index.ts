@@ -15,7 +15,7 @@
  */
 
 import type { WidgetSetConfig } from "@osdk/foundry-config-json";
-import { MANIFEST_FILE_LOCATION } from "@osdk/widget-api.unstable";
+import { MANIFEST_FILE_LOCATION } from "@osdk/widget.api.unstable";
 import type { CommandModule } from "yargs";
 import type { StemmaRepositoryRid } from "../../../net/StemmaRepositoryRid.js";
 import configLoader from "../../../util/configLoader.js";

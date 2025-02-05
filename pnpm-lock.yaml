@@ -1046,10 +1046,10 @@ importers:
       '@osdk/e2e.generated.catchall':
         specifier: workspace:*
         version: link:../../packages/e2e.generated.catchall
-      '@osdk/widget-client-react.unstable':
+      '@osdk/widget.client-react.unstable':
         specifier: workspace:*
         version: link:../../packages/widget.client-react.unstable
-      '@osdk/widget-client.unstable':
+      '@osdk/widget.client.unstable':
         specifier: workspace:*
         version: link:../../packages/widget.client.unstable
       '@radix-ui/react-icons':
@@ -1211,7 +1211,7 @@ importers:
       '@osdk/shared.net.fetch':
         specifier: workspace:~
         version: link:../shared.net.fetch
-      '@osdk/widget-api.unstable':
+      '@osdk/widget.api.unstable':
         specifier: workspace:~
         version: link:../widget.api.unstable
       '@types/archiver':
@@ -2869,10 +2869,10 @@ importers:
       '@osdk/foundry.datasets':
         specifier: ~2.5.0
         version: 2.5.0
-      '@osdk/widget-client-react.unstable':
+      '@osdk/widget.client-react.unstable':
         specifier: workspace:~
         version: link:../widget.client-react.unstable
-      '@osdk/widget-client.unstable':
+      '@osdk/widget.client.unstable':
         specifier: workspace:~
         version: link:../widget.client.unstable
       '@radix-ui/react-icons':
@@ -3677,7 +3677,7 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/widget-client.unstable':
+      '@osdk/widget.client.unstable':
         specifier: workspace:~
         version: link:../widget.client.unstable
       '@types/react':
@@ -3701,7 +3701,7 @@ importers:
 
   packages/widget.client.unstable:
     dependencies:
-      '@osdk/widget-api.unstable':
+      '@osdk/widget.api.unstable':
         specifier: workspace:~
         version: link:../widget.api.unstable
       tiny-invariant:
@@ -3729,7 +3729,7 @@ importers:
       '@osdk/foundry-config-json':
         specifier: workspace:~
         version: link:../foundry-config-json
-      '@osdk/widget-api.unstable':
+      '@osdk/widget.api.unstable':
         specifier: workspace:~
         version: link:../widget.api.unstable
       escodegen:

@@ -1,7 +1,7 @@
 {
-  "name": "@osdk/widget-client.unstable",
-  "version": "2.0.0-beta.11",
-  "description": "Client that sets up listeners for the custom widgets embedded into Foundry, adhering to the contract laid out in @osdk/widget-api",
+  "name": "@osdk/widget.client.unstable",
+  "version": "1.1.0",
+  "description": "Client that sets up listeners for the custom widgets embedded into Foundry, adhering to the contract laid out in @osdk/widget.api",
   "access": "public",
   "license": "Apache-2.0",
   "repository": {
@@ -41,7 +41,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/widget-api.unstable": "workspace:~",
+    "@osdk/widget.api.unstable": "workspace:~",
     "tiny-invariant": "^1.3.1"
   },
   "peerDependencies": {

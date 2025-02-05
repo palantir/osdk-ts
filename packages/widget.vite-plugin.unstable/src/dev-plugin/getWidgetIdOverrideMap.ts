@@ -17,7 +17,7 @@
 import {
   type ParameterConfig,
   type WidgetConfig,
-} from "@osdk/widget-api.unstable";
+} from "@osdk/widget.api.unstable";
 import type { ViteDevServer } from "vite";
 import { VITE_INJECTIONS_PATH } from "../common/constants.js";
 import { extractInjectedScripts } from "./extractInjectedScripts.js";

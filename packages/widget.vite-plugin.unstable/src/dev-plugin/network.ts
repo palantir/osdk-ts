@@ -15,11 +15,11 @@
  */
 
 type WidgetSettings = Record<string, {
-  entrypointJs: {
+  entrypointJs: Array<{
     filePath: string;
     scriptType: { type: "module"; module: {} };
-  }[];
-  entrypointCss: string[];
+  }>;
+  entrypointCss: Array<{ filePath: string }>;
 }>;
 
 export function setWidgetSetSettings(
