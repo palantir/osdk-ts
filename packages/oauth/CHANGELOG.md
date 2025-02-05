@@ -1,5 +1,11 @@
 # @osdk/oauth
 
+## 1.1.0-beta.11
+
+### Minor Changes
+
+- 9df2d99: Fixes CJS generation for OAuth
+
 ## 1.1.0-beta.10
 
 ### Minor Changes

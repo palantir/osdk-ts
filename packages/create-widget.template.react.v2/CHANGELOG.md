@@ -1,5 +1,13 @@
 # @osdk/create-widget.template.react.v2
 
+## 2.0.0-beta.13
+
+### Minor Changes
+
+- ff1ece7: Update create-widget template README and autoVersion strategy
+- 121475a: Release versions 1.1.0 of Custom Widget client libraries
+- da8585b: Updated implementation for the custom widget Vite plugin
+
 ## 2.0.0-beta.12
 
 ### Minor Changes

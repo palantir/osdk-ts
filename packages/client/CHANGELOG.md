@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.1.0-beta.28
+
+### Minor Changes
+
+- f446d0c: Exposes $clone from OSDK Object instances
+
+### Patch Changes
+
+- Updated dependencies [f446d0c]
+  - @osdk/api@2.1.0-beta.28
+  - @osdk/generator-converters@2.1.0-beta.28
+  - @osdk/client.unstable@2.1.0-beta.28
+
 ## 2.1.0-beta.27
 
 ### Patch Changes
