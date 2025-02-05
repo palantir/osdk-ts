@@ -8,4 +8,9 @@ export default defineConfig({
   server: {
     port: 8080,
   },
+  build: {
+    rollupOptions: {
+      input: ["./index.html"],
+    },
+  },
 });
