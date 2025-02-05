@@ -54,7 +54,7 @@
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/yargs": "^17.0.32",
     "typescript": "~5.5.4",
-    "vitest": "^3.0.4"
+    "vitest": "^3.0.5"
   },
   "publishConfig": {
     "access": "public"
