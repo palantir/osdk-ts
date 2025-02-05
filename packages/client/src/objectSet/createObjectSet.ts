@@ -238,11 +238,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       return { unsubscribe: async () => (await pendingSubscribe)() };
     },
 
-    nearestNeighbors: (
-      query,
-      numNeighbors,
-      property,
-    ) => {
+    nearestNeighbors: (query, numNeighbors, property) => {
       const nearestNeighborsQuery = isTextQuery(query)
         ? { "type": "text" as const, "value": query }
         : { "type": "vector" as const, "value": query };
