@@ -21,7 +21,6 @@ import {
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import color from "picocolors";
-import { parse } from "recast";
 import sirv from "sirv";
 import type { Plugin, Rollup, ViteDevServer } from "vite";
 import {
@@ -166,9 +165,7 @@ export function FoundryWidgetDevPlugin(): Plugin {
      */
     transform(code, id) {
       if (configFileToEntrypoint[id] != null) {
-        // Recasts result is typed as any, but is compatible with the Rollup AST
-        const ast = parse(code) as { program: Rollup.ProgramNode };
-        const configObject = extractWidgetConfig(id, ast.program);
+        const configObject = extractWidgetConfig(id, this.parse(code));
         if (configObject != null) {
           configFiles[id] = configObject;
         }

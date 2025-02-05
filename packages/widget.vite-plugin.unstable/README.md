@@ -173,4 +173,5 @@ This vite plugin will then discover both entrypoints and output a combined `.pal
 ## Developer mode
 
 The vite plugin also automatically configures developer mode so that you can preview the changes you make locally live on your Foundry environment. For developer mode to work, make sure you set a `FOUNDRY_TOKEN` environment variable that has a token with access to your Foundry stack.
+
 1. Have a `foundry.config.json` in the root of your project (where you run vite from), with at minimum the following contents:
