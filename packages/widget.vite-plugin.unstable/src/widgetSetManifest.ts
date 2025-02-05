@@ -18,7 +18,7 @@ import {
   type ParameterConfig,
   type WidgetConfig,
   type WidgetSetManifest,
-} from "@osdk/widget-api.unstable";
+} from "@osdk/widget.api.unstable";
 import type { Rollup } from "vite";
 import { CONFIG_FILE_SUFFIX } from "./constants.js";
 

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { HostMessage } from "@osdk/widget-api.unstable";
-import { defineConfig } from "@osdk/widget-api.unstable";
+import type { HostMessage } from "@osdk/widget.api.unstable";
+import { defineConfig } from "@osdk/widget.api.unstable";
 import { describe, expectTypeOf, it } from "vitest";
 import type { HostMessageEventListener } from "./host.js";
 import { FoundryHostEventTarget } from "./host.js";

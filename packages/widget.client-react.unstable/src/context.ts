@@ -23,7 +23,7 @@ import {
   type ParameterConfig,
   type ParameterValueMap,
   type WidgetConfig,
-} from "@osdk/widget-client.unstable";
+} from "@osdk/widget.client.unstable";
 import React, { useContext } from "react";
 
 export interface FoundryWidgetClientContext<

@@ -1,7 +1,7 @@
 {
-  "name": "@osdk/widget-client-react.unstable",
-  "version": "2.0.0-beta.12",
-  "description": "Wrapper around @osdk/widget-client",
+  "name": "@osdk/widget.client-react.unstable",
+  "version": "1.1.0",
+  "description": "Wrapper around @osdk/widget.client",
   "access": "public",
   "license": "Apache-2.0",
   "repository": {
@@ -42,7 +42,7 @@
   },
   "peerDependencies": {
     "@osdk/client": "^2",
-    "@osdk/widget-client.unstable": "workspace:~",
+    "@osdk/widget.client.unstable": "workspace:~",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "react": "^18",
@@ -52,7 +52,7 @@
     "@osdk/client": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/widget-client.unstable": "workspace:~",
+    "@osdk/widget.client.unstable": "workspace:~",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "react": "^18.3.1",

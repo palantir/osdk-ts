@@ -1,6 +1,6 @@
 {
   "name": "@osdk/widget.vite-plugin.unstable",
-  "version": "2.0.0-beta.12",
+  "version": "1.1.0",
   "description": "A vite plugin that will extract parameter definitions from TS/JS files + entrypoint info into a manifest file to be uploaded to Foundry ",
   "access": "public",
   "license": "Apache-2.0",
@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@osdk/foundry-config-json": "workspace:~",
-    "@osdk/widget-api.unstable": "workspace:~",
+    "@osdk/widget.api.unstable": "workspace:~",
     "escodegen": "^2.1.0",
     "fs-extra": "^11.2.0",
     "parse5": "^7.2.1",
