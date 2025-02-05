@@ -1,5 +1,11 @@
 # @osdk/benchmarks.primary
 
+## 0.1.0-beta.10
+
+### Patch Changes
+
+- @osdk/client@2.1.0-beta.27
+
 ## 0.1.0-beta.9
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @osdk/widget.client-react.unstable
 
+## 2.0.0-beta.12
+
+### Patch Changes
+
+- @osdk/client@2.1.0-beta.27
+- @osdk/widget-client.unstable@2.0.0-beta.12
+
 ## 2.0.0-beta.11
 
 ### Patch Changes
