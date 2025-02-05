@@ -17,9 +17,9 @@
     ],
     ["@osdk/cli", "@osdk/cli.*"],
     [
-      "@osdk/widget-api.unstable",
-      "@osdk/widget-client.unstable",
-      "@osdk/widget-client-react.unstable",
+      "@osdk/widget.api.unstable",
+      "@osdk/widget.client.unstable",
+      "@osdk/widget.client-react.unstable",
       "@osdk/widget.vite-plugin.unstable",
       "@osdk/create-widget",
       "@osdk/create-widget.template.*"

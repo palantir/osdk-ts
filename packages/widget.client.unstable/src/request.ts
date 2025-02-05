@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { HostMessage, WidgetMessage } from "@osdk/widget-api.unstable";
+import type { HostMessage, WidgetMessage } from "@osdk/widget.api.unstable";
 
 export function serializeRequest(
   id: string,

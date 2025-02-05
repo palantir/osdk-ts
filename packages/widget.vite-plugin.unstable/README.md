@@ -18,11 +18,11 @@ export default defineConfig({
 
 ## Defining configuration
 
-The `@osdk/widget-client` package exports a `WidgetConfig` type so that you can define a configuration object in the shape that this plugin requires. You can define your config like so:
+The `@osdk/widget.client` package exports a `WidgetConfig` type so that you can define a configuration object in the shape that this plugin requires. You can define your config like so:
 
 ```js
 // main.config.ts
-import { defineConfig } from "@osdk/widget-client";
+import { defineConfig } from "@osdk/widget.client";
 
 export default defineConfig({
   rid: "<FILL IN RID>", // This is the RID of the Foundry widget this code will publish to
@@ -81,7 +81,7 @@ And in `index.html`, you import `main.tsx`:
 Import your configuration file in `src/main.tsx` so the vite plugin will discover it:
 
 ```js
-import { FoundryWidget } from "@osdk/widget-client-react";
+import { FoundryWidget } from "@osdk/widget.client-react";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./app.js";

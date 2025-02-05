@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@osdk/foundry-config-json": "workspace:~",
-    "@osdk/widget-api.unstable": "workspace:~",
+    "@osdk/widget.api.unstable": "workspace:~",
     "escodegen": "^2.1.0",
     "fs-extra": "^11.2.0",
     "parse5": "^7.2.1",

@@ -1,4 +1,4 @@
-import { defineConfig } from "@osdk/widget-client.unstable";
+import { defineConfig } from "@osdk/widget.client.unstable";
 
 const config: {
   id: "widgetOne";

@@ -19,7 +19,7 @@ import {
   MANIFEST_FILE_LOCATION,
   type ParameterConfig,
   type WidgetConfig,
-} from "@osdk/widget-api.unstable";
+} from "@osdk/widget.api.unstable";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import color from "picocolors";
