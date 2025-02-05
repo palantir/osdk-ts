@@ -3805,6 +3805,9 @@ importers:
       '@osdk/client':
         specifier: workspace:~
         version: link:../../packages/client
+      '@osdk/oauth':
+        specifier: workspace:~
+        version: link:../../packages/oauth
       '@test-app2/osdk':
         specifier: link:./osdk/@test-app2/osdk
         version: link:osdk/@test-app2/osdk
@@ -3824,6 +3827,9 @@ importers:
       '@osdk/client':
         specifier: workspace:~
         version: link:../../packages/client
+      '@osdk/oauth':
+        specifier: workspace:~
+        version: link:../../packages/oauth
       '@test-app2/osdk':
         specifier: link:./osdk/@test-app2/osdk
         version: link:osdk/@test-app2/osdk
@@ -3843,6 +3849,9 @@ importers:
       '@osdk/client':
         specifier: workspace:~
         version: link:../../packages/client
+      '@osdk/oauth':
+        specifier: workspace:~
+        version: link:../../packages/oauth
       '@test-app2/osdk':
         specifier: link:./osdk/@test-app2/osdk
         version: link:osdk/@test-app2/osdk

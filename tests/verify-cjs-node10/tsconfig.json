@@ -3,6 +3,9 @@
     "module": "CommonJS",
     "moduleResolution": "node10",
     "target": "es2020",
-    "skipLibCheck": true
-  }
+    "skipLibCheck": true,
+    "rootDir": "src",
+    "outDir": "lib"
+  },
+  "include": ["src"]
 }

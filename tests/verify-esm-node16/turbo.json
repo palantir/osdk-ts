@@ -5,8 +5,15 @@
       "outputs": ["osdk/@test-app2/**/*"],
       "dependsOn": [
         "@osdk/tool.generate-with-mock-ontology#transpile",
-        "^transpileCjs"
+        "^transpile"
       ]
+    },
+    "typecheck": {
+      "outputs": ["./lib"]
+    },
+    "test": {
+      "dependsOn": ["typecheck"],
+      "inputs": ["./lib/**/*.js"]
     }
   }
 }

@@ -166,6 +166,9 @@ async function transpileWithTsup(format, target) {
       ? [
         "@osdk/shared.client",
         "@osdk/internal.foundry.ontologiesv2",
+        "@osdk/shared.client2",
+        "delay",
+        "oauth4webapi",
       ]
       : [],
     format: [format],
