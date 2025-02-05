@@ -18,6 +18,6 @@ import type { PluginOption } from "vite";
 import { FoundryWidgetBuildPlugin } from "./build-plugin/FoundryWidgetBuildPlugin.js";
 import { FoundryWidgetDevPlugin } from "./dev-plugin/FoundryWidgetDevPlugin.js";
 
-export default function FoundryWidgetVitePlugin(): PluginOption {
+export default function FoundryWidgetPlugin(): PluginOption {
   return [FoundryWidgetDevPlugin(), FoundryWidgetBuildPlugin()];
 }
