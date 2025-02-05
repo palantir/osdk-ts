@@ -453,8 +453,8 @@ importers:
         version: 18.3.1(react@18.3.1)
     devDependencies:
       '@next/env':
-        specifier: ^15.0.1
-        version: 15.0.1
+        specifier: ^15.1.6
+        version: 15.1.6
       '@types/node':
         specifier: ^20.17.0
         version: 20.17.14
@@ -499,8 +499,8 @@ importers:
         version: 18.3.1(react@18.3.1)
     devDependencies:
       '@next/env':
-        specifier: ^15.0.1
-        version: 15.0.1
+        specifier: ^15.1.6
+        version: 15.1.6
       '@types/node':
         specifier: ^20.17.0
         version: 20.17.14
@@ -1813,8 +1813,8 @@ importers:
         version: 18.3.1(react@18.3.1)
     devDependencies:
       '@next/env':
-        specifier: ^15.0.1
-        version: 15.0.1
+        specifier: ^15.1.6
+        version: 15.1.6
       '@osdk/create-app.template-packager':
         specifier: workspace:~
         version: link:../create-app.template-packager
@@ -1859,8 +1859,8 @@ importers:
         version: 18.3.1(react@18.3.1)
     devDependencies:
       '@next/env':
-        specifier: ^15.0.1
-        version: 15.0.1
+        specifier: ^15.1.6
+        version: 15.1.6
       '@osdk/create-app.template-packager':
         specifier: workspace:~
         version: link:../create-app.template-packager
@@ -6069,9 +6069,6 @@ packages:
   '@mswjs/interceptors@0.29.1':
     resolution: {integrity: sha512-3rDakgJZ77+RiQUuSK69t1F0m8BQKA8Vh5DCS5V0DWvNY67zob2JhhQrhCO0AKLGINTRSFd1tBaHcJTkhefoSw==}
     engines: {node: '>=18'}
-
-  '@next/env@15.0.1':
-    resolution: {integrity: sha512-lc4HeDUKO9gxxlM5G2knTRifqhsY6yYpwuHspBZdboZe0Gp+rZHBNNSIjmQKDJIdRXiXGyVnSD6gafrbQPvILQ==}
 
   '@next/env@15.1.6':
     resolution: {integrity: sha512-d9AFQVPEYNr+aqokIiPLNK/MTyt3DWa/dpKveiAaVccUadFbhFEvY6FXYX2LJO2Hv7PHnLBu2oWwB4uBuHjr/w==}
@@ -17202,8 +17199,6 @@ snapshots:
       is-node-process: 1.2.0
       outvariant: 1.4.2
       strict-event-emitter: 0.5.1
-
-  '@next/env@15.0.1': {}
 
   '@next/env@15.1.6': {}
 
