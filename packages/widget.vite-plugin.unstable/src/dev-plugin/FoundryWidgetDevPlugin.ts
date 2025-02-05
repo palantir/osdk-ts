@@ -19,11 +19,14 @@ import {
   type WidgetConfig,
 } from "@osdk/widget-api.unstable";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import color from "picocolors";
 import { parse } from "recast";
+import sirv from "sirv";
 import type { Plugin, Rollup, ViteDevServer } from "vite";
 import {
   CONFIG_FILE_SUFFIX,
+  ENTRYPOINTS_PATH,
   PALANTIR_PATH,
   SETUP_PATH,
   VITE_INJECTIONS_PATH,
@@ -32,6 +35,11 @@ import { extractWidgetConfig } from "../common/extractWidgetConfig.js";
 import { extractInjectedScripts } from "./extractInjectedScripts.js";
 import { getWidgetIdOverrideMap } from "./getWidgetIdOverrideMap.js";
 import { publishDevModeSettings } from "./publishDevModeSettings.js";
+
+// Location of the setup page assets
+const DIR_DIST: string = typeof __dirname !== "undefined"
+  ? __dirname
+  : path.dirname(fileURLToPath(import.meta.url));
 
 export function FoundryWidgetDevPlugin(): Plugin {
   // The root HTML entrypoints of the build process
@@ -69,13 +77,21 @@ export function FoundryWidgetDevPlugin(): Plugin {
        */
       server.middlewares.use(
         `/${SETUP_PATH}`,
+        sirv(path.resolve(DIR_DIST, "../../site"), {
+          single: true,
+          dev: true,
+        }),
+      );
+
+      /**
+       * Make the entrypoints available to the setup page so that it can load them in iframes in
+       * order to trigger module parsing.
+       */
+      server.middlewares.use(
+        `/${ENTRYPOINTS_PATH}`,
         (_, res) => {
-          const localhostUrl = getLocalhostUrl(server);
-          const resolvedEntrypoints = htmlEntrypoints.map((entrypoint) =>
-            path.relative(process.cwd(), entrypoint)
-          ).map((entrypoint) => localhostUrl + "/" + entrypoint);
-          res.setHeader("Content-Type", "text/html");
-          res.end(renderSetupPage(resolvedEntrypoints));
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify(htmlEntrypoints));
         },
       );
 
@@ -108,8 +124,8 @@ export function FoundryWidgetDevPlugin(): Plugin {
 
       /**
        * Serve scripts that would usually be injected into the HTML if Vite had control over the
-       * serving of index HTMLs. This is necessary to ensure that plugins like React refresh work
-       * correctly.
+       * serving of index HTML pages. This is necessary to ensure that plugins like React refresh
+       * work correctly.
        */
       server.middlewares.use(
         `/${VITE_INJECTIONS_PATH}`,
@@ -148,7 +164,8 @@ export function FoundryWidgetDevPlugin(): Plugin {
      */
     transform(code, id) {
       if (configFileToEntrypoint[id] != null) {
-        const ast = parse(code);
+        // Recasts result is typed as any, but is compatible with the Rollup AST
+        const ast = parse(code) as { program: Rollup.ProgramNode };
         const configObject = extractWidgetConfig(id, ast.program);
         if (configObject != null) {
           configFiles[id] = configObject;
@@ -193,62 +210,7 @@ function printSetupPageUrl(server: ViteDevServer) {
   const setupRoute = `${localhostUrl}${server.config.base ?? "/"}${SETUP_PATH}`;
   server.config.logger.info(
     `  ${color.green("➜")}  ${
-      color.bold(
-        "Click to enter developer mode for your widget",
-      )
-    }: ${
-      color.green(
-        setupRoute.replace(/:(\d+)\//, (_, port) => `:${color.bold(port)}/`),
-      )
-    }`,
+      color.bold("Click to enter developer mode for your widget set")
+    }: ${color.green(setupRoute)}`,
   );
-}
-
-function renderSetupPage(entrypoints: string[]) {
-  return `
-<html>
-  <head>
-    <title>Widget setup</title>
-    <script>
-      let countOfAttempts = 0;
-      let interval;
-      function finish() { 
-        fetch('/.palantir/finish')
-          .then(response => response.json())
-          .then(data => {
-            if (data.status === "success") {
-              clearInterval(interval);
-              document.getElementById('widget-setup-status').textContent = 'Redirecting...';
-              setTimeout(() => {
-                 window.location.href = data.redirectUrl;
-              }, 250);
-            } else if (data.status === "failed") {
-              // Rethrow for consistent error handling
-              throw new Error(data.error);
-            } else if (data.status === "pending" && countOfAttempts < 10) {
-              // Do nothing, wait for next interval
-              countOfAttempts++;
-            } else {
-              // Unexpected response
-              throw new Error("Failed to start dev mode");
-            }
-          })
-          .catch(error => {
-            clearInterval(interval);
-            document.getElementById('widget-setup-status').textContent = error;
-          });
-      }
-      interval = setInterval(finish, 250);
-    </script>
-  </head>
-  <body>
-    <div id="widget-setup-status">Loading...</div>
-    <div style="display:none">
-        ${
-    entrypoints.map((entrypoint) => `<iframe src="${entrypoint}"></iframe>`)
-      .join("")
-  }
-    </div>
-  </body>
-</html>`;
 }

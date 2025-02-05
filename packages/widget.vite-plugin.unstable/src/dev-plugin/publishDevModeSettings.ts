@@ -15,6 +15,7 @@
  */
 
 import { loadFoundryConfig } from "@osdk/foundry-config-json";
+import type { ServerResponse } from "node:http";
 import type { ViteDevServer } from "vite";
 import { enableDevMode, setWidgetSetSettings } from "./network.js";
 
@@ -24,7 +25,7 @@ import { enableDevMode, setWidgetSetSettings } from "./network.js";
 export async function publishDevModeSettings(
   server: ViteDevServer,
   widgetIdToOverrides: Record<string, string[]>,
-  res: any,
+  res: ServerResponse,
 ): Promise<void> {
   try {
     if (process.env.FOUNDRY_TOKEN == null) {
@@ -79,11 +80,15 @@ export async function publishDevModeSettings(
       redirectUrl:
         `${foundryUrl}/workspace/custom-widgets/preview/${widgetSetRid}`,
     }));
-  } catch (error: any) {
-    // Note, this can't be logger.error as that method throws and prevents a response being sent
-    server.config.logger.warn(`Failed to start dev mode: ${error.message}`);
+  } catch (error: unknown) {
+    // Note, this can't be server.config.logger.error as that method throws and prevents a response being sent
+    server.config.logger.warn(
+      `Failed to start dev mode: ${(error as Error).message}`,
+    );
     res.setHeader("Content-Type", "application/json");
     res.statusCode = 500;
-    res.end(JSON.stringify({ status: "failed", error: error.message }));
+    res.end(
+      JSON.stringify({ status: "failed", error: (error as Error).message }),
+    );
   }
 }

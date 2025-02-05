@@ -17,65 +17,55 @@
 import { NonIdealState, Spinner, SpinnerSize } from "@blueprintjs/core";
 import React, { useEffect } from "react";
 
+type State = {
+  state: "loading";
+} | {
+  state: "failed";
+  error?: string;
+} | {
+  state: "success";
+};
+
+const POLLING_INTERVAL = 250;
+const REDIRECT_DELAY = 500;
+
 export const App: React.FC = () => {
   const [entrypointPaths, setEntrypointPaths] = React.useState<string[]>([]);
-  const [loading, setLoading] = React.useState<
-    | { state: "success" }
-    | { state: "failed"; error: string }
-    | { state: "loading" }
-    | { state: "not-started" }
-  >({ state: "not-started" });
+  const [loading, setLoading] = React.useState<State>({ state: "loading" });
+
+  // Load entrypoints values on mount
   useEffect(() => {
-    void fetch("./entrypoints")
-      .then((res) => res.json())
-      .then(({ entrypoints }: { entrypoints: string[] }) => {
-        setEntrypointPaths(entrypoints);
-        // Poll the manifest endpoint until all entrypoints have JS files listed for them
-        const poll = window.setInterval(() => {
-          void fetch("./manifest")
-            .then((res) => res.json())
-            .then(({ manifest }) => {
-              let clearInterval = true;
-              for (const entrypoint of entrypoints) {
-                if (
-                  manifest[entrypoint] == null
-                  || manifest[entrypoint].length === 0
-                ) {
-                  clearInterval = false;
-                }
-              }
-              if (clearInterval) {
-                window.clearInterval(poll);
-                setLoading({ state: "loading" });
-                // Tell the vite server to start dev mode for the specified entrypoint
-                void fetch("./finish", {
-                  // TODO: Actually handle multiple entrypoints
-                  body: JSON.stringify({ entrypoint: entrypoints[0] }),
-                  method: "POST",
-                }).then((res) => {
-                  if (res.status !== 200) {
-                    setLoading({ state: "failed", error: res.statusText });
-                  } else {
-                    setLoading({ state: "success" });
-                    setTimeout(() => {
-                      void res
-                        .json()
-                        .then(
-                          (
-                            { redirectUrl },
-                          ) => (window.location.href = redirectUrl),
-                        );
-                    }, 500);
-                  }
-                });
-              }
-            });
-        }, 100);
-      });
+    void loadEntrypoints().then(setEntrypointPaths);
   }, []);
+
+  // Poll the finish endpoint until it returns a success or error
+  useEffect(() => {
+    const poll = window.setInterval(() => {
+      void finish().then((result) => {
+        if (result.status === "success") {
+          setLoading({ state: "success" });
+          setTimeout(() => {
+            window.location.href = result.redirectUrl;
+          }, REDIRECT_DELAY);
+          window.clearInterval(poll);
+        } else if (result.status === "error") {
+          setLoading({ state: "failed", error: result.error });
+          window.clearInterval(poll);
+        }
+      }).catch((error: unknown) => {
+        setLoading({
+          state: "failed",
+          error: error instanceof Error ? error.message : undefined,
+        });
+        window.clearInterval(poll);
+      });
+    }, POLLING_INTERVAL);
+    return () => window.clearInterval(poll);
+  }, []);
+
   return (
     <div className="body">
-      {(loading.state === "loading" || loading.state === "not-started") && (
+      {loading.state === "loading" && (
         <NonIdealState
           title="Generating developer mode manifest…"
           icon={<Spinner intent="primary" />}
@@ -107,3 +97,21 @@ export const App: React.FC = () => {
     </div>
   );
 };
+
+function loadEntrypoints(): Promise<string[]> {
+  return fetch("./entrypoints").then((res) => res.json());
+}
+
+function finish(): Promise<
+  {
+    status: "success";
+    redirectUrl: string;
+  } | {
+    status: "error";
+    error: string;
+  } | {
+    status: "pending";
+  }
+> {
+  return fetch("./finish").then((res) => res.json());
+}
