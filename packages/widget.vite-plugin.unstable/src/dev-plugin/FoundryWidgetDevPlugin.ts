@@ -31,6 +31,7 @@ import {
   VITE_INJECTIONS_PATH,
 } from "../common/constants.js";
 import { extractWidgetConfig } from "../common/extractWidgetConfig.js";
+import { standardizeFileExtension } from "../common/standardizeFileExtension.js";
 import { extractInjectedScripts } from "./extractInjectedScripts.js";
 import { getWidgetIdOverrideMap } from "./getWidgetIdOverrideMap.js";
 import { publishDevModeSettings } from "./publishDevModeSettings.js";
@@ -142,20 +143,35 @@ export function FoundryWidgetDevPlugin(): Plugin {
      * file paths that are imported from them.
      */
     resolveId(source, importer) {
+      if (importer == null) {
+        return;
+      }
+
+      // Standardize the source file extension and get the full path
+      const standardizedSource = standardizeFileExtension(
+        getFullSourcePath(source.slice(1), importer),
+      );
+      // Importers are already full paths, so just standardize the extension
+      const standardizedImporter = standardizeFileExtension(importer);
+
       // In dev mode all entrypoints have a generic HTML importer value
-      if (importer?.endsWith("index.html") && !source.includes("@fs")) {
+      if (
+        importer.endsWith("index.html") && !standardizedSource.includes("@fs")
+      ) {
         // Store the fully resolved path and the relative path, as we need the former for mapping
         // config files to entrypoints and the latter as a dev mode override script
-        codeEntrypoints[getFullSourcePath(source.slice(1), importer)] = source;
+        codeEntrypoints[standardizedSource] = source;
       }
 
       // Look for config files that are imported from an entrypoint file
-      const fileWithoutExtension = source.replace(/\.[^/.]+$/, "");
       if (
-        fileWithoutExtension.endsWith(CONFIG_FILE_SUFFIX) && importer != null
-        && codeEntrypoints[importer] != null
+        standardizedSource.replace(/\.[^/.]+$/, "").endsWith(CONFIG_FILE_SUFFIX)
+        && codeEntrypoints[standardizedImporter] != null
       ) {
-        configFileToEntrypoint[getFullSourcePath(source, importer)] = importer;
+        const fullSourcePath = standardizeFileExtension(
+          getFullSourcePath(source, standardizedImporter),
+        );
+        configFileToEntrypoint[fullSourcePath] = standardizedImporter;
       }
     },
 
@@ -164,10 +180,11 @@ export function FoundryWidgetDevPlugin(): Plugin {
      * object manually, as Vite doesn't compile files during dev mode.
      */
     transform(code, id) {
-      if (configFileToEntrypoint[id] != null) {
+      const standardizedSource = standardizeFileExtension(id);
+      if (configFileToEntrypoint[standardizedSource] != null) {
         const configObject = extractWidgetConfig(id, this.parse(code));
         if (configObject != null) {
-          configFiles[id] = configObject;
+          configFiles[standardizedSource] = configObject;
         }
       }
     },

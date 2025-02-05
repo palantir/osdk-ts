@@ -20,6 +20,7 @@ import type { ParameterConfig, WidgetConfig } from "@osdk/widget-api.unstable";
 import { MANIFEST_FILE_LOCATION } from "@osdk/widget-api.unstable";
 import type { Plugin } from "vite";
 import { extractWidgetConfig } from "../common/extractWidgetConfig.js";
+import { standardizeFileExtension } from "../common/standardizeFileExtension.js";
 import { buildWidgetSetManifest } from "./buildWidgetSetManifest.js";
 import { isConfigFile } from "./isConfigFile.js";
 
@@ -42,7 +43,8 @@ export function FoundryWidgetBuildPlugin(): Plugin {
 
       const widgetConfig = extractWidgetConfig(moduleInfo.id, moduleInfo.ast);
       if (widgetConfig != null) {
-        configFiles[moduleInfo.id] = widgetConfig;
+        const standardizedSource = standardizeFileExtension(moduleInfo.id);
+        configFiles[standardizedSource] = widgetConfig;
       }
     },
 

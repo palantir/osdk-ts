@@ -21,6 +21,7 @@ import type {
   WidgetSetManifest,
 } from "@osdk/widget-api.unstable";
 import type { Rollup } from "vite";
+import { standardizeFileExtension } from "../common/standardizeFileExtension.js";
 import { isConfigFile } from "./isConfigFile.js";
 
 export function buildWidgetSetManifest(
@@ -69,7 +70,8 @@ function getChunkConfigFile(
     );
   }
 
-  const configFile = configFiles[configModuleIds[0]];
+  const standardizedSource = standardizeFileExtension(configModuleIds[0]);
+  const configFile = configFiles[standardizedSource];
   if (configFile == null) {
     throw new Error(
       `No config file found for entrypoint ${chunk.facadeModuleId}`,
