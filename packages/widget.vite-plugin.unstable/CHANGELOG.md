@@ -1,5 +1,17 @@
 # @osdk/widget.vite-plugin.unstable
 
+## 2.0.0-beta.13
+
+### Minor Changes
+
+- 121475a: Release versions 1.1.0 of Custom Widget client libraries
+- da8585b: Updated implementation for the custom widget Vite plugin
+
+### Patch Changes
+
+- Updated dependencies [121475a]
+  - @osdk/widget.api.unstable@2.0.0-beta.13
+
 ## 2.0.0-beta.12
 
 ### Patch Changes

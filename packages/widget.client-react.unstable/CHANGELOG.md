@@ -1,5 +1,18 @@
 # @osdk/widget.client-react.unstable
 
+## 2.0.0-beta.13
+
+### Minor Changes
+
+- 121475a: Release versions 1.1.0 of Custom Widget client libraries
+
+### Patch Changes
+
+- Updated dependencies [f446d0c]
+- Updated dependencies [121475a]
+  - @osdk/client@2.1.0-beta.28
+  - @osdk/widget.client.unstable@2.0.0-beta.13
+
 ## 2.0.0-beta.12
 
 ### Patch Changes
