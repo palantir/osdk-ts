@@ -27,7 +27,6 @@ import { runInterfacesTest } from "./runInterfacesTest.js";
 import { runLegacyExamples } from "./runLegacyExamples.js";
 import { runMediaTest } from "./runMediaTest.js";
 import { runNearestNeighborsTest } from "./runNearestNeighborsTest.js";
-// import { runNearestNeighborsTest } from "./runNearestNeighborTest.js";
 import { runQueriesTest } from "./runQueriesTest.js";
 import { runStructsTest } from "./runStructsTest.js";
 import { runSubscriptionsTest } from "./runSubscriptionsTest.js";
