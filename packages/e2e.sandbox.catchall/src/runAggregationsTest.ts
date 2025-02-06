@@ -110,3 +110,5 @@ export async function runAggregationsTest(): Promise<void> {
     );
   }
 }
+
+void runAggregationsTest();

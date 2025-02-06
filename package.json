@@ -8,6 +8,7 @@
     "ci:publish": "./scripts/ci-publish.sh",
     "ci:publishSnapshot": "pnpm run prePublish && pnpm exec changeset version --snapshot && pnpm exec changeset publish --no-git-tag --snapshot --tag=next",
     "cspell:all": "cspell . --quiet",
+    "e2e": "./scripts/run-e2e.sh",
     "lint": "turbo run lint",
     "postVersionCmd": "turbo run postVersioning && turbo codegen",
     "prePublish": "turbo build && turbo lint",

@@ -139,3 +139,5 @@ export async function runGeoQueriesTest(): Promise<void> {
 
   console.log(nonNullGeoProps.data.map(data => data.usState));
 }
+
+void runGeoQueriesTest();
