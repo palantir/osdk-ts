@@ -139,6 +139,9 @@ describe("queries", () => {
   it("two dimensional aggregation response works", async () => {
     const result = await client(twoDimensionalAggregationFunction)
       .executeFunction();
+    expectTypeOf<typeof result>().toEqualTypeOf<
+      { key: string; value: number }[]
+    >;
     expect(result).toEqual([{ key: "Q-AFN", value: 1 }, {
       key: "Q-AFO",
       value: 2,
@@ -146,6 +149,15 @@ describe("queries", () => {
   });
 
   it("two dimensional aggregation request/response works", async () => {
+    const clientBoundQueryFunction =
+      client(acceptsTwoDimensionalAggregationFunction).executeFunction;
+    type InferredParamType = Parameters<
+      typeof clientBoundQueryFunction
+    >[0];
+
+    expectTypeOf<{ aggFunction: { key: string; value: number }[] }>()
+      .toMatchTypeOf<InferredParamType>();
+
     const result = await client(acceptsTwoDimensionalAggregationFunction)
       .executeFunction({
         aggFunction: [
@@ -159,6 +171,10 @@ describe("queries", () => {
           },
         ],
       });
+    expectTypeOf<typeof result>().toEqualTypeOf<
+      { key: string; value: number }[]
+    >;
+
     expect(result).toEqual([{ key: "responseKey1", value: 3 }, {
       key: "responseKey2",
       value: 4,
@@ -168,6 +184,16 @@ describe("queries", () => {
   it("three dimensional aggregation response works", async () => {
     const result = await client(threeDimensionalAggregationFunction)
       .executeFunction();
+
+    expectTypeOf<typeof result>().toEqualTypeOf<
+      {
+        key: string;
+        groups: {
+          key: { startValue: string | undefined; endValue: string | undefined };
+          value: number;
+        }[];
+      }[]
+    >;
     expect(result).toEqual([{
       key: "Q-AFN",
       groups: [{
@@ -192,6 +218,23 @@ describe("queries", () => {
   });
 
   it("three dimensional aggregation request/response works", async () => {
+    const clientBoundQueryFunction =
+      client(acceptsThreeDimensionalAggregationFunction).executeFunction;
+    type InferredParamType = Parameters<
+      typeof clientBoundQueryFunction
+    >[0];
+
+    expectTypeOf<{
+      aggFunction: {
+        key: string;
+        groups: {
+          key: { startValue: string | undefined; endValue: string };
+          value: number;
+        }[];
+      }[];
+    }>()
+      .toMatchTypeOf<InferredParamType>();
+
     const result = await client(acceptsThreeDimensionalAggregationFunction)
       .executeFunction({
         aggFunction: [
@@ -213,6 +256,7 @@ describe("queries", () => {
           },
         ],
       });
+
     expect(result).toEqual([
       {
         key: "Q-AFN",
