@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import * as matchers from "jest-extended";
-import type CustomMatchers from "jest-extended";
 import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
 import type { PromiseState } from "p-state";
@@ -25,16 +23,6 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import type { AsyncClientCache, AsyncFactory } from "./Cache.js";
 import { createAsyncClientCache, createClientCache } from "./Cache.js";
-
-declare module "vitest" {
-  interface Assertion<T = any> extends CustomMatchers<T> {}
-  interface AsymmetricMatchersContaining<T = any> extends CustomMatchers<T> {}
-  interface ExpectStatic<T = any> extends CustomMatchers<T> {
-    isPromiseLike: () => any;
-  }
-}
-
-expect.extend(matchers);
 
 function createSpys(cache: ReturnType<typeof createClientCache>) {
   return {
@@ -218,7 +206,7 @@ describe("AsyncCache", () => {
         for (let i = 0; i < asyncCacheSpies.get.mock.calls.length; i++) {
           if (asyncCacheSpies.get.mock.calls[i][1] === key) {
             if (asyncCacheSpies.get.mock.results[i].type === "return") {
-              await expect(getPromises[i]).toReject();
+              await expect(getPromises[i]).rejects.toThrowError();
             }
           }
         }

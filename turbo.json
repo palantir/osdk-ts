@@ -176,7 +176,7 @@
     },
 
     "@osdk/e2e.sandbox.todoapp#build": {
-      "inputs": ["src/**/*", "vite.config.ts", "postcss.config.js", "tailwind.config.js"],
+      "inputs": ["src/**/*", "vite.config.ts", "index.html"],
       "dependsOn": ["transpile", "typecheck"]
     },
 
