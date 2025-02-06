@@ -1606,21 +1606,21 @@
           "embedding": {
             "displayName": "Embedding",
             "dataType": {
-                "type": "vector",
-                "dimension": 1536,
-                "supportsSearchWith": [
+              "type": "vector",
+              "dimension": 1536,
+              "supportsSearchWith": [
                 {
-                    "value": "COSINE_SIMILARITY"
+                  "value": "COSINE_SIMILARITY"
                 }
-                ],
-                "embeddingModel": {
+              ],
+              "embeddingModel": {
                 "type": "lms",
                 "value": "OPENAI_TEXT_EMBEDDING_ADA_002"
-                }
+              }
             },
             "rid": "ri.ontology.main.property.de94ac47-509e-4094-913e-5c66f370abc8",
             "status": {
-                "type": "experimental"
+              "type": "experimental"
             },
             "visibility": "NORMAL"
           }
@@ -1635,7 +1635,7 @@
         "titleProperty": "orderTitle",
         "pluralDisplayName": "[matthewvs-dev] Order Embeddings"
       },
-    "linkTypes": []
+      "linkTypes": []
     }
   },
   "queryTypes": {
