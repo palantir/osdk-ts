@@ -20,17 +20,18 @@ import { client } from "./client.js";
 import { assertThrowsExpectedError } from "./errorChecks.js";
 
 export async function runNearestNeighborsTest(): Promise<void> {
+  const MAX_NEIGHBORS = 500;
+  const EMBEDDING_PROPERTY_VECTOR_SIZE = 1536;
+
   // Fetch 10 orders related to 'coffee'
   const result = await client(MatthewvsDevOrderEmbedding).nearestNeighbors(
     "coffee",
     10,
     "embedding",
   ).fetchPage();
-  console.log("(fetchPage) 10 nearest neighbors to \"coffee\":");
   result.data.map(s => console.log(s.orderTitle));
 
   // Fetch page with errors
-  console.log("(fetchPageWithErrors) 10 nearest neighbors to \"coffee\":");
   const resultWithErrors = await client(MatthewvsDevOrderEmbedding)
     .nearestNeighbors("coffee", 10, "embedding").fetchPageWithErrors();
   invariant(resultWithErrors.value !== undefined);
@@ -56,26 +57,44 @@ export async function runNearestNeighborsTest(): Promise<void> {
     console.log(s.orderTitle);
   });
 
-  // Test nearestNeighbor query on a property without an embedding (orderTitle)
+  // Vector query
+  const vectorQuery = await client(MatthewvsDevOrderEmbedding).nearestNeighbors(
+    Array.from({ length: EMBEDDING_PROPERTY_VECTOR_SIZE }, () => 0.3),
+    10,
+    "embedding",
+  ).fetchPage();
+  vectorQuery.data.map(s => console.log(s.orderTitle));
+
+  // nearestNeighbor query on a property without an embedding (orderTitle)
   await assertThrowsExpectedError(
     "PropertyTypeDoesNotSupportNearestNeighbors",
-    // @ts-ignore
     () =>
       client(MatthewvsDevOrderEmbedding).nearestNeighbors(
         "coffee",
         10,
+        // @ts-ignore
         "orderTitle",
       ).fetchPage(),
   );
 
-  // Test querying too many neighbors
-  const MAX_NEIGHBORS = 500;
+  // Querying too many neighbors
   await assertThrowsExpectedError(
     "TooManyNearestNeighborsRequested",
     () =>
       client(MatthewvsDevOrderEmbedding).nearestNeighbors(
         "coffee",
         MAX_NEIGHBORS + 1,
+        "embedding",
+      ).fetchPage(),
+  );
+
+  // Invalid query vector
+  await assertThrowsExpectedError(
+    "TooManyNearestNeighborsRequested",
+    () =>
+      client(MatthewvsDevOrderEmbedding).nearestNeighbors(
+        Array.from({ length: EMBEDDING_PROPERTY_VECTOR_SIZE - 1 }, () => 0.3),
+        10,
         "embedding",
       ).fetchPage(),
   );
