@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-export const PALANTIR_PATH: string = ".palantir";
-export const SETUP_PATH: string = `${PALANTIR_PATH}/setup`;
-export const VITE_INJECTIONS: string = `${PALANTIR_PATH}/vite-injections.js`;
-export const CONFIG_FILE_SUFFIX = ".config";
+import { CONFIG_FILE_SUFFIX } from "../common/constants.js";
+
+export function isConfigFile(filePath: string): boolean {
+  const trimmedFilePath = filePath.replace(/\.[^/.]+$/, "");
+  return trimmedFilePath.endsWith(CONFIG_FILE_SUFFIX);
+}

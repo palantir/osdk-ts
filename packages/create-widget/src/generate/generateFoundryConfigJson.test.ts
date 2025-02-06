@@ -24,8 +24,7 @@ const expected = `
     "rid": "ri.widgetregistry..widget-set.fake",
     "directory": "./dist",
     "autoVersion": {
-      "type": "git-describe",
-      "tagPrefix": ""
+      "type": "package-json"
     }
   }
 }

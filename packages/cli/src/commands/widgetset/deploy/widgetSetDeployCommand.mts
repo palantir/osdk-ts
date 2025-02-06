@@ -16,8 +16,8 @@
 
 import { createInternalClientContext, widgetRegistry } from "#net";
 import { ExitProcessError } from "@osdk/cli.common";
-import type { WidgetSetManifest } from "@osdk/widget-api.unstable";
-import { MANIFEST_FILE_LOCATION } from "@osdk/widget-api.unstable";
+import type { WidgetSetManifest } from "@osdk/widget.api.unstable";
+import { MANIFEST_FILE_LOCATION } from "@osdk/widget.api.unstable";
 import archiver from "archiver";
 import { consola } from "consola";
 import * as fs from "node:fs";

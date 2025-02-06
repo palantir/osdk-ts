@@ -8,6 +8,7 @@
     "ci:publish": "./scripts/ci-publish.sh",
     "ci:publishSnapshot": "pnpm run prePublish && pnpm exec changeset version --snapshot && pnpm exec changeset publish --no-git-tag --snapshot --tag=next",
     "cspell:all": "cspell . --quiet",
+    "e2e": "./scripts/run-e2e.sh",
     "lint": "turbo run lint",
     "postVersionCmd": "turbo run postVersioning && turbo codegen",
     "prePublish": "turbo build && turbo lint",
@@ -56,11 +57,13 @@
     "turbo": "^2.3.3",
     "typescript": "~5.5.4",
     "typescript-eslint": "^8.21.0",
-    "vitest": "^3.0.4"
+    "vitest": "^3.0.5"
   },
   "pnpm": {
     "overrides": {
-      "trim@0.0.1": "0.0.3"
+      "trim@0.0.1": "0.0.3",
+      "cookie@0.6.0": "0.7.2",
+      "cookie@0.7.1": "0.7.2"
     }
   },
   "engines": {

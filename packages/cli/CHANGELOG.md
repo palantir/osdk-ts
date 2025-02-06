@@ -1,5 +1,11 @@
 # @osdk/cli
 
+## 0.25.0-beta.28
+
+### Minor Changes
+
+- db51d24: Traverse widget set site version to delete
+
 ## 0.25.0-beta.27
 
 ## 0.25.0-beta.26

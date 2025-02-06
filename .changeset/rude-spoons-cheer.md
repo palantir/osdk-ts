@@ -1,5 +1,5 @@
 ---
-"@osdk/widget-api.unstable": minor
+"@osdk/widget.api.unstable": minor
 "@osdk/widget.vite-plugin.unstable": minor
 ---
 

@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.1.0-beta.28
+
+### Minor Changes
+
+- f446d0c: Exposes $clone from OSDK Object instances
+
 ## 2.1.0-beta.27
 
 ## 2.1.0-beta.26

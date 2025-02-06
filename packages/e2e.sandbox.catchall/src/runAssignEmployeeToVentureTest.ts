@@ -80,3 +80,5 @@ export async function runAssignEmployeeToVentureTest(): Promise<void> {
 
   const q = (client as Client)(Person).fetchPage();
 }
+
+void runAssignEmployeeToVentureTest();

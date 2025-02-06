@@ -3,4 +3,4 @@
 "@osdk/widget.vite-plugin.unstable": patch
 ---
 
-Rename @osdk/widget-manifest-vite-plugin to @osdk/widget.vite-plugin.unstable
+Rename @osdk/widget.manifest-vite-plugin to @osdk/widget.vite-plugin.unstable

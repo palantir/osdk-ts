@@ -1,8 +1,8 @@
 ---
-"@osdk/widget-client-react.unstable": minor
-"@osdk/widget-client.unstable": minor
+"@osdk/widget.client-react.unstable": minor
+"@osdk/widget.client.unstable": minor
 "@osdk/generator-converters": minor
-"@osdk/widget-api.unstable": minor
+"@osdk/widget.api.unstable": minor
 "@osdk/shared.client.impl": minor
 "@osdk/shared.net.errors": minor
 "@osdk/shared.net.fetch": minor

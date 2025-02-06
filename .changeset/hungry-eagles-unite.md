@@ -1,5 +1,5 @@
 ---
-"@osdk/widget-client.unstable": patch
+"@osdk/widget.client.unstable": patch
 "@osdk/foundry-sdk-generator": patch
 "@osdk/generator-converters": patch
 "@osdk/client.unstable": patch

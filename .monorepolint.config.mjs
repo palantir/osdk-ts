@@ -118,8 +118,8 @@ const archetypeRules = archetypes(
       "@osdk/shared.net.errors",
       "@osdk/shared.net.fetch",
       "@osdk/shared.net",
-      "@osdk/widget-api.unstable",
-      "@osdk/widget-client.unstable",
+      "@osdk/widget.api.unstable",
+      "@osdk/widget.client.unstable",
     ],
     {
       ...LIBRARY_RULES,
@@ -242,7 +242,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "reactLibrary",
     [
-      "@osdk/widget-client-react.unstable",
+      "@osdk/widget.client-react.unstable",
       "@osdk/react",
     ],
     {

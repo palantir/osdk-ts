@@ -13,7 +13,7 @@
 "@osdk/create-app.template.react": patch
 "@osdk/create-app.template.vue": patch
 "@osdk/generator-converters": patch
-"@osdk/widget-api.unstable": patch
+"@osdk/widget.api.unstable": patch
 "@osdk/tool.release": patch
 "@osdk/generator": patch
 "@osdk/maker": patch

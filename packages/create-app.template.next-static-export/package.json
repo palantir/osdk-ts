@@ -1,7 +1,7 @@
 {
   "name": "@osdk/create-app.template.next-static-export",
   "private": true,
-  "version": "2.1.0-beta.27",
+  "version": "2.1.0-beta.28",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -43,13 +43,13 @@
     "@osdk/create-app.template-packager": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@types/node": "^20.17.0",
+    "@types/node": "^18.0.0",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "eslint": "^9.19.0",
     "eslint-config-next": "^15.0.1",
     "typescript": "~5.5.4",
-    "vitest": "^3.0.4"
+    "vitest": "^3.0.5"
   },
   "publishConfig": {
     "access": "public"

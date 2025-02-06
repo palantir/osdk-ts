@@ -333,13 +333,13 @@ const UPDATE_PACKAGE_JSON: Mutator = {
       )
       .replace(
         // Use locally generated SDK in the monorepo
-        /"@osdk\/widget-client-react.unstable": "\^.*?"/,
-        `"@osdk/widget-client-react.unstable": "workspace:*"`,
+        /"@osdk\/widget.client-react.unstable": "\^.*?"/,
+        `"@osdk/widget.client-react.unstable": "workspace:*"`,
       )
       .replace(
         // Use locally generated SDK in the monorepo
-        /"@osdk\/widget-client.unstable": "\^.*?"/,
-        `"@osdk/widget-client.unstable": "workspace:*"`,
+        /"@osdk\/widget.client.unstable": "\^.*?"/,
+        `"@osdk/widget.client.unstable": "workspace:*"`,
       )
       .replace(
         // Use locally generated SDK in the monorepo
@@ -364,36 +364,10 @@ const UPDATE_README: Mutator = {
   }),
 };
 
-const UPDATE_WIDGET_FOUNDRY_CONFIG_JSON: Mutator = {
-  filePattern: "foundry.config.json",
-  mutate: (template, content, _sdkVersion) => {
-    if (!WIDGET_TEMPLATES.find(t => t.id === template.id)) {
-      return {
-        type: "modify",
-        newContent: content,
-      };
-    }
-    // Use package-json auto version strategy in vite manifest
-    return {
-      type: "modify",
-      newContent: content.replace(
-        `{
-      "type": "git-describe",
-      "tagPrefix": ""
-    }`,
-        `{
-      "type": "package-json"
-    }`,
-      ),
-    };
-  },
-};
-
 const MUTATORS: Mutator[] = [
   DELETE_NPM_RC,
   UPDATE_PACKAGE_JSON,
   UPDATE_README,
-  UPDATE_WIDGET_FOUNDRY_CONFIG_JSON,
 ];
 
 function templateCanonicalId(template: Template): string {
