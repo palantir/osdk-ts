@@ -30,7 +30,7 @@ export type PropertyKeys<
   O extends ObjectOrInterfaceDefinition,
 > = keyof Properties<O> & string;
 
-type VectorType = Extract<SimpleWirePropertyTypes, "vector">;
+export type VectorType = Extract<SimpleWirePropertyTypes, "vector">;
 export type VectorPropertyKeys<O extends ObjectOrInterfaceDefinition> =
   & keyof {
     [

@@ -26,6 +26,8 @@ import { runGeotimeSeriesReferenceTests } from "./runGeotimeSeriesTest.js";
 import { runInterfacesTest } from "./runInterfacesTest.js";
 import { runLegacyExamples } from "./runLegacyExamples.js";
 import { runMediaTest } from "./runMediaTest.js";
+import { runNearestNeighborsTest } from "./runNearestNeighborsTest.js";
+// import { runNearestNeighborsTest } from "./runNearestNeighborTest.js";
 import { runQueriesTest } from "./runQueriesTest.js";
 import { runStructsTest } from "./runStructsTest.js";
 import { runSubscriptionsTest } from "./runSubscriptionsTest.js";
@@ -76,6 +78,8 @@ async function runTests() {
 
     await runStructsTest();
     await runFetchByRidTest();
+
+    await runNearestNeighborsTest();
   } catch (e) {
     console.error(`Caught an error we did not expect, type: ${typeof e}`);
     console.error(e);
