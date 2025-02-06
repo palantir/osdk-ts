@@ -20,10 +20,21 @@ import type {
 } from "../mapping/DataValueMapping.js";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { ObjectTypeDefinition } from "../ontology/ObjectTypeDefinition.js";
-import type { TwoDimensionalQueryAggregationDefinition } from "../ontology/QueryDefinition.js";
+import type {
+  AggregationKeyTypes,
+  AggregationRangeKeyTypes,
+  AggregationValueTypes,
+} from "../ontology/QueryDefinition.js";
 import type { OsdkBase } from "../OsdkBase.js";
 import type { OsdkObjectPrimaryKeyType } from "../OsdkObjectPrimaryKeyType.js";
-import type { TwoDimensionalAggregation } from "./Aggregations.js";
+import type {
+  AggKeyClientToWire,
+  AggKeyWireToClient,
+  AggValueClientToWire,
+  AggValueWireToClient,
+  ThreeDimensionalAggregation,
+  TwoDimensionalAggregation,
+} from "./Aggregations.js";
 
 /**
  * Helper types for converting query definition parameter types to typescript types
@@ -47,11 +58,27 @@ export namespace QueryParam {
    */
   export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
 
+  export type RangeKey<T extends AggregationRangeKeyTypes> = AggKeyClientToWire<
+    "range",
+    T
+  >;
+
   export type TwoDimensionalAggregationType<
-    T extends TwoDimensionalQueryAggregationDefinition,
+    T extends AggregationKeyTypes | RangeKey<any>,
+    V extends AggregationValueTypes,
   > = TwoDimensionalAggregation<
-    DataValueClientToWire[T["keyType"]],
-    DataValueClientToWire[T["valueType"]]
+    T extends AggregationKeyTypes ? AggKeyClientToWire<T> : T,
+    AggValueClientToWire<V>
+  >;
+
+  export type ThreeDimensionalAggregationType<
+    OUT extends AggregationKeyTypes | RangeKey<any>,
+    IN extends AggregationKeyTypes | RangeKey<any>,
+    V extends AggregationValueTypes,
+  > = ThreeDimensionalAggregation<
+    OUT extends AggregationKeyTypes ? AggKeyClientToWire<OUT> : OUT,
+    IN extends AggregationKeyTypes ? AggKeyClientToWire<IN> : IN,
+    AggValueClientToWire<V>
   >;
 }
 
@@ -75,5 +102,28 @@ export namespace QueryResult {
    */
   export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<
     T
+  >;
+
+  export type RangeKey<T extends AggregationRangeKeyTypes> = AggKeyWireToClient<
+    "range",
+    T
+  >;
+
+  export type TwoDimensionalAggregationType<
+    T extends AggregationKeyTypes | RangeKey<any>,
+    V extends AggregationValueTypes,
+  > = TwoDimensionalAggregation<
+    T extends AggregationKeyTypes ? AggKeyWireToClient<T> : T,
+    AggValueWireToClient<V>
+  >;
+
+  export type ThreeDimensionalAggregationType<
+    OUT extends AggregationKeyTypes | RangeKey<any>,
+    IN extends AggregationKeyTypes | RangeKey<any>,
+    V extends AggregationValueTypes,
+  > = ThreeDimensionalAggregation<
+    OUT extends AggregationKeyTypes ? AggKeyWireToClient<OUT> : OUT,
+    IN extends AggregationKeyTypes ? AggKeyWireToClient<IN> : IN,
+    AggValueWireToClient<V>
   >;
 }

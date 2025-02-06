@@ -111,7 +111,7 @@ async function remapQueryResponse<
 
   if (
     responseDataType.multiplicity != null
-    && responseDataType.multiplicity !== false
+    && responseDataType.multiplicity
   ) {
     const withoutMultiplicity = { ...responseDataType, multiplicity: false };
     for (let i = 0; i < responseValue.length; i++) {

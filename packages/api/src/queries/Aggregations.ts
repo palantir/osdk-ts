@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-import type { DataValueClientToWire } from "../mapping/DataValueMapping.js";
-import type { AggregationKeyDataType } from "../ontology/QueryDefinition.js";
+import type {
+  DataValueClientToWire,
+  DataValueWireToClient,
+} from "../mapping/DataValueMapping.js";
+import type {
+  AggregationKeyTypes,
+  AggregationRangeKeyTypes,
+  AggregationValueTypes,
+} from "../ontology/QueryDefinition.js";
 
 export type Range<T extends AllowedBucketTypes> = {
   startValue?: T;
@@ -41,14 +48,26 @@ export type ThreeDimensionalAggregation<
   V extends AllowedBucketTypes,
 > = { key: T; groups: { key: U; value: V }[] }[];
 
-type WireAggKeyTypeMapping<T extends AggregationKeyDataType<any>["keyType"]> =
-  DataValueClientToWire[T];
+export type AggKeyWireToClient<
+  T extends AggregationKeyTypes,
+  S extends AggregationRangeKeyTypes = never,
+> = T extends keyof DataValueWireToClient ? DataValueWireToClient[T]
+  : T extends "range"
+    ? S extends keyof DataValueWireToClient ? Range<DataValueWireToClient[S]>
+    : never
+  : never;
 
-export interface AggregationTypeMapping {
-  boolean: boolean;
-  string: string;
-  integer: number;
-  date: string;
-  double: number;
-  timestamp: string;
-}
+export type AggKeyClientToWire<
+  T extends AggregationKeyTypes,
+  S extends AggregationRangeKeyTypes = never,
+> = T extends keyof DataValueClientToWire ? DataValueClientToWire[T]
+  : T extends "range"
+    ? S extends keyof DataValueClientToWire ? Range<DataValueClientToWire[S]>
+    : never
+  : never;
+
+export type AggValueWireToClient<T extends AggregationValueTypes> = T extends
+  keyof DataValueWireToClient ? DataValueWireToClient[T] : never;
+
+export type AggValueClientToWire<T extends AggregationValueTypes> = T extends
+  keyof DataValueClientToWire ? DataValueClientToWire[T] : never;

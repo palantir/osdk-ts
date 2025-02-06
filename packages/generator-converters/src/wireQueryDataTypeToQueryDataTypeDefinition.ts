@@ -90,13 +90,13 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
 
       return {
         type: "union",
-        union: input.unionTypes.reduce((acc, t) => {
+        union: input.unionTypes.reduce<QueryDataTypeDefinition[]>((acc, t) => {
           if (t.type === "null") {
             return acc;
           }
           acc.push(wireQueryDataTypeToQueryDataTypeDefinition(t));
           return acc;
-        }, [] as QueryDataTypeDefinition[]),
+        }, []),
         nullable: allowNulls,
       };
 
