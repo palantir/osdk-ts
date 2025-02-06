@@ -127,10 +127,9 @@ export type AggregationKeyDataType<V = any> =
   | RangeAggregationKeyDataType<V>;
 
 export interface SimpleAggregationKeyDataType<V = any> {
-  keyType: "boolean" | "string" | "date" | "double" | "integer" | "timestamp";
+  keyType: Exclude<AggregationKeyTypes, "range">;
   valueType: V;
 }
-
 export interface RangeAggregationKeyDataType<V = any> {
   keyType: "range";
   keySubtype: AggregationRangeKeyTypes;
