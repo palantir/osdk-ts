@@ -87,10 +87,6 @@ async function handleLoadObjectSet(
     true,
   );
 
-  // console.log("====RESPONSE====")
-  // console.log(parsedBody)
-  // console.log("====RESPONSE====")
-
   if (
     (req.params.ontologyApiName === defaultOntology.apiName
       || req.params.ontologyApiName === defaultOntology.rid)
