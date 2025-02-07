@@ -4,7 +4,43 @@
     "codegen": {
       "inputs": ["ontology.json"],
       "outputs": ["src/generatedNoCheck/**/*"],
-      "dependsOn": ["@osdk/cli.cmd.typescript#transpile"]
+      "dependsOn": ["@osdk/cli.cmd.typescript#transpileEsm"]
+    },
+
+    "transpile": {
+      "outputLogs": "new-only",
+      "dependsOn": [
+        "@osdk/monorepo.tsconfig#typecheck",
+        "^transpile",
+        "transpileLegacy",
+        "codegen"
+      ],
+      "inputs": ["bin/**", "src/**", "tsup.config.js", "tsconfig.json", "tsconfig.cjs.json", "transpile.sh"],
+      "outputs": ["dist/**", "lib/**", "build/**/*.{js,cjs,js.map,cjs.map}"]
+    },
+
+    "transpileLegacy": {
+      "outputLogs": "new-only",
+      "dependsOn": [
+        "//#babel-config",
+        "@osdk/monorepo.tsconfig#typecheck",
+        "^typecheck",
+        "^transpile",
+        "codegen"
+      ],
+      "inputs": [
+        "bin/**",
+        "src/**",
+        "templates/**",
+        "tsup.config.js",
+        "tsconfig.json",
+        "tsconfig.cjs.json"
+      ],
+      "outputs": [
+        "dist/**",
+        "lib/**",
+        "build/{esm,cjs,browser}/*"
+      ]
     }
   }
 }

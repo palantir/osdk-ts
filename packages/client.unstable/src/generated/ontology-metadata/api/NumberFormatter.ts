@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,17 @@
  */
 
 import type { NumberFormatBase } from "./NumberFormatBase.js";
+import type { NumberFormatBasisPoint } from "./NumberFormatBasisPoint.js";
+import type { NumberFormatBillions } from "./NumberFormatBillions.js";
 import type { NumberFormatCurrency } from "./NumberFormatCurrency.js";
 import type { NumberFormatCustomUnit } from "./NumberFormatCustomUnit.js";
+import type { NumberFormatDuration } from "./NumberFormatDuration.js";
+import type { NumberFormatMillions } from "./NumberFormatMillions.js";
 import type { NumberFormatOrdinal } from "./NumberFormatOrdinal.js";
 import type { NumberFormatPercentage } from "./NumberFormatPercentage.js";
 import type { NumberFormatPerMille } from "./NumberFormatPerMille.js";
 import type { NumberFormatPrePostFix } from "./NumberFormatPrePostFix.js";
+import type { NumberFormatThousands } from "./NumberFormatThousands.js";
 import type { NumberFormatUnit } from "./NumberFormatUnit.js";
 export interface NumberFormatter_base {
   type: "base";
@@ -61,6 +66,31 @@ export interface NumberFormatter_prePost {
   type: "prePost";
   prePost: NumberFormatPrePostFix;
 }
+
+export interface NumberFormatter_duration {
+  type: "duration";
+  duration: NumberFormatDuration;
+}
+
+export interface NumberFormatter_thousands {
+  type: "thousands";
+  thousands: NumberFormatThousands;
+}
+
+export interface NumberFormatter_millions {
+  type: "millions";
+  millions: NumberFormatMillions;
+}
+
+export interface NumberFormatter_billions {
+  type: "billions";
+  billions: NumberFormatBillions;
+}
+
+export interface NumberFormatter_basisPoint {
+  type: "basisPoint";
+  basisPoint: NumberFormatBasisPoint;
+}
 export type NumberFormatter =
   | NumberFormatter_base
   | NumberFormatter_percentage
@@ -69,4 +99,9 @@ export type NumberFormatter =
   | NumberFormatter_currency
   | NumberFormatter_unit
   | NumberFormatter_customUnit
-  | NumberFormatter_prePost;
+  | NumberFormatter_prePost
+  | NumberFormatter_duration
+  | NumberFormatter_thousands
+  | NumberFormatter_millions
+  | NumberFormatter_billions
+  | NumberFormatter_basisPoint;

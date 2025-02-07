@@ -31,7 +31,6 @@ import invariant from "tiny-invariant";
 import { legacyToModernSingleAggregationResult } from "../internal/conversions/legacyToModernSingleAggregationResult.js";
 import { modernToLegacyAggregationClause } from "../internal/conversions/modernToLegacyAggregationClause.js";
 import { modernToLegacyGroupByClause } from "../internal/conversions/modernToLegacyGroupByClause.js";
-import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import type { ArrayElement } from "../util/ArrayElement.js";
@@ -59,9 +58,7 @@ export async function aggregate<
   if (req.$groupBy) {
     body.groupBy = modernToLegacyGroupByClause(req.$groupBy);
   }
-  if (req.$where) {
-    body.where = modernToLegacyWhereClause(req.$where, objectType);
-  }
+
   const result = await OntologiesV2.OntologyObjectSets.aggregate(
     addUserAgentAndRequestContextHeaders(clientCtx, objectType),
     await clientCtx.ontologyRid,

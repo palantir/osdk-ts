@@ -20,7 +20,7 @@ import { logger } from "./logger.js";
 export async function loggingFetch(
   input: RequestInfo | URL,
   init?: RequestInit | undefined,
-) {
+): Promise<Response> {
   let url = new URL(
     (typeof input === "string")
       ? input

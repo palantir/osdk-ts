@@ -55,7 +55,7 @@ export async function publishPackages(
   );
 
   // need to produce the output to save for future run of create tag/release
-  fs.writeFile(
+  await fs.writeFile(
     path.join(cwd, "pnpm-publish-summary.json"),
     JSON.stringify(
       {
@@ -113,7 +113,9 @@ async function publishSinglePackage(
   };
 }
 
-export async function packageVersionsOrEmptySet(name: string) {
+export async function packageVersionsOrEmptySet(
+  name: string,
+): Promise<Set<string>> {
   try {
     return await packageVersionsOrThrow(name);
   } catch (e) {

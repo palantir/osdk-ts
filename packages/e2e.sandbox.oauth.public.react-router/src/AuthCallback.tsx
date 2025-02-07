@@ -6,7 +6,7 @@ import { publicOauthClient } from "./client.js";
  * Component to render at `/auth/callback`
  * This calls signIn() again to save the token, and then navigates the user back to the home page.
  */
-function AuthCallback() {
+function AuthCallback(): React.JSX.Element {
   const navigate = useNavigate();
   const [error, setError] = useState<string | undefined>(undefined);
 

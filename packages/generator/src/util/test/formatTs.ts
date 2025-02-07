@@ -16,7 +16,7 @@
 
 import { format } from "prettier";
 
-export function formatTs(contents: string) {
+export function formatTs(contents: string): string | Promise<string> {
   try {
     return format(contents, {
       parser: "typescript",

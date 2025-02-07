@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/api";
+import type { Osdk, PropertyKeys } from "@osdk/api";
 import { $Objects, $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import { apiServer, stubData, withoutRid } from "@osdk/shared.test";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import type { Client } from "../Client.js";
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  expectTypeOf,
+  it,
+} from "vitest";
+import { additionalContext, type Client } from "../Client.js";
 import { createClient } from "../createClient.js";
+import { createOsdkObject } from "./convertWireToOsdkObjects/createOsdkObject.js";
 
 function asV2Object(o: any, includeRid?: boolean) {
   o = includeRid ? { ...o } : withoutRid(o);
@@ -34,28 +42,27 @@ function asV2Object(o: any, includeRid?: boolean) {
 }
 
 describe("OsdkObject", () => {
+  let client: Client;
+  let customEntryPointClient: Client;
+
+  beforeAll(async () => {
+    apiServer.listen();
+    client = createClient(
+      "https://stack.palantir.com",
+      $ontologyRid,
+      async () => "myAccessToken",
+    );
+    customEntryPointClient = createClient(
+      "https://stack.palantirCustom.com/foo/first/someStuff",
+      $ontologyRid,
+      async () => "myAccessToken",
+    );
+  });
+
+  afterAll(() => {
+    apiServer.close();
+  });
   describe("link", () => {
-    let client: Client;
-    let customEntryPointClient: Client;
-
-    beforeAll(async () => {
-      apiServer.listen();
-      client = createClient(
-        "https://stack.palantir.com",
-        $ontologyRid,
-        async () => "myAccessToken",
-      );
-      customEntryPointClient = createClient(
-        "https://stack.palantirCustom.com/foo/first/someStuff",
-        $ontologyRid,
-        async () => "myAccessToken",
-      );
-    });
-
-    afterAll(() => {
-      apiServer.close();
-    });
-
     it("loads an employee", async () => {
       const result = await client(Employee).where({
         employeeId: stubData.employee1.employeeId,
@@ -195,6 +202,214 @@ describe("OsdkObject", () => {
         "equipment",
         "objectTypeWithAllPropertyTypes",
       ].sort());
+    });
+  });
+  describe("clone", () => {
+    let employee: Osdk.Instance<
+      $Objects.Employee,
+      never,
+      PropertyKeys<$Objects.Employee>
+    >;
+    beforeAll(async () => {
+      employee = (await client(Employee).where({
+        employeeId: stubData.employee2.employeeId,
+      }).fetchPage()).data[0];
+
+      expect(employee).toMatchObject({
+        "$apiName": "Employee",
+        "$objectType": "Employee",
+        "$primaryKey": 50031,
+        "$title": "Jane Doe",
+        "class": "Blue",
+        "employeeId": 50031,
+        "fullName": "Jane Doe",
+        "office": "SEA",
+        "startDate": "2012-02-12",
+      });
+    });
+
+    it("clones and updates an object with another osdk object", async () => {
+      const updatedEmployee = createOsdkObject(
+        client[additionalContext],
+        {
+          "apiName": "Employee",
+          "primaryKeyType": "integer",
+          "primaryKeyApiName": "employeeId",
+          "properties": {
+            "class": { "type": "string" },
+            "employeeId": { "type": "integer" },
+            "fullName": { "type": "string" },
+            "office": { "type": "string" },
+          },
+        } as any,
+        {
+          "$apiName": "Employee",
+          "$objectType": "Employee",
+          "$primaryKey": 50031,
+          "$title": "Jane Doe",
+          "class": "Red",
+          "employeeId": 50031,
+          "fullName": "Jane Doe",
+          "office": "NYC",
+        },
+      ) as Osdk.Instance<
+        Employee,
+        never,
+        "class" | "employeeId" | "fullName" | "office"
+      >;
+
+      const mergedEmployee = employee.$clone(updatedEmployee);
+
+      expectTypeOf(mergedEmployee).toEqualTypeOf(employee);
+
+      expect(mergedEmployee).toMatchInlineSnapshot(`
+        {
+          "$apiName": "Employee",
+          "$objectType": "Employee",
+          "$primaryKey": 50031,
+          "$title": "Jane Doe",
+          "class": "Red",
+          "employeeId": 50031,
+          "employeeLocation": GeotimeSeriesPropertyImpl {
+            "lastFetchedValue": undefined,
+          },
+          "employeeSensor": TimeSeriesPropertyImpl {},
+          "employeeStatus": TimeSeriesPropertyImpl {},
+          "fullName": "Jane Doe",
+          "office": "NYC",
+          "startDate": "2012-02-12",
+        }
+      `);
+    });
+
+    it("correctly scopes up with another OSDK object", async () => {
+      const firstEmployee = { $clone: () => {} } as unknown as Osdk.Instance<
+        Employee,
+        never,
+        "class"
+      >;
+      expectTypeOf(firstEmployee.$clone(employee)).toMatchTypeOf<
+        Osdk.Instance<
+          Employee,
+          never,
+          PropertyKeys<Employee>
+        >
+      >();
+    });
+
+    it("Correctly preserves keys from original and new with distinct property key sets", async () => {
+      const firstEmployee = { $clone: () => {} } as unknown as Osdk.Instance<
+        Employee,
+        never,
+        "class"
+      >;
+      expectTypeOf(
+        firstEmployee.$clone({} as Osdk.Instance<Employee, never, "office">),
+      ).toMatchTypeOf<
+        Osdk.Instance<
+          Employee,
+          never,
+          "class" | "office"
+        >
+      >();
+    });
+
+    it("clones and updates an object with a record", async () => {
+      const mergedEmployee = employee.$clone({
+        "class": "Green",
+        "employeeId": 50031,
+        "fullName": "John Doe",
+        "office": "SEA",
+        "startDate": "2019-01-01",
+      });
+
+      expect(mergedEmployee).toMatchInlineSnapshot(`
+        {
+          "$apiName": "Employee",
+          "$objectType": "Employee",
+          "$primaryKey": 50031,
+          "$title": "John Doe",
+          "class": "Green",
+          "employeeId": 50031,
+          "employeeLocation": GeotimeSeriesPropertyImpl {
+            "lastFetchedValue": undefined,
+          },
+          "employeeSensor": TimeSeriesPropertyImpl {},
+          "employeeStatus": TimeSeriesPropertyImpl {},
+          "fullName": "John Doe",
+          "office": "SEA",
+          "startDate": "2019-01-01",
+        }
+      `);
+    });
+
+    it("correctly scopes up with a record", async () => {
+      const firstEmployee = { $clone: () => {} } as unknown as Osdk.Instance<
+        Employee,
+        never,
+        "class"
+      >;
+      expectTypeOf(firstEmployee.$clone({
+        "class": "Green",
+        "employeeId": 50031,
+        "fullName": "John Doe",
+        "office": "SEA",
+        "startDate": "2019-01-01",
+      })).toMatchTypeOf<
+        Osdk.Instance<
+          Employee,
+          never,
+          "class" | "employeeId" | "fullName" | "office" | "startDate"
+        >
+      >();
+    });
+
+    it("correctly sets title", async () => {
+      const mergedEmployee = employee.$clone({
+        "fullName": "Brad Pitt",
+      });
+
+      expect(mergedEmployee).toMatchInlineSnapshot(`
+        {
+          "$apiName": "Employee",
+          "$objectType": "Employee",
+          "$primaryKey": 50031,
+          "$title": "Brad Pitt",
+          "class": "Blue",
+          "employeeId": 50031,
+          "employeeLocation": GeotimeSeriesPropertyImpl {
+            "lastFetchedValue": undefined,
+          },
+          "employeeSensor": TimeSeriesPropertyImpl {},
+          "employeeStatus": TimeSeriesPropertyImpl {},
+          "fullName": "Brad Pitt",
+          "office": "SEA",
+          "startDate": "2012-02-12",
+        }
+      `);
+    });
+
+    it("is able to clone with nothing passed in", async () => {
+      expect(employee.$clone()).toMatchObject({
+        "$apiName": "Employee",
+        "$objectType": "Employee",
+        "$primaryKey": 50031,
+        "$title": "Jane Doe",
+        "class": "Blue",
+        "employeeId": 50031,
+        "fullName": "Jane Doe",
+        "office": "SEA",
+        "startDate": "2012-02-12",
+      });
+    });
+
+    it("throws when merging objects with different primary keys", async () => {
+      expect(() =>
+        employee.$clone({
+          "class": "Green",
+          "employeeId": 50035,
+        })
+      ).toThrow();
     });
   });
 });

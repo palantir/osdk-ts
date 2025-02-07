@@ -38,7 +38,7 @@ export class ForeignType extends AbstractImportable {
     }$${this.shortApiName}`;
   }
 
-  getDefinitionIdentifier(v2: boolean) {
+  getDefinitionIdentifier(v2: boolean): string {
     return this.uniqueImportName;
   }
 }

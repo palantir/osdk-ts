@@ -18,7 +18,9 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { GeneratePackageCommand } from "../generate/index.js";
 
-export async function cli(args: string[] = process.argv) {
+export async function cli(args: string[] = process.argv): Promise<
+  Record<string, unknown> | undefined
+> {
   const base = yargs(hideBin(args))
     .command(new GeneratePackageCommand())
     .demandCommand()
@@ -29,7 +31,7 @@ export async function cli(args: string[] = process.argv) {
     .version(process.env.npm_package_version!);
 
   try {
-    return base.parseAsync();
+    return await base.parseAsync();
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import type { ActionTypeLoadRequestV2 } from "./ActionTypeLoadRequestV2.js";
 import type { DatasourceType } from "./DatasourceType.js";
+import type { EntityMetadataLoadRequest } from "./EntityMetadataLoadRequest.js";
 import type { InterfaceTypeLoadRequest } from "./InterfaceTypeLoadRequest.js";
 import type { LinkTypeLoadRequest } from "./LinkTypeLoadRequest.js";
 import type { ObjectTypeLoadRequest } from "./ObjectTypeLoadRequest.js";
@@ -34,8 +36,11 @@ export interface OntologyBulkLoadEntitiesRequest {
   sharedPropertyTypes: Array<SharedPropertyTypeLoadRequest>;
   interfaceTypes: Array<InterfaceTypeLoadRequest>;
   typeGroups: Array<TypeGroupLoadRequest>;
+  actionTypes: Array<ActionTypeLoadRequestV2>;
   loadRedacted: boolean | undefined;
   includeObjectTypeCount: boolean | undefined;
+  includeTypeGroupEntitiesCount: boolean | undefined;
   includeObjectTypesWithoutSearchableDatasources: boolean | undefined;
   includeEntityMetadata: boolean | undefined;
+  entityMetadata: EntityMetadataLoadRequest | undefined;
 }

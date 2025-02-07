@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import type { CreatePackageResponse } from "../CreatePackageResponse.js";
 /**
  * Creates a new package in the specified ontology. Requires the privileged operation `ontology:service-create-package`
  * on the ontology root rid rid.
+ *
+ * If using a Compass project as OwningRid, the project must be in the same namespace as the ontology.
  */
 export async function createPackage(
   ctx: ConjureContext,

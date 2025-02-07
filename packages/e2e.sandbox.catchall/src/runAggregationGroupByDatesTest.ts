@@ -17,7 +17,7 @@
 import { BuilderDeploymentState } from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
 
-export async function runAggregationGroupByDatesTest() {
+export async function runAggregationGroupByDatesTest(): Promise<void> {
   const groupedTimestamps = await client(BuilderDeploymentState).aggregate({
     $select: { $count: "unordered" },
     $groupBy: { currentTimestamp: { $duration: [10, "seconds"] } },
@@ -62,3 +62,5 @@ export async function runAggregationGroupByDatesTest() {
     rangedDates[0].$count,
   );
 }
+
+void runAggregationGroupByDatesTest();

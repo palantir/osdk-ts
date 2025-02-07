@@ -6,4 +6,5 @@ export { Thing, UsesForeignSpt } from './ontology/objects.js';
 export * as $Objects from './ontology/objects.js';
 export { getTask } from './ontology/queries.js';
 export * as $Queries from './ontology/queries.js';
+export { $osdkMetadata } from './OntologyMetadata.js';
 export { $ontologyRid } from './OntologyMetadata.js';

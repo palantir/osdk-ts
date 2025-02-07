@@ -6,7 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
-import { $osdkMetadata } from '../../OntologyMetadata';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace moveOffice {
   // Represents the definition of the parameters for the action

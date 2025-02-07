@@ -49,7 +49,7 @@ export function stringify<T extends Record<string, any>>(
     [K in keyof T | "*"]?: Customizer<K, T[K]>;
   } = {},
   separator = ",\n",
-) {
+): string {
   const defaultKeyFormatter = (key: string) => `${JSON.stringify(key)}`;
   const entries: Array<string> = [];
 

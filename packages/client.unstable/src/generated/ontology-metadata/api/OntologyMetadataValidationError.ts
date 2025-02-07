@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +18,10 @@ import type { ActionTypeError } from "./ActionTypeError.js";
 import type { InterfaceTypeError } from "./InterfaceTypeError.js";
 import type { LinkTypeError } from "./LinkTypeError.js";
 import type { ObjectTypeError } from "./ObjectTypeError.js";
-import type { OntologyLimitsError } from "./OntologyLimitsError.js";
 import type { RuleSetError } from "./RuleSetError.js";
 import type { SharedPropertyTypeError } from "./SharedPropertyTypeError.js";
 import type { TypeGroupError } from "./TypeGroupError.js";
 import type { WorkflowError } from "./WorkflowError.js";
-export interface OntologyMetadataValidationError_ontologyLimits {
-  type: "ontologyLimits";
-  ontologyLimits: OntologyLimitsError;
-}
-
 export interface OntologyMetadataValidationError_objectType {
   type: "objectType";
   objectType: ObjectTypeError;
@@ -68,7 +62,6 @@ export interface OntologyMetadataValidationError_typeGroup {
   typeGroup: TypeGroupError;
 }
 export type OntologyMetadataValidationError =
-  | OntologyMetadataValidationError_ontologyLimits
   | OntologyMetadataValidationError_objectType
   | OntologyMetadataValidationError_linkType
   | OntologyMetadataValidationError_ruleSet

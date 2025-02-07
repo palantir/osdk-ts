@@ -26,6 +26,8 @@ import type {
   InterfaceTypeStatus_deprecated,
   InterfaceTypeStatus_experimental,
   OntologyIrInterfaceType,
+  OntologyIrObjectType,
+  OntologyIrPropertyType,
   SharedPropertyTypeGothamMapping,
   StructFieldType,
   ValueTypeApiName,
@@ -33,18 +35,21 @@ import type {
   ValueTypeDisplayMetadata,
   ValueTypeStatus,
   ValueTypeVersion,
+  Visibility,
 } from "@osdk/client.unstable";
 
 import type { OntologyFullMetadata } from "@osdk/internal.foundry.core";
+import type { BlueprintIcon } from "./iconNames.js";
 
 export interface Ontology extends
   Omit<
     OntologyFullMetadata,
-    "ontology" | "sharedPropertyTypes" | "interfaceTypes"
+    "ontology" | "sharedPropertyTypes" | "interfaceTypes" | "objectTypes"
   >
 {
   interfaceTypes: Record<string, InterfaceType>;
   sharedPropertyTypes: Record<string, SharedPropertyType>;
+  objectTypes: Record<string, ObjectType>;
   valueTypes: Record<string, ValueTypeDefinitionVersion[]>;
   importedTypes: ImportedTypes;
 }
@@ -54,6 +59,69 @@ export type {
   InterfaceTypeStatus_deprecated,
   InterfaceTypeStatus_experimental,
 };
+
+export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
+
+export interface ObjectTypeInner extends
+  Omit<
+    OntologyIrObjectType,
+    | "titlePropertyTypeRid"
+    | "propertyTypes"
+    | "allImplementsInterfaces"
+    | "implementsInterfaces2"
+    | "displayMetadata"
+  >
+{
+  properties: Array<ObjectPropertyType>;
+  titlePropertyApiName: string;
+  implementsInterfaces: Array<InterfaceImplementation>;
+  description: string | undefined;
+  icon: { locator: BlueprintIcon; color: string } | undefined;
+  displayName: string;
+  pluralDisplayName: string;
+  visibility: Visibility;
+  editsEnabled: boolean;
+}
+
+export type InterfaceImplementation = {
+  implements: InterfaceType;
+  propertyMapping: { interfaceProperty: string; mapsTo: string }[];
+};
+
+export type ObjectType = RequiredFields<
+  Partial<ObjectTypeInner>,
+  | "apiName"
+  | "primaryKeys"
+  | "displayName"
+  | "pluralDisplayName"
+  | "titlePropertyApiName"
+>;
+
+export interface ObjectPropertyTypeInner extends
+  Omit<
+    OntologyIrPropertyType,
+    | "sharedPropertyTypeApiName"
+    | "type"
+    | "inlineAction"
+    | "sharedPropertyTypeRid"
+    | "valueType"
+    | "ruleSetBinding"
+    | "displayMetadata"
+  >
+{
+  type: PropertyTypeType;
+  array?: boolean;
+  valueType: string | ValueTypeDefinitionVersion;
+  sharedPropertyType: SharedPropertyType;
+  description: string | undefined;
+  displayName: string;
+  visibility: Visibility;
+}
+
+export type ObjectPropertyType = RequiredFields<
+  Partial<ObjectPropertyTypeInner>,
+  "apiName" | "type" | "displayName"
+>;
 
 export interface InterfaceType extends
   Omit<
@@ -83,6 +151,7 @@ type TypeClass = { kind: string; name: string };
 
 export interface SharedPropertyType extends PropertyType {
   apiName: string;
+  nonNameSpacedApiName: string;
   gothamMapping?: SharedPropertyTypeGothamMapping;
 }
 

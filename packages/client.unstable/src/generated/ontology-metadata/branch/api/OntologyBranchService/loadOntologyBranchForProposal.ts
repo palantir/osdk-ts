@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import type { LoadOntologyBranchForProposalResponse } from "../LoadOntologyBranc
 
 /**
  * Load a ProposalV2 and its parent branch with the provided ontologyProposalRid.
- * Currently not implemented and will return dummy data.
  */
 export async function loadOntologyBranchForProposal(
   ctx: ConjureContext,

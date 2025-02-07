@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,15 @@
  */
 
 import type { ColumnName } from "./ColumnName.js";
-import type { ObjectTypeFieldApiName } from "./ObjectTypeFieldApiName.js";
+import type { NestedStructFieldApiNameMapping } from "./NestedStructFieldApiNameMapping.js";
 import type { StructFieldName } from "./StructFieldName.js";
 
 /**
- * A mapping from the backing column struct field names to the struct property type field api names.
+ * A mapping from the backing column struct field names to the struct property type field api names. Optionally
+ * allows specifying nested fields, although OMS will throw in practice since this is only to avoid an API break
+ * in the future if we want to support nested structs.
  */
 export interface StructFieldApiNameMapping {
   column: ColumnName;
-  mapping: Record<StructFieldName, ObjectTypeFieldApiName>;
+  mapping: Record<StructFieldName, NestedStructFieldApiNameMapping>;
 }

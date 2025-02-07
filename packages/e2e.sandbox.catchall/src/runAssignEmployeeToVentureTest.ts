@@ -25,7 +25,7 @@ import { client as unstableClient } from "./client.js";
 
 const client: Client = unstableClient;
 
-export async function runAssignEmployeeToVentureTest() {
+export async function runAssignEmployeeToVentureTest(): Promise<void> {
   let didValidateOnce = false;
 
   const e = await client(Employee).fetchOneWithErrors("hi", {
@@ -80,3 +80,5 @@ export async function runAssignEmployeeToVentureTest() {
 
   const q = (client as Client)(Person).fetchPage();
 }
+
+void runAssignEmployeeToVentureTest();

@@ -127,7 +127,7 @@ type WidgetMessageVisitor<C extends WidgetConfig<C["parameters"]>> =
 export function visitWidgetMessage<C extends WidgetConfig<C["parameters"]>>(
   message: WidgetMessage<C>,
   visitor: WidgetMessageVisitor<C>,
-) {
+): void {
   const { type, payload } = message;
   const handler = visitor[type];
   if (handler) {

@@ -23,8 +23,8 @@ import nodePolyfill from "rollup-plugin-polyfill-node";
 async function createRollupBuild(
   absolutePackagePath: string,
   packageName: string,
-) {
-  const inputPath = `${absolutePackagePath}/${packageName}/index.js`;
+): Promise<RollupBuild> {
+  const inputPath = `${absolutePackagePath}/${packageName}/esm/index.js`;
 
   const { findUp } = await import("find-up");
   const nodeModulesPath = await findUp("node_modules", {
@@ -32,7 +32,7 @@ async function createRollupBuild(
     type: "directory",
   });
 
-  return rollup({
+  return await rollup({
     input: inputPath,
     plugins: [
       nodeResolve({
@@ -64,8 +64,9 @@ async function writeRollupBuild(
   packageName: string,
   format: ModuleFormat,
 ) {
-  const outputPath =
-    `${absolutePackagePath}/${packageName}/dist/bundle/index.${format}.js`;
+  const outputPath = `${absolutePackagePath}/${packageName}/dist/bundle/index.${
+    format === "cjs" ? "cjs" : "mjs"
+  }`;
 
   await Promise.all([
     rollupBuild.write({
@@ -84,13 +85,18 @@ async function generateEsmBuild(
   absolutePackagePath: string,
   packageName: string,
 ) {
-  const umdBuild = await createRollupBuild(absolutePackagePath, packageName);
+  const umdBuild = await createRollupBuild(
+    absolutePackagePath,
+    packageName,
+  );
   await writeRollupBuild(umdBuild, absolutePackagePath, packageName, "esm");
 }
 
 export async function generateBundles(
   absolutePackagePath: string,
   packageName: string,
-) {
-  await Promise.all([generateEsmBuild(absolutePackagePath, packageName)]);
+): Promise<void> {
+  await Promise.all([
+    generateEsmBuild(absolutePackagePath, packageName),
+  ]);
 }

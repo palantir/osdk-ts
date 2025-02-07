@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,4 +24,6 @@ export type LogicRuleTypeFilter =
   | "ADD_LINK"
   | "DELETE_LINK"
   | "FUNCTION"
-  | "BATCHED_FUNCTION";
+  | "BATCHED_FUNCTION"
+  | "ADD_OR_MODIFY_OBJECT"
+  | "ADD_OR_MODIFY_OBJECT_V2";

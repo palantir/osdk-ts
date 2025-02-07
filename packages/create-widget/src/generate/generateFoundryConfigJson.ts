@@ -16,23 +16,22 @@
 
 export function generateFoundryConfigJson({
   foundryUrl,
-  widget,
+  widgetSet,
   directory,
 }: {
   foundryUrl: string;
-  widget: string;
+  widgetSet: string;
   directory: string;
 }): string {
   return (
     JSON.stringify(
       {
         foundryUrl,
-        widget: {
-          rid: widget,
+        widgetSet: {
+          rid: widgetSet,
           directory,
           autoVersion: {
-            type: "git-describe",
-            tagPrefix: "",
+            type: "package-json",
           },
         },
       },

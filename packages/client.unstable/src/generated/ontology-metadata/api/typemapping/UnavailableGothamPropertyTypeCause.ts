@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import type { GothamPropertyTypeUnavailableConverterError } from "./GothamPropertyTypeUnavailableConverterError.js";
 import type { GothamPropertyTypeUnavailableDeprecated } from "./GothamPropertyTypeUnavailableDeprecated.js";
+import type { GothamPropertyTypeUnavailableHasCustomMakers } from "./GothamPropertyTypeUnavailableHasCustomMakers.js";
 import type { GothamPropertyTypeUnavailableInTransfer } from "./GothamPropertyTypeUnavailableInTransfer.js";
 import type { GothamPropertyTypeUnavailableIsComposite } from "./GothamPropertyTypeUnavailableIsComposite.js";
-import type { GothamPropertyTypeUnavailableIsCompositeWithCustomValidators } from "./GothamPropertyTypeUnavailableIsCompositeWithCustomValidators.js";
-import type { GothamPropertyTypeUnavailableIsCompositeWithEnumValues } from "./GothamPropertyTypeUnavailableIsCompositeWithEnumValues.js";
 import type { GothamPropertyTypeUnavailableNonIndexedProperty } from "./GothamPropertyTypeUnavailableNonIndexedProperty.js";
 import type { GothamPropertyTypeUnavailableSystemProperty } from "./GothamPropertyTypeUnavailableSystemProperty.js";
 import type { GothamPropertyTypeUnavailableUnknown } from "./GothamPropertyTypeUnavailableUnknown.js";
@@ -30,22 +30,16 @@ export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailabl
     GothamPropertyTypeUnavailableIsComposite;
 }
 
-export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableIsCompositeWithEnumValues {
-  type: "gothamPropertyTypeUnavailableIsCompositeWithEnumValues";
-  gothamPropertyTypeUnavailableIsCompositeWithEnumValues:
-    GothamPropertyTypeUnavailableIsCompositeWithEnumValues;
-}
-
-export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableIsCompositeWithCustomValidators {
-  type: "gothamPropertyTypeUnavailableIsCompositeWithCustomValidators";
-  gothamPropertyTypeUnavailableIsCompositeWithCustomValidators:
-    GothamPropertyTypeUnavailableIsCompositeWithCustomValidators;
-}
-
 export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableInTransfer {
   type: "gothamPropertyTypeUnavailableInTransfer";
   gothamPropertyTypeUnavailableInTransfer:
     GothamPropertyTypeUnavailableInTransfer;
+}
+
+export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableConverterError {
+  type: "gothamPropertyTypeUnavailableConverterError";
+  gothamPropertyTypeUnavailableConverterError:
+    GothamPropertyTypeUnavailableConverterError;
 }
 
 export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableDeprecated {
@@ -78,18 +72,24 @@ export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailabl
     GothamPropertyTypeUnavailableUnsupportedMaxValueLength;
 }
 
+export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableHasCustomMakers {
+  type: "gothamPropertyTypeUnavailableHasCustomMakers";
+  gothamPropertyTypeUnavailableHasCustomMakers:
+    GothamPropertyTypeUnavailableHasCustomMakers;
+}
+
 export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableUnknown {
   type: "gothamPropertyTypeUnavailableUnknown";
   gothamPropertyTypeUnavailableUnknown: GothamPropertyTypeUnavailableUnknown;
 }
 export type UnavailableGothamPropertyTypeCause =
   | UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableIsComposite
-  | UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableIsCompositeWithEnumValues
-  | UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableIsCompositeWithCustomValidators
   | UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableInTransfer
+  | UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableConverterError
   | UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableDeprecated
   | UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableSystemProperty
   | UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableNonIndexedProperty
   | UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableUnsupportedBaseValidators
   | UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableUnsupportedMaxValueLength
+  | UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableHasCustomMakers
   | UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableUnknown;

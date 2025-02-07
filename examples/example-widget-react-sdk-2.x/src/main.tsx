@@ -1,7 +1,7 @@
 import "@radix-ui/themes/styles.css";
 import "./main.css";
 
-import { FoundryWidget } from "@osdk/widget-client-react.unstable";
+import { FoundryWidget } from "@osdk/widget.client-react.unstable";
 import { Theme } from "@radix-ui/themes";
 import { createRoot } from "react-dom/client";
 import MainConfig from "./main.config.js";

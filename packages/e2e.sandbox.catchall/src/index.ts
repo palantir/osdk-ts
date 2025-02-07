@@ -25,6 +25,7 @@ import { runGeoQueriesTest } from "./runGeoQueriesTest.js";
 import { runGeotimeSeriesReferenceTests } from "./runGeotimeSeriesTest.js";
 import { runInterfacesTest } from "./runInterfacesTest.js";
 import { runLegacyExamples } from "./runLegacyExamples.js";
+import { runMediaTest } from "./runMediaTest.js";
 import { runQueriesTest } from "./runQueriesTest.js";
 import { runStructsTest } from "./runStructsTest.js";
 import { runSubscriptionsTest } from "./runSubscriptionsTest.js";
@@ -42,7 +43,7 @@ async function runTests() {
       await runLegacyExamples();
     }
     if (testSubscriptions) {
-      runSubscriptionsTest();
+      await runSubscriptionsTest();
 
       // we don't need the console flooded with additional things
       return;
@@ -71,6 +72,8 @@ async function runTests() {
 
     await runGeotimeSeriesReferenceTests();
 
+    await runMediaTest();
+
     await runStructsTest();
     await runFetchByRidTest();
   } catch (e) {
@@ -79,4 +82,4 @@ async function runTests() {
   }
 }
 
-runTests();
+void runTests();

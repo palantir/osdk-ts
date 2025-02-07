@@ -1,6 +1,6 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
-import { $osdkMetadata } from '../../OntologyMetadata';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
   PropertyKeys as $PropertyKeys,
   ObjectTypeDefinition as $ObjectTypeDefinition,

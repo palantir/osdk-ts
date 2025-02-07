@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
+import type { GenericOntologyMetadataError } from "../../api/GenericOntologyMetadataError.js";
 import type { DatasourceModificationConstraintError } from "./DatasourceModificationConstraintError.js";
 import type { ForeignKeyConstraintError } from "./ForeignKeyConstraintError.js";
 import type { FoundrySchemaConstraintError } from "./FoundrySchemaConstraintError.js";
+import type { GeotimeSeriesReferencePropertyTypeConstraintError } from "./GeotimeSeriesReferencePropertyTypeConstraintError.js";
 import type { InterfaceImplementationError } from "./InterfaceImplementationError.js";
 import type { MediaReferencePropertyTypeConstraintError } from "./MediaReferencePropertyTypeConstraintError.js";
 import type { NumberOfDatasourcesConstraintError } from "./NumberOfDatasourcesConstraintError.js";
+import type { ObjectTypePropertyConstraintError } from "./ObjectTypePropertyConstraintError.js";
+import type { PropertySecurityGroupsConstraintError } from "./PropertySecurityGroupsConstraintError.js";
 import type { SchemaMigrationError } from "./SchemaMigrationError.js";
 import type { TimeDependentPropertyTypeConstraintError } from "./TimeDependentPropertyTypeConstraintError.js";
 export interface ValidationError_foreignKeyConstraint {
@@ -58,9 +62,30 @@ export interface ValidationError_timeDependentPropertyTypeConstraint {
   timeDependentPropertyTypeConstraint: TimeDependentPropertyTypeConstraintError;
 }
 
+export interface ValidationError_geotimeSeriesReferencePropertyTypeConstraint {
+  type: "geotimeSeriesReferencePropertyTypeConstraint";
+  geotimeSeriesReferencePropertyTypeConstraint:
+    GeotimeSeriesReferencePropertyTypeConstraintError;
+}
+
 export interface ValidationError_datasourceModificationConstraint {
   type: "datasourceModificationConstraint";
   datasourceModificationConstraint: DatasourceModificationConstraintError;
+}
+
+export interface ValidationError_objectTypePropertyConstraint {
+  type: "objectTypePropertyConstraint";
+  objectTypePropertyConstraint: ObjectTypePropertyConstraintError;
+}
+
+export interface ValidationError_propertySecurityGroupsConstraint {
+  type: "propertySecurityGroupsConstraint";
+  propertySecurityGroupsConstraint: PropertySecurityGroupsConstraintError;
+}
+
+export interface ValidationError_genericOntologyMetadataError {
+  type: "genericOntologyMetadataError";
+  genericOntologyMetadataError: GenericOntologyMetadataError;
 }
 export type ValidationError =
   | ValidationError_foreignKeyConstraint
@@ -70,4 +95,8 @@ export type ValidationError =
   | ValidationError_mediaReferencePropertyTypeConstraint
   | ValidationError_interfaceImplementationConstraint
   | ValidationError_timeDependentPropertyTypeConstraint
-  | ValidationError_datasourceModificationConstraint;
+  | ValidationError_geotimeSeriesReferencePropertyTypeConstraint
+  | ValidationError_datasourceModificationConstraint
+  | ValidationError_objectTypePropertyConstraint
+  | ValidationError_propertySecurityGroupsConstraint
+  | ValidationError_genericOntologyMetadataError;

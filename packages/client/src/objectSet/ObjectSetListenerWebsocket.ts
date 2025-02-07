@@ -218,7 +218,7 @@ export class ObjectSetListenerWebsocket {
 
     // actually prepares the subscription, ensures the ws is ready, and sends
     // a subscribe message. We don't want to block on this.
-    this.#initiateSubscribe(sub);
+    void this.#initiateSubscribe(sub);
 
     return () => {
       this.#unsubscribe(sub);
@@ -345,7 +345,10 @@ export class ObjectSetListenerWebsocket {
   async #ensureWebsocket() {
     if (this.#ws == null) {
       const { baseUrl, tokenProvider } = this.#client;
-      const url = constructWebsocketUrl(baseUrl, this.#client.ontologyRid);
+      const url = constructWebsocketUrl(
+        baseUrl,
+        await this.#client.ontologyRid,
+      );
 
       const token = await tokenProvider();
 
@@ -413,16 +416,16 @@ export class ObjectSetListenerWebsocket {
     }
     switch (data.type) {
       case "objectSetChanged":
-        return this.#handleMessage_objectSetChanged(data);
+        return void this.#handleMessage_objectSetChanged(data);
 
       case "refreshObjectSet":
-        return this.#handleMessage_refreshObjectSet(data);
+        return void this.#handleMessage_refreshObjectSet(data);
 
       case "subscribeResponses":
-        return this.#handleMessage_subscribeResponses(data);
+        return void this.#handleMessage_subscribeResponses(data);
 
       case "subscriptionClosed": {
-        return this.#handleMessage_subscriptionClosed(data);
+        return void this.#handleMessage_subscriptionClosed(data);
       }
 
       default:
@@ -653,7 +656,9 @@ export class ObjectSetListenerWebsocket {
         if (s.status === "subscribed") s.status = "reconnecting";
       }
 
-      this.#ensureWebsocket();
+      // we don't care about the result of this (we want cycleWebsocket to be fire and forget)
+      // just that it happens
+      void this.#ensureWebsocket();
     }
   };
 
@@ -693,7 +698,7 @@ export class ObjectSetListenerWebsocket {
 /** @internal */
 export function constructWebsocketUrl(
   baseUrl: string,
-  ontologyRid: string | Promise<string>,
+  ontologyRid: string,
 ) {
   const base = new URL(baseUrl);
   const url = new URL(

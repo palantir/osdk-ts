@@ -25,8 +25,8 @@ const ExpectedOsdkVersion = "2.1.0";
 export async function generateOntologyMetadataFile(
   { fs, outDir, ontology, ontologyApiNamespace }: GenerateContext,
   userAgent: string,
-) {
-  fs.writeFile(
+): Promise<void> {
+  await fs.writeFile(
     path.join(outDir, "OntologyMetadata.ts"),
     await formatTs(
       `

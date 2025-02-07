@@ -18,7 +18,7 @@ import { BoundariesUsState } from "@osdk/e2e.generated.catchall";
 import { expectType } from "ts-expect";
 import { client } from "./client.js";
 
-export async function demoStrictnessObject() {
+export async function demoStrictnessObject(): Promise<void> {
   const { data: defaultResults } = await client(BoundariesUsState)
     .fetchPage();
   expectType<string>(defaultResults[0].usState);
@@ -41,7 +41,7 @@ export async function demoStrictnessObject() {
   // const employeeNotStrict = fooDataNotStrict[0].$as(Employee);
 }
 
-export async function demoStrictnessInterface() {
+export async function demoStrictnessInterface(): Promise<void> {
   // const { data: fooDataNotStrict } = await client(FooInterface)
   //   .fetchPage({ $__EXPERIMENTAL_strictNonNull: false });
 

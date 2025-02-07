@@ -162,7 +162,9 @@ export class GeneratePackageCommand
       .strict();
   }
 
-  public handler = async (args: Arguments<generatePackageCommandArgs>) => {
+  public handler = async (
+    args: Arguments<generatePackageCommandArgs>,
+  ): Promise<void> => {
     const { consola } = await import("consola");
     consola.start(
       `Generating OSDK: ${args.packageName} at version: ${args.packageVersion}`,

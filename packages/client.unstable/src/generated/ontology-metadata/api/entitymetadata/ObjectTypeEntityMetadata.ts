@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import type { EditsHistory } from "./EditsHistory.js";
 import type { EditsResolutionStrategies } from "./EditsResolutionStrategies.js";
 import type { EntityConfig } from "./EntityConfig.js";
 import type { ObjectTypeAlias } from "./ObjectTypeAlias.js";
+import type { ObjectTypeIndexingSettings } from "./ObjectTypeIndexingSettings.js";
 import type { EntityProvenance } from "./provenance/EntityProvenance.js";
 import type { StorageBackend } from "./StorageBackend.js";
 
@@ -38,4 +39,5 @@ export interface ObjectTypeEntityMetadata {
   editsResolutionStrategies: EditsResolutionStrategies;
   aliases: Array<ObjectTypeAlias>;
   editsHistory: EditsHistory;
+  objectTypeIndexingSettings: ObjectTypeIndexingSettings | undefined;
 }

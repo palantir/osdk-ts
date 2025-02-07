@@ -1,5 +1,633 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`Load Ontologies Metadata > Loads action types with media refs, interface props, and structs 1`] = `
+{
+  "externalInterfaces": Map {},
+  "externalObjects": Map {},
+  "filteredFullMetadata": {
+    "actionTypes": {
+      "actionTakesMedia": {
+        "apiName": "actionTakesMedia",
+        "description": "An action which takes a mediaReference parameter",
+        "operations": [],
+        "parameters": {
+          "media_reference": {
+            "dataType": {
+              "type": "mediaReference",
+            },
+            "required": true,
+          },
+        },
+        "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f3",
+        "status": "ACTIVE",
+      },
+      "createStructPerson": {
+        "apiName": "createStructPerson",
+        "description": "Create a struct",
+        "operations": [],
+        "parameters": {
+          "address": {
+            "dataType": {
+              "fields": [
+                {
+                  "fieldType": {
+                    "type": "string",
+                  },
+                  "name": "city",
+                  "required": true,
+                },
+                {
+                  "fieldType": {
+                    "type": "string",
+                  },
+                  "name": "state",
+                  "required": true,
+                },
+                {
+                  "fieldType": {
+                    "type": "integer",
+                  },
+                  "name": "zipcode",
+                  "required": true,
+                },
+              ],
+              "type": "struct",
+            },
+            "required": false,
+          },
+          "name": {
+            "dataType": {
+              "type": "string",
+            },
+            "required": true,
+          },
+        },
+        "rid": "ri.ontology.main.action-type.9f24017d-cf17-4fa8-84c3-8e01e5d594f2",
+        "status": "ACTIVE",
+      },
+      "delete-foo-interface": {
+        "apiName": "delete-foo-interface",
+        "displayName": "Delete Foo Interface",
+        "operations": [
+          {
+            "interfaceTypeApiName": "FooInterface",
+            "type": "deleteInterfaceObject",
+          },
+        ],
+        "parameters": {
+          "deletedInterface": {
+            "dataType": {
+              "interfaceTypeApiName": "FooInterface",
+              "type": "interfaceObject",
+            },
+            "required": true,
+          },
+        },
+        "rid": "ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817",
+        "status": "EXPERIMENTAL",
+      },
+      "promoteEmployee": {
+        "apiName": "promoteEmployee",
+        "description": "Update an employee's title and compensation",
+        "operations": [
+          {
+            "objectTypeApiName": "Employee",
+            "type": "modifyObject",
+          },
+        ],
+        "parameters": {
+          "employeeId": {
+            "dataType": {
+              "type": "integer",
+            },
+            "required": true,
+          },
+          "newCompensation": {
+            "dataType": {
+              "type": "double",
+            },
+            "required": true,
+          },
+          "newTitle": {
+            "dataType": {
+              "type": "string",
+            },
+            "required": true,
+          },
+        },
+        "rid": "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2167",
+        "status": "ACTIVE",
+      },
+    },
+    "interfaceTypes": {
+      "FooInterface": {
+        "allExtendsInterfaces": [],
+        "allLinks": {},
+        "allProperties": {
+          "fooSpt": {
+            "apiName": "fooSpt",
+            "dataType": {
+              "type": "string",
+            },
+            "description": "A foo",
+            "displayName": "Foo",
+            "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
+          },
+        },
+        "apiName": "FooInterface",
+        "description": "Interface for Foo",
+        "displayName": "Foo Interface",
+        "extendsInterfaces": [],
+        "implementedByObjectTypes": [
+          "Employee",
+          "Person",
+        ],
+        "links": {},
+        "properties": {
+          "fooSpt": {
+            "apiName": "fooSpt",
+            "dataType": {
+              "type": "string",
+            },
+            "description": "A foo",
+            "displayName": "Foo",
+            "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
+          },
+        },
+        "rid": "ri.interface.main.interface.1",
+      },
+    },
+    "objectTypes": {
+      "Employee": {
+        "implementsInterfaces": [
+          "FooInterface",
+        ],
+        "implementsInterfaces2": {
+          "FooInterface": {
+            "properties": {
+              "fooSpt": "fullName",
+            },
+          },
+        },
+        "linkTypes": [],
+        "objectType": {
+          "apiName": "Employee",
+          "description": "A full-time or part-time 
+
+ employee of our firm",
+          "displayName": "Employee",
+          "icon": {
+            "color": "blue",
+            "name": "person",
+            "type": "blueprint",
+          },
+          "pluralDisplayName": "Employees",
+          "primaryKey": "employeeId",
+          "properties": {
+            "class": {
+              "dataType": {
+                "type": "string",
+              },
+              "description": "",
+              "rid": "rid",
+            },
+            "employeeId": {
+              "dataType": {
+                "type": "integer",
+              },
+              "rid": "rid",
+            },
+            "employeeLocation": {
+              "dataType": {
+                "type": "geotimeSeriesReference",
+              },
+              "description": "Geotime series reference of the location of the employee",
+              "rid": "rid",
+            },
+            "employeeSensor": {
+              "dataType": {
+                "type": "timeseries",
+              },
+              "description": "TimeSeries sensor of the status of the employee",
+              "rid": "rid",
+            },
+            "employeeStatus": {
+              "dataType": {
+                "itemType": {
+                  "type": "string",
+                },
+                "type": "timeseries",
+              },
+              "description": "TimeSeries of the status of the employee",
+              "rid": "rid",
+            },
+            "fullName": {
+              "dataType": {
+                "type": "string",
+              },
+              "rid": "rid",
+            },
+            "office": {
+              "dataType": {
+                "type": "string",
+              },
+              "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
+ This is some more text.",
+              "rid": "rid",
+            },
+            "startDate": {
+              "dataType": {
+                "type": "date",
+              },
+              "description": "The date the employee was hired (most recently, if they were re-hired)",
+              "rid": "rid",
+            },
+          },
+          "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
+          "status": "ACTIVE",
+          "titleProperty": "fullName",
+          "visibility": "NORMAL",
+        },
+        "sharedPropertyTypeMapping": {
+          "fooSpt": "fullName",
+        },
+      },
+      "Office": {
+        "implementsInterfaces": [],
+        "implementsInterfaces2": {},
+        "linkTypes": [],
+        "objectType": {
+          "apiName": "Office",
+          "description": "A office in our Company",
+          "displayName": "Office",
+          "icon": {
+            "color": "blue",
+            "name": "office",
+            "type": "blueprint",
+          },
+          "pluralDisplayName": "Office",
+          "primaryKey": "officeId",
+          "properties": {
+            "entrance": {
+              "dataType": {
+                "type": "geopoint",
+              },
+              "rid": "rid",
+            },
+            "name": {
+              "dataType": {
+                "type": "string",
+              },
+              "description": "The Name of the Office",
+              "rid": "rid",
+            },
+            "occupiedArea": {
+              "dataType": {
+                "type": "geoshape",
+              },
+              "description": "The occupied area of the Office",
+              "rid": "rid",
+            },
+            "officeId": {
+              "dataType": {
+                "type": "string",
+              },
+              "rid": "rid",
+            },
+          },
+          "rid": "ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45",
+          "status": "ACTIVE",
+          "titleProperty": "officeId",
+        },
+        "sharedPropertyTypeMapping": {},
+      },
+    },
+    "ontology": {
+      "apiName": "default-ontology",
+      "description": "The default ontology",
+      "displayName": "Ontology",
+      "rid": "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+    },
+    "queryTypes": {},
+    "sharedPropertyTypes": {},
+  },
+}
+`;
+
+exports[`Load Ontologies Metadata > Loads action types with media refs, interface props, and structs 2`] = `
+{
+  "externalInterfaces": Map {},
+  "externalObjects": Map {},
+  "filteredFullMetadata": {
+    "actionTypes": {
+      "actionTakesMedia": {
+        "apiName": "actionTakesMedia",
+        "description": "An action which takes a mediaReference parameter",
+        "operations": [],
+        "parameters": {
+          "media_reference": {
+            "dataType": {
+              "type": "mediaReference",
+            },
+            "required": true,
+          },
+        },
+        "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f3",
+        "status": "ACTIVE",
+      },
+      "createStructPerson": {
+        "apiName": "createStructPerson",
+        "description": "Create a struct",
+        "operations": [],
+        "parameters": {
+          "address": {
+            "dataType": {
+              "fields": [
+                {
+                  "fieldType": {
+                    "type": "string",
+                  },
+                  "name": "city",
+                  "required": true,
+                },
+                {
+                  "fieldType": {
+                    "type": "string",
+                  },
+                  "name": "state",
+                  "required": true,
+                },
+                {
+                  "fieldType": {
+                    "type": "integer",
+                  },
+                  "name": "zipcode",
+                  "required": true,
+                },
+              ],
+              "type": "struct",
+            },
+            "required": false,
+          },
+          "name": {
+            "dataType": {
+              "type": "string",
+            },
+            "required": true,
+          },
+        },
+        "rid": "ri.ontology.main.action-type.9f24017d-cf17-4fa8-84c3-8e01e5d594f2",
+        "status": "ACTIVE",
+      },
+      "delete-foo-interface": {
+        "apiName": "delete-foo-interface",
+        "displayName": "Delete Foo Interface",
+        "operations": [
+          {
+            "interfaceTypeApiName": "FooInterface",
+            "type": "deleteInterfaceObject",
+          },
+        ],
+        "parameters": {
+          "deletedInterface": {
+            "dataType": {
+              "interfaceTypeApiName": "FooInterface",
+              "type": "interfaceObject",
+            },
+            "required": true,
+          },
+        },
+        "rid": "ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817",
+        "status": "EXPERIMENTAL",
+      },
+      "promoteEmployee": {
+        "apiName": "promoteEmployee",
+        "description": "Update an employee's title and compensation",
+        "operations": [
+          {
+            "objectTypeApiName": "Employee",
+            "type": "modifyObject",
+          },
+        ],
+        "parameters": {
+          "employeeId": {
+            "dataType": {
+              "type": "integer",
+            },
+            "required": true,
+          },
+          "newCompensation": {
+            "dataType": {
+              "type": "double",
+            },
+            "required": true,
+          },
+          "newTitle": {
+            "dataType": {
+              "type": "string",
+            },
+            "required": true,
+          },
+        },
+        "rid": "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2167",
+        "status": "ACTIVE",
+      },
+    },
+    "interfaceTypes": {
+      "FooInterface": {
+        "allExtendsInterfaces": [],
+        "allLinks": {},
+        "allProperties": {
+          "fooSpt": {
+            "apiName": "fooSpt",
+            "dataType": {
+              "type": "string",
+            },
+            "description": "A foo",
+            "displayName": "Foo",
+            "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
+          },
+        },
+        "apiName": "FooInterface",
+        "description": "Interface for Foo",
+        "displayName": "Foo Interface",
+        "extendsInterfaces": [],
+        "implementedByObjectTypes": [
+          "Employee",
+          "Person",
+        ],
+        "links": {},
+        "properties": {
+          "fooSpt": {
+            "apiName": "fooSpt",
+            "dataType": {
+              "type": "string",
+            },
+            "description": "A foo",
+            "displayName": "Foo",
+            "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
+          },
+        },
+        "rid": "ri.interface.main.interface.1",
+      },
+    },
+    "objectTypes": {
+      "Employee": {
+        "implementsInterfaces": [
+          "FooInterface",
+        ],
+        "implementsInterfaces2": {
+          "FooInterface": {
+            "properties": {
+              "fooSpt": "fullName",
+            },
+          },
+        },
+        "linkTypes": [],
+        "objectType": {
+          "apiName": "Employee",
+          "description": "A full-time or part-time 
+
+ employee of our firm",
+          "displayName": "Employee",
+          "icon": {
+            "color": "blue",
+            "name": "person",
+            "type": "blueprint",
+          },
+          "pluralDisplayName": "Employees",
+          "primaryKey": "employeeId",
+          "properties": {
+            "class": {
+              "dataType": {
+                "type": "string",
+              },
+              "description": "",
+              "rid": "rid",
+            },
+            "employeeId": {
+              "dataType": {
+                "type": "integer",
+              },
+              "rid": "rid",
+            },
+            "employeeLocation": {
+              "dataType": {
+                "type": "geotimeSeriesReference",
+              },
+              "description": "Geotime series reference of the location of the employee",
+              "rid": "rid",
+            },
+            "employeeSensor": {
+              "dataType": {
+                "type": "timeseries",
+              },
+              "description": "TimeSeries sensor of the status of the employee",
+              "rid": "rid",
+            },
+            "employeeStatus": {
+              "dataType": {
+                "itemType": {
+                  "type": "string",
+                },
+                "type": "timeseries",
+              },
+              "description": "TimeSeries of the status of the employee",
+              "rid": "rid",
+            },
+            "fullName": {
+              "dataType": {
+                "type": "string",
+              },
+              "rid": "rid",
+            },
+            "office": {
+              "dataType": {
+                "type": "string",
+              },
+              "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
+ This is some more text.",
+              "rid": "rid",
+            },
+            "startDate": {
+              "dataType": {
+                "type": "date",
+              },
+              "description": "The date the employee was hired (most recently, if they were re-hired)",
+              "rid": "rid",
+            },
+          },
+          "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
+          "status": "ACTIVE",
+          "titleProperty": "fullName",
+          "visibility": "NORMAL",
+        },
+        "sharedPropertyTypeMapping": {
+          "fooSpt": "fullName",
+        },
+      },
+      "Office": {
+        "implementsInterfaces": [],
+        "implementsInterfaces2": {},
+        "linkTypes": [],
+        "objectType": {
+          "apiName": "Office",
+          "description": "A office in our Company",
+          "displayName": "Office",
+          "icon": {
+            "color": "blue",
+            "name": "office",
+            "type": "blueprint",
+          },
+          "pluralDisplayName": "Office",
+          "primaryKey": "officeId",
+          "properties": {
+            "entrance": {
+              "dataType": {
+                "type": "geopoint",
+              },
+              "rid": "rid",
+            },
+            "name": {
+              "dataType": {
+                "type": "string",
+              },
+              "description": "The Name of the Office",
+              "rid": "rid",
+            },
+            "occupiedArea": {
+              "dataType": {
+                "type": "geoshape",
+              },
+              "description": "The occupied area of the Office",
+              "rid": "rid",
+            },
+            "officeId": {
+              "dataType": {
+                "type": "string",
+              },
+              "rid": "rid",
+            },
+          },
+          "rid": "ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45",
+          "status": "ACTIVE",
+          "titleProperty": "officeId",
+        },
+        "sharedPropertyTypeMapping": {},
+      },
+    },
+    "ontology": {
+      "apiName": "default-ontology",
+      "description": "The default ontology",
+      "displayName": "Ontology",
+      "rid": "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+    },
+    "queryTypes": {},
+    "sharedPropertyTypes": {},
+  },
+}
+`;
+
 exports[`Load Ontologies Metadata > Loads object and action types using only specified link types 1`] = `
 {
   "externalInterfaces": Map {},
@@ -214,7 +842,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
 }
 `;
 
-exports[`Load Ontologies Metadata > Loads object and action types without link types 1`] = `
+exports[`Load Ontologies Metadata > Loads object, action, interface types without link types 1`] = `
 {
   "externalInterfaces": Map {},
   "externalObjects": Map {},
@@ -253,7 +881,44 @@ exports[`Load Ontologies Metadata > Loads object and action types without link t
         "status": "ACTIVE",
       },
     },
-    "interfaceTypes": {},
+    "interfaceTypes": {
+      "FooInterface": {
+        "allExtendsInterfaces": [],
+        "allLinks": {},
+        "allProperties": {
+          "fooSpt": {
+            "apiName": "fooSpt",
+            "dataType": {
+              "type": "string",
+            },
+            "description": "A foo",
+            "displayName": "Foo",
+            "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
+          },
+        },
+        "apiName": "FooInterface",
+        "description": "Interface for Foo",
+        "displayName": "Foo Interface",
+        "extendsInterfaces": [],
+        "implementedByObjectTypes": [
+          "Employee",
+          "Person",
+        ],
+        "links": {},
+        "properties": {
+          "fooSpt": {
+            "apiName": "fooSpt",
+            "dataType": {
+              "type": "string",
+            },
+            "description": "A foo",
+            "displayName": "Foo",
+            "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
+          },
+        },
+        "rid": "ri.interface.main.interface.1",
+      },
+    },
     "objectTypes": {
       "Employee": {
         "implementsInterfaces": [

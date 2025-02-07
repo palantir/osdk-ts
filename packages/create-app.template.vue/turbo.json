@@ -5,7 +5,7 @@
     "codegen": {
       "inputs": ["templates/**/*"],
       "outputs": ["src/generatedNoCheck/**/*"],
-      "dependsOn": ["@osdk/create-app.template-packager#transpile"]
+      "dependsOn": ["@osdk/create-app.template-packager#transpileEsm"]
     }
   }
 }

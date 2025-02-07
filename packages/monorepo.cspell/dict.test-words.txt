@@ -13,3 +13,4 @@ geotimeseries
 containsallterm
 containsanyterm
 palantircustom
+Mnayan

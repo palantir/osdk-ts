@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 import type { ActiveObjectTypeStatus } from "./ActiveObjectTypeStatus.js";
 import type { DeprecatedObjectTypeStatus } from "./DeprecatedObjectTypeStatus.js";
+import type { EndorsedObjectTypeStatus } from "./EndorsedObjectTypeStatus.js";
+import type { ExampleObjectTypeStatus } from "./ExampleObjectTypeStatus.js";
 import type { ExperimentalObjectTypeStatus } from "./ExperimentalObjectTypeStatus.js";
 export interface ObjectTypeStatus_experimental {
   type: "experimental";
@@ -31,10 +33,22 @@ export interface ObjectTypeStatus_deprecated {
   type: "deprecated";
   deprecated: DeprecatedObjectTypeStatus;
 }
+
+export interface ObjectTypeStatus_example {
+  type: "example";
+  example: ExampleObjectTypeStatus;
+}
+
+export interface ObjectTypeStatus_endorsed {
+  type: "endorsed";
+  endorsed: EndorsedObjectTypeStatus;
+}
 /**
- * The status to indicate whether the ObjectType is either Experimental, Active or Deprecated.
+ * The status to indicate whether the ObjectType is either Experimental, Active, Deprecated, Example or Endorsed.
  */
 export type ObjectTypeStatus =
   | ObjectTypeStatus_experimental
   | ObjectTypeStatus_active
-  | ObjectTypeStatus_deprecated;
+  | ObjectTypeStatus_deprecated
+  | ObjectTypeStatus_example
+  | ObjectTypeStatus_endorsed;

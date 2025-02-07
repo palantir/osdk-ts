@@ -15,6 +15,7 @@
  */
 
 import type { ActionTypeV2 } from "@osdk/internal.foundry.core";
+import { FooInterface } from "./interfaces.js";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
 
 export const PromoteEmployee: ActionTypeV2 = {
@@ -258,6 +259,22 @@ export const ActionTakesAttachment: ActionTypeV2 = {
   status: "ACTIVE",
 };
 
+export const ActionTakesMedia: ActionTypeV2 = {
+  apiName: "actionTakesMedia",
+  description: "An action which takes a mediaReference parameter",
+  parameters: {
+    media_reference: {
+      dataType: {
+        type: "mediaReference",
+      },
+      required: true,
+    },
+  },
+  rid: "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f3",
+  operations: [],
+  status: "ACTIVE",
+};
+
 export const ActionTypeWithUnsupportedTypes: ActionTypeV2 = {
   apiName: "unsupportedAction",
   description: "An unsupported action type",
@@ -282,6 +299,94 @@ export const ActionTypeWithUnsupportedTypes: ActionTypeV2 = {
   status: "ACTIVE",
 };
 
+export const ActionTakesInterface: ActionTypeV2 = {
+  apiName: "delete-foo-interface",
+  displayName: "Delete Foo Interface",
+  status: "EXPERIMENTAL",
+  parameters: {
+    deletedInterface: {
+      dataType: {
+        type: "interfaceObject",
+        interfaceTypeApiName: FooInterface.apiName,
+      },
+      required: true,
+    },
+  },
+  rid: "ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817",
+  operations: [
+    {
+      type: "deleteInterfaceObject",
+      interfaceTypeApiName: FooInterface.apiName,
+    },
+  ],
+};
+
+export const ActionCreatesInterface: ActionTypeV2 = {
+  apiName: "create-foo-interface",
+  displayName: "Create Foo Interface",
+  status: "EXPERIMENTAL",
+  parameters: {
+    createdInterface: {
+      dataType: {
+        type: "objectType",
+      },
+      required: true,
+    },
+  },
+  rid: "ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817",
+  operations: [
+    {
+      "type": "createInterfaceObject",
+      "interfaceTypeApiName": "FooInterface",
+    },
+  ],
+};
+
+export const ActionTakesStruct: ActionTypeV2 = {
+  apiName: "createStructPerson",
+  description: "Create a struct",
+  parameters: {
+    name: {
+      dataType: {
+        type: "string",
+      },
+      required: true,
+    },
+    address: {
+      dataType: {
+        type: "struct",
+        fields: [
+          {
+            name: "city",
+            fieldType: {
+              type: "string",
+            },
+            required: true,
+          },
+          {
+            name: "state",
+            fieldType: {
+              type: "string",
+            },
+            required: true,
+          },
+          {
+            name: "zipcode",
+            fieldType: {
+              type: "integer",
+            },
+            required: true,
+          },
+        ],
+      },
+      required: false,
+    },
+  },
+  rid: "ri.ontology.main.action-type.9f24017d-cf17-4fa8-84c3-8e01e5d594f2",
+  operations: [],
+  status: "ACTIVE",
+};
+
 export const actionTypes: ActionTypeV2[] = [
   PromoteEmployee,
   PromoteEmployeeObject,
@@ -290,4 +395,8 @@ export const actionTypes: ActionTypeV2[] = [
   MoveOffice,
   ActionTakesObjectSet,
   ActionTakesAttachment,
+  ActionTakesMedia,
+  ActionTakesInterface,
+  ActionTakesStruct,
+  ActionCreatesInterface,
 ];

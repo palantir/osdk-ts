@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { BooleanFormatter } from "./BooleanFormatter.js";
 import type { DateFormatter } from "./DateFormatter.js";
 import type { KnownFormatter } from "./KnownFormatter.js";
 import type { NumberFormatter } from "./NumberFormatter.js";
@@ -49,6 +50,11 @@ export interface BaseFormatter_timeDependent {
   type: "timeDependent";
   timeDependent: TimeDependentFormatter;
 }
+
+export interface BaseFormatter_boolean {
+  type: "boolean";
+  boolean: BooleanFormatter;
+}
 /**
  * The basic formatting behavior.
  */
@@ -58,4 +64,5 @@ export type BaseFormatter =
   | BaseFormatter_timestamp
   | BaseFormatter_date
   | BaseFormatter_string
-  | BaseFormatter_timeDependent;
+  | BaseFormatter_timeDependent
+  | BaseFormatter_boolean;

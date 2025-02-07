@@ -1,5 +1,56 @@
 # @osdk/api
 
+## 2.1.0-beta.28
+
+### Minor Changes
+
+- f446d0c: Exposes $clone from OSDK Object instances
+
+## 2.1.0-beta.27
+
+## 2.1.0-beta.26
+
+### Minor Changes
+
+- 7865cb6: Add support for search on struct properties.
+- 9c4efe6: Support uploading media parameters through actions
+- f19da8e: Remove where clause from aggregate options. This option was never actually doing anything before as it was not passed to the backend for processing, so we are removing it to prevent future confusion.
+
+## 2.1.0-beta.25
+
+### Minor Changes
+
+- c80ca45: Add ability to create interfaces through actions now.
+
+## 2.1.0-beta.24
+
+### Minor Changes
+
+- 03f95eb: Add support for interface params in actions.
+- c691c8b: Package now has experimental support for commonjs
+- 3c9ac22: Cleaning up where clause types.
+
+## 2.1.0-beta.23
+
+### Minor Changes
+
+- d794c19: Adding support for struct action params.
+- 62c1d63: Add support for reading media reference property in OSDK.
+
+## 2.1.0-beta.22
+
+### Minor Changes
+
+- 73fa373: Exports helper method to construct object sets from RIDs from internal utils
+
+## 2.1.0-beta.21
+
+### Minor Changes
+
+- 3ea2e79: Creates new export for internal helper functions
+- 656f975: Fixes attachment upload inputs sending incorrect in browser contexts
+- f34b3d4: Add ability to fetch by rid, experimentally.
+
 ## 2.1.0-beta.20
 
 ### Minor Changes

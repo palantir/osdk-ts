@@ -15,22 +15,26 @@
  */
 
 import type { Osdk } from "@osdk/api";
-import { FooInterface, OsdkTestObject } from "@osdk/e2e.generated.catchall";
+import {
+  createFooInterface,
+  FooInterface,
+  OsdkTestObject,
+} from "@osdk/e2e.generated.catchall";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import { client } from "./client.js";
 
-export async function runInterfacesTest() {
+export async function runInterfacesTest(): Promise<void> {
   // this has the nice effect of faking a 'race' with the below code
-  (async () => {
+  void (async () => {
     const { data } = await client(FooInterface).fetchPage();
     const first = data[0];
     const e = first.$as(OsdkTestObject);
   })();
 
   console.log("hello");
-  const qqq = await client(FooInterface).where({ name: { $ne: "Patti" } });
+  const qqq = client(FooInterface).where({ name: { $ne: "Patti" } });
 
   const fooLimitedToEmployees = await client(FooInterface).fetchPage();
   invariant(fooLimitedToEmployees.data.length > 0);
@@ -93,4 +97,10 @@ export async function runInterfacesTest() {
     // underlyings are ref equal!
     console.log("employee === employee2", testObject === testObject2);
   }
+
+  const result = await client(createFooInterface).applyAction({
+    createdInterface: "testObject",
+  });
 }
+
+void runInterfacesTest();

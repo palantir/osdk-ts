@@ -1,5 +1,37 @@
 # @osdk/cli
 
+## 0.25.0-beta.28
+
+### Minor Changes
+
+- db51d24: Traverse widget set site version to delete
+
+## 0.25.0-beta.27
+
+## 0.25.0-beta.26
+
+### Minor Changes
+
+- 8766327: CLI unstable widgetset commands
+
+## 0.25.0-beta.25
+
+## 0.25.0-beta.24
+
+## 0.25.0-beta.23
+
+## 0.25.0-beta.22
+
+### Minor Changes
+
+- c9da74c: Improves code quality by fixing linting errors
+
+## 0.25.0-beta.21
+
+### Minor Changes
+
+- 1dca4cb: Use @osdk/foundry-config-json in @osdk/widget.vite-plugin.unstable for shared config and auto versioning
+
 ## 0.25.0-beta.20
 
 ## 0.25.0-beta.19

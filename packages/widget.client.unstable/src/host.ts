@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { HostMessage, WidgetConfig } from "@osdk/widget-api.unstable";
+import type { HostMessage, WidgetConfig } from "@osdk/widget.api.unstable";
 
 export interface HostMessageEventListener<P extends HostMessage.Payload> {
   (event: CustomEvent<P>): void;
@@ -60,7 +60,7 @@ export class FoundryHostEventTarget<
   public dispatchEventMessage<T extends HostMessage<C>["type"]>(
     type: T,
     payload: (HostMessage<C> & { type: T })["payload"],
-  ) {
+  ): void {
     this.dispatchEvent(
       new CustomEvent<HostMessage.Payload>(type, {
         detail: payload,

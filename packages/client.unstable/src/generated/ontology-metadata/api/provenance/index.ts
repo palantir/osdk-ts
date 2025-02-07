@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,9 @@
 export * as ExperimentalOntologyProvenanceService from "./ExperimentalOntologyProvenanceService.js";
 
 export type { AllPropertiesPropertySet } from "./AllPropertiesPropertySet.js";
+export type { BatchGetTaggedDependentsForOntologyEntityIdentifierRequest } from "./BatchGetTaggedDependentsForOntologyEntityIdentifierRequest.js";
+export type { BatchGetTaggedDependentsForOntologyEntityIdentifierResponse } from "./BatchGetTaggedDependentsForOntologyEntityIdentifierResponse.js";
+export type { DependencyIdentifierAndTag } from "./DependencyIdentifierAndTag.js";
 export type { Dependent } from "./Dependent.js";
 export type { GetDependenciesForTaggedDependentRequest } from "./GetDependenciesForTaggedDependentRequest.js";
 export type { GetDependenciesForTaggedDependentRequestV2 } from "./GetDependenciesForTaggedDependentRequestV2.js";
@@ -26,6 +29,9 @@ export type { GetDependenciesForTaggedDependentResponseV2Success } from "./GetDe
 export type { GetDependenciesForTaggedDependentResponseV2TagNotFound } from "./GetDependenciesForTaggedDependentResponseV2TagNotFound.js";
 export type { GetDependenciesPagingToken } from "./GetDependenciesPagingToken.js";
 export type { GetDependenciesV2PagingToken } from "./GetDependenciesV2PagingToken.js";
+export type { GetTaggedDependentsForOntologyEntityIdentifierPagingToken } from "./GetTaggedDependentsForOntologyEntityIdentifierPagingToken.js";
+export type { GetTaggedDependentsForOntologyEntityIdentifierRequest } from "./GetTaggedDependentsForOntologyEntityIdentifierRequest.js";
+export type { GetTaggedDependentsForOntologyEntityIdentifierResponse } from "./GetTaggedDependentsForOntologyEntityIdentifierResponse.js";
 export type { GetTaggedDependentsForOntologyEntityRequest } from "./GetTaggedDependentsForOntologyEntityRequest.js";
 export type { GetTaggedDependentsForOntologyEntityResponse } from "./GetTaggedDependentsForOntologyEntityResponse.js";
 export type { GetTaggedDependentsPagingToken } from "./GetTaggedDependentsPagingToken.js";
@@ -38,6 +44,7 @@ export type { PropertyTypeIdWithObjectTypeId } from "./PropertyTypeIdWithObjectT
 export type { PropertyTypeRidSet } from "./PropertyTypeRidSet.js";
 export type { PropertyTypeRidWithObjectTypeRid } from "./PropertyTypeRidWithObjectTypeRid.js";
 export type { ProvenanceDependentOntologyEntities } from "./ProvenanceDependentOntologyEntities.js";
+export type { ProvenanceOntologyEntityIdentifier } from "./ProvenanceOntologyEntityIdentifier.js";
 export type { ProvenanceOntologyEntityRid } from "./ProvenanceOntologyEntityRid.js";
 export type { ProvenanceOntologyEntityRidType } from "./ProvenanceOntologyEntityRidType.js";
 export type { RegisterDependencyRequest } from "./RegisterDependencyRequest.js";
@@ -45,5 +52,6 @@ export type { RegisterDependencyResponse } from "./RegisterDependencyResponse.js
 export type { Tag } from "./Tag.js";
 export type { TagDependentRequest } from "./TagDependentRequest.js";
 export type { TagDependentResponse } from "./TagDependentResponse.js";
+export type { TaggedDependencyAndDependent } from "./TaggedDependencyAndDependent.js";
 export type { Version } from "./Version.js";
 export type { VersionedResource } from "./VersionedResource.js";

@@ -34,14 +34,14 @@ import type {
   MinimalObjectSet,
 } from "@osdk/api/unstable";
 import {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet,
   __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
 } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
+import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.client";
-import { symbolClientContext } from "@osdk/shared.client2";
 import { createBulkLinksAsyncIterFactory } from "./__unstable/createBulkLinksAsyncIterFactory.js";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import { applyAction } from "./actions/applyAction.js";
@@ -59,6 +59,15 @@ import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import { ObjectSetListenerWebsocket } from "./objectSet/ObjectSetListenerWebsocket.js";
 import { applyQuery } from "./queries/applyQuery.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
+
+// We import it this way to keep compatible with CJS. If we referenced the
+// value of `symbolClientContext` directly, then we would have to a dynamic import
+// in `createClientInternal` which would make it async and a break.
+// Since this is just a string in `@osdk/shared.client2` instead of a symbol,
+// we can safely perform this trick.
+type newSymbolClientContext =
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  typeof import("@osdk/shared.client2").symbolClientContext;
 
 class ActionInvoker<Q extends ActionDefinition<any>>
   implements ActionSignatureFromDef<Q>
@@ -106,8 +115,10 @@ export function createClientInternal(
       throw new Error("Invalid ontology RID");
     }
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     ontologyRid.then((ontologyRid) => {
       if (!ontologyRid.startsWith("ri.")) {
+        // FIXME this promise is not await so this just shows up as an unhandled promise rejection
         throw new Error("Invalid ontology RID");
       }
     });
@@ -161,31 +172,6 @@ export function createClientInternal(
               clientCtx,
             ),
           } as any;
-        case __EXPERIMENTAL__NOT_SUPPORTED_YET__preexistingObjectSet.name:
-          return {
-            preexistingObjectSet: <T extends ObjectOrInterfaceDefinition>(
-              definition: T,
-              rid: string,
-            ) => {
-              return createObjectSet(
-                definition,
-                client[additionalContext],
-                {
-                  type: "intersect",
-                  objectSets: [
-                    {
-                      type: "base",
-                      objectType: definition.apiName,
-                    },
-                    {
-                      type: "reference",
-                      reference: rid,
-                    },
-                  ],
-                },
-              );
-            },
-          } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe.name:
           return {
             subscribe: <
@@ -230,6 +216,28 @@ export function createClientInternal(
               ) as Osdk<Q>;
             },
           } as any;
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference.name:
+          return {
+            createMediaReference: async (args: {
+              data: Blob;
+              fileName: string;
+              objectTypeApi: string;
+              propertyTypeApi: string;
+            }) => {
+              const { data, fileName, objectTypeApi, propertyTypeApi } = args;
+              return await OntologiesV2.MediaReferenceProperties.upload(
+                clientCtx,
+                await clientCtx.ontologyRid,
+                objectTypeApi,
+                propertyTypeApi,
+                data,
+                {
+                  mediaItemPath: fileName,
+                  preview: true,
+                },
+              );
+            },
+          } as any;
       }
 
       throw new Error("not implemented");
@@ -242,6 +250,8 @@ export function createClientInternal(
     undefined,
     clientCtx,
   );
+
+  const symbolClientContext: newSymbolClientContext = "__osdkClientContext";
 
   const client: Client = Object.defineProperties<Client>(
     clientFn as Client,
@@ -264,7 +274,15 @@ export function createClientInternal(
   return client;
 }
 
-export const createClient = createClientInternal.bind(
+export const createClient: (
+  baseUrl: string,
+  ontologyRid: string | Promise<string>,
+  tokenProvider: () => Promise<string>,
+  options?: {
+    logger?: Logger;
+  } | undefined,
+  fetchFn?: typeof fetch | undefined,
+) => Client = createClientInternal.bind(
   undefined,
   createObjectSet,
 );

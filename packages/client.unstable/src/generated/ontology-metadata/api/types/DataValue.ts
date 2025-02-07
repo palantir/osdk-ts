@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,19 @@ import type { DateListValue } from "./DateListValue.js";
 import type { DateValue } from "./DateValue.js";
 import type { DoubleListValue } from "./DoubleListValue.js";
 import type { DoubleValue } from "./DoubleValue.js";
+import type { GeohashListValue } from "./GeohashListValue.js";
+import type { GeohashValue } from "./GeohashValue.js";
+import type { GeoshapeListValue } from "./GeoshapeListValue.js";
+import type { GeoshapeValue } from "./GeoshapeValue.js";
+import type { GeotimeSeriesReferenceListValue } from "./GeotimeSeriesReferenceListValue.js";
+import type { GeotimeSeriesReferenceValue } from "./GeotimeSeriesReferenceValue.js";
 import type { IntegerListValue } from "./IntegerListValue.js";
 import type { IntegerValue } from "./IntegerValue.js";
 import type { LongListValue } from "./LongListValue.js";
 import type { LongValue } from "./LongValue.js";
 import type { MarkingListValue } from "./MarkingListValue.js";
 import type { MarkingValue } from "./MarkingValue.js";
+import type { MediaReferenceListValue } from "./MediaReferenceListValue.js";
 import type { MediaReferenceValue } from "./MediaReferenceValue.js";
 import type { NullValue } from "./NullValue.js";
 import type { ObjectLocatorListValue } from "./ObjectLocatorListValue.js";
@@ -35,6 +42,8 @@ import type { ObjectLocatorValue } from "./ObjectLocatorValue.js";
 import type { ObjectTypeValue } from "./ObjectTypeValue.js";
 import type { StringListValue } from "./StringListValue.js";
 import type { StringValue } from "./StringValue.js";
+import type { StructListValue } from "./StructListValue.js";
+import type { StructValue } from "./StructValue.js";
 import type { TimeSeriesReferenceValue } from "./TimeSeriesReferenceValue.js";
 import type { TimestampListValue } from "./TimestampListValue.js";
 import type { TimestampValue } from "./TimestampValue.js";
@@ -98,6 +107,26 @@ export interface DataValue_dateList {
   dateList: DateListValue;
 }
 
+export interface DataValue_geohash {
+  type: "geohash";
+  geohash: GeohashValue;
+}
+
+export interface DataValue_geohashList {
+  type: "geohashList";
+  geohashList: GeohashListValue;
+}
+
+export interface DataValue_geoshape {
+  type: "geoshape";
+  geoshape: GeoshapeValue;
+}
+
+export interface DataValue_geoshapeList {
+  type: "geoshapeList";
+  geoshapeList: GeoshapeListValue;
+}
+
 export interface DataValue_timeSeriesReference {
   type: "timeSeriesReference";
   timeSeriesReference: TimeSeriesReferenceValue;
@@ -157,6 +186,31 @@ export interface DataValue_mediaReference {
   type: "mediaReference";
   mediaReference: MediaReferenceValue;
 }
+
+export interface DataValue_mediaReferenceList {
+  type: "mediaReferenceList";
+  mediaReferenceList: MediaReferenceListValue;
+}
+
+export interface DataValue_geotimeSeriesReference {
+  type: "geotimeSeriesReference";
+  geotimeSeriesReference: GeotimeSeriesReferenceValue;
+}
+
+export interface DataValue_geotimeSeriesReferenceList {
+  type: "geotimeSeriesReferenceList";
+  geotimeSeriesReferenceList: GeotimeSeriesReferenceListValue;
+}
+
+export interface DataValue_struct {
+  type: "struct";
+  struct: StructValue;
+}
+
+export interface DataValue_structList {
+  type: "structList";
+  structList: StructListValue;
+}
 export type DataValue =
   | DataValue_boolean
   | DataValue_booleanList
@@ -170,6 +224,10 @@ export type DataValue =
   | DataValue_stringList
   | DataValue_date
   | DataValue_dateList
+  | DataValue_geohash
+  | DataValue_geohashList
+  | DataValue_geoshape
+  | DataValue_geoshapeList
   | DataValue_timeSeriesReference
   | DataValue_timestamp
   | DataValue_timestampList
@@ -181,4 +239,9 @@ export type DataValue =
   | DataValue_attachmentList
   | DataValue_marking
   | DataValue_markingList
-  | DataValue_mediaReference;
+  | DataValue_mediaReference
+  | DataValue_mediaReferenceList
+  | DataValue_geotimeSeriesReference
+  | DataValue_geotimeSeriesReferenceList
+  | DataValue_struct
+  | DataValue_structList;

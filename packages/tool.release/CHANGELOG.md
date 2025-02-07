@@ -1,5 +1,17 @@
 # @osdk/tool.release
 
+## 0.6.0-beta.4
+
+### Minor Changes
+
+- f0b519d: Upgrade to vitest 3 and vite 6
+
+## 0.6.0-beta.3
+
+### Minor Changes
+
+- c9da74c: Improves code quality by fixing linting errors
+
 ## 0.6.0-beta.2
 
 ### Minor Changes

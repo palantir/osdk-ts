@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 import type { ActiveLinkTypeStatus } from "./ActiveLinkTypeStatus.js";
 import type { DeprecatedLinkTypeStatus } from "./DeprecatedLinkTypeStatus.js";
+import type { ExampleLinkTypeStatus } from "./ExampleLinkTypeStatus.js";
 import type { ExperimentalLinkTypeStatus } from "./ExperimentalLinkTypeStatus.js";
 export interface LinkTypeStatus_experimental {
   type: "experimental";
@@ -31,10 +32,16 @@ export interface LinkTypeStatus_deprecated {
   type: "deprecated";
   deprecated: DeprecatedLinkTypeStatus;
 }
+
+export interface LinkTypeStatus_example {
+  type: "example";
+  example: ExampleLinkTypeStatus;
+}
 /**
- * The status to indicate whether the LinkType is either Experimental, Active or Deprecated.
+ * The status to indicate whether the LinkType is either Experimental, Active, Deprecated, or Example.
  */
 export type LinkTypeStatus =
   | LinkTypeStatus_experimental
   | LinkTypeStatus_active
-  | LinkTypeStatus_deprecated;
+  | LinkTypeStatus_deprecated
+  | LinkTypeStatus_example;

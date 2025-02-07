@@ -22,7 +22,7 @@ import type { CommonSiteArgs } from "./CommonSiteArgs.js";
 export async function logSiteCommandConfigFileOverride(
   args: Arguments<CommonSiteArgs>,
   config: FoundryConfig<"site"> | undefined,
-) {
+): Promise<void> {
   if (
     config?.site.application != null
     && args.application !== config.site.application

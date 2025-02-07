@@ -1,7 +1,7 @@
 import { createClient } from "@osdk/client";
 import { createPublicOauthClient } from "@osdk/oauth";
 import invariant from "tiny-invariant";
-import { $ontologyRid } from "./generatedNoCheck2";
+import { $ontologyRid } from "./generatedNoCheck2/index.js";
 
 invariant(
   import.meta.env.VITE_FOUNDRY_CLIENT_ID,

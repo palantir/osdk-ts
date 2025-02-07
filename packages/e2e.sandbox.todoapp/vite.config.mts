@@ -1,3 +1,4 @@
+import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import https from "node:https";
 import { visualizer } from "rollup-plugin-visualizer";
@@ -14,6 +15,7 @@ export default defineConfig(({ mode }) => {
       visualizer({
         filename: "build/site-stats.html",
       }) as unknown as PluginOption,
+      tailwindcss(),
     ],
     server: {
       port: 8080,

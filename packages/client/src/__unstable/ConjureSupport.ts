@@ -19,6 +19,7 @@ import type {
   LinkTypeMetadata,
   LoadAllOntologiesResponse,
   ObjectType,
+  Type,
 } from "@osdk/client.unstable";
 import {
   bulkLoadOntologyEntities,
@@ -34,12 +35,23 @@ import {
 } from "../object/SimpleCache.js";
 import { makeConjureContext } from "../ontology/makeConjureContext.js";
 
-export type ObjectPropertyMapping = {
+export interface ObjectPropertyMapping {
   apiName: string;
   id: string;
   propertyIdToApiNameMapping: Record<string, string>;
   propertyApiNameToIdMapping: Record<string, string>;
-};
+  pk: {
+    rid: string;
+    apiName: string;
+    type: Type;
+  };
+}
+
+type ObjectLinkMapping = Record<string, {
+  apiName: string;
+  directedLinkTypeRid: DirectedLinkTypeRid;
+  otherObjectType: string; // rid
+}>;
 
 let cachedAllOntologies: LoadAllOntologiesResponse | undefined;
 async function getOntologyVersionForRid(
@@ -82,7 +94,12 @@ export class MetadataClient {
     });
   }
 
-  forObjectByRid = strongMemoAsync(async (rid: string) => {
+  forObjectByRid: (key: string) => Promise<{
+    getPropertyMapping: () => Promise<ObjectPropertyMapping>;
+    getLinkMapping: () => Promise<ObjectLinkMapping>;
+    getRid: () => string;
+    getApiName: () => Promise<string | undefined>;
+  }> = strongMemoAsync(async (rid: string) => {
     return Promise.resolve({
       getPropertyMapping: this.#objectPropertyMapping.bind(this, rid),
       getLinkMapping: this.#objectLinkMapping.bind(this, rid),
@@ -91,7 +108,12 @@ export class MetadataClient {
     });
   });
 
-  forObjectByApiName = strongMemoAsync(
+  forObjectByApiName: (key: string) => Promise<{
+    getPropertyMapping: () => Promise<ObjectPropertyMapping>;
+    getLinkMapping: () => Promise<ObjectLinkMapping>;
+    getRid: () => string;
+    getApiName: () => Promise<string | undefined>;
+  }> = strongMemoAsync(
     async (objectApiName: string) => {
       const objectDef = await this.#client.ontologyProvider.getObjectDefinition(
         objectApiName,
@@ -120,11 +142,7 @@ export class MetadataClient {
     );
 
     // apiName to content
-    const ret: Record<string, {
-      apiName: string;
-      directedLinkTypeRid: DirectedLinkTypeRid;
-      otherObjectType: string; // rid
-    }> = {};
+    const ret: ObjectLinkMapping = {};
     for (const l of linkTypes.linkTypes[objectTypeRid]) {
       const helper = (
         { apiName }: LinkTypeMetadata,
@@ -217,6 +235,9 @@ export class MetadataClient {
       includeObjectTypeCount: undefined,
       includeObjectTypesWithoutSearchableDatasources: true,
       includeEntityMetadata: undefined,
+      actionTypes: [],
+      includeTypeGroupEntitiesCount: undefined,
+      entityMetadata: undefined,
     };
     const entities = await bulkLoadOntologyEntities(this.#ctx, undefined, body);
     invariant(
@@ -226,16 +247,20 @@ export class MetadataClient {
     return entities.objectTypes[0].objectType;
   });
 
-  ontologyVersion = strongMemoAsync(async (_: string) =>
-    getOntologyVersionForRid(this.#ctx, await this.#client.ontologyRid)
-  );
+  ontologyVersion: (key: string) => Promise<string> = strongMemoAsync(async (
+    _: string,
+  ) => getOntologyVersionForRid(this.#ctx, await this.#client.ontologyRid));
 }
 
-export const metadataCacheClient = weakMemoAsync(
+export const metadataCacheClient: (
+  key: MinimalClient,
+) => Promise<MetadataClient> = weakMemoAsync(
   (client: MinimalClient) => Promise.resolve(new MetadataClient(client)),
 );
 
-function createObjectPropertyMapping(conjureOT: ObjectType) {
+function createObjectPropertyMapping(
+  conjureOT: ObjectType,
+): ObjectPropertyMapping {
   invariant(
     conjureOT.primaryKeys.length === 1,
     `only one primary key supported, got ${conjureOT.primaryKeys.length}`,

@@ -43,5 +43,6 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
       }).filter(([key, value]) => value != null),
     ),
     links: {},
+    implementedBy: interfaceType.implementedByObjectTypes,
   };
 }

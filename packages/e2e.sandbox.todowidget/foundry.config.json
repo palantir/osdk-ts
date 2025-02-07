@@ -1,7 +1,7 @@
 {
   "foundryUrl": "https://fake.palantirfoundry.com/",
-  "widget": {
-    "rid": "ri.widgetregistry..widget.fake",
+  "widgetSet": {
+    "rid": "ri.widgetregistry..widget-set.fake",
     "directory": "./dist",
     "autoVersion": {
       "type": "package-json"

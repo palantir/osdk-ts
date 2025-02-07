@@ -52,7 +52,7 @@ export type ObjectInterfaceBaseMetadata = {
   implements?: ReadonlyArray<string>;
 };
 
-export interface ObjectInterfaceCompileDefinition<> {
+export interface ObjectInterfaceCompileDefinition {
   type: "object" | "interface";
   objectSet?: any;
   props?: any;

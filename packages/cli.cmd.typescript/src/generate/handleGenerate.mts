@@ -35,7 +35,9 @@ import type { TypescriptGenerateArgs } from "./TypescriptGenerateArgs.js";
 
 const USER_AGENT = `osdk-cli.cmd.typescript/${process.env.PACKAGE_VERSION}`;
 
-export async function handleGenerate(args: TypescriptGenerateArgs) {
+export async function handleGenerate(
+  args: TypescriptGenerateArgs,
+): Promise<void> {
   let success = false;
   if (args.ontologyPath) {
     success = await generateFromLocalFile(args);
@@ -260,7 +262,7 @@ async function generateClientSdk(
 export function updateVersionsIfTheyExist(
   packageJson: any,
   versions: Record<string, string>,
-) {
+): void {
   for (const d of ["dependencies", "devDependencies", "peerDependencies"]) {
     for (const [key, value] of Object.entries(versions)) {
       if (packageJson?.[d]?.[key]) {
@@ -270,7 +272,14 @@ export function updateVersionsIfTheyExist(
   }
 }
 
-export async function getDependencyVersions() {
+export async function getDependencyVersions(): Promise<{
+  typescriptVersion: string;
+  tslibVersion: string;
+  areTheTypesWrongVersion: string;
+  osdkApiVersion: string;
+  osdkClientVersion: string;
+  osdkLegacyClientVersion: string;
+}> {
   const ourPackageJsonPath = await getOurPackageJsonPath();
 
   const ourPackageJson = JSON.parse(

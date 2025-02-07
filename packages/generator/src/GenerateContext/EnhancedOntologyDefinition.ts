@@ -25,6 +25,20 @@ import { EnhancedQuery } from "./EnhancedQuery.js";
 import { EnhancedSharedPropertyType } from "./EnhancedSharedPropertyType.js";
 import { ForeignType } from "./ForeignType.js";
 
+type RequiredType<
+  K extends
+    | "objectTypes"
+    | "actionTypes"
+    | "interfaceTypes"
+    | "queryTypes"
+    | "sharedPropertyTypes",
+> = <
+  L extends boolean = false,
+>(
+  fullApiName: string,
+  localOnly?: L,
+) => L extends true ? EnhancedOntologyDefinition[K][string] : ForeignType;
+
 export class EnhancedOntologyDefinition {
   ontology: OntologyV2;
   objectTypes: Record<string, EnhancedObjectType | ForeignType>;
@@ -113,13 +127,18 @@ export class EnhancedOntologyDefinition {
     };
   };
 
-  public requireObjectType = this.#createRequireType("objectTypes");
-  public requireInterfaceType = this.#createRequireType("interfaceTypes");
-  public requireActionType = this.#createRequireType("actionTypes");
-  public requireQueryType = this.#createRequireType("queryTypes");
-  public requireSharedPropertyType = this.#createRequireType(
-    "sharedPropertyTypes",
-  );
+  public requireObjectType: RequiredType<"objectTypes"> = this
+    .#createRequireType("objectTypes");
+  public requireInterfaceType: RequiredType<"interfaceTypes"> = this
+    .#createRequireType("interfaceTypes");
+  public requireActionType: RequiredType<"actionTypes"> = this
+    .#createRequireType("actionTypes");
+  public requireQueryType: RequiredType<"queryTypes"> = this
+    .#createRequireType("queryTypes");
+  public requireSharedPropertyType: RequiredType<"sharedPropertyTypes"> = this
+    .#createRequireType(
+      "sharedPropertyTypes",
+    );
 }
 
 function remap<T, X>(

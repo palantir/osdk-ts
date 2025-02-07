@@ -7,3 +7,6 @@ paperplane
 Pressable
 Tamagui
 unistyles
+siteasset
+widgetset
+widgetregistry

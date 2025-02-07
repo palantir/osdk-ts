@@ -17,7 +17,7 @@
 import { BgaoNflPlayer, McAirportStruct } from "@osdk/e2e.generated.catchall";
 import { dsClient } from "./client.js";
 
-export async function runStructsTest() {
+export async function runStructsTest(): Promise<void> {
   const player = await dsClient(BgaoNflPlayer).fetchOne(
     "50A409AB-C909-453A-A61A-31B51324C8E3",
   );
@@ -33,4 +33,31 @@ export async function runStructsTest() {
 
   console.log(airport.airportStruct);
   console.log(airport.airportStruct?.geoHash);
+
+  const airportFilteredShouldHaveData = await dsClient(McAirportStruct)
+    .where({
+      $and: [{ airportStruct: { code: { $startsWith: "D" } } }, {
+        airportStruct: { timestamp: { $startsWith: "173" } },
+      }, { airportName: { $containsAnyTerm: "Reagan" } }],
+    }).fetchPage();
+  const airportFilteredShouldNotHaveData = await dsClient(McAirportStruct)
+    .where({
+      $and: [{ airportStruct: { code: { $startsWith: "B" } } }, {
+        airportStruct: { timestamp: { $startsWith: "173" } },
+      }],
+    }).fetchPage();
+  console.log("Full With Data :", airportFilteredShouldHaveData);
+  console.log(airportFilteredShouldHaveData.data[0].airportStruct);
+  console.log("Full Without Data :", airportFilteredShouldNotHaveData);
+  console.log(airportFilteredShouldNotHaveData.data[0]);
 }
+
+// Commented out so we don't keep creating objects by accident
+//   const myActionCall = await client(createStructPersonOpiTeam).applyAction({
+//     id: "James Zhang",
+//     address: { city: "NYC", state: "NY", zipcode: 10010 },
+//     age: 29,
+//   });
+// }
+
+void runStructsTest();

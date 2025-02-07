@@ -46,6 +46,12 @@ import {
 import { linkResponseMap } from "../stubs/links.js";
 import { linkTypesResponseMap } from "../stubs/linkTypes.js";
 import { loadRequestHandlersV2 } from "../stubs/loadRequests.js";
+import {
+  mediaContentRequestHandler,
+  mediaMetadataRequestHandler,
+  mediaUploadRequest,
+  mediaUploadRequestBody,
+} from "../stubs/media.js";
 import { objectLoadResponseMap } from "../stubs/objects.js";
 import {
   employeeObjectType,
@@ -671,6 +677,92 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
     ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
     async req => {
       return handleStreamValues(req, true);
+    },
+  ),
+  /**
+   * Load media metadata
+   */
+  handleOpenApiCall(
+    OntologiesV2.MediaReferenceProperties.getMediaMetadata,
+    ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
+    async req => {
+      const propertyName = req.params.propertyName;
+
+      const mediaMetadata = mediaMetadataRequestHandler[propertyName];
+      if (
+        typeof req.params.primaryKey !== "string"
+        || typeof req.params.ontologyApiName !== "string"
+        || typeof req.params.objectType !== "string"
+        || typeof propertyName !== "string"
+        || mediaMetadata == null
+      ) {
+        throw new OpenApiCallError(400, InvalidRequest("Invalid request"));
+      }
+      return mediaMetadata;
+    },
+  ),
+  /**
+   * Read media content
+   */
+  handleOpenApiCall(
+    OntologiesV2.MediaReferenceProperties.getMediaContent,
+    [
+      "ontologyApiName",
+      "objectType",
+      "primaryKey",
+      "propertyName",
+    ],
+    async req => {
+      const propertyName = req.params.propertyName;
+
+      const mediaResponse = mediaContentRequestHandler[propertyName];
+      if (
+        typeof req.params.primaryKey !== "string"
+        || typeof req.params.ontologyApiName !== "string"
+        || typeof req.params.objectType !== "string"
+        || typeof propertyName !== "string"
+        || mediaResponse == null
+      ) {
+        throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
+      }
+
+      return new Response(JSON.stringify(mediaResponse));
+    },
+  ),
+  handleOpenApiCall(
+    OntologiesV2.MediaReferenceProperties.upload,
+    [
+      "ontologyApiName",
+      "objectType",
+      "propertyName",
+    ],
+    async req => {
+      const urlObj = new URL(req.request.url);
+      const fileName = urlObj.searchParams.get("mediaItemPath");
+
+      if (
+        typeof fileName !== "string"
+        || typeof req.params.ontologyApiName !== "string"
+        || typeof req.params.objectType !== "string"
+        || typeof req.params.propertyName !== "string"
+      ) {
+        throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
+      }
+
+      const mediaUploadResponse = mediaUploadRequest[fileName];
+      const body = await req.request.arrayBuffer();
+
+      if (mediaUploadResponse) {
+        const expectedBody = mediaUploadRequestBody[fileName];
+        const expectedBodyArray = await expectedBody.arrayBuffer();
+
+        if (!areArrayBuffersEqual(body, expectedBodyArray)) {
+          throw new OpenApiCallError(400, InvalidContentTypeError);
+        }
+
+        return mediaUploadResponse;
+      }
+      throw new OpenApiCallError(400, InvalidRequest("Media not found"));
     },
   ),
 ] as const;

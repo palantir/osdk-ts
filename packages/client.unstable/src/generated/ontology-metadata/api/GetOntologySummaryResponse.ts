@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,16 @@
  */
 
 import type { ActionTypesSummary } from "./ActionTypesSummary.js";
+import type { InterfacesSummary } from "./InterfacesSummary.js";
 import type { LinkTypesSummary } from "./LinkTypesSummary.js";
 import type { ObjectTypesSummary } from "./ObjectTypesSummary.js";
+import type { SharedPropertiesSummary } from "./SharedPropertiesSummary.js";
+import type { TypeGroupsSummary } from "./TypeGroupsSummary.js";
 export interface GetOntologySummaryResponse {
   objectTypes: ObjectTypesSummary;
   linkTypes: LinkTypesSummary;
   actionTypes: ActionTypesSummary;
+  sharedProperties: SharedPropertiesSummary;
+  interfaces: InterfacesSummary;
+  typeGroups: TypeGroupsSummary;
 }

@@ -1,8 +1,10 @@
-import { defineConfig } from "@osdk/widget-client.unstable";
+import { defineConfig } from "@osdk/widget.client.unstable";
 
 export default defineConfig({
+  id: "widgetOne",
+  name: "Widget One",
+  description: "First widget",
   type: "workshop",
-  rid: "ri.widgetregistry..widget.0000-0000-0000-0000",
   parameters: {
     headerText: {
       displayName: "Widget title",

@@ -1,50 +1,13 @@
-export interface MockProject {
-  $apiName: string;
-  $primaryKey: string;
-  id: string;
-  name: string;
-  description: string;
-  tasks: MockTask[];
-}
+import { IProject } from "./useProjects";
+import { ITask } from "./useProjectTasks";
 
-export interface MockTask {
-  $apiName: string;
-  $primaryKey: string;
-  id: string;
-  title: string;
-  description: string;
-}
-
-const projects: MockProject[] = [
+const projects: IProject[] = [
   {
     $apiName: "MockProject",
     $primaryKey: "1",
     id: "1",
     name: "Mock project",
     description: "This is a mock description",
-    tasks: [
-      {
-        $apiName: "MockTask",
-        $primaryKey: "1",
-        id: "1",
-        title: "Try to",
-        description: "task description 1",
-      },
-      {
-        $apiName: "MockTask",
-        $primaryKey: "2",
-        id: "2",
-        title: "Implement this",
-        description: "task description 2",
-      },
-      {
-        $apiName: "MockTask",
-        $primaryKey: "3",
-        id: "3",
-        title: "With the Ontology SDK!",
-        description: "task description 3",
-      },
-    ],
   },
   {
     $apiName: "MockProject",
@@ -52,18 +15,43 @@ const projects: MockProject[] = [
     id: "2",
     name: "Yet another mock project",
     description: "This is another mock description",
-    tasks: [
-      {
-        $apiName: "MockTask",
-        $primaryKey: "4",
-        id: "4",
-        title: "More tasks here",
-        description: "More task description",
-      },
-    ],
   },
 ];
 
+const tasks: ITask[] = [
+  {
+    $apiName: "MockTask",
+    $primaryKey: "1",
+    id: "1",
+    title: "Try to",
+    description: "task description 1",
+    projectId: "1",
+  },
+  {
+    $apiName: "MockTask",
+    $primaryKey: "2",
+    id: "2",
+    title: "Implement this",
+    description: "task description 2",
+    projectId: "1",
+  },
+  {
+    $apiName: "MockTask",
+    $primaryKey: "3",
+    id: "3",
+    title: "With the Ontology SDK!",
+    description: "task description 3",
+    projectId: "1",
+  },
+  {
+    $apiName: "MockTask",
+    $primaryKey: "4",
+    id: "4",
+    title: "More tasks here",
+    description: "More task description",
+    projectId: "2",
+  },
+];
 async function delay(): Promise<void> {
   return new Promise((resolve) =>
     setTimeout(() => resolve(), 500 + Math.random() * 1000)
@@ -75,7 +63,7 @@ function randomId(): string {
   return `${Math.floor(Math.random() * 2 ** 31)}`;
 }
 
-async function getProjects(): Promise<MockProject[]> {
+async function getProjects(): Promise<IProject[]> {
   await delay();
   const result = [...projects];
   result.sort((p1, p2) => p1.name.localeCompare(p2.name));
@@ -84,11 +72,10 @@ async function getProjects(): Promise<MockProject[]> {
 
 async function createProject({
   name,
-  description = "",
 }: {
   name: string;
   description?: string;
-}): Promise<MockProject["$primaryKey"]> {
+}): Promise<IProject["$primaryKey"]> {
   await delay();
   const id = randomId();
   projects.push({
@@ -96,24 +83,24 @@ async function createProject({
     $primaryKey: id,
     id,
     name,
-    description,
-    tasks: [],
+    description: "",
   });
   return id;
 }
 
 async function getRecommendedProjectDescription(
-  project: MockProject,
+  project: IProject,
 ): Promise<string> {
   await delay();
-  if (project.tasks != null && project.tasks.length === 0) {
+  const projectTasks = tasks.filter((t) => t.projectId === project.id);
+  if (projectTasks.length === 0) {
     throw new Error("Project description recommendation requires tasks");
   }
   return `AIP Logic mock description for project`;
 }
 
 async function updateProjectDescription(
-  project: MockProject,
+  project: IProject,
 ): Promise<void> {
   await delay();
   project.description = await getRecommendedProjectDescription(project);
@@ -127,6 +114,11 @@ async function deleteProject(id: string): Promise<void> {
   }
 }
 
+async function getProjectTasks(projectId: string): Promise<ITask[]> {
+  await delay();
+  return tasks.filter((t) => t.projectId === projectId);
+}
+
 async function createTask({
   title,
   description = "",
@@ -135,19 +127,20 @@ async function createTask({
   title: string;
   description: string;
   projectId: string;
-}): Promise<MockTask["$primaryKey"]> {
+}): Promise<ITask["$primaryKey"]> {
   await delay();
   const project = projects.find((p) => p.id === projectId);
   if (project == null) {
     throw new Error(`Project ${projectId} not found!`);
   }
   const id = randomId();
-  project.tasks.unshift({
+  tasks.unshift({
     $apiName: "MockTask",
     $primaryKey: id,
     id,
     title,
     description,
+    projectId,
   });
   return id;
 }
@@ -164,11 +157,9 @@ async function getRecommendedTaskDescription(
 
 async function deleteTask(id: string): Promise<void> {
   await delay();
-  for (const project of projects) {
-    const idx = project.tasks.findIndex((t) => t.id === id);
-    if (idx !== -1) {
-      project.tasks.splice(idx, 1);
-    }
+  const idx = tasks.findIndex((t) => t.id === id);
+  if (idx !== -1) {
+    tasks.splice(idx, 1);
   }
 }
 
@@ -177,6 +168,7 @@ const Mocks = {
   createProject,
   getRecommendedProjectDescription,
   deleteProject,
+  getProjectTasks,
   createTask,
   deleteTask,
   getRecommendedTaskDescription,

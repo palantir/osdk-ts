@@ -1,58 +1,49 @@
-export interface MockProject {
-  $apiName: string;
-  $primaryKey: string;
-  id: string;
-  name: string;
-  tasks: MockTask[];
-}
+import { IProject } from "./useProjects";
+import { ITask } from "./useProjectTasks";
 
-export interface MockTask {
-  $apiName: string;
-  $primaryKey: string;
-  id: string;
-  title: string;
-}
-
-const projects: MockProject[] = [
+const projects: IProject[] = [
   {
     $apiName: "MockProject",
     $primaryKey: "1",
     id: "1",
     name: "Mock project",
-    tasks: [
-      {
-        $apiName: "MockTask",
-        $primaryKey: "1",
-        id: "1",
-        title: "Try to",
-      },
-      {
-        $apiName: "MockTask",
-        $primaryKey: "2",
-        id: "2",
-        title: "Implement this",
-      },
-      {
-        $apiName: "MockTask",
-        $primaryKey: "3",
-        id: "3",
-        title: "With the Ontology SDK!",
-      },
-    ],
   },
   {
     $apiName: "MockProject",
     $primaryKey: "2",
     id: "2",
     name: "Yet another mock project",
-    tasks: [
-      {
-        $apiName: "MockTask",
-        $primaryKey: "4",
-        id: "4",
-        title: "More tasks here",
-      },
-    ],
+  },
+];
+
+const tasks: ITask[] = [
+  {
+    $apiName: "MockTask",
+    $primaryKey: "1",
+    id: "1",
+    title: "Try to",
+    projectId: "1",
+  },
+  {
+    $apiName: "MockTask",
+    $primaryKey: "2",
+    id: "2",
+    title: "Implement this",
+    projectId: "1",
+  },
+  {
+    $apiName: "MockTask",
+    $primaryKey: "3",
+    id: "3",
+    title: "With the Ontology SDK!",
+    projectId: "1",
+  },
+  {
+    $apiName: "MockTask",
+    $primaryKey: "4",
+    id: "4",
+    title: "More tasks here",
+    projectId: "2",
   },
 ];
 
@@ -67,7 +58,7 @@ function randomId(): string {
   return `${Math.floor(Math.random() * 2 ** 31)}`;
 }
 
-async function getProjects(): Promise<MockProject[]> {
+async function getProjects(): Promise<IProject[]> {
   await delay();
   const result = [...projects];
   result.sort((p1, p2) => p1.name.localeCompare(p2.name));
@@ -78,7 +69,7 @@ async function createProject({
   name,
 }: {
   name: string;
-}): Promise<MockProject["$primaryKey"]> {
+}): Promise<IProject["$primaryKey"]> {
   await delay();
   const id = randomId();
   projects.push({
@@ -86,7 +77,6 @@ async function createProject({
     $primaryKey: id,
     id,
     name,
-    tasks: [],
   });
   return id;
 }
@@ -99,30 +89,39 @@ async function deleteProject(id: string): Promise<void> {
   }
 }
 
+async function getProjectTasks(projectId: string): Promise<ITask[]> {
+  await delay();
+  return tasks.filter((t) => t.projectId === projectId);
+}
+
 async function createTask({
   title,
   projectId,
 }: {
   title: string;
   projectId: string;
-}): Promise<MockTask["$primaryKey"]> {
+}): Promise<ITask["$primaryKey"]> {
   await delay();
-  const project = projects.find((p) => p.id === projectId);
-  if (project == null) {
+  const task = tasks.find((t) => t.projectId === projectId);
+  if (task == null) {
     throw new Error(`Project ${projectId} not found!`);
   }
   const id = randomId();
-  project.tasks.unshift({ $apiName: "MockTask", $primaryKey: id, id, title });
+  tasks.unshift({
+    $apiName: "MockTask",
+    $primaryKey: id,
+    id,
+    title,
+    projectId,
+  });
   return id;
 }
 
 async function deleteTask(id: string): Promise<void> {
   await delay();
-  for (const project of projects) {
-    const idx = project.tasks.findIndex((t) => t.id === id);
-    if (idx !== -1) {
-      project.tasks.splice(idx, 1);
-    }
+  const idx = tasks.findIndex((t) => t.projectId === id);
+  if (idx !== -1) {
+    tasks.splice(idx, 1);
   }
 }
 
@@ -130,6 +129,7 @@ const Mocks = {
   getProjects,
   createProject,
   deleteProject,
+  getProjectTasks,
   createTask,
   deleteTask,
 };

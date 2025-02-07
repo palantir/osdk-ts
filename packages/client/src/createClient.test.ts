@@ -115,7 +115,7 @@ describe(createClient, () => {
         "makeConjureContext",
       );
 
-      metadataCacheClient(
+      void metadataCacheClient(
         {
           baseUrl: "https://mock4.com/",
           ontologyProvider: { getObjectDefinition: async () => ({}) },

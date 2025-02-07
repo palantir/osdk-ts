@@ -3,8 +3,8 @@ import { ActionValidationError } from "@osdk/client";
 import { useCallback, useEffect } from "react";
 import type { KeyedMutator } from "swr";
 import useSWR from "swr";
-import { $ } from "./foundryClient";
-import * as MyOsdk from "./generatedNoCheck2";
+import { $ } from "./foundryClient.js";
+import * as MyOsdk from "./generatedNoCheck2/index.js";
 
 declare global {
   interface ArrayConstructor {
@@ -124,10 +124,12 @@ export function useTodos() {
 
 type OsdkPropsOnly<T extends ObjectTypeDefinition> = Omit<
   Osdk<T>,
-  "$as" | "$link"
+  "$as" | "$link" | "$clone"
 >;
 
-export interface SimpleTodo extends OsdkPropsOnly<MyOsdk.Todo> {}
+export interface SimpleTodo extends OsdkPropsOnly<MyOsdk.Todo> {
+  $primaryKey: string;
+}
 
 function createFauxTodo(title: string): SimpleTodo {
   return {
@@ -204,7 +206,7 @@ export function useSubscribe(mutate: KeyedMutator<SimpleTodo[]>) {
               }
             };
 
-            mutate((data) => {
+            void mutate((data) => {
               // update any Todos that we got a new version for
               const updated = data?.map((object) => {
                 const updateObject = getUpdate(
@@ -226,7 +228,7 @@ export function useSubscribe(mutate: KeyedMutator<SimpleTodo[]>) {
           },
 
           onOutOfDate() {
-            mutate();
+            void mutate();
           },
 
           onError(data) {

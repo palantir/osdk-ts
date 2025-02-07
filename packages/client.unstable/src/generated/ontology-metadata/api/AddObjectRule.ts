@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,13 @@
 import type { LogicRuleValue } from "./LogicRuleValue.js";
 import type { ObjectTypeId } from "./ObjectTypeId.js";
 import type { PropertyTypeId } from "./PropertyTypeId.js";
+import type { StructFieldLogicRuleValue } from "./StructFieldLogicRuleValue.js";
+import type { StructFieldRid } from "./StructFieldRid.js";
 export interface AddObjectRule {
   objectTypeId: ObjectTypeId;
   propertyValues: Record<PropertyTypeId, LogicRuleValue>;
+  structFieldValues: Record<
+    PropertyTypeId,
+    Record<StructFieldRid, StructFieldLogicRuleValue>
+  >;
 }

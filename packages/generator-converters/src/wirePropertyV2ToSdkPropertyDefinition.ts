@@ -40,6 +40,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "integer":
     case "string":
     case "byte":
+    case "cipherText":
     case "decimal":
     case "double":
     case "float":
@@ -48,6 +49,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "boolean":
     case "date":
     case "attachment":
+    case "mediaReference":
     case "geopoint":
     case "geoshape":
     case "timestamp":
@@ -71,8 +73,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         nullable: true,
       };
     }
-    case "cipherText":
-    case "mediaReference": {
+    case "cipherText": {
       consola.info(
         `${JSON.stringify(input.dataType.type)} is not a supported dataType`,
       );
@@ -106,6 +107,7 @@ function objectPropertyTypeToSdkPropertyDefinition(
     case "timestamp":
     case "marking":
     case "geotimeSeriesReference":
+    case "mediaReference":
       return propertyType.type;
     case "date":
       return "datetime";
@@ -130,7 +132,6 @@ function objectPropertyTypeToSdkPropertyDefinition(
       );
     }
 
-    case "mediaReference":
     case "cipherText": {
       consola.info(
         `${JSON.stringify(propertyType.type)} is not a supported propertyType`,

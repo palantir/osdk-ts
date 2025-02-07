@@ -1,5 +1,30 @@
 # @osdk/client.unstable
 
+## 2.1.0-beta.28
+
+## 2.1.0-beta.27
+
+## 2.1.0-beta.26
+
+### Minor Changes
+
+- 94463b6: Support objects as code
+
+## 2.1.0-beta.25
+
+## 2.1.0-beta.24
+
+## 2.1.0-beta.23
+
+### Minor Changes
+
+- 7a95618: Generate new OMS APIs
+- 83e7ea3: Move from a single-widget to widget set model for custom widget libraries
+
+## 2.1.0-beta.22
+
+## 2.1.0-beta.21
+
 ## 2.1.0-beta.20
 
 ### Minor Changes

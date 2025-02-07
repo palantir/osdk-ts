@@ -23,7 +23,7 @@ import { Employee } from "@osdk/e2e.generated.catchall";
 export async function fetchEmployeePageByAdUsername(
   client: Client,
   adUsername: string,
-) {
+): Promise<void> {
   const result = await client(Employee).where({
     $and: [{ adUsername }, { employeeNumber: { $ne: 5 } }],
   }).fetchPage();

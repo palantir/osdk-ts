@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,12 @@
  */
 
 import type { ObjectTypeId } from "../ObjectTypeId.js";
+import type { CreateObjectOption } from "./CreateObjectOption.js";
 
 /**
- * ObjectReferenceType specifies that this parameter must be an ObjectLocator.
+ * ObjectReferenceType specifies that this parameter must be an ObjectLocator. An additional optional field maybeCreateObjectOption is included for handling upsert action types by providing flexibility of object creation from a user-specified PK or auto-generated UID PK.
  */
 export interface ObjectReferenceType {
   objectTypeId: ObjectTypeId;
+  maybeCreateObjectOption: CreateObjectOption | undefined;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
+import type { StructParameterFieldDisplayMetadata } from "./StructParameterFieldDisplayMetadata.js";
 import type { TypeClass } from "./TypeClass.js";
+import type { StructParameterFieldApiName } from "./types/StructParameterFieldApiName.js";
 export interface ParameterDisplayMetadata {
   displayName: string;
   typeClasses: Array<TypeClass>;
   description: string;
+  structFields: Record<
+    StructParameterFieldApiName,
+    StructParameterFieldDisplayMetadata
+  >;
 }

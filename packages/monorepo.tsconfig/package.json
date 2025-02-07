@@ -8,7 +8,8 @@
     "url": "https://github.com/palantir/osdk-ts.git"
   },
   "exports": {
-    "./base.json": "./base.json"
+    "./base.json": "./base.json",
+    "./base-4.9.json": "./base.json"
   },
   "scripts": {},
   "dependencies": {},

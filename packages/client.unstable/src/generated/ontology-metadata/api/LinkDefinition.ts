@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { IntermediaryLinkDefinition } from "./IntermediaryLinkDefinition.js";
 import type { ManyToManyLinkDefinition } from "./ManyToManyLinkDefinition.js";
 import type { OneToManyLinkDefinition } from "./OneToManyLinkDefinition.js";
 export interface LinkDefinition_manyToMany {
@@ -25,6 +26,12 @@ export interface LinkDefinition_oneToMany {
   type: "oneToMany";
   oneToMany: OneToManyLinkDefinition;
 }
+
+export interface LinkDefinition_intermediary {
+  type: "intermediary";
+  intermediary: IntermediaryLinkDefinition;
+}
 export type LinkDefinition =
   | LinkDefinition_manyToMany
-  | LinkDefinition_oneToMany;
+  | LinkDefinition_oneToMany
+  | LinkDefinition_intermediary;

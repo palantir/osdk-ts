@@ -25,7 +25,7 @@ import {
 } from "@osdk/e2e.generated.catchall";
 import { client, dsClient } from "./client.js";
 
-export async function runSubscriptionsTest() {
+export function runSubscriptionsTest(): void {
   normalSubscription();
   interfaceSubscription();
   referenceUpdateSubscription();
@@ -140,4 +140,4 @@ function referenceUpdateSubscription() {
   );
 }
 
-runSubscriptionsTest();
+void runSubscriptionsTest();

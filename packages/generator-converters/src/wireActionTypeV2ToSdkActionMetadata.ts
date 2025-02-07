@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionMetadata } from "@osdk/api";
+import type { ActionMetadata, ValidBaseActionParameterTypes } from "@osdk/api";
 import type {
   ActionParameterType,
   ActionParameterV2,
@@ -69,7 +69,9 @@ function actionPropertyToSdkPropertyDefinition(
     case "integer":
     case "long":
     case "timestamp":
+    case "mediaReference":
     case "marking":
+    case "objectType":
       return parameterType.type;
     case "date":
       return "datetime";
@@ -79,8 +81,31 @@ function actionPropertyToSdkPropertyDefinition(
       return { type: "object", object: parameterType.objectTypeApiName };
     case "array":
       return actionPropertyToSdkPropertyDefinition(parameterType.subType);
+    case "interfaceObject":
+      return {
+        type: "interface",
+        interface: parameterType.interfaceTypeApiName,
+      };
+    case "struct":
+      return {
+        type: "struct",
+        struct: parameterType.fields.reduce(
+          (
+            structMap: Record<string, ValidBaseActionParameterTypes>,
+            structField,
+          ) => {
+            structMap[structField.name] = actionPropertyToSdkPropertyDefinition(
+              structField.fieldType as ActionParameterType,
+            ) as ValidBaseActionParameterTypes;
+            return structMap;
+          },
+          {},
+        ),
+      };
     default:
-      throw new Error(`Unsupported action parameter type: ${parameterType}`);
+      throw new Error(
+        `Unsupported action parameter type: ${JSON.stringify(parameterType)}`,
+      );
   }
 }
 
@@ -88,7 +113,7 @@ function createModifiedEntities<K extends string>(
   addedObjects: Set<K>,
   modifiedObjects: Set<K>,
 ): ActionMetadata["modifiedEntities"] {
-  let entities = {} as Record<
+  const entities = {} as Record<
     K,
     {
       created: boolean;

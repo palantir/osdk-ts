@@ -62,7 +62,9 @@ export function defineInterface(
         ) {
           invariant(
             isPropertyTypeType(type),
-            `Invalid data type ${type} for property ${apiName} on InterfaceType ${apiName}`,
+            `Invalid data type ${
+              JSON.stringify(type)
+            } for property ${apiName} on InterfaceType ${apiName}`,
           );
 
           const spt = defineSharedPropertyType({

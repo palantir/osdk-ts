@@ -21,6 +21,7 @@ import type {
   SyncApplyActionResponseV2,
 } from "@osdk/internal.foundry.core";
 import stableStringify from "json-stable-stringify";
+import { mediaReference } from "./media.js";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
 
 export const actionRequestCreateOffice: ApplyActionRequestV2 = {
@@ -157,6 +158,35 @@ export const actionRequestWithAttachmentUpload: ApplyActionRequestV2 = {
   parameters: {
     attachment:
       "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
+  },
+};
+
+export const actionRequestMediaUpload: ApplyActionRequestV2 = {
+  options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
+  parameters: {
+    media_reference: mediaReference,
+  },
+};
+
+export const actionRequestWithInterface: ApplyActionRequestV2 = {
+  options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
+  parameters: {
+    deletedInterface: { objectTypeApiName: "Employee", primaryKeyValue: 1 },
+  },
+};
+
+export const actionRequestWithObjectTypeReference: ApplyActionRequestV2 = {
+  options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
+  parameters: {
+    createdInterface: "UnderlyingObject",
+  },
+};
+
+export const actionRequestWithStruct: ApplyActionRequestV2 = {
+  options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
+  parameters: {
+    name: "testMan",
+    address: { city: "NYC", state: "NY", zipcode: 12345 },
   },
 };
 
@@ -367,5 +397,17 @@ export const actionResponseMap: {
   actionTakesAttachment: {
     [stableStringify(actionRequestWithAttachment)]: actionResponse,
     [stableStringify(actionRequestWithAttachmentUpload)]: actionResponse,
+  },
+  actionTakesMedia: {
+    [stableStringify(actionRequestMediaUpload)]: actionResponse,
+  },
+  deleteFooInterface: {
+    [stableStringify(actionRequestWithInterface)]: actionResponse,
+  },
+  createStructPerson: {
+    [stableStringify(actionRequestWithStruct)]: actionResponse,
+  },
+  createFooInterface: {
+    [stableStringify(actionRequestWithObjectTypeReference)]: actionResponse,
   },
 };

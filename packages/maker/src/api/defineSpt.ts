@@ -48,6 +48,7 @@ export function defineSharedPropertyType(
   return ontologyDefinition.sharedPropertyTypes[apiName] = {
     ...opts,
     apiName,
+    nonNameSpacedApiName: opts.apiName,
     displayName: opts.displayName ?? opts.apiName, // This way the non-namespaced api name is the display name (maybe not ideal)
     typeClasses: opts.typeClasses ?? defaultTypeClasses,
   };

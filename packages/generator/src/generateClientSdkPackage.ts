@@ -31,7 +31,7 @@ export async function generateClientSdkPackage(
   cliVersion: string,
   externalObjects: Map<string, string> = new Map(),
   externalInterfaces: Map<string, string> = new Map(),
-) {
+): Promise<void> {
   if (!packageName) throw new Error("Package name is required");
   if (sdkVersion === "1.1") {
     throw new Error(
@@ -42,7 +42,7 @@ export async function generateClientSdkPackage(
   for (const packageType of ["module", "commonjs"] as const) {
     const outDir = path.join(baseOutDir, "dist", packageType);
 
-    generateClientSdkVersionTwoPointZero(
+    await generateClientSdkVersionTwoPointZero(
       ontology,
       `typescript-sdk/${packageVersion} osdk-cli/${cliVersion}`,
       minimalFs,
@@ -71,7 +71,7 @@ export async function generateClientSdkPackage(
   await writeJson(
     minimalFs,
     path.join(baseOutDir, "package.json"),
-    await getPackageJsonContents(
+    getPackageJsonContents(
       packageName,
       packageVersion,
       dependencyVersions,
@@ -134,7 +134,10 @@ export function getExpectedDependencies(
     osdkApiVersion,
     osdkClientVersion,
   }: DependencyVersions,
-) {
+): {
+  devDependencies: Record<string, string>;
+  peerDependencies: Record<string, string>;
+} {
   return {
     devDependencies: {
       "@osdk/api": osdkApiVersion,
@@ -174,7 +177,25 @@ export function getPackageJsonContents(
   name: string,
   version: string,
   dependencyVersions: DependencyVersions,
-) {
+): {
+  files: string[];
+  devDependencies: Record<string, string>;
+  peerDependencies: Record<string, string>;
+  name: string;
+  version: string;
+  main: string;
+  module: string;
+  exports: {
+    ".": {
+      import: string;
+      require: string;
+    };
+  };
+  scripts: {
+    prepack: string;
+    check: string;
+  };
+} {
   const esmPrefix = "./dist/module";
   const commonjsPrefix = "./dist/commonjs";
   return {
@@ -209,7 +230,7 @@ async function writeJson(
 ) {
   // consola.info(`Writing ${filePath}`);
   // consola.debug(`Writing ${filePath} with body`, body);
-  return await minimalFs.writeFile(
+  return void await minimalFs.writeFile(
     filePath,
     JSON.stringify(body, undefined, 2) + "\n",
   );

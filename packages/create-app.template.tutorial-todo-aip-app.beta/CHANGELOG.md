@@ -1,5 +1,29 @@
 # @osdk/create-app.template.tutorial-todo-aip-app.beta
 
+## 2.1.0-beta.28
+
+## 2.1.0-beta.27
+
+## 2.1.0-beta.26
+
+## 2.1.0-beta.25
+
+## 2.1.0-beta.24
+
+## 2.1.0-beta.23
+
+### Minor Changes
+
+- f0b519d: Upgrade to vitest 3 and vite 6
+
+## 2.1.0-beta.22
+
+### Minor Changes
+
+- 027c4d5: update todo sample to allow build on a lesson level
+
+## 2.1.0-beta.21
+
 ## 2.1.0-beta.20
 
 ## 2.1.0-beta.19

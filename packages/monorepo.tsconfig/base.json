@@ -1,22 +1,7 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./base-4.9.json",
   "compilerOptions": {
-    "target": "ES2022",
-
-    "module": "NodeNext",
-    "moduleResolution": "nodenext",
-
-    "emitDeclarationOnly": true,
-    "declarationMap": true,
-    "declaration": true,
-
-    "isolatedModules": true,
-    "esModuleInterop": true,
-
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "stripInternal": true
+    "isolatedDeclarations": true
   }
 }

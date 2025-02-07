@@ -1,5 +1,112 @@
 # @osdk/foundry-sdk-generator
 
+## 2.1.0-beta.28
+
+### Patch Changes
+
+- Updated dependencies [f446d0c]
+  - @osdk/client@2.1.0-beta.28
+  - @osdk/api@2.1.0-beta.28
+  - @osdk/generator@2.1.0-beta.28
+
+## 2.1.0-beta.27
+
+### Minor Changes
+
+- c70821e: Fix generation of actions with new parameter types.
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.27
+- @osdk/client@2.1.0-beta.27
+- @osdk/generator@2.1.0-beta.27
+
+## 2.1.0-beta.26
+
+### Minor Changes
+
+- 44e62f6: Updating fetch for auth and other packages.
+- 908c8f6: We now generate osdk libs that support commonjs
+
+### Patch Changes
+
+- Updated dependencies [7865cb6]
+- Updated dependencies [e6fbd94]
+- Updated dependencies [9c4efe6]
+- Updated dependencies [44e62f6]
+- Updated dependencies [94463b6]
+- Updated dependencies [f19da8e]
+  - @osdk/client@2.1.0-beta.26
+  - @osdk/api@2.1.0-beta.26
+  - @osdk/generator@2.1.0-beta.26
+
+## 2.1.0-beta.25
+
+### Patch Changes
+
+- Updated dependencies [c80ca45]
+  - @osdk/client@2.1.0-beta.25
+  - @osdk/api@2.1.0-beta.25
+  - @osdk/generator@2.1.0-beta.25
+
+## 2.1.0-beta.24
+
+### Patch Changes
+
+- Updated dependencies [03f95eb]
+- Updated dependencies [c691c8b]
+- Updated dependencies [3c9ac22]
+  - @osdk/generator@2.1.0-beta.24
+  - @osdk/client@2.1.0-beta.24
+  - @osdk/api@2.1.0-beta.24
+  - @osdk/shared.client.impl@1.1.0-beta.5
+
+## 2.1.0-beta.23
+
+### Minor Changes
+
+- d665147: Update platform sdk deps
+
+### Patch Changes
+
+- Updated dependencies [d794c19]
+- Updated dependencies [f0b519d]
+- Updated dependencies [7a95618]
+- Updated dependencies [62c1d63]
+- Updated dependencies [696c59c]
+- Updated dependencies [3fc2ee6]
+- Updated dependencies [d665147]
+  - @osdk/generator@2.1.0-beta.23
+  - @osdk/client@2.1.0-beta.23
+  - @osdk/api@2.1.0-beta.23
+
+## 2.1.0-beta.22
+
+### Minor Changes
+
+- c9da74c: Improves code quality by fixing linting errors
+
+### Patch Changes
+
+- Updated dependencies [c9da74c]
+- Updated dependencies [73fa373]
+  - @osdk/generator@2.1.0-beta.22
+  - @osdk/client@2.1.0-beta.22
+  - @osdk/api@2.1.0-beta.22
+
+## 2.1.0-beta.21
+
+### Patch Changes
+
+- Updated dependencies [3ea2e79]
+- Updated dependencies [656f975]
+- Updated dependencies [f34b3d4]
+- Updated dependencies [e86e91d]
+  - @osdk/client@2.1.0-beta.21
+  - @osdk/api@2.1.0-beta.21
+  - @osdk/generator@2.1.0-beta.21
+  - @osdk/shared.client.impl@1.1.0-beta.4
+
 ## 2.1.0-beta.20
 
 ### Minor Changes

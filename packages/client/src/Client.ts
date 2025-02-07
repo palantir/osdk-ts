@@ -32,12 +32,14 @@ import type {
   ExperimentFns,
   MinimalObjectSet,
 } from "@osdk/api/unstable";
-import type { SharedClient as OldSharedClient } from "@osdk/shared.client";
 import type { SharedClient } from "@osdk/shared.client2";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 import type { SatisfiesSemver } from "./SatisfiesSemver.js";
+
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+type OldSharedClient = import("@osdk/shared.client").SharedClient;
 
 export type CheckVersionBound<Q> = Q extends VersionBound<infer V> ? (
     SatisfiesSemver<V, MaxOsdkVersion> extends true ? Q
@@ -92,10 +94,10 @@ export interface Client extends SharedClient, OldSharedClient {
 
 // DO NOT EXPORT FROM PACKAGE
 /** @internal */
-export const additionalContext = Symbol("additionalContext");
+export const additionalContext: unique symbol = Symbol("additionalContext");
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
 const MaxOsdkVersion = "2.1.0";
 // END: THIS IS GENERATED CODE. DO NOT EDIT.
 export type MaxOsdkVersion = typeof MaxOsdkVersion;
-const ErrorMessage = Symbol("ErrorMessage");
+const ErrorMessage: unique symbol = Symbol("ErrorMessage");

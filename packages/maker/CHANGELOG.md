@@ -1,5 +1,83 @@
 # @osdk/maker
 
+## 0.9.0-beta.28
+
+### Patch Changes
+
+- Updated dependencies [f446d0c]
+  - @osdk/api@2.1.0-beta.28
+
+## 0.9.0-beta.27
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.27
+
+## 0.9.0-beta.26
+
+### Minor Changes
+
+- 44e62f6: Updating fetch for auth and other packages.
+- 94463b6: Support objects as code
+
+### Patch Changes
+
+- Updated dependencies [7865cb6]
+- Updated dependencies [9c4efe6]
+- Updated dependencies [f19da8e]
+  - @osdk/api@2.1.0-beta.26
+
+## 0.9.0-beta.25
+
+### Patch Changes
+
+- Updated dependencies [c80ca45]
+  - @osdk/api@2.1.0-beta.25
+
+## 0.9.0-beta.24
+
+### Patch Changes
+
+- Updated dependencies [03f95eb]
+- Updated dependencies [c691c8b]
+- Updated dependencies [3c9ac22]
+  - @osdk/api@2.1.0-beta.24
+
+## 0.9.0-beta.23
+
+### Minor Changes
+
+- f0b519d: Upgrade to vitest 3 and vite 6
+- 7a95618: Generate new OMS APIs
+- d665147: Update platform sdk deps
+
+### Patch Changes
+
+- Updated dependencies [d794c19]
+- Updated dependencies [62c1d63]
+  - @osdk/api@2.1.0-beta.23
+
+## 0.9.0-beta.22
+
+### Minor Changes
+
+- 8d8bebb: Fix nullability
+- c9da74c: Improves code quality by fixing linting errors
+
+### Patch Changes
+
+- Updated dependencies [73fa373]
+  - @osdk/api@2.1.0-beta.22
+
+## 0.9.0-beta.21
+
+### Patch Changes
+
+- Updated dependencies [3ea2e79]
+- Updated dependencies [656f975]
+- Updated dependencies [f34b3d4]
+  - @osdk/api@2.1.0-beta.21
+
 ## 0.9.0-beta.20
 
 ### Minor Changes

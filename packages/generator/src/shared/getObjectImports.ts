@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
+import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import type { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
 import type { ForeignType } from "../GenerateContext/ForeignType.js";
 
 export function getObjectImports(
-  objects: Set<EnhancedObjectType | ForeignType>,
+  objects: Set<EnhancedObjectType | ForeignType | EnhancedInterfaceType>,
   curApiName: string | undefined,
   currentFilePath: string,
   v2: boolean,
-) {
+): string {
   return Array.from(objects).filter(obj => obj.fullApiName !== curApiName)
     .map(obj => {
       const defId = obj.getDefinitionIdentifier(v2);

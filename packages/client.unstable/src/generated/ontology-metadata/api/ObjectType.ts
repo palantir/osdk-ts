@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,5 +43,9 @@ export interface ObjectType {
   redacted: boolean | undefined;
   implementsInterfaces: Array<InterfaceTypeRid>;
   implementsInterfaces2: Array<ObjectTypeInterfaceImplementation>;
+  allImplementsInterfaces: Record<
+    InterfaceTypeRid,
+    ObjectTypeInterfaceImplementation
+  >;
   typeGroups: Array<TypeGroupRid>;
 }

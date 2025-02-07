@@ -15,13 +15,17 @@
  */
 
 import type { ObjectOrInterfaceDefinition, WhereClause } from "@osdk/api";
-import { objectTypeWithAllPropertyTypes } from "@osdk/client.test.ontology";
+import {
+  BgaoNflPlayer,
+  objectTypeWithAllPropertyTypes,
+} from "@osdk/client.test.ontology";
 import type { Point } from "geojson";
 import { expectType } from "ts-expect";
 import { describe, expect, it } from "vitest";
 import { modernToLegacyWhereClause } from "./modernToLegacyWhereClause.js";
 
 type ObjAllProps = objectTypeWithAllPropertyTypes;
+type structObj = BgaoNflPlayer;
 describe(modernToLegacyWhereClause, () => {
   describe("api namespaces", () => {
     describe("interfaces", () => {
@@ -31,7 +35,12 @@ describe(modernToLegacyWhereClause, () => {
           apiName: "a.Foo",
           __DefinitionMetadata: {
             type: "interface",
-            properties: { "prop": { type: "integer" } },
+            properties: {
+              "prop": { type: "integer" },
+              "prop2": {
+                type: { "innerProp1": "string", "innerProp2": "float" },
+              },
+            },
             apiName: "a.Foo",
             displayName: "",
             links: {},
@@ -40,14 +49,32 @@ describe(modernToLegacyWhereClause, () => {
         } as const satisfies ObjectOrInterfaceDefinition;
 
         const r = modernToLegacyWhereClause({
-          prop: 5,
+          $and: [
+            { prop: { $eq: 5 } },
+            { prop2: { innerProp1: { $eq: "myProp" } } },
+          ],
         }, T);
 
         expect(r).toMatchInlineSnapshot(`
           {
-            "field": "a.prop",
-            "type": "eq",
-            "value": 5,
+            "type": "and",
+            "value": [
+              {
+                "field": "a.prop",
+                "type": "eq",
+                "value": 5,
+              },
+              {
+                "field": undefined,
+                "propertyIdentifier": {
+                  "propertyApiName": "a.prop2",
+                  "structFieldApiName": "innerProp1",
+                  "type": "structField",
+                },
+                "type": "eq",
+                "value": "myProp",
+              },
+            ],
           }
         `);
       });
@@ -62,6 +89,9 @@ describe(modernToLegacyWhereClause, () => {
               "foo": { type: "integer" },
               "b.prop": { type: "integer" },
               "prop": { type: "integer" },
+              "c.prop2": {
+                type: { "innerProp1": "string", "innerProp2": "float" },
+              },
             },
             apiName: "Foo",
             displayName: "",
@@ -73,6 +103,7 @@ describe(modernToLegacyWhereClause, () => {
         const r = modernToLegacyWhereClause({
           "b.prop": 5,
           foo: 6,
+          "c.prop2": { innerProp1: { $eq: "myProp" } },
         }, T);
 
         expect(r).toMatchInlineSnapshot(`
@@ -89,6 +120,16 @@ describe(modernToLegacyWhereClause, () => {
                 "type": "eq",
                 "value": 6,
               },
+              {
+                "field": undefined,
+                "propertyIdentifier": {
+                  "propertyApiName": "c.prop2",
+                  "structFieldApiName": "innerProp1",
+                  "type": "structField",
+                },
+                "type": "eq",
+                "value": "myProp",
+              },
             ],
           }
         `);
@@ -104,6 +145,9 @@ describe(modernToLegacyWhereClause, () => {
               "a.foo": { type: "integer" },
               "b.prop": { type: "integer" },
               "prop": { type: "integer" },
+              "c.prop2": {
+                type: { "innerProp1": "string", "innerProp2": "float" },
+              },
             },
             apiName: "a.Foo",
             displayName: "",
@@ -115,6 +159,7 @@ describe(modernToLegacyWhereClause, () => {
         const r = modernToLegacyWhereClause({
           "b.prop": 5,
           "a.foo": 6,
+          "c.prop2": { innerProp1: { $eq: "myProp" } },
         }, T);
 
         expect(r).toMatchInlineSnapshot(`
@@ -130,6 +175,16 @@ describe(modernToLegacyWhereClause, () => {
                 "field": "a.foo",
                 "type": "eq",
                 "value": 6,
+              },
+              {
+                "field": undefined,
+                "propertyIdentifier": {
+                  "propertyApiName": "c.prop2",
+                  "structFieldApiName": "innerProp1",
+                  "type": "structField",
+                },
+                "type": "eq",
+                "value": "myProp",
               },
             ],
           }
@@ -704,6 +759,96 @@ describe(modernToLegacyWhereClause, () => {
           "value": "test",
         }
       `);
+      });
+      it("converts struct where clauses correctly", () => {
+        expect(modernToLegacyWhereClause<structObj>({
+          address: { state: { $eq: "NJ" } },
+        }, BgaoNflPlayer)).toMatchInlineSnapshot(`
+          {
+            "field": undefined,
+            "propertyIdentifier": {
+              "propertyApiName": "address",
+              "structFieldApiName": "state",
+              "type": "structField",
+            },
+            "type": "eq",
+            "value": "NJ",
+          }
+        `);
+
+        expect(modernToLegacyWhereClause<structObj>({
+          $and: [
+            { address: { state: { $eq: "NJ" } } },
+            { address: { city: { $containsAnyTerm: "N" } } },
+          ],
+        }, BgaoNflPlayer)).toMatchInlineSnapshot(`
+        {
+          "type": "and",
+          "value": [
+            {
+              "field": undefined,
+              "propertyIdentifier": {
+                "propertyApiName": "address",
+                "structFieldApiName": "state",
+                "type": "structField",
+              },
+              "type": "eq",
+              "value": "NJ",
+            },
+            {
+              "field": undefined,
+              "fuzzy": false,
+              "propertyIdentifier": {
+                "propertyApiName": "address",
+                "structFieldApiName": "city",
+                "type": "structField",
+              },
+              "type": "containsAnyTerm",
+              "value": "N",
+            },
+          ],
+        }
+      `);
+
+        expect(modernToLegacyWhereClause<structObj>({
+          $or: [
+            { address: { state: { $eq: "NJ" } } },
+            { address: { city: { $containsAnyTerm: "N" } } },
+            { gamesPlayed: { $gt: 5 } },
+          ],
+        }, BgaoNflPlayer)).toMatchInlineSnapshot(`
+      {
+        "type": "or",
+        "value": [
+          {
+            "field": undefined,
+            "propertyIdentifier": {
+              "propertyApiName": "address",
+              "structFieldApiName": "state",
+              "type": "structField",
+            },
+            "type": "eq",
+            "value": "NJ",
+          },
+          {
+            "field": undefined,
+            "fuzzy": false,
+            "propertyIdentifier": {
+              "propertyApiName": "address",
+              "structFieldApiName": "city",
+              "type": "structField",
+            },
+            "type": "containsAnyTerm",
+            "value": "N",
+          },
+          {
+            "field": "gamesPlayed",
+            "type": "gt",
+            "value": 5,
+          },
+        ],
+      }
+    `);
       });
     });
 

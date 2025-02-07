@@ -1,5 +1,139 @@
 # @osdk/client
 
+## 2.1.0-beta.28
+
+### Minor Changes
+
+- f446d0c: Exposes $clone from OSDK Object instances
+
+### Patch Changes
+
+- Updated dependencies [f446d0c]
+  - @osdk/api@2.1.0-beta.28
+  - @osdk/generator-converters@2.1.0-beta.28
+  - @osdk/client.unstable@2.1.0-beta.28
+
+## 2.1.0-beta.27
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.27
+- @osdk/client.unstable@2.1.0-beta.27
+- @osdk/generator-converters@2.1.0-beta.27
+
+## 2.1.0-beta.26
+
+### Minor Changes
+
+- 7865cb6: Add support for search on struct properties.
+- e6fbd94: Export Attachment from client
+- 9c4efe6: Support uploading media parameters through actions
+- 44e62f6: Updating fetch for auth and other packages.
+- 94463b6: Support objects as code
+- f19da8e: Remove where clause from aggregate options. This option was never actually doing anything before as it was not passed to the backend for processing, so we are removing it to prevent future confusion.
+
+### Patch Changes
+
+- Updated dependencies [7865cb6]
+- Updated dependencies [9c4efe6]
+- Updated dependencies [44e62f6]
+- Updated dependencies [94463b6]
+- Updated dependencies [f19da8e]
+  - @osdk/api@2.1.0-beta.26
+  - @osdk/generator-converters@2.1.0-beta.26
+  - @osdk/client.unstable@2.1.0-beta.26
+
+## 2.1.0-beta.25
+
+### Minor Changes
+
+- c80ca45: Add ability to create interfaces through actions now.
+
+### Patch Changes
+
+- Updated dependencies [c80ca45]
+  - @osdk/generator-converters@2.1.0-beta.25
+  - @osdk/api@2.1.0-beta.25
+  - @osdk/client.unstable@2.1.0-beta.25
+
+## 2.1.0-beta.24
+
+### Minor Changes
+
+- 03f95eb: Add support for interface params in actions.
+- c691c8b: Package now has experimental support for commonjs
+- 3c9ac22: Cleaning up where clause types.
+
+### Patch Changes
+
+- Updated dependencies [03f95eb]
+- Updated dependencies [c691c8b]
+- Updated dependencies [3c9ac22]
+  - @osdk/generator-converters@2.1.0-beta.24
+  - @osdk/api@2.1.0-beta.24
+  - @osdk/shared.client.impl@1.1.0-beta.5
+  - @osdk/shared.net.errors@2.1.0-beta.2
+  - @osdk/shared.net.fetch@1.1.0-beta.3
+  - @osdk/client.unstable@2.1.0-beta.24
+
+## 2.1.0-beta.23
+
+### Minor Changes
+
+- d794c19: Adding support for struct action params.
+- 7a95618: Generate new OMS APIs
+- 62c1d63: Add support for reading media reference property in OSDK.
+- 3fc2ee6: Include more descriptive JS docs for public utils
+- d665147: Update platform sdk deps
+
+### Patch Changes
+
+- Updated dependencies [d794c19]
+- Updated dependencies [f0b519d]
+- Updated dependencies [7a95618]
+- Updated dependencies [62c1d63]
+- Updated dependencies [83e7ea3]
+- Updated dependencies [d665147]
+  - @osdk/generator-converters@2.1.0-beta.23
+  - @osdk/api@2.1.0-beta.23
+  - @osdk/client.unstable@2.1.0-beta.23
+
+## 2.1.0-beta.22
+
+### Minor Changes
+
+- c9da74c: Improves code quality by fixing linting errors
+- 73fa373: Exports helper method to construct object sets from RIDs from internal utils
+
+### Patch Changes
+
+- Updated dependencies [c9da74c]
+- Updated dependencies [73fa373]
+  - @osdk/generator-converters@2.1.0-beta.22
+  - @osdk/api@2.1.0-beta.22
+  - @osdk/client.unstable@2.1.0-beta.22
+
+## 2.1.0-beta.21
+
+### Minor Changes
+
+- 3ea2e79: Creates new export for internal helper functions
+- 656f975: Fixes attachment upload inputs sending incorrect in browser contexts
+- f34b3d4: Add ability to fetch by rid, experimentally.
+- e86e91d: Internal property of Client is removed from output
+
+### Patch Changes
+
+- Updated dependencies [3ea2e79]
+- Updated dependencies [656f975]
+- Updated dependencies [f34b3d4]
+- Updated dependencies [1132993]
+  - @osdk/api@2.1.0-beta.21
+  - @osdk/shared.net.fetch@1.1.0-beta.2
+  - @osdk/generator-converters@2.1.0-beta.21
+  - @osdk/shared.client.impl@1.1.0-beta.4
+  - @osdk/client.unstable@2.1.0-beta.21
+
 ## 2.1.0-beta.20
 
 ### Minor Changes

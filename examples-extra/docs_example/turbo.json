@@ -4,7 +4,7 @@
     "codegen": {
       "inputs": ["ontology.json"],
       "outputs": ["src/generatedNoCheck/**/*"],
-      "dependsOn": ["@osdk/cli.cmd.typescript#transpile"]
+      "dependsOn": ["@osdk/cli.cmd.typescript#transpileEsm"]
     }
   }
 }

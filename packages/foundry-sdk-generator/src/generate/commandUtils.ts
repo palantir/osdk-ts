@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export function transformArrayArg(arg?: string[]) {
+export function transformArrayArg(arg?: string[]): string[] | undefined {
   if (arg && arg.length > 0) {
     if (arg[0] === undefined) {
       return undefined;

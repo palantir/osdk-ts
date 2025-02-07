@@ -1,5 +1,77 @@
 # @osdk/cli.cmd.typescript
 
+## 0.25.0-beta.28
+
+### Patch Changes
+
+- @osdk/generator@2.1.0-beta.28
+- @osdk/cli.common@0.25.0-beta.28
+
+## 0.25.0-beta.27
+
+### Patch Changes
+
+- @osdk/generator@2.1.0-beta.27
+- @osdk/cli.common@0.25.0-beta.27
+
+## 0.25.0-beta.26
+
+### Patch Changes
+
+- Updated dependencies [44e62f6]
+  - @osdk/generator@2.1.0-beta.26
+  - @osdk/cli.common@0.25.0-beta.26
+
+## 0.25.0-beta.25
+
+### Patch Changes
+
+- @osdk/generator@2.1.0-beta.25
+- @osdk/cli.common@0.25.0-beta.25
+
+## 0.25.0-beta.24
+
+### Patch Changes
+
+- Updated dependencies [03f95eb]
+- Updated dependencies [c691c8b]
+  - @osdk/generator@2.1.0-beta.24
+  - @osdk/shared.client.impl@1.1.0-beta.5
+  - @osdk/cli.common@0.25.0-beta.24
+
+## 0.25.0-beta.23
+
+### Minor Changes
+
+- d665147: Update platform sdk deps
+
+### Patch Changes
+
+- Updated dependencies [d794c19]
+- Updated dependencies [f0b519d]
+- Updated dependencies [696c59c]
+- Updated dependencies [d665147]
+  - @osdk/generator@2.1.0-beta.23
+  - @osdk/cli.common@0.25.0-beta.23
+
+## 0.25.0-beta.22
+
+### Patch Changes
+
+- Updated dependencies [c9da74c]
+  - @osdk/generator@2.1.0-beta.22
+  - @osdk/cli.common@0.25.0-beta.22
+
+## 0.25.0-beta.21
+
+### Patch Changes
+
+- Updated dependencies [1dca4cb]
+- Updated dependencies [3d2ba6f]
+  - @osdk/cli.common@0.25.0-beta.21
+  - @osdk/generator@2.1.0-beta.21
+  - @osdk/shared.client.impl@1.1.0-beta.4
+
 ## 0.25.0-beta.20
 
 ### Minor Changes

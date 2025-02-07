@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,9 @@
 import type { MarkingId } from "./MarkingId.js";
 
 /**
- * Contains a non-empty set of markings that represent the max classification of this datasource. All cbac marking
- * properties linked to this datasource must only contain values that satisfy this max classification.
- * It must contain a valid set of cbac markings.
+ * Contains a set of markings that represents the max classification of this datasource.
  */
 export interface ClassificationConstraint {
   markings: Array<MarkingId>;
+  allowEmptyMarkings: boolean | undefined;
 }

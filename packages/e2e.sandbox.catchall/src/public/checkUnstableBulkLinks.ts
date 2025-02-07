@@ -19,7 +19,7 @@ import { Employee, WeatherStation } from "@osdk/e2e.generated.catchall";
 import { client } from "../client.js";
 import { logger } from "../logger.js";
 
-export async function checkUnstableBulkLinks() {
+export async function checkUnstableBulkLinks(): Promise<void> {
   // Test one to many
   const stations = await client(WeatherStation).fetchPage();
   for await (
@@ -67,4 +67,4 @@ export async function checkUnstableBulkLinks() {
   }
 }
 
-checkUnstableBulkLinks();
+void checkUnstableBulkLinks();

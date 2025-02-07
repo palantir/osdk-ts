@@ -24,7 +24,7 @@ export async function bundleDependencies(
   generatedPackageName: string,
   generatedFiles: { [fileName: string]: string },
   entry?: string,
-) {
+): Promise<string> {
   const project = new Project({
     useInMemoryFileSystem: true,
     compilerOptions: {
@@ -51,7 +51,7 @@ export async function bundleDependencies(
   return outputModule(project);
 }
 
-export function outputModule(project: Project) {
+export function outputModule(project: Project): string {
   const modules: string[] = [];
 
   project.getSourceFiles().forEach(sourceFile => {

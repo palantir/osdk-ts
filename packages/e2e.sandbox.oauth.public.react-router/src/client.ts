@@ -1,4 +1,6 @@
+import type { Client } from "@osdk/client";
 import { createClient } from "@osdk/client";
+import type { PublicOauthClient } from "@osdk/oauth";
 import { createPublicOauthClient } from "@osdk/oauth";
 
 const url = import.meta.env.VITE_FOUNDRY_API_URL;
@@ -19,7 +21,7 @@ function checkEnv(
 
 const showLoginPage = true;
 
-export const publicOauthClient = createPublicOauthClient(
+export const publicOauthClient: PublicOauthClient = createPublicOauthClient(
   clientId,
   url,
   redirectUrl,
@@ -39,4 +41,8 @@ export const publicOauthClient = createPublicOauthClient(
 );
 
 // Normally you would also export a client from here
-export default createClient(url, "yourOntologyRid", publicOauthClient);
+export default createClient(
+  url,
+  "yourOntologyRid",
+  publicOauthClient,
+) satisfies Client as Client;

@@ -18,6 +18,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { importSharedPropertyType } from "./defineImportSpt.js";
 import { defineInterface } from "./defineInterface.js";
 import { defineInterfaceLinkConstraint } from "./defineInterfaceLinkConstraint.js";
+import { defineObject } from "./defineObject.js";
 import {
   defineOntology,
   dumpOntologyFullMetadata,
@@ -32,8 +33,8 @@ import type {
 } from "./types.js";
 
 describe("Ontology Defining", () => {
-  beforeEach(() => {
-    defineOntology("com.palantir.", () => {});
+  beforeEach(async () => {
+    await defineOntology("com.palantir.", () => {});
   });
 
   describe("ValueTypes", () => {
@@ -52,7 +53,7 @@ describe("Ontology Defining", () => {
         "[Error: Invariant failed: Version is not a valid semver]",
       );
     });
-    it("Correctly serializes a value type", () => {
+    it("Correctly serializes a value type", async () => {
       defineValueType({
         apiName: "apiName",
         displayName: "displayName",
@@ -107,6 +108,9 @@ describe("Ontology Defining", () => {
  }
         `);
     });
+
+    // N.B Not sure what this is for but I don't want to break anything so I added the eslint ignore
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     defineOntology("com.palantir.", () => {});
   });
 
@@ -184,6 +188,7 @@ describe("Ontology Defining", () => {
                           "analyzerOverride": undefined,
                           "enableAsciiFolding": undefined,
                           "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
                           "supportsExactMatching": true,
                         },
                         "type": "string",
@@ -208,6 +213,7 @@ describe("Ontology Defining", () => {
                 },
               },
             },
+            "objectTypes": {},
             "sharedPropertyTypes": {
               "com.palantir.foo": {
                 "sharedPropertyType": {
@@ -228,6 +234,7 @@ describe("Ontology Defining", () => {
                       "analyzerOverride": undefined,
                       "enableAsciiFolding": undefined,
                       "isLongText": false,
+                      "supportsEfficientLeadingWildcard": false,
                       "supportsExactMatching": true,
                     },
                     "type": "string",
@@ -264,6 +271,7 @@ describe("Ontology Defining", () => {
               "objectTypes": {},
             },
             "interfaceTypes": {},
+            "objectTypes": {},
             "sharedPropertyTypes": {
               "com.palantir.foo": {
                 "sharedPropertyType": {
@@ -284,6 +292,7 @@ describe("Ontology Defining", () => {
                       "analyzerOverride": undefined,
                       "enableAsciiFolding": undefined,
                       "isLongText": false,
+                      "supportsEfficientLeadingWildcard": false,
                       "supportsExactMatching": true,
                     },
                     "type": "string",
@@ -375,6 +384,7 @@ describe("Ontology Defining", () => {
                         "analyzerOverride": undefined,
                         "enableAsciiFolding": undefined,
                         "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
                         "supportsExactMatching": true,
                       },
                       "type": "string",
@@ -430,6 +440,7 @@ describe("Ontology Defining", () => {
                         "analyzerOverride": undefined,
                         "enableAsciiFolding": undefined,
                         "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
                         "supportsExactMatching": true,
                       },
                       "type": "string",
@@ -454,6 +465,7 @@ describe("Ontology Defining", () => {
               },
             },
           },
+          "objectTypes": {},
           "sharedPropertyTypes": {
             "com.palantir.property1": {
               "sharedPropertyType": {
@@ -474,6 +486,7 @@ describe("Ontology Defining", () => {
                     "analyzerOverride": undefined,
                     "enableAsciiFolding": undefined,
                     "isLongText": false,
+                    "supportsEfficientLeadingWildcard": false,
                     "supportsExactMatching": true,
                   },
                   "type": "string",
@@ -510,6 +523,7 @@ describe("Ontology Defining", () => {
                     "analyzerOverride": undefined,
                     "enableAsciiFolding": undefined,
                     "isLongText": false,
+                    "supportsEfficientLeadingWildcard": false,
                     "supportsExactMatching": true,
                   },
                   "type": "string",
@@ -589,6 +603,7 @@ describe("Ontology Defining", () => {
                         "analyzerOverride": undefined,
                         "enableAsciiFolding": undefined,
                         "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
                         "supportsExactMatching": true,
                       },
                       "type": "string",
@@ -644,6 +659,7 @@ describe("Ontology Defining", () => {
                         "analyzerOverride": undefined,
                         "enableAsciiFolding": undefined,
                         "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
                         "supportsExactMatching": true,
                       },
                       "type": "string",
@@ -668,6 +684,7 @@ describe("Ontology Defining", () => {
               },
             },
           },
+          "objectTypes": {},
           "sharedPropertyTypes": {
             "com.palantir.property1": {
               "sharedPropertyType": {
@@ -688,6 +705,7 @@ describe("Ontology Defining", () => {
                     "analyzerOverride": undefined,
                     "enableAsciiFolding": undefined,
                     "isLongText": false,
+                    "supportsEfficientLeadingWildcard": false,
                     "supportsExactMatching": true,
                   },
                   "type": "string",
@@ -724,6 +742,7 @@ describe("Ontology Defining", () => {
                     "analyzerOverride": undefined,
                     "enableAsciiFolding": undefined,
                     "isLongText": false,
+                    "supportsEfficientLeadingWildcard": false,
                     "supportsExactMatching": true,
                   },
                   "type": "string",
@@ -827,6 +846,7 @@ describe("Ontology Defining", () => {
               },
             },
           },
+          "objectTypes": {},
           "sharedPropertyTypes": {},
         }
       `);
@@ -902,6 +922,7 @@ describe("Ontology Defining", () => {
               },
             },
           },
+          "objectTypes": {},
           "sharedPropertyTypes": {},
         }
       `);
@@ -987,6 +1008,7 @@ describe("Ontology Defining", () => {
                       "analyzerOverride": undefined,
                       "enableAsciiFolding": undefined,
                       "isLongText": false,
+                      "supportsEfficientLeadingWildcard": false,
                       "supportsExactMatching": true,
                     },
                     "type": "string",
@@ -1011,6 +1033,7 @@ describe("Ontology Defining", () => {
             },
           },
         },
+        "objectTypes": {},
         "sharedPropertyTypes": {
           "com.palantir.fooSpt": {
             "sharedPropertyType": {
@@ -1031,6 +1054,7 @@ describe("Ontology Defining", () => {
                   "analyzerOverride": undefined,
                   "enableAsciiFolding": undefined,
                   "isLongText": false,
+                  "supportsEfficientLeadingWildcard": false,
                   "supportsExactMatching": true,
                 },
                 "type": "string",
@@ -1079,6 +1103,7 @@ describe("Ontology Defining", () => {
                   "objectTypes": {},
                 },
                 "interfaceTypes": {},
+                "objectTypes": {},
                 "sharedPropertyTypes": {
                   "com.palantir.fooSpt": {
                     "sharedPropertyType": {
@@ -1189,7 +1214,7 @@ describe("Ontology Defining", () => {
                   "apiName": "com.palantir.foo",
                   "baseFormatter": undefined,
                   "dataConstraints": {
-                    "nullability": "NO_EXPLICIT_NULLS",
+                    "nullability": undefined,
                     "nullabilityV2": {
                       "noEmptyCollections": true,
                       "noNulls": true,
@@ -1240,6 +1265,7 @@ describe("Ontology Defining", () => {
                       "analyzerOverride": undefined,
                       "enableAsciiFolding": undefined,
                       "isLongText": false,
+                      "supportsEfficientLeadingWildcard": false,
                       "supportsExactMatching": true,
                     },
                     "type": "string",
@@ -1255,6 +1281,7 @@ describe("Ontology Defining", () => {
             },
           },
         },
+        "objectTypes": {},
         "sharedPropertyTypes": {
           "com.palantir.foo": {
             "sharedPropertyType": {
@@ -1262,7 +1289,7 @@ describe("Ontology Defining", () => {
               "apiName": "com.palantir.foo",
               "baseFormatter": undefined,
               "dataConstraints": {
-                "nullability": "NO_EXPLICIT_NULLS",
+                "nullability": undefined,
                 "nullabilityV2": {
                   "noEmptyCollections": true,
                   "noNulls": true,
@@ -1342,5 +1369,312 @@ describe("Ontology Defining", () => {
       status: { type: "deprecated", message: "foo", deadline: "foo" },
     });
     expect(result.status).toEqual(deprecatedStatus);
+  });
+
+  describe("Objects", () => {
+    it("Fails if any property reference does not exist", () => {
+      const spt = defineSharedPropertyType({
+        apiName: "foo",
+        type: "string",
+      });
+
+      const sample = defineInterface({
+        apiName: "interface",
+        properties: { foo: spt },
+      });
+
+      expect(() => {
+        defineObject({
+          titlePropertyApiName: "fizz",
+          displayName: "Foo",
+          pluralDisplayName: "Foo",
+          apiName: "foo",
+          primaryKeys: ["bar"],
+          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Title property fizz is not defined on object foo]`,
+      );
+
+      expect(() => {
+        defineObject({
+          titlePropertyApiName: "bar",
+          displayName: "Foo",
+          pluralDisplayName: "Foo",
+          apiName: "foo",
+          primaryKeys: ["fizz"],
+          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Primary key properties fizz do not exist on object foo]`,
+      );
+
+      expect(() => {
+        defineObject({
+          titlePropertyApiName: "bar",
+          displayName: "Foo",
+          pluralDisplayName: "Foo",
+          apiName: "foo",
+          primaryKeys: ["bar"],
+          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+          implementsInterfaces: [{
+            implements: sample,
+            propertyMapping: [{ interfaceProperty: "foo", mapsTo: "fizz" }],
+          }],
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: \nOntology Definition Error: Object property mapped to interface does not exist. Object Property Mapped: fizz\n]`,
+      );
+
+      expect(() => {
+        defineObject({
+          titlePropertyApiName: "bar",
+          displayName: "Foo",
+          pluralDisplayName: "Foo",
+          apiName: "foo",
+          primaryKeys: ["bar"],
+          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+          implementsInterfaces: [{
+            implements: sample,
+            propertyMapping: [{ interfaceProperty: "fizz", mapsTo: "bar" }, {
+              interfaceProperty: "foo",
+              mapsTo: "bar",
+            }],
+          }],
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: \nOntology Definition Error: Interface property com.palantir.interface.fizz referenced in foo object does not exist\n]`,
+      );
+    });
+
+    it("Objects properly defined", () => {
+      const spt = defineSharedPropertyType({
+        apiName: "foo",
+        type: "string",
+      });
+
+      const sample = defineInterface({
+        apiName: "interface",
+        properties: { foo: spt },
+      });
+
+      const object = defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "Foo",
+        pluralDisplayName: "Foo",
+        apiName: "foo",
+        primaryKeys: ["bar"],
+        properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+        implementsInterfaces: [{
+          implements: sample,
+          propertyMapping: [{ interfaceProperty: "foo", mapsTo: "bar" }],
+        }],
+      });
+
+      expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+          {
+           "blockPermissionInformation": {
+             "actionTypes": {},
+             "linkTypes": {},
+             "objectTypes": {},
+           },
+           "interfaceTypes": {
+             "com.palantir.interface": {
+               "interfaceType": {
+                 "allExtendsInterfaces": [],
+                 "allLinks": [],
+                 "allProperties": [],
+                 "apiName": "com.palantir.interface",
+                 "displayMetadata": {
+                   "description": "interface",
+                   "displayName": "interface",
+                   "icon": undefined,
+                 },
+                 "extendsInterfaces": [],
+                 "links": [],
+                 "properties": [
+                   {
+                     "aliases": [],
+                     "apiName": "com.palantir.foo",
+                     "baseFormatter": undefined,
+                     "dataConstraints": undefined,
+                     "displayMetadata": {
+                       "description": undefined,
+                       "displayName": "foo",
+                       "visibility": "NORMAL",
+                     },
+                     "gothamMapping": undefined,
+                     "indexedForSearch": true,
+                     "provenance": undefined,
+                     "type": {
+                       "string": {
+                         "analyzerOverride": undefined,
+                         "enableAsciiFolding": undefined,
+                         "isLongText": false,
+                         "supportsEfficientLeadingWildcard": false,
+                         "supportsExactMatching": true,
+                       },
+                       "type": "string",
+                     },
+                     "typeClasses": [
+                       {
+                         "kind": "render_hint",
+                         "name": "SELECTABLE",
+                       },
+                       {
+                         "kind": "render_hint",
+                         "name": "SORTABLE",
+                       },
+                     ],
+                     "valueType": undefined,
+                   },
+                 ],
+                 "status": {
+                   "active": {},
+                   "type": "active",
+                 },
+               },
+             },
+           },
+           "objectTypes": {
+             "com.palantir.foo": {
+               "datasources": [
+                 {
+                   "datasource": {
+                     "datasetV2": {
+                       "datasetRid": "com.palantir.foo",
+                       "propertyMapping": {
+                         "bar": {
+                           "column": "bar",
+                           "type": "column",
+                         },
+                       },
+                     },
+                     "type": "datasetV2",
+                   },
+                   "editsConfiguration": {
+                     "onlyAllowPrivilegedEdits": false,
+                   },
+                   "redacted": false,
+                   "rid": "ri.ontology.main.datasource.com.palantir.foo",
+                 },
+               ],
+               "entityMetadata": {
+                 "arePatchesEnabled": false,
+               },
+               "objectType": {
+                 "allImplementsInterfaces": {},
+                 "apiName": "com.palantir.foo",
+                 "displayMetadata": {
+                   "description": undefined,
+                   "displayName": "Foo",
+                   "groupDisplayName": undefined,
+                   "icon": {
+                     "blueprint": {
+                       "color": "#2D72D2",
+                       "locator": "cube",
+                     },
+                     "type": "blueprint",
+                   },
+                   "pluralDisplayName": "Foo",
+                   "visibility": "NORMAL",
+                 },
+                 "implementsInterfaces2": [
+                   {
+                     "interfaceTypeApiName": "com.palantir.interface",
+                     "properties": {
+                       "com.palantir.foo": {
+                         "propertyTypeRid": "bar",
+                       },
+                     },
+                   },
+                 ],
+                 "primaryKeys": [
+                   "bar",
+                 ],
+                 "propertyTypes": {
+                   "bar": {
+                     "apiName": "bar",
+                     "baseFormatter": undefined,
+                     "dataConstraints": undefined,
+                     "displayMetadata": {
+                       "description": undefined,
+                       "displayName": "Bar",
+                       "visibility": "NORMAL",
+                     },
+                     "indexedForSearch": true,
+                     "inlineAction": undefined,
+                     "ruleSetBinding": undefined,
+                     "sharedPropertyTypeApiName": undefined,
+                     "sharedPropertyTypeRid": undefined,
+                     "status": {
+                       "active": {},
+                       "type": "active",
+                     },
+                     "type": {
+                       "string": {
+                         "analyzerOverride": undefined,
+                         "enableAsciiFolding": undefined,
+                         "isLongText": false,
+                         "supportsEfficientLeadingWildcard": false,
+                         "supportsExactMatching": true,
+                       },
+                       "type": "string",
+                     },
+                     "typeClasses": [],
+                     "valueType": undefined,
+                   },
+                 },
+                 "redacted": false,
+                 "status": {
+                   "active": {},
+                   "type": "active",
+                 },
+                 "titlePropertyTypeRid": "bar",
+               },
+             },
+           },
+           "sharedPropertyTypes": {
+             "com.palantir.foo": {
+               "sharedPropertyType": {
+                 "aliases": [],
+                 "apiName": "com.palantir.foo",
+                 "baseFormatter": undefined,
+                 "dataConstraints": undefined,
+                 "displayMetadata": {
+                   "description": undefined,
+                   "displayName": "foo",
+                   "visibility": "NORMAL",
+                 },
+                 "gothamMapping": undefined,
+                 "indexedForSearch": true,
+                 "provenance": undefined,
+                 "type": {
+                   "string": {
+                     "analyzerOverride": undefined,
+                     "enableAsciiFolding": undefined,
+                     "isLongText": false,
+                     "supportsEfficientLeadingWildcard": false,
+                     "supportsExactMatching": true,
+                   },
+                   "type": "string",
+                 },
+                 "typeClasses": [
+                   {
+                     "kind": "render_hint",
+                     "name": "SELECTABLE",
+                   },
+                   {
+                     "kind": "render_hint",
+                     "name": "SORTABLE",
+                   },
+                 ],
+                 "valueType": undefined,
+               },
+             },
+           },
+         }
+        `);
+    });
   });
 });

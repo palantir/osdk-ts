@@ -1,5 +1,25 @@
 # @osdk/create-app
 
+## 2.1.0-beta.28
+
+## 2.1.0-beta.27
+
+## 2.1.0-beta.26
+
+## 2.1.0-beta.25
+
+## 2.1.0-beta.24
+
+## 2.1.0-beta.23
+
+## 2.1.0-beta.22
+
+## 2.1.0-beta.21
+
+### Minor Changes
+
+- 3d2ba6f: Revert api:x-read/write back to api:read/write-x
+
 ## 2.1.0-beta.20
 
 ## 2.1.0-beta.19
