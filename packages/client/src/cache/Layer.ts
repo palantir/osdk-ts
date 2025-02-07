@@ -15,21 +15,51 @@
  */
 
 import type { CacheKey } from "./CacheKey.js";
+import { WeakMapWithEntries } from "./WeakMapWithEntries.js";
+
+/*
+  Image some layers
+
+  [
+    { cache: { obj1: { a: 1 } }, layerId: undefined },
+    { cache: { obj1: { a: 1, b: 2 } }, layerId: "layer1" },
+    { cache: { obj1: { a: undefined, b: 2 } }, layerId: "layer2" },
+    { cache: { obj1: { a: 1, b: 2 } }, layerId: "layer3" },
+  ]
+*/
 
 export class Layer {
   #parent: Layer | undefined;
-  #cache = new WeakMap<CacheKey<string, any>, Entry<any>>();
+  #cache = new WeakMapWithEntries<CacheKey<string, any>, Entry<any>>();
+  #layerId: unknown;
 
-  constructor(parent: Layer | undefined) {
+  constructor(parent: Layer | undefined, layerId: unknown) {
     this.#parent = parent;
+    this.#layerId = layerId;
   }
 
-  addLayer(): Layer {
-    return new Layer(this);
+  get parentLayer(): Layer | undefined {
+    return this.#parent;
   }
 
-  removeLayer(): Layer {
+  get layerId(): unknown {
+    return this.#layerId;
+  }
+
+  addLayer(layerId: unknown): Layer {
+    return new Layer(this, layerId);
+  }
+
+  removeLayer(layerId: unknown): Layer {
+    if (layerId == null || this.#layerId !== layerId) {
+      return this;
+    }
+
     return this.#parent ?? this;
+  }
+
+  entries(): IterableIterator<[CacheKey<string, any>, Entry<any>]> {
+    return this.#cache.entries();
   }
 
   public get<K extends CacheKey<string, unknown>>(

@@ -17,7 +17,8 @@
 import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import { apiServer } from "@osdk/shared.test";
 
-import type { Osdk } from "@osdk/api";
+import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
+import type { Mock } from "vitest";
 import {
   afterAll,
   afterEach,
@@ -65,6 +66,29 @@ afterAll(() => {
 function defer(x: Unsubscribable) {
   subscriptions.push(x);
   return x;
+}
+
+function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
+  subFn: Mock<(e: ListPayload<T> | undefined) => void>,
+  resolvedList: Osdk.Instance<T>[],
+) {
+  vitest.runOnlyPendingTimers();
+  expect(subFn).toHaveBeenCalledExactlyOnceWith(
+    expect.objectContaining({
+      resolvedList,
+    }),
+  );
+  subFn.mockClear();
+}
+
+function expectSingleObjectCallAndClear<T extends ObjectTypeDefinition>(
+  subFn: Mock<(e: ObjectEntry<T> | undefined) => void>,
+  value: Osdk.Instance<T>,
+) {
+  expect(subFn).toHaveBeenCalledExactlyOnceWith(
+    expect.objectContaining({ value }),
+  );
+  subFn.mockClear();
 }
 
 expect.extend({
@@ -146,6 +170,159 @@ describe(Store, () => {
       expect(cache.getObject(Employee, emp.$primaryKey)).toBe(
         updatedEmpFromCache,
       );
+    });
+
+    describe("optimistic updates", () => {
+      it("rolls back objects", async () => {
+        const emp = employeesAsServerReturns[0];
+        cache.updateObject(emp); // pre-seed the cache with the "real" value
+
+        const subFn = vitest.fn((e: ObjectEntry<Employee> | undefined) => {});
+        defer(
+          cache.observeObject(
+            Employee,
+            emp.$primaryKey,
+            { mode: "offline" },
+            subFn,
+          ),
+        );
+
+        expectSingleObjectCallAndClear(subFn, emp);
+
+        // update with an optimistic write
+        cache.updateObject(emp.$clone({ fullName: "new name" }), {
+          optimisticId: "1",
+        });
+        expectSingleObjectCallAndClear(
+          subFn,
+          emp.$clone({ fullName: "new name" }),
+        );
+
+        // remove the optimistic write
+        cache.removeLayer("1");
+
+        expectSingleObjectCallAndClear(subFn, emp);
+      });
+
+      it("rolls back to an updated real value", async () => {
+        vi.useFakeTimers();
+        cache.updateList(Employee, {}, employeesAsServerReturns); // pre-seed the cache with the "real" value
+
+        const emp = employeesAsServerReturns[0];
+
+        const empSubFn = vitest.fn(
+          (e: ObjectEntry<Employee> | undefined) => {},
+        );
+        defer(
+          cache.observeObject(
+            Employee,
+            emp.$primaryKey,
+            { mode: "offline" },
+            empSubFn,
+          ),
+        );
+
+        expectSingleObjectCallAndClear(empSubFn, emp);
+
+        const listSubFn = vitest.fn(
+          (e: ListPayload<Employee> | undefined) => {},
+        );
+        defer(
+          cache.observeList(Employee, {}, { mode: "offline" }, listSubFn),
+        );
+
+        expectSingleListCallAndClear(listSubFn, employeesAsServerReturns);
+
+        const optimisticEmployee = emp.$clone({ fullName: "new name" });
+
+        // update with an optimistic write
+        cache.updateObject(optimisticEmployee, {
+          optimisticId: "1",
+        });
+
+        // expect optimistic write
+        expectSingleObjectCallAndClear(empSubFn, optimisticEmployee);
+
+        // expect optimistic write to the list
+        expectSingleListCallAndClear(
+          listSubFn,
+          [
+            optimisticEmployee,
+            ...employeesAsServerReturns.slice(1),
+          ],
+        );
+
+        // write the real update, via the earlier list definition
+        const truthUpdatedEmployee = emp.$clone({
+          fullName: "real update",
+        });
+        cache.updateList(Employee, {}, [truthUpdatedEmployee]);
+
+        // we shouldn't expect an update because the top layer has a value
+        expect(empSubFn).not.toHaveBeenCalled();
+
+        // we do get an update to the list but we still see the optimistic value
+        // for the object
+        expectSingleListCallAndClear(listSubFn, [optimisticEmployee]);
+
+        // remove the optimistic write
+        cache.removeLayer("1");
+
+        // see the object observation get updated
+        expectSingleObjectCallAndClear(empSubFn, truthUpdatedEmployee);
+
+        // see the list get updated
+        expectSingleListCallAndClear(listSubFn, [truthUpdatedEmployee]);
+
+        vi.useRealTimers();
+      });
+
+      it("rolls back to an updated real value via list", async () => {
+        const emp = employeesAsServerReturns[0];
+        cache.updateObject(emp); // pre-seed the cache with the "real" value
+
+        const subFn = vitest.fn((e: ObjectEntry<Employee> | undefined) => {});
+        defer(
+          cache.observeObject(
+            Employee,
+            emp.$primaryKey,
+            { mode: "offline" },
+            subFn,
+          ),
+        );
+        expect(subFn).toHaveBeenCalledExactlyOnceWith(
+          expect.objectContaining({ value: emp }),
+        );
+        subFn.mockClear();
+
+        const optimisticEmployee = emp.$clone({ fullName: "new name" });
+
+        // update with an optimistic write
+        cache.updateObject(optimisticEmployee, {
+          optimisticId: "1",
+        });
+        expect(subFn).toHaveBeenCalledExactlyOnceWith(
+          expect.objectContaining({
+            value: optimisticEmployee,
+          }),
+        );
+        subFn.mockClear();
+
+        const truthUpdatedEmployee = emp.$clone({
+          fullName: "real update",
+        });
+        cache.updateObject(truthUpdatedEmployee);
+
+        // we shouldn't expect an update because the top layer has a value
+        expect(subFn).not.toHaveBeenCalled();
+
+        // remove the optimistic write
+        cache.removeLayer("1");
+
+        expect(subFn).toHaveBeenCalledExactlyOnceWith(
+          expect.objectContaining({ value: truthUpdatedEmployee }),
+        );
+      });
     });
 
     describe(".observeObject (force)", () => {
@@ -283,7 +460,7 @@ describe(Store, () => {
           );
 
           expect(subFn1).not.toHaveBeenCalled();
-          vitest.runAllTimers();
+          vitest.runOnlyPendingTimers();
 
           expect(subFn1).toHaveBeenCalledExactlyOnceWith(undefined);
           subFn1.mockClear();
@@ -299,12 +476,12 @@ describe(Store, () => {
         it("subsequent load", async () => {
           // Pre-seed with data the server doesn't return
           cache.updateList(Employee, {}, mutatedEmployees);
-          vitest.runAllTimers();
+          vitest.runOnlyPendingTimers();
 
           defer(
             cache.observeList(Employee, {}, { mode: "force" }, subFn1),
           );
-          vitest.runAllTimers();
+          vitest.runOnlyPendingTimers();
 
           expect(subFn1).toHaveBeenCalledExactlyOnceWith({
             listEntry: expect.any(Object),
@@ -337,7 +514,7 @@ describe(Store, () => {
           expect(subFn1).toHaveBeenCalledTimes(0);
 
           cache.updateList(Employee, {}, employeesAsServerReturns);
-          vi.runAllTimers();
+          vitest.runOnlyPendingTimers();
 
           expect(subFn1).toHaveBeenCalledExactlyOnceWith(
             expect.objectContaining({ resolvedList: employeesAsServerReturns }),
@@ -346,7 +523,7 @@ describe(Store, () => {
 
           // list is just now one object
           cache.updateList(Employee, {}, [employeesAsServerReturns[0]]);
-          vi.runAllTimers();
+          vitest.runOnlyPendingTimers();
 
           expect(subFn1).toHaveBeenCalledExactlyOnceWith(
             expect.objectContaining({
@@ -363,7 +540,7 @@ describe(Store, () => {
           expect(subFn1).toHaveBeenCalledTimes(0);
 
           cache.updateList(Employee, {}, employeesAsServerReturns);
-          vi.runAllTimers();
+          vitest.runOnlyPendingTimers();
 
           expect(subFn1).toHaveBeenCalledExactlyOnceWith(
             expect.objectContaining({ resolvedList: employeesAsServerReturns }),
@@ -376,7 +553,7 @@ describe(Store, () => {
             { employeeId: { $gt: 0 } },
             mutatedEmployees,
           );
-          vi.runAllTimers();
+          vitest.runOnlyPendingTimers();
 
           // original list updates still
           expect(subFn1).toHaveBeenCalledExactlyOnceWith(
