@@ -26,11 +26,21 @@ import deepEqual from "fast-deep-equal";
 
 import { BehaviorSubject, combineLatest, of } from "rxjs";
 import { auditTime, map, mergeMap } from "rxjs/operators";
+import invariant from "tiny-invariant";
 import type { Client } from "../Client.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Canonical } from "./Canonical.js";
 import { Entry, Layer } from "./Layer.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
+
+/*
+    Work still to do:
+    - [x] testing for optimistic writes
+    - [ ] add pagination
+    - [ ] sub-selection support
+    - [ ] interfaces
+    - [ ] setup defaults
+*/
 
 export interface Unsubscribable {
   unsubscribe: () => void;
@@ -53,6 +63,10 @@ interface BatchContext {
 
 interface Options {
   mode: "offline" | "force";
+}
+
+interface UpdateOptions {
+  optimisticId?: unknown;
 }
 
 export interface ObjectEntry<T extends ObjectTypeDefinition>
@@ -98,8 +112,8 @@ export class Store {
     } as unknown as CacheKey<string, any>;
   });
   #whereCanonicalizer = new WhereClauseCanonicalizer();
-  #truthLayer = new Layer(undefined);
-  #optimisticLayer: Layer;
+  #truthLayer = new Layer(undefined, undefined);
+  #topLayer: Layer;
   #client: Client;
 
   #cacheKeyToSubject = new WeakMap<
@@ -109,11 +123,43 @@ export class Store {
 
   constructor(client: Client) {
     this.#client = client;
-    this.#optimisticLayer = this.#truthLayer;
+    this.#topLayer = this.#truthLayer;
   }
 
-  removeLayer(): void {
-    this.#optimisticLayer = this.#optimisticLayer.removeLayer();
+  removeLayer(layerId: unknown): void {
+    invariant(
+      layerId != null,
+      "undefined is the reserved layerId for the truth layer",
+    );
+    // 1. collect all cache keys for a given layerId
+    let currentLayer: Layer | undefined = this.#topLayer;
+    const cacheKeys = new Map<CacheKey<string, any>, Entry<any>>();
+    while (currentLayer != null && currentLayer.parentLayer != null) {
+      if (currentLayer.layerId === layerId) {
+        for (const [k, v] of currentLayer.entries()) {
+          if (cacheKeys.has(k)) continue;
+          cacheKeys.set(k, v);
+        }
+      }
+
+      currentLayer = currentLayer.parentLayer;
+    }
+
+    // 2. remove the layers from the chain
+    this.#topLayer = this.#topLayer.removeLayer(layerId);
+
+    // 3. check each cache key to see if it is different in the new chain
+    for (const [k, oldEntry] of cacheKeys) {
+      const currentEntry = this.#topLayer.get(k);
+
+      // 4. if different, update the subject
+      if (oldEntry !== currentEntry) {
+        // We are going to be pretty lazy here and just re-emit the value.
+        // In the future it may benefit us to deep equal check her but I think
+        // the subjects are effectively doing this anyway.
+        this.#cacheKeyToSubject.get(k)?.next(currentEntry);
+      }
+    }
   }
 
   protected getSubject = <KEY extends CacheKey<string, any>>(
@@ -121,7 +167,7 @@ export class Store {
   ): BehaviorSubject<Entry<KEY> | undefined> => {
     let subject = this.#cacheKeyToSubject.get(cacheKey);
     if (!subject) {
-      subject = new BehaviorSubject(this.#optimisticLayer.get(cacheKey));
+      subject = new BehaviorSubject(this.#topLayer.get(cacheKey));
       this.#cacheKeyToSubject.set(cacheKey, subject);
     }
 
@@ -203,11 +249,11 @@ export class Store {
   }
 
   public updateObject<T extends ObjectTypeDefinition>(
-    obj: Osdk.Instance<T>,
-    optimistic = true,
+    value: Osdk.Instance<T>,
+    { optimisticId }: UpdateOptions = {},
   ): Osdk.Instance<T> {
-    return this.#batch({ optimistic }, (batch) => {
-      return this.#updateObject(obj, batch);
+    return this.#batch({ optimisticId }, (batch) => {
+      return this.#updateObject(value, batch);
     }).retVal;
   }
 
@@ -216,7 +262,7 @@ export class Store {
     pk: string | number,
   ): Osdk.Instance<T> | undefined {
     const objectCacheKey = this.#getObjectCacheKey(type.apiName, pk);
-    const objEntry = this.#optimisticLayer.get(objectCacheKey);
+    const objEntry = this.#topLayer.get(objectCacheKey);
     return objEntry?.value as Osdk.Instance<T> | undefined;
   }
 
@@ -250,7 +296,7 @@ export class Store {
       obj.$apiName,
       obj.$primaryKey,
     );
-    const existing = this.#optimisticLayer.get(objectCacheKey) as
+    const existing = this.#topLayer.get(objectCacheKey) as
       | Osdk.Instance<T>
       | undefined;
     if (existing && deepEqual(obj, existing)) {
@@ -269,34 +315,47 @@ export class Store {
   }
 
   #batch = <X>(
-    { optimistic }: { optimistic: boolean },
+    { optimisticId }: { optimisticId?: unknown },
     batchFn: (batchContext: BatchContext) => X,
   ) => {
-    let layerCreated = false;
+    invariant(
+      optimisticId === undefined || !!optimisticId,
+      "optimistic must be undefined or not falsy",
+    );
+
+    let needsLayer = optimisticId !== undefined;
     const batchContext: BatchContext = {
       addedObjects: new Set(),
       modifiedObjects: new Set(),
       modifiedLists: new Set(),
       createLayerIfNeeded: () => {
-        if (!layerCreated) {
-          this.#optimisticLayer = this.#optimisticLayer.addLayer();
-          layerCreated = true;
+        if (needsLayer) {
+          this.#topLayer = this.#topLayer.addLayer(optimisticId);
+          needsLayer = false;
         }
       },
-      optimisticWrite: optimistic,
+      optimisticWrite: !!optimisticId,
       write: (cacheKey, value) => {
-        if (optimistic) batchContext.createLayerIfNeeded();
-        const writeLayer = optimistic
-          ? this.#optimisticLayer
+        const oldTopValue = this.#topLayer.get(cacheKey);
+
+        if (optimisticId) batchContext.createLayerIfNeeded();
+
+        const writeLayer = optimisticId
+          ? this.#topLayer
           : this.#truthLayer;
-        const entry = {
+        const newValue = {
           cacheKey,
           value,
           lastUpdated: Date.now(),
         };
-        writeLayer.set(cacheKey, entry);
 
-        this.#cacheKeyToSubject.get(cacheKey)?.next(entry);
+        writeLayer.set(cacheKey, newValue);
+
+        const newTopValue = this.#topLayer.get(cacheKey);
+
+        if (oldTopValue !== newTopValue) {
+          this.#cacheKeyToSubject.get(cacheKey)?.next(newValue);
+        }
       },
     };
 
@@ -309,9 +368,9 @@ export class Store {
     type: T,
     where: WhereClause<T>,
     values: Osdk.Instance<T>[],
-    optimistic = true,
+    { optimisticId }: UpdateOptions = {},
   ): void {
-    this.#batch({ optimistic }, (b) => {
+    this.#batch({ optimisticId }, (b) => {
       this.#updateList(
         type,
         this.#whereCanonicalizer.canonicalize(where),
@@ -339,7 +398,7 @@ export class Store {
     const listCacheKey = this.#getListCacheKey(type.apiName, where);
 
     // update the list cache
-    const existingList = this.#optimisticLayer.get(listCacheKey);
+    const existingList = this.#topLayer.get(listCacheKey);
     if (existingList && deepEqual(existingList.value, mappedValues)) {
       return;
     }
