@@ -170,7 +170,7 @@ export async function runVersion({
 
   for (const release of releasePlan.releases) {
     const versions = await packageVersionsOrEmptySet(release.name);
-    if (versions.has(release.newVersion)) {
+    if (versions.has(release.newVersion) && release.type !== "none") {
       throw new FailedWithUserMessage(
         `The version ${release.newVersion} of ${release.name} is already published on npm`,
       );
