@@ -43,7 +43,7 @@ async function runTests() {
       await runLegacyExamples();
     }
     if (testSubscriptions) {
-      await runSubscriptionsTest();
+      runSubscriptionsTest();
 
       // we don't need the console flooded with additional things
       return;

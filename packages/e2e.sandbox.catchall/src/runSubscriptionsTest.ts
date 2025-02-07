@@ -25,7 +25,13 @@ import {
 } from "@osdk/e2e.generated.catchall";
 import { client, dsClient } from "./client.js";
 
-export async function runSubscriptionsTest(): Promise<void> {
+export function runSubscriptionsTest(): void {
+  normalSubscription();
+  interfaceSubscription();
+  referenceUpdateSubscription();
+}
+
+function normalSubscription() {
   let counter = 0;
   const subscription = client(OsdkTestObject)
     .subscribe(
@@ -69,7 +75,9 @@ export async function runSubscriptionsTest(): Promise<void> {
       },
       { properties: ["stringProperty"] },
     );
+}
 
+function interfaceSubscription() {
   const interfaceSubscription = client(OsdkTestInterface).subscribe({
     onChange(object) {
       console.log(
@@ -91,7 +99,9 @@ export async function runSubscriptionsTest(): Promise<void> {
       console.error("Error in interface subscription: ", err);
     },
   });
+}
 
+function referenceUpdateSubscription() {
   const mtaBusSubscription = dsClient(
     __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
   ).subscribe(
