@@ -14,20 +14,9 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
-
 export type CacheKey<X extends string, T> = {
   __cacheKey: {
     type: X;
     value: T;
   };
 };
-export type ObjectCacheKey<T extends ObjectOrInterfaceDefinition> = CacheKey<
-  "object",
-  Osdk.Instance<T>
->;
-
-export type ListCacheKey<T extends ObjectOrInterfaceDefinition> = CacheKey<
-  "list",
-  ObjectCacheKey<T>
->;

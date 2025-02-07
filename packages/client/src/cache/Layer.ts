@@ -18,22 +18,47 @@ import type { CacheKey } from "./CacheKey.js";
 
 export class Layer {
   #parent: Layer | undefined;
-  #cache = new WeakMap<CacheKey<string, any>, unknown>();
+  #cache = new WeakMap<CacheKey<string, any>, Entry<any>>();
 
   constructor(parent: Layer | undefined) {
     this.#parent = parent;
   }
 
-  addLayer() {
+  addLayer(): Layer {
     return new Layer(this);
   }
 
-  public get<T>(cacheKey: CacheKey<string, T>): T | undefined {
-    return this.#cache.get(cacheKey) as T | undefined
-      ?? this.#parent?.get(cacheKey) as T | undefined;
+  removeLayer(): Layer {
+    return this.#parent ?? this;
   }
 
-  public set<T>(cacheKey: CacheKey<string, T>, value: T) {
+  public get<K extends CacheKey<string, unknown>>(
+    cacheKey: K,
+  ): Entry<K> | undefined {
+    return this.#cache.get(cacheKey) as Entry<K> | undefined
+      ?? this.#parent?.get(cacheKey) as Entry<K> | undefined;
+  }
+
+  public set<K extends CacheKey<string, unknown>>(
+    cacheKey: K,
+    value: Entry<K>,
+  ): void {
     this.#cache.set(cacheKey, value);
+  }
+}
+
+export class Entry<K extends CacheKey<any, any>> {
+  readonly cacheKey: K;
+  value: K["__cacheKey"]["value"];
+  lastUpdated: number;
+
+  constructor(
+    cacheKey: K,
+    value: K["__cacheKey"]["value"],
+    lastUpdated: number,
+  ) {
+    this.cacheKey = cacheKey;
+    this.value = value;
+    this.lastUpdated = lastUpdated;
   }
 }

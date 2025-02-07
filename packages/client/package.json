@@ -82,9 +82,7 @@
     "type-fest": "^4.18.2",
     "ws": "^8.18.0",
     "rxjs": "^7.8.1",
-    "@wry/trie": "^0.5.0",
-    "@wry/equality": "^0.5.7",
-    "typescript-event-target": "^1.1.1"
+    "@wry/trie": "^0.5.0"
   },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.26.5",
