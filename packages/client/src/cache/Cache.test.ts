@@ -17,6 +17,7 @@
 import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import { apiServer } from "@osdk/shared.test";
 
+import type { Osdk } from "@osdk/api";
 import {
   afterAll,
   afterEach,
@@ -89,6 +90,9 @@ describe(Store, () => {
     let client: Client;
     let cache: Store;
 
+    let employeesAsServerReturns: Osdk.Instance<Employee>[];
+    let mutatedEmployees: Osdk.Instance<Employee>[];
+
     beforeAll(async () => {
       apiServer.listen();
       client = createClient(
@@ -96,6 +100,15 @@ describe(Store, () => {
         $ontologyRid,
         async () => "myAccessToken",
       );
+
+      employeesAsServerReturns = (await client(Employee).fetchPage()).data;
+      mutatedEmployees = [
+        employeesAsServerReturns[0],
+        employeesAsServerReturns[1].$clone({
+          fullName: "foo",
+        }),
+        ...employeesAsServerReturns.slice(2),
+      ];
     });
 
     afterAll(() => {
@@ -111,8 +124,7 @@ describe(Store, () => {
     });
 
     it("basic single object works", async () => {
-      const { data } = await client(Employee).fetchPage();
-      const emp = data[0];
+      const emp = employeesAsServerReturns[0];
 
       // starts empty
       expect(
@@ -137,37 +149,25 @@ describe(Store, () => {
     });
 
     describe(".observeObject (force)", () => {
+      const subFn1 = vitest.fn((e: ObjectEntry<Employee> | undefined) => {});
+      const subFn2 = vitest.fn((e: ObjectEntry<Employee> | undefined) => {});
+
+      beforeEach(async () => {
+        subFn1.mockClear();
+        subFn2.mockClear();
+      });
+
       const likeEmployee50030 = expect.objectContaining({
         $primaryKey: 50030,
         fullName: "John Doe",
       });
 
-      it("fetches and updates one", async () => {
-        const subFn = vitest.fn((e: ObjectEntry<Employee> | undefined) => {});
-        defer(
-          cache.observeObject(Employee, 50030, { mode: "force" }, subFn),
-        );
-
-        expect(subFn).toHaveBeenCalledExactlyOnceWith(undefined);
-        subFn.mockClear();
-
-        await vi.waitFor(() => expect(subFn).toHaveBeenCalled());
-        expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          expect.objectContaining({
-            value: likeEmployee50030,
-          }),
-        );
-      });
-
       it("fetches and updates twice", async () => {
-        const subFn1 = vitest.fn((e: ObjectEntry<Employee> | undefined) => {});
-        const subFn2 = vitest.fn((e: ObjectEntry<Employee> | undefined) => {});
-
         defer(
           cache.observeObject(Employee, 50030, { mode: "force" }, subFn1),
         );
-
-        expect(subFn1).toHaveBeenCalledTimes(1);
+        // initially, there is no data since its loading
+        expect(subFn1).toHaveBeenCalledExactlyOnceWith(undefined);
         subFn1.mockClear();
 
         await vi.waitFor(() => expect(subFn1).toHaveBeenCalled());
@@ -176,7 +176,8 @@ describe(Store, () => {
             value: likeEmployee50030,
           }),
         );
-        const firstLoad = subFn1.mock.calls[0][0]!;
+
+        const firstLoad = subFn1.mock.lastCall?.[0]!;
         subFn1.mockClear();
 
         defer(
@@ -209,6 +210,7 @@ describe(Store, () => {
 
       beforeEach(() => {
         subFn.mockClear();
+
         sub = defer(
           cache.observeObject(Employee, 50030, { mode: "offline" }, subFn),
         );
@@ -218,8 +220,7 @@ describe(Store, () => {
       });
 
       it("does basic observation and unsubscribe", async () => {
-        const { data } = await client(Employee).fetchPage();
-        const emp = data[0];
+        const emp = employeesAsServerReturns[0];
 
         // force an update
         cache.updateObject(emp);
@@ -247,14 +248,13 @@ describe(Store, () => {
       });
 
       it("observes with list update", async () => {
-        const { data } = await client(Employee).fetchPage();
-        const emp = data[0];
+        const emp = employeesAsServerReturns[0];
 
         // force an update
         cache.updateObject(emp.$clone({ fullName: "not the name" }));
         expect(subFn).toHaveBeenCalledTimes(1);
 
-        cache.updateList(Employee, {}, data);
+        cache.updateList(Employee, {}, employeesAsServerReturns);
         expect(subFn).toHaveBeenCalledTimes(2);
 
         expect(subFn.mock.calls[1][0]).toEqual(
@@ -263,82 +263,128 @@ describe(Store, () => {
       });
     });
 
-    describe.todo(".observeList (force)");
+    describe(".observeList", () => {
+      const subFn1 = vitest.fn(
+        (x: ListPayload<Employee> | undefined) => {},
+      );
 
-    describe(".observeList (offline)", () => {
       beforeEach(() => {
         vi.useFakeTimers({});
+        subFn1.mockReset();
       });
       afterEach(() => {
         vi.useRealTimers();
       });
 
-      it("updates with list updates", async () => {
-        const subFn = vitest.fn(
-          (x: ListPayload<Employee> | undefined) => {
-          },
-        );
+      describe("mode=force", () => {
+        it("initial load", async () => {
+          defer(
+            cache.observeList(Employee, {}, { mode: "force" }, subFn1),
+          );
 
-        const { data } = await client(Employee).fetchPage();
-        subscriptions.push(
-          cache.observeList(Employee, {}, { mode: "offline" }, subFn),
-        );
-        expect(subFn).toHaveBeenCalledTimes(0);
+          expect(subFn1).not.toHaveBeenCalled();
+          vitest.runAllTimers();
 
-        cache.updateList(Employee, {}, data);
-        vi.runAllTimers();
+          expect(subFn1).toHaveBeenCalledExactlyOnceWith(undefined);
+          subFn1.mockClear();
 
-        expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          expect.objectContaining({ resolvedList: data }),
-        );
-        subFn.mockClear();
+          await vi.waitFor(() => expect(subFn1).toHaveBeenCalled());
 
-        // list is just now one object
-        cache.updateList(Employee, {}, [data[0]]);
-        vi.runAllTimers();
-
-        expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          expect.objectContaining({ resolvedList: [data[0]] }),
-        );
-      });
-
-      it("updates with different list updates", async () => {
-        const { data } = await client(Employee).fetchPage();
-        const subFn = vitest.fn<
-          (x: ListPayload<Employee> | undefined) => void
-        >();
-        subscriptions.push(
-          cache.observeList(Employee, {}, { mode: "offline" }, subFn),
-        );
-
-        expect(subFn).toHaveBeenCalledTimes(0);
-
-        cache.updateList(Employee, {}, data);
-        vi.runAllTimers();
-
-        expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          expect.objectContaining({ resolvedList: data }),
-        );
-        subFn.mockClear();
-
-        // pretend an object was changed server side
-        // and lets use the 2nd entry to make it more interesting
-        const updatedEmployee = data[1].$clone({
-          fullName: "foo",
+          expect(subFn1).toHaveBeenCalledExactlyOnceWith({
+            listEntry: expect.any(Object),
+            resolvedList: employeesAsServerReturns,
+          });
         });
 
-        // new where === different list
-        cache.updateList(Employee, { employeeId: { $gt: 0 } }, [
-          updatedEmployee,
-        ]);
-        vi.runAllTimers();
+        it("subsequent load", async () => {
+          // Pre-seed with data the server doesn't return
+          cache.updateList(Employee, {}, mutatedEmployees);
+          vitest.runAllTimers();
 
-        // original list updates still
-        expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          expect.objectContaining({
-            resolvedList: [data[0], updatedEmployee, ...data.slice(2)],
-          }),
-        );
+          defer(
+            cache.observeList(Employee, {}, { mode: "force" }, subFn1),
+          );
+          vitest.runAllTimers();
+
+          expect(subFn1).toHaveBeenCalledExactlyOnceWith({
+            listEntry: expect.any(Object),
+            resolvedList: mutatedEmployees,
+          });
+          const firstLoad = subFn1.mock.calls[0][0]!;
+          subFn1.mockClear();
+
+          // list is updated returned from server
+          await vi.waitFor(() => expect(subFn1).toHaveBeenCalled());
+          expect(subFn1).toHaveBeenCalledExactlyOnceWith({
+            listEntry: expect.objectContaining({
+              ...firstLoad.listEntry,
+              lastUpdated: expect.toBeGreaterThan(
+                firstLoad.listEntry.lastUpdated,
+              ),
+            }),
+            resolvedList: employeesAsServerReturns,
+          });
+          const secondLoad = subFn1.mock.calls[0][0]!;
+          subFn1.mockClear();
+        });
+      });
+
+      describe("mode = offline", () => {
+        it("updates with list updates", async () => {
+          subscriptions.push(
+            cache.observeList(Employee, {}, { mode: "offline" }, subFn1),
+          );
+          expect(subFn1).toHaveBeenCalledTimes(0);
+
+          cache.updateList(Employee, {}, employeesAsServerReturns);
+          vi.runAllTimers();
+
+          expect(subFn1).toHaveBeenCalledExactlyOnceWith(
+            expect.objectContaining({ resolvedList: employeesAsServerReturns }),
+          );
+          subFn1.mockClear();
+
+          // list is just now one object
+          cache.updateList(Employee, {}, [employeesAsServerReturns[0]]);
+          vi.runAllTimers();
+
+          expect(subFn1).toHaveBeenCalledExactlyOnceWith(
+            expect.objectContaining({
+              resolvedList: [employeesAsServerReturns[0]],
+            }),
+          );
+        });
+
+        it("updates with different list updates", async () => {
+          subscriptions.push(
+            cache.observeList(Employee, {}, { mode: "offline" }, subFn1),
+          );
+
+          expect(subFn1).toHaveBeenCalledTimes(0);
+
+          cache.updateList(Employee, {}, employeesAsServerReturns);
+          vi.runAllTimers();
+
+          expect(subFn1).toHaveBeenCalledExactlyOnceWith(
+            expect.objectContaining({ resolvedList: employeesAsServerReturns }),
+          );
+          subFn1.mockClear();
+
+          // new where === different list
+          cache.updateList(
+            Employee,
+            { employeeId: { $gt: 0 } },
+            mutatedEmployees,
+          );
+          vi.runAllTimers();
+
+          // original list updates still
+          expect(subFn1).toHaveBeenCalledExactlyOnceWith(
+            expect.objectContaining({
+              resolvedList: mutatedEmployees,
+            }),
+          );
+        });
       });
     });
   });

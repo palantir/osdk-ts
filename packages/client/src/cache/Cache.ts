@@ -165,6 +165,22 @@ export class Store {
     );
     const subject = this.getSubject(listCacheKey);
 
+    if (options.mode === "force") {
+      const objectSet = (this.#client(type) as ObjectSet<ObjectTypeDefinition>)
+        .where(where);
+
+      objectSet.fetchPage().then((res) => {
+        this.updateList(type, where, res.data);
+      }, (err: unknown) => {
+        // eslint-disable-next-line no-console
+        console.error("Error fetching list", {
+          type,
+          where,
+          err,
+        });
+      });
+    }
+
     const ret = subject.pipe(
       mergeMap(listEntry => {
         if (listEntry == null) return of(undefined);
