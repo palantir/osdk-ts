@@ -14,7 +14,7 @@ import {
 import React, { useCallback, useState } from "react";
 import { useWidgetContext } from "./context.js";
 
-export const App: React.FC = () => {
+export const Widget: React.FC = () => {
   const { parameters, emitEvent } = useWidgetContext();
   const { headerText, todoItems } = parameters.values;
   const [newTodoItem, setNewTodoItem] = useState("");
