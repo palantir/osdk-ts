@@ -376,6 +376,43 @@ export interface DataValueWireToClient {
 }
 
 // @public (undocumented)
+export namespace DerivedProperty {
+    	// Warning: (ae-forgotten-export) The symbol "Aggregatable" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export interface AggregateBuilder<
+    		Q extends ObjectOrInterfaceDefinition,
+    		CONSTRAINED extends boolean
+    	> extends Builder<Q, CONSTRAINED>, Aggregatable<Q> {}
+    	// Warning: (ae-forgotten-export) The symbol "Filterable" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "Pivotable" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export interface Builder<
+    		Q extends ObjectOrInterfaceDefinition,
+    		CONSTRAINED extends boolean
+    	> extends Filterable<Q, CONSTRAINED>, Pivotable<Q, CONSTRAINED> {}
+    	// (undocumented)
+    export type Clause<Q extends ObjectOrInterfaceDefinition> = { [key: string]: Selector<Q, SimplePropertyDef> };
+    	// (undocumented)
+    export type Selector<
+    		Q extends ObjectOrInterfaceDefinition,
+    		T extends SimplePropertyDef
+    	> = (baseObjectSet: DerivedProperty.Builder<Q, false>) => SelectorResult<T>;
+    	// Warning: (ae-forgotten-export) The symbol "SimplePropertyDef" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export type SelectorResult<T extends SimplePropertyDef> = { type: T };
+    	// Warning: (ae-forgotten-export) The symbol "Selectable" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export interface SelectPropertyBuilder<
+    		Q extends ObjectOrInterfaceDefinition,
+    		CONSTRAINED extends boolean
+    	> extends AggregateBuilder<Q, CONSTRAINED>, Selectable<Q> {}
+}
+
+// @public (undocumented)
 export const DistanceUnitMapping: {
     	centimeter: "CENTIMETERS";
     	centimeters: "CENTIMETERS";
@@ -670,6 +707,18 @@ export namespace ObjectMetadata {
 // @public (undocumented)
 export type ObjectOrInterfaceDefinition = ObjectTypeDefinition | InterfaceDefinition;
 
+// @public (undocumented)
+export namespace ObjectOrInterfaceDefinition {
+    	// (undocumented)
+    export type WithDerivedProperties<
+    		K extends ObjectOrInterfaceDefinition,
+    		D extends Record<string, SimplePropertyDef>
+    	> = { __DefinitionMetadata: {
+            		properties: { [T in keyof D] : SimplePropertyDef.ToPropertyDef<D[T]> };
+            		props: { [T in keyof D] : SimplePropertyDef.ToRuntimeProperty<D[T]> };
+            	} } & K;
+}
+
 // Warning: (ae-forgotten-export) The symbol "BaseQueryDataTypeDefinition" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -680,38 +729,15 @@ export interface ObjectQueryDataType<T_Target extends ObjectTypeDefinition = nev
     object: string;
 }
 
-// Warning: (ae-forgotten-export) The symbol "MinimalObjectSet" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ObjectSetCleanedTypes" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ExtractRdp" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "MergeObjectSet" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export interface ObjectSet<
 	Q extends ObjectOrInterfaceDefinition = any,
-	_UNUSED = any
-> extends MinimalObjectSet<Q> {
-    	// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    readonly aggregate: <AO extends AggregateOpts<Q>>(req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>) => Promise<AggregationsResults<Q, AO>>;
-    	readonly fetchOne: Q extends ObjectTypeDefinition ? <
-    		const L extends PropertyKeys<Q>,
-    		const R extends boolean,
-    		const S extends false | "throw" = NullabilityAdherence.Default
-    	>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<Osdk.Instance<Q, ExtractOptions<R, S>, L>> : never;
-    	readonly fetchOneWithErrors: Q extends ObjectTypeDefinition ? <
-    		L extends PropertyKeys<Q>,
-    		R extends boolean,
-    		S extends false | "throw" = NullabilityAdherence.Default
-    	>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<Result<Osdk.Instance<Q, ExtractOptions<R, S>, L>>> : never;
-    	readonly intersect: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
-    	readonly pivotTo: <L extends LinkNames<Q>>(type: L) => CompileTimeMetadata<LinkedType<Q, L>>["objectSet"];
-    	readonly subscribe: <const P extends PropertyKeys<Q>>(listener: ObjectSetListener<Q, P>, opts?: ObjectSetListenerOptions<Q, P>) => { unsubscribe: () => void };
-    	readonly subtract: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
-    	readonly union: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
-}
+	UNUSED_OR_RDP extends ObjectSet<Q, any> | Record<string, SimplePropertyDef> = ObjectSet<Q, any>
+> extends ObjectSetCleanedTypes<Q, ExtractRdp<UNUSED_OR_RDP>, MergeObjectSet<Q, UNUSED_OR_RDP>> {}
 
 // @public (undocumented)
 export interface ObjectSetListener<
@@ -788,8 +814,9 @@ export namespace Osdk {
     export type Instance<
     		Q extends ObjectOrInterfaceDefinition,
     		OPTIONS extends never | "$rid" = never,
-    		P extends PropertyKeys<Q> = PropertyKeys<Q>
-    	> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P>> & {
+    		P extends PropertyKeys<Q> = PropertyKeys<Q>,
+    		R extends Record<string, SimplePropertyDef> = {}
+    	> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
         		readonly $link: Q extends { linksType?: any } ? Q["linksType"] : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q> : never;
         		readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P>>;
         		readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(updatedObject?: Osdk.Instance<Q, any, NEW_PROPS> | { [K in NEW_PROPS]? : CompileTimeMetadata<Q>["props"][K] }) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>;
@@ -868,7 +895,10 @@ export interface PropertyDef<
 }
 
 // @public (undocumented)
-export type PropertyKeys<O extends ObjectOrInterfaceDefinition> = keyof NonNullable<O["__DefinitionMetadata"]>["properties"] & string;
+export type PropertyKeys<
+	O extends ObjectOrInterfaceDefinition,
+	RDPs extends Record<string, SimplePropertyDef> = {}
+> = (keyof NonNullable<O["__DefinitionMetadata"]>["properties"] | keyof RDPs) & string;
 
 // @public
 export interface PropertyValueWireToClient {
@@ -1017,10 +1047,11 @@ export interface SingleLinkAccessor<T extends ObjectTypeDefinition> {
 // @public
 export type SingleOsdkResult<
 	Q extends ObjectOrInterfaceDefinition,
-	L extends PropertyKeys<Q>,
+	L extends PropertyKeys<Q> | (keyof RDPs & string),
 	R extends boolean,
-	S extends NullabilityAdherence
-> = Osdk.Instance<Q, ExtractOptions<R, S>, L>;
+	S extends NullabilityAdherence,
+	RDPs extends Record<string, SimplePropertyDef> = {}
+> = Osdk.Instance<Q, ExtractOptions<R, S>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>;
 
 // Warning: (ae-forgotten-export) The symbol "AggregationKeyDataType" needs to be exported by the entry point index.d.ts
 //
@@ -1109,7 +1140,10 @@ export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<"d
 // Warning: (ae-forgotten-export) The symbol "GetWirePropertyValueFromClient" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type ValidAggregationKeys<Q extends ObjectOrInterfaceDefinition> = keyof ({ [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<GetWirePropertyValueFromClient<CompileTimeMetadata<Q>["properties"][KK]["type"]>>}`]? : any } & { $count?: any });
+export type ValidAggregationKeys<
+	Q extends ObjectOrInterfaceDefinition,
+	R extends "aggregate" | "withPropertiesAggregate" = "aggregate"
+> = keyof ({ [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<GetWirePropertyValueFromClient<CompileTimeMetadata<Q>["properties"][KK]["type"]>, R extends "aggregate" ? true : false>}`]? : any } & { $count?: any });
 
 // @public (undocumented)
 export type ValidBaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "objectType";

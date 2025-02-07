@@ -15,6 +15,10 @@
  */
 
 import type {
+  NumericWithPropAggregateOption,
+  StringWithPropAggregateOption,
+} from "../derivedProperties/WithPropertiesAggregationOptions.js";
+import type {
   GetWirePropertyValueFromClient,
 } from "../mapping/PropertyValueMapping.js";
 import type {
@@ -32,19 +36,23 @@ export type NumericAggregateOption =
   | "approximateDistinct"
   | "exactDistinct";
 
-type AGG_FOR_TYPE<T> = number extends T ? NumericAggregateOption
-  : string extends T ? StringAggregateOption
+type AGG_FOR_TYPE<T, U extends boolean> = number extends T
+  ? U extends true ? NumericAggregateOption : NumericWithPropAggregateOption
+  : string extends T
+    ? U extends true ? StringAggregateOption : StringWithPropAggregateOption
   : never;
 
 export type ValidAggregationKeys<
   Q extends ObjectOrInterfaceDefinition,
+  R extends "aggregate" | "withPropertiesAggregate" = "aggregate",
 > = keyof (
   & {
     [
       KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<
         GetWirePropertyValueFromClient<
           CompileTimeMetadata<Q>["properties"][KK]["type"]
-        >
+        >,
+        R extends "aggregate" ? true : false
       >}`
     ]?: any;
   }
