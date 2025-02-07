@@ -1,5 +1,13 @@
 # @osdk/foundry.datasets
 
+## 2.0.3
+
+### Patch Changes
+
+- Updated dependencies [d67e753]
+  - @osdk/shared.net.platformapi@0.2.2
+  - @osdk/foundry.core@2.0.3
+
 ## 2.0.2
 
 ### Patch Changes

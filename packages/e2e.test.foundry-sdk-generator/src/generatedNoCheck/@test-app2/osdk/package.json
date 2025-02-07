@@ -1,0 +1,22 @@
+{
+    "name": "@test-app2/osdk",
+    "version": "0.0.1",
+    "main": "./index.js",
+    "types": "./index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./index.d.ts",
+            "script": {
+                "types": "./dist/bundle/index.d.ts",
+                "default": "./dist/bundle/index.esm.js"
+            },
+            "default": "./index.js"
+        }
+    },
+    "dependencies": {
+        "@osdk/api": "workspace:^"
+    },
+    "peerDependencies": {
+        "@osdk/client": "workspace:^"
+    }
+}

@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.twoDimensionalAggregationFunction = exports.threeDimensionalAggregationFunction = exports.returnsTimestamp = exports.returnsObject = exports.returnsDate = exports.incrementPersonAge = exports.addOne = void 0;
+var addOne_js_1 = require("./queries/addOne.js");
+Object.defineProperty(exports, "addOne", { enumerable: true, get: function () { return addOne_js_1.addOne; } });
+var incrementPersonAge_js_1 = require("./queries/incrementPersonAge.js");
+Object.defineProperty(exports, "incrementPersonAge", { enumerable: true, get: function () { return incrementPersonAge_js_1.incrementPersonAge; } });
+var returnsDate_js_1 = require("./queries/returnsDate.js");
+Object.defineProperty(exports, "returnsDate", { enumerable: true, get: function () { return returnsDate_js_1.returnsDate; } });
+var returnsObject_js_1 = require("./queries/returnsObject.js");
+Object.defineProperty(exports, "returnsObject", { enumerable: true, get: function () { return returnsObject_js_1.returnsObject; } });
+var returnsTimestamp_js_1 = require("./queries/returnsTimestamp.js");
+Object.defineProperty(exports, "returnsTimestamp", { enumerable: true, get: function () { return returnsTimestamp_js_1.returnsTimestamp; } });
+var threeDimensionalAggregationFunction_js_1 = require("./queries/threeDimensionalAggregationFunction.js");
+Object.defineProperty(exports, "threeDimensionalAggregationFunction", { enumerable: true, get: function () { return threeDimensionalAggregationFunction_js_1.threeDimensionalAggregationFunction; } });
+var twoDimensionalAggregationFunction_js_1 = require("./queries/twoDimensionalAggregationFunction.js");
+Object.defineProperty(exports, "twoDimensionalAggregationFunction", { enumerable: true, get: function () { return twoDimensionalAggregationFunction_js_1.twoDimensionalAggregationFunction; } });

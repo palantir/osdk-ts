@@ -1,0 +1,29 @@
+{
+    "name": "@test-app2/osdk",
+    "version": "0.0.1",
+    "main": "./cjs/index.js",
+    "types": "./cjs/index.d.ts",
+    "exports": {
+        ".": {
+            "script": {
+                "types": "./dist/bundle/index.d.mts",
+                "default": "./dist/bundle/index.mjs"
+            },
+            "require": {
+                "types": "./cjs/index.d.ts",
+                "default": "./cjs/index.js"
+            },
+            "import": {
+                "types": "./esm/index.d.ts",
+                "default": "./esm/index.js"
+            },
+            "types": "./cjs/index.d.ts",
+            "default": "./cjs/index.js"
+        }
+    },
+    "dependencies": {},
+    "peerDependencies": {
+        "@osdk/client": "workspace:^"
+    },
+    "type": "commonjs"
+}
