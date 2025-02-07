@@ -32,4 +32,5 @@ unevaluable
 ungroup
 unioned
 unresolve
+Unsubscribable
 webapi

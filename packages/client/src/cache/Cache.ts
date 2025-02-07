@@ -15,83 +15,86 @@
  */
 
 import type {
-  ObjectOrInterfaceDefinition,
+  ObjectSet,
+  ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
   WhereClause,
 } from "@osdk/api";
 import { Trie } from "@wry/trie";
 import deepEqual from "fast-deep-equal";
-import { Subject } from "rxjs";
+
+import { BehaviorSubject, combineLatest, of } from "rxjs";
+import { auditTime, map, mergeMap } from "rxjs/operators";
 import type { Client } from "../Client.js";
-import type { CacheKey, ListCacheKey, ObjectCacheKey } from "./CacheKey.js";
+import type { CacheKey } from "./CacheKey.js";
 import type { Canonical } from "./Canonical.js";
-import { Layer } from "./Layer.js";
+import { Entry, Layer } from "./Layer.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
-interface TheRealDeal {
-  observeAggregation: () => {
-    loading: boolean;
-    data: any;
-  };
-  observeList: () => void;
-  observeObject: () => void;
+export interface Unsubscribable {
+  unsubscribe: () => void;
 }
 
-interface Observation {
-  type: "object" | "list" | "aggregation";
-  apiName: string;
-  where: WhereClause<any>;
+export interface ListPayload<T extends ObjectTypeDefinition> {
+  listEntry: ListEntry<T>;
+  resolvedList: Array<Osdk.Instance<any, never, string> | undefined>;
 }
 
-interface BatchResult {
-  addedObjects: Map<ObjectCacheKey<any>, Osdk.Instance<any>>;
-  modifiedObjects: Map<ObjectCacheKey<any>, Osdk.Instance<any>>;
-  needsLayer: boolean;
-}
+interface BatchContext {
+  addedObjects: Set<ObjectCacheKey<any>>;
+  modifiedObjects: Set<ObjectCacheKey<any>>;
+  modifiedLists: Set<ListCacheKey<any>>;
+  createLayerIfNeeded: () => void;
+  optimisticWrite: boolean;
 
-function createBatchResult(): BatchResult {
-  return {
-    addedObjects: new Map(),
-    modifiedObjects: new Map(),
-    needsLayer: true,
-  };
-}
-
-export interface ObservableObject<T extends ObjectOrInterfaceDefinition> {
-  subscribe: (fn: (value: Osdk.Instance<T>) => void) => () => void;
-}
-
-class ObservableObjectImpl<T extends ObjectOrInterfaceDefinition> {
-  lastValue?: Osdk.Instance<T>;
-
-  constructor(
-    private subject: Subject<Osdk.Instance<T>>,
-    lastValue?: Osdk.Instance<T>,
-  ) {
-    this.lastValue = lastValue;
-  }
-
-  subscribe = (fn: (value: Osdk.Instance<T>) => void) => {
-    const sub = this.subject.subscribe(fn);
-    return () => sub.unsubscribe();
-  };
+  write: <K extends CacheKey<string, any>>(k: K, v: Entry<K>["value"]) => void;
 }
 
 interface Options {
+  mode: "offline" | "force";
 }
 
-interface ObjectEntry {
-  value: Osdk.Instance<any>;
-  lastUpdated: number;
-}
+export interface ObjectEntry<T extends ObjectTypeDefinition>
+  extends Entry<ObjectCacheKey<T>>
+{}
 
-let count = 0;
+export interface ListEntry<T extends ObjectTypeDefinition>
+  extends Entry<ListCacheKey<T>>
+{}
+
+export interface ObjectCacheKey<T extends ObjectTypeDefinition>
+  extends
+    CacheKey<
+      "object",
+      Osdk.Instance<T>
+    >
+{}
+
+export interface ListCacheKey<T extends ObjectTypeDefinition> extends
+  CacheKey<
+    "list",
+    {
+      entries: ObjectCacheKey<T>[];
+      // TODO: add pagination
+    }
+  >
+{}
+
+type SubFn<X> = (x: X | undefined) => void;
+
+/*
+  Notes:
+    - Subjects are one per type per store (by cache key)
+    - Data is one per layer per cache key
+*/
+
+let cacheKeyNum = 0;
 export class Store {
   #cacheKeys = new Trie<CacheKey<string, any>>(false, (x) => {
     return {
       x,
-      count: count++,
+      cacheKeyNum: cacheKeyNum++,
     } as unknown as CacheKey<string, any>;
   });
   #whereCanonicalizer = new WhereClauseCanonicalizer();
@@ -99,53 +102,109 @@ export class Store {
   #optimisticLayer: Layer;
   #client: Client;
 
-  #cachedKeyToSubject = new WeakMap<CacheKey<string, any>, Subject<any>>();
+  #cacheKeyToSubject = new WeakMap<
+    CacheKey<string, any>,
+    BehaviorSubject<Entry<any> | undefined>
+  >();
 
   constructor(client: Client) {
     this.#client = client;
     this.#optimisticLayer = this.#truthLayer;
   }
 
-  #getSubject<T>(cacheKey: CacheKey<string, T>): Subject<T> {
-    let subject = this.#cachedKeyToSubject.get(cacheKey);
-    if (!subject) {
-      subject = new Subject();
-      this.#cachedKeyToSubject.set(cacheKey, subject);
-    }
-    return subject;
+  removeLayer(): void {
+    this.#optimisticLayer = this.#optimisticLayer.removeLayer();
   }
 
-  public observeObject<T extends ObjectOrInterfaceDefinition>(
+  protected getSubject = <KEY extends CacheKey<string, any>>(
+    cacheKey: KEY,
+  ): BehaviorSubject<Entry<KEY> | undefined> => {
+    let subject = this.#cacheKeyToSubject.get(cacheKey);
+    if (!subject) {
+      subject = new BehaviorSubject(this.#optimisticLayer.get(cacheKey));
+      this.#cacheKeyToSubject.set(cacheKey, subject);
+    }
+
+    return subject;
+  };
+
+  public observeObject<T extends ObjectTypeDefinition>(
     type: T,
     pk: PrimaryKeyType<T>,
     options: Options,
-  ): ObservableObject<T> {
+    subFn: SubFn<ObjectEntry<T>>,
+  ): Unsubscribable {
     const objectCacheKey = this.#getObjectCacheKey(type.apiName, pk);
-    const obj = this.#optimisticLayer.get(objectCacheKey);
-
-    const subject = this.#getSubject(objectCacheKey);
-    return new ObservableObjectImpl(subject, obj);
+    const sub = this.getSubject(objectCacheKey)
+      .subscribe(subFn);
+    if (options.mode === "force") {
+      const q = this.#client(type) as ObjectSet<ObjectTypeDefinition>;
+      q.fetchOne(pk).then((res) => {
+        this.updateObject(res);
+      }, (err: unknown) => {
+        // eslint-disable-next-line no-console
+        console.error("Error fetching object", {
+          type,
+          pk,
+          err,
+        });
+      });
+    }
+    return { unsubscribe: () => sub.unsubscribe() };
   }
 
-  public updateObject<T extends ObjectOrInterfaceDefinition>(
+  public observeList<T extends ObjectTypeDefinition>(
+    type: T,
+    where: WhereClause<T>,
+    options: Options,
+    subFn: SubFn<ListPayload<T>>,
+  ): Unsubscribable {
+    const listCacheKey = this.#getListCacheKey(
+      type.apiName,
+      this.#whereCanonicalizer.canonicalize(where),
+    );
+    const subject = this.getSubject(listCacheKey);
+
+    const ret = subject.pipe(
+      mergeMap(listEntry => {
+        if (listEntry == null) return of(undefined);
+        return combineLatest({
+          listEntry: of(listEntry),
+          resolvedList: combineLatest(
+            (listEntry?.value.entries ?? []).map(cacheKey =>
+              this.getSubject(cacheKey).pipe(
+                map(objectEntry => objectEntry?.value),
+              )
+            ),
+          ),
+        }).pipe(map(x => x.listEntry == null ? undefined : x));
+      }),
+      // like throttle but returns the tail
+      auditTime(0),
+    ).subscribe(subFn);
+
+    return { unsubscribe: () => ret.unsubscribe() };
+  }
+
+  public updateObject<T extends ObjectTypeDefinition>(
     obj: Osdk.Instance<T>,
     optimistic = true,
   ): Osdk.Instance<T> {
-    return this.#batch((batch) => {
-      return this.#updateObject(obj, optimistic, batch);
-    }).result;
+    return this.#batch({ optimistic }, (batch) => {
+      return this.#updateObject(obj, batch);
+    }).retVal;
   }
 
-  public getObject<T extends ObjectOrInterfaceDefinition>(
+  public getObject<T extends ObjectTypeDefinition>(
     type: T,
     pk: string | number,
   ): Osdk.Instance<T> | undefined {
     const objectCacheKey = this.#getObjectCacheKey(type.apiName, pk);
-    const obj = this.#optimisticLayer.get(objectCacheKey);
-    return obj as Osdk.Instance<T> | undefined;
+    const objEntry = this.#optimisticLayer.get(objectCacheKey);
+    return objEntry?.value as Osdk.Instance<T> | undefined;
   }
 
-  #getObjectCacheKey<T extends ObjectOrInterfaceDefinition>(
+  #getObjectCacheKey<T extends ObjectTypeDefinition>(
     apiName: T["apiName"],
     pk: PrimaryKeyType<T>,
   ): ObjectCacheKey<T> {
@@ -156,7 +215,7 @@ export class Store {
     ]) as ObjectCacheKey<T>;
   }
 
-  #getListCacheKey<T extends ObjectOrInterfaceDefinition>(
+  #getListCacheKey<T extends ObjectTypeDefinition>(
     apiName: T["apiName"],
     where: Canonical<WhereClause<T>>,
   ): ListCacheKey<T> {
@@ -167,10 +226,9 @@ export class Store {
     ]) as ListCacheKey<T>;
   }
 
-  #updateObject<T extends ObjectOrInterfaceDefinition>(
+  #updateObject<T extends ObjectTypeDefinition>(
     obj: Osdk.Instance<T>,
-    optimistic: boolean,
-    batchResult: BatchResult,
+    batch: BatchContext,
   ): Osdk.Instance<T> {
     const objectCacheKey = this.#getObjectCacheKey(
       obj.$apiName,
@@ -183,72 +241,95 @@ export class Store {
       return existing;
     }
 
-    if (optimistic && batchResult.needsLayer) {
-      this.#optimisticLayer = this.#optimisticLayer.addLayer();
-      batchResult.needsLayer = false;
-    }
-
-    const writeLayer = optimistic ? this.#optimisticLayer : this.#truthLayer;
-    writeLayer.set(objectCacheKey, obj);
+    batch.write(objectCacheKey, obj);
 
     if (existing) {
-      batchResult.modifiedObjects.set(objectCacheKey, obj);
+      batch.modifiedObjects.add(objectCacheKey);
     } else {
-      batchResult.addedObjects.set(objectCacheKey, obj);
+      batch.addedObjects.add(objectCacheKey);
     }
 
     return obj;
   }
 
-  #batch = <X>(batchFn: (batchResult: BatchResult) => X) => {
-    const batchResult = createBatchResult();
+  #batch = <X>(
+    { optimistic }: { optimistic: boolean },
+    batchFn: (batchContext: BatchContext) => X,
+  ) => {
+    let layerCreated = false;
+    const batchContext: BatchContext = {
+      addedObjects: new Set(),
+      modifiedObjects: new Set(),
+      modifiedLists: new Set(),
+      createLayerIfNeeded: () => {
+        if (!layerCreated) {
+          this.#optimisticLayer = this.#optimisticLayer.addLayer();
+          layerCreated = true;
+        }
+      },
+      optimisticWrite: optimistic,
+      write: (cacheKey, value) => {
+        if (optimistic) batchContext.createLayerIfNeeded();
+        const writeLayer = optimistic
+          ? this.#optimisticLayer
+          : this.#truthLayer;
+        const entry = {
+          cacheKey,
+          value,
+          lastUpdated: Date.now(),
+        };
+        writeLayer.set(cacheKey, entry);
 
-    const result = batchFn(batchResult);
+        this.#cacheKeyToSubject.get(cacheKey)?.next(entry);
+      },
+    };
 
-    batchResult.addedObjects.forEach((obj, key) => {
-      this.#cachedKeyToSubject.get(key)?.next(obj);
-    });
-    batchResult.modifiedObjects.forEach((obj, key) => {
-      this.#cachedKeyToSubject.get(key)?.next(obj);
-    });
+    const retVal = batchFn(batchContext);
 
-    return { batchResult, result };
+    return { batchResult: batchContext, retVal: retVal };
   };
 
-  public updateList<T extends ObjectOrInterfaceDefinition>(
+  public updateList<T extends ObjectTypeDefinition>(
     type: T,
     where: WhereClause<T>,
     values: Osdk.Instance<T>[],
     optimistic = true,
   ): void {
-    this.#batch((b) => {
-      if (optimistic) {
-        this.#optimisticLayer = this.#optimisticLayer.addLayer();
-      }
-
-      // update the cache for any object that has changed
-      // and save the mapped values to return
-      const mappedValues = values.map(v => {
-        this.#updateObject(v, optimistic, b);
-        return this.#getObjectCacheKey(v.$apiName, v.$primaryKey);
-      });
-
-      const listCacheKey = this.#getListCacheKey(
-        type.apiName,
+    this.#batch({ optimistic }, (b) => {
+      this.#updateList(
+        type,
         this.#whereCanonicalizer.canonicalize(where),
+        values,
+        b,
       );
-      // update the list cache
-      const layer = optimistic ? this.#optimisticLayer : this.#truthLayer;
-      const _existingList = layer.get(listCacheKey);
-      // TODO don't update the list if it hasn't changed
-      layer.set(listCacheKey, mappedValues);
-
-      return undefined as any;
     });
   }
-}
 
-interface List<T extends ObjectOrInterfaceDefinition> {
-  type: "list";
-  objectRefs: Set<ObjectCacheKey<T>>;
+  #updateList<T extends ObjectTypeDefinition>(
+    type: T,
+    where: Canonical<WhereClause<T>>,
+    values: Array<Osdk.Instance<T> | ObjectEntry<T>>,
+    batch: BatchContext,
+  ): void {
+    // update the cache for any object that has changed
+    // and save the mapped values to return
+    const mappedValues = values.map(v => {
+      if (v instanceof Entry) return v.cacheKey;
+
+      this.#updateObject(v, batch);
+      return this.#getObjectCacheKey(v.$apiName, v.$primaryKey);
+    });
+
+    const listCacheKey = this.#getListCacheKey(type.apiName, where);
+
+    // update the list cache
+    const existingList = this.#optimisticLayer.get(listCacheKey);
+    if (existingList && deepEqual(existingList.value, mappedValues)) {
+      return;
+    }
+
+    batch.write(listCacheKey, { entries: mappedValues });
+
+    return undefined as any;
+  }
 }
