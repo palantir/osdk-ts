@@ -1,0 +1,9 @@
+export { actionTakesObjectSet, createOffice, createOfficeAndEmployee, moveOffice } from './ontology/actions.js';
+export * as $Actions from './ontology/actions.js';
+export { FooInterface } from './ontology/interfaces.js';
+export * as $Interfaces from './ontology/interfaces.js';
+export { Employee, equipment, objectTypeWithAllPropertyTypes, ObjectWithTimestampPrimaryKey, Office, } from './ontology/objects.js';
+export * as $Objects from './ontology/objects.js';
+export { addOne, incrementPersonAge, returnsDate, returnsObject, returnsTimestamp, threeDimensionalAggregationFunction, twoDimensionalAggregationFunction, } from './ontology/queries.js';
+export * as $Queries from './ontology/queries.js';
+export { $ontologyRid } from './OntologyMetadata.js';

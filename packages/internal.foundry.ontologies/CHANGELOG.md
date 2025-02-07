@@ -1,5 +1,15 @@
 # @osdk/internal.foundry.ontologies
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [d67e753]
+  - @osdk/shared.net.platformapi@0.2.2
+  - @osdk/shared.net@1.12.3
+  - @osdk/internal.foundry.core@0.1.3
+  - @osdk/api@1.9.3
+
 ## 0.1.2
 
 ### Patch Changes

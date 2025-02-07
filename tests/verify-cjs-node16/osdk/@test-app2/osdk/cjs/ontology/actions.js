@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.moveOffice = exports.createOfficeAndEmployee = exports.createOffice = exports.actionTakesObjectSet = void 0;
+var actionTakesObjectSet_js_1 = require("./actions/actionTakesObjectSet.js");
+Object.defineProperty(exports, "actionTakesObjectSet", { enumerable: true, get: function () { return actionTakesObjectSet_js_1.actionTakesObjectSet; } });
+var createOffice_js_1 = require("./actions/createOffice.js");
+Object.defineProperty(exports, "createOffice", { enumerable: true, get: function () { return createOffice_js_1.createOffice; } });
+var createOfficeAndEmployee_js_1 = require("./actions/createOfficeAndEmployee.js");
+Object.defineProperty(exports, "createOfficeAndEmployee", { enumerable: true, get: function () { return createOfficeAndEmployee_js_1.createOfficeAndEmployee; } });
+var moveOffice_js_1 = require("./actions/moveOffice.js");
+Object.defineProperty(exports, "moveOffice", { enumerable: true, get: function () { return moveOffice_js_1.moveOffice; } });
