@@ -86,7 +86,7 @@ function expectSingleObjectCallAndClear<T extends ObjectTypeDefinition>(
   value: Osdk.Instance<T>,
 ) {
   expect(subFn).toHaveBeenCalledExactlyOnceWith(
-    expect.objectContaining({ value }),
+    expect.objectContaining({ value: { instance: value } }),
   );
   subFn.mockClear();
 }
@@ -159,7 +159,11 @@ describe(Store, () => {
       expect(emp).toBe(result);
 
       // getting the object now matches the result
-      expect(cache.getObject(Employee, emp.$primaryKey)).toBe(result);
+      expect(cache.getObject(Employee, emp.$primaryKey)).toEqual(
+        expect.objectContaining({
+          instance: result,
+        }),
+      );
 
       const updatedEmpFromCache = cache.updateObject(
         emp.$clone({ fullName: "new name" }),
@@ -167,8 +171,10 @@ describe(Store, () => {
       expect(updatedEmpFromCache).not.toBe(emp);
 
       // getting it again is the updated object
-      expect(cache.getObject(Employee, emp.$primaryKey)).toBe(
-        updatedEmpFromCache,
+      expect(cache.getObject(Employee, emp.$primaryKey)).toEqual(
+        expect.objectContaining({
+          instance: updatedEmpFromCache,
+        }),
       );
     });
 
@@ -291,7 +297,7 @@ describe(Store, () => {
           ),
         );
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          expect.objectContaining({ value: emp }),
+          expect.objectContaining({ value: { instance: emp } }),
         );
         subFn.mockClear();
 
@@ -303,7 +309,7 @@ describe(Store, () => {
         });
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
           expect.objectContaining({
-            value: optimisticEmployee,
+            value: { instance: optimisticEmployee },
           }),
         );
         subFn.mockClear();
@@ -320,7 +326,9 @@ describe(Store, () => {
         cache.removeLayer("1");
 
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          expect.objectContaining({ value: truthUpdatedEmployee }),
+          expect.objectContaining({
+            value: { instance: truthUpdatedEmployee },
+          }),
         );
       });
     });
@@ -350,7 +358,7 @@ describe(Store, () => {
         await vi.waitFor(() => expect(subFn1).toHaveBeenCalled());
         expect(subFn1).toHaveBeenCalledExactlyOnceWith(
           expect.objectContaining({
-            value: likeEmployee50030,
+            value: { instance: likeEmployee50030 },
           }),
         );
 
@@ -402,7 +410,7 @@ describe(Store, () => {
         // force an update
         cache.updateObject(emp);
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          expect.objectContaining({ value: emp }),
+          expect.objectContaining({ value: { instance: emp } }),
         );
         subFn.mockClear();
 
@@ -410,7 +418,9 @@ describe(Store, () => {
         cache.updateObject(emp.$clone({ fullName: "new name" }));
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
           expect.objectContaining({
-            value: expect.objectContaining({ fullName: "new name" }),
+            value: {
+              instance: expect.objectContaining({ fullName: "new name" }),
+            },
           }),
         );
         subFn.mockClear();
@@ -435,7 +445,7 @@ describe(Store, () => {
         expect(subFn).toHaveBeenCalledTimes(2);
 
         expect(subFn.mock.calls[1][0]).toEqual(
-          expect.objectContaining({ value: emp }),
+          expect.objectContaining({ value: { instance: emp } }),
         );
       });
     });
