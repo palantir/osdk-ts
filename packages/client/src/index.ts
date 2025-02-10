@@ -23,7 +23,6 @@ export type {
   ActionValidationResponse,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-  Attachment,
   InterfaceDefinition,
   ObjectMetadata,
   ObjectSet,
