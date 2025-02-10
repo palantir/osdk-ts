@@ -1,4 +1,4 @@
-import { $Actions, $Objects, $Queries } from "@osdk/e2e.generated.catchall";
+import { $Actions, $Objects, $Queries } from "{{osdkPackage}}";
 import {
   Box,
   Button,
@@ -14,7 +14,7 @@ import {
 import React, { useCallback, useState } from "react";
 import { useWidgetContext } from "./context.js";
 
-export const App: React.FC = () => {
+export const Widget: React.FC = () => {
   const { parameters, emitEvent } = useWidgetContext();
   const { headerText, todoItems } = parameters.values;
   const [newTodoItem, setNewTodoItem] = useState("");
@@ -48,7 +48,7 @@ export const App: React.FC = () => {
               {parameters.state === "loading"
                   || parameters.state === "not-started"
                 ? <Skeleton>Hello, world!</Skeleton>
-                : headerText ?? "example-widget-react-sdk-2.x"}
+                : headerText ?? "{{project}}"}
             </Heading>
 
             <Table.Root>
