@@ -18,6 +18,7 @@ import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
+import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { ExtractOptions, IsNever, Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { NullabilityAdherence } from "./FetchPageArgs.js";
@@ -60,10 +61,16 @@ export type FetchPageResult<
  */
 export type SingleOsdkResult<
   Q extends ObjectOrInterfaceDefinition,
-  L extends PropertyKeys<Q>,
+  L extends PropertyKeys<Q> | (keyof RDPs & string),
   R extends boolean,
   S extends NullabilityAdherence,
-> = Osdk.Instance<Q, ExtractOptions<R, S>, L>;
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> = Osdk.Instance<
+  Q,
+  ExtractOptions<R, S>,
+  PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
+  { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+>;
 
 export type IsAny<T> = unknown extends T
   ? [keyof T] extends [never] ? false : true

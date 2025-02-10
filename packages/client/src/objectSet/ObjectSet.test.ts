@@ -555,6 +555,231 @@ describe("ObjectSet", () => {
     });
   });
 
+  describe("Derived Properties Object Set", () => {
+    it("does not allow aggregate or selectProperty before a link type is selected", () => {
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          // @ts-expect-error
+          base.aggregate("employeeId:exactDistinct"),
+      });
+
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          // @ts-expect-error
+          base.selectProperty("employeeId"),
+      });
+    });
+
+    it("does not allow selectProperty when a many link was selected at any point", () => {
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) => {
+          // @ts-expect-error
+          base.pivotTo("peeps").selectProperty("employeeId");
+
+          // @ts-expect-error
+          base.pivotTo("lead").pivotTo("peeps").selectProperty("employeeId");
+
+          return base.pivotTo("lead").selectProperty("employeeId");
+        },
+      });
+    });
+
+    it("enforces a return only of correct type", () => {
+      client(Employee).withProperties({
+        // @ts-expect-error
+        "derivedPropertyName": (base) => {
+          return base.pivotTo("peeps");
+        },
+        // @ts-expect-error
+        "derivedPropertyName2": (base) => {
+          return { incorrect: "type" };
+        },
+      });
+    });
+
+    // Executed code fails since we're providing bad strings to the function
+    it.fails("correctly narrows types of aggregate function", () => {
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) => {
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("notAProperty:sum");
+
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate(":avg");
+
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("employeeId:notAnOp");
+
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("");
+
+          base.pivotTo("lead").aggregate("employeeId:collectList");
+
+          return base.pivotTo("lead").aggregate("employeeId:sum");
+        },
+      });
+    });
+
+    // Executed code fails since we're providing bad strings to the function
+    it("correctly narrows types of options for aggregate functions", () => {
+      const objectSet = client(Employee).withProperties({
+        "derivedPropertyName": (base) => {
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("employeeId:approximateDistinct", {
+            limit: 1,
+          });
+
+          base.pivotTo("lead").aggregate("employeeId:collectList", {
+            limit: 1,
+          });
+
+          base.pivotTo("lead").aggregate("employeeId:collectSet", { limit: 1 });
+
+          base.pivotTo("lead").aggregate("employeeId:collectList", {
+            // @ts-expect-error
+            percentile: 1,
+          });
+
+          return base.pivotTo("lead").aggregate(
+            "employeeId:approximatePercentile",
+            { percentile: 0.5 },
+          );
+        },
+      });
+
+      expectTypeOf(objectSet).branded.toEqualTypeOf<
+        ObjectSet<
+          Employee,
+          { derivedPropertyName: "double" | undefined }
+        >
+      >();
+    });
+
+    it("correctly narrows types of selectProperty function", () => {
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) => {
+          // @ts-expect-error
+          base.pivotTo("lead").selectProperty("notAProperty");
+
+          return base.pivotTo("lead").selectProperty("employeeStatus");
+        },
+      }) satisfies ObjectSet<
+        Employee,
+        {
+          "derivedPropertyName": "stringTimeseries" | undefined;
+        }
+      >;
+    });
+
+    it("propagates derived property type to future object set operations with correct types", () => {
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").aggregate("employeeId:sum"),
+        // @ts-expect-error
+      }).where({ "notAProperty": { "$eq": 3 } });
+
+      const numericAggregationObjectSet = client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").aggregate("employeeId:sum"),
+      }).where({ "derivedPropertyName": { "$eq": 3 } });
+
+      expectTypeOf(numericAggregationObjectSet).toEqualTypeOf<
+        ObjectSet<Employee, {
+          derivedPropertyName: "double" | undefined;
+        }>
+      >();
+
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").aggregate("employeeId:collectList"),
+      }).where({ "derivedPropertyName": { "$isNull": false } })
+        // @ts-expect-error
+        .where({ "derivedPropertyName": { "$eq": [1, 2] } });
+
+      const setAggregationObjectSet = client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").aggregate("fullName:collectSet"),
+      });
+      setAggregationObjectSet.where({
+        "derivedPropertyName": { "$isNull": false },
+      });
+
+      setAggregationObjectSet.where({
+        // @ts-expect-error
+        "derivedPropertyName": { "$eq": [1, 2] },
+      });
+      expectTypeOf(setAggregationObjectSet).toEqualTypeOf<
+        ObjectSet<Employee, {
+          derivedPropertyName: "string"[] | undefined;
+        }>
+      >();
+
+      const selectPropertyObjectSet = client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("employeeId"),
+      }).where({ "derivedPropertyName": { "$eq": 3 } });
+
+      expectTypeOf(selectPropertyObjectSet).toEqualTypeOf<
+        ObjectSet<Employee, {
+          derivedPropertyName: "integer";
+        }>
+      >();
+
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("startDate"),
+      }).where({ "derivedPropertyName": { "$eq": "datetimeFilter" } });
+    });
+
+    it("correctly types multiple property definitions in one clause", () => {
+      const objectSet = client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").aggregate("employeeId:sum"),
+        "derivedPropertyName2": (base) =>
+          base.pivotTo("lead").selectProperty("fullName"),
+      }).where({ "derivedPropertyName": { "$eq": 3 } })
+        .where({ "derivedPropertyName2": { "$eq": "name" } });
+
+      expectTypeOf(objectSet).toEqualTypeOf<
+        ObjectSet<Employee, {
+          derivedPropertyName: "double" | undefined;
+          derivedPropertyName2: "string" | undefined;
+        }>
+      >();
+    });
+
+    it("ensures other properties are consistently typed", () => {
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("employeeId"),
+      }).where({ "fullName": { "$eq": "A" } });
+
+      client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("employeeId"),
+      }).where({ "employeeId": { "$eq": 2 } });
+    });
+
+    it("allows fetching derived properties with correctly typed Osdk.Instance types", async () => {
+      const objectWithRdp = await client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("employeeId"),
+      }).fetchOne(50035);
+
+      expectTypeOf(objectWithRdp.derivedPropertyName).toEqualTypeOf<
+        number
+      >();
+      expect(objectWithRdp.derivedPropertyName).toBe(1);
+
+      const objectWithUndefinedRdp = await client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("employeeId"),
+      }).fetchOne(50036);
+
+      expect(objectWithUndefinedRdp.derivedPropertyName).toBeUndefined();
+    });
+  });
+
   describe.each(["fetchOne", "fetchOneWithErrors"] as const)("%s", (k) => {
     describe("strictNonNull: false", () => {
       describe("includeRid: true", () => {
