@@ -81,7 +81,10 @@ export interface ObjectCacheKey<T extends ObjectTypeDefinition>
   extends
     CacheKey<
       "object",
-      Osdk.Instance<T>
+      {
+        instance: Osdk.Instance<T>;
+        invalidating?: boolean;
+      }
     >
 {}
 
@@ -235,7 +238,7 @@ export class Store {
           resolvedList: combineLatest(
             (listEntry?.value.entries ?? []).map(cacheKey =>
               this.getSubject(cacheKey).pipe(
-                map(objectEntry => objectEntry?.value),
+                map(objectEntry => objectEntry?.value.instance),
               )
             ),
           ),
@@ -303,7 +306,7 @@ export class Store {
       return existing;
     }
 
-    batch.write(objectCacheKey, obj);
+    batch.write(objectCacheKey, { instance: obj });
 
     if (existing) {
       batch.modifiedObjects.add(objectCacheKey);
