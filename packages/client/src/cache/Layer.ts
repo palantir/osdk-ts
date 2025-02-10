@@ -30,7 +30,7 @@ import { WeakMapWithEntries } from "./WeakMapWithEntries.js";
 
 export class Layer {
   #parent: Layer | undefined;
-  #cache = new WeakMapWithEntries<CacheKey<string, any>, Entry<any>>();
+  #cache = new WeakMapWithEntries<CacheKey<string, any, any>, Entry<any>>();
   #layerId: unknown;
 
   constructor(parent: Layer | undefined, layerId: unknown) {
@@ -58,18 +58,18 @@ export class Layer {
     return this.#parent ?? this;
   }
 
-  entries(): IterableIterator<[CacheKey<string, any>, Entry<any>]> {
+  entries(): IterableIterator<[CacheKey<string, any, any>, Entry<any>]> {
     return this.#cache.entries();
   }
 
-  public get<K extends CacheKey<string, unknown>>(
+  public get<K extends CacheKey<string, unknown, any>>(
     cacheKey: K,
   ): Entry<K> | undefined {
     return this.#cache.get(cacheKey) as Entry<K> | undefined
       ?? this.#parent?.get(cacheKey) as Entry<K> | undefined;
   }
 
-  public set<K extends CacheKey<string, unknown>>(
+  public set<K extends CacheKey<string, unknown, any>>(
     cacheKey: K,
     value: Entry<K>,
   ): void {
@@ -77,10 +77,11 @@ export class Layer {
   }
 }
 
-export class Entry<K extends CacheKey<any, any>> {
+export class Entry<K extends CacheKey<any, any, any>> {
   readonly cacheKey: K;
   value: K["__cacheKey"]["value"];
   lastUpdated: number;
+  status: "init" | "loading" | "loaded" | "error";
 
   constructor(
     cacheKey: K,
@@ -90,5 +91,6 @@ export class Entry<K extends CacheKey<any, any>> {
     this.cacheKey = cacheKey;
     this.value = value;
     this.lastUpdated = lastUpdated;
+    this.status = "init";
   }
 }
