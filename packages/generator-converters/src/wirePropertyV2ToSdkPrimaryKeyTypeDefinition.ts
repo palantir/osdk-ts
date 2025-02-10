@@ -47,6 +47,7 @@ export function wirePropertyV2ToSdkPrimaryKeyTypeDefinition(
     case "geotimeSeriesReference":
     case "cipherText":
     case "mediaReference":
+    case "vector":
     case "struct":
     case "cipherText":
       throw new Error(

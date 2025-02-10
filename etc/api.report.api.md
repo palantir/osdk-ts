@@ -707,6 +707,7 @@ export interface ObjectSet<
     		S extends false | "throw" = NullabilityAdherence.Default
     	>(primaryKey: PrimaryKeyType<Q>, options?: SelectArg<Q, L, R, S>) => Promise<Result<Osdk.Instance<Q, ExtractOptions<R, S>, L>>> : never;
     	readonly intersect: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
+    	readonly nearestNeighbors: (query: string | number[], numNeighbors: number, property: VectorPropertyKeys<Q>) => this;
     	readonly pivotTo: <L extends LinkNames<Q>>(type: L) => CompileTimeMetadata<LinkedType<Q, L>>["objectSet"];
     	readonly subscribe: <const P extends PropertyKeys<Q>>(listener: ObjectSetListener<Q, P>, opts?: ObjectSetListenerOptions<Q, P>) => { unsubscribe: () => void };
     	readonly subtract: (...objectSets: ReadonlyArray<CompileTimeMetadata<Q>["objectSet"]>) => this;
@@ -802,6 +803,7 @@ export type OsdkBase<Q extends ObjectOrInterfaceDefinition> = {
     	readonly $objectType: string;
     	readonly $primaryKey: PrimaryKeyType<Q>;
     	readonly $title: string | undefined;
+    	readonly $score?: number | undefined;
 };
 
 // @public @deprecated (undocumented)
@@ -867,8 +869,10 @@ export interface PropertyDef<
     type: T;
 }
 
+// Warning: (ae-forgotten-export) The symbol "Properties" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export type PropertyKeys<O extends ObjectOrInterfaceDefinition> = keyof NonNullable<O["__DefinitionMetadata"]>["properties"] & string;
+export type PropertyKeys<O extends ObjectOrInterfaceDefinition> = keyof Properties<O> & string;
 
 // @public
 export interface PropertyValueWireToClient {
@@ -912,6 +916,8 @@ export interface PropertyValueWireToClient {
     stringTimeseries: TimeSeriesProperty<string>;
     	// (undocumented)
     timestamp: string;
+    	// (undocumented)
+    vector: number[];
 }
 
 // Warning: (ae-forgotten-export) The symbol "PrimitiveDataType" needs to be exported by the entry point index.d.ts
@@ -1006,7 +1012,7 @@ export type SelectArgToKeys<
 > = A extends SelectArg<Q, never> ? PropertyKeys<Q> : A["$select"] extends readonly string[] ? A["$select"][number] : PropertyKeys<Q>;
 
 // @public (undocumented)
-export type SimpleWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
+export type SimpleWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference" | "vector";
 
 // @public (undocumented)
 export interface SingleLinkAccessor<T extends ObjectTypeDefinition> {
@@ -1113,6 +1119,12 @@ export type ValidAggregationKeys<Q extends ObjectOrInterfaceDefinition> = keyof 
 
 // @public (undocumented)
 export type ValidBaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "objectType";
+
+// @public (undocumented)
+export type VectorPropertyKeys<O extends ObjectOrInterfaceDefinition> = keyof { [K in keyof Properties<O> as Properties<O>[K]["type"] extends VectorType ? K : never] : any } & string;
+
+// @public (undocumented)
+export type VectorType = Extract<SimpleWirePropertyTypes, "vector">;
 
 // Warning: (ae-forgotten-export) The symbol "VersionString" needs to be exported by the entry point index.d.ts
 //
