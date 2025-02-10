@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-export type CacheKey<X extends string, T> = {
+export type CacheKey<X extends string, T_StoreValue, T_Query> = {
   __cacheKey: {
     type: X;
-    value: T;
+    value: T_StoreValue;
+    query: T_Query;
   };
 };

@@ -86,7 +86,7 @@ function expectSingleObjectCallAndClear<T extends ObjectTypeDefinition>(
   value: Osdk.Instance<T>,
 ) {
   expect(subFn).toHaveBeenCalledExactlyOnceWith(
-    expect.objectContaining({ value: { instance: value } }),
+    expect.objectContaining({ value: { data: value } }),
   );
   subFn.mockClear();
 }
@@ -155,17 +155,18 @@ describe(Store, () => {
         cache.getObject(Employee, emp.$primaryKey),
       ).toBeUndefined();
 
-      const result = cache.updateObject(emp);
+      const result = cache.updateObject(Employee, emp);
       expect(emp).toBe(result);
 
       // getting the object now matches the result
       expect(cache.getObject(Employee, emp.$primaryKey)).toEqual(
         expect.objectContaining({
-          instance: result,
+          data: result,
         }),
       );
 
       const updatedEmpFromCache = cache.updateObject(
+        Employee,
         emp.$clone({ fullName: "new name" }),
       );
       expect(updatedEmpFromCache).not.toBe(emp);
@@ -173,7 +174,7 @@ describe(Store, () => {
       // getting it again is the updated object
       expect(cache.getObject(Employee, emp.$primaryKey)).toEqual(
         expect.objectContaining({
-          instance: updatedEmpFromCache,
+          data: updatedEmpFromCache,
         }),
       );
     });
@@ -181,7 +182,7 @@ describe(Store, () => {
     describe("optimistic updates", () => {
       it("rolls back objects", async () => {
         const emp = employeesAsServerReturns[0];
-        cache.updateObject(emp); // pre-seed the cache with the "real" value
+        cache.updateObject(Employee, emp); // pre-seed the cache with the "real" value
 
         const subFn = vitest.fn((e: ObjectEntry<Employee> | undefined) => {});
         defer(
@@ -196,7 +197,7 @@ describe(Store, () => {
         expectSingleObjectCallAndClear(subFn, emp);
 
         // update with an optimistic write
-        cache.updateObject(emp.$clone({ fullName: "new name" }), {
+        cache.updateObject(Employee, emp.$clone({ fullName: "new name" }), {
           optimisticId: "1",
         });
         expectSingleObjectCallAndClear(
@@ -212,6 +213,7 @@ describe(Store, () => {
 
       it("rolls back to an updated real value", async () => {
         vi.useFakeTimers();
+
         cache.updateList(Employee, {}, employeesAsServerReturns); // pre-seed the cache with the "real" value
 
         const emp = employeesAsServerReturns[0];
@@ -242,7 +244,7 @@ describe(Store, () => {
         const optimisticEmployee = emp.$clone({ fullName: "new name" });
 
         // update with an optimistic write
-        cache.updateObject(optimisticEmployee, {
+        cache.updateObject(Employee, optimisticEmployee, {
           optimisticId: "1",
         });
 
@@ -285,7 +287,7 @@ describe(Store, () => {
 
       it("rolls back to an updated real value via list", async () => {
         const emp = employeesAsServerReturns[0];
-        cache.updateObject(emp); // pre-seed the cache with the "real" value
+        cache.updateObject(Employee, emp); // pre-seed the cache with the "real" value
 
         const subFn = vitest.fn((e: ObjectEntry<Employee> | undefined) => {});
         defer(
@@ -297,19 +299,19 @@ describe(Store, () => {
           ),
         );
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          expect.objectContaining({ value: { instance: emp } }),
+          expect.objectContaining({ value: { data: emp } }),
         );
         subFn.mockClear();
 
         const optimisticEmployee = emp.$clone({ fullName: "new name" });
 
         // update with an optimistic write
-        cache.updateObject(optimisticEmployee, {
+        cache.updateObject(Employee, optimisticEmployee, {
           optimisticId: "1",
         });
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
           expect.objectContaining({
-            value: { instance: optimisticEmployee },
+            value: { data: optimisticEmployee },
           }),
         );
         subFn.mockClear();
@@ -317,7 +319,7 @@ describe(Store, () => {
         const truthUpdatedEmployee = emp.$clone({
           fullName: "real update",
         });
-        cache.updateObject(truthUpdatedEmployee);
+        cache.updateObject(Employee, truthUpdatedEmployee);
 
         // we shouldn't expect an update because the top layer has a value
         expect(subFn).not.toHaveBeenCalled();
@@ -327,7 +329,46 @@ describe(Store, () => {
 
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
           expect.objectContaining({
-            value: { instance: truthUpdatedEmployee },
+            value: { data: truthUpdatedEmployee },
+          }),
+        );
+      });
+    });
+
+    describe(".invalidateObject", () => {
+      it("triggers an update", async () => {
+        const emp = employeesAsServerReturns[0];
+        const staleEmp = emp.$clone({ fullName: "stale" });
+        cache.updateObject(Employee, staleEmp);
+
+        const subFn = vitest.fn((e: ObjectEntry<Employee> | undefined) => {});
+        defer(
+          cache.observeObject(
+            Employee,
+            emp.$primaryKey,
+            { mode: "offline" },
+            subFn,
+          ),
+        );
+
+        expectSingleObjectCallAndClear(subFn, staleEmp);
+
+        // invalidate
+        cache.invalidateObject(Employee, staleEmp.$primaryKey);
+
+        expect(subFn).toHaveBeenCalledExactlyOnceWith(
+          expect.objectContaining({
+            value: { data: staleEmp },
+            status: "loading",
+          }),
+        );
+        subFn.mockClear();
+
+        await vi.waitFor(() => expect(subFn).toHaveBeenCalled());
+
+        expect(subFn).toHaveBeenCalledExactlyOnceWith(
+          expect.objectContaining({
+            value: { data: emp },
           }),
         );
       });
@@ -358,11 +399,12 @@ describe(Store, () => {
         await vi.waitFor(() => expect(subFn1).toHaveBeenCalled());
         expect(subFn1).toHaveBeenCalledExactlyOnceWith(
           expect.objectContaining({
-            value: { instance: likeEmployee50030 },
+            value: { data: likeEmployee50030 },
           }),
         );
 
         const firstLoad = subFn1.mock.lastCall?.[0]!;
+
         subFn1.mockClear();
 
         defer(
@@ -408,18 +450,18 @@ describe(Store, () => {
         const emp = employeesAsServerReturns[0];
 
         // force an update
-        cache.updateObject(emp);
+        cache.updateObject(Employee, emp);
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          expect.objectContaining({ value: { instance: emp } }),
+          expect.objectContaining({ value: { data: emp } }),
         );
         subFn.mockClear();
 
         // force again
-        cache.updateObject(emp.$clone({ fullName: "new name" }));
+        cache.updateObject(Employee, emp.$clone({ fullName: "new name" }));
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
           expect.objectContaining({
             value: {
-              instance: expect.objectContaining({ fullName: "new name" }),
+              data: expect.objectContaining({ fullName: "new name" }),
             },
           }),
         );
@@ -429,6 +471,7 @@ describe(Store, () => {
 
         // force again but no subscription update
         cache.updateObject(
+          Employee,
           emp.$clone({ fullName: "new name 2" }),
         );
         expect(subFn).not.toHaveBeenCalled();
@@ -438,14 +481,14 @@ describe(Store, () => {
         const emp = employeesAsServerReturns[0];
 
         // force an update
-        cache.updateObject(emp.$clone({ fullName: "not the name" }));
+        cache.updateObject(Employee, emp.$clone({ fullName: "not the name" }));
         expect(subFn).toHaveBeenCalledTimes(1);
 
         cache.updateList(Employee, {}, employeesAsServerReturns);
         expect(subFn).toHaveBeenCalledTimes(2);
 
         expect(subFn.mock.calls[1][0]).toEqual(
-          expect.objectContaining({ value: { instance: emp } }),
+          expect.objectContaining({ value: { data: emp } }),
         );
       });
     });
@@ -475,12 +518,18 @@ describe(Store, () => {
           expect(subFn1).toHaveBeenCalledExactlyOnceWith(undefined);
           subFn1.mockClear();
 
+          // vitest.runOnlyPendingTimers();
+          vitest.advanceTimersByTime(10000);
+
           await vi.waitFor(() => expect(subFn1).toHaveBeenCalled());
 
-          expect(subFn1).toHaveBeenCalledExactlyOnceWith({
-            listEntry: expect.any(Object),
-            resolvedList: employeesAsServerReturns,
-          });
+          expect(subFn1).toHaveBeenCalledExactlyOnceWith(
+            expect.objectContaining({
+              listEntry: expect.any(Object),
+              resolvedList: employeesAsServerReturns,
+              status: "loaded",
+            }),
+          );
         });
 
         it("subsequent load", async () => {
@@ -493,10 +542,13 @@ describe(Store, () => {
           );
           vitest.runOnlyPendingTimers();
 
-          expect(subFn1).toHaveBeenCalledExactlyOnceWith({
-            listEntry: expect.any(Object),
-            resolvedList: mutatedEmployees,
-          });
+          expect(subFn1).toHaveBeenCalledExactlyOnceWith(
+            expect.objectContaining({
+              listEntry: expect.any(Object),
+              resolvedList: mutatedEmployees,
+              status: "loaded",
+            }),
+          );
           const firstLoad = subFn1.mock.calls[0][0]!;
           subFn1.mockClear();
 
@@ -510,6 +562,8 @@ describe(Store, () => {
               ),
             }),
             resolvedList: employeesAsServerReturns,
+            status: "loaded",
+            fetchMore: expect.any(Function),
           });
           const secondLoad = subFn1.mock.calls[0][0]!;
           subFn1.mockClear();
@@ -572,6 +626,42 @@ describe(Store, () => {
             }),
           );
         });
+      });
+    });
+
+    describe(".fetchMore", () => {
+      it("works in the solo case", async () => {
+        const subFn = vitest.fn(
+          (x: ListPayload<Employee> | undefined) => {},
+        );
+        defer(cache.observeList(
+          Employee,
+          {},
+          { mode: "force", pageSize: 1 },
+          subFn,
+        ));
+
+        expect(subFn).not.toHaveBeenCalled();
+        await vi.waitFor(() => expect(subFn).toHaveBeenCalled());
+
+        expect(subFn).toHaveBeenCalledExactlyOnceWith(
+          expect.objectContaining({
+            resolvedList: employeesAsServerReturns.slice(0, 1),
+          }),
+        );
+        const { fetchMore } = subFn.mock.calls[0][0]!;
+        subFn.mockClear();
+
+        void fetchMore();
+
+        await vi.waitFor(() => expect(subFn).toHaveBeenCalledTimes(1));
+
+        expect(subFn).toHaveBeenCalledWith(
+          expect.objectContaining({
+            resolvedList: employeesAsServerReturns.slice(0, 2),
+            status: "loaded",
+          }),
+        );
       });
     });
   });
