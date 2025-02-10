@@ -1,5 +1,11 @@
 # @osdk/create-widget.template.react.v2
 
+## 2.0.0-beta.15
+
+### Minor Changes
+
+- c5f9fe0: Rename widget template component name consistent
+
 ## 2.0.0-beta.14
 
 ## 2.0.0-beta.13

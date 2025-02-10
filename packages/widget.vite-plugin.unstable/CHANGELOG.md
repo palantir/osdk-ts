@@ -1,5 +1,15 @@
 # @osdk/widget.vite-plugin.unstable
 
+## 2.0.0-beta.15
+
+### Minor Changes
+
+- c5f9fe0: Rename widget template component name consistent
+
+### Patch Changes
+
+- @osdk/widget.api.unstable@2.0.0-beta.15
+
 ## 2.0.0-beta.14
 
 ### Minor Changes

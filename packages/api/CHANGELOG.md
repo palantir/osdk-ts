@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.1.0-beta.29
+
+### Minor Changes
+
+- f1145ff: Adds support for runtime derived properties
+
 ## 2.1.0-beta.28
 
 ### Minor Changes
