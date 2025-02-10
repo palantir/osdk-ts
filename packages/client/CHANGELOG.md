@@ -1,5 +1,19 @@
 # @osdk/client
 
+## 2.1.0-beta.29
+
+### Minor Changes
+
+- f1145ff: Adds support for runtime derived properties
+- 8026baf: Update interface support for .subscribe
+
+### Patch Changes
+
+- Updated dependencies [f1145ff]
+  - @osdk/api@2.1.0-beta.29
+  - @osdk/generator-converters@2.1.0-beta.29
+  - @osdk/client.unstable@2.1.0-beta.29
+
 ## 2.1.0-beta.28
 
 ### Minor Changes
