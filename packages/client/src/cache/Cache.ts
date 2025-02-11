@@ -15,22 +15,29 @@
  */
 
 import type {
-  ObjectSet,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
   WhereClause,
 } from "@osdk/api";
 import { Trie } from "@wry/trie";
-import deepEqual from "fast-deep-equal";
-
-import { BehaviorSubject, combineLatest, of } from "rxjs";
-import { auditTime, map, mergeMap } from "rxjs/operators";
+import { BehaviorSubject } from "rxjs";
 import invariant from "tiny-invariant";
 import type { Client } from "../Client.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Canonical } from "./Canonical.js";
-import { Entry, Layer } from "./Layer.js";
+import type { Entry } from "./Layer.js";
+import { Layer } from "./Layer.js";
+import type {
+  ListCacheKey,
+  ListPayload,
+  ListQueryOptions,
+} from "./ListQuery.js";
+import { ListQuery } from "./ListQuery.js";
+import type { ObjectCacheKey, ObjectEntry } from "./ObjectQuery.js";
+import { ObjectQuery } from "./ObjectQuery.js";
+import type { Query } from "./Query.js";
+import type { SubFn } from "./types.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 /*
@@ -46,16 +53,9 @@ export interface Unsubscribable {
   unsubscribe: () => void;
 }
 
-type Status = "init" | "loading" | "loaded" | "error";
+export type Status = "init" | "loading" | "loaded" | "error";
 
-export interface ListPayload<T extends ObjectTypeDefinition> {
-  listEntry: ListEntry<T>;
-  resolvedList: Array<Osdk.Instance<any, never, string> | undefined>;
-  fetchMore: () => Promise<unknown>;
-  status: Status;
-}
-
-interface BatchContext {
+export interface BatchContext {
   addedObjects: Set<ObjectCacheKey<any>>;
   modifiedObjects: Set<ObjectCacheKey<any>>;
   modifiedLists: Set<ListCacheKey<any>>;
@@ -77,411 +77,9 @@ interface UpdateOptions {
   optimisticId?: unknown;
 }
 
-export interface ObjectEntry<T extends ObjectTypeDefinition>
-  extends Entry<ObjectCacheKey<T>>
-{}
-
-export interface ListEntry<T extends ObjectTypeDefinition>
-  extends Entry<ListCacheKey<T>>
-{}
-
-interface StorageData<T> {
+export interface StorageData<T> {
   // status: "loading" | "loaded" | "error" | undefined;
   data: T | undefined;
-}
-
-interface ObjectStorageData<T extends ObjectTypeDefinition>
-  extends StorageData<Osdk.Instance<T>>
-{
-}
-
-interface ListStorageData<T extends ObjectTypeDefinition>
-  extends StorageData<ObjectCacheKey<T>[]>
-{
-}
-
-export interface ObjectCacheKey<T extends ObjectTypeDefinition>
-  extends
-    CacheKey<
-      "object",
-      ObjectStorageData<T>,
-      ObjectQuery<T>
-    >
-{}
-
-export interface ListCacheKey<T extends ObjectTypeDefinition> extends
-  CacheKey<
-    "list",
-    ListStorageData<T>,
-    ListQuery<T>
-  > //
-{}
-
-type SubFn<X> = (x: X | undefined) => void;
-
-interface QueryOptions {
-  dedupeInterval?: number;
-}
-
-abstract class Query<
-  KEY extends CacheKey<string, any, any>,
-  PAYLOAD,
-  O extends QueryOptions,
-> {
-  lastFetchStarted?: number;
-  pendingFetch?: Promise<unknown>;
-  retainCount: number = 0;
-  options: O;
-  cacheKey: KEY;
-  store: Store;
-  abortController?: AbortController;
-
-  constructor(store: Store, opts: O, cacheKey: KEY) {
-    this.options = opts;
-    this.cacheKey = cacheKey;
-    this.store = store;
-  }
-
-  // lastResult(): void {}
-
-  retain(): void {}
-  release(opts: { gcAfter: number }): void {}
-
-  revalidate(force?: boolean): Promise<unknown> {
-    if (force) {
-      this.abortController?.abort();
-    }
-
-    // if we are pending the first page we can just ignore this
-    if (this.pendingFetch) {
-      return this.pendingFetch;
-    }
-
-    if (
-      (this.options.dedupeInterval ?? 0) > 0 && (
-        this.lastFetchStarted != null
-        && Date.now() - this.lastFetchStarted < (this.options.dedupeInterval
-            ?? 0)
-      )
-    ) {
-      return Promise.resolve();
-    }
-
-    this._preFetch();
-
-    this.lastFetchStarted = Date.now();
-    this.pendingFetch = this._fetch().finally(() => {
-      this.pendingFetch = undefined;
-    });
-
-    return Promise.resolve();
-  }
-
-  abstract subscribe(subFn: SubFn<PAYLOAD>): Unsubscribable;
-
-  _preFetch(): void {}
-  abstract _fetch(): Promise<unknown>;
-
-  getSubject(): BehaviorSubject<Entry<KEY> | undefined> {
-    return this.store.getSubject(this.cacheKey);
-  }
-
-  setStatus(
-    status: Status,
-    batch: BatchContext,
-  ): void {
-    const existing = this.store._topLayer.get(this.cacheKey);
-    if (existing?.value.status === status) return;
-
-    batch.write(this.cacheKey, {
-      ...existing?.value ?? { data: undefined },
-    }, status);
-  }
-}
-
-class ObjectQuery<T extends ObjectTypeDefinition> extends Query<
-  ObjectCacheKey<T>,
-  ObjectEntry<T>,
-  QueryOptions
-> {
-  #type: ObjectTypeDefinition;
-  #pk: string | number | boolean;
-  constructor(
-    store: Store,
-    type: ObjectTypeDefinition,
-    pk: PrimaryKeyType<T>,
-    cacheKey: ObjectCacheKey<T>,
-    opts: QueryOptions,
-  ) {
-    super(store, opts, cacheKey);
-    this.#type = type;
-    this.#pk = pk;
-  }
-
-  public subscribe(
-    subFn: SubFn<ObjectEntry<T>>,
-  ): Unsubscribable {
-    const sub = this.getSubject().subscribe(subFn);
-    return { unsubscribe: () => sub.unsubscribe() };
-  }
-
-  async _fetch(): Promise<void> {
-    const objectSet = this.store._client(this.#type) as ObjectSet<
-      ObjectTypeDefinition
-    >;
-    const obj = await objectSet.fetchOne(this.#pk);
-    this.store._batch({}, (batch) => {
-      this.writeToStore(obj as Osdk.Instance<T>, batch);
-    });
-  }
-
-  writeToStore(
-    data: Osdk.Instance<T>,
-    batch: BatchContext,
-  ): Osdk.Instance<T> {
-    const entry = this.store._topLayer.get(this.cacheKey);
-
-    if (entry && deepEqual(data, entry.value.data)) {
-      // must do a "full write" here so that the lastUpdated is updated
-      batch.write(this.cacheKey, { data }, "loaded");
-
-      return entry.value.data as Osdk.Instance<T>;
-    }
-
-    batch.write(this.cacheKey, { data }, "loaded");
-
-    if (entry) {
-      batch.modifiedObjects.add(this.cacheKey);
-    } else {
-      batch.addedObjects.add(this.cacheKey);
-    }
-
-    return data;
-  }
-}
-
-interface ListQueryOptions extends QueryOptions {
-  pageSize?: number;
-}
-
-class ListQuery<T extends ObjectTypeDefinition> extends Query<
-  ListCacheKey<T>,
-  ListPayload<T>,
-  ListQueryOptions
-> {
-  // pageSize?: number; // this is the internal page size. we need to track this properly
-  #client: Client;
-  #type: ObjectTypeDefinition;
-  #whereClause: Canonical<WhereClause<ObjectTypeDefinition>>;
-
-  // this represents the minimum number of results we need to load if we revalidate
-  #minNumResults = 0;
-  #store: Store;
-
-  #nextPageToken?: string;
-
-  pendingPageFetch?: Promise<unknown>;
-
-  entries: ObjectCacheKey<T>[] | undefined;
-
-  constructor(
-    store: Store,
-    type: ObjectTypeDefinition,
-    whereClause: Canonical<WhereClause<ObjectTypeDefinition>>,
-    cacheKey: ListCacheKey<T>,
-    opts: ListQueryOptions,
-  ) {
-    super(store, opts, cacheKey);
-    this.#client = store._client;
-    this.#type = type;
-    this.#whereClause = whereClause;
-    this.#store = store;
-  }
-
-  subscribe(subFn: SubFn<ListPayload<T>>) {
-    const ret = this.#store.getSubject(this.cacheKey).pipe(
-      mergeMap(listEntry => {
-        if (listEntry == null) return of(undefined);
-        return combineLatest({
-          listEntry: of(listEntry),
-          resolvedList: combineLatest(
-            (listEntry?.value.data ?? []).map(cacheKey =>
-              this.#store.getSubject(cacheKey).pipe(
-                map(objectEntry => objectEntry?.value.data),
-              )
-            ),
-          ),
-          fetchMore: of(this.fetchMore),
-          status: of(listEntry.status),
-        }).pipe(map(x => x.listEntry == null ? undefined : x));
-      }),
-      // like throttle but returns the tail
-      auditTime(0),
-    ).subscribe(subFn);
-
-    return { unsubscribe: (): void => ret.unsubscribe() };
-  }
-
-  _preFetch(): void {
-    this.#nextPageToken = undefined;
-  }
-
-  async _fetch(): Promise<void> {
-    const objectSet =
-      (this.#client(this.#type) as ObjectSet<ObjectTypeDefinition>)
-        .where(this.#whereClause);
-
-    while (true) {
-      await this.#fetchPageAndUpdate(
-        objectSet,
-        "loading",
-        this.abortController?.signal,
-      );
-
-      const count = this.#store._truthLayer.get(this.cacheKey)?.value.data
-        ?.length;
-
-      invariant(count != null);
-
-      if (count > this.#minNumResults || this.#nextPageToken == null) {
-        // this.updateList
-        break;
-      }
-    }
-    this.store._batch({}, (batch) => {
-      this.setStatus("loaded", batch);
-    });
-
-    return Promise.resolve();
-  }
-
-  fetchMore = (): Promise<unknown> => {
-    if (this.pendingPageFetch) {
-      return this.pendingPageFetch;
-    }
-
-    if (this.pendingFetch) {
-      this.pendingPageFetch = new Promise(async (res) => {
-        await this.pendingFetch;
-        res(this.fetchMore());
-      });
-      return this.pendingPageFetch;
-    }
-
-    if (this.#nextPageToken == null) {
-      return Promise.resolve();
-    }
-
-    this.store._batch({}, (batch) => {
-      this.setStatus("loading", batch);
-    });
-
-    const objectSet =
-      (this.#client(this.#type) as ObjectSet<ObjectTypeDefinition>)
-        .where(this.#whereClause);
-
-    this.pendingFetch = this.#fetchPageAndUpdate(
-      objectSet,
-      "loaded",
-      this.abortController?.signal,
-    ).finally(() => {
-      this.pendingPageFetch = undefined;
-    });
-    return this.pendingFetch;
-  };
-
-  async #fetchPageAndUpdate(
-    objectSet: ObjectSet,
-    status: Status,
-    signal: AbortSignal | undefined,
-  ) {
-    const append = this.#nextPageToken != null;
-    const { data, nextPageToken } = await objectSet.fetchPage({
-      $nextPageToken: this.#nextPageToken,
-      $pageSize: this.options.pageSize,
-    });
-
-    if (signal?.aborted) {
-      return;
-    }
-
-    this.#nextPageToken = nextPageToken;
-
-    this.#store._batch({}, (batch) => {
-      return this.updateList(data, append, status, batch);
-    });
-
-    return { data };
-  }
-
-  #updateObjects(
-    values: Array<Osdk.Instance<T> | ObjectEntry<T>>,
-    batch: BatchContext,
-  ) {
-    return values.map(v => {
-      if (v instanceof Entry) return v.cacheKey;
-
-      this.#store.getObjectQuery(this.#type, v.$primaryKey as string | number)
-        .writeToStore(v, batch);
-      // this.#store.getObject(this.#type, v.$primaryKey as string | number); // FIXME types
-      return this.#store._getObjectCacheKey(v.$apiName, v.$primaryKey);
-    });
-  }
-
-  updateList(
-    values: Array<Osdk.Instance<T> | ObjectEntry<T>>,
-    append: boolean,
-    status: Status,
-    batch: BatchContext,
-  ): number {
-    // update the cache for any object that has changed
-    // and save the mapped values to return
-    let data = this.#updateObjects(values, batch);
-
-    // update the list cache
-    const existingList = this.#store._topLayer.get(this.cacheKey);
-    if (
-      !append && existingList && deepEqual(existingList.value.data, data)
-    ) {
-      if (existingList.status === status) {
-        this.setStatus(status, batch);
-      }
-      return existingList.value.data!.length;
-    }
-
-    if (append) {
-      data = [...existingList?.value.data ?? [], ...data];
-    }
-
-    batch.write(this.cacheKey, { data }, status);
-    batch.modifiedLists.add(this.cacheKey);
-
-    return data.length;
-  }
-
-  // appendList(
-  //   values: Array<Osdk.Instance<T> | ObjectEntry<T>>,
-  //   batch: BatchContext,
-  // ): void {
-  //   // update the cache for any object that has changed
-  //   // and save the mapped values to return
-  //   const mappedValues = this.#updateObjects(values, batch);
-
-  //   // update the list cache
-  //   const existingList = this.#store._topLayer.get(this.cacheKey);
-  //   if (existingList) {
-  //     const newEntries = [
-  //       ...existingList.value.entries,
-  //       ...mappedValues,
-  //     ];
-
-  //     batch.write(this.cacheKey, { entries: newEntries });
-  //     batch.modifiedLists.add(this.cacheKey);
-  //     return;
-  //   } else {
-  //     batch.write(this.cacheKey, { entries: mappedValues });
-  //   }
-  // }
 }
 
 /*

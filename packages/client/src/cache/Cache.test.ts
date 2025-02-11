@@ -32,8 +32,10 @@ import {
 } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import type { ListPayload, ObjectEntry, Unsubscribable } from "./Cache.js";
+import type { Unsubscribable } from "./Cache.js";
 import { Store } from "./Cache.js";
+import type { ListPayload } from "./ListQuery.js";
+import type { ObjectEntry } from "./ObjectQuery.js";
 
 let subscriptions: Unsubscribable[];
 beforeEach(() => {
