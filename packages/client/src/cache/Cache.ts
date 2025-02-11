@@ -25,7 +25,6 @@ import { BehaviorSubject } from "rxjs";
 import invariant from "tiny-invariant";
 import type { Client } from "../Client.js";
 import type { CacheKey } from "./CacheKey.js";
-import type { Canonical } from "./Canonical.js";
 import type { Entry } from "./Layer.js";
 import { Layer } from "./Layer.js";
 import type {
@@ -115,12 +114,35 @@ export class Store {
 
   #cacheKeyToSubject = new WeakMap<
     CacheKey<string, any, any>,
-    BehaviorSubject<Entry<any> | undefined>
+    BehaviorSubject<Entry<any>>
   >();
+
+  #cacheKeyFactories = new Map<string, (...args: any[]) => CacheKey>();
 
   constructor(client: Client) {
     this._client = client;
     this._topLayer = this._truthLayer;
+    this.registerCacheKeyFactory<ObjectCacheKey>(
+      "object",
+      (apiName, pk) =>
+        this.#cacheKeys.lookupArray(["object", apiName, pk]) as ObjectCacheKey,
+    );
+    this.registerCacheKeyFactory<ListCacheKey>(
+      "list",
+      (apiName, where) =>
+        this.#cacheKeys.lookupArray([
+          "list",
+          apiName,
+          this._whereCanonicalizer.canonicalize(where),
+        ]) as ListCacheKey,
+    );
+  }
+
+  registerCacheKeyFactory<K extends CacheKey>(
+    type: K["type"],
+    factory: (...args: K["__cacheKey"]["args"]) => K,
+  ): void {
+    this.#cacheKeyFactories.set(type, factory);
   }
 
   removeLayer(layerId: unknown): void {
@@ -154,17 +176,39 @@ export class Store {
         // We are going to be pretty lazy here and just re-emit the value.
         // In the future it may benefit us to deep equal check her but I think
         // the subjects are effectively doing this anyway.
-        this.#cacheKeyToSubject.get(k)?.next(currentEntry);
+        this.#cacheKeyToSubject.get(k)?.next(
+          currentEntry ?? {
+            cacheKey: k,
+            status: "init",
+            value: undefined,
+            lastUpdated: 0,
+          },
+        );
       }
     }
   }
 
+  getCacheKey<K extends CacheKey<string, any, any>>(
+    type: K["type"],
+    ...args: K["__cacheKey"]["args"]
+  ): K {
+    const factory = this.#cacheKeyFactories.get(type);
+    invariant(factory, `no cache key factory for type "${type}"`);
+    return factory(...args) as K;
+  }
+
   getSubject = <KEY extends CacheKey<string, any, any>>(
     cacheKey: KEY,
-  ): BehaviorSubject<Entry<KEY> | undefined> => {
+  ): BehaviorSubject<Entry<KEY>> => {
     let subject = this.#cacheKeyToSubject.get(cacheKey);
     if (!subject) {
-      subject = new BehaviorSubject(this._topLayer.get(cacheKey));
+      const initialValue: Entry<KEY> = this._topLayer.get(cacheKey) ?? {
+        cacheKey,
+        status: "init",
+        value: undefined,
+        lastUpdated: 0,
+      };
+      subject = new BehaviorSubject(initialValue);
       this.#cacheKeyToSubject.set(cacheKey, subject);
     }
 
@@ -179,11 +223,12 @@ export class Store {
   ): Unsubscribable {
     const query = this.getObjectQuery(type, pk);
     query.retain();
-    const ret = query.subscribe(subFn);
 
     if (options.mode !== "offline") {
       void query.revalidate(options.mode === "force");
     }
+    const ret = query.subscribe(subFn);
+
     return ret;
   }
 
@@ -193,18 +238,16 @@ export class Store {
     return this.queries.get(cacheKey) as K["__cacheKey"]["query"] | undefined;
   }
 
-  public peekListQuery<T extends ObjectTypeDefinition>(
-    type: T,
-    where: WhereClause<T>,
-    opts: ListQueryOptions,
-  ): ListQuery | undefined {
-    const canonWhere = this._whereCanonicalizer.canonicalize(where);
-    const listCacheKey = this._getListCacheKey(
-      type.apiName,
-      canonWhere,
-    );
-
-    return this.queries.get(listCacheKey) as ListQuery | undefined;
+  #getQuery<K extends CacheKey>(
+    cacheKey: K,
+    createQuery: () => K["__cacheKey"]["query"],
+  ): K["__cacheKey"]["query"] {
+    let query = this.peekQuery(cacheKey);
+    if (!query) {
+      query = createQuery();
+      this.queries.set(cacheKey, query);
+    }
+    return query;
   }
 
   public getListQuery<T extends ObjectTypeDefinition>(
@@ -214,34 +257,35 @@ export class Store {
     peek = false,
   ): ListQuery {
     const canonWhere = this._whereCanonicalizer.canonicalize(where);
-    const listCacheKey = this._getListCacheKey(
+    const listCacheKey = this.getCacheKey<ListCacheKey>(
+      "list",
       type.apiName,
       canonWhere,
     );
 
-    const query = this.queries.get(listCacheKey) as ListQuery | undefined
-      ?? new ListQuery(this, type, canonWhere, listCacheKey, opts);
-    this.queries.set(listCacheKey, query);
-    return query;
+    return this.#getQuery(listCacheKey, () => {
+      return new ListQuery(this, type, canonWhere, listCacheKey, opts);
+    });
   }
 
   public getObjectQuery<T extends ObjectTypeDefinition>(
     type: T,
     pk: PrimaryKeyType<T>,
   ): ObjectQuery {
-    const objectCacheKey = this._getObjectCacheKey(type["apiName"], pk);
+    const objectCacheKey = this.getCacheKey<ObjectCacheKey>(
+      "object",
+      type["apiName"],
+      pk,
+    );
 
-    const query = this.queries.get(objectCacheKey) as ObjectQuery | undefined
-      ?? new ObjectQuery(
+    return this.#getQuery(objectCacheKey, () =>
+      new ObjectQuery(
         this,
         type,
         pk,
         objectCacheKey,
         { dedupeInterval: 0 },
-      );
-    this.queries.set(objectCacheKey, query);
-
-    return query;
+      ));
   }
 
   public observeList<T extends ObjectTypeDefinition>(
@@ -252,11 +296,11 @@ export class Store {
   ): Unsubscribable {
     const query = this.getListQuery(type, where, options);
     query.retain();
-    const ret = query.subscribe(subFn);
 
     if (options.mode !== "offline") {
       void query.revalidate(options.mode === "force");
     }
+    const ret = query.subscribe(subFn);
 
     return ret;
   }
@@ -277,31 +321,13 @@ export class Store {
     type: T,
     pk: string | number,
   ): Osdk.Instance<T> | undefined {
-    const objectCacheKey = this._getObjectCacheKey(type.apiName, pk);
+    const objectCacheKey = this.getCacheKey<ObjectCacheKey>(
+      "object",
+      type.apiName,
+      pk,
+    );
     const objEntry = this._topLayer.get(objectCacheKey);
     return objEntry?.value as Osdk.Instance<T> | undefined;
-  }
-
-  _getObjectCacheKey<T extends ObjectTypeDefinition>(
-    apiName: T["apiName"],
-    pk: PrimaryKeyType<T>,
-  ): ObjectCacheKey {
-    return this.#cacheKeys.lookupArray([
-      "object",
-      apiName,
-      pk,
-    ]) as ObjectCacheKey;
-  }
-
-  _getListCacheKey<T extends ObjectTypeDefinition>(
-    apiName: T["apiName"],
-    where: Canonical<WhereClause<T>>,
-  ): ListCacheKey {
-    return this.#cacheKeys.lookupArray([
-      "list",
-      apiName,
-      where,
-    ]) as ListCacheKey;
   }
 
   _batch = <X>(
@@ -374,20 +400,6 @@ export class Store {
 
     const query = this.getObjectQuery(type, pk);
 
-    const objectCacheKey = this._getObjectCacheKey(type.apiName, pk);
-
-    // mark existing object as stale
-    const existingObj = this._topLayer.get(objectCacheKey);
-    if (existingObj) {
-      this.getSubject(objectCacheKey).next({
-        // sadly the ts-eslint rules continue to create false flags and we are safely spreading because
-        // its just an interface.
-        // eslint-disable-next-line @typescript-eslint/no-misused-spread
-        ...existingObj,
-        status: "loading",
-      });
-    }
-
     void query.revalidate(true);
 
     // potentially trigger updates of the lists that included this object?
@@ -399,8 +411,11 @@ export class Store {
     type: T,
     where: WhereClause<T>,
   ): void {
-    const canonWhere = this._whereCanonicalizer.canonicalize(where);
-    const cacheKey = this._getListCacheKey(type.apiName, canonWhere);
+    const cacheKey = this.getCacheKey<ListCacheKey>(
+      "list",
+      type.apiName,
+      where,
+    );
 
     const query = this.peekQuery(cacheKey);
     if (query) {
