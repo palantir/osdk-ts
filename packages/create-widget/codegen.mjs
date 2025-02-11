@@ -27,12 +27,14 @@ export const TEMPLATES = [
     label: "OSDK React",
     envPrefix: "VITE_",
     buildDirectory: "./dist",
+    requiresOsdk: true,
   },
   {
     id: "minimal-react",
     label: "Minimal React",
     envPrefix: "VITE_",
     buildDirectory: "./dist",
+    requiresOsdk: false,
   },
 ];
 
@@ -69,6 +71,7 @@ fs.writeFileSync(
             label: "${template.label}",
             envPrefix: "${template.envPrefix}",
             buildDirectory: "${template.buildDirectory}",
+            requiresOsdk: ${template.requiresOsdk},
             files: {
               ${v1Name ? `"1.x": getPackageFiles(import("${v1Name}")),` : ""}
               ${v2Name ? `"2.x": getPackageFiles(import("${v2Name}")),` : ""}
