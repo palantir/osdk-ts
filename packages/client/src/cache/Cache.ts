@@ -487,7 +487,7 @@ export class Store {
     const query = this.getObjectQuery(apiName, value.$primaryKey);
 
     return this._batch({ optimisticId }, (batch) => {
-      return query.writeToStore(value, "loading", batch);
+      return query.writeToStore(value, "loaded", batch);
     }).retVal.value;
   }
 
