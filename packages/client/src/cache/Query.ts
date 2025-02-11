@@ -93,10 +93,14 @@ export abstract class Query<
     const existing = batch.read(this.cacheKey);
     if (existing?.status === status) return;
 
-    batch.write(this.cacheKey, {
-      ...existing?.value ?? { data: undefined },
-    }, status);
+    batch.write(this.cacheKey, existing?.value, status);
   }
+
+  abstract writeToStore(
+    data: KEY["__cacheKey"]["value"],
+    status: Status,
+    batch: BatchContext,
+  ): Entry<KEY>;
 }
 export interface QueryOptions {
   dedupeInterval?: number;

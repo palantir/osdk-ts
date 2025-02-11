@@ -104,7 +104,7 @@ export class ListQuery extends Query<
             : combineLatest(
               (listEntry?.value?.data ?? []).map(cacheKey =>
                 this.store.getSubject(cacheKey).pipe(
-                  map(objectEntry => objectEntry?.value.data),
+                  map(objectEntry => objectEntry?.value),
                 )
               ),
             ),
@@ -228,7 +228,7 @@ export class ListQuery extends Query<
       if (v instanceof Entry) return v.cacheKey;
 
       this.store.getObjectQuery(this.#type, v.$primaryKey as string | number)
-        .writeToStore(v, batch);
+        .writeToStore(v, "loaded", batch);
       return this.store.getCacheKey<ObjectCacheKey>(
         "object",
         v.$apiName,
@@ -251,21 +251,26 @@ export class ListQuery extends Query<
 
     // update the list cache
     const existingList = batch.read(this.cacheKey);
-    if (
-      !append && existingList
-      && deepEqual(existingList.value.data, objectCacheKeys)
-    ) {
-      if (existingList.status !== status) {
-        this.setStatus(status, batch);
-      }
-      return existingList;
-    }
 
     if (append) {
       objectCacheKeys = [...existingList?.value.data ?? [], ...objectCacheKeys];
     }
 
-    const ret = batch.write(this.cacheKey, { data: objectCacheKeys }, status);
+    return this.writeToStore({ data: objectCacheKeys }, status, batch);
+  }
+
+  writeToStore(
+    data: ListStorageData,
+    status: Status,
+    batch: BatchContext,
+  ): Entry<ListCacheKey> {
+    const entry = batch.read(this.cacheKey);
+
+    if (entry && deepEqual(data, entry.value)) {
+      return batch.write(this.cacheKey, entry.value, status);
+    }
+
+    const ret = batch.write(this.cacheKey, data, status);
     batch.modifiedLists.add(this.cacheKey);
 
     return ret;

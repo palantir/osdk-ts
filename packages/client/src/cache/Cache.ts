@@ -346,22 +346,6 @@ export class Store {
     return ret;
   }
 
-  public updateObject(
-    apiName: string | ObjectTypeDefinition,
-    value: Osdk.Instance<ObjectTypeDefinition>,
-    { optimisticId }: UpdateOptions = {},
-  ): Osdk.Instance<ObjectTypeDefinition> {
-    if (typeof apiName !== "string") {
-      apiName = apiName.apiName;
-    }
-
-    const query = this.getObjectQuery(apiName, value.$primaryKey);
-
-    return this._batch({ optimisticId }, (batch) => {
-      return query.writeToStore(value, batch);
-    }).retVal;
-  }
-
   public getObject<T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,
     pk: string | number,
@@ -489,6 +473,22 @@ export class Store {
     );
 
     void this.peekQuery(cacheKey)?.revalidate(true);
+  }
+
+  public updateObject(
+    apiName: string | ObjectTypeDefinition,
+    value: Osdk.Instance<ObjectTypeDefinition>,
+    { optimisticId }: UpdateOptions = {},
+  ): Osdk.Instance<ObjectTypeDefinition> {
+    if (typeof apiName !== "string") {
+      apiName = apiName.apiName;
+    }
+
+    const query = this.getObjectQuery(apiName, value.$primaryKey);
+
+    return this._batch({ optimisticId }, (batch) => {
+      return query.writeToStore(value, "loading", batch);
+    }).retVal.value;
   }
 
   public updateList<T extends ObjectTypeDefinition>(

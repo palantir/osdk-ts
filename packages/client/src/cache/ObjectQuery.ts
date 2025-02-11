@@ -22,12 +22,7 @@ import type {
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import { distinctUntilChanged } from "rxjs";
-import type {
-  BatchContext,
-  StorageData,
-  Store,
-  Unsubscribable,
-} from "./Cache.js";
+import type { BatchContext, Status, Store, Unsubscribable } from "./Cache.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Entry } from "./Layer.js";
 import type { QueryOptions } from "./Query.js";
@@ -36,10 +31,7 @@ import type { SubFn } from "./types.js";
 
 export interface ObjectEntry extends Entry<ObjectCacheKey> {}
 
-interface ObjectStorageData
-  extends StorageData<Osdk.Instance<ObjectTypeDefinition>>
-{
-}
+type ObjectStorageData = Osdk.Instance<ObjectTypeDefinition>;
 
 export interface ObjectCacheKey extends
   CacheKey<
@@ -84,21 +76,27 @@ export class ObjectQuery extends Query<
     }) as ObjectSet<ObjectTypeDefinition>;
     const obj = await objectSet.fetchOne(this.#pk);
     this.store._batch({}, (batch) => {
-      this.writeToStore(obj as Osdk.Instance<ObjectTypeDefinition>, batch);
+      this.writeToStore(
+        obj as Osdk.Instance<ObjectTypeDefinition>,
+        "loaded",
+        batch,
+      );
     });
   }
 
   writeToStore(
     data: Osdk.Instance<ObjectTypeDefinition>,
+    status: Status,
     batch: BatchContext,
-  ): Osdk.Instance<ObjectTypeDefinition> {
+  ): Entry<ObjectCacheKey> {
     const entry = batch.read(this.cacheKey);
-    // must do a "full write" here so that the lastUpdated is updated
-    batch.write(this.cacheKey, { data }, "loaded");
 
-    if (entry && deepEqual(data, entry.value.data)) {
-      return entry.value.data as Osdk.Instance<ObjectTypeDefinition>;
+    if (entry && deepEqual(data, entry.value)) {
+      // must do a "full write" here so that the lastUpdated is updated
+      return batch.write(this.cacheKey, entry.value, status);
+      //   return entry.value.data as Osdk.Instance<ObjectTypeDefinition>;
     }
+    const ret = batch.write(this.cacheKey, data, status);
 
     if (entry) {
       batch.modifiedObjects.add(this.cacheKey);
@@ -106,6 +104,6 @@ export class ObjectQuery extends Query<
       batch.addedObjects.add(this.cacheKey);
     }
 
-    return data;
+    return ret;
   }
 }
