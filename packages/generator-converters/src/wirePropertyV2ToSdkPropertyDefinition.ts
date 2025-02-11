@@ -15,8 +15,8 @@
  */
 
 import type {
+  BaseWirePropertyTypes,
   ObjectMetadata,
-  SimpleWirePropertyTypes,
   WirePropertyTypes,
 } from "@osdk/api";
 import type {
@@ -121,11 +121,11 @@ function objectPropertyTypeToSdkPropertyDefinition(
       } else return "sensorTimeseries";
     case "struct": {
       return propertyType.structFieldTypes.reduce(
-        (structMap: Record<string, SimpleWirePropertyTypes>, structField) => {
+        (structMap: Record<string, BaseWirePropertyTypes>, structField) => {
           structMap[structField.apiName] =
             objectPropertyTypeToSdkPropertyDefinition(
               structField.dataType,
-            ) as SimpleWirePropertyTypes;
+            ) as BaseWirePropertyTypes;
           return structMap;
         },
         {},

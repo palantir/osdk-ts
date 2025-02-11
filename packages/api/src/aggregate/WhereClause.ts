@@ -22,7 +22,7 @@ import type {
   CompileTimeMetadata,
   ObjectMetadata,
 } from "../ontology/ObjectTypeDefinition.js";
-import type { SimpleWirePropertyTypes } from "../ontology/WirePropertyTypes.js";
+import type { BaseWirePropertyTypes } from "../ontology/WirePropertyTypes.js";
 import type { IsNever } from "../OsdkObjectFrom.js";
 import type { ArrayFilter } from "./ArrayFilter.js";
 import type { BaseFilter } from "./BaseFilter.js";
@@ -151,7 +151,7 @@ type FilterFor<PD extends ObjectMetadata.Property> = PD["multiplicity"] extends
     ? ArrayFilter<string>
     : (PD["type"] extends boolean ? ArrayFilter<boolean>
       : ArrayFilter<number>))
-  : PD["type"] extends Record<string, SimpleWirePropertyTypes> ?
+  : PD["type"] extends Record<string, BaseWirePropertyTypes> ?
       | StructFilter<PD["type"]>
       | BaseFilter<string>
   : (PD["type"] extends "string" ? StringFilter
@@ -163,10 +163,10 @@ type FilterFor<PD extends ObjectMetadata.Property> = PD["multiplicity"] extends
       ? NumberFilter
     : BaseFilter<string>); // FIXME we need to represent all types
 
-type StructFilterOpts<ST extends Record<string, SimpleWirePropertyTypes>> = {
+type StructFilterOpts<ST extends Record<string, BaseWirePropertyTypes>> = {
   [K in keyof ST]?: FilterFor<{ "type": ST[K] }>;
 };
-type StructFilter<ST extends Record<string, SimpleWirePropertyTypes>> = {
+type StructFilter<ST extends Record<string, BaseWirePropertyTypes>> = {
   [K in keyof ST]: Just<K, StructFilterOpts<ST>>;
 }[keyof ST];
 
