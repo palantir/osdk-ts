@@ -33,27 +33,24 @@ import type { QueryOptions } from "./Query.js";
 import { Query } from "./Query.js";
 import type { SubFn } from "./types.js";
 
-export interface ObjectEntry<T extends ObjectTypeDefinition>
-  extends Entry<ObjectCacheKey<T>>
-{}
+export interface ObjectEntry extends Entry<ObjectCacheKey> {}
 
-interface ObjectStorageData<T extends ObjectTypeDefinition>
-  extends StorageData<Osdk.Instance<T>>
+interface ObjectStorageData
+  extends StorageData<Osdk.Instance<ObjectTypeDefinition>>
 {
 }
 
-export interface ObjectCacheKey<T extends ObjectTypeDefinition>
-  extends
-    CacheKey<
-      "object",
-      ObjectStorageData<T>,
-      ObjectQuery<T>
-    >
+export interface ObjectCacheKey extends
+  CacheKey<
+    "object",
+    ObjectStorageData,
+    ObjectQuery
+  >
 {}
 
-export class ObjectQuery<T extends ObjectTypeDefinition> extends Query<
-  ObjectCacheKey<T>,
-  ObjectEntry<T>,
+export class ObjectQuery extends Query<
+  ObjectCacheKey,
+  ObjectEntry,
   QueryOptions
 > {
   #type: ObjectTypeDefinition;
@@ -61,8 +58,8 @@ export class ObjectQuery<T extends ObjectTypeDefinition> extends Query<
   constructor(
     store: Store,
     type: ObjectTypeDefinition,
-    pk: PrimaryKeyType<T>,
-    cacheKey: ObjectCacheKey<T>,
+    pk: PrimaryKeyType<ObjectTypeDefinition>,
+    cacheKey: ObjectCacheKey,
     opts: QueryOptions,
   ) {
     super(store, opts, cacheKey);
@@ -71,7 +68,7 @@ export class ObjectQuery<T extends ObjectTypeDefinition> extends Query<
   }
 
   public subscribe(
-    subFn: SubFn<ObjectEntry<T>>,
+    subFn: SubFn<ObjectEntry>,
   ): Unsubscribable {
     const sub = this.getSubject().subscribe(subFn);
     return { unsubscribe: () => sub.unsubscribe() };
@@ -83,21 +80,21 @@ export class ObjectQuery<T extends ObjectTypeDefinition> extends Query<
     >;
     const obj = await objectSet.fetchOne(this.#pk);
     this.store._batch({}, (batch) => {
-      this.writeToStore(obj as Osdk.Instance<T>, batch);
+      this.writeToStore(obj as Osdk.Instance<ObjectTypeDefinition>, batch);
     });
   }
 
   writeToStore(
-    data: Osdk.Instance<T>,
+    data: Osdk.Instance<ObjectTypeDefinition>,
     batch: BatchContext,
-  ): Osdk.Instance<T> {
+  ): Osdk.Instance<ObjectTypeDefinition> {
     const entry = this.store._topLayer.get(this.cacheKey);
 
     if (entry && deepEqual(data, entry.value.data)) {
       // must do a "full write" here so that the lastUpdated is updated
       batch.write(this.cacheKey, { data }, "loaded");
 
-      return entry.value.data as Osdk.Instance<T>;
+      return entry.value.data as Osdk.Instance<ObjectTypeDefinition>;
     }
 
     batch.write(this.cacheKey, { data }, "loaded");

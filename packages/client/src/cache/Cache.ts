@@ -56,9 +56,9 @@ export interface Unsubscribable {
 export type Status = "init" | "loading" | "loaded" | "error";
 
 export interface BatchContext {
-  addedObjects: Set<ObjectCacheKey<any>>;
-  modifiedObjects: Set<ObjectCacheKey<any>>;
-  modifiedLists: Set<ListCacheKey<any>>;
+  addedObjects: Set<ObjectCacheKey>;
+  modifiedObjects: Set<ObjectCacheKey>;
+  modifiedLists: Set<ListCacheKey>;
   createLayerIfNeeded: () => void;
   optimisticWrite: boolean;
 
@@ -170,7 +170,7 @@ export class Store {
     type: T,
     pk: PrimaryKeyType<T>,
     options: ObserveOptions,
-    subFn: SubFn<ObjectEntry<T>>,
+    subFn: SubFn<ObjectEntry>,
   ): Unsubscribable {
     const query = this.getObjectQuery(type, pk);
     query.retain();
@@ -184,14 +184,14 @@ export class Store {
     type: T,
     where: WhereClause<T>,
     opts: ListQueryOptions,
-  ): ListQuery<T> {
+  ): ListQuery {
     const canonWhere = this._whereCanonicalizer.canonicalize(where);
     const listCacheKey = this._getListCacheKey(
       type.apiName,
       canonWhere,
     );
 
-    const query = this.queries.get(listCacheKey) as ListQuery<T> | undefined
+    const query = this.queries.get(listCacheKey) as ListQuery | undefined
       ?? new ListQuery(this, type, canonWhere, listCacheKey, opts);
     this.queries.set(listCacheKey, query);
     return query;
@@ -200,10 +200,10 @@ export class Store {
   public getObjectQuery<T extends ObjectTypeDefinition>(
     type: T,
     pk: PrimaryKeyType<T>,
-  ): ObjectQuery<T> {
+  ): ObjectQuery {
     const objectCacheKey = this._getObjectCacheKey(type["apiName"], pk);
 
-    const query = this.queries.get(objectCacheKey) as ObjectQuery<T> | undefined
+    const query = this.queries.get(objectCacheKey) as ObjectQuery | undefined
       ?? new ObjectQuery(
         this,
         type,
@@ -220,7 +220,7 @@ export class Store {
     type: T,
     where: WhereClause<T>,
     options: ObserveOptions & ListQueryOptions,
-    subFn: SubFn<ListPayload<T>>,
+    subFn: SubFn<ListPayload>,
   ): Unsubscribable {
     const query = this.getListQuery(type, where, options);
     query.retain();
@@ -230,11 +230,11 @@ export class Store {
     return ret;
   }
 
-  public updateObject<T extends ObjectTypeDefinition>(
-    type: T,
-    value: Osdk.Instance<T>,
+  public updateObject(
+    type: ObjectTypeDefinition,
+    value: Osdk.Instance<ObjectTypeDefinition>,
     { optimisticId }: UpdateOptions = {},
-  ): Osdk.Instance<T> {
+  ): Osdk.Instance<ObjectTypeDefinition> {
     const query = this.getObjectQuery(type, value.$primaryKey);
 
     return this._batch({ optimisticId }, (batch) => {
@@ -254,23 +254,23 @@ export class Store {
   _getObjectCacheKey<T extends ObjectTypeDefinition>(
     apiName: T["apiName"],
     pk: PrimaryKeyType<T>,
-  ): ObjectCacheKey<T> {
+  ): ObjectCacheKey {
     return this.#cacheKeys.lookupArray([
       "object",
       apiName,
       pk,
-    ]) as ObjectCacheKey<T>;
+    ]) as ObjectCacheKey;
   }
 
   _getListCacheKey<T extends ObjectTypeDefinition>(
     apiName: T["apiName"],
     where: Canonical<WhereClause<T>>,
-  ): ListCacheKey<T> {
+  ): ListCacheKey {
     return this.#cacheKeys.lookupArray([
       "list",
       apiName,
       where,
-    ]) as ListCacheKey<T>;
+    ]) as ListCacheKey;
   }
 
   _batch = <X>(
