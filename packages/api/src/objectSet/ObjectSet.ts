@@ -29,6 +29,7 @@ import type {
 import type { Result } from "../object/Result.js";
 import type { InterfaceDefinition } from "../ontology/InterfaceDefinition.js";
 import type {
+  DerivedObjectOrInterfaceDefinition,
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
@@ -51,7 +52,7 @@ type MergeObjectSet<
   Q extends ObjectOrInterfaceDefinition,
   D extends ObjectSet<Q> | Record<string, SimplePropertyDef> = {},
 > = D extends Record<string, SimplePropertyDef>
-  ? ObjectOrInterfaceDefinition.WithDerivedProperties<Q, D>
+  ? DerivedObjectOrInterfaceDefinition.WithDerivedProperties<Q, D>
   : Q;
 
 type ExtractRdp<
