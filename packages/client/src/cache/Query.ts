@@ -86,8 +86,8 @@ export abstract class Query<
     status: Status,
     batch: BatchContext,
   ): void {
-    const existing = this.store._topLayer.get(this.cacheKey);
-    if (existing?.value.status === status) return;
+    const existing = batch.read(this.cacheKey);
+    if (existing?.status === status) return;
 
     batch.write(this.cacheKey, {
       ...existing?.value ?? { data: undefined },

@@ -71,7 +71,6 @@ export class ListQuery extends Query<
 
   // this represents the minimum number of results we need to load if we revalidate
   #minNumResults = 0;
-  #store: Store;
 
   #nextPageToken?: string;
 
@@ -90,18 +89,17 @@ export class ListQuery extends Query<
     this.#client = store._client;
     this.#type = type;
     this.#whereClause = whereClause;
-    this.#store = store;
   }
 
   subscribe(subFn: SubFn<ListPayload>) {
-    const ret = this.#store.getSubject(this.cacheKey).pipe(
+    const ret = this.store.getSubject(this.cacheKey).pipe(
       mergeMap(listEntry => {
         if (listEntry == null) return of(undefined);
         return combineLatest({
           listEntry: of(listEntry),
           resolvedList: combineLatest(
             (listEntry?.value.data ?? []).map(cacheKey =>
-              this.#store.getSubject(cacheKey).pipe(
+              this.store.getSubject(cacheKey).pipe(
                 map(objectEntry => objectEntry?.value.data),
               )
             ),
@@ -122,24 +120,24 @@ export class ListQuery extends Query<
   }
 
   async _fetch(): Promise<void> {
-    const objectSet =
-      (this.#client(this.#type) as ObjectSet<ObjectTypeDefinition>)
-        .where(this.#whereClause);
+    const objectSet = (this.#client(this.#type))
+      .where(this.#whereClause);
 
     while (true) {
-      await this.#fetchPageAndUpdate(
+      const entry = await this.#fetchPageAndUpdate(
         objectSet,
         "loading",
         this.abortController?.signal,
       );
+      if (!entry) {
+        // we were aborted
+        return;
+      }
 
-      const count = this.#store._truthLayer.get(this.cacheKey)?.value.data
-        ?.length;
-
-      invariant(count != null);
+      invariant(entry.value.data);
+      const count = entry.value.data.length;
 
       if (count > this.#minNumResults || this.#nextPageToken == null) {
-        // this.updateList
         break;
       }
     }
@@ -171,9 +169,8 @@ export class ListQuery extends Query<
       this.setStatus("loading", batch);
     });
 
-    const objectSet =
-      (this.#client(this.#type) as ObjectSet<ObjectTypeDefinition>)
-        .where(this.#whereClause);
+    const objectSet = this.#client(this.#type)
+      .where(this.#whereClause);
 
     this.pendingFetch = this.#fetchPageAndUpdate(
       objectSet,
@@ -189,7 +186,7 @@ export class ListQuery extends Query<
     objectSet: ObjectSet,
     status: Status,
     signal: AbortSignal | undefined,
-  ) {
+  ): Promise<Entry<ListCacheKey> | undefined> {
     const append = this.#nextPageToken != null;
     const { data, nextPageToken } = await objectSet.fetchPage({
       $nextPageToken: this.#nextPageToken,
@@ -202,11 +199,11 @@ export class ListQuery extends Query<
 
     this.#nextPageToken = nextPageToken;
 
-    this.#store._batch({}, (batch) => {
+    const { retVal } = this.store._batch({}, (batch) => {
       return this.updateList(data, append, status, batch);
     });
 
-    return { data };
+    return retVal;
   }
 
   #updateObjects(
@@ -216,10 +213,9 @@ export class ListQuery extends Query<
     return values.map(v => {
       if (v instanceof Entry) return v.cacheKey;
 
-      this.#store.getObjectQuery(this.#type, v.$primaryKey as string | number)
+      this.store.getObjectQuery(this.#type, v.$primaryKey as string | number)
         .writeToStore(v, batch);
-      // this.#store.getObject(this.#type, v.$primaryKey as string | number); // FIXME types
-      return this.#store._getObjectCacheKey(v.$apiName, v.$primaryKey);
+      return this.store._getObjectCacheKey(v.$apiName, v.$primaryKey);
     });
   }
 
@@ -228,29 +224,32 @@ export class ListQuery extends Query<
     append: boolean,
     status: Status,
     batch: BatchContext,
-  ): number {
+  ): Entry<ListCacheKey> {
     // update the cache for any object that has changed
     // and save the mapped values to return
-    let data = this.#updateObjects(values, batch);
+    let objectCacheKeys = this.#updateObjects(values, batch);
+
+    // EA TODO: I think we need to do more here.
 
     // update the list cache
-    const existingList = this.#store._topLayer.get(this.cacheKey);
+    const existingList = batch.read(this.cacheKey);
     if (
-      !append && existingList && deepEqual(existingList.value.data, data)
+      !append && existingList
+      && deepEqual(existingList.value.data, objectCacheKeys)
     ) {
-      if (existingList.status === status) {
+      if (existingList.status !== status) {
         this.setStatus(status, batch);
       }
-      return existingList.value.data!.length;
+      return existingList;
     }
 
     if (append) {
-      data = [...existingList?.value.data ?? [], ...data];
+      objectCacheKeys = [...existingList?.value.data ?? [], ...objectCacheKeys];
     }
 
-    batch.write(this.cacheKey, { data }, status);
+    const ret = batch.write(this.cacheKey, { data: objectCacheKeys }, status);
     batch.modifiedLists.add(this.cacheKey);
 
-    return data.length;
+    return ret;
   }
 }

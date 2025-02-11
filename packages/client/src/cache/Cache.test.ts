@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
+import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import { apiServer } from "@osdk/shared.test";
-
-import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import type { Mock } from "vitest";
 import {
   afterAll,
@@ -370,6 +369,57 @@ describe(Store, () => {
 
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
           expect.objectContaining({
+            value: { data: emp },
+          }),
+        );
+      });
+    });
+
+    describe(".invalidateList", () => {
+      it("triggers an update", async () => {
+        const emp = employeesAsServerReturns[0];
+        const staleEmp = emp.$clone({ fullName: "stale" });
+        cache.updateList(Employee, {}, [staleEmp]);
+
+        const subFn = vitest.fn((e: ObjectEntry | undefined) => {});
+        defer(
+          cache.observeObject(
+            Employee,
+            emp.$primaryKey,
+            { mode: "offline" },
+            subFn,
+          ),
+        );
+        expectSingleObjectCallAndClear(subFn, staleEmp);
+
+        const subListFn = vitest.fn(
+          (x: ListPayload | undefined) => {},
+        );
+        defer(cache.observeList(Employee, {}, { mode: "offline" }, subListFn));
+
+        await vi.waitFor(() => expect(subListFn).toHaveBeenCalled());
+        expect(subListFn).toHaveBeenCalledExactlyOnceWith(
+          expect.objectContaining({
+            resolvedList: [staleEmp],
+          }),
+        );
+        subListFn.mockClear();
+
+        cache.invalidateList(Employee, {});
+
+        await vi.waitFor(() => expect(subListFn).toHaveBeenCalled());
+        expect(subListFn).toHaveBeenCalledExactlyOnceWith(
+          expect.objectContaining({
+            resolvedList: employeesAsServerReturns,
+          }),
+        );
+        subListFn.mockClear();
+
+        await vi.waitFor(() => expect(subFn).toHaveBeenCalled());
+
+        expect(subFn).toHaveBeenCalledExactlyOnceWith(
+          expect.objectContaining({
+            status: "loaded",
             value: { data: emp },
           }),
         );
