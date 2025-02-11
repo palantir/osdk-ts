@@ -45,6 +45,8 @@ import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 /*
     Work still to do:
     - [x] testing for optimistic writes
+    - [x] automatic invalidation of actions
+    - [ ] links
     - [ ] add pagination
     - [ ] sub-selection support
     - [ ] interfaces
@@ -84,8 +86,15 @@ interface UpdateOptions {
 }
 
 export interface StorageData<T> {
-  // status: "loading" | "loaded" | "error" | undefined;
   data: T | undefined;
+}
+
+interface OptimisticUpdateContext {
+  updateObject: (value: Osdk.Instance<ObjectTypeDefinition>) => this;
+}
+
+export interface ApplyActionOptions {
+  optimisticUpdate?: (ctx: OptimisticUpdateContext) => void;
 }
 
 /*
@@ -94,7 +103,6 @@ export interface StorageData<T> {
     - Data is one per layer per cache key
 */
 
-const cacheKeyNum = 0;
 export class Store {
   #cacheKeys = new Trie<CacheKey<string, any, any>>(false, (keys) => {
     return { type: keys[0], otherKeys: keys.slice(1) } as unknown as CacheKey<
@@ -140,11 +148,36 @@ export class Store {
   applyAction: <Q extends ActionDefinition<any>>(
     action: Q,
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
-  ) => Promise<unknown> = (action, args) => {
-    return this._client(action).applyAction(args as any, { $returnEdits: true })
+    opts?: ApplyActionOptions,
+  ) => Promise<unknown> = (action, args, { optimisticUpdate } = {}) => {
+    const optimisticId = optimisticUpdate ? Object.create(null) : undefined;
+    if (optimisticUpdate) {
+      this._batch({ optimisticId }, () => {
+        const self = this;
+        optimisticUpdate({
+          updateObject(value: Osdk.Instance<ObjectTypeDefinition>) {
+            const query = self.getObjectQuery(
+              value.$apiName,
+              value.$primaryKey,
+            );
+
+            self._batch({ optimisticId }, (batch) => {
+              return query.writeToStore(value, "loading", batch);
+            }).retVal.value;
+
+            return this;
+          },
+        });
+      });
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    return this._client(action)
+      .applyAction(args as any, { $returnEdits: true })
       .then(
         (value: ActionEditResponse) => {
           if (value.type === "edits") {
+            // TODO we need an update for deletes
             for (const q of [value.addedObjects, value.modifiedObjects]) {
               if (!q) continue;
               for (const o of q) {
@@ -156,11 +189,13 @@ export class Store {
               this.invalidateList(apiName.toString(), {});
             }
           }
+          return value;
         },
-        (err: any) => {
-          throw err;
-        },
-      );
+      ).finally(() => {
+        if (optimisticId) {
+          this.removeLayer(optimisticId);
+        }
+      });
   };
 
   registerCacheKeyFactory<K extends CacheKey>(

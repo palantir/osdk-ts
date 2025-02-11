@@ -17,13 +17,13 @@
 import type {
   ActionDefinition,
   ActionEditResponse,
-  ActionReturnTypeForOptions,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
   OsdkBase,
 } from "@osdk/api";
-
+import type { DeferredPromise } from "p-defer";
+import pDefer from "p-defer";
 import type { Mock } from "vitest";
 import { afterEach, beforeEach, expect, vi, vitest } from "vitest";
 import type { ActionSignatureFromDef } from "../actions/applyAction.js";
@@ -35,36 +35,44 @@ import type { ObjectEntry } from "./ObjectQuery.js";
 
 export interface MockClientHelper {
   client: Mock<Client> & Client;
-  mockApplyActionOnce: (x: Partial<ActionEditResponse>) => void;
-  mockFetchOneOnce: <X extends Partial<OsdkBase<any>>>(
-    r: X,
-    waitForPromise?: Promise<any>,
-  ) => void;
+
+  mockApplyActionOnce: () => DeferredPromise<Partial<ActionEditResponse>>;
+
+  mockFetchOneOnce: <Q extends ObjectTypeDefinition>() => DeferredPromise<
+    Partial<
+      Osdk.Instance<Q>
+    >
+  >;
 }
 
 export function createClientMockHelper(): MockClientHelper {
   const client = vitest.fn<typeof client>() as unknown as Mock<Client> & Client;
 
-  function mockFetchOneOnce<X extends Partial<OsdkBase<any>>>(
-    r: X,
-    waitForPromise?: Promise<any>,
-  ): void {
+  function mockFetchOneOnce<
+    X extends Partial<OsdkBase<any>>,
+  >(): DeferredPromise<X> {
+    const d = pDefer<X>();
+
     client.mockReturnValueOnce(
       {
         fetchOne: async (a) => {
-          await waitForPromise;
+          const r = await d.promise;
           return { ...r, $primaryKey: a };
         },
       } as Pick<ObjectSet<ObjectTypeDefinition>, "fetchOne">,
     );
+    return d;
   }
 
-  function mockApplyActionOnce(x: Partial<ActionEditResponse>): void {
+  function mockApplyActionOnce(): DeferredPromise<
+    Partial<ActionEditResponse>
+  > {
+    const d = pDefer<Partial<ActionEditResponse>>();
+
     client.mockReturnValueOnce(
       {
-        applyAction: async (
-          a,
-        ): Promise<ActionReturnTypeForOptions<{ $returnEdits: true }>> => {
+        applyAction: async (_args): Promise<ActionEditResponse> => {
+          const x = await d.promise;
           return {
             type: "edits",
             addedLinks: x.addedLinks ?? [],
@@ -80,6 +88,7 @@ export function createClientMockHelper(): MockClientHelper {
         "applyAction"
       >,
     );
+    return d;
   }
 
   return {
@@ -145,10 +154,72 @@ export async function waitForCall(
 function createSubscriptionHelper() {
 }
 
-export function mockSingleSubCallback(): Mock<
-  (e: ObjectEntry | undefined) => void
-> {
-  return vitest.fn((e: ObjectEntry | undefined) => {});
+export function mockSingleSubCallback():
+  & Mock<
+    (e: ObjectEntry | undefined) => void
+  >
+  & {
+    expectLoaded: (value: unknown) => Promise<void>;
+    expectLoading: (value: unknown) => Promise<void>;
+    expectLoadingAndLoaded: (q: {
+      loading?: unknown;
+      loaded: unknown;
+    }) => Promise<void>;
+  }
+{
+  const ret = vitest.fn((e: ObjectEntry | undefined) => {});
+
+  async function expectLoaded(value: unknown) {
+    await waitForCall(ret);
+    // as long as we get the loaded call we are happy
+    expect(ret).toHaveBeenLastCalledWith(
+      cacheEntryContaining({
+        value,
+        status: "loaded",
+      }),
+    );
+    ret.mockClear();
+  }
+
+  async function expectLoading(value: unknown) {
+    await waitForCall(ret);
+    // as long as we get the loaded call we are happy
+    expect(ret).toHaveBeenCalledExactlyOnceWith(
+      cacheEntryContaining({
+        value,
+        status: "loading",
+      }),
+    );
+    ret.mockClear();
+  }
+
+  return Object.assign(ret, {
+    expectLoaded,
+    expectLoading,
+    expectLoadingAndLoaded: async (
+      q: { loading?: unknown; loaded: unknown },
+    ) => {
+      await waitForCall(ret, 2);
+
+      // as long as we get the loaded call we are happy
+      expect(ret).toHaveBeenNthCalledWith(
+        1,
+        cacheEntryContaining({
+          ...("loading" in q ? { value: q.loading } : {}),
+          status: "loading",
+        }),
+      );
+      expect(ret).toHaveBeenNthCalledWith(
+        2,
+        cacheEntryContaining({
+          value: q.loaded,
+          status: "loaded",
+        }),
+      );
+      expect(ret).toHaveBeenCalledTimes(2);
+      ret.mockClear();
+    },
+  });
 }
 
 export function mockListSubCallback(): Mock<
