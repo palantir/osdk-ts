@@ -43,10 +43,7 @@ import type { ExtractOptions, Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 import type { BaseObjectSet } from "./BaseObjectSet.js";
-import type {
-  ObjectSetListener,
-  ObjectSetListenerOptions,
-} from "./ObjectSetListener.js";
+import type { ObjectSetSubscription } from "./ObjectSetListener.js";
 
 type MergeObjectSet<
   Q extends ObjectOrInterfaceDefinition,
@@ -377,8 +374,8 @@ interface Subscribe<
   readonly subscribe: <
     const P extends PropertyKeys<Q>,
   >(
-    listener: ObjectSetListener<Q, P>,
-    opts?: ObjectSetListenerOptions<Q, P>,
+    listener: ObjectSetSubscription.Listener<Q, P>,
+    opts?: ObjectSetSubscription.Options<Q, P>,
   ) => { unsubscribe: () => void };
 }
 

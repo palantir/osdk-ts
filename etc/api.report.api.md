@@ -733,35 +733,37 @@ export interface ObjectSet<
 > extends ObjectSetCleanedTypes<Q, ExtractRdp<UNUSED_OR_RDP>, MergeObjectSet<Q, UNUSED_OR_RDP>> {}
 
 // @public (undocumented)
-export interface ObjectSetListener<
-	O extends ObjectOrInterfaceDefinition,
-	P extends PropertyKeys<O> = PropertyKeys<O>
-> {
-    	// Warning: (ae-forgotten-export) The symbol "ObjectUpdate" needs to be exported by the entry point index.d.ts
-    onChange?: (objectUpdate: ObjectUpdate<O, P>) => void;
-    	onError?: (errors: {
-        		subscriptionClosed: boolean;
-        		error: any;
-        	}) => void;
-    	onOutOfDate?: () => void;
-    	onSuccessfulSubscription?: () => void;
-}
-
-// @public
-export interface ObjectSetListenerOptions<
-	O extends ObjectOrInterfaceDefinition,
-	P extends PropertyKeys<O> = PropertyKeys<O>
-> {
-    	// (undocumented)
-    properties?: Array<P>;
-}
-
-// @public (undocumented)
 export interface ObjectSetQueryDataType<T_Target extends ObjectTypeDefinition = never> extends BaseQueryDataTypeDefinition<"objectSet"> {
     	// (undocumented)
     __OsdkTargetType?: T_Target;
     	// (undocumented)
     objectSet: string;
+}
+
+// @public (undocumented)
+export namespace ObjectSetSubscription {
+    	// (undocumented)
+    export interface Listener<
+    		O extends ObjectOrInterfaceDefinition,
+    		P extends PropertyKeys<O> = PropertyKeys<O>
+    	> {
+        		// Warning: (ae-forgotten-export) The symbol "ObjectUpdate" needs to be exported by the entry point index.d.ts
+        onChange?: (objectUpdate: ObjectUpdate<O, P>) => void;
+        		onError?: (errors: {
+            			subscriptionClosed: boolean;
+            			error: any;
+            		}) => void;
+        		onOutOfDate?: () => void;
+        		onSuccessfulSubscription?: () => void;
+        	}
+    	// (undocumented)
+    export interface Options<
+    		O extends ObjectOrInterfaceDefinition,
+    		P extends PropertyKeys<O> = PropertyKeys<O>
+    	> {
+        		// (undocumented)
+        properties?: Array<P>;
+        	}
 }
 
 // @public (undocumented)
