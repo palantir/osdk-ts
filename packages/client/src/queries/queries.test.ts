@@ -90,7 +90,6 @@ describe("queries", () => {
 
   it("accepts objectSets", async () => {
     const employeeObjectSet = client(Employee);
-
     const result = await client(queryAcceptsObjectSets).executeFunction({
       objectSet: employeeObjectSet,
     });
