@@ -22,7 +22,6 @@ import {
   Todo,
 } from "@osdk/client.test.ontology";
 import { apiServer } from "@osdk/shared.test";
-import pDefer from "p-defer";
 import type { Mock } from "vitest";
 import {
   afterAll,
@@ -49,7 +48,6 @@ import {
   expectSingleObjectCallAndClear,
   mockListSubCallback,
   mockSingleSubCallback,
-  waitForCall,
 } from "./testUtils.js";
 
 const defer = createDefer();
@@ -827,34 +825,22 @@ describe(Store, () => {
     describe("actions", () => {
       it("properly invalidates objects", async () => {
         // after the below `observeObject`, the cache will need to load from the server
-        mockClient.mockFetchOneOnce({
+        mockClient.mockFetchOneOnce().resolve({
           $apiName: "Todo",
         });
 
         const todoSubFn = mockSingleSubCallback();
         defer(cache.observeObject(Todo, 0, {}, todoSubFn));
 
-        await waitForCall(todoSubFn, 2);
-        expect(todoSubFn).toHaveBeenCalledWith(
-          cacheEntryContaining({
-            status: "loading",
-            value: undefined,
+        await todoSubFn.expectLoadingAndLoaded({
+          loading: undefined,
+          loaded: expect.objectContaining({
+            $primaryKey: 0,
           }),
-        );
-
-        // as long as we get the loaded call we are happy
-        expect(todoSubFn).toHaveBeenLastCalledWith(
-          cacheEntryContaining({
-            value: expect.objectContaining({
-              $primaryKey: 0,
-            }),
-            status: "loaded",
-          }),
-        );
-        todoSubFn.mockClear();
+        });
 
         // at this point we have an observation properly set up
-        mockClient.mockApplyActionOnce({
+        mockClient.mockApplyActionOnce().resolve({
           addedObjects: [{
             objectType: "Todo",
             primaryKey: 0,
@@ -862,36 +848,70 @@ describe(Store, () => {
         });
 
         // after we apply the action, the object is invalidated and gets re-requested
-        const deferred = pDefer();
-        mockClient.mockFetchOneOnce({
-          $apiName: "Todo",
-          foo: "hi",
-        }, deferred.promise);
+
+        const mockFetchResult = mockClient.mockFetchOneOnce<Todo>();
 
         const actionPromise = cache.applyAction(createOffice, {
           officeId: "whatever",
         });
 
         await actionPromise;
-        await waitForCall(todoSubFn);
-        expect(todoSubFn).toHaveBeenCalledExactlyOnceWith(
-          cacheEntryContaining({
-            status: "loading",
-          }),
-        );
-        todoSubFn.mockClear();
+        await todoSubFn.expectLoading(expect.any(Object));
 
-        deferred.resolve();
+        mockFetchResult.resolve({
+          $apiName: "Todo",
+          text: "hello there kind sir",
+        });
 
-        await waitForCall(todoSubFn);
-        expect(todoSubFn).toHaveBeenLastCalledWith(
-          cacheEntryContaining({
-            value: expect.objectContaining({
-              foo: "hi",
-            }),
-            status: "loaded",
-          }),
+        await todoSubFn.expectLoaded(expect.objectContaining({
+          text: "hello there kind sir",
+        }));
+      });
+
+      it("rolls back optimistic updates on error", async () => {
+        const fauxObject = {
+          $apiName: "Todo",
+          $objectType: "Todo",
+          $primaryKey: 0,
+          $title: "does not matter",
+        } as Osdk.Instance<Todo>;
+
+        // after the below `observeObject`, the cache will need to load from the server
+        mockClient.mockFetchOneOnce<Todo>()
+          .resolve(fauxObject);
+
+        const todoSubFn = mockSingleSubCallback();
+        defer(
+          cache.observeObject(Todo, 0, {}, todoSubFn),
         );
+
+        await todoSubFn.expectLoadingAndLoaded({
+          loading: undefined,
+          loaded: fauxObject,
+        });
+
+        // at this point we have an observation properly set up
+        const applyActionResult = mockClient.mockApplyActionOnce();
+
+        const actionPromise = cache.applyAction(createOffice, {
+          officeId: "whatever",
+        }, {
+          optimisticUpdate: (ctx) => {
+            ctx.updateObject({ ...fauxObject, someValue: "optimistic" });
+          },
+        });
+
+        await todoSubFn.expectLoading({
+          ...fauxObject,
+          someValue: "optimistic",
+        });
+
+        // let the action error out
+        applyActionResult.reject("an error thrown");
+        await expect(actionPromise).rejects.toThrow("an error thrown");
+
+        // back to the original object
+        await todoSubFn.expectLoaded(fauxObject);
       });
     });
   });
