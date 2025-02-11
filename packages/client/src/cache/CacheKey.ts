@@ -23,6 +23,7 @@ export type CacheKey<
   T_KeyFactoryArgs extends any[] = any[],
 > = {
   type: X;
+  otherKeys: T_KeyFactoryArgs;
   __cacheKey: {
     value: T_StoreValue;
     query: T_Query;

@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
-import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
+import type { Osdk } from "@osdk/api";
+import {
+  $ontologyRid,
+  createOffice,
+  Employee,
+  Todo,
+} from "@osdk/client.test.ontology";
 import { apiServer } from "@osdk/shared.test";
+import pDefer from "p-defer";
 import type { Mock } from "vitest";
 import {
   afterAll,
@@ -33,19 +39,20 @@ import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import type { Unsubscribable } from "./Cache.js";
 import { Store } from "./Cache.js";
-import type { ListPayload } from "./ListQuery.js";
-import type { ObjectEntry } from "./ObjectQuery.js";
+import type { MockClientHelper } from "./testUtils.js";
+import {
+  applyCustomMatchers,
+  cacheEntryContaining,
+  createClientMockHelper,
+  createDefer,
+  expectSingleListCallAndClear,
+  expectSingleObjectCallAndClear,
+  mockListSubCallback,
+  mockSingleSubCallback,
+  waitForCall,
+} from "./testUtils.js";
 
-let subscriptions: Unsubscribable[];
-beforeEach(() => {
-  subscriptions = [];
-});
-afterEach(() => {
-  for (const s of subscriptions) {
-    s.unsubscribe();
-  }
-  subscriptions = [];
-});
+const defer = createDefer();
 
 beforeAll(() => {
   vi.setConfig({
@@ -71,51 +78,7 @@ const ANY_INIT_ENTRY = {
   status: "init",
 };
 
-function defer(x: Unsubscribable) {
-  subscriptions.push(x);
-  return x;
-}
-
-function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
-  subFn: Mock<(e: ListPayload | undefined) => void>,
-  resolvedList: Osdk.Instance<T>[],
-) {
-  vitest.runOnlyPendingTimers();
-  expect(subFn).toHaveBeenCalledExactlyOnceWith(
-    expect.objectContaining({
-      resolvedList,
-    }),
-  );
-  subFn.mockClear();
-}
-
-function expectSingleObjectCallAndClear<T extends ObjectTypeDefinition>(
-  subFn: Mock<(e: ObjectEntry | undefined) => void>,
-  value: Osdk.Instance<T>,
-) {
-  expect(subFn).toHaveBeenCalledExactlyOnceWith(
-    expect.objectContaining({ value: { data: value } }),
-  );
-  subFn.mockClear();
-}
-
-expect.extend({
-  toBeGreaterThan: (r: number, e: number) => {
-    return {
-      pass: r > e,
-      message: () => `expected ${r} to be greater than ${e} (lastUpdated)`,
-    };
-  },
-});
-
-interface CustomMatchers<R = unknown> {
-  toBeGreaterThan: (n: number) => R;
-}
-
-declare module "vitest" {
-  interface Assertion<T = any> extends CustomMatchers<T> {}
-  interface AsymmetricMatchersContaining extends CustomMatchers {}
-}
+applyCustomMatchers();
 
 describe(Store, () => {
   describe("with mock server", () => {
@@ -192,7 +155,7 @@ describe(Store, () => {
         const emp = employeesAsServerReturns[0];
         cache.updateObject(Employee, emp); // pre-seed the cache with the "real" value
 
-        const subFn = vitest.fn((e: ObjectEntry | undefined) => {});
+        const subFn = mockSingleSubCallback();
         defer(
           cache.observeObject(
             Employee,
@@ -226,9 +189,7 @@ describe(Store, () => {
 
         const emp = employeesAsServerReturns[0];
 
-        const empSubFn = vitest.fn(
-          (e: ObjectEntry | undefined) => {},
-        );
+        const empSubFn = mockSingleSubCallback();
         defer(
           cache.observeObject(
             Employee,
@@ -240,9 +201,7 @@ describe(Store, () => {
 
         expectSingleObjectCallAndClear(empSubFn, emp);
 
-        const listSubFn = vitest.fn(
-          (e: ListPayload | undefined) => {},
-        );
+        const listSubFn = mockListSubCallback();
         defer(
           cache.observeList(Employee, {}, { mode: "offline" }, listSubFn),
         );
@@ -297,7 +256,7 @@ describe(Store, () => {
         const emp = employeesAsServerReturns[0];
         cache.updateObject(Employee, emp); // pre-seed the cache with the "real" value
 
-        const subFn = vitest.fn((e: ObjectEntry | undefined) => {});
+        const subFn = mockSingleSubCallback();
         defer(
           cache.observeObject(
             Employee,
@@ -349,7 +308,7 @@ describe(Store, () => {
         const staleEmp = emp.$clone({ fullName: "stale" });
         cache.updateObject(Employee, staleEmp);
 
-        const subFn = vitest.fn((e: ObjectEntry | undefined) => {});
+        const subFn = mockSingleSubCallback();
         defer(
           cache.observeObject(
             Employee,
@@ -395,7 +354,7 @@ describe(Store, () => {
         const staleEmp = emp.$clone({ fullName: "stale" });
         cache.updateList(Employee, {}, [staleEmp]);
 
-        const subFn = vitest.fn((e: ObjectEntry | undefined) => {});
+        const subFn = mockSingleSubCallback();
         defer(
           cache.observeObject(
             Employee,
@@ -406,9 +365,7 @@ describe(Store, () => {
         );
         expectSingleObjectCallAndClear(subFn, staleEmp);
 
-        const subListFn = vitest.fn(
-          (x: ListPayload | undefined) => {},
-        );
+        const subListFn = mockListSubCallback();
         defer(cache.observeList(Employee, {}, { mode: "offline" }, subListFn));
 
         await vi.waitFor(() => expect(subListFn).toHaveBeenCalled());
@@ -450,9 +407,75 @@ describe(Store, () => {
       });
     });
 
+    describe(".invalidateObjectType", () => {
+      beforeEach(() => {
+        vi.useFakeTimers({});
+      });
+      afterEach(() => {
+        vi.useRealTimers();
+      });
+
+      it("triggers an update", async () => {
+        const emp = employeesAsServerReturns[0];
+        const staleEmp = emp.$clone({ fullName: "stale" });
+        cache.updateList(Employee, {}, [staleEmp]);
+
+        const subFn = mockSingleSubCallback();
+        defer(
+          cache.observeObject(
+            Employee,
+            emp.$primaryKey,
+            { mode: "offline" },
+            subFn,
+          ),
+        );
+        expectSingleObjectCallAndClear(subFn, staleEmp);
+
+        const subListFn = mockListSubCallback();
+        defer(cache.observeList(Employee, {}, { mode: "offline" }, subListFn));
+
+        await vi.waitFor(() => expect(subListFn).toHaveBeenCalled());
+        expect(subListFn).toHaveBeenCalledExactlyOnceWith(
+          expect.objectContaining({
+            resolvedList: [staleEmp],
+            status: "loaded",
+          }),
+        );
+        subListFn.mockClear();
+
+        cache.invalidateObjectType(Employee);
+
+        await vi.waitFor(() => expect(subListFn).toHaveBeenCalled());
+        expect(subListFn).toHaveBeenCalledExactlyOnceWith(
+          expect.objectContaining({
+            resolvedList: [staleEmp],
+            status: "loading",
+          }),
+        );
+        subListFn.mockClear();
+
+        await vi.waitFor(() => expect(subListFn).toHaveBeenCalled());
+        expect(subListFn).toHaveBeenCalledExactlyOnceWith(
+          expect.objectContaining({
+            resolvedList: employeesAsServerReturns,
+          }),
+        );
+        subListFn.mockClear();
+
+        await vi.waitFor(() => expect(subFn).toHaveBeenCalled());
+
+        expect(subFn).toHaveBeenCalledExactlyOnceWith(
+          expect.objectContaining({
+            status: "loaded",
+            value: { data: emp },
+          }),
+        );
+      });
+    });
+
     describe(".observeObject (force)", () => {
-      const subFn1 = vitest.fn((e: ObjectEntry | undefined) => {});
-      const subFn2 = vitest.fn((e: ObjectEntry | undefined) => {});
+      const subFn1 = mockSingleSubCallback();
+      const subFn2 = mockSingleSubCallback();
 
       beforeEach(async () => {
         subFn1.mockClear();
@@ -521,7 +544,7 @@ describe(Store, () => {
     });
 
     describe(".observeObject (offline)", () => {
-      const subFn = vitest.fn((e: ObjectEntry | undefined) => {});
+      const subFn = mockSingleSubCallback();
       let sub: Unsubscribable;
 
       beforeEach(() => {
@@ -583,9 +606,7 @@ describe(Store, () => {
     });
 
     describe(".observeList", () => {
-      const subFn1 = vitest.fn(
-        (x: ListPayload | undefined) => {},
-      );
+      const subFn1 = mockListSubCallback();
 
       beforeEach(() => {
         vi.useFakeTimers({});
@@ -668,7 +689,7 @@ describe(Store, () => {
 
       describe("mode = offline", () => {
         it("updates with list updates", async () => {
-          subscriptions.push(
+          defer(
             cache.observeList(Employee, {}, { mode: "offline" }, subFn1),
           );
           expect(subFn1).toHaveBeenCalledTimes(0);
@@ -693,7 +714,7 @@ describe(Store, () => {
         });
 
         it("updates with different list updates", async () => {
-          subscriptions.push(
+          defer(
             cache.observeList(Employee, {}, { mode: "offline" }, subFn1),
           );
 
@@ -734,9 +755,7 @@ describe(Store, () => {
       });
 
       it("works in the solo case", async () => {
-        const subFn = vitest.fn(
-          (x: ListPayload | undefined) => {},
-        );
+        const subFn = mockListSubCallback();
         defer(cache.observeList(
           Employee,
           {},
@@ -746,6 +765,8 @@ describe(Store, () => {
 
         expect(subFn).not.toHaveBeenCalled();
         await vi.waitFor(() => expect(subFn).toHaveBeenCalled());
+
+        console.log(subFn.mock.calls[0][0]?.listEntry.cacheKey);
 
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
           expect.objectContaining({
@@ -779,6 +800,95 @@ describe(Store, () => {
         expect(subFn).toHaveBeenCalledWith(
           expect.objectContaining({
             resolvedList: employeesAsServerReturns.slice(0, 2),
+            status: "loaded",
+          }),
+        );
+      });
+    });
+  });
+
+  describe("with mock client", () => {
+    let client: Mock<Client> & Client;
+    let mockClient: MockClientHelper;
+    let cache: Store;
+
+    let employeesAsServerReturns: Osdk.Instance<Employee>[];
+    let mutatedEmployees: Osdk.Instance<Employee>[];
+
+    beforeEach(async () => {
+      mockClient = createClientMockHelper();
+      client = mockClient.client;
+      cache = new Store(client);
+    });
+
+    describe("actions", () => {
+      it("properly invalidates objects", async () => {
+        // after the below `observeObject`, the cache will need to load from the server
+        mockClient.mockFetchOneOnce({
+          $apiName: "Todo",
+        });
+
+        const todoSubFn = mockSingleSubCallback();
+        defer(cache.observeObject(Todo, 0, {}, todoSubFn));
+
+        await waitForCall(todoSubFn, 2);
+        expect(todoSubFn).toHaveBeenCalledWith(
+          cacheEntryContaining({
+            status: "loading",
+          }),
+        );
+
+        // as long as we get the loaded call we are happy
+        expect(todoSubFn).toHaveBeenLastCalledWith(
+          cacheEntryContaining({
+            value: {
+              data: expect.objectContaining({
+                $primaryKey: 0,
+              }),
+            },
+            status: "loaded",
+          }),
+        );
+        todoSubFn.mockClear();
+
+        // at this point we have an observation properly set up
+        mockClient.mockApplyActionOnce({
+          addedObjects: [{
+            objectType: "Todo",
+            primaryKey: 0,
+          }],
+        });
+
+        // after we apply the action, the object is invalidated and gets re-requested
+        const deferred = pDefer();
+        mockClient.mockFetchOneOnce({
+          $apiName: "Todo",
+          foo: "hi",
+        }, deferred.promise);
+
+        const actionPromise = cache.applyAction(createOffice, {
+          officeId: "whatever",
+        });
+
+        await actionPromise;
+        await waitForCall(todoSubFn);
+        expect(todoSubFn).toHaveBeenCalledExactlyOnceWith(
+          expect.objectContaining({
+            status: "loading",
+          }),
+        );
+        todoSubFn.mockClear();
+
+        deferred.resolve();
+
+        await waitForCall(todoSubFn);
+        expect(todoSubFn).toHaveBeenLastCalledWith(
+          cacheEntryContaining({
+            value: {
+              data: expect.objectContaining({
+                foo: "hi",
+              }),
+            },
             status: "loaded",
           }),
         );

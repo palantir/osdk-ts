@@ -15,6 +15,8 @@
  */
 
 import type {
+  ActionDefinition,
+  ActionEditResponse,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
@@ -23,6 +25,7 @@ import type {
 import { Trie } from "@wry/trie";
 import { BehaviorSubject } from "rxjs";
 import invariant from "tiny-invariant";
+import type { ActionSignatureFromDef } from "../actions/applyAction.js";
 import type { Client } from "../Client.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Entry } from "./Layer.js";
@@ -32,7 +35,7 @@ import type {
   ListPayload,
   ListQueryOptions,
 } from "./ListQuery.js";
-import { ListQuery } from "./ListQuery.js";
+import { isListCacheKey, ListQuery } from "./ListQuery.js";
 import type { ObjectCacheKey, ObjectEntry } from "./ObjectQuery.js";
 import { ObjectQuery } from "./ObjectQuery.js";
 import type { Query } from "./Query.js";
@@ -73,7 +76,7 @@ export interface BatchContext {
 }
 
 interface ObserveOptions {
-  mode: "offline" | "force";
+  mode?: "offline" | "force";
 }
 
 interface UpdateOptions {
@@ -91,18 +94,14 @@ export interface StorageData<T> {
     - Data is one per layer per cache key
 */
 
-let cacheKeyNum = 0;
+const cacheKeyNum = 0;
 export class Store {
   #cacheKeys = new Trie<CacheKey<string, any, any>>(false, (keys) => {
-    if (process.env.NODE_ENV === "production") {
-      return { type: keys[0] } as unknown as CacheKey<string, any, any>;
-    } else {
-      return {
-        type: keys[0],
-        keys,
-        cacheKeyNum: cacheKeyNum++,
-      } as unknown as CacheKey<string, any, any>;
-    }
+    return { type: keys[0], otherKeys: keys.slice(1) } as unknown as CacheKey<
+      string,
+      any,
+      any
+    >;
   });
   _whereCanonicalizer: WhereClauseCanonicalizer =
     new WhereClauseCanonicalizer();
@@ -137,6 +136,32 @@ export class Store {
         ]) as ListCacheKey,
     );
   }
+
+  applyAction: <Q extends ActionDefinition<any>>(
+    action: Q,
+    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
+  ) => Promise<unknown> = (action, args) => {
+    return this._client(action).applyAction(args as any, { $returnEdits: true })
+      .then(
+        (value: ActionEditResponse) => {
+          if (value.type === "edits") {
+            for (const q of [value.addedObjects, value.modifiedObjects]) {
+              if (!q) continue;
+              for (const o of q) {
+                this.invalidateObject(o.objectType, o.primaryKey);
+              }
+            }
+          } else {
+            for (const apiName of value.editedObjectTypes) {
+              this.invalidateList(apiName.toString(), {});
+            }
+          }
+        },
+        (err: any) => {
+          throw err;
+        },
+      );
+  };
 
   registerCacheKeyFactory<K extends CacheKey>(
     type: K["type"],
@@ -216,12 +241,16 @@ export class Store {
   };
 
   public observeObject<T extends ObjectTypeDefinition>(
-    type: T,
+    apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveOptions,
     subFn: SubFn<ObjectEntry>,
   ): Unsubscribable {
-    const query = this.getObjectQuery(type, pk);
+    if (typeof apiName !== "string") {
+      apiName = apiName.apiName;
+    }
+
+    const query = this.getObjectQuery(apiName, pk);
     query.retain();
 
     if (options.mode !== "offline") {
@@ -251,37 +280,45 @@ export class Store {
   }
 
   public getListQuery<T extends ObjectTypeDefinition>(
-    type: T,
+    apiName: T["apiName"] | T,
     where: WhereClause<T>,
     opts: ListQueryOptions,
     peek = false,
   ): ListQuery {
+    if (typeof apiName !== "string") {
+      apiName = apiName.apiName;
+    }
+
     const canonWhere = this._whereCanonicalizer.canonicalize(where);
     const listCacheKey = this.getCacheKey<ListCacheKey>(
       "list",
-      type.apiName,
+      apiName,
       canonWhere,
     );
 
     return this.#getQuery(listCacheKey, () => {
-      return new ListQuery(this, type, canonWhere, listCacheKey, opts);
+      return new ListQuery(this, apiName, canonWhere, listCacheKey, opts);
     });
   }
 
   public getObjectQuery<T extends ObjectTypeDefinition>(
-    type: T,
+    apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
   ): ObjectQuery {
+    if (typeof apiName !== "string") {
+      apiName = apiName.apiName;
+    }
+
     const objectCacheKey = this.getCacheKey<ObjectCacheKey>(
       "object",
-      type["apiName"],
+      apiName,
       pk,
     );
 
     return this.#getQuery(objectCacheKey, () =>
       new ObjectQuery(
         this,
-        type,
+        apiName,
         pk,
         objectCacheKey,
         { dedupeInterval: 0 },
@@ -289,12 +326,16 @@ export class Store {
   }
 
   public observeList<T extends ObjectTypeDefinition>(
-    type: T,
+    apiName: T["apiName"] | T,
     where: WhereClause<T>,
     options: ObserveOptions & ListQueryOptions,
     subFn: SubFn<ListPayload>,
   ): Unsubscribable {
-    const query = this.getListQuery(type, where, options);
+    if (typeof apiName !== "string") {
+      apiName = apiName.apiName;
+    }
+
+    const query = this.getListQuery(apiName, where, options);
     query.retain();
 
     if (options.mode !== "offline") {
@@ -306,11 +347,15 @@ export class Store {
   }
 
   public updateObject(
-    type: ObjectTypeDefinition,
+    apiName: string | ObjectTypeDefinition,
     value: Osdk.Instance<ObjectTypeDefinition>,
     { optimisticId }: UpdateOptions = {},
   ): Osdk.Instance<ObjectTypeDefinition> {
-    const query = this.getObjectQuery(type, value.$primaryKey);
+    if (typeof apiName !== "string") {
+      apiName = apiName.apiName;
+    }
+
+    const query = this.getObjectQuery(apiName, value.$primaryKey);
 
     return this._batch({ optimisticId }, (batch) => {
       return query.writeToStore(value, batch);
@@ -318,12 +363,16 @@ export class Store {
   }
 
   public getObject<T extends ObjectTypeDefinition>(
-    type: T,
+    apiName: T["apiName"] | T,
     pk: string | number,
   ): Osdk.Instance<T> | undefined {
+    if (typeof apiName !== "string") {
+      apiName = apiName.apiName;
+    }
+
     const objectCacheKey = this.getCacheKey<ObjectCacheKey>(
       "object",
-      type.apiName,
+      apiName,
       pk,
     );
     const objEntry = this._topLayer.get(objectCacheKey);
@@ -392,13 +441,17 @@ export class Store {
   };
 
   public invalidateObject<T extends ObjectTypeDefinition>(
-    type: T,
+    apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
   ): void {
+    if (typeof apiName !== "string") {
+      apiName = apiName.apiName;
+    }
+
     // inevitably we will want an internal version of this and a "public" one
     // so we can avoid extra requests
 
-    const query = this.getObjectQuery(type, pk);
+    const query = this.getObjectQuery(apiName, pk);
 
     void query.revalidate(true);
 
@@ -407,30 +460,49 @@ export class Store {
     // could we detect that a list WOULD include it?
   }
 
-  public invalidateList<T extends ObjectTypeDefinition>(
-    type: T,
-    where: WhereClause<T>,
+  public invalidateObjectType<T extends ObjectTypeDefinition>(
+    apiName: T["apiName"] | T,
   ): void {
-    const cacheKey = this.getCacheKey<ListCacheKey>(
-      "list",
-      type.apiName,
-      where,
-    );
+    if (typeof apiName !== "string") {
+      apiName = apiName.apiName;
+    }
 
-    const query = this.peekQuery(cacheKey);
-    if (query) {
-      void query.revalidate(true);
+    for (const [cacheKey, v] of this._truthLayer.entries()) {
+      if (isListCacheKey(cacheKey, apiName)) {
+        void this.peekQuery(cacheKey)?.revalidate(true);
+      }
     }
   }
 
+  public invalidateList<T extends ObjectTypeDefinition>(
+    apiName: T["apiName"] | T,
+    where: WhereClause<T>,
+  ): void {
+    if (typeof apiName !== "string") {
+      apiName = apiName.apiName;
+    }
+
+    const cacheKey = this.getCacheKey<ListCacheKey>(
+      "list",
+      apiName,
+      where,
+    );
+
+    void this.peekQuery(cacheKey)?.revalidate(true);
+  }
+
   public updateList<T extends ObjectTypeDefinition>(
-    type: T,
+    apiName: T["apiName"] | T,
     where: WhereClause<T>,
     values: Osdk.Instance<T>[],
     { optimisticId }: UpdateOptions = {},
     opts: ListQueryOptions = { dedupeInterval: 0 },
   ): void {
-    const query = this.getListQuery(type, where, opts);
+    if (typeof apiName !== "string") {
+      apiName = apiName.apiName;
+    }
+
+    const query = this.getListQuery(apiName, where, opts);
 
     this._batch({ optimisticId }, (b) => {
       query.updateList(values, false, "loaded", b);
