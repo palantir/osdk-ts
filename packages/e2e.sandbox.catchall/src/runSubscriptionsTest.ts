@@ -15,9 +15,6 @@
  */
 
 import {
-  __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
-} from "@osdk/api/unstable";
-import {
   $Actions,
   MtaBus,
   OsdkTestInterface,
@@ -103,9 +100,8 @@ function interfaceSubscription() {
 
 function referenceUpdateSubscription() {
   const mtaBusSubscription = dsClient(
-    __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
+    MtaBus,
   ).subscribe(
-    dsClient(MtaBus),
     {
       onChange(object) {
         if (object.object.positionId != null) {

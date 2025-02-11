@@ -20,8 +20,6 @@ import type {
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet,
-  ObjectSetListener,
-  ObjectSetListenerOptions,
   ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
@@ -37,7 +35,6 @@ import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
-  __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
 } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
 import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
@@ -51,12 +48,8 @@ import { fetchMetadataInternal } from "./fetchMetadata.js";
 import type { Logger } from "./Logger.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { fetchSingle } from "./object/fetchSingle.js";
-import {
-  createObjectSet,
-  getWireObjectSet,
-} from "./objectSet/createObjectSet.js";
+import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
-import { ObjectSetListenerWebsocket } from "./objectSet/ObjectSetListenerWebsocket.js";
 import { applyQuery } from "./queries/applyQuery.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 
@@ -171,28 +164,6 @@ export function createClientInternal(
             getBulkLinks: createBulkLinksAsyncIterFactory(
               clientCtx,
             ),
-          } as any;
-        case __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe.name:
-          return {
-            subscribe: <
-              Q extends ObjectOrInterfaceDefinition,
-              const P extends PropertyKeys<Q>,
-            >(
-              objectSet: ObjectSet<Q>,
-              listener: ObjectSetListener<Q, P>,
-              opts?: ObjectSetListenerOptions<Q, P>,
-            ) => {
-              const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
-                clientCtx,
-              ).subscribe(
-                objectSet.$objectSetInternals?.def!,
-                getWireObjectSet(objectSet),
-                listener,
-                opts?.properties,
-              );
-
-              return { unsubscribe: async () => (await pendingSubscribe)() };
-            },
           } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid.name:
           return {
