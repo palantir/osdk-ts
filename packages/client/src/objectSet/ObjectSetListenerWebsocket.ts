@@ -16,7 +16,7 @@
 
 import type {
   ObjectOrInterfaceDefinition,
-  ObjectSetListener,
+  ObjectSetSubscription,
   Osdk,
   PropertyKeys,
 } from "@osdk/api";
@@ -53,8 +53,8 @@ function fillOutListener<
     onError = doNothing,
     onOutOfDate = doNothing,
     onSuccessfulSubscription = doNothing,
-  }: ObjectSetListener<Q, P>,
-): Required<ObjectSetListener<Q, P>> {
+  }: ObjectSetSubscription.Listener<Q, P>,
+): Required<ObjectSetSubscription.Listener<Q, P>> {
   return { onChange, onError, onOutOfDate, onSuccessfulSubscription };
 }
 
@@ -62,7 +62,7 @@ interface Subscription<
   Q extends ObjectOrInterfaceDefinition,
   P extends PropertyKeys<Q>,
 > {
-  listener: Required<ObjectSetListener<Q, P>>;
+  listener: Required<ObjectSetSubscription.Listener<Q, P>>;
   requestedProperties: Array<P>;
   requestedReferenceProperties: Array<P>;
   objectSet: ObjectSet;
@@ -171,7 +171,7 @@ export class ObjectSetListenerWebsocket {
   >(
     objectType: ObjectOrInterfaceDefinition,
     objectSet: ObjectSet,
-    listener: ObjectSetListener<Q, P>,
+    listener: ObjectSetSubscription.Listener<Q, P>,
     properties: Array<P> = [],
   ): Promise<() => void> {
     const objOrInterfaceDef = objectType.type === "object"

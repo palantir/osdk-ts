@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSetListener, PropertyKeys } from "@osdk/api";
+import type { ObjectSetSubscription, PropertyKeys } from "@osdk/api";
 import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import type {
   ObjectSetStreamSubscribeRequests,
@@ -112,7 +112,7 @@ describe("ObjectSetListenerWebsocket", async () => {
     let client: ObjectSetListenerWebsocket;
     let listener: MockedObject<
       Required<
-        ObjectSetListener<Employee, any>
+        ObjectSetSubscription.Listener<Employee, any>
       >
     >;
     let oslwInst = 0;
@@ -430,7 +430,7 @@ interface MockedWebSocket
 
 type MockedListener = MockedObject<
   Required<
-    ObjectSetListener<Employee, PropertyKeys<Employee>>
+    ObjectSetSubscription.Listener<Employee, PropertyKeys<Employee>>
   >
 >;
 
