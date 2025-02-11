@@ -21,6 +21,7 @@ import type {
   PrimaryKeyType,
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
+import { distinctUntilChanged } from "rxjs";
 import type {
   BatchContext,
   StorageData,
@@ -70,7 +71,7 @@ export class ObjectQuery extends Query<
   public subscribe(
     subFn: SubFn<ObjectEntry>,
   ): Unsubscribable {
-    const sub = this.getSubject().subscribe(subFn);
+    const sub = this.getSubject().pipe(distinctUntilChanged()).subscribe(subFn);
     return { unsubscribe: () => sub.unsubscribe() };
   }
 
@@ -88,16 +89,13 @@ export class ObjectQuery extends Query<
     data: Osdk.Instance<ObjectTypeDefinition>,
     batch: BatchContext,
   ): Osdk.Instance<ObjectTypeDefinition> {
-    const entry = this.store._topLayer.get(this.cacheKey);
+    const entry = batch.read(this.cacheKey);
+    // must do a "full write" here so that the lastUpdated is updated
+    batch.write(this.cacheKey, { data }, "loaded");
 
     if (entry && deepEqual(data, entry.value.data)) {
-      // must do a "full write" here so that the lastUpdated is updated
-      batch.write(this.cacheKey, { data }, "loaded");
-
       return entry.value.data as Osdk.Instance<ObjectTypeDefinition>;
     }
-
-    batch.write(this.cacheKey, { data }, "loaded");
 
     if (entry) {
       batch.modifiedObjects.add(this.cacheKey);

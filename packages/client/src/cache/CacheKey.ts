@@ -15,8 +15,8 @@
  */
 
 export type CacheKey<X extends string, T_StoreValue, T_Query> = {
+  type: X;
   __cacheKey: {
-    type: X;
     value: T_StoreValue;
     query: T_Query;
   };

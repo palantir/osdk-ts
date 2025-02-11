@@ -66,7 +66,11 @@ export interface BatchContext {
     k: K,
     v: Entry<K>["value"],
     status: Entry<K>["status"],
-  ) => void;
+  ) => Entry<K>;
+
+  read: <K extends CacheKey<string, any, any>>(
+    k: K,
+  ) => Entry<K> | undefined;
 }
 
 interface ObserveOptions {
@@ -92,9 +96,10 @@ let cacheKeyNum = 0;
 export class Store {
   #cacheKeys = new Trie<CacheKey<string, any, any>>(false, (keys) => {
     if (process.env.NODE_ENV === "production") {
-      return {} as unknown as CacheKey<string, any, any>;
+      return { type: keys[0] } as unknown as CacheKey<string, any, any>;
     } else {
       return {
+        type: keys[0],
         keys,
         cacheKeyNum: cacheKeyNum++,
       } as unknown as CacheKey<string, any, any>;
@@ -176,14 +181,37 @@ export class Store {
     query.retain();
     const ret = query.subscribe(subFn);
 
-    void query.revalidate(options.mode === "force");
+    if (options.mode !== "offline") {
+      void query.revalidate(options.mode === "force");
+    }
     return ret;
+  }
+
+  public peekQuery<K extends CacheKey<string, any, any>>(
+    cacheKey: K,
+  ): K["__cacheKey"]["query"] | undefined {
+    return this.queries.get(cacheKey) as K["__cacheKey"]["query"] | undefined;
+  }
+
+  public peekListQuery<T extends ObjectTypeDefinition>(
+    type: T,
+    where: WhereClause<T>,
+    opts: ListQueryOptions,
+  ): ListQuery | undefined {
+    const canonWhere = this._whereCanonicalizer.canonicalize(where);
+    const listCacheKey = this._getListCacheKey(
+      type.apiName,
+      canonWhere,
+    );
+
+    return this.queries.get(listCacheKey) as ListQuery | undefined;
   }
 
   public getListQuery<T extends ObjectTypeDefinition>(
     type: T,
     where: WhereClause<T>,
     opts: ListQueryOptions,
+    peek = false,
   ): ListQuery {
     const canonWhere = this._whereCanonicalizer.canonicalize(where);
     const listCacheKey = this._getListCacheKey(
@@ -225,7 +253,10 @@ export class Store {
     const query = this.getListQuery(type, where, options);
     query.retain();
     const ret = query.subscribe(subFn);
-    void query.revalidate(options.mode === "force");
+
+    if (options.mode !== "offline") {
+      void query.revalidate(options.mode === "force");
+    }
 
     return ret;
   }
@@ -319,6 +350,13 @@ export class Store {
         if (oldTopValue !== newTopValue) {
           this.#cacheKeyToSubject.get(cacheKey)?.next(newValue);
         }
+
+        return newValue;
+      },
+      read: (cacheKey) => {
+        return optimisticId
+          ? this._topLayer.get(cacheKey)
+          : this._truthLayer.get(cacheKey);
       },
     };
 
@@ -355,6 +393,19 @@ export class Store {
     // potentially trigger updates of the lists that included this object?
     // TODO
     // could we detect that a list WOULD include it?
+  }
+
+  public invalidateList<T extends ObjectTypeDefinition>(
+    type: T,
+    where: WhereClause<T>,
+  ): void {
+    const canonWhere = this._whereCanonicalizer.canonicalize(where);
+    const cacheKey = this._getListCacheKey(type.apiName, canonWhere);
+
+    const query = this.peekQuery(cacheKey);
+    if (query) {
+      void query.revalidate(true);
+    }
   }
 
   public updateList<T extends ObjectTypeDefinition>(
