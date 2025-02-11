@@ -71,7 +71,7 @@ function defer(x: Unsubscribable) {
 }
 
 function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
-  subFn: Mock<(e: ListPayload<T> | undefined) => void>,
+  subFn: Mock<(e: ListPayload | undefined) => void>,
   resolvedList: Osdk.Instance<T>[],
 ) {
   vitest.runOnlyPendingTimers();
@@ -84,7 +84,7 @@ function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
 }
 
 function expectSingleObjectCallAndClear<T extends ObjectTypeDefinition>(
-  subFn: Mock<(e: ObjectEntry<T> | undefined) => void>,
+  subFn: Mock<(e: ObjectEntry | undefined) => void>,
   value: Osdk.Instance<T>,
 ) {
   expect(subFn).toHaveBeenCalledExactlyOnceWith(
@@ -186,7 +186,7 @@ describe(Store, () => {
         const emp = employeesAsServerReturns[0];
         cache.updateObject(Employee, emp); // pre-seed the cache with the "real" value
 
-        const subFn = vitest.fn((e: ObjectEntry<Employee> | undefined) => {});
+        const subFn = vitest.fn((e: ObjectEntry | undefined) => {});
         defer(
           cache.observeObject(
             Employee,
@@ -221,7 +221,7 @@ describe(Store, () => {
         const emp = employeesAsServerReturns[0];
 
         const empSubFn = vitest.fn(
-          (e: ObjectEntry<Employee> | undefined) => {},
+          (e: ObjectEntry | undefined) => {},
         );
         defer(
           cache.observeObject(
@@ -235,7 +235,7 @@ describe(Store, () => {
         expectSingleObjectCallAndClear(empSubFn, emp);
 
         const listSubFn = vitest.fn(
-          (e: ListPayload<Employee> | undefined) => {},
+          (e: ListPayload | undefined) => {},
         );
         defer(
           cache.observeList(Employee, {}, { mode: "offline" }, listSubFn),
@@ -291,7 +291,7 @@ describe(Store, () => {
         const emp = employeesAsServerReturns[0];
         cache.updateObject(Employee, emp); // pre-seed the cache with the "real" value
 
-        const subFn = vitest.fn((e: ObjectEntry<Employee> | undefined) => {});
+        const subFn = vitest.fn((e: ObjectEntry | undefined) => {});
         defer(
           cache.observeObject(
             Employee,
@@ -343,7 +343,7 @@ describe(Store, () => {
         const staleEmp = emp.$clone({ fullName: "stale" });
         cache.updateObject(Employee, staleEmp);
 
-        const subFn = vitest.fn((e: ObjectEntry<Employee> | undefined) => {});
+        const subFn = vitest.fn((e: ObjectEntry | undefined) => {});
         defer(
           cache.observeObject(
             Employee,
@@ -377,8 +377,8 @@ describe(Store, () => {
     });
 
     describe(".observeObject (force)", () => {
-      const subFn1 = vitest.fn((e: ObjectEntry<Employee> | undefined) => {});
-      const subFn2 = vitest.fn((e: ObjectEntry<Employee> | undefined) => {});
+      const subFn1 = vitest.fn((e: ObjectEntry | undefined) => {});
+      const subFn2 = vitest.fn((e: ObjectEntry | undefined) => {});
 
       beforeEach(async () => {
         subFn1.mockClear();
@@ -434,7 +434,7 @@ describe(Store, () => {
     });
 
     describe(".observeObject (offline)", () => {
-      const subFn = vitest.fn((e: ObjectEntry<Employee> | undefined) => {});
+      const subFn = vitest.fn((e: ObjectEntry | undefined) => {});
       let sub: Unsubscribable;
 
       beforeEach(() => {
@@ -497,7 +497,7 @@ describe(Store, () => {
 
     describe(".observeList", () => {
       const subFn1 = vitest.fn(
-        (x: ListPayload<Employee> | undefined) => {},
+        (x: ListPayload | undefined) => {},
       );
 
       beforeEach(() => {
@@ -634,7 +634,7 @@ describe(Store, () => {
     describe(".fetchMore", () => {
       it("works in the solo case", async () => {
         const subFn = vitest.fn(
-          (x: ListPayload<Employee> | undefined) => {},
+          (x: ListPayload | undefined) => {},
         );
         defer(cache.observeList(
           Employee,

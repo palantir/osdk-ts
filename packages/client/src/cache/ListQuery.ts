@@ -35,27 +35,23 @@ import type { QueryOptions } from "./Query.js";
 import { Query } from "./Query.js";
 import type { SubFn } from "./types.js";
 
-export interface ListPayload<T extends ObjectTypeDefinition> {
-  listEntry: ListEntry<T>;
+export interface ListPayload {
+  listEntry: ListEntry;
   resolvedList: Array<Osdk.Instance<any, never, string> | undefined>;
   fetchMore: () => Promise<unknown>;
   status: Status;
 }
 
-export interface ListEntry<T extends ObjectTypeDefinition>
-  extends Entry<ListCacheKey<T>>
-{}
+export interface ListEntry extends Entry<ListCacheKey> {}
 
-interface ListStorageData<T extends ObjectTypeDefinition>
-  extends StorageData<ObjectCacheKey<T>[]>
-{
+interface ListStorageData extends StorageData<ObjectCacheKey[]> {
 }
 
-export interface ListCacheKey<T extends ObjectTypeDefinition> extends
+export interface ListCacheKey extends
   CacheKey<
     "list",
-    ListStorageData<T>,
-    ListQuery<T>
+    ListStorageData,
+    ListQuery
   > //
 {}
 
@@ -63,9 +59,9 @@ export interface ListQueryOptions extends QueryOptions {
   pageSize?: number;
 }
 
-export class ListQuery<T extends ObjectTypeDefinition> extends Query<
-  ListCacheKey<T>,
-  ListPayload<T>,
+export class ListQuery extends Query<
+  ListCacheKey,
+  ListPayload,
   ListQueryOptions
 > {
   // pageSize?: number; // this is the internal page size. we need to track this properly
@@ -81,13 +77,13 @@ export class ListQuery<T extends ObjectTypeDefinition> extends Query<
 
   pendingPageFetch?: Promise<unknown>;
 
-  entries: ObjectCacheKey<T>[] | undefined;
+  entries: ObjectCacheKey[] | undefined;
 
   constructor(
     store: Store,
     type: ObjectTypeDefinition,
     whereClause: Canonical<WhereClause<ObjectTypeDefinition>>,
-    cacheKey: ListCacheKey<T>,
+    cacheKey: ListCacheKey,
     opts: ListQueryOptions,
   ) {
     super(store, opts, cacheKey);
@@ -97,7 +93,7 @@ export class ListQuery<T extends ObjectTypeDefinition> extends Query<
     this.#store = store;
   }
 
-  subscribe(subFn: SubFn<ListPayload<T>>) {
+  subscribe(subFn: SubFn<ListPayload>) {
     const ret = this.#store.getSubject(this.cacheKey).pipe(
       mergeMap(listEntry => {
         if (listEntry == null) return of(undefined);
@@ -214,7 +210,7 @@ export class ListQuery<T extends ObjectTypeDefinition> extends Query<
   }
 
   #updateObjects(
-    values: Array<Osdk.Instance<T> | ObjectEntry<T>>,
+    values: Array<Osdk.Instance<ObjectTypeDefinition> | ObjectEntry>,
     batch: BatchContext,
   ) {
     return values.map(v => {
@@ -228,7 +224,7 @@ export class ListQuery<T extends ObjectTypeDefinition> extends Query<
   }
 
   updateList(
-    values: Array<Osdk.Instance<T> | ObjectEntry<T>>,
+    values: Array<Osdk.Instance<ObjectTypeDefinition> | ObjectEntry>,
     append: boolean,
     status: Status,
     batch: BatchContext,
