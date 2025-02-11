@@ -55,18 +55,18 @@ export class ObjectQuery extends Query<
   ObjectEntry,
   QueryOptions
 > {
-  #type: ObjectTypeDefinition;
+  #apiName: string;
   #pk: string | number | boolean;
 
   constructor(
     store: Store,
-    type: ObjectTypeDefinition,
+    type: string,
     pk: PrimaryKeyType<ObjectTypeDefinition>,
     cacheKey: ObjectCacheKey,
     opts: QueryOptions,
   ) {
     super(store, opts, cacheKey);
-    this.#type = type;
+    this.#apiName = type;
     this.#pk = pk;
   }
 
@@ -78,9 +78,10 @@ export class ObjectQuery extends Query<
   }
 
   async _fetch(): Promise<void> {
-    const objectSet = this.store._client(this.#type) as ObjectSet<
-      ObjectTypeDefinition
-    >;
+    const objectSet = this.store._client({
+      type: "object",
+      apiName: this.#apiName,
+    }) as ObjectSet<ObjectTypeDefinition>;
     const obj = await objectSet.fetchOne(this.#pk);
     this.store._batch({}, (batch) => {
       this.writeToStore(obj as Osdk.Instance<ObjectTypeDefinition>, batch);

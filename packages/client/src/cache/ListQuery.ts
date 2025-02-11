@@ -69,7 +69,7 @@ export class ListQuery extends Query<
 > {
   // pageSize?: number; // this is the internal page size. we need to track this properly
   #client: Client;
-  #type: ObjectTypeDefinition;
+  #type: string;
   #whereClause: Canonical<WhereClause<ObjectTypeDefinition>>;
 
   // this represents the minimum number of results we need to load if we revalidate
@@ -83,7 +83,7 @@ export class ListQuery extends Query<
 
   constructor(
     store: Store,
-    type: ObjectTypeDefinition,
+    type: string,
     whereClause: Canonical<WhereClause<ObjectTypeDefinition>>,
     cacheKey: ListCacheKey,
     opts: ListQueryOptions,
@@ -124,8 +124,11 @@ export class ListQuery extends Query<
   }
 
   async _fetch(): Promise<void> {
-    const objectSet = this.#client(this.#type)
-      .where(this.#whereClause);
+    const objectSet =
+      (this.#client({ type: "object", apiName: this.#type }) as ObjectSet<
+        ObjectTypeDefinition
+      >)
+        .where(this.#whereClause);
 
     while (true) {
       const entry = await this.#fetchPageAndUpdate(
@@ -173,8 +176,10 @@ export class ListQuery extends Query<
       this.setStatus("loading", batch);
     });
 
-    const objectSet = this.#client(this.#type)
-      .where(this.#whereClause);
+    const objectSet =
+      (this.#client({ type: "object", apiName: this.#type }) as ObjectSet<
+        ObjectTypeDefinition
+      >).where(this.#whereClause);
 
     this.pendingFetch = this.#fetchPageAndUpdate(
       objectSet,
@@ -265,4 +270,12 @@ export class ListQuery extends Query<
 
     return ret;
   }
+}
+
+export function isListCacheKey(
+  cacheKey: CacheKey,
+  apiName?: string,
+): cacheKey is ListCacheKey {
+  return cacheKey.type === "list"
+    && (apiName == null || cacheKey.otherKeys[0] === apiName);
 }
