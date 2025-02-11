@@ -22,7 +22,7 @@ export type ObjectOrInterfaceDefinition =
   | ObjectTypeDefinition
   | InterfaceDefinition;
 
-export namespace ObjectOrInterfaceDefinition {
+export namespace DerivedObjectOrInterfaceDefinition {
   export type WithDerivedProperties<
     K extends ObjectOrInterfaceDefinition,
     D extends Record<string, SimplePropertyDef>,
