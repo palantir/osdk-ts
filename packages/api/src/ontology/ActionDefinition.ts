@@ -111,16 +111,3 @@ export interface ActionDefinition<
     & ActionCompileTimeMetadata<T_signatures>
     & ActionMetadata;
 }
-
-export type ValidBaseActionParameterTypes =
-  | "boolean"
-  | "string"
-  | "integer"
-  | "long"
-  | "double"
-  | "datetime"
-  | "timestamp"
-  | "attachment"
-  | "marking"
-  | "mediaReference"
-  | "objectType";
