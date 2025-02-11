@@ -60,6 +60,8 @@ export namespace ActionMetadata {
     	// (undocumented)
     export namespace DataType {
         		// (undocumented)
+        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "objectType";
+        		// (undocumented)
         export interface Interface<T_Target extends InterfaceDefinition = never> {
             			// (undocumented)
             __OsdkTargetType?: T_Target;
@@ -87,7 +89,7 @@ export namespace ActionMetadata {
             type: "objectSet";
             		}
         		// (undocumented)
-        export interface Struct<T extends Record<string, ValidBaseActionParameterTypes>> {
+        export interface Struct<T extends Record<string, DataType.BaseActionParameterTypes>> {
             			// (undocumented)
             struct: T;
             			// (undocumented)
@@ -103,7 +105,7 @@ export namespace ActionMetadata {
         		// (undocumented)
         nullable?: boolean;
         		// (undocumented)
-        type: ValidBaseActionParameterTypes | DataType.Object<any> | DataType.ObjectSet<any> | DataType.Interface<any> | DataType.Struct<any>;
+        type: DataType.BaseActionParameterTypes | DataType.Object<any> | DataType.ObjectSet<any> | DataType.Interface<any> | DataType.Struct<any>;
         	}
 }
 
@@ -1132,9 +1134,6 @@ export type ValidAggregationKeys<
 	Q extends ObjectOrInterfaceDefinition,
 	R extends "aggregate" | "withPropertiesAggregate" = "aggregate"
 > = keyof ({ [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<GetWirePropertyValueFromClient<CompileTimeMetadata<Q>["properties"][KK]["type"]>, R extends "aggregate" ? true : false>}`]? : any } & { $count?: any });
-
-// @public (undocumented)
-export type ValidBaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "objectType";
 
 // Warning: (ae-forgotten-export) The symbol "VersionString" needs to be exported by the entry point index.d.ts
 //

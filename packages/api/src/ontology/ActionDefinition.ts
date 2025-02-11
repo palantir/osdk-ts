@@ -42,7 +42,7 @@ export namespace ActionMetadata {
     T_Target extends ObjectTypeDefinition = never,
   > {
     type:
-      | ValidBaseActionParameterTypes
+      | DataType.BaseActionParameterTypes
       | DataType.Object<any>
       | DataType.ObjectSet<any>
       | DataType.Interface<any>
@@ -53,6 +53,19 @@ export namespace ActionMetadata {
   }
 
   export namespace DataType {
+    export type BaseActionParameterTypes =
+      | "boolean"
+      | "string"
+      | "integer"
+      | "long"
+      | "double"
+      | "datetime"
+      | "timestamp"
+      | "attachment"
+      | "marking"
+      | "mediaReference"
+      | "objectType";
+
     export interface Object<
       T_Target extends ObjectTypeDefinition = never,
     > {
@@ -76,7 +89,7 @@ export namespace ActionMetadata {
     }
 
     export interface Struct<
-      T extends Record<string, ValidBaseActionParameterTypes>,
+      T extends Record<string, DataType.BaseActionParameterTypes>,
     > {
       type: "struct";
       struct: T;
@@ -98,16 +111,3 @@ export interface ActionDefinition<
     & ActionCompileTimeMetadata<T_signatures>
     & ActionMetadata;
 }
-
-export type ValidBaseActionParameterTypes =
-  | "boolean"
-  | "string"
-  | "integer"
-  | "long"
-  | "double"
-  | "datetime"
-  | "timestamp"
-  | "attachment"
-  | "marking"
-  | "mediaReference"
-  | "objectType";

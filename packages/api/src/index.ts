@@ -82,7 +82,6 @@ export type { ObjectSetListenerOptions } from "./objectSet/ObjectSetListener.js"
 export type {
   ActionDefinition,
   ActionMetadata,
-  ValidBaseActionParameterTypes,
 } from "./ontology/ActionDefinition.js";
 export type {
   InterfaceDefinition,
