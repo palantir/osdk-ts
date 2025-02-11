@@ -24,7 +24,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const TEMPLATES = [
   {
     id: "react",
-    label: "React",
+    label: "OSDK React",
+    envPrefix: "VITE_",
+    buildDirectory: "./dist",
+  },
+  {
+    id: "minimal-react",
+    label: "Minimal React",
     envPrefix: "VITE_",
     buildDirectory: "./dist",
   },
