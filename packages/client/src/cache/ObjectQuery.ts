@@ -45,7 +45,8 @@ export interface ObjectCacheKey extends
   CacheKey<
     "object",
     ObjectStorageData,
-    ObjectQuery
+    ObjectQuery,
+    [string, pk: PrimaryKeyType<ObjectTypeDefinition>]
   >
 {}
 
@@ -56,6 +57,7 @@ export class ObjectQuery extends Query<
 > {
   #type: ObjectTypeDefinition;
   #pk: string | number | boolean;
+
   constructor(
     store: Store,
     type: ObjectTypeDefinition,

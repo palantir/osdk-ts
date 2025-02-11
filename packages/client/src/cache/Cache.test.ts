@@ -64,6 +64,13 @@ afterAll(() => {
   vi.resetConfig();
 });
 
+const ANY_INIT_ENTRY = {
+  cacheKey: expect.any(Object),
+  value: undefined,
+  lastUpdated: 0,
+  status: "init",
+};
+
 function defer(x: Unsubscribable) {
   subscriptions.push(x);
   return x;
@@ -376,6 +383,13 @@ describe(Store, () => {
     });
 
     describe(".invalidateList", () => {
+      beforeEach(() => {
+        vi.useFakeTimers({});
+      });
+      afterEach(() => {
+        vi.useRealTimers();
+      });
+
       it("triggers an update", async () => {
         const emp = employeesAsServerReturns[0];
         const staleEmp = emp.$clone({ fullName: "stale" });
@@ -401,11 +415,21 @@ describe(Store, () => {
         expect(subListFn).toHaveBeenCalledExactlyOnceWith(
           expect.objectContaining({
             resolvedList: [staleEmp],
+            status: "loaded",
           }),
         );
         subListFn.mockClear();
 
         cache.invalidateList(Employee, {});
+
+        await vi.waitFor(() => expect(subListFn).toHaveBeenCalled());
+        expect(subListFn).toHaveBeenCalledExactlyOnceWith(
+          expect.objectContaining({
+            resolvedList: [staleEmp],
+            status: "loading",
+          }),
+        );
+        subListFn.mockClear();
 
         await vi.waitFor(() => expect(subListFn).toHaveBeenCalled());
         expect(subListFn).toHaveBeenCalledExactlyOnceWith(
@@ -444,8 +468,16 @@ describe(Store, () => {
         defer(
           cache.observeObject(Employee, 50030, { mode: "force" }, subFn1),
         );
-        // initially, there is no data since its loading
-        expect(subFn1).toHaveBeenCalledExactlyOnceWith(undefined);
+        const ANY_LOADING_ENTRY = {
+          cacheKey: expect.any(Object),
+          value: expect.anything(),
+          lastUpdated: expect.toBeGreaterThan(0),
+          status: "loading",
+        };
+        expect(subFn1).toHaveBeenCalledExactlyOnceWith(
+          ANY_LOADING_ENTRY,
+        );
+
         subFn1.mockClear();
 
         await vi.waitFor(() => expect(subFn1).toHaveBeenCalled());
@@ -462,8 +494,13 @@ describe(Store, () => {
         defer(
           cache.observeObject(Employee, 50030, { mode: "force" }, subFn2),
         );
+        expect(subFn1).toHaveBeenCalledExactlyOnceWith(
+          ANY_LOADING_ENTRY,
+        );
+        subFn1.mockClear();
+
         // should be the earlier results
-        expect(subFn2).toHaveBeenCalledExactlyOnceWith(firstLoad);
+        expect(subFn2).toHaveBeenCalledExactlyOnceWith(ANY_LOADING_ENTRY);
         subFn2.mockClear();
 
         // both will be updated
@@ -494,7 +531,7 @@ describe(Store, () => {
           cache.observeObject(Employee, 50030, { mode: "offline" }, subFn),
         );
 
-        expect(subFn).toHaveBeenCalledExactlyOnceWith(undefined);
+        expect(subFn).toHaveBeenCalledExactlyOnceWith(ANY_INIT_ENTRY);
         subFn.mockClear();
       });
 
@@ -563,15 +600,23 @@ describe(Store, () => {
           defer(
             cache.observeList(Employee, {}, { mode: "force" }, subFn1),
           );
-
-          expect(subFn1).not.toHaveBeenCalled();
           vitest.runOnlyPendingTimers();
+          await vi.waitFor(() => expect(subFn1).toHaveBeenCalled());
 
-          expect(subFn1).toHaveBeenCalledExactlyOnceWith(undefined);
+          expect(subFn1).toHaveBeenCalledExactlyOnceWith({
+            listEntry: {
+              status: "loading",
+              cacheKey: expect.any(Object),
+              value: {
+                data: undefined,
+              },
+              lastUpdated: expect.toBeGreaterThan(0),
+            },
+            status: "loading",
+            resolvedList: [],
+            fetchMore: expect.any(Function),
+          });
           subFn1.mockClear();
-
-          // vitest.runOnlyPendingTimers();
-          vitest.advanceTimersByTime(10000);
 
           await vi.waitFor(() => expect(subFn1).toHaveBeenCalled());
 
@@ -587,24 +632,23 @@ describe(Store, () => {
         it("subsequent load", async () => {
           // Pre-seed with data the server doesn't return
           cache.updateList(Employee, {}, mutatedEmployees);
-          vitest.runOnlyPendingTimers();
 
           defer(
             cache.observeList(Employee, {}, { mode: "force" }, subFn1),
           );
-          vitest.runOnlyPendingTimers();
+
+          await vi.waitFor(() => expect(subFn1).toHaveBeenCalled());
 
           expect(subFn1).toHaveBeenCalledExactlyOnceWith(
             expect.objectContaining({
               listEntry: expect.any(Object),
               resolvedList: mutatedEmployees,
-              status: "loaded",
+              status: "loading",
             }),
           );
           const firstLoad = subFn1.mock.calls[0][0]!;
           subFn1.mockClear();
 
-          // list is updated returned from server
           await vi.waitFor(() => expect(subFn1).toHaveBeenCalled());
           expect(subFn1).toHaveBeenCalledExactlyOnceWith({
             listEntry: expect.objectContaining({
@@ -612,12 +656,12 @@ describe(Store, () => {
               lastUpdated: expect.toBeGreaterThan(
                 firstLoad.listEntry.lastUpdated,
               ),
+              status: "loaded",
             }),
             resolvedList: employeesAsServerReturns,
             status: "loaded",
             fetchMore: expect.any(Function),
           });
-          const secondLoad = subFn1.mock.calls[0][0]!;
           subFn1.mockClear();
         });
       });
@@ -682,6 +726,13 @@ describe(Store, () => {
     });
 
     describe(".fetchMore", () => {
+      beforeEach(() => {
+        vi.useFakeTimers({});
+      });
+      afterEach(() => {
+        vi.useRealTimers();
+      });
+
       it("works in the solo case", async () => {
         const subFn = vitest.fn(
           (x: ListPayload | undefined) => {},
@@ -698,7 +749,16 @@ describe(Store, () => {
 
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
           expect.objectContaining({
+            status: "loading",
+          }),
+        );
+        subFn.mockClear();
+        await vi.waitFor(() => expect(subFn).toHaveBeenCalled());
+
+        expect(subFn).toHaveBeenCalledExactlyOnceWith(
+          expect.objectContaining({
             resolvedList: employeesAsServerReturns.slice(0, 1),
+            status: "loaded",
           }),
         );
         const { fetchMore } = subFn.mock.calls[0][0]!;
@@ -707,7 +767,15 @@ describe(Store, () => {
         void fetchMore();
 
         await vi.waitFor(() => expect(subFn).toHaveBeenCalledTimes(1));
+        expect(subFn).toHaveBeenCalledExactlyOnceWith(
+          expect.objectContaining({
+            resolvedList: employeesAsServerReturns.slice(0, 1),
+            status: "loading",
+          }),
+        );
+        subFn.mockClear();
 
+        await vi.waitFor(() => expect(subFn).toHaveBeenCalledTimes(1));
         expect(subFn).toHaveBeenCalledWith(
           expect.objectContaining({
             resolvedList: employeesAsServerReturns.slice(0, 2),

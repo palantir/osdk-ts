@@ -21,7 +21,6 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
-
 import { combineLatest, of } from "rxjs";
 import { auditTime, map, mergeMap } from "rxjs/operators";
 import invariant from "tiny-invariant";
@@ -51,7 +50,11 @@ export interface ListCacheKey extends
   CacheKey<
     "list",
     ListStorageData,
-    ListQuery
+    ListQuery,
+    [
+      apiName: string,
+      whereClause: WhereClause<ObjectTypeDefinition>,
+    ]
   > //
 {}
 
@@ -94,16 +97,17 @@ export class ListQuery extends Query<
   subscribe(subFn: SubFn<ListPayload>) {
     const ret = this.store.getSubject(this.cacheKey).pipe(
       mergeMap(listEntry => {
-        if (listEntry == null) return of(undefined);
         return combineLatest({
           listEntry: of(listEntry),
-          resolvedList: combineLatest(
-            (listEntry?.value.data ?? []).map(cacheKey =>
-              this.store.getSubject(cacheKey).pipe(
-                map(objectEntry => objectEntry?.value.data),
-              )
+          resolvedList: listEntry?.value?.data == null
+            ? of([])
+            : combineLatest(
+              (listEntry?.value?.data ?? []).map(cacheKey =>
+                this.store.getSubject(cacheKey).pipe(
+                  map(objectEntry => objectEntry?.value.data),
+                )
+              ),
             ),
-          ),
           fetchMore: of(this.fetchMore),
           status: of(listEntry.status),
         }).pipe(map(x => x.listEntry == null ? undefined : x));
@@ -120,7 +124,7 @@ export class ListQuery extends Query<
   }
 
   async _fetch(): Promise<void> {
-    const objectSet = (this.#client(this.#type))
+    const objectSet = this.#client(this.#type)
       .where(this.#whereClause);
 
     while (true) {
@@ -200,7 +204,12 @@ export class ListQuery extends Query<
     this.#nextPageToken = nextPageToken;
 
     const { retVal } = this.store._batch({}, (batch) => {
-      return this.updateList(data, append, status, batch);
+      return this.updateList(
+        data,
+        append,
+        nextPageToken ? status : "loaded",
+        batch,
+      );
     });
 
     return retVal;
@@ -215,7 +224,11 @@ export class ListQuery extends Query<
 
       this.store.getObjectQuery(this.#type, v.$primaryKey as string | number)
         .writeToStore(v, batch);
-      return this.store._getObjectCacheKey(v.$apiName, v.$primaryKey);
+      return this.store.getCacheKey<ObjectCacheKey>(
+        "object",
+        v.$apiName,
+        v.$primaryKey,
+      );
     });
   }
 

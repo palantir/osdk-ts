@@ -21,7 +21,7 @@ import type { Entry } from "./Layer.js";
 import type { SubFn } from "./types.js";
 
 export abstract class Query<
-  KEY extends CacheKey<string, any, any>,
+  KEY extends CacheKey,
   PAYLOAD,
   O extends QueryOptions,
 > {
@@ -63,6 +63,10 @@ export abstract class Query<
       return Promise.resolve();
     }
 
+    this.store._batch({}, (batch) => {
+      this.setStatus("loading", batch);
+    });
+
     this._preFetch();
 
     this.lastFetchStarted = Date.now();
@@ -78,7 +82,7 @@ export abstract class Query<
   _preFetch(): void {}
   abstract _fetch(): Promise<unknown>;
 
-  getSubject(): BehaviorSubject<Entry<KEY> | undefined> {
+  getSubject(): BehaviorSubject<Entry<KEY>> {
     return this.store.getSubject(this.cacheKey);
   }
 
