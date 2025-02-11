@@ -317,13 +317,23 @@ describe(Store, () => {
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
           cacheEntryContaining({
             value: staleEmp,
-            status: "loading",
+            status: "loaded",
           }),
         );
         subFn.mockClear();
 
         // invalidate
         cache.invalidateObject(Employee, staleEmp.$primaryKey);
+
+        await vi.waitFor(() => expect(subFn).toHaveBeenCalled());
+
+        expect(subFn).toHaveBeenCalledExactlyOnceWith(
+          cacheEntryContaining({
+            value: staleEmp,
+            status: "loading",
+          }),
+        );
+        subFn.mockClear();
 
         await vi.waitFor(() => expect(subFn).toHaveBeenCalled());
 
