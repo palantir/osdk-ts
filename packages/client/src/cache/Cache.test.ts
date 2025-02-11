@@ -131,9 +131,7 @@ describe(Store, () => {
 
       // getting the object now matches the result
       expect(cache.getObject(Employee, emp.$primaryKey)).toEqual(
-        expect.objectContaining({
-          data: result,
-        }),
+        result,
       );
 
       const updatedEmpFromCache = cache.updateObject(
@@ -144,9 +142,7 @@ describe(Store, () => {
 
       // getting it again is the updated object
       expect(cache.getObject(Employee, emp.$primaryKey)).toEqual(
-        expect.objectContaining({
-          data: updatedEmpFromCache,
-        }),
+        updatedEmpFromCache,
       );
     });
 
@@ -266,7 +262,7 @@ describe(Store, () => {
           ),
         );
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          expect.objectContaining({ value: { data: emp } }),
+          expect.objectContaining({ value: emp }),
         );
         subFn.mockClear();
 
@@ -277,8 +273,8 @@ describe(Store, () => {
           optimisticId: "1",
         });
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          expect.objectContaining({
-            value: { data: optimisticEmployee },
+          cacheEntryContaining({
+            value: optimisticEmployee,
           }),
         );
         subFn.mockClear();
@@ -295,8 +291,8 @@ describe(Store, () => {
         cache.removeLayer("1");
 
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          expect.objectContaining({
-            value: { data: truthUpdatedEmployee },
+          cacheEntryContaining({
+            value: truthUpdatedEmployee,
           }),
         );
       });
@@ -318,24 +314,22 @@ describe(Store, () => {
           ),
         );
 
-        expectSingleObjectCallAndClear(subFn, staleEmp);
-
-        // invalidate
-        cache.invalidateObject(Employee, staleEmp.$primaryKey);
-
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          expect.objectContaining({
-            value: { data: staleEmp },
+          cacheEntryContaining({
+            value: staleEmp,
             status: "loading",
           }),
         );
         subFn.mockClear();
 
+        // invalidate
+        cache.invalidateObject(Employee, staleEmp.$primaryKey);
+
         await vi.waitFor(() => expect(subFn).toHaveBeenCalled());
 
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          expect.objectContaining({
-            value: { data: emp },
+          cacheEntryContaining({
+            value: emp,
           }),
         );
       });
@@ -399,9 +393,9 @@ describe(Store, () => {
         await vi.waitFor(() => expect(subFn).toHaveBeenCalled());
 
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          expect.objectContaining({
+          cacheEntryContaining({
             status: "loaded",
-            value: { data: emp },
+            value: emp,
           }),
         );
       });
@@ -465,9 +459,9 @@ describe(Store, () => {
         await vi.waitFor(() => expect(subFn).toHaveBeenCalled());
 
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          expect.objectContaining({
+          cacheEntryContaining({
             status: "loaded",
-            value: { data: emp },
+            value: emp,
           }),
         );
       });
@@ -498,15 +492,18 @@ describe(Store, () => {
           status: "loading",
         };
         expect(subFn1).toHaveBeenCalledExactlyOnceWith(
-          ANY_LOADING_ENTRY,
+          cacheEntryContaining({
+            status: "loading",
+            value: undefined,
+          }),
         );
 
         subFn1.mockClear();
 
         await vi.waitFor(() => expect(subFn1).toHaveBeenCalled());
         expect(subFn1).toHaveBeenCalledExactlyOnceWith(
-          expect.objectContaining({
-            value: { data: likeEmployee50030 },
+          cacheEntryContaining({
+            value: likeEmployee50030,
           }),
         );
 
@@ -564,17 +561,15 @@ describe(Store, () => {
         // force an update
         cache.updateObject(Employee, emp);
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          expect.objectContaining({ value: { data: emp } }),
+          cacheEntryContaining({ value: emp }),
         );
         subFn.mockClear();
 
         // force again
         cache.updateObject(Employee, emp.$clone({ fullName: "new name" }));
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          expect.objectContaining({
-            value: {
-              data: expect.objectContaining({ fullName: "new name" }),
-            },
+          cacheEntryContaining({
+            value: expect.objectContaining({ fullName: "new name" }),
           }),
         );
         subFn.mockClear();
@@ -600,7 +595,7 @@ describe(Store, () => {
         expect(subFn).toHaveBeenCalledTimes(2);
 
         expect(subFn.mock.calls[1][0]).toEqual(
-          expect.objectContaining({ value: { data: emp } }),
+          cacheEntryContaining({ value: emp }),
         );
       });
     });
@@ -624,19 +619,17 @@ describe(Store, () => {
           vitest.runOnlyPendingTimers();
           await vi.waitFor(() => expect(subFn1).toHaveBeenCalled());
 
-          expect(subFn1).toHaveBeenCalledExactlyOnceWith({
-            listEntry: {
+          expect(subFn1).toHaveBeenCalledExactlyOnceWith(
+            {
+              listEntry: cacheEntryContaining({
+                status: "loading",
+                value: undefined,
+              }),
               status: "loading",
-              cacheKey: expect.any(Object),
-              value: {
-                data: undefined,
-              },
-              lastUpdated: expect.toBeGreaterThan(0),
+              resolvedList: [],
+              fetchMore: expect.any(Function),
             },
-            status: "loading",
-            resolvedList: [],
-            fetchMore: expect.any(Function),
-          });
+          );
           subFn1.mockClear();
 
           await vi.waitFor(() => expect(subFn1).toHaveBeenCalled());
@@ -835,17 +828,16 @@ describe(Store, () => {
         expect(todoSubFn).toHaveBeenCalledWith(
           cacheEntryContaining({
             status: "loading",
+            value: undefined,
           }),
         );
 
         // as long as we get the loaded call we are happy
         expect(todoSubFn).toHaveBeenLastCalledWith(
           cacheEntryContaining({
-            value: {
-              data: expect.objectContaining({
-                $primaryKey: 0,
-              }),
-            },
+            value: expect.objectContaining({
+              $primaryKey: 0,
+            }),
             status: "loaded",
           }),
         );
@@ -873,7 +865,7 @@ describe(Store, () => {
         await actionPromise;
         await waitForCall(todoSubFn);
         expect(todoSubFn).toHaveBeenCalledExactlyOnceWith(
-          expect.objectContaining({
+          cacheEntryContaining({
             status: "loading",
           }),
         );
@@ -884,11 +876,9 @@ describe(Store, () => {
         await waitForCall(todoSubFn);
         expect(todoSubFn).toHaveBeenLastCalledWith(
           cacheEntryContaining({
-            value: {
-              data: expect.objectContaining({
-                foo: "hi",
-              }),
-            },
+            value: expect.objectContaining({
+              foo: "hi",
+            }),
             status: "loaded",
           }),
         );

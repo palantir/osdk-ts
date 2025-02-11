@@ -129,7 +129,7 @@ export function expectSingleObjectCallAndClear<T extends ObjectTypeDefinition>(
   value: Osdk.Instance<T>,
 ): void {
   expect(subFn).toHaveBeenCalledExactlyOnceWith(
-    expect.objectContaining({ value: { data: value } }),
+    expect.objectContaining({ value: value }),
   );
   subFn.mockClear();
 }
@@ -162,7 +162,9 @@ export function mockListSubCallback(): Mock<
 export function cacheEntryContaining(x: Partial<Entry<any>>): Entry<any> {
   return {
     cacheKey: x.cacheKey ?? expect.any(Object),
-    value: x.value ?? expect.anything(),
+    value: "value" in x
+      ? x.value
+      : expect.toBeOneOf([expect.anything(), undefined]),
     status: x.status ?? expect.anything(),
     lastUpdated: x.lastUpdated ?? expect.anything(),
   };
@@ -179,11 +181,15 @@ export function applyCustomMatchers(): void {
   });
 }
 
-interface CustomMatchers<R = unknown> {
+interface CustomMatchers<R = any> {
+  toBeGreaterThan: (n: number) => R;
+}
+
+interface CustomAsymmetricMatchers<R = any> {
   toBeGreaterThan: (n: number) => R;
 }
 
 declare module "vitest" {
   interface Assertion<T = any> extends CustomMatchers<T> {}
-  interface AsymmetricMatchersContaining extends CustomMatchers {}
+  interface AsymmetricMatchersContaining extends CustomAsymmetricMatchers {}
 }
