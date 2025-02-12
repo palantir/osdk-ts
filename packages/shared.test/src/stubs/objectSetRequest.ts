@@ -39,6 +39,18 @@ const baseObjectSet: LoadObjectSetRequestV2 = {
   select: [],
 };
 
+const baseObjectSetWithEmptyWhere: LoadObjectSetRequestV2 = {
+  objectSet: {
+    type: "filter",
+    objectSet: { type: "base", objectType: employeeObjectType.apiName },
+    where: {
+      type: "and",
+      value: [],
+    },
+  },
+  select: [],
+};
+
 const baseObjectSetSelect: LoadObjectSetRequestV2 = {
   objectSet: { type: "base", objectType: employeeObjectType.apiName },
   select: ["fullName"],
@@ -521,6 +533,12 @@ export const loadObjectSetRequestHandlers: {
     employee3,
     employeeFailsStrict,
   ],
+  [stableStringify(baseObjectSetWithEmptyWhere)]: [
+    employee1,
+    employee2,
+    employee3,
+    employeeFailsStrict,
+  ],
   [stableStringify(ridObjectSet)]: [employee1],
   [stableStringify(ridObjectSetSelect)]: [employee2],
   [stableStringify(unionedObjectSet)]: [employee1, employee2],
@@ -546,6 +564,7 @@ export const loadObjectSetRequestHandlers: {
   [stableStringify(searchAroundObjectSet)]: [nycOffice],
   [stableStringify(searchAroundFilteredObjectSet)]: [nycOffice],
   [stableStringify(baseObjectSetSelect)]: [employee1, employee2, employee3],
+
   [stableStringify(objectWithAllPropertyTypes)]: [objectWithAllPropertyTypes1],
   [stableStringify(emptyObjectWithAllPropertyTypes)]: [
     objectWithAllPropertyTypesEmptyEntries,
