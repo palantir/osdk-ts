@@ -1,5 +1,15 @@
 # @osdk/api
 
+## 2.1.0-beta.30
+
+### Minor Changes
+
+- 966d408: Rename type for base action parameter types.
+- f03e39f: Add a namespace type for listeners.
+- 1591f04: Rename base property types.
+- 785f663: Rename namespace so not exported from api package.
+- 2d5e648: Remove subscribe from experimental gate.
+
 ## 2.1.0-beta.29
 
 ### Minor Changes
