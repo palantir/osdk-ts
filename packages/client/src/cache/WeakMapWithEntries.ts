@@ -120,7 +120,7 @@ export class WeakMapWithEntries<K extends WeakKey, V>
   /**
    * Returns an iterable of keys in the map
    */
-  keys(): MapIterator<K> {
+  keys(): IterableIterator<K> {
     const self = this;
     function* iter(): IterableIterator<K> {
       for (const ref of self.#list) {
@@ -136,7 +136,7 @@ export class WeakMapWithEntries<K extends WeakKey, V>
   /**
    * Returns an iterable of values in the map
    */
-  values(): MapIterator<V> {
+  values(): IterableIterator<V> {
     const self = this;
     function* iter(): IterableIterator<V> {
       for (const ref of self.#list) {

@@ -85,16 +85,14 @@ interface UpdateOptions {
   optimisticId?: unknown;
 }
 
-export interface StorageData<T> {
-  data: T | undefined;
-}
-
 interface OptimisticUpdateContext {
   updateObject: (value: Osdk.Instance<ObjectTypeDefinition>) => this;
 }
 
-export interface ApplyActionOptions {
-  optimisticUpdate?: (ctx: OptimisticUpdateContext) => void;
+export namespace Store {
+  export interface ApplyActionOptions {
+    optimisticUpdate?: (ctx: OptimisticUpdateContext) => void;
+  }
 }
 
 /*
@@ -148,7 +146,7 @@ export class Store {
   applyAction: <Q extends ActionDefinition<any>>(
     action: Q,
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
-    opts?: ApplyActionOptions,
+    opts?: Store.ApplyActionOptions,
   ) => Promise<unknown> = (action, args, { optimisticUpdate } = {}) => {
     const optimisticId = optimisticUpdate ? Object.create(null) : undefined;
     if (optimisticUpdate) {
@@ -176,18 +174,26 @@ export class Store {
       .applyAction(args as any, { $returnEdits: true })
       .then(
         (value: ActionEditResponse) => {
+          const typesToInvalidate = new Set<string>();
           if (value.type === "edits") {
-            // TODO we need an update for deletes
-            for (const q of [value.addedObjects, value.modifiedObjects]) {
-              if (!q) continue;
-              for (const o of q) {
-                this.invalidateObject(o.objectType, o.primaryKey);
-              }
+            // TODO we need an backend update for deletes
+            for (const obj of value.modifiedObjects) {
+              this.invalidateObject(obj.objectType, obj.primaryKey);
+            }
+
+            for (const obj of value.addedObjects) {
+              // TODO: add to existing lists instead
+              typesToInvalidate.add(obj.objectType);
             }
           } else {
             for (const apiName of value.editedObjectTypes) {
-              this.invalidateList(apiName.toString(), {});
+              typesToInvalidate.add(apiName.toString());
             }
+          }
+
+          for (const objectType of typesToInvalidate) {
+            // TODO make sure this covers individual object loads too
+            this.invalidateObjectType(objectType);
           }
           return value;
         },

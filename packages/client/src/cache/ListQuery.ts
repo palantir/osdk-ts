@@ -31,19 +31,21 @@ import { Entry } from "./Layer.js";
 import type { ObjectCacheKey, ObjectEntry } from "./ObjectQuery.js";
 import type { QueryOptions } from "./Query.js";
 import { Query } from "./Query.js";
-import type { BatchContext, Status, StorageData, Store } from "./Store.js";
+import type { BatchContext, Status, Store } from "./Store.js";
 import type { SubFn } from "./types.js";
 
 export interface ListPayload {
   listEntry: ListEntry;
-  resolvedList: Array<Osdk.Instance<any, never, string> | undefined>;
+  resolvedList: Array<Osdk.Instance<any, never, string>>;
   fetchMore: () => Promise<unknown>;
+  hasMore: boolean;
   status: Status;
 }
 
 export interface ListEntry extends Entry<ListCacheKey> {}
 
-interface ListStorageData extends StorageData<ObjectCacheKey[]> {
+interface ListStorageData {
+  data: ObjectCacheKey[];
 }
 
 export interface ListCacheKey extends
@@ -109,6 +111,7 @@ export class ListQuery extends Query<
               ),
             ),
           fetchMore: of(this.fetchMore),
+          hasMore: of(this.#nextPageToken != null),
           status: of(listEntry.status),
         }).pipe(map(x => x.listEntry == null ? undefined : x));
       }),
