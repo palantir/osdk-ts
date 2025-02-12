@@ -24,7 +24,7 @@
     "@osdk/e2e.generated.catchall": "workspace:*",
     "@osdk/oauth": "workspace:*",
     "@osdk/react": "workspace:*",
-    "@react-navigation/bottom-tabs": "^7.0.0",
+    "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/elements": "^2.2.4",
     "@react-navigation/native": "^7.0.14",
     "dotenv": "^16.4.5",
