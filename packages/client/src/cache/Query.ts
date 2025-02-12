@@ -15,9 +15,9 @@
  */
 
 import type { BehaviorSubject } from "rxjs";
-import type { BatchContext, Status, Store, Unsubscribable } from "./Cache.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Entry } from "./Layer.js";
+import type { BatchContext, Status, Store, Unsubscribable } from "./Store.js";
 import type { SubFn } from "./types.js";
 
 export abstract class Query<

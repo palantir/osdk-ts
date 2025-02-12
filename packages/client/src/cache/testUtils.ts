@@ -28,10 +28,10 @@ import type { Mock } from "vitest";
 import { afterEach, beforeEach, expect, vi, vitest } from "vitest";
 import type { ActionSignatureFromDef } from "../actions/applyAction.js";
 import type { Client } from "../Client.js";
-import type { Unsubscribable } from "./Cache.js";
 import type { Entry } from "./Layer.js";
 import type { ListPayload } from "./ListQuery.js";
 import type { ObjectEntry } from "./ObjectQuery.js";
+import type { Unsubscribable } from "./Store.js";
 
 export interface MockClientHelper {
   client: Mock<Client> & Client;

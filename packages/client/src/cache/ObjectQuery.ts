@@ -22,11 +22,11 @@ import type {
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import { distinctUntilChanged } from "rxjs";
-import type { BatchContext, Status, Store, Unsubscribable } from "./Cache.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Entry } from "./Layer.js";
 import type { QueryOptions } from "./Query.js";
 import { Query } from "./Query.js";
+import type { BatchContext, Status, Store, Unsubscribable } from "./Store.js";
 import type { SubFn } from "./types.js";
 
 export interface ObjectEntry extends Entry<ObjectCacheKey> {}

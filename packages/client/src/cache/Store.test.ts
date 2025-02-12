@@ -36,8 +36,8 @@ import {
 } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import type { Unsubscribable } from "./Cache.js";
-import { Store } from "./Cache.js";
+import type { Unsubscribable } from "./Store.js";
+import { Store } from "./Store.js";
 import type { MockClientHelper } from "./testUtils.js";
 import {
   applyCustomMatchers,

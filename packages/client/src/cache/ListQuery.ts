@@ -25,13 +25,13 @@ import { combineLatest, of } from "rxjs";
 import { auditTime, map, mergeMap } from "rxjs/operators";
 import invariant from "tiny-invariant";
 import type { Client } from "../Client.js";
-import type { BatchContext, Status, StorageData, Store } from "./Cache.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Canonical } from "./Canonical.js";
 import { Entry } from "./Layer.js";
 import type { ObjectCacheKey, ObjectEntry } from "./ObjectQuery.js";
 import type { QueryOptions } from "./Query.js";
 import { Query } from "./Query.js";
+import type { BatchContext, Status, StorageData, Store } from "./Store.js";
 import type { SubFn } from "./types.js";
 
 export interface ListPayload {
