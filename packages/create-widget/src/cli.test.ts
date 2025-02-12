@@ -51,6 +51,7 @@ for (const template of TEMPLATES) {
         project: `expected-${template.id}`,
         template,
         sdkVersion,
+        requiresOsdk: template.requiresOsdk,
       });
     });
   });
@@ -60,12 +61,14 @@ async function runTest({
   project,
   template,
   sdkVersion,
+  requiresOsdk,
 }: {
   project: string;
   template: Template;
   sdkVersion: string;
+  requiresOsdk: boolean;
 }): Promise<void> {
-  await cli([
+  let options = [
     "npx",
     "@osdk/create-widget",
     project,
@@ -76,13 +79,20 @@ async function runTest({
     "https://example.palantirfoundry.com",
     "--widgetSet",
     "ri.widgetregistry..widget-set.fake",
-    "--osdkPackage",
-    "@custom-widget/sdk",
-    "--osdkRegistryUrl",
-    "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
     "--sdkVersion",
     sdkVersion,
-  ]);
+  ];
+
+  if (requiresOsdk) {
+    options = options.concat([
+      "--osdkPackage",
+      "@custom-widget/sdk",
+      "--osdkRegistryUrl",
+      "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
+    ]);
+  }
+
+  await cli(options);
 
   expect(
     fs.readdirSync(path.join(process.cwd(), project)).length,
@@ -93,8 +103,9 @@ async function runTest({
   expect(fs.existsSync(path.join(process.cwd(), project, "README.md"))).toBe(
     true,
   );
-
-  const packageJson = JSON.parse(
-    fs.readFileSync(path.join(process.cwd(), project, "package.json"), "utf-8"),
+  const packageJsonContents = fs.readFileSync(
+    path.join(process.cwd(), project, "package.json"),
+    "utf-8",
   );
+  expect(() => JSON.parse(packageJsonContents)).not.toThrow();
 }
