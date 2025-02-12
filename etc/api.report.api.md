@@ -283,6 +283,8 @@ export interface DataValueClientToWire {
     	// (undocumented)
     byte: number;
     	// (undocumented)
+    date: string;
+    	// (undocumented)
     datetime: string;
     	// (undocumented)
     decimal: string | number;
@@ -335,6 +337,8 @@ export interface DataValueWireToClient {
     boolean: boolean;
     	// (undocumented)
     byte: number;
+    	// (undocumented)
+    date: string;
     	// (undocumented)
     datetime: string;
     	// (undocumented)
@@ -991,6 +995,29 @@ export namespace QueryParam {
     export type ObjectType<T extends ObjectTypeDefinition> = OsdkBase<T> | OsdkObjectPrimaryKeyType<T>;
     	// (undocumented)
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueClientToWire[T];
+    	// Warning: (ae-forgotten-export) The symbol "AggregationRangeKeyTypes" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "AggKeyClientToWire" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export type RangeKey<T extends AggregationRangeKeyTypes> = AggKeyClientToWire<"range", T>;
+    	// Warning: (ae-forgotten-export) The symbol "ThreeDimensionalAggregation" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export type ThreeDimensionalAggregationType<
+    		OUT extends AggregationKeyTypes | RangeKey<any>,
+    		IN extends AggregationKeyTypes | RangeKey<any>,
+    		V extends AggregationValueTypes
+    	> = ThreeDimensionalAggregation<OUT extends AggregationKeyTypes ? AggKeyClientToWire<OUT> : OUT, IN extends AggregationKeyTypes ? AggKeyClientToWire<IN> : IN, AggValueClientToWire<V>>;
+    	// Warning: (ae-forgotten-export) The symbol "AggregationKeyTypes" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "AggregationValueTypes" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "TwoDimensionalAggregation" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "AggValueClientToWire" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export type TwoDimensionalAggregationType<
+    		T extends AggregationKeyTypes | RangeKey<any>,
+    		V extends AggregationValueTypes
+    	> = TwoDimensionalAggregation<T extends AggregationKeyTypes ? AggKeyClientToWire<T> : T, AggValueClientToWire<V>>;
 }
 
 // @public (undocumented)
@@ -1004,6 +1031,23 @@ export namespace QueryResult {
     export type ObjectType<T extends ObjectTypeDefinition> = OsdkBase<T>;
     	// (undocumented)
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueWireToClient[T];
+    	// Warning: (ae-forgotten-export) The symbol "AggKeyWireToClient" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export type RangeKey<T extends AggregationRangeKeyTypes> = AggKeyWireToClient<"range", T>;
+    	// (undocumented)
+    export type ThreeDimensionalAggregationType<
+    		OUT extends AggregationKeyTypes | RangeKey<any>,
+    		IN extends AggregationKeyTypes | RangeKey<any>,
+    		V extends AggregationValueTypes
+    	> = ThreeDimensionalAggregation<OUT extends AggregationKeyTypes ? AggKeyWireToClient<OUT> : OUT, IN extends AggregationKeyTypes ? AggKeyWireToClient<IN> : IN, AggValueWireToClient<V>>;
+    	// Warning: (ae-forgotten-export) The symbol "AggValueWireToClient" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export type TwoDimensionalAggregationType<
+    		T extends AggregationKeyTypes | RangeKey<any>,
+    		V extends AggregationValueTypes
+    	> = TwoDimensionalAggregation<T extends AggregationKeyTypes ? AggKeyWireToClient<T> : T, AggValueWireToClient<V>>;
 }
 
 // Warning: (ae-forgotten-export) The symbol "ErrorResult" needs to be exported by the entry point index.d.ts
@@ -1126,7 +1170,7 @@ export type TimeSeriesQuery = {
 };
 
 // @public (undocumented)
-export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<"date" | "double" | "timestamp">;
+export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<AggregationValueTypes>;
 
 // Warning: (ae-forgotten-export) The symbol "AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "GetWirePropertyValueFromClient" needs to be exported by the entry point index.d.ts

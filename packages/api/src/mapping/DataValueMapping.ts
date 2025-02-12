@@ -25,6 +25,7 @@ export interface DataValueWireToClient {
   boolean: boolean;
   byte: number;
   datetime: string;
+  date: string;
   decimal: string;
   float: number;
   double: number;
@@ -57,6 +58,7 @@ export interface DataValueClientToWire {
   boolean: boolean;
   byte: number;
   datetime: string;
+  date: string;
   decimal: string | number;
   float: number;
   double: number;
