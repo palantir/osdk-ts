@@ -57,7 +57,9 @@ function createTmpDir(): tmp.DirResult {
   return tmpDir;
 }
 
-function templatesWithSdkVersions(templates: readonly Template[]) {
+function templatesWithSdkVersions<T extends Pick<Template, "files">>(
+  templates: readonly T[],
+) {
   return templates.flatMap((template) =>
     Object.keys(template.files).map((sdkVersion) =>
       [template, sdkVersion as SdkVersion] as const

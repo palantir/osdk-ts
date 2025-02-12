@@ -1,0 +1,47 @@
+{
+  "name": "@osdk/examples.widget-minimal-react-sdk-2.x",
+  "private": true,
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "scripts": {
+    "build": "tsc && vite build",
+    "dev": "vite",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@blueprintjs/core": "^5.16.0",
+    "@osdk/widget.client-react.unstable": "workspace:*",
+    "@osdk/widget.client.unstable": "workspace:*",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-router-dom": "^6.23.1"
+  },
+  "devDependencies": {
+    "@eslint/compat": "^1.2.1",
+    "@eslint/js": "^9.13.0",
+    "@osdk/widget.vite-plugin.unstable": "workspace:*",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@typescript-eslint/eslint-plugin": "^8.21.0",
+    "@typescript-eslint/parser": "^8.21.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "eslint": "^9.19.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jsx-a11y": "^6.10.1",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.14",
+    "globals": "^15.11.0",
+    "typescript": "~5.5.4",
+    "typescript-eslint": "^8.21.0",
+    "vite": "^6.0.11",
+    "vitest": "^3.0.5"
+  },
+  "type": "module"
+}

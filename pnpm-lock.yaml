@@ -1034,6 +1034,85 @@ importers:
         specifier: ^2.1.6
         version: 2.1.6(typescript@5.5.4)
 
+  examples/example-widget-minimal-react-sdk-2.x:
+    dependencies:
+      '@blueprintjs/core':
+        specifier: ^5.16.0
+        version: 5.16.0(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@osdk/widget.client-react.unstable':
+        specifier: workspace:*
+        version: link:../../packages/widget.client-react.unstable
+      '@osdk/widget.client.unstable':
+        specifier: workspace:*
+        version: link:../../packages/widget.client.unstable
+      react:
+        specifier: ^18
+        version: 18.3.1
+      react-dom:
+        specifier: ^18
+        version: 18.3.1(react@18.3.1)
+      react-router-dom:
+        specifier: ^6.23.1
+        version: 6.23.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+    devDependencies:
+      '@eslint/compat':
+        specifier: ^1.2.1
+        version: 1.2.1(eslint@9.19.0(jiti@2.4.2))
+      '@eslint/js':
+        specifier: ^9.13.0
+        version: 9.19.0
+      '@osdk/widget.vite-plugin.unstable':
+        specifier: workspace:*
+        version: link:../../packages/widget.vite-plugin.unstable
+      '@types/react':
+        specifier: ^18
+        version: 18.3.12
+      '@types/react-dom':
+        specifier: ^18
+        version: 18.3.1
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^8.21.0
+        version: 8.21.0(@typescript-eslint/parser@8.21.0(eslint@9.19.0(jiti@2.4.2))(typescript@5.5.4))(eslint@9.19.0(jiti@2.4.2))(typescript@5.5.4)
+      '@typescript-eslint/parser':
+        specifier: ^8.21.0
+        version: 8.21.0(eslint@9.19.0(jiti@2.4.2))(typescript@5.5.4)
+      '@vitejs/plugin-react':
+        specifier: ^4.2.0
+        version: 4.2.1(vite@6.0.11(@types/node@22.13.1)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.38.0)(yaml@2.4.5))
+      eslint:
+        specifier: ^9.19.0
+        version: 9.19.0(jiti@2.4.2)
+      eslint-plugin-import:
+        specifier: ^2.31.0
+        version: 2.31.0(@typescript-eslint/parser@8.21.0(eslint@9.19.0(jiti@2.4.2))(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@8.21.0(eslint@9.19.0(jiti@2.4.2))(typescript@5.5.4))(eslint-plugin-import@2.31.0)(eslint@9.19.0(jiti@2.4.2)))(eslint@9.19.0(jiti@2.4.2))
+      eslint-plugin-jsx-a11y:
+        specifier: ^6.10.1
+        version: 6.10.1(eslint@9.19.0(jiti@2.4.2))
+      eslint-plugin-react:
+        specifier: ^7.37.2
+        version: 7.37.2(eslint@9.19.0(jiti@2.4.2))
+      eslint-plugin-react-hooks:
+        specifier: ^5.0.0
+        version: 5.0.0(eslint@9.19.0(jiti@2.4.2))
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.14
+        version: 0.4.14(eslint@9.19.0(jiti@2.4.2))
+      globals:
+        specifier: ^15.11.0
+        version: 15.11.0
+      typescript:
+        specifier: ~5.5.4
+        version: 5.5.4
+      typescript-eslint:
+        specifier: ^8.21.0
+        version: 8.21.0(eslint@9.19.0(jiti@2.4.2))(typescript@5.5.4)
+      vite:
+        specifier: ^6.0.11
+        version: 6.0.11(@types/node@22.13.1)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.38.0)(yaml@2.4.5)
+      vitest:
+        specifier: ^3.0.5
+        version: 3.0.5(@types/node@22.13.1)(happy-dom@16.8.1)(jiti@2.4.2)(jsdom@20.0.3)(lightningcss@1.29.1)(msw@2.7.0(@types/node@22.13.1)(typescript@5.5.4))(terser@5.38.0)(yaml@2.4.5)
+
   examples/example-widget-react-sdk-2.x:
     dependencies:
       '@osdk/client':
@@ -2433,6 +2512,9 @@ importers:
         specifier: 17.7.2
         version: 17.7.2
     devDependencies:
+      '@osdk/create-widget.template.minimal-react.v2':
+        specifier: workspace:*
+        version: link:../create-widget.template.minimal-react.v2
       '@osdk/create-widget.template.react.v2':
         specifier: workspace:*
         version: link:../create-widget.template.react.v2
@@ -2466,6 +2548,85 @@ importers:
       typescript:
         specifier: ~5.5.4
         version: 5.5.4
+
+  packages/create-widget.template.minimal-react.v2:
+    dependencies:
+      '@blueprintjs/core':
+        specifier: ^5.16.0
+        version: 5.16.0(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react:
+        specifier: ^18
+        version: 18.3.1
+      react-dom:
+        specifier: ^18
+        version: 18.3.1(react@18.3.1)
+      react-router-dom:
+        specifier: ^6.23.1
+        version: 6.23.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+    devDependencies:
+      '@eslint/compat':
+        specifier: ^1.2.1
+        version: 1.2.1(eslint@9.19.0(jiti@2.4.2))
+      '@eslint/js':
+        specifier: ^9.13.0
+        version: 9.19.0
+      '@osdk/create-app.template-packager':
+        specifier: workspace:~
+        version: link:../create-app.template-packager
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@types/react':
+        specifier: ^18
+        version: 18.3.12
+      '@types/react-dom':
+        specifier: ^18
+        version: 18.3.1
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^8.21.0
+        version: 8.21.0(@typescript-eslint/parser@8.21.0(eslint@9.19.0(jiti@2.4.2))(typescript@5.5.4))(eslint@9.19.0(jiti@2.4.2))(typescript@5.5.4)
+      '@typescript-eslint/parser':
+        specifier: ^8.21.0
+        version: 8.21.0(eslint@9.19.0(jiti@2.4.2))(typescript@5.5.4)
+      '@vitejs/plugin-react':
+        specifier: ^4.2.0
+        version: 4.2.1(vite@6.0.11(@types/node@22.13.1)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.38.0)(yaml@2.4.5))
+      eslint:
+        specifier: ^9.19.0
+        version: 9.19.0(jiti@2.4.2)
+      eslint-plugin-import:
+        specifier: ^2.31.0
+        version: 2.31.0(@typescript-eslint/parser@8.21.0(eslint@9.19.0(jiti@2.4.2))(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@8.21.0(eslint@9.19.0(jiti@2.4.2))(typescript@5.5.4))(eslint-plugin-import@2.31.0)(eslint@9.19.0(jiti@2.4.2)))(eslint@9.19.0(jiti@2.4.2))
+      eslint-plugin-jsx-a11y:
+        specifier: ^6.10.1
+        version: 6.10.1(eslint@9.19.0(jiti@2.4.2))
+      eslint-plugin-react:
+        specifier: ^7.37.2
+        version: 7.37.2(eslint@9.19.0(jiti@2.4.2))
+      eslint-plugin-react-hooks:
+        specifier: ^5.0.0
+        version: 5.0.0(eslint@9.19.0(jiti@2.4.2))
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.14
+        version: 0.4.14(eslint@9.19.0(jiti@2.4.2))
+      globals:
+        specifier: ^15.11.0
+        version: 15.11.0
+      typescript:
+        specifier: ~5.5.4
+        version: 5.5.4
+      typescript-eslint:
+        specifier: ^8.21.0
+        version: 8.21.0(eslint@9.19.0(jiti@2.4.2))(typescript@5.5.4)
+      vite:
+        specifier: ^6.0.11
+        version: 6.0.11(@types/node@22.13.1)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.38.0)(yaml@2.4.5)
+      vitest:
+        specifier: ^3.0.5
+        version: 3.0.5(@types/node@22.13.1)(happy-dom@16.8.1)(jiti@2.4.2)(jsdom@20.0.3)(lightningcss@1.29.1)(msw@2.7.0(@types/node@22.13.1)(typescript@5.5.4))(terser@5.38.0)(yaml@2.4.5)
 
   packages/create-widget.template.react.v2:
     dependencies:
@@ -5301,7 +5462,7 @@ packages:
 
   '@expo/bunyan@4.0.1':
     resolution: {integrity: sha512-+Lla7nYSiHZirgK+U/uYzsLv/X+HaJienbD5AKX1UQZHYfWaP+9uuQluRB4GrEVWF0GZ7vEVp/jzaOT9k/SQlg==}
-    engines: {node: '>=0.10.0'}
+    engines: {'0': node >=0.10.0}
 
   '@expo/cli@0.21.8':
     resolution: {integrity: sha512-gU+NlL/XS9r7LEfLhjDDKuv3jEtOh+rVnk/k7Lp8WrUwaMCoEGfmQpSqLXetFCCC4UFXSaj1cdMGoy2UBw4rew==}
