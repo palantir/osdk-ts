@@ -29,9 +29,11 @@ import { consola } from "consola";
 export function wirePropertyV2ToSdkPropertyDefinition(
   input: (PropertyV2 | SharedPropertyType) & { nullable?: boolean },
   isNullable: boolean = true,
+  shouldLogWarnings: boolean = false,
 ): ObjectMetadata.Property | undefined {
   const sdkPropDefinition = objectPropertyTypeToSdkPropertyDefinition(
     input.dataType,
+    shouldLogWarnings,
   );
   if (sdkPropDefinition == null) {
     return undefined;
@@ -74,22 +76,27 @@ export function wirePropertyV2ToSdkPropertyDefinition(
       };
     }
     case "cipherText": {
-      consola.info(
-        `${JSON.stringify(input.dataType.type)} is not a supported dataType`,
-      );
+      if (shouldLogWarnings) {
+        consola.info(
+          `${JSON.stringify(input.dataType.type)} is not a supported dataType`,
+        );
+      }
       return undefined;
     }
     default:
       const _: never = input.dataType;
-      consola.info(
-        `${JSON.stringify(input.dataType)} is not a supported dataType`,
-      );
+      if (shouldLogWarnings) {
+        consola.info(
+          `${JSON.stringify(input.dataType)} is not a supported dataType`,
+        );
+      }
       return undefined;
   }
 }
 
 function objectPropertyTypeToSdkPropertyDefinition(
   propertyType: ObjectPropertyType,
+  shouldLogWarnings: boolean = false,
 ): WirePropertyTypes | undefined {
   switch (propertyType.type) {
     case "integer":
@@ -133,16 +140,23 @@ function objectPropertyTypeToSdkPropertyDefinition(
     }
 
     case "cipherText": {
-      consola.info(
-        `${JSON.stringify(propertyType.type)} is not a supported propertyType`,
-      );
+      if (shouldLogWarnings) {
+        consola.info(
+          `${
+            JSON.stringify(propertyType.type)
+          } is not a supported propertyType`,
+        );
+      }
+
       return undefined;
     }
     default: {
       const _: never = propertyType;
-      consola.info(
-        `${JSON.stringify(propertyType)} is not a supported propertyType`,
-      );
+      if (shouldLogWarnings) {
+        consola.info(
+          `${JSON.stringify(propertyType)} is not a supported propertyType`,
+        );
+      }
       return undefined;
     }
   }

@@ -52,6 +52,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
     wireObjectTypeFullMetadataToSdkObjectMetadata(
       object.raw,
       true,
+      true,
     ),
   );
 
@@ -66,7 +67,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
   const osdkObjectIdentifier = `${object.shortApiName}.OsdkObject`;
 
   const identifiers: Identifiers = {
-    objectDefIdentifier: `${object.shortApiName}`,
+    objectDefIdentifier: object.shortApiName,
     osdkObjectLinksIdentifier,
     osdkObjectPropsIdentifier,
     osdkObjectStrictPropsIdentifier,
@@ -229,7 +230,7 @@ ${
             // !strict || propertyDefinition.nullable ? "?" : ""
             ""}`,
           (typeof propertyDefinition.type === "object"
-            ? `${remapStructType(propertyDefinition.type)}`
+            ? remapStructType(propertyDefinition.type)
             : `$PropType[${JSON.stringify(propertyDefinition.type)}]`)
           + `${propertyDefinition.multiplicity ? "[]" : ""}${
             propertyDefinition.nullable

@@ -21,6 +21,7 @@ import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkProp
 export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
   interfaceType: InterfaceType,
   v2: boolean,
+  shouldLogWarnings: boolean = false,
 ): InterfaceMetadata {
   return {
     type: "interface",
@@ -38,6 +39,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
           wirePropertyV2ToSdkPropertyDefinition(
             value,
             true,
+            shouldLogWarnings,
           ),
         ];
       }).filter(([key, value]) => value != null),

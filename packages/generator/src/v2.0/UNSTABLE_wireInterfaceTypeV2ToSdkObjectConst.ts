@@ -54,6 +54,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
         __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
           parent.raw,
           v2,
+          true,
         ),
       );
       return it;

@@ -27,7 +27,7 @@ export class EnhancedObjectType extends EnhancedBase<ObjectTypeFullMetadata> {
   }
 
   getDefinitionIdentifier(v2: boolean): string {
-    return v2 ? `${this.shortApiName}` : `${this.shortApiName}Def`;
+    return v2 ? this.shortApiName : `${this.shortApiName}Def`;
   }
 
   getImportedDefinitionIdentifier(v2: boolean): string {
