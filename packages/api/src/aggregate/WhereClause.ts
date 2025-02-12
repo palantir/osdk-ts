@@ -153,7 +153,7 @@ type FilterFor<PD extends ObjectMetadata.Property> = PD["multiplicity"] extends
       : ArrayFilter<number>))
   : PD["type"] extends Record<string, BaseWirePropertyTypes> ?
       | StructFilter<PD["type"]>
-      | BaseFilter<string>
+      | BaseFilter.$isNull<string>
   : (PD["type"] extends "string" ? StringFilter
     : PD["type"] extends "geopoint" | "geoshape" ? GeoFilter
     : PD["type"] extends "datetime" | "timestamp" ? DatetimeFilter
