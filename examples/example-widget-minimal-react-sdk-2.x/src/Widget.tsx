@@ -30,7 +30,7 @@ export const Widget: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => setCounterValue(counterValue + 1), 1000);
     return () => clearInterval(interval);
-  }, [emitEvent, setCounterValue, counterValue]);
+  }, [setCounterValue, counterValue]);
 
   return (
     <div className={css.container}>
