@@ -150,7 +150,7 @@ async function generateV2QueryFile(
                 ${
                   queryParamJsDoc(paramToDef(parameter), { apiName })
                 }readonly "${apiName}"${q.nullable ? "?" : ""}`,
-                `${getQueryParamType(ontology, q, "Param")}`,
+                getQueryParamType(ontology, q, "Param"),
               ];
             },
           })
@@ -296,12 +296,9 @@ export function getQueryParamType(
     case "integer":
     case "long":
     case "string":
-    case "threeDimensionalAggregation":
     case "timestamp":
-    case "twoDimensionalAggregation":
       inner = `Query${type}.PrimitiveType<${JSON.stringify(input.type)}>`;
       break;
-
     case "struct":
       inner = `{
             ${
@@ -312,14 +309,33 @@ export function getQueryParamType(
                 ${type === "Param" ? "readonly " : ""}"${apiName}"${
                 p.nullable ? "?" : ""
               }`,
-              `${getQueryParamType(enhancedOntology, p, type)}`,
+              getQueryParamType(enhancedOntology, p, type),
             ];
           },
         })
       }
             }`;
       break;
+    case "twoDimensionalAggregation":
+      inner = `Query${type}.TwoDimensionalAggregationType<${
+        input.twoDimensionalAggregation.keyType === "range"
+          ? `Query${type}.RangeKey<"${input.twoDimensionalAggregation.keySubtype}">`
+          : `"${input.twoDimensionalAggregation.keyType}"`
+      }, "${input.twoDimensionalAggregation.valueType}">`;
+      break;
 
+    case "threeDimensionalAggregation":
+      inner = `Query${type}.ThreeDimensionalAggregationType<${
+        input.threeDimensionalAggregation.keyType === "range"
+          ? `Query${type}.RangeKey<"${input.threeDimensionalAggregation.keySubtype}">`
+          : `"${input.threeDimensionalAggregation.keyType}"`
+      },${
+        input.threeDimensionalAggregation.valueType.keyType === "range"
+          ? `Query${type}.RangeKey<"${input.threeDimensionalAggregation.valueType.keySubtype}">`
+          : `"${input.threeDimensionalAggregation.valueType.keyType}"`
+      }, 
+        "${input.threeDimensionalAggregation.valueType.valueType}">`;
+      break;
     case "object":
       inner = `Query${type}.ObjectType<${
         enhancedOntology.requireObjectType(input.object)

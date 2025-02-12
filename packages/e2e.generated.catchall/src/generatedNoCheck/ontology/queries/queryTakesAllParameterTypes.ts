@@ -84,7 +84,11 @@ export namespace queryTakesAllParameterTypes {
     /**
      * (no ontology metadata)
      */
-    readonly threeDimensionalAggregation: QueryParam.PrimitiveType<'threeDimensionalAggregation'>;
+    readonly threeDimensionalAggregation: QueryParam.ThreeDimensionalAggregationType<
+      QueryParam.RangeKey<'date'>,
+      QueryParam.RangeKey<'timestamp'>,
+      'date'
+    >;
 
     /**
      * (no ontology metadata)
@@ -94,7 +98,7 @@ export namespace queryTakesAllParameterTypes {
     /**
      * (no ontology metadata)
      */
-    readonly twoDimensionalAggregation: QueryParam.PrimitiveType<'twoDimensionalAggregation'>;
+    readonly twoDimensionalAggregation: QueryParam.TwoDimensionalAggregationType<'string', 'double'>;
 
     /**
      *   description: a union of strings and integers
