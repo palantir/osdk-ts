@@ -103,4 +103,9 @@ async function runTest({
   expect(fs.existsSync(path.join(process.cwd(), project, "README.md"))).toBe(
     true,
   );
+  const packageJsonContents = fs.readFileSync(
+    path.join(process.cwd(), project, "package.json"),
+    "utf-8",
+  );
+  expect(() => JSON.parse(packageJsonContents)).not.toThrow();
 }
