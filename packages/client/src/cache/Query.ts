@@ -74,7 +74,7 @@ export abstract class Query<
       this.pendingFetch = undefined;
     });
 
-    return Promise.resolve();
+    return this.pendingFetch;
   }
 
   abstract subscribe(subFn: SubFn<PAYLOAD>): Unsubscribable;
