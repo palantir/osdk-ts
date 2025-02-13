@@ -72,6 +72,6 @@ export class ObservableClientImpl implements ObservableClient {
   public canonicalizeWhereClause<T extends ObjectTypeDefinition>(
     where: WhereClause<T>,
   ): Canonical<WhereClause<T>> {
-    return this.#store._whereCanonicalizer.canonicalize(where);
+    return this.#store.whereCanonicalizer.canonicalize(where);
   }
 }

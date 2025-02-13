@@ -115,10 +115,9 @@ function createInitEntry(cacheKey: CacheKey): Entry<any> {
 */
 
 export class Store {
-  _whereCanonicalizer: WhereClauseCanonicalizer =
-    new WhereClauseCanonicalizer();
-  _truthLayer: Layer = new Layer(undefined, undefined);
-  _topLayer: Layer;
+  whereCanonicalizer: WhereClauseCanonicalizer = new WhereClauseCanonicalizer();
+  #truthLayer: Layer = new Layer(undefined, undefined);
+  #topLayer: Layer;
   client: Client;
 
   queries: Map<CacheKey<string, any, any>, Query<any, any, any>> = new Map();
@@ -131,8 +130,8 @@ export class Store {
 
   constructor(client: Client) {
     this.client = client;
-    this._topLayer = this._truthLayer;
-    this.#cacheKeys = new CacheKeys(this._whereCanonicalizer);
+    this.#topLayer = this.#truthLayer;
+    this.#cacheKeys = new CacheKeys(this.whereCanonicalizer);
   }
 
   applyAction: <Q extends ActionDefinition<any>>(
@@ -227,7 +226,7 @@ export class Store {
       "undefined is the reserved layerId for the truth layer",
     );
     // 1. collect all cache keys for a given layerId
-    let currentLayer: Layer | undefined = this._topLayer;
+    let currentLayer: Layer | undefined = this.#topLayer;
     const cacheKeys = new Map<CacheKey<string, any, any>, Entry<any>>();
     while (currentLayer != null && currentLayer.parentLayer != null) {
       if (currentLayer.layerId === layerId) {
@@ -241,11 +240,11 @@ export class Store {
     }
 
     // 2. remove the layers from the chain
-    this._topLayer = this._topLayer.removeLayer(layerId);
+    this.#topLayer = this.#topLayer.removeLayer(layerId);
 
     // 3. check each cache key to see if it is different in the new chain
     for (const [k, oldEntry] of cacheKeys) {
-      const currentEntry = this._topLayer.get(k);
+      const currentEntry = this.#topLayer.get(k);
 
       // 4. if different, update the subject
       if (oldEntry !== currentEntry) {
@@ -258,7 +257,7 @@ export class Store {
             // eslint-disable-next-line @typescript-eslint/no-misused-spread
             ...(currentEntry ?? createInitEntry(k)),
             isOptimistic:
-              currentEntry?.value !== this._truthLayer.get(k)?.value,
+              currentEntry?.value !== this.#truthLayer.get(k)?.value,
           },
         );
       }
@@ -277,14 +276,14 @@ export class Store {
   ): BehaviorSubject<SubjectPayload<KEY>> => {
     let subject = this.#cacheKeyToSubject.get(cacheKey);
     if (!subject) {
-      const initialValue: Entry<KEY> = this._topLayer.get(cacheKey)
+      const initialValue: Entry<KEY> = this.#topLayer.get(cacheKey)
         ?? createInitEntry(cacheKey);
 
       subject = new BehaviorSubject({
         // eslint-disable-next-line @typescript-eslint/no-misused-spread
         ...initialValue,
         isOptimistic:
-          initialValue.value !== this._truthLayer.get(cacheKey)?.value,
+          initialValue.value !== this.#truthLayer.get(cacheKey)?.value,
       });
       this.#cacheKeyToSubject.set(cacheKey, subject);
     }
@@ -313,7 +312,7 @@ export class Store {
     return ret;
   }
 
-  public peekQuery<K extends CacheKey<string, any, any>>(
+  #peekQuery<K extends CacheKey<string, any, any>>(
     cacheKey: K,
   ): K["__cacheKey"]["query"] | undefined {
     return this.queries.get(cacheKey) as K["__cacheKey"]["query"] | undefined;
@@ -323,7 +322,7 @@ export class Store {
     cacheKey: K,
     createQuery: () => K["__cacheKey"]["query"],
   ): K["__cacheKey"]["query"] {
-    let query = this.peekQuery(cacheKey);
+    let query = this.#peekQuery(cacheKey);
     if (!query) {
       query = createQuery();
       this.queries.set(cacheKey, query);
@@ -341,7 +340,7 @@ export class Store {
       apiName = apiName.apiName;
     }
 
-    const canonWhere = this._whereCanonicalizer.canonicalize(where);
+    const canonWhere = this.whereCanonicalizer.canonicalize(where);
     const listCacheKey = this.getCacheKey<ListCacheKey>(
       "list",
       apiName,
@@ -411,7 +410,7 @@ export class Store {
       apiName,
       pk,
     );
-    const objEntry = this._topLayer.get(objectCacheKey);
+    const objEntry = this.#topLayer.get(objectCacheKey);
     return objEntry?.value as Osdk.Instance<T> | undefined;
   }
 
@@ -434,19 +433,19 @@ export class Store {
       modifiedLists: new Set(),
       createLayerIfNeeded: () => {
         if (needsLayer) {
-          this._topLayer = this._topLayer.addLayer(optimisticId);
+          this.#topLayer = this.#topLayer.addLayer(optimisticId);
           needsLayer = false;
         }
       },
       optimisticWrite: !!optimisticId,
       write: (cacheKey, value, status) => {
-        const oldTopValue = this._topLayer.get(cacheKey);
+        const oldTopValue = this.#topLayer.get(cacheKey);
 
         if (optimisticId) batchContext.createLayerIfNeeded();
 
         const writeLayer = optimisticId
-          ? this._topLayer
-          : this._truthLayer;
+          ? this.#topLayer
+          : this.#truthLayer;
         const newValue = {
           cacheKey,
           value,
@@ -456,13 +455,13 @@ export class Store {
 
         writeLayer.set(cacheKey, newValue);
 
-        const newTopValue = this._topLayer.get(cacheKey);
+        const newTopValue = this.#topLayer.get(cacheKey);
 
         if (oldTopValue !== newTopValue) {
           this.#cacheKeyToSubject.get(cacheKey)?.next({
             ...newValue,
             isOptimistic:
-              newTopValue?.value !== this._truthLayer.get(cacheKey)?.value,
+              newTopValue?.value !== this.#truthLayer.get(cacheKey)?.value,
           });
         }
 
@@ -470,8 +469,8 @@ export class Store {
       },
       read: (cacheKey) => {
         return optimisticId
-          ? this._topLayer.get(cacheKey)
-          : this._truthLayer.get(cacheKey);
+          ? this.#topLayer.get(cacheKey)
+          : this.#truthLayer.get(cacheKey);
       },
     };
 
@@ -503,10 +502,10 @@ export class Store {
   public maybeRevalidateLists(
     changes: ChangedObjects,
   ): void {
-    for (const [cacheKey, v] of this._truthLayer.entries()) {
+    for (const [cacheKey, v] of this.#truthLayer.entries()) {
       if (isListCacheKey(cacheKey)) {
         // fixme promise
-        void this.peekQuery(cacheKey)?.maybeRevalidate(changes);
+        void this.#peekQuery(cacheKey)?.maybeRevalidate(changes);
       }
     }
   }
@@ -515,10 +514,10 @@ export class Store {
     changes: ChangedObjects,
     optimisticId: OptimisticId,
   ): void {
-    for (const [cacheKey, v] of this._truthLayer.entries()) {
+    for (const [cacheKey, v] of this.#truthLayer.entries()) {
       if (isListCacheKey(cacheKey)) {
         // fixme promise
-        void this.peekQuery(cacheKey)?.maybeUpdate(changes, optimisticId);
+        void this.#peekQuery(cacheKey)?.maybeUpdate(changes, optimisticId);
       }
     }
   }
@@ -530,9 +529,9 @@ export class Store {
       apiName = apiName.apiName;
     }
 
-    for (const [cacheKey, v] of this._truthLayer.entries()) {
+    for (const [cacheKey, v] of this.#truthLayer.entries()) {
       if (isListCacheKey(cacheKey, apiName)) {
-        void this.peekQuery(cacheKey)?.revalidate(true);
+        void this.#peekQuery(cacheKey)?.revalidate(true);
       }
     }
   }
@@ -551,7 +550,7 @@ export class Store {
       where,
     );
 
-    void this.peekQuery(cacheKey)?.revalidate(true);
+    void this.#peekQuery(cacheKey)?.revalidate(true);
   }
 
   public updateObject(
