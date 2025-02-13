@@ -41,7 +41,8 @@ import type { ListCacheKey, ListQueryOptions } from "./ListQuery.js";
 import { isListCacheKey, ListQuery } from "./ListQuery.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
 import { ObjectQuery } from "./ObjectQuery.js";
-import { OptimisticJob } from "./OptimisticJob.js";
+import { type OptimisticId } from "./OptimisticId.js";
+import { runOptimisticJob } from "./OptimisticJob.js";
 import type { Query } from "./Query.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
@@ -84,7 +85,7 @@ interface ObserveOptions {
 }
 
 interface UpdateOptions {
-  optimisticId?: unknown;
+  optimisticId?: OptimisticId;
 }
 
 export namespace Store {
@@ -125,51 +126,28 @@ export class Store {
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
     opts?: Store.ApplyActionOptions,
   ) => Promise<unknown> = (action, args, { optimisticUpdate } = {}) => {
-    const optimisticId = optimisticUpdate ? Object.create(null) : undefined;
+    const removeOptimisticResult = runOptimisticJob(this, optimisticUpdate);
+    return (async () => {
+      try {
+        // The types for client get confused when we dynamically applyAction so we
+        // have to deal with the `any` here and force cast it to what it should be.
+        // TODO: Update the types so this doesn't happen!
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        const actionResults: ActionEditResponse = await this.client(action)
+          .applyAction(args as any, { $returnEdits: true });
 
-    const job = new OptimisticJob(this, optimisticId);
-
-    if (optimisticUpdate) {
-      optimisticUpdate(job.context);
-    }
-
-    const optimisticResult = job.getResult().then((changes) => {
-      this.maybeUpdateLists(changes, optimisticId);
-
-      return changes;
-    });
-
-    // The types for client get confused when we dynamically applyAction so we
-    // have to deal with the `any` here and force cast it to what it should be.
-    // TODO: Update the types so this doesn't happen!
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    const applyActionResult: Promise<ActionEditResponse> = this.client(action)
-      .applyAction(args as any, { $returnEdits: true });
-
-    return applyActionResult
-      .then((value) => {
         // eslint-disable-next-line no-console
         console.log("action done, pausing");
-        return delay(500).then(() => value);
-        return value;
-      })
-      .then((value) => {
-        // in rare cases, its possible the optimistic update hasn't finished
-        // being applied and therefore we could accidentally removeLayer below
-        // and then inadvertently create a new one that doesn't get removed
-        return optimisticResult.then(() => value);
-      })
-      .then((value) => {
+        await delay(500);
         // eslint-disable-next-line no-console
         console.log("action done, pausing done");
-        return this.#invalidateActionEditResponse(value);
-      }).finally(() => {
-        if (optimisticId) {
-          // eslint-disable-next-line no-console
-          console.log("removing layer");
-          this.removeLayer(optimisticId);
-        }
-      });
+        await this.#invalidateActionEditResponse(actionResults);
+        return actionResults;
+      } finally {
+        // make sure this happens even if the action fails
+        await removeOptimisticResult();
+      }
+    })();
   };
 
   #invalidateActionEditResponse = (value: ActionEditResponse) => {
@@ -227,7 +205,7 @@ export class Store {
     return changes;
   };
 
-  removeLayer(layerId: unknown): void {
+  removeLayer(layerId: OptimisticId): void {
     invariant(
       layerId != null,
       "undefined is the reserved layerId for the truth layer",
@@ -419,7 +397,7 @@ export class Store {
   }
 
   batch = <X>(
-    { optimisticId }: { optimisticId?: unknown },
+    { optimisticId }: { optimisticId?: OptimisticId },
     batchFn: (batchContext: BatchContext) => X,
   ): {
     batchResult: BatchContext;
@@ -505,19 +483,19 @@ export class Store {
     for (const [cacheKey, v] of this._truthLayer.entries()) {
       if (isListCacheKey(cacheKey)) {
         // fixme promise
-        void this.peekQuery(cacheKey)?.maybeRevalidateList(changes);
+        void this.peekQuery(cacheKey)?.maybeRevalidate(changes);
       }
     }
   }
 
   public maybeUpdateLists(
     changes: ChangedObjects,
-    optimisticId: object,
+    optimisticId: OptimisticId,
   ): void {
     for (const [cacheKey, v] of this._truthLayer.entries()) {
       if (isListCacheKey(cacheKey)) {
         // fixme promise
-        void this.peekQuery(cacheKey)?.maybeUpdateList(changes, optimisticId);
+        void this.peekQuery(cacheKey)?.maybeUpdate(changes, optimisticId);
       }
     }
   }

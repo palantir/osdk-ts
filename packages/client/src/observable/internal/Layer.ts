@@ -51,7 +51,12 @@ export class Layer {
   }
 
   removeLayer(layerId: unknown): Layer {
-    if (layerId == null || this.#layerId !== layerId) {
+    if (layerId == null || this.#parent == null) {
+      // we are the root, so we can't remove anything
+      return this;
+    }
+    if (this.#layerId !== layerId) {
+      this.#parent = this.#parent.removeLayer(layerId);
       return this;
     }
 

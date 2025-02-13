@@ -19,6 +19,7 @@ import { MultiMap } from "mnemonist";
 import { additionalContext } from "../../Client.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
 import type { ChangedObjects } from "./ChangedObjects.js";
+import { createOptimisticId, type OptimisticId } from "./OptimisticId.js";
 import type { Store } from "./Store.js";
 
 export class OptimisticJob {
@@ -26,7 +27,7 @@ export class OptimisticJob {
   getResult: () => Promise<ChangedObjects>;
   #result!: Promise<ChangedObjects>;
 
-  constructor(store: Store, optimisticId: unknown) {
+  constructor(store: Store, optimisticId: OptimisticId) {
     const updatedObjects: Array<
       Osdk.Instance<ObjectTypeDefinition>
     > = [];
@@ -94,4 +95,26 @@ export class OptimisticJob {
       },
     };
   }
+}
+
+export function runOptimisticJob(
+  store: Store,
+  optimisticUpdate: undefined | ((ctx: OptimisticBuilder) => void),
+): () => Promise<void> {
+  if (!optimisticUpdate) {
+    return () => Promise.resolve();
+  }
+
+  const optimisticId = createOptimisticId();
+  const job = new OptimisticJob(store, optimisticId);
+  optimisticUpdate(job.context);
+  const optimisticApplicationDone = job.getResult().then((result) => {
+    store.maybeUpdateLists(result, optimisticId);
+  });
+
+  return () => {
+    return optimisticApplicationDone.finally(() => {
+      store.removeLayer(optimisticId);
+    });
+  };
 }

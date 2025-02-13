@@ -34,6 +34,7 @@ import type { ChangedObjects } from "./ChangedObjects.js";
 import { Entry } from "./Layer.js";
 import { objectSortaMatchesWhereClause } from "./objectMatchesWhereClause.js";
 import type { ObjectCacheKey, ObjectEntry } from "./ObjectQuery.js";
+import type { OptimisticId } from "./OptimisticId.js";
 import { Query } from "./Query.js";
 import type { BatchContext, Store } from "./Store.js";
 
@@ -242,9 +243,9 @@ export class ListQuery extends Query<
    * @param optimisticId
    * @returns
    */
-  maybeUpdateList(
+  maybeUpdate(
     changedObjects: ChangedObjects,
-    optimisticId: object,
+    optimisticId: OptimisticId,
   ): boolean {
     let needsRevalidation = false;
     const objectsToInsert: Osdk.Instance<ObjectTypeDefinition>[] = [];
@@ -296,7 +297,7 @@ export class ListQuery extends Query<
     return needsRevalidation;
   }
 
-  maybeRevalidateList(
+  maybeRevalidate(
     changedObjects: ChangedObjects,
   ): Promise<unknown> {
     let needsRevalidation = false;

@@ -37,6 +37,7 @@ import {
 import type { Client } from "../../Client.js";
 import { createClient } from "../../createClient.js";
 import type { Unsubscribable } from "../ObservableClient.js";
+import { createOptimisticId } from "./OptimisticId.js";
 import { Store } from "./Store.js";
 import type { MockClientHelper } from "./testUtils.js";
 import {
@@ -164,9 +165,10 @@ describe(Store, () => {
 
         expectSingleObjectCallAndClear(subFn, emp, "loaded");
 
+        const optimisticId = createOptimisticId();
         // update with an optimistic write
         cache.updateObject(Employee, emp.$clone({ fullName: "new name" }), {
-          optimisticId: "1",
+          optimisticId,
         });
         expectSingleObjectCallAndClear(
           subFn,
@@ -175,7 +177,7 @@ describe(Store, () => {
         );
 
         // remove the optimistic write
-        cache.removeLayer("1");
+        cache.removeLayer(optimisticId);
 
         expectSingleObjectCallAndClear(subFn, emp, "loaded");
       });
@@ -208,9 +210,11 @@ describe(Store, () => {
 
         const optimisticEmployee = emp.$clone({ fullName: "new name" });
 
+        const optimisticId = createOptimisticId();
+
         // update with an optimistic write
         cache.updateObject(Employee, optimisticEmployee, {
-          optimisticId: "1",
+          optimisticId,
         });
 
         // expect optimistic write
@@ -239,7 +243,7 @@ describe(Store, () => {
         expectSingleListCallAndClear(listSubFn, [optimisticEmployee]);
 
         // remove the optimistic write
-        cache.removeLayer("1");
+        cache.removeLayer(optimisticId);
 
         // see the object observation get updated
         expectSingleObjectCallAndClear(empSubFn, truthUpdatedEmployee);
@@ -274,8 +278,9 @@ describe(Store, () => {
         const optimisticEmployee = emp.$clone({ fullName: "new name" });
 
         // update with an optimistic write
+        const optimisticId = createOptimisticId();
         cache.updateObject(Employee, optimisticEmployee, {
-          optimisticId: "1",
+          optimisticId,
         });
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
           objectPayloadContaining({
@@ -293,7 +298,7 @@ describe(Store, () => {
         expect(subFn).not.toHaveBeenCalled();
 
         // remove the optimistic write
-        cache.removeLayer("1");
+        cache.removeLayer(optimisticId);
 
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
           objectPayloadContaining({
@@ -946,6 +951,81 @@ describe(Store, () => {
           }),
         );
       });
+    });
+  });
+
+  describe("layers", () => {
+    it("properly remove", () => {
+      const store = new Store({} as any);
+
+      const baseObjects = [1, 2].map((i) => ({
+        $primaryKey: i,
+        $objectType: "Employee",
+        $apiName: "Employee",
+        $title: `truth ${i}`,
+      } as Osdk.Instance<Employee>));
+
+      const cacheKeys = baseObjects.map((obj) =>
+        store.getCacheKey("object", "Employee", obj.$primaryKey)
+      );
+
+      // set the truth
+      for (const obj of baseObjects) {
+        store.updateObject("Employee", obj);
+      }
+
+      // expect the truth
+      for (const obj of baseObjects) {
+        expect(store.getObject("Employee", obj.$primaryKey)).toEqual(
+          expect.objectContaining({ $title: `truth ${obj.$primaryKey}` }),
+        );
+      }
+
+      const layerIds = [1, 2].map(createOptimisticId);
+
+      // optimistically set the objects in their own layers
+      for (let i = 0; i < 2; i++) {
+        store.batch({ optimisticId: layerIds[i] }, (batch) => {
+          batch.write(
+            cacheKeys[i],
+            {
+              ...baseObjects[i],
+              $title: `optimistic ${baseObjects[i].$primaryKey}`,
+            },
+            "loading",
+          );
+        });
+      }
+
+      // expect the optimistic values
+      for (let i = 0; i < 2; i++) {
+        expect(store.getObject("Employee", baseObjects[i].$primaryKey)).toEqual(
+          expect.objectContaining({
+            $title: `optimistic ${baseObjects[i].$primaryKey}`,
+          }),
+        );
+      }
+
+      // remove the first layer
+      store.removeLayer(layerIds[0]);
+
+      // should have truth object 1 and optimistic object 2
+      expect(store.getObject("Employee", 1)).toEqual(
+        expect.objectContaining({ $title: "truth 1" }),
+      );
+      expect(store.getObject("Employee", 2)).toEqual(
+        expect.objectContaining({ $title: "optimistic 2" }),
+      );
+
+      // remove the second layer
+      store.removeLayer(layerIds[1]);
+
+      // should have truth objects
+      for (const obj of baseObjects) {
+        expect(store.getObject("Employee", obj.$primaryKey)).toEqual(
+          expect.objectContaining({ $title: `truth ${obj.$primaryKey}` }),
+        );
+      }
     });
   });
 });

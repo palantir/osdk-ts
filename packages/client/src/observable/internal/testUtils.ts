@@ -151,7 +151,9 @@ export async function waitForCall(
   subFn: Mock<(e: any) => void>,
   times: number = 1,
 ): Promise<void> {
-  await vi.waitFor(() => expect(subFn).toHaveBeenCalledTimes(times));
+  await vi.waitFor(() => {
+    expect(subFn).toHaveBeenCalledTimes(times);
+  });
   expect(subFn).toHaveBeenCalledTimes(times);
 }
 
