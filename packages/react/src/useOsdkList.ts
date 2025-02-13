@@ -41,7 +41,18 @@ export namespace useOsdkList {
     fetchMore: (() => Promise<unknown>) | undefined;
     data: Osdk.Instance<T>[];
     isLoading: boolean;
+
+    // FIXME populate error!
     error: undefined;
+
+    /**
+     * Refers to whether the ordered list of objects (only considering the $primaryKey)
+     * is optimistic or not.
+     *
+     * If you need to know if the contents of the list are optimistic you can
+     * do that on a per object basis with useOsdkObject
+     */
+    isOptimistic: boolean;
   }
 }
 
@@ -74,5 +85,6 @@ export function useOsdkList<T extends ObjectTypeDefinition>(
     data: listPayload?.resolvedList as Osdk.Instance<T>[],
     isLoading: listPayload?.status === "loading",
     error: undefined,
+    isOptimistic: listPayload?.isOptimistic ?? false,
   };
 }

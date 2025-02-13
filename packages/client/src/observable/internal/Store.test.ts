@@ -511,6 +511,7 @@ describe(Store, () => {
           objectPayloadContaining({
             status: "loading",
             object: undefined,
+            isOptimistic: false,
           }),
         );
 
@@ -520,6 +521,7 @@ describe(Store, () => {
         expect(subFn1).toHaveBeenCalledExactlyOnceWith(
           objectPayloadContaining({
             object: likeEmployee50030,
+            isOptimistic: false,
           }),
         );
 
@@ -567,7 +569,10 @@ describe(Store, () => {
           cache.observeObject(Employee, 50030, { mode: "offline" }, subFn),
         );
 
-        expect(subFn).toHaveBeenCalledExactlyOnceWith(ANY_INIT_ENTRY);
+        expect(subFn).toHaveBeenCalledExactlyOnceWith(objectPayloadContaining({
+          status: "init",
+          object: undefined,
+        }));
         subFn.mockClear();
       });
 
@@ -893,10 +898,12 @@ describe(Store, () => {
           loading: objectPayloadContaining({
             status: "loading",
             object: undefined,
+            isOptimistic: false,
           }),
           loaded: objectPayloadContaining({
             object: fauxObject,
             status: "loaded",
+            isOptimistic: false,
           }),
         });
 
@@ -919,6 +926,7 @@ describe(Store, () => {
               someValue: "optimistic",
             },
             status: "loading",
+            isOptimistic: true,
           }),
         );
         todoSubFn.mockClear();
@@ -933,6 +941,7 @@ describe(Store, () => {
           objectPayloadContaining({
             object: fauxObject,
             status: "loaded",
+            isOptimistic: false,
           }),
         );
       });

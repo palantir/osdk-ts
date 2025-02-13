@@ -23,7 +23,7 @@ import type {
 import type { SubFn } from "../types.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Entry } from "./Layer.js";
-import type { BatchContext, Store } from "./Store.js";
+import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 
 export abstract class Query<
   KEY extends CacheKey,
@@ -87,7 +87,7 @@ export abstract class Query<
   _preFetch(): void {}
   abstract _fetch(): Promise<unknown>;
 
-  getSubject(): BehaviorSubject<Entry<KEY>> {
+  getSubject(): BehaviorSubject<SubjectPayload<KEY>> {
     return this.store.getSubject(this.cacheKey);
   }
 

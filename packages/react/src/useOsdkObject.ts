@@ -24,6 +24,11 @@ export namespace useOsdkObject {
   export interface Result<Q extends ObjectTypeDefinition> {
     object: Osdk.Instance<Q> | undefined;
     isLoading: boolean;
+
+    /**
+     * Refers to whether the object is optimistic or not.
+     */
+    isOptimistic: boolean;
     forceUpdate: () => void;
   }
 }
@@ -35,17 +40,17 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
 
   const { subscribe, getSnapShot } = React.useMemo(
     () =>
-      makeExternalStore<ObjectPayload>((x) =>
+      makeExternalStore<ObjectPayload>((payload) =>
         store.observeObject(
           obj.$objectType,
-          obj.$apiName,
+          obj.$primaryKey,
           {
             mode: "offline",
           },
-          x,
+          payload,
         )
       ),
-    [store, obj],
+    [store, obj.$objectType, obj.$apiName],
   );
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
@@ -53,6 +58,7 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
   return {
     object: payload?.object as Osdk.Instance<Q> | undefined,
     isLoading: payload?.status === "loading",
+    isOptimistic: payload?.isOptimistic ?? false,
     forceUpdate: () => {
       throw "not implemented";
     },

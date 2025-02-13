@@ -9,7 +9,7 @@ export const TodoView = React.memo(function TodoView({
   todo: $Objects.Todo.OsdkInstance;
 }) {
   const [isPending, setIsPending] = useState<boolean>(false);
-  const { isLoading } = useOsdkObject(todo);
+  const { isLoading, isOptimistic } = useOsdkObject(todo);
 
   const completeTodo = useOsdkAction($Actions.completeTodo);
   const toggleComplete = React.useCallback(
@@ -20,7 +20,6 @@ export const TodoView = React.memo(function TodoView({
           optimisticUpdate: (ctx) => {
             ctx.updateObject(todo.$clone({
               isComplete: !todo.isComplete,
-              title: todo.title + " (optimistic)",
             }));
           },
         },
@@ -73,12 +72,19 @@ border border-solid border-yellow-800 border-t-transparent">
             <div className="ml-2 w-4 h-4 rounded-full animate-spin shrink-0
 border border-solid border-yellow-800 border-t-transparent">
             </div>
-            <div className="ml-2 text-xs text-gray-500">(Saving)</div>
+            <SmallTextDiv>(Saving)</SmallTextDiv>
           </>
         )
         : (
           ""
         )}
+      {isOptimistic
+        ? <SmallTextDiv>(Optimistic)</SmallTextDiv>
+        : ("")}
     </div>
   );
 });
+
+export function SmallTextDiv({ children }: { children: React.ReactNode }) {
+  return <div className="ml-2 text-xs text-gray-500">{children}</div>;
+}

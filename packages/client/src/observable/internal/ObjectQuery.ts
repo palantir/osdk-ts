@@ -21,7 +21,7 @@ import type {
   PrimaryKeyType,
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
-import { combineLatest, mergeMap, of, tap } from "rxjs";
+import { map } from "rxjs";
 import type { ObjectPayload } from "../ObjectPayload.js";
 import type {
   QueryOptions,
@@ -71,14 +71,13 @@ export class ObjectQuery extends Query<
     subFn: SubFn<ObjectPayload>,
   ): Unsubscribable {
     const sub = this.getSubject().pipe(
-      tap((x) => {
-      }),
-      mergeMap((x) => {
-        return combineLatest({
-          status: of(x.status),
-          object: of(x.value),
-          lastUpdated: of(x.lastUpdated),
-        });
+      map((x) => {
+        return {
+          status: x.status,
+          object: x.value,
+          lastUpdated: x.lastUpdated,
+          isOptimistic: x.isOptimistic,
+        };
       }),
       //   distinctUntilChanged(),
     ).subscribe(subFn);

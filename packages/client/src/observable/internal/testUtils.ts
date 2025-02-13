@@ -241,13 +241,21 @@ export function cacheEntryContaining(x: Partial<Entry<any>>): Entry<any> {
   };
 }
 
+function nonOptionalValue<T extends object, K extends keyof T>(
+  src: T,
+  key: K,
+): NonNullable<T[K]> {
+  return key in src
+    ? src[key]
+    : expect.toBeOneOf([expect.anything(), undefined]);
+}
+
 export function objectPayloadContaining(
   x: Partial<ObjectPayload>,
 ): ObjectPayload {
   return {
-    object: "object" in x
-      ? x.object
-      : expect.toBeOneOf([expect.anything(), undefined]),
+    object: nonOptionalValue(x, "object"),
+    isOptimistic: expect.any(Boolean),
     status: x.status ?? expect.anything(),
     lastUpdated: x.lastUpdated ?? expect.anything(),
   };
@@ -260,6 +268,7 @@ export function listPayloadContaining(
     fetchMore: x.fetchMore ?? expect.any(Function),
     hasMore: x.hasMore ?? expect.any(Boolean),
     resolvedList: x.resolvedList ?? expect.anything(),
+    isOptimistic: expect.any(Boolean),
     status: x.status ?? expect.anything(),
     lastUpdated: x.lastUpdated ?? expect.anything(),
   };

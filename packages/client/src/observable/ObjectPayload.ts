@@ -19,6 +19,7 @@ import type { Status } from "./ObservableClient.js";
 
 export interface ObjectPayload {
   object: Osdk.Instance<ObjectTypeDefinition>;
+  isOptimistic: boolean;
   status: Status;
   lastUpdated: number;
 }

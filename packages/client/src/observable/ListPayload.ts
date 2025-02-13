@@ -19,6 +19,7 @@ import type { Status } from "./ObservableClient.js";
 
 export interface ListPayload {
   resolvedList: Array<Osdk.Instance<any, never, string>>;
+  isOptimistic: boolean;
   lastUpdated: number;
   fetchMore: () => Promise<unknown>;
   hasMore: boolean;

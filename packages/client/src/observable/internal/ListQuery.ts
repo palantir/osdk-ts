@@ -99,12 +99,13 @@ export class ListQuery extends Query<
           resolvedList: listEntry?.value?.data == null
             ? of([])
             : combineLatest(
-              (listEntry?.value?.data ?? []).map(cacheKey =>
+              listEntry.value.data.map(cacheKey =>
                 this.store.getSubject(cacheKey).pipe(
                   map(objectEntry => objectEntry?.value),
                 )
               ),
             ),
+          isOptimistic: of(listEntry.isOptimistic),
           fetchMore: of(this.fetchMore),
           hasMore: of(this.#nextPageToken != null),
           status: of(listEntry.status),

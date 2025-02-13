@@ -3,14 +3,12 @@ import "./App.css";
 import React from "react";
 import CreateTodoForm from "./CreateTodoForm.js";
 import { $Objects } from "./generatedNoCheck2/index.js";
-import { TodoView } from "./TodoView.js";
+import { SmallTextDiv, TodoView } from "./TodoView.js";
 
 function App() {
-  const { data, isLoading, error } = useOsdkList($Objects.Todo, {
-    where: { title: { $startsWith: "cool" } },
+  const { data, isLoading, error, isOptimistic } = useOsdkList($Objects.Todo, {
+    where: { title: { $startsWith: "ea " } },
   });
-
-  console.log({ data, isLoading, error });
 
   if (!data && isLoading) {
     return "Loading";
@@ -18,7 +16,7 @@ function App() {
 
   return (
     <main className="flex min-h-screen flex-col items-center p-24 ">
-      <h1 className="mb-6 text-xl">Todos</h1>
+      <h1 className="mb-6 text-xl">Todos App</h1>
 
       <div className="min-w-fit">
         <CreateTodoForm />
@@ -31,7 +29,10 @@ border border-solid border-yellow-800 border-t-transparent">
                 </div>
               )
               : <div className="mr-2 w-4 h-4"></div>}
-            {isLoading ? "Loading" : ""}
+            Todos{isOptimistic
+              ? <SmallTextDiv>(Optimistic)</SmallTextDiv>
+              : ""}
+            {isLoading ? <SmallTextDiv>(Loading)</SmallTextDiv> : ""}
           </div>
 
           {error && <h2>{JSON.stringify(error)}</h2>}

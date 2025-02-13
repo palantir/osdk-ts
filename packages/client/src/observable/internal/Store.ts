@@ -46,6 +46,8 @@ import { runOptimisticJob } from "./OptimisticJob.js";
 import type { Query } from "./Query.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
+const ACTION_DELAY = process.env.NODE_ENV === "production" ? 0 : 500;
+
 /*
     Work still to do:
     - [x] testing for optimistic writes
@@ -61,6 +63,10 @@ import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
     - [ ] setup defaults
     - [ ] reduce updates in react
 */
+
+export interface SubjectPayload<KEY extends CacheKey> extends Entry<KEY> {
+  isOptimistic: boolean;
+}
 
 export interface BatchContext {
   addedObjects: Set<ObjectCacheKey>;
@@ -94,6 +100,14 @@ export namespace Store {
   }
 }
 
+function createInitEntry(cacheKey: CacheKey): Entry<any> {
+  return {
+    cacheKey,
+    status: "init",
+    value: undefined,
+    lastUpdated: 0,
+  };
+}
 /*
   Notes:
     - Subjects are one per type per store (by cache key)
@@ -111,7 +125,7 @@ export class Store {
 
   #cacheKeyToSubject = new WeakMap<
     CacheKey<string, any, any>,
-    BehaviorSubject<Entry<any>>
+    BehaviorSubject<SubjectPayload<any>>
   >();
   #cacheKeys: CacheKeys;
 
@@ -136,11 +150,13 @@ export class Store {
         const actionResults: ActionEditResponse = await this.client(action)
           .applyAction(args as any, { $returnEdits: true });
 
-        // eslint-disable-next-line no-console
-        console.log("action done, pausing");
-        await delay(500);
-        // eslint-disable-next-line no-console
-        console.log("action done, pausing done");
+        if (ACTION_DELAY > 0) {
+          // eslint-disable-next-line no-console
+          console.log("action done, pausing");
+          await delay(ACTION_DELAY);
+          // eslint-disable-next-line no-console
+          console.log("action done, pausing done");
+        }
         await this.#invalidateActionEditResponse(actionResults);
         return actionResults;
       } finally {
@@ -233,15 +249,16 @@ export class Store {
 
       // 4. if different, update the subject
       if (oldEntry !== currentEntry) {
+        const x = currentEntry ?? createInitEntry(k);
         // We are going to be pretty lazy here and just re-emit the value.
         // In the future it may benefit us to deep equal check her but I think
         // the subjects are effectively doing this anyway.
         this.#cacheKeyToSubject.get(k)?.next(
-          currentEntry ?? {
-            cacheKey: k,
-            status: "init",
-            value: undefined,
-            lastUpdated: 0,
+          {
+            // eslint-disable-next-line @typescript-eslint/no-misused-spread
+            ...(currentEntry ?? createInitEntry(k)),
+            isOptimistic:
+              currentEntry?.value !== this._truthLayer.get(k)?.value,
           },
         );
       }
@@ -257,16 +274,18 @@ export class Store {
 
   getSubject = <KEY extends CacheKey<string, any, any>>(
     cacheKey: KEY,
-  ): BehaviorSubject<Entry<KEY>> => {
+  ): BehaviorSubject<SubjectPayload<KEY>> => {
     let subject = this.#cacheKeyToSubject.get(cacheKey);
     if (!subject) {
-      const initialValue: Entry<KEY> = this._topLayer.get(cacheKey) ?? {
-        cacheKey,
-        status: "init",
-        value: undefined,
-        lastUpdated: 0,
-      };
-      subject = new BehaviorSubject(initialValue);
+      const initialValue: Entry<KEY> = this._topLayer.get(cacheKey)
+        ?? createInitEntry(cacheKey);
+
+      subject = new BehaviorSubject({
+        // eslint-disable-next-line @typescript-eslint/no-misused-spread
+        ...initialValue,
+        isOptimistic:
+          initialValue.value !== this._truthLayer.get(cacheKey)?.value,
+      });
       this.#cacheKeyToSubject.set(cacheKey, subject);
     }
 
@@ -440,7 +459,11 @@ export class Store {
         const newTopValue = this._topLayer.get(cacheKey);
 
         if (oldTopValue !== newTopValue) {
-          this.#cacheKeyToSubject.get(cacheKey)?.next(newValue);
+          this.#cacheKeyToSubject.get(cacheKey)?.next({
+            ...newValue,
+            isOptimistic:
+              newTopValue?.value !== this._truthLayer.get(cacheKey)?.value,
+          });
         }
 
         return newValue;
