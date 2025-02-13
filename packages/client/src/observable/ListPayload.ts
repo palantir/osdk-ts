@@ -15,12 +15,11 @@
  */
 
 import type { Osdk } from "@osdk/api";
-import type { ListEntry } from "./internal/ListQuery.js";
 import type { Status } from "./ObservableClient.js";
 
 export interface ListPayload {
-  listEntry: ListEntry; // FIXME remove this from the payload
   resolvedList: Array<Osdk.Instance<any, never, string>>;
+  lastUpdated: number;
   fetchMore: () => Promise<unknown>;
   hasMore: boolean;
   status: Status;

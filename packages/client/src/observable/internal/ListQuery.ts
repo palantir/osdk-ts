@@ -96,7 +96,6 @@ export class ListQuery extends Query<
     const ret = this.getSubject().pipe(
       mergeMap(listEntry => {
         return combineLatest({
-          listEntry: of(listEntry),
           resolvedList: listEntry?.value?.data == null
             ? of([])
             : combineLatest(
@@ -109,7 +108,8 @@ export class ListQuery extends Query<
           fetchMore: of(this.fetchMore),
           hasMore: of(this.#nextPageToken != null),
           status: of(listEntry.status),
-        }).pipe(map(x => x.listEntry == null ? undefined : x));
+          lastUpdated: of(listEntry.lastUpdated),
+        });
       }),
       // like throttle but returns the tail
       auditTime(0),

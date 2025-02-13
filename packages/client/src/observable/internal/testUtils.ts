@@ -261,7 +261,7 @@ export function listPayloadContaining(
     hasMore: x.hasMore ?? expect.any(Boolean),
     resolvedList: x.resolvedList ?? expect.anything(),
     status: x.status ?? expect.anything(),
-    listEntry: x.listEntry ?? expect.anything(),
+    lastUpdated: x.lastUpdated ?? expect.anything(),
   };
 }
 

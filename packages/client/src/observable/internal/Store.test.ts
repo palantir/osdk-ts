@@ -42,7 +42,6 @@ import { Store } from "./Store.js";
 import type { MockClientHelper } from "./testUtils.js";
 import {
   applyCustomMatchers,
-  cacheEntryContaining,
   createClientMockHelper,
   createDefer,
   expectSingleListCallAndClear,
@@ -637,24 +636,17 @@ describe(Store, () => {
           await vi.waitFor(() => expect(subFn1).toHaveBeenCalled());
 
           expect(subFn1).toHaveBeenCalledExactlyOnceWith(
-            {
-              listEntry: cacheEntryContaining({
-                status: "loading",
-                value: undefined,
-              }),
+            listPayloadContaining({
               status: "loading",
               resolvedList: [],
-              fetchMore: expect.any(Function),
-              hasMore: expect.any(Boolean),
-            },
+            }),
           );
           subFn1.mockClear();
 
           await vi.waitFor(() => expect(subFn1).toHaveBeenCalled());
 
           expect(subFn1).toHaveBeenCalledExactlyOnceWith(
-            expect.objectContaining({
-              listEntry: expect.any(Object),
+            listPayloadContaining({
               resolvedList: employeesAsServerReturns,
               status: "loaded",
             }),
@@ -672,8 +664,7 @@ describe(Store, () => {
           await vi.waitFor(() => expect(subFn1).toHaveBeenCalled());
 
           expect(subFn1).toHaveBeenCalledExactlyOnceWith(
-            expect.objectContaining({
-              listEntry: expect.any(Object),
+            listPayloadContaining({
               resolvedList: mutatedEmployees,
               status: "loading",
             }),
@@ -683,19 +674,13 @@ describe(Store, () => {
 
           await vi.waitFor(() => expect(subFn1).toHaveBeenCalled());
           expect(subFn1).toHaveBeenCalledExactlyOnceWith(
-            listPayloadContaining(
-              {
-                listEntry: expect.objectContaining({
-                  ...firstLoad.listEntry,
-                  lastUpdated: expect.toBeGreaterThan(
-                    firstLoad.listEntry.lastUpdated,
-                  ),
-                  status: "loaded",
-                }),
-                resolvedList: employeesAsServerReturns,
-                status: "loaded",
-              },
-            ),
+            listPayloadContaining({
+              resolvedList: employeesAsServerReturns,
+              status: "loaded",
+              lastUpdated: expect.toBeGreaterThan(
+                firstLoad.lastUpdated,
+              ),
+            }),
           );
           subFn1.mockClear();
         });
