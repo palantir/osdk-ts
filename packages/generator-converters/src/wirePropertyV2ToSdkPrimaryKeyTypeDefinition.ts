@@ -15,7 +15,7 @@
  */
 
 import type { PrimaryKeyTypes } from "@osdk/api";
-import type { PropertyV2 } from "@osdk/internal.foundry.core";
+import type { PropertyV2 } from "@osdk/foundry.ontologies";
 
 export function wirePropertyV2ToSdkPrimaryKeyTypeDefinition(
   input: PropertyV2,
@@ -49,6 +49,7 @@ export function wirePropertyV2ToSdkPrimaryKeyTypeDefinition(
     case "mediaReference":
     case "struct":
     case "cipherText":
+    case "vector":
       throw new Error(
         `Type not supported for primaryKey: ${input.dataType.type}`,
       );

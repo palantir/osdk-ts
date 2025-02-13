@@ -17,7 +17,7 @@
 import type {
   InterfaceType,
   SharedPropertyType,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import { format } from "prettier";
 import { describe, expect, it } from "vitest";
 import { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";

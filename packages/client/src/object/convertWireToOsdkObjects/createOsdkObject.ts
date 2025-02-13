@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
-import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
+import type { OntologyObjectV2 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import { GeotimeSeriesPropertyImpl } from "../../createGeotimeSeriesProperty.js";
 import { MediaReferencePropertyImpl } from "../../createMediaReferenceProperty.js";

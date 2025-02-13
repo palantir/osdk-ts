@@ -16,7 +16,7 @@
 
 import type { DerivedProperty } from "@osdk/api";
 import { Employee } from "@osdk/client.test.ontology";
-import type { DerivedPropertyDefinition } from "@osdk/internal.foundry.core";
+import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
 import { createWithPropertiesObjectSet } from "./createWithPropertiesObjectSet.js";
 

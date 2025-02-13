@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { LinkTypeSide } from "@osdk/internal.foundry.core";
+import type { LinkTypeSide } from "@osdk/foundry.ontologies";
+import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import * as OntologiesV1 from "@osdk/internal.foundry.ontologies";
-import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import stableStringify from "json-stable-stringify";
 import type { HttpResponseResolver, PathParams, RequestHandler } from "msw";
 import type { BaseAPIError } from "../BaseError.js";

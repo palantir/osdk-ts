@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  MediaMetadata,
-  MediaReference,
-} from "@osdk/internal.foundry.core";
+import type { MediaMetadata, MediaReference } from "@osdk/foundry.ontologies";
 
 export const mediaMetadata: MediaMetadata = {
   path: "file1.txt",

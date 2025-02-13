@@ -19,7 +19,7 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectSet,
 } from "@osdk/api";
-import { OntologyObjectSets } from "@osdk/internal.foundry.ontologiesv2";
+import { OntologyObjectSets } from "@osdk/foundry.ontologies";
 import { additionalContext, type Client } from "../Client.js";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
 

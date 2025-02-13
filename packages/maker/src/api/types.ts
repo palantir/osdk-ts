@@ -38,7 +38,7 @@ import type {
   Visibility,
 } from "@osdk/client.unstable";
 
-import type { OntologyFullMetadata } from "@osdk/internal.foundry.core";
+import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import type { BlueprintIcon } from "./iconNames.js";
 
 export interface Ontology extends

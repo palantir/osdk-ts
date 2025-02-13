@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { QueryTypeV2 } from "@osdk/internal.foundry.core";
+import type { QueryTypeV2 } from "@osdk/foundry.ontologies";
 
 export const addOneQueryType: QueryTypeV2 = {
   apiName: "addOne",

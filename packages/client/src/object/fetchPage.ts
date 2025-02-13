@@ -36,8 +36,8 @@ import type {
   SearchJsonQueryV2,
   SearchObjectsForInterfaceRequest,
   SearchOrderByV2,
-} from "@osdk/internal.foundry.core";
-import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
+} from "@osdk/foundry.ontologies";
+import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";

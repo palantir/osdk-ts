@@ -19,7 +19,7 @@ import type {
   ActionParameterType,
   ActionParameterV2,
   ActionTypeV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import { getModifiedEntityTypes } from "./getEditedEntities.js";
 
 export function wireActionTypeV2ToSdkActionMetadata(

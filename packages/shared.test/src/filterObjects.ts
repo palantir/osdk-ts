@@ -17,7 +17,7 @@
 import type {
   OntologyObject,
   OntologyObjectV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import type {
   PagedBodyResponse,
   PagedBodyResponseWithTotal,
@@ -35,7 +35,7 @@ export function filterObjectProperties<
     return object;
   }
 
-  const result = Object.entries(object).reduce((acc, [key, value]) => {
+  const result = Object.entries(object).reduce<{ [key: string]: any }>((acc, [key, value]) => {
     if (properties.has(key)) {
       acc[key] = value;
     } else if (key === "__primaryKey") {
@@ -45,7 +45,7 @@ export function filterObjectProperties<
     }
 
     return acc;
-  }, {} as { [key: string]: any });
+  }, {});
 
   return result as T;
 }
@@ -77,7 +77,7 @@ export function filterObjectsProperties<
   }
 
   const result = objects.data.map(object =>
-    Object.entries(object).reduce((acc, [key, value]) => {
+    Object.entries(object).reduce<{ [key: string]: any }>((acc, [key, value]) => {
       if (properties.has(key)) {
         acc[key] = value;
       } else if (key === "__primaryKey") {
@@ -87,7 +87,7 @@ export function filterObjectsProperties<
       }
 
       return acc;
-    }, {} as { [key: string]: any })
+    }, {})
   );
 
   const ret:

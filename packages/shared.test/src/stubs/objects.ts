@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
+import type { OntologyObjectV2 } from "@osdk/foundry.ontologies";
 
-import type { GeoJsonObject } from "@osdk/internal.foundry.geo";
+import type { GeoJsonObject } from "@osdk/foundry.geo";
 
 export const employee1 = {
   __rid:

@@ -15,11 +15,11 @@
  */
 
 import type { ActionMetadata } from "@osdk/api";
-import { wireActionTypeV2ToSdkActionMetadata } from "@osdk/generator-converters";
 import type {
   ActionParameterType,
   ActionTypeV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
+import { wireActionTypeV2ToSdkActionMetadata } from "@osdk/generator-converters";
 import path from "node:path";
 import type { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
 import type { ForeignType } from "../GenerateContext/ForeignType.js";

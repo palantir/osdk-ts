@@ -15,7 +15,7 @@
  */
 
 import { PalantirApiError } from "@osdk/client";
-import { Datasets } from "@osdk/internal.foundry";
+import { Datasets } from "@osdk/foundry";
 import { platformClient as client } from "./client.js";
 import { logger } from "./logger.js";
 

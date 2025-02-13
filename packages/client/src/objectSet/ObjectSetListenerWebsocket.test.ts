@@ -20,7 +20,7 @@ import type {
   ObjectSetStreamSubscribeRequests,
   ObjectUpdate,
   StreamMessage,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import { apiServer } from "@osdk/shared.test";
 import ImportedWebSocket from "isomorphic-ws";
 import { http, HttpResponse } from "msw";

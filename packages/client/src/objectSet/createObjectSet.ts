@@ -35,7 +35,7 @@ import type { MinimalObjectSet } from "@osdk/api/unstable";
 import type {
   DerivedPropertyDefinition,
   ObjectSet as WireObjectSet,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import { createWithPropertiesObjectSet } from "../derivedProperties/createWithPropertiesObjectSet.js";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
