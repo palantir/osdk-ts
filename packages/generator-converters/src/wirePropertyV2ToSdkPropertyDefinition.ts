@@ -40,7 +40,6 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "integer":
     case "string":
     case "byte":
-    case "cipherText":
     case "decimal":
     case "double":
     case "float":

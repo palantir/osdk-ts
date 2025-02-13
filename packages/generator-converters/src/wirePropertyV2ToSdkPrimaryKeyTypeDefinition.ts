@@ -45,7 +45,6 @@ export function wirePropertyV2ToSdkPrimaryKeyTypeDefinition(
     case "marking":
     case "float":
     case "geotimeSeriesReference":
-    case "cipherText":
     case "mediaReference":
     case "struct":
     case "cipherText":
