@@ -1,17 +1,13 @@
+import { useOsdkAction } from "@osdk/react";
 import React, { useState } from "react";
+import { $Actions, Todo } from "./generatedNoCheck2/index.js";
 
-export default function CreateTodoForm({
-  createTodo,
-}: {
-  createTodo: (
-    title: string,
-    setError: (error: string | undefined) => void,
-  ) => Promise<void>;
-}) {
+export default function CreateTodoForm() {
   const formRef = React.useRef<HTMLFormElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [pending, setPending] = useState(false);
-  const [error, setError] = useState<string>();
+
+  const createTodo = useOsdkAction($Actions.createTodo);
 
   return (
     <div className="flex shrink mb-6">
@@ -22,10 +18,22 @@ export default function CreateTodoForm({
           if (!inputRef.current || !formRef.current) {
             throw "should never happen";
           }
+          const title = inputRef.current.value;
           setPending(true);
-          setError(undefined);
           try {
-            await createTodo(inputRef.current.value, setError);
+            await createTodo.applyAction(
+              { is_complete: false, Todo: title },
+              {
+                optimisticUpdate: (b) => {
+                  const id = "TMP " + window.crypto.randomUUID();
+                  b.createObject(Todo, id, {
+                    title,
+                    id,
+                    isComplete: false,
+                  });
+                },
+              },
+            );
             formRef.current.reset();
           } catch (e) {
             console.error(e);
@@ -34,7 +42,7 @@ export default function CreateTodoForm({
           }
         }}
       >
-        <div className="error">{error}</div>
+        <div className="error">{JSON.stringify(createTodo.error)}</div>
         <input
           type="text"
           name={"title"}

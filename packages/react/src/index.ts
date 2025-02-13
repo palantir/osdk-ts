@@ -15,4 +15,7 @@
  */
 
 export { OsdkProvider } from "./OsdkProvider.js";
+export { useOsdkAction } from "./useOsdkAction.js";
 export { useOsdkClient } from "./useOsdkClient.js";
+export { useOsdkList } from "./useOsdkList.js";
+export { useOsdkObject } from "./useOsdkObject.js";

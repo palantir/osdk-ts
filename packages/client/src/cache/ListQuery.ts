@@ -28,10 +28,11 @@ import type { Client } from "../Client.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Canonical } from "./Canonical.js";
 import { Entry } from "./Layer.js";
+import { objectSortaMatchesWhereClause } from "./objectMatchesWhereClause.js";
 import type { ObjectCacheKey, ObjectEntry } from "./ObjectQuery.js";
 import type { QueryOptions } from "./Query.js";
 import { Query } from "./Query.js";
-import type { BatchContext, Status, Store } from "./Store.js";
+import type { BatchContext, ChangedObjects, Status, Store } from "./Store.js";
 import type { SubFn } from "./types.js";
 
 export interface ListPayload {
@@ -97,7 +98,7 @@ export class ListQuery extends Query<
   }
 
   subscribe(subFn: SubFn<ListPayload>) {
-    const ret = this.store.getSubject(this.cacheKey).pipe(
+    const ret = this.getSubject().pipe(
       mergeMap(listEntry => {
         return combineLatest({
           listEntry: of(listEntry),
@@ -238,6 +239,96 @@ export class ListQuery extends Query<
         v.$primaryKey,
       );
     });
+  }
+
+  /**
+   * Caller is responsible for removing the layer
+   *
+   * @param changedObjects
+   * @param optimisticId
+   * @returns
+   */
+  maybeUpdateList(
+    changedObjects: ChangedObjects,
+    optimisticId: object,
+  ): boolean {
+    let needsRevalidation = false;
+    const objectsToInsert: Osdk.Instance<ObjectTypeDefinition>[] = [];
+    for (const [type, objects] of changedObjects.addedObjects.associations()) {
+      if (this.cacheKey.otherKeys[0] !== type) {
+        continue;
+      }
+
+      for (const obj of objects) {
+        // strict match means it didn't use a filter we cannot use on the frontend
+        const strictMatch = objectSortaMatchesWhereClause(
+          obj,
+          this.#whereClause,
+          true,
+        );
+
+        if (strictMatch) {
+          objectsToInsert.push(obj);
+        } else {
+          // sorta match means it used a filter we cannot use on the frontend
+          const sortaMatch = objectSortaMatchesWhereClause(
+            obj,
+            this.#whereClause,
+            false,
+          );
+          if (sortaMatch) {
+            needsRevalidation = true;
+          }
+        }
+      }
+    }
+
+    needsRevalidation ||= objectsToInsert.length > 0;
+
+    if (objectsToInsert.length > 0) {
+      // for now we are not doing sorting which makes life easy :)
+      // FIXME
+
+      this.store._batch({ optimisticId }, (batch) => {
+        this.updateList(
+          objectsToInsert,
+          true,
+          "loading",
+          batch,
+        );
+      });
+    }
+
+    return needsRevalidation;
+  }
+
+  maybeRevalidateList(
+    changedObjects: ChangedObjects,
+  ): Promise<unknown> {
+    let needsRevalidation = false;
+    for (const [type, objects] of changedObjects.addedObjects.associations()) {
+      if (this.cacheKey.otherKeys[0] !== type) {
+        continue;
+      }
+
+      for (const obj of objects) {
+        // sorta match means it used a filter we cannot use on the frontend
+        const sortaMatch = objectSortaMatchesWhereClause(
+          obj,
+          this.#whereClause,
+          false,
+        );
+        if (sortaMatch) {
+          needsRevalidation = true;
+        }
+      }
+    }
+
+    if (needsRevalidation) {
+      return this.revalidate(true);
+    }
+
+    return Promise.resolve();
   }
 
   updateList(

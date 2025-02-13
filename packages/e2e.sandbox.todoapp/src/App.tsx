@@ -1,42 +1,45 @@
-import React from "react";
+import { useOsdkList } from "@osdk/react";
 import "./App.css";
 import CreateTodoForm from "./CreateTodoForm.js";
 import { TodoView } from "./TodoView.js";
-import { useTodos } from "./useTodos.js";
+
+import { $Objects } from "./generatedNoCheck2/index.js";
 
 function App() {
-  const { todos, isLoading, toggleComplete, error, isValidating, createTodo } =
-    useTodos();
+  const { data, isLoading, error } = useOsdkList($Objects.Todo, {
+    where: { title: { $startsWith: "cool" } },
+  });
 
-  if (todos) {
-    console.log(todos[0]);
+  console.log({ data, isLoading, error });
+
+  if (!data && isLoading) {
+    return "Loading";
   }
+
   return (
     <main className="flex min-h-screen flex-col items-center p-24 ">
       <h1 className="mb-6 text-xl">Todos</h1>
 
       <div className="min-w-fit">
-        <CreateTodoForm createTodo={createTodo} />
+        <CreateTodoForm />
         <div>
           <div className="flex mb-4">
-            {isLoading || isValidating
+            {isLoading
               ? (
                 <div className="mr-2 w-4 h-4 rounded-full animate-spin shrink-0
 border border-solid border-yellow-800 border-t-transparent">
                 </div>
               )
               : <div className="mr-2 w-4 h-4"></div>}
-            {isLoading || isValidating ? "Loading" : ""}
+            {isLoading ? "Loading" : ""}
           </div>
 
-          {error && <h2>{error.toString()}</h2>}
-          {todos
-            && todos.map((todo) => (
+          {error && <h2>{JSON.stringify(error)}</h2>}
+          {data
+            && data.map((todo) => (
               <TodoView
                 todo={todo}
-                toggleComplete={toggleComplete}
                 key={todo.id}
-                loading={isLoading || isValidating}
               />
             ))}
         </div>

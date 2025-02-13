@@ -87,8 +87,10 @@ export class WeakMapWithEntries<K extends WeakKey, V>
    * @param key Must be an object or symbol.
    */
   set(key: K, value: V): this {
+    if (!this.#map.has(key)) {
+      this.#list.push(new WeakRef(key));
+    }
     this.#map.set(key, value);
-    this.#list.push(new WeakRef(key));
 
     return this;
   }

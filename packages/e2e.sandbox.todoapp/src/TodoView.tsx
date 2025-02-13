@@ -1,16 +1,33 @@
+import { useOsdkAction, useOsdkObject } from "@osdk/react";
 import React, { useState } from "react";
-import type { SimpleTodo } from "./useTodos.js";
+import type { $Objects } from "./generatedNoCheck2/index.js";
+import { $Actions } from "./generatedNoCheck2/index.js";
 
-export function TodoView({
+export const TodoView = React.memo(function TodoView({
   todo,
-  toggleComplete,
-  loading,
 }: {
-  todo: SimpleTodo;
-  toggleComplete: (todo: SimpleTodo) => void;
-  loading: boolean;
+  todo: $Objects.Todo.OsdkInstance;
 }) {
   const [isPending, setIsPending] = useState<boolean>(false);
+  const { isLoading } = useOsdkObject(todo);
+
+  const completeTodo = useOsdkAction($Actions.completeTodo);
+  const toggleComplete = React.useCallback(
+    (todo: $Objects.Todo.OsdkInstance) => {
+      return completeTodo.applyAction(
+        { is_complete: !todo.isComplete, Todo: todo },
+        {
+          optimisticUpdate: (ctx) => {
+            ctx.updateObject(todo.$clone({
+              isComplete: !todo.isComplete,
+              title: todo.title + " (optimistic)",
+            }));
+          },
+        },
+      );
+    },
+    [completeTodo],
+  );
 
   async function handleClick() {
     setIsPending(true);
@@ -18,7 +35,7 @@ export function TodoView({
     setIsPending(false);
   }
 
-  const validating = isPending || loading;
+  const validating = isPending || isLoading;
 
   return (
     <div className="flex items-center mb-4" key={todo.id}>
@@ -64,4 +81,4 @@ border border-solid border-yellow-800 border-t-transparent">
         )}
     </div>
   );
-}
+});

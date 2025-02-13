@@ -58,3 +58,10 @@ export {
   extractDateInLocalTime,
   extractDateInUTC,
 } from "./util/datetimeConverters.js";
+
+// THIS IS NOT THE FINAL NAME DO NOT SHIP LIKE THIS
+export type { ActionSignatureFromDef } from "./actions/applyAction.js";
+export type { ListPayload } from "./cache/ListQuery.js";
+export type { ObjectPayload } from "./cache/ObjectQuery.js";
+export { Store } from "./cache/Store.js";
+export type { Unsubscribable } from "./cache/Store.js";

@@ -20,13 +20,17 @@ import type {
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
+  PropertyKeys,
   WhereClause,
 } from "@osdk/api";
 import { Trie } from "@wry/trie";
+import { MultiMap } from "mnemonist";
+import { delay } from "msw";
 import { BehaviorSubject } from "rxjs";
 import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../actions/applyAction.js";
 import type { Client } from "../Client.js";
+import { additionalContext } from "../Client.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Entry } from "./Layer.js";
 import { Layer } from "./Layer.js";
@@ -36,7 +40,7 @@ import type {
   ListQueryOptions,
 } from "./ListQuery.js";
 import { isListCacheKey, ListQuery } from "./ListQuery.js";
-import type { ObjectCacheKey, ObjectEntry } from "./ObjectQuery.js";
+import type { ObjectCacheKey, ObjectPayload } from "./ObjectQuery.js";
 import { ObjectQuery } from "./ObjectQuery.js";
 import type { Query } from "./Query.js";
 import type { SubFn } from "./types.js";
@@ -46,11 +50,16 @@ import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
     Work still to do:
     - [x] testing for optimistic writes
     - [x] automatic invalidation of actions
+    - [x] automatic optimistic list updates
+    - [x] useOsdkObjects
+    - [x] imply offline for objects passed directly
+    - [ ] websocket subscriptions
     - [ ] links
     - [ ] add pagination
     - [ ] sub-selection support
     - [ ] interfaces
     - [ ] setup defaults
+    - [ ] reduce updates in react
 */
 
 export interface Unsubscribable {
@@ -87,12 +96,23 @@ interface UpdateOptions {
 
 interface OptimisticUpdateContext {
   updateObject: (value: Osdk.Instance<ObjectTypeDefinition>) => this;
+  createObject: <T extends ObjectTypeDefinition>(
+    type: T,
+    primaryKey: PrimaryKeyType<T>,
+    properties: Pick<Osdk.Instance<T>, PropertyKeys<T>>,
+  ) => this;
 }
 
 export namespace Store {
   export interface ApplyActionOptions {
     optimisticUpdate?: (ctx: OptimisticUpdateContext) => void;
   }
+}
+
+// TODO MOVE THIS
+export interface ChangedObjects {
+  modifiedObjects: MultiMap<string, Osdk.Instance<ObjectTypeDefinition>>;
+  addedObjects: MultiMap<string, Osdk.Instance<ObjectTypeDefinition>>;
 }
 
 /*
@@ -149,59 +169,104 @@ export class Store {
     opts?: Store.ApplyActionOptions,
   ) => Promise<unknown> = (action, args, { optimisticUpdate } = {}) => {
     const optimisticId = optimisticUpdate ? Object.create(null) : undefined;
+    const pendingOptimisticCreates: Promise<
+      Osdk.Instance<ObjectTypeDefinition>[]
+    >[] = [];
+
+    const job = new OptimisticJob(this, optimisticId);
+
     if (optimisticUpdate) {
-      this._batch({ optimisticId }, () => {
-        const self = this;
-        optimisticUpdate({
-          updateObject(value: Osdk.Instance<ObjectTypeDefinition>) {
-            const query = self.getObjectQuery(
-              value.$apiName,
-              value.$primaryKey,
-            );
-
-            self._batch({ optimisticId }, (batch) => {
-              return query.writeToStore(value, "loading", batch);
-            }).retVal.value;
-
-            return this;
-          },
-        });
-      });
+      optimisticUpdate(job.context);
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    job.getResult().then((changes) => {
+      this.maybeUpdateLists(changes, optimisticId);
+
+      return changes;
+    });
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     return this._client(action)
       .applyAction(args as any, { $returnEdits: true })
+      .then((value: ActionEditResponse) => {
+        // eslint-disable-next-line no-console
+        console.log("action done, pausing");
+        return delay(500).then(() => value);
+        return value;
+      })
       .then(
         (value: ActionEditResponse) => {
-          const typesToInvalidate = new Set<string>();
-          if (value.type === "edits") {
-            // TODO we need an backend update for deletes
-            for (const obj of value.modifiedObjects) {
-              this.invalidateObject(obj.objectType, obj.primaryKey);
-            }
-
-            for (const obj of value.addedObjects) {
-              // TODO: add to existing lists instead
-              typesToInvalidate.add(obj.objectType);
-            }
-          } else {
-            for (const apiName of value.editedObjectTypes) {
-              typesToInvalidate.add(apiName.toString());
-            }
-          }
-
-          for (const objectType of typesToInvalidate) {
-            // TODO make sure this covers individual object loads too
-            this.invalidateObjectType(objectType);
-          }
-          return value;
+          // eslint-disable-next-line no-console
+          console.log("action done, pausing done");
+          return this.#invalidateActionEditResponse(value);
         },
       ).finally(() => {
         if (optimisticId) {
+          // eslint-disable-next-line no-console
+          console.log("removing layer");
           this.removeLayer(optimisticId);
         }
       });
+  };
+
+  #invalidateActionEditResponse = (value: ActionEditResponse) => {
+    const typesToInvalidate = new Set<string>();
+    let promisesToWait: Promise<any>[] = [];
+    if (value.type === "edits") {
+      // TODO we need an backend update for deletes
+      for (const obj of value.modifiedObjects) {
+        promisesToWait.push(
+          this.invalidateObject(obj.objectType, obj.primaryKey),
+        );
+      }
+
+      for (const obj of value.addedObjects) {
+        promisesToWait.push(
+          this.invalidateObject(obj.objectType, obj.primaryKey),
+        );
+
+        typesToInvalidate.add(obj.objectType);
+      }
+
+      promisesToWait = [
+        Promise.allSettled(promisesToWait).then(() => {
+          const changes2 = this.#changesFromActionEditResponse(value);
+          this.maybeRevalidateLists(changes2);
+        }),
+      ];
+    } else {
+      for (const apiName of value.editedObjectTypes) {
+        typesToInvalidate.add(apiName.toString());
+      }
+    }
+
+    return Promise.allSettled(promisesToWait).then(() => {
+      // after the single object invalidations are done we can decide if we need to updates any lists
+      for (const objectType of typesToInvalidate) {
+        // TODO make sure this covers individual object loads too
+        this.invalidateObjectType(objectType);
+      }
+
+      return value;
+    });
+  };
+
+  #changesFromActionEditResponse = (value: ActionEditResponse) => {
+    const changes: ChangedObjects = {
+      addedObjects: new MultiMap(Array),
+      modifiedObjects: new MultiMap(Array),
+    };
+
+    for (const changeType of ["addedObjects", "modifiedObjects"] as const) {
+      for (const { objectType, primaryKey } of (value[changeType] ?? [])) {
+        const obj = this.getObject(objectType, primaryKey);
+        if (obj) {
+          changes[changeType].set(objectType, obj);
+        }
+      }
+    }
+    return changes;
   };
 
   registerCacheKeyFactory<K extends CacheKey>(
@@ -285,7 +350,7 @@ export class Store {
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveOptions,
-    subFn: SubFn<ObjectEntry>,
+    subFn: SubFn<ObjectPayload>,
   ): Unsubscribable {
     if (typeof apiName !== "string") {
       apiName = apiName.apiName;
@@ -468,7 +533,7 @@ export class Store {
   public invalidateObject<T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
-  ): void {
+  ): Promise<unknown> {
     if (typeof apiName !== "string") {
       apiName = apiName.apiName;
     }
@@ -478,11 +543,34 @@ export class Store {
 
     const query = this.getObjectQuery(apiName, pk);
 
-    void query.revalidate(true);
+    return query.revalidate(true);
 
     // potentially trigger updates of the lists that included this object?
     // TODO
     // could we detect that a list WOULD include it?
+  }
+
+  public maybeRevalidateLists(
+    changes: ChangedObjects,
+  ): void {
+    for (const [cacheKey, v] of this._truthLayer.entries()) {
+      if (isListCacheKey(cacheKey)) {
+        // fixme promise
+        void this.peekQuery(cacheKey)?.maybeRevalidateList(changes);
+      }
+    }
+  }
+
+  public maybeUpdateLists(
+    changes: ChangedObjects,
+    optimisticId: object,
+  ): void {
+    for (const [cacheKey, v] of this._truthLayer.entries()) {
+      if (isListCacheKey(cacheKey)) {
+        // fixme promise
+        void this.peekQuery(cacheKey)?.maybeUpdateList(changes, optimisticId);
+      }
+    }
   }
 
   public invalidateObjectType<T extends ObjectTypeDefinition>(
@@ -548,5 +636,80 @@ export class Store {
     this._batch({ optimisticId }, (b) => {
       query.updateList(values, false, "loaded", b);
     });
+  }
+}
+
+class OptimisticJob {
+  context: OptimisticUpdateContext;
+  getResult: () => Promise<ChangedObjects>;
+  #result!: Promise<ChangedObjects>;
+
+  constructor(store: Store, optimisticId: unknown) {
+    const updatedObjects: Array<
+      Osdk.Instance<ObjectTypeDefinition>
+    > = [];
+
+    const addedObjects: Array<
+      Promise<Osdk.Instance<ObjectTypeDefinition>>
+    > = [];
+
+    // todo memoize this
+    this.getResult = () => {
+      return this.#result ??= (async () => {
+        const changes: ChangedObjects = {
+          addedObjects: new MultiMap(),
+          modifiedObjects: new MultiMap(),
+        };
+
+        const settled = await Promise.allSettled(addedObjects);
+        for (const added of settled) {
+          if (added.status === "fulfilled") {
+            changes.addedObjects.set(added.value.$objectType, added.value);
+          } else {
+            // TODO FIXME
+            throw added;
+          }
+        }
+
+        for (const modified of updatedObjects) {
+          changes.modifiedObjects.set(modified.$apiName, modified);
+        }
+        store._batch({ optimisticId }, (batch) => {
+          for (const a of ["addedObjects", "modifiedObjects"] as const) {
+            for (const b of changes[a].values()) {
+              store.getObjectQuery(b.$objectType, b.$primaryKey).writeToStore(
+                b,
+                "loading",
+                batch,
+              );
+            }
+          }
+        });
+
+        return changes;
+      })();
+    };
+
+    this.context = {
+      updateObject(value: Osdk.Instance<ObjectTypeDefinition>) {
+        updatedObjects.push(value);
+        return this;
+      },
+      createObject(type, pk, properties) {
+        const create = store._client[additionalContext].objectFactory2(
+          store._client[additionalContext],
+          [{
+            $primaryKey: pk,
+            $apiName: type.apiName,
+            $objectType: type.apiName,
+            ...properties,
+          }],
+          undefined,
+        ).then(x => x[0]);
+
+        addedObjects.push(create);
+        return this;
+      },
+    };
   }
 }

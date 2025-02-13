@@ -21,7 +21,7 @@ import type {
   PrimaryKeyType,
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
-import { distinctUntilChanged } from "rxjs";
+import { combineLatest, mergeMap, of, tap } from "rxjs";
 import type { CacheKey } from "./CacheKey.js";
 import type { Entry } from "./Layer.js";
 import type { QueryOptions } from "./Query.js";
@@ -32,6 +32,12 @@ import type { SubFn } from "./types.js";
 export interface ObjectEntry extends Entry<ObjectCacheKey> {}
 
 type ObjectStorageData = Osdk.Instance<ObjectTypeDefinition>;
+
+export interface ObjectPayload {
+  object: Osdk.Instance<ObjectTypeDefinition>;
+  status: Status;
+  lastUpdated: number;
+}
 
 export interface ObjectCacheKey extends
   CacheKey<
@@ -44,7 +50,7 @@ export interface ObjectCacheKey extends
 
 export class ObjectQuery extends Query<
   ObjectCacheKey,
-  ObjectEntry,
+  ObjectPayload,
   QueryOptions
 > {
   #apiName: string;
@@ -63,9 +69,20 @@ export class ObjectQuery extends Query<
   }
 
   public subscribe(
-    subFn: SubFn<ObjectEntry>,
+    subFn: SubFn<ObjectPayload>,
   ): Unsubscribable {
-    const sub = this.getSubject().pipe(distinctUntilChanged()).subscribe(subFn);
+    const sub = this.getSubject().pipe(
+      tap((x) => {
+      }),
+      mergeMap((x) => {
+        return combineLatest({
+          status: of(x.status),
+          object: of(x.value),
+          lastUpdated: of(x.lastUpdated),
+        });
+      }),
+      //   distinctUntilChanged(),
+    ).subscribe(subFn);
     return { unsubscribe: () => sub.unsubscribe() };
   }
 

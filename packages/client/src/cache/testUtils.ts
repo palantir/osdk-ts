@@ -30,8 +30,8 @@ import type { ActionSignatureFromDef } from "../actions/applyAction.js";
 import type { Client } from "../Client.js";
 import type { Entry } from "./Layer.js";
 import type { ListPayload } from "./ListQuery.js";
-import type { ObjectEntry } from "./ObjectQuery.js";
-import type { Unsubscribable } from "./Store.js";
+import type { ObjectPayload } from "./ObjectQuery.js";
+import type { Status, Unsubscribable } from "./Store.js";
 
 export interface MockClientHelper {
   client: Mock<Client> & Client;
@@ -134,17 +134,21 @@ export function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
 }
 
 export function expectSingleObjectCallAndClear<T extends ObjectTypeDefinition>(
-  subFn: Mock<(e: ObjectEntry | undefined) => void>,
-  value: Osdk.Instance<T>,
+  subFn: Mock<(e: ObjectPayload | undefined) => void>,
+  object: Osdk.Instance<T>,
+  status?: Status,
 ): void {
   expect(subFn).toHaveBeenCalledExactlyOnceWith(
-    expect.objectContaining({ value: value }),
+    expect.objectContaining({
+      object,
+      status: status ?? expect.any(String),
+    }),
   );
   subFn.mockClear();
 }
 
 export async function waitForCall(
-  subFn: Mock<(e: ObjectEntry | undefined) => void>,
+  subFn: Mock<(e: any) => void>,
   times: number = 1,
 ): Promise<void> {
   await vi.waitFor(() => expect(subFn).toHaveBeenCalledTimes(times));
@@ -156,46 +160,46 @@ function createSubscriptionHelper() {
 
 export function mockSingleSubCallback():
   & Mock<
-    (e: ObjectEntry | undefined) => void
+    (e: ObjectPayload | undefined) => void
   >
   & {
-    expectLoaded: (value: unknown) => Promise<void>;
-    expectLoading: (value: unknown) => Promise<void>;
+    // expectLoaded: (value: unknown) => Promise<void>;
+    // expectLoading: (value: unknown) => Promise<void>;
     expectLoadingAndLoaded: (q: {
       loading?: unknown;
       loaded: unknown;
     }) => Promise<void>;
   }
 {
-  const ret = vitest.fn((e: ObjectEntry | undefined) => {});
+  const ret = vitest.fn((e: ObjectPayload | undefined) => {});
 
-  async function expectLoaded(value: unknown) {
-    await waitForCall(ret);
-    // as long as we get the loaded call we are happy
-    expect(ret).toHaveBeenLastCalledWith(
-      cacheEntryContaining({
-        value,
-        status: "loaded",
-      }),
-    );
-    ret.mockClear();
-  }
+  //   async function expectLoaded(value: unknown) {
+  //     await waitForCall(ret);
+  //     // as long as we get the loaded call we are happy
+  //     expect(ret).toHaveBeenLastCalledWith(
+  //       cacheEntryContaining({
+  //         value,
+  //         status: "loaded",
+  //       }),
+  //     );
+  //     ret.mockClear();
+  //   }
 
-  async function expectLoading(value: unknown) {
-    await waitForCall(ret);
-    // as long as we get the loaded call we are happy
-    expect(ret).toHaveBeenCalledExactlyOnceWith(
-      cacheEntryContaining({
-        value,
-        status: "loading",
-      }),
-    );
-    ret.mockClear();
-  }
+  //   async function expectLoading(value: unknown) {
+  //     await waitForCall(ret);
+  //     // as long as we get the loaded call we are happy
+  //     expect(ret).toHaveBeenCalledExactlyOnceWith(
+  //       cacheEntryContaining({
+  //         value,
+  //         status: "loading",
+  //       }),
+  //     );
+  //     ret.mockClear();
+  //   }
 
   return Object.assign(ret, {
-    expectLoaded,
-    expectLoading,
+    // expectLoaded,
+    // expectLoading,
     expectLoadingAndLoaded: async (
       q: { loading?: unknown; loaded: unknown },
     ) => {
@@ -204,17 +208,11 @@ export function mockSingleSubCallback():
       // as long as we get the loaded call we are happy
       expect(ret).toHaveBeenNthCalledWith(
         1,
-        cacheEntryContaining({
-          ...("loading" in q ? { value: q.loading } : {}),
-          status: "loading",
-        }),
+        q.loading,
       );
       expect(ret).toHaveBeenNthCalledWith(
         2,
-        cacheEntryContaining({
-          value: q.loaded,
-          status: "loaded",
-        }),
+        q.loaded,
       );
       expect(ret).toHaveBeenCalledTimes(2);
       ret.mockClear();
@@ -238,6 +236,30 @@ export function cacheEntryContaining(x: Partial<Entry<any>>): Entry<any> {
       : expect.toBeOneOf([expect.anything(), undefined]),
     status: x.status ?? expect.anything(),
     lastUpdated: x.lastUpdated ?? expect.anything(),
+  };
+}
+
+export function objectPayloadContaining(
+  x: Partial<ObjectPayload>,
+): ObjectPayload {
+  return {
+    object: "object" in x
+      ? x.object
+      : expect.toBeOneOf([expect.anything(), undefined]),
+    status: x.status ?? expect.anything(),
+    lastUpdated: x.lastUpdated ?? expect.anything(),
+  };
+}
+
+export function listPayloadContaining(
+  x: Partial<ListPayload>,
+): ListPayload {
+  return {
+    fetchMore: x.fetchMore ?? expect.any(Function),
+    hasMore: x.hasMore ?? expect.any(Boolean),
+    resolvedList: x.resolvedList ?? expect.anything(),
+    status: x.status ?? expect.anything(),
+    listEntry: x.listEntry ?? expect.anything(),
   };
 }
 

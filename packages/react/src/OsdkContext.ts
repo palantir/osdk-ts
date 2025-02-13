@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Client } from "@osdk/client";
+import type { Client, Store } from "@osdk/client";
 import React from "react";
 
 function fakeClientFn(..._args: any[]) {
@@ -27,8 +27,13 @@ const fakeClient = Object.assign(fakeClientFn, {
   fetchMetadata: fakeClientFn,
 } as Client);
 
-export const OsdkContext: React.Context<{
+interface OsdkContextContents {
   client: Client;
-}> = React.createContext<{ client: Client }>({
-  client: fakeClient,
-});
+  store: Store;
+}
+
+export const OsdkContext: React.Context<OsdkContextContents> = React
+  .createContext<OsdkContextContents>({
+    client: fakeClient,
+    store: undefined!,
+  });

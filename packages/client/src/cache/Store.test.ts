@@ -46,8 +46,11 @@ import {
   createDefer,
   expectSingleListCallAndClear,
   expectSingleObjectCallAndClear,
+  listPayloadContaining,
   mockListSubCallback,
   mockSingleSubCallback,
+  objectPayloadContaining,
+  waitForCall,
 } from "./testUtils.js";
 
 const defer = createDefer();
@@ -70,8 +73,8 @@ afterAll(() => {
 });
 
 const ANY_INIT_ENTRY = {
-  cacheKey: expect.any(Object),
-  value: undefined,
+  // cacheKey: expect.any(Object),
+  object: undefined,
   lastUpdated: 0,
   status: "init",
 };
@@ -159,7 +162,7 @@ describe(Store, () => {
           ),
         );
 
-        expectSingleObjectCallAndClear(subFn, emp);
+        expectSingleObjectCallAndClear(subFn, emp, "loaded");
 
         // update with an optimistic write
         cache.updateObject(Employee, emp.$clone({ fullName: "new name" }), {
@@ -168,12 +171,13 @@ describe(Store, () => {
         expectSingleObjectCallAndClear(
           subFn,
           emp.$clone({ fullName: "new name" }),
+          "loaded",
         );
 
         // remove the optimistic write
         cache.removeLayer("1");
 
-        expectSingleObjectCallAndClear(subFn, emp);
+        expectSingleObjectCallAndClear(subFn, emp, "loaded");
       });
 
       it("rolls back to an updated real value", async () => {
@@ -193,7 +197,7 @@ describe(Store, () => {
           ),
         );
 
-        expectSingleObjectCallAndClear(empSubFn, emp);
+        expectSingleObjectCallAndClear(empSubFn, emp, "loaded");
 
         const listSubFn = mockListSubCallback();
         defer(
@@ -260,7 +264,10 @@ describe(Store, () => {
           ),
         );
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          expect.objectContaining({ value: emp }),
+          objectPayloadContaining({
+            object: emp,
+            status: "loaded",
+          }),
         );
         subFn.mockClear();
 
@@ -271,8 +278,8 @@ describe(Store, () => {
           optimisticId: "1",
         });
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          cacheEntryContaining({
-            value: optimisticEmployee,
+          objectPayloadContaining({
+            object: optimisticEmployee,
           }),
         );
         subFn.mockClear();
@@ -289,8 +296,8 @@ describe(Store, () => {
         cache.removeLayer("1");
 
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          cacheEntryContaining({
-            value: truthUpdatedEmployee,
+          objectPayloadContaining({
+            object: truthUpdatedEmployee,
           }),
         );
       });
@@ -313,21 +320,21 @@ describe(Store, () => {
         );
 
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          cacheEntryContaining({
-            value: staleEmp,
+          objectPayloadContaining({
+            object: staleEmp,
             status: "loaded",
           }),
         );
         subFn.mockClear();
 
         // invalidate
-        cache.invalidateObject(Employee, staleEmp.$primaryKey);
+        void cache.invalidateObject(Employee, staleEmp.$primaryKey);
 
         await vi.waitFor(() => expect(subFn).toHaveBeenCalled());
 
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          cacheEntryContaining({
-            value: staleEmp,
+          objectPayloadContaining({
+            object: staleEmp,
             status: "loading",
           }),
         );
@@ -336,8 +343,8 @@ describe(Store, () => {
         await vi.waitFor(() => expect(subFn).toHaveBeenCalled());
 
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          cacheEntryContaining({
-            value: emp,
+          objectPayloadContaining({
+            object: emp,
           }),
         );
       });
@@ -401,9 +408,9 @@ describe(Store, () => {
         await vi.waitFor(() => expect(subFn).toHaveBeenCalled());
 
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          cacheEntryContaining({
+          objectPayloadContaining({
             status: "loaded",
-            value: emp,
+            object: emp,
           }),
         );
       });
@@ -467,9 +474,9 @@ describe(Store, () => {
         await vi.waitFor(() => expect(subFn).toHaveBeenCalled());
 
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          cacheEntryContaining({
+          objectPayloadContaining({
             status: "loaded",
-            value: emp,
+            object: emp,
           }),
         );
       });
@@ -493,16 +500,13 @@ describe(Store, () => {
         defer(
           cache.observeObject(Employee, 50030, { mode: "force" }, subFn1),
         );
-        const ANY_LOADING_ENTRY = {
-          cacheKey: expect.any(Object),
-          value: expect.anything(),
-          lastUpdated: expect.toBeGreaterThan(0),
+        const ANY_LOADING_ENTRY = expect.objectContaining({
           status: "loading",
-        };
+        });
         expect(subFn1).toHaveBeenCalledExactlyOnceWith(
-          cacheEntryContaining({
+          objectPayloadContaining({
             status: "loading",
-            value: undefined,
+            object: undefined,
           }),
         );
 
@@ -510,8 +514,8 @@ describe(Store, () => {
 
         await vi.waitFor(() => expect(subFn1).toHaveBeenCalled());
         expect(subFn1).toHaveBeenCalledExactlyOnceWith(
-          cacheEntryContaining({
-            value: likeEmployee50030,
+          objectPayloadContaining({
+            object: likeEmployee50030,
           }),
         );
 
@@ -569,15 +573,15 @@ describe(Store, () => {
         // force an update
         cache.updateObject(Employee, emp);
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          cacheEntryContaining({ value: emp }),
+          objectPayloadContaining({ object: emp }),
         );
         subFn.mockClear();
 
         // force again
         cache.updateObject(Employee, emp.$clone({ fullName: "new name" }));
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
-          cacheEntryContaining({
-            value: expect.objectContaining({ fullName: "new name" }),
+          objectPayloadContaining({
+            object: expect.objectContaining({ fullName: "new name" }),
           }),
         );
         subFn.mockClear();
@@ -603,7 +607,7 @@ describe(Store, () => {
         expect(subFn).toHaveBeenCalledTimes(2);
 
         expect(subFn.mock.calls[1][0]).toEqual(
-          cacheEntryContaining({ value: emp }),
+          objectPayloadContaining({ object: emp }),
         );
       });
     });
@@ -636,6 +640,7 @@ describe(Store, () => {
               status: "loading",
               resolvedList: [],
               fetchMore: expect.any(Function),
+              hasMore: expect.any(Boolean),
             },
           );
           subFn1.mockClear();
@@ -672,18 +677,21 @@ describe(Store, () => {
           subFn1.mockClear();
 
           await vi.waitFor(() => expect(subFn1).toHaveBeenCalled());
-          expect(subFn1).toHaveBeenCalledExactlyOnceWith({
-            listEntry: expect.objectContaining({
-              ...firstLoad.listEntry,
-              lastUpdated: expect.toBeGreaterThan(
-                firstLoad.listEntry.lastUpdated,
-              ),
-              status: "loaded",
-            }),
-            resolvedList: employeesAsServerReturns,
-            status: "loaded",
-            fetchMore: expect.any(Function),
-          });
+          expect(subFn1).toHaveBeenCalledExactlyOnceWith(
+            listPayloadContaining(
+              {
+                listEntry: expect.objectContaining({
+                  ...firstLoad.listEntry,
+                  lastUpdated: expect.toBeGreaterThan(
+                    firstLoad.listEntry.lastUpdated,
+                  ),
+                  status: "loaded",
+                }),
+                resolvedList: employeesAsServerReturns,
+                status: "loaded",
+              },
+            ),
+          );
           subFn1.mockClear();
         });
       });
@@ -767,8 +775,6 @@ describe(Store, () => {
         expect(subFn).not.toHaveBeenCalled();
         await vi.waitFor(() => expect(subFn).toHaveBeenCalled());
 
-        console.log(subFn.mock.calls[0][0]?.listEntry.cacheKey);
-
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
           expect.objectContaining({
             status: "loading",
@@ -833,9 +839,14 @@ describe(Store, () => {
         defer(cache.observeObject(Todo, 0, {}, todoSubFn));
 
         await todoSubFn.expectLoadingAndLoaded({
-          loading: undefined,
-          loaded: expect.objectContaining({
-            $primaryKey: 0,
+          loading: objectPayloadContaining({
+            status: "loading",
+            object: undefined,
+          }),
+          loaded: objectPayloadContaining({
+            object: expect.objectContaining({
+              $primaryKey: 0,
+            }),
           }),
         });
 
@@ -849,23 +860,26 @@ describe(Store, () => {
 
         // after we apply the action, the object is invalidated and gets re-requested
 
-        const mockFetchResult = mockClient.mockFetchOneOnce<Todo>();
+        mockClient.mockFetchOneOnce<Todo>().resolve({
+          $apiName: "Todo",
+          text: "hello there kind sir",
+        });
 
         const actionPromise = cache.applyAction(createOffice, {
           officeId: "whatever",
         });
 
         await actionPromise;
-        await todoSubFn.expectLoading(expect.any(Object));
-
-        mockFetchResult.resolve({
-          $apiName: "Todo",
-          text: "hello there kind sir",
+        await todoSubFn.expectLoadingAndLoaded({
+          loading: objectPayloadContaining({
+            status: "loading",
+          }),
+          loaded: objectPayloadContaining({
+            object: expect.objectContaining({
+              text: "hello there kind sir",
+            }),
+          }),
         });
-
-        await todoSubFn.expectLoaded(expect.objectContaining({
-          text: "hello there kind sir",
-        }));
       });
 
       it("rolls back optimistic updates on error", async () => {
@@ -886,8 +900,14 @@ describe(Store, () => {
         );
 
         await todoSubFn.expectLoadingAndLoaded({
-          loading: undefined,
-          loaded: fauxObject,
+          loading: objectPayloadContaining({
+            status: "loading",
+            object: undefined,
+          }),
+          loaded: objectPayloadContaining({
+            object: fauxObject,
+            status: "loaded",
+          }),
         });
 
         // at this point we have an observation properly set up
@@ -901,17 +921,30 @@ describe(Store, () => {
           },
         });
 
-        await todoSubFn.expectLoading({
-          ...fauxObject,
-          someValue: "optimistic",
-        });
+        await waitForCall(todoSubFn, 1);
+        expect(todoSubFn).toHaveBeenCalledExactlyOnceWith(
+          objectPayloadContaining({
+            object: {
+              ...fauxObject,
+              someValue: "optimistic",
+            },
+            status: "loading",
+          }),
+        );
+        todoSubFn.mockClear();
 
         // let the action error out
         applyActionResult.reject("an error thrown");
         await expect(actionPromise).rejects.toThrow("an error thrown");
 
         // back to the original object
-        await todoSubFn.expectLoaded(fauxObject);
+        await waitForCall(todoSubFn, 1);
+        expect(todoSubFn).toHaveBeenCalledExactlyOnceWith(
+          objectPayloadContaining({
+            object: fauxObject,
+            status: "loaded",
+          }),
+        );
       });
     });
   });
