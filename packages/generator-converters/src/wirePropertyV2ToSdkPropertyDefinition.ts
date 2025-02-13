@@ -24,16 +24,15 @@ import type {
   PropertyV2,
   SharedPropertyType,
 } from "@osdk/internal.foundry.core";
-import { consola } from "consola";
 
 export function wirePropertyV2ToSdkPropertyDefinition(
   input: (PropertyV2 | SharedPropertyType) & { nullable?: boolean },
   isNullable: boolean = true,
-  shouldLogWarnings: boolean = false,
+  log?: { info: (msg: string) => void },
 ): ObjectMetadata.Property | undefined {
   const sdkPropDefinition = objectPropertyTypeToSdkPropertyDefinition(
     input.dataType,
-    shouldLogWarnings,
+    log,
   );
   if (sdkPropDefinition == null) {
     return undefined;
@@ -76,27 +75,25 @@ export function wirePropertyV2ToSdkPropertyDefinition(
       };
     }
     case "cipherText": {
-      if (shouldLogWarnings) {
-        consola.info(
-          `${JSON.stringify(input.dataType.type)} is not a supported dataType`,
-        );
-      }
+      log?.info(
+        `${JSON.stringify(input.dataType.type)} is not a supported dataType`,
+      );
+
       return undefined;
     }
     default:
       const _: never = input.dataType;
-      if (shouldLogWarnings) {
-        consola.info(
-          `${JSON.stringify(input.dataType)} is not a supported dataType`,
-        );
-      }
+      log?.info(
+        `${JSON.stringify(input.dataType)} is not a supported dataType`,
+      );
+
       return undefined;
   }
 }
 
 function objectPropertyTypeToSdkPropertyDefinition(
   propertyType: ObjectPropertyType,
-  shouldLogWarnings: boolean = false,
+  log?: { info: (msg: string) => void },
 ): WirePropertyTypes | undefined {
   switch (propertyType.type) {
     case "integer":
@@ -140,23 +137,18 @@ function objectPropertyTypeToSdkPropertyDefinition(
     }
 
     case "cipherText": {
-      if (shouldLogWarnings) {
-        consola.info(
-          `${
-            JSON.stringify(propertyType.type)
-          } is not a supported propertyType`,
-        );
-      }
+      log?.info(
+        `${JSON.stringify(propertyType.type)} is not a supported propertyType`,
+      );
 
       return undefined;
     }
     default: {
       const _: never = propertyType;
-      if (shouldLogWarnings) {
-        consola.info(
-          `${JSON.stringify(propertyType)} is not a supported propertyType`,
-        );
-      }
+      log?.info(
+        `${JSON.stringify(propertyType)} is not a supported propertyType`,
+      );
+
       return undefined;
     }
   }

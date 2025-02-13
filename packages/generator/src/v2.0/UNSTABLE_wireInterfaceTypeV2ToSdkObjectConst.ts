@@ -15,6 +15,7 @@
  */
 
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/generator-converters";
+import consola from "consola";
 import fastDeepEqual from "fast-deep-equal";
 import invariant from "tiny-invariant";
 import { extractNamespace } from "../GenerateContext/EnhancedBase.js";
@@ -54,7 +55,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
         __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
           parent.raw,
           v2,
-          true,
+          consola,
         ),
       );
       return it;

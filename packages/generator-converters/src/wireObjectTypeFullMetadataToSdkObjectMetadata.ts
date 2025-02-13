@@ -30,7 +30,7 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
     };
   },
   v2: boolean,
-  shouldLogWarnings: boolean = false,
+  log?: { info: (msg: string) => void },
 ): ObjectMetadata {
   if (
     objectTypeWithLink.objectType
@@ -82,7 +82,7 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
         wirePropertyV2ToSdkPropertyDefinition(
           value,
           !(v2 && objectTypeWithLink.objectType.primaryKey === key),
-          shouldLogWarnings,
+          log,
         ),
       ]).filter(([key, value]) => value != null),
     ),
