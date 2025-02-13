@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  type ActionDefinition,
-  type ActionSignatureFromDef,
-  ActionValidationError,
-  type Store,
+import type {
+  ActionDefinition,
+  ActionSignatureFromDef,
+  ObservableClient,
 } from "@osdk/client";
+import { ActionValidationError } from "@osdk/client";
 import React from "react";
 import { OsdkContext } from "./OsdkContext.js";
 
@@ -27,7 +27,7 @@ export namespace useOsdkAction {
   export interface Result<Q extends ActionDefinition<any>> {
     applyAction: (
       args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
-      opts: Store.ApplyActionOptions,
+      opts: ObservableClient.ApplyActionOptions,
     ) => Promise<unknown>;
 
     error:
@@ -49,7 +49,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
 
   const applyAction = React.useCallback(async function applyAction(
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
-    opts: Store.ApplyActionOptions,
+    opts: ObservableClient.ApplyActionOptions,
   ) {
     try {
       const r = await store.applyAction(actionDef, args, opts);

@@ -22,6 +22,7 @@ import type {
 } from "@osdk/api";
 import type { ActionSignatureFromDef } from "../actions/applyAction.js";
 import type { Client } from "../Client.js";
+import type { Canonical } from "./internal/Canonical.js";
 import { ObservableClientImpl } from "./internal/ObservableClientImpl.js";
 import { Store } from "./internal/Store.js";
 import type { ListPayload } from "./ListPayload.js";
@@ -31,6 +32,11 @@ import type { SubFn } from "./types.js";
 
 export type Status = "init" | "loading" | "loaded" | "error";
 
+export namespace ObservableClient {
+  export interface ApplyActionOptions {
+    optimisticUpdate?: (ctx: OptimisticBuilder) => void;
+  }
+}
 export interface QueryOptions {
   dedupeInterval?: number;
 }
@@ -41,9 +47,6 @@ export interface ObserveOptions {
 
 export interface ListQueryOptions extends QueryOptions {
   pageSize?: number;
-}
-export interface ApplyActionOptions {
-  optimisticUpdate?: (ctx: OptimisticBuilder) => void;
 }
 
 export interface ObservableClient {
@@ -64,8 +67,12 @@ export interface ObservableClient {
   applyAction: <Q extends ActionDefinition<any>>(
     action: Q,
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
-    opts?: ApplyActionOptions,
+    opts?: ObservableClient.ApplyActionOptions,
   ) => Promise<unknown>;
+
+  canonicalizeWhereClause: <T extends ObjectTypeDefinition>(
+    where: WhereClause<T>,
+  ) => Canonical<WhereClause<T>>;
 }
 
 export function createObservableClient(client: Client): ObservableClient {

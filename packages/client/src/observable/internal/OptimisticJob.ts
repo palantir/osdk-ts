@@ -56,7 +56,7 @@ export class OptimisticJob {
         for (const modified of updatedObjects) {
           changes.modifiedObjects.set(modified.$apiName, modified);
         }
-        store._batch({ optimisticId }, (batch) => {
+        store.batch({ optimisticId }, (batch) => {
           for (const a of ["addedObjects", "modifiedObjects"] as const) {
             for (const b of changes[a].values()) {
               store.getObjectQuery(b.$objectType, b.$primaryKey).writeToStore(
@@ -78,8 +78,8 @@ export class OptimisticJob {
         return this;
       },
       createObject(type, pk, properties) {
-        const create = store._client[additionalContext].objectFactory2(
-          store._client[additionalContext],
+        const create = store.client[additionalContext].objectFactory2(
+          store.client[additionalContext],
           [{
             $primaryKey: pk,
             $apiName: type.apiName,

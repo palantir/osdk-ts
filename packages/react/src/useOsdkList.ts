@@ -50,7 +50,7 @@ export function useOsdkList<T extends ObjectTypeDefinition>(
   opts: useOsdkList.Options<T>,
 ): useOsdkList.Result<T> {
   const { store } = React.useContext(OsdkContext);
-  const where = store._whereCanonicalizer.canonicalize(opts.where);
+  const where = store.canonicalizeWhereClause(opts.where);
 
   const { subscribe, getSnapShot } = React.useMemo(
     () =>

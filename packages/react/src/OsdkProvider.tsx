@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Client, Store } from "@osdk/client";
+import type { Client, ObservableClient } from "@osdk/client";
 import React from "react";
 import { OsdkContext } from "./OsdkContext.js";
 
@@ -25,7 +25,7 @@ export function OsdkProvider({
 }: {
   children: React.ReactNode;
   client: Client;
-  store: Store;
+  store: ObservableClient;
 }): React.JSX.Element {
   return (
     <OsdkContext.Provider value={{ client, store }}>

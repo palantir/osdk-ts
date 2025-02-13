@@ -68,7 +68,7 @@ export abstract class Query<
       return Promise.resolve();
     }
 
-    this.store._batch({}, (batch) => {
+    this.store.batch({}, (batch) => {
       this.setStatus("loading", batch);
     });
 

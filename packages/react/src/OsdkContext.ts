@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Client, Store } from "@osdk/client";
+import type { Client, ObservableClient } from "@osdk/client";
 import React from "react";
 
 function fakeClientFn(..._args: any[]) {
@@ -29,7 +29,11 @@ const fakeClient = Object.assign(fakeClientFn, {
 
 interface OsdkContextContents {
   client: Client;
-  store: Store;
+  // keeping the old name for now intentionally
+  // in case i need both for a while
+  // in the future we can just make
+  // this `client: ObservableClient`
+  store: ObservableClient;
 }
 
 export const OsdkContext: React.Context<OsdkContextContents> = React

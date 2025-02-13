@@ -24,13 +24,13 @@ import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
 import type {
-  ApplyActionOptions,
   ListQueryOptions,
   ObservableClient,
   ObserveOptions,
   Unsubscribable,
 } from "../ObservableClient.js";
 import type { SubFn } from "../types.js";
+import type { Canonical } from "./Canonical.js";
 import type { Store } from "./Store.js";
 
 /**
@@ -64,8 +64,14 @@ export class ObservableClientImpl implements ObservableClient {
   public applyAction<Q extends ActionDefinition<any>>(
     action: Q,
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
-    opts?: ApplyActionOptions,
+    opts?: ObservableClient.ApplyActionOptions,
   ): Promise<unknown> {
     return this.#store.applyAction(action, args, opts);
+  }
+
+  public canonicalizeWhereClause<T extends ObjectTypeDefinition>(
+    where: WhereClause<T>,
+  ): Canonical<WhereClause<T>> {
+    return this.#store._whereCanonicalizer.canonicalize(where);
   }
 }

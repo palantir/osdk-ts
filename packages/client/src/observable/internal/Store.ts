@@ -22,7 +22,6 @@ import type {
   PrimaryKeyType,
   WhereClause,
 } from "@osdk/api";
-import { Trie } from "@wry/trie";
 import { delay } from "msw";
 import { BehaviorSubject } from "rxjs";
 import invariant from "tiny-invariant";
@@ -34,6 +33,7 @@ import type { Unsubscribable } from "../ObservableClient.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
 import type { SubFn } from "../types.js";
 import type { CacheKey } from "./CacheKey.js";
+import { CacheKeys } from "./CacheKeys.js";
 import { type ChangedObjects, createChangedObjects } from "./ChangedObjects.js";
 import type { Entry } from "./Layer.js";
 import { Layer } from "./Layer.js";
@@ -100,18 +100,11 @@ export namespace Store {
 */
 
 export class Store {
-  #cacheKeys = new Trie<CacheKey<string, any, any>>(false, (keys) => {
-    return { type: keys[0], otherKeys: keys.slice(1) } as unknown as CacheKey<
-      string,
-      any,
-      any
-    >;
-  });
   _whereCanonicalizer: WhereClauseCanonicalizer =
     new WhereClauseCanonicalizer();
   _truthLayer: Layer = new Layer(undefined, undefined);
   _topLayer: Layer;
-  _client: Client;
+  client: Client;
 
   queries: Map<CacheKey<string, any, any>, Query<any, any, any>> = new Map();
 
@@ -119,26 +112,12 @@ export class Store {
     CacheKey<string, any, any>,
     BehaviorSubject<Entry<any>>
   >();
-
-  #cacheKeyFactories = new Map<string, (...args: any[]) => CacheKey>();
+  #cacheKeys: CacheKeys;
 
   constructor(client: Client) {
-    this._client = client;
+    this.client = client;
     this._topLayer = this._truthLayer;
-    this.registerCacheKeyFactory<ObjectCacheKey>(
-      "object",
-      (apiName, pk) =>
-        this.#cacheKeys.lookupArray(["object", apiName, pk]) as ObjectCacheKey,
-    );
-    this.registerCacheKeyFactory<ListCacheKey>(
-      "list",
-      (apiName, where) =>
-        this.#cacheKeys.lookupArray([
-          "list",
-          apiName,
-          this._whereCanonicalizer.canonicalize(where),
-        ]) as ListCacheKey,
-    );
+    this.#cacheKeys = new CacheKeys(this._whereCanonicalizer);
   }
 
   applyAction: <Q extends ActionDefinition<any>>(
@@ -147,9 +126,6 @@ export class Store {
     opts?: Store.ApplyActionOptions,
   ) => Promise<unknown> = (action, args, { optimisticUpdate } = {}) => {
     const optimisticId = optimisticUpdate ? Object.create(null) : undefined;
-    const pendingOptimisticCreates: Promise<
-      Osdk.Instance<ObjectTypeDefinition>[]
-    >[] = [];
 
     const job = new OptimisticJob(this, optimisticId);
 
@@ -157,29 +133,37 @@ export class Store {
       optimisticUpdate(job.context);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    job.getResult().then((changes) => {
+    const optimisticResult = job.getResult().then((changes) => {
       this.maybeUpdateLists(changes, optimisticId);
 
       return changes;
     });
 
+    // The types for client get confused when we dynamically applyAction so we
+    // have to deal with the `any` here and force cast it to what it should be.
+    // TODO: Update the types so this doesn't happen!
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    return this._client(action)
-      .applyAction(args as any, { $returnEdits: true })
-      .then((value: ActionEditResponse) => {
+    const applyActionResult: Promise<ActionEditResponse> = this.client(action)
+      .applyAction(args as any, { $returnEdits: true });
+
+    return applyActionResult
+      .then((value) => {
         // eslint-disable-next-line no-console
         console.log("action done, pausing");
         return delay(500).then(() => value);
         return value;
       })
-      .then(
-        (value: ActionEditResponse) => {
-          // eslint-disable-next-line no-console
-          console.log("action done, pausing done");
-          return this.#invalidateActionEditResponse(value);
-        },
-      ).finally(() => {
+      .then((value) => {
+        // in rare cases, its possible the optimistic update hasn't finished
+        // being applied and therefore we could accidentally removeLayer below
+        // and then inadvertently create a new one that doesn't get removed
+        return optimisticResult.then(() => value);
+      })
+      .then((value) => {
+        // eslint-disable-next-line no-console
+        console.log("action done, pausing done");
+        return this.#invalidateActionEditResponse(value);
+      }).finally(() => {
         if (optimisticId) {
           // eslint-disable-next-line no-console
           console.log("removing layer");
@@ -243,13 +227,6 @@ export class Store {
     return changes;
   };
 
-  registerCacheKeyFactory<K extends CacheKey>(
-    type: K["type"],
-    factory: (...args: K["__cacheKey"]["args"]) => K,
-  ): void {
-    this.#cacheKeyFactories.set(type, factory);
-  }
-
   removeLayer(layerId: unknown): void {
     invariant(
       layerId != null,
@@ -297,9 +274,7 @@ export class Store {
     type: K["type"],
     ...args: K["__cacheKey"]["args"]
   ): K {
-    const factory = this.#cacheKeyFactories.get(type);
-    invariant(factory, `no cache key factory for type "${type}"`);
-    return factory(...args) as K;
+    return this.#cacheKeys.getCacheKey(type, ...args);
   }
 
   getSubject = <KEY extends CacheKey<string, any, any>>(
@@ -443,7 +418,7 @@ export class Store {
     return objEntry?.value as Osdk.Instance<T> | undefined;
   }
 
-  _batch = <X>(
+  batch = <X>(
     { optimisticId }: { optimisticId?: unknown },
     batchFn: (batchContext: BatchContext) => X,
   ): {
@@ -589,7 +564,7 @@ export class Store {
 
     const query = this.getObjectQuery(apiName, value.$primaryKey);
 
-    return this._batch({ optimisticId }, (batch) => {
+    return this.batch({ optimisticId }, (batch) => {
       return query.writeToStore(value, "loaded", batch);
     }).retVal.value;
   }
@@ -607,7 +582,7 @@ export class Store {
 
     const query = this.getListQuery(apiName, where, opts);
 
-    this._batch({ optimisticId }, (b) => {
+    this.batch({ optimisticId }, (b) => {
       query.updateList(values, false, "loaded", b);
     });
   }

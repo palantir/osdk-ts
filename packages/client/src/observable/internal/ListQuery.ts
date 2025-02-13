@@ -86,7 +86,7 @@ export class ListQuery extends Query<
     opts: ListQueryOptions,
   ) {
     super(store, opts, cacheKey);
-    this.#client = store._client;
+    this.#client = store.client;
     this.#type = type;
     this.#whereClause = whereClause;
   }
@@ -146,7 +146,7 @@ export class ListQuery extends Query<
         break;
       }
     }
-    this.store._batch({}, (batch) => {
+    this.store.batch({}, (batch) => {
       this.setStatus("loaded", batch);
     });
 
@@ -170,7 +170,7 @@ export class ListQuery extends Query<
       return Promise.resolve();
     }
 
-    this.store._batch({}, (batch) => {
+    this.store.batch({}, (batch) => {
       this.setStatus("loading", batch);
     });
 
@@ -206,7 +206,7 @@ export class ListQuery extends Query<
 
     this.#nextPageToken = nextPageToken;
 
-    const { retVal } = this.store._batch({}, (batch) => {
+    const { retVal } = this.store.batch({}, (batch) => {
       return this.updateList(
         data,
         append,
@@ -283,7 +283,7 @@ export class ListQuery extends Query<
       // for now we are not doing sorting which makes life easy :)
       // FIXME
 
-      this.store._batch({ optimisticId }, (batch) => {
+      this.store.batch({ optimisticId }, (batch) => {
         this.updateList(
           objectsToInsert,
           true,

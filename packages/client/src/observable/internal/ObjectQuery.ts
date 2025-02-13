@@ -86,12 +86,12 @@ export class ObjectQuery extends Query<
   }
 
   async _fetch(): Promise<void> {
-    const objectSet = this.store._client({
+    const objectSet = this.store.client({
       type: "object",
       apiName: this.#apiName,
     }) as ObjectSet<ObjectTypeDefinition>;
     const obj = await objectSet.fetchOne(this.#pk);
-    this.store._batch({}, (batch) => {
+    this.store.batch({}, (batch) => {
       this.writeToStore(
         obj as Osdk.Instance<ObjectTypeDefinition>,
         "loaded",

@@ -61,7 +61,8 @@ export {
 
 // THIS IS NOT THE FINAL NAME DO NOT SHIP LIKE THIS
 export type { ActionSignatureFromDef } from "./actions/applyAction.js";
-export type { ListPayload } from "./cache/ListQuery.js";
-export type { ObjectPayload } from "./cache/ObjectQuery.js";
-export { Store } from "./cache/Store.js";
-export type { Unsubscribable } from "./cache/Store.js";
+export type { ListPayload } from "./observable/ListPayload.js";
+export type { ObjectPayload } from "./observable/ObjectPayload.js";
+export type { Unsubscribable } from "./observable/ObservableClient.js";
+export type { ObservableClient } from "./observable/ObservableClient.js";
+export { createObservableClient } from "./observable/ObservableClient.js";
