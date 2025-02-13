@@ -24,7 +24,7 @@ import type {
   QueryDataType,
   ThreeDimensionalAggregation,
   TwoDimensionalAggregation,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import { isNullableQueryDataType } from "./isNullableQueryDataType.js";
 
 export function wireQueryDataTypeToQueryDataTypeDefinition<

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import type { ObjectTypeFullMetadata } from "@osdk/foundry.ontologies";
 import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
-import type { ObjectTypeFullMetadata } from "@osdk/internal.foundry.core";
 import consola from "consola";
 import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";

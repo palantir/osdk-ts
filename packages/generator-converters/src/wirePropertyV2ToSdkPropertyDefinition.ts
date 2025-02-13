@@ -23,7 +23,7 @@ import type {
   ObjectPropertyType,
   PropertyV2,
   SharedPropertyType,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 
 export function wirePropertyV2ToSdkPropertyDefinition(
   input: (PropertyV2 | SharedPropertyType) & { nullable?: boolean },
@@ -41,7 +41,6 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "integer":
     case "string":
     case "byte":
-    case "cipherText":
     case "decimal":
     case "double":
     case "float":
@@ -74,7 +73,8 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         nullable: true,
       };
     }
-    case "cipherText": {
+    case "cipherText":
+    case "vector": {
       log?.info(
         `${JSON.stringify(input.dataType.type)} is not a supported dataType`,
       );
@@ -135,8 +135,8 @@ function objectPropertyTypeToSdkPropertyDefinition(
         {},
       );
     }
-
-    case "cipherText": {
+    case "cipherText":
+    case "vector": {
       log?.info(
         `${JSON.stringify(propertyType.type)} is not a supported propertyType`,
       );

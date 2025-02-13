@@ -15,10 +15,7 @@
  */
 
 import type { QueryMetadata, QueryParameterDefinition } from "@osdk/api";
-import type {
-  QueryParameterV2,
-  QueryTypeV2,
-} from "@osdk/internal.foundry.core";
+import type { QueryParameterV2, QueryTypeV2 } from "@osdk/foundry.ontologies";
 import {
   wireQueryDataTypeToQueryDataTypeDefinition,
 } from "./wireQueryDataTypeToQueryDataTypeDefinition.js";

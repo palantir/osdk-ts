@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { QueryDataType } from "@osdk/internal.foundry.core";
+import type { QueryDataType } from "@osdk/foundry.ontologies";
 
 export function isNullableQueryDataType(input: QueryDataType): boolean {
   if (input.type === "null") {

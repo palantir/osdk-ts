@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { AttachmentV2 } from "@osdk/internal.foundry.core";
+import type { AttachmentV2 } from "@osdk/foundry.ontologies";
 
 export const attachmentMetadata: AttachmentV2 = {
   filename: "file1.txt",

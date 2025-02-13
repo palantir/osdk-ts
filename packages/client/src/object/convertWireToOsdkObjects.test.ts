@@ -21,7 +21,7 @@ import {
   FooInterface,
   objectTypeWithAllPropertyTypes,
 } from "@osdk/client.test.ontology";
-import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
+import type { OntologyObjectV2 } from "@osdk/foundry.ontologies";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { apiServer } from "@osdk/shared.test";
 import {

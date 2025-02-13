@@ -19,7 +19,7 @@ import type {
   DerivedPropertyDefinition,
   ObjectSet as WireObjectSet,
   SelectedPropertyOperation,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 
