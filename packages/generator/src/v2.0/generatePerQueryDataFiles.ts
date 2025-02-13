@@ -15,12 +15,12 @@
  */
 
 import type { QueryParameterDefinition } from "@osdk/api";
+import type { QueryDataType } from "@osdk/foundry.ontologies";
 import {
   wireQueryDataTypeToQueryDataTypeDefinition,
   wireQueryParameterV2ToQueryParameterDefinition as paramToDef,
   wireQueryTypeV2ToSdkQueryDefinitionNoParams,
 } from "@osdk/generator-converters";
-import type { QueryDataType } from "@osdk/internal.foundry.core";
 import path from "node:path";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
 import type { EnhancedQuery } from "../GenerateContext/EnhancedQuery.js";

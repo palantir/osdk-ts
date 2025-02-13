@@ -25,7 +25,7 @@ import type {
   InterfaceToObjectTypeMappings,
   InterfaceTypeApiName,
   OntologyObjectV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {

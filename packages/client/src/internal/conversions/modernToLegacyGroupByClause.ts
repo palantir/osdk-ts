@@ -19,7 +19,7 @@ import { DurationMapping } from "@osdk/api";
 import type {
   AggregationGroupByV2,
   AggregationRangeV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 
 /** @internal */
 export function modernToLegacyGroupByClause(

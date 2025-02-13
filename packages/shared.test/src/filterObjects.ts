@@ -17,7 +17,7 @@
 import type {
   OntologyObject,
   OntologyObjectV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import type {
   PagedBodyResponse,
   PagedBodyResponseWithTotal,
@@ -35,17 +35,20 @@ export function filterObjectProperties<
     return object;
   }
 
-  const result = Object.entries(object).reduce((acc, [key, value]) => {
-    if (properties.has(key)) {
-      acc[key] = value;
-    } else if (key === "__primaryKey") {
-      acc.__primaryKey = value;
-    } else if (key === "__apiName") {
-      acc.__apiName = value;
-    }
+  const result = Object.entries(object).reduce<{ [key: string]: any }>(
+    (acc, [key, value]) => {
+      if (properties.has(key)) {
+        acc[key] = value;
+      } else if (key === "__primaryKey") {
+        acc.__primaryKey = value;
+      } else if (key === "__apiName") {
+        acc.__apiName = value;
+      }
 
-    return acc;
-  }, {} as { [key: string]: any });
+      return acc;
+    },
+    {},
+  );
 
   return result as T;
 }
@@ -77,17 +80,20 @@ export function filterObjectsProperties<
   }
 
   const result = objects.data.map(object =>
-    Object.entries(object).reduce((acc, [key, value]) => {
-      if (properties.has(key)) {
-        acc[key] = value;
-      } else if (key === "__primaryKey") {
-        acc.__primaryKey = value;
-      } else if (key === "__apiName") {
-        acc.__apiName = value;
-      }
+    Object.entries(object).reduce<{ [key: string]: any }>(
+      (acc, [key, value]) => {
+        if (properties.has(key)) {
+          acc[key] = value;
+        } else if (key === "__primaryKey") {
+          acc.__primaryKey = value;
+        } else if (key === "__apiName") {
+          acc.__apiName = value;
+        }
 
-      return acc;
-    }, {} as { [key: string]: any })
+        return acc;
+      },
+      {},
+    )
   );
 
   const ret:

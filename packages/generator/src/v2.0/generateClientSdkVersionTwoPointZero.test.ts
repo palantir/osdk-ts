@@ -18,7 +18,7 @@ import type {
   ActionParameterType,
   ObjectPropertyType,
   QueryDataType,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import { consola } from "consola";
 import { mkdir, readdir, rmdir, writeFile } from "fs/promises";
 import * as immer from "immer";

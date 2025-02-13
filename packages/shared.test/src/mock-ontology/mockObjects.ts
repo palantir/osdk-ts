@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
+import type { OntologyObjectV2 } from "@osdk/foundry.ontologies";
 
 export function getMockTodoObject(): OntologyObjectV2 & { __apiName: "Todo" } {
   return {

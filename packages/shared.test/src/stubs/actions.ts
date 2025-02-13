@@ -19,7 +19,7 @@ import type {
   BatchApplyActionRequestV2,
   BatchApplyActionResponseV2,
   SyncApplyActionResponseV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import stableStringify from "json-stable-stringify";
 import { mediaReference } from "./media.js";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";

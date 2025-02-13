@@ -34,7 +34,7 @@ import {
 import type {
   BatchApplyActionResponseV2,
   SyncApplyActionResponseV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import { apiServer, stubData } from "@osdk/shared.test";
 import {
   afterAll,

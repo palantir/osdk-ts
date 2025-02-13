@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { SharedPropertyType } from "@osdk/internal.foundry.core";
+import type { SharedPropertyType } from "@osdk/foundry.ontologies";
 
 export const fooSpt: SharedPropertyType = {
   rid: "ri.sharedPropertyType.main.sharedPropertyType.1",

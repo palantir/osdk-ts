@@ -25,7 +25,7 @@ import { DistanceUnitMapping } from "@osdk/api";
 import type {
   PropertyIdentifier,
   SearchJsonQueryV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import type { BBox, Position } from "geojson";
 import invariant from "tiny-invariant";
 

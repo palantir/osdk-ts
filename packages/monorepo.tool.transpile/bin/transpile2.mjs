@@ -165,7 +165,7 @@ async function transpileWithTsup(format, target) {
     noExternal: format === "cjs"
       ? [
         "@osdk/shared.client",
-        "@osdk/internal.foundry.ontologiesv2",
+        "@osdk/foundry.ontologies",
         "@osdk/shared.client2",
         "delay",
         "oauth4webapi",

@@ -17,7 +17,7 @@
 import type {
   LoadObjectSetRequestV2,
   LoadObjectSetResponseV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import stableStringify from "json-stable-stringify";
 import {
   employee1,

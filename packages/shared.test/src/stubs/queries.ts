@@ -17,7 +17,7 @@
 import type {
   ExecuteQueryRequest,
   ExecuteQueryResponse,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import { employee1, employee2 } from "./objects.js";
 import {
   addOneQueryType,

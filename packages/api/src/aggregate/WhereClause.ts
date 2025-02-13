@@ -50,7 +50,7 @@ export type PossibleWhereClauseFilters =
   | "$containsAnyTerm"
   | "$containsAllTerms";
 
-// the value side of this needs to match DistanceUnit from @osdk/internal.foundry but we don't
+// the value side of this needs to match DistanceUnit from @osdk/foundry but we don't
 // want the dependency
 export const DistanceUnitMapping: {
   centimeter: "CENTIMETERS";

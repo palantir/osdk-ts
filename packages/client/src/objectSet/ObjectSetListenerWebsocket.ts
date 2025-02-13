@@ -30,7 +30,7 @@ import type {
   RefreshObjectSet,
   StreamMessage,
   SubscriptionClosed,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
 import type { Logger } from "../Logger.js";

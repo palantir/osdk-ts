@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionTypeV2, LogicRule } from "@osdk/internal.foundry.core";
+import type { ActionTypeV2, LogicRule } from "@osdk/foundry.ontologies";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedBase } from "./EnhancedBase.js";
 

@@ -18,7 +18,7 @@ import type {
   StreamTimeSeriesPointsRequest,
   StreamTimeSeriesPointsResponse,
   TimeSeriesPoint,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import stableStringify from "json-stable-stringify";
 
 const pointPrimaryKey1: string = JSON.stringify({

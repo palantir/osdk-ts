@@ -19,7 +19,7 @@ import type {
   TimeSeriesProperty,
   TimeSeriesQuery,
 } from "@osdk/api";
-import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
+import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { asyncIterPointsHelper, getTimeRange } from "./util/timeseriesUtils.js";
 

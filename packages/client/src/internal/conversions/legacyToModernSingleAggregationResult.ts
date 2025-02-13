@@ -19,7 +19,7 @@ import type {
   AggregationResultsWithoutGroups,
   ObjectOrInterfaceDefinition,
 } from "@osdk/api";
-import type { AggregateObjectsResponseV2 } from "@osdk/internal.foundry.core";
+import type { AggregateObjectsResponseV2 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { ArrayElement } from "../../util/ArrayElement.js";
 
