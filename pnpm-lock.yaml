@@ -1319,9 +1319,6 @@ importers:
       '@osdk/cli.common':
         specifier: workspace:~
         version: link:../cli.common
-      '@osdk/foundry.core':
-        specifier: 2.13.0
-        version: 2.13.0
       '@osdk/foundry.ontologies':
         specifier: 2.13.0
         version: 2.13.0
@@ -3171,9 +3168,6 @@ importers:
       '@osdk/client':
         specifier: workspace:*
         version: link:../client
-      '@osdk/foundry.core':
-        specifier: 2.13.0
-        version: 2.13.0
       '@osdk/foundry.ontologies':
         specifier: 2.13.0
         version: 2.13.0
