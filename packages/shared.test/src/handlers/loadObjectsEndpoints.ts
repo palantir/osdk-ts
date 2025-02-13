@@ -104,6 +104,30 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
   ),
 
   /**
+   * List ontologies
+   */
+  handleOpenApiCall(
+    OntologiesV2.OntologiesV2.list,
+    [],
+    async () => {
+      return {
+        data: [defaultOntology],
+      };
+    },
+  ),
+
+  /**
+   * Get specified Ontology
+   */
+  handleOpenApiCall(
+    OntologiesV2.OntologiesV2.get,
+    ["ontologyRid"],
+    async req => {
+      return defaultOntology;
+    },
+  ),
+
+  /**
    * List objectTypes
    */
   handleOpenApiCall(

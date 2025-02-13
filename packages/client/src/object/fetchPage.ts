@@ -26,13 +26,12 @@ import type {
   PropertyKeys,
   Result,
 } from "@osdk/api";
+import type { PageSize, PageToken } from "@osdk/foundry.core";
 import type {
   LoadObjectSetRequestV2,
   LoadObjectSetV2MultipleObjectTypesRequest,
   ObjectSet,
   OntologyObjectV2,
-  PageSize,
-  PageToken,
   SearchJsonQueryV2,
   SearchObjectsForInterfaceRequest,
   SearchOrderByV2,

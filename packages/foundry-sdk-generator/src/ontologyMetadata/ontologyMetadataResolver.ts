@@ -177,13 +177,10 @@ export class OntologyMetadataResolver {
   > {
     let ontology: Ontology;
 
-    const { Ontologies } = await import("@osdk/foundry.ontologies");
-    const { OntologiesV2 } = await import(
-      "@osdk/foundry.ontologies"
-    );
+    const { OntologiesV2 } = await import("@osdk/foundry.ontologies");
 
     try {
-      ontology = await Ontologies.get(
+      ontology = await OntologiesV2.get(
         this.getClientContext(),
         ontologyRid,
       );
