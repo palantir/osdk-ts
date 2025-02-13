@@ -27,6 +27,7 @@ import { BehaviorSubject } from "rxjs";
 import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import type { Client } from "../../Client.js";
+import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
 import type { Unsubscribable } from "../ObservableClient.js";
@@ -44,6 +45,7 @@ import { ObjectQuery } from "./ObjectQuery.js";
 import { type OptimisticId } from "./OptimisticId.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
 import type { Query } from "./Query.js";
+import { RefCounts } from "./RefCounts.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 const ACTION_DELAY = process.env.NODE_ENV === "production" ? 0 : 500;
@@ -108,6 +110,7 @@ function createInitEntry(cacheKey: CacheKey): Entry<any> {
     lastUpdated: 0,
   };
 }
+
 /*
   Notes:
     - Subjects are one per type per store (by cache key)
@@ -120,7 +123,8 @@ export class Store {
   #topLayer: Layer;
   client: Client;
 
-  queries: Map<CacheKey<string, any, any>, Query<any, any, any>> = new Map();
+  #queries: WeakMap<CacheKey<string, any, any>, Query<any, any, any>> =
+    new WeakMap();
 
   #cacheKeyToSubject = new WeakMap<
     CacheKey<string, any, any>,
@@ -128,96 +132,96 @@ export class Store {
   >();
   #cacheKeys: CacheKeys;
 
+  #refCounts = new RefCounts<CacheKey>(
+    DEBUG_REFCOUNTS ? 5_000 : 60_000,
+    (k) => this.#cleanupCacheKey(k),
+  );
+
+  #finalizationRegistry: FinalizationRegistry<() => void>;
+
   constructor(client: Client) {
     this.client = client;
     this.#topLayer = this.#truthLayer;
-    this.#cacheKeys = new CacheKeys(this.whereCanonicalizer);
+    this.#cacheKeys = new CacheKeys(this.whereCanonicalizer, (k) => {
+      if (DEBUG_REFCOUNTS) {
+        const cacheKeyType = k.type;
+        const otherKeys = k.otherKeys;
+        // eslint-disable-next-line no-console
+        console.log(
+          `CacheKeys.onCreate(${cacheKeyType}, ${JSON.stringify(otherKeys)})`,
+        );
+
+        this.#finalizationRegistry.register(k, () => {
+          // eslint-disable-next-line no-console
+          console.log(
+            `CacheKey Finalization(${cacheKeyType}, ${
+              JSON.stringify(otherKeys)
+            })`,
+          );
+        });
+      }
+
+      this.#refCounts.register(k);
+    });
+
+    setInterval(() => {
+      this.#refCounts.gc();
+    }, 1000);
+
+    this.#finalizationRegistry = new FinalizationRegistry<() => void>(
+      (cleanupCallback) => {
+        try {
+          cleanupCallback();
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.error(
+            "Caught an error while running a finalization callback",
+            e,
+          );
+        }
+      },
+    );
   }
+
+  /**
+   * Called after a key is no longer retained and the timeout has elapsed
+   * @param key
+   */
+  #cleanupCacheKey = (key: CacheKey<string, any, any>) => {
+    const subject = this.#cacheKeyToSubject.get(key);
+
+    if (DEBUG_REFCOUNTS) {
+      // eslint-disable-next-line no-console
+      console.log(
+        `CacheKey cleaning up (${
+          JSON.stringify({
+            closed: subject?.closed,
+            observed: subject?.observed,
+          })
+        })`,
+        JSON.stringify([key.type, ...key.otherKeys], null, 2),
+      );
+    }
+    this.#cacheKeys.remove(key);
+    if (process.env.NODE_ENV !== "production") {
+      invariant(subject);
+    }
+
+    if (subject) {
+      subject.complete();
+      this.#cacheKeyToSubject.delete(key);
+    }
+
+    this.#queries.get(key)?.dispose();
+    this.#queries.delete(key);
+  };
 
   applyAction: <Q extends ActionDefinition<any>>(
     action: Q,
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
     opts?: Store.ApplyActionOptions,
-  ) => Promise<unknown> = (action, args, { optimisticUpdate } = {}) => {
-    const removeOptimisticResult = runOptimisticJob(this, optimisticUpdate);
-    return (async () => {
-      try {
-        // The types for client get confused when we dynamically applyAction so we
-        // have to deal with the `any` here and force cast it to what it should be.
-        // TODO: Update the types so this doesn't happen!
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        const actionResults: ActionEditResponse = await this.client(action)
-          .applyAction(args as any, { $returnEdits: true });
-
-        if (ACTION_DELAY > 0) {
-          // eslint-disable-next-line no-console
-          console.log("action done, pausing");
-          await delay(ACTION_DELAY);
-          // eslint-disable-next-line no-console
-          console.log("action done, pausing done");
-        }
-        await this.#invalidateActionEditResponse(actionResults);
-        return actionResults;
-      } finally {
-        // make sure this happens even if the action fails
-        await removeOptimisticResult();
-      }
-    })();
-  };
-
-  #invalidateActionEditResponse = (value: ActionEditResponse) => {
-    const typesToInvalidate = new Set<string>();
-    let promisesToWait: Promise<any>[] = [];
-    if (value.type === "edits") {
-      // TODO we need an backend update for deletes
-      for (const obj of value.modifiedObjects) {
-        promisesToWait.push(
-          this.invalidateObject(obj.objectType, obj.primaryKey),
-        );
-      }
-
-      for (const obj of value.addedObjects) {
-        promisesToWait.push(
-          this.invalidateObject(obj.objectType, obj.primaryKey),
-        );
-
-        typesToInvalidate.add(obj.objectType);
-      }
-
-      promisesToWait = [
-        Promise.allSettled(promisesToWait).then(() => {
-          const changes2 = this.#changesFromActionEditResponse(value);
-          this.maybeRevalidateLists(changes2);
-        }),
-      ];
-    } else {
-      for (const apiName of value.editedObjectTypes) {
-        typesToInvalidate.add(apiName.toString());
-      }
-    }
-
-    return Promise.allSettled(promisesToWait).then(() => {
-      // after the single object invalidations are done we can decide if we need to updates any lists
-      for (const objectType of typesToInvalidate) {
-        // TODO make sure this covers individual object loads too
-        this.invalidateObjectType(objectType);
-      }
-
-      return value;
-    });
-  };
-
-  #changesFromActionEditResponse = (value: ActionEditResponse) => {
-    const changes = createChangedObjects();
-    for (const changeType of ["addedObjects", "modifiedObjects"] as const) {
-      for (const { objectType, primaryKey } of (value[changeType] ?? [])) {
-        const obj = this.getObject(objectType, primaryKey);
-        if (obj) {
-          changes[changeType].set(objectType, obj);
-        }
-      }
-    }
-    return changes;
+  ) => Promise<unknown> = (action, args, opts) => {
+    return new ActionApplication(this).applyAction(action, args, opts);
   };
 
   removeLayer(layerId: OptimisticId): void {
@@ -268,7 +272,7 @@ export class Store {
     type: K["type"],
     ...args: K["__cacheKey"]["args"]
   ): K {
-    return this.#cacheKeys.getCacheKey(type, ...args);
+    return this.#refCounts.register(this.#cacheKeys.get(type, ...args));
   }
 
   getSubject = <KEY extends CacheKey<string, any, any>>(
@@ -302,20 +306,51 @@ export class Store {
     }
 
     const query = this.getObjectQuery(apiName, pk);
-    query.retain();
+    this.#refCounts.retain(query.cacheKey);
 
     if (options.mode !== "offline") {
       void query.revalidate(options.mode === "force");
     }
-    const ret = query.subscribe(subFn);
+    const { unsubscribe } = query.subscribe(subFn);
 
-    return ret;
+    return {
+      unsubscribe: () => {
+        unsubscribe();
+        this.#refCounts.release(query.cacheKey);
+      },
+    };
+  }
+
+  public observeList<T extends ObjectTypeDefinition>(
+    apiName: T["apiName"] | T,
+    where: WhereClause<T>,
+    options: ObserveOptions & ListQueryOptions,
+    subFn: SubFn<ListPayload>,
+  ): Unsubscribable {
+    if (typeof apiName !== "string") {
+      apiName = apiName.apiName;
+    }
+
+    const query = this.getListQuery(apiName, where, options);
+    this.#refCounts.retain(query.cacheKey);
+
+    if (options.mode !== "offline") {
+      void query.revalidate(options.mode === "force");
+    }
+    const { unsubscribe } = query.subscribe(subFn);
+
+    return {
+      unsubscribe: () => {
+        unsubscribe();
+        this.#refCounts.release(query.cacheKey);
+      },
+    };
   }
 
   #peekQuery<K extends CacheKey<string, any, any>>(
     cacheKey: K,
   ): K["__cacheKey"]["query"] | undefined {
-    return this.queries.get(cacheKey) as K["__cacheKey"]["query"] | undefined;
+    return this.#queries.get(cacheKey) as K["__cacheKey"]["query"] | undefined;
   }
 
   #getQuery<K extends CacheKey>(
@@ -325,7 +360,7 @@ export class Store {
     let query = this.#peekQuery(cacheKey);
     if (!query) {
       query = createQuery();
-      this.queries.set(cacheKey, query);
+      this.#queries.set(cacheKey, query);
     }
     return query;
   }
@@ -374,27 +409,6 @@ export class Store {
         objectCacheKey,
         { dedupeInterval: 0 },
       ));
-  }
-
-  public observeList<T extends ObjectTypeDefinition>(
-    apiName: T["apiName"] | T,
-    where: WhereClause<T>,
-    options: ObserveOptions & ListQueryOptions,
-    subFn: SubFn<ListPayload>,
-  ): Unsubscribable {
-    if (typeof apiName !== "string") {
-      apiName = apiName.apiName;
-    }
-
-    const query = this.getListQuery(apiName, where, options);
-    query.retain();
-
-    if (options.mode !== "offline") {
-      void query.revalidate(options.mode === "force");
-    }
-    const ret = query.subscribe(subFn);
-
-    return ret;
   }
 
   public getObject<T extends ObjectTypeDefinition>(
@@ -566,7 +580,7 @@ export class Store {
 
     return this.batch({ optimisticId }, (batch) => {
       return query.writeToStore(value, "loaded", batch);
-    }).retVal.value;
+    }).retVal.value!;
   }
 
   public updateList<T extends ObjectTypeDefinition>(
@@ -586,4 +600,106 @@ export class Store {
       query.updateList(values, false, "loaded", b);
     });
   }
+
+  retain(cacheKey: CacheKey<string, any, any>): void {
+    this.#refCounts.retain(cacheKey);
+  }
+
+  release(cacheKey: CacheKey<string, any, any>): void {
+    this.#refCounts.release(cacheKey);
+  }
+}
+
+class ActionApplication {
+  constructor(private store: Store) {}
+
+  applyAction: <Q extends ActionDefinition<any>>(
+    action: Q,
+    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
+    opts?: Store.ApplyActionOptions,
+  ) => Promise<unknown> = (action, args, { optimisticUpdate } = {}) => {
+    const removeOptimisticResult = runOptimisticJob(
+      this.store,
+      optimisticUpdate,
+    );
+    return (async () => {
+      try {
+        // The types for client get confused when we dynamically applyAction so we
+        // have to deal with the `any` here and force cast it to what it should be.
+        // TODO: Update the types so this doesn't happen!
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        const actionResults: ActionEditResponse = await this.store.client(
+          action,
+        ).applyAction(args as any, { $returnEdits: true });
+
+        if (ACTION_DELAY > 0) {
+          // eslint-disable-next-line no-console
+          console.log("action done, pausing");
+          await delay(ACTION_DELAY);
+          // eslint-disable-next-line no-console
+          console.log("action done, pausing done");
+        }
+        await this.#invalidateActionEditResponse(actionResults);
+        return actionResults;
+      } finally {
+        // make sure this happens even if the action fails
+        await removeOptimisticResult();
+      }
+    })();
+  };
+
+  #invalidateActionEditResponse = (value: ActionEditResponse) => {
+    const typesToInvalidate = new Set<string>();
+    let promisesToWait: Promise<any>[] = [];
+    if (value.type === "edits") {
+      // TODO we need an backend update for deletes
+      for (const obj of value.modifiedObjects) {
+        promisesToWait.push(
+          this.store.invalidateObject(obj.objectType, obj.primaryKey),
+        );
+      }
+
+      for (const obj of value.addedObjects) {
+        promisesToWait.push(
+          this.store.invalidateObject(obj.objectType, obj.primaryKey),
+        );
+
+        typesToInvalidate.add(obj.objectType);
+      }
+
+      promisesToWait = [
+        Promise.allSettled(promisesToWait).then(() => {
+          const changes2 = this.#changesFromActionEditResponse(value);
+          this.store.maybeRevalidateLists(changes2);
+        }),
+      ];
+    } else {
+      for (const apiName of value.editedObjectTypes) {
+        typesToInvalidate.add(apiName.toString());
+      }
+    }
+
+    return Promise.allSettled(promisesToWait).then(() => {
+      // after the single object invalidations are done we can decide if we need to updates any lists
+      for (const objectType of typesToInvalidate) {
+        // TODO make sure this covers individual object loads too
+        this.store.invalidateObjectType(objectType);
+      }
+
+      return value;
+    });
+  };
+
+  #changesFromActionEditResponse = (value: ActionEditResponse) => {
+    const changes = createChangedObjects();
+    for (const changeType of ["addedObjects", "modifiedObjects"] as const) {
+      for (const { objectType, primaryKey } of (value[changeType] ?? [])) {
+        const obj = this.store.getObject(objectType, primaryKey);
+        if (obj) {
+          changes[changeType].set(objectType, obj);
+        }
+      }
+    }
+    return changes;
+  };
 }

@@ -6,8 +6,10 @@ import { $Objects } from "./generatedNoCheck2/index.js";
 import { SmallTextDiv, TodoView } from "./TodoView.js";
 
 function App() {
+  const [$startsWith, setStartsWith] = React.useState("ea ");
+
   const { data, isLoading, error, isOptimistic } = useOsdkList($Objects.Todo, {
-    where: { title: { $startsWith: "ea " } },
+    where: { title: { $startsWith } },
   });
 
   if (!data && isLoading) {
@@ -17,6 +19,9 @@ function App() {
   return (
     <main className="flex min-h-screen flex-col items-center p-24 ">
       <h1 className="mb-6 text-xl">Todos App</h1>
+      <a onClick={() => setStartsWith($startsWith === "ea " ? "FAIL" : "ea ")}>
+        FAIL
+      </a>
 
       <div className="min-w-fit">
         <CreateTodoForm />

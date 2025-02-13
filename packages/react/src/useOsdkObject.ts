@@ -48,8 +48,7 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
             mode: "offline",
           },
           payload,
-        )
-      ),
+        ), `object ${obj.$objectType} ${obj.$primaryKey}`),
     [store, obj.$objectType, obj.$apiName],
   );
 

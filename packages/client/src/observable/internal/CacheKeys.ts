@@ -23,28 +23,68 @@ import type { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 export class CacheKeys {
   #cacheKeys = new Trie<CacheKey<string, any, any>>(false, (keys) => {
-    return { type: keys[0], otherKeys: keys.slice(1) } as unknown as CacheKey<
+    const ret = {
+      type: keys[0],
+      otherKeys: keys.slice(1),
+    } as unknown as CacheKey<
       string,
       any,
       any
     >;
+    this.#onCreate(ret);
+    return ret;
   });
   #cacheKeyFactories = new Map<string, (...args: any[]) => CacheKey>();
+  #onCreate: (cacheKey: CacheKey) => void;
 
-  constructor(whereCanonicalizer: WhereClauseCanonicalizer) {
+  constructor(
+    whereCanonicalizer: WhereClauseCanonicalizer,
+    onCreate: (cacheKey: CacheKey) => void,
+  ) {
+    this.#onCreate = onCreate;
     this.#registerCacheKeyFactory<ObjectCacheKey>(
       "object",
-      (apiName, pk) =>
-        this.#cacheKeys.lookupArray(["object", apiName, pk]) as ObjectCacheKey,
+      (apiName, pk) => {
+        if (process.env.NODE_ENV !== "production") {
+          // eslint-disable-next-line no-console
+          console.debug(
+            `CacheKeys.get([object, ${apiName}, ${pk}]) -- already exists? `,
+            this.#cacheKeys.peekArray([
+              "object",
+              apiName,
+              pk,
+            ]) != null,
+          );
+        }
+        return this.#cacheKeys.lookupArray([
+          "object",
+          apiName,
+          pk,
+        ]) as ObjectCacheKey;
+      },
     );
     this.#registerCacheKeyFactory<ListCacheKey>(
       "list",
-      (apiName, where) =>
-        this.#cacheKeys.lookupArray([
+      (apiName, where) => {
+        if (process.env.NODE_ENV !== "production") {
+          // eslint-disable-next-line no-console
+          console.debug(
+            `CacheKeys.get([list, ${apiName}, ${
+              JSON.stringify(where)
+            }]) -- already exists? `,
+            this.#cacheKeys.peekArray([
+              "list",
+              apiName,
+              whereCanonicalizer.canonicalize(where),
+            ]) != null,
+          );
+        }
+        return this.#cacheKeys.lookupArray([
           "list",
           apiName,
           whereCanonicalizer.canonicalize(where),
-        ]) as ListCacheKey,
+        ]) as ListCacheKey;
+      },
     );
   }
 
@@ -55,12 +95,18 @@ export class CacheKeys {
     this.#cacheKeyFactories.set(type, factory);
   }
 
-  getCacheKey<K extends CacheKey<string, any, any>>(
+  get<K extends CacheKey<string, any, any>>(
     type: K["type"],
     ...args: K["__cacheKey"]["args"]
   ): K {
     const factory = this.#cacheKeyFactories.get(type);
     invariant(factory, `no cache key factory for type "${type}"`);
     return factory(...args) as K;
+  }
+
+  remove<K extends CacheKey<string, any, any>>(
+    cacheKey: K,
+  ): void {
+    this.#cacheKeys.remove(cacheKey.type, ...cacheKey.otherKeys);
   }
 }

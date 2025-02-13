@@ -14,12 +14,5 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
-import type { Status } from "./ObservableClient.js";
-
-export interface ObjectPayload {
-  object: Osdk.Instance<ObjectTypeDefinition> | undefined;
-  isOptimistic: boolean;
-  status: Status;
-  lastUpdated: number;
-}
+export const DEBUG_REFCOUNTS: boolean = process.env.NODE_ENV !== "production"
+  && true;

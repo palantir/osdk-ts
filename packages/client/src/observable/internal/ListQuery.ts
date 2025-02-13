@@ -75,9 +75,9 @@ export class ListQuery extends Query<
 
   #nextPageToken?: string;
 
-  pendingPageFetch?: Promise<unknown>;
+  #pendingPageFetch?: Promise<unknown>;
 
-  entries: ObjectCacheKey[] | undefined;
+  #toRelease: Set<ObjectCacheKey> = new Set();
 
   constructor(
     store: Store,
@@ -101,7 +101,7 @@ export class ListQuery extends Query<
             : combineLatest(
               listEntry.value.data.map(cacheKey =>
                 this.store.getSubject(cacheKey).pipe(
-                  map(objectEntry => objectEntry?.value),
+                  map(objectEntry => objectEntry?.value!),
                 )
               ),
             ),
@@ -141,7 +141,7 @@ export class ListQuery extends Query<
         return;
       }
 
-      invariant(entry.value.data);
+      invariant(entry.value?.data);
       const count = entry.value.data.length;
 
       if (count > this.#minNumResults || this.#nextPageToken == null) {
@@ -156,16 +156,16 @@ export class ListQuery extends Query<
   }
 
   fetchMore = (): Promise<unknown> => {
-    if (this.pendingPageFetch) {
-      return this.pendingPageFetch;
+    if (this.#pendingPageFetch) {
+      return this.#pendingPageFetch;
     }
 
     if (this.pendingFetch) {
-      this.pendingPageFetch = new Promise(async (res) => {
+      this.#pendingPageFetch = new Promise(async (res) => {
         await this.pendingFetch;
         res(this.fetchMore());
       });
-      return this.pendingPageFetch;
+      return this.#pendingPageFetch;
     }
 
     if (this.#nextPageToken == null) {
@@ -186,7 +186,7 @@ export class ListQuery extends Query<
       "loaded",
       this.abortController?.signal,
     ).finally(() => {
-      this.pendingPageFetch = undefined;
+      this.#pendingPageFetch = undefined;
     });
     return this.pendingFetch;
   };
@@ -218,23 +218,6 @@ export class ListQuery extends Query<
     });
 
     return retVal;
-  }
-
-  #updateObjects(
-    values: Array<Osdk.Instance<ObjectTypeDefinition> | ObjectEntry>,
-    batch: BatchContext,
-  ) {
-    return values.map(v => {
-      if (v instanceof Entry) return v.cacheKey;
-
-      this.store.getObjectQuery(this.#type, v.$primaryKey as string | number)
-        .writeToStore(v, "loaded", batch);
-      return this.store.getCacheKey<ObjectCacheKey>(
-        "object",
-        v.$apiName,
-        v.$primaryKey,
-      );
-    });
   }
 
   /**
@@ -335,15 +318,43 @@ export class ListQuery extends Query<
   ): Entry<ListCacheKey> {
     // update the cache for any object that has changed
     // and save the mapped values to return
-    let objectCacheKeys = this.#updateObjects(values, batch);
+    let objectCacheKeys = values.map(v => {
+      if (v instanceof Entry) return v.cacheKey;
+
+      this.store.getObjectQuery(this.#type, v.$primaryKey as string | number)
+        .writeToStore(v, "loaded", batch);
+      return this.store.getCacheKey<ObjectCacheKey>(
+        "object",
+        v.$apiName,
+        v.$primaryKey,
+      );
+    });
+
+    const existingList = batch.read(this.cacheKey);
+
+    // whether its append or update we need to retain all the new objects
+    if (!batch.optimisticWrite) {
+      if (!append) {
+        // we need to release all the old objects
+        for (const objectCacheKey of existingList?.value?.data ?? []) {
+          this.store.release(objectCacheKey);
+          this.#toRelease.delete(objectCacheKey);
+        }
+      }
+
+      for (const objectCacheKey of objectCacheKeys) {
+        this.#toRelease.add(objectCacheKey);
+        this.store.retain(objectCacheKey);
+      }
+    }
 
     // EA TODO: I think we need to do more here.
 
-    // update the list cache
-    const existingList = batch.read(this.cacheKey);
-
     if (append) {
-      objectCacheKeys = [...existingList?.value.data ?? [], ...objectCacheKeys];
+      objectCacheKeys = [
+        ...existingList?.value?.data ?? [],
+        ...objectCacheKeys,
+      ];
     }
 
     return this.writeToStore({ data: objectCacheKeys }, status, batch);
@@ -364,6 +375,19 @@ export class ListQuery extends Query<
     batch.modifiedLists.add(this.cacheKey);
 
     return ret;
+  }
+
+  _dispose(): void {
+    // eslint-disable-next-line no-console
+    console.log("DISPOSE LIST QUERY");
+    this.store.batch({}, (batch) => {
+      const entry = batch.read(this.cacheKey);
+      if (entry) {
+        for (const objectCacheKey of entry.value?.data ?? []) {
+          this.store.release(objectCacheKey);
+        }
+      }
+    });
   }
 }
 

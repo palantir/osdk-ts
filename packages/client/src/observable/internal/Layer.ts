@@ -84,7 +84,7 @@ export class Layer {
 
 export class Entry<K extends CacheKey<any, any, any>> {
   readonly cacheKey: K;
-  value: K["__cacheKey"]["value"];
+  value: K["__cacheKey"]["value"] | undefined;
   lastUpdated: number;
   status: "init" | "loading" | "loaded" | "error";
 

@@ -73,8 +73,7 @@ export function useOsdkList<T extends ObjectTypeDefinition>(
             dedupeInterval: opts.dedupeIntervalMs ?? 2_000,
           },
           x,
-        )
-      ),
+        ), `list ${type.apiName} ${JSON.stringify(where)}`),
     [store, type, where, opts.dedupeIntervalMs],
   );
 

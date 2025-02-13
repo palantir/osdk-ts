@@ -44,10 +44,6 @@ export abstract class Query<
     this.store = store;
   }
 
-  // lastResult(): void {}
-  retain(): void {}
-  release(opts: { gcAfter: number }): void {}
-
   revalidate(force?: boolean): Promise<unknown> {
     if (force) {
       this.abortController?.abort();
@@ -100,6 +96,15 @@ export abstract class Query<
 
     batch.write(this.cacheKey, existing?.value, status);
   }
+
+  dispose(): void {
+    if (this.abortController) {
+      this.abortController.abort();
+    }
+    this._dispose();
+  }
+
+  _dispose(): void {}
 
   abstract writeToStore(
     data: KEY["__cacheKey"]["value"],
