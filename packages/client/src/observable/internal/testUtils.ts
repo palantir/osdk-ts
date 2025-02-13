@@ -26,12 +26,12 @@ import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
 import type { Mock } from "vitest";
 import { afterEach, beforeEach, expect, vi, vitest } from "vitest";
-import type { ActionSignatureFromDef } from "../actions/applyAction.js";
-import type { Client } from "../Client.js";
+import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
+import type { Client } from "../../Client.js";
+import type { ListPayload } from "../ListPayload.js";
+import type { ObjectPayload } from "../ObjectPayload.js";
+import type { Status, Unsubscribable } from "../ObservableClient.js";
 import type { Entry } from "./Layer.js";
-import type { ListPayload } from "./ListQuery.js";
-import type { ObjectPayload } from "./ObjectQuery.js";
-import type { Status, Unsubscribable } from "./Store.js";
 
 export interface MockClientHelper {
   client: Mock<Client> & Client;

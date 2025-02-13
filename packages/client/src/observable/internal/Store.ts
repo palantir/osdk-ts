@@ -20,30 +20,29 @@ import type {
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
-  PropertyKeys,
   WhereClause,
 } from "@osdk/api";
 import { Trie } from "@wry/trie";
-import { MultiMap } from "mnemonist";
 import { delay } from "msw";
 import { BehaviorSubject } from "rxjs";
 import invariant from "tiny-invariant";
-import type { ActionSignatureFromDef } from "../actions/applyAction.js";
-import type { Client } from "../Client.js";
-import { additionalContext } from "../Client.js";
+import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
+import type { Client } from "../../Client.js";
+import type { ListPayload } from "../ListPayload.js";
+import type { ObjectPayload } from "../ObjectPayload.js";
+import type { Unsubscribable } from "../ObservableClient.js";
+import type { OptimisticBuilder } from "../OptimisticBuilder.js";
+import type { SubFn } from "../types.js";
 import type { CacheKey } from "./CacheKey.js";
+import { type ChangedObjects, createChangedObjects } from "./ChangedObjects.js";
 import type { Entry } from "./Layer.js";
 import { Layer } from "./Layer.js";
-import type {
-  ListCacheKey,
-  ListPayload,
-  ListQueryOptions,
-} from "./ListQuery.js";
+import type { ListCacheKey, ListQueryOptions } from "./ListQuery.js";
 import { isListCacheKey, ListQuery } from "./ListQuery.js";
-import type { ObjectCacheKey, ObjectPayload } from "./ObjectQuery.js";
+import type { ObjectCacheKey } from "./ObjectQuery.js";
 import { ObjectQuery } from "./ObjectQuery.js";
+import { OptimisticJob } from "./OptimisticJob.js";
 import type { Query } from "./Query.js";
-import type { SubFn } from "./types.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 /*
@@ -61,12 +60,6 @@ import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
     - [ ] setup defaults
     - [ ] reduce updates in react
 */
-
-export interface Unsubscribable {
-  unsubscribe: () => void;
-}
-
-export type Status = "init" | "loading" | "loaded" | "error";
 
 export interface BatchContext {
   addedObjects: Set<ObjectCacheKey>;
@@ -94,25 +87,10 @@ interface UpdateOptions {
   optimisticId?: unknown;
 }
 
-interface OptimisticUpdateContext {
-  updateObject: (value: Osdk.Instance<ObjectTypeDefinition>) => this;
-  createObject: <T extends ObjectTypeDefinition>(
-    type: T,
-    primaryKey: PrimaryKeyType<T>,
-    properties: Pick<Osdk.Instance<T>, PropertyKeys<T>>,
-  ) => this;
-}
-
 export namespace Store {
   export interface ApplyActionOptions {
-    optimisticUpdate?: (ctx: OptimisticUpdateContext) => void;
+    optimisticUpdate?: (ctx: OptimisticBuilder) => void;
   }
-}
-
-// TODO MOVE THIS
-export interface ChangedObjects {
-  modifiedObjects: MultiMap<string, Osdk.Instance<ObjectTypeDefinition>>;
-  addedObjects: MultiMap<string, Osdk.Instance<ObjectTypeDefinition>>;
 }
 
 /*
@@ -253,11 +231,7 @@ export class Store {
   };
 
   #changesFromActionEditResponse = (value: ActionEditResponse) => {
-    const changes: ChangedObjects = {
-      addedObjects: new MultiMap(Array),
-      modifiedObjects: new MultiMap(Array),
-    };
-
+    const changes = createChangedObjects();
     for (const changeType of ["addedObjects", "modifiedObjects"] as const) {
       for (const { objectType, primaryKey } of (value[changeType] ?? [])) {
         const obj = this.getObject(objectType, primaryKey);
@@ -636,80 +610,5 @@ export class Store {
     this._batch({ optimisticId }, (b) => {
       query.updateList(values, false, "loaded", b);
     });
-  }
-}
-
-class OptimisticJob {
-  context: OptimisticUpdateContext;
-  getResult: () => Promise<ChangedObjects>;
-  #result!: Promise<ChangedObjects>;
-
-  constructor(store: Store, optimisticId: unknown) {
-    const updatedObjects: Array<
-      Osdk.Instance<ObjectTypeDefinition>
-    > = [];
-
-    const addedObjects: Array<
-      Promise<Osdk.Instance<ObjectTypeDefinition>>
-    > = [];
-
-    // todo memoize this
-    this.getResult = () => {
-      return this.#result ??= (async () => {
-        const changes: ChangedObjects = {
-          addedObjects: new MultiMap(),
-          modifiedObjects: new MultiMap(),
-        };
-
-        const settled = await Promise.allSettled(addedObjects);
-        for (const added of settled) {
-          if (added.status === "fulfilled") {
-            changes.addedObjects.set(added.value.$objectType, added.value);
-          } else {
-            // TODO FIXME
-            throw added;
-          }
-        }
-
-        for (const modified of updatedObjects) {
-          changes.modifiedObjects.set(modified.$apiName, modified);
-        }
-        store._batch({ optimisticId }, (batch) => {
-          for (const a of ["addedObjects", "modifiedObjects"] as const) {
-            for (const b of changes[a].values()) {
-              store.getObjectQuery(b.$objectType, b.$primaryKey).writeToStore(
-                b,
-                "loading",
-                batch,
-              );
-            }
-          }
-        });
-
-        return changes;
-      })();
-    };
-
-    this.context = {
-      updateObject(value: Osdk.Instance<ObjectTypeDefinition>) {
-        updatedObjects.push(value);
-        return this;
-      },
-      createObject(type, pk, properties) {
-        const create = store._client[additionalContext].objectFactory2(
-          store._client[additionalContext],
-          [{
-            $primaryKey: pk,
-            $apiName: type.apiName,
-            $objectType: type.apiName,
-            ...properties,
-          }],
-          undefined,
-        ).then(x => x[0]);
-
-        addedObjects.push(create);
-        return this;
-      },
-    };
   }
 }

@@ -22,22 +22,21 @@ import type {
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import { combineLatest, mergeMap, of, tap } from "rxjs";
+import type { ObjectPayload } from "../ObjectPayload.js";
+import type {
+  QueryOptions,
+  Status,
+  Unsubscribable,
+} from "../ObservableClient.js";
+import type { SubFn } from "../types.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Entry } from "./Layer.js";
-import type { QueryOptions } from "./Query.js";
 import { Query } from "./Query.js";
-import type { BatchContext, Status, Store, Unsubscribable } from "./Store.js";
-import type { SubFn } from "./types.js";
+import type { BatchContext, Store } from "./Store.js";
 
 export interface ObjectEntry extends Entry<ObjectCacheKey> {}
 
 type ObjectStorageData = Osdk.Instance<ObjectTypeDefinition>;
-
-export interface ObjectPayload {
-  object: Osdk.Instance<ObjectTypeDefinition>;
-  status: Status;
-  lastUpdated: number;
-}
 
 export interface ObjectCacheKey extends
   CacheKey<

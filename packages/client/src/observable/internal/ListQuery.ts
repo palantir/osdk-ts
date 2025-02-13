@@ -24,24 +24,18 @@ import deepEqual from "fast-deep-equal";
 import { combineLatest, of } from "rxjs";
 import { auditTime, map, mergeMap } from "rxjs/operators";
 import invariant from "tiny-invariant";
-import type { Client } from "../Client.js";
+import type { Client } from "../../Client.js";
+import type { ListPayload } from "../ListPayload.js";
+import type { QueryOptions, Status } from "../ObservableClient.js";
+import type { SubFn } from "../types.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Canonical } from "./Canonical.js";
+import type { ChangedObjects } from "./ChangedObjects.js";
 import { Entry } from "./Layer.js";
 import { objectSortaMatchesWhereClause } from "./objectMatchesWhereClause.js";
 import type { ObjectCacheKey, ObjectEntry } from "./ObjectQuery.js";
-import type { QueryOptions } from "./Query.js";
 import { Query } from "./Query.js";
-import type { BatchContext, ChangedObjects, Status, Store } from "./Store.js";
-import type { SubFn } from "./types.js";
-
-export interface ListPayload {
-  listEntry: ListEntry;
-  resolvedList: Array<Osdk.Instance<any, never, string>>;
-  fetchMore: () => Promise<unknown>;
-  hasMore: boolean;
-  status: Status;
-}
+import type { BatchContext, Store } from "./Store.js";
 
 export interface ListEntry extends Entry<ListCacheKey> {}
 

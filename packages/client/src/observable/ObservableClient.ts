@@ -1,0 +1,77 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type {
+  ActionDefinition,
+  ObjectTypeDefinition,
+  PrimaryKeyType,
+  WhereClause,
+} from "@osdk/api";
+import type { ActionSignatureFromDef } from "../actions/applyAction.js";
+import type { Client } from "../Client.js";
+import { ObservableClientImpl } from "./internal/ObservableClientImpl.js";
+import { Store } from "./internal/Store.js";
+import type { ListPayload } from "./ListPayload.js";
+import type { ObjectPayload } from "./ObjectPayload.js";
+import type { OptimisticBuilder } from "./OptimisticBuilder.js";
+import type { SubFn } from "./types.js";
+
+export type Status = "init" | "loading" | "loaded" | "error";
+
+export interface QueryOptions {
+  dedupeInterval?: number;
+}
+
+export interface ObserveOptions {
+  mode?: "offline" | "force";
+}
+
+export interface ListQueryOptions extends QueryOptions {
+  pageSize?: number;
+}
+export interface ApplyActionOptions {
+  optimisticUpdate?: (ctx: OptimisticBuilder) => void;
+}
+
+export interface ObservableClient {
+  observeObject<T extends ObjectTypeDefinition>(
+    apiName: T["apiName"] | T,
+    pk: PrimaryKeyType<T>,
+    options: ObserveOptions,
+    subFn: SubFn<ObjectPayload>,
+  ): Unsubscribable;
+
+  observeList<T extends ObjectTypeDefinition>(
+    apiName: T["apiName"] | T,
+    where: WhereClause<T>,
+    options: ObserveOptions & ListQueryOptions,
+    subFn: SubFn<ListPayload>,
+  ): Unsubscribable;
+
+  applyAction: <Q extends ActionDefinition<any>>(
+    action: Q,
+    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
+    opts?: ApplyActionOptions,
+  ) => Promise<unknown>;
+}
+
+export function createObservableClient(client: Client): ObservableClient {
+  return new ObservableClientImpl(new Store(client));
+}
+
+export interface Unsubscribable {
+  unsubscribe: () => void;
+}

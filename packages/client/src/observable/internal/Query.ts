@@ -15,10 +15,15 @@
  */
 
 import type { BehaviorSubject } from "rxjs";
+import type {
+  QueryOptions,
+  Status,
+  Unsubscribable,
+} from "../ObservableClient.js";
+import type { SubFn } from "../types.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Entry } from "./Layer.js";
-import type { BatchContext, Status, Store, Unsubscribable } from "./Store.js";
-import type { SubFn } from "./types.js";
+import type { BatchContext, Store } from "./Store.js";
 
 export abstract class Query<
   KEY extends CacheKey,
@@ -101,7 +106,4 @@ export abstract class Query<
     status: Status,
     batch: BatchContext,
   ): Entry<KEY>;
-}
-export interface QueryOptions {
-  dedupeInterval?: number;
 }
