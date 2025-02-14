@@ -34,7 +34,7 @@ export const getAuth = () => {
       clientId,
       url,
       redirectUrl,
-      { scopes }
+      { scopes },
     );
   }
   return auth;
