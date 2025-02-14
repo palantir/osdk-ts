@@ -34,10 +34,7 @@ export default function createClientAndAuth() {
     url,
     redirectUrl,
     {{#if scopes}}
-    true,
-    undefined,
-    window.location.toString(),
-    scopes,
+    { scopes },
     {{/if}}
   );
 
