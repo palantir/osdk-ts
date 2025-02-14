@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-import type { BehaviorSubject } from "rxjs";
+import type {
+  Connectable,
+  Observable,
+  Observer,
+  Subscribable,
+  Subscription,
+} from "rxjs";
 import type {
   QueryOptions,
   Status,
   Unsubscribable,
 } from "../ObservableClient.js";
-import type { SubFn } from "../types.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Entry } from "./Layer.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
@@ -29,7 +34,7 @@ export abstract class Query<
   KEY extends CacheKey,
   PAYLOAD,
   O extends QueryOptions,
-> {
+> implements Subscribable<PAYLOAD> {
   lastFetchStarted?: number;
   pendingFetch?: Promise<unknown>;
   retainCount: number = 0;
@@ -37,11 +42,32 @@ export abstract class Query<
   cacheKey: KEY;
   store: Store;
   abortController?: AbortController;
+  #connectable?: Connectable<PAYLOAD>;
+  #subscription?: Subscription;
+  #subject: Observable<SubjectPayload<KEY>>;
 
-  constructor(store: Store, opts: O, cacheKey: KEY) {
+  constructor(
+    store: Store,
+    observable: Observable<SubjectPayload<KEY>>,
+    opts: O,
+    cacheKey: KEY,
+  ) {
     this.options = opts;
     this.cacheKey = cacheKey;
     this.store = store;
+    this.#subject = observable;
+  }
+
+  protected abstract _createConnectable(
+    subject: Observable<SubjectPayload<KEY>>,
+  ): Connectable<PAYLOAD>;
+
+  public subscribe(
+    observer: Partial<Observer<PAYLOAD>>,
+  ): Unsubscribable {
+    this.#connectable ??= this._createConnectable(this.#subject);
+    this.#subscription = this.#connectable.connect();
+    return this.#connectable.subscribe(observer);
   }
 
   revalidate(force?: boolean): Promise<unknown> {
@@ -78,14 +104,8 @@ export abstract class Query<
     return this.pendingFetch;
   }
 
-  abstract subscribe(subFn: SubFn<PAYLOAD>): Unsubscribable;
-
   _preFetch(): void {}
   abstract _fetch(): Promise<unknown>;
-
-  getSubject(): BehaviorSubject<SubjectPayload<KEY>> {
-    return this.store.getSubject(this.cacheKey);
-  }
 
   setStatus(
     status: Status,
@@ -101,6 +121,7 @@ export abstract class Query<
     if (this.abortController) {
       this.abortController.abort();
     }
+    this.#subscription?.unsubscribe();
     this._dispose();
   }
 

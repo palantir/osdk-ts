@@ -21,13 +21,23 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
-import { combineLatest, of } from "rxjs";
-import { auditTime, map, mergeMap } from "rxjs/operators";
+import {
+  asyncScheduler,
+  auditTime,
+  combineLatest,
+  type Connectable,
+  connectable,
+  map,
+  mergeMap,
+  type Observable,
+  observeOn,
+  of,
+  ReplaySubject,
+} from "rxjs";
 import invariant from "tiny-invariant";
 import type { Client } from "../../Client.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { QueryOptions, Status } from "../ObservableClient.js";
-import type { SubFn } from "../types.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Canonical } from "./Canonical.js";
 import type { ChangedObjects } from "./ChangedObjects.js";
@@ -36,10 +46,11 @@ import { objectSortaMatchesWhereClause } from "./objectMatchesWhereClause.js";
 import type { ObjectCacheKey, ObjectEntry } from "./ObjectQuery.js";
 import type { OptimisticId } from "./OptimisticId.js";
 import { Query } from "./Query.js";
-import type { BatchContext, Store } from "./Store.js";
+import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 
 export interface ListEntry extends Entry<ListCacheKey> {}
 
+auditTime(0);
 interface ListStorageData {
   data: ObjectCacheKey[];
 }
@@ -74,49 +85,61 @@ export class ListQuery extends Query<
   #minNumResults = 0;
 
   #nextPageToken?: string;
-
   #pendingPageFetch?: Promise<unknown>;
-
   #toRelease: Set<ObjectCacheKey> = new Set();
 
   constructor(
     store: Store,
+    subject: Observable<SubjectPayload<ListCacheKey>>,
     type: string,
     whereClause: Canonical<WhereClause<ObjectTypeDefinition>>,
     cacheKey: ListCacheKey,
     opts: ListQueryOptions,
   ) {
-    super(store, opts, cacheKey);
+    super(
+      store,
+      subject,
+      opts,
+      cacheKey,
+    );
+
     this.#client = store.client;
     this.#type = type;
     this.#whereClause = whereClause;
+    observeOn(asyncScheduler);
   }
 
-  subscribe(subFn: SubFn<ListPayload>) {
-    const ret = this.getSubject().pipe(
-      mergeMap(listEntry => {
-        return combineLatest({
-          resolvedList: listEntry?.value?.data == null
-            ? of([])
-            : combineLatest(
-              listEntry.value.data.map(cacheKey =>
-                this.store.getSubject(cacheKey).pipe(
-                  map(objectEntry => objectEntry?.value!),
-                )
+  protected _createConnectable(
+    subject: Observable<SubjectPayload<ListCacheKey>>,
+  ): Connectable<ListPayload> {
+    return connectable(
+      subject.pipe(
+        mergeMap(listEntry => {
+          return combineLatest({
+            resolvedList: listEntry?.value?.data == null
+              ? of([])
+              : combineLatest(
+                listEntry.value.data.map(cacheKey =>
+                  this.store.getSubject(cacheKey).pipe(
+                    map(objectEntry => objectEntry?.value!),
+                  )
+                ),
               ),
-            ),
-          isOptimistic: of(listEntry.isOptimistic),
-          fetchMore: of(this.fetchMore),
-          hasMore: of(this.#nextPageToken != null),
-          status: of(listEntry.status),
-          lastUpdated: of(listEntry.lastUpdated),
-        });
-      }),
-      // like throttle but returns the tail
-      auditTime(0),
-    ).subscribe(subFn);
-
-    return { unsubscribe: (): void => ret.unsubscribe() };
+            isOptimistic: of(listEntry.isOptimistic),
+            fetchMore: of(this.fetchMore),
+            hasMore: of(this.#nextPageToken != null),
+            status: of(listEntry.status),
+            lastUpdated: of(listEntry.lastUpdated),
+          });
+        }),
+        // like throttle but returns the tail
+        auditTime(0),
+      ),
+      {
+        resetOnDisconnect: false,
+        connector: () => new ReplaySubject(1),
+      },
+    );
   }
 
   _preFetch(): void {

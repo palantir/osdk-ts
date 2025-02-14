@@ -21,18 +21,14 @@ import type {
   PrimaryKeyType,
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
-import { map } from "rxjs";
+import type { Connectable, Observable, Subject } from "rxjs";
+import { BehaviorSubject, connectable, map } from "rxjs";
 import type { ObjectPayload } from "../ObjectPayload.js";
-import type {
-  QueryOptions,
-  Status,
-  Unsubscribable,
-} from "../ObservableClient.js";
-import type { SubFn } from "../types.js";
+import type { QueryOptions, Status } from "../ObservableClient.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Entry } from "./Layer.js";
 import { Query } from "./Query.js";
-import type { BatchContext, Store } from "./Store.js";
+import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 
 export interface ObjectEntry extends Entry<ObjectCacheKey> {}
 
@@ -57,31 +53,46 @@ export class ObjectQuery extends Query<
 
   constructor(
     store: Store,
+    subject: Subject<SubjectPayload<ObjectCacheKey>>,
     type: string,
     pk: PrimaryKeyType<ObjectTypeDefinition>,
     cacheKey: ObjectCacheKey,
     opts: QueryOptions,
   ) {
-    super(store, opts, cacheKey);
+    super(
+      store,
+      subject,
+      opts,
+      cacheKey,
+    );
     this.#apiName = type;
     this.#pk = pk;
   }
 
-  public subscribe(
-    subFn: SubFn<ObjectPayload>,
-  ): Unsubscribable {
-    const sub = this.getSubject().pipe(
-      map((x) => {
-        return {
-          status: x.status,
-          object: x.value,
-          lastUpdated: x.lastUpdated,
-          isOptimistic: x.isOptimistic,
-        };
-      }),
-      //   distinctUntilChanged(),
-    ).subscribe(subFn);
-    return { unsubscribe: () => sub.unsubscribe() };
+  protected _createConnectable(
+    subject: Observable<SubjectPayload<ObjectCacheKey>>,
+  ): Connectable<ObjectPayload> {
+    return connectable(
+      subject.pipe(
+        map((x) => {
+          return {
+            status: x.status,
+            object: x.value,
+            lastUpdated: x.lastUpdated,
+            isOptimistic: x.isOptimistic,
+          };
+        }),
+      ),
+      {
+        connector: () =>
+          new BehaviorSubject<ObjectPayload>({
+            status: "init",
+            object: undefined,
+            lastUpdated: 0,
+            isOptimistic: false,
+          }),
+      },
+    );
   }
 
   async _fetch(): Promise<void> {

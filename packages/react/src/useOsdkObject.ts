@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
+import type { ObjectTypeDefinition, Osdk, PrimaryKeyType } from "@osdk/api";
 import type { ObjectPayload } from "@osdk/client";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
@@ -35,21 +35,33 @@ export namespace useOsdkObject {
 
 export function useOsdkObject<Q extends ObjectTypeDefinition>(
   obj: Osdk.Instance<Q>,
+): useOsdkObject.Result<Q>;
+export function useOsdkObject<Q extends ObjectTypeDefinition>(
+  type: Q,
+  primaryKey: PrimaryKeyType<Q>,
+): useOsdkObject.Result<Q>;
+export function useOsdkObject<Q extends ObjectTypeDefinition>(
+  ...args: [obj: Osdk.Instance<Q>] | [type: Q, primaryKey: PrimaryKeyType<Q>]
 ): useOsdkObject.Result<Q> {
   const { store } = React.useContext(OsdkContext);
+
+  // TODO: Figure out what the correct default behavior is for the various scenarios
+  const mode = args.length === 1 ? "offline" : undefined;
+  const objectType = args.length === 1 ? args[0].$objectType : args[0].apiName;
+  const primaryKey = args.length === 1 ? args[0].$primaryKey : args[1];
 
   const { subscribe, getSnapShot } = React.useMemo(
     () =>
       makeExternalStore<ObjectPayload>((payload) =>
         store.observeObject(
-          obj.$objectType,
-          obj.$primaryKey,
+          objectType,
+          primaryKey,
           {
-            mode: "offline",
+            mode,
           },
           payload,
-        ), `object ${obj.$objectType} ${obj.$primaryKey}`),
-    [store, obj.$objectType, obj.$apiName],
+        ), `object ${objectType} ${primaryKey}`),
+    [store, objectType, primaryKey, mode],
   );
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);

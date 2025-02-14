@@ -26,6 +26,7 @@ import type { ObjectPayload } from "../ObjectPayload.js";
 import type {
   ListQueryOptions,
   ObservableClient,
+  ObserveObjectOptions,
   ObserveOptions,
   Unsubscribable,
 } from "../ObservableClient.js";
@@ -46,7 +47,7 @@ export class ObservableClientImpl implements ObservableClient {
   public observeObject<T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
-    options: ObserveOptions,
+    options: ObserveObjectOptions<T>,
     subFn: SubFn<ObjectPayload>,
   ): Unsubscribable {
     return this.#store.observeObject(apiName, pk, options, subFn);

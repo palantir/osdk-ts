@@ -16,6 +16,7 @@
 
 import { Trie } from "@wry/trie";
 import invariant from "tiny-invariant";
+import { DEBUG_CACHE_KEYS } from "../DebugFlags.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { ListCacheKey } from "./ListQuery.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
@@ -45,7 +46,7 @@ export class CacheKeys {
     this.#registerCacheKeyFactory<ObjectCacheKey>(
       "object",
       (apiName, pk) => {
-        if (process.env.NODE_ENV !== "production") {
+        if (process.env.NODE_ENV !== "production" && DEBUG_CACHE_KEYS) {
           // eslint-disable-next-line no-console
           console.debug(
             `CacheKeys.get([object, ${apiName}, ${pk}]) -- already exists? `,
@@ -66,7 +67,7 @@ export class CacheKeys {
     this.#registerCacheKeyFactory<ListCacheKey>(
       "list",
       (apiName, where) => {
-        if (process.env.NODE_ENV !== "production") {
+        if (process.env.NODE_ENV !== "production" && DEBUG_CACHE_KEYS) {
           // eslint-disable-next-line no-console
           console.debug(
             `CacheKeys.get([list, ${apiName}, ${

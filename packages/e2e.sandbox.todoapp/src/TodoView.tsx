@@ -86,5 +86,7 @@ border border-solid border-yellow-800 border-t-transparent">
 });
 
 export function SmallTextDiv({ children }: { children: React.ReactNode }) {
-  return <div className="ml-2 text-xs text-gray-500">{children}</div>;
+  return (
+    <div className="ml-2 text-xs text-gray-500 font-normal">{children}</div>
+  );
 }

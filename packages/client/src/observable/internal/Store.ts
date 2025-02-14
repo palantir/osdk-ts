@@ -30,7 +30,10 @@ import type { Client } from "../../Client.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
-import type { Unsubscribable } from "../ObservableClient.js";
+import type {
+  ObserveObjectOptions,
+  Unsubscribable,
+} from "../ObservableClient.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
 import type { SubFn } from "../types.js";
 import type { CacheKey } from "./CacheKey.js";
@@ -48,7 +51,7 @@ import type { Query } from "./Query.js";
 import { RefCounts } from "./RefCounts.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
-const ACTION_DELAY = process.env.NODE_ENV === "production" ? 0 : 500;
+const ACTION_DELAY = process.env.NODE_ENV === "production" ? 0 : 1000;
 
 /*
     Work still to do:
@@ -133,7 +136,7 @@ export class Store {
   #cacheKeys: CacheKeys;
 
   #refCounts = new RefCounts<CacheKey>(
-    DEBUG_REFCOUNTS ? 5_000 : 60_000,
+    DEBUG_REFCOUNTS ? 15_000 : 60_000,
     (k) => this.#cleanupCacheKey(k),
   );
 
@@ -188,7 +191,7 @@ export class Store {
    * @param key
    */
   #cleanupCacheKey = (key: CacheKey<string, any, any>) => {
-    const subject = this.#cacheKeyToSubject.get(key);
+    const subject = this.peekSubject(key);
 
     if (DEBUG_REFCOUNTS) {
       // eslint-disable-next-line no-console
@@ -256,7 +259,7 @@ export class Store {
         // We are going to be pretty lazy here and just re-emit the value.
         // In the future it may benefit us to deep equal check her but I think
         // the subjects are effectively doing this anyway.
-        this.#cacheKeyToSubject.get(k)?.next(
+        this.peekSubject(k)?.next(
           {
             // eslint-disable-next-line @typescript-eslint/no-misused-spread
             ...(currentEntry ?? createInitEntry(k)),
@@ -274,6 +277,15 @@ export class Store {
   ): K {
     return this.#refCounts.register(this.#cacheKeys.get(type, ...args));
   }
+
+  peekSubject = <KEY extends CacheKey<string, any, any>>(
+    cacheKey: KEY,
+  ):
+    | BehaviorSubject<SubjectPayload<KEY>>
+    | undefined =>
+  {
+    return this.#cacheKeyToSubject.get(cacheKey);
+  };
 
   getSubject = <KEY extends CacheKey<string, any, any>>(
     cacheKey: KEY,
@@ -298,7 +310,7 @@ export class Store {
   public observeObject<T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
-    options: ObserveOptions,
+    options: ObserveObjectOptions<T>,
     subFn: SubFn<ObjectPayload>,
   ): Unsubscribable {
     if (typeof apiName !== "string") {
@@ -311,11 +323,11 @@ export class Store {
     if (options.mode !== "offline") {
       void query.revalidate(options.mode === "force");
     }
-    const { unsubscribe } = query.subscribe(subFn);
+    const sub = query.subscribe({ next: subFn });
 
     return {
       unsubscribe: () => {
-        unsubscribe();
+        sub.unsubscribe();
         this.#refCounts.release(query.cacheKey);
       },
     };
@@ -337,11 +349,11 @@ export class Store {
     if (options.mode !== "offline") {
       void query.revalidate(options.mode === "force");
     }
-    const { unsubscribe } = query.subscribe(subFn);
+    const sub = query.subscribe({ next: subFn });
 
     return {
       unsubscribe: () => {
-        unsubscribe();
+        sub.unsubscribe();
         this.#refCounts.release(query.cacheKey);
       },
     };
@@ -383,7 +395,14 @@ export class Store {
     );
 
     return this.#getQuery(listCacheKey, () => {
-      return new ListQuery(this, apiName, canonWhere, listCacheKey, opts);
+      return new ListQuery(
+        this,
+        this.getSubject(listCacheKey),
+        apiName,
+        canonWhere,
+        listCacheKey,
+        opts,
+      );
     });
   }
 
@@ -404,6 +423,7 @@ export class Store {
     return this.#getQuery(objectCacheKey, () =>
       new ObjectQuery(
         this,
+        this.getSubject(objectCacheKey),
         apiName,
         pk,
         objectCacheKey,

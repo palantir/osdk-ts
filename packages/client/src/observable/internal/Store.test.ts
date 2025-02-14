@@ -184,7 +184,8 @@ describe(Store, () => {
       it("rolls back to an updated real value", async () => {
         vi.useFakeTimers();
 
-        cache.updateList(Employee, {}, employeesAsServerReturns); // pre-seed the cache with the "real" value
+        // pre-seed the cache with the "real" value
+        cache.updateList(Employee, {}, employeesAsServerReturns);
 
         const emp = employeesAsServerReturns[0];
 
