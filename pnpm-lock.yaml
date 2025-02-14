@@ -3290,9 +3290,6 @@ importers:
       '@osdk/foundry.ontologies':
         specifier: 2.13.0
         version: 2.13.0
-      consola:
-        specifier: ^3.2.3
-        version: 3.2.3
     devDependencies:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~

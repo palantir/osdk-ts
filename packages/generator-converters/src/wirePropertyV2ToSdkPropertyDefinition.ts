@@ -24,14 +24,15 @@ import type {
   PropertyV2,
   SharedPropertyType,
 } from "@osdk/foundry.ontologies";
-import { consola } from "consola";
 
 export function wirePropertyV2ToSdkPropertyDefinition(
   input: (PropertyV2 | SharedPropertyType) & { nullable?: boolean },
   isNullable: boolean = true,
+  log?: { info: (msg: string) => void },
 ): ObjectMetadata.Property | undefined {
   const sdkPropDefinition = objectPropertyTypeToSdkPropertyDefinition(
     input.dataType,
+    log,
   );
   if (sdkPropDefinition == null) {
     return undefined;
@@ -74,22 +75,25 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     }
     case "cipherText":
     case "vector": {
-      consola.info(
+      log?.info(
         `${JSON.stringify(input.dataType.type)} is not a supported dataType`,
       );
+
       return undefined;
     }
     default:
       const _: never = input.dataType;
-      consola.info(
+      log?.info(
         `${JSON.stringify(input.dataType)} is not a supported dataType`,
       );
+
       return undefined;
   }
 }
 
 function objectPropertyTypeToSdkPropertyDefinition(
   propertyType: ObjectPropertyType,
+  log?: { info: (msg: string) => void },
 ): WirePropertyTypes | undefined {
   switch (propertyType.type) {
     case "integer":
@@ -131,19 +135,20 @@ function objectPropertyTypeToSdkPropertyDefinition(
         {},
       );
     }
-
     case "cipherText":
     case "vector": {
-      consola.info(
+      log?.info(
         `${JSON.stringify(propertyType.type)} is not a supported propertyType`,
       );
+
       return undefined;
     }
     default: {
       const _: never = propertyType;
-      consola.info(
+      log?.info(
         `${JSON.stringify(propertyType)} is not a supported propertyType`,
       );
+
       return undefined;
     }
   }

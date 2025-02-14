@@ -16,6 +16,7 @@
 
 import type { ObjectTypeFullMetadata } from "@osdk/foundry.ontologies";
 import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
+import consola from "consola";
 import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
@@ -52,6 +53,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
     wireObjectTypeFullMetadataToSdkObjectMetadata(
       object.raw,
       true,
+      consola,
     ),
   );
 
