@@ -33,5 +33,4 @@
     "\\.\\./.*?/build",
     "\\./index.js"
   ],
-  "typescript.preferGoToSourceDefinition": true
 }
