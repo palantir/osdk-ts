@@ -212,7 +212,7 @@ export namespace Osdk {
 
       readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(
         updatedObject?:
-          | Osdk.Instance<Q>
+          | Osdk.Instance<Q, any, NEW_PROPS>
           | {
             [K in NEW_PROPS]?: CompileTimeMetadata<
               Q
