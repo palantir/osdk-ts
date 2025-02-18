@@ -14,52 +14,45 @@
  * limitations under the License.
  */
 
-import type {
-  ListPayload,
-  ObjectTypeDefinition,
-  Osdk,
-  WhereClause,
-} from "@osdk/client";
+import type { ObjectTypeDefinition, Osdk, WhereClause } from "@osdk/client";
+import type { ListPayload } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext } from "./OsdkContext.js";
 
-export namespace useOsdkList {
-  export interface Options<T extends ObjectTypeDefinition> {
-    where: WhereClause<T>;
+export interface UseOsdkListOptions<T extends ObjectTypeDefinition> {
+  where: WhereClause<T>;
 
-    /**
-     * The number of milliseconds to wait after the last observed list change.
-     *
-     * Two uses of `useOsdkList` with the where clause will only trigger one
-     * network request if the second is within `dedupeIntervalMs`.
-     */
-    dedupeIntervalMs?: number;
-  }
+  /**
+   * The number of milliseconds to wait after the last observed list change.
+   *
+   * Two uses of `useOsdkList` with the where clause will only trigger one
+   * network request if the second is within `dedupeIntervalMs`.
+   */
+  dedupeIntervalMs?: number;
+}
+export interface UseOsdkListResult<T extends ObjectTypeDefinition> {
+  fetchMore: (() => Promise<unknown>) | undefined;
+  data: Osdk.Instance<T>[];
+  isLoading: boolean;
 
-  export interface Result<T extends ObjectTypeDefinition> {
-    fetchMore: (() => Promise<unknown>) | undefined;
-    data: Osdk.Instance<T>[];
-    isLoading: boolean;
+  // FIXME populate error!
+  error: undefined;
 
-    // FIXME populate error!
-    error: undefined;
-
-    /**
-     * Refers to whether the ordered list of objects (only considering the $primaryKey)
-     * is optimistic or not.
-     *
-     * If you need to know if the contents of the list are optimistic you can
-     * do that on a per object basis with useOsdkObject
-     */
-    isOptimistic: boolean;
-  }
+  /**
+   * Refers to whether the ordered list of objects (only considering the $primaryKey)
+   * is optimistic or not.
+   *
+   * If you need to know if the contents of the list are optimistic you can
+   * do that on a per object basis with useOsdkObject
+   */
+  isOptimistic: boolean;
 }
 
 export function useOsdkList<T extends ObjectTypeDefinition>(
   type: T,
-  opts: useOsdkList.Options<T>,
-): useOsdkList.Result<T> {
+  opts: UseOsdkListOptions<T>,
+): UseOsdkListResult<T> {
   const { store } = React.useContext(OsdkContext);
   const where = store.canonicalizeWhereClause(opts.where);
 

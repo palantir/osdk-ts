@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { Client, ObservableClient } from "@osdk/client";
+import type { Client } from "@osdk/client";
+import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 
 function fakeClientFn(..._args: any[]) {

@@ -1,9 +1,9 @@
+import { createClient } from "@osdk/client";
 import type {
-  ObservableClient} from "@osdk/client";
+  ObservableClient} from "@osdk/client/unstable-do-not-use";
 import {
-  createClient,
   createObservableClient
-} from "@osdk/client";
+} from "@osdk/client/unstable-do-not-use";
 import { createPublicOauthClient } from "@osdk/oauth";
 import invariant from "tiny-invariant";
 import { $ontologyRid } from "./generatedNoCheck2/index.js";

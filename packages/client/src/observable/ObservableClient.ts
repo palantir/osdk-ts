@@ -18,6 +18,7 @@ import type {
   ActionDefinition,
   ObjectTypeDefinition,
   PrimaryKeyType,
+  PropertyKeys,
   WhereClause,
 } from "@osdk/api";
 import type { ActionSignatureFromDef } from "../actions/applyAction.js";
@@ -43,6 +44,12 @@ export interface QueryOptions {
 
 export interface ObserveOptions {
   mode?: "offline" | "force";
+}
+
+export interface ObserveObjectOptions<T extends ObjectTypeDefinition>
+  extends ObserveOptions
+{
+  select?: PropertyKeys<T>[];
 }
 
 export interface ListQueryOptions extends QueryOptions {

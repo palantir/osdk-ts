@@ -15,34 +15,44 @@
  */
 
 import type { ObjectTypeDefinition, Osdk, PrimaryKeyType } from "@osdk/api";
-import type { ObjectPayload } from "@osdk/client";
+import type { ObjectPayload } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext } from "./OsdkContext.js";
 
-export namespace useOsdkObject {
-  export interface Result<Q extends ObjectTypeDefinition> {
-    object: Osdk.Instance<Q> | undefined;
-    isLoading: boolean;
+export interface UseOsdkObjectResult<Q extends ObjectTypeDefinition> {
+  object: Osdk.Instance<Q> | undefined;
+  isLoading: boolean;
 
-    /**
-     * Refers to whether the object is optimistic or not.
-     */
-    isOptimistic: boolean;
-    forceUpdate: () => void;
-  }
+  /**
+   * Refers to whether the object is optimistic or not.
+   */
+  isOptimistic: boolean;
+  forceUpdate: () => void;
 }
 
+/**
+ * @param obj an existing `Osdk.Instance` object to get metadata for.
+ */
 export function useOsdkObject<Q extends ObjectTypeDefinition>(
   obj: Osdk.Instance<Q>,
-): useOsdkObject.Result<Q>;
+): UseOsdkObjectResult<Q>;
+/**
+ * Loads an object by type and primary key.
+ *
+ * @param type
+ * @param primaryKey
+ */
 export function useOsdkObject<Q extends ObjectTypeDefinition>(
   type: Q,
   primaryKey: PrimaryKeyType<Q>,
-): useOsdkObject.Result<Q>;
+): UseOsdkObjectResult<Q>;
+/*
+    Implementation of useOsdkObject
+ */
 export function useOsdkObject<Q extends ObjectTypeDefinition>(
   ...args: [obj: Osdk.Instance<Q>] | [type: Q, primaryKey: PrimaryKeyType<Q>]
-): useOsdkObject.Result<Q> {
+): UseOsdkObjectResult<Q> {
   const { store } = React.useContext(OsdkContext);
 
   // TODO: Figure out what the correct default behavior is for the various scenarios

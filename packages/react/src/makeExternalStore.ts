@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Unsubscribable } from "@osdk/client";
+import type { Unsubscribable } from "@osdk/client/unstable-do-not-use";
 
 export function makeExternalStore<X>(
   createObservation: (callback: (x: X | undefined) => void) => Unsubscribable,

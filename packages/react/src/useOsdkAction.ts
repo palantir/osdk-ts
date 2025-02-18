@@ -14,37 +14,35 @@
  * limitations under the License.
  */
 
+import type { ActionDefinition } from "@osdk/client";
+import { ActionValidationError } from "@osdk/client";
 import type {
-  ActionDefinition,
   ActionSignatureFromDef,
   ObservableClient,
-} from "@osdk/client";
-import { ActionValidationError } from "@osdk/client";
+} from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { OsdkContext } from "./OsdkContext.js";
 
-export namespace useOsdkAction {
-  export interface Result<Q extends ActionDefinition<any>> {
-    applyAction: (
-      args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
-      opts: ObservableClient.ApplyActionOptions,
-    ) => Promise<unknown>;
+export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
+  applyAction: (
+    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
+    opts: ObservableClient.ApplyActionOptions,
+  ) => Promise<unknown>;
 
-    error:
-      | undefined
-      | Partial<{
-        actionValidation: ActionValidationError;
-        unknown: unknown;
-      }>;
-    data: unknown;
-  }
+  error:
+    | undefined
+    | Partial<{
+      actionValidation: ActionValidationError;
+      unknown: unknown;
+    }>;
+  data: unknown;
 }
 
 export function useOsdkAction<Q extends ActionDefinition<any>>(
   actionDef: Q,
-): useOsdkAction.Result<Q> {
+): UseOsdkActionResult<Q> {
   const { store } = React.useContext(OsdkContext);
-  const [error, setError] = React.useState<useOsdkAction.Result<Q>["error"]>();
+  const [error, setError] = React.useState<UseOsdkActionResult<Q>["error"]>();
   const [data, setData] = React.useState<unknown>();
 
   const applyAction = React.useCallback(async function applyAction(
