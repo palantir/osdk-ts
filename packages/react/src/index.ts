@@ -14,5 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * @module @osdk/react
+ */
+
 export { OsdkProvider } from "./OsdkProvider.js";
 export { useOsdkClient } from "./useOsdkClient.js";

@@ -1226,10 +1226,10 @@ export interface VersionBound<V extends VersionString<any, any, any>> {
 // Warning: (ae-forgotten-export) The symbol "OrWhereClause" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "AndWhereClause" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "NotWhereClause" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "FilterFor" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "PropertyWhereClause" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T> | AndWhereClause<T> | NotWhereClause<T> | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true ? Record<string, never> : { [P in keyof CompileTimeMetadata<T>["properties"]]? : FilterFor<CompileTimeMetadata<T>["properties"][P]> });
+export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T> | AndWhereClause<T> | NotWhereClause<T> | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true ? Record<string, never> : PropertyWhereClause<T>);
 
 // @public (undocumented)
 export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWirePropertyTypes>;
