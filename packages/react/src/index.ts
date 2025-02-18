@@ -18,5 +18,5 @@
  * @module @osdk/react
  */
 
-export { OsdkProvider2 } from "./new/OsdkProvider2.js";
+export { OsdkProvider } from "./OsdkProvider.js";
 export { useOsdkClient } from "./useOsdkClient.js";
