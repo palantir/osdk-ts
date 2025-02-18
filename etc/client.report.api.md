@@ -96,7 +96,9 @@ export interface Client extends SharedClient, OldSharedClient {
 export function createAttachmentUpload(data: Blob, name: string): AttachmentUpload;
 
 // @public (undocumented)
-export const createClient: (baseUrl: string, ontologyRid: string | Promise<string>, tokenProvider: () => Promise<string>, options?: { logger?: Logger } | undefined, fetchFn?: typeof fetch | undefined) => Client;
+export const createClient: (baseUrl: string, ontologyRid: string | Promise<string>, tokenProvider: () => Promise<string>, options?: {
+    	logger?: Logger
+} | undefined, fetchFn?: typeof fetch | undefined) => Client;
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
@@ -129,8 +131,8 @@ export { isOk }
 export interface Logger {
     	// (undocumented)
     child(bindings: Record<string, any>, options?: {
-        		level?: string;
-        		msgPrefix?: string;
+        		level?: string
+        		msgPrefix?: string
         	}): Logger;
     	// (undocumented)
     debug: LogFn;
@@ -183,12 +185,12 @@ export { Result }
 
 // @public (undocumented)
 export type ResultOrError<T extends object> = ({
-    	type: "ok";
-    	err?: never;
+    	type: "ok"
+    	err?: never
 } & T) | {
-    	type: "err";
-    	data?: never;
-    	err?: unknown;
+    	type: "err"
+    	data?: never
+    	err?: unknown
 };
 
 export { SingleLinkAccessor }
