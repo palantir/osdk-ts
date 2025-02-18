@@ -18,7 +18,7 @@ import type { ObjectTypeDefinition, Osdk, PrimaryKeyType } from "@osdk/api";
 import type { ObjectPayload } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
-import { OsdkContext } from "./OsdkContext.js";
+import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseOsdkObjectResult<Q extends ObjectTypeDefinition> {
   object: Osdk.Instance<Q> | undefined;
@@ -53,7 +53,7 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
 export function useOsdkObject<Q extends ObjectTypeDefinition>(
   ...args: [obj: Osdk.Instance<Q>] | [type: Q, primaryKey: PrimaryKeyType<Q>]
 ): UseOsdkObjectResult<Q> {
-  const { store } = React.useContext(OsdkContext);
+  const { store } = React.useContext(OsdkContext2);
 
   // TODO: Figure out what the correct default behavior is for the various scenarios
   const mode = args.length === 1 ? "offline" : undefined;

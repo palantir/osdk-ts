@@ -21,7 +21,7 @@ import type {
   ObservableClient,
 } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import { OsdkContext } from "./OsdkContext.js";
+import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
   applyAction: (
@@ -41,7 +41,7 @@ export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
 export function useOsdkAction<Q extends ActionDefinition<any>>(
   actionDef: Q,
 ): UseOsdkActionResult<Q> {
-  const { store } = React.useContext(OsdkContext);
+  const { store } = React.useContext(OsdkContext2);
   const [error, setError] = React.useState<UseOsdkActionResult<Q>["error"]>();
   const [data, setData] = React.useState<unknown>();
 

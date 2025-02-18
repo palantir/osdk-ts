@@ -15,17 +15,24 @@
  */
 
 import type { Client } from "@osdk/client";
+import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import { OsdkContext } from "./OsdkContext.js";
+import { OsdkContext2 } from "./OsdkContext2.js";
 
-export function OsdkProvider({
-  children,
-  client,
-}: {
+interface OsdkProviderOptions {
   children: React.ReactNode;
   client: Client;
-}): React.JSX.Element {
+  store: ObservableClient;
+}
+
+export function OsdkProvider2({
+  children,
+  client,
+  store,
+}: OsdkProviderOptions): React.JSX.Element {
   return (
-    <OsdkContext.Provider value={{ client }}>{children}</OsdkContext.Provider>
+    <OsdkContext2.Provider value={{ client, store }}>
+      {children}
+    </OsdkContext2.Provider>
   );
 }

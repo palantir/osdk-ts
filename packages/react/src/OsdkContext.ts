@@ -15,7 +15,6 @@
  */
 
 import type { Client } from "@osdk/client";
-import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 
 function fakeClientFn(..._args: any[]) {
@@ -28,17 +27,8 @@ const fakeClient = Object.assign(fakeClientFn, {
   fetchMetadata: fakeClientFn,
 } as Client);
 
-interface OsdkContextContents {
+export const OsdkContext: React.Context<{
   client: Client;
-  // keeping the old name for now intentionally
-  // in case i need both for a while
-  // in the future we can just make
-  // this `client: ObservableClient`
-  store: ObservableClient;
-}
-
-export const OsdkContext: React.Context<OsdkContextContents> = React
-  .createContext<OsdkContextContents>({
-    client: fakeClient,
-    store: undefined!,
-  });
+}> = React.createContext<{ client: Client }>({
+  client: fakeClient,
+});

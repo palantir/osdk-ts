@@ -18,7 +18,7 @@ import type { ObjectTypeDefinition, Osdk, WhereClause } from "@osdk/client";
 import type { ListPayload } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
-import { OsdkContext } from "./OsdkContext.js";
+import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseOsdkListOptions<T extends ObjectTypeDefinition> {
   where: WhereClause<T>;
@@ -53,7 +53,7 @@ export function useOsdkList<T extends ObjectTypeDefinition>(
   type: T,
   opts: UseOsdkListOptions<T>,
 ): UseOsdkListResult<T> {
-  const { store } = React.useContext(OsdkContext);
+  const { store } = React.useContext(OsdkContext2);
   const where = store.canonicalizeWhereClause(opts.where);
 
   const { subscribe, getSnapShot } = React.useMemo(

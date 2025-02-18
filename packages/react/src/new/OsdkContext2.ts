@@ -15,17 +15,30 @@
  */
 
 import type { Client } from "@osdk/client";
+import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import { OsdkContext } from "./OsdkContext.js";
 
-export function OsdkProvider({
-  children,
-  client,
-}: {
-  children: React.ReactNode;
-  client: Client;
-}): React.JSX.Element {
-  return (
-    <OsdkContext.Provider value={{ client }}>{children}</OsdkContext.Provider>
+function fakeClientFn(..._args: any[]) {
+  throw new Error(
+    "This is not a real client. Did you forget to <OsdkContext.Provider>?",
   );
 }
+
+const fakeClient = Object.assign(fakeClientFn, {
+  fetchMetadata: fakeClientFn,
+} as Client);
+
+interface OsdkContextContents {
+  client: Client;
+  // keeping the old name for now intentionally
+  // in case i need both for a while
+  // in the future we can just make
+  // this `client: ObservableClient`
+  store: ObservableClient;
+}
+
+export const OsdkContext2: React.Context<OsdkContextContents> = React
+  .createContext<OsdkContextContents>({
+    client: fakeClient,
+    store: undefined!,
+  });

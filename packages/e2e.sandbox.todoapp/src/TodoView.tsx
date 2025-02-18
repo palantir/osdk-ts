@@ -1,4 +1,4 @@
-import { useOsdkAction, useOsdkObject } from "@osdk/react";
+import { useOsdkAction, useOsdkObject } from "@osdk/react/experimental";
 import React, { useState } from "react";
 import type { $Objects } from "./generatedNoCheck2/index.js";
 import { $Actions } from "./generatedNoCheck2/index.js";

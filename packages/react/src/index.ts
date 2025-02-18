@@ -18,8 +18,5 @@
  * @module @osdk/react
  */
 
-export { OsdkProvider } from "./OsdkProvider.js";
-export { useOsdkAction } from "./useOsdkAction.js";
+export { OsdkProvider2 } from "./new/OsdkProvider2.js";
 export { useOsdkClient } from "./useOsdkClient.js";
-export { useOsdkList } from "./useOsdkList.js";
-export { useOsdkObject } from "./useOsdkObject.js";

@@ -1,4 +1,4 @@
-import { useOsdkList } from "@osdk/react";
+import { useOsdkList } from "@osdk/react/experimental";
 import "./App.css";
 import type { WhereClause } from "@osdk/client";
 import React from "react";
