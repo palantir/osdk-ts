@@ -33,4 +33,7 @@
     "\\.\\./.*?/build",
     "\\./index.js"
   ],
+  "[markdown]": {
+    "editor.defaultFormatter": "dprint.dprint"
+  },
 }

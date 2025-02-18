@@ -35,7 +35,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 );
 ```
 
-
 ## Load a list of objects
 
 In this example, we are using a silly where clause to demonstrate how to
@@ -48,8 +47,8 @@ function App() {
   // data is `Osdk.Instance<Todo>[] | undefined` in this case.
   const { data, isLoading, error } = useOsdkList(Todo, {
     where: {
-      title: { $startsWith: "cool " }
-    }
+      title: { $startsWith: "cool " },
+    },
   });
 
   // If the cache has no existing copy for this query and
@@ -59,27 +58,29 @@ function App() {
     return "Loading...";
   }
 
-  return <div>
-    { /* lazy error handling */ }
-    { error && JSON.stringify(error) }
-    { isLoading && <div>Refreshing data</div> }
-    
-    { /* Actually render the todos */ }
-    {data.map(todo => (<TodoView todo={todo}/>))}
-  </div>
+  return (
+    <div>
+      {/* lazy error handling */}
+      {error && JSON.stringify(error)}
+      {isLoading && <div>Refreshing data</div>}
+
+      {/* Actually render the todos */}
+      {data.map(todo => <TodoView todo={todo} />)}
+    </div>
+  );
 }
 ```
 
 ## Rendering a single object
 
-In this example, since we are already being provided a `Todo.OsdkInstance` we 
+In this example, since we are already being provided a `Todo.OsdkInstance` we
 can use the {@link useOsdkObject } hook to fetch the loading state.
 
 ```tsx
 import { Todo } from "@my/osdk";
 
 interface TodoProps {
-  todo: Todo.OsdkInstance 
+  todo: Todo.OsdkInstance;
 }
 
 function TodoView({ todo }: TodoProps) {
@@ -87,8 +88,8 @@ function TodoView({ todo }: TodoProps) {
 
   return (
     <div>
-      { todo.title }
-      { isLoading && "(Loading)" }
+      {todo.title}
+      {isLoading && "(Loading)"}
     </div>
   );
 }
@@ -109,29 +110,31 @@ function TodoView({ todo }: TodoProps) {
   const completeTodo = useOsdkAction($Actions.completeTodo);
 
   const onClick = React.useCallback(() => {
-    completeTodo.applyAction({ 
-      todo: todo, 
-      isComplete: true
+    completeTodo.applyAction({
+      todo: todo,
+      isComplete: true,
     });
   }, [completeTodo]);
 
   return (
     <div>
       <div>
-        { todo.title }
-        { todo.isComplete == false && <span>
-          ( <button onClick={onClick}>Mark Complete</button> )
-        </span> }
-        { isLoading && "(Loading)" }
+        {todo.title}
+        {todo.isComplete == false && (
+          <span>
+            ( <button onClick={onClick}>Mark Complete</button> )
+          </span>
+        )}
+        {isLoading && "(Loading)"}
       </div>
-      { completeTodo.error && (
+      {completeTodo.error && (
         <div>
-          An error occurred while applying the action: 
+          An error occurred while applying the action:
           <pre>{JSON.stringify(completeTodo.error, null, 2)}</pre>
         </div>
       )}
     </div>
-  )
+  );
 }
 ```
 
@@ -157,29 +160,29 @@ function TodoView({ todo }: TodoProps) {
   const completeTodo = useOsdkAction($Actions.completeTodo);
 
   const onClick = React.useCallback(() => {
-    completeTodo.applyAction({ 
-      todo: todo, 
-      isComplete: true
+    completeTodo.applyAction({
+      todo: todo,
+      isComplete: true,
     }, {
       optimisticUpdate: (ou) => {
         ou.updateObject(
           todo.$clone({
-            isComplete: true
-          })
+            isComplete: true,
+          }),
         );
-      }
-    })
+      },
+    });
   });
 
   return (
     <div>
-      { todo.title }
-      { todo.isComplete == false && !isOptimistic && ( 
-        <button onClick={onClick}>Mark Complete</button> 
+      {todo.title}
+      {todo.isComplete == false && !isOptimistic && (
+        <button onClick={onClick}>Mark Complete</button>
       )}
-      { isLoading && "(Loading)" }
-      { isOptimistic && "(Optimistic)" }
+      {isLoading && "(Loading)"}
+      {isOptimistic && "(Optimistic)"}
     </div>
-  )
+  );
 }
 ```

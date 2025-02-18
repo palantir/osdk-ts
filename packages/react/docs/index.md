@@ -11,13 +11,11 @@ Every API mentioned in this document is experimental and may change, be renamed,
 `@osdk/react` is an opinionated library for using OSDK in a react application. It provides a number
 of features over using the `@osdk/client` directly:
 
-* Automatic caching
-* Normalized caching
-* Optimistic Updates
-* Subscriptions (coming soon)
-* and more.
-
-
+- Automatic caching
+- Normalized caching
+- Optimistic Updates
+- Subscriptions (coming soon)
+- and more.
 
 ## Getting Started
 
