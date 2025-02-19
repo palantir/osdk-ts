@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.1.0-rc.32
+
+### Patch Changes
+
+- 55c05f2: Remove runtime derived properties from external types.
+
 ## 2.1.0-beta.31
 
 ### Minor Changes
