@@ -188,6 +188,12 @@ export interface NotWhereClause<
   $not: WhereClause<T>;
 }
 
+export type PropertyWhereClause<T extends ObjectOrInterfaceDefinition> = {
+  [P in keyof CompileTimeMetadata<T>["properties"]]?: FilterFor<
+    CompileTimeMetadata<T>["properties"][P]
+  >;
+};
+
 export type WhereClause<
   T extends ObjectOrInterfaceDefinition,
 > =
@@ -196,8 +202,4 @@ export type WhereClause<
   | NotWhereClause<T>
   | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true
     ? Record<string, never>
-    : {
-      [P in keyof CompileTimeMetadata<T>["properties"]]?: FilterFor<
-        CompileTimeMetadata<T>["properties"][P]
-      >;
-    });
+    : PropertyWhereClause<T>);

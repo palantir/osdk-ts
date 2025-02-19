@@ -1,5 +1,21 @@
 # @osdk/generator-converters
 
+## 2.1.0-beta.31
+
+### Minor Changes
+
+- bb8b219: Use new external packages instead of the internal ones.
+- 81b2fb2: Remove duplicate types in case statement.
+- ecd4aee: Fixing use of logging from client for unknown property types.
+- ee6224b: Explicitly type aggregation types in queries.
+
+### Patch Changes
+
+- Updated dependencies [bb8b219]
+- Updated dependencies [ee6224b]
+- Updated dependencies [5fe2c8d]
+  - @osdk/api@2.1.0-beta.31
+
 ## 2.1.0-beta.30
 
 ### Minor Changes

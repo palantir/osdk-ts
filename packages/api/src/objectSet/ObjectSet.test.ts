@@ -101,9 +101,6 @@ describe("ObjectSet", () => {
     where: vi.fn(() => {
       return fauxObjectSet;
     }),
-    withProperties: vi.fn(() => {
-      return fauxObjectSet;
-    }),
     fetchPage: vi.fn(() => Promise.resolve()),
     asyncIter: vi.fn(() => {
       return {};

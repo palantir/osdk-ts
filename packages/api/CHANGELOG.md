@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 2.1.0-beta.31
+
+### Minor Changes
+
+- bb8b219: Use new external packages instead of the internal ones.
+- ee6224b: Explicitly type aggregation types in queries.
+- 5fe2c8d: Remove ability to filter on entire struct.
+
 ## 2.1.0-beta.30
 
 ### Minor Changes

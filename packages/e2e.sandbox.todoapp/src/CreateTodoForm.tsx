@@ -1,20 +1,17 @@
+import { useOsdkAction } from "@osdk/react/experimental";
 import React, { useState } from "react";
+import { Button } from "./Button.js";
+import { $Actions, Todo } from "./generatedNoCheck2/index.js";
 
-export default function CreateTodoForm({
-  createTodo,
-}: {
-  createTodo: (
-    title: string,
-    setError: (error: string | undefined) => void,
-  ) => Promise<void>;
-}) {
+export default function CreateTodoForm() {
   const formRef = React.useRef<HTMLFormElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [pending, setPending] = useState(false);
-  const [error, setError] = useState<string>();
+
+  const createTodo = useOsdkAction($Actions.createTodo);
 
   return (
-    <div className="flex shrink mb-6">
+    <div className="flex grow">
       <form
         ref={formRef}
         onSubmit={async (evt) => {
@@ -22,10 +19,22 @@ export default function CreateTodoForm({
           if (!inputRef.current || !formRef.current) {
             throw "should never happen";
           }
+          const title = inputRef.current.value;
           setPending(true);
-          setError(undefined);
           try {
-            await createTodo(inputRef.current.value, setError);
+            await createTodo.applyAction(
+              { is_complete: false, Todo: title },
+              {
+                optimisticUpdate: (b) => {
+                  const id = "TMP " + window.crypto.randomUUID();
+                  b.createObject(Todo, id, {
+                    title,
+                    id,
+                    isComplete: false,
+                  });
+                },
+              },
+            );
             formRef.current.reset();
           } catch (e) {
             console.error(e);
@@ -34,7 +43,7 @@ export default function CreateTodoForm({
           }
         }}
       >
-        <div className="error">{error}</div>
+        <div className="error">{JSON.stringify(createTodo.error)}</div>
         <input
           type="text"
           name={"title"}
@@ -45,22 +54,20 @@ export default function CreateTodoForm({
           border-2
            focus:border-blue-500 focus:ring-blue-500 disabled:opacity-90
            disabled:pointer-events-none 
-           dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:ring-gray-600"
+           "
         />
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm aria-disabled:bg-gray-300 aria-disabled:cursor-default"
-          aria-disabled={false}
-          disabled={pending}
-        >
+        <Button>
           Create Todo
-        </button>
-        {pending
-          ? (
-            <div className="ml-2 w-4 h-4 rounded-full animate-spin shrink-0
+        </Button>
+        <div className="inline">
+          {pending
+            ? (
+              <div className="ml-2 w-4 h-4 rounded-full animate-spin shrink-0
 border border-solid border-yellow-800 border-t-transparent">
-            </div>
-          )
-          : <div className="ml-2 w-4 h-4"></div>}
+              </div>
+            )
+            : <div className="ml-2 w-4 h-4"></div>}
+        </div>
       </form>
     </div>
   );

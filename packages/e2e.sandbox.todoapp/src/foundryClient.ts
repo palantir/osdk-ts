@@ -1,4 +1,6 @@
 import { createClient } from "@osdk/client";
+import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
+import { createObservableClient } from "@osdk/client/unstable-do-not-use";
 import { createPublicOauthClient } from "@osdk/oauth";
 import invariant from "tiny-invariant";
 import { $ontologyRid } from "./generatedNoCheck2/index.js";
@@ -22,3 +24,5 @@ export const $ = createClient(
   $ontologyRid,
   auth,
 );
+
+export const store: ObservableClient = createObservableClient($);

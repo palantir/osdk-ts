@@ -202,6 +202,9 @@ const archetypeRules = archetypes(
       ...INTERNAL_LIBRARY_RULES,
       skipTypes: true,
       react: true,
+      extraTsConfigCompilerOptions: {
+        "isolatedDeclarations": false,
+      },
     },
   )
   .addArchetype(
@@ -552,6 +555,7 @@ const formattedGeneratorHelper = (contents, ext) => async (context) => {
  *   commonjs?: boolean
  *   singlePackageName?: string
  *   react?: boolean
+ *   extraTsConfigCompilerOptions?: import("typescript").CompilerOptions
  * }} opts
  * @returns {Parameters<import("@monorepolint/rules")["standardTsconfig"]>[0]["options"]}
  */
@@ -578,6 +582,7 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
             }
             : {}
         ),
+        ...(opts.extraTsConfigCompilerOptions ?? {}),
       },
       include: ["./src/**/*"],
       ...(opts.customTsconfigExcludes
@@ -656,6 +661,7 @@ function minimalPackageRules(shared, options) {
  * @property { boolean } [checkApi]
  * @property { boolean } [minimalChangesOnly]
  * @property { "vite" | undefined } [framework]
+ * @property { import("typescript").CompilerOptions} [extraTsConfigCompilerOptions]
  */
 
 /**
@@ -711,6 +717,7 @@ function standardPackageRules(shared, options) {
           skipTsconfigReferences: options.skipTsconfigReferences,
           outDir: "build/esm",
           react: options.react || options.vitestEnvironment === "happy-dom",
+          extraTsConfigCompilerOptions: options.extraTsConfigCompilerOptions,
         },
       ),
     }),

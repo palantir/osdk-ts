@@ -1,0 +1,18 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["./src/index.ts", "./src/public"],
+  "out": "build/apidoc",
+  "plugin": ["typedoc-material-theme", "typedoc-plugin-missing-exports"],
+  "readme": "./docs/index.md",
+  "excludeExternals": true,
+  "externalPattern": [
+    "**/node_modules/**",
+    "**/packages/client/**",
+    "**/packages/api/**",
+  ],
+  "projectDocuments": [
+    "./docs/getting_started.md",
+  ],
+  "collapseInternalModule": true,
+  "groupOrder": ["Functions", "Classes", "Interfaces", "Enums", "Type aliases", "Variables", "Namespace", "Module"],
+}

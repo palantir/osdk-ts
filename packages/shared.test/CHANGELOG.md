@@ -1,5 +1,18 @@
 # @osdk/shared.test
 
+## 2.1.0-beta.31
+
+### Minor Changes
+
+- bb8b219: Use new external packages instead of the internal ones.
+
+### Patch Changes
+
+- Updated dependencies [bb8b219]
+- Updated dependencies [ee6224b]
+- Updated dependencies [5fe2c8d]
+  - @osdk/api@2.1.0-beta.31
+
 ## 2.1.0-beta.30
 
 ### Patch Changes

@@ -1,16 +1,32 @@
+import { useOsdkAction, useOsdkObject } from "@osdk/react/experimental";
 import React, { useState } from "react";
-import type { SimpleTodo } from "./useTodos.js";
+import type { $Objects } from "./generatedNoCheck2/index.js";
+import { $Actions } from "./generatedNoCheck2/index.js";
 
-export function TodoView({
+export const TodoView = React.memo(function TodoView({
   todo,
-  toggleComplete,
-  loading,
 }: {
-  todo: SimpleTodo;
-  toggleComplete: (todo: SimpleTodo) => void;
-  loading: boolean;
+  todo: $Objects.Todo.OsdkInstance;
 }) {
   const [isPending, setIsPending] = useState<boolean>(false);
+  const { isLoading, isOptimistic } = useOsdkObject(todo);
+
+  const completeTodo = useOsdkAction($Actions.completeTodo);
+  const toggleComplete = React.useCallback(
+    (todo: $Objects.Todo.OsdkInstance) => {
+      return completeTodo.applyAction(
+        { is_complete: !todo.isComplete, Todo: todo },
+        {
+          optimisticUpdate: (ctx) => {
+            ctx.updateObject(todo.$clone({
+              isComplete: !todo.isComplete,
+            }));
+          },
+        },
+      );
+    },
+    [completeTodo],
+  );
 
   async function handleClick() {
     setIsPending(true);
@@ -18,7 +34,7 @@ export function TodoView({
     setIsPending(false);
   }
 
-  const validating = isPending || loading;
+  const validating = isPending || isLoading;
 
   return (
     <div className="flex items-center mb-4" key={todo.id}>
@@ -56,12 +72,21 @@ border border-solid border-yellow-800 border-t-transparent">
             <div className="ml-2 w-4 h-4 rounded-full animate-spin shrink-0
 border border-solid border-yellow-800 border-t-transparent">
             </div>
-            <div className="ml-2 text-xs text-gray-500">(Saving)</div>
+            <SmallTextDiv>(Saving)</SmallTextDiv>
           </>
         )
         : (
           ""
         )}
+      {isOptimistic
+        ? <SmallTextDiv>(Optimistic)</SmallTextDiv>
+        : ("")}
     </div>
+  );
+});
+
+export function SmallTextDiv({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="ml-2 text-xs text-gray-500 font-normal">{children}</div>
   );
 }
