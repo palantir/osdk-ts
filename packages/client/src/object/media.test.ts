@@ -66,4 +66,23 @@ describe("media", () => {
       content: "Hello World",
     });
   });
+
+  it("reads media content as base64 successfully", async () => {
+    const result = await client(objectTypeWithAllPropertyTypes)
+      .where({ id: stubData.objectWithAllPropertyTypes1.id }).fetchPage();
+
+    const object1 = result.data[0];
+    expect(object1.mediaReference).toBeDefined();
+
+    const mediaContent = await object1?.mediaReference?.fetchAsBase64Url();
+    const encodedString = mediaContent != null
+      ? mediaContent.split("base64,")[1]
+      : "";
+    const buffer = Buffer.from(encodedString, "base64");
+    const decodedString = buffer.toString("utf-8");
+
+    expect(JSON.parse(decodedString)).toEqual({
+      content: "Hello World",
+    });
+  });
 });

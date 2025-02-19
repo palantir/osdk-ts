@@ -59,4 +59,16 @@ export class MediaReferencePropertyImpl implements Media {
       mediaType: r.mediaType,
     };
   }
+
+  public async fetchAsBase64Url(): Promise<string> {
+    const response = await this.fetchContents();
+    if (!response.ok) {
+      throw new Error(`Error fetching media contents: ${response.status}`);
+    }
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const base64String = buffer.toString("base64");
+    const mimeType = response.headers.get("content-type") || "image/jpeg";
+    return `data:${mimeType};base64,${base64String}`;
+  }
 }

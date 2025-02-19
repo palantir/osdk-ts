@@ -23,6 +23,10 @@ export interface Media {
    * Fetches content of a media reference property
    */
   fetchContents(): Promise<Response>;
+  /**
+   * Returns base64 encoded contents
+   */
+  fetchAsBase64Url(): Promise<string>;
 }
 
 /**
