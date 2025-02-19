@@ -30,14 +30,26 @@ export function buildWidgetSetManifest(
   configFiles: Record<string, WidgetConfig<ParameterConfig>>,
   bundle: Rollup.OutputBundle,
 ): WidgetSetManifest {
-  const entrypointChunks = Object.values(bundle).filter(
-    (chunk): chunk is Rollup.OutputChunk =>
-      chunk.type === "chunk" && chunk.isEntry && chunk.facadeModuleId != null,
+  const chunks = Object.values(bundle).filter(
+    (chunk): chunk is Rollup.OutputChunk => chunk.type === "chunk",
   );
-  const widgets = entrypointChunks.map((chunk) =>
+
+  // Capture CSS imports for non-entrypoint chunks, to be matched against entrypoint chunks
+  const nonEntrypointChunkCssImports = chunks.filter(
+    chunk => !chunk.isEntry && (chunk.viteMetadata?.importedCss.size ?? 0) > 0,
+  ).reduce<Record<string, string[]>>((acc, chunk) => {
+    acc[chunk.fileName] = Array.from(chunk.viteMetadata?.importedCss ?? []);
+    return acc;
+  }, {});
+
+  // Generate widget config for each entrypoint chunk
+  const widgets = chunks.filter(
+    (chunk) => chunk.isEntry && chunk.facadeModuleId != null,
+  ).map((chunk) =>
     widgetConfig(
       chunk,
       getChunkConfigFile(chunk, configFiles),
+      nonEntrypointChunkCssImports,
     )
   ).reduce<Record<string, WidgetManifestConfig>>((acc, widget) => {
     acc[widget.id] = widget;
@@ -84,8 +96,15 @@ function getChunkConfigFile(
 function widgetConfig(
   chunk: Rollup.OutputChunk,
   widgetConfig: WidgetConfig<ParameterConfig>,
+  nonEntrypointChunkCssImports: Record<string, string[]>,
 ): WidgetManifestConfig {
-  const cssFiles = Array.from(chunk.viteMetadata?.importedCss ?? []);
+  const directCssFiles = Array.from(chunk.viteMetadata?.importedCss ?? []);
+  const transitiveCssFiles = chunk.imports.flatMap((chunk) =>
+    nonEntrypointChunkCssImports[chunk] ?? []
+  );
+  const allCssFiles = Array.from(
+    new Set([...directCssFiles, ...transitiveCssFiles]),
+  );
   return {
     id: widgetConfig.id,
     name: widgetConfig.name,
@@ -94,7 +113,7 @@ function widgetConfig(
     entrypointJs: [
       { path: chunk.fileName, type: "module" },
     ],
-    entrypointCss: cssFiles.map((path) => ({
+    entrypointCss: allCssFiles.map((path) => ({
       path,
     })),
     parameters: widgetConfig.parameters,
