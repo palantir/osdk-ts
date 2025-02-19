@@ -56,6 +56,7 @@ import { checkIfClean as isGitClean, setupUser } from "./gitUtils.js";
 import { runPublish } from "./runPublish.js";
 import type { GithubContext } from "./runVersion.js";
 import { runVersion } from "./runVersion.js";
+import { simulateMinorBump } from "./simulateMinorBump.js";
 import { setupOctokit } from "./util/setupOctokit.js";
 
 async function getStdoutOrThrow(...args: Parameters<typeof getExecOutput>) {
@@ -92,7 +93,7 @@ async function getContext(
     .options({
       cwd: { type: "string", description: "Change working directory" },
       mode: {
-        choices: ["version", "publish"],
+        choices: ["version", "publish", "simulateMinorBump"],
         default: "version",
       },
       publishCmd: {
@@ -124,7 +125,7 @@ async function getContext(
         );
       }
 
-      if (argv.mode === "version" && argv.publishCmd) {
+      if (argv.publishCmd && argv.mode !== "publish") {
         throw new Error(
           "You cannot provide a publish command when running in version mode",
         );
@@ -158,7 +159,11 @@ async function getContext(
   const hasNonEmptyChangesets = changesets.some(
     (changeset) => changeset.releases.length > 0,
   );
-
+  if (args.mode === "simulateMinorBump") {
+    simulateMinorBump();
+    consola.info("Simulated minor bump");
+    return;
+  }
   if (args.mode === "version") {
     if (!hasChangesets) {
       consola.info("No changesets found; not creating PR");
