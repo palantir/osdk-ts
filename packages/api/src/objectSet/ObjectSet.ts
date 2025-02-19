@@ -18,7 +18,6 @@ import type { AggregateOpts } from "../aggregate/AggregateOpts.js";
 import type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } from "../aggregate/AggregateOptsThatErrors.js";
 import type { AggregationsResults } from "../aggregate/AggregationsResults.js";
 import type { WhereClause } from "../aggregate/WhereClause.js";
-import type { DerivedProperty } from "../derivedProperties/DerivedProperty.js";
 import type {
   AsyncIterArgs,
   Augments,
@@ -189,24 +188,6 @@ interface AsyncIter<
 interface InterfaceObjectSet<
   Q extends InterfaceDefinition,
 > extends MinimalObjectSet<Q> {
-}
-
-interface WithProperties<
-  Q extends ObjectOrInterfaceDefinition = any,
-  RDPs extends Record<string, SimplePropertyDef> = {},
-> {
-  readonly withProperties: <
-    NEW extends Record<string, SimplePropertyDef>,
-  >(
-    clause: { [K in keyof NEW]: DerivedProperty.Selector<Q, NEW[K]> },
-  ) => ObjectSet<
-    Q,
-    {
-      [NN in keyof NEW | keyof RDPs]: NN extends keyof NEW ? NEW[NN]
-        : NN extends keyof RDPs ? RDPs[NN]
-        : never;
-    }
-  >;
 }
 
 export interface ObjectSet<
@@ -385,7 +366,6 @@ interface ObjectSetCleanedTypes<
   MERGED extends ObjectOrInterfaceDefinition,
 > extends
   MinimalObjectSet<Q, D>,
-  WithProperties<Q, D>,
   Aggregate<MERGED>,
   SetArithmetic<MERGED>,
   PivotTo<MERGED>,

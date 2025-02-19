@@ -403,47 +403,6 @@ export interface DataValueWireToClient {
 }
 
 // @public (undocumented)
-export namespace DerivedProperty {
-    	// Warning: (ae-forgotten-export) The symbol "Aggregatable" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    export interface AggregateBuilder<
-    		Q extends ObjectOrInterfaceDefinition,
-    		CONSTRAINED extends boolean
-    	> extends Builder<Q, CONSTRAINED>, Aggregatable<Q> {}
-    	// Warning: (ae-forgotten-export) The symbol "Filterable" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "Pivotable" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    export interface Builder<
-    		Q extends ObjectOrInterfaceDefinition,
-    		CONSTRAINED extends boolean
-    	> extends Filterable<Q, CONSTRAINED>, Pivotable<Q, CONSTRAINED> {}
-    	// (undocumented)
-    export type Clause<Q extends ObjectOrInterfaceDefinition> = {
-        		[key: string]: Selector<Q, SimplePropertyDef>
-        	};
-    	// (undocumented)
-    export type Selector<
-    		Q extends ObjectOrInterfaceDefinition,
-    		T extends SimplePropertyDef
-    	> = (baseObjectSet: DerivedProperty.Builder<Q, false>) => SelectorResult<T>;
-    	// Warning: (ae-forgotten-export) The symbol "SimplePropertyDef" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    export type SelectorResult<T extends SimplePropertyDef> = {
-        		type: T
-        	};
-    	// Warning: (ae-forgotten-export) The symbol "Selectable" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    export interface SelectPropertyBuilder<
-    		Q extends ObjectOrInterfaceDefinition,
-    		CONSTRAINED extends boolean
-    	> extends AggregateBuilder<Q, CONSTRAINED>, Selectable<Q> {}
-}
-
-// @public (undocumented)
 export const DistanceUnitMapping: {
     	centimeter: "CENTIMETERS"
     	centimeters: "CENTIMETERS"
@@ -752,6 +711,7 @@ export interface ObjectQueryDataType<T_Target extends ObjectTypeDefinition = nev
     object: string;
 }
 
+// Warning: (ae-forgotten-export) The symbol "SimplePropertyDef" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ObjectSetCleanedTypes" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ExtractRdp" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MergeObjectSet" needs to be exported by the entry point index.d.ts
