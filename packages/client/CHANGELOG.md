@@ -1,5 +1,15 @@
 # @osdk/client
 
+## 2.1.0-rc.32
+
+### Patch Changes
+
+- 55c05f2: Remove runtime derived properties from external types.
+- Updated dependencies [55c05f2]
+  - @osdk/api@2.1.0-rc.32
+  - @osdk/generator-converters@2.1.0-rc.32
+  - @osdk/client.unstable@2.1.0-rc.32
+
 ## 2.1.0-beta.31
 
 ### Minor Changes

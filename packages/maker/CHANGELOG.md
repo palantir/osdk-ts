@@ -1,5 +1,12 @@
 # @osdk/maker
 
+## 0.9.0-rc.32
+
+### Patch Changes
+
+- Updated dependencies [55c05f2]
+  - @osdk/api@2.1.0-rc.32
+
 ## 0.9.0-beta.31
 
 ### Minor Changes
