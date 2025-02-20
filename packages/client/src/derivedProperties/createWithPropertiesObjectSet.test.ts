@@ -60,7 +60,7 @@ describe(createWithPropertiesObjectSet, () => {
 
     const clause: DerivedProperty.Clause<Employee> = {
       "derivedPropertyName": (base) =>
-        base.pivotTo("lead").aggregate("startDate:approximatePercentile", {
+        base.pivotTo("lead").aggregate("employeeId:approximatePercentile", {
           percentile: 0.5,
         }),
 
@@ -89,7 +89,7 @@ describe(createWithPropertiesObjectSet, () => {
           },
           "operation": {
             "approximatePercentile": 0.5,
-            "selectedPropertyApiName": "startDate",
+            "selectedPropertyApiName": "employeeId",
             "type": "approximatePercentile",
           },
           "type": "selection",

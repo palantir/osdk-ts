@@ -774,7 +774,7 @@ describe("ObjectSet", () => {
       const objectWithUndefinedRdp = await client(Employee).withProperties({
         "derivedPropertyName": (base) =>
           base.pivotTo("lead").selectProperty("employeeId"),
-      }).fetchOne(50036);
+      }).fetchOne(50036, { $select: ["derivedPropertyName"] });
 
       expect(objectWithUndefinedRdp.derivedPropertyName).toBeUndefined();
     });

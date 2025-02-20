@@ -18,8 +18,7 @@ export type CollectWithPropAggregations = "collectSet" | "collectList";
 
 export type BaseWithPropAggregations =
   | "approximateDistinct"
-  | "exactDistinct"
-  | "approximatePercentile";
+  | "exactDistinct";
 
 export type StringWithPropAggregateOption =
   | BaseWithPropAggregations
@@ -30,5 +29,6 @@ export type NumericWithPropAggregateOption =
   | "max"
   | "sum"
   | "avg"
+  | "approximatePercentile"
   | BaseWithPropAggregations
   | CollectWithPropAggregations;
