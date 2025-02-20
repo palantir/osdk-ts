@@ -22,6 +22,7 @@ import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkProp
 export function wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
   objectTypeWithLink: ObjectTypeFullMetadata,
   v2: boolean,
+  log?: { info: (msg: string) => void },
 ): ObjectTypeDefinition<any> {
   if (
     objectTypeWithLink.objectType
@@ -73,8 +74,9 @@ export function wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
         wirePropertyV2ToSdkPropertyDefinition(
           value,
           !(v2 && objectTypeWithLink.objectType.primaryKey === key),
+          log,
         ),
-      ]),
+      ]).filter(([key, value]) => value != null),
     ),
     spts: objectTypeWithLink.sharedPropertyTypeMapping,
     inverseSpts: invertProps(objectTypeWithLink.sharedPropertyTypeMapping),
