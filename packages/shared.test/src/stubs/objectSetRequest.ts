@@ -156,7 +156,7 @@ const derivedPropertyBodyUndefinedValue: LoadObjectSetRequestV2 = {
     type: "filter",
     where: { "field": "employeeId", "type": "eq", "value": 50036 },
   },
-  select: [],
+  select: ["derivedPropertyName"],
 };
 
 const eqSearchBody: LoadObjectSetRequestV2 = {
