@@ -189,18 +189,21 @@ export function createClientInternal(
           } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference.name:
           return {
-            createMediaReference: async (args: {
+            createMediaReference: async <
+              Q extends ObjectTypeDefinition,
+              const L extends PropertyKeys<Q>,
+            >(args: {
               data: Blob;
               fileName: string;
-              objectTypeApi: string;
-              propertyTypeApi: string;
+              objectType: Q;
+              propertyType: L;
             }) => {
-              const { data, fileName, objectTypeApi, propertyTypeApi } = args;
+              const { data, fileName, objectType, propertyType } = args;
               return await OntologiesV2.MediaReferenceProperties.upload(
                 clientCtx,
                 await clientCtx.ontologyRid,
-                objectTypeApi,
-                propertyTypeApi,
+                objectType.apiName,
+                propertyType,
                 data,
                 {
                   mediaItemPath: fileName,

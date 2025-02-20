@@ -40,9 +40,9 @@ export async function runMediaTest(): Promise<void> {
         )
           .createMediaReference({
             data: await response.blob(),
-            fileName: "test13.png",
-            objectTypeApi: MnayanOsdkMediaObject.apiName,
-            propertyTypeApi: "mediaReference",
+            fileName: "test14.png",
+            objectType: MnayanOsdkMediaObject,
+            propertyType: "mediaReference",
           });
 
         console.log("Media Reference:", mediaRef);
