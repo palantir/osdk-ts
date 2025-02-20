@@ -17,6 +17,7 @@
 import type {
   ActionDefinition,
   InterfaceDefinition,
+  MediaPropertyKeys,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -191,7 +192,7 @@ export function createClientInternal(
           return {
             createMediaReference: async <
               Q extends ObjectTypeDefinition,
-              const L extends PropertyKeys<Q>,
+              const L extends MediaPropertyKeys<Q>,
             >(args: {
               data: Blob;
               fileName: string;
@@ -203,7 +204,7 @@ export function createClientInternal(
                 clientCtx,
                 await clientCtx.ontologyRid,
                 objectType.apiName,
-                propertyType,
+                propertyType as string,
                 data,
                 {
                   mediaItemPath: fileName,

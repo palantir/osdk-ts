@@ -86,6 +86,7 @@ export type {
   InterfaceDefinition,
   InterfaceMetadata,
 } from "./ontology/InterfaceDefinition.js";
+export type { MediaPropertyKeys } from "./ontology/MediaPropertyKeys.js";
 export type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
@@ -126,5 +127,4 @@ export type {
   TimeSeriesQuery,
 } from "./timeseries/timeseries.js";
 export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
-
 export {};
