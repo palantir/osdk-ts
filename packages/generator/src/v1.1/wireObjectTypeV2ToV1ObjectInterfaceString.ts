@@ -18,6 +18,7 @@ import type {
   ObjectPropertyType,
   ObjectTypeFullMetadata,
 } from "@osdk/gateway/types";
+import { consola } from "consola";
 import { isReservedKeyword } from "../util/reservedKeywords.js";
 
 export function wireObjectTypeV2ToObjectInterfaceStringV1(
@@ -69,6 +70,9 @@ ${
       const propertyType = wirePropertyTypeV2ToTypeScriptType(
         propertyDefinition.dataType,
       );
+      if (propertyType == null) {
+        return [];
+      }
       const entries = [
         `${
           getDescriptionIfPresent(propertyDefinition.description, true)
@@ -101,14 +105,18 @@ ${
 
 function wirePropertyTypeV2ToTypeScriptType(
   property: ObjectPropertyType,
-): string {
+): string | undefined {
   switch (property.type) {
     case "string":
       return "string";
     case "boolean":
       return "boolean";
     case "array":
-      return wirePropertyTypeV2ToTypeScriptType(property.subType) + "[]";
+      const subType = wirePropertyTypeV2ToTypeScriptType(property.subType);
+      if (subType == null) {
+        return undefined;
+      }
+      return subType + "[]";
     case "integer":
       return "number";
     case "attachment":
@@ -140,8 +148,8 @@ function wirePropertyTypeV2ToTypeScriptType(
     case "marking":
       return "string";
     default:
-      const _: never = property;
-      throw new Error(`Unknown property type ${property}`);
+      consola.info(`Unknown property type ${JSON.stringify(property)}`);
+      return undefined;
   }
 }
 

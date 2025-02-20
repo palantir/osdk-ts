@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
+import { consola } from "consola";
 import { mkdir, readdir, rmdir, writeFile } from "fs/promises";
 import { describe, expect, test, vi } from "vitest";
 import { compileThis } from "../util/test/compileThis.js";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles.js";
-import { TodoWireOntology } from "../util/test/TodoWireOntology.js";
+import {
+  TodoWireOntology,
+  TodoWireOntologyWithUnknownProperties,
+} from "../util/test/TodoWireOntology.js";
 import { generateClientSdkVersionOneDotOne } from "./generateClientSdkVersionOneDotOne.js";
 
 describe("generator", () => {
@@ -33,6 +37,44 @@ describe("generator", () => {
       BASE_PATH,
     );
 
+    expect(helper.minimalFiles.writeFile).toBeCalled();
+    // helper.dumpFilesToConsole();
+
+    expect(
+      helper.getFiles()[`${BASE_PATH}/index.ts`],
+    ).toMatchInlineSnapshot(`
+      "export * from '@osdk/legacy-client';
+      export { FoundryClient } from './FoundryClient';
+      export type { Ontology } from './Ontology';
+      "
+    `);
+
+    const diagnostics = compileThis(helper.getFiles(), BASE_PATH);
+    for (const q of diagnostics) {
+      console.error(
+        `${q.file?.fileName}:${q.file?.getLineStarts()} ${q.messageText}`,
+      );
+    }
+
+    // TODO: Certain errors are expected since we can't resolve the static code, but we should fix them.
+    const errors = diagnostics.filter((q) => q.code !== 2792);
+
+    expect(errors).toHaveLength(0);
+  });
+
+  test("should be able to generate a project when unknown property types are present, and logs them", async () => {
+    const mockConsola = vi.spyOn(consola, "info");
+    const helper = createMockMinimalFiles();
+    const BASE_PATH = "/foo";
+    await generateClientSdkVersionOneDotOne(
+      TodoWireOntologyWithUnknownProperties,
+      "typescript-sdk/0.0.0 typescript-sdk-generator/0.0.0",
+      helper.minimalFiles,
+      BASE_PATH,
+    );
+    expect(mockConsola).toHaveBeenCalledWith(
+      `Unknown property type {"type":"futureUnknownType"}`,
+    );
     expect(helper.minimalFiles.writeFile).toBeCalled();
     // helper.dumpFilesToConsole();
 
