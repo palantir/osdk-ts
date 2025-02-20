@@ -34,6 +34,7 @@ export function hydrateObjectSetFromRid<T extends ObjectOrInterfaceDefinition>(
   return createObjectSet(
     definition,
     client[additionalContext],
+    {},
     {
       type: "intersect",
       objectSets: [
