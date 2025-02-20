@@ -1,5 +1,11 @@
 # @osdkkit/react
 
+## 0.3.0-rc.4
+
+### Patch Changes
+
+- 66a8ee4: Adding support for react caching work.
+
 ## 0.3.0-beta.3
 
 ### Minor Changes
