@@ -20,7 +20,10 @@ import { DEBUG_CACHE_KEYS } from "../DebugFlags.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { ListCacheKey } from "./ListQuery.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
+import type { OrderByCanonicalizer } from "./Store.js";
 import type { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
+
+type CacheKeyArgs<K extends CacheKey> = [K["type"], ...K["otherKeys"]];
 
 export class CacheKeys {
   #cacheKeys = new Trie<CacheKey<string, any, any>>(false, (keys) => {
@@ -40,6 +43,7 @@ export class CacheKeys {
 
   constructor(
     whereCanonicalizer: WhereClauseCanonicalizer,
+    orderByCanonicalizer: OrderByCanonicalizer,
     onCreate: (cacheKey: CacheKey) => void,
   ) {
     this.#onCreate = onCreate;
@@ -66,24 +70,28 @@ export class CacheKeys {
     );
     this.#registerCacheKeyFactory<ListCacheKey>(
       "list",
-      (apiName, where) => {
+      (apiName, where, orderBy) => {
         if (process.env.NODE_ENV !== "production" && DEBUG_CACHE_KEYS) {
           // eslint-disable-next-line no-console
           console.debug(
-            `CacheKeys.get([list, ${apiName}, ${
-              JSON.stringify(where)
+            `CacheKeys.get([list, ${apiName}, ${JSON.stringify(where)}, ${
+              JSON.stringify(orderBy)
             }]) -- already exists? `,
             this.#cacheKeys.peekArray([
               "list",
               apiName,
               whereCanonicalizer.canonicalize(where),
+              orderByCanonicalizer.canonicalize(orderBy),
             ]) != null,
           );
         }
-        return this.#cacheKeys.lookupArray([
+        return this.#cacheKeys.lookupArray<
+          CacheKeyArgs<ListCacheKey>
+        >([
           "list",
           apiName,
           whereCanonicalizer.canonicalize(where),
+          orderByCanonicalizer.canonicalize(orderBy),
         ]) as ListCacheKey;
       },
     );

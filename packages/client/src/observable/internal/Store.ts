@@ -26,19 +26,27 @@ import { delay } from "msw";
 import { BehaviorSubject } from "rxjs";
 import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
-import type { Client } from "../../Client.js";
+import { additionalContext, type Client } from "../../Client.js";
+import type { Logger } from "../../Logger.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
 import type {
+  ObserveListOptions,
   ObserveObjectOptions,
+  OrderBy,
   Unsubscribable,
 } from "../ObservableClient.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
 import type { SubFn } from "../types.js";
 import type { CacheKey } from "./CacheKey.js";
 import { CacheKeys } from "./CacheKeys.js";
-import { type ChangedObjects, createChangedObjects } from "./ChangedObjects.js";
+import type { Canonical } from "./Canonical.js";
+import {
+  type Changes,
+  createChangedObjects,
+  DEBUG_ONLY__changesToString,
+} from "./ChangedObjects.js";
 import type { Entry } from "./Layer.js";
 import { Layer } from "./Layer.js";
 import type { ListCacheKey, ListQueryOptions } from "./ListQuery.js";
@@ -49,6 +57,7 @@ import { type OptimisticId } from "./OptimisticId.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
 import type { Query } from "./Query.js";
 import { RefCounts } from "./RefCounts.js";
+import { WeakMapWithEntries } from "./WeakMapWithEntries.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 const ACTION_DELAY = process.env.NODE_ENV === "production" ? 0 : 1000;
@@ -74,9 +83,7 @@ export interface SubjectPayload<KEY extends CacheKey> extends Entry<KEY> {
 }
 
 export interface BatchContext {
-  addedObjects: Set<ObjectCacheKey>;
-  modifiedObjects: Set<ObjectCacheKey>;
-  modifiedLists: Set<ListCacheKey>;
+  changes: Changes;
   createLayerIfNeeded: () => void;
   optimisticWrite: boolean;
 
@@ -89,10 +96,6 @@ export interface BatchContext {
   read: <K extends CacheKey<string, any, any>>(
     k: K,
   ) => Entry<K> | undefined;
-}
-
-interface ObserveOptions {
-  mode?: "offline" | "force";
 }
 
 interface UpdateOptions {
@@ -120,14 +123,38 @@ function createInitEntry(cacheKey: CacheKey): Entry<any> {
     - Data is one per layer per cache key
 */
 
+export class OrderByCanonicalizer {
+  // crappy version
+  #map = new Map<string, Record<string, "asc" | "desc" | undefined>>();
+
+  canonicalize: <T>(
+    orderBy: Record<string, "asc" | "desc" | undefined>,
+  ) => Canonical<Record<string, "asc" | "desc" | undefined>> = (orderBy) => {
+    if (this.#map.has(JSON.stringify(orderBy))) {
+      return this.#map.get(JSON.stringify(orderBy))! as Canonical<
+        Record<string, "asc" | "desc" | undefined>
+      >;
+    } else {
+      this.#map.set(JSON.stringify(orderBy), orderBy);
+      return orderBy as Canonical<Record<string, "asc" | "desc" | undefined>>;
+    }
+  };
+}
+
 export class Store {
   whereCanonicalizer: WhereClauseCanonicalizer = new WhereClauseCanonicalizer();
+  orderByCanonicalizer: OrderByCanonicalizer = new OrderByCanonicalizer();
   #truthLayer: Layer = new Layer(undefined, undefined);
   #topLayer: Layer;
   client: Client;
 
-  #queries: WeakMap<CacheKey<string, any, any>, Query<any, any, any>> =
-    new WeakMap();
+  /** @internal */
+  logger?: Logger;
+
+  #queries: WeakMapWithEntries<
+    CacheKey<string, any, any>,
+    Query<any, any, any>
+  > = new WeakMapWithEntries();
 
   #cacheKeyToSubject = new WeakMap<
     CacheKey<string, any, any>,
@@ -144,28 +171,33 @@ export class Store {
 
   constructor(client: Client) {
     this.client = client;
+    this.logger = client[additionalContext].logger;
     this.#topLayer = this.#truthLayer;
-    this.#cacheKeys = new CacheKeys(this.whereCanonicalizer, (k) => {
-      if (DEBUG_REFCOUNTS) {
-        const cacheKeyType = k.type;
-        const otherKeys = k.otherKeys;
-        // eslint-disable-next-line no-console
-        console.log(
-          `CacheKeys.onCreate(${cacheKeyType}, ${JSON.stringify(otherKeys)})`,
-        );
-
-        this.#finalizationRegistry.register(k, () => {
+    this.#cacheKeys = new CacheKeys(
+      this.whereCanonicalizer,
+      this.orderByCanonicalizer,
+      (k) => {
+        if (DEBUG_REFCOUNTS) {
+          const cacheKeyType = k.type;
+          const otherKeys = k.otherKeys;
           // eslint-disable-next-line no-console
           console.log(
-            `CacheKey Finalization(${cacheKeyType}, ${
-              JSON.stringify(otherKeys)
-            })`,
+            `CacheKeys.onCreate(${cacheKeyType}, ${JSON.stringify(otherKeys)})`,
           );
-        });
-      }
 
-      this.#refCounts.register(k);
-    });
+          this.#finalizationRegistry.register(k, () => {
+            // eslint-disable-next-line no-console
+            console.log(
+              `CacheKey Finalization(${cacheKeyType}, ${
+                JSON.stringify(otherKeys)
+              })`,
+            );
+          });
+        }
+
+        this.#refCounts.register(k);
+      },
+    );
 
     setInterval(() => {
       this.#refCounts.gc();
@@ -321,7 +353,17 @@ export class Store {
     this.#refCounts.retain(query.cacheKey);
 
     if (options.mode !== "offline") {
-      void query.revalidate(options.mode === "force");
+      query.revalidate(options.mode === "force")
+        .catch(e => {
+          // we don't want observeObject() to return a promise,
+          // so we settle for logging an error here instead of
+          // dropping it on the floor.
+          if (this.logger) {
+            this.logger.error("Unhandled error in observeObject", e);
+          } else {
+            throw e;
+          }
+        });
     }
     const sub = query.subscribe({ next: subFn });
 
@@ -334,16 +376,16 @@ export class Store {
   }
 
   public observeList<T extends ObjectTypeDefinition>(
-    apiName: T["apiName"] | T,
-    where: WhereClause<T>,
-    options: ObserveOptions & ListQueryOptions,
+    options: ObserveListOptions<T>,
     subFn: SubFn<ListPayload>,
   ): Unsubscribable {
-    if (typeof apiName !== "string") {
-      apiName = apiName.apiName;
-    }
-
-    const query = this.getListQuery(apiName, where, options);
+    // the ListQuery represents the shared state of the list
+    const query = this.getListQuery(
+      options.objectType,
+      options.where ?? {},
+      options.orderBy ?? {},
+      options,
+    );
     this.#refCounts.retain(query.cacheKey);
 
     if (options.mode !== "offline") {
@@ -380,18 +422,20 @@ export class Store {
   public getListQuery<T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,
     where: WhereClause<T>,
+    orderBy: Record<string, "asc" | "desc" | undefined>,
     opts: ListQueryOptions,
-    peek = false,
   ): ListQuery {
     if (typeof apiName !== "string") {
       apiName = apiName.apiName;
     }
 
     const canonWhere = this.whereCanonicalizer.canonicalize(where);
+    const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy);
     const listCacheKey = this.getCacheKey<ListCacheKey>(
       "list",
       apiName,
       canonWhere,
+      canonOrderBy,
     );
 
     return this.#getQuery(listCacheKey, () => {
@@ -400,6 +444,7 @@ export class Store {
         this.getSubject(listCacheKey),
         apiName,
         canonWhere,
+        canonOrderBy,
         listCacheKey,
         opts,
       );
@@ -449,7 +494,10 @@ export class Store {
   }
 
   batch = <X>(
-    { optimisticId }: { optimisticId?: OptimisticId },
+    { optimisticId, changes = createChangedObjects() }: {
+      optimisticId?: OptimisticId;
+      changes?: Changes;
+    },
     batchFn: (batchContext: BatchContext) => X,
   ): {
     batchResult: BatchContext;
@@ -462,9 +510,7 @@ export class Store {
 
     let needsLayer = optimisticId !== undefined;
     const batchContext: BatchContext = {
-      addedObjects: new Set(),
-      modifiedObjects: new Set(),
-      modifiedLists: new Set(),
+      changes,
       createLayerIfNeeded: () => {
         if (needsLayer) {
           this.#topLayer = this.#topLayer.addLayer(optimisticId);
@@ -509,6 +555,7 @@ export class Store {
     };
 
     const retVal = batchFn(batchContext);
+    this.maybeUpdateLists(changes, optimisticId);
 
     return { batchResult: batchContext, retVal: retVal };
   };
@@ -533,55 +580,102 @@ export class Store {
     // could we detect that a list WOULD include it?
   }
 
-  public maybeRevalidateLists(
-    changes: ChangedObjects,
-  ): void {
-    for (const [cacheKey, v] of this.#truthLayer.entries()) {
-      if (isListCacheKey(cacheKey)) {
-        // fixme promise
-        void this.#peekQuery(cacheKey)?.maybeRevalidate(changes);
+  public async maybeRevalidateLists(
+    changes: Changes,
+  ): Promise<void> {
+    if (process.env.NODE_ENV !== "production") {
+      // todo
+      this.logger?.trace(
+        { methodName: "maybeRevalidateList" },
+        DEBUG_ONLY__changesToString(changes),
+      );
+    }
+
+    try {
+      const promises: Array<Promise<unknown>> = [];
+      for (const [cacheKey, v] of this.#truthLayer.entries()) {
+        if (isListCacheKey(cacheKey)) {
+          const promise = this.#peekQuery(cacheKey)?.maybeRevalidate(changes);
+          if (promise) promises.push(promise);
+        }
+      }
+      await Promise.all(promises);
+    } finally {
+      if (process.env.NODE_ENV !== "production") {
+        // todo
+        this.logger?.trace(
+          { methodName: "maybeRevalidateList" },
+          "in finally",
+          DEBUG_ONLY__changesToString(changes),
+        );
       }
     }
   }
 
   public maybeUpdateLists(
-    changes: ChangedObjects,
-    optimisticId: OptimisticId,
+    changes: Changes,
+    optimisticId: OptimisticId | undefined,
   ): void {
-    for (const [cacheKey, v] of this.#truthLayer.entries()) {
+    for (const cacheKey of this.#queries.keys()) {
       if (isListCacheKey(cacheKey)) {
-        // fixme promise
-        void this.#peekQuery(cacheKey)?.maybeUpdate(changes, optimisticId);
+        if (!changes.modifiedLists.has(cacheKey)) {
+          // fixme should this return a promise?
+          this.#peekQuery(cacheKey)?.maybeUpdate(changes, optimisticId);
+        }
       }
     }
   }
 
+  /**
+   * @param apiName
+   * @param changes The changes we know about / to update
+   * @returns
+   */
   public invalidateObjectType<T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,
-  ): void {
+    changes: Changes | undefined,
+  ): Promise<unknown[]> {
     if (typeof apiName !== "string") {
       apiName = apiName.apiName;
     }
+
+    const promises: Array<Promise<unknown>> = [];
 
     for (const [cacheKey, v] of this.#truthLayer.entries()) {
       if (isListCacheKey(cacheKey, apiName)) {
-        void this.#peekQuery(cacheKey)?.revalidate(true);
+        if (!changes || !changes.modifiedLists.has(cacheKey)) {
+          const promise = this.#peekQuery(cacheKey)?.revalidate(true);
+
+          if (promise) {
+            promises.push(promise);
+            changes?.modifiedLists.add(cacheKey);
+          }
+        }
       }
     }
+
+    return Promise.all(promises);
   }
 
   public invalidateList<T extends ObjectTypeDefinition>(
-    apiName: T["apiName"] | T,
-    where: WhereClause<T>,
+    { objectType, where, orderBy }: {
+      objectType: T["apiName"] | T;
+      where?: WhereClause<T>;
+      orderBy?: OrderBy<T>;
+    },
   ): void {
-    if (typeof apiName !== "string") {
-      apiName = apiName.apiName;
+    if (typeof objectType !== "string") {
+      objectType = objectType.apiName;
     }
+
+    where = this.whereCanonicalizer.canonicalize(where ?? {});
+    orderBy = this.orderByCanonicalizer.canonicalize(orderBy ?? {});
 
     const cacheKey = this.getCacheKey<ListCacheKey>(
       "list",
-      apiName,
-      where,
+      objectType,
+      where as Canonical<WhereClause<T>>,
+      orderBy as Canonical<OrderBy<T>>,
     );
 
     void this.#peekQuery(cacheKey)?.revalidate(true);
@@ -603,18 +697,31 @@ export class Store {
     }).retVal.value!;
   }
 
+  /**
+   * Updates the internal state of a list and will create a new internal query if needed.
+   *
+   * @param apiName
+   * @param where
+   * @param orderBy
+   * @param values
+   * @param param4
+   * @param opts
+   */
   public updateList<T extends ObjectTypeDefinition>(
-    apiName: T["apiName"] | T,
-    where: WhereClause<T>,
+    {
+      objectType: apiName,
+      where,
+      orderBy,
+    }: {
+      objectType: T["apiName"] | T;
+      where: WhereClause<T>;
+      orderBy: OrderBy<T>;
+    },
     values: Osdk.Instance<T>[],
     { optimisticId }: UpdateOptions = {},
     opts: ListQueryOptions = { dedupeInterval: 0 },
   ): void {
-    if (typeof apiName !== "string") {
-      apiName = apiName.apiName;
-    }
-
-    const query = this.getListQuery(apiName, where, opts);
+    const query = this.getListQuery(apiName, where ?? {}, orderBy ?? {}, opts);
 
     this.batch({ optimisticId }, (b) => {
       query.updateList(values, false, "loaded", b);
@@ -630,7 +737,7 @@ export class Store {
   }
 }
 
-class ActionApplication {
+export class ActionApplication {
   constructor(private store: Store) {}
 
   applyAction: <Q extends ActionDefinition<any>>(
@@ -647,7 +754,7 @@ class ActionApplication {
         // The types for client get confused when we dynamically applyAction so we
         // have to deal with the `any` here and force cast it to what it should be.
         // TODO: Update the types so this doesn't happen!
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+
         const actionResults: ActionEditResponse = await this.store.client(
           action,
         ).applyAction(args as any, { $returnEdits: true });
@@ -659,19 +766,28 @@ class ActionApplication {
           // eslint-disable-next-line no-console
           console.log("action done, pausing done");
         }
-        await this.#invalidateActionEditResponse(actionResults);
+        await this._invalidateActionEditResponse(actionResults);
         return actionResults;
       } finally {
+        if (process.env.NODE_ENV !== "production") {
+          this.store.logger?.debug(
+            "optimistic action complete; remove the results",
+          );
+        }
         // make sure this happens even if the action fails
         await removeOptimisticResult();
       }
     })();
   };
 
-  #invalidateActionEditResponse = (value: ActionEditResponse) => {
+  _invalidateActionEditResponse = async (
+    value: ActionEditResponse,
+  ): Promise<ActionEditResponse> => {
     const typesToInvalidate = new Set<string>();
-    let promisesToWait: Promise<any>[] = [];
+
+    let changes: Changes | undefined;
     if (value.type === "edits") {
+      const promisesToWait: Promise<any>[] = [];
       // TODO we need an backend update for deletes
       for (const obj of value.modifiedObjects) {
         promisesToWait.push(
@@ -687,27 +803,27 @@ class ActionApplication {
         typesToInvalidate.add(obj.objectType);
       }
 
-      promisesToWait = [
-        Promise.allSettled(promisesToWait).then(() => {
-          const changes2 = this.#changesFromActionEditResponse(value);
-          this.store.maybeRevalidateLists(changes2);
-        }),
-      ];
+      await Promise.all(promisesToWait);
+
+      // the action invocation just gives back object ids,
+      // so we don't want to build the changes object
+      // until we have up to date values.
+      changes = this.#changesFromActionEditResponse(value);
+
+      // updates `changes` in place
+      await this.store.maybeRevalidateLists(changes);
     } else {
       for (const apiName of value.editedObjectTypes) {
         typesToInvalidate.add(apiName.toString());
       }
     }
 
-    return Promise.allSettled(promisesToWait).then(() => {
-      // after the single object invalidations are done we can decide if we need to updates any lists
-      for (const objectType of typesToInvalidate) {
-        // TODO make sure this covers individual object loads too
-        this.store.invalidateObjectType(objectType);
-      }
-
-      return value;
-    });
+    // after the single object invalidations are done we can decide if we need to updates any lists
+    for (const objectType of typesToInvalidate) {
+      // TODO make sure this covers individual object loads too
+      await this.store.invalidateObjectType(objectType, changes);
+    }
+    return value;
   };
 
   #changesFromActionEditResponse = (value: ActionEditResponse) => {

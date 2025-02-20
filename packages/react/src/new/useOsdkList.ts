@@ -14,14 +14,60 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk, WhereClause } from "@osdk/client";
+import type {
+  ObjectTypeDefinition,
+  Osdk,
+  PropertyKeys,
+  WhereClause,
+} from "@osdk/client";
 import type { ListPayload } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseOsdkListOptions<T extends ObjectTypeDefinition> {
-  where: WhereClause<T>;
+  /**
+   * Standard OSDK Where
+   */
+  where?: WhereClause<T>;
+
+  /**
+   *  The preferred page size for the list.
+   */
+  pageSize?: number;
+
+  /** */
+  orderBy?: {
+    [K in PropertyKeys<T>]?: "asc" | "desc";
+  };
+
+  /**
+   * Causes the list to automatically fetch more as soon as the previous page
+   * has been loaded. If a number is provided, it will continue to automatically
+   * fetch more until the list is at least that long.
+   */
+  // autoFetchMore?: boolean | number;
+
+  /**
+   * Upon a list being revalidated, this option determines how the component
+   * will be re-rendered with the data.
+   *
+   * An example to help understand the options:
+   *
+   * Suppose pageSize is 10 and we have called `fetchMore()` twice. The list is
+   * now 30 items long.
+   *
+   * Upon revalidation, we get the first 10 items of the list. The options behave
+   * as follows:
+   *
+   * - `"in-place"`: The first 10 items of the list are replaced with the new 10
+   *   items. The list is now 30 items long, but only the first 10 items are valid.
+   * - `"wait"`: The old list is returned until after the next 20 items are loaded
+   *   (which will happen automatically). The list is now 30 items long.
+   * - `"reset"`: The entire list is replaced with the new 10 items. The list is
+   *   now 10 items long.
+   */
+  // invalidationMode?: "in-place" | "wait" | "reset";
 
   /**
    * The number of milliseconds to wait after the last observed list change.
@@ -30,7 +76,16 @@ export interface UseOsdkListOptions<T extends ObjectTypeDefinition> {
    * network request if the second is within `dedupeIntervalMs`.
    */
   dedupeIntervalMs?: number;
+
+  /**
+   * If provided, the list will be considered this length for the purposes of
+   * `invalidationMode` when using the `wait` option. If not provided,
+   * the internal expectedLength will be determined by the number of times
+   * `fetchMore` has been called.
+   */
+  // expectedLength?: number | undefined;
 }
+
 export interface UseOsdkListResult<T extends ObjectTypeDefinition> {
   fetchMore: (() => Promise<unknown>) | undefined;
   data: Osdk.Instance<T>[];
@@ -49,25 +104,43 @@ export interface UseOsdkListResult<T extends ObjectTypeDefinition> {
   isOptimistic: boolean;
 }
 
+declare const process: {
+  env: {
+    NODE_ENV: "development" | "production";
+  };
+};
+
 export function useOsdkList<T extends ObjectTypeDefinition>(
-  type: T,
-  opts: UseOsdkListOptions<T>,
+  objectType: T,
+  { pageSize, orderBy, dedupeIntervalMs, where }: UseOsdkListOptions<T>,
 ): UseOsdkListResult<T> {
   const { store } = React.useContext(OsdkContext2);
-  const where = store.canonicalizeWhereClause(opts.where);
+
+  /*  We want the canonical where clause so that the use of `React.useMemo`
+      is stable. No real added cost as we canonicalize internal to
+      the ObservableClient anyway.
+   */
+  const canonWhere = store.canonicalizeWhereClause(where ?? {});
 
   const { subscribe, getSnapShot } = React.useMemo(
     () =>
-      makeExternalStore<ListPayload>((x) =>
-        store.observeList(
-          type,
-          where,
-          {
-            dedupeInterval: opts.dedupeIntervalMs ?? 2_000,
-          },
-          x,
-        ), `list ${type.apiName} ${JSON.stringify(where)}`),
-    [store, type, where, opts.dedupeIntervalMs],
+      makeExternalStore<ListPayload>(
+        (x) =>
+          store.observeList(
+            {
+              objectType,
+              where: canonWhere,
+              dedupeInterval: dedupeIntervalMs ?? 2_000,
+              pageSize,
+              orderBy,
+            },
+            x,
+          ),
+        process.env.NODE_ENV !== "production"
+          ? `list ${objectType.apiName} ${JSON.stringify(canonWhere)}`
+          : void 0,
+      ),
+    [store, objectType, canonWhere, dedupeIntervalMs],
   );
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);

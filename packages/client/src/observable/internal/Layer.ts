@@ -55,12 +55,13 @@ export class Layer {
       // we are the root, so we can't remove anything
       return this;
     }
+
     if (this.#layerId !== layerId) {
       this.#parent = this.#parent.removeLayer(layerId);
       return this;
     }
 
-    return this.#parent ?? this;
+    return this.#parent.removeLayer(layerId);
   }
 
   entries(): IterableIterator<[CacheKey<string, any, any>, Entry<any>]> {

@@ -35,12 +35,15 @@ import {
   ReplaySubject,
 } from "rxjs";
 import invariant from "tiny-invariant";
-import type { Client } from "../../Client.js";
+import { additionalContext, type Client } from "../../Client.js";
 import type { ListPayload } from "../ListPayload.js";
-import type { QueryOptions, Status } from "../ObservableClient.js";
-import type { CacheKey } from "./CacheKey.js";
+import type { CommonObserveOptions, Status } from "../ObservableClient.js";
+import {
+  type CacheKey,
+  DEBUG_ONLY__cacheKeysToString as DEBUG_ONLY__cacheKeysToString,
+} from "./CacheKey.js";
 import type { Canonical } from "./Canonical.js";
-import type { ChangedObjects } from "./ChangedObjects.js";
+import { type Changes, DEBUG_ONLY__changesToString } from "./ChangedObjects.js";
 import { Entry } from "./Layer.js";
 import { objectSortaMatchesWhereClause } from "./objectMatchesWhereClause.js";
 import type { ObjectCacheKey, ObjectEntry } from "./ObjectQuery.js";
@@ -48,9 +51,6 @@ import type { OptimisticId } from "./OptimisticId.js";
 import { Query } from "./Query.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 
-export interface ListEntry extends Entry<ListCacheKey> {}
-
-auditTime(0);
 interface ListStorageData {
   data: ObjectCacheKey[];
 }
@@ -62,12 +62,13 @@ export interface ListCacheKey extends
     ListQuery,
     [
       apiName: string,
-      whereClause: WhereClause<ObjectTypeDefinition>,
+      whereClause: Canonical<WhereClause<ObjectTypeDefinition>>,
+      orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
     ]
   > //
 {}
 
-export interface ListQueryOptions extends QueryOptions {
+export interface ListQueryOptions extends CommonObserveOptions {
   pageSize?: number;
 }
 
@@ -87,12 +88,14 @@ export class ListQuery extends Query<
   #nextPageToken?: string;
   #pendingPageFetch?: Promise<unknown>;
   #toRelease: Set<ObjectCacheKey> = new Set();
+  #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
 
   constructor(
     store: Store,
     subject: Observable<SubjectPayload<ListCacheKey>>,
-    type: string,
+    objectType: string,
     whereClause: Canonical<WhereClause<ObjectTypeDefinition>>,
+    orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>,
     cacheKey: ListCacheKey,
     opts: ListQueryOptions,
   ) {
@@ -101,11 +104,22 @@ export class ListQuery extends Query<
       subject,
       opts,
       cacheKey,
+      process.env.NODE_ENV !== "production"
+        ? (
+          store.client[additionalContext].logger?.child({}, {
+            msgPrefix: `ListQuery<${
+              cacheKey.otherKeys.map(x => JSON.stringify(x)).join(", ")
+            }>`,
+          })
+        )
+        : undefined,
     );
 
     this.#client = store.client;
-    this.#type = type;
+    this.#type = objectType;
     this.#whereClause = whereClause;
+    this.#orderBy = orderBy;
+
     observeOn(asyncScheduler);
   }
 
@@ -223,6 +237,13 @@ export class ListQuery extends Query<
     const { data, nextPageToken } = await objectSet.fetchPage({
       $nextPageToken: this.#nextPageToken,
       $pageSize: this.options.pageSize,
+      // For now this keeps the shared test code from falling apart
+      // but shouldn't be needed ideally
+      ...(Object.keys(this.#orderBy).length > 0
+        ? {
+          $orderBy: this.#orderBy,
+        }
+        : {}),
     });
 
     if (signal?.aborted) {
@@ -246,17 +267,18 @@ export class ListQuery extends Query<
   /**
    * Caller is responsible for removing the layer
    *
-   * @param changedObjects
+   * @param changes
    * @param optimisticId
    * @returns
    */
   maybeUpdate(
-    changedObjects: ChangedObjects,
-    optimisticId: OptimisticId,
+    changes: Changes,
+    optimisticId: OptimisticId | undefined,
   ): boolean {
     let needsRevalidation = false;
     const objectsToInsert: Osdk.Instance<ObjectTypeDefinition>[] = [];
-    for (const [type, objects] of changedObjects.addedObjects.associations()) {
+    // WE NEED TO DEAL WITH MODIFIED OBJECTS STILL
+    for (const [type, objects] of changes.addedObjects.associations()) {
       if (this.cacheKey.otherKeys[0] !== type) {
         continue;
       }
@@ -288,10 +310,7 @@ export class ListQuery extends Query<
     needsRevalidation ||= objectsToInsert.length > 0;
 
     if (objectsToInsert.length > 0) {
-      // for now we are not doing sorting which makes life easy :)
-      // FIXME
-
-      this.store.batch({ optimisticId }, (batch) => {
+      this.store.batch({ optimisticId, changes }, (batch) => {
         this.updateList(
           objectsToInsert,
           true,
@@ -304,33 +323,47 @@ export class ListQuery extends Query<
     return needsRevalidation;
   }
 
-  maybeRevalidate(
-    changedObjects: ChangedObjects,
-  ): Promise<unknown> {
-    let needsRevalidation = false;
-    for (const [type, objects] of changedObjects.addedObjects.associations()) {
-      if (this.cacheKey.otherKeys[0] !== type) {
-        continue;
-      }
+  async maybeRevalidate(
+    changes: Changes,
+  ): Promise<void> {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.trace(
+        { methodName: "maybeRevalidate" },
+        DEBUG_ONLY__changesToString(changes),
+      );
+    }
+    try {
+      let needsRevalidation = false;
+      for (const [type, objects] of changes.addedObjects.associations()) {
+        if (this.cacheKey.otherKeys[0] !== type) {
+          continue;
+        }
 
-      for (const obj of objects) {
-        // sorta match means it used a filter we cannot use on the frontend
-        const sortaMatch = objectSortaMatchesWhereClause(
-          obj,
-          this.#whereClause,
-          false,
-        );
-        if (sortaMatch) {
-          needsRevalidation = true;
+        for (const obj of objects) {
+          // sorta match means it used a filter we cannot use on the frontend
+          const sortaMatch = objectSortaMatchesWhereClause(
+            obj,
+            this.#whereClause,
+            false,
+          );
+          if (sortaMatch) {
+            needsRevalidation = true;
+          }
         }
       }
-    }
 
-    if (needsRevalidation) {
-      return this.revalidate(true);
+      if (needsRevalidation) {
+        changes.modifiedLists.add(this.cacheKey);
+        await this.revalidate(true);
+      }
+    } finally {
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.trace(
+          { methodName: "maybeRevalidate" },
+          "in finally",
+        );
+      }
     }
-
-    return Promise.resolve();
   }
 
   updateList(
@@ -380,6 +413,46 @@ export class ListQuery extends Query<
       ];
     }
 
+    if (Object.keys(this.#orderBy).length > 0) {
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.info({ methodName: "updateList" }, "Sorting entries");
+      }
+      const sortFns = Object.entries(this.#orderBy).map(([key, order]) => {
+        return (
+          a: Osdk.Instance<ObjectTypeDefinition, never, any, {}> | undefined,
+          b: Osdk.Instance<ObjectTypeDefinition, never, any, {}> | undefined,
+        ): number => {
+          const aValue = a?.[key];
+          const bValue = b?.[key];
+
+          if (aValue == null && bValue == null) {
+            return 0;
+          }
+          if (aValue == null) {
+            return 1;
+          }
+          if (bValue == null) {
+            return -1;
+          }
+          const m = order === "asc" ? -1 : 1;
+          return aValue < bValue ? m : aValue > bValue ? -m : 0;
+        };
+      });
+
+      objectCacheKeys = objectCacheKeys.sort((a, b) => {
+        for (const sortFn of sortFns) {
+          const ret = sortFn(
+            batch.read(a)?.value,
+            batch.read(b)?.value,
+          );
+          if (ret !== 0) {
+            return ret;
+          }
+        }
+        return 0;
+      });
+    }
+
     return this.writeToStore({ data: objectCacheKeys }, status, batch);
   }
 
@@ -388,6 +461,13 @@ export class ListQuery extends Query<
     status: Status,
     batch: BatchContext,
   ): Entry<ListCacheKey> {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.trace(
+        { methodName: "writeToStore" },
+        "",
+        DEBUG_ONLY__cacheKeysToString(data.data),
+      );
+    }
     const entry = batch.read(this.cacheKey);
 
     if (entry && deepEqual(data, entry.value)) {
@@ -395,8 +475,7 @@ export class ListQuery extends Query<
     }
 
     const ret = batch.write(this.cacheKey, data, status);
-    batch.modifiedLists.add(this.cacheKey);
-
+    batch.changes.modifiedLists.add(this.cacheKey);
     return ret;
   }
 
