@@ -23,11 +23,7 @@ import type {
 } from "rxjs";
 import { additionalContext } from "../../Client.js";
 import type { Logger } from "../../Logger.js";
-import type {
-  CommonObserveOptions,
-  Status,
-  Unsubscribable,
-} from "../ObservableClient.js";
+import type { CommonObserveOptions, Status } from "../ObservableClient.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Entry } from "./Layer.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
@@ -82,7 +78,7 @@ export abstract class Query<
 
   public subscribe(
     observer: Partial<Observer<PAYLOAD>>,
-  ): Unsubscribable {
+  ): Subscription {
     this.#connectable ??= this._createConnectable(this.#subject);
     this.#subscription = this.#connectable.connect();
     return this.#connectable.subscribe(observer);

@@ -84,6 +84,8 @@ export interface UseOsdkListOptions<T extends ObjectTypeDefinition> {
    * `fetchMore` has been called.
    */
   // expectedLength?: number | undefined;
+
+  streamUpdates?: boolean;
 }
 
 export interface UseOsdkListResult<T extends ObjectTypeDefinition> {
@@ -112,7 +114,8 @@ declare const process: {
 
 export function useOsdkList<T extends ObjectTypeDefinition>(
   objectType: T,
-  { pageSize, orderBy, dedupeIntervalMs, where }: UseOsdkListOptions<T>,
+  { pageSize, orderBy, dedupeIntervalMs, where, streamUpdates }:
+    UseOsdkListOptions<T>,
 ): UseOsdkListResult<T> {
   const { store } = React.useContext(OsdkContext2);
 
@@ -126,16 +129,14 @@ export function useOsdkList<T extends ObjectTypeDefinition>(
     () =>
       makeExternalStore<ListPayload>(
         (x) =>
-          store.observeList(
-            {
-              objectType,
-              where: canonWhere,
-              dedupeInterval: dedupeIntervalMs ?? 2_000,
-              pageSize,
-              orderBy,
-            },
-            x,
-          ),
+          store.observeList({
+            objectType,
+            where: canonWhere,
+            dedupeInterval: dedupeIntervalMs ?? 2_000,
+            pageSize,
+            orderBy,
+            streamUpdates,
+          }, x),
         process.env.NODE_ENV !== "production"
           ? `list ${objectType.apiName} ${JSON.stringify(canonWhere)}`
           : void 0,

@@ -18,6 +18,7 @@ function TodoList({ where, heading }: TodoListProps) {
     orderBy: {
       title: "asc",
     },
+    streamUpdates: true,
   });
 
   if (!data && isLoading) {

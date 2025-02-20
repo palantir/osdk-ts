@@ -17,6 +17,7 @@
 import type {
   ActionDefinition,
   ActionEditResponse,
+  ObjectSet,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
@@ -393,6 +394,97 @@ export class Store {
     }
     const sub = query.subscribe({ next: subFn });
 
+    if (options.streamUpdates) {
+      const miniDef = {
+        type: "object",
+        apiName: (typeof options.objectType === "string"
+          ? options.objectType
+          : options.objectType.apiName),
+      } as T;
+      let objectSet: ObjectSet<T> = this.client(miniDef);
+      if (options.where) {
+        objectSet = objectSet.where(options.where ?? {});
+      }
+      const store = this;
+      const websocketSubscription = objectSet.subscribe({
+        onChange({ object, state }) {
+          if (process.env.NODE_ENV !== "production") {
+            store.logger?.debug(
+              { methodName: "onError" },
+              "updates",
+              state,
+              object,
+            );
+          }
+
+          const cacheKey = store.getCacheKey<ObjectCacheKey>(
+            "object",
+            object.$objectType,
+            object.$primaryKey,
+          );
+          const type = store.#peekQuery(cacheKey) == null
+            ? "addedObjects"
+            : "modifiedObjects";
+
+          const changes = createChangedObjects();
+          changes[type].set(
+            object.$objectType,
+            object,
+          );
+
+          if (state === "ADDED_OR_UPDATED") {
+            // todo, can we do the update without
+            // the extra invalidation? maybe a flag to updateObject
+            store.updateObject(
+              object.$objectType,
+              object,
+            );
+            store.maybeRevalidateLists(changes).catch(err => {
+              // eslint-disable-next-line no-console
+              console.error("Unhandled error in maybeRevalidateLists", err);
+            });
+          }
+        },
+
+        onError(errors) {
+          if (process.env.NODE_ENV !== "production") {
+            store.logger?.info(
+              { methodName: "onError" },
+              "subscription errors",
+              errors,
+            );
+          }
+        },
+
+        onOutOfDate() {
+          if (process.env.NODE_ENV !== "production") {
+            store.logger?.info(
+              { methodName: "onOutOfDate" },
+            );
+          }
+        },
+
+        onSuccessfulSubscription() {
+          if (process.env.NODE_ENV !== "production") {
+            store.logger?.info(
+              { methodName: "onSuccessfulSubscription" },
+            );
+          }
+        },
+      });
+
+      sub.add(() => {
+        if (process.env.NODE_ENV !== "production") {
+          store.logger?.info(
+            { methodName: "observeList" },
+            "Unsubscribing from websocket",
+          );
+        }
+
+        websocketSubscription.unsubscribe();
+      });
+    }
+
     return {
       unsubscribe: () => {
         sub.unsubscribe();
@@ -638,6 +730,12 @@ export class Store {
     if (typeof apiName !== "string") {
       apiName = apiName.apiName;
     }
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.info(
+        { methodName: "invalidateObjectType" },
+        changes ? DEBUG_ONLY__changesToString(changes) : void 0,
+      );
+    }
 
     const promises: Array<Promise<unknown>> = [];
 
@@ -815,14 +913,10 @@ export class ActionApplication {
     } else {
       for (const apiName of value.editedObjectTypes) {
         typesToInvalidate.add(apiName.toString());
+        await this.store.invalidateObjectType(apiName as string, changes);
       }
     }
 
-    // after the single object invalidations are done we can decide if we need to updates any lists
-    for (const objectType of typesToInvalidate) {
-      // TODO make sure this covers individual object loads too
-      await this.store.invalidateObjectType(objectType, changes);
-    }
     return value;
   };
 

@@ -66,6 +66,7 @@ export interface ObserveListOptions<Q extends ObjectTypeDefinition>
   orderBy?: OrderBy<Q>;
   invalidationMode?: "in-place" | "wait" | "reset";
   expectedLength?: number;
+  streamUpdates?: boolean;
 }
 
 export interface ObservableClient {

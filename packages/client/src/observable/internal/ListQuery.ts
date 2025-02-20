@@ -123,6 +123,10 @@ export class ListQuery extends Query<
     observeOn(asyncScheduler);
   }
 
+  get canonicalWhere(): Canonical<WhereClause<ObjectTypeDefinition>> {
+    return this.#whereClause;
+  }
+
   protected _createConnectable(
     subject: Observable<SubjectPayload<ListCacheKey>>,
   ): Connectable<ListPayload> {
@@ -327,7 +331,7 @@ export class ListQuery extends Query<
     changes: Changes,
   ): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.trace(
+      this.logger?.info(
         { methodName: "maybeRevalidate" },
         DEBUG_ONLY__changesToString(changes),
       );
@@ -339,16 +343,43 @@ export class ListQuery extends Query<
           continue;
         }
 
+        let strictMatches = 0;
         for (const obj of objects) {
-          // sorta match means it used a filter we cannot use on the frontend
-          const sortaMatch = objectSortaMatchesWhereClause(
+          // if its a strict match we can just insert it into place
+          const strictMatch = objectSortaMatchesWhereClause(
             obj,
             this.#whereClause,
-            false,
+            true,
           );
-          if (sortaMatch) {
-            needsRevalidation = true;
+
+          if (strictMatch) {
+            strictMatches++;
+          } else {
+            // sorta match means it used a filter we cannot use on the frontend
+            const sortaMatch = objectSortaMatchesWhereClause(
+              obj,
+              this.#whereClause,
+              false,
+            );
+            if (sortaMatch) {
+              needsRevalidation = true;
+            }
           }
+        }
+
+        if (strictMatches === objects.length) {
+          if (process.env.NODE_ENV !== "production") {
+            this.logger?.info(
+              { methodName: "maybeRevalidate" },
+              `All objects were strict matches. Updating list`,
+            );
+          }
+          // just append
+          this.store.batch({}, (batch) => {
+            this.updateList(objects, true, "loaded", batch);
+          });
+        } else {
+          needsRevalidation = true;
         }
       }
 
@@ -452,6 +483,16 @@ export class ListQuery extends Query<
         return 0;
       });
     }
+
+    const visited = new Set<ObjectCacheKey>();
+    objectCacheKeys = objectCacheKeys.filter((key) => {
+      batch.read(key);
+      if (visited.has(key)) {
+        return false;
+      }
+      visited.add(key);
+      return true;
+    });
 
     return this.writeToStore({ data: objectCacheKeys }, status, batch);
   }

@@ -1329,8 +1329,9 @@ describe(Store, () => {
           .resolve(createdObjectD);
 
         // this order matters!
-        const plainList = mockClient.mockFetchPageOnce<Todo>();
-        const orderedList = mockClient.mockFetchPageOnce<Todo>();
+        // but now we don't need them because we just update lists instead of revalidate when we can
+        // const plainList = mockClient.mockFetchPageOnce<Todo>();
+        // const orderedList = mockClient.mockFetchPageOnce<Todo>();
 
         mockedApplyAction.resolve({
           addedObjects: [
@@ -1347,24 +1348,24 @@ describe(Store, () => {
           ],
         });
 
-        plainList.resolve({
-          nextPageToken: undefined,
-          totalCount: "4",
-          data: [fauxObjectB, fauxObjectC, modifiedObjectA, createdObjectD],
-        });
+        // plainList.resolve({
+        //   nextPageToken: undefined,
+        //   totalCount: "4",
+        //   data: [fauxObjectB, fauxObjectC, modifiedObjectA, createdObjectD],
+        // });
 
-        orderedList.resolve({
-          nextPageToken: undefined,
-          totalCount: "4",
-          data: [modifiedObjectA, fauxObjectC, createdObjectD],
-        });
+        // orderedList.resolve({
+        //   nextPageToken: undefined,
+        //   totalCount: "4",
+        //   data: [modifiedObjectA, fauxObjectC, createdObjectD],
+        // });
 
         await actionPromise;
 
         await waitForCall(subListUnordered, 1);
         expectSingleListCallAndClear(subListUnordered, [
           fauxObjectB,
-          fauxObjectC,
+          // fauxObjectC,
           modifiedObjectA,
           createdObjectD,
         ], { isOptimistic: false });
@@ -1372,7 +1373,7 @@ describe(Store, () => {
         await waitForCall(subListOrdered, 1);
         expectSingleListCallAndClear(
           subListOrdered,
-          [modifiedObjectA, fauxObjectC, createdObjectD],
+          [modifiedObjectA, fauxObjectB, createdObjectD],
           { isOptimistic: false },
         );
       });
