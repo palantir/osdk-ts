@@ -25,7 +25,7 @@ export async function runWithPropertiesTest(): Promise<void> {
 
   console.log(result.data.map((x) => x.countryName));
 
-  const result2 = await client(Country_1).withProperties({
+  const result2 = client(Country_1).withProperties({
     "exactDistinctAirportStateCode": (base) =>
       base.pivotTo("stateTerritory").aggregate(
         "airportStateCode:exactDistinct",
@@ -35,13 +35,17 @@ export async function runWithPropertiesTest(): Promise<void> {
       base.pivotTo("stateTerritory").aggregate("airportStateName:collectSet", {
         "limit": 10,
       }),
-  }).fetchPage();
+  });
 
-  console.log(
-    result2.data.map((
-      x,
-    ) => [x.exactDistinctAirportStateCode, x.stateCount, x.stateNameSet]),
-  );
+  await result2.fetchPage({ $select: ["exactDistinctAirportStateCode"] });
+  await result2.fetchPageWithErrors();
+
+  console.log("Done");
+  // console.log(
+  //   result2.data.map((
+  //     x,
+  //   ) => [x.exactDistinctAirportStateCode, x.stateCount, x.stateNameSet]),
+  // );
 }
 
 void runWithPropertiesTest();

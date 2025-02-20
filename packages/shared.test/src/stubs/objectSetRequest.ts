@@ -159,6 +159,31 @@ const derivedPropertyBodyUndefinedValue: LoadObjectSetRequestV2 = {
   select: [],
 };
 
+const derivedPropertyBodyCount: LoadObjectSetRequestV2 = {
+  objectSet: {
+    objectSet: {
+      derivedProperties: {
+        derivedPropertyName: {
+          objectSet: {
+            link: "lead",
+            objectSet: { type: "methodInput" },
+            type: "searchAround",
+          },
+          operation: {
+            type: "count",
+          },
+          type: "selection",
+        },
+      },
+      objectSet: { "objectType": "Employee", "type": "base" },
+      type: "withProperties",
+    },
+    type: "filter",
+    where: { "field": "employeeId", "type": "eq", "value": 50036 },
+  },
+  select: [],
+};
+
 const eqSearchBody: LoadObjectSetRequestV2 = {
   objectSet: {
     type: "filter",
@@ -546,6 +571,9 @@ export const loadObjectSetRequestHandlers: {
   [stableStringify(subtractedObjectSet)]: [employee2, employee3],
   [stableStringify(derivedPropertyBody)]: [employee4withDerived],
   [stableStringify(derivedPropertyBodyUndefinedValue)]: [
+    employee5withUndefinedDerived,
+  ],
+  [stableStringify(derivedPropertyBodyCount)]: [
     employee5withUndefinedDerived,
   ],
   [stableStringify(eqSearchBody)]: [employee1],

@@ -78,6 +78,7 @@ const objectSetDefinitions = new WeakMap<
 export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   objectType: Q,
   clientCtx: MinimalClient,
+  derivedPropertiesWithNullability: Record<string, boolean>,
   objectSet: WireObjectSet = resolveBaseObjectSetType(objectType),
 ): ObjectSet<Q> {
   const base: ObjectSet<Q> = {
@@ -106,11 +107,16 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     ) as ObjectSet<Q>["fetchPageWithErrors"],
 
     where: (clause) => {
-      return clientCtx.objectSetFactory(objectType, clientCtx, {
-        type: "filter",
-        objectSet: objectSet,
-        where: modernToLegacyWhereClause(clause, objectType),
-      });
+      return clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        derivedPropertiesWithNullability,
+        {
+          type: "filter",
+          objectSet: objectSet,
+          where: modernToLegacyWhereClause(clause, objectType),
+        },
+      );
     },
 
     pivotTo: function<L extends LinkNames<Q>>(
@@ -120,33 +126,48 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     },
 
     union: (...objectSets) => {
-      return clientCtx.objectSetFactory(objectType, clientCtx, {
-        type: "union",
-        objectSets: [
-          objectSet,
-          ...objectSets.map(os => objectSetDefinitions.get(os)!),
-        ],
-      });
+      return clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        derivedPropertiesWithNullability,
+        {
+          type: "union",
+          objectSets: [
+            objectSet,
+            ...objectSets.map(os => objectSetDefinitions.get(os)!),
+          ],
+        },
+      );
     },
 
     intersect: (...objectSets) => {
-      return clientCtx.objectSetFactory(objectType, clientCtx, {
-        type: "intersect",
-        objectSets: [
-          objectSet,
-          ...objectSets.map(os => objectSetDefinitions.get(os)!),
-        ],
-      });
+      return clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        derivedPropertiesWithNullability,
+        {
+          type: "intersect",
+          objectSets: [
+            objectSet,
+            ...objectSets.map(os => objectSetDefinitions.get(os)!),
+          ],
+        },
+      );
     },
 
     subtract: (...objectSets) => {
-      return clientCtx.objectSetFactory(objectType, clientCtx, {
-        type: "subtract",
-        objectSets: [
-          objectSet,
-          ...objectSets.map(os => objectSetDefinitions.get(os)!),
-        ],
-      });
+      return clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        derivedPropertiesWithNullability,
+        {
+          type: "subtract",
+          objectSets: [
+            objectSet,
+            ...objectSets.map(os => objectSetDefinitions.get(os)!),
+          ],
+        },
+      );
     },
 
     asyncIter: async function*<
@@ -172,6 +193,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           objectType,
           objectSet,
           { ...args, $nextPageToken },
+          derivedPropertiesWithNullability,
         );
         $nextPageToken = result.nextPageToken;
 
@@ -199,6 +221,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
             objectSet,
             primaryKey,
           ),
+          derivedPropertiesWithNullability,
         ) as Osdk<Q>;
       }
       : undefined) as ObjectSet<Q>["fetchOne"],
@@ -258,9 +281,22 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         )!;
       }
 
+      const derivedPropertyNullability: Record<string, boolean> = {};
+
+      for (const [key, derivedProperty] of Object.entries(derivedProperties)) {
+        if (derivedProperty == null) {
+          throw new Error("Derived property definition cannot be nullish");
+        }
+        derivedPropertyNullability[key] =
+          !(derivedProperty.operation.type === "count"
+            || derivedProperty.operation.type === "exactDistinct"
+            || derivedProperty.operation.type === "approximateDistinct");
+      }
+
       return clientCtx.objectSetFactory(
         objectType,
         clientCtx,
+        derivedPropertyNullability,
         {
           type: "withProperties",
           derivedProperties: derivedProperties,
@@ -279,6 +315,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       return clientCtx.objectSetFactory(
         objectType,
         clientCtx,
+        derivedPropertiesWithNullability,
         {
           type: "searchAround",
           objectSet,

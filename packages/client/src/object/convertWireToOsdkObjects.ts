@@ -56,6 +56,7 @@ export async function convertWireToOsdkObjects(
   forceRemoveRid: boolean = false,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull: NullabilityAdherence = false,
+  derivedPropertiesWithNullability: Record<string, boolean> = {},
 ): Promise<Osdk.Instance<ObjectOrInterfaceDefinition>[]> {
   client.logger?.debug(`START convertWireToOsdkObjects()`);
 
@@ -83,7 +84,13 @@ export async function convertWireToOsdkObjects(
       // API returns interface spt names but we cache by real values
       invariantInterfacesAsViews(objectDef, ifaceDef.apiName, client);
 
-      conforming &&= isConforming(client, ifaceDef, rawObj, ifaceSelected);
+      conforming &&= isConforming(
+        client,
+        ifaceDef,
+        derivedPropertiesWithNullability,
+        rawObj,
+        ifaceSelected,
+      );
 
       reframeAsObjectInPlace(objectDef, ifaceDef.apiName, rawObj);
 
@@ -93,10 +100,20 @@ export async function convertWireToOsdkObjects(
         ifaceSelected,
       );
     } else {
-      objProps = selectedProps ?? Object.keys(objectDef.properties);
+      objProps = selectedProps
+        ?? [
+          ...Object.keys(objectDef.properties),
+          ...Object.keys(derivedPropertiesWithNullability),
+        ];
     }
 
-    conforming &&= isConforming(client, objectDef, rawObj, objProps);
+    conforming &&= isConforming(
+      client,
+      objectDef,
+      derivedPropertiesWithNullability,
+      rawObj,
+      objProps,
+    );
 
     if (strictNonNull === "throw" && !conforming) {
       throw new Error(
@@ -130,6 +147,7 @@ export async function convertWireToOsdkObjects2(
     InterfaceTypeApiName,
     InterfaceToObjectTypeMappings
   > = {},
+  derivedPropertiesWithNullability: Record<string, boolean> = {},
 ): Promise<Osdk.Instance<ObjectOrInterfaceDefinition>[]> {
   client.logger?.debug(`START convertWireToOsdkObjects2()`);
 
@@ -170,10 +188,20 @@ export async function convertWireToOsdkObjects2(
 
       objProps = ifaceSelected;
     } else {
-      objProps = selectedProps ?? Object.keys(objectDef.properties);
+      objProps = selectedProps
+        ?? [
+          ...Object.keys(objectDef.properties),
+          ...Object.keys(derivedPropertiesWithNullability),
+        ];
     }
 
-    conforming &&= isConforming(client, objectDef, rawObj, objProps);
+    conforming &&= isConforming(
+      client,
+      objectDef,
+      derivedPropertiesWithNullability,
+      rawObj,
+      objProps,
+    );
 
     if (strictNonNull === "throw" && !conforming) {
       throw new Error(
@@ -246,11 +274,19 @@ function isConforming(
   def:
     | InterfaceMetadata
     | ObjectMetadata,
+  derivedPropertiesWithNullability: Record<string, boolean>,
   obj: OntologyObjectV2,
   propsToCheck: readonly string[],
 ) {
-  for (const propName of propsToCheck) {
-    if (def.properties[propName].nullable === false && obj[propName] == null) {
+  for (
+    const propName of propsToCheck
+  ) {
+    if (
+      (propName in derivedPropertiesWithNullability
+        && !derivedPropertiesWithNullability[propName] && obj[propName] == null)
+      || (propName in def.properties
+        && def.properties[propName].nullable === false && obj[propName] == null)
+    ) {
       if (process.env.NODE_ENV !== "production") {
         client.logger?.debug(
           {

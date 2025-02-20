@@ -25,5 +25,6 @@ export type ObjectSetFactory<
 > = (
   type: Q,
   clientCtx: MinimalClient,
+  derivedPropertiesWithNullability: Record<string, boolean>,
   objectSet?: WireObjectSet,
 ) => R;

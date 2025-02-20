@@ -584,17 +584,19 @@ describe("ObjectSet", () => {
       });
     });
 
-    it("enforces a return only of correct type", () => {
-      client(Employee).withProperties({
-        // @ts-expect-error
-        "derivedPropertyName": (base) => {
-          return base.pivotTo("peeps");
-        },
-        // @ts-expect-error
-        "derivedPropertyName2": (base) => {
-          return { incorrect: "type" };
-        },
-      });
+    it.fails("enforces a return only of correct type", () => {
+      expect(
+        client(Employee).withProperties({
+          // @ts-expect-error
+          "derivedPropertyName": (base) => {
+            return base.pivotTo("peeps");
+          },
+          // @ts-expect-error
+          "derivedPropertyName2": (base) => {
+            return { incorrect: "type" };
+          },
+        }),
+      ).toThrow("Derived property definition cannot be nullish");
     });
 
     // Executed code fails since we're providing bad strings to the function
