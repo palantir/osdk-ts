@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.2.0-beta.3
+
+### Minor Changes
+
+- 761e69d: Added type safety to createMediaReference
+
+### Patch Changes
+
+- Updated dependencies [761e69d]
+  - @osdk/api@2.2.0-beta.3
+  - @osdk/generator-converters@2.2.0-beta.3
+  - @osdk/client.unstable@2.2.0-beta.3
+
 ## 2.2.0-beta.2
 
 ### Minor Changes
