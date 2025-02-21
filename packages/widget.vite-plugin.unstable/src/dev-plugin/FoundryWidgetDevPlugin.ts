@@ -22,7 +22,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import color from "picocolors";
 import sirv from "sirv";
-import type { Plugin, Rollup, ViteDevServer } from "vite";
+import type { Plugin, ViteDevServer } from "vite";
 import {
   CONFIG_FILE_SUFFIX,
   ENTRYPOINTS_PATH,
@@ -31,6 +31,7 @@ import {
   VITE_INJECTIONS_PATH,
 } from "../common/constants.js";
 import { extractWidgetConfig } from "../common/extractWidgetConfig.js";
+import { getInputHtmlEntrypoints } from "../common/getInputHtmlEntrypoints.js";
 import { standardizeFileExtension } from "../common/standardizeFileExtension.js";
 import { extractInjectedScripts } from "./extractInjectedScripts.js";
 import { getWidgetIdOverrideMap } from "./getWidgetIdOverrideMap.js";
@@ -202,23 +203,6 @@ function getLocalhostUrl(server: ViteDevServer): string {
  */
 function getFullSourcePath(source: string, importer: string): string {
   return path.resolve(path.dirname(importer), source);
-}
-
-/**
- * Get a standardize list of entrypoints from the possible Vite config formats.
- */
-function getInputHtmlEntrypoints(
-  options: Rollup.NormalizedInputOptions,
-): string[] {
-  if (Array.isArray(options.input)) {
-    return options.input;
-  }
-  if (options.input != null) {
-    return Object.values(options.input);
-  }
-  throw new Error(
-    "Widget entrypoints were not found in the expected Vite config format",
-  );
 }
 
 function printSetupPageUrl(server: ViteDevServer) {
