@@ -136,7 +136,7 @@
     "@osdk-maker-simulatedRelease",
     "@osdk-monorepo.api-extractor-simulatedRelease",
     "@osdk-monorepo.cspell-simulatedRelease",
-    "@osdk-monorepo.tool.transpile-simulatedRelease.md",
+    "@osdk-monorepo.tool.transpile-simulatedRelease",
     "@osdk-monorepo.tsconfig-simulatedRelease",
     "@osdk-oauth-simulatedRelease",
     "@osdk-react-simulatedRelease",
