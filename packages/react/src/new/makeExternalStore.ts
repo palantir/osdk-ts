@@ -30,16 +30,12 @@ export function makeExternalStore<X>(
   }
 
   function subscribe(notifyUpdate: () => void) {
-    // eslint-disable-next-line no-console
-    console.log("Subscribing", name);
     const obs = createObservation((payload) => {
       lastResult = payload;
       notifyUpdate();
     });
 
     return (): void => {
-      // eslint-disable-next-line no-console
-      console.log("Unsubscribing", name);
       obs.unsubscribe();
     };
   }

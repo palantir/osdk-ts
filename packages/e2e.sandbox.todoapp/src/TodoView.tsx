@@ -1,50 +1,37 @@
 import { useOsdkAction, useOsdkObject } from "@osdk/react/experimental";
-import React, { useState } from "react";
+import React from "react";
 import type { $Objects } from "./generatedNoCheck2/index.js";
 import { $Actions } from "./generatedNoCheck2/index.js";
+import { InlineSpinner } from "./InlineSpinner.js";
 
-export const TodoView = React.memo(function TodoView({
-  todo,
-}: {
+interface Props {
   todo: $Objects.Todo.OsdkInstance;
-}) {
-  const [isPending, setIsPending] = useState<boolean>(false);
+}
+
+export const TodoView = React.memo(function TodoView({ todo }: Props) {
   const { isLoading, isOptimistic } = useOsdkObject(todo);
 
-  const completeTodo = useOsdkAction($Actions.completeTodo);
+  const { applyAction, isPending } = useOsdkAction($Actions.completeTodo);
   const toggleComplete = React.useCallback(
-    (todo: $Objects.Todo.OsdkInstance) => {
-      return completeTodo.applyAction(
-        { is_complete: !todo.isComplete, Todo: todo },
-        {
-          optimisticUpdate: (ctx) => {
-            ctx.updateObject(todo.$clone({
-              isComplete: !todo.isComplete,
-            }));
-          },
+    () => {
+      return applyAction({
+        is_complete: !todo.isComplete,
+        Todo: todo,
+
+        $optimisticUpdate: (ctx) => {
+          ctx.updateObject(todo.$clone({
+            isComplete: !todo.isComplete,
+          }));
         },
-      );
+      });
     },
-    [completeTodo],
+    [applyAction, todo],
   );
-
-  async function handleClick() {
-    setIsPending(true);
-    await toggleComplete(todo);
-    setIsPending(false);
-  }
-
-  const validating = isPending || isLoading;
 
   return (
     <div className="flex items-center mb-4" key={todo.id}>
-      {validating
-        ? (
-          <div className="mr-2 w-4 h-4 rounded-full animate-spin shrink-0
-border border-solid border-yellow-800 border-t-transparent">
-          </div>
-        )
-        : <div className="mr-2 w-4 h-4 shrink-0"></div>}
+      <InlineSpinner isLoading={isLoading} />
+
       <input
         type="checkbox"
         id={"label-" + todo.id}
@@ -53,10 +40,10 @@ border border-solid border-yellow-800 border-t-transparent">
          disabled:opacity-50 disabled:pointer-events-none
         dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
         style={{ display: "inline-block" }}
-        checked={todo.isComplete} /* fixme */
-        onClick={handleClick}
-        aria-disabled={validating}
-        disabled={validating}
+        checked={todo.isComplete}
+        onClick={toggleComplete}
+        aria-disabled={isLoading || isPending}
+        disabled={isLoading || isPending}
         readOnly={true}
       />
 
@@ -66,18 +53,7 @@ border border-solid border-yellow-800 border-t-transparent">
       >
         {todo.title}
       </label>
-      {isPending
-        ? (
-          <>
-            <div className="ml-2 w-4 h-4 rounded-full animate-spin shrink-0
-border border-solid border-yellow-800 border-t-transparent">
-            </div>
-            <SmallTextDiv>(Saving)</SmallTextDiv>
-          </>
-        )
-        : (
-          ""
-        )}
+
       {isOptimistic
         ? <SmallTextDiv>(Optimistic)</SmallTextDiv>
         : ("")}
