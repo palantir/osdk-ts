@@ -206,6 +206,8 @@ export default tseslint.config(
       "@typescript-eslint/no-base-to-string": "off",
       // "@typescript-eslint/prefer-const": "warn",
 
+      "eslint@typescript-eslint/require-await": "off",
+
       // rules that should be enabled but I dont want a massive delta yet
       "@typescript-eslint/await-thenable": "warn",
     },
