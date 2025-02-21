@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.2.0-beta.2
+
+### Minor Changes
+
+- fccd9ac: "Allow selecting derived properties"
+
+### Patch Changes
+
+- Updated dependencies [fccd9ac]
+  - @osdk/api@2.2.0-beta.2
+  - @osdk/generator-converters@2.2.0-beta.2
+  - @osdk/client.unstable@2.2.0-beta.2
+
 ## 2.1.0-beta.31
 
 ### Minor Changes
