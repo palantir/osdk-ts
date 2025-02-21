@@ -2731,6 +2731,8 @@ importers:
         specifier: ^3.0.5
         version: 3.0.5(@types/node@22.13.1)(happy-dom@16.8.1)(jiti@2.4.2)(jsdom@20.0.3)(lightningcss@1.29.1)(msw@2.7.0(@types/node@22.13.1)(typescript@5.5.4))(terser@5.38.0)(yaml@2.7.0)
 
+  packages/docs-snippets-spec: {}
+
   packages/e2e.generated.1.1.x:
     dependencies:
       '@osdk/api':
