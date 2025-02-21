@@ -15,86 +15,44 @@
  */
 
 import type {
-  ParameterConfig,
-  WidgetConfig,
   WidgetManifestConfig,
   WidgetSetManifest,
 } from "@osdk/widget.api.unstable";
-import type { Rollup } from "vite";
-import { standardizeFileExtension } from "../common/standardizeFileExtension.js";
-import { isConfigFile } from "./isConfigFile.js";
+import type { WidgetBuildOutputs } from "./getWidgetBuildOutputs.js";
 
 export function buildWidgetSetManifest(
   widgetSetRid: string,
   widgetSetVersion: string,
-  configFiles: Record<string, WidgetConfig<ParameterConfig>>,
-  bundle: Rollup.OutputBundle,
+  widgetBuilds: WidgetBuildOutputs[],
 ): WidgetSetManifest {
-  const entrypointChunks = Object.values(bundle).filter(
-    (chunk): chunk is Rollup.OutputChunk =>
-      chunk.type === "chunk" && chunk.isEntry && chunk.facadeModuleId != null,
-  );
-  const widgets = entrypointChunks.map((chunk) =>
-    widgetConfig(
-      chunk,
-      getChunkConfigFile(chunk, configFiles),
-    )
-  ).reduce<Record<string, WidgetManifestConfig>>((acc, widget) => {
-    acc[widget.id] = widget;
-    return acc;
-  }, {});
-
   return {
     manifestVersion: "1.0.0",
     widgetSet: {
       rid: widgetSetRid,
       version: widgetSetVersion,
-      widgets,
+      widgets: Object.fromEntries(
+        widgetBuilds
+          .map(buildWidgetManifest)
+          .map((widgetManifest) => [widgetManifest.id, widgetManifest]),
+      ),
     },
   };
 }
 
-function getChunkConfigFile(
-  chunk: Rollup.OutputChunk,
-  configFiles: Record<string, WidgetConfig<ParameterConfig>>,
-): WidgetConfig<ParameterConfig> {
-  const configModuleIds = chunk.moduleIds.filter(isConfigFile);
-  if (configModuleIds.length === 0) {
-    throw new Error(
-      `No widget config files found for entrypoint ${chunk.facadeModuleId}`,
-    );
-  }
-  if (configModuleIds.length > 1) {
-    throw new Error(
-      `Multiple widget config files found for entrypoint ${chunk.facadeModuleId}`,
-    );
-  }
-
-  const standardizedSource = standardizeFileExtension(configModuleIds[0]);
-  const configFile = configFiles[standardizedSource];
-  if (configFile == null) {
-    throw new Error(
-      `No config file found for entrypoint ${chunk.facadeModuleId}`,
-    );
-  }
-
-  return configFile;
-}
-
-function widgetConfig(
-  chunk: Rollup.OutputChunk,
-  widgetConfig: WidgetConfig<ParameterConfig>,
+function buildWidgetManifest(
+  widgetBuild: WidgetBuildOutputs,
 ): WidgetManifestConfig {
-  const cssFiles = Array.from(chunk.viteMetadata?.importedCss ?? []);
+  const widgetConfig = widgetBuild.widgetConfig;
   return {
     id: widgetConfig.id,
     name: widgetConfig.name,
     description: widgetConfig.description,
     type: "workshopWidgetV1",
-    entrypointJs: [
-      { path: chunk.fileName, type: "module" },
-    ],
-    entrypointCss: cssFiles.map((path) => ({
+    entrypointJs: widgetBuild.scripts.map((script) => ({
+      path: script.src,
+      type: script.scriptType,
+    })),
+    entrypointCss: widgetBuild.stylesheets.map((path) => ({
       path,
     })),
     parameters: widgetConfig.parameters,
