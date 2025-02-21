@@ -142,7 +142,7 @@ export function createClientInternal(
     : never
   {
     if (o.type === "object" || o.type === "interface") {
-      return objectSetFactory(o, clientCtx) as any;
+      return objectSetFactory(o, clientCtx, {}) as any;
     } else if (o.type === "action") {
       return new ActionInvoker(
         clientCtx,

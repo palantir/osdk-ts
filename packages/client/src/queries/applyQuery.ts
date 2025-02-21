@@ -174,7 +174,7 @@ async function remapQueryResponse<
         );
       }
       if (typeof responseValue === "string") {
-        return createObjectSet(def, client, {
+        return createObjectSet(def, client, {}, {
           type: "intersect",
           objectSets: [
             { type: "base", objectType: responseDataType.objectSet },

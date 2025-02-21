@@ -141,7 +141,7 @@ describe(fetchPage, () => {
       "https://foo",
       async () => "",
     );
-    const objectSet = createObjectSet(Todo, client).where({
+    const objectSet = createObjectSet(Todo, client, {}).where({
       text: "hello",
     }).where({
       id: { $gt: 2 },
@@ -174,8 +174,12 @@ describe(fetchPage, () => {
       "https://foo",
       async () => "",
     );
-    const objectSet = createObjectSet(Todo, client);
-    const objectSetWithSpecialPropertyTypes = createObjectSet(Employee, client);
+    const objectSet = createObjectSet(Todo, client, {});
+    const objectSetWithSpecialPropertyTypes = createObjectSet(
+      Employee,
+      client,
+      {},
+    );
 
     expectTypeOf(objectSet.where).toBeCallableWith({
       $and: [{ id: { $gt: 2 } }, { id: { $lte: 2 } }],

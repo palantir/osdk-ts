@@ -42,7 +42,7 @@ export function get$link(
       (linkName) => {
         const linkDef = objDef.links[linkName as keyof typeof objDef.links];
         const objectSet =
-          (client.objectSetFactory(objDef, client) as ObjectSet<any>)
+          (client.objectSetFactory(objDef, client, {}) as ObjectSet<any>)
             .where({
               [objDef.primaryKeyApiName]: rawObj.$primaryKey,
             } as WhereClause<ObjectTypeDefinition>)

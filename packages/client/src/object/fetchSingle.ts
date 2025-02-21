@@ -34,6 +34,7 @@ export async function fetchSingle<
   objectType: Q,
   args: A,
   objectSet: ObjectSet,
+  derivedPropertiesWithNullability?: Record<string, boolean>,
 ): Promise<
   A extends FetchPageArgs<Q, infer L, infer R, any, infer S>
     ? SingleOsdkResult<Q, L, R, S>
@@ -44,6 +45,7 @@ export async function fetchSingle<
     objectType,
     { ...args, $pageSize: 1 },
     objectSet,
+    derivedPropertiesWithNullability,
   );
 
   if (result.data.length !== 1 || result.nextPageToken != null) {

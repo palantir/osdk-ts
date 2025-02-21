@@ -163,6 +163,7 @@ export async function fetchPageInternal<
   objectType: Q,
   objectSet: ObjectSet,
   args: FetchPageArgs<Q, L, R, A, S> = {},
+  derivedPropertiesWithNullability: Record<string, boolean>,
 ): Promise<FetchPageResult<Q, L, R, S>> {
   if (objectType.type === "interface") {
     return await fetchInterfacePage(
@@ -177,6 +178,7 @@ export async function fetchPageInternal<
       objectType,
       args,
       objectSet,
+      derivedPropertiesWithNullability,
     ) as any; // fixme
   }
 }
@@ -193,9 +195,16 @@ export async function fetchPageWithErrorsInternal<
   objectType: Q,
   objectSet: ObjectSet,
   args: FetchPageArgs<Q, L, R, A, S> = {},
+  derivedPropertiesWithNullability: Record<string, boolean>,
 ): Promise<Result<FetchPageResult<Q, L, R, S>>> {
   try {
-    const result = await fetchPageInternal(client, objectType, objectSet, args);
+    const result = await fetchPageInternal(
+      client,
+      objectType,
+      objectSet,
+      args,
+      derivedPropertiesWithNullability,
+    );
     return { value: result };
   } catch (e) {
     if (e instanceof Error) {
@@ -223,8 +232,15 @@ export async function fetchPage<
   objectType: Q,
   args: FetchPageArgs<Q, L, R, any, S>,
   objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
+  derivedPropertiesWithNullability: Record<string, boolean> = {},
 ): Promise<FetchPageResult<Q, L, R, S>> {
-  return fetchPageInternal(client, objectType, objectSet, args);
+  return fetchPageInternal(
+    client,
+    objectType,
+    objectSet,
+    args,
+    derivedPropertiesWithNullability,
+  );
 }
 
 /** @internal */
@@ -238,8 +254,15 @@ export async function fetchPageWithErrors<
   objectType: Q,
   args: FetchPageArgs<Q, L, R, any, S>,
   objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
+  derivedPropertiesWithNullability: Record<string, boolean>,
 ): Promise<Result<FetchPageResult<Q, L, R, S>>> {
-  return fetchPageWithErrorsInternal(client, objectType, objectSet, args);
+  return fetchPageWithErrorsInternal(
+    client,
+    objectType,
+    objectSet,
+    args,
+    derivedPropertiesWithNullability,
+  );
 }
 
 function applyFetchArgs<
@@ -283,6 +306,7 @@ export async function fetchObjectPage<
   objectType: Q,
   args: FetchPageArgs<Q, L, R, Augments, S>,
   objectSet: ObjectSet,
+  derivedPropertiesWithNullability: Record<string, boolean>,
 ): Promise<FetchPageResult<Q, L, R, S>> {
   const r = await OntologiesV2.OntologyObjectSets.load(
     addUserAgentAndRequestContextHeaders(client, objectType),
@@ -302,6 +326,8 @@ export async function fetchObjectPage<
       undefined,
       undefined,
       args.$select,
+      false,
+      derivedPropertiesWithNullability,
     ),
     nextPageToken: r.nextPageToken,
     totalCount: r.totalCount,
