@@ -82,11 +82,11 @@ export type {
   ActionDefinition,
   ActionMetadata,
 } from "./ontology/ActionDefinition.js";
+export type { FilteredPropertyKeys } from "./ontology/FilteredPropertyKeys.js";
 export type {
   InterfaceDefinition,
   InterfaceMetadata,
 } from "./ontology/InterfaceDefinition.js";
-export type { MediaPropertyKeys } from "./ontology/MediaPropertyKeys.js";
 export type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
