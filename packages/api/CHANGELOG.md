@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.2.0-beta.3
+
+### Minor Changes
+
+- 761e69d: Added type safety to createMediaReference
+
 ## 2.2.0-beta.2
 
 ### Minor Changes
