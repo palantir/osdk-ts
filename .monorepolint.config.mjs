@@ -107,6 +107,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "standardLibraries",
     [
+      "@osdk/docs-snippets-spec",
       "@osdk/foundry-config-json",
       "@osdk/generator-converters",
       "@osdk/generator-utils",
