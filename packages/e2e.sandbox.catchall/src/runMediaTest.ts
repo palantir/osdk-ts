@@ -45,6 +45,18 @@ export async function runMediaTest(): Promise<void> {
             propertyType: "mediaReference",
           });
 
+        // Won't allow property keys not of media ref type
+        const mediaRefShouldNotWork = await client(
+          __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
+        )
+          .createMediaReference({
+            data: await response.blob(),
+            fileName: "test15.png",
+            objectType: MnayanOsdkMediaObject,
+            // @ts-expect-error
+            propertyType: "path",
+          });
+
         console.log("Media Reference:", mediaRef);
         // Enable below to test creating object via non-function backed action
         /* const result = await client($Actions.createMediaObject).applyAction({

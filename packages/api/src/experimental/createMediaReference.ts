@@ -16,7 +16,7 @@
 
 import type { MediaReference } from "../object/Media.js";
 import type { FilteredPropertyKeys } from "../ontology/FilteredPropertyKeys.js";
-import type { ObjectTypeDefinition } from "../ontology/ObjectTypeDefinition.js";
+import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
 import type { Experiment } from "./Experiment.js";
 
 /**
@@ -32,7 +32,7 @@ import type { Experiment } from "./Experiment.js";
  * @returns media reference of the uploaded media item.
  */
 type createMediaReference = <
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   const L extends FilteredPropertyKeys<Q, "mediaReference">,
 >(
   args: {
