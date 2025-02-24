@@ -1,5 +1,12 @@
 # @osdk/generator-converters
 
+## 0.7.3
+
+### Patch Changes
+
+- 507ae4a: Ignore unknown properties
+  - @osdk/api@1.9.3
+
 ## 0.7.2
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @osdk/shared.net.platformapi
 
+## 0.2.2
+
+### Patch Changes
+
+- d67e753: Fix fetch functions.
+
 ## 0.2.1
 
 ### Patch Changes

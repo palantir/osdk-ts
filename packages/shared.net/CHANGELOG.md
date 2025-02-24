@@ -1,5 +1,11 @@
 # @osdk/shared.net
 
+## 1.12.3
+
+### Patch Changes
+
+- d67e753: Fix fetch functions.
+
 ## 1.12.2
 
 ### Patch Changes
