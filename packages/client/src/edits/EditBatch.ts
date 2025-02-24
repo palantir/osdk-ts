@@ -15,40 +15,43 @@
  */
 
 import type {
-  AddLinks,
+  AddLinkEdits,
   AnyEdit,
-  CreateObjects,
-  DeleteObjects,
-  RemoveLinks,
-  UpdateObjects,
+  CreateObjectEdits,
+  DeleteObjectEdits,
+  RemoveLinkEdits,
+  UpdateObjectEdits,
 } from "./types.js";
 
 export interface EditBatch<X extends AnyEdit = never> {
-  link: <L extends AddLinks<X>>(
+  link: <L extends AddLinkEdits<X>>(
     source: L["source"],
     apiName: L["apiName"],
     target: L["target"],
   ) => void;
 
-  unlink: <L extends RemoveLinks<X>>(
+  unlink: <L extends RemoveLinkEdits<X>>(
     source: L["source"],
     apiName: L["apiName"],
     target: L["target"],
   ) => void;
 
-  create: <O extends CreateObjects<X>>(
+  create: <O extends CreateObjectEdits<X>>(
     obj: O["obj"],
     properties: O["properties"],
   ) => void;
 
-  delete: <O extends DeleteObjects<X>>(
+  delete: <O extends DeleteObjectEdits<X>>(
     obj: O["obj"],
   ) => void;
 
-  update: <O extends UpdateObjects<X>>(
+  update: <O extends UpdateObjectEdits<X>>(
     obj: O["obj"],
     properties: O["properties"],
   ) => void;
 
+  /**
+   * @returns accumulated and merged list of edits
+   */
   getEdits: () => X[];
 }

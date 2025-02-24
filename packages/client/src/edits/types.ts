@@ -22,7 +22,9 @@ import type {
   PropertyKeys,
 } from "@osdk/api";
 
-export interface ObjectLocator<S extends ObjectTypeDefinition> {
+export interface ObjectLocator<
+  S extends ObjectTypeDefinition = ObjectTypeDefinition,
+> {
   apiName: CompileTimeMetadata<S>["apiName"];
   primaryKey: CompileTimeMetadata<S>["primaryKeyApiName"];
 }
@@ -51,10 +53,10 @@ export interface RemoveLink<
 
 export interface CreateObject<S extends ObjectTypeDefinition> {
   type: "createObject";
-  obj: ObjectLocator<S>;
+  obj: S;
   properties: {
-    [apiName in keyof PropertyKeys<S>]: OsdkObjectPropertyType<
-      CompileTimeMetadata<S>["properties"][apiName]
+    [P in PropertyKeys<S>]: OsdkObjectPropertyType<
+      CompileTimeMetadata<S>["properties"][P]
     >;
   };
 }
@@ -69,11 +71,11 @@ export interface UpdateObject<S extends ObjectTypeDefinition> {
   obj: ObjectLocator<S>;
   properties: {
     [
-      apiName in keyof Omit<
+      P in Exclude<
         PropertyKeys<S>,
         CompileTimeMetadata<S>["primaryKeyApiName"]
       >
-    ]: OsdkObjectPropertyType<CompileTimeMetadata<S>["properties"][apiName]>;
+    ]: OsdkObjectPropertyType<CompileTimeMetadata<S>["properties"][P]>;
   };
 }
 
@@ -84,21 +86,33 @@ export type AnyEdit =
   | DeleteObject<any>
   | UpdateObject<any>;
 
-export type AddLinks<X extends AnyEdit> = Extract<X, { type: "addLink" }>;
+export type AddLinkEdits<X extends AnyEdit> = Extract<X, { type: "addLink" }>;
 
-export type RemoveLinks<X extends AnyEdit> = Extract<X, { type: "removeLink" }>;
+export type RemoveLinkEdits<X extends AnyEdit> = Extract<
+  X,
+  { type: "removeLink" }
+>;
 
-export type CreateObjects<X extends AnyEdit> = Extract<
+export type CreateObjectEdits<X extends AnyEdit> = Extract<
   X,
   { type: "createObject" }
 >;
 
-export type DeleteObjects<X extends AnyEdit> = Extract<
+export type DeleteObjectEdits<X extends AnyEdit> = Extract<
   X,
   { type: "deleteObject" }
 >;
 
-export type UpdateObjects<X extends AnyEdit> = Extract<
+export type UpdateObjectEdits<X extends AnyEdit> = Extract<
   X,
   { type: "updateObject" }
 >;
+
+export type ObjectEdits<X extends AnyEdit> =
+  | CreateObjectEdits<X>
+  | DeleteObjectEdits<X>
+  | UpdateObjectEdits<X>;
+
+export type LinkEdits<X extends AnyEdit> =
+  | AddLinkEdits<X>
+  | RemoveLinkEdits<X>;
