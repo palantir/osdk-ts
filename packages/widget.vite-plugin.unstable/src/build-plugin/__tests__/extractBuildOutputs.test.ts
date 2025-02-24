@@ -24,13 +24,13 @@ const EXAMPLE_HTML = `
 <!DOCTYPE html>
 <html>
 <head>
-    <script src="/script1.js"></script>
+    <script src="/script1.js" type="text/javascript"></script>
     <script type="module" src="/script2.js"></script>
     <link rel="stylesheet" href="/styles.css">
     <link rel="stylesheet" href="/more-styles.css">
 </head>
 <body>
-    <script src="/script3.js"></script>
+    <script src="/script3.js" type="text/javascript"></script>
 </body>
 </html>
 `;
@@ -66,7 +66,33 @@ test("extractBuildOutputs throws error for inline scripts", () => {
     </html>
   `);
   expect(() => extractBuildOutputs("dummy/path.html")).toThrow(
-    "Inline scripts are not supported",
+    "Unexpected inline content found in Vite HTML output",
+  );
+});
+
+test("extractBuildOutputs throws error for invalid script type", () => {
+  vi.mocked(fs.readFileSync).mockReturnValue(`
+    <html>
+      <head>
+        <script src="/script.js" type="text/unknown"></script>
+      </head>
+    </html>
+  `);
+  expect(() => extractBuildOutputs("dummy/path.html")).toThrow(
+    "Invalid script type attribute found in Vite HTML output: text/unknown",
+  );
+});
+
+test("extractBuildOutputs throws error for unexpected attributes", () => {
+  vi.mocked(fs.readFileSync).mockReturnValue(`
+    <html>
+      <head>
+        <script src="/script.js" type="module" async></script>
+      </head>
+    </html>
+  `);
+  expect(() => extractBuildOutputs("dummy/path.html")).toThrow(
+    "Unexpected async attribute found in Vite HTML output",
   );
 });
 
@@ -79,7 +105,7 @@ test("extractBuildOutputs throws error for stylesheet without href", () => {
     </html>
   `);
   expect(() => extractBuildOutputs("dummy/path.html")).toThrow(
-    "Stylesheet node missing href attribute",
+    "Missing href attribute in Vite HTML output",
   );
 });
 

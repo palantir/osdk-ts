@@ -75,12 +75,14 @@ function visitNode(node: DefaultTreeAdapterTypes.Node): BuildOutput[] {
 function parseScriptNode(
   node: DefaultTreeAdapterTypes.Element,
 ): ScriptBuildOutput {
-  const srcAttribute = getAttribute(node, "src");
-  const typeAttribute = getAttribute(node, "type") as
-    | ScriptType
-    | undefined;
-  if (srcAttribute == null) {
-    throw new Error("Inline scripts are not supported");
+  assertEmptyNode(node);
+  assertAttributes(node, ["src", "type"]);
+  const srcAttribute = getAttribute(node, "src")!;
+  const typeAttribute = getAttribute(node, "type")!;
+  if (!isValidScriptType(typeAttribute)) {
+    throw new Error(
+      `Invalid script type attribute found in Vite HTML output: ${typeAttribute}`,
+    );
   }
   return {
     type: "script",
@@ -92,11 +94,45 @@ function parseScriptNode(
 function parseStylesheetNode(
   node: DefaultTreeAdapterTypes.Element,
 ): StylesheetBuildOutput {
-  const srcAttribute = getAttribute(node, "href");
-  if (srcAttribute == null) {
-    throw new Error("Stylesheet node missing href attribute");
-  }
+  assertEmptyNode(node);
+  // We don't handle media queries or other attributes on the link tag
+  assertAttributes(node, ["rel", "href"]);
+  const srcAttribute = getAttribute(node, "href")!;
   return { type: "stylesheet", src: srcAttribute };
+}
+
+function isValidScriptType(type: string): type is ScriptType {
+  return type === "text/javascript" || type === "module";
+}
+
+function assertAttributes(
+  node: DefaultTreeAdapterTypes.Element,
+  expectedAttributeNames: string[],
+): void {
+  const expectedAttributeNameSet = new Set(expectedAttributeNames);
+  const actualAttributeNames = new Set(node.attrs?.map(attr => attr.name));
+
+  actualAttributeNames.forEach(attributeName => {
+    if (!expectedAttributeNameSet.has(attributeName)) {
+      throw new Error(
+        `Unexpected ${attributeName} attribute found in Vite HTML output`,
+      );
+    }
+  });
+
+  expectedAttributeNameSet.forEach(expectedAttributeName => {
+    if (!actualAttributeNames.has(expectedAttributeName)) {
+      throw new Error(
+        `Missing ${expectedAttributeName} attribute in Vite HTML output`,
+      );
+    }
+  });
+}
+
+function assertEmptyNode(node: DefaultTreeAdapterTypes.Node): void {
+  if ("childNodes" in node && node.childNodes.length > 0) {
+    throw new Error("Unexpected inline content found in Vite HTML output");
+  }
 }
 
 function getAttribute(

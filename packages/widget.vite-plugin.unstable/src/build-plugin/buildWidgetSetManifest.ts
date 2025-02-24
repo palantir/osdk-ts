@@ -49,13 +49,17 @@ function buildWidgetManifest(
     description: widgetConfig.description,
     type: "workshopWidgetV1",
     entrypointJs: widgetBuild.scripts.map((script) => ({
-      path: script.src,
+      path: trimLeadingSlash(script.src),
       type: script.scriptType,
     })),
     entrypointCss: widgetBuild.stylesheets.map((path) => ({
-      path,
+      path: trimLeadingSlash(path),
     })),
     parameters: widgetConfig.parameters,
     events: widgetConfig.events,
   };
+}
+
+function trimLeadingSlash(path: string): string {
+  return path.startsWith("/") ? path.slice(1) : path;
 }
