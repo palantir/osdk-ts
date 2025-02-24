@@ -133,7 +133,9 @@ export abstract class Query<
         this.pendingFetch = undefined;
       });
 
-    this.logger?.warn("Returning");
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.info({ methodName: "revalidate" }, "Returning");
+    }
 
     return this.pendingFetch;
   }

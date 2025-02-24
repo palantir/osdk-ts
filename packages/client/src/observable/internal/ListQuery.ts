@@ -28,11 +28,11 @@ import {
   type Connectable,
   connectable,
   map,
-  mergeMap,
   type Observable,
   observeOn,
   of,
   ReplaySubject,
+  switchMap,
 } from "rxjs";
 import invariant from "tiny-invariant";
 import { additionalContext, type Client } from "../../Client.js";
@@ -44,9 +44,9 @@ import {
 } from "./CacheKey.js";
 import type { Canonical } from "./Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "./ChangedObjects.js";
-import { Entry } from "./Layer.js";
+import type { Entry } from "./Layer.js";
 import { objectSortaMatchesWhereClause } from "./objectMatchesWhereClause.js";
-import type { ObjectCacheKey, ObjectEntry } from "./ObjectQuery.js";
+import type { ObjectCacheKey } from "./ObjectQuery.js";
 import type { OptimisticId } from "./OptimisticId.js";
 import { Query } from "./Query.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
@@ -132,7 +132,7 @@ export class ListQuery extends Query<
   ): Connectable<ListPayload> {
     return connectable(
       subject.pipe(
-        mergeMap(listEntry => {
+        switchMap(listEntry => {
           return combineLatest({
             resolvedList: listEntry?.value?.data == null
               ? of([])
@@ -258,7 +258,7 @@ export class ListQuery extends Query<
 
     const { retVal } = this.store.batch({}, (batch) => {
       return this.updateList(
-        data,
+        this.store.updateObjects(data, batch),
         append,
         nextPageToken ? status : "loaded",
         batch,
@@ -269,82 +269,55 @@ export class ListQuery extends Query<
   }
 
   /**
-   * Caller is responsible for removing the layer
-   *
+   * Note: This method is not async because I want it to return right after it
+   *       finishes the synchronous updates. The promise that is returned
+   *       will resolve after the revalidation is complete.
    * @param changes
    * @param optimisticId
-   * @returns
+   * @returns If revalidation is needed, a promise that resolves after the
+   *          revalidation is complete. Otherwise, undefined.
    */
-  maybeUpdate(
+
+  maybeUpdateAndRevalidate = (
     changes: Changes,
     optimisticId: OptimisticId | undefined,
-  ): boolean {
-    let needsRevalidation = false;
-    const objectsToInsert: Osdk.Instance<ObjectTypeDefinition>[] = [];
-    // WE NEED TO DEAL WITH MODIFIED OBJECTS STILL
-    for (const [type, objects] of changes.addedObjects.associations()) {
-      if (this.cacheKey.otherKeys[0] !== type) {
-        continue;
-      }
-
-      for (const obj of objects) {
-        // strict match means it didn't use a filter we cannot use on the frontend
-        const strictMatch = objectSortaMatchesWhereClause(
-          obj,
-          this.#whereClause,
-          true,
-        );
-
-        if (strictMatch) {
-          objectsToInsert.push(obj);
-        } else {
-          // sorta match means it used a filter we cannot use on the frontend
-          const sortaMatch = objectSortaMatchesWhereClause(
-            obj,
-            this.#whereClause,
-            false,
-          );
-          if (sortaMatch) {
-            needsRevalidation = true;
-          }
-        }
-      }
-    }
-
-    needsRevalidation ||= objectsToInsert.length > 0;
-
-    if (objectsToInsert.length > 0) {
-      this.store.batch({ optimisticId, changes }, (batch) => {
-        this.updateList(
-          objectsToInsert,
-          true,
-          "loading",
-          batch,
-        );
-      });
-    }
-
-    return needsRevalidation;
-  }
-
-  async maybeRevalidate(
-    changes: Changes,
-  ): Promise<void> {
+  ): Promise<void> | undefined => {
     if (process.env.NODE_ENV !== "production") {
       this.logger?.info(
-        { methodName: "maybeRevalidate" },
+        { methodName: "#maybeMaybe" },
         DEBUG_ONLY__changesToString(changes),
       );
     }
-    try {
-      let needsRevalidation = false;
-      for (const [type, objects] of changes.addedObjects.associations()) {
-        if (this.cacheKey.otherKeys[0] !== type) {
-          continue;
-        }
+    if (changes.modifiedLists.has(this.cacheKey)) return;
 
-        let strictMatches = 0;
-        for (const obj of objects) {
+    try {
+      const relevantObjects: Record<"added" | "modified", {
+        all: Osdk.Instance<ObjectTypeDefinition>[];
+        strictMatches: Set<Osdk.Instance<ObjectTypeDefinition>>;
+        sortaMatches: Set<Osdk.Instance<ObjectTypeDefinition>>;
+      }> = {
+        added: {
+          all: changes.addedObjects.get(this.cacheKey.otherKeys[0]) ?? [],
+          strictMatches: new Set(),
+          sortaMatches: new Set(),
+        },
+        modified: {
+          all: changes.modifiedObjects.get(this.cacheKey.otherKeys[0]) ?? [],
+          strictMatches: new Set(),
+          sortaMatches: new Set(),
+        },
+      };
+
+      if (
+        relevantObjects.added.all.length === 0
+        && relevantObjects.modified.all.length === 0
+      ) {
+        return;
+      }
+
+      // categorize
+      for (const group of Object.values(relevantObjects)) {
+        for (const obj of group.all ?? []) {
           // if its a strict match we can just insert it into place
           const strictMatch = objectSortaMatchesWhereClause(
             obj,
@@ -353,7 +326,7 @@ export class ListQuery extends Query<
           );
 
           if (strictMatch) {
-            strictMatches++;
+            group.strictMatches.add(obj);
           } else {
             // sorta match means it used a filter we cannot use on the frontend
             const sortaMatch = objectSortaMatchesWhereClause(
@@ -362,60 +335,133 @@ export class ListQuery extends Query<
               false,
             );
             if (sortaMatch) {
+              group.sortaMatches.add(obj);
+            }
+          }
+        }
+      }
+
+      // If we got purely strict matches we can just update the list and move
+      // on with our lives. But if we got sorta matches, then we need to revalidate
+      // the list so we preemptively set it to loading to avoid thrashing the store.
+      const status = optimisticId
+          || relevantObjects.added.sortaMatches.size > 0
+          || relevantObjects.modified.sortaMatches.size > 0
+        ? "loading"
+        : "loaded";
+
+      // while we only push updates for the strict matches, we still need to
+      // trigger the list updating if some of our objects changed
+
+      // mark ourselves as updated so we don't infinite recurse.
+      changes.modifiedLists.add(this.cacheKey);
+
+      const newList: Array<ObjectCacheKey> = [];
+
+      let needsRevalidation = false;
+      this.store.batch({ optimisticId, changes }, (batch) => {
+        const curValue = batch.read(this.cacheKey);
+
+        const existingList = new Set(curValue?.value?.data);
+
+        const toAdd = new Set<Osdk.Instance<ObjectTypeDefinition>>(
+          // easy case. objects are new to the cache and they match this filter
+          relevantObjects.added.strictMatches,
+        );
+
+        const toRemove = new Set<ObjectCacheKey>();
+
+        // deal with the modified objects
+        for (const obj of relevantObjects.modified.all) {
+          if (relevantObjects.modified.strictMatches.has(obj)) {
+            const existingObjectCacheKey = this.store.getCacheKey<
+              ObjectCacheKey
+            >(
+              "object",
+              obj.$apiName,
+              obj.$primaryKey,
+            );
+
+            // full match and already there, do nothing
+            if (!existingList.has(existingObjectCacheKey)) {
+              // object is new to the list
+              toAdd.add(obj);
+            }
+            continue;
+          } else if (batch.optimisticWrite) {
+            // we aren't removing objects in optimistic mode
+            // we also don't want to trigger revalidation in optimistic mode
+            // as it should be triggered when the optimistic job is done
+            continue;
+          } else {
+            // object is no longer a strict match
+            const existingObjectCacheKey = this.store.getCacheKey<
+              ObjectCacheKey
+            >(
+              "object",
+              obj.$apiName,
+              obj.$primaryKey,
+            );
+
+            toRemove.add(existingObjectCacheKey);
+
+            if (relevantObjects.modified.sortaMatches.has(obj)) {
+              // since it might still be in the list we need to revalidate
               needsRevalidation = true;
             }
           }
         }
 
-        if (strictMatches === objects.length) {
-          if (process.env.NODE_ENV !== "production") {
-            this.logger?.info(
-              { methodName: "maybeRevalidate" },
-              `All objects were strict matches. Updating list`,
-            );
-          }
-          // just append
-          this.store.batch({}, (batch) => {
-            this.updateList(objects, true, "loaded", batch);
-          });
-        } else {
-          needsRevalidation = true;
+        for (const key of existingList) {
+          if (toRemove.has(key)) continue;
+          newList.push(key);
         }
-      }
+        for (const obj of toAdd) {
+          newList.push(
+            this.store.getCacheKey<ObjectCacheKey>(
+              "object",
+              obj.$apiName,
+              obj.$primaryKey,
+            ),
+          );
+        }
+
+        this.updateList(
+          newList,
+          /* append */ false,
+          status,
+          batch,
+        );
+      });
 
       if (needsRevalidation) {
         changes.modifiedLists.add(this.cacheKey);
-        await this.revalidate(true);
+        return this.revalidate(true).then(() => void 0); // strip return value
       }
+      return undefined;
     } finally {
       if (process.env.NODE_ENV !== "production") {
         this.logger?.trace(
-          { methodName: "maybeRevalidate" },
+          { methodName: "#maybeMaybe" },
           "in finally",
         );
       }
     }
-  }
+  };
 
   updateList(
-    values: Array<Osdk.Instance<ObjectTypeDefinition> | ObjectEntry>,
+    objectCacheKeys: Array<ObjectCacheKey>,
     append: boolean,
     status: Status,
     batch: BatchContext,
   ): Entry<ListCacheKey> {
-    // update the cache for any object that has changed
-    // and save the mapped values to return
-    let objectCacheKeys = values.map(v => {
-      if (v instanceof Entry) return v.cacheKey;
-
-      this.store.getObjectQuery(this.#type, v.$primaryKey as string | number)
-        .writeToStore(v, "loaded", batch);
-      return this.store.getCacheKey<ObjectCacheKey>(
-        "object",
-        v.$apiName,
-        v.$primaryKey,
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.trace(
+        { methodName: "updateList" },
+        `{status: ${status}}`,
+        JSON.stringify(objectCacheKeys, null, 2),
       );
-    });
+    }
 
     const existingList = batch.read(this.cacheKey);
 
@@ -423,6 +469,8 @@ export class ListQuery extends Query<
     if (!batch.optimisticWrite) {
       if (!append) {
         // we need to release all the old objects
+        // N.B. the store keeps the cache keys around for a bit so we don't
+        // need to worry about them being GC'd before we re-retain them
         for (const objectCacheKey of existingList?.value?.data ?? []) {
           this.store.release(objectCacheKey);
           this.#toRelease.delete(objectCacheKey);
@@ -435,8 +483,6 @@ export class ListQuery extends Query<
       }
     }
 
-    // EA TODO: I think we need to do more here.
-
     if (append) {
       objectCacheKeys = [
         ...existingList?.value?.data ?? [],
@@ -447,6 +493,10 @@ export class ListQuery extends Query<
     if (Object.keys(this.#orderBy).length > 0) {
       if (process.env.NODE_ENV !== "production") {
         this.logger?.info({ methodName: "updateList" }, "Sorting entries");
+        this.logger?.trace(
+          { methodName: "updateList" },
+          DEBUG_ONLY__cacheKeysToString(objectCacheKeys),
+        );
       }
       const sortFns = Object.entries(this.#orderBy).map(([key, order]) => {
         return (
@@ -505,7 +555,7 @@ export class ListQuery extends Query<
     if (process.env.NODE_ENV !== "production") {
       this.logger?.trace(
         { methodName: "writeToStore" },
-        "",
+        `{status: ${status}},`,
         DEBUG_ONLY__cacheKeysToString(data.data),
       );
     }

@@ -16,14 +16,12 @@
 
 import type {
   ActionDefinition,
-  ActionEditResponse,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
   WhereClause,
 } from "@osdk/api";
-import { delay } from "msw";
 import { BehaviorSubject } from "rxjs";
 import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
@@ -40,6 +38,7 @@ import type {
 } from "../ObservableClient.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
 import type { SubFn } from "../types.js";
+import { ActionApplication } from "./ActionApplication.js";
 import type { CacheKey } from "./CacheKey.js";
 import { CacheKeys } from "./CacheKeys.js";
 import type { Canonical } from "./Canonical.js";
@@ -48,20 +47,16 @@ import {
   createChangedObjects,
   DEBUG_ONLY__changesToString,
 } from "./ChangedObjects.js";
-import type { Entry } from "./Layer.js";
-import { Layer } from "./Layer.js";
+import { Entry, Layer } from "./Layer.js";
 import type { ListCacheKey, ListQueryOptions } from "./ListQuery.js";
 import { isListCacheKey, ListQuery } from "./ListQuery.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
 import { ObjectQuery } from "./ObjectQuery.js";
 import { type OptimisticId } from "./OptimisticId.js";
-import { runOptimisticJob } from "./OptimisticJob.js";
 import type { Query } from "./Query.js";
 import { RefCounts } from "./RefCounts.js";
 import { WeakMapWithEntries } from "./WeakMapWithEntries.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
-
-const ACTION_DELAY = process.env.NODE_ENV === "production" ? 0 : 1000;
 
 /*
     Work still to do:
@@ -70,9 +65,9 @@ const ACTION_DELAY = process.env.NODE_ENV === "production" ? 0 : 1000;
     - [x] automatic optimistic list updates
     - [x] useOsdkObjects
     - [x] imply offline for objects passed directly
-    - [ ] websocket subscriptions
+    - [x] websocket subscriptions
     - [ ] links
-    - [ ] add pagination
+    - [x] add pagination
     - [ ] sub-selection support
     - [ ] interfaces
     - [ ] setup defaults
@@ -172,7 +167,9 @@ export class Store {
 
   constructor(client: Client) {
     this.client = client;
-    this.logger = client[additionalContext].logger;
+    this.logger = client[additionalContext].logger?.child({}, {
+      msgPrefix: "Store",
+    });
     this.#topLayer = this.#truthLayer;
     this.#cacheKeys = new CacheKeys(
       this.whereCanonicalizer,
@@ -618,12 +615,12 @@ export class Store {
         const writeLayer = optimisticId
           ? this.#topLayer
           : this.#truthLayer;
-        const newValue = {
+        const newValue = new Entry(
           cacheKey,
           value,
-          lastUpdated: Date.now(),
+          Date.now(),
           status,
-        };
+        );
 
         writeLayer.set(cacheKey, newValue);
 
@@ -631,6 +628,7 @@ export class Store {
 
         if (oldTopValue !== newTopValue) {
           this.#cacheKeyToSubject.get(cacheKey)?.next({
+            // eslint-disable-next-line @typescript-eslint/no-misused-spread
             ...newValue,
             isOptimistic:
               newTopValue?.value !== this.#truthLayer.get(cacheKey)?.value,
@@ -647,7 +645,7 @@ export class Store {
     };
 
     const retVal = batchFn(batchContext);
-    this.maybeUpdateLists(changes, optimisticId);
+    void this.maybeUpdateLists(changes, optimisticId);
 
     return { batchResult: batchContext, retVal: retVal };
   };
@@ -687,7 +685,10 @@ export class Store {
       const promises: Array<Promise<unknown>> = [];
       for (const [cacheKey, v] of this.#truthLayer.entries()) {
         if (isListCacheKey(cacheKey)) {
-          const promise = this.#peekQuery(cacheKey)?.maybeRevalidate(changes);
+          const promise = this.#peekQuery(cacheKey)?.maybeUpdateAndRevalidate(
+            changes,
+            undefined,
+          );
           if (promise) promises.push(promise);
         }
       }
@@ -707,15 +708,31 @@ export class Store {
   public maybeUpdateLists(
     changes: Changes,
     optimisticId: OptimisticId | undefined,
-  ): void {
+  ): Promise<(void | undefined)[]> {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.trace(
+        { methodName: "maybeUpdateLists" },
+        DEBUG_ONLY__changesToString(changes),
+        { optimisticId },
+      );
+    }
+    if (changes.addedObjects.size === 0 && changes.modifiedObjects.size === 0) {
+      return Promise.resolve([]);
+    }
+    const promises = [];
     for (const cacheKey of this.#queries.keys()) {
       if (isListCacheKey(cacheKey)) {
         if (!changes.modifiedLists.has(cacheKey)) {
-          // fixme should this return a promise?
-          this.#peekQuery(cacheKey)?.maybeUpdate(changes, optimisticId);
+          const promise = this.#peekQuery(cacheKey)?.maybeUpdateAndRevalidate(
+            changes,
+            optimisticId,
+          );
+          if (promise) promises.push(promise);
         }
       }
     }
+
+    return Promise.all(promises);
   }
 
   /**
@@ -795,13 +812,30 @@ export class Store {
     }).retVal.value!;
   }
 
+  public updateObjects(
+    values: Array<Osdk.Instance<ObjectTypeDefinition>>,
+    batch: BatchContext,
+  ): ObjectCacheKey[] {
+    // update the cache for any object that has changed
+    // and save the mapped values to return
+    return values.map(v => {
+      return this.getObjectQuery(
+        v.$apiName,
+        v.$primaryKey as string | number,
+      )
+        .writeToStore(v, "loaded", batch).cacheKey;
+    });
+  }
+
   /**
    * Updates the internal state of a list and will create a new internal query if needed.
+   *
+   * Helper method only for tests right now. May be removed later.
    *
    * @param apiName
    * @param where
    * @param orderBy
-   * @param values
+   * @param objects
    * @param param4
    * @param opts
    */
@@ -815,14 +849,23 @@ export class Store {
       where: WhereClause<T>;
       orderBy: OrderBy<T>;
     },
-    values: Osdk.Instance<T>[],
+    objects: Osdk.Instance<T>[],
     { optimisticId }: UpdateOptions = {},
     opts: ListQueryOptions = { dedupeInterval: 0 },
   ): void {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.info(
+        { methodName: "updateList" },
+        "",
+        { optimisticId },
+      );
+    }
+
     const query = this.getListQuery(apiName, where ?? {}, orderBy ?? {}, opts);
 
-    this.batch({ optimisticId }, (b) => {
-      query.updateList(values, false, "loaded", b);
+    this.batch({ optimisticId }, (batch) => {
+      const objectCacheKeys = this.updateObjects(objects, batch);
+      query.updateList(objectCacheKeys, false, "loaded", batch);
     });
   }
 
@@ -833,103 +876,4 @@ export class Store {
   release(cacheKey: CacheKey<string, any, any>): void {
     this.#refCounts.release(cacheKey);
   }
-}
-
-export class ActionApplication {
-  constructor(private store: Store) {}
-
-  applyAction: <Q extends ActionDefinition<any>>(
-    action: Q,
-    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
-    opts?: Store.ApplyActionOptions,
-  ) => Promise<unknown> = (action, args, { optimisticUpdate } = {}) => {
-    const removeOptimisticResult = runOptimisticJob(
-      this.store,
-      optimisticUpdate,
-    );
-    return (async () => {
-      try {
-        // The types for client get confused when we dynamically applyAction so we
-        // have to deal with the `any` here and force cast it to what it should be.
-        // TODO: Update the types so this doesn't happen!
-
-        const actionResults: ActionEditResponse = await this.store.client(
-          action,
-        ).applyAction(args as any, { $returnEdits: true });
-
-        if (ACTION_DELAY > 0) {
-          // eslint-disable-next-line no-console
-          console.log("action done, pausing");
-          await delay(ACTION_DELAY);
-          // eslint-disable-next-line no-console
-          console.log("action done, pausing done");
-        }
-        await this._invalidateActionEditResponse(actionResults);
-        return actionResults;
-      } finally {
-        if (process.env.NODE_ENV !== "production") {
-          this.store.logger?.debug(
-            "optimistic action complete; remove the results",
-          );
-        }
-        // make sure this happens even if the action fails
-        await removeOptimisticResult();
-      }
-    })();
-  };
-
-  _invalidateActionEditResponse = async (
-    value: ActionEditResponse,
-  ): Promise<ActionEditResponse> => {
-    const typesToInvalidate = new Set<string>();
-
-    let changes: Changes | undefined;
-    if (value.type === "edits") {
-      const promisesToWait: Promise<any>[] = [];
-      // TODO we need an backend update for deletes
-      for (const obj of value.modifiedObjects) {
-        promisesToWait.push(
-          this.store.invalidateObject(obj.objectType, obj.primaryKey),
-        );
-      }
-
-      for (const obj of value.addedObjects) {
-        promisesToWait.push(
-          this.store.invalidateObject(obj.objectType, obj.primaryKey),
-        );
-
-        typesToInvalidate.add(obj.objectType);
-      }
-
-      await Promise.all(promisesToWait);
-
-      // the action invocation just gives back object ids,
-      // so we don't want to build the changes object
-      // until we have up to date values.
-      changes = this.#changesFromActionEditResponse(value);
-
-      // updates `changes` in place
-      await this.store.maybeRevalidateLists(changes);
-    } else {
-      for (const apiName of value.editedObjectTypes) {
-        typesToInvalidate.add(apiName.toString());
-        await this.store.invalidateObjectType(apiName as string, changes);
-      }
-    }
-
-    return value;
-  };
-
-  #changesFromActionEditResponse = (value: ActionEditResponse) => {
-    const changes = createChangedObjects();
-    for (const changeType of ["addedObjects", "modifiedObjects"] as const) {
-      for (const { objectType, primaryKey } of (value[changeType] ?? [])) {
-        const obj = this.store.getObject(objectType, primaryKey);
-        if (obj) {
-          changes[changeType].set(objectType, obj);
-        }
-      }
-    }
-    return changes;
-  };
 }

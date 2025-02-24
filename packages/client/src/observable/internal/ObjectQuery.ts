@@ -129,6 +129,13 @@ export class ObjectQuery extends Query<
     status: Status,
     batch: BatchContext,
   ): Entry<ObjectCacheKey> {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.trace(
+        { methodName: "writeToStore" },
+        `{status: ${status}},`,
+        data,
+      );
+    }
     const entry = batch.read(this.cacheKey);
 
     if (entry && deepEqual(data, entry.value)) {

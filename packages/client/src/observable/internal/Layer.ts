@@ -93,10 +93,11 @@ export class Entry<K extends CacheKey<any, any, any>> {
     cacheKey: K,
     value: K["__cacheKey"]["value"],
     lastUpdated: number,
+    status: "init" | "loading" | "loaded" | "error" = "init",
   ) {
     this.cacheKey = cacheKey;
     this.value = value;
     this.lastUpdated = lastUpdated;
-    this.status = "init";
+    this.status = status;
   }
 }

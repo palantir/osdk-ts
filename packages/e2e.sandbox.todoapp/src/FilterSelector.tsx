@@ -8,6 +8,7 @@ const whereClauses: WhereClause<Todo>[] = [
   {},
   { title: { $startsWith: "ea " } },
   { title: { $startsWith: "cool " } },
+  { isComplete: true },
 ];
 
 interface FilterSelectorProps {

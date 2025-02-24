@@ -202,8 +202,6 @@ describe(Store, () => {
       });
 
       it("rolls back to an updated real value", async () => {
-        vi.useFakeTimers();
-
         // pre-seed the cache with the "real" value
         cache.updateList({
           objectType: Employee,
@@ -233,53 +231,68 @@ describe(Store, () => {
           }, listSubFn),
         );
 
+        await waitForCall(listSubFn, 1);
         expectSingleListCallAndClear(listSubFn, employeesAsServerReturns);
 
         const optimisticEmployee = emp.$clone({ fullName: "new name" });
 
         const optimisticId = createOptimisticId();
 
+        testStage("optimistic update");
+        expect(listSubFn).not.toHaveBeenCalled();
+
         // update with an optimistic write
         cache.updateObject(Employee, optimisticEmployee, {
           optimisticId,
         });
 
+        testStage("after optimistic update");
+
         // expect optimistic write
         expectSingleObjectCallAndClear(empSubFn, optimisticEmployee);
 
         // expect optimistic write to the list
+        await waitForCall(listSubFn, 1);
         expectSingleListCallAndClear(
           listSubFn,
           [
             optimisticEmployee,
             ...employeesAsServerReturns.slice(1),
           ],
+          {
+            isOptimistic: true,
+            status: "loading",
+          },
         );
 
         // write the real update, via the earlier list definition
         const truthUpdatedEmployee = emp.$clone({
           fullName: "real update",
         });
+
+        testStage("write real update");
+
         cache.updateList(
           { objectType: Employee, where: {}, orderBy: {} },
           [truthUpdatedEmployee],
         );
 
-        // we shouldn't expect an update because the top layer has a value
-        expect(empSubFn).not.toHaveBeenCalled();
-
-        // we do get an update to the list but we still see the optimistic value
-        // for the object
-        expectSingleListCallAndClear(listSubFn, [optimisticEmployee]);
-
         // remove the optimistic write
         cache.removeLayer(optimisticId);
 
         // see the object observation get updated
-        expectSingleObjectCallAndClear(empSubFn, truthUpdatedEmployee);
+        expectSingleObjectCallAndClear(
+          empSubFn,
+          truthUpdatedEmployee,
+          "loaded",
+        );
 
         // see the list get updated
-        expectSingleListCallAndClear(listSubFn, [truthUpdatedEmployee]);
+        await waitForCall(listSubFn, 1);
+        expectSingleListCallAndClear(listSubFn, [truthUpdatedEmployee], {
+          status: "loaded",
+          isOptimistic: false,
+        });
 
         vi.useRealTimers();
       });
@@ -427,7 +440,10 @@ describe(Store, () => {
           { status: "loaded" },
         );
 
+        testStage("invalidate");
+
         cache.invalidateList({ objectType: Employee });
+        testStage("check invalidate");
 
         await waitForCall(subListFn, 1);
         expectSingleListCallAndClear(
