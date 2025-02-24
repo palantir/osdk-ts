@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
+import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { RequestHandler } from "msw";
 import { InvalidRequest, QueryNotFoundError } from "../errors.js";
 import { defaultOntology } from "../stubs/ontologies.js";

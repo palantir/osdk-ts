@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { QueryDataType, QueryTypeV2 } from "@osdk/internal.foundry.core";
+import type { QueryDataType, QueryTypeV2 } from "@osdk/foundry.ontologies";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedBase } from "./EnhancedBase.js";
 
@@ -39,8 +39,8 @@ export class EnhancedQuery extends EnhancedBase<QueryTypeV2> {
     return `${this.shortApiName}.Parameters`;
   }
 
-  get definitionIdentifier() {
-    return `${this.shortApiName}`;
+  get definitionIdentifier(): string {
+    return this.shortApiName;
   }
 
   get definitionParamsIdentifier() {

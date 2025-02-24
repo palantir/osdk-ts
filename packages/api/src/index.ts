@@ -42,6 +42,7 @@ export type {
   OsdkObjectLinksObject,
   SingleLinkAccessor,
 } from "./definitions/LinkDefinitions.js";
+export type { DerivedProperty } from "./derivedProperties/DerivedProperty.js";
 export { DurationMapping } from "./groupby/GroupByClause.js";
 export type {
   AllGroupByValues,
@@ -76,13 +77,12 @@ export { isOk } from "./object/Result.js";
 export type { Result } from "./object/Result.js";
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
 export type { ObjectSet } from "./objectSet/ObjectSet.js";
-export type { ObjectSetListener } from "./objectSet/ObjectSetListener.js";
-export type { ObjectSetListenerOptions } from "./objectSet/ObjectSetListener.js";
+export type { ObjectSetSubscription } from "./objectSet/ObjectSetListener.js";
 export type {
   ActionDefinition,
   ActionMetadata,
-  ValidBaseActionParameterTypes,
 } from "./ontology/ActionDefinition.js";
+export type { FilteredPropertyKeys } from "./ontology/FilteredPropertyKeys.js";
 export type {
   InterfaceDefinition,
   InterfaceMetadata,
@@ -111,7 +111,7 @@ export type {
   TwoDimensionalQueryAggregationDefinition,
 } from "./ontology/QueryDefinition.js";
 export type {
-  SimpleWirePropertyTypes,
+  BaseWirePropertyTypes,
   WirePropertyTypes,
 } from "./ontology/WirePropertyTypes.js";
 export type { OsdkBase, PrimaryKeyType } from "./OsdkBase.js";
@@ -127,5 +127,4 @@ export type {
   TimeSeriesQuery,
 } from "./timeseries/timeseries.js";
 export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
-
 export {};

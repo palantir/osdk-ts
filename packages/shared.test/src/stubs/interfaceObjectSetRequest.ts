@@ -17,7 +17,7 @@
 import type {
   LoadObjectSetV2MultipleObjectTypesRequest,
   LoadObjectSetV2MultipleObjectTypesResponse,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import stableStringify from "json-stable-stringify";
 import {
   employeeInterfaceScoped,

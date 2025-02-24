@@ -25,7 +25,7 @@ import type {
   OntologyIdentifier,
   QueryDataType,
   QueryTypeV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { Result } from "./Result.js";
 
@@ -177,13 +177,10 @@ export class OntologyMetadataResolver {
   > {
     let ontology: Ontology;
 
-    const { Ontologies } = await import("@osdk/internal.foundry.ontologies");
-    const { OntologiesV2 } = await import(
-      "@osdk/internal.foundry.ontologiesv2"
-    );
+    const { OntologiesV2 } = await import("@osdk/foundry.ontologies");
 
     try {
-      ontology = await Ontologies.get(
+      ontology = await OntologiesV2.get(
         this.getClientContext(),
         ontologyRid,
       );

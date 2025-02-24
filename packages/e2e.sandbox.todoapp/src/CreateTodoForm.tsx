@@ -1,67 +1,76 @@
-import React, { useState } from "react";
+import { useOsdkAction } from "@osdk/react/experimental";
+import React from "react";
+import { Button } from "./Button.js";
+import { $Actions, Todo } from "./generatedNoCheck2/index.js";
+import { H2 } from "./H2.js";
+import { InlineSpinner } from "./InlineSpinner.js";
 
-export default function CreateTodoForm({
-  createTodo,
-}: {
-  createTodo: (
-    title: string,
-    setError: (error: string | undefined) => void,
-  ) => Promise<void>;
-}) {
+export default function CreateTodoForm() {
   const formRef = React.useRef<HTMLFormElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState<string>();
+
+  const { applyAction, isPending, error } = useOsdkAction($Actions.createTodo);
+
+  const onSubmit = React.useCallback(
+    async (evt: React.FormEvent<HTMLFormElement>) => {
+      evt.preventDefault();
+      if (!inputRef.current || !formRef.current) {
+        throw "should never happen";
+      }
+      const title = inputRef.current.value;
+
+      await applyAction({
+        is_complete: false,
+        Todo: title,
+
+        $optimisticUpdate: (b) => {
+          const id = "TMP " + window.crypto.randomUUID();
+          b.createObject(Todo, id, {
+            title,
+            id,
+            isComplete: false,
+          });
+        },
+      });
+
+      // reset the form if we succeeded
+      formRef.current.reset();
+    },
+    [formRef.current, inputRef.current, applyAction],
+  );
 
   return (
-    <div className="flex shrink mb-6">
-      <form
-        ref={formRef}
-        onSubmit={async (evt) => {
-          evt.preventDefault();
-          if (!inputRef.current || !formRef.current) {
-            throw "should never happen";
-          }
-          setPending(true);
-          setError(undefined);
-          try {
-            await createTodo(inputRef.current.value, setError);
-            formRef.current.reset();
-          } catch (e) {
-            console.error(e);
-          } finally {
-            setPending(false);
-          }
-        }}
-      >
-        <div className="error">{error}</div>
-        <input
-          type="text"
-          name={"title"}
-          disabled={pending}
-          aria-disabled={pending}
-          ref={inputRef}
-          className="py-3 px-4 mr-4 border-gray-500 rounded-lg text-sm
-          border-2
-           focus:border-blue-500 focus:ring-blue-500 disabled:opacity-90
-           disabled:pointer-events-none 
-           dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:ring-gray-600"
-        />
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm aria-disabled:bg-gray-300 aria-disabled:cursor-default"
-          aria-disabled={false}
-          disabled={pending}
+    <>
+      <H2>
+        Create Todo<InlineSpinner isLoading={isPending} />
+      </H2>
+
+      <div className="flex grow">
+        <form
+          ref={formRef}
+          onSubmit={onSubmit}
         >
-          Create Todo
-        </button>
-        {pending
-          ? (
-            <div className="ml-2 w-4 h-4 rounded-full animate-spin shrink-0
-border border-solid border-yellow-800 border-t-transparent">
-            </div>
-          )
-          : <div className="ml-2 w-4 h-4"></div>}
-      </form>
-    </div>
+          <div className="error">{JSON.stringify(error)}</div>
+          <input
+            type="text"
+            name={"title"}
+            disabled={isPending}
+            aria-disabled={isPending}
+            ref={inputRef}
+            className="py-2 px-2 mr-4 mb-1 border-gray-500 rounded-lg text-sm border-2
+           
+           disabled:opacity-90
+           disabled:pointer-events-none 
+           disabled:border-gray-200
+           focus:border-blue-500 focus:ring-blue-500
+
+           "
+          />
+          <Button disabled={isPending}>
+            Create Todo
+          </Button>
+        </form>
+      </div>
+    </>
   );
 }

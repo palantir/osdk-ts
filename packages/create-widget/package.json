@@ -1,6 +1,6 @@
 {
   "name": "@osdk/create-widget",
-  "version": "2.0.0-beta.13",
+  "version": "2.1.0-beta.1",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -44,6 +44,7 @@
     "yargs": "17.7.2"
   },
   "devDependencies": {
+    "@osdk/create-widget.template.minimal-react.v2": "workspace:*",
     "@osdk/create-widget.template.react.v2": "workspace:*",
     "@osdk/generator-utils": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",

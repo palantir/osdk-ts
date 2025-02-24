@@ -15,10 +15,10 @@
  */
 
 export type WirePropertyTypes =
-  | SimpleWirePropertyTypes
-  | Record<string, SimpleWirePropertyTypes>;
+  | BaseWirePropertyTypes
+  | Record<string, BaseWirePropertyTypes>;
 
-export type SimpleWirePropertyTypes =
+export type BaseWirePropertyTypes =
   | "string"
   | "datetime"
   | "double"

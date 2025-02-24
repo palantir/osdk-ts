@@ -1,5 +1,47 @@
 # @osdk/cli.cmd.typescript
 
+## 0.26.0-beta.3
+
+### Patch Changes
+
+- @osdk/generator@2.2.0-beta.3
+- @osdk/cli.common@0.26.0-beta.3
+
+## 0.26.0-beta.2
+
+### Patch Changes
+
+- @osdk/generator@2.2.0-beta.2
+- @osdk/cli.common@0.26.0-beta.2
+
+## 0.25.0-beta.31
+
+### Minor Changes
+
+- bb8b219: Use new external packages instead of the internal ones.
+
+### Patch Changes
+
+- Updated dependencies [bb8b219]
+- Updated dependencies [ecd4aee]
+- Updated dependencies [ee6224b]
+  - @osdk/generator@2.1.0-beta.31
+  - @osdk/cli.common@0.25.0-beta.31
+
+## 0.25.0-beta.30
+
+### Patch Changes
+
+- @osdk/generator@2.1.0-beta.30
+- @osdk/cli.common@0.25.0-beta.30
+
+## 0.25.0-beta.29
+
+### Patch Changes
+
+- @osdk/generator@2.1.0-beta.29
+- @osdk/cli.common@0.25.0-beta.29
+
 ## 0.25.0-beta.28
 
 ### Patch Changes

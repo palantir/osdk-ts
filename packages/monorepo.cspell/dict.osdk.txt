@@ -4,6 +4,7 @@ Nativewind
 osdk
 palantirfoundry
 paperplane
+Pivotable
 Pressable
 Tamagui
 unistyles

@@ -1,5 +1,11 @@
 # @osdk/tool.release
 
+## 0.6.0-beta.5
+
+### Minor Changes
+
+- 1ae146c: Fix release for none release types.
+
 ## 0.6.0-beta.4
 
 ### Minor Changes

@@ -15,7 +15,7 @@
  */
 
 import type { AggregationClause } from "@osdk/api";
-import type { AggregationV2 } from "@osdk/internal.foundry.core";
+import type { AggregationV2 } from "@osdk/foundry.ontologies";
 
 const directionFieldMap = (dir?: "asc" | "desc" | "unordered") =>
   dir === "asc" ? "ASC" : dir === "desc" ? "DESC" : undefined;

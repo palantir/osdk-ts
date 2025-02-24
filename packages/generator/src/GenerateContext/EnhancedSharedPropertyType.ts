@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { SharedPropertyType } from "@osdk/internal.foundry.core";
+import type { SharedPropertyType } from "@osdk/foundry.ontologies";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedBase } from "./EnhancedBase.js";
 

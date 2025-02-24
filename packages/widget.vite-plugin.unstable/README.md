@@ -99,13 +99,13 @@ Import your configuration file in `src/main.tsx` so the vite plugin will discove
 import { FoundryWidget } from "@osdk/widget.client-react";
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { App } from "./app.js";
+import { Widget } from "./Widget.js";
 import MainConfig from "./main.config.js";
 
 const root = document.querySelector("body")!;
 createRoot(root).render(
   <FoundryWidget config={MainConfig}>
-    <App />
+    <Widget />
   </FoundryWidget>
 );
 ```

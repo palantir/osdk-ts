@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { LoadObjectSetResponseV2 } from "@osdk/internal.foundry.core";
-import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
+import type { LoadObjectSetResponseV2 } from "@osdk/foundry.ontologies";
+import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import stableStringify from "json-stable-stringify";
 import type { HttpResponseResolver, PathParams, RequestHandler } from "msw";
 import type { BaseAPIError } from "../BaseError.js";

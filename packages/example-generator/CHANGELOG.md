@@ -1,5 +1,48 @@
 # @osdk/example-generator
 
+## 0.10.0-beta.3
+
+### Patch Changes
+
+- @osdk/create-app@2.2.0-beta.3
+- @osdk/create-widget@2.1.0-beta.1
+
+## 0.10.0-beta.2
+
+### Patch Changes
+
+- @osdk/create-app@2.2.0-beta.2
+- @osdk/create-widget@2.1.0-beta.1
+
+## 0.9.0-beta.31
+
+### Patch Changes
+
+- @osdk/create-app@2.1.0-beta.31
+- @osdk/create-widget@2.0.0-beta.16
+
+## 0.9.0-beta.30
+
+### Patch Changes
+
+- Updated dependencies [255a8f1]
+- Updated dependencies [14bb6d2]
+  - @osdk/create-widget@2.0.0-beta.16
+  - @osdk/create-app@2.1.0-beta.30
+
+## 0.9.0-beta.29
+
+### Patch Changes
+
+- @osdk/create-widget@2.0.0-beta.15
+- @osdk/create-app@2.1.0-beta.29
+
+## 0.9.0-beta.28
+
+### Patch Changes
+
+- @osdk/create-widget@2.0.0-beta.14
+
 ## 0.9.0-beta.27
 
 ### Minor Changes

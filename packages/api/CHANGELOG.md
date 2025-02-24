@@ -1,5 +1,41 @@
 # @osdk/api
 
+## 2.2.0-beta.3
+
+### Minor Changes
+
+- 761e69d: Added type safety to createMediaReference
+
+## 2.2.0-beta.2
+
+### Minor Changes
+
+- fccd9ac: "Allow selecting derived properties"
+
+## 2.1.0-beta.31
+
+### Minor Changes
+
+- bb8b219: Use new external packages instead of the internal ones.
+- ee6224b: Explicitly type aggregation types in queries.
+- 5fe2c8d: Remove ability to filter on entire struct.
+
+## 2.1.0-beta.30
+
+### Minor Changes
+
+- 966d408: Rename type for base action parameter types.
+- f03e39f: Add a namespace type for listeners.
+- 1591f04: Rename base property types.
+- 785f663: Rename namespace so not exported from api package.
+- 2d5e648: Remove subscribe from experimental gate.
+
+## 2.1.0-beta.29
+
+### Minor Changes
+
+- f1145ff: Adds support for runtime derived properties
+
 ## 2.1.0-beta.28
 
 ### Minor Changes

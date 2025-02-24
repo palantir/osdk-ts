@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { ActionMetadata, ValidBaseActionParameterTypes } from "@osdk/api";
+import type { ActionMetadata } from "@osdk/api";
 import type {
   ActionParameterType,
   ActionParameterV2,
   ActionTypeV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import { getModifiedEntityTypes } from "./getEditedEntities.js";
 
 export function wireActionTypeV2ToSdkActionMetadata(
@@ -91,12 +91,15 @@ function actionPropertyToSdkPropertyDefinition(
         type: "struct",
         struct: parameterType.fields.reduce(
           (
-            structMap: Record<string, ValidBaseActionParameterTypes>,
+            structMap: Record<
+              string,
+              ActionMetadata.DataType.BaseActionParameterTypes
+            >,
             structField,
           ) => {
             structMap[structField.name] = actionPropertyToSdkPropertyDefinition(
               structField.fieldType as ActionParameterType,
-            ) as ValidBaseActionParameterTypes;
+            ) as ActionMetadata.DataType.BaseActionParameterTypes;
             return structMap;
           },
           {},

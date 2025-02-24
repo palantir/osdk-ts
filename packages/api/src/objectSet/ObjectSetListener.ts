@@ -20,32 +20,47 @@ import type {
 } from "../ontology/ObjectOrInterface.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 
-export interface ObjectSetListener<
-  O extends ObjectOrInterfaceDefinition,
-  P extends PropertyKeys<O> = PropertyKeys<O>,
-> {
-  /**
-   * Specific objects have changed and can be immediately updated
-   */
-  onChange?: (
-    objectUpdate: ObjectUpdate<O, P>,
-  ) => void;
+export namespace ObjectSetSubscription {
+  export interface Listener<
+    O extends ObjectOrInterfaceDefinition,
+    P extends PropertyKeys<O> = PropertyKeys<O>,
+  > {
+    /**
+     * Specific objects have changed and can be immediately updated
+     */
+    onChange?: (
+      objectUpdate: ObjectUpdate<O, P>,
+    ) => void;
+
+    /**
+     * The subscription has been successfully established and updates can be expected to be received.
+     */
+    onSuccessfulSubscription?: () => void;
+
+    /**
+     * The ObjectSet has become outdated and should be re-fetched in its entirety.
+     * This is also sent when the subscription is first initialized.
+     */
+    onOutOfDate?: () => void;
+
+    /**
+     * There was a fatal error with the subscription process. The subscription will close or will not be established.
+     */
+    onError?: (errors: { subscriptionClosed: boolean; error: any }) => void;
+  }
 
   /**
-   * The subscription has been successfully established and updates can be expected to be received.
+   * Options for subscribing to an ObjectSet.
+   *
+   * properties - The properties to request a subscription for. Requesting specific properties limits the possible properties
+   * that can be returned from the subscription. If not provided, all properties will be requested and potentially be returned on updates.
    */
-  onSuccessfulSubscription?: () => void;
-
-  /**
-   * The ObjectSet has become outdated and should be re-fetched in its entirety.
-   * This is also sent when the subscription is first initialized.
-   */
-  onOutOfDate?: () => void;
-
-  /**
-   * There was a fatal error with the subscription process. The subscription will close or will not be established.
-   */
-  onError?: (errors: { subscriptionClosed: boolean; error: any }) => void;
+  export interface Options<
+    O extends ObjectOrInterfaceDefinition,
+    P extends PropertyKeys<O> = PropertyKeys<O>,
+  > {
+    properties?: Array<P>;
+  }
 }
 
 type ObjectUpdate<
@@ -55,16 +70,3 @@ type ObjectUpdate<
   object: Osdk.Instance<O, never, P>;
   state: "ADDED_OR_UPDATED" | "REMOVED";
 };
-
-/**
- * Options for subscribing to an ObjectSet.
- *
- * properties - The properties to request a subscription for. Requesting specific properties limits the possible properties
- * that can be returned from the subscription. If not provided, all properties will be requested and potentially be returned on updates.
- */
-export interface ObjectSetListenerOptions<
-  O extends ObjectOrInterfaceDefinition,
-  P extends PropertyKeys<O> = PropertyKeys<O>,
-> {
-  properties?: Array<P>;
-}

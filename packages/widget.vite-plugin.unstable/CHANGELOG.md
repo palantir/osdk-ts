@@ -1,5 +1,31 @@
 # @osdk/widget.vite-plugin.unstable
 
+## 2.0.0-beta.16
+
+### Patch Changes
+
+- @osdk/widget.api.unstable@2.0.0-beta.16
+
+## 2.0.0-beta.15
+
+### Minor Changes
+
+- c5f9fe0: Rename widget template component name consistent
+
+### Patch Changes
+
+- @osdk/widget.api.unstable@2.0.0-beta.15
+
+## 2.0.0-beta.14
+
+### Minor Changes
+
+- b463be5: Fix custom widget Vite 6 CORS issues and release @osdk/widget.vite-plugin.unstable 1.1.1
+
+### Patch Changes
+
+- @osdk/widget.api.unstable@2.0.0-beta.14
+
 ## 2.0.0-beta.13
 
 ### Minor Changes

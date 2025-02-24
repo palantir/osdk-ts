@@ -1,5 +1,63 @@
 # @osdk/foundry-sdk-generator
 
+## 2.2.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [761e69d]
+  - @osdk/client@2.2.0-beta.3
+  - @osdk/api@2.2.0-beta.3
+  - @osdk/generator@2.2.0-beta.3
+
+## 2.2.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [fccd9ac]
+  - @osdk/client@2.2.0-beta.2
+  - @osdk/api@2.2.0-beta.2
+  - @osdk/generator@2.2.0-beta.2
+
+## 2.1.0-beta.31
+
+### Minor Changes
+
+- bb8b219: Use new external packages instead of the internal ones.
+
+### Patch Changes
+
+- Updated dependencies [bb8b219]
+- Updated dependencies [ecd4aee]
+- Updated dependencies [ee6224b]
+- Updated dependencies [5fe2c8d]
+  - @osdk/generator@2.1.0-beta.31
+  - @osdk/client@2.1.0-beta.31
+  - @osdk/api@2.1.0-beta.31
+
+## 2.1.0-beta.30
+
+### Patch Changes
+
+- Updated dependencies [966d408]
+- Updated dependencies [f03e39f]
+- Updated dependencies [1591f04]
+- Updated dependencies [785f663]
+- Updated dependencies [0d8ac3b]
+- Updated dependencies [2d5e648]
+  - @osdk/client@2.1.0-beta.30
+  - @osdk/api@2.1.0-beta.30
+  - @osdk/generator@2.1.0-beta.30
+
+## 2.1.0-beta.29
+
+### Patch Changes
+
+- Updated dependencies [f1145ff]
+- Updated dependencies [8026baf]
+  - @osdk/client@2.1.0-beta.29
+  - @osdk/api@2.1.0-beta.29
+  - @osdk/generator@2.1.0-beta.29
+
 ## 2.1.0-beta.28
 
 ### Patch Changes

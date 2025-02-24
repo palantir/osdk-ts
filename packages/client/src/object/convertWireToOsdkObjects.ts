@@ -25,7 +25,7 @@ import type {
   InterfaceToObjectTypeMappings,
   InterfaceTypeApiName,
   OntologyObjectV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
@@ -250,7 +250,10 @@ function isConforming(
   propsToCheck: readonly string[],
 ) {
   for (const propName of propsToCheck) {
-    if (def.properties[propName].nullable === false && obj[propName] == null) {
+    if (
+      propName in def.properties && def.properties[propName].nullable === false
+      && obj[propName] == null
+    ) {
       if (process.env.NODE_ENV !== "production") {
         client.logger?.debug(
           {

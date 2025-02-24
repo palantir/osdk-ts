@@ -15,7 +15,7 @@
  */
 
 import { PalantirApiError } from "@osdk/client";
-import { Datasets } from "@osdk/internal.foundry";
+import { Datasets } from "@osdk/foundry";
 import { platformClient as client } from "./client.js";
 import { logger } from "./logger.js";
 
@@ -45,13 +45,13 @@ export async function runFoundrySdkClientVerificationTest(
     );
   }
 
-  if (!branchesResult.data.find(b => b.branchId === "master")) {
+  if (!branchesResult.data.find(b => b.name === "master")) {
     throw new Error(
       `You can not run this test as dataset ${datasetRid} does not have a master branch.`,
     );
   }
 
-  if (branchesResult.data.find(b => b.branchId === branchToCreate)) {
+  if (branchesResult.data.find(b => b.name === branchToCreate)) {
     throw new Error(
       `Expected that dataset ${datasetRid} would not have a branch called "${branchToCreate}". Aborting`,
     );
@@ -61,7 +61,7 @@ export async function runFoundrySdkClientVerificationTest(
   // now that we know it exists.
   try {
     await Datasets.Branches.create(client, datasetRid, {
-      branchId: "master",
+      name: "master",
     });
     throw new Error("createBranch(master) should have failed");
   } catch (err) {
@@ -81,7 +81,7 @@ export async function runFoundrySdkClientVerificationTest(
   const testBranch = await Datasets.Branches.create(
     client,
     datasetRid,
-    { branchId: branchToCreate },
+    { name: branchToCreate },
   );
   logger.info({ testBranch }, "Created test branch");
 
@@ -89,7 +89,7 @@ export async function runFoundrySdkClientVerificationTest(
   await Datasets.Branches.deleteBranch(
     client,
     datasetRid,
-    testBranch.branchId,
+    testBranch.name,
   );
 
   logger.info(

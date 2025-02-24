@@ -33,6 +33,7 @@ export interface Template {
   label: string;
   envPrefix: string;
   buildDirectory: string;
+  requiresOsdk: boolean;
   hidden?: boolean;
   isBeta?: boolean;
   files: {
@@ -42,5 +43,5 @@ export interface Template {
 
 export interface TemplateContext {
   project: string;
-  osdkPackage: string;
+  osdkPackage?: string;
 }

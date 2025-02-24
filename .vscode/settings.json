@@ -33,5 +33,7 @@
     "\\.\\./.*?/build",
     "\\./index.js"
   ],
-  "typescript.preferGoToSourceDefinition": true
+  "[markdown]": {
+    "editor.defaultFormatter": "dprint.dprint"
+  },
 }

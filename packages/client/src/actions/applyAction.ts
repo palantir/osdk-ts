@@ -28,8 +28,8 @@ import type {
   BatchApplyActionResponseV2,
   DataValue,
   SyncApplyActionResponseV2,
-} from "@osdk/internal.foundry.core";
-import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
+} from "@osdk/foundry.ontologies";
+import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";

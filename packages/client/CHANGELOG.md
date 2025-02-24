@@ -1,5 +1,83 @@
 # @osdk/client
 
+## 2.2.0-beta.3
+
+### Minor Changes
+
+- 761e69d: Added type safety to createMediaReference
+
+### Patch Changes
+
+- Updated dependencies [761e69d]
+  - @osdk/api@2.2.0-beta.3
+  - @osdk/generator-converters@2.2.0-beta.3
+  - @osdk/client.unstable@2.2.0-beta.3
+
+## 2.2.0-beta.2
+
+### Minor Changes
+
+- fccd9ac: "Allow selecting derived properties"
+
+### Patch Changes
+
+- Updated dependencies [fccd9ac]
+  - @osdk/api@2.2.0-beta.2
+  - @osdk/generator-converters@2.2.0-beta.2
+  - @osdk/client.unstable@2.2.0-beta.2
+
+## 2.1.0-beta.31
+
+### Minor Changes
+
+- bb8b219: Use new external packages instead of the internal ones.
+- ee6224b: Explicitly type aggregation types in queries.
+
+### Patch Changes
+
+- Updated dependencies [bb8b219]
+- Updated dependencies [81b2fb2]
+- Updated dependencies [ecd4aee]
+- Updated dependencies [ee6224b]
+- Updated dependencies [5fe2c8d]
+  - @osdk/generator-converters@2.1.0-beta.31
+  - @osdk/api@2.1.0-beta.31
+  - @osdk/client.unstable@2.1.0-beta.31
+
+## 2.1.0-beta.30
+
+### Minor Changes
+
+- 966d408: Rename type for base action parameter types.
+- f03e39f: Add a namespace type for listeners.
+- 0d8ac3b: Remove attachment from exports.
+- 2d5e648: Remove subscribe from experimental gate.
+
+### Patch Changes
+
+- Updated dependencies [966d408]
+- Updated dependencies [f03e39f]
+- Updated dependencies [1591f04]
+- Updated dependencies [785f663]
+- Updated dependencies [2d5e648]
+  - @osdk/generator-converters@2.1.0-beta.30
+  - @osdk/api@2.1.0-beta.30
+  - @osdk/client.unstable@2.1.0-beta.30
+
+## 2.1.0-beta.29
+
+### Minor Changes
+
+- f1145ff: Adds support for runtime derived properties
+- 8026baf: Update interface support for .subscribe
+
+### Patch Changes
+
+- Updated dependencies [f1145ff]
+  - @osdk/api@2.1.0-beta.29
+  - @osdk/generator-converters@2.1.0-beta.29
+  - @osdk/client.unstable@2.1.0-beta.29
+
 ## 2.1.0-beta.28
 
 ### Minor Changes

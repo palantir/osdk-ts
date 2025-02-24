@@ -17,12 +17,14 @@
 import type {
   LoadObjectSetRequestV2,
   LoadObjectSetResponseV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import stableStringify from "json-stable-stringify";
 import {
   employee1,
   employee2,
   employee3,
+  employee4withDerived,
+  employee5withUndefinedDerived,
   employeeFailsStrict,
   nycOffice,
   objectWithAllPropertyTypes1,
@@ -34,6 +36,18 @@ import { BGaoNflPlayerObjectType } from "./objectTypeV2.js";
 
 const baseObjectSet: LoadObjectSetRequestV2 = {
   objectSet: { type: "base", objectType: employeeObjectType.apiName },
+  select: [],
+};
+
+const baseObjectSetWithEmptyWhere: LoadObjectSetRequestV2 = {
+  objectSet: {
+    type: "filter",
+    objectSet: { type: "base", objectType: employeeObjectType.apiName },
+    where: {
+      type: "and",
+      value: [],
+    },
+  },
   select: [],
 };
 
@@ -91,6 +105,58 @@ const subtractedObjectSet: LoadObjectSetRequestV2 = {
     ],
   },
   select: [],
+};
+
+const derivedPropertyBody: LoadObjectSetRequestV2 = {
+  objectSet: {
+    objectSet: {
+      derivedProperties: {
+        derivedPropertyName: {
+          objectSet: {
+            link: "lead",
+            objectSet: { type: "methodInput" },
+            type: "searchAround",
+          },
+          operation: {
+            selectedPropertyApiName: "employeeId",
+            type: "get",
+          },
+          type: "selection",
+        },
+      },
+      objectSet: { "objectType": "Employee", "type": "base" },
+      type: "withProperties",
+    },
+    type: "filter",
+    where: { "field": "employeeId", "type": "eq", "value": 50035 },
+  },
+  select: [],
+};
+
+const derivedPropertyBodyUndefinedValue: LoadObjectSetRequestV2 = {
+  objectSet: {
+    objectSet: {
+      derivedProperties: {
+        derivedPropertyName: {
+          objectSet: {
+            link: "lead",
+            objectSet: { type: "methodInput" },
+            type: "searchAround",
+          },
+          operation: {
+            selectedPropertyApiName: "employeeId",
+            type: "get",
+          },
+          type: "selection",
+        },
+      },
+      objectSet: { "objectType": "Employee", "type": "base" },
+      type: "withProperties",
+    },
+    type: "filter",
+    where: { "field": "employeeId", "type": "eq", "value": 50036 },
+  },
+  select: ["derivedPropertyName"],
 };
 
 const eqSearchBody: LoadObjectSetRequestV2 = {
@@ -467,11 +533,21 @@ export const loadObjectSetRequestHandlers: {
     employee3,
     employeeFailsStrict,
   ],
+  [stableStringify(baseObjectSetWithEmptyWhere)]: [
+    employee1,
+    employee2,
+    employee3,
+    employeeFailsStrict,
+  ],
   [stableStringify(ridObjectSet)]: [employee1],
   [stableStringify(ridObjectSetSelect)]: [employee2],
   [stableStringify(unionedObjectSet)]: [employee1, employee2],
   [stableStringify(intersectedObjectSet)]: [employee3],
   [stableStringify(subtractedObjectSet)]: [employee2, employee3],
+  [stableStringify(derivedPropertyBody)]: [employee4withDerived],
+  [stableStringify(derivedPropertyBodyUndefinedValue)]: [
+    employee5withUndefinedDerived,
+  ],
   [stableStringify(eqSearchBody)]: [employee1],
   [stableStringify(eqSearchBody2)]: [employee2],
   [stableStringify(eqSearchBodyBadObject)]: [employeeFailsStrict],
@@ -488,6 +564,7 @@ export const loadObjectSetRequestHandlers: {
   [stableStringify(searchAroundObjectSet)]: [nycOffice],
   [stableStringify(searchAroundFilteredObjectSet)]: [nycOffice],
   [stableStringify(baseObjectSetSelect)]: [employee1, employee2, employee3],
+
   [stableStringify(objectWithAllPropertyTypes)]: [objectWithAllPropertyTypes1],
   [stableStringify(emptyObjectWithAllPropertyTypes)]: [
     objectWithAllPropertyTypesEmptyEntries,

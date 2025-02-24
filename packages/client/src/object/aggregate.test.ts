@@ -25,7 +25,7 @@ import {
   objectTypeWithAllPropertyTypes,
   Todo,
 } from "@osdk/client.test.ontology";
-import type { AggregateObjectsResponseV2 } from "@osdk/internal.foundry.core";
+import type { AggregateObjectsResponseV2 } from "@osdk/foundry.ontologies";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import {

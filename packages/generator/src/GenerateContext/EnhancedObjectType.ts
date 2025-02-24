@@ -15,8 +15,8 @@
  */
 
 import type { ObjectMetadata } from "@osdk/api";
+import type { ObjectTypeFullMetadata } from "@osdk/foundry.ontologies";
 import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
-import type { ObjectTypeFullMetadata } from "@osdk/internal.foundry.core";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedBase } from "./EnhancedBase.js";
@@ -27,7 +27,7 @@ export class EnhancedObjectType extends EnhancedBase<ObjectTypeFullMetadata> {
   }
 
   getDefinitionIdentifier(v2: boolean): string {
-    return v2 ? `${this.shortApiName}` : `${this.shortApiName}Def`;
+    return v2 ? this.shortApiName : `${this.shortApiName}Def`;
   }
 
   getImportedDefinitionIdentifier(v2: boolean): string {
