@@ -116,12 +116,10 @@ export function objectSortaMatchesWhereClause(
         case "$ne":
           return realValue !== expected;
         case "$in":
-           
           return expected.$in.includes(realValue);
         case "$isNull":
           return realValue == null;
         case "$startsWith":
-           
           return realValue.startsWith(
             expected,
           );
