@@ -1,5 +1,11 @@
 # @osdk/shared.test
 
+## 1.6.3
+
+### Patch Changes
+
+- @osdk/api@1.9.3
+
 ## 1.6.2
 
 ### Patch Changes

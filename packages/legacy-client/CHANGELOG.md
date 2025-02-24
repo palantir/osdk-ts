@@ -1,5 +1,14 @@
 # @osdk/legacy-client
 
+## 2.5.4
+
+### Patch Changes
+
+- d67e753: Fix fetch functions.
+- Updated dependencies [d67e753]
+  - @osdk/shared.net@1.12.3
+  - @osdk/api@1.9.3
+
 ## 2.5.3
 
 ### Patch Changes
