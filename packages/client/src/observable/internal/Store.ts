@@ -440,6 +440,60 @@ export class Store {
               // eslint-disable-next-line no-console
               console.error("Unhandled error in maybeRevalidateLists", err);
             });
+          } else if (state === "REMOVED") {
+            const changes = createChangedObjects();
+            store.batch({ changes }, (batch) => {
+              const existing = batch.read(query.cacheKey);
+              const cacheKeyToRemove = store.getCacheKey<ObjectCacheKey>(
+                "object",
+                object.$objectType,
+                object.$primaryKey,
+              );
+              if (existing?.status === "loaded") {
+                const newObjects = existing.value?.data.filter(
+                  (o) => o !== cacheKeyToRemove,
+                );
+                if (newObjects?.length !== existing.value?.data.length) {
+                  batch.changes.modifiedLists.add(query.cacheKey);
+                  batch.write(
+                    query.cacheKey,
+                    { data: newObjects ?? [] },
+                    "loaded",
+                  );
+                  // Should there be an else for this case? Do we need to invalidate
+                  // the paging tokens we may have?
+                }
+              } else {
+                // There may be a tiny race here where OSW tells us the object has
+                // been removed but an outstanding invalidation of this query is
+                // about to return. In this case, its possible that we remove this item
+                // from the list and then the returned list load re-adds it.
+                // To avoid this, we will just force reload the query to be sure
+                // we don't leave things in a bad state.
+
+                if (process.env.NODE_ENV !== "production") {
+                  store.logger?.info(
+                    "Removing an object from an object list that is in the middle of being loaded.",
+                    existing,
+                  );
+                }
+
+                query.revalidate(/* force */ true).catch((e) => {
+                  if (store.logger) {
+                    store.logger?.error(
+                      "Uncaught error while revalidating list",
+                      e,
+                    );
+                  } else {
+                    // eslint-disable-next-line no-console
+                    console.error(
+                      "Uncaught error while revalidating list",
+                      e,
+                    );
+                  }
+                });
+              }
+            });
           }
         },
 
