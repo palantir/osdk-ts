@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 2.2.0-beta.4
+
+### Minor Changes
+
+- fe0cc43: Experimental react changes
+
+### Patch Changes
+
+- @osdk/api@2.2.0-beta.4
+- @osdk/client.unstable@2.2.0-beta.4
+- @osdk/generator-converters@2.2.0-beta.4
+
 ## 2.2.0-beta.3
 
 ### Minor Changes
