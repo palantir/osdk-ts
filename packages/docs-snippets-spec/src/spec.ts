@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Spec types
 export type SnippetVariables = {
   [VariableName: string]: "required" | "optional";
 };
@@ -54,3 +55,43 @@ type VariablesForSnippetConfig<
   S extends DocsSnippetsSpec,
   T extends SnippetNames<S>,
 > = S["snippets"][T]["variables"];
+
+// For implementers
+export interface BaseSnippet {
+  title?: string;
+  status?: "status" | "public-beta";
+}
+
+export type SdkSnippets<S extends DocsSnippetsSpec> = {
+  kind: "sdk";
+  versions: {
+    [version: string]: {
+      snippets: {
+        [name in SnippetNames<S>]: BaseSnippet & { template: string };
+      };
+    };
+  };
+};
+
+export type ApiSnippets<S extends DocsSnippetsSpec> = {
+  kind: "api";
+  versions: {
+    [version: string]: {
+      snippets: {
+        [name in SnippetNames<S>]: BaseSnippet & {
+          endpoint: {
+            method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "WebSocket";
+            path: string;
+            headers: Record<string, string>;
+          };
+          body?: string;
+          response?: string;
+        };
+      };
+    };
+  };
+};
+
+export type DocsSnippets<S extends DocsSnippetsSpec> =
+  | SdkSnippets<S>
+  | ApiSnippets<S>;
