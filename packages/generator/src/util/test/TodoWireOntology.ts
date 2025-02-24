@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectPropertyType } from "@osdk/gateway/types";
 import type { WireOntologyDefinition } from "../../WireOntologyDefinition.js";
 
 export const TodoWireOntology = {
@@ -96,6 +97,156 @@ export const TodoWireOntology = {
             dataType: {
               type: "boolean",
             },
+          },
+        },
+        status: "ACTIVE",
+        rid: "ridForTodo",
+      },
+      linkTypes: [{
+        apiName: "Assignee",
+        cardinality: "ONE",
+        displayName: "Assignee",
+        objectTypeApiName: "Person",
+        status: "ACTIVE",
+        foreignKeyPropertyApiName: "email",
+      }],
+      implementsInterfaces: [],
+      implementsInterfaces2: {},
+      sharedPropertyTypeMapping: {},
+    },
+    Person: {
+      objectType: {
+        apiName: "Person",
+        primaryKey: "email",
+        displayName: "Person",
+        description: "A person",
+        titleProperty: "email",
+        properties: {
+          email: {
+            dataType: {
+              type: "string",
+            },
+          },
+        },
+
+        rid: "ridForPerson",
+        status: "ACTIVE",
+      },
+      linkTypes: [{
+        apiName: "Todos",
+        cardinality: "MANY",
+        displayName: "Todos",
+        objectTypeApiName: "Todo",
+        status: "ACTIVE",
+        foreignKeyPropertyApiName: "id",
+      }],
+      implementsInterfaces: [],
+      implementsInterfaces2: {},
+      sharedPropertyTypeMapping: {},
+    },
+  },
+  queryTypes: {
+    "getCount": {
+      apiName: "getCount",
+      output: {
+        type: "integer",
+      },
+      parameters: {
+        completed: { dataType: { type: "boolean" } },
+      },
+      rid: "rid.query.1",
+      version: "0",
+    },
+  },
+  interfaceTypes: {},
+  sharedPropertyTypes: {},
+} satisfies WireOntologyDefinition;
+
+export const TodoWireOntologyWithUnknownProperties = {
+  ontology: {
+    rid: "ridHere",
+    apiName: "OntologyApiName",
+    displayName: "",
+    description: "",
+  },
+  actionTypes: {
+    "markTodoCompleted": {
+      apiName: "markTodoCompleted",
+      description: "An action which takes different types of parameters",
+      parameters: {
+        object: {
+          description: "A Todo to mark completed",
+          dataType: {
+            type: "object",
+            objectApiName: "Todo",
+            objectTypeApiName: "Todo",
+          },
+          required: false,
+        },
+      },
+      rid: "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
+      operations: [{
+        type: "modifyObject",
+        objectTypeApiName: "Todo",
+      }],
+      status: "ACTIVE",
+    },
+    "deleteTodos": {
+      apiName: "deleteTodos",
+      description: "An action which takes in an array of objects",
+      parameters: {
+        object: {
+          description: "Todo(s) to be deleted",
+          "dataType": {
+            "type": "array",
+
+            "subType": {
+              "type": "object",
+              "objectApiName": "Todo",
+              "objectTypeApiName": "Todo",
+            },
+          },
+          required: false,
+        },
+      },
+      rid: "ri.ontology.main.action-type.8f94017d-cf17-4fa8-84c3-8e01e5d594f2",
+      operations: [{
+        type: "deleteObject",
+        objectTypeApiName: "Todo",
+      }],
+      status: "ACTIVE",
+    },
+  },
+  objectTypes: {
+    Todo: {
+      objectType: {
+        apiName: "Todo",
+        primaryKey: "id",
+        displayName: "AwesomeTodoDisplayname",
+        description: "Its a todo item.",
+        titleProperty: "body",
+        properties: {
+          id: {
+            dataType: {
+              type: "integer",
+            },
+          },
+          body: {
+            dataType: {
+              type: "string",
+            },
+            description: "The text of the todo",
+            displayName: "Body",
+          },
+          complete: {
+            dataType: {
+              type: "boolean",
+            },
+          },
+          unknownType: {
+            dataType: {
+              type: "futureUnknownType",
+            } as unknown as ObjectPropertyType,
           },
         },
         status: "ACTIVE",

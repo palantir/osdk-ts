@@ -39,7 +39,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
             true,
           ),
         ];
-      }),
+      }).filter(([key, value]) => value != null),
     ),
     links: {},
   };

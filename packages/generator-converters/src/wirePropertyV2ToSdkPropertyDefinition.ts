@@ -27,7 +27,14 @@ import type {
 export function wirePropertyV2ToSdkPropertyDefinition(
   input: PropertyV2 | SharedPropertyType,
   isNullable: boolean = true,
-): ObjectTypePropertyDefinition {
+  log?: { info: (msg: string) => void },
+): ObjectTypePropertyDefinition | undefined {
+  const sdkPropDefinition = objectPropertyTypeToSdkPropertyDefinition(
+    input.dataType,
+  );
+  if (sdkPropDefinition == null) {
+    return undefined;
+  }
   switch (input.dataType.type) {
     case "integer":
     case "string":
@@ -49,7 +56,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         displayName: input.displayName,
         multiplicity: false,
         description: input.description,
-        type: objectPropertyTypeToSdkPropertyDefinition(input.dataType),
+        type: sdkPropDefinition,
         nullable: isNullable,
       };
     case "array": {
@@ -57,21 +64,21 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         displayName: input.displayName,
         multiplicity: true,
         description: input.description,
-        type: objectPropertyTypeToSdkPropertyDefinition(input.dataType),
+        type: sdkPropDefinition,
         nullable: true,
       };
     }
     default:
       const _: never = input.dataType;
-      throw new Error(
-        `Unexpected data type ${JSON.stringify(input.dataType)}`,
-      );
+      log?.info(`Unexpected data type ${JSON.stringify(input.dataType)}`);
+      return undefined;
   }
 }
 
 function objectPropertyTypeToSdkPropertyDefinition(
   propertyType: ObjectPropertyType,
-): WirePropertyTypes {
+  log?: { info: (msg: string) => void },
+): WirePropertyTypes | undefined {
   switch (propertyType.type) {
     case "integer":
     case "string":
@@ -99,6 +106,7 @@ function objectPropertyTypeToSdkPropertyDefinition(
       return "numericTimeseries";
     default:
       const _: never = propertyType;
-      throw new Error(`Unexpected data type ${JSON.stringify(propertyType)}`);
+      log?.info(`Unexpected data type ${JSON.stringify(propertyType)}`);
+      return undefined;
   }
 }

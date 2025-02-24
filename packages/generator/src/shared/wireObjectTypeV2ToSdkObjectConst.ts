@@ -16,6 +16,7 @@
 
 import type { ObjectTypeFullMetadata } from "@osdk/gateway/types";
 import { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "@osdk/generator-converters";
+import consola from "consola";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
 import { propertyJsdoc } from "./propertyJsdoc.js";
@@ -38,6 +39,7 @@ export function wireObjectTypeV2ToSdkObjectConst(
     wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
       object,
       v2,
+      consola,
     ),
   );
 
