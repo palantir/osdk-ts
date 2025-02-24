@@ -73,7 +73,7 @@ const archetypeRules = archetypes(
     [
       "@osdk/client",
       "@osdk/api",
-      "@osdk/functions",
+      "@osdk/functions.unstable",
     ],
     {
       ...LIBRARY_RULES,

@@ -14,4 +14,11 @@
  * limitations under the License.
  */
 
-export type { Double, Float, Integer, Long } from "./PrimitiveTypes.js";
+export type {
+  DateISOString,
+  Double,
+  Float,
+  Integer,
+  Long,
+  TimestampISOString,
+} from "./PrimitiveTypes.js";
