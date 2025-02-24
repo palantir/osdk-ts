@@ -14,514 +14,774 @@
  * limitations under the License.
  */
 
-import type { DocsSnippetsSpec, SnippetVariables } from "../spec.js";
-
-const CodeSnippetBaseTemplateStrings = {} as const satisfies SnippetVariables;
-
-const AttachmentUploadTemplateStrings = {
-  hasAttachmentUpload: "required",
-  attachmentProperty: "optional",
-  hasAttachmentImports: "required",
-} as const satisfies SnippetVariables;
-
-const ObjectTypeTemplateStrings = {
-  objectType: "required",
-  titleProperty: "required",
-  titlePropertySnakeCase: "required",
-  allCapsTitlePropertySnakeCase: "required",
-  properties: "required",
-  primaryKeyProperty: "required",
-} as const satisfies SnippetVariables;
-
-const ObjectTypeWithLinkTemplateStrings = {
-  sourceObjectType: "required",
-  linkedObjectType: "required",
-  linkApiName: "required",
-  linkApiNameSnakeCase: "required",
-  isLinkManySided: "required",
-  linkedProperties: "required",
-  linkedPrimaryKeyProperty: "required",
-} as const satisfies SnippetVariables;
-
-const ObjectTypeWithPropertyTemplateStrings = {
-  objectType: "required",
-  property: "required",
-  propertySnakeCase: "required",
-  isDateProperty: "required",
-  isTimestampProperty: "required",
-  properties: "required",
-  primaryKeyProperty: "required",
-  propertyValue: "required",
-  rawPropertyValue: "required",
-  propertyValueIncremented: "required",
-  rawPropertyValueIncremented: "required",
-} as const satisfies SnippetVariables;
-
-const RangeObjectTypeWithPropertyTemplateStrings = {
-  ...ObjectTypeWithPropertyTemplateStrings,
-  operation: "required",
-  operationSymbol: "required",
-} as const satisfies SnippetVariables;
-
-const NumericAggregationObjectTypeWithPropertyTemplateStrings = {
-  ...ObjectTypeWithPropertyTemplateStrings,
-  operation: "required",
-} as const satisfies SnippetVariables;
-
-const DurationObjectTypeWithPropertyTemplateStrings = {
-  ...ObjectTypeWithPropertyTemplateStrings,
-  duration: "required",
-  durationText: "required",
-  durationLowercase: "required",
-} as const satisfies SnippetVariables;
-
-const DistanceObjectTypeWithPropertyTemplateStrings = {
-  ...ObjectTypeWithPropertyTemplateStrings,
-  distanceUnit: "required",
-  distanceUnitText: "required",
-} as const satisfies SnippetVariables;
-
-const GeoIntersectionPropertyTemplateStrings = {
-  ...ObjectTypeWithPropertyTemplateStrings,
-  intersects: "required",
-} as const satisfies SnippetVariables;
-
-const TimeUnitPropertyTemplateStrings = {
-  ...ObjectTypeWithPropertyTemplateStrings,
-  timeUnit: "required",
-  timeUnitValue: "required",
-} as const satisfies SnippetVariables;
-
-const FunctionTemplateStrings = {
-  ...CodeSnippetBaseTemplateStrings,
-  ...AttachmentUploadTemplateStrings,
-  funcApiName: "required",
-  rawFuncApiName: "required",
-  funcApiNameSnakeCase: "required",
-  functionInputValues: "required",
-  hasTimestampInputs: "required",
-  hasDateInputs: "required",
-  needsImports: "required",
-} as const satisfies SnippetVariables;
-
-const ActionTemplateStrings = {
-  ...CodeSnippetBaseTemplateStrings,
-  ...AttachmentUploadTemplateStrings,
-  actionApiName: "required",
-  rawActionApiName: "required",
-  actionApiNameUpperCaseFirstCharacter: "required",
-  actionApiNameSnakeCase: "required",
-  hasTimestampInputs: "required",
-  hasDateInputs: "required",
-  needsImports: "required",
-  actionEditAddObjectTypes: "required",
-  actionEditModifyObjectTypes: "required",
-  actionEditDeleteObjectCount: "required",
-  actionEditAddedLinksCount: "required",
-  actionEditDeletedLinksCount: "required",
-  hasEditObjectTypes: "required",
-  hasParameters: "required",
-  actionTypeParameterValues: "required",
-} as const satisfies SnippetVariables;
-
-const BatchActionTemplateStrings = {
-  ...ActionTemplateStrings,
-  actionApiNameBatchRequest: "required",
-} as const satisfies SnippetVariables;
-
-const InterfaceTemplateStrings = {
-  interfaceApiName: "required",
-} as const satisfies SnippetVariables;
-
-const InterfaceCastingTemplateStrings = {
-  interfaceApiName: "required",
-  objectTypeApiName: "required",
-  interfaceApiNameCamelCase: "required",
-  objectTypeApiNameCamelCase: "required",
-} as const satisfies SnippetVariables;
-
-const AttachmentTemplateStrings = {} as const satisfies SnippetVariables;
-
-const MediaTemplateStrings = {
-  objectType: "required",
-  rawObjectTypeApiName: "required",
-  property: "required",
-} as const satisfies SnippetVariables;
+import type { DocsSnippetsSpec } from "../spec.js";
 
 export const OSDK_SNIPPETS_SPEC = {
-  version: 1,
-  snippets: {
-    // loadObjectSnippets
-    loadSingleObjectGuide: {
-      variables: {
-        ...ObjectTypeTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+  "version": 1,
+  "snippets": {
+    "loadSingleObjectGuide": {
+      "variables": {
+        "objectType": "required",
+        "titleProperty": "required",
+        "titlePropertySnakeCase": "required",
+        "allCapsTitlePropertySnakeCase": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    loadObjectPageGuide: {
-      variables: {
-        ...ObjectTypeTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "loadObjectPageGuide": {
+      "variables": {
+        "objectType": "required",
+        "titleProperty": "required",
+        "titlePropertySnakeCase": "required",
+        "allCapsTitlePropertySnakeCase": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    orderObjectsGuide: {
-      variables: {
-        ...ObjectTypeTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "orderObjectsGuide": {
+      "variables": {
+        "objectType": "required",
+        "titleProperty": "required",
+        "titlePropertySnakeCase": "required",
+        "allCapsTitlePropertySnakeCase": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    searchObjectsGuide: {
-      variables: {
-        ...ObjectTypeTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "searchObjectsGuide": {
+      "variables": {
+        "objectType": "required",
+        "titleProperty": "required",
+        "titlePropertySnakeCase": "required",
+        "allCapsTitlePropertySnakeCase": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    loadSingleObjectReference: {
-      variables: {
-        ...ObjectTypeTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "loadSingleObjectReference": {
+      "variables": {
+        "objectType": "required",
+        "titleProperty": "required",
+        "titlePropertySnakeCase": "required",
+        "allCapsTitlePropertySnakeCase": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    loadObjectsReference: {
-      variables: {
-        ...ObjectTypeTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "loadObjectsReference": {
+      "variables": {
+        "objectType": "required",
+        "titleProperty": "required",
+        "titlePropertySnakeCase": "required",
+        "allCapsTitlePropertySnakeCase": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    loadAllObjectsReference: {
-      variables: {
-        ...ObjectTypeTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "loadAllObjectsReference": {
+      "variables": {
+        "objectType": "required",
+        "titleProperty": "required",
+        "titlePropertySnakeCase": "required",
+        "allCapsTitlePropertySnakeCase": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    loadLinkedObjectReference: {
-      variables: {
-        ...ObjectTypeWithLinkTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "loadLinkedObjectReference": {
+      "variables": {
+        "sourceObjectType": "required",
+        "linkedObjectType": "required",
+        "linkApiName": "required",
+        "linkApiNameSnakeCase": "required",
+        "isLinkManySided": "required",
+        "linkedProperties": "required",
+        "linkedPrimaryKeyProperty": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    loadLinkedObjectsReference: {
-      variables: {
-        ...ObjectTypeWithLinkTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "loadLinkedObjectsReference": {
+      "variables": {
+        "sourceObjectType": "required",
+        "linkedObjectType": "required",
+        "linkApiName": "required",
+        "linkApiNameSnakeCase": "required",
+        "isLinkManySided": "required",
+        "linkedProperties": "required",
+        "linkedPrimaryKeyProperty": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    // aggregationSnippets
-    aggregationTemplate: {
-      variables: {
-        ...ObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "aggregationTemplate": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    countAggregationTemplate: {
-      variables: {
-        ...ObjectTypeTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "countAggregationTemplate": {
+      "variables": {
+        "objectType": "required",
+        "titleProperty": "required",
+        "titlePropertySnakeCase": "required",
+        "allCapsTitlePropertySnakeCase": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    approximateDistinctAggregationTemplate: {
-      variables: {
-        ...ObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "approximateDistinctAggregationTemplate": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    exactDistinctAggregationTemplate: {
-      variables: {
-        ...ObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "exactDistinctAggregationTemplate": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    numericAggregationTemplate: {
-      variables: {
-        ...NumericAggregationObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "numericAggregationTemplate": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "operation": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    fixedWidthGroupByTemplate: {
-      variables: {
-        ...ObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "fixedWidthGroupByTemplate": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    durationGroupByTemplate: {
-      variables: {
-        ...DurationObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "durationGroupByTemplate": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "duration": "required",
+        "durationText": "required",
+        "durationLowercase": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    exactGroupByTemplate: {
-      variables: {
-        ...ObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "exactGroupByTemplate": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    rangeGroupByTemplate: {
-      variables: {
-        ...RangeObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "rangeGroupByTemplate": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "operation": "required",
+        "operationSymbol": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    // applyActionSnippets
-    applyAction: {
-      variables: {
-        ...ActionTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "applyAction": {
+      "variables": {
+        "hasAttachmentUpload": "required",
+        "attachmentProperty": "optional",
+        "hasAttachmentImports": "required",
+        "actionApiName": "required",
+        "rawActionApiName": "required",
+        "actionApiNameUpperCaseFirstCharacter": "required",
+        "actionApiNameSnakeCase": "required",
+        "hasTimestampInputs": "required",
+        "hasDateInputs": "required",
+        "needsImports": "required",
+        "actionEditAddObjectTypes": "required",
+        "actionEditModifyObjectTypes": "required",
+        "actionEditDeleteObjectCount": "required",
+        "actionEditAddedLinksCount": "required",
+        "actionEditDeletedLinksCount": "required",
+        "hasEditObjectTypes": "required",
+        "hasParameters": "required",
+        "actionTypeParameterValues": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    batchApplyAction: {
-      variables: {
-        ...BatchActionTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "batchApplyAction": {
+      "variables": {
+        "hasAttachmentUpload": "required",
+        "attachmentProperty": "optional",
+        "hasAttachmentImports": "required",
+        "actionApiName": "required",
+        "rawActionApiName": "required",
+        "actionApiNameUpperCaseFirstCharacter": "required",
+        "actionApiNameSnakeCase": "required",
+        "hasTimestampInputs": "required",
+        "hasDateInputs": "required",
+        "needsImports": "required",
+        "actionEditAddObjectTypes": "required",
+        "actionEditModifyObjectTypes": "required",
+        "actionEditDeleteObjectCount": "required",
+        "actionEditAddedLinksCount": "required",
+        "actionEditDeletedLinksCount": "required",
+        "hasEditObjectTypes": "required",
+        "hasParameters": "required",
+        "actionTypeParameterValues": "required",
+        "actionApiNameBatchRequest": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    // attachmentSnippets
-    uploadAttachment: {
-      variables: {
-        ...AttachmentTemplateStrings,
-        packageName: "required",
+    "uploadAttachment": {
+      "variables": {
+        "packageName": "required",
       },
     },
-    // mediaSnippets
-    uploadMedia: {
-      variables: {
-        ...MediaTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "uploadMedia": {
+      "variables": {
+        "objectType": "required",
+        "rawObjectTypeApiName": "required",
+        "property": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    readMedia: {
-      variables: {
-        ...MediaTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "readMedia": {
+      "variables": {
+        "objectType": "required",
+        "rawObjectTypeApiName": "required",
+        "property": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    // castInterfacesSnippets
-    castInterfaceToObjectReference: {
-      variables: {
-        ...InterfaceCastingTemplateStrings,
-        packageName: "required",
+    "castInterfaceToObjectReference": {
+      "variables": {
+        "interfaceApiName": "required",
+        "objectTypeApiName": "required",
+        "interfaceApiNameCamelCase": "required",
+        "objectTypeApiNameCamelCase": "required",
+        "packageName": "required",
       },
     },
-    // executeFunctionSnippet
-    executeFunction: {
-      variables: {
-        ...FunctionTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "executeFunction": {
+      "variables": {
+        "hasAttachmentUpload": "required",
+        "attachmentProperty": "optional",
+        "hasAttachmentImports": "required",
+        "funcApiName": "required",
+        "rawFuncApiName": "required",
+        "funcApiNameSnakeCase": "required",
+        "functionInputValues": "required",
+        "hasTimestampInputs": "required",
+        "hasDateInputs": "required",
+        "needsImports": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    // filterObjectsSnippets
-    stringStartsWithTemplate: {
-      variables: {
-        ...ObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "stringStartsWithTemplate": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    containsAllTermsInOrderTemplate: {
-      variables: {
-        ...ObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "containsAllTermsInOrderTemplate": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    containsAnyTermTemplate: {
-      variables: {
-        ...ObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "containsAnyTermTemplate": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    containsAllTermsTemplate: {
-      variables: {
-        ...ObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "containsAllTermsTemplate": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    equalityTemplate: {
-      variables: {
-        ...ObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "equalityTemplate": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    inFilterTemplate: {
-      variables: {
-        ...ObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "inFilterTemplate": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    nullTemplate: {
-      variables: {
-        ...ObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "nullTemplate": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    rangeTemplate: {
-      variables: {
-        ...ObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "rangeTemplate": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    withinDistanceTemplate: {
-      variables: {
-        ...DistanceObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "withinDistanceTemplate": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "distanceUnit": "required",
+        "distanceUnitText": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    withinBoundingBoxTemplate: {
-      variables: {
-        ...ObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "withinBoundingBoxTemplate": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    withinPolygonTemplate: {
-      variables: {
-        ...ObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "withinPolygonTemplate": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    intersectsPolygonTemplate: {
-      variables: {
-        ...GeoIntersectionPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "intersectsPolygonTemplate": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "intersects": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    intersectsBboxTemplate: {
-      variables: {
-        ...GeoIntersectionPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "intersectsBboxTemplate": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "intersects": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    notTemplate: {
-      variables: {
-        ...ObjectTypeTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "notTemplate": {
+      "variables": {
+        "objectType": "required",
+        "titleProperty": "required",
+        "titlePropertySnakeCase": "required",
+        "allCapsTitlePropertySnakeCase": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    andTemplate: {
-      variables: {
-        ...ObjectTypeTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "andTemplate": {
+      "variables": {
+        "objectType": "required",
+        "titleProperty": "required",
+        "titlePropertySnakeCase": "required",
+        "allCapsTitlePropertySnakeCase": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    orTemplate: {
-      variables: {
-        ...ObjectTypeTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "orTemplate": {
+      "variables": {
+        "objectType": "required",
+        "titleProperty": "required",
+        "titlePropertySnakeCase": "required",
+        "allCapsTitlePropertySnakeCase": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    // loadInterfacesSnippets
-    loadInterfacesReference: {
-      variables: {
-        ...InterfaceTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "loadInterfacesReference": {
+      "variables": {
+        "interfaceApiName": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    loadAllInterfacesReference: {
-      variables: {
-        ...InterfaceTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "loadAllInterfacesReference": {
+      "variables": {
+        "interfaceApiName": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    loadOrderedInterfacesReference: {
-      variables: {
-        ...InterfaceTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "loadOrderedInterfacesReference": {
+      "variables": {
+        "interfaceApiName": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    searchInterfacesReference: {
-      variables: {
-        ...InterfaceTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "searchInterfacesReference": {
+      "variables": {
+        "interfaceApiName": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    // loadTimeSeriesSnippets
-    loadTimeSeriesPointsSnippet: {
-      variables: {
-        ...ObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "loadTimeSeriesPointsSnippet": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    loadRelativeTimeSeriesPointsSnippet: {
-      variables: {
-        ...TimeUnitPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "loadRelativeTimeSeriesPointsSnippet": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "timeUnit": "required",
+        "timeUnitValue": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    loadAbsoluteTimeSeriesPointsSnippet: {
-      variables: {
-        ...ObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "loadAbsoluteTimeSeriesPointsSnippet": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    loadTimeSeriesFirstPointSnippet: {
-      variables: {
-        ...ObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "loadTimeSeriesFirstPointSnippet": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    loadTimeSeriesLastPointSnippet: {
-      variables: {
-        ...ObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "loadTimeSeriesLastPointSnippet": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    // metadataSnippets
-    loadObjectMetadataSnippet: {
-      variables: {
-        ...ObjectTypeWithPropertyTemplateStrings,
-        rawOntologyApiName: "required",
-        packageName: "required",
+    "loadObjectMetadataSnippet": {
+      "variables": {
+        "objectType": "required",
+        "property": "required",
+        "propertySnakeCase": "required",
+        "isDateProperty": "required",
+        "isTimestampProperty": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "propertyValue": "required",
+        "rawPropertyValue": "required",
+        "propertyValueIncremented": "required",
+        "rawPropertyValueIncremented": "required",
+        "rawOntologyApiName": "required",
+        "packageName": "required",
       },
     },
-    // subscribeSnippets
-    subscribeToObjectSetInstructions: {
-      variables: {
-        ...ObjectTypeTemplateStrings,
-        packageName: "required",
+    "subscribeToObjectSetInstructions": {
+      "variables": {
+        "objectType": "required",
+        "titleProperty": "required",
+        "titlePropertySnakeCase": "required",
+        "allCapsTitlePropertySnakeCase": "required",
+        "properties": "required",
+        "primaryKeyProperty": "required",
+        "packageName": "required",
       },
     },
   },
