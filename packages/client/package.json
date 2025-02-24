@@ -94,6 +94,7 @@
     "@osdk/shared.test": "workspace:~",
     "@types/geojson": "^7946.0.14",
     "@types/ws": "^8.5.11",
+    "chalk": "^5.4.1",
     "execa": "^9.5.1",
     "msw": "^2.7.0",
     "p-defer": "^4.0.1",

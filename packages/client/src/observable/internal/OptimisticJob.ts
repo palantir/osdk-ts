@@ -15,61 +15,57 @@
  */
 
 import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
-import { MultiMap } from "mnemonist";
 import { additionalContext } from "../../Client.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
-import type { ChangedObjects } from "./ChangedObjects.js";
+import { type Changes } from "./ChangedObjects.js";
 import { createOptimisticId, type OptimisticId } from "./OptimisticId.js";
 import type { Store } from "./Store.js";
 
 export class OptimisticJob {
   context: OptimisticBuilder;
-  getResult: () => Promise<ChangedObjects>;
-  #result!: Promise<ChangedObjects>;
+  getResult: () => Promise<Changes>;
+  #result!: Promise<Changes>;
 
   constructor(store: Store, optimisticId: OptimisticId) {
     const updatedObjects: Array<
       Osdk.Instance<ObjectTypeDefinition>
     > = [];
 
-    const addedObjects: Array<
+    // due to potentially needing to fetch the object metadata,
+    // the creation of objects needs to be async. In practice, the
+    // metadata is cached.
+    const addedObjectPromises: Array<
       Promise<Osdk.Instance<ObjectTypeDefinition>>
     > = [];
+
+    // TODO, this code needs to be refactored. its weird right now
+    // but the contract for `runOptimisticJob` is good.
 
     // todo memoize this
     this.getResult = () => {
       return this.#result ??= (async () => {
-        const changes: ChangedObjects = {
-          addedObjects: new MultiMap(),
-          modifiedObjects: new MultiMap(),
-        };
+        const addedObjects = await Promise.allSettled(
+          addedObjectPromises,
+        );
 
-        const settled = await Promise.allSettled(addedObjects);
-        for (const added of settled) {
-          if (added.status === "fulfilled") {
-            changes.addedObjects.set(added.value.$objectType, added.value);
-          } else {
-            // TODO FIXME
-            throw added;
-          }
-        }
-
-        for (const modified of updatedObjects) {
-          changes.modifiedObjects.set(modified.$apiName, modified);
-        }
-        store.batch({ optimisticId }, (batch) => {
-          for (const a of ["addedObjects", "modifiedObjects"] as const) {
-            for (const b of changes[a].values()) {
-              store.getObjectQuery(b.$objectType, b.$primaryKey).writeToStore(
-                b,
-                "loading",
-                batch,
-              );
+        const { batchResult } = store.batch({ optimisticId }, (batch) => {
+          for (const obj of addedObjects) {
+            if (obj.status === "fulfilled") {
+              store.getObjectQuery(obj.value.$objectType, obj.value.$primaryKey)
+                .writeToStore(obj.value, "loading", batch);
+            } else {
+              // TODO FIXME
+              throw obj;
             }
+          }
+
+          for (const obj of updatedObjects) {
+            store.getObjectQuery(obj.$objectType, obj.$primaryKey)
+              .writeToStore(obj, "loading", batch);
           }
         });
 
-        return changes;
+        return batchResult.changes;
       })();
     };
 
@@ -88,9 +84,11 @@ export class OptimisticJob {
             ...properties,
           }],
           undefined,
-        ).then(x => x[0]);
+        ).then(objs => {
+          return objs[0];
+        });
 
-        addedObjects.push(create);
+        addedObjectPromises.push(create);
         return this;
       },
     };
@@ -108,12 +106,13 @@ export function runOptimisticJob(
   const optimisticId = createOptimisticId();
   const job = new OptimisticJob(store, optimisticId);
   optimisticUpdate(job.context);
-  const optimisticApplicationDone = job.getResult().then((result) => {
-    store.maybeUpdateLists(result, optimisticId);
-  });
+  const optimisticApplicationDone = job.getResult();
 
   return () => {
-    return optimisticApplicationDone.finally(() => {
+    return optimisticApplicationDone.then(
+      // we don't want to leak the result
+      () => undefined,
+    ).finally(() => {
       store.removeLayer(optimisticId);
     });
   };

@@ -172,7 +172,7 @@ export default tseslint.config(
       "@typescript-eslint/no-unsafe-return": "off",
       "@typescript-eslint/no-unsafe-argument": "off",
       "prefer-const": "warn",
-      "@typescript-eslint/no-unsafe-call": "warn",
+      "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-confusing-void-expression": ["warn", {
         ignoreArrowShorthand: true,
         ignoreVoidOperator: true,

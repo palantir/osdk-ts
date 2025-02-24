@@ -20,6 +20,11 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 8080,
       proxy: {
+        "/api/v2/ontologySubscriptions": {
+          ws: true,
+          target: `${env.VITE_FOUNDRY_URL}`,
+          changeOrigin: true,
+        },
         "/multipass": `${env.VITE_FOUNDRY_URL}`,
         "/api": `${env.VITE_FOUNDRY_URL}`,
         "/ontology-metadata": `${env.VITE_FOUNDRY_URL}`,
