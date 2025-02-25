@@ -22,7 +22,7 @@ import type {
   PropertyKeys,
 } from "@osdk/api";
 
-export interface ObjectLocator<
+interface ObjectLocator<
   S extends ObjectTypeDefinition = ObjectTypeDefinition,
 > {
   apiName: CompileTimeMetadata<S>["apiName"];
@@ -107,12 +107,3 @@ export type UpdateObjectEdits<X extends AnyEdit> = Extract<
   X,
   { type: "updateObject" }
 >;
-
-export type ObjectEdits<X extends AnyEdit> =
-  | CreateObjectEdits<X>
-  | DeleteObjectEdits<X>
-  | UpdateObjectEdits<X>;
-
-export type LinkEdits<X extends AnyEdit> =
-  | AddLinkEdits<X>
-  | RemoveLinkEdits<X>;
