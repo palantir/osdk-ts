@@ -4,15 +4,11 @@ title: Getting Started
 
 # Installation
 
-Once these features have become Generally Available, you would just need to update to the latest version of `@osdk/client` and `@osdk/react`.
+Once these features are Generally Available, simply update to the latest versions of `@osdk/client` and `@osdk/react` in your project. Currently, they are in beta and require some additional steps.
 
-However, for now these are beta packages and require a few extra steps:
+## 1. Specify the Beta Versions
 
-## 1. Set the specific beta versions
-
-Using `latest` in npm/yarn/pnpm is a misnomer as it doesn't actually get you the latest version unless you specifically instruct these tools to update. Further, they won't work with beta/rc releases generally.
-
-Here are the latest versions to use as of the time of this writing (and the minimum required versions):
+Using `latest` in npm/yarn/pnpm does not always install the actual latest version, especially when dealing with beta or release-candidate packages. You must specify them explicitly, for example:
 
 ```json
 "@osdk/client": "^2.2.0-beta.4",
@@ -20,23 +16,23 @@ Here are the latest versions to use as of the time of this writing (and the mini
 "@osdk/react": "^0.4.0-beta.2",
 ```
 
-## 2. Regenerate your SDK with the latest beta version on your Foundry.
+## 2. Regenerate Your SDK on Foundry
 
-### Open the Developer Console for your app
+### Access the Developer Console
 
 In the Developer Console for your Foundry, after loading your application, click the "SDK versions" tab on the left navbar. If it is collapsed, it has a tag icon on it.
 
-### Ensure you have beta sdk generation enabled
+### Ensure Beta SDK Generation is Enabled
 
 On the SDK versions page, in the top right corner is a "Settings" button. Click it and enable beta features for TypeScript.
 
-### Generate a new version
+### Generate a New Version
 
 Click the blue "Generate new version" button. In the dialog that shows up, make sure that the checkbox for "npm" is checked and that you are on the latest -beta generator. Mine has `2.2.0-beta.3` currently. Then click "Generate" and wait a few seconds.
 
 Note: normally we want the generator version `2.2.0-beta.3` to match the `@osdk/client` version we have in our package.json file. However, in this case, I know that the `2.2.0-beta.3` will work with the `2.2.0-beta.4` `@osdk/client`.
 
-### Update your package.json with your generated sdk version
+### Update Your package.json
 
 On the SDK versions page, the table shows you your generated sdk version number in the left column. Mine says "0.4.0" so we will update my package.json to reflect that. Note, you need to use your package name, not `@no-caching-app/sdk`.
 
@@ -54,29 +50,18 @@ On the SDK versions page, the table shows you your generated sdk version number 
 
 # Getting Started
 
-Below, we will try to use the filenames that match what are used when creating an osdk project from a template.
+Below is an example using filenames that align with a typical osdk project.
 
-## Configure a `<OsdkProvider2/>`
+## Configure `<OsdkProvider2/>`
 
-In `main.tsx` (or wherever you call `react-dom`'s `createRoot`), we need to add an `OsdkProvider2`.
-
-First, we need to import `OsdkProvider2` and your new `observableClient`:
+In `main.tsx` (or wherever you call `createRoot`), add an `OsdkProvider2`:
 
 ```ts
 import { OsdkProvider2 } from "@osdk/react/experimental";
 import client from "./client"; // or wherever you created it
 ```
 
-Then, if you have a `createRoot` call that looks like this:
-
-```ts
-// EXISTING CODE
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <RouterProvider router={router} />,
-);
-```
-
-Then we need to wrap that inner component like this, adding the `<OsdkProvider2...` and `</OsdkProvider>` lines:
+Then wrap your existing root components with `<OsdkProvider2 client={client}>`:
 
 ```ts
 ReactDOM.createRoot(document.getElementById("root")!).render(
@@ -86,16 +71,13 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 );
 ```
 
-## Load a list of objects
-
-In this example, we are using a silly where clause to demonstrate how to
-use them in general. For more, see {@link useOsdkList}.
+## Retrieve Objects
 
 ```tsx
 import { Todo } from "@my/osdk";
 
 function App() {
-  const { data, isLoading } = useOsdkList(Todo);
+  const { data, isLoading } = useOsdkObjects(Todo);
 
   // If the cache has no existing copy for this query and
   // we are in a loading state then we can just tell the
@@ -115,15 +97,15 @@ function App() {
 }
 ```
 
-Additionally, `useOsdkList()` takes a second argument allowing you to pass a `where` clause:
+Using a `where` clause:
 
 ```ts
-const { data, isLoading } = useOsdkList(Todo, {
+const { data, isLoading } = useOsdkObjects(Todo, {
   where: { text: { $startsWith: "cool " } },
 });
 ```
 
-## Rendering a single object
+## Render a Single Object
 
 We can either load an object by type and primary key or we can pass an `Osdk.Instance` object we have already loaded to get information like its `isLoading` status.
 
@@ -147,12 +129,9 @@ function TodoView({ todo }: TodoProps) {
 }
 ```
 
-## Call an action
+## Call an Action
 
-{@link useOsdkAction} is the hook we use for apply actions.
-The hook does not apply the action on page render. Instead
-it returns an object that lets you invoke `applyAction` in a
-react callback and render the state of the last/active call.
+{@link useOsdkAction} is the hook we use for apply actions. The hook does not apply the action on page render. Instead it returns an object that lets you invoke `applyAction` in a react callback and render the state of the last/active call.
 
 ```tsx
 import { $Actions } from "@my/osdk";
@@ -194,19 +173,15 @@ function TodoView({ todo }: TodoProps) {
 }
 ```
 
-## Using optimistic updates
+## Optimistic Updates
 
-With optimistic updates, you can change the internal cache of the
-ObservationClient while you wait for the action to be performed.
+With optimistic updates, you can change the internal cache of the ObservationClient while you wait for the action to be performed.
 
-In this case, it allows us to mark the todo as complete even though applying
-the action to the server has not yet completed.
+In this case, it allows us to mark the todo as complete even though applying the action to the server has not yet completed.
 
-If the action is successful then the changed objects are automatically
-reloaded from the server and the optimistic change is removed.
+If the action is successful then the changed objects are automatically reloaded from the server and the optimistic change is removed.
 
-If the action errors, then the changed objects are automatically rolled back
-to their state prior to the action being performed.
+If the action errors, then the changed objects are automatically rolled back to their state prior to the action being performed.
 
 ```tsx
 // ...
@@ -246,9 +221,9 @@ function TodoView({ todo }: TodoProps) {
 }
 ```
 
-# Debugging problems
+# Debugging Issues
 
-## Problems with `npm install`?
+## NPM Install Concerns
 
 NOTE: DO NOT DO THIS UNLESS YOU ARE HAVING PROBLEMS.
 
