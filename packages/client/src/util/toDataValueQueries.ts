@@ -121,7 +121,7 @@ export async function toDataValueQueries(
         for (const [key, mapValue] of Object.entries(value)) {
           entrySet.push({
             key: desiredType.keyType.type === "object"
-              ? extractFrom(key)
+              ? extractPrimaryKeyFromObjectIdentifier(key)
               : await toDataValueQueries(
                 key,
                 client,
@@ -166,6 +166,6 @@ export async function toDataValueQueries(
   return value;
 }
 
-function extractFrom(a: string) {
+function extractPrimaryKeyFromObjectIdentifier(a: string) {
   return a.substring(a.indexOf(":") + 1);
 }
