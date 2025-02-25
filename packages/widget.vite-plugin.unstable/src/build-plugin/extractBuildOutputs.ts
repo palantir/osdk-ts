@@ -76,9 +76,10 @@ function parseScriptNode(
   node: DefaultTreeAdapterTypes.Element,
 ): ScriptBuildOutput {
   assertEmptyNode(node);
-  assertAttributes(node, ["src", "type"]);
+  assertMinAttributes(node, ["src"]);
+  assertMaxAttributes(node, ["src", "type"]);
   const srcAttribute = getAttribute(node, "src")!;
-  const typeAttribute = getAttribute(node, "type")!;
+  const typeAttribute = getAttributeOrDefault(node, "type", "text/javascript");
   if (!isValidScriptType(typeAttribute)) {
     throw new Error(
       `Invalid script type attribute found in Vite HTML output: ${typeAttribute}`,
@@ -95,8 +96,9 @@ function parseStylesheetNode(
   node: DefaultTreeAdapterTypes.Element,
 ): StylesheetBuildOutput {
   assertEmptyNode(node);
+  assertMinAttributes(node, ["rel", "href"]);
   // We don't handle media queries or other attributes on the link tag
-  assertAttributes(node, ["rel", "href"]);
+  assertMaxAttributes(node, ["rel", "href"]);
   const srcAttribute = getAttribute(node, "href")!;
   return { type: "stylesheet", src: srcAttribute };
 }
@@ -105,25 +107,29 @@ function isValidScriptType(type: string): type is ScriptType {
   return type === "text/javascript" || type === "module";
 }
 
-function assertAttributes(
+function assertMinAttributes(
   node: DefaultTreeAdapterTypes.Element,
-  expectedAttributeNames: string[],
+  requiredAttributeNames: string[],
 ): void {
-  const expectedAttributeNameSet = new Set(expectedAttributeNames);
-  const actualAttributeNames = new Set(node.attrs?.map(attr => attr.name));
-
-  actualAttributeNames.forEach(attributeName => {
-    if (!expectedAttributeNameSet.has(attributeName)) {
+  const actualAttributeNames = new Set(node.attrs?.map((attr) => attr.name));
+  requiredAttributeNames.forEach((requiredAttributeName) => {
+    if (!actualAttributeNames.has(requiredAttributeName)) {
       throw new Error(
-        `Unexpected ${attributeName} attribute found in Vite HTML output`,
+        `Missing ${requiredAttributeName} attribute in Vite HTML output`,
       );
     }
   });
+}
 
-  expectedAttributeNameSet.forEach(expectedAttributeName => {
-    if (!actualAttributeNames.has(expectedAttributeName)) {
+function assertMaxAttributes(
+  node: DefaultTreeAdapterTypes.Element,
+  allowedAttributeNames: string[],
+): void {
+  const actualAttributeNames = new Set(node.attrs?.map((attr) => attr.name));
+  actualAttributeNames.forEach((actualAttributeName) => {
+    if (!allowedAttributeNames.includes(actualAttributeName)) {
       throw new Error(
-        `Missing ${expectedAttributeName} attribute in Vite HTML output`,
+        `Unexpected ${actualAttributeName} attribute found in Vite HTML output`,
       );
     }
   });
@@ -135,10 +141,29 @@ function assertEmptyNode(node: DefaultTreeAdapterTypes.Node): void {
   }
 }
 
+function assertValue(
+  actual: string,
+  allowedValues: string[],
+) {
+  if (!allowedValues.includes(actual)) {
+    throw new Error(
+      `Invalid value found in Vite HTML output: ${actual}`,
+    );
+  }
+}
+
 function getAttribute(
   node: DefaultTreeAdapterTypes.Element,
   attributeName: string,
 ): string | undefined {
   return node.attrs?.find((attribute) => attribute.name === attributeName)
     ?.value;
+}
+
+function getAttributeOrDefault(
+  node: DefaultTreeAdapterTypes.Element,
+  attributeName: string,
+  defaultValue: string,
+): string {
+  return getAttribute(node, attributeName) ?? defaultValue;
 }

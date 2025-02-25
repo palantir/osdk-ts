@@ -25,12 +25,13 @@ const EXAMPLE_HTML = `
 <html>
 <head>
     <script src="/script1.js" type="text/javascript"></script>
-    <script type="module" src="/script2.js"></script>
+    <script src="/script2.js" type="module"></script>
+    <script src="/script3.js"></script>
     <link rel="stylesheet" href="/styles.css">
     <link rel="stylesheet" href="/more-styles.css">
 </head>
 <body>
-    <script src="/script3.js" type="text/javascript"></script>
+    <script src="/script4.js" type="text/javascript"></script>
 </body>
 </html>
 `;
@@ -40,9 +41,10 @@ test("extractBuildOutputs with scripts and stylesheets", () => {
   const result = extractBuildOutputs("dummy/path.html");
   expect(result).toEqual({
     scripts: [
-      { type: "script", scriptType: "text/javascript", src: "/script1.js" },
-      { type: "script", scriptType: "module", src: "/script2.js" },
-      { type: "script", scriptType: "text/javascript", src: "/script3.js" },
+      { type: "script", src: "/script1.js", scriptType: "text/javascript" },
+      { type: "script", src: "/script2.js", scriptType: "module" },
+      { type: "script", src: "/script3.js", scriptType: "text/javascript" },
+      { type: "script", src: "/script4.js", scriptType: "text/javascript" },
     ],
     stylesheets: ["/styles.css", "/more-styles.css"],
   });
@@ -83,7 +85,7 @@ test("extractBuildOutputs throws error for invalid script type", () => {
   );
 });
 
-test("extractBuildOutputs throws error for unexpected attributes", () => {
+test("extractBuildOutputs throws error for unexpected script attributes", () => {
   vi.mocked(fs.readFileSync).mockReturnValue(`
     <html>
       <head>
@@ -123,4 +125,17 @@ test("extractBuildOutputs ignores non-stylesheet links", () => {
     scripts: [],
     stylesheets: ["/styles.css"],
   });
+});
+
+test("extractBuildOutputs throws error for unexpected link attributes", () => {
+  vi.mocked(fs.readFileSync).mockReturnValue(`
+    <html>
+      <head>
+        <link rel="stylesheet" href="/styles.css" async>
+      </head>
+    </html>
+  `);
+  expect(() => extractBuildOutputs("dummy/path.html")).toThrow(
+    "Unexpected async attribute found in Vite HTML output",
+  );
 });
