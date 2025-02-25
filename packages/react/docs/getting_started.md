@@ -56,28 +56,6 @@ On the SDK versions page, the table shows you your generated sdk version number 
 
 Below, we will try to use the filenames that match what are used when creating an osdk project from a template.
 
-## Create an `ObservableClient` with your `Client`.
-
-In `client.ts`, or wherever you already call `createClient`, add a new import:
-
-```ts
-import { createObservableClient } from "@osdk/client/unstable-do-not-use";
-```
-
-After you create your `client`, additionally create your `observableClient`.
-
-```ts
-// EXISTING CODE (yours may differ slightly)
-const client: Client = createClient(
-  url,
-  $ontologyRid,
-  auth,
-);
-
-// ADD THIS LINE:
-export const observableClient = createObservableClient(client);
-```
-
 ## Configure a `<OsdkProvider2/>`
 
 In `main.tsx` (or wherever you call `react-dom`'s `createRoot`), we need to add an `OsdkProvider2`.
@@ -86,7 +64,7 @@ First, we need to import `OsdkProvider2` and your new `observableClient`:
 
 ```ts
 import { OsdkProvider2 } from "@osdk/react/experimental";
-import client, { observableClient } from "./client";
+import client from "./client"; // or wherever you created it
 ```
 
 Then, if you have a `createRoot` call that looks like this:
@@ -102,7 +80,7 @@ Then we need to wrap that inner component like this, adding the `<OsdkProvider2.
 
 ```ts
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <OsdkProvider2 client={client} store={observableClient}>
+  <OsdkProvider2 client={client}>
     <RouterProvider router={router} />,
   </OsdkProvider2>,
 );
