@@ -30,6 +30,7 @@ import type { DataValue } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
+import { createObjectSpecifierFromPrimaryKey } from "../object/createObjectSpecifierFromPrimaryKey.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
 import { hydrateAttachmentFromRidInternal } from "../public-utils/hydrateAttachmentFromRid.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
@@ -366,7 +367,10 @@ function getObjectId(
       `Missing definition for ${objectTypeApiName}`,
     );
   }
-  return `${objectTypeApiName}:${primaryKey}`;
+  return createObjectSpecifierFromPrimaryKey(
+    def,
+    primaryKey,
+  );
 }
 
 export function createQueryObjectResponse<
@@ -380,6 +384,9 @@ export function createQueryObjectResponse<
     $title: undefined,
     $objectType: objectDef.apiName,
     $primaryKey: primaryKey,
-    $objectSpecifier: `${objectDef.apiName}:${primaryKey}` as any,
+    $objectSpecifier: createObjectSpecifierFromPrimaryKey(
+      objectDef,
+      primaryKey,
+    ),
   };
 }

@@ -23,6 +23,7 @@ import type { InterfaceMetadata } from '@osdk/api';
 import { isOk } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/api/unstable';
 import { ObjectMetadata } from '@osdk/api';
+import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
 import { ObjectSet } from '@osdk/api';
 import type { ObjectSetQueryDataType } from '@osdk/api';
@@ -32,6 +33,7 @@ import { Osdk } from '@osdk/api';
 import { OsdkObject } from '@osdk/api';
 import { PageResult } from '@osdk/api';
 import { PalantirApiError } from '@osdk/shared.net.errors';
+import type { PrimaryKeyType } from '@osdk/api';
 import { PropertyDef } from '@osdk/api';
 import { PropertyKeys } from '@osdk/api';
 import { PropertyValueWireToClient } from '@osdk/api';
@@ -100,6 +102,9 @@ export function createAttachmentUpload(data: Blob, name: string): AttachmentUplo
 export const createClient: (baseUrl: string, ontologyRid: string | Promise<string>, tokenProvider: () => Promise<string>, options?: {
     	logger?: Logger
 } | undefined, fetchFn?: typeof fetch | undefined) => Client;
+
+// @public (undocumented)
+export function createObjectSpecifierFromPrimaryKey<Q extends ObjectOrInterfaceDefinition>(def: Q, primaryKey: PrimaryKeyType<Q>): ObjectSpecifier<Q>;
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen

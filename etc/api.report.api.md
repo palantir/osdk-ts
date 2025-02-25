@@ -798,7 +798,7 @@ export namespace ObjectSetSubscription {
 
 // @public (undocumented)
 export type ObjectSpecifier<Q extends ObjectOrInterfaceDefinition> = string & {
-    	__apiName: Q["apiName"] | (Q extends InterfaceDefinition ? NonNullable<Q["__DefinitionMetadata"]> extends InterfaceMetadata ? NonNullable<NonNullable<Q["__DefinitionMetadata"]>["implementedBy"]>[number] : never : never)
+    	__apiName?: Q["apiName"] | (Q extends InterfaceDefinition ? NonNullable<Q["__DefinitionMetadata"]> extends InterfaceMetadata ? NonNullable<NonNullable<Q["__DefinitionMetadata"]>["implementedBy"]>[number] : never : never)
 };
 
 // @public (undocumented)

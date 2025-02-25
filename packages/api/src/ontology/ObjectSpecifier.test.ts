@@ -28,14 +28,16 @@ describe("ObjectSpecifier", () => {
     type EmployeeObjectId = ObjectSpecifier<Employee>;
 
     expectTypeOf<EmployeeObjectId>().toMatchTypeOf<
-      string & { __apiName: "Employee" }
+      string & { __apiName?: "Employee" }
     >();
 
     const employee = await fauxObjectSet.fetchOne(123);
 
     const specifier: EmployeeObjectId = employee.$objectSpecifier;
 
-    expectTypeOf(specifier).toMatchTypeOf<string & { __apiName: "Employee" }>();
+    expectTypeOf(specifier).toMatchTypeOf<
+      string & { __apiName?: "Employee" }
+    >();
 
     type NonEmployeeObjectId = ObjectSpecifier<
       { apiName: "NotEmployee"; osdkMetadata: any; type: "object" }
@@ -54,7 +56,7 @@ describe("ObjectSpecifier", () => {
       type FooInterfaceObjectSpecifier = ObjectSpecifier<FooInterface>;
 
       expectTypeOf<FooInterfaceObjectSpecifier>().toMatchTypeOf<
-        string & { __apiName: "FooInterface" | "Employee" }
+        string & { __apiName?: "FooInterface" | "Employee" }
       >();
 
       const fooInterface = await fauxInterfaceObjectSet.fetchPage();
@@ -62,7 +64,7 @@ describe("ObjectSpecifier", () => {
       const specifier = fooInterface.data[0].$objectSpecifier;
 
       expectTypeOf(specifier).toMatchTypeOf<
-        string & { __apiName: "FooInterface" | "Employee" }
+        string & { __apiName?: "FooInterface" | "Employee" }
       >();
     });
 
@@ -72,7 +74,7 @@ describe("ObjectSpecifier", () => {
       const specifier = employee.$objectSpecifier;
 
       expectTypeOf(specifier).toMatchTypeOf<
-        string & { __apiName: "Employee" }
+        string & { __apiName?: "Employee" }
       >();
 
       const fooInterface = (await fauxInterfaceObjectSet.fetchPage()).data[0];

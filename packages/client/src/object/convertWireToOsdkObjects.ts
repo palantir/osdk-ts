@@ -32,6 +32,7 @@ import {
   type FetchedObjectTypeDefinition,
 } from "../ontology/OntologyProvider.js";
 import { createOsdkObject } from "./convertWireToOsdkObjects/createOsdkObject.js";
+import { createObjectSpecifierFromPrimaryKey } from "./createObjectSpecifierFromPrimaryKey.js";
 
 /**
  * If interfaceApiName is not undefined, converts the instances of the
@@ -314,7 +315,10 @@ function fixObjectPropertiesInPlace(
     obj.$primaryKey ??= obj.__primaryKey;
     obj.$title ??= obj.__title;
 
-    obj.$objectSpecifier = `${obj.$apiName}:${obj.$primaryKey}`;
+    obj.$objectSpecifier = createObjectSpecifierFromPrimaryKey(
+      { apiName: obj.$apiName, type: "object" },
+      obj.$primaryKey,
+    );
 
     // we don't want people to use these
     delete obj.__apiName;

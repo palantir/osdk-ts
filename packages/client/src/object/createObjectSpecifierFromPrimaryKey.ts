@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import { describe, expect, it } from "vitest";
+import type {
+  ObjectOrInterfaceDefinition,
+  ObjectSpecifier,
+  PrimaryKeyType,
+} from "@osdk/api";
 
-describe("toDataValueQueries", () => {
-  it("should be implemented", () => {
-    expect(true).toBe(true);
-  });
-});
+export function createObjectSpecifierFromPrimaryKey<
+  Q extends ObjectOrInterfaceDefinition,
+>(def: Q, primaryKey: PrimaryKeyType<Q>): ObjectSpecifier<Q> {
+  return `${def.apiName}:${primaryKey}` as ObjectSpecifier<Q>;
+}
