@@ -1,5 +1,17 @@
 # @osdkkit/react
 
+## 0.4.0-beta.2
+
+### Minor Changes
+
+- fe0cc43: Experimental react changes
+
+### Patch Changes
+
+- Updated dependencies [fe0cc43]
+  - @osdk/client@2.2.0-beta.4
+  - @osdk/api@2.2.0-beta.4
+
 ## 0.3.0-beta.3
 
 ### Minor Changes

@@ -1,5 +1,19 @@
 # @osdk/api
 
+## 2.2.0-beta.4
+
+## 2.2.0-beta.3
+
+### Minor Changes
+
+- 761e69d: Added type safety to createMediaReference
+
+## 2.2.0-beta.2
+
+### Minor Changes
+
+- fccd9ac: "Allow selecting derived properties"
+
 ## 2.1.0-beta.31
 
 ### Minor Changes

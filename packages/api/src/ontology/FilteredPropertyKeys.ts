@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-export interface Logger {
-  trace: LogFn;
-  debug: LogFn;
-  fatal: LogFn;
-  error: LogFn;
-  warn: LogFn;
-  info: LogFn;
+import type { ObjectOrInterfaceDefinition } from "./ObjectOrInterface.js";
+import type { WirePropertyTypes } from "./WirePropertyTypes.js";
 
-  isLevelEnabled(level: string): boolean;
-
-  child(
-    bindings: Record<string, any>,
-    options?: { level?: string; msgPrefix?: string },
-  ): Logger;
-}
-
-export interface LogFn {
-  (obj: unknown, msg?: string, ...args: any[]): void;
-  (msg: string, ...args: any[]): void;
-}
+export type FilteredPropertyKeys<
+  O extends ObjectOrInterfaceDefinition,
+  T extends WirePropertyTypes,
+> = {
+  [K in keyof NonNullable<O["__DefinitionMetadata"]>["properties"]]:
+    NonNullable<O["__DefinitionMetadata"]>["properties"][K]["type"] extends T
+      ? K
+      : never;
+}[keyof NonNullable<O["__DefinitionMetadata"]>["properties"]];
