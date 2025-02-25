@@ -49,7 +49,7 @@ export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
 export function useOsdkAction<Q extends ActionDefinition<any>>(
   actionDef: Q,
 ): UseOsdkActionResult<Q> {
-  const { store } = React.useContext(OsdkContext2);
+  const { observableClient } = React.useContext(OsdkContext2);
   const [error, setError] = React.useState<UseOsdkActionResult<Q>["error"]>();
   const [data, setData] = React.useState<unknown>();
   const [isPending, setPending] = React.useState(false);
@@ -61,7 +61,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
     try {
       setPending(true);
       setError(undefined);
-      const r = await store.applyAction(actionDef, args, {
+      const r = await observableClient.applyAction(actionDef, args, {
         optimisticUpdate: $optimisticUpdate,
       });
       setData(r);
@@ -77,7 +77,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
     } finally {
       setPending(false);
     }
-  }, [store, setError]);
+  }, [observableClient, setError]);
 
   return { applyAction, error, data, isPending };
 }

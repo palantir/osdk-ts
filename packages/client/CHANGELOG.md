@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.2.0-beta.5
+
+### Minor Changes
+
+- 62e5965: Removed unneeded lint statements.
+- 2f6206c: Improvements to @osdk/react
+
+### Patch Changes
+
+- @osdk/api@2.2.0-beta.5
+- @osdk/client.unstable@2.2.0-beta.5
+- @osdk/generator-converters@2.2.0-beta.5
+
 ## 2.2.0-beta.4
 
 ### Minor Changes
