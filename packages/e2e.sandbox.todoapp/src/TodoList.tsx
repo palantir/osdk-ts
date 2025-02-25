@@ -1,5 +1,5 @@
 import type { WhereClause } from "@osdk/client";
-import { useOsdkList } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react/experimental";
 import "./App.css";
 import type { Todo } from "./generatedNoCheck2/index.js";
 import { $Objects } from "./generatedNoCheck2/index.js";
@@ -13,13 +13,16 @@ interface TodoListProps {
 }
 
 function TodoList({ where, heading }: TodoListProps) {
-  const { data, isLoading, error, isOptimistic } = useOsdkList($Objects.Todo, {
-    where,
-    orderBy: {
-      title: "asc",
+  const { data, isLoading, error, isOptimistic } = useOsdkObjects(
+    $Objects.Todo,
+    {
+      where,
+      orderBy: {
+        title: "asc",
+      },
+      streamUpdates: true,
     },
-    streamUpdates: true,
-  });
+  );
 
   if (!data && isLoading) {
     return "Loading";

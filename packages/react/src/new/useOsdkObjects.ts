@@ -25,7 +25,7 @@ import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
-export interface UseOsdkListOptions<T extends ObjectTypeDefinition> {
+export interface UseOsdkObjectsOptions<T extends ObjectTypeDefinition> {
   /**
    * Standard OSDK Where
    */
@@ -72,7 +72,7 @@ export interface UseOsdkListOptions<T extends ObjectTypeDefinition> {
   /**
    * The number of milliseconds to wait after the last observed list change.
    *
-   * Two uses of `useOsdkList` with the where clause will only trigger one
+   * Two uses of `useOsdkObjects` with the where clause will only trigger one
    * network request if the second is within `dedupeIntervalMs`.
    */
   dedupeIntervalMs?: number;
@@ -112,10 +112,10 @@ declare const process: {
   };
 };
 
-export function useOsdkList<T extends ObjectTypeDefinition>(
+export function useOsdkObjects<T extends ObjectTypeDefinition>(
   objectType: T,
   { pageSize, orderBy, dedupeIntervalMs, where, streamUpdates }:
-    UseOsdkListOptions<T>,
+    UseOsdkObjectsOptions<T>,
 ): UseOsdkListResult<T> {
   const { store } = React.useContext(OsdkContext2);
 
