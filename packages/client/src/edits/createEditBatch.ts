@@ -89,7 +89,7 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
 
 export function createEditBatch<T extends AnyEdit>(
   _client: Client,
-  _editScope: T[],
+  _editScope?: T[],
 ): EditBatch<T> {
   return new InMemoryEditBatch<T>();
 }

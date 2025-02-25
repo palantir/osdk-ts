@@ -20,14 +20,19 @@ import type {
   ObjectTypeDefinition,
   OsdkObjectPropertyType,
   PropertyKeys,
+  PropertyValueWireToClient,
 } from "@osdk/api";
 
-interface ObjectLocator<
+type ObjectLocator<
   S extends ObjectTypeDefinition = ObjectTypeDefinition,
-> {
-  apiName: CompileTimeMetadata<S>["apiName"];
-  primaryKey: CompileTimeMetadata<S>["primaryKeyApiName"];
-}
+> =
+  & {
+    apiName: CompileTimeMetadata<S>["apiName"];
+  }
+  & {
+    [P in CompileTimeMetadata<S>["primaryKeyApiName"]]:
+      PropertyValueWireToClient[CompileTimeMetadata<S>["primaryKeyType"]];
+  };
 
 export interface AddLink<
   S extends ObjectTypeDefinition,
