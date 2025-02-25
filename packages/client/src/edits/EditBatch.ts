@@ -50,8 +50,5 @@ export interface EditBatch<X extends AnyEdit = never> {
     properties: O["properties"],
   ) => void;
 
-  /**
-   * @returns accumulated and merged list of edits
-   */
   getEdits: () => X[];
 }
