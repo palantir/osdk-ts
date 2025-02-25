@@ -1,5 +1,18 @@
 # @osdkkit/react
 
+## 0.4.0-beta.3
+
+### Minor Changes
+
+- 2f6206c: Improvements to @osdk/react
+
+### Patch Changes
+
+- Updated dependencies [62e5965]
+- Updated dependencies [2f6206c]
+  - @osdk/client@2.2.0-beta.5
+  - @osdk/api@2.2.0-beta.5
+
 ## 0.4.0-beta.2
 
 ### Minor Changes
