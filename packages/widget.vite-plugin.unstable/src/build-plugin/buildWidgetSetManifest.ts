@@ -30,26 +30,15 @@ export function buildWidgetSetManifest(
   configFiles: Record<string, WidgetConfig<ParameterConfig>>,
   bundle: Rollup.OutputBundle,
 ): WidgetSetManifest {
-  const chunks = Object.values(bundle).filter(
-    (chunk): chunk is Rollup.OutputChunk => chunk.type === "chunk",
+  const entrypointChunks = Object.values(bundle).filter(
+    (chunk): chunk is Rollup.OutputChunk =>
+      chunk.type === "chunk" && chunk.isEntry && chunk.facadeModuleId != null,
   );
-
-  // Capture CSS imports for non-entrypoint chunks, to be matched against entrypoint chunks
-  const nonEntrypointChunkCssImports = chunks.filter(
-    chunk => !chunk.isEntry && (chunk.viteMetadata?.importedCss.size ?? 0) > 0,
-  ).reduce<Record<string, string[]>>((acc, chunk) => {
-    acc[chunk.fileName] = Array.from(chunk.viteMetadata?.importedCss ?? []);
-    return acc;
-  }, {});
-
-  // Generate widget config for each entrypoint chunk
-  const widgets = chunks.filter(
-    (chunk) => chunk.isEntry && chunk.facadeModuleId != null,
-  ).map((chunk) =>
+  const widgets = entrypointChunks.map((chunk) =>
     widgetConfig(
       chunk,
       getChunkConfigFile(chunk, configFiles),
-      nonEntrypointChunkCssImports,
+      findCssFiles(bundle, chunk),
     )
   ).reduce<Record<string, WidgetManifestConfig>>((acc, widget) => {
     acc[widget.id] = widget;
@@ -96,15 +85,9 @@ function getChunkConfigFile(
 function widgetConfig(
   chunk: Rollup.OutputChunk,
   widgetConfig: WidgetConfig<ParameterConfig>,
-  nonEntrypointChunkCssImports: Record<string, string[]>,
+  cssFiles: Set<string>,
 ): WidgetManifestConfig {
-  const directCssFiles = Array.from(chunk.viteMetadata?.importedCss ?? []);
-  const transitiveCssFiles = chunk.imports.flatMap((chunk) =>
-    nonEntrypointChunkCssImports[chunk] ?? []
-  );
-  const allCssFiles = Array.from(
-    new Set([...directCssFiles, ...transitiveCssFiles]),
-  );
+  const allCssFiles = Array.from(cssFiles);
   return {
     id: widgetConfig.id,
     name: widgetConfig.name,
@@ -119,4 +102,28 @@ function widgetConfig(
     parameters: widgetConfig.parameters,
     events: widgetConfig.events,
   };
+}
+
+function findCssFiles(
+  bundle: Rollup.OutputBundle,
+  chunk: Rollup.OutputChunk,
+  cache: Map<string, Set<string>> = new Map(),
+): Set<string> {
+  if (cache.has(chunk.name)) {
+    return cache.get(chunk.name)!;
+  }
+
+  const files = new Set<string>();
+  chunk.imports
+    .map((file) => bundle[file])
+    .filter((file) => file?.type === "chunk")
+    .forEach((file) => {
+      findCssFiles(bundle, file, cache).forEach((file) => files.add(file));
+    });
+  chunk.viteMetadata!.importedCss.forEach((file) => {
+    files.add(file);
+  });
+
+  cache.set(chunk.name, files);
+  return files;
 }

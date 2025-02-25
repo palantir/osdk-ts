@@ -32,6 +32,14 @@ export function FoundryWidgetBuildPlugin(): Plugin {
     name: "@osdk:widget-build-plugin",
     enforce: "pre",
 
+    configResolved(config) {
+      // Not supporting the CSS file extraction logic in this mode
+      // https://github.com/vitejs/vite/blob/f6926caa1f2c9433ca544172378412795722d8e1/packages/vite/src/node/plugins/html.ts#L931
+      if (!config.build.cssCodeSplit) {
+        throw new Error("CSS code splitting must be enabled");
+      }
+    },
+
     /**
      * Attempt to parse any module that looks like a widget configuration file, storing the result
      * to be matched to entrypoints later.
