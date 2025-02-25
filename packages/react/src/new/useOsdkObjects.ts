@@ -114,8 +114,13 @@ declare const process: {
 
 export function useOsdkObjects<T extends ObjectTypeDefinition>(
   objectType: T,
-  { pageSize, orderBy, dedupeIntervalMs, where, streamUpdates }:
-    UseOsdkObjectsOptions<T>,
+  {
+    pageSize,
+    orderBy,
+    dedupeIntervalMs,
+    where = {},
+    streamUpdates,
+  }: UseOsdkObjectsOptions<T> = {},
 ): UseOsdkListResult<T> {
   const { observableClient } = React.useContext(OsdkContext2);
 
