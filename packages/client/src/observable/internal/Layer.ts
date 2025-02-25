@@ -55,12 +55,13 @@ export class Layer {
       // we are the root, so we can't remove anything
       return this;
     }
+
     if (this.#layerId !== layerId) {
       this.#parent = this.#parent.removeLayer(layerId);
       return this;
     }
 
-    return this.#parent ?? this;
+    return this.#parent.removeLayer(layerId);
   }
 
   entries(): IterableIterator<[CacheKey<string, any, any>, Entry<any>]> {
@@ -92,10 +93,11 @@ export class Entry<K extends CacheKey<any, any, any>> {
     cacheKey: K,
     value: K["__cacheKey"]["value"],
     lastUpdated: number,
+    status: "init" | "loading" | "loaded" | "error" = "init",
   ) {
     this.cacheKey = cacheKey;
     this.value = value;
     this.lastUpdated = lastUpdated;
-    this.status = "init";
+    this.status = status;
   }
 }

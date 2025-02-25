@@ -38,7 +38,8 @@ export namespace ObservableClient {
     optimisticUpdate?: (ctx: OptimisticBuilder) => void;
   }
 }
-export interface QueryOptions {
+
+export interface CommonObserveOptions {
   dedupeInterval?: number;
 }
 
@@ -52,8 +53,20 @@ export interface ObserveObjectOptions<T extends ObjectTypeDefinition>
   select?: PropertyKeys<T>[];
 }
 
-export interface ListQueryOptions extends QueryOptions {
+export type OrderBy<Q extends ObjectTypeDefinition> = {
+  [K in PropertyKeys<Q>]?: "asc" | "desc" | undefined;
+};
+
+export interface ObserveListOptions<Q extends ObjectTypeDefinition>
+  extends CommonObserveOptions, ObserveOptions
+{
+  objectType: Q["apiName"] | Q;
+  where?: WhereClause<Q>;
   pageSize?: number;
+  orderBy?: OrderBy<Q>;
+  invalidationMode?: "in-place" | "wait" | "reset";
+  expectedLength?: number;
+  streamUpdates?: boolean;
 }
 
 export interface ObservableClient {
@@ -65,9 +78,7 @@ export interface ObservableClient {
   ): Unsubscribable;
 
   observeList<T extends ObjectTypeDefinition>(
-    apiName: T["apiName"] | T,
-    where: WhereClause<T>,
-    options: ObserveOptions & ListQueryOptions,
+    options: ObserveListOptions<T>,
     subFn: SubFn<ListPayload>,
   ): Unsubscribable;
 

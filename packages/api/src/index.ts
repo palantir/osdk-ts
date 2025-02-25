@@ -82,6 +82,7 @@ export type {
   ActionDefinition,
   ActionMetadata,
 } from "./ontology/ActionDefinition.js";
+export type { FilteredPropertyKeys } from "./ontology/FilteredPropertyKeys.js";
 export type {
   InterfaceDefinition,
   InterfaceMetadata,
@@ -126,5 +127,4 @@ export type {
   TimeSeriesQuery,
 } from "./timeseries/timeseries.js";
 export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
-
 export {};
