@@ -25,7 +25,7 @@ import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
-export interface UseOsdkListOptions<T extends ObjectTypeDefinition> {
+export interface UseOsdkObjectsOptions<T extends ObjectTypeDefinition> {
   /**
    * Standard OSDK Where
    */
@@ -72,7 +72,7 @@ export interface UseOsdkListOptions<T extends ObjectTypeDefinition> {
   /**
    * The number of milliseconds to wait after the last observed list change.
    *
-   * Two uses of `useOsdkList` with the where clause will only trigger one
+   * Two uses of `useOsdkObjects` with the where clause will only trigger one
    * network request if the second is within `dedupeIntervalMs`.
    */
   dedupeIntervalMs?: number;
@@ -90,11 +90,11 @@ export interface UseOsdkListOptions<T extends ObjectTypeDefinition> {
 
 export interface UseOsdkListResult<T extends ObjectTypeDefinition> {
   fetchMore: (() => Promise<unknown>) | undefined;
-  data: Osdk.Instance<T>[];
+  data: Osdk.Instance<T>[] | undefined;
   isLoading: boolean;
 
   // FIXME populate error!
-  error: undefined;
+  // error: undefined;
 
   /**
    * Refers to whether the ordered list of objects (only considering the $primaryKey)
@@ -112,24 +112,29 @@ declare const process: {
   };
 };
 
-export function useOsdkList<T extends ObjectTypeDefinition>(
+export function useOsdkObjects<T extends ObjectTypeDefinition>(
   objectType: T,
-  { pageSize, orderBy, dedupeIntervalMs, where, streamUpdates }:
-    UseOsdkListOptions<T>,
+  {
+    pageSize,
+    orderBy,
+    dedupeIntervalMs,
+    where = {},
+    streamUpdates,
+  }: UseOsdkObjectsOptions<T> = {},
 ): UseOsdkListResult<T> {
-  const { store } = React.useContext(OsdkContext2);
+  const { observableClient } = React.useContext(OsdkContext2);
 
   /*  We want the canonical where clause so that the use of `React.useMemo`
       is stable. No real added cost as we canonicalize internal to
       the ObservableClient anyway.
    */
-  const canonWhere = store.canonicalizeWhereClause(where ?? {});
+  const canonWhere = observableClient.canonicalizeWhereClause(where ?? {});
 
   const { subscribe, getSnapShot } = React.useMemo(
     () =>
       makeExternalStore<ListPayload>(
         (x) =>
-          store.observeList({
+          observableClient.observeList({
             objectType,
             where: canonWhere,
             dedupeInterval: dedupeIntervalMs ?? 2_000,
@@ -141,16 +146,15 @@ export function useOsdkList<T extends ObjectTypeDefinition>(
           ? `list ${objectType.apiName} ${JSON.stringify(canonWhere)}`
           : void 0,
       ),
-    [store, objectType, canonWhere, dedupeIntervalMs],
+    [observableClient, objectType, canonWhere, dedupeIntervalMs],
   );
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
-
+  // TODO: we need to expose the error in the result
   return {
     fetchMore: listPayload?.fetchMore,
     data: listPayload?.resolvedList as Osdk.Instance<T>[],
     isLoading: listPayload?.status === "loading",
-    error: undefined,
     isOptimistic: listPayload?.isOptimistic ?? false,
   };
 }
