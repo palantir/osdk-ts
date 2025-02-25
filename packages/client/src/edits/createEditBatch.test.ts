@@ -34,13 +34,11 @@ type TestEditScope =
   | AddLink<Task, "RP">
   | RemoveLink<Task, "RP">;
 
-declare const editScope: TestEditScope[];
-
 describe(createEditBatch, () => {
   let editBatch: EditBatch<TestEditScope>;
 
   beforeEach(() => {
-    editBatch = createEditBatch<TestEditScope>(createClientMockHelper().client);
+    editBatch = createEditBatch(createClientMockHelper().client);
   });
 
   it("collects all edits", () => {
