@@ -83,7 +83,7 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
   }
 
   public getEdits(): X[] {
-    return this.edits;
+    return [...this.edits];
   }
 }
 
