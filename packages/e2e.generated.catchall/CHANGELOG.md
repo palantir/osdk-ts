@@ -1,5 +1,13 @@
 # @osdk/e2e.generated.catchall
 
+## 2.0.3
+
+### Patch Changes
+
+- @osdk/client@0.21.3
+- @osdk/api@1.9.3
+- @osdk/client.api@0.21.3
+
 ## 2.0.2
 
 ### Patch Changes
