@@ -94,10 +94,10 @@ function widgetConfig(
     description: widgetConfig.description,
     type: "workshopWidgetV1",
     entrypointJs: [
-      { path: chunk.fileName, type: "module" },
+      { path: trimLeadingSlash(chunk.fileName), type: "module" },
     ],
     entrypointCss: allCssFiles.map((path) => ({
-      path,
+      path: trimLeadingSlash(path),
     })),
     parameters: widgetConfig.parameters,
     events: widgetConfig.events,
@@ -126,4 +126,8 @@ function findCssFiles(
 
   cache.set(chunk.name, files);
   return files;
+}
+
+function trimLeadingSlash(path: string): string {
+  return path.startsWith("/") ? path.slice(1) : path;
 }

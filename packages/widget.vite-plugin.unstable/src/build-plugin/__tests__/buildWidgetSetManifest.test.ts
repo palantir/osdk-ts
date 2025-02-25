@@ -63,12 +63,12 @@ test("it correctly constructs a widget set manifest", () => {
           type: "workshopWidgetV1",
           entrypointJs: [
             {
-              path: "/src/widget.js",
+              path: "src/widget.js",
               type: "module",
             },
           ],
           entrypointCss: [
-            { path: "/src/widget.css" },
+            { path: "src/widget.css" },
           ],
           parameters: {},
           events: {},
@@ -227,8 +227,8 @@ test("it captures transitive CSS dependencies", () => {
   );
   expect(result.widgetSet.widgets).toHaveProperty("widget-id");
   expect(result.widgetSet.widgets["widget-id"].entrypointCss).toEqual([
-    { path: "/src/style.css" },
-    { path: "/src/component.css" },
+    { path: "src/component.css" },
+    { path: "src/style.css" },
   ]);
 });
 
