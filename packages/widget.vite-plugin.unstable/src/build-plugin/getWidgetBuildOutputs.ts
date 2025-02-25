@@ -32,7 +32,10 @@ export function getWidgetBuildOutputs(
   buildDir: string,
   configFiles: Record<string, WidgetConfig<ParameterConfig>>,
 ): WidgetBuildOutputs {
-  const inputHtmlFilePath = path.resolve(buildDir, input);
+  const inputHtmlFilePath = path.resolve(
+    buildDir,
+    path.relative(process.cwd(), input),
+  );
   const buildOutputs = extractBuildOutputs(inputHtmlFilePath);
   const scriptPaths = new Set(
     buildOutputs.scripts.map((script) => script.src.slice(1)),

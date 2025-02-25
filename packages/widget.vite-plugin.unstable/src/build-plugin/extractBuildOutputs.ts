@@ -77,7 +77,7 @@ function parseScriptNode(
 ): ScriptBuildOutput {
   assertEmptyNode(node);
   assertMinAttributes(node, ["src"]);
-  assertMaxAttributes(node, ["src", "type"]);
+  assertMaxAttributes(node, ["src", "type", "crossorigin"]);
   const srcAttribute = getAttribute(node, "src")!;
   const typeAttribute = getAttributeOrDefault(node, "type", "text/javascript");
   if (!isValidScriptType(typeAttribute)) {
@@ -98,7 +98,7 @@ function parseStylesheetNode(
   assertEmptyNode(node);
   assertMinAttributes(node, ["rel", "href"]);
   // We don't handle media queries or other attributes on the link tag
-  assertMaxAttributes(node, ["rel", "href"]);
+  assertMaxAttributes(node, ["rel", "href", "crossorigin"]);
   const srcAttribute = getAttribute(node, "href")!;
   return { type: "stylesheet", src: srcAttribute };
 }
