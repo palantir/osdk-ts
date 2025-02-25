@@ -1004,7 +1004,7 @@ describe(Store, () => {
           officeId: "whatever",
         }, {
           optimisticUpdate: (ctx) => {
-            ctx.updateObject({ ...fauxObject, someValue: "optimistic" });
+            ctx.updateObject({ ...fauxObject, text: "optimistic" });
           },
         });
 
@@ -1013,7 +1013,7 @@ describe(Store, () => {
           objectPayloadContaining({
             object: {
               ...fauxObject,
-              someValue: "optimistic",
+              text: "optimistic",
             },
             status: "loading",
             isOptimistic: true,

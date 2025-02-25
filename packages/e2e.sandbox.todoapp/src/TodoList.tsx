@@ -13,7 +13,7 @@ interface TodoListProps {
 }
 
 function TodoList({ where, heading }: TodoListProps) {
-  const { data, isLoading, error, isOptimistic } = useOsdkObjects(
+  const { data, isLoading, isOptimistic } = useOsdkObjects(
     $Objects.Todo,
     {
       where,
@@ -40,7 +40,7 @@ function TodoList({ where, heading }: TodoListProps) {
           {isLoading ? "(Loading)" : ""}
         </SmallTextDiv>
       </H2>
-      {error && <h2>{JSON.stringify(error)}</h2>}
+
       {data
         && data.map((todo) => (
           <TodoView

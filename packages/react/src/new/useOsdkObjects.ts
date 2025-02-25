@@ -90,11 +90,11 @@ export interface UseOsdkObjectsOptions<T extends ObjectTypeDefinition> {
 
 export interface UseOsdkListResult<T extends ObjectTypeDefinition> {
   fetchMore: (() => Promise<unknown>) | undefined;
-  data: Osdk.Instance<T>[];
+  data: Osdk.Instance<T>[] | undefined;
   isLoading: boolean;
 
   // FIXME populate error!
-  error: undefined;
+  // error: undefined;
 
   /**
    * Refers to whether the ordered list of objects (only considering the $primaryKey)
@@ -145,12 +145,11 @@ export function useOsdkObjects<T extends ObjectTypeDefinition>(
   );
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
-
+  // TODO: we need to expose the error in the result
   return {
     fetchMore: listPayload?.fetchMore,
     data: listPayload?.resolvedList as Osdk.Instance<T>[],
     isLoading: listPayload?.status === "loading",
-    error: undefined,
     isOptimistic: listPayload?.isOptimistic ?? false,
   };
 }
