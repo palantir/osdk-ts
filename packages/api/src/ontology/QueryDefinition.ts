@@ -57,7 +57,8 @@ export type QueryDataTypeDefinition<
   | UnionQueryDataType
   | StructQueryDataType
   | TwoDimensionalAggregationDataType
-  | ThreeDimensionalAggregationDataType;
+  | ThreeDimensionalAggregationDataType
+  | MapDataType;
 
 export type BaseQueryDataTypeDefinition<T extends string> = {
   multiplicity?: boolean;
@@ -120,6 +121,11 @@ export interface ThreeDimensionalAggregationDataType
   extends BaseQueryDataTypeDefinition<"threeDimensionalAggregation">
 {
   threeDimensionalAggregation: ThreeDimensionalQueryAggregationDefinition;
+}
+
+export interface MapDataType extends BaseQueryDataTypeDefinition<"map"> {
+  keyType: QueryDataTypeDefinition;
+  valueType: QueryDataTypeDefinition;
 }
 
 export type AggregationKeyDataType<V = any> =

@@ -120,7 +120,7 @@ async function generateV2QueryFile(
   await fs.writeFile(
     path.join(outDir, `${query.shortApiName}.ts`),
     await formatTs(`
-        import type { QueryDefinition , QueryParam, QueryResult, VersionBound} from "${
+        import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound} from "${
       forInternalUse ? "@osdk/api" : "@osdk/client"
     }";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
@@ -281,6 +281,7 @@ export function getQueryParamType(
   enhancedOntology: EnhancedOntologyDefinition,
   input: QueryParameterDefinition,
   type: "Param" | "Result",
+  isMapKey = false,
 ): string {
   let inner = `unknown /* ${input.type} */`;
 
@@ -337,6 +338,13 @@ export function getQueryParamType(
         "${input.threeDimensionalAggregation.valueType.valueType}">`;
       break;
     case "object":
+      if (isMapKey) {
+        inner = `ObjectSpecifier<${
+          enhancedOntology.requireObjectType(input.object)
+            .getImportedDefinitionIdentifier(true)
+        }>`;
+        break;
+      }
       inner = `Query${type}.ObjectType<${
         enhancedOntology.requireObjectType(input.object)
           .getImportedDefinitionIdentifier(true)
@@ -361,6 +369,11 @@ export function getQueryParamType(
         getQueryParamType(enhancedOntology, u, type)
       ).join(" | ");
       break;
+
+    case "map":
+      inner = `Record<${
+        getQueryParamType(enhancedOntology, input.keyType, type, true)
+      }, ${getQueryParamType(enhancedOntology, input.valueType, type)}>`;
   }
 
   if (input.multiplicity && type === "Param") {

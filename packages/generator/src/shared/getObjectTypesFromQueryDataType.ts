@@ -46,6 +46,11 @@ export function getObjectTypesFromQueryDataType(
       }
       return;
 
+    case "entrySet":
+      getObjectTypesFromQueryDataType(dataType.keyType, types);
+      getObjectTypesFromQueryDataType(dataType.valueType, types);
+      return;
+
     case "attachment":
     case "boolean":
     case "date":
