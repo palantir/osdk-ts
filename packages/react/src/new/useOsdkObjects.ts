@@ -117,19 +117,19 @@ export function useOsdkObjects<T extends ObjectTypeDefinition>(
   { pageSize, orderBy, dedupeIntervalMs, where, streamUpdates }:
     UseOsdkObjectsOptions<T>,
 ): UseOsdkListResult<T> {
-  const { store } = React.useContext(OsdkContext2);
+  const { observableClient } = React.useContext(OsdkContext2);
 
   /*  We want the canonical where clause so that the use of `React.useMemo`
       is stable. No real added cost as we canonicalize internal to
       the ObservableClient anyway.
    */
-  const canonWhere = store.canonicalizeWhereClause(where ?? {});
+  const canonWhere = observableClient.canonicalizeWhereClause(where ?? {});
 
   const { subscribe, getSnapShot } = React.useMemo(
     () =>
       makeExternalStore<ListPayload>(
         (x) =>
-          store.observeList({
+          observableClient.observeList({
             objectType,
             where: canonWhere,
             dedupeInterval: dedupeIntervalMs ?? 2_000,
@@ -141,7 +141,7 @@ export function useOsdkObjects<T extends ObjectTypeDefinition>(
           ? `list ${objectType.apiName} ${JSON.stringify(canonWhere)}`
           : void 0,
       ),
-    [store, objectType, canonWhere, dedupeIntervalMs],
+    [observableClient, objectType, canonWhere, dedupeIntervalMs],
   );
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
