@@ -265,6 +265,7 @@ describe("OsdkObject", () => {
       expect(mergedEmployee).toMatchInlineSnapshot(`
         {
           "$apiName": "Employee",
+          "$objectSpecifier": "Employee:50031",
           "$objectType": "Employee",
           "$primaryKey": 50031,
           "$title": "Jane Doe",
@@ -326,6 +327,7 @@ describe("OsdkObject", () => {
       expect(mergedEmployee).toMatchInlineSnapshot(`
         {
           "$apiName": "Employee",
+          "$objectSpecifier": "Employee:50031",
           "$objectType": "Employee",
           "$primaryKey": 50031,
           "$title": "John Doe",
@@ -372,6 +374,7 @@ describe("OsdkObject", () => {
       expect(mergedEmployee).toMatchInlineSnapshot(`
         {
           "$apiName": "Employee",
+          "$objectSpecifier": "Employee:50031",
           "$objectType": "Employee",
           "$primaryKey": 50031,
           "$title": "Brad Pitt",

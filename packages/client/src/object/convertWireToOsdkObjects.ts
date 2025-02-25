@@ -314,6 +314,8 @@ function fixObjectPropertiesInPlace(
     obj.$primaryKey ??= obj.__primaryKey;
     obj.$title ??= obj.__title;
 
+    obj.$objectSpecifier = `${obj.$apiName}:${obj.$primaryKey}`;
+
     // we don't want people to use these
     delete obj.__apiName;
     delete obj.__primaryKey;

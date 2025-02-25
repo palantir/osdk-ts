@@ -90,6 +90,7 @@ export type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "./ontology/ObjectOrInterface.js";
+export type { ObjectSpecifier } from "./ontology/ObjectSpecifier.js";
 export type {
   CompileTimeMetadata,
   ObjectMetadata,

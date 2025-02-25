@@ -26,6 +26,7 @@ import { ObjectMetadata } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
 import { ObjectSet } from '@osdk/api';
 import type { ObjectSetQueryDataType } from '@osdk/api';
+import { ObjectSpecifier } from '@osdk/api';
 import { ObjectTypeDefinition } from '@osdk/api';
 import { Osdk } from '@osdk/api';
 import { OsdkObject } from '@osdk/api';
@@ -155,6 +156,8 @@ export interface Logger {
 export { ObjectMetadata }
 
 export { ObjectSet }
+
+export { ObjectSpecifier }
 
 export { ObjectTypeDefinition }
 

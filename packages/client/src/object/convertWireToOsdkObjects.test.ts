@@ -74,6 +74,7 @@ describe("convertWireToOsdkObjects", () => {
       "$apiName",
       "$objectType",
       "$primaryKey",
+      "$objectSpecifier",
       "employeeLocation",
     ].sort());
 
@@ -93,7 +94,7 @@ describe("convertWireToOsdkObjects", () => {
 
     // Should not have $title
     expect(JSON.stringify(employee)).toMatchInlineSnapshot(
-      `"{"employeeId":50030,"fullName":"John Doe","office":"NYC","class":"Red","startDate":"2019-01-01","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"$apiName":"Employee","$objectType":"Employee","$primaryKey":50030}"`,
+      `"{"employeeId":50030,"fullName":"John Doe","office":"NYC","class":"Red","startDate":"2019-01-01","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"$apiName":"Employee","$objectType":"Employee","$primaryKey":50030,"$objectSpecifier":"Employee:50030"}"`,
     );
 
     expect(JSON.stringify(employee.$as(FooInterface))).toMatchInlineSnapshot(
@@ -102,7 +103,7 @@ describe("convertWireToOsdkObjects", () => {
 
     // Should have $title
     expect(JSON.stringify(employee2)).toMatchInlineSnapshot(
-      `"{"employeeId":50031,"fullName":"Jane Doe","office":"SEA","class":"Blue","startDate":"2012-02-12","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"$apiName":"Employee","$objectType":"Employee","$primaryKey":50031,"$title":"Jane Doe"}"`,
+      `"{"employeeId":50031,"fullName":"Jane Doe","office":"SEA","class":"Blue","startDate":"2012-02-12","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"$apiName":"Employee","$objectType":"Employee","$primaryKey":50031,"$title":"Jane Doe","$objectSpecifier":"Employee:50031"}"`,
     );
 
     expect(JSON.stringify(employee2.$as(FooInterface))).toMatchInlineSnapshot(
@@ -289,6 +290,7 @@ describe("convertWireToOsdkObjects", () => {
     expect(obj).toMatchInlineSnapshot(`
       {
         "$apiName": "Employee",
+        "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
         "$title": "Steve",
@@ -338,6 +340,7 @@ describe("convertWireToOsdkObjects", () => {
     expect(obj).toMatchInlineSnapshot(`
       {
         "$apiName": "Employee",
+        "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
         "$title": "Steve",
@@ -385,6 +388,7 @@ describe("convertWireToOsdkObjects", () => {
     expect(obj).toMatchInlineSnapshot(`
       {
         "$apiName": "Employee",
+        "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
         "$rid": "hiMom",
@@ -440,6 +444,7 @@ describe("convertWireToOsdkObjects", () => {
     expect(obj).toMatchInlineSnapshot(`
       {
         "$apiName": "Employee",
+        "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
         "$rid": "hiMom",

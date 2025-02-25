@@ -26,6 +26,7 @@ export type {
   InterfaceDefinition,
   ObjectMetadata,
   ObjectSet,
+  ObjectSpecifier,
   ObjectTypeDefinition,
   Osdk,
   OsdkObject,
