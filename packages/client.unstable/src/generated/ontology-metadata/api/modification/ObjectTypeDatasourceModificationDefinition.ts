@@ -16,6 +16,7 @@
 
 import type { ObjectTypeDatasetDatasourceModification } from "./ObjectTypeDatasetDatasourceModification.js";
 import type { ObjectTypeDatasetDatasourceV2Modification } from "./ObjectTypeDatasetDatasourceV2Modification.js";
+import type { ObjectTypeDatasetDatasourceV3Modification } from "./ObjectTypeDatasetDatasourceV3Modification.js";
 import type { ObjectTypeDerivedPropertiesDatasourceModification } from "./ObjectTypeDerivedPropertiesDatasourceModification.js";
 import type { ObjectTypeDirectDatasourceModification } from "./ObjectTypeDirectDatasourceModification.js";
 import type { ObjectTypeEditsOnlyDatasourceModification } from "./ObjectTypeEditsOnlyDatasourceModification.js";
@@ -63,6 +64,11 @@ export interface ObjectTypeDatasourceModificationDefinition_datasetV2 {
   datasetV2: ObjectTypeDatasetDatasourceV2Modification;
 }
 
+export interface ObjectTypeDatasourceModificationDefinition_datasetV3 {
+  type: "datasetV3";
+  datasetV3: ObjectTypeDatasetDatasourceV3Modification;
+}
+
 export interface ObjectTypeDatasourceModificationDefinition_restrictedViewV2 {
   type: "restrictedViewV2";
   restrictedViewV2: ObjectTypeRestrictedViewDatasourceV2Modification;
@@ -108,6 +114,7 @@ export type ObjectTypeDatasourceModificationDefinition =
   | ObjectTypeDatasourceModificationDefinition_restrictedView
   | ObjectTypeDatasourceModificationDefinition_timeSeries
   | ObjectTypeDatasourceModificationDefinition_datasetV2
+  | ObjectTypeDatasourceModificationDefinition_datasetV3
   | ObjectTypeDatasourceModificationDefinition_restrictedViewV2
   | ObjectTypeDatasourceModificationDefinition_media
   | ObjectTypeDatasourceModificationDefinition_mediaSetView

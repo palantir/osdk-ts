@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { OntologyBranchRid } from "../../api/OntologyBranchRid.js";
-import type { OntologyBranch } from "./OntologyBranch.js";
-export interface CreateOntologyServiceBranchResponse {
-  ontologyBranchRid: OntologyBranchRid;
-  ontologyBranch: OntologyBranch;
+import type { BranchConflictsWithMain } from "./BranchConflictsWithMain.js";
+export interface MergeConstraintError_branchConflictsWithMain {
+  type: "branchConflictsWithMain";
+  branchConflictsWithMain: BranchConflictsWithMain;
 }
+export type MergeConstraintError = MergeConstraintError_branchConflictsWithMain;

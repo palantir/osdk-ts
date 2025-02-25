@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
+import type { OntologyIrObjectPropertyReference } from "./blockdata/OntologyIrObjectPropertyReference.js";
 import type { LinkTypeMetadata } from "./LinkTypeMetadata.js";
 import type { LinkTypePeeringMetadata } from "./LinkTypePeeringMetadata.js";
 import type { ObjectTypeApiName } from "./ObjectTypeApiName.js";
-import type { ObjectTypeFieldApiName } from "./ObjectTypeFieldApiName.js";
 export interface OntologyIrManyToManyLinkDefinition {
   objectTypeAToBLinkMetadata: LinkTypeMetadata;
   objectTypeBToALinkMetadata: LinkTypeMetadata;
   objectTypeRidA: ObjectTypeApiName;
   objectTypeRidB: ObjectTypeApiName;
+  peeringMetadata: LinkTypePeeringMetadata | undefined;
   objectTypeAPrimaryKeyPropertyMapping: Record<
-    ObjectTypeFieldApiName,
-    ObjectTypeFieldApiName
+    OntologyIrObjectPropertyReference,
+    OntologyIrObjectPropertyReference
   >;
   objectTypeBPrimaryKeyPropertyMapping: Record<
-    ObjectTypeFieldApiName,
-    ObjectTypeFieldApiName
+    OntologyIrObjectPropertyReference,
+    OntologyIrObjectPropertyReference
   >;
-  peeringMetadata: LinkTypePeeringMetadata | undefined;
 }

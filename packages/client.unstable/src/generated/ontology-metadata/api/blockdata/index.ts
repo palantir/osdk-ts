@@ -46,6 +46,7 @@ export type { OntologyIrInterfaceTypeBlockDataV2 } from "./OntologyIrInterfaceTy
 export type { OntologyIrKnownMarketplaceIdentifiers } from "./OntologyIrKnownMarketplaceIdentifiers.js";
 export type { OntologyIrLinkTypeBlockDataV2 } from "./OntologyIrLinkTypeBlockDataV2.js";
 export type { OntologyIrMarketplaceObjectTypeEntityMetadata } from "./OntologyIrMarketplaceObjectTypeEntityMetadata.js";
+export type { OntologyIrObjectPropertyReference } from "./OntologyIrObjectPropertyReference.js";
 export type { OntologyIrObjectsWritebackDataset } from "./OntologyIrObjectsWritebackDataset.js";
 export type { OntologyIrObjectTypeBlockDataV2 } from "./OntologyIrObjectTypeBlockDataV2.js";
 export type { OntologyIrOntologyBlockDataV2 } from "./OntologyIrOntologyBlockDataV2.js";

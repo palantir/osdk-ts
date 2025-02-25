@@ -15,8 +15,8 @@
  */
 
 import type { ObjectTypeFieldApiName } from "../ObjectTypeFieldApiName.js";
-import type { LinkDefinition } from "./LinkDefinition.js";
 import type { OntologyIrDerivedPropertyAggregation } from "./OntologyIrDerivedPropertyAggregation.js";
+import type { OntologyIrLinkDefinition } from "./OntologyIrLinkDefinition.js";
 
 /**
  * A derived property that references aggregations on a linked object type.
@@ -27,5 +27,5 @@ export interface OntologyIrAggregatedPropertiesDefinition {
     ObjectTypeFieldApiName,
     OntologyIrDerivedPropertyAggregation
   >;
-  linkDefinition: LinkDefinition;
+  linkDefinition: OntologyIrLinkDefinition;
 }

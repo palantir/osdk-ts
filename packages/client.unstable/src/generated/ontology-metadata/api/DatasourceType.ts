@@ -28,4 +28,5 @@ export type DatasourceType =
   | "GEOTIME_SERIES"
   | "EDITS_ONLY"
   | "DIRECT"
-  | "DERIVED";
+  | "DERIVED"
+  | "DATASET_V3";

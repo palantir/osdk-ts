@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import type { OntologyIrObjectPropertyReference } from "./blockdata/OntologyIrObjectPropertyReference.js";
 import type { LinkTypeMetadata } from "./LinkTypeMetadata.js";
 import type { ObjectTypeApiName } from "./ObjectTypeApiName.js";
-import type { ObjectTypeFieldApiName } from "./ObjectTypeFieldApiName.js";
 import type { OneToManyLinkCardinalityHint } from "./OneToManyLinkCardinalityHint.js";
 export interface OntologyIrOneToManyLinkDefinition {
   cardinalityHint: OneToManyLinkCardinalityHint;
@@ -25,7 +25,7 @@ export interface OntologyIrOneToManyLinkDefinition {
   objectTypeRidOneSide: ObjectTypeApiName;
   oneToManyLinkMetadata: LinkTypeMetadata;
   oneSidePrimaryKeyToManySidePropertyMapping: Record<
-    ObjectTypeFieldApiName,
-    ObjectTypeFieldApiName
+    OntologyIrObjectPropertyReference,
+    OntologyIrObjectPropertyReference
   >;
 }
