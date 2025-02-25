@@ -785,4 +785,9 @@ export const OSDK_SNIPPETS_SPEC = {
       },
     },
   },
-} as const satisfies DocsSnippetsSpec;
+} as const;
+
+// Can't add "as const satisfies DocsSnippetsSpec" above as it causes:
+// Variable must have an explicit type annotation with --isolatedDeclarations.ts(9010)
+// So instead, type check it here:
+export const __validSpec: DocsSnippetsSpec = OSDK_SNIPPETS_SPEC;
