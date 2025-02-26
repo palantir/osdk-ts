@@ -18,6 +18,7 @@ import type { ArrayPropertyType } from "./generated/ontology-metadata/api/ArrayP
 import type {
   InterfaceTypeBlockDataV2,
   OntologyBlockDataV2,
+  OntologyIrLinkTypeBlockDataV2,
   OntologyIrObjectTypeBlockDataV2,
   SharedPropertyTypeBlockDataV2,
 } from "./generated/ontology-metadata/api/blockdata/index.js";
@@ -65,6 +66,7 @@ export interface OntologyIrOntologyBlockDataV2 extends
         string,
         OntologyIrSharedPropertyTypeBlockDataV2
       >;
+      linkTypes: Record<string, OntologyIrLinkTypeBlockDataV2>;
     }
   >
 {
