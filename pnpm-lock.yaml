@@ -1262,7 +1262,7 @@ importers:
         specifier: 7.0.1
         version: 7.0.1
       consola:
-        specifier: ^3.4.0
+        specifier: 3.4.0
         version: 3.4.0
       open:
         specifier: 10.1.0
@@ -1596,7 +1596,7 @@ importers:
   packages/create-app:
     dependencies:
       consola:
-        specifier: ^3.4.0
+        specifier: 3.4.0
         version: 3.4.0
       find-up:
         specifier: 7.0.0
@@ -2524,7 +2524,7 @@ importers:
   packages/create-widget:
     dependencies:
       consola:
-        specifier: ^3.4.0
+        specifier: 3.4.0
         version: 3.4.0
       find-up:
         specifier: 7.0.0
@@ -3220,7 +3220,7 @@ importers:
         specifier: 15.3.0
         version: 15.3.0(rollup@3.29.5)
       consola:
-        specifier: ^3.4.0
+        specifier: 3.4.0
         version: 3.4.0
       find-up:
         specifier: 7.0.0
