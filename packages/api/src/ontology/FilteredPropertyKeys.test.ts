@@ -19,7 +19,7 @@ import type { FilteredPropertyKeys } from "./FilteredPropertyKeys.js";
 
 type stubObject = {
   type: "object";
-  apiName: "MnayanOsdkMediaObject";
+  apiName: "object";
   __DefinitionMetadata: {
     type: "object";
     primaryKeyApiName: "id";
@@ -27,7 +27,7 @@ type stubObject = {
     rid: "rid.a.b.c.d";
     status: "ACTIVE";
     titleProperty: "path";
-    pluralDisplayName: "Mnayan OSDKMedia Objects";
+    pluralDisplayName: "objects";
     interfaceMap: {};
     inverseInterfaceMap: {};
     apiName: "";
