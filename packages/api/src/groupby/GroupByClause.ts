@@ -26,7 +26,15 @@ export type GroupByClause<
   [P in AggregatableKeys<Q>]?: GroupByEntry<Q, P>;
 };
 
-type BaseGroupByValue = "exact" | { $exactWithLimit: number };
+type BaseGroupByValue =
+  | "exact"
+  | { $exactWithLimit: number }
+  | ExactGroupByWithOptions;
+
+type ExactGroupByWithOptions = {
+  $exact: { $limit?: number; $defaultValue: string };
+};
+
 export type GroupByRange<T> = [T, T];
 
 export type StringGroupByValue = BaseGroupByValue;
