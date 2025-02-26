@@ -50,6 +50,8 @@ export type { OntologyIrObjectPropertyReference } from "./OntologyIrObjectProper
 export type { OntologyIrObjectsWritebackDataset } from "./OntologyIrObjectsWritebackDataset.js";
 export type { OntologyIrObjectTypeBlockDataV2 } from "./OntologyIrObjectTypeBlockDataV2.js";
 export type { OntologyIrOntologyBlockDataV2 } from "./OntologyIrOntologyBlockDataV2.js";
+export type { OntologyIrPropertyToColumnMapping } from "./OntologyIrPropertyToColumnMapping.js";
+export type { OntologyIrPropertyToPropertyMapping } from "./OntologyIrPropertyToPropertyMapping.js";
 export type { OntologyIrSchemaMigrationBlockData } from "./OntologyIrSchemaMigrationBlockData.js";
 export type { OntologyIrSchemaTransitionsWithSchemaVersion } from "./OntologyIrSchemaTransitionsWithSchemaVersion.js";
 export type { OntologyIrSharedPropertyTypeBlockDataV2 } from "./OntologyIrSharedPropertyTypeBlockDataV2.js";

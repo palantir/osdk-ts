@@ -79,6 +79,10 @@ export interface OntologyIrInterfaceType
       allExtendsInterfaces: string[];
       links: OntologyIrInterfaceLinkType[];
       allLinks: OntologyIrInterfaceLinkType[];
+      propertiesV2: {
+        sharedPropertyType: OntologyIrSharedPropertyType;
+        required: boolean;
+      }[];
     }>
 {}
 

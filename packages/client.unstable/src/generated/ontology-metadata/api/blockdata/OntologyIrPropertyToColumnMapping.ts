@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-import type { DataSetName } from "./blockdata/DataSetName.js";
-import type { OntologyIrPropertyToColumnMapping } from "./blockdata/OntologyIrPropertyToColumnMapping.js";
+import type { ColumnName } from "../ColumnName.js";
+import type { OntologyIrObjectPropertyReference } from "./OntologyIrObjectPropertyReference.js";
 
 /**
- * Many to many link type datasource that is backed by a dataset in foundry, uniquely identified by its rid and
- * branch.
+ * Because complex objects can't be used as map keys over the wire, this is used in many to many link dataset datasource
  */
-export interface OntologyIrManyToManyLinkTypeDatasetDatasource {
-  datasetRid: DataSetName;
-  writebackDatasetRid: DataSetName | undefined;
-  objectTypeAPrimaryKeyMapping: Array<OntologyIrPropertyToColumnMapping>;
-  objectTypeBPrimaryKeyMapping: Array<OntologyIrPropertyToColumnMapping>;
+export interface OntologyIrPropertyToColumnMapping {
+  property: OntologyIrObjectPropertyReference;
+  column: ColumnName;
 }
