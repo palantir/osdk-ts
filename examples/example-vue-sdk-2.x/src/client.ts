@@ -28,10 +28,7 @@ export const auth = createPublicOauthClient(
   clientId,
   url,
   redirectUrl,
-  true,
-  undefined,
-  window.location.toString(),
-  scopes,
+  { scopes },
 );
 
 /**
