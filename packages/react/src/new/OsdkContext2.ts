@@ -34,11 +34,11 @@ interface OsdkContextContents {
   // in case i need both for a while
   // in the future we can just make
   // this `client: ObservableClient`
-  store: ObservableClient;
+  observableClient: ObservableClient;
 }
 
 export const OsdkContext2: React.Context<OsdkContextContents> = React
   .createContext<OsdkContextContents>({
     client: fakeClient,
-    store: undefined!,
+    observableClient: undefined!,
   });

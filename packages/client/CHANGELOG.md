@@ -1,5 +1,56 @@
 # @osdk/client
 
+## 2.2.0-beta.5
+
+### Minor Changes
+
+- 62e5965: Removed unneeded lint statements.
+- 2f6206c: Improvements to @osdk/react
+
+### Patch Changes
+
+- @osdk/api@2.2.0-beta.5
+- @osdk/client.unstable@2.2.0-beta.5
+- @osdk/generator-converters@2.2.0-beta.5
+
+## 2.2.0-beta.4
+
+### Minor Changes
+
+- fe0cc43: Experimental react changes
+
+### Patch Changes
+
+- @osdk/api@2.2.0-beta.4
+- @osdk/client.unstable@2.2.0-beta.4
+- @osdk/generator-converters@2.2.0-beta.4
+
+## 2.2.0-beta.3
+
+### Minor Changes
+
+- 761e69d: Added type safety to createMediaReference
+
+### Patch Changes
+
+- Updated dependencies [761e69d]
+  - @osdk/api@2.2.0-beta.3
+  - @osdk/generator-converters@2.2.0-beta.3
+  - @osdk/client.unstable@2.2.0-beta.3
+
+## 2.2.0-beta.2
+
+### Minor Changes
+
+- fccd9ac: "Allow selecting derived properties"
+
+### Patch Changes
+
+- Updated dependencies [fccd9ac]
+  - @osdk/api@2.2.0-beta.2
+  - @osdk/generator-converters@2.2.0-beta.2
+  - @osdk/client.unstable@2.2.0-beta.2
+
 ## 2.1.0-beta.31
 
 ### Minor Changes

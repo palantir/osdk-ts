@@ -21,11 +21,9 @@ import type {
   Subscribable,
   Subscription,
 } from "rxjs";
-import type {
-  QueryOptions,
-  Status,
-  Unsubscribable,
-} from "../ObservableClient.js";
+import { additionalContext } from "../../Client.js";
+import type { Logger } from "../../Logger.js";
+import type { CommonObserveOptions, Status } from "../ObservableClient.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Entry } from "./Layer.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
@@ -33,7 +31,7 @@ import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 export abstract class Query<
   KEY extends CacheKey,
   PAYLOAD,
-  O extends QueryOptions,
+  O extends CommonObserveOptions,
 > implements Subscribable<PAYLOAD> {
   lastFetchStarted?: number;
   pendingFetch?: Promise<unknown>;
@@ -46,16 +44,32 @@ export abstract class Query<
   #subscription?: Subscription;
   #subject: Observable<SubjectPayload<KEY>>;
 
+  /** @internal */
+  protected logger: Logger | undefined;
+
   constructor(
     store: Store,
     observable: Observable<SubjectPayload<KEY>>,
     opts: O,
     cacheKey: KEY,
+    logger?: Logger,
   ) {
     this.options = opts;
     this.cacheKey = cacheKey;
     this.store = store;
     this.#subject = observable;
+
+    this.logger = logger ?? (
+      process.env.NODE_ENV === "production"
+        ? store.client[additionalContext].logger
+        : store.client[additionalContext].logger?.child({}, {
+          msgPrefix: process.env.NODE_ENV !== "production"
+            ? (`Query<${cacheKey.type}, ${
+              cacheKey.otherKeys.map(x => JSON.stringify(x)).join(", ")
+            }>`)
+            : "Query",
+        })
+    );
   }
 
   protected abstract _createConnectable(
@@ -64,13 +78,17 @@ export abstract class Query<
 
   public subscribe(
     observer: Partial<Observer<PAYLOAD>>,
-  ): Unsubscribable {
+  ): Subscription {
     this.#connectable ??= this._createConnectable(this.#subject);
     this.#subscription = this.#connectable.connect();
     return this.#connectable.subscribe(observer);
   }
 
   revalidate(force?: boolean): Promise<unknown> {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.info({ methodName: "revalidate" });
+    }
+
     if (force) {
       this.abortController?.abort();
     }
@@ -87,6 +105,10 @@ export abstract class Query<
             ?? 0)
       )
     ) {
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.trace({ methodName: "revalidate" }, "DEDUPE");
+      }
+
       return Promise.resolve();
     }
 
@@ -97,9 +119,23 @@ export abstract class Query<
     this._preFetch();
 
     this.lastFetchStarted = Date.now();
-    this.pendingFetch = this._fetch().finally(() => {
-      this.pendingFetch = undefined;
-    });
+
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.trace({ methodName: "revalidate" }, "calling _fetch()");
+    }
+    this.pendingFetch = this._fetch()
+      .catch((e) => {
+        this.logger?.error({ methodName: "revalidate" }, "_fetch() FAILED", e);
+        throw e;
+      })
+      .finally(() => {
+        this.logger?.info({ methodName: "revalidate" }, "finally _fetch()");
+        this.pendingFetch = undefined;
+      });
+
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.info({ methodName: "revalidate" }, "Returning");
+    }
 
     return this.pendingFetch;
   }
@@ -111,6 +147,9 @@ export abstract class Query<
     status: Status,
     batch: BatchContext,
   ): void {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.trace({ methodName: "setStatus" }, status);
+    }
     const existing = batch.read(this.cacheKey);
     if (existing?.status === status) return;
 

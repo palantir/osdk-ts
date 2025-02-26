@@ -23,8 +23,9 @@ import type {
 import deepEqual from "fast-deep-equal";
 import type { Connectable, Observable, Subject } from "rxjs";
 import { BehaviorSubject, connectable, map } from "rxjs";
+import { additionalContext } from "../../Client.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
-import type { QueryOptions, Status } from "../ObservableClient.js";
+import type { CommonObserveOptions, Status } from "../ObservableClient.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Entry } from "./Layer.js";
 import { Query } from "./Query.js";
@@ -46,7 +47,7 @@ export interface ObjectCacheKey extends
 export class ObjectQuery extends Query<
   ObjectCacheKey,
   ObjectPayload,
-  QueryOptions
+  CommonObserveOptions
 > {
   #apiName: string;
   #pk: string | number | boolean;
@@ -57,13 +58,22 @@ export class ObjectQuery extends Query<
     type: string,
     pk: PrimaryKeyType<ObjectTypeDefinition>,
     cacheKey: ObjectCacheKey,
-    opts: QueryOptions,
+    opts: CommonObserveOptions,
   ) {
     super(
       store,
       subject,
       opts,
       cacheKey,
+      process.env.NODE_ENV !== "production"
+        ? (
+          store.client[additionalContext].logger?.child({}, {
+            msgPrefix: `ObjectQuery<${
+              cacheKey.otherKeys.map(x => JSON.stringify(x)).join(", ")
+            }>`,
+          })
+        )
+        : undefined,
     );
     this.#apiName = type;
     this.#pk = pk;
@@ -96,6 +106,10 @@ export class ObjectQuery extends Query<
   }
 
   async _fetch(): Promise<void> {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.info({ methodName: "_fetch" });
+    }
+
     const objectSet = this.store.client({
       type: "object",
       apiName: this.#apiName,
@@ -115,6 +129,13 @@ export class ObjectQuery extends Query<
     status: Status,
     batch: BatchContext,
   ): Entry<ObjectCacheKey> {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.trace(
+        { methodName: "writeToStore" },
+        `{status: ${status}},`,
+        data,
+      );
+    }
     const entry = batch.read(this.cacheKey);
 
     if (entry && deepEqual(data, entry.value)) {
@@ -125,9 +146,9 @@ export class ObjectQuery extends Query<
     const ret = batch.write(this.cacheKey, data, status);
 
     if (entry) {
-      batch.modifiedObjects.add(this.cacheKey);
+      batch.changes.modifiedObjects.set(data.$apiName, data);
     } else {
-      batch.addedObjects.add(this.cacheKey);
+      batch.changes.addedObjects.set(data.$apiName, data);
     }
 
     return ret;

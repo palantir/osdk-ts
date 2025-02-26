@@ -15,23 +15,30 @@
  */
 
 import type { Client } from "@osdk/client";
-import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
-import React from "react";
+import {
+  createObservableClient,
+  type ObservableClient,
+} from "@osdk/client/unstable-do-not-use";
+import React, { useMemo } from "react";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 interface OsdkProviderOptions {
   children: React.ReactNode;
   client: Client;
-  store: ObservableClient;
+  observableClient?: ObservableClient;
 }
 
 export function OsdkProvider2({
   children,
   client,
-  store,
+  observableClient,
 }: OsdkProviderOptions): React.JSX.Element {
+  observableClient = useMemo(
+    () => observableClient ?? createObservableClient(client),
+    [client, observableClient],
+  );
   return (
-    <OsdkContext2.Provider value={{ client, store }}>
+    <OsdkContext2.Provider value={{ client, observableClient }}>
       {children}
     </OsdkContext2.Provider>
   );

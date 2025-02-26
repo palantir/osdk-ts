@@ -518,6 +518,12 @@ export type FetchPageResult<
 > = PageResult<PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S>> : Osdk.Instance<Q, ExtractOptions<R, S>, L>>;
 
 // @public (undocumented)
+export type FilteredPropertyKeys<
+	O extends ObjectOrInterfaceDefinition,
+	T extends WirePropertyTypes
+> = { [K in keyof NonNullable<O["__DefinitionMetadata"]>["properties"]] : NonNullable<O["__DefinitionMetadata"]>["properties"][K]["type"] extends T ? K : never }[keyof NonNullable<O["__DefinitionMetadata"]>["properties"]];
+
+// @public (undocumented)
 export type GeoFilter_Intersects = {
     	"$intersects": {
         		$bbox: BBox

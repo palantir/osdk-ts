@@ -24,8 +24,8 @@ import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
 import type {
-  ListQueryOptions,
   ObservableClient,
+  ObserveListOptions,
   ObserveObjectOptions,
   ObserveOptions,
   Unsubscribable,
@@ -54,12 +54,10 @@ export class ObservableClientImpl implements ObservableClient {
   }
 
   public observeList<T extends ObjectTypeDefinition>(
-    apiName: T["apiName"] | T,
-    where: WhereClause<T>,
-    options: ObserveOptions & ListQueryOptions,
+    options: ObserveOptions & ObserveListOptions<T>,
     subFn: SubFn<ListPayload>,
   ): Unsubscribable {
-    return this.#store.observeList(apiName, where, options, subFn);
+    return this.#store.observeList(options, subFn);
   }
 
   public applyAction<Q extends ActionDefinition<any>>(

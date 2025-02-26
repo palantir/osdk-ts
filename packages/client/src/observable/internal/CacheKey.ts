@@ -30,3 +30,28 @@ export type CacheKey<
     args: T_KeyFactoryArgs;
   };
 };
+
+/**
+ * This isn't performant and should only be used for debug logging!
+ * @internal
+ */
+export function DEBUG_ONLY__cacheKeyToString(x: CacheKey) {
+  if (process.env.NODE_ENV !== "production") {
+    return `${x.type}CacheKey<${
+      x.otherKeys.map(xx => JSON.stringify(xx)).join(", ")
+    }>`.replaceAll("\"", "'");
+  } else {
+    throw new Error("not implemented");
+  }
+}
+/**
+ * This isn't performant and should only be used for debug logging!
+ * @internal
+ */
+export function DEBUG_ONLY__cacheKeysToString(x: CacheKey[]) {
+  if (process.env.NODE_ENV !== "production") {
+    return JSON.stringify(x.map(DEBUG_ONLY__cacheKeyToString), null, 2);
+  } else {
+    throw new Error("not implemented");
+  }
+}

@@ -116,12 +116,10 @@ export function objectSortaMatchesWhereClause(
         case "$ne":
           return realValue !== expected;
         case "$in":
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           return expected.$in.includes(realValue);
         case "$isNull":
           return realValue == null;
         case "$startsWith":
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           return realValue.startsWith(
             expected,
           );

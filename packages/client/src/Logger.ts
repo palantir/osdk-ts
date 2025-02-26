@@ -30,7 +30,7 @@ export interface Logger {
   ): Logger;
 }
 
-interface LogFn {
+export interface LogFn {
   (obj: unknown, msg?: string, ...args: any[]): void;
   (msg: string, ...args: any[]): void;
 }

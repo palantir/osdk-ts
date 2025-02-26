@@ -28,29 +28,29 @@ import {
   type Connectable,
   connectable,
   map,
-  mergeMap,
   type Observable,
   observeOn,
   of,
   ReplaySubject,
+  switchMap,
 } from "rxjs";
 import invariant from "tiny-invariant";
-import type { Client } from "../../Client.js";
+import { additionalContext, type Client } from "../../Client.js";
 import type { ListPayload } from "../ListPayload.js";
-import type { QueryOptions, Status } from "../ObservableClient.js";
-import type { CacheKey } from "./CacheKey.js";
+import type { CommonObserveOptions, Status } from "../ObservableClient.js";
+import {
+  type CacheKey,
+  DEBUG_ONLY__cacheKeysToString as DEBUG_ONLY__cacheKeysToString,
+} from "./CacheKey.js";
 import type { Canonical } from "./Canonical.js";
-import type { ChangedObjects } from "./ChangedObjects.js";
-import { Entry } from "./Layer.js";
+import { type Changes, DEBUG_ONLY__changesToString } from "./ChangedObjects.js";
+import type { Entry } from "./Layer.js";
 import { objectSortaMatchesWhereClause } from "./objectMatchesWhereClause.js";
-import type { ObjectCacheKey, ObjectEntry } from "./ObjectQuery.js";
+import type { ObjectCacheKey } from "./ObjectQuery.js";
 import type { OptimisticId } from "./OptimisticId.js";
 import { Query } from "./Query.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 
-export interface ListEntry extends Entry<ListCacheKey> {}
-
-auditTime(0);
 interface ListStorageData {
   data: ObjectCacheKey[];
 }
@@ -62,12 +62,13 @@ export interface ListCacheKey extends
     ListQuery,
     [
       apiName: string,
-      whereClause: WhereClause<ObjectTypeDefinition>,
+      whereClause: Canonical<WhereClause<ObjectTypeDefinition>>,
+      orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
     ]
   > //
 {}
 
-export interface ListQueryOptions extends QueryOptions {
+export interface ListQueryOptions extends CommonObserveOptions {
   pageSize?: number;
 }
 
@@ -87,12 +88,14 @@ export class ListQuery extends Query<
   #nextPageToken?: string;
   #pendingPageFetch?: Promise<unknown>;
   #toRelease: Set<ObjectCacheKey> = new Set();
+  #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
 
   constructor(
     store: Store,
     subject: Observable<SubjectPayload<ListCacheKey>>,
-    type: string,
+    objectType: string,
     whereClause: Canonical<WhereClause<ObjectTypeDefinition>>,
+    orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>,
     cacheKey: ListCacheKey,
     opts: ListQueryOptions,
   ) {
@@ -101,12 +104,27 @@ export class ListQuery extends Query<
       subject,
       opts,
       cacheKey,
+      process.env.NODE_ENV !== "production"
+        ? (
+          store.client[additionalContext].logger?.child({}, {
+            msgPrefix: `ListQuery<${
+              cacheKey.otherKeys.map(x => JSON.stringify(x)).join(", ")
+            }>`,
+          })
+        )
+        : undefined,
     );
 
     this.#client = store.client;
-    this.#type = type;
+    this.#type = objectType;
     this.#whereClause = whereClause;
+    this.#orderBy = orderBy;
+
     observeOn(asyncScheduler);
+  }
+
+  get canonicalWhere(): Canonical<WhereClause<ObjectTypeDefinition>> {
+    return this.#whereClause;
   }
 
   protected _createConnectable(
@@ -114,7 +132,7 @@ export class ListQuery extends Query<
   ): Connectable<ListPayload> {
     return connectable(
       subject.pipe(
-        mergeMap(listEntry => {
+        switchMap(listEntry => {
           return combineLatest({
             resolvedList: listEntry?.value?.data == null
               ? of([])
@@ -223,6 +241,13 @@ export class ListQuery extends Query<
     const { data, nextPageToken } = await objectSet.fetchPage({
       $nextPageToken: this.#nextPageToken,
       $pageSize: this.options.pageSize,
+      // For now this keeps the shared test code from falling apart
+      // but shouldn't be needed ideally
+      ...(Object.keys(this.#orderBy).length > 0
+        ? {
+          $orderBy: this.#orderBy,
+        }
+        : {}),
     });
 
     if (signal?.aborted) {
@@ -233,7 +258,7 @@ export class ListQuery extends Query<
 
     const { retVal } = this.store.batch({}, (batch) => {
       return this.updateList(
-        data,
+        this.store.updateObjects(data, batch),
         append,
         nextPageToken ? status : "loaded",
         batch,
@@ -244,114 +269,199 @@ export class ListQuery extends Query<
   }
 
   /**
-   * Caller is responsible for removing the layer
-   *
-   * @param changedObjects
+   * Note: This method is not async because I want it to return right after it
+   *       finishes the synchronous updates. The promise that is returned
+   *       will resolve after the revalidation is complete.
+   * @param changes
    * @param optimisticId
-   * @returns
+   * @returns If revalidation is needed, a promise that resolves after the
+   *          revalidation is complete. Otherwise, undefined.
    */
-  maybeUpdate(
-    changedObjects: ChangedObjects,
-    optimisticId: OptimisticId,
-  ): boolean {
-    let needsRevalidation = false;
-    const objectsToInsert: Osdk.Instance<ObjectTypeDefinition>[] = [];
-    for (const [type, objects] of changedObjects.addedObjects.associations()) {
-      if (this.cacheKey.otherKeys[0] !== type) {
-        continue;
+
+  maybeUpdateAndRevalidate = (
+    changes: Changes,
+    optimisticId: OptimisticId | undefined,
+  ): Promise<void> | undefined => {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.info(
+        { methodName: "#maybeMaybe" },
+        DEBUG_ONLY__changesToString(changes),
+      );
+    }
+    if (changes.modifiedLists.has(this.cacheKey)) return;
+
+    try {
+      const relevantObjects: Record<"added" | "modified", {
+        all: Osdk.Instance<ObjectTypeDefinition>[];
+        strictMatches: Set<Osdk.Instance<ObjectTypeDefinition>>;
+        sortaMatches: Set<Osdk.Instance<ObjectTypeDefinition>>;
+      }> = {
+        added: {
+          all: changes.addedObjects.get(this.cacheKey.otherKeys[0]) ?? [],
+          strictMatches: new Set(),
+          sortaMatches: new Set(),
+        },
+        modified: {
+          all: changes.modifiedObjects.get(this.cacheKey.otherKeys[0]) ?? [],
+          strictMatches: new Set(),
+          sortaMatches: new Set(),
+        },
+      };
+
+      if (
+        relevantObjects.added.all.length === 0
+        && relevantObjects.modified.all.length === 0
+      ) {
+        return;
       }
 
-      for (const obj of objects) {
-        // strict match means it didn't use a filter we cannot use on the frontend
-        const strictMatch = objectSortaMatchesWhereClause(
-          obj,
-          this.#whereClause,
-          true,
-        );
-
-        if (strictMatch) {
-          objectsToInsert.push(obj);
-        } else {
-          // sorta match means it used a filter we cannot use on the frontend
-          const sortaMatch = objectSortaMatchesWhereClause(
+      // categorize
+      for (const group of Object.values(relevantObjects)) {
+        for (const obj of group.all ?? []) {
+          // if its a strict match we can just insert it into place
+          const strictMatch = objectSortaMatchesWhereClause(
             obj,
             this.#whereClause,
-            false,
+            true,
           );
-          if (sortaMatch) {
-            needsRevalidation = true;
+
+          if (strictMatch) {
+            group.strictMatches.add(obj);
+          } else {
+            // sorta match means it used a filter we cannot use on the frontend
+            const sortaMatch = objectSortaMatchesWhereClause(
+              obj,
+              this.#whereClause,
+              false,
+            );
+            if (sortaMatch) {
+              group.sortaMatches.add(obj);
+            }
           }
         }
       }
-    }
 
-    needsRevalidation ||= objectsToInsert.length > 0;
+      // If we got purely strict matches we can just update the list and move
+      // on with our lives. But if we got sorta matches, then we need to revalidate
+      // the list so we preemptively set it to loading to avoid thrashing the store.
+      const status = optimisticId
+          || relevantObjects.added.sortaMatches.size > 0
+          || relevantObjects.modified.sortaMatches.size > 0
+        ? "loading"
+        : "loaded";
 
-    if (objectsToInsert.length > 0) {
-      // for now we are not doing sorting which makes life easy :)
-      // FIXME
+      // while we only push updates for the strict matches, we still need to
+      // trigger the list updating if some of our objects changed
 
-      this.store.batch({ optimisticId }, (batch) => {
+      // mark ourselves as updated so we don't infinite recurse.
+      changes.modifiedLists.add(this.cacheKey);
+
+      const newList: Array<ObjectCacheKey> = [];
+
+      let needsRevalidation = false;
+      this.store.batch({ optimisticId, changes }, (batch) => {
+        const curValue = batch.read(this.cacheKey);
+
+        const existingList = new Set(curValue?.value?.data);
+
+        const toAdd = new Set<Osdk.Instance<ObjectTypeDefinition>>(
+          // easy case. objects are new to the cache and they match this filter
+          relevantObjects.added.strictMatches,
+        );
+
+        const toRemove = new Set<ObjectCacheKey>();
+
+        // deal with the modified objects
+        for (const obj of relevantObjects.modified.all) {
+          if (relevantObjects.modified.strictMatches.has(obj)) {
+            const existingObjectCacheKey = this.store.getCacheKey<
+              ObjectCacheKey
+            >(
+              "object",
+              obj.$apiName,
+              obj.$primaryKey,
+            );
+
+            // full match and already there, do nothing
+            if (!existingList.has(existingObjectCacheKey)) {
+              // object is new to the list
+              toAdd.add(obj);
+            }
+            continue;
+          } else if (batch.optimisticWrite) {
+            // we aren't removing objects in optimistic mode
+            // we also don't want to trigger revalidation in optimistic mode
+            // as it should be triggered when the optimistic job is done
+            continue;
+          } else {
+            // object is no longer a strict match
+            const existingObjectCacheKey = this.store.getCacheKey<
+              ObjectCacheKey
+            >(
+              "object",
+              obj.$apiName,
+              obj.$primaryKey,
+            );
+
+            toRemove.add(existingObjectCacheKey);
+
+            if (relevantObjects.modified.sortaMatches.has(obj)) {
+              // since it might still be in the list we need to revalidate
+              needsRevalidation = true;
+            }
+          }
+        }
+
+        for (const key of existingList) {
+          if (toRemove.has(key)) continue;
+          newList.push(key);
+        }
+        for (const obj of toAdd) {
+          newList.push(
+            this.store.getCacheKey<ObjectCacheKey>(
+              "object",
+              obj.$apiName,
+              obj.$primaryKey,
+            ),
+          );
+        }
+
         this.updateList(
-          objectsToInsert,
-          true,
-          "loading",
+          newList,
+          /* append */ false,
+          status,
           batch,
         );
       });
-    }
 
-    return needsRevalidation;
-  }
-
-  maybeRevalidate(
-    changedObjects: ChangedObjects,
-  ): Promise<unknown> {
-    let needsRevalidation = false;
-    for (const [type, objects] of changedObjects.addedObjects.associations()) {
-      if (this.cacheKey.otherKeys[0] !== type) {
-        continue;
+      if (needsRevalidation) {
+        changes.modifiedLists.add(this.cacheKey);
+        return this.revalidate(true).then(() => void 0); // strip return value
       }
-
-      for (const obj of objects) {
-        // sorta match means it used a filter we cannot use on the frontend
-        const sortaMatch = objectSortaMatchesWhereClause(
-          obj,
-          this.#whereClause,
-          false,
+      return undefined;
+    } finally {
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.trace(
+          { methodName: "#maybeMaybe" },
+          "in finally",
         );
-        if (sortaMatch) {
-          needsRevalidation = true;
-        }
       }
     }
-
-    if (needsRevalidation) {
-      return this.revalidate(true);
-    }
-
-    return Promise.resolve();
-  }
+  };
 
   updateList(
-    values: Array<Osdk.Instance<ObjectTypeDefinition> | ObjectEntry>,
+    objectCacheKeys: Array<ObjectCacheKey>,
     append: boolean,
     status: Status,
     batch: BatchContext,
   ): Entry<ListCacheKey> {
-    // update the cache for any object that has changed
-    // and save the mapped values to return
-    let objectCacheKeys = values.map(v => {
-      if (v instanceof Entry) return v.cacheKey;
-
-      this.store.getObjectQuery(this.#type, v.$primaryKey as string | number)
-        .writeToStore(v, "loaded", batch);
-      return this.store.getCacheKey<ObjectCacheKey>(
-        "object",
-        v.$apiName,
-        v.$primaryKey,
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.trace(
+        { methodName: "updateList" },
+        `{status: ${status}}`,
+        JSON.stringify(objectCacheKeys, null, 2),
       );
-    });
+    }
 
     const existingList = batch.read(this.cacheKey);
 
@@ -359,6 +469,8 @@ export class ListQuery extends Query<
     if (!batch.optimisticWrite) {
       if (!append) {
         // we need to release all the old objects
+        // N.B. the store keeps the cache keys around for a bit so we don't
+        // need to worry about them being GC'd before we re-retain them
         for (const objectCacheKey of existingList?.value?.data ?? []) {
           this.store.release(objectCacheKey);
           this.#toRelease.delete(objectCacheKey);
@@ -371,14 +483,66 @@ export class ListQuery extends Query<
       }
     }
 
-    // EA TODO: I think we need to do more here.
-
     if (append) {
       objectCacheKeys = [
         ...existingList?.value?.data ?? [],
         ...objectCacheKeys,
       ];
     }
+
+    if (Object.keys(this.#orderBy).length > 0) {
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.info({ methodName: "updateList" }, "Sorting entries");
+        this.logger?.trace(
+          { methodName: "updateList" },
+          DEBUG_ONLY__cacheKeysToString(objectCacheKeys),
+        );
+      }
+      const sortFns = Object.entries(this.#orderBy).map(([key, order]) => {
+        return (
+          a: Osdk.Instance<ObjectTypeDefinition, never, any, {}> | undefined,
+          b: Osdk.Instance<ObjectTypeDefinition, never, any, {}> | undefined,
+        ): number => {
+          const aValue = a?.[key];
+          const bValue = b?.[key];
+
+          if (aValue == null && bValue == null) {
+            return 0;
+          }
+          if (aValue == null) {
+            return 1;
+          }
+          if (bValue == null) {
+            return -1;
+          }
+          const m = order === "asc" ? -1 : 1;
+          return aValue < bValue ? m : aValue > bValue ? -m : 0;
+        };
+      });
+
+      objectCacheKeys = objectCacheKeys.sort((a, b) => {
+        for (const sortFn of sortFns) {
+          const ret = sortFn(
+            batch.read(a)?.value,
+            batch.read(b)?.value,
+          );
+          if (ret !== 0) {
+            return ret;
+          }
+        }
+        return 0;
+      });
+    }
+
+    const visited = new Set<ObjectCacheKey>();
+    objectCacheKeys = objectCacheKeys.filter((key) => {
+      batch.read(key);
+      if (visited.has(key)) {
+        return false;
+      }
+      visited.add(key);
+      return true;
+    });
 
     return this.writeToStore({ data: objectCacheKeys }, status, batch);
   }
@@ -388,6 +552,13 @@ export class ListQuery extends Query<
     status: Status,
     batch: BatchContext,
   ): Entry<ListCacheKey> {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.trace(
+        { methodName: "writeToStore" },
+        `{status: ${status}},`,
+        DEBUG_ONLY__cacheKeysToString(data.data),
+      );
+    }
     const entry = batch.read(this.cacheKey);
 
     if (entry && deepEqual(data, entry.value)) {
@@ -395,8 +566,7 @@ export class ListQuery extends Query<
     }
 
     const ret = batch.write(this.cacheKey, data, status);
-    batch.modifiedLists.add(this.cacheKey);
-
+    batch.changes.modifiedLists.add(this.cacheKey);
     return ret;
   }
 

@@ -23,10 +23,16 @@ import type {
 import React from "react";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
+type ApplyActionParams<Q extends ActionDefinition<any>> =
+  & Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
+  & {
+    [K in keyof ObservableClient.ApplyActionOptions as `$${K}`]:
+      ObservableClient.ApplyActionOptions[K];
+  };
+
 export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
   applyAction: (
-    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
-    opts: ObservableClient.ApplyActionOptions,
+    args: ApplyActionParams<Q>,
   ) => Promise<unknown>;
 
   error:
@@ -36,21 +42,28 @@ export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
       unknown: unknown;
     }>;
   data: unknown;
+
+  isPending: boolean;
 }
 
 export function useOsdkAction<Q extends ActionDefinition<any>>(
   actionDef: Q,
 ): UseOsdkActionResult<Q> {
-  const { store } = React.useContext(OsdkContext2);
+  const { observableClient } = React.useContext(OsdkContext2);
   const [error, setError] = React.useState<UseOsdkActionResult<Q>["error"]>();
   const [data, setData] = React.useState<unknown>();
+  const [isPending, setPending] = React.useState(false);
 
   const applyAction = React.useCallback(async function applyAction(
-    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
-    opts: ObservableClient.ApplyActionOptions,
+    hookArgs: ApplyActionParams<Q>,
   ) {
+    const { $optimisticUpdate, ...args } = hookArgs;
     try {
-      const r = await store.applyAction(actionDef, args, opts);
+      setPending(true);
+      setError(undefined);
+      const r = await observableClient.applyAction(actionDef, args, {
+        optimisticUpdate: $optimisticUpdate,
+      });
       setData(r);
       return r;
     } catch (e) {
@@ -61,8 +74,10 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
       } else {
         setError({ unknown: e });
       }
+    } finally {
+      setPending(false);
     }
-  }, [store, setError]);
+  }, [observableClient, setError]);
 
-  return { applyAction, error, data };
+  return { applyAction, error, data, isPending };
 }
