@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Client } from "../Client.js";
+import type { Client } from "@osdk/client";
 import type { EditBatch } from "./EditBatch.js";
 import type {
   AddLinkEdits,
