@@ -33,7 +33,7 @@ export default async function versionUnsetCommand(
           "Your site will no longer be accessible until a new live site version is set.",
         )
       }`,
-      { type: "confirm" },
+      { type: "confirm", cancel: "symbol" },
     );
     handlePromptCancel(confirmed);
   }

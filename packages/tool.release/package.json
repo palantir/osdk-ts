@@ -46,7 +46,7 @@
     "@octokit/core": "^6.1.2",
     "@octokit/plugin-throttling": "^9.3.0",
     "chalk": "^5.4.1",
-    "consola": "^3.2.3",
+    "consola": "^3.4.0",
     "execa": "^9.5.1",
     "latest-version": "^9.0.0",
     "octokit": "^4.0.2",

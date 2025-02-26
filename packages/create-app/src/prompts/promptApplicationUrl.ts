@@ -28,7 +28,7 @@ export async function promptApplicationUrl(
   }
 
   if (applicationUrl == null) {
-    const skip = (await consola.prompt(
+    const skip = await consola.prompt(
       `Do you know the URL your production application will be hosted on? This is required to create a production build of your application with the correct OAuth redirect URL.`,
       {
         type: "select",
@@ -41,9 +41,7 @@ export async function promptApplicationUrl(
           },
         ],
       },
-      // Types for "select" are wrong the value is returned rather than the option object
-      // https://github.com/unjs/consola/pull/238
-    )) as unknown as "yes" | "no";
+    ) as "yes" | "no";
 
     if (skip === "no") {
       return undefined;

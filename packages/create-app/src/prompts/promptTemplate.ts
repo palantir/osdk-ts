@@ -22,7 +22,7 @@ import type { Template } from "../templates.js";
 export async function promptTemplate(
   parsed: { template?: string; beta?: boolean },
 ): Promise<Template> {
-  let useBeta = parsed.beta ?? false;
+  const useBeta = parsed.beta ?? false;
   let template = TEMPLATES.find((t) =>
     t.id === parsed.template || t.id === `template-${parsed.template}`
   );
@@ -38,7 +38,7 @@ export async function promptTemplate(
     if (availableTemplates.length === 0) {
       throw new Error("No available templates found for the selected options.");
     }
-    const templateId = (await consola.prompt(
+    const templateId = await consola.prompt(
       parsed.template != null
         ? `The provided template ${
           green(
@@ -54,10 +54,8 @@ export async function promptTemplate(
           value: template.id,
           label: template.label,
         })),
-        // Types for "select" are wrong the value is returned rather than the option object
-        // https://github.com/unjs/consola/pull/238
       },
-    )) as unknown as string;
+    );
 
     template = TEMPLATES.find((t) => t.id === templateId);
     if (template == null) {

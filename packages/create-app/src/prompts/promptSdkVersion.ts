@@ -38,9 +38,7 @@ export async function promptSdkVersion(
           value: sdkVersion,
         })),
       },
-      // Types for "select" are wrong the value is returned rather than the option object
-      // https://github.com/unjs/consola/pull/238
-    ) as unknown as SdkVersion;
+    );
   }
 
   return sdkVersion as SdkVersion;
