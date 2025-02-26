@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import type { Client } from "@osdk/client";
 import { Task } from "@osdk/client.test.ontology";
-import { beforeEach, describe, expect, it } from "vitest";
-import { createClientMockHelper } from "../observable/internal/testUtils.js";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createEditBatch } from "./createEditBatch.js";
 import type { EditBatch } from "./EditBatch.js";
 import type {
@@ -35,10 +35,12 @@ type TestEditScope =
   | RemoveLink<Task, "RP">;
 
 describe(createEditBatch, () => {
+  let client: Client;
   let editBatch: EditBatch<TestEditScope>;
 
   beforeEach(() => {
-    editBatch = createEditBatch(createClientMockHelper().client);
+    client = vi.fn() as any as Client;
+    editBatch = createEditBatch(client);
   });
 
   it("collects all edits", () => {

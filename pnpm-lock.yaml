@@ -3268,6 +3268,12 @@ importers:
 
   packages/functions:
     dependencies:
+      '@osdk/api':
+        specifier: workspace:~
+        version: link:../api
+      '@osdk/client':
+        specifier: workspace:~
+        version: link:../client
       '@types/geojson':
         specifier: ^7946.0.13
         version: 7946.0.14
@@ -3287,6 +3293,9 @@ importers:
       '@microsoft/api-extractor':
         specifier: ^7.49.1
         version: 7.49.1(@types/node@22.13.0)
+      '@osdk/client.test.ontology':
+        specifier: workspace:~
+        version: link:../client.test.ontology
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -14730,7 +14739,7 @@ snapshots:
 
   '@babel/generator@7.24.10':
     dependencies:
-      '@babel/types': 7.25.7
+      '@babel/types': 7.26.7
       '@jridgewell/gen-mapping': 0.3.8
       '@jridgewell/trace-mapping': 0.3.25
       jsesc: 2.5.2
@@ -14862,7 +14871,7 @@ snapshots:
 
   '@babel/helper-hoist-variables@7.24.7':
     dependencies:
-      '@babel/types': 7.25.7
+      '@babel/types': 7.26.7
 
   '@babel/helper-member-expression-to-functions@7.24.8':
     dependencies:
@@ -15016,8 +15025,8 @@ snapshots:
 
   '@babel/helpers@7.24.8':
     dependencies:
-      '@babel/template': 7.24.7
-      '@babel/types': 7.25.7
+      '@babel/template': 7.25.9
+      '@babel/types': 7.26.7
 
   '@babel/helpers@7.26.0':
     dependencies:
@@ -15033,7 +15042,7 @@ snapshots:
 
   '@babel/parser@7.25.7':
     dependencies:
-      '@babel/types': 7.25.7
+      '@babel/types': 7.26.7
 
   '@babel/parser@7.26.2':
     dependencies:
@@ -15861,9 +15870,9 @@ snapshots:
 
   '@babel/template@7.24.7':
     dependencies:
-      '@babel/code-frame': 7.24.7
-      '@babel/parser': 7.25.7
-      '@babel/types': 7.25.7
+      '@babel/code-frame': 7.26.2
+      '@babel/parser': 7.26.7
+      '@babel/types': 7.26.7
 
   '@babel/template@7.25.9':
     dependencies:
@@ -15873,14 +15882,14 @@ snapshots:
 
   '@babel/traverse@7.24.8':
     dependencies:
-      '@babel/code-frame': 7.24.7
-      '@babel/generator': 7.24.10
+      '@babel/code-frame': 7.26.2
+      '@babel/generator': 7.26.5
       '@babel/helper-environment-visitor': 7.24.7
       '@babel/helper-function-name': 7.24.7
       '@babel/helper-hoist-variables': 7.24.7
       '@babel/helper-split-export-declaration': 7.24.7
-      '@babel/parser': 7.25.7
-      '@babel/types': 7.25.7
+      '@babel/parser': 7.26.7
+      '@babel/types': 7.26.7
       debug: 4.4.0
       globals: 11.12.0
     transitivePeerDependencies:
