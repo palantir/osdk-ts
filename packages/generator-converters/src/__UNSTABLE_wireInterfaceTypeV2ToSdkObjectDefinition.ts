@@ -29,20 +29,22 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
     apiName: interfaceType.apiName,
     displayName: interfaceType.displayName,
     description: interfaceType.description,
-    implements: interfaceType.extendsInterfaces,
+    implements: interfaceType.allExtendsInterfaces
+      ?? interfaceType.extendsInterfaces,
     properties: Object.fromEntries(
-      Object.entries(interfaceType.properties).map((
-        [key, value],
-      ) => {
-        return [
-          key,
-          wirePropertyV2ToSdkPropertyDefinition(
-            value,
-            true,
-            log,
-          ),
-        ];
-      }).filter(([key, value]) => value != null),
+      Object.entries(interfaceType.allProperties ?? interfaceType.properties)
+        .map((
+          [key, value],
+        ) => {
+          return [
+            key,
+            wirePropertyV2ToSdkPropertyDefinition(
+              value,
+              true,
+              log,
+            ),
+          ];
+        }).filter(([key, value]) => value != null),
     ),
     links: {},
     implementedBy: interfaceType.implementedByObjectTypes,

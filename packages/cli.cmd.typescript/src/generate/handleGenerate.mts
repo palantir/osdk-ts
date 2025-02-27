@@ -147,7 +147,7 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
       return {
         ...x,
         extendsInterfaces: [...x.extendsInterfaces].sort(),
-        properties: sortKeys(x.properties),
+        properties: sortKeys(x.allProperties ?? x.properties),
       };
     });
 
