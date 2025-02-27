@@ -111,6 +111,7 @@ function objectPropertyTypeToSdkPropertyDefinition(
     case "timestamp":
     case "marking":
     case "geotimeSeriesReference":
+    case "vector":
     case "mediaReference":
       return propertyType.type;
     case "date":
@@ -135,8 +136,7 @@ function objectPropertyTypeToSdkPropertyDefinition(
         {},
       );
     }
-    case "cipherText":
-    case "vector": {
+    case "cipherText": {
       log?.info(
         `${JSON.stringify(propertyType.type)} is not a supported propertyType`,
       );
