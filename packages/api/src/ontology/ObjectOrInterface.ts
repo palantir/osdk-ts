@@ -39,17 +39,17 @@ export namespace DerivedObjectOrInterfaceDefinition {
   } & K;
 }
 
+type Properties<O extends ObjectOrInterfaceDefinition> = NonNullable<
+  O["__DefinitionMetadata"]
+>["properties"];
+
 export type PropertyKeys<
   O extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > =
-  & (keyof NonNullable<O["__DefinitionMetadata"]>["properties"] | keyof RDPs)
+  & (keyof Properties<O> | keyof RDPs)
   & string;
 
-// TODO: refactor
-type Properties<O extends ObjectOrInterfaceDefinition> = NonNullable<
-  O["__DefinitionMetadata"]
->["properties"];
 export type VectorType = Extract<BaseWirePropertyTypes, "vector">;
 export type VectorPropertyKeys<O extends ObjectOrInterfaceDefinition> = keyof {
   [
