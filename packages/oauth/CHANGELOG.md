@@ -1,5 +1,37 @@
 # @osdk/oauth
 
+## 1.1.0-beta.11
+
+### Minor Changes
+
+- 9df2d99: Fixes CJS generation for OAuth
+
+## 1.1.0-beta.10
+
+### Minor Changes
+
+- 44e62f6: Updating fetch for auth and other packages.
+
+## 1.1.0-beta.9
+
+### Minor Changes
+
+- c691c8b: Package now has experimental support for commonjs
+
+## 1.1.0-beta.8
+
+### Minor Changes
+
+- 02685ab: Adding return types to functions.
+- 696c59c: Enables additional metadata to be required to match a refresh token in local storage
+
+## 1.1.0-beta.7
+
+### Minor Changes
+
+- 0166d14: Fixes an infinite redirect issue on some errors in the OAuth flow
+- c9da74c: Improves code quality by fixing linting errors
+
 ## 1.1.0-beta.6
 
 ### Minor Changes

@@ -213,6 +213,19 @@ export const TodoWireOntology: WireOntologyDefinition = {
       extendsInterfaces: [],
       links: {},
       implementedByObjectTypes: [],
+      allProperties: {
+        "SomeProperty": {
+          apiName: "SomeProperty",
+          description: "Some property",
+          displayName: "Sum Property",
+          dataType: {
+            type: "string",
+          },
+          rid: "idk2",
+        },
+      },
+      allExtendsInterfaces: [],
+      allLinks: {},
     },
   },
   sharedPropertyTypes: {

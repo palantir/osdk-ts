@@ -18,18 +18,23 @@ import type {
   ActionEditResponse,
   ActionValidationResponse,
   AttachmentUpload,
+  MediaReference,
 } from "@osdk/api";
 import {
   $Actions,
   $ontologyRid,
   actionTakesAttachment,
+  actionTakesMedia,
+  createFooInterface,
   createOffice,
+  createStructPerson,
+  deleteFooInterface,
   moveOffice,
 } from "@osdk/client.test.ontology";
 import type {
   BatchApplyActionResponseV2,
   SyncApplyActionResponseV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import { apiServer, stubData } from "@osdk/shared.test";
 import {
   afterAll,
@@ -38,6 +43,7 @@ import {
   expect,
   expectTypeOf,
   it,
+  vi,
 } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
@@ -94,6 +100,7 @@ describe("actions", () => {
       }
     `);
 
+    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
     const undefinedResult = await client(createOffice).applyAction({
       officeId: "NYC",
       address: "123 Main Street",
@@ -104,7 +111,8 @@ describe("actions", () => {
     expect(undefinedResult).toBeUndefined();
 
     const clientCreateOffice = client(createOffice).batchApplyAction;
-    expectTypeOf<typeof clientCreateOffice>().toBeCallableWith([{
+    const clientCreateOfficeMock: typeof clientCreateOffice = vi.fn();
+    void clientCreateOfficeMock([{
       officeId: "NYC",
       address: "123 Main Street",
       capacity: 100,
@@ -169,6 +177,29 @@ describe("actions", () => {
         }
       `);
     }
+  });
+
+  it("Accepts structs", async () => {
+    const clientBoundActionTakesStruct = client(createStructPerson).applyAction;
+    type InferredParamType = Parameters<
+      typeof clientBoundActionTakesStruct
+    >[0];
+    expectTypeOf<
+      {
+        name: string;
+        address: { city: string; state: string; zipcode: number };
+      }
+    >()
+      .toMatchTypeOf<
+        InferredParamType
+      >();
+
+    const result = await client(createStructPerson).applyAction({
+      name: "testMan",
+      address: { city: "NYC", state: "NY", zipcode: 12345 },
+    });
+    expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
+    expect(result).toBeUndefined();
   });
 
   it("Accepts attachments", async () => {
@@ -259,6 +290,110 @@ describe("actions", () => {
 
     expectTypeOf<typeof result2>().toEqualTypeOf<undefined>();
     expect(result2).toBeUndefined();
+  });
+
+  it("Accepts media reference", async () => {
+    const clientBoundActionTakesMedia = client(
+      actionTakesMedia,
+    ).applyAction;
+    type InferredParamType = Parameters<
+      typeof clientBoundActionTakesMedia
+    >[0];
+
+    expectTypeOf<
+      {
+        media_reference: MediaReference;
+      }
+    >().toMatchTypeOf<
+      InferredParamType
+    >();
+
+    const result = await client(actionTakesMedia).applyAction({
+      media_reference: stubData.mediaReference,
+    });
+
+    expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
+    expect(result).toBeUndefined();
+  });
+
+  it("Accepts interfaces", async () => {
+    const clientBoundTakesInterface = client(
+      deleteFooInterface,
+    ).applyAction;
+
+    type InferredParamType = Parameters<
+      typeof clientBoundTakesInterface
+    >[0];
+
+    expectTypeOf<
+      {
+        deletedInterface: {
+          $objectType: "Employee" | "Person";
+          $primaryKey: string | number;
+        };
+      }
+    >().toMatchTypeOf<
+      InferredParamType
+    >();
+
+    const clientBoundBatchActionTakesInterface = client(
+      deleteFooInterface,
+    ).batchApplyAction;
+    type InferredBatchParamType = Parameters<
+      typeof clientBoundBatchActionTakesInterface
+    >[0];
+
+    expectTypeOf<{
+      deletedInterface: {
+        $objectType: "Employee" | "Person";
+        $primaryKey: string | number;
+      };
+    }[]>().toMatchTypeOf<InferredBatchParamType>();
+
+    const result = await client(deleteFooInterface).applyAction({
+      deletedInterface: {
+        $objectType: "Employee",
+        $primaryKey: 1,
+      },
+    });
+
+    expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
+    expect(result).toBeUndefined();
+  });
+  it("Accepts object type refs", async () => {
+    const clientBoundTakesObjectType = client(
+      createFooInterface,
+    ).applyAction;
+
+    type InferredParamType = Parameters<
+      typeof clientBoundTakesObjectType
+    >[0];
+
+    expectTypeOf<
+      {
+        createdInterface: string;
+      }
+    >().toMatchTypeOf<
+      InferredParamType
+    >();
+
+    const clientBoundBatchActionTakesObjectType = client(
+      createFooInterface,
+    ).batchApplyAction;
+    type InferredBatchParamType = Parameters<
+      typeof clientBoundBatchActionTakesObjectType
+    >[0];
+
+    expectTypeOf<{
+      createdInterface: string;
+    }[]>().toMatchTypeOf<InferredBatchParamType>();
+
+    const result = await client(createFooInterface).applyAction({
+      createdInterface: "UnderlyingObject",
+    });
+
+    expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
+    expect(result).toBeUndefined();
   });
   it("conditionally returns edits in batch mode", async () => {
     const result = await client(moveOffice).batchApplyAction([
@@ -440,9 +575,13 @@ describe("ActionResponse remapping", () => {
     const actions = Object.keys($Actions);
     expect(actions).toStrictEqual([
       "actionTakesAttachment",
+      "actionTakesMedia",
       "actionTakesObjectSet",
+      "createFooInterface",
       "createOffice",
       "createOfficeAndEmployee",
+      "createStructPerson",
+      "deleteFooInterface",
       "moveOffice",
       "promoteEmployee",
       "promoteEmployeeObject",

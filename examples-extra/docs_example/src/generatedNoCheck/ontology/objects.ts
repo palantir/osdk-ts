@@ -1,4 +1,4 @@
-export { Employee } from './objects/Employee';
-export { equipment } from './objects/equipment';
-export { Office } from './objects/Office';
-export { Todo } from './objects/Todo';
+export { Employee } from './objects/Employee.js';
+export { equipment } from './objects/equipment.js';
+export { Office } from './objects/Office.js';
+export { Todo } from './objects/Todo.js';

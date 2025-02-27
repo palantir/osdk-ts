@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 
 import type { BuilderEntityProvenance } from "./BuilderEntityProvenance.js";
+import type { EditsHistoryProvenance } from "./EditsHistoryProvenance.js";
 import type { MarketplaceEntityProvenance } from "./MarketplaceEntityProvenance.js";
 export interface EntityProvenanceSource_builder {
   type: "builder";
@@ -25,6 +26,11 @@ export interface EntityProvenanceSource_marketplace {
   type: "marketplace";
   marketplace: MarketplaceEntityProvenance;
 }
+
+export interface EntityProvenanceSource_editsHistory {
+  type: "editsHistory";
+  editsHistory: EditsHistoryProvenance;
+}
 /**
  * Information describing the source provenance of an ontology entity modeled as an extensible union.
  * Each service or client which defines the definition of an ontology entity can declare their custom
@@ -33,4 +39,5 @@ export interface EntityProvenanceSource_marketplace {
  */
 export type EntityProvenanceSource =
   | EntityProvenanceSource_builder
-  | EntityProvenanceSource_marketplace;
+  | EntityProvenanceSource_marketplace
+  | EntityProvenanceSource_editsHistory;

@@ -17,7 +17,7 @@
 import type {
   InterfaceType,
   SharedPropertyType,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import { format } from "prettier";
 import { describe, expect, it } from "vitest";
 import { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
@@ -55,6 +55,9 @@ function simpleInterface<T extends string, Q extends SharedPropertyType>(
     links: {},
     properties,
     implementedByObjectTypes: [],
+    allExtendsInterfaces: parents,
+    allLinks: {},
+    allProperties: properties,
   } as const satisfies InterfaceType;
 }
 
@@ -160,6 +163,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           strictProps: Bar.StrictProps;
           apiName: "Bar";
           displayName: "Bar";
+          implementedBy: [];
           implements: [];
           links: {};
           properties: {
@@ -252,6 +256,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           apiName: "Foo";
           description: "Foo interface desc";
           displayName: "Foo interface dn";
+          implementedBy: [];
           implements: ["Parent"];
           links: {};
           properties: {
@@ -345,6 +350,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           apiName: "Foo";
           description: "Foo interface desc";
           displayName: "Foo interface dn";
+          implementedBy: [];
           implements: ["Parent"];
           links: {};
           properties: {

@@ -1,5 +1,16 @@
 # @osdk/shared.net.fetch
 
+## 1.1.0-beta.3
+
+### Minor Changes
+
+- c691c8b: Package now has experimental support for commonjs
+
+### Patch Changes
+
+- Updated dependencies [c691c8b]
+  - @osdk/shared.net.errors@2.1.0-beta.2
+
 ## 1.1.0-beta.2
 
 ### Minor Changes

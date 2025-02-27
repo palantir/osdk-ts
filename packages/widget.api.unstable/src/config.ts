@@ -38,10 +38,12 @@ export interface EventDefinition<P extends ParameterConfig> {
 export type ParameterConfig = Record<string, ParameterDefinition>;
 
 export interface WidgetConfig<P extends ParameterConfig> {
-  parameters: ParameterConfig;
-  rid: `ri.widgetregistry..widget.${string}`;
+  id: string;
+  name: string;
+  description?: string;
   // TODO: Add specific config for each type of widget. For now, all the config is generic and can be used by any widget.
   type: "workshop";
+  parameters: ParameterConfig;
   events: { [eventId: string]: EventDefinition<NoInfer<P>> };
 }
 

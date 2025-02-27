@@ -16,7 +16,7 @@
 
 import type {
   ObjectOrInterfaceDefinition,
-  ObjectSetListener,
+  ObjectSetSubscription,
   Osdk,
   PropertyKeys,
 } from "@osdk/api";
@@ -30,7 +30,7 @@ import type {
   RefreshObjectSet,
   StreamMessage,
   SubscriptionClosed,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
 import type { Logger } from "../Logger.js";
@@ -53,8 +53,8 @@ function fillOutListener<
     onError = doNothing,
     onOutOfDate = doNothing,
     onSuccessfulSubscription = doNothing,
-  }: ObjectSetListener<Q, P>,
-): Required<ObjectSetListener<Q, P>> {
+  }: ObjectSetSubscription.Listener<Q, P>,
+): Required<ObjectSetSubscription.Listener<Q, P>> {
   return { onChange, onError, onOutOfDate, onSuccessfulSubscription };
 }
 
@@ -62,12 +62,11 @@ interface Subscription<
   Q extends ObjectOrInterfaceDefinition,
   P extends PropertyKeys<Q>,
 > {
-  listener: Required<ObjectSetListener<Q, P>>;
-  objectSet: ObjectSet;
-  interfaceApiName?: string;
-  primaryKeyPropertyName?: string;
+  listener: Required<ObjectSetSubscription.Listener<Q, P>>;
   requestedProperties: Array<P>;
   requestedReferenceProperties: Array<P>;
+  objectSet: ObjectSet;
+
   subscriptionId: string;
   isReady?: boolean;
   status:
@@ -77,6 +76,9 @@ interface Subscription<
     | "expired"
     | "error"
     | "reconnecting";
+
+  interfaceApiName?: string;
+  primaryKeyPropertyName?: string;
 }
 
 function isReady<
@@ -169,10 +171,10 @@ export class ObjectSetListenerWebsocket {
   >(
     objectType: ObjectOrInterfaceDefinition,
     objectSet: ObjectSet,
-    listener: ObjectSetListener<Q, P>,
+    listener: ObjectSetSubscription.Listener<Q, P>,
     properties: Array<P> = [],
   ): Promise<() => void> {
-    const objDef = objectType.type === "object"
+    const objOrInterfaceDef = objectType.type === "object"
       ? await this.#client.ontologyProvider.getObjectDefinition(
         objectType.apiName,
       )
@@ -183,38 +185,33 @@ export class ObjectSetListenerWebsocket {
     let objectProperties: Array<P> = [];
     let referenceProperties: Array<P> = [];
 
-    if (objectType.type === "object") {
-      if (properties.length === 0) {
-        properties = Object.keys(objDef.properties) as Array<P>;
-      }
-
-      objectProperties = properties.filter((p) =>
-        objDef.properties[p].type !== "geotimeSeriesReference"
-      );
-
-      referenceProperties = properties.filter((p) =>
-        objDef.properties[p].type === "geotimeSeriesReference"
-      );
-    } else {
-      objectProperties = [];
-      referenceProperties = properties;
+    if (properties.length === 0) {
+      properties = Object.keys(objOrInterfaceDef.properties) as Array<P>;
     }
+
+    objectProperties = properties.filter((p) =>
+      objOrInterfaceDef.properties[p].type !== "geotimeSeriesReference"
+    );
+
+    referenceProperties = properties.filter((p) =>
+      objOrInterfaceDef.properties[p].type === "geotimeSeriesReference"
+    );
 
     const sub: Subscription<Q, P> = {
       listener: fillOutListener<Q, P>(listener),
       objectSet,
-      primaryKeyPropertyName: objDef.type === "interface"
+      primaryKeyPropertyName: objOrInterfaceDef.type === "interface"
         ? undefined
-        : objDef.primaryKeyApiName,
+        : objOrInterfaceDef.primaryKeyApiName,
       requestedProperties: objectProperties,
       requestedReferenceProperties: referenceProperties,
       status: "preparing",
       // Since we don't have a real subscription id yet but we need to keep
       // track of this reference, we can just use a random uuid.
       subscriptionId: `TMP-${nextUuid()}}`,
-      interfaceApiName: objDef.type === "object"
+      interfaceApiName: objOrInterfaceDef.type === "object"
         ? undefined
-        : objDef.apiName,
+        : objOrInterfaceDef.apiName,
     };
 
     this.#subscriptions.set(sub.subscriptionId, sub);
@@ -451,7 +448,7 @@ export class ObjectSetListenerWebsocket {
     );
     const osdkObjectsWithReferenceUpdates = await Promise.all(
       referenceUpdates.map(async (o) => {
-        const osdkObjectArray = await this.#client.objectFactory(
+        const osdkObjectArray = await this.#client.objectFactory2(
           this.#client,
           [{
             __apiName: o.objectType,
@@ -462,6 +459,13 @@ export class ObjectSetListenerWebsocket {
             [o.property]: o.value,
           }],
           sub.interfaceApiName,
+          false,
+          undefined,
+          false,
+          await this.#fetchInterfaceMapping(
+            o.objectType,
+            sub.interfaceApiName,
+          ),
         ) as Array<Osdk.Instance<any, never, any>>;
         const singleOsdkObject = osdkObjectArray[0] ?? undefined;
         return singleOsdkObject != null
@@ -491,10 +495,18 @@ export class ObjectSetListenerWebsocket {
       for (const key of keysToDelete) {
         delete o.object[key];
       }
-      const osdkObjectArray = await this.#client.objectFactory(
+
+      const osdkObjectArray = await this.#client.objectFactory2(
         this.#client,
         [o.object],
         sub.interfaceApiName,
+        false,
+        undefined,
+        false,
+        await this.#fetchInterfaceMapping(
+          o.object.__apiName,
+          sub.interfaceApiName,
+        ),
       ) as Array<Osdk.Instance<any, never, any>>;
       const singleOsdkObject = osdkObjectArray[0] ?? undefined;
       return singleOsdkObject != null
@@ -516,6 +528,20 @@ export class ObjectSetListenerWebsocket {
       }
     }
   };
+
+  async #fetchInterfaceMapping(
+    objectTypeApiName: string,
+    interfaceApiName: string | undefined,
+  ): Promise<Record<string, Record<string, Record<string, string>>>> {
+    if (interfaceApiName == null) return {};
+    const interfaceMap = (await this.#client.ontologyProvider
+      .getObjectDefinition(objectTypeApiName)).interfaceMap;
+    return {
+      [interfaceApiName]: {
+        [objectTypeApiName]: interfaceMap[interfaceApiName],
+      },
+    };
+  }
 
   #handleMessage_refreshObjectSet = (payload: RefreshObjectSet) => {
     const sub = this.#subscriptions.get(payload.id);

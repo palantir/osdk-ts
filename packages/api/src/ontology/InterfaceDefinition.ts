@@ -22,6 +22,7 @@ import type {
 
 export interface InterfaceMetadata extends ObjectInterfaceBaseMetadata {
   type: "interface";
+  implementedBy?: ReadonlyArray<string>;
 }
 
 export interface InterfaceDefinition {

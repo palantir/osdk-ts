@@ -15,23 +15,24 @@
  */
 
 import type {
+  BaseWirePropertyTypes,
   ObjectMetadata,
-  SimpleWirePropertyTypes,
   WirePropertyTypes,
 } from "@osdk/api";
 import type {
   ObjectPropertyType,
   PropertyV2,
   SharedPropertyType,
-} from "@osdk/internal.foundry.core";
-import { consola } from "consola";
+} from "@osdk/foundry.ontologies";
 
 export function wirePropertyV2ToSdkPropertyDefinition(
   input: (PropertyV2 | SharedPropertyType) & { nullable?: boolean },
   isNullable: boolean = true,
+  log?: { info: (msg: string) => void },
 ): ObjectMetadata.Property | undefined {
   const sdkPropDefinition = objectPropertyTypeToSdkPropertyDefinition(
     input.dataType,
+    log,
   );
   if (sdkPropDefinition == null) {
     return undefined;
@@ -48,6 +49,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "boolean":
     case "date":
     case "attachment":
+    case "mediaReference":
     case "geopoint":
     case "geoshape":
     case "timestamp":
@@ -72,23 +74,26 @@ export function wirePropertyV2ToSdkPropertyDefinition(
       };
     }
     case "cipherText":
-    case "mediaReference": {
-      consola.info(
+    case "vector": {
+      log?.info(
         `${JSON.stringify(input.dataType.type)} is not a supported dataType`,
       );
+
       return undefined;
     }
     default:
       const _: never = input.dataType;
-      consola.info(
+      log?.info(
         `${JSON.stringify(input.dataType)} is not a supported dataType`,
       );
+
       return undefined;
   }
 }
 
 function objectPropertyTypeToSdkPropertyDefinition(
   propertyType: ObjectPropertyType,
+  log?: { info: (msg: string) => void },
 ): WirePropertyTypes | undefined {
   switch (propertyType.type) {
     case "integer":
@@ -106,6 +111,7 @@ function objectPropertyTypeToSdkPropertyDefinition(
     case "timestamp":
     case "marking":
     case "geotimeSeriesReference":
+    case "mediaReference":
       return propertyType.type;
     case "date":
       return "datetime";
@@ -119,29 +125,30 @@ function objectPropertyTypeToSdkPropertyDefinition(
       } else return "sensorTimeseries";
     case "struct": {
       return propertyType.structFieldTypes.reduce(
-        (structMap: Record<string, SimpleWirePropertyTypes>, structField) => {
+        (structMap: Record<string, BaseWirePropertyTypes>, structField) => {
           structMap[structField.apiName] =
             objectPropertyTypeToSdkPropertyDefinition(
               structField.dataType,
-            ) as SimpleWirePropertyTypes;
+            ) as BaseWirePropertyTypes;
           return structMap;
         },
         {},
       );
     }
-
-    case "mediaReference":
-    case "cipherText": {
-      consola.info(
+    case "cipherText":
+    case "vector": {
+      log?.info(
         `${JSON.stringify(propertyType.type)} is not a supported propertyType`,
       );
+
       return undefined;
     }
     default: {
       const _: never = propertyType;
-      consola.info(
+      log?.info(
         `${JSON.stringify(propertyType)} is not a supported propertyType`,
       );
+
       return undefined;
     }
   }

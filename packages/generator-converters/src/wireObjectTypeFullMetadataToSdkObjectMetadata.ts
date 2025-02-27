@@ -19,7 +19,7 @@ import type {
   ObjectTypeFullMetadata,
   PropertyApiName,
   PropertyV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import { wirePropertyV2ToSdkPrimaryKeyTypeDefinition } from "./wirePropertyV2ToSdkPrimaryKeyTypeDefinition.js";
 import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition.js";
 
@@ -30,6 +30,7 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
     };
   },
   v2: boolean,
+  log?: { info: (msg: string) => void },
 ): ObjectMetadata {
   if (
     objectTypeWithLink.objectType
@@ -81,6 +82,7 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
         wirePropertyV2ToSdkPropertyDefinition(
           value,
           !(v2 && objectTypeWithLink.objectType.primaryKey === key),
+          log,
         ),
       ]).filter(([key, value]) => value != null),
     ),

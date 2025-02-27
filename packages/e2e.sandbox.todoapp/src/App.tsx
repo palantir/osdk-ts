@@ -1,43 +1,47 @@
+import type { WhereClause } from "@osdk/client";
+import React from "react";
 import "./App.css";
-import CreateTodoForm from "./CreateTodoForm";
-import { TodoView } from "./TodoView";
-import { useTodos } from "./useTodos";
+import CreateTodoForm from "./CreateTodoForm.js";
+import FilterSelector from "./FilterSelector.js";
+import type { Todo } from "./generatedNoCheck2/index.js";
+import { H1 } from "./H2.js";
+import { Section } from "./Section.js";
+import { SpecificTodo } from "./SpecificTodo.js";
+import TodoList from "./TodoList.js";
 
 function App() {
-  const { todos, isLoading, toggleComplete, error, isValidating, createTodo } =
-    useTodos();
+  const [whereClause, setWhereClause] = React.useState<WhereClause<Todo>>({});
 
-  if (todos) {
-    console.log(todos[0]);
-  }
   return (
-    <main className="flex min-h-screen flex-col items-center p-24 ">
-      <h1 className="mb-6 text-xl">Todos</h1>
+    <main className="flex min-h-screen flex-col items-center p-24">
+      <H1>Todos App</H1>
 
-      <div className="min-w-fit">
-        <CreateTodoForm createTodo={createTodo} />
-        <div>
-          <div className="flex mb-4">
-            {isLoading || isValidating
-              ? (
-                <div className="mr-2 w-4 h-4 rounded-full animate-spin shrink-0
-border border-solid border-yellow-800 border-t-transparent">
-                </div>
-              )
-              : <div className="mr-2 w-4 h-4"></div>}
-            {isLoading || isValidating ? "Loading" : ""}
-          </div>
+      <div className="flex flex-row items-start text-left">
+        <div className="min-w-80 mr-8">
+          <Section>
+            <TodoList where={whereClause} />
+          </Section>
+        </div>
 
-          {error && <h2>{error.toString()}</h2>}
-          {todos
-            && todos.map((todo) => (
-              <TodoView
-                todo={todo}
-                toggleComplete={toggleComplete}
-                key={todo.id}
-                loading={isLoading || isValidating}
-              />
-            ))}
+        <div className="w-64">
+          <Section>
+            <CreateTodoForm />
+          </Section>
+
+          <Section>
+            <SpecificTodo />
+          </Section>
+
+          <Section>
+            <FilterSelector
+              setFilter={setWhereClause}
+              heading="<-- Filter"
+            />
+          </Section>
+
+          <Section>
+            <SpecificTodo />
+          </Section>
         </div>
       </div>
     </main>

@@ -62,6 +62,7 @@ const cspell = {
     "*.json",
     "*.sh",
     "*.snap",
+    "typedoc.jsonc",
 
     // Dictionary files have words that are only used in certain contexts so they implicitly
     // won't pass the generic case.
@@ -199,6 +200,7 @@ const cspell = {
         "Hemsworth",
         "underlyings",
         "Dherlihy",
+        "Mnayan",
       ],
     },
   ],

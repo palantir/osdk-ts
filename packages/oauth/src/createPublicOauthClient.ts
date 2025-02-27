@@ -78,6 +78,11 @@ export interface PublicOauthClientOptions {
    * Context path for the authorization server (defaults to "multipass")
    */
   ctxPath?: string;
+
+  /**
+   * Allows for an additional value to be appended to the local storage key for the refresh token.
+   */
+  refreshTokenMarker?: string;
 }
 
 /**
@@ -132,6 +137,7 @@ export function createPublicOauthClient(
   fetchFn?: typeof globalThis.fetch,
   ctxPath?: string,
 ): PublicOauthClient {
+  let refreshTokenMarker: string | undefined;
   ({
     useHistory,
     loginPage,
@@ -139,6 +145,7 @@ export function createPublicOauthClient(
     scopes,
     fetchFn,
     ctxPath,
+    refreshTokenMarker,
   } = processOptionsAndAssignDefaults(
     url,
     redirect_uri,
@@ -150,7 +157,10 @@ export function createPublicOauthClient(
     ctxPath,
   ));
 
-  const client: Client = { client_id, token_endpoint_auth_method: "none" };
+  const client: Client = {
+    client_id,
+    token_endpoint_auth_method: "none",
+  };
   const authServer = createAuthorizationServer(ctxPath, url);
   const oauthHttpOptions: HttpRequestOptions = { [customFetch]: fetchFn };
 
@@ -160,6 +170,7 @@ export function createPublicOauthClient(
     _signIn,
     oauthHttpOptions,
     maybeRefresh.bind(globalThis, true),
+    refreshTokenMarker,
   );
 
   // as an arrow function, `useHistory` is known to be a boolean
@@ -176,8 +187,10 @@ export function createPublicOauthClient(
   async function maybeRefresh(
     expectRefreshToken?: boolean,
   ): Promise<Token | undefined> {
-    const { refresh_token } = readLocal(client);
-    if (!refresh_token) {
+    const { refresh_token, refreshTokenMarker: lastRefreshTokenMarker } =
+      readLocal(client);
+
+    if (!refresh_token || lastRefreshTokenMarker !== refreshTokenMarker) {
       if (expectRefreshToken) throw new Error("No refresh token found");
       return;
     }

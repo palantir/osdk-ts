@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,5 +17,6 @@
 export type LmsEmbeddingModel =
   | "OPENAI_TEXT_EMBEDDING_ADA_002"
   | "TEXT_EMBEDDING_3_SMALL"
+  | "SNOWFLAKE_ARCTIC_EMBED_M"
   | "INSTRUCTOR_LARGE"
   | "BGE_BASE_EN_V1_5";

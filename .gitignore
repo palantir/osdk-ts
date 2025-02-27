@@ -38,4 +38,6 @@ api-docs/
 temp/
 tsup.config.bundled_*.mjs
 
+vitest.config.mts.timestamp-*
+
 vitest.workspace.ts

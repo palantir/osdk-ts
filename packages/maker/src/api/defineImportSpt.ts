@@ -44,7 +44,11 @@ export function importSharedPropertyType(
       "Package name includes upper case characters",
     );
 
-    return { apiName: packageName + "." + apiName, type: typeHint };
+    return {
+      apiName: packageName + "." + apiName,
+      type: typeHint,
+      nonNameSpacedApiName: apiName,
+    };
   }
-  return { apiName: apiName, type: typeHint };
+  return { apiName: apiName, type: typeHint, nonNameSpacedApiName: apiName };
 }

@@ -1,34 +1,37 @@
-import { useState } from "react";
-import type { SimpleTodo } from "./useTodos";
+import { useOsdkAction, useOsdkObject } from "@osdk/react/experimental";
+import React from "react";
+import type { $Objects } from "./generatedNoCheck2/index.js";
+import { $Actions } from "./generatedNoCheck2/index.js";
+import { InlineSpinner } from "./InlineSpinner.js";
 
-export function TodoView({
-  todo,
-  toggleComplete,
-  loading,
-}: {
-  todo: SimpleTodo;
-  toggleComplete: (todo: SimpleTodo) => void;
-  loading: boolean;
-}) {
-  const [isPending, setIsPending] = useState<boolean>(false);
+interface Props {
+  todo: $Objects.Todo.OsdkInstance;
+}
 
-  async function handleClick() {
-    setIsPending(true);
-    await toggleComplete(todo);
-    setIsPending(false);
-  }
+export const TodoView = React.memo(function TodoView({ todo }: Props) {
+  const { isLoading, isOptimistic } = useOsdkObject(todo);
 
-  const validating = isPending || loading;
+  const { applyAction, isPending } = useOsdkAction($Actions.completeTodo);
+  const toggleComplete = React.useCallback(
+    () => {
+      return applyAction({
+        is_complete: !todo.isComplete,
+        Todo: todo,
+
+        $optimisticUpdate: (ctx) => {
+          ctx.updateObject(todo.$clone({
+            isComplete: !todo.isComplete,
+          }));
+        },
+      });
+    },
+    [applyAction, todo],
+  );
 
   return (
     <div className="flex items-center mb-4" key={todo.id}>
-      {validating
-        ? (
-          <div className="mr-2 w-4 h-4 rounded-full animate-spin shrink-0
-border border-solid border-yellow-800 border-t-transparent">
-          </div>
-        )
-        : <div className="mr-2 w-4 h-4 shrink-0"></div>}
+      <InlineSpinner isLoading={isLoading} />
+
       <input
         type="checkbox"
         id={"label-" + todo.id}
@@ -37,10 +40,10 @@ border border-solid border-yellow-800 border-t-transparent">
          disabled:opacity-50 disabled:pointer-events-none
         dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
         style={{ display: "inline-block" }}
-        checked={todo.isComplete} /* fixme */
-        onClick={handleClick}
-        aria-disabled={validating}
-        disabled={validating}
+        checked={todo.isComplete}
+        onClick={toggleComplete}
+        aria-disabled={isLoading || isPending}
+        disabled={isLoading || isPending}
         readOnly={true}
       />
 
@@ -50,18 +53,16 @@ border border-solid border-yellow-800 border-t-transparent">
       >
         {todo.title}
       </label>
-      {isPending
-        ? (
-          <>
-            <div className="ml-2 w-4 h-4 rounded-full animate-spin shrink-0
-border border-solid border-yellow-800 border-t-transparent">
-            </div>
-            <div className="ml-2 text-xs text-gray-500">(Saving)</div>
-          </>
-        )
-        : (
-          ""
-        )}
+
+      {isOptimistic
+        ? <SmallTextDiv>(Optimistic)</SmallTextDiv>
+        : ("")}
     </div>
+  );
+});
+
+export function SmallTextDiv({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="ml-2 text-xs text-gray-500 font-normal">{children}</div>
   );
 }

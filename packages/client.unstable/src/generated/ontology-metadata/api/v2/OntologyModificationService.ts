@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ export { checkExistingUniqueIdentifiers } from "./OntologyModificationService/ch
 export { createOntology } from "./OntologyModificationService/createOntology.js";
 export { deleteOntology } from "./OntologyModificationService/deleteOntology.js";
 export { getEntityModificationHistory } from "./OntologyModificationService/getEntityModificationHistory.js";
+export { getEntityModificationHistoryV2 } from "./OntologyModificationService/getEntityModificationHistoryV2.js";
 export { getModificationHistory } from "./OntologyModificationService/getModificationHistory.js";
 export { getModifiedEntities } from "./OntologyModificationService/getModifiedEntities.js";
 export { importSharedPropertyTypes } from "./OntologyModificationService/importSharedPropertyTypes.js";

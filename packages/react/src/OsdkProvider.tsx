@@ -24,7 +24,7 @@ export function OsdkProvider({
 }: {
   children: React.ReactNode;
   client: Client;
-}) {
+}): React.JSX.Element {
   return (
     <OsdkContext.Provider value={{ client }}>{children}</OsdkContext.Provider>
   );

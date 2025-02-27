@@ -6,8 +6,8 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
-import { $osdkMetadata } from '../../OntologyMetadata';
-import type { Todo } from '../objects/Todo';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
+import type { Todo } from '../objects/Todo.js';
 
 export namespace completeTodo {
   // Represents the definition of the parameters for the action

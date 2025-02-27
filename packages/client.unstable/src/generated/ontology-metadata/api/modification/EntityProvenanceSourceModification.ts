@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 
 import type { BuilderEntityProvenance } from "../entitymetadata/provenance/BuilderEntityProvenance.js";
+import type { EditsHistoryProvenance } from "../entitymetadata/provenance/EditsHistoryProvenance.js";
 import type { MarketplaceEntityProvenance } from "../entitymetadata/provenance/MarketplaceEntityProvenance.js";
 import type { NoneEntityProvenance } from "./NoneEntityProvenance.js";
 export interface EntityProvenanceSourceModification_builder {
@@ -27,6 +28,11 @@ export interface EntityProvenanceSourceModification_marketplace {
   marketplace: MarketplaceEntityProvenance;
 }
 
+export interface EntityProvenanceSourceModification_editsHistory {
+  type: "editsHistory";
+  editsHistory: EditsHistoryProvenance;
+}
+
 export interface EntityProvenanceSourceModification_none {
   type: "none";
   none: NoneEntityProvenance;
@@ -34,4 +40,5 @@ export interface EntityProvenanceSourceModification_none {
 export type EntityProvenanceSourceModification =
   | EntityProvenanceSourceModification_builder
   | EntityProvenanceSourceModification_marketplace
+  | EntityProvenanceSourceModification_editsHistory
   | EntityProvenanceSourceModification_none;

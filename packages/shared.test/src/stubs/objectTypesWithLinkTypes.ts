@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeFullMetadata } from "@osdk/internal.foundry.core";
+import type { ObjectTypeFullMetadata } from "@osdk/foundry.ontologies";
 import {
   leadLinkType,
   occupants,

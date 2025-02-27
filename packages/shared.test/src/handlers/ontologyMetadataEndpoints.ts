@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { OntologyFullMetadata } from "@osdk/internal.foundry.core";
-import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
+import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
+import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { HttpResponseResolver, PathParams, RequestHandler } from "msw";
 import { http as rest, HttpResponse } from "msw";
 import invariant from "tiny-invariant";
@@ -306,9 +306,9 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
           Object.entries(body.linkTypeVersions).length === 0,
           "Currently don't support loading links via tests",
         );
-        invariant(body.loadRedacted === false, "unsupported for tests");
+        invariant(!body.loadRedacted, "unsupported for tests");
         invariant(
-          body.includeObjectTypesWithoutSearchableDatasources === true,
+          body.includeObjectTypesWithoutSearchableDatasources,
           "unsupported for tests",
         );
 
@@ -434,9 +434,9 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
           Object.entries(body.linkTypes).length === 0,
           "Currently don't support loading links via tests",
         );
-        invariant(body.loadRedacted === false, "unsupported for tests");
+        invariant(!body.loadRedacted, "unsupported for tests");
         invariant(
-          body.includeObjectTypesWithoutSearchableDatasources === true,
+          body.includeObjectTypesWithoutSearchableDatasources,
           "unsupported for tests",
         );
 

@@ -1,5 +1,145 @@
 # @osdk/shared.test
 
+## 2.2.0-beta.5
+
+### Patch Changes
+
+- @osdk/api@2.2.0-beta.5
+
+## 2.2.0-beta.4
+
+### Patch Changes
+
+- @osdk/api@2.2.0-beta.4
+
+## 2.2.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [761e69d]
+  - @osdk/api@2.2.0-beta.3
+
+## 2.2.0-beta.2
+
+### Minor Changes
+
+- fccd9ac: "Allow selecting derived properties"
+
+### Patch Changes
+
+- Updated dependencies [fccd9ac]
+  - @osdk/api@2.2.0-beta.2
+
+## 2.1.0-beta.31
+
+### Minor Changes
+
+- bb8b219: Use new external packages instead of the internal ones.
+
+### Patch Changes
+
+- Updated dependencies [bb8b219]
+- Updated dependencies [ee6224b]
+- Updated dependencies [5fe2c8d]
+  - @osdk/api@2.1.0-beta.31
+
+## 2.1.0-beta.30
+
+### Patch Changes
+
+- Updated dependencies [966d408]
+- Updated dependencies [f03e39f]
+- Updated dependencies [1591f04]
+- Updated dependencies [785f663]
+- Updated dependencies [2d5e648]
+  - @osdk/api@2.1.0-beta.30
+
+## 2.1.0-beta.29
+
+### Minor Changes
+
+- f1145ff: Adds support for runtime derived properties
+
+### Patch Changes
+
+- Updated dependencies [f1145ff]
+  - @osdk/api@2.1.0-beta.29
+
+## 2.1.0-beta.28
+
+### Patch Changes
+
+- Updated dependencies [f446d0c]
+  - @osdk/api@2.1.0-beta.28
+
+## 2.1.0-beta.27
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.27
+
+## 2.1.0-beta.26
+
+### Minor Changes
+
+- 9c4efe6: Support uploading media parameters through actions
+
+### Patch Changes
+
+- Updated dependencies [7865cb6]
+- Updated dependencies [9c4efe6]
+- Updated dependencies [f19da8e]
+  - @osdk/api@2.1.0-beta.26
+
+## 2.1.0-beta.25
+
+### Minor Changes
+
+- c80ca45: Add ability to create interfaces through actions now.
+
+### Patch Changes
+
+- Updated dependencies [c80ca45]
+  - @osdk/api@2.1.0-beta.25
+
+## 2.1.0-beta.24
+
+### Minor Changes
+
+- 03f95eb: Add support for interface params in actions.
+
+### Patch Changes
+
+- Updated dependencies [03f95eb]
+- Updated dependencies [c691c8b]
+- Updated dependencies [3c9ac22]
+  - @osdk/api@2.1.0-beta.24
+
+## 2.1.0-beta.23
+
+### Minor Changes
+
+- d794c19: Adding support for struct action params.
+- 62c1d63: Add support for reading media reference property in OSDK.
+- d665147: Update platform sdk deps
+
+### Patch Changes
+
+- Updated dependencies [d794c19]
+- Updated dependencies [62c1d63]
+  - @osdk/api@2.1.0-beta.23
+
+## 2.1.0-beta.22
+
+### Minor Changes
+
+- c9da74c: Improves code quality by fixing linting errors
+
+### Patch Changes
+
+- Updated dependencies [73fa373]
+  - @osdk/api@2.1.0-beta.22
+
 ## 2.1.0-beta.21
 
 ### Minor Changes

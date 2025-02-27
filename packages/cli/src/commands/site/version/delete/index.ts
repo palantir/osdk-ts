@@ -29,7 +29,7 @@ const command: CommandModule<
       .positional("version", {
         type: "string",
         demandOption: true,
-        description: "Version to set as live",
+        description: "Version to delete",
       })
       .option("yes", {
         alias: "y",

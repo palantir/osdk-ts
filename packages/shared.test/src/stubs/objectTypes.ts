@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectType } from "@osdk/internal.foundry.core";
+import type { ObjectType } from "@osdk/foundry.ontologies";
 
 export const employeeObjectType: ObjectType = {
   apiName: "Employee",

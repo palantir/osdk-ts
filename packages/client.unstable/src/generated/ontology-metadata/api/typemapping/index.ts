@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ export type { ExternalMappingConfigurationFilter } from "./ExternalMappingConfig
 export type { GetGothamObjectTypesResponse } from "./GetGothamObjectTypesResponse.js";
 export type { GetGothamPropertyTypesResponse } from "./GetGothamPropertyTypesResponse.js";
 export type { GothamDatasourceDelegateId } from "./GothamDatasourceDelegateId.js";
+export type { GothamDatasourceMetadata } from "./GothamDatasourceMetadata.js";
 export type { GothamIntrinsic } from "./GothamIntrinsic.js";
 export type { GothamIntrinsicEndDate } from "./GothamIntrinsicEndDate.js";
 export type { GothamIntrinsicExpectedBaseType } from "./GothamIntrinsicExpectedBaseType.js";
@@ -38,6 +39,7 @@ export type { GothamMappingConfiguration } from "./GothamMappingConfiguration.js
 export type { GothamObjectIntrinsicMapping } from "./GothamObjectIntrinsicMapping.js";
 export type { GothamObjectTypeAvailable } from "./GothamObjectTypeAvailable.js";
 export type { GothamObjectTypeUnavailable } from "./GothamObjectTypeUnavailable.js";
+export type { GothamObjectTypeUnavailableHasNonLabelPropertyTitleGenerators } from "./GothamObjectTypeUnavailableHasNonLabelPropertyTitleGenerators.js";
 export type { GothamObjectTypeUnavailableHasTypeGroups } from "./GothamObjectTypeUnavailableHasTypeGroups.js";
 export type { GothamObjectTypeUnavailableInTransfer } from "./GothamObjectTypeUnavailableInTransfer.js";
 export type { GothamObjectTypeUnavailableIsCoreType } from "./GothamObjectTypeUnavailableIsCoreType.js";
@@ -49,21 +51,26 @@ export type { GothamObjectTypeUri } from "./GothamObjectTypeUri.js";
 export type { GothamOntologyParentType } from "./GothamOntologyParentType.js";
 export type { GothamOntologyParentTypeUri } from "./GothamOntologyParentTypeUri.js";
 export type { GothamPropertyComponentUri } from "./GothamPropertyComponentUri.js";
+export type { GothamPropertyDatasourceMapping } from "./GothamPropertyDatasourceMapping.js";
+export type { GothamPropertyDatasourceMappingProperty } from "./GothamPropertyDatasourceMappingProperty.js";
+export type { GothamPropertyDatasourceMappingStruct } from "./GothamPropertyDatasourceMappingStruct.js";
 export type { GothamPropertyIntrinsicMapping } from "./GothamPropertyIntrinsicMapping.js";
 export type { GothamPropertyIntrinsicMappingV2 } from "./GothamPropertyIntrinsicMappingV2.js";
+export type { GothamPropertyIntrinsicMappingV3 } from "./GothamPropertyIntrinsicMappingV3.js";
 export type { GothamPropertyTypeAvailable } from "./GothamPropertyTypeAvailable.js";
 export type { GothamPropertyTypeUnavailable } from "./GothamPropertyTypeUnavailable.js";
+export type { GothamPropertyTypeUnavailableConverterError } from "./GothamPropertyTypeUnavailableConverterError.js";
 export type { GothamPropertyTypeUnavailableDeprecated } from "./GothamPropertyTypeUnavailableDeprecated.js";
+export type { GothamPropertyTypeUnavailableHasCustomMakers } from "./GothamPropertyTypeUnavailableHasCustomMakers.js";
 export type { GothamPropertyTypeUnavailableInTransfer } from "./GothamPropertyTypeUnavailableInTransfer.js";
 export type { GothamPropertyTypeUnavailableIsComposite } from "./GothamPropertyTypeUnavailableIsComposite.js";
-export type { GothamPropertyTypeUnavailableIsCompositeWithCustomValidators } from "./GothamPropertyTypeUnavailableIsCompositeWithCustomValidators.js";
-export type { GothamPropertyTypeUnavailableIsCompositeWithEnumValues } from "./GothamPropertyTypeUnavailableIsCompositeWithEnumValues.js";
 export type { GothamPropertyTypeUnavailableNonIndexedProperty } from "./GothamPropertyTypeUnavailableNonIndexedProperty.js";
 export type { GothamPropertyTypeUnavailableSystemProperty } from "./GothamPropertyTypeUnavailableSystemProperty.js";
 export type { GothamPropertyTypeUnavailableUnknown } from "./GothamPropertyTypeUnavailableUnknown.js";
 export type { GothamPropertyTypeUnavailableUnsupportedBaseValidators } from "./GothamPropertyTypeUnavailableUnsupportedBaseValidators.js";
 export type { GothamPropertyTypeUnavailableUnsupportedMaxValueLength } from "./GothamPropertyTypeUnavailableUnsupportedMaxValueLength.js";
 export type { GothamPropertyTypeUri } from "./GothamPropertyTypeUri.js";
+export type { GothamPropertyValueTypesToCreate } from "./GothamPropertyValueTypesToCreate.js";
 export type { GothamRepresentativePropertyType } from "./GothamRepresentativePropertyType.js";
 export type { GothamTypeInstallFailedStatus } from "./GothamTypeInstallFailedStatus.js";
 export type { GothamTypeInstallInstalledStatus } from "./GothamTypeInstallInstalledStatus.js";
@@ -80,6 +87,13 @@ export type { LoadGothamTypeInstallationStatusesResponse } from "./LoadGothamTyp
 export type { ObjectTypeGothamMapping } from "./ObjectTypeGothamMapping.js";
 export type { ObjectTypeGothamMappingModification } from "./ObjectTypeGothamMappingModification.js";
 export type { ObjectTypeHasUnavailableRepresentativePropertyTypes } from "./ObjectTypeHasUnavailableRepresentativePropertyTypes.js";
+export type { OntologyIrGothamPropertyDatasourceMapping } from "./OntologyIrGothamPropertyDatasourceMapping.js";
+export type { OntologyIrGothamPropertyDatasourceMappingProperty } from "./OntologyIrGothamPropertyDatasourceMappingProperty.js";
+export type { OntologyIrGothamPropertyDatasourceMappingStruct } from "./OntologyIrGothamPropertyDatasourceMappingStruct.js";
+export type { OntologyIrGothamPropertyIntrinsicMapping } from "./OntologyIrGothamPropertyIntrinsicMapping.js";
+export type { OntologyIrGothamPropertyIntrinsicMappingV2 } from "./OntologyIrGothamPropertyIntrinsicMappingV2.js";
+export type { OntologyIrGothamPropertyIntrinsicMappingV3 } from "./OntologyIrGothamPropertyIntrinsicMappingV3.js";
+export type { OntologyIrObjectTypeGothamMapping } from "./OntologyIrObjectTypeGothamMapping.js";
 export type { PropertyTypeGothamMapping } from "./PropertyTypeGothamMapping.js";
 export type { RevDbIntegrationState } from "./RevDbIntegrationState.js";
 export type { SharedPropertyTypeGothamMapping } from "./SharedPropertyTypeGothamMapping.js";

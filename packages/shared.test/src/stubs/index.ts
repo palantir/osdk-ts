@@ -21,6 +21,7 @@ export * from "./attachments.js";
 export * from "./links.js";
 export * from "./linkTypes.js";
 export * from "./loadRequests.js";
+export * from "./media.js";
 export * from "./objects.js";
 export * from "./objectSetRequest.js";
 export * from "./objectTypesWithLinkTypes.js";

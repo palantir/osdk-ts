@@ -16,12 +16,11 @@
 
 import type {
   ActionDefinition,
+  FilteredPropertyKeys,
   InterfaceDefinition,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet,
-  ObjectSetListener,
-  ObjectSetListenerOptions,
   ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
@@ -34,13 +33,13 @@ import type {
   MinimalObjectSet,
 } from "@osdk/api/unstable";
 import {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
-  __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
 } from "@osdk/api/unstable";
-import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
+import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
+import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.client";
-import { symbolClientContext } from "@osdk/shared.client2";
 import { createBulkLinksAsyncIterFactory } from "./__unstable/createBulkLinksAsyncIterFactory.js";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import { applyAction } from "./actions/applyAction.js";
@@ -50,14 +49,19 @@ import { fetchMetadataInternal } from "./fetchMetadata.js";
 import type { Logger } from "./Logger.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { fetchSingle } from "./object/fetchSingle.js";
-import {
-  createObjectSet,
-  getWireObjectSet,
-} from "./objectSet/createObjectSet.js";
+import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
-import { ObjectSetListenerWebsocket } from "./objectSet/ObjectSetListenerWebsocket.js";
 import { applyQuery } from "./queries/applyQuery.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
+
+// We import it this way to keep compatible with CJS. If we referenced the
+// value of `symbolClientContext` directly, then we would have to a dynamic import
+// in `createClientInternal` which would make it async and a break.
+// Since this is just a string in `@osdk/shared.client2` instead of a symbol,
+// we can safely perform this trick.
+type newSymbolClientContext =
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  typeof import("@osdk/shared.client2").symbolClientContext;
 
 class ActionInvoker<Q extends ActionDefinition<any>>
   implements ActionSignatureFromDef<Q>
@@ -162,28 +166,6 @@ export function createClientInternal(
               clientCtx,
             ),
           } as any;
-        case __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe.name:
-          return {
-            subscribe: <
-              Q extends ObjectOrInterfaceDefinition,
-              const P extends PropertyKeys<Q>,
-            >(
-              objectSet: ObjectSet<Q>,
-              listener: ObjectSetListener<Q, P>,
-              opts?: ObjectSetListenerOptions<Q, P>,
-            ) => {
-              const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
-                clientCtx,
-              ).subscribe(
-                objectSet.$objectSetInternals?.def!,
-                getWireObjectSet(objectSet),
-                listener,
-                opts?.properties,
-              );
-
-              return { unsubscribe: async () => (await pendingSubscribe)() };
-            },
-          } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid.name:
           return {
             fetchOneByRid: async <
@@ -206,6 +188,31 @@ export function createClientInternal(
               ) as Osdk<Q>;
             },
           } as any;
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference.name:
+          return {
+            createMediaReference: async <
+              Q extends ObjectTypeDefinition,
+              const L extends FilteredPropertyKeys<Q, "mediaReference">,
+            >(args: {
+              data: Blob;
+              fileName: string;
+              objectType: Q;
+              propertyType: L;
+            }) => {
+              const { data, fileName, objectType, propertyType } = args;
+              return await OntologiesV2.MediaReferenceProperties.upload(
+                clientCtx,
+                await clientCtx.ontologyRid,
+                objectType.apiName,
+                propertyType as string,
+                data,
+                {
+                  mediaItemPath: fileName,
+                  preview: true,
+                },
+              );
+            },
+          } as any;
       }
 
       throw new Error("not implemented");
@@ -218,6 +225,8 @@ export function createClientInternal(
     undefined,
     clientCtx,
   );
+
+  const symbolClientContext: newSymbolClientContext = "__osdkClientContext";
 
   const client: Client = Object.defineProperties<Client>(
     clientFn as Client,

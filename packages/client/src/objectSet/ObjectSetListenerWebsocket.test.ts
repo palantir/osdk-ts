@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectOrInterfaceDefinition,
-  ObjectSetListener,
-  PropertyKeys,
-} from "@osdk/api";
+import type { ObjectSetSubscription, PropertyKeys } from "@osdk/api";
 import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import type {
   ObjectSetStreamSubscribeRequests,
   ObjectUpdate,
   StreamMessage,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import { apiServer } from "@osdk/shared.test";
 import ImportedWebSocket from "isomorphic-ws";
 import { http, HttpResponse } from "msw";
@@ -116,7 +112,7 @@ describe("ObjectSetListenerWebsocket", async () => {
     let client: ObjectSetListenerWebsocket;
     let listener: MockedObject<
       Required<
-        ObjectSetListener<ObjectOrInterfaceDefinition, PropertyKeys<any>>
+        ObjectSetSubscription.Listener<Employee, any>
       >
     >;
     let oslwInst = 0;
@@ -434,7 +430,7 @@ interface MockedWebSocket
 
 type MockedListener = MockedObject<
   Required<
-    ObjectSetListener<ObjectOrInterfaceDefinition, PropertyKeys<any>>
+    ObjectSetSubscription.Listener<Employee, PropertyKeys<Employee>>
   >
 >;
 

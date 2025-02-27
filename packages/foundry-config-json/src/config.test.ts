@@ -114,7 +114,7 @@ describe("loadFoundryConfig - site", () => {
     );
 
     await expect(loadFoundryConfig("site")).rejects.toThrow(
-      "The configuration file does not match",
+      "The configuration file /path/foundry.config.json does not match",
     );
   });
 
@@ -133,7 +133,7 @@ describe("loadFoundryConfig - site", () => {
     );
 
     await expect(loadFoundryConfig("site")).rejects.toThrow(
-      "The configuration file does not match the expected schema: data/site/autoVersion must match exactly one schema in oneOf",
+      "The configuration file /path/foundry.config.json does not match the expected schema: data/site/autoVersion must match exactly one schema in oneOf",
     );
   });
 
@@ -152,7 +152,7 @@ describe("loadFoundryConfig - site", () => {
     );
 
     await expect(loadFoundryConfig("site")).rejects.toThrow(
-      "The configuration file does not match the expected schema: data/site/uploadOnly must be boolean",
+      "The configuration file /path/foundry.config.json does not match the expected schema: data/site/uploadOnly must be boolean",
     );
   });
 
@@ -174,7 +174,7 @@ describe("loadFoundryConfig - site", () => {
     );
 
     await expect(loadFoundryConfig("site")).rejects.toThrow(
-      "The configuration file does not match",
+      "The configuration file /path/foundry.config.json does not match",
     );
   });
 
@@ -191,7 +191,7 @@ describe("loadFoundryConfig - site", () => {
     );
 
     await expect(loadFoundryConfig("site")).rejects.toThrow(
-      "The configuration file does not match",
+      "The configuration file /path/foundry.config.json does not match",
     );
   });
 
@@ -209,7 +209,7 @@ describe("loadFoundryConfig - site", () => {
     );
 
     await expect(loadFoundryConfig("site")).rejects.toThrow(
-      "The configuration file does not match",
+      "The configuration file /path/foundry.config.json does not match",
     );
   });
 
@@ -226,7 +226,7 @@ describe("loadFoundryConfig - site", () => {
   });
 });
 
-describe("loadFoundryConfig - widget", () => {
+describe("loadFoundryConfig - widget set", () => {
   beforeEach(() => {
     vi.mocked(findUp).mockResolvedValue("/path/foundry.config.json");
     vi.mocked(extname).mockReturnValue(".json");
@@ -235,9 +235,10 @@ describe("loadFoundryConfig - widget", () => {
   it("should load and parse the configuration file correctly", async () => {
     const correctConfig = {
       foundryUrl: "http://localhost",
-      widget: {
+      widgetSet: {
         rid: "test-rid",
         directory: "/test/directory",
+        repository: "test-repository-rid",
         autoVersion: {
           type: "git-describe",
         },
@@ -247,7 +248,7 @@ describe("loadFoundryConfig - widget", () => {
     vi.mocked(fsPromises.readFile).mockResolvedValue(
       JSON.stringify(correctConfig),
     );
-    await expect(loadFoundryConfig("widget")).resolves.toEqual({
+    await expect(loadFoundryConfig("widgetSet")).resolves.toEqual({
       configFilePath: "/path/foundry.config.json",
       foundryConfig: {
         ...correctConfig,

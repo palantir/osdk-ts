@@ -26,8 +26,8 @@ import type {
   QueryDefinition,
   QueryParameterDefinition,
 } from "@osdk/api";
-import type { DataValue } from "@osdk/internal.foundry.core";
-import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
+import type { DataValue } from "@osdk/foundry.ontologies";
+import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
 import { hydrateAttachmentFromRidInternal } from "../public-utils/hydrateAttachmentFromRid.js";
@@ -111,7 +111,7 @@ async function remapQueryResponse<
 
   if (
     responseDataType.multiplicity != null
-    && responseDataType.multiplicity !== false
+    && responseDataType.multiplicity
   ) {
     const withoutMultiplicity = { ...responseDataType, multiplicity: false };
     for (let i = 0; i < responseValue.length; i++) {

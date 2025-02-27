@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import type { LinkTypePropertyIncompatibleBackingColumnTypeError } from "./LinkT
 import type { ObjectTypePropertyIncompatibleBackingColumnTypeError } from "./ObjectTypePropertyIncompatibleBackingColumnTypeError.js";
 import type { SchemaForLinkTypeDatasourceNotFoundError } from "./SchemaForLinkTypeDatasourceNotFoundError.js";
 import type { SchemaForObjectTypeDatasourceNotFoundError } from "./SchemaForObjectTypeDatasourceNotFoundError.js";
+import type { StructColumnFieldMissingFromBackingDatasourceForObjectTypeError } from "./StructColumnFieldMissingFromBackingDatasourceForObjectTypeError.js";
 export interface FoundrySchemaConstraintError_columnMissingFromBackingDatasourceForObjectType {
   type: "columnMissingFromBackingDatasourceForObjectType";
   columnMissingFromBackingDatasourceForObjectType:
@@ -31,6 +32,12 @@ export interface FoundrySchemaConstraintError_columnMissingFromBackingDatasource
   type: "columnMissingFromBackingDatasourceForLinkType";
   columnMissingFromBackingDatasourceForLinkType:
     ColumnMissingFromBackingDatasourceForLinkTypeError;
+}
+
+export interface FoundrySchemaConstraintError_structColumnFieldMissingFromBackingDatasourceForObjectType {
+  type: "structColumnFieldMissingFromBackingDatasourceForObjectType";
+  structColumnFieldMissingFromBackingDatasourceForObjectType:
+    StructColumnFieldMissingFromBackingDatasourceForObjectTypeError;
 }
 
 export interface FoundrySchemaConstraintError_objectTypePropertyIncompatibleBackingColumnType {
@@ -67,6 +74,7 @@ export interface FoundrySchemaConstraintError_schemaForLinkTypeDatasourceNotFoun
 export type FoundrySchemaConstraintError =
   | FoundrySchemaConstraintError_columnMissingFromBackingDatasourceForObjectType
   | FoundrySchemaConstraintError_columnMissingFromBackingDatasourceForLinkType
+  | FoundrySchemaConstraintError_structColumnFieldMissingFromBackingDatasourceForObjectType
   | FoundrySchemaConstraintError_objectTypePropertyIncompatibleBackingColumnType
   | FoundrySchemaConstraintError_linkTypePropertyIncompatibleBackingColumnType
   | FoundrySchemaConstraintError_linkTypePropertiesReferenceSameColumn

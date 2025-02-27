@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 import type { ActivePropertyTypeStatus } from "./ActivePropertyTypeStatus.js";
 import type { DeprecatedPropertyTypeStatus } from "./DeprecatedPropertyTypeStatus.js";
+import type { ExamplePropertyTypeStatus } from "./ExamplePropertyTypeStatus.js";
 import type { ExperimentalPropertyTypeStatus } from "./ExperimentalPropertyTypeStatus.js";
 export interface PropertyTypeStatus_experimental {
   type: "experimental";
@@ -31,10 +32,16 @@ export interface PropertyTypeStatus_deprecated {
   type: "deprecated";
   deprecated: DeprecatedPropertyTypeStatus;
 }
+
+export interface PropertyTypeStatus_example {
+  type: "example";
+  example: ExamplePropertyTypeStatus;
+}
 /**
- * The status to indicate whether the PropertyType is either Experimental, Active or Deprecated.
+ * The status to indicate whether the PropertyType is either Experimental, Active, Deprecated, or Example.
  */
 export type PropertyTypeStatus =
   | PropertyTypeStatus_experimental
   | PropertyTypeStatus_active
-  | PropertyTypeStatus_deprecated;
+  | PropertyTypeStatus_deprecated
+  | PropertyTypeStatus_example;

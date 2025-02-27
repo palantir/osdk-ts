@@ -235,6 +235,9 @@ export class MetadataClient {
       includeObjectTypeCount: undefined,
       includeObjectTypesWithoutSearchableDatasources: true,
       includeEntityMetadata: undefined,
+      actionTypes: [],
+      includeTypeGroupEntitiesCount: undefined,
+      entityMetadata: undefined,
     };
     const entities = await bulkLoadOntologyEntities(this.#ctx, undefined, body);
     invariant(

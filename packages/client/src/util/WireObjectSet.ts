@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
+import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 
 const WIRE_OBJECT_SET_TYPES = new Set([
   "base",

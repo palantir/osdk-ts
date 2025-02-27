@@ -61,5 +61,18 @@ describe("Create authorization server", () => {
         "https://stack.palantir.com/foo/first/someStuff/multipass/api/oauth2/revoke_token",
       issuer: "https://stack.palantir.com/foo/first/someStuff/multipass",
     });
+    const authServerCustomWithTrailingSlash = createAuthorizationServer(
+      "multipass",
+      "https://stack.palantir.com/foo/first/someStuff/",
+    );
+    expect(authServerCustomWithTrailingSlash).toEqual({
+      token_endpoint:
+        "https://stack.palantir.com/foo/first/someStuff/multipass/api/oauth2/token",
+      authorization_endpoint:
+        "https://stack.palantir.com/foo/first/someStuff/multipass/api/oauth2/authorize",
+      revocation_endpoint:
+        "https://stack.palantir.com/foo/first/someStuff/multipass/api/oauth2/revoke_token",
+      issuer: "https://stack.palantir.com/foo/first/someStuff/multipass",
+    });
   });
 });

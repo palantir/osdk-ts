@@ -20,8 +20,8 @@ import type {
   ParameterConfig,
   ParameterValueMap,
   WidgetConfig,
-} from "@osdk/widget-client.unstable";
-import { createFoundryWidgetClient } from "@osdk/widget-client.unstable";
+} from "@osdk/widget.client.unstable";
+import { createFoundryWidgetClient } from "@osdk/widget.client.unstable";
 import React, { useEffect, useMemo } from "react";
 import type { FoundryWidgetClientContext } from "./context.js";
 import { FoundryWidgetContext } from "./context.js";
@@ -87,7 +87,8 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
             }
             // If any is loading, consider all of it loading unless we have failed somewhere
             if (
-              value.type === "loading" && aggregatedLoadedState !== "failed"
+              value.type === "loading"
+              && aggregatedLoadedState !== "failed"
             ) {
               aggregatedLoadedState = "loading";
               continue;

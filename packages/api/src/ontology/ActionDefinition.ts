@@ -15,6 +15,7 @@
  */
 
 import type { OsdkMetadata } from "../OsdkMetadata.js";
+import type { InterfaceDefinition } from "./InterfaceDefinition.js";
 import type {
   ObjectTypeDefinition,
   ReleaseStatus,
@@ -41,15 +42,30 @@ export namespace ActionMetadata {
     T_Target extends ObjectTypeDefinition = never,
   > {
     type:
-      | ValidBaseActionParameterTypes
+      | DataType.BaseActionParameterTypes
       | DataType.Object<any>
-      | DataType.ObjectSet<any>;
+      | DataType.ObjectSet<any>
+      | DataType.Interface<any>
+      | DataType.Struct<any>;
     description?: string;
     multiplicity?: boolean;
     nullable?: boolean;
   }
 
   export namespace DataType {
+    export type BaseActionParameterTypes =
+      | "boolean"
+      | "string"
+      | "integer"
+      | "long"
+      | "double"
+      | "datetime"
+      | "timestamp"
+      | "attachment"
+      | "marking"
+      | "mediaReference"
+      | "objectType";
+
     export interface Object<
       T_Target extends ObjectTypeDefinition = never,
     > {
@@ -58,12 +74,25 @@ export namespace ActionMetadata {
       object: T_Target["apiName"];
     }
 
+    export interface Interface<T_Target extends InterfaceDefinition = never> {
+      __OsdkTargetType?: T_Target;
+      type: "interface";
+      interface: T_Target["apiName"];
+    }
+
     export interface ObjectSet<
       T_Target extends ObjectTypeDefinition = never,
     > {
       __OsdkTargetType?: T_Target;
       type: "objectSet";
       objectSet: T_Target["apiName"];
+    }
+
+    export interface Struct<
+      T extends Record<string, DataType.BaseActionParameterTypes>,
+    > {
+      type: "struct";
+      struct: T;
     }
   }
 }
@@ -82,14 +111,3 @@ export interface ActionDefinition<
     & ActionCompileTimeMetadata<T_signatures>
     & ActionMetadata;
 }
-
-export type ValidBaseActionParameterTypes =
-  | "boolean"
-  | "string"
-  | "integer"
-  | "long"
-  | "double"
-  | "datetime"
-  | "timestamp"
-  | "attachment"
-  | "marking";

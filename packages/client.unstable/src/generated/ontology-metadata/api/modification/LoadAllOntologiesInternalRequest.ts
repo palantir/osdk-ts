@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import type { ExternalMappingConfigurationFilter } from "../typemapping/External
  * Request to load all visible Ontologies. This is only expected to be used by Ontology Metadata App.
  */
 export interface LoadAllOntologiesInternalRequest {
+  includeEmptyDefaultOntology: boolean | undefined;
   externalMappingConfigurationFilters: Array<
     ExternalMappingConfigurationFilter
   >;

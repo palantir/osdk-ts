@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
+import type { OntologyObjectV2 } from "@osdk/foundry.ontologies";
 import type { PagedBodyResponse } from "../handlers/endpointUtils.js";
 import { employee1, employee2, employee3 } from "./objects.js";
 

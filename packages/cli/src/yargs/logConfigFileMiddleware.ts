@@ -18,10 +18,12 @@ import { consola } from "consola";
 import getConfig from "../util/configLoader.js";
 
 let firstTime = true;
-export async function logConfigFileMiddleware(): Promise<void> {
+export async function logConfigFileMiddleware(
+  type: "site" | "widgetSet",
+): Promise<void> {
   if (firstTime) {
     firstTime = false;
-    const config = getConfig();
+    const config = getConfig(type);
     const configFilePath = (await config)?.configFilePath;
     if (configFilePath) {
       consola.debug(

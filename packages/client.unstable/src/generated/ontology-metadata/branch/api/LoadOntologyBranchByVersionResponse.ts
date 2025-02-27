@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 import type { OntologyBranch } from "./OntologyBranch.js";
+import type { VersionedBranchDetails } from "./VersionedBranchDetails.js";
 export interface LoadOntologyBranchByVersionResponse {
   ontologyBranch: OntologyBranch;
+  versionedBranchDetails: VersionedBranchDetails;
 }

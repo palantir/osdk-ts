@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,4 +17,9 @@
 /**
  * Specifies value to be used to sort ObjectTypes.
  */
-export type ObjectTypeSortBy = "OBJECT_TYPE_ID" | "OBJECT_TYPE_DISPLAY_NAME";
+export type ObjectTypeSortBy =
+  | "OBJECT_TYPE_ID"
+  | "OBJECT_TYPE_API_NAME"
+  | "OBJECT_TYPE_DISPLAY_NAME"
+  | "OBJECT_TYPE_PLURAL_DISPLAY_NAME"
+  | "OBJECT_TYPE_UNIQUE_USERS_COUNT";

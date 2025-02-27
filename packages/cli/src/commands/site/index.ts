@@ -16,10 +16,10 @@
 
 import type { CliCommonArgs } from "@osdk/cli.common";
 import { YargsCheckError } from "@osdk/cli.common";
-import type { LoadedFoundryConfig } from "@osdk/foundry-config-json";
 import type { CommandModule } from "yargs";
 import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
 import configLoader from "../../util/configLoader.js";
+import { logConfigFileMiddleware } from "../../yargs/logConfigFileMiddleware.js";
 import type { CommonSiteArgs } from "./CommonSiteArgs.js";
 import deploy from "./deploy/index.js";
 import { logSiteCommandConfigFileOverride } from "./logSiteCommandConfigFileOverride.js";
@@ -29,8 +29,7 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
   command: "site",
   describe: "Manage your site",
   builder: async (argv) => {
-    const config: LoadedFoundryConfig<"site"> | undefined =
-      await configLoader();
+    const config = await configLoader("site");
     const application = config?.foundryConfig.site.application;
     const foundryUrl = config?.foundryConfig.foundryUrl;
     return argv
@@ -74,9 +73,10 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
         }
         return true;
       })
-      .middleware((args) =>
-        logSiteCommandConfigFileOverride(args, config?.foundryConfig)
-      )
+      .middleware((args) => {
+        void logConfigFileMiddleware("site");
+        void logSiteCommandConfigFileOverride(args, config?.foundryConfig);
+      })
       .demandCommand();
   },
   handler: async (args) => {},

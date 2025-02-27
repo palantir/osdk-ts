@@ -29,6 +29,7 @@ export type { AggregationResultsWithGroups } from "./aggregate/AggregationResult
 export type { AggregationResultsWithoutGroups } from "./aggregate/AggregationResultsWithoutGroups.js";
 export type { AggregationClause } from "./aggregate/AggregationsClause.js";
 export type { AggregationsResults } from "./aggregate/AggregationsResults.js";
+export type { GeoFilterOptions } from "./aggregate/GeoFilter.js";
 export { DistanceUnitMapping } from "./aggregate/WhereClause.js";
 export type {
   GeoFilter_Intersects,
@@ -41,6 +42,7 @@ export type {
   OsdkObjectLinksObject,
   SingleLinkAccessor,
 } from "./definitions/LinkDefinitions.js";
+export type { DerivedProperty } from "./derivedProperties/DerivedProperty.js";
 export { DurationMapping } from "./groupby/GroupByClause.js";
 export type {
   AllGroupByValues,
@@ -70,16 +72,17 @@ export type {
   FetchPageResult,
   SingleOsdkResult,
 } from "./object/FetchPageResult.js";
+export type { Media, MediaMetadata, MediaReference } from "./object/Media.js";
 export { isOk } from "./object/Result.js";
 export type { Result } from "./object/Result.js";
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
 export type { ObjectSet } from "./objectSet/ObjectSet.js";
-export type { ObjectSetListener } from "./objectSet/ObjectSetListener.js";
-export type { ObjectSetListenerOptions } from "./objectSet/ObjectSetListener.js";
+export type { ObjectSetSubscription } from "./objectSet/ObjectSetListener.js";
 export type {
   ActionDefinition,
   ActionMetadata,
 } from "./ontology/ActionDefinition.js";
+export type { FilteredPropertyKeys } from "./ontology/FilteredPropertyKeys.js";
 export type {
   InterfaceDefinition,
   InterfaceMetadata,
@@ -108,7 +111,7 @@ export type {
   TwoDimensionalQueryAggregationDefinition,
 } from "./ontology/QueryDefinition.js";
 export type {
-  SimpleWirePropertyTypes,
+  BaseWirePropertyTypes,
   WirePropertyTypes,
 } from "./ontology/WirePropertyTypes.js";
 export type { OsdkBase, PrimaryKeyType } from "./OsdkBase.js";
@@ -124,5 +127,4 @@ export type {
   TimeSeriesQuery,
 } from "./timeseries/timeseries.js";
 export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
-
 export {};

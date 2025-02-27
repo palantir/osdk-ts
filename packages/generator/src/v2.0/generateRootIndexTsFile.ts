@@ -41,6 +41,7 @@ export async function generateRootIndexTsFile(
         helper(ontology.queryTypes)
       }} from "./ontology/queries${importExt}";
         export * as $Queries from "./ontology/queries${importExt}";
+        export { $osdkMetadata } from "./OntologyMetadata${importExt}";
         ${
         ontologyApiNamespace == null
           ? `export { $ontologyRid } from "./OntologyMetadata${importExt}";`

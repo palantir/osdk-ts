@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import type { Type } from "../../api/Type.js";
  * There may be some edge cases not covered by this validation.
  *
  * Schema Migrations that are validated for include:
- * - dropAllPatches
+ * - dropAllPatches (this is the only allowed migration in case of a primary key type change)
  * - dropProperty where the propertyTypeRid matches the deleted property
  * - renameProperty where the source matches the current propertyTypeRid and the target does not match the current propertyTypeId
  */

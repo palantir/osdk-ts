@@ -26,18 +26,17 @@ import type {
   PropertyKeys,
   Result,
 } from "@osdk/api";
+import type { PageSize, PageToken } from "@osdk/foundry.core";
 import type {
   LoadObjectSetRequestV2,
   LoadObjectSetV2MultipleObjectTypesRequest,
   ObjectSet,
   OntologyObjectV2,
-  PageSize,
-  PageToken,
   SearchJsonQueryV2,
   SearchObjectsForInterfaceRequest,
   SearchOrderByV2,
-} from "@osdk/internal.foundry.core";
-import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
+} from "@osdk/foundry.ontologies";
+import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";

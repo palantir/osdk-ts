@@ -48,10 +48,11 @@ git status --porcelain --untracked-files=no | while read line; do
         bnitgub="da"
     else 
         v=$(git diff -U0 $file | tail +5 | md5sum)
-        expected="ce0376e23ce2aa3d0dcd56c2befc2993  -" 
+        # 2023 -> 2024, 2023 -> 2025, 2024 -> 2025
+        expected=("ce0376e23ce2aa3d0dcd56c2befc2993  -", "ef60ce5d7f8bca44ce62fda0e2640235  -", "fab2d6132fef74b11845dc9106c49a4f  -")
 
 
-        if [[ $v == $expected ]]; then
+        if [[ " ${expected[@]} " =~ "$v" ]]; then
             git checkout --quiet $file
         else
             # echo "KEEP $file"

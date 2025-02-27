@@ -20,7 +20,6 @@ import {
   createProgram,
   createSourceFile,
   ModuleKind,
-  ModuleResolutionKind,
   ScriptTarget,
 } from "typescript";
 
@@ -31,6 +30,7 @@ export interface CompilerOutput {
 
 export function compileInMemory(
   files: { [fileName: string]: string },
+  type: "cjs" | "esm",
 ): {
   files: {
     [fileName: string]: string;
@@ -39,9 +39,9 @@ export function compileInMemory(
 } {
   const inMemoryOutputFileSystem: { [fileName: string]: string } = {};
   const compilerOptions: CompilerOptions = {
-    module: ModuleKind.NodeNext,
+    module: type === "cjs" ? ModuleKind.CommonJS : ModuleKind.ES2022,
     target: ScriptTarget.ES2020,
-    moduleResolution: ModuleResolutionKind.NodeNext,
+    resolvePackageJsonExports: true,
     declaration: true,
     skipLibCheck: true,
   };

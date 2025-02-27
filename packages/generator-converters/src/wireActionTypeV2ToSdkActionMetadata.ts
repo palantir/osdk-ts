@@ -19,7 +19,7 @@ import type {
   ActionParameterType,
   ActionParameterV2,
   ActionTypeV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import { getModifiedEntityTypes } from "./getEditedEntities.js";
 
 export function wireActionTypeV2ToSdkActionMetadata(
@@ -69,7 +69,9 @@ function actionPropertyToSdkPropertyDefinition(
     case "integer":
     case "long":
     case "timestamp":
+    case "mediaReference":
     case "marking":
+    case "objectType":
       return parameterType.type;
     case "date":
       return "datetime";
@@ -79,9 +81,33 @@ function actionPropertyToSdkPropertyDefinition(
       return { type: "object", object: parameterType.objectTypeApiName };
     case "array":
       return actionPropertyToSdkPropertyDefinition(parameterType.subType);
+    case "interfaceObject":
+      return {
+        type: "interface",
+        interface: parameterType.interfaceTypeApiName,
+      };
+    case "struct":
+      return {
+        type: "struct",
+        struct: parameterType.fields.reduce(
+          (
+            structMap: Record<
+              string,
+              ActionMetadata.DataType.BaseActionParameterTypes
+            >,
+            structField,
+          ) => {
+            structMap[structField.name] = actionPropertyToSdkPropertyDefinition(
+              structField.fieldType as ActionParameterType,
+            ) as ActionMetadata.DataType.BaseActionParameterTypes;
+            return structMap;
+          },
+          {},
+        ),
+      };
     default:
       throw new Error(
-        `Unsupported action parameter type: ${parameterType.type}`,
+        `Unsupported action parameter type: ${JSON.stringify(parameterType)}`,
       );
   }
 }

@@ -20,12 +20,10 @@ import type {
   OrderedAggregationClause,
   UnorderedAggregationClause,
 } from "./AggregationsClause.js";
-import type { WhereClause } from "./WhereClause.js";
 
 export type AggregateOpts<Q extends ObjectOrInterfaceDefinition> = {
   $select:
     | UnorderedAggregationClause<Q>
     | OrderedAggregationClause<Q>;
-  $where?: WhereClause<Q>;
   $groupBy?: GroupByClause<Q>;
 };

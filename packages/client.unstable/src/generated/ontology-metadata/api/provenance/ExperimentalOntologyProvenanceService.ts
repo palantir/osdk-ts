@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+export { batchGetTaggedDependentsForOntologyEntityIdentifier } from "./ExperimentalOntologyProvenanceService/batchGetTaggedDependentsForOntologyEntityIdentifier.js";
 export { getDependenciesForTaggedDependent } from "./ExperimentalOntologyProvenanceService/getDependenciesForTaggedDependent.js";
 export { getDependenciesForTaggedDependentV2 } from "./ExperimentalOntologyProvenanceService/getDependenciesForTaggedDependentV2.js";
 export { getTaggedDependentsForOntologyEntity } from "./ExperimentalOntologyProvenanceService/getTaggedDependentsForOntologyEntity.js";
+export { getTaggedDependentsForOntologyEntityIdentifier } from "./ExperimentalOntologyProvenanceService/getTaggedDependentsForOntologyEntityIdentifier.js";
 export { registerDependency } from "./ExperimentalOntologyProvenanceService/registerDependency.js";
 export { tagDependent } from "./ExperimentalOntologyProvenanceService/tagDependent.js";

@@ -1,6 +1,6 @@
 {
   "name": "@osdk/foundry-sdk-generator",
-  "version": "2.1.0-beta.21",
+  "version": "2.2.0-beta.5",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -10,35 +10,38 @@
   },
   "exports": {
     ".": {
-      "browser": "./build/browser/index.js",
-      "import": "./build/esm/index.js",
-      "default": "./build/browser/index.js"
+      "import": {
+        "types": "./build/types/index.d.ts",
+        "default": "./build/esm/index.js"
+      },
+      "default": "./build/esm/index.js"
     },
     "./*": {
-      "browser": "./build/browser/public/*.js",
-      "import": "./build/esm/public/*.js",
-      "default": "./build/browser/public/*.js"
+      "import": {
+        "types": "./build/types/public/*.d.ts",
+        "default": "./build/esm/public/*.js"
+      },
+      "default": "./build/esm/public/*.js"
     }
   },
   "scripts": {
-    "check-attw": "monorepo.tool.attw esm",
+    "check-attw": "attw --profile esm-only --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --config ./vitest.config.mts --pool=forks",
     "test:watch": "vitest",
-    "transpile": "monorepo.tool.transpile tsup"
+    "transpileEsm": "monorepo.tool.transpile -f esm -m bundle -t node",
+    "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
     "@osdk/api": "workspace:*",
     "@osdk/client": "workspace:*",
-    "@osdk/foundry.core": "2.8.0",
-    "@osdk/foundry.thirdpartyapplications": "2.8.0",
+    "@osdk/foundry.ontologies": "2.13.0",
+    "@osdk/foundry.thirdpartyapplications": "2.13.0",
     "@osdk/generator": "workspace:*",
-    "@osdk/internal.foundry.core": "2.8.0",
-    "@osdk/internal.foundry.ontologies": "2.8.0",
-    "@osdk/internal.foundry.ontologiesv2": "2.8.0",
     "@osdk/shared.client.impl": "workspace:*",
     "@rollup/plugin-commonjs": "28.0.0",
     "@rollup/plugin-node-resolve": "15.3.0",
@@ -56,7 +59,6 @@
     "@osdk/generator-utils": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/monorepo.tsup": "workspace:~",
     "@osdk/shared.test": "workspace:~",
     "@types/node": "^18.0.0",
     "@types/yargs": "^17.0.29",
@@ -70,9 +72,8 @@
     "foundry-sdk-generator": "./bin/foundry-sdk-generator.mjs"
   },
   "files": [
-    "build/cjs",
     "build/esm",
-    "build/browser",
+    "build/types",
     "CHANGELOG.md",
     "package.json",
     "templates",

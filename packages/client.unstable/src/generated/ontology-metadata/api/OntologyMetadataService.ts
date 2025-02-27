@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 export { bulkLoadOntologyEntities } from "./OntologyMetadataService/bulkLoadOntologyEntities.js";
 export { bulkLoadOntologyEntitiesByDatasources } from "./OntologyMetadataService/bulkLoadOntologyEntitiesByDatasources.js";
+export { getActionTypesForInterfaceType } from "./OntologyMetadataService/getActionTypesForInterfaceType.js";
 export { getActionTypesForObjectType } from "./OntologyMetadataService/getActionTypesForObjectType.js";
 export { getFeatureConfigurations } from "./OntologyMetadataService/getFeatureConfigurations.js";
 export { getLinkMetadataForObjectTypes } from "./OntologyMetadataService/getLinkMetadataForObjectTypes.js";
@@ -23,6 +24,7 @@ export { getLinkTypesForObjectTypes } from "./OntologyMetadataService/getLinkTyp
 export { getObjectTypesForInterfaceTypes } from "./OntologyMetadataService/getObjectTypesForInterfaceTypes.js";
 export { getObjectTypesForSharedPropertyTypes } from "./OntologyMetadataService/getObjectTypesForSharedPropertyTypes.js";
 export { getObjectTypesForTypeGroups } from "./OntologyMetadataService/getObjectTypesForTypeGroups.js";
+export { getOntologyEntitiesForTypeGroups } from "./OntologyMetadataService/getOntologyEntitiesForTypeGroups.js";
 export { getOntologyRidsForEntities } from "./OntologyMetadataService/getOntologyRidsForEntities.js";
 export { getOntologySummary } from "./OntologyMetadataService/getOntologySummary.js";
 export { getOrganizationRidsForOntology } from "./OntologyMetadataService/getOrganizationRidsForOntology.js";

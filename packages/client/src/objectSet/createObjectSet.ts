@@ -32,7 +32,11 @@ import type {
   SingleOsdkResult,
 } from "@osdk/api";
 import type { MinimalObjectSet } from "@osdk/api/unstable";
-import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
+import type {
+  DerivedPropertyDefinition,
+  ObjectSet as WireObjectSet,
+} from "@osdk/foundry.ontologies";
+import { createWithPropertiesObjectSet } from "../derivedProperties/createWithPropertiesObjectSet.js";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { aggregate } from "../object/aggregate.js";
@@ -236,6 +240,33 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       );
 
       return { unsubscribe: async () => (await pendingSubscribe)() };
+    },
+
+    withProperties: (clause) => {
+      const definitionMap = new Map<any, DerivedPropertyDefinition>();
+
+      const derivedProperties: Record<string, DerivedPropertyDefinition> = {};
+      for (const key of Object.keys(clause)) {
+        const derivedPropertyDefinition = clause
+          [key](createWithPropertiesObjectSet(
+            objectType,
+            { type: "methodInput" },
+            definitionMap,
+          ));
+        derivedProperties[key] = definitionMap.get(
+          derivedPropertyDefinition,
+        )!;
+      }
+
+      return clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        {
+          type: "withProperties",
+          derivedProperties: derivedProperties,
+          objectSet: objectSet,
+        },
+      );
     },
 
     $objectSetInternals: {

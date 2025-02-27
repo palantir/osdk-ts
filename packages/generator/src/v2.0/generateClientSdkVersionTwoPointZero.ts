@@ -38,7 +38,7 @@ export async function generateClientSdkVersionTwoPointZero(
   externalSpts: Map<string, string> = new Map(),
   forInternalUse: boolean = false,
 ): Promise<void> {
-  const importExt = packageType === "module" ? ".js" : "";
+  const importExt = ".js"; // turns out you can always use the extension
 
   // Structurally, we need to have multiple ontologies read in
   // with one per package.

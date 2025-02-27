@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ import type { BranchId } from "./BranchId.js";
 import type { StreamLocatorRid } from "./StreamLocatorRid.js";
 
 /**
- * Representing a stream locator which is uniquelly defined by its rid and branch id.
+ * Representing a stream locator which is uniquely defined by its rid and branch id.
  */
 export interface StreamLocator {
   streamLocatorRid: StreamLocatorRid;

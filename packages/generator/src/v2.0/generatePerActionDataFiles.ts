@@ -15,11 +15,11 @@
  */
 
 import type { ActionMetadata } from "@osdk/api";
-import { wireActionTypeV2ToSdkActionMetadata } from "@osdk/generator-converters";
 import type {
   ActionParameterType,
   ActionTypeV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
+import { wireActionTypeV2ToSdkActionMetadata } from "@osdk/generator-converters";
 import path from "node:path";
 import type { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
 import type { ForeignType } from "../GenerateContext/ForeignType.js";
@@ -103,6 +103,17 @@ export async function generatePerActionDataFiles(
                     return `ActionMetadata.DataType.ObjectSet<${
                       obj.getImportedDefinitionIdentifier(true)
                     }>`;
+                  } else if (type.type === "interface") {
+                    const obj = enhancedOntology.requireInterfaceType(
+                      type.interface,
+                    );
+                    return `ActionMetadata.DataType.Interface<${
+                      obj.getImportedDefinitionIdentifier(true)
+                    }>`;
+                  } else if (type.type === "struct") {
+                    return `ActionMetadata.DataType.Struct<${
+                      JSON.stringify(type.struct)
+                    }>`;
                   }
                   return undefined;
                 },
@@ -130,6 +141,13 @@ export async function generatePerActionDataFiles(
             enhancedOntology.requireObjectType(input.objectSet)
               .getImportedDefinitionIdentifier(true)
           }>`;
+        } else if (input.type === "interface") {
+          return `ActionParam.InterfaceType<${
+            enhancedOntology.requireInterfaceType(input.interface)
+              .getImportedDefinitionIdentifier(true)
+          }>`;
+        } else if (input.type === "struct") {
+          return `ActionParam.StructType<${JSON.stringify(input.struct)}>`;
         }
       }
 
@@ -238,24 +256,45 @@ export async function generatePerActionDataFiles(
             );
           }
         }
-        if (
-          p.dataType.type === "array"
-          && (p.dataType.subType.type === "object"
-            || p.dataType.subType.type === "objectSet")
-        ) {
-          if (p.dataType.subType.objectApiName) {
+        if (p.dataType.type === "interfaceObject") {
+          if (p.dataType.interfaceTypeApiName) {
             referencedObjectDefs.add(
-              enhancedOntology.requireObjectType(
-                p.dataType.subType.objectApiName,
+              enhancedOntology.requireInterfaceType(
+                p.dataType.interfaceTypeApiName,
               ),
             );
           }
-          if (p.dataType.subType.objectTypeApiName) {
-            referencedObjectDefs.add(
-              enhancedOntology.requireObjectType(
-                p.dataType.subType.objectTypeApiName,
-              ),
-            );
+        }
+        if (p.dataType.type === "array") {
+          if (
+            p.dataType.subType.type === "object"
+            || p.dataType.subType.type === "objectSet"
+          ) {
+            if (p.dataType.subType.objectApiName) {
+              referencedObjectDefs.add(
+                enhancedOntology.requireObjectType(
+                  p.dataType.subType.objectApiName,
+                ),
+              );
+            }
+            if (p.dataType.subType.objectTypeApiName) {
+              referencedObjectDefs.add(
+                enhancedOntology.requireObjectType(
+                  p.dataType.subType.objectTypeApiName,
+                ),
+              );
+            }
+          }
+          if (
+            p.dataType.subType.type === "interfaceObject"
+          ) {
+            if (p.dataType.subType.interfaceTypeApiName) {
+              referencedObjectDefs.add(
+                enhancedOntology.requireInterfaceType(
+                  p.dataType.subType.interfaceTypeApiName,
+                ),
+              );
+            }
           }
         }
       }

@@ -21,5 +21,8 @@ export default defineConfig({
     pool: "forks",
     exclude: [...configDefaults.exclude, "**/build/**/*"],
     environment: "happy-dom",
+    fakeTimers: {
+      toFake: ["setTimeout", "clearTimeout", "Date"],
+    },
   },
 });

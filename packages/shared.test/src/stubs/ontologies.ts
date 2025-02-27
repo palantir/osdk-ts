@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  Ontology,
-  OntologyFullMetadata,
-} from "@osdk/internal.foundry.core";
+import type { Ontology, OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import { actionTypes, ActionTypeWithUnsupportedTypes } from "./actionsTypes.js";
 import { BarInterface, FooInterface } from "./interfaces.js";
 import { objectTypesWithLinkTypes } from "./objectTypesWithLinkTypes.js";

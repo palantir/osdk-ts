@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { InterfaceType } from "@osdk/internal.foundry.core";
+import type { InterfaceType } from "@osdk/foundry.ontologies";
 import { fooSpt } from "./spts.js";
 
 export const FooInterface: InterfaceType = {
@@ -27,7 +27,10 @@ export const FooInterface: InterfaceType = {
     fooSpt,
   },
   links: {},
-  implementedByObjectTypes: [],
+  implementedByObjectTypes: ["Employee", "Person"],
+  allProperties: { fooSpt },
+  allExtendsInterfaces: [],
+  allLinks: {},
 };
 
 export const employeeInterfaceScoped = {
@@ -52,6 +55,9 @@ export const BarInterface: InterfaceType = {
   rid: "ri.interface.main.interface.2",
   extendsInterfaces: [],
   properties: {},
+  allProperties: {},
   links: {},
   implementedByObjectTypes: [],
+  allExtendsInterfaces: [],
+  allLinks: {},
 };

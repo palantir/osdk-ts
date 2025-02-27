@@ -1,5 +1,88 @@
 # @osdk/api
 
+## 2.2.0-beta.5
+
+## 2.2.0-beta.4
+
+## 2.2.0-beta.3
+
+### Minor Changes
+
+- 761e69d: Added type safety to createMediaReference
+
+## 2.2.0-beta.2
+
+### Minor Changes
+
+- fccd9ac: "Allow selecting derived properties"
+
+## 2.1.0-beta.31
+
+### Minor Changes
+
+- bb8b219: Use new external packages instead of the internal ones.
+- ee6224b: Explicitly type aggregation types in queries.
+- 5fe2c8d: Remove ability to filter on entire struct.
+
+## 2.1.0-beta.30
+
+### Minor Changes
+
+- 966d408: Rename type for base action parameter types.
+- f03e39f: Add a namespace type for listeners.
+- 1591f04: Rename base property types.
+- 785f663: Rename namespace so not exported from api package.
+- 2d5e648: Remove subscribe from experimental gate.
+
+## 2.1.0-beta.29
+
+### Minor Changes
+
+- f1145ff: Adds support for runtime derived properties
+
+## 2.1.0-beta.28
+
+### Minor Changes
+
+- f446d0c: Exposes $clone from OSDK Object instances
+
+## 2.1.0-beta.27
+
+## 2.1.0-beta.26
+
+### Minor Changes
+
+- 7865cb6: Add support for search on struct properties.
+- 9c4efe6: Support uploading media parameters through actions
+- f19da8e: Remove where clause from aggregate options. This option was never actually doing anything before as it was not passed to the backend for processing, so we are removing it to prevent future confusion.
+
+## 2.1.0-beta.25
+
+### Minor Changes
+
+- c80ca45: Add ability to create interfaces through actions now.
+
+## 2.1.0-beta.24
+
+### Minor Changes
+
+- 03f95eb: Add support for interface params in actions.
+- c691c8b: Package now has experimental support for commonjs
+- 3c9ac22: Cleaning up where clause types.
+
+## 2.1.0-beta.23
+
+### Minor Changes
+
+- d794c19: Adding support for struct action params.
+- 62c1d63: Add support for reading media reference property in OSDK.
+
+## 2.1.0-beta.22
+
+### Minor Changes
+
+- 73fa373: Exports helper method to construct object sets from RIDs from internal utils
+
 ## 2.1.0-beta.21
 
 ### Minor Changes

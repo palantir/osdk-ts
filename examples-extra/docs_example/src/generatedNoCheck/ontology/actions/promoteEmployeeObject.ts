@@ -6,8 +6,8 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
-import { $osdkMetadata } from '../../OntologyMetadata';
-import type { Employee } from '../objects/Employee';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
+import type { Employee } from '../objects/Employee.js';
 
 export namespace promoteEmployeeObject {
   // Represents the definition of the parameters for the action

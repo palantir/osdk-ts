@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
+import type { EditsWinToLatestTimestamp } from "./EditsWinToLatestTimestamp.js";
 import type { LatestTimestampToEditsWin } from "./LatestTimestampToEditsWin.js";
 export interface UpdateEditsResolutionStrategyMigration_latestTimestampToEditsWin {
   type: "latestTimestampToEditsWin";
   latestTimestampToEditsWin: LatestTimestampToEditsWin;
+}
+
+export interface UpdateEditsResolutionStrategyMigration_editsWinToLatestTimestamp {
+  type: "editsWinToLatestTimestamp";
+  editsWinToLatestTimestamp: EditsWinToLatestTimestamp;
 }
 /**
  * Migration to communicate to Funnel that the edits resolution strategy for an object type has changed. Funnel
@@ -27,4 +33,5 @@ export interface UpdateEditsResolutionStrategyMigration_latestTimestampToEditsWi
  * users.
  */
 export type UpdateEditsResolutionStrategyMigration =
-  UpdateEditsResolutionStrategyMigration_latestTimestampToEditsWin;
+  | UpdateEditsResolutionStrategyMigration_latestTimestampToEditsWin
+  | UpdateEditsResolutionStrategyMigration_editsWinToLatestTimestamp;

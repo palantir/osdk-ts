@@ -1,6 +1,6 @@
 import type { Dataset } from "@osdk/foundry.datasets";
 import { Datasets } from "@osdk/foundry.datasets";
-import { type AsyncValue } from "@osdk/widget-client.unstable";
+import { type AsyncValue } from "@osdk/widget.client.unstable";
 import { ExclamationTriangleIcon, TableIcon } from "@radix-ui/react-icons";
 import {
   Box,
@@ -48,18 +48,20 @@ export const App: React.FC = () => {
         }
         return { type: "loading" };
       });
-      Datasets.get(client, datasetRid).then((dataset) => {
-        setDataset({
-          type: "loaded",
-          value: dataset,
+      Datasets.get(client, datasetRid)
+        .then((dataset) => {
+          setDataset({
+            type: "loaded",
+            value: dataset,
+          });
+        })
+        .catch((error) => {
+          setDataset((prevDataset) => ({
+            type: "failed",
+            error: error as Error,
+            value: prevDataset.value,
+          }));
         });
-      }).catch((error) => {
-        setDataset(prevDataset => ({
-          type: "failed",
-          error: error as Error,
-          value: prevDataset.value,
-        }));
-      });
     }
   }, [datasetRid]);
 
@@ -112,7 +114,9 @@ export const App: React.FC = () => {
                   <ExclamationTriangleIcon /> Failed to load dataset
                 </Text>
               )
-              : "No dataset loaded"}
+              : (
+                "No dataset loaded"
+              )}
           </Heading>
           <Table.Root>
             <Table.Header>

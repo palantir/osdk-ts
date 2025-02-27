@@ -186,6 +186,10 @@ describe("FetchMetadata", () => {
         "apiName": "FooInterface",
         "description": "Interface for Foo",
         "displayName": "Foo Interface",
+        "implementedBy": [
+          "Employee",
+          "Person",
+        ],
         "implements": [],
         "links": {},
         "properties": {

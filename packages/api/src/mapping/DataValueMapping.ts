@@ -15,6 +15,7 @@
  */
 
 import type { Attachment, AttachmentUpload } from "../object/Attachment.js";
+import type { MediaReference } from "../object/Media.js";
 
 /**
  * Map from the DataValue type to the typescript type that we return
@@ -24,6 +25,7 @@ export interface DataValueWireToClient {
   boolean: boolean;
   byte: number;
   datetime: string;
+  date: string;
   decimal: string;
   float: number;
   double: number;
@@ -34,6 +36,7 @@ export interface DataValueWireToClient {
   short: number;
   string: string;
   timestamp: string;
+  mediaReference: MediaReference;
   twoDimensionalAggregation: {
     key: AllowedBucketKeyTypes;
     value: AllowedBucketTypes;
@@ -44,6 +47,7 @@ export interface DataValueWireToClient {
   }[];
   struct: Record<string, any>;
   set: Set<any>;
+  objectType: string;
 }
 
 /**
@@ -54,6 +58,7 @@ export interface DataValueClientToWire {
   boolean: boolean;
   byte: number;
   datetime: string;
+  date: string;
   decimal: string | number;
   float: number;
   double: number;
@@ -65,6 +70,7 @@ export interface DataValueClientToWire {
   string: string;
   timestamp: string;
   set: Set<any>;
+  mediaReference: MediaReference;
   twoDimensionalAggregation: {
     key: AllowedBucketKeyTypes;
     value: AllowedBucketTypes;
@@ -74,6 +80,7 @@ export interface DataValueClientToWire {
     groups: { key: AllowedBucketKeyTypes; value: AllowedBucketTypes }[];
   }[];
   struct: Record<string, any>;
+  objectType: string;
 }
 
 export type AllowedBucketTypes = string | number | boolean;

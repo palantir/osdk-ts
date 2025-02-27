@@ -1,5 +1,126 @@
 # @osdk/example-generator
 
+## 0.10.0-beta.5
+
+### Patch Changes
+
+- @osdk/create-app@2.2.0-beta.5
+- @osdk/create-widget@2.1.0-beta.1
+
+## 0.10.0-beta.4
+
+### Patch Changes
+
+- @osdk/create-app@2.2.0-beta.4
+- @osdk/create-widget@2.1.0-beta.1
+
+## 0.10.0-beta.3
+
+### Patch Changes
+
+- @osdk/create-app@2.2.0-beta.3
+- @osdk/create-widget@2.1.0-beta.1
+
+## 0.10.0-beta.2
+
+### Patch Changes
+
+- @osdk/create-app@2.2.0-beta.2
+- @osdk/create-widget@2.1.0-beta.1
+
+## 0.9.0-beta.31
+
+### Patch Changes
+
+- @osdk/create-app@2.1.0-beta.31
+- @osdk/create-widget@2.0.0-beta.16
+
+## 0.9.0-beta.30
+
+### Patch Changes
+
+- Updated dependencies [255a8f1]
+- Updated dependencies [14bb6d2]
+  - @osdk/create-widget@2.0.0-beta.16
+  - @osdk/create-app@2.1.0-beta.30
+
+## 0.9.0-beta.29
+
+### Patch Changes
+
+- @osdk/create-widget@2.0.0-beta.15
+- @osdk/create-app@2.1.0-beta.29
+
+## 0.9.0-beta.28
+
+### Patch Changes
+
+- @osdk/create-widget@2.0.0-beta.14
+
+## 0.9.0-beta.27
+
+### Minor Changes
+
+- ff1ece7: Update create-widget template README and autoVersion strategy
+
+### Patch Changes
+
+- Updated dependencies [ff1ece7]
+  - @osdk/create-widget@2.0.0-beta.13
+  - @osdk/create-app@2.1.0-beta.28
+
+## 0.9.0-beta.26
+
+### Patch Changes
+
+- @osdk/create-widget@2.0.0-beta.12
+- @osdk/create-app@2.1.0-beta.27
+
+## 0.9.0-beta.25
+
+### Minor Changes
+
+- d430386: Rename unstable create-widget --widgetSetRid arg to --widgetSet
+
+### Patch Changes
+
+- Updated dependencies [d430386]
+  - @osdk/create-widget@2.0.0-beta.11
+  - @osdk/create-app@2.1.0-beta.26
+
+## 0.9.0-beta.24
+
+### Patch Changes
+
+- @osdk/create-app@2.1.0-beta.25
+- @osdk/create-widget@2.0.0-beta.10
+
+## 0.9.0-beta.23
+
+### Patch Changes
+
+- @osdk/create-app@2.1.0-beta.24
+- @osdk/create-widget@2.0.0-beta.9
+
+## 0.9.0-beta.22
+
+### Minor Changes
+
+- 83e7ea3: Move from a single-widget to widget set model for custom widget libraries
+
+### Patch Changes
+
+- Updated dependencies [83e7ea3]
+  - @osdk/create-widget@2.0.0-beta.8
+  - @osdk/create-app@2.1.0-beta.23
+
+## 0.9.0-beta.21
+
+### Patch Changes
+
+- @osdk/create-app@2.1.0-beta.22
+- @osdk/create-widget@2.0.0-beta.7
+
 ## 0.9.0-beta.20
 
 ### Minor Changes

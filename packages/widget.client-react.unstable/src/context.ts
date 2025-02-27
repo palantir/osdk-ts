@@ -23,7 +23,7 @@ import {
   type ParameterConfig,
   type ParameterValueMap,
   type WidgetConfig,
-} from "@osdk/widget-client.unstable";
+} from "@osdk/widget.client.unstable";
 import React, { useContext } from "react";
 
 export interface FoundryWidgetClientContext<
@@ -50,7 +50,9 @@ export interface FoundryWidgetClientContext<
   };
 }
 
-export const FoundryWidgetContext = React.createContext<
+export const FoundryWidgetContext: React.Context<
+  FoundryWidgetClientContext<WidgetConfig<ParameterConfig>>
+> = React.createContext<
   FoundryWidgetClientContext<WidgetConfig<ParameterConfig>>
 >({
   emitEvent: () => {},
