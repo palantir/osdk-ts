@@ -322,6 +322,12 @@ function fixObjectPropertiesInPlace(
       obj.$primaryKey,
     );
 
+    // nearestNeighbors queries return scores as a property of the object
+    if (obj.__score) {
+      obj.$score ??= obj.__score;
+      delete obj.__score;
+    }
+
     // we don't want people to use these
     delete obj.__apiName;
     delete obj.__primaryKey;

@@ -39,9 +39,11 @@ export interface OrderByArg<
   Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q> = PropertyKeys<Q>,
 > {
-  $orderBy?: {
-    [K in L]?: "asc" | "desc";
-  };
+  $orderBy?:
+    | {
+      [K in L]?: "asc" | "desc";
+    }
+    | "relevance";
 }
 
 export type SelectArgToKeys<
