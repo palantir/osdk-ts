@@ -70,13 +70,13 @@ export namespace actionTakesAllParameterTypes {
     /**
      * An action which takes different types of parameters
      */
-    applyAction<P extends actionTakesAllParameterTypes.Params, OP extends ApplyActionOptions>(
-      args: P,
+    applyAction<OP extends ApplyActionOptions>(
+      args: actionTakesAllParameterTypes.Params,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
 
-    batchApplyAction<P extends ReadonlyArray<actionTakesAllParameterTypes.Params>, OP extends ApplyBatchActionOptions>(
-      args: P,
+    batchApplyAction<OP extends ApplyBatchActionOptions>(
+      args: ReadonlyArray<actionTakesAllParameterTypes.Params>,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }

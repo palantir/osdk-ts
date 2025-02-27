@@ -83,7 +83,7 @@ export async function generatePackage(
     beta: options.beta,
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+   
   const compilerOutput: Record<
     "esm" | "cjs",
     ReturnType<typeof compileInMemory>

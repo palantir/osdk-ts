@@ -37,13 +37,13 @@ export namespace createStructPerson {
     /**
      * Create a struct
      */
-    applyAction<P extends createStructPerson.Params, OP extends ApplyActionOptions>(
-      args: P,
+    applyAction<OP extends ApplyActionOptions>(
+      args: createStructPerson.Params,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
 
-    batchApplyAction<P extends ReadonlyArray<createStructPerson.Params>, OP extends ApplyBatchActionOptions>(
-      args: P,
+    batchApplyAction<OP extends ApplyBatchActionOptions>(
+      args: ReadonlyArray<createStructPerson.Params>,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }
