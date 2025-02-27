@@ -1,5 +1,17 @@
 # @osdk/cli.cmd.typescript
 
+## 0.26.0-beta.6
+
+### Minor Changes
+
+- b68adea: Add support for inherited interfaces.
+
+### Patch Changes
+
+- Updated dependencies [b68adea]
+  - @osdk/generator@2.2.0-beta.6
+  - @osdk/cli.common@0.26.0-beta.6
+
 ## 0.26.0-beta.5
 
 ### Patch Changes

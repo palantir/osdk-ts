@@ -1,5 +1,12 @@
 # @osdk/api
 
+## 2.2.0-beta.6
+
+### Minor Changes
+
+- cddfbf9: Adds default value option to group by
+- a6e5f89: Changes count, exactDistinct, and approximateDistinct to be non-nullable
+
 ## 2.2.0-beta.5
 
 ## 2.2.0-beta.4
