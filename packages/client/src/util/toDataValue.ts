@@ -42,6 +42,14 @@ export async function toDataValue(
 
   // arrays and sets are both sent over the wire as arrays
   if (Array.isArray(value) || value instanceof Set) {
+    const values = Array.from(value);
+    if (values.every((dataValue) => isAttachmentUpload(dataValue))) {
+      const converted = [];
+      for (const value of values) {
+        converted.push(await toDataValue(value, client));
+      }
+      return converted;
+    }
     const promiseArray = Array.from(
       value,
       async (innerValue) => await toDataValue(innerValue, client),
