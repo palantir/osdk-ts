@@ -178,6 +178,78 @@ describe("ObjectSet", () => {
     expect(iter).toEqual(1);
   });
 
+  it("nearest neighbors object set", async () => {
+    const numNeighbors = 3;
+    const nearestNeighborsObjectSet = client(Employee).nearestNeighbors(
+      "python3",
+      numNeighbors,
+      "skillSetEmbedding",
+    );
+    const { data: employees } = await nearestNeighborsObjectSet.fetchPage();
+    expect(employees).toHaveLength(numNeighbors);
+    // Check that no score is returned when not ordered by relevance
+    employees.forEach(e => expect(e.$score).toBeUndefined());
+  });
+
+  it("nearest neighbors object set ordered by relevance", async () => {
+    const objectSet = client(Employee);
+    const { data: employees } = await objectSet.nearestNeighbors(
+      "python3",
+      3,
+      "skillSetEmbedding",
+    ).fetchPage({
+      $orderBy: "relevance",
+    });
+
+    expect(employees).toHaveLength(3);
+    // Check that returned objects have scores
+    employees.forEach(e => expect(e.$score).toBeGreaterThanOrEqual(0));
+  });
+
+  it("nearest neighbors object set ordered by relevance fetchPageWithErrors", async () => {
+    const objectSet = client(Employee);
+    const result = await objectSet.nearestNeighbors(
+      "python3",
+      3,
+      "skillSetEmbedding",
+    ).fetchPageWithErrors({
+      $orderBy: "relevance",
+    });
+
+    if (isOk(result)) {
+      const employees = result.value.data;
+      expect(employees).toHaveLength(3);
+      // Check that returned objects have scores
+      employees.forEach(e => expect(e.$score).toBeGreaterThanOrEqual(0));
+    }
+  });
+
+  it("nearest neighbors object set vector query", async () => {
+    const numNeighbors = 3;
+    const nearestNeighborsObjectSet = client(Employee).nearestNeighbors(
+      Array.from({ length: 1536 }, () => 0.3),
+      numNeighbors,
+      "skillSetEmbedding",
+    );
+    const { data: employees } = await nearestNeighborsObjectSet.fetchPage();
+    expect(employees).toHaveLength(numNeighbors);
+    // Check that no score is returned when not ordered by relevance
+    employees.forEach(e => expect(e.$score).toBeUndefined());
+  });
+
+  it("type checking nearestNeighbor call", () => {
+    expectTypeOf(client(Employee).nearestNeighbors).toBeCallableWith(
+      "some text",
+      10,
+      "skillSetEmbedding",
+    );
+    expectTypeOf(client(Employee).nearestNeighbors).toBeCallableWith(
+      [0, 1, 2],
+      10,
+      "skillSetEmbedding",
+    );
+  });
+
   it("orders objects in ascending order without a filter, and returns all results", async () => {
     const { data: employees } = await client(Employee)
       .fetchPage({
@@ -911,6 +983,8 @@ describe("ObjectSet", () => {
             | "startDate"
             | "employeeLocation"
             | "employeeSensor"
+            | "skillSet"
+            | "skillSetEmbedding"
           >();
 
         expectTypeOf<

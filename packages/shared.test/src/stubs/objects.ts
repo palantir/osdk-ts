@@ -33,6 +33,11 @@ export const employee1 = {
   employeeLocation: "GeotimeSeriesReferencePlaceholder",
 };
 
+export const employee1WithScore: OntologyObjectV2 = {
+  ...employee1,
+  __score: 0.95,
+};
+
 export const employee2 = {
   __rid:
     "ri.phonograph2-objects.main.object.ae6a0b9a-9b9a-4b9e-8b0a-2b0b9a9a0b9a",
@@ -49,6 +54,11 @@ export const employee2 = {
   employeeLocation: "GeotimeSeriesReferencePlaceholder",
 };
 
+export const employee2WithScore: OntologyObjectV2 = {
+  ...employee1,
+  __score: 0.91,
+};
+
 export const employee3 = {
   __rid:
     "ri.phonograph2-objects.main.object.b9a0b2b0-0a2b-0b8b-9e4b-a9a9b9a0b9a0",
@@ -63,6 +73,11 @@ export const employee3 = {
   employeeStatus: "TimeSeries<String>",
   employeeSensor: "TimeSeries<>",
   employeeLocation: "GeotimeSeriesReferencePlaceholder",
+};
+
+export const employee3WithScore: OntologyObjectV2 = {
+  ...employee1,
+  __score: 0.85,
 };
 
 export const employee4withDerived = {

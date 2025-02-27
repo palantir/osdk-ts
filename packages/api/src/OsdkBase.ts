@@ -32,12 +32,7 @@ export type OsdkBase<
 
   readonly $title: string | undefined;
 
-<<<<<<< HEAD
   readonly $objectSpecifier: ObjectSpecifier<Q>;
-||||||| parent of 4171243d (Add nearestNeighbor support)
-=======
-  readonly $score?: number | undefined;
->>>>>>> 4171243d (Add nearestNeighbor support)
 };
 
 export type PrimaryKeyType<Q extends ObjectOrInterfaceDefinition> =
