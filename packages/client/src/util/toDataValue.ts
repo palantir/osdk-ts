@@ -17,7 +17,10 @@
 import { type DataValue } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { isAttachmentUpload } from "../object/AttachmentUpload.js";
+import {
+  isAttachmentFile,
+  isAttachmentUpload,
+} from "../object/AttachmentUpload.js";
 import { isMediaReference } from "../object/mediaUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import { isInterfaceActionParam } from "./interfaceUtils.js";
@@ -43,7 +46,11 @@ export async function toDataValue(
   // arrays and sets are both sent over the wire as arrays
   if (Array.isArray(value) || value instanceof Set) {
     const values = Array.from(value);
-    if (values.every((dataValue) => isAttachmentUpload(dataValue))) {
+    if (
+      values.some((dataValue) =>
+        isAttachmentUpload(dataValue) || isAttachmentFile(dataValue)
+      )
+    ) {
       const converted = [];
       for (const value of values) {
         converted.push(await toDataValue(value, client));
@@ -69,7 +76,7 @@ export async function toDataValue(
     return await toDataValue(attachment.rid, client);
   }
 
-  if (typeof value === "object" && value instanceof Blob && "name" in value) {
+  if (isAttachmentFile(value)) {
     const attachment = await OntologiesV2.Attachments.upload(
       client,
       value,
