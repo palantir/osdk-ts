@@ -90,7 +90,8 @@
     "@osdk/tests.verify-cjs-node10": "0.0.3",
     "@osdk/tests.verify-esm-node16": "0.0.3",
     "@osdk/examples.widget-minimal-react-sdk-2.x": "0.0.0",
-    "@osdk/create-widget.template.minimal-react.v2": "2.0.0"
+    "@osdk/create-widget.template.minimal-react.v2": "2.0.0",
+    "@osdk/functions.unstable": "0.0.0"
   },
   "changesets": [
     "@osdk-api-simulatedRelease",
@@ -152,10 +153,16 @@
     "@osdk-widget.client-react.unstable-simulatedRelease",
     "@osdk-widget.client.unstable-simulatedRelease",
     "@osdk-widget.vite-plugin.unstable-simulatedRelease",
+    "afraid-spies-build",
+    "few-spies-reply",
+    "lucky-points-report",
     "nasty-hairs-travel",
     "proud-weeks-accept",
+    "proud-yaks-judge",
+    "quick-spiders-add",
     "quiet-dots-cheat",
     "shiny-pumas-raise",
+    "thin-deers-punch",
     "wicked-dingos-melt"
   ]
 }
