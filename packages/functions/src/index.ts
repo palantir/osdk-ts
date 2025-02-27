@@ -22,3 +22,15 @@ export type {
   Long,
   TimestampISOString,
 } from "./PrimitiveTypes.js";
+
+export { buildEditScope } from "./edits/buildEditScope.js";
+export { createEditBatch } from "./edits/createEditBatch.js";
+export type { EditBatch } from "./edits/EditBatch.js";
+export type {
+  AddLink,
+  AnyEdit,
+  CreateObject,
+  DeleteObject,
+  RemoveLink,
+  UpdateObject,
+} from "./edits/types.js";
