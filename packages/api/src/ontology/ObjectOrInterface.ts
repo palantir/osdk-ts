@@ -17,6 +17,7 @@
 import type { InterfaceDefinition } from "./InterfaceDefinition.js";
 import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
 import type { SimplePropertyDef } from "./SimplePropertyDef.js";
+import type { BaseWirePropertyTypes } from "./WirePropertyTypes.js";
 
 export type ObjectOrInterfaceDefinition =
   | ObjectTypeDefinition
@@ -44,3 +45,15 @@ export type PropertyKeys<
 > =
   & (keyof NonNullable<O["__DefinitionMetadata"]>["properties"] | keyof RDPs)
   & string;
+
+// TODO: refactor
+type Properties<O extends ObjectOrInterfaceDefinition> = NonNullable<
+  O["__DefinitionMetadata"]
+>["properties"];
+export type VectorType = Extract<BaseWirePropertyTypes, "vector">;
+export type VectorPropertyKeys<O extends ObjectOrInterfaceDefinition> = keyof {
+  [
+    K in keyof Properties<O> as Properties<O>[K]["type"] extends VectorType ? K
+      : never
+  ]: any;
+};

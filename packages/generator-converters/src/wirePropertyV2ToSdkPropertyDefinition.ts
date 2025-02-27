@@ -56,6 +56,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "timeseries":
     case "marking":
     case "geotimeSeriesReference":
+    case "vector":
     case "struct":
       return {
         displayName: input.displayName,
@@ -73,8 +74,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         nullable: true,
       };
     }
-    case "cipherText":
-    case "vector": {
+    case "cipherText": {
       log?.info(
         `${JSON.stringify(input.dataType.type)} is not a supported dataType`,
       );
