@@ -35,6 +35,7 @@ import type { MinimalObjectSet } from "@osdk/api/unstable";
 import type {
   DerivedPropertyDefinition,
   ObjectSet as WireObjectSet,
+  PropertyApiName,
 } from "@osdk/foundry.ontologies";
 import { createWithPropertiesObjectSet } from "../derivedProperties/createWithPropertiesObjectSet.js";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
@@ -147,6 +148,29 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           ...objectSets.map(os => objectSetDefinitions.get(os)!),
         ],
       });
+    },
+
+    nearestNeighbors: (query, numNeighbors, property) => {
+      const nearestNeighborsQuery = isTextQuery(query)
+        ? { "type": "text" as const, "value": query }
+        : { "type": "vector" as const, "value": query };
+      return clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        {
+          type: "nearestNeighbors",
+          objectSet: {
+            type: "base",
+            objectType: objectType.apiName,
+          },
+          propertyIdentifier: {
+            type: "property",
+            apiName: property as PropertyApiName,
+          },
+          numNeighbors,
+          query: nearestNeighborsQuery,
+        },
+      ) as ObjectSet<Q>;
     },
 
     asyncIter: async function*<
@@ -315,4 +339,8 @@ async function createWithPk(
     },
   };
   return withPk;
+}
+
+function isTextQuery(query: string | number[]): query is string {
+  return typeof query === "string";
 }
