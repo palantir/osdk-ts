@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,13 @@
  */
 
 import type { InterfaceLinkType } from "./InterfaceLinkType.js";
+import type { InterfaceSharedPropertyType } from "./InterfaceSharedPropertyType.js";
 import type { InterfaceTypeApiName } from "./InterfaceTypeApiName.js";
 import type { InterfaceTypeDisplayMetadata } from "./InterfaceTypeDisplayMetadata.js";
 import type { InterfaceTypeRid } from "./InterfaceTypeRid.js";
 import type { InterfaceTypeStatus } from "./InterfaceTypeStatus.js";
 import type { SharedPropertyType } from "./SharedPropertyType.js";
+import type { SharedPropertyTypeRid } from "./SharedPropertyTypeRid.js";
 
 /**
  * Represents a collection of properties that object types can implement. If an object type implements an
@@ -32,6 +34,8 @@ export interface InterfaceType {
   status: InterfaceTypeStatus;
   properties: Array<SharedPropertyType>;
   allProperties: Array<SharedPropertyType>;
+  propertiesV2: Record<SharedPropertyTypeRid, InterfaceSharedPropertyType>;
+  allPropertiesV2: Record<SharedPropertyTypeRid, InterfaceSharedPropertyType>;
   extendsInterfaces: Array<InterfaceTypeRid>;
   allExtendsInterfaces: Array<InterfaceTypeRid>;
   links: Array<InterfaceLinkType>;

@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import type { OntologyBranchRid } from "../../api/OntologyBranchRid.js";
-import type { OntologyBranch } from "./OntologyBranch.js";
-export interface CreateOntologyServiceBranchResponse {
-  ontologyBranchRid: OntologyBranchRid;
-  ontologyBranch: OntologyBranch;
+import type { LinkTypeId } from "./LinkTypeId.js";
+
+/**
+ * This status indicates that the LinkType is reaching the end of its life and will be removed as per the deadline specified.
+ */
+export interface OntologyIrDeprecatedLinkTypeStatus {
+  message: string;
+  deadline: string;
+  replacedBy: LinkTypeId | undefined;
 }

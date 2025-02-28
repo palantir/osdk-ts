@@ -79,6 +79,13 @@ export interface OntologyIrInterfaceType
       allExtendsInterfaces: string[];
       links: OntologyIrInterfaceLinkType[];
       allLinks: OntologyIrInterfaceLinkType[];
+      propertiesV2: Record<
+        ObjectTypeFieldApiName,
+        {
+          sharedPropertyType: OntologyIrSharedPropertyType;
+          required: boolean;
+        }
+      >;
     }>
 {}
 

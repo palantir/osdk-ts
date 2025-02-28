@@ -15,6 +15,7 @@
  */
 
 import type { OntologyIrObjectTypeDatasetDatasourceV2 } from "./OntologyIrObjectTypeDatasetDatasourceV2.js";
+import type { OntologyIrObjectTypeDatasetDatasourceV3 } from "./OntologyIrObjectTypeDatasetDatasourceV3.js";
 import type { OntologyIrObjectTypeDerivedPropertiesDatasource } from "./OntologyIrObjectTypeDerivedPropertiesDatasource.js";
 import type { OntologyIrObjectTypeDirectDatasource } from "./OntologyIrObjectTypeDirectDatasource.js";
 import type { OntologyIrObjectTypeEditsOnlyDatasource } from "./OntologyIrObjectTypeEditsOnlyDatasource.js";
@@ -37,6 +38,11 @@ export interface OntologyIrObjectTypeDatasourceDefinition_timeSeries {
 export interface OntologyIrObjectTypeDatasourceDefinition_datasetV2 {
   type: "datasetV2";
   datasetV2: OntologyIrObjectTypeDatasetDatasourceV2;
+}
+
+export interface OntologyIrObjectTypeDatasourceDefinition_datasetV3 {
+  type: "datasetV3";
+  datasetV3: OntologyIrObjectTypeDatasetDatasourceV3;
 }
 
 export interface OntologyIrObjectTypeDatasourceDefinition_restrictedViewV2 {
@@ -80,6 +86,7 @@ export type OntologyIrObjectTypeDatasourceDefinition =
   | OntologyIrObjectTypeDatasourceDefinition_streamV2
   | OntologyIrObjectTypeDatasourceDefinition_timeSeries
   | OntologyIrObjectTypeDatasourceDefinition_datasetV2
+  | OntologyIrObjectTypeDatasourceDefinition_datasetV3
   | OntologyIrObjectTypeDatasourceDefinition_restrictedViewV2
   | OntologyIrObjectTypeDatasourceDefinition_restrictedStream
   | OntologyIrObjectTypeDatasourceDefinition_mediaSetView

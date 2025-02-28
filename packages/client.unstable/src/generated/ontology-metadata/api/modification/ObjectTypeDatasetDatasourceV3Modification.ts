@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import type { OntologyBranchRid } from "../../api/OntologyBranchRid.js";
-import type { OntologyBranch } from "./OntologyBranch.js";
-export interface CreateOntologyServiceBranchResponse {
-  ontologyBranchRid: OntologyBranchRid;
-  ontologyBranch: OntologyBranch;
+import type { DatasetRid } from "../DatasetRid.js";
+import type { PropertySecurityGroupsModification } from "../PropertySecurityGroupsModification.js";
+import type { PropertyTypeId } from "../PropertyTypeId.js";
+import type { PropertyTypeMappingInfo } from "../PropertyTypeMappingInfo.js";
+export interface ObjectTypeDatasetDatasourceV3Modification {
+  datasetRid: DatasetRid;
+  propertyMapping: Record<PropertyTypeId, PropertyTypeMappingInfo>;
+  propertySecurityGroups: PropertySecurityGroupsModification | undefined;
 }

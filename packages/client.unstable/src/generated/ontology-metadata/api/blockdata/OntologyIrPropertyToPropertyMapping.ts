@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import type { OntologyBranchRid } from "../../api/OntologyBranchRid.js";
-import type { OntologyBranch } from "./OntologyBranch.js";
-export interface CreateOntologyServiceBranchResponse {
-  ontologyBranchRid: OntologyBranchRid;
-  ontologyBranch: OntologyBranch;
+import type { OntologyIrObjectPropertyReference } from "./OntologyIrObjectPropertyReference.js";
+
+/**
+ * Because complex objects can't be used as map keys over the wire, this is used in link definitions
+ */
+export interface OntologyIrPropertyToPropertyMapping {
+  from: OntologyIrObjectPropertyReference;
+  to: OntologyIrObjectPropertyReference;
 }

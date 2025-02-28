@@ -132,6 +132,7 @@ export interface InterfaceType extends
     | "allProperties"
     | "allLinks"
     | "allExtendsInterfaces"
+    | "propertiesV2"
   >
 {
   properties: Record<string, SharedPropertyType>;
