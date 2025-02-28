@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet } from "@osdk/api";
+import type { ObjectSet, ObjectSpecifier } from "@osdk/api";
 import {
   $ontologyRid,
   $Queries,
@@ -26,6 +26,7 @@ import {
   incrementPersonAgeComplex,
   queryAcceptsObject,
   queryAcceptsObjectSets,
+  queryTypeReturnsMap,
   returnsDate,
   returnsTimestamp,
   threeDimensionalAggregationFunction,
@@ -75,6 +76,7 @@ describe("queries", () => {
       $apiName: "Employee",
       $objectType: "Employee",
       $primaryKey: 50031,
+      $objectSpecifier: "Employee:50031",
     });
 
     // Should also accept primary keys
@@ -85,6 +87,7 @@ describe("queries", () => {
       $apiName: "Employee",
       $objectType: "Employee",
       $primaryKey: 50031,
+      $objectSpecifier: "Employee:50031",
     });
   });
 
@@ -132,6 +135,7 @@ describe("queries", () => {
         $apiName: "Employee",
         $objectType: "Employee",
         $primaryKey: 50031,
+        $objectSpecifier: "Employee:50031",
       },
     });
   });
@@ -277,6 +281,42 @@ describe("queries", () => {
     ]);
   });
 
+  it("map type request and response works", async () => {
+    const clientBoundQueryFunction =
+      client(queryTypeReturnsMap).executeFunction;
+    type InferredParamType = Parameters<
+      typeof clientBoundQueryFunction
+    >[0];
+
+    expectTypeOf<InferredParamType>()
+      .toMatchTypeOf<
+        { peopleMap: Record<ObjectSpecifier<Employee>, string> }
+      >();
+
+    const myMap: Record<ObjectSpecifier<Employee>, string> = {
+      ["Employee:person1" as any]: "hi",
+    };
+    const result = await client(queryTypeReturnsMap).executeFunction({
+      peopleMap: myMap,
+    });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "Employee:50030": "bye",
+      }
+    `);
+
+    expectTypeOf<typeof result>().toMatchTypeOf<
+      Record<ObjectSpecifier<Employee>, number>
+    >();
+
+    const object = await client(Employee).fetchOne(50030);
+
+    const value = result[object.$objectSpecifier];
+
+    expect(value).toBe("bye");
+  });
+
   it("accepts and returns objects", async () => {
     const employeeObjectSet = client(Employee);
     const result = await client(queryAcceptsObjectSets).executeFunction({
@@ -296,6 +336,7 @@ describe("queries", () => {
       "queryAcceptsObject",
       "queryAcceptsObjectSets",
       "queryTypeReturnsArray",
+      "queryTypeReturnsMap",
       "returnsDate",
       "returnsObject",
       "returnsTimestamp",

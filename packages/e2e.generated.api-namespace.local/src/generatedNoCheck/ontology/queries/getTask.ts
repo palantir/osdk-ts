@@ -1,4 +1,4 @@
-import type { QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
+import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Task as $Imported$com$example$dep$Task } from '@osdk/e2e.generated.api-namespace.dep';

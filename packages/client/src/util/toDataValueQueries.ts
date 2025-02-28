@@ -130,6 +130,30 @@ export async function toDataValueQueries(
       break;
     }
 
+    case "map": {
+      if (typeof value === "object") {
+        const entrySet: Array<{ key: any; value: any }> = [];
+        for (const [key, mapValue] of Object.entries(value)) {
+          entrySet.push({
+            key: desiredType.keyType.type === "object"
+              ? extractPrimaryKeyFromObjectIdentifier(key)
+              : await toDataValueQueries(
+                key,
+                client,
+                desiredType.keyType,
+              ),
+            value: await toDataValueQueries(
+              mapValue,
+              client,
+              desiredType.valueType,
+            ),
+          });
+        }
+        return entrySet;
+      }
+      break;
+    }
+
     case "struct": {
       if (typeof value === "object") {
         const structMap: { [key: string]: unknown } = {};
@@ -143,6 +167,7 @@ export async function toDataValueQueries(
         return structMap;
       }
     }
+
     case "boolean":
     case "date":
     case "double":
@@ -154,4 +179,8 @@ export async function toDataValueQueries(
       return value;
   }
   return value;
+}
+
+function extractPrimaryKeyFromObjectIdentifier(a: string) {
+  return a.substring(a.indexOf(":") + 1);
 }

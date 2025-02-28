@@ -134,7 +134,11 @@ export interface PropertyDef<
   nullable: N extends "nullable" ? true : false;
 }
 
-export type ReleaseStatus = "ACTIVE" | "EXPERIMENTAL" | "DEPRECATED";
+export type ReleaseStatus =
+  | "ACTIVE"
+  | "EXPERIMENTAL"
+  | "DEPRECATED"
+  | "ENDORSED";
 
 type ObjectTypeVisibility = "NORMAL" | "PROMINENT" | "HIDDEN";
 
