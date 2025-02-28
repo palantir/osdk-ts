@@ -30,13 +30,14 @@ export function createSharedClientContext(
   tokenProvider: () => Promise<string>,
   userAgent: string,
   fetchFn: typeof globalThis.fetch = fetch,
+  log?: (value: string) => void,
 ): SharedClientContext & OldSharedClientContext {
   if (baseUrl.length === 0) {
     throw new Error("baseUrl cannot be empty");
   }
 
   const retryingFetchWithAuthOrThrow = createFetchHeaderMutator(
-    createRetryingFetch(createFetchOrThrow(fetchFn)),
+    createRetryingFetch(createFetchOrThrow(fetchFn, log)),
     async (headers) => {
       const token = await tokenProvider();
       headers.set("Authorization", `Bearer ${token}`);

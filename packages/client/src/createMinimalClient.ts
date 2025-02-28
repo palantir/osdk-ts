@@ -66,6 +66,7 @@ export function createMinimalClient(
       tokenProvider,
       USER_AGENT,
       fetchFn,
+      options.logger?.debug,
     ),
     objectSetFactory,
     objectFactory: convertWireToOsdkObjects,
