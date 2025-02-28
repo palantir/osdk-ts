@@ -32,6 +32,7 @@ import type {
   DerivedObjectOrInterfaceDefinition,
   ObjectOrInterfaceDefinition,
   PropertyKeys,
+  VectorPropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
 import type {
   CompileTimeMetadata,
@@ -207,6 +208,27 @@ interface WithProperties<
         : never;
     }
   >;
+}
+
+interface NearestNeighbors<Q extends ObjectOrInterfaceDefinition> {
+  /**
+   * Finds the nearest neighbors for a given text or vector within the object set.
+   *
+   * @param query - Queries support either a vector matching the embedding model defined on the property, or text that is
+        automatically embedded.
+   * @param numNeighbors - The number of objects to return. If the number of documents in the objectType is less than the provided
+            value, all objects will be returned. This value is limited to 1 &le; numNeighbors &ge; 500.
+   * @param property - The property key with a defined embedding model to search over.
+   *
+   * @returns An object set containing the `numNeighbors` nearest neighbors. To return the objects ordered by relevance and each
+   * objects associated score, specify "relevance" in the orderBy.
+ */
+
+  readonly nearestNeighbors: (
+    query: string | number[],
+    numNeighbors: number,
+    property: VectorPropertyKeys<Q>,
+  ) => this;
 }
 
 export interface ObjectSet<
@@ -388,6 +410,7 @@ interface ObjectSetCleanedTypes<
   WithProperties<Q, D>,
   Aggregate<MERGED>,
   SetArithmetic<MERGED>,
+  NearestNeighbors<MERGED>,
   PivotTo<MERGED>,
   FetchOne<Q, D>,
   Subscribe<MERGED>
