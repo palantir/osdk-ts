@@ -262,8 +262,15 @@ function convertInterface(
 ): OntologyIrInterfaceType {
   return {
     ...interfaceType,
-    propertiesV2: Object.values(interfaceType.properties)
-      .map((spt) => ({ required: true, sharedPropertyType: convertSpt(spt) })),
+    propertiesV2: Object.fromEntries(
+      Object.values(interfaceType.properties)
+        .map((
+          spt,
+        ) => [spt.apiName, {
+          required: true,
+          sharedPropertyType: convertSpt(spt),
+        }]),
+    ),
     // these are omitted from our internal types but we need to re-add them for the final json
     allExtendsInterfaces: [],
     allLinks: [],
