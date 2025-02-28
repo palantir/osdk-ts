@@ -16,6 +16,7 @@
 
 import { PalantirApiError, UnknownError } from "@osdk/shared.net.errors";
 
+let requestId = 0;
 /**
  * Wraps a fetch plugin so that all errors (including when statusCode is not in the 200s) are converted to either PalantirApiError or UnknownError.
  *
@@ -24,21 +25,65 @@ import { PalantirApiError, UnknownError } from "@osdk/shared.net.errors";
  * @param fetchFn
  * @returns
  */
-export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
+export function createFetchOrThrow(
+  fetchFn: typeof fetch = fetch,
+  log?: (value: string) => void,
+) {
   return async function fetchOrThrow(
     url: RequestInfo | URL,
     requestInit?: RequestInit,
   ): Promise<Response> {
     let response;
 
+    const currentRequestId = requestId++;
+    const startTime = new Date().getTime();
+
     try {
+      if (log) {
+        log(
+          "[REQUEST ID: " + currentRequestId + "] Request: "
+            + JSON.stringify({ url, request: requestInit }),
+        );
+      }
+
       response = await fetchFn(url, requestInit);
     } catch (e) {
+      if (log) {
+        log(
+          "[REQUEST ID: " + currentRequestId + "] Error: "
+            + JSON.stringify(e),
+        );
+      }
+
       throw convertError(e, "A network error occurred");
+    }
+    let responseMetadata = {};
+
+    if (log) {
+      responseMetadata = {
+        url: response.url,
+        totalRequestDuration: new Date().getTime() - startTime,
+        responseHeaders: response.headers.entries(),
+        statusCode: response.status,
+        statusText: response.statusText,
+        request: requestInit,
+      };
     }
 
     if (!response.ok) {
       if (response.headers.get("Content-Type") === "text/plain") {
+        if (log) {
+          log(
+            "[REQUEST ID: " + currentRequestId + "] Error Response: "
+              + JSON.stringify({
+                ...responseMetadata,
+                statusCode: response.status,
+                statusText: response.statusText,
+                responseBody: await response.text(),
+              }),
+          );
+        }
+
         throw new PalantirApiError(await response.text());
       }
 
@@ -54,6 +99,20 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
         );
       }
 
+      if (log) {
+        log(
+          "[REQUEST ID: " + currentRequestId + "] Error Response: "
+            + JSON.stringify({
+              ...responseMetadata,
+              errorInstanceId: body?.errorInstanceId,
+              errorName: body?.errorName,
+              errorCode: body?.errorCode,
+              parameters: body?.parameters,
+              responseBody: body,
+            }),
+        );
+      }
+
       throw new PalantirApiError(
         body?.message
           ?? `Failed to fetch ${response.status} ${response.statusText}`,
@@ -64,6 +123,23 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
         body?.parameters,
       );
     }
+
+    if (log) {
+      log(
+        "[REQUEST ID: " + currentRequestId
+          + "] Response: "
+          + JSON.stringify(responseMetadata),
+      );
+      // response.json().then((value) => {
+      //   log(
+      //     "[REQUEST ID: " + currentRequestId + "] Response: "
+      //       + JSON.stringify({ ...responseMetadata, responseBody: value }),
+      //   );
+      // }).catch(() => {
+
+      // });
+    }
+
     return response;
   };
 }
