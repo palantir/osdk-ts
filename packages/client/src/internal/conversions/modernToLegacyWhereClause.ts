@@ -176,7 +176,7 @@ function handleWherePair(
   invariant(
     !hasDollarSign
       || keysOfFilter.length === 1,
-    "A WhereClause Filter with multiple clauses/fields is not allowed. Instead, use an 'and' clause to combine multiple filters.",
+    "A WhereClause Filter with multiple clauses/fields is not allowed. Instead, use an 'or'/'and' clause to combine multiple filters.",
   );
 
   if (!hasDollarSign) {
