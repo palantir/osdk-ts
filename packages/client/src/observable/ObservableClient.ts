@@ -30,9 +30,14 @@ import { Store } from "./internal/Store.js";
 import type { ListPayload } from "./ListPayload.js";
 import type { ObjectPayload } from "./ObjectPayload.js";
 import type { OptimisticBuilder } from "./OptimisticBuilder.js";
-import type { SubFn } from "./types.js";
 
 export type Status = "init" | "loading" | "loaded" | "error";
+
+export interface Observer<T> {
+  next: (value: T) => void;
+  error: (err: any) => void;
+  complete: () => void;
+}
 
 export namespace ObservableClient {
   export interface ApplyActionOptions {
@@ -75,12 +80,12 @@ export interface ObservableClient {
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveOptions,
-    subFn: SubFn<ObjectPayload>,
+    subFn: Observer<ObjectPayload>,
   ): Unsubscribable;
 
   observeList<T extends ObjectTypeDefinition>(
     options: ObserveListOptions<T>,
-    subFn: SubFn<ListPayload>,
+    subFn: Observer<ListPayload>,
   ): Unsubscribable;
 
   applyAction: <Q extends ActionDefinition<any>>(

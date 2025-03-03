@@ -94,7 +94,7 @@ export interface UseOsdkListResult<T extends ObjectTypeDefinition> {
   isLoading: boolean;
 
   // FIXME populate error!
-  // error: undefined;
+  error: Error | undefined;
 
   /**
    * Refers to whether the ordered list of objects (only considering the $primaryKey)
@@ -133,7 +133,7 @@ export function useOsdkObjects<T extends ObjectTypeDefinition>(
   const { subscribe, getSnapShot } = React.useMemo(
     () =>
       makeExternalStore<ListPayload>(
-        (x) =>
+        (observer) =>
           observableClient.observeList({
             type,
             where: canonWhere,
@@ -141,7 +141,7 @@ export function useOsdkObjects<T extends ObjectTypeDefinition>(
             pageSize,
             orderBy,
             streamUpdates,
-          }, x),
+          }, observer),
         process.env.NODE_ENV !== "production"
           ? `list ${type.apiName} ${JSON.stringify(canonWhere)}`
           : void 0,
@@ -153,6 +153,9 @@ export function useOsdkObjects<T extends ObjectTypeDefinition>(
   // TODO: we need to expose the error in the result
   return {
     fetchMore: listPayload?.fetchMore,
+    error: listPayload && "error" in listPayload
+      ? listPayload?.error
+      : undefined,
     data: listPayload?.resolvedList as Osdk.Instance<T>[],
     isLoading: listPayload?.status === "loading",
     isOptimistic: listPayload?.isOptimistic ?? false,

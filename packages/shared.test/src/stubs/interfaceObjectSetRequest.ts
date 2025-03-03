@@ -17,6 +17,7 @@
 import type {
   LoadObjectSetV2MultipleObjectTypesRequest,
   LoadObjectSetV2MultipleObjectTypesResponse,
+  ObjectSet,
 } from "@osdk/foundry.ontologies";
 import stableStringify from "json-stable-stringify";
 import {
@@ -29,6 +30,19 @@ const baseObjectSet: LoadObjectSetV2MultipleObjectTypesRequest = {
   objectSet: { type: "interfaceBase", interfaceType: FooInterface.apiName },
   select: [],
   excludeRid: true,
+};
+
+function wrapWithEmptyFilter(objectSet: ObjectSet): ObjectSet {
+  return {
+    type: "filter",
+    objectSet,
+    where: { type: "and", value: [] },
+  };
+}
+
+const baseObjectSetEmptyFilter: LoadObjectSetV2MultipleObjectTypesRequest = {
+  ...baseObjectSet,
+  objectSet: wrapWithEmptyFilter(baseObjectSet.objectSet),
 };
 
 const baseObjectSetSelect: LoadObjectSetV2MultipleObjectTypesRequest = {
@@ -71,6 +85,7 @@ export const loadInterfaceObjectSetHandlers: {
   [key: string]: LoadObjectSetV2MultipleObjectTypesResponse;
 } = {
   [stableStringify(baseObjectSet)]: baseObjectSetResponse,
+  [stableStringify(baseObjectSetEmptyFilter)]: baseObjectSetResponse,
   [stableStringify(eqSearchBody)]: equalsObjectSetResponse,
   [stableStringify(baseObjectSetSelect)]: baseObjectSetResponse,
 };

@@ -17,6 +17,27 @@
 import type { OntologyObjectV2 } from "@osdk/foundry.ontologies";
 
 import type { GeoJsonObject } from "@osdk/foundry.geo";
+import { employeeInterfaceScoped } from "./interfaces.js";
+
+export const employee50050: {
+  __rid: string;
+  __primaryKey: number;
+  __apiName: string;
+  fullName: string;
+  employeeId: number;
+  office: string;
+  class: string;
+  startDate: string;
+} = {
+  __rid: employeeInterfaceScoped.$rid,
+  __primaryKey: employeeInterfaceScoped.$primaryKey,
+  __apiName: employeeInterfaceScoped.$apiName,
+  fullName: "Santa Claus",
+  employeeId: employeeInterfaceScoped.$primaryKey,
+  office: "NYC",
+  class: "Red",
+  startDate: "2019-01-01",
+};
 
 export const employee1 = {
   __rid:
