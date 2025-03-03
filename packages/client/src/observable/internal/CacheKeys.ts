@@ -20,7 +20,7 @@ import { DEBUG_CACHE_KEYS } from "../DebugFlags.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { ListCacheKey } from "./ListQuery.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
-import type { OrderByCanonicalizer } from "./Store.js";
+import type { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import type { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 type CacheKeyArgs<K extends CacheKey> = [K["type"], ...K["otherKeys"]];

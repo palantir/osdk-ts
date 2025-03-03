@@ -21,6 +21,14 @@ import invariant from "tiny-invariant";
 import type { Canonical } from "./Canonical.js";
 
 export class WhereClauseCanonicalizer {
+  /**
+   * This is a shortcut cache for any WhereClause's that we have
+   * seen and already canonicalized. The theory behind this
+   * is that well behaving React applications will either `useMemo`
+   * their where clause, or store it in state or pass it through as
+   * props such that we are likely to get the same WhereClause
+   * object multiple times and we can skip unnecessary work.
+   */
   #cache = new WeakMap<WhereClause<any>, Canonical<WhereClause<any>>>();
 
   /**
