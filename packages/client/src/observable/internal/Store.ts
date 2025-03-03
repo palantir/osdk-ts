@@ -31,6 +31,7 @@ import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
 import type {
+  ObservableClient,
   ObserveListOptions,
   ObserveObjectOptions,
   OrderBy,
@@ -119,7 +120,7 @@ function createInitEntry(cacheKey: CacheKey): Entry<any> {
     - Data is one per layer per cache key
 */
 
-export class Store {
+export class Store implements ObservableClient {
   whereCanonicalizer: WhereClauseCanonicalizer = new WhereClauseCanonicalizer();
   orderByCanonicalizer: OrderByCanonicalizer = new OrderByCanonicalizer();
   #truthLayer: Layer = new Layer(undefined, undefined);
@@ -322,6 +323,12 @@ export class Store {
 
     return subject;
   };
+
+  public canonicalizeWhereClause<T extends ObjectTypeDefinition>(
+    where: WhereClause<T>,
+  ): Canonical<WhereClause<T>> {
+    return this.whereCanonicalizer.canonicalize(where);
+  }
 
   public observeObject<T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,

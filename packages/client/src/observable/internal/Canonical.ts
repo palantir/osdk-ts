@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type Canonical<T> = Readonly<T> & { __canonical: true };
+export type Canonical<T> = T & { __canonical: true };
