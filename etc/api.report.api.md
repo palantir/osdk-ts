@@ -946,13 +946,11 @@ export interface PropertyDef<
     type: T;
 }
 
-// Warning: (ae-forgotten-export) The symbol "Properties" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
 export type PropertyKeys<
 	O extends ObjectOrInterfaceDefinition,
 	RDPs extends Record<string, SimplePropertyDef> = {}
-> = (keyof Properties<O> | keyof RDPs) & string;
+> = (keyof NonNullable<O["__DefinitionMetadata"]>["properties"] | keyof RDPs) & string;
 
 // @public
 export interface PropertyValueWireToClient {
@@ -1276,12 +1274,6 @@ export type ValidAggregationKeys<
 > = keyof ({ [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<GetWirePropertyValueFromClient<CompileTimeMetadata<Q>["properties"][KK]["type"]>, R extends "aggregate" ? true : false>}`]? : any } & {
     	$count?: any
 });
-
-// @public (undocumented)
-export type VectorPropertyKeys<O extends ObjectOrInterfaceDefinition> = keyof { [K in keyof Properties<O> as Properties<O>[K]["type"] extends VectorType ? K : never] : any };
-
-// @public (undocumented)
-export type VectorType = Extract<BaseWirePropertyTypes, "vector">;
 
 // Warning: (ae-forgotten-export) The symbol "VersionString" needs to be exported by the entry point index.d.ts
 //
