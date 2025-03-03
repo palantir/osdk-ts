@@ -92,10 +92,6 @@ export type {
   PropertyKeys,
 } from "./ontology/ObjectOrInterface.js";
 export type {
-  VectorPropertyKeys,
-  VectorType,
-} from "./ontology/ObjectOrInterface.js";
-export type {
   CompileTimeMetadata,
   ObjectMetadata,
   ObjectTypeDefinition,

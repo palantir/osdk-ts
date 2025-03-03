@@ -27,12 +27,12 @@ import type {
   SelectArg,
 } from "../object/FetchPageArgs.js";
 import type { Result } from "../object/Result.js";
+import type { VectorPropertyKeys } from "../ontology/FilteredPropertyKeys.js";
 import type { InterfaceDefinition } from "../ontology/InterfaceDefinition.js";
 import type {
   DerivedObjectOrInterfaceDefinition,
   ObjectOrInterfaceDefinition,
   PropertyKeys,
-  VectorPropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
 import type {
   CompileTimeMetadata,
