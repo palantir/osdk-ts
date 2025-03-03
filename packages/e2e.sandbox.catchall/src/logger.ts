@@ -19,6 +19,6 @@ import { pino } from "pino";
 import PinoPretty from "pino-pretty";
 
 export const logger: Logger = pino(
-  { level: "debug" },
+  { level: "trace" },
   PinoPretty.build({ sync: true }),
 );

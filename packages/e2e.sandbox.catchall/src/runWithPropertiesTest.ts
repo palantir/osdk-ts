@@ -16,8 +16,11 @@
 
 import { Country_1, StateTerritory } from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
+import { logger } from "./logger.js";
 
 export async function runWithPropertiesTest(): Promise<void> {
+  logger.debug("Running withProperties test");
+
   const result = await client(StateTerritory).withProperties({
     "countryName": (base) =>
       base.pivotTo("country1").selectProperty("airportCountryName"),
