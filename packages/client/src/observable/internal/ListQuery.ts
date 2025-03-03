@@ -15,6 +15,7 @@
  */
 
 import type {
+  InterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
@@ -22,14 +23,12 @@ import type {
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import {
-  asyncScheduler,
   auditTime,
   combineLatest,
   type Connectable,
   connectable,
   map,
   type Observable,
-  observeOn,
   of,
   ReplaySubject,
   switchMap,
@@ -61,12 +60,20 @@ export interface ListCacheKey extends
     ListStorageData,
     ListQuery,
     [
+      type: "object" | "interface",
       apiName: string,
-      whereClause: Canonical<WhereClause<ObjectTypeDefinition>>,
+      whereClause: Canonical<
+        WhereClause<ObjectTypeDefinition | InterfaceDefinition>
+      >,
       orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
     ]
   > //
 {}
+
+export const API_NAME_IDX = 1;
+export const TYPE_IDX = 0;
+export const WHERE_IDX = 2;
+export const ORDER_BY_IDX = 3;
 
 export interface ListQueryOptions extends CommonObserveOptions {
   pageSize?: number;
@@ -80,7 +87,9 @@ export class ListQuery extends Query<
   // pageSize?: number; // this is the internal page size. we need to track this properly
   #client: Client;
   #type: string;
-  #whereClause: Canonical<WhereClause<ObjectTypeDefinition>>;
+  #whereClause: Canonical<
+    WhereClause<ObjectTypeDefinition | InterfaceDefinition>
+  >;
 
   // this represents the minimum number of results we need to load if we revalidate
   #minNumResults = 0;
@@ -93,8 +102,11 @@ export class ListQuery extends Query<
   constructor(
     store: Store,
     subject: Observable<SubjectPayload<ListCacheKey>>,
-    objectType: string,
-    whereClause: Canonical<WhereClause<ObjectTypeDefinition>>,
+    apiType: "object" | "interface",
+    objectOrInterfaceType: string,
+    whereClause: Canonical<
+      WhereClause<ObjectTypeDefinition | InterfaceDefinition>
+    >,
     orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>,
     cacheKey: ListCacheKey,
     opts: ListQueryOptions,
@@ -116,11 +128,9 @@ export class ListQuery extends Query<
     );
 
     this.#client = store.client;
-    this.#type = objectType;
+    this.#type = objectOrInterfaceType;
     this.#whereClause = whereClause;
     this.#orderBy = orderBy;
-
-    observeOn(asyncScheduler);
   }
 
   get canonicalWhere(): Canonical<WhereClause<ObjectTypeDefinition>> {
@@ -297,12 +307,15 @@ export class ListQuery extends Query<
         sortaMatches: Set<Osdk.Instance<ObjectTypeDefinition>>;
       }> = {
         added: {
-          all: changes.addedObjects.get(this.cacheKey.otherKeys[0]) ?? [],
+          all: changes.addedObjects.get(this.cacheKey.otherKeys[API_NAME_IDX])
+            ?? [],
           strictMatches: new Set(),
           sortaMatches: new Set(),
         },
         modified: {
-          all: changes.modifiedObjects.get(this.cacheKey.otherKeys[0]) ?? [],
+          all:
+            changes.modifiedObjects.get(this.cacheKey.otherKeys[API_NAME_IDX])
+              ?? [],
           strictMatches: new Set(),
           sortaMatches: new Set(),
         },
@@ -589,5 +602,5 @@ export function isListCacheKey(
   apiName?: string,
 ): cacheKey is ListCacheKey {
   return cacheKey.type === "list"
-    && (apiName == null || cacheKey.otherKeys[0] === apiName);
+    && (apiName == null || cacheKey.otherKeys[API_NAME_IDX] === apiName);
 }

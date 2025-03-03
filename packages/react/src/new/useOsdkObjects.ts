@@ -113,7 +113,7 @@ declare const process: {
 };
 
 export function useOsdkObjects<T extends ObjectTypeDefinition>(
-  objectType: T,
+  type: T,
   {
     pageSize,
     orderBy,
@@ -135,7 +135,7 @@ export function useOsdkObjects<T extends ObjectTypeDefinition>(
       makeExternalStore<ListPayload>(
         (x) =>
           observableClient.observeList({
-            objectType,
+            type,
             where: canonWhere,
             dedupeInterval: dedupeIntervalMs ?? 2_000,
             pageSize,
@@ -143,10 +143,10 @@ export function useOsdkObjects<T extends ObjectTypeDefinition>(
             streamUpdates,
           }, x),
         process.env.NODE_ENV !== "production"
-          ? `list ${objectType.apiName} ${JSON.stringify(canonWhere)}`
+          ? `list ${type.apiName} ${JSON.stringify(canonWhere)}`
           : void 0,
       ),
-    [observableClient, objectType, canonWhere, dedupeIntervalMs],
+    [observableClient, type, canonWhere, dedupeIntervalMs],
   );
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);

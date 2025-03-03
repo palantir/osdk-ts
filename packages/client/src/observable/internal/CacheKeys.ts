@@ -70,7 +70,7 @@ export class CacheKeys {
     );
     this.#registerCacheKeyFactory<ListCacheKey>(
       "list",
-      (apiName, where, orderBy) => {
+      (type, apiName, where, orderBy) => {
         if (process.env.NODE_ENV !== "production" && DEBUG_CACHE_KEYS) {
           // eslint-disable-next-line no-console
           console.debug(
@@ -89,6 +89,7 @@ export class CacheKeys {
           CacheKeyArgs<ListCacheKey>
         >([
           "list",
+          type,
           apiName,
           whereCanonicalizer.canonicalize(where),
           orderByCanonicalizer.canonicalize(orderBy),
