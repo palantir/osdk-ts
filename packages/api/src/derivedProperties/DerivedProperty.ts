@@ -111,10 +111,9 @@ type Aggregatable<
     V extends `${infer N}:${infer P}`
       ? P extends CollectWithPropAggregations
         ? Array<CompileTimeMetadata<Q>["properties"][N]["type"]> | undefined
-      : P extends "approximateDistinct" | "exactDistinct" | "$count"
-        ? "integer" | undefined
+      : P extends "approximateDistinct" | "exactDistinct" | "$count" ? "integer"
       : "double" | undefined
-      : V extends "$count" ? "integer" | undefined
+      : V extends "$count" ? "integer"
       : never
   >;
 };

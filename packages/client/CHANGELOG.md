@@ -1,5 +1,21 @@
 # @osdk/client
 
+## 2.2.0-beta.6
+
+### Minor Changes
+
+- cddfbf9: Adds default value option to group by
+- ea4e4b1: Fix attachments to be upload sequentially rather than in parallel.
+
+### Patch Changes
+
+- Updated dependencies [b68adea]
+- Updated dependencies [cddfbf9]
+- Updated dependencies [a6e5f89]
+  - @osdk/generator-converters@2.2.0-beta.6
+  - @osdk/api@2.2.0-beta.6
+  - @osdk/client.unstable@2.2.0-beta.6
+
 ## 2.2.0-beta.5
 
 ### Minor Changes
