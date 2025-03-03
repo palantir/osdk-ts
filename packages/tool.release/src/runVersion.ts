@@ -117,7 +117,7 @@ export async function runVersion({
   const isReleaseBranch = context.branch.startsWith("release/")
     || process.env.PRETEND_BRANCH?.startsWith("release/");
 
-  const runGitCommands = !process.env.PRETEND_BRANCH;
+  const runGitCommands = true;
 
   if (!isMainBranch && !isReleaseBranch) {
     throw new FailedWithUserMessage(
