@@ -22,6 +22,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
+import groupBy from "object.groupby";
 import {
   auditTime,
   combineLatest,
@@ -86,7 +87,8 @@ export class ListQuery extends Query<
 > {
   // pageSize?: number; // this is the internal page size. we need to track this properly
   #client: Client;
-  #type: string;
+  #type: "object" | "interface";
+  #apiName: string;
   #whereClause: Canonical<
     WhereClause<ObjectTypeDefinition | InterfaceDefinition>
   >;
@@ -103,7 +105,7 @@ export class ListQuery extends Query<
     store: Store,
     subject: Observable<SubjectPayload<ListCacheKey>>,
     apiType: "object" | "interface",
-    objectOrInterfaceType: string,
+    apiName: string,
     whereClause: Canonical<
       WhereClause<ObjectTypeDefinition | InterfaceDefinition>
     >,
@@ -128,7 +130,8 @@ export class ListQuery extends Query<
     );
 
     this.#client = store.client;
-    this.#type = objectOrInterfaceType;
+    this.#type = apiType;
+    this.#apiName = apiName;
     this.#whereClause = whereClause;
     this.#orderBy = orderBy;
   }
@@ -175,11 +178,13 @@ export class ListQuery extends Query<
   }
 
   async _fetch(): Promise<void> {
-    const objectSet =
-      (this.#client({ type: "object", apiName: this.#type }) as ObjectSet<
-        ObjectTypeDefinition
-      >)
-        .where(this.#whereClause);
+    const objectSet = (this.#client({
+      // we need to cast this down from "object" | "interface" to match the client
+      // overloads in a reasonable manner
+      type: this.#type as "object",
+      apiName: this.#apiName,
+    }) as ObjectSet<ObjectTypeDefinition>)
+      .where(this.#whereClause);
 
     while (true) {
       const entry = await this.#fetchPageAndUpdate(
@@ -227,10 +232,14 @@ export class ListQuery extends Query<
       this.setStatus("loading", batch);
     });
 
-    const objectSet =
-      (this.#client({ type: "object", apiName: this.#type }) as ObjectSet<
-        ObjectTypeDefinition
-      >).where(this.#whereClause);
+    const objectSet = (this.#client({
+      // we need to cast this down from "object" | "interface" to match the client
+      // overloads in a reasonable manner
+      type: this.#type as "object",
+      apiName: this.#apiName,
+    }) as ObjectSet<
+      ObjectTypeDefinition
+    >).where(this.#whereClause);
 
     this.pendingFetch = this.#fetchPageAndUpdate(
       objectSet,
@@ -248,34 +257,76 @@ export class ListQuery extends Query<
     signal: AbortSignal | undefined,
   ): Promise<Entry<ListCacheKey> | undefined> {
     const append = this.#nextPageToken != null;
-    const { data, nextPageToken } = await objectSet.fetchPage({
-      $nextPageToken: this.#nextPageToken,
-      $pageSize: this.options.pageSize,
-      // For now this keeps the shared test code from falling apart
-      // but shouldn't be needed ideally
-      ...(Object.keys(this.#orderBy).length > 0
-        ? {
-          $orderBy: this.#orderBy,
-        }
-        : {}),
-    });
 
-    if (signal?.aborted) {
-      return;
+    try {
+      let { data, nextPageToken } = await objectSet.fetchPage({
+        $nextPageToken: this.#nextPageToken,
+        $pageSize: this.options.pageSize,
+        // For now this keeps the shared test code from falling apart
+        // but shouldn't be needed ideally
+        ...(Object.keys(this.#orderBy).length > 0
+          ? {
+            $orderBy: this.#orderBy,
+          }
+          : {}),
+      });
+
+      if (signal?.aborted) {
+        return;
+      }
+
+      this.#nextPageToken = nextPageToken;
+
+      // Our caching really expects to have the full objects in the list
+      // so we need to fetch them all here
+      if (this.#type === "interface") {
+        const groups = groupBy(data, (x) => x.$objectType);
+        const objectTypeToPrimaryKeyToObject = Object.fromEntries(
+          await Promise.all(
+            Object.entries(groups).map<
+              Promise<
+                [
+                  /** objectType **/ string,
+                  Record<string | number, Osdk.Instance<ObjectTypeDefinition>>,
+                ]
+              >
+            >(async ([apiName, objects]) => {
+              return [
+                apiName,
+                Object.fromEntries((await this.#client(
+                  { type: "object", apiName } as ObjectTypeDefinition,
+                ).where({
+                  $primaryKey: { $in: objects.map(x => x.$primaryKey) },
+                } as WhereClause<any>).fetchPage()).data.map(
+                  x => [x.$primaryKey, x],
+                )),
+              ];
+            }),
+          ),
+        );
+
+        data = data.map((obj) =>
+          objectTypeToPrimaryKeyToObject[obj.$objectType][obj.$primaryKey]
+        );
+      }
+
+      const { retVal } = this.store.batch({}, (batch) => {
+        return this.updateList(
+          this.store.updateObjects(data, batch),
+          append,
+          nextPageToken ? status : "loaded",
+          batch,
+        );
+      });
+
+      return retVal;
+    } catch (e) {
+      this.store.getSubject(this.cacheKey).error(e);
+
+      // rethrowing would result in many unhandled promise rejections
+      // which i don't think we want
+      // throw e;
     }
-
-    this.#nextPageToken = nextPageToken;
-
-    const { retVal } = this.store.batch({}, (batch) => {
-      return this.updateList(
-        this.store.updateObjects(data, batch),
-        append,
-        nextPageToken ? status : "loaded",
-        batch,
-      );
-    });
-
-    return retVal;
   }
 
   /**

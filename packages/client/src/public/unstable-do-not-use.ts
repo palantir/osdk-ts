@@ -20,6 +20,9 @@ export { augment } from "../object/fetchPage.js";
 export type { ActionSignatureFromDef } from "../actions/applyAction.js";
 export type { ListPayload } from "../observable/ListPayload.js";
 export type { ObjectPayload } from "../observable/ObjectPayload.js";
-export type { Unsubscribable } from "../observable/ObservableClient.js";
-export type { ObservableClient } from "../observable/ObservableClient.js";
 export { createObservableClient } from "../observable/ObservableClient.js";
+export type {
+  ObservableClient,
+  Observer,
+  Unsubscribable,
+} from "../observable/ObservableClient.js";

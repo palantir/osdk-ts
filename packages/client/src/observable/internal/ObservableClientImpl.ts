@@ -28,9 +28,9 @@ import type {
   ObservableClient,
   ObserveListOptions,
   ObserveObjectOptions,
+  Observer,
   Unsubscribable,
 } from "../ObservableClient.js";
-import type { SubFn } from "../types.js";
 import type { Canonical } from "./Canonical.js";
 import type { Store } from "./Store.js";
 
@@ -53,12 +53,12 @@ export class ObservableClientImpl implements ObservableClient {
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveObjectOptions<T>,
-    subFn: SubFn<ObjectPayload>,
+    subFn: Observer<ObjectPayload>,
   ) => Unsubscribable;
 
   public observeList: <T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveListOptions<T>,
-    subFn: SubFn<ListPayload>,
+    subFn: Observer<ListPayload>,
   ) => Unsubscribable;
 
   public applyAction: <Q extends ActionDefinition<any>>(

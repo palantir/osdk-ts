@@ -24,6 +24,8 @@ export interface UseOsdkObjectResult<Q extends ObjectTypeDefinition> {
   object: Osdk.Instance<Q> | undefined;
   isLoading: boolean;
 
+  error: Error | undefined;
+
   /**
    * Refers to whether the object is optimistic or not.
    */
@@ -63,14 +65,14 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
   const { subscribe, getSnapShot } = React.useMemo(
     () =>
       makeExternalStore<ObjectPayload>(
-        (payload) =>
+        (observer) =>
           observableClient.observeObject(
             objectType,
             primaryKey,
             {
               mode,
             },
-            payload,
+            observer,
           ),
         `object ${objectType} ${primaryKey}`,
       ),
@@ -82,7 +84,8 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
   return {
     object: payload?.object as Osdk.Instance<Q> | undefined,
     isLoading: payload?.status === "loading",
-    isOptimistic: payload?.isOptimistic ?? false,
+    isOptimistic: !!payload?.isOptimistic,
+    error: payload && "error" in payload ? payload.error : undefined,
     forceUpdate: () => {
       throw "not implemented";
     },

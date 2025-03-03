@@ -23,6 +23,7 @@ import type {
   PrimaryKeyType,
   WhereClause,
 } from "@osdk/api";
+import type { Observer } from "rxjs";
 import { BehaviorSubject } from "rxjs";
 import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
@@ -39,7 +40,6 @@ import type {
   Unsubscribable,
 } from "../ObservableClient.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
-import type { SubFn } from "../types.js";
 import { ActionApplication } from "./ActionApplication.js";
 import type { CacheKey } from "./CacheKey.js";
 import { CacheKeys } from "./CacheKeys.js";
@@ -337,7 +337,7 @@ export class Store implements ObservableClient {
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveObjectOptions<T>,
-    subFn: SubFn<ObjectPayload>,
+    subFn: Observer<ObjectPayload>,
   ): Unsubscribable {
     if (typeof apiName !== "string") {
       apiName = apiName.apiName;
@@ -359,7 +359,7 @@ export class Store implements ObservableClient {
           }
         });
     }
-    const sub = query.subscribe({ next: subFn });
+    const sub = query.subscribe(subFn);
 
     return {
       unsubscribe: () => {
@@ -371,7 +371,7 @@ export class Store implements ObservableClient {
 
   public observeList<T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveListOptions<T>,
-    subFn: SubFn<ListPayload>,
+    subFn: Observer<ListPayload>,
   ): Unsubscribable {
     // the ListQuery represents the shared state of the list
     const query = this.getListQuery(
@@ -385,7 +385,7 @@ export class Store implements ObservableClient {
     if (options.mode !== "offline") {
       void query.revalidate(options.mode === "force");
     }
-    const sub = query.subscribe({ next: subFn });
+    const sub = query.subscribe(subFn);
 
     if (options.streamUpdates) {
       const miniDef = {

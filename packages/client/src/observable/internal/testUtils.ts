@@ -28,8 +28,9 @@ import type {
 import { Chalk } from "chalk";
 import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
+import type { Observer } from "rxjs";
 import invariant from "tiny-invariant";
-import type { Mock } from "vitest";
+import type { Mock, MockedObject } from "vitest";
 import { afterEach, beforeEach, expect, vi, vitest } from "vitest";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import type { Client } from "../../Client.js";
@@ -318,40 +319,43 @@ export function createDefer() {
 }
 
 export function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
-  subFn: Mock<(e: ListPayload | undefined) => void>,
+  subFn: MockedObject<Observer<ListPayload | undefined>>,
   resolvedList: Osdk.Instance<T>[],
   payloadOptions: Omit<Partial<ListPayload>, "resolvedList"> = {},
 ): void {
   if (vitest.isFakeTimers()) {
     vitest.runOnlyPendingTimers();
   }
-  expect(subFn).toHaveBeenCalledExactlyOnceWith(
+  expect(subFn.next).toHaveBeenCalledExactlyOnceWith(
     listPayloadContaining({
       ...payloadOptions,
       resolvedList,
     }),
   );
-  subFn.mockClear();
+  subFn.next.mockClear();
 }
 
 export function expectSingleObjectCallAndClear<T extends ObjectTypeDefinition>(
-  subFn: Mock<(e: ObjectPayload | undefined) => void>,
+  subFn: MockedObject<Observer<ObjectPayload | undefined>>,
   object: Osdk.Instance<T>,
   status?: Status,
 ): void {
-  expect(subFn).toHaveBeenCalledExactlyOnceWith(
+  expect(subFn.next).toHaveBeenCalledExactlyOnceWith(
     expect.objectContaining({
       object,
       status: status ?? expect.any(String),
     }),
   );
-  subFn.mockClear();
+  subFn.next.mockClear();
 }
 
 export async function waitForCall(
-  subFn: Mock<(e: any) => void>,
+  subFn: Mock<(e: any) => void> | MockedObject<Observer<any>>,
   times: number = 1,
 ): Promise<void> {
+  if ("next" in subFn && "error" in subFn && "complete" in subFn) {
+    subFn = subFn.next;
+  }
   try {
     await vi.waitFor(() => {
       expect(subFn).toHaveBeenCalledTimes(times);
@@ -365,12 +369,21 @@ export async function waitForCall(
   expect(subFn).toHaveBeenCalledTimes(times);
 }
 
+export function expectNoMoreCalls(
+  observer: MockedObject<
+    Observer<any>
+  >,
+): void {
+  expect(observer.next).not.toHaveBeenCalled();
+  expect(observer.error).not.toHaveBeenCalled();
+}
+
 function createSubscriptionHelper() {
 }
 
 export function mockSingleSubCallback():
-  & Mock<
-    (e: ObjectPayload | undefined) => void
+  & MockedObject<
+    Observer<ObjectPayload | undefined>
   >
   & {
     // expectLoaded: (value: unknown) => Promise<void>;
@@ -381,7 +394,7 @@ export function mockSingleSubCallback():
     }) => Promise<void>;
   }
 {
-  const ret = vitest.fn((e: ObjectPayload | undefined) => {});
+  const ret = mockObserver<ObjectPayload | undefined>();
 
   //   async function expectLoaded(value: unknown) {
   //     await waitForCall(ret);
@@ -413,29 +426,37 @@ export function mockSingleSubCallback():
     expectLoadingAndLoaded: async (
       q: { loading?: unknown; loaded: unknown },
     ) => {
-      await waitForCall(ret, 2);
+      await waitForCall(ret.next, 2);
 
       // as long as we get the loaded call we are happy
-      expect(ret).toHaveBeenNthCalledWith(
+      expect(ret.next).toHaveBeenNthCalledWith(
         1,
         q.loading,
       );
-      expect(ret).toHaveBeenNthCalledWith(
+      expect(ret.next).toHaveBeenNthCalledWith(
         2,
         q.loaded,
       );
-      expect(ret).toHaveBeenCalledTimes(2);
-      ret.mockClear();
+      expect(ret.next).toHaveBeenCalledTimes(2);
+      ret.next.mockClear();
     },
   });
 }
 
-export function mockListSubCallback(): Mock<
-  (x: ListPayload | undefined) => void
+export function mockObserver<T>(): MockedObject<Observer<T>> {
+  return {
+    next: vitest.fn(),
+
+    // error: vitest.fn((x) => console.error(x)),
+    error: vitest.fn(),
+    complete: vitest.fn(),
+  };
+}
+
+export function mockListSubCallback(): MockedObject<
+  Observer<ListPayload | undefined>
 > {
-  return vitest.fn(
-    (x: ListPayload | undefined) => {},
-  );
+  return mockObserver<ListPayload | undefined>();
 }
 
 export function cacheEntryContaining(x: Partial<Entry<any>>): Entry<any> {
