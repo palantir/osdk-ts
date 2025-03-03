@@ -65,6 +65,15 @@ export async function runNearestNeighborsTest(): Promise<void> {
   ).fetchPage();
   vectorQuery.data.map(s => console.log(s.orderTitle));
 
+  // nested nearest neighbors
+  const nestedResult = client(MatthewvsDevOrderEmbedding)
+    .nearestNeighbors("coffee", 10, "embedding")
+    .nearestNeighbors("coffee", 5, "embedding")
+    .nearestNeighbors("coffee", 2, "embedding")
+    .fetchPage();
+
+  invariant((await nestedResult).data.length === 2);
+
   // nearestNeighbor query on a property without an embedding (orderTitle)
   await assertThrowsExpectedError(
     "PropertyTypeDoesNotSupportNearestNeighbors",
