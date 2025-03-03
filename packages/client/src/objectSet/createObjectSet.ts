@@ -24,6 +24,7 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
+  OrderByArg,
   Osdk,
   PrimaryKeyType,
   PropertyKeys,
@@ -178,6 +179,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherence.Default,
+      Z extends OrderByArg<Q, L> = never,
     >(
       args?: AsyncIterArgs<Q, L, R, A, S>,
     ): AsyncIterableIterator<SingleOsdkResult<Q, L, R, S>> {
@@ -187,7 +189,8 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           Q,
           L,
           R,
-          S
+          S,
+          Z
         > = await fetchPageInternal(
           augmentRequestContext(
             clientCtx,

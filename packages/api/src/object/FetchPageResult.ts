@@ -21,7 +21,7 @@ import type {
 import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { ExtractOptions, IsNever, Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
-import type { NullabilityAdherence } from "./FetchPageArgs.js";
+import type { NullabilityAdherence, OrderByArg } from "./FetchPageArgs.js";
 
 /** exposed for a test */
 export type RespectNullability<S extends NullabilityAdherence> = S extends false
@@ -51,9 +51,11 @@ export type FetchPageResult<
   L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
+  Z extends OrderByArg<Q, L>,
 > = PageResult<
-  PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S>>
-    : Osdk.Instance<Q, ExtractOptions<R, S>, L>
+  PropertyKeys<Q> extends L
+    ? Osdk.Instance<Q, ExtractOptions<R, S>, never, {}, Z>
+    : Osdk.Instance<Q, ExtractOptions<R, S>, L, {}, Z>
 >;
 
 /**

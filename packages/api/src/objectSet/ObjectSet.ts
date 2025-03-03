@@ -24,6 +24,7 @@ import type {
   Augments,
   FetchPageArgs,
   NullabilityAdherence,
+  OrderByArg,
   SelectArg,
 } from "../object/FetchPageArgs.js";
 import type { Result } from "../object/Result.js";
@@ -90,6 +91,7 @@ interface FetchPage<
     R extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
+    Z extends OrderByArg<Q, L> = never,
   >(
     args?: FetchPageArgs<Q, L, R, A, S>,
   ) => Promise<
@@ -98,7 +100,8 @@ interface FetchPage<
         Q,
         ExtractOptions<R, S>,
         PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
-        { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+        { [K in Extract<keyof RDPs, L>]: RDPs[K] },
+        Z
       >
     >
   >;

@@ -18,7 +18,10 @@ import type {
   DefaultToFalse,
   OsdkObjectLinksObject,
 } from "./definitions/LinkDefinitions.js";
-import type { NullabilityAdherence } from "./object/FetchPageArgs.js";
+import type {
+  NullabilityAdherence,
+  OrderByArg,
+} from "./object/FetchPageArgs.js";
 import type { UnionIfTrue } from "./object/FetchPageResult.js";
 import type { InterfaceDefinition } from "./ontology/InterfaceDefinition.js";
 import type {
@@ -188,6 +191,7 @@ export namespace Osdk {
     OPTIONS extends never | "$rid" = never,
     P extends PropertyKeys<Q> = PropertyKeys<Q>,
     R extends Record<string, SimplePropertyDef> = {},
+    Z extends OrderByArg<Q, P> = never,
   > =
     & OsdkBase<Q>
     & Pick<
@@ -220,6 +224,7 @@ export namespace Osdk {
           },
       ) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>;
     }
+    & { readonly $score: Z extends { $orderBy: "relevance" } ? number : never }
     // We are hiding the $rid field if it wasn't requested as we want to discourage its use
     & (IsNever<OPTIONS> extends true ? {}
       : IsAny<OPTIONS> extends true ? {}
