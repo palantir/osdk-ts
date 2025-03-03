@@ -3,6 +3,7 @@ aimpoints
 BACKCOMPAT
 backlink
 Canonicalizer
+Canonicalizers
 codegen
 devx
 Discoverability

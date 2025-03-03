@@ -53,9 +53,9 @@ import { isListCacheKey, ListQuery } from "./ListQuery.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
 import { ObjectQuery } from "./ObjectQuery.js";
 import { type OptimisticId } from "./OptimisticId.js";
+import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import type { Query } from "./Query.js";
 import { RefCounts } from "./RefCounts.js";
-import { WeakMapWithEntries } from "./WeakMapWithEntries.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 /*
@@ -119,24 +119,6 @@ function createInitEntry(cacheKey: CacheKey): Entry<any> {
     - Data is one per layer per cache key
 */
 
-export class OrderByCanonicalizer {
-  // crappy version
-  #map = new Map<string, Record<string, "asc" | "desc" | undefined>>();
-
-  canonicalize: <T>(
-    orderBy: Record<string, "asc" | "desc" | undefined>,
-  ) => Canonical<Record<string, "asc" | "desc" | undefined>> = (orderBy) => {
-    if (this.#map.has(JSON.stringify(orderBy))) {
-      return this.#map.get(JSON.stringify(orderBy))! as Canonical<
-        Record<string, "asc" | "desc" | undefined>
-      >;
-    } else {
-      this.#map.set(JSON.stringify(orderBy), orderBy);
-      return orderBy as Canonical<Record<string, "asc" | "desc" | undefined>>;
-    }
-  };
-}
-
 export class Store {
   whereCanonicalizer: WhereClauseCanonicalizer = new WhereClauseCanonicalizer();
   orderByCanonicalizer: OrderByCanonicalizer = new OrderByCanonicalizer();
@@ -147,10 +129,12 @@ export class Store {
   /** @internal */
   logger?: Logger;
 
-  #queries: WeakMapWithEntries<
+  // we can use a regular Map here because the refCounting will
+  // handle cleanup.
+  #queries: Map<
     CacheKey<string, any, any>,
     Query<any, any, any>
-  > = new WeakMapWithEntries();
+  > = new Map();
 
   #cacheKeyToSubject = new WeakMap<
     CacheKey<string, any, any>,
@@ -163,6 +147,8 @@ export class Store {
     (k) => this.#cleanupCacheKey(k),
   );
 
+  // we are currently only using this for debug logging and should just remove it in the future if that
+  // continues to be true
   #finalizationRegistry: FinalizationRegistry<() => void>;
 
   constructor(client: Client) {
