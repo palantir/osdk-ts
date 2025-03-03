@@ -1,5 +1,44 @@
 # @osdk/example-generator
 
+## 0.9.0
+
+### Minor Changes
+
+- 62a3d1f: Use fixed versions for create-app client and oauth deps
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- 1dca4cb: Use @osdk/foundry-config-json in @osdk/widget.vite-plugin.unstable for shared config and auto versioning
+- 35efba7: Upgraded to eslint 9
+- ff1ece7: Update create-widget template README and autoVersion strategy
+- 314ae66: Move from "views" naming to "widgets"
+- 83e7ea3: Move from a single-widget to widget set model for custom widget libraries
+- 81e99c0: Couple templates with SDK version, allow specifying --sdkVersion
+- d430386: Rename unstable create-widget --widgetSetRid arg to --widgetSet
+- 4849ae2: internal create-app code is codegen'd
+- 0e1a2e3: Add the scopes option to OSDK CLI and update all example generators to include the scopes if provided, else, hide the scopes to avoid confusion
+
+### Patch Changes
+
+- Updated dependencies [62a3d1f]
+- Updated dependencies [be9a9ff]
+- Updated dependencies [25fd9f0]
+- Updated dependencies [776ae5d]
+- Updated dependencies [ef09e2d]
+- Updated dependencies [ff1ece7]
+- Updated dependencies [f7008f7]
+- Updated dependencies [51b270d]
+- Updated dependencies [292f5a5]
+- Updated dependencies [314ae66]
+- Updated dependencies [255a8f1]
+- Updated dependencies [14bb6d2]
+- Updated dependencies [3d2ba6f]
+- Updated dependencies [83e7ea3]
+- Updated dependencies [81e99c0]
+- Updated dependencies [d430386]
+- Updated dependencies [4849ae2]
+- Updated dependencies [0e1a2e3]
+  - @osdk/create-app@2.1.0
+  - @osdk/create-widget@2.0.0
+
 ## 0.9.0-rc.32
 
 ### Patch Changes

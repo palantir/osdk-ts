@@ -1,5 +1,26 @@
 # @osdk/widget.api.unstable
 
+## 2.0.0
+
+### Major Changes
+
+- 5a4ebd7: Bump unstable widget packages to v1 to avoid undesired v0.x version behavior
+
+### Minor Changes
+
+- 009650f: Add initial views API
+- f0b519d: Upgrade to vitest 3 and vite 6
+- 5f36612: Add support for events
+- c691c8b: Package now has experimental support for commonjs
+- 314ae66: Move from "views" naming to "widgets"
+- 21d2dd1: Add fetch proxy
+- 01c02e5: Add vite plugin to parse out parameter config into a generated config file
+- 121475a: Release versions 1.1.0 of Custom Widget client libraries
+- 7c13070: Change manifest to support script types for entrypoint JS
+- 83e7ea3: Move from a single-widget to widget set model for custom widget libraries
+- e4839b9: Add target type to widget manifest
+- 7d1355e: Initial release of widget API
+
 ## 2.0.0-beta.16
 
 ## 2.0.0-beta.15
