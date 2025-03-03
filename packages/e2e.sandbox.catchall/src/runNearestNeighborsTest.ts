@@ -74,6 +74,13 @@ export async function runNearestNeighborsTest(): Promise<void> {
 
   invariant((await nestedResult).data.length === 2);
 
+  // Invalid order by relevance
+  await assertThrowsExpectedError(
+    "InvalidOrderType",
+    () =>
+      client(MatthewvsDevOrderEmbedding).fetchPage({ $orderBy: "relevance" }),
+  );
+
   // nearestNeighbor query on a property without an embedding (orderTitle)
   await assertThrowsExpectedError(
     "PropertyTypeDoesNotSupportNearestNeighbors",
