@@ -16,6 +16,7 @@
 
 import type {
   ActionDefinition,
+  InterfaceDefinition,
   ObjectTypeDefinition,
   PrimaryKeyType,
   PropertyKeys,
@@ -47,20 +48,20 @@ export interface ObserveOptions {
   mode?: "offline" | "force";
 }
 
-export interface ObserveObjectOptions<T extends ObjectTypeDefinition>
-  extends ObserveOptions
-{
+export interface ObserveObjectOptions<
+  T extends ObjectTypeDefinition | InterfaceDefinition,
+> extends ObserveOptions {
   select?: PropertyKeys<T>[];
 }
 
-export type OrderBy<Q extends ObjectTypeDefinition> = {
+export type OrderBy<Q extends ObjectTypeDefinition | InterfaceDefinition> = {
   [K in PropertyKeys<Q>]?: "asc" | "desc" | undefined;
 };
 
-export interface ObserveListOptions<Q extends ObjectTypeDefinition>
-  extends CommonObserveOptions, ObserveOptions
-{
-  objectType: Q["apiName"] | Q;
+export interface ObserveListOptions<
+  Q extends ObjectTypeDefinition | InterfaceDefinition,
+> extends CommonObserveOptions, ObserveOptions {
+  type: Pick<Q, "apiName" | "type">;
   where?: WhereClause<Q>;
   pageSize?: number;
   orderBy?: OrderBy<Q>;

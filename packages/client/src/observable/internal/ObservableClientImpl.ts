@@ -16,6 +16,7 @@
 
 import type {
   ActionDefinition,
+  InterfaceDefinition,
   ObjectTypeDefinition,
   PrimaryKeyType,
   WhereClause,
@@ -48,14 +49,14 @@ export class ObservableClientImpl implements ObservableClient {
     this.canonicalizeWhereClause = store.canonicalizeWhereClause.bind(store);
   }
 
-  public observeObject: <T extends ObjectTypeDefinition>(
+  public observeObject: <T extends ObjectTypeDefinition | InterfaceDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveObjectOptions<T>,
     subFn: SubFn<ObjectPayload>,
   ) => Unsubscribable;
 
-  public observeList: <T extends ObjectTypeDefinition>(
+  public observeList: <T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveListOptions<T>,
     subFn: SubFn<ListPayload>,
   ) => Unsubscribable;
@@ -66,7 +67,9 @@ export class ObservableClientImpl implements ObservableClient {
     opts?: ObservableClient.ApplyActionOptions,
   ) => Promise<unknown>;
 
-  public canonicalizeWhereClause: <T extends ObjectTypeDefinition>(
+  public canonicalizeWhereClause: <
+    T extends ObjectTypeDefinition | InterfaceDefinition,
+  >(
     where: WhereClause<T>,
   ) => Canonical<WhereClause<T>>;
 }

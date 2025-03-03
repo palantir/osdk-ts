@@ -37,7 +37,10 @@ import {
 } from "vitest";
 import { type Client } from "../../Client.js";
 import { createClient } from "../../createClient.js";
-import type { Unsubscribable } from "../ObservableClient.js";
+import type {
+  ObserveListOptions,
+  Unsubscribable,
+} from "../ObservableClient.js";
 import { createOptimisticId } from "./OptimisticId.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
 import { Store } from "./Store.js";
@@ -147,7 +150,7 @@ describe(Store, () => {
         cache.getObject(Employee, emp.$primaryKey),
       ).toBeUndefined();
 
-      const result = cache.updateObject(Employee, emp);
+      const result = cache.updateObject(emp);
       expect(emp).toBe(result);
 
       // getting the object now matches the result
@@ -156,7 +159,6 @@ describe(Store, () => {
       );
 
       const updatedEmpFromCache = cache.updateObject(
-        Employee,
         emp.$clone({ fullName: "new name" }),
       );
       expect(updatedEmpFromCache).not.toBe(emp);
@@ -170,7 +172,7 @@ describe(Store, () => {
     describe("optimistic updates", () => {
       it("rolls back objects", async () => {
         const emp = employeesAsServerReturns[0];
-        cache.updateObject(Employee, emp); // pre-seed the cache with the "real" value
+        cache.updateObject(emp); // pre-seed the cache with the "real" value
 
         const subFn = mockSingleSubCallback();
         defer(
@@ -186,7 +188,7 @@ describe(Store, () => {
 
         const optimisticId = createOptimisticId();
         // update with an optimistic write
-        cache.updateObject(Employee, emp.$clone({ fullName: "new name" }), {
+        cache.updateObject(emp.$clone({ fullName: "new name" }), {
           optimisticId,
         });
         expectSingleObjectCallAndClear(
@@ -204,7 +206,7 @@ describe(Store, () => {
       it("rolls back to an updated real value", async () => {
         // pre-seed the cache with the "real" value
         cache.updateList({
-          objectType: Employee,
+          type: Employee,
           where: {},
           orderBy: {},
         }, employeesAsServerReturns);
@@ -226,7 +228,7 @@ describe(Store, () => {
         const listSubFn = mockListSubCallback();
         defer(
           cache.observeList({
-            objectType: Employee,
+            type: Employee,
             mode: "offline",
           }, listSubFn),
         );
@@ -242,7 +244,7 @@ describe(Store, () => {
         expect(listSubFn).not.toHaveBeenCalled();
 
         // update with an optimistic write
-        cache.updateObject(Employee, optimisticEmployee, {
+        cache.updateObject(optimisticEmployee, {
           optimisticId,
         });
 
@@ -273,7 +275,7 @@ describe(Store, () => {
         testStage("write real update");
 
         cache.updateList(
-          { objectType: Employee, where: {}, orderBy: {} },
+          { type: Employee, where: {}, orderBy: {} },
           [truthUpdatedEmployee],
         );
 
@@ -299,7 +301,7 @@ describe(Store, () => {
 
       it("rolls back to an updated real value via list", async () => {
         const emp = employeesAsServerReturns[0];
-        cache.updateObject(Employee, emp); // pre-seed the cache with the "real" value
+        cache.updateObject(emp); // pre-seed the cache with the "real" value
 
         const subFn = mockSingleSubCallback();
         defer(
@@ -322,7 +324,7 @@ describe(Store, () => {
 
         // update with an optimistic write
         const optimisticId = createOptimisticId();
-        cache.updateObject(Employee, optimisticEmployee, {
+        cache.updateObject(optimisticEmployee, {
           optimisticId,
         });
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
@@ -335,7 +337,7 @@ describe(Store, () => {
         const truthUpdatedEmployee = emp.$clone({
           fullName: "real update",
         });
-        cache.updateObject(Employee, truthUpdatedEmployee);
+        cache.updateObject(truthUpdatedEmployee);
 
         // we shouldn't expect an update because the top layer has a value
         expect(subFn).not.toHaveBeenCalled();
@@ -355,7 +357,7 @@ describe(Store, () => {
       it("triggers an update", async () => {
         const emp = employeesAsServerReturns[0];
         const staleEmp = emp.$clone({ fullName: "stale" });
-        cache.updateObject(Employee, staleEmp);
+        cache.updateObject(staleEmp);
 
         const subFn = mockSingleSubCallback();
         defer(
@@ -410,7 +412,7 @@ describe(Store, () => {
         const emp = employeesAsServerReturns[0];
         const staleEmp = emp.$clone({ fullName: "stale" });
         cache.updateList(
-          { objectType: Employee, where: {}, orderBy: {} },
+          { type: Employee, where: {}, orderBy: {} },
           [staleEmp],
         );
 
@@ -428,7 +430,7 @@ describe(Store, () => {
         const subListFn = mockListSubCallback();
         defer(
           cache.observeList({
-            objectType: Employee,
+            type: Employee,
             mode: "offline",
           }, subListFn),
         );
@@ -442,7 +444,7 @@ describe(Store, () => {
 
         testStage("invalidate");
 
-        cache.invalidateList({ objectType: Employee });
+        cache.invalidateList({ type: Employee });
         testStage("check invalidate");
 
         await waitForCall(subListFn, 1);
@@ -476,7 +478,7 @@ describe(Store, () => {
         const emp = employeesAsServerReturns[0];
         const staleEmp = emp.$clone({ fullName: "stale" });
         cache.updateList(
-          { objectType: Employee, where: {}, orderBy: {} },
+          { type: Employee, where: {}, orderBy: {} },
           [staleEmp],
         );
 
@@ -494,7 +496,7 @@ describe(Store, () => {
         const subListFn = mockListSubCallback();
         defer(
           cache.observeList({
-            objectType: Employee,
+            type: Employee,
             where: {},
             orderBy: {},
             mode: "offline",
@@ -640,14 +642,14 @@ describe(Store, () => {
         const emp = employeesAsServerReturns[0];
 
         // force an update
-        cache.updateObject(Employee, emp);
+        cache.updateObject(emp);
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
           objectPayloadContaining({ object: emp }),
         );
         subFn.mockClear();
 
         // force again
-        cache.updateObject(Employee, emp.$clone({ fullName: "new name" }));
+        cache.updateObject(emp.$clone({ fullName: "new name" }));
         expect(subFn).toHaveBeenCalledExactlyOnceWith(
           objectPayloadContaining({
             object: expect.objectContaining({ fullName: "new name" }),
@@ -659,7 +661,6 @@ describe(Store, () => {
 
         // force again but no subscription update
         cache.updateObject(
-          Employee,
           emp.$clone({ fullName: "new name 2" }),
         );
         expect(subFn).not.toHaveBeenCalled();
@@ -669,11 +670,11 @@ describe(Store, () => {
         const emp = employeesAsServerReturns[0];
 
         // force an update
-        cache.updateObject(Employee, emp.$clone({ fullName: "not the name" }));
+        cache.updateObject(emp.$clone({ fullName: "not the name" }));
         expect(subFn).toHaveBeenCalledTimes(1);
 
         cache.updateList(
-          { objectType: Employee, where: {}, orderBy: {} },
+          { type: Employee, where: {}, orderBy: {} },
           employeesAsServerReturns,
         );
         expect(subFn).toHaveBeenCalledTimes(2);
@@ -699,7 +700,12 @@ describe(Store, () => {
         it("initial load", async () => {
           defer(
             cache.observeList(
-              { objectType: Employee, where: {}, orderBy: {}, mode: "force" },
+              {
+                type: Employee,
+                where: {},
+                orderBy: {},
+                mode: "force",
+              },
               listSub1,
             ),
           );
@@ -727,13 +733,13 @@ describe(Store, () => {
         it("subsequent load", async () => {
           // Pre-seed with data the server doesn't return
           cache.updateList(
-            { objectType: Employee, where: {}, orderBy: {} },
+            { type: Employee, where: {}, orderBy: {} },
             mutatedEmployees,
           );
 
           defer(
             cache.observeList({
-              objectType: Employee,
+              type: Employee,
               mode: "force",
             }, listSub1),
           );
@@ -762,7 +768,7 @@ describe(Store, () => {
         it("updates with list updates", async () => {
           defer(
             cache.observeList({
-              objectType: Employee,
+              type: Employee,
               where: {},
               orderBy: {},
               mode: "offline",
@@ -771,7 +777,7 @@ describe(Store, () => {
           expect(listSub1).toHaveBeenCalledTimes(0);
 
           cache.updateList(
-            { objectType: Employee, where: {}, orderBy: {} },
+            { type: Employee, where: {}, orderBy: {} },
             employeesAsServerReturns,
           );
           vitest.runOnlyPendingTimers();
@@ -783,7 +789,7 @@ describe(Store, () => {
 
           // list is just now one object
           cache.updateList(
-            { objectType: Employee, where: {}, orderBy: {} },
+            { type: Employee, where: {}, orderBy: {} },
             [employeesAsServerReturns[0]],
           );
           vitest.runOnlyPendingTimers();
@@ -798,7 +804,7 @@ describe(Store, () => {
         it("updates with different list updates", async () => {
           defer(
             cache.observeList({
-              objectType: Employee,
+              type: Employee,
               where: {},
               orderBy: {},
               mode: "offline",
@@ -808,7 +814,7 @@ describe(Store, () => {
           expect(listSub1).toHaveBeenCalledTimes(0);
 
           cache.updateList(
-            { objectType: Employee, where: {}, orderBy: {} },
+            { type: Employee, where: {}, orderBy: {} },
             employeesAsServerReturns,
           );
           vitest.runOnlyPendingTimers();
@@ -821,7 +827,7 @@ describe(Store, () => {
           // new where === different list
           cache.updateList(
             {
-              objectType: Employee,
+              type: Employee,
               where: { employeeId: { $gt: 0 } },
               orderBy: {},
             },
@@ -851,7 +857,7 @@ describe(Store, () => {
         const listSub = mockListSubCallback();
         defer(cache.observeList(
           {
-            objectType: Employee,
+            type: Employee,
             where: {},
             orderBy: {},
             mode: "force",
@@ -1064,18 +1070,18 @@ describe(Store, () => {
       } as Osdk.Instance<Todo>;
 
       const noWhereNoOrderBy = {
-        objectType: Todo,
+        type: Todo,
         where: {},
         orderBy: {},
-      } as const;
+      } satisfies ObserveListOptions<Todo>;
 
       const noWhereOrderByText = {
-        objectType: Todo,
+        type: Todo,
         where: {},
         orderBy: {
           text: "asc",
         },
-      } as const;
+      } satisfies ObserveListOptions<Todo>;
 
       const subListUnordered = mockListSubCallback();
       const subListOrdered = mockListSubCallback();
@@ -1122,7 +1128,7 @@ describe(Store, () => {
         // For whatever reason, object B is no longer in the first set (use your imagination)
         // but we have added a C before A. So the first list is [C, A]
         store.updateList(
-          { objectType: Todo, where: {}, orderBy: {} },
+          { type: Todo, where: {}, orderBy: {} },
           [fauxObjectC, fauxObjectA],
         );
 
@@ -1414,7 +1420,7 @@ describe(Store, () => {
 
       // set the truth
       for (const obj of baseObjects) {
-        store.updateObject("Employee", obj);
+        store.updateObject(obj);
       }
 
       // expect the truth

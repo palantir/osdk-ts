@@ -16,6 +16,7 @@
 
 import type {
   ActionDefinition,
+  InterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
@@ -324,13 +325,15 @@ export class Store implements ObservableClient {
     return subject;
   };
 
-  public canonicalizeWhereClause<T extends ObjectTypeDefinition>(
+  public canonicalizeWhereClause<
+    T extends ObjectTypeDefinition | InterfaceDefinition,
+  >(
     where: WhereClause<T>,
   ): Canonical<WhereClause<T>> {
     return this.whereCanonicalizer.canonicalize(where);
   }
 
-  public observeObject<T extends ObjectTypeDefinition>(
+  public observeObject<T extends ObjectTypeDefinition | InterfaceDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveObjectOptions<T>,
@@ -366,13 +369,13 @@ export class Store implements ObservableClient {
     };
   }
 
-  public observeList<T extends ObjectTypeDefinition>(
+  public observeList<T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveListOptions<T>,
     subFn: SubFn<ListPayload>,
   ): Unsubscribable {
     // the ListQuery represents the shared state of the list
     const query = this.getListQuery(
-      options.objectType,
+      options.type,
       options.where ?? {},
       options.orderBy ?? {},
       options,
@@ -387,13 +390,19 @@ export class Store implements ObservableClient {
     if (options.streamUpdates) {
       const miniDef = {
         type: "object",
-        apiName: (typeof options.objectType === "string"
-          ? options.objectType
-          : options.objectType.apiName),
+        apiName: (typeof options.type === "string"
+          ? options.type
+          : options.type.apiName),
       } as T;
-      let objectSet: ObjectSet<T> = this.client(miniDef);
+
+      // the extra casts here are because of the way we have overrides for the
+      // client cause it to fall back to the last override case which we don't want
+      let objectSet: ObjectSet<T> = this.client(
+        miniDef as ObjectTypeDefinition,
+      ) as unknown as ObjectSet<T>;
+
       if (options.where) {
-        objectSet = objectSet.where(options.where ?? {});
+        objectSet = objectSet.where(options.where);
       }
       const store = this;
       const websocketSubscription = objectSet.subscribe({
@@ -426,7 +435,6 @@ export class Store implements ObservableClient {
             // todo, can we do the update without
             // the extra invalidation? maybe a flag to updateObject
             store.updateObject(
-              object.$objectType,
               object,
             );
             store.maybeRevalidateLists(changes).catch(err => {
@@ -555,20 +563,19 @@ export class Store implements ObservableClient {
     return query;
   }
 
-  public getListQuery<T extends ObjectTypeDefinition>(
-    apiName: T["apiName"] | T,
+  public getListQuery<T extends ObjectTypeDefinition | InterfaceDefinition>(
+    def: Pick<T, "type" | "apiName">,
     where: WhereClause<T>,
     orderBy: Record<string, "asc" | "desc" | undefined>,
     opts: ListQueryOptions,
   ): ListQuery {
-    if (typeof apiName !== "string") {
-      apiName = apiName.apiName;
-    }
+    const { apiName, type } = def;
 
     const canonWhere = this.whereCanonicalizer.canonicalize(where);
     const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy);
     const listCacheKey = this.getCacheKey<ListCacheKey>(
       "list",
+      type,
       apiName,
       canonWhere,
       canonOrderBy,
@@ -578,6 +585,7 @@ export class Store implements ObservableClient {
       return new ListQuery(
         this,
         this.getSubject(listCacheKey),
+        type,
         apiName,
         canonWhere,
         canonOrderBy,
@@ -625,6 +633,10 @@ export class Store implements ObservableClient {
       apiName,
       pk,
     );
+
+    // we probably don't want to do this? If we have RDP, interface, and subselect, then we
+    // will likely not have a complete object on the top layer?
+    // maybe we can do an optimistic update by merging and then only write the full object to the truth layer?
     const objEntry = this.#topLayer.get(objectCacheKey);
     return objEntry?.value as Osdk.Instance<T> | undefined;
   }
@@ -820,22 +832,19 @@ export class Store implements ObservableClient {
   }
 
   public invalidateList<T extends ObjectTypeDefinition>(
-    { objectType, where, orderBy }: {
-      objectType: T["apiName"] | T;
+    { type, where, orderBy }: {
+      type: Pick<T, "apiName" | "type">;
       where?: WhereClause<T>;
       orderBy?: OrderBy<T>;
     },
   ): void {
-    if (typeof objectType !== "string") {
-      objectType = objectType.apiName;
-    }
-
     where = this.whereCanonicalizer.canonicalize(where ?? {});
     orderBy = this.orderByCanonicalizer.canonicalize(orderBy ?? {});
 
     const cacheKey = this.getCacheKey<ListCacheKey>(
       "list",
-      objectType,
+      type.type,
+      type.apiName,
       where as Canonical<WhereClause<T>>,
       orderBy as Canonical<OrderBy<T>>,
     );
@@ -843,20 +852,15 @@ export class Store implements ObservableClient {
     void this.#peekQuery(cacheKey)?.revalidate(true);
   }
 
-  public updateObject(
-    apiName: string | ObjectTypeDefinition,
-    value: Osdk.Instance<ObjectTypeDefinition>,
+  public updateObject<T extends ObjectTypeDefinition>(
+    value: Osdk.Instance<T>,
     { optimisticId }: UpdateOptions = {},
-  ): Osdk.Instance<ObjectTypeDefinition> {
-    if (typeof apiName !== "string") {
-      apiName = apiName.apiName;
-    }
-
-    const query = this.getObjectQuery(apiName, value.$primaryKey);
+  ): Osdk.Instance<T> {
+    const query = this.getObjectQuery(value.$apiName, value.$primaryKey);
 
     return this.batch({ optimisticId }, (batch) => {
       return query.writeToStore(value, "loaded", batch);
-    }).retVal.value!;
+    }).retVal.value! as Osdk.Instance<T>;
   }
 
   public updateObjects(
@@ -886,13 +890,13 @@ export class Store implements ObservableClient {
    * @param param4
    * @param opts
    */
-  public updateList<T extends ObjectTypeDefinition>(
+  public updateList<T extends ObjectTypeDefinition | InterfaceDefinition>(
     {
-      objectType: apiName,
+      type,
       where,
       orderBy,
     }: {
-      objectType: T["apiName"] | T;
+      type: Pick<T, "apiName" | "type">;
       where: WhereClause<T>;
       orderBy: OrderBy<T>;
     },
@@ -908,7 +912,12 @@ export class Store implements ObservableClient {
       );
     }
 
-    const query = this.getListQuery(apiName, where ?? {}, orderBy ?? {}, opts);
+    const query = this.getListQuery(
+      type,
+      where ?? {},
+      orderBy ?? {},
+      opts,
+    );
 
     this.batch({ optimisticId }, (batch) => {
       const objectCacheKeys = this.updateObjects(objects, batch);
