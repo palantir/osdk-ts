@@ -34,11 +34,14 @@ export async function promptScopes(
         `Scopes [ ${joinedInvalidScopes} ] are invalid. Scope names can only contain letters, hyphens, underscores, and colons`,
       );
     }
-    const stringScopes = await consola.prompt("Scopes:", {
-      type: "text",
-      placeholder: "api:read-data api:write-data",
-      default: "api:read-data api:write-data",
-    });
+    const stringScopes = await consola.prompt(
+      "Enter the scopes to request during OAuth:",
+      {
+        type: "text",
+        placeholder: "api:read-data api:write-data",
+        default: "api:read-data api:write-data",
+      },
+    );
     scopes = stringScopes.split(" ");
   }
 
