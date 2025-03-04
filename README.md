@@ -25,7 +25,7 @@ npm install @osdk/oauth
 
 ## Client Overview
 
-Once you have generated an SDk in your Developer Console application, you need to create your token provider via OAuth. This token provider is supplied by creating the auth provider from the `@osdk/oauth` package. Once you have your token provider set up, you can pass the authentication instance when creating the client.
+Once you have generated an SDK in your Developer Console application, you need to create your token provider via OAuth. This token provider is supplied by creating the auth provider from the `@osdk/oauth` package. Once you have your token provider set up, you can pass the authentication instance when creating the client.
 
 ## OAuth Instructions
 
