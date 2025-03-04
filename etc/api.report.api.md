@@ -115,7 +115,7 @@ export namespace ActionParam {
     export type InterfaceType<T extends InterfaceDefinition> = {
         		$objectType: NonNullable<T["__DefinitionMetadata"]> extends {
             			implementedBy: infer U
-            		} ? (U extends ReadonlyArray<string> ? U[number] : string) : string
+            		} ? (U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string) : string
         		$primaryKey: string | number
         	};
     	// (undocumented)
