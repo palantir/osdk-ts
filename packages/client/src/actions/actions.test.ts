@@ -28,6 +28,7 @@ import {
   createFooInterface,
   createOffice,
   createStructPerson,
+  deleteBarInterface,
   deleteFooInterface,
   moveOffice,
 } from "@osdk/client.test.ontology";
@@ -359,6 +360,40 @@ describe("actions", () => {
 
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
     expect(result).toBeUndefined();
+  });
+  it("Accepts interfaces if implementing object types unknown", async () => {
+    const clientBoundTakesInterface = client(
+      deleteBarInterface,
+    ).applyAction;
+
+    type InferredParamType = Parameters<
+      typeof clientBoundTakesInterface
+    >[0];
+
+    expectTypeOf<
+      {
+        deletedInterface: {
+          $objectType: string;
+          $primaryKey: string | number;
+        };
+      }
+    >().toMatchTypeOf<
+      InferredParamType
+    >();
+
+    const clientBoundBatchActionTakesInterface = client(
+      deleteBarInterface,
+    ).batchApplyAction;
+    type InferredBatchParamType = Parameters<
+      typeof clientBoundBatchActionTakesInterface
+    >[0];
+
+    expectTypeOf<{
+      deletedInterface: {
+        $objectType: string;
+        $primaryKey: string | number;
+      };
+    }[]>().toMatchTypeOf<InferredBatchParamType>();
   });
   it("Accepts object type refs", async () => {
     const clientBoundTakesObjectType = client(
