@@ -91,7 +91,9 @@ describe("actions", () => {
             "primaryKey": "NYC",
           },
         ],
+        "deletedLinks": [],
         "deletedLinksCount": 0,
+        "deletedObjects": [],
         "deletedObjectsCount": 0,
         "editedObjectTypes": [
           "Office",
@@ -448,7 +450,9 @@ describe("actions", () => {
       {
         "addedLinks": [],
         "addedObjects": [],
+        "deletedLinks": [],
         "deletedLinksCount": 0,
+        "deletedObjects": [],
         "deletedObjectsCount": 0,
         "editedObjectTypes": [
           "Office",
@@ -487,9 +491,19 @@ describe("ActionResponse remapping", () => {
         "linkTypeApiNameBtoA": "test",
         "bSideObject": { "primaryKey": "key2", "objectType": "Employee" },
         "type": "addLink",
+      }, {
+        "objectType": "Developer",
+        "primaryKey": "PalantirDev",
+        "type": "deleteObject",
+      }, {
+        "aSideObject": { "primaryKey": "key1", "objectType": "Office" },
+        "linkTypeApiNameAtoB": "test",
+        "linkTypeApiNameBtoA": "test",
+        "bSideObject": { "primaryKey": "key2", "objectType": "Employee" },
+        "type": "deleteLink",
       }],
       deletedLinksCount: 0,
-      deletedObjectsCount: 0,
+      deletedObjectsCount: 1,
       addedObjectCount: 1,
       modifiedObjectsCount: 1,
       addedLinksCount: 1,
@@ -549,8 +563,28 @@ describe("ActionResponse remapping", () => {
             "primaryKey": "PalantirDev",
           },
         ],
+        "deletedLinks": [
+          {
+            "aSideObject": {
+              "objectType": "Office",
+              "primaryKey": "key1",
+            },
+            "bSideObject": {
+              "objectType": "Employee",
+              "primaryKey": "key2",
+            },
+            "linkTypeApiNameAtoB": "test",
+            "linkTypeApiNameBtoA": "test",
+          },
+        ],
         "deletedLinksCount": 0,
-        "deletedObjectsCount": 0,
+        "deletedObjects": [
+          {
+            "objectType": "Developer",
+            "primaryKey": "PalantirDev",
+          },
+        ],
+        "deletedObjectsCount": 1,
         "editedObjectTypes": [
           "Developer",
           "Contractor",
@@ -588,7 +622,9 @@ describe("ActionResponse remapping", () => {
             "primaryKey": "PalantirDev",
           },
         ],
+        "deletedLinks": [],
         "deletedLinksCount": 0,
+        "deletedObjects": [],
         "deletedObjectsCount": 0,
         "editedObjectTypes": [
           "Developer",

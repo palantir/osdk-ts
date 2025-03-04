@@ -24,11 +24,19 @@ export const FooInterface: InterfaceType = {
   rid: "ri.interface.main.interface.1",
   extendsInterfaces: [],
   properties: {
-    fooSpt,
+    fooSpt: {
+      ...fooSpt,
+      required: true,
+    },
   },
   links: {},
   implementedByObjectTypes: ["Employee", "Person"],
-  allProperties: { fooSpt },
+  allProperties: {
+    fooSpt: {
+      ...fooSpt,
+      required: true,
+    },
+  },
   allExtendsInterfaces: [],
   allLinks: {},
 };

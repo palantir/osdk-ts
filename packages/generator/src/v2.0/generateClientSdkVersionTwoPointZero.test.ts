@@ -299,6 +299,7 @@ const referencedOntology = {
           },
           displayName: "Some Property",
           rid: "idk",
+          required: true,
         },
       },
       implementedByObjectTypes: [],
@@ -313,6 +314,7 @@ const referencedOntology = {
           },
           displayName: "Some Property",
           rid: "idk",
+          required: true,
         },
         "com.example.dep.spt2": {
           apiName: "com.example.dep.spt2",
@@ -321,6 +323,7 @@ const referencedOntology = {
           },
           displayName: "Some Property 2",
           rid: "idk",
+          required: true,
         },
       },
     },

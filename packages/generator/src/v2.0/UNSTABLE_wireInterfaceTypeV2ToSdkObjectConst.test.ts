@@ -45,7 +45,9 @@ function simpleInterface<T extends string, Q extends SharedPropertyType>(
   metadataLevel: 0 | 1 | 2 = 2,
   implementedByObjectTypes: string[] = [],
 ) {
-  const properties = Object.fromEntries(spts.map(spt => [spt.apiName, spt]));
+  const properties = Object.fromEntries(
+    spts.map(spt => [spt.apiName, { ...spt, required: true }]),
+  );
 
   return {
     apiName,

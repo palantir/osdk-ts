@@ -58,6 +58,7 @@ export function getObjectTypesFromQueryDataType(
     case "threeDimensionalAggregation":
     case "timestamp":
     case "twoDimensionalAggregation":
+    case "entrySet":
     case "unsupported":
       /* complete no-op */
       return;
