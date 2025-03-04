@@ -1,5 +1,23 @@
 # @osdk/cli
 
+## 0.25.0
+
+### Minor Changes
+
+- 2ffa338: Support site snapshot upload
+- db51d24: Traverse widget set site version to delete
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- 1b60b3d: Packages use more specific versions instead of indirection through shared.net
+- 1dca4cb: Use @osdk/foundry-config-json in @osdk/widget.vite-plugin.unstable for shared config and auto versioning
+- c682504: Ensures codegen is bundled with the cli version
+- cf9dcbe: Split out @osdk/foundry-config-json package
+- a39ef6a: Add package.json auto version strategy
+- 8766327: CLI unstable widgetset commands
+- b42399b: Site version and file limit custom error message and tips
+- c9da74c: Improves code quality by fixing linting errors
+- 963addb: Include API error info in CLI error messages
+- 4c93ac5: Allow configuring uploadOnly through foundry.config.json
+
 ## 0.25.0-rc.32
 
 ## 0.25.0-beta.31

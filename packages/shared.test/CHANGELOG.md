@@ -1,5 +1,94 @@
 # @osdk/shared.test
 
+## 2.1.0
+
+### Minor Changes
+
+- d794c19: Adding support for struct action params.
+- 6f50516: Fix bug where object return types in a query were not properly mapped when wrapped in a struct.
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- 9c4efe6: Support uploading media parameters through actions
+- 1812118: Add geotime support for OSDK.
+- d927a1d: Throws error in createClient when passed an invalid ontology RID
+- bc1761c: Update platform API dependencies.
+- f1145ff: Adds support for runtime derived properties
+- c80ca45: Add ability to create interfaces through actions now.
+- bb8b219: Use new external packages instead of the internal ones.
+- 03f95eb: Add support for interface params in actions.
+- 91cfa3a: Fixing url parsing for client.
+- 9d35a1f: Remove unused imports
+- 9298f75: Using new interface APIs for backend.
+- f34b3d4: Add ability to fetch by rid, experimentally.
+- acbfab9: Fixes where clauses for interfaces with no properties.
+- c9da74c: Improves code quality by fixing linting errors
+- 62c1d63: Add support for reading media reference property in OSDK.
+- 91cfa3a: Fixing URL parsing for custom entry points.
+- abfe4b3: Add support for reading struct properties.
+- 5e78575: Fix queries that have response types with nested values, like arrays.
+- 9af346e: Fixing proxy handlers.
+- 9018dc2: Updating platform api dependencies.
+- 6b6c8a1: Updates gateway endpoints and changes fetchContents for attachments to return a response
+- 09eaf24: Update to latest platform sdks
+- d665147: Update platform sdk deps
+
+### Patch Changes
+
+- Updated dependencies [966d408]
+- Updated dependencies [cddc196]
+- Updated dependencies [d794c19]
+- Updated dependencies [05febf4]
+- Updated dependencies [55c05f2]
+- Updated dependencies [0dc40b0]
+- Updated dependencies [25fd9f0]
+- Updated dependencies [11a05cc]
+- Updated dependencies [7865cb6]
+- Updated dependencies [9c4efe6]
+- Updated dependencies [3ea2e79]
+- Updated dependencies [1812118]
+- Updated dependencies [bc1761c]
+- Updated dependencies [656f975]
+- Updated dependencies [f1145ff]
+- Updated dependencies [f446d0c]
+- Updated dependencies [c80ca45]
+- Updated dependencies [bb8b219]
+- Updated dependencies [03f95eb]
+- Updated dependencies [1a89f23]
+- Updated dependencies [9d35a1f]
+- Updated dependencies [c691c8b]
+- Updated dependencies [749cf69]
+- Updated dependencies [f03e39f]
+- Updated dependencies [11088aa]
+- Updated dependencies [72c1905]
+- Updated dependencies [9298f75]
+- Updated dependencies [f34b3d4]
+- Updated dependencies [acbfab9]
+- Updated dependencies [62c1d63]
+- Updated dependencies [3c9ac22]
+- Updated dependencies [1591f04]
+- Updated dependencies [03e1941]
+- Updated dependencies [abfe4b3]
+- Updated dependencies [b79becf]
+- Updated dependencies [27866a8]
+- Updated dependencies [e5fe7c0]
+- Updated dependencies [1b2e8c9]
+- Updated dependencies [9f3807c]
+- Updated dependencies [0c56d21]
+- Updated dependencies [e548b9b]
+- Updated dependencies [ee6224b]
+- Updated dependencies [1dc0228]
+- Updated dependencies [6c60414]
+- Updated dependencies [5fe2c8d]
+- Updated dependencies [d3b3f35]
+- Updated dependencies [785f663]
+- Updated dependencies [6b6c8a1]
+- Updated dependencies [c537e2d]
+- Updated dependencies [73fa373]
+- Updated dependencies [8e6a5f4]
+- Updated dependencies [2d5e648]
+- Updated dependencies [31e7d70]
+- Updated dependencies [f19da8e]
+  - @osdk/api@2.1.0
+
 ## 2.1.0-rc.32
 
 ### Patch Changes
