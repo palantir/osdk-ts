@@ -124,6 +124,7 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
         nullable: false,
       };
 
+    case "entrySet":
     case "null":
     case "unsupported":
       throw new Error(
