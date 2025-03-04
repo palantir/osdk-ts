@@ -32,7 +32,7 @@ export namespace createMediaViaFunction {
     batchApplyAction<P extends ReadonlyArray<createMediaViaFunction.Params>, OP extends ApplyBatchActionOptions>(
       args: P,
       options?: OP,
-    ): Promise<ActionReturnTypeForOptions<OP>>;
+    ): Promise<ActionReturnTypeForOptions<OP, true>>;
   }
 }
 

@@ -53,7 +53,7 @@ export namespace promoteEmployeeObject {
     batchApplyAction<P extends ReadonlyArray<promoteEmployeeObject.Params>, OP extends ApplyBatchActionOptions>(
       args: P,
       options?: OP,
-    ): Promise<ActionReturnTypeForOptions<OP>>;
+    ): Promise<ActionReturnTypeForOptions<OP, true>>;
   }
 }
 

@@ -185,7 +185,7 @@ export async function applyAction<
     const edits = response.edits;
     return (options?.$returnEdits
       ? edits?.type === "edits" ? remapActionResponse(response) : edits
-      : undefined) as ActionReturnTypeForOptions<Op>;
+      : undefined) as ActionReturnTypeForOptions<Op, true>;
   }
 }
 

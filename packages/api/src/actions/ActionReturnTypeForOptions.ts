@@ -19,12 +19,15 @@ import type {
   ActionValidationResponse,
   ApplyActionOptions,
   ApplyBatchActionOptions,
+  BatchActionEditResponse,
 } from "./Actions.js";
 
 // cannot specify both validateOnly and returnEdits as true
 
 export type ActionReturnTypeForOptions<
   Op extends ApplyActionOptions | ApplyBatchActionOptions,
+  IS_BATCH extends boolean = false,
 > = Op extends { $validateOnly: true } ? ActionValidationResponse
-  : Op extends { $returnEdits: true } ? ActionEditResponse
+  : Op extends { $returnEdits: true }
+    ? IS_BATCH extends true ? BatchActionEditResponse : ActionEditResponse
   : undefined;

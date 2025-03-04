@@ -23,6 +23,13 @@ export type ActionResults =
   )
   & { editedObjectTypes: Array<String> };
 
+export type BatchActionResults =
+  & (
+    | BatchObjectEdits
+    | LargeScaleObjectEdits
+  )
+  & { editedObjectTypes: Array<String> };
+
 interface ObjectEdits {
   type: "edits";
   addedObjects: Array<ObjectReference>;
@@ -33,6 +40,16 @@ interface ObjectEdits {
   deletedObjectsCount: number;
   deletedLinksCount: number;
 }
+
+interface BatchObjectEdits {
+  type: "edits";
+  addedObjects: Array<ObjectReference>;
+  modifiedObjects: Array<ObjectReference>;
+  addedLinks: Array<LinkReference>;
+  deletedObjectsCount: number;
+  deletedLinksCount: number;
+}
+
 interface LargeScaleObjectEdits {
   type: "largeScaleEdits";
   addedObjects?: never;

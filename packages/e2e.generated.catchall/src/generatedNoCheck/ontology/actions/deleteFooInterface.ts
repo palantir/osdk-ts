@@ -33,7 +33,7 @@ export namespace deleteFooInterface {
     batchApplyAction<P extends ReadonlyArray<deleteFooInterface.Params>, OP extends ApplyBatchActionOptions>(
       args: P,
       options?: OP,
-    ): Promise<ActionReturnTypeForOptions<OP>>;
+    ): Promise<ActionReturnTypeForOptions<OP, true>>;
   }
 }
 

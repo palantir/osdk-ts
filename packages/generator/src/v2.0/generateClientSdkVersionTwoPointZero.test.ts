@@ -597,7 +597,7 @@ describe("generator", () => {
             batchApplyAction<P extends ReadonlyArray<deleteTodos.Params>, OP extends ApplyBatchActionOptions>(
               args: P,
               options?: OP,
-            ): Promise<ActionReturnTypeForOptions<OP>>;
+            ): Promise<ActionReturnTypeForOptions<OP, true>>;
           }
         }
 
@@ -673,7 +673,7 @@ describe("generator", () => {
             batchApplyAction<P extends ReadonlyArray<markTodoCompleted.Params>, OP extends ApplyBatchActionOptions>(
               args: P,
               options?: OP,
-            ): Promise<ActionReturnTypeForOptions<OP>>;
+            ): Promise<ActionReturnTypeForOptions<OP, true>>;
           }
         }
 
@@ -1218,7 +1218,7 @@ describe("generator", () => {
             batchApplyAction<P extends ReadonlyArray<deleteTodos.Params>, OP extends ApplyBatchActionOptions>(
               args: P,
               options?: OP,
-            ): Promise<ActionReturnTypeForOptions<OP>>;
+            ): Promise<ActionReturnTypeForOptions<OP, true>>;
           }
         }
 
@@ -1294,7 +1294,7 @@ describe("generator", () => {
             batchApplyAction<P extends ReadonlyArray<markTodoCompleted.Params>, OP extends ApplyBatchActionOptions>(
               args: P,
               options?: OP,
-            ): Promise<ActionReturnTypeForOptions<OP>>;
+            ): Promise<ActionReturnTypeForOptions<OP, true>>;
           }
         }
 
@@ -2048,7 +2048,7 @@ describe("generator", () => {
               batchApplyAction<P extends ReadonlyArray<setTaskBody.Params>, OP extends ApplyBatchActionOptions>(
                 args: P,
                 options?: OP,
-              ): Promise<ActionReturnTypeForOptions<OP>>;
+              ): Promise<ActionReturnTypeForOptions<OP, true>>;
             }
           }
 

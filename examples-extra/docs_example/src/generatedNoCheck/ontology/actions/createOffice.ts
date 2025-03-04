@@ -69,7 +69,7 @@ export namespace createOffice {
     batchApplyAction<P extends ReadonlyArray<createOffice.Params>, OP extends ApplyBatchActionOptions>(
       args: P,
       options?: OP,
-    ): Promise<ActionReturnTypeForOptions<OP>>;
+    ): Promise<ActionReturnTypeForOptions<OP, true>>;
   }
 }
 

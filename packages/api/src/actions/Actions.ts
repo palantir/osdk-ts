@@ -23,6 +23,7 @@ import type { OsdkObjectPrimaryKeyType } from "../OsdkObjectPrimaryKeyType.js";
 
 import type {
   ActionResults,
+  BatchActionResults,
   ValidateActionResponseV2,
 } from "./ActionResults.js";
 
@@ -62,8 +63,9 @@ export namespace ActionParam {
    */
   export type InterfaceType<T extends InterfaceDefinition> = {
     $objectType: NonNullable<T["__DefinitionMetadata"]> extends
-      { implementedBy: infer U }
-      ? (U extends ReadonlyArray<string> ? U[number] : string)
+      { implementedBy: infer U } ? (U extends ReadonlyArray<never> ? string
+        : U extends ReadonlyArray<string> ? U[number]
+        : string)
       : string;
     $primaryKey: string | number;
   };
@@ -74,4 +76,5 @@ export namespace ActionParam {
 }
 
 export type ActionEditResponse = ActionResults;
+export type BatchActionEditResponse = BatchActionResults;
 export type ActionValidationResponse = ValidateActionResponseV2;

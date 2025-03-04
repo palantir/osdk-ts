@@ -33,7 +33,7 @@ export namespace deleteOsdkTestObject {
     batchApplyAction<P extends ReadonlyArray<deleteOsdkTestObject.Params>, OP extends ApplyBatchActionOptions>(
       args: P,
       options?: OP,
-    ): Promise<ActionReturnTypeForOptions<OP>>;
+    ): Promise<ActionReturnTypeForOptions<OP, true>>;
   }
 }
 

@@ -115,7 +115,7 @@ export namespace ActionParam {
     export type InterfaceType<T extends InterfaceDefinition> = {
         		$objectType: NonNullable<T["__DefinitionMetadata"]> extends {
             			implementedBy: infer U
-            		} ? (U extends ReadonlyArray<string> ? U[number] : string) : string
+            		} ? (U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string) : string
         		$primaryKey: string | number
         	};
     	// (undocumented)
@@ -130,12 +130,17 @@ export namespace ActionParam {
     export type StructType<T extends Record<string, keyof DataValueClientToWire>> = { [K in keyof T] : DataValueClientToWire[T[K]] };
 }
 
+// Warning: (ae-forgotten-export) The symbol "BatchActionEditResponse" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export type ActionReturnTypeForOptions<Op extends ApplyActionOptions | ApplyBatchActionOptions> = Op extends {
+export type ActionReturnTypeForOptions<
+	Op extends ApplyActionOptions | ApplyBatchActionOptions,
+	IS_BATCH extends boolean = false
+> = Op extends {
     	$validateOnly: true
 } ? ActionValidationResponse : Op extends {
     	$returnEdits: true
-} ? ActionEditResponse : undefined;
+} ? IS_BATCH extends true ? BatchActionEditResponse : ActionEditResponse : undefined;
 
 // Warning: (ae-forgotten-export) The symbol "ValidateActionResponseV2" needs to be exported by the entry point index.d.ts
 //
