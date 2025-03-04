@@ -4,6 +4,7 @@ BACKCOMPAT
 backlink
 Canonicalizer
 codegen
+commitish
 devx
 Discoverability
 duplicative
