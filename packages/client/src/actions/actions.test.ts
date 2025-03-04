@@ -90,7 +90,9 @@ describe("actions", () => {
             "primaryKey": "NYC",
           },
         ],
+        "deletedLinks": [],
         "deletedLinksCount": 0,
+        "deletedObjects": [],
         "deletedObjectsCount": 0,
         "editedObjectTypes": [
           "Office",
@@ -413,7 +415,9 @@ describe("actions", () => {
       {
         "addedLinks": [],
         "addedObjects": [],
+        "deletedLinks": [],
         "deletedLinksCount": 0,
+        "deletedObjects": [],
         "deletedObjectsCount": 0,
         "editedObjectTypes": [
           "Office",
@@ -514,7 +518,9 @@ describe("ActionResponse remapping", () => {
             "primaryKey": "PalantirDev",
           },
         ],
+        "deletedLinks": [],
         "deletedLinksCount": 0,
+        "deletedObjects": [],
         "deletedObjectsCount": 0,
         "editedObjectTypes": [
           "Developer",
@@ -553,7 +559,9 @@ describe("ActionResponse remapping", () => {
             "primaryKey": "PalantirDev",
           },
         ],
+        "deletedLinks": [],
         "deletedLinksCount": 0,
+        "deletedObjects": [],
         "deletedObjectsCount": 0,
         "editedObjectTypes": [
           "Developer",

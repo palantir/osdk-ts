@@ -27,7 +27,9 @@ interface ObjectEdits {
   type: "edits";
   addedObjects: Array<ObjectReference>;
   modifiedObjects: Array<ObjectReference>;
+  deletedObjects?: Array<ObjectReference>;
   addedLinks: Array<LinkReference>;
+  deletedLinks?: Array<LinkReference>;
   deletedObjectsCount: number;
   deletedLinksCount: number;
 }
@@ -35,7 +37,9 @@ interface LargeScaleObjectEdits {
   type: "largeScaleEdits";
   addedObjects?: never;
   modifiedObjects?: never;
+  deletedObjects?: never;
   addedLinks?: never;
+  deletedLinks?: never;
   deletedObjectsCount?: never;
   deletedLinksCount?: never;
 }

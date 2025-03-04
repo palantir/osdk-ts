@@ -272,6 +272,8 @@ export function createClientMockHelper(): MockClientHelper {
             type: "edits",
             addedLinks: x.addedLinks ?? [],
             addedObjects: x.addedObjects ?? [],
+            deletedObjects: x.deletedObjects ?? [],
+            deletedLinks: x.deletedLinks ?? [],
             deletedLinksCount: x.deletedLinksCount ?? 0,
             deletedObjectsCount: x.deletedObjectsCount ?? 0,
             editedObjectTypes: x.editedObjectTypes ?? [],
