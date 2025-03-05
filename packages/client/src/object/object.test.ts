@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import type { InterfaceMetadata, Osdk, PropertyKeys } from "@osdk/api";
+import type {
+  InterfaceDefinition,
+  InterfaceMetadata,
+  Osdk,
+  PropertyKeys,
+} from "@osdk/api";
 import {
   $Objects,
   $ontologyRid,
   Employee,
-  FooInterface,
 } from "@osdk/client.test.ontology";
 import { apiServer, stubData, withoutRid } from "@osdk/shared.test";
 import {
@@ -33,10 +37,9 @@ import {
 import { additionalContext, type Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import type {
-  FetchedObjectTypeDefinition} from "../ontology/OntologyProvider.js";
-import {
-  InterfaceDefinitions,
+  FetchedObjectTypeDefinition,
 } from "../ontology/OntologyProvider.js";
+import { InterfaceDefinitions } from "../ontology/OntologyProvider.js";
 import { createOsdkObject } from "./convertWireToOsdkObjects/createOsdkObject.js";
 
 function asV2Object(o: any, includeRid?: boolean) {
@@ -430,11 +433,20 @@ describe("OsdkObject", () => {
           "fooSpt": {
             type: "string",
           },
+          "notImplementedFooSpt": {
+            type: "string",
+          },
         },
         rid: "",
         type: "interface",
         implements: [],
       } satisfies InterfaceMetadata;
+
+      const fooInterfaceOsdkDef = {
+        apiName: "FooInterface",
+        type: "interface",
+        "__DefinitionMetadata": interfaceDef,
+      } satisfies InterfaceDefinition;
 
       const EmployeeFetchedMetadata = {
         "apiName": "Employee",
@@ -467,7 +479,7 @@ describe("OsdkObject", () => {
       } satisfies FetchedObjectTypeDefinition;
 
       it("Correctly updates the interface and underlying object", () => {
-        const employeePreInterface = createOsdkObject(
+        const employeeOsdkObject = createOsdkObject(
           client[additionalContext],
           EmployeeFetchedMetadata,
           {
@@ -484,8 +496,8 @@ describe("OsdkObject", () => {
           "employeeId" | "fullName"
         >;
 
-        const personInterfaceObject = employeePreInterface.$as(
-          FooInterface,
+        const personInterfaceObject = employeeOsdkObject.$as(
+          fooInterfaceOsdkDef,
         );
 
         const clonedInterface = personInterfaceObject.$clone({
@@ -512,6 +524,33 @@ describe("OsdkObject", () => {
             "fullName": "John Adams",
           }
         `);
+      });
+      it("Throws if updating an interface with a property not implemented by the underlying object type", () => {
+        const employeeOsdkObject = createOsdkObject(
+          client[additionalContext],
+          EmployeeFetchedMetadata,
+          {
+            "$apiName": "Employee",
+            "$objectType": "Employee",
+            "$primaryKey": 50031,
+            "$title": "Jane Doe",
+            "employeeId": 50031,
+            "fullName": "Jane Doe",
+          },
+        ) as Osdk.Instance<
+          Employee,
+          never,
+          "employeeId" | "fullName"
+        >;
+
+        const loadedInterfaceObject = employeeOsdkObject.$as(interfaceDef);
+        expect(() =>
+          loadedInterfaceObject.$clone({
+            "notImplementedFooSpt": "John Adams",
+          })
+        ).toThrowErrorMatchingInlineSnapshot(
+          `[Error: Cannot clone interface with notImplementedFooSpt as property is not implemented by the underlying object type Employee]`,
+        );
       });
     });
   });

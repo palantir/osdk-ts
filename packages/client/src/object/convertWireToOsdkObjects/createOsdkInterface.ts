@@ -112,9 +112,11 @@ export function createOsdkInterface<
     const objDef = underlying[ObjectDefRef];
     const targetPropName =
       objDef.interfaceMap![interfaceDef.apiName][propertyName];
-    // If the underlying object does not implement the SPT, we do not map it
+    // If the underlying object does not implement the SPT, throw errors
     if (targetPropName == null) {
-      return undefined;
+      throw new Error(
+        `Cannot clone interface with ${propertyName} as property is not implemented by the underlying object type ${objDef.apiName}`,
+      );
     }
     return [targetPropName, value];
   }
