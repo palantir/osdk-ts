@@ -24,6 +24,7 @@ import type {
   Augments,
   FetchPageArgs,
   NullabilityAdherence,
+  OrderByType,
   SelectArg,
 } from "../object/FetchPageArgs.js";
 import type { Result } from "../object/Result.js";
@@ -90,15 +91,17 @@ interface FetchPage<
     R extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
+    Z extends OrderByType<Q, L> = {},
   >(
-    args?: FetchPageArgs<Q, L, R, A, S>,
+    args?: FetchPageArgs<Q, L, R, A, S, Z>,
   ) => Promise<
     PageResult<
       Osdk.Instance<
         Q,
         ExtractOptions<R, S>,
         PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
-        { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+        { [K in Extract<keyof RDPs, L>]: RDPs[K] },
+        Z
       >
     >
   >;
@@ -122,8 +125,9 @@ interface FetchPage<
     R extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
+    Z extends OrderByType<Q, L> = {},
   >(
-    args?: FetchPageArgs<Q, L, R, A, S>,
+    args?: FetchPageArgs<Q, L, R, A, S, Z>,
   ) => Promise<
     Result<
       PageResult<
@@ -131,7 +135,8 @@ interface FetchPage<
           Q,
           ExtractOptions<R, S>,
           PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
-          { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+          { [K in Extract<keyof RDPs, L>]: RDPs[K] },
+          Z
         >
       >
     >
@@ -175,14 +180,16 @@ interface AsyncIter<
     R extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
+    Z extends OrderByType<Q, L> = {},
   >(
-    args?: AsyncIterArgs<Q, L, R, A, S>,
+    args?: AsyncIterArgs<Q, L, R, A, S, Z>,
   ) => AsyncIterableIterator<
     Osdk.Instance<
       Q,
       ExtractOptions<R, S>,
       PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
-      { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+      { [K in Extract<keyof RDPs, L>]: RDPs[K] },
+      Z
     >
   >;
 }

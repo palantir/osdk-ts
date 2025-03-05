@@ -24,6 +24,7 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
+  OrderByType,
   Osdk,
   PrimaryKeyType,
   PropertyKeys,
@@ -178,9 +179,10 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherence.Default,
+      Z extends OrderByType<Q, L> = {},
     >(
-      args?: AsyncIterArgs<Q, L, R, A, S>,
-    ): AsyncIterableIterator<SingleOsdkResult<Q, L, R, S>> {
+      args?: AsyncIterArgs<Q, L, R, A, S, Z>,
+    ): AsyncIterableIterator<SingleOsdkResult<Q, L, R, S, {}, Z>> {
       let $nextPageToken: string | undefined = undefined;
       do {
         const result: FetchPageResult<
@@ -200,7 +202,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         $nextPageToken = result.nextPageToken;
 
         for (const obj of result.data) {
-          yield obj as SingleOsdkResult<Q, L, R, S>;
+          yield obj as SingleOsdkResult<Q, L, R, S, {}, Z>;
         }
       } while ($nextPageToken != null);
     },

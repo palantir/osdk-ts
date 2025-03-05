@@ -229,8 +229,9 @@ export interface AsyncIterArgs<
 	K extends PropertyKeys<Q> = PropertyKeys<Q>,
 	R extends boolean = false,
 	A extends Augments = never,
-	S extends NullabilityAdherence = NullabilityAdherence.Default
-> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
+	S extends NullabilityAdherence = NullabilityAdherence.Default,
+	Z extends OrderByType<Q, K> = {}
+> extends SelectArg<Q, K, R, S>, OrderByArg<Q, Z, PropertyKeys<Q>> {
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
 }
@@ -499,8 +500,9 @@ export interface FetchPageArgs<
 	K extends PropertyKeys<Q> = PropertyKeys<Q>,
 	R extends boolean = false,
 	A extends Augments = never,
-	S extends NullabilityAdherence = NullabilityAdherence.Default
-> extends AsyncIterArgs<Q, K, R, A, S> {
+	S extends NullabilityAdherence = NullabilityAdherence.Default,
+	Z extends OrderByType<Q, K> = {}
+> extends AsyncIterArgs<Q, K, R, A, S, Z> {
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
@@ -514,8 +516,9 @@ export type FetchPageResult<
 	Q extends ObjectOrInterfaceDefinition,
 	L extends PropertyKeys<Q>,
 	R extends boolean,
-	S extends NullabilityAdherence
-> = PageResult<PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S>> : Osdk.Instance<Q, ExtractOptions<R, S>, L>>;
+	S extends NullabilityAdherence,
+	Z extends OrderByType<Q, L> = {}
+> = PageResult<PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S>, PropertyKeys<Q>, {}, Z> : Osdk.Instance<Q, ExtractOptions<R, S>, L, {}, Z>>;
 
 // @public (undocumented)
 export type FilteredPropertyKeys<
@@ -826,6 +829,12 @@ export interface OntologyMetadata<_NEVER_USED_KEPT_FOR_BACKCOMPAT = any> {
     userAgent: string;
 }
 
+// @public (undocumented)
+export type OrderByType<
+	Q extends ObjectOrInterfaceDefinition,
+	L extends PropertyKeys<Q> = PropertyKeys<Q>
+> = { [K in L]? : "asc" | "desc" } | "relevance";
+
 // Warning: (ae-forgotten-export) The symbol "IsNever" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "IsAny" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ExtractPropsKeysFromOldPropsStyle" needs to be exported by the entry point index.d.ts
@@ -846,14 +855,17 @@ export namespace Osdk {
     		Q extends ObjectOrInterfaceDefinition,
     		OPTIONS extends never | "$rid" = never,
     		P extends PropertyKeys<Q> = PropertyKeys<Q>,
-    		R extends Record<string, SimplePropertyDef> = {}
+    		R extends Record<string, SimplePropertyDef> = {},
+    		Z extends OrderByType<Q, P> = {}
     	> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
         		readonly $link: Q extends {
             			linksType?: any
             		} ? Q["linksType"] : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q> : never
         		readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P>>
         		readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(updatedObject?: Osdk.Instance<Q, any, NEW_PROPS> | { [K in NEW_PROPS]? : CompileTimeMetadata<Q>["props"][K] }) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>
-        	} & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
+        	} & (Z extends "relevance" ? {
+        		readonly $score: number
+        	} : {}) & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
         		readonly $rid: string
         	} : {});
 }
@@ -864,7 +876,6 @@ export type OsdkBase<Q extends ObjectOrInterfaceDefinition> = {
     	readonly $objectType: string
     	readonly $primaryKey: PrimaryKeyType<Q>
     	readonly $title: string | undefined
-    	readonly $score?: number | undefined
 };
 
 // @public @deprecated (undocumented)
