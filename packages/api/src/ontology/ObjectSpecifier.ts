@@ -21,7 +21,7 @@ import type {
 import type { ObjectOrInterfaceDefinition } from "./ObjectOrInterface.js";
 
 export type ObjectSpecifier<Q extends ObjectOrInterfaceDefinition> = string & {
-  __apiName?:
+  __apiName:
     | Q["apiName"]
     | (Q extends InterfaceDefinition
       ? NonNullable<Q["__DefinitionMetadata"]> extends InterfaceMetadata

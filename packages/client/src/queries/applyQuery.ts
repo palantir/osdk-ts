@@ -217,7 +217,11 @@ async function remapQueryResponse<
         invariant(entry.key, "Expected key");
         invariant(entry.value, "Expected value");
         const key = responseDataType.keyType.type === "object"
-          ? getObjectId(entry.key, responseDataType.keyType.object, definitions)
+          ? getObjectSpecifier(
+            entry.key,
+            responseDataType.keyType.object,
+            definitions,
+          )
           : entry.key;
         const value = await remapQueryResponse(
           client,
@@ -356,7 +360,7 @@ function requiresConversion(dataType: QueryDataTypeDefinition) {
   }
 }
 
-function getObjectId(
+function getObjectSpecifier(
   primaryKey: any,
   objectTypeApiName: string,
   definitions: Map<string, ObjectOrInterfaceDefinition>,
