@@ -29,6 +29,7 @@ export default function CreateTodoForm() {
             title,
             id,
             isComplete: false,
+            location: undefined,
           });
         },
       });
