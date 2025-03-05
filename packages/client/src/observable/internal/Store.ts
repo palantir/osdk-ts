@@ -409,7 +409,7 @@ export class Store implements ObservableClient {
         onChange({ object, state }) {
           if (process.env.NODE_ENV !== "production") {
             store.logger?.debug(
-              { methodName: "onError" },
+              { methodName: "onChange" },
               "updates",
               state,
               object,
