@@ -1,5 +1,11 @@
 # @osdk/tool.release
 
+## 0.7.0-beta.2
+
+### Minor Changes
+
+- 21e33a5: Upgrade consola to 3.4.0
+
 ## 0.6.0-beta.5
 
 ### Minor Changes

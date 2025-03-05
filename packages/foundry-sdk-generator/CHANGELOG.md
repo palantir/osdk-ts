@@ -1,5 +1,24 @@
 # @osdk/foundry-sdk-generator
 
+## 2.2.0-beta.7
+
+### Minor Changes
+
+- 21e33a5: Upgrade consola to 3.4.0
+- 7416ce4: Update Platform SDK Dependencies
+- 5774599: Fix resolution of new action parameter type.
+
+### Patch Changes
+
+- Updated dependencies [7416ce4]
+- Updated dependencies [21e33a5]
+- Updated dependencies [7416ce4]
+- Updated dependencies [879b6c3]
+- Updated dependencies [805df40]
+  - @osdk/client@2.2.0-beta.7
+  - @osdk/api@2.2.0-beta.7
+  - @osdk/generator@2.2.0-beta.7
+
 ## 2.2.0-beta.6
 
 ### Patch Changes

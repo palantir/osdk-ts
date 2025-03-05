@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 2.2.0-beta.7
+
+### Minor Changes
+
+- 7416ce4: Adds deleted objects and links returned from applyAction
+- 7416ce4: Update Platform SDK Dependencies
+- 805df40: Fix interface action types.
+
 ## 2.2.0-beta.6
 
 ### Minor Changes

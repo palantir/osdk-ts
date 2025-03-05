@@ -1,5 +1,21 @@
 # @osdk/generator
 
+## 2.2.0-beta.7
+
+### Minor Changes
+
+- 21e33a5: Upgrade consola to 3.4.0
+- 7416ce4: Update Platform SDK Dependencies
+- 805df40: Fix interface action types.
+
+### Patch Changes
+
+- Updated dependencies [7416ce4]
+- Updated dependencies [7416ce4]
+- Updated dependencies [805df40]
+  - @osdk/api@2.2.0-beta.7
+  - @osdk/generator-converters@2.2.0-beta.7
+
 ## 2.2.0-beta.6
 
 ### Minor Changes
