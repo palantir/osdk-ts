@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import type { Osdk, PropertyKeys } from "@osdk/api";
-import { $Objects, $ontologyRid, Employee } from "@osdk/client.test.ontology";
+import type { InterfaceMetadata, Osdk, PropertyKeys } from "@osdk/api";
+import {
+  $Objects,
+  $ontologyRid,
+  Employee,
+  FooInterface,
+} from "@osdk/client.test.ontology";
 import { apiServer, stubData, withoutRid } from "@osdk/shared.test";
 import {
   afterAll,
@@ -27,6 +32,11 @@ import {
 } from "vitest";
 import { additionalContext, type Client } from "../Client.js";
 import { createClient } from "../createClient.js";
+import type {
+  FetchedObjectTypeDefinition} from "../ontology/OntologyProvider.js";
+import {
+  InterfaceDefinitions,
+} from "../ontology/OntologyProvider.js";
 import { createOsdkObject } from "./convertWireToOsdkObjects/createOsdkObject.js";
 
 function asV2Object(o: any, includeRid?: boolean) {
@@ -410,6 +420,99 @@ describe("OsdkObject", () => {
           "employeeId": 50035,
         })
       ).toThrow();
+    });
+    describe("interface", () => {
+      const interfaceDef = {
+        apiName: "FooInterface",
+        displayName: "",
+        links: {},
+        properties: {
+          "fooSpt": {
+            type: "string",
+          },
+        },
+        rid: "",
+        type: "interface",
+        implements: [],
+      } satisfies InterfaceMetadata;
+
+      const EmployeeFetchedMetadata = {
+        "apiName": "Employee",
+        "primaryKeyType": "integer",
+        "primaryKeyApiName": "employeeId",
+        "properties": {
+          "employeeId": { "type": "integer" },
+          "fullName": { "type": "string" },
+        },
+        interfaceMap: {
+          "FooInterface": {
+            "fooSpt": "fullName",
+          },
+        },
+        inverseInterfaceMap: {
+          "FooInterface": {
+            "fullName": "fooSpt",
+          },
+        },
+        [InterfaceDefinitions]: {
+          "FooInterface": { def: interfaceDef },
+        },
+        type: "object",
+        titleProperty: "fullName",
+        pluralDisplayName: "",
+        status: "ACTIVE",
+        displayName: "",
+        links: {},
+        rid: "",
+      } satisfies FetchedObjectTypeDefinition;
+
+      it("Correctly updates the interface and underlying object", () => {
+        const employeePreInterface = createOsdkObject(
+          client[additionalContext],
+          EmployeeFetchedMetadata,
+          {
+            "$apiName": "Employee",
+            "$objectType": "Employee",
+            "$primaryKey": 50031,
+            "$title": "Jane Doe",
+            "employeeId": 50031,
+            "fullName": "Jane Doe",
+          },
+        ) as Osdk.Instance<
+          Employee,
+          never,
+          "employeeId" | "fullName"
+        >;
+
+        const personInterfaceObject = employeePreInterface.$as(
+          FooInterface,
+        );
+
+        const clonedInterface = personInterfaceObject.$clone({
+          "fooSpt": "John Adams",
+        });
+
+        expect(clonedInterface).toMatchInlineSnapshot(`
+          {
+            "$apiName": "FooInterface",
+            "$objectType": "Employee",
+            "$primaryKey": 50031,
+            "$title": "John Adams",
+            "fooSpt": "John Adams",
+          }
+        `);
+
+        expect(clonedInterface.$as("Employee")).toMatchInlineSnapshot(`
+          {
+            "$apiName": "Employee",
+            "$objectType": "Employee",
+            "$primaryKey": 50031,
+            "$title": "John Adams",
+            "employeeId": 50031,
+            "fullName": "John Adams",
+          }
+        `);
+      });
     });
   });
 });

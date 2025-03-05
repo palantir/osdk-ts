@@ -197,11 +197,11 @@ export async function convertWireToOsdkObjects2(
  * Utility function that lets us take down selected property names from an interface
  * and convert them to an array of property names on an object.
  */
-function convertInterfacePropNamesToObjectPropNames(
+export function convertInterfacePropNamesToObjectPropNames(
   objectDef: FetchedObjectTypeDefinition & { interfaceMap: {} },
   interfaceApiName: string,
   ifacePropsToMap: readonly string[],
-) {
+): string[] {
   return ifacePropsToMap.map((ifaceProp) =>
     objectDef.interfaceMap[interfaceApiName][ifaceProp]
   );
