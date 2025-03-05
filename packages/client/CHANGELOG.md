@@ -1,5 +1,23 @@
 # @osdk/client
 
+## 2.2.0-beta.7
+
+### Minor Changes
+
+- 7416ce4: Adds deleted objects and links returned from applyAction
+- 7416ce4: Update Platform SDK Dependencies
+- 879b6c3: Include a more descriptive error message for multiple filters on a single property filter clause
+- 805df40: Fix interface action types.
+
+### Patch Changes
+
+- Updated dependencies [7416ce4]
+- Updated dependencies [7416ce4]
+- Updated dependencies [805df40]
+  - @osdk/api@2.2.0-beta.7
+  - @osdk/generator-converters@2.2.0-beta.7
+  - @osdk/client.unstable@2.2.0-beta.7
+
 ## 2.2.0-beta.6
 
 ### Minor Changes
