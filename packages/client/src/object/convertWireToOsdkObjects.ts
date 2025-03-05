@@ -194,14 +194,16 @@ export async function convertWireToOsdkObjects2(
 }
 
 /**
+ * @internal
+ *
  * Utility function that lets us take down selected property names from an interface
  * and convert them to an array of property names on an object.
  */
-function convertInterfacePropNamesToObjectPropNames(
-  objectDef: FetchedObjectTypeDefinition & { interfaceMap: {} },
+export function convertInterfacePropNamesToObjectPropNames(
+  objectDef: FetchedObjectTypeDefinition,
   interfaceApiName: string,
   ifacePropsToMap: readonly string[],
-) {
+): string[] {
   return ifacePropsToMap.map((ifaceProp) =>
     objectDef.interfaceMap[interfaceApiName][ifaceProp]
   );
@@ -216,7 +218,7 @@ function convertInterfacePropNamesToObjectPropNames(
  * @param rawObj
  */
 function reframeAsObjectInPlace(
-  objectDef: FetchedObjectTypeDefinition & { interfaceMap: {} },
+  objectDef: FetchedObjectTypeDefinition,
   interfaceApiName: string,
   rawObj: OntologyObjectV2,
 ) {

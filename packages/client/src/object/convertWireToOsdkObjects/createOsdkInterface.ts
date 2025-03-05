@@ -60,6 +60,10 @@ export function createOsdkInterface<
         value: (underlying as any).$rid,
         enumerable: "$rid" in underlying,
       },
+      "$clone": {
+        value: clone,
+        enumerable: false,
+      },
 
       [InterfaceDefRef]: { value: interfaceDef },
 
@@ -80,4 +84,37 @@ export function createOsdkInterface<
       ),
     }) as InterfaceHolder<any> & Osdk<any>,
   );
+  function clone(update: Record<string, any> | undefined) {
+    if (update == null) {
+      return underlying.$clone().$as(interfaceDef);
+    }
+
+    for (const key of Object.keys(update)) {
+      if (!(key in interfaceDef.properties)) {
+        throw new Error(
+          `Invalid property ${key} for interface ${interfaceDef.apiName}`,
+        );
+      }
+    }
+
+    const remappedProps = Object.fromEntries(
+      Object.keys(update).map(p => mapProperty(p, update[p])).filter(x =>
+        x != null
+      ),
+    );
+
+    return underlying.$clone(remappedProps).$as(interfaceDef);
+  }
+  function mapProperty(propertyName: string, value: any) {
+    const objDef = underlying[ObjectDefRef];
+    const targetPropName =
+      objDef.interfaceMap![interfaceDef.apiName][propertyName];
+    // If the underlying object does not implement the SPT, throw errors
+    if (targetPropName == null) {
+      throw new Error(
+        `Cannot clone interface with ${propertyName} as property is not implemented by the underlying object type ${objDef.apiName}`,
+      );
+    }
+    return [targetPropName, value];
+  }
 }
