@@ -345,7 +345,7 @@ export class ListQuery extends Query<
   ): Promise<void> | undefined => {
     if (process.env.NODE_ENV !== "production") {
       this.logger?.info(
-        { methodName: "#maybeMaybe" },
+        { methodName: "#maybeUpdateAndRevalidate" },
         DEBUG_ONLY__changesToString(changes),
       );
     }
@@ -506,7 +506,7 @@ export class ListQuery extends Query<
     } finally {
       if (process.env.NODE_ENV !== "production") {
         this.logger?.trace(
-          { methodName: "#maybeMaybe" },
+          { methodName: "#maybeUpdateAndRevalidate" },
           "in finally",
         );
       }
