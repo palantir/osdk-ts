@@ -140,6 +140,60 @@
     }
   },
   "queryTypes": {},
-  "interfaceTypes": {},
+  "interfaceTypes": {
+    "TodoLike": {
+      "rid": "ri.ontology.main.interface.fe6b2917-915d-4952-b89d-1231dad224e0",
+      "apiName": "TodoLike",
+      "displayName": "TodoLike",
+      "description": "",
+      "properties": {
+        "name": {
+          "rid": "ri.ontology.main.shared-property.f709f271-4788-4120-a8fb-b9e4166967c5",
+          "apiName": "name",
+          "displayName": "Name",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "isComplete": {
+          "rid": "ri.ontology.main.shared-property.99e85c50-c360-473e-951b-2bb919418aaf",
+          "apiName": "isComplete",
+          "displayName": "isComplete",
+          "dataType": {
+            "type": "boolean"
+          },
+          "required": true
+        }
+      },
+      "allProperties": {
+        "name": {
+          "rid": "ri.ontology.main.shared-property.f709f271-4788-4120-a8fb-b9e4166967c5",
+          "apiName": "name",
+          "displayName": "Name",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "isComplete": {
+          "rid": "ri.ontology.main.shared-property.99e85c50-c360-473e-951b-2bb919418aaf",
+          "apiName": "isComplete",
+          "displayName": "isComplete",
+          "dataType": {
+            "type": "boolean"
+          },
+          "required": true
+        }
+      },
+      "extendsInterfaces": [],
+      "allExtendsInterfaces": [],
+      "implementedByObjectTypes": [
+        "Todo"
+      ],
+      "links": {},
+      "allLinks": {}
+    }
+  },
   "sharedPropertyTypes": {}
 }

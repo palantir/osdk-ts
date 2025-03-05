@@ -1,1 +1,1 @@
-export {};
+export { TodoLike } from './interfaces/TodoLike.js';
