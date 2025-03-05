@@ -15,7 +15,6 @@
  */
 
 import type { CompileTimeMetadata, ObjectTypeDefinition } from "@osdk/api";
-import type { EditScopeBuilder } from "./EditScopeBuilder.js";
 import type {
   AddLink,
   AnyEdit,
@@ -25,48 +24,28 @@ import type {
   UpdateObject,
 } from "./types.js";
 
-class NoopEditScopeBuilder<T extends AnyEdit = never>
-  implements EditScopeBuilder<T>
-{
-  public link<
+export interface EditScopeBuilder<T extends AnyEdit = never> {
+  link: <
     S extends ObjectTypeDefinition,
     L extends keyof CompileTimeMetadata<S>["links"],
-  >(_s: S, _l: L): EditScopeBuilder<T | AddLink<S, L>> {
-    return this;
-  }
+  >(s: S, l: L) => EditScopeBuilder<T | AddLink<S, L>>;
 
-  public unlink<
+  unlink: <
     S extends ObjectTypeDefinition,
     L extends keyof CompileTimeMetadata<S>["links"],
-  >(_s: S, _l: L): EditScopeBuilder<T | RemoveLink<S, L>> {
-    return this;
-  }
+  >(s: S, l: L) => EditScopeBuilder<T | RemoveLink<S, L>>;
 
-  public create<S extends ObjectTypeDefinition>(
-    _s: S,
-  ): EditScopeBuilder<T | CreateObject<S>> {
-    return this;
-  }
-
-  public delete<S extends ObjectTypeDefinition>(
+  create: <S extends ObjectTypeDefinition>(
     s: S,
-  ): EditScopeBuilder<T | DeleteObject<S>> {
-    return this;
-  }
+  ) => EditScopeBuilder<T | CreateObject<S>>;
 
-  public update<S extends ObjectTypeDefinition>(
+  delete: <S extends ObjectTypeDefinition>(
     s: S,
-  ): EditScopeBuilder<T | UpdateObject<S>> {
-    return this;
-  }
+  ) => EditScopeBuilder<T | DeleteObject<S>>;
 
-  public build(): T[] {
-    return [];
-  }
+  update: <S extends ObjectTypeDefinition>(
+    s: S,
+  ) => EditScopeBuilder<T | UpdateObject<S>>;
+
+  build: () => T[];
 }
-
-function buildEditScope(): EditScopeBuilder {
-  return new NoopEditScopeBuilder();
-}
-
-export { buildEditScope };
