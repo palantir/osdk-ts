@@ -51,7 +51,7 @@
     "latest-version": "^9.0.0",
     "octokit": "^4.1.2",
     "p-filter": "^4.1.0",
-    "p-map": "^7.0.2",
+    "p-map": "^7.0.3",
     "package-json": "^10.0.0",
     "pkg-versions": "^4.0.0",
     "resolve-from": "^5.0.0",
