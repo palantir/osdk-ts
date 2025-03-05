@@ -85,8 +85,11 @@ export abstract class Query<
   }
 
   revalidate(force?: boolean): Promise<unknown> {
+    const logger = process.env.NODE_ENV !== "production"
+      ? this.logger?.child({ methodName: "revalidate" })
+      : this.logger;
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.info({ methodName: "revalidate" });
+      logger?.info("");
     }
 
     if (force) {
@@ -106,7 +109,7 @@ export abstract class Query<
       )
     ) {
       if (process.env.NODE_ENV !== "production") {
-        this.logger?.trace({ methodName: "revalidate" }, "DEDUPE");
+        logger?.debug("DEDUPE");
       }
 
       return Promise.resolve();
@@ -121,20 +124,20 @@ export abstract class Query<
     this.lastFetchStarted = Date.now();
 
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.trace({ methodName: "revalidate" }, "calling _fetch()");
+      logger?.debug("calling _fetch()");
     }
     this.pendingFetch = this._fetch()
       .catch((e) => {
-        this.logger?.error({ methodName: "revalidate" }, "_fetch() FAILED", e);
+        logger?.error("_fetch() FAILED", e);
         throw e;
       })
       .finally(() => {
-        this.logger?.info({ methodName: "revalidate" }, "finally _fetch()");
+        logger?.info("finally _fetch()");
         this.pendingFetch = undefined;
       });
 
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.info({ methodName: "revalidate" }, "Returning");
+      logger?.info("Returning");
     }
 
     return this.pendingFetch;
@@ -148,7 +151,7 @@ export abstract class Query<
     batch: BatchContext,
   ): void {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.trace({ methodName: "setStatus" }, status);
+      this.logger?.child({ methodName: "setStatus" }).debug(status);
     }
     const existing = batch.read(this.cacheKey);
     if (existing?.status === status) return;

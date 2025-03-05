@@ -373,6 +373,9 @@ export class Store implements ObservableClient {
     options: ObserveListOptions<T>,
     subFn: Observer<ListPayload>,
   ): Unsubscribable {
+    const logger = process.env.NODE_ENV !== "production"
+      ? this.logger?.child({ methodName: "observeList" })
+      : this.logger;
     // the ListQuery represents the shared state of the list
     const query = this.getListQuery(
       options.type,
@@ -408,8 +411,7 @@ export class Store implements ObservableClient {
       const websocketSubscription = objectSet.subscribe({
         onChange({ object, state }) {
           if (process.env.NODE_ENV !== "production") {
-            store.logger?.debug(
-              { methodName: "onChange" },
+            logger?.child({ methodName: "onChange" }).debug(
               "updates",
               state,
               object,
@@ -473,15 +475,15 @@ export class Store implements ObservableClient {
                 // we don't leave things in a bad state.
 
                 if (process.env.NODE_ENV !== "production") {
-                  store.logger?.info(
+                  logger?.info(
                     "Removing an object from an object list that is in the middle of being loaded.",
                     existing,
                   );
                 }
 
                 query.revalidate(/* force */ true).catch((e) => {
-                  if (store.logger) {
-                    store.logger?.error(
+                  if (logger) {
+                    logger?.error(
                       "Uncaught error while revalidating list",
                       e,
                     );
@@ -500,8 +502,7 @@ export class Store implements ObservableClient {
 
         onError(errors) {
           if (process.env.NODE_ENV !== "production") {
-            store.logger?.info(
-              { methodName: "onError" },
+            logger?.child({ methodName: "onError" }).info(
               "subscription errors",
               errors,
             );
@@ -510,25 +511,24 @@ export class Store implements ObservableClient {
 
         onOutOfDate() {
           if (process.env.NODE_ENV !== "production") {
-            store.logger?.info(
+            logger?.child(
               { methodName: "onOutOfDate" },
-            );
+            ).info("");
           }
         },
 
         onSuccessfulSubscription() {
           if (process.env.NODE_ENV !== "production") {
-            store.logger?.info(
+            logger?.child(
               { methodName: "onSuccessfulSubscription" },
-            );
+            ).debug("");
           }
         },
       });
 
       sub.add(() => {
         if (process.env.NODE_ENV !== "production") {
-          store.logger?.info(
-            { methodName: "observeList" },
+          logger?.child({ methodName: "observeList" }).info(
             "Unsubscribing from websocket",
           );
         }
@@ -734,8 +734,7 @@ export class Store implements ObservableClient {
   ): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
       // todo
-      this.logger?.trace(
-        { methodName: "maybeRevalidateList" },
+      this.logger?.child({ methodName: "maybeRevalidateList" }).debug(
         DEBUG_ONLY__changesToString(changes),
       );
     }
@@ -755,8 +754,7 @@ export class Store implements ObservableClient {
     } finally {
       if (process.env.NODE_ENV !== "production") {
         // todo
-        this.logger?.trace(
-          { methodName: "maybeRevalidateList" },
+        this.logger?.child({ methodName: "maybeRevalidateList" }).debug(
           "in finally",
           DEBUG_ONLY__changesToString(changes),
         );
@@ -769,8 +767,7 @@ export class Store implements ObservableClient {
     optimisticId: OptimisticId | undefined,
   ): Promise<(void | undefined)[]> {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.trace(
-        { methodName: "maybeUpdateLists" },
+      this.logger?.child({ methodName: "maybeUpdateLists" }).debug(
         DEBUG_ONLY__changesToString(changes),
         { optimisticId },
       );
@@ -807,8 +804,7 @@ export class Store implements ObservableClient {
       apiName = apiName.apiName;
     }
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.info(
-        { methodName: "invalidateObjectType" },
+      this.logger?.child({ methodName: "invalidateObjectType" }).info(
         changes ? DEBUG_ONLY__changesToString(changes) : void 0,
       );
     }
@@ -905,8 +901,7 @@ export class Store implements ObservableClient {
     opts: ListQueryOptions = { dedupeInterval: 0 },
   ): void {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.info(
-        { methodName: "updateList" },
+      this.logger?.child({ methodName: "updateList" }).info(
         "",
         { optimisticId },
       );

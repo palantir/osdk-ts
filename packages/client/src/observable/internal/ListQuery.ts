@@ -344,8 +344,7 @@ export class ListQuery extends Query<
     optimisticId: OptimisticId | undefined,
   ): Promise<void> | undefined => {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.info(
-        { methodName: "#maybeUpdateAndRevalidate" },
+      this.logger?.child({ methodName: "#maybeUpdateAndRevalidate" }).info(
         DEBUG_ONLY__changesToString(changes),
       );
     }
@@ -505,10 +504,9 @@ export class ListQuery extends Query<
       return undefined;
     } finally {
       if (process.env.NODE_ENV !== "production") {
-        this.logger?.trace(
+        this.logger?.child(
           { methodName: "#maybeUpdateAndRevalidate" },
-          "in finally",
-        );
+        ).debug("in finally");
       }
     }
   };
@@ -519,9 +517,11 @@ export class ListQuery extends Query<
     status: Status,
     batch: BatchContext,
   ): Entry<ListCacheKey> {
+    const logger = process.env.NODE_ENV !== "production"
+      ? this.logger?.child({ methodName: "updateList" })
+      : this.logger;
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.trace(
-        { methodName: "updateList" },
+      logger?.debug(
         `{status: ${status}}`,
         JSON.stringify(objectCacheKeys, null, 2),
       );
@@ -556,8 +556,8 @@ export class ListQuery extends Query<
 
     if (Object.keys(this.#orderBy).length > 0) {
       if (process.env.NODE_ENV !== "production") {
-        this.logger?.info({ methodName: "updateList" }, "Sorting entries");
-        this.logger?.trace(
+        logger?.info({ methodName: "updateList" }, "Sorting entries");
+        logger?.debug(
           { methodName: "updateList" },
           DEBUG_ONLY__cacheKeysToString(objectCacheKeys),
         );
@@ -617,8 +617,7 @@ export class ListQuery extends Query<
     batch: BatchContext,
   ): Entry<ListCacheKey> {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.trace(
-        { methodName: "writeToStore" },
+      this.logger?.child({ methodName: "writeToStore" }).debug(
         `{status: ${status}},`,
         DEBUG_ONLY__cacheKeysToString(data.data),
       );

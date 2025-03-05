@@ -130,7 +130,7 @@ export class ObjectQuery extends Query<
     batch: BatchContext,
   ): Entry<ObjectCacheKey> {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.trace(
+      this.logger?.debug(
         { methodName: "writeToStore" },
         `{status: ${status}},`,
         data,
