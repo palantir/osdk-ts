@@ -1,5 +1,28 @@
 # @osdk/api
 
+## 2.2.0-beta.6
+
+### Minor Changes
+
+- cddfbf9: Adds default value option to group by
+- a6e5f89: Changes count, exactDistinct, and approximateDistinct to be non-nullable
+
+## 2.2.0-beta.5
+
+## 2.2.0-beta.4
+
+## 2.2.0-beta.3
+
+### Minor Changes
+
+- 761e69d: Added type safety to createMediaReference
+
+## 2.2.0-beta.2
+
+### Minor Changes
+
+- fccd9ac: "Allow selecting derived properties"
+
 ## 2.1.0-beta.31
 
 ### Minor Changes

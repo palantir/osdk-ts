@@ -22,7 +22,9 @@ import type {
 } from "@osdk/api";
 
 export interface OptimisticBuilder {
-  updateObject: (value: Osdk.Instance<ObjectTypeDefinition>) => this;
+  updateObject: <T extends ObjectTypeDefinition>(
+    value: Osdk.Instance<T>,
+  ) => this;
   createObject: <T extends ObjectTypeDefinition>(
     type: T,
     primaryKey: PrimaryKeyType<T>,

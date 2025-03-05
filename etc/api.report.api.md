@@ -115,7 +115,7 @@ export namespace ActionParam {
     export type InterfaceType<T extends InterfaceDefinition> = {
         		$objectType: NonNullable<T["__DefinitionMetadata"]> extends {
             			implementedBy: infer U
-            		} ? (U extends ReadonlyArray<string> ? U[number] : string) : string
+            		} ? (U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string) : string
         		$primaryKey: string | number
         	};
     	// (undocumented)
@@ -516,6 +516,12 @@ export type FetchPageResult<
 	R extends boolean,
 	S extends NullabilityAdherence
 > = PageResult<PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S>> : Osdk.Instance<Q, ExtractOptions<R, S>, L>>;
+
+// @public (undocumented)
+export type FilteredPropertyKeys<
+	O extends ObjectOrInterfaceDefinition,
+	T extends WirePropertyTypes
+> = { [K in keyof NonNullable<O["__DefinitionMetadata"]>["properties"]] : NonNullable<O["__DefinitionMetadata"]>["properties"][K]["type"] extends T ? K : never }[keyof NonNullable<O["__DefinitionMetadata"]>["properties"]];
 
 // @public (undocumented)
 export type GeoFilter_Intersects = {

@@ -28,6 +28,7 @@ import {
   createFooInterface,
   createOffice,
   createStructPerson,
+  deleteBarInterface,
   deleteFooInterface,
   moveOffice,
 } from "@osdk/client.test.ontology";
@@ -90,7 +91,9 @@ describe("actions", () => {
             "primaryKey": "NYC",
           },
         ],
+        "deletedLinks": [],
         "deletedLinksCount": 0,
+        "deletedObjects": [],
         "deletedObjectsCount": 0,
         "editedObjectTypes": [
           "Office",
@@ -360,6 +363,40 @@ describe("actions", () => {
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
     expect(result).toBeUndefined();
   });
+  it("Accepts interfaces if implementing object types unknown", async () => {
+    const clientBoundTakesInterface = client(
+      deleteBarInterface,
+    ).applyAction;
+
+    type InferredParamType = Parameters<
+      typeof clientBoundTakesInterface
+    >[0];
+
+    expectTypeOf<
+      {
+        deletedInterface: {
+          $objectType: string;
+          $primaryKey: string | number;
+        };
+      }
+    >().toMatchTypeOf<
+      InferredParamType
+    >();
+
+    const clientBoundBatchActionTakesInterface = client(
+      deleteBarInterface,
+    ).batchApplyAction;
+    type InferredBatchParamType = Parameters<
+      typeof clientBoundBatchActionTakesInterface
+    >[0];
+
+    expectTypeOf<{
+      deletedInterface: {
+        $objectType: string;
+        $primaryKey: string | number;
+      };
+    }[]>().toMatchTypeOf<InferredBatchParamType>();
+  });
   it("Accepts object type refs", async () => {
     const clientBoundTakesObjectType = client(
       createFooInterface,
@@ -413,7 +450,9 @@ describe("actions", () => {
       {
         "addedLinks": [],
         "addedObjects": [],
+        "deletedLinks": [],
         "deletedLinksCount": 0,
+        "deletedObjects": [],
         "deletedObjectsCount": 0,
         "editedObjectTypes": [
           "Office",
@@ -452,9 +491,19 @@ describe("ActionResponse remapping", () => {
         "linkTypeApiNameBtoA": "test",
         "bSideObject": { "primaryKey": "key2", "objectType": "Employee" },
         "type": "addLink",
+      }, {
+        "objectType": "Developer",
+        "primaryKey": "PalantirDev",
+        "type": "deleteObject",
+      }, {
+        "aSideObject": { "primaryKey": "key1", "objectType": "Office" },
+        "linkTypeApiNameAtoB": "test",
+        "linkTypeApiNameBtoA": "test",
+        "bSideObject": { "primaryKey": "key2", "objectType": "Employee" },
+        "type": "deleteLink",
       }],
       deletedLinksCount: 0,
-      deletedObjectsCount: 0,
+      deletedObjectsCount: 1,
       addedObjectCount: 1,
       modifiedObjectsCount: 1,
       addedLinksCount: 1,
@@ -514,8 +563,28 @@ describe("ActionResponse remapping", () => {
             "primaryKey": "PalantirDev",
           },
         ],
+        "deletedLinks": [
+          {
+            "aSideObject": {
+              "objectType": "Office",
+              "primaryKey": "key1",
+            },
+            "bSideObject": {
+              "objectType": "Employee",
+              "primaryKey": "key2",
+            },
+            "linkTypeApiNameAtoB": "test",
+            "linkTypeApiNameBtoA": "test",
+          },
+        ],
         "deletedLinksCount": 0,
-        "deletedObjectsCount": 0,
+        "deletedObjects": [
+          {
+            "objectType": "Developer",
+            "primaryKey": "PalantirDev",
+          },
+        ],
+        "deletedObjectsCount": 1,
         "editedObjectTypes": [
           "Developer",
           "Contractor",
@@ -553,7 +622,9 @@ describe("ActionResponse remapping", () => {
             "primaryKey": "PalantirDev",
           },
         ],
+        "deletedLinks": [],
         "deletedLinksCount": 0,
+        "deletedObjects": [],
         "deletedObjectsCount": 0,
         "editedObjectTypes": [
           "Developer",
@@ -581,6 +652,7 @@ describe("ActionResponse remapping", () => {
       "createOffice",
       "createOfficeAndEmployee",
       "createStructPerson",
+      "deleteBarInterface",
       "deleteFooInterface",
       "moveOffice",
       "promoteEmployee",

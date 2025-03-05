@@ -172,7 +172,7 @@ export default tseslint.config(
       "@typescript-eslint/no-unsafe-return": "off",
       "@typescript-eslint/no-unsafe-argument": "off",
       "prefer-const": "warn",
-      "@typescript-eslint/no-unsafe-call": "warn",
+      "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-confusing-void-expression": ["warn", {
         ignoreArrowShorthand: true,
         ignoreVoidOperator: true,
@@ -205,6 +205,8 @@ export default tseslint.config(
       "@typescript-eslint/no-unsafe-argument": "off",
       "@typescript-eslint/no-base-to-string": "off",
       // "@typescript-eslint/prefer-const": "warn",
+
+      "eslint@typescript-eslint/require-await": "off",
 
       // rules that should be enabled but I dont want a massive delta yet
       "@typescript-eslint/await-thenable": "warn",

@@ -29,6 +29,7 @@ import type {
 
 namespace Employee {
   export type PropertyKeys =
+    | "employeeId"
     | "fullName"
     | "class";
 
@@ -40,6 +41,7 @@ namespace Employee {
   export interface Props {
     readonly class: $PropType["string"] | undefined;
     readonly fullName: $PropType["string"] | undefined;
+    readonly employeeId: $PropType["integer"] | undefined;
   }
   export type StrictProps = Props;
 
@@ -83,6 +85,7 @@ interface Employee extends $ObjectTypeDefinition {
     properties: {
       class: $PropertyDef<"string", "nullable", "single">;
       fullName: $PropertyDef<"string", "nullable", "single">;
+      employeeId: $PropertyDef<"integer", "nullable", "single">;
     };
     rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44";
     status: "ACTIVE";
@@ -137,7 +140,7 @@ describe("ObjectSet", () => {
 
       expectTypeOf(withA).toEqualTypeOf<
         $ObjectSet<Employee, {
-          a: "integer" | undefined;
+          a: "integer";
         }>
       >();
 
@@ -145,12 +148,12 @@ describe("ObjectSet", () => {
 
       expectTypeOf<typeof withAResults["data"][0]>().toEqualTypeOf<
         Osdk.Instance<Employee, never, PropertyKeys<Employee>, {
-          a: "integer" | undefined;
+          a: "integer";
         }>
       >();
 
       expectTypeOf<typeof withAResults["data"][0]["a"]>()
-        .toEqualTypeOf<number | undefined>();
+        .toEqualTypeOf<number>();
     });
 
     test("multiple properties", async () => {
@@ -161,7 +164,7 @@ describe("ObjectSet", () => {
       });
       expectTypeOf(withFamily).toEqualTypeOf<
         $ObjectSet<Employee, {
-          mom: "integer" | undefined;
+          mom: "integer";
           dad: "string" | undefined;
           sister: "string"[] | undefined;
         }>
@@ -171,14 +174,14 @@ describe("ObjectSet", () => {
 
       expectTypeOf<typeof withFamilyResults["data"][0]>().toEqualTypeOf<
         Osdk.Instance<Employee, never, PropertyKeys<Employee>, {
-          mom: "integer" | undefined;
+          mom: "integer";
           dad: "string" | undefined;
           sister: "string"[] | undefined;
         }>
       >();
 
       expectTypeOf<typeof withFamilyResults["data"][0]["mom"]>()
-        .toEqualTypeOf<number | undefined>();
+        .toEqualTypeOf<number>();
       expectTypeOf<typeof withFamilyResults["data"][0]["dad"]>()
         .toEqualTypeOf<string | undefined>();
       expectTypeOf<typeof withFamilyResults["data"][0]["sister"]>()
@@ -197,13 +200,72 @@ describe("ObjectSet", () => {
 
         expectTypeOf(withParents).toEqualTypeOf<
           $ObjectSet<Employee, {
-            mom: "integer" | undefined;
+            mom: "integer";
             dad: "string" | undefined;
           }>
         >();
       });
 
       test.todo("with calculated properties");
+    });
+
+    describe("nullability", () => {
+      it("count, exactDistinct, and approximateDistinct aren't nullable", async () => {
+        const withFamily = fauxObjectSet.withProperties({
+          "mom": (base) => base.pivotTo("lead").aggregate("$count"),
+          "dad": (base) =>
+            base.pivotTo("lead").aggregate("class:exactDistinct"),
+          "sis": (base) =>
+            base.pivotTo("lead").aggregate("class:approximateDistinct"),
+        });
+
+        const withFamilyResults = await withFamily.fetchPage();
+
+        expectTypeOf<typeof withFamilyResults["data"][0]>().toEqualTypeOf<
+          Osdk.Instance<Employee, never, PropertyKeys<Employee>, {
+            mom: "integer";
+            dad: "integer";
+            sis: "integer";
+          }>
+        >();
+      });
+
+      it(
+        "collectToSet, collectToList, selectProperty, and numeric aggregations are nullable",
+        async () => {
+          const withAggregations = fauxObjectSet.withProperties({
+            "collectSet": (base) =>
+              base.pivotTo("lead").aggregate("class:collectSet"),
+            "select": (base) => base.pivotTo("lead").selectProperty("fullName"),
+            "collectList": (base) =>
+              base.pivotTo("lead").aggregate("class:collectList"),
+            "min": (base) => base.pivotTo("lead").aggregate("employeeId:max"),
+            "max": (base) => base.pivotTo("lead").aggregate("employeeId:min"),
+            "sum": (base) => base.pivotTo("lead").aggregate("employeeId:sum"),
+            "avg": (base) => base.pivotTo("lead").aggregate("employeeId:avg"),
+            "approximatePercentile": (base) =>
+              base.pivotTo("lead").aggregate(
+                "employeeId:approximatePercentile",
+              ),
+          });
+
+          const withAggregationResults = await withAggregations.fetchPage();
+
+          expectTypeOf<typeof withAggregationResults["data"][0]>()
+            .toEqualTypeOf<
+              Osdk.Instance<Employee, never, PropertyKeys<Employee>, {
+                collectSet: "string"[] | undefined;
+                select: "string" | undefined;
+                collectList: "string"[] | undefined;
+                min: "double" | undefined;
+                max: "double" | undefined;
+                sum: "double" | undefined;
+                avg: "double" | undefined;
+                approximatePercentile: "double" | undefined;
+              }>
+            >();
+        },
+      );
     });
 
     describe("fetch functions return correct Osdk.Instance", () => {
@@ -221,7 +283,7 @@ describe("ObjectSet", () => {
         expectTypeOf<typeof whereResults["data"][0]>()
           .toEqualTypeOf<
             Osdk.Instance<Employee, never, PropertyKeys<Employee>, {
-              mom: "integer" | undefined;
+              mom: "integer";
               dad: "string" | undefined;
               sister: "string"[] | undefined;
             }>
@@ -233,7 +295,7 @@ describe("ObjectSet", () => {
         expectTypeOf<typeof asyncIter>().toEqualTypeOf<
           AsyncIterableIterator<
             Osdk.Instance<Employee, never, PropertyKeys<Employee>, {
-              mom: "integer" | undefined;
+              mom: "integer";
               dad: "string" | undefined;
               sister: "string"[] | undefined;
             }>
@@ -247,7 +309,7 @@ describe("ObjectSet", () => {
         expectTypeOf<typeof withFamilyResults["data"][0]>()
           .toEqualTypeOf<
             Osdk.Instance<Employee, never, PropertyKeys<Employee>, {
-              mom: "integer" | undefined;
+              mom: "integer";
               dad: "string" | undefined;
               sister: "string"[] | undefined;
             }>
@@ -262,14 +324,14 @@ describe("ObjectSet", () => {
         expectTypeOf<typeof withFamilyResults["data"][0]>()
           .toEqualTypeOf<
             Osdk.Instance<Employee, never, never, {
-              mom: "integer" | undefined;
+              mom: "integer";
               dad: "string" | undefined;
               sister: "string"[] | undefined;
             }>
           >();
 
         expectTypeOf<typeof withFamilyResults["data"][0]["mom"]>()
-          .toEqualTypeOf<number | undefined>();
+          .toEqualTypeOf<number>();
       });
 
       it("Works with selecting some RDPs", async () => {
@@ -280,14 +342,14 @@ describe("ObjectSet", () => {
         expectTypeOf<typeof withFamilyResults["data"][0]>()
           .toEqualTypeOf<
             Osdk.Instance<Employee, never, never, {
-              mom: "integer" | undefined;
+              mom: "integer";
             }>
           >();
       });
 
       it("Works with selecting all non-RDP's", async () => {
         const withFamilyResults = await withFamily.fetchPage({
-          $select: ["class", "fullName"],
+          $select: ["class", "fullName", "employeeId"],
         });
 
         expectTypeOf<typeof withFamilyResults["data"][0]>()
@@ -322,7 +384,7 @@ describe("ObjectSet", () => {
               Employee,
               never,
               "class",
-              { mom: "integer" | undefined }
+              { mom: "integer" }
             >
           >();
       });
@@ -337,7 +399,7 @@ describe("ObjectSet", () => {
 
       expectTypeOf<ObjectSetType>().toEqualTypeOf<
         $ObjectSet<Employee, {
-          mom: "integer" | undefined;
+          mom: "integer";
         }>
       >();
 

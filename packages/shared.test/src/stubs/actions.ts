@@ -32,7 +32,7 @@ export const actionRequestCreateOffice: ApplyActionRequestV2 = {
   },
   options: {
     mode: "VALIDATE_AND_EXECUTE",
-    returnEdits: "ALL",
+    returnEdits: "ALL_V2_WITH_DELETIONS",
   },
 };
 
@@ -65,7 +65,7 @@ const actionRequestMoveOfficeBig: ApplyActionRequestV2 = {
   },
   options: {
     mode: "VALIDATE_AND_EXECUTE",
-    returnEdits: "ALL",
+    returnEdits: "ALL_V2_WITH_DELETIONS",
   },
 };
 
@@ -77,7 +77,7 @@ const actionRequestMoveOfficeGetResults: ApplyActionRequestV2 = {
   },
   options: {
     mode: "VALIDATE_AND_EXECUTE",
-    returnEdits: "ALL",
+    returnEdits: "ALL_V2_WITH_DELETIONS",
   },
 };
 
@@ -114,7 +114,7 @@ const actionRequestMoveOfficeInvalid: ApplyActionRequestV2 = {
   },
   options: {
     mode: "VALIDATE_AND_EXECUTE",
-    returnEdits: "ALL",
+    returnEdits: "ALL_V2_WITH_DELETIONS",
   },
 };
 
@@ -137,7 +137,7 @@ const actionRequestCreateOfficeAndEmployee: ApplyActionRequestV2 = {
   },
   options: {
     mode: "VALIDATE_AND_EXECUTE",
-    returnEdits: "ALL",
+    returnEdits: "ALL_V2_WITH_DELETIONS",
   },
 };
 

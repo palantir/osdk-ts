@@ -21,6 +21,12 @@ export function isAttachmentUpload(o: any): o is AttachmentUpload {
     && o.data instanceof Blob;
 }
 
+export function isAttachmentFile(
+  o: any,
+): o is Blob & { readonly name: string } {
+  return typeof o === "object" && o instanceof Blob && "name" in o;
+}
+
 export function createAttachmentUpload(
   data: Blob,
   name: string,

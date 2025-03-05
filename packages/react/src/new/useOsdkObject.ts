@@ -53,7 +53,7 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
 export function useOsdkObject<Q extends ObjectTypeDefinition>(
   ...args: [obj: Osdk.Instance<Q>] | [type: Q, primaryKey: PrimaryKeyType<Q>]
 ): UseOsdkObjectResult<Q> {
-  const { store } = React.useContext(OsdkContext2);
+  const { observableClient } = React.useContext(OsdkContext2);
 
   // TODO: Figure out what the correct default behavior is for the various scenarios
   const mode = args.length === 1 ? "offline" : undefined;
@@ -62,16 +62,19 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
 
   const { subscribe, getSnapShot } = React.useMemo(
     () =>
-      makeExternalStore<ObjectPayload>((payload) =>
-        store.observeObject(
-          objectType,
-          primaryKey,
-          {
-            mode,
-          },
-          payload,
-        ), `object ${objectType} ${primaryKey}`),
-    [store, objectType, primaryKey, mode],
+      makeExternalStore<ObjectPayload>(
+        (payload) =>
+          observableClient.observeObject(
+            objectType,
+            primaryKey,
+            {
+              mode,
+            },
+            payload,
+          ),
+        `object ${objectType} ${primaryKey}`,
+      ),
+    [observableClient, objectType, primaryKey, mode],
   );
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);

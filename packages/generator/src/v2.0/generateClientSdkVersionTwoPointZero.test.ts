@@ -154,11 +154,11 @@ function changeNames(ontology: WireOntologyDefinition, newNames: {
       newNames.interfaces,
       (ifaceType, oldIfaceName, newIfaceName) => {
         changeValue(ifaceType, "apiName", oldIfaceName, newIfaceName);
-        ifaceType.extendsInterfaces = ifaceType.extendsInterfaces.map(
+        ifaceType.extendsInterfaces = ifaceType.allExtendsInterfaces.map(
           v => v === oldIfaceName ? newIfaceName : v,
         );
         changeEachEntry(
-          ifaceType.properties,
+          ifaceType.allProperties,
           newNames.spts,
           (property, oldSptName, newSptName) => {
             changeValue(property, "apiName", oldSptName, newSptName);
@@ -299,6 +299,7 @@ const referencedOntology = {
           },
           displayName: "Some Property",
           rid: "idk",
+          required: true,
         },
       },
       implementedByObjectTypes: [],
@@ -313,6 +314,16 @@ const referencedOntology = {
           },
           displayName: "Some Property",
           rid: "idk",
+          required: true,
+        },
+        "com.example.dep.spt2": {
+          apiName: "com.example.dep.spt2",
+          dataType: {
+            type: "string",
+          },
+          displayName: "Some Property 2",
+          rid: "idk",
+          required: true,
         },
       },
     },
@@ -2128,10 +2139,11 @@ describe("generator", () => {
         export type OsdkObjectLinks$SomeInterface = {};
 
         export namespace SomeInterface {
-          export type PropertyKeys = 'spt';
+          export type PropertyKeys = 'spt' | 'spt2';
 
           export interface Props {
             readonly spt: $PropType['string'] | undefined;
+            readonly spt2: $PropType['string'] | undefined;
           }
           export type StrictProps = Props;
 
@@ -2168,6 +2180,10 @@ describe("generator", () => {
                *   display name: 'Some Property'
                */
               spt: $PropertyDef<'string', 'nullable', 'single'>;
+              /**
+               *   display name: 'Some Property 2'
+               */
+              spt2: $PropertyDef<'string', 'nullable', 'single'>;
             };
             rid: 'idk2';
             type: 'interface';

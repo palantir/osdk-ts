@@ -11,10 +11,11 @@ import type {
 export type OsdkObjectLinks$FooInterface = {};
 
 export namespace FooInterface {
-  export type PropertyKeys = 'name' | 'description';
+  export type PropertyKeys = 'name' | 'description' | 'inheritedDescription';
 
   export interface Props {
     readonly description: $PropType['string'] | undefined;
+    readonly inheritedDescription: $PropType['string'] | undefined;
     readonly name: $PropType['string'] | undefined;
   }
   export type StrictProps = Props;
@@ -52,6 +53,11 @@ export interface FooInterface extends $InterfaceDefinition {
        *   description: Description of Description
        */
       description: $PropertyDef<'string', 'nullable', 'single'>;
+      /**
+       *   display name: 'Inherited Description',
+       *   description: Description property we inherited from some parent interface
+       */
+      inheritedDescription: $PropertyDef<'string', 'nullable', 'single'>;
       /**
        *   display name: 'Name',
        *   description: Name of Foo

@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client",
-  "version": "2.2.0-beta.1",
+  "version": "2.2.0-beta.6",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -64,8 +64,8 @@
   "dependencies": {
     "@osdk/api": "workspace:~",
     "@osdk/client.unstable": "workspace:*",
-    "@osdk/foundry.core": "2.14.0",
-    "@osdk/foundry.ontologies": "2.14.0",
+    "@osdk/foundry.core": "2.15.0",
+    "@osdk/foundry.ontologies": "2.15.0",
     "@osdk/generator-converters": "workspace:*",
     "@osdk/shared.client": "^1.0.1",
     "@osdk/shared.client.impl": "workspace:~",
@@ -94,6 +94,7 @@
     "@osdk/shared.test": "workspace:~",
     "@types/geojson": "^7946.0.14",
     "@types/ws": "^8.5.11",
+    "chalk": "^5.4.1",
     "execa": "^9.5.1",
     "msw": "^2.7.0",
     "p-defer": "^4.0.1",

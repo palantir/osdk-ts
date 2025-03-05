@@ -43,8 +43,11 @@ function simpleInterface<T extends string, Q extends SharedPropertyType>(
   spts: Q[],
   parents: string[],
   metadataLevel: 0 | 1 | 2 = 2,
+  implementedByObjectTypes: string[] = [],
 ) {
-  const properties = Object.fromEntries(spts.map(spt => [spt.apiName, spt]));
+  const properties = Object.fromEntries(
+    spts.map(spt => [spt.apiName, { ...spt, required: true }]),
+  );
 
   return {
     apiName,
@@ -54,7 +57,7 @@ function simpleInterface<T extends string, Q extends SharedPropertyType>(
     extendsInterfaces: parents,
     links: {},
     properties,
-    implementedByObjectTypes: [],
+    implementedByObjectTypes,
     allExtendsInterfaces: parents,
     allLinks: {},
     allProperties: properties,
@@ -359,6 +362,99 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
              *   description: bar property desc
              */
             bar: $PropertyDef<"integer", "nullable", "single">;
+            /**
+             *   display name: 'foo property dn',
+             *   description: foo property desc
+             */
+            foo: $PropertyDef<"integer", "nullable", "single">;
+          };
+          rid: "FooRid";
+          type: "interface";
+        };
+      }
+
+      export const Foo: Foo = {
+        type: "interface",
+        apiName: "Foo",
+        osdkMetadata: $osdkMetadata,
+      };
+      "
+    `);
+  });
+  it("Generates map for implementedBy", async () => {
+    const fooSpt = simpleSpt("foo");
+    const barSpt = simpleSpt("bar");
+
+    const ontology = enhanceOntology(
+      {
+        sanitized: simpleOntology("ontology", [
+          simpleInterface("Foo", [fooSpt], ["Parent"], 2, ["childrenObject"]),
+          simpleInterface("Parent", [barSpt], []),
+        ]),
+
+        importExt: "",
+      },
+    );
+
+    const formattedCode = await format(
+      __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
+        ontology.interfaceTypes.Foo as EnhancedInterfaceType,
+        ontology,
+        true,
+        true,
+      ),
+      {
+        parser: "typescript",
+      },
+    );
+    expect(formattedCode).toMatchInlineSnapshot(`
+      "import type {
+        InterfaceDefinition as $InterfaceDefinition,
+        ObjectSet as $ObjectSet,
+        Osdk as $Osdk,
+        PropertyValueWireToClient as $PropType,
+      } from "@osdk/api";
+
+      export type OsdkObjectLinks$Foo = {};
+
+      export namespace Foo {
+        export type PropertyKeys = "foo";
+
+        export interface Props {
+          readonly foo: $PropType["integer"] | undefined;
+        }
+        export type StrictProps = Props;
+
+        export interface ObjectSet extends $ObjectSet<Foo, Foo.ObjectSet> {}
+
+        export type OsdkInstance<
+          OPTIONS extends never | "$rid" = never,
+          K extends keyof Foo.Props = keyof Foo.Props,
+        > = $Osdk.Instance<Foo, OPTIONS, K>;
+
+        /** @deprecated use OsdkInstance */
+        export type OsdkObject<
+          OPTIONS extends never | "$rid" = never,
+          K extends keyof Foo.Props = keyof Foo.Props,
+        > = OsdkInstance<OPTIONS, K>;
+      }
+
+      export interface Foo extends $InterfaceDefinition {
+        osdkMetadata: typeof $osdkMetadata;
+        type: "interface";
+        apiName: "Foo";
+        __DefinitionMetadata?: {
+          objectSet: Foo.ObjectSet;
+          props: Foo.Props;
+          linksType: OsdkObjectLinks$Foo;
+          strictProps: Foo.StrictProps;
+          apiName: "Foo";
+          description: "Foo interface desc";
+          displayName: "Foo interface dn";
+          implementedBy: ["childrenObject"];
+          implements: ["Parent"];
+          links: {};
+          properties: {
             /**
              *   display name: 'foo property dn',
              *   description: foo property desc

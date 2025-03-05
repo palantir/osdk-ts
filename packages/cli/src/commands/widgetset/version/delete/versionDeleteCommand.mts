@@ -31,7 +31,7 @@ export default async function versionDeleteCommand(
       `Are you sure you want to delete the version ${version}?\n${
         colorize("bold", "This action cannot be undone.")
       }`,
-      { type: "confirm" },
+      { type: "confirm", cancel: "symbol" },
     );
     handlePromptCancel(confirmed);
   }
