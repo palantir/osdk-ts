@@ -188,6 +188,7 @@ describe("ObjectSet", () => {
     const { data: employees } = await nearestNeighborsObjectSet.fetchPage();
     expect(employees).toHaveLength(numNeighbors);
     // Check that no score is returned when not ordered by relevance
+    // @ts-ignore
     employees.forEach(e => expect(e.$score).toBeUndefined());
   });
 
@@ -234,6 +235,7 @@ describe("ObjectSet", () => {
     const { data: employees } = await nearestNeighborsObjectSet.fetchPage();
     expect(employees).toHaveLength(numNeighbors);
     // Check that no score is returned when not ordered by relevance
+    // @ts-ignore
     employees.forEach(e => expect(e.$score).toBeUndefined());
   });
 
@@ -248,6 +250,51 @@ describe("ObjectSet", () => {
       10,
       "skillSetEmbedding",
     );
+  });
+
+  it("type checking nearestNeighbor return type", async () => {
+    const nearestNeighbors = client(Employee).nearestNeighbors(
+      "python3",
+      3,
+      "skillSetEmbedding",
+    );
+
+    const { data: unOrdered } = await nearestNeighbors.fetchPage();
+    expectTypeOf<typeof unOrdered>().toMatchTypeOf<
+      Osdk.Instance<Employee, never, PropertyKeys<Employee>, {}, {}>[]
+    >;
+
+    const { data: orderedByField } = await nearestNeighbors.fetchPage({
+      $orderBy: { "employeeId": "desc" },
+    });
+    expectTypeOf<typeof orderedByField>().toMatchTypeOf<
+      Osdk.Instance<Employee, never, PropertyKeys<Employee>, {}, {
+        employeeId: "desc";
+      }>[]
+    >;
+
+    const { data: orderedByRelevance } = await nearestNeighbors.fetchPage({
+      $orderBy: "relevance",
+    });
+    expectTypeOf<typeof orderedByRelevance>().toMatchTypeOf<
+      Osdk.Instance<Employee, never, PropertyKeys<Employee>, {}, "relevance">[]
+    >;
+
+    const orderedByRelevanceWithErrors = await nearestNeighbors
+      .fetchPageWithErrors({
+        $orderBy: "relevance",
+      });
+    if (isOk(orderedByRelevanceWithErrors)) {
+      expectTypeOf(orderedByRelevanceWithErrors.value.data).toMatchTypeOf<
+        Osdk.Instance<
+          Employee,
+          never,
+          PropertyKeys<Employee>,
+          {},
+          "relevance"
+        >[]
+      >;
+    }
   });
 
   it("orders objects in ascending order without a filter, and returns all results", async () => {
@@ -754,6 +801,8 @@ describe("ObjectSet", () => {
         },
       });
 
+      // Ignores "Type instantiation is excessively deep and possibly infinite."
+      // @ts-ignore
       expectTypeOf(objectSet).branded.toEqualTypeOf<
         ObjectSet<
           Employee,

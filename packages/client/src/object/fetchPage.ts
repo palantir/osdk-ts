@@ -23,6 +23,7 @@ import type {
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
+  OrderByType,
   PropertyKeys,
   Result,
 } from "@osdk/api";
@@ -113,12 +114,13 @@ async function fetchInterfacePage<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
+  Z extends OrderByType<Q, L>,
 >(
   client: MinimalClient,
   interfaceType: Q,
-  args: FetchPageArgs<Q, L, R, any, S, T>,
+  args: FetchPageArgs<Q, L, R, any, S, T, Z>,
   objectSet: ObjectSet,
-): Promise<FetchPageResult<Q, L, R, S, T>> {
+): Promise<FetchPageResult<Q, L, R, S, T, Z>> {
   if (args.$__UNSTABLE_useOldInterfaceApis) {
     const result = await OntologiesV2.OntologyInterfaces
       .search(
@@ -171,7 +173,7 @@ async function fetchInterfacePage<
     ),
     nextPageToken: result.nextPageToken,
     totalCount: result.totalCount,
-  }) as unknown as Promise<FetchPageResult<Q, L, R, S, T>>;
+  }) as unknown as Promise<FetchPageResult<Q, L, R, S, T, Z>>;
 }
 
 /** @internal */
@@ -182,12 +184,13 @@ export async function fetchPageInternal<
   A extends Augments,
   S extends NullabilityAdherence,
   T extends boolean,
+  Z extends OrderByType<Q, L>,
 >(
   client: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet,
-  args: FetchPageArgs<Q, L, R, A, S, T> = {},
-): Promise<FetchPageResult<Q, L, R, S, T>> {
+  args: FetchPageArgs<Q, L, R, A, S, T, Z> = {},
+): Promise<FetchPageResult<Q, L, R, S, T, Z>> {
   if (objectType.type === "interface") {
     return await fetchInterfacePage(
       client,
@@ -213,12 +216,13 @@ export async function fetchPageWithErrorsInternal<
   A extends Augments,
   S extends NullabilityAdherence,
   T extends boolean,
+  Z extends OrderByType<Q, L>,
 >(
   client: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet,
-  args: FetchPageArgs<Q, L, R, A, S, T> = {},
-): Promise<Result<FetchPageResult<Q, L, R, S, T>>> {
+  args: FetchPageArgs<Q, L, R, A, S, T, Z> = {},
+): Promise<Result<FetchPageResult<Q, L, R, S, T, Z>>> {
   try {
     const result = await fetchPageInternal(client, objectType, objectSet, args);
     return { value: result };
@@ -244,12 +248,13 @@ export async function fetchPage<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
+  Z extends OrderByType<Q, L>,
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, any, S, T>,
+  args: FetchPageArgs<Q, L, R, any, S, T, Z>,
   objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
-): Promise<FetchPageResult<Q, L, R, S, T>> {
+): Promise<FetchPageResult<Q, L, R, S, T, Z>> {
   return fetchPageInternal(client, objectType, objectSet, args);
 }
 
@@ -260,12 +265,13 @@ export async function fetchPageWithErrors<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
+  Z extends OrderByType<Q, L>,
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, any, S, T>,
+  args: FetchPageArgs<Q, L, R, any, S, T, Z>,
   objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
-): Promise<Result<FetchPageResult<Q, L, R, S, T>>> {
+): Promise<Result<FetchPageResult<Q, L, R, S, T, Z>>> {
   return fetchPageWithErrorsInternal(client, objectType, objectSet, args);
 }
 
@@ -276,7 +282,7 @@ function applyFetchArgs<
     pageSize?: PageSize;
   },
 >(
-  args: FetchPageArgs<any, any, any, any, any, any>,
+  args: FetchPageArgs<any, any, any, any, any, any, OrderByType<any, any>>,
   body: X,
 ): X {
   if (args?.$nextPageToken) {
@@ -309,12 +315,13 @@ export async function fetchObjectPage<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
+  Z extends OrderByType<Q, L>,
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, Augments, S, T>,
+  args: FetchPageArgs<Q, L, R, Augments, S, T, Z>,
   objectSet: ObjectSet,
-): Promise<FetchPageResult<Q, L, R, S, T>> {
+): Promise<FetchPageResult<Q, L, R, S, T, Z>> {
   const r = await OntologiesV2.OntologyObjectSets.load(
     addUserAgentAndRequestContextHeaders(client, objectType),
     await client.ontologyRid,
@@ -336,5 +343,5 @@ export async function fetchObjectPage<
     ),
     nextPageToken: r.nextPageToken,
     totalCount: r.totalCount,
-  }) as unknown as Promise<FetchPageResult<Q, L, R, S, T>>;
+  }) as unknown as Promise<FetchPageResult<Q, L, R, S, T, Z>>;
 }

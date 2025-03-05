@@ -230,8 +230,16 @@ export interface AsyncIterArgs<
 	R extends boolean = false,
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
+<<<<<<< HEAD
 	T extends boolean = false
 > extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
+||||||| parent of d56ec163 (Move $score field out of Osdk base and conditionally expose it)
+	S extends NullabilityAdherence = NullabilityAdherence.Default
+> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
+=======
+	Z extends OrderByType<Q, K> = {}
+> extends SelectArg<Q, K, R, S>, OrderByArg<Q, Z, PropertyKeys<Q>> {
+>>>>>>> d56ec163 (Move $score field out of Osdk base and conditionally expose it)
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
     	// (undocumented)
@@ -504,8 +512,16 @@ export interface FetchPageArgs<
 	R extends boolean = false,
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
+<<<<<<< HEAD
 	T extends boolean = false
 > extends AsyncIterArgs<Q, K, R, A, S, T> {
+||||||| parent of d56ec163 (Move $score field out of Osdk base and conditionally expose it)
+	S extends NullabilityAdherence = NullabilityAdherence.Default
+> extends AsyncIterArgs<Q, K, R, A, S> {
+=======
+	Z extends OrderByType<Q, K> = {}
+> extends AsyncIterArgs<Q, K, R, A, S, Z> {
+>>>>>>> d56ec163 (Move $score field out of Osdk base and conditionally expose it)
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
@@ -520,8 +536,16 @@ export type FetchPageResult<
 	L extends PropertyKeys<Q>,
 	R extends boolean,
 	S extends NullabilityAdherence,
+<<<<<<< HEAD
 	T extends boolean
 > = PageResult<PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S, T>> : Osdk.Instance<Q, ExtractOptions<R, S, T>, L>>;
+||||||| parent of d56ec163 (Move $score field out of Osdk base and conditionally expose it)
+	S extends NullabilityAdherence
+> = PageResult<PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S>> : Osdk.Instance<Q, ExtractOptions<R, S>, L>>;
+=======
+	Z extends OrderByType<Q, L> = {}
+> = PageResult<PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S>, PropertyKeys<Q>, {}, Z> : Osdk.Instance<Q, ExtractOptions<R, S>, L, {}, Z>>;
+>>>>>>> d56ec163 (Move $score field out of Osdk base and conditionally expose it)
 
 // @public (undocumented)
 export type FilteredPropertyKeys<
@@ -837,6 +861,12 @@ export interface OntologyMetadata<_NEVER_USED_KEPT_FOR_BACKCOMPAT = any> {
     userAgent: string;
 }
 
+// @public (undocumented)
+export type OrderByType<
+	Q extends ObjectOrInterfaceDefinition,
+	L extends PropertyKeys<Q> = PropertyKeys<Q>
+> = { [K in L]? : "asc" | "desc" } | "relevance";
+
 // Warning: (ae-forgotten-export) The symbol "IsNever" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "IsAny" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ExtractPropsKeysFromOldPropsStyle" needs to be exported by the entry point index.d.ts
@@ -857,14 +887,17 @@ export namespace Osdk {
     		Q extends ObjectOrInterfaceDefinition,
     		OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
     		P extends PropertyKeys<Q> = PropertyKeys<Q>,
-    		R extends Record<string, SimplePropertyDef> = {}
+    		R extends Record<string, SimplePropertyDef> = {},
+    		Z extends OrderByType<Q, P> = {}
     	> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
         		readonly $link: Q extends {
             			linksType?: any
             		} ? Q["linksType"] : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q> : never
         		readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P, OPTIONS>>
         		readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(updatedObject?: Osdk.Instance<Q, any, NEW_PROPS> | { [K in NEW_PROPS]? : CompileTimeMetadata<Q>["props"][K] }) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>
-        	} & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
+        	} & (Z extends "relevance" ? {
+        		readonly $score: number
+        	} : {}) & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
         		readonly $rid: string
         	} : {});
 }
@@ -876,11 +909,16 @@ export type OsdkBase<Q extends ObjectOrInterfaceDefinition> = {
     	readonly $primaryKey: PrimaryKeyType<Q>
     	readonly $title: string | undefined
 <<<<<<< HEAD
+<<<<<<< HEAD
     	readonly $objectSpecifier: ObjectSpecifier<Q>
 ||||||| parent of b44270ef (Add tests)
 =======
     	readonly $score?: number | undefined
 >>>>>>> b44270ef (Add tests)
+||||||| parent of d56ec163 (Move $score field out of Osdk base and conditionally expose it)
+    	readonly $score?: number | undefined
+=======
+>>>>>>> d56ec163 (Move $score field out of Osdk base and conditionally expose it)
 };
 
 // @public @deprecated (undocumented)

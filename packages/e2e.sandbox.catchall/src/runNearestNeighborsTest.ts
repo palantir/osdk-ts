@@ -52,9 +52,10 @@ export async function runNearestNeighborsTest(): Promise<void> {
     .nearestNeighbors("coffee", 10, "embedding").fetchPage({
       $orderBy: { "orderTitle": "desc" },
     });
+
   resultOrdered.data.map(s => {
+    // @ts-ignore
     invariant(s.$score === undefined);
-    console.log(s.orderTitle);
   });
 
   // Vector query

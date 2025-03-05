@@ -24,6 +24,7 @@ import type {
   Augments,
   FetchPageArgs,
   NullabilityAdherence,
+  OrderByType,
   SelectArg,
 } from "../object/FetchPageArgs.js";
 import type { Result } from "../object/Result.js";
@@ -91,15 +92,17 @@ interface FetchPage<
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
+    Z extends OrderByType<Q, L> = {},
   >(
-    args?: FetchPageArgs<Q, L, R, A, S, T>,
+    args?: FetchPageArgs<Q, L, R, A, S, T, Z>,
   ) => Promise<
     PageResult<
       Osdk.Instance<
         Q,
         ExtractOptions<R, S, T>,
         PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
-        { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+        { [K in Extract<keyof RDPs, L>]: RDPs[K] },
+        Z
       >
     >
   >;
@@ -124,8 +127,9 @@ interface FetchPage<
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
+    Z extends OrderByType<Q, L> = {},
   >(
-    args?: FetchPageArgs<Q, L, R, A, S, T>,
+    args?: FetchPageArgs<Q, L, R, A, S, T, Z>,
   ) => Promise<
     Result<
       PageResult<
@@ -133,7 +137,8 @@ interface FetchPage<
           Q,
           ExtractOptions<R, S, T>,
           PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
-          { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+          { [K in Extract<keyof RDPs, L>]: RDPs[K] },
+          Z
         >
       >
     >
@@ -178,14 +183,16 @@ interface AsyncIter<
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
+    Z extends OrderByType<Q, L> = {},
   >(
-    args?: AsyncIterArgs<Q, L, R, A, S, T>,
+    args?: AsyncIterArgs<Q, L, R, A, S, T, Z>,
   ) => AsyncIterableIterator<
     Osdk.Instance<
       Q,
       ExtractOptions<R, S, T>,
       PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
-      { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+      { [K in Extract<keyof RDPs, L>]: RDPs[K] },
+      Z
     >
   >;
 }
