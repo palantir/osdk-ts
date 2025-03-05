@@ -86,10 +86,7 @@ export function createOsdkInterface<
   );
   function clone(update: Record<string, any> | undefined) {
     if (update == null) {
-      return createOsdkInterface(
-        underlying.$clone() as Osdk<Q> & ObjectHolder<Q>,
-        interfaceDef,
-      );
+      return underlying.$clone().$as(interfaceDef);
     }
 
     for (const key of Object.keys(update)) {
