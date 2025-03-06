@@ -184,7 +184,7 @@ describe("ObjectSet", () => {
     const { data: employees } = await nearestNeighborsObjectSet.fetchPage();
     expect(employees).toHaveLength(numNeighbors);
     // Check that no score is returned when not ordered by relevance
-    // @ts-ignore
+    // @ts-expect-error
     employees.forEach(e => expect(e.$score).toBeUndefined());
   });
 
@@ -231,7 +231,7 @@ describe("ObjectSet", () => {
     const { data: employees } = await nearestNeighborsObjectSet.fetchPage();
     expect(employees).toHaveLength(numNeighbors);
     // Check that no score is returned when not ordered by relevance
-    // @ts-ignore
+    // @ts-expect-error
     employees.forEach(e => expect(e.$score).toBeUndefined());
   });
 
@@ -257,24 +257,29 @@ describe("ObjectSet", () => {
 
     const { data: unOrdered } = await nearestNeighbors.fetchPage();
     expectTypeOf<typeof unOrdered>().toMatchTypeOf<
-      Osdk.Instance<Employee, never, PropertyKeys<Employee>, {}, {}>[]
+      Osdk.Instance<Employee, never, PropertyKeys<Employee>>[]
     >;
+    // @ts-expect-error
+    unOrdered.map(e => e.$score);
 
     const { data: orderedByField } = await nearestNeighbors.fetchPage({
       $orderBy: { "employeeId": "desc" },
     });
     expectTypeOf<typeof orderedByField>().toMatchTypeOf<
-      Osdk.Instance<Employee, never, PropertyKeys<Employee>, {}, {
-        employeeId: "desc";
-      }>[]
+      Osdk.Instance<Employee, never, PropertyKeys<Employee>>[]
     >;
+    // @ts-expect-error
+    orderedByField.map(e => e.$score);
 
     const { data: orderedByRelevance } = await nearestNeighbors.fetchPage({
       $orderBy: "relevance",
     });
     expectTypeOf<typeof orderedByRelevance>().toMatchTypeOf<
-      Osdk.Instance<Employee, never, PropertyKeys<Employee>, {}, "relevance">[]
+      Osdk.Instance<Employee, never, PropertyKeys<Employee>, {}, "$score">[]
     >;
+    orderedByRelevance.forEach(e =>
+      expectTypeOf(e.$score).toMatchTypeOf<number>
+    );
 
     const orderedByRelevanceWithErrors = await nearestNeighbors
       .fetchPageWithErrors({
@@ -287,9 +292,12 @@ describe("ObjectSet", () => {
           never,
           PropertyKeys<Employee>,
           {},
-          "relevance"
+          "$score"
         >[]
       >;
+      orderedByRelevanceWithErrors.value.data.forEach(e =>
+        expectTypeOf(e.$score).toMatchTypeOf<number>
+      );
     }
   });
 
@@ -766,9 +774,7 @@ describe("ObjectSet", () => {
         },
       });
 
-      // Ignores "Type instantiation is excessively deep and possibly infinite."
-      // @ts-ignore
-      expectTypeOf(objectSet).branded.toEqualTypeOf<
+      expectTypeOf(objectSet).toEqualTypeOf<
         ObjectSet<
           Employee,
           { derivedPropertyName: "double" | undefined }
