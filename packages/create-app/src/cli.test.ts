@@ -98,6 +98,8 @@ async function runTest(
     corsProxy.toString(),
     "--sdkVersion",
     sdkVersion,
+    "--scopes",
+    "api:read-data",
   ]);
 
   expect(fs.readdirSync(path.join(process.cwd(), project)).length)

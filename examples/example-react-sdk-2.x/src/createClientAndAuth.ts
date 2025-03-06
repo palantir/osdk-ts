@@ -30,10 +30,7 @@ export default function createClientAndAuth() {
     clientId,
     url,
     redirectUrl,
-    true,
-    undefined,
-    window.location.toString(),
-    scopes,
+    { scopes },
   );
 
   /**
