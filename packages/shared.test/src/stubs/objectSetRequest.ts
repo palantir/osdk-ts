@@ -166,7 +166,7 @@ const nearestNeighborsObjectSetVectorQuery: LoadObjectSetRequestV2 = {
   select: [],
 };
 
-const nearestNeighborsObjectSetWithOrdering: LoadObjectSetRequestV2 = {
+const nearestNeighborsObjectSetWithRelevancyOrdering: LoadObjectSetRequestV2 = {
   objectSet: {
     type: "nearestNeighbors",
     objectSet: {
@@ -186,6 +186,34 @@ const nearestNeighborsObjectSetWithOrdering: LoadObjectSetRequestV2 = {
   orderBy: {
     orderType: "relevance",
     fields: [],
+  },
+  select: [],
+};
+
+const nearestNeighborsObjectSetWithOrdering: LoadObjectSetRequestV2 = {
+  objectSet: {
+    type: "nearestNeighbors",
+    objectSet: {
+      type: "base",
+      objectType: employeeObjectType.apiName,
+    },
+    propertyIdentifier: {
+      type: "property",
+      apiName: "skillSetEmbedding",
+    },
+    numNeighbors: 3,
+    query: {
+      type: "text",
+      value: "python3",
+    },
+  },
+  orderBy: {
+    fields: [
+      {
+        field: "employeeId",
+        direction: "desc",
+      },
+    ],
   },
   select: [],
 };
@@ -639,10 +667,15 @@ export const loadObjectSetRequestHandlers: {
     employee2,
     employee3,
   ],
-  [stableStringify(nearestNeighborsObjectSetWithOrdering)]: [
+  [stableStringify(nearestNeighborsObjectSetWithRelevancyOrdering)]: [
     employee1WithScore,
     employee2WithScore,
     employee3WithScore,
+  ],
+  [stableStringify(nearestNeighborsObjectSetWithOrdering)]: [
+    employee1,
+    employee2,
+    employee3,
   ],
   [stableStringify(derivedPropertyBody)]: [employee4withDerived],
   [stableStringify(derivedPropertyBodyUndefinedValue)]: [
