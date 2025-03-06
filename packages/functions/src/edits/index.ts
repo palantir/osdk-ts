@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-export type {
-  DateISOString,
-  Double,
-  Float,
-  Integer,
-  Long,
-  TimestampISOString,
-} from "./PrimitiveTypes.js";
-
-export type {
-  Attachment,
-  Range,
-  ThreeDimensionalAggregation,
-  TwoDimensionalAggregation,
-} from "@osdk/api";
+export { createEditBatch } from "./createEditBatch.js";
+export type { EditBatch } from "./EditBatch.js";
+export type { Edits } from "./types.js";
