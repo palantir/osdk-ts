@@ -22,13 +22,13 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
-import type { ListPayload } from "../ListPayload.js";
-import type { ObjectPayload } from "../ObjectPayload.js";
 import type {
   ObservableClient,
   ObserveListOptions,
   ObserveObjectOptions,
   Observer,
+  SubListArgs,
+  SubObjectArgs,
   Unsubscribable,
 } from "../ObservableClient.js";
 import type { Canonical } from "./Canonical.js";
@@ -43,22 +43,24 @@ export class ObservableClientImpl implements ObservableClient {
   constructor(store: Store) {
     this.#store = store;
 
-    this.observeObject = store.observeObject.bind(store);
-    this.observeList = store.observeList.bind(store);
+    this.observeObject = store.observeObject.bind(
+      store,
+    ) as typeof this.observeObject;
+    this.observeList = store.observeList.bind(store) as typeof this.observeList;
     this.applyAction = store.applyAction.bind(store);
     this.canonicalizeWhereClause = store.canonicalizeWhereClause.bind(store);
   }
 
-  public observeObject: <T extends ObjectTypeDefinition | InterfaceDefinition>(
+  public observeObject: <T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveObjectOptions<T>,
-    subFn: Observer<ObjectPayload>,
+    subFn: Observer<SubObjectArgs<T>>,
   ) => Unsubscribable;
 
   public observeList: <T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveListOptions<T>,
-    subFn: Observer<ListPayload>,
+    subFn: Observer<SubListArgs<T>>,
   ) => Unsubscribable;
 
   public applyAction: <Q extends ActionDefinition<any>>(

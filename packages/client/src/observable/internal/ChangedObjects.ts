@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import { MultiMap } from "mnemonist";
+import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { DEBUG_ONLY__cacheKeyToString } from "./CacheKey.js";
 import type { ListCacheKey } from "./ListQuery.js";
 
 export interface Changes {
-  modifiedObjects: MultiMap<string, Osdk.Instance<ObjectTypeDefinition>>;
-  addedObjects: MultiMap<string, Osdk.Instance<ObjectTypeDefinition>>;
+  modifiedObjects: MultiMap<string, ObjectHolder>;
+  addedObjects: MultiMap<string, ObjectHolder>;
   addedLists: Set<ListCacheKey>;
   modifiedLists: Set<ListCacheKey>;
 }
@@ -30,9 +30,9 @@ export function createChangedObjects(): Changes {
   return {
     modifiedObjects: new MultiMap<
       string,
-      Osdk.Instance<ObjectTypeDefinition>
+      ObjectHolder
     >(),
-    addedObjects: new MultiMap<string, Osdk.Instance<ObjectTypeDefinition>>(),
+    addedObjects: new MultiMap<string, ObjectHolder>(),
     addedLists: new Set<ListCacheKey>(),
     modifiedLists: new Set<ListCacheKey>(),
   };
@@ -60,7 +60,7 @@ function listHelper(set: Set<ListCacheKey>) {
 }
 
 function multimapHelper(
-  multimap: MultiMap<string, Osdk.Instance<ObjectTypeDefinition>>,
+  multimap: MultiMap<string, ObjectHolder>,
 ) {
   return Object.fromEntries(
     Array.from(multimap.associations()).map(

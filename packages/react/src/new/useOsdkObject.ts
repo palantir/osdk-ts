@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, Osdk, PrimaryKeyType } from "@osdk/api";
-import type { ObjectPayload } from "@osdk/client/unstable-do-not-use";
+import type { SubObjectArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
@@ -64,7 +64,7 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
 
   const { subscribe, getSnapShot } = React.useMemo(
     () =>
-      makeExternalStore<ObjectPayload>(
+      makeExternalStore<SubObjectArgs<Q>>(
         (observer) =>
           observableClient.observeObject(
             objectType,

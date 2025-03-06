@@ -6,7 +6,6 @@ import FilterSelector from "./FilterSelector.js";
 import type { Todo } from "./generatedNoCheck2/index.js";
 import { H1 } from "./H2.js";
 import { Section } from "./Section.js";
-import { SpecificTodo } from "./SpecificTodo.js";
 import TodoList from "./TodoList.js";
 
 function App() {
@@ -28,9 +27,11 @@ function App() {
             <CreateTodoForm />
           </Section>
 
-          <Section>
+          {
+            /* <Section>
             <SpecificTodo />
-          </Section>
+          </Section> */
+          }
 
           <Section>
             <FilterSelector
@@ -38,10 +39,12 @@ function App() {
               heading="<-- Filter"
             />
           </Section>
-
+          {
+            /*
           <Section>
             <SpecificTodo />
-          </Section>
+          </Section> */
+          }
         </div>
       </div>
     </main>

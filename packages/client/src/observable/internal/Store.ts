@@ -29,11 +29,11 @@ import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { additionalContext, type Client } from "../../Client.js";
 import type { Logger } from "../../Logger.js";
+import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
 import type {
-  ObservableClient,
   ObserveListOptions,
   ObserveObjectOptions,
   OrderBy,
@@ -53,7 +53,7 @@ import { Entry, Layer } from "./Layer.js";
 import type { ListCacheKey, ListQueryOptions } from "./ListQuery.js";
 import { isListCacheKey, ListQuery } from "./ListQuery.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
-import { ObjectQuery } from "./ObjectQuery.js";
+import { ObjectQuery, storeOsdkInstances } from "./ObjectQuery.js";
 import { type OptimisticId } from "./OptimisticId.js";
 import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import type { Query } from "./Query.js";
@@ -121,7 +121,7 @@ function createInitEntry(cacheKey: CacheKey): Entry<any> {
     - Data is one per layer per cache key
 */
 
-export class Store implements ObservableClient {
+export class Store {
   whereCanonicalizer: WhereClauseCanonicalizer = new WhereClauseCanonicalizer();
   orderByCanonicalizer: OrderByCanonicalizer = new OrderByCanonicalizer();
   #truthLayer: Layer = new Layer(undefined, undefined);
@@ -391,17 +391,10 @@ export class Store implements ObservableClient {
     const sub = query.subscribe(subFn);
 
     if (options.streamUpdates) {
-      const miniDef = {
-        type: "object",
-        apiName: (typeof options.type === "string"
-          ? options.type
-          : options.type.apiName),
-      } as T;
-
       // the extra casts here are because of the way we have overrides for the
       // client cause it to fall back to the last override case which we don't want
       let objectSet: ObjectSet<T> = this.client(
-        miniDef as ObjectTypeDefinition,
+        options.type as ObjectTypeDefinition,
       ) as unknown as ObjectSet<T>;
 
       if (options.where) {
@@ -409,23 +402,28 @@ export class Store implements ObservableClient {
       }
       const store = this;
       const websocketSubscription = objectSet.subscribe({
-        onChange({ object, state }) {
+        onChange({ object: objOrIface, state }) {
           if (process.env.NODE_ENV !== "production") {
             logger?.child({ methodName: "onChange" }).debug(
               "updates",
               state,
-              object,
+              objOrIface,
             );
           }
 
           const cacheKey = store.getCacheKey<ObjectCacheKey>(
             "object",
-            object.$objectType,
-            object.$primaryKey,
+            objOrIface.$objectType,
+            objOrIface.$primaryKey,
           );
           const type = store.#peekQuery(cacheKey) == null
             ? "addedObjects"
             : "modifiedObjects";
+
+          const object: ObjectHolder =
+            (objOrIface.$apiName !== objOrIface.$objectType
+              ? objOrIface.$as(objOrIface.$objectType)
+              : objOrIface) as unknown as ObjectHolder;
 
           const changes = createChangedObjects();
           changes[type].set(
@@ -436,9 +434,10 @@ export class Store implements ObservableClient {
           if (state === "ADDED_OR_UPDATED") {
             // todo, can we do the update without
             // the extra invalidation? maybe a flag to updateObject
-            store.updateObject(
-              object,
-            );
+            store.batch({}, (batch) => {
+              storeOsdkInstances(store, [object as Osdk.Instance<any>], batch);
+            });
+
             store.maybeRevalidateLists(changes).catch(err => {
               // eslint-disable-next-line no-console
               console.error("Unhandled error in maybeRevalidateLists", err);
@@ -620,25 +619,10 @@ export class Store implements ObservableClient {
       ));
   }
 
-  public getObject<T extends ObjectTypeDefinition>(
-    apiName: T["apiName"] | T,
-    pk: string | number,
-  ): Osdk.Instance<T> | undefined {
-    if (typeof apiName !== "string") {
-      apiName = apiName.apiName;
-    }
-
-    const objectCacheKey = this.getCacheKey<ObjectCacheKey>(
-      "object",
-      apiName,
-      pk,
-    );
-
-    // we probably don't want to do this? If we have RDP, interface, and subselect, then we
-    // will likely not have a complete object on the top layer?
-    // maybe we can do an optimistic update by merging and then only write the full object to the truth layer?
-    const objEntry = this.#topLayer.get(objectCacheKey);
-    return objEntry?.value as Osdk.Instance<T> | undefined;
+  public getValue<K extends CacheKey<string, any, any>>(
+    cacheKey: K,
+  ): Entry<K> | undefined {
+    return this.#topLayer.get(cacheKey);
   }
 
   batch = <X>(
@@ -800,6 +784,8 @@ export class Store implements ObservableClient {
     apiName: T["apiName"] | T,
     changes: Changes | undefined,
   ): Promise<unknown[]> {
+    // this whole method needs to be updated as it was written for
+    // objects only.
     if (typeof apiName !== "string") {
       apiName = apiName.apiName;
     }
@@ -846,78 +832,6 @@ export class Store implements ObservableClient {
     );
 
     void this.#peekQuery(cacheKey)?.revalidate(true);
-  }
-
-  public updateObject<T extends ObjectTypeDefinition>(
-    value: Osdk.Instance<T>,
-    { optimisticId }: UpdateOptions = {},
-  ): Osdk.Instance<T> {
-    const query = this.getObjectQuery(value.$apiName, value.$primaryKey);
-
-    return this.batch({ optimisticId }, (batch) => {
-      return query.writeToStore(value, "loaded", batch);
-    }).retVal.value! as Osdk.Instance<T>;
-  }
-
-  public updateObjects(
-    values: Array<Osdk.Instance<ObjectTypeDefinition>>,
-    batch: BatchContext,
-  ): ObjectCacheKey[] {
-    // update the cache for any object that has changed
-    // and save the mapped values to return
-    return values.map(v => {
-      return this.getObjectQuery(
-        v.$apiName,
-        v.$primaryKey as string | number,
-      )
-        .writeToStore(v, "loaded", batch).cacheKey;
-    });
-  }
-
-  /**
-   * Updates the internal state of a list and will create a new internal query if needed.
-   *
-   * Helper method only for tests right now. May be removed later.
-   *
-   * @param apiName
-   * @param where
-   * @param orderBy
-   * @param objects
-   * @param param4
-   * @param opts
-   */
-  public updateList<T extends ObjectTypeDefinition | InterfaceDefinition>(
-    {
-      type,
-      where,
-      orderBy,
-    }: {
-      type: Pick<T, "apiName" | "type">;
-      where: WhereClause<T>;
-      orderBy: OrderBy<T>;
-    },
-    objects: Osdk.Instance<T>[],
-    { optimisticId }: UpdateOptions = {},
-    opts: ListQueryOptions = { dedupeInterval: 0 },
-  ): void {
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "updateList" }).info(
-        "",
-        { optimisticId },
-      );
-    }
-
-    const query = this.getListQuery(
-      type,
-      where ?? {},
-      orderBy ?? {},
-      opts,
-    );
-
-    this.batch({ optimisticId }, (batch) => {
-      const objectCacheKeys = this.updateObjects(objects, batch);
-      query.updateList(objectCacheKeys, false, "loaded", batch);
-    });
   }
 
   retain(cacheKey: CacheKey<string, any, any>): void {

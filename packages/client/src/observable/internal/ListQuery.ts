@@ -36,6 +36,14 @@ import {
 } from "rxjs";
 import invariant from "tiny-invariant";
 import { additionalContext, type Client } from "../../Client.js";
+import type { InterfaceHolder } from "../../object/convertWireToOsdkObjects/InterfaceHolder.js";
+import {
+  ObjectDefRef,
+  UnderlyingOsdkObject,
+} from "../../object/convertWireToOsdkObjects/InternalSymbols.js";
+import type {
+  ObjectHolder,
+} from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { CommonObserveOptions, Status } from "../ObservableClient.js";
 import {
@@ -46,7 +54,7 @@ import type { Canonical } from "./Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "./ChangedObjects.js";
 import type { Entry } from "./Layer.js";
 import { objectSortaMatchesWhereClause } from "./objectMatchesWhereClause.js";
-import type { ObjectCacheKey } from "./ObjectQuery.js";
+import { type ObjectCacheKey, storeOsdkInstances } from "./ObjectQuery.js";
 import type { OptimisticId } from "./OptimisticId.js";
 import { Query } from "./Query.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
@@ -79,6 +87,12 @@ export const ORDER_BY_IDX = 3;
 export interface ListQueryOptions extends CommonObserveOptions {
   pageSize?: number;
 }
+
+type ExtractRelevantObjectsResult = Record<"added" | "modified", {
+  all: (ObjectHolder | InterfaceHolder)[];
+  strictMatches: Set<(ObjectHolder | InterfaceHolder)>;
+  sortaMatches: Set<(ObjectHolder | InterfaceHolder)>;
+}>;
 
 export class ListQuery extends Query<
   ListCacheKey,
@@ -143,7 +157,7 @@ export class ListQuery extends Query<
   protected _createConnectable(
     subject: Observable<SubjectPayload<ListCacheKey>>,
   ): Connectable<ListPayload> {
-    return connectable(
+    return connectable<ListPayload>(
       subject.pipe(
         switchMap(listEntry => {
           return combineLatest({
@@ -280,39 +294,12 @@ export class ListQuery extends Query<
       // Our caching really expects to have the full objects in the list
       // so we need to fetch them all here
       if (this.#type === "interface") {
-        const groups = groupBy(data, (x) => x.$objectType);
-        const objectTypeToPrimaryKeyToObject = Object.fromEntries(
-          await Promise.all(
-            Object.entries(groups).map<
-              Promise<
-                [
-                  /** objectType **/ string,
-                  Record<string | number, Osdk.Instance<ObjectTypeDefinition>>,
-                ]
-              >
-            >(async ([apiName, objects]) => {
-              return [
-                apiName,
-                Object.fromEntries((await this.#client(
-                  { type: "object", apiName } as ObjectTypeDefinition,
-                ).where({
-                  $primaryKey: { $in: objects.map(x => x.$primaryKey) },
-                } as WhereClause<any>).fetchPage()).data.map(
-                  x => [x.$primaryKey, x],
-                )),
-              ];
-            }),
-          ),
-        );
-
-        data = data.map((obj) =>
-          objectTypeToPrimaryKeyToObject[obj.$objectType][obj.$primaryKey]
-        );
+        data = await reloadDataAsFullObjects(this.#client, data);
       }
 
       const { retVal } = this.store.batch({}, (batch) => {
         return this.updateList(
-          this.store.updateObjects(data, batch),
+          storeOsdkInstances(this.store, data, batch),
           append,
           nextPageToken ? status : "loaded",
           batch,
@@ -351,25 +338,7 @@ export class ListQuery extends Query<
     if (changes.modifiedLists.has(this.cacheKey)) return;
 
     try {
-      const relevantObjects: Record<"added" | "modified", {
-        all: Osdk.Instance<ObjectTypeDefinition>[];
-        strictMatches: Set<Osdk.Instance<ObjectTypeDefinition>>;
-        sortaMatches: Set<Osdk.Instance<ObjectTypeDefinition>>;
-      }> = {
-        added: {
-          all: changes.addedObjects.get(this.cacheKey.otherKeys[API_NAME_IDX])
-            ?? [],
-          strictMatches: new Set(),
-          sortaMatches: new Set(),
-        },
-        modified: {
-          all:
-            changes.modifiedObjects.get(this.cacheKey.otherKeys[API_NAME_IDX])
-              ?? [],
-          strictMatches: new Set(),
-          sortaMatches: new Set(),
-        },
-      };
+      const relevantObjects = this.extractRelevantObjects(changes);
 
       if (
         relevantObjects.added.all.length === 0
@@ -427,7 +396,7 @@ export class ListQuery extends Query<
 
         const existingList = new Set(curValue?.value?.data);
 
-        const toAdd = new Set<Osdk.Instance<ObjectTypeDefinition>>(
+        const toAdd = new Set<ObjectHolder | InterfaceHolder>(
           // easy case. objects are new to the cache and they match this filter
           relevantObjects.added.strictMatches,
         );
@@ -441,7 +410,7 @@ export class ListQuery extends Query<
               ObjectCacheKey
             >(
               "object",
-              obj.$apiName,
+              obj.$objectType,
               obj.$primaryKey,
             );
 
@@ -462,7 +431,7 @@ export class ListQuery extends Query<
               ObjectCacheKey
             >(
               "object",
-              obj.$apiName,
+              obj.$objectType,
               obj.$primaryKey,
             );
 
@@ -483,7 +452,7 @@ export class ListQuery extends Query<
           newList.push(
             this.store.getCacheKey<ObjectCacheKey>(
               "object",
-              obj.$apiName,
+              obj.$objectType,
               obj.$primaryKey,
             ),
           );
@@ -510,6 +479,51 @@ export class ListQuery extends Query<
       }
     }
   };
+
+  private extractRelevantObjects(
+    changes: Changes,
+  ): ExtractRelevantObjectsResult {
+    if (this.#type === "object") {
+      return {
+        added: {
+          all: changes.addedObjects.get(this.cacheKey.otherKeys[API_NAME_IDX])
+            ?? [],
+          strictMatches: new Set(),
+          sortaMatches: new Set(),
+        },
+        modified: {
+          all:
+            changes.modifiedObjects.get(this.cacheKey.otherKeys[API_NAME_IDX])
+              ?? [],
+          strictMatches: new Set(),
+          sortaMatches: new Set(),
+        },
+      };
+    }
+
+    const added = Array.from(changes.addedObjects).filter(([, object]) => {
+      return this.#apiName in object[ObjectDefRef].interfaceMap;
+    }).map(([, object]) => object.$as(this.#apiName));
+
+    const modified = Array.from(changes.modifiedObjects).filter(
+      ([, object]) => {
+        return this.#apiName in object[ObjectDefRef].interfaceMap;
+      },
+    ).map(([, object]) => object.$as(this.#apiName));
+
+    return {
+      added: {
+        all: added,
+        strictMatches: new Set(),
+        sortaMatches: new Set(),
+      },
+      modified: {
+        all: modified,
+        strictMatches: new Set(),
+        sortaMatches: new Set(),
+      },
+    };
+  }
 
   updateList(
     objectCacheKeys: Array<ObjectCacheKey>,
@@ -564,8 +578,8 @@ export class ListQuery extends Query<
       }
       const sortFns = Object.entries(this.#orderBy).map(([key, order]) => {
         return (
-          a: Osdk.Instance<ObjectTypeDefinition, never, any, {}> | undefined,
-          b: Osdk.Instance<ObjectTypeDefinition, never, any, {}> | undefined,
+          a: ObjectHolder | InterfaceHolder | undefined,
+          b: ObjectHolder | InterfaceHolder | undefined,
         ): number => {
           const aValue = a?.[key];
           const bValue = b?.[key];
@@ -587,8 +601,8 @@ export class ListQuery extends Query<
       objectCacheKeys = objectCacheKeys.sort((a, b) => {
         for (const sortFn of sortFns) {
           const ret = sortFn(
-            batch.read(a)?.value,
-            batch.read(b)?.value,
+            batch.read(a)?.value?.$as(this.#apiName),
+            batch.read(b)?.value?.$as(this.#apiName),
           );
           if (ret !== 0) {
             return ret;
@@ -645,6 +659,53 @@ export class ListQuery extends Query<
       }
     });
   }
+}
+
+// Hopefully this can go away when we can just request the full object properties on first load
+async function reloadDataAsFullObjects(
+  client: Client,
+  data: Osdk.Instance<any, never, string, {}>[],
+) {
+  const groups = groupBy(data, (x) => x.$objectType);
+  const objectTypeToPrimaryKeyToObject = Object.fromEntries(
+    await Promise.all(
+      Object.entries(groups).map<
+        Promise<
+          [
+            /** objectType **/ string,
+            Record<string | number, Osdk.Instance<ObjectTypeDefinition>>,
+          ]
+        >
+      >(async ([apiName, objects]) => {
+        // to keep InternalSimpleOsdkInstance simple, we make both the `ObjectDefRef` and
+        // the `InterfaceDefRef` optional but we know that the right one is on there
+        // thus we can `!`
+        const objectDef = (objects[0] as ObjectHolder)[UnderlyingOsdkObject][
+          ObjectDefRef
+        ]!;
+        const where = {
+          [objectDef.primaryKeyApiName]: {
+            $in: objects.map(x => x.$primaryKey),
+          },
+        } as WhereClause<any>;
+
+        const result = await client(
+          { type: "object", apiName } as ObjectTypeDefinition,
+        ).where(where).fetchPage();
+        return [
+          apiName,
+          Object.fromEntries(result.data.map(
+            x => [x.$primaryKey, x],
+          )),
+        ];
+      }),
+    ),
+  );
+
+  data = data.map((obj) =>
+    objectTypeToPrimaryKeyToObject[obj.$objectType][obj.$primaryKey]
+  );
+  return data;
 }
 
 export function isListCacheKey(

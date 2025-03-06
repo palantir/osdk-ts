@@ -466,21 +466,21 @@ export class ObjectSetListenerWebsocket {
             o.objectType,
             sub.interfaceApiName,
           ),
-        ) as Array<Osdk.Instance<any, never, any>>;
+        );
         const singleOsdkObject = osdkObjectArray[0] ?? undefined;
         return singleOsdkObject != null
           ? {
-            object: singleOsdkObject,
+            object: singleOsdkObject as Osdk.Instance<any, never, any>,
             state: "ADDED_OR_UPDATED" as ObjectState,
           }
           : undefined;
       }),
     );
 
-    for (const osdkObject of osdkObjectsWithReferenceUpdates) {
-      if (osdkObject != null) {
+    for (const update of osdkObjectsWithReferenceUpdates) {
+      if (update != null) {
         try {
-          sub.listener.onChange?.(osdkObject);
+          sub.listener.onChange?.(update);
         } catch (error) {
           this.#logger?.error(error, "Error in onChange callback");
           this.#tryCatchOnError(sub, false, error);

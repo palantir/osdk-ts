@@ -15,17 +15,20 @@
  */
 
 import type {
+  InterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
   WhereClause,
 } from "@osdk/client";
-import type { ListPayload } from "@osdk/client/unstable-do-not-use";
+import type { SubListArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
-export interface UseOsdkObjectsOptions<T extends ObjectTypeDefinition> {
+export interface UseOsdkObjectsOptions<
+  T extends ObjectTypeDefinition | InterfaceDefinition,
+> {
   /**
    * Standard OSDK Where
    */
@@ -88,7 +91,9 @@ export interface UseOsdkObjectsOptions<T extends ObjectTypeDefinition> {
   streamUpdates?: boolean;
 }
 
-export interface UseOsdkListResult<T extends ObjectTypeDefinition> {
+export interface UseOsdkListResult<
+  T extends ObjectTypeDefinition | InterfaceDefinition,
+> {
   fetchMore: (() => Promise<unknown>) | undefined;
   data: Osdk.Instance<T>[] | undefined;
   isLoading: boolean;
@@ -112,16 +117,18 @@ declare const process: {
   };
 };
 
-export function useOsdkObjects<T extends ObjectTypeDefinition>(
-  type: T,
+export function useOsdkObjects<
+  Q extends ObjectTypeDefinition | InterfaceDefinition,
+>(
+  type: Q,
   {
     pageSize,
     orderBy,
     dedupeIntervalMs,
     where = {},
     streamUpdates,
-  }: UseOsdkObjectsOptions<T> = {},
-): UseOsdkListResult<T> {
+  }: UseOsdkObjectsOptions<Q> = {},
+): UseOsdkListResult<Q> {
   const { observableClient } = React.useContext(OsdkContext2);
 
   /*  We want the canonical where clause so that the use of `React.useMemo`
@@ -132,7 +139,7 @@ export function useOsdkObjects<T extends ObjectTypeDefinition>(
 
   const { subscribe, getSnapShot } = React.useMemo(
     () =>
-      makeExternalStore<ListPayload>(
+      makeExternalStore<SubListArgs<Q>>(
         (observer) =>
           observableClient.observeList({
             type,
@@ -156,7 +163,7 @@ export function useOsdkObjects<T extends ObjectTypeDefinition>(
     error: listPayload && "error" in listPayload
       ? listPayload?.error
       : undefined,
-    data: listPayload?.resolvedList as Osdk.Instance<T>[],
+    data: listPayload?.resolvedList as Osdk.Instance<Q>[],
     isLoading: listPayload?.status === "loading",
     isOptimistic: listPayload?.isOptimistic ?? false,
   };

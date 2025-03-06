@@ -18,6 +18,7 @@ import type {
   ActionDefinition,
   InterfaceDefinition,
   ObjectTypeDefinition,
+  Osdk,
   PrimaryKeyType,
   PropertyKeys,
   WhereClause,
@@ -27,8 +28,6 @@ import type { Client } from "../Client.js";
 import type { Canonical } from "./internal/Canonical.js";
 import { ObservableClientImpl } from "./internal/ObservableClientImpl.js";
 import { Store } from "./internal/Store.js";
-import type { ListPayload } from "./ListPayload.js";
-import type { ObjectPayload } from "./ObjectPayload.js";
 import type { OptimisticBuilder } from "./OptimisticBuilder.js";
 
 export type Status = "init" | "loading" | "loaded" | "error";
@@ -75,17 +74,35 @@ export interface ObserveListOptions<
   streamUpdates?: boolean;
 }
 
+export interface SubObjectArgs<T extends ObjectTypeDefinition> {
+  object: Osdk.Instance<T> | undefined;
+  isOptimistic: boolean;
+  status: Status;
+  lastUpdated: number;
+}
+
+export interface SubListArgs<
+  T extends ObjectTypeDefinition | InterfaceDefinition,
+> {
+  resolvedList: Array<Osdk.Instance<T>>;
+  isOptimistic: boolean;
+  lastUpdated: number;
+  fetchMore: () => Promise<unknown>;
+  hasMore: boolean;
+  status: Status;
+}
+
 export interface ObservableClient {
   observeObject<T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveOptions,
-    subFn: Observer<ObjectPayload>,
+    subFn: Observer<SubObjectArgs<T>>,
   ): Unsubscribable;
 
-  observeList<T extends ObjectTypeDefinition>(
+  observeList<T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveListOptions<T>,
-    subFn: Observer<ListPayload>,
+    subFn: Observer<SubListArgs<T>>,
   ): Unsubscribable;
 
   applyAction: <Q extends ActionDefinition<any>>(
@@ -94,7 +111,9 @@ export interface ObservableClient {
     opts?: ObservableClient.ApplyActionOptions,
   ) => Promise<unknown>;
 
-  canonicalizeWhereClause: <T extends ObjectTypeDefinition>(
+  canonicalizeWhereClause: <
+    T extends ObjectTypeDefinition | InterfaceDefinition,
+  >(
     where: WhereClause<T>,
   ) => Canonical<WhereClause<T>>;
 }

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
-import type { OntologyObjectV2 } from "@osdk/foundry.ontologies";
+import type { Osdk } from "@osdk/api";
 import invariant from "tiny-invariant";
 import { GeotimeSeriesPropertyImpl } from "../../createGeotimeSeriesProperty.js";
 import { MediaReferencePropertyImpl } from "../../createMediaReferenceProperty.js";
@@ -23,6 +22,7 @@ import { TimeSeriesPropertyImpl } from "../../createTimeseriesProperty.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { hydrateAttachmentFromRidInternal } from "../../public-utils/hydrateAttachmentFromRid.js";
+import type { SimpleOsdkProperties } from "../convertWireToOsdkObjects.js";
 import { get$as } from "./getDollarAs.js";
 import { get$link } from "./getDollarLink.js";
 import {
@@ -31,11 +31,6 @@ import {
   UnderlyingOsdkObject,
 } from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
-
-interface InternalOsdkInstance {
-  [ObjectDefRef]: FetchedObjectTypeDefinition;
-  [ClientRef]: MinimalClient;
-}
 
 const specialPropertyTypes = new Set(
   [
@@ -52,21 +47,22 @@ const specialPropertyTypes = new Set(
 // every time an object is created.
 const basePropDefs = {
   "$as": {
-    get: function(this: InternalOsdkInstance) {
+    get: function(this: ObjectHolder) {
       return get$as(this[ObjectDefRef]);
     },
   },
   "$link": {
-    get: function(this: InternalOsdkInstance & ObjectHolder<any>) {
+    get: function(this: ObjectHolder) {
       return get$link(this);
     },
   },
   "$clone": {
     value: function(
-      this: InternalOsdkInstance & ObjectHolder<any>,
+      this: ObjectHolder,
       update: Record<string, any> | undefined,
     ) {
-      const rawObj = this[UnderlyingOsdkObject];
+      // I think `rawObj` is the same thing as `this` and can be removed?
+      const rawObj = this[UnderlyingOsdkObject] as SimpleOsdkProperties;
       const def = this[ObjectDefRef];
 
       if (update == null) {
@@ -92,42 +88,50 @@ const basePropDefs = {
   },
 };
 
-/** @internal */
+/**
+ * @internal
+ * @param client
+ * @param objectDef
+ * @param rawObj
+ */
 export function createOsdkObject<
   Q extends FetchedObjectTypeDefinition,
 >(
   client: MinimalClient,
   objectDef: Q,
-  rawObj: OntologyObjectV2,
-): Osdk<ObjectTypeDefinition, any> {
+  rawObj: SimpleOsdkProperties,
+): ObjectHolder {
   // updates the object's "hidden class/map".
-  Object.defineProperties(rawObj, {
-    [UnderlyingOsdkObject]: {
-      enumerable: false,
-      value: rawObj,
-    },
-    [ObjectDefRef]: { value: objectDef, enumerable: false },
-    [ClientRef]: { value: client, enumerable: false },
-    ...basePropDefs,
-  });
+  const o = Object.defineProperties(
+    rawObj as ObjectHolder,
+    {
+      [UnderlyingOsdkObject]: {
+        enumerable: false,
+        value: rawObj,
+      },
+      [ObjectDefRef]: { value: objectDef, enumerable: false },
+      [ClientRef]: { value: client, enumerable: false },
+      ...basePropDefs,
+    } satisfies Record<keyof ObjectHolder, PropertyDescriptor>,
+  );
 
   // Assign the special values
-  for (const propKey of Object.keys(rawObj)) {
+  for (const propKey of Object.keys(o)) {
     if (
       propKey in objectDef.properties
       && typeof (objectDef.properties[propKey].type) === "string"
       && specialPropertyTypes.has(objectDef.properties[propKey].type)
     ) {
-      rawObj[propKey] = createSpecialProperty(
+      o[propKey] = createSpecialProperty(
         client,
         objectDef,
-        rawObj as any,
+        o as Osdk.Instance<any>,
         propKey,
       );
     }
   }
 
-  return Object.freeze(rawObj) as Osdk<ObjectTypeDefinition, any>;
+  return Object.freeze(o);
 }
 
 function createSpecialProperty(

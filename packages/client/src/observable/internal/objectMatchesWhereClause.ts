@@ -16,12 +16,13 @@
 
 import type {
   ObjectTypeDefinition,
-  Osdk,
   PossibleWhereClauseFilters,
   WhereClause,
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import invariant from "tiny-invariant";
+import type { InterfaceHolder } from "../../object/convertWireToOsdkObjects/InterfaceHolder.js";
+import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 
 function is$and(
   whereClause: WhereClause<ObjectTypeDefinition>,
@@ -75,7 +76,7 @@ function is$not(
 }
 
 export function objectSortaMatchesWhereClause(
-  o: Osdk.Instance<ObjectTypeDefinition>,
+  o: ObjectHolder | InterfaceHolder,
   whereClause: WhereClause<ObjectTypeDefinition>,
   strict: boolean,
 ): boolean {
@@ -99,7 +100,7 @@ export function objectSortaMatchesWhereClause(
 
   return Object.entries(whereClause).every(([key, filter]) => {
     if (typeof filter === "object") {
-      const realValue = o[key as keyof typeof o];
+      const realValue: any = o[key as keyof typeof o];
       const [f] = Object.keys(filter) as Array<PossibleWhereClauseFilters>;
       const expected = (filter as any)[f];
       switch (f) {

@@ -261,7 +261,7 @@ describe("OsdkObject", () => {
           "fullName": "Jane Doe",
           "office": "NYC",
         },
-      ) as Osdk.Instance<
+      ) as unknown as Osdk.Instance<
         Employee,
         never,
         "class" | "employeeId" | "fullName" | "office"

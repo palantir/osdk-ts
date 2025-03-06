@@ -1,8 +1,8 @@
 import type { WhereClause } from "@osdk/client";
 import { useOsdkObjects } from "@osdk/react/experimental";
 import "./App.css";
-import type { Todo } from "./generatedNoCheck2/index.js";
-import { $Objects } from "./generatedNoCheck2/index.js";
+import * as React from "react";
+import { Todo , $Interfaces } from "./generatedNoCheck2/index.js";
 import { H2 } from "./H2.js";
 import { InlineSpinner } from "./InlineSpinner.js";
 import { SmallTextDiv, TodoView } from "./TodoView.js";
@@ -14,11 +14,11 @@ interface TodoListProps {
 
 function TodoList({ where, heading }: TodoListProps) {
   const { data, isLoading, isOptimistic } = useOsdkObjects(
-    $Objects.Todo,
+    $Interfaces.TodoLike,
     {
       where,
       orderBy: {
-        title: "asc",
+        name: "asc",
       },
       streamUpdates: true,
     },
@@ -44,8 +44,8 @@ function TodoList({ where, heading }: TodoListProps) {
       {data
         && data.map((todo) => (
           <TodoView
-            todo={todo}
-            key={todo.id}
+            todo={todo.$as(Todo)}
+            key={String(todo.$primaryKey)}
           />
         ))}
     </>

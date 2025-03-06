@@ -63,7 +63,10 @@ export namespace ObjectSetSubscription {
   }
 }
 
-type ObjectUpdate<
+/**
+ * @internal
+ */
+export type ObjectUpdate<
   O extends ObjectOrInterfaceDefinition,
   P extends PropertyKeys<O>,
 > = {

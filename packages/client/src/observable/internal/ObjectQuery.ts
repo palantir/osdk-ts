@@ -24,6 +24,7 @@ import deepEqual from "fast-deep-equal";
 import type { Connectable, Observable, Subject } from "rxjs";
 import { BehaviorSubject, connectable, map } from "rxjs";
 import { additionalContext } from "../../Client.js";
+import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
 import type { CommonObserveOptions, Status } from "../ObservableClient.js";
 import type { CacheKey } from "./CacheKey.js";
@@ -33,7 +34,7 @@ import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 
 export interface ObjectEntry extends Entry<ObjectCacheKey> {}
 
-type ObjectStorageData = Osdk.Instance<ObjectTypeDefinition>;
+type ObjectStorageData = ObjectHolder;
 
 export interface ObjectCacheKey extends
   CacheKey<
@@ -82,7 +83,7 @@ export class ObjectQuery extends Query<
   protected _createConnectable(
     subject: Observable<SubjectPayload<ObjectCacheKey>>,
   ): Connectable<ObjectPayload> {
-    return connectable(
+    return connectable<ObjectPayload>(
       subject.pipe(
         map((x) => {
           return {
@@ -117,7 +118,7 @@ export class ObjectQuery extends Query<
     const obj = await objectSet.fetchOne(this.#pk);
     this.store.batch({}, (batch) => {
       this.writeToStore(
-        obj as Osdk.Instance<ObjectTypeDefinition>,
+        obj as ObjectHolder<typeof obj>,
         "loaded",
         batch,
       );
@@ -125,7 +126,7 @@ export class ObjectQuery extends Query<
   }
 
   writeToStore(
-    data: Osdk.Instance<ObjectTypeDefinition>,
+    data: ObjectHolder,
     status: Status,
     batch: BatchContext,
   ): Entry<ObjectCacheKey> {
@@ -153,4 +154,25 @@ export class ObjectQuery extends Query<
 
     return ret;
   }
+}
+
+/** @internal */
+export function storeOsdkInstances(
+  store: Store,
+  values: Array<Osdk.Instance<ObjectTypeDefinition>>,
+  batch: BatchContext,
+): ObjectCacheKey[] {
+  // update the cache for any object that has changed
+  // and save the mapped values to return
+  return values.map(v => {
+    return store.getObjectQuery(
+      v.$apiName,
+      v.$primaryKey as string | number,
+    )
+      .writeToStore(
+        v as ObjectHolder<typeof v>,
+        "loaded",
+        batch,
+      ).cacheKey;
+  });
 }

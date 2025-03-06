@@ -17,6 +17,7 @@
 import type {
   ActionDefinition,
   ActionEditResponse,
+  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -36,10 +37,16 @@ import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import type { Client } from "../../Client.js";
 import { additionalContext } from "../../Client.js";
 import type { LogFn, Logger } from "../../Logger.js";
+import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
-import type { Status, Unsubscribable } from "../ObservableClient.js";
+import type { OrderBy, Status, Unsubscribable } from "../ObservableClient.js";
 import type { Entry } from "./Layer.js";
+import type { ListQueryOptions } from "./ListQuery.js";
+import type { ObjectCacheKey } from "./ObjectQuery.js";
+import { storeOsdkInstances } from "./ObjectQuery.js";
+import type { OptimisticId } from "./OptimisticId.js";
+import type { Store } from "./Store.js";
 
 const chalk = new Chalk(); // new Chalk({ level: 3 });
 
@@ -208,7 +215,7 @@ export function createClientMockHelper(): MockClientHelper {
       Osdk.Instance<ObjectOrInterfaceDefinition, never, any, {}>[]
     >();
     vi.mocked(client[additionalContext].objectFactory2).mockReturnValueOnce(
-      d.promise,
+      d.promise as Promise<ObjectHolder[]>,
     );
     return d;
   }
@@ -329,7 +336,9 @@ export function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
   expect(subFn.next).toHaveBeenCalledExactlyOnceWith(
     listPayloadContaining({
       ...payloadOptions,
-      resolvedList,
+      resolvedList: resolvedList as unknown as Array<
+        ObjectHolder
+      >,
     }),
   );
   subFn.next.mockClear();
@@ -525,4 +534,80 @@ interface CustomAsymmetricMatchers<R = any> {
 declare module "vitest" {
   interface Assertion<T = any> extends CustomMatchers<T> {}
   interface AsymmetricMatchersContaining extends CustomAsymmetricMatchers {}
+}
+
+/**
+ * Updates the internal state of a list and will create a new internal query if needed.
+ *
+ * Helper method only for tests right now. May be removed later.
+ *
+ * @param apiName
+ * @param where
+ * @param orderBy
+ * @param objects
+ * @param param4
+ * @param opts
+ */
+export function updateList<
+  T extends ObjectTypeDefinition | InterfaceDefinition,
+>(
+  store: Store,
+  {
+    type,
+    where,
+    orderBy,
+  }: {
+    type: Pick<T, "apiName" | "type">;
+    where: WhereClause<T>;
+    orderBy: OrderBy<T>;
+  },
+  objects: Osdk.Instance<T>[],
+  { optimisticId }: { optimisticId?: OptimisticId } = {},
+  opts: ListQueryOptions = { dedupeInterval: 0 },
+): void {
+  if (process.env.NODE_ENV !== "production") {
+    store.logger?.child({ methodName: "updateList" }).info(
+      "",
+      { optimisticId },
+    );
+  }
+
+  const query = store.getListQuery(
+    type,
+    where ?? {},
+    orderBy ?? {},
+    opts,
+  );
+
+  store.batch({ optimisticId }, (batch) => {
+    const objectCacheKeys = storeOsdkInstances(store, objects, batch);
+    query.updateList(objectCacheKeys, false, "loaded", batch);
+  });
+}
+
+export function getObject(
+  store: Store,
+  type: string,
+  pk: number,
+): ObjectHolder | undefined {
+  return store.getValue(store.getCacheKey<ObjectCacheKey>("object", type, pk))
+    ?.value;
+}
+
+export function updateObject<T extends ObjectOrInterfaceDefinition>(
+  store: Store,
+  value: Osdk.Instance<any>,
+  { optimisticId }: { optimisticId?: OptimisticId } = {},
+): Osdk.Instance<T> {
+  const query = store.getObjectQuery(value.$apiName, value.$primaryKey);
+
+  store.batch({ optimisticId }, (batch) => {
+    return query.writeToStore(
+      value as ObjectHolder<typeof value>,
+      "loaded",
+      batch,
+    );
+  });
+
+  return value;
 }
