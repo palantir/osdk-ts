@@ -1036,9 +1036,7 @@ export namespace QueryParam {
     //
     // (undocumented)
     export type RangeKey<T extends AggregationRangeKeyTypes> = AggKeyClientToWire<"range", T>;
-    	// Warning: (ae-forgotten-export) The symbol "ThreeDimensionalAggregation" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
+    	// (undocumented)
     export type ThreeDimensionalAggregationType<
     		OUT extends AggregationKeyTypes | RangeKey<any>,
     		IN extends AggregationKeyTypes | RangeKey<any>,
@@ -1046,7 +1044,6 @@ export namespace QueryParam {
     	> = ThreeDimensionalAggregation<OUT extends AggregationKeyTypes ? AggKeyClientToWire<OUT> : OUT, IN extends AggregationKeyTypes ? AggKeyClientToWire<IN> : IN, AggValueClientToWire<V>>;
     	// Warning: (ae-forgotten-export) The symbol "AggregationKeyTypes" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "AggregationValueTypes" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "TwoDimensionalAggregation" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "AggValueClientToWire" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -1088,6 +1085,18 @@ export namespace QueryResult {
     	> = TwoDimensionalAggregation<T extends AggregationKeyTypes ? AggKeyWireToClient<T> : T, AggValueWireToClient<V>>;
 }
 
+// Warning: (ae-forgotten-export) The symbol "AllowedBucketTypes_2" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type Range_2<T extends AllowedBucketTypes_2> = {
+    	startValue?: T
+    	endValue: T
+} | {
+    	startValue: T
+    	endValue?: T
+};
+export { Range_2 as Range }
+
 // Warning: (ae-forgotten-export) The symbol "ErrorResult" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -1126,6 +1135,21 @@ export type SingleOsdkResult<
 	S extends NullabilityAdherence,
 	RDPs extends Record<string, SimplePropertyDef> = {}
 > = Osdk.Instance<Q, ExtractOptions<R, S>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>;
+
+// Warning: (ae-forgotten-export) The symbol "AllowedBucketKeyTypes_2" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type ThreeDimensionalAggregation<
+	T extends AllowedBucketKeyTypes_2,
+	U extends AllowedBucketKeyTypes_2,
+	V extends AllowedBucketTypes_2
+> = {
+    	key: T
+    	groups: {
+        		key: U
+        		value: V
+        	}[]
+}[];
 
 // Warning: (ae-forgotten-export) The symbol "AggregationKeyDataType" needs to be exported by the entry point index.d.ts
 //
@@ -1206,6 +1230,15 @@ export type TimeSeriesQuery = {
     	$after?: never
     	$unit?: never
 };
+
+// @public (undocumented)
+export type TwoDimensionalAggregation<
+	T extends AllowedBucketKeyTypes_2,
+	U extends AllowedBucketTypes_2
+> = {
+    	key: T
+    	value: U
+}[];
 
 // @public (undocumented)
 export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<AggregationValueTypes>;

@@ -4,6 +4,13 @@
 
 ```ts
 
+import { Attachment } from '@osdk/api';
+import { Range as Range_2 } from '@osdk/api';
+import { ThreeDimensionalAggregation } from '@osdk/api';
+import { TwoDimensionalAggregation } from '@osdk/api';
+
+export { Attachment }
+
 // @public (undocumented)
 export type DateISOString<T extends string = string> = T & {
     	__dateBrand?: void
@@ -29,10 +36,16 @@ export type Long<T extends string = string> = T & {
     	__longBrand?: void
 };
 
+export { Range_2 as Range }
+
+export { ThreeDimensionalAggregation }
+
 // @public (undocumented)
 export type TimestampISOString<T extends string = string> = T & {
     	__timestampBrand?: void
 };
+
+export { TwoDimensionalAggregation }
 
 // (No @packageDocumentation comment for this package)
 
