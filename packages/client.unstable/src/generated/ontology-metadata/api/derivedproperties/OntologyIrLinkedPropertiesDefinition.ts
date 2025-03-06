@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeFieldApiName } from "../ObjectTypeFieldApiName.js";
-import type { LinkDefinition } from "./LinkDefinition.js";
+import type { OntologyIrLinkDefinition } from "./OntologyIrLinkDefinition.js";
 import type { OntologyIrPropertyTypeIdentifier } from "./OntologyIrPropertyTypeIdentifier.js";
 
 /**
@@ -27,5 +27,5 @@ export interface OntologyIrLinkedPropertiesDefinition {
     ObjectTypeFieldApiName,
     OntologyIrPropertyTypeIdentifier
   >;
-  linkDefinition: LinkDefinition;
+  linkDefinition: OntologyIrLinkDefinition;
 }

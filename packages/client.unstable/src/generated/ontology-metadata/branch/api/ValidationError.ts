@@ -21,6 +21,7 @@ import type { FoundrySchemaConstraintError } from "./FoundrySchemaConstraintErro
 import type { GeotimeSeriesReferencePropertyTypeConstraintError } from "./GeotimeSeriesReferencePropertyTypeConstraintError.js";
 import type { InterfaceImplementationError } from "./InterfaceImplementationError.js";
 import type { MediaReferencePropertyTypeConstraintError } from "./MediaReferencePropertyTypeConstraintError.js";
+import type { MergeConstraintError } from "./MergeConstraintError.js";
 import type { NumberOfDatasourcesConstraintError } from "./NumberOfDatasourcesConstraintError.js";
 import type { ObjectTypePropertyConstraintError } from "./ObjectTypePropertyConstraintError.js";
 import type { PropertySecurityGroupsConstraintError } from "./PropertySecurityGroupsConstraintError.js";
@@ -83,6 +84,11 @@ export interface ValidationError_propertySecurityGroupsConstraint {
   propertySecurityGroupsConstraint: PropertySecurityGroupsConstraintError;
 }
 
+export interface ValidationError_mergeConstraint {
+  type: "mergeConstraint";
+  mergeConstraint: MergeConstraintError;
+}
+
 export interface ValidationError_genericOntologyMetadataError {
   type: "genericOntologyMetadataError";
   genericOntologyMetadataError: GenericOntologyMetadataError;
@@ -99,4 +105,5 @@ export type ValidationError =
   | ValidationError_datasourceModificationConstraint
   | ValidationError_objectTypePropertyConstraint
   | ValidationError_propertySecurityGroupsConstraint
+  | ValidationError_mergeConstraint
   | ValidationError_genericOntologyMetadataError;

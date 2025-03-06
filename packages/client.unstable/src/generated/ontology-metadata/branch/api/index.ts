@@ -18,6 +18,7 @@ export * as OntologyBranchService from "./OntologyBranchService.js";
 
 export type { BaseFormatterReferencedPropertiesDoNotExistError } from "./BaseFormatterReferencedPropertiesDoNotExistError.js";
 export type { BaseValueTypeUsageError } from "./BaseValueTypeUsageError.js";
+export type { BranchConflictsWithMain } from "./BranchConflictsWithMain.js";
 export type { BranchIndexingConfig } from "./BranchIndexingConfig.js";
 export type { BranchLock } from "./BranchLock.js";
 export type { BranchMergeStatus } from "./BranchMergeStatus.js";
@@ -96,6 +97,7 @@ export type { MediaReferencePropertyTypeConstraintError } from "./MediaReference
 export type { MediaReferencePropertyTypeHasNoDatasourcesError } from "./MediaReferencePropertyTypeHasNoDatasourcesError.js";
 export type { MediaViewDatasourceDoesNotReferenceMediaReferencePropertiesError } from "./MediaViewDatasourceDoesNotReferenceMediaReferencePropertiesError.js";
 export type { MergeableStatus } from "./MergeableStatus.js";
+export type { MergeConstraintError } from "./MergeConstraintError.js";
 export type { MergedStatusV2 } from "./MergedStatusV2.js";
 export type { MergeOntologyServiceBranchRequest } from "./MergeOntologyServiceBranchRequest.js";
 export type { MergeOntologyServiceBranchResponse } from "./MergeOntologyServiceBranchResponse.js";

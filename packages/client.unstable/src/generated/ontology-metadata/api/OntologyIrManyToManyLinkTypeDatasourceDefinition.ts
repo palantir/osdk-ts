@@ -15,19 +15,12 @@
  */
 
 import type { OntologyIrManyToManyLinkTypeDatasetDatasource } from "./OntologyIrManyToManyLinkTypeDatasetDatasource.js";
-import type { OntologyIrManyToManyLinkTypeStreamDatasource } from "./OntologyIrManyToManyLinkTypeStreamDatasource.js";
 export interface OntologyIrManyToManyLinkTypeDatasourceDefinition_dataset {
   type: "dataset";
   dataset: OntologyIrManyToManyLinkTypeDatasetDatasource;
-}
-
-export interface OntologyIrManyToManyLinkTypeDatasourceDefinition_stream {
-  type: "stream";
-  stream: OntologyIrManyToManyLinkTypeStreamDatasource;
 }
 /**
  * Wrapper type for all supported many to many link type datasource types.
  */
 export type OntologyIrManyToManyLinkTypeDatasourceDefinition =
-  | OntologyIrManyToManyLinkTypeDatasourceDefinition_dataset
-  | OntologyIrManyToManyLinkTypeDatasourceDefinition_stream;
+  OntologyIrManyToManyLinkTypeDatasourceDefinition_dataset;

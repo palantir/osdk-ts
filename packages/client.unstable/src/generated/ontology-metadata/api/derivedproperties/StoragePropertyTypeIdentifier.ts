@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import type { OntologyBranchRid } from "../../api/OntologyBranchRid.js";
-import type { OntologyBranch } from "./OntologyBranch.js";
-export interface CreateOntologyServiceBranchResponse {
-  ontologyBranchRid: OntologyBranchRid;
-  ontologyBranch: OntologyBranch;
+import type { PropertyTypeRid } from "../PropertyTypeRid.js";
+export interface StoragePropertyTypeIdentifier_propertyType {
+  type: "propertyType";
+  propertyType: PropertyTypeRid;
 }
+export type StoragePropertyTypeIdentifier =
+  StoragePropertyTypeIdentifier_propertyType;

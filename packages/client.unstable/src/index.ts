@@ -74,6 +74,8 @@ export type {
   OntologyIrValueTypeBlockDataEntry,
 } from "./blockDataIr.js";
 export type { OntologyIrObjectTypeBlockDataV2 } from "./generated/ontology-metadata/api/blockdata/OntologyIrObjectTypeBlockDataV2.js";
+export type { InterfaceSharedPropertyType } from "./generated/ontology-metadata/api/InterfaceSharedPropertyType.js";
+export type { OntologyIrInterfaceSharedPropertyType } from "./generated/ontology-metadata/api/OntologyIrInterfaceSharedPropertyType.js";
 export type { OntologyIrObjectType } from "./generated/ontology-metadata/api/OntologyIrObjectType.js";
 export type { OntologyIrObjectTypeDatasource } from "./generated/ontology-metadata/api/OntologyIrObjectTypeDatasource.js";
 export type { OntologyIrObjectTypeDatasourceDefinition } from "./generated/ontology-metadata/api/OntologyIrObjectTypeDatasourceDefinition.js";

@@ -85,6 +85,7 @@ export type { ObjectStorageV2Modification } from "./ObjectStorageV2Modification.
 export type { ObjectTypeCreate } from "./ObjectTypeCreate.js";
 export type { ObjectTypeDatasetDatasourceModification } from "./ObjectTypeDatasetDatasourceModification.js";
 export type { ObjectTypeDatasetDatasourceV2Modification } from "./ObjectTypeDatasetDatasourceV2Modification.js";
+export type { ObjectTypeDatasetDatasourceV3Modification } from "./ObjectTypeDatasetDatasourceV3Modification.js";
 export type { ObjectTypeDatasourceCreate } from "./ObjectTypeDatasourceCreate.js";
 export type { ObjectTypeDatasourceDelete } from "./ObjectTypeDatasourceDelete.js";
 export type { ObjectTypeDatasourceModificationDefinition } from "./ObjectTypeDatasourceModificationDefinition.js";
