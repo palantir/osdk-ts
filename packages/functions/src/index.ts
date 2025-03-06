@@ -22,3 +22,10 @@ export type {
   Long,
   TimestampISOString,
 } from "./PrimitiveTypes.js";
+
+export type {
+  Attachment,
+  Range,
+  ThreeDimensionalAggregation,
+  TwoDimensionalAggregation,
+} from "@osdk/api";
