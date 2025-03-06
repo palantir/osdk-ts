@@ -99,7 +99,7 @@ async function runTest(
     "--sdkVersion",
     sdkVersion,
     "--scopes",
-    "api:read-data api:write-data",
+    "api:read-data",
   ]);
 
   expect(fs.readdirSync(path.join(process.cwd(), project)).length)
