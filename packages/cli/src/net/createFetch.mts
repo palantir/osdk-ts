@@ -15,12 +15,13 @@
  */
 
 import { ExitProcessError } from "@osdk/cli.common";
-import { PalantirApiError } from "@osdk/shared.net.errors";
+import { PalantirApiError, UnknownError } from "@osdk/shared.net.errors";
 import {
   createFetchHeaderMutator,
   createFetchOrThrow,
 } from "@osdk/shared.net.fetch";
 import { consola } from "consola";
+import { inspect } from "node:util";
 import prettyBytes from "pretty-bytes";
 import { USER_AGENT } from "./UserAgent.js";
 
@@ -111,16 +112,21 @@ function handleFetchError(e: unknown): Promise<Response> {
       `The .zip file contains a file${currentFilePathPart}${currentFileSizePart} that is too large${fileSizeLimitPart}`;
     tip = "Ensure all files in the production build are below the size limit";
   } else {
-    const { errorCode, errorName, errorInstanceId, parameters } = e;
-    // Include extra info about the original API error in CLI error messages
-    // https://www.palantir.com/docs/foundry/api/general/overview/errors/
-    message = `${e.message}\n\n${
-      JSON.stringify(
-        { errorCode, errorName, errorInstanceId, parameters },
-        null,
-        2,
-      )
-    }`;
+    if (e instanceof UnknownError) {
+      // Include deep inspect of original error
+      message = `${e.message}\n\n${inspect(e, { depth: 10, colors: true })}`;
+    } else {
+      // Include extra info about the original API error
+      // https://www.palantir.com/docs/foundry/api/general/overview/errors/
+      const { errorCode, errorName, errorInstanceId, parameters } = e;
+      message = `${e.message}\n\n${
+        JSON.stringify(
+          { errorCode, errorName, errorInstanceId, parameters },
+          null,
+          2,
+        )
+      }`;
+    }
   }
 
   throw new ExitProcessError(1, message, tip, e);

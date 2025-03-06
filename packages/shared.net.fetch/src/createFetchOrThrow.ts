@@ -34,29 +34,39 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
     try {
       response = await fetchFn(url, requestInit);
     } catch (e) {
-      throw convertError(e, "A network error occurred");
+      throw convertError(e, undefined, "A network error occurred");
     }
 
     if (!response.ok) {
+      const fallbackMessage =
+        `Failed to fetch ${response.status} ${response.statusText}`;
+
       if (response.headers.get("Content-Type") === "text/plain") {
-        throw new PalantirApiError(await response.text());
+        throw new UnknownError(await response.text(), response.status);
+      }
+
+      if (response.headers.get("Content-Type") === "text/html") {
+        throw new UnknownError(
+          fallbackMessage,
+          response.status,
+          new Error("Received HTML error page: " + await response.text()),
+        );
       }
 
       let body;
       try {
         body = await response.json();
       } catch (e) {
-        throw new PalantirApiError(
-          `Failed to fetch ${response.status} ${response.statusText}`,
-          "UNKNOWN",
-          undefined,
+        throw new UnknownError(
+          fallbackMessage,
           response.status,
+          e instanceof Error ? e : undefined,
         );
       }
 
       throw new PalantirApiError(
         body?.message
-          ?? `Failed to fetch ${response.status} ${response.statusText}`,
+          ?? fallbackMessage,
         body?.errorName,
         body?.errorCode,
         response.status,
@@ -70,10 +80,11 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
 
 function convertError(
   e: any,
+  statusCode: number | undefined,
   msgIfNotError: string = "An unknown error occurred",
 ) {
   if (e instanceof Error) {
-    return new UnknownError(e.message, "UNKNOWN", e);
+    return new UnknownError(e.message, statusCode, e);
   }
-  return new UnknownError(msgIfNotError, "UNKNOWN");
+  return new UnknownError(msgIfNotError, statusCode);
 }

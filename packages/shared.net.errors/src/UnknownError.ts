@@ -18,8 +18,8 @@ import { PalantirApiError } from "./PalantirApiError.js";
 
 export class UnknownError extends PalantirApiError {
   originalError: Error | undefined;
-  constructor(message: string, errorType: string, originalError?: Error) {
-    super(message, errorType);
+  constructor(message: string, statusCode?: number, originalError?: Error) {
+    super(message, undefined, undefined, statusCode);
     this.originalError = originalError;
   }
 }
