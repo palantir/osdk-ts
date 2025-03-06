@@ -19,9 +19,14 @@ import type {
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
 import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
-import type { ExtractOptions, IsNever, Osdk } from "../OsdkObjectFrom.js";
+import type {
+  ExtractOptions,
+  ExtractOrderByOptions,
+  IsNever,
+  Osdk,
+} from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
-import type { NullabilityAdherence, OrderByType } from "./FetchPageArgs.js";
+import type { NullabilityAdherence, OrderByOptions } from "./FetchPageArgs.js";
 
 /** exposed for a test */
 export type RespectNullability<S extends NullabilityAdherence> = S extends false
@@ -52,11 +57,22 @@ export type FetchPageResult<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
-  Z extends OrderByType<Q, L> = {},
+  Z extends OrderByOptions<Q, L> = {},
 > = PageResult<
-  PropertyKeys<Q> extends L
-    ? Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q>, {}, Z>
-    : Osdk.Instance<Q, ExtractOptions<R, S, T>, L, {}, Z>
+  PropertyKeys<Q> extends L ? Osdk.Instance<
+      Q,
+      ExtractOptions<R, S, T>,
+      PropertyKeys<Q>,
+      {},
+      ExtractOrderByOptions<Z extends "relevance" ? true : false>
+    >
+    : Osdk.Instance<
+      Q,
+      ExtractOptions<R, S, T>,
+      L,
+      {},
+      ExtractOrderByOptions<Z extends "relevance" ? true : false>
+    >
 >;
 
 /**
@@ -69,13 +85,13 @@ export type SingleOsdkResult<
   S extends NullabilityAdherence,
   RDPs extends Record<string, SimplePropertyDef> = {},
   T extends boolean = false,
-  Z extends OrderByType<Q, L> = {},
+  Z extends OrderByOptions<Q, L> = {},
 > = Osdk.Instance<
   Q,
   ExtractOptions<R, S, T>,
   PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
   { [K in Extract<keyof RDPs, L>]: RDPs[K] },
-  Z
+  ExtractOrderByOptions<Z extends "relevance" ? true : false>
 >;
 
 export type IsAny<T> = unknown extends T

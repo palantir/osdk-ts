@@ -23,7 +23,7 @@ import type {
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
-  OrderByType,
+  OrderByOptions,
   PropertyKeys,
   Result,
 } from "@osdk/api";
@@ -114,7 +114,7 @@ async function fetchInterfacePage<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
-  Z extends OrderByType<Q, L>,
+  Z extends OrderByOptions<Q, L>,
 >(
   client: MinimalClient,
   interfaceType: Q,
@@ -184,7 +184,7 @@ export async function fetchPageInternal<
   A extends Augments,
   S extends NullabilityAdherence,
   T extends boolean,
-  Z extends OrderByType<Q, L>,
+  Z extends OrderByOptions<Q, L>,
 >(
   client: MinimalClient,
   objectType: Q,
@@ -216,7 +216,7 @@ export async function fetchPageWithErrorsInternal<
   A extends Augments,
   S extends NullabilityAdherence,
   T extends boolean,
-  Z extends OrderByType<Q, L>,
+  Z extends OrderByOptions<Q, L>,
 >(
   client: MinimalClient,
   objectType: Q,
@@ -248,7 +248,7 @@ export async function fetchPage<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
-  Z extends OrderByType<Q, L>,
+  Z extends OrderByOptions<Q, L>,
 >(
   client: MinimalClient,
   objectType: Q,
@@ -265,7 +265,7 @@ export async function fetchPageWithErrors<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
-  Z extends OrderByType<Q, L>,
+  Z extends OrderByOptions<Q, L>,
 >(
   client: MinimalClient,
   objectType: Q,
@@ -282,7 +282,7 @@ function applyFetchArgs<
     pageSize?: PageSize;
   },
 >(
-  args: FetchPageArgs<any, any, any, any, any, any, OrderByType<any, any>>,
+  args: FetchPageArgs<any, any, any, any, any, any, OrderByOptions<any, any>>,
   body: X,
 ): X {
   if (args?.$nextPageToken) {
@@ -315,7 +315,7 @@ export async function fetchObjectPage<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
-  Z extends OrderByType<Q, L>,
+  Z extends OrderByOptions<Q, L>,
 >(
   client: MinimalClient,
   objectType: Q,

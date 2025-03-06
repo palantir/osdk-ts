@@ -231,7 +231,7 @@ export interface AsyncIterArgs<
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	T extends boolean = false,
-	Z extends OrderByType<Q, K> = {}
+	Z extends OrderByOptions<Q, K> = {}
 > extends SelectArg<Q, K, R, S>, OrderByArg<Q, Z, PropertyKeys<Q>> {
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
@@ -506,7 +506,7 @@ export interface FetchPageArgs<
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	T extends boolean = false,
-	Z extends OrderByType<Q, K> = {}
+	Z extends OrderByOptions<Q, K> = {}
 > extends AsyncIterArgs<Q, K, R, A, S, T, Z> {
     	// (undocumented)
     $nextPageToken?: string;
@@ -515,6 +515,7 @@ export interface FetchPageArgs<
 }
 
 // Warning: (ae-forgotten-export) The symbol "ExtractOptions" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ExtractOrderByOptions" needs to be exported by the entry point index.d.ts
 //
 // @public
 export type FetchPageResult<
@@ -523,8 +524,8 @@ export type FetchPageResult<
 	R extends boolean,
 	S extends NullabilityAdherence,
 	T extends boolean,
-	Z extends OrderByType<Q, L> = {}
-> = PageResult<PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q>, {}, Z> : Osdk.Instance<Q, ExtractOptions<R, S, T>, L, {}, Z>>;
+	Z extends OrderByOptions<Q, L> = {}
+> = PageResult<PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q>, {}, ExtractOrderByOptions<Z extends "relevance" ? true : false>> : Osdk.Instance<Q, ExtractOptions<R, S, T>, L, {}, ExtractOrderByOptions<Z extends "relevance" ? true : false>>>;
 
 // @public (undocumented)
 export type FilteredPropertyKeys<
@@ -841,7 +842,7 @@ export interface OntologyMetadata<_NEVER_USED_KEPT_FOR_BACKCOMPAT = any> {
 }
 
 // @public (undocumented)
-export type OrderByType<
+export type OrderByOptions<
 	Q extends ObjectOrInterfaceDefinition,
 	L extends PropertyKeys<Q> = PropertyKeys<Q>
 > = { [K in L]? : "asc" | "desc" } | "relevance";
@@ -867,14 +868,14 @@ export namespace Osdk {
     		OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
     		P extends PropertyKeys<Q> = PropertyKeys<Q>,
     		R extends Record<string, SimplePropertyDef> = {},
-    		Z extends OrderByType<Q, P> = {}
+    		ORDER_BY_OPTIONS extends never | "$score" = never
     	> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
         		readonly $link: Q extends {
             			linksType?: any
             		} ? Q["linksType"] : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q> : never
         		readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P, OPTIONS>>
         		readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(updatedObject?: Osdk.Instance<Q, any, NEW_PROPS> | { [K in NEW_PROPS]? : CompileTimeMetadata<Q>["props"][K] }) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>
-        	} & (Z extends "relevance" ? {
+        	} & (IsNever<ORDER_BY_OPTIONS> extends true ? {} : IsAny<ORDER_BY_OPTIONS> extends true ? {} : "$score" extends ORDER_BY_OPTIONS ? {
         		readonly $score: number
         	} : {}) & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
         		readonly $rid: string
@@ -1162,8 +1163,8 @@ export type SingleOsdkResult<
 	S extends NullabilityAdherence,
 	RDPs extends Record<string, SimplePropertyDef> = {},
 	T extends boolean = false,
-	Z extends OrderByType<Q, L> = {}
-> = Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }, Z>;
+	Z extends OrderByOptions<Q, L> = {}
+> = Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }, ExtractOrderByOptions<Z extends "relevance" ? true : false>>;
 
 // Warning: (ae-forgotten-export) The symbol "AllowedBucketKeyTypes_2" needs to be exported by the entry point index.d.ts
 //

@@ -24,7 +24,7 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
-  OrderByType,
+  OrderByOptions,
   Osdk,
   PrimaryKeyType,
   PropertyKeys,
@@ -180,7 +180,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherence.Default,
       T extends boolean = false,
-      Z extends OrderByType<Q, L> = {},
+      Z extends OrderByOptions<Q, L> = {},
     >(
       args?: AsyncIterArgs<Q, L, R, A, S, T, Z>,
     ): AsyncIterableIterator<SingleOsdkResult<Q, L, R, S, {}, T, Z>> {

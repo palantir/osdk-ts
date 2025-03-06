@@ -24,7 +24,7 @@ import type {
   Augments,
   FetchPageArgs,
   NullabilityAdherence,
-  OrderByType,
+  OrderByOptions,
   SelectArg,
 } from "../object/FetchPageArgs.js";
 import type { Result } from "../object/Result.js";
@@ -41,7 +41,11 @@ import type {
 } from "../ontology/ObjectTypeDefinition.js";
 import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { PrimaryKeyType } from "../OsdkBase.js";
-import type { ExtractOptions, Osdk } from "../OsdkObjectFrom.js";
+import type {
+  ExtractOptions,
+  ExtractOrderByOptions,
+  Osdk,
+} from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 import type { BaseObjectSet } from "./BaseObjectSet.js";
@@ -92,7 +96,7 @@ interface FetchPage<
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
-    Z extends OrderByType<Q, L> = {},
+    Z extends OrderByOptions<Q, L> = {},
   >(
     args?: FetchPageArgs<Q, L, R, A, S, T, Z>,
   ) => Promise<
@@ -102,7 +106,7 @@ interface FetchPage<
         ExtractOptions<R, S, T>,
         PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
         { [K in Extract<keyof RDPs, L>]: RDPs[K] },
-        Z
+        ExtractOrderByOptions<Z extends "relevance" ? true : false>
       >
     >
   >;
@@ -127,7 +131,7 @@ interface FetchPage<
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
-    Z extends OrderByType<Q, L> = {},
+    Z extends OrderByOptions<Q, L> = {},
   >(
     args?: FetchPageArgs<Q, L, R, A, S, T, Z>,
   ) => Promise<
@@ -138,7 +142,7 @@ interface FetchPage<
           ExtractOptions<R, S, T>,
           PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
           { [K in Extract<keyof RDPs, L>]: RDPs[K] },
-          Z
+          ExtractOrderByOptions<Z extends "relevance" ? true : false>
         >
       >
     >
@@ -183,7 +187,7 @@ interface AsyncIter<
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
-    Z extends OrderByType<Q, L> = {},
+    Z extends OrderByOptions<Q, L> = {},
   >(
     args?: AsyncIterArgs<Q, L, R, A, S, T, Z>,
   ) => AsyncIterableIterator<
@@ -192,7 +196,7 @@ interface AsyncIter<
       ExtractOptions<R, S, T>,
       PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
       { [K in Extract<keyof RDPs, L>]: RDPs[K] },
-      Z
+      ExtractOrderByOptions<Z extends "relevance" ? true : false>
     >
   >;
 }

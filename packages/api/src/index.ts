@@ -65,7 +65,7 @@ export type {
   Augments,
   FetchPageArgs,
   NullabilityAdherence,
-  OrderByType,
+  OrderByOptions,
   SelectArg,
   SelectArgToKeys,
 } from "./object/FetchPageArgs.js";
