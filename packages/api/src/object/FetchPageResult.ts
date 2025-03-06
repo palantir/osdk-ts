@@ -54,7 +54,8 @@ export type FetchPageResult<
   T extends boolean,
   Z extends OrderByType<Q, L> = {},
 > = PageResult<
-  PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q>, {}, Z>
+  PropertyKeys<Q> extends L
+    ? Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q>, {}, Z>
     : Osdk.Instance<Q, ExtractOptions<R, S, T>, L, {}, Z>
 >;
 

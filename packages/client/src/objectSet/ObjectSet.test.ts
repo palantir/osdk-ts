@@ -1058,6 +1058,8 @@ describe("ObjectSet", () => {
             | "employeeStatus"
             | "employeeSensor"
             | "employeeLocation"
+            | "skillSet"
+            | "skillSetEmbedding"
           >();
 
         // We don't have a proper definition that has

@@ -182,8 +182,8 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       T extends boolean = false,
       Z extends OrderByType<Q, L> = {},
     >(
-      args?: AsyncIterArgs<Q, L, R, A, S, T>,
-    ): AsyncIterableIterator<SingleOsdkResult<Q, L, R, S, {}, T,>> {
+      args?: AsyncIterArgs<Q, L, R, A, S, T, Z>,
+    ): AsyncIterableIterator<SingleOsdkResult<Q, L, R, S, {}, T, Z>> {
       let $nextPageToken: string | undefined = undefined;
       do {
         const result: FetchPageResult<

@@ -230,16 +230,9 @@ export interface AsyncIterArgs<
 	R extends boolean = false,
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
-<<<<<<< HEAD
-	T extends boolean = false
-> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
-||||||| parent of d56ec163 (Move $score field out of Osdk base and conditionally expose it)
-	S extends NullabilityAdherence = NullabilityAdherence.Default
-> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
-=======
+	T extends boolean = false,
 	Z extends OrderByType<Q, K> = {}
 > extends SelectArg<Q, K, R, S>, OrderByArg<Q, Z, PropertyKeys<Q>> {
->>>>>>> d56ec163 (Move $score field out of Osdk base and conditionally expose it)
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
     	// (undocumented)
@@ -512,16 +505,9 @@ export interface FetchPageArgs<
 	R extends boolean = false,
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
-<<<<<<< HEAD
-	T extends boolean = false
-> extends AsyncIterArgs<Q, K, R, A, S, T> {
-||||||| parent of d56ec163 (Move $score field out of Osdk base and conditionally expose it)
-	S extends NullabilityAdherence = NullabilityAdherence.Default
-> extends AsyncIterArgs<Q, K, R, A, S> {
-=======
+	T extends boolean = false,
 	Z extends OrderByType<Q, K> = {}
-> extends AsyncIterArgs<Q, K, R, A, S, Z> {
->>>>>>> d56ec163 (Move $score field out of Osdk base and conditionally expose it)
+> extends AsyncIterArgs<Q, K, R, A, S, T, Z> {
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
@@ -536,16 +522,9 @@ export type FetchPageResult<
 	L extends PropertyKeys<Q>,
 	R extends boolean,
 	S extends NullabilityAdherence,
-<<<<<<< HEAD
-	T extends boolean
-> = PageResult<PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S, T>> : Osdk.Instance<Q, ExtractOptions<R, S, T>, L>>;
-||||||| parent of d56ec163 (Move $score field out of Osdk base and conditionally expose it)
-	S extends NullabilityAdherence
-> = PageResult<PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S>> : Osdk.Instance<Q, ExtractOptions<R, S>, L>>;
-=======
+	T extends boolean,
 	Z extends OrderByType<Q, L> = {}
-> = PageResult<PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S>, PropertyKeys<Q>, {}, Z> : Osdk.Instance<Q, ExtractOptions<R, S>, L, {}, Z>>;
->>>>>>> d56ec163 (Move $score field out of Osdk base and conditionally expose it)
+> = PageResult<PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q>, {}, Z> : Osdk.Instance<Q, ExtractOptions<R, S, T>, L, {}, Z>>;
 
 // @public (undocumented)
 export type FilteredPropertyKeys<
@@ -908,17 +887,7 @@ export type OsdkBase<Q extends ObjectOrInterfaceDefinition> = {
     	readonly $objectType: string
     	readonly $primaryKey: PrimaryKeyType<Q>
     	readonly $title: string | undefined
-<<<<<<< HEAD
-<<<<<<< HEAD
     	readonly $objectSpecifier: ObjectSpecifier<Q>
-||||||| parent of b44270ef (Add tests)
-=======
-    	readonly $score?: number | undefined
->>>>>>> b44270ef (Add tests)
-||||||| parent of d56ec163 (Move $score field out of Osdk base and conditionally expose it)
-    	readonly $score?: number | undefined
-=======
->>>>>>> d56ec163 (Move $score field out of Osdk base and conditionally expose it)
 };
 
 // @public @deprecated (undocumented)
@@ -1192,8 +1161,9 @@ export type SingleOsdkResult<
 	R extends boolean,
 	S extends NullabilityAdherence,
 	RDPs extends Record<string, SimplePropertyDef> = {},
-	T extends boolean = false
-> = Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>;
+	T extends boolean = false,
+	Z extends OrderByType<Q, L> = {}
+> = Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }, Z>;
 
 // Warning: (ae-forgotten-export) The symbol "AllowedBucketKeyTypes_2" needs to be exported by the entry point index.d.ts
 //
