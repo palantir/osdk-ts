@@ -24,13 +24,13 @@ export namespace createFooInterface {
 
   // Represents a fqn of the action
   export interface Signatures {
-    applyAction<P extends createFooInterface.Params, OP extends ApplyActionOptions>(
-      args: P,
+    applyAction<OP extends ApplyActionOptions>(
+      args: createFooInterface.Params,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
 
-    batchApplyAction<P extends ReadonlyArray<createFooInterface.Params>, OP extends ApplyBatchActionOptions>(
-      args: P,
+    batchApplyAction<OP extends ApplyBatchActionOptions>(
+      args: ReadonlyArray<createFooInterface.Params>,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }
