@@ -34,7 +34,7 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
     try {
       response = await fetchFn(url, requestInit);
     } catch (e) {
-      throw convertError(e, undefined, "A network error occurred");
+      throw convertError(e, "A network error occurred");
     }
 
     if (!response.ok) {
@@ -42,11 +42,11 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
         `Failed to fetch ${response.status} ${response.statusText}`;
 
       if (response.headers.get("Content-Type") === "text/plain") {
-        throw new UnknownError(await response.text(), response.status);
+        throw unknownError(await response.text(), response.status);
       }
 
       if (response.headers.get("Content-Type") === "text/html") {
-        throw new UnknownError(
+        throw unknownError(
           fallbackMessage,
           response.status,
           new Error("Received HTML error page: " + await response.text()),
@@ -57,7 +57,7 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
       try {
         body = await response.json();
       } catch (e) {
-        throw new UnknownError(
+        throw unknownError(
           fallbackMessage,
           response.status,
           e instanceof Error ? e : undefined,
@@ -80,11 +80,18 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
 
 function convertError(
   e: any,
-  statusCode: number | undefined,
   msgIfNotError: string = "An unknown error occurred",
 ) {
   if (e instanceof Error) {
-    return new UnknownError(e.message, statusCode, e);
+    return unknownError(e.message, undefined, e);
   }
-  return new UnknownError(msgIfNotError, statusCode);
+  return unknownError(msgIfNotError, undefined);
+}
+
+function unknownError(
+  message: string,
+  statusCode?: number,
+  originalError?: Error,
+) {
+  return new UnknownError(message, undefined, originalError, statusCode);
 }
