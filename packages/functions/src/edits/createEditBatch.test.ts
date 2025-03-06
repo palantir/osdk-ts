@@ -19,20 +19,11 @@ import { Task } from "@osdk/client.test.ontology";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createEditBatch } from "./createEditBatch.js";
 import type { EditBatch } from "./EditBatch.js";
-import type {
-  AddLink,
-  CreateObject,
-  DeleteObject,
-  RemoveLink,
-  UpdateObject,
-} from "./types.js";
+import type { Edits } from "./types.js";
 
 type TestEditScope =
-  | CreateObject<Task>
-  | DeleteObject<Task>
-  | UpdateObject<Task>
-  | AddLink<Task, "RP">
-  | RemoveLink<Task, "RP">;
+  | Edits.Object<Task>
+  | Edits.Link<Task, "RP">;
 
 describe(createEditBatch, () => {
   let client: Client;
@@ -40,7 +31,7 @@ describe(createEditBatch, () => {
 
   beforeEach(() => {
     client = vi.fn() as any as Client;
-    editBatch = createEditBatch(client);
+    editBatch = createEditBatch<TestEditScope>(client);
   });
 
   it("collects all edits", () => {

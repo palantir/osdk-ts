@@ -34,6 +34,18 @@ type ObjectLocator<
       PropertyValueWireToClient[CompileTimeMetadata<S>["primaryKeyType"]];
   };
 
+export namespace Edits {
+  export type Object<S extends ObjectTypeDefinition> =
+    | CreateObject<S>
+    | DeleteObject<S>
+    | UpdateObject<S>;
+
+  export type Link<
+    S extends ObjectTypeDefinition,
+    L extends keyof CompileTimeMetadata<S>["links"],
+  > = AddLink<S, L> | RemoveLink<S, L>;
+}
+
 export interface AddLink<
   S extends ObjectTypeDefinition,
   L extends keyof CompileTimeMetadata<S>["links"],
