@@ -1138,8 +1138,9 @@ export type SingleOsdkResult<
 	L extends PropertyKeys<Q> | (keyof RDPs & string),
 	R extends boolean,
 	S extends NullabilityAdherence,
-	RDPs extends Record<string, SimplePropertyDef> = {}
-> = Osdk.Instance<Q, ExtractOptions<R, S>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>;
+	RDPs extends Record<string, SimplePropertyDef> = {},
+	Z extends OrderByType<Q, L> = {}
+> = Osdk.Instance<Q, ExtractOptions<R, S>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }, Z>;
 
 // Warning: (ae-forgotten-export) The symbol "AggregationKeyDataType" needs to be exported by the entry point index.d.ts
 //
