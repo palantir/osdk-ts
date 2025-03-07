@@ -24,27 +24,29 @@ describe("ObjectSpecifier", () => {
     fetchOne: vi.fn(() => Promise.resolve(() => "")),
   } as any as Employee.ObjectSet;
 
-  it("should only work with same ObjectID", async () => {
-    type EmployeeObjectId = ObjectSpecifier<Employee>;
+  it("should only work with same Object Specifier", async () => {
+    type EmployeeObjectSpecifier = ObjectSpecifier<Employee>;
 
-    expectTypeOf<EmployeeObjectId>().toMatchTypeOf<
-      string & { __apiName?: "Employee" }
+    expectTypeOf<EmployeeObjectSpecifier>().toMatchTypeOf<
+      string & { __apiName: "Employee" }
     >();
 
     const employee = await fauxObjectSet.fetchOne(123);
 
-    const specifier: EmployeeObjectId = employee.$objectSpecifier;
+    const specifier: EmployeeObjectSpecifier = employee.$objectSpecifier;
 
     expectTypeOf(specifier).toMatchTypeOf<
-      string & { __apiName?: "Employee" }
+      string & { __apiName: "Employee" }
     >();
 
-    type NonEmployeeObjectId = ObjectSpecifier<
+    type NonEmployeeObjectSpecifier = ObjectSpecifier<
       { apiName: "NotEmployee"; osdkMetadata: any; type: "object" }
     >;
 
-    // @ts-expect-error
-    expectTypeOf<NonEmployeeObjectId>().toMatchTypeOf<EmployeeObjectId>();
+    expectTypeOf<NonEmployeeObjectSpecifier>().toMatchTypeOf<
+      // @ts-expect-error
+      EmployeeObjectId
+    >();
   });
 
   describe("interfaces", () => {
@@ -56,7 +58,7 @@ describe("ObjectSpecifier", () => {
       type FooInterfaceObjectSpecifier = ObjectSpecifier<FooInterface>;
 
       expectTypeOf<FooInterfaceObjectSpecifier>().toMatchTypeOf<
-        string & { __apiName?: "FooInterface" | "Employee" }
+        string & { __apiName: "FooInterface" | "Employee" }
       >();
 
       const fooInterface = await fauxInterfaceObjectSet.fetchPage();
@@ -64,7 +66,7 @@ describe("ObjectSpecifier", () => {
       const specifier = fooInterface.data[0].$objectSpecifier;
 
       expectTypeOf(specifier).toMatchTypeOf<
-        string & { __apiName?: "FooInterface" | "Employee" }
+        string & { __apiName: "FooInterface" | "Employee" }
       >();
     });
 
@@ -74,7 +76,7 @@ describe("ObjectSpecifier", () => {
       const specifier = employee.$objectSpecifier;
 
       expectTypeOf(specifier).toMatchTypeOf<
-        string & { __apiName?: "Employee" }
+        string & { __apiName: "Employee" }
       >();
 
       const fooInterface = (await fauxInterfaceObjectSet.fetchPage()).data[0];
