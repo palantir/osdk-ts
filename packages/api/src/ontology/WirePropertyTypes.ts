@@ -38,4 +38,5 @@ export type BaseWirePropertyTypes =
   | "attachment"
   | "geopoint"
   | "geoshape"
-  | "geotimeSeriesReference";
+  | "geotimeSeriesReference"
+  | "vector";

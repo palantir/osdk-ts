@@ -54,7 +54,8 @@ describe(fetchPage, () => {
           T,
           L & PropertyKeys<T>,
           R,
-          "drop"
+          "drop",
+          {}
         >({} as any, {} as any, {} as any);
       }
     }

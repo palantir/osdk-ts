@@ -237,6 +237,30 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
  This is some more text.",
               "rid": "rid",
             },
+            "skillSet": {
+              "dataType": {
+                "type": "string",
+              },
+              "description": "A short description of the employees skill set",
+              "rid": "rid",
+            },
+            "skillSetEmbedding": {
+              "dataType": {
+                "dimension": 1536,
+                "embeddingModel": {
+                  "type": "lms",
+                  "value": "OPENAI_TEXT_EMBEDDING_ADA_002",
+                },
+                "supportsSearchWith": [
+                  {
+                    "value": "COSINE_SIMILARITY",
+                  },
+                ],
+                "type": "vector",
+              },
+              "description": "Vectorized skill set",
+              "rid": "rid",
+            },
             "startDate": {
               "dataType": {
                 "type": "date",
@@ -449,6 +473,30 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
               },
               "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
  This is some more text.",
+              "rid": "rid",
+            },
+            "skillSet": {
+              "dataType": {
+                "type": "string",
+              },
+              "description": "A short description of the employees skill set",
+              "rid": "rid",
+            },
+            "skillSetEmbedding": {
+              "dataType": {
+                "dimension": 1536,
+                "embeddingModel": {
+                  "type": "lms",
+                  "value": "OPENAI_TEXT_EMBEDDING_ADA_002",
+                },
+                "supportsSearchWith": [
+                  {
+                    "value": "COSINE_SIMILARITY",
+                  },
+                ],
+                "type": "vector",
+              },
+              "description": "Vectorized skill set",
               "rid": "rid",
             },
             "startDate": {
@@ -685,6 +733,30 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
               },
               "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
  This is some more text.",
+              "rid": "rid",
+            },
+            "skillSet": {
+              "dataType": {
+                "type": "string",
+              },
+              "description": "A short description of the employees skill set",
+              "rid": "rid",
+            },
+            "skillSetEmbedding": {
+              "dataType": {
+                "dimension": 1536,
+                "embeddingModel": {
+                  "type": "lms",
+                  "value": "OPENAI_TEXT_EMBEDDING_ADA_002",
+                },
+                "supportsSearchWith": [
+                  {
+                    "value": "COSINE_SIMILARITY",
+                  },
+                ],
+                "type": "vector",
+              },
+              "description": "Vectorized skill set",
               "rid": "rid",
             },
             "startDate": {

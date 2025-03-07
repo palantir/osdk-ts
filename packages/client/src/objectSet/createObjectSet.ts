@@ -24,6 +24,7 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
+  OrderByOptions,
   Osdk,
   PrimaryKeyType,
   PropertyKeys,
@@ -35,6 +36,7 @@ import type { MinimalObjectSet } from "@osdk/api/unstable";
 import type {
   DerivedPropertyDefinition,
   ObjectSet as WireObjectSet,
+  PropertyApiName,
 } from "@osdk/foundry.ontologies";
 import { createWithPropertiesObjectSet } from "../derivedProperties/createWithPropertiesObjectSet.js";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
@@ -149,14 +151,38 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       });
     },
 
+    nearestNeighbors: (query, numNeighbors, property) => {
+      const nearestNeighborsQuery = isTextQuery(query)
+        ? { "type": "text" as const, "value": query }
+        : { "type": "vector" as const, "value": query };
+      return clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        {
+          type: "nearestNeighbors",
+          objectSet: {
+            type: "base",
+            objectType: objectType.apiName,
+          },
+          propertyIdentifier: {
+            type: "property",
+            apiName: property as PropertyApiName,
+          },
+          numNeighbors,
+          query: nearestNeighborsQuery,
+        },
+      ) as ObjectSet<Q>;
+    },
+
     asyncIter: async function*<
       L extends PropertyKeys<Q>,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherence.Default,
+      Z extends OrderByOptions<Q, L> = {},
     >(
-      args?: AsyncIterArgs<Q, L, R, A, S>,
-    ): AsyncIterableIterator<SingleOsdkResult<Q, L, R, S>> {
+      args?: AsyncIterArgs<Q, L, R, A, S, Z>,
+    ): AsyncIterableIterator<SingleOsdkResult<Q, L, R, S, {}, Z>> {
       let $nextPageToken: string | undefined = undefined;
       do {
         const result: FetchPageResult<
@@ -176,7 +202,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         $nextPageToken = result.nextPageToken;
 
         for (const obj of result.data) {
-          yield obj as SingleOsdkResult<Q, L, R, S>;
+          yield obj as SingleOsdkResult<Q, L, R, S, {}, Z>;
         }
       } while ($nextPageToken != null);
     },
@@ -315,4 +341,8 @@ async function createWithPk(
     },
   };
   return withPk;
+}
+
+function isTextQuery(query: string | number[]): query is string {
+  return typeof query === "string";
 }
