@@ -293,6 +293,7 @@ describe("ObjectSetListenerWebsocket", async () => {
             {
               "object": {
                 "$apiName": "Employee",
+                "$objectSpecifier": "Employee:undefined",
                 "$objectType": "Employee",
                 "$primaryKey": undefined,
                 "$title": undefined,
@@ -313,6 +314,7 @@ describe("ObjectSetListenerWebsocket", async () => {
             {
               "object": {
                 "$apiName": "Employee",
+                "$objectSpecifier": "Employee:12345",
                 "$objectType": "Employee",
                 "$primaryKey": "12345",
                 "$title": undefined,

@@ -1,4 +1,4 @@
-import type { QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
+import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Todo } from '../objects/Todo.js';
@@ -41,6 +41,16 @@ export namespace queryTakesAllParameterTypes {
      * (no ontology metadata)
      */
     readonly float: QueryParam.PrimitiveType<'float'>;
+
+    /**
+     * (no ontology metadata)
+     */
+    readonly functionMap: Record<QueryParam.PrimitiveType<'float'>, QueryParam.PrimitiveType<'string'>>;
+
+    /**
+     * (no ontology metadata)
+     */
+    readonly functionMapObjectKey: Record<ObjectSpecifier<Todo>, QueryParam.PrimitiveType<'string'>>;
 
     /**
      * (no ontology metadata)
@@ -169,6 +179,37 @@ export interface queryTakesAllParameterTypes
       float: {
         nullable: false;
         type: 'float';
+      };
+      /**
+       * (no ontology metadata)
+       */
+      functionMap: {
+        keyType: {
+          type: 'float';
+          nullable: false;
+        };
+        nullable: false;
+        type: 'map';
+        valueType: {
+          type: 'string';
+          nullable: false;
+        };
+      };
+      /**
+       * (no ontology metadata)
+       */
+      functionMapObjectKey: {
+        keyType: {
+          type: 'object';
+          object: 'Todo';
+          nullable: false;
+        };
+        nullable: false;
+        type: 'map';
+        valueType: {
+          type: 'string';
+          nullable: false;
+        };
       };
       /**
        * (no ontology metadata)

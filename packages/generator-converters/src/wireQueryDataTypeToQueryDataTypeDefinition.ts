@@ -125,6 +125,28 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
       };
 
     case "entrySet":
+      const keyType = wireQueryDataTypeToQueryDataTypeDefinition(input.keyType);
+
+      if (!validMapKeyTypes.includes(keyType.type)) {
+        throw new Error(
+          "Map types with a key type of " + keyType.type + " are not supported"
+            + validMapKeyTypes.toString(),
+        );
+      }
+
+      if (keyType.multiplicity === true) {
+        throw new Error(
+          "Map types cannot have keys as arrays",
+        );
+      }
+
+      return {
+        type: "map",
+        nullable: false,
+        keyType,
+        valueType: wireQueryDataTypeToQueryDataTypeDefinition(input.valueType),
+      };
+
     case "null":
     case "unsupported":
       throw new Error(
@@ -189,3 +211,23 @@ function guardInvalidKeyTypes(
 ): key is QueryAggregationKeyType & ({ type: "string" | "boolean" }) {
   return key.type === "string" || key.type === "boolean";
 }
+
+/**
+ * The set of all valid key types for maps. This includes all types that are represented by strings or numbers in the OSDK, and  Ontology Objects.
+ */
+const validMapKeyTypes = [
+  "string",
+  "object",
+  "double",
+  "float",
+  "integer",
+  "long",
+  "date",
+  "timestamp",
+  "byte",
+  "datetime",
+  "decimal",
+  "marking",
+  "short",
+  "objectType",
+];

@@ -28,7 +28,9 @@ import type {
 } from "@osdk/api";
 import type { DataValue } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
+import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
+import { createObjectSpecifierFromPrimaryKey } from "../object/createObjectSpecifierFromPrimaryKey.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
 import { hydrateAttachmentFromRidInternal } from "../public-utils/hydrateAttachmentFromRid.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
@@ -206,6 +208,32 @@ async function remapQueryResponse<
 
       return responseValue as QueryReturnType<typeof responseDataType>;
     }
+
+    case "map": {
+      const map = {} as any;
+
+      invariant(Array.isArray(responseValue), "Expected array entry");
+      for (const entry of responseValue) {
+        invariant(entry.key, "Expected key");
+        invariant(entry.value, "Expected value");
+        const key = responseDataType.keyType.type === "object"
+          ? getObjectSpecifier(
+            entry.key,
+            responseDataType.keyType.object,
+            definitions,
+          )
+          : entry.key;
+        const value = await remapQueryResponse(
+          client,
+          responseDataType.valueType,
+          entry.value,
+          definitions,
+        );
+        map[key] = value;
+      }
+      return map;
+    }
+
     case "twoDimensionalAggregation": {
       const result: {
         key: AllowedBucketKeyTypes;
@@ -259,6 +287,17 @@ async function getRequiredDefinitions(
 
     case "set": {
       return getRequiredDefinitions(dataType.set, client);
+    }
+
+    case "map": {
+      for (const value of [dataType.keyType, dataType.valueType]) {
+        for (
+          const [type, objectDef] of await getRequiredDefinitions(value, client)
+        ) {
+          result.set(type, objectDef);
+        }
+      }
+      break;
     }
 
     case "struct": {
@@ -321,6 +360,23 @@ function requiresConversion(dataType: QueryDataTypeDefinition) {
   }
 }
 
+function getObjectSpecifier(
+  primaryKey: any,
+  objectTypeApiName: string,
+  definitions: Map<string, ObjectOrInterfaceDefinition>,
+): string {
+  const def = definitions.get(objectTypeApiName);
+  if (!def) {
+    throw new Error(
+      `Missing definition for ${objectTypeApiName}`,
+    );
+  }
+  return createObjectSpecifierFromPrimaryKey(
+    def,
+    primaryKey,
+  );
+}
+
 export function createQueryObjectResponse<
   Q extends ObjectOrInterfaceDefinition,
 >(
@@ -332,5 +388,9 @@ export function createQueryObjectResponse<
     $title: undefined,
     $objectType: objectDef.apiName,
     $primaryKey: primaryKey,
+    $objectSpecifier: createObjectSpecifierFromPrimaryKey(
+      objectDef,
+      primaryKey,
+    ),
   };
 }

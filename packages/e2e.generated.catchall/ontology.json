@@ -1805,6 +1805,24 @@
               }
             }
           }
+        },
+        "functionMapObjectKey": {
+          "dataType": {
+            "type": "entrySet",
+            "keyType": {
+              "type": "object",
+              "objectApiName": "Todo",
+              "objectTypeApiName": "Todo"
+            },
+            "valueType": { "type": "string" }
+          }
+        },
+        "functionMap": {
+          "dataType": {
+            "type": "entrySet",
+            "keyType": { "type": "float" },
+            "valueType": { "type": "string" }
+          }
         }
       }
     },
@@ -1912,7 +1930,8 @@
         }
       },
       "rid": "ri.ontology.main.interface.06c534fd-4f68-44d9-b268-72729a47eaab",
-      "status": "ACTIVE"
+      "status": "ACTIVE",
+      "implementedByObjectTypes": ["OsdkTestObject"]
     }
   },
 

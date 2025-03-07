@@ -803,6 +803,11 @@ export namespace ObjectSetSubscription {
 }
 
 // @public (undocumented)
+export type ObjectSpecifier<Q extends ObjectOrInterfaceDefinition> = string & {
+    	__apiName: Q["apiName"] | (Q extends InterfaceDefinition ? NonNullable<Q["__DefinitionMetadata"]> extends InterfaceMetadata ? NonNullable<NonNullable<Q["__DefinitionMetadata"]>["implementedBy"]>[number] : never : never)
+};
+
+// @public (undocumented)
 export interface ObjectTypeDefinition {
     	// (undocumented)
     __DefinitionMetadata?: ObjectMetadata & ObjectInterfaceCompileDefinition;
@@ -864,6 +869,7 @@ export type OsdkBase<Q extends ObjectOrInterfaceDefinition> = {
     	readonly $objectType: string
     	readonly $primaryKey: PrimaryKeyType<Q>
     	readonly $title: string | undefined
+    	readonly $objectSpecifier: ObjectSpecifier<Q>
 };
 
 // @public @deprecated (undocumented)
@@ -985,9 +991,10 @@ export interface PropertyValueWireToClient {
 // Warning: (ae-forgotten-export) The symbol "StructQueryDataType" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "TwoDimensionalAggregationDataType" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ThreeDimensionalAggregationDataType" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "MapDataType" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type QueryDataTypeDefinition<T_Target extends ObjectTypeDefinition = any> = PrimitiveDataType | ObjectQueryDataType<T_Target> | ObjectSetQueryDataType<T_Target> | SetQueryDataType | UnionQueryDataType | StructQueryDataType | TwoDimensionalAggregationDataType | ThreeDimensionalAggregationDataType;
+export type QueryDataTypeDefinition<T_Target extends ObjectTypeDefinition = any> = PrimitiveDataType | ObjectQueryDataType<T_Target> | ObjectSetQueryDataType<T_Target> | SetQueryDataType | UnionQueryDataType | StructQueryDataType | TwoDimensionalAggregationDataType | ThreeDimensionalAggregationDataType | MapDataType;
 
 // @public (undocumented)
 export interface QueryDefinition<T = any> {
