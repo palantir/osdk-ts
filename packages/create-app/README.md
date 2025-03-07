@@ -41,7 +41,7 @@ npx @osdk/create-app [project] [--<option>]
 
 ## Templates
 
-| Template name      | Description                                                                                                                           |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
-| react              | [React](https://react.dev/) with [Vite](https://vitejs.dev/guide/why.html)                                                            |
-| vue                | [Vue](https://vuejs.org/) with [Vite](https://vitejs.dev/guide/why.html)                                                              |
+| Template name | Description                                                                |
+| ------------- | -------------------------------------------------------------------------- |
+| react         | [React](https://react.dev/) with [Vite](https://vitejs.dev/guide/why.html) |
+| vue           | [Vue](https://vuejs.org/) with [Vite](https://vitejs.dev/guide/why.html)   |
