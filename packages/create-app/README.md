@@ -45,4 +45,3 @@ npx @osdk/create-app [project] [--<option>]
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
 | react              | [React](https://react.dev/) with [Vite](https://vitejs.dev/guide/why.html)                                                            |
 | vue                | [Vue](https://vuejs.org/) with [Vite](https://vitejs.dev/guide/why.html)                                                              |
-| next-static-export | [Next.js](https://nextjs.org/) with [static export](https://nextjs.org/docs/pages/building-your-application/deploying/static-exports) |

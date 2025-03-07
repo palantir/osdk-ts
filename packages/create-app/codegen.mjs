@@ -41,12 +41,6 @@ export const TEMPLATES = [
     buildDirectory: "./dist",
   },
   {
-    id: "next-static-export",
-    label: "Next (static export)",
-    envPrefix: "NEXT_PUBLIC_",
-    buildDirectory: "./out",
-  },
-  {
     id: "tutorial-todo-app",
     label: "Tutorial: To do App",
     envPrefix: "VITE_",
