@@ -16,6 +16,7 @@
 
 import type {
   ActionDefinition,
+  InterfaceDefinition,
   ObjectTypeDefinition,
   PrimaryKeyType,
   WhereClause,
@@ -27,10 +28,9 @@ import type {
   ObservableClient,
   ObserveListOptions,
   ObserveObjectOptions,
-  ObserveOptions,
+  Observer,
   Unsubscribable,
 } from "../ObservableClient.js";
-import type { SubFn } from "../types.js";
 import type { Canonical } from "./Canonical.js";
 import type { Store } from "./Store.js";
 
@@ -42,35 +42,34 @@ export class ObservableClientImpl implements ObservableClient {
 
   constructor(store: Store) {
     this.#store = store;
+
+    this.observeObject = store.observeObject.bind(store);
+    this.observeList = store.observeList.bind(store);
+    this.applyAction = store.applyAction.bind(store);
+    this.canonicalizeWhereClause = store.canonicalizeWhereClause.bind(store);
   }
 
-  public observeObject<T extends ObjectTypeDefinition>(
+  public observeObject: <T extends ObjectTypeDefinition | InterfaceDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveObjectOptions<T>,
-    subFn: SubFn<ObjectPayload>,
-  ): Unsubscribable {
-    return this.#store.observeObject(apiName, pk, options, subFn);
-  }
+    subFn: Observer<ObjectPayload>,
+  ) => Unsubscribable;
 
-  public observeList<T extends ObjectTypeDefinition>(
-    options: ObserveOptions & ObserveListOptions<T>,
-    subFn: SubFn<ListPayload>,
-  ): Unsubscribable {
-    return this.#store.observeList(options, subFn);
-  }
+  public observeList: <T extends ObjectTypeDefinition | InterfaceDefinition>(
+    options: ObserveListOptions<T>,
+    subFn: Observer<ListPayload>,
+  ) => Unsubscribable;
 
-  public applyAction<Q extends ActionDefinition<any>>(
+  public applyAction: <Q extends ActionDefinition<any>>(
     action: Q,
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
     opts?: ObservableClient.ApplyActionOptions,
-  ): Promise<unknown> {
-    return this.#store.applyAction(action, args, opts);
-  }
+  ) => Promise<unknown>;
 
-  public canonicalizeWhereClause<T extends ObjectTypeDefinition>(
+  public canonicalizeWhereClause: <
+    T extends ObjectTypeDefinition | InterfaceDefinition,
+  >(
     where: WhereClause<T>,
-  ): Canonical<WhereClause<T>> {
-    return this.#store.whereCanonicalizer.canonicalize(where);
-  }
+  ) => Canonical<WhereClause<T>>;
 }

@@ -14,25 +14,50 @@
  * limitations under the License.
  */
 
-import type { Unsubscribable } from "@osdk/client/unstable-do-not-use";
+import type {
+  Observer,
+  Unsubscribable,
+} from "@osdk/client/unstable-do-not-use";
 
 export function makeExternalStore<X>(
-  createObservation: (callback: (x: X | undefined) => void) => Unsubscribable,
+  createObservation: (
+    callback: Observer<X | undefined>,
+  ) => Unsubscribable,
   name?: string,
 ): {
   subscribe: (notifyUpdate: () => void) => () => void;
-  getSnapShot: () => X | undefined;
+  getSnapShot: () =>
+    | X
+    | Partial<X> & { error: Error }
+    | undefined;
 } {
-  let lastResult: X | undefined;
+  let lastResult:
+    | X
+    | Partial<X> & { error: Error }
+    | undefined;
 
-  function getSnapShot(): X | undefined {
+  function getSnapShot():
+    | X
+    | Partial<X> & { error: Error }
+    | undefined
+  {
     return lastResult;
   }
 
   function subscribe(notifyUpdate: () => void) {
-    const obs = createObservation((payload) => {
-      lastResult = payload;
-      notifyUpdate();
+    const obs = createObservation({
+      next: (payload) => {
+        lastResult = payload;
+        notifyUpdate();
+      },
+      error: (error: unknown) => {
+        lastResult = {
+          ...(lastResult ?? {}),
+          error: error instanceof Error ? error : new Error(String(error)),
+        } as Partial<X> & { error: Error };
+        notifyUpdate();
+      },
+      complete: () => {},
     });
 
     return (): void => {

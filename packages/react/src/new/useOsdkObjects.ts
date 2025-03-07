@@ -94,7 +94,7 @@ export interface UseOsdkListResult<T extends ObjectTypeDefinition> {
   isLoading: boolean;
 
   // FIXME populate error!
-  // error: undefined;
+  error: Error | undefined;
 
   /**
    * Refers to whether the ordered list of objects (only considering the $primaryKey)
@@ -113,7 +113,7 @@ declare const process: {
 };
 
 export function useOsdkObjects<T extends ObjectTypeDefinition>(
-  objectType: T,
+  type: T,
   {
     pageSize,
     orderBy,
@@ -133,26 +133,29 @@ export function useOsdkObjects<T extends ObjectTypeDefinition>(
   const { subscribe, getSnapShot } = React.useMemo(
     () =>
       makeExternalStore<ListPayload>(
-        (x) =>
+        (observer) =>
           observableClient.observeList({
-            objectType,
+            type,
             where: canonWhere,
             dedupeInterval: dedupeIntervalMs ?? 2_000,
             pageSize,
             orderBy,
             streamUpdates,
-          }, x),
+          }, observer),
         process.env.NODE_ENV !== "production"
-          ? `list ${objectType.apiName} ${JSON.stringify(canonWhere)}`
+          ? `list ${type.apiName} ${JSON.stringify(canonWhere)}`
           : void 0,
       ),
-    [observableClient, objectType, canonWhere, dedupeIntervalMs],
+    [observableClient, type, canonWhere, dedupeIntervalMs],
   );
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
   // TODO: we need to expose the error in the result
   return {
     fetchMore: listPayload?.fetchMore,
+    error: listPayload && "error" in listPayload
+      ? listPayload?.error
+      : undefined,
     data: listPayload?.resolvedList as Osdk.Instance<T>[],
     isLoading: listPayload?.status === "loading",
     isOptimistic: listPayload?.isOptimistic ?? false,

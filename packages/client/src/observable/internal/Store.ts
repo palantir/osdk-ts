@@ -16,12 +16,14 @@
 
 import type {
   ActionDefinition,
+  InterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
   WhereClause,
 } from "@osdk/api";
+import type { Observer } from "rxjs";
 import { BehaviorSubject } from "rxjs";
 import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
@@ -31,13 +33,13 @@ import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
 import type {
+  ObservableClient,
   ObserveListOptions,
   ObserveObjectOptions,
   OrderBy,
   Unsubscribable,
 } from "../ObservableClient.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
-import type { SubFn } from "../types.js";
 import { ActionApplication } from "./ActionApplication.js";
 import type { CacheKey } from "./CacheKey.js";
 import { CacheKeys } from "./CacheKeys.js";
@@ -53,9 +55,9 @@ import { isListCacheKey, ListQuery } from "./ListQuery.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
 import { ObjectQuery } from "./ObjectQuery.js";
 import { type OptimisticId } from "./OptimisticId.js";
+import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import type { Query } from "./Query.js";
 import { RefCounts } from "./RefCounts.js";
-import { WeakMapWithEntries } from "./WeakMapWithEntries.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 /*
@@ -119,25 +121,7 @@ function createInitEntry(cacheKey: CacheKey): Entry<any> {
     - Data is one per layer per cache key
 */
 
-export class OrderByCanonicalizer {
-  // crappy version
-  #map = new Map<string, Record<string, "asc" | "desc" | undefined>>();
-
-  canonicalize: <T>(
-    orderBy: Record<string, "asc" | "desc" | undefined>,
-  ) => Canonical<Record<string, "asc" | "desc" | undefined>> = (orderBy) => {
-    if (this.#map.has(JSON.stringify(orderBy))) {
-      return this.#map.get(JSON.stringify(orderBy))! as Canonical<
-        Record<string, "asc" | "desc" | undefined>
-      >;
-    } else {
-      this.#map.set(JSON.stringify(orderBy), orderBy);
-      return orderBy as Canonical<Record<string, "asc" | "desc" | undefined>>;
-    }
-  };
-}
-
-export class Store {
+export class Store implements ObservableClient {
   whereCanonicalizer: WhereClauseCanonicalizer = new WhereClauseCanonicalizer();
   orderByCanonicalizer: OrderByCanonicalizer = new OrderByCanonicalizer();
   #truthLayer: Layer = new Layer(undefined, undefined);
@@ -147,10 +131,12 @@ export class Store {
   /** @internal */
   logger?: Logger;
 
-  #queries: WeakMapWithEntries<
+  // we can use a regular Map here because the refCounting will
+  // handle cleanup.
+  #queries: Map<
     CacheKey<string, any, any>,
     Query<any, any, any>
-  > = new WeakMapWithEntries();
+  > = new Map();
 
   #cacheKeyToSubject = new WeakMap<
     CacheKey<string, any, any>,
@@ -163,6 +149,8 @@ export class Store {
     (k) => this.#cleanupCacheKey(k),
   );
 
+  // we are currently only using this for debug logging and should just remove it in the future if that
+  // continues to be true
   #finalizationRegistry: FinalizationRegistry<() => void>;
 
   constructor(client: Client) {
@@ -337,11 +325,19 @@ export class Store {
     return subject;
   };
 
-  public observeObject<T extends ObjectTypeDefinition>(
+  public canonicalizeWhereClause<
+    T extends ObjectTypeDefinition | InterfaceDefinition,
+  >(
+    where: WhereClause<T>,
+  ): Canonical<WhereClause<T>> {
+    return this.whereCanonicalizer.canonicalize(where);
+  }
+
+  public observeObject<T extends ObjectTypeDefinition | InterfaceDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveObjectOptions<T>,
-    subFn: SubFn<ObjectPayload>,
+    subFn: Observer<ObjectPayload>,
   ): Unsubscribable {
     if (typeof apiName !== "string") {
       apiName = apiName.apiName;
@@ -363,7 +359,7 @@ export class Store {
           }
         });
     }
-    const sub = query.subscribe({ next: subFn });
+    const sub = query.subscribe(subFn);
 
     return {
       unsubscribe: () => {
@@ -373,13 +369,13 @@ export class Store {
     };
   }
 
-  public observeList<T extends ObjectTypeDefinition>(
+  public observeList<T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveListOptions<T>,
-    subFn: SubFn<ListPayload>,
+    subFn: Observer<ListPayload>,
   ): Unsubscribable {
     // the ListQuery represents the shared state of the list
     const query = this.getListQuery(
-      options.objectType,
+      options.type,
       options.where ?? {},
       options.orderBy ?? {},
       options,
@@ -389,18 +385,24 @@ export class Store {
     if (options.mode !== "offline") {
       void query.revalidate(options.mode === "force");
     }
-    const sub = query.subscribe({ next: subFn });
+    const sub = query.subscribe(subFn);
 
     if (options.streamUpdates) {
       const miniDef = {
         type: "object",
-        apiName: (typeof options.objectType === "string"
-          ? options.objectType
-          : options.objectType.apiName),
+        apiName: (typeof options.type === "string"
+          ? options.type
+          : options.type.apiName),
       } as T;
-      let objectSet: ObjectSet<T> = this.client(miniDef);
+
+      // the extra casts here are because of the way we have overrides for the
+      // client cause it to fall back to the last override case which we don't want
+      let objectSet: ObjectSet<T> = this.client(
+        miniDef as ObjectTypeDefinition,
+      ) as unknown as ObjectSet<T>;
+
       if (options.where) {
-        objectSet = objectSet.where(options.where ?? {});
+        objectSet = objectSet.where(options.where);
       }
       const store = this;
       const websocketSubscription = objectSet.subscribe({
@@ -433,7 +435,6 @@ export class Store {
             // todo, can we do the update without
             // the extra invalidation? maybe a flag to updateObject
             store.updateObject(
-              object.$objectType,
               object,
             );
             store.maybeRevalidateLists(changes).catch(err => {
@@ -562,20 +563,19 @@ export class Store {
     return query;
   }
 
-  public getListQuery<T extends ObjectTypeDefinition>(
-    apiName: T["apiName"] | T,
+  public getListQuery<T extends ObjectTypeDefinition | InterfaceDefinition>(
+    def: Pick<T, "type" | "apiName">,
     where: WhereClause<T>,
     orderBy: Record<string, "asc" | "desc" | undefined>,
     opts: ListQueryOptions,
   ): ListQuery {
-    if (typeof apiName !== "string") {
-      apiName = apiName.apiName;
-    }
+    const { apiName, type } = def;
 
     const canonWhere = this.whereCanonicalizer.canonicalize(where);
     const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy);
     const listCacheKey = this.getCacheKey<ListCacheKey>(
       "list",
+      type,
       apiName,
       canonWhere,
       canonOrderBy,
@@ -585,6 +585,7 @@ export class Store {
       return new ListQuery(
         this,
         this.getSubject(listCacheKey),
+        type,
         apiName,
         canonWhere,
         canonOrderBy,
@@ -632,6 +633,10 @@ export class Store {
       apiName,
       pk,
     );
+
+    // we probably don't want to do this? If we have RDP, interface, and subselect, then we
+    // will likely not have a complete object on the top layer?
+    // maybe we can do an optimistic update by merging and then only write the full object to the truth layer?
     const objEntry = this.#topLayer.get(objectCacheKey);
     return objEntry?.value as Osdk.Instance<T> | undefined;
   }
@@ -827,22 +832,19 @@ export class Store {
   }
 
   public invalidateList<T extends ObjectTypeDefinition>(
-    { objectType, where, orderBy }: {
-      objectType: T["apiName"] | T;
+    { type, where, orderBy }: {
+      type: Pick<T, "apiName" | "type">;
       where?: WhereClause<T>;
       orderBy?: OrderBy<T>;
     },
   ): void {
-    if (typeof objectType !== "string") {
-      objectType = objectType.apiName;
-    }
-
     where = this.whereCanonicalizer.canonicalize(where ?? {});
     orderBy = this.orderByCanonicalizer.canonicalize(orderBy ?? {});
 
     const cacheKey = this.getCacheKey<ListCacheKey>(
       "list",
-      objectType,
+      type.type,
+      type.apiName,
       where as Canonical<WhereClause<T>>,
       orderBy as Canonical<OrderBy<T>>,
     );
@@ -850,20 +852,15 @@ export class Store {
     void this.#peekQuery(cacheKey)?.revalidate(true);
   }
 
-  public updateObject(
-    apiName: string | ObjectTypeDefinition,
-    value: Osdk.Instance<ObjectTypeDefinition>,
+  public updateObject<T extends ObjectTypeDefinition>(
+    value: Osdk.Instance<T>,
     { optimisticId }: UpdateOptions = {},
-  ): Osdk.Instance<ObjectTypeDefinition> {
-    if (typeof apiName !== "string") {
-      apiName = apiName.apiName;
-    }
-
-    const query = this.getObjectQuery(apiName, value.$primaryKey);
+  ): Osdk.Instance<T> {
+    const query = this.getObjectQuery(value.$apiName, value.$primaryKey);
 
     return this.batch({ optimisticId }, (batch) => {
       return query.writeToStore(value, "loaded", batch);
-    }).retVal.value!;
+    }).retVal.value! as Osdk.Instance<T>;
   }
 
   public updateObjects(
@@ -893,13 +890,13 @@ export class Store {
    * @param param4
    * @param opts
    */
-  public updateList<T extends ObjectTypeDefinition>(
+  public updateList<T extends ObjectTypeDefinition | InterfaceDefinition>(
     {
-      objectType: apiName,
+      type,
       where,
       orderBy,
     }: {
-      objectType: T["apiName"] | T;
+      type: Pick<T, "apiName" | "type">;
       where: WhereClause<T>;
       orderBy: OrderBy<T>;
     },
@@ -915,7 +912,12 @@ export class Store {
       );
     }
 
-    const query = this.getListQuery(apiName, where ?? {}, orderBy ?? {}, opts);
+    const query = this.getListQuery(
+      type,
+      where ?? {},
+      orderBy ?? {},
+      opts,
+    );
 
     this.batch({ optimisticId }, (batch) => {
       const objectCacheKeys = this.updateObjects(objects, batch);

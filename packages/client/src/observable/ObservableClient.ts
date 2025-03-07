@@ -16,6 +16,7 @@
 
 import type {
   ActionDefinition,
+  InterfaceDefinition,
   ObjectTypeDefinition,
   PrimaryKeyType,
   PropertyKeys,
@@ -29,9 +30,14 @@ import { Store } from "./internal/Store.js";
 import type { ListPayload } from "./ListPayload.js";
 import type { ObjectPayload } from "./ObjectPayload.js";
 import type { OptimisticBuilder } from "./OptimisticBuilder.js";
-import type { SubFn } from "./types.js";
 
 export type Status = "init" | "loading" | "loaded" | "error";
+
+export interface Observer<T> {
+  next: (value: T) => void;
+  error: (err: any) => void;
+  complete: () => void;
+}
 
 export namespace ObservableClient {
   export interface ApplyActionOptions {
@@ -47,20 +53,20 @@ export interface ObserveOptions {
   mode?: "offline" | "force";
 }
 
-export interface ObserveObjectOptions<T extends ObjectTypeDefinition>
-  extends ObserveOptions
-{
+export interface ObserveObjectOptions<
+  T extends ObjectTypeDefinition | InterfaceDefinition,
+> extends ObserveOptions {
   select?: PropertyKeys<T>[];
 }
 
-export type OrderBy<Q extends ObjectTypeDefinition> = {
+export type OrderBy<Q extends ObjectTypeDefinition | InterfaceDefinition> = {
   [K in PropertyKeys<Q>]?: "asc" | "desc" | undefined;
 };
 
-export interface ObserveListOptions<Q extends ObjectTypeDefinition>
-  extends CommonObserveOptions, ObserveOptions
-{
-  objectType: Q["apiName"] | Q;
+export interface ObserveListOptions<
+  Q extends ObjectTypeDefinition | InterfaceDefinition,
+> extends CommonObserveOptions, ObserveOptions {
+  type: Pick<Q, "apiName" | "type">;
   where?: WhereClause<Q>;
   pageSize?: number;
   orderBy?: OrderBy<Q>;
@@ -74,12 +80,12 @@ export interface ObservableClient {
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveOptions,
-    subFn: SubFn<ObjectPayload>,
+    subFn: Observer<ObjectPayload>,
   ): Unsubscribable;
 
   observeList<T extends ObjectTypeDefinition>(
     options: ObserveListOptions<T>,
-    subFn: SubFn<ListPayload>,
+    subFn: Observer<ListPayload>,
   ): Unsubscribable;
 
   applyAction: <Q extends ActionDefinition<any>>(

@@ -20,7 +20,7 @@ import { DEBUG_CACHE_KEYS } from "../DebugFlags.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { ListCacheKey } from "./ListQuery.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
-import type { OrderByCanonicalizer } from "./Store.js";
+import type { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import type { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 type CacheKeyArgs<K extends CacheKey> = [K["type"], ...K["otherKeys"]];
@@ -70,7 +70,7 @@ export class CacheKeys {
     );
     this.#registerCacheKeyFactory<ListCacheKey>(
       "list",
-      (apiName, where, orderBy) => {
+      (type, apiName, where, orderBy) => {
         if (process.env.NODE_ENV !== "production" && DEBUG_CACHE_KEYS) {
           // eslint-disable-next-line no-console
           console.debug(
@@ -89,6 +89,7 @@ export class CacheKeys {
           CacheKeyArgs<ListCacheKey>
         >([
           "list",
+          type,
           apiName,
           whereCanonicalizer.canonicalize(where),
           orderByCanonicalizer.canonicalize(orderBy),
