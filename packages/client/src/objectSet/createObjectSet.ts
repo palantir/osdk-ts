@@ -269,6 +269,10 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       );
     },
 
+    toString: () => {
+      return JSON.stringify(objectSet);
+    },
+
     $objectSetInternals: {
       def: objectType,
     },
