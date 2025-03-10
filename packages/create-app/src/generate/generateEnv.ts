@@ -27,8 +27,7 @@ export function generateEnvDevelopment({
 }): string {
   const foundryApiUrl = corsProxy ? "http://localhost:8080" : foundryUrl;
   const applicationUrl = "http://localhost:8080";
-  return `
-# This env file is intended for developing on your local computer.
+  return `# This env file is intended for developing on your local computer.
 # To set up development in Foundry's Code Workspaces, see .env.code-workspaces
 # To deploy your application to production, see .env.production
 
@@ -53,7 +52,7 @@ ${envPrefix}FOUNDRY_API_URL=${foundryApiUrl}
 # Developer Console. It typically does not need to be changed.
 
 ${envPrefix}FOUNDRY_CLIENT_ID=${clientId}
-`
+`;
 }
 
 export function generateEnvProduction({
@@ -67,7 +66,8 @@ export function generateEnvProduction({
   applicationUrl: string | undefined;
   clientId: string;
 }): string {
-  const applicationUrlOrDefault = applicationUrl ?? "<Fill in the domain at which you deploy your application>";
+  const applicationUrlOrDefault = applicationUrl
+    ?? "<Fill in the domain at which you deploy your application>";
   return `# This env file is intended for deploying your application to production.
 # To set up development on your local computer, see .env.development
 # To set up development in Foundry's Code Workspaces, see .env.code-workspaces
@@ -80,7 +80,11 @@ export function generateEnvProduction({
 # If you change where your application is hosted, you will need to change this
 # URL here and in Developer Console.
 
-${applicationUrl == null ? "# " : ""}${envPrefix}FOUNDRY_REDIRECT_URL=${applicationUrlOrDefault}/auth/callback
+${
+    applicationUrl == null
+      ? "# "
+      : ""
+  }${envPrefix}FOUNDRY_REDIRECT_URL=${applicationUrlOrDefault}/auth/callback
 
 
 # This URL is the Foundry host that your OSDK will use. It typically does not
@@ -93,5 +97,5 @@ ${envPrefix}FOUNDRY_API_URL=${foundryUrl}
 # Developer Console. It typically does not need to be changed.
 
 ${envPrefix}FOUNDRY_CLIENT_ID=${clientId}
-`
+`;
 }
