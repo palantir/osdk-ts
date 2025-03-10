@@ -1,8 +1,8 @@
 import type { WhereClause } from "@osdk/client";
 import { useOsdkObjects } from "@osdk/react/experimental";
-import "./App.css";
 import * as React from "react";
-import { Todo , $Interfaces } from "./generatedNoCheck2/index.js";
+import "./App.css";
+import { $Interfaces, Todo } from "./generatedNoCheck2/index.js";
 import { H2 } from "./H2.js";
 import { InlineSpinner } from "./InlineSpinner.js";
 import { SmallTextDiv, TodoView } from "./TodoView.js";

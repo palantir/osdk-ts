@@ -106,7 +106,7 @@ export class ObjectQuery extends Query<
     );
   }
 
-  async _fetch(): Promise<void> {
+  async _fetchAndStore(): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
       this.logger?.info({ methodName: "_fetch" });
     }
@@ -140,23 +140,22 @@ export class ObjectQuery extends Query<
     const entry = batch.read(this.cacheKey);
 
     if (entry && deepEqual(data, entry.value)) {
-      // must do a "full write" here so that the lastUpdated is updated
+      // must do a "full write" here so that the lastUpdated is updated but we
+      // don't want to retrigger anyone's memoization on the value!
       return batch.write(this.cacheKey, entry.value, status);
-      //   return entry.value.data as Osdk.Instance<ObjectTypeDefinition>;
     }
     const ret = batch.write(this.cacheKey, data, status);
-
-    if (entry) {
-      batch.changes.modifiedObjects.set(data.$apiName, data);
-    } else {
-      batch.changes.addedObjects.set(data.$apiName, data);
-    }
+    batch.changes.registerObject(this.cacheKey, data, /* isNew */ !entry);
 
     return ret;
   }
 }
 
-/** @internal */
+/**
+ * Internal helper method for writing objects to the store and returning their
+ * object keys
+ * @internal
+ */
 export function storeOsdkInstances(
   store: Store,
   values: Array<Osdk.Instance<ObjectTypeDefinition>>,

@@ -96,12 +96,26 @@ export class ActionApplication {
       await Promise.all(promisesToWait);
 
       // the action invocation just gives back object ids,
-      // so we don't want to build the changes object
-      // until we have up to date values.
-      changes = this.#changesFromActionEditResponse(value);
-
-      // updates `changes` in place
-      await this.store.maybeRevalidateLists(changes);
+      // but the invalidateObject calls above should have put the
+      // actual objects in the cache
+      const changes = createChangedObjects();
+      for (const changeType of ["addedObjects", "modifiedObjects"] as const) {
+        for (const { objectType, primaryKey } of (value[changeType] ?? [])) {
+          const cacheKey = this.store.getCacheKey<ObjectCacheKey>(
+            "object",
+            objectType,
+            primaryKey,
+          );
+          // N.B. this probably isn't right. `getValue`() will give you the "top"
+          // value but I think we want the "truth" guaranteed.
+          const obj = this.store.getValue(cacheKey);
+          if (obj && obj.value) {
+            changes[changeType].set(objectType, obj.value);
+            (changeType === "addedObjects" ? changes.added : changes.modified)
+              .add(cacheKey);
+          }
+        }
+      }
     } else {
       for (const apiName of value.editedObjectTypes) {
         typesToInvalidate.add(apiName.toString());
@@ -110,23 +124,5 @@ export class ActionApplication {
     }
 
     return value;
-  };
-
-  #changesFromActionEditResponse = (value: ActionEditResponse) => {
-    const changes = createChangedObjects();
-    for (const changeType of ["addedObjects", "modifiedObjects"] as const) {
-      for (const { objectType, primaryKey } of (value[changeType] ?? [])) {
-        const cacheKey = this.store.getCacheKey<ObjectCacheKey>(
-          "object",
-          objectType,
-          primaryKey,
-        );
-        const obj = this.store.getValue(cacheKey);
-        if (obj && obj.value) {
-          changes[changeType].set(objectType, obj.value);
-        }
-      }
-    }
-    return changes;
   };
 }

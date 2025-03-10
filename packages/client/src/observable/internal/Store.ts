@@ -17,9 +17,7 @@
 import type {
   ActionDefinition,
   InterfaceDefinition,
-  ObjectSet,
   ObjectTypeDefinition,
-  Osdk,
   PrimaryKeyType,
   WhereClause,
 } from "@osdk/api";
@@ -29,7 +27,6 @@ import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { additionalContext, type Client } from "../../Client.js";
 import type { Logger } from "../../Logger.js";
-import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
@@ -53,7 +50,7 @@ import { Entry, Layer } from "./Layer.js";
 import type { ListCacheKey, ListQueryOptions } from "./ListQuery.js";
 import { isListCacheKey, ListQuery } from "./ListQuery.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
-import { ObjectQuery, storeOsdkInstances } from "./ObjectQuery.js";
+import { ObjectQuery } from "./ObjectQuery.js";
 import { type OptimisticId } from "./OptimisticId.js";
 import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import type { Query } from "./Query.js";
@@ -134,7 +131,7 @@ export class Store {
   // we can use a regular Map here because the refCounting will
   // handle cleanup.
   #queries: Map<
-    CacheKey<string, any, any>,
+    CacheKey,
     Query<any, any, any>
   > = new Map();
 
@@ -344,7 +341,7 @@ export class Store {
     }
 
     const query = this.getObjectQuery(apiName, pk);
-    this.#refCounts.retain(query.cacheKey);
+    this.retain(query.cacheKey);
 
     if (options.mode !== "offline") {
       query.revalidate(options.mode === "force")
@@ -364,7 +361,7 @@ export class Store {
     return {
       unsubscribe: () => {
         sub.unsubscribe();
-        this.#refCounts.release(query.cacheKey);
+        this.release(query.cacheKey);
       },
     };
   }
@@ -373,9 +370,6 @@ export class Store {
     options: ObserveListOptions<T>,
     subFn: Observer<ListPayload>,
   ): Unsubscribable {
-    const logger = process.env.NODE_ENV !== "production"
-      ? this.logger?.child({ methodName: "observeList" })
-      : this.logger;
     // the ListQuery represents the shared state of the list
     const query = this.getListQuery(
       options.type,
@@ -383,7 +377,7 @@ export class Store {
       options.orderBy ?? {},
       options,
     );
-    this.#refCounts.retain(query.cacheKey);
+    this.retain(query.cacheKey);
 
     if (options.mode !== "offline") {
       void query.revalidate(options.mode === "force");
@@ -391,160 +385,18 @@ export class Store {
     const sub = query.subscribe(subFn);
 
     if (options.streamUpdates) {
-      // the extra casts here are because of the way we have overrides for the
-      // client cause it to fall back to the last override case which we don't want
-      let objectSet: ObjectSet<T> = this.client(
-        options.type as ObjectTypeDefinition,
-      ) as unknown as ObjectSet<T>;
-
-      if (options.where) {
-        objectSet = objectSet.where(options.where);
-      }
-      const store = this;
-      const websocketSubscription = objectSet.subscribe({
-        onChange({ object: objOrIface, state }) {
-          if (process.env.NODE_ENV !== "production") {
-            logger?.child({ methodName: "onChange" }).debug(
-              "updates",
-              state,
-              objOrIface,
-            );
-          }
-
-          const cacheKey = store.getCacheKey<ObjectCacheKey>(
-            "object",
-            objOrIface.$objectType,
-            objOrIface.$primaryKey,
-          );
-          const type = store.#peekQuery(cacheKey) == null
-            ? "addedObjects"
-            : "modifiedObjects";
-
-          const object: ObjectHolder =
-            (objOrIface.$apiName !== objOrIface.$objectType
-              ? objOrIface.$as(objOrIface.$objectType)
-              : objOrIface) as unknown as ObjectHolder;
-
-          const changes = createChangedObjects();
-          changes[type].set(
-            object.$objectType,
-            object,
-          );
-
-          if (state === "ADDED_OR_UPDATED") {
-            // todo, can we do the update without
-            // the extra invalidation? maybe a flag to updateObject
-            store.batch({}, (batch) => {
-              storeOsdkInstances(store, [object as Osdk.Instance<any>], batch);
-            });
-
-            store.maybeRevalidateLists(changes).catch(err => {
-              // eslint-disable-next-line no-console
-              console.error("Unhandled error in maybeRevalidateLists", err);
-            });
-          } else if (state === "REMOVED") {
-            const changes = createChangedObjects();
-            store.batch({ changes }, (batch) => {
-              const existing = batch.read(query.cacheKey);
-              const cacheKeyToRemove = store.getCacheKey<ObjectCacheKey>(
-                "object",
-                object.$objectType,
-                object.$primaryKey,
-              );
-              if (existing?.status === "loaded") {
-                const newObjects = existing.value?.data.filter(
-                  (o) => o !== cacheKeyToRemove,
-                );
-                if (newObjects?.length !== existing.value?.data.length) {
-                  batch.changes.modifiedLists.add(query.cacheKey);
-                  batch.write(
-                    query.cacheKey,
-                    { data: newObjects ?? [] },
-                    "loaded",
-                  );
-                  // Should there be an else for this case? Do we need to invalidate
-                  // the paging tokens we may have?
-                }
-              } else {
-                // There may be a tiny race here where OSW tells us the object has
-                // been removed but an outstanding invalidation of this query is
-                // about to return. In this case, its possible that we remove this item
-                // from the list and then the returned list load re-adds it.
-                // To avoid this, we will just force reload the query to be sure
-                // we don't leave things in a bad state.
-
-                if (process.env.NODE_ENV !== "production") {
-                  logger?.info(
-                    "Removing an object from an object list that is in the middle of being loaded.",
-                    existing,
-                  );
-                }
-
-                query.revalidate(/* force */ true).catch((e) => {
-                  if (logger) {
-                    logger?.error(
-                      "Uncaught error while revalidating list",
-                      e,
-                    );
-                  } else {
-                    // eslint-disable-next-line no-console
-                    console.error(
-                      "Uncaught error while revalidating list",
-                      e,
-                    );
-                  }
-                });
-              }
-            });
-          }
-        },
-
-        onError(errors) {
-          if (process.env.NODE_ENV !== "production") {
-            logger?.child({ methodName: "onError" }).info(
-              "subscription errors",
-              errors,
-            );
-          }
-        },
-
-        onOutOfDate() {
-          if (process.env.NODE_ENV !== "production") {
-            logger?.child(
-              { methodName: "onOutOfDate" },
-            ).info("");
-          }
-        },
-
-        onSuccessfulSubscription() {
-          if (process.env.NODE_ENV !== "production") {
-            logger?.child(
-              { methodName: "onSuccessfulSubscription" },
-            ).debug("");
-          }
-        },
-      });
-
-      sub.add(() => {
-        if (process.env.NODE_ENV !== "production") {
-          logger?.child({ methodName: "observeList" }).info(
-            "Unsubscribing from websocket",
-          );
-        }
-
-        websocketSubscription.unsubscribe();
-      });
+      query.registerStreamUpdates(sub);
     }
 
     return {
       unsubscribe: () => {
         sub.unsubscribe();
-        this.#refCounts.release(query.cacheKey);
+        this.release(query.cacheKey);
       },
     };
   }
 
-  #peekQuery<K extends CacheKey<string, any, any>>(
+  peekQuery<K extends CacheKey>(
     cacheKey: K,
   ): K["__cacheKey"]["query"] | undefined {
     return this.#queries.get(cacheKey) as K["__cacheKey"]["query"] | undefined;
@@ -554,7 +406,7 @@ export class Store {
     cacheKey: K,
     createQuery: () => K["__cacheKey"]["query"],
   ): K["__cacheKey"]["query"] {
-    let query = this.#peekQuery(cacheKey);
+    let query = this.peekQuery(cacheKey);
     if (!query) {
       query = createQuery();
       this.#queries.set(cacheKey, query);
@@ -634,6 +486,7 @@ export class Store {
   ): {
     batchResult: BatchContext;
     retVal: X;
+    changes: Changes;
   } => {
     invariant(
       optimisticId === undefined || !!optimisticId,
@@ -688,9 +541,13 @@ export class Store {
     };
 
     const retVal = batchFn(batchContext);
-    void this.maybeUpdateLists(changes, optimisticId);
+    void this.maybeRevalidateQueries(changes, optimisticId);
 
-    return { batchResult: batchContext, retVal: retVal };
+    return {
+      batchResult: batchContext,
+      retVal: retVal,
+      changes: batchContext.changes,
+    };
   };
 
   public invalidateObject<T extends ObjectTypeDefinition>(
@@ -701,78 +558,41 @@ export class Store {
       apiName = apiName.apiName;
     }
 
-    // inevitably we will want an internal version of this and a "public" one
-    // so we can avoid extra requests
-
-    const query = this.getObjectQuery(apiName, pk);
-
-    return query.revalidate(true);
-
-    // potentially trigger updates of the lists that included this object?
-    // TODO
-    // could we detect that a list WOULD include it?
+    return this.getObjectQuery(apiName, pk)
+      .revalidate(/* force */ true);
   }
 
-  public async maybeRevalidateLists(
+  async maybeRevalidateQueries(
     changes: Changes,
+    optimisticId?: OptimisticId | undefined,
   ): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
       // todo
-      this.logger?.child({ methodName: "maybeRevalidateList" }).debug(
+      this.logger?.child({ methodName: "maybeRevalidateQueries" }).debug(
         DEBUG_ONLY__changesToString(changes),
+        { optimisticId },
       );
     }
 
     try {
       const promises: Array<Promise<unknown>> = [];
-      for (const [cacheKey, v] of this.#truthLayer.entries()) {
-        if (isListCacheKey(cacheKey)) {
-          const promise = this.#peekQuery(cacheKey)?.maybeUpdateAndRevalidate(
-            changes,
-            undefined,
-          );
-          if (promise) promises.push(promise);
-        }
+      for (const cacheKey of this.#queries.keys()) {
+        const promise = this.peekQuery(cacheKey)?.maybeUpdateAndRevalidate?.(
+          changes,
+          optimisticId,
+        );
+        if (promise) promises.push(promise);
       }
       await Promise.all(promises);
     } finally {
       if (process.env.NODE_ENV !== "production") {
         // todo
-        this.logger?.child({ methodName: "maybeRevalidateList" }).debug(
+        this.logger?.child({ methodName: "maybeRevalidateQueries" }).debug(
           "in finally",
           DEBUG_ONLY__changesToString(changes),
         );
       }
     }
-  }
-
-  public maybeUpdateLists(
-    changes: Changes,
-    optimisticId: OptimisticId | undefined,
-  ): Promise<(void | undefined)[]> {
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "maybeUpdateLists" }).debug(
-        DEBUG_ONLY__changesToString(changes),
-        { optimisticId },
-      );
-    }
-    if (changes.addedObjects.size === 0 && changes.modifiedObjects.size === 0) {
-      return Promise.resolve([]);
-    }
-    const promises = [];
-    for (const cacheKey of this.#queries.keys()) {
-      if (isListCacheKey(cacheKey)) {
-        if (!changes.modifiedLists.has(cacheKey)) {
-          const promise = this.#peekQuery(cacheKey)?.maybeUpdateAndRevalidate(
-            changes,
-            optimisticId,
-          );
-          if (promise) promises.push(promise);
-        }
-      }
-    }
-
-    return Promise.all(promises);
   }
 
   /**
@@ -784,8 +604,6 @@ export class Store {
     apiName: T["apiName"] | T,
     changes: Changes | undefined,
   ): Promise<unknown[]> {
-    // this whole method needs to be updated as it was written for
-    // objects only.
     if (typeof apiName !== "string") {
       apiName = apiName.apiName;
     }
@@ -797,14 +615,14 @@ export class Store {
 
     const promises: Array<Promise<unknown>> = [];
 
-    for (const [cacheKey, v] of this.#truthLayer.entries()) {
-      if (isListCacheKey(cacheKey, apiName)) {
-        if (!changes || !changes.modifiedLists.has(cacheKey)) {
-          const promise = this.#peekQuery(cacheKey)?.revalidate(true);
+    for (const cacheKey of this.#truthLayer.keys()) {
+      if (isListCacheKey(cacheKey)) {
+        if (!changes || !changes.modified.has(cacheKey)) {
+          const promise = this.peekQuery(cacheKey)?.revalidate(true);
 
           if (promise) {
             promises.push(promise);
-            changes?.modifiedLists.add(cacheKey);
+            changes?.modified.add(cacheKey);
           }
         }
       }
@@ -831,7 +649,7 @@ export class Store {
       orderBy as Canonical<OrderBy<T>>,
     );
 
-    void this.#peekQuery(cacheKey)?.revalidate(true);
+    void this.peekQuery(cacheKey)?.revalidate(true);
   }
 
   retain(cacheKey: CacheKey<string, any, any>): void {
