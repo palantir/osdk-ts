@@ -196,12 +196,10 @@ function TodoView({ todo }: TodoProps) {
     applyAction({
       todo: todo,
       isComplete: true,
-    }, {
-      optimisticUpdate: (ou) => {
+
+      $optimisticUpdate: (ou) => {
         ou.updateObject(
-          todo.$clone({
-            isComplete: true,
-          }),
+          todo.$clone({ isComplete: true }),
         );
       },
     });
