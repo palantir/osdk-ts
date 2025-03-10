@@ -23,7 +23,7 @@ import type {
   PropertyKeys,
   SelectArgToKeys,
 } from "@osdk/api";
-import { FooInterface , Employee, Todo } from "@osdk/client.test.ontology";
+import { Employee, FooInterface, Todo } from "@osdk/client.test.ontology";
 import type { SearchJsonQueryV2 } from "@osdk/foundry.ontologies";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
