@@ -92,7 +92,9 @@ describe("ObjectSet", () => {
 
     const whereClausedInterface2 = await client(FooInterface).where({
       fooSpt: "The Grinch",
-    }).fetchPage({ $includeAllBaseObjectProperties: false });
+    }).fetchPage({
+      $includeAllBaseObjectProperties: false,
+    });
 
     const interfaceObj2 = whereClausedInterface2.data[0];
     expect(interfaceObj2.fooSpt).toEqual("The Grinch");

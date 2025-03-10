@@ -55,7 +55,7 @@ export async function runInterfacesTest2(): Promise<void> {
 
   expectType<
     TypeOf<
-      Osdk.Instance<NbaPlayer>,
+      Osdk.Instance<NbaPlayer, never, "id">,
       typeof nbaPlayer1
     >
   >(true);

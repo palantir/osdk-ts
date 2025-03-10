@@ -915,9 +915,11 @@
           "color": "color"
         },
         "titleProperty": "name",
-        "pluralDisplayName": "names",
-        "implementsInterfaces": ["Athlete"],
-        "implementsInterfaces2": { "Athlete": { "jerseyNumber": "jerseyNumber", "athleteId": "id", "name22": "name" } }
+        "pluralDisplayName": "names"
+      },
+      "implementsInterfaces": ["Athlete"],
+      "implementsInterfaces2": {
+        "Athlete": { "properties": { "jerseyNumber": "jerseyNumber", "athleteId": "id", "name22": "name" } }
       },
       "linkTypes": []
     },
