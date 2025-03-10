@@ -44,6 +44,7 @@ export async function runInterfacesTest2(): Promise<void> {
     name22: { $eq: "Michael Jordan" },
   }).fetchPage({
     $select: ["athleteId"],
+    $includeAllBaseObjectProperties: true,
   });
 
   invariant(athletesSelected.data.length > 0);

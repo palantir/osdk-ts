@@ -23,12 +23,15 @@ import type {
   PropertyKeys,
   SelectArgToKeys,
 } from "@osdk/api";
-import type { FooInterface } from "@osdk/client.test.ontology";
-import { Employee, Todo } from "@osdk/client.test.ontology";
+import { FooInterface , Employee, Todo } from "@osdk/client.test.ontology";
 import type { SearchJsonQueryV2 } from "@osdk/foundry.ontologies";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
-import { fetchPage, objectSetToSearchJsonV2 } from "../object/fetchPage.js";
+import {
+  fetchPage,
+  objectSetToSearchJsonV2,
+  resolveInterfaceObjectSet,
+} from "../object/fetchPage.js";
 import {
   createObjectSet,
   getWireObjectSet,
@@ -166,6 +169,74 @@ describe(fetchPage, () => {
           },
         ],
       } satisfies SearchJsonQueryV2,
+    );
+  });
+
+  it("converts interface object set for new API correctly", () => {
+    const client = createMinimalClient(
+      metadata,
+      "https://foo",
+      async () => "",
+    );
+    const objectSet = createObjectSet(FooInterface, client).where({
+      fooSpt: "hello",
+    });
+
+    const wireObjectSet = getWireObjectSet(objectSet);
+
+    expect(
+      resolveInterfaceObjectSet(wireObjectSet, "FooInterface", {
+        $includeAllBaseObjectProperties: true,
+      }),
+    ).toEqual(
+      {
+        type: "intersect",
+        objectSets: [
+          {
+            type: "filter",
+            where: {
+              type: "eq",
+              field: "fooSpt",
+              value: "hello",
+            },
+            objectSet: { interfaceType: "FooInterface", type: "interfaceBase" },
+          },
+          {
+            type: "interfaceBase",
+            interfaceType: "FooInterface",
+            includeAllBaseObjectProperties: true,
+          },
+        ],
+      },
+    );
+
+    expect(
+      resolveInterfaceObjectSet(wireObjectSet, "FooInterface", {}),
+    ).toEqual(
+      {
+        type: "filter",
+        where: {
+          type: "eq",
+          field: "fooSpt",
+          value: "hello",
+        },
+        objectSet: { interfaceType: "FooInterface", type: "interfaceBase" },
+      },
+    );
+    expect(
+      resolveInterfaceObjectSet(wireObjectSet, "FooInterface", {
+        $includeAllBaseObjectProperties: false,
+      }),
+    ).toEqual(
+      {
+        type: "filter",
+        where: {
+          type: "eq",
+          field: "fooSpt",
+          value: "hello",
+        },
+        objectSet: { interfaceType: "FooInterface", type: "interfaceBase" },
+      },
     );
   });
 
