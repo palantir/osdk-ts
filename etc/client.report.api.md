@@ -87,7 +87,7 @@ export interface Client extends SharedClient, OldSharedClient {
     // (undocumented)
     <Q extends QueryDefinition<any>>(o: Q): QuerySignatureFromDef<Q>;
     	// (undocumented)
-    <Q extends Experiment<"2.0.8"> | Experiment<"2.1.0">>(experiment: Q): ExperimentFns<Q>;
+    <Q extends Experiment<"2.0.8"> | Experiment<"2.1.0"> | Experiment<"2.2.0">>(experiment: Q): ExperimentFns<Q>;
     	// (undocumented)
     fetchMetadata<Q extends (ObjectTypeDefinition | InterfaceDefinition | ActionDefinition<any> | QueryDefinition<any>)>(o: Q): Promise<Q extends ObjectTypeDefinition ? ObjectMetadata : Q extends InterfaceDefinition ? InterfaceMetadata : Q extends ActionDefinition<any> ? ActionMetadata : Q extends QueryDefinition<any> ? QueryMetadata : never>;
 }
