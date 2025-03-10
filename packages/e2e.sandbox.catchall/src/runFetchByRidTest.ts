@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid } from "@osdk/api/unstable";
+import {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+} from "@osdk/api/unstable";
 import { FintrafficAis } from "@osdk/e2e.generated.catchall";
 import { dsClient } from "./client.js";
 
@@ -27,6 +30,15 @@ export async function runFetchByRidTest(): Promise<void> {
   );
 
   console.log(result);
+
+  const result2 = await dsClient(
+    __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+  ).fetchPageByRid(FintrafficAis, [
+    "ri.phonograph2-objects.main.object.0e329e64-9944-4427-bed2-a4a52e844f9e",
+    "ri.phonograph2-objects.main.object.7b74bd56-4de1-4190-9123-266ab14b0b20",
+  ]);
+
+  console.log(result2);
 }
 
 void runFetchByRidTest();
