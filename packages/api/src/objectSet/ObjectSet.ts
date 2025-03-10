@@ -89,13 +89,14 @@ interface FetchPage<
     R extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
+    T extends boolean = false,
   >(
-    args?: FetchPageArgs<Q, L, R, A, S>,
+    args?: FetchPageArgs<Q, L, R, A, S, T>,
   ) => Promise<
     PageResult<
       Osdk.Instance<
         Q,
-        ExtractOptions<R, S>,
+        ExtractOptions<R, S, T>,
         PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
         { [K in Extract<keyof RDPs, L>]: RDPs[K] }
       >
@@ -121,14 +122,15 @@ interface FetchPage<
     R extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
+    T extends boolean = false,
   >(
-    args?: FetchPageArgs<Q, L, R, A, S>,
+    args?: FetchPageArgs<Q, L, R, A, S, T>,
   ) => Promise<
     Result<
       PageResult<
         Osdk.Instance<
           Q,
-          ExtractOptions<R, S>,
+          ExtractOptions<R, S, T>,
           PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
           { [K in Extract<keyof RDPs, L>]: RDPs[K] }
         >
@@ -174,12 +176,13 @@ interface AsyncIter<
     R extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
+    T extends boolean = false,
   >(
-    args?: AsyncIterArgs<Q, L, R, A, S>,
+    args?: AsyncIterArgs<Q, L, R, A, S, T>,
   ) => AsyncIterableIterator<
     Osdk.Instance<
       Q,
-      ExtractOptions<R, S>,
+      ExtractOptions<R, S, T>,
       PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
       { [K in Extract<keyof RDPs, L>]: RDPs[K] }
     >

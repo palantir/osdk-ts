@@ -20,8 +20,16 @@ import {
   FooInterface,
 } from "@osdk/client.test.ontology";
 import { apiServer } from "@osdk/shared.test";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  expectTypeOf,
+  it,
+} from "vitest";
 
+import type { Osdk, PropertyKeys } from "@osdk/api";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
@@ -69,13 +77,33 @@ describe("ObjectSet", () => {
   it("allows fetching by field from a interface object set - where clause", async () => {
     const whereClausedInterface = await client(FooInterface).where({
       fooSpt: "The Grinch",
-    }).fetchPage();
+    }).fetchPage({ $includeAllBaseObjectProperties: true });
 
     const interfaceObj = whereClausedInterface.data[0];
     expect(interfaceObj.fooSpt).toEqual("The Grinch");
 
     const asEmployee = interfaceObj.$as(Employee);
+    expectTypeOf<typeof asEmployee>().toEqualTypeOf<
+      Osdk.Instance<Employee, "$allBaseProperties", PropertyKeys<Employee>, {}>
+    >;
 
     expect(asEmployee.fullName).toEqual("The Grinch");
+    expect(asEmployee.office).toEqual("Where the Grinch Lives");
+
+    const whereClausedInterface2 = await client(FooInterface).where({
+      fooSpt: "The Grinch",
+    }).fetchPage({ $includeAllBaseObjectProperties: false });
+
+    const interfaceObj2 = whereClausedInterface2.data[0];
+    expect(interfaceObj2.fooSpt).toEqual("The Grinch");
+    const asEmployee2 = interfaceObj2.$as(Employee);
+
+    expectTypeOf<typeof asEmployee2>().toEqualTypeOf<
+      Osdk.Instance<Employee, never, "fullName", {}>
+    >;
+
+    expect(asEmployee2.fullName).toEqual("The Grinch");
+    // @ts-expect-error
+    expect(asEmployee2.office).toBeUndefined();
   });
 });

@@ -104,3 +104,110 @@ export async function runInterfacesTest(): Promise<void> {
 }
 
 void runInterfacesTest();
+
+// /** exposed for a test */
+// export type UnionIfTrue<
+//   S extends string,
+//   UNION_IF_TRUE extends boolean,
+//   E extends string,
+// > = IsNever<S> extends true ? never
+//   : UNION_IF_TRUE extends true ? S | E
+//   : S;
+
+// export type IsNever<T> = [T] extends [never] ? true : false;
+
+// export type MapPropNamesToObjectType<
+//   FROM extends ObjectOrInterfaceDefinition,
+//   TO extends ObjectTypeDefinition,
+//   P extends ValidOsdkPropParams<FROM>,
+//   OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
+// > = OPTIONS extends "$allBaseProperties"
+//   ? PropertyKeys<FROM> extends P ? PropertyKeys<TO>
+//   : PropMapToObject<
+//     FROM,
+//     TO
+//   >[JustProps<FROM, P> & keyof PropMapToObject<FROM, TO>]
+//   : PropMapToObject<
+//     FROM,
+//     TO
+//   >[JustProps<FROM, P> & keyof PropMapToObject<FROM, TO>];
+
+// export type PropMapToObject<
+//   FROM extends ObjectOrInterfaceDefinition,
+//   TO extends ObjectTypeDefinition,
+// > = NonNullable<CompileTimeMetadata<TO>["interfaceMap"]>[ApiNameAsString<FROM>];
+
+// export type ApiNameAsString<
+//   T extends ObjectOrInterfaceDefinition,
+// > = CompileTimeMetadata<T>["apiName"];
+
+// export type JustProps<
+//   T extends ObjectOrInterfaceDefinition,
+//   P extends ValidOsdkPropParams<T>,
+// > = P extends "$all" ? PropertyKeys<T>
+//   : Exclude<P, SpecialOsdkPropParams>;
+
+// type ValidOsdkPropParams<Q extends ObjectOrInterfaceDefinition> =
+//   | SpecialOsdkPropParams
+//   | PropertyKeys<Q>;
+
+// type SpecialOsdkPropParams =
+//   | "$all"
+//   | "$rid"
+//   | "$strict"
+//   | "$notStrict";
+
+// type huh = ConvertProps<
+//   FooInterface,
+//   OsdkTestObject,
+//   PropertyKeys<FooInterface>
+// >;
+
+// type huh1 = UnionIfTrue<
+//   MapPropNamesToObjectType<
+//     FooInterface,
+//     OsdkTestObject,
+//     PropertyKeys<FooInterface>
+//   >,
+//   PropertyKeys<FooInterface> extends "$rid" ? true : false,
+//   "$rid"
+// >;
+
+// type huh2 = MapPropNamesToObjectType<
+//   FooInterface,
+//   OsdkTestObject,
+//   PropertyKeys<FooInterface>
+// >;
+
+// type huh3 = PropMapToObject<
+//   FooInterface,
+//   OsdkTestObject
+// >[
+//   JustProps<
+//     FooInterface,
+//     & PropertyKeys<FooInterface>
+//     & keyof PropMapToObject<FooInterface, OsdkTestObject>
+//   >
+// ];
+
+// type huh4 = PropertyKeys<OsdkTestObject>;
+
+// type huh5<
+//   FROM extends ObjectOrInterfaceDefinition,
+//   TO extends ObjectTypeDefinition,
+//   P extends ValidOsdkPropParams<FROM>,
+//   OPTIONS extends "$allBaseProperties" | "rid" = never,
+// > = "$allBaseProperties" extends OPTIONS
+//   ? PropertyKeys<FROM> extends P ? PropertyKeys<TO> : false
+//   : true;
+
+// type huh6 = huh5<
+//   FooInterface,
+//   OsdkTestObject,
+//   "inheritedDescription" | "description" | "name",
+//   "$allBaseProperties" | "rid"
+// >;
+
+// type huh9 = never extends " " ? true : false;
+// type huh7 = PropertyKeys<FooInterface>;
+// type huh8 = PropertyKeys<OsdkTestObject>;

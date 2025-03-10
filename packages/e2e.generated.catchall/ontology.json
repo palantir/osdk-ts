@@ -873,6 +873,54 @@
       },
       "linkTypes": []
     },
+    "NbaPlayer": {
+      "objectType": {
+        "apiName": "NbaPlayer",
+        "primaryKey": "id",
+        "displayName": "NbaPlayer",
+        "description": "NbaPlayer",
+        "properties": {
+          "id": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "gamesPlayed": {
+            "dataType": {
+              "type": "integer"
+            }
+          },
+          "name": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "jerseyNumber": {
+            "dataType": {
+              "type": "integer"
+            }
+          },
+          "wikiUrl": {
+            "dataType": {
+              "type": "string"
+            }
+          }
+        },
+
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "traffic",
+          "color": "color"
+        },
+        "titleProperty": "name",
+        "pluralDisplayName": "names",
+        "implementsInterfaces": ["Athlete"],
+        "implementsInterfaces2": { "Athlete": { "jerseyNumber": "jerseyNumber", "athleteId": "id", "name22": "name" } }
+      },
+      "linkTypes": []
+    },
     "StructPerson": {
       "objectType": {
         "apiName": "StructPerson",
@@ -1884,6 +1932,71 @@
           },
           "displayName": "Inherited Description",
           "description": "Description property we inherited from some parent interface"
+        }
+      },
+      "rid": "ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b",
+      "status": "ACTIVE"
+    },
+    "Athlete": {
+      "apiName": "Athlete",
+      "displayName": "Athlete interface",
+      "description": "Its an athlete.",
+      "properties": {
+        "jerseyNumber": {
+          "rid": "ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d6",
+          "apiName": "jerseyNumber",
+          "dataType": {
+            "type": "integer"
+          },
+          "displayName": "Jersey Number",
+          "description": "Jersey Number"
+        },
+        "athleteId": {
+          "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
+          "apiName": "athleteId",
+          "dataType": {
+            "type": "string"
+          },
+          "displayName": "Athlete ID",
+          "description": "Athlete ID"
+        },
+        "name22": {
+          "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
+          "apiName": "name22",
+          "dataType": {
+            "type": "string"
+          },
+          "displayName": "Name",
+          "description": "Name"
+        }
+      },
+      "allProperties": {
+        "jerseyNumber": {
+          "rid": "ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d6",
+          "apiName": "jerseyNumber",
+          "dataType": {
+            "type": "integer"
+          },
+          "displayName": "Jersey Number",
+          "description": "Jersey Number"
+        },
+        "athleteId": {
+          "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
+          "apiName": "athleteId",
+          "dataType": {
+            "type": "string"
+          },
+          "displayName": "Athlete ID",
+          "description": "Athlete ID"
+        },
+        "name22": {
+          "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
+          "apiName": "name22",
+          "dataType": {
+            "type": "string"
+          },
+          "displayName": "Name",
+          "description": "Name"
         }
       },
       "rid": "ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b",

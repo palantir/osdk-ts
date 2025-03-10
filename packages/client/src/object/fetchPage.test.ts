@@ -54,7 +54,8 @@ describe(fetchPage, () => {
           T,
           L & PropertyKeys<T>,
           R,
-          "drop"
+          "drop",
+          false
         >({} as any, {} as any, {} as any);
       }
     }
@@ -216,14 +217,18 @@ describe(fetchPage, () => {
 
   describe("includeRid", () => {
     it("properly returns the correct string for includeRid", () => {
-      expectTypeOf<Awaited<FetchPageResult<TodoDef, "text", false, "throw">>>()
+      expectTypeOf<
+        Awaited<FetchPageResult<TodoDef, "text", false, "throw", false>>
+      >()
         .toEqualTypeOf<{
           data: Osdk<TodoDef, "text">[];
           nextPageToken: string | undefined;
           totalCount: string;
         }>();
 
-      expectTypeOf<Awaited<FetchPageResult<TodoDef, "text", true, false>>>()
+      expectTypeOf<
+        Awaited<FetchPageResult<TodoDef, "text", true, false, false>>
+      >()
         .branded
         .toEqualTypeOf<{
           data: Osdk<TodoDef, "text" | "$rid" | "$notStrict">[];
@@ -234,7 +239,7 @@ describe(fetchPage, () => {
 
     it("works with $all", () => {
       expectTypeOf<
-        Awaited<FetchPageResult<TodoDef, "text" | "id", false, "drop">>
+        Awaited<FetchPageResult<TodoDef, "text" | "id", false, "drop", false>>
       >().branded
         .toEqualTypeOf<{
           data: Osdk<TodoDef>[];
@@ -243,7 +248,7 @@ describe(fetchPage, () => {
         }>();
 
       expectTypeOf<
-        Awaited<FetchPageResult<TodoDef, "text" | "id", true, "drop">>
+        Awaited<FetchPageResult<TodoDef, "text" | "id", true, "drop", false>>
       >()
         .branded
         .toEqualTypeOf<{
@@ -253,7 +258,7 @@ describe(fetchPage, () => {
         }>();
 
       expectTypeOf<
-        Awaited<FetchPageResult<TodoDef, "text" | "id", true, "drop">>
+        Awaited<FetchPageResult<TodoDef, "text" | "id", true, "drop", false>>
       >()
         .branded
         .toEqualTypeOf<{
@@ -263,7 +268,7 @@ describe(fetchPage, () => {
         }>();
 
       expectTypeOf<
-        Awaited<FetchPageResult<FooInterface, "fooSpt", true, "drop">>
+        Awaited<FetchPageResult<FooInterface, "fooSpt", true, "drop", false>>
       >()
         .branded
         .toEqualTypeOf<{
@@ -273,7 +278,7 @@ describe(fetchPage, () => {
         }>();
 
       expectTypeOf<
-        Awaited<FetchPageResult<FooInterface, "fooSpt", true, "drop">>
+        Awaited<FetchPageResult<FooInterface, "fooSpt", true, "drop", false>>
       >()
         .branded
         .toEqualTypeOf<{
