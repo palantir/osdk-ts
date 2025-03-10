@@ -883,8 +883,19 @@ describe("ObjectSet", () => {
         >()
           .toEqualTypeOf<"fooSpt">();
 
-        expectTypeOf<ConvertProps<FooInterface, Employee, "fooSpt">>()
-          .toEqualTypeOf<"fullName">();
+        expectTypeOf<
+          ConvertProps<FooInterface, Employee, "fooSpt", "$allBaseProperties">
+        >()
+          .toEqualTypeOf<
+            | "employeeId"
+            | "fullName"
+            | "office"
+            | "class"
+            | "startDate"
+            | "employeeStatus"
+            | "employeeSensor"
+            | "employeeLocation"
+          >();
 
         // We don't have a proper definition that has
         // a non-null property on an interface so

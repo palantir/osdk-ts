@@ -13,7 +13,7 @@ export {
   editOsdkTestObject,
 } from './ontology/actions.js';
 export * as $Actions from './ontology/actions.js';
-export { FooInterface, InterfaceNoProps, OsdkTestInterface } from './ontology/interfaces.js';
+export { Athlete, FooInterface, InterfaceNoProps, OsdkTestInterface } from './ontology/interfaces.js';
 export * as $Interfaces from './ontology/interfaces.js';
 export {
   BgaoNflPlayer,
@@ -27,6 +27,7 @@ export {
   McAirportStruct,
   MnayanOsdkMediaObject,
   MtaBus,
+  NbaPlayer,
   ObjectTypeWithAllPropertyTypes,
   OsdkTestObject,
   Person,

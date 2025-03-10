@@ -154,16 +154,18 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherence.Default,
+      T extends boolean = false,
     >(
-      args?: AsyncIterArgs<Q, L, R, A, S>,
-    ): AsyncIterableIterator<SingleOsdkResult<Q, L, R, S>> {
+      args?: AsyncIterArgs<Q, L, R, A, S, T>,
+    ): AsyncIterableIterator<SingleOsdkResult<Q, L, R, S, {}, T>> {
       let $nextPageToken: string | undefined = undefined;
       do {
         const result: FetchPageResult<
           Q,
           L,
           R,
-          S
+          S,
+          T
         > = await fetchPageInternal(
           augmentRequestContext(
             clientCtx,
@@ -176,7 +178,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         $nextPageToken = result.nextPageToken;
 
         for (const obj of result.data) {
-          yield obj as SingleOsdkResult<Q, L, R, S>;
+          yield obj as SingleOsdkResult<Q, L, R, S, {}, T>;
         }
       } while ($nextPageToken != null);
     },
