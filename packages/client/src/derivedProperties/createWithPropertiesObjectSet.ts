@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { DerivedProperty, ObjectOrInterfaceDefinition } from "@osdk/api";
+import type {
+  DerivedProperty,
+  ObjectMetadata,
+  ObjectOrInterfaceDefinition,
+} from "@osdk/api";
 import type {
   DerivedPropertyDefinition,
   ObjectSet as WireObjectSet,
@@ -22,8 +26,18 @@ import type {
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
+import type { MinimalClient } from "../MinimalClientContext.js";
 
 const idCounter = 0;
+
+// @internal
+export type DerivedPropertyDefinitionMap = Map<
+  any,
+  {
+    def: DerivedPropertyDefinition;
+    typeCallback: () => Promise<ObjectMetadata.Property>;
+  }
+>;
 
 /** @internal */
 export function createWithPropertiesObjectSet<
@@ -31,22 +45,33 @@ export function createWithPropertiesObjectSet<
 >(
   objectType: Q,
   objectSet: WireObjectSet,
-  definitionMap: Map<any, DerivedPropertyDefinition>,
+  clientCtx: MinimalClient,
+  definitionMap: DerivedPropertyDefinitionMap,
 ): DerivedProperty.SelectPropertyBuilder<Q, false> {
   const base: DerivedProperty.SelectPropertyBuilder<Q, false> = {
     pivotTo: (link) => {
-      return createWithPropertiesObjectSet(objectType, {
-        type: "searchAround",
-        objectSet,
-        link,
-      }, definitionMap);
+      return createWithPropertiesObjectSet(
+        objectType,
+        {
+          type: "searchAround",
+          objectSet,
+          link,
+        },
+        clientCtx,
+        definitionMap,
+      );
     },
     where: (clause) => {
-      return createWithPropertiesObjectSet(objectType, {
-        type: "filter",
-        objectSet: objectSet,
-        where: modernToLegacyWhereClause(clause, objectType),
-      }, definitionMap);
+      return createWithPropertiesObjectSet(
+        objectType,
+        {
+          type: "filter",
+          objectSet: objectSet,
+          where: modernToLegacyWhereClause(clause, objectType),
+        },
+        clientCtx,
+        definitionMap,
+      );
     },
     aggregate: (aggregation: string, opt: any) => {
       const splitAggregation = aggregation.split(":");
@@ -98,20 +123,38 @@ export function createWithPropertiesObjectSet<
       }
       const selectorResult: DerivedProperty.SelectorResult<any> = { type: {} };
       definitionMap.set(selectorResult, {
-        type: "selection",
-        objectSet: objectSet,
-        operation: aggregationOperationDefinition,
+        "def": {
+          type: "selection",
+          objectSet: objectSet,
+          operation: aggregationOperationDefinition,
+        },
+        "typeCallback": async () => {
+          const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
+            objectType.apiName,
+          );
+          invariant(objDef, `Missing definition for '${objectType.apiName}'`);
+          return objDef.properties[aggregationPropertyName];
+        },
       });
       return selectorResult;
     },
     selectProperty: (name) => {
       const selectorResult: DerivedProperty.SelectorResult<any> = { type: {} };
       definitionMap.set(selectorResult, {
-        type: "selection",
-        objectSet: objectSet,
-        operation: {
-          type: "get",
-          selectedPropertyApiName: name,
+        "def": {
+          type: "selection",
+          objectSet: objectSet,
+          operation: {
+            type: "get",
+            selectedPropertyApiName: name,
+          },
+        },
+        "typeCallback": async () => {
+          const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
+            objectType.apiName,
+          );
+          invariant(objDef, `Missing definition for '${objectType.apiName}'`);
+          return objDef.properties[name];
         },
       });
       return selectorResult;
