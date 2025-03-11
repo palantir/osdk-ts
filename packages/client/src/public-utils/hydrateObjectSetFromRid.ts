@@ -47,5 +47,6 @@ export function hydrateObjectSetFromRid<T extends ObjectOrInterfaceDefinition>(
         },
       ],
     },
+    {},
   );
 }

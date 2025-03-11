@@ -268,3 +268,38 @@ export const objectLoadResponseMap: {
   },
   BgaoNflPlayer: { [travisPlayer.__primaryKey.toString()]: travisPlayer },
 };
+
+export const objectWithAllPropertyTypesWithDerivedProperties: OntologyObjectV2 =
+  {
+    ...objectWithAllPropertyTypes1,
+    attachmentSelectDp: {
+      rid:
+        "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
+    },
+    geoSelectDp: {
+      coordinates: [
+        [
+          [1.0, 1.0],
+          [1.0, 2.0],
+          [2.0, 2.0],
+          [2.0, 1.0],
+          [1.0, 1.0],
+        ],
+      ],
+      type: "Polygon",
+    },
+    geoCollectListDp: [
+      {
+        coordinates: [
+          [
+            [1.0, 1.0],
+            [1.0, 2.0],
+            [2.0, 2.0],
+            [2.0, 1.0],
+            [1.0, 1.0],
+          ],
+        ],
+        type: "Polygon",
+      },
+    ],
+  };

@@ -21,6 +21,7 @@ import type {
   FetchPageResult,
   InterfaceDefinition,
   NullabilityAdherence,
+  ObjectMetadata,
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
   PropertyKeys,
@@ -162,6 +163,10 @@ export async function fetchPageInternal<
   client: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet,
+  derivedPropertyTypeByName: Record<
+    string,
+    Promise<ObjectMetadata.Property>
+  >,
   args: FetchPageArgs<Q, L, R, A, S> = {},
 ): Promise<FetchPageResult<Q, L, R, S>> {
   if (objectType.type === "interface") {
@@ -177,6 +182,7 @@ export async function fetchPageInternal<
       objectType,
       args,
       objectSet,
+      derivedPropertyTypeByName,
     ) as any; // fixme
   }
 }
@@ -192,10 +198,20 @@ export async function fetchPageWithErrorsInternal<
   client: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet,
+  derivedPropertyTypeByName: Record<
+    string,
+    Promise<ObjectMetadata.Property>
+  >,
   args: FetchPageArgs<Q, L, R, A, S> = {},
 ): Promise<Result<FetchPageResult<Q, L, R, S>>> {
   try {
-    const result = await fetchPageInternal(client, objectType, objectSet, args);
+    const result = await fetchPageInternal(
+      client,
+      objectType,
+      objectSet,
+      derivedPropertyTypeByName,
+      args,
+    );
     return { value: result };
   } catch (e) {
     if (e instanceof Error) {
@@ -223,8 +239,18 @@ export async function fetchPage<
   objectType: Q,
   args: FetchPageArgs<Q, L, R, any, S>,
   objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
+  derivedPropertyTypeByName: Record<
+    string,
+    Promise<ObjectMetadata.Property>
+  > = {},
 ): Promise<FetchPageResult<Q, L, R, S>> {
-  return fetchPageInternal(client, objectType, objectSet, args);
+  return fetchPageInternal(
+    client,
+    objectType,
+    objectSet,
+    derivedPropertyTypeByName,
+    args,
+  );
 }
 
 /** @internal */
@@ -238,8 +264,18 @@ export async function fetchPageWithErrors<
   objectType: Q,
   args: FetchPageArgs<Q, L, R, any, S>,
   objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
+  derivedPropertyTypeByName: Record<
+    string,
+    Promise<ObjectMetadata.Property>
+  >,
 ): Promise<Result<FetchPageResult<Q, L, R, S>>> {
-  return fetchPageWithErrorsInternal(client, objectType, objectSet, args);
+  return fetchPageWithErrorsInternal(
+    client,
+    objectType,
+    objectSet,
+    derivedPropertyTypeByName,
+    args,
+  );
 }
 
 function applyFetchArgs<
@@ -283,6 +319,10 @@ export async function fetchObjectPage<
   objectType: Q,
   args: FetchPageArgs<Q, L, R, Augments, S>,
   objectSet: ObjectSet,
+  derivedPropertyTypeByName: Record<
+    string,
+    Promise<ObjectMetadata.Property>
+  >,
 ): Promise<FetchPageResult<Q, L, R, S>> {
   const r = await OntologiesV2.OntologyObjectSets.load(
     addUserAgentAndRequestContextHeaders(client, objectType),
@@ -302,6 +342,8 @@ export async function fetchObjectPage<
       undefined,
       undefined,
       args.$select,
+      false,
+      derivedPropertyTypeByName,
     ),
     nextPageToken: r.nextPageToken,
     totalCount: r.totalCount,

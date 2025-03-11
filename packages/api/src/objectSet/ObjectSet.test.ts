@@ -31,7 +31,13 @@ namespace Employee {
   export type PropertyKeys =
     | "employeeId"
     | "fullName"
-    | "class";
+    | "class"
+    | "attachment"
+    | "geopoint"
+    | "timeseries"
+    | "mediaReference"
+    | "geotimeSeriesReference"
+    | "isActive";
 
   export interface Links {
     readonly lead: $SingleLinkAccessor<Employee>;
@@ -42,6 +48,14 @@ namespace Employee {
     readonly class: $PropType["string"] | undefined;
     readonly fullName: $PropType["string"] | undefined;
     readonly employeeId: $PropType["integer"] | undefined;
+    readonly attachment: $PropType["attachment"] | undefined;
+    readonly geopoint: $PropType["geopoint"] | undefined;
+    readonly timeseries: $PropType["numericTimeseries"] | undefined;
+    readonly mediaReference: $PropType["mediaReference"] | undefined;
+    readonly geotimeSeriesReference:
+      | $PropType["geotimeSeriesReference"]
+      | undefined;
+    readonly isActive: $PropType["boolean"] | undefined;
   }
   export type StrictProps = Props;
 
@@ -86,6 +100,16 @@ interface Employee extends $ObjectTypeDefinition {
       class: $PropertyDef<"string", "nullable", "single">;
       fullName: $PropertyDef<"string", "nullable", "single">;
       employeeId: $PropertyDef<"integer", "nullable", "single">;
+      attachment: $PropertyDef<"attachment", "nullable", "single">;
+      geopoint: $PropertyDef<"geopoint", "nullable", "single">;
+      timeseries: $PropertyDef<"numericTimeseries", "nullable", "single">;
+      mediaReference: $PropertyDef<"mediaReference", "nullable", "single">;
+      geotimeSeriesReference: $PropertyDef<
+        "geotimeSeriesReference",
+        "nullable",
+        "single"
+      >;
+      isActive: $PropertyDef<"boolean", "nullable", "single">;
     };
     rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44";
     status: "ACTIVE";
@@ -349,12 +373,27 @@ describe("ObjectSet", () => {
 
       it("Works with selecting all non-RDP's", async () => {
         const withFamilyResults = await withFamily.fetchPage({
-          $select: ["class", "fullName", "employeeId"],
+          $select: [
+            "class",
+            "fullName",
+            "employeeId",
+            "attachment",
+            "geopoint",
+            "timeseries",
+            "mediaReference",
+            "geotimeSeriesReference",
+            "isActive",
+          ],
         });
 
         expectTypeOf<typeof withFamilyResults["data"][0]>()
           .toEqualTypeOf<
-            Osdk.Instance<Employee, never, PropertyKeys<Employee>, {}>
+            Osdk.Instance<
+              Employee,
+              never,
+              PropertyKeys<Employee>,
+              {}
+            >
           >();
         expectTypeOf<typeof withFamilyResults["data"][0]["class"]>()
           .toEqualTypeOf<
@@ -419,6 +458,41 @@ describe("ObjectSet", () => {
       fauxObjectSet.withProperties({
         "mom": (base) => base.pivotTo("lead").aggregate("$count"),
       }) satisfies ObjectSetType;
+    });
+
+    it("has correct aggregation keys", () => {
+      fauxObjectSet.withProperties({
+        "integer": (base) => base.pivotTo("lead").aggregate("$count"),
+        "integerNumericAgg": (base) =>
+          base.pivotTo("lead").aggregate("employeeId:sum"),
+        "string": (base) => base.pivotTo("lead").aggregate("class:collectList"),
+        "stringDoesNotHaveNumericAgg": (base) =>
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("class:sum"),
+        "isActive": (base) =>
+          base.pivotTo("lead").aggregate("isActive:approximateDistinct"),
+        "attachment": (base) =>
+          base.pivotTo("lead").aggregate("attachment:collectList"),
+        "geopoint": (base) =>
+          base.pivotTo("lead").aggregate("geopoint:collectList"),
+        "numericTimeseries": (base) =>
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("timeseries:sum"),
+        "numericTimeseriesExactDistinct": (base) =>
+          base.pivotTo("lead").aggregate("timeseries:exactDistinct"),
+        "mediaReference": (base) =>
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("mediaReference:avg"),
+        "mediaReferenceExactDistinct": (base) =>
+          base.pivotTo("lead").aggregate("mediaReference:exactDistinct"),
+        "geotimeSeriesReference": (base) =>
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("geotimeSeriesReference:sum"),
+        "geotimeSeriesReferenceExactDistinct": (base) =>
+          base.pivotTo("lead").aggregate(
+            "geotimeSeriesReference:exactDistinct",
+          ),
+      });
     });
   });
 });

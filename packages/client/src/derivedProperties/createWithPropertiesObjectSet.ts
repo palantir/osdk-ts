@@ -35,7 +35,7 @@ export type DerivedPropertyDefinitionMap = Map<
   any,
   {
     def: DerivedPropertyDefinition;
-    typeCallback: () => Promise<ObjectMetadata.Property>;
+    type: Promise<ObjectMetadata.Property>;
   }
 >;
 
@@ -128,13 +128,7 @@ export function createWithPropertiesObjectSet<
           objectSet: objectSet,
           operation: aggregationOperationDefinition,
         },
-        "typeCallback": async () => {
-          const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
-            objectType.apiName,
-          );
-          invariant(objDef, `Missing definition for '${objectType.apiName}'`);
-          return objDef.properties[aggregationPropertyName];
-        },
+        "type": getRdpType(clientCtx, objectType, aggregationPropertyName),
       });
       return selectorResult;
     },
@@ -149,17 +143,23 @@ export function createWithPropertiesObjectSet<
             selectedPropertyApiName: name,
           },
         },
-        "typeCallback": async () => {
-          const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
-            objectType.apiName,
-          );
-          invariant(objDef, `Missing definition for '${objectType.apiName}'`);
-          return objDef.properties[name];
-        },
+        "type": getRdpType(clientCtx, objectType, name),
       });
       return selectorResult;
     },
   };
 
   return base;
+}
+
+async function getRdpType(
+  clientCtx: MinimalClient,
+  objectType: ObjectOrInterfaceDefinition,
+  name: string,
+) {
+  const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
+    objectType.apiName,
+  );
+  invariant(objDef, `Missing definition for '${objectType.apiName}'`);
+  return objDef.properties[name];
 }

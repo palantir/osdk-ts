@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
+import type { ObjectMetadata, ObjectTypeDefinition, Osdk } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import { GeotimeSeriesPropertyImpl } from "../../createGeotimeSeriesProperty.js";
@@ -99,6 +99,7 @@ export function createOsdkObject<
   client: MinimalClient,
   objectDef: Q,
   rawObj: OntologyObjectV2,
+  derivedPropertyTypeByName: Record<string, ObjectMetadata.Property> = {},
 ): Osdk<ObjectTypeDefinition, any> {
   // updates the object's "hidden class/map".
   Object.defineProperties(rawObj, {
@@ -124,6 +125,27 @@ export function createOsdkObject<
         rawObj as any,
         propKey,
       );
+    } else if (
+      propKey in derivedPropertyTypeByName
+      && typeof (derivedPropertyTypeByName[propKey].type) === "string"
+      && specialPropertyTypes.has(derivedPropertyTypeByName[propKey].type)
+    ) {
+      if (derivedPropertyTypeByName[propKey].type === "attachment") {
+        if (Array.isArray(rawObj[propKey])) {
+          rawObj[propKey] = rawObj[propKey].map(a =>
+            hydrateAttachmentFromRidInternal(client, a.rid)
+          );
+        }
+        rawObj[propKey] = hydrateAttachmentFromRidInternal(
+          client,
+          rawObj[propKey].rid,
+        );
+      } else {
+        invariant(
+          false,
+          "Derived property aggregations for Timeseries and Media are not supported",
+        );
+      }
     }
   }
 
@@ -144,63 +166,53 @@ function createSpecialProperty(
         && specialPropertyTypes.has(propDef.type),
     );
   }
-  {
-    {
-      {
-        {
-          if (propDef.type === "attachment") {
-            if (Array.isArray(rawValue)) {
-              return rawValue.map(a =>
-                hydrateAttachmentFromRidInternal(client, a.rid)
-              );
-            }
-            return hydrateAttachmentFromRidInternal(client, rawValue.rid);
-          }
-
-          if (
-            propDef.type === "numericTimeseries"
-            || propDef.type === "stringTimeseries"
-            || propDef.type === "sensorTimeseries"
-          ) {
-            return new TimeSeriesPropertyImpl<
-              (typeof propDef)["type"] extends "numericTimeseries" ? number
-                : (typeof propDef)["type"] extends "stringTimeseries" ? string
-                : number | string
-            >(
-              client,
-              objectDef.apiName,
-              rawObject[objectDef.primaryKeyApiName as string],
-              p as string,
-            );
-          }
-
-          if (propDef.type === "geotimeSeriesReference") {
-            return new GeotimeSeriesPropertyImpl<GeoJSON.Point>(
-              client,
-              objectDef.apiName,
-              rawObject[objectDef.primaryKeyApiName as string],
-              p as string,
-              rawValue.type === "geotimeSeriesValue"
-                ? {
-                  time: rawValue.timestamp,
-                  value: {
-                    type: "Point",
-                    coordinates: rawValue.position,
-                  },
-                }
-                : undefined,
-            );
-          }
-          if (propDef.type === "mediaReference") {
-            return new MediaReferencePropertyImpl({
-              client,
-              objectApiName: objectDef.apiName,
-              primaryKey: rawObject[objectDef.primaryKeyApiName as string],
-              propertyName: p as string,
-            });
-          }
-        }
-      }
+  if (propDef.type === "attachment") {
+    if (Array.isArray(rawValue)) {
+      return rawValue.map(a => hydrateAttachmentFromRidInternal(client, a.rid));
     }
+    return hydrateAttachmentFromRidInternal(client, rawValue.rid);
+  }
+
+  if (
+    propDef.type === "numericTimeseries"
+    || propDef.type === "stringTimeseries"
+    || propDef.type === "sensorTimeseries"
+  ) {
+    return new TimeSeriesPropertyImpl<
+      (typeof propDef)["type"] extends "numericTimeseries" ? number
+        : (typeof propDef)["type"] extends "stringTimeseries" ? string
+        : number | string
+    >(
+      client,
+      objectDef.apiName,
+      rawObject[objectDef.primaryKeyApiName as string],
+      p as string,
+    );
+  }
+
+  if (propDef.type === "geotimeSeriesReference") {
+    return new GeotimeSeriesPropertyImpl<GeoJSON.Point>(
+      client,
+      objectDef.apiName,
+      rawObject[objectDef.primaryKeyApiName as string],
+      p as string,
+      rawValue.type === "geotimeSeriesValue"
+        ? {
+          time: rawValue.timestamp,
+          value: {
+            type: "Point",
+            coordinates: rawValue.position,
+          },
+        }
+        : undefined,
+    );
+  }
+  if (propDef.type === "mediaReference") {
+    return new MediaReferencePropertyImpl({
+      client,
+      objectApiName: objectDef.apiName,
+      primaryKey: rawObject[objectDef.primaryKeyApiName as string],
+      propertyName: p as string,
+    });
   }
 }

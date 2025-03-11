@@ -21,6 +21,7 @@ import type {
   LinkedType,
   LinkNames,
   NullabilityAdherence,
+  ObjectMetadata,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -36,6 +37,7 @@ import type {
   DerivedPropertyDefinition,
   ObjectSet as WireObjectSet,
 } from "@osdk/foundry.ontologies";
+import type { DerivedPropertyDefinitionMap } from "../derivedProperties/createWithPropertiesObjectSet.js";
 import { createWithPropertiesObjectSet } from "../derivedProperties/createWithPropertiesObjectSet.js";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -79,6 +81,10 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   objectType: Q,
   clientCtx: MinimalClient,
   objectSet: WireObjectSet = resolveBaseObjectSetType(objectType),
+  derivedPropertyTypeByName: Record<
+    string,
+    Promise<ObjectMetadata.Property>
+  > = {},
 ): ObjectSet<Q> {
   const base: ObjectSet<Q> = {
     aggregate: (aggregate<Q, any>).bind(
@@ -93,6 +99,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       augmentRequestContext(clientCtx, _ => ({ finalMethodCall: "fetchPage" })),
       objectType,
       objectSet,
+      derivedPropertyTypeByName,
     ) as ObjectSet<Q>["fetchPage"],
 
     fetchPageWithErrors: fetchPageWithErrorsInternal.bind(
@@ -103,14 +110,20 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       ),
       objectType,
       objectSet,
+      derivedPropertyTypeByName,
     ) as ObjectSet<Q>["fetchPageWithErrors"],
 
     where: (clause) => {
-      return clientCtx.objectSetFactory(objectType, clientCtx, {
-        type: "filter",
-        objectSet: objectSet,
-        where: modernToLegacyWhereClause(clause, objectType),
-      });
+      return clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        {
+          type: "filter",
+          objectSet: objectSet,
+          where: modernToLegacyWhereClause(clause, objectType),
+        },
+        derivedPropertyTypeByName,
+      );
     },
 
     pivotTo: function<L extends LinkNames<Q>>(
@@ -120,33 +133,48 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     },
 
     union: (...objectSets) => {
-      return clientCtx.objectSetFactory(objectType, clientCtx, {
-        type: "union",
-        objectSets: [
-          objectSet,
-          ...objectSets.map(os => objectSetDefinitions.get(os)!),
-        ],
-      });
+      return clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        {
+          type: "union",
+          objectSets: [
+            objectSet,
+            ...objectSets.map(os => objectSetDefinitions.get(os)!),
+          ],
+        },
+        derivedPropertyTypeByName,
+      );
     },
 
     intersect: (...objectSets) => {
-      return clientCtx.objectSetFactory(objectType, clientCtx, {
-        type: "intersect",
-        objectSets: [
-          objectSet,
-          ...objectSets.map(os => objectSetDefinitions.get(os)!),
-        ],
-      });
+      return clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        {
+          type: "intersect",
+          objectSets: [
+            objectSet,
+            ...objectSets.map(os => objectSetDefinitions.get(os)!),
+          ],
+        },
+        derivedPropertyTypeByName,
+      );
     },
 
     subtract: (...objectSets) => {
-      return clientCtx.objectSetFactory(objectType, clientCtx, {
-        type: "subtract",
-        objectSets: [
-          objectSet,
-          ...objectSets.map(os => objectSetDefinitions.get(os)!),
-        ],
-      });
+      return clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        {
+          type: "subtract",
+          objectSets: [
+            objectSet,
+            ...objectSets.map(os => objectSetDefinitions.get(os)!),
+          ],
+        },
+        derivedPropertyTypeByName,
+      );
     },
 
     asyncIter: async function*<
@@ -171,6 +199,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           ),
           objectType,
           objectSet,
+          derivedPropertyTypeByName,
           { ...args, $nextPageToken },
         );
         $nextPageToken = result.nextPageToken;
@@ -199,6 +228,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
             objectSet,
             primaryKey,
           ),
+          derivedPropertyTypeByName,
         ) as Osdk<Q>;
       }
       : undefined) as ObjectSet<Q>["fetchOne"],
@@ -243,19 +273,30 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     },
 
     withProperties: (clause) => {
-      const definitionMap = new Map<any, DerivedPropertyDefinition>();
+      const definitionMap: DerivedPropertyDefinitionMap = new Map();
 
-      const derivedProperties: Record<string, DerivedPropertyDefinition> = {};
+      const derivedPropertyDefinitionByName: Record<
+        string,
+        DerivedPropertyDefinition
+      > = {};
+      const derivedPropertyTypeByName: Record<
+        string,
+        Promise<ObjectMetadata.Property>
+      > = {};
       for (const key of Object.keys(clause)) {
         const derivedPropertyDefinition = clause
           [key](createWithPropertiesObjectSet(
             objectType,
             { type: "methodInput" },
+            clientCtx,
             definitionMap,
           ));
-        derivedProperties[key] = definitionMap.get(
+        derivedPropertyDefinitionByName[key] = definitionMap.get(
           derivedPropertyDefinition,
-        )!;
+        )!.def;
+        derivedPropertyTypeByName[key] = definitionMap.get(
+          derivedPropertyDefinition,
+        )!.type;
       }
 
       return clientCtx.objectSetFactory(
@@ -263,9 +304,10 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         clientCtx,
         {
           type: "withProperties",
-          derivedProperties: derivedProperties,
+          derivedProperties: derivedPropertyDefinitionByName,
           objectSet: objectSet,
         },
+        derivedPropertyTypeByName,
       );
     },
 
@@ -284,6 +326,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           objectSet,
           link,
         },
+        derivedPropertyTypeByName,
       );
     };
   }

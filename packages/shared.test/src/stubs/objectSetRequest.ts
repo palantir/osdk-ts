@@ -29,6 +29,7 @@ import {
   nycOffice,
   objectWithAllPropertyTypes1,
   objectWithAllPropertyTypesEmptyEntries,
+  objectWithAllPropertyTypesWithDerivedProperties,
   travisPlayer,
 } from "./objects.js";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
@@ -157,6 +158,82 @@ const derivedPropertyBodyUndefinedValue: LoadObjectSetRequestV2 = {
     where: { "field": "employeeId", "type": "eq", "value": 50036 },
   },
   select: ["derivedPropertyName"],
+};
+
+const derivedPropertyBodyCount: LoadObjectSetRequestV2 = {
+  objectSet: {
+    objectSet: {
+      derivedProperties: {
+        derivedPropertyName: {
+          objectSet: {
+            link: "lead",
+            objectSet: { type: "methodInput" },
+            type: "searchAround",
+          },
+          operation: {
+            type: "count",
+          },
+          type: "selection",
+        },
+      },
+      objectSet: { "objectType": "Employee", "type": "base" },
+      type: "withProperties",
+    },
+    type: "filter",
+    where: { "field": "employeeId", "type": "eq", "value": 50036 },
+  },
+  select: [],
+};
+
+const derivedPropertyAttachmentGeoTest: LoadObjectSetRequestV2 = {
+  objectSet: {
+    objectSet: {
+      derivedProperties: {
+        attachmentSelectDp: {
+          objectSet: {
+            link: "linkedObjectType",
+            objectSet: { type: "methodInput" },
+            type: "searchAround",
+          },
+          operation: {
+            selectedPropertyApiName: "attachment",
+            type: "get",
+          },
+          type: "selection",
+        },
+        geoSelectDp: {
+          objectSet: {
+            link: "linkedObjectType",
+            objectSet: { type: "methodInput" },
+            type: "searchAround",
+          },
+          operation: {
+            selectedPropertyApiName: "geoShape",
+            type: "get",
+          },
+          type: "selection",
+        },
+        geoCollectListDp: {
+          objectSet: {
+            link: "linkedObjectType",
+            objectSet: { type: "methodInput" },
+            type: "searchAround",
+          },
+          operation: {
+            selectedPropertyApiName: "geoShapeArray",
+            type: "collectList",
+            limit: 100,
+          },
+          type: "selection",
+        },
+      },
+      objectSet: { objectType: "objectTypeWithAllPropertyTypes", type: "base" },
+      type: "withProperties",
+    },
+    type: "filter",
+    where: { field: "id", type: "eq", value: 1000 },
+  },
+  select: [],
 };
 
 const eqSearchBody: LoadObjectSetRequestV2 = {
@@ -547,6 +624,12 @@ export const loadObjectSetRequestHandlers: {
   [stableStringify(derivedPropertyBody)]: [employee4withDerived],
   [stableStringify(derivedPropertyBodyUndefinedValue)]: [
     employee5withUndefinedDerived,
+  ],
+  [stableStringify(derivedPropertyBodyCount)]: [
+    employee5withUndefinedDerived,
+  ],
+  [stableStringify(derivedPropertyAttachmentGeoTest)]: [
+    objectWithAllPropertyTypesWithDerivedProperties,
   ],
   [stableStringify(eqSearchBody)]: [employee1],
   [stableStringify(eqSearchBody2)]: [employee2],

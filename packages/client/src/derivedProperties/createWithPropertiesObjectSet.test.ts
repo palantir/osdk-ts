@@ -16,16 +16,31 @@
 
 import type { DerivedProperty } from "@osdk/api";
 import { Employee } from "@osdk/client.test.ontology";
-import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
+import type { MinimalClient } from "../MinimalClientContext.js";
+import type { DerivedPropertyDefinitionMap } from "./createWithPropertiesObjectSet.js";
 import { createWithPropertiesObjectSet } from "./createWithPropertiesObjectSet.js";
 
 describe(createWithPropertiesObjectSet, () => {
   it("correctly creates basic object set with derived properties", () => {
-    const map = new Map<any, DerivedPropertyDefinition>();
-    const deriveObjectSet = createWithPropertiesObjectSet(Employee, {
-      type: "methodInput",
-    }, map);
+    const map: DerivedPropertyDefinitionMap = new Map();
+    const deriveObjectSet = createWithPropertiesObjectSet(
+      Employee,
+      {
+        type: "methodInput",
+      },
+      {
+        ontologyProvider: {
+          getObjectDefinition: async (a: string) => ({
+            properties: {
+              "derivedPropertyName": { type: "string" },
+              "secondaryDerivedPropertyName": { type: "string" },
+            },
+          } as any),
+        },
+      } as MinimalClient,
+      map,
+    );
 
     const clause = {
       "derivedPropertyName": (base) =>
@@ -34,7 +49,7 @@ describe(createWithPropertiesObjectSet, () => {
 
     const result = clause["derivedPropertyName"](deriveObjectSet);
     const definition = map.get(result);
-    expect(definition).toMatchInlineSnapshot(`
+    expect(definition?.def).toMatchInlineSnapshot(`
         {
           "objectSet": {
             "link": "lead",
@@ -53,10 +68,24 @@ describe(createWithPropertiesObjectSet, () => {
   });
 
   it("correctly handles multiple definitions in one clause", () => {
-    const map = new Map<any, DerivedPropertyDefinition>();
-    const deriveObjectSet = createWithPropertiesObjectSet(Employee, {
-      type: "methodInput",
-    }, map);
+    const map: DerivedPropertyDefinitionMap = new Map();
+    const deriveObjectSet = createWithPropertiesObjectSet(
+      Employee,
+      {
+        type: "methodInput",
+      },
+      {
+        ontologyProvider: {
+          getObjectDefinition: async (a: string) => ({
+            properties: {
+              "derivedPropertyName": { type: "string" },
+              "secondaryDerivedPropertyName": { type: "string" },
+            },
+          } as any),
+        },
+      } as MinimalClient,
+      map,
+    );
 
     const clause: DerivedProperty.Clause<Employee> = {
       "derivedPropertyName": (base) =>
@@ -78,7 +107,7 @@ describe(createWithPropertiesObjectSet, () => {
     );
     const secondDefinition = map.get(secondResult);
 
-    expect(definition).toMatchInlineSnapshot(`
+    expect(definition?.def).toMatchInlineSnapshot(`
         {
           "objectSet": {
             "link": "lead",
@@ -96,7 +125,7 @@ describe(createWithPropertiesObjectSet, () => {
         }
       `);
 
-    expect(secondDefinition).toMatchInlineSnapshot(`
+    expect(secondDefinition?.def).toMatchInlineSnapshot(`
         {
           "objectSet": {
             "link": "lead",
