@@ -1,5 +1,15 @@
 # @osdk/api
 
+## 2.2.0-beta.8
+
+### Minor Changes
+
+- 0e874b1: Exporting more entities from functions package.
+- 63b2e63: Update Platform SDK Dependencies
+- 26c2d95: Add experimental function to load page of objects by rid.
+- 63b2e63: Supports generating queries for entrySet function types
+- 63b2e63: Adds ObjectSpecifiers to generated OSDK objects
+
 ## 2.2.0-beta.7
 
 ### Minor Changes

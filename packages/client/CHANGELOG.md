@@ -1,5 +1,30 @@
 # @osdk/client
 
+## 2.2.0-beta.8
+
+### Minor Changes
+
+- 1ba3871: Support $clone for interface objects
+- 63b2e63: Update Platform SDK Dependencies
+- 26c2d95: Add experimental function to load page of objects by rid.
+- 63b2e63: Supports generating queries for entrySet function types
+- 63b2e63: Adds ObjectSpecifiers to generated OSDK objects
+
+### Patch Changes
+
+- Updated dependencies [ad93d55]
+- Updated dependencies [0e874b1]
+- Updated dependencies [63b2e63]
+- Updated dependencies [26c2d95]
+- Updated dependencies [63b2e63]
+- Updated dependencies [63b2e63]
+  - @osdk/shared.net.errors@2.2.0-beta.2
+  - @osdk/shared.net.fetch@1.2.0-beta.2
+  - @osdk/api@2.2.0-beta.8
+  - @osdk/generator-converters@2.2.0-beta.8
+  - @osdk/shared.client.impl@1.2.0-beta.2
+  - @osdk/client.unstable@2.2.0-beta.8
+
 ## 2.2.0-beta.7
 
 ### Minor Changes
