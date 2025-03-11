@@ -1,5 +1,16 @@
 # @osdk/shared.net.fetch
 
+## 1.2.0-beta.2
+
+### Minor Changes
+
+- ad93d55: Include deep inspect information about unknown errors
+
+### Patch Changes
+
+- Updated dependencies [ad93d55]
+  - @osdk/shared.net.errors@2.2.0-beta.2
+
 ## 1.1.0-beta.3
 
 ### Minor Changes
