@@ -66,6 +66,22 @@ const ridObjectSetSelect: LoadObjectSetRequestV2 = {
   select: ["fullName"],
 };
 
+const multipleRidObjectSet: LoadObjectSetRequestV2 = {
+  objectSet: {
+    type: "static",
+    objects: ["ri.employee.i.look.for", "ri.employee.i.look.for.2"],
+  },
+  select: [],
+};
+
+const multipleRidObjectSetSelect: LoadObjectSetRequestV2 = {
+  objectSet: {
+    type: "static",
+    objects: ["ri.employee.i.look.for2", "ri.employee.i.look.for.3"],
+  },
+  select: ["fullName"],
+};
+
 const unionedObjectSet: LoadObjectSetRequestV2 = {
   objectSet: {
     type: "union",
@@ -541,6 +557,8 @@ export const loadObjectSetRequestHandlers: {
   ],
   [stableStringify(ridObjectSet)]: [employee1],
   [stableStringify(ridObjectSetSelect)]: [employee2],
+  [stableStringify(multipleRidObjectSet)]: [employee1, employee2],
+  [stableStringify(multipleRidObjectSetSelect)]: [employee2, employee3],
   [stableStringify(unionedObjectSet)]: [employee1, employee2],
   [stableStringify(intersectedObjectSet)]: [employee3],
   [stableStringify(subtractedObjectSet)]: [employee2, employee3],
