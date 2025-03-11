@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { Client } from "@osdk/client";
+import type { Client, Osdk } from "@osdk/client";
+import type { Person } from "@osdk/client.test.ontology";
 import { Task } from "@osdk/client.test.ontology";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createEditBatch } from "./createEditBatch.js";
@@ -35,23 +36,38 @@ describe(createEditBatch, () => {
   });
 
   it("collects all edits", () => {
+    const taskInstance = {
+      $apiName: "Task",
+      $primaryKey: 2,
+    } as Osdk.Instance<Task>;
+
+    const personInstance = {
+      $apiName: "Person",
+      $primaryKey: 2,
+    } as Osdk.Instance<Person>;
+
     editBatch.create(Task, { id: 0, name: "My Task Name" });
     editBatch.create(Task, { id: 1, name: "My Other Task Name" });
-    editBatch.delete({ apiName: "Task", id: 0 });
-    editBatch.update({ apiName: "Task", id: 0 }, { name: "My New Task Name" });
+    editBatch.delete({ $apiName: "Task", $primaryKey: 0 });
+    editBatch.delete(taskInstance);
+    editBatch.update({ $apiName: "Task", $primaryKey: 0 }, {
+      name: "My New Task Name",
+    });
+    editBatch.update(taskInstance, { name: "My Very New Task Name" });
     editBatch.create(Task, { id: 0, name: "My Task Name" });
 
-    editBatch.link({ apiName: "Task", id: 0 }, "RP", {
-      apiName: "Person",
-      id: 0,
+    editBatch.link({ $apiName: "Task", $primaryKey: 0 }, "RP", {
+      $apiName: "Person",
+      $primaryKey: 0,
     });
-    editBatch.link({ apiName: "Task", id: 0 }, "RP", {
-      apiName: "Person",
-      id: 1,
+    editBatch.link({ $apiName: "Task", $primaryKey: 0 }, "RP", {
+      $apiName: "Person",
+      $primaryKey: 1,
     });
-    editBatch.unlink({ apiName: "Task", id: 0 }, "RP", {
-      apiName: "Person",
-      id: 1,
+    editBatch.link(taskInstance, "RP", personInstance);
+    editBatch.unlink({ $apiName: "Task", $primaryKey: 0 }, "RP", {
+      $apiName: "Person",
+      $primaryKey: 1,
     });
 
     expect(editBatch.getEdits()).toEqual([
@@ -65,11 +81,17 @@ describe(createEditBatch, () => {
         obj: Task,
         properties: { id: 1, name: "My Other Task Name" },
       },
-      { type: "deleteObject", obj: { apiName: "Task", id: 0 } },
+      { type: "deleteObject", obj: { $apiName: "Task", $primaryKey: 0 } },
+      { type: "deleteObject", obj: { $apiName: "Task", $primaryKey: 2 } },
       {
         type: "updateObject",
-        obj: { apiName: "Task", id: 0 },
+        obj: { $apiName: "Task", $primaryKey: 0 },
         properties: { name: "My New Task Name" },
+      },
+      {
+        type: "updateObject",
+        obj: { $apiName: "Task", $primaryKey: 2 },
+        properties: { name: "My Very New Task Name" },
       },
       {
         type: "createObject",
@@ -79,20 +101,26 @@ describe(createEditBatch, () => {
       {
         type: "addLink",
         apiName: "RP",
-        source: { apiName: "Task", id: 0 },
-        target: { apiName: "Person", id: 0 },
+        source: { $apiName: "Task", $primaryKey: 0 },
+        target: { $apiName: "Person", $primaryKey: 0 },
       },
       {
         type: "addLink",
         apiName: "RP",
-        source: { apiName: "Task", id: 0 },
-        target: { apiName: "Person", id: 1 },
+        source: { $apiName: "Task", $primaryKey: 0 },
+        target: { $apiName: "Person", $primaryKey: 1 },
+      },
+      {
+        type: "addLink",
+        apiName: "RP",
+        source: { $apiName: "Task", $primaryKey: 2 },
+        target: { $apiName: "Person", $primaryKey: 2 },
       },
       {
         type: "removeLink",
         apiName: "RP",
-        source: { apiName: "Task", id: 0 },
-        target: { apiName: "Person", id: 1 },
+        source: { $apiName: "Task", $primaryKey: 0 },
+        target: { $apiName: "Person", $primaryKey: 1 },
       },
     ]);
   });

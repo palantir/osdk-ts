@@ -18,21 +18,17 @@ import type {
   CompileTimeMetadata,
   ObjectMetadata,
   ObjectTypeDefinition,
+  Osdk,
   OsdkObjectPropertyType,
   PropertyKeys,
-  PropertyValueWireToClient,
 } from "@osdk/api";
 
 type ObjectLocator<
   S extends ObjectTypeDefinition = ObjectTypeDefinition,
-> =
-  & {
-    apiName: CompileTimeMetadata<S>["apiName"];
-  }
-  & {
-    [P in CompileTimeMetadata<S>["primaryKeyApiName"]]:
-      PropertyValueWireToClient[CompileTimeMetadata<S>["primaryKeyType"]];
-  };
+> = {
+  $apiName: Osdk.Instance<S>["$apiName"];
+  $primaryKey: Osdk.Instance<S>["$primaryKey"];
+};
 
 export namespace Edits {
   export type Object<S extends ObjectTypeDefinition> =
