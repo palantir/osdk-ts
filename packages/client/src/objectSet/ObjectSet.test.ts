@@ -884,6 +884,11 @@ describe("ObjectSet", () => {
           .toEqualTypeOf<"fooSpt">();
 
         expectTypeOf<
+          ConvertProps<FooInterface, Employee, "fooSpt">
+        >()
+          .toEqualTypeOf<"fullName">();
+
+        expectTypeOf<
           ConvertProps<FooInterface, Employee, "fooSpt", "$allBaseProperties">
         >()
           .toEqualTypeOf<
