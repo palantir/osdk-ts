@@ -545,7 +545,7 @@ const loadIn50050: LoadObjectSetRequestV2 = {
   "objectSet": {
     "type": "filter",
     "objectSet": { "type": "base", "objectType": "Employee" },
-    "where": { "type": "in", "field": "$primaryKey", "value": [50050] },
+    "where": { "type": "in", "field": "employeeId", "value": [50050] },
   },
   "select": [],
 };

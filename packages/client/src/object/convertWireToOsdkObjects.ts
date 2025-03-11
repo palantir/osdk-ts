@@ -332,6 +332,7 @@ function isConforming(
         client.logger?.debug(
           {
             obj: {
+              $apiName: obj["$apiName"],
               $objectType: obj["$objectType"],
               $primaryKey: obj["$primaryKey"],
             },

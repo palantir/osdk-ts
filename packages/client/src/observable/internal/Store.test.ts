@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/api";
+import type {
+  CompileTimeMetadata,
+  ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
+  Osdk,
+  OsdkBase,
+} from "@osdk/api";
 import {
   $ontologyRid,
   createOffice,
@@ -22,7 +28,8 @@ import {
   FooInterface,
   Todo,
 } from "@osdk/client.test.ontology";
-import { apiServer } from "@osdk/shared.test";
+import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
+import { apiServer, stubData } from "@osdk/shared.test";
 import chalk from "chalk";
 import type { Mock, Task } from "vitest";
 import {
@@ -38,7 +45,12 @@ import {
 } from "vitest";
 import { type Client } from "../../Client.js";
 import { createClient } from "../../createClient.js";
+import { createMinimalClient } from "../../createMinimalClient.js";
+
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import { createObjectSet } from "../../objectSet/createObjectSet.js";
+import type { OntologyProvider } from "../../ontology/OntologyProvider.js";
+import { InterfaceDefinitions } from "../../ontology/OntologyProvider.js";
 import type {
   ObserveListOptions,
   Unsubscribable,
@@ -66,6 +78,8 @@ import {
 } from "./testUtils.js";
 
 const defer = createDefer();
+
+const logger = createTestLogger({});
 
 beforeAll(() => {
   vi.setConfig({
@@ -123,7 +137,7 @@ describe(Store, () => {
         "https://stack.palantir.com",
         $ontologyRid,
         async () => "myAccessToken",
-        { logger: createTestLogger({}) },
+        { logger },
       );
 
       employeesAsServerReturns = (await client(Employee).fetchPage()).data;
@@ -307,8 +321,6 @@ describe(Store, () => {
           status: "loaded",
           isOptimistic: false,
         });
-
-        vi.useRealTimers();
       });
 
       it("rolls back to an updated real value via list", async () => {
@@ -682,8 +694,8 @@ describe(Store, () => {
           );
 
           vitest.runOnlyPendingTimers();
-          await vi.waitFor(() => expect(listSub1.next).toHaveBeenCalled());
-          await vi.waitFor(() => expect(ifaceSub.next).toHaveBeenCalled());
+          await waitForCall(listSub1);
+          await waitForCall(ifaceSub);
 
           expectSingleListCallAndClear(
             listSub1,
@@ -697,7 +709,7 @@ describe(Store, () => {
             { status: "loading" },
           );
 
-          await waitForCall(listSub1.next);
+          await waitForCall(listSub1);
           expectSingleListCallAndClear(
             listSub1,
             employeesAsServerReturns,
@@ -706,6 +718,7 @@ describe(Store, () => {
             },
           );
 
+          await waitForCall(ifaceSub);
           expectSingleListCallAndClear(
             ifaceSub,
             employeesAsServerReturns.filter(o => o.$primaryKey === 50050),
@@ -906,6 +919,7 @@ describe(Store, () => {
         // after the below `observeObject`, the cache will need to load from the server
         mockClient.mockFetchOneOnce().resolve({
           $apiName: "Todo",
+          $primaryKey: 0,
         });
 
         const todoSubFn = mockSingleSubCallback();
@@ -932,17 +946,16 @@ describe(Store, () => {
         });
 
         // after we apply the action, the object is invalidated and gets re-requested
-
         mockClient.mockFetchOneOnce<Todo>().resolve({
+          $primaryKey: 0,
           $apiName: "Todo",
           text: "hello there kind sir",
         });
 
-        const actionPromise = store.applyAction(createOffice, {
+        await store.applyAction(createOffice, {
           officeId: "whatever",
         });
 
-        await actionPromise;
         await todoSubFn.expectLoadingAndLoaded({
           loading: objectPayloadContaining({
             status: "loading",
@@ -1025,31 +1038,83 @@ describe(Store, () => {
       });
     });
 
-    describe("orderBy", () => {
+    describe("orderBy", async () => {
+      const ontologyProvider: OntologyProvider = {
+        getObjectDefinition: async (apiName) => {
+          return {
+            ...wireObjectTypeFullMetadataToSdkObjectMetadata(
+              stubData.todoWithLinkTypes,
+              true,
+            ),
+            [InterfaceDefinitions]: {},
+          };
+        },
+        getActionDefinition(apiName) {
+          throw new Error("not implemented");
+        },
+        getInterfaceDefinition(apiName) {
+          throw new Error("not implemented");
+        },
+        getQueryDefinition(apiName) {
+          throw new Error("not implemented");
+        },
+      };
+
+      const minimalClient = createMinimalClient(
+        { ontologyRid: "ri.whatever" },
+        "https://localhost:8080",
+        () => Promise.resolve("token"),
+        { logger },
+        fetch,
+        createObjectSet,
+        (opts) => (client) => ontologyProvider,
+      );
+
+      async function createObject<
+        X extends ObjectOrInterfaceDefinition,
+        WeakSauce extends boolean = false,
+      >(
+        x:
+          // & OntologyObjectV2
+          & OsdkBase<WeakSauce extends true ? ObjectTypeDefinition : X>
+          & CompileTimeMetadata<X>["props"],
+      ) {
+        return (await minimalClient.objectFactory2(
+          minimalClient,
+          [x],
+          undefined,
+        ))[0] as ObjectHolder & Osdk.Instance<X>;
+      }
+
       let nextPk = 0;
-      const fauxObjectA = {
+      const fauxObjectA = await createObject<Todo>({
         $apiName: "Todo",
         $objectType: "Todo",
-        $primaryKey: nextPk++,
+        $primaryKey: nextPk,
         $title: "a",
+        id: nextPk,
         text: "a",
-      } as Osdk.Instance<Todo>;
+      });
 
-      const fauxObjectB = {
+      nextPk++;
+      const fauxObjectB = await createObject<Todo>({
         $apiName: "Todo",
         $objectType: "Todo",
-        $primaryKey: nextPk++,
+        $primaryKey: nextPk,
         $title: "b",
+        id: nextPk,
         text: "b",
-      } as Osdk.Instance<Todo>;
+      });
 
-      const fauxObjectC = {
+      nextPk++;
+      const fauxObjectC = await createObject<Todo>({
         $apiName: "Todo",
         $objectType: "Todo",
-        $primaryKey: nextPk++,
+        $primaryKey: nextPk,
         $title: "c",
+        id: nextPk,
         text: "c",
-      } as Osdk.Instance<Todo>;
+      });
 
       const noWhereNoOrderBy = {
         type: Todo,
@@ -1127,19 +1192,19 @@ describe(Store, () => {
       });
 
       it("produces proper results with optimistic updates and successful action", async () => {
-        const optimisticallyMutatedA = {
+        const optimisticallyMutatedA = await createObject<Todo, true>({
           ...fauxObjectA,
           text: "optimistic",
-        };
+        });
         const pkForOptimistic = nextPk++;
-        const optimisticallyCreatedObjectD = {
+        const optimisticallyCreatedObjectD = await createObject<Todo>({
           "$apiName": "Todo",
           "$objectType": "Todo",
           "$primaryKey": pkForOptimistic,
           "$title": "d",
           "text": "d",
           id: pkForOptimistic,
-        } as Osdk.Instance<Todo>;
+        });
 
         // for whatever reason, the first list is loaded as [B, A]
         updateList(store, noWhereNoOrderBy, [fauxObjectB, fauxObjectA]);
@@ -1172,7 +1237,7 @@ describe(Store, () => {
             id: pkForOptimistic,
             text: "d",
           });
-          b.updateObject(optimisticallyMutatedA);
+          b.updateObject(optimisticallyMutatedA as Osdk.Instance<any>);
         });
 
         // The first list is now [B, A, optimistic]
@@ -1221,31 +1286,31 @@ describe(Store, () => {
       // I think these are named backwards
       it("produces proper results with optimistic updates and rollback", async () => {
         const pkForOptimistic = nextPk++;
-        const optimisticallyCreatedObjectD = {
+        const optimisticallyCreatedObjectD = await createObject<Todo>({
           "$apiName": "Todo",
           "$objectType": "Todo",
           "$primaryKey": pkForOptimistic,
           "$title": "d",
           "text": "d",
           id: pkForOptimistic,
-        } as Osdk.Instance<Todo>;
+        });
 
-        const optimisticallyMutatedA = {
+        const optimisticallyMutatedA = await createObject<Todo, true>({
           ...fauxObjectA,
           text: "optimistic",
-        };
+        });
 
         testStage("Initial Setup");
 
         // later we will "create" this object
-        const createdObjectD = {
+        const createdObjectD = await createObject<Todo>({
           "$apiName": "Todo",
           "$objectType": "Todo",
           "$primaryKey": 9000,
           "$title": "d prime",
           "text": "d prime",
           id: 9000,
-        } as Osdk.Instance<Todo>;
+        });
 
         // for whatever reason, the first list is loaded as [B, A]
         updateList(store, noWhereNoOrderBy, [fauxObjectB, fauxObjectA]);
@@ -1282,8 +1347,8 @@ describe(Store, () => {
           { officeId: "5" },
           {
             optimisticUpdate: (b) => {
-              b.createObject(Todo, pkForOptimistic, {
-                id: pkForOptimistic,
+              b.createObject(Todo, optimisticallyCreatedObjectD.$primaryKey, {
+                id: optimisticallyCreatedObjectD.$primaryKey,
                 text: "d",
               });
               b.updateObject(optimisticallyMutatedA);
@@ -1301,7 +1366,7 @@ describe(Store, () => {
           optimisticallyCreatedObjectD,
         ], { isOptimistic: true });
 
-        // the second list is now [A, B, optimistic]
+        // the second list is now [B, optimistic, optimistic a]
         await waitForCall(subListOrdered, 1);
         expectSingleListCallAndClear(subListOrdered, [
           fauxObjectB,
@@ -1311,10 +1376,14 @@ describe(Store, () => {
 
         testStage("Resolve Action");
 
-        const modifiedObjectA = {
+        const modifiedObjectA = await createObject<Todo>({
           ...fauxObjectA,
           text: "a prime",
-        };
+        });
+
+        // console.log("winner?", modifiedObjectA.$as);
+        // // throw "hi";
+        // console.log("winner2?", modifiedObjectA.$as("Todo").$as);
 
         // The action will complete and then revalidate in order...
         mockClient.mockFetchOneOnce<Todo>(modifiedObjectA.$primaryKey)
@@ -1358,6 +1427,7 @@ describe(Store, () => {
         await actionPromise;
 
         await waitForCall(subListUnordered, 1);
+        console.log("=====", subListUnordered.next.mock.calls[0][0]);
         expectSingleListCallAndClear(subListUnordered, [
           fauxObjectB,
           // fauxObjectC,

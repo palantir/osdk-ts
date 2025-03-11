@@ -115,7 +115,7 @@ export function createTestLogger(
           ...args2: any[],
         ]
       ) => {
-        const hasData = typeof args[0] !== "string";
+        const hasData = args.length > 0 && typeof args[0] !== "string";
         const obj: Record<string, unknown> = hasData ? args[0] as any : {};
         const more: any[] = hasData ? args.slice(1) : args.slice(0);
 
@@ -123,7 +123,7 @@ export function createTestLogger(
         console.log(
           `${colors[name][1](name)}${
             options?.msgPrefix ? " " + colors[name][0](options.msgPrefix) : ""
-          }${obj.methodName ? ` .${chalk.magenta(obj.methodName)}()` : ""}`,
+          }${obj?.methodName ? ` .${chalk.magenta(obj.methodName)}()` : ""}`,
           ...more,
         );
         if (bindings && Object.keys(bindings).length > 0) {
@@ -260,7 +260,11 @@ export function createClientMockHelper(): MockClientHelper {
             "expected id to match",
           );
           const r = await d.promise;
-          return { ...r, $primaryKey: a };
+          invariant(
+            r.$primaryKey === a,
+            `expected id to match. Got ${a} but object to return was ${r.$primaryKey}`,
+          );
+          return r;
         },
       } as Pick<ObjectSet<ObjectTypeDefinition>, "fetchOne">,
     );
@@ -327,7 +331,7 @@ export function createDefer() {
 
 export function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
   subFn: MockedObject<Observer<ListPayload | undefined>>,
-  resolvedList: Osdk.Instance<T>[],
+  resolvedList: ObjectHolder[] | Osdk.Instance<T>[],
   payloadOptions: Omit<Partial<ListPayload>, "resolvedList"> = {},
 ): void {
   if (vitest.isFakeTimers()) {
@@ -561,7 +565,7 @@ export function updateList<
     where: WhereClause<T>;
     orderBy: OrderBy<T>;
   },
-  objects: Osdk.Instance<T>[],
+  objects: ObjectHolder[] | Osdk.Instance<T>[],
   { optimisticId }: { optimisticId?: OptimisticId } = {},
   opts: ListQueryOptions = { dedupeInterval: 0 },
 ): void {

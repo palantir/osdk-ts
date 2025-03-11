@@ -39,7 +39,7 @@ export interface BaseHolder {
   ) => ObjectHolder | InterfaceHolder;
 
   readonly "$clone": (
-    newProps: Record<string, any>,
+    newProps?: Record<string, any>,
   ) => this;
 
   // [key: `$$${string}`]: any;

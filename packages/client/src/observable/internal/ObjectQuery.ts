@@ -34,12 +34,10 @@ import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 
 export interface ObjectEntry extends Entry<ObjectCacheKey> {}
 
-type ObjectStorageData = ObjectHolder;
-
 export interface ObjectCacheKey extends
   CacheKey<
     "object",
-    ObjectStorageData,
+    ObjectHolder,
     ObjectQuery,
     [string, pk: PrimaryKeyType<ObjectTypeDefinition>]
   >
@@ -158,7 +156,7 @@ export class ObjectQuery extends Query<
  */
 export function storeOsdkInstances(
   store: Store,
-  values: Array<Osdk.Instance<ObjectTypeDefinition>>,
+  values: Array<ObjectHolder> | Array<Osdk.Instance<any, any, any>>,
   batch: BatchContext,
 ): ObjectCacheKey[] {
   // update the cache for any object that has changed
@@ -169,7 +167,7 @@ export function storeOsdkInstances(
       v.$primaryKey as string | number,
     )
       .writeToStore(
-        v as ObjectHolder<typeof v>,
+        v as ObjectHolder,
         "loaded",
         batch,
       ).cacheKey;

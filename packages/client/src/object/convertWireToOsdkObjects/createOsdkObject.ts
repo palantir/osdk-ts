@@ -94,11 +94,9 @@ const basePropDefs = {
  * @param objectDef
  * @param rawObj
  */
-export function createOsdkObject<
-  Q extends FetchedObjectTypeDefinition,
->(
+export function createOsdkObject(
   client: MinimalClient,
-  objectDef: Q,
+  objectDef: FetchedObjectTypeDefinition,
   rawObj: SimpleOsdkProperties,
 ): ObjectHolder {
   // updates the object's "hidden class/map".
