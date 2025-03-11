@@ -17,6 +17,7 @@
 import type {
   CompileTimeMetadata,
   ConvertProps,
+  FetchPageResult,
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -26,7 +27,10 @@ import type {
   Result,
 } from "@osdk/api";
 import { isOk } from "@osdk/api";
-import { __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid } from "@osdk/api/unstable";
+import {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+} from "@osdk/api/unstable";
 import {
   $ontologyRid,
   BarInterface,
@@ -247,6 +251,21 @@ describe("ObjectSet", () => {
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
   });
 
+  it("allows fetching page of rids with experimental function", async () => {
+    const employees = await client(
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+    ).fetchPageByRid(
+      Employee,
+      ["ri.employee.i.look.for", "ri.employee.i.look.for.2"],
+      {},
+    );
+    expectTypeOf<typeof employees>().toMatchTypeOf<
+      FetchPageResult<Employee, PropertyKeys<Employee>, boolean, any>
+    >;
+    expect(employees.data[0].$primaryKey).toBe(stubData.employee1.employeeId);
+    expect(employees.data[1].$primaryKey).toBe(stubData.employee2.employeeId);
+  });
+
   it("allows fetching by rid with experimental function, with select", async () => {
     const employee = await client(
       __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
@@ -260,6 +279,22 @@ describe("ObjectSet", () => {
     >;
     expect(employee.$primaryKey).toBe(stubData.employee2.employeeId);
   });
+
+  it("allows fetching by rid with experimental function, with select", async () => {
+    const employees = await client(
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+    ).fetchPageByRid(
+      Employee,
+      ["ri.employee.i.look.for2", "ri.employee.i.look.for.3"],
+      { $select: ["fullName"] },
+    );
+    expectTypeOf<typeof employees>().toMatchTypeOf<
+      FetchPageResult<Employee, "fullName", boolean, any>
+    >;
+    expect(employees.data[0].$primaryKey).toBe(stubData.employee2.employeeId);
+    expect(employees.data[1].$primaryKey).toBe(stubData.employee3.employeeId);
+  });
+
   it("check struct parsing", async () => {
     const player = await client(BgaoNflPlayer).fetchOne(
       "tkelce",

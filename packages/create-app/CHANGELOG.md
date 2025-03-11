@@ -1,5 +1,11 @@
 # @osdk/create-app
 
+## 2.2.0-beta.8
+
+### Minor Changes
+
+- 770ec64: Drop Next.js templates
+
 ## 2.2.0-beta.7
 
 ### Minor Changes

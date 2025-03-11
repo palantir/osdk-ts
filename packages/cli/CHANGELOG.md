@@ -1,5 +1,11 @@
 # @osdk/cli
 
+## 0.26.0-beta.8
+
+### Minor Changes
+
+- ad93d55: Include deep inspect information about unknown errors
+
 ## 0.26.0-beta.7
 
 ### Minor Changes
