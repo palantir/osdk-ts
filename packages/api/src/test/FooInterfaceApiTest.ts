@@ -24,7 +24,7 @@ import type {
 
 export type OsdkObjectLinks$FooInterface = {};
 
-export namespace FooInterface {
+export namespace FooInterfaceApiTest {
   export type PropertyKeys = "name" | "description";
 
   export interface Props {
@@ -34,30 +34,30 @@ export namespace FooInterface {
   export type StrictProps = Props;
 
   export interface ObjectSet
-    extends $ObjectSet<FooInterface, FooInterface.ObjectSet>
+    extends $ObjectSet<FooInterfaceApiTest, FooInterfaceApiTest.ObjectSet>
   {}
 
   export type OsdkInstance<
     OPTIONS extends never | "$rid" = never,
-    K extends keyof FooInterface.Props = keyof FooInterface.Props,
-  > = $Osdk.Instance<FooInterface, OPTIONS, K>;
+    K extends keyof FooInterfaceApiTest.Props = keyof FooInterfaceApiTest.Props,
+  > = $Osdk.Instance<FooInterfaceApiTest, OPTIONS, K>;
 
   /** @deprecated use OsdkInstance */
   export type OsdkObject<
     OPTIONS extends never | "$rid" = never,
-    K extends keyof FooInterface.Props = keyof FooInterface.Props,
+    K extends keyof FooInterfaceApiTest.Props = keyof FooInterfaceApiTest.Props,
   > = OsdkInstance<OPTIONS, K>;
 }
 
-export interface FooInterface extends $InterfaceDefinition {
+export interface FooInterfaceApiTest extends $InterfaceDefinition {
   osdkMetadata: any;
   type: "interface";
   apiName: "FooInterface";
   __DefinitionMetadata?: {
-    objectSet: FooInterface.ObjectSet;
-    props: FooInterface.Props;
+    objectSet: FooInterfaceApiTest.ObjectSet;
+    props: FooInterfaceApiTest.Props;
     linksType: OsdkObjectLinks$FooInterface;
-    strictProps: FooInterface.StrictProps;
+    strictProps: FooInterfaceApiTest.StrictProps;
     apiName: "FooInterface";
     description: "Its a Foo.";
     displayName: "Foo interface";
@@ -80,7 +80,7 @@ export interface FooInterface extends $InterfaceDefinition {
   };
 }
 
-export const FooInterface: FooInterface = {
+export const FooInterfaceApiTest: FooInterfaceApiTest = {
   type: "interface",
   apiName: "FooInterface",
   osdkMetadata: {},

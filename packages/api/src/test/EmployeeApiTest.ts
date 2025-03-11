@@ -23,33 +23,37 @@ import type {
   SingleLinkAccessor as $SingleLinkAccessor,
 } from "../index.js";
 
-export namespace Employee {
+export namespace EmployeeApiTest {
   export type PropertyKeys =
+    | "employeeId"
     | "fullName"
     | "class";
 
   export interface Links {
-    readonly lead: $SingleLinkAccessor<Employee>;
-    readonly peeps: Employee.ObjectSet;
+    readonly lead: $SingleLinkAccessor<EmployeeApiTest>;
+    readonly peeps: EmployeeApiTest.ObjectSet;
   }
 
   export interface Props {
     readonly class: $PropType["string"] | undefined;
     readonly fullName: $PropType["string"] | undefined;
+    readonly employeeId: $PropType["integer"] | undefined;
   }
   export type StrictProps = Props;
 
-  export interface ObjectSet extends $ObjectSet<Employee, Employee.ObjectSet> {}
+  export interface ObjectSet
+    extends $ObjectSet<EmployeeApiTest, EmployeeApiTest.ObjectSet>
+  {}
 }
 
-export interface Employee extends $ObjectTypeDefinition {
+export interface EmployeeApiTest extends $ObjectTypeDefinition {
   type: "object";
   apiName: "Employee";
   __DefinitionMetadata?: {
-    objectSet: Employee.ObjectSet;
-    props: Employee.Props;
-    linksType: Employee.Links;
-    strictProps: Employee.StrictProps;
+    objectSet: EmployeeApiTest.ObjectSet;
+    props: EmployeeApiTest.Props;
+    linksType: EmployeeApiTest.Links;
+    strictProps: EmployeeApiTest.StrictProps;
     apiName: "Employee";
     description: "A full-time or part-time \n\n employee of our firm";
     displayName: "Employee";
@@ -70,8 +74,8 @@ export interface Employee extends $ObjectTypeDefinition {
       };
     };
     links: {
-      lead: $ObjectMetadata.Link<Employee, false>;
-      peeps: $ObjectMetadata.Link<Employee, true>;
+      lead: $ObjectMetadata.Link<EmployeeApiTest, false>;
+      peeps: $ObjectMetadata.Link<EmployeeApiTest, true>;
     };
     pluralDisplayName: "Employees";
     primaryKeyApiName: "employeeId";
@@ -79,6 +83,7 @@ export interface Employee extends $ObjectTypeDefinition {
     properties: {
       class: $PropertyDef<"string", "nullable", "single">;
       fullName: $PropertyDef<"string", "nullable", "single">;
+      employeeId: $PropertyDef<"integer", "nullable", "single">;
     };
     rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44";
     status: "ACTIVE";
@@ -88,7 +93,7 @@ export interface Employee extends $ObjectTypeDefinition {
   };
 }
 
-export const Employee: Employee = {
+export const EmployeeApiTest: EmployeeApiTest = {
   type: "object",
   apiName: "Employee",
 };
