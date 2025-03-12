@@ -21,7 +21,7 @@ import type {
 } from "@osdk/api";
 
 /**
- * An ObjectSpecifier is a string that uniquely identifies an object in the system,
+ * Creates an Object Specifier. An ObjectSpecifier is a string that uniquely identifies an object in the system,
  * even when loading an interface object where primary key uniqueness is not guaranteed.
  *
  * @param objectDef - An Object Type Definition
@@ -32,4 +32,28 @@ export function createObjectSpecifierFromPrimaryKey<
   Q extends ObjectTypeDefinition,
 >(objectDef: Q, primaryKey: PrimaryKeyType<Q>): ObjectSpecifier<Q> {
   return `${objectDef.apiName}:${primaryKey}` as ObjectSpecifier<Q>;
+}
+
+/**
+ * Extracts the primary key from an ObjectSpecifier on an OSDK object.
+ *
+ * @param ObjectSpecifier
+ * @returns A string representing the primary key
+ */
+export function extractPrimaryKeyFromObjectSpecifier(
+  ObjectSpecifier: ObjectSpecifier<any>,
+): string {
+  return ObjectSpecifier.split(":")[1];
+}
+
+/**
+ * Extracts the object type from an ObjectSpecifier on an OSDK object.
+ *
+ * @param ObjectSpecifier
+ * @returns The object type extracted from the ObjectSpecifier
+ */
+export function extractObjectTypeFromObjectSpecifier(
+  ObjectSpecifier: ObjectSpecifier<any>,
+): string {
+  return ObjectSpecifier.split(":")[0];
 }

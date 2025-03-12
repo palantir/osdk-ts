@@ -23,7 +23,7 @@ import { TimeSeriesPropertyImpl } from "../../createTimeseriesProperty.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { hydrateAttachmentFromRidInternal } from "../../public-utils/hydrateAttachmentFromRid.js";
-import { createObjectSpecifierFromPrimaryKey } from "../createObjectSpecifierFromPrimaryKey.js";
+import { createObjectSpecifierFromPrimaryKey } from "../../util/objectSpecifierUtils.js";
 import { get$as } from "./getDollarAs.js";
 import { get$link } from "./getDollarLink.js";
 import {
