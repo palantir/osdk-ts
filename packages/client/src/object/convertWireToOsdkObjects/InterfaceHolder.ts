@@ -15,16 +15,12 @@
  */
 
 import type { InterfaceMetadata, Osdk } from "@osdk/api";
-import type {
-  InterfaceDefRef,
-  UnderlyingOsdkObject,
-} from "./InternalSymbols.js";
-import type { BaseHolder, ObjectHolder } from "./ObjectHolder.js";
+import type { BaseHolder } from "./BaseHolder.js";
+import type { InterfaceDefRef } from "./InternalSymbols.js";
 
 /** @internal */
 export interface InterfaceHolder<
   _Q extends Osdk.Instance<any> = never,
 > extends BaseHolder {
-  [UnderlyingOsdkObject]: ObjectHolder;
   [InterfaceDefRef]: InterfaceMetadata;
 }

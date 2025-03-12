@@ -45,7 +45,7 @@ import {
   type Changes,
   createChangedObjects,
   DEBUG_ONLY__changesToString,
-} from "./ChangedObjects.js";
+} from "./Changes.js";
 import { Entry, Layer } from "./Layer.js";
 import type { ListCacheKey, ListQueryOptions } from "./ListQuery.js";
 import { isListCacheKey, ListQuery } from "./ListQuery.js";

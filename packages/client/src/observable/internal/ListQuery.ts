@@ -53,7 +53,7 @@ import {
   DEBUG_ONLY__cacheKeysToString as DEBUG_ONLY__cacheKeysToString,
 } from "./CacheKey.js";
 import type { Canonical } from "./Canonical.js";
-import { type Changes, DEBUG_ONLY__changesToString } from "./ChangedObjects.js";
+import { type Changes, DEBUG_ONLY__changesToString } from "./Changes.js";
 import type { Entry } from "./Layer.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "./objectMatchesWhereClause.js";
 import { type ObjectCacheKey, storeOsdkInstances } from "./ObjectQuery.js";

@@ -14,44 +14,12 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectOrInterfaceDefinition,
-  ObjectSpecifier,
-  Osdk,
-} from "@osdk/api";
+import type { Osdk } from "@osdk/api";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
+import type { BaseHolder } from "./BaseHolder.js";
 import type { get$link } from "./getDollarLink.js";
-import type { InterfaceHolder } from "./InterfaceHolder.js";
-import type {
-  ClientRef,
-  ObjectDefRef,
-  UnderlyingOsdkObject,
-} from "./InternalSymbols.js";
-
-/** @internal */
-export interface BaseHolder {
-  readonly [UnderlyingOsdkObject]: ObjectHolder;
-
-  readonly $apiName: string;
-  readonly $objectType: string;
-  readonly $primaryKey: string | number | boolean;
-  readonly $title: string | undefined;
-  readonly $objectSpecifier: ObjectSpecifier<any>;
-
-  readonly "$as": (
-    newDef: string | ObjectOrInterfaceDefinition,
-  ) => ObjectHolder | InterfaceHolder;
-
-  readonly "$clone": (
-    newProps?: Record<string, any>,
-  ) => this;
-
-  // [key: `$$${string}`]: any;
-  // Unlike SimpleOsdkProperties, all of our remaining types are unknown as the full
-  // union is basically `any` when you consider the above fields.
-  [key: string]: unknown;
-}
+import type { ClientRef, ObjectDefRef } from "./InternalSymbols.js";
 
 /**
  * @internal

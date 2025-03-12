@@ -17,7 +17,7 @@
 import type { ActionDefinition, ActionEditResponse } from "@osdk/api";
 import { delay } from "msw";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
-import { type Changes, createChangedObjects } from "./ChangedObjects.js";
+import { type Changes, createChangedObjects } from "./Changes.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
 import type { Store } from "./Store.js";

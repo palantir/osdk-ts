@@ -25,7 +25,7 @@ import { additionalContext } from "../../Client.js";
 import type { Logger } from "../../Logger.js";
 import type { CommonObserveOptions, Status } from "../ObservableClient.js";
 import type { CacheKey } from "./CacheKey.js";
-import type { Changes } from "./ChangedObjects.js";
+import type { Changes } from "./Changes.js";
 import type { Entry } from "./Layer.js";
 import type { OptimisticId } from "./OptimisticId.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";

@@ -92,20 +92,21 @@ const basePropDefs = {
  * @internal
  * @param client
  * @param objectDef
- * @param rawObj
+ * @param simpleOsdkProperties
  */
 export function createOsdkObject(
   client: MinimalClient,
   objectDef: FetchedObjectTypeDefinition,
-  rawObj: SimpleOsdkProperties,
+  simpleOsdkProperties: SimpleOsdkProperties,
 ): ObjectHolder {
   // updates the object's "hidden class/map".
-  const o = Object.defineProperties(
-    rawObj as ObjectHolder,
+  const rawObj = simpleOsdkProperties as ObjectHolder;
+  Object.defineProperties(
+    rawObj,
     {
       [UnderlyingOsdkObject]: {
         enumerable: false,
-        value: rawObj,
+        value: simpleOsdkProperties,
       },
       [ObjectDefRef]: { value: objectDef, enumerable: false },
       [ClientRef]: { value: client, enumerable: false },
@@ -114,22 +115,22 @@ export function createOsdkObject(
   );
 
   // Assign the special values
-  for (const propKey of Object.keys(o)) {
+  for (const propKey of Object.keys(rawObj)) {
     if (
       propKey in objectDef.properties
       && typeof (objectDef.properties[propKey].type) === "string"
       && specialPropertyTypes.has(objectDef.properties[propKey].type)
     ) {
-      o[propKey] = createSpecialProperty(
+      rawObj[propKey] = createSpecialProperty(
         client,
         objectDef,
-        o,
+        rawObj,
         propKey,
       );
     }
   }
 
-  return Object.freeze(o);
+  return Object.freeze(rawObj);
 }
 
 function createSpecialProperty(

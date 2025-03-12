@@ -17,7 +17,7 @@
 import { additionalContext } from "../../Client.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
-import { type Changes } from "./ChangedObjects.js";
+import { type Changes } from "./Changes.js";
 import { createOptimisticId, type OptimisticId } from "./OptimisticId.js";
 import type { Store } from "./Store.js";
 
