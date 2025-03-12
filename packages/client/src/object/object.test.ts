@@ -506,6 +506,7 @@ describe("OsdkObject", () => {
         expect(clonedInterface).toMatchInlineSnapshot(`
           {
             "$apiName": "FooInterface",
+            "$objectSpecifier": "Employee:50031",
             "$objectType": "Employee",
             "$primaryKey": 50031,
             "$title": "John Adams",
@@ -516,6 +517,7 @@ describe("OsdkObject", () => {
         expect(clonedInterface.$as("Employee")).toMatchInlineSnapshot(`
           {
             "$apiName": "Employee",
+            "$objectSpecifier": "Employee:50031",
             "$objectType": "Employee",
             "$primaryKey": 50031,
             "$title": "John Adams",

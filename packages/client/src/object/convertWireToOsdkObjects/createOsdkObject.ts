@@ -23,6 +23,7 @@ import { TimeSeriesPropertyImpl } from "../../createTimeseriesProperty.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { hydrateAttachmentFromRidInternal } from "../../public-utils/hydrateAttachmentFromRid.js";
+import { createObjectSpecifierFromPrimaryKey } from "../createObjectSpecifierFromPrimaryKey.js";
 import { get$as } from "./getDollarAs.js";
 import { get$link } from "./getDollarLink.js";
 import {
@@ -89,6 +90,17 @@ const basePropDefs = {
       const newObject = { ...this[UnderlyingOsdkObject], ...update };
       return createOsdkObject(this[ClientRef], this[ObjectDefRef], newObject);
     },
+  },
+
+  "$objectSpecifier": {
+    get: function(this: InternalOsdkInstance & ObjectHolder<any>) {
+      const rawObj = this[UnderlyingOsdkObject];
+      return createObjectSpecifierFromPrimaryKey(
+        this[ObjectDefRef],
+        rawObj.$primaryKey,
+      );
+    },
+    enumerable: true,
   },
 };
 

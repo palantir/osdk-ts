@@ -18,7 +18,6 @@ import type {
   AllowedBucketKeyTypes,
   AllowedBucketTypes,
   CompileTimeMetadata,
-  ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
   OsdkBase,
   PrimaryKeyType,
@@ -100,7 +99,7 @@ async function remapQueryResponse<
   client: MinimalClient,
   responseDataType: T,
   responseValue: DataValue,
-  definitions: Map<string, ObjectOrInterfaceDefinition>,
+  definitions: Map<string, ObjectTypeDefinition>,
 ): Promise<QueryReturnType<T>> {
   // handle null responses
   if (responseValue == null) {
@@ -267,8 +266,8 @@ async function remapQueryResponse<
 async function getRequiredDefinitions(
   dataType: QueryDataTypeDefinition,
   client: MinimalClient,
-): Promise<Map<string, ObjectOrInterfaceDefinition>> {
-  const result = new Map<string, ObjectOrInterfaceDefinition>();
+): Promise<Map<string, ObjectTypeDefinition>> {
+  const result = new Map<string, ObjectTypeDefinition>();
   switch (dataType.type) {
     case "objectSet": {
       const objectDef = await client.ontologyProvider.getObjectDefinition(
@@ -363,7 +362,7 @@ function requiresConversion(dataType: QueryDataTypeDefinition) {
 function getObjectSpecifier(
   primaryKey: any,
   objectTypeApiName: string,
-  definitions: Map<string, ObjectOrInterfaceDefinition>,
+  definitions: Map<string, ObjectTypeDefinition>,
 ): string {
   const def = definitions.get(objectTypeApiName);
   if (!def) {
@@ -378,7 +377,7 @@ function getObjectSpecifier(
 }
 
 export function createQueryObjectResponse<
-  Q extends ObjectOrInterfaceDefinition,
+  Q extends ObjectTypeDefinition,
 >(
   primaryKey: PrimaryKeyType<Q>,
   objectDef: Q,
