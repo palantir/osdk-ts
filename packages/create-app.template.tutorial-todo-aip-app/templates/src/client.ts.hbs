@@ -8,9 +8,9 @@ checkEnv(clientId, "VITE_FOUNDRY_CLIENT_ID");
 checkEnv(redirectUrl, "VITE_FOUNDRY_REDIRECT_URL");
 {{#if scopes}}
 const scopes = [
-  {{#each scopes}}
-    "{{this}}",
-  {{/each}}
+ {{#each scopes}}
+  "{{this}}",
+ {{/each}}
 ];
 {{/if}}
 

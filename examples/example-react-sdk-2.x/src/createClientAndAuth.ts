@@ -18,8 +18,8 @@ export default function createClientAndAuth() {
   const clientId = import.meta.env.VITE_FOUNDRY_CLIENT_ID;
   const redirectUrl = import.meta.env.VITE_FOUNDRY_REDIRECT_URL;
   const scopes = [
-      "api:ontologies-read",
-      "api:ontologies-write",
+    "api:ontologies-read",
+    "api:ontologies-write",
   ];
 
   checkEnv(url, "VITE_FOUNDRY_API_URL");

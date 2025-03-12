@@ -8,9 +8,9 @@ checkEnv(clientId, "NEXT_PUBLIC_FOUNDRY_CLIENT_ID");
 checkEnv(redirectUrl, "NEXT_PUBLIC_FOUNDRY_REDIRECT_URL");
 {{#if scopes}}
 const scopes = [
-  {{#each scopes}}
-    "{{this}}",
-  {{/each}}
+ {{#each scopes}}
+  "{{this}}",
+ {{/each}}
 ];
 {{/if}}
 
