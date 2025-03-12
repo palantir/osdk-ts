@@ -74,14 +74,14 @@ export interface ObserveListOptions<
   streamUpdates?: boolean;
 }
 
-export interface SubObjectArgs<T extends ObjectTypeDefinition> {
+export interface ObserveObjectArgs<T extends ObjectTypeDefinition> {
   object: Osdk.Instance<T> | undefined;
   isOptimistic: boolean;
   status: Status;
   lastUpdated: number;
 }
 
-export interface SubListArgs<
+export interface ObserveObjectsArgs<
   T extends ObjectTypeDefinition | InterfaceDefinition,
 > {
   resolvedList: Array<Osdk.Instance<T>>;
@@ -97,12 +97,12 @@ export interface ObservableClient {
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveOptions,
-    subFn: Observer<SubObjectArgs<T>>,
+    subFn: Observer<ObserveObjectArgs<T>>,
   ): Unsubscribable;
 
   observeList<T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveListOptions<T>,
-    subFn: Observer<SubListArgs<T>>,
+    subFn: Observer<ObserveObjectsArgs<T>>,
   ): Unsubscribable;
 
   applyAction: <Q extends ActionDefinition<any>>(

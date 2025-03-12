@@ -55,6 +55,7 @@ import { type OptimisticId } from "./OptimisticId.js";
 import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import type { Query } from "./Query.js";
 import { RefCounts } from "./RefCounts.js";
+import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 /*
@@ -326,7 +327,7 @@ export class Store {
     T extends ObjectTypeDefinition | InterfaceDefinition,
   >(
     where: WhereClause<T>,
-  ): Canonical<WhereClause<T>> {
+  ): Canonical<SimpleWhereClause> {
     return this.whereCanonicalizer.canonicalize(where);
   }
 
@@ -666,20 +667,20 @@ export class Store {
 
 export async function invalidateList<T extends ObjectTypeDefinition>(
   store: Store,
-  { type, where, orderBy }: {
+  args: {
     type: Pick<T, "apiName" | "type">;
-    where?: WhereClause<T>;
+    where?: WhereClause<T> | SimpleWhereClause;
     orderBy?: OrderBy<T>;
   },
 ): Promise<void> {
-  where = store.whereCanonicalizer.canonicalize(where ?? {});
-  orderBy = store.orderByCanonicalizer.canonicalize(orderBy ?? {});
+  const where = store.whereCanonicalizer.canonicalize(args.where ?? {});
+  const orderBy = store.orderByCanonicalizer.canonicalize(args.orderBy ?? {});
 
   const cacheKey = store.getCacheKey<ListCacheKey>(
     "list",
-    type.type,
-    type.apiName,
-    where as Canonical<WhereClause<T>>,
+    args.type.type,
+    args.type.apiName,
+    where,
     orderBy as Canonical<OrderBy<T>>,
   );
 

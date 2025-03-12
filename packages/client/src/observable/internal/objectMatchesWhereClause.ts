@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypeDefinition,
-  PossibleWhereClauseFilters,
-  WhereClause,
-} from "@osdk/api";
+import type { PossibleWhereClauseFilters } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import invariant from "tiny-invariant";
 import type { InterfaceHolder } from "../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 
 function is$and(
-  whereClause: WhereClause<ObjectTypeDefinition>,
-): whereClause is { $and: WhereClause<ObjectTypeDefinition>[] } {
+  whereClause: SimpleWhereClause,
+): whereClause is { $and: SimpleWhereClause[] } {
   if (process.env.NODE_ENV !== "production") {
     if ("$and" in whereClause) {
       invariant(
@@ -43,8 +40,8 @@ function is$and(
 }
 
 function is$or(
-  whereClause: WhereClause<ObjectTypeDefinition>,
-): whereClause is { $or: WhereClause<ObjectTypeDefinition>[] } {
+  whereClause: SimpleWhereClause,
+): whereClause is { $or: SimpleWhereClause[] } {
   if (process.env.NODE_ENV !== "production") {
     if ("$or" in whereClause) {
       invariant(
@@ -61,8 +58,8 @@ function is$or(
 }
 
 function is$not(
-  whereClause: WhereClause<ObjectTypeDefinition>,
-): whereClause is { $not: WhereClause<ObjectTypeDefinition> } {
+  whereClause: SimpleWhereClause,
+): whereClause is { $not: SimpleWhereClause } {
   if (process.env.NODE_ENV !== "production") {
     if ("$not" in whereClause) {
       invariant(
@@ -77,7 +74,7 @@ function is$not(
 
 export function objectSortaMatchesWhereClause(
   o: ObjectHolder | InterfaceHolder,
-  whereClause: WhereClause<ObjectTypeDefinition>,
+  whereClause: SimpleWhereClause,
   strict: boolean,
 ): boolean {
   if (deepEqual({}, whereClause)) {

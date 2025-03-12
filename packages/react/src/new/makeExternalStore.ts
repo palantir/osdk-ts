@@ -19,28 +19,21 @@ import type {
   Unsubscribable,
 } from "@osdk/client/unstable-do-not-use";
 
+export type Snapshot<X> =
+  | X
+  | (Partial<X> & { error: Error })
+  | undefined;
+
 export function makeExternalStore<X>(
-  createObservation: (
-    callback: Observer<X | undefined>,
-  ) => Unsubscribable,
+  createObservation: (callback: Observer<X | undefined>) => Unsubscribable,
   name?: string,
 ): {
   subscribe: (notifyUpdate: () => void) => () => void;
-  getSnapShot: () =>
-    | X
-    | Partial<X> & { error: Error }
-    | undefined;
+  getSnapShot: () => Snapshot<X>;
 } {
-  let lastResult:
-    | X
-    | Partial<X> & { error: Error }
-    | undefined;
+  let lastResult: Snapshot<X>;
 
-  function getSnapShot():
-    | X
-    | Partial<X> & { error: Error }
-    | undefined
-  {
+  function getSnapShot(): Snapshot<X> {
     return lastResult;
   }
 
@@ -54,7 +47,7 @@ export function makeExternalStore<X>(
         lastResult = {
           ...(lastResult ?? {}),
           error: error instanceof Error ? error : new Error(String(error)),
-        } as Partial<X> & { error: Error };
+        } as Snapshot<X>;
         notifyUpdate();
       },
       complete: () => {},

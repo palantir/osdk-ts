@@ -25,10 +25,10 @@ import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import type {
   ObservableClient,
   ObserveListOptions,
+  ObserveObjectArgs,
   ObserveObjectOptions,
+  ObserveObjectsArgs,
   Observer,
-  SubListArgs,
-  SubObjectArgs,
   Unsubscribable,
 } from "../ObservableClient.js";
 import type { Canonical } from "./Canonical.js";
@@ -48,19 +48,21 @@ export class ObservableClientImpl implements ObservableClient {
     ) as typeof this.observeObject;
     this.observeList = store.observeList.bind(store) as typeof this.observeList;
     this.applyAction = store.applyAction.bind(store);
-    this.canonicalizeWhereClause = store.canonicalizeWhereClause.bind(store);
+    this.canonicalizeWhereClause = store.canonicalizeWhereClause.bind(
+      store,
+    ) as typeof this.canonicalizeWhereClause;
   }
 
   public observeObject: <T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveObjectOptions<T>,
-    subFn: Observer<SubObjectArgs<T>>,
+    subFn: Observer<ObserveObjectArgs<T>>,
   ) => Unsubscribable;
 
   public observeList: <T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveListOptions<T>,
-    subFn: Observer<SubListArgs<T>>,
+    subFn: Observer<ObserveObjectsArgs<T>>,
   ) => Unsubscribable;
 
   public applyAction: <Q extends ActionDefinition<any>>(

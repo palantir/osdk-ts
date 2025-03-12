@@ -21,7 +21,7 @@ import type {
   PropertyKeys,
   WhereClause,
 } from "@osdk/client";
-import type { SubListArgs } from "@osdk/client/unstable-do-not-use";
+import type { ObserveObjectsArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
@@ -139,7 +139,7 @@ export function useOsdkObjects<
 
   const { subscribe, getSnapShot } = React.useMemo(
     () =>
-      makeExternalStore<SubListArgs<Q>>(
+      makeExternalStore<ObserveObjectsArgs<Q>>(
         (observer) =>
           observableClient.observeList({
             type,

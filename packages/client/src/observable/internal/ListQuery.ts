@@ -15,13 +15,11 @@
  */
 
 import type {
-  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
-  WhereClause,
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import groupBy from "object.groupby";
@@ -59,6 +57,7 @@ import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "./obj
 import { type ObjectCacheKey, storeOsdkInstances } from "./ObjectQuery.js";
 import type { OptimisticId } from "./OptimisticId.js";
 import { Query } from "./Query.js";
+import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 
 interface ListStorageData {
@@ -73,9 +72,7 @@ export interface ListCacheKey extends
     [
       type: "object" | "interface",
       apiName: string,
-      whereClause: Canonical<
-        WhereClause<ObjectTypeDefinition | InterfaceDefinition>
-      >,
+      whereClause: Canonical<SimpleWhereClause>,
       orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
     ]
   > //
@@ -239,9 +236,7 @@ export class ListQuery extends BaseListQuery<
 
   #type: "object" | "interface";
   #apiName: string;
-  #whereClause: Canonical<
-    WhereClause<ObjectTypeDefinition | InterfaceDefinition>
-  >;
+  #whereClause: Canonical<SimpleWhereClause>;
 
   // this represents the minimum number of results we need to load if we revalidate
   #minNumResults = 0;
@@ -262,9 +257,7 @@ export class ListQuery extends BaseListQuery<
     subject: Observable<SubjectPayload<ListCacheKey>>,
     apiType: "object" | "interface",
     apiName: string,
-    whereClause: Canonical<
-      WhereClause<ObjectTypeDefinition | InterfaceDefinition>
-    >,
+    whereClause: Canonical<SimpleWhereClause>,
     orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>,
     cacheKey: ListCacheKey,
     opts: ListQueryOptions,
@@ -289,17 +282,15 @@ export class ListQuery extends BaseListQuery<
     this.#apiName = apiName;
     this.#whereClause = whereClause;
     this.#orderBy = orderBy;
-    this.#objectSet = (store.client({
-      // we need to cast this down from "object" | "interface" to match the client
-      // overloads in a reasonable manner
-      type: this.#type as "object",
+    this.#objectSet = store.client({
+      type: this.#type,
       apiName: this.#apiName,
-    }) as ObjectSet<ObjectTypeDefinition>)
+    } as ObjectTypeDefinition)
       .where(this.#whereClause);
     this.#sortFns = createOrderBySortFns(this.#orderBy);
   }
 
-  get canonicalWhere(): Canonical<WhereClause<ObjectTypeDefinition>> {
+  get canonicalWhere(): Canonical<SimpleWhereClause> {
     return this.#whereClause;
   }
 
@@ -915,7 +906,7 @@ function createOrderBySortFns(
 // Hopefully this can go away when we can just request the full object properties on first load
 async function reloadDataAsFullObjects(
   client: Client,
-  data: Osdk.Instance<any, never, string, {}>[],
+  data: Osdk.Instance<any>[],
 ) {
   const groups = groupBy(data, (x) => x.$objectType);
   const objectTypeToPrimaryKeyToObject = Object.fromEntries(
@@ -934,14 +925,14 @@ async function reloadDataAsFullObjects(
         const objectDef = (objects[0] as ObjectHolder)[UnderlyingOsdkObject][
           ObjectDefRef
         ]!;
-        const where = {
+        const where: SimpleWhereClause = {
           [objectDef.primaryKeyApiName]: {
             $in: objects.map(x => x.$primaryKey),
           },
-        } as WhereClause<any>;
+        };
 
         const result = await client(
-          { type: "object", apiName } as ObjectTypeDefinition,
+          objectDef as ObjectTypeDefinition,
         ).where(where).fetchPage();
         return [
           apiName,

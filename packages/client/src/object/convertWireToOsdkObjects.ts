@@ -32,32 +32,8 @@ import {
 import { createOsdkObject } from "./convertWireToOsdkObjects/createOsdkObject.js";
 import type { InterfaceHolder } from "./convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "./convertWireToOsdkObjects/ObjectHolder.js";
-
-/**
- * Represents a "pure" object from the wire that has its special properties with
- * $ prefix and is ready to be converted to an Osdk object.
- *
- * This object intentionally does not have any generics attached to keep it simple
- * to use.
- *
- * @internal
- */
-export interface SimpleOsdkProperties {
-  $apiName: string;
-  $objectType: string;
-  $primaryKey: string | number | boolean;
-  $title: string | undefined;
-
-  [key: string]:
-    | string
-    | Array<string>
-    | number
-    | Array<number>
-    | boolean
-    | Array<boolean>
-    | undefined;
-}
 import { createObjectSpecifierFromPrimaryKey } from "./createObjectSpecifierFromPrimaryKey.js";
+import type { SimpleOsdkProperties } from "./SimpleOsdkProperties.js";
 
 /**
  * If interfaceApiName is not undefined, converts the instances of the

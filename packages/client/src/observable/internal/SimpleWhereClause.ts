@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectHolder } from "../object/convertWireToOsdkObjects/ObjectHolder.js";
-import type { ObserveObjectArgs } from "./ObservableClient.js";
+import type { WhereClause } from "@osdk/api";
 
-export interface ObjectPayload extends Omit<ObserveObjectArgs<any>, "object"> {
-  object: ObjectHolder | undefined;
-}
+export type SimpleWhereClause = WhereClause<
+  any
+>;

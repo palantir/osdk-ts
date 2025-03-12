@@ -14,15 +14,27 @@
  * limitations under the License.
  */
 
-export { augment } from "../object/fetchPage.js";
+/**
+ * Represents a "pure" object from the wire that has its special properties with
+ * $ prefix and is ready to be converted to an Osdk object.
+ *
+ * This object intentionally does not have any generics attached to keep it simple
+ * to use.
+ *
+ * @internal
+ */
+export interface SimpleOsdkProperties {
+  $apiName: string;
+  $objectType: string;
+  $primaryKey: string | number | boolean;
+  $title: string | undefined;
 
-// THIS IS NOT THE FINAL NAME DO NOT SHIP LIKE THIS
-export type { ActionSignatureFromDef } from "../actions/applyAction.js";
-export { createObservableClient } from "../observable/ObservableClient.js";
-export type {
-  ObservableClient,
-  ObserveObjectArgs,
-  ObserveObjectsArgs,
-  Observer,
-  Unsubscribable,
-} from "../observable/ObservableClient.js";
+  [key: string]:
+    | string
+    | Array<string>
+    | number
+    | Array<number>
+    | boolean
+    | Array<boolean>
+    | undefined;
+}
