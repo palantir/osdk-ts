@@ -44,7 +44,7 @@ type AGG_FOR_TYPE<T, U extends boolean> = number extends T
 
 export type ValidAggregationKeys<
   Q extends ObjectOrInterfaceDefinition,
-  R extends "aggregate" | "withPropertiesAggregate" = "aggregate",
+  R extends "aggregate" = "aggregate",
 > = keyof (
   & {
     [
@@ -52,7 +52,7 @@ export type ValidAggregationKeys<
         GetWirePropertyValueFromClient<
           CompileTimeMetadata<Q>["properties"][KK]["type"]
         >,
-        R extends "aggregate" ? true : false
+        true
       >}`
     ]?: any;
   }

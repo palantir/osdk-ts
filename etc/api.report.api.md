@@ -1170,8 +1170,8 @@ export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<Ag
 // @public (undocumented)
 export type ValidAggregationKeys<
 	Q extends ObjectOrInterfaceDefinition,
-	R extends "aggregate" | "withPropertiesAggregate" = "aggregate"
-> = keyof ({ [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<GetWirePropertyValueFromClient<CompileTimeMetadata<Q>["properties"][KK]["type"]>, R extends "aggregate" ? true : false>}`]? : any } & {
+	R extends "aggregate" = "aggregate"
+> = keyof ({ [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<GetWirePropertyValueFromClient<CompileTimeMetadata<Q>["properties"][KK]["type"]>, true>}`]? : any } & {
     	$count?: any
 });
 
