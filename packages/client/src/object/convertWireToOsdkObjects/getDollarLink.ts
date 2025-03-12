@@ -16,7 +16,6 @@
 
 import type {
   ObjectSet,
-  ObjectTypeDefinition,
   OsdkObjectLinksObject,
   SelectArg,
   WhereClause,
@@ -32,7 +31,7 @@ import type { ObjectHolder } from "./ObjectHolder.js";
 
 /** @internal */
 export function get$link(
-  holder: ObjectHolder<any>,
+  holder: ObjectHolder,
 ): OsdkObjectLinksObject<any> {
   const client = holder[ClientRef];
   const objDef = holder[ObjectDefRef];
@@ -45,7 +44,7 @@ export function get$link(
           (client.objectSetFactory(objDef, client) as ObjectSet<any>)
             .where({
               [objDef.primaryKeyApiName]: rawObj.$primaryKey,
-            } as WhereClause<ObjectTypeDefinition>)
+            } as WhereClause<any>)
             .pivotTo(linkName);
 
         const value = !linkDef.multiplicity

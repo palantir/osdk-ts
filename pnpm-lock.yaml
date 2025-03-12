@@ -1381,6 +1381,9 @@ importers:
       mnemonist:
         specifier: ^0.40.2
         version: 0.40.2
+      object.groupby:
+        specifier: ^1.0.3
+        version: 1.0.3
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
@@ -1412,6 +1415,9 @@ importers:
       '@osdk/shared.test':
         specifier: workspace:~
         version: link:../shared.test
+      '@types/object.groupby':
+        specifier: ^1.0.4
+        version: 1.0.4
       '@types/ws':
         specifier: ^8.5.11
         version: 8.5.11
@@ -7426,6 +7432,9 @@ packages:
 
   '@types/node@22.13.0':
     resolution: {integrity: sha512-ClIbNe36lawluuvq3+YYhnIN2CELi+6q8NpnM7PYp4hBn/TatfboPgVSm2rwKRfnV2M+Ty9GWDFI64KEe+kysA==}
+
+  '@types/object.groupby@1.0.4':
+    resolution: {integrity: sha512-n5gXvoz1nuDLLLMgTl82b5VCkSlqt2zfBkSWxoCmMS/j+hN6W7BuPlpOm68B/RRluy2bYo67KOtMQ28cySqeYw==}
 
   '@types/prop-types@15.7.10':
     resolution: {integrity: sha512-mxSnDQxPqsZxmeShFH+uwQ4kO4gcJcGahjjMFeLbKE95IAZiiZyiEepGZjtXJ7hN/yfu0bu9xN2ajcU0JcxX6A==}
@@ -18892,6 +18901,8 @@ snapshots:
   '@types/node@22.13.0':
     dependencies:
       undici-types: 6.20.0
+
+  '@types/object.groupby@1.0.4': {}
 
   '@types/prop-types@15.7.10': {}
 

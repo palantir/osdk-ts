@@ -16,7 +16,9 @@
 
 import type {
   ActionDefinition,
+  InterfaceDefinition,
   ObjectTypeDefinition,
+  Osdk,
   PrimaryKeyType,
   PropertyKeys,
   WhereClause,
@@ -26,12 +28,15 @@ import type { Client } from "../Client.js";
 import type { Canonical } from "./internal/Canonical.js";
 import { ObservableClientImpl } from "./internal/ObservableClientImpl.js";
 import { Store } from "./internal/Store.js";
-import type { ListPayload } from "./ListPayload.js";
-import type { ObjectPayload } from "./ObjectPayload.js";
 import type { OptimisticBuilder } from "./OptimisticBuilder.js";
-import type { SubFn } from "./types.js";
 
 export type Status = "init" | "loading" | "loaded" | "error";
+
+export interface Observer<T> {
+  next: (value: T) => void;
+  error: (err: any) => void;
+  complete: () => void;
+}
 
 export namespace ObservableClient {
   export interface ApplyActionOptions {
@@ -47,20 +52,20 @@ export interface ObserveOptions {
   mode?: "offline" | "force";
 }
 
-export interface ObserveObjectOptions<T extends ObjectTypeDefinition>
-  extends ObserveOptions
-{
+export interface ObserveObjectOptions<
+  T extends ObjectTypeDefinition | InterfaceDefinition,
+> extends ObserveOptions {
   select?: PropertyKeys<T>[];
 }
 
-export type OrderBy<Q extends ObjectTypeDefinition> = {
+export type OrderBy<Q extends ObjectTypeDefinition | InterfaceDefinition> = {
   [K in PropertyKeys<Q>]?: "asc" | "desc" | undefined;
 };
 
-export interface ObserveListOptions<Q extends ObjectTypeDefinition>
-  extends CommonObserveOptions, ObserveOptions
-{
-  objectType: Q["apiName"] | Q;
+export interface ObserveListOptions<
+  Q extends ObjectTypeDefinition | InterfaceDefinition,
+> extends CommonObserveOptions, ObserveOptions {
+  type: Pick<Q, "apiName" | "type">;
   where?: WhereClause<Q>;
   pageSize?: number;
   orderBy?: OrderBy<Q>;
@@ -69,17 +74,35 @@ export interface ObserveListOptions<Q extends ObjectTypeDefinition>
   streamUpdates?: boolean;
 }
 
+export interface ObserveObjectArgs<T extends ObjectTypeDefinition> {
+  object: Osdk.Instance<T> | undefined;
+  isOptimistic: boolean;
+  status: Status;
+  lastUpdated: number;
+}
+
+export interface ObserveObjectsArgs<
+  T extends ObjectTypeDefinition | InterfaceDefinition,
+> {
+  resolvedList: Array<Osdk.Instance<T>>;
+  isOptimistic: boolean;
+  lastUpdated: number;
+  fetchMore: () => Promise<unknown>;
+  hasMore: boolean;
+  status: Status;
+}
+
 export interface ObservableClient {
   observeObject<T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveOptions,
-    subFn: SubFn<ObjectPayload>,
+    subFn: Observer<ObserveObjectArgs<T>>,
   ): Unsubscribable;
 
-  observeList<T extends ObjectTypeDefinition>(
+  observeList<T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveListOptions<T>,
-    subFn: SubFn<ListPayload>,
+    subFn: Observer<ObserveObjectsArgs<T>>,
   ): Unsubscribable;
 
   applyAction: <Q extends ActionDefinition<any>>(
@@ -88,7 +111,9 @@ export interface ObservableClient {
     opts?: ObservableClient.ApplyActionOptions,
   ) => Promise<unknown>;
 
-  canonicalizeWhereClause: <T extends ObjectTypeDefinition>(
+  canonicalizeWhereClause: <
+    T extends ObjectTypeDefinition | InterfaceDefinition,
+  >(
     where: WhereClause<T>,
   ) => Canonical<WhereClause<T>>;
 }
