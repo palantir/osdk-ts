@@ -23,13 +23,6 @@ export interface LogFn {
   (msg: string, ...args: any[]): void;
 }
 
- 
-declare const process: {
-  env: {
-    NODE_ENV: "development" | "production";
-  };
-};
-
 function createStyle({ color }: { color: string }) {
   return `color: ${color}; border: 1px solid ${color}; padding: 2px; border-radius: 3px;`;
 }
