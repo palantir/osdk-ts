@@ -100,8 +100,12 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     template,
   });
   const foundryUrl: string = await promptFoundryUrl(parsed);
-  const osdkPackage: string = await promptOsdkPackage(parsed);
-  const osdkRegistryUrl: string = await promptOsdkRegistryUrl(parsed);
+  const osdkPackage: string | undefined = template.requiresOsdk
+    ? await promptOsdkPackage(parsed)
+    : undefined;
+  const osdkRegistryUrl: string | undefined = template.requiresOsdk
+    ? await promptOsdkRegistryUrl(parsed)
+    : undefined;
   const widgetSet: string = await promptWidgetSetRid(parsed);
 
   await run({

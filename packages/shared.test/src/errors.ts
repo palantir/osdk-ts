@@ -26,7 +26,7 @@ import type {
   OntologyNotFound,
   QueryEncounteredUserFacingError,
   QueryNotFound,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/internal.foundry.ontologies";
 import type { BaseAPIError } from "./BaseError.js";
 
 const errorInstanceId = "errorInstanceId";

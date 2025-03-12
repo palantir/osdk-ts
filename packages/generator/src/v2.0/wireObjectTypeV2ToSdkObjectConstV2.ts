@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import type { ObjectTypeFullMetadata } from "@osdk/foundry.ontologies";
 import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
-import type { ObjectTypeFullMetadata } from "@osdk/internal.foundry.core";
+import consola from "consola";
 import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
@@ -52,6 +53,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
     wireObjectTypeFullMetadataToSdkObjectMetadata(
       object.raw,
       true,
+      consola,
     ),
   );
 
@@ -66,7 +68,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
   const osdkObjectIdentifier = `${object.shortApiName}.OsdkObject`;
 
   const identifiers: Identifiers = {
-    objectDefIdentifier: `${object.shortApiName}`,
+    objectDefIdentifier: object.shortApiName,
     osdkObjectLinksIdentifier,
     osdkObjectPropsIdentifier,
     osdkObjectStrictPropsIdentifier,
@@ -229,7 +231,7 @@ ${
             // !strict || propertyDefinition.nullable ? "?" : ""
             ""}`,
           (typeof propertyDefinition.type === "object"
-            ? `${remapStructType(propertyDefinition.type)}`
+            ? remapStructType(propertyDefinition.type)
             : `$PropType[${JSON.stringify(propertyDefinition.type)}]`)
           + `${propertyDefinition.multiplicity ? "[]" : ""}${
             propertyDefinition.nullable

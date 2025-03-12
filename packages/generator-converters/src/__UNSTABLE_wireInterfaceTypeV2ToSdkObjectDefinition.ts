@@ -15,12 +15,13 @@
  */
 
 import type { InterfaceMetadata } from "@osdk/api";
-import type { InterfaceType } from "@osdk/internal.foundry.core";
+import type { InterfaceType } from "@osdk/foundry.ontologies";
 import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition.js";
 
 export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
   interfaceType: InterfaceType,
   v2: boolean,
+  log?: { info: (msg: string) => void },
 ): InterfaceMetadata {
   return {
     type: "interface",
@@ -28,19 +29,22 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
     apiName: interfaceType.apiName,
     displayName: interfaceType.displayName,
     description: interfaceType.description,
-    implements: interfaceType.extendsInterfaces,
+    implements: interfaceType.allExtendsInterfaces
+      ?? interfaceType.extendsInterfaces,
     properties: Object.fromEntries(
-      Object.entries(interfaceType.properties).map((
-        [key, value],
-      ) => {
-        return [
-          key,
-          wirePropertyV2ToSdkPropertyDefinition(
-            value,
-            true,
-          ),
-        ];
-      }).filter(([key, value]) => value != null),
+      Object.entries(interfaceType.allProperties ?? interfaceType.properties)
+        .map((
+          [key, value],
+        ) => {
+          return [
+            key,
+            wirePropertyV2ToSdkPropertyDefinition(
+              value,
+              true,
+              log,
+            ),
+          ];
+        }).filter(([key, value]) => value != null),
     ),
     links: {},
     implementedBy: interfaceType.implementedByObjectTypes,

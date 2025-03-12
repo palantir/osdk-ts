@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { LoadObjectSetV2MultipleObjectTypesResponse } from "@osdk/internal.foundry.core";
-import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
+import type { LoadObjectSetV2MultipleObjectTypesResponse } from "@osdk/foundry.ontologies";
+import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import stableStringify from "json-stable-stringify";
 import type { RequestHandler } from "msw";
 import { InvalidRequest } from "../errors.js";

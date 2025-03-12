@@ -28,9 +28,8 @@ import type {
   BatchApplyActionResponseV2,
   DataValue,
   SyncApplyActionResponseV2,
-} from "@osdk/internal.foundry.core";
-import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
-import invariant from "tiny-invariant";
+} from "@osdk/foundry.ontologies";
+import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
@@ -169,7 +168,7 @@ export async function applyAction<
             : "VALIDATE_AND_EXECUTE",
           returnEdits: options
               ?.$returnEdits
-            ? "ALL"
+            ? "ALL_V2_WITH_DELETIONS"
             : "NONE",
         },
       },
@@ -233,40 +232,52 @@ export function remapActionResponse(
       deletedLinksCount: editResponses.deletedLinksCount,
       deletedObjectsCount: editResponses.deletedObjectsCount,
       addedLinks: [],
+      deletedLinks: [],
       addedObjects: [],
+      deletedObjects: [],
       modifiedObjects: [],
       editedObjectTypes: [],
     };
 
     const editedObjectTypesSet = new Set<string>();
     for (const edit of editResponses.edits) {
-      if (edit.type === "addLink") {
-        remappedActionResponse.addedLinks.push(
-          {
-            linkTypeApiNameAtoB: edit.linkTypeApiNameAtoB,
-            linkTypeApiNameBtoA: edit.linkTypeApiNameBtoA,
-            aSideObject: edit.aSideObject,
-            bSideObject: edit.bSideObject,
-          },
-        );
+      if (edit.type === "addLink" || edit.type === "deleteLink") {
+        const osdkEdit = {
+          linkTypeApiNameAtoB: edit.linkTypeApiNameAtoB,
+          linkTypeApiNameBtoA: edit.linkTypeApiNameBtoA,
+          aSideObject: edit.aSideObject,
+          bSideObject: edit.bSideObject,
+        };
+        edit.type === "addLink"
+          ? remappedActionResponse.addedLinks.push(
+            osdkEdit,
+          )
+          : remappedActionResponse.deletedLinks?.push(osdkEdit);
         editedObjectTypesSet.add(edit.aSideObject.objectType);
         editedObjectTypesSet.add(edit.bSideObject.objectType);
-      } else if (edit.type === "addObject") {
-        remappedActionResponse.addedObjects.push(
-          {
-            objectType: edit.objectType,
-            primaryKey: edit.primaryKey,
-          },
-        );
-        editedObjectTypesSet.add(edit.objectType);
-      } else if (edit.type === "modifyObject") {
-        remappedActionResponse.modifiedObjects.push({
+      } else if (
+        edit.type === "addObject" || edit.type === "deleteObject"
+        || edit.type === "modifyObject"
+      ) {
+        const osdkEdit = {
           objectType: edit.objectType,
           primaryKey: edit.primaryKey,
-        });
+        };
+        if (edit.type === "addObject") {
+          remappedActionResponse.addedObjects.push(osdkEdit);
+        } else if (edit.type === "deleteObject") {
+          remappedActionResponse.deletedObjects?.push(osdkEdit);
+        } else if (edit.type === "modifyObject") {
+          remappedActionResponse.modifiedObjects.push(osdkEdit);
+        }
         editedObjectTypesSet.add(edit.objectType);
       } else {
-        invariant(false, "Unknown edit type");
+        if (process.env.NODE_ENV !== "production") {
+          // eslint-disable-next-line no-console
+          console.warn(
+            `Unexpected edit type: ${JSON.stringify(edit)}`,
+          );
+        }
       }
     }
     remappedActionResponse.editedObjectTypes = [...editedObjectTypesSet];

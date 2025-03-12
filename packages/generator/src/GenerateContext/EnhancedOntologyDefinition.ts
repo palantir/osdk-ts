@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyV2 } from "@osdk/internal.foundry.core";
+import type { OntologyV2 } from "@osdk/foundry.ontologies";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedAction } from "./EnhancedAction.js";

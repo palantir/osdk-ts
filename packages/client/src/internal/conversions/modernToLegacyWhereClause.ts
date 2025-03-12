@@ -25,7 +25,7 @@ import { DistanceUnitMapping } from "@osdk/api";
 import type {
   PropertyIdentifier,
   SearchJsonQueryV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import type { BBox, Position } from "geojson";
 import invariant from "tiny-invariant";
 
@@ -176,7 +176,7 @@ function handleWherePair(
   invariant(
     !hasDollarSign
       || keysOfFilter.length === 1,
-    "WhereClause Filter with multiple clauses isn't allowed",
+    "A WhereClause Filter with multiple clauses/fields is not allowed. Instead, use an 'or'/'and' clause to combine multiple filters.",
   );
 
   if (!hasDollarSign) {

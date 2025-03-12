@@ -30,8 +30,8 @@ interface RunArgs {
   sdkVersion: SdkVersion;
   foundryUrl: string;
   widgetSet: string;
-  osdkPackage: string;
-  osdkRegistryUrl: string;
+  osdkPackage?: string;
+  osdkRegistryUrl?: string;
 }
 
 export async function run({
@@ -118,8 +118,16 @@ export async function run({
   };
   processFiles(root);
 
-  const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl });
-  fs.writeFileSync(path.join(root, ".npmrc"), npmRc);
+  if (template.requiresOsdk) {
+    if (osdkPackage == null || osdkRegistryUrl == null) {
+      throw new Error(
+        `Template ${template.id} requires OSDK package and registry URL`,
+      );
+    }
+    const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl });
+    fs.writeFileSync(path.join(root, ".npmrc"), npmRc);
+  }
+
   const foundryConfigJson = generateFoundryConfigJson({
     foundryUrl,
     widgetSet,

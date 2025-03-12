@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { QueryDataType } from "@osdk/internal.foundry.core";
+import type { QueryDataType } from "@osdk/foundry.ontologies";
 
 export function getObjectTypesFromQueryDataType(
   dataType: QueryDataType,
@@ -46,6 +46,11 @@ export function getObjectTypesFromQueryDataType(
       }
       return;
 
+    case "entrySet":
+      getObjectTypesFromQueryDataType(dataType.keyType, types);
+      getObjectTypesFromQueryDataType(dataType.valueType, types);
+      return;
+
     case "attachment":
     case "boolean":
     case "date":
@@ -58,6 +63,7 @@ export function getObjectTypesFromQueryDataType(
     case "threeDimensionalAggregation":
     case "timestamp":
     case "twoDimensionalAggregation":
+    case "entrySet":
     case "unsupported":
       /* complete no-op */
       return;

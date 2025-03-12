@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { BoundariesUsState } from "@osdk/e2e.generated.catchall";
+import {
+  BoundariesUsState,
+  OsdkTestObject,
+} from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
 
 export async function runAggregationsTest(): Promise<void> {
@@ -90,6 +93,15 @@ export async function runAggregationsTest(): Promise<void> {
       },
     });
 
+  const testExactMatchWithDefault = await client(OsdkTestObject).aggregate({
+    $select: {
+      $count: "unordered",
+    },
+    $groupBy: {
+      "description": { "$exact": { $defaultValue: "default", $limit: 300 } },
+    },
+  });
+
   console.log(
     testAggregateCountWithGroups[0].$group.usState,
     testAggregateCountWithGroups[0].$count,
@@ -109,4 +121,8 @@ export async function runAggregationsTest(): Promise<void> {
       `start:${group.$group.latitude.startValue},end:${group.$group.latitude.endValue}:${group.$count}`,
     );
   }
+
+  console.log(testExactMatchWithDefault);
 }
+
+void runAggregationsTest();

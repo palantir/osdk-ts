@@ -2,6 +2,7 @@ aggregatable
 aimpoints
 BACKCOMPAT
 backlink
+Canonicalizer
 codegen
 devx
 Discoverability
@@ -13,6 +14,7 @@ geosearch
 groupable
 inbetween
 isModifierable
+Multimap
 objs
 onwarn
 pypi
@@ -31,4 +33,5 @@ unevaluable
 ungroup
 unioned
 unresolve
+Unsubscribable
 webapi

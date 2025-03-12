@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
-import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
+import type { OntologyObjectV2 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import { GeotimeSeriesPropertyImpl } from "../../createGeotimeSeriesProperty.js";
 import { MediaReferencePropertyImpl } from "../../createMediaReferenceProperty.js";
@@ -59,6 +59,35 @@ const basePropDefs = {
   "$link": {
     get: function(this: InternalOsdkInstance & ObjectHolder<any>) {
       return get$link(this);
+    },
+  },
+  "$clone": {
+    value: function(
+      this: InternalOsdkInstance & ObjectHolder<any>,
+      update: Record<string, any> | undefined,
+    ) {
+      const rawObj = this[UnderlyingOsdkObject];
+      const def = this[ObjectDefRef];
+
+      if (update == null) {
+        return createOsdkObject(this[ClientRef], def, { ...rawObj });
+      }
+
+      if (
+        def.primaryKeyApiName in update
+        && rawObj[def.primaryKeyApiName] !== update[def.primaryKeyApiName]
+      ) {
+        throw new Error(
+          `Cannot update ${def.apiName} object with differing primary key values `,
+        );
+      }
+
+      if (def.titleProperty in update && !("$title" in update)) {
+        update.$title = update[def.titleProperty];
+      }
+
+      const newObject = { ...this[UnderlyingOsdkObject], ...update };
+      return createOsdkObject(this[ClientRef], this[ObjectDefRef], newObject);
     },
   },
 };

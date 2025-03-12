@@ -167,12 +167,12 @@ export default tseslint.config(
 
       // ideally these would be an error because it does catch bugs
       // but it also requires a lot of code change right now
-      "@typescript-eslint/no-unsafe-assignment": "warn",
-      "@typescript-eslint/no-unsafe-member-access": "warn",
-      "@typescript-eslint/no-unsafe-return": "warn",
-      "@typescript-eslint/no-unsafe-argument": "warn",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
       "prefer-const": "warn",
-      "@typescript-eslint/no-unsafe-call": "warn",
+      "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-confusing-void-expression": ["warn", {
         ignoreArrowShorthand: true,
         ignoreVoidOperator: true,
@@ -200,11 +200,13 @@ export default tseslint.config(
     rules: {
       // Just trying to reduce the errors in tests
       "@typescript-eslint/unbound-method": "warn",
-      "@typescript-eslint/no-unsafe-assignment": "warn",
+      "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/no-deprecated": "warn",
-      "@typescript-eslint/no-unsafe-argument": "warn",
-      "@typescript-eslint/no-base-to-string": "warn",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/no-base-to-string": "off",
       // "@typescript-eslint/prefer-const": "warn",
+
+      "eslint@typescript-eslint/require-await": "off",
 
       // rules that should be enabled but I dont want a massive delta yet
       "@typescript-eslint/await-thenable": "warn",

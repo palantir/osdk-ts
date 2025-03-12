@@ -21,4 +21,5 @@ export type ObjectTypeStatusFilter =
   | "EXPERIMENTAL"
   | "ACTIVE"
   | "DEPRECATED"
-  | "EXAMPLE";
+  | "EXAMPLE"
+  | "ENDORSED";

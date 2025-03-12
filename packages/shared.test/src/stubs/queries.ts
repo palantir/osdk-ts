@@ -17,7 +17,7 @@
 import type {
   ExecuteQueryRequest,
   ExecuteQueryResponse,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import { employee1, employee2 } from "./objects.js";
 import {
   addOneQueryType,
@@ -28,6 +28,7 @@ import {
   queryTypeReturnsArray,
   queryTypeReturnsComplexStruct,
   queryTypeReturnsDate,
+  queryTypeReturnsMap,
   queryTypeReturnsObject,
   queryTypeReturnsStruct,
   queryTypeReturnsTimestamp,
@@ -255,6 +256,16 @@ export const queryTypeReturnsArrayResponse: ExecuteQueryResponse = {
   value: ["Pitt", "Clooney", "Reynolds"],
 };
 
+export const queryTypeReturnsMapRequest: ExecuteQueryRequest = {
+  parameters: {
+    peopleMap: [{ key: "person1", value: "hi" }],
+  },
+};
+
+export const queryTypeReturnsMapResponse: ExecuteQueryResponse = {
+  value: [{ key: "50030", value: "bye" }],
+};
+
 export const emptyBody: string = JSON.stringify({
   parameters: {},
 });
@@ -310,5 +321,8 @@ export const queryRequestHandlers: {
   [queryTypeReturnsArray.apiName]: {
     [JSON.stringify(queryTypeReturnsArrayRequest)]:
       queryTypeReturnsArrayResponse,
+  },
+  [queryTypeReturnsMap.apiName]: {
+    [JSON.stringify(queryTypeReturnsMapRequest)]: queryTypeReturnsMapResponse,
   },
 };

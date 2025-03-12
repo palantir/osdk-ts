@@ -16,11 +16,12 @@
 
 import { consola } from "consola";
 
+// https://github.com/unjs/consola?tab=readme-ov-file#await-promptmessage--type-cancel-
+const cancelSymbol = Symbol.for("cancel");
+
 export function handlePromptCancel(promptResponse: any): void {
   const isFalse = typeof promptResponse === "boolean" && !promptResponse;
-  // https://github.com/unjs/consola/issues/251
-  const isSigInt = typeof promptResponse === "symbol"
-    && promptResponse.toString() === "Symbol(clack:cancel)";
+  const isSigInt = promptResponse === cancelSymbol;
   if (isSigInt || isFalse) {
     consola.fail("Operation cancelled");
     process.exit(0);

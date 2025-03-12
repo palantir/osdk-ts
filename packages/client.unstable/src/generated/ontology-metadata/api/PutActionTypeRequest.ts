@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import type { ActionNotification } from "./ActionNotification.js";
 import type { ActionNotificationSettings } from "./ActionNotificationSettings.js";
 import type { ActionRevert } from "./ActionRevert.js";
 import type { ActionTypeApiName } from "./ActionTypeApiName.js";
-import type { ActionTypeDisplayMetadata } from "./ActionTypeDisplayMetadata.js";
+import type { ActionTypeDisplayMetadataModification } from "./ActionTypeDisplayMetadataModification.js";
 import type { ActionTypeStatus } from "./ActionTypeStatus.js";
 import type { ActionWebhooks } from "./ActionWebhooks.js";
 import type { ParameterId } from "./ParameterId.js";
@@ -32,7 +32,7 @@ import type { ValidationRule } from "./ValidationRule.js";
  */
 export interface PutActionTypeRequest {
   apiName: ActionTypeApiName;
-  displayMetadata: ActionTypeDisplayMetadata;
+  displayMetadata: ActionTypeDisplayMetadataModification;
   parameters: Record<ParameterId, PutParameterRequest>;
   parameterOrdering: Array<ParameterId>;
   logic: ActionLogic;

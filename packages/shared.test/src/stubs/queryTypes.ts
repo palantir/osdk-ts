@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { QueryTypeV2 } from "@osdk/internal.foundry.core";
+import type { QueryTypeV2 } from "@osdk/foundry.ontologies";
 
 export const addOneQueryType: QueryTypeV2 = {
   apiName: "addOne",
@@ -420,6 +420,39 @@ export const queryTypeReturnsArray: QueryTypeV2 = {
     "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdda",
   "version": "0.1.1",
 };
+
+export const queryTypeReturnsMap: QueryTypeV2 = {
+  "apiName": "queryTypeReturnsMap",
+  "output": {
+    "type": "entrySet",
+    "keyType": {
+      type: "object",
+      objectApiName: "Employee",
+      objectTypeApiName: "Employee",
+    },
+    valueType: {
+      type: "float",
+    },
+  },
+  "parameters": {
+    "peopleMap": {
+      "dataType": {
+        "type": "entrySet",
+        "keyType": {
+          type: "object",
+          objectApiName: "Employee",
+          objectTypeApiName: "Employee",
+        },
+        valueType: {
+          type: "string",
+        },
+      },
+    },
+  },
+  "rid":
+    "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdd2",
+  "version": "0.1.1",
+};
 export const queryTypes: QueryTypeV2[] = [
   addOneQueryType,
   queryTypeReturnsStruct,
@@ -434,4 +467,5 @@ export const queryTypes: QueryTypeV2[] = [
   queryTypeAcceptsThreeDimensionalAggregation,
   queryTypeReturnsArray,
   queryTypeReturnsComplexStruct,
+  queryTypeReturnsMap,
 ];

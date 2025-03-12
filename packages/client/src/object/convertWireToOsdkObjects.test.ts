@@ -21,7 +21,7 @@ import {
   FooInterface,
   objectTypeWithAllPropertyTypes,
 } from "@osdk/client.test.ontology";
-import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
+import type { OntologyObjectV2 } from "@osdk/foundry.ontologies";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { apiServer } from "@osdk/shared.test";
 import {
@@ -74,6 +74,7 @@ describe("convertWireToOsdkObjects", () => {
       "$apiName",
       "$objectType",
       "$primaryKey",
+      "$objectSpecifier",
       "employeeLocation",
     ].sort());
 
@@ -93,7 +94,7 @@ describe("convertWireToOsdkObjects", () => {
 
     // Should not have $title
     expect(JSON.stringify(employee)).toMatchInlineSnapshot(
-      `"{"employeeId":50030,"fullName":"John Doe","office":"NYC","class":"Red","startDate":"2019-01-01","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"$apiName":"Employee","$objectType":"Employee","$primaryKey":50030}"`,
+      `"{"employeeId":50030,"fullName":"John Doe","office":"NYC","class":"Red","startDate":"2019-01-01","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"$apiName":"Employee","$objectType":"Employee","$primaryKey":50030,"$objectSpecifier":"Employee:50030"}"`,
     );
 
     expect(JSON.stringify(employee.$as(FooInterface))).toMatchInlineSnapshot(
@@ -102,7 +103,7 @@ describe("convertWireToOsdkObjects", () => {
 
     // Should have $title
     expect(JSON.stringify(employee2)).toMatchInlineSnapshot(
-      `"{"employeeId":50031,"fullName":"Jane Doe","office":"SEA","class":"Blue","startDate":"2012-02-12","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"$apiName":"Employee","$objectType":"Employee","$primaryKey":50031,"$title":"Jane Doe"}"`,
+      `"{"employeeId":50031,"fullName":"Jane Doe","office":"SEA","class":"Blue","startDate":"2012-02-12","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"$apiName":"Employee","$objectType":"Employee","$primaryKey":50031,"$title":"Jane Doe","$objectSpecifier":"Employee:50031"}"`,
     );
 
     expect(JSON.stringify(employee2.$as(FooInterface))).toMatchInlineSnapshot(
@@ -205,12 +206,12 @@ describe("convertWireToOsdkObjects", () => {
       "userAgent",
     );
 
-    let object = {
+    const object = {
       __apiName: Employee.apiName,
       __primaryKey: 0,
     } as const;
     const prototypeBefore = Object.getPrototypeOf(object);
-    let object2 = await convertWireToOsdkObjects(
+    const object2 = await convertWireToOsdkObjects(
       clientCtx,
       [object],
       undefined,
@@ -235,12 +236,12 @@ describe("convertWireToOsdkObjects", () => {
       "userAgent",
     );
 
-    let object = {
+    const object = {
       __apiName: Employee.apiName,
       __primaryKey: 0,
     } as const;
     const prototypeBefore = Object.getPrototypeOf(object);
-    let object2 = await convertWireToOsdkObjects2(
+    const object2 = await convertWireToOsdkObjects2(
       clientCtx,
       [object],
       undefined,
@@ -260,7 +261,7 @@ describe("convertWireToOsdkObjects", () => {
       async () => "myAccessToken",
     );
 
-    let objectFromWire = {
+    const objectFromWire = {
       __apiName: "Employee" as const,
       __primaryKey: 0,
       __title: "Steve",
@@ -289,6 +290,7 @@ describe("convertWireToOsdkObjects", () => {
     expect(obj).toMatchInlineSnapshot(`
       {
         "$apiName": "Employee",
+        "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
         "$title": "Steve",
@@ -305,7 +307,7 @@ describe("convertWireToOsdkObjects", () => {
       async () => "myAccessToken",
     );
 
-    let objectFromWire = {
+    const objectFromWire = {
       __apiName: "Employee" as const,
       __primaryKey: 0,
       __title: "Steve",
@@ -338,6 +340,7 @@ describe("convertWireToOsdkObjects", () => {
     expect(obj).toMatchInlineSnapshot(`
       {
         "$apiName": "Employee",
+        "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
         "$title": "Steve",
@@ -353,7 +356,7 @@ describe("convertWireToOsdkObjects", () => {
       async () => "myAccessToken",
     );
 
-    let objectFromWire = {
+    const objectFromWire = {
       __apiName: "Employee" as const,
       __primaryKey: 0,
       __title: "Steve",
@@ -385,6 +388,7 @@ describe("convertWireToOsdkObjects", () => {
     expect(obj).toMatchInlineSnapshot(`
       {
         "$apiName": "Employee",
+        "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
         "$rid": "hiMom",
@@ -403,7 +407,7 @@ describe("convertWireToOsdkObjects", () => {
       async () => "myAccessToken",
     );
 
-    let objectFromWire = {
+    const objectFromWire = {
       __apiName: "Employee" as const,
       __primaryKey: 0,
       __title: "Steve",
@@ -440,6 +444,7 @@ describe("convertWireToOsdkObjects", () => {
     expect(obj).toMatchInlineSnapshot(`
       {
         "$apiName": "Employee",
+        "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
         "$rid": "hiMom",
@@ -453,7 +458,7 @@ describe("convertWireToOsdkObjects", () => {
 
   describe("selection keys", () => {
     it("throws when required is missing", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
       } as const;
@@ -473,7 +478,7 @@ describe("convertWireToOsdkObjects", () => {
     });
 
     it("does not throw when optional is missing", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
       } as const;
@@ -529,7 +534,7 @@ describe("convertWireToOsdkObjects", () => {
 
   describe("selection keys - new", () => {
     it("throws when required is missing", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
       } as const;
@@ -549,7 +554,7 @@ describe("convertWireToOsdkObjects", () => {
     });
 
     it("does not throw when optional is missing", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
       } as const;
@@ -605,7 +610,7 @@ describe("convertWireToOsdkObjects", () => {
 
   describe("without selection keys", () => {
     it("throws when required is missing", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
       } as const;
@@ -625,7 +630,7 @@ describe("convertWireToOsdkObjects", () => {
     });
 
     it("does not throw when required is present", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
         "employeeId": 0,
@@ -683,7 +688,7 @@ describe("convertWireToOsdkObjects", () => {
 
   describe("without selection keys - new", () => {
     it("throws when required is missing", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
       } as const;
@@ -703,7 +708,7 @@ describe("convertWireToOsdkObjects", () => {
     });
 
     it("does not throw when required is present", async () => {
-      let object = {
+      const object = {
         __apiName: "Employee",
         __primaryKey: 0,
         "employeeId": 0,

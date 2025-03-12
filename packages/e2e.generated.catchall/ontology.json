@@ -387,6 +387,100 @@
     }
   },
   "objectTypes": {
+    "StateTerritory": {
+      "objectType": {
+        "apiName": "StateTerritory",
+        "displayName": "State/Territory",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "States",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "airportStateName",
+        "properties": {
+          "airportStateName": {
+            "displayName": "airportStateName",
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "airportStateCode": {
+            "displayName": "airportStateCode",
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "country": {
+            "displayName": "country",
+            "dataType": {
+              "type": "string"
+            }
+          }
+        },
+        "rid": "ri.ontology.main.object-type.98f324e1-b8f4-42ef-aee7-5c4a1494ce5e",
+        "titleProperty": "airportStateName",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [{
+        "apiName": "country1",
+        "cardinality": "ONE",
+        "displayName": "State Country",
+        "objectTypeApiName": "Country_1",
+        "status": "ACTIVE",
+        "foreignKeyPropertyApiName": "airportCountryName"
+      }],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {
+      },
+      "sharedPropertyTypeMapping": {}
+    },
+    "Country_1": {
+      "objectType": {
+        "apiName": "Country_1",
+        "displayName": "Country",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "Countries",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "airportCountryName",
+        "properties": {
+          "airportCountryName": {
+            "displayName": "airportCountryName",
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "airportCountryIsoCode": {
+            "displayName": "airportCountryIsoCode",
+            "dataType": {
+              "type": "string"
+            }
+          }
+        },
+        "rid": "ri.ontology.main.object-type.0a276176-8d93-489e-93b4-77673de56b9e",
+        "titleProperty": "airportCountryName",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [{
+        "apiName": "stateTerritory",
+        "cardinality": "MANY",
+        "displayName": "State Country",
+        "objectTypeApiName": "StateTerritory",
+        "status": "ACTIVE",
+        "foreignKeyPropertyApiName": "airportStateName"
+      }],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {
+      },
+      "sharedPropertyTypeMapping": {}
+    },
     "OsdkTestObject": {
       "objectType": {
         "apiName": "OsdkTestObject",
@@ -1711,6 +1805,24 @@
               }
             }
           }
+        },
+        "functionMapObjectKey": {
+          "dataType": {
+            "type": "entrySet",
+            "keyType": {
+              "type": "object",
+              "objectApiName": "Todo",
+              "objectTypeApiName": "Todo"
+            },
+            "valueType": { "type": "string" }
+          }
+        },
+        "functionMap": {
+          "dataType": {
+            "type": "entrySet",
+            "keyType": { "type": "float" },
+            "valueType": { "type": "string" }
+          }
         }
       }
     },
@@ -1763,6 +1875,35 @@
           "description": "Description of Description"
         }
       },
+      "allProperties": {
+        "name": {
+          "rid": "ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d6",
+          "apiName": "name",
+          "dataType": {
+            "type": "string"
+          },
+          "displayName": "Name",
+          "description": "Name of Foo"
+        },
+        "description": {
+          "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
+          "apiName": "description",
+          "dataType": {
+            "type": "string"
+          },
+          "displayName": "Description",
+          "description": "Description of Description"
+        },
+        "inheritedDescription": {
+          "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
+          "apiName": "inheritedDescription",
+          "dataType": {
+            "type": "string"
+          },
+          "displayName": "Inherited Description",
+          "description": "Description property we inherited from some parent interface"
+        }
+      },
       "rid": "ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b",
       "status": "ACTIVE"
     },
@@ -1789,7 +1930,8 @@
         }
       },
       "rid": "ri.ontology.main.interface.06c534fd-4f68-44d9-b268-72729a47eaab",
-      "status": "ACTIVE"
+      "status": "ACTIVE",
+      "implementedByObjectTypes": ["OsdkTestObject"]
     }
   },
 

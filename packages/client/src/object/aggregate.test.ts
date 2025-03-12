@@ -25,7 +25,7 @@ import {
   objectTypeWithAllPropertyTypes,
   Todo,
 } from "@osdk/client.test.ontology";
-import type { AggregateObjectsResponseV2 } from "@osdk/internal.foundry.core";
+import type { AggregateObjectsResponseV2 } from "@osdk/foundry.ontologies";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import {
@@ -201,6 +201,7 @@ describe("aggregate", () => {
           dateTime: { $duration: [10, "seconds"] },
           date: { $ranges: [["2024-01-02", "2024-01-09"]] },
           boolean: "exact",
+          double: { "$exact": { $defaultValue: "default", $limit: 300 } },
         },
       },
     );
@@ -222,6 +223,7 @@ describe("aggregate", () => {
       grouped[0].$group.date,
     );
     expectType<boolean | undefined>(grouped[0].$group.boolean);
+    expectType<number | undefined>(grouped[0].$group.double);
 
     expectType<
       AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
@@ -270,7 +272,7 @@ describe("aggregate", () => {
           $groupBy: {
             wrongKey: "don't work";
             text: "exact";
-            id: { $exactWithLimit: 10 };
+            id: { $exact: { $limit: 10; $defaultValue: "default" } };
             integer: { $ranges: [[1, 2]] };
             short: {
               $ranges: [[2, 3], [4, 5]];
@@ -290,7 +292,7 @@ describe("aggregate", () => {
         // @ts-expect-error
         wrongKey: "don't work",
         string: "exact",
-        id: { $exactWithLimit: 10 },
+        id: { $exact: { $limit: 10, $defaultValue: "default" } },
         integer: { $ranges: [[1, 2]] },
         short: {
           $ranges: [[2, 3], [4, 5]],

@@ -15,12 +15,12 @@
  */
 
 import type { QueryParameterDefinition } from "@osdk/api";
+import type { QueryDataType } from "@osdk/foundry.ontologies";
 import {
   wireQueryDataTypeToQueryDataTypeDefinition,
   wireQueryParameterV2ToQueryParameterDefinition as paramToDef,
   wireQueryTypeV2ToSdkQueryDefinitionNoParams,
 } from "@osdk/generator-converters";
-import type { QueryDataType } from "@osdk/internal.foundry.core";
 import path from "node:path";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
 import type { EnhancedQuery } from "../GenerateContext/EnhancedQuery.js";
@@ -120,7 +120,7 @@ async function generateV2QueryFile(
   await fs.writeFile(
     path.join(outDir, `${query.shortApiName}.ts`),
     await formatTs(`
-        import type { QueryDefinition , QueryParam, QueryResult, VersionBound} from "${
+        import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound} from "${
       forInternalUse ? "@osdk/api" : "@osdk/client"
     }";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
@@ -150,7 +150,7 @@ async function generateV2QueryFile(
                 ${
                   queryParamJsDoc(paramToDef(parameter), { apiName })
                 }readonly "${apiName}"${q.nullable ? "?" : ""}`,
-                `${getQueryParamType(ontology, q, "Param")}`,
+                getQueryParamType(ontology, q, "Param"),
               ];
             },
           })
@@ -281,6 +281,7 @@ export function getQueryParamType(
   enhancedOntology: EnhancedOntologyDefinition,
   input: QueryParameterDefinition,
   type: "Param" | "Result",
+  isMapKey = false,
 ): string {
   let inner = `unknown /* ${input.type} */`;
 
@@ -296,12 +297,9 @@ export function getQueryParamType(
     case "integer":
     case "long":
     case "string":
-    case "threeDimensionalAggregation":
     case "timestamp":
-    case "twoDimensionalAggregation":
       inner = `Query${type}.PrimitiveType<${JSON.stringify(input.type)}>`;
       break;
-
     case "struct":
       inner = `{
             ${
@@ -312,15 +310,41 @@ export function getQueryParamType(
                 ${type === "Param" ? "readonly " : ""}"${apiName}"${
                 p.nullable ? "?" : ""
               }`,
-              `${getQueryParamType(enhancedOntology, p, type)}`,
+              getQueryParamType(enhancedOntology, p, type),
             ];
           },
         })
       }
             }`;
       break;
+    case "twoDimensionalAggregation":
+      inner = `Query${type}.TwoDimensionalAggregationType<${
+        input.twoDimensionalAggregation.keyType === "range"
+          ? `Query${type}.RangeKey<"${input.twoDimensionalAggregation.keySubtype}">`
+          : `"${input.twoDimensionalAggregation.keyType}"`
+      }, "${input.twoDimensionalAggregation.valueType}">`;
+      break;
 
+    case "threeDimensionalAggregation":
+      inner = `Query${type}.ThreeDimensionalAggregationType<${
+        input.threeDimensionalAggregation.keyType === "range"
+          ? `Query${type}.RangeKey<"${input.threeDimensionalAggregation.keySubtype}">`
+          : `"${input.threeDimensionalAggregation.keyType}"`
+      },${
+        input.threeDimensionalAggregation.valueType.keyType === "range"
+          ? `Query${type}.RangeKey<"${input.threeDimensionalAggregation.valueType.keySubtype}">`
+          : `"${input.threeDimensionalAggregation.valueType.keyType}"`
+      }, 
+        "${input.threeDimensionalAggregation.valueType.valueType}">`;
+      break;
     case "object":
+      if (isMapKey) {
+        inner = `ObjectSpecifier<${
+          enhancedOntology.requireObjectType(input.object)
+            .getImportedDefinitionIdentifier(true)
+        }>`;
+        break;
+      }
       inner = `Query${type}.ObjectType<${
         enhancedOntology.requireObjectType(input.object)
           .getImportedDefinitionIdentifier(true)
@@ -345,6 +369,11 @@ export function getQueryParamType(
         getQueryParamType(enhancedOntology, u, type)
       ).join(" | ");
       break;
+
+    case "map":
+      inner = `Record<${
+        getQueryParamType(enhancedOntology, input.keyType, type, true)
+      }, ${getQueryParamType(enhancedOntology, input.valueType, type)}>`;
   }
 
   if (input.multiplicity && type === "Param") {

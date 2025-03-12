@@ -1,5 +1,210 @@
 # @osdk/client
 
+## 2.2.0-beta.8
+
+### Minor Changes
+
+- 1ba3871: Support $clone for interface objects
+- 63b2e63: Update Platform SDK Dependencies
+- 26c2d95: Add experimental function to load page of objects by rid.
+- 63b2e63: Supports generating queries for entrySet function types
+- 63b2e63: Adds ObjectSpecifiers to generated OSDK objects
+
+### Patch Changes
+
+- Updated dependencies [ad93d55]
+- Updated dependencies [0e874b1]
+- Updated dependencies [63b2e63]
+- Updated dependencies [26c2d95]
+- Updated dependencies [63b2e63]
+- Updated dependencies [63b2e63]
+  - @osdk/shared.net.errors@2.2.0-beta.2
+  - @osdk/shared.net.fetch@1.2.0-beta.2
+  - @osdk/api@2.2.0-beta.8
+  - @osdk/generator-converters@2.2.0-beta.8
+  - @osdk/shared.client.impl@1.2.0-beta.2
+  - @osdk/client.unstable@2.2.0-beta.8
+
+## 2.2.0-beta.7
+
+### Minor Changes
+
+- 7416ce4: Adds deleted objects and links returned from applyAction
+- 7416ce4: Update Platform SDK Dependencies
+- 879b6c3: Include a more descriptive error message for multiple filters on a single property filter clause
+- 805df40: Fix interface action types.
+
+### Patch Changes
+
+- Updated dependencies [7416ce4]
+- Updated dependencies [7416ce4]
+- Updated dependencies [805df40]
+  - @osdk/api@2.2.0-beta.7
+  - @osdk/generator-converters@2.2.0-beta.7
+  - @osdk/client.unstable@2.2.0-beta.7
+
+## 2.2.0-beta.6
+
+### Minor Changes
+
+- cddfbf9: Adds default value option to group by
+- ea4e4b1: Fix attachments to be upload sequentially rather than in parallel.
+
+### Patch Changes
+
+- Updated dependencies [b68adea]
+- Updated dependencies [cddfbf9]
+- Updated dependencies [a6e5f89]
+  - @osdk/generator-converters@2.2.0-beta.6
+  - @osdk/api@2.2.0-beta.6
+  - @osdk/client.unstable@2.2.0-beta.6
+
+## 2.2.0-beta.5
+
+### Minor Changes
+
+- 62e5965: Removed unneeded lint statements.
+- 2f6206c: Improvements to @osdk/react
+
+### Patch Changes
+
+- @osdk/api@2.2.0-beta.5
+- @osdk/client.unstable@2.2.0-beta.5
+- @osdk/generator-converters@2.2.0-beta.5
+
+## 2.2.0-beta.4
+
+### Minor Changes
+
+- fe0cc43: Experimental react changes
+
+### Patch Changes
+
+- @osdk/api@2.2.0-beta.4
+- @osdk/client.unstable@2.2.0-beta.4
+- @osdk/generator-converters@2.2.0-beta.4
+
+## 2.2.0-beta.3
+
+### Minor Changes
+
+- 761e69d: Added type safety to createMediaReference
+
+### Patch Changes
+
+- Updated dependencies [761e69d]
+  - @osdk/api@2.2.0-beta.3
+  - @osdk/generator-converters@2.2.0-beta.3
+  - @osdk/client.unstable@2.2.0-beta.3
+
+## 2.2.0-beta.2
+
+### Minor Changes
+
+- fccd9ac: "Allow selecting derived properties"
+
+### Patch Changes
+
+- Updated dependencies [fccd9ac]
+  - @osdk/api@2.2.0-beta.2
+  - @osdk/generator-converters@2.2.0-beta.2
+  - @osdk/client.unstable@2.2.0-beta.2
+
+## 2.1.0-beta.31
+
+### Minor Changes
+
+- bb8b219: Use new external packages instead of the internal ones.
+- ee6224b: Explicitly type aggregation types in queries.
+
+### Patch Changes
+
+- Updated dependencies [bb8b219]
+- Updated dependencies [81b2fb2]
+- Updated dependencies [ecd4aee]
+- Updated dependencies [ee6224b]
+- Updated dependencies [5fe2c8d]
+  - @osdk/generator-converters@2.1.0-beta.31
+  - @osdk/api@2.1.0-beta.31
+  - @osdk/client.unstable@2.1.0-beta.31
+
+## 2.1.0-beta.30
+
+### Minor Changes
+
+- 966d408: Rename type for base action parameter types.
+- f03e39f: Add a namespace type for listeners.
+- 0d8ac3b: Remove attachment from exports.
+- 2d5e648: Remove subscribe from experimental gate.
+
+### Patch Changes
+
+- Updated dependencies [966d408]
+- Updated dependencies [f03e39f]
+- Updated dependencies [1591f04]
+- Updated dependencies [785f663]
+- Updated dependencies [2d5e648]
+  - @osdk/generator-converters@2.1.0-beta.30
+  - @osdk/api@2.1.0-beta.30
+  - @osdk/client.unstable@2.1.0-beta.30
+
+## 2.1.0-beta.29
+
+### Minor Changes
+
+- f1145ff: Adds support for runtime derived properties
+- 8026baf: Update interface support for .subscribe
+
+### Patch Changes
+
+- Updated dependencies [f1145ff]
+  - @osdk/api@2.1.0-beta.29
+  - @osdk/generator-converters@2.1.0-beta.29
+  - @osdk/client.unstable@2.1.0-beta.29
+
+## 2.1.0-beta.28
+
+### Minor Changes
+
+- f446d0c: Exposes $clone from OSDK Object instances
+
+### Patch Changes
+
+- Updated dependencies [f446d0c]
+  - @osdk/api@2.1.0-beta.28
+  - @osdk/generator-converters@2.1.0-beta.28
+  - @osdk/client.unstable@2.1.0-beta.28
+
+## 2.1.0-beta.27
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.27
+- @osdk/client.unstable@2.1.0-beta.27
+- @osdk/generator-converters@2.1.0-beta.27
+
+## 2.1.0-beta.26
+
+### Minor Changes
+
+- 7865cb6: Add support for search on struct properties.
+- e6fbd94: Export Attachment from client
+- 9c4efe6: Support uploading media parameters through actions
+- 44e62f6: Updating fetch for auth and other packages.
+- 94463b6: Support objects as code
+- f19da8e: Remove where clause from aggregate options. This option was never actually doing anything before as it was not passed to the backend for processing, so we are removing it to prevent future confusion.
+
+### Patch Changes
+
+- Updated dependencies [7865cb6]
+- Updated dependencies [9c4efe6]
+- Updated dependencies [44e62f6]
+- Updated dependencies [94463b6]
+- Updated dependencies [f19da8e]
+  - @osdk/api@2.1.0-beta.26
+  - @osdk/generator-converters@2.1.0-beta.26
+  - @osdk/client.unstable@2.1.0-beta.26
+
 ## 2.1.0-beta.25
 
 ### Minor Changes

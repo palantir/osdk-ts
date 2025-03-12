@@ -27,7 +27,9 @@ describe("Generate Package Command", () => {
     async (scope) => {
       const generatedPath = path.join(
         path.dirname(fileURLToPath(import.meta.url)),
-        "generatedNoCheck",
+        "..",
+        "build",
+        "codegen",
         scope,
         "osdk",
       );

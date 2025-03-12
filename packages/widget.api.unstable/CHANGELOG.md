@@ -1,4 +1,24 @@
-# @osdk/widget-api.unstable
+# @osdk/widget.api.unstable
+
+## 2.1.0-beta.3
+
+## 2.1.0-beta.2
+
+## 2.0.0-beta.16
+
+## 2.0.0-beta.15
+
+## 2.0.0-beta.14
+
+## 2.0.0-beta.13
+
+### Minor Changes
+
+- 121475a: Release versions 1.1.0 of Custom Widget client libraries
+
+## 2.0.0-beta.12
+
+## 2.0.0-beta.11
 
 ## 2.0.0-beta.10
 

@@ -1,5 +1,35 @@
 # @osdk/cli.common
 
+## 0.26.0-beta.8
+
+## 0.26.0-beta.7
+
+### Minor Changes
+
+- 21e33a5: Upgrade consola to 3.4.0
+
+## 0.26.0-beta.6
+
+## 0.26.0-beta.5
+
+## 0.26.0-beta.4
+
+## 0.26.0-beta.3
+
+## 0.26.0-beta.2
+
+## 0.25.0-beta.31
+
+## 0.25.0-beta.30
+
+## 0.25.0-beta.29
+
+## 0.25.0-beta.28
+
+## 0.25.0-beta.27
+
+## 0.25.0-beta.26
+
 ## 0.25.0-beta.25
 
 ## 0.25.0-beta.24

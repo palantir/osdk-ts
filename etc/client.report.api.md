@@ -12,7 +12,6 @@ import { ActionReturnTypeForOptions } from '@osdk/api';
 import { ActionValidationResponse } from '@osdk/api';
 import { ApplyActionOptions } from '@osdk/api';
 import { ApplyBatchActionOptions } from '@osdk/api';
-import { Attachment } from '@osdk/api';
 import type { AttachmentUpload } from '@osdk/api';
 import type { CompileTimeMetadata } from '@osdk/api';
 import type { DataValueClientToWire } from '@osdk/api';
@@ -24,14 +23,17 @@ import type { InterfaceMetadata } from '@osdk/api';
 import { isOk } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/api/unstable';
 import { ObjectMetadata } from '@osdk/api';
+import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
 import { ObjectSet } from '@osdk/api';
 import type { ObjectSetQueryDataType } from '@osdk/api';
+import { ObjectSpecifier } from '@osdk/api';
 import { ObjectTypeDefinition } from '@osdk/api';
 import { Osdk } from '@osdk/api';
 import { OsdkObject } from '@osdk/api';
 import { PageResult } from '@osdk/api';
 import { PalantirApiError } from '@osdk/shared.net.errors';
+import type { PrimaryKeyType } from '@osdk/api';
 import { PropertyDef } from '@osdk/api';
 import { PropertyKeys } from '@osdk/api';
 import { PropertyValueWireToClient } from '@osdk/api';
@@ -71,8 +73,6 @@ export { ApplyActionOptions }
 
 export { ApplyBatchActionOptions }
 
-export { Attachment }
-
 // Warning: (ae-forgotten-export) The symbol "OldSharedClient" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -90,7 +90,7 @@ export interface Client extends SharedClient, OldSharedClient {
     // (undocumented)
     <Q extends QueryDefinition<any>>(o: Q): QuerySignatureFromDef<Q>;
     	// (undocumented)
-    <Q extends Experiment<"2.0.8"> | Experiment<"2.1.0">>(experiment: Q): ExperimentFns<Q>;
+    <Q extends Experiment<"2.0.8"> | Experiment<"2.1.0"> | Experiment<"2.2.0">>(experiment: Q): ExperimentFns<Q>;
     	// (undocumented)
     fetchMetadata<Q extends (ObjectTypeDefinition | InterfaceDefinition | ActionDefinition<any> | QueryDefinition<any>)>(o: Q): Promise<Q extends ObjectTypeDefinition ? ObjectMetadata : Q extends InterfaceDefinition ? InterfaceMetadata : Q extends ActionDefinition<any> ? ActionMetadata : Q extends QueryDefinition<any> ? QueryMetadata : never>;
 }
@@ -99,7 +99,12 @@ export interface Client extends SharedClient, OldSharedClient {
 export function createAttachmentUpload(data: Blob, name: string): AttachmentUpload;
 
 // @public (undocumented)
-export const createClient: (baseUrl: string, ontologyRid: string | Promise<string>, tokenProvider: () => Promise<string>, options?: { logger?: Logger } | undefined, fetchFn?: typeof fetch | undefined) => Client;
+export const createClient: (baseUrl: string, ontologyRid: string | Promise<string>, tokenProvider: () => Promise<string>, options?: {
+    	logger?: Logger
+} | undefined, fetchFn?: typeof fetch | undefined) => Client;
+
+// @public (undocumented)
+export function createObjectSpecifierFromPrimaryKey<Q extends ObjectOrInterfaceDefinition>(def: Q, primaryKey: PrimaryKeyType<Q>): ObjectSpecifier<Q>;
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
@@ -132,8 +137,8 @@ export { isOk }
 export interface Logger {
     	// (undocumented)
     child(bindings: Record<string, any>, options?: {
-        		level?: string;
-        		msgPrefix?: string;
+        		level?: string
+        		msgPrefix?: string
         	}): Logger;
     	// (undocumented)
     debug: LogFn;
@@ -156,6 +161,8 @@ export interface Logger {
 export { ObjectMetadata }
 
 export { ObjectSet }
+
+export { ObjectSpecifier }
 
 export { ObjectTypeDefinition }
 
@@ -186,12 +193,12 @@ export { Result }
 
 // @public (undocumented)
 export type ResultOrError<T extends object> = ({
-    	type: "ok";
-    	err?: never;
+    	type: "ok"
+    	err?: never
 } & T) | {
-    	type: "err";
-    	data?: never;
-    	err?: unknown;
+    	type: "err"
+    	data?: never
+    	err?: unknown
 };
 
 export { SingleLinkAccessor }

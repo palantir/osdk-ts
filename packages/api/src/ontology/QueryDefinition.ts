@@ -57,7 +57,8 @@ export type QueryDataTypeDefinition<
   | UnionQueryDataType
   | StructQueryDataType
   | TwoDimensionalAggregationDataType
-  | ThreeDimensionalAggregationDataType;
+  | ThreeDimensionalAggregationDataType
+  | MapDataType;
 
 export type BaseQueryDataTypeDefinition<T extends string> = {
   multiplicity?: boolean;
@@ -122,25 +123,46 @@ export interface ThreeDimensionalAggregationDataType
   threeDimensionalAggregation: ThreeDimensionalQueryAggregationDefinition;
 }
 
+export interface MapDataType extends BaseQueryDataTypeDefinition<"map"> {
+  keyType: QueryDataTypeDefinition;
+  valueType: QueryDataTypeDefinition;
+}
+
 export type AggregationKeyDataType<V = any> =
   | SimpleAggregationKeyDataType<V>
   | RangeAggregationKeyDataType<V>;
 
 export interface SimpleAggregationKeyDataType<V = any> {
-  keyType: "boolean" | "string";
+  keyType: Exclude<AggregationKeyTypes, "range">;
   valueType: V;
 }
-
 export interface RangeAggregationKeyDataType<V = any> {
   keyType: "range";
-  keySubtype: "date" | "double" | "integer" | "timestamp";
+  keySubtype: AggregationRangeKeyTypes;
   valueType: V;
 }
 
 export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<
-  "date" | "double" | "timestamp"
+  AggregationValueTypes
 >;
 
 export type ThreeDimensionalQueryAggregationDefinition = AggregationKeyDataType<
   TwoDimensionalQueryAggregationDefinition
 >;
+
+export type AggregationKeyTypes =
+  | "boolean"
+  | "string"
+  | "date"
+  | "double"
+  | "integer"
+  | "timestamp"
+  | "range";
+
+export type AggregationRangeKeyTypes =
+  | "date"
+  | "double"
+  | "integer"
+  | "timestamp";
+
+export type AggregationValueTypes = "date" | "double" | "timestamp";

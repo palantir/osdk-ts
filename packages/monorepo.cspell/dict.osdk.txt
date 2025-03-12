@@ -4,6 +4,10 @@ Nativewind
 osdk
 palantirfoundry
 paperplane
+Pivotable
 Pressable
 Tamagui
 unistyles
+siteasset
+widgetset
+widgetregistry

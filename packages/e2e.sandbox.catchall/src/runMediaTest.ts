@@ -40,9 +40,21 @@ export async function runMediaTest(): Promise<void> {
         )
           .createMediaReference({
             data: await response.blob(),
-            fileName: "test13.png",
-            objectTypeApi: MnayanOsdkMediaObject.apiName,
-            propertyTypeApi: "mediaReference",
+            fileName: "test15.png",
+            objectType: MnayanOsdkMediaObject,
+            propertyType: "mediaReference",
+          });
+
+        // Won't allow property keys not of media ref type
+        const mediaRefShouldNotWork = await client(
+          __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
+        )
+          .createMediaReference({
+            data: await response.blob(),
+            fileName: "test15.png",
+            objectType: MnayanOsdkMediaObject,
+            // @ts-expect-error
+            propertyType: "path",
           });
 
         console.log("Media Reference:", mediaRef);
@@ -66,3 +78,5 @@ export async function runMediaTest(): Promise<void> {
 
   console.log(mediaMetadata);
 }
+
+void runMediaTest();

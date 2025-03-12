@@ -102,3 +102,5 @@ export async function runInterfacesTest(): Promise<void> {
     createdInterface: "testObject",
   });
 }
+
+void runInterfacesTest();

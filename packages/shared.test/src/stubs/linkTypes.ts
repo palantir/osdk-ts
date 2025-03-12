@@ -17,7 +17,7 @@
 import type {
   LinkTypeSideV2,
   ListOutgoingLinkTypesResponseV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
 
 export const peepsLinkType: LinkTypeSideV2 = {

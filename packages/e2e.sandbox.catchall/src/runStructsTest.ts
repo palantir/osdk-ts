@@ -59,3 +59,5 @@ export async function runStructsTest(): Promise<void> {
 //     age: 29,
 //   });
 // }
+
+void runStructsTest();

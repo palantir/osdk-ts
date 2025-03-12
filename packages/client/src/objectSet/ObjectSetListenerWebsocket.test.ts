@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectOrInterfaceDefinition,
-  ObjectSetListener,
-  PropertyKeys,
-} from "@osdk/api";
+import type { ObjectSetSubscription, PropertyKeys } from "@osdk/api";
 import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import type {
   ObjectSetStreamSubscribeRequests,
   ObjectUpdate,
   StreamMessage,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import { apiServer } from "@osdk/shared.test";
 import ImportedWebSocket from "isomorphic-ws";
 import { http, HttpResponse } from "msw";
@@ -116,7 +112,7 @@ describe("ObjectSetListenerWebsocket", async () => {
     let client: ObjectSetListenerWebsocket;
     let listener: MockedObject<
       Required<
-        ObjectSetListener<ObjectOrInterfaceDefinition, PropertyKeys<any>>
+        ObjectSetSubscription.Listener<Employee, any>
       >
     >;
     let oslwInst = 0;
@@ -297,6 +293,7 @@ describe("ObjectSetListenerWebsocket", async () => {
             {
               "object": {
                 "$apiName": "Employee",
+                "$objectSpecifier": "Employee:undefined",
                 "$objectType": "Employee",
                 "$primaryKey": undefined,
                 "$title": undefined,
@@ -317,6 +314,7 @@ describe("ObjectSetListenerWebsocket", async () => {
             {
               "object": {
                 "$apiName": "Employee",
+                "$objectSpecifier": "Employee:12345",
                 "$objectType": "Employee",
                 "$primaryKey": "12345",
                 "$title": undefined,
@@ -434,7 +432,7 @@ interface MockedWebSocket
 
 type MockedListener = MockedObject<
   Required<
-    ObjectSetListener<ObjectOrInterfaceDefinition, PropertyKeys<any>>
+    ObjectSetSubscription.Listener<Employee, PropertyKeys<Employee>>
   >
 >;
 

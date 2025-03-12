@@ -21,7 +21,6 @@ import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { defineInterface } from "../api/defineInterface.js";
-import { defineLink } from "../api/defineLink.js";
 import { defineObject } from "../api/defineObject.js";
 import { defineOntology } from "../api/defineOntology.js";
 import { defineSharedPropertyType } from "../api/defineSpt.js";
@@ -108,27 +107,9 @@ export default async function main(
   }
 }
 
-async function loadOntologyViaJiti(input: string) {
-  Object.assign(globalThis, {
-    defineInterface,
-    defineLink,
-    defineObject,
-    defineSharedPropertyType,
-  });
-
-  const jiti_ = await import("jiti");
-  const jiti = (jiti_.default as any as typeof jiti_["default"]["default"])(
-    process.cwd(),
-    { debug: true },
-  );
-
-  return defineOntology("", async () => await jiti(input));
-}
-
 async function loadOntologyViaTsNode(input: string) {
   Object.assign(globalThis, {
     defineInterface,
-    defineLink,
     defineObject,
     defineSharedPropertyType,
   });

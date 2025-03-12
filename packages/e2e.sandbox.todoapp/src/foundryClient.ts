@@ -1,7 +1,8 @@
+import type { Logger } from "@osdk/client";
 import { createClient } from "@osdk/client";
 import { createPublicOauthClient } from "@osdk/oauth";
 import invariant from "tiny-invariant";
-import { $ontologyRid } from "./generatedNoCheck2";
+import { $ontologyRid } from "./generatedNoCheck2/index.js";
 
 invariant(
   import.meta.env.VITE_FOUNDRY_CLIENT_ID,
@@ -17,8 +18,68 @@ const auth = createPublicOauthClient(
   { useHistory: true },
 );
 
+export interface LogFn {
+  (obj: unknown, msg?: string, ...args: any[]): void;
+  (msg: string, ...args: any[]): void;
+}
+
+export function createLogger(
+  bindings: Record<string, any>,
+  options?: { level?: string; msgPrefix?: string },
+): Logger {
+  function createLogMethod(
+    name: "debug" | "error" | "info" | "warn" | "fatal" | "trace",
+  ): LogFn {
+    return ((
+      ...args: [
+        obj: unknown,
+        ...args1: any[],
+      ] | [
+        ...args2: any[],
+      ]
+    ) => {
+      const hasData = typeof args[0] !== "string";
+      const obj: Record<string, unknown> = hasData ? args[0] as any : {};
+      const more: any[] = hasData ? args.slice(1) : args.slice(0);
+
+      console[name === "fatal" ? "error" : name === "trace" ? "debug" : name](
+        `${name}${options?.msgPrefix ? " " + options.msgPrefix : ""}${
+          obj.methodName ? ` .${(obj.methodName as string)}()` : ""
+        }`,
+        ...more,
+      );
+
+      if (bindings && Object.keys(bindings).length > 0) {
+        console.log(bindings);
+      }
+    });
+  }
+  return {
+    debug: createLogMethod("debug"),
+    error: createLogMethod("error"),
+    info: createLogMethod("info"),
+    warn: createLogMethod("warn"),
+    fatal: createLogMethod("fatal"),
+    child: (theseBindings, theseOptions) =>
+      createLogger({
+        ...bindings,
+        ...theseBindings,
+      }, {
+        level: (theseOptions ?? options)?.level,
+        msgPrefix: options?.msgPrefix || theseOptions?.msgPrefix
+          ? `${options?.msgPrefix ? `${options.msgPrefix} ` : ""}${
+            theseOptions?.msgPrefix || ""
+          }`
+          : undefined,
+      }),
+    trace: createLogMethod("trace"),
+    isLevelEnabled: ((level) => !!level), // always true, no error from tsc
+  };
+}
+
 export const $ = createClient(
   "http://localhost:8080",
   $ontologyRid,
   auth,
+  { logger: createLogger({}) },
 );

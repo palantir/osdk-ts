@@ -1,5 +1,11 @@
 # @osdk/foundry-config-json
 
+## 1.0.0-beta.4
+
+### Minor Changes
+
+- 8766327: CLI unstable widgetset commands
+
 ## 1.0.0-beta.3
 
 ### Major Changes

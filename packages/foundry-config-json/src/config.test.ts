@@ -114,7 +114,7 @@ describe("loadFoundryConfig - site", () => {
     );
 
     await expect(loadFoundryConfig("site")).rejects.toThrow(
-      "The configuration file does not match",
+      "The configuration file /path/foundry.config.json does not match",
     );
   });
 
@@ -133,7 +133,7 @@ describe("loadFoundryConfig - site", () => {
     );
 
     await expect(loadFoundryConfig("site")).rejects.toThrow(
-      "The configuration file does not match the expected schema: data/site/autoVersion must match exactly one schema in oneOf",
+      "The configuration file /path/foundry.config.json does not match the expected schema: data/site/autoVersion must match exactly one schema in oneOf",
     );
   });
 
@@ -152,7 +152,7 @@ describe("loadFoundryConfig - site", () => {
     );
 
     await expect(loadFoundryConfig("site")).rejects.toThrow(
-      "The configuration file does not match the expected schema: data/site/uploadOnly must be boolean",
+      "The configuration file /path/foundry.config.json does not match the expected schema: data/site/uploadOnly must be boolean",
     );
   });
 
@@ -174,7 +174,7 @@ describe("loadFoundryConfig - site", () => {
     );
 
     await expect(loadFoundryConfig("site")).rejects.toThrow(
-      "The configuration file does not match",
+      "The configuration file /path/foundry.config.json does not match",
     );
   });
 
@@ -191,7 +191,7 @@ describe("loadFoundryConfig - site", () => {
     );
 
     await expect(loadFoundryConfig("site")).rejects.toThrow(
-      "The configuration file does not match",
+      "The configuration file /path/foundry.config.json does not match",
     );
   });
 
@@ -209,7 +209,7 @@ describe("loadFoundryConfig - site", () => {
     );
 
     await expect(loadFoundryConfig("site")).rejects.toThrow(
-      "The configuration file does not match",
+      "The configuration file /path/foundry.config.json does not match",
     );
   });
 
@@ -238,6 +238,7 @@ describe("loadFoundryConfig - widget set", () => {
       widgetSet: {
         rid: "test-rid",
         directory: "/test/directory",
+        repository: "test-repository-rid",
         autoVersion: {
           type: "git-describe",
         },

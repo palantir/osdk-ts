@@ -25,13 +25,14 @@ import type {
   InterfaceToObjectTypeMappings,
   InterfaceTypeApiName,
   OntologyObjectV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
   type FetchedObjectTypeDefinition,
 } from "../ontology/OntologyProvider.js";
 import { createOsdkObject } from "./convertWireToOsdkObjects/createOsdkObject.js";
+import { createObjectSpecifierFromPrimaryKey } from "./createObjectSpecifierFromPrimaryKey.js";
 
 /**
  * If interfaceApiName is not undefined, converts the instances of the
@@ -194,14 +195,16 @@ export async function convertWireToOsdkObjects2(
 }
 
 /**
+ * @internal
+ *
  * Utility function that lets us take down selected property names from an interface
  * and convert them to an array of property names on an object.
  */
-function convertInterfacePropNamesToObjectPropNames(
-  objectDef: FetchedObjectTypeDefinition & { interfaceMap: {} },
+export function convertInterfacePropNamesToObjectPropNames(
+  objectDef: FetchedObjectTypeDefinition,
   interfaceApiName: string,
   ifacePropsToMap: readonly string[],
-) {
+): string[] {
   return ifacePropsToMap.map((ifaceProp) =>
     objectDef.interfaceMap[interfaceApiName][ifaceProp]
   );
@@ -216,7 +219,7 @@ function convertInterfacePropNamesToObjectPropNames(
  * @param rawObj
  */
 function reframeAsObjectInPlace(
-  objectDef: FetchedObjectTypeDefinition & { interfaceMap: {} },
+  objectDef: FetchedObjectTypeDefinition,
   interfaceApiName: string,
   rawObj: OntologyObjectV2,
 ) {
@@ -250,7 +253,10 @@ function isConforming(
   propsToCheck: readonly string[],
 ) {
   for (const propName of propsToCheck) {
-    if (def.properties[propName].nullable === false && obj[propName] == null) {
+    if (
+      propName in def.properties && def.properties[propName].nullable === false
+      && obj[propName] == null
+    ) {
       if (process.env.NODE_ENV !== "production") {
         client.logger?.debug(
           {
@@ -310,6 +316,11 @@ function fixObjectPropertiesInPlace(
     // copying over for now as its always returned. In the future, this should just be inferred from underlying
     obj.$primaryKey ??= obj.__primaryKey;
     obj.$title ??= obj.__title;
+
+    obj.$objectSpecifier = createObjectSpecifierFromPrimaryKey(
+      { apiName: obj.$apiName, type: "object" },
+      obj.$primaryKey,
+    );
 
     // we don't want people to use these
     delete obj.__apiName;

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ActionTypeV2 } from "@osdk/internal.foundry.core";
-import { FooInterface } from "./interfaces.js";
+import type { ActionTypeV2 } from "@osdk/foundry.ontologies";
+import { BarInterface, FooInterface } from "./interfaces.js";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
 
 export const PromoteEmployee: ActionTypeV2 = {
@@ -321,6 +321,28 @@ export const ActionTakesInterface: ActionTypeV2 = {
   ],
 };
 
+export const ActionTakesAnotherInterface: ActionTypeV2 = {
+  apiName: "delete-bar-interface",
+  displayName: "Delete Bar Interface",
+  status: "EXPERIMENTAL",
+  parameters: {
+    deletedInterface: {
+      dataType: {
+        type: "interfaceObject",
+        interfaceTypeApiName: BarInterface.apiName,
+      },
+      required: true,
+    },
+  },
+  rid: "ri.actions.main.action-type.3828bab4-4ac7-4fdf-a780-6ccbc359d817",
+  operations: [
+    {
+      type: "deleteInterfaceObject",
+      interfaceTypeApiName: BarInterface.apiName,
+    },
+  ],
+};
+
 export const ActionCreatesInterface: ActionTypeV2 = {
   apiName: "create-foo-interface",
   displayName: "Create Foo Interface",
@@ -397,6 +419,7 @@ export const actionTypes: ActionTypeV2[] = [
   ActionTakesAttachment,
   ActionTakesMedia,
   ActionTakesInterface,
+  ActionTakesAnotherInterface,
   ActionTakesStruct,
   ActionCreatesInterface,
 ];

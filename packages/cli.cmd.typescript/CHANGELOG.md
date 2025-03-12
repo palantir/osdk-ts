@@ -1,5 +1,124 @@
 # @osdk/cli.cmd.typescript
 
+## 0.26.0-beta.8
+
+### Minor Changes
+
+- 63b2e63: Update Platform SDK Dependencies
+
+### Patch Changes
+
+- Updated dependencies [63b2e63]
+- Updated dependencies [63b2e63]
+  - @osdk/generator@2.2.0-beta.8
+  - @osdk/shared.client.impl@1.2.0-beta.2
+  - @osdk/cli.common@0.26.0-beta.8
+
+## 0.26.0-beta.7
+
+### Minor Changes
+
+- 21e33a5: Upgrade consola to 3.4.0
+- 7416ce4: Update Platform SDK Dependencies
+
+### Patch Changes
+
+- Updated dependencies [21e33a5]
+- Updated dependencies [7416ce4]
+- Updated dependencies [805df40]
+  - @osdk/cli.common@0.26.0-beta.7
+  - @osdk/generator@2.2.0-beta.7
+
+## 0.26.0-beta.6
+
+### Minor Changes
+
+- b68adea: Add support for inherited interfaces.
+
+### Patch Changes
+
+- Updated dependencies [b68adea]
+  - @osdk/generator@2.2.0-beta.6
+  - @osdk/cli.common@0.26.0-beta.6
+
+## 0.26.0-beta.5
+
+### Patch Changes
+
+- @osdk/generator@2.2.0-beta.5
+- @osdk/cli.common@0.26.0-beta.5
+
+## 0.26.0-beta.4
+
+### Patch Changes
+
+- @osdk/generator@2.2.0-beta.4
+- @osdk/cli.common@0.26.0-beta.4
+
+## 0.26.0-beta.3
+
+### Patch Changes
+
+- @osdk/generator@2.2.0-beta.3
+- @osdk/cli.common@0.26.0-beta.3
+
+## 0.26.0-beta.2
+
+### Patch Changes
+
+- @osdk/generator@2.2.0-beta.2
+- @osdk/cli.common@0.26.0-beta.2
+
+## 0.25.0-beta.31
+
+### Minor Changes
+
+- bb8b219: Use new external packages instead of the internal ones.
+
+### Patch Changes
+
+- Updated dependencies [bb8b219]
+- Updated dependencies [ecd4aee]
+- Updated dependencies [ee6224b]
+  - @osdk/generator@2.1.0-beta.31
+  - @osdk/cli.common@0.25.0-beta.31
+
+## 0.25.0-beta.30
+
+### Patch Changes
+
+- @osdk/generator@2.1.0-beta.30
+- @osdk/cli.common@0.25.0-beta.30
+
+## 0.25.0-beta.29
+
+### Patch Changes
+
+- @osdk/generator@2.1.0-beta.29
+- @osdk/cli.common@0.25.0-beta.29
+
+## 0.25.0-beta.28
+
+### Patch Changes
+
+- @osdk/generator@2.1.0-beta.28
+- @osdk/cli.common@0.25.0-beta.28
+
+## 0.25.0-beta.27
+
+### Patch Changes
+
+- @osdk/generator@2.1.0-beta.27
+- @osdk/cli.common@0.25.0-beta.27
+
+## 0.25.0-beta.26
+
+### Patch Changes
+
+- Updated dependencies [44e62f6]
+  - @osdk/generator@2.1.0-beta.26
+  - @osdk/cli.common@0.25.0-beta.26
+
 ## 0.25.0-beta.25
 
 ### Patch Changes

@@ -1,5 +1,114 @@
 # @osdk/benchmarks.primary
 
+## 0.1.0-beta.21
+
+### Patch Changes
+
+- Updated dependencies [1ba3871]
+- Updated dependencies [63b2e63]
+- Updated dependencies [26c2d95]
+- Updated dependencies [63b2e63]
+- Updated dependencies [63b2e63]
+  - @osdk/client@2.2.0-beta.8
+
+## 0.1.0-beta.20
+
+### Patch Changes
+
+- Updated dependencies [7416ce4]
+- Updated dependencies [7416ce4]
+- Updated dependencies [879b6c3]
+- Updated dependencies [805df40]
+  - @osdk/client@2.2.0-beta.7
+
+## 0.1.0-beta.19
+
+### Patch Changes
+
+- Updated dependencies [cddfbf9]
+- Updated dependencies [ea4e4b1]
+  - @osdk/client@2.2.0-beta.6
+
+## 0.1.0-beta.18
+
+### Patch Changes
+
+- Updated dependencies [62e5965]
+- Updated dependencies [2f6206c]
+  - @osdk/client@2.2.0-beta.5
+
+## 0.1.0-beta.17
+
+### Patch Changes
+
+- Updated dependencies [fe0cc43]
+  - @osdk/client@2.2.0-beta.4
+
+## 0.1.0-beta.16
+
+### Patch Changes
+
+- Updated dependencies [761e69d]
+  - @osdk/client@2.2.0-beta.3
+
+## 0.1.0-beta.15
+
+### Patch Changes
+
+- Updated dependencies [fccd9ac]
+  - @osdk/client@2.2.0-beta.2
+
+## 0.1.0-beta.14
+
+### Patch Changes
+
+- Updated dependencies [bb8b219]
+- Updated dependencies [ee6224b]
+  - @osdk/client@2.1.0-beta.31
+
+## 0.1.0-beta.13
+
+### Patch Changes
+
+- Updated dependencies [966d408]
+- Updated dependencies [f03e39f]
+- Updated dependencies [0d8ac3b]
+- Updated dependencies [2d5e648]
+  - @osdk/client@2.1.0-beta.30
+
+## 0.1.0-beta.12
+
+### Patch Changes
+
+- Updated dependencies [f1145ff]
+- Updated dependencies [8026baf]
+  - @osdk/client@2.1.0-beta.29
+
+## 0.1.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [f446d0c]
+  - @osdk/client@2.1.0-beta.28
+
+## 0.1.0-beta.10
+
+### Patch Changes
+
+- @osdk/client@2.1.0-beta.27
+
+## 0.1.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [7865cb6]
+- Updated dependencies [e6fbd94]
+- Updated dependencies [9c4efe6]
+- Updated dependencies [44e62f6]
+- Updated dependencies [94463b6]
+- Updated dependencies [f19da8e]
+  - @osdk/client@2.1.0-beta.26
+
 ## 0.1.0-beta.8
 
 ### Patch Changes

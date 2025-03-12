@@ -31,8 +31,7 @@ export function generateFoundryConfigJson({
           rid: widgetSet,
           directory,
           autoVersion: {
-            type: "git-describe",
-            tagPrefix: "",
+            type: "package-json",
           },
         },
       },

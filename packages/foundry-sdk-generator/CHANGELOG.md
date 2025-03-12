@@ -1,5 +1,172 @@
 # @osdk/foundry-sdk-generator
 
+## 2.2.0-beta.8
+
+### Minor Changes
+
+- 63b2e63: Update Platform SDK Dependencies
+
+### Patch Changes
+
+- Updated dependencies [1ba3871]
+- Updated dependencies [0e874b1]
+- Updated dependencies [63b2e63]
+- Updated dependencies [26c2d95]
+- Updated dependencies [63b2e63]
+- Updated dependencies [63b2e63]
+  - @osdk/client@2.2.0-beta.8
+  - @osdk/api@2.2.0-beta.8
+  - @osdk/generator@2.2.0-beta.8
+  - @osdk/shared.client.impl@1.2.0-beta.2
+
+## 2.2.0-beta.7
+
+### Minor Changes
+
+- 21e33a5: Upgrade consola to 3.4.0
+- 7416ce4: Update Platform SDK Dependencies
+- 5774599: Fix resolution of new action parameter type.
+
+### Patch Changes
+
+- Updated dependencies [7416ce4]
+- Updated dependencies [21e33a5]
+- Updated dependencies [7416ce4]
+- Updated dependencies [879b6c3]
+- Updated dependencies [805df40]
+  - @osdk/client@2.2.0-beta.7
+  - @osdk/api@2.2.0-beta.7
+  - @osdk/generator@2.2.0-beta.7
+
+## 2.2.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [b68adea]
+- Updated dependencies [cddfbf9]
+- Updated dependencies [a6e5f89]
+- Updated dependencies [ea4e4b1]
+  - @osdk/generator@2.2.0-beta.6
+  - @osdk/client@2.2.0-beta.6
+  - @osdk/api@2.2.0-beta.6
+
+## 2.2.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [62e5965]
+- Updated dependencies [2f6206c]
+  - @osdk/client@2.2.0-beta.5
+  - @osdk/api@2.2.0-beta.5
+  - @osdk/generator@2.2.0-beta.5
+
+## 2.2.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [fe0cc43]
+  - @osdk/client@2.2.0-beta.4
+  - @osdk/api@2.2.0-beta.4
+  - @osdk/generator@2.2.0-beta.4
+
+## 2.2.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [761e69d]
+  - @osdk/client@2.2.0-beta.3
+  - @osdk/api@2.2.0-beta.3
+  - @osdk/generator@2.2.0-beta.3
+
+## 2.2.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [fccd9ac]
+  - @osdk/client@2.2.0-beta.2
+  - @osdk/api@2.2.0-beta.2
+  - @osdk/generator@2.2.0-beta.2
+
+## 2.1.0-beta.31
+
+### Minor Changes
+
+- bb8b219: Use new external packages instead of the internal ones.
+
+### Patch Changes
+
+- Updated dependencies [bb8b219]
+- Updated dependencies [ecd4aee]
+- Updated dependencies [ee6224b]
+- Updated dependencies [5fe2c8d]
+  - @osdk/generator@2.1.0-beta.31
+  - @osdk/client@2.1.0-beta.31
+  - @osdk/api@2.1.0-beta.31
+
+## 2.1.0-beta.30
+
+### Patch Changes
+
+- Updated dependencies [966d408]
+- Updated dependencies [f03e39f]
+- Updated dependencies [1591f04]
+- Updated dependencies [785f663]
+- Updated dependencies [0d8ac3b]
+- Updated dependencies [2d5e648]
+  - @osdk/client@2.1.0-beta.30
+  - @osdk/api@2.1.0-beta.30
+  - @osdk/generator@2.1.0-beta.30
+
+## 2.1.0-beta.29
+
+### Patch Changes
+
+- Updated dependencies [f1145ff]
+- Updated dependencies [8026baf]
+  - @osdk/client@2.1.0-beta.29
+  - @osdk/api@2.1.0-beta.29
+  - @osdk/generator@2.1.0-beta.29
+
+## 2.1.0-beta.28
+
+### Patch Changes
+
+- Updated dependencies [f446d0c]
+  - @osdk/client@2.1.0-beta.28
+  - @osdk/api@2.1.0-beta.28
+  - @osdk/generator@2.1.0-beta.28
+
+## 2.1.0-beta.27
+
+### Minor Changes
+
+- c70821e: Fix generation of actions with new parameter types.
+
+### Patch Changes
+
+- @osdk/api@2.1.0-beta.27
+- @osdk/client@2.1.0-beta.27
+- @osdk/generator@2.1.0-beta.27
+
+## 2.1.0-beta.26
+
+### Minor Changes
+
+- 44e62f6: Updating fetch for auth and other packages.
+- 908c8f6: We now generate osdk libs that support commonjs
+
+### Patch Changes
+
+- Updated dependencies [7865cb6]
+- Updated dependencies [e6fbd94]
+- Updated dependencies [9c4efe6]
+- Updated dependencies [44e62f6]
+- Updated dependencies [94463b6]
+- Updated dependencies [f19da8e]
+  - @osdk/client@2.1.0-beta.26
+  - @osdk/api@2.1.0-beta.26
+  - @osdk/generator@2.1.0-beta.26
+
 ## 2.1.0-beta.25
 
 ### Patch Changes

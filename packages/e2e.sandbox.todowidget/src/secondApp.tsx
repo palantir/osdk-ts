@@ -1,4 +1,4 @@
-import { useFoundryWidgetContext } from "@osdk/widget-client-react.unstable";
+import { useFoundryWidgetContext } from "@osdk/widget.client-react.unstable";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import {
   Box,

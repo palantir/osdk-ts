@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet } from "@osdk/api";
+import type { ObjectSet, ObjectSpecifier } from "@osdk/api";
 import {
   $ontologyRid,
   $Queries,
@@ -26,6 +26,7 @@ import {
   incrementPersonAgeComplex,
   queryAcceptsObject,
   queryAcceptsObjectSets,
+  queryTypeReturnsMap,
   returnsDate,
   returnsTimestamp,
   threeDimensionalAggregationFunction,
@@ -75,6 +76,7 @@ describe("queries", () => {
       $apiName: "Employee",
       $objectType: "Employee",
       $primaryKey: 50031,
+      $objectSpecifier: "Employee:50031",
     });
 
     // Should also accept primary keys
@@ -85,6 +87,7 @@ describe("queries", () => {
       $apiName: "Employee",
       $objectType: "Employee",
       $primaryKey: 50031,
+      $objectSpecifier: "Employee:50031",
     });
   });
 
@@ -132,6 +135,7 @@ describe("queries", () => {
         $apiName: "Employee",
         $objectType: "Employee",
         $primaryKey: 50031,
+        $objectSpecifier: "Employee:50031",
       },
     });
   });
@@ -139,6 +143,9 @@ describe("queries", () => {
   it("two dimensional aggregation response works", async () => {
     const result = await client(twoDimensionalAggregationFunction)
       .executeFunction();
+    expectTypeOf<typeof result>().toEqualTypeOf<
+      { key: string; value: number }[]
+    >;
     expect(result).toEqual([{ key: "Q-AFN", value: 1 }, {
       key: "Q-AFO",
       value: 2,
@@ -146,6 +153,15 @@ describe("queries", () => {
   });
 
   it("two dimensional aggregation request/response works", async () => {
+    const clientBoundQueryFunction =
+      client(acceptsTwoDimensionalAggregationFunction).executeFunction;
+    type InferredParamType = Parameters<
+      typeof clientBoundQueryFunction
+    >[0];
+
+    expectTypeOf<{ aggFunction: { key: string; value: number }[] }>()
+      .toMatchTypeOf<InferredParamType>();
+
     const result = await client(acceptsTwoDimensionalAggregationFunction)
       .executeFunction({
         aggFunction: [
@@ -159,6 +175,10 @@ describe("queries", () => {
           },
         ],
       });
+    expectTypeOf<typeof result>().toEqualTypeOf<
+      { key: string; value: number }[]
+    >;
+
     expect(result).toEqual([{ key: "responseKey1", value: 3 }, {
       key: "responseKey2",
       value: 4,
@@ -168,6 +188,16 @@ describe("queries", () => {
   it("three dimensional aggregation response works", async () => {
     const result = await client(threeDimensionalAggregationFunction)
       .executeFunction();
+
+    expectTypeOf<typeof result>().toEqualTypeOf<
+      {
+        key: string;
+        groups: {
+          key: { startValue: string | undefined; endValue: string | undefined };
+          value: number;
+        }[];
+      }[]
+    >;
     expect(result).toEqual([{
       key: "Q-AFN",
       groups: [{
@@ -192,6 +222,23 @@ describe("queries", () => {
   });
 
   it("three dimensional aggregation request/response works", async () => {
+    const clientBoundQueryFunction =
+      client(acceptsThreeDimensionalAggregationFunction).executeFunction;
+    type InferredParamType = Parameters<
+      typeof clientBoundQueryFunction
+    >[0];
+
+    expectTypeOf<{
+      aggFunction: {
+        key: string;
+        groups: {
+          key: { startValue: string | undefined; endValue: string };
+          value: number;
+        }[];
+      }[];
+    }>()
+      .toMatchTypeOf<InferredParamType>();
+
     const result = await client(acceptsThreeDimensionalAggregationFunction)
       .executeFunction({
         aggFunction: [
@@ -213,6 +260,7 @@ describe("queries", () => {
           },
         ],
       });
+
     expect(result).toEqual([
       {
         key: "Q-AFN",
@@ -231,6 +279,42 @@ describe("queries", () => {
         groups: [],
       },
     ]);
+  });
+
+  it("map type request and response works", async () => {
+    const clientBoundQueryFunction =
+      client(queryTypeReturnsMap).executeFunction;
+    type InferredParamType = Parameters<
+      typeof clientBoundQueryFunction
+    >[0];
+
+    expectTypeOf<InferredParamType>()
+      .toMatchTypeOf<
+        { peopleMap: Record<ObjectSpecifier<Employee>, string> }
+      >();
+
+    const myMap: Record<ObjectSpecifier<Employee>, string> = {
+      ["Employee:person1" as any]: "hi",
+    };
+    const result = await client(queryTypeReturnsMap).executeFunction({
+      peopleMap: myMap,
+    });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "Employee:50030": "bye",
+      }
+    `);
+
+    expectTypeOf<typeof result>().toMatchTypeOf<
+      Record<ObjectSpecifier<Employee>, number>
+    >();
+
+    const object = await client(Employee).fetchOne(50030);
+
+    const value = result[object.$objectSpecifier];
+
+    expect(value).toBe("bye");
   });
 
   it("accepts and returns objects", async () => {
@@ -252,6 +336,7 @@ describe("queries", () => {
       "queryAcceptsObject",
       "queryAcceptsObjectSets",
       "queryTypeReturnsArray",
+      "queryTypeReturnsMap",
       "returnsDate",
       "returnsObject",
       "returnsTimestamp",

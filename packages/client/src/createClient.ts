@@ -16,12 +16,12 @@
 
 import type {
   ActionDefinition,
+  FetchPageArgs,
+  FilteredPropertyKeys,
   InterfaceDefinition,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet,
-  ObjectSetListener,
-  ObjectSetListenerOptions,
   ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
@@ -36,11 +36,11 @@ import type {
 import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
-  __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe,
 } from "@osdk/api/unstable";
-import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
-import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
+import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
+import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.client";
 import { createBulkLinksAsyncIterFactory } from "./__unstable/createBulkLinksAsyncIterFactory.js";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
@@ -50,13 +50,10 @@ import { createMinimalClient } from "./createMinimalClient.js";
 import { fetchMetadataInternal } from "./fetchMetadata.js";
 import type { Logger } from "./Logger.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
+import { fetchPage } from "./object/fetchPage.js";
 import { fetchSingle } from "./object/fetchSingle.js";
-import {
-  createObjectSet,
-  getWireObjectSet,
-} from "./objectSet/createObjectSet.js";
+import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
-import { ObjectSetListenerWebsocket } from "./objectSet/ObjectSetListenerWebsocket.js";
 import { applyQuery } from "./queries/applyQuery.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 
@@ -172,28 +169,6 @@ export function createClientInternal(
               clientCtx,
             ),
           } as any;
-        case __EXPERIMENTAL__NOT_SUPPORTED_YET_subscribe.name:
-          return {
-            subscribe: <
-              Q extends ObjectOrInterfaceDefinition,
-              const P extends PropertyKeys<Q>,
-            >(
-              objectSet: ObjectSet<Q>,
-              listener: ObjectSetListener<Q, P>,
-              opts?: ObjectSetListenerOptions<Q, P>,
-            ) => {
-              const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
-                clientCtx,
-              ).subscribe(
-                objectSet.$objectSetInternals?.def!,
-                getWireObjectSet(objectSet),
-                listener,
-                opts?.properties,
-              );
-
-              return { unsubscribe: async () => (await pendingSubscribe)() };
-            },
-          } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid.name:
           return {
             fetchOneByRid: async <
@@ -211,30 +186,54 @@ export function createClientInternal(
                 objectType,
                 options,
                 createWithRid(
-                  rid,
+                  [rid],
                 ),
               ) as Osdk<Q>;
             },
           } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference.name:
           return {
-            createMediaReference: async (args: {
+            createMediaReference: async <
+              Q extends ObjectTypeDefinition,
+              const L extends FilteredPropertyKeys<Q, "mediaReference">,
+            >(args: {
               data: Blob;
               fileName: string;
-              objectTypeApi: string;
-              propertyTypeApi: string;
+              objectType: Q;
+              propertyType: L;
             }) => {
-              const { data, fileName, objectTypeApi, propertyTypeApi } = args;
+              const { data, fileName, objectType, propertyType } = args;
               return await OntologiesV2.MediaReferenceProperties.upload(
                 clientCtx,
                 await clientCtx.ontologyRid,
-                objectTypeApi,
-                propertyTypeApi,
+                objectType.apiName,
+                propertyType as string,
                 data,
                 {
                   mediaItemPath: fileName,
                   preview: true,
                 },
+              );
+            },
+          } as any;
+
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid.name:
+          return {
+            fetchPageByRid: async <
+              Q extends ObjectOrInterfaceDefinition,
+              const L extends PropertyKeys<Q>,
+              const R extends boolean,
+              const S extends false | "throw" = NullabilityAdherence.Default,
+            >(
+              objectOrInterfaceType: Q,
+              rids: string[],
+              options: FetchPageArgs<Q, L, R, any, S> = {},
+            ) => {
+              return await fetchPage(
+                clientCtx,
+                objectOrInterfaceType,
+                options,
+                createWithRid(rids),
               );
             },
           } as any;
@@ -288,11 +287,11 @@ export const createClient: (
 );
 
 function createWithRid(
-  rid: string,
+  rids: string[],
 ) {
   const withRid: WireObjectSet = {
     type: "static",
-    "objects": [rid],
+    "objects": rids,
   };
 
   return withRid;

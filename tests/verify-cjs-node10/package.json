@@ -9,11 +9,13 @@
   },
   "scripts": {
     "codegen": "generate-with-mock-ontology",
-    "typecheck": "tsc --noEmit"
+    "test": "node ./lib/test.js",
+    "typecheck": "tsc"
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
+    "@osdk/oauth": "workspace:~",
     "@test-app2/osdk": "link:./osdk/@test-app2/osdk"
   },
   "devDependencies": {

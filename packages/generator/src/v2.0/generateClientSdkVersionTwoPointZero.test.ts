@@ -18,7 +18,7 @@ import type {
   ActionParameterType,
   ObjectPropertyType,
   QueryDataType,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import { consola } from "consola";
 import { mkdir, readdir, rmdir, writeFile } from "fs/promises";
 import * as immer from "immer";
@@ -154,11 +154,11 @@ function changeNames(ontology: WireOntologyDefinition, newNames: {
       newNames.interfaces,
       (ifaceType, oldIfaceName, newIfaceName) => {
         changeValue(ifaceType, "apiName", oldIfaceName, newIfaceName);
-        ifaceType.extendsInterfaces = ifaceType.extendsInterfaces.map(
+        ifaceType.extendsInterfaces = ifaceType.allExtendsInterfaces.map(
           v => v === oldIfaceName ? newIfaceName : v,
         );
         changeEachEntry(
-          ifaceType.properties,
+          ifaceType.allProperties,
           newNames.spts,
           (property, oldSptName, newSptName) => {
             changeValue(property, "apiName", oldSptName, newSptName);
@@ -299,6 +299,7 @@ const referencedOntology = {
           },
           displayName: "Some Property",
           rid: "idk",
+          required: true,
         },
       },
       implementedByObjectTypes: [],
@@ -313,6 +314,16 @@ const referencedOntology = {
           },
           displayName: "Some Property",
           rid: "idk",
+          required: true,
+        },
+        "com.example.dep.spt2": {
+          apiName: "com.example.dep.spt2",
+          dataType: {
+            type: "string",
+          },
+          displayName: "Some Property 2",
+          rid: "idk",
+          required: true,
         },
       },
     },
@@ -968,7 +979,7 @@ describe("generator", () => {
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
         ",
-          "/foo/ontology/queries/getCount.ts": "import type { QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
+          "/foo/ontology/queries/getCount.ts": "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
@@ -1021,7 +1032,7 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
         };
         ",
-          "/foo/ontology/queries/returnsTodo.ts": "import type { QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
+          "/foo/ontology/queries/returnsTodo.ts": "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { Todo } from '../objects/Todo.js';
@@ -1589,7 +1600,7 @@ describe("generator", () => {
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
         ",
-          "/foo/ontology/queries/getCount.ts": "import type { QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
+          "/foo/ontology/queries/getCount.ts": "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
@@ -1642,7 +1653,7 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
         };
         ",
-          "/foo/ontology/queries/returnsTodo.ts": "import type { QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
+          "/foo/ontology/queries/returnsTodo.ts": "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { Todo } from '../objects/Todo.js';
@@ -1806,7 +1817,7 @@ describe("generator", () => {
 
       expect(helper.getFiles()["/foo/ontology/queries/getTask.ts"])
         .toMatchInlineSnapshot(`
-          "import type { QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
+          "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
           import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
           import { $osdkMetadata } from '../../OntologyMetadata.js';
           import type { Task as $Imported$com$example$dep$Task } from '@com.example.dep/osdk';
@@ -2128,10 +2139,11 @@ describe("generator", () => {
         export type OsdkObjectLinks$SomeInterface = {};
 
         export namespace SomeInterface {
-          export type PropertyKeys = 'spt';
+          export type PropertyKeys = 'spt' | 'spt2';
 
           export interface Props {
             readonly spt: $PropType['string'] | undefined;
+            readonly spt2: $PropType['string'] | undefined;
           }
           export type StrictProps = Props;
 
@@ -2168,6 +2180,10 @@ describe("generator", () => {
                *   display name: 'Some Property'
                */
               spt: $PropertyDef<'string', 'nullable', 'single'>;
+              /**
+               *   display name: 'Some Property 2'
+               */
+              spt2: $PropertyDef<'string', 'nullable', 'single'>;
             };
             rid: 'idk2';
             type: 'interface';

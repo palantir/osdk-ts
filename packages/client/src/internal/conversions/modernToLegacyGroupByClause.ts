@@ -19,7 +19,7 @@ import { DurationMapping } from "@osdk/api";
 import type {
   AggregationGroupByV2,
   AggregationRangeV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 
 /** @internal */
 export function modernToLegacyGroupByClause(
@@ -42,6 +42,15 @@ export function modernToLegacyGroupByClause(
           },
         ];
       }
+    } else if ("$exact" in type) {
+      return [
+        {
+          type: "exact",
+          field,
+          maxGroupCount: type.$exact?.$limit ?? undefined,
+          defaultValue: type.$exact.$defaultValue ?? undefined,
+        },
+      ];
     } else if ("$fixedWidth" in type) {
       return [{
         type: "fixedWidth",

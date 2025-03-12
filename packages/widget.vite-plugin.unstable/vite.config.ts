@@ -18,7 +18,7 @@ import react from "@vitejs/plugin-react";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
-import { SETUP_PATH } from "./src/constants.js";
+import { SETUP_PATH } from "./src/common/constants.js";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -28,6 +28,6 @@ export default defineConfig({
     port: 8080,
   },
   build: {
-    outDir: resolve(dirname(fileURLToPath(import.meta.url)), "./build/client"),
+    outDir: resolve(dirname(fileURLToPath(import.meta.url)), "./build/site"),
   },
 });

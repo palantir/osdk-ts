@@ -38,25 +38,35 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
     }
 
     if (!response.ok) {
+      const fallbackMessage =
+        `Failed to fetch ${response.status} ${response.statusText}`;
+
       if (response.headers.get("Content-Type") === "text/plain") {
-        throw new PalantirApiError(await response.text());
+        throw unknownError(await response.text(), response.status);
+      }
+
+      if (response.headers.get("Content-Type") === "text/html") {
+        throw unknownError(
+          fallbackMessage,
+          response.status,
+          new Error("Received HTML error page: " + await response.text()),
+        );
       }
 
       let body;
       try {
         body = await response.json();
       } catch (e) {
-        throw new PalantirApiError(
-          `Failed to fetch ${response.status} ${response.statusText}`,
-          "UNKNOWN",
-          undefined,
+        throw unknownError(
+          fallbackMessage,
           response.status,
+          e instanceof Error ? e : undefined,
         );
       }
 
       throw new PalantirApiError(
         body?.message
-          ?? `Failed to fetch ${response.status} ${response.statusText}`,
+          ?? fallbackMessage,
         body?.errorName,
         body?.errorCode,
         response.status,
@@ -73,7 +83,15 @@ function convertError(
   msgIfNotError: string = "An unknown error occurred",
 ) {
   if (e instanceof Error) {
-    return new UnknownError(e.message, "UNKNOWN", e);
+    return unknownError(e.message, undefined, e);
   }
-  return new UnknownError(msgIfNotError, "UNKNOWN");
+  return unknownError(msgIfNotError, undefined);
+}
+
+function unknownError(
+  message: string,
+  statusCode?: number,
+  originalError?: Error,
+) {
+  return new UnknownError(message, undefined, originalError, statusCode);
 }

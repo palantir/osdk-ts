@@ -111,8 +111,8 @@ async function setup() {
 
   const finalOutDir = path.join(
     path.dirname(fileURLToPath(import.meta.url)),
-    "src",
-    "generatedNoCheck",
+    "build",
+    "codegen",
   );
 
   await fs.rm(finalOutDir, { recursive: true, force: true });

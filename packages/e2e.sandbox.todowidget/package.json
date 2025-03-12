@@ -1,7 +1,7 @@
 {
   "name": "@osdk/e2e.sandbox.todowidget",
   "private": true,
-  "version": "0.1.0-beta.1",
+  "version": "0.2.0-beta.1",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
     }
   },
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "vite build",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "dev": "vite",
@@ -32,14 +32,13 @@
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "preview": "vite preview",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
-    "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
     "@osdk/client": "workspace:~",
     "@osdk/foundry.datasets": "~2.5.0",
-    "@osdk/widget-client-react.unstable": "workspace:~",
-    "@osdk/widget-client.unstable": "workspace:~",
+    "@osdk/widget.client-react.unstable": "workspace:~",
+    "@osdk/widget.client.unstable": "workspace:~",
     "@radix-ui/react-icons": "^1.3.1",
     "@radix-ui/themes": "^3.1.4",
     "react": "^18",
@@ -54,19 +53,12 @@
     "@vitejs/plugin-react": "^4.2.0",
     "typescript": "~5.5.4",
     "vite": "^6.0.11",
-    "vitest": "^3.0.4"
+    "vitest": "^3.0.5"
   },
   "publishConfig": {
     "access": "public"
   },
-  "files": [
-    "build/esm",
-    "build/types",
-    "CHANGELOG.md",
-    "package.json",
-    "templates",
-    "*.d.ts"
-  ],
+  "files": [],
   "module": "./build/esm/index.js",
   "types": "./build/esm/index.d.ts",
   "type": "module"

@@ -1,9 +1,9 @@
-import { defineConfig } from "@osdk/widget-client.unstable";
+import { defineConfig } from "@osdk/widget.client.unstable";
 
 export default defineConfig({
   id: "widgetId",
   name: "Custom Widget",
-  description: "And example custom widget implementation",
+  description: "An example custom widget implementation",
   type: "workshop",
   parameters: {
     headerText: {

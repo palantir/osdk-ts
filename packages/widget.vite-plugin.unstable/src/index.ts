@@ -14,5 +14,10 @@
  * limitations under the License.
  */
 
-import { FoundryWidgetVitePlugin } from "./plugin.js";
-export default FoundryWidgetVitePlugin;
+import type { PluginOption } from "vite";
+import { FoundryWidgetBuildPlugin } from "./build-plugin/FoundryWidgetBuildPlugin.js";
+import { FoundryWidgetDevPlugin } from "./dev-plugin/FoundryWidgetDevPlugin.js";
+
+export default function FoundryWidgetPlugin(): PluginOption {
+  return [FoundryWidgetDevPlugin(), FoundryWidgetBuildPlugin()];
+}

@@ -115,6 +115,18 @@ async function transformTypes() {
 
     await mkdir(path.dirname(destPathRightExt), { recursive: true });
     await writeFile(destPathRightExt, result.code, "utf-8");
+    if (result.map) {
+      result.map.sources = result.map.sources.map(s =>
+        path.relative(path.dirname(destPathRightExt), s)
+      );
+      result.map.sourcesContent = undefined;
+      result.map.file = path.basename(destPathRightExt);
+      await writeFile(
+        destPathRightExt + ".map",
+        JSON.stringify(result.map),
+        "utf-8",
+      );
+    }
   }
 }
 
@@ -165,7 +177,10 @@ async function transpileWithTsup(format, target) {
     noExternal: format === "cjs"
       ? [
         "@osdk/shared.client",
-        "@osdk/internal.foundry.ontologiesv2",
+        "@osdk/foundry.ontologies",
+        "@osdk/shared.client2",
+        "delay",
+        "oauth4webapi",
       ]
       : [],
     format: [format],

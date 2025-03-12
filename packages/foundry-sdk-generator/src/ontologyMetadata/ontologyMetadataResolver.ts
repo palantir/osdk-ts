@@ -25,7 +25,7 @@ import type {
   OntologyIdentifier,
   QueryDataType,
   QueryTypeV2,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { Result } from "./Result.js";
 
@@ -177,13 +177,10 @@ export class OntologyMetadataResolver {
   > {
     let ontology: Ontology;
 
-    const { Ontologies } = await import("@osdk/internal.foundry.ontologies");
-    const { OntologiesV2 } = await import(
-      "@osdk/internal.foundry.ontologiesv2"
-    );
+    const { OntologiesV2 } = await import("@osdk/foundry.ontologies");
 
     try {
-      ontology = await Ontologies.get(
+      ontology = await OntologiesV2.get(
         this.getClientContext(),
         ontologyRid,
       );
@@ -284,6 +281,7 @@ export class OntologyMetadataResolver {
         linkTypes,
         actionTypes,
         queryTypes,
+        interfaceTypes,
       },
       ontologyFullMetadata,
       extPackageInfo,
@@ -306,6 +304,7 @@ export class OntologyMetadataResolver {
       objectTypes: Set<string>;
       queryTypes: Set<string>;
       actionTypes: Set<string>;
+      interfaceTypes: Set<string>;
     },
     fullOntology: OntologyFullMetadata,
     packageInfo: PackageInfo,
@@ -325,6 +324,12 @@ export class OntologyMetadataResolver {
           object.linkTypes.map(link => [link.apiName, link]),
         ),
       ]),
+    );
+
+    const loadedInterfaceTypes = Object.fromEntries(
+      Object.values(filteredFullMetadata.interfaceTypes).map(
+        interfaceType => [interfaceType.apiName, interfaceType],
+      ),
     );
 
     const missingObjectTypes: string[] = [];
@@ -370,6 +375,20 @@ export class OntologyMetadataResolver {
       errors.push(
         `Unable to find the following Object Types: ${
           missingObjectTypes.join(", ")
+        }`,
+      );
+    }
+    const missingInterfaceTypes: string[] = [];
+    for (const expectedInterface of expectedEntities.interfaceTypes) {
+      if (!loadedInterfaceTypes[expectedInterface]) {
+        missingInterfaceTypes.push(expectedInterface);
+        continue;
+      }
+    }
+    if (missingInterfaceTypes.length > 0) {
+      errors.push(
+        `Unable to find the following Interface Types: ${
+          missingInterfaceTypes.join(", ")
         }`,
       );
     }
@@ -431,6 +450,7 @@ export class OntologyMetadataResolver {
       const result = this.validateActionParameters(
         action,
         expectedEntities.objectTypes,
+        expectedEntities.interfaceTypes,
       );
       if (result.isErr()) {
         for (const errorString of result.error) {
@@ -484,6 +504,7 @@ export class OntologyMetadataResolver {
   private validateActionParameters(
     actionType: ActionTypeV2,
     loadedObjectApiNames: Set<string>,
+    loadedInterfaceApiNames: Set<string>,
   ): Result<{}, string[]> {
     const camelizedApiName = this.camelize(actionType.apiName);
 
@@ -495,6 +516,7 @@ export class OntologyMetadataResolver {
           camelizedApiName,
           paramData.dataType,
           loadedObjectApiNames,
+          loadedInterfaceApiNames,
         ),
     );
 
@@ -584,6 +606,7 @@ export class OntologyMetadataResolver {
     actionApiName: string,
     actonTypeParameter: ActionParameterType,
     loadedObjectApiNames: Set<string>,
+    loadedInterfaceApiNames: Set<string>,
   ): Result<{}, string[]> {
     switch (actonTypeParameter.type) {
       case "array":
@@ -591,6 +614,7 @@ export class OntologyMetadataResolver {
           actionApiName,
           actonTypeParameter.subType,
           loadedObjectApiNames,
+          loadedInterfaceApiNames,
         );
       case "object":
         if (loadedObjectApiNames.has(actonTypeParameter.objectTypeApiName!)) {
@@ -612,6 +636,16 @@ export class OntologyMetadataResolver {
           + `make sure to specify it as an argument with --ontologyObjects ${actonTypeParameter
             .objectTypeApiName!})`,
         ]);
+      case "interfaceObject":
+        if (
+          loadedInterfaceApiNames.has(actonTypeParameter.interfaceTypeApiName)
+        ) {
+          return Result.ok({});
+        }
+        return Result.err([
+          `Unable to load action ${actionApiName} because it takes an unloaded interface type as a parameter: ${actonTypeParameter.interfaceTypeApiName} `
+          + `make sure to specify it as an argument with --ontologyInterfaces ${actonTypeParameter.interfaceTypeApiName}`,
+        ]);
       case "string":
       case "boolean":
       case "attachment":
@@ -620,7 +654,11 @@ export class OntologyMetadataResolver {
       case "integer":
       case "long":
       case "timestamp":
+      case "struct":
+      case "mediaReference":
+      case "objectType":
         return Result.ok({});
+
       default:
         return Result.err([
           `Unable to load action ${actionApiName} because it takes an unsupported parameter: ${

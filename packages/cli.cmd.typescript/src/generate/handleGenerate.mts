@@ -16,14 +16,14 @@
 
 import { ExitProcessError, YargsCheckError } from "@osdk/cli.common";
 import invokeLoginFlow from "@osdk/cli.common/loginFlow";
+import type { OntologyIdentifier } from "@osdk/foundry.ontologies";
+import { OntologiesV2 } from "@osdk/foundry.ontologies";
 import type { MinimalFs, WireOntologyDefinition } from "@osdk/generator";
 import {
   __UNSTABLE_generateClientSdkPackage,
   generateClientSdkVersionTwoPointZero,
   getExpectedDependencies,
 } from "@osdk/generator";
-import type { OntologyIdentifier } from "@osdk/internal.foundry.core";
-import { OntologiesV2 } from "@osdk/internal.foundry.ontologiesv2";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { consola } from "consola";
 import deepEqual from "fast-deep-equal";
@@ -147,7 +147,7 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
       return {
         ...x,
         extendsInterfaces: [...x.extendsInterfaces].sort(),
-        properties: sortKeys(x.properties),
+        properties: sortKeys(x.allProperties ?? x.properties),
       };
     });
 

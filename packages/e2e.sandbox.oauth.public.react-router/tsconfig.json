@@ -3,7 +3,7 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "build/esm",
-    "jsx": "react"
+    "isolatedDeclarations": false
   },
   "include": [
     "./src/**/*"

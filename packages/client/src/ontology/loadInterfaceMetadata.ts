@@ -15,8 +15,8 @@
  */
 
 import type { InterfaceMetadata } from "@osdk/api";
+import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/generator-converters";
-import * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export async function loadInterfaceMetadata(

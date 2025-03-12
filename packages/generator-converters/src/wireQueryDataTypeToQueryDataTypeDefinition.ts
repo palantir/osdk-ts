@@ -24,7 +24,7 @@ import type {
   QueryDataType,
   ThreeDimensionalAggregation,
   TwoDimensionalAggregation,
-} from "@osdk/internal.foundry.core";
+} from "@osdk/foundry.ontologies";
 import { isNullableQueryDataType } from "./isNullableQueryDataType.js";
 
 export function wireQueryDataTypeToQueryDataTypeDefinition<
@@ -90,13 +90,13 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
 
       return {
         type: "union",
-        union: input.unionTypes.reduce((acc, t) => {
+        union: input.unionTypes.reduce<QueryDataTypeDefinition[]>((acc, t) => {
           if (t.type === "null") {
             return acc;
           }
           acc.push(wireQueryDataTypeToQueryDataTypeDefinition(t));
           return acc;
-        }, [] as QueryDataTypeDefinition[]),
+        }, []),
         nullable: allowNulls,
       };
 
@@ -122,6 +122,29 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
         type: "threeDimensionalAggregation",
         threeDimensionalAggregation: get3DQueryAggregationProps(input),
         nullable: false,
+      };
+
+    case "entrySet":
+      const keyType = wireQueryDataTypeToQueryDataTypeDefinition(input.keyType);
+
+      if (!validMapKeyTypes.includes(keyType.type)) {
+        throw new Error(
+          "Map types with a key type of " + keyType.type + " are not supported"
+            + validMapKeyTypes.toString(),
+        );
+      }
+
+      if (keyType.multiplicity === true) {
+        throw new Error(
+          "Map types cannot have keys as arrays",
+        );
+      }
+
+      return {
+        type: "map",
+        nullable: false,
+        keyType,
+        valueType: wireQueryDataTypeToQueryDataTypeDefinition(input.valueType),
       };
 
     case "null":
@@ -188,3 +211,23 @@ function guardInvalidKeyTypes(
 ): key is QueryAggregationKeyType & ({ type: "string" | "boolean" }) {
   return key.type === "string" || key.type === "boolean";
 }
+
+/**
+ * The set of all valid key types for maps. This includes all types that are represented by strings or numbers in the OSDK, and  Ontology Objects.
+ */
+const validMapKeyTypes = [
+  "string",
+  "object",
+  "double",
+  "float",
+  "integer",
+  "long",
+  "date",
+  "timestamp",
+  "byte",
+  "datetime",
+  "decimal",
+  "marking",
+  "short",
+  "objectType",
+];

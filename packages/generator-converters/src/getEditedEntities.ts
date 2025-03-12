@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionTypeV2 } from "@osdk/internal.foundry.core";
+import type { ActionTypeV2 } from "@osdk/foundry.ontologies";
 
 export type ModifiedEntityTypes = {
   addedObjects: Set<string>;
