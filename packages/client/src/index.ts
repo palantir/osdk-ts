@@ -55,8 +55,6 @@ export { createAttachmentUpload } from "./object/AttachmentUpload.js";
 export type { ResultOrError } from "./ResultOrError.js";
 export {
   createObjectSpecifierFromPrimaryKey,
-  extractObjectTypeFromObjectSpecifier,
-  extractPrimaryKeyFromObjectSpecifier,
 } from "./util/objectSpecifierUtils.js";
 
 export {
