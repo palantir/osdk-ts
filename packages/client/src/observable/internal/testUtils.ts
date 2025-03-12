@@ -36,7 +36,7 @@ import { afterEach, beforeEach, expect, vi, vitest } from "vitest";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import type { Client } from "../../Client.js";
 import { additionalContext } from "../../Client.js";
-import type { LogFn, Logger } from "../../Logger.js";
+import type { LogFn, Logger } from "../../logger/Logger.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
@@ -182,7 +182,7 @@ export function createClientMockHelper(): MockClientHelper {
         return deadObjectSet;
       },
       fetchPage: (...fetchArgs: any[]) => {
-        localLogger.trace("etchPage", where!, fetchArgs);
+        localLogger.trace("fetchPage", where!, fetchArgs);
         throw new Error("NO");
       },
       fetchOne: (...fetchArgs: any[]) => {
@@ -212,6 +212,7 @@ export function createClientMockHelper(): MockClientHelper {
     requestContext: {},
     logger,
   };
+  client.fetchMetadata = vitest.fn();
 
   function mockObjectFactory2Once() {
     const d = pDefer<

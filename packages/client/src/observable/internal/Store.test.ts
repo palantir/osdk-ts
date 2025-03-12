@@ -16,6 +16,7 @@
 
 import type {
   CompileTimeMetadata,
+  ObjectMetadata,
   ObjectTypeDefinition,
   Osdk,
   OsdkBase,
@@ -914,6 +915,62 @@ describe(Store, () => {
 
       expect(sub.error).toHaveBeenCalled();
       expect(sub.next).not.toHaveBeenCalled();
+    });
+    describe("batching", () => {
+      it("groups requests for single objects", async () => {
+        mockClient.mockFetchPageOnce().resolve({
+          data: [{
+            $apiName: "Employee",
+            $objectType: "Employee",
+            $primaryKey: 0,
+          }, {
+            $apiName: "Employee",
+            $objectType: "Employee",
+            $primaryKey: 1,
+          }],
+          nextPageToken: undefined,
+          totalCount: "2",
+        });
+
+        vi.mocked(client.fetchMetadata).mockReturnValue(Promise.resolve(
+          {
+            primaryKeyApiName: "id",
+          } satisfies Pick<
+            ObjectMetadata,
+            "primaryKeyApiName"
+          > as ObjectMetadata,
+        ));
+
+        const a = mockSingleSubCallback();
+        const b = mockSingleSubCallback();
+
+        defer(store.observeObject(Employee, 0, {}, a));
+        defer(store.observeObject(Employee, 1, {}, b));
+
+        await a.expectLoadingAndLoaded({
+          loading: objectPayloadContaining({
+            status: "loading",
+            object: undefined,
+          }),
+          loaded: objectPayloadContaining({
+            object: expect.objectContaining({
+              $primaryKey: 0,
+            }),
+          }),
+        });
+        await b.expectLoadingAndLoaded({
+          loading: objectPayloadContaining({
+            status: "loading",
+            object: undefined,
+          }),
+          loaded: objectPayloadContaining({
+            object: expect.objectContaining({
+              $primaryKey: 1,
+            }),
+          }),
+        });
+        console.log(client.mock.calls);
+      });
     });
 
     describe("actions", () => {

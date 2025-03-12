@@ -50,7 +50,7 @@ export type { Client } from "./Client.js";
 export { createClient } from "./createClient.js";
 export { createPlatformClient } from "./createPlatformClient.js";
 export type { PlatformClient } from "./createPlatformClient.js";
-export type { Logger } from "./Logger.js";
+export type { Logger } from "./logger/Logger.js";
 export { createAttachmentUpload } from "./object/AttachmentUpload.js";
 export { createObjectSpecifierFromPrimaryKey } from "./object/createObjectSpecifierFromPrimaryKey.js";
 export type { ResultOrError } from "./ResultOrError.js";

@@ -39,7 +39,7 @@ import {
 } from "vitest";
 import { z } from "zod";
 import { createMinimalClient } from "../createMinimalClient.js";
-import type { Logger } from "../Logger.js";
+import type { Logger } from "../logger/Logger.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
   constructWebsocketUrl,
