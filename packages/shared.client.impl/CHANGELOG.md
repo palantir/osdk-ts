@@ -1,5 +1,13 @@
 # @osdk/shared.client.impl
 
+## 1.2.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [ad93d55]
+  - @osdk/shared.net.errors@2.2.0-beta.2
+  - @osdk/shared.net.fetch@1.2.0-beta.2
+
 ## 1.1.0-beta.5
 
 ### Minor Changes

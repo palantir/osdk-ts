@@ -16,113 +16,8 @@
 
 import { describe, expectTypeOf, it, test, vi } from "vitest";
 
-import type {
-  ObjectMetadata as $ObjectMetadata,
-  ObjectSet as $ObjectSet,
-  ObjectTypeDefinition as $ObjectTypeDefinition,
-  Osdk,
-  PropertyDef as $PropertyDef,
-  PropertyKeys,
-  PropertyValueWireToClient as $PropType,
-  SingleLinkAccessor as $SingleLinkAccessor,
-} from "../index.js";
-
-namespace Employee {
-  export type PropertyKeys =
-    | "employeeId"
-    | "fullName"
-    | "class"
-    | "attachment"
-    | "geopoint"
-    | "timeseries"
-    | "mediaReference"
-    | "geotimeSeriesReference"
-    | "isActive";
-
-  export interface Links {
-    readonly lead: $SingleLinkAccessor<Employee>;
-    readonly peeps: Employee.ObjectSet;
-  }
-
-  export interface Props {
-    readonly class: $PropType["string"] | undefined;
-    readonly fullName: $PropType["string"] | undefined;
-    readonly employeeId: $PropType["integer"] | undefined;
-    readonly attachment: $PropType["attachment"] | undefined;
-    readonly geopoint: $PropType["geopoint"] | undefined;
-    readonly timeseries: $PropType["numericTimeseries"] | undefined;
-    readonly mediaReference: $PropType["mediaReference"] | undefined;
-    readonly geotimeSeriesReference:
-      | $PropType["geotimeSeriesReference"]
-      | undefined;
-    readonly isActive: $PropType["boolean"] | undefined;
-  }
-  export type StrictProps = Props;
-
-  export interface ObjectSet extends $ObjectSet<Employee, Employee.ObjectSet> {}
-}
-
-interface Employee extends $ObjectTypeDefinition {
-  type: "object";
-  apiName: "Employee";
-  __DefinitionMetadata?: {
-    objectSet: Employee.ObjectSet;
-    props: Employee.Props;
-    linksType: Employee.Links;
-    strictProps: Employee.StrictProps;
-    apiName: "Employee";
-    description: "A full-time or part-time \n\n employee of our firm";
-    displayName: "Employee";
-    icon: {
-      type: "blueprint";
-      color: "blue";
-      name: "person";
-    };
-    implements: ["FooInterface"];
-    interfaceMap: {
-      FooInterface: {
-        fooSpt: "fullName";
-      };
-    };
-    inverseInterfaceMap: {
-      FooInterface: {
-        fullName: "fooSpt";
-      };
-    };
-    links: {
-      lead: $ObjectMetadata.Link<Employee, false>;
-      peeps: $ObjectMetadata.Link<Employee, true>;
-    };
-    pluralDisplayName: "Employees";
-    primaryKeyApiName: "employeeId";
-    primaryKeyType: "integer";
-    properties: {
-      class: $PropertyDef<"string", "nullable", "single">;
-      fullName: $PropertyDef<"string", "nullable", "single">;
-      employeeId: $PropertyDef<"integer", "nullable", "single">;
-      attachment: $PropertyDef<"attachment", "nullable", "single">;
-      geopoint: $PropertyDef<"geopoint", "nullable", "single">;
-      timeseries: $PropertyDef<"numericTimeseries", "nullable", "single">;
-      mediaReference: $PropertyDef<"mediaReference", "nullable", "single">;
-      geotimeSeriesReference: $PropertyDef<
-        "geotimeSeriesReference",
-        "nullable",
-        "single"
-      >;
-      isActive: $PropertyDef<"boolean", "nullable", "single">;
-    };
-    rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44";
-    status: "ACTIVE";
-    titleProperty: "fullName";
-    type: "object";
-    visibility: "NORMAL";
-  };
-}
-
-const Employee: Employee = {
-  type: "object",
-  apiName: "Employee",
-};
+import type { ObjectSet as $ObjectSet, Osdk, PropertyKeys } from "../index.js";
+import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
 
 describe("ObjectSet", () => {
   const fauxObjectSet = {
@@ -136,20 +31,20 @@ describe("ObjectSet", () => {
     asyncIter: vi.fn(() => {
       return {};
     }),
-  } as any as Employee.ObjectSet;
+  } as any as EmployeeApiTest.ObjectSet;
 
   describe("normal", () => {
     test("select none", async () => {
       const result = await fauxObjectSet.fetchPage();
       expectTypeOf<typeof result.data[0]>().toEqualTypeOf<
-        Osdk.Instance<Employee, never>
+        Osdk.Instance<EmployeeApiTest, never>
       >();
     });
 
     test("select one", async () => {
       const result = await fauxObjectSet.fetchPage({ "$select": ["fullName"] });
       expectTypeOf<typeof result.data[0]>().toEqualTypeOf<
-        Osdk.Instance<Employee, never, "fullName">
+        Osdk.Instance<EmployeeApiTest, never, "fullName">
       >();
     });
   });
@@ -163,7 +58,7 @@ describe("ObjectSet", () => {
       });
 
       expectTypeOf(withA).toEqualTypeOf<
-        $ObjectSet<Employee, {
+        $ObjectSet<EmployeeApiTest, {
           a: "integer";
         }>
       >();
@@ -171,7 +66,7 @@ describe("ObjectSet", () => {
       const withAResults = await withA.fetchPage();
 
       expectTypeOf<typeof withAResults["data"][0]>().toEqualTypeOf<
-        Osdk.Instance<Employee, never, PropertyKeys<Employee>, {
+        Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {
           a: "integer";
         }>
       >();
@@ -187,7 +82,7 @@ describe("ObjectSet", () => {
         "sister": (base) => base.pivotTo("lead").aggregate("class:collectList"),
       });
       expectTypeOf(withFamily).toEqualTypeOf<
-        $ObjectSet<Employee, {
+        $ObjectSet<EmployeeApiTest, {
           mom: "integer";
           dad: "string" | undefined;
           sister: "string"[] | undefined;
@@ -197,7 +92,7 @@ describe("ObjectSet", () => {
       const withFamilyResults = await withFamily.fetchPage();
 
       expectTypeOf<typeof withFamilyResults["data"][0]>().toEqualTypeOf<
-        Osdk.Instance<Employee, never, PropertyKeys<Employee>, {
+        Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {
           mom: "integer";
           dad: "string" | undefined;
           sister: "string"[] | undefined;
@@ -223,7 +118,7 @@ describe("ObjectSet", () => {
         });
 
         expectTypeOf(withParents).toEqualTypeOf<
-          $ObjectSet<Employee, {
+          $ObjectSet<EmployeeApiTest, {
             mom: "integer";
             dad: "string" | undefined;
           }>
@@ -246,7 +141,7 @@ describe("ObjectSet", () => {
         const withFamilyResults = await withFamily.fetchPage();
 
         expectTypeOf<typeof withFamilyResults["data"][0]>().toEqualTypeOf<
-          Osdk.Instance<Employee, never, PropertyKeys<Employee>, {
+          Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {
             mom: "integer";
             dad: "integer";
             sis: "integer";
@@ -277,16 +172,21 @@ describe("ObjectSet", () => {
 
           expectTypeOf<typeof withAggregationResults["data"][0]>()
             .toEqualTypeOf<
-              Osdk.Instance<Employee, never, PropertyKeys<Employee>, {
-                collectSet: "string"[] | undefined;
-                select: "string" | undefined;
-                collectList: "string"[] | undefined;
-                min: "double" | undefined;
-                max: "double" | undefined;
-                sum: "double" | undefined;
-                avg: "double" | undefined;
-                approximatePercentile: "double" | undefined;
-              }>
+              Osdk.Instance<
+                EmployeeApiTest,
+                never,
+                PropertyKeys<EmployeeApiTest>,
+                {
+                  collectSet: "string"[] | undefined;
+                  select: "string" | undefined;
+                  collectList: "string"[] | undefined;
+                  min: "double" | undefined;
+                  max: "double" | undefined;
+                  sum: "double" | undefined;
+                  avg: "double" | undefined;
+                  approximatePercentile: "double" | undefined;
+                }
+              >
             >();
         },
       );
@@ -306,11 +206,16 @@ describe("ObjectSet", () => {
         expectTypeOf<typeof where>().toEqualTypeOf<typeof withFamily>();
         expectTypeOf<typeof whereResults["data"][0]>()
           .toEqualTypeOf<
-            Osdk.Instance<Employee, never, PropertyKeys<Employee>, {
-              mom: "integer";
-              dad: "string" | undefined;
-              sister: "string"[] | undefined;
-            }>
+            Osdk.Instance<
+              EmployeeApiTest,
+              never,
+              PropertyKeys<EmployeeApiTest>,
+              {
+                mom: "integer";
+                dad: "string" | undefined;
+                sister: "string"[] | undefined;
+              }
+            >
           >();
       });
 
@@ -318,11 +223,16 @@ describe("ObjectSet", () => {
         const asyncIter = withFamily.asyncIter();
         expectTypeOf<typeof asyncIter>().toEqualTypeOf<
           AsyncIterableIterator<
-            Osdk.Instance<Employee, never, PropertyKeys<Employee>, {
-              mom: "integer";
-              dad: "string" | undefined;
-              sister: "string"[] | undefined;
-            }>
+            Osdk.Instance<
+              EmployeeApiTest,
+              never,
+              PropertyKeys<EmployeeApiTest>,
+              {
+                mom: "integer";
+                dad: "string" | undefined;
+                sister: "string"[] | undefined;
+              }
+            >
           >
         >();
       });
@@ -332,11 +242,16 @@ describe("ObjectSet", () => {
 
         expectTypeOf<typeof withFamilyResults["data"][0]>()
           .toEqualTypeOf<
-            Osdk.Instance<Employee, never, PropertyKeys<Employee>, {
-              mom: "integer";
-              dad: "string" | undefined;
-              sister: "string"[] | undefined;
-            }>
+            Osdk.Instance<
+              EmployeeApiTest,
+              never,
+              PropertyKeys<EmployeeApiTest>,
+              {
+                mom: "integer";
+                dad: "string" | undefined;
+                sister: "string"[] | undefined;
+              }
+            >
           >();
       });
 
@@ -347,7 +262,7 @@ describe("ObjectSet", () => {
 
         expectTypeOf<typeof withFamilyResults["data"][0]>()
           .toEqualTypeOf<
-            Osdk.Instance<Employee, never, never, {
+            Osdk.Instance<EmployeeApiTest, never, never, {
               mom: "integer";
               dad: "string" | undefined;
               sister: "string"[] | undefined;
@@ -365,7 +280,7 @@ describe("ObjectSet", () => {
 
         expectTypeOf<typeof withFamilyResults["data"][0]>()
           .toEqualTypeOf<
-            Osdk.Instance<Employee, never, never, {
+            Osdk.Instance<EmployeeApiTest, never, never, {
               mom: "integer";
             }>
           >();
@@ -389,9 +304,9 @@ describe("ObjectSet", () => {
         expectTypeOf<typeof withFamilyResults["data"][0]>()
           .toEqualTypeOf<
             Osdk.Instance<
-              Employee,
+              EmployeeApiTest,
               never,
-              PropertyKeys<Employee>,
+              PropertyKeys<EmployeeApiTest>,
               {}
             >
           >();
@@ -408,7 +323,7 @@ describe("ObjectSet", () => {
 
         expectTypeOf<typeof withFamilyResults["data"][0]>()
           .toEqualTypeOf<
-            Osdk.Instance<Employee, never, "class", {}>
+            Osdk.Instance<EmployeeApiTest, never, "class", {}>
           >();
       });
 
@@ -420,7 +335,7 @@ describe("ObjectSet", () => {
         expectTypeOf<typeof withFamilyResults["data"][0]>()
           .toEqualTypeOf<
             Osdk.Instance<
-              Employee,
+              EmployeeApiTest,
               never,
               "class",
               { mom: "integer" }
@@ -437,7 +352,7 @@ describe("ObjectSet", () => {
       type ObjectSetType = typeof objectSet;
 
       expectTypeOf<ObjectSetType>().toEqualTypeOf<
-        $ObjectSet<Employee, {
+        $ObjectSet<EmployeeApiTest, {
           mom: "integer";
         }>
       >();
@@ -449,7 +364,7 @@ describe("ObjectSet", () => {
 
     it("Defining the Type", () => {
       type ObjectSetType = $ObjectSet<
-        Employee,
+        EmployeeApiTest,
         {
           mom: "integer" | undefined;
         }

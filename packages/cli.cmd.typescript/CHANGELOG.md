@@ -1,5 +1,19 @@
 # @osdk/cli.cmd.typescript
 
+## 0.26.0-beta.8
+
+### Minor Changes
+
+- 63b2e63: Update Platform SDK Dependencies
+
+### Patch Changes
+
+- Updated dependencies [63b2e63]
+- Updated dependencies [63b2e63]
+  - @osdk/generator@2.2.0-beta.8
+  - @osdk/shared.client.impl@1.2.0-beta.2
+  - @osdk/cli.common@0.26.0-beta.8
+
 ## 0.26.0-beta.7
 
 ### Minor Changes
