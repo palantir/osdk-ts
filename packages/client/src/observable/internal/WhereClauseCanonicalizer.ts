@@ -19,9 +19,21 @@ import { Trie } from "@wry/trie";
 import deepEqual from "fast-deep-equal";
 import invariant from "tiny-invariant";
 import type { Canonical } from "./Canonical.js";
+import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 
 export class WhereClauseCanonicalizer {
-  #cache = new WeakMap<WhereClause<any>, Canonical<WhereClause<any>>>();
+  /**
+   * This is a shortcut cache for any WhereClause's that we have
+   * seen and already canonicalized. The theory behind this
+   * is that well behaving React applications will either `useMemo`
+   * their where clause, or store it in state or pass it through as
+   * props such that we are likely to get the same WhereClause
+   * object multiple times and we can skip unnecessary work.
+   */
+  #cache = new WeakMap<
+    WhereClause<any> | SimpleWhereClause,
+    Canonical<SimpleWhereClause>
+  >();
 
   /**
    * This is a trie that stores the sorted collapsed keys of a where clause to
@@ -35,42 +47,42 @@ export class WhereClauseCanonicalizer {
    * canonicalized options.
    */
   #existingOptions: Map<object, {
-    options: WeakRef<Canonical<WhereClause<any>>>[];
+    options: WeakRef<Canonical<SimpleWhereClause>>[];
   }> = new Map();
 
   public canonicalize<T extends ObjectOrInterfaceDefinition>(
-    where: WhereClause<T>,
-  ): Canonical<WhereClause<T>> {
+    where: WhereClause<T> | SimpleWhereClause,
+  ): Canonical<SimpleWhereClause> {
     // fastest shortcut
     if (this.#cache.has(where)) {
-      return this.#cache.get(where)! as Canonical<WhereClause<T>>;
+      return this.#cache.get(where)!;
     }
 
     const keysSet = new Set<string>();
-    const tmpCanon = this.#toCanon(where, keysSet);
+    const calculatedCanon = this.#toCanon(where, keysSet);
     const cacheKey = this.#trie.lookupArray(Array.from(keysSet).sort());
     const lookupEntry = this.#existingOptions.get(cacheKey)
-      ?? { options: [] as WeakRef<Canonical<WhereClause<T>>>[] };
+      ?? { options: [] as WeakRef<Canonical<SimpleWhereClause>>[] };
     this.#existingOptions.set(cacheKey, lookupEntry);
 
     const canon =
-      lookupEntry.options.find((ref) => deepEqual(ref.deref(), tmpCanon))
+      lookupEntry.options.find((ref) => deepEqual(ref.deref(), calculatedCanon))
         ?.deref()
-        ?? tmpCanon;
+        ?? calculatedCanon;
 
-    if (canon === tmpCanon) {
+    if (canon === calculatedCanon) {
       // This means no existing options were found
       lookupEntry.options.push(new WeakRef(canon));
     }
 
     this.#cache.set(where, canon);
-    return canon as Canonical<WhereClause<T>>;
+    return canon;
   }
 
   #toCanon = <T extends ObjectOrInterfaceDefinition>(
-    where: WhereClause<T>,
+    where: WhereClause<T> | SimpleWhereClause,
     set: Set<string> = new Set<string>(),
-  ): Canonical<WhereClause<T>> => {
+  ): Canonical<SimpleWhereClause> => {
     if ("$and" in where) {
       if (process.env.NODE_ENV !== "production") {
         invariant(Array.isArray(where.$and), "expected $and to be an array");
@@ -79,13 +91,13 @@ export class WhereClauseCanonicalizer {
           "expected only $and to be present",
         );
       }
-      if ((where as { $and: WhereClause<T>[] }).$and.length === 0) {
+      if ((where as { $and: SimpleWhereClause[] }).$and.length === 0) {
         // empty $and is a no-op
-        return {} as Canonical<WhereClause<T>>;
+        return {} as Canonical<SimpleWhereClause>;
       }
-      if ((where as { $and: WhereClause<T>[] }).$and.length === 1) {
+      if ((where as { $and: SimpleWhereClause[] }).$and.length === 1) {
         return this.#toCanon(
-          (where as { $and: WhereClause<T>[] }).$and[0],
+          (where as { $and: SimpleWhereClause[] }).$and[0],
           set,
         );
       }
@@ -105,6 +117,6 @@ export class WhereClauseCanonicalizer {
           }
           return [k, v];
         }),
-    ) as Canonical<WhereClause<T>>;
+    ) as Canonical<SimpleWhereClause>;
   };
 }

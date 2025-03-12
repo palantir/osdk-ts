@@ -90,17 +90,36 @@ export function objectSetToSearchJsonV2(
   throw new Error(`Unsupported objectSet type: ${objectSet.type}`);
 }
 
+/** @internal */
+export function resolveInterfaceObjectSet(
+  objectSet: ObjectSet,
+  interfaceTypeApiName: string,
+  args: FetchPageArgs<any, any, any, any, any, any>,
+): ObjectSet {
+  return args?.$includeAllBaseObjectProperties
+    ? {
+      type: "intersect",
+      objectSets: [objectSet, {
+        type: "interfaceBase",
+        interfaceType: interfaceTypeApiName,
+        includeAllBaseObjectProperties: true,
+      }],
+    }
+    : objectSet;
+}
+
 async function fetchInterfacePage<
   Q extends InterfaceDefinition,
   L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
+  T extends boolean,
 >(
   client: MinimalClient,
   interfaceType: Q,
-  args: FetchPageArgs<Q, L, R, any, S>,
+  args: FetchPageArgs<Q, L, R, any, S, T>,
   objectSet: ObjectSet,
-): Promise<FetchPageResult<Q, L, R, S>> {
+): Promise<FetchPageResult<Q, L, R, S, T>> {
   if (args.$__UNSTABLE_useOldInterfaceApis) {
     const result = await OntologiesV2.OntologyInterfaces
       .search(
@@ -131,7 +150,11 @@ async function fetchInterfacePage<
     addUserAgentAndRequestContextHeaders(client, interfaceType),
     await client.ontologyRid,
     applyFetchArgs<LoadObjectSetV2MultipleObjectTypesRequest>(args, {
-      objectSet,
+      objectSet: resolveInterfaceObjectSet(
+        objectSet,
+        interfaceType.apiName,
+        args,
+      ),
       select: ((args?.$select as string[] | undefined) ?? []),
       excludeRid: !args?.$includeRid,
     }),
@@ -149,7 +172,7 @@ async function fetchInterfacePage<
     ),
     nextPageToken: result.nextPageToken,
     totalCount: result.totalCount,
-  }) as unknown as Promise<FetchPageResult<Q, L, R, S>>;
+  }) as unknown as Promise<FetchPageResult<Q, L, R, S, T>>;
 }
 
 /** @internal */
@@ -159,6 +182,7 @@ export async function fetchPageInternal<
   R extends boolean,
   A extends Augments,
   S extends NullabilityAdherence,
+  T extends boolean,
 >(
   client: MinimalClient,
   objectType: Q,
@@ -167,8 +191,8 @@ export async function fetchPageInternal<
     string,
     Promise<ObjectMetadata.Property>
   >,
-  args: FetchPageArgs<Q, L, R, A, S> = {},
-): Promise<FetchPageResult<Q, L, R, S>> {
+  args: FetchPageArgs<Q, L, R, A, S, T> = {},
+): Promise<FetchPageResult<Q, L, R, S, T>> {
   if (objectType.type === "interface") {
     return await fetchInterfacePage(
       client,
@@ -194,6 +218,7 @@ export async function fetchPageWithErrorsInternal<
   R extends boolean,
   A extends Augments,
   S extends NullabilityAdherence,
+  T extends boolean,
 >(
   client: MinimalClient,
   objectType: Q,
@@ -202,8 +227,8 @@ export async function fetchPageWithErrorsInternal<
     string,
     Promise<ObjectMetadata.Property>
   >,
-  args: FetchPageArgs<Q, L, R, A, S> = {},
-): Promise<Result<FetchPageResult<Q, L, R, S>>> {
+  args: FetchPageArgs<Q, L, R, A, S, T> = {},
+): Promise<Result<FetchPageResult<Q, L, R, S, T>>> {
   try {
     const result = await fetchPageInternal(
       client,
@@ -234,16 +259,17 @@ export async function fetchPage<
   L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
+  T extends boolean,
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, any, S>,
+  args: FetchPageArgs<Q, L, R, any, S, T>,
   objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
   derivedPropertyTypeByName: Record<
     string,
     Promise<ObjectMetadata.Property>
   > = {},
-): Promise<FetchPageResult<Q, L, R, S>> {
+): Promise<FetchPageResult<Q, L, R, S, T>> {
   return fetchPageInternal(
     client,
     objectType,
@@ -259,16 +285,17 @@ export async function fetchPageWithErrors<
   L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
+  T extends boolean,
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, any, S>,
+  args: FetchPageArgs<Q, L, R, any, S, T>,
   objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
   derivedPropertyTypeByName: Record<
     string,
     Promise<ObjectMetadata.Property>
   >,
-): Promise<Result<FetchPageResult<Q, L, R, S>>> {
+): Promise<Result<FetchPageResult<Q, L, R, S, T>>> {
   return fetchPageWithErrorsInternal(
     client,
     objectType,
@@ -285,7 +312,7 @@ function applyFetchArgs<
     pageSize?: PageSize;
   },
 >(
-  args: FetchPageArgs<any, any, any, any, any>,
+  args: FetchPageArgs<any, any, any, any, any, any>,
   body: X,
 ): X {
   if (args?.$nextPageToken) {
@@ -314,16 +341,17 @@ export async function fetchObjectPage<
   L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
+  T extends boolean,
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, Augments, S>,
+  args: FetchPageArgs<Q, L, R, Augments, S, T>,
   objectSet: ObjectSet,
   derivedPropertyTypeByName: Record<
     string,
     Promise<ObjectMetadata.Property>
   >,
-): Promise<FetchPageResult<Q, L, R, S>> {
+): Promise<FetchPageResult<Q, L, R, S, T>> {
   const r = await OntologiesV2.OntologyObjectSets.load(
     addUserAgentAndRequestContextHeaders(client, objectType),
     await client.ontologyRid,
@@ -347,5 +375,5 @@ export async function fetchObjectPage<
     ),
     nextPageToken: r.nextPageToken,
     totalCount: r.totalCount,
-  }) as unknown as Promise<FetchPageResult<Q, L, R, S>>;
+  }) as unknown as Promise<FetchPageResult<Q, L, R, S, T>>;
 }

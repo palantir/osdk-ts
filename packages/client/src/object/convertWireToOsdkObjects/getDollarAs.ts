@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, Osdk, OsdkBase } from "@osdk/api";
+import type { ObjectOrInterfaceDefinition, OsdkBase } from "@osdk/api";
 import {
   type FetchedObjectTypeDefinition,
   InterfaceDefinitions,
@@ -30,7 +30,7 @@ export type DollarAsFn = <
   Q extends FetchedObjectTypeDefinition,
   NEW_Q extends ObjectOrInterfaceDefinition,
 >(
-  this: Osdk<any> & (InterfaceHolder<Q> | ObjectHolder<Q>),
+  this: InterfaceHolder | ObjectHolder,
   newDef: string | NEW_Q,
 ) => OsdkBase<any>;
 

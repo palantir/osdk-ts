@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
-import type { Status } from "./ObservableClient.js";
+import type { ObjectHolder } from "../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { ObserveObjectArgs } from "./ObservableClient.js";
 
-export interface ObjectPayload {
-  object: Osdk.Instance<ObjectTypeDefinition> | undefined;
-  isOptimistic: boolean;
-  status: Status;
-  lastUpdated: number;
+export interface ObjectPayload extends Omit<ObserveObjectArgs<any>, "object"> {
+  object: ObjectHolder | undefined;
 }

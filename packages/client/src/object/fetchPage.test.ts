@@ -23,12 +23,15 @@ import type {
   PropertyKeys,
   SelectArgToKeys,
 } from "@osdk/api";
-import type { FooInterface } from "@osdk/client.test.ontology";
-import { Employee, Todo } from "@osdk/client.test.ontology";
+import { Employee, FooInterface, Todo } from "@osdk/client.test.ontology";
 import type { SearchJsonQueryV2 } from "@osdk/foundry.ontologies";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
-import { fetchPage, objectSetToSearchJsonV2 } from "../object/fetchPage.js";
+import {
+  fetchPage,
+  objectSetToSearchJsonV2,
+  resolveInterfaceObjectSet,
+} from "../object/fetchPage.js";
 import {
   createObjectSet,
   getWireObjectSet,
@@ -54,7 +57,8 @@ describe(fetchPage, () => {
           T,
           L & PropertyKeys<T>,
           R,
-          "drop"
+          "drop",
+          false
         >({} as any, {} as any, {} as any);
       }
     }
@@ -170,6 +174,74 @@ describe(fetchPage, () => {
     );
   });
 
+  it("converts interface object set for new API correctly", () => {
+    const client = createMinimalClient(
+      metadata,
+      "https://foo",
+      async () => "",
+    );
+    const objectSet = createObjectSet(FooInterface, client).where({
+      fooSpt: "hello",
+    });
+
+    const wireObjectSet = getWireObjectSet(objectSet);
+
+    expect(
+      resolveInterfaceObjectSet(wireObjectSet, "FooInterface", {
+        $includeAllBaseObjectProperties: true,
+      }),
+    ).toEqual(
+      {
+        type: "intersect",
+        objectSets: [
+          {
+            type: "filter",
+            where: {
+              type: "eq",
+              field: "fooSpt",
+              value: "hello",
+            },
+            objectSet: { interfaceType: "FooInterface", type: "interfaceBase" },
+          },
+          {
+            type: "interfaceBase",
+            interfaceType: "FooInterface",
+            includeAllBaseObjectProperties: true,
+          },
+        ],
+      },
+    );
+
+    expect(
+      resolveInterfaceObjectSet(wireObjectSet, "FooInterface", {}),
+    ).toEqual(
+      {
+        type: "filter",
+        where: {
+          type: "eq",
+          field: "fooSpt",
+          value: "hello",
+        },
+        objectSet: { interfaceType: "FooInterface", type: "interfaceBase" },
+      },
+    );
+    expect(
+      resolveInterfaceObjectSet(wireObjectSet, "FooInterface", {
+        $includeAllBaseObjectProperties: false,
+      }),
+    ).toEqual(
+      {
+        type: "filter",
+        where: {
+          type: "eq",
+          field: "fooSpt",
+          value: "hello",
+        },
+        objectSet: { interfaceType: "FooInterface", type: "interfaceBase" },
+      },
+    );
+  });
+
   it("where clause keys correctly typed", () => {
     const client = createMinimalClient(
       metadata,
@@ -221,14 +293,18 @@ describe(fetchPage, () => {
 
   describe("includeRid", () => {
     it("properly returns the correct string for includeRid", () => {
-      expectTypeOf<Awaited<FetchPageResult<TodoDef, "text", false, "throw">>>()
+      expectTypeOf<
+        Awaited<FetchPageResult<TodoDef, "text", false, "throw", false>>
+      >()
         .toEqualTypeOf<{
           data: Osdk<TodoDef, "text">[];
           nextPageToken: string | undefined;
           totalCount: string;
         }>();
 
-      expectTypeOf<Awaited<FetchPageResult<TodoDef, "text", true, false>>>()
+      expectTypeOf<
+        Awaited<FetchPageResult<TodoDef, "text", true, false, false>>
+      >()
         .branded
         .toEqualTypeOf<{
           data: Osdk<TodoDef, "text" | "$rid" | "$notStrict">[];
@@ -239,7 +315,7 @@ describe(fetchPage, () => {
 
     it("works with $all", () => {
       expectTypeOf<
-        Awaited<FetchPageResult<TodoDef, "text" | "id", false, "drop">>
+        Awaited<FetchPageResult<TodoDef, "text" | "id", false, "drop", false>>
       >().branded
         .toEqualTypeOf<{
           data: Osdk<TodoDef>[];
@@ -248,7 +324,7 @@ describe(fetchPage, () => {
         }>();
 
       expectTypeOf<
-        Awaited<FetchPageResult<TodoDef, "text" | "id", true, "drop">>
+        Awaited<FetchPageResult<TodoDef, "text" | "id", true, "drop", false>>
       >()
         .branded
         .toEqualTypeOf<{
@@ -258,7 +334,7 @@ describe(fetchPage, () => {
         }>();
 
       expectTypeOf<
-        Awaited<FetchPageResult<TodoDef, "text" | "id", true, "drop">>
+        Awaited<FetchPageResult<TodoDef, "text" | "id", true, "drop", false>>
       >()
         .branded
         .toEqualTypeOf<{
@@ -268,7 +344,7 @@ describe(fetchPage, () => {
         }>();
 
       expectTypeOf<
-        Awaited<FetchPageResult<FooInterface, "fooSpt", true, "drop">>
+        Awaited<FetchPageResult<FooInterface, "fooSpt", true, "drop", false>>
       >()
         .branded
         .toEqualTypeOf<{
@@ -278,7 +354,7 @@ describe(fetchPage, () => {
         }>();
 
       expectTypeOf<
-        Awaited<FetchPageResult<FooInterface, "fooSpt", true, "drop">>
+        Awaited<FetchPageResult<FooInterface, "fooSpt", true, "drop", false>>
       >()
         .branded
         .toEqualTypeOf<{

@@ -216,6 +216,8 @@ export class GeneratePackageCommand
       packageVersion: args.packageVersion,
       outputDir: args.outputDir,
       beta: !!args.beta,
+      ontologyJsonOnly: args.experimentalFeatures?.includes("ontologyJsonOnly")
+        ?? false,
     });
 
     const elapsedTime = Date.now() - timeStart;

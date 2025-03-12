@@ -50,7 +50,7 @@ export function DEBUG_ONLY__cacheKeyToString(x: CacheKey) {
  */
 export function DEBUG_ONLY__cacheKeysToString(x: CacheKey[]) {
   if (process.env.NODE_ENV !== "production") {
-    return JSON.stringify(x.map(DEBUG_ONLY__cacheKeyToString), null, 2);
+    return "\n  - " + x.map(DEBUG_ONLY__cacheKeyToString).join("\n  - ");
   } else {
     throw new Error("not implemented");
   }
