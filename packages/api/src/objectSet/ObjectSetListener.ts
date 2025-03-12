@@ -64,7 +64,7 @@ export namespace ObjectSetSubscription {
 }
 
 /**
- * @internal
+ * Should not be exported from root
  */
 export type ObjectUpdate<
   O extends ObjectOrInterfaceDefinition,

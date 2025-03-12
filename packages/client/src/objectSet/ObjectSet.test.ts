@@ -565,7 +565,7 @@ describe("ObjectSet", () => {
             ? await client(Employee).fetchPage(opts)
             : (await client(Employee).fetchPageWithErrors(opts)).value!;
 
-          expect(result.data).toHaveLength(4);
+          expect(result.data).toHaveLength(5);
           expectTypeOf(result.data[0]).branded.toEqualTypeOf<
             Osdk<Employee, "$all" | "$notStrict" | "$rid">
           >();
@@ -581,7 +581,7 @@ describe("ObjectSet", () => {
             ? await client(Employee).fetchPage(opts)
             : (await client(Employee).fetchPageWithErrors(opts)).value!;
 
-          expect(result.data).toHaveLength(4);
+          expect(result.data).toHaveLength(5);
           expectTypeOf(result.data[0]).branded.toEqualTypeOf<
             Osdk<Employee, "$all" | "$notStrict">
           >();

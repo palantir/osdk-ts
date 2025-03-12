@@ -40,6 +40,15 @@ export class Changes {
   registerList = (key: ListCacheKey): void => {
     this.modified.add(key);
   };
+
+  isEmpty(): boolean {
+    return (
+      this.modifiedObjects.size === 0
+      && this.addedObjects.size === 0
+      && this.added.size === 0
+      && this.modified.size === 0
+    );
+  }
 }
 
 export function createChangedObjects(): Changes {

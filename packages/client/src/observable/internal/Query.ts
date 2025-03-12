@@ -94,13 +94,10 @@ export abstract class Query<
    * @param force
    * @returns
    */
-  revalidate(force?: boolean): Promise<unknown> {
+  async revalidate(force?: boolean): Promise<void> {
     const logger = process.env.NODE_ENV !== "production"
       ? this.logger?.child({ methodName: "revalidate" })
       : this.logger;
-    if (process.env.NODE_ENV !== "production") {
-      logger?.info("");
-    }
 
     if (force) {
       this.abortController?.abort();
@@ -112,7 +109,11 @@ export abstract class Query<
 
     // if we are pending the first page/object we can just ignore this
     if (this.pendingFetch) {
-      return this.pendingFetch;
+      if (process.env.NODE_ENV !== "production") {
+        logger?.info("Fetch is already pending, using it");
+      }
+      await this.pendingFetch;
+      return;
     }
 
     if (
@@ -123,10 +124,14 @@ export abstract class Query<
       )
     ) {
       if (process.env.NODE_ENV !== "production") {
-        logger?.debug("DEDUPE");
+        logger?.debug("Within dupeInterval, aborting revalidate");
       }
 
       return Promise.resolve();
+    }
+
+    if (process.env.NODE_ENV !== "production") {
+      logger?.debug("Starting actual revalidate");
     }
 
     this.store.batch({}, (batch) => {
@@ -142,19 +147,16 @@ export abstract class Query<
     this.lastFetchStarted = Date.now();
 
     if (process.env.NODE_ENV !== "production") {
-      logger?.debug("calling _fetch()");
+      logger?.debug("calling _fetchAndStore()");
     }
     this.pendingFetch = this._fetchAndStore()
       .finally(() => {
-        logger?.info("finally _fetch()");
+        logger?.info("finally _fetchAndStore()");
         this.pendingFetch = undefined;
       });
 
-    if (process.env.NODE_ENV !== "production") {
-      logger?.info("Returning");
-    }
-
-    return this.pendingFetch;
+    await this.pendingFetch;
+    return;
   }
 
   protected _preFetch(): void {}

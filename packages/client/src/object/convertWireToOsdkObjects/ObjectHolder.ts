@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
+import type {
+  ObjectOrInterfaceDefinition,
+  ObjectSpecifier,
+  Osdk,
+} from "@osdk/api";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import type { get$link } from "./getDollarLink.js";
@@ -33,6 +37,7 @@ export interface BaseHolder {
   readonly $objectType: string;
   readonly $primaryKey: string | number | boolean;
   readonly $title: string | undefined;
+  readonly $objectSpecifier: ObjectSpecifier<any>;
 
   readonly "$as": (
     newDef: string | ObjectOrInterfaceDefinition,

@@ -106,7 +106,9 @@ export class ObjectQuery extends Query<
 
   async _fetchAndStore(): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.info({ methodName: "_fetch" });
+      this.logger?.child({ methodName: "_fetchAndStore" }).info(
+        "calling fetchOne",
+      );
     }
 
     const objectSet = this.store.client({
@@ -128,19 +130,24 @@ export class ObjectQuery extends Query<
     status: Status,
     batch: BatchContext,
   ): Entry<ObjectCacheKey> {
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.debug(
-        { methodName: "writeToStore" },
-        `{status: ${status}},`,
-        data,
-      );
-    }
     const entry = batch.read(this.cacheKey);
 
     if (entry && deepEqual(data, entry.value)) {
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.child({ methodName: "writeToStore" }).debug(
+          `Object was deep equal, just setting status`,
+        );
+      }
       // must do a "full write" here so that the lastUpdated is updated but we
       // don't want to retrigger anyone's memoization on the value!
       return batch.write(this.cacheKey, entry.value, status);
+    }
+
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "writeToStore" }).debug(
+        JSON.stringify({ status }),
+        data,
+      );
     }
     const ret = batch.write(this.cacheKey, data, status);
     batch.changes.registerObject(this.cacheKey, data, /* isNew */ !entry);

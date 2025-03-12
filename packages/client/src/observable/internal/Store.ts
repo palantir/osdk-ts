@@ -346,6 +346,7 @@ export class Store {
     if (options.mode !== "offline") {
       query.revalidate(options.mode === "force")
         .catch(e => {
+          subFn.error(e);
           // we don't want observeObject() to return a promise,
           // so we settle for logging an error here instead of
           // dropping it on the floor.
@@ -380,7 +381,9 @@ export class Store {
     this.retain(query.cacheKey);
 
     if (options.mode !== "offline") {
-      void query.revalidate(options.mode === "force");
+      query.revalidate(options.mode === "force").catch((x: unknown) => {
+        subFn.error(x);
+      });
     }
     const sub = query.subscribe(subFn);
 
@@ -541,7 +544,18 @@ export class Store {
     };
 
     const retVal = batchFn(batchContext);
-    void this.maybeRevalidateQueries(changes, optimisticId);
+    this.maybeRevalidateQueries(changes, optimisticId).catch(e => {
+      // we don't want batch() to return a promise,
+      // so we settle for logging an error here instead of
+      // dropping it on the floor.
+      if (this.logger) {
+        this.logger.error("Unhandled error in batch", e);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error("Unhandled error in batch", e);
+        throw e;
+      }
+    });
 
     return {
       batchResult: batchContext,
@@ -566,6 +580,16 @@ export class Store {
     changes: Changes,
     optimisticId?: OptimisticId | undefined,
   ): Promise<void> {
+    if (changes.isEmpty()) {
+      if (process.env.NODE_ENV !== "production") {
+        // todo
+        this.logger?.child({ methodName: "maybeRevalidateQueries" }).debug(
+          "No changes, aborting",
+        );
+      }
+      return;
+    }
+
     if (process.env.NODE_ENV !== "production") {
       // todo
       this.logger?.child({ methodName: "maybeRevalidateQueries" }).debug(
@@ -603,7 +627,7 @@ export class Store {
   public invalidateObjectType<T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,
     changes: Changes | undefined,
-  ): Promise<unknown[]> {
+  ): Promise<void> {
     if (typeof apiName !== "string") {
       apiName = apiName.apiName;
     }
@@ -613,7 +637,7 @@ export class Store {
       );
     }
 
-    const promises: Array<Promise<unknown>> = [];
+    const promises: Array<Promise<void>> = [];
 
     for (const cacheKey of this.#truthLayer.keys()) {
       if (isListCacheKey(cacheKey)) {
@@ -628,28 +652,7 @@ export class Store {
       }
     }
 
-    return Promise.all(promises);
-  }
-
-  public invalidateList<T extends ObjectTypeDefinition>(
-    { type, where, orderBy }: {
-      type: Pick<T, "apiName" | "type">;
-      where?: WhereClause<T>;
-      orderBy?: OrderBy<T>;
-    },
-  ): void {
-    where = this.whereCanonicalizer.canonicalize(where ?? {});
-    orderBy = this.orderByCanonicalizer.canonicalize(orderBy ?? {});
-
-    const cacheKey = this.getCacheKey<ListCacheKey>(
-      "list",
-      type.type,
-      type.apiName,
-      where as Canonical<WhereClause<T>>,
-      orderBy as Canonical<OrderBy<T>>,
-    );
-
-    void this.peekQuery(cacheKey)?.revalidate(true);
+    return Promise.all(promises).then(() => void 0);
   }
 
   retain(cacheKey: CacheKey<string, any, any>): void {
@@ -659,4 +662,26 @@ export class Store {
   release(cacheKey: CacheKey<string, any, any>): void {
     this.#refCounts.release(cacheKey);
   }
+}
+
+export async function invalidateList<T extends ObjectTypeDefinition>(
+  store: Store,
+  { type, where, orderBy }: {
+    type: Pick<T, "apiName" | "type">;
+    where?: WhereClause<T>;
+    orderBy?: OrderBy<T>;
+  },
+): Promise<void> {
+  where = store.whereCanonicalizer.canonicalize(where ?? {});
+  orderBy = store.orderByCanonicalizer.canonicalize(orderBy ?? {});
+
+  const cacheKey = store.getCacheKey<ListCacheKey>(
+    "list",
+    type.type,
+    type.apiName,
+    where as Canonical<WhereClause<T>>,
+    orderBy as Canonical<OrderBy<T>>,
+  );
+
+  await store.peekQuery(cacheKey)?.revalidate(true);
 }

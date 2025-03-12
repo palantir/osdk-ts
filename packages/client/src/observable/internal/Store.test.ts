@@ -16,7 +16,6 @@
 
 import type {
   CompileTimeMetadata,
-  ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
   OsdkBase,
@@ -58,7 +57,7 @@ import type {
 import type { ObjectCacheKey } from "./ObjectQuery.js";
 import { createOptimisticId } from "./OptimisticId.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
-import { Store } from "./Store.js";
+import { invalidateList, Store } from "./Store.js";
 import type { MockClientHelper } from "./testUtils.js";
 import {
   applyCustomMatchers,
@@ -437,7 +436,7 @@ describe(Store, () => {
 
         testStage("invalidate");
 
-        cache.invalidateList({ type: Employee });
+        const invalidateListPromise = invalidateList(cache, { type: Employee });
         testStage("check invalidate");
 
         await waitForCall(subListFn, 1);
@@ -456,6 +455,9 @@ describe(Store, () => {
 
         await waitForCall(subFn, 1);
         expectSingleObjectCallAndClear(subFn, emp, "loaded");
+
+        // don't leave promises dangling
+        await invalidateListPromise;
       });
     });
 
@@ -1071,25 +1073,32 @@ describe(Store, () => {
       );
 
       async function createObject<
-        X extends ObjectOrInterfaceDefinition,
+        X extends ObjectTypeDefinition,
         WeakSauce extends boolean = false,
       >(
+        type: X,
         x:
           // & OntologyObjectV2
-          & OsdkBase<WeakSauce extends true ? ObjectTypeDefinition : X>
+          & Omit<
+            OsdkBase<WeakSauce extends true ? ObjectTypeDefinition : X>,
+            "$apiName" | "$objectType" | "$objectSpecifier"
+          >
           & CompileTimeMetadata<X>["props"],
       ) {
         return (await minimalClient.objectFactory2(
           minimalClient,
-          [x],
+          [{
+            ...x,
+            $apiName: type.apiName,
+            $objectType: type.apiName,
+            $objectSpecifier: `${type.apiName}:${x.$primaryKey}`,
+          }],
           undefined,
         ))[0] as ObjectHolder & Osdk.Instance<X>;
       }
 
       let nextPk = 0;
-      const fauxObjectA = await createObject<Todo>({
-        $apiName: "Todo",
-        $objectType: "Todo",
+      const fauxObjectA = await createObject(Todo, {
         $primaryKey: nextPk,
         $title: "a",
         id: nextPk,
@@ -1097,9 +1106,7 @@ describe(Store, () => {
       });
 
       nextPk++;
-      const fauxObjectB = await createObject<Todo>({
-        $apiName: "Todo",
-        $objectType: "Todo",
+      const fauxObjectB = await createObject(Todo, {
         $primaryKey: nextPk,
         $title: "b",
         id: nextPk,
@@ -1107,9 +1114,7 @@ describe(Store, () => {
       });
 
       nextPk++;
-      const fauxObjectC = await createObject<Todo>({
-        $apiName: "Todo",
-        $objectType: "Todo",
+      const fauxObjectC = await createObject(Todo, {
         $primaryKey: nextPk,
         $title: "c",
         id: nextPk,
@@ -1192,14 +1197,12 @@ describe(Store, () => {
       });
 
       it("produces proper results with optimistic updates and successful action", async () => {
-        const optimisticallyMutatedA = await createObject<Todo, true>({
+        const optimisticallyMutatedA = await createObject<Todo, true>(Todo, {
           ...fauxObjectA,
           text: "optimistic",
         });
         const pkForOptimistic = nextPk++;
-        const optimisticallyCreatedObjectD = await createObject<Todo>({
-          "$apiName": "Todo",
-          "$objectType": "Todo",
+        const optimisticallyCreatedObjectD = await createObject(Todo, {
           "$primaryKey": pkForOptimistic,
           "$title": "d",
           "text": "d",
@@ -1286,16 +1289,14 @@ describe(Store, () => {
       // I think these are named backwards
       it("produces proper results with optimistic updates and rollback", async () => {
         const pkForOptimistic = nextPk++;
-        const optimisticallyCreatedObjectD = await createObject<Todo>({
-          "$apiName": "Todo",
-          "$objectType": "Todo",
+        const optimisticallyCreatedObjectD = await createObject<Todo>(Todo, {
           "$primaryKey": pkForOptimistic,
           "$title": "d",
           "text": "d",
           id: pkForOptimistic,
         });
 
-        const optimisticallyMutatedA = await createObject<Todo, true>({
+        const optimisticallyMutatedA = await createObject<Todo, true>(Todo, {
           ...fauxObjectA,
           text: "optimistic",
         });
@@ -1303,9 +1304,7 @@ describe(Store, () => {
         testStage("Initial Setup");
 
         // later we will "create" this object
-        const createdObjectD = await createObject<Todo>({
-          "$apiName": "Todo",
-          "$objectType": "Todo",
+        const createdObjectD = await createObject<Todo>(Todo, {
           "$primaryKey": 9000,
           "$title": "d prime",
           "text": "d prime",
@@ -1376,7 +1375,7 @@ describe(Store, () => {
 
         testStage("Resolve Action");
 
-        const modifiedObjectA = await createObject<Todo>({
+        const modifiedObjectA = await createObject<Todo>(Todo, {
           ...fauxObjectA,
           text: "a prime",
         });

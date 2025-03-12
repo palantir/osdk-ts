@@ -409,23 +409,27 @@ export class ObjectSetListenerWebsocket {
     this.#sendSubscribeMessage();
   };
 
-  #onMessage = async (message: WebSocket.MessageEvent) => {
+  #onMessage = async (message: WebSocket.MessageEvent): Promise<void> => {
     const data = JSON.parse(message.data.toString()) as StreamMessage;
     if (process.env.NODE_ENV !== "production") {
       this.#logger?.debug({ payload: data }, "received message from ws");
     }
     switch (data.type) {
       case "objectSetChanged":
-        return void this.#handleMessage_objectSetChanged(data);
+        await this.#handleMessage_objectSetChanged(data);
+        return;
 
       case "refreshObjectSet":
-        return void this.#handleMessage_refreshObjectSet(data);
+        this.#handleMessage_refreshObjectSet(data);
+        return;
 
       case "subscribeResponses":
-        return void this.#handleMessage_subscribeResponses(data);
+        this.#handleMessage_subscribeResponses(data);
+        return;
 
       case "subscriptionClosed": {
-        return void this.#handleMessage_subscriptionClosed(data);
+        this.#handleMessage_subscriptionClosed(data);
+        return;
       }
 
       default:

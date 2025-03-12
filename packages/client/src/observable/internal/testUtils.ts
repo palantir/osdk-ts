@@ -64,7 +64,10 @@ export interface MockClientHelper {
   >;
 
   mockObjectFactory2Once: () => DeferredPromise<
-    Osdk.Instance<ObjectOrInterfaceDefinition, never, any, {}>[]
+    Array<
+      | Osdk.Instance<ObjectOrInterfaceDefinition, never, any, {}>
+      | ObjectHolder
+    >
   >;
 
   mockFetchPageOnce: <
@@ -212,7 +215,10 @@ export function createClientMockHelper(): MockClientHelper {
 
   function mockObjectFactory2Once() {
     const d = pDefer<
-      Osdk.Instance<ObjectOrInterfaceDefinition, never, any, {}>[]
+      (
+        | Osdk.Instance<ObjectOrInterfaceDefinition, never, any, {}>
+        | ObjectHolder
+      )[]
     >();
     vi.mocked(client[additionalContext].objectFactory2).mockReturnValueOnce(
       d.promise as Promise<ObjectHolder[]>,
@@ -600,14 +606,14 @@ export function getObject(
 
 export function updateObject<T extends ObjectOrInterfaceDefinition>(
   store: Store,
-  value: Osdk.Instance<any>,
+  value: Osdk.Instance<T>,
   { optimisticId }: { optimisticId?: OptimisticId } = {},
 ): Osdk.Instance<T> {
   const query = store.getObjectQuery(value.$apiName, value.$primaryKey);
 
   store.batch({ optimisticId }, (batch) => {
     return query.writeToStore(
-      value as ObjectHolder<typeof value>,
+      value as unknown as ObjectHolder<typeof value>,
       "loaded",
       batch,
     );

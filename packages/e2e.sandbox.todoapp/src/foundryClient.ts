@@ -23,6 +23,7 @@ export interface LogFn {
   (msg: string, ...args: any[]): void;
 }
 
+ 
 declare const process: {
   env: {
     NODE_ENV: "development" | "production";
@@ -74,21 +75,20 @@ export function createLogger(
       );
     }
 
-    if (bindings["methodName"]) {
-      msgs.push(`%c.${bindings["methodName"]}()%c`);
+    if (typeof bindings === "object" && "methodName" in bindings) {
+      msgs.push(`%c.${bindings.methodName}()%c`);
       styles.push(
         "font-style: italic;color: orchid",
         "",
       );
     }
 
-    const xxx = console[name === "fatal" ? "error" : name].bind(
+    return console[name === "fatal" ? "error" : name].bind(
       console,
       msgs.join(" "),
       ...styles,
       // ...args,
     );
-    return xxx;
   }
   return {
     debug: createLogMethod("debug"),

@@ -161,16 +161,22 @@ abstract class BaseListQuery<
     status: Status,
     batch: BatchContext,
   ): Entry<KEY> {
+    const entry = batch.read(this.cacheKey);
+
+    if (entry && deepEqual(data, entry.value)) {
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.child({ methodName: "writeToStore" }).debug(
+          `Object was deep equal, just setting status`,
+        );
+      }
+      return batch.write(this.cacheKey, entry.value, status);
+    }
+
     if (process.env.NODE_ENV !== "production") {
       this.logger?.child({ methodName: "writeToStore" }).debug(
         `{status: ${status}},`,
         DEBUG_ONLY__cacheKeysToString(data.data),
       );
-    }
-    const entry = batch.read(this.cacheKey);
-
-    if (entry && deepEqual(data, entry.value)) {
-      return batch.write(this.cacheKey, entry.value, status);
     }
 
     const ret = batch.write(this.cacheKey, data, status);
@@ -335,6 +341,11 @@ export class ListQuery extends BaseListQuery<
   }
 
   protected async _fetchAndStore(): Promise<void> {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "_fetchAndStore" }).info(
+        "fetching pages",
+      );
+    }
     while (true) {
       const entry = await this.#fetchPageAndUpdate(
         this.#objectSet,
@@ -432,6 +443,7 @@ export class ListQuery extends BaseListQuery<
 
       return retVal;
     } catch (e) {
+      this.logger?.error("error", e);
       this.store.getSubject(this.cacheKey).error(e);
 
       // rethrowing would result in many unhandled promise rejections
@@ -452,7 +464,8 @@ export class ListQuery extends BaseListQuery<
   ): Promise<void> => {
     if (this.#type === "object") {
       if (this.#apiName === apiName) {
-        return void this.revalidate(/* force */ true);
+        await this.revalidate(/* force */ true);
+        return;
       } else {
         return;
       }
@@ -464,7 +477,8 @@ export class ListQuery extends BaseListQuery<
     });
 
     if (this.#apiName in objectMetadata.interfaceMap) {
-      return void this.revalidate(/* force */ true);
+      await this.revalidate(/* force */ true);
+      return;
     }
   };
 
@@ -483,7 +497,7 @@ export class ListQuery extends BaseListQuery<
     optimisticId: OptimisticId | undefined,
   ): Promise<void> | undefined => {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "#maybeUpdateAndRevalidate" }).info(
+      this.logger?.child({ methodName: "maybeUpdateAndRevalidate" }).debug(
         DEBUG_ONLY__changesToString(changes),
       );
     }
@@ -590,7 +604,7 @@ export class ListQuery extends BaseListQuery<
       });
 
       if (needsRevalidation) {
-        return this.revalidate(true).then(() => void 0); // strip return value
+        return this.revalidate(true);
       }
       return undefined;
     } finally {
@@ -689,14 +703,6 @@ export class ListQuery extends BaseListQuery<
     batch: BatchContext,
   ): ObjectCacheKey[] {
     if (Object.keys(this.#orderBy).length > 0) {
-      if (process.env.NODE_ENV !== "production") {
-        this.logger?.info({ methodName: "_sortCacheKeys" }, "Sorting entries");
-        this.logger?.debug(
-          { methodName: "_sortCacheKeys" },
-          DEBUG_ONLY__cacheKeysToString(objectCacheKeys),
-        );
-      }
-
       objectCacheKeys = objectCacheKeys.sort((a, b) => {
         for (const sortFn of this.#sortFns) {
           const ret = sortFn(
@@ -717,6 +723,12 @@ export class ListQuery extends BaseListQuery<
     const logger = process.env.NODE_ENV !== "production"
       ? this.logger?.child({ methodName: "registerStreamUpdates" })
       : this.logger;
+
+    if (process.env.NODE_ENV !== "production") {
+      logger?.child({ methodName: "observeList" }).info(
+        "Subscribing from websocket",
+      );
+    }
 
     // FIXME: We should only do this once. If we already have one we should probably
     // just reuse it.

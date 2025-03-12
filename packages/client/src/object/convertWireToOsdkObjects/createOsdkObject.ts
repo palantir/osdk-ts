@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/api";
+import type { Attachment, ReferenceValue } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import { GeotimeSeriesPropertyImpl } from "../../createGeotimeSeriesProperty.js";
 import { MediaReferencePropertyImpl } from "../../createMediaReferenceProperty.js";
@@ -123,7 +123,7 @@ export function createOsdkObject(
       o[propKey] = createSpecialProperty(
         client,
         objectDef,
-        o as Osdk.Instance<any>,
+        o,
         propKey,
       );
     }
@@ -135,7 +135,7 @@ export function createOsdkObject(
 function createSpecialProperty(
   client: MinimalClient,
   objectDef: FetchedObjectTypeDefinition,
-  rawObject: Osdk.Instance<any>,
+  rawObject: ObjectHolder,
   p: keyof typeof rawObject & string | symbol,
 ) {
   const rawValue = rawObject[p as any];
@@ -156,7 +156,10 @@ function createSpecialProperty(
                 hydrateAttachmentFromRidInternal(client, a.rid)
               );
             }
-            return hydrateAttachmentFromRidInternal(client, rawValue.rid);
+            return hydrateAttachmentFromRidInternal(
+              client,
+              (rawValue as Attachment).rid,
+            );
           }
 
           if (
@@ -182,12 +185,12 @@ function createSpecialProperty(
               objectDef.apiName,
               rawObject[objectDef.primaryKeyApiName as string],
               p as string,
-              rawValue.type === "geotimeSeriesValue"
+              (rawValue as ReferenceValue).type === "geotimeSeriesValue"
                 ? {
-                  time: rawValue.timestamp,
+                  time: (rawValue as ReferenceValue).timestamp,
                   value: {
                     type: "Point",
-                    coordinates: rawValue.position,
+                    coordinates: (rawValue as ReferenceValue).position,
                   },
                 }
                 : undefined,
