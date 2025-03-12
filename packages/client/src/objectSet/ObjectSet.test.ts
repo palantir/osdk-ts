@@ -260,7 +260,7 @@ describe("ObjectSet", () => {
       {},
     );
     expectTypeOf<typeof employees>().toMatchTypeOf<
-      FetchPageResult<Employee, PropertyKeys<Employee>, boolean, any>
+      FetchPageResult<Employee, PropertyKeys<Employee>, boolean, any, any>
     >;
     expect(employees.data[0].$primaryKey).toBe(stubData.employee1.employeeId);
     expect(employees.data[1].$primaryKey).toBe(stubData.employee2.employeeId);
@@ -289,7 +289,7 @@ describe("ObjectSet", () => {
       { $select: ["fullName"] },
     );
     expectTypeOf<typeof employees>().toMatchTypeOf<
-      FetchPageResult<Employee, "fullName", boolean, any>
+      FetchPageResult<Employee, "fullName", boolean, any, any>
     >;
     expect(employees.data[0].$primaryKey).toBe(stubData.employee2.employeeId);
     expect(employees.data[1].$primaryKey).toBe(stubData.employee3.employeeId);
