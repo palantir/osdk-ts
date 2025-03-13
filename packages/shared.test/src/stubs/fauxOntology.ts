@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { FauxOntology } from "../FauxFoundry.js";
-import { actionTypes } from "./actionsTypes.js";
+import { FauxOntology } from "../FauxFoundry/FauxOntology.js";
+import { actionTypes, ActionTypeWithUnsupportedTypes } from "./actionsTypes.js";
 import { BarInterface, FooInterface } from "./interfaces.js";
 import { objectTypesWithLinkTypes } from "./objectTypesWithLinkTypes.js";
 import { fullOntology } from "./ontologies.js";
@@ -35,6 +35,8 @@ for (const xx of Object.values(objectTypesWithLinkTypes)) {
 for (const xx of Object.values(actionTypes)) {
   fauxOntology.registerActionType(xx);
 }
+
+fauxOntology.registerActionType(ActionTypeWithUnsupportedTypes);
 
 for (const xx of Object.values(queryTypes)) {
   fauxOntology.registerQueryType(xx);

@@ -15,7 +15,6 @@
  */
 
 import type { ObjectTypeFullMetadata } from "@osdk/foundry.ontologies";
-import { FauxOntology } from "../FauxFoundry.js";
 import {
   leadLinkType,
   occupants,
@@ -130,13 +129,6 @@ export const bGaoNflPlayerWithLinkTypes: ObjectTypeFullMetadata = {
   implementsInterfaces2: {},
   sharedPropertyTypeMapping: {},
 };
-
-const ont = new FauxOntology({
-  apiName: "test",
-  description: "",
-  displayName: "",
-  rid: "ri.ontology.main",
-});
 
 export const objectTypesWithLinkTypes: {
   [objectTypeApiName: string]: ObjectTypeFullMetadata;

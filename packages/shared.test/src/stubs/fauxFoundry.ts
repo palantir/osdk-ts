@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { FauxFoundry } from "../FauxFoundry.js";
+import { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
+import { fauxDataStore } from "./fauxDataStore.js";
 import { fauxOntology } from "./fauxOntology.js";
 
 export const fauxFoundry: FauxFoundry = new FauxFoundry();
 fauxFoundry.registerOntology(fauxOntology);
+fauxFoundry.setDataStore(fauxOntology.apiName, fauxDataStore);

@@ -30,6 +30,7 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "test": "vitest run --pool=forks",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
@@ -42,6 +43,7 @@
     "@osdk/internal.foundry.ontologies": "2.16.0",
     "fetch-retry": "^6.0.0",
     "json-stable-stringify": "^1.1.1",
+    "mnemonist": "^0.40.3",
     "msw": "^2.7.0",
     "tiny-invariant": "^1.3.3",
     "type-fest": "^4.37.0"

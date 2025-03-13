@@ -23,7 +23,7 @@ export function requireParam<P, K extends string>(
 ): asserts params is
   & P
   & {
-    [K in typeof name]: string;
+    [KK in K]: string;
   }
 {
   if (typeof params[name] !== "string") {
@@ -31,5 +31,19 @@ export function requireParam<P, K extends string>(
       400,
       InvalidRequest(`Invalid parameter: ${name} must be a string`),
     );
+  }
+}
+
+export function requireParams<P, K extends string>(
+  params: P,
+  names: Array<K & keyof P>,
+): asserts params is
+  & P
+  & {
+    [KK in K]: string;
+  }
+{
+  for (const name of names) {
+    requireParam(params, name);
   }
 }
