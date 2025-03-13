@@ -3095,18 +3095,9 @@ importers:
       '@osdk/api':
         specifier: workspace:~
         version: link:../api
-      '@types/geojson':
-        specifier: ^7946.0.13
-        version: 7946.0.14
-      fetch-retry:
-        specifier: ^6.0.0
-        version: 6.0.0
-      tiny-invariant:
-        specifier: ^1.3.1
-        version: 1.3.3
-      type-fest:
-        specifier: ^4.18.2
-        version: 4.33.0
+      '@osdk/client':
+        specifier: workspace:~
+        version: link:../client
     devDependencies:
       '@microsoft/api-documenter':
         specifier: ^7.26.5
@@ -3114,6 +3105,9 @@ importers:
       '@microsoft/api-extractor':
         specifier: ^7.49.1
         version: 7.49.1(@types/node@22.13.0)
+      '@osdk/client.test.ontology':
+        specifier: workspace:~
+        version: link:../client.test.ontology
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
