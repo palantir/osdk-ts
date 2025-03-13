@@ -260,7 +260,7 @@ describe("ObjectSet", () => {
       {},
     );
     expectTypeOf<typeof employees>().toMatchTypeOf<
-      FetchPageResult<Employee, PropertyKeys<Employee>, boolean, any>
+      FetchPageResult<Employee, PropertyKeys<Employee>, boolean, any, any>
     >;
     expect(employees.data[0].$primaryKey).toBe(stubData.employee1.employeeId);
     expect(employees.data[1].$primaryKey).toBe(stubData.employee2.employeeId);
@@ -289,7 +289,7 @@ describe("ObjectSet", () => {
       { $select: ["fullName"] },
     );
     expectTypeOf<typeof employees>().toMatchTypeOf<
-      FetchPageResult<Employee, "fullName", boolean, any>
+      FetchPageResult<Employee, "fullName", boolean, any, any>
     >;
     expect(employees.data[0].$primaryKey).toBe(stubData.employee2.employeeId);
     expect(employees.data[1].$primaryKey).toBe(stubData.employee3.employeeId);
@@ -565,7 +565,7 @@ describe("ObjectSet", () => {
             ? await client(Employee).fetchPage(opts)
             : (await client(Employee).fetchPageWithErrors(opts)).value!;
 
-          expect(result.data).toHaveLength(4);
+          expect(result.data).toHaveLength(5);
           expectTypeOf(result.data[0]).branded.toEqualTypeOf<
             Osdk<Employee, "$all" | "$notStrict" | "$rid">
           >();
@@ -581,7 +581,7 @@ describe("ObjectSet", () => {
             ? await client(Employee).fetchPage(opts)
             : (await client(Employee).fetchPageWithErrors(opts)).value!;
 
-          expect(result.data).toHaveLength(4);
+          expect(result.data).toHaveLength(5);
           expectTypeOf(result.data[0]).branded.toEqualTypeOf<
             Osdk<Employee, "$all" | "$notStrict">
           >();
@@ -918,8 +918,24 @@ describe("ObjectSet", () => {
         >()
           .toEqualTypeOf<"fooSpt">();
 
-        expectTypeOf<ConvertProps<FooInterface, Employee, "fooSpt">>()
+        expectTypeOf<
+          ConvertProps<FooInterface, Employee, "fooSpt">
+        >()
           .toEqualTypeOf<"fullName">();
+
+        expectTypeOf<
+          ConvertProps<FooInterface, Employee, "fooSpt", "$allBaseProperties">
+        >()
+          .toEqualTypeOf<
+            | "employeeId"
+            | "fullName"
+            | "office"
+            | "class"
+            | "startDate"
+            | "employeeStatus"
+            | "employeeSensor"
+            | "employeeLocation"
+          >();
 
         // We don't have a proper definition that has
         // a non-null property on an interface so

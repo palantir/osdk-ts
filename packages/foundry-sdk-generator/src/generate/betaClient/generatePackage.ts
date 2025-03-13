@@ -18,6 +18,7 @@ import type { MinimalFs } from "@osdk/generator";
 import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
 import { resolveDependenciesFromFindUp } from "@osdk/generator-utils";
 import { mkdir, readdir, writeFile } from "fs/promises";
+import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { dirname, isAbsolute, join, normalize } from "path";
 import type { OntologyInfo } from "../../ontologyMetadata/ontologyMetadataResolver.js";
@@ -38,10 +39,21 @@ export async function generatePackage(
     packageVersion: string;
     outputDir: string;
     beta: boolean;
+    ontologyJsonOnly: boolean;
   },
 ): Promise<void> {
   const { consola } = await import("consola");
   let success = true;
+
+  if (options.ontologyJsonOnly) {
+    await mkdir(options.outputDir, { recursive: true });
+    await writeFile(
+      path.join(options.outputDir, "ontology.json"),
+      JSON.stringify(ontologyInfo.filteredFullMetadata, null, 2),
+      "utf-8",
+    );
+    return;
+  }
 
   const packagePath = join(options.outputDir, options.packageName);
 
@@ -83,7 +95,6 @@ export async function generatePackage(
     beta: options.beta,
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const compilerOutput: Record<
     "esm" | "cjs",
     ReturnType<typeof compileInMemory>

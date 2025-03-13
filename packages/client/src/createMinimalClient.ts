@@ -27,6 +27,7 @@ import {
 } from "./object/convertWireToOsdkObjects.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
+import type { OntologyProvider } from "./ontology/OntologyProvider.js";
 import {
   createStandardOntologyProviderFactory,
   type OntologyCachingOptions,
@@ -44,6 +45,10 @@ export function createMinimalClient(
     init?: RequestInit | undefined,
   ) => Promise<Response> = global.fetch,
   objectSetFactory: ObjectSetFactory<any, any> = createObjectSet,
+  createOntologyProviderFactory: (
+    a: OntologyCachingOptions & { logger?: Logger },
+  ) => (minimalClient: MinimalClient) => OntologyProvider =
+    createStandardOntologyProviderFactory,
 ) {
   if (process.env.NODE_ENV !== "production") {
     try {
@@ -80,7 +85,7 @@ export function createMinimalClient(
   > as any;
 
   return Object.freeze(Object.assign(minimalClient, {
-    ontologyProvider: createStandardOntologyProviderFactory(
+    ontologyProvider: createOntologyProviderFactory(
       options,
     )(minimalClient),
   }));

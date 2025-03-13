@@ -9,6 +9,7 @@ export { GtfsTripTrackObject } from './objects/GtfsTripTrackObject.js';
 export { McAirportStruct } from './objects/McAirportStruct.js';
 export { MnayanOsdkMediaObject } from './objects/MnayanOsdkMediaObject.js';
 export { MtaBus } from './objects/MtaBus.js';
+export { NbaPlayer } from './objects/NbaPlayer.js';
 export { ObjectTypeWithAllPropertyTypes } from './objects/ObjectTypeWithAllPropertyTypes.js';
 export { OsdkTestObject } from './objects/OsdkTestObject.js';
 export { Person } from './objects/Person.js';

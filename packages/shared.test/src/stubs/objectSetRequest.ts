@@ -24,6 +24,7 @@ import {
   employee2,
   employee3,
   employee4withDerived,
+  employee50050,
   employee5withUndefinedDerived,
   employeeFailsStrict,
   nycOffice,
@@ -540,20 +541,34 @@ const employee2ToToEmployee1PeepByPk: LoadObjectSetRequestV2 = {
   "select": ["employeeId"],
 };
 
+const loadIn50050: LoadObjectSetRequestV2 = {
+  "objectSet": {
+    "type": "filter",
+    "objectSet": { "type": "base", "objectType": "Employee" },
+    "where": { "type": "in", "field": "employeeId", "value": [50050] },
+  },
+  "select": [],
+};
+
 export const loadObjectSetRequestHandlers: {
   [key: string]: LoadObjectSetResponseV2["data"];
 } = {
+  [stableStringify(loadIn50050)]: [
+    employee50050,
+  ],
   [stableStringify(baseObjectSet)]: [
     employee1,
     employee2,
     employee3,
     employeeFailsStrict,
+    employee50050,
   ],
   [stableStringify(baseObjectSetWithEmptyWhere)]: [
     employee1,
     employee2,
     employee3,
     employeeFailsStrict,
+    employee50050,
   ],
   [stableStringify(ridObjectSet)]: [employee1],
   [stableStringify(ridObjectSetSelect)]: [employee2],

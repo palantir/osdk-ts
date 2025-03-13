@@ -31,11 +31,12 @@ type fetchPageByRidFn = <
   const L extends PropertyKeys<Q>,
   const R extends boolean,
   const S extends NullabilityAdherence,
+  const T extends boolean,
 >(
   objectType: Q,
   rids: string[],
   options?: FetchPageArgs<Q, L, R, any, S>,
-) => Promise<FetchPageResult<Q, L, R, S>>;
+) => Promise<FetchPageResult<Q, L, R, S, T>>;
 
 export const __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid: Experiment<
   "2.2.0",

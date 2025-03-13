@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { InterfaceMetadata, Osdk } from "@osdk/api";
+import type { InterfaceMetadata } from "@osdk/api";
 import { extractNamespace } from "../../internal/conversions/modernToLegacyWhereClause.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import type { InterfaceHolder } from "./InterfaceHolder.js";
@@ -29,9 +29,9 @@ import type { ObjectHolder } from "./ObjectHolder.js";
 export function createOsdkInterface<
   Q extends FetchedObjectTypeDefinition,
 >(
-  underlying: Osdk<Q> & ObjectHolder<Q>,
+  underlying: ObjectHolder,
   interfaceDef: InterfaceMetadata,
-) {
+): InterfaceHolder {
   const [objApiNamespace] = extractNamespace(interfaceDef.apiName);
 
   return Object.freeze(
@@ -86,7 +86,7 @@ export function createOsdkInterface<
           }];
         }),
       ),
-    }) as InterfaceHolder<any> & Osdk<any>,
+    }) as InterfaceHolder,
   );
   function clone(update: Record<string, any> | undefined) {
     if (update == null) {
