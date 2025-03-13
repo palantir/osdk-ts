@@ -20,7 +20,7 @@ import { InvalidRequest, QueryNotFoundError } from "../errors.js";
 import { defaultOntology } from "../stubs/ontologies.js";
 import { queryRequestHandlers } from "../stubs/queries.js";
 import { queryTypes } from "../stubs/queryTypes.js";
-import { getOntology } from "./ontologyMetadataEndpoints.js";
+import { getOntologyOld } from "./ontologyMetadataEndpoints.js";
 import {
   handleOpenApiCall,
   OpenApiCallError,
@@ -35,7 +35,7 @@ export const queryHandlers: Array<RequestHandler> = [
     ["ontologyApiName"],
     async (req) => {
       // will throw if bad name
-      getOntology(req.params.ontologyApiName as string);
+      getOntologyOld(req.params.ontologyApiName as string);
 
       return {
         data: queryTypes,

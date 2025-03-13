@@ -16,32 +16,23 @@
 
 import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
-import type { HttpResponseResolver, PathParams, RequestHandler } from "msw";
+import type { RequestHandler } from "msw";
 import { http as rest, HttpResponse } from "msw";
 import invariant from "tiny-invariant";
-import type { BaseAPIError } from "../BaseError.js";
-import {
-  ActionNotFoundError,
-  InvalidRequest,
-  LinkTypeNotFound,
-  ObjectNotFoundError,
-  ObjectTypeDoesNotExistError,
-  OntologyNotFoundError,
-  QueryNotFoundError,
-} from "../errors.js";
+import { InvalidRequest, OntologyNotFoundError } from "../errors.js";
+import { fauxFoundry } from "../stubs/fauxFoundry.js";
 import {
   defaultOntology,
   defaultOntologyForConjure,
   fullOntology,
 } from "../stubs/ontologies.js";
 import { authHandlerMiddleware } from "./commonHandlers.js";
-import type { ExtractBody, ExtractResponse } from "./util/handleOpenApiCall.js";
 import {
   handleOpenApiCall,
   OpenApiCallError,
 } from "./util/handleOpenApiCall.js";
 
-export function getOntology(
+export function getOntologyOld(
   ontologyApiName: string,
 ): OntologyFullMetadata {
   if (
@@ -51,34 +42,6 @@ export function getOntology(
     throw new OpenApiCallError(404, OntologyNotFoundError(ontologyApiName));
   }
   return fullOntology;
-}
-
-function getObjectDef(ontologyApiName: string, objectTypeApiName: string) {
-  const ontology = getOntology(ontologyApiName);
-  const objectType = ontology.objectTypes[objectTypeApiName];
-  if (objectType === undefined) {
-    throw new OpenApiCallError(
-      404,
-      ObjectTypeDoesNotExistError(objectTypeApiName),
-    );
-  }
-  return objectType;
-}
-
-function getLinkType(
-  ontologyApiName: string,
-  objectTypeApiName: string,
-  linkTypeName: string,
-) {
-  const objectType = getObjectDef(ontologyApiName, objectTypeApiName);
-  const linkType = objectType.linkTypes.find((a) => a.apiName === linkTypeName);
-  if (linkType === undefined) {
-    throw new OpenApiCallError(
-      404,
-      LinkTypeNotFound(objectTypeApiName, linkTypeName),
-    );
-  }
-  return linkType;
 }
 
 type ConjureObjectTypeInfo = {
@@ -131,8 +94,9 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
     OntologiesV2.OntologiesV2.getFullMetadata,
     ["ontologyApiName"],
     async (req) => {
-      const ontology = getOntology(req.params.ontologyApiName);
-      return ontology;
+      return fauxFoundry
+        .getOntology(req.params.ontologyApiName)
+        .getOntologyFullMetadata();
     },
   ),
 
@@ -140,12 +104,10 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
     OntologiesV2.ObjectTypesV2.get,
     ["ontologyApiName", "objectTypeApiName"],
     async (req) => {
-      const { objectType } = getObjectDef(
-        req.params.ontologyApiName,
-        req.params.objectTypeApiName,
-      );
-
-      return objectType;
+      return fauxFoundry
+        .getOntology(req.params.ontologyApiName)
+        .getObjectTypeFullMetadata(req.params.objectTypeApiName)
+        .objectType;
     },
   ),
 
@@ -153,20 +115,18 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
     OntologiesV2.ObjectTypesV2.getFullMetadata,
     ["ontologyApiName", "objectTypeApiName"],
     async (req) => {
-      return getObjectDef(
-        req.params.ontologyApiName,
-        req.params.objectTypeApiName,
-      );
+      return fauxFoundry
+        .getOntology(req.params.ontologyApiName)
+        .getObjectTypeFullMetadata(req.params.objectTypeApiName);
     },
   ),
   handleOpenApiCall(
     OntologiesV2.ObjectTypesV2.getFullMetadata,
     ["ontologyApiName", "objectTypeApiName"],
     async (req) => {
-      return getObjectDef(
-        req.params.ontologyApiName,
-        req.params.objectTypeApiName,
-      );
+      return fauxFoundry
+        .getOntology(req.params.ontologyApiName)
+        .getObjectTypeFullMetadata(req.params.objectTypeApiName);
     },
     "https://stack.palantirCustom.com/foo/first/someStuff/",
   ),
@@ -175,15 +135,9 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
     OntologiesV2.ActionTypesV2.get,
     ["ontologyApiName", "actionTypeApiName"],
     async (req) => {
-      const ontology = getOntology(req.params.ontologyApiName);
-      const actionType = ontology.actionTypes[req.params.actionTypeApiName];
-      if (actionType === undefined) {
-        throw new OpenApiCallError(
-          404,
-          ActionNotFoundError(),
-        );
-      }
-      return actionType;
+      return fauxFoundry
+        .getOntology(req.params.ontologyApiName)
+        .getActionDef(req.params.actionTypeApiName);
     },
   ),
 
@@ -191,15 +145,9 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
     OntologiesV2.QueryTypes.get,
     ["ontologyApiName", "queryTypeApiName"],
     async (req) => {
-      const ontology = getOntology(req.params.ontologyApiName);
-      const queryType = ontology.queryTypes[req.params.queryTypeApiName];
-      if (queryType === undefined) {
-        throw new OpenApiCallError(
-          404,
-          QueryNotFoundError(req.params.queryTypeApiName),
-        );
-      }
-      return queryType;
+      return fauxFoundry
+        .getOntology(req.params.ontologyApiName)
+        .getQueryDef(req.params.queryTypeApiName);
     },
   ),
 
@@ -211,13 +159,9 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
       "linkType",
     ],
     async ({ params }) => {
-      const linkType = getLinkType(
-        params.ontology,
-        params.objectType,
-        params.linkType,
-      );
-
-      return linkType;
+      return fauxFoundry
+        .getOntology(params.ontology)
+        .getLinkTypeSideV2(params.objectType, params.linkType);
     },
   ),
 
@@ -228,9 +172,11 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
       "objectType",
     ],
     async ({ params }) => {
-      const object = getObjectDef(params.ontology, params.objectType);
-
-      return { data: object.linkTypes };
+      return {
+        data: fauxFoundry
+          .getOntology(params.ontology)
+          .getObjectTypeFullMetadata(params.objectType).linkTypes,
+      };
     },
   ),
 
@@ -238,28 +184,40 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
     OntologiesV2.OntologyInterfaces.list,
     ["ontologyApiName"],
     async (req) => {
-      // will throw if bad name
-      getOntology(req.params.ontologyApiName as string);
-
       return {
-        data: Object.values(fullOntology.interfaceTypes),
+        data: fauxFoundry
+          .getOntology(req.params.ontologyApiName)
+          .getAllInterfaceTypes(),
       };
     },
   ),
 
-  handleOpenApiCall(
-    OntologiesV2.OntologyInterfaces.get,
-    ["ontologyApiName", "interfaceType"],
-    handleInterfaceGet,
+  ...[undefined, "https://stack.palantirCustom.com/foo/first/someStuff/"].map(
+    base =>
+      handleOpenApiCall(
+        OntologiesV2.OntologyInterfaces.get,
+        ["ontologyApiName", "interfaceType"],
+        (req) => {
+          // will throw if bad name
+          getOntologyOld(req.params.ontologyApiName as string);
+
+          const interfaceType = req.params.interfaceType;
+          if (typeof interfaceType !== "string") {
+            throw new OpenApiCallError(
+              400,
+              InvalidRequest("Invalid parameter objectType"),
+            );
+          }
+
+          return fauxFoundry
+            .getOntology(req.params.ontologyApiName)
+            .getInterfaceType(interfaceType);
+        },
+        base,
+      ),
   ),
 
-  handleOpenApiCall(
-    OntologiesV2.OntologyInterfaces.get,
-    ["ontologyApiName", "interfaceType"],
-    handleInterfaceGet,
-    "https://stack.palantirCustom.com/foo/first/someStuff/",
-  ),
-
+  // FIXME: does this need to live?
   rest.post(
     `https://stack.palantir.com/ontology-metadata/api/ontology/ontology/ontologies/load/all`,
     authHandlerMiddleware(
@@ -285,6 +243,7 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
     ),
   ),
 
+  // FIXME: does this need to live?
   rest.post(
     `https://stack.palantir.com/ontology-metadata/api/ontology/ontology/loadEntities`,
     authHandlerMiddleware<
@@ -401,6 +360,7 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
     ),
   ),
 
+  // FIXME: does this need to live?
   rest.post(
     `https://stack.palantir.com/ontology-metadata/api/ontology/ontology/bulkLoadEntities`,
     authHandlerMiddleware<
@@ -527,41 +487,3 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
     ),
   ),
 ];
-
-async function handleInterfaceGet(
-  req: Parameters<
-    HttpResponseResolver<
-      PathParams<string>,
-      ExtractBody<typeof OntologiesV2.OntologyInterfaces.get>,
-      ExtractResponse<typeof OntologiesV2.OntologyInterfaces.get> | BaseAPIError
-    >
-  >[0],
-) {
-  // will throw if bad name
-  getOntology(req.params.ontologyApiName as string);
-
-  const interfaceType = req.params.interfaceType;
-  if (typeof interfaceType !== "string") {
-    throw new OpenApiCallError(
-      400,
-      InvalidRequest("Invalid parameter objectType"),
-    );
-  }
-
-  if (
-    fullOntology.interfaceTypes[interfaceType]
-      === undefined
-  ) {
-    throw new OpenApiCallError(
-      404,
-      ObjectNotFoundError(
-        req.params.interfaceType as string,
-        "",
-      ),
-    );
-  }
-
-  return (
-    fullOntology.interfaceTypes[interfaceType]
-  );
-}

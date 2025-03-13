@@ -71,7 +71,7 @@ import {
   areArrayBuffersEqual,
   pageThroughResponseSearchParams,
 } from "./endpointUtils.js";
-import { getOntology } from "./ontologyMetadataEndpoints.js";
+import { getOntologyOld } from "./ontologyMetadataEndpoints.js";
 import type { ExtractBody } from "./util/handleOpenApiCall.js";
 import {
   handleOpenApiCall,
@@ -134,7 +134,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
     OntologiesV1.ObjectTypes.list,
     ["ontologyRid"],
     async req => {
-      getOntology(req.params.ontologyRid as string);
+      getOntologyOld(req.params.ontologyRid as string);
 
       return {
         data: [
@@ -156,7 +156,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
     ["ontologyApiName"],
     async req => {
       // will throw if bad name
-      getOntology(req.params.ontologyApiName as string);
+      getOntologyOld(req.params.ontologyApiName as string);
 
       return {
         data: ObjectTypesV2,
@@ -172,7 +172,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
     ["ontologyApiName", "objectType", "primaryKey"],
     async req => {
       // will throw if bad name
-      getOntology(req.params.ontologyApiName as string);
+      getOntologyOld(req.params.ontologyApiName as string);
 
       const objectType = req.params.objectType;
       const primaryKey = req.params.primaryKey;
@@ -319,7 +319,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
     ],
     async req => {
       // will throw if bad name
-      getOntology(req.params.ontologyRid);
+      getOntologyOld(req.params.ontologyRid);
 
       const objectTypeApiName = req.params.objectType;
       const linkTypeApiName = req.params.linkType;
@@ -366,7 +366,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
     ["ontologyRid", "objectType"],
     async req => {
       // will throw if bad name
-      getOntology(req.params.ontologyRid as string);
+      getOntologyOld(req.params.ontologyRid as string);
 
       const objectType = req.params.objectType;
       if (typeof objectType !== "string") {
@@ -404,7 +404,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
     ],
     async req => {
       // will throw if bad name
-      getOntology(req.params.ontologyApiName as string);
+      getOntologyOld(req.params.ontologyApiName as string);
 
       const primaryKey = req.params.primaryKey;
       const linkType = req.params.linkType;
@@ -461,7 +461,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
     ],
     async req => {
       // will throw if bad name
-      getOntology(req.params.ontologyApiName as string);
+      getOntologyOld(req.params.ontologyApiName as string);
 
       const primaryKey = req.params.primaryKey;
       const linkType = req.params.linkType;
