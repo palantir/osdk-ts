@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import type {
-  Attachment,
-  ObjectMetadata,
-  ReferenceValue,
-} from "@osdk/foundry.ontologies";
+import type { ObjectMetadata } from "@osdk/api";
+import type { Attachment, ReferenceValue } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import { GeotimeSeriesPropertyImpl } from "../../createGeotimeSeriesProperty.js";
 import { MediaReferencePropertyImpl } from "../../createMediaReferenceProperty.js";
@@ -137,16 +134,18 @@ export function createOsdkObject(
       && typeof (derivedPropertyTypeByName[propKey].type) === "string"
       && specialPropertyTypes.has(derivedPropertyTypeByName[propKey].type)
     ) {
+      const rawValue = rawObj[propKey as any];
       if (derivedPropertyTypeByName[propKey].type === "attachment") {
-        if (Array.isArray(rawObj[propKey])) {
-          rawObj[propKey] = rawObj[propKey].map(a =>
+        if (Array.isArray(rawValue)) {
+          rawObj[propKey] = rawValue.map(a =>
             hydrateAttachmentFromRidInternal(client, a.rid)
           );
+        } else {
+          rawObj[propKey] = hydrateAttachmentFromRidInternal(
+            client,
+            (rawValue as Attachment).rid,
+          );
         }
-        rawObj[propKey] = hydrateAttachmentFromRidInternal(
-          client,
-          rawObj[propKey].rid,
-        );
       } else {
         invariant(
           false,
