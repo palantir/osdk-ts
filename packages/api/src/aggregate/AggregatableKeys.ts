@@ -16,9 +16,9 @@
 
 import type {
   BaseWithPropAggregations,
-  CollectWithPropAggregations,
+  DistinctWithPropAggregateOption,
   NumericWithPropAggregateOption,
-  StringWithPropAggregateOption,
+  ValidCollectPropertyKeysForSpecialTypes,
 } from "../derivedProperties/WithPropertiesAggregationOptions.js";
 import type {
   GetWirePropertyValueFromClient,
@@ -30,32 +30,39 @@ import type {
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
 import type { WirePropertyTypes } from "../ontology/WirePropertyTypes.js";
 
-export type StringAggregateOption = "approximateDistinct" | "exactDistinct";
+export type BaseAggregateOptions = "approximateDistinct" | "exactDistinct";
+
+export type MinMaxAggregateOption = "min" | "max";
+
+export type DatetimeAggregateOption =
+  & MinMaxAggregateOption
+  & BaseAggregateOptions;
+
 export type NumericAggregateOption =
-  | "min"
-  | "max"
   | "sum"
   | "avg"
   | "approximateDistinct"
-  | "exactDistinct";
+  | "exactDistinct"
+  | MinMaxAggregateOption;
 
-type AGG_FOR_TYPE<PROPERTY_TYPE> = number extends PROPERTY_TYPE
-  ? NumericAggregateOption
-  : string extends PROPERTY_TYPE ? StringAggregateOption
-  : never;
+type AGG_FOR_TYPE<WIRE_TYPE extends WirePropertyTypes> =
+  GetWirePropertyValueFromClient<WIRE_TYPE> extends number
+    ? NumericAggregateOption
+    : WIRE_TYPE extends "datetime" | "timestamp" ? DatetimeAggregateOption
+    : BaseAggregateOptions;
 
 type WITH_PROPERTIES_AGG_FOR_TYPE<WIRE_TYPE extends WirePropertyTypes> =
   number extends GetWirePropertyValueFromClient<WIRE_TYPE>
     ? NumericWithPropAggregateOption
-    : string extends GetWirePropertyValueFromClient<WIRE_TYPE>
-      ? StringWithPropAggregateOption
+    : WIRE_TYPE extends "datetime" | "timestamp" ? DatetimeAggregateOption
+    : WIRE_TYPE extends "string" ? BaseWithPropAggregations
     : WITH_PROPERTIES_AGG_FOR_SPECIAL_WIRE_TYPE<WIRE_TYPE>;
 
 type WITH_PROPERTIES_AGG_FOR_SPECIAL_WIRE_TYPE<
   WIRE_TYPE extends WirePropertyTypes,
-> = WIRE_TYPE extends "attachment" | "geopoint" | "geoshape" | "boolean"
-  ? BaseWithPropAggregations | CollectWithPropAggregations
-  : BaseWithPropAggregations;
+> = WIRE_TYPE extends ValidCollectPropertyKeysForSpecialTypes
+  ? BaseWithPropAggregations
+  : DistinctWithPropAggregateOption;
 
 export type ValidAggregationKeys<
   Q extends ObjectOrInterfaceDefinition,
@@ -65,9 +72,7 @@ export type ValidAggregationKeys<
     [
       KK in AggregatableKeys<Q> as `${KK & string}:${R extends "aggregate"
         ? AGG_FOR_TYPE<
-          GetWirePropertyValueFromClient<
-            CompileTimeMetadata<Q>["properties"][KK]["type"]
-          >
+          CompileTimeMetadata<Q>["properties"][KK]["type"]
         >
         : WITH_PROPERTIES_AGG_FOR_TYPE<
           CompileTimeMetadata<Q>["properties"][KK]["type"]
