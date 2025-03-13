@@ -8,9 +8,9 @@ const clientId = import.meta.env.VITE_FOUNDRY_CLIENT_ID;
 const redirectUrl = import.meta.env.VITE_FOUNDRY_REDIRECT_URL;
 {{#if scopes}}
 const scopes = [
-  {{#each scopes}}
-    "{{this}}",
-  {{/each}}
+ {{#each scopes}}
+  "{{this}}",
+ {{/each}}
 ];
 {{/if}}
 
@@ -32,10 +32,7 @@ export const auth = createPublicOauthClient(
   url,
   redirectUrl,
   {{#if scopes}}
-  true,
-  undefined,
-  window.location.toString(),
-  scopes,
+  { scopes },
   {{/if}}
 );
 
