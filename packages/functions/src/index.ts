@@ -23,9 +23,4 @@ export type {
   TimestampISOString,
 } from "./PrimitiveTypes.js";
 
-export type {
-  Attachment,
-  Range,
-  ThreeDimensionalAggregation,
-  TwoDimensionalAggregation,
-} from "@osdk/api";
+export type { Attachment } from "@osdk/api";
