@@ -25,6 +25,7 @@ import {
   handleOpenApiCall,
   OpenApiCallError,
 } from "./util/handleOpenApiCall.js";
+import { requireParam } from "./util/requireParam.js";
 
 export const queryHandlers: Array<RequestHandler> = [
   /**
@@ -54,12 +55,8 @@ export const queryHandlers: Array<RequestHandler> = [
       const parsedBody = JSON.parse(body);
       const queryApiName = req.params.queryApiName;
 
-      if (typeof queryApiName !== "string") {
-        throw new OpenApiCallError(
-          400,
-          InvalidRequest("Invalid parameters queryApiName"),
-        );
-      }
+      requireParam(req.params, "ontologyApiName");
+      requireParam(req.params, "queryApiName");
 
       const queryResponses = queryRequestHandlers[queryApiName];
       if (!queryResponses) {
