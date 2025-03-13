@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable @typescript-eslint/require-await */
+
 import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { RequestHandler } from "msw";
@@ -86,7 +88,7 @@ type ConjureObjectTypeInfo = {
   typeGroups: [];
 };
 
-export const ontologyMetadataEndpoint: Array<RequestHandler> = [
+const getOntologyEndpoints = (base: string | undefined) => [
   /**
    * Load ObjectSet Objects
    */
@@ -98,6 +100,7 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
         .getOntology(req.params.ontologyApiName)
         .getOntologyFullMetadata();
     },
+    base,
   ),
 
   handleOpenApiCall(
@@ -109,6 +112,7 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
         .getObjectTypeFullMetadata(req.params.objectTypeApiName)
         .objectType;
     },
+    base,
   ),
 
   handleOpenApiCall(
@@ -119,16 +123,7 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
         .getOntology(req.params.ontologyApiName)
         .getObjectTypeFullMetadata(req.params.objectTypeApiName);
     },
-  ),
-  handleOpenApiCall(
-    OntologiesV2.ObjectTypesV2.getFullMetadata,
-    ["ontologyApiName", "objectTypeApiName"],
-    async (req) => {
-      return fauxFoundry
-        .getOntology(req.params.ontologyApiName)
-        .getObjectTypeFullMetadata(req.params.objectTypeApiName);
-    },
-    "https://stack.palantirCustom.com/foo/first/someStuff/",
+    base,
   ),
 
   handleOpenApiCall(
@@ -139,6 +134,7 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
         .getOntology(req.params.ontologyApiName)
         .getActionDef(req.params.actionTypeApiName);
     },
+    base,
   ),
 
   handleOpenApiCall(
@@ -149,6 +145,7 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
         .getOntology(req.params.ontologyApiName)
         .getQueryDef(req.params.queryTypeApiName);
     },
+    base,
   ),
 
   handleOpenApiCall(
@@ -163,6 +160,7 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
         .getOntology(params.ontology)
         .getLinkTypeSideV2(params.objectType, params.linkType);
     },
+    base,
   ),
 
   handleOpenApiCall(
@@ -178,6 +176,7 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
           .getObjectTypeFullMetadata(params.objectType).linkTypes,
       };
     },
+    base,
   ),
 
   handleOpenApiCall(
@@ -190,31 +189,36 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
           .getAllInterfaceTypes(),
       };
     },
+    base,
   ),
 
-  ...[undefined, "https://stack.palantirCustom.com/foo/first/someStuff/"].map(
-    base =>
-      handleOpenApiCall(
-        OntologiesV2.OntologyInterfaces.get,
-        ["ontologyApiName", "interfaceType"],
-        (req) => {
-          // will throw if bad name
-          getOntologyOld(req.params.ontologyApiName as string);
+  handleOpenApiCall(
+    OntologiesV2.OntologyInterfaces.get,
+    ["ontologyApiName", "interfaceType"],
+    (req) => {
+      // will throw if bad name
+      getOntologyOld(req.params.ontologyApiName as string);
 
-          const interfaceType = req.params.interfaceType;
-          if (typeof interfaceType !== "string") {
-            throw new OpenApiCallError(
-              400,
-              InvalidRequest("Invalid parameter objectType"),
-            );
-          }
+      const interfaceType = req.params.interfaceType;
+      if (typeof interfaceType !== "string") {
+        throw new OpenApiCallError(
+          400,
+          InvalidRequest("Invalid parameter objectType"),
+        );
+      }
 
-          return fauxFoundry
-            .getOntology(req.params.ontologyApiName)
-            .getInterfaceType(interfaceType);
-        },
-        base,
-      ),
+      return fauxFoundry
+        .getOntology(req.params.ontologyApiName)
+        .getInterfaceType(interfaceType);
+    },
+    base,
+  ),
+];
+
+export const ontologyMetadataEndpoint: Array<RequestHandler> = [
+  ...getOntologyEndpoints(undefined),
+  ...getOntologyEndpoints(
+    "https://stack.palantirCustom.com/foo/first/someStuff/",
   ),
 
   // FIXME: does this need to live?
