@@ -182,13 +182,14 @@ async function remapQueryResponse<
             { type: "base", objectType: responseDataType.objectSet },
             { type: "reference", reference: responseValue },
           ],
-        }) as QueryReturnType<typeof responseDataType>;
+        }, {}) as QueryReturnType<typeof responseDataType>;
       }
 
       return createObjectSet(
         def,
         client,
         responseValue,
+        {},
       ) as QueryReturnType<
         typeof responseDataType
       >;

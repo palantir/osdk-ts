@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, ObjectSet } from "@osdk/api";
+import type {
+  ObjectMetadata,
+  ObjectOrInterfaceDefinition,
+  ObjectSet,
+} from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
@@ -26,4 +30,8 @@ export type ObjectSetFactory<
   type: Q,
   clientCtx: MinimalClient,
   objectSet?: WireObjectSet,
+  derivedPropertyTypeByName?: Record<
+    string,
+    Promise<ObjectMetadata.Property>
+  >,
 ) => R;

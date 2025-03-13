@@ -16,6 +16,7 @@
 
 import type { ObjectTypeFullMetadata } from "@osdk/foundry.ontologies";
 import {
+  allPropertyTypesSelfLink,
   leadLinkType,
   occupants,
   officeLinkType,
@@ -60,7 +61,7 @@ export const officeObjectTypeWithLinkTypes: ObjectTypeFullMetadata = {
 export const objectTypeWithAllPropertyTypesWithLinkTypes:
   ObjectTypeFullMetadata = {
     objectType: objectTypeWithAllPropertyTypes,
-    linkTypes: [],
+    linkTypes: [allPropertyTypesSelfLink],
     implementsInterfaces: [],
     implementsInterfaces2: {},
     sharedPropertyTypeMapping: {},

@@ -16,6 +16,7 @@
 
 import type {
   FetchPageArgs,
+  ObjectMetadata,
   ObjectOrInterfaceDefinition,
   Result,
   SingleOsdkResult,
@@ -34,6 +35,10 @@ export async function fetchSingle<
   objectType: Q,
   args: A,
   objectSet: ObjectSet,
+  derivedPropertyTypeByName?: Record<
+    string,
+    Promise<ObjectMetadata.Property>
+  >,
 ): Promise<
   A extends FetchPageArgs<Q, infer L, infer R, any, infer S>
     ? SingleOsdkResult<Q, L, R, S>
@@ -44,6 +49,7 @@ export async function fetchSingle<
     objectType,
     { ...args, $pageSize: 1 },
     objectSet,
+    derivedPropertyTypeByName,
   );
 
   if (result.data.length !== 1 || result.nextPageToken != null) {

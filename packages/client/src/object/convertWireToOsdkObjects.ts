@@ -58,6 +58,10 @@ export async function convertWireToOsdkObjects(
   forceRemoveRid: boolean = false,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull: NullabilityAdherence = false,
+  derivedPropertyTypesByName: Record<
+    string,
+    Promise<ObjectMetadata.Property>
+  > = {},
 ): Promise<Array<ObjectHolder | InterfaceHolder>> {
   client.logger?.debug(`START convertWireToOsdkObjects()`);
 
@@ -110,10 +114,22 @@ export async function convertWireToOsdkObjects(
       continue;
     }
 
+    const resolvedDerivedProperties = await Promise.all(
+      Object.entries(derivedPropertyTypesByName).map(
+        async ([key, promise]) => {
+          const resolved = await promise;
+          return [key, resolved];
+        },
+      ),
+    );
+
+    const derivedProperties = Object.fromEntries(resolvedDerivedProperties);
+
     let osdkObject: ObjectHolder | InterfaceHolder = createOsdkObject(
       client,
       objectDef,
       rawObj,
+      derivedProperties,
     );
     if (interfaceApiName) osdkObject = osdkObject.$as(interfaceApiName);
 
@@ -174,6 +190,10 @@ export async function convertWireToOsdkObjects2(
     InterfaceTypeApiName,
     InterfaceToObjectTypeMappings
   > = {},
+  derivedPropertyTypeByName: Record<
+    string,
+    Promise<ObjectMetadata.Property>
+  > = {},
 ): Promise<Array<ObjectHolder | InterfaceHolder>> {
   client.logger?.debug(`START convertWireToOsdkObjects2()`);
 
@@ -227,10 +247,22 @@ export async function convertWireToOsdkObjects2(
       continue;
     }
 
+    const resolvedDerivedProperties = await Promise.all(
+      Object.entries(derivedPropertyTypeByName).map(
+        async ([key, promise]) => {
+          const resolved = await promise;
+          return [key, resolved];
+        },
+      ),
+    );
+
+    const derivedProperties = Object.fromEntries(resolvedDerivedProperties);
+
     let osdkObject: ObjectHolder | InterfaceHolder = createOsdkObject(
       client,
       objectDef,
       rawObj,
+      derivedProperties,
     );
     if (interfaceApiName) osdkObject = osdkObject.$as(interfaceApiName);
 
