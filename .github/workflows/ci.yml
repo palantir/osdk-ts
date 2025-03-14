@@ -176,4 +176,4 @@ jobs:
 
       - name: Run codegen
         run: pnpm codegen
-        working-directory: packages/foundry-sdk-generator
+        working-directory: packages/e2e.test.foundry-sdk-generator
