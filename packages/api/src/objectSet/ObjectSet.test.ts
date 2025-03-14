@@ -157,7 +157,7 @@ describe("ObjectSet", () => {
               base.pivotTo("lead").aggregate("class:collectSet"),
             "select": (base) => base.pivotTo("lead").selectProperty("fullName"),
             "collectList": (base) =>
-              base.pivotTo("lead").aggregate("class:collectList"),
+              base.pivotTo("lead").aggregate("booleanProp:collectSet"),
             "min": (base) => base.pivotTo("lead").aggregate("employeeId:max"),
             "max": (base) => base.pivotTo("lead").aggregate("employeeId:min"),
             "sum": (base) => base.pivotTo("lead").aggregate("employeeId:sum"),
@@ -179,7 +179,7 @@ describe("ObjectSet", () => {
                 {
                   collectSet: "string"[] | undefined;
                   select: "string" | undefined;
-                  collectList: "string"[] | undefined;
+                  collectList: "boolean"[] | undefined;
                   min: "double" | undefined;
                   max: "double" | undefined;
                   sum: "double" | undefined;
@@ -288,7 +288,7 @@ describe("ObjectSet", () => {
 
       it("Works with selecting all non-RDP's", async () => {
         const withFamilyResults = await withFamily.fetchPage({
-          $select: ["class", "fullName", "employeeId"],
+          $select: ["class", "fullName", "employeeId", "booleanProp"],
         });
 
         expectTypeOf<typeof withFamilyResults["data"][0]>()

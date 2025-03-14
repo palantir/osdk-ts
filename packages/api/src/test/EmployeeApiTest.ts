@@ -27,7 +27,8 @@ export namespace EmployeeApiTest {
   export type PropertyKeys =
     | "employeeId"
     | "fullName"
-    | "class";
+    | "class"
+    | "booleanProp";
 
   export interface Links {
     readonly lead: $SingleLinkAccessor<EmployeeApiTest>;
@@ -38,6 +39,7 @@ export namespace EmployeeApiTest {
     readonly class: $PropType["string"] | undefined;
     readonly fullName: $PropType["string"] | undefined;
     readonly employeeId: $PropType["integer"] | undefined;
+    readonly booleanProp: $PropType["boolean"] | undefined;
   }
   export type StrictProps = Props;
 
@@ -84,6 +86,7 @@ export interface EmployeeApiTest extends $ObjectTypeDefinition {
       class: $PropertyDef<"string", "nullable", "single">;
       fullName: $PropertyDef<"string", "nullable", "single">;
       employeeId: $PropertyDef<"integer", "nullable", "single">;
+      booleanProp: $PropertyDef<"boolean", "nullable", "single">;
     };
     rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44";
     status: "ACTIVE";
