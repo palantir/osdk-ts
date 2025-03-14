@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  LinkTypeSideV2,
-  ListOutgoingLinkTypesResponseV2,
-} from "@osdk/foundry.ontologies";
+import type { LinkTypeSideV2 } from "@osdk/foundry.ontologies";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
 
 export const peepsLinkType: LinkTypeSideV2 = {
@@ -35,7 +32,7 @@ export const leadLinkType: LinkTypeSideV2 = {
   objectTypeApiName: employeeObjectType.apiName,
   cardinality: "ONE",
   displayName: "Lead",
-  linkTypeRid: "rid.link-type.326",
+  linkTypeRid: peepsLinkType.linkTypeRid,
 };
 
 export const officeLinkType: LinkTypeSideV2 = {
@@ -53,16 +50,5 @@ export const occupants: LinkTypeSideV2 = {
   objectTypeApiName: employeeObjectType.apiName,
   cardinality: "MANY",
   displayName: "Office Occupants",
-  linkTypeRid: "rid.link-type.323",
-};
-
-export const linkTypesResponseMap: {
-  [objectType: string]: ListOutgoingLinkTypesResponseV2;
-} = {
-  Employee: {
-    data: [peepsLinkType, leadLinkType, officeLinkType],
-  },
-  Office: {
-    data: [occupants],
-  },
+  linkTypeRid: officeLinkType.linkTypeRid,
 };

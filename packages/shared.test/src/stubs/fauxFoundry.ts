@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,10 @@
  * limitations under the License.
  */
 
-import type { ListObjectsResponseV2 } from "@osdk/foundry.ontologies";
+import { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
+import { fauxDataStore } from "./fauxDataStore.js";
+import { fauxOntology } from "./fauxOntology.js";
 
-import {
-  employee1,
-  employee2,
-  employee3,
-  objectWithAllPropertyTypes1,
-  objectWithAllPropertyTypesEmptyEntries,
-} from "./objects.js";
-
-export const loadRequestHandlersV2: {
-  [objectTypeApiName: string]: ListObjectsResponseV2["data"];
-} = {
-  Employee: [employee1, employee2, employee3],
-  objectTypeWithAllPropertyTypes: [
-    objectWithAllPropertyTypes1,
-    objectWithAllPropertyTypesEmptyEntries,
-  ],
-};
+export const fauxFoundry: FauxFoundry = new FauxFoundry();
+fauxFoundry.registerOntology(fauxOntology);
+fauxFoundry.setDataStore(fauxOntology.apiName, fauxDataStore);

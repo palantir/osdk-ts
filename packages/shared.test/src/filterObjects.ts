@@ -23,7 +23,7 @@ import type {
   PagedBodyResponseWithTotal,
 } from "./handlers/endpointUtils.js";
 
-export function filterObjectProperties<
+export function subSelectPropertiesUrl<
   T extends OntologyObjectV2 | OntologyObject,
 >(
   object: T,
@@ -53,7 +53,7 @@ export function filterObjectProperties<
   return result as T;
 }
 
-export function filterObjectsProperties<
+export function subSelectProperties<
   T extends OntologyObjectV2 | OntologyObject,
   TResponse extends
     | PagedBodyResponse<T>
@@ -62,19 +62,26 @@ export function filterObjectsProperties<
     : false),
 >(
   objects: PagedBodyResponse<T>,
-  url: URL | string[],
+  urlOrProperties: URL | string[],
   includeCount: TIncludeCount,
+  excludeRid?: boolean,
 ): TIncludeCount extends true ? PagedBodyResponseWithTotal<T>
   : PagedBodyResponse<T>
 {
   let properties: Set<string>;
-  if (Array.isArray(url)) {
-    properties = new Set(url);
+  if (Array.isArray(urlOrProperties)) {
+    properties = new Set(urlOrProperties);
   } else {
-    properties = new Set(url.searchParams.getAll("select"));
+    properties = new Set(urlOrProperties.searchParams.getAll("select"));
   }
 
   if (properties.size === 0) {
+    if (excludeRid) {
+      objects.data = objects.data.map(object => {
+        const { __rid, ...rest } = object as any;
+        return rest;
+      }) as T[];
+    }
     return objects as TIncludeCount extends true ? PagedBodyResponseWithTotal<T>
       : PagedBodyResponse<T>;
   }
