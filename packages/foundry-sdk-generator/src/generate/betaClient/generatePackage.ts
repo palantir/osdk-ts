@@ -55,8 +55,9 @@ export async function generatePackage(
     return;
   }
 
-  const packagePath = join(options.outputDir, options.packageName);
-
+  const packagePath = customNormalize(
+    join(options.outputDir, options.packageName),
+  );
   const resolvedPeerDependencies = await resolveDependenciesFromFindUp(
     betaPeerDependencies,
     dirname(fileURLToPath(import.meta.url)),
@@ -67,10 +68,10 @@ export async function generatePackage(
   const inMemoryFileSystem: { [fileName: string]: string } = {};
   const hostFs: MinimalFs = {
     writeFile: async (path, contents) => {
-      inMemoryFileSystem[normalize(path)] = contents;
+      inMemoryFileSystem[customNormalize(path)] = contents;
     },
     mkdir: async (path, _options?: { recursive: boolean }) => {
-      await mkdir(normalize(path), { recursive: true });
+      await mkdir(customNormalize(path), { recursive: true });
     },
     readdir: path => readdir(path),
   };
@@ -183,4 +184,8 @@ export async function generatePackage(
   if (!success) {
     throw new Error("Failed to generate package");
   }
+}
+
+export function customNormalize(pathName: string): string {
+  return normalize(pathName.replace(/\\/g, "/"));
 }
