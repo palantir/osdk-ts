@@ -20,7 +20,12 @@ import type {
   Osdk,
   PropertyKeys,
 } from "@osdk/api";
-import { $Objects, $ontologyRid, Employee } from "@osdk/client.test.ontology";
+import {
+  $Objects,
+  $ontologyRid,
+  Employee,
+  FooInterface,
+} from "@osdk/client.test.ontology";
 import { apiServer, stubData, withoutRid } from "@osdk/shared.test";
 import {
   afterAll,
@@ -506,6 +511,7 @@ describe("OsdkObject", () => {
         expect(clonedInterface).toMatchInlineSnapshot(`
           {
             "$apiName": "FooInterface",
+            "$objectSpecifier": "Employee:50031",
             "$objectType": "Employee",
             "$primaryKey": 50031,
             "$title": "John Adams",
@@ -516,6 +522,7 @@ describe("OsdkObject", () => {
         expect(clonedInterface.$as("Employee")).toMatchInlineSnapshot(`
           {
             "$apiName": "Employee",
+            "$objectSpecifier": "Employee:50031",
             "$objectType": "Employee",
             "$primaryKey": 50031,
             "$title": "John Adams",
@@ -551,6 +558,23 @@ describe("OsdkObject", () => {
           `[Error: Cannot clone interface with notImplementedFooSpt as property is not implemented by the underlying object type Employee]`,
         );
       });
+    });
+  });
+  describe("objectSpecifier", () => {
+    it("returns the object specifier for a loaded object", async () => {
+      const result = await client(Employee).where({
+        employeeId: stubData.employee1.employeeId,
+      }).fetchPage();
+
+      const employee = result.data[0];
+      expect(employee.$objectSpecifier).toBe("Employee:50030");
+    });
+
+    it("returns the object specifier for a loaded interface object", async () => {
+      const result = await client(FooInterface).fetchPage();
+
+      const object = result.data[0];
+      expect(object.$objectSpecifier).toBe("Employee:50050");
     });
   });
 });

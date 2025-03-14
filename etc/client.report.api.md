@@ -23,7 +23,6 @@ import type { InterfaceMetadata } from '@osdk/api';
 import { isOk } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/api/unstable';
 import { ObjectMetadata } from '@osdk/api';
-import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
 import { ObjectSet } from '@osdk/api';
 import type { ObjectSetQueryDataType } from '@osdk/api';
@@ -103,8 +102,8 @@ export const createClient: (baseUrl: string, ontologyRid: string | Promise<strin
     	logger?: Logger
 } | undefined, fetchFn?: typeof fetch | undefined) => Client;
 
-// @public (undocumented)
-export function createObjectSpecifierFromPrimaryKey<Q extends ObjectOrInterfaceDefinition>(def: Q, primaryKey: PrimaryKeyType<Q>): ObjectSpecifier<Q>;
+// @public
+export function createObjectSpecifierFromPrimaryKey<Q extends ObjectTypeDefinition>(objectDef: Q, primaryKey: PrimaryKeyType<Q>): ObjectSpecifier<Q>;
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen

@@ -24,6 +24,7 @@ import {
 } from "../object/AttachmentUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import { isOsdkBaseObject } from "./isOsdkBaseObject.js";
+import { extractPrimaryKeyFromObjectSpecifier } from "./objectSpecifierUtils.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
 /**
@@ -136,7 +137,7 @@ export async function toDataValueQueries(
         for (const [key, mapValue] of Object.entries(value)) {
           entrySet.push({
             key: desiredType.keyType.type === "object"
-              ? extractPrimaryKeyFromObjectIdentifier(key)
+              ? extractPrimaryKeyFromObjectSpecifier(key as any)
               : await toDataValueQueries(
                 key,
                 client,
@@ -179,8 +180,4 @@ export async function toDataValueQueries(
       return value;
   }
   return value;
-}
-
-function extractPrimaryKeyFromObjectIdentifier(a: string) {
-  return a.substring(a.indexOf(":") + 1);
 }
