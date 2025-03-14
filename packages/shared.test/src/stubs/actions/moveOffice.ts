@@ -14,49 +14,24 @@
  * limitations under the License.
  */
 
-import type {
-  ActionTypeV2,
-  ApplyActionRequestV2,
-  SyncApplyActionResponseV2,
-} from "@osdk/foundry.ontologies";
-import type { FauxDataStore } from "../../FauxFoundry/FauxDataStore.js";
-import { validateAction } from "../../FauxFoundry/validateAction.js";
+import type { FauxDataStoreBatch } from "../../FauxFoundry/FauxDataStoreBatch.js";
+import type { JustProps } from "../../FauxFoundry/typeHelpers/JustProps.js";
+import type { TH_ApplyActionRequestV2 } from "../../FauxFoundry/typeHelpers/TH_ApplyActionRequestV2.js";
+import type { MoveOffice } from "../actionsTypes.js";
 import { officeObjectType } from "../objectTypeV2.js";
 
 export function moveOfficeImpl(
-  ds: FauxDataStore,
-  payload: ApplyActionRequestV2,
-  def: ActionTypeV2,
-): SyncApplyActionResponseV2 {
-  // how should we check validation?
-  const validation = validateAction(payload, def);
-  if (validation.result === "INVALID") {
-    return { validation };
-  }
-
-  // future: actually change the store
-  return {
-    validation,
-    edits: payload.options?.mode === "VALIDATE_AND_EXECUTE"
-        && (
-          payload.options.returnEdits === "ALL"
-          || payload.options.returnEdits === "ALL_V2_WITH_DELETIONS"
-        )
-      ? {
-        type: "edits",
-        edits: [
-          {
-            type: "modifyObject",
-            primaryKey: payload.parameters.officeId,
-            objectType: officeObjectType.apiName,
-          },
-        ],
-        addedLinksCount: 0,
-        addedObjectCount: 0,
-        deletedLinksCount: 0,
-        deletedObjectsCount: 0,
-        modifiedObjectsCount: 1,
-      }
-      : undefined,
-  };
+  batch: FauxDataStoreBatch,
+  payload: TH_ApplyActionRequestV2<typeof MoveOffice>,
+  def: typeof MoveOffice,
+): void {
+  // we are only setting capacity because we don't have a way to go from address
+  // to gps coord
+  batch.modifyObject(
+    officeObjectType.apiName,
+    payload.parameters.officeId,
+    {
+      capacity: payload.parameters.newCapacity as number,
+    } satisfies Partial<JustProps<typeof officeObjectType>>,
+  );
 }

@@ -19,6 +19,7 @@ import { FauxDataStore } from "../../FauxFoundry/FauxDataStore.js";
 import { FauxFoundry } from "../../FauxFoundry/FauxFoundry.js";
 import { FauxOntology } from "../../FauxFoundry/FauxOntology.js";
 import { registerLazyActions } from "../actions.js";
+import { ActionTypeWithUnsupportedTypes } from "../actionsTypes.js";
 import { BarInterface, FooInterface } from "../interfaces.js";
 import {
   employee1 as employee_John_50030,
@@ -49,6 +50,7 @@ for (const xx of Object.values(objectTypesWithLinkTypes)) {
 }
 
 registerLazyActions(legacyFullOntology);
+legacyFullOntology.registerActionType(ActionTypeWithUnsupportedTypes);
 
 for (const xx of Object.values(queryTypes)) {
   legacyFullOntology.registerQueryType(xx);
@@ -71,7 +73,18 @@ legacyFauxDataStore.registerObject(employee3);
 legacyFauxDataStore.registerObject(employee4withDerived);
 legacyFauxDataStore.registerObject(employeeFailsStrict);
 legacyFauxDataStore.registerObject(employee50050);
+
 legacyFauxDataStore.registerObject(nycOffice);
+legacyFauxDataStore.registerObject(
+  {
+    ...nycOffice,
+    __primaryKey: "SEA",
+    __rid: nycOffice.__rid + "-1",
+    officeId: "SEA",
+    name: "Seattle Office",
+  } satisfies typeof nycOffice,
+);
+
 legacyFauxDataStore.registerObject(objectWithAllPropertyTypes1);
 legacyFauxDataStore.registerObject(objectWithAllPropertyTypesEmptyEntries);
 legacyFauxDataStore.registerObject(travisPlayer);

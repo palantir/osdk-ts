@@ -136,7 +136,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       const primaryKey = req.params.primaryKey;
 
       const response = subSelectPropertiesUrl(
-        legacyFauxDataStore.getObject(objectType, primaryKey),
+        legacyFauxDataStore.getObjectOrThrow(objectType, primaryKey),
         new URL(req.request.url),
       );
 
