@@ -42,4 +42,19 @@ describe("test path normalization", () => {
       normalizedWindowsPath,
     );
   });
+
+  it("works for mixed slashes", () => {
+    const normalizedWindowsPath =
+      "C/Users/testFolder/osdk-ts/packages/foundry-sdk-generator/src/generate/betaClient/__tests__/customNormalize.test.ts";
+
+    const windowsPath =
+      "C\\Users\\testFolder\\osdk-ts\\packages/foundry-sdk-generator/src/generate\\betaClient\\__tests__\\customNormalize.test.ts";
+    expect(customNormalize(windowsPath)).toEqual(normalizedWindowsPath);
+
+    const macPathExtraSlashes =
+      "C\\Users\\testFolder\\osdk-ts\\\\packages\\foundry-sdk-generator//src\\generate//betaClient\\__tests__\\\\customNormalize.test.ts";
+    expect(customNormalize(macPathExtraSlashes)).toEqual(
+      normalizedWindowsPath,
+    );
+  });
 });
