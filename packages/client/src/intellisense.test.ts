@@ -65,8 +65,9 @@ describe("intellisense", () => {
 
   beforeAll(() => {
     const clientsPackageJson = findUpSync("package.json", {
-      cwd: import.meta.url,
+      cwd: import.meta.dirname,
     });
+    console.log({ clientsPackageJson });
     invariant(clientsPackageJson != null);
     packagesDir = path.join(
       path.dirname(clientsPackageJson),
@@ -86,6 +87,8 @@ describe("intellisense", () => {
       "intellisense.test.helpers",
       `${a.task.name}.ts`,
     );
+
+    console.log(intellisenseFilePath);
 
     expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
 

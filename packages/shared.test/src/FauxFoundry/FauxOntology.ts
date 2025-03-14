@@ -64,12 +64,9 @@ export class FauxOntology {
     OntologiesV2.ActionTypeApiName,
     (
       fauxDataStore: FauxDataStore,
-      payload:
-        | OntologiesV2.ApplyActionRequestV2
-        | OntologiesV2.BatchApplyActionRequestV2,
-    ) =>
-      | OntologiesV2.SyncApplyActionResponseV2
-      | OntologiesV2.BatchApplyActionResponseV2
+      payload: OntologiesV2.ApplyActionRequestV2,
+      def: OntologiesV2.ActionTypeV2,
+    ) => OntologiesV2.SyncApplyActionResponseV2
   > = new Map();
 
   constructor(ontology: OntologiesV2.OntologyV2) {
@@ -97,6 +94,10 @@ export class FauxOntology {
 
   getAllObjectTypes(): OntologiesV2.ObjectTypeFullMetadata[] {
     return Object.values(this.#ontology.objectTypes);
+  }
+
+  getAllActionTypes(): OntologiesV2.ActionTypeV2[] {
+    return Object.values(this.#ontology.actionTypes);
   }
 
   getInterfaceType(interfaceType: string): OntologiesV2.InterfaceType {
@@ -144,13 +145,9 @@ export class FauxOntology {
     actionTypeApiName: string,
   ): (
     fauxDataStore: FauxDataStore,
-    payload:
-      | OntologiesV2.ApplyActionRequestV2
-      | OntologiesV2.BatchApplyActionRequestV2,
-  ) =>
-    | OntologiesV2.SyncApplyActionResponseV2
-    | OntologiesV2.BatchApplyActionResponseV2
-  {
+    payload: OntologiesV2.ApplyActionRequestV2,
+    def: OntologiesV2.ActionTypeV2,
+  ) => OntologiesV2.SyncApplyActionResponseV2 {
     const impl = this.#actionImpl.get(actionTypeApiName);
     invariant(impl, "Action implementation not found for " + actionTypeApiName);
     return impl;
@@ -209,12 +206,9 @@ export class FauxOntology {
     def: OntologiesV2.ActionTypeV2,
     implementation?: (
       fauxDataStore: FauxDataStore,
-      payload:
-        | OntologiesV2.ApplyActionRequestV2
-        | OntologiesV2.BatchApplyActionRequestV2,
-    ) =>
-      | OntologiesV2.SyncApplyActionResponseV2
-      | OntologiesV2.BatchApplyActionResponseV2,
+      payload: OntologiesV2.ApplyActionRequestV2,
+      def: OntologiesV2.ActionTypeV2,
+    ) => OntologiesV2.SyncApplyActionResponseV2,
   ): void {
     if (def.apiName in this.#ontology.actionTypes) {
       throw new Error(
