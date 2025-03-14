@@ -32,8 +32,8 @@
     "@osdk/cli.cmd.typescript": "workspace:~",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.2.25",
-    "@typescript-eslint/eslint-plugin": "^8.21.0",
-    "@typescript-eslint/parser": "^8.21.0",
+    "@typescript-eslint/eslint-plugin": "^8.26.1",
+    "@typescript-eslint/parser": "^8.26.1",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.19",
     "eslint": "^9.19.0",
@@ -42,7 +42,7 @@
     "rollup-plugin-visualizer": "^5.12.0",
     "tslib": "^2.6.3",
     "typescript": "~5.5.4",
-    "typescript-eslint": "^8.21.0",
+    "typescript-eslint": "^8.26.1",
     "vite": "^6.0.11"
   },
   "type": "module"
