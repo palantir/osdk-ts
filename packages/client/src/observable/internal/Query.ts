@@ -22,7 +22,7 @@ import type {
   Subscription,
 } from "rxjs";
 import { additionalContext } from "../../Client.js";
-import type { Logger } from "../../Logger.js";
+import type { Logger } from "../../logger/Logger.js";
 import type { CommonObserveOptions, Status } from "../ObservableClient.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Changes } from "./Changes.js";
@@ -79,7 +79,7 @@ export abstract class Query<
   ): Connectable<PAYLOAD>;
 
   public subscribe(
-    observer: Partial<Observer<PAYLOAD>>,
+    observer: Observer<PAYLOAD>,
   ): Subscription {
     this.#connectable ??= this._createConnectable(this.#subject);
     this.#subscription = this.#connectable.connect();

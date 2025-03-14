@@ -27,7 +27,7 @@ import {
   it,
   vi,
 } from "vitest";
-import type { Logger } from "./Logger.js";
+import type { Logger } from "./logger/Logger.js";
 import type { TsServer } from "./tsserver.js";
 import { startTsServer } from "./tsserver.js";
 
