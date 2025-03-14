@@ -80,13 +80,13 @@ export class FauxDataStore {
       `Expected both sides of the link to have the same rid, but got ${srcSide.linkTypeRid} and ${dstSide.linkTypeRid}`,
     );
 
-    this.updateSingleLinkSide(
+    this.#updateSingleLinkSide(
       srcSide,
       srcLocator,
       dstSide,
       dstLocator,
     );
-    this.updateSingleLinkSide(
+    this.#updateSingleLinkSide(
       dstSide,
       dstLocator,
       srcSide,
@@ -94,7 +94,7 @@ export class FauxDataStore {
     );
   }
 
-  private updateSingleLinkSide(
+  #updateSingleLinkSide(
     srcSide: OntologiesV2.LinkTypeSideV2,
     srcLocator: ObjectLocator,
     dstSide: OntologiesV2.LinkTypeSideV2,
@@ -107,7 +107,7 @@ export class FauxDataStore {
 
       if (oldLocator && oldLocator !== dstLocator) {
         // we need to remove the other side's old value
-        this.removeSingleSideOfLink(
+        this.#removeSingleSideOfLink(
           oldLocator,
           dstSide,
           srcLocator,
@@ -122,7 +122,7 @@ export class FauxDataStore {
     }
   }
 
-  private removeSingleSideOfLink(
+  #removeSingleSideOfLink(
     locator: ObjectLocator,
     linkSide: OntologiesV2.LinkTypeSideV2,
     expectedPriorValue: ObjectLocator,
@@ -173,7 +173,7 @@ export class FauxDataStore {
     }
   }
 
-  getLinks(
+  getLinksOrThrow(
     apiName: string,
     primaryKey: string | number | boolean,
     linkApiName: string,

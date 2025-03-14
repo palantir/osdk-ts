@@ -179,35 +179,6 @@ const actionResponse: SyncApplyActionResponseV2 = {
   },
 };
 
-const actionResponseGetResults: SyncApplyActionResponseV2 = {
-  validation: {
-    result: "VALID",
-    submissionCriteria: [],
-    parameters: {},
-  },
-  edits: {
-    type: "edits",
-    edits: [{
-      type: "modifyObject",
-      primaryKey: "NYC",
-      objectType: officeObjectType.apiName,
-    }],
-    addedObjectCount: 2,
-    addedLinksCount: 0,
-    modifiedObjectsCount: 0,
-    deletedLinksCount: 0,
-    deletedObjectsCount: 0,
-  },
-};
-
-const actionResponseInvalid: SyncApplyActionResponseV2 = {
-  validation: {
-    result: "INVALID",
-    submissionCriteria: [],
-    parameters: {},
-  },
-};
-
 export function registerLazyActions(fauxOntology: FauxOntology): void {
   // These first actions don't didn't have implementations in the legacy ontology
   fauxOntology.registerActionType(PromoteEmployee);
