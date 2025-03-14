@@ -37,12 +37,14 @@ import {
   attachmentUploadRequest,
   attachmentUploadRequestBody,
 } from "../stubs/attachments.js";
-import { fauxDataStore } from "../stubs/fauxDataStore.js";
-import { fauxFoundry } from "../stubs/fauxFoundry.js";
 import {
   latestValueRequestHandlers,
   streamValuesRequestHandlers,
 } from "../stubs/geotimeseriesrequests.js";
+import {
+  fauxFoundry,
+  legacyFauxDataStore,
+} from "../stubs/ontologies/legacyFullOntology.js";
 
 import {
   mediaContentRequestHandler,
@@ -51,7 +53,7 @@ import {
   mediaUploadRequestBody,
 } from "../stubs/media.js";
 import { employeeObjectType } from "../stubs/objectTypes.js";
-import { defaultOntology } from "../stubs/ontologies.js";
+import { defaultOntologyMetadata } from "../stubs/ontologies/defaultOntologyMetadata.js";
 import {
   firstPointRequestHandlers,
   lastPointRequestHandlers,
@@ -134,7 +136,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       const primaryKey = req.params.primaryKey;
 
       const response = subSelectPropertiesUrl(
-        fauxDataStore.getObject(objectType, primaryKey),
+        legacyFauxDataStore.getObjectOrThrow(objectType, primaryKey),
         new URL(req.request.url),
       );
 
@@ -167,7 +169,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       };
 
       const loadObjects = pageThroughResponseSearchParams(
-        fauxDataStore.getObjectsOfType(objectType),
+        legacyFauxDataStore.getObjectsOfType(objectType),
         getPaginationParamsFromUrl(req.request),
         true,
       );
@@ -199,8 +201,8 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       const firstPointResp =
         firstPointRequestHandlers[JSON.stringify(pointParams)];
       if (
-        (req.params.ontologyApiName === defaultOntology.apiName
-          || req.params.ontologyApiName === defaultOntology.rid)
+        (req.params.ontologyApiName === defaultOntologyMetadata.apiName
+          || req.params.ontologyApiName === defaultOntologyMetadata.rid)
         && req.params.objectType === employeeObjectType.apiName
       ) {
         return firstPointResp;
@@ -223,8 +225,8 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       const lastPointResp =
         lastPointRequestHandlers[JSON.stringify(pointParams)];
       if (
-        (req.params.ontologyApiName === defaultOntology.apiName
-          || req.params.ontologyApiName === defaultOntology.rid)
+        (req.params.ontologyApiName === defaultOntologyMetadata.apiName
+          || req.params.ontologyApiName === defaultOntologyMetadata.rid)
         && req.params.objectType === employeeObjectType.apiName
       ) {
         return lastPointResp;
@@ -267,7 +269,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
 
       const linkResults = fauxFoundry
         .getDataStore(ontologyApiName)
-        .getLinks(objectType, primaryKey, linkType);
+        .getLinksOrThrow(objectType, primaryKey, linkType);
 
       const objects = pageThroughResponseSearchParams(
         linkResults,
@@ -313,7 +315,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       const targetPrimaryKey = req.params.targetPrimaryKey;
 
       const links = fauxFoundry.getDataStore(req.params.ontologyApiName)
-        .getLinks(objectType, primaryKey, linkType);
+        .getLinksOrThrow(objectType, primaryKey, linkType);
 
       const object =
         links.filter(l => String(l.__primaryKey) === targetPrimaryKey)[0];
@@ -499,8 +501,8 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       const lastPointResp =
         latestValueRequestHandlers[JSON.stringify(pointParams)];
       if (
-        (req.params.ontologyApiName === defaultOntology.apiName
-          || req.params.ontologyApiName === defaultOntology.rid)
+        (req.params.ontologyApiName === defaultOntologyMetadata.apiName
+          || req.params.ontologyApiName === defaultOntologyMetadata.rid)
         && req.params.objectType === employeeObjectType.apiName
       ) {
         return lastPointResp;
@@ -623,8 +625,8 @@ async function handleStreamValues(
     : streamPointsRequestHandlers[stableStringify(requestBody)];
   if (
     streamPointsResp
-    && (req.params.ontologyApiName === defaultOntology.apiName
-      || req.params.ontologyApiName === defaultOntology.rid)
+    && (req.params.ontologyApiName === defaultOntologyMetadata.apiName
+      || req.params.ontologyApiName === defaultOntologyMetadata.rid)
     && req.params.objectType === employeeObjectType.apiName
   ) {
     return new Response(JSON.stringify(streamPointsResp));

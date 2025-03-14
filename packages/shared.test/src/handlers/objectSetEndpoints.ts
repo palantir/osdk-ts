@@ -24,7 +24,7 @@ import {
 } from "../FauxFoundry/getObjectsFromSet.js";
 import { subSelectProperties } from "../filterObjects.js";
 import { aggregationRequestHandlers } from "../stubs/aggregationRequests.js";
-import { fauxFoundry } from "../stubs/fauxFoundry.js";
+import { fauxFoundry } from "../stubs/ontologies/legacyFullOntology.js";
 import { pageThroughResponseSearchParams } from "./endpointUtils.js";
 import { getPaginationParamsFromRequest } from "./util/getPaginationParams.js";
 import {

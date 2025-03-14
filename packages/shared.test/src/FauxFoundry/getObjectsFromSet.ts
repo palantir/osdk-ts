@@ -88,7 +88,11 @@ export function getObjectsFromSet(
     case "searchAround": {
       const base = getObjectsFromSet(ds, objectSet.objectSet, methodInput);
       return base.flatMap(o => {
-        const ret = ds.getLinks(o.__apiName, o.__primaryKey, objectSet.link);
+        const ret = ds.getLinksOrThrow(
+          o.__apiName,
+          o.__primaryKey,
+          objectSet.link,
+        );
         return ret;
       });
     }

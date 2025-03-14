@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { ActionValidationResponse } from "@osdk/api";
+import type { CompileTimeMetadata } from "@osdk/api";
+import type { ObjectTypeV2 } from "@osdk/foundry.ontologies";
+import type { ToObjectTypeDefinition } from "./ToObjectTypeDefinition.js";
 
-export class ActionValidationError extends Error {
-  constructor(public validation: ActionValidationResponse) {
-    super("Validation Error: " + JSON.stringify(validation, null, 2));
-  }
-}
+export type JustProps<T extends ObjectTypeV2> = CompileTimeMetadata<
+  ToObjectTypeDefinition<T>
+>["props"];

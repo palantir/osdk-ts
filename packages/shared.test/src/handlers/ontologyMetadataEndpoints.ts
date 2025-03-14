@@ -22,12 +22,12 @@ import type { RequestHandler } from "msw";
 import { http as rest, HttpResponse } from "msw";
 import invariant from "tiny-invariant";
 import { InvalidRequest, OntologyNotFoundError } from "../errors.js";
-import { fauxFoundry } from "../stubs/fauxFoundry.js";
 import {
-  defaultOntology,
   defaultOntologyForConjure,
   fullOntology,
 } from "../stubs/ontologies.js";
+import { defaultOntologyMetadata } from "../stubs/ontologies/defaultOntologyMetadata.js";
+import { fauxFoundry } from "../stubs/ontologies/legacyFullOntology.js";
 import { authHandlerMiddleware } from "./commonHandlers.js";
 import {
   handleOpenApiCall,
@@ -109,7 +109,7 @@ const getOntologyEndpoints = (base: string | undefined) => [
     async (req) => {
       return fauxFoundry
         .getOntology(req.params.ontologyApiName)
-        .getObjectTypeFullMetadata(req.params.objectTypeApiName)
+        .getObjectTypeFullMetadataOrThrow(req.params.objectTypeApiName)
         .objectType;
     },
     base,
@@ -121,7 +121,7 @@ const getOntologyEndpoints = (base: string | undefined) => [
     async (req) => {
       return fauxFoundry
         .getOntology(req.params.ontologyApiName)
-        .getObjectTypeFullMetadata(req.params.objectTypeApiName);
+        .getObjectTypeFullMetadataOrThrow(req.params.objectTypeApiName);
     },
     base,
   ),
@@ -173,7 +173,7 @@ const getOntologyEndpoints = (base: string | undefined) => [
       return {
         data: fauxFoundry
           .getOntology(params.ontology)
-          .getObjectTypeFullMetadata(params.objectType).linkTypes,
+          .getObjectTypeFullMetadataOrThrow(params.objectType).linkTypes,
       };
     },
     base,
@@ -239,7 +239,7 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
                   defaultBranchRid:
                     "ri.ontology.main.branch.122438ac-a6b7-46e9-825f-6c911ffff857",
                 },
-              [defaultOntology.rid]: defaultOntologyForConjure,
+              [defaultOntologyMetadata.rid]: defaultOntologyForConjure,
             },
           },
         );

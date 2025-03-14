@@ -20,9 +20,11 @@ import invariant from "tiny-invariant";
 import { ObjectNotFoundError } from "../errors.js";
 import { OpenApiCallError } from "../handlers/util/handleOpenApiCall.js";
 import type { BaseServerObject } from "./BaseServerObject.js";
+import { FauxDataStoreBatch } from "./FauxDataStoreBatch.js";
 import type { FauxOntology } from "./FauxOntology.js";
 import type { ObjectLocator } from "./ObjectLocator.js";
 import { objectLocator, parseLocator } from "./ObjectLocator.js";
+import { validateAction } from "./validateAction.js";
 
 export class FauxDataStore {
   #objects = new DefaultMap<
@@ -31,6 +33,7 @@ export class FauxDataStore {
   >(
     (key) => new Map(),
   );
+
   #singleLinks = new DefaultMap(
     (_objectLocator: ObjectLocator) =>
       new Map<OntologiesV2.LinkTypeApiName, ObjectLocator>(),
@@ -44,6 +47,10 @@ export class FauxDataStore {
 
   constructor(fauxOntology: FauxOntology) {
     this.#fauxOntology = fauxOntology;
+  }
+
+  get ontology(): FauxOntology {
+    return this.#fauxOntology;
   }
 
   registerObject(x: BaseServerObject): void {
@@ -73,13 +80,13 @@ export class FauxDataStore {
       `Expected both sides of the link to have the same rid, but got ${srcSide.linkTypeRid} and ${dstSide.linkTypeRid}`,
     );
 
-    this.updateSingleLinkSide(
+    this.#updateSingleLinkSide(
       srcSide,
       srcLocator,
       dstSide,
       dstLocator,
     );
-    this.updateSingleLinkSide(
+    this.#updateSingleLinkSide(
       dstSide,
       dstLocator,
       srcSide,
@@ -87,7 +94,7 @@ export class FauxDataStore {
     );
   }
 
-  private updateSingleLinkSide(
+  #updateSingleLinkSide(
     srcSide: OntologiesV2.LinkTypeSideV2,
     srcLocator: ObjectLocator,
     dstSide: OntologiesV2.LinkTypeSideV2,
@@ -100,7 +107,7 @@ export class FauxDataStore {
 
       if (oldLocator && oldLocator !== dstLocator) {
         // we need to remove the other side's old value
-        this.removeSingleSideOfLink(
+        this.#removeSingleSideOfLink(
           oldLocator,
           dstSide,
           srcLocator,
@@ -115,7 +122,7 @@ export class FauxDataStore {
     }
   }
 
-  private removeSingleSideOfLink(
+  #removeSingleSideOfLink(
     locator: ObjectLocator,
     linkSide: OntologiesV2.LinkTypeSideV2,
     expectedPriorValue: ObjectLocator,
@@ -135,10 +142,17 @@ export class FauxDataStore {
   getObject(
     apiName: string,
     primaryKey: string | number | boolean,
-  ): BaseServerObject {
-    const object = this.#objects
+  ): BaseServerObject | undefined {
+    return this.#objects
       .get(apiName)
       .get(String(primaryKey));
+  }
+
+  getObjectOrThrow(
+    apiName: string,
+    primaryKey: string | number | boolean,
+  ): BaseServerObject {
+    const object = this.getObject(apiName, primaryKey);
 
     if (!object) {
       throw new OpenApiCallError(
@@ -159,12 +173,12 @@ export class FauxDataStore {
     }
   }
 
-  getLinks(
+  getLinksOrThrow(
     apiName: string,
     primaryKey: string | number | boolean,
     linkApiName: string,
   ): BaseServerObject[] {
-    const object = this.getObject(apiName, primaryKey);
+    const object = this.getObjectOrThrow(apiName, primaryKey);
     if (object === undefined) {
       throw new OpenApiCallError(
         404,
@@ -186,7 +200,7 @@ export class FauxDataStore {
       }
       const { objectType, primaryKey } = parseLocator(locator);
 
-      return [this.getObject(objectType, primaryKey)]; // will throw if not found
+      return [this.getObjectOrThrow(objectType, primaryKey)]; // will throw if not found
     } else {
       const locators = this.#manyLinks
         .get(objectLocator(object))
@@ -196,7 +210,7 @@ export class FauxDataStore {
         .map((a) => {
           const [objectType, primaryKey] = a.split(":") ?? [];
           invariant(objectType && primaryKey, "Invalid locator format");
-          return this.getObject(objectType, primaryKey);
+          return this.getObjectOrThrow(objectType, primaryKey);
         });
     }
   }
@@ -205,5 +219,119 @@ export class FauxDataStore {
     return this.#objects
       .get(apiName)
       .values();
+  }
+
+  applyAction(
+    actionTypeApiName: string,
+    req: OntologiesV2.ApplyActionRequestV2,
+  ): OntologiesV2.SyncApplyActionResponseV2 {
+    const actionDef = this.#fauxOntology.getActionDef(actionTypeApiName);
+    const actionImpl = this.#fauxOntology.getActionImpl(actionTypeApiName);
+
+    const validation = validateAction(req, actionDef, this);
+    if (validation.result === "INVALID") {
+      return { validation };
+    }
+
+    const batch = new FauxDataStoreBatch(this);
+    const r = actionImpl(batch, req, actionDef);
+
+    // The legacy actions return the full payload
+    // they want to return, so we need to do that
+    // but the future is for the actionImpl's to
+    // return void and to do validation details here
+    if (r) return r;
+
+    return {
+      validation: {
+        parameters: {},
+        result: "VALID",
+        submissionCriteria: [],
+      },
+      edits: req.options?.mode === "VALIDATE_AND_EXECUTE"
+          && (
+            req.options.returnEdits === "ALL"
+            || req.options.returnEdits === "ALL_V2_WITH_DELETIONS"
+          )
+        ? {
+          type: "edits",
+          ...batch.objectEdits,
+        }
+        : undefined,
+    };
+  }
+
+  batchApplyAction(
+    actionTypeApiName: string,
+    batchReq: OntologiesV2.BatchApplyActionRequestV2,
+  ): OntologiesV2.BatchApplyActionResponseV2 {
+    const actionDef = this.#fauxOntology.getActionDef(actionTypeApiName);
+    const actionImpl = this.#fauxOntology.getActionImpl(actionTypeApiName);
+
+    for (const req of batchReq.requests) {
+      const result = validateAction(req, actionDef, this);
+      if (result.result === "INVALID") {
+        throw new OpenApiCallError(
+          500,
+          {
+            errorCode: "INVALID_ARGUMENT",
+            errorName: "ActionValidationFailed",
+            errorInstanceId: "faux-foundry",
+            parameters: {
+              actionType: actionTypeApiName,
+            },
+          } as OntologiesV2.ActionValidationFailed,
+        );
+      }
+    }
+
+    const batch = new FauxDataStoreBatch(this);
+
+    const returnLargeScaleEdits = false;
+    for (const item of batchReq.requests) {
+      actionImpl(
+        batch,
+        {
+          ...item,
+          options: {
+            mode: "VALIDATE_AND_EXECUTE",
+            returnEdits: batchReq.options?.returnEdits,
+          },
+        },
+        actionDef,
+      );
+    }
+    if (batchReq.options?.returnEdits === "NONE") {
+      return {};
+    }
+
+    if (returnLargeScaleEdits) {
+      const editedObjectTypes = new Set<OntologiesV2.ObjectTypeApiName>();
+      for (const edit of batch.objectEdits.edits) {
+        if (
+          edit.type === "modifyObject" || edit.type === "addObject"
+          || edit.type === "deleteObject"
+        ) {
+          editedObjectTypes.add(edit.objectType);
+        }
+      }
+
+      return {
+        edits: {
+          type: "largeScaleEdits",
+          editedObjectTypes: Array.from(editedObjectTypes),
+        },
+      };
+    }
+
+    return {
+      edits: {
+        type: "edits",
+        ...batch.objectEdits,
+        edits: batch.objectEdits.edits.filter(x =>
+          x.type !== "deleteObject" && x.type !== "deleteLink"
+        ),
+      },
+    };
   }
 }
