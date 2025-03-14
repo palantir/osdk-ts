@@ -24,10 +24,10 @@ import invariant from "tiny-invariant";
 import { InvalidRequest, OntologyNotFoundError } from "../errors.js";
 import { fauxFoundry } from "../stubs/fauxFoundry.js";
 import {
-  defaultOntology,
   defaultOntologyForConjure,
   fullOntology,
 } from "../stubs/ontologies.js";
+import { defaultOntologyMetadata } from "../stubs/ontologies/defaultOntologyMetadata.js";
 import { authHandlerMiddleware } from "./commonHandlers.js";
 import {
   handleOpenApiCall,
@@ -239,7 +239,7 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
                   defaultBranchRid:
                     "ri.ontology.main.branch.122438ac-a6b7-46e9-825f-6c911ffff857",
                 },
-              [defaultOntology.rid]: defaultOntologyForConjure,
+              [defaultOntologyMetadata.rid]: defaultOntologyForConjure,
             },
           },
         );

@@ -16,7 +16,6 @@
 
 import invariant from "tiny-invariant";
 import { FauxDataStore } from "../FauxFoundry/FauxDataStore.js";
-import { fauxOntology } from "./fauxOntology.js";
 import {
   employee1 as employee_John_50030,
   employee2 as employee_Jane_50031,
@@ -29,8 +28,11 @@ import {
   objectWithAllPropertyTypesEmptyEntries,
   travisPlayer,
 } from "./objects.js";
+import { legacyFullOntology } from "./ontologies/legacyFullOntology.js";
 
-export const fauxDataStore: FauxDataStore = new FauxDataStore(fauxOntology);
+export const fauxDataStore: FauxDataStore = new FauxDataStore(
+  legacyFullOntology,
+);
 
 fauxDataStore.registerObject(employee_John_50030);
 fauxDataStore.registerObject(employee_Jane_50031);

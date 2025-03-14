@@ -51,7 +51,7 @@ import {
   mediaUploadRequestBody,
 } from "../stubs/media.js";
 import { employeeObjectType } from "../stubs/objectTypes.js";
-import { defaultOntology } from "../stubs/ontologies.js";
+import { defaultOntologyMetadata } from "../stubs/ontologies/defaultOntologyMetadata.js";
 import {
   firstPointRequestHandlers,
   lastPointRequestHandlers,
@@ -199,8 +199,8 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       const firstPointResp =
         firstPointRequestHandlers[JSON.stringify(pointParams)];
       if (
-        (req.params.ontologyApiName === defaultOntology.apiName
-          || req.params.ontologyApiName === defaultOntology.rid)
+        (req.params.ontologyApiName === defaultOntologyMetadata.apiName
+          || req.params.ontologyApiName === defaultOntologyMetadata.rid)
         && req.params.objectType === employeeObjectType.apiName
       ) {
         return firstPointResp;
@@ -223,8 +223,8 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       const lastPointResp =
         lastPointRequestHandlers[JSON.stringify(pointParams)];
       if (
-        (req.params.ontologyApiName === defaultOntology.apiName
-          || req.params.ontologyApiName === defaultOntology.rid)
+        (req.params.ontologyApiName === defaultOntologyMetadata.apiName
+          || req.params.ontologyApiName === defaultOntologyMetadata.rid)
         && req.params.objectType === employeeObjectType.apiName
       ) {
         return lastPointResp;
@@ -499,8 +499,8 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       const lastPointResp =
         latestValueRequestHandlers[JSON.stringify(pointParams)];
       if (
-        (req.params.ontologyApiName === defaultOntology.apiName
-          || req.params.ontologyApiName === defaultOntology.rid)
+        (req.params.ontologyApiName === defaultOntologyMetadata.apiName
+          || req.params.ontologyApiName === defaultOntologyMetadata.rid)
         && req.params.objectType === employeeObjectType.apiName
       ) {
         return lastPointResp;
@@ -623,8 +623,8 @@ async function handleStreamValues(
     : streamPointsRequestHandlers[stableStringify(requestBody)];
   if (
     streamPointsResp
-    && (req.params.ontologyApiName === defaultOntology.apiName
-      || req.params.ontologyApiName === defaultOntology.rid)
+    && (req.params.ontologyApiName === defaultOntologyMetadata.apiName
+      || req.params.ontologyApiName === defaultOntologyMetadata.rid)
     && req.params.objectType === employeeObjectType.apiName
   ) {
     return new Response(JSON.stringify(streamPointsResp));

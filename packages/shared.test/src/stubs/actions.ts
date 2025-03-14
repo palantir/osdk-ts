@@ -20,7 +20,22 @@ import type {
   BatchApplyActionResponseV2,
   SyncApplyActionResponseV2,
 } from "@osdk/foundry.ontologies";
-import stableStringify from "json-stable-stringify";
+import type { FauxOntology } from "../FauxFoundry/FauxOntology.js";
+import { createLazyDoNothingActionImpl } from "../handlers/util/createLazyDoNothingActionImpl.js";
+import {
+  ActionCreatesInterface,
+  ActionTakesAnotherInterface,
+  ActionTakesAttachment,
+  ActionTakesInterface,
+  ActionTakesMedia,
+  ActionTakesObjectSet,
+  ActionTakesStruct,
+  CreateOffice,
+  CreateOfficeAndEmployee,
+  MoveOffice,
+  PromoteEmployee,
+  PromoteEmployeeObject,
+} from "./actionsTypes.js";
 import { mediaReference } from "./media.js";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
 
@@ -360,54 +375,89 @@ const actionResponseMoveOfficeBatch: BatchApplyActionResponseV2 = {
   },
 };
 
-export const actionResponseMap: {
-  [actionApiName: string]: {
-    [actionBody: string]: any;
-  };
-} = {
-  promoteEmployee: {},
-  createOffice: {
-    [stableStringify(actionRequestCreateOffice)]: actionResponseCreateOffice,
-    [stableStringify(actionRequestCreateOfficeNoReturnEdits)]: actionResponse,
-  },
-  moveOffice: {
-    [stableStringify(actionRequestMoveOffice)]: actionResponse,
-    [stableStringify(actionRequestMoveOfficeBig)]: actionResponseMoveOfficeBig,
-    [stableStringify(actionRequestMoveOfficeGetResults)]:
-      actionResponseGetResults,
-    [stableStringify(actionRequestMoveOfficeValidateOnly)]:
-      actionResponseInvalid,
-    [stableStringify(actionRequestMoveOfficeValidateOnlyWithoutEdits)]:
-      actionResponseInvalid,
-    [stableStringify(actionRequestMoveOfficeInvalid)]: actionResponseInvalid,
-    [stableStringify(actionRequestMoveOffice2)]: undefined,
-    [stableStringify(actionRequestMoveOffice3)]: undefined,
-    [stableStringify(actionRequestMoveOfficeBatch)]: {},
-    [stableStringify(actionRequestMoveOfficeBatchWithEdits)]:
-      actionResponseMoveOfficeBatch,
-    [stableStringify(actionRequestMoveOfficeBatchInvalid)]: undefined,
-  },
-  createOfficeAndEmployee: {
-    [stableStringify(actionRequestCreateOfficeAndEmployee)]:
-      actionResponseCreateOfficeAndEmployee,
-  },
-  actionTakesObjectSet: {
-    [stableStringify(actionRequestWithObjectSet)]: actionResponse,
-  },
-  actionTakesAttachment: {
-    [stableStringify(actionRequestWithAttachment)]: actionResponse,
-    [stableStringify(actionRequestWithAttachmentUpload)]: actionResponse,
-  },
-  actionTakesMedia: {
-    [stableStringify(actionRequestMediaUpload)]: actionResponse,
-  },
-  deleteFooInterface: {
-    [stableStringify(actionRequestWithInterface)]: actionResponse,
-  },
-  createStructPerson: {
-    [stableStringify(actionRequestWithStruct)]: actionResponse,
-  },
-  createFooInterface: {
-    [stableStringify(actionRequestWithObjectTypeReference)]: actionResponse,
-  },
-};
+export function registerLazyActions(fauxOntology: FauxOntology): void {
+  // These first actions don't didn't have implementations in the legacy ontology
+  fauxOntology.registerActionType(PromoteEmployee);
+  fauxOntology.registerActionType(ActionTakesAnotherInterface);
+  fauxOntology.registerActionType(PromoteEmployeeObject);
+
+  // junk implementations!
+
+  fauxOntology.registerActionType(
+    CreateOffice,
+    createLazyDoNothingActionImpl([
+      [actionRequestCreateOffice, actionResponseCreateOffice],
+      [actionRequestCreateOfficeNoReturnEdits, actionResponse],
+    ]),
+  );
+
+  fauxOntology.registerActionType(
+    MoveOffice,
+    createLazyDoNothingActionImpl([
+      [actionRequestMoveOffice, actionResponse],
+      [actionRequestMoveOfficeBig, actionResponseMoveOfficeBig],
+      [actionRequestMoveOfficeGetResults, actionResponseGetResults],
+      [actionRequestMoveOfficeValidateOnly, actionResponseInvalid],
+      [actionRequestMoveOfficeValidateOnlyWithoutEdits, actionResponseInvalid],
+      [actionRequestMoveOfficeInvalid, actionResponseInvalid],
+      [actionRequestMoveOffice2, undefined],
+      [actionRequestMoveOffice3, undefined],
+      [actionRequestMoveOfficeBatch, {}],
+      [actionRequestMoveOfficeBatchWithEdits, actionResponseMoveOfficeBatch],
+      [actionRequestMoveOfficeBatchInvalid, undefined],
+    ]),
+  );
+
+  fauxOntology.registerActionType(
+    CreateOfficeAndEmployee,
+    createLazyDoNothingActionImpl([
+      [
+        actionRequestCreateOfficeAndEmployee,
+        actionResponseCreateOfficeAndEmployee,
+      ],
+    ]),
+  );
+
+  fauxOntology.registerActionType(
+    ActionTakesObjectSet,
+    createLazyDoNothingActionImpl([
+      [actionRequestWithObjectSet, actionResponse],
+    ]),
+  );
+
+  fauxOntology.registerActionType(
+    ActionTakesAttachment,
+    createLazyDoNothingActionImpl([
+      [actionRequestWithAttachment, actionResponse],
+      [actionRequestWithAttachmentUpload, actionResponse],
+    ]),
+  );
+
+  fauxOntology.registerActionType(
+    ActionTakesMedia,
+    createLazyDoNothingActionImpl([
+      [actionRequestMediaUpload, actionResponse],
+    ]),
+  );
+
+  fauxOntology.registerActionType(
+    ActionTakesInterface,
+    createLazyDoNothingActionImpl([
+      [actionRequestWithInterface, actionResponse],
+    ]),
+  );
+
+  fauxOntology.registerActionType(
+    ActionTakesStruct,
+    createLazyDoNothingActionImpl([
+      [actionRequestWithStruct, actionResponse],
+    ]),
+  );
+
+  fauxOntology.registerActionType(
+    ActionCreatesInterface,
+    createLazyDoNothingActionImpl([
+      [actionRequestWithObjectTypeReference, actionResponse],
+    ]),
+  );
+}

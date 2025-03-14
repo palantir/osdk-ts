@@ -19,18 +19,17 @@ import type {
   SyncApplyActionResponseV2,
 } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
-import stableStringify from "json-stable-stringify";
 import type { HttpResponseResolver, PathParams, RequestHandler } from "msw";
 import type { BaseAPIError } from "../BaseError.js";
-import { ApplyActionFailedError, InvalidRequest } from "../errors.js";
-import { actionResponseMap } from "../stubs/actions.js";
-import { defaultOntology } from "../stubs/ontologies.js";
+import { ApplyActionFailedError } from "../errors.js";
+import { fauxFoundry } from "../stubs/fauxFoundry.js";
 import { getOntologyOld } from "./ontologyMetadataEndpoints.js";
 import type { ExtractBody, ExtractResponse } from "./util/handleOpenApiCall.js";
 import {
   handleOpenApiCall,
   OpenApiCallError,
 } from "./util/handleOpenApiCall.js";
+import { requireParams } from "./util/requireParam.js";
 
 export const actionHandlers: Array<RequestHandler> = [
   undefined,
@@ -75,6 +74,15 @@ export const actionHandlers: Array<RequestHandler> = [
   ),
 ]);
 
+/**
+ * This currently tries to do both batch and regular apply actions, which only
+ * works with the `createLazyDoNothingActionImpl` as it just string compares
+ * inputs. This is a temporary solution to get the existing actions working.
+ *
+ * Next refactor of this should move the batch code to loop over the non-batch
+ * endpoint which means manually updating these lazy entries (or bite the bullet
+ * and rewrite those tests)
+ */
 async function handleAction<
   T extends BatchApplyActionResponse | SyncApplyActionResponseV2,
 >(
@@ -86,28 +94,25 @@ async function handleAction<
       T | BaseAPIError
     >
   >[0],
-) {
+): Promise<T> {
   const parsedBody = await req.request.json();
 
-  const ontologyApiName = req.params.ontologyApiName;
-  const actionType = req.params.actionType;
+  requireParams(req.params, ["ontologyApiName", "actionType"]);
+  const { ontologyApiName, actionType } = req.params;
 
-  if (
-    typeof ontologyApiName !== "string" || typeof actionType !== "string"
-  ) {
-    throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
+  const ontology = fauxFoundry.getOntology(ontologyApiName);
+  const dataStore = fauxFoundry.getDataStore(ontologyApiName);
+
+  const impl = ontology.getActionImpl(actionType);
+
+  const response = impl(dataStore, parsedBody);
+
+  // this is just for the legacy code that registered `undefined` as the return
+  // value causing this code path. Once we get rid of the uses of
+  // `createLazyDoNothingActionImpl` this should be removed.
+  if (!response) {
+    throw new OpenApiCallError(400, ApplyActionFailedError);
   }
 
-  const actionResponse =
-    actionResponseMap[actionType][stableStringify(parsedBody)];
-
-  if (
-    (req.params.ontologyApiName === defaultOntology.apiName
-      || req.params.ontologyApiName === defaultOntology.rid)
-    && actionResponse
-  ) {
-    return actionResponse;
-  }
-
-  throw new OpenApiCallError(400, ApplyActionFailedError);
+  return response as T;
 }

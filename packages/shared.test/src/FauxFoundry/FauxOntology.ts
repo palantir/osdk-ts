@@ -20,6 +20,7 @@ import {
   type ObjectTypeDefinition,
 } from "@osdk/api";
 import type * as OntologiesV2 from "@osdk/foundry.ontologies";
+import invariant from "tiny-invariant";
 import {
   ActionNotFoundError,
   LinkTypeNotFound,
@@ -28,6 +29,7 @@ import {
   QueryNotFoundError,
 } from "../errors.js";
 import { OpenApiCallError } from "../handlers/util/handleOpenApiCall.js";
+import type { FauxDataStore } from "./FauxDataStore.js";
 
 interface TypeHelper_Property<Q extends ObjectMetadata.Property>
   extends OntologiesV2.PropertyV2
@@ -58,6 +60,17 @@ interface TypeHelper_ObjectTypeFullMetadata<Q extends ObjectTypeDefinition>
 
 export class FauxOntology {
   #ontology: OntologiesV2.OntologyFullMetadata;
+  #actionImpl: Map<
+    OntologiesV2.ActionTypeApiName,
+    (
+      fauxDataStore: FauxDataStore,
+      payload:
+        | OntologiesV2.ApplyActionRequestV2
+        | OntologiesV2.BatchApplyActionRequestV2,
+    ) =>
+      | OntologiesV2.SyncApplyActionResponseV2
+      | OntologiesV2.BatchApplyActionResponseV2
+  > = new Map();
 
   constructor(ontology: OntologiesV2.OntologyV2) {
     this.#ontology = {
@@ -127,6 +140,22 @@ export class FauxOntology {
     return actionType;
   }
 
+  public getActionImpl(
+    actionTypeApiName: string,
+  ): (
+    fauxDataStore: FauxDataStore,
+    payload:
+      | OntologiesV2.ApplyActionRequestV2
+      | OntologiesV2.BatchApplyActionRequestV2,
+  ) =>
+    | OntologiesV2.SyncApplyActionResponseV2
+    | OntologiesV2.BatchApplyActionResponseV2
+  {
+    const impl = this.#actionImpl.get(actionTypeApiName);
+    invariant(impl, "Action implementation not found for " + actionTypeApiName);
+    return impl;
+  }
+
   public getQueryDef(
     queryTypeApiName: string,
   ): OntologiesV2.QueryTypeV2 {
@@ -176,13 +205,26 @@ export class FauxOntology {
     this.#ontology.objectTypes[def.objectType.apiName] = def;
   }
 
-  registerActionType(def: OntologiesV2.ActionTypeV2): void {
+  registerActionType(
+    def: OntologiesV2.ActionTypeV2,
+    implementation?: (
+      fauxDataStore: FauxDataStore,
+      payload:
+        | OntologiesV2.ApplyActionRequestV2
+        | OntologiesV2.BatchApplyActionRequestV2,
+    ) =>
+      | OntologiesV2.SyncApplyActionResponseV2
+      | OntologiesV2.BatchApplyActionResponseV2,
+  ): void {
     if (def.apiName in this.#ontology.actionTypes) {
       throw new Error(
         `ActionType ${def.apiName} already registered`,
       );
     }
     this.#ontology.actionTypes[def.apiName] = def;
+    if (implementation) {
+      this.#actionImpl.set(def.apiName, implementation);
+    }
   }
 
   registerQueryType(def: OntologiesV2.QueryTypeV2): void {
