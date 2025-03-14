@@ -37,12 +37,14 @@ import {
   attachmentUploadRequest,
   attachmentUploadRequestBody,
 } from "../stubs/attachments.js";
-import { fauxDataStore } from "../stubs/fauxDataStore.js";
-import { fauxFoundry } from "../stubs/fauxFoundry.js";
 import {
   latestValueRequestHandlers,
   streamValuesRequestHandlers,
 } from "../stubs/geotimeseriesrequests.js";
+import {
+  fauxFoundry,
+  legacyFauxDataStore,
+} from "../stubs/ontologies/legacyFullOntology.js";
 
 import {
   mediaContentRequestHandler,
@@ -134,7 +136,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       const primaryKey = req.params.primaryKey;
 
       const response = subSelectPropertiesUrl(
-        fauxDataStore.getObject(objectType, primaryKey),
+        legacyFauxDataStore.getObject(objectType, primaryKey),
         new URL(req.request.url),
       );
 
@@ -167,7 +169,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       };
 
       const loadObjects = pageThroughResponseSearchParams(
-        fauxDataStore.getObjectsOfType(objectType),
+        legacyFauxDataStore.getObjectsOfType(objectType),
         getPaginationParamsFromUrl(req.request),
         true,
       );

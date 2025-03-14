@@ -22,12 +22,12 @@ import type { RequestHandler } from "msw";
 import { http as rest, HttpResponse } from "msw";
 import invariant from "tiny-invariant";
 import { InvalidRequest, OntologyNotFoundError } from "../errors.js";
-import { fauxFoundry } from "../stubs/fauxFoundry.js";
 import {
   defaultOntologyForConjure,
   fullOntology,
 } from "../stubs/ontologies.js";
 import { defaultOntologyMetadata } from "../stubs/ontologies/defaultOntologyMetadata.js";
+import { fauxFoundry } from "../stubs/ontologies/legacyFullOntology.js";
 import { authHandlerMiddleware } from "./commonHandlers.js";
 import {
   handleOpenApiCall,

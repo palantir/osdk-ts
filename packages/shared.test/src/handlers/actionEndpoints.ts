@@ -22,7 +22,7 @@ import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { HttpResponseResolver, PathParams, RequestHandler } from "msw";
 import type { BaseAPIError } from "../BaseError.js";
 import { ApplyActionFailedError } from "../errors.js";
-import { fauxFoundry } from "../stubs/fauxFoundry.js";
+import { fauxFoundry } from "../stubs/ontologies/legacyFullOntology.js";
 import { getOntologyOld } from "./ontologyMetadataEndpoints.js";
 import type { ExtractBody, ExtractResponse } from "./util/handleOpenApiCall.js";
 import {
