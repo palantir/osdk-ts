@@ -33,6 +33,9 @@ import {
 } from "./util/handleOpenApiCall.js";
 
 export const actionHandlers: Array<RequestHandler> = [
+  undefined,
+  "https://stack.palantirCustom.com/foo/first/someStuff/",
+].flatMap(baseUrl => [
   /**
    * List ActionTypes
    */
@@ -46,6 +49,7 @@ export const actionHandlers: Array<RequestHandler> = [
         data: Object.values(ontology.actionTypes),
       };
     },
+    baseUrl,
   ),
 
   /**
@@ -55,16 +59,7 @@ export const actionHandlers: Array<RequestHandler> = [
     OntologiesV2.Actions.apply,
     ["ontologyApiName", "actionType"],
     handleAction<SyncApplyActionResponseV2>,
-  ),
-
-  /**
-   * Apply an Action with custom URL entrypoint
-   */
-  handleOpenApiCall(
-    OntologiesV2.Actions.apply,
-    ["ontologyApiName", "actionType"],
-    handleAction<SyncApplyActionResponseV2>,
-    "https://stack.palantirCustom.com/foo/first/someStuff/",
+    baseUrl,
   ),
 
   /**
@@ -76,8 +71,9 @@ export const actionHandlers: Array<RequestHandler> = [
     handleAction<
       ExtractResponse<typeof OntologiesV2.Actions.applyBatch>
     >,
+    baseUrl,
   ),
-];
+]);
 
 async function handleAction<
   T extends BatchApplyActionResponse | SyncApplyActionResponseV2,
