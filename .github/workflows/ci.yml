@@ -154,29 +154,3 @@ jobs:
       - name: Faux Publish
         run: pnpm publish -r --no-git-checks
 
-  windowsCodegen:
-    name: Windows Code Generation
-    runs-on: windows-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Build
-        run: pnpm build
-
-      - name: Run codegen
-        run: pnpm codegen
-        working-directory: packages/e2e.test.foundry-sdk-generator
