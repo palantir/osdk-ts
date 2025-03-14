@@ -30,6 +30,7 @@ import {
   createStructPerson,
   deleteBarInterface,
   deleteFooInterface,
+  Employee,
   moveOffice,
 } from "@osdk/client.test.ontology";
 import type {
@@ -377,7 +378,7 @@ describe("actions", () => {
     const result = await client(deleteFooInterface).applyAction({
       deletedInterface: {
         $objectType: "Employee",
-        $primaryKey: 1,
+        $primaryKey: 50030,
       },
     });
 
@@ -447,7 +448,7 @@ describe("actions", () => {
     }[]>().toMatchTypeOf<InferredBatchParamType>();
 
     const result = await client(createFooInterface).applyAction({
-      createdInterface: "UnderlyingObject",
+      createdInterface: Employee.apiName,
     });
 
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();

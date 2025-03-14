@@ -270,6 +270,13 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
           "pluralDisplayName": "Office",
           "primaryKey": "officeId",
           "properties": {
+            "capacity": {
+              "dataType": {
+                "type": "integer",
+              },
+              "description": "The capacity of the Office",
+              "rid": "rid",
+            },
             "entrance": {
               "dataType": {
                 "type": "geopoint",
@@ -484,6 +491,13 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
           "pluralDisplayName": "Office",
           "primaryKey": "officeId",
           "properties": {
+            "capacity": {
+              "dataType": {
+                "type": "integer",
+              },
+              "description": "The capacity of the Office",
+              "rid": "rid",
+            },
             "entrance": {
               "dataType": {
                 "type": "geopoint",

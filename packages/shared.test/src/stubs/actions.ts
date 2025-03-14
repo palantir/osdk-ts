@@ -103,14 +103,14 @@ export const actionRequestMediaUpload: ApplyActionRequestV2 = {
 export const actionRequestWithInterface: ApplyActionRequestV2 = {
   options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
   parameters: {
-    deletedInterface: { objectTypeApiName: "Employee", primaryKeyValue: 1 },
+    deletedInterface: { objectTypeApiName: "Employee", primaryKeyValue: 50030 },
   },
 };
 
 export const actionRequestWithObjectTypeReference: ApplyActionRequestV2 = {
   options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
   parameters: {
-    createdInterface: "UnderlyingObject",
+    createdInterface: "Employee",
   },
 };
 

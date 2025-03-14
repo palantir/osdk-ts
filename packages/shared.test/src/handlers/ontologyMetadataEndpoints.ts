@@ -109,7 +109,7 @@ const getOntologyEndpoints = (base: string | undefined) => [
     async (req) => {
       return fauxFoundry
         .getOntology(req.params.ontologyApiName)
-        .getObjectTypeFullMetadata(req.params.objectTypeApiName)
+        .getObjectTypeFullMetadataOrThrow(req.params.objectTypeApiName)
         .objectType;
     },
     base,
@@ -121,7 +121,7 @@ const getOntologyEndpoints = (base: string | undefined) => [
     async (req) => {
       return fauxFoundry
         .getOntology(req.params.ontologyApiName)
-        .getObjectTypeFullMetadata(req.params.objectTypeApiName);
+        .getObjectTypeFullMetadataOrThrow(req.params.objectTypeApiName);
     },
     base,
   ),
@@ -173,7 +173,7 @@ const getOntologyEndpoints = (base: string | undefined) => [
       return {
         data: fauxFoundry
           .getOntology(params.ontology)
-          .getObjectTypeFullMetadata(params.objectType).linkTypes,
+          .getObjectTypeFullMetadataOrThrow(params.objectType).linkTypes,
       };
     },
     base,

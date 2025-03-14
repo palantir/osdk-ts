@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionTypeV2 } from "@osdk/foundry.ontologies";
+import type { ActionTypeV2, ObjectTypeApiName } from "@osdk/foundry.ontologies";
 import { BarInterface, FooInterface } from "./interfaces.js";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
 
@@ -179,7 +179,56 @@ export const CreateOfficeAndEmployee: ActionTypeV2 = {
   status: "ACTIVE",
 };
 
-export const MoveOffice: ActionTypeV2 = {
+interface MoveOfficeActionDef {
+  readonly apiName: "moveOffice";
+  readonly description: "Update an office's physical location";
+  readonly displayName: "move-office";
+  readonly parameters: {
+    readonly officeId: {
+      readonly dataType: {
+        readonly type: "string";
+      };
+      readonly required: true;
+    };
+    readonly newAddress: {
+      readonly description:
+        "The office's new physical address (not necessarily shipping address)";
+      readonly dataType: {
+        readonly type: "string";
+      };
+      readonly required: false;
+    };
+    readonly newCapacity: {
+      readonly description:
+        "The maximum seated-at-desk capacity of the new office (maximum fire-safe capacity may be higher)";
+      readonly dataType: {
+        readonly type: "integer";
+      };
+      readonly required: false;
+    };
+    readonly officeNames: {
+      readonly description: "A list of all office names";
+      readonly dataType: {
+        readonly type: "array";
+        readonly subType: {
+          readonly type: "integer";
+        };
+      };
+      readonly required: false;
+    };
+  };
+  readonly rid:
+    "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2";
+  readonly operations: [
+    {
+      readonly type: "modifyObject";
+      readonly objectTypeApiName: ObjectTypeApiName;
+    },
+  ];
+  readonly status: "ACTIVE";
+}
+
+export const MoveOffice: MoveOfficeActionDef = {
   apiName: "moveOffice",
   description: "Update an office's physical location",
   displayName: "move-office",
@@ -223,7 +272,7 @@ export const MoveOffice: ActionTypeV2 = {
     objectTypeApiName: officeObjectType.apiName,
   }],
   status: "ACTIVE",
-};
+} as const satisfies ActionTypeV2;
 
 export const ActionTakesObjectSet: ActionTypeV2 = {
   apiName: "actionTakesObjectSet",

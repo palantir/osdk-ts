@@ -29,7 +29,8 @@ import {
   QueryNotFoundError,
 } from "../errors.js";
 import { OpenApiCallError } from "../handlers/util/handleOpenApiCall.js";
-import type { FauxDataStore } from "./FauxDataStore.js";
+import type { FauxDataStoreBatch } from "./FauxDataStoreBatch.js";
+import type { TH_ApplyActionRequestV2 } from "./typeHelpers/TH_ApplyActionRequestV2.js";
 
 interface TypeHelper_Property<Q extends ObjectMetadata.Property>
   extends OntologiesV2.PropertyV2
@@ -58,16 +59,17 @@ interface TypeHelper_ObjectTypeFullMetadata<Q extends ObjectTypeDefinition>
   objectType: TypeHelper_ObjectType<Q>;
 }
 
+export type ActionImpl<
+  Q extends OntologiesV2.ActionTypeV2 = OntologiesV2.ActionTypeV2,
+> = (
+  batch: FauxDataStoreBatch,
+  payload: TH_ApplyActionRequestV2<Q>,
+  def: Q,
+) => unknown;
+
 export class FauxOntology {
   #ontology: OntologiesV2.OntologyFullMetadata;
-  #actionImpl: Map<
-    OntologiesV2.ActionTypeApiName,
-    (
-      fauxDataStore: FauxDataStore,
-      payload: OntologiesV2.ApplyActionRequestV2,
-      def: OntologiesV2.ActionTypeV2,
-    ) => OntologiesV2.SyncApplyActionResponseV2
-  > = new Map();
+  #actionImpl: Map<OntologiesV2.ActionTypeApiName, ActionImpl> = new Map();
 
   constructor(ontology: OntologiesV2.OntologyV2) {
     this.#ontology = {
@@ -117,6 +119,12 @@ export class FauxOntology {
 
   public getObjectTypeFullMetadata(
     objectTypeApiName: string,
+  ): OntologiesV2.ObjectTypeFullMetadata | undefined {
+    return this.#ontology.objectTypes[objectTypeApiName];
+  }
+
+  public getObjectTypeFullMetadataOrThrow(
+    objectTypeApiName: string,
   ): OntologiesV2.ObjectTypeFullMetadata {
     const objectType = this.#ontology.objectTypes[objectTypeApiName];
     if (objectType === undefined) {
@@ -128,9 +136,7 @@ export class FauxOntology {
     return objectType;
   }
 
-  public getActionDef(
-    actionTypeApiName: string,
-  ): OntologiesV2.ActionTypeV2 {
+  public getActionDef(actionTypeApiName: string): OntologiesV2.ActionTypeV2 {
     const actionType = this.#ontology.actionTypes[actionTypeApiName];
     if (actionType === undefined) {
       throw new OpenApiCallError(
@@ -141,21 +147,13 @@ export class FauxOntology {
     return actionType;
   }
 
-  public getActionImpl(
-    actionTypeApiName: string,
-  ): (
-    fauxDataStore: FauxDataStore,
-    payload: OntologiesV2.ApplyActionRequestV2,
-    def: OntologiesV2.ActionTypeV2,
-  ) => OntologiesV2.SyncApplyActionResponseV2 {
+  public getActionImpl(actionTypeApiName: string): ActionImpl {
     const impl = this.#actionImpl.get(actionTypeApiName);
     invariant(impl, "Action implementation not found for " + actionTypeApiName);
     return impl;
   }
 
-  public getQueryDef(
-    queryTypeApiName: string,
-  ): OntologiesV2.QueryTypeV2 {
+  public getQueryDef(queryTypeApiName: string): OntologiesV2.QueryTypeV2 {
     const queryType = this.#ontology.queryTypes[queryTypeApiName];
     if (queryType === undefined) {
       throw new OpenApiCallError(
@@ -170,7 +168,7 @@ export class FauxOntology {
     objectTypeApiName: string,
     linkTypeName: string,
   ): OntologiesV2.LinkTypeSideV2 {
-    const objectType = this.getObjectTypeFullMetadata(objectTypeApiName);
+    const objectType = this.getObjectTypeFullMetadataOrThrow(objectTypeApiName);
     const linkType = objectType.linkTypes.find((a) =>
       a.apiName === linkTypeName
     );
@@ -202,13 +200,17 @@ export class FauxOntology {
     this.#ontology.objectTypes[def.objectType.apiName] = def;
   }
 
+  registerActionType<Q extends OntologiesV2.ActionTypeV2>(
+    def: Q,
+    implementation?: ActionImpl<Q>,
+  ): void;
   registerActionType(
     def: OntologiesV2.ActionTypeV2,
-    implementation?: (
-      fauxDataStore: FauxDataStore,
-      payload: OntologiesV2.ApplyActionRequestV2,
-      def: OntologiesV2.ActionTypeV2,
-    ) => OntologiesV2.SyncApplyActionResponseV2,
+    implementation?: ActionImpl,
+  ): void;
+  registerActionType(
+    def: OntologiesV2.ActionTypeV2,
+    implementation?: ActionImpl,
   ): void {
     if (def.apiName in this.#ontology.actionTypes) {
       throw new Error(
