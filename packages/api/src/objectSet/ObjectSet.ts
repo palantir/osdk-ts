@@ -28,7 +28,7 @@ import type {
   SelectArg,
 } from "../object/FetchPageArgs.js";
 import type { Result } from "../object/Result.js";
-import type { VectorPropertyKeys } from "../ontology/FilteredPropertyKeys.js";
+import type { FilteredPropertyKeys } from "../ontology/FilteredPropertyKeys.js";
 import type { InterfaceDefinition } from "../ontology/InterfaceDefinition.js";
 import type {
   DerivedObjectOrInterfaceDefinition,
@@ -241,7 +241,7 @@ interface NearestNeighbors<Q extends ObjectOrInterfaceDefinition> {
   readonly nearestNeighbors: (
     query: string | number[],
     numNeighbors: number,
-    property: VectorPropertyKeys<Q>,
+    property: FilteredPropertyKeys<Q, "vector">,
   ) => this;
 }
 

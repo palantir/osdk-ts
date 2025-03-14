@@ -26,6 +26,3 @@ export type FilteredPropertyKeys<
       ? K
       : never;
 }[keyof NonNullable<O["__DefinitionMetadata"]>["properties"]];
-
-export type VectorPropertyKeys<Q extends ObjectOrInterfaceDefinition> =
-  FilteredPropertyKeys<Q, "vector">;
