@@ -23,6 +23,7 @@ import type { BaseServerObject } from "./BaseServerObject.js";
 import type { FauxOntology } from "./FauxOntology.js";
 import type { ObjectLocator } from "./ObjectLocator.js";
 import { objectLocator, parseLocator } from "./ObjectLocator.js";
+import { validateAction } from "./validateAction.js";
 
 export class FauxDataStore {
   #objects = new DefaultMap<
@@ -44,6 +45,10 @@ export class FauxDataStore {
 
   constructor(fauxOntology: FauxOntology) {
     this.#fauxOntology = fauxOntology;
+  }
+
+  get ontology(): FauxOntology {
+    return this.#fauxOntology;
   }
 
   registerObject(x: BaseServerObject): void {
@@ -205,5 +210,129 @@ export class FauxDataStore {
     return this.#objects
       .get(apiName)
       .values();
+  }
+
+  applyAction(
+    actionTypeApiName: string,
+    req: OntologiesV2.ApplyActionRequestV2,
+  ): OntologiesV2.SyncApplyActionResponseV2 {
+    const actionImpl = this.#fauxOntology.getActionImpl(actionTypeApiName);
+    return actionImpl(
+      this,
+      req,
+      this.#fauxOntology.getActionDef(actionTypeApiName),
+    );
+  }
+
+  batchApplyAction(
+    actionTypeApiName: string,
+    req: OntologiesV2.BatchApplyActionRequestV2,
+  ): OntologiesV2.BatchApplyActionResponseV2 {
+    const actionDef = this.#fauxOntology.getActionDef(actionTypeApiName);
+    const actionImpl = this.#fauxOntology.getActionImpl(actionTypeApiName);
+
+    for (const x of req.requests) {
+      const result = validateAction(x, actionDef);
+      if (result.result === "INVALID") {
+        throw new OpenApiCallError(
+          500,
+          {
+            errorCode: "INVALID_ARGUMENT",
+            errorName: "ActionValidationFailed",
+            errorInstanceId: "faux-foundry",
+            parameters: {
+              actionType: actionTypeApiName,
+            },
+          } as OntologiesV2.ActionValidationFailed,
+        );
+      }
+    }
+
+    const bae: OntologiesV2.BatchActionObjectEdits = {
+      addedLinksCount: 0,
+      addedObjectCount: 0,
+      deletedLinksCount: 0,
+      deletedObjectsCount: 0,
+      modifiedObjectsCount: 0,
+      edits: [],
+    };
+
+    const editedObjectTypes = new Set<OntologiesV2.ObjectTypeApiName>();
+
+    let returnLargeScaleEdits = false;
+    for (const item of req.requests) {
+      const result = actionImpl(
+        this,
+        {
+          ...item,
+          options: {
+            mode: "VALIDATE_AND_EXECUTE",
+            returnEdits: req.options?.returnEdits,
+          },
+        },
+        actionDef,
+      );
+      if (result.validation?.result === "INVALID") {
+        throw new OpenApiCallError(
+          500,
+          {
+            errorCode: "INVALID_ARGUMENT",
+            errorName: "ApplyActionFailed",
+            errorInstanceId: "faux-foundry",
+            parameters: {},
+          } as OntologiesV2.ApplyActionFailed,
+        );
+        // this would suck because we probably left the store in a mixed state
+      }
+
+      if (result.edits && req.options?.returnEdits === "ALL") {
+        if (result.edits.type === "edits") {
+          bae.edits.push(
+            // batch doesn't seem to support this yet?
+            ...(result.edits.edits.filter(x =>
+              x.type !== "deleteObject" && x.type !== "deleteLink"
+            )),
+          );
+          bae.addedLinksCount += result.edits.addedLinksCount;
+          bae.addedObjectCount += result.edits.addedObjectCount;
+          bae.deletedLinksCount += result.edits.deletedLinksCount;
+          bae.deletedObjectsCount += result.edits.deletedObjectsCount;
+          bae.modifiedObjectsCount += result.edits.modifiedObjectsCount;
+
+          for (const edit of result.edits.edits) {
+            if (
+              edit.type === "modifyObject" || edit.type === "addObject"
+              || edit.type === "deleteObject"
+            ) {
+              editedObjectTypes.add(edit.objectType);
+            }
+          }
+        } else if (result.edits.type === "largeScaleEdits") {
+          returnLargeScaleEdits = true;
+          for (const objectType of result.edits.editedObjectTypes) {
+            editedObjectTypes.add(objectType);
+          }
+        }
+      }
+    }
+    if (req.options?.returnEdits === "NONE") {
+      return {};
+    }
+
+    if (returnLargeScaleEdits) {
+      return {
+        edits: {
+          type: "largeScaleEdits",
+          editedObjectTypes: Array.from(editedObjectTypes),
+        },
+      };
+    }
+
+    return {
+      edits: {
+        type: "edits",
+        ...bae,
+      },
+    };
   }
 }

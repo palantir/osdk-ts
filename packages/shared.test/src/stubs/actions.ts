@@ -16,12 +16,11 @@
 
 import type {
   ApplyActionRequestV2,
-  BatchApplyActionRequestV2,
-  BatchApplyActionResponseV2,
   SyncApplyActionResponseV2,
 } from "@osdk/foundry.ontologies";
 import type { FauxOntology } from "../FauxFoundry/FauxOntology.js";
 import { createLazyDoNothingActionImpl } from "../handlers/util/createLazyDoNothingActionImpl.js";
+import { moveOfficeImpl } from "./actions/moveOffice.js";
 import {
   ActionCreatesInterface,
   ActionTakesAnotherInterface,
@@ -59,88 +58,6 @@ export const actionRequestCreateOfficeNoReturnEdits: ApplyActionRequestV2 = {
   },
   options: {
     mode: "VALIDATE_AND_EXECUTE",
-    returnEdits: "NONE",
-  },
-};
-
-export const actionRequestMoveOffice: ApplyActionRequestV2 = {
-  parameters: {
-    officeId: "NYC",
-    newAddress: "123 Main Street",
-    newCapacity: 100,
-  },
-  options: {},
-};
-
-const actionRequestMoveOfficeBig: ApplyActionRequestV2 = {
-  parameters: {
-    officeId: "SEA",
-    newAddress: "456 Main Street",
-    newCapacity: 1000,
-  },
-  options: {
-    mode: "VALIDATE_AND_EXECUTE",
-    returnEdits: "ALL_V2_WITH_DELETIONS",
-  },
-};
-
-const actionRequestMoveOfficeGetResults: ApplyActionRequestV2 = {
-  parameters: {
-    officeId: "NYC",
-    newAddress: "123 Main Street",
-    newCapacity: 100,
-  },
-  options: {
-    mode: "VALIDATE_AND_EXECUTE",
-    returnEdits: "ALL_V2_WITH_DELETIONS",
-  },
-};
-
-const actionRequestMoveOffice2: ApplyActionRequestV2 = {
-  parameters: {
-    officeId: "SEA",
-  },
-  options: {},
-};
-
-const actionRequestMoveOffice3: ApplyActionRequestV2 = {
-  parameters: {
-    officeId: "LAX",
-  },
-  options: {},
-};
-
-const actionRequestMoveOfficeValidateOnly: ApplyActionRequestV2 = {
-  parameters: {
-    officeId: "SEA",
-    newAddress: "456 Pike Place",
-    newCapacity: 40,
-  },
-  options: {
-    mode: "VALIDATE_ONLY",
-  },
-};
-
-const actionRequestMoveOfficeInvalid: ApplyActionRequestV2 = {
-  parameters: {
-    officeId: "SEA",
-    newAddress: "456 Pike Place",
-    newCapacity: 40,
-  },
-  options: {
-    mode: "VALIDATE_AND_EXECUTE",
-    returnEdits: "ALL_V2_WITH_DELETIONS",
-  },
-};
-
-const actionRequestMoveOfficeValidateOnlyWithoutEdits: ApplyActionRequestV2 = {
-  parameters: {
-    officeId: "SEA",
-    newAddress: "456 Pike Place",
-    newCapacity: 40,
-  },
-  options: {
-    mode: "VALIDATE_ONLY",
     returnEdits: "NONE",
   },
 };
@@ -205,58 +122,6 @@ export const actionRequestWithStruct: ApplyActionRequestV2 = {
   },
 };
 
-export const actionRequestMoveOfficeBatch: BatchApplyActionRequestV2 = {
-  requests: [{
-    parameters: {
-      officeId: "SEA",
-      newAddress: "456 Good Place",
-      newCapacity: 40,
-    },
-  }, {
-    parameters: {
-      officeId: "NYC",
-      newAddress: "123 Main Street",
-      newCapacity: 80,
-    },
-  }],
-  options: {},
-};
-
-export const actionRequestMoveOfficeBatchWithEdits: BatchApplyActionRequestV2 =
-  {
-    requests: [{
-      parameters: {
-        officeId: "SEA",
-        newAddress: "456 Good Place",
-        newCapacity: 40,
-      },
-    }, {
-      parameters: {
-        officeId: "NYC",
-        newAddress: "123 Main Street",
-        newCapacity: 80,
-      },
-    }],
-    options: { returnEdits: "ALL" },
-  };
-
-export const actionRequestMoveOfficeBatchInvalid: BatchApplyActionRequestV2 = {
-  requests: [{
-    parameters: {
-      officeId: "SEA",
-      newAddress: "456 Pike Place",
-      newCapacity: 40,
-    },
-  }, {
-    parameters: {
-      officeId: "NYC",
-      newAddress: "123 Main Street",
-      newCapacity: 80,
-    },
-  }],
-  options: { returnEdits: "ALL" },
-};
-
 const actionResponseCreateOfficeAndEmployee: SyncApplyActionResponseV2 = {
   validation: {
     submissionCriteria: [],
@@ -314,18 +179,6 @@ const actionResponse: SyncApplyActionResponseV2 = {
   },
 };
 
-const actionResponseMoveOfficeBig: SyncApplyActionResponseV2 = {
-  validation: {
-    result: "VALID",
-    submissionCriteria: [],
-    parameters: {},
-  },
-  edits: {
-    type: "largeScaleEdits",
-    editedObjectTypes: ["airplane"],
-  },
-};
-
 const actionResponseGetResults: SyncApplyActionResponseV2 = {
   validation: {
     result: "VALID",
@@ -355,26 +208,6 @@ const actionResponseInvalid: SyncApplyActionResponseV2 = {
   },
 };
 
-const actionResponseMoveOfficeBatch: BatchApplyActionResponseV2 = {
-  edits: {
-    type: "edits",
-    edits: [{
-      type: "modifyObject",
-      primaryKey: "SEA",
-      objectType: officeObjectType.apiName,
-    }, {
-      type: "modifyObject",
-      primaryKey: "NYC",
-      objectType: officeObjectType.apiName,
-    }],
-    addedObjectCount: 0,
-    addedLinksCount: 0,
-    modifiedObjectsCount: 2,
-    deletedLinksCount: 0,
-    deletedObjectsCount: 0,
-  },
-};
-
 export function registerLazyActions(fauxOntology: FauxOntology): void {
   // These first actions don't didn't have implementations in the legacy ontology
   fauxOntology.registerActionType(PromoteEmployee);
@@ -391,22 +224,7 @@ export function registerLazyActions(fauxOntology: FauxOntology): void {
     ]),
   );
 
-  fauxOntology.registerActionType(
-    MoveOffice,
-    createLazyDoNothingActionImpl([
-      [actionRequestMoveOffice, actionResponse],
-      [actionRequestMoveOfficeBig, actionResponseMoveOfficeBig],
-      [actionRequestMoveOfficeGetResults, actionResponseGetResults],
-      [actionRequestMoveOfficeValidateOnly, actionResponseInvalid],
-      [actionRequestMoveOfficeValidateOnlyWithoutEdits, actionResponseInvalid],
-      [actionRequestMoveOfficeInvalid, actionResponseInvalid],
-      [actionRequestMoveOffice2, undefined],
-      [actionRequestMoveOffice3, undefined],
-      [actionRequestMoveOfficeBatch, {}],
-      [actionRequestMoveOfficeBatchWithEdits, actionResponseMoveOfficeBatch],
-      [actionRequestMoveOfficeBatchInvalid, undefined],
-    ]),
-  );
+  fauxOntology.registerActionType(MoveOffice, moveOfficeImpl);
 
   fauxOntology.registerActionType(
     CreateOfficeAndEmployee,
