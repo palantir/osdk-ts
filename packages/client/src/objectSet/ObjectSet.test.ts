@@ -178,6 +178,133 @@ describe("ObjectSet", () => {
     expect(iter).toEqual(1);
   });
 
+  it("nearest neighbors object set", async () => {
+    const numNeighbors = 3;
+    const nearestNeighborsObjectSet = client(Employee).nearestNeighbors(
+      "python3",
+      numNeighbors,
+      "skillSetEmbedding",
+    );
+    const { data: employees } = await nearestNeighborsObjectSet.fetchPage();
+    expect(employees).toHaveLength(numNeighbors);
+    // Check that no score is returned when not ordered by relevance
+    // @ts-expect-error
+    employees.forEach(e => expect(e.$score).toBeUndefined());
+  });
+
+  it("nearest neighbors object set ordered by relevance", async () => {
+    const objectSet = client(Employee);
+    const { data: employees } = await objectSet.nearestNeighbors(
+      "python3",
+      3,
+      "skillSetEmbedding",
+    ).fetchPage({
+      $orderBy: "relevance",
+    });
+
+    expect(employees).toHaveLength(3);
+    // Check that returned objects have scores
+    employees.forEach(e => expect(e.$score).toBeGreaterThanOrEqual(0));
+  });
+
+  it("nearest neighbors object set ordered by relevance fetchPageWithErrors", async () => {
+    const objectSet = client(Employee);
+    const result = await objectSet.nearestNeighbors(
+      "python3",
+      3,
+      "skillSetEmbedding",
+    ).fetchPageWithErrors({
+      $orderBy: "relevance",
+    });
+
+    if (isOk(result)) {
+      const employees = result.value.data;
+      expect(employees).toHaveLength(3);
+      // Check that returned objects have scores
+      employees.forEach(e => expect(e.$score).toBeGreaterThanOrEqual(0));
+    }
+  });
+
+  it("nearest neighbors object set vector query", async () => {
+    const numNeighbors = 3;
+    const nearestNeighborsObjectSet = client(Employee).nearestNeighbors(
+      Array.from({ length: 1536 }, () => 0.3),
+      numNeighbors,
+      "skillSetEmbedding",
+    );
+    const { data: employees } = await nearestNeighborsObjectSet.fetchPage();
+    expect(employees).toHaveLength(numNeighbors);
+    // Check that no score is returned when not ordered by relevance
+    // @ts-expect-error
+    employees.forEach(e => expect(e.$score).toBeUndefined());
+  });
+
+  it("type checking nearestNeighbor call", () => {
+    expectTypeOf(client(Employee).nearestNeighbors).toBeCallableWith(
+      "some text",
+      10,
+      "skillSetEmbedding",
+    );
+    expectTypeOf(client(Employee).nearestNeighbors).toBeCallableWith(
+      [0, 1, 2],
+      10,
+      "skillSetEmbedding",
+    );
+  });
+
+  it("type checking nearestNeighbor return type", async () => {
+    const nearestNeighbors = client(Employee).nearestNeighbors(
+      "python3",
+      3,
+      "skillSetEmbedding",
+    );
+
+    const { data: unOrdered } = await nearestNeighbors.fetchPage();
+    expectTypeOf<typeof unOrdered>().toMatchTypeOf<
+      Osdk.Instance<Employee, never, PropertyKeys<Employee>>[]
+    >;
+    // @ts-expect-error
+    unOrdered.map(e => e.$score);
+
+    const { data: orderedByField } = await nearestNeighbors.fetchPage({
+      $orderBy: { "employeeId": "desc" },
+    });
+    expectTypeOf<typeof orderedByField>().toMatchTypeOf<
+      Osdk.Instance<Employee, never, PropertyKeys<Employee>>[]
+    >;
+    // @ts-expect-error
+    orderedByField.map(e => e.$score);
+
+    const { data: orderedByRelevance } = await nearestNeighbors.fetchPage({
+      $orderBy: "relevance",
+    });
+    expectTypeOf<typeof orderedByRelevance>().toMatchTypeOf<
+      Osdk.Instance<Employee, never, PropertyKeys<Employee>, {}, "$score">[]
+    >;
+    orderedByRelevance.forEach(e =>
+      expectTypeOf(e.$score).toMatchTypeOf<number>
+    );
+
+    const orderedByRelevanceWithErrors = await nearestNeighbors
+      .fetchPageWithErrors({
+        $orderBy: "relevance",
+      });
+    if (isOk(orderedByRelevanceWithErrors)) {
+      expectTypeOf(orderedByRelevanceWithErrors.value.data).toMatchTypeOf<
+        Osdk.Instance<
+          Employee,
+          never,
+          PropertyKeys<Employee>,
+          {},
+          "$score"
+        >[]
+      >;
+      orderedByRelevanceWithErrors.value.data.forEach(e =>
+        expectTypeOf(e.$score).toMatchTypeOf<number>
+      );
+    }
+  });
+
   it("orders objects in ascending order without a filter, and returns all results", async () => {
     const { data: employees } = await client(Employee)
       .fetchPage({
@@ -682,7 +809,7 @@ describe("ObjectSet", () => {
         },
       });
 
-      expectTypeOf(objectSet).branded.toEqualTypeOf<
+      expectTypeOf(objectSet).toEqualTypeOf<
         ObjectSet<
           Employee,
           { derivedPropertyName: "double" | undefined }
@@ -911,6 +1038,8 @@ describe("ObjectSet", () => {
             | "startDate"
             | "employeeLocation"
             | "employeeSensor"
+            | "skillSet"
+            | "skillSetEmbedding"
           >();
 
         expectTypeOf<
@@ -935,6 +1064,8 @@ describe("ObjectSet", () => {
             | "employeeStatus"
             | "employeeSensor"
             | "employeeLocation"
+            | "skillSet"
+            | "skillSetEmbedding"
           >();
 
         // We don't have a proper definition that has

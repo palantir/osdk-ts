@@ -196,6 +196,7 @@ export namespace Osdk {
     OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
     P extends PropertyKeys<Q> = PropertyKeys<Q>,
     R extends Record<string, SimplePropertyDef> = {},
+    ORDER_BY_OPTIONS extends never | "$score" = never,
   > =
     & OsdkBase<Q>
     & Pick<
@@ -228,6 +229,10 @@ export namespace Osdk {
           },
       ) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>;
     }
+    & (IsNever<ORDER_BY_OPTIONS> extends true ? {}
+      : IsAny<ORDER_BY_OPTIONS> extends true ? {}
+      : "$score" extends ORDER_BY_OPTIONS ? { readonly $score: number }
+      : {})
     // We are hiding the $rid field if it wasn't requested as we want to discourage its use
     & (IsNever<OPTIONS> extends true ? {}
       : IsAny<OPTIONS> extends true ? {}
@@ -269,3 +274,8 @@ export type ExtractOptions<
   S extends NullabilityAdherence = NullabilityAdherence.Default,
   T extends boolean = false,
 > = ExtractRidOption<R> | ExtractAllPropertiesOption<T>;
+
+export type ExtractOrderByOptions<R extends boolean> = IsNever<R> extends true
+  ? never
+  : DefaultToFalse<R> extends false ? never
+  : "$score";

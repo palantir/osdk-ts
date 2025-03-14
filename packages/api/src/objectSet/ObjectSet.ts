@@ -24,9 +24,11 @@ import type {
   Augments,
   FetchPageArgs,
   NullabilityAdherence,
+  OrderByOptions,
   SelectArg,
 } from "../object/FetchPageArgs.js";
 import type { Result } from "../object/Result.js";
+import type { FilteredPropertyKeys } from "../ontology/FilteredPropertyKeys.js";
 import type { InterfaceDefinition } from "../ontology/InterfaceDefinition.js";
 import type {
   DerivedObjectOrInterfaceDefinition,
@@ -39,7 +41,11 @@ import type {
 } from "../ontology/ObjectTypeDefinition.js";
 import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { PrimaryKeyType } from "../OsdkBase.js";
-import type { ExtractOptions, Osdk } from "../OsdkObjectFrom.js";
+import type {
+  ExtractOptions,
+  ExtractOrderByOptions,
+  Osdk,
+} from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 import type { BaseObjectSet } from "./BaseObjectSet.js";
@@ -90,15 +96,17 @@ interface FetchPage<
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
+    Z extends OrderByOptions<Q, L> = {},
   >(
-    args?: FetchPageArgs<Q, L, R, A, S, T>,
+    args?: FetchPageArgs<Q, L, R, A, S, T, Z>,
   ) => Promise<
     PageResult<
       Osdk.Instance<
         Q,
         ExtractOptions<R, S, T>,
         PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
-        { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+        { [K in Extract<keyof RDPs, L>]: RDPs[K] },
+        ExtractOrderByOptions<Z extends "relevance" ? true : false>
       >
     >
   >;
@@ -123,8 +131,9 @@ interface FetchPage<
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
+    Z extends OrderByOptions<Q, L> = {},
   >(
-    args?: FetchPageArgs<Q, L, R, A, S, T>,
+    args?: FetchPageArgs<Q, L, R, A, S, T, Z>,
   ) => Promise<
     Result<
       PageResult<
@@ -132,7 +141,8 @@ interface FetchPage<
           Q,
           ExtractOptions<R, S, T>,
           PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
-          { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+          { [K in Extract<keyof RDPs, L>]: RDPs[K] },
+          ExtractOrderByOptions<Z extends "relevance" ? true : false>
         >
       >
     >
@@ -177,14 +187,16 @@ interface AsyncIter<
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
+    Z extends OrderByOptions<Q, L> = {},
   >(
-    args?: AsyncIterArgs<Q, L, R, A, S, T>,
+    args?: AsyncIterArgs<Q, L, R, A, S, T, Z>,
   ) => AsyncIterableIterator<
     Osdk.Instance<
       Q,
       ExtractOptions<R, S, T>,
       PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
-      { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+      { [K in Extract<keyof RDPs, L>]: RDPs[K] },
+      ExtractOrderByOptions<Z extends "relevance" ? true : false>
     >
   >;
 }
@@ -210,6 +222,27 @@ interface WithProperties<
         : never;
     }
   >;
+}
+
+interface NearestNeighbors<Q extends ObjectOrInterfaceDefinition> {
+  /**
+   * Finds the nearest neighbors for a given text or vector within the object set.
+   *
+   * @param query - Queries support either a vector matching the embedding model defined on the property, or text that is
+        automatically embedded.
+   * @param numNeighbors - The number of objects to return. If the number of documents in the objectType is less than the provided
+            value, all objects will be returned. This value is limited to 1 &le; numNeighbors &ge; 500.
+   * @param property - The property key with a defined embedding model to search over.
+   *
+   * @returns An object set containing the `numNeighbors` nearest neighbors. To return the objects ordered by relevance and each
+   * objects associated score, specify "relevance" in the orderBy.
+ */
+
+  readonly nearestNeighbors: (
+    query: string | number[],
+    numNeighbors: number,
+    property: FilteredPropertyKeys<Q, "vector">,
+  ) => this;
 }
 
 export interface ObjectSet<
@@ -391,6 +424,7 @@ interface ObjectSetCleanedTypes<
   WithProperties<Q, D>,
   Aggregate<MERGED>,
   SetArithmetic<MERGED>,
+  NearestNeighbors<MERGED>,
   PivotTo<MERGED>,
   FetchOne<Q, D>,
   Subscribe<MERGED>

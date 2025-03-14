@@ -21,8 +21,11 @@ import type {
 import stableStringify from "json-stable-stringify";
 import {
   employee1,
+  employee1WithScore,
   employee2,
+  employee2WithScore,
   employee3,
+  employee3WithScore,
   employee4withDerived,
   employee50050,
   employee5withUndefinedDerived,
@@ -118,6 +121,98 @@ const subtractedObjectSet: LoadObjectSetRequestV2 = {
           field: "employeeId",
           value: 50030,
         },
+      },
+    ],
+  },
+  select: [],
+};
+
+const nearestNeighborsObjectSet: LoadObjectSetRequestV2 = {
+  objectSet: {
+    type: "nearestNeighbors",
+    objectSet: {
+      type: "base",
+      objectType: employeeObjectType.apiName,
+    },
+    propertyIdentifier: {
+      type: "property",
+      apiName: "skillSetEmbedding",
+    },
+    numNeighbors: 3,
+    query: {
+      type: "text",
+      value: "python3",
+    },
+  },
+  select: [],
+};
+
+const nearestNeighborsObjectSetVectorQuery: LoadObjectSetRequestV2 = {
+  objectSet: {
+    type: "nearestNeighbors",
+    objectSet: {
+      type: "base",
+      objectType: employeeObjectType.apiName,
+    },
+    propertyIdentifier: {
+      type: "property",
+      apiName: "skillSetEmbedding",
+    },
+    numNeighbors: 3,
+    query: {
+      type: "vector",
+      value: Array.from({ length: 1536 }, () => 0.3),
+    },
+  },
+  select: [],
+};
+
+const nearestNeighborsObjectSetWithRelevancyOrdering: LoadObjectSetRequestV2 = {
+  objectSet: {
+    type: "nearestNeighbors",
+    objectSet: {
+      type: "base",
+      objectType: employeeObjectType.apiName,
+    },
+    propertyIdentifier: {
+      type: "property",
+      apiName: "skillSetEmbedding",
+    },
+    numNeighbors: 3,
+    query: {
+      type: "text",
+      value: "python3",
+    },
+  },
+  orderBy: {
+    orderType: "relevance",
+    fields: [],
+  },
+  select: [],
+};
+
+const nearestNeighborsObjectSetWithOrdering: LoadObjectSetRequestV2 = {
+  objectSet: {
+    type: "nearestNeighbors",
+    objectSet: {
+      type: "base",
+      objectType: employeeObjectType.apiName,
+    },
+    propertyIdentifier: {
+      type: "property",
+      apiName: "skillSetEmbedding",
+    },
+    numNeighbors: 3,
+    query: {
+      type: "text",
+      value: "python3",
+    },
+  },
+  orderBy: {
+    fields: [
+      {
+        field: "employeeId",
+        direction: "desc",
       },
     ],
   },
@@ -577,6 +672,26 @@ export const loadObjectSetRequestHandlers: {
   [stableStringify(unionedObjectSet)]: [employee1, employee2],
   [stableStringify(intersectedObjectSet)]: [employee3],
   [stableStringify(subtractedObjectSet)]: [employee2, employee3],
+  [stableStringify(nearestNeighborsObjectSet)]: [
+    employee1,
+    employee2,
+    employee3,
+  ],
+  [stableStringify(nearestNeighborsObjectSetVectorQuery)]: [
+    employee1,
+    employee2,
+    employee3,
+  ],
+  [stableStringify(nearestNeighborsObjectSetWithRelevancyOrdering)]: [
+    employee1WithScore,
+    employee2WithScore,
+    employee3WithScore,
+  ],
+  [stableStringify(nearestNeighborsObjectSetWithOrdering)]: [
+    employee1,
+    employee2,
+    employee3,
+  ],
   [stableStringify(derivedPropertyBody)]: [employee4withDerived],
   [stableStringify(derivedPropertyBodyUndefinedValue)]: [
     employee5withUndefinedDerived,
