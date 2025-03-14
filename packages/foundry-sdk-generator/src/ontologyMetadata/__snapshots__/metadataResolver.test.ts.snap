@@ -65,8 +65,8 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
         "rid": "ri.ontology.main.action-type.9f24017d-cf17-4fa8-84c3-8e01e5d594f2",
         "status": "ACTIVE",
       },
-      "delete-foo-interface": {
-        "apiName": "delete-foo-interface",
+      "deleteFooInterface": {
+        "apiName": "deleteFooInterface",
         "displayName": "Delete Foo Interface",
         "operations": [
           {

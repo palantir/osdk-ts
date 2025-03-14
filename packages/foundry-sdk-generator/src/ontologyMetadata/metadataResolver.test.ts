@@ -219,7 +219,7 @@ describe("Load Ontologies Metadata", () => {
           objectTypesApiNamesToLoad: ["Employee", "Office"],
           actionTypesApiNamesToLoad: [
             "promote-employee",
-            "delete-foo-interface",
+            "deleteFooInterface",
             "createStructPerson",
             "actionTakesMedia",
           ],
@@ -249,7 +249,7 @@ describe("Load Ontologies Metadata", () => {
           objectTypesApiNamesToLoad: ["Employee", "Office"],
           actionTypesApiNamesToLoad: [
             "promote-employee",
-            "delete-foo-interface",
+            "deleteFooInterface",
             "createStructPerson",
             "actionTakesMedia",
           ],

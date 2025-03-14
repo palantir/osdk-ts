@@ -14,19 +14,9 @@
  * limitations under the License.
  */
 
-import type { Ontology, OntologyFullMetadata } from "@osdk/foundry.ontologies";
-import { actionTypes, ActionTypeWithUnsupportedTypes } from "./actionsTypes.js";
-import { BarInterface, FooInterface } from "./interfaces.js";
-import { objectTypesWithLinkTypes } from "./objectTypesWithLinkTypes.js";
-import { queryTypes } from "./queryTypes.js";
-import { fooSpt } from "./spts.js";
-
-export const defaultOntology: Ontology = {
-  apiName: "default-ontology",
-  displayName: "Ontology",
-  description: "The default ontology",
-  rid: "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
-};
+import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
+import { defaultOntologyMetadata as defaultOntology } from "./ontologies/defaultOntologyMetadata.js";
+import { legacyFullOntology } from "./ontologies/legacyFullOntology.js";
 
 export const defaultOntologyForConjure = {
   apiName: defaultOntology.apiName as string,
@@ -37,21 +27,5 @@ export const defaultOntologyForConjure = {
     "ri.ontology.main.branch.99999999-8888-7777-6666-555555555555",
 } as const;
 
-export const fullOntology: OntologyFullMetadata = {
-  ontology: defaultOntology,
-  objectTypes: objectTypesWithLinkTypes,
-  actionTypes: Object.fromEntries([
-    ...actionTypes.map(actionType => [actionType.apiName, actionType]),
-    ["unsupported-action", ActionTypeWithUnsupportedTypes],
-  ]),
-  queryTypes: Object.fromEntries(
-    queryTypes.map(queryType => [queryType.apiName, queryType]),
-  ),
-  interfaceTypes: {
-    FooInterface,
-    BarInterface,
-  },
-  sharedPropertyTypes: {
-    fooSpt,
-  },
-};
+export const fullOntology: OntologyFullMetadata = legacyFullOntology
+  .getOntologyFullMetadata();

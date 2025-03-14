@@ -300,7 +300,7 @@ export const ActionTypeWithUnsupportedTypes: ActionTypeV2 = {
 };
 
 export const ActionTakesInterface: ActionTypeV2 = {
-  apiName: "delete-foo-interface",
+  apiName: "deleteFooInterface",
   displayName: "Delete Foo Interface",
   status: "EXPERIMENTAL",
   parameters: {
@@ -344,7 +344,7 @@ export const ActionTakesAnotherInterface: ActionTypeV2 = {
 };
 
 export const ActionCreatesInterface: ActionTypeV2 = {
-  apiName: "create-foo-interface",
+  apiName: "createFooInterface",
   displayName: "Create Foo Interface",
   status: "EXPERIMENTAL",
   parameters: {
@@ -408,18 +408,3 @@ export const ActionTakesStruct: ActionTypeV2 = {
   operations: [],
   status: "ACTIVE",
 };
-
-export const actionTypes: ActionTypeV2[] = [
-  PromoteEmployee,
-  PromoteEmployeeObject,
-  CreateOffice,
-  CreateOfficeAndEmployee,
-  MoveOffice,
-  ActionTakesObjectSet,
-  ActionTakesAttachment,
-  ActionTakesMedia,
-  ActionTakesInterface,
-  ActionTakesAnotherInterface,
-  ActionTakesStruct,
-  ActionCreatesInterface,
-];

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
-import { fauxDataStore } from "./fauxDataStore.js";
-import { legacyFullOntology } from "./ontologies/legacyFullOntology.js";
+import type { Ontology } from "@osdk/foundry.ontologies";
 
-export const fauxFoundry: FauxFoundry = new FauxFoundry();
-fauxFoundry.registerOntology(legacyFullOntology);
-fauxFoundry.setDataStore(legacyFullOntology.apiName, fauxDataStore);
+export const defaultOntologyMetadata: Ontology = {
+  apiName: "default-ontology",
+  displayName: "Ontology",
+  description: "The default ontology",
+  rid: "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+};

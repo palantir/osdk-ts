@@ -17,7 +17,7 @@
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { RequestHandler } from "msw";
 import { InvalidRequest, QueryNotFoundError } from "../errors.js";
-import { defaultOntology } from "../stubs/ontologies.js";
+import { defaultOntologyMetadata } from "../stubs/ontologies/defaultOntologyMetadata.js";
 import { queryRequestHandlers } from "../stubs/queries.js";
 import { queryTypes } from "../stubs/queryTypes.js";
 import { getOntologyOld } from "./ontologyMetadataEndpoints.js";
@@ -65,8 +65,8 @@ export const queryHandlers: Array<RequestHandler> = [
 
       const queryResponse = queryResponses[JSON.stringify(parsedBody)];
       if (
-        req.params.ontologyApiName === defaultOntology.apiName
-        || req.params.ontologyApiName === defaultOntology.rid
+        req.params.ontologyApiName === defaultOntologyMetadata.apiName
+        || req.params.ontologyApiName === defaultOntologyMetadata.rid
           && queryResponse
       ) {
         return queryResponse;

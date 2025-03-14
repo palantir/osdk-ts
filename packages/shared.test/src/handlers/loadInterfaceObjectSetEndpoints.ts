@@ -20,7 +20,7 @@ import stableStringify from "json-stable-stringify";
 import type { RequestHandler } from "msw";
 import { InvalidRequest } from "../errors.js";
 import { loadInterfaceObjectSetHandlers } from "../stubs/interfaceObjectSetRequest.js";
-import { defaultOntology } from "../stubs/ontologies.js";
+import { defaultOntologyMetadata } from "../stubs/ontologies/defaultOntologyMetadata.js";
 import {
   handleOpenApiCall,
   OpenApiCallError,
@@ -40,8 +40,8 @@ export const interfaceObjectSetHandlers: Array<RequestHandler> = [
         loadInterfaceObjectSetHandlers[stableStringify(parsedBody)];
 
       if (
-        (req.params.ontologyApiName === defaultOntology.apiName
-          || req.params.ontologyApiName === defaultOntology.rid)
+        (req.params.ontologyApiName === defaultOntologyMetadata.apiName
+          || req.params.ontologyApiName === defaultOntologyMetadata.rid)
         && response
       ) {
         return response;
