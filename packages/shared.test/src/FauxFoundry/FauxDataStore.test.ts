@@ -94,8 +94,8 @@ describe(FauxDataStore, () => {
       const { a, b, c, d } = employees;
 
       const getLeadsAndPeeps = (id: string) => ({
-        lead: fauxDataStore.getLinks("Employee", id, "lead")[0],
-        peeps: fauxDataStore.getLinks("Employee", id, "peeps"),
+        lead: fauxDataStore.getLinksOrThrow("Employee", id, "lead")[0],
+        peeps: fauxDataStore.getLinksOrThrow("Employee", id, "peeps"),
       });
 
       // set a's lead to b

@@ -101,7 +101,7 @@ legacyFauxDataStore.registerLink(
   "peeps",
 );
 invariant(
-  legacyFauxDataStore.getLinks(
+  legacyFauxDataStore.getLinksOrThrow(
     "Employee",
     employee_Jane_50031.__primaryKey,
     "peeps",

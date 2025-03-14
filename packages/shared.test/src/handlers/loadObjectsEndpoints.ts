@@ -269,7 +269,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
 
       const linkResults = fauxFoundry
         .getDataStore(ontologyApiName)
-        .getLinks(objectType, primaryKey, linkType);
+        .getLinksOrThrow(objectType, primaryKey, linkType);
 
       const objects = pageThroughResponseSearchParams(
         linkResults,
@@ -315,7 +315,7 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       const targetPrimaryKey = req.params.targetPrimaryKey;
 
       const links = fauxFoundry.getDataStore(req.params.ontologyApiName)
-        .getLinks(objectType, primaryKey, linkType);
+        .getLinksOrThrow(objectType, primaryKey, linkType);
 
       const object =
         links.filter(l => String(l.__primaryKey) === targetPrimaryKey)[0];
