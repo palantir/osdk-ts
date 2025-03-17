@@ -944,9 +944,14 @@ async function reloadDataAsFullObjects(
     ),
   );
 
-  data = data.map((obj) =>
-    objectTypeToPrimaryKeyToObject[obj.$objectType][obj.$primaryKey]
-  );
+  data = data.map((obj) => {
+    invariant(
+      objectTypeToPrimaryKeyToObject[obj.$objectType][obj.$primaryKey],
+      `Could not find object ${obj.$objectType} ${obj.$primaryKey}`,
+    );
+    return objectTypeToPrimaryKeyToObject[obj.$objectType][obj.$primaryKey];
+  });
+
   return data;
 }
 

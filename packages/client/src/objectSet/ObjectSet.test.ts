@@ -153,7 +153,7 @@ describe("ObjectSet", () => {
     expect(pks.has(stubData.employee2.employeeId)).toBe(true);
     expect(pks.has(stubData.employee3.employeeId)).toBe(true);
     expect(pks.has(stubData.employee4withDerived.employeeId)).toBe(true);
-    expect(pks.has(stubData.employeeFailsStrict.__primaryKey)).toBe(true);
+    expect(pks.has(stubData.employeePassesStrict.__primaryKey)).toBe(true);
     expect(pks.has(stubData.employee50050.employeeId)).toBe(true);
   });
 
@@ -191,7 +191,7 @@ describe("ObjectSet", () => {
     expect(pks.has(stubData.employee2.employeeId)).toBe(true);
     expect(pks.has(stubData.employee3.employeeId)).toBe(true);
     expect(pks.has(stubData.employee4withDerived.employeeId)).toBe(true);
-    expect(pks.has(stubData.employeeFailsStrict.__primaryKey)).toBe(true);
+    expect(pks.has(stubData.employeePassesStrict.__primaryKey)).toBe(true);
     expect(pks.has(stubData.employee50050.employeeId)).toBe(true);
   });
 
@@ -209,6 +209,7 @@ describe("ObjectSet", () => {
         50030,
         50031,
         50032,
+        50033,
         50035,
         stubData.employee50050.employeeId,
       ]);
@@ -426,7 +427,7 @@ describe("ObjectSet", () => {
     expect(pks.has(stubData.employee2.employeeId)).toBe(true);
     expect(pks.has(stubData.employee3.employeeId)).toBe(true);
     expect(pks.has(stubData.employee4withDerived.employeeId)).toBe(true);
-    expect(pks.has(stubData.employeeFailsStrict.__primaryKey)).toBe(true);
+    expect(pks.has(stubData.employeePassesStrict.__primaryKey)).toBe(true);
     expect(pks.has(stubData.employee50050.employeeId)).toBe(true);
   });
 

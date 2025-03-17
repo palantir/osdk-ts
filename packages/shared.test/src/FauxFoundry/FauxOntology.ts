@@ -148,6 +148,38 @@ export class FauxOntology {
     return impl;
   }
 
+  public getInterfaceToObjectTypeMappings(
+    objectApiNames: Iterable<OntologiesV2.ObjectTypeApiName>,
+  ): Record<
+    OntologiesV2.InterfaceTypeApiName,
+    OntologiesV2.InterfaceToObjectTypeMappings
+  > {
+    const objectDefs = Array.from(objectApiNames).map(apiName =>
+      this.getObjectTypeFullMetadataOrThrow(apiName)
+    );
+
+    const ifaceToObjMap: Record<
+      OntologiesV2.InterfaceTypeApiName,
+      OntologiesV2.InterfaceToObjectTypeMappings
+    > = {};
+
+    for (const objDef of objectDefs) {
+      for (
+        const [ifaceApiName, { properties }] of Object.entries(
+          objDef.implementsInterfaces2,
+        )
+      ) {
+        if (ifaceToObjMap[ifaceApiName] === undefined) {
+          ifaceToObjMap[ifaceApiName] = {};
+        }
+
+        ifaceToObjMap[ifaceApiName][objDef.objectType.apiName] = properties;
+      }
+    }
+
+    return ifaceToObjMap;
+  }
+
   public getLinkTypeSideV2(
     objectTypeApiName: string,
     linkTypeName: string,

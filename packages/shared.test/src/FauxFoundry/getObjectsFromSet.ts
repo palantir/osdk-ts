@@ -77,8 +77,18 @@ export function getObjectsFromSet(
           methodInput,
         );
         for (const obj of set) {
-          if (!toIntersect.includes(obj)) {
+          const match = toIntersect.find(x =>
+            x.__apiName === obj.__apiName
+            && x.__primaryKey === obj.__primaryKey
+          );
+
+          if (!match) {
             set.delete(obj);
+          } else if (obj["$propsToReturn"] || match["$propsToReturn"]) {
+            obj["$propsToReturn"] = {
+              ...obj["$propsToReturn"],
+              ...match["$propsToReturn"],
+            };
           }
         }
       }
@@ -121,11 +131,85 @@ export function getObjectsFromSet(
     case "methodInput":
       invariant(methodInput, "expected a methodInput");
       return [methodInput];
+
+    case "asBaseObjectTypes":
+      throw new Error(
+        `Unhandled objectSet type ${JSON.stringify(objectSet)} in shared.test`,
+      );
+
+    case "asType":
+      throw new Error(
+        `Unhandled objectSet type ${JSON.stringify(objectSet)} in shared.test`,
+      );
+
+    case "interfaceBase":
+      const relevantObjectTypes = ds
+        .ontology
+        .getAllObjectTypes().filter(x =>
+          objectSet.interfaceType in x.implementsInterfaces2
+        );
+
+      // const ifaceDef = ds.ontology.getInterfaceType(objectTypeWithAllPropertyTypes);
+
+      return relevantObjectTypes.flatMap(x =>
+        Array.from(ds.getObjectsOfType(x.objectType.apiName))
+      ).map(obj => {
+        const objDef = ds.ontology.getObjectTypeFullMetadataOrThrow(
+          obj.__apiName,
+        );
+        const ifaceMap = objDef.implementsInterfaces2[objectSet.interfaceType];
+        const $propsToReturn = objectSet.includeAllBaseObjectProperties
+          ? obj
+          : Object.fromEntries(
+            Object.values(ifaceMap.properties).map(
+              (propApiName) => [propApiName, obj[propApiName]],
+            ),
+          );
+
+        return ({
+          ...objToInterface(ds, obj, objectSet.interfaceType),
+          $propsToReturn,
+        });
+      });
+
+    case "nearestNeighbors":
+      throw new Error(
+        `Unhandled objectSet type ${JSON.stringify(objectSet)} in shared.test`,
+      );
+
+    case "reference":
+      throw new Error(
+        `Unhandled objectSet type ${JSON.stringify(objectSet)} in shared.test`,
+      );
   }
 
   throw new Error(
     `Unhandled objectSet type ${JSON.stringify(objectSet)} in shared.test`,
   );
+}
+
+function objToInterface(
+  ds: FauxDataStore,
+  o: BaseServerObject,
+  iface: OntologiesV2.InterfaceTypeApiName,
+): BaseServerObject {
+  const ifaceDef = ds.ontology.getInterfaceType(iface);
+  const propMap = ds.ontology
+    .getObjectTypeFullMetadataOrThrow(o.__apiName)
+    .implementsInterfaces2[iface].properties;
+
+  const { __apiName, __primaryKey, __rid, __title } = o;
+
+  const ret: BaseServerObject = {
+    __apiName,
+    __primaryKey,
+    __rid,
+    __title,
+  };
+  for (const [sptApiName, propApiName] of Object.entries(propMap)) {
+    ret[sptApiName] = o[propApiName];
+  }
+  return ret;
 }
 
 export function getDerivedPropertyValue(
@@ -135,7 +219,7 @@ export function getDerivedPropertyValue(
 ): any {
   switch (def.type) {
     case "selection": {
-      return z(ds, obj, def);
+      return getDerivedPropertySelection(ds, obj, def);
     }
   }
   throw new Error(
@@ -144,7 +228,7 @@ export function getDerivedPropertyValue(
   // return obj[property.propertyIdentifier];
 }
 
-function z(
+function getDerivedPropertySelection(
   ds: FauxDataStore,
   obj: BaseServerObject,
   { operation, objectSet }: OntologiesV2.SelectedPropertyDefinition,

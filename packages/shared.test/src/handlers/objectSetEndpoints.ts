@@ -18,15 +18,9 @@ import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import stableStringify from "json-stable-stringify";
 import type { RequestHandler } from "msw";
 import { InvalidRequest } from "../errors.js";
-import {
-  createOrderBySortFn,
-  getObjectsFromSet,
-} from "../FauxFoundry/getObjectsFromSet.js";
-import { subSelectProperties } from "../filterObjects.js";
+
 import { aggregationRequestHandlers } from "../stubs/aggregationRequests.js";
 import { fauxFoundry } from "../stubs/ontologies/legacyFullOntology.js";
-import { pageThroughResponseSearchParams } from "./endpointUtils.js";
-import { getPaginationParamsFromRequest } from "./util/getPaginationParams.js";
 import {
   handleOpenApiCall,
   OpenApiCallError,
@@ -42,45 +36,10 @@ export const objectSetHandlers: Array<RequestHandler> = [
   handleOpenApiCall(
     OntologiesV2.OntologyObjectSets.load,
     ["ontologyApiName"],
-    async (req) => {
-      const parsedBody = await req.request.json();
-      const selected = parsedBody.select;
-      const { ontologyApiName } = req.params;
-      const ds = fauxFoundry.getDataStore(ontologyApiName);
-      let objects = getObjectsFromSet(ds, parsedBody.objectSet, undefined);
-
-      if (!objects) {
-        return {
-          data: [],
-          totalCount: "0",
-          nextPageToken: undefined,
-        };
-      }
-
-      if (parsedBody.orderBy) {
-        objects = objects.sort(createOrderBySortFn(parsedBody.orderBy));
-      }
-
-      const page = pageThroughResponseSearchParams(
-        objects,
-        getPaginationParamsFromRequest(parsedBody),
-        false,
-      );
-
-      if (!page) {
-        throw new OpenApiCallError(
-          404,
-          InvalidRequest(
-            `No objects found for ${JSON.stringify(parsedBody)}`,
-          ),
-        );
-      }
-      return subSelectProperties(
-        page,
-        [...selected],
-        true,
-        parsedBody.excludeRid,
-      );
+    async ({ request, params }) => {
+      return fauxFoundry
+        .getDataStore(params.ontologyApiName)
+        .getObjectsFromObjectSet(await request.json());
     },
     baseUrl,
   ),

@@ -723,7 +723,7 @@ describe(Store, () => {
           await waitForCall(ifaceSub);
           expectSingleListCallAndClear(
             ifaceSub,
-            employeesAsServerReturns.filter(o => o.$primaryKey === 50050),
+            employeesAsServerReturns,
             {
               status: "loaded",
             },
@@ -1380,21 +1380,12 @@ describe(Store, () => {
           text: "a prime",
         });
 
-        // console.log("winner?", modifiedObjectA.$as);
-        // // throw "hi";
-        // console.log("winner2?", modifiedObjectA.$as("Todo").$as);
-
         // The action will complete and then revalidate in order...
         mockClient.mockFetchOneOnce<Todo>(modifiedObjectA.$primaryKey)
           .resolve(modifiedObjectA);
 
         mockClient.mockFetchOneOnce<Todo>(createdObjectD.$primaryKey)
           .resolve(createdObjectD);
-
-        // this order matters!
-        // but now we don't need them because we just update lists instead of revalidate when we can
-        // const plainList = mockClient.mockFetchPageOnce<Todo>();
-        // const orderedList = mockClient.mockFetchPageOnce<Todo>();
 
         mockedApplyAction.resolve({
           addedObjects: [
@@ -1410,18 +1401,6 @@ describe(Store, () => {
             },
           ],
         });
-
-        // plainList.resolve({
-        //   nextPageToken: undefined,
-        //   totalCount: "4",
-        //   data: [fauxObjectB, fauxObjectC, modifiedObjectA, createdObjectD],
-        // });
-
-        // orderedList.resolve({
-        //   nextPageToken: undefined,
-        //   totalCount: "4",
-        //   data: [modifiedObjectA, fauxObjectC, createdObjectD],
-        // });
 
         await actionPromise;
 
