@@ -15,11 +15,12 @@
  */
 
 import invariant from "tiny-invariant";
-import { FauxDataStore } from "../../FauxFoundry/FauxDataStore.js";
+import type { FauxDataStore } from "../../FauxFoundry/FauxDataStore.js";
 import { FauxFoundry } from "../../FauxFoundry/FauxFoundry.js";
-import { FauxOntology } from "../../FauxFoundry/FauxOntology.js";
+import type { FauxOntology } from "../../FauxFoundry/FauxOntology.js";
 import { registerLazyActions } from "../actions.js";
 import { ActionTypeWithUnsupportedTypes } from "../actionsTypes.js";
+import { helloWorldAttachment } from "../attachments.js";
 import { BarInterface, FooInterface } from "../interfaces.js";
 import {
   employee1 as employee_John_50030,
@@ -39,9 +40,14 @@ import { fooSpt } from "../spts.js";
 import { defaultOntologyMetadata } from "./defaultOntologyMetadata.js";
 
 //
+// Setup the faux foundry
+//
+export const fauxFoundry: FauxFoundry = new FauxFoundry();
+
+//
 // Setup the ontology
 //
-export const legacyFullOntology: FauxOntology = new FauxOntology(
+export const legacyFullOntology: FauxOntology = fauxFoundry.createOntology(
   defaultOntologyMetadata,
 );
 
@@ -62,8 +68,8 @@ legacyFullOntology.registerSharedPropertyType(fooSpt);
 //
 // Setup the data store
 //
-export const legacyFauxDataStore: FauxDataStore = new FauxDataStore(
-  legacyFullOntology,
+export const legacyFauxDataStore: FauxDataStore = fauxFoundry.getDataStore(
+  defaultOntologyMetadata.rid,
 );
 legacyFauxDataStore.registerObject(employee_John_50030);
 legacyFauxDataStore.registerObject(employee_Jane_50031);
@@ -109,6 +115,6 @@ invariant(
 //
 // Setup the faux foundry
 //
-export const fauxFoundry: FauxFoundry = new FauxFoundry();
-fauxFoundry.registerOntology(legacyFullOntology);
-fauxFoundry.setDataStore(legacyFullOntology.apiName, legacyFauxDataStore);
+
+// used in attachment.test.ts in @osdk/client
+fauxFoundry.attachments.registerAttachment(helloWorldAttachment);

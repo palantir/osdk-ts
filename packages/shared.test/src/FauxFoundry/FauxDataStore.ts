@@ -20,6 +20,7 @@ import invariant from "tiny-invariant";
 import { ObjectNotFoundError } from "../errors.js";
 import { OpenApiCallError } from "../handlers/util/handleOpenApiCall.js";
 import type { BaseServerObject } from "./BaseServerObject.js";
+import type { FauxAttachmentStore } from "./FauxAttachmentStore.js";
 import { FauxDataStoreBatch } from "./FauxDataStoreBatch.js";
 import type { FauxOntology } from "./FauxOntology.js";
 import type { ObjectLocator } from "./ObjectLocator.js";
@@ -45,8 +46,11 @@ export class FauxDataStore {
 
   #fauxOntology: FauxOntology;
 
-  constructor(fauxOntology: FauxOntology) {
+  #attachments: FauxAttachmentStore;
+
+  constructor(fauxOntology: FauxOntology, attachments: FauxAttachmentStore) {
     this.#fauxOntology = fauxOntology;
+    this.#attachments = attachments;
   }
 
   get ontology(): FauxOntology {
@@ -299,7 +303,10 @@ export class FauxDataStore {
     }
 
     const batch = new FauxDataStoreBatch(this);
-    const r = actionImpl(batch, req, actionDef);
+    const r = actionImpl(batch, req, {
+      def: actionDef,
+      attachments: this.#attachments,
+    });
 
     // The legacy actions return the full payload
     // they want to return, so we need to do that
@@ -363,7 +370,7 @@ export class FauxDataStore {
             returnEdits: batchReq.options?.returnEdits,
           },
         },
-        actionDef,
+        { def: actionDef, attachments: this.#attachments },
       );
     }
     if (batchReq.options?.returnEdits === "NONE") {

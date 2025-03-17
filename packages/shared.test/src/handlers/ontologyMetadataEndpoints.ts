@@ -16,12 +16,11 @@
 
 /* eslint-disable @typescript-eslint/require-await */
 
-import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { RequestHandler } from "msw";
 import { http as rest, HttpResponse } from "msw";
 import invariant from "tiny-invariant";
-import { InvalidRequest, OntologyNotFoundError } from "../errors.js";
+import { OntologyNotFoundError } from "../errors.js";
 import {
   defaultOntologyForConjure,
   fullOntology,
@@ -33,18 +32,6 @@ import {
   handleOpenApiCall,
   OpenApiCallError,
 } from "./util/handleOpenApiCall.js";
-
-export function getOntologyOld(
-  ontologyApiName: string,
-): OntologyFullMetadata {
-  if (
-    ontologyApiName !== fullOntology.ontology.apiName
-    && ontologyApiName !== fullOntology.ontology.rid
-  ) {
-    throw new OpenApiCallError(404, OntologyNotFoundError(ontologyApiName));
-  }
-  return fullOntology;
-}
 
 type ConjureObjectTypeInfo = {
   displayMetadata: {
@@ -195,21 +182,10 @@ const getOntologyEndpoints = (base: string | undefined) => [
   handleOpenApiCall(
     OntologiesV2.OntologyInterfaces.get,
     ["ontologyApiName", "interfaceType"],
-    (req) => {
-      // will throw if bad name
-      getOntologyOld(req.params.ontologyApiName as string);
-
-      const interfaceType = req.params.interfaceType;
-      if (typeof interfaceType !== "string") {
-        throw new OpenApiCallError(
-          400,
-          InvalidRequest("Invalid parameter objectType"),
-        );
-      }
-
+    ({ params }) => {
       return fauxFoundry
-        .getOntology(req.params.ontologyApiName)
-        .getInterfaceType(interfaceType);
+        .getOntology(params.ontologyApiName)
+        .getInterfaceType(params.interfaceType);
     },
     base,
   ),

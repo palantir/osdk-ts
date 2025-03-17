@@ -14,56 +14,13 @@
  * limitations under the License.
  */
 
-import type { AttachmentV2 } from "@osdk/foundry.ontologies";
+import type { FauxAttachmentInfo } from "../FauxFoundry/FauxAttachmentStore.js";
 
-export const attachmentMetadata: AttachmentV2 = {
+export const helloWorldAttachment: FauxAttachmentInfo = {
   filename: "file1.txt",
   mediaType: "application/json",
-  sizeBytes: "18",
   rid: "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
-};
-
-export const localAttachment1 = {
-  filename: "file1.txt",
-};
-
-export const localAttachment2 = {
-  filename: "",
-};
-
-export const attachmentPropertyName1: string = "attachment";
-export const attachmentPropertyName2: string = "attachment2";
-
-export const attachmentUploadRequest: Record<string, AttachmentV2 | undefined> =
-  {
-    [localAttachment1.filename]: attachmentMetadata,
-    [localAttachment2.filename]: undefined,
-  };
-
-export const attachmentUploadRequestBody: Record<string, Blob> = {
-  [localAttachment1.filename]: new Blob([
+  buffer: new TextEncoder().encode(
     JSON.stringify({ name: "Hello World" }, null, 2),
-  ], {
-    type: "application/json",
-  }),
-};
-
-export const attachmentMetadataRequest: Record<
-  string,
-  AttachmentV2 | undefined
-> = {
-  [attachmentPropertyName1]: attachmentMetadata,
-  [attachmentPropertyName2]: undefined,
-  [attachmentMetadata.rid]: attachmentMetadata,
-};
-
-export const attachmentContentRequest: Record<
-  string,
-  string | {
-    name: string;
-  } | undefined
-> = {
-  [attachmentPropertyName1]: "Hello World",
-  [attachmentPropertyName2]: undefined,
-  [attachmentMetadata.rid]: { name: "Hello World 2" },
+  ),
 };

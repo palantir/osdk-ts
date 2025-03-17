@@ -16,11 +16,13 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 import type { BaseServerObject } from "./BaseServerObject.js";
+import { FauxAttachmentStore } from "./FauxAttachmentStore.js";
 import { FauxDataStore } from "./FauxDataStore.js";
 import { FauxOntology } from "./FauxOntology.js";
 
 describe(FauxDataStore, () => {
   describe("Simple Employee ontology", () => {
+    let attachmentsStore: FauxAttachmentStore;
     let fauxOntology: FauxOntology;
     let fauxDataStore: FauxDataStore;
 
@@ -37,13 +39,14 @@ describe(FauxDataStore, () => {
       ) as unknown as Record<typeof pks[number], BaseServerObject>;
 
     beforeEach(() => {
+      attachmentsStore = new FauxAttachmentStore();
       fauxOntology = new FauxOntology({
         apiName: "foo",
         description: "foo",
         displayName: "foo",
         rid: "ri.foo",
       });
-      fauxDataStore = new FauxDataStore(fauxOntology);
+      fauxDataStore = new FauxDataStore(fauxOntology, attachmentsStore);
 
       const Employee = {
         implementsInterfaces: [],

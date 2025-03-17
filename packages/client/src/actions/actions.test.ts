@@ -252,7 +252,7 @@ describe("actions", () => {
     }[]>().toMatchTypeOf<InferredBatchParamType>();
 
     const result = await client(actionTakesAttachment).applyAction({
-      attachment: "attachment.rid",
+      attachment: stubData.helloWorldAttachment.rid,
     });
 
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
@@ -294,8 +294,7 @@ describe("actions", () => {
       InferredBatchParamType
     >();
 
-    const blob =
-      stubData.attachmentUploadRequestBody[stubData.localAttachment1.filename];
+    const blob = new Blob([stubData.helloWorldAttachment.buffer]);
 
     const attachment = createAttachmentUpload(blob, "file1.txt");
 
