@@ -18,7 +18,11 @@ import { describe, expectTypeOf, it } from "vitest";
 import type { NullabilityAdherence } from "./object/FetchPageArgs.js";
 import type { ObjectSet } from "./objectSet/ObjectSet.js";
 import type { ObjectOrInterfaceDefinition } from "./ontology/ObjectOrInterface.js";
-import type { ExtractOptions, Osdk } from "./OsdkObjectFrom.js";
+import type {
+  ExtractOptions,
+  Osdk,
+  WithOrderByRelevance,
+} from "./OsdkObjectFrom.js";
 
 describe("ExtractOptions", () => {
   describe("NullabilityAdherence Generic", () => {
@@ -359,7 +363,10 @@ describe("ExtractOptions", () => {
     it("is not $notStrict", async () => {
       expectTypeOf<ReturnType<Helper<quickAndDirty>["go"]>>().branded
         .toEqualTypeOf<
-          Osdk.Instance<quickAndDirty>[]
+          (
+            | WithOrderByRelevance<Osdk.Instance<quickAndDirty>>
+            | Osdk.Instance<quickAndDirty>
+          )[]
         >();
     });
   });

@@ -35,13 +35,21 @@ export interface SelectArg<
   $includeRid?: R;
 }
 
-export interface OrderByArg<
+export type OrderByOptions<
   Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q> = PropertyKeys<Q>,
-> {
-  $orderBy?: {
+> =
+  | {
     [K in L]?: "asc" | "desc";
-  };
+  }
+  | "relevance";
+
+export interface OrderByArg<
+  Q extends ObjectOrInterfaceDefinition,
+  Z extends OrderByOptions<Q, L>,
+  L extends PropertyKeys<Q> = PropertyKeys<Q>,
+> {
+  $orderBy?: Z;
 }
 
 export type SelectArgToKeys<
@@ -58,7 +66,8 @@ export interface FetchPageArgs<
   A extends Augments = never,
   S extends NullabilityAdherence = NullabilityAdherence.Default,
   T extends boolean = false,
-> extends AsyncIterArgs<Q, K, R, A, S, T> {
+  Z extends OrderByOptions<Q, K> = {},
+> extends AsyncIterArgs<Q, K, R, A, S, T, Z> {
   $nextPageToken?: string;
   $pageSize?: number;
 }
@@ -70,7 +79,8 @@ export interface AsyncIterArgs<
   A extends Augments = never,
   S extends NullabilityAdherence = NullabilityAdherence.Default,
   T extends boolean = false,
-> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
+  Z extends OrderByOptions<Q, K> = {},
+> extends SelectArg<Q, K, R, S>, OrderByArg<Q, Z, PropertyKeys<Q>> {
   $__UNSTABLE_useOldInterfaceApis?: boolean;
   $includeAllBaseObjectProperties?: T;
 }

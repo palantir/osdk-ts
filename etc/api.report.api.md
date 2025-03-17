@@ -230,8 +230,9 @@ export interface AsyncIterArgs<
 	R extends boolean = false,
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
-	T extends boolean = false
-> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
+	T extends boolean = false,
+	Z extends OrderByOptions<Q, K> = {}
+> extends SelectArg<Q, K, R, S>, OrderByArg<Q, Z, PropertyKeys<Q>> {
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
     	// (undocumented)
@@ -273,7 +274,7 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 }
 
 // @public (undocumented)
-export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
+export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference" | "vector";
 
 // @public (undocumented)
 export type CompileTimeMetadata<T extends {
@@ -504,8 +505,9 @@ export interface FetchPageArgs<
 	R extends boolean = false,
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
-	T extends boolean = false
-> extends AsyncIterArgs<Q, K, R, A, S, T> {
+	T extends boolean = false,
+	Z extends OrderByOptions<Q, K> = {}
+> extends AsyncIterArgs<Q, K, R, A, S, T, Z> {
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
@@ -520,8 +522,9 @@ export type FetchPageResult<
 	L extends PropertyKeys<Q>,
 	R extends boolean,
 	S extends NullabilityAdherence,
-	T extends boolean
-> = PageResult<PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S, T>> : Osdk.Instance<Q, ExtractOptions<R, S, T>, L>>;
+	T extends boolean,
+	Z extends OrderByOptions<Q, L> = {}
+> = PageResult<Z extends "relevance" ? WithOrderByRelevance<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? never : L>> : Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? never : L>>;
 
 // @public (undocumented)
 export type FilteredPropertyKeys<
@@ -837,6 +840,12 @@ export interface OntologyMetadata<_NEVER_USED_KEPT_FOR_BACKCOMPAT = any> {
     userAgent: string;
 }
 
+// @public (undocumented)
+export type OrderByOptions<
+	Q extends ObjectOrInterfaceDefinition,
+	L extends PropertyKeys<Q> = PropertyKeys<Q>
+> = { [K in L]? : "asc" | "desc" } | "relevance";
+
 // Warning: (ae-forgotten-export) The symbol "IsNever" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "IsAny" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ExtractPropsKeysFromOldPropsStyle" needs to be exported by the entry point index.d.ts
@@ -989,6 +998,8 @@ export interface PropertyValueWireToClient {
     stringTimeseries: TimeSeriesProperty<string>;
     	// (undocumented)
     timestamp: string;
+    	// (undocumented)
+    vector: number[];
 }
 
 // Warning: (ae-forgotten-export) The symbol "PrimitiveDataType" needs to be exported by the entry point index.d.ts
@@ -1147,8 +1158,9 @@ export type SingleOsdkResult<
 	R extends boolean,
 	S extends NullabilityAdherence,
 	RDPs extends Record<string, SimplePropertyDef> = {},
-	T extends boolean = false
-> = Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>;
+	T extends boolean = false,
+	Z extends OrderByOptions<Q, L> = {}
+> = Z extends "relevance" ? WithOrderByRelevance<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>> : Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>;
 
 // Warning: (ae-forgotten-export) The symbol "AllowedBucketKeyTypes_2" needs to be exported by the entry point index.d.ts
 //
@@ -1286,6 +1298,11 @@ export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T
 
 // @public (undocumented)
 export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWirePropertyTypes>;
+
+// @public (undocumented)
+export type WithOrderByRelevance<T extends Osdk.Instance<any>> = T & {
+    	$score: number
+};
 
 // Warnings were encountered during analysis:
 //
