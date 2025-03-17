@@ -18,6 +18,8 @@ import type {
   ExecuteQueryRequest,
   ExecuteQueryResponse,
 } from "@osdk/foundry.ontologies";
+import type { FauxOntology } from "../FauxFoundry/FauxOntology.js";
+import { createLazyQueryImpl } from "../handlers/util/createLazyQueryImpl.js";
 import { employee1, employee2 } from "./objects.js";
 import {
   addOneQueryType,
@@ -270,7 +272,7 @@ export const emptyBody: string = JSON.stringify({
   parameters: {},
 });
 
-export const queryRequestHandlers: {
+const queryRequestHandlers: {
   [queryApiName: string]: {
     [queryBody: string]: ExecuteQueryResponse;
   };
@@ -326,3 +328,36 @@ export const queryRequestHandlers: {
     [JSON.stringify(queryTypeReturnsMapRequest)]: queryTypeReturnsMapResponse,
   },
 };
+
+export function registerLazyQueries(fauxOntology: FauxOntology): void {
+  const queryTypes = [
+    addOneQueryType,
+    queryTypeReturnsStruct,
+    queryTypeReturnsDate,
+    queryTypeReturnsObject,
+    queryTypeReturnsTimestamp,
+    queryTypeTwoDimensionalAggregation,
+    queryTypeThreeDimensionalAggregation,
+    queryTypeAcceptsObjects,
+    queryTypeAcceptsObjectSets,
+    queryTypeAcceptsTwoDimensionalAggregation,
+    queryTypeAcceptsThreeDimensionalAggregation,
+    queryTypeReturnsArray,
+    queryTypeReturnsComplexStruct,
+    queryTypeReturnsMap,
+  ];
+
+  for (const queryType of Object.values(queryTypes)) {
+    const lazyHandlerMap = queryRequestHandlers[queryType.apiName];
+    if (!lazyHandlerMap) {
+      throw new Error(
+        `Query type ${queryType.apiName} is not registered in queryRequestHandlers`,
+      );
+    }
+
+    fauxOntology.registerQueryType(
+      queryType,
+      createLazyQueryImpl(lazyHandlerMap),
+    );
+  }
+}

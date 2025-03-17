@@ -34,7 +34,7 @@ import {
   travisPlayer,
 } from "../objects.js";
 import { objectTypesWithLinkTypes } from "../objectTypesWithLinkTypes.js";
-import { queryTypes } from "../queryTypes.js";
+import { registerLazyQueries } from "../queries.js";
 import { fooSpt } from "../spts.js";
 import { defaultOntologyMetadata } from "./defaultOntologyMetadata.js";
 
@@ -52,9 +52,7 @@ for (const xx of Object.values(objectTypesWithLinkTypes)) {
 registerLazyActions(legacyFullOntology);
 legacyFullOntology.registerActionType(ActionTypeWithUnsupportedTypes);
 
-for (const xx of Object.values(queryTypes)) {
-  legacyFullOntology.registerQueryType(xx);
-}
+registerLazyQueries(legacyFullOntology);
 
 legacyFullOntology.registerInterfaceType(BarInterface);
 legacyFullOntology.registerInterfaceType(FooInterface);
