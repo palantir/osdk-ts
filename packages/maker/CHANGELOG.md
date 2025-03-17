@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.10.0-beta.9
+
+### Minor Changes
+
+- 12843cb: Add ability to load all underlying properties of an interface.
+
+### Patch Changes
+
+- Updated dependencies [12843cb]
+- Updated dependencies [f82767c]
+  - @osdk/api@2.2.0-beta.9
+
 ## 0.10.0-beta.8
 
 ### Minor Changes

@@ -1,5 +1,12 @@
 # @osdk/api
 
+## 2.2.0-beta.9
+
+### Minor Changes
+
+- 12843cb: Add ability to load all underlying properties of an interface.
+- f82767c: Allow using aggregation operations for boolean property types
+
 ## 2.2.0-beta.8
 
 ### Minor Changes
