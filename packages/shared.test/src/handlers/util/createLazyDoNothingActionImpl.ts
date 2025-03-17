@@ -18,8 +18,8 @@ import type * as OntologiesV2 from "@osdk/foundry.ontologies";
 import stableStringify from "json-stable-stringify";
 import invariant from "tiny-invariant";
 import { ApplyActionFailedError } from "../../errors.js";
+import type { FauxActionImpl } from "../../FauxFoundry/FauxActionImpl.js";
 import type { FauxDataStoreBatch } from "../../FauxFoundry/FauxDataStoreBatch.js";
-import type { ActionImpl } from "../../FauxFoundry/FauxOntology.js";
 import { OpenApiCallError } from "./handleOpenApiCall.js";
 
 /**
@@ -37,7 +37,7 @@ export function createLazyDoNothingActionImpl(
       OntologiesV2.BatchApplyActionResponseV2 | undefined,
     ]
   >,
-): ActionImpl {
+): FauxActionImpl {
   const stableToRet = new Map(
     reqRespPairs.map(pair => [
       stableStringify(pair[0]),

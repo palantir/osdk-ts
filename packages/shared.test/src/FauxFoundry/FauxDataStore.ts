@@ -53,8 +53,55 @@ export class FauxDataStore {
     return this.#fauxOntology;
   }
 
+  #assertObjectExists(
+    objectType: string,
+    primaryKey: string | number | boolean,
+  ) {
+    if (!this.getObject(objectType, primaryKey)) {
+      throw new OpenApiCallError(
+        404,
+        ObjectNotFoundError(objectType, String(primaryKey)),
+      );
+    }
+  }
+
+  #assertObjectDoesNotExist(
+    objectType: string,
+    primaryKey: string | number | boolean,
+  ): void {
+    if (this.getObject(objectType, primaryKey)) {
+      throw new OpenApiCallError(
+        500,
+        {
+          errorCode: "CONFLICT",
+          errorName: "ObjectAlreadyExists",
+          errorInstanceId: "faux-foundry",
+          parameters: {
+            objectType,
+            primaryKey: String(primaryKey),
+          },
+        } satisfies OntologiesV2.ObjectAlreadyExists,
+      );
+    }
+  }
+
   registerObject(x: BaseServerObject): void {
+    this.#assertObjectDoesNotExist(x.__apiName, x.__primaryKey);
     this.#objects.get(x.__apiName).set(String(x.__primaryKey), x);
+  }
+
+  replaceObjectOrThrow(x: BaseServerObject): void {
+    this.#assertObjectExists(x.__apiName, x.__primaryKey);
+    this.#objects.get(x.__apiName).set(String(x.__primaryKey), x);
+  }
+
+  /** Throws if the object does not already exist */
+  unregisterObjectOrThrow(
+    objectType: string,
+    primaryKey: string | number | boolean,
+  ): void {
+    this.#assertObjectExists(objectType, primaryKey);
+    this.#objects.get(objectType).delete(String(primaryKey));
   }
 
   registerLink(
@@ -65,20 +112,20 @@ export class FauxDataStore {
   ): void {
     const srcLocator = objectLocator(src);
     const dstLocator = objectLocator(dst);
-    const srcSide = this.#fauxOntology.getLinkTypeSideV2(
+    const [srcSide, dstSide] = this.#fauxOntology.getBothLinkTypeSides(
       src.__apiName,
       srcLinkName,
-    );
-
-    const dstSide = this.#fauxOntology.getLinkTypeSideV2(
       dst.__apiName,
-      destLinkName,
     );
 
     invariant(
       srcSide.linkTypeRid === dstSide.linkTypeRid,
       `Expected both sides of the link to have the same rid, but got ${srcSide.linkTypeRid} and ${dstSide.linkTypeRid}`,
     );
+    invariant(
+      dstSide.apiName === destLinkName,
+      `Link name mismatch on dst side. Expected ${destLinkName} but found ${dstSide.apiName}`,
+    );
 
     this.#updateSingleLinkSide(
       srcSide,
@@ -92,6 +139,29 @@ export class FauxDataStore {
       srcSide,
       srcLocator,
     );
+  }
+
+  unregisterLink(
+    src: BaseServerObject,
+    srcLinkName: string,
+    dst: BaseServerObject,
+    dstLinkName: string,
+  ): void {
+    const srcLocator = objectLocator(src);
+    const dstLocator = objectLocator(dst);
+    const [srcSide, dstSide] = this.#fauxOntology.getBothLinkTypeSides(
+      src.__apiName,
+      srcLinkName,
+      dst.__apiName,
+    );
+
+    invariant(
+      dstSide.apiName === dstLinkName,
+      `Link name mismatch on dst side. Expected ${dstLinkName} but found ${dstSide.apiName}`,
+    );
+
+    this.#removeSingleSideOfLink(srcLocator, srcSide, dstLocator);
+    this.#removeSingleSideOfLink(dstLocator, dstSide, srcLocator);
   }
 
   #updateSingleLinkSide(
@@ -118,6 +188,7 @@ export class FauxDataStore {
       const linkNameToObj = this.#manyLinks.get(srcLocator);
       linkNameToObj.set(srcLinkName, dstLocator);
     } else {
+      // "never" case
       throw new Error("unexpected cardinality: " + srcSide.cardinality);
     }
   }
@@ -179,12 +250,6 @@ export class FauxDataStore {
     linkApiName: string,
   ): BaseServerObject[] {
     const object = this.getObjectOrThrow(apiName, primaryKey);
-    if (object === undefined) {
-      throw new OpenApiCallError(
-        404,
-        ObjectNotFoundError(apiName, String(primaryKey)),
-      );
-    }
 
     const linkTypeSide = this.#fauxOntology.getLinkTypeSideV2(
       apiName,
