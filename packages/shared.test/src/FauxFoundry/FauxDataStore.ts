@@ -27,6 +27,7 @@ import type { BaseServerObject } from "./BaseServerObject.js";
 import type { FauxAttachmentStore } from "./FauxAttachmentStore.js";
 import { FauxDataStoreBatch } from "./FauxDataStoreBatch.js";
 import type { FauxOntology } from "./FauxOntology.js";
+import { filterTimeSeriesData } from "./filterTimeSeriesData.js";
 import { createOrderBySortFn, getObjectsFromSet } from "./getObjectsFromSet.js";
 import type { ObjectLocator } from "./ObjectLocator.js";
 import { objectLocator, parseLocator } from "./ObjectLocator.js";
@@ -52,6 +53,15 @@ export class FauxDataStore {
   #fauxOntology: FauxOntology;
 
   #attachments: FauxAttachmentStore;
+
+  #timeSeriesData = new DefaultMap(
+    (_objectType: OntologiesV2.ObjectTypeApiName) =>
+      new DefaultMap((_pk: string) =>
+        new DefaultMap((_property: OntologiesV2.PropertyApiName) =>
+          [] as Array<OntologiesV2.TimeSeriesPoint>
+        )
+      ),
+  );
 
   constructor(fauxOntology: FauxOntology, attachments: FauxAttachmentStore) {
     this.#fauxOntology = fauxOntology;
@@ -174,6 +184,40 @@ export class FauxDataStore {
 
     this.#removeSingleSideOfLink(srcLocator, srcSide, dstLocator);
     this.#removeSingleSideOfLink(dstLocator, dstSide, srcLocator);
+  }
+
+  registerTimeSeriesData(
+    objectType: OntologiesV2.ObjectTypeApiName,
+    primaryKey: string,
+    property: OntologiesV2.PropertyApiName,
+    data: OntologiesV2.TimeSeriesPoint[],
+  ): void {
+    this.getObjectOrThrow(objectType, primaryKey);
+    const def = this.ontology.getObjectTypeFullMetadataOrThrow(objectType);
+    invariant(
+      def.objectType.properties[property].dataType.type === "timeseries"
+        || def.objectType.properties[property].dataType.type
+          === "geotimeSeriesReference",
+    );
+    this.#timeSeriesData.get(objectType).get(String(primaryKey)).set(
+      property,
+      data,
+    );
+  }
+
+  getTimeSeriesData(
+    objectType: OntologiesV2.ObjectTypeApiName,
+    primaryKey: string,
+    property: OntologiesV2.PropertyApiName,
+    filter?: OntologiesV2.StreamTimeSeriesPointsRequest,
+  ): OntologiesV2.TimeSeriesPoint[] {
+    this.getObjectOrThrow(objectType, primaryKey);
+    const allData = this.#timeSeriesData.get(objectType).get(String(primaryKey))
+      .get(
+        property,
+      );
+    if (!filter) return allData;
+    return filterTimeSeriesData(allData, filter);
   }
 
   #updateSingleLinkSide(

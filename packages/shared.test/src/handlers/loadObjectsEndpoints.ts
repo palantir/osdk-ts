@@ -17,10 +17,8 @@
 /* eslint-disable @typescript-eslint/require-await */
 
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
-import stableStringify from "json-stable-stringify";
-import type { HttpResponseResolver, PathParams, RequestHandler } from "msw";
+import type { RequestHandler } from "msw";
 import { randomUUID } from "node:crypto";
-import type { BaseAPIError } from "../BaseError.js";
 import {
   InvalidContentTypeError,
   InvalidRequest,
@@ -31,32 +29,20 @@ import {
   subSelectPropertiesUrl,
 } from "../filterObjects.js";
 import {
-  latestValueRequestHandlers,
-  streamValuesRequestHandlers,
-} from "../stubs/geotimeseriesrequests.js";
-import {
   mediaContentRequestHandler,
   mediaMetadataRequestHandler,
   mediaUploadRequest,
   mediaUploadRequestBody,
 } from "../stubs/media.js";
-import { employeeObjectType } from "../stubs/objectTypes.js";
-import { defaultOntologyMetadata } from "../stubs/ontologies/defaultOntologyMetadata.js";
 import {
   fauxFoundry,
   legacyFauxDataStore,
 } from "../stubs/ontologies/legacyFullOntology.js";
 import {
-  firstPointRequestHandlers,
-  lastPointRequestHandlers,
-  streamPointsRequestHandlers,
-} from "../stubs/timeseriesRequests.js";
-import {
   areArrayBuffersEqual,
   pageThroughResponseSearchParams,
 } from "./endpointUtils.js";
 import { getPaginationParamsFromUrl } from "./util/getPaginationParams.js";
-import type { ExtractBody } from "./util/handleOpenApiCall.js";
 import {
   handleOpenApiCall,
   OpenApiCallError,
@@ -178,28 +164,15 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
    */
   handleOpenApiCall(
     OntologiesV2.TimeSeriesPropertiesV2.getFirstPoint,
-    [
-      "ontologyApiName",
-      "objectType",
-      "primaryKey",
-      "propertyName",
-    ],
-    async req => {
-      const pointParams = {
-        primaryKey: req.params.primaryKey,
-        propertyName: req.params.propertyName,
-      };
-
-      const firstPointResp =
-        firstPointRequestHandlers[JSON.stringify(pointParams)];
-      if (
-        (req.params.ontologyApiName === defaultOntologyMetadata.apiName
-          || req.params.ontologyApiName === defaultOntologyMetadata.rid)
-        && req.params.objectType === employeeObjectType.apiName
-      ) {
-        return firstPointResp;
-      }
-      throw new OpenApiCallError(400, InvalidRequest("Invalid request"));
+    ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
+    async ({ params }) => {
+      const { objectType, ontologyApiName, primaryKey, propertyName } = params;
+      return fauxFoundry.getDataStore(ontologyApiName)
+        .getTimeSeriesData(
+          objectType,
+          primaryKey,
+          propertyName,
+        ).at(0);
     },
   ),
 
@@ -209,21 +182,14 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
   handleOpenApiCall(
     OntologiesV2.TimeSeriesPropertiesV2.getLastPoint,
     ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
-    async req => {
-      const pointParams = {
-        primaryKey: req.params.primaryKey,
-        propertyName: req.params.propertyName,
-      };
-      const lastPointResp =
-        lastPointRequestHandlers[JSON.stringify(pointParams)];
-      if (
-        (req.params.ontologyApiName === defaultOntologyMetadata.apiName
-          || req.params.ontologyApiName === defaultOntologyMetadata.rid)
-        && req.params.objectType === employeeObjectType.apiName
-      ) {
-        return lastPointResp;
-      }
-      throw new OpenApiCallError(400, InvalidRequest("Invalid request"));
+    async ({ params }) => {
+      const { objectType, ontologyApiName, primaryKey, propertyName } = params;
+      return fauxFoundry.getDataStore(ontologyApiName)
+        .getTimeSeriesData(
+          objectType,
+          primaryKey,
+          propertyName,
+        ).at(-1);
     },
   ),
 
@@ -234,7 +200,19 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
     OntologiesV2.TimeSeriesPropertiesV2.streamPoints,
     ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
     async req => {
-      return handleStreamValues(req, false);
+      const { objectType, ontologyApiName, primaryKey, propertyName } =
+        req.params;
+      const requestBody = await req.request.json();
+
+      return Response.json(
+        fauxFoundry.getDataStore(ontologyApiName)
+          .getTimeSeriesData(
+            objectType,
+            primaryKey,
+            propertyName,
+            requestBody,
+          ),
+      );
     },
   ),
 
@@ -432,21 +410,21 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
   handleOpenApiCall(
     OntologiesV2.TimeSeriesValueBankProperties.getLatestValue,
     ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
-    async req => {
-      const pointParams = {
-        primaryKey: req.params.primaryKey,
-        propertyName: req.params.propertyName,
-      };
-      const lastPointResp =
-        latestValueRequestHandlers[JSON.stringify(pointParams)];
-      if (
-        (req.params.ontologyApiName === defaultOntologyMetadata.apiName
-          || req.params.ontologyApiName === defaultOntologyMetadata.rid)
-        && req.params.objectType === employeeObjectType.apiName
-      ) {
-        return lastPointResp;
+    async ({ params }) => {
+      const { objectType, ontologyApiName, primaryKey, propertyName } = params;
+
+      const ret = fauxFoundry.getDataStore(ontologyApiName)
+        .getTimeSeriesData(
+          objectType,
+          primaryKey,
+          propertyName,
+        ).at(-1);
+
+      if (!ret) {
+        throw new OpenApiCallError(400, InvalidRequest("Invalid request"));
       }
-      throw new OpenApiCallError(400, InvalidRequest("Invalid request"));
+
+      return ret;
     },
   ),
   /**
@@ -456,7 +434,19 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
     OntologiesV2.TimeSeriesValueBankProperties.streamValues,
     ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
     async req => {
-      return handleStreamValues(req, true);
+      const { objectType, ontologyApiName, primaryKey, propertyName } =
+        req.params;
+      const requestBody = await req.request.json();
+
+      return Response.json(
+        fauxFoundry.getDataStore(ontologyApiName)
+          .getTimeSeriesData(
+            objectType,
+            primaryKey,
+            propertyName,
+            requestBody,
+          ),
+      );
     },
   ),
   /**
@@ -546,29 +536,3 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
     },
   ),
 ] as const;
-
-async function handleStreamValues(
-  req: Parameters<
-    HttpResponseResolver<
-      PathParams<string>,
-      | ExtractBody<typeof OntologiesV2.TimeSeriesPropertiesV2.streamPoints>
-      | Blob
-      | BaseAPIError
-    >
-  >[0],
-  useGeotime?: boolean,
-) {
-  const requestBody = await req.request.json();
-  const streamPointsResp = useGeotime
-    ? streamValuesRequestHandlers[stableStringify(requestBody)]
-    : streamPointsRequestHandlers[stableStringify(requestBody)];
-  if (
-    streamPointsResp
-    && (req.params.ontologyApiName === defaultOntologyMetadata.apiName
-      || req.params.ontologyApiName === defaultOntologyMetadata.rid)
-    && req.params.objectType === employeeObjectType.apiName
-  ) {
-    return new Response(JSON.stringify(streamPointsResp));
-  }
-  throw new OpenApiCallError(400, InvalidRequest("Invalid request"));
-}
