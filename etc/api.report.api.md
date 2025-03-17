@@ -515,7 +515,6 @@ export interface FetchPageArgs<
 }
 
 // Warning: (ae-forgotten-export) The symbol "ExtractOptions" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "ExtractOrderByOptions" needs to be exported by the entry point index.d.ts
 //
 // @public
 export type FetchPageResult<
@@ -525,7 +524,7 @@ export type FetchPageResult<
 	S extends NullabilityAdherence,
 	T extends boolean,
 	Z extends OrderByOptions<Q, L> = {}
-> = PageResult<PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q>, {}, ExtractOrderByOptions<Z extends "relevance" ? true : false>> : Osdk.Instance<Q, ExtractOptions<R, S, T>, L, {}, ExtractOrderByOptions<Z extends "relevance" ? true : false>>>;
+> = PageResult<Z extends "relevance" ? WithOrderByRelevance<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? never : L>> : Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? never : L>>;
 
 // @public (undocumented)
 export type FilteredPropertyKeys<
@@ -867,17 +866,14 @@ export namespace Osdk {
     		Q extends ObjectOrInterfaceDefinition,
     		OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
     		P extends PropertyKeys<Q> = PropertyKeys<Q>,
-    		R extends Record<string, SimplePropertyDef> = {},
-    		ORDER_BY_OPTIONS extends never | "$score" = never
+    		R extends Record<string, SimplePropertyDef> = {}
     	> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
         		readonly $link: Q extends {
             			linksType?: any
             		} ? Q["linksType"] : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q> : never
         		readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P, OPTIONS>>
         		readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(updatedObject?: Osdk.Instance<Q, any, NEW_PROPS> | { [K in NEW_PROPS]? : CompileTimeMetadata<Q>["props"][K] }) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>
-        	} & (IsNever<ORDER_BY_OPTIONS> extends true ? {} : IsAny<ORDER_BY_OPTIONS> extends true ? {} : "$score" extends ORDER_BY_OPTIONS ? {
-        		readonly $score: number
-        	} : {}) & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
+        	} & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
         		readonly $rid: string
         	} : {});
 }
@@ -1164,7 +1160,7 @@ export type SingleOsdkResult<
 	RDPs extends Record<string, SimplePropertyDef> = {},
 	T extends boolean = false,
 	Z extends OrderByOptions<Q, L> = {}
-> = Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }, ExtractOrderByOptions<Z extends "relevance" ? true : false>>;
+> = Z extends "relevance" ? WithOrderByRelevance<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>> : Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>;
 
 // Warning: (ae-forgotten-export) The symbol "AllowedBucketKeyTypes_2" needs to be exported by the entry point index.d.ts
 //
@@ -1302,6 +1298,12 @@ export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T
 
 // @public (undocumented)
 export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWirePropertyTypes>;
+
+// @public (undocumented)
+export type WithOrderByRelevance<T extends Osdk.Instance<any>> = {
+    	$score: number
+    	object: T
+};
 
 // Warnings were encountered during analysis:
 //

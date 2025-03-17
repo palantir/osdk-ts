@@ -44,7 +44,7 @@ export async function runNearestNeighborsTest(): Promise<void> {
     });
   resultOrderedByRelevance.data.map(s => {
     invariant(s.$score !== undefined);
-    console.log(s.orderTitle, s.$score);
+    console.log(s.object.orderTitle, s.$score);
   });
 
   // Ensure regular ordering still works

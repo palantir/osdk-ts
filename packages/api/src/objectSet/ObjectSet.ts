@@ -43,8 +43,8 @@ import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { PrimaryKeyType } from "../OsdkBase.js";
 import type {
   ExtractOptions,
-  ExtractOrderByOptions,
   Osdk,
+  WithOrderByRelevance,
 } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
@@ -101,13 +101,20 @@ interface FetchPage<
     args?: FetchPageArgs<Q, L, R, A, S, T, Z>,
   ) => Promise<
     PageResult<
-      Osdk.Instance<
-        Q,
-        ExtractOptions<R, S, T>,
-        PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
-        { [K in Extract<keyof RDPs, L>]: RDPs[K] },
-        ExtractOrderByOptions<Z extends "relevance" ? true : false>
-      >
+      Z extends "relevance" ? WithOrderByRelevance<
+          Osdk.Instance<
+            Q,
+            ExtractOptions<R, S, T>,
+            PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
+            { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+          >
+        >
+        : Osdk.Instance<
+          Q,
+          ExtractOptions<R, S, T>,
+          PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
+          { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+        >
     >
   >;
 
@@ -137,13 +144,20 @@ interface FetchPage<
   ) => Promise<
     Result<
       PageResult<
-        Osdk.Instance<
-          Q,
-          ExtractOptions<R, S, T>,
-          PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
-          { [K in Extract<keyof RDPs, L>]: RDPs[K] },
-          ExtractOrderByOptions<Z extends "relevance" ? true : false>
-        >
+        Z extends "relevance" ? WithOrderByRelevance<
+            Osdk.Instance<
+              Q,
+              ExtractOptions<R, S, T>,
+              PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
+              { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+            >
+          >
+          : Osdk.Instance<
+            Q,
+            ExtractOptions<R, S, T>,
+            PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
+            { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+          >
       >
     >
   >;
@@ -191,13 +205,20 @@ interface AsyncIter<
   >(
     args?: AsyncIterArgs<Q, L, R, A, S, T, Z>,
   ) => AsyncIterableIterator<
-    Osdk.Instance<
-      Q,
-      ExtractOptions<R, S, T>,
-      PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
-      { [K in Extract<keyof RDPs, L>]: RDPs[K] },
-      ExtractOrderByOptions<Z extends "relevance" ? true : false>
-    >
+    Z extends "relevance" ? WithOrderByRelevance<
+        Osdk.Instance<
+          Q,
+          ExtractOptions<R, S, T>,
+          PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
+          { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+        >
+      >
+      : Osdk.Instance<
+        Q,
+        ExtractOptions<R, S, T>,
+        PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
+        { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+      >
   >;
 }
 

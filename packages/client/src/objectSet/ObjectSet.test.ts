@@ -25,6 +25,7 @@ import type {
   Osdk,
   PropertyKeys,
   Result,
+  WithOrderByRelevance,
 } from "@osdk/api";
 import { isOk } from "@osdk/api";
 import {
@@ -279,7 +280,7 @@ describe("ObjectSet", () => {
       $orderBy: "relevance",
     });
     expectTypeOf<typeof orderedByRelevance>().toMatchTypeOf<
-      Osdk.Instance<Employee, never, PropertyKeys<Employee>, {}, "$score">[]
+      WithOrderByRelevance<Osdk.Instance<Employee>>[]
     >;
     orderedByRelevance.forEach(e =>
       expectTypeOf(e.$score).toMatchTypeOf<number>
@@ -291,13 +292,7 @@ describe("ObjectSet", () => {
       });
     if (isOk(orderedByRelevanceWithErrors)) {
       expectTypeOf(orderedByRelevanceWithErrors.value.data).toMatchTypeOf<
-        Osdk.Instance<
-          Employee,
-          never,
-          PropertyKeys<Employee>,
-          {},
-          "$score"
-        >[]
+        WithOrderByRelevance<Osdk.Instance<Employee>>[]
       >;
       orderedByRelevanceWithErrors.value.data.forEach(e =>
         expectTypeOf(e.$score).toMatchTypeOf<number>

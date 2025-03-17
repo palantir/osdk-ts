@@ -191,7 +191,8 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           L,
           R,
           S,
-          T
+          T,
+          Z
         > = await fetchPageInternal(
           augmentRequestContext(
             clientCtx,

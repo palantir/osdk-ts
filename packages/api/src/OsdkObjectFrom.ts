@@ -190,13 +190,17 @@ export type Osdk<
       ExtractPropsKeysFromOldPropsStyle<Q, OPTIONS>
     >;
 
+export type WithOrderByRelevance<T extends Osdk.Instance<any>> = {
+  $score: number;
+  object: T;
+};
+
 export namespace Osdk {
   export type Instance<
     Q extends ObjectOrInterfaceDefinition,
     OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
     P extends PropertyKeys<Q> = PropertyKeys<Q>,
     R extends Record<string, SimplePropertyDef> = {},
-    ORDER_BY_OPTIONS extends never | "$score" = never,
   > =
     & OsdkBase<Q>
     & Pick<
@@ -229,10 +233,6 @@ export namespace Osdk {
           },
       ) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>;
     }
-    & (IsNever<ORDER_BY_OPTIONS> extends true ? {}
-      : IsAny<ORDER_BY_OPTIONS> extends true ? {}
-      : "$score" extends ORDER_BY_OPTIONS ? { readonly $score: number }
-      : {})
     // We are hiding the $rid field if it wasn't requested as we want to discourage its use
     & (IsNever<OPTIONS> extends true ? {}
       : IsAny<OPTIONS> extends true ? {}

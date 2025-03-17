@@ -118,7 +118,11 @@ export type {
 } from "./ontology/WirePropertyTypes.js";
 export type { OsdkBase, PrimaryKeyType } from "./OsdkBase.js";
 export type { OsdkObject } from "./OsdkObject.js";
-export type { ConvertProps, Osdk } from "./OsdkObjectFrom.js";
+export type {
+  ConvertProps,
+  Osdk,
+  WithOrderByRelevance,
+} from "./OsdkObjectFrom.js";
 export type { PageResult } from "./PageResult.js";
 export type {
   Range,
