@@ -27,6 +27,7 @@ import {
 } from "../errors.js";
 import { OpenApiCallError } from "../handlers/util/handleOpenApiCall.js";
 import type { FauxActionImpl } from "./FauxActionImpl.js";
+import type { FauxQueryImpl } from "./FauxQueryImpl.js";
 import type { TH_ObjectTypeFullMetadata } from "./typeHelpers/TH_ObjectTypeFullMetadata.js";
 
 /**
@@ -36,6 +37,7 @@ import type { TH_ObjectTypeFullMetadata } from "./typeHelpers/TH_ObjectTypeFullM
 export class FauxOntology {
   #ontology: OntologiesV2.OntologyFullMetadata;
   #actionImpl: Map<OntologiesV2.ActionTypeApiName, FauxActionImpl> = new Map();
+  #queryImpl: Map<OntologiesV2.QueryApiName, FauxQueryImpl> = new Map();
 
   constructor(ontology: OntologiesV2.OntologyV2) {
     this.#ontology = {
@@ -66,6 +68,10 @@ export class FauxOntology {
 
   getAllActionTypes(): OntologiesV2.ActionTypeV2[] {
     return Object.values(this.#ontology.actionTypes);
+  }
+
+  getAllQueryTypes(): OntologiesV2.QueryTypeV2[] {
+    return Object.values(this.#ontology.queryTypes);
   }
 
   getInterfaceType(interfaceType: string): OntologiesV2.InterfaceType {
@@ -128,6 +134,18 @@ export class FauxOntology {
       );
     }
     return queryType;
+  }
+
+  public getQueryImpl(queryTypeApiName: string): FauxQueryImpl {
+    const impl = this.#queryImpl.get(queryTypeApiName);
+    if (!impl) {
+      throw new OpenApiCallError(
+        404,
+        QueryNotFoundError(queryTypeApiName),
+      );
+    }
+    invariant(impl, "Query implementation not found for " + queryTypeApiName);
+    return impl;
   }
 
   public getLinkTypeSideV2(
@@ -251,13 +269,19 @@ export class FauxOntology {
     }
   }
 
-  registerQueryType(def: OntologiesV2.QueryTypeV2): void {
+  registerQueryType(
+    def: OntologiesV2.QueryTypeV2,
+    implementation?: FauxQueryImpl,
+  ): void {
     if (def.apiName in this.#ontology.queryTypes) {
       throw new Error(
         `QueryType ${def.apiName} already registered`,
       );
     }
     this.#ontology.queryTypes[def.apiName] = def;
+    if (implementation) {
+      this.#queryImpl.set(def.apiName, implementation);
+    }
   }
 
   registerInterfaceType(def: OntologiesV2.InterfaceType): void {
