@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import type { FauxDataStoreBatch } from "../../FauxFoundry/FauxDataStoreBatch.js";
+import type { FauxActionImpl } from "../../FauxFoundry/FauxActionImpl.js";
 import type { JustProps } from "../../FauxFoundry/typeHelpers/JustProps.js";
-import type { TH_ApplyActionRequestV2 } from "../../FauxFoundry/typeHelpers/TH_ApplyActionRequestV2.js";
 import type { MoveOffice } from "../actionsTypes.js";
 import { officeObjectType } from "../objectTypeV2.js";
 
-export function moveOfficeImpl(
-  batch: FauxDataStoreBatch,
-  payload: TH_ApplyActionRequestV2<typeof MoveOffice>,
-  def: typeof MoveOffice,
-): void {
+export const moveOfficeImpl: FauxActionImpl<typeof MoveOffice> = (
+  batch,
+  payload,
+  ctx,
+): void => {
   // we are only setting capacity because we don't have a way to go from address
   // to gps coord
   batch.modifyObject(
@@ -34,4 +33,4 @@ export function moveOfficeImpl(
       capacity: payload.parameters.newCapacity as number,
     } satisfies Partial<JustProps<typeof officeObjectType>>,
   );
-}
+};

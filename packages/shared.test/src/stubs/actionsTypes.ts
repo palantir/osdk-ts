@@ -292,7 +292,22 @@ export const ActionTakesObjectSet: ActionTypeV2 = {
   status: "ACTIVE",
 };
 
-export const ActionTakesAttachment: ActionTypeV2 = {
+export const ActionTakesAttachment: {
+  readonly apiName: "actionTakesAttachment";
+  readonly description: "An action which takes an attachment";
+  readonly parameters: {
+    readonly attachment: {
+      readonly dataType: {
+        readonly type: "attachment";
+      };
+      readonly required: true;
+    };
+  };
+  readonly rid:
+    "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f3";
+  readonly operations: [];
+  readonly status: "ACTIVE";
+} = {
   apiName: "actionTakesAttachment",
   description: "An action which takes an attachment",
   parameters: {
@@ -306,7 +321,7 @@ export const ActionTakesAttachment: ActionTypeV2 = {
   rid: "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f3",
   operations: [],
   status: "ACTIVE",
-};
+} as const satisfies ActionTypeV2;
 
 export const ActionTakesMedia: ActionTypeV2 = {
   apiName: "actionTakesMedia",

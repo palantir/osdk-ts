@@ -19,10 +19,9 @@
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import stableStringify from "json-stable-stringify";
 import type { HttpResponseResolver, PathParams, RequestHandler } from "msw";
+import { randomUUID } from "node:crypto";
 import type { BaseAPIError } from "../BaseError.js";
 import {
-  AttachmentNotFoundError,
-  AttachmentSizeExceededLimitError,
   InvalidContentTypeError,
   InvalidRequest,
   ObjectNotFoundError,
@@ -32,20 +31,9 @@ import {
   subSelectPropertiesUrl,
 } from "../filterObjects.js";
 import {
-  attachmentContentRequest,
-  attachmentMetadataRequest,
-  attachmentUploadRequest,
-  attachmentUploadRequestBody,
-} from "../stubs/attachments.js";
-import {
   latestValueRequestHandlers,
   streamValuesRequestHandlers,
 } from "../stubs/geotimeseriesrequests.js";
-import {
-  fauxFoundry,
-  legacyFauxDataStore,
-} from "../stubs/ontologies/legacyFullOntology.js";
-
 import {
   mediaContentRequestHandler,
   mediaMetadataRequestHandler,
@@ -54,6 +42,10 @@ import {
 } from "../stubs/media.js";
 import { employeeObjectType } from "../stubs/objectTypes.js";
 import { defaultOntologyMetadata } from "../stubs/ontologies/defaultOntologyMetadata.js";
+import {
+  fauxFoundry,
+  legacyFauxDataStore,
+} from "../stubs/ontologies/legacyFullOntology.js";
 import {
   firstPointRequestHandlers,
   lastPointRequestHandlers,
@@ -341,28 +333,23 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
   handleOpenApiCall(
     OntologiesV2.Attachments.upload,
     [],
-    async req => {
+    async (req) => {
       const urlObj = new URL(req.request.url);
-      const fileName = urlObj.searchParams.get("filename");
+      const filename = urlObj.searchParams.get("filename");
 
-      if (typeof fileName !== "string") {
+      if (typeof filename !== "string") {
         throw new OpenApiCallError(400, InvalidRequest("Invalid parameter"));
       }
 
-      const attachmentsUploadResponse = attachmentUploadRequest[fileName];
       const body = await req.request.arrayBuffer();
 
-      if (attachmentsUploadResponse) {
-        const expectedBody = attachmentUploadRequestBody[fileName];
-        const expectedBodyArray = await expectedBody.arrayBuffer();
-
-        if (!areArrayBuffersEqual(body, expectedBodyArray)) {
-          throw new OpenApiCallError(400, InvalidContentTypeError);
-        }
-
-        return attachmentsUploadResponse as any; // fixme
-      }
-      throw new OpenApiCallError(400, AttachmentSizeExceededLimitError);
+      return fauxFoundry.attachments.registerAttachment({
+        buffer: body,
+        filename,
+        mediaType: req.request.headers.get("Content-Type")
+          ?? "application/octet-stream",
+        rid: `ri.attachments.main.attachment.${randomUUID()}`,
+      });
     },
   ),
 
@@ -372,20 +359,10 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
   handleOpenApiCall(
     OntologiesV2.Attachments.get,
     ["attachmentRid"],
-    async req => {
-      const attachmentRid = req.params.attachmentRid;
-
-      if (typeof attachmentRid !== "string") {
-        throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
-      }
-
-      const getAttachmentMetadataResponse =
-        attachmentMetadataRequest[attachmentRid];
-      if (getAttachmentMetadataResponse) {
-        return getAttachmentMetadataResponse as any; // fixme
-      }
-
-      throw new OpenApiCallError(404, AttachmentNotFoundError);
+    async ({ params }) => {
+      return fauxFoundry
+        .attachments
+        .getAttachmentMetadata(params.attachmentRid);
     },
   ),
 
@@ -400,31 +377,19 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       "primaryKey",
       "propertyName",
     ],
-    async req => {
-      const ontologyApiName = req.params.ontologyApiName;
-      const primaryKey = req.params.primaryKey;
-      const objectType = req.params.objectType;
-      const propertyName = req.params.propertyName;
+    async ({ params }) => {
+      const { ontologyApiName, primaryKey, objectType, propertyName } = params;
 
-      if (
-        typeof primaryKey !== "string"
-        || typeof ontologyApiName !== "string"
-        || typeof objectType !== "string"
-        || typeof propertyName !== "string"
-      ) {
-        throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
-      }
+      const rid = fauxFoundry
+        .getDataStore(ontologyApiName)
+        .getObjectOrThrow(objectType, primaryKey)[propertyName];
 
-      const getAttachmentMetadataResponse =
-        attachmentMetadataRequest[propertyName];
-      if (getAttachmentMetadataResponse) {
-        return {
-          ...getAttachmentMetadataResponse,
-          type: "single" as const,
-        } as any; // fixme
-      }
+      const metadata = fauxFoundry.attachments.getAttachmentMetadata(rid);
 
-      throw new OpenApiCallError(404, AttachmentNotFoundError);
+      return {
+        ...metadata,
+        type: "single",
+      } as const;
     },
   ),
 
@@ -434,21 +399,9 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
   handleOpenApiCall(
     OntologiesV2.Attachments.read,
     ["attachmentRid"],
-    async req => {
-      const attachmentRid = req.params.attachmentRid;
-
-      if (typeof attachmentRid !== "string") {
-        throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
-      }
-
-      const getAttachmentContentResponse =
-        attachmentContentRequest[attachmentRid];
-
-      if (getAttachmentContentResponse) {
-        return new Response(JSON.stringify(getAttachmentContentResponse));
-      }
-
-      throw new OpenApiCallError(404, AttachmentNotFoundError);
+    async ({ params }) => {
+      return new Response(fauxFoundry
+        .attachments.getAttachmentBuffer(params.attachmentRid));
     },
   ),
 
@@ -463,28 +416,14 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       "primaryKey",
       "propertyName",
     ],
-    async req => {
-      const ontologyApiName = req.params.ontologyApiName;
-      const primaryKey = req.params.primaryKey;
-      const objectType = req.params.objectType;
-      const propertyName = req.params.propertyName;
+    async ({ params }) => {
+      const { ontologyApiName, primaryKey, objectType, propertyName } = params;
 
-      if (
-        typeof primaryKey !== "string"
-        || typeof ontologyApiName !== "string"
-        || typeof objectType !== "string"
-        || typeof propertyName !== "string"
-      ) {
-        throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
-      }
+      const rid = fauxFoundry
+        .getDataStore(ontologyApiName)
+        .getObjectOrThrow(objectType, primaryKey)[propertyName];
 
-      const getAttachmentContentResponse =
-        attachmentContentRequest[propertyName];
-      if (getAttachmentContentResponse) {
-        return new Response(JSON.stringify(getAttachmentContentResponse));
-      }
-
-      throw new OpenApiCallError(404, AttachmentNotFoundError);
+      return new Response(fauxFoundry.attachments.getAttachmentBuffer(rid));
     },
   ),
   /**

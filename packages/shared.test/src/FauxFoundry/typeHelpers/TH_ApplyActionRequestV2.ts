@@ -20,12 +20,17 @@ import type {
   ActionParameterV2,
   ActionTypeV2,
   ApplyActionRequestV2,
+  AttachmentRid,
   ParameterId,
 } from "@osdk/foundry.ontologies";
 
-type TH_ActionParameterType_Primitive<X extends ActionParameterType> =
-  ActionParam.PrimitiveType<
-    Exclude<X["type"], "object" | "array" | "objectSet" | "interfaceObject">
+type TH_ActionParameterType_Primitive<X extends ActionParameterType> = X extends
+  { type: "attachment" } ? AttachmentRid
+  : ActionParam.PrimitiveType<
+    Exclude<
+      X["type"],
+      "object" | "array" | "objectSet" | "interfaceObject" | "attachment"
+    >
   >;
 
 type TH_ActionParameterType<X extends ActionParameterType> = X extends

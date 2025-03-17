@@ -18,6 +18,7 @@ import type {
   ApplyActionRequestV2,
   SyncApplyActionResponseV2,
 } from "@osdk/foundry.ontologies";
+import invariant from "tiny-invariant";
 import type { FauxOntology } from "../FauxFoundry/FauxOntology.js";
 import { createLazyDoNothingActionImpl } from "../handlers/util/createLazyDoNothingActionImpl.js";
 import { moveOfficeImpl } from "./actions/moveOffice.js";
@@ -216,10 +217,12 @@ export function registerLazyActions(fauxOntology: FauxOntology): void {
 
   fauxOntology.registerActionType(
     ActionTakesAttachment,
-    createLazyDoNothingActionImpl([
-      [actionRequestWithAttachment, actionResponse],
-      [actionRequestWithAttachmentUpload, actionResponse],
-    ]),
+    (_batch, payload, { attachments }) => {
+      const attachment = attachments.getAttachmentMetadata(
+        payload.parameters.attachment,
+      );
+      invariant(attachment, "expected attachment to be real");
+    },
   );
 
   fauxOntology.registerActionType(
