@@ -1300,9 +1300,8 @@ export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T
 export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWirePropertyTypes>;
 
 // @public (undocumented)
-export type WithOrderByRelevance<T extends Osdk.Instance<any>> = {
+export type WithOrderByRelevance<T extends Osdk.Instance<any>> = T & {
     	$score: number
-    	object: T
 };
 
 // Warnings were encountered during analysis:

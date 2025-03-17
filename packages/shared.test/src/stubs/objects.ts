@@ -15,7 +15,6 @@
  */
 
 import type { GeoJsonObject } from "@osdk/foundry.geo";
-import type { OntologyObjectV2 } from "@osdk/foundry.ontologies";
 import { employeeInterfaceScoped } from "./interfaces.js";
 
 export const employee50050: {
@@ -54,11 +53,6 @@ export const employee1 = {
 } as const;
 export const employee1_50030_JohnDoe: typeof employee1 = employee1;
 
-export const employee1WithScore: OntologyObjectV2 = {
-  ...employee1,
-  __score: 0.95,
-};
-
 export const employee2 = {
   __rid:
     "ri.phonograph2-objects.main.object.ae6a0b9a-9b9a-4b9e-8b0a-2b0b9a9a0b9a",
@@ -76,11 +70,6 @@ export const employee2 = {
 } as const;
 export const employee2_50031_JaneDoe: typeof employee2 = employee2;
 
-export const employee2WithScore: OntologyObjectV2 = {
-  ...employee1,
-  __score: 0.91,
-};
-
 export const employee3 = {
   __rid:
     "ri.phonograph2-objects.main.object.b9a0b2b0-0a2b-0b8b-9e4b-a9a9b9a0b9a0",
@@ -97,11 +86,6 @@ export const employee3 = {
   employeeLocation: "GeotimeSeriesReferencePlaceholder",
 };
 export const employee3_Jack_50032: typeof employee3 = employee3;
-
-export const employee3WithScore: OntologyObjectV2 = {
-  ...employee1,
-  __score: 0.85,
-};
 
 // DELETE THIS
 export const employee4withDerived = {

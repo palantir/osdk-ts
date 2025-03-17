@@ -190,9 +190,8 @@ export type Osdk<
       ExtractPropsKeysFromOldPropsStyle<Q, OPTIONS>
     >;
 
-export type WithOrderByRelevance<T extends Osdk.Instance<any>> = {
+export type WithOrderByRelevance<T extends Osdk.Instance<any>> = T & {
   $score: number;
-  object: T;
 };
 
 export namespace Osdk {
@@ -274,8 +273,3 @@ export type ExtractOptions<
   S extends NullabilityAdherence = NullabilityAdherence.Default,
   T extends boolean = false,
 > = ExtractRidOption<R> | ExtractAllPropertiesOption<T>;
-
-export type ExtractOrderByOptions<R extends boolean> = IsNever<R> extends true
-  ? never
-  : DefaultToFalse<R> extends false ? never
-  : "$score";
