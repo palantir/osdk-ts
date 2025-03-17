@@ -142,7 +142,6 @@ export function objectSortaMatchesWhereClause(
       }
     }
 
-    // console.log("AAAA", key in o, o[key], filter);
     if (key in o) {
       if (o[key as keyof typeof o] === filter) {
         return true;

@@ -17,12 +17,17 @@
 import type * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { DefaultMap, MultiMap } from "mnemonist";
 import invariant from "tiny-invariant";
-import { ObjectNotFoundError } from "../errors.js";
+import { InvalidRequest, ObjectNotFoundError } from "../errors.js";
+import { subSelectProperties } from "../filterObjects.js";
+import type { PagedBodyResponseWithTotal } from "../handlers/endpointUtils.js";
+import { pageThroughResponseSearchParams } from "../handlers/endpointUtils.js";
+import { getPaginationParamsFromRequest } from "../handlers/util/getPaginationParams.js";
 import { OpenApiCallError } from "../handlers/util/handleOpenApiCall.js";
 import type { BaseServerObject } from "./BaseServerObject.js";
 import type { FauxAttachmentStore } from "./FauxAttachmentStore.js";
 import { FauxDataStoreBatch } from "./FauxDataStoreBatch.js";
 import type { FauxOntology } from "./FauxOntology.js";
+import { createOrderBySortFn, getObjectsFromSet } from "./getObjectsFromSet.js";
 import type { ObjectLocator } from "./ObjectLocator.js";
 import { objectLocator, parseLocator } from "./ObjectLocator.js";
 import { validateAction } from "./validateAction.js";
@@ -89,9 +94,12 @@ export class FauxDataStore {
     }
   }
 
-  registerObject(x: BaseServerObject): void {
-    this.#assertObjectDoesNotExist(x.__apiName, x.__primaryKey);
-    this.#objects.get(x.__apiName).set(String(x.__primaryKey), x);
+  registerObject(obj: BaseServerObject): void {
+    this.#assertObjectDoesNotExist(obj.__apiName, obj.__primaryKey);
+    this.#objects.get(obj.__apiName).set(
+      String(obj.__primaryKey),
+      Object.freeze({ ...obj }),
+    );
   }
 
   replaceObjectOrThrow(x: BaseServerObject): void {
@@ -288,6 +296,55 @@ export class FauxDataStore {
     return this.#objects
       .get(apiName)
       .values();
+  }
+
+  getObjectsFromObjectSet(
+    parsedBody:
+      | OntologiesV2.LoadObjectSetV2MultipleObjectTypesRequest
+      | OntologiesV2.LoadObjectSetRequestV2,
+  ): PagedBodyResponseWithTotal<BaseServerObject> {
+    const selected = parsedBody.select;
+    // when we have interfaces in here, we have a little trick for
+    // caching off the important properties
+    let objects = getObjectsFromSet(this, parsedBody.objectSet, undefined);
+
+    if (!objects) {
+      return {
+        data: [],
+        totalCount: "0",
+        nextPageToken: undefined,
+      };
+    }
+
+    if (parsedBody.orderBy) {
+      objects = objects.sort(createOrderBySortFn(parsedBody.orderBy));
+    }
+
+    // finally, if we got interfaces, the objects have names like the interface and we need
+    // to return them like the object.
+
+    const page = pageThroughResponseSearchParams(
+      objects,
+      getPaginationParamsFromRequest(parsedBody),
+      false,
+    );
+
+    if (!page) {
+      throw new OpenApiCallError(
+        404,
+        InvalidRequest(
+          `No objects found for ${JSON.stringify(parsedBody)}`,
+        ),
+      );
+    }
+    const ret = subSelectProperties(
+      page,
+      [...selected],
+      true,
+      parsedBody.excludeRid,
+    );
+
+    return ret;
   }
 
   applyAction(

@@ -28,7 +28,7 @@ import {
   employee3,
   employee4withDerived,
   employee50050,
-  employeeFailsStrict,
+  employeePassesStrict,
   nycOffice,
   objectWithAllPropertyTypes1,
   objectWithAllPropertyTypesEmptyEntries,
@@ -75,7 +75,7 @@ legacyFauxDataStore.registerObject(employee_John_50030);
 legacyFauxDataStore.registerObject(employee_Jane_50031);
 legacyFauxDataStore.registerObject(employee3);
 legacyFauxDataStore.registerObject(employee4withDerived);
-legacyFauxDataStore.registerObject(employeeFailsStrict);
+legacyFauxDataStore.registerObject(employeePassesStrict);
 legacyFauxDataStore.registerObject(employee50050);
 
 legacyFauxDataStore.registerObject(nycOffice);

@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-import type { LoadObjectSetV2MultipleObjectTypesResponse } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
-import stableStringify from "json-stable-stringify";
 import type { RequestHandler } from "msw";
-import { InvalidRequest } from "../errors.js";
-import { loadInterfaceObjectSetHandlers } from "../stubs/interfaceObjectSetRequest.js";
-import { defaultOntologyMetadata } from "../stubs/ontologies/defaultOntologyMetadata.js";
-import {
-  handleOpenApiCall,
-  OpenApiCallError,
-} from "./util/handleOpenApiCall.js";
+import { fauxFoundry } from "../stubs/ontologies/legacyFullOntology.js";
+import { handleOpenApiCall } from "./util/handleOpenApiCall.js";
 
 export const interfaceObjectSetHandlers: Array<RequestHandler> = [
   /**
@@ -33,26 +26,19 @@ export const interfaceObjectSetHandlers: Array<RequestHandler> = [
   handleOpenApiCall(
     OntologiesV2.OntologyObjectSets.loadMultipleObjectTypes,
     ["ontologyApiName"],
-    async (req) => {
-      const parsedBody = await req.request.json();
+    async ({ params, request }) => {
+      const pagedResponse = fauxFoundry
+        .getDataStore(params.ontologyApiName)
+        .getObjectsFromObjectSet(await request.json());
 
-      const response: LoadObjectSetV2MultipleObjectTypesResponse | undefined =
-        loadInterfaceObjectSetHandlers[stableStringify(parsedBody)];
+      const objectApiNames = new Set(pagedResponse.data.map(o => o.__apiName));
 
-      if (
-        (req.params.ontologyApiName === defaultOntologyMetadata.apiName
-          || req.params.ontologyApiName === defaultOntologyMetadata.rid)
-        && response
-      ) {
-        return response;
-      }
-
-      throw new OpenApiCallError(
-        400,
-        InvalidRequest(
-          `Invalid request body: ${JSON.stringify(parsedBody)}`,
-        ),
-      );
+      return {
+        interfaceToObjectTypeMappings: fauxFoundry
+          .getOntology(params.ontologyApiName)
+          .getInterfaceToObjectTypeMappings(objectApiNames),
+        ...pagedResponse,
+      };
     },
   ),
 ];

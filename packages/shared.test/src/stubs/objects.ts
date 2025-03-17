@@ -124,13 +124,13 @@ export const employee5withUndefinedDerived = {
   employeeLocation: "GeotimeSeriesReferencePlaceholder",
 };
 
-export const employeeFailsStrict = {
+export const employeePassesStrict = {
   __rid:
     "ri.phonograph2-objects.main.object.b9a0b2b0-0aa2b-0b8b-9e4b-a9a9b9a0b9a0",
   __primaryKey: 50033,
   __apiName: "Employee",
   __title: "Jack Smith",
-  employeeId: undefined,
+  employeeId: 50033,
   fullName: "Jack Smith",
   office: "LON",
   class: "Red",
