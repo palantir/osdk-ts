@@ -210,7 +210,7 @@ describe("ObjectSet", () => {
     employees.forEach(e => expect(e.$score).toBeUndefined());
   });
 
-  it.only("nearest neighbors object set ordered by relevance", async () => {
+  it("nearest neighbors object set ordered by relevance", async () => {
     const objectSet = client(Employee);
     const { data: employees } = await objectSet.nearestNeighbors(
       "python3",
