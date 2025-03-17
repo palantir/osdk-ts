@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-export { createEditBatch } from "./createEditBatch.js";
-export type { EditBatch } from "./EditBatch.js";
-export type { Edits } from "./types.js";
+export * from "./build/cjs/public/edits.cjs";
