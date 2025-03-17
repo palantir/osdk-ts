@@ -20,11 +20,12 @@ import { InvalidRequest, QueryNotFoundError } from "../errors.js";
 import { defaultOntology } from "../stubs/ontologies.js";
 import { queryRequestHandlers } from "../stubs/queries.js";
 import { queryTypes } from "../stubs/queryTypes.js";
-import { getOntology } from "./ontologyMetadataEndpoints.js";
+import { getOntologyOld } from "./ontologyMetadataEndpoints.js";
 import {
   handleOpenApiCall,
   OpenApiCallError,
 } from "./util/handleOpenApiCall.js";
+import { requireParam } from "./util/requireParam.js";
 
 export const queryHandlers: Array<RequestHandler> = [
   /**
@@ -35,7 +36,7 @@ export const queryHandlers: Array<RequestHandler> = [
     ["ontologyApiName"],
     async (req) => {
       // will throw if bad name
-      getOntology(req.params.ontologyApiName as string);
+      getOntologyOld(req.params.ontologyApiName as string);
 
       return {
         data: queryTypes,
@@ -54,12 +55,8 @@ export const queryHandlers: Array<RequestHandler> = [
       const parsedBody = JSON.parse(body);
       const queryApiName = req.params.queryApiName;
 
-      if (typeof queryApiName !== "string") {
-        throw new OpenApiCallError(
-          400,
-          InvalidRequest("Invalid parameters queryApiName"),
-        );
-      }
+      requireParam(req.params, "ontologyApiName");
+      requireParam(req.params, "queryApiName");
 
       const queryResponses = queryRequestHandlers[queryApiName];
       if (!queryResponses) {

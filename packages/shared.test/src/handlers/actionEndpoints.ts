@@ -25,7 +25,7 @@ import type { BaseAPIError } from "../BaseError.js";
 import { ApplyActionFailedError, InvalidRequest } from "../errors.js";
 import { actionResponseMap } from "../stubs/actions.js";
 import { defaultOntology } from "../stubs/ontologies.js";
-import { getOntology } from "./ontologyMetadataEndpoints.js";
+import { getOntologyOld } from "./ontologyMetadataEndpoints.js";
 import type { ExtractBody, ExtractResponse } from "./util/handleOpenApiCall.js";
 import {
   handleOpenApiCall,
@@ -40,7 +40,7 @@ export const actionHandlers: Array<RequestHandler> = [
     OntologiesV2.ActionTypesV2.list,
     ["ontologyApiName"],
     async ({ params }) => {
-      const ontology = getOntology(params.ontologyApiName);
+      const ontology = getOntologyOld(params.ontologyApiName);
 
       return {
         data: Object.values(ontology.actionTypes),

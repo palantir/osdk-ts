@@ -15,6 +15,7 @@
  */
 
 export * as handlers from "./handlers/index.js";
+export { handleOpenApiCall } from "./handlers/util/handleOpenApiCall.js";
 export { loadAll } from "./handlers/util/loadAll.js";
 export * from "./mock-ontology/index.js";
 export { apiServer } from "./setupServers.js";

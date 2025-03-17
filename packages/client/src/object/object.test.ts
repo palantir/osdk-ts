@@ -261,7 +261,7 @@ describe("OsdkObject", () => {
           "fullName": "Jane Doe",
           "office": "NYC",
         },
-      ) as Osdk.Instance<
+      ) as unknown as Osdk.Instance<
         Employee,
         never,
         "class" | "employeeId" | "fullName" | "office"
@@ -489,7 +489,7 @@ describe("OsdkObject", () => {
             "employeeId": 50031,
             "fullName": "Jane Doe",
           },
-        ) as Osdk.Instance<
+        ) as unknown as Osdk.Instance<
           Employee,
           never,
           "employeeId" | "fullName"
@@ -536,7 +536,7 @@ describe("OsdkObject", () => {
             "employeeId": 50031,
             "fullName": "Jane Doe",
           },
-        ) as Osdk.Instance<
+        ) as unknown as Osdk.Instance<
           Employee,
           never,
           "employeeId" | "fullName"

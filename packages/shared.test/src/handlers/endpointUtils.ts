@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { PageToken } from "@osdk/foundry.core";
 import stableStringify from "json-stable-stringify";
 
 export interface PagedBodyResponse<T> {
@@ -98,20 +99,18 @@ export function pageThroughResponseSearchParams<
   TData,
   TIncludeCount extends boolean,
 >(
-  handlers: { [key: string]: readonly TData[] },
-  handlerKey: string,
-  pageSize: number = 1000,
-  pageToken?: string,
+  iter: Iterable<TData>,
+  { pageSize = 1000, pageToken }: {
+    pageSize: number | undefined;
+    pageToken: PageToken | undefined;
+  },
   includeCount?: TIncludeCount,
 ):
   | (TIncludeCount extends true ? PagedBodyResponseWithTotal<TData>
     : PagedBodyResponse<TData>)
   | undefined
 {
-  if (handlers[handlerKey] === undefined) {
-    return undefined;
-  }
-  const data = handlers[handlerKey];
+  const data = Array.from(iter);
   const pageCount = Math.ceil(data.length / pageSize);
   const currentPage = pageToken ? Number(pageToken) : 0;
 
@@ -129,7 +128,7 @@ export function pageThroughResponseSearchParams<
     nextPageToken,
     data: data.slice(startIndex, endIndex),
     ...(includeCount
-      ? { totalCount: "" + data.length }
+      ? { totalCount: String(data.length) }
       : {}),
   };
 

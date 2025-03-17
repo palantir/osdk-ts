@@ -1,5 +1,24 @@
 # @osdk/foundry-sdk-generator
 
+## 2.2.0-beta.9
+
+### Minor Changes
+
+- 12843cb: Add ability to load all underlying properties of an interface.
+- 26a850c: Fix windows generation bug.
+
+### Patch Changes
+
+- Updated dependencies [12843cb]
+- Updated dependencies [f82767c]
+- Updated dependencies [2517750]
+- Updated dependencies [2517750]
+- Updated dependencies [2517750]
+- Updated dependencies [2517750]
+  - @osdk/generator@2.2.0-beta.9
+  - @osdk/client@2.2.0-beta.9
+  - @osdk/api@2.2.0-beta.9
+
 ## 2.2.0-beta.8
 
 ### Minor Changes

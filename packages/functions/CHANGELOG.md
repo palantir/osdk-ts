@@ -1,5 +1,22 @@
 # @osdk/functions.unstable
 
+## 0.1.0-beta.2
+
+### Minor Changes
+
+- e8cdbb8: Add ontology edits API
+
+### Patch Changes
+
+- Updated dependencies [12843cb]
+- Updated dependencies [f82767c]
+- Updated dependencies [2517750]
+- Updated dependencies [2517750]
+- Updated dependencies [2517750]
+- Updated dependencies [2517750]
+  - @osdk/client@2.2.0-beta.9
+  - @osdk/api@2.2.0-beta.9
+
 ## 0.1.0-beta.1
 
 ### Minor Changes

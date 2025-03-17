@@ -1,5 +1,23 @@
 # @osdk/client
 
+## 2.2.0-beta.9
+
+### Minor Changes
+
+- 12843cb: Add ability to load all underlying properties of an interface.
+- 2517750: observeList should work for interfaces and have the fully loaded content
+- 2517750: Provides efficient OrderByCanonicalizer
+- 2517750: Initial internal architecture document for ObservableClient
+- 2517750: subscribe in ObservableClient now uses Observer
+
+### Patch Changes
+
+- Updated dependencies [12843cb]
+- Updated dependencies [f82767c]
+  - @osdk/api@2.2.0-beta.9
+  - @osdk/generator-converters@2.2.0-beta.9
+  - @osdk/client.unstable@2.2.0-beta.9
+
 ## 2.2.0-beta.8
 
 ### Minor Changes

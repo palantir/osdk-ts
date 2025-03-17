@@ -23,6 +23,31 @@ export interface LogFn {
   (msg: string, ...args: any[]): void;
 }
 
+function createStyle({ color }: { color: string }) {
+  return `color: ${color}; border: 1px solid ${color}; padding: 2px; border-radius: 3px;`;
+}
+
+const levelStyles = {
+  debug: createStyle({
+    color: "LightBlue",
+  }),
+  error: createStyle({
+    color: "red",
+  }),
+  fatal: createStyle({
+    color: "red",
+  }),
+  info: createStyle({
+    color: "green",
+  }),
+  trace: createStyle({
+    color: "gray",
+  }),
+  warn: createStyle({
+    color: "orange",
+  }),
+};
+
 export function createLogger(
   bindings: Record<string, any>,
   options?: { level?: string; msgPrefix?: string },
@@ -30,29 +55,33 @@ export function createLogger(
   function createLogMethod(
     name: "debug" | "error" | "info" | "warn" | "fatal" | "trace",
   ): LogFn {
-    return ((
-      ...args: [
-        obj: unknown,
-        ...args1: any[],
-      ] | [
-        ...args2: any[],
-      ]
-    ) => {
-      const hasData = typeof args[0] !== "string";
-      const obj: Record<string, unknown> = hasData ? args[0] as any : {};
-      const more: any[] = hasData ? args.slice(1) : args.slice(0);
+    const msgs: string[] = [`%c${name}%c`];
+    const styles: string[] = [levelStyles[name], ""];
 
-      console[name === "fatal" ? "error" : name === "trace" ? "debug" : name](
-        `${name}${options?.msgPrefix ? " " + options.msgPrefix : ""}${
-          obj.methodName ? ` .${(obj.methodName as string)}()` : ""
-        }`,
-        ...more,
+    // const params = ["%c%s", levelStyles[name], name];
+    if (options?.msgPrefix) {
+      msgs.push(`%c${options.msgPrefix}%c`);
+      styles.push(
+        "font-style: italic; color: gray",
+        // "border: 1px solid green; ",
+        "",
       );
+    }
 
-      if (bindings && Object.keys(bindings).length > 0) {
-        console.log(bindings);
-      }
-    });
+    if (typeof bindings === "object" && "methodName" in bindings) {
+      msgs.push(`%c.${bindings.methodName}()%c`);
+      styles.push(
+        "font-style: italic;color: orchid",
+        "",
+      );
+    }
+
+    return console[name === "fatal" ? "error" : name].bind(
+      console,
+      msgs.join(" "),
+      ...styles,
+      // ...args,
+    );
   }
   return {
     debug: createLogMethod("debug"),
@@ -66,11 +95,8 @@ export function createLogger(
         ...theseBindings,
       }, {
         level: (theseOptions ?? options)?.level,
-        msgPrefix: options?.msgPrefix || theseOptions?.msgPrefix
-          ? `${options?.msgPrefix ? `${options.msgPrefix} ` : ""}${
-            theseOptions?.msgPrefix || ""
-          }`
-          : undefined,
+        msgPrefix: [options?.msgPrefix, theseOptions?.msgPrefix].filter(x => x)
+          .join(""),
       }),
     trace: createLogMethod("trace"),
     isLevelEnabled: ((level) => !!level), // always true, no error from tsc

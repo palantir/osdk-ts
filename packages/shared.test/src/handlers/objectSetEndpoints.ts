@@ -14,38 +14,75 @@
  * limitations under the License.
  */
 
-import type { LoadObjectSetResponseV2 } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import stableStringify from "json-stable-stringify";
-import type { HttpResponseResolver, PathParams, RequestHandler } from "msw";
-import type { BaseAPIError } from "../BaseError.js";
+import type { RequestHandler } from "msw";
 import { InvalidRequest } from "../errors.js";
-import { filterObjectsProperties } from "../filterObjects.js";
+import {
+  createOrderBySortFn,
+  getObjectsFromSet,
+} from "../FauxFoundry/getObjectsFromSet.js";
+import { subSelectProperties } from "../filterObjects.js";
 import { aggregationRequestHandlers } from "../stubs/aggregationRequests.js";
-import { loadObjectSetRequestHandlers } from "../stubs/objectSetRequest.js";
-import { defaultOntology } from "../stubs/ontologies.js";
-import { pageThroughResponse } from "./endpointUtils.js";
-import type { ExtractBody } from "./util/handleOpenApiCall.js";
+import { fauxFoundry } from "../stubs/fauxFoundry.js";
+import { pageThroughResponseSearchParams } from "./endpointUtils.js";
+import { getPaginationParamsFromRequest } from "./util/getPaginationParams.js";
 import {
   handleOpenApiCall,
   OpenApiCallError,
 } from "./util/handleOpenApiCall.js";
 
 export const objectSetHandlers: Array<RequestHandler> = [
+  undefined,
+  "https://stack.palantirCustom.com/foo/first/someStuff/",
+].flatMap(baseUrl => [
   /**
    * Load ObjectSet Objects
    */
   handleOpenApiCall(
     OntologiesV2.OntologyObjectSets.load,
     ["ontologyApiName"],
-    handleLoadObjectSet,
-  ),
+    async (req) => {
+      const parsedBody = await req.request.json();
+      const selected = parsedBody.select;
+      const { ontologyApiName } = req.params;
+      const ds = fauxFoundry.getDataStore(ontologyApiName);
+      let objects = getObjectsFromSet(ds, parsedBody.objectSet, undefined);
 
-  handleOpenApiCall(
-    OntologiesV2.OntologyObjectSets.load,
-    ["ontologyApiName"],
-    handleLoadObjectSet,
-    "https://stack.palantirCustom.com/foo/first/someStuff/",
+      if (!objects) {
+        return {
+          data: [],
+          totalCount: "0",
+          nextPageToken: undefined,
+        };
+      }
+
+      if (parsedBody.orderBy) {
+        objects = objects.sort(createOrderBySortFn(parsedBody.orderBy));
+      }
+
+      const page = pageThroughResponseSearchParams(
+        objects,
+        getPaginationParamsFromRequest(parsedBody),
+        false,
+      );
+
+      if (!page) {
+        throw new OpenApiCallError(
+          404,
+          InvalidRequest(
+            `No objects found for ${JSON.stringify(parsedBody)}`,
+          ),
+        );
+      }
+      return subSelectProperties(
+        page,
+        [...selected],
+        true,
+        parsedBody.excludeRid,
+      );
+    },
+    baseUrl,
   ),
 
   /**
@@ -67,38 +104,6 @@ export const objectSetHandlers: Array<RequestHandler> = [
         ),
       );
     },
+    baseUrl,
   ),
-];
-
-async function handleLoadObjectSet(
-  req: Parameters<
-    HttpResponseResolver<
-      PathParams<string>,
-      ExtractBody<typeof OntologiesV2.OntologyObjectSets.load>,
-      LoadObjectSetResponseV2 | BaseAPIError
-    >
-  >[0],
-) {
-  const parsedBody = await req.request.json();
-  const selected = parsedBody.select;
-  const response: LoadObjectSetResponseV2 | undefined = pageThroughResponse(
-    loadObjectSetRequestHandlers,
-    parsedBody,
-    true,
-  );
-
-  if (
-    (req.params.ontologyApiName === defaultOntology.apiName
-      || req.params.ontologyApiName === defaultOntology.rid)
-    && response
-  ) {
-    return filterObjectsProperties(response, [...selected], true);
-  }
-
-  throw new OpenApiCallError(
-    400,
-    InvalidRequest(
-      `Invalid request body: ${JSON.stringify(parsedBody)}`,
-    ),
-  );
-}
+]);

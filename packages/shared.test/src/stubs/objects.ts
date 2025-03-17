@@ -14,9 +14,29 @@
  * limitations under the License.
  */
 
-import type { OntologyObjectV2 } from "@osdk/foundry.ontologies";
-
 import type { GeoJsonObject } from "@osdk/foundry.geo";
+import type { OntologyObjectV2 } from "@osdk/foundry.ontologies";
+import { employeeInterfaceScoped } from "./interfaces.js";
+
+export const employee50050: {
+  __rid: string;
+  __primaryKey: number;
+  __apiName: string;
+  fullName: string;
+  employeeId: number;
+  office: string;
+  class: string;
+  startDate: string;
+} = {
+  __rid: employeeInterfaceScoped.$rid,
+  __primaryKey: employeeInterfaceScoped.$primaryKey,
+  __apiName: employeeInterfaceScoped.$apiName,
+  fullName: "Santa Claus",
+  employeeId: employeeInterfaceScoped.$primaryKey,
+  office: "NYC",
+  class: "Red",
+  startDate: "2019-01-01",
+};
 
 export const employee1 = {
   __rid:
@@ -31,7 +51,8 @@ export const employee1 = {
   employeeStatus: "TimeSeries<String>",
   employeeSensor: "TimeSeries<>",
   employeeLocation: "GeotimeSeriesReferencePlaceholder",
-};
+} as const;
+export const employee1_50030_JohnDoe: typeof employee1 = employee1;
 
 export const employee1WithScore: OntologyObjectV2 = {
   ...employee1,
@@ -52,7 +73,8 @@ export const employee2 = {
   employeeStatus: "TimeSeries<String>",
   employeeSensor: "TimeSeries<>",
   employeeLocation: "GeotimeSeriesReferencePlaceholder",
-};
+} as const;
+export const employee2_50031_JaneDoe: typeof employee2 = employee2;
 
 export const employee2WithScore: OntologyObjectV2 = {
   ...employee1,
@@ -74,15 +96,17 @@ export const employee3 = {
   employeeSensor: "TimeSeries<>",
   employeeLocation: "GeotimeSeriesReferencePlaceholder",
 };
+export const employee3_Jack_50032: typeof employee3 = employee3;
 
 export const employee3WithScore: OntologyObjectV2 = {
   ...employee1,
   __score: 0.85,
 };
 
+// DELETE THIS
 export const employee4withDerived = {
   __rid:
-    "ri.phonograph2-objects.main.object.b9a0b2b0-0a2b-0b8b-9e4b-a9a9b9a0b9a0",
+    "ri.phonograph2-objects.main.object.b9a0b2xb0-0a2b-0b8b-9e4b-a9a9b9a0b9a0",
   __primaryKey: 50035,
   __apiName: "Employee",
   __title: "Jack Smith",
@@ -99,7 +123,7 @@ export const employee4withDerived = {
 
 export const employee5withUndefinedDerived = {
   __rid:
-    "ri.phonograph2-objects.main.object.b9a0b2b0-0a2b-0b8b-9e4b-a9a9b9a0b9a0",
+    "ri.phonograph2-objects.main.object.b9a0cb2b0-0a2b-0b8b-9e4b-a9a9b9a0b9a0",
   __primaryKey: 50036,
   __apiName: "Employee",
   __title: "Jack Smith",
@@ -116,7 +140,7 @@ export const employee5withUndefinedDerived = {
 
 export const employeeFailsStrict = {
   __rid:
-    "ri.phonograph2-objects.main.object.b9a0b2b0-0a2b-0b8b-9e4b-a9a9b9a0b9a0",
+    "ri.phonograph2-objects.main.object.b9a0b2b0-0aa2b-0b8b-9e4b-a9a9b9a0b9a0",
   __primaryKey: 50033,
   __apiName: "Employee",
   __title: "Jack Smith",
@@ -143,7 +167,7 @@ export const officeAreaGeoJson: GeoJsonObject = {
   type: "Polygon",
 };
 
-export const nycOffice: OntologyObjectV2 = {
+export const nycOffice = {
   __rid:
     "ri.phonograph2-objects.main.object.c0c0c0c0-c0c0-c0c0-c0c0-c0c0c0c0c0c0",
   __primaryKey: "NYC",
@@ -151,8 +175,8 @@ export const nycOffice: OntologyObjectV2 = {
   __title: "New York City",
   officeId: "NYC",
   name: "New York City",
-  entrance: { type: "Point", coordinates: [1.1, 1.1] },
-  occupiedArea: officeAreaGeoJson,
+  entrance: { type: "Point", coordinates: [1.1, 1.1] as const },
+  occupiedArea: officeAreaGeoJson as GeoJsonObject,
 };
 
 export const travisPlayer = {
@@ -175,7 +199,7 @@ export const travisPlayer = {
   id: "tkelce",
 };
 
-export const objectWithAllPropertyTypes1: OntologyObjectV2 = {
+export const objectWithAllPropertyTypes1 = {
   __rid:
     "ri.phonograph2-objects.main.object.401ac022-89eb-4591-8b7e-0a912b9efb44",
   __primaryKey: 1,
@@ -249,7 +273,7 @@ export const objectWithAllPropertyTypes1: OntologyObjectV2 = {
     },
   ],
   mediaReference: "MediaReferencePlaceholder",
-};
+} as const;
 
 export const objectWithAllPropertyTypesEmptyEntries = {
   __rid:
@@ -258,28 +282,4 @@ export const objectWithAllPropertyTypesEmptyEntries = {
   __apiName: "objectTypeWithAllPropertyTypes",
   __title: "2",
   id: 2,
-};
-
-export const objectLoadResponseMap: {
-  [objectTypeApiName: string]: {
-    [primaryKey: string]: OntologyObjectV2;
-  };
-} = {
-  Employee: {
-    [employee1.__primaryKey.toString()]: employee1,
-    [employee2.__primaryKey.toString()]: employee2,
-    [employee3.__primaryKey.toString()]: employee3,
-    [employee4withDerived.__primaryKey.toString()]: employee4withDerived,
-    [employeeFailsStrict.__primaryKey.toString()]: employeeFailsStrict,
-  },
-  Office: {
-    [nycOffice.__primaryKey.toString()]: nycOffice,
-  },
-  objectTypeWithAllPropertyTypes: {
-    [objectWithAllPropertyTypes1.__primaryKey.toString()]:
-      objectWithAllPropertyTypes1,
-    [objectWithAllPropertyTypesEmptyEntries.__primaryKey.toString()]:
-      objectWithAllPropertyTypesEmptyEntries,
-  },
-  BgaoNflPlayer: { [travisPlayer.__primaryKey.toString()]: travisPlayer },
 };
