@@ -19,9 +19,9 @@ export default function createClientAndAuth() {
   const redirectUrl = import.meta.env.VITE_FOUNDRY_REDIRECT_URL;
   {{#if scopes}}
   const scopes = [
-   {{#each scopes}}
+    {{#each scopes}}
     "{{this}}",
-   {{/each}}
+    {{/each}}
   ];
   {{/if}}
 
