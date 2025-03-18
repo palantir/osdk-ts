@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-import type { TimeSeriesQuery } from "@osdk/api";
-import { TimeseriesDurationMapping } from "@osdk/api";
+import type {
+  TimeSeriesQuery,
+  TimeSeriesQueryWrapper,
+  TimeSeriesRange,
+} from "@osdk/api";
+import {
+  isAbsoluteTimeRange,
+  isLegacyTimeSeriesQuery,
+  isRelativeTimeRange,
+  isTimeSeriesQueryV2,
+  TimeseriesDurationMapping,
+} from "@osdk/api";
 import type { TimeRange } from "@osdk/foundry.ontologies";
 import { iterateReadableStream, parseStreamedResponse } from "./streamutils.js";
 
@@ -45,6 +55,62 @@ export function getTimeRange(body: TimeSeriesQuery): TimeRange {
       },
     };
 }
+
+export const parseTimeSeriesRangeV2 = (
+  range: TimeSeriesRange,
+): TimeRange | undefined => {
+  if (isAbsoluteTimeRange(range)) {
+    return {
+      type: "absolute",
+      startTime: range.startTime,
+      endTime: range.endTime,
+    };
+  }
+
+  if (isRelativeTimeRange(range)) {
+    if (range.before) {
+      return {
+        type: "relative",
+        startTime: {
+          when: "BEFORE",
+          value: range.before,
+          unit: TimeseriesDurationMapping[range.unit],
+        },
+      };
+    }
+
+    if (range.after) {
+      return {
+        type: "relative",
+        endTime: {
+          when: "AFTER",
+          value: range.after,
+          unit: TimeseriesDurationMapping[range.unit],
+        },
+      };
+    }
+  }
+
+  return undefined;
+};
+
+export const parseTimeSeriesQuery = (query: TimeSeriesQueryWrapper): {
+  range?: TimeRange;
+} => {
+  if (isLegacyTimeSeriesQuery(query)) {
+    return {
+      range: getTimeRange(query),
+    };
+  }
+
+  if (isTimeSeriesQueryV2(query)) {
+    return {
+      range: query.range ? parseTimeSeriesRangeV2(query.range) : undefined,
+    };
+  }
+
+  return {};
+};
 
 export async function* asyncIterPointsHelper<
   T extends number | string | GeoJSON.Point,

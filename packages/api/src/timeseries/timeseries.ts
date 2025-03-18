@@ -46,6 +46,25 @@ export type TimeSeriesQuery =
     $unit?: never;
   };
 
+export type TimeSeriesQueryV2 = {
+  range: TimeSeriesRange;
+};
+
+export type TimeSeriesQueryWrapper = TimeSeriesQuery | TimeSeriesQueryV2;
+
+export type TimeSeriesRange = AbsoluteTimeRange | RelativeTimeRange;
+
+export type AbsoluteTimeRange = {
+  startTime?: string;
+  endTime?: string;
+};
+
+export type RelativeTimeRange = {
+  before?: number;
+  unit: keyof typeof TimeseriesDurationMapping;
+  after?: number;
+};
+
 export type TimeseriesDurationUnits =
   | "YEARS"
   | "MONTHS"
@@ -109,7 +128,7 @@ export interface TimeSeriesProperty<T extends number | string> {
       });
      */
   readonly getAllPoints: (
-    query?: TimeSeriesQuery,
+    query?: TimeSeriesQueryWrapper,
   ) => Promise<Array<TimeSeriesPoint<T>>>;
   /**
      * Returns an async iterator to load all points
@@ -125,7 +144,7 @@ export interface TimeSeriesProperty<T extends number | string> {
       }
      */
   readonly asyncIterPoints: (
-    query?: TimeSeriesQuery,
+    query?: TimeSeriesQueryWrapper,
   ) => AsyncGenerator<TimeSeriesPoint<T>>;
 }
 
