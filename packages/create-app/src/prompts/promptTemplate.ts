@@ -27,7 +27,7 @@ export async function promptTemplate(
     t.id === parsed.template || t.id === `template-${parsed.template}`
   );
   if (template == null) {
-    const availableTemplates = getAvailableTemplates(useBeta);
+    const availableTemplates = getAvailableTemplatesOrThrow(useBeta);
     const templateId = await consola.prompt(
       parsed.template != null
         ? `The provided template ${
@@ -57,7 +57,7 @@ export async function promptTemplate(
 }
 
 /** Exported for testing only */
-export function getAvailableTemplates(useBeta: boolean): Template[] {
+export function getAvailableTemplatesOrThrow(useBeta: boolean): Template[] {
   const availableTemplates = TEMPLATES.filter(template =>
     !template.hidden
     && (useBeta
