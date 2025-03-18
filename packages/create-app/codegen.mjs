@@ -89,6 +89,7 @@ fs.writeFileSync(
             label: "${template.label}",
             envPrefix: "${template.envPrefix}",
             buildDirectory: "${template.buildDirectory}",
+            hidden: ${template.hidden || false},
             files: {
               ${v1Name ? `"1.x": getPackageFiles(import("${v1Name}")),` : ""}
               ${v2Name ? `"2.x": getPackageFiles(import("${v2Name}")),` : ""}

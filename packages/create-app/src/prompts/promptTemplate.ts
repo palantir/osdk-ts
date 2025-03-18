@@ -27,17 +27,7 @@ export async function promptTemplate(
     t.id === parsed.template || t.id === `template-${parsed.template}`
   );
   if (template == null) {
-    const availableTemplates = TEMPLATES.filter(template =>
-      !template.hidden
-      && (useBeta
-        ? template.isBeta === true
-        // isBeta could be null
-        : !template.isBeta)
-    );
-
-    if (availableTemplates.length === 0) {
-      throw new Error("No available templates found for the selected options.");
-    }
+    const availableTemplates = getAvailableTemplates(useBeta);
     const templateId = await consola.prompt(
       parsed.template != null
         ? `The provided template ${
@@ -64,4 +54,20 @@ export async function promptTemplate(
   }
 
   return template;
+}
+
+/** Exported for testing only */
+export function getAvailableTemplates(useBeta: boolean): Template[] {
+  const availableTemplates = TEMPLATES.filter(template =>
+    !template.hidden
+    && (useBeta
+      ? template.isBeta === true
+      // isBeta could be null
+      : !template.isBeta)
+  );
+
+  if (availableTemplates.length === 0) {
+    throw new Error("No available templates found for the selected options.");
+  }
+  return availableTemplates;
 }

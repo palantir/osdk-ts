@@ -17,7 +17,7 @@
 import { afterEach, expect, test, vi } from "vitest";
 import { consola } from "../consola.js";
 import { TEMPLATES } from "../generatedNoCheck/templates.js";
-import { promptTemplate } from "./promptTemplate.js";
+import { getAvailableTemplates, promptTemplate } from "./promptTemplate.js";
 
 vi.mock("../consola.js");
 
@@ -55,4 +55,30 @@ test("it prompts if initial value is invalid", async () => {
     TEMPLATES[0],
   );
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(1);
+});
+
+test("getAvailableTemplates does not include tutorials", () => {
+  //
+  // At some point, when we changed to generating the templates file, I broke
+  // the ability to 'hide' the tutorials. This test is to ensure that the
+  // tutorials are not included in the list of available templates but still
+  // exist in the TEMPLATES list.
+  //
+  const tutorials = [
+    "template-tutorial-todo-app",
+    "template-tutorial-todo-aip-app",
+  ];
+
+  for (const id of tutorials) {
+    // First be sure that the templates are in TEMPLATES, otherwise if someone
+    // renamed them the other checks could pass since we are checking by name
+    expect(TEMPLATES).toContainEqual(
+      expect.objectContaining({ id }),
+    );
+
+    // Be sure that the function for prompting does not include the known tutorials
+    expect(getAvailableTemplates(false)).not.toContainEqual(
+      expect.objectContaining({ id }),
+    );
+  }
 });
