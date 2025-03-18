@@ -23,7 +23,7 @@ import type {
   PropertyKeys,
 } from "@osdk/api";
 
-type ObjectLocator<
+export type ObjectLocator<
   S extends ObjectTypeDefinition = ObjectTypeDefinition,
 > = {
   $apiName: Osdk.Instance<S>["$apiName"];

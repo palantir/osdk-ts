@@ -19,6 +19,7 @@ export type {
   AnyEdit,
   CreateObject,
   DeleteObject,
+  ObjectLocator,
   RemoveLink,
   UpdateObject,
 } from "../edits/types.js";
