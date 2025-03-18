@@ -19,7 +19,6 @@ export * from "./actionsTypes.js";
 export * from "./aggregationRequests.js";
 export * from "./attachments.js";
 export * from "./linkTypes.js";
-export * from "./media.js";
 export * from "./objects.js";
 export * from "./objectTypesWithLinkTypes.js";
 export * from "./objectTypeV2.js";

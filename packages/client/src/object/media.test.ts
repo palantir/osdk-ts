@@ -33,6 +33,21 @@ describe("media", () => {
       $ontologyRid,
       async () => "myAccessToken",
     );
+
+    stubData.fauxFoundry
+      .getDataStore($ontologyRid)
+      .registerMedia(
+        objectTypeWithAllPropertyTypes.apiName,
+        "mediaReference",
+        {
+          content: new TextEncoder().encode(
+            JSON.stringify({ content: "Hello World" }),
+          ),
+          mediaType: "application/json",
+          mediaItemRid: stubData.objectWithAllPropertyTypes1.mediaReference,
+          path: "file1.txt",
+        },
+      );
   });
 
   afterAll(() => {
@@ -48,10 +63,11 @@ describe("media", () => {
     const object1 = result.data[0];
     expect(object1.mediaReference).toBeDefined();
     const mediaMetadata = await object1.mediaReference?.fetchMetadata();
-    expect(mediaMetadata).toBeDefined();
-    expect(mediaMetadata?.path).toEqual("file1.txt");
-    expect(mediaMetadata?.mediaType).toEqual("application/json");
-    expect(mediaMetadata?.sizeBytes).toEqual(20);
+    expect(mediaMetadata).toEqual({
+      path: "file1.txt",
+      mediaType: "application/json",
+      sizeBytes: 25,
+    });
   });
 
   it("reads media content successfully", async () => {
@@ -61,8 +77,7 @@ describe("media", () => {
     const object1 = result.data[0];
     expect(object1.mediaReference).toBeDefined();
     const mediaContent = await object1?.mediaReference?.fetchContents();
-    const mediaText = await mediaContent!.text();
-    expect(JSON.parse(mediaText)).toEqual({
+    expect(await mediaContent!.json()).toEqual({
       content: "Hello World",
     });
   });

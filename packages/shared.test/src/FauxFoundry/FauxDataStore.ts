@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import type { MediaItemRid } from "@osdk/foundry.core";
 import type * as OntologiesV2 from "@osdk/foundry.ontologies";
+import type { PropertyApiNameNotFound } from "@osdk/internal.foundry.ontologies";
 import { DefaultMap, MultiMap } from "mnemonist";
 import invariant from "tiny-invariant";
 import { InvalidRequest, ObjectNotFoundError } from "../errors.js";
@@ -32,6 +34,11 @@ import { createOrderBySortFn, getObjectsFromSet } from "./getObjectsFromSet.js";
 import type { ObjectLocator } from "./ObjectLocator.js";
 import { objectLocator, parseLocator } from "./ObjectLocator.js";
 import { validateAction } from "./validateAction.js";
+
+export interface MediaMetadataAndContent extends OntologiesV2.MediaMetadata {
+  content: ArrayBuffer;
+  mediaItemRid: MediaItemRid;
+}
 
 export class FauxDataStore {
   #objects = new DefaultMap<
@@ -61,6 +68,13 @@ export class FauxDataStore {
           [] as Array<OntologiesV2.TimeSeriesPoint>
         )
       ),
+  );
+
+  #media = new DefaultMap(
+    (_objectType: OntologiesV2.ObjectTypeApiName) =>
+      new DefaultMap((_propName: OntologiesV2.PropertyApiName) => {
+        return new Map<MediaItemRid, MediaMetadataAndContent>();
+      }),
   );
 
   constructor(fauxOntology: FauxOntology, attachments: FauxAttachmentStore) {
@@ -247,6 +261,85 @@ export class FauxDataStore {
       // "never" case
       throw new Error("unexpected cardinality: " + srcSide.cardinality);
     }
+  }
+
+  registerMedia(
+    objectType: OntologiesV2.ObjectTypeApiName,
+    property: OntologiesV2.PropertyApiName,
+    payload: Omit<MediaMetadataAndContent, "sizeBytes">,
+  ): void {
+    this.#media.get(objectType).get(property).set(payload.mediaItemRid, {
+      ...payload,
+      sizeBytes: String(payload.content.byteLength),
+    });
+  }
+
+  getMediaOrThrow(
+    objectType: OntologiesV2.ObjectTypeApiName,
+    primaryKey: string,
+    property: OntologiesV2.PropertyApiName,
+  ): MediaMetadataAndContent {
+    const obj = this.getObjectOrThrow(objectType, primaryKey);
+    const propertyDef =
+      this.ontology.getObjectTypeFullMetadataOrThrow(objectType)
+        .objectType.properties[property];
+
+    if (!propertyDef) {
+      // FIXME: what would the backend do here?
+      throw new OpenApiCallError(
+        400,
+        {
+          errorCode: "INVALID_ARGUMENT",
+          errorName: "PropertyApiNameNotFound",
+          errorInstanceId: "faux-foundry",
+          parameters: {
+            propertyId: property,
+            propertyBaseType: "unknown",
+          },
+        } satisfies PropertyApiNameNotFound,
+      );
+    }
+
+    if (propertyDef.dataType.type !== "mediaReference") {
+      // FIXME: what would the backend do here?
+      throw new OpenApiCallError(
+        400,
+        {
+          errorCode: "INVALID_ARGUMENT",
+          errorName: "InvalidPropertyType",
+          errorInstanceId: "faux-foundry",
+          parameters: {
+            property,
+            propertyBaseType: propertyDef.dataType.type,
+          },
+        } satisfies OntologiesV2.InvalidPropertyType,
+      );
+    }
+
+    const rid = obj[property];
+
+    if (!rid || !rid.startsWith("ri.")) {
+      throw new OpenApiCallError(
+        400,
+        {
+          errorCode: "INVALID_ARGUMENT",
+          errorName: "InvalidPropertyValue",
+          errorInstanceId: "faux-foundry",
+          parameters: {
+            property,
+            propertyBaseType: propertyDef.dataType.type,
+            propertyValue: rid,
+          },
+        } satisfies OntologiesV2.InvalidPropertyValue,
+      );
+    }
+
+    const ret = this.#media.get(objectType).get(property).get(rid);
+
+    if (!ret) {
+      throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
+    }
+    return ret;
   }
 
   #removeSingleSideOfLink(

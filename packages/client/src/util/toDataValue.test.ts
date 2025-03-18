@@ -15,6 +15,7 @@
  */
 
 import { $ontologyRid, Employee, Task } from "@osdk/client.test.ontology";
+import type { MediaReference } from "@osdk/foundry.core";
 import { apiServer, MockOntology, stubData } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
@@ -165,9 +166,19 @@ describe(toDataValue, () => {
   });
 
   it("converts media reference correctly", async () => {
-    const converted = await toDataValue(stubData.mediaReference, clientCtx);
-    expect(converted).toEqual(
-      stubData.mediaReference,
-    );
+    const mediaReference: MediaReference = {
+      mimeType: "application/json",
+      reference: {
+        type: "mediaSetViewItem",
+        mediaSetViewItem: {
+          mediaItemRid: "media-item-rid",
+          mediaSetRid: "media-set-rid",
+          mediaSetViewRid: "media-set-view-rid",
+        },
+      },
+    };
+
+    const converted = await toDataValue(mediaReference, clientCtx);
+    expect(converted).toEqual(mediaReference);
   });
 });
