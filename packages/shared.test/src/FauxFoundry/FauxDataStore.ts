@@ -16,7 +16,6 @@
 
 import type { MediaItemRid } from "@osdk/foundry.core";
 import type * as OntologiesV2 from "@osdk/foundry.ontologies";
-import type { PropertyApiNameNotFound } from "@osdk/internal.foundry.ontologies";
 import { DefaultMap, MultiMap } from "mnemonist";
 import invariant from "tiny-invariant";
 import { InvalidRequest, ObjectNotFoundError } from "../errors.js";
@@ -285,18 +284,19 @@ export class FauxDataStore {
         .objectType.properties[property];
 
     if (!propertyDef) {
-      // FIXME: what would the backend do here?
+      // This should be the correct error, per
+      // https://github.com/palantir/osdk-ts/pull/1303#discussion_r2001968959
       throw new OpenApiCallError(
         400,
         {
-          errorCode: "INVALID_ARGUMENT",
-          errorName: "PropertyApiNameNotFound",
+          errorCode: "NOT_FOUND",
+          errorName: "PropertiesNotFound",
           errorInstanceId: "faux-foundry",
           parameters: {
-            propertyId: property,
-            propertyBaseType: "unknown",
+            objectType,
+            properties: [property],
           },
-        } satisfies PropertyApiNameNotFound,
+        } satisfies OntologiesV2.PropertiesNotFound,
       );
     }
 

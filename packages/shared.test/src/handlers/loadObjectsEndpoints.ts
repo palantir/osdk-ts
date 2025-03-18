@@ -496,8 +496,9 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       const mediaType = request.headers.get("Content-Type")
         ?? "application/octet-stream";
 
-      // FIXME is this what a rid for this looks like?
-      const mediaItemRid = `ri.media.main.${randomUUID()}`;
+      // This should be the correct prefix, per
+      // https://github.com/palantir/osdk-ts/pull/1303#discussion_r2001989395
+      const mediaItemRid = `ri.mio.main.media-item.${randomUUID()}`;
 
       fauxFoundry.getDataStore(ontologyApiName).registerMedia(
         objectType,

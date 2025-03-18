@@ -21,24 +21,26 @@ import type {
 } from "@osdk/api";
 import type { ObjectTypeV2, PropertyV2 } from "@osdk/foundry.ontologies";
 
-type ZZ<T extends PropertyV2> = T["dataType"]["type"] extends "array" ? never
-  : T["dataType"]["type"] extends "date" ? "timestamp"
-  : Exclude<
-    T["dataType"]["type"],
-    "array" | "date" | "struct" | "cipherText" | "timeseries" | "vector"
-  >;
+type PropertyV2ToWirePropertyTypes<T extends PropertyV2> =
+  T["dataType"]["type"] extends "array" ? never
+    : T["dataType"]["type"] extends "date" ? "timestamp"
+    : Exclude<
+      T["dataType"]["type"],
+      "array" | "date" | "struct" | "cipherText" | "timeseries" | "vector"
+    >;
 
 export type ToObjectTypeDefinition<T extends ObjectTypeV2> = {
   type: "object";
   apiName: T["apiName"];
   __DefinitionMetadata: Omit<ObjectMetadata, "properties"> & {
     props: {
-      [key in keyof T["properties"] & string]:
-        PropertyValueWireToClient[ZZ<T["properties"][key]>];
+      [key in keyof T["properties"] & string]: PropertyValueWireToClient[
+        PropertyV2ToWirePropertyTypes<T["properties"][key]>
+      ];
     };
     properties: {
       [key in keyof T["properties"] & string]: PropertyDef<
-        ZZ<T["properties"][key]>
+        PropertyV2ToWirePropertyTypes<T["properties"][key]>
       >;
     };
   };

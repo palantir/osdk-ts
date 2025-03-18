@@ -27,8 +27,6 @@ import type {
 } from "@osdk/foundry.ontologies";
 import type { FauxDataStore } from "./FauxDataStore.js";
 
-// TODO: just call this from `FauxDataStore` instead of embedding in function
-// (must migrate all actions first)
 export function validateAction(
   payload: ApplyActionRequestV2 | BatchApplyActionRequestItem,
   def: ActionTypeV2,
