@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
-export { createEditBatch } from "./createEditBatch.js";
-export type { EditBatch } from "./EditBatch.js";
-export type { Edits } from "./types.js";
+export type {
+  AddLink,
+  AnyEdit,
+  CreateObject,
+  DeleteObject,
+  ObjectLocator,
+  RemoveLink,
+  UpdateObject,
+} from "../edits/types.js";
