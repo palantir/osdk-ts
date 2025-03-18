@@ -16,7 +16,7 @@
 
 import type * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { Duration } from "date-fns";
-import { constructNow, isAfter, isBefore, sub } from "date-fns";
+import { add, constructNow, isAfter, isBefore, sub } from "date-fns";
 
 const toDuration: Record<
   OntologiesV2.RelativeTimeSeriesTimeUnit,
@@ -46,8 +46,8 @@ export function filterTimeSeriesData(
 
   const ret = data.filter((point) => {
     if (range.type === "relative") {
-      return (!end || isAfter(point.time, end))
-        && (!start || isBefore(point.time, start));
+      return (!end || isBefore(point.time, end))
+        && (!start || isAfter(point.time, start));
     } else {
       return (!end || isBefore(point.time, end))
         && (!start || isAfter(point.time, start));
@@ -68,6 +68,6 @@ function extractDate(
   const x = range[key];
   if (!x) return undefined;
 
-  const method = x.when === "BEFORE" ? sub : sub;
+  const method = x.when === "BEFORE" ? sub : add;
   return method(now, toDuration[x.unit](x.value));
 }

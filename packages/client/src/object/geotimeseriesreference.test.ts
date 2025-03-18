@@ -120,7 +120,8 @@ describe("Timeseries", () => {
     });
     expect(points).toBeDefined();
     expect(points!).toEqual([
-      locationGeotimeData[50030][0],
+      locationGeotimeData[50030][1],
+      locationGeotimeData[50030][2],
     ]);
   });
 
@@ -133,8 +134,8 @@ describe("Timeseries", () => {
     });
     expect(points).toBeDefined();
     expect(points!).toEqual([
+      locationGeotimeData[50030][0],
       locationGeotimeData[50030][1],
-      locationGeotimeData[50030][2],
     ]);
 
     vi.useRealTimers();

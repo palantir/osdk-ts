@@ -105,8 +105,8 @@ describe("Timeseries", () => {
     });
     expect(points).toBeDefined();
     expect(points!).toEqual([
-      expect.objectContaining({ value: -365 }),
-      expect.objectContaining({ value: -30 }),
+      expect.objectContaining({ value: -7 }),
+      expect.objectContaining({ value: -1 }),
     ]);
   });
 
@@ -119,6 +119,8 @@ describe("Timeseries", () => {
     });
     expect(points).toBeDefined();
     expect(points!).toEqual([
+      expect.objectContaining({ value: -365 }),
+      expect.objectContaining({ value: -30 }),
       expect.objectContaining({ value: -7 }),
       expect.objectContaining({ value: -1 }),
     ]);
