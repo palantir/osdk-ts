@@ -15,6 +15,8 @@
  */
 
 import type { GeoJsonObject } from "@osdk/foundry.geo";
+import type { AttachmentRid } from "@osdk/foundry.ontologies";
+import { helloWorldAttachment } from "./attachments.js";
 import { employeeInterfaceScoped } from "./interfaces.js";
 
 export const employee50050: {
@@ -122,13 +124,13 @@ export const employee5withUndefinedDerived = {
   employeeLocation: "GeotimeSeriesReferencePlaceholder",
 };
 
-export const employeeFailsStrict = {
+export const employeePassesStrict = {
   __rid:
     "ri.phonograph2-objects.main.object.b9a0b2b0-0aa2b-0b8b-9e4b-a9a9b9a0b9a0",
   __primaryKey: 50033,
   __apiName: "Employee",
   __title: "Jack Smith",
-  employeeId: undefined,
+  employeeId: 50033,
   fullName: "Jack Smith",
   office: "LON",
   class: "Red",
@@ -197,15 +199,14 @@ export const objectWithAllPropertyTypes1 = {
   decimal: 1.1,
   integer: 1,
   attachment: {
-    rid: "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
+    rid: helloWorldAttachment.rid satisfies AttachmentRid as AttachmentRid,
   },
   attachment2: {
     rid: "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a80",
   },
   attachmentArray: [
     {
-      rid:
-        "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
+      rid: helloWorldAttachment.rid satisfies AttachmentRid as AttachmentRid,
     },
     {
       rid:

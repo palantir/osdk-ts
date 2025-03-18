@@ -33,17 +33,8 @@ export function filterObjects(
       }
       invariant(field);
       const ret = objects.filter((obj) => {
-        console.log({
-          type: where.type,
-          value: where.value,
-          field,
-          obj,
-          winner: obj[field],
-          winner2: obj[field] === where.value,
-        });
         return obj[field] === where.value;
       });
-      console.log({ ret });
       return ret;
     }
 

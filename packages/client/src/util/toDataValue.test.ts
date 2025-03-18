@@ -142,28 +142,26 @@ describe(toDataValue, () => {
   });
 
   it("converts blob attachment uploads correctly", async () => {
-    const blob =
-      stubData.attachmentUploadRequestBody[stubData.localAttachment1.filename];
+    const blob = new Blob([JSON.stringify({ "hi": "mom" })]);
     const attachmentUpload = createAttachmentUpload(blob, "file1.txt");
     const converted = await toDataValue(attachmentUpload, clientCtx);
 
-    expect(converted).toEqual(
-      "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
-    );
+    expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/i);
   });
 
   it("converts file attachment uploads correctly", async () => {
     // Mimics the Web file API (https://developer.mozilla.org/en-US/docs/Web/API/File). The File constructor is only available in Node 19.2.0 and above
     const file = Object.assign(
-      stubData.attachmentUploadRequestBody[stubData.localAttachment1.filename],
+      new Blob([
+        JSON.stringify({ name: "Hello World" }, null, 2),
+      ], {
+        type: "application/json",
+      }),
       { name: "file1.txt" },
     );
 
     const converted = await toDataValue(file, clientCtx);
-
-    expect(converted).toEqual(
-      "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
-    );
+    expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/i);
   });
 
   it("converts media reference correctly", async () => {

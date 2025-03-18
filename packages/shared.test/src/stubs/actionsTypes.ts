@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionTypeV2 } from "@osdk/foundry.ontologies";
+import type { ActionTypeV2, ObjectTypeApiName } from "@osdk/foundry.ontologies";
 import { BarInterface, FooInterface } from "./interfaces.js";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
 
@@ -179,7 +179,56 @@ export const CreateOfficeAndEmployee: ActionTypeV2 = {
   status: "ACTIVE",
 };
 
-export const MoveOffice: ActionTypeV2 = {
+interface MoveOfficeActionDef {
+  readonly apiName: "moveOffice";
+  readonly description: "Update an office's physical location";
+  readonly displayName: "move-office";
+  readonly parameters: {
+    readonly officeId: {
+      readonly dataType: {
+        readonly type: "string";
+      };
+      readonly required: true;
+    };
+    readonly newAddress: {
+      readonly description:
+        "The office's new physical address (not necessarily shipping address)";
+      readonly dataType: {
+        readonly type: "string";
+      };
+      readonly required: false;
+    };
+    readonly newCapacity: {
+      readonly description:
+        "The maximum seated-at-desk capacity of the new office (maximum fire-safe capacity may be higher)";
+      readonly dataType: {
+        readonly type: "integer";
+      };
+      readonly required: false;
+    };
+    readonly officeNames: {
+      readonly description: "A list of all office names";
+      readonly dataType: {
+        readonly type: "array";
+        readonly subType: {
+          readonly type: "integer";
+        };
+      };
+      readonly required: false;
+    };
+  };
+  readonly rid:
+    "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2";
+  readonly operations: [
+    {
+      readonly type: "modifyObject";
+      readonly objectTypeApiName: ObjectTypeApiName;
+    },
+  ];
+  readonly status: "ACTIVE";
+}
+
+export const MoveOffice: MoveOfficeActionDef = {
   apiName: "moveOffice",
   description: "Update an office's physical location",
   displayName: "move-office",
@@ -223,7 +272,7 @@ export const MoveOffice: ActionTypeV2 = {
     objectTypeApiName: officeObjectType.apiName,
   }],
   status: "ACTIVE",
-};
+} as const satisfies ActionTypeV2;
 
 export const ActionTakesObjectSet: ActionTypeV2 = {
   apiName: "actionTakesObjectSet",
@@ -243,7 +292,22 @@ export const ActionTakesObjectSet: ActionTypeV2 = {
   status: "ACTIVE",
 };
 
-export const ActionTakesAttachment: ActionTypeV2 = {
+export const ActionTakesAttachment: {
+  readonly apiName: "actionTakesAttachment";
+  readonly description: "An action which takes an attachment";
+  readonly parameters: {
+    readonly attachment: {
+      readonly dataType: {
+        readonly type: "attachment";
+      };
+      readonly required: true;
+    };
+  };
+  readonly rid:
+    "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f3";
+  readonly operations: [];
+  readonly status: "ACTIVE";
+} = {
   apiName: "actionTakesAttachment",
   description: "An action which takes an attachment",
   parameters: {
@@ -257,7 +321,7 @@ export const ActionTakesAttachment: ActionTypeV2 = {
   rid: "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f3",
   operations: [],
   status: "ACTIVE",
-};
+} as const satisfies ActionTypeV2;
 
 export const ActionTakesMedia: ActionTypeV2 = {
   apiName: "actionTakesMedia",
@@ -300,7 +364,7 @@ export const ActionTypeWithUnsupportedTypes: ActionTypeV2 = {
 };
 
 export const ActionTakesInterface: ActionTypeV2 = {
-  apiName: "delete-foo-interface",
+  apiName: "deleteFooInterface",
   displayName: "Delete Foo Interface",
   status: "EXPERIMENTAL",
   parameters: {
@@ -344,7 +408,7 @@ export const ActionTakesAnotherInterface: ActionTypeV2 = {
 };
 
 export const ActionCreatesInterface: ActionTypeV2 = {
-  apiName: "create-foo-interface",
+  apiName: "createFooInterface",
   displayName: "Create Foo Interface",
   status: "EXPERIMENTAL",
   parameters: {
@@ -408,18 +472,3 @@ export const ActionTakesStruct: ActionTypeV2 = {
   operations: [],
   status: "ACTIVE",
 };
-
-export const actionTypes: ActionTypeV2[] = [
-  PromoteEmployee,
-  PromoteEmployeeObject,
-  CreateOffice,
-  CreateOfficeAndEmployee,
-  MoveOffice,
-  ActionTakesObjectSet,
-  ActionTakesAttachment,
-  ActionTakesMedia,
-  ActionTakesInterface,
-  ActionTakesAnotherInterface,
-  ActionTakesStruct,
-  ActionCreatesInterface,
-];

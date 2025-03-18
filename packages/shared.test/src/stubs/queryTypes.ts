@@ -453,19 +453,3 @@ export const queryTypeReturnsMap: QueryTypeV2 = {
     "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdd2",
   "version": "0.1.1",
 };
-export const queryTypes: QueryTypeV2[] = [
-  addOneQueryType,
-  queryTypeReturnsStruct,
-  queryTypeReturnsDate,
-  queryTypeReturnsObject,
-  queryTypeReturnsTimestamp,
-  queryTypeTwoDimensionalAggregation,
-  queryTypeThreeDimensionalAggregation,
-  queryTypeAcceptsObjects,
-  queryTypeAcceptsObjectSets,
-  queryTypeAcceptsTwoDimensionalAggregation,
-  queryTypeAcceptsThreeDimensionalAggregation,
-  queryTypeReturnsArray,
-  queryTypeReturnsComplexStruct,
-  queryTypeReturnsMap,
-];

@@ -30,6 +30,7 @@ import {
   createStructPerson,
   deleteBarInterface,
   deleteFooInterface,
+  Employee,
   moveOffice,
 } from "@osdk/client.test.ontology";
 import type {
@@ -126,38 +127,52 @@ describe("actions", () => {
     const result = await client(moveOffice).applyAction({
       officeId: "SEA",
       newAddress: "456 Pike Place",
-      newCapacity: 40,
+      // intentionally using a string to trigger validation errors
+      newCapacity: "40" as unknown as number,
     }, {
       $validateOnly: true,
     });
     expectTypeOf<typeof result>().toEqualTypeOf<ActionValidationResponse>();
 
-    expect(result).toMatchInlineSnapshot(`
-        {
-          "parameters": {},
-          "result": "INVALID",
-          "submissionCriteria": [],
-        }
-      `);
+    expect(result).toMatchObject(
+      {
+        "parameters": {
+          "newCapacity": {
+            "evaluatedConstraints": [],
+            "required": false,
+            "result": "INVALID",
+          },
+        },
+        "result": "INVALID",
+        "submissionCriteria": [],
+      },
+    );
   });
 
   it("returns validation directly on validateOnly mode, with custom entry point in URL", async () => {
     const result = await customEntryPointClient(moveOffice).applyAction({
       officeId: "SEA",
       newAddress: "456 Pike Place",
-      newCapacity: 40,
+      // intentionally using a string to trigger validation failure
+      newCapacity: "40" as unknown as number,
     }, {
       $validateOnly: true,
     });
     expectTypeOf<typeof result>().toEqualTypeOf<ActionValidationResponse>();
 
-    expect(result).toMatchInlineSnapshot(`
-        {
-          "parameters": {},
-          "result": "INVALID",
-          "submissionCriteria": [],
-        }
-      `);
+    expect(result).toMatchObject(
+      {
+        "parameters": {
+          "newCapacity": {
+            "evaluatedConstraints": [],
+            "required": false,
+            "result": "INVALID",
+          },
+        },
+        "result": "INVALID",
+        "submissionCriteria": [],
+      },
+    );
   });
 
   it("throws on validation errors", async () => {
@@ -165,7 +180,8 @@ describe("actions", () => {
       const result = await client(moveOffice).applyAction({
         officeId: "SEA",
         newAddress: "456 Pike Place",
-        newCapacity: 40,
+        // intentionally using a string to trigger validation failure
+        newCapacity: "40" as unknown as number,
       }, {
         $returnEdits: true,
       });
@@ -174,7 +190,13 @@ describe("actions", () => {
       expect(e).toBeInstanceOf(ActionValidationError);
       expect((e as ActionValidationError).validation).toMatchInlineSnapshot(`
         {
-          "parameters": {},
+          "parameters": {
+            "newCapacity": {
+              "evaluatedConstraints": [],
+              "required": false,
+              "result": "INVALID",
+            },
+          },
           "result": "INVALID",
           "submissionCriteria": [],
         }
@@ -230,7 +252,7 @@ describe("actions", () => {
     }[]>().toMatchTypeOf<InferredBatchParamType>();
 
     const result = await client(actionTakesAttachment).applyAction({
-      attachment: "attachment.rid",
+      attachment: stubData.helloWorldAttachment.rid,
     });
 
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
@@ -272,8 +294,7 @@ describe("actions", () => {
       InferredBatchParamType
     >();
 
-    const blob =
-      stubData.attachmentUploadRequestBody[stubData.localAttachment1.filename];
+    const blob = new Blob([stubData.helloWorldAttachment.buffer]);
 
     const attachment = createAttachmentUpload(blob, "file1.txt");
 
@@ -356,7 +377,7 @@ describe("actions", () => {
     const result = await client(deleteFooInterface).applyAction({
       deletedInterface: {
         $objectType: "Employee",
-        $primaryKey: 1,
+        $primaryKey: 50030,
       },
     });
 
@@ -426,7 +447,7 @@ describe("actions", () => {
     }[]>().toMatchTypeOf<InferredBatchParamType>();
 
     const result = await client(createFooInterface).applyAction({
-      createdInterface: "UnderlyingObject",
+      createdInterface: Employee.apiName,
     });
 
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();

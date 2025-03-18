@@ -97,6 +97,7 @@
     "@types/object.groupby": "^1.0.4",
     "@types/ws": "^8.5.11",
     "chalk": "^5.4.1",
+    "date-fns": "^4.1.0",
     "execa": "^9.5.1",
     "msw": "^2.7.0",
     "p-defer": "^4.0.1",

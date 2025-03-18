@@ -14,10 +14,23 @@
  * limitations under the License.
  */
 
-import { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
-import { fauxDataStore } from "./fauxDataStore.js";
-import { fauxOntology } from "./fauxOntology.js";
+import type {
+  ExecuteQueryRequest,
+  ExecuteQueryResponse,
+} from "@osdk/foundry.ontologies";
+import { InvalidRequest } from "../../errors.js";
+import { OpenApiCallError } from "./handleOpenApiCall.js";
 
-export const fauxFoundry: FauxFoundry = new FauxFoundry();
-fauxFoundry.registerOntology(fauxOntology);
-fauxFoundry.setDataStore(fauxOntology.apiName, fauxDataStore);
+export function createLazyQueryImpl(
+  bodyToResponse: Record<string, ExecuteQueryResponse>,
+): (req: ExecuteQueryRequest) => ExecuteQueryResponse {
+  return (req: ExecuteQueryRequest): ExecuteQueryResponse => {
+    const body = JSON.stringify(req);
+
+    const resp = bodyToResponse[body];
+    if (!resp) {
+      throw new OpenApiCallError(400, InvalidRequest("Invalid Query Request"));
+    }
+    return resp;
+  };
+}

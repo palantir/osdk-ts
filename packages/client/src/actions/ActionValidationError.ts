@@ -18,6 +18,6 @@ import type { ActionValidationResponse } from "@osdk/api";
 
 export class ActionValidationError extends Error {
   constructor(public validation: ActionValidationResponse) {
-    super("Validation Error");
+    super("Validation Error: " + JSON.stringify(validation, null, 2));
   }
 }

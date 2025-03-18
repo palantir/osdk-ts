@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import type { OntologyV2 } from "@osdk/foundry.ontologies";
 import { OntologyNotFoundError } from "../errors.js";
 import { OpenApiCallError } from "../handlers/util/handleOpenApiCall.js";
+import { FauxAttachmentStore } from "./FauxAttachmentStore.js";
 import { FauxDataStore } from "./FauxDataStore.js";
-import type { FauxOntology } from "./FauxOntology.js";
+import { FauxOntology } from "./FauxOntology.js";
 
 export class FauxFoundry {
   #ontologiesByRid = new Map<string, FauxOntology>();
@@ -25,7 +27,16 @@ export class FauxFoundry {
 
   #dataStoresByOntologyApiName = new Map<string, FauxDataStore>();
 
+  readonly attachments: FauxAttachmentStore = new FauxAttachmentStore();
+
   constructor() {
+  }
+
+  createOntology(metadata: OntologyV2): FauxOntology {
+    const ret = new FauxOntology(metadata);
+    this.registerOntology(ret);
+
+    return ret;
   }
 
   registerOntology(ontology: FauxOntology): void {
@@ -67,7 +78,7 @@ export class FauxFoundry {
     const ontology = this.getOntology(ontologyApiNameOrRid); // will throw
     const dataStore = this.#dataStoresByOntologyApiName.get(ontology.apiName);
     if (!dataStore) {
-      const ret = new FauxDataStore(ontology);
+      const ret = new FauxDataStore(ontology, this.attachments);
       this.setDataStore(ontologyApiNameOrRid, ret);
       return ret;
     }

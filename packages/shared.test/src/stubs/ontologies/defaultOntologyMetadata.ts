@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import type { FauxAttachmentInfo } from "../FauxFoundry/FauxAttachmentStore.js";
+import type { Ontology } from "@osdk/foundry.ontologies";
 
-export const helloWorldAttachment: FauxAttachmentInfo = {
-  filename: "file1.txt",
-  mediaType: "application/json",
-  rid: "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
-  buffer: new TextEncoder().encode(
-    JSON.stringify({ name: "Hello World" }, null, 2),
-  ),
+export const defaultOntologyMetadata: Ontology = {
+  apiName: "default-ontology",
+  displayName: "Ontology",
+  description: "The default ontology",
+  rid: "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
 };

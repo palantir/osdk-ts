@@ -54,7 +54,7 @@ export function subSelectPropertiesUrl<
 }
 
 export function subSelectProperties<
-  T extends OntologyObjectV2 | OntologyObject,
+  T extends OntologyObjectV2,
   TResponse extends
     | PagedBodyResponse<T>
     | PagedBodyResponseWithTotal<T>,
@@ -75,33 +75,39 @@ export function subSelectProperties<
     properties = new Set(urlOrProperties.searchParams.getAll("select"));
   }
 
-  if (properties.size === 0) {
-    if (excludeRid) {
-      objects.data = objects.data.map(object => {
-        const { __rid, ...rest } = object as any;
-        return rest;
-      }) as T[];
+  const result = objects.data.map(object => {
+    // This is set when an object had an interface that was marked to return all properties
+    if (object.$propsToReturn) {
+      return {
+        __apiName: object.__apiName,
+        __primaryKey: object.__primaryKey,
+        __title: object.__title,
+        ...object.$propsToReturn,
+        ...(excludeRid ? {} : { __rid: object.__rid }),
+      };
     }
-    return objects as TIncludeCount extends true ? PagedBodyResponseWithTotal<T>
-      : PagedBodyResponse<T>;
-  }
 
-  const result = objects.data.map(object =>
-    Object.entries(object).reduce<{ [key: string]: any }>(
+    // no subselect provided, just handle the rid.
+    if (properties.size === 0) {
+      return excludeRid ? removeRid(object) : object;
+    }
+
+    // do subselect
+    properties.add("__primaryKey");
+    properties.add("__apiName");
+    properties.add("__title");
+    if (!excludeRid) properties.add("__rid");
+    return Object.entries(object).reduce<{ [key: string]: any }>(
       (acc, [key, value]) => {
         if (properties.has(key)) {
           acc[key] = value;
-        } else if (key === "__primaryKey") {
-          acc.__primaryKey = value;
-        } else if (key === "__apiName") {
-          acc.__apiName = value;
         }
 
         return acc;
       },
       {},
-    )
-  );
+    );
+  });
 
   const ret:
     | PagedBodyResponse<T>
@@ -113,4 +119,8 @@ export function subSelectProperties<
 
   return ret as TIncludeCount extends true ? PagedBodyResponseWithTotal<T>
     : PagedBodyResponse<T>;
+}
+function removeRid<T extends OntologyObjectV2>(object: T) {
+  const { __rid, ...rest } = object as Omit<T, "__rid">;
+  return rest;
 }

@@ -16,11 +16,13 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 import type { BaseServerObject } from "./BaseServerObject.js";
+import { FauxAttachmentStore } from "./FauxAttachmentStore.js";
 import { FauxDataStore } from "./FauxDataStore.js";
 import { FauxOntology } from "./FauxOntology.js";
 
 describe(FauxDataStore, () => {
   describe("Simple Employee ontology", () => {
+    let attachmentsStore: FauxAttachmentStore;
     let fauxOntology: FauxOntology;
     let fauxDataStore: FauxDataStore;
 
@@ -37,15 +39,16 @@ describe(FauxDataStore, () => {
       ) as unknown as Record<typeof pks[number], BaseServerObject>;
 
     beforeEach(() => {
+      attachmentsStore = new FauxAttachmentStore();
       fauxOntology = new FauxOntology({
         apiName: "foo",
         description: "foo",
         displayName: "foo",
         rid: "ri.foo",
       });
-      fauxDataStore = new FauxDataStore(fauxOntology);
+      fauxDataStore = new FauxDataStore(fauxOntology, attachmentsStore);
 
-      fauxOntology.registerObjectType({
+      const Employee = {
         implementsInterfaces: [],
         implementsInterfaces2: {},
         linkTypes: [{
@@ -87,16 +90,18 @@ describe(FauxDataStore, () => {
           titleProperty: "id",
         },
         sharedPropertyTypeMapping: {},
-      });
+      } as const;
+
+      fauxOntology.registerObjectType(Employee);
+    });
+
+    const getLeadsAndPeeps = (id: string) => ({
+      lead: fauxDataStore.getLinksOrThrow("Employee", id, "lead")[0],
+      peeps: fauxDataStore.getLinksOrThrow("Employee", id, "peeps"),
     });
 
     it("should work in the happy paths", () => {
       const { a, b, c, d } = employees;
-
-      const getLeadsAndPeeps = (id: string) => ({
-        lead: fauxDataStore.getLinks("Employee", id, "lead")[0],
-        peeps: fauxDataStore.getLinks("Employee", id, "peeps"),
-      });
 
       // set a's lead to b
       fauxDataStore.registerObject(a);
@@ -151,6 +156,43 @@ describe(FauxDataStore, () => {
       expect(getLeadsAndPeeps("d")).toMatchObject({
         lead: undefined,
         peeps: [c, b], // d has two peeps now
+      });
+
+      // remove b's lead
+      fauxDataStore.unregisterLink(d, "peeps", b, "lead");
+      expect(getLeadsAndPeeps("b")).toMatchObject({
+        lead: undefined,
+        peeps: [a], // b's peeps should not change
+      });
+      expect(getLeadsAndPeeps("d")).toMatchObject({
+        lead: undefined,
+        peeps: [c], // d no longer leads b
+      });
+
+      // change b's lead to d but in the other direction
+      fauxDataStore.registerLink(b, "lead", d, "peeps");
+      expect(getLeadsAndPeeps("b")).toMatchObject({
+        lead: d,
+        peeps: [a], // b's peeps should not change
+      });
+      expect(getLeadsAndPeeps("c")).toMatchObject({
+        lead: d,
+        peeps: [], // c should no longer have b as a peep
+      });
+      expect(getLeadsAndPeeps("d")).toMatchObject({
+        lead: undefined,
+        peeps: [c, b], // d has two peeps now
+      });
+
+      // remove b's lead in the other direction
+      fauxDataStore.unregisterLink(b, "lead", d, "peeps");
+      expect(getLeadsAndPeeps("b")).toMatchObject({
+        lead: undefined,
+        peeps: [a], // b's peeps should not change
+      });
+      expect(getLeadsAndPeeps("d")).toMatchObject({
+        lead: undefined,
+        peeps: [c], // d no longer leads b
       });
     });
   });

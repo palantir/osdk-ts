@@ -51,9 +51,9 @@ describe("attachments", () => {
     expect(attachmentMetadata).toBeDefined();
     expect(attachmentMetadata?.filename).toEqual("file1.txt");
     expect(attachmentMetadata?.mediaType).toEqual("application/json");
-    expect(attachmentMetadata?.sizeBytes).toEqual(18);
+    expect(attachmentMetadata?.sizeBytes).toEqual(27);
     expect(attachmentMetadata?.rid).toEqual(
-      "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
+      stubData.helloWorldAttachment.rid,
     );
   });
 
@@ -66,7 +66,7 @@ describe("attachments", () => {
     const attachmentContent = await object1?.attachment?.fetchContents();
     const attachmentText = await attachmentContent!.text();
     expect(JSON.parse(attachmentText)).toEqual({
-      name: "Hello World 2",
+      name: "Hello World",
     });
   });
 });
