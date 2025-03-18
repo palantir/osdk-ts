@@ -52,17 +52,9 @@ export type TimeSeriesQueryV2 = {
 
 export type TimeSeriesQueryWrapper = TimeSeriesQuery | TimeSeriesQueryV2;
 
-export type TimeSeriesRange = AbsoluteTimeRange | RelativeTimeRange;
-
-export type AbsoluteTimeRange = {
+export type TimeSeriesRange = {
   startTime?: string;
   endTime?: string;
-};
-
-export type RelativeTimeRange = {
-  before?: number;
-  unit: keyof typeof TimeseriesDurationMapping;
-  after?: number;
 };
 
 export type TimeseriesDurationUnits =

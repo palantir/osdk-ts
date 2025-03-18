@@ -20,9 +20,7 @@ import type {
   TimeSeriesRange,
 } from "@osdk/api";
 import {
-  isAbsoluteTimeRange,
   isLegacyTimeSeriesQuery,
-  isRelativeTimeRange,
   isTimeSeriesQueryV2,
   TimeseriesDurationMapping,
 } from "@osdk/api";
@@ -58,41 +56,11 @@ export function getTimeRange(body: TimeSeriesQuery): TimeRange {
 
 export const parseTimeSeriesRangeV2 = (
   range: TimeSeriesRange,
-): TimeRange | undefined => {
-  if (isAbsoluteTimeRange(range)) {
-    return {
-      type: "absolute",
-      startTime: range.startTime,
-      endTime: range.endTime,
-    };
-  }
-
-  if (isRelativeTimeRange(range)) {
-    if (range.before) {
-      return {
-        type: "relative",
-        startTime: {
-          when: "BEFORE",
-          value: range.before,
-          unit: TimeseriesDurationMapping[range.unit],
-        },
-      };
-    }
-
-    if (range.after) {
-      return {
-        type: "relative",
-        endTime: {
-          when: "AFTER",
-          value: range.after,
-          unit: TimeseriesDurationMapping[range.unit],
-        },
-      };
-    }
-  }
-
-  return undefined;
-};
+): TimeRange => ({
+  type: "absolute",
+  startTime: range.startTime,
+  endTime: range.endTime,
+});
 
 export const parseTimeSeriesQuery = (query: TimeSeriesQueryWrapper): {
   range?: TimeRange;

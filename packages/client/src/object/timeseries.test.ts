@@ -167,38 +167,6 @@ describe("Timeseries", () => {
     ]);
   });
 
-  it("getAll points works with before in TimeSeriesQueryV2", async () => {
-    const employee = await client(Employee).fetchOne(50030);
-    expect(employee.$primaryKey).toEqual(50030);
-    const points = await employee.employeeStatus?.getAllPoints({
-      range: {
-        before: 1,
-        unit: "month",
-      },
-    });
-    expect(points).toBeDefined();
-    expect(points!).toEqual([{ time: "2012-02-12", value: 10 }, {
-      time: "2013-03-13",
-      value: 20,
-    }, { time: "2014-04-14", value: 30 }]);
-  });
-
-  it("getAll points works with after in TimeSeriesQueryV2", async () => {
-    const employee = await client(Employee).fetchOne(50030);
-    expect(employee.$primaryKey).toEqual(50030);
-    const points = await employee.employeeStatus?.getAllPoints({
-      range: {
-        after: 1,
-        unit: "month",
-      },
-    });
-    expect(points).toBeDefined();
-    expect(points!).toEqual([{ time: "2012-02-12", value: 10 }, {
-      time: "2014-04-14",
-      value: 30,
-    }]);
-  });
-
   it("getAll points works with absolute range in TimeSeriesQueryV2", async () => {
     const employee = await client(Employee).fetchOne(50030);
     expect(employee.$primaryKey).toEqual(50030);

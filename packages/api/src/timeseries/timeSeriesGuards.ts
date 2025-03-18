@@ -15,12 +15,9 @@
  */
 
 import type {
-  AbsoluteTimeRange,
-  RelativeTimeRange,
   TimeSeriesQuery,
   TimeSeriesQueryV2,
   TimeSeriesQueryWrapper,
-  TimeSeriesRange,
 } from "./timeseries.js";
 
 /**
@@ -47,18 +44,4 @@ export function isLegacyTimeSeriesQuery(
   query: TimeSeriesQueryWrapper,
 ): query is TimeSeriesQuery {
   return !("range" in query);
-}
-
-// Type Guards for TimeRanges
-
-export function isAbsoluteTimeRange(
-  range: TimeSeriesRange,
-): range is AbsoluteTimeRange {
-  return "startTime" in range || "endTime" in range;
-}
-
-export function isRelativeTimeRange(
-  range: TimeSeriesRange,
-): range is RelativeTimeRange {
-  return "unit" in range && ("before" in range || "after" in range);
 }
