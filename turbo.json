@@ -136,7 +136,7 @@
     },
 
     "build": {
-      "dependsOn": ["transpile", "typecheck"],
+      "dependsOn": ["transpile", "transpileTypes", "typecheck"],
       "inputs": [
         "src/**/*",
 
