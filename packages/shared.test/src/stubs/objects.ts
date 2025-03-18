@@ -257,7 +257,7 @@ export const objectWithAllPropertyTypes1 = {
       type: "Polygon",
     },
   ],
-  mediaReference: "MediaReferencePlaceholder",
+  mediaReference: "ri.MediaReferencePlaceholder",
 } as const;
 
 export const objectWithAllPropertyTypesEmptyEntries = {

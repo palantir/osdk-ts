@@ -36,7 +36,6 @@ import {
   PromoteEmployee,
   PromoteEmployeeObject,
 } from "./actionsTypes.js";
-import { mediaReference } from "./media.js";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
 
 export const actionRequestCreateOffice: ApplyActionRequestV2 = {
@@ -97,7 +96,17 @@ export const actionRequestWithAttachmentUpload: ApplyActionRequestV2 = {
 export const actionRequestMediaUpload: ApplyActionRequestV2 = {
   options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
   parameters: {
-    media_reference: mediaReference,
+    media_reference: {
+      mimeType: "application/json",
+      reference: {
+        type: "mediaSetViewItem",
+        mediaSetViewItem: {
+          mediaItemRid: "media-item-rid",
+          mediaSetRid: "media-set-rid",
+          mediaSetViewRid: "media-set-view-rid",
+        },
+      },
+    },
   },
 };
 

@@ -19,29 +19,16 @@
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { RequestHandler } from "msw";
 import { randomUUID } from "node:crypto";
-import {
-  InvalidContentTypeError,
-  InvalidRequest,
-  ObjectNotFoundError,
-} from "../errors.js";
+import { InvalidRequest, ObjectNotFoundError } from "../errors.js";
 import {
   subSelectProperties,
   subSelectPropertiesUrl,
 } from "../filterObjects.js";
 import {
-  mediaContentRequestHandler,
-  mediaMetadataRequestHandler,
-  mediaUploadRequest,
-  mediaUploadRequestBody,
-} from "../stubs/media.js";
-import {
   fauxFoundry,
   legacyFauxDataStore,
 } from "../stubs/ontologies/legacyFullOntology.js";
-import {
-  areArrayBuffersEqual,
-  pageThroughResponseSearchParams,
-} from "./endpointUtils.js";
+import { pageThroughResponseSearchParams } from "./endpointUtils.js";
 import { getPaginationParamsFromUrl } from "./util/getPaginationParams.js";
 import {
   handleOpenApiCall,
@@ -456,19 +443,14 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
     OntologiesV2.MediaReferenceProperties.getMediaMetadata,
     ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
     async req => {
-      const propertyName = req.params.propertyName;
+      const { ontologyApiName, objectType, primaryKey, propertyName } =
+        req.params;
 
-      const mediaMetadata = mediaMetadataRequestHandler[propertyName];
-      if (
-        typeof req.params.primaryKey !== "string"
-        || typeof req.params.ontologyApiName !== "string"
-        || typeof req.params.objectType !== "string"
-        || typeof propertyName !== "string"
-        || mediaMetadata == null
-      ) {
-        throw new OpenApiCallError(400, InvalidRequest("Invalid request"));
-      }
-      return mediaMetadata;
+      const { mediaType, sizeBytes, path } = fauxFoundry
+        .getDataStore(ontologyApiName)
+        .getMediaOrThrow(objectType, primaryKey, propertyName);
+
+      return { mediaType, sizeBytes, path };
     },
   ),
   /**
@@ -483,20 +465,16 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       "propertyName",
     ],
     async req => {
-      const propertyName = req.params.propertyName;
+      const { ontologyApiName, objectType, primaryKey, propertyName } =
+        req.params;
 
-      const mediaResponse = mediaContentRequestHandler[propertyName];
-      if (
-        typeof req.params.primaryKey !== "string"
-        || typeof req.params.ontologyApiName !== "string"
-        || typeof req.params.objectType !== "string"
-        || typeof propertyName !== "string"
-        || mediaResponse == null
-      ) {
-        throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
-      }
+      const { content, mediaType } = fauxFoundry
+        .getDataStore(ontologyApiName)
+        .getMediaOrThrow(objectType, primaryKey, propertyName);
 
-      return new Response(JSON.stringify(mediaResponse));
+      return new Response(content, {
+        headers: { "Content-Type": mediaType },
+      });
     },
   ),
   handleOpenApiCall(
@@ -506,33 +484,43 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       "objectType",
       "propertyName",
     ],
-    async req => {
-      const urlObj = new URL(req.request.url);
-      const fileName = urlObj.searchParams.get("mediaItemPath");
+    async ({ params, request }) => {
+      const { ontologyApiName, objectType, propertyName } = params;
+      const fileName = new URL(request.url).searchParams.get("mediaItemPath");
 
-      if (
-        typeof fileName !== "string"
-        || typeof req.params.ontologyApiName !== "string"
-        || typeof req.params.objectType !== "string"
-        || typeof req.params.propertyName !== "string"
-      ) {
+      if (typeof fileName !== "string") {
         throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
       }
 
-      const mediaUploadResponse = mediaUploadRequest[fileName];
-      const body = await req.request.arrayBuffer();
+      const content = await request.arrayBuffer();
+      const mediaType = request.headers.get("Content-Type")
+        ?? "application/octet-stream";
 
-      if (mediaUploadResponse) {
-        const expectedBody = mediaUploadRequestBody[fileName];
-        const expectedBodyArray = await expectedBody.arrayBuffer();
+      // FIXME is this what a rid for this looks like?
+      const mediaItemRid = `ri.media.main.${randomUUID()}`;
 
-        if (!areArrayBuffersEqual(body, expectedBodyArray)) {
-          throw new OpenApiCallError(400, InvalidContentTypeError);
-        }
+      fauxFoundry.getDataStore(ontologyApiName).registerMedia(
+        objectType,
+        propertyName,
+        {
+          content,
+          mediaItemRid,
+          mediaType,
+          path: fileName,
+        },
+      );
 
-        return mediaUploadResponse;
-      }
-      throw new OpenApiCallError(400, InvalidRequest("Media not found"));
+      return {
+        mimeType: mediaType,
+        reference: {
+          type: "mediaSetViewItem",
+          mediaSetViewItem: {
+            mediaItemRid,
+            mediaSetRid: "ri.unimplemented.in.shared.test",
+            mediaSetViewRid: "ri.unimplemented.in.shared.test",
+          },
+        },
+      } as const;
     },
   ),
 ] as const;

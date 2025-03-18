@@ -333,7 +333,8 @@ describe("actions", () => {
     >();
 
     const result = await client(actionTakesMedia).applyAction({
-      media_reference: stubData.mediaReference,
+      media_reference:
+        stubData.actionRequestMediaUpload.parameters.media_reference,
     });
 
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
