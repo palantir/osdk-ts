@@ -20,11 +20,13 @@ import type { ActionLogicModification } from "./ActionLogicModification.js";
 import type { ActionNotificationModification } from "./ActionNotificationModification.js";
 import type { ActionNotificationSettings } from "./ActionNotificationSettings.js";
 import type { ActionRevert } from "./ActionRevert.js";
+import type { ActionSubmissionConfiguration } from "./ActionSubmissionConfiguration.js";
 import type { ActionTypeApiName } from "./ActionTypeApiName.js";
 import type { ActionTypeDisplayMetadataModification } from "./ActionTypeDisplayMetadataModification.js";
 import type { ActionTypeProvenanceModification } from "./ActionTypeProvenanceModification.js";
 import type { ActionTypeStatus } from "./ActionTypeStatus.js";
 import type { ActionWebhooksModification } from "./ActionWebhooksModification.js";
+import type { CompassProjectRid } from "./CompassProjectRid.js";
 import type { FormContent } from "./FormContent.js";
 import type { OntologyPackageRid } from "./OntologyPackageRid.js";
 import type { ParameterId } from "./ParameterId.js";
@@ -56,6 +58,8 @@ export interface ActionTypeCreate {
   notificationSettings: ActionNotificationSettings | undefined;
   revert: ActionRevert | undefined;
   packageRid: OntologyPackageRid | undefined;
+  projectRid: CompassProjectRid | undefined;
   provenance: ActionTypeProvenanceModification | undefined;
   typeGroups: Array<TypeGroupRidOrIdInRequest>;
+  submissionConfiguration: ActionSubmissionConfiguration | undefined;
 }

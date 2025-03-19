@@ -18,5 +18,5 @@ import type { DerivedPropertyLinkTypeSide } from "./DerivedPropertyLinkTypeSide.
 import type { OntologyIrDerivedPropertyLinkTypeIdentifier } from "./OntologyIrDerivedPropertyLinkTypeIdentifier.js";
 export interface OntologyIrLinkTypeLinkDefinition {
   linkTypeIdentifier: OntologyIrDerivedPropertyLinkTypeIdentifier;
-  linkTypeSide: DerivedPropertyLinkTypeSide | undefined;
+  linkTypeSide: DerivedPropertyLinkTypeSide;
 }

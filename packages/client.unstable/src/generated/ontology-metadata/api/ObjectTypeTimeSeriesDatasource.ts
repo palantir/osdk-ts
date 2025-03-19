@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { MarkingId } from "./MarkingId.js";
 import type { PropertyTypeRid } from "./PropertyTypeRid.js";
 import type { TimeSeriesSyncRid } from "./TimeSeriesSyncRid.js";
 
@@ -23,4 +24,5 @@ import type { TimeSeriesSyncRid } from "./TimeSeriesSyncRid.js";
 export interface ObjectTypeTimeSeriesDatasource {
   timeSeriesSyncRid: TimeSeriesSyncRid;
   properties: Array<PropertyTypeRid>;
+  assumedMarkings: Array<MarkingId>;
 }

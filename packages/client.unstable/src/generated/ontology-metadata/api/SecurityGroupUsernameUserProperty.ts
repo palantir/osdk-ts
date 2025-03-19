@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-import type { LinkTypeId } from "./LinkTypeId.js";
-import type { LinkTypeRid } from "./LinkTypeRid.js";
-
 /**
- * The Intermediary LinkType is not in OSv2
+ * The user's username
  */
-export interface IntermediaryLinkTypeMustBeOsV2Error {
-  intermediaryLinkTypeRid: LinkTypeRid;
-  intermediaryLinkTypeId: LinkTypeId | undefined;
+export interface SecurityGroupUsernameUserProperty {
+  realm: string;
 }

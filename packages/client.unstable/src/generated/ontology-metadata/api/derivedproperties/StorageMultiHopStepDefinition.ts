@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-import type { LinkTypeId } from "./LinkTypeId.js";
-import type { LinkTypeRid } from "./LinkTypeRid.js";
-
-/**
- * The Intermediary LinkType is referencing ObjectTypes with a non-one-to-many relationship on one of the sides
- */
-export interface InvalidAssociatedLinkTypeError {
-  intermediaryLinkTypeId: LinkTypeId | undefined;
-  associatedLinkTypeId: LinkTypeId | undefined;
-  intermediaryLinkTypeRid: LinkTypeRid;
-  associatedLinkTypeRid: LinkTypeRid;
+import type { StorageSearchAroundStep } from "./StorageSearchAroundStep.js";
+export interface StorageMultiHopStepDefinition_searchAround {
+  type: "searchAround";
+  searchAround: StorageSearchAroundStep;
 }
+export type StorageMultiHopStepDefinition =
+  StorageMultiHopStepDefinition_searchAround;

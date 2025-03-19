@@ -28,6 +28,7 @@ import type { ObjectTypeSort } from "./ObjectTypeSort.js";
  */
 export interface ObjectTypeSearchRequestV2 {
   clause: ObjectTypeClause;
+  semanticSearchQuery: string | undefined;
   ontologyRids: Array<OntologyRid>;
   ontologyBranchRid: OntologyBranchRid | undefined;
   excludedObjectTypeRids: Array<ObjectTypeRid>;

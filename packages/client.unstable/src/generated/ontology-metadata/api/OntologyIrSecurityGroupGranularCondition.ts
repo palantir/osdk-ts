@@ -17,7 +17,19 @@
 import type { OntologyIrSecurityGroupAndCondition } from "./OntologyIrSecurityGroupAndCondition.js";
 import type { OntologyIrSecurityGroupComparisonCondition } from "./OntologyIrSecurityGroupComparisonCondition.js";
 import type { OntologyIrSecurityGroupMarkingsCondition } from "./OntologyIrSecurityGroupMarkingsCondition.js";
+import type { OntologyIrSecurityGroupNotCondition } from "./OntologyIrSecurityGroupNotCondition.js";
 import type { OntologyIrSecurityGroupOrCondition } from "./OntologyIrSecurityGroupOrCondition.js";
+import type { SecurityGroupTrueCondition } from "./SecurityGroupTrueCondition.js";
+export interface OntologyIrSecurityGroupGranularCondition_not {
+  type: "not";
+  not: OntologyIrSecurityGroupNotCondition;
+}
+
+export interface OntologyIrSecurityGroupGranularCondition_true {
+  type: "true";
+  true: SecurityGroupTrueCondition;
+}
+
 export interface OntologyIrSecurityGroupGranularCondition_and {
   type: "and";
   and: OntologyIrSecurityGroupAndCondition;
@@ -42,6 +54,8 @@ export interface OntologyIrSecurityGroupGranularCondition_comparison {
  * Note that more conditions can and will be added in the future, as the need arises.
  */
 export type OntologyIrSecurityGroupGranularCondition =
+  | OntologyIrSecurityGroupGranularCondition_not
+  | OntologyIrSecurityGroupGranularCondition_true
   | OntologyIrSecurityGroupGranularCondition_and
   | OntologyIrSecurityGroupGranularCondition_or
   | OntologyIrSecurityGroupGranularCondition_markings

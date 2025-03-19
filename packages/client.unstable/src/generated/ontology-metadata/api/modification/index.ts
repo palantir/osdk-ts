@@ -53,6 +53,7 @@ export type { InlineActionTypeModification } from "./InlineActionTypeModificatio
 export type { InterfaceLinkTypeImplementationModification } from "./InterfaceLinkTypeImplementationModification.js";
 export type { InterfaceLinkTypeModification } from "./InterfaceLinkTypeModification.js";
 export type { InterfacePropertyImplementationModification } from "./InterfacePropertyImplementationModification.js";
+export type { InterfaceSharedPropertyTypeModification } from "./InterfaceSharedPropertyTypeModification.js";
 export type { InterfaceTypeModification } from "./InterfaceTypeModification.js";
 export type { IntermediaryLinkDefinitionModification } from "./IntermediaryLinkDefinitionModification.js";
 export type { LinkDefinitionModification } from "./LinkDefinitionModification.js";
@@ -109,6 +110,7 @@ export type { ObjectTypeRestrictedViewDatasourceModification } from "./ObjectTyp
 export type { ObjectTypeRestrictedViewDatasourceV2Modification } from "./ObjectTypeRestrictedViewDatasourceV2Modification.js";
 export type { ObjectTypeStreamDatasourceModification } from "./ObjectTypeStreamDatasourceModification.js";
 export type { ObjectTypeStreamDatasourceV2Modification } from "./ObjectTypeStreamDatasourceV2Modification.js";
+export type { ObjectTypeTableDatasourceModification } from "./ObjectTypeTableDatasourceModification.js";
 export type { ObjectTypeTimeSeriesDatasourceModification } from "./ObjectTypeTimeSeriesDatasourceModification.js";
 export type { ObjectTypeTraitsModification } from "./ObjectTypeTraitsModification.js";
 export type { ObjectTypeUpdate } from "./ObjectTypeUpdate.js";

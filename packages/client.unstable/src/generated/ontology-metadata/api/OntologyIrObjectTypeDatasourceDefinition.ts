@@ -24,6 +24,7 @@ import type { OntologyIrObjectTypeMediaSetViewDatasource } from "./OntologyIrObj
 import type { OntologyIrObjectTypeRestrictedStreamDatasource } from "./OntologyIrObjectTypeRestrictedStreamDatasource.js";
 import type { OntologyIrObjectTypeRestrictedViewDatasourceV2 } from "./OntologyIrObjectTypeRestrictedViewDatasourceV2.js";
 import type { OntologyIrObjectTypeStreamDatasourceV2 } from "./OntologyIrObjectTypeStreamDatasourceV2.js";
+import type { OntologyIrObjectTypeTableDatasource } from "./OntologyIrObjectTypeTableDatasource.js";
 import type { OntologyIrObjectTypeTimeSeriesDatasource } from "./OntologyIrObjectTypeTimeSeriesDatasource.js";
 export interface OntologyIrObjectTypeDatasourceDefinition_streamV2 {
   type: "streamV2";
@@ -65,6 +66,11 @@ export interface OntologyIrObjectTypeDatasourceDefinition_geotimeSeries {
   geotimeSeries: OntologyIrObjectTypeGeotimeSeriesDatasource;
 }
 
+export interface OntologyIrObjectTypeDatasourceDefinition_table {
+  type: "table";
+  table: OntologyIrObjectTypeTableDatasource;
+}
+
 export interface OntologyIrObjectTypeDatasourceDefinition_editsOnly {
   type: "editsOnly";
   editsOnly: OntologyIrObjectTypeEditsOnlyDatasource;
@@ -91,6 +97,7 @@ export type OntologyIrObjectTypeDatasourceDefinition =
   | OntologyIrObjectTypeDatasourceDefinition_restrictedStream
   | OntologyIrObjectTypeDatasourceDefinition_mediaSetView
   | OntologyIrObjectTypeDatasourceDefinition_geotimeSeries
+  | OntologyIrObjectTypeDatasourceDefinition_table
   | OntologyIrObjectTypeDatasourceDefinition_editsOnly
   | OntologyIrObjectTypeDatasourceDefinition_direct
   | OntologyIrObjectTypeDatasourceDefinition_derived;
