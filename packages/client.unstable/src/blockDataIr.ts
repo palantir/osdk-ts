@@ -54,7 +54,6 @@ export interface OntologyIrOntologyBlockDataV2 extends
     Omit<
       OntologyBlockDataV2,
       | "knownIdentifiers"
-      | "linkTypes"
       | "ruleSets"
       | "actionTypes"
       | "blockOutputCompassLocations"
