@@ -16,8 +16,10 @@
 
 import type { TimeSeriesPoint } from "@osdk/api";
 import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
-import { apiServer, stubData } from "@osdk/shared.test";
+import { LegacyFauxFoundry } from "@osdk/shared.test";
 import { formatISO, sub } from "date-fns";
+import type { SetupServerApi } from "msw/node";
+import { setupServer } from "msw/node";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
@@ -50,8 +52,14 @@ describe("Timeseries", () => {
     ],
   };
 
+  let fauxFoundry: LegacyFauxFoundry;
+  let apiServer: SetupServerApi;
+
   beforeAll(async () => {
+    fauxFoundry = new LegacyFauxFoundry();
+    apiServer = setupServer(...fauxFoundry.handlers);
     apiServer.listen();
+
     client = createClient(
       "https://stack.palantir.com",
       $ontologyRid,
@@ -59,7 +67,7 @@ describe("Timeseries", () => {
     );
 
     for (const [pk, data] of Object.entries(locationGeotimeData)) {
-      stubData.legacyFauxFoundry.getDataStore($ontologyRid)
+      fauxFoundry.getDataStore($ontologyRid)
         .registerTimeSeriesData(
           "Employee",
           pk,

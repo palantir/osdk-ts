@@ -16,16 +16,13 @@
 
 import type { SetupServer } from "msw/node";
 import { setupServer } from "msw/node";
-import { createFauxFoundryHandlers } from "./handlers/createFauxFoundryHandlers.js";
-import { legacyFauxFoundry } from "./stubs/index.js";
+import { LegacyFauxFoundry } from "./stubs/LegacyFauxFoundry.js";
 
+const legacyFauxFoundry: LegacyFauxFoundry = new LegacyFauxFoundry();
+
+/**
+ * @deprecated For legacy behavior use `const fauxFoundry = new LegacyFauxFoundry(); setupServer(fauxFoundry.handlers);
+ */
 export const apiServer: SetupServer = setupServer(
-  ...createFauxFoundryHandlers(
-    "https://stack.palantir.com/",
-    legacyFauxFoundry,
-  ),
-  ...createFauxFoundryHandlers(
-    "https://stack.palantirCustom.com/foo/first/someStuff/",
-    legacyFauxFoundry,
-  ),
+  ...legacyFauxFoundry.handlers,
 );

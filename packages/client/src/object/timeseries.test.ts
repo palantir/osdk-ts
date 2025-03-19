@@ -16,13 +16,16 @@
 
 import type { TimeSeriesPoint } from "@osdk/api";
 import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
-import { apiServer, stubData } from "@osdk/shared.test";
+import { LegacyFauxFoundry } from "@osdk/shared.test";
 import { formatISO, sub } from "date-fns";
+import { setupServer, type SetupServerApi } from "msw/node";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
 describe("Timeseries", () => {
+  let fauxFoundry: LegacyFauxFoundry;
+  let apiServer: SetupServerApi;
   let client: Client;
   const statusTimeseriesData = [
     { time: formatISO(sub(Date.now(), { "years": 2 })), value: -365 },
@@ -39,6 +42,8 @@ describe("Timeseries", () => {
   ];
 
   beforeAll(async () => {
+    fauxFoundry = new LegacyFauxFoundry();
+    apiServer = setupServer(...fauxFoundry.handlers);
     apiServer.listen();
     client = createClient(
       "https://stack.palantir.com",
@@ -46,7 +51,7 @@ describe("Timeseries", () => {
       async () => "myAccessToken",
     );
 
-    stubData.legacyFauxFoundry.getDataStore($ontologyRid)
+    fauxFoundry.getDataStore($ontologyRid)
       .registerTimeSeriesData(
         "Employee",
         "50030",
@@ -54,7 +59,7 @@ describe("Timeseries", () => {
         statusTimeseriesData,
       );
 
-    stubData.legacyFauxFoundry.getDataStore($ontologyRid)
+    fauxFoundry.getDataStore($ontologyRid)
       .registerTimeSeriesData(
         "Employee",
         "50030",

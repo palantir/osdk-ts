@@ -20,4 +20,5 @@ export { loadAll } from "./handlers/util/loadAll.js";
 export * from "./mock-ontology/index.js";
 export { apiServer } from "./setupServers.js";
 export * as stubData from "./stubs/index.js";
+export { LegacyFauxFoundry } from "./stubs/LegacyFauxFoundry.js";
 export { withoutRid } from "./withoutRid.js";

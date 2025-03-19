@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import { defaultOntologyMetadata as defaultOntology } from "./ontologies/defaultOntologyMetadata.js";
-import { legacyFullOntology } from "./ontologies/legacyFullOntology.js";
 
 export const defaultOntologyForConjure = {
   apiName: defaultOntology.apiName as string,
@@ -26,6 +24,3 @@ export const defaultOntologyForConjure = {
   defaultBranchRid:
     "ri.ontology.main.branch.99999999-8888-7777-6666-555555555555",
 } as const;
-
-export const fullOntology: OntologyFullMetadata = legacyFullOntology
-  .getOntologyFullMetadata();

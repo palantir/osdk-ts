@@ -18,23 +18,29 @@ import {
   $ontologyRid,
   objectTypeWithAllPropertyTypes,
 } from "@osdk/client.test.ontology";
-import { apiServer, stubData } from "@osdk/shared.test";
+import { LegacyFauxFoundry, stubData } from "@osdk/shared.test";
+import { setupServer, type SetupServerApi } from "msw/node";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
 describe("media", () => {
+  let fauxFoundry: LegacyFauxFoundry;
+  let apiServer: SetupServerApi;
   let client: Client;
 
   beforeAll(async () => {
+    fauxFoundry = new LegacyFauxFoundry();
+    apiServer = setupServer(...fauxFoundry.handlers);
     apiServer.listen();
+
     client = createClient(
       "https://stack.palantir.com",
       $ontologyRid,
       async () => "myAccessToken",
     );
 
-    stubData.legacyFauxFoundry
+    fauxFoundry
       .getDataStore($ontologyRid)
       .registerMedia(
         objectTypeWithAllPropertyTypes.apiName,

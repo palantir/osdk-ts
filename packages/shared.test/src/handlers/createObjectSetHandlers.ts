@@ -15,15 +15,9 @@
  */
 
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
-import stableStringify from "json-stable-stringify";
 import type { RequestHandler } from "msw";
-import { InvalidRequest } from "../errors.js";
 import type { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
-import { aggregationRequestHandlers } from "../stubs/aggregationRequests.js";
-import {
-  handleOpenApiCall,
-  OpenApiCallError,
-} from "./util/handleOpenApiCall.js";
+import { handleOpenApiCall } from "./util/handleOpenApiCall.js";
 
 export const createObjectSetHandlers = (
   baseUrl: string,
@@ -50,17 +44,7 @@ export const createObjectSetHandlers = (
     OntologiesV2.OntologyObjectSets.aggregate,
     ["ontologyApiName"],
     async ({ request }) => {
-      const parsedBody = await request.json();
-      const aggResp = aggregationRequestHandlers[stableStringify(parsedBody)];
-      if (aggResp) {
-        return aggResp;
-      }
-      throw new OpenApiCallError(
-        400,
-        InvalidRequest(
-          `Invalid aggregation request: ${JSON.stringify(parsedBody)}`,
-        ),
-      );
+      throw new Error("Not implemented");
     },
     baseUrl,
   ),

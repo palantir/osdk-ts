@@ -19,7 +19,7 @@
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { RequestHandler } from "msw";
 import { http as rest, HttpResponse } from "msw";
-import { defaultOntologyForConjure } from "../stubs/ontologies.js";
+import { defaultOntologyForConjure } from "../stubs/defaultOntologyForConjure.js";
 import { defaultOntologyMetadata } from "../stubs/ontologies/defaultOntologyMetadata.js";
 import { authHandlerMiddleware } from "./authHandlerMiddleware.js";
 import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";

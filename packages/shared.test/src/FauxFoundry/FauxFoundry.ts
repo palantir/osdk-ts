@@ -15,7 +15,9 @@
  */
 
 import type { OntologyV2 } from "@osdk/foundry.ontologies";
+import type { RequestHandler } from "msw";
 import { OntologyNotFoundError } from "../errors.js";
+import { createFauxFoundryHandlers } from "../handlers/createFauxFoundryHandlers.js";
 import { OpenApiCallError } from "../handlers/util/handleOpenApiCall.js";
 import { FauxAttachmentStore } from "./FauxAttachmentStore.js";
 import { FauxDataStore } from "./FauxDataStore.js";
@@ -28,8 +30,16 @@ export class FauxFoundry {
   #dataStoresByOntologyApiName = new Map<string, FauxDataStore>();
 
   readonly attachments: FauxAttachmentStore = new FauxAttachmentStore();
+  #handlers: RequestHandler[];
 
-  constructor() {
+  constructor({ baseUrls }: { baseUrls: string[] }) {
+    this.#handlers = baseUrls.flatMap(baseUrl =>
+      createFauxFoundryHandlers(baseUrl, this)
+    );
+  }
+
+  get handlers(): RequestHandler[] {
+    return this.#handlers;
   }
 
   createOntology(metadata: OntologyV2): FauxOntology {
