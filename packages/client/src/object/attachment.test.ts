@@ -14,27 +14,29 @@
  * limitations under the License.
  */
 
+import { objectTypeWithAllPropertyTypes } from "@osdk/client.test.ontology";
 import {
-  $ontologyRid,
-  objectTypeWithAllPropertyTypes,
-} from "@osdk/client.test.ontology";
-import { LegacyFauxFoundry, stubData } from "@osdk/shared.test";
-import { type SetupServer, setupServer } from "msw/node";
+  LegacyFauxFoundry,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
+import { type SetupServer } from "msw/node";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
 describe("attachments", () => {
-  let legacyFauxFoundry: LegacyFauxFoundry;
+  let fauxFoundry: LegacyFauxFoundry;
   let apiServer: SetupServer;
   let client: Client;
 
   beforeAll(async () => {
-    legacyFauxFoundry = new LegacyFauxFoundry();
-    apiServer = setupServer(...legacyFauxFoundry.handlers);
-    apiServer.listen();
+    ({ client, apiServer, fauxFoundry } = startNodeApiServer(
+      new LegacyFauxFoundry(),
+      createClient,
+    ));
 
-    legacyFauxFoundry.attachments.registerAttachment({
+    fauxFoundry.attachments.registerAttachment({
       filename: "file1.txt",
       mediaType: "application/json",
       rid:
@@ -43,12 +45,6 @@ describe("attachments", () => {
         JSON.stringify({ name: "Hello World" }, null, 2),
       ),
     });
-
-    client = createClient(
-      "https://stack.palantir.com",
-      $ontologyRid,
-      async () => "myAccessToken",
-    );
   });
 
   afterAll(() => {

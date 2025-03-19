@@ -39,23 +39,15 @@ import { registerLazyQueries } from "./queries.js";
 import { fooSpt } from "./spts.js";
 
 export class LegacyFauxFoundry extends FauxFoundry {
-  readonly legacyFullOntology: FauxOntology;
-
   constructor(
-    baseUrls: string[] = [
-      "https://stack.palantir.com/",
-      "https://stack.palantirCustom.com/foo/first/someStuff/",
-    ],
+    baseUrl: string = "https://stack.palantir.com/",
   ) {
-    super({ baseUrls });
+    super(baseUrl, defaultOntologyMetadata);
 
     //
     // Setup the ontology
     //
-    const legacyFullOntology: FauxOntology = this.legacyFullOntology = this
-      .createOntology(
-        defaultOntologyMetadata,
-      );
+    const legacyFullOntology: FauxOntology = this.getDefaultOntology();
 
     for (const xx of Object.values(objectTypesWithLinkTypes)) {
       legacyFullOntology.registerObjectType(xx);
@@ -74,9 +66,7 @@ export class LegacyFauxFoundry extends FauxFoundry {
     //
     // Setup the data store
     //
-    const legacyFauxDataStore: FauxDataStore = this.getDataStore(
-      defaultOntologyMetadata.rid,
-    );
+    const legacyFauxDataStore: FauxDataStore = this.getDefaultDataStore();
     legacyFauxDataStore.registerObject(employee_John_50030);
     legacyFauxDataStore.registerObject(employee_Jane_50031);
     legacyFauxDataStore.registerObject(employee3);

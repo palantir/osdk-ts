@@ -14,39 +14,23 @@
  * limitations under the License.
  */
 
-import {
-  $ontologyRid,
-  Employee,
-  FooInterface,
-} from "@osdk/client.test.ontology";
-import { apiServer } from "@osdk/shared.test";
-import {
-  afterAll,
-  beforeAll,
-  describe,
-  expect,
-  expectTypeOf,
-  it,
-} from "vitest";
+import { Employee, FooInterface } from "@osdk/client.test.ontology";
+import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 
 import type { Osdk, PropertyKeys } from "@osdk/api";
+import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
 describe("ObjectSet", () => {
   let client: Client;
 
-  beforeAll(async () => {
-    apiServer.listen();
-    client = createClient(
-      "https://stack.palantir.com",
-      $ontologyRid,
-      async () => "myAccessToken",
-    );
-  });
-
-  afterAll(() => {
-    apiServer.close();
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
+    ({ client } = testSetup);
+    return () => {
+      testSetup.apiServer.close();
+    };
   });
 
   it("does not allow intersect/union/subtract with implementing interface types, for now", () => {

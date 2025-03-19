@@ -14,15 +14,48 @@
  * limitations under the License.
  */
 
-import type { SetupServer } from "msw/node";
+import type { SetupServerApi } from "msw/node";
 import { setupServer } from "msw/node";
-import { LegacyFauxFoundry } from "./stubs/LegacyFauxFoundry.js";
+import type { FauxFoundry } from "./FauxFoundry/FauxFoundry.js";
 
-const legacyFauxFoundry: LegacyFauxFoundry = new LegacyFauxFoundry();
+interface ClientFactory<C, A extends any[]> {
+  (
+    baseUrl: string,
+    ontologyRid: string,
+    authToken: () => Promise<string>,
+    ...args: A
+  ): C;
+}
 
-/**
- * @deprecated For legacy behavior use `const fauxFoundry = new LegacyFauxFoundry(); setupServer(fauxFoundry.handlers);
+export interface TestSetup<C> {
+  apiServer: SetupServerApi;
+  fauxFoundry: FauxFoundry;
+  client: C;
+  auth: () => Promise<string>;
+}
+/** Helper method to start an api server with a FauxFoundry
+ * @param fauxFoundry
+ * @returns
  */
-export const apiServer: SetupServer = setupServer(
-  ...legacyFauxFoundry.handlers,
-);
+export function startNodeApiServer<
+  CF extends ClientFactory<any, any[]> | undefined,
+>(
+  fauxFoundry: FauxFoundry,
+  clientFactory?: CF,
+  ...clientArgs: CF extends ClientFactory<any, infer A> ? A : never[]
+): TestSetup<CF extends ClientFactory<infer C, any> ? C : never> {
+  const apiServer = setupServer(...fauxFoundry.handlers);
+  const auth = () => Promise.resolve("myAccessToken");
+  apiServer.listen();
+  return {
+    apiServer,
+    auth,
+    fauxFoundry,
+    client: clientFactory?.(
+      fauxFoundry.baseUrl,
+      fauxFoundry.defaultOntologyRid,
+      auth,
+      ...clientArgs,
+    ),
+  };
+}

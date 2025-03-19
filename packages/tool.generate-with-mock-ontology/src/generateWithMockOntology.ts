@@ -15,8 +15,9 @@
  */
 
 // @ts-check
+import { createClient } from "@osdk/client";
 import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePackageCommand } from "@osdk/foundry-sdk-generator";
-import { apiServer } from "@osdk/shared.test";
+import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import { $ } from "execa";
 import * as fs from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -24,12 +25,15 @@ import * as path from "node:path";
 import { safeStat } from "./safeStat.js";
 
 export async function generateWithMockOntology(): Promise<void> {
+  const testSetup = startNodeApiServer(
+    new LegacyFauxFoundry(),
+    createClient,
+  );
+
   try {
     const dir = await fs.mkdtemp(
       path.join(tmpdir(), "osdk-e2e-foundry-sdk-generator-"),
     );
-
-    apiServer.listen();
 
     const testApp2Dir = path.join(dir, "@test-app2");
 
@@ -107,6 +111,6 @@ export async function generateWithMockOntology(): Promise<void> {
   } finally {
     // eslint-disable-next-line no-console
     console.log("teardown: stopping API server");
-    apiServer.close();
+    testSetup.apiServer.close();
   }
 }

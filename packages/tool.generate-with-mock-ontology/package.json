@@ -42,6 +42,7 @@
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/shared.test": "workspace:~",
     "execa": "^9.5.1",
+    "msw": "^2.7.3",
     "typescript": "~5.5.4"
   },
   "publishConfig": {

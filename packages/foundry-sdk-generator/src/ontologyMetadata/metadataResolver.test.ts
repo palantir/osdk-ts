@@ -14,18 +14,33 @@
  * limitations under the License.
  */
 
-import { apiServer, authHandlerMiddleware, stubData } from "@osdk/shared.test";
+import {
+  authHandlerMiddleware,
+  LegacyFauxFoundry,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
 import { http, HttpResponse } from "msw";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import type { SetupServerApi } from "msw/node";
+import { beforeAll, describe, expect, it } from "vitest";
 import { OntologyMetadataResolver } from "./ontologyMetadataResolver.js";
 
 describe("Load Ontologies Metadata", () => {
-  beforeAll(() => {
-    apiServer.listen();
-  });
+  let ontologyMetadataResolver: OntologyMetadataResolver;
+  let apiServer: SetupServerApi;
 
-  afterAll(() => {
-    apiServer.close();
+  beforeAll(async () => {
+    const testSetup = startNodeApiServer(new LegacyFauxFoundry());
+
+    ({ apiServer } = testSetup);
+    ontologyMetadataResolver = new OntologyMetadataResolver(
+      await testSetup.auth(),
+      testSetup.fauxFoundry.baseUrl,
+    );
+
+    return () => {
+      testSetup.apiServer.close();
+    };
   });
 
   it("Loads no object types and action types", async () => {

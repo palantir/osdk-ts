@@ -16,11 +16,9 @@
 
 import type { TimeSeriesPoint } from "@osdk/api";
 import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
-import { LegacyFauxFoundry } from "@osdk/shared.test";
+import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import { formatISO, sub } from "date-fns";
-import type { SetupServerApi } from "msw/node";
-import { setupServer } from "msw/node";
-import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
@@ -52,22 +50,15 @@ describe("Timeseries", () => {
     ],
   };
 
-  let fauxFoundry: LegacyFauxFoundry;
-  let apiServer: SetupServerApi;
-
   beforeAll(async () => {
-    fauxFoundry = new LegacyFauxFoundry();
-    apiServer = setupServer(...fauxFoundry.handlers);
-    apiServer.listen();
-
-    client = createClient(
-      "https://stack.palantir.com",
-      $ontologyRid,
-      async () => "myAccessToken",
+    const testSetup = startNodeApiServer(
+      new LegacyFauxFoundry(),
+      createClient,
     );
+    ({ client } = testSetup);
 
     for (const [pk, data] of Object.entries(locationGeotimeData)) {
-      fauxFoundry.getDataStore($ontologyRid)
+      testSetup.fauxFoundry.getDataStore($ontologyRid)
         .registerTimeSeriesData(
           "Employee",
           pk,
@@ -78,11 +69,11 @@ describe("Timeseries", () => {
 
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2013-03-13"));
-  });
 
-  afterAll(() => {
-    apiServer.close();
-    vi.useRealTimers();
+    return () => {
+      testSetup.apiServer.close();
+      vi.useRealTimers();
+    };
   });
 
   it("get latest value works", async () => {

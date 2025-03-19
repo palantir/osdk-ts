@@ -18,29 +18,27 @@ import {
   $ontologyRid,
   objectTypeWithAllPropertyTypes,
 } from "@osdk/client.test.ontology";
-import { LegacyFauxFoundry, stubData } from "@osdk/shared.test";
-import { setupServer, type SetupServerApi } from "msw/node";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import {
+  LegacyFauxFoundry,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
+import { beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
 describe("media", () => {
-  let fauxFoundry: LegacyFauxFoundry;
-  let apiServer: SetupServerApi;
   let client: Client;
 
-  beforeAll(async () => {
-    fauxFoundry = new LegacyFauxFoundry();
-    apiServer = setupServer(...fauxFoundry.handlers);
-    apiServer.listen();
-
-    client = createClient(
-      "https://stack.palantir.com",
-      $ontologyRid,
-      async () => "myAccessToken",
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new LegacyFauxFoundry(),
+      createClient,
     );
 
-    fauxFoundry
+    ({ client } = testSetup);
+
+    testSetup.fauxFoundry
       .getDataStore($ontologyRid)
       .registerMedia(
         objectTypeWithAllPropertyTypes.apiName,
@@ -52,10 +50,10 @@ describe("media", () => {
         "file1.txt",
         stubData.objectWithAllPropertyTypes1.mediaReference,
       );
-  });
 
-  afterAll(() => {
-    apiServer.close();
+    return () => {
+      testSetup.apiServer.close();
+    };
   });
 
   it("reads media metadata successfully", async () => {

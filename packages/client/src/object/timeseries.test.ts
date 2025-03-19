@@ -15,16 +15,15 @@
  */
 
 import type { TimeSeriesPoint } from "@osdk/api";
-import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
-import { LegacyFauxFoundry } from "@osdk/shared.test";
+import { Employee } from "@osdk/client.test.ontology";
+import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import { formatISO, sub } from "date-fns";
-import { setupServer, type SetupServerApi } from "msw/node";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { type SetupServerApi } from "msw/node";
+import { beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
 describe("Timeseries", () => {
-  let fauxFoundry: LegacyFauxFoundry;
   let apiServer: SetupServerApi;
   let client: Client;
   const statusTimeseriesData = [
@@ -41,17 +40,14 @@ describe("Timeseries", () => {
     { time: formatISO(sub(Date.now(), { "days": 3 })), value: -1 },
   ];
 
-  beforeAll(async () => {
-    fauxFoundry = new LegacyFauxFoundry();
-    apiServer = setupServer(...fauxFoundry.handlers);
-    apiServer.listen();
-    client = createClient(
-      "https://stack.palantir.com",
-      $ontologyRid,
-      async () => "myAccessToken",
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new LegacyFauxFoundry(),
+      createClient,
     );
+    ({ client } = testSetup);
 
-    fauxFoundry.getDataStore($ontologyRid)
+    testSetup.fauxFoundry.getDefaultDataStore()
       .registerTimeSeriesData(
         "Employee",
         "50030",
@@ -59,17 +55,17 @@ describe("Timeseries", () => {
         statusTimeseriesData,
       );
 
-    fauxFoundry.getDataStore($ontologyRid)
+    testSetup.fauxFoundry.getDefaultDataStore()
       .registerTimeSeriesData(
         "Employee",
         "50030",
         "employeeSensor",
         sensorTimeseriesData,
       );
-  });
 
-  afterAll(() => {
-    apiServer.close();
+    return () => {
+      testSetup.apiServer.close();
+    };
   });
 
   it("get first points works", async () => {

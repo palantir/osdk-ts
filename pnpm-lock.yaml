@@ -3556,6 +3556,9 @@ importers:
       execa:
         specifier: ^9.5.1
         version: 9.5.2
+      msw:
+        specifier: ^2.7.3
+        version: 2.7.3(@types/node@22.13.0)(typescript@5.5.4)
       typescript:
         specifier: ~5.5.4
         version: 5.5.4

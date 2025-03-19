@@ -32,7 +32,8 @@ try {
   // ignored, only needed for regeneration
 }
 
-const fullOntology = new LegacyFauxFoundry().legacyFullOntology
+const fullOntology = new LegacyFauxFoundry()
+  .getDefaultOntology()
   .getOntologyFullMetadata();
 
 const ontologyWithoutUnsupportedAction = {
