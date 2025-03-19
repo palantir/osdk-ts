@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { RequestHandler } from "msw";
 import type { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
-import { handleOpenApiCall } from "./util/handleOpenApiCall.js";
+import { MockOntologiesV2 } from "./MockOntologiesV2.js";
 
 export const createObjectSetHandlers = (
   baseUrl: string,
@@ -26,35 +25,30 @@ export const createObjectSetHandlers = (
   /**
    * Load ObjectSet Objects
    */
-  handleOpenApiCall(
-    OntologiesV2.OntologyObjectSets.load,
-    ["ontologyApiName"],
+  MockOntologiesV2.OntologyObjectSets.load(
+    baseUrl,
     async ({ request, params }) => {
       return fauxFoundry
         .getDataStore(params.ontologyApiName)
         .getObjectsFromObjectSet(await request.json());
     },
-    baseUrl,
   ),
 
   /**
    * Aggregate Objects in ObjectSet
    */
-  handleOpenApiCall(
-    OntologiesV2.OntologyObjectSets.aggregate,
-    ["ontologyApiName"],
+  MockOntologiesV2.OntologyObjectSets.aggregate(
+    baseUrl,
     async ({ request }) => {
       throw new Error("Not implemented");
     },
-    baseUrl,
   ),
 
   /**
    * Load interface objectset Objects
    */
-  handleOpenApiCall(
-    OntologiesV2.OntologyObjectSets.loadMultipleObjectTypes,
-    ["ontologyApiName"],
+  MockOntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
+    baseUrl,
     async ({ params, request }) => {
       const pagedResponse = fauxFoundry
         .getDataStore(params.ontologyApiName)
@@ -69,6 +63,5 @@ export const createObjectSetHandlers = (
         ...pagedResponse,
       };
     },
-    baseUrl,
   ),
 ];

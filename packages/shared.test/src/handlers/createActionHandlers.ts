@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { RequestHandler } from "msw";
 import { ApplyActionFailedError } from "../errors.js";
 import type { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
-import {
-  handleOpenApiCall,
-  OpenApiCallError,
-} from "./util/handleOpenApiCall.js";
+import { MockOntologiesV2 } from "./MockOntologiesV2.js";
+import { OpenApiCallError } from "./util/handleOpenApiCall.js";
 
 export const createActionHandlers = (
   baseUrl: string,
@@ -30,9 +27,8 @@ export const createActionHandlers = (
   /**
    * Apply an Action
    */
-  handleOpenApiCall(
-    OntologiesV2.Actions.apply,
-    ["ontologyApiName", "actionType"],
+  MockOntologiesV2.Actions.apply(
+    baseUrl,
     async ({ params: { ontologyApiName, actionType }, request }) => {
       const response = fauxFoundry
         .getDataStore(ontologyApiName)
@@ -47,20 +43,14 @@ export const createActionHandlers = (
 
       return response;
     },
-    baseUrl,
   ),
 
-  /**
-   * Apply a Batch Action
-   */
-  handleOpenApiCall(
-    OntologiesV2.Actions.applyBatch,
-    ["ontologyApiName", "actionType"],
+  MockOntologiesV2.Actions.applyBatch(
+    baseUrl,
     async ({ params: { ontologyApiName, actionType }, request }) => {
       return fauxFoundry
         .getDataStore(ontologyApiName)
         .batchApplyAction(actionType, await request.json());
     },
-    baseUrl,
   ),
 ];

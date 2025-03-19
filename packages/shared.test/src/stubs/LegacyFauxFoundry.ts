@@ -20,7 +20,6 @@ import { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
 import type { FauxOntology } from "../FauxFoundry/FauxOntology.js";
 import { registerLazyActions } from "./actions.js";
 import { ActionTypeWithUnsupportedTypes } from "./actionsTypes.js";
-import { helloWorldAttachment } from "./attachments.js";
 import { BarInterface, FooInterface } from "./interfaces.js";
 import {
   employee1 as employee_John_50030,
@@ -118,12 +117,5 @@ export class LegacyFauxFoundry extends FauxFoundry {
         "peeps",
       ).length === 2,
     );
-
-    //
-    // Setup the faux foundry
-    //
-
-    // used in attachment.test.ts in @osdk/client
-    this.attachments.registerAttachment(helloWorldAttachment);
   }
 }

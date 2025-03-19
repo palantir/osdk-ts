@@ -16,10 +16,8 @@
 
 /* eslint-disable @typescript-eslint/require-await */
 
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
-
 import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
-import { handleOpenApiCall } from "./util/handleOpenApiCall.js";
+import { MockOntologiesV2 } from "./MockOntologiesV2.js";
 import { requireSearchParams } from "./util/requireSearchParams.js";
 
 export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
@@ -29,9 +27,8 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
   /**
    * Load media metadata
    */
-  handleOpenApiCall(
-    OntologiesV2.MediaReferenceProperties.getMediaMetadata,
-    ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
+  MockOntologiesV2.MediaReferenceProperties.getMediaMetadata(
+    baseUrl,
     async (
       { params: { ontologyApiName, objectType, primaryKey, propertyName } },
     ) => {
@@ -40,14 +37,12 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
         .getMediaOrThrow(objectType, primaryKey, propertyName)
         .metaData;
     },
-    baseUrl,
   ),
   /**
    * Read media content
    */
-  handleOpenApiCall(
-    OntologiesV2.MediaReferenceProperties.getMediaContent,
-    ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
+  MockOntologiesV2.MediaReferenceProperties.getMediaContent(
+    baseUrl,
     async (
       { params: { ontologyApiName, objectType, primaryKey, propertyName } },
     ) => {
@@ -59,12 +54,10 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
         headers: { "Content-Type": mediaType },
       });
     },
-    baseUrl,
   ),
 
-  handleOpenApiCall(
-    OntologiesV2.MediaReferenceProperties.upload,
-    ["ontologyApiName", "objectType", "propertyName"],
+  MockOntologiesV2.MediaReferenceProperties.upload(
+    baseUrl,
     async (
       { params: { ontologyApiName, objectType, propertyName }, request },
     ) => {
@@ -80,6 +73,5 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
           mediaItemPath,
         );
     },
-    baseUrl,
   ),
 ];

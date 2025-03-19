@@ -18,16 +18,32 @@ import {
   $ontologyRid,
   objectTypeWithAllPropertyTypes,
 } from "@osdk/client.test.ontology";
-import { apiServer, stubData } from "@osdk/shared.test";
+import { LegacyFauxFoundry, stubData } from "@osdk/shared.test";
+import { type SetupServer, setupServer } from "msw/node";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
 describe("attachments", () => {
+  let legacyFauxFoundry: LegacyFauxFoundry;
+  let apiServer: SetupServer;
   let client: Client;
 
   beforeAll(async () => {
+    legacyFauxFoundry = new LegacyFauxFoundry();
+    apiServer = setupServer(...legacyFauxFoundry.handlers);
     apiServer.listen();
+
+    legacyFauxFoundry.attachments.registerAttachment({
+      filename: "file1.txt",
+      mediaType: "application/json",
+      rid:
+        "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
+      buffer: new TextEncoder().encode(
+        JSON.stringify({ name: "Hello World" }, null, 2),
+      ),
+    });
+
     client = createClient(
       "https://stack.palantir.com",
       $ontologyRid,
@@ -53,7 +69,7 @@ describe("attachments", () => {
     expect(attachmentMetadata?.mediaType).toEqual("application/json");
     expect(attachmentMetadata?.sizeBytes).toEqual(27);
     expect(attachmentMetadata?.rid).toEqual(
-      stubData.helloWorldAttachment.rid,
+      stubData.objectWithAllPropertyTypes1.attachment.rid,
     );
   });
 

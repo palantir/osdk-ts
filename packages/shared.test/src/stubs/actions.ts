@@ -80,11 +80,6 @@ const actionRequestWithObjectSet: ApplyActionRequestV2 = {
   options: {},
 };
 
-export const actionRequestWithAttachment: ApplyActionRequestV2 = {
-  options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
-  parameters: { attachment: "attachment.rid" },
-};
-
 export const actionRequestWithAttachmentUpload: ApplyActionRequestV2 = {
   options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
   parameters: {

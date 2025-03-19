@@ -16,14 +16,13 @@
 
 /* eslint-disable @typescript-eslint/require-await */
 
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { RequestHandler } from "msw";
 import { http as rest, HttpResponse } from "msw";
 import { defaultOntologyForConjure } from "../stubs/defaultOntologyForConjure.js";
 import { defaultOntologyMetadata } from "../stubs/ontologies/defaultOntologyMetadata.js";
 import { authHandlerMiddleware } from "./authHandlerMiddleware.js";
 import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
-import { handleOpenApiCall } from "./util/handleOpenApiCall.js";
+import { MockOntologiesV2 } from "./MockOntologiesV2.js";
 
 export const createOntologyHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
@@ -32,46 +31,39 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
   /**
    * Load ObjectSet Objects
    */
-  handleOpenApiCall(
-    OntologiesV2.OntologiesV2.getFullMetadata,
-    ["ontologyApiName"],
+  MockOntologiesV2.OntologiesV2.getFullMetadata(
+    baseUrl,
     async (req) => {
       return fauxFoundry
         .getOntology(req.params.ontologyApiName)
         .getOntologyFullMetadata();
     },
-    baseUrl,
   ),
 
-  handleOpenApiCall(
-    OntologiesV2.ObjectTypesV2.get,
-    ["ontologyApiName", "objectTypeApiName"],
+  MockOntologiesV2.ObjectTypesV2.get(
+    baseUrl,
     async (req) => {
       return fauxFoundry
         .getOntology(req.params.ontologyApiName)
         .getObjectTypeFullMetadataOrThrow(req.params.objectTypeApiName)
         .objectType;
     },
-    baseUrl,
   ),
 
-  handleOpenApiCall(
-    OntologiesV2.ObjectTypesV2.getFullMetadata,
-    ["ontologyApiName", "objectTypeApiName"],
+  MockOntologiesV2.ObjectTypesV2.getFullMetadata(
+    baseUrl,
     async (req) => {
       return fauxFoundry
         .getOntology(req.params.ontologyApiName)
         .getObjectTypeFullMetadataOrThrow(req.params.objectTypeApiName);
     },
-    baseUrl,
   ),
 
   /**
    * List ActionTypes
    */
-  handleOpenApiCall(
-    OntologiesV2.ActionTypesV2.list,
-    ["ontologyApiName"],
+  MockOntologiesV2.ActionTypesV2.list(
+    baseUrl,
     async ({ params }) => {
       return {
         data: fauxFoundry
@@ -79,52 +71,37 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
           .getAllActionTypes(),
       };
     },
-    baseUrl,
   ),
 
-  handleOpenApiCall(
-    OntologiesV2.ActionTypesV2.get,
-    ["ontologyApiName", "actionTypeApiName"],
+  MockOntologiesV2.ActionTypesV2.get(
+    baseUrl,
     async (req) => {
       return fauxFoundry
         .getOntology(req.params.ontologyApiName)
         .getActionDef(req.params.actionTypeApiName);
     },
-    baseUrl,
   ),
 
-  handleOpenApiCall(
-    OntologiesV2.QueryTypes.get,
-    ["ontologyApiName", "queryTypeApiName"],
+  MockOntologiesV2.QueryTypes.get(
+    baseUrl,
     async (req) => {
       return fauxFoundry
         .getOntology(req.params.ontologyApiName)
         .getQueryDef(req.params.queryTypeApiName);
     },
-    baseUrl,
   ),
 
-  handleOpenApiCall(
-    OntologiesV2.ObjectTypesV2.getOutgoingLinkType,
-    [
-      "ontology",
-      "objectType",
-      "linkType",
-    ],
+  MockOntologiesV2.ObjectTypesV2.getOutgoingLinkType(
+    baseUrl,
     async ({ params }) => {
       return fauxFoundry
         .getOntology(params.ontology)
         .getLinkTypeSideV2(params.objectType, params.linkType);
     },
-    baseUrl,
   ),
 
-  handleOpenApiCall(
-    OntologiesV2.ObjectTypesV2.listOutgoingLinkTypes,
-    [
-      "ontology",
-      "objectType",
-    ],
+  MockOntologiesV2.ObjectTypesV2.listOutgoingLinkTypes(
+    baseUrl,
     async ({ params }) => {
       return {
         data: fauxFoundry
@@ -132,12 +109,10 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
           .getObjectTypeFullMetadataOrThrow(params.objectType).linkTypes,
       };
     },
-    baseUrl,
   ),
 
-  handleOpenApiCall(
-    OntologiesV2.OntologyInterfaces.list,
-    ["ontologyApiName"],
+  MockOntologiesV2.OntologyInterfaces.list(
+    baseUrl,
     async (req) => {
       return {
         data: fauxFoundry
@@ -145,26 +120,22 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
           .getAllInterfaceTypes(),
       };
     },
-    baseUrl,
   ),
 
-  handleOpenApiCall(
-    OntologiesV2.OntologyInterfaces.get,
-    ["ontologyApiName", "interfaceType"],
+  MockOntologiesV2.OntologyInterfaces.get(
+    baseUrl,
     ({ params }) => {
       return fauxFoundry
         .getOntology(params.ontologyApiName)
         .getInterfaceType(params.interfaceType);
     },
-    baseUrl,
   ),
 
   /**
    * List ontologies
    */
-  handleOpenApiCall(
-    OntologiesV2.OntologiesV2.list,
-    [],
+  MockOntologiesV2.OntologiesV2.list(
+    baseUrl,
     async () => {
       return {
         data: fauxFoundry
@@ -172,30 +143,26 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
           .map(x => x.getOntologyFullMetadata().ontology),
       };
     },
-    baseUrl,
   ),
 
   /**
    * Get specified Ontology
    */
-  handleOpenApiCall(
-    OntologiesV2.OntologiesV2.get,
-    ["ontologyRid"],
+  MockOntologiesV2.OntologiesV2.get(
+    baseUrl,
     async req => {
       return fauxFoundry
         .getOntology(req.params.ontologyRid)
         .getOntologyFullMetadata()
         .ontology;
     },
-    baseUrl,
   ),
 
   /**
    * List objectTypes V2
    */
-  handleOpenApiCall(
-    OntologiesV2.ObjectTypesV2.list,
-    ["ontologyApiName"],
+  MockOntologiesV2.ObjectTypesV2.list(
+    baseUrl,
     async req => {
       return {
         data: fauxFoundry
@@ -204,22 +171,19 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
           .map(x => x.objectType),
       };
     },
-    baseUrl,
   ),
 
   /**
    * List Queries
    */
-  handleOpenApiCall(
-    OntologiesV2.QueryTypes.list,
-    ["ontologyApiName"],
+  MockOntologiesV2.QueryTypes.list(
+    baseUrl,
     async (req) => {
       return {
         data: fauxFoundry.getOntology(req.params.ontologyApiName)
           .getAllQueryTypes(),
       };
     },
-    baseUrl,
   ),
 ];
 

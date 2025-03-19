@@ -16,11 +16,10 @@
 
 /* eslint-disable @typescript-eslint/require-await */
 
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { randomUUID } from "node:crypto";
 
 import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
-import { handleOpenApiCall } from "./util/handleOpenApiCall.js";
+import { MockOntologiesV2 } from "./MockOntologiesV2.js";
 import { requireSearchParams } from "./util/requireSearchParams.js";
 
 export const createAttachmentHandlers: FauxFoundryHandlersFactory = (
@@ -30,9 +29,8 @@ export const createAttachmentHandlers: FauxFoundryHandlersFactory = (
   /**
    * Upload attachment
    */
-  handleOpenApiCall(
-    OntologiesV2.Attachments.upload,
-    [],
+  MockOntologiesV2.Attachments.upload(
+    baseUrl,
     async ({ request }) => {
       const { filename } = requireSearchParams(["filename"], request);
 
@@ -44,34 +42,27 @@ export const createAttachmentHandlers: FauxFoundryHandlersFactory = (
         rid: `ri.attachments.main.attachment.${randomUUID()}`,
       });
     },
-    baseUrl,
   ),
 
   /**
    * Get attachment metadata V1
    */
-  handleOpenApiCall(
-    OntologiesV2.Attachments.get,
-    ["attachmentRid"],
+
+  MockOntologiesV2.Attachments.get(
+    baseUrl,
     async ({ params }) => {
       return fauxFoundry
         .attachments
         .getAttachmentMetadataByRid(params.attachmentRid);
     },
-    baseUrl,
   ),
 
   /**
    * Get attachment metadata V2
    */
-  handleOpenApiCall(
-    OntologiesV2.AttachmentPropertiesV2.getAttachment,
-    [
-      "ontologyApiName",
-      "objectType",
-      "primaryKey",
-      "propertyName",
-    ],
+
+  MockOntologiesV2.AttachmentPropertiesV2.getAttachment(
+    baseUrl,
     async (
       { params: { ontologyApiName, primaryKey, objectType, propertyName } },
     ) => {
@@ -81,33 +72,26 @@ export const createAttachmentHandlers: FauxFoundryHandlersFactory = (
         type: "single" as const,
       };
     },
-    baseUrl,
   ),
 
   /**
    * Read attachment content V1
    */
-  handleOpenApiCall(
-    OntologiesV2.Attachments.read,
-    ["attachmentRid"],
+
+  MockOntologiesV2.Attachments.read(
+    baseUrl,
     async ({ params }) => {
       return new Response(fauxFoundry
         .attachments.getAttachmentBuffer(params.attachmentRid));
     },
-    baseUrl,
   ),
 
   /**
    * Read attachment content V2
    */
-  handleOpenApiCall(
-    OntologiesV2.AttachmentPropertiesV2.readAttachment,
-    [
-      "ontologyApiName",
-      "objectType",
-      "primaryKey",
-      "propertyName",
-    ],
+
+  MockOntologiesV2.AttachmentPropertiesV2.readAttachment(
+    baseUrl,
     async (
       { params: { ontologyApiName, primaryKey, objectType, propertyName } },
     ) => {
@@ -119,6 +103,5 @@ export const createAttachmentHandlers: FauxFoundryHandlersFactory = (
         ),
       );
     },
-    baseUrl,
   ),
 ];

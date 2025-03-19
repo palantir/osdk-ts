@@ -37,7 +37,7 @@ import type {
   BatchApplyActionResponseV2,
   SyncApplyActionResponseV2,
 } from "@osdk/foundry.ontologies";
-import { apiServer, stubData } from "@osdk/shared.test";
+import { apiServer, MockOntologiesV2, stubData } from "@osdk/shared.test";
 import {
   afterAll,
   beforeAll,
@@ -53,14 +53,17 @@ import { createAttachmentUpload } from "../object/AttachmentUpload.js";
 import { ActionValidationError } from "./ActionValidationError.js";
 import { remapActionResponse } from "./applyAction.js";
 
+const baseUrl = "https://stack.palantir.com";
+
 describe("actions", () => {
   let client: Client;
   let customEntryPointClient: Client;
 
   beforeAll(async () => {
     apiServer.listen();
+
     client = createClient(
-      "https://stack.palantir.com",
+      baseUrl,
       $ontologyRid,
       async () => "myAccessToken",
     );
@@ -251,12 +254,25 @@ describe("actions", () => {
       attachment: string | AttachmentUpload;
     }[]>().toMatchTypeOf<InferredBatchParamType>();
 
-    const result = await client(actionTakesAttachment).applyAction({
-      attachment: stubData.helloWorldAttachment.rid,
-    });
+    await apiServer.boundary(async () => {
+      apiServer.use(MockOntologiesV2.Actions.apply(baseUrl, (info) => {
+        return {
+          validation: {
+            result: "VALID",
+            submissionCriteria: [],
+            parameters: {},
+          },
+        };
+      }));
 
-    expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
-    expect(result).toBeUndefined();
+      // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
+      const result = await client(actionTakesAttachment).applyAction({
+        attachment: "ri.some.rid",
+      });
+
+      expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
+      expect(result).toBeUndefined();
+    })();
   });
 
   it("Accepts attachment uploads", async () => {
@@ -294,17 +310,19 @@ describe("actions", () => {
       InferredBatchParamType
     >();
 
-    const blob = new Blob([stubData.helloWorldAttachment.buffer]);
+    const blob = new Blob([JSON.stringify({ name: "Hello World" }, null, 2)]);
 
     const attachment = createAttachmentUpload(blob, "file1.txt");
 
     // Mimics the Web file API (https://developer.mozilla.org/en-US/docs/Web/API/File). The File constructor is only available in Node 19.2.0 and above
     const fileAttachment = Object.assign(blob, { name: "file1.txt" });
 
+    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
     const result = await client(actionTakesAttachment).applyAction({
       attachment,
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
     const result2 = await client(actionTakesAttachment).applyAction({
       attachment: fileAttachment,
     });
@@ -682,3 +700,11 @@ describe("ActionResponse remapping", () => {
     ]);
   });
 });
+
+function wrapper<R>(fn: () => R): typeof fn {
+  return () => fn();
+}
+
+async function example() {
+  await wrapper(async () => Promise.resolve("hi"))();
+}

@@ -15,6 +15,7 @@
  */
 
 export { authHandlerMiddleware } from "./handlers/authHandlerMiddleware.js";
+export { MockOntologiesV2 } from "./handlers/MockOntologiesV2.js";
 export { handleOpenApiCall } from "./handlers/util/handleOpenApiCall.js";
 export { loadAll } from "./handlers/util/loadAll.js";
 export * from "./mock-ontology/index.js";

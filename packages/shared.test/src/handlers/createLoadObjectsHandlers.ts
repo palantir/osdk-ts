@@ -16,18 +16,15 @@
 
 /* eslint-disable @typescript-eslint/require-await */
 
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { InvalidRequest } from "../errors.js";
 import {
   subSelectProperties,
   subSelectPropertiesUrl,
 } from "../filterObjects.js";
 import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
+import { MockOntologiesV2 } from "./MockOntologiesV2.js";
 import { getPaginationParamsFromUrl } from "./util/getPaginationParams.js";
-import {
-  handleOpenApiCall,
-  OpenApiCallError,
-} from "./util/handleOpenApiCall.js";
+import { OpenApiCallError } from "./util/handleOpenApiCall.js";
 import { pageThroughResponseSearchParams } from "./util/pageThroughResponseSearchParams.js";
 
 export const createLoadObjectsHandlers: FauxFoundryHandlersFactory = (
@@ -37,9 +34,8 @@ export const createLoadObjectsHandlers: FauxFoundryHandlersFactory = (
   /**
    * Load object
    */
-  handleOpenApiCall(
-    OntologiesV2.OntologyObjectsV2.get,
-    ["ontologyApiName", "objectType", "primaryKey"],
+  MockOntologiesV2.OntologyObjectsV2.get(
+    baseUrl,
     async (
       { request, params: { ontologyApiName, objectType, primaryKey } },
     ) => {
@@ -50,15 +46,13 @@ export const createLoadObjectsHandlers: FauxFoundryHandlersFactory = (
         new URL(request.url),
       );
     },
-    baseUrl,
   ),
 
   /**
    * Load all objects
    */
-  handleOpenApiCall(
-    OntologiesV2.OntologyObjectsV2.list,
-    ["ontologyApiName", "objectType"],
+  MockOntologiesV2.OntologyObjectsV2.list(
+    baseUrl,
     async ({ request, params: { ontologyApiName, objectType } }) => {
       const loadObjects = pageThroughResponseSearchParams(
         fauxFoundry
@@ -73,20 +67,13 @@ export const createLoadObjectsHandlers: FauxFoundryHandlersFactory = (
       }
       throw new OpenApiCallError(400, InvalidRequest("Invalid Request"));
     },
-    baseUrl,
   ),
 
   /**
    * List Linked Objects
    */
-  handleOpenApiCall(
-    OntologiesV2.LinkedObjectsV2.listLinkedObjects,
-    [
-      "ontologyApiName",
-      "objectType",
-      "primaryKey",
-      "linkType",
-    ],
+  MockOntologiesV2.LinkedObjectsV2.listLinkedObjects(
+    baseUrl,
     async (
       {
         request,
@@ -108,21 +95,14 @@ export const createLoadObjectsHandlers: FauxFoundryHandlersFactory = (
       }
       throw new OpenApiCallError(400, InvalidRequest("Invalid Request"));
     },
-    baseUrl,
   ),
 
   /**
    * Get specific Linked Object
    */
-  handleOpenApiCall(
-    OntologiesV2.LinkedObjectsV2.getLinkedObject,
-    [
-      "ontologyApiName",
-      "objectType",
-      "primaryKey",
-      "linkType",
-      "targetPrimaryKey",
-    ],
+
+  MockOntologiesV2.LinkedObjectsV2.getLinkedObject(
+    baseUrl,
     async (
       {
         request,
@@ -144,6 +124,5 @@ export const createLoadObjectsHandlers: FauxFoundryHandlersFactory = (
         new URL(request.url),
       );
     },
-    baseUrl,
   ),
 ];
