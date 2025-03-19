@@ -1,5 +1,11 @@
 # @osdk/functions.unstable
 
+## 0.0.2
+
+### Patch Changes
+
+- 586be29: Fix exports from @osdk/functions.unstable package
+
 ## 0.0.1
 
 ### Patch Changes
