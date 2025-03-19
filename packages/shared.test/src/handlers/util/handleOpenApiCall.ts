@@ -22,7 +22,7 @@ import type {
 } from "msw";
 import { http as http, HttpResponse } from "msw";
 import type { BaseAPIError } from "../../BaseError.js";
-import { authHandlerMiddleware } from "../commonHandlers.js";
+import { authHandlerMiddleware } from "../authHandlerMiddleware.js";
 
 export class OpenApiCallError extends Error {
   constructor(
@@ -86,7 +86,7 @@ export function handleOpenApiCall<
       >
     >[0],
   ) => ExtractResponse<X> | Promise<ExtractResponse<X>>,
-  baseUrl: string = "https://stack.palantir.com/",
+  baseUrl: string,
 ): HttpHandler {
   let captured: {
     method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";

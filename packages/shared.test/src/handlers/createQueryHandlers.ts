@@ -15,36 +15,20 @@
  */
 
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
-import type { RequestHandler } from "msw";
-import { fauxFoundry } from "../stubs/ontologies/legacyFullOntology.js";
+import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
 import { handleOpenApiCall } from "./util/handleOpenApiCall.js";
-import { requireParams } from "./util/requireParam.js";
 
-export const queryHandlers: Array<RequestHandler> = [
-  /**
-   * List Queries
-   */
-  handleOpenApiCall(
-    OntologiesV2.QueryTypes.list,
-    ["ontologyApiName"],
-    async (req) => {
-      return {
-        data: fauxFoundry.getOntology(req.params.ontologyApiName)
-          .getAllQueryTypes(),
-      };
-    },
-  ),
-
+export const createQueryHandlers: FauxFoundryHandlersFactory = (
+  baseUrl,
+  fauxFoundry,
+) => [
   /**
    * Execute Queries
    */
   handleOpenApiCall(
     OntologiesV2.Queries.execute,
     ["ontologyApiName", "queryApiName"],
-    async ({ request, params }) => {
-      requireParams(params, ["ontologyApiName", "queryApiName"]);
-      const { ontologyApiName, queryApiName } = params;
-
+    async ({ request, params: { ontologyApiName, queryApiName } }) => {
       const queryImpl = fauxFoundry
         .getOntology(ontologyApiName)
         .getQueryImpl(queryApiName);
@@ -54,5 +38,6 @@ export const queryHandlers: Array<RequestHandler> = [
         fauxFoundry.getDataStore(ontologyApiName),
       );
     },
+    baseUrl,
   ),
 ];

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { apiServer, handlers } from "@osdk/shared.test";
+import { apiServer, authHandlerMiddleware, stubData } from "@osdk/shared.test";
+import { http, HttpResponse } from "msw";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { OntologyMetadataResolver } from "./ontologyMetadataResolver.js";
 
@@ -101,10 +102,39 @@ describe("Load Ontologies Metadata", () => {
       "myAccessToken",
       "https://stack.palantir.com",
     );
-    apiServer.use(...handlers.unsupportedMetadataHandler);
+    const ontologyRid =
+      "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361";
+    apiServer.use(
+      /**
+       * List ActionTypes
+       */
+      http.get(
+        "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/actionTypes",
+        authHandlerMiddleware(async (req) => {
+          return HttpResponse.json({
+            data: [stubData.ActionTypeWithUnsupportedTypes],
+          });
+        }),
+      ),
+      http.get(
+        "https://stack.palantir.com/api/v1/ontologies/:ontologyRid/objectTypes",
+        authHandlerMiddleware(async ({ params }) => {
+          if (params.ontologyRid !== ontologyRid) {
+            return HttpResponse.json(
+              { message: "Ontology not found" },
+              { status: 404 },
+            );
+          }
+
+          return HttpResponse.json({ error: "Internal Service Error" }, {
+            status: 500,
+          });
+        }),
+      ),
+    );
     const ontologyDefinitions = await ontologyMetadataResolver
       .getWireOntologyDefinition(
-        "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+        ontologyRid,
         {
           objectTypesApiNamesToLoad: undefined,
           actionTypesApiNamesToLoad: ["unsupportedAction"],

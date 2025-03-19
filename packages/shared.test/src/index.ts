@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export * as handlers from "./handlers/index.js";
+export { authHandlerMiddleware } from "./handlers/authHandlerMiddleware.js";
 export { handleOpenApiCall } from "./handlers/util/handleOpenApiCall.js";
 export { loadAll } from "./handlers/util/loadAll.js";
 export * from "./mock-ontology/index.js";

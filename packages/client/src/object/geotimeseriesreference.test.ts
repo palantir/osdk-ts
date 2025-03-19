@@ -59,12 +59,13 @@ describe("Timeseries", () => {
     );
 
     for (const [pk, data] of Object.entries(locationGeotimeData)) {
-      stubData.fauxFoundry.getDataStore($ontologyRid).registerTimeSeriesData(
-        "Employee",
-        pk,
-        "employeeLocation",
-        data,
-      );
+      stubData.legacyFauxFoundry.getDataStore($ontologyRid)
+        .registerTimeSeriesData(
+          "Employee",
+          pk,
+          "employeeLocation",
+          data,
+        );
     }
 
     vi.useFakeTimers();

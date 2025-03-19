@@ -42,14 +42,15 @@ import { defaultOntologyMetadata } from "./defaultOntologyMetadata.js";
 //
 // Setup the faux foundry
 //
-export const fauxFoundry: FauxFoundry = new FauxFoundry();
+export const legacyFauxFoundry: FauxFoundry = new FauxFoundry();
 
 //
 // Setup the ontology
 //
-export const legacyFullOntology: FauxOntology = fauxFoundry.createOntology(
-  defaultOntologyMetadata,
-);
+export const legacyFullOntology: FauxOntology = legacyFauxFoundry
+  .createOntology(
+    defaultOntologyMetadata,
+  );
 
 for (const xx of Object.values(objectTypesWithLinkTypes)) {
   legacyFullOntology.registerObjectType(xx);
@@ -68,7 +69,7 @@ legacyFullOntology.registerSharedPropertyType(fooSpt);
 //
 // Setup the data store
 //
-export const legacyFauxDataStore: FauxDataStore = fauxFoundry.getDataStore(
+const legacyFauxDataStore: FauxDataStore = legacyFauxFoundry.getDataStore(
   defaultOntologyMetadata.rid,
 );
 legacyFauxDataStore.registerObject(employee_John_50030);
@@ -117,4 +118,4 @@ invariant(
 //
 
 // used in attachment.test.ts in @osdk/client
-fauxFoundry.attachments.registerAttachment(helloWorldAttachment);
+legacyFauxFoundry.attachments.registerAttachment(helloWorldAttachment);

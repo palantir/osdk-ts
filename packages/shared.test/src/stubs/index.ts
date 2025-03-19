@@ -23,6 +23,6 @@ export * from "./objects.js";
 export * from "./objectTypesWithLinkTypes.js";
 export * from "./objectTypeV2.js";
 export * from "./ontologies.js";
-export { fauxFoundry } from "./ontologies/legacyFullOntology.js";
+export { legacyFauxFoundry } from "./ontologies/legacyFullOntology.js";
 export * from "./queries.js";
 export * from "./queryTypes.js";

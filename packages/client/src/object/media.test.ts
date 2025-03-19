@@ -34,19 +34,17 @@ describe("media", () => {
       async () => "myAccessToken",
     );
 
-    stubData.fauxFoundry
+    stubData.legacyFauxFoundry
       .getDataStore($ontologyRid)
       .registerMedia(
         objectTypeWithAllPropertyTypes.apiName,
         "mediaReference",
-        {
-          content: new TextEncoder().encode(
-            JSON.stringify({ content: "Hello World" }),
-          ),
-          mediaType: "application/json",
-          mediaItemRid: stubData.objectWithAllPropertyTypes1.mediaReference,
-          path: "file1.txt",
-        },
+        new TextEncoder().encode(
+          JSON.stringify({ content: "Hello World" }),
+        ),
+        "application/json",
+        "file1.txt",
+        stubData.objectWithAllPropertyTypes1.mediaReference,
       );
   });
 

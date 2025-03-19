@@ -21,7 +21,7 @@ import type {
 import type {
   PagedBodyResponse,
   PagedBodyResponseWithTotal,
-} from "./handlers/endpointUtils.js";
+} from "./handlers/util/pageThroughResponseSearchParams.js";
 
 export function subSelectPropertiesUrl<
   T extends OntologyObjectV2 | OntologyObject,

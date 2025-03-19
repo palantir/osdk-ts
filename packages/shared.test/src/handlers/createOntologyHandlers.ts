@@ -21,53 +21,14 @@ import type { RequestHandler } from "msw";
 import { http as rest, HttpResponse } from "msw";
 import { defaultOntologyForConjure } from "../stubs/ontologies.js";
 import { defaultOntologyMetadata } from "../stubs/ontologies/defaultOntologyMetadata.js";
-import { fauxFoundry } from "../stubs/ontologies/legacyFullOntology.js";
-import { authHandlerMiddleware } from "./commonHandlers.js";
+import { authHandlerMiddleware } from "./authHandlerMiddleware.js";
+import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
 import { handleOpenApiCall } from "./util/handleOpenApiCall.js";
 
-type ConjureObjectTypeInfo = {
-  displayMetadata: {
-    "description": string;
-    "displayName": string;
-    "groupDisplayName": null;
-    "icon": {
-      "type": "blueprint";
-      "blueprint": {
-        "color": "#00B3A4";
-        "locator": "person";
-      };
-    };
-    "pluralDisplayName": string;
-    "visibility": "PROMINENT";
-  };
-  id: string;
-  primaryKeys: string[];
-  propertyTypes: Record<string, unknown>;
-  rid: string;
-  titlePropertyTypeRid: string;
-  traits: {
-    eventMetadata: null;
-    actionLogMetadata: null;
-    timeSeriesMetadata: null;
-    sensorTrait: null;
-    workflowObjectTypeTraits: {};
-  };
-  apiName: string;
-  status: {
-    "type": "active";
-    "active": {};
-  };
-  redacted: null;
-  implementsInterfaces: string[]; // rids
-  implementsInterfaces2: {
-    interfaceTypeRid: string;
-    interfaceTypeApiName: string;
-    links: {};
-  }[];
-  typeGroups: [];
-};
-
-const getOntologyEndpoints = (base: string | undefined) => [
+export const createOntologyHandlers: FauxFoundryHandlersFactory = (
+  baseUrl,
+  fauxFoundry,
+) => [
   /**
    * Load ObjectSet Objects
    */
@@ -79,7 +40,7 @@ const getOntologyEndpoints = (base: string | undefined) => [
         .getOntology(req.params.ontologyApiName)
         .getOntologyFullMetadata();
     },
-    base,
+    baseUrl,
   ),
 
   handleOpenApiCall(
@@ -91,7 +52,7 @@ const getOntologyEndpoints = (base: string | undefined) => [
         .getObjectTypeFullMetadataOrThrow(req.params.objectTypeApiName)
         .objectType;
     },
-    base,
+    baseUrl,
   ),
 
   handleOpenApiCall(
@@ -102,7 +63,23 @@ const getOntologyEndpoints = (base: string | undefined) => [
         .getOntology(req.params.ontologyApiName)
         .getObjectTypeFullMetadataOrThrow(req.params.objectTypeApiName);
     },
-    base,
+    baseUrl,
+  ),
+
+  /**
+   * List ActionTypes
+   */
+  handleOpenApiCall(
+    OntologiesV2.ActionTypesV2.list,
+    ["ontologyApiName"],
+    async ({ params }) => {
+      return {
+        data: fauxFoundry
+          .getOntology(params.ontologyApiName)
+          .getAllActionTypes(),
+      };
+    },
+    baseUrl,
   ),
 
   handleOpenApiCall(
@@ -113,7 +90,7 @@ const getOntologyEndpoints = (base: string | undefined) => [
         .getOntology(req.params.ontologyApiName)
         .getActionDef(req.params.actionTypeApiName);
     },
-    base,
+    baseUrl,
   ),
 
   handleOpenApiCall(
@@ -124,7 +101,7 @@ const getOntologyEndpoints = (base: string | undefined) => [
         .getOntology(req.params.ontologyApiName)
         .getQueryDef(req.params.queryTypeApiName);
     },
-    base,
+    baseUrl,
   ),
 
   handleOpenApiCall(
@@ -139,7 +116,7 @@ const getOntologyEndpoints = (base: string | undefined) => [
         .getOntology(params.ontology)
         .getLinkTypeSideV2(params.objectType, params.linkType);
     },
-    base,
+    baseUrl,
   ),
 
   handleOpenApiCall(
@@ -155,7 +132,7 @@ const getOntologyEndpoints = (base: string | undefined) => [
           .getObjectTypeFullMetadataOrThrow(params.objectType).linkTypes,
       };
     },
-    base,
+    baseUrl,
   ),
 
   handleOpenApiCall(
@@ -168,7 +145,7 @@ const getOntologyEndpoints = (base: string | undefined) => [
           .getAllInterfaceTypes(),
       };
     },
-    base,
+    baseUrl,
   ),
 
   handleOpenApiCall(
@@ -179,17 +156,74 @@ const getOntologyEndpoints = (base: string | undefined) => [
         .getOntology(params.ontologyApiName)
         .getInterfaceType(params.interfaceType);
     },
-    base,
+    baseUrl,
+  ),
+
+  /**
+   * List ontologies
+   */
+  handleOpenApiCall(
+    OntologiesV2.OntologiesV2.list,
+    [],
+    async () => {
+      return {
+        data: fauxFoundry
+          .getEveryOntology()
+          .map(x => x.getOntologyFullMetadata().ontology),
+      };
+    },
+    baseUrl,
+  ),
+
+  /**
+   * Get specified Ontology
+   */
+  handleOpenApiCall(
+    OntologiesV2.OntologiesV2.get,
+    ["ontologyRid"],
+    async req => {
+      return fauxFoundry
+        .getOntology(req.params.ontologyRid)
+        .getOntologyFullMetadata()
+        .ontology;
+    },
+    baseUrl,
+  ),
+
+  /**
+   * List objectTypes V2
+   */
+  handleOpenApiCall(
+    OntologiesV2.ObjectTypesV2.list,
+    ["ontologyApiName"],
+    async req => {
+      return {
+        data: fauxFoundry
+          .getOntology(req.params.ontologyApiName)
+          .getAllObjectTypes()
+          .map(x => x.objectType),
+      };
+    },
+    baseUrl,
+  ),
+
+  /**
+   * List Queries
+   */
+  handleOpenApiCall(
+    OntologiesV2.QueryTypes.list,
+    ["ontologyApiName"],
+    async (req) => {
+      return {
+        data: fauxFoundry.getOntology(req.params.ontologyApiName)
+          .getAllQueryTypes(),
+      };
+    },
+    baseUrl,
   ),
 ];
 
-export const ontologyMetadataEndpoint: Array<RequestHandler> = [
-  ...getOntologyEndpoints(undefined),
-  ...getOntologyEndpoints(
-    "https://stack.palantirCustom.com/foo/first/someStuff/",
-  ),
-
-  // FIXME: does this need to live?
+export const conjureEndpoint: Array<RequestHandler> = [
   rest.post(
     `https://stack.palantir.com/ontology-metadata/api/ontology/ontology/ontologies/load/all`,
     authHandlerMiddleware(

@@ -17,32 +17,16 @@
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { RequestHandler } from "msw";
 import { ApplyActionFailedError } from "../errors.js";
-import { fauxFoundry } from "../stubs/ontologies/legacyFullOntology.js";
+import type { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
 import {
   handleOpenApiCall,
   OpenApiCallError,
 } from "./util/handleOpenApiCall.js";
 
-export const actionHandlers: Array<RequestHandler> = [
-  undefined,
-  "https://stack.palantirCustom.com/foo/first/someStuff/",
-].flatMap(baseUrl => [
-  /**
-   * List ActionTypes
-   */
-  handleOpenApiCall(
-    OntologiesV2.ActionTypesV2.list,
-    ["ontologyApiName"],
-    async ({ params }) => {
-      return {
-        data: fauxFoundry
-          .getOntology(params.ontologyApiName)
-          .getAllActionTypes(),
-      };
-    },
-    baseUrl,
-  ),
-
+export const createActionHandlers = (
+  baseUrl: string,
+  fauxFoundry: FauxFoundry,
+): Array<RequestHandler> => [
   /**
    * Apply an Action
    */
@@ -79,4 +63,4 @@ export const actionHandlers: Array<RequestHandler> = [
     },
     baseUrl,
   ),
-]);
+];

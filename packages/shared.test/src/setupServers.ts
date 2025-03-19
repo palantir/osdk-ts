@@ -16,22 +16,16 @@
 
 import type { SetupServer } from "msw/node";
 import { setupServer } from "msw/node";
-import {
-  actionHandlers,
-  loadObjectsEndpoints,
-  multipassServerHandlers,
-  objectSetHandlers,
-  ontologyMetadataEndpoint,
-  queryHandlers,
-} from "./handlers/index.js";
-import { interfaceObjectSetHandlers } from "./handlers/loadInterfaceObjectSetEndpoints.js";
+import { createFauxFoundryHandlers } from "./handlers/createFauxFoundryHandlers.js";
+import { legacyFauxFoundry } from "./stubs/index.js";
 
 export const apiServer: SetupServer = setupServer(
-  ...loadObjectsEndpoints,
-  ...multipassServerHandlers,
-  ...objectSetHandlers,
-  ...actionHandlers,
-  ...queryHandlers,
-  ...ontologyMetadataEndpoint,
-  ...interfaceObjectSetHandlers,
+  ...createFauxFoundryHandlers(
+    "https://stack.palantir.com/",
+    legacyFauxFoundry,
+  ),
+  ...createFauxFoundryHandlers(
+    "https://stack.palantirCustom.com/foo/first/someStuff/",
+    legacyFauxFoundry,
+  ),
 );

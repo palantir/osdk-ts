@@ -46,19 +46,21 @@ describe("Timeseries", () => {
       async () => "myAccessToken",
     );
 
-    stubData.fauxFoundry.getDataStore($ontologyRid).registerTimeSeriesData(
-      "Employee",
-      "50030",
-      "employeeStatus",
-      statusTimeseriesData,
-    );
+    stubData.legacyFauxFoundry.getDataStore($ontologyRid)
+      .registerTimeSeriesData(
+        "Employee",
+        "50030",
+        "employeeStatus",
+        statusTimeseriesData,
+      );
 
-    stubData.fauxFoundry.getDataStore($ontologyRid).registerTimeSeriesData(
-      "Employee",
-      "50030",
-      "employeeSensor",
-      sensorTimeseriesData,
-    );
+    stubData.legacyFauxFoundry.getDataStore($ontologyRid)
+      .registerTimeSeriesData(
+        "Employee",
+        "50030",
+        "employeeSensor",
+        sensorTimeseriesData,
+      );
   });
 
   afterAll(() => {

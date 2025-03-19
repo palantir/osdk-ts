@@ -18,17 +18,17 @@ import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import stableStringify from "json-stable-stringify";
 import type { RequestHandler } from "msw";
 import { InvalidRequest } from "../errors.js";
+import type { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
 import { aggregationRequestHandlers } from "../stubs/aggregationRequests.js";
-import { fauxFoundry } from "../stubs/ontologies/legacyFullOntology.js";
 import {
   handleOpenApiCall,
   OpenApiCallError,
 } from "./util/handleOpenApiCall.js";
 
-export const objectSetHandlers: Array<RequestHandler> = [
-  undefined,
-  "https://stack.palantirCustom.com/foo/first/someStuff/",
-].flatMap(baseUrl => [
+export const createObjectSetHandlers = (
+  baseUrl: string,
+  fauxFoundry: FauxFoundry,
+): Array<RequestHandler> => [
   /**
    * Load ObjectSet Objects
    */
@@ -64,4 +64,27 @@ export const objectSetHandlers: Array<RequestHandler> = [
     },
     baseUrl,
   ),
-]);
+
+  /**
+   * Load interface objectset Objects
+   */
+  handleOpenApiCall(
+    OntologiesV2.OntologyObjectSets.loadMultipleObjectTypes,
+    ["ontologyApiName"],
+    async ({ params, request }) => {
+      const pagedResponse = fauxFoundry
+        .getDataStore(params.ontologyApiName)
+        .getObjectsFromObjectSet(await request.json());
+
+      const objectApiNames = new Set(pagedResponse.data.map(o => o.__apiName));
+
+      return {
+        interfaceToObjectTypeMappings: fauxFoundry
+          .getOntology(params.ontologyApiName)
+          .getInterfaceToObjectTypeMappings(objectApiNames),
+        ...pagedResponse,
+      };
+    },
+    baseUrl,
+  ),
+];
