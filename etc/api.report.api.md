@@ -235,7 +235,7 @@ export interface AsyncIterArgs<
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
     	// (undocumented)
-    $includeAllBaseObjectProperties?: T;
+    $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
 }
 
 // @public (undocumented)
