@@ -72,7 +72,7 @@ export interface AsyncIterArgs<
   T extends boolean = false,
 > extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
   $__UNSTABLE_useOldInterfaceApis?: boolean;
-  $includeAllBaseObjectProperties?: T;
+  $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
 }
 
 export type Augment<
