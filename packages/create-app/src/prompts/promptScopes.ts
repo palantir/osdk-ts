@@ -21,26 +21,27 @@ const scopeNameRegex = /^[a-zA-Z-_:]+$/;
 export async function promptScopes(
   { scopes }: { scopes?: string[] },
 ): Promise<string[] | undefined> {
-  if (scopes == null) {
-    return undefined;
-  }
-
   while (true) {
-    const invalidScopes = scopes.filter(scope => !scopeNameRegex.test(scope));
-    const allValidScopes = invalidScopes.length === 0;
-    if (allValidScopes) {
-      break;
-    }
+    if (scopes != null) {
+      const invalidScopes = scopes.filter(scope => !scopeNameRegex.test(scope));
+      const allValidScopes = invalidScopes.length === 0;
+      if (allValidScopes) {
+        break;
+      }
 
-    const joinedInvalidScopes = invalidScopes.join(", ");
-    consola.fail(
-      `Scopes [ ${joinedInvalidScopes} ] are invalid. Scope names can only contain letters, hyphens, underscores, and colons`,
+      const joinedInvalidScopes = invalidScopes.join(", ");
+      consola.fail(
+        `Scopes [ ${joinedInvalidScopes} ] are invalid. Scope names can only contain letters, hyphens, underscores, and colons`,
+      );
+    }
+    const stringScopes = await consola.prompt(
+      "Enter the scopes to request during OAuth:",
+      {
+        type: "text",
+        placeholder: "api:read-data api:write-data",
+        default: "api:read-data api:write-data",
+      },
     );
-    const stringScopes = await consola.prompt("Scopes:", {
-      type: "text",
-      placeholder: "api:read-data api:write-data",
-      default: "api:read-data api:write-data",
-    });
     scopes = stringScopes.split(" ");
   }
 

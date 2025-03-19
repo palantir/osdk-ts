@@ -20,7 +20,7 @@ export default function createClientAndAuth() {
   {{#if scopes}}
   const scopes = [
     {{#each scopes}}
-      "{{this}}",
+    "{{this}}",
     {{/each}}
   ];
   {{/if}}
@@ -34,10 +34,7 @@ export default function createClientAndAuth() {
     url,
     redirectUrl,
     {{#if scopes}}
-    true,
-    undefined,
-    window.location.toString(),
-    scopes,
+    { scopes },
     {{/if}}
   );
 
