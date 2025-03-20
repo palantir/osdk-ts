@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/api";
-import type { Status } from "./ObservableClient.js";
+import type { InterfaceHolder } from "../object/convertWireToOsdkObjects/InterfaceHolder.js";
+import type { ObjectHolder } from "../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { ObserveObjectsArgs } from "./ObservableClient.js";
 
-export interface ListPayload {
-  resolvedList: Array<Osdk.Instance<any, never, string>>;
-  isOptimistic: boolean;
-  lastUpdated: number;
-  fetchMore: () => Promise<unknown>;
-  hasMore: boolean;
-  status: Status;
+export interface ListPayload
+  extends Omit<ObserveObjectsArgs<any>, "resolvedList">
+{
+  resolvedList: Array<ObjectHolder | InterfaceHolder>;
 }

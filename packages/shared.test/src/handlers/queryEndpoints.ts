@@ -16,15 +16,9 @@
 
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { RequestHandler } from "msw";
-import { InvalidRequest, QueryNotFoundError } from "../errors.js";
-import { defaultOntology } from "../stubs/ontologies.js";
-import { queryRequestHandlers } from "../stubs/queries.js";
-import { queryTypes } from "../stubs/queryTypes.js";
-import { getOntology } from "./ontologyMetadataEndpoints.js";
-import {
-  handleOpenApiCall,
-  OpenApiCallError,
-} from "./util/handleOpenApiCall.js";
+import { fauxFoundry } from "../stubs/ontologies/legacyFullOntology.js";
+import { handleOpenApiCall } from "./util/handleOpenApiCall.js";
+import { requireParams } from "./util/requireParam.js";
 
 export const queryHandlers: Array<RequestHandler> = [
   /**
@@ -34,11 +28,9 @@ export const queryHandlers: Array<RequestHandler> = [
     OntologiesV2.QueryTypes.list,
     ["ontologyApiName"],
     async (req) => {
-      // will throw if bad name
-      getOntology(req.params.ontologyApiName as string);
-
       return {
-        data: queryTypes,
+        data: fauxFoundry.getOntology(req.params.ontologyApiName)
+          .getAllQueryTypes(),
       };
     },
   ),
@@ -49,32 +41,18 @@ export const queryHandlers: Array<RequestHandler> = [
   handleOpenApiCall(
     OntologiesV2.Queries.execute,
     ["ontologyApiName", "queryApiName"],
-    async (req) => {
-      const body = await req.request.text();
-      const parsedBody = JSON.parse(body);
-      const queryApiName = req.params.queryApiName;
+    async ({ request, params }) => {
+      requireParams(params, ["ontologyApiName", "queryApiName"]);
+      const { ontologyApiName, queryApiName } = params;
 
-      if (typeof queryApiName !== "string") {
-        throw new OpenApiCallError(
-          400,
-          InvalidRequest("Invalid parameters queryApiName"),
-        );
-      }
+      const queryImpl = fauxFoundry
+        .getOntology(ontologyApiName)
+        .getQueryImpl(queryApiName);
 
-      const queryResponses = queryRequestHandlers[queryApiName];
-      if (!queryResponses) {
-        throw new OpenApiCallError(404, QueryNotFoundError(queryApiName));
-      }
-
-      const queryResponse = queryResponses[JSON.stringify(parsedBody)];
-      if (
-        req.params.ontologyApiName === defaultOntology.apiName
-        || req.params.ontologyApiName === defaultOntology.rid
-          && queryResponse
-      ) {
-        return queryResponse;
-      }
-      throw new OpenApiCallError(400, InvalidRequest("Invalid Query Request"));
+      return queryImpl(
+        await request.json(),
+        fauxFoundry.getDataStore(ontologyApiName),
+      );
     },
   ),
 ];

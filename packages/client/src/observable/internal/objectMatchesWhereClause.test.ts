@@ -17,6 +17,7 @@
 import type { Osdk, WhereClause } from "@osdk/api";
 import type { objectTypeWithAllPropertyTypes } from "@osdk/client.test.ontology";
 import { describe, expect, expectTypeOf, it } from "vitest";
+import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { objectSortaMatchesWhereClause } from "./objectMatchesWhereClause.js";
 
 const fauxObject: Osdk.Instance<objectTypeWithAllPropertyTypes> = {
@@ -155,7 +156,9 @@ describe(objectSortaMatchesWhereClause, () => {
   )(
     "%s | %s ==> { strict: %s, loose: %s }",
     (instanceName, whereClauseName, strictExpected, nonStrictExpected) => {
-      const instance = objects[instanceName];
+      const instance = objects[instanceName] as unknown as ObjectHolder<
+        typeof objects[typeof instanceName]
+      >;
       const whereClause = whereClauses[whereClauseName] as WhereClause<
         objectTypeWithAllPropertyTypes
       >;

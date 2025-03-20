@@ -16,12 +16,26 @@
 
 import type {
   ApplyActionRequestV2,
-  BatchApplyActionRequestV2,
-  BatchApplyActionResponseV2,
   SyncApplyActionResponseV2,
 } from "@osdk/foundry.ontologies";
-import stableStringify from "json-stable-stringify";
-import { mediaReference } from "./media.js";
+import invariant from "tiny-invariant";
+import type { FauxOntology } from "../FauxFoundry/FauxOntology.js";
+import { createLazyDoNothingActionImpl } from "../handlers/util/createLazyDoNothingActionImpl.js";
+import { moveOfficeImpl } from "./actions/moveOffice.js";
+import {
+  ActionCreatesInterface,
+  ActionTakesAnotherInterface,
+  ActionTakesAttachment,
+  ActionTakesInterface,
+  ActionTakesMedia,
+  ActionTakesObjectSet,
+  ActionTakesStruct,
+  CreateOffice,
+  CreateOfficeAndEmployee,
+  MoveOffice,
+  PromoteEmployee,
+  PromoteEmployeeObject,
+} from "./actionsTypes.js";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
 
 export const actionRequestCreateOffice: ApplyActionRequestV2 = {
@@ -44,88 +58,6 @@ export const actionRequestCreateOfficeNoReturnEdits: ApplyActionRequestV2 = {
   },
   options: {
     mode: "VALIDATE_AND_EXECUTE",
-    returnEdits: "NONE",
-  },
-};
-
-export const actionRequestMoveOffice: ApplyActionRequestV2 = {
-  parameters: {
-    officeId: "NYC",
-    newAddress: "123 Main Street",
-    newCapacity: 100,
-  },
-  options: {},
-};
-
-const actionRequestMoveOfficeBig: ApplyActionRequestV2 = {
-  parameters: {
-    officeId: "SEA",
-    newAddress: "456 Main Street",
-    newCapacity: 1000,
-  },
-  options: {
-    mode: "VALIDATE_AND_EXECUTE",
-    returnEdits: "ALL_V2_WITH_DELETIONS",
-  },
-};
-
-const actionRequestMoveOfficeGetResults: ApplyActionRequestV2 = {
-  parameters: {
-    officeId: "NYC",
-    newAddress: "123 Main Street",
-    newCapacity: 100,
-  },
-  options: {
-    mode: "VALIDATE_AND_EXECUTE",
-    returnEdits: "ALL_V2_WITH_DELETIONS",
-  },
-};
-
-const actionRequestMoveOffice2: ApplyActionRequestV2 = {
-  parameters: {
-    officeId: "SEA",
-  },
-  options: {},
-};
-
-const actionRequestMoveOffice3: ApplyActionRequestV2 = {
-  parameters: {
-    officeId: "LAX",
-  },
-  options: {},
-};
-
-const actionRequestMoveOfficeValidateOnly: ApplyActionRequestV2 = {
-  parameters: {
-    officeId: "SEA",
-    newAddress: "456 Pike Place",
-    newCapacity: 40,
-  },
-  options: {
-    mode: "VALIDATE_ONLY",
-  },
-};
-
-const actionRequestMoveOfficeInvalid: ApplyActionRequestV2 = {
-  parameters: {
-    officeId: "SEA",
-    newAddress: "456 Pike Place",
-    newCapacity: 40,
-  },
-  options: {
-    mode: "VALIDATE_AND_EXECUTE",
-    returnEdits: "ALL_V2_WITH_DELETIONS",
-  },
-};
-
-const actionRequestMoveOfficeValidateOnlyWithoutEdits: ApplyActionRequestV2 = {
-  parameters: {
-    officeId: "SEA",
-    newAddress: "456 Pike Place",
-    newCapacity: 40,
-  },
-  options: {
-    mode: "VALIDATE_ONLY",
     returnEdits: "NONE",
   },
 };
@@ -164,21 +96,31 @@ export const actionRequestWithAttachmentUpload: ApplyActionRequestV2 = {
 export const actionRequestMediaUpload: ApplyActionRequestV2 = {
   options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
   parameters: {
-    media_reference: mediaReference,
+    media_reference: {
+      mimeType: "application/json",
+      reference: {
+        type: "mediaSetViewItem",
+        mediaSetViewItem: {
+          mediaItemRid: "media-item-rid",
+          mediaSetRid: "media-set-rid",
+          mediaSetViewRid: "media-set-view-rid",
+        },
+      },
+    },
   },
 };
 
 export const actionRequestWithInterface: ApplyActionRequestV2 = {
   options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
   parameters: {
-    deletedInterface: { objectTypeApiName: "Employee", primaryKeyValue: 1 },
+    deletedInterface: { objectTypeApiName: "Employee", primaryKeyValue: 50030 },
   },
 };
 
 export const actionRequestWithObjectTypeReference: ApplyActionRequestV2 = {
   options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
   parameters: {
-    createdInterface: "UnderlyingObject",
+    createdInterface: "Employee",
   },
 };
 
@@ -188,58 +130,6 @@ export const actionRequestWithStruct: ApplyActionRequestV2 = {
     name: "testMan",
     address: { city: "NYC", state: "NY", zipcode: 12345 },
   },
-};
-
-export const actionRequestMoveOfficeBatch: BatchApplyActionRequestV2 = {
-  requests: [{
-    parameters: {
-      officeId: "SEA",
-      newAddress: "456 Good Place",
-      newCapacity: 40,
-    },
-  }, {
-    parameters: {
-      officeId: "NYC",
-      newAddress: "123 Main Street",
-      newCapacity: 80,
-    },
-  }],
-  options: {},
-};
-
-export const actionRequestMoveOfficeBatchWithEdits: BatchApplyActionRequestV2 =
-  {
-    requests: [{
-      parameters: {
-        officeId: "SEA",
-        newAddress: "456 Good Place",
-        newCapacity: 40,
-      },
-    }, {
-      parameters: {
-        officeId: "NYC",
-        newAddress: "123 Main Street",
-        newCapacity: 80,
-      },
-    }],
-    options: { returnEdits: "ALL" },
-  };
-
-export const actionRequestMoveOfficeBatchInvalid: BatchApplyActionRequestV2 = {
-  requests: [{
-    parameters: {
-      officeId: "SEA",
-      newAddress: "456 Pike Place",
-      newCapacity: 40,
-    },
-  }, {
-    parameters: {
-      officeId: "NYC",
-      newAddress: "123 Main Street",
-      newCapacity: 80,
-    },
-  }],
-  options: { returnEdits: "ALL" },
 };
 
 const actionResponseCreateOfficeAndEmployee: SyncApplyActionResponseV2 = {
@@ -299,115 +189,76 @@ const actionResponse: SyncApplyActionResponseV2 = {
   },
 };
 
-const actionResponseMoveOfficeBig: SyncApplyActionResponseV2 = {
-  validation: {
-    result: "VALID",
-    submissionCriteria: [],
-    parameters: {},
-  },
-  edits: {
-    type: "largeScaleEdits",
-    editedObjectTypes: ["airplane"],
-  },
-};
+export function registerLazyActions(fauxOntology: FauxOntology): void {
+  // These first actions don't didn't have implementations in the legacy ontology
+  fauxOntology.registerActionType(PromoteEmployee);
+  fauxOntology.registerActionType(ActionTakesAnotherInterface);
+  fauxOntology.registerActionType(PromoteEmployeeObject);
 
-const actionResponseGetResults: SyncApplyActionResponseV2 = {
-  validation: {
-    result: "VALID",
-    submissionCriteria: [],
-    parameters: {},
-  },
-  edits: {
-    type: "edits",
-    edits: [{
-      type: "modifyObject",
-      primaryKey: "NYC",
-      objectType: officeObjectType.apiName,
-    }],
-    addedObjectCount: 2,
-    addedLinksCount: 0,
-    modifiedObjectsCount: 0,
-    deletedLinksCount: 0,
-    deletedObjectsCount: 0,
-  },
-};
+  // junk implementations!
 
-const actionResponseInvalid: SyncApplyActionResponseV2 = {
-  validation: {
-    result: "INVALID",
-    submissionCriteria: [],
-    parameters: {},
-  },
-};
+  fauxOntology.registerActionType(
+    CreateOffice,
+    createLazyDoNothingActionImpl([
+      [actionRequestCreateOffice, actionResponseCreateOffice],
+      [actionRequestCreateOfficeNoReturnEdits, actionResponse],
+    ]),
+  );
 
-const actionResponseMoveOfficeBatch: BatchApplyActionResponseV2 = {
-  edits: {
-    type: "edits",
-    edits: [{
-      type: "modifyObject",
-      primaryKey: "SEA",
-      objectType: officeObjectType.apiName,
-    }, {
-      type: "modifyObject",
-      primaryKey: "NYC",
-      objectType: officeObjectType.apiName,
-    }],
-    addedObjectCount: 0,
-    addedLinksCount: 0,
-    modifiedObjectsCount: 2,
-    deletedLinksCount: 0,
-    deletedObjectsCount: 0,
-  },
-};
+  fauxOntology.registerActionType(MoveOffice, moveOfficeImpl);
 
-export const actionResponseMap: {
-  [actionApiName: string]: {
-    [actionBody: string]: any;
-  };
-} = {
-  promoteEmployee: {},
-  createOffice: {
-    [stableStringify(actionRequestCreateOffice)]: actionResponseCreateOffice,
-    [stableStringify(actionRequestCreateOfficeNoReturnEdits)]: actionResponse,
-  },
-  moveOffice: {
-    [stableStringify(actionRequestMoveOffice)]: actionResponse,
-    [stableStringify(actionRequestMoveOfficeBig)]: actionResponseMoveOfficeBig,
-    [stableStringify(actionRequestMoveOfficeGetResults)]:
-      actionResponseGetResults,
-    [stableStringify(actionRequestMoveOfficeValidateOnly)]:
-      actionResponseInvalid,
-    [stableStringify(actionRequestMoveOfficeValidateOnlyWithoutEdits)]:
-      actionResponseInvalid,
-    [stableStringify(actionRequestMoveOfficeInvalid)]: actionResponseInvalid,
-    [stableStringify(actionRequestMoveOffice2)]: undefined,
-    [stableStringify(actionRequestMoveOffice3)]: undefined,
-    [stableStringify(actionRequestMoveOfficeBatch)]: {},
-    [stableStringify(actionRequestMoveOfficeBatchWithEdits)]:
-      actionResponseMoveOfficeBatch,
-    [stableStringify(actionRequestMoveOfficeBatchInvalid)]: undefined,
-  },
-  createOfficeAndEmployee: {
-    [stableStringify(actionRequestCreateOfficeAndEmployee)]:
-      actionResponseCreateOfficeAndEmployee,
-  },
-  actionTakesObjectSet: {
-    [stableStringify(actionRequestWithObjectSet)]: actionResponse,
-  },
-  actionTakesAttachment: {
-    [stableStringify(actionRequestWithAttachment)]: actionResponse,
-    [stableStringify(actionRequestWithAttachmentUpload)]: actionResponse,
-  },
-  actionTakesMedia: {
-    [stableStringify(actionRequestMediaUpload)]: actionResponse,
-  },
-  deleteFooInterface: {
-    [stableStringify(actionRequestWithInterface)]: actionResponse,
-  },
-  createStructPerson: {
-    [stableStringify(actionRequestWithStruct)]: actionResponse,
-  },
-  createFooInterface: {
-    [stableStringify(actionRequestWithObjectTypeReference)]: actionResponse,
-  },
-};
+  fauxOntology.registerActionType(
+    CreateOfficeAndEmployee,
+    createLazyDoNothingActionImpl([
+      [
+        actionRequestCreateOfficeAndEmployee,
+        actionResponseCreateOfficeAndEmployee,
+      ],
+    ]),
+  );
+
+  fauxOntology.registerActionType(
+    ActionTakesObjectSet,
+    createLazyDoNothingActionImpl([
+      [actionRequestWithObjectSet, actionResponse],
+    ]),
+  );
+
+  fauxOntology.registerActionType(
+    ActionTakesAttachment,
+    (_batch, payload, { attachments }) => {
+      const attachment = attachments.getAttachmentMetadata(
+        payload.parameters.attachment,
+      );
+      invariant(attachment, "expected attachment to be real");
+    },
+  );
+
+  fauxOntology.registerActionType(
+    ActionTakesMedia,
+    createLazyDoNothingActionImpl([
+      [actionRequestMediaUpload, actionResponse],
+    ]),
+  );
+
+  fauxOntology.registerActionType(
+    ActionTakesInterface,
+    createLazyDoNothingActionImpl([
+      [actionRequestWithInterface, actionResponse],
+    ]),
+  );
+
+  fauxOntology.registerActionType(
+    ActionTakesStruct,
+    createLazyDoNothingActionImpl([
+      [actionRequestWithStruct, actionResponse],
+    ]),
+  );
+
+  fauxOntology.registerActionType(
+    ActionCreatesInterface,
+    createLazyDoNothingActionImpl([
+      [actionRequestWithObjectTypeReference, actionResponse],
+    ]),
+  );
+}

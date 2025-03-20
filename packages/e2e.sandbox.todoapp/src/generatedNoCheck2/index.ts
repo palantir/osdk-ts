@@ -1,6 +1,6 @@
 export { completeTodo, createTodo } from './ontology/actions.js';
 export * as $Actions from './ontology/actions.js';
-export {} from './ontology/interfaces.js';
+export { TodoLike } from './ontology/interfaces.js';
 export * as $Interfaces from './ontology/interfaces.js';
 export { Todo } from './ontology/objects.js';
 export * as $Objects from './ontology/objects.js';

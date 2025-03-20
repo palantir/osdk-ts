@@ -1,5 +1,22 @@
 # @osdkkit/react
 
+## 0.4.0-beta.4
+
+### Minor Changes
+
+- 2517750: Errors should now propagate via useOsdkObject and useOsdkObjects
+
+### Patch Changes
+
+- Updated dependencies [12843cb]
+- Updated dependencies [f82767c]
+- Updated dependencies [2517750]
+- Updated dependencies [2517750]
+- Updated dependencies [2517750]
+- Updated dependencies [2517750]
+  - @osdk/client@2.2.0-beta.9
+  - @osdk/api@2.2.0-beta.9
+
 ## 0.4.0-beta.3
 
 ### Minor Changes

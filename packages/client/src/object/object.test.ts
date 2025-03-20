@@ -261,7 +261,7 @@ describe("OsdkObject", () => {
           "fullName": "Jane Doe",
           "office": "NYC",
         },
-      ) as Osdk.Instance<
+      ) as unknown as Osdk.Instance<
         Employee,
         never,
         "class" | "employeeId" | "fullName" | "office"
@@ -274,6 +274,7 @@ describe("OsdkObject", () => {
       expect(mergedEmployee).toMatchInlineSnapshot(`
         {
           "$apiName": "Employee",
+          "$objectSpecifier": "Employee:50031",
           "$objectType": "Employee",
           "$primaryKey": 50031,
           "$title": "Jane Doe",
@@ -335,6 +336,7 @@ describe("OsdkObject", () => {
       expect(mergedEmployee).toMatchInlineSnapshot(`
         {
           "$apiName": "Employee",
+          "$objectSpecifier": "Employee:50031",
           "$objectType": "Employee",
           "$primaryKey": 50031,
           "$title": "John Doe",
@@ -381,6 +383,7 @@ describe("OsdkObject", () => {
       expect(mergedEmployee).toMatchInlineSnapshot(`
         {
           "$apiName": "Employee",
+          "$objectSpecifier": "Employee:50031",
           "$objectType": "Employee",
           "$primaryKey": 50031,
           "$title": "Brad Pitt",
@@ -486,7 +489,7 @@ describe("OsdkObject", () => {
             "employeeId": 50031,
             "fullName": "Jane Doe",
           },
-        ) as Osdk.Instance<
+        ) as unknown as Osdk.Instance<
           Employee,
           never,
           "employeeId" | "fullName"
@@ -533,7 +536,7 @@ describe("OsdkObject", () => {
             "employeeId": 50031,
             "fullName": "Jane Doe",
           },
-        ) as Osdk.Instance<
+        ) as unknown as Osdk.Instance<
           Employee,
           never,
           "employeeId" | "fullName"

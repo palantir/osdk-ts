@@ -30,9 +30,15 @@ export class OpenApiCallError extends Error {
     public json: {
       errorCode: string;
       errorName: string;
+      errorInstanceId: string;
+      parameters: Record<string, unknown>;
     },
   ) {
-    super(json.errorName ?? "Unknown error");
+    super(
+      `${json.errorCode} ${json.errorName ?? "Unknown error"} ${
+        JSON.stringify(json.parameters)
+      }`,
+    );
   }
 }
 
@@ -138,7 +144,10 @@ export function handleOpenApiCall<
           );
         } catch (e) {
           if (e instanceof OpenApiCallError) {
-            return HttpResponse.json(e.json, { status: e.status });
+            return HttpResponse.json({ ...e.json, stack: e.stack }, {
+              status: e.status,
+              statusText: e.message,
+            });
           }
           throw e;
         }

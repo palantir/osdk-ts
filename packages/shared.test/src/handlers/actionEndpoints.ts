@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-import type {
-  BatchApplyActionResponse,
-  SyncApplyActionResponseV2,
-} from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
-import stableStringify from "json-stable-stringify";
-import type { HttpResponseResolver, PathParams, RequestHandler } from "msw";
-import type { BaseAPIError } from "../BaseError.js";
-import { ApplyActionFailedError, InvalidRequest } from "../errors.js";
-import { actionResponseMap } from "../stubs/actions.js";
-import { defaultOntology } from "../stubs/ontologies.js";
-import { getOntology } from "./ontologyMetadataEndpoints.js";
-import type { ExtractBody, ExtractResponse } from "./util/handleOpenApiCall.js";
+import type { RequestHandler } from "msw";
+import { ApplyActionFailedError } from "../errors.js";
+import { fauxFoundry } from "../stubs/ontologies/legacyFullOntology.js";
 import {
   handleOpenApiCall,
   OpenApiCallError,
 } from "./util/handleOpenApiCall.js";
 
 export const actionHandlers: Array<RequestHandler> = [
+  undefined,
+  "https://stack.palantirCustom.com/foo/first/someStuff/",
+].flatMap(baseUrl => [
   /**
    * List ActionTypes
    */
@@ -40,12 +34,13 @@ export const actionHandlers: Array<RequestHandler> = [
     OntologiesV2.ActionTypesV2.list,
     ["ontologyApiName"],
     async ({ params }) => {
-      const ontology = getOntology(params.ontologyApiName);
-
       return {
-        data: Object.values(ontology.actionTypes),
+        data: fauxFoundry
+          .getOntology(params.ontologyApiName)
+          .getAllActionTypes(),
       };
     },
+    baseUrl,
   ),
 
   /**
@@ -54,17 +49,21 @@ export const actionHandlers: Array<RequestHandler> = [
   handleOpenApiCall(
     OntologiesV2.Actions.apply,
     ["ontologyApiName", "actionType"],
-    handleAction<SyncApplyActionResponseV2>,
-  ),
+    async ({ params: { ontologyApiName, actionType }, request }) => {
+      const response = fauxFoundry
+        .getDataStore(ontologyApiName)
+        .applyAction(actionType, await request.json());
 
-  /**
-   * Apply an Action with custom URL entrypoint
-   */
-  handleOpenApiCall(
-    OntologiesV2.Actions.apply,
-    ["ontologyApiName", "actionType"],
-    handleAction<SyncApplyActionResponseV2>,
-    "https://stack.palantirCustom.com/foo/first/someStuff/",
+      // this is just for the legacy code that registered `undefined` as the return
+      // value causing this code path. Once we get rid of the uses of
+      // `createLazyDoNothingActionImpl` this should be removed.
+      if (!response) {
+        throw new OpenApiCallError(400, ApplyActionFailedError);
+      }
+
+      return response;
+    },
+    baseUrl,
   ),
 
   /**
@@ -73,45 +72,11 @@ export const actionHandlers: Array<RequestHandler> = [
   handleOpenApiCall(
     OntologiesV2.Actions.applyBatch,
     ["ontologyApiName", "actionType"],
-    handleAction<
-      ExtractResponse<typeof OntologiesV2.Actions.applyBatch>
-    >,
+    async ({ params: { ontologyApiName, actionType }, request }) => {
+      return fauxFoundry
+        .getDataStore(ontologyApiName)
+        .batchApplyAction(actionType, await request.json());
+    },
+    baseUrl,
   ),
-];
-
-async function handleAction<
-  T extends BatchApplyActionResponse | SyncApplyActionResponseV2,
->(
-  req: Parameters<
-    HttpResponseResolver<
-      PathParams<string>,
-      | ExtractBody<typeof OntologiesV2.Actions.apply>
-      | ExtractBody<typeof OntologiesV2.Actions.applyBatch>,
-      T | BaseAPIError
-    >
-  >[0],
-) {
-  const parsedBody = await req.request.json();
-
-  const ontologyApiName = req.params.ontologyApiName;
-  const actionType = req.params.actionType;
-
-  if (
-    typeof ontologyApiName !== "string" || typeof actionType !== "string"
-  ) {
-    throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
-  }
-
-  const actionResponse =
-    actionResponseMap[actionType][stableStringify(parsedBody)];
-
-  if (
-    (req.params.ontologyApiName === defaultOntology.apiName
-      || req.params.ontologyApiName === defaultOntology.rid)
-    && actionResponse
-  ) {
-    return actionResponse;
-  }
-
-  throw new OpenApiCallError(400, ApplyActionFailedError);
-}
+]);

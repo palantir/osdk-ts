@@ -236,7 +236,7 @@ export class ObjectSetListenerWebsocket {
    */
   async #initiateSubscribe(sub: Subscription<any, any>) {
     if (process.env.NODE_ENV !== "production") {
-      this.#logger?.trace("#initiateSubscribe()");
+      this.#logger?.debug("#initiateSubscribe()");
     }
 
     try {
@@ -260,7 +260,7 @@ export class ObjectSetListenerWebsocket {
 
   #sendSubscribeMessage() {
     if (process.env.NODE_ENV !== "production") {
-      this.#logger?.trace("#sendSubscribeMessage()");
+      this.#logger?.debug("#sendSubscribeMessage()");
     }
     // If two calls to `.subscribe()` happen at once (or if the connection is reset),
     // we may have multiple subscriptions that don't have a subscriptionId yet,
@@ -292,7 +292,7 @@ export class ObjectSetListenerWebsocket {
     };
 
     if (process.env.NODE_ENV !== "production") {
-      this.#logger?.trace(
+      this.#logger?.debug(
         { payload: subscribe },
         "sending subscribe message",
       );
@@ -370,7 +370,7 @@ export class ObjectSetListenerWebsocket {
         // we again may have lost the race after our minimum backoff time
         if (this.#ws == null) {
           if (process.env.NODE_ENV !== "production") {
-            this.#logger?.trace("Creating websocket");
+            this.#logger?.debug("Creating websocket");
           }
           this.#ws = new WebSocket(url, [`Bearer-${token}`]);
           this.#ws.addEventListener("close", this.#onClose);
@@ -409,23 +409,27 @@ export class ObjectSetListenerWebsocket {
     this.#sendSubscribeMessage();
   };
 
-  #onMessage = async (message: WebSocket.MessageEvent) => {
+  #onMessage = async (message: WebSocket.MessageEvent): Promise<void> => {
     const data = JSON.parse(message.data.toString()) as StreamMessage;
     if (process.env.NODE_ENV !== "production") {
-      this.#logger?.trace({ payload: data }, "received message from ws");
+      this.#logger?.debug({ payload: data }, "received message from ws");
     }
     switch (data.type) {
       case "objectSetChanged":
-        return void this.#handleMessage_objectSetChanged(data);
+        await this.#handleMessage_objectSetChanged(data);
+        return;
 
       case "refreshObjectSet":
-        return void this.#handleMessage_refreshObjectSet(data);
+        this.#handleMessage_refreshObjectSet(data);
+        return;
 
       case "subscribeResponses":
-        return void this.#handleMessage_subscribeResponses(data);
+        this.#handleMessage_subscribeResponses(data);
+        return;
 
       case "subscriptionClosed": {
-        return void this.#handleMessage_subscriptionClosed(data);
+        this.#handleMessage_subscriptionClosed(data);
+        return;
       }
 
       default:
@@ -466,21 +470,21 @@ export class ObjectSetListenerWebsocket {
             o.objectType,
             sub.interfaceApiName,
           ),
-        ) as Array<Osdk.Instance<any, never, any>>;
+        );
         const singleOsdkObject = osdkObjectArray[0] ?? undefined;
         return singleOsdkObject != null
           ? {
-            object: singleOsdkObject,
+            object: singleOsdkObject as Osdk.Instance<any, never, any>,
             state: "ADDED_OR_UPDATED" as ObjectState,
           }
           : undefined;
       }),
     );
 
-    for (const osdkObject of osdkObjectsWithReferenceUpdates) {
-      if (osdkObject != null) {
+    for (const update of osdkObjectsWithReferenceUpdates) {
+      if (update != null) {
         try {
-          sub.listener.onChange?.(osdkObject);
+          sub.listener.onChange?.(update);
         } catch (error) {
           this.#logger?.error(error, "Error in onChange callback");
           this.#tryCatchOnError(sub, false, error);
@@ -584,7 +588,7 @@ export class ObjectSetListenerWebsocket {
             || sub.status === "reconnecting";
 
           if (process.env.NODE_ENV !== "production") {
-            this.#logger?.trace({ shouldFireOutOfDate }, "success");
+            this.#logger?.debug({ shouldFireOutOfDate }, "success");
           }
           sub.status = "subscribed";
           if (sub.subscriptionId !== response.id) {
@@ -620,7 +624,7 @@ export class ObjectSetListenerWebsocket {
 
   #onClose = (event: WebSocket.CloseEvent) => {
     if (process.env.NODE_ENV !== "production") {
-      this.#logger?.trace({ event }, "Received close event from ws", event);
+      this.#logger?.debug({ event }, "Received close event from ws", event);
     }
     // TODO we should probably throttle this so we don't abuse the backend
     this.#cycleWebsocket();

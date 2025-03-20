@@ -14,28 +14,45 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import { MultiMap } from "mnemonist";
+import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { CacheKey } from "./CacheKey.js";
 import { DEBUG_ONLY__cacheKeyToString } from "./CacheKey.js";
 import type { ListCacheKey } from "./ListQuery.js";
+import type { ObjectCacheKey } from "./ObjectQuery.js";
 
-export interface Changes {
-  modifiedObjects: MultiMap<string, Osdk.Instance<ObjectTypeDefinition>>;
-  addedObjects: MultiMap<string, Osdk.Instance<ObjectTypeDefinition>>;
-  addedLists: Set<ListCacheKey>;
-  modifiedLists: Set<ListCacheKey>;
+export class Changes {
+  modifiedObjects: MultiMap<string, ObjectHolder> = new MultiMap();
+  addedObjects: MultiMap<string, ObjectHolder> = new MultiMap();
+
+  added: Set<ListCacheKey | ObjectCacheKey> = new Set();
+  modified: Set<ListCacheKey | ObjectCacheKey> = new Set();
+
+  registerObject = (
+    cacheKey: ObjectCacheKey,
+    data: ObjectHolder,
+    isNew: boolean,
+  ): void => {
+    this[isNew ? "addedObjects" : "modifiedObjects"].set(data.$apiName, data);
+    this[isNew ? "added" : "modified"].add(cacheKey);
+  };
+
+  registerList = (key: ListCacheKey): void => {
+    this.modified.add(key);
+  };
+
+  isEmpty(): boolean {
+    return (
+      this.modifiedObjects.size === 0
+      && this.addedObjects.size === 0
+      && this.added.size === 0
+      && this.modified.size === 0
+    );
+  }
 }
 
 export function createChangedObjects(): Changes {
-  return {
-    modifiedObjects: new MultiMap<
-      string,
-      Osdk.Instance<ObjectTypeDefinition>
-    >(),
-    addedObjects: new MultiMap<string, Osdk.Instance<ObjectTypeDefinition>>(),
-    addedLists: new Set<ListCacheKey>(),
-    modifiedLists: new Set<ListCacheKey>(),
-  };
+  return new Changes();
 }
 
 export function DEBUG_ONLY__changesToString(changes: Changes): string {
@@ -44,8 +61,8 @@ export function DEBUG_ONLY__changesToString(changes: Changes): string {
       {
         modifiedObjects: multimapHelper(changes.modifiedObjects),
         addedObjects: multimapHelper(changes.addedObjects),
-        addedLists: listHelper(changes.addedLists),
-        modifiedLists: listHelper(changes.modifiedLists),
+        added: listHelper(changes.added),
+        modified: listHelper(changes.modified),
       },
       null,
       2,
@@ -55,12 +72,12 @@ export function DEBUG_ONLY__changesToString(changes: Changes): string {
   }
 }
 
-function listHelper(set: Set<ListCacheKey>) {
+function listHelper(set: Set<CacheKey>) {
   return Array.from(set).map(DEBUG_ONLY__cacheKeyToString);
 }
 
 function multimapHelper(
-  multimap: MultiMap<string, Osdk.Instance<ObjectTypeDefinition>>,
+  multimap: MultiMap<string, ObjectHolder>,
 ) {
   return Object.fromEntries(
     Array.from(multimap.associations()).map(
