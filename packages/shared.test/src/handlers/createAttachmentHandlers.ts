@@ -17,9 +17,8 @@
 /* eslint-disable @typescript-eslint/require-await */
 
 import { randomUUID } from "node:crypto";
-
+import { OntologiesV2 } from "../mock/index.js";
 import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
-import { MockOntologiesV2 } from "./MockOntologiesV2.js";
 import { requireSearchParams } from "./util/requireSearchParams.js";
 
 export const createAttachmentHandlers: FauxFoundryHandlersFactory = (
@@ -29,7 +28,7 @@ export const createAttachmentHandlers: FauxFoundryHandlersFactory = (
   /**
    * Upload attachment
    */
-  MockOntologiesV2.Attachments.upload(
+  OntologiesV2.Attachments.upload(
     baseUrl,
     async ({ request }) => {
       const { filename } = requireSearchParams(["filename"], request);
@@ -48,7 +47,7 @@ export const createAttachmentHandlers: FauxFoundryHandlersFactory = (
    * Get attachment metadata V1
    */
 
-  MockOntologiesV2.Attachments.get(
+  OntologiesV2.Attachments.get(
     baseUrl,
     async ({ params }) => {
       return fauxFoundry
@@ -61,7 +60,7 @@ export const createAttachmentHandlers: FauxFoundryHandlersFactory = (
    * Get attachment metadata V2
    */
 
-  MockOntologiesV2.AttachmentPropertiesV2.getAttachment(
+  OntologiesV2.AttachmentPropertiesV2.getAttachment(
     baseUrl,
     async (
       { params: { ontologyApiName, primaryKey, objectType, propertyName } },
@@ -78,7 +77,7 @@ export const createAttachmentHandlers: FauxFoundryHandlersFactory = (
    * Read attachment content V1
    */
 
-  MockOntologiesV2.Attachments.read(
+  OntologiesV2.Attachments.read(
     baseUrl,
     async ({ params }) => {
       return new Response(fauxFoundry
@@ -90,7 +89,7 @@ export const createAttachmentHandlers: FauxFoundryHandlersFactory = (
    * Read attachment content V2
    */
 
-  MockOntologiesV2.AttachmentPropertiesV2.readAttachment(
+  OntologiesV2.AttachmentPropertiesV2.readAttachment(
     baseUrl,
     async (
       { params: { ontologyApiName, primaryKey, objectType, propertyName } },

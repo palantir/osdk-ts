@@ -72,18 +72,6 @@ export type ParamsAfterReqCall<
   T extends (reqCall: any, ...args: any[]) => Promise<any>,
 > = T extends (reqCall: any, ...args: infer Z) => Promise<any> ? Z : never;
 
-export function handleOpenApiCall<
-  const N extends ExtractStringParams<ParamsAfterReqCall<X>>,
-  const X extends ((...args: any[]) => Promise<any>),
->(
-  openApiCall: X,
-  names: N,
-  restImpl: RestImpl<N[number], ExtractBody<X>, ExtractResponse<X>>,
-  baseUrl: string,
-): HttpHandler {
-  return handleOpenApiCallFactory(openApiCall, names)(baseUrl, restImpl);
-}
-
 export type RestImpl<
   URL_PARAMS extends string,
   REQ_BODY extends DefaultBodyType,
@@ -108,13 +96,22 @@ export type OpenApiCallFactory<
   options?: RequestHandlerOptions,
 ) => HttpHandler;
 
-export function handleOpenApiCallFactory<
+export type CallFactory<
+  URL_PARAMS extends string,
+  X extends ((...args: any[]) => Promise<any>),
+> = (
+  baseUrl: string,
+  restImpl: RestImpl<URL_PARAMS, ExtractBody<X>, ExtractResponse<X>>,
+  options?: RequestHandlerOptions,
+) => HttpHandler;
+
+export function handleOpenApiCall<
   const N extends ExtractStringParams<ParamsAfterReqCall<X>>,
   const X extends ((...args: any[]) => Promise<any>),
 >(
   openApiCall: X,
   names: N,
-): OpenApiCallFactory<N[number], ExtractBody<X>, ExtractResponse<X>> {
+): CallFactory<N[number], X> {
   return (
     baseUrl: string,
     restImpl: RestImpl<N[number], ExtractBody<X>, ExtractResponse<X>>,

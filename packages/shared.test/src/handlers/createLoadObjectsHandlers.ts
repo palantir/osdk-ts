@@ -21,8 +21,8 @@ import {
   subSelectProperties,
   subSelectPropertiesUrl,
 } from "../filterObjects.js";
+import { OntologiesV2 } from "../mock/index.js";
 import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
-import { MockOntologiesV2 } from "./MockOntologiesV2.js";
 import { getPaginationParamsFromUrl } from "./util/getPaginationParams.js";
 import { OpenApiCallError } from "./util/handleOpenApiCall.js";
 import { pageThroughResponseSearchParams } from "./util/pageThroughResponseSearchParams.js";
@@ -34,7 +34,7 @@ export const createLoadObjectsHandlers: FauxFoundryHandlersFactory = (
   /**
    * Load object
    */
-  MockOntologiesV2.OntologyObjectsV2.get(
+  OntologiesV2.OntologyObjectsV2.get(
     baseUrl,
     async (
       { request, params: { ontologyApiName, objectType, primaryKey } },
@@ -51,7 +51,7 @@ export const createLoadObjectsHandlers: FauxFoundryHandlersFactory = (
   /**
    * Load all objects
    */
-  MockOntologiesV2.OntologyObjectsV2.list(
+  OntologiesV2.OntologyObjectsV2.list(
     baseUrl,
     async ({ request, params: { ontologyApiName, objectType } }) => {
       const loadObjects = pageThroughResponseSearchParams(
@@ -72,7 +72,7 @@ export const createLoadObjectsHandlers: FauxFoundryHandlersFactory = (
   /**
    * List Linked Objects
    */
-  MockOntologiesV2.LinkedObjectsV2.listLinkedObjects(
+  OntologiesV2.LinkedObjectsV2.listLinkedObjects(
     baseUrl,
     async (
       {
@@ -101,7 +101,7 @@ export const createLoadObjectsHandlers: FauxFoundryHandlersFactory = (
    * Get specific Linked Object
    */
 
-  MockOntologiesV2.LinkedObjectsV2.getLinkedObject(
+  OntologiesV2.LinkedObjectsV2.getLinkedObject(
     baseUrl,
     async (
       {

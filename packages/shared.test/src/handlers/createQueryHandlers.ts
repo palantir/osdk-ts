@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
+import { OntologiesV2 } from "../mock/index.js";
 import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
-import { handleOpenApiCall } from "./util/handleOpenApiCall.js";
 
 export const createQueryHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
@@ -25,9 +24,8 @@ export const createQueryHandlers: FauxFoundryHandlersFactory = (
   /**
    * Execute Queries
    */
-  handleOpenApiCall(
-    OntologiesV2.Queries.execute,
-    ["ontologyApiName", "queryApiName"],
+  OntologiesV2.Queries.execute(
+    baseUrl,
     async ({ request, params: { ontologyApiName, queryApiName } }) => {
       const queryImpl = fauxFoundry
         .getOntology(ontologyApiName)
@@ -38,6 +36,5 @@ export const createQueryHandlers: FauxFoundryHandlersFactory = (
         fauxFoundry.getDataStore(ontologyApiName),
       );
     },
-    baseUrl,
   ),
 ];

@@ -16,14 +16,10 @@
 
 /* eslint-disable @typescript-eslint/require-await */
 
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { InvalidRequest } from "../errors.js";
-
+import { OntologiesV2 } from "../mock/index.js";
 import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
-import {
-  handleOpenApiCall,
-  OpenApiCallError,
-} from "./util/handleOpenApiCall.js";
+import { OpenApiCallError } from "./util/handleOpenApiCall.js";
 
 export const createTimeseriesAndGeotimeHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
@@ -32,9 +28,9 @@ export const createTimeseriesAndGeotimeHandlers: FauxFoundryHandlersFactory = (
   /**
    * Load firstPoint
    */
-  handleOpenApiCall(
-    OntologiesV2.TimeSeriesPropertiesV2.getFirstPoint,
-    ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
+
+  OntologiesV2.TimeSeriesPropertiesV2.getFirstPoint(
+    baseUrl,
     async (
       { params: { objectType, ontologyApiName, primaryKey, propertyName } },
     ) => {
@@ -45,15 +41,13 @@ export const createTimeseriesAndGeotimeHandlers: FauxFoundryHandlersFactory = (
           propertyName,
         ).at(0);
     },
-    baseUrl,
   ),
 
   /**
    * Load lastPoint
    */
-  handleOpenApiCall(
-    OntologiesV2.TimeSeriesPropertiesV2.getLastPoint,
-    ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
+  OntologiesV2.TimeSeriesPropertiesV2.getLastPoint(
+    baseUrl,
     async (
       { params: { objectType, ontologyApiName, primaryKey, propertyName } },
     ) => {
@@ -64,15 +58,13 @@ export const createTimeseriesAndGeotimeHandlers: FauxFoundryHandlersFactory = (
           propertyName,
         ).at(-1);
     },
-    baseUrl,
   ),
 
   /**
    * stream points
    */
-  handleOpenApiCall(
-    OntologiesV2.TimeSeriesPropertiesV2.streamPoints,
-    ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
+  OntologiesV2.TimeSeriesPropertiesV2.streamPoints(
+    baseUrl,
     async (
       {
         request,
@@ -89,15 +81,13 @@ export const createTimeseriesAndGeotimeHandlers: FauxFoundryHandlersFactory = (
           ),
       );
     },
-    baseUrl,
   ),
 
   /**
    * Load latestValue
    */
-  handleOpenApiCall(
-    OntologiesV2.TimeSeriesValueBankProperties.getLatestValue,
-    ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
+  OntologiesV2.TimeSeriesValueBankProperties.getLatestValue(
+    baseUrl,
     async (
       { params: { objectType, ontologyApiName, primaryKey, propertyName } },
     ) => {
@@ -114,15 +104,13 @@ export const createTimeseriesAndGeotimeHandlers: FauxFoundryHandlersFactory = (
 
       return ret;
     },
-    baseUrl,
   ),
 
   /**
    * stream values
    */
-  handleOpenApiCall(
-    OntologiesV2.TimeSeriesValueBankProperties.streamValues,
-    ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
+  OntologiesV2.TimeSeriesValueBankProperties.streamValues(
+    baseUrl,
     async (
       {
         request,
@@ -139,6 +127,5 @@ export const createTimeseriesAndGeotimeHandlers: FauxFoundryHandlersFactory = (
           ),
       );
     },
-    baseUrl,
   ),
 ];

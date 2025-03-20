@@ -16,7 +16,7 @@
 
 import type { RequestHandler } from "msw";
 import type { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
-import { MockOntologiesV2 } from "./MockOntologiesV2.js";
+import { OntologiesV2 } from "../mock/index.js";
 
 export const createObjectSetHandlers = (
   baseUrl: string,
@@ -25,7 +25,7 @@ export const createObjectSetHandlers = (
   /**
    * Load ObjectSet Objects
    */
-  MockOntologiesV2.OntologyObjectSets.load(
+  OntologiesV2.OntologyObjectSets.load(
     baseUrl,
     async ({ request, params }) => {
       return fauxFoundry
@@ -37,7 +37,7 @@ export const createObjectSetHandlers = (
   /**
    * Aggregate Objects in ObjectSet
    */
-  MockOntologiesV2.OntologyObjectSets.aggregate(
+  OntologiesV2.OntologyObjectSets.aggregate(
     baseUrl,
     async ({ request }) => {
       throw new Error("Not implemented");
@@ -47,7 +47,7 @@ export const createObjectSetHandlers = (
   /**
    * Load interface objectset Objects
    */
-  MockOntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
+  OntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
     baseUrl,
     async ({ params, request }) => {
       const pagedResponse = fauxFoundry

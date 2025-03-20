@@ -17,7 +17,7 @@
 import type { RequestHandler } from "msw";
 import { ApplyActionFailedError } from "../errors.js";
 import type { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
-import { MockOntologiesV2 } from "./MockOntologiesV2.js";
+import { OntologiesV2 } from "../mock/index.js";
 import { OpenApiCallError } from "./util/handleOpenApiCall.js";
 
 export const createActionHandlers = (
@@ -27,7 +27,7 @@ export const createActionHandlers = (
   /**
    * Apply an Action
    */
-  MockOntologiesV2.Actions.apply(
+  OntologiesV2.Actions.apply(
     baseUrl,
     async ({ params: { ontologyApiName, actionType }, request }) => {
       const response = fauxFoundry
@@ -45,7 +45,7 @@ export const createActionHandlers = (
     },
   ),
 
-  MockOntologiesV2.Actions.applyBatch(
+  OntologiesV2.Actions.applyBatch(
     baseUrl,
     async ({ params: { ontologyApiName, actionType }, request }) => {
       return fauxFoundry

@@ -18,11 +18,11 @@
 
 import type { RequestHandler } from "msw";
 import { http as rest, HttpResponse } from "msw";
+import { OntologiesV2 } from "../mock/index.js";
 import { defaultOntologyForConjure } from "../stubs/defaultOntologyForConjure.js";
 import { defaultOntologyMetadata } from "../stubs/ontologies/defaultOntologyMetadata.js";
 import { authHandlerMiddleware } from "./authHandlerMiddleware.js";
 import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
-import { MockOntologiesV2 } from "./MockOntologiesV2.js";
 
 export const createOntologyHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
@@ -31,7 +31,7 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
   /**
    * Load ObjectSet Objects
    */
-  MockOntologiesV2.OntologiesV2.getFullMetadata(
+  OntologiesV2.OntologiesV2.getFullMetadata(
     baseUrl,
     async (req) => {
       return fauxFoundry
@@ -40,7 +40,7 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
     },
   ),
 
-  MockOntologiesV2.ObjectTypesV2.get(
+  OntologiesV2.ObjectTypesV2.get(
     baseUrl,
     async (req) => {
       return fauxFoundry
@@ -50,7 +50,7 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
     },
   ),
 
-  MockOntologiesV2.ObjectTypesV2.getFullMetadata(
+  OntologiesV2.ObjectTypesV2.getFullMetadata(
     baseUrl,
     async (req) => {
       return fauxFoundry
@@ -62,7 +62,7 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
   /**
    * List ActionTypes
    */
-  MockOntologiesV2.ActionTypesV2.list(
+  OntologiesV2.ActionTypesV2.list(
     baseUrl,
     async ({ params }) => {
       return {
@@ -73,7 +73,7 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
     },
   ),
 
-  MockOntologiesV2.ActionTypesV2.get(
+  OntologiesV2.ActionTypesV2.get(
     baseUrl,
     async (req) => {
       return fauxFoundry
@@ -82,7 +82,7 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
     },
   ),
 
-  MockOntologiesV2.QueryTypes.get(
+  OntologiesV2.QueryTypes.get(
     baseUrl,
     async (req) => {
       return fauxFoundry
@@ -91,7 +91,7 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
     },
   ),
 
-  MockOntologiesV2.ObjectTypesV2.getOutgoingLinkType(
+  OntologiesV2.ObjectTypesV2.getOutgoingLinkType(
     baseUrl,
     async ({ params }) => {
       return fauxFoundry
@@ -100,7 +100,7 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
     },
   ),
 
-  MockOntologiesV2.ObjectTypesV2.listOutgoingLinkTypes(
+  OntologiesV2.ObjectTypesV2.listOutgoingLinkTypes(
     baseUrl,
     async ({ params }) => {
       return {
@@ -111,7 +111,7 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
     },
   ),
 
-  MockOntologiesV2.OntologyInterfaces.list(
+  OntologiesV2.OntologyInterfaces.list(
     baseUrl,
     async (req) => {
       return {
@@ -122,7 +122,7 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
     },
   ),
 
-  MockOntologiesV2.OntologyInterfaces.get(
+  OntologiesV2.OntologyInterfaces.get(
     baseUrl,
     ({ params }) => {
       return fauxFoundry
@@ -134,7 +134,7 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
   /**
    * List ontologies
    */
-  MockOntologiesV2.OntologiesV2.list(
+  OntologiesV2.OntologiesV2.list(
     baseUrl,
     async () => {
       return {
@@ -148,7 +148,7 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
   /**
    * Get specified Ontology
    */
-  MockOntologiesV2.OntologiesV2.get(
+  OntologiesV2.OntologiesV2.get(
     baseUrl,
     async req => {
       return fauxFoundry
@@ -161,7 +161,7 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
   /**
    * List objectTypes V2
    */
-  MockOntologiesV2.ObjectTypesV2.list(
+  OntologiesV2.ObjectTypesV2.list(
     baseUrl,
     async req => {
       return {
@@ -176,7 +176,7 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
   /**
    * List Queries
    */
-  MockOntologiesV2.QueryTypes.list(
+  OntologiesV2.QueryTypes.list(
     baseUrl,
     async (req) => {
       return {

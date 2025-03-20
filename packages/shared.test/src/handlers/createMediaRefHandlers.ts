@@ -16,8 +16,8 @@
 
 /* eslint-disable @typescript-eslint/require-await */
 
+import { OntologiesV2 } from "../mock/index.js";
 import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
-import { MockOntologiesV2 } from "./MockOntologiesV2.js";
 import { requireSearchParams } from "./util/requireSearchParams.js";
 
 export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
@@ -27,7 +27,7 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
   /**
    * Load media metadata
    */
-  MockOntologiesV2.MediaReferenceProperties.getMediaMetadata(
+  OntologiesV2.MediaReferenceProperties.getMediaMetadata(
     baseUrl,
     async (
       { params: { ontologyApiName, objectType, primaryKey, propertyName } },
@@ -41,7 +41,7 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
   /**
    * Read media content
    */
-  MockOntologiesV2.MediaReferenceProperties.getMediaContent(
+  OntologiesV2.MediaReferenceProperties.getMediaContent(
     baseUrl,
     async (
       { params: { ontologyApiName, objectType, primaryKey, propertyName } },
@@ -56,7 +56,7 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
     },
   ),
 
-  MockOntologiesV2.MediaReferenceProperties.upload(
+  OntologiesV2.MediaReferenceProperties.upload(
     baseUrl,
     async (
       { params: { ontologyApiName, objectType, propertyName }, request },
