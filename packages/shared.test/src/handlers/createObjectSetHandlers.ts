@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,41 @@
  * limitations under the License.
  */
 
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { RequestHandler } from "msw";
-import { fauxFoundry } from "../stubs/ontologies/legacyFullOntology.js";
-import { handleOpenApiCall } from "./util/handleOpenApiCall.js";
+import type { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
+import { OntologiesV2 } from "../mock/index.js";
 
-export const interfaceObjectSetHandlers: Array<RequestHandler> = [
+export const createObjectSetHandlers = (
+  baseUrl: string,
+  fauxFoundry: FauxFoundry,
+): Array<RequestHandler> => [
+  /**
+   * Load ObjectSet Objects
+   */
+  OntologiesV2.OntologyObjectSets.load(
+    baseUrl,
+    async ({ request, params }) => {
+      return fauxFoundry
+        .getDataStore(params.ontologyApiName)
+        .getObjectsFromObjectSet(await request.json());
+    },
+  ),
+
+  /**
+   * Aggregate Objects in ObjectSet
+   */
+  OntologiesV2.OntologyObjectSets.aggregate(
+    baseUrl,
+    async ({ request }) => {
+      throw new Error("Not implemented");
+    },
+  ),
+
   /**
    * Load interface objectset Objects
    */
-  handleOpenApiCall(
-    OntologiesV2.OntologyObjectSets.loadMultipleObjectTypes,
-    ["ontologyApiName"],
+  OntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
+    baseUrl,
     async ({ params, request }) => {
       const pagedResponse = fauxFoundry
         .getDataStore(params.ontologyApiName)

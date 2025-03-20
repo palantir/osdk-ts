@@ -16,138 +16,92 @@
 
 /* eslint-disable @typescript-eslint/require-await */
 
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { RequestHandler } from "msw";
 import { http as rest, HttpResponse } from "msw";
-import { defaultOntologyForConjure } from "../stubs/ontologies.js";
+import { OntologiesV2 } from "../mock/index.js";
+import { defaultOntologyForConjure } from "../stubs/defaultOntologyForConjure.js";
 import { defaultOntologyMetadata } from "../stubs/ontologies/defaultOntologyMetadata.js";
-import { fauxFoundry } from "../stubs/ontologies/legacyFullOntology.js";
-import { authHandlerMiddleware } from "./commonHandlers.js";
-import { handleOpenApiCall } from "./util/handleOpenApiCall.js";
+import { authHandlerMiddleware } from "./authHandlerMiddleware.js";
+import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
 
-type ConjureObjectTypeInfo = {
-  displayMetadata: {
-    "description": string;
-    "displayName": string;
-    "groupDisplayName": null;
-    "icon": {
-      "type": "blueprint";
-      "blueprint": {
-        "color": "#00B3A4";
-        "locator": "person";
-      };
-    };
-    "pluralDisplayName": string;
-    "visibility": "PROMINENT";
-  };
-  id: string;
-  primaryKeys: string[];
-  propertyTypes: Record<string, unknown>;
-  rid: string;
-  titlePropertyTypeRid: string;
-  traits: {
-    eventMetadata: null;
-    actionLogMetadata: null;
-    timeSeriesMetadata: null;
-    sensorTrait: null;
-    workflowObjectTypeTraits: {};
-  };
-  apiName: string;
-  status: {
-    "type": "active";
-    "active": {};
-  };
-  redacted: null;
-  implementsInterfaces: string[]; // rids
-  implementsInterfaces2: {
-    interfaceTypeRid: string;
-    interfaceTypeApiName: string;
-    links: {};
-  }[];
-  typeGroups: [];
-};
-
-const getOntologyEndpoints = (base: string | undefined) => [
+export const createOntologyHandlers: FauxFoundryHandlersFactory = (
+  baseUrl,
+  fauxFoundry,
+) => [
   /**
    * Load ObjectSet Objects
    */
-  handleOpenApiCall(
-    OntologiesV2.OntologiesV2.getFullMetadata,
-    ["ontologyApiName"],
+  OntologiesV2.OntologiesV2.getFullMetadata(
+    baseUrl,
     async (req) => {
       return fauxFoundry
         .getOntology(req.params.ontologyApiName)
         .getOntologyFullMetadata();
     },
-    base,
   ),
 
-  handleOpenApiCall(
-    OntologiesV2.ObjectTypesV2.get,
-    ["ontologyApiName", "objectTypeApiName"],
+  OntologiesV2.ObjectTypesV2.get(
+    baseUrl,
     async (req) => {
       return fauxFoundry
         .getOntology(req.params.ontologyApiName)
         .getObjectTypeFullMetadataOrThrow(req.params.objectTypeApiName)
         .objectType;
     },
-    base,
   ),
 
-  handleOpenApiCall(
-    OntologiesV2.ObjectTypesV2.getFullMetadata,
-    ["ontologyApiName", "objectTypeApiName"],
+  OntologiesV2.ObjectTypesV2.getFullMetadata(
+    baseUrl,
     async (req) => {
       return fauxFoundry
         .getOntology(req.params.ontologyApiName)
         .getObjectTypeFullMetadataOrThrow(req.params.objectTypeApiName);
     },
-    base,
   ),
 
-  handleOpenApiCall(
-    OntologiesV2.ActionTypesV2.get,
-    ["ontologyApiName", "actionTypeApiName"],
+  /**
+   * List ActionTypes
+   */
+  OntologiesV2.ActionTypesV2.list(
+    baseUrl,
+    async ({ params }) => {
+      return {
+        data: fauxFoundry
+          .getOntology(params.ontologyApiName)
+          .getAllActionTypes(),
+      };
+    },
+  ),
+
+  OntologiesV2.ActionTypesV2.get(
+    baseUrl,
     async (req) => {
       return fauxFoundry
         .getOntology(req.params.ontologyApiName)
         .getActionDef(req.params.actionTypeApiName);
     },
-    base,
   ),
 
-  handleOpenApiCall(
-    OntologiesV2.QueryTypes.get,
-    ["ontologyApiName", "queryTypeApiName"],
+  OntologiesV2.QueryTypes.get(
+    baseUrl,
     async (req) => {
       return fauxFoundry
         .getOntology(req.params.ontologyApiName)
         .getQueryDef(req.params.queryTypeApiName);
     },
-    base,
   ),
 
-  handleOpenApiCall(
-    OntologiesV2.ObjectTypesV2.getOutgoingLinkType,
-    [
-      "ontology",
-      "objectType",
-      "linkType",
-    ],
+  OntologiesV2.ObjectTypesV2.getOutgoingLinkType(
+    baseUrl,
     async ({ params }) => {
       return fauxFoundry
         .getOntology(params.ontology)
         .getLinkTypeSideV2(params.objectType, params.linkType);
     },
-    base,
   ),
 
-  handleOpenApiCall(
-    OntologiesV2.ObjectTypesV2.listOutgoingLinkTypes,
-    [
-      "ontology",
-      "objectType",
-    ],
+  OntologiesV2.ObjectTypesV2.listOutgoingLinkTypes(
+    baseUrl,
     async ({ params }) => {
       return {
         data: fauxFoundry
@@ -155,12 +109,10 @@ const getOntologyEndpoints = (base: string | undefined) => [
           .getObjectTypeFullMetadataOrThrow(params.objectType).linkTypes,
       };
     },
-    base,
   ),
 
-  handleOpenApiCall(
-    OntologiesV2.OntologyInterfaces.list,
-    ["ontologyApiName"],
+  OntologiesV2.OntologyInterfaces.list(
+    baseUrl,
     async (req) => {
       return {
         data: fauxFoundry
@@ -168,28 +120,74 @@ const getOntologyEndpoints = (base: string | undefined) => [
           .getAllInterfaceTypes(),
       };
     },
-    base,
   ),
 
-  handleOpenApiCall(
-    OntologiesV2.OntologyInterfaces.get,
-    ["ontologyApiName", "interfaceType"],
+  OntologiesV2.OntologyInterfaces.get(
+    baseUrl,
     ({ params }) => {
       return fauxFoundry
         .getOntology(params.ontologyApiName)
         .getInterfaceType(params.interfaceType);
     },
-    base,
+  ),
+
+  /**
+   * List ontologies
+   */
+  OntologiesV2.OntologiesV2.list(
+    baseUrl,
+    async () => {
+      return {
+        data: fauxFoundry
+          .getEveryOntology()
+          .map(x => x.getOntologyFullMetadata().ontology),
+      };
+    },
+  ),
+
+  /**
+   * Get specified Ontology
+   */
+  OntologiesV2.OntologiesV2.get(
+    baseUrl,
+    async req => {
+      return fauxFoundry
+        .getOntology(req.params.ontologyRid)
+        .getOntologyFullMetadata()
+        .ontology;
+    },
+  ),
+
+  /**
+   * List objectTypes V2
+   */
+  OntologiesV2.ObjectTypesV2.list(
+    baseUrl,
+    async req => {
+      return {
+        data: fauxFoundry
+          .getOntology(req.params.ontologyApiName)
+          .getAllObjectTypes()
+          .map(x => x.objectType),
+      };
+    },
+  ),
+
+  /**
+   * List Queries
+   */
+  OntologiesV2.QueryTypes.list(
+    baseUrl,
+    async (req) => {
+      return {
+        data: fauxFoundry.getOntology(req.params.ontologyApiName)
+          .getAllQueryTypes(),
+      };
+    },
   ),
 ];
 
-export const ontologyMetadataEndpoint: Array<RequestHandler> = [
-  ...getOntologyEndpoints(undefined),
-  ...getOntologyEndpoints(
-    "https://stack.palantirCustom.com/foo/first/someStuff/",
-  ),
-
-  // FIXME: does this need to live?
+export const conjureEndpoint: Array<RequestHandler> = [
   rest.post(
     `https://stack.palantir.com/ontology-metadata/api/ontology/ontology/ontologies/load/all`,
     authHandlerMiddleware(

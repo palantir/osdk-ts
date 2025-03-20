@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import { $ontologyRid, Employee, Task } from "@osdk/client.test.ontology";
+import { Employee, Task } from "@osdk/client.test.ontology";
 import type { MediaReference } from "@osdk/foundry.core";
-import { apiServer, MockOntology, stubData } from "@osdk/shared.test";
+import {
+  LegacyFauxFoundry,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
-import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
@@ -33,24 +37,20 @@ describe(toDataValue, () => {
 
   const mockFetch: MockedFunction<typeof globalThis.fetch> = vi.fn();
 
-  beforeAll(async () => {
-    apiServer.listen();
-    client = createClient(
-      "https://stack.palantir.com",
-      $ontologyRid,
-      async () => "myAccessToken",
-    );
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
+    ({ client } = testSetup);
 
     clientCtx = createMinimalClient(
-      MockOntology.metadata,
-      "https://stack.palantir.com",
-      async () => "myAccessToken",
+      { ontologyRid: testSetup.fauxFoundry.defaultOntologyRid },
+      testSetup.fauxFoundry.baseUrl,
+      testSetup.auth,
       {},
     );
-  });
 
-  afterAll(() => {
-    apiServer.close();
+    return () => {
+      testSetup.apiServer.close();
+    };
   });
 
   it("converts passthrough values correctly", async () => {

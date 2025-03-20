@@ -20,16 +20,14 @@ import type {
   Osdk,
   PropertyKeys,
 } from "@osdk/api";
-import { $Objects, $ontologyRid, Employee } from "@osdk/client.test.ontology";
-import { apiServer, stubData, withoutRid } from "@osdk/shared.test";
+import { $Objects, Employee } from "@osdk/client.test.ontology";
 import {
-  afterAll,
-  beforeAll,
-  describe,
-  expect,
-  expectTypeOf,
-  it,
-} from "vitest";
+  LegacyFauxFoundry,
+  startNodeApiServer,
+  stubData,
+  withoutRid,
+} from "@osdk/shared.test";
+import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 import { additionalContext, type Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import type {
@@ -50,27 +48,25 @@ function asV2Object(o: any, includeRid?: boolean) {
   return o;
 }
 
-describe("OsdkObject", () => {
+describe.each([
+  "https://stack.palantir.com",
+  "https://stack.palantirCustom.com/foo/first/someStuff",
+])("OsdkObject for %s", (baseUrl) => {
   let client: Client;
-  let customEntryPointClient: Client;
 
   beforeAll(async () => {
-    apiServer.listen();
-    client = createClient(
-      "https://stack.palantir.com",
-      $ontologyRid,
-      async () => "myAccessToken",
-    );
-    customEntryPointClient = createClient(
-      "https://stack.palantirCustom.com/foo/first/someStuff",
-      $ontologyRid,
-      async () => "myAccessToken",
-    );
+    let apiServer;
+
+    ({ client, apiServer } = startNodeApiServer(
+      new LegacyFauxFoundry(baseUrl),
+      createClient,
+    ));
+
+    return () => {
+      apiServer.close();
+    };
   });
 
-  afterAll(() => {
-    apiServer.close();
-  });
   describe("link", () => {
     it("loads an employee", async () => {
       const result = await client(Employee).where({
@@ -98,7 +94,7 @@ describe("OsdkObject", () => {
       expect(Object.keys(employee.$link.lead)).toBeDefined();
     });
     it("loads an employee with custom client", async () => {
-      const result = await customEntryPointClient(Employee).where({
+      const result = await client(Employee).where({
         employeeId: stubData.employee1.employeeId,
       }).fetchPage();
 
@@ -271,7 +267,7 @@ describe("OsdkObject", () => {
 
       expectTypeOf(mergedEmployee).toEqualTypeOf(employee);
 
-      expect(mergedEmployee).toMatchInlineSnapshot(`
+      expect(mergedEmployee).toMatchObject(
         {
           "$apiName": "Employee",
           "$objectSpecifier": "Employee:50031",
@@ -280,16 +276,16 @@ describe("OsdkObject", () => {
           "$title": "Jane Doe",
           "class": "Red",
           "employeeId": 50031,
-          "employeeLocation": GeotimeSeriesPropertyImpl {
+          "employeeLocation": {
             "lastFetchedValue": undefined,
           },
-          "employeeSensor": TimeSeriesPropertyImpl {},
-          "employeeStatus": TimeSeriesPropertyImpl {},
+          "employeeSensor": {},
+          "employeeStatus": {},
           "fullName": "Jane Doe",
           "office": "NYC",
           "startDate": "2012-02-12",
-        }
-      `);
+        },
+      );
     });
 
     it("correctly scopes up with another OSDK object", async () => {
@@ -333,7 +329,7 @@ describe("OsdkObject", () => {
         "startDate": "2019-01-01",
       });
 
-      expect(mergedEmployee).toMatchInlineSnapshot(`
+      expect(mergedEmployee).toMatchObject(
         {
           "$apiName": "Employee",
           "$objectSpecifier": "Employee:50031",
@@ -342,16 +338,16 @@ describe("OsdkObject", () => {
           "$title": "John Doe",
           "class": "Green",
           "employeeId": 50031,
-          "employeeLocation": GeotimeSeriesPropertyImpl {
+          "employeeLocation": {
             "lastFetchedValue": undefined,
           },
-          "employeeSensor": TimeSeriesPropertyImpl {},
-          "employeeStatus": TimeSeriesPropertyImpl {},
+          "employeeSensor": {},
+          "employeeStatus": {},
           "fullName": "John Doe",
           "office": "SEA",
           "startDate": "2019-01-01",
-        }
-      `);
+        },
+      );
     });
 
     it("correctly scopes up with a record", async () => {
@@ -380,7 +376,7 @@ describe("OsdkObject", () => {
         "fullName": "Brad Pitt",
       });
 
-      expect(mergedEmployee).toMatchInlineSnapshot(`
+      expect(mergedEmployee).toMatchObject(
         {
           "$apiName": "Employee",
           "$objectSpecifier": "Employee:50031",
@@ -389,16 +385,16 @@ describe("OsdkObject", () => {
           "$title": "Brad Pitt",
           "class": "Blue",
           "employeeId": 50031,
-          "employeeLocation": GeotimeSeriesPropertyImpl {
+          "employeeLocation": {
             "lastFetchedValue": undefined,
           },
-          "employeeSensor": TimeSeriesPropertyImpl {},
-          "employeeStatus": TimeSeriesPropertyImpl {},
+          "employeeSensor": {},
+          "employeeStatus": {},
           "fullName": "Brad Pitt",
           "office": "SEA",
           "startDate": "2012-02-12",
-        }
-      `);
+        },
+      );
     });
 
     it("is able to clone with nothing passed in", async () => {
@@ -503,17 +499,17 @@ describe("OsdkObject", () => {
           "fooSpt": "John Adams",
         });
 
-        expect(clonedInterface).toMatchInlineSnapshot(`
+        expect(clonedInterface).toMatchObject(
           {
             "$apiName": "FooInterface",
             "$objectType": "Employee",
             "$primaryKey": 50031,
             "$title": "John Adams",
             "fooSpt": "John Adams",
-          }
-        `);
+          },
+        );
 
-        expect(clonedInterface.$as("Employee")).toMatchInlineSnapshot(`
+        expect(clonedInterface.$as("Employee")).toMatchObject(
           {
             "$apiName": "Employee",
             "$objectType": "Employee",
@@ -521,8 +517,8 @@ describe("OsdkObject", () => {
             "$title": "John Adams",
             "employeeId": 50031,
             "fullName": "John Adams",
-          }
-        `);
+          },
+        );
       });
       it("Throws if updating an interface with a property not implemented by the underlying object type", () => {
         const employeeOsdkObject = createOsdkObject(
@@ -547,8 +543,8 @@ describe("OsdkObject", () => {
           loadedInterfaceObject.$clone({
             "notImplementedFooSpt": "John Adams",
           })
-        ).toThrowErrorMatchingInlineSnapshot(
-          `[Error: Cannot clone interface with notImplementedFooSpt as property is not implemented by the underlying object type Employee]`,
+        ).toThrowError(
+          `Cannot clone interface with notImplementedFooSpt as property is not implemented by the underlying object type Employee`,
         );
       });
     });

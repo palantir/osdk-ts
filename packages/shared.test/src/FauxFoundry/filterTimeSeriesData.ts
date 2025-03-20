@@ -38,7 +38,7 @@ export function filterTimeSeriesData(
   now: Date = constructNow(Date.now()),
 ): OntologiesV2.TimeSeriesPoint[] {
   if (!range) {
-    return data; // TODO is this the right default?
+    return data;
   }
 
   const start = extractDate(range, "startTime", now);

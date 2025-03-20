@@ -14,6 +14,27 @@
  * limitations under the License.
  */
 
-export const MOCK_ORIGIN = "https://mock.com";
-export const MOCK_BASE_URL: `${typeof MOCK_ORIGIN}/api/v2/ontologies/` =
-  `${MOCK_ORIGIN}/api/v2/ontologies/`;
+import { OntologiesV2 } from "../mock/index.js";
+import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
+
+export const createQueryHandlers: FauxFoundryHandlersFactory = (
+  baseUrl,
+  fauxFoundry,
+) => [
+  /**
+   * Execute Queries
+   */
+  OntologiesV2.Queries.execute(
+    baseUrl,
+    async ({ request, params: { ontologyApiName, queryApiName } }) => {
+      const queryImpl = fauxFoundry
+        .getOntology(ontologyApiName)
+        .getQueryImpl(queryApiName);
+
+      return queryImpl(
+        await request.json(),
+        fauxFoundry.getDataStore(ontologyApiName),
+      );
+    },
+  ),
+];

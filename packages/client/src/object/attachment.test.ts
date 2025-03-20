@@ -14,25 +14,37 @@
  * limitations under the License.
  */
 
+import { objectTypeWithAllPropertyTypes } from "@osdk/client.test.ontology";
 import {
-  $ontologyRid,
-  objectTypeWithAllPropertyTypes,
-} from "@osdk/client.test.ontology";
-import { apiServer, stubData } from "@osdk/shared.test";
+  LegacyFauxFoundry,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
+import { type SetupServer } from "msw/node";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
 describe("attachments", () => {
+  let fauxFoundry: LegacyFauxFoundry;
+  let apiServer: SetupServer;
   let client: Client;
 
   beforeAll(async () => {
-    apiServer.listen();
-    client = createClient(
-      "https://stack.palantir.com",
-      $ontologyRid,
-      async () => "myAccessToken",
-    );
+    ({ client, apiServer, fauxFoundry } = startNodeApiServer(
+      new LegacyFauxFoundry(),
+      createClient,
+    ));
+
+    fauxFoundry.attachments.registerAttachment({
+      filename: "file1.txt",
+      mediaType: "application/json",
+      rid:
+        "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
+      buffer: new TextEncoder().encode(
+        JSON.stringify({ name: "Hello World" }, null, 2),
+      ),
+    });
   });
 
   afterAll(() => {
@@ -53,7 +65,7 @@ describe("attachments", () => {
     expect(attachmentMetadata?.mediaType).toEqual("application/json");
     expect(attachmentMetadata?.sizeBytes).toEqual(27);
     expect(attachmentMetadata?.rid).toEqual(
-      stubData.helloWorldAttachment.rid,
+      stubData.objectWithAllPropertyTypes1.attachment.rid,
     );
   });
 

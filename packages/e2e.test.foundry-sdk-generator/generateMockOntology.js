@@ -16,7 +16,7 @@
 
 // @ts-check
 import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePackageCommand } from "@osdk/foundry-sdk-generator";
-import { apiServer } from "@osdk/shared.test";
+import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import { $ } from "execa";
 import * as fs from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -28,7 +28,7 @@ async function setup() {
     path.join(tmpdir(), "osdk-e2e-foundry-sdk-generator-"),
   );
 
-  apiServer.listen();
+  const testSetup = startNodeApiServer(new LegacyFauxFoundry(), undefined);
 
   const testAppDir = path.join(dir, "@test-app");
   const testApp2Dir = path.join(dir, "@test-app2");
@@ -117,16 +117,13 @@ async function setup() {
 
   await fs.rm(finalOutDir, { recursive: true, force: true });
   await fs.cp(dir, finalOutDir, { recursive: true });
-}
 
-export async function teardown() {
   // eslint-disable-next-line no-console
   console.log("teardown: stopping API server");
-  apiServer.close();
+  testSetup.apiServer.close();
 }
 
 await setup();
-await teardown();
 
 /**
  * @param {string} testAppDir

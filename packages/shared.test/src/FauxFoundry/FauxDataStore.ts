@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-import type { MediaItemRid } from "@osdk/foundry.core";
+import type {
+  MediaItemRid,
+  MediaReference,
+  MediaType,
+} from "@osdk/foundry.core";
 import type * as OntologiesV2 from "@osdk/foundry.ontologies";
-import type { PropertyApiNameNotFound } from "@osdk/internal.foundry.ontologies";
 import { DefaultMap, MultiMap } from "mnemonist";
+import { randomUUID } from "node:crypto";
 import invariant from "tiny-invariant";
+import type { ReadonlyDeep } from "type-fest";
 import { InvalidRequest, ObjectNotFoundError } from "../errors.js";
 import { subSelectProperties } from "../filterObjects.js";
-import type { PagedBodyResponseWithTotal } from "../handlers/endpointUtils.js";
-import { pageThroughResponseSearchParams } from "../handlers/endpointUtils.js";
 import { getPaginationParamsFromRequest } from "../handlers/util/getPaginationParams.js";
 import { OpenApiCallError } from "../handlers/util/handleOpenApiCall.js";
+import type { PagedBodyResponseWithTotal } from "../handlers/util/pageThroughResponseSearchParams.js";
+import { pageThroughResponseSearchParams } from "../handlers/util/pageThroughResponseSearchParams.js";
 import type { BaseServerObject } from "./BaseServerObject.js";
 import type { FauxAttachmentStore } from "./FauxAttachmentStore.js";
 import { FauxDataStoreBatch } from "./FauxDataStoreBatch.js";
@@ -35,9 +40,10 @@ import type { ObjectLocator } from "./ObjectLocator.js";
 import { objectLocator, parseLocator } from "./ObjectLocator.js";
 import { validateAction } from "./validateAction.js";
 
-export interface MediaMetadataAndContent extends OntologiesV2.MediaMetadata {
+export interface MediaMetadataAndContent {
   content: ArrayBuffer;
-  mediaItemRid: MediaItemRid;
+  mediaRef: MediaReference;
+  metaData: OntologiesV2.MediaMetadata;
 }
 
 export class FauxDataStore {
@@ -266,12 +272,39 @@ export class FauxDataStore {
   registerMedia(
     objectType: OntologiesV2.ObjectTypeApiName,
     property: OntologiesV2.PropertyApiName,
-    payload: Omit<MediaMetadataAndContent, "sizeBytes">,
-  ): void {
-    this.#media.get(objectType).get(property).set(payload.mediaItemRid, {
-      ...payload,
-      sizeBytes: String(payload.content.byteLength),
+    content: ArrayBuffer,
+    mediaType: MediaType,
+    path: string | undefined,
+    // This should be the correct prefix, per
+    // https://github.com/palantir/osdk-ts/pull/1303#discussion_r2001989395
+    mediaItemRid: MediaItemRid = `ri.mio.main.media-item.${randomUUID()}`,
+  ): MediaReference {
+    const mediaRef: ReadonlyDeep<MediaReference> = Object.freeze({
+      mimeType: mediaType,
+      reference: Object.freeze({
+        type: "mediaSetViewItem",
+        mediaSetViewItem: Object.freeze({
+          mediaItemRid,
+          mediaSetRid: "ri.unimplemented.in.shared.test",
+          mediaSetViewRid: "ri.unimplemented.in.shared.test",
+        }),
+      }),
     });
+
+    this.#media.get(objectType).get(property).set(
+      mediaItemRid,
+      Object.freeze({
+        content,
+        mediaRef,
+        metaData: Object.freeze({
+          mediaType,
+          path,
+          sizeBytes: String(content.byteLength),
+        }),
+      }),
+    );
+
+    return mediaRef;
   }
 
   getMediaOrThrow(
@@ -285,18 +318,19 @@ export class FauxDataStore {
         .objectType.properties[property];
 
     if (!propertyDef) {
-      // FIXME: what would the backend do here?
+      // This should be the correct error, per
+      // https://github.com/palantir/osdk-ts/pull/1303#discussion_r2001968959
       throw new OpenApiCallError(
         400,
         {
-          errorCode: "INVALID_ARGUMENT",
-          errorName: "PropertyApiNameNotFound",
+          errorCode: "NOT_FOUND",
+          errorName: "PropertiesNotFound",
           errorInstanceId: "faux-foundry",
           parameters: {
-            propertyId: property,
-            propertyBaseType: "unknown",
+            objectType,
+            properties: [property],
           },
-        } satisfies PropertyApiNameNotFound,
+        } satisfies OntologiesV2.PropertiesNotFound,
       );
     }
 
@@ -429,6 +463,28 @@ export class FauxDataStore {
     }
   }
 
+  getLinkOrThrow(
+    objectType: string,
+    primaryKey: string | number | boolean,
+    linkType: string,
+    targetPrimaryKey: string | number | boolean,
+  ): BaseServerObject {
+    const allLinks = this.getLinksOrThrow(objectType, primaryKey, linkType);
+    const object =
+      allLinks.filter(l => String(l.__primaryKey) === targetPrimaryKey)[0];
+
+    if (!object) {
+      throw new OpenApiCallError(
+        404,
+        ObjectNotFoundError(
+          `${objectType} -> ${linkType}`,
+          String(targetPrimaryKey),
+        ),
+      );
+    }
+    return object;
+  }
+
   getObjectsOfType(apiName: string): Iterable<BaseServerObject> {
     return this.#objects
       .get(apiName)
@@ -482,6 +538,24 @@ export class FauxDataStore {
     );
 
     return ret;
+  }
+
+  getAttachmentMetadata(
+    objectType: string,
+    primaryKey: string | number | boolean,
+    propertyName: string,
+  ): OntologiesV2.AttachmentV2 {
+    const rid = this.getObjectOrThrow(objectType, primaryKey)[propertyName];
+    return this.#attachments.getAttachmentMetadataByRid(rid);
+  }
+
+  getAttachmentBuffer(
+    objectType: string,
+    primaryKey: string | number | boolean,
+    propertyName: string,
+  ): ArrayBuffer {
+    const rid = this.getObjectOrThrow(objectType, primaryKey)[propertyName];
+    return this.#attachments.getAttachmentBuffer(rid);
   }
 
   applyAction(

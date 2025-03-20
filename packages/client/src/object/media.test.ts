@@ -18,40 +18,42 @@ import {
   $ontologyRid,
   objectTypeWithAllPropertyTypes,
 } from "@osdk/client.test.ontology";
-import { apiServer, stubData } from "@osdk/shared.test";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import {
+  LegacyFauxFoundry,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
+import { beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
 describe("media", () => {
   let client: Client;
 
-  beforeAll(async () => {
-    apiServer.listen();
-    client = createClient(
-      "https://stack.palantir.com",
-      $ontologyRid,
-      async () => "myAccessToken",
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new LegacyFauxFoundry(),
+      createClient,
     );
 
-    stubData.fauxFoundry
+    ({ client } = testSetup);
+
+    testSetup.fauxFoundry
       .getDataStore($ontologyRid)
       .registerMedia(
         objectTypeWithAllPropertyTypes.apiName,
         "mediaReference",
-        {
-          content: new TextEncoder().encode(
-            JSON.stringify({ content: "Hello World" }),
-          ),
-          mediaType: "application/json",
-          mediaItemRid: stubData.objectWithAllPropertyTypes1.mediaReference,
-          path: "file1.txt",
-        },
+        new TextEncoder().encode(
+          JSON.stringify({ content: "Hello World" }),
+        ),
+        "application/json",
+        "file1.txt",
+        stubData.objectWithAllPropertyTypes1.mediaReference,
       );
-  });
 
-  afterAll(() => {
-    apiServer.close();
+    return () => {
+      testSetup.apiServer.close();
+    };
   });
 
   it("reads media metadata successfully", async () => {

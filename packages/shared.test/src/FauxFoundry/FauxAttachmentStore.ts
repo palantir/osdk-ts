@@ -30,10 +30,10 @@ export class FauxAttachmentStore {
     attachment: FauxAttachmentInfo,
   ): OntologiesV2.AttachmentV2 {
     this.#attachments.set(attachment.rid, attachment);
-    return this.getAttachmentMetadata(attachment.rid);
+    return this.getAttachmentMetadataByRid(attachment.rid);
   }
 
-  getAttachmentMetadata(attachmentRid: string): OntologiesV2.AttachmentV2 {
+  getAttachmentMetadataByRid(attachmentRid: string): OntologiesV2.AttachmentV2 {
     const attachment = this.#attachments.get(attachmentRid);
     if (!attachment) {
       throw new OpenApiCallError(

@@ -80,11 +80,6 @@ const actionRequestWithObjectSet: ApplyActionRequestV2 = {
   options: {},
 };
 
-export const actionRequestWithAttachment: ApplyActionRequestV2 = {
-  options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
-  parameters: { attachment: "attachment.rid" },
-};
-
 export const actionRequestWithAttachmentUpload: ApplyActionRequestV2 = {
   options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
   parameters: {
@@ -227,7 +222,7 @@ export function registerLazyActions(fauxOntology: FauxOntology): void {
   fauxOntology.registerActionType(
     ActionTakesAttachment,
     (_batch, payload, { attachments }) => {
-      const attachment = attachments.getAttachmentMetadata(
+      const attachment = attachments.getAttachmentMetadataByRid(
         payload.parameters.attachment,
       );
       invariant(attachment, "expected attachment to be real");

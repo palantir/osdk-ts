@@ -16,13 +16,10 @@
 
 export * from "./actions.js";
 export * from "./actionsTypes.js";
-export * from "./aggregationRequests.js";
-export * from "./attachments.js";
+export * from "./defaultOntologyForConjure.js";
 export * from "./linkTypes.js";
 export * from "./objects.js";
 export * from "./objectTypesWithLinkTypes.js";
 export * from "./objectTypeV2.js";
-export * from "./ontologies.js";
-export { fauxFoundry } from "./ontologies/legacyFullOntology.js";
 export * from "./queries.js";
 export * from "./queryTypes.js";

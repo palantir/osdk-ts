@@ -14,41 +14,21 @@
  * limitations under the License.
  */
 
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { RequestHandler } from "msw";
 import { ApplyActionFailedError } from "../errors.js";
-import { fauxFoundry } from "../stubs/ontologies/legacyFullOntology.js";
-import {
-  handleOpenApiCall,
-  OpenApiCallError,
-} from "./util/handleOpenApiCall.js";
+import type { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
+import { OntologiesV2 } from "../mock/index.js";
+import { OpenApiCallError } from "./util/handleOpenApiCall.js";
 
-export const actionHandlers: Array<RequestHandler> = [
-  undefined,
-  "https://stack.palantirCustom.com/foo/first/someStuff/",
-].flatMap(baseUrl => [
-  /**
-   * List ActionTypes
-   */
-  handleOpenApiCall(
-    OntologiesV2.ActionTypesV2.list,
-    ["ontologyApiName"],
-    async ({ params }) => {
-      return {
-        data: fauxFoundry
-          .getOntology(params.ontologyApiName)
-          .getAllActionTypes(),
-      };
-    },
-    baseUrl,
-  ),
-
+export const createActionHandlers = (
+  baseUrl: string,
+  fauxFoundry: FauxFoundry,
+): Array<RequestHandler> => [
   /**
    * Apply an Action
    */
-  handleOpenApiCall(
-    OntologiesV2.Actions.apply,
-    ["ontologyApiName", "actionType"],
+  OntologiesV2.Actions.apply(
+    baseUrl,
     async ({ params: { ontologyApiName, actionType }, request }) => {
       const response = fauxFoundry
         .getDataStore(ontologyApiName)
@@ -63,20 +43,14 @@ export const actionHandlers: Array<RequestHandler> = [
 
       return response;
     },
-    baseUrl,
   ),
 
-  /**
-   * Apply a Batch Action
-   */
-  handleOpenApiCall(
-    OntologiesV2.Actions.applyBatch,
-    ["ontologyApiName", "actionType"],
+  OntologiesV2.Actions.applyBatch(
+    baseUrl,
     async ({ params: { ontologyApiName, actionType }, request }) => {
       return fauxFoundry
         .getDataStore(ontologyApiName)
         .batchApplyAction(actionType, await request.json());
     },
-    baseUrl,
   ),
-]);
+];

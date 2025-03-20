@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import type { FauxAttachmentInfo } from "../FauxFoundry/FauxAttachmentStore.js";
+import { Queries } from "@osdk/foundry.ontologies";
+import type { CallFactory } from "../../handlers/util/handleOpenApiCall.js";
+import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
 
-export const helloWorldAttachment: FauxAttachmentInfo = {
-  filename: "file1.txt",
-  mediaType: "application/json",
-  rid: "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
-  buffer: new TextEncoder().encode(
-    JSON.stringify({ name: "Hello World" }, null, 2),
-  ),
-};
+export const execute: CallFactory<
+  "ontologyApiName" | "queryApiName",
+  typeof Queries.execute
+> = handleOpenApiCall(
+  Queries.execute,
+  ["ontologyApiName", "queryApiName"],
+);

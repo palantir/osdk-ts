@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,4 @@
  * limitations under the License.
  */
 
-import type { OntologyObjectV2 } from "@osdk/foundry.ontologies";
-
-export function getMockTodoObject(): OntologyObjectV2 & { __apiName: "Todo" } {
-  return {
-    __apiName: "Todo" as const,
-    __primaryKey: 1,
-    __rid: "ri.a.b.c.d",
-    id: "123",
-    body: "body",
-    complete: false,
-  };
-}
-
-export function getMockTaskObject(): OntologyObjectV2 & { __apiName: "Task" } {
-  return {
-    __apiName: "Task" as const,
-    __primaryKey: 1,
-    id: 1,
-  };
-}
+export * as OntologiesV2 from "./OntologiesV2/index.js";

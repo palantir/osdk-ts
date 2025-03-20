@@ -15,8 +15,6 @@
  */
 
 import type { GeoJsonObject } from "@osdk/foundry.geo";
-import type { AttachmentRid } from "@osdk/foundry.ontologies";
-import { helloWorldAttachment } from "./attachments.js";
 import { employeeInterfaceScoped } from "./interfaces.js";
 
 export const employee50050: {
@@ -199,14 +197,15 @@ export const objectWithAllPropertyTypes1 = {
   decimal: 1.1,
   integer: 1,
   attachment: {
-    rid: helloWorldAttachment.rid satisfies AttachmentRid as AttachmentRid,
+    rid: "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
   },
   attachment2: {
     rid: "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a80",
   },
   attachmentArray: [
     {
-      rid: helloWorldAttachment.rid satisfies AttachmentRid as AttachmentRid,
+      rid:
+        "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
     },
     {
       rid:

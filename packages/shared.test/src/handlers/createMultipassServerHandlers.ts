@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import type { RequestHandler } from "msw";
 import { http, HttpResponse } from "msw";
+import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
 
-export const multipassServerHandlers: Array<RequestHandler> = [
+export const createMultipassServerHandlers: FauxFoundryHandlersFactory = (
+  baseUrl,
+  fauxFoundry,
+) => [
   http.post(
-    "https://stack.palantir.com/multipass/api/oauth2/token",
+    `${baseUrl}/multipass/api/oauth2/token`,
     async (req) => {
       const body = await req.request.text();
       const parsedBody = new URLSearchParams(body);

@@ -15,14 +15,16 @@
  */
 
 import type { TimeSeriesPoint } from "@osdk/api";
-import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
-import { apiServer, stubData } from "@osdk/shared.test";
+import { Employee } from "@osdk/client.test.ontology";
+import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import { formatISO, sub } from "date-fns";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { type SetupServerApi } from "msw/node";
+import { beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
 describe("Timeseries", () => {
+  let apiServer: SetupServerApi;
   let client: Client;
   const statusTimeseriesData = [
     { time: formatISO(sub(Date.now(), { "years": 2 })), value: -365 },
@@ -38,31 +40,32 @@ describe("Timeseries", () => {
     { time: formatISO(sub(Date.now(), { "days": 3 })), value: -1 },
   ];
 
-  beforeAll(async () => {
-    apiServer.listen();
-    client = createClient(
-      "https://stack.palantir.com",
-      $ontologyRid,
-      async () => "myAccessToken",
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new LegacyFauxFoundry(),
+      createClient,
     );
+    ({ client } = testSetup);
 
-    stubData.fauxFoundry.getDataStore($ontologyRid).registerTimeSeriesData(
-      "Employee",
-      "50030",
-      "employeeStatus",
-      statusTimeseriesData,
-    );
+    testSetup.fauxFoundry.getDefaultDataStore()
+      .registerTimeSeriesData(
+        "Employee",
+        "50030",
+        "employeeStatus",
+        statusTimeseriesData,
+      );
 
-    stubData.fauxFoundry.getDataStore($ontologyRid).registerTimeSeriesData(
-      "Employee",
-      "50030",
-      "employeeSensor",
-      sensorTimeseriesData,
-    );
-  });
+    testSetup.fauxFoundry.getDefaultDataStore()
+      .registerTimeSeriesData(
+        "Employee",
+        "50030",
+        "employeeSensor",
+        sensorTimeseriesData,
+      );
 
-  afterAll(() => {
-    apiServer.close();
+    return () => {
+      testSetup.apiServer.close();
+    };
   });
 
   it("get first points works", async () => {

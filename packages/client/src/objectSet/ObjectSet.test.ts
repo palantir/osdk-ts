@@ -32,22 +32,18 @@ import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
 } from "@osdk/api/unstable";
 import {
-  $ontologyRid,
   BarInterface,
   BgaoNflPlayer,
   Employee,
   FooInterface,
   Office,
 } from "@osdk/client.test.ontology";
-import { apiServer, stubData } from "@osdk/shared.test";
 import {
-  afterAll,
-  beforeAll,
-  describe,
-  expect,
-  expectTypeOf,
-  it,
-} from "vitest";
+  LegacyFauxFoundry,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
+import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
@@ -86,17 +82,12 @@ export type PropMapToObject<
 describe("ObjectSet", () => {
   let client: Client;
 
-  beforeAll(async () => {
-    apiServer.listen();
-    client = createClient(
-      "https://stack.palantir.com",
-      $ontologyRid,
-      async () => "myAccessToken",
-    );
-  });
-
-  afterAll(() => {
-    apiServer.close();
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
+    ({ client } = testSetup);
+    return () => {
+      testSetup.apiServer.close();
+    };
   });
 
   it("does not allow intersect/union/subtract with different object types", () => {

@@ -17,7 +17,7 @@
 // @ts-check
 
 import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
-import { stubData } from "@osdk/shared.test";
+import { LegacyFauxFoundry } from "@osdk/shared.test";
 import { rmSync } from "node:fs";
 import { mkdir, readdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
@@ -32,10 +32,14 @@ try {
   // ignored, only needed for regeneration
 }
 
+const fullOntology = new LegacyFauxFoundry()
+  .getDefaultOntology()
+  .getOntologyFullMetadata();
+
 const ontologyWithoutUnsupportedAction = {
-  ...stubData.fullOntology,
+  ...fullOntology,
   actionTypes: {
-    ...stubData.fullOntology.actionTypes,
+    ...fullOntology.actionTypes,
   },
 };
 

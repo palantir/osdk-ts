@@ -21,14 +21,17 @@ import type {
   OsdkBase,
 } from "@osdk/api";
 import {
-  $ontologyRid,
   createOffice,
   Employee,
   FooInterface,
   Todo,
 } from "@osdk/client.test.ontology";
 import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
-import { apiServer, stubData } from "@osdk/shared.test";
+import {
+  LegacyFauxFoundry,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
 import chalk from "chalk";
 import type { Mock, Task } from "vitest";
 import {
@@ -131,13 +134,12 @@ describe(Store, () => {
     let mutatedEmployees: Osdk.Instance<Employee>[];
 
     beforeAll(async () => {
-      apiServer.listen();
-      client = createClient(
-        "https://stack.palantir.com",
-        $ontologyRid,
-        async () => "myAccessToken",
+      const testSetup = startNodeApiServer(
+        new LegacyFauxFoundry(),
+        createClient,
         { logger },
       );
+      ({ client } = testSetup);
 
       employeesAsServerReturns = (await client(Employee).fetchPage()).data;
       mutatedEmployees = [
@@ -147,18 +149,18 @@ describe(Store, () => {
         }),
         ...employeesAsServerReturns.slice(2),
       ];
-    });
 
-    afterAll(() => {
-      apiServer.close();
+      return () => {
+        testSetup.apiServer.close();
+      };
     });
 
     beforeEach(() => {
       cache = new Store(client);
-    });
 
-    afterEach(() => {
-      cache = undefined!;
+      return () => {
+        cache = undefined!;
+      };
     });
 
     it("basic single object works", async () => {

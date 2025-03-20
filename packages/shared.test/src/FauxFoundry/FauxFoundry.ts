@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import type { OntologyV2 } from "@osdk/foundry.ontologies";
+import type { Ontology, OntologyV2 } from "@osdk/foundry.ontologies";
+import type { RequestHandler } from "msw";
 import { OntologyNotFoundError } from "../errors.js";
+import { createFauxFoundryHandlers } from "../handlers/createFauxFoundryHandlers.js";
 import { OpenApiCallError } from "../handlers/util/handleOpenApiCall.js";
 import { FauxAttachmentStore } from "./FauxAttachmentStore.js";
 import { FauxDataStore } from "./FauxDataStore.js";
@@ -27,9 +29,37 @@ export class FauxFoundry {
 
   #dataStoresByOntologyApiName = new Map<string, FauxDataStore>();
 
-  readonly attachments: FauxAttachmentStore = new FauxAttachmentStore();
+  #handlers: RequestHandler[];
 
-  constructor() {
+  readonly attachments: FauxAttachmentStore = new FauxAttachmentStore();
+  readonly baseUrl: string;
+  readonly defaultOntologyRid: any;
+
+  constructor(
+    baseUrl: string,
+    defaultOntology: Ontology = {
+      apiName: "default-ontology",
+      displayName: "Ontology",
+      description: "The default ontology",
+      rid: `ri.ontology.main.ontology.${crypto.randomUUID()}`,
+    },
+  ) {
+    this.baseUrl = baseUrl;
+    this.#handlers = createFauxFoundryHandlers(baseUrl, this);
+    this.createOntology(defaultOntology);
+    this.defaultOntologyRid = defaultOntology.rid;
+  }
+
+  get handlers(): RequestHandler[] {
+    return this.#handlers;
+  }
+
+  getDefaultOntology(): FauxOntology {
+    return this.getOntology(this.defaultOntologyRid);
+  }
+
+  getDefaultDataStore(): FauxDataStore {
+    return this.getDataStore(this.defaultOntologyRid);
   }
 
   createOntology(metadata: OntologyV2): FauxOntology {
