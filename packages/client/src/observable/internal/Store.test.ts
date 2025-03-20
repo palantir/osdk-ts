@@ -16,6 +16,7 @@
 
 import type {
   CompileTimeMetadata,
+  ObjectMetadata,
   ObjectTypeDefinition,
   Osdk,
   OsdkBase,
@@ -917,16 +918,89 @@ describe(Store, () => {
       expect(sub.error).toHaveBeenCalled();
       expect(sub.next).not.toHaveBeenCalled();
     });
+    describe("batching", () => {
+      it("groups requests for single objects", async () => {
+        mockClient.mockFetchPageOnce().resolve({
+          data: [{
+            $apiName: "Employee",
+            $objectType: "Employee",
+            $primaryKey: 0,
+          }, {
+            $apiName: "Employee",
+            $objectType: "Employee",
+            $primaryKey: 1,
+          }],
+          nextPageToken: undefined,
+          totalCount: "2",
+        });
+
+        vi.mocked(client.fetchMetadata).mockReturnValue(Promise.resolve(
+          {
+            primaryKeyApiName: "id",
+          } satisfies Pick<
+            ObjectMetadata,
+            "primaryKeyApiName"
+          > as ObjectMetadata,
+        ));
+
+        const a = mockSingleSubCallback();
+        const b = mockSingleSubCallback();
+
+        defer(store.observeObject(Employee, 0, {}, a));
+        defer(store.observeObject(Employee, 1, {}, b));
+
+        await a.expectLoadingAndLoaded({
+          loading: objectPayloadContaining({
+            status: "loading",
+            object: undefined,
+          }),
+          loaded: objectPayloadContaining({
+            object: expect.objectContaining({
+              $primaryKey: 0,
+            }),
+          }),
+        });
+        await b.expectLoadingAndLoaded({
+          loading: objectPayloadContaining({
+            status: "loading",
+            object: undefined,
+          }),
+          loaded: objectPayloadContaining({
+            object: expect.objectContaining({
+              $primaryKey: 1,
+            }),
+          }),
+        });
+        console.log(client.mock.calls);
+      });
+    });
 
     describe("actions", () => {
+      beforeEach(() => {
+        vi.mocked(client.fetchMetadata).mockReturnValue(Promise.resolve(
+          {
+            primaryKeyApiName: "id",
+          } satisfies Pick<
+            ObjectMetadata,
+            "primaryKeyApiName"
+          > as ObjectMetadata,
+        ));
+      });
+
       it("properly invalidates objects", async () => {
         // after the below `observeObject`, the cache will need to load from the server
-        mockClient.mockFetchOneOnce().resolve({
-          $apiName: "Todo",
-          $primaryKey: 0,
+        // (also the batch loader uses object set to load not fetchOne)
+        mockClient.mockFetchPageOnce().resolve({
+          data: [{
+            $apiName: "Todo",
+            $primaryKey: 0,
+          }],
+          nextPageToken: undefined,
+          totalCount: "1",
         });
 
         const todoSubFn = mockSingleSubCallback();
+
         defer(store.observeObject(Todo, 0, {}, todoSubFn));
 
         await todoSubFn.expectLoadingAndLoaded({
@@ -950,10 +1024,14 @@ describe(Store, () => {
         });
 
         // after we apply the action, the object is invalidated and gets re-requested
-        mockClient.mockFetchOneOnce<Todo>().resolve({
-          $primaryKey: 0,
-          $apiName: "Todo",
-          text: "hello there kind sir",
+        mockClient.mockFetchPageOnce().resolve({
+          data: [{
+            $primaryKey: 0,
+            $apiName: "Todo",
+            text: "hello there kind sir",
+          }],
+          nextPageToken: undefined,
+          totalCount: "1",
         });
 
         await store.applyAction(createOffice, {
@@ -981,8 +1059,11 @@ describe(Store, () => {
         } as Osdk.Instance<Todo> & ObjectHolder;
 
         // after the below `observeObject`, the cache will need to load from the server
-        mockClient.mockFetchOneOnce<Todo>()
-          .resolve(fauxObject);
+        mockClient.mockFetchPageOnce().resolve({
+          data: [fauxObject],
+          nextPageToken: undefined,
+          totalCount: "1",
+        });
 
         const todoSubFn = mockSingleSubCallback();
         defer(
@@ -1139,6 +1220,17 @@ describe(Store, () => {
 
       const subListUnordered = mockListSubCallback();
       const subListOrdered = mockListSubCallback();
+
+      beforeEach(() => {
+        vi.mocked(client.fetchMetadata).mockReturnValue(Promise.resolve(
+          {
+            primaryKeyApiName: "id",
+          } satisfies Pick<
+            ObjectMetadata,
+            "primaryKeyApiName"
+          > as ObjectMetadata,
+        ));
+      });
 
       beforeEach(() => {
         defer(
@@ -1383,11 +1475,11 @@ describe(Store, () => {
         });
 
         // The action will complete and then revalidate in order...
-        mockClient.mockFetchOneOnce<Todo>(modifiedObjectA.$primaryKey)
-          .resolve(modifiedObjectA);
-
-        mockClient.mockFetchOneOnce<Todo>(createdObjectD.$primaryKey)
-          .resolve(createdObjectD);
+        mockClient.mockFetchPageOnce().resolve({
+          data: [modifiedObjectA, createdObjectD],
+          nextPageToken: undefined,
+          totalCount: "1",
+        });
 
         mockedApplyAction.resolve({
           addedObjects: [
