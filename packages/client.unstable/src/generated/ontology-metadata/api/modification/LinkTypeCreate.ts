@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import type { CompassProjectRid } from "../CompassProjectRid.js";
 import type { OntologyPackageRid } from "../OntologyPackageRid.js";
 import type { LinkTypeModification } from "./LinkTypeModification.js";
 export interface LinkTypeCreate {
   linkType: LinkTypeModification;
   packageRid: OntologyPackageRid | undefined;
+  projectRid: CompassProjectRid | undefined;
 }

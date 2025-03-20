@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 import type { ActionApplyClientPreferences } from "./ActionApplyClientPreferences.js";
 import type { ActionLogConfiguration } from "./ActionLogConfiguration.js";
 import type { ActionNotificationSettings } from "./ActionNotificationSettings.js";
+import type { ActionSubmissionConfiguration } from "./ActionSubmissionConfiguration.js";
 import type { ActionTypeApiName } from "./ActionTypeApiName.js";
 import type { ActionTypeDisplayMetadata } from "./ActionTypeDisplayMetadata.js";
 import type { ActionTypeEntities } from "./ActionTypeEntities.js";
@@ -48,4 +49,5 @@ export interface ActionTypeMetadata {
   actionApplyClientSettings: ActionApplyClientPreferences | undefined;
   notificationSettings: ActionNotificationSettings;
   provenance: ActionTypeProvenance | undefined;
+  submissionConfiguration: ActionSubmissionConfiguration | undefined;
 }

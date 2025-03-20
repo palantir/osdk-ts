@@ -110,6 +110,7 @@ export type { NonDefaultOntologyBranchDetails } from "./NonDefaultOntologyBranch
 export type { NonIndexedBranchConfig } from "./NonIndexedBranchConfig.js";
 export type { NotAllPropertyTypesAreMappedToDatasourceWithinObjectType } from "./NotAllPropertyTypesAreMappedToDatasourceWithinObjectType.js";
 export type { NumberOfDatasourcesConstraintError } from "./NumberOfDatasourcesConstraintError.js";
+export type { ObjectTypeDatasourceCannotHaveAssumedMarkingsUpdatedError } from "./ObjectTypeDatasourceCannotHaveAssumedMarkingsUpdatedError.js";
 export type { ObjectTypeDatasourceColumnMappingMismatchError } from "./ObjectTypeDatasourceColumnMappingMismatchError.js";
 export type { ObjectTypeDatasourceWithoutPrimaryKeyColumnError } from "./ObjectTypeDatasourceWithoutPrimaryKeyColumnError.js";
 export type { ObjectTypeImplementsTooManyInterfacesError } from "./ObjectTypeImplementsTooManyInterfacesError.js";
@@ -158,6 +159,7 @@ export type { TimeDependentPropertyTypeHasNoDatasourcesError } from "./TimeDepen
 export type { TimeSeriesDatasourceDoesNotReferenceExistingPropertiesError } from "./TimeSeriesDatasourceDoesNotReferenceExistingPropertiesError.js";
 export type { TimeSeriesDatasourceDoesNotReferenceTimeDependentPropertiesError } from "./TimeSeriesDatasourceDoesNotReferenceTimeDependentPropertiesError.js";
 export type { TitlePropertyTypeIsDerivedError } from "./TitlePropertyTypeIsDerivedError.js";
+export type { UnexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError } from "./UnexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError.js";
 export type { UnmappedPropertiesInPropertySecurityGroupError } from "./UnmappedPropertiesInPropertySecurityGroupError.js";
 export type { ValidateOntologyBranchRequest } from "./ValidateOntologyBranchRequest.js";
 export type { ValidateOntologyBranchResponse } from "./ValidateOntologyBranchResponse.js";

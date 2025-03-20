@@ -28,6 +28,7 @@ import type { ObjectTypeRestrictedViewDatasource } from "./ObjectTypeRestrictedV
 import type { ObjectTypeRestrictedViewDatasourceV2 } from "./ObjectTypeRestrictedViewDatasourceV2.js";
 import type { ObjectTypeStreamDatasource } from "./ObjectTypeStreamDatasource.js";
 import type { ObjectTypeStreamDatasourceV2 } from "./ObjectTypeStreamDatasourceV2.js";
+import type { ObjectTypeTableDatasource } from "./ObjectTypeTableDatasource.js";
 import type { ObjectTypeTimeSeriesDatasource } from "./ObjectTypeTimeSeriesDatasource.js";
 export interface ObjectTypeDatasourceDefinition_dataset {
   type: "dataset";
@@ -89,6 +90,11 @@ export interface ObjectTypeDatasourceDefinition_geotimeSeries {
   geotimeSeries: ObjectTypeGeotimeSeriesDatasource;
 }
 
+export interface ObjectTypeDatasourceDefinition_table {
+  type: "table";
+  table: ObjectTypeTableDatasource;
+}
+
 export interface ObjectTypeDatasourceDefinition_editsOnly {
   type: "editsOnly";
   editsOnly: ObjectTypeEditsOnlyDatasource;
@@ -119,6 +125,7 @@ export type ObjectTypeDatasourceDefinition =
   | ObjectTypeDatasourceDefinition_media
   | ObjectTypeDatasourceDefinition_mediaSetView
   | ObjectTypeDatasourceDefinition_geotimeSeries
+  | ObjectTypeDatasourceDefinition_table
   | ObjectTypeDatasourceDefinition_editsOnly
   | ObjectTypeDatasourceDefinition_direct
   | ObjectTypeDatasourceDefinition_derived;
