@@ -28,8 +28,10 @@ export function generateEnvDevelopment({
   const foundryApiUrl = corsProxy ? "http://localhost:8080" : foundryUrl;
   const applicationUrl = "http://localhost:8080";
   return `# This env file is intended for developing on your local computer.
-# To set up development in Foundry's Code Workspaces, see .env.code-workspaces
-# To deploy your application to production, see .env.production
+# To set up development in Foundry's Code Workspaces, see .env.code-workspaces.
+# To deploy your application to production, see .env.production.
+# Note that .env.code-workspaces is only present for projects that were set up
+# using the "Bootstrap in Foundry" option in Developer Console.
 
 
 # This URL is the URL your users will be redirected back to after signing in.
@@ -69,8 +71,10 @@ export function generateEnvProduction({
   const applicationUrlOrDefault = applicationUrl
     ?? "<Fill in the domain at which you deploy your application>";
   return `# This env file is intended for deploying your application to production.
-# To set up development on your local computer, see .env.development
-# To set up development in Foundry's Code Workspaces, see .env.code-workspaces
+# To set up development on your local computer, see .env.development.
+# To set up development in Foundry's Code Workspaces, see .env.code-workspaces.
+# Note that .env.code-workspaces is only present for projects that were set up
+# using the "Bootstrap in Foundry" option in Developer Console.
 
 
 # This URL is the URL your users will be redirected back to after signing in.

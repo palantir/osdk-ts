@@ -22,8 +22,10 @@ import {
 
 const expectedEnvDevelopment = `
 # This env file is intended for developing on your local computer.
-# To set up development in Foundry's Code Workspaces, see .env.code-workspaces
-# To deploy your application to production, see .env.production
+# To set up development in Foundry's Code Workspaces, see .env.code-workspaces.
+# To deploy your application to production, see .env.production.
+# Note that .env.code-workspaces is only present for projects that were set up
+# using the "Bootstrap in Foundry" option in Developer Console.
 
 
 # This URL is the URL your users will be redirected back to after signing in.
@@ -50,8 +52,10 @@ PUBLIC_FOUNDRY_CLIENT_ID=123
 
 const expectedEnvDevelopmentCorsProxy = `
 # This env file is intended for developing on your local computer.
-# To set up development in Foundry's Code Workspaces, see .env.code-workspaces
-# To deploy your application to production, see .env.production
+# To set up development in Foundry's Code Workspaces, see .env.code-workspaces.
+# To deploy your application to production, see .env.production.
+# Note that .env.code-workspaces is only present for projects that were set up
+# using the "Bootstrap in Foundry" option in Developer Console.
 
 
 # This URL is the URL your users will be redirected back to after signing in.
@@ -78,8 +82,10 @@ PUBLIC_FOUNDRY_CLIENT_ID=123
 
 const expectedEnvProduction = `
 # This env file is intended for deploying your application to production.
-# To set up development on your local computer, see .env.development
-# To set up development in Foundry's Code Workspaces, see .env.code-workspaces
+# To set up development on your local computer, see .env.development.
+# To set up development in Foundry's Code Workspaces, see .env.code-workspaces.
+# Note that .env.code-workspaces is only present for projects that were set up
+# using the "Bootstrap in Foundry" option in Developer Console.
 
 
 # This URL is the URL your users will be redirected back to after signing in.
@@ -106,8 +112,10 @@ PUBLIC_FOUNDRY_CLIENT_ID=123
 
 const expectedEnvProductionNoAppUrl = `
 # This env file is intended for deploying your application to production.
-# To set up development on your local computer, see .env.development
-# To set up development in Foundry's Code Workspaces, see .env.code-workspaces
+# To set up development on your local computer, see .env.development.
+# To set up development in Foundry's Code Workspaces, see .env.code-workspaces.
+# Note that .env.code-workspaces is only present for projects that were set up
+# using the "Bootstrap in Foundry" option in Developer Console.
 
 
 # This URL is the URL your users will be redirected back to after signing in.
