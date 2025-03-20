@@ -16,7 +16,9 @@
 
 import type { InterfaceTypeApiName } from "./InterfaceTypeApiName.js";
 import type { InterfaceTypeDisplayMetadata } from "./InterfaceTypeDisplayMetadata.js";
+import type { ObjectTypeFieldApiName } from "./ObjectTypeFieldApiName.js";
 import type { OntologyIrInterfaceLinkType } from "./OntologyIrInterfaceLinkType.js";
+import type { OntologyIrInterfaceSharedPropertyType } from "./OntologyIrInterfaceSharedPropertyType.js";
 import type { OntologyIrInterfaceTypeStatus } from "./OntologyIrInterfaceTypeStatus.js";
 import type { OntologyIrSharedPropertyType } from "./OntologyIrSharedPropertyType.js";
 
@@ -30,6 +32,14 @@ export interface OntologyIrInterfaceType {
   status: OntologyIrInterfaceTypeStatus;
   properties: Array<OntologyIrSharedPropertyType>;
   allProperties: Array<OntologyIrSharedPropertyType>;
+  propertiesV2: Record<
+    ObjectTypeFieldApiName,
+    OntologyIrInterfaceSharedPropertyType
+  >;
+  allPropertiesV2: Record<
+    ObjectTypeFieldApiName,
+    OntologyIrInterfaceSharedPropertyType
+  >;
   extendsInterfaces: Array<InterfaceTypeApiName>;
   allExtendsInterfaces: Array<InterfaceTypeApiName>;
   links: Array<OntologyIrInterfaceLinkType>;

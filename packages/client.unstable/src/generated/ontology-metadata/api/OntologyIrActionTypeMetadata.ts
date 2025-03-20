@@ -17,6 +17,7 @@
 import type { ActionApplyClientPreferences } from "./ActionApplyClientPreferences.js";
 import type { ActionLogConfiguration } from "./ActionLogConfiguration.js";
 import type { ActionNotificationSettings } from "./ActionNotificationSettings.js";
+import type { ActionSubmissionConfiguration } from "./ActionSubmissionConfiguration.js";
 import type { ActionTypeApiName } from "./ActionTypeApiName.js";
 import type { ActionTypeDisplayMetadata } from "./ActionTypeDisplayMetadata.js";
 import type { ActionTypeRid } from "./ActionTypeRid.js";
@@ -48,4 +49,5 @@ export interface OntologyIrActionTypeMetadata {
   actionApplyClientSettings: ActionApplyClientPreferences | undefined;
   notificationSettings: ActionNotificationSettings;
   provenance: ActionTypeProvenance | undefined;
+  submissionConfiguration: ActionSubmissionConfiguration | undefined;
 }

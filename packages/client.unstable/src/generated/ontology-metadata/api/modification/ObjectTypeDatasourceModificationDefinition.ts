@@ -16,6 +16,7 @@
 
 import type { ObjectTypeDatasetDatasourceModification } from "./ObjectTypeDatasetDatasourceModification.js";
 import type { ObjectTypeDatasetDatasourceV2Modification } from "./ObjectTypeDatasetDatasourceV2Modification.js";
+import type { ObjectTypeDatasetDatasourceV3Modification } from "./ObjectTypeDatasetDatasourceV3Modification.js";
 import type { ObjectTypeDerivedPropertiesDatasourceModification } from "./ObjectTypeDerivedPropertiesDatasourceModification.js";
 import type { ObjectTypeDirectDatasourceModification } from "./ObjectTypeDirectDatasourceModification.js";
 import type { ObjectTypeEditsOnlyDatasourceModification } from "./ObjectTypeEditsOnlyDatasourceModification.js";
@@ -27,6 +28,7 @@ import type { ObjectTypeRestrictedViewDatasourceModification } from "./ObjectTyp
 import type { ObjectTypeRestrictedViewDatasourceV2Modification } from "./ObjectTypeRestrictedViewDatasourceV2Modification.js";
 import type { ObjectTypeStreamDatasourceModification } from "./ObjectTypeStreamDatasourceModification.js";
 import type { ObjectTypeStreamDatasourceV2Modification } from "./ObjectTypeStreamDatasourceV2Modification.js";
+import type { ObjectTypeTableDatasourceModification } from "./ObjectTypeTableDatasourceModification.js";
 import type { ObjectTypeTimeSeriesDatasourceModification } from "./ObjectTypeTimeSeriesDatasourceModification.js";
 export interface ObjectTypeDatasourceModificationDefinition_dataset {
   type: "dataset";
@@ -63,6 +65,11 @@ export interface ObjectTypeDatasourceModificationDefinition_datasetV2 {
   datasetV2: ObjectTypeDatasetDatasourceV2Modification;
 }
 
+export interface ObjectTypeDatasourceModificationDefinition_datasetV3 {
+  type: "datasetV3";
+  datasetV3: ObjectTypeDatasetDatasourceV3Modification;
+}
+
 export interface ObjectTypeDatasourceModificationDefinition_restrictedViewV2 {
   type: "restrictedViewV2";
   restrictedViewV2: ObjectTypeRestrictedViewDatasourceV2Modification;
@@ -81,6 +88,11 @@ export interface ObjectTypeDatasourceModificationDefinition_mediaSetView {
 export interface ObjectTypeDatasourceModificationDefinition_geotimeSeries {
   type: "geotimeSeries";
   geotimeSeries: ObjectTypeGeotimeSeriesDatasourceModification;
+}
+
+export interface ObjectTypeDatasourceModificationDefinition_table {
+  type: "table";
+  table: ObjectTypeTableDatasourceModification;
 }
 
 export interface ObjectTypeDatasourceModificationDefinition_editsOnly {
@@ -108,10 +120,12 @@ export type ObjectTypeDatasourceModificationDefinition =
   | ObjectTypeDatasourceModificationDefinition_restrictedView
   | ObjectTypeDatasourceModificationDefinition_timeSeries
   | ObjectTypeDatasourceModificationDefinition_datasetV2
+  | ObjectTypeDatasourceModificationDefinition_datasetV3
   | ObjectTypeDatasourceModificationDefinition_restrictedViewV2
   | ObjectTypeDatasourceModificationDefinition_media
   | ObjectTypeDatasourceModificationDefinition_mediaSetView
   | ObjectTypeDatasourceModificationDefinition_geotimeSeries
+  | ObjectTypeDatasourceModificationDefinition_table
   | ObjectTypeDatasourceModificationDefinition_editsOnly
   | ObjectTypeDatasourceModificationDefinition_direct
   | ObjectTypeDatasourceModificationDefinition_derived;

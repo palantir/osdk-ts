@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-import type { EntityConfig } from "./EntityConfig.js";
-import type { OntologyIrEntityProvenance } from "./provenance/OntologyIrEntityProvenance.js";
-import type { StorageBackend } from "./StorageBackend.js";
-
 /**
  * Contains additional metadata associated with a LinkType.
  */
 export interface OntologyIrLinkTypeEntityMetadata {
-  entityConfig: EntityConfig;
   arePatchesEnabled: boolean;
-  targetStorageBackend: StorageBackend;
-  provenance: OntologyIrEntityProvenance | undefined;
-  redacted: boolean | undefined;
 }

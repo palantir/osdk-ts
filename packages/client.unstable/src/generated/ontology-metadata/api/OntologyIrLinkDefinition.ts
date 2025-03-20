@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { OntologyIrIntermediaryLinkDefinition } from "./OntologyIrIntermediaryLinkDefinition.js";
 import type { OntologyIrManyToManyLinkDefinition } from "./OntologyIrManyToManyLinkDefinition.js";
 import type { OntologyIrOneToManyLinkDefinition } from "./OntologyIrOneToManyLinkDefinition.js";
 export interface OntologyIrLinkDefinition_manyToMany {
@@ -26,12 +25,6 @@ export interface OntologyIrLinkDefinition_oneToMany {
   type: "oneToMany";
   oneToMany: OntologyIrOneToManyLinkDefinition;
 }
-
-export interface OntologyIrLinkDefinition_intermediary {
-  type: "intermediary";
-  intermediary: OntologyIrIntermediaryLinkDefinition;
-}
 export type OntologyIrLinkDefinition =
   | OntologyIrLinkDefinition_manyToMany
-  | OntologyIrLinkDefinition_oneToMany
-  | OntologyIrLinkDefinition_intermediary;
+  | OntologyIrLinkDefinition_oneToMany;

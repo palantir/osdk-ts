@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-import type { LinkTypeId } from "./LinkTypeId.js";
-import type { LinkTypeRid } from "./LinkTypeRid.js";
-import type { ObjectTypeId } from "./ObjectTypeId.js";
-import type { ObjectTypeRid } from "./ObjectTypeRid.js";
-
-/**
- * The Intermediary LinkType is referencing ObjectTypes that are not in OSv2.
- */
-export interface ReferencedObjectTypesMustBeOsV2Error {
-  intermediaryLinkTypeRid: LinkTypeRid;
-  objectTypeRid: ObjectTypeRid;
-  intermediaryLinkTypeId: LinkTypeId | undefined;
-  objectTypeId: ObjectTypeId | undefined;
+import type { OntologyIrSearchAroundStep } from "./OntologyIrSearchAroundStep.js";
+export interface OntologyIrMultiHopStepDefinition_searchAround {
+  type: "searchAround";
+  searchAround: OntologyIrSearchAroundStep;
 }
+export type OntologyIrMultiHopStepDefinition =
+  OntologyIrMultiHopStepDefinition_searchAround;

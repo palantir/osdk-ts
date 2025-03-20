@@ -18,5 +18,5 @@ import type { DerivedPropertyLinkTypeIdentifier } from "./DerivedPropertyLinkTyp
 import type { DerivedPropertyLinkTypeSide } from "./DerivedPropertyLinkTypeSide.js";
 export interface LinkTypeLinkDefinition {
   linkTypeIdentifier: DerivedPropertyLinkTypeIdentifier;
-  linkTypeSide: DerivedPropertyLinkTypeSide | undefined;
+  linkTypeSide: DerivedPropertyLinkTypeSide;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,12 @@
  */
 
 import type { ActionTypeRid } from "../../api/ActionTypeRid.js";
+import type { InterfaceTypeRid } from "../../api/InterfaceTypeRid.js";
 import type { LinkTypeRid } from "../../api/LinkTypeRid.js";
 import type { ObjectTypeRid } from "../../api/ObjectTypeRid.js";
+import type { RuleSetRid } from "../../api/RuleSetRid.js";
 import type { SharedPropertyTypeRid } from "../../api/SharedPropertyTypeRid.js";
+import type { TypeGroupRid } from "../../api/TypeGroupRid.js";
 
 /**
  * Summary of the conflicting entities. Conflicting entities are calculated by finding the intersection of entities that are updated/deleted on a branch and entities that are updated/deleted on the default branch between the latestRebasedVersion and a target ontologyVersion.
@@ -30,4 +33,7 @@ export interface ConflictingEntitiesSummary {
   linkTypeEntityMetadatas: Array<LinkTypeRid>;
   actionTypes: Array<ActionTypeRid>;
   sharedPropertyTypes: Array<SharedPropertyTypeRid>;
+  interfaceTypes: Array<InterfaceTypeRid>;
+  typeGroups: Array<TypeGroupRid>;
+  ruleSets: Array<RuleSetRid>;
 }

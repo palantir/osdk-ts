@@ -26,6 +26,8 @@ export type DatasourceType =
   | "MEDIA"
   | "MEDIA_SET_VIEW"
   | "GEOTIME_SERIES"
+  | "TABLE"
   | "EDITS_ONLY"
   | "DIRECT"
-  | "DERIVED";
+  | "DERIVED"
+  | "DATASET_V3";

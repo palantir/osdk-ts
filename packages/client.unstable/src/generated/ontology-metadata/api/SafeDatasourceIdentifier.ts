@@ -23,6 +23,7 @@ import type { MediaSetViewLocator } from "./MediaSetViewLocator.js";
 import type { MediaSourceRid } from "./MediaSourceRid.js";
 import type { RestrictedViewRid } from "./RestrictedViewRid.js";
 import type { StreamLocatorRid } from "./StreamLocatorRid.js";
+import type { TableRid } from "./TableRid.js";
 import type { TimeSeriesSyncRid } from "./TimeSeriesSyncRid.js";
 export interface SafeDatasourceIdentifier_datasetRid {
   type: "datasetRid";
@@ -78,6 +79,11 @@ export interface SafeDatasourceIdentifier_derivedPropertiesSourceRid {
   type: "derivedPropertiesSourceRid";
   derivedPropertiesSourceRid: DerivedPropertiesSourceRid;
 }
+
+export interface SafeDatasourceIdentifier_tableRid {
+  type: "tableRid";
+  tableRid: TableRid;
+}
 /**
  * Union type representing safe parts of different datasource identifiers
  */
@@ -92,4 +98,5 @@ export type SafeDatasourceIdentifier =
   | SafeDatasourceIdentifier_geotimeSeriesIntegrationRid
   | SafeDatasourceIdentifier_editsOnly
   | SafeDatasourceIdentifier_directSourceRid
-  | SafeDatasourceIdentifier_derivedPropertiesSourceRid;
+  | SafeDatasourceIdentifier_derivedPropertiesSourceRid
+  | SafeDatasourceIdentifier_tableRid;

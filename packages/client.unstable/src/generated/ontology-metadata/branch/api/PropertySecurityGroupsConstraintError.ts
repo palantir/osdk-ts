@@ -15,6 +15,7 @@
  */
 
 import type { InvalidNumberOfPropertyReferencesInPropertySecurityGroupError } from "./InvalidNumberOfPropertyReferencesInPropertySecurityGroupError.js";
+import type { UnexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError } from "./UnexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError.js";
 import type { UnmappedPropertiesInPropertySecurityGroupError } from "./UnmappedPropertiesInPropertySecurityGroupError.js";
 export interface PropertySecurityGroupsConstraintError_unmappedPropertiesInPropertySecurityGroup {
   type: "unmappedPropertiesInPropertySecurityGroup";
@@ -27,9 +28,16 @@ export interface PropertySecurityGroupsConstraintError_invalidNumberOfPropertyRe
   invalidNumberOfPropertyReferencesInPropertySecurityGroup:
     InvalidNumberOfPropertyReferencesInPropertySecurityGroupError;
 }
+
+export interface PropertySecurityGroupsConstraintError_unexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError {
+  type: "unexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError";
+  unexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError:
+    UnexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError;
+}
 /**
  * Errors related to validation of property security groups.
  */
 export type PropertySecurityGroupsConstraintError =
   | PropertySecurityGroupsConstraintError_unmappedPropertiesInPropertySecurityGroup
-  | PropertySecurityGroupsConstraintError_invalidNumberOfPropertyReferencesInPropertySecurityGroup;
+  | PropertySecurityGroupsConstraintError_invalidNumberOfPropertyReferencesInPropertySecurityGroup
+  | PropertySecurityGroupsConstraintError_unexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError;

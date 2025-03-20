@@ -16,6 +16,7 @@
 
 import type { ObjectTypeDatasetDatasource } from "./ObjectTypeDatasetDatasource.js";
 import type { ObjectTypeDatasetDatasourceV2 } from "./ObjectTypeDatasetDatasourceV2.js";
+import type { ObjectTypeDatasetDatasourceV3 } from "./ObjectTypeDatasetDatasourceV3.js";
 import type { ObjectTypeDerivedPropertiesDatasource } from "./ObjectTypeDerivedPropertiesDatasource.js";
 import type { ObjectTypeDirectDatasource } from "./ObjectTypeDirectDatasource.js";
 import type { ObjectTypeEditsOnlyDatasource } from "./ObjectTypeEditsOnlyDatasource.js";
@@ -27,6 +28,7 @@ import type { ObjectTypeRestrictedViewDatasource } from "./ObjectTypeRestrictedV
 import type { ObjectTypeRestrictedViewDatasourceV2 } from "./ObjectTypeRestrictedViewDatasourceV2.js";
 import type { ObjectTypeStreamDatasource } from "./ObjectTypeStreamDatasource.js";
 import type { ObjectTypeStreamDatasourceV2 } from "./ObjectTypeStreamDatasourceV2.js";
+import type { ObjectTypeTableDatasource } from "./ObjectTypeTableDatasource.js";
 import type { ObjectTypeTimeSeriesDatasource } from "./ObjectTypeTimeSeriesDatasource.js";
 export interface ObjectTypeDatasourceDefinition_dataset {
   type: "dataset";
@@ -58,6 +60,11 @@ export interface ObjectTypeDatasourceDefinition_datasetV2 {
   datasetV2: ObjectTypeDatasetDatasourceV2;
 }
 
+export interface ObjectTypeDatasourceDefinition_datasetV3 {
+  type: "datasetV3";
+  datasetV3: ObjectTypeDatasetDatasourceV3;
+}
+
 export interface ObjectTypeDatasourceDefinition_restrictedViewV2 {
   type: "restrictedViewV2";
   restrictedViewV2: ObjectTypeRestrictedViewDatasourceV2;
@@ -81,6 +88,11 @@ export interface ObjectTypeDatasourceDefinition_mediaSetView {
 export interface ObjectTypeDatasourceDefinition_geotimeSeries {
   type: "geotimeSeries";
   geotimeSeries: ObjectTypeGeotimeSeriesDatasource;
+}
+
+export interface ObjectTypeDatasourceDefinition_table {
+  type: "table";
+  table: ObjectTypeTableDatasource;
 }
 
 export interface ObjectTypeDatasourceDefinition_editsOnly {
@@ -107,11 +119,13 @@ export type ObjectTypeDatasourceDefinition =
   | ObjectTypeDatasourceDefinition_restrictedView
   | ObjectTypeDatasourceDefinition_timeSeries
   | ObjectTypeDatasourceDefinition_datasetV2
+  | ObjectTypeDatasourceDefinition_datasetV3
   | ObjectTypeDatasourceDefinition_restrictedViewV2
   | ObjectTypeDatasourceDefinition_restrictedStream
   | ObjectTypeDatasourceDefinition_media
   | ObjectTypeDatasourceDefinition_mediaSetView
   | ObjectTypeDatasourceDefinition_geotimeSeries
+  | ObjectTypeDatasourceDefinition_table
   | ObjectTypeDatasourceDefinition_editsOnly
   | ObjectTypeDatasourceDefinition_direct
   | ObjectTypeDatasourceDefinition_derived;

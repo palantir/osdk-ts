@@ -31,6 +31,7 @@ export type { DayOfWeek } from "./DayOfWeek.js";
 export type { DayTime } from "./DayTime.js";
 export type { EditsHistory } from "./EditsHistory.js";
 export type { EditsHistoryConfig } from "./EditsHistoryConfig.js";
+export type { EditsHistoryImportConfiguration } from "./EditsHistoryImportConfiguration.js";
 export type { EditsResolutionStrategies } from "./EditsResolutionStrategies.js";
 export type { EditsResolutionStrategy } from "./EditsResolutionStrategy.js";
 export type { EntityConfig } from "./EntityConfig.js";

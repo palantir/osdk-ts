@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { LinkTypeId } from "./LinkTypeId.js";
-import type { LinkTypeRid } from "./LinkTypeRid.js";
-
-/**
- * The Intermediary LinkType is not in OSv2
- */
-export interface IntermediaryLinkTypeMustBeOsV2Error {
-  intermediaryLinkTypeRid: LinkTypeRid;
-  intermediaryLinkTypeId: LinkTypeId | undefined;
+import type { PropertyTypeRid } from "../PropertyTypeRid.js";
+import type { StorageDerivedPropertyAggregation } from "./StorageDerivedPropertyAggregation.js";
+import type { StorageLinkDefinition } from "./StorageLinkDefinition.js";
+export interface StorageAggregatedPropertiesDefinition {
+  propertyTypeMapping: Record<
+    PropertyTypeRid,
+    StorageDerivedPropertyAggregation
+  >;
+  linkDefinition: StorageLinkDefinition;
 }
