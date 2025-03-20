@@ -25,12 +25,36 @@ export function generateEnvDevelopment({
   clientId: string;
   corsProxy: boolean;
 }): string {
-  return generateEnv({
-    envPrefix,
-    foundryUrl: corsProxy ? "http://localhost:8080" : foundryUrl,
-    applicationUrl: "http://localhost:8080",
-    clientId,
-  });
+  const foundryApiUrl = corsProxy ? "http://localhost:8080" : foundryUrl;
+  const applicationUrl = "http://localhost:8080";
+  return `# This env file is intended for developing on your local computer.
+# To set up development in Foundry's Code Workspaces, see .env.code-workspaces.
+# To deploy your application to production, see .env.production.
+# Note that .env.code-workspaces is only present for projects that were set up
+# using the "Bootstrap in Foundry" option in Developer Console.
+
+
+# This URL is the URL your users will be redirected back to after signing in.
+# This URL must exactly match one of the URLs listed in the "OAuth & scopes"
+# page of Developer Console.
+#
+# If your application in development is not hosted on port 8080, you will need
+# to change this URL here and in Developer Console.
+
+${envPrefix}FOUNDRY_REDIRECT_URL=${applicationUrl}/auth/callback
+
+
+# This URL is the Foundry host that your OSDK will use. It typically does not
+# need to be changed.
+
+${envPrefix}FOUNDRY_API_URL=${foundryApiUrl}
+
+
+# This client ID must match the client ID given on the "OAuth & scopes" page of
+# Developer Console. It typically does not need to be changed.
+
+${envPrefix}FOUNDRY_CLIENT_ID=${clientId}
+`;
 }
 
 export function generateEnvProduction({
@@ -44,29 +68,38 @@ export function generateEnvProduction({
   applicationUrl: string | undefined;
   clientId: string;
 }): string {
-  return generateEnv({
-    envPrefix,
-    foundryUrl,
-    applicationUrl,
-    clientId,
-  });
-}
+  const applicationUrlOrDefault = applicationUrl
+    ?? "<Fill in the domain at which you deploy your application>";
+  return `# This env file is intended for deploying your application to production.
+# To set up development on your local computer, see .env.development.
+# To set up development in Foundry's Code Workspaces, see .env.code-workspaces.
+# Note that .env.code-workspaces is only present for projects that were set up
+# using the "Bootstrap in Foundry" option in Developer Console.
 
-function generateEnv({
-  envPrefix,
-  foundryUrl,
-  applicationUrl,
-  clientId,
-}: {
-  envPrefix: string;
-  foundryUrl: string;
-  applicationUrl: string | undefined;
-  clientId: string;
-}): string {
-  return `${envPrefix}FOUNDRY_API_URL=${foundryUrl}\n`
-    + `${applicationUrl == null ? "# " : ""}${envPrefix}FOUNDRY_REDIRECT_URL=${
-      applicationUrl
-        ?? "<Fill in the domain at which you deploy your application>"
-    }/auth/callback\n`
-    + `${envPrefix}FOUNDRY_CLIENT_ID=${clientId}\n`;
+
+# This URL is the URL your users will be redirected back to after signing in.
+# This URL must exactly match one of the URLs listed in the "OAuth & scopes"
+# page of Developer Console.
+#
+# If you change where your application is hosted, you will need to change this
+# URL here and in Developer Console.
+
+${
+    applicationUrl == null
+      ? "# "
+      : ""
+  }${envPrefix}FOUNDRY_REDIRECT_URL=${applicationUrlOrDefault}/auth/callback
+
+
+# This URL is the Foundry host that your OSDK will use. It typically does not
+# need to be changed.
+
+${envPrefix}FOUNDRY_API_URL=${foundryUrl}
+
+
+# This client ID must match the client ID given on the "OAuth & scopes" page of
+# Developer Console. It typically does not need to be changed.
+
+${envPrefix}FOUNDRY_CLIENT_ID=${clientId}
+`;
 }
