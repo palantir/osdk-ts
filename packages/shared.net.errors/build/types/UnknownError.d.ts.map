@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,SAAS,wBAAwB,uBAAwB;AAEzD,OAAO,cAAM,qBAAqB,iBAAiB;CACjD,eAAe;CACf,YACEA,iBACAC,oBACAC,gBAAgB,OAChBC;AAKH","names":["message: string","errorName?: string","originalError?: Error","statusCode?: number"],"sources":["../../src/UnknownError.ts"],"version":3,"file":"UnknownError.d.ts"}

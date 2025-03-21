@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,qBAAsB;AAC1D,iBAAiB,wCAAwC;CACvD,MAAM;CACN;AACD;AAED,iBAAiB,yCAAyC;CACxD,MAAM;CACN,WAAW;AACZ;AACD,YAAY,iCACR,0CACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/formatting/ValueReferenceOrStringConstant.ts"],"version":3,"file":"ValueReferenceOrStringConstant.d.ts"}

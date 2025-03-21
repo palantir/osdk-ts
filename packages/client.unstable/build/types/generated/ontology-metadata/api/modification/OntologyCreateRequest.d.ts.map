@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,eAAe,eAAgB;AAC7C,cAAc,uBAAuB,uBAAwB;AAC7D,cAAc,6BAA6B,6BAA8B;AACzE,cAAc,2BAA2B,0BAA2B;;;;;;;AAQpE,iBAAiB,sBAAsB;CACrC,SAAS;CACT;CACA;CACA,uBAAuB;CACvB,wBAAwB,MAAM;CAC9B,qBAAqB;AACtB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/modification/OntologyCreateRequest.ts"],"version":3,"file":"OntologyCreateRequest.d.ts"}

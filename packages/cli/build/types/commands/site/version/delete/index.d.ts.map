@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,OAAQ;AAC3C,cAAc,sBAAsB,yBAA0B;AAC9D,cAAc,yBAAyB,wBAAyB;AAEhE,cAAMA,SAAS,cACb,gBACA;AAwBF,eAAe","names":["command: CommandModule<\n  CommonSiteArgs,\n  VersionDeleteArgs\n>"],"sources":["../../../../../../src/commands/site/version/delete/index.ts"],"version":3,"file":"index.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,sBAAuB;AAC5D,cAAc,oBAAoB,mBAAoB;AACtD,iBAAiB,sBAAsB;CACrC,MAAM;CACN,QAAQ;AACT;AAED,iBAAiB,4BAA4B;CAC3C,MAAM;CACN,cAAc;AACf;;;;AAID,YAAY,iBACR,wBACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/KnownFormatter.ts"],"version":3,"file":"KnownFormatter.d.ts"}

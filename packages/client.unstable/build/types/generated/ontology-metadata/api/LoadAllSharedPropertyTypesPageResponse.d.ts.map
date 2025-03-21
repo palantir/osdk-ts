@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,0CAA0C,yCAA0C;AAClG,cAAc,2CAA2C,0CAA2C;;;;AAKpG,iBAAiB,uCAAuC;CACtD,qBAAqB,MAAM;CAC3B,eAAe;AAChB","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/LoadAllSharedPropertyTypesPageResponse.ts"],"version":3,"file":"LoadAllSharedPropertyTypesPageResponse.d.ts"}

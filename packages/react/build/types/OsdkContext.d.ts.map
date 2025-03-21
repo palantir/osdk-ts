@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,cAAc,cAAe;AAC3C,OAAO,WAAW,OAAQ;AAY1B,OAAO,cAAMA,aAAa,MAAM,QAAQ;CACtC,QAAQ;AACT","names":["OsdkContext: React.Context<{\n  client: Client;\n}>"],"sources":["../../src/OsdkContext.ts"],"version":3,"file":"OsdkContext.d.ts"}

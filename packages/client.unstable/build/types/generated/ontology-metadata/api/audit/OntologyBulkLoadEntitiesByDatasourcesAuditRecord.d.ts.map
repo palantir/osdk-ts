@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,oCAAoC,mCAAoC;AACtF,iBAAiB,iDAAiD;CAChE,UAAU,MAAM;AACjB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/audit/OntologyBulkLoadEntitiesByDatasourcesAuditRecord.ts"],"version":3,"file":"OntologyBulkLoadEntitiesByDatasourcesAuditRecord.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,iBAAiB,gBAAiB;AAChD,cAAc,kBAAkB,iBAAkB;AAClD,iBAAiB,wBAAwB;CACvC;CACA,YAAY;CACZ,aAAa,MAAM;CACnB;CACA;AACD","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/RelationDisplayMetadata.ts"],"version":3,"file":"RelationDisplayMetadata.d.ts"}

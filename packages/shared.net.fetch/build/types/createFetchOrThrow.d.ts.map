@@ -1,0 +1,1 @@
+{"mappings":";;;;;;;;AA0BA,OAAO,iBAAS,mBAAmBA,iBAAgB,SAE/CC,KAAK,cAAc,KACnBC,cAAc,gBACb,QAAQ","names":["fetchFn: typeof fetch","url: RequestInfo | URL","requestInit?: RequestInit"],"sources":["../../src/createFetchOrThrow.ts"],"version":3,"file":"createFetchOrThrow.d.ts"}

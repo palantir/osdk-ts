@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,gBAAgB,eAAgB;AAC9C,cAAc,kCAAkC,iCAAkC;AAClF,iBAAiB,uCAAuC;CACtD,UAAU;CACV,wBAAwB,MAAM;AAC/B","names":[],"sources":["../../../../../src/generated/type-registry/api/InvalidDataConstraintsForBaseTypeError.ts"],"version":3,"file":"InvalidDataConstraintsForBaseTypeError.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mCAAmC,kCAAmC;AACpF,cAAc,2BAA2B,qCAAsC;AAE/E,YAAY,UAAU,UAAU,qCACtB,oBAAoB,GAAG;AAGjC,YAAY;CACV,UAAU;CACV,UAAU,UAAU;IAClB,YAAY,oBAAoB,GAAG,SAAS,GAAG","names":[],"sources":["../../../src/util/LinkUtils.ts"],"version":3,"file":"LinkUtils.d.ts"}

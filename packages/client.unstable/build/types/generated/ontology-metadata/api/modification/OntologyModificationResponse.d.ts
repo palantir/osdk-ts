@@ -1,0 +1,31 @@
+import type { WorkflowIdInRequest } from "../../workflow/api/WorkflowIdInRequest.js";
+import type { WorkflowRid } from "../../workflow/api/WorkflowRid.js";
+import type { ActionType } from "../ActionType.js";
+import type { ActionTypeIdInRequest } from "../ActionTypeIdInRequest.js";
+import type { ActionTypeRid } from "../ActionTypeRid.js";
+import type { RuleSetIdInRequest } from "../formatting/RuleSetIdInRequest.js";
+import type { InterfaceTypeIdInRequest } from "../InterfaceTypeIdInRequest.js";
+import type { InterfaceTypeRid } from "../InterfaceTypeRid.js";
+import type { LinkTypeId } from "../LinkTypeId.js";
+import type { LinkTypeRid } from "../LinkTypeRid.js";
+import type { ObjectTypeId } from "../ObjectTypeId.js";
+import type { ObjectTypeRid } from "../ObjectTypeRid.js";
+import type { OntologyVersion } from "../OntologyVersion.js";
+import type { RuleSetRid } from "../RuleSetRid.js";
+import type { SharedPropertyTypeIdInRequest } from "../SharedPropertyTypeIdInRequest.js";
+import type { SharedPropertyTypeRid } from "../SharedPropertyTypeRid.js";
+import type { TypeGroupIdInRequest } from "../TypeGroupIdInRequest.js";
+import type { TypeGroupRid } from "../TypeGroupRid.js";
+export interface OntologyModificationResponse {
+	ontologyVersion: OntologyVersion;
+	createdRuleSets: Record<RuleSetIdInRequest, RuleSetRid>;
+	createdWorkflows: Record<WorkflowIdInRequest, WorkflowRid>;
+	createdActionTypes: Array<ActionType>;
+	createdActionTypeRids: Record<ActionTypeIdInRequest, ActionTypeRid>;
+	updatedActionTypes: Record<ActionTypeRid, ActionType>;
+	createdSharedPropertyTypes: Record<SharedPropertyTypeIdInRequest, SharedPropertyTypeRid>;
+	createdObjectTypes: Record<ObjectTypeId, ObjectTypeRid>;
+	createdLinkTypes: Record<LinkTypeId, LinkTypeRid>;
+	createdInterfaceTypes: Record<InterfaceTypeIdInRequest, InterfaceTypeRid>;
+	createdTypeGroups: Record<TypeGroupIdInRequest, TypeGroupRid>;
+}

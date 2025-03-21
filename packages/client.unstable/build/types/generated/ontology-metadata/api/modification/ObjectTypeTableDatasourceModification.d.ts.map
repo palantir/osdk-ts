@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,sBAAuB;AAC3D,cAAc,+BAA+B,+BAAgC;AAC7E,cAAc,gBAAgB,gBAAiB;;;;AAK/C,iBAAiB,sCAAsC;CACrD,UAAU;CACV,iBAAiB,OAAO,gBAAgB;AACzC","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/modification/ObjectTypeTableDatasourceModification.ts"],"version":3,"file":"ObjectTypeTableDatasourceModification.d.ts"}

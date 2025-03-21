@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,mBAAoB;AACrD,cAAc,2BAA2B,2BAA4B;;;;AAKrE,iBAAiB,0BAA0B;CACzC,IAAI;CACJ,qBAAqB;AACtB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/modification/PutParameterRequestWithId.ts"],"version":3,"file":"PutParameterRequestWithId.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,uBAAwB;AAC7D,cAAc,oBAAoB,mBAAoB;;;;;AAMtD,iBAAiB,4BAA4B;CAC3C,MAAM;CACN,qBAAqB;CACrB,mBAAmB;AACpB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/modification/GetModifiedEntitiesResponse.ts"],"version":3,"file":"GetModifiedEntitiesResponse.d.ts"}

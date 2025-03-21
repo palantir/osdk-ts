@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,iCAAiC,gCAAiC;AAChF,cAAc,kCAAkC,iCAAkC;AAClF,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,2BAA2B,0BAA2B;AACpE,cAAc,iBAAiB,gBAAiB;AAChD,iBAAiB,iBAAiB;CAChC,2BAA2B;CAC3B,sBAAsB,OAAO,aAAa;CAC1C,oBAAoB,OAAO,WAAW;AACvC","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ActionValidation.ts"],"version":3,"file":"ActionValidation.d.ts"}

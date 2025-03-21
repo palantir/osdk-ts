@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qCAAqC,oCAAqC;AACxF,cAAc,qCAAqC,oCAAqC;AACxF,iBAAiB,mCAAmC;CAClD,MAAM;CACN,cAAc;AACf;AAED,iBAAiB,mCAAmC;CAClD,MAAM;CACN,cAAc;AACf;AACD,YAAY,wBACR,qCACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/derivedproperties/StorageLinkDefinition.ts"],"version":3,"file":"StorageLinkDefinition.d.ts"}

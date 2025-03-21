@@ -1,0 +1,1 @@
+{"version":3,"file":"queries.js","names":["getTask"],"sources":["queries.ts"],"sourcesContent":["export { getTask } from './queries/getTask.js';\n"],"mappings":"AAAA,SAASA,OAAO,QAAQ,sBAAsB","ignoreList":[]}

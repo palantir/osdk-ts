@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,sBAAuB;AAC5D,cAAc,oBAAoB,mBAAoB;;;;AAKtD,iBAAiB,mCAAmC;CAClD,iBAAiB;CACjB,eAAe,MAAM;AACtB","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/GetObjectTypesForTypeGroupsRequest.ts"],"version":3,"file":"GetObjectTypesForTypeGroupsRequest.d.ts"}

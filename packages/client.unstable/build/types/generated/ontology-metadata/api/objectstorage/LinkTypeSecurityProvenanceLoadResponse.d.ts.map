@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,uBAAwB;AAC7D,cAAc,6CAA6C,4CAA6C;AACxG,cAAc,iBAAiB,gBAAiB;;;;AAKhD,iBAAiB,uCAAuC;CACtD,YAAY,MAAM;CAClB,OAAO,eAAe,MAAM;CAC5B,iBAAiB;AAClB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/objectstorage/LinkTypeSecurityProvenanceLoadResponse.ts"],"version":3,"file":"LinkTypeSecurityProvenanceLoadResponse.d.ts"}

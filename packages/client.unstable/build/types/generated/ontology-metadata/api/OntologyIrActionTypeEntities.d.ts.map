@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,4BAA4B,2BAA4B;AACtE,cAAc,kBAAkB,iBAAkB;AAClD,cAAc,oBAAoB,mBAAoB;AACtD,cAAc,oBAAoB,mBAAoB;AACtD,iBAAiB,6BAA6B;CAC5C,qBAAqB,MAAM;CAC3B,mBAAmB,MAAM;CACzB,wBAAwB,MAAM;CAC9B,YAAY,MAAM;AACnB","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/OntologyIrActionTypeEntities.ts"],"version":3,"file":"OntologyIrActionTypeEntities.d.ts"}

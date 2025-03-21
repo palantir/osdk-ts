@@ -1,0 +1,1 @@
+{"mappings":"AAuBA,cAAc,+BAA+B,8BAA+B;;;;;;;;;;AAY5E,OAAO,iBAAS,8BACdA,mBACAC,uBACAC,aACAC,mBACAC,iBAAgB,WAAW,OAC3BC,mBACC","names":["client_id: string","client_secret: string","url: string","scopes: string[]","fetchFn: typeof globalThis.fetch","ctxPath: string"],"sources":["../../src/createConfidentialOauthClient.ts"],"version":3,"file":"createConfidentialOauthClient.d.ts"}

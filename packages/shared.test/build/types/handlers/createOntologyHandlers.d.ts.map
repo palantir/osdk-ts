@@ -1,0 +1,1 @@
+{"mappings":"AAkBA,cAAc,sBAAsB,KAAM;AAM1C,cAAc,kCAAkC,gCAAiC;AAEjF,OAAO,cAAMA,wBAAwB;AAmKrC,OAAO,cAAMC,iBAAiB,MAAM","names":["createOntologyHandlers: FauxFoundryHandlersFactory","conjureEndpoint: Array<RequestHandler>"],"sources":["../../../src/handlers/createOntologyHandlers.ts"],"version":3,"file":"createOntologyHandlers.d.ts"}

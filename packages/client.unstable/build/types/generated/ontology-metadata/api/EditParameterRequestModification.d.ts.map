@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,8CAA8C,6CAA8C;AAC1G,cAAc,gCAAgC,+BAAgC;AAC9E,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,qCAAqC,0CAA2C;;;;AAK9F,iBAAiB,iCAAiC;CAChD,IAAI;CACJ,MAAM;CACN,iBAAiB;CACjB,YAAY;AACb","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/EditParameterRequestModification.ts"],"version":3,"file":"EditParameterRequestModification.d.ts"}

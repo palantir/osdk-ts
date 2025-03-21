@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mDAAmD,kDAAmD;AACpH,cAAc,2BAA2B,0BAA2B;AACpE,iBAAiB,gCAAgC;CAC/C,MAAM;CACN,cAAc;AACf;AAED,iBAAiB,wDAAwD;CACvE,MAAM;CACN,sCACE;AACH;;;;;AAKD,YAAY,qBACR,kCACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/llm/OntologyLmsRequest.ts"],"version":3,"file":"OntologyLmsRequest.d.ts"}

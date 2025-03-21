@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,yBAAyB,yBAA0B;AACjE,cAAc,iDAAiD,gDAAiD;;;;AAKhH,iBAAiB,4CAA4C;CAC3D,SAAS,MAAM;CACf,mBAAmB;AACpB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/permissions/GetBulkObjectTypePermissionsForUsersRequest.ts"],"version":3,"file":"GetBulkObjectTypePermissionsForUsersRequest.d.ts"}

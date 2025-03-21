@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,6BAA6B,4BAA6B;;;;;;AAOxE,iBAAiB,6BAA6B;CAC5C,yBAAyB,MAAM;CAC/B;AACD","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/permissions/BulkUpdateEntityRolesRequest.ts"],"version":3,"file":"BulkUpdateEntityRolesRequest.d.ts"}

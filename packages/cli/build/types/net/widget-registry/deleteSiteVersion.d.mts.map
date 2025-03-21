@@ -1,0 +1,1 @@
+{"mappings":"AAiBA,cAAc,6BAA6B,8BAA+B;AAC1E,cAAc,2BAA2B,2BAA4B;AACrE,cAAc,oBAAoB,oBAAqB;AAEvD,OAAO,iBAAe,kBACpBA,KAAK,uBACLC,eAAe,eAAe,qBAC9BC,kBACC","names":["ctx: InternalClientContext","repositoryRid: WidgetSetRid | StemmaRepositoryRid","version: string"],"sources":["../../../../src/net/widget-registry/deleteSiteVersion.mts"],"version":3,"file":"deleteSiteVersion.d.mts"}

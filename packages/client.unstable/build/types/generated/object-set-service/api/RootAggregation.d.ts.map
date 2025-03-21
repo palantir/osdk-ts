@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,uBAAuB,sBAAuB;AAC5D,cAAc,cAAc,aAAc;AAC1C,cAAc,kBAAkB,iBAAkB;;;;AAKlD,iBAAiB,gBAAgB;CAC/B,SAAS,OAAO,YAAY;CAC5B,iBAAiB,OAAO,iBAAiB;AAC1C","names":[],"sources":["../../../../../src/generated/object-set-service/api/RootAggregation.ts"],"version":3,"file":"RootAggregation.d.ts"}

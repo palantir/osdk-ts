@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,oBAAoB,2BAA4B;AAC9D,cAAc,qBAAqB,4BAA6B;;;;;;AAOhE,iBAAiB,2CAA2C;CAC1D,eAAe;CACf,cAAc;CACd;CACA;AACD","names":[],"sources":["../../../../../../src/generated/ontology-metadata/branch/api/ObjectTypeImplementsTooManyInterfacesError.ts"],"version":3,"file":"ObjectTypeImplementsTooManyInterfacesError.d.ts"}

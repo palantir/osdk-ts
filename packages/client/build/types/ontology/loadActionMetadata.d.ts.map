@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,WAAY;AAKhD,cAAc,qBAAqB,4BAA6B;AAEhE,OAAO,iBAAe,mBACpBA,QAAQ,eACRC,qBACC,QAAQ","names":["client: MinimalClient","actionType: string"],"sources":["../../../src/ontology/loadActionMetadata.ts"],"version":3,"file":"loadActionMetadata.d.ts"}

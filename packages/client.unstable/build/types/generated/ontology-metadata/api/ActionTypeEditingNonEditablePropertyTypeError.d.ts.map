@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,4BAA4B,2BAA4B;AACtE,cAAc,oBAAoB,mBAAoB;AACtD,cAAc,sBAAsB,qBAAsB;;;;AAK1D,iBAAiB,8CAA8C;CAC7D,sBAAsB;CACtB,+BAA+B;CAC/B,0BAA0B,MAAM;AACjC","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ActionTypeEditingNonEditablePropertyTypeError.ts"],"version":3,"file":"ActionTypeEditingNonEditablePropertyTypeError.d.ts"}

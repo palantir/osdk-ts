@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,qBAAsB;AAC1D,cAAc,oCAAoC,mCAAoC;AACtF,iBAAiB,8BAA8B;CAC7C,MAAM;CACN,QAAQ;AACT;AAED,iBAAiB,4BAA4B;CAC3C,MAAM;CACN,MAAM;AACP;AACD,YAAY,yBACR,gCACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/entitymetadata/OntologyIrEditsHistory.ts"],"version":3,"file":"OntologyIrEditsHistory.d.ts"}

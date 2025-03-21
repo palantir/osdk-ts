@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,oBAAqB;AACxD,cAAc,6BAA6B,4BAA6B;AACxE,iBAAiB,4CAA4C;CAC3D,MAAM;CACN,uBAAuB;AACxB;AAED,iBAAiB,oCAAoC;CACnD,MAAM;CACN,eAAe;AAChB;AACD,YAAY,wBACR,8CACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/AliasEntityIdentifier.ts"],"version":3,"file":"AliasEntityIdentifier.d.ts"}

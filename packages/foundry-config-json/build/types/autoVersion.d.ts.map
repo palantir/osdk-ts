@@ -1,0 +1,1 @@
+{"mappings":"AAqBA,cAAc,yBAAyB,aAAc;AAErD,OAAO,cAAM,yBAAyB,MAAM;CAExC;CACA;CAFF,YACkBA,aACAC;AAInB;;;;;;;;AASD,OAAO,iBAAe,YAAYC,QAAQ,oBAAoB","names":["msg: string","tip?: string","config: AutoVersionConfig"],"sources":["../../src/autoVersion.ts"],"version":3,"file":"autoVersion.d.ts"}

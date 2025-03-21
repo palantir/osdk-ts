@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uCAAuC,sCAAuC;AAC5F,cAAc,4CAA4C,2CAA4C;AACtG,cAAc,yDAAyD,wDAAyD;AAChI,cAAc,mCAAmC,wCAAyC;AAC1F,iBAAiB,uCAAuC;CACtD,sBAAsB,MAAM;CAC5B,mBAAmB;CACnB,wBAAwB,OACtB,6BACA;AAEH","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ConditionalValidationBlockModification.ts"],"version":3,"file":"ConditionalValidationBlockModification.d.ts"}

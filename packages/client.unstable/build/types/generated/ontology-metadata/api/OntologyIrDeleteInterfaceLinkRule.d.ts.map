@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,gCAAgC,+BAAgC;AAC9E,cAAc,4BAA4B,2BAA4B;AACtE,cAAc,mBAAmB,kBAAmB;AACpD,iBAAiB,kCAAkC;CACjD,kBAAkB;CAClB,sBAAsB;CACtB,cAAc;CACd,cAAc;AACf","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/OntologyIrDeleteInterfaceLinkRule.ts"],"version":3,"file":"OntologyIrDeleteInterfaceLinkRule.d.ts"}

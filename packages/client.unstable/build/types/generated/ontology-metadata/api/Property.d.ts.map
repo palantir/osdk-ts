@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,oBAAqB;AACxD,cAAc,qBAAqB,oBAAqB;AACxD,cAAc,kBAAkB,iBAAkB;AAClD,cAAc,6BAA6B,4BAA6B;AACxE,cAAc,uBAAuB,sBAAuB;;;;AAK5D,iBAAiB,SAAS;CACxB,IAAI;CACJ,MAAM;CACN,eAAe;CACf,QAAQ;CACR;CACA,KAAK;AACN","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/Property.ts"],"version":3,"file":"Property.d.ts"}

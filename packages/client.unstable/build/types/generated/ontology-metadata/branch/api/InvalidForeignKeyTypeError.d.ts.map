@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,wBAAwB,+BAAgC;AACtE,cAAc,mBAAmB,0BAA2B;AAC5D,cAAc,qBAAqB,4BAA6B;;;;AAKhE,iBAAiB,2BAA2B;CAC1C,sBAAsB;CACtB,sBAAsB;CACtB,UAAU;CACV,wBAAwB;AACzB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/branch/api/InvalidForeignKeyTypeError.ts"],"version":3,"file":"InvalidForeignKeyTypeError.d.ts"}

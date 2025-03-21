@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAoC,cAAe;AACjE,cAAc,wCAAwC,wCAAyC;;;;;;;AAQ/F,OAAO,iBAAe,yBACpBA,KAAK,iBACJ,QAAQ","names":["ctx: ConjureContext"],"sources":["../../../../../../src/generated/ontology-metadata/api/OntologyMetadataService/getFeatureConfigurations.ts"],"version":3,"file":"getFeatureConfigurations.d.ts"}

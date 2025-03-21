@@ -1,0 +1,1 @@
+{"mappings":"AAkBA,cAAc,sBAAsB,QAAS;AAQ7C,OAAO,iBAAS,kBACdA,OAAO,sBAAsB,WAAW,QACxCC","names":["fetch: MockedFunction<typeof globalThis.fetch>","response: any"],"sources":["../../src/createClient.test.ts"],"version":3,"file":"createClient.test.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,wBAAwB,uBAAwB;AAC9D,cAAc,mCAAmC,kCAAmC;AACpF,iBAAiB,6BAA6B;CAC5C,MAAM;CACN,SAAS;AACV;AAED,iBAAiB,+BAA+B;CAC9C,MAAM;CACN,WAAW;AACZ;AACD,YAAY,uBACR,+BACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ActionLogSummaryPart.ts"],"version":3,"file":"ActionLogSummaryPart.d.ts"}

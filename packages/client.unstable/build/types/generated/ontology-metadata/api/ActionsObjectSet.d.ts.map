@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,qBAAsB;AAC1D,cAAc,wBAAwB,uBAAwB;AAC9D,cAAc,wBAAwB,6BAA8B;;;;AAKpE,iBAAiB,iBAAiB;CAChC,WAAW;CACX,iBAAiB,OAAO,kBAAkB;AAC3C","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ActionsObjectSet.ts"],"version":3,"file":"ActionsObjectSet.d.ts"}

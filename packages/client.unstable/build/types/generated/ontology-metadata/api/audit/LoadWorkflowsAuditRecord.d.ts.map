@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,+BAA+B,8BAA+B;AAC5E,iBAAiB,yBAAyB;CACxC,WAAW,MAAM;AAClB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/audit/LoadWorkflowsAuditRecord.ts"],"version":3,"file":"LoadWorkflowsAuditRecord.d.ts"}

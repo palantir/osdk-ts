@@ -1,0 +1,8 @@
+import type { ArrayTypeElementsUniqueConstraint } from "./ArrayTypeElementsUniqueConstraint.js";
+import type { ArrayTypeSizeConstraint } from "./ArrayTypeSizeConstraint.js";
+import type { DataConstraintModification } from "./DataConstraintModification.js";
+export interface ArrayTypeDataConstraintsModification {
+	size: ArrayTypeSizeConstraint | undefined;
+	elementsConstraint: DataConstraintModification | undefined;
+	elementsUnique: ArrayTypeElementsUniqueConstraint | undefined;
+}

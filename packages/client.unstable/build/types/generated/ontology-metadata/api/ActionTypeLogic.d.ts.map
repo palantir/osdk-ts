@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,0BAA0B,yBAA0B;AAClE,cAAc,oBAAoB,mBAAoB;AACtD,cAAc,wBAAwB,uBAAwB;AAC9D,cAAc,sBAAsB,qBAAsB;AAC1D,iBAAiB,gBAAgB;CAC/B,OAAO;CACP,YAAY;CACZ,QAAQ;CACR,UAAU;CACV,eAAe,MAAM;AACtB","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ActionTypeLogic.ts"],"version":3,"file":"ActionTypeLogic.d.ts"}

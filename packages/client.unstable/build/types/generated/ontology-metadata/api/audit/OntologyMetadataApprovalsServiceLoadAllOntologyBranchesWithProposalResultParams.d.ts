@@ -1,0 +1,4 @@
+import type { LoadAllOntologyBranchesWithProposalAuditRecord } from "./LoadAllOntologyBranchesWithProposalAuditRecord.js";
+export interface OntologyMetadataApprovalsServiceLoadAllOntologyBranchesWithProposalResultParams {
+	response: LoadAllOntologyBranchesWithProposalAuditRecord;
+}

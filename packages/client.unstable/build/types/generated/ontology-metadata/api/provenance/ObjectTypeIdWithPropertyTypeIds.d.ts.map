@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,oBAAoB,oBAAqB;AACvD,cAAc,yBAAyB,wBAAyB;;;;AAKhE,iBAAiB,gCAAgC;CAC/C,cAAc;CACd,iBAAiB;AAClB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/provenance/ObjectTypeIdWithPropertyTypeIds.ts"],"version":3,"file":"ObjectTypeIdWithPropertyTypeIds.d.ts"}

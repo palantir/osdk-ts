@@ -1,0 +1,1 @@
+{"mappings":"AAiBA,cAAc,WAAW,mBAAmB,oBAAqB;AAEjE,OAAO,iBAAS,0BAA0B;CACxC,cAAc;EACZ,WAAW;EACX,aAAa;EACb,SAAS;CACV;CACD,gBAAgB;;CAEf;CACD;AACD","names":[],"sources":["../../../../src/util/test/createMockMinimalFiles.ts"],"version":3,"file":"createMockMinimalFiles.d.ts"}

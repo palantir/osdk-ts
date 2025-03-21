@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,qBAAsB;AACzD,cAAc,yBAAyB,yBAA0B;AACjE,cAAc,uBAAuB,uBAAwB;;;;AAK7D,iBAAiB,oCAAoC;CACnD,eAAe;CACf,iBAAiB;CACjB,QAAQ;AACT","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/entitymetadata/ObjectTypeEntityMetadataLoadRequest.ts"],"version":3,"file":"ObjectTypeEntityMetadataLoadRequest.d.ts"}

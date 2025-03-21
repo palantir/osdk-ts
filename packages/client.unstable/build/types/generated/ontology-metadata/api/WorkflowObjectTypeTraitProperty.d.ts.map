@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,4CAA4C,2CAA4C;AACtG,cAAc,kDAAkD,iDAAkD;AAClH,cAAc,kDAAkD,iDAAkD;AAClH,cAAc,yCAAyC,wCAAyC;;;;AAKhG,iBAAiB,gCAAgC;CAC/C,aAAa;CACb,IAAI;CACJ,eAAe;CACf,aAAa;AACd","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/WorkflowObjectTypeTraitProperty.ts"],"version":3,"file":"WorkflowObjectTypeTraitProperty.d.ts"}

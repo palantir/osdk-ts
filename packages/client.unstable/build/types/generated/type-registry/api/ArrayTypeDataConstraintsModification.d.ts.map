@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,yCAAyC,wCAAyC;AAChG,cAAc,+BAA+B,8BAA+B;AAC5E,cAAc,kCAAkC,iCAAkC;AAClF,iBAAiB,qCAAqC;CACpD,MAAM;CACN,oBAAoB;CACpB,gBAAgB;AACjB","names":[],"sources":["../../../../../src/generated/type-registry/api/ArrayTypeDataConstraintsModification.ts"],"version":3,"file":"ArrayTypeDataConstraintsModification.d.ts"}

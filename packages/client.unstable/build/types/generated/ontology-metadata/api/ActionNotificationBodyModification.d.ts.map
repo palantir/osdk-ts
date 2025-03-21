@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qDAAqD,oDAAqD;AACxH,cAAc,4CAA4C,2CAA4C;AACtG,iBAAiB,wDAAwD;CACvE,MAAM;CACN,sBAAsB;AACvB;AAED,iBAAiB,qDAAqD;CACpE,MAAM;CACN,mBAAmB;AACpB;;;;AAID,YAAY,qCACR,0DACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ActionNotificationBodyModification.ts"],"version":3,"file":"ActionNotificationBodyModification.d.ts"}

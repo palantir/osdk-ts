@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,iBAAiB,oBAAoB,2BAA4B;AAG/E,cAAc,cAAc,MAAO;AAInC,OAAO,iBAAS,oBACdA,kBACAC,KAAK,OAAO,qBACX,aAAa","names":["moduleId: string","ast: Rollup.ProgramNode | null"],"sources":["../../../src/common/extractWidgetConfig.ts"],"version":3,"file":"extractWidgetConfig.d.ts"}

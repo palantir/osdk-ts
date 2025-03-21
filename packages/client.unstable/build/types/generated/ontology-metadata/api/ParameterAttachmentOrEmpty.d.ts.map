@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,2BAA2B,0BAA2B;AACpE,iBAAiB,iCAAiC;CAChD,MAAM;CACN,OAAO;AACR;AAED,iBAAiB,sCAAsC;CACrD,MAAM;CACN,YAAY;AACb;AACD,YAAY,6BACR,mCACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ParameterAttachmentOrEmpty.ts"],"version":3,"file":"ParameterAttachmentOrEmpty.d.ts"}

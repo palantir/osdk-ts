@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,oBAAoB,mBAAoB;AACtD,cAAc,qBAAqB,oBAAqB;AACxD,iBAAiB,kCAAkC;CACjD,MAAM;CACN,cAAc;AACf;AAED,iBAAiB,mCAAmC;CAClD,MAAM;CACN,eAAe;AAChB;;;;AAID,YAAY,uBACR,oCACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ObjectTypeIdentifier.ts"],"version":3,"file":"ObjectTypeIdentifier.d.ts"}

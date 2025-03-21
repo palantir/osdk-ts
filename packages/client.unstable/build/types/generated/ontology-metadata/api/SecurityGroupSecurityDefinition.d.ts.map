@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,+CAA+C,8CAA+C;AAC5G,cAAc,oDAAoD,mDAAoD;AACtH,iBAAiB,8CAA8C;CAC7D,MAAM;CACN,eAAe;AAChB;AAED,iBAAiB,yCAAyC;CACxD,MAAM;CACN,UAAU;AACX;AACD,YAAY,kCACR,gDACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/SecurityGroupSecurityDefinition.ts"],"version":3,"file":"SecurityGroupSecurityDefinition.d.ts"}

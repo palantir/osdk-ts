@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,qCAAsC;AAE1E,cAAc,kBAAkB,oBAAqB;AAGrD,OAAO,cAAMA,gBAAgB,sBAAsB","names":["moveOfficeImpl: FauxActionImpl<typeof MoveOffice>"],"sources":["../../../../src/stubs/actions/moveOffice.ts"],"version":3,"file":"moveOffice.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,2BAA2B,sBAAuB;KAS3D,gCAAgC,uBAAuB;AAE5D,OAAO,iBAAS,0BACdA,iBACAC,qBAAqB,iBACrBC,mBACAC,iBAAgB,WAAW,QAC1B,sBAAsB","names":["baseUrl: string","tokenProvider: () => Promise<string>","userAgent: string","fetchFn: typeof globalThis.fetch"],"sources":["../../src/createSharedClientContext.ts"],"version":3,"file":"createSharedClientContext.d.ts"}

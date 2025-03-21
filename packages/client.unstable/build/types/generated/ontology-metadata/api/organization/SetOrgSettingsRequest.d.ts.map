@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,yBAAyB,wBAAyB;AAChE,cAAc,qBAAqB,oBAAqB;;;;AAKxD,iBAAiB,sBAAsB;CACrC,OAAO;CACP,WAAW;AACZ","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/organization/SetOrgSettingsRequest.ts"],"version":3,"file":"SetOrgSettingsRequest.d.ts"}

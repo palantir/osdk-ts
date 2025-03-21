@@ -1,0 +1,11 @@
+export { checkExistingUniqueIdentifiers } from "./OntologyModificationService/checkExistingUniqueIdentifiers.js";
+export { createOntology } from "./OntologyModificationService/createOntology.js";
+export { deleteOntology } from "./OntologyModificationService/deleteOntology.js";
+export { getEntityModificationHistory } from "./OntologyModificationService/getEntityModificationHistory.js";
+export { getEntityModificationHistoryV2 } from "./OntologyModificationService/getEntityModificationHistoryV2.js";
+export { getModificationHistory } from "./OntologyModificationService/getModificationHistory.js";
+export { getModifiedEntities } from "./OntologyModificationService/getModifiedEntities.js";
+export { importSharedPropertyTypes } from "./OntologyModificationService/importSharedPropertyTypes.js";
+export { loadAllOntologiesInternal } from "./OntologyModificationService/loadAllOntologiesInternal.js";
+export { modifyOntology } from "./OntologyModificationService/modifyOntology.js";
+export { updateOntology } from "./OntologyModificationService/updateOntology.js";

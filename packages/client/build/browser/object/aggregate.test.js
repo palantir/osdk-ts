@@ -1,0 +1,410 @@
+/*
+ * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { objectTypeWithAllPropertyTypes, Todo } from "@osdk/client.test.ontology";
+import { expectType } from "ts-expect";
+import { beforeAll, describe, expect, expectTypeOf, it, vi } from "vitest";
+import { createClient } from "../createClient.js";
+import { createMinimalClient } from "../createMinimalClient.js";
+import { aggregate } from "./aggregate.js";
+const metadata = {
+  expectsClientVersion: "0.0.0",
+  ontologyRid: "ri.a.b.c.d",
+  ontologyApiName: "apiName",
+  userAgent: ""
+};
+let mockFetch;
+let clientCtx;
+let client;
+beforeAll(() => {
+  mockFetch = vi.fn();
+  mockFetch.mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: () => new Promise(resolve => resolve(aggregationResponse))
+  });
+  clientCtx = createMinimalClient(metadata, "https://host.com", async () => "myAccessToken", {}, mockFetch);
+  client = createClient("https://host.com", metadata.ontologyRid, async () => "", undefined, mockFetch);
+});
+const aggregationResponse = {
+  accuracy: "APPROXIMATE",
+  data: [{
+    group: {
+      string: "hello"
+    },
+    metrics: [{
+      name: "string.approximateDistinct",
+      value: 1
+    }, {
+      name: "string.exactDistinct",
+      value: 1
+    }, {
+      name: "id.max",
+      value: 1
+    }, {
+      name: "id.avg",
+      value: 1
+    }]
+  }]
+};
+describe("aggregate", () => {
+  it("works", async () => {
+    expectTypeOf().toEqualTypeOf;
+    const notGrouped = await aggregate(clientCtx, objectTypeWithAllPropertyTypes, {
+      type: "base",
+      objectType: "ToDo"
+    }, {
+      $select: {
+        "string:approximateDistinct": "unordered",
+        "string:exactDistinct": "unordered",
+        "id:max": "unordered",
+        "id:avg": "unordered",
+        "$count": "unordered"
+      }
+    });
+    expect(mockFetch).toHaveBeenCalledWith("https://host.com/api/v2/ontologies/ri.a.b.c.d/objectSets/aggregate", {
+      body: JSON.stringify({
+        "objectSet": {
+          "type": "base",
+          "objectType": "ToDo"
+        },
+        "groupBy": [],
+        "aggregation": [{
+          "type": "approximateDistinct",
+          "name": "string.approximateDistinct",
+          "field": "string"
+        }, {
+          "type": "exactDistinct",
+          "name": "string.exactDistinct",
+          "field": "string"
+        }, {
+          "type": "max",
+          "name": "id.max",
+          "field": "id"
+        }, {
+          "type": "avg",
+          "name": "id.avg",
+          "field": "id"
+        }, {
+          "type": "count",
+          "name": "count"
+        }]
+      }),
+      method: "POST",
+      headers: expect.anything()
+    });
+    expectType(notGrouped.string.approximateDistinct);
+    expectType(notGrouped.string.exactDistinct);
+    expectType(notGrouped.id.max);
+    expectType(notGrouped.id.avg);
+    expectType(notGrouped.$count);
+    expectType(false); // subSelect should hide unused keys
+
+    const grouped = await client(objectTypeWithAllPropertyTypes).aggregate({
+      $select: {
+        "id:approximateDistinct": "unordered",
+        "id:exactDistinct": "unordered",
+        "id:max": "unordered",
+        "$count": "unordered"
+      },
+      $groupBy: {
+        string: "exact",
+        id: {
+          $exactWithLimit: 10
+        },
+        integer: {
+          $ranges: [[1, 2]]
+        },
+        short: {
+          $ranges: [[2, 3], [4, 5]]
+        },
+        float: {
+          $fixedWidth: 10
+        },
+        dateTime: {
+          $duration: [10, "seconds"]
+        },
+        date: {
+          $ranges: [["2024-01-02", "2024-01-09"]]
+        },
+        boolean: "exact",
+        double: {
+          "$exact": {
+            $defaultValue: "default",
+            $limit: 300
+          }
+        }
+      }
+    });
+    expectType(grouped);
+    expectType(grouped[0].$group.string);
+    expectType(grouped[0].id.approximateDistinct);
+    expectType(grouped[0].id.exactDistinct);
+    expectType(grouped[0].$group.id);
+    expectType(grouped[0].$count);
+    expectType(grouped[0].$group.integer);
+    expectType(grouped[0].$group.short);
+    expectType(grouped[0].$group.float);
+    expectType(grouped[0].$group.dateTime);
+    expectType(grouped[0].$group.date);
+    expectType(grouped[0].$group.boolean);
+    expectType(grouped[0].$group.double);
+    expectType({
+      $select: {
+        "id:approximateDistinct": "unordered",
+        "$count": "unordered"
+      },
+      $groupBy: {
+        string: "exact",
+        id: {
+          $exactWithLimit: 10
+        },
+        integer: {
+          $ranges: [[1, 2]]
+        },
+        short: {
+          $ranges: [[2, 3], [4, 5]]
+        },
+        float: {
+          $fixedWidth: 10
+        }
+      }
+    });
+    expectType({
+      $select: {
+        id: "approximateDistinct",
+        // @ts-expect-error
+        wrongSelectKey: "don't work",
+        "$count": "unordered"
+      },
+      $groupBy: {
+        // @ts-expect-error
+        wrongKey: "don't work",
+        string: "exact",
+        id: {
+          $exact: {
+            $limit: 10,
+            $defaultValue: "default"
+          }
+        },
+        integer: {
+          $ranges: [[1, 2]]
+        },
+        short: {
+          $ranges: [[2, 3], [4, 5]]
+        },
+        float: {
+          $fixedWidth: 10
+        }
+      }
+    });
+    expectTypeOf().toBeCallableWith(clientCtx, objectTypeWithAllPropertyTypes, {
+      type: "base",
+      objectType: "ToDo"
+    }, {
+      $select: {
+        "id:approximateDistinct": "unordered",
+        // @ts-expect-error
+        "wrongSelectKey": "don't work",
+        "$count": "unordered"
+      },
+      $groupBy: {
+        string: "exact",
+        // @ts-expect-error
+        wrongKey: "wrongKey",
+        id: {
+          $exactWithLimit: 10
+        },
+        integer: {
+          $ranges: [[1, 2]]
+        },
+        short: {
+          $ranges: [[2, 3], [4, 5]]
+        },
+        float: {
+          $fixedWidth: 10
+        }
+      }
+    });
+    expectType({
+      dateTime: {
+        $duration: [10, "seconds"]
+      },
+      date: {
+        $duration: [1, "years"]
+      }
+    });
+
+    // Can't use value greater than 1 for years
+    expectType({
+      // @ts-expect-error
+      date: {
+        $duration: [10, "years"]
+      }
+    });
+
+    // Can't use arbitrary string for time unit
+    expectType({
+      // @ts-expect-error
+      dateTime: {
+        $duration: [1, "nonexistentTimeUnit"]
+      }
+    });
+
+    // Can't use time unit smaller than days for date type
+    expectType({
+      // @ts-expect-error
+      date: {
+        $duration: [1, "seconds"]
+      }
+    });
+  });
+  it("works with $orderBy (no groups)", async () => {
+    const notGrouped = await aggregate(clientCtx, objectTypeWithAllPropertyTypes, {
+      type: "base",
+      objectType: "ToDo"
+    }, {
+      $select: {
+        "string:approximateDistinct": "asc",
+        "id:exactDistinct": "asc",
+        "id:avg": "desc",
+        "id:max": "asc",
+        "$count": "unordered"
+      }
+    });
+    expect(mockFetch).toHaveBeenCalledWith("https://host.com/api/v2/ontologies/ri.a.b.c.d/objectSets/aggregate", {
+      body: JSON.stringify({
+        "objectSet": {
+          "type": "base",
+          "objectType": "ToDo"
+        },
+        "groupBy": [],
+        "aggregation": [{
+          "type": "approximateDistinct",
+          "name": "string.approximateDistinct",
+          direction: "ASC",
+          "field": "string"
+        }, {
+          "type": "exactDistinct",
+          "name": "id.exactDistinct",
+          direction: "ASC",
+          "field": "id"
+        }, {
+          "type": "avg",
+          "name": "id.avg",
+          direction: "DESC",
+          "field": "id"
+        }, {
+          "type": "max",
+          "name": "id.max",
+          direction: "ASC",
+          "field": "id"
+        }, {
+          "type": "count",
+          "name": "count"
+        }]
+      }),
+      method: "POST",
+      headers: expect.anything()
+    });
+    expectType(notGrouped.string.approximateDistinct);
+    expectType(notGrouped.id.exactDistinct);
+    expectType(notGrouped.id.max);
+    expectType(notGrouped.id.avg);
+    expectType(notGrouped.$count);
+    expectType(false); // subselect should hide unused keys
+  });
+  it("works with $orderBy (1 group)", async () => {
+    const grouped = await aggregate(clientCtx, objectTypeWithAllPropertyTypes, {
+      type: "base",
+      objectType: "ToDo"
+    }, {
+      $select: {
+        "id:max": "desc",
+        "string:approximateDistinct": "asc",
+        "id:avg": "unordered",
+        "$count": "unordered",
+        "string:exactDistinct": "desc"
+      },
+      $groupBy: {
+        id: "exact"
+      }
+    });
+    expect(mockFetch).toHaveBeenCalledWith("https://host.com/api/v2/ontologies/ri.a.b.c.d/objectSets/aggregate", {
+      body: JSON.stringify({
+        "objectSet": {
+          "type": "base",
+          "objectType": "ToDo"
+        },
+        "groupBy": [{
+          "type": "exact",
+          "field": "id"
+        }],
+        "aggregation": [{
+          "type": "max",
+          "name": "id.max",
+          direction: "DESC",
+          "field": "id"
+        }, {
+          "type": "approximateDistinct",
+          "name": "string.approximateDistinct",
+          direction: "ASC",
+          "field": "string"
+        }, {
+          "type": "avg",
+          "name": "id.avg",
+          "field": "id"
+        }, {
+          "type": "count",
+          "name": "count"
+        }, {
+          "type": "exactDistinct",
+          "name": "string.exactDistinct",
+          direction: "DESC",
+          "field": "string"
+        }]
+      }),
+      method: "POST",
+      headers: expect.anything()
+    });
+    expectType(grouped[0].string.approximateDistinct);
+    expectType(grouped[0].id.max);
+    expectType(grouped[0].id.avg);
+    expectType(grouped[0].$count);
+    expectType(grouped[0].string.exactDistinct);
+    expectType(false); // subselect should hide unused keys
+  });
+  it("prohibits ordered select with multiple groupBy", async () => {
+    await client(Todo).aggregate({
+      $select: {
+        // @ts-expect-error
+        "id:max": "desc",
+        // @ts-expect-error
+        "text:approximateDistinct": "asc",
+        // @ts-expect-error
+        "text:exactDistinct": "desc",
+        "id:avg": "unordered",
+        "$count": "unordered"
+      },
+      $groupBy: {
+        id: "exact",
+        timestamp: "exact"
+      }
+    });
+  });
+  it("works with where: todo", async () => {});
+});
+//# sourceMappingURL=aggregate.test.js.map

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,iCAAiC,gCAAiC;AAChF,cAAc,gBAAgB,eAAgB;AAC9C,cAAc,mBAAmB,kBAAmB;;;;AAKpD,iBAAiB,6BAA6B;CAC5C,WAAW,OAAO,aAAa;CAC/B,eAAe;AAChB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/workflow/api/LoadAllWorkflowsPageResponse.ts"],"version":3,"file":"LoadAllWorkflowsPageResponse.d.ts"}

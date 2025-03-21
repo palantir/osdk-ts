@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,qBAAsB;AACzD,iBAAiB,qEAAqE;CACpF,SAAS;AACV","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/audit/OntologyPermissionServiceGetSuggestedRolesForObjectTypeRequestParams.ts"],"version":3,"file":"OntologyPermissionServiceGetSuggestedRolesForObjectTypeRequestParams.d.ts"}

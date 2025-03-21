@@ -1,0 +1,1 @@
+{"mappings":"AAkBA,SAAS,mBAAmB,+BAAgC;AAsB5D,OAAO,cAAM,0BAA0B,YAAY;CACjD,YACEA;AAoEH","names":["baseUrl: string"],"sources":["../../../src/stubs/LegacyFauxFoundry.ts"],"version":3,"file":"LegacyFauxFoundry.d.ts"}

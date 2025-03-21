@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,qBAAsB;AACzD,cAAc,kBAAkB,kBAAmB;AACnD,cAAc,mBAAmB,mBAAoB;AACrD,cAAc,uBAAuB,uBAAwB;AAC7D,iBAAiB,sCAAsC;CACrD,aAAa;CACb,YAAY;CACZ,iBAAiB;CACjB,gBAAgB,MAAM;AACvB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/audit/LinkTypeAndDatasourcesLoadAuditRecord.ts"],"version":3,"file":"LinkTypeAndDatasourcesLoadAuditRecord.d.ts"}

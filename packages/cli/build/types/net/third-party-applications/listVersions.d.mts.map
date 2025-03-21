@@ -1,0 +1,1 @@
+{"mappings":"AAiBA,cAAc,6BAA6B,8BAA+B;AAC1E,cAAc,wBAAwB,wBAAyB;AAC/D,cAAc,4BAA4B,4BAA6B;AAEvE,OAAO,iBAAe,aACpBA,KAAK,uBACLC,kBAAkB,mBACjB,QAAQ","names":["ctx: InternalClientContext","thirdPartyAppRid: ThirdPartyAppRid"],"sources":["../../../../src/net/third-party-applications/listVersions.mts"],"version":3,"file":"listVersions.d.mts"}

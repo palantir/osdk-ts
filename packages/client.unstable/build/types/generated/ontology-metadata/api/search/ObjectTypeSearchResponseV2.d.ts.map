@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,2BAA2B,0BAA2B;AACpE,cAAc,mCAAmC,kCAAmC;;;;AAKpF,iBAAiB,2BAA2B;CAC1C,aAAa,MAAM;CACnB;CACA,eAAe;AAChB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/search/ObjectTypeSearchResponseV2.ts"],"version":3,"file":"ObjectTypeSearchResponseV2.d.ts"}

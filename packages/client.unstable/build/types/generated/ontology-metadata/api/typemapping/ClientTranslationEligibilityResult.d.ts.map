@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,kCAAkC,iCAAkC;AAClF,cAAc,6BAA6B,4BAA6B;AACxE,cAAc,8BAA8B,6BAA8B;;;;AAK1E,iBAAiB,mCAAmC;CAClD,YAAY;CACZ,wBAAwB,OACtB,4BACA;AAEH","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/typemapping/ClientTranslationEligibilityResult.ts"],"version":3,"file":"ClientTranslationEligibilityResult.d.ts"}

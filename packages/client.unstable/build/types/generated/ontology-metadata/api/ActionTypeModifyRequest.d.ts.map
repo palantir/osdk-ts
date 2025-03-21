@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,qBAAsB;AAC1D,cAAc,qBAAqB,oBAAqB;AACxD,cAAc,6BAA6B,4BAA6B;AACxE,cAAc,4BAA4B,2BAA4B;;;;AAKtE,iBAAiB,wBAAwB;CACvC,mBAAmB,MAAM;CACzB,mBAAmB,MAAM;CACzB,iBAAiB,OAAO,eAAe;CACvC,gBAAgB;AACjB","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ActionTypeModifyRequest.ts"],"version":3,"file":"ActionTypeModifyRequest.d.ts"}

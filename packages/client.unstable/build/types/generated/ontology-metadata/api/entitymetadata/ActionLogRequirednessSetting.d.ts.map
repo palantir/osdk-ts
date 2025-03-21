@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,4BAA4B,2BAA4B;AACtE,cAAc,sCAAsC,qCAAsC;AAC1F,iBAAiB,kDAAkD;CACjE,MAAM;CACN,sBAAsB;AACvB;AAED,iBAAiB,4DAA4D;CAC3E,MAAM;CACN,gCAAgC;AACjC;;;;;AAKD,YAAY,+BACR,oDACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/entitymetadata/ActionLogRequirednessSetting.ts"],"version":3,"file":"ActionLogRequirednessSetting.d.ts"}

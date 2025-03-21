@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,wBAAwB,WAAY;AAElD,OAAO,iBAAS,mBAAmBA,SAAS,KAAK;AAKjD,OAAO,iBAAS,iBACdA,SACC,KAAK,OAAO;UAAW;AAAc;AAIxC,OAAO,iBAAS,uBACdC,MAAM,MACNC,eACC","names":["o: any","data: Blob","name: string"],"sources":["../../../src/object/AttachmentUpload.ts"],"version":3,"file":"AttachmentUpload.d.ts"}

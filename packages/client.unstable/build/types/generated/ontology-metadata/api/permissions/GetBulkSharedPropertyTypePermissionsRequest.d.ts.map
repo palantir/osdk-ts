@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,yBAAyB,yBAA0B;AACjE,cAAc,6BAA6B,6BAA8B;;;;;AAMzE,iBAAiB,4CAA4C;CAC3D,wBAAwB,MAAM;CAC9B,mBAAmB;AACpB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/permissions/GetBulkSharedPropertyTypePermissionsRequest.ts"],"version":3,"file":"GetBulkSharedPropertyTypePermissionsRequest.d.ts"}

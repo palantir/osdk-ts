@@ -1,0 +1,10 @@
+import type { ApplyActionRequestV2 } from "@osdk/foundry.ontologies";
+import type { FauxOntology } from "../FauxFoundry/FauxOntology.js";
+export declare const actionRequestCreateOffice: ApplyActionRequestV2;
+export declare const actionRequestCreateOfficeNoReturnEdits: ApplyActionRequestV2;
+export declare const actionRequestWithAttachmentUpload: ApplyActionRequestV2;
+export declare const actionRequestMediaUpload: ApplyActionRequestV2;
+export declare const actionRequestWithInterface: ApplyActionRequestV2;
+export declare const actionRequestWithObjectTypeReference: ApplyActionRequestV2;
+export declare const actionRequestWithStruct: ApplyActionRequestV2;
+export declare function registerLazyActions(fauxOntology: FauxOntology): void;

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,sBAAuB;AAC5D,cAAc,kBAAkB,iBAAkB;;;;AAKlD,iBAAiB,uBAAuB;CACtC;CACA,iBAAiB;CACjB,YAAY;AACb","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/types/TimestampConfiguration.ts"],"version":3,"file":"TimestampConfiguration.d.ts"}

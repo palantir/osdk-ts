@@ -1,0 +1,11 @@
+import type { Osdk } from "@osdk/api";
+import { Employee } from "@osdk/client.test.ontology";
+import { type Client } from "../Client.js";
+export declare function shouldError(client: Client): Promise<Osdk<Employee>>;
+export declare function shouldError2(client: Client): Promise<Employee.OsdkObject>;
+export declare function shouldCompile_client_fetchOne_old_select(client: Client): Promise<Osdk<Employee, "employeeId">>;
+export declare function shouldCompile_unstableClient_fetchOne_old_select(client: Client): Promise<Osdk<Employee, "employeeId">>;
+export declare function shouldCompile_client_fetchOne_new_select(client: Client): Promise<Employee.OsdkObject<never, "employeeId">>;
+export declare function shouldCompile_unstableClient_fetchOne_new_select(client: Client): Promise<Osdk<Employee, "employeeId">>;
+export declare function shouldCompile_client_fetchOne_old_noArgs(client: Client): Promise<Osdk<Employee>>;
+export declare function shouldCompile_unstableClient_fetchOne_noArgs(client: Client): Promise<Osdk<Employee>>;

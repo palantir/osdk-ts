@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAoC,cAAe;AACjE,cAAc,wCAAwC,wCAAyC;;;;;;;AAQ/F,OAAO,iBAAe,8BACpBA,KAAK,gBACLC,SAAS,mCACR","names":["ctx: ConjureContext","request: TypeGroupSetOrganizationsRequest"],"sources":["../../../../../../src/generated/ontology-metadata/api/TypeGroupOrgsService/setOrganizationsForTypeGroups.ts"],"version":3,"file":"setOrganizationsForTypeGroups.d.ts"}

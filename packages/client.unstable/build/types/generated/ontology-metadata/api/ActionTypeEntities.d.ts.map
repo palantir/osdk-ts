@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,wBAAwB,uBAAwB;AAC9D,cAAc,kBAAkB,iBAAkB;AAClD,cAAc,oBAAoB,mBAAoB;AACtD,cAAc,oBAAoB,mBAAoB;AACtD,iBAAiB,mBAAmB;CAClC,qBAAqB,MAAM;CAC3B,mBAAmB,MAAM;CACzB,wBAAwB,MAAM;CAC9B,YAAY,MAAM;AACnB","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ActionTypeEntities.ts"],"version":3,"file":"ActionTypeEntities.d.ts"}

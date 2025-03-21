@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,SAAS,kBAAkB,iBAAkB;AAC7C,cAAqB,cAAc,aAAc;AAwBjD,OAAO,cAAM,sBAAsB,sBAAsB,OAAO;CAC9D,YACEA,WAAU,qBACVC,UAAS;EAAE;EAAgB;CAAoB;AAclD","names":["bindings: Record<string, any>","options: { level?: string; msgPrefix?: string }"],"sources":["../../../src/logger/MinimalLogger.ts"],"version":3,"file":"MinimalLogger.d.ts"}

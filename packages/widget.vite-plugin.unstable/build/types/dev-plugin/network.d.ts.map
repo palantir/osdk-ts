@@ -1,0 +1,1 @@
+{"mappings":"AAwBA,OAAO,iBAAS,qBACdA,oBACAC,sBACAC,qBAAqB,2BACpB,QAAQ;AA6BX,OAAO,iBAAS,cAAcF,qBAAqB,QAAQ","names":["foundryUrl: string","widgetSetRid: string","widgetIdToOverrides: Record<string, string[]>"],"sources":["../../../src/dev-plugin/network.ts"],"version":3,"file":"network.d.ts"}

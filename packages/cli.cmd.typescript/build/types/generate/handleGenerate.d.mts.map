@@ -1,0 +1,1 @@
+{"mappings":"AAiCA,cAAc,8BAA8B,6BAA8B;AAI1E,OAAO,iBAAe,eACpBA,MAAM,yBACL;AA8NH,OAAO,iBAAS,0BACdC,kBACAC,UAAU;AAWZ,OAAO,iBAAe,yBAAyB,QAAQ;CACrD;CACA;CACA;CACA;CACA;CACA;AACD","names":["args: TypescriptGenerateArgs","packageJson: any","versions: Record<string, string>"],"sources":["../../../src/generate/handleGenerate.mts"],"version":3,"file":"handleGenerate.d.mts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,yBAAyB,yBAA0B;AACjE,cAAc,mBAAmB,mBAAoB;AACrD,iBAAiB,6DAA6D;CAC5E,SAAS;CACT,WAAW;AACZ","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/audit/OntologyPermissionServiceGetOntologyPermissionsRequestParams.ts"],"version":3,"file":"OntologyPermissionServiceGetOntologyPermissionsRequestParams.d.ts"}

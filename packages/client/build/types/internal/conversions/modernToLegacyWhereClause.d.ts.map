@@ -1,0 +1,1 @@
+{"mappings":"AA+BA,OAAO,iBAAS,iBACdA","names":["fqApiName: string"],"sources":["../../../../src/internal/conversions/modernToLegacyWhereClause.ts"],"version":3,"file":"modernToLegacyWhereClause.d.ts"}

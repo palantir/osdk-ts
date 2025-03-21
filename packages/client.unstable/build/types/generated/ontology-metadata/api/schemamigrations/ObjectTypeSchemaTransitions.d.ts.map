@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,qBAAsB;AACzD,cAAc,uBAAuB,uBAAwB;AAC7D,cAAc,qBAAqB,qBAAsB;AACzD,cAAc,wBAAwB,uBAAwB;;;;AAK9D,iBAAiB,4BAA4B;CAC3C,eAAe;CACf,iBAAiB;CACjB,mBAAmB,MAAM;CACzB,eAAe;AAChB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/schemamigrations/ObjectTypeSchemaTransitions.ts"],"version":3,"file":"ObjectTypeSchemaTransitions.d.ts"}

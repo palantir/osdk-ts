@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,uBAAwB;AAC7D,cAAc,yCAAyC,wCAAyC;AAChG,cAAc,6BAA6B,4BAA6B;AACxE,iBAAiB,sCAAsC;CACrD,qBAAqB,OACnB,iBACA;CAEF,gBAAgB;AACjB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/derivedproperties/StorageAggregatedPropertiesDefinition.ts"],"version":3,"file":"StorageAggregatedPropertiesDefinition.d.ts"}

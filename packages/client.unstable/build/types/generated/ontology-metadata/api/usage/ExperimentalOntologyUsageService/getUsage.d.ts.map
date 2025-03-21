@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAoC,cAAe;AACjE,cAAc,uBAAuB,uBAAwB;AAC7D,cAAc,wBAAwB,wBAAyB;;;;;;;;;;;AAY/D,OAAO,iBAAe,SACpBA,KAAK,gBACLC,SAAS,kBACR,QAAQ","names":["ctx: ConjureContext","request: GetUsageRequest"],"sources":["../../../../../../../src/generated/ontology-metadata/api/usage/ExperimentalOntologyUsageService/getUsage.ts"],"version":3,"file":"getUsage.d.ts"}

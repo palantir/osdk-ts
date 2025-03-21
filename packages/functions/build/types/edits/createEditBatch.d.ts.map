@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,cAAc,cAAe;AAC3C,cAAc,iBAAiB,gBAAiB;AAChD,cAEE,eAKK,YAAa;AAgEpB,OAAO,iBAAS,gBAAgB,UAAU,SACxCA,SAAS,SACR,UAAU","names":["_client: Client"],"sources":["../../../src/edits/createEditBatch.ts"],"version":3,"file":"createEditBatch.d.ts"}

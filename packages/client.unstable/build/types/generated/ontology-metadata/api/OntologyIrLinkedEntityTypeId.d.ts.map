@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,4BAA4B,2BAA4B;AACtE,cAAc,oBAAoB,mBAAoB;AACtD,iBAAiB,wCAAwC;CACvD,MAAM;CACN,YAAY;AACb;AAED,iBAAiB,2CAA2C;CAC1D,MAAM;CACN,eAAe;AAChB;;;;AAID,YAAY,+BACR,0CACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/OntologyIrLinkedEntityTypeId.ts"],"version":3,"file":"OntologyIrLinkedEntityTypeId.d.ts"}

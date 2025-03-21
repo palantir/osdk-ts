@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,iCAAiC,gCAAiC;AAChF,cAAc,kCAAkC,iCAAkC;AAClF,iBAAiB,iCAAiC;CAChD,MAAM;CACN,WAAW;AACZ;AAED,iBAAiB,kCAAkC;CACjD,MAAM;CACN,YAAY;AACb;;;;;AAKD,YAAY,yBACR,mCACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/entitymetadata/TransformProfileConfig.ts"],"version":3,"file":"TransformProfileConfig.d.ts"}

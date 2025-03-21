@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,mCAAoC;AACrE,iBAAiB,6DAA6D;CAC5E,SAAS;AACV","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/audit/OntologyPermissionServiceGetWorkflowPermissionsRequestParams.ts"],"version":3,"file":"OntologyPermissionServiceGetWorkflowPermissionsRequestParams.d.ts"}

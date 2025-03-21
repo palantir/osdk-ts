@@ -1,0 +1,1 @@
+{"mappings":"AAkBA,cAAc,eAAe,UAAW;AASxC,OAAO,iBAAe,UACpBA,SAAS,SACTC,gBACAC,8BACAC,gBAAgB;;AAA8B,IAC7C,QAAQ","names":["project: Project","dirs: string[]","generatedPackageName: string","generatedFiles: { [fileName: string]: string }"],"sources":["../../../../src/generate/betaClient/copyFiles.ts"],"version":3,"file":"copyFiles.d.ts"}

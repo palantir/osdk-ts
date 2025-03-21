@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAoC,cAAe;AACjE,cAAc,2BAA2B,2BAA4B;AACrE,cAAc,4BAA4B,4BAA6B;;;;;;AAOvE,OAAO,iBAAe,aACpBA,KAAK,gBACLC,SAAS,sBACR,QAAQ","names":["ctx: ConjureContext","request: TagDependentRequest"],"sources":["../../../../../../../src/generated/ontology-metadata/api/provenance/ExperimentalOntologyProvenanceService/tagDependent.ts"],"version":3,"file":"tagDependent.d.ts"}

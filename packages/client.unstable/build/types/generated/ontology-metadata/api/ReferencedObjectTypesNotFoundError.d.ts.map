@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,kBAAkB,iBAAkB;AAClD,cAAc,oBAAoB,mBAAoB;;;;AAKtD,iBAAiB,mCAAmC;CAClD,oBAAoB,OAAO,cAAc,MAAM;AAChD","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ReferencedObjectTypesNotFoundError.ts"],"version":3,"file":"ReferencedObjectTypesNotFoundError.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAoC,cAAe;AACjE,cAAc,oBAAoB,oBAAqB;;;;AAKvD,OAAO,iBAAe,gBACpBA,KAAK,gBACLC,cAAc,eACb","names":["ctx: ConjureContext","objectSetRid: ObjectSetRid"],"sources":["../../../../../../src/generated/object-set-service/api/ObjectSetService/deleteObjectSet.ts"],"version":3,"file":"deleteObjectSet.d.ts"}

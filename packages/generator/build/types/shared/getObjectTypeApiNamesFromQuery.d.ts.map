@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,0BAA2B;AAC5D,cAAc,qBAAqB,qCAAsC;AAGzE,OAAO,iBAAS,+BACdA,OAAO,cAAc","names":["query: QueryTypeV2 | EnhancedQuery"],"sources":["../../../src/shared/getObjectTypeApiNamesFromQuery.ts"],"version":3,"file":"getObjectTypeApiNamesFromQuery.d.ts"}

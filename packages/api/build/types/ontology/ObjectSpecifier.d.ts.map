@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cACE,qBACA,yBACK,0BAA2B;AAClC,cAAc,mCAAmC,wBAAyB;AAE1E,YAAY,gBAAgB,UAAU,wCAAwC;CAC5E,WACI,EAAE,cACD,UAAU,sBACT,YAAY,EAAE,iCAAiC,oBAC7C,YACA,YAAY,EAAE,yBAAyB;AAIhD","names":[],"sources":["../../../src/ontology/ObjectSpecifier.ts"],"version":3,"file":"ObjectSpecifier.d.ts"}

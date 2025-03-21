@@ -1,0 +1,1 @@
+{"mappings":"AAkBA,cAAc,qBAAqB,MAAO;AAE1C,iBAAiB,gBAAgB;CAC/B;CACA;AACD;;;;;;;;;;;AAYD,OAAO,iBAAe,uBACpBA,QAAQ,KAAK,eAAe,wBAC3B,QAAQ","names":["server: Pick<ViteDevServer, \"transformIndexHtml\">"],"sources":["../../../src/dev-plugin/extractInjectedScripts.ts"],"version":3,"file":"extractInjectedScripts.d.ts"}

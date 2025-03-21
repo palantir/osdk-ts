@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,oCAAoC,mCAAoC;AACtF,iBAAiB,0CAA0C;CACzD,MAAM;CACN,OAAO;AACR;AAED,iBAAiB,wDAAwD;CACvE,MAAM;CACN,qBAAqB;AACtB;AACD,YAAY,sCACR,4CACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ParameterTimeSeriesReferenceOrEmpty.ts"],"version":3,"file":"ParameterTimeSeriesReferenceOrEmpty.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,0CAA0C,yCAA0C;AAClG,cAAc,yCAAyC,wCAAyC;AAChG,iBAAiB,oCAAoC;CACnD,MAAM;CACN,YAAY;AACb;AAED,iBAAiB,mCAAmC;CAClD,MAAM;CACN,WAAW;AACZ;AACD,YAAY,2BACR,sCACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/OntologyIrLinkDefinition.ts"],"version":3,"file":"OntologyIrLinkDefinition.d.ts"}

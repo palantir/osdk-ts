@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAoC,cAAe;AACjE,cAAc,0BAA0B,8BAA+B;AACvE,cAAc,2BAA2B,+BAAgC;;;;;AAMzE,OAAO,iBAAe,UACpBA,KAAK,gBACLC,SAAS,qBACR,QAAQ","names":["ctx: ConjureContext","request: OntologyLmsRequest"],"sources":["../../../../../../src/generated/ontology-metadata/api/OntologyLlmService/usePlugin.ts"],"version":3,"file":"usePlugin.d.ts"}

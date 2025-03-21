@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,yCAAyC,gDAAiD;AACxG,cAAc,qCAAqC,4CAA6C;AAChG,cAAc,oBAAoB,2BAA4B;AAC9D,cAAc,qBAAqB,4BAA6B;;;;AAKhE,iBAAiB,2BAA2B;CAC1C,eAAe;CACf,cAAc;CACd,+BAA+B;CAC/B,mCAAmC;AACpC","names":[],"sources":["../../../../../../src/generated/ontology-metadata/branch/api/InterfaceLinkNotFoundError.ts"],"version":3,"file":"InterfaceLinkNotFoundError.d.ts"}

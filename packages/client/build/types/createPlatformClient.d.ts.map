@@ -1,0 +1,1 @@
+{"mappings":"AAiBA,cAAc,2BAA2B,sBAAuB;AAGhE,iBAAiB,uBAAuB,oBAAoB,CAAE;;;;;;;;;;;;;AAc9D,OAAO,iBAAS,qBACdA,iBACAC,qBAAqB,iBACrBC,qBACAC,iBAAgB,WAAW,QAC1B","names":["baseUrl: string","tokenProvider: () => Promise<string>","options: undefined","fetchFn: typeof globalThis.fetch"],"sources":["../../src/createPlatformClient.ts"],"version":3,"file":"createPlatformClient.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,iBAAiB,gBAAiB;AAChD,cAAc,wBAAwB,uBAAwB;AAC9D,iBAAiB,2BAA2B;CAC1C,sBAAsB;CACtB,WAAW;AACZ","names":[],"sources":["../../../../../src/generated/object-set-service/api/UpdateLatestVersionRequest.ts"],"version":3,"file":"UpdateLatestVersionRequest.d.ts"}

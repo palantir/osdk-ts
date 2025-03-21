@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,oBAAoB,oBAAqB;AACvD,cAAc,qBAAqB,qBAAsB;AACzD,cAAc,0BAA0B,0BAA2B;AACnE,cAAc,kDAAkD,iDAAkD;AAClH,iBAAiB,2BAA2B;CAC1C,KAAK;CACL,gCAAgC;CAChC,oBAAoB;CACpB,cAAc;AACf","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/modification/ObjectTypeDatasourceUpdate.ts"],"version":3,"file":"ObjectTypeDatasourceUpdate.d.ts"}

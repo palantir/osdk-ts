@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,iBAAiB,UAAU;CACzB,QAAQA,cAAcC,UAAU;EAAE;CAAoB,MAAK;CAC3D,WAAW;CACX,SAAS;AACV;AAED,YAAY,eAAeD,cAAcE,qBAAqB;AAC9D,YAAY,aAAaF,iBAAiB","names":["path: string","options?: { recursive: boolean }","contents: string"],"sources":["../../src/MinimalFs.ts"],"version":3,"file":"MinimalFs.d.ts"}

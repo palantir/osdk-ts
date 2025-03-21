@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mCAAmC,4DAA6D;AAC9G,cAAc,4BAA4B,2BAA4B;AACtE,iBAAiB,mDAAmD;CAClE,MAAM;CACN,aAAa;AACd;AAED,iBAAiB,4CAA4C;CAC3D,MAAM;CACN,MAAM;AACP;AACD,YAAY,yCACR,qDACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ActionTypeProvenanceSourceModification.ts"],"version":3,"file":"ActionTypeProvenanceSourceModification.d.ts"}

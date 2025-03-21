@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sCAAsC,qCAAsC;AAC1F,cAAc,kBAAkB,iBAAkB;AAClD,cAAc,wBAAwB,uBAAwB;;;;;;AAO9D,iBAAiB,yBAAyB;CACxC,YAAY;CACZ,UAAU,OAAO,kBAAkB;AACpC","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/OntologyIrRuleSetBinding.ts"],"version":3,"file":"OntologyIrRuleSetBinding.d.ts"}

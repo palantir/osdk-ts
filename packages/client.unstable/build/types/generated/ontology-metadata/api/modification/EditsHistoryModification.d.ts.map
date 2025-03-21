@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sCAAsC,qCAAsC;AAC1F,cAAc,kCAAkC,iCAAkC;AAClF,iBAAiB,gCAAgC;CAC/C,MAAM;CACN,QAAQ;AACT;AAED,iBAAiB,8BAA8B;CAC7C,MAAM;CACN,MAAM;AACP;AACD,YAAY,2BACR,kCACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/modification/EditsHistoryModification.ts"],"version":3,"file":"EditsHistoryModification.d.ts"}

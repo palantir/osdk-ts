@@ -1,0 +1,1 @@
+{"mappings":"AAoBA,OAAO,iBAAgB,sBACrBA,eAAe,cAAc,cAC5B;AA4FH,OAAO,iBAAgB,sBACrBC,gBAAgB,4BAA4B,cAC3C,eAAe","names":["asyncIterable: AsyncIterable<Uint8Array>","readableStream: ReadableStreamDefaultReader<Uint8Array>"],"sources":["../../../src/util/streamutils.ts"],"version":3,"file":"streamutils.d.ts"}

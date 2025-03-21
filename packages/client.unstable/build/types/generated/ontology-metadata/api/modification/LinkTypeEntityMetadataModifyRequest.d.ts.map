@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,gCAAgC,+BAAgC;AAC9E,cAAc,oCAAoC,mCAAoC;AACtF,cAAc,kCAAkC,iCAAkC;AAClF,iBAAiB,oCAAoC;CACnD,cAAc;CACd;CACA,sBAAsB;CACtB,YAAY;AACb","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/modification/LinkTypeEntityMetadataModifyRequest.ts"],"version":3,"file":"LinkTypeEntityMetadataModifyRequest.d.ts"}

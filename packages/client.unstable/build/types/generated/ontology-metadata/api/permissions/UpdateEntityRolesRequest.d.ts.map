@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,oBAAoB,mBAAoB;AACtD,cAAc,iCAAiC,gCAAiC;AAChF,cAAc,sBAAsB,qBAAsB;;;;;;AAO1D,iBAAiB,yBAAyB;CACxC,QAAQ;CACR,cAAc,MAAM;CACpB,QAAQ;CACR;CACA;AACD","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/permissions/UpdateEntityRolesRequest.ts"],"version":3,"file":"UpdateEntityRolesRequest.d.ts"}

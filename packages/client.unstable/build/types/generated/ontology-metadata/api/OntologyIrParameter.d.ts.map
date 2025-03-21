@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,gCAAgC,+BAAgC;AAC9E,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,oBAAoB,mBAAoB;AACtD,cAAc,mCAAmC,wCAAyC;;;;AAK1F,iBAAiB,oBAAoB;CACnC,IAAI;CACJ,KAAK;CACL,MAAM;CACN,iBAAiB;AAClB","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/OntologyIrParameter.ts"],"version":3,"file":"OntologyIrParameter.d.ts"}

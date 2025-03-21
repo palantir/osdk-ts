@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,qBAAsB;AACzD,cAAc,yBAAyB,yBAA0B;AACjE,iBAAiB,6BAA6B;CAC5C,eAAe;CACf,SAAS;AACV","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/audit/UpdatedActionTypeAuditRecord.ts"],"version":3,"file":"UpdatedActionTypeAuditRecord.d.ts"}

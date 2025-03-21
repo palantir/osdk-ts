@@ -1,0 +1,14 @@
+import type { ActionNotFound, ApplyActionFailed, AttachmentNotFound, AttachmentSizeExceededLimit, InvalidContentType, LinkTypeNotFound, ObjectNotFound, ObjectTypeNotFound, OntologyNotFound, QueryEncounteredUserFacingError, QueryNotFound } from "@osdk/internal.foundry.ontologies";
+import type { BaseAPIError } from "./BaseError.js";
+export declare function ObjectTypeDoesNotExistError(objectType: string): ObjectTypeNotFound;
+export declare function LinkTypeNotFound(objectType: string, linkType: string): LinkTypeNotFound;
+export declare function OntologyNotFoundError(ontology: string): OntologyNotFound;
+export declare function ObjectNotFoundError(objectType: string, primaryKey: string): ObjectNotFound;
+export declare function QueryNotFoundError(queryApiName: string): QueryNotFound;
+export declare function ActionNotFoundError(): ActionNotFound;
+export declare function InvalidRequest(errorName: string): BaseAPIError;
+export declare const ApplyActionFailedError: ApplyActionFailed;
+export declare const ExecuteQueryFailedError: QueryEncounteredUserFacingError;
+export declare const InvalidContentTypeError: InvalidContentType;
+export declare const AttachmentSizeExceededLimitError: AttachmentSizeExceededLimit;
+export declare const AttachmentNotFoundError: AttachmentNotFound;

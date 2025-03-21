@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,cAAe;AAChD,SAAS,qBAAqB,cAAe;KAExC,gBAAgB,kBAAkB,eAAe;AACtD,OAAO,iBAAS,aAAa,UAAU,eACrCA,QAAQ,IAAI,cACX,QAAQ,GAAG","names":["result: T | OAuth2Error"],"sources":["../../src/throwIfError.ts"],"version":3,"file":"throwIfError.d.ts"}

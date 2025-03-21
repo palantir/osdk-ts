@@ -1,0 +1,1 @@
+{"mappings":"AAiBA,cAAc,2BAA2B,2BAA4B;AAUrE,iBAAS,UACPA,MAAM,SACL,QAAQ,oBAAoB;AAC/B,iBAAS,UACPC,MAAM,cACL,QAAQ,oBAAoB;AAC/B,iBAAS,UACPC,MAAM,SAAS,cACd,QAAQ,oBAAoB,SAAS;AA+BxC,eAAe","names":["type: \"site\"","type: \"widgetSet\"","type: \"site\" | \"widgetSet\""],"sources":["../../../src/util/configLoader.ts"],"version":3,"file":"configLoader.d.ts"}

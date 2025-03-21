@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,0BAA0B,0BAA2B;AACnE,cAAc,4BAA4B,4BAA6B;AACvE,cAAc,4CAA4C,2CAA4C;;;;AAKtG,iBAAiB,yBAAyB;CACxC,sCAAsC,MACpC;CAEF,qBAAqB,MAAM;CAC3B,8BAA8B,MAAM;AACrC","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/usage/OntologyEntityReferences.ts"],"version":3,"file":"OntologyEntityReferences.d.ts"}

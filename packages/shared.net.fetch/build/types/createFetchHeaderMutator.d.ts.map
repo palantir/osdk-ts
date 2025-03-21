@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,OAAO,iBAAS,yBACdA,gBAAgB,mBAChBC,UAAUC,SAAS,YAAY,QAAQ,WAAW,iBAC1C","names":["fetchFn: typeof fetch | undefined","mutator: (headers: Headers) => Promise<Headers> | Headers","headers: Headers"],"sources":["../../src/createFetchHeaderMutator.ts"],"version":3,"file":"createFetchHeaderMutator.d.ts"}

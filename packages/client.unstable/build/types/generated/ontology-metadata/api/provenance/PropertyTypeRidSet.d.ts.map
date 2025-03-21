@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,uBAAwB;AAC7D,cAAc,gCAAgC,+BAAgC;AAC9E,iBAAiB,iCAAiC;CAChD,MAAM;CACN,eAAe;AAChB;AAED,iBAAiB,sCAAsC;CACrD,MAAM;CACN,oBAAoB,MAAM;AAC3B;;;;AAID,YAAY,qBACR,mCACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/provenance/PropertyTypeRidSet.ts"],"version":3,"file":"PropertyTypeRidSet.d.ts"}

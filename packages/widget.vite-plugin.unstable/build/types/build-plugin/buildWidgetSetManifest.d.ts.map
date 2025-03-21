@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAEE,yBACK,2BAA4B;AACnC,cAAc,0BAA0B,4BAA6B;AAErE,OAAO,iBAAS,uBACdA,sBACAC,0BACAC,cAAc,uBACb","names":["widgetSetRid: string","widgetSetVersion: string","widgetBuilds: WidgetBuildOutputs[]"],"sources":["../../../src/build-plugin/buildWidgetSetManifest.ts"],"version":3,"file":"buildWidgetSetManifest.d.ts"}

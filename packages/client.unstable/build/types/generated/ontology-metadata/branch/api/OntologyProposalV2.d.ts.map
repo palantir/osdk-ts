@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,yBAAyB,gCAAiC;AACxE,cAAc,2BAA2B,kCAAmC;AAC5E,cAAc,wBAAwB,uBAAwB;AAC9D,cAAc,2BAA2B,0BAA2B;AACpE,cAAc,6BAA6B,4BAA6B;;;;AAKxE,iBAAiB,mBAAmB;CAClC,KAAK;CACL,iBAAiB;CACjB,aAAa;CACb,aAAa;CACb,QAAQ;AACT","names":[],"sources":["../../../../../../src/generated/ontology-metadata/branch/api/OntologyProposalV2.ts"],"version":3,"file":"OntologyProposalV2.d.ts"}

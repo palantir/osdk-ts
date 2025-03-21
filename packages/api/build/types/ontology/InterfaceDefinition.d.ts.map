@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,oBAAoB,oBAAqB;AACvD,cACE,6BACA,wCACK,2BAA4B;AAEnC,iBAAiB,0BAA0B,4BAA4B;CACrE,MAAM;CACN,gBAAgB;AACjB;AAED,iBAAiB,oBAAoB;CACnC,MAAM;CACN;CACA,eAAe;CACf,uBACI,oBACA;AACL","names":[],"sources":["../../../src/ontology/InterfaceDefinition.ts"],"version":3,"file":"InterfaceDefinition.d.ts"}

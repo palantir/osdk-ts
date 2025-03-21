@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,wBAAwB,uBAAwB;AAC9D,cAAc,qBAAqB,oBAAqB;AACxD,cAAc,sBAAsB,qBAAsB;AAC1D,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,uBAAuB,sBAAuB;AAC5D,iBAAiB,uBAAuB;CACtC,eAAe;CACf,iBAAiB;CACjB,aAAa;CACb,gBAAgB;CAChB,kBAAkB;AACnB","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ObjectTypeDeletedEvent.ts"],"version":3,"file":"ObjectTypeDeletedEvent.d.ts"}

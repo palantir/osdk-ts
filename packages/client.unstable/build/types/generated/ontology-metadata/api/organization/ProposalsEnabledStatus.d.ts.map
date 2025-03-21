@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,yBAAyB,wBAAyB;AAChE,cAAc,wBAAwB,uBAAwB;AAC9D,iBAAiB,gCAAgC;CAC/C,MAAM;CACN,UAAU;AACX;AAED,iBAAiB,+BAA+B;CAC9C,MAAM;CACN,SAAS;AACV;AACD,YAAY,yBACR,kCACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/organization/ProposalsEnabledStatus.ts"],"version":3,"file":"ProposalsEnabledStatus.d.ts"}

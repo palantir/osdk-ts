@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,yBAAyB,wBAAyB;AAChE,cAAc,2BAA2B,0BAA2B;AACpE,cAAc,wBAAwB,uBAAwB;AAC9D,cAAc,wBAAwB,uBAAwB;;;;;AAM9D,iBAAiB,QAAQ;CACvB,mBAAmB;CACnB,wBAAwB;CACxB,QAAQ;CACR,kBAAkB;CAClB;AACD","names":[],"sources":["../../../../src/generated/third-party-application-service/PypiSdk.ts"],"version":3,"file":"PypiSdk.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,gCAAgC,+BAAgC;AAC9E,cAAc,oCAAoC,mCAAoC;AACtF,iBAAiB,8BAA8B;CAC7C,MAAM;CACN,mBAAmB;AACpB;AAED,iBAAiB,0BAA0B;CACzC,MAAM;CACN,eAAe;AAChB;AACD,YAAY,cACR,gCACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/objectset/PropertySet.ts"],"version":3,"file":"PropertySet.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,0CAA0C,yCAA0C;AAClG,cAAc,mBAAmB,kBAAmB;AACpD,iBAAiB,6BAA6B;CAC5C,MAAM;CACN,OAAO;AACR;AAED,iBAAiB,0DAA0D;CACzE,MAAM;CACN,oCAAoC;AACrC;;;;;AAKD,YAAY,yBACR,+BACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ParameterStructOrEmpty.ts"],"version":3,"file":"ParameterStructOrEmpty.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,wBAAwB,wBAAyB;AAC/D,cAAc,4BAA4B,4BAA6B;AACvE,cAAc,8BAA8B,6BAA8B;AAC1E,cAAc,wBAAwB,uBAAwB;;;;AAK9D,iBAAiB,cAAc;CAC7B,KAAK;CACL,SAAS;CACT,WAAW;CACX,aAAa,MAAM;AACpB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/accessrequest/AccessRequest.ts"],"version":3,"file":"AccessRequest.d.ts"}

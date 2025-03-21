@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,4BAA6B;AAChE,cAAc,mBAAmB,0BAA2B;AAC5D,cAAc,qBAAqB,4BAA6B;;;;AAKhE,iBAAiB,2DAA2D;CAC1E,eAAe;CACf,eAAe;CACf,aAAa;AACd","names":[],"sources":["../../../../../../src/generated/ontology-metadata/branch/api/MarkingPropertiesMustHaveAssociatedMarkingConstraintsError.ts"],"version":3,"file":"MarkingPropertiesMustHaveAssociatedMarkingConstraintsError.d.ts"}

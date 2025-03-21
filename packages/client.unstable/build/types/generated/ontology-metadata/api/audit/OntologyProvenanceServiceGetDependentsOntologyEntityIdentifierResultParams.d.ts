@@ -1,0 +1,4 @@
+import type { GetTaggedDependentsForOntologyEntityIdentifierResponse } from "../provenance/GetTaggedDependentsForOntologyEntityIdentifierResponse.js";
+export interface OntologyProvenanceServiceGetDependentsOntologyEntityIdentifierResultParams {
+	request: GetTaggedDependentsForOntologyEntityIdentifierResponse;
+}

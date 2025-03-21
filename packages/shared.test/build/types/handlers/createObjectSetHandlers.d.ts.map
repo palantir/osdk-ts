@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,KAAM;AAC1C,cAAc,mBAAmB,+BAAgC;AAGjE,OAAO,cAAM,0BACXA,iBACAC,aAAa,gBACZ,MAAM","names":["baseUrl: string","fauxFoundry: FauxFoundry"],"sources":["../../../src/handlers/createObjectSetHandlers.ts"],"version":3,"file":"createObjectSetHandlers.d.ts"}

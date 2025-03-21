@@ -1,0 +1,1 @@
+{"version":3,"file":"interfaces.js","names":["SomeInterface"],"sources":["interfaces.ts"],"sourcesContent":["export { SomeInterface } from './interfaces/SomeInterface.js';\n"],"mappings":"AAAA,SAASA,aAAa,QAAQ,+BAA+B","ignoreList":[]}

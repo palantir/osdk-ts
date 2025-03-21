@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,wBAAwB,uBAAwB;AAC9D,iBAAiB,8BAA8B;CAC7C,MAAM;CACN,OAAO;AACR;AAED,iBAAiB,gCAAgC;CAC/C,MAAM;CACN,SAAS;AACV;AACD,YAAY,0BACR,gCACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ParameterBooleanOrEmpty.ts"],"version":3,"file":"ParameterBooleanOrEmpty.d.ts"}

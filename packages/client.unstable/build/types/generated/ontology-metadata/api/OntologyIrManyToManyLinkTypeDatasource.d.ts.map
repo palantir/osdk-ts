@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,oBAAqB;AACxD,cAAc,0BAA0B,yBAA0B;AAClE,cAAc,wDAAwD,uDAAwD;AAC9H,iBAAiB,uCAAuC;CACtD,KAAK;CACL,YAAY;CACZ,oBAAoB;CACpB;AACD","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/OntologyIrManyToManyLinkTypeDatasource.ts"],"version":3,"file":"OntologyIrManyToManyLinkTypeDatasource.d.ts"}

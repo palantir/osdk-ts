@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,6BAA6B,4BAA6B;AACxE,cAAc,oBAAoB,mBAAoB;AACtD,iBAAiB,mCAAmC;CAClD,wBAAwB,OAAO,cAAc,MAAM;AACpD","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/GetRelationsForObjectTypesResponse.ts"],"version":3,"file":"GetRelationsForObjectTypesResponse.d.ts"}

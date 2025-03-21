@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,mBAAoB;AACrD,cAAc,uBAAuB,uBAAwB;AAC7D,iBAAiB,6BAA6B;CAC5C,YAAY,OAAO,aAAa;AACjC","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/audit/LoadAllOntologiesAuditRecord.ts"],"version":3,"file":"LoadAllOntologiesAuditRecord.d.ts"}

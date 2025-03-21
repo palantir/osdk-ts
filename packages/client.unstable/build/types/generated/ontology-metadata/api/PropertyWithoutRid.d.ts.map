@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,oBAAqB;AACxD,cAAc,qBAAqB,oBAAqB;AACxD,cAAc,kBAAkB,iBAAkB;AAClD,cAAc,6BAA6B,4BAA6B;;;;AAKxE,iBAAiB,mBAAmB;CAClC,IAAI;CACJ,MAAM;CACN;CACA,eAAe;CACf,QAAQ;CACR;AACD","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/PropertyWithoutRid.ts"],"version":3,"file":"PropertyWithoutRid.d.ts"}

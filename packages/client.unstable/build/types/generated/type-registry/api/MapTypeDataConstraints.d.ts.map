@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,qBAAsB;AAC1D,cAAc,iCAAiC,gCAAiC;AAChF,iBAAiB,uBAAuB;CACtC,wBAAwB,MAAM;CAC9B,0BAA0B,MAAM;CAChC,cAAc;AACf","names":[],"sources":["../../../../../src/generated/type-registry/api/MapTypeDataConstraints.ts"],"version":3,"file":"MapTypeDataConstraints.d.ts"}

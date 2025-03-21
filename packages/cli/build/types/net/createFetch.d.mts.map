@@ -1,0 +1,1 @@
+{"mappings":"AA2BA,OAAO,iBAAS,YACdA,qBAAqB,0BACrBC,iBAAgB,eACR","names":["tokenProvider: () => Promise<string> | string","fetchFn: typeof fetch"],"sources":["../../../src/net/createFetch.mts"],"version":3,"file":"createFetch.d.mts"}

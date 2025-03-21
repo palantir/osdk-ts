@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,wBAAwB,wBAAyB;AAC/D,cAAc,uBAAuB,uBAAwB;AAC7D,iBAAiB,6BAA6B;CAC5C,kBAAkB;CAClB,iBAAiB;AAClB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/audit/InterfaceTypeLoadAuditRecord.ts"],"version":3,"file":"InterfaceTypeLoadAuditRecord.d.ts"}

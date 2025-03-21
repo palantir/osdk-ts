@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,qBAAsB;AAC1D,cAAc,2BAA2B,0BAA2B;AACpE,iBAAiB,iCAAiC;CAChD,MAAM;CACN,qBAAqB;AACtB;AAED,iBAAiB,4BAA4B;CAC3C,MAAM;CACN,gBAAgB;AACjB;;;;;AAKD,YAAY,eACR,mCACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/RidFormatter.ts"],"version":3,"file":"RidFormatter.d.ts"}

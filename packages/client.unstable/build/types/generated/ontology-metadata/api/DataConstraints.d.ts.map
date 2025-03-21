@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,sBAAuB;AAC5D,cAAc,yBAAyB,wBAAyB;AAChE,cAAc,0CAA0C,yCAA0C;AAClG,iBAAiB,gBAAgB;CAC/B,aAAa;CACb,eAAe;CACf,yBAAyB,MAAM;AAChC","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/DataConstraints.ts"],"version":3,"file":"DataConstraints.d.ts"}

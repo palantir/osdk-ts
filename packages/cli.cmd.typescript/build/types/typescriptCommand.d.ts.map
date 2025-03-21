@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,kBAAmB;AACtD,iBAAiB,WAAW,OAAQ;AAGpC,OAAO,cAAMA,mBAAmB,MAAM,cACpC,eACA","names":["typescriptCommand: yargs.CommandModule<\n  CliCommonArgs,\n  CliCommonArgs\n>"],"sources":["../../src/typescriptCommand.ts"],"version":3,"file":"typescriptCommand.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,oBAAoB,mBAAoB;AACtD,iBAAiB,kCAAkC;CACjD,MAAM;CACN,KAAK;AACN;AAED,iBAAiB,iCAAiC;CAChD,MAAM;CACN,IAAI;AACL;;;;AAID,YAAY,gCACR,oCACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ActionTypeParameterIdentifier.ts"],"version":3,"file":"ActionTypeParameterIdentifier.d.ts"}

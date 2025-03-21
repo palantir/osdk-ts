@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,8BAA+B;AACpE,cAAc,iCAAiC,+CAAgD;AAC/F,cAAc,iCAAiC,+CAAgD;AAC/F,cAAc,8BAA8B,6BAA8B;;;;AAK1E,iBAAiB,4BAA4B;CAC3C,0BAA0B;CAC1B,aAAa;CACb,aAAa;CACb,UAAU;AACX","names":[],"sources":["../../../../../../src/generated/ontology-metadata/approvals/api/CreateOntologyBranchRequest.ts"],"version":3,"file":"CreateOntologyBranchRequest.d.ts"}

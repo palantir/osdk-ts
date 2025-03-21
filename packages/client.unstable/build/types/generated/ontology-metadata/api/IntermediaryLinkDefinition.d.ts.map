@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,wBAAwB,uBAAwB;AAC9D,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,qBAAqB,oBAAqB;;;;;;;;;;AAWxD,iBAAiB,2BAA2B;CAC1C,4BAA4B;CAC5B,4BAA4B;CAC5B,2BAA2B;CAC3B,gBAAgB;CAChB,gBAAgB;CAChB,4BAA4B;CAC5B,4BAA4B;AAC7B","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/IntermediaryLinkDefinition.ts"],"version":3,"file":"IntermediaryLinkDefinition.d.ts"}

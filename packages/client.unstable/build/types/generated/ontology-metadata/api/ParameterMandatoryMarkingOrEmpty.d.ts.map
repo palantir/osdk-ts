@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,iCAAiC,gCAAiC;AAChF,iBAAiB,uCAAuC;CACtD,MAAM;CACN,OAAO;AACR;AAED,iBAAiB,kDAAkD;CACjE,MAAM;CACN,kBAAkB;AACnB;AACD,YAAY,mCACR,yCACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ParameterMandatoryMarkingOrEmpty.ts"],"version":3,"file":"ParameterMandatoryMarkingOrEmpty.d.ts"}

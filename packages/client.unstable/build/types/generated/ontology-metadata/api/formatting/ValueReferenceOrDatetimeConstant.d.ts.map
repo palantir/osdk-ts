@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,qBAAsB;AAC1D,iBAAiB,0CAA0C;CACzD,MAAM;CACN;AACD;AAED,iBAAiB,2CAA2C;CAC1D,MAAM;CACN,WAAW;AACZ;AACD,YAAY,mCACR,4CACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/formatting/ValueReferenceOrDatetimeConstant.ts"],"version":3,"file":"ValueReferenceOrDatetimeConstant.d.ts"}

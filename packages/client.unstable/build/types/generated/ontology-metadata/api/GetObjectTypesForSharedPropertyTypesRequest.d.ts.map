@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,sBAAuB;AAC5D,cAAc,6BAA6B,4BAA6B;;;;AAKxE,iBAAiB,4CAA4C;CAC3D,iBAAiB;CACjB,wBAAwB,MAAM;AAC/B","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/GetObjectTypesForSharedPropertyTypesRequest.ts"],"version":3,"file":"GetObjectTypesForSharedPropertyTypesRequest.d.ts"}

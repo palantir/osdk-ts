@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,kBAAkB,kBAAmB;AACnD,cAAc,mBAAmB,mBAAoB;AACrD,cAAc,uBAAuB,uBAAwB;;;;AAK7D,iBAAiB,oBAAoB;CACnC,YAAY;CACZ,iBAAiB;CACjB,aAAa;CACb;AACD","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/search/ObjectTypeSearchHit.ts"],"version":3,"file":"ObjectTypeSearchHit.d.ts"}

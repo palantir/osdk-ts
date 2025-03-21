@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,6BAA6B,4BAA6B;AACxE,cAAc,gCAAgC,+BAAgC;AAC9E,iBAAiB,6DAA6D;CAC5E,MAAM;CACN,gBAAgB;AACjB;AAED,iBAAiB,wDAAwD;CACvE,MAAM;CACN,WAAW;AACZ;;;;AAID,YAAY,gDACR,+DACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/OntologyIrFunctionExecutionWithRecipientInput.ts"],"version":3,"file":"OntologyIrFunctionExecutionWithRecipientInput.d.ts"}

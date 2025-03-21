@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,sBAAuB;AAC5D,cAAc,oBAAoB,mBAAoB;;;;AAKtD,iBAAiB,wCAAwC;CACvD,iBAAiB;CACjB,eAAe,MAAM;AACtB","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/GetOntologyEntitiesForTypeGroupsRequest.ts"],"version":3,"file":"GetOntologyEntitiesForTypeGroupsRequest.d.ts"}

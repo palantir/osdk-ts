@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,gCAAgC,8CAA+C;AAC7F,cAAc,kBAAkB,iBAAkB;AAClD,cAAc,4BAA4B,2BAA4B;AACtE,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,uBAAuB,sBAAuB;;;;AAK5D,iBAAiB,uBAAuB;CACtC,YAAY;CACZ,aAAa;CACb,iBAAiB;CACjB,aAAa,MAAM;CACnB,gBAAgB;AACjB","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ObjectTypeLoadResponse.ts"],"version":3,"file":"ObjectTypeLoadResponse.d.ts"}

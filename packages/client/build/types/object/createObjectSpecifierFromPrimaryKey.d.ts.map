@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cACE,6BACA,iBACA,sBACK,WAAY;AAEnB,OAAO,iBAAS,oCACd,UAAU,6BACVA,KAAK,GAAGC,YAAY,eAAe,KAAK,gBAAgB","names":["def: Q","primaryKey: PrimaryKeyType<Q>"],"sources":["../../../src/object/createObjectSpecifierFromPrimaryKey.ts"],"version":3,"file":"createObjectSpecifierFromPrimaryKey.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,sBAAuB;AAC5D,cAAc,oBAAoB,mBAAoB;AACtD,iBAAiB,wCAAwC;CACvD,MAAM;CACN,iBAAiB;AAClB;AAED,iBAAiB,qCAAqC;CACpD,MAAM;CACN,cAAc;AACf;;;;AAID,YAAY,0BACR,0CACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/entitymetadata/EntityMigrationCategory.ts"],"version":3,"file":"EntityMigrationCategory.d.ts"}

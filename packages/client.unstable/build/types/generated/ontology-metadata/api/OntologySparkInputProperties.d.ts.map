@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,kBAAkB,iBAAkB;AAClD,cAAc,2BAA2B,0BAA2B;AACpE,cAAc,uBAAuB,sBAAuB;;;;AAK5D,iBAAiB,6BAA6B;CAC5C,YAAY;CACZ,qBAAqB;CACrB,iBAAiB;CACjB;CACA;CACA;AACD","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/OntologySparkInputProperties.ts"],"version":3,"file":"OntologySparkInputProperties.d.ts"}

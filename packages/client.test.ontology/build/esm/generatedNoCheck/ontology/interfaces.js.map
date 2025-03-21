@@ -1,0 +1,1 @@
+{"version":3,"file":"interfaces.js","names":["BarInterface","FooInterface"],"sources":["interfaces.ts"],"sourcesContent":["export { BarInterface } from './interfaces/BarInterface.js';\nexport { FooInterface } from './interfaces/FooInterface.js';\n"],"mappings":"AAAA,SAASA,YAAY,QAAQ,8BAA8B;AAC3D,SAASC,YAAY,QAAQ,8BAA8B","ignoreList":[]}

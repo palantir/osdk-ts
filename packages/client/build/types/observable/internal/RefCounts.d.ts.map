@@ -1,0 +1,1 @@
+{"mappings":"AAkBA,OAAO,cAAM,UAAU,UAAU,CAAE,GAAE;CAOvB;CAA2B;CANvC,QAAQ;CAIR,QAAQ;CAER,YAAoBA,mBAA2BC,UAAUC,KAAK;CAG9D,SAAS,UAAU,GAAGC,KAAK,IAAI;CAQ/B,OAAOD,KAAK;CAQZ,QAAQA,KAAK;CAgBb,IAAIA,KAAK;CAIT;AAiCD","names":["keepAlive: number","cleanup: (key: T) => void","key: T","key: X"],"sources":["../../../../src/observable/internal/RefCounts.ts"],"version":3,"file":"RefCounts.d.ts"}

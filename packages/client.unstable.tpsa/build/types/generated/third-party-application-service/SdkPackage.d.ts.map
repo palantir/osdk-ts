@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,8BAA8B,6BAA8B;AAC1E,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,qBAAqB,oBAAqB;AACxD,iBAAiB,WAAW;CAC1B,KAAK;CACL,eAAe;CACf,aAAa;AACd","names":[],"sources":["../../../../src/generated/third-party-application-service/SdkPackage.ts"],"version":3,"file":"SdkPackage.d.ts"}

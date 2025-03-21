@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cACE,qBACA,mBACA,gBACA,6BACA,4BACK,WAAY;KAId,YAAY,UAAU,+BAA+B,UACxD,sBAAsB,oBACpB,UAAU,uBAAuB;AAGrC,OAAO,iBAAS,gBAAgB,UAAU,6BACxCA,MAAM,IACL;CACD;CACA,WAAW,YAAY;AACxB","names":["type: T"],"sources":["../../src/useOsdkMetadata.ts"],"version":3,"file":"useOsdkMetadata.d.ts"}

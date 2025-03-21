@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,4BAA4B,4BAA6B;AACvE,cAAc,kCAAkC,iCAAkC;;;;AAKlF,iBAAiB,mCAAmC;CAClD,WAAW,OAAO,4BAA4B;AAC/C","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/typemapping/CheckTranslationEligibilityRequest.ts"],"version":3,"file":"CheckTranslationEligibilityRequest.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,oCAAoC,mCAAoC;AACtF,cAAc,iCAAiC,gCAAiC;AAChF,cAAc,4BAA4B,2BAA4B;AACtE,cAAc,0BAA0B,yBAA0B;AAClE,iBAAiB,kBAAkB;CACjC,KAAK;CACL,UAAU;CACV,oBAAoB;CACpB,aAAa;CACb;AACD","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/InterfaceLinkType.ts"],"version":3,"file":"InterfaceLinkType.d.ts"}

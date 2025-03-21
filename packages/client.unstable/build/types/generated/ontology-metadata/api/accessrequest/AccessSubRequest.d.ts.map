@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,2BAA2B,2BAA4B;AACrE,cAAc,+BAA+B,+BAAgC;AAC7E,cAAc,+BAA+B,8BAA+B;AAC5E,cAAc,gCAAgC,+BAAgC;;;;AAK9E,iBAAiB,iBAAiB;CAChC,KAAK;CACL,SAAS;CACT,SAAS;CACT,UAAU;AACX","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/accessrequest/AccessSubRequest.ts"],"version":3,"file":"AccessSubRequest.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,uBAAwB;AAC7D,cAAc,iBAAiB,gBAAiB;AAChD,cAAc,WAAW,UAAW;;;;;AAMpC,iBAAiB,oBAAoB;CACnC,WAAW;CACX,MAAM,MAAM;CACZ,iBAAiB;AAClB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/provenance/TagDependentRequest.ts"],"version":3,"file":"TagDependentRequest.d.ts"}

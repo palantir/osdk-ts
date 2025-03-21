@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,4CAA4C,2CAA4C;AACtG,cAAc,yCAAyC,wCAAyC;AAChG,iBAAiB,mDAAmD;CAClE,MAAM;CACN,mBAAmB;AACpB;AAED,iBAAiB,0DAA0D;CACzE,MAAM;CACN,0BAA0B;AAC3B;;;;AAID,YAAY,mCACR,qDACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/schemamigrations/OntologyIrNonRevertibleMigration.ts"],"version":3,"file":"OntologyIrNonRevertibleMigration.d.ts"}

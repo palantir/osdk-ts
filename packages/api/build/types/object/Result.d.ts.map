@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,YAAY,cAAc;CAAE,OAAO;CAAO;AAAe;AACzD,YAAY,SAAS,KAAK;CAAE,OAAO;CAAG;AAAe;AACrD,YAAY,OAAO,KAAK,SAAS,KAAK;;;;;;AAOtC,OAAO,iBAAS,KAAK,GAAGA,GAAG,OAAO,KAAK,KAAK,SAAS;;;;;;AASrD,OAAO,iBAAS,QAAQ,GAAGA,GAAG,OAAO,KAAK,KAAK","names":["a: Result<X>"],"sources":["../../../src/object/Result.ts"],"version":3,"file":"Result.d.ts"}

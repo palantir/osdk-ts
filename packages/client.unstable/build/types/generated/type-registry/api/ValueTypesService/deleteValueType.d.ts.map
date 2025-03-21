@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAoC,cAAe;AACjE,cAAc,oBAAoB,oBAAqB;;;;AAKvD,OAAO,iBAAe,gBACpBA,KAAK,gBACLC,cAAc,eACb","names":["ctx: ConjureContext","valueTypeRid: ValueTypeRid"],"sources":["../../../../../../src/generated/type-registry/api/ValueTypesService/deleteValueType.ts"],"version":3,"file":"deleteValueType.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,iBAAiB,kBAAkB,0BAA2B;AAkB9D,OAAO,iBAAS,qBACdA,MAAM,aAAa,mBACnB,EAAE,OAAmD,EAA1C,aAAa,+BACxBC,MAAK,OACJ,aAAa","names":["data: OntologiesV2.TimeSeriesPoint[]","now: Date"],"sources":["../../../src/FauxFoundry/filterTimeSeriesData.ts"],"version":3,"file":"filterTimeSeriesData.d.ts"}

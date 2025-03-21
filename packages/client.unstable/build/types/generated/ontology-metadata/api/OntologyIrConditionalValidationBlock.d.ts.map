@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qCAAqC,oCAAqC;AACxF,cAAc,0CAA0C,yCAA0C;AAClG,cAAc,uDAAuD,sDAAuD;AAC5H,cAAc,mCAAmC,wCAAyC;AAC1F,iBAAiB,qCAAqC;CACpD,sBAAsB,MAAM;CAC5B,mBAAmB;CACnB,wBAAwB,OACtB,6BACA;AAEH","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/OntologyIrConditionalValidationBlock.ts"],"version":3,"file":"OntologyIrConditionalValidationBlock.d.ts"}

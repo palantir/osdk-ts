@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,yBAAyB,yBAA0B;AACjE,cAAc,uBAAuB,uBAAwB;AAC7D,cAAc,gBAAgB,eAAgB;;;;AAK9C,iBAAiB,sBAAsB;CACrC,UAAU;CACV,eAAe;CACf,iBAAiB;AAClB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/schemamigrations/OntologyIrPatchBackup.ts"],"version":3,"file":"OntologyIrPatchBackup.d.ts"}

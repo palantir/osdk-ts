@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,mBAAoB;AACrD,cAAc,gCAAgC,+BAAgC;AAC9E,iBAAiB,kDAAkD;CACjE,MAAM;CACN,0BAA0B;AAC3B;AAED,iBAAiB,kCAAkC;CACjD,MAAM;CACN,UAAU;AACX;;;;AAID,YAAY,2BACR,oDACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/usage/OntologyEntityIdentifier.ts"],"version":3,"file":"OntologyEntityIdentifier.d.ts"}

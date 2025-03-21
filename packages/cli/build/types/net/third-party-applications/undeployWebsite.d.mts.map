@@ -1,0 +1,1 @@
+{"mappings":"AAiBA,cAAc,6BAA6B,8BAA+B;AAC1E,cAAc,wBAAwB,wBAAyB;AAE/D,OAAO,iBAAe,gBACpBA,KAAK,uBACLC,kBAAkB,mBACjB","names":["ctx: InternalClientContext","thirdPartyAppRid: ThirdPartyAppRid"],"sources":["../../../../src/net/third-party-applications/undeployWebsite.mts"],"version":3,"file":"undeployWebsite.d.mts"}

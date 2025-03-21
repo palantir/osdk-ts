@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,WAAY;AAGhD,cAAc,qBAAqB,4BAA6B;AAEhE,OAAO,iBAAe,uBACpBA,QAAQ,eACRC,qBACC,QAAQ,iBAAiB;CAAE;AAAa","names":["client: MinimalClient","objectType: string"],"sources":["../../../src/ontology/loadFullObjectMetadata.ts"],"version":3,"file":"loadFullObjectMetadata.d.ts"}

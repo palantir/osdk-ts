@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,wBAAwB,uBAAwB;AAC9D,cAAc,qBAAqB,oBAAqB;AACxD,cAAc,oCAAoC,mCAAoC;AACtF,cAAc,uBAAuB,sBAAuB;AAC5D,iBAAiB,wBAAwB;CACvC,iBAAiB;CACjB,uBAAuB;CACvB,uBAAuB;CACvB,sBAAsB;CACtB,uBAAuB;CACvB,4CAA4C,OAC1C,iBACA;AAEH","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/OneToManyLinkDefinition.ts"],"version":3,"file":"OneToManyLinkDefinition.d.ts"}

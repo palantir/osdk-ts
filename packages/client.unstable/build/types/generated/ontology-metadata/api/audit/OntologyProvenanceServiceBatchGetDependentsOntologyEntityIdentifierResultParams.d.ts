@@ -1,0 +1,4 @@
+import type { BatchGetTaggedDependentsForOntologyEntityIdentifierResponse } from "../provenance/BatchGetTaggedDependentsForOntologyEntityIdentifierResponse.js";
+export interface OntologyProvenanceServiceBatchGetDependentsOntologyEntityIdentifierResultParams {
+	request: BatchGetTaggedDependentsForOntologyEntityIdentifierResponse;
+}

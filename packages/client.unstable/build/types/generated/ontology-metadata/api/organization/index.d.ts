@@ -1,0 +1,12 @@
+export * as OntologyOrganizationService from "./OntologyOrganizationService.js";
+export type  { GetOrgSettingsByUserRequest } from "./GetOrgSettingsByUserRequest.js";
+export type  { GetOrgSettingsByUserResponse } from "./GetOrgSettingsByUserResponse.js";
+export type  { GetOrgSettingsRequest } from "./GetOrgSettingsRequest.js";
+export type  { GetOrgSettingsResponse } from "./GetOrgSettingsResponse.js";
+export type  { ProposalsDisabled } from "./ProposalsDisabled.js";
+export type  { ProposalsEnabled } from "./ProposalsEnabled.js";
+export type  { ProposalsEnabledStatus } from "./ProposalsEnabledStatus.js";
+export type  { ProposalsSettings } from "./ProposalsSettings.js";
+export type  { SetOrgSettingsRequest } from "./SetOrgSettingsRequest.js";
+export type  { SetOrgSettingsResponse } from "./SetOrgSettingsResponse.js";
+export type  { UsageSettings } from "./UsageSettings.js";

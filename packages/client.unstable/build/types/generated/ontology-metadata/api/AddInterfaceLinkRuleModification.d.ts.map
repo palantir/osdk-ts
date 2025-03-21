@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,yCAAyC,wCAAyC;AAChG,cAAc,qCAAqC,oCAAqC;AACxF,cAAc,mBAAmB,kBAAmB;AACpD,iBAAiB,iCAAiC;CAChD,+BAA+B;CAC/B,mCAAmC;CACnC,cAAc;CACd,cAAc;AACf","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/AddInterfaceLinkRuleModification.ts"],"version":3,"file":"AddInterfaceLinkRuleModification.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,wCAAwC,uCAAwC;AAC9F,iBAAiB,8CAA8C;CAC7D,MAAM;CACN,OAAO;AACR;AAED,iBAAiB,oDAAoD;CACnE,MAAM;CACN,aAAa;AACd;;;;AAID,YAAY,0CACR,gDACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ParameterCbacMarkingOrEmptyModification.ts"],"version":3,"file":"ParameterCbacMarkingOrEmptyModification.d.ts"}

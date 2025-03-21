@@ -1,0 +1,1 @@
+{"mappings":"AAmBA,OAAO,iBAAe,0CACpBA,cACAC,OAAO;CAAE;AAAa,IACrB","names":["name: string","opts?: { cwd: string }"],"sources":["../../src/getDependencyVersionFromFindUpPackageJson.ts"],"version":3,"file":"getDependencyVersionFromFindUpPackageJson.d.ts"}

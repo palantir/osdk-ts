@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mCAAmC,kCAAmC;AACpF,cAAc,+BAA+B,8BAA+B;AAC5E,iBAAiB,kCAAkC;CACjD,MAAM;CACN,oBAAoB;AACrB;AAED,iBAAiB,sCAAsC;CACrD,MAAM;CACN,wBAAwB;AACzB;AACD,YAAY,iBACR,oCACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/TypeGroupError.ts"],"version":3,"file":"TypeGroupError.d.ts"}

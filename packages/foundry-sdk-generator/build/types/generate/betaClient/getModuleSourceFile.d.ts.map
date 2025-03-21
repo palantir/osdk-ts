@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,SAAS,YAAY,qBAAqB,UAAW;AAEnE,OAAO,iBAAS,oBACdA,SAAS,SACTC,MAAM,gBACL;AAkBH,OAAO,iBAAS,qBAAqBC","names":["project: Project","node: StringLiteral","filePath: string"],"sources":["../../../../src/generate/betaClient/getModuleSourceFile.ts"],"version":3,"file":"getModuleSourceFile.d.ts"}

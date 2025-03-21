@@ -1,0 +1,1 @@
+{"mappings":"AAiBA,cAAc,6BAA6B,8BAA+B;AAC1E,cAAc,oBAAoB,oBAAqB;AAEvD,OAAO,iBAAe,uBACpBA,KAAK,uBACLC,cAAc,cACdC,kBACC","names":["ctx: InternalClientContext","widgetSetRid: WidgetSetRid","version: string"],"sources":["../../../../src/net/widget-registry/deleteWidgetSetRelease.mts"],"version":3,"file":"deleteWidgetSetRelease.d.mts"}

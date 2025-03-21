@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,OAAQ;AAC3C,cAAc,2BAA2B,8BAA+B;AACxE,cAAc,uBAAuB,sBAAuB;AAE5D,cAAMA,SAAS,cACb,qBACA;AAkBF,eAAe","names":["command: CommandModule<\n  CommonWidgetSetArgs,\n  VersionInfoArgs\n>"],"sources":["../../../../../../src/commands/widgetset/version/info/index.ts"],"version":3,"file":"index.d.ts"}

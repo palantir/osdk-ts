@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,4BAA6B;AAChE,cAAc,uBAAuB,8BAA+B;AACpE,cAAc,YAAY,mBAAoB;;;;;;;;;;;;;;;;;;;;AAqB9C,iBAAiB,4CAA4C;CAC3D,eAAe;CACf,iBAAiB;CACjB,YAAY;CACZ,YAAY;AACb","names":[],"sources":["../../../../../../src/generated/ontology-metadata/branch/api/MissingPropertyDataTypeSchemaMigrationError.ts"],"version":3,"file":"MissingPropertyDataTypeSchemaMigrationError.d.ts"}

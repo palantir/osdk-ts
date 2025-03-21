@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,0BAA0B,yBAA0B;AAClE,cAAc,gCAAgC,+BAAgC;;;;AAK9E,iBAAiB,wBAAwB;CACvC,YAAY,MAAM;CAClB;CACA,eAAe;AAChB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/search/TypeGroupSearchResponse.ts"],"version":3,"file":"TypeGroupSearchResponse.d.ts"}

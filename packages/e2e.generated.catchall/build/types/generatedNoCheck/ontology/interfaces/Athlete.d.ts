@@ -1,0 +1,57 @@
+import type { PropertyDef as $PropertyDef } from "@osdk/client";
+import { $osdkMetadata } from "../../OntologyMetadata.js";
+import type { InterfaceDefinition as $InterfaceDefinition, ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from "@osdk/client";
+export type OsdkObjectLinks$Athlete = {};
+export declare namespace Athlete {
+	type PropertyKeys = "jerseyNumber" | "athleteId" | "name22";
+	interface Props {
+		readonly athleteId: $PropType["string"] | undefined;
+		readonly jerseyNumber: $PropType["integer"] | undefined;
+		readonly name22: $PropType["string"] | undefined;
+	}
+	type StrictProps = Props;
+	interface ObjectSet extends $ObjectSet<Athlete, Athlete.ObjectSet> {}
+	type OsdkInstance<
+		OPTIONS extends never | "$rid" = never,
+		K extends keyof Athlete.Props = keyof Athlete.Props
+	> = $Osdk.Instance<Athlete, OPTIONS, K>;
+	type OsdkObject<
+		OPTIONS extends never | "$rid" = never,
+		K extends keyof Athlete.Props = keyof Athlete.Props
+	> = OsdkInstance<OPTIONS, K>;
+}
+export interface Athlete extends $InterfaceDefinition {
+	osdkMetadata: typeof $osdkMetadata;
+	type: "interface";
+	apiName: "Athlete";
+	__DefinitionMetadata?: {
+		objectSet: Athlete.ObjectSet
+		props: Athlete.Props
+		linksType: OsdkObjectLinks$Athlete
+		strictProps: Athlete.StrictProps
+		apiName: "Athlete"
+		description: "Its an athlete."
+		displayName: "Athlete interface"
+		links: {}
+		properties: {
+			/**
+			*   display name: 'Athlete ID',
+			*   description: Athlete ID
+			*/
+			athleteId: $PropertyDef<"string", "nullable", "single">
+			/**
+			*   display name: 'Jersey Number',
+			*   description: Jersey Number
+			*/
+			jerseyNumber: $PropertyDef<"integer", "nullable", "single">
+			/**
+			*   display name: 'Name',
+			*   description: Name
+			*/
+			name22: $PropertyDef<"string", "nullable", "single">
+		}
+		rid: "ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b"
+		type: "interface"
+	};
+}
+export declare const Athlete: Athlete;

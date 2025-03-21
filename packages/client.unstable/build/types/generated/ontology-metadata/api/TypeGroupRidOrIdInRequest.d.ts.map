@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,4BAA4B,2BAA4B;AACtE,cAAc,oBAAoB,mBAAoB;AACtD,iBAAiB,8BAA8B;CAC7C,MAAM;CACN,KAAK;AACN;AAED,iBAAiB,sCAAsC;CACrD,MAAM;CACN,aAAa;AACd;AACD,YAAY,4BACR,gCACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/TypeGroupRidOrIdInRequest.ts"],"version":3,"file":"TypeGroupRidOrIdInRequest.d.ts"}

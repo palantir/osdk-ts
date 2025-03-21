@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,uBAAwB;AAC7D,cAAc,kCAAkC,iCAAkC;AAClF,cAAc,sBAAsB,qBAAsB;;;;;AAM1D,iBAAiB,+BAA+B;CAC9C,qBAAqB,OAAO,iBAAiB;CAC7C,gBAAgB;AACjB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/derivedproperties/AggregatedPropertiesDefinition.ts"],"version":3,"file":"AggregatedPropertiesDefinition.d.ts"}

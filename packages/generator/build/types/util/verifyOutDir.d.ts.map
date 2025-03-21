@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,iBAAiB,iBAAkB;;;;;;;AAQjD,OAAO,iBAAe,aACpBA,gBACAC,IAAI,YACH","names":["outDir: string","fs: MinimalFs"],"sources":["../../../src/util/verifyOutDir.ts"],"version":3,"file":"verifyOutDir.d.ts"}

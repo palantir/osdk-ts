@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,oBAAoB,mBAAoB;AACtD,cAAc,8BAA8B,6BAA8B;;;;;;AAO1E,iBAAiB,yBAAyB;CACxC,yBAAyB,OAAO,cAAc;AAC/C","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/entitymetadata/SyncMetadataModification.ts"],"version":3,"file":"SyncMetadataModification.d.ts"}

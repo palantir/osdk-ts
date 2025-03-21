@@ -1,0 +1,1 @@
+{"mappings":"AAkBA,cAAc,qBAAqB,YAAa;KAG3C,kCAAkC;KAElC,OAAO;CACV;CACA,MAAM;CACN,QAAQ;CACR;CACA;CACA;CACA;AACD;KACI,MAAM;CACT;CACA,MAAM;CACN,OAAO;CACP;CACA;CACA;CACA;AACD;AAED,OAAO,iBAAS,8BACdA,SAAS,MAAM","names":["linkDef: One | Many"],"sources":["../../../src/api/defineInterfaceLinkConstraint.ts"],"version":3,"file":"defineInterfaceLinkConstraint.d.ts"}

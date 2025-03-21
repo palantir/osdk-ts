@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,2BAA2B,0BAA2B;AACpE,cAAc,sBAAsB,qBAAsB;AAC1D,iBAAiB,kCAAkC;CACjD,MAAM;CACN,eAAe;AAChB;AAED,iBAAiB,6BAA6B;CAC5C,MAAM;CACN,UAAU;AACX;;;;AAID,YAAY,sBACR,oCACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/DurationFormatStyle.ts"],"version":3,"file":"DurationFormatStyle.d.ts"}

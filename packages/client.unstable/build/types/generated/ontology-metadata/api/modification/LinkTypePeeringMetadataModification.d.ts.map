@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,iCAAiC,iCAAkC;AACjF,cAAc,mCAAmC,kCAAmC;AACpF,iBAAiB,yCAAyC;CACxD,MAAM;CACN,MAAM;AACP;AAED,iBAAiB,uCAAuC;CACtD,MAAM;CACN,IAAI;AACL;AACD,YAAY,sCACR,2CACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/modification/LinkTypePeeringMetadataModification.ts"],"version":3,"file":"LinkTypePeeringMetadataModification.d.ts"}

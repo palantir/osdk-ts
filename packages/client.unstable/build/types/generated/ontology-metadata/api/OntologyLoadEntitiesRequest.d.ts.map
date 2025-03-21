@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,qBAAqB,oBAAqB;AACxD,cAAc,uBAAuB,sBAAuB;;;;;;AAO5D,iBAAiB,4BAA4B;CAC3C,oBAAoB,OAAO,eAAe;CAC1C,kBAAkB,OAAO,aAAa;CACtC;CACA;AACD","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/OntologyLoadEntitiesRequest.ts"],"version":3,"file":"OntologyLoadEntitiesRequest.d.ts"}

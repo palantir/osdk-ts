@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,uBAAwB;AAC7D,cAAc,yBAAyB,wBAAyB;AAChE,cAAc,qBAAqB,oBAAqB;AACxD,iBAAiB,6BAA6B;CAC5C,cAAc;CACd,OAAO;CACP,WAAW;AACZ","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/organization/GetOrgSettingsByUserResponse.ts"],"version":3,"file":"GetOrgSettingsByUserResponse.d.ts"}

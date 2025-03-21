@@ -1,0 +1,1 @@
+{"mappings":"AAiBA,cAAc,uBAAuB,uCAAwC;AAO7E,OAAO,iBAAe,6BACpB,EAAE,IAAI,QAAQ,UAAU,sBAAuC,EAAf,iBAChDA,oBACC","names":["userAgent: string"],"sources":["../../../src/v2.0/generateMetadata.ts"],"version":3,"file":"generateMetadata.d.ts"}

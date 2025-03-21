@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,oBAAqB;AACxD,cAAc,0BAA0B,yBAA0B;AAClE,cAAc,8CAA8C,6CAA8C;AAC1G,iBAAiB,6BAA6B;CAC5C,KAAK;CACL,YAAY;CACZ,oBAAoB;CACpB;AACD","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ManyToManyLinkTypeDatasource.ts"],"version":3,"file":"ManyToManyLinkTypeDatasource.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,6CAA6C,6CAA8C;AACzG,cAAc,mBAAmB,mBAAoB;AACrD,iBAAiB,6DAA6D;CAC5E,SAAS;CACT,aAAa;AACd","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/audit/ActionTypeServiceLoadAllActionTypesFromOntologyRequestParams.ts"],"version":3,"file":"ActionTypeServiceLoadAllActionTypesFromOntologyRequestParams.d.ts"}

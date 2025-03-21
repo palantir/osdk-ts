@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,qBAAsB;AACzD,cAAc,iBAAiB,gBAAiB;AAChD,iBAAiB,0BAA0B;CACzC,eAAe;CACf,WAAW;CACX;CACA;AACD","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/usage/GetActionTypeUsageRequest.ts"],"version":3,"file":"GetActionTypeUsageRequest.d.ts"}

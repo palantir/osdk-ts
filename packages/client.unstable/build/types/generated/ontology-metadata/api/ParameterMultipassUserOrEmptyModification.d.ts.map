@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,0CAA0C,yCAA0C;AAClG,iBAAiB,gDAAgD;CAC/D,MAAM;CACN,OAAO;AACR;AAED,iBAAiB,+CAA+C;CAC9D,MAAM;CACN,MAAM;AACP;AACD,YAAY,4CACR,kDACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ParameterMultipassUserOrEmptyModification.ts"],"version":3,"file":"ParameterMultipassUserOrEmptyModification.d.ts"}

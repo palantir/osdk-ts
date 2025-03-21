@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,+BAA+B,8BAA+B;AAC5E,cAAc,8BAA8B,6BAA8B;AAC1E,cAAc,iBAAiB,gBAAiB;AAChD,iBAAiB,iBAAiB;CAChC,iBAAiB;CACjB,aAAa,MAAM;CACnB,SAAS;AACV","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/LinkTypeMetadata.ts"],"version":3,"file":"LinkTypeMetadata.d.ts"}

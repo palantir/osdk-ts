@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,2BAA2B,0BAA2B;AACpE,cAAc,2BAA2B,0BAA2B;AACpE,cAAc,gDAAgD,+CAAgD;AAC9G,cAAc,2BAA2B,0BAA2B;;;;AAKpE,iBAAiB,mCAAmC;CAClD,QAAQ,OAAO,qBAAqB;CACpC,WAAW;CACX,WAAW;AACZ","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/OntologyIrTemplateNotificationBody.ts"],"version":3,"file":"OntologyIrTemplateNotificationBody.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,qBAAsB;AAC1D,cAAc,2BAA2B,0BAA2B;AACpE,cAAc,8BAA8B,6BAA8B;;;;AAK1E,iBAAiB,kBAAkB;CACjC,SAAS,MAAM;CACf,iBAAiB;CACjB,YAAY;AACb","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/PutSectionRequest.ts"],"version":3,"file":"PutSectionRequest.d.ts"}

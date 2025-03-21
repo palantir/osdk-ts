@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qCAAqC,4CAA6C;AAChG,cAAc,oBAAoB,2BAA4B;AAC9D,cAAc,qBAAqB,4BAA6B;AAChE,cAAc,0CAA0C,iDAAkD;;;;AAK1G,iBAAiB,2BAA2B;CAC1C,WAAW;CACX,cAAc;CACd,2BAA2B;CAC3B,4CAA4C,MAC1C;AAEH","names":[],"sources":["../../../../../../src/generated/ontology-metadata/branch/api/MissingSharedPropertyError.ts"],"version":3,"file":"MissingSharedPropertyError.d.ts"}

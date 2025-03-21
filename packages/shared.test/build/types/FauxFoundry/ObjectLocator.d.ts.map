@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,iBAAiB,kBAAkB,0BAA2B;AAE9D,cAAc,wBAAwB,uBAAwB;AAE9D,YAAY;CACV,UAAU,aAAa,oBAAoB,aAAa;CACxD;OACK,KAAK;AAEZ,OAAO,iBAAS,cAAcA,KAAK,mBAAmB;AAItD,OAAO,iBAAS,aACdC,SAAS,gBACR;CAAE;CAAoB;AAAoB","names":["obj: BaseServerObject","locator: ObjectLocator"],"sources":["../../../src/FauxFoundry/ObjectLocator.ts"],"version":3,"file":"ObjectLocator.d.ts"}

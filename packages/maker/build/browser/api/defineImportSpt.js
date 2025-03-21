@@ -1,0 +1,47 @@
+/*
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import invariant from "tiny-invariant";
+import { ontologyDefinition } from "./defineOntology.js";
+/**
+ * Defines a foreign shared property type you want to take as an input to your product. The typeHint field is used for OSDK generation
+ */
+export function importSharedPropertyType(opts) {
+  const {
+    apiName,
+    packageName,
+    typeHint
+  } = opts;
+  if (packageName !== undefined) {
+    ontologyDefinition.importedTypes.sharedPropertyTypes.push({
+      apiName,
+      packageName
+    });
+    !!packageName.endsWith(".") ? process.env.NODE_ENV !== "production" ? invariant(false, "Package name format invalid ends with period") : invariant(false) : void 0;
+    !(packageName.match("[A-Z]") == null) ? process.env.NODE_ENV !== "production" ? invariant(false, "Package name includes upper case characters") : invariant(false) : void 0;
+    return {
+      apiName: packageName + "." + apiName,
+      type: typeHint,
+      nonNameSpacedApiName: apiName
+    };
+  }
+  return {
+    apiName: apiName,
+    type: typeHint,
+    nonNameSpacedApiName: apiName
+  };
+}
+//# sourceMappingURL=defineImportSpt.js.map

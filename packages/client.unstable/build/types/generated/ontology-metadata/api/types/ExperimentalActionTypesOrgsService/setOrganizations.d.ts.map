@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAoC,cAAe;AACjE,cAAc,yCAAyC,4CAA6C;;;;;;;;AASpG,OAAO,iBAAe,iBACpBA,KAAK,gBACLC,SAAS,oCACR","names":["ctx: ConjureContext","request: ActionTypeSetOrganizationsRequest"],"sources":["../../../../../../../src/generated/ontology-metadata/api/types/ExperimentalActionTypesOrgsService/setOrganizations.ts"],"version":3,"file":"setOrganizations.d.ts"}

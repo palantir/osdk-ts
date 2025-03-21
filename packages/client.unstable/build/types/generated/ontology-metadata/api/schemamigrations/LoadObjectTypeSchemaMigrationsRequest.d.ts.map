@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,qBAAsB;AACzD,cAAc,uBAAuB,uBAAwB;AAC7D,cAAc,uCAAuC,sCAAuC;;;;AAK5F,iBAAiB,sCAAsC;CACrD,eAAe;CACf,iBAAiB;CACjB,WAAW;AACZ","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/schemamigrations/LoadObjectTypeSchemaMigrationsRequest.ts"],"version":3,"file":"LoadObjectTypeSchemaMigrationsRequest.d.ts"}

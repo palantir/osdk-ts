@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,gCAAgC,+BAAgC;AAC9E,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,oBAAoB,mBAAoB;AACtD,cAAc,yBAAyB,8BAA+B;;;;AAKtE,iBAAiB,UAAU;CACzB,IAAI;CACJ,KAAK;CACL,MAAM;CACN,iBAAiB;AAClB","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/Parameter.ts"],"version":3,"file":"Parameter.d.ts"}

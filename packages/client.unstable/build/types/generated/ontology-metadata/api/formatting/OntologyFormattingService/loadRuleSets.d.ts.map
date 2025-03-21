@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAoC,cAAe;AACjE,cAAc,2BAA2B,2BAA4B;AACrE,cAAc,4BAA4B,4BAA6B;;;;;;;AAQvE,OAAO,iBAAe,aACpBA,KAAK,gBACLC,SAAS,sBACR,QAAQ","names":["ctx: ConjureContext","request: LoadRuleSetsRequest"],"sources":["../../../../../../../src/generated/ontology-metadata/api/formatting/OntologyFormattingService/loadRuleSets.ts"],"version":3,"file":"loadRuleSets.d.ts"}

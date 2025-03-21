@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,8BAA8B,6CAA8C;AAC1F,cAAc,gBAAgB,gBAAiB;AAC/C,cAAc,oCAAoC,oCAAqC;AACvF,iBAAiB,oBAAoB;CACnC,UAAU;CACV,aAAa,MAAM;CACnB,gBAAgB;AACjB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/blockdata/LinkTypeBlockDataV2.ts"],"version":3,"file":"LinkTypeBlockDataV2.d.ts"}

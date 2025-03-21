@@ -1,0 +1,1 @@
+export type FoundryFieldType = "ARRAY" | "DECIMAL" | "MAP" | "STRUCT" | "LONG" | "BINARY" | "BOOLEAN" | "BYTE" | "DATE" | "DOUBLE" | "FLOAT" | "INTEGER" | "SHORT" | "STRING" | "TIMESTAMP" | "UNKNOWN_TYPE";

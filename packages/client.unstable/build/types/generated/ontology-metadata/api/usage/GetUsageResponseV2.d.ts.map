@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,qBAAsB;AACzD,cAAc,oBAAoB,mBAAoB;AACtD,cAAc,0BAA0B,yBAA0B;;;;AAKlE,iBAAiB,mBAAmB;CAClC,cAAc;CACd,sBAAsB,OAAO,eAAe;CAC5C;AACD","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/usage/GetUsageResponseV2.ts"],"version":3,"file":"GetUsageResponseV2.d.ts"}

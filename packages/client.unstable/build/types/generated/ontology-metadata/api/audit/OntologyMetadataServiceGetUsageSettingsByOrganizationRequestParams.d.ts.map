@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,uBAAwB;AAC7D,cAAc,6CAA6C,mDAAoD;AAC/G,iBAAiB,mEAAmE;CAClF,iBAAiB;CACjB,SAAS;AACV","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/audit/OntologyMetadataServiceGetUsageSettingsByOrganizationRequestParams.ts"],"version":3,"file":"OntologyMetadataServiceGetUsageSettingsByOrganizationRequestParams.d.ts"}

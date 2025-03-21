@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,6CAA6C,4CAA6C;AACxG,cAAc,yCAAyC,wCAAyC;AAChG,iBAAiB,oDAAoD;CACnE,MAAM;CACN,kBAAkB;AACnB;AAED,iBAAiB,wDAAwD;CACvE,MAAM;CACN,sBAAsB;AACvB;AACD,YAAY,qCACR,sDACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/derivedproperties/StorageDerivedPropertiesDefinition.ts"],"version":3,"file":"StorageDerivedPropertiesDefinition.d.ts"}

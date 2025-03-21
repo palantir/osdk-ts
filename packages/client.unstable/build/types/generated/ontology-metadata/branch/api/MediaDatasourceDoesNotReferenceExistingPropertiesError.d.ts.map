@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,4BAA6B;AAChE,cAAc,sBAAsB,6BAA8B;;;;;AAMlE,iBAAiB,uDAAuD;CACtE,YAAY;CACZ,kBAAkB;CAClB,4BAA4B,MAAM;AACnC","names":[],"sources":["../../../../../../src/generated/ontology-metadata/branch/api/MediaDatasourceDoesNotReferenceExistingPropertiesError.ts"],"version":3,"file":"MediaDatasourceDoesNotReferenceExistingPropertiesError.d.ts"}

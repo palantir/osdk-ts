@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,uBAAuB,sBAAuB;AAC5D,cAAc,iBAAiB,gBAAiB;AAChD,iBAAiB,sBAAsB;CACrC,WAAW;CACX,aAAa;CACb,iBAAiB;CACjB;CACA;AACD","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/TypeGroupLoadResponse.ts"],"version":3,"file":"TypeGroupLoadResponse.d.ts"}

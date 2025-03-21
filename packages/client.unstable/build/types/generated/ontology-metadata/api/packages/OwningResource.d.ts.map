@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,yBAAyB,yBAA0B;AACjE,cAAc,kBAAkB,kBAAmB;AACnD,iBAAiB,uBAAuB;CACtC,MAAM;CACN,SAAS;AACV;AAED,iBAAiB,8BAA8B;CAC7C,MAAM;CACN,gBAAgB;AACjB;;;;AAID,YAAY,iBACR,yBACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/packages/OwningResource.ts"],"version":3,"file":"OwningResource.d.ts"}

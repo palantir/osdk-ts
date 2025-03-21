@@ -1,0 +1,1 @@
+{"mappings":"AAiBA,cAAc,6BAA6B,8BAA+B;AAC1E,cAAc,oBAAoB,oBAAqB;AACvD,cAAc,qCAAqC,qCAAsC;AAEzF,OAAO,iBAAe,sBACpBA,KAAK,uBACLC,cAAc,eACb,QAAQ","names":["ctx: InternalClientContext","widgetSetRid: WidgetSetRid"],"sources":["../../../../src/net/widget-registry/listWidgetSetReleases.mts"],"version":3,"file":"listWidgetSetReleases.d.mts"}

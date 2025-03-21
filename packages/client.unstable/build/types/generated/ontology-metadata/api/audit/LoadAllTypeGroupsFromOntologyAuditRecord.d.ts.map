@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,mBAAoB;AACrD,cAAc,uBAAuB,uBAAwB;AAC7D,cAAc,oBAAoB,oBAAqB;AACvD,iBAAiB,yCAAyC;CACxD,aAAa;CACb,iBAAiB;CACjB,eAAe,MAAM;AACtB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/audit/LoadAllTypeGroupsFromOntologyAuditRecord.ts"],"version":3,"file":"LoadAllTypeGroupsFromOntologyAuditRecord.d.ts"}

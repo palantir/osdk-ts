@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,qBAAsB;AACzD,cAAc,kCAAkC,iCAAkC;;;;;AAMlF,iBAAiB,wCAAwC;CACvD,QAAQ;CACR,QAAQ;CACR,YAAY,MAAM;AACnB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/schemamigrations/PastVersionSchemaTransitionModification.ts"],"version":3,"file":"PastVersionSchemaTransitionModification.d.ts"}

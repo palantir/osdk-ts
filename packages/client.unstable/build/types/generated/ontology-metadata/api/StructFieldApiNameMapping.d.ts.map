@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,kBAAkB,iBAAkB;AAClD,cAAc,uCAAuC,sCAAuC;AAC5F,cAAc,uBAAuB,sBAAuB;;;;;;AAO5D,iBAAiB,0BAA0B;CACzC,QAAQ;CACR,SAAS,OAAO,iBAAiB;AAClC","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/StructFieldApiNameMapping.ts"],"version":3,"file":"StructFieldApiNameMapping.d.ts"}

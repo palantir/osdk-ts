@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,gBAAgB,gBAAiB;AAC/C,cAAc,kBAAkB,kBAAmB;AACnD,cAAc,wBAAwB,wBAAyB;AAC/D,cAAc,iBAAiB,gBAAiB;AAChD,cAAc,wBAAwB,uBAAwB;;;;;;;;;;;;AAa9D,iBAAiB,QAAQ;CACvB,KAAK;CACL;CACA;CACA,QAAQ;CACR,YAAY,OAAO,kBAAkB;CACrC,QAAQ,MAAM;AACf","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/formatting/RuleSet.ts"],"version":3,"file":"RuleSet.d.ts"}

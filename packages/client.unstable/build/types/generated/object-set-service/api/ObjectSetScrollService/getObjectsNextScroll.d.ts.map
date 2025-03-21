@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAoC,cAAe;AACjE,cAAc,mCAAmC,mCAAoC;AACrF,cAAc,gCAAgC,gCAAiC;;;;AAK/E,OAAO,iBAAe,qBACpBA,KAAK,gBACLC,SAAS,8BACR,QAAQ","names":["ctx: ConjureContext","request: GetObjectsNextScrollRequest"],"sources":["../../../../../../src/generated/object-set-service/api/ObjectSetScrollService/getObjectsNextScroll.ts"],"version":3,"file":"getObjectsNextScroll.d.ts"}

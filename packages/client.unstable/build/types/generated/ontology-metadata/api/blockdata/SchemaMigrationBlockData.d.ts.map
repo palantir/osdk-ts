@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,sBAAuB;AAC3D,cAAc,uBAAuB,uBAAwB;AAC7D,cAAc,0CAA0C,yCAA0C;AAClG,iBAAiB,yBAAyB;CACxC,kBAAkB;CAClB,uBAAuB,OAAO,iBAAiB;AAChD","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/blockdata/SchemaMigrationBlockData.ts"],"version":3,"file":"SchemaMigrationBlockData.d.ts"}

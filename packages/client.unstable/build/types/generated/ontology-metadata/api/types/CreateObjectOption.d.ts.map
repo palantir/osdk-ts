@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,oBAAqB;AACxD,cAAc,iBAAiB,gBAAiB;AAChD,iBAAiB,iCAAiC;CAChD,MAAM;CACN,eAAe;AAChB;AAED,iBAAiB,6BAA6B;CAC5C,MAAM;CACN,WAAW;AACZ;AACD,YAAY,qBACR,mCACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/types/CreateObjectOption.ts"],"version":3,"file":"CreateObjectOption.d.ts"}

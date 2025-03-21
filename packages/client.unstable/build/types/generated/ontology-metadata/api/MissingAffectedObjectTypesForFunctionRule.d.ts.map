@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,uBAAuB,sBAAuB;AAC5D,cAAc,qBAAqB,oBAAqB;AACxD,iBAAiB,0CAA0C;CACzD,iBAAiB;CACjB,aAAa;CACb,4BAA4B,MAAM;AACnC","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/MissingAffectedObjectTypesForFunctionRule.ts"],"version":3,"file":"MissingAffectedObjectTypesForFunctionRule.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,kEAAkE,6EAA8E;AAC9J,iBAAiB,oFAAoF;CACnG,SAAS;AACV","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/audit/OntologyProvenanceServiceBatchGetDependentsForOntologyEntityIdentifierRequestParams.ts"],"version":3,"file":"OntologyProvenanceServiceBatchGetDependentsForOntologyEntityIdentifierRequestParams.d.ts"}

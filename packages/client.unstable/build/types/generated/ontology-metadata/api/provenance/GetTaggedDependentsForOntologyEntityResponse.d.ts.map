@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,iBAAiB,gBAAiB;AAChD,cAAc,sCAAsC,qCAAsC;;;;;AAM1F,iBAAiB,6CAA6C;CAC5D,0BAA0B,MAAM;CAChC,eAAe;AAChB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/provenance/GetTaggedDependentsForOntologyEntityResponse.ts"],"version":3,"file":"GetTaggedDependentsForOntologyEntityResponse.d.ts"}

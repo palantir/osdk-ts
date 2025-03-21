@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,OAAO,iBAAS,uBACdA,cACAC","names":["name: string","ontologyApiNamespace: string | undefined"],"sources":["../../../../src/shared/apiNamespaces/startsWithApiNamespace.ts"],"version":3,"file":"startsWithApiNamespace.d.ts"}

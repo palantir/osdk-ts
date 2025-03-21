@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAoC,cAAe;AACjE,cAAc,sBAAsB,sBAAuB;;;;;;AAO3D,OAAO,iBAAe,kBACpBA,KAAK,gBACLC,gBAAgB,iBACf","names":["ctx: ConjureContext","applicationRid: ApplicationRid"],"sources":["../../../../../src/generated/third-party-application-service/ApplicationService/deleteApplication.ts"],"version":3,"file":"deleteApplication.d.ts"}

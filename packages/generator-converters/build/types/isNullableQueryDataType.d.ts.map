@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,0BAA2B;AAE9D,OAAO,iBAAS,wBAAwBA,OAAO","names":["input: QueryDataType"],"sources":["../../src/isNullableQueryDataType.ts"],"version":3,"file":"isNullableQueryDataType.d.ts"}

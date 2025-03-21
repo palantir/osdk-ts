@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sCAAsC,qCAAsC;AAC1F,cAAc,kCAAkC,iCAAkC;AAClF,iBAAiB,6CAA6C;CAC5D,MAAM;CACN,kBAAkB;AACnB;AAED,iBAAiB,iDAAiD;CAChE,MAAM;CACN,sBAAsB;AACvB;AACD,YAAY,8BACR,+CACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/derivedproperties/DerivedPropertiesDefinition.ts"],"version":3,"file":"DerivedPropertiesDefinition.d.ts"}

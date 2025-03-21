@@ -1,0 +1,11 @@
+import type { SecurityGroupGranularSecurityDefinitionModification } from "./SecurityGroupGranularSecurityDefinitionModification.js";
+import type { SecurityGroupMandatoryOnlySecurityDefinitionModification } from "./SecurityGroupMandatoryOnlySecurityDefinitionModification.js";
+export interface SecurityGroupSecurityDefinitionModification_mandatoryOnly {
+	type: "mandatoryOnly";
+	mandatoryOnly: SecurityGroupMandatoryOnlySecurityDefinitionModification;
+}
+export interface SecurityGroupSecurityDefinitionModification_granular {
+	type: "granular";
+	granular: SecurityGroupGranularSecurityDefinitionModification;
+}
+export type SecurityGroupSecurityDefinitionModification = SecurityGroupSecurityDefinitionModification_mandatoryOnly | SecurityGroupSecurityDefinitionModification_granular;

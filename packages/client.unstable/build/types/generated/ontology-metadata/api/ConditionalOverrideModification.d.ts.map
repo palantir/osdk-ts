@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,6BAA6B,4BAA6B;AACxE,cAAc,oDAAoD,mDAAoD;AACtH,iBAAiB,gCAAgC;CAC/C,WAAW;CACX,yBAAyB,MAAM;AAChC","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ConditionalOverrideModification.ts"],"version":3,"file":"ConditionalOverrideModification.d.ts"}

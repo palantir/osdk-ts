@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,sBAAsB,qBAAsB;AAC1D,iBAAiB,4BAA4B;CAC3C,MAAM;CACN,OAAO;AACR;AAED,iBAAiB,4BAA4B;CAC3C,MAAM;CACN,OAAO;AACR;AACD,YAAY,wBACR,8BACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ParameterRangeOrEmpty.ts"],"version":3,"file":"ParameterRangeOrEmpty.d.ts"}

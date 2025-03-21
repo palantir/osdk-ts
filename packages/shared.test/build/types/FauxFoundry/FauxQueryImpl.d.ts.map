@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,iBAAiB,kBAAkB,0BAA2B;AAC9D,cAAc,qBAAqB,oBAAqB;AAExD,iBAAiB,cAAc;EAE3BA,KAAK,aAAa,qBAClBC,eAAe,gBACd,aAAa;AACjB","names":["req: OntologiesV2.ExecuteQueryRequest","fauxDataStore: FauxDataStore"],"sources":["../../../src/FauxFoundry/FauxQueryImpl.ts"],"version":3,"file":"FauxQueryImpl.d.ts"}

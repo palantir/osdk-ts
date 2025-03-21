@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAoC,cAAe;AACjE,cAAc,sBAAsB,sBAAuB;AAC3D,cAAc,gBAAgB,gBAAiB;;;;;;;AAQ/C,OAAO,iBAAe,wBACpBA,KAAK,gBACLC,UAAU,WACT,QAAQ","names":["ctx: ConjureContext","clientId: ClientId"],"sources":["../../../../../src/generated/third-party-application-service/ApplicationClientService/getApplicationForClient.ts"],"version":3,"file":"getApplicationForClient.d.ts"}

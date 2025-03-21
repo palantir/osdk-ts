@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,uBAAwB;AAC7D,cAAc,6BAA6B,4BAA6B;AACxE,cAAc,qCAAqC,oCAAqC;AACxF,iBAAiB,kCAAkC;CACjD,qBAAqB,OAAO,iBAAiB;CAC7C,gBAAgB;AACjB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/derivedproperties/StorageLinkedPropertiesDefinition.ts"],"version":3,"file":"StorageLinkedPropertiesDefinition.d.ts"}

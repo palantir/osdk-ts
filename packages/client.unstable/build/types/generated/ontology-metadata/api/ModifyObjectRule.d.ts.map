@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,qBAAsB;AAC1D,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,sBAAsB,qBAAsB;AAC1D,cAAc,iCAAiC,gCAAiC;AAChF,cAAc,sBAAsB,qBAAsB;AAC1D,iBAAiB,iBAAiB;CAChC,gBAAgB;CAChB,gBAAgB,OAAO,gBAAgB;CACvC,mBAAmB,OACjB,gBACA,OAAO,gBAAgB;AAE1B","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ModifyObjectRule.ts"],"version":3,"file":"ModifyObjectRule.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,yBAAyB,WAAY;AAGnD,cAAc,qBAAqB,4BAA6B;AAEhE,OAAO,iBAAe,sBACpBA,QAAQ,eACRC,qBACC,QAAQ","names":["client: MinimalClient","objectType: string"],"sources":["../../../src/ontology/loadInterfaceMetadata.ts"],"version":3,"file":"loadInterfaceMetadata.d.ts"}

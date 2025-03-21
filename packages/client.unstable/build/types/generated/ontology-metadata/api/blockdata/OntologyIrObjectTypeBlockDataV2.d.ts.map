@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,4BAA4B,4BAA6B;AACvE,cAAc,sCAAsC,sCAAuC;AAC3F,cAAc,qDAAqD,oDAAqD;AACxH,iBAAiB,gCAAgC;CAC/C,YAAY;CACZ,aAAa,MAAM;CACnB,gBAAgB;AACjB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/blockdata/OntologyIrObjectTypeBlockDataV2.ts"],"version":3,"file":"OntologyIrObjectTypeBlockDataV2.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,4BAA6B;AAChE,cAAc,sBAAsB,6BAA8B;;;;AAKlE,iBAAiB,yDAAyD;CACxE,eAAe;CACf,2BAA2B,MAAM;CACjC,2BAA2B,MAAM;AAClC","names":[],"sources":["../../../../../../src/generated/ontology-metadata/branch/api/NotAllPropertyTypesAreMappedToDatasourceWithinObjectType.ts"],"version":3,"file":"NotAllPropertyTypesAreMappedToDatasourceWithinObjectType.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAiBA,cACO,mCAEA,oCAAqC;AAgB5C,OAAO,cAAMA,SAASC,KAAK,gCAAgC","names":["get$as: (key: FetchedObjectTypeDefinition) => DollarAsFn","key: FetchedObjectTypeDefinition"],"sources":["../../../../src/object/convertWireToOsdkObjects/getDollarAs.ts"],"version":3,"file":"getDollarAs.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,2BAA2B,0BAA2B;AACpE,cAAc,yBAAyB,wBAAyB;AAChE,iBAAiB,kCAAkC;CACjD,MAAM;CACN,kBAAkB;AACnB;AAED,iBAAiB,gCAAgC;CAC/C,MAAM;CACN,gBAAgB;AACjB;;;;;;;;AAQD,YAAY,mBACR,oCACA","names":[],"sources":["../../../../../src/generated/type-registry/api/PermissioningRid.ts"],"version":3,"file":"PermissioningRid.d.ts"}

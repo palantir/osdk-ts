@@ -1,0 +1,1 @@
+{"mappings":"AAmBA,cAAc,6BAA6B,8BAA+B;AAC1E,cAAc,wBAAwB,wBAAyB;AAC/D,cAAc,eAAe,eAAgB;AAE7C,OAAO,iBAAe,WACpBA,KAAK,uBACLC,kBAAkB,mBACjB,QAAQ","names":["ctx: InternalClientContext","thirdPartyAppRid: ThirdPartyAppRid"],"sources":["../../../../src/net/third-party-applications/getWebsite.mts"],"version":3,"file":"getWebsite.d.mts"}

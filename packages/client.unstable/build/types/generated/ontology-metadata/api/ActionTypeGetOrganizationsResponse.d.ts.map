@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,oBAAqB;AACxD,cAAc,uBAAuB,sBAAuB;;;;;AAM5D,iBAAiB,mCAAmC;CAClD,gCAAgC,OAAO,eAAe,MAAM;AAC7D","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ActionTypeGetOrganizationsResponse.ts"],"version":3,"file":"ActionTypeGetOrganizationsResponse.d.ts"}

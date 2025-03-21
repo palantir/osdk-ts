@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,OAAO,iBAAS,0BACdA,aAAa,uBACbC,iBAAiB","names":["identifiers: ReadonlyArray<string>","alternateNames?: ReadonlyMap<string, string>"],"sources":["../../../src/util/commaSeparatedIdentifiers.ts"],"version":3,"file":"commaSeparatedIdentifiers.d.ts"}

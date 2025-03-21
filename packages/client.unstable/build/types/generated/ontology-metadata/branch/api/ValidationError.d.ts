@@ -1,0 +1,66 @@
+import type { GenericOntologyMetadataError } from "../../api/GenericOntologyMetadataError.js";
+import type { DatasourceModificationConstraintError } from "./DatasourceModificationConstraintError.js";
+import type { ForeignKeyConstraintError } from "./ForeignKeyConstraintError.js";
+import type { FoundrySchemaConstraintError } from "./FoundrySchemaConstraintError.js";
+import type { GeotimeSeriesReferencePropertyTypeConstraintError } from "./GeotimeSeriesReferencePropertyTypeConstraintError.js";
+import type { InterfaceImplementationError } from "./InterfaceImplementationError.js";
+import type { MediaReferencePropertyTypeConstraintError } from "./MediaReferencePropertyTypeConstraintError.js";
+import type { MergeConstraintError } from "./MergeConstraintError.js";
+import type { NumberOfDatasourcesConstraintError } from "./NumberOfDatasourcesConstraintError.js";
+import type { ObjectTypePropertyConstraintError } from "./ObjectTypePropertyConstraintError.js";
+import type { PropertySecurityGroupsConstraintError } from "./PropertySecurityGroupsConstraintError.js";
+import type { SchemaMigrationError } from "./SchemaMigrationError.js";
+import type { TimeDependentPropertyTypeConstraintError } from "./TimeDependentPropertyTypeConstraintError.js";
+export interface ValidationError_foreignKeyConstraint {
+	type: "foreignKeyConstraint";
+	foreignKeyConstraint: ForeignKeyConstraintError;
+}
+export interface ValidationError_foundrySchemaConstraint {
+	type: "foundrySchemaConstraint";
+	foundrySchemaConstraint: FoundrySchemaConstraintError;
+}
+export interface ValidationError_numberOfDatasourcesConstraint {
+	type: "numberOfDatasourcesConstraint";
+	numberOfDatasourcesConstraint: NumberOfDatasourcesConstraintError;
+}
+export interface ValidationError_schemaMigration {
+	type: "schemaMigration";
+	schemaMigration: SchemaMigrationError;
+}
+export interface ValidationError_mediaReferencePropertyTypeConstraint {
+	type: "mediaReferencePropertyTypeConstraint";
+	mediaReferencePropertyTypeConstraint: MediaReferencePropertyTypeConstraintError;
+}
+export interface ValidationError_interfaceImplementationConstraint {
+	type: "interfaceImplementationConstraint";
+	interfaceImplementationConstraint: InterfaceImplementationError;
+}
+export interface ValidationError_timeDependentPropertyTypeConstraint {
+	type: "timeDependentPropertyTypeConstraint";
+	timeDependentPropertyTypeConstraint: TimeDependentPropertyTypeConstraintError;
+}
+export interface ValidationError_geotimeSeriesReferencePropertyTypeConstraint {
+	type: "geotimeSeriesReferencePropertyTypeConstraint";
+	geotimeSeriesReferencePropertyTypeConstraint: GeotimeSeriesReferencePropertyTypeConstraintError;
+}
+export interface ValidationError_datasourceModificationConstraint {
+	type: "datasourceModificationConstraint";
+	datasourceModificationConstraint: DatasourceModificationConstraintError;
+}
+export interface ValidationError_objectTypePropertyConstraint {
+	type: "objectTypePropertyConstraint";
+	objectTypePropertyConstraint: ObjectTypePropertyConstraintError;
+}
+export interface ValidationError_propertySecurityGroupsConstraint {
+	type: "propertySecurityGroupsConstraint";
+	propertySecurityGroupsConstraint: PropertySecurityGroupsConstraintError;
+}
+export interface ValidationError_mergeConstraint {
+	type: "mergeConstraint";
+	mergeConstraint: MergeConstraintError;
+}
+export interface ValidationError_genericOntologyMetadataError {
+	type: "genericOntologyMetadataError";
+	genericOntologyMetadataError: GenericOntologyMetadataError;
+}
+export type ValidationError = ValidationError_foreignKeyConstraint | ValidationError_foundrySchemaConstraint | ValidationError_numberOfDatasourcesConstraint | ValidationError_schemaMigration | ValidationError_mediaReferencePropertyTypeConstraint | ValidationError_interfaceImplementationConstraint | ValidationError_timeDependentPropertyTypeConstraint | ValidationError_geotimeSeriesReferencePropertyTypeConstraint | ValidationError_datasourceModificationConstraint | ValidationError_objectTypePropertyConstraint | ValidationError_propertySecurityGroupsConstraint | ValidationError_mergeConstraint | ValidationError_genericOntologyMetadataError;

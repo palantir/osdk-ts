@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,0BAA0B,0BAA2B;AACnE,cAAc,mBAAmB,mBAAoB;AACrD,cAAc,sBAAsB,qBAAsB;;;;AAK1D,iBAAiB,wBAAwB;CACvC,YAAY;CACZ,WAAW;CACX,aAAa;AACd","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/packages/OntologyPackageMetadata.ts"],"version":3,"file":"OntologyPackageMetadata.d.ts"}

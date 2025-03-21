@@ -1,0 +1,4 @@
+/**
+* The type of block being deployed
+*/
+export type BlockType = "WORKSHOP_TEMPLATE" | "REPOSITORY_TEMPLATE" | "SLATE_TEMPLATE" | "OBJECT_VIEW_TEMPLATE" | "DATA_CONNECTOR" | "TAURUS_WORKFLOW" | "VERTEX_GRAPH_TEMPLATE";

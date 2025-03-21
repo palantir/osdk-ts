@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,qBAAsB;AAC1D,cAAc,kBAAkB,iBAAkB;AAClD,cAAc,oBAAoB,mBAAoB;AACtD,cAAc,sBAAsB,qBAAsB;;;;;AAM1D,iBAAiB,cAAc;CAC7B,uBAAuB;CACvB,gBAAgB,OAAO,gBAAgB;CACvC,aAAa,MAAM;CACnB,uBAAuB,OAAO,cAAc;CAC5C;AACD","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ActionLogRule.ts"],"version":3,"file":"ActionLogRule.d.ts"}

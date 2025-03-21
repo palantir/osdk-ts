@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,uCAAuC,sCAAuC;AAC5F,iBAAiB,6CAA6C;CAC5D,MAAM;CACN,OAAO;AACR;AAED,iBAAiB,qDAAqD;CACpE,MAAM;CACN,eAAe;AAChB;AACD,YAAY,yCACR,+CACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ParameterGeotimeSeriesReferenceOrEmpty.ts"],"version":3,"file":"ParameterGeotimeSeriesReferenceOrEmpty.d.ts"}

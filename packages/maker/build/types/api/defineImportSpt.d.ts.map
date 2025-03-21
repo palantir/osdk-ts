@@ -1,0 +1,1 @@
+{"mappings":"AAkBA,cAAc,kBAAkB,0BAA0B,YAAa;;;;AAKvE,OAAO,iBAAS,yBACdA,MAAM;CACJ;CACA;CACA,UAAU;AACX,IACA","names":["opts: {\n    apiName: string;\n    packageName?: string;\n    typeHint: PropertyTypeType;\n  }"],"sources":["../../../src/api/defineImportSpt.ts"],"version":3,"file":"defineImportSpt.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qCAAqC,oCAAqC;AACxF,cAAc,oBAAoB,mBAAoB;AACtD,iBAAiB,4CAA4C;CAC3D,MAAM;CACN,YAAY;AACb;AAED,iBAAiB,+CAA+C;CAC9D,MAAM;CACN,eAAe;AAChB;AACD,YAAY,mCACR,8CACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/LinkedEntityTypeRidOrIdInRequest.ts"],"version":3,"file":"LinkedEntityTypeRidOrIdInRequest.d.ts"}

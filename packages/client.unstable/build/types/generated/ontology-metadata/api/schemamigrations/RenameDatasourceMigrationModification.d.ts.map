@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,4BAA4B,4BAA6B;AACvE,cAAc,qBAAqB,qBAAsB;;;;AAKzD,iBAAiB,sCAAsC;CACrD,QAAQ;CACR,QAAQ;AACT","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/schemamigrations/RenameDatasourceMigrationModification.ts"],"version":3,"file":"RenameDatasourceMigrationModification.d.ts"}

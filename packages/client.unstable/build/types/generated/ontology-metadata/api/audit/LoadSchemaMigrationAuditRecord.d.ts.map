@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,0BAA0B,0BAA2B;AACnE,cAAc,qBAAqB,qBAAsB;AACzD,iBAAiB,+BAA+B;CAC9C,QAAQ;CACR,QAAQ;CACR,cAAc,MAAM;AACrB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/audit/LoadSchemaMigrationAuditRecord.ts"],"version":3,"file":"LoadSchemaMigrationAuditRecord.d.ts"}

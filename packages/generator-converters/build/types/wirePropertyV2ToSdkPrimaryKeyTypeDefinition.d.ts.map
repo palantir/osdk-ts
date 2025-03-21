@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,WAAY;AACjD,cAAc,kBAAkB,0BAA2B;AAE3D,OAAO,iBAAS,4CACdA,OAAO,aACN","names":["input: PropertyV2"],"sources":["../../src/wirePropertyV2ToSdkPrimaryKeyTypeDefinition.ts"],"version":3,"file":"wirePropertyV2ToSdkPrimaryKeyTypeDefinition.d.ts"}

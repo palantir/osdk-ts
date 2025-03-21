@@ -1,0 +1,1 @@
+{"mappings":"AAoBA,cAAc,kCAAkC,gCAAiC;AAGjF,OAAO,cAAMA,oCAAoC","names":["createTimeseriesAndGeotimeHandlers: FauxFoundryHandlersFactory"],"sources":["../../../src/handlers/createTimeseriesAndGeotimeHandlers.ts"],"version":3,"file":"createTimeseriesAndGeotimeHandlers.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,kBAAkB,kBAAmB;AACnD,cAAc,mBAAmB,mBAAoB;AACrD,cAAc,8BAA8B,6BAA8B;AAC1E,iBAAiB,sBAAsB;CACrC,YAAY;CACZ,cAAc,OAAO,wBAAwB;AAC9C","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/blockdata/ActionTypeBlockDataV2.ts"],"version":3,"file":"ActionTypeBlockDataV2.d.ts"}

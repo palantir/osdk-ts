@@ -1,0 +1,1 @@
+{"mappings":"AAAA,SAAS,kDAAkD;AAC3D,SAAS,gDAAgD;AACzD,SAAS,cAAc;AACvB,SAAS,0BAA0B;AACnC,SAAS,iCAAiC;AAC1C,SAAS,0BAA0B;AACnC,SAAS,8BAA8B;AACvC,SAAS,6BAA6B;AACtC,SAAS,2BAA2B;AACpC,SAAS,mBAAmB;AAC5B,SAAS,qBAAqB;AAC9B,SAAS,wBAAwB;AACjC,SAAS,2CAA2C;AACpD,SAAS,yCAAyC","names":[],"sources":["../../../../src/generatedNoCheck/ontology/queries.ts"],"version":3,"file":"queries.d.ts"}

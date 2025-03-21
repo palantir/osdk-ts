@@ -1,0 +1,1 @@
+{"version":3,"file":"objects.js","names":["Thing","UsesForeignSpt"],"sources":["objects.ts"],"sourcesContent":["export { Thing } from './objects/Thing.js';\nexport { UsesForeignSpt } from './objects/UsesForeignSpt.js';\n"],"mappings":"AAAA,SAASA,KAAK,QAAQ,oBAAoB;AAC1C,SAASC,cAAc,QAAQ,6BAA6B","ignoreList":[]}

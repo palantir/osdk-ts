@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAoC,cAAe;AACjE,cAAc,iCAAiC,iCAAkC;AACjF,cAAc,kCAAkC,kCAAmC;AACnF,OAAO,iBAAe,mBACpBA,KAAK,gBACLC,SAAS,4BACR,QAAQ","names":["ctx: ConjureContext","request: BatchGetValueTypesRequest"],"sources":["../../../../../../src/generated/type-registry/api/ValueTypesService/batchGetValueTypes.ts"],"version":3,"file":"batchGetValueTypes.d.ts"}

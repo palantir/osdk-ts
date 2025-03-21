@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,WAAY;AAEhD,OAAO,iBAAS,cACdA,UAAU,eAAe,UACzB,EAAE,aAAa,SAAqD,EAA1C;CAAE;CAAuB;AAAiB","names":["property: ObjectMetadata.Property"],"sources":["../../../src/shared/propertyJsdoc.ts"],"version":3,"file":"propertyJsdoc.d.ts"}

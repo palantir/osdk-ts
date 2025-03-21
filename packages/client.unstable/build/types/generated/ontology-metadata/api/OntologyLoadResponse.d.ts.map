@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,6BAA6B,4BAA6B;AACxE,cAAc,oBAAoB,mBAAoB;AACtD,cAAc,uBAAuB,sBAAuB;AAC5D,cAAc,yBAAyB,wBAAyB;AAChE,cAAc,kBAAkB,iBAAkB;;;;AAKlD,iBAAiB,qBAAqB;CACpC,oBAAoB,OAAO,cAAc;CACzC,wBAAwB,OAAO,YAAY;CAC3C,wBAAwB;AACzB","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/OntologyLoadResponse.ts"],"version":3,"file":"OntologyLoadResponse.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,YAAY,cAAc,qBACrB;CAAE,MAAM;CAAM;AAAa,IAAG,KAC/B;CAAE,MAAM;CAAO;CAAc;AAAe;AAEhD,OAAO,iBAAS,KAAKA,QAAQ,qBAAqB,UAAU;CAAE,MAAM;AAAM","names":["result: ResultOrError<any>"],"sources":["../../src/ResultOrError.ts"],"version":3,"file":"ResultOrError.d.ts"}

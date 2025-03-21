@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,qBAAqB,oBAAqB;;;;AAKxD,iBAAiB,kCAAkC;CACjD,oBAAoB,OAAO,eAAe,MAAM;AACjD","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/DeletedObjectTypesStillInUseError.ts"],"version":3,"file":"DeletedObjectTypesStillInUseError.d.ts"}

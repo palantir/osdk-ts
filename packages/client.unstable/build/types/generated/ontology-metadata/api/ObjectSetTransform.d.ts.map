@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,gCAAiC;AACtE,cAAc,6BAA6B,4BAA6B;AACxE,iBAAiB,kCAAkC;CACjD,MAAM;CACN,gBAAgB;AACjB;AAED,iBAAiB,gCAAgC;CAC/C,MAAM;CACN,cAAc;AACf;;;;AAID,YAAY,qBACR,oCACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ObjectSetTransform.ts"],"version":3,"file":"ObjectSetTransform.d.ts"}

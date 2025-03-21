@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,iBAAiB,aAAa;CAC5B;CACA;CACA;CACA,YAAY;AACb;AAGD,OAAO,iBAAS,eAAeA,aAAa,SAAS","names":["error: any"],"sources":["../../src/BaseError.ts"],"version":3,"file":"BaseError.d.ts"}

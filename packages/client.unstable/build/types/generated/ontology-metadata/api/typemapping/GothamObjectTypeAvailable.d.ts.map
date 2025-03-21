@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,iBAAiB,iBAAkB;AACjD,cAAc,wCAAwC,uCAAwC;AAC9F,cAAc,2CAA2C,0CAA2C;;;;AAKpG,iBAAiB,0BAA0B;CACzC,eAAe;CACf;CACA;CACA,aAAa,MAAM;CACnB,6BAA6B,MAAM;CACnC,SAAS;AACV","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/typemapping/GothamObjectTypeAvailable.ts"],"version":3,"file":"GothamObjectTypeAvailable.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,0CAA0C,yCAA0C;AAClG,cAAc,0CAA0C,yCAA0C;AAClG,iBAAiB,wCAAwC;CACvD,MAAM;CACN,cAAc;AACf;AAED,iBAAiB,wCAAwC;CACvD,MAAM;CACN,cAAc;AACf;AACD,YAAY,6BACR,0CACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/derivedproperties/LinkDefinitionModification.ts"],"version":3,"file":"LinkDefinitionModification.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,0BAA0B,yBAA0B;AAClE,cAAc,oBAAoB,mBAAoB;AACtD,iBAAiB,iCAAiC;CAChD,MAAM;CACN,cAAc;AACf;AAED,iBAAiB,2BAA2B;CAC1C,MAAM;CACN,QAAQ;AACT;AACD,YAAY,sBACR,mCACA","names":[],"sources":["../../../../src/generated/third-party-application-service/ClientSpecification.ts"],"version":3,"file":"ClientSpecification.d.ts"}

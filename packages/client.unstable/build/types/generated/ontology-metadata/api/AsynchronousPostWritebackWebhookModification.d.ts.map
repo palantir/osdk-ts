@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,gDAAgD,+CAAgD;AAC9G,cAAc,wDAAwD,uDAAwD;AAC9H,iBAAiB,+DAA+D;CAC9E,MAAM;CACN,mBAAmB;AACpB;AAED,iBAAiB,iEAAiE;CAChF,MAAM;CACN,qBAAqB;AACtB;;;;;AAKD,YAAY,+CACR,iEACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/AsynchronousPostWritebackWebhookModification.ts"],"version":3,"file":"AsynchronousPostWritebackWebhookModification.d.ts"}

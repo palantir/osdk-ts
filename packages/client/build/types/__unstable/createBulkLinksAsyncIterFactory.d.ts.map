@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,gBAAgB,WAAY;AAC1C,cAAc,+BAA+B,sBAAsB,oBAAqB;AASxF,cAAc,qBAAqB,4BAA6B;AAUhE,OAAO,iBAAS,gCAAgCA,KAAK,iBAEjDC,MAAM,MAAM,gBACZC,wBACC,eAAe","names":["ctx: MinimalClient","objs: Array<OsdkBase<any>>","linkTypes: string[]"],"sources":["../../../src/__unstable/createBulkLinksAsyncIterFactory.ts"],"version":3,"file":"createBulkLinksAsyncIterFactory.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,4BAA6B;AAChE,cAAc,sBAAsB,6BAA8B;;;;AAKlE,iBAAiB,yBAAyB;CACxC,YAAY;CACZ,uCAAuC,MAAM;AAC9C","names":[],"sources":["../../../../../../src/generated/ontology-metadata/branch/api/PrimaryKeyIsDerivedError.ts"],"version":3,"file":"PrimaryKeyIsDerivedError.d.ts"}

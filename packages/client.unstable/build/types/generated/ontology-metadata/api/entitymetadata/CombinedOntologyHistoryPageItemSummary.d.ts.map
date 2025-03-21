@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,mBAAoB;AACrD,cAAc,qBAAqB,qBAAsB;AACzD,cAAc,gCAAgC,+BAAgC;;;;;;;;AAS9E,iBAAiB,uCAAuC;CACtD,qBAAqB,OAAO,eAAe;CAC3C,mBAAmB,OAAO,aAAa;AACxC","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/entitymetadata/CombinedOntologyHistoryPageItemSummary.ts"],"version":3,"file":"CombinedOntologyHistoryPageItemSummary.d.ts"}

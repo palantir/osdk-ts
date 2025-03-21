@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,wBAAwB,wBAAyB;AAC/D,cAAc,mBAAmB,mBAAoB;AACrD,cAAc,uBAAuB,uBAAwB;AAC7D,iBAAiB,6CAA6C;CAC5D,aAAa;CACb,iBAAiB;CACjB,mBAAmB,MAAM;AAC1B","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/audit/LoadAllInterfaceTypesFromOntologyAuditRecord.ts"],"version":3,"file":"LoadAllInterfaceTypesFromOntologyAuditRecord.d.ts"}

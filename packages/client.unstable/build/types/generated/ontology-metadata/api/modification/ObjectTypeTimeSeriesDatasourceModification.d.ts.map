@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,iBAAiB,iBAAkB;AACjD,cAAc,sBAAsB,sBAAuB;AAC3D,cAAc,yBAAyB,yBAA0B;AACjE,iBAAiB,2CAA2C;CAC1D,mBAAmB;CACnB,YAAY,MAAM;CAClB,iBAAiB,MAAM;AACxB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/modification/ObjectTypeTimeSeriesDatasourceModification.ts"],"version":3,"file":"ObjectTypeTimeSeriesDatasourceModification.d.ts"}

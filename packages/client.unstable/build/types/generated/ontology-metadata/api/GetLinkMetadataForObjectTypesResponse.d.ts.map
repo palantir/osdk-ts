@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,oBAAoB,mBAAoB;AACtD,cAAc,qBAAqB,oBAAqB;;;;AAKxD,iBAAiB,sCAAsC;CACrD,OAAO,OAAO,eAAe,MAAM;AACpC","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/GetLinkMetadataForObjectTypesResponse.ts"],"version":3,"file":"GetLinkMetadataForObjectTypesResponse.d.ts"}

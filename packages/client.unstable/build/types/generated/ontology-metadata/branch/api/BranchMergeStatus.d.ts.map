@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,uBAAuB,sBAAuB;AAC5D,iBAAiB,2BAA2B;CAC1C,MAAM;CACN,UAAU;AACX;AAED,iBAAiB,wBAAwB;CACvC,MAAM;CACN,OAAO;AACR;AACD,YAAY,oBACR,6BACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/branch/api/BranchMergeStatus.ts"],"version":3,"file":"BranchMergeStatus.d.ts"}

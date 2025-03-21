@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,iBAAiB,iBAAkB;AACjD,iBAAiB,mBAAmB,UAAU;CAC5C,YAAY;CACZ,QAAQA;AACT;AAED,OAAO,iBAAS,oBAAoB","names":["path: string"],"sources":["../../../src/util/InMemoryFs.ts"],"version":3,"file":"InMemoryFs.d.ts"}

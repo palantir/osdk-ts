@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,4BAA4B,2BAA4B;AACtE,cAAc,oBAAoB,mBAAoB;;;;AAKtD,iBAAiB,6DAA6D;CAC5E,eAAe;CACf,iDAAiD,MAAM;AACxD","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/InlineActionTypeCannotBeReferencedByMultipleObjectTypesError.ts"],"version":3,"file":"InlineActionTypeCannotBeReferencedByMultipleObjectTypesError.d.ts"}

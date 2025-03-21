@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,4BAA4B,4BAA6B;AACvE,cAAc,kCAAkC,kCAAmC;AACnF,cAAc,mBAAmB,mBAAoB;AACrD,iBAAiB,6BAA6B;CAC5C,sBAAsB;CACtB,gBAAgB;CAChB,aAAa;AACd","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/modification/InlineActionTypeModification.ts"],"version":3,"file":"InlineActionTypeModification.d.ts"}

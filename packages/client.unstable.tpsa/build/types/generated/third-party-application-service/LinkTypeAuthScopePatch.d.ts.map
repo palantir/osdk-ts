@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,6BAA6B,4BAA6B;AACxE,cAAc,yBAAyB,wBAAyB;AAChE,iBAAiB,sCAAsC;CACrD,MAAM;CACN,gBAAgB;AACjB;AAED,iBAAiB,+BAA+B;CAC9C,MAAM;CACN,SAAS;AACV;AACD,YAAY,yBACR,wCACA","names":[],"sources":["../../../../src/generated/third-party-application-service/LinkTypeAuthScopePatch.ts"],"version":3,"file":"LinkTypeAuthScopePatch.d.ts"}

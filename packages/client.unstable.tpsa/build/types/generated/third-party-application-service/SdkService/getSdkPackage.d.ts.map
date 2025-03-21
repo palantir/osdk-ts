@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAoC,cAAe;AACjE,cAAc,kBAAkB,kBAAmB;AACnD,cAAc,qBAAqB,qBAAsB;;;;;;AAOzD,OAAO,iBAAe,cACpBA,KAAK,gBACLC,eAAe,gBACd,QAAQ","names":["ctx: ConjureContext","sdkPackageRid: SdkPackageRid"],"sources":["../../../../../src/generated/third-party-application-service/SdkService/getSdkPackage.ts"],"version":3,"file":"getSdkPackage.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,4CAA4C,2CAA4C;AACtG,cAAc,wCAAwC,uCAAwC;AAC9F,iBAAiB,oDAAoD;CACnE,MAAM;CACN,6BAA6B;AAC9B;AAED,iBAAiB,wDAAwD;CACvE,MAAM;CACN,iCAAiC;AAClC;AACD,YAAY,0BACR,sDACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/SharedPropertyTypeError.ts"],"version":3,"file":"SharedPropertyTypeError.d.ts"}

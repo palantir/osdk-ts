@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,0BAA0B,yBAA0B;AAClE,cAAc,iBAAiB,gBAAiB;AAChD,iBAAiB,oBAAoB;CACnC,MAAM;CACN,IAAI;CACJ,OAAO;AACR","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/formatting/MathBinaryOperation.ts"],"version":3,"file":"MathBinaryOperation.d.ts"}

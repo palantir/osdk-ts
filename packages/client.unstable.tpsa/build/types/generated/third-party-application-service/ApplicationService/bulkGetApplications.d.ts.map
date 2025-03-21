@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAoC,cAAe;AACjE,cAAc,kCAAkC,kCAAmC;AACnF,cAAc,mCAAmC,mCAAoC;;;;;;;;AASrF,OAAO,iBAAe,oBACpBA,KAAK,gBACLC,SAAS,6BACR,QAAQ","names":["ctx: ConjureContext","request: BulkGetApplicationsRequest"],"sources":["../../../../../src/generated/third-party-application-service/ApplicationService/bulkGetApplications.ts"],"version":3,"file":"bulkGetApplications.d.ts"}

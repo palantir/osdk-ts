@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,qBAAsB;AACzD,cAAc,0BAA0B,0BAA2B;AACnE,cAAc,6BAA6B,4BAA6B;;;;AAKxE,iBAAiB,+BAA+B;CAC9C;CACA;CACA;CACA;CACA;CACA,uBAAuB,OAAO,eAAe;CAC7C;CACA,YAAY;AACb","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/permissions/GetLinkTypePermissionsResponse.ts"],"version":3,"file":"GetLinkTypePermissionsResponse.d.ts"}

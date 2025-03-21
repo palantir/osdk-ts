@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAoC,cAAe;AACjE,cAAc,uBAAuB,uBAAwB;AAC7D,cAAc,wBAAwB,wBAAyB;;;;AAK/D,OAAO,iBAAe,SACpBA,KAAK,gBACLC,SAAS,kBACR,QAAQ","names":["ctx: ConjureContext","request: GetLinksRequest"],"sources":["../../../../../../src/generated/object-set-service/api/ObjectSetServiceV2Deprecated/getLinks.ts"],"version":3,"file":"getLinks.d.ts"}

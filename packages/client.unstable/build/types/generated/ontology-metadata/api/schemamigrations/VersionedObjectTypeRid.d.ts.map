@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,qBAAsB;AACzD,cAAc,uBAAuB,uBAAwB;;;;AAK7D,iBAAiB,uBAAuB;CACtC,eAAe;CACf,iBAAiB;AAClB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/schemamigrations/VersionedObjectTypeRid.ts"],"version":3,"file":"VersionedObjectTypeRid.d.ts"}

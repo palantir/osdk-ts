@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uCAAuC,sCAAuC;AAC5F,cAAc,mCAAmC,kCAAmC;AACpF,iBAAiB,0CAA0C;CACzD,MAAM;CACN,wBAAwB;AACzB;AAED,iBAAiB,8CAA8C;CAC7D,MAAM;CACN,4BAA4B;AAC7B;AACD,YAAY,qBACR,4CACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/InterfaceTypeError.ts"],"version":3,"file":"InterfaceTypeError.d.ts"}

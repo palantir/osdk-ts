@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,iBAAiB,kBAAkB,0BAA2B;AAG9D,iBAAiB,2BACP,KAAK,aAAa,cAAc,aAC1C;CACE,QAAQ;AACT;AAED,OAAO,cAAM,oBAAoB;;CAG/B,mBACEA,YAAY,qBACX,aAAa;CAKhB,2BAA2BC,wBAAwB,aAAa;CAsBhE,oBAAoBA,wBAAwB;AAe7C","names":["attachment: FauxAttachmentInfo","attachmentRid: string"],"sources":["../../../src/FauxFoundry/FauxAttachmentStore.ts"],"version":3,"file":"FauxAttachmentStore.d.ts"}

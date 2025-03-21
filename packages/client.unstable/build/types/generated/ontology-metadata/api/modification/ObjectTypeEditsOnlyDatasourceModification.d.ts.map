@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,oBAAoB,oBAAqB;AACvD,cAAc,0CAA0C,0CAA2C;AACnG,cAAc,sBAAsB,sBAAuB;AAC3D,iBAAiB,0CAA0C;CACzD,cAAc;CACd,YAAY,MAAM;CAClB,wBAAwB;AACzB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/modification/ObjectTypeEditsOnlyDatasourceModification.ts"],"version":3,"file":"ObjectTypeEditsOnlyDatasourceModification.d.ts"}

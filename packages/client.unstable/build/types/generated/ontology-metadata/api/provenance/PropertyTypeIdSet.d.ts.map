@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,sBAAuB;AAC3D,cAAc,gCAAgC,+BAAgC;AAC9E,iBAAiB,gCAAgC;CAC/C,MAAM;CACN,eAAe;AAChB;AAED,iBAAiB,qCAAqC;CACpD,MAAM;CACN,oBAAoB,MAAM;AAC3B;;;;AAID,YAAY,oBACR,kCACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/provenance/PropertyTypeIdSet.ts"],"version":3,"file":"PropertyTypeIdSet.d.ts"}

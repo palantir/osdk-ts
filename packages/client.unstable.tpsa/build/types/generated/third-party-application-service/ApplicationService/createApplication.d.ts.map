@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAoC,cAAe;AACjE,cAAc,gCAAgC,gCAAiC;AAC/E,cAAc,4BAA4B,4BAA6B;;;;;;;AAQvE,OAAO,iBAAe,kBACpBA,KAAK,gBACLC,SAAS,2BACR,QAAQ","names":["ctx: ConjureContext","request: CreateApplicationRequest"],"sources":["../../../../../src/generated/third-party-application-service/ApplicationService/createApplication.ts"],"version":3,"file":"createApplication.d.ts"}

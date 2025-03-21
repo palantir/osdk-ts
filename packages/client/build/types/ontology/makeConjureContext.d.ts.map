@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,2BAA2B,sBAAuB;AAChE,cAAc,sBAAsB,cAAe;AAEnD,OAAO,iBAAS,mBACd,EAAE,SAAS,OAAO,SAAS,eAAoC,EAAnB,qBAC5CA,sBACC","names":["servicePath: string"],"sources":["../../../src/ontology/makeConjureContext.ts"],"version":3,"file":"makeConjureContext.d.ts"}

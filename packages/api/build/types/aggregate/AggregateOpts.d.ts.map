@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,6BAA8B;AACjE,cAAc,mCAAmC,kCAAmC;AACpF,cACE,0BACA,kCACK,yBAA0B;AAEjC,YAAY,cAAc,UAAU,+BAA+B;CACjE,SACI,2BAA2B,KAC3B,yBAAyB;CAC7B,WAAW,cAAc;AAC1B","names":[],"sources":["../../../src/aggregate/AggregateOpts.ts"],"version":3,"file":"AggregateOpts.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cACE,+BAGK,WAAY;AACnB,cAEE,qBAGK,0BAA2B;AAGlC,OAAO,iBAAS,2CACd,kBAEAA,OAAO,gBACN","names":["input: QueryDataType"],"sources":["../../src/wireQueryDataTypeToQueryDataTypeDefinition.ts"],"version":3,"file":"wireQueryDataTypeToQueryDataTypeDefinition.d.ts"}

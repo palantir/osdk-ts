@@ -1,0 +1,1 @@
+{"mappings":";;;;;;;AA8BA,OAAO,iBAAe,UACpBA,gBACAC,qBACC;UAuCO,YAAY;CACpB;CACA;AACD;;;;;;;AAOD,OAAO,iBAAe,cAAcC,mBAAmB,QAAQ;AAiB/D,OAAO,iBAAS,SAASC","names":["token?: string","tokenFile?: string","filePath: string","token: string"],"sources":["../../../src/util/token.ts"],"version":3,"file":"token.d.ts"}

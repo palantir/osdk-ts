@@ -1,0 +1,1 @@
+{"mappings":"AAiBA,cAAc,qBAAqB,OAAQ;AAC3C,cAAc,8BAA8B,6BAA8B;AAE1E,OAAO,cAAMA,iBAAiB,cAC5B,CAAE,GACF","names":["generateCommand: CommandModule<\n  {},\n  TypescriptGenerateArgs\n>"],"sources":["../../../src/generate/generate.ts"],"version":3,"file":"generate.d.ts"}

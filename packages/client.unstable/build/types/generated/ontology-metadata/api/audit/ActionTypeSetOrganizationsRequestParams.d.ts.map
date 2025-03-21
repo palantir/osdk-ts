@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,qBAAsB;AACzD,cAAc,uBAAuB,uBAAwB;AAC7D,iBAAiB,wCAAwC;CACvD,kCAAkC,OAChC,eACA,MAAM;AAET","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/audit/ActionTypeSetOrganizationsRequestParams.ts"],"version":3,"file":"ActionTypeSetOrganizationsRequestParams.d.ts"}

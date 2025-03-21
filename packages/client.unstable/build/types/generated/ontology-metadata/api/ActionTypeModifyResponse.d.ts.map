@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,kBAAkB,iBAAkB;AAClD,cAAc,qBAAqB,oBAAqB;AACxD,iBAAiB,yBAAyB;CACxC,oBAAoB,MAAM;CAC1B,oBAAoB,OAAO,eAAe;AAC3C","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ActionTypeModifyResponse.ts"],"version":3,"file":"ActionTypeModifyResponse.d.ts"}

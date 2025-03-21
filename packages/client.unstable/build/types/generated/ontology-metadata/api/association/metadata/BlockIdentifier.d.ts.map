@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,sBAAuB;AAC5D,cAAc,4BAA4B,2BAA4B;AACtE,cAAc,iBAAiB,gBAAiB;;;;;AAMhD,iBAAiB,gBAAgB;CAC/B,SAAS;CACT,cAAc;CACd,WAAW;AACZ","names":[],"sources":["../../../../../../../src/generated/ontology-metadata/api/association/metadata/BlockIdentifier.ts"],"version":3,"file":"BlockIdentifier.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,gBAAgB,eAAgB;AAC9C,cAAc,8BAA8B,6BAA8B;AAC1E,cAAc,+BAA+B,8BAA+B;AAC5E,cAAc,gBAAgB,eAAgB;;;;;AAM9C,iBAAiB,oCAAoC;CACnD,UAAU;CACV,iBAAiB,OAAO,wBAAwB;CAChD,UAAU;AACX","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/OntologyIrObjectTypeTableDatasource.ts"],"version":3,"file":"OntologyIrObjectTypeTableDatasource.d.ts"}

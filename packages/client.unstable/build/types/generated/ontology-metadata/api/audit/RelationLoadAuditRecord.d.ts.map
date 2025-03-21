@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,uBAAwB;AAC7D,cAAc,kBAAkB,kBAAmB;AACnD,cAAc,mBAAmB,mBAAoB;AACrD,iBAAiB,wBAAwB;CACvC,aAAa;CACb,YAAY;CACZ,iBAAiB;AAClB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/audit/RelationLoadAuditRecord.ts"],"version":3,"file":"RelationLoadAuditRecord.d.ts"}

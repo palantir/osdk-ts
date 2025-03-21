@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,SAAS,eAAe,0BAA2B;AACnD,cAAc,mBAAmB,0CAA2C;AAG5E,OAAO,cAAMA,SAAS,YACpB,oBAAoB,uBACb,QAAQ","names":["execute: CallFactory<\n  \"ontologyApiName\" | \"queryApiName\",\n  typeof Queries.execute\n>"],"sources":["../../../../src/mock/OntologiesV2/Queries.ts"],"version":3,"file":"Queries.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,iBAAiB,gBAAiB;AAChD,cAAc,mCAAmC,kCAAmC;AACpF,cAAc,WAAW,UAAW;;;;AAKpC,iBAAiB,6BAA6B;CAC5C,WAAW;CACX,gBAAgB;CAChB,KAAK;AACN","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/provenance/TaggedDependencyAndDependent.ts"],"version":3,"file":"TaggedDependencyAndDependent.d.ts"}

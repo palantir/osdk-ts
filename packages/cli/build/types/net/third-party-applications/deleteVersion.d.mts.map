@@ -1,0 +1,1 @@
+{"mappings":"AAiBA,cAAc,6BAA6B,8BAA+B;AAC1E,cAAc,wBAAwB,wBAAyB;AAE/D,OAAO,iBAAe,cACpBA,KAAK,uBACLC,kBAAkB,kBAClBC,kBACC","names":["ctx: InternalClientContext","thirdPartyAppRid: ThirdPartyAppRid","version: string"],"sources":["../../../../src/net/third-party-applications/deleteVersion.mts"],"version":3,"file":"deleteVersion.d.mts"}

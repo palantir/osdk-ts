@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,OAAO,iBAAS,oBACdA,iBACAC,QAAQ,MAAM,MAAM","names":["version: string","prefix: \"^\" | \"~\" | \"\""],"sources":["../../src/changeVersionPrefix.ts"],"version":3,"file":"changeVersionPrefix.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qCAAqC,oCAAqC;AACxF,cAAc,sCAAsC,qCAAsC;AAC1F,iBAAiB,kCAAkC;CACjD,gBAAgB,MAAM;CACtB,eAAe;AAChB","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/LoadAllInterfaceTypesPageResponse.ts"],"version":3,"file":"LoadAllInterfaceTypesPageResponse.d.ts"}

@@ -1,0 +1,15 @@
+import type { QueryTypeV2 } from "@osdk/foundry.ontologies";
+export declare const addOneQueryType: QueryTypeV2;
+export declare const queryTypeReturnsStruct: QueryTypeV2;
+export declare const queryTypeReturnsComplexStruct: QueryTypeV2;
+export declare const queryTypeReturnsTimestamp: QueryTypeV2;
+export declare const queryTypeReturnsDate: QueryTypeV2;
+export declare const queryTypeReturnsObject: QueryTypeV2;
+export declare const queryTypeThreeDimensionalAggregation: QueryTypeV2;
+export declare const queryTypeTwoDimensionalAggregation: QueryTypeV2;
+export declare const queryTypeAcceptsTwoDimensionalAggregation: QueryTypeV2;
+export declare const queryTypeAcceptsThreeDimensionalAggregation: QueryTypeV2;
+export declare const queryTypeAcceptsObjects: QueryTypeV2;
+export declare const queryTypeAcceptsObjectSets: QueryTypeV2;
+export declare const queryTypeReturnsArray: QueryTypeV2;
+export declare const queryTypeReturnsMap: QueryTypeV2;

@@ -1,0 +1,4 @@
+import type { LoadAllSharedPropertyTypesFromOntologyAuditRecord } from "./LoadAllSharedPropertyTypesFromOntologyAuditRecord.js";
+export interface OntologyMetadataServiceLoadAllSharedPropertyTypesFromOntologyResultParams {
+	response: LoadAllSharedPropertyTypesFromOntologyAuditRecord;
+}

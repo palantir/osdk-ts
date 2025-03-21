@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,qBAAsB;AAC1D,cAAc,oBAAoB,mBAAoB;AACtD,cAAc,kBAAkB,iBAAkB;;;;AAKlD,iBAAiB,mBAAmB;CAClC,cAAc;CACd,MAAM,OAAO,YAAY;AAC1B","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/NewObjectUrlTarget.ts"],"version":3,"file":"NewObjectUrlTarget.d.ts"}

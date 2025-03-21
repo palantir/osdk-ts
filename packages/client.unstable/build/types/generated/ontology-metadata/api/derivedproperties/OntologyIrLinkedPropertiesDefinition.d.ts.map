@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,8BAA8B,8BAA+B;AAC3E,cAAc,gCAAgC,+BAAgC;AAC9E,cAAc,wCAAwC,uCAAwC;;;;;AAM9F,iBAAiB,qCAAqC;CACpD,qBAAqB,OACnB,wBACA;CAEF,gBAAgB;AACjB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/derivedproperties/OntologyIrLinkedPropertiesDefinition.ts"],"version":3,"file":"OntologyIrLinkedPropertiesDefinition.d.ts"}

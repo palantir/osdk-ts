@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,OAAQ;AAC3C,cAAc,2BAA2B,8BAA+B;AACxE,cAAc,yBAAyB,wBAAyB;AAEhE,cAAMA,SAAS,cACb,qBACA;AAwBF,eAAe","names":["command: CommandModule<\n  CommonWidgetSetArgs,\n  VersionDeleteArgs\n>"],"sources":["../../../../../../src/commands/widgetset/version/delete/index.ts"],"version":3,"file":"index.d.ts"}

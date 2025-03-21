@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,WAAY;AAG/C,cAAc,qBAAqB,4BAA6B;AAEhE,OAAO,iBAAe,kBACpBA,QAAQ,eACRC,oBACC,QAAQ","names":["client: MinimalClient","queryType: string"],"sources":["../../../src/ontology/loadQueryMetadata.ts"],"version":3,"file":"loadQueryMetadata.d.ts"}

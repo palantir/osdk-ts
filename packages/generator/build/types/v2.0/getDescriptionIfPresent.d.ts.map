@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,OAAO,iBAAS,wBACdA,sBACAC","names":["description?: string","includeNewline?: boolean"],"sources":["../../../src/v2.0/getDescriptionIfPresent.ts"],"version":3,"file":"getDescriptionIfPresent.d.ts"}

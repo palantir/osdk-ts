@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uCAAuC,sCAAuC;AAC5F,cAAc,2CAA2C,0CAA2C;AACpG,iBAAiB,mDAAmD;CAClE,MAAM;CACN,iCAAiC;AAClC;AAED,iBAAiB,uDAAuD;CACtE,MAAM;CACN,qCAAqC;AACtC;;;;AAID,YAAY,qBACR,qDACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/StructFieldPrefill.ts"],"version":3,"file":"StructFieldPrefill.d.ts"}

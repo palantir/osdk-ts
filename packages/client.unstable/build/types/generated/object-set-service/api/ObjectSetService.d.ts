@@ -1,0 +1,9 @@
+export { createObjectSet } from "./ObjectSetService/createObjectSet.js";
+export { createTemporaryObjectSet } from "./ObjectSetService/createTemporaryObjectSet.js";
+export { deleteObjectSet } from "./ObjectSetService/deleteObjectSet.js";
+export { getBulkObjectSet } from "./ObjectSetService/getBulkObjectSet.js";
+export { getObjectSet } from "./ObjectSetService/getObjectSet.js";
+export { getObjectsPage } from "./ObjectSetService/getObjectsPage.js";
+export { getObjectTypes } from "./ObjectSetService/getObjectTypes.js";
+export { getReferencedEntities } from "./ObjectSetService/getReferencedEntities.js";
+export { materializeObjectSet } from "./ObjectSetService/materializeObjectSet.js";

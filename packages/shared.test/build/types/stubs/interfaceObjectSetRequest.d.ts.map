@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAEE,kDAEK,0BAA2B;AAqJlC,OAAO,cAAMA,gCAAgC;gBAC5B;AAChB","names":["loadInterfaceObjectSetHandlers: {\n  [key: string]: LoadObjectSetV2MultipleObjectTypesResponse;\n}"],"sources":["../../../src/stubs/interfaceObjectSetRequest.ts"],"version":3,"file":"interfaceObjectSetRequest.d.ts"}

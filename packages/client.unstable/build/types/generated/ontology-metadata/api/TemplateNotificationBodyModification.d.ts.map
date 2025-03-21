@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,6BAA6B,4BAA6B;AACxE,cAAc,2BAA2B,0BAA2B;AACpE,cAAc,kDAAkD,iDAAkD;AAClH,cAAc,6BAA6B,4BAA6B;;;;AAKxE,iBAAiB,qCAAqC;CACpD,QAAQ,OACN,qBACA;CAEF,WAAW;CACX,WAAW;AACZ","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/TemplateNotificationBodyModification.ts"],"version":3,"file":"TemplateNotificationBodyModification.d.ts"}

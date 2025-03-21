@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,qBAAsB;AAC1D,cAAc,2BAA2B,0BAA2B;AACpE,cAAc,wBAAwB,uBAAwB;AAC9D,cAAc,wBAAwB,uBAAwB;;;;;AAM9D,iBAAiB,OAAO;CACtB,gBAAgB;CAChB,qBAAqB;CACrB,QAAQ;CACR,kBAAkB;CAClB;AACD","names":[],"sources":["../../../../src/generated/third-party-application-service/NpmSdk.ts"],"version":3,"file":"NpmSdk.d.ts"}

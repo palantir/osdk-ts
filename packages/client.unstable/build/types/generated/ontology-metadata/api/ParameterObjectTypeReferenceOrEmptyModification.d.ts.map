@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,gDAAgD,+CAAgD;AAC9G,iBAAiB,sDAAsD;CACrE,MAAM;CACN,OAAO;AACR;AAED,iBAAiB,oEAAoE;CACnF,MAAM;CACN,qBAAqB;AACtB;AACD,YAAY,kDACR,wDACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ParameterObjectTypeReferenceOrEmptyModification.ts"],"version":3,"file":"ParameterObjectTypeReferenceOrEmptyModification.d.ts"}

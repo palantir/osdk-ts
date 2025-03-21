@@ -1,0 +1,55 @@
+import type { ActionDefinition, ActionMetadata, ActionParam, ActionReturnTypeForOptions, ApplyActionOptions, ApplyBatchActionOptions } from "@osdk/client";
+import { $osdkMetadata } from "../../OntologyMetadata.js";
+import type { Task as $Imported$com$example$dep$Task } from "@osdk/e2e.generated.api-namespace.dep";
+export declare namespace setTaskBody {
+	type ParamsDefinition = {
+		body: {
+			multiplicity: false
+			nullable: false
+			type: "string"
+		}
+		task: {
+			multiplicity: false
+			nullable: false
+			type: ActionMetadata.DataType.Object<$Imported$com$example$dep$Task>
+		}
+	};
+	interface Params {
+		readonly body: ActionParam.PrimitiveType<"string">;
+		readonly task: ActionParam.ObjectType<$Imported$com$example$dep$Task>;
+	}
+	interface Signatures {
+		applyAction<
+			P extends setTaskBody.Params,
+			OP extends ApplyActionOptions
+		>(args: P, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
+		batchApplyAction<
+			P extends ReadonlyArray<setTaskBody.Params>,
+			OP extends ApplyBatchActionOptions
+		>(args: P, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
+	}
+}
+/**
+* @param {ActionParam.PrimitiveType<"string">} body
+* @param {ActionParam.ObjectType<$Imported$com$example$dep$Task>} task
+*/
+export interface setTaskBody extends ActionDefinition<setTaskBody.Signatures> {
+	__DefinitionMetadata?: {
+		apiName: "setTaskBody"
+		modifiedEntities: {
+			"com.example.dep.Task": {
+				created: false
+				modified: true
+			}
+		}
+		parameters: setTaskBody.ParamsDefinition
+		rid: "ri.a.b.c.d"
+		status: "ACTIVE"
+		type: "action"
+		signatures: setTaskBody.Signatures
+	};
+	apiName: "setTaskBody";
+	type: "action";
+	osdkMetadata: typeof $osdkMetadata;
+}
+export declare const setTaskBody: setTaskBody;

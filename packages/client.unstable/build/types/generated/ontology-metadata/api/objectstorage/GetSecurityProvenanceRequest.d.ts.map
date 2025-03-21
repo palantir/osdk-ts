@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,mBAAoB;AACrD,cAAc,qBAAqB,qBAAsB;AACzD,cAAc,sCAAsC,qCAAsC;;;;AAK1F,iBAAiB,6BAA6B;CAC5C,aAAa,MAAM;CACnB,gCAAgC;CAChC,WAAW,MAAM;AAClB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/objectstorage/GetSecurityProvenanceRequest.ts"],"version":3,"file":"GetSecurityProvenanceRequest.d.ts"}

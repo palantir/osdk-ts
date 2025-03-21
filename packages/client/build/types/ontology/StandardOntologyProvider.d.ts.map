@@ -1,0 +1,1 @@
+{"mappings":"AA4BA,cAGO,+BACA,uBAAwB;AAE/B,iBAAiB,uBAAuB,CACvC;AAED,OAAO,cAAMA,wCACXC,MAAM,2BACH","names":["createStandardOntologyProviderFactory: (\n  opts: OntologyCachingOptions,\n) => OntologyProviderFactory","opts: OntologyCachingOptions"],"sources":["../../../src/ontology/StandardOntologyProvider.ts"],"version":3,"file":"StandardOntologyProvider.d.ts"}

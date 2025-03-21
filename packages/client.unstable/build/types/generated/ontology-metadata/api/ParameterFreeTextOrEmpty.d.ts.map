@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,yBAAyB,wBAAyB;AAChE,iBAAiB,+BAA+B;CAC9C,MAAM;CACN,OAAO;AACR;AAED,iBAAiB,8BAA8B;CAC7C,MAAM;CACN,MAAM;AACP;AACD,YAAY,2BACR,iCACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ParameterFreeTextOrEmpty.ts"],"version":3,"file":"ParameterFreeTextOrEmpty.d.ts"}

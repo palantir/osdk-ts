@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,cAAc,cAAe;AAC3C,cAAc,gCAAgC,+BAAgC;AAC9E,cAAc,iBAAiB,gBAAiB;AAChD,cAAc,iBAAiB,gBAAiB;;;;;AAMhD,iBAAiB,gBAAgB;CAC/B,gBAAgB;CAChB;CACA;CACA,SAAS,MAAM;CACf,YAAY,MAAM;CAClB,YAAY,MAAM;AACnB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/usage/GetUsageRequest.ts"],"version":3,"file":"GetUsageRequest.d.ts"}

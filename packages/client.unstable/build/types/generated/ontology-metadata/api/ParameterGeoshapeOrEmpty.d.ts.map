@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,yBAAyB,wBAAyB;AAChE,iBAAiB,+BAA+B;CAC9C,MAAM;CACN,OAAO;AACR;AAED,iBAAiB,kCAAkC;CACjD,MAAM;CACN,UAAU;AACX;AACD,YAAY,2BACR,iCACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ParameterGeoshapeOrEmpty.ts"],"version":3,"file":"ParameterGeoshapeOrEmpty.d.ts"}

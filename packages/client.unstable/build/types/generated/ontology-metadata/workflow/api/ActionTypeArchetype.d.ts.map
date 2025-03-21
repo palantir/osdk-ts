@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sCAAsC,qCAAsC;AAC1F,cAAc,sCAAsC,qCAAsC;AAC1F,cAAc,6BAA6B,4BAA6B;AACxE,cAAc,oCAAoC,mCAAoC;AACtF,cAAc,sCAAsC,qCAAsC;;;;AAK1F,iBAAiB,oBAAoB;CACnC,IAAI;CACJ,aAAa;CACb,aAAa;CACb,YAAY,OACV,gCACA;CAEF;AACD","names":[],"sources":["../../../../../../src/generated/ontology-metadata/workflow/api/ActionTypeArchetype.ts"],"version":3,"file":"ActionTypeArchetype.d.ts"}

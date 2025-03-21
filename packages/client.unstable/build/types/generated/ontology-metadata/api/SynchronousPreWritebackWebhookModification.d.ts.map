@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,gDAAgD,+CAAgD;AAC9G,cAAc,wDAAwD,uDAAwD;AAC9H,iBAAiB,6DAA6D;CAC5E,MAAM;CACN,mBAAmB;AACpB;AAED,iBAAiB,+DAA+D;CAC9E,MAAM;CACN,qBAAqB;AACtB;;;;;AAKD,YAAY,6CACR,+DACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/SynchronousPreWritebackWebhookModification.ts"],"version":3,"file":"SynchronousPreWritebackWebhookModification.d.ts"}

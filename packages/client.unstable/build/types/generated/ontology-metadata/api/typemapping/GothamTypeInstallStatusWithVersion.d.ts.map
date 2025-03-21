@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,uBAAwB;AAC7D,cAAc,+BAA+B,8BAA+B;AAC5E,cAAc,8BAA8B,6BAA8B;AAC1E,iBAAiB,mCAAmC;CAClD,QAAQ;CACR,kBAAkB;CAClB,gBAAgB;AACjB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/typemapping/GothamTypeInstallStatusWithVersion.ts"],"version":3,"file":"GothamTypeInstallStatusWithVersion.d.ts"}

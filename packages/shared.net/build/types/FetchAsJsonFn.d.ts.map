@@ -1,0 +1,1 @@
+{"mappings":";;;;;AAqBA,YAAY,iBACVA,KAAK,KACLC,aAAa,KAAK,aAAa,UAAU;CAAE;AAA2B,MACnE","names":["url: URL","requestInit: Omit<RequestInit, \"body\"> & { body?: object | undefined }"],"sources":["../../src/FetchAsJsonFn.ts"],"version":3,"file":"FetchAsJsonFn.d.ts"}

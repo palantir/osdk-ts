@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,gCAAgC,+BAAgC;AAC9E,cAAc,wBAAwB,uBAAwB;AAC9D,iBAAiB,kCAAkC;CACjD,MAAM;CACN,KAAK;AACN;AAED,iBAAiB,0CAA0C;CACzD,MAAM;CACN,aAAa;AACd;AACD,YAAY,gCACR,oCACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/InterfaceTypeRidOrIdInRequest.ts"],"version":3,"file":"InterfaceTypeRidOrIdInRequest.d.ts"}

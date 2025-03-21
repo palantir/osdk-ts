@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,kBAAkB,iBAAkB;AAClD,cAAc,oBAAoB,mBAAoB;AACtD,cAAc,gCAAgC,+BAAgC;AAC9E,cAAc,sBAAsB,qBAAsB;;;;;AAM1D,iBAAiB,wBAAwB;CACvC,uBAAuB;CACvB,gBAAgB,OAAO,gBAAgB;CACvC,aAAa,MAAM;CACnB,uBAAuB,OAAO,cAAc;CAC5C;AACD","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/OntologyIrActionLogRule.ts"],"version":3,"file":"OntologyIrActionLogRule.d.ts"}

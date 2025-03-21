@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,aAAa,qBAAqB,2BAA4B;AAE5E,OAAO,iBAAS,iBACdA,YACAC,OAAO,cAAc,KACrBC,MAAM,0BACL,cAAc,QAAQ;AAmBzB,OAAO,iBAAS,oBACdC,UAAU,YAAY,QAAQ,iCAC7B","names":["id: string","input: RequestInfo | URL","init: RequestInit | undefined","response: HostMessage.Payload._unstable_FetchResponseSuccess"],"sources":["../../src/request.ts"],"version":3,"file":"request.d.ts"}

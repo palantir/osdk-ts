@@ -1,0 +1,67 @@
+import type { PropertyDef as $PropertyDef } from "@osdk/client";
+import { $osdkMetadata } from "../../OntologyMetadata.js";
+import type { ObjectTypeDefinition as $ObjectTypeDefinition } from "@osdk/client";
+import type { ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from "@osdk/client";
+export declare namespace GtfsTripTrackObject {
+	type PropertyKeys = "entityId" | "geotimeSeriesReferences" | "timestamp";
+	type Links = {};
+	interface Props {
+		readonly entityId: $PropType["string"];
+		readonly geotimeSeriesReferences: $PropType["geotimeSeriesReference"] | undefined;
+		readonly timestamp: $PropType["timestamp"] | undefined;
+	}
+	type StrictProps = Props;
+	interface ObjectSet extends $ObjectSet<GtfsTripTrackObject, GtfsTripTrackObject.ObjectSet> {}
+	type OsdkInstance<
+		OPTIONS extends never | "$rid" = never,
+		K extends keyof GtfsTripTrackObject.Props = keyof GtfsTripTrackObject.Props
+	> = $Osdk.Instance<GtfsTripTrackObject, OPTIONS, K>;
+	type OsdkObject<
+		OPTIONS extends never | "$rid" = never,
+		K extends keyof GtfsTripTrackObject.Props = keyof GtfsTripTrackObject.Props
+	> = OsdkInstance<OPTIONS, K>;
+}
+export interface GtfsTripTrackObject extends $ObjectTypeDefinition {
+	osdkMetadata: typeof $osdkMetadata;
+	type: "object";
+	apiName: "GtfsTripTrackObject";
+	__DefinitionMetadata?: {
+		objectSet: GtfsTripTrackObject.ObjectSet
+		props: GtfsTripTrackObject.Props
+		linksType: GtfsTripTrackObject.Links
+		strictProps: GtfsTripTrackObject.StrictProps
+		apiName: "GtfsTripTrackObject"
+		description: "GtfsTripTrackObject"
+		displayName: "GtfsTripTrackObject"
+		icon: {
+			type: "blueprint"
+			name: "traffic"
+			color: "color"
+		}
+		interfaceMap: {}
+		inverseInterfaceMap: {}
+		links: {}
+		pluralDisplayName: "GtfsTripTrackObject"
+		primaryKeyApiName: "entityId"
+		primaryKeyType: "string"
+		properties: {
+			/**
+			* (no ontology metadata)
+			*/
+			entityId: $PropertyDef<"string", "non-nullable", "single">
+			/**
+			* (no ontology metadata)
+			*/
+			geotimeSeriesReferences: $PropertyDef<"geotimeSeriesReference", "nullable", "single">
+			/**
+			* (no ontology metadata)
+			*/
+			timestamp: $PropertyDef<"timestamp", "nullable", "single">
+		}
+		rid: "ri.a.b.c.d"
+		status: "ACTIVE"
+		titleProperty: "entityId"
+		type: "object"
+	};
+}
+export declare const GtfsTripTrackObject: GtfsTripTrackObject;

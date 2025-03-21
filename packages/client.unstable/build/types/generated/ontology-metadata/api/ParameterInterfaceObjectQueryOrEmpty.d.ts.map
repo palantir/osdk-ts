@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,qCAAqC,oCAAqC;AACxF,iBAAiB,2CAA2C;CAC1D,MAAM;CACN,OAAO;AACR;AAED,iBAAiB,0DAA0D;CACzE,MAAM;CACN,sBAAsB;AACvB;;;;;AAKD,YAAY,uCACR,6CACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ParameterInterfaceObjectQueryOrEmpty.ts"],"version":3,"file":"ParameterInterfaceObjectQueryOrEmpty.d.ts"}

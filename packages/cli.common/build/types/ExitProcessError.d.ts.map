@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,OAAO,cAAM,yBAAyB,MAAM;CAExC;CACA;CACA;CACA,yBAAgC;CAJlC,YACkBA,mBACAC,cACAC,cACAC,gBAAgB;AAInC","names":["errorCode: number","msg?: string","tip?: string","originalError?: Error | undefined"],"sources":["../../src/ExitProcessError.ts"],"version":3,"file":"ExitProcessError.d.ts"}

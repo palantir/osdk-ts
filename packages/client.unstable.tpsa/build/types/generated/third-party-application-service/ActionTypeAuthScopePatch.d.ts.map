@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,2BAA2B,0BAA2B;AACpE,cAAc,6BAA6B,4BAA6B;AACxE,iBAAiB,wCAAwC;CACvD,MAAM;CACN,gBAAgB;AACjB;AAED,iBAAiB,iCAAiC;CAChD,MAAM;CACN,SAAS;AACV;AACD,YAAY,2BACR,0CACA","names":[],"sources":["../../../../src/generated/third-party-application-service/ActionTypeAuthScopePatch.ts"],"version":3,"file":"ActionTypeAuthScopePatch.d.ts"}

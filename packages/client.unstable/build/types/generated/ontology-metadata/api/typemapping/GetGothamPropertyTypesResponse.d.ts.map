@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sCAAsC,mDAAoD;AACxG,cAAc,mCAAmC,kCAAmC;AACpF,cAAc,qCAAqC,oCAAqC;;;;AAKxF,iBAAiB,+BAA+B;CAC9C,8BAA8B,MAAM;CACpC,+BAA+B,MAAM;CACrC,yCAAyC,MAAM;AAChD","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/typemapping/GetGothamPropertyTypesResponse.ts"],"version":3,"file":"GetGothamPropertyTypesResponse.d.ts"}

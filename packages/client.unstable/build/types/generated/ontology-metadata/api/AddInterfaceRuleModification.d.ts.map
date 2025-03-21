@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qCAAqC,oCAAqC;AACxF,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,oDAAoD,mDAAoD;AACtH,cAAc,+DAA+D,8DAA+D;AAC5I,iBAAiB,6BAA6B;CAC5C,+BAA+B;CAC/B,YAAY;CACZ,+CAA+C,MAC7C;CAEF,0DAA0D,MACxD;AAEH","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/AddInterfaceRuleModification.ts"],"version":3,"file":"AddInterfaceRuleModification.d.ts"}

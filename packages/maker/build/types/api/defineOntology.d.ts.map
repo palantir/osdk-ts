@@ -1,0 +1,1 @@
+{"mappings":"AAgCA,cACE,YAUA,oCAGK,uBAAwB;KAgB1B,0BAA0B;CAC7B,UAAU;CACV,WAAW;AACZ;AAED,OAAO,iBAAe,eACpBA,YACAC,mBAAmB,gBAClB,QAAQ;AAmNX,OAAO,iBAAS,4BAA4B;AAI5C,OAAO,iBAAS,yBAAyB","names":["ns: string","body: () => void | Promise<void>"],"sources":["../../../src/api/defineOntology.ts"],"version":3,"file":"defineOntology.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,wBAAwB,uBAAwB;AAC9D,cAAc,sBAAsB,qBAAsB;AAC1D,cAAc,mBAAmB,kBAAmB;;;;;;;;;;;AAYpD,iBAAiB,mBAAmB;CAClC,aAAa;CACb,gBAAgB;CAChB,kBAAkB;AACnB","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/BranchDeletedEvent.ts"],"version":3,"file":"BranchDeletedEvent.d.ts"}

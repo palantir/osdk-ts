@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,wBAAwB,+BAAgC;AACtE,cAAc,mBAAmB,0BAA2B;AAC5D,cAAc,qBAAqB,4BAA6B;;;;AAKhE,iBAAiB,sCAAsC;CACrD,sBAAsB;CACtB,sBAAsB;CACtB,UAAU;CACV,wBAAwB;CACxB,wBAAwB;AACzB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/branch/api/PrimaryAndForeignKeyTypeMismatchError.ts"],"version":3,"file":"PrimaryAndForeignKeyTypeMismatchError.d.ts"}

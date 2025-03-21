@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,4BAA6B;AAChE,cAAc,sBAAsB,6BAA8B;AAClE,cAAc,uBAAuB,8BAA+B;;;;AAKpE,iBAAiB,+BAA+B;CAC9C,eAAe;CACf,qBAAqB,MAAM;CAC3B,gBAAgB,MAAM;CACtB,kBAAkB,MAAM;AACzB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/branch/api/PrimaryKeyChangeMigrationError.ts"],"version":3,"file":"PrimaryKeyChangeMigrationError.d.ts"}

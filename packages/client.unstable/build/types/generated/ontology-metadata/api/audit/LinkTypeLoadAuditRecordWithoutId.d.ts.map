@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,mBAAoB;AACrD,cAAc,uBAAuB,uBAAwB;AAC7D,iBAAiB,iCAAiC;CAChD,aAAa;CACb,iBAAiB;AAClB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/audit/LinkTypeLoadAuditRecordWithoutId.ts"],"version":3,"file":"LinkTypeLoadAuditRecordWithoutId.d.ts"}

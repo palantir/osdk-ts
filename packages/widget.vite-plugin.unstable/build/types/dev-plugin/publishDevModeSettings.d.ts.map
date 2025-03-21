@@ -1,0 +1,1 @@
+{"mappings":"AAiBA,cAAc,sBAAsB,WAAY;AAChD,cAAc,qBAAqB,MAAO;;;;AAM1C,OAAO,iBAAe,uBACpBA,QAAQ,eACRC,qBAAqB,0BACrBC,KAAK,iBACJ","names":["server: ViteDevServer","widgetIdToOverrides: Record<string, string[]>","res: ServerResponse"],"sources":["../../../src/dev-plugin/publishDevModeSettings.ts"],"version":3,"file":"publishDevModeSettings.d.ts"}

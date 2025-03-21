@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,yBAAyB,wBAAyB;AAChE,cAAc,uBAAuB,sBAAuB;AAC5D,iBAAiB,iCAAiC;CAChD,MAAM;CACN,iBAAiB;AAClB;AAED,iBAAiB,gCAAgC;CAC/C,MAAM;CACN,gBAAgB;AACjB;;;;AAID,YAAY,mBACR,mCACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/VersionReference.ts"],"version":3,"file":"VersionReference.d.ts"}

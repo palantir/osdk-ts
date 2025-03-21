@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAoC,cAAe;AACjE,cAAc,sBAAsB,sBAAuB;AAC3D,cAAc,mBAAmB,mBAAoB;;;;;;AAOrD,OAAO,iBAAe,eACpBA,KAAK,gBACLC,gBAAgB,iBACf,QAAQ","names":["ctx: ConjureContext","applicationRid: ApplicationRid"],"sources":["../../../../../src/generated/third-party-application-service/ApplicationClientService/getClientState.ts"],"version":3,"file":"getClientState.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,kBAAkB,iBAAkB;AAClD,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,uBAAuB,sBAAuB;AAC5D,iBAAiB,yBAAyB;CACxC,YAAY;CACZ,aAAa;CACb,iBAAiB;AAClB","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ActionTypeLoadResponseV2.ts"],"version":3,"file":"ActionTypeLoadResponseV2.d.ts"}

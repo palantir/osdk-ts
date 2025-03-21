@@ -1,0 +1,1013 @@
+{
+  "metadata": {
+    "toolPackage": "@microsoft/api-extractor",
+    "toolVersion": "7.49.1",
+    "schemaVersion": 1011,
+    "oldestForwardsCompatibleVersion": 1001,
+    "tsdocConfig": {
+      "$schema": "https://developer.microsoft.com/json-schemas/tsdoc/v0/tsdoc.schema.json",
+      "noStandardTags": true,
+      "tagDefinitions": [
+        {
+          "tagName": "@alpha",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@beta",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@defaultValue",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@decorator",
+          "syntaxKind": "block",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@deprecated",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@eventProperty",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@example",
+          "syntaxKind": "block",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@experimental",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@inheritDoc",
+          "syntaxKind": "inline"
+        },
+        {
+          "tagName": "@internal",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@label",
+          "syntaxKind": "inline"
+        },
+        {
+          "tagName": "@link",
+          "syntaxKind": "inline",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@override",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@packageDocumentation",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@param",
+          "syntaxKind": "block",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@privateRemarks",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@public",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@readonly",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@remarks",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@returns",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@sealed",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@see",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@throws",
+          "syntaxKind": "block",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@typeParam",
+          "syntaxKind": "block",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@virtual",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@betaDocumentation",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@internalRemarks",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@preapproved",
+          "syntaxKind": "modifier"
+        }
+      ],
+      "supportForTags": {
+        "@alpha": true,
+        "@beta": true,
+        "@defaultValue": true,
+        "@decorator": true,
+        "@deprecated": true,
+        "@eventProperty": true,
+        "@example": true,
+        "@experimental": true,
+        "@inheritDoc": true,
+        "@internal": true,
+        "@label": true,
+        "@link": true,
+        "@override": true,
+        "@packageDocumentation": true,
+        "@param": true,
+        "@privateRemarks": true,
+        "@public": true,
+        "@readonly": true,
+        "@remarks": true,
+        "@returns": true,
+        "@sealed": true,
+        "@see": true,
+        "@throws": true,
+        "@typeParam": true,
+        "@virtual": true,
+        "@betaDocumentation": true,
+        "@internalRemarks": true,
+        "@preapproved": true
+      },
+      "reportUnsupportedHtmlElements": false
+    }
+  },
+  "projectFolderUrl": "https://github.com/palantir/osdk-ts/tree/main/packages/client.api",
+  "kind": "Package",
+  "canonicalReference": "@osdk/functions.unstable!",
+  "docComment": "",
+  "name": "@osdk/functions.unstable",
+  "preserveMemberOrder": false,
+  "members": [
+    {
+      "kind": "EntryPoint",
+      "canonicalReference": "@osdk/functions.unstable!",
+      "name": "",
+      "preserveMemberOrder": false,
+      "members": [
+        {
+          "kind": "Function",
+          "canonicalReference": "@osdk/functions.unstable!createEditBatch:function(1)",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare function createEditBatch<T extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "AnyEdit",
+              "canonicalReference": "@osdk/functions.unstable!~AnyEdit:type"
+            },
+            {
+              "kind": "Content",
+              "text": ">(_client: "
+            },
+            {
+              "kind": "Reference",
+              "text": "Client",
+              "canonicalReference": "@osdk/client!Client:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "): "
+            },
+            {
+              "kind": "Reference",
+              "text": "EditBatch",
+              "canonicalReference": "@osdk/functions.unstable!EditBatch:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<T>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "fileUrlPath": "src/edits/createEditBatch.ts",
+          "returnTypeTokenRange": {
+            "startIndex": 5,
+            "endIndex": 7
+          },
+          "releaseTag": "Public",
+          "overloadIndex": 1,
+          "parameters": [
+            {
+              "parameterName": "_client",
+              "parameterTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              },
+              "isOptional": false
+            }
+          ],
+          "typeParameters": [
+            {
+              "typeParameterName": "T",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "name": "createEditBatch"
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@osdk/functions.unstable!DateISOString:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export type DateISOString<T extends "
+            },
+            {
+              "kind": "Content",
+              "text": "string"
+            },
+            {
+              "kind": "Content",
+              "text": " = "
+            },
+            {
+              "kind": "Content",
+              "text": "string"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Content",
+              "text": "T & {\n\t__dateBrand?: void\n}"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "fileUrlPath": "src/PrimitiveTypes.ts",
+          "releaseTag": "Public",
+          "name": "DateISOString",
+          "typeParameters": [
+            {
+              "typeParameterName": "T",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 5,
+            "endIndex": 6
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@osdk/functions.unstable!Double:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export type Double<T extends "
+            },
+            {
+              "kind": "Content",
+              "text": "number"
+            },
+            {
+              "kind": "Content",
+              "text": " = "
+            },
+            {
+              "kind": "Content",
+              "text": "number"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Content",
+              "text": "T & {\n\t__doubleBrand?: void\n}"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "fileUrlPath": "src/PrimitiveTypes.ts",
+          "releaseTag": "Public",
+          "name": "Double",
+          "typeParameters": [
+            {
+              "typeParameterName": "T",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 5,
+            "endIndex": 6
+          }
+        },
+        {
+          "kind": "Interface",
+          "canonicalReference": "@osdk/functions.unstable!EditBatch:interface",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export interface EditBatch<X extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "AnyEdit",
+              "canonicalReference": "@osdk/functions.unstable!~AnyEdit:type"
+            },
+            {
+              "kind": "Content",
+              "text": " = "
+            },
+            {
+              "kind": "Content",
+              "text": "never"
+            },
+            {
+              "kind": "Content",
+              "text": "> "
+            }
+          ],
+          "fileUrlPath": "src/edits/EditBatch.ts",
+          "releaseTag": "Public",
+          "typeParameters": [
+            {
+              "typeParameterName": "X",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              }
+            }
+          ],
+          "name": "EditBatch",
+          "preserveMemberOrder": false,
+          "members": [
+            {
+              "kind": "PropertySignature",
+              "canonicalReference": "@osdk/functions.unstable!EditBatch#create:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "create: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "<O extends "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "CreateObjectEdits",
+                  "canonicalReference": "@osdk/functions.unstable!~CreateObjectEdits:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<X>>(obj: O[\"obj\"], properties: O[\"properties\"]) => void"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isReadonly": false,
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "create",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 4
+              }
+            },
+            {
+              "kind": "PropertySignature",
+              "canonicalReference": "@osdk/functions.unstable!EditBatch#delete:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "delete: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "<O extends "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "DeleteObjectEdits",
+                  "canonicalReference": "@osdk/functions.unstable!~DeleteObjectEdits:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<X>>(obj: O[\"obj\"]) => void"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isReadonly": false,
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "delete",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 4
+              }
+            },
+            {
+              "kind": "PropertySignature",
+              "canonicalReference": "@osdk/functions.unstable!EditBatch#getEdits:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "getEdits: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "() => X[]"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isReadonly": false,
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "getEdits",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              }
+            },
+            {
+              "kind": "PropertySignature",
+              "canonicalReference": "@osdk/functions.unstable!EditBatch#link:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "link: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "<L extends "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "AddLinkEdits",
+                  "canonicalReference": "@osdk/functions.unstable!~AddLinkEdits:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<X>>(source: L[\"source\"], apiName: L[\"apiName\"], target: L[\"target\"]) => void"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isReadonly": false,
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "link",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 4
+              }
+            },
+            {
+              "kind": "PropertySignature",
+              "canonicalReference": "@osdk/functions.unstable!EditBatch#unlink:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "unlink: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "<L extends "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "RemoveLinkEdits",
+                  "canonicalReference": "@osdk/functions.unstable!~RemoveLinkEdits:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<X>>(source: L[\"source\"], apiName: L[\"apiName\"], target: L[\"target\"]) => void"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isReadonly": false,
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "unlink",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 4
+              }
+            },
+            {
+              "kind": "PropertySignature",
+              "canonicalReference": "@osdk/functions.unstable!EditBatch#update:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "update: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "<O extends "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "UpdateObjectEdits",
+                  "canonicalReference": "@osdk/functions.unstable!~UpdateObjectEdits:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<X>>(obj: O[\"obj\"], properties: O[\"properties\"]) => void"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isReadonly": false,
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "update",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 4
+              }
+            }
+          ],
+          "extendsTokenRanges": []
+        },
+        {
+          "kind": "Namespace",
+          "canonicalReference": "@osdk/functions.unstable!Edits:namespace",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare namespace Edits "
+            }
+          ],
+          "fileUrlPath": "src/edits/types.ts",
+          "releaseTag": "Public",
+          "name": "Edits",
+          "preserveMemberOrder": false,
+          "members": [
+            {
+              "kind": "TypeAlias",
+              "canonicalReference": "@osdk/functions.unstable!Edits.Link:type",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "type Link<\n\t\tS extends "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "ObjectTypeDefinition",
+                  "canonicalReference": "@osdk/api!ObjectTypeDefinition:interface"
+                },
+                {
+                  "kind": "Content",
+                  "text": ",\n\t\tL extends "
+                },
+                {
+                  "kind": "Content",
+                  "text": "keyof "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "CompileTimeMetadata",
+                  "canonicalReference": "@osdk/api!CompileTimeMetadata:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<S>[\"links\"]"
+                },
+                {
+                  "kind": "Content",
+                  "text": "\n\t> = "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "AddLink",
+                  "canonicalReference": "@osdk/functions.unstable!~AddLink:interface"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<S, L> | "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "RemoveLink",
+                  "canonicalReference": "@osdk/functions.unstable!~RemoveLink:interface"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<S, L>"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "releaseTag": "Public",
+              "name": "Link",
+              "typeParameters": [
+                {
+                  "typeParameterName": "S",
+                  "constraintTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 2
+                  },
+                  "defaultTypeTokenRange": {
+                    "startIndex": 0,
+                    "endIndex": 0
+                  }
+                },
+                {
+                  "typeParameterName": "L",
+                  "constraintTokenRange": {
+                    "startIndex": 3,
+                    "endIndex": 6
+                  },
+                  "defaultTypeTokenRange": {
+                    "startIndex": 0,
+                    "endIndex": 0
+                  }
+                }
+              ],
+              "typeTokenRange": {
+                "startIndex": 7,
+                "endIndex": 11
+              }
+            },
+            {
+              "kind": "TypeAlias",
+              "canonicalReference": "@osdk/functions.unstable!Edits.Object:type",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "type Object<S extends "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "ObjectTypeDefinition",
+                  "canonicalReference": "@osdk/api!ObjectTypeDefinition:interface"
+                },
+                {
+                  "kind": "Content",
+                  "text": "> = "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "CreateObject",
+                  "canonicalReference": "@osdk/functions.unstable!~CreateObject:interface"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<S> | "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "DeleteObject",
+                  "canonicalReference": "@osdk/functions.unstable!~DeleteObject:interface"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<S> | "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "UpdateObject",
+                  "canonicalReference": "@osdk/functions.unstable!~UpdateObject:interface"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<S>"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "releaseTag": "Public",
+              "name": "Object",
+              "typeParameters": [
+                {
+                  "typeParameterName": "S",
+                  "constraintTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 2
+                  },
+                  "defaultTypeTokenRange": {
+                    "startIndex": 0,
+                    "endIndex": 0
+                  }
+                }
+              ],
+              "typeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 9
+              }
+            }
+          ]
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@osdk/functions.unstable!Float:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export type Float<T extends "
+            },
+            {
+              "kind": "Content",
+              "text": "number"
+            },
+            {
+              "kind": "Content",
+              "text": " = "
+            },
+            {
+              "kind": "Content",
+              "text": "number"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Content",
+              "text": "T & {\n\t__floatBrand?: void\n}"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "fileUrlPath": "src/PrimitiveTypes.ts",
+          "releaseTag": "Public",
+          "name": "Float",
+          "typeParameters": [
+            {
+              "typeParameterName": "T",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 5,
+            "endIndex": 6
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@osdk/functions.unstable!Integer:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export type Integer<T extends "
+            },
+            {
+              "kind": "Content",
+              "text": "number"
+            },
+            {
+              "kind": "Content",
+              "text": " = "
+            },
+            {
+              "kind": "Content",
+              "text": "number"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Content",
+              "text": "T & {\n\t__integerBrand?: void\n}"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "fileUrlPath": "src/PrimitiveTypes.ts",
+          "releaseTag": "Public",
+          "name": "Integer",
+          "typeParameters": [
+            {
+              "typeParameterName": "T",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 5,
+            "endIndex": 6
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@osdk/functions.unstable!Long:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export type Long<T extends "
+            },
+            {
+              "kind": "Content",
+              "text": "string"
+            },
+            {
+              "kind": "Content",
+              "text": " = "
+            },
+            {
+              "kind": "Content",
+              "text": "string"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Content",
+              "text": "T & {\n\t__longBrand?: void\n}"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "fileUrlPath": "src/PrimitiveTypes.ts",
+          "releaseTag": "Public",
+          "name": "Long",
+          "typeParameters": [
+            {
+              "typeParameterName": "T",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 5,
+            "endIndex": 6
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@osdk/functions.unstable!TimestampISOString:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export type TimestampISOString<T extends "
+            },
+            {
+              "kind": "Content",
+              "text": "string"
+            },
+            {
+              "kind": "Content",
+              "text": " = "
+            },
+            {
+              "kind": "Content",
+              "text": "string"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Content",
+              "text": "T & {\n\t__timestampBrand?: void\n}"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "fileUrlPath": "src/PrimitiveTypes.ts",
+          "releaseTag": "Public",
+          "name": "TimestampISOString",
+          "typeParameters": [
+            {
+              "typeParameterName": "T",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 5,
+            "endIndex": 6
+          }
+        }
+      ]
+    }
+  ]
+}

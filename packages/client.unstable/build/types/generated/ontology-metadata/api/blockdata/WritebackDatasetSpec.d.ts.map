@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,kBAAkB,iBAAkB;AAClD,cAAc,4BAA4B,2BAA4B;AACtE,cAAc,2BAA2B,0BAA2B;AACpE,iBAAiB,qBAAqB;CACpC,QAAQ;CACR,qBAAqB;CACrB,sBAAsB;AACvB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/blockdata/WritebackDatasetSpec.ts"],"version":3,"file":"WritebackDatasetSpec.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,qBAAsB;AAC1D,cAAc,8BAA8B,6BAA8B;AAC1E,cAAc,iBAAiB,gBAAiB;AAChD,cAAc,kBAAkB,iBAAkB;;;;AAKlD,iBAAiB,QAAQ;CACvB,IAAI;CACJ,KAAK;CACL,SAAS,MAAM;CACf,iBAAiB;AAClB","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/Section.ts"],"version":3,"file":"Section.d.ts"}

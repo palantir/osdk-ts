@@ -1,0 +1,7 @@
+import type { ActionNotificationBodyFunctionExecution } from "./ActionNotificationBodyFunctionExecution.js";
+/**
+* The body of a notification based on the result of a function execution.
+*/
+export interface FunctionGeneratedNotificationBody {
+	functionExecution: ActionNotificationBodyFunctionExecution;
+}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,wBAAwB,wBAAyB;AAC/D,cAAc,UAAU,SAAU;AAClC,iBAAiB,kBAAkB;CACjC,MAAM;CACN,IAAI;AACL;AAED,iBAAiB,gCAAgC;CAC/C,MAAM;CACN,kBAAkB;AACnB;AACD,YAAY,iBACR,oBACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/formatting/ValueReference.ts"],"version":3,"file":"ValueReference.d.ts"}

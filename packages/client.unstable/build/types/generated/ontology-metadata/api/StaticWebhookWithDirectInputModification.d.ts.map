@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,kCAAkC,iCAAkC;AAClF,cAAc,6BAA6B,4BAA6B;AACxE,cAAc,kBAAkB,iBAAkB;AAClD,cAAc,sBAAsB,qBAAsB;;;;AAK1D,iBAAiB,yCAAyC;CACxD,YAAY;CACZ,gBAAgB;CAChB,oBAAoB,OAAO,uBAAuB;AACnD","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/StaticWebhookWithDirectInputModification.ts"],"version":3,"file":"StaticWebhookWithDirectInputModification.d.ts"}

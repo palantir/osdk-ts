@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAoC,cAAe;AACjE,cAAc,2BAA2B,2BAA4B;AACrE,cAAc,4BAA4B,4BAA6B;;;;;;;;AASvE,OAAO,iBAAe,aACpBA,KAAK,gBACLC,SAAS,sBACR,QAAQ","names":["ctx: ConjureContext","request: OntologyLoadRequest"],"sources":["../../../../../../src/generated/ontology-metadata/api/OntologyMetadataService/loadOntology.ts"],"version":3,"file":"loadOntology.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,sBAAuB;AAC3D,cAAc,uBAAuB,uBAAwB;AAC7D,iBAAiB,6CAA6C;CAC5D,MAAM;CACN,cAAc;AACf;AAED,iBAAiB,gDAAgD;CAC/D,MAAM;CACN,iBAAiB;AAClB;AACD,YAAY,kCACR,+CACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/derivedproperties/PropertyTypeIdentifierInRequest.ts"],"version":3,"file":"PropertyTypeIdentifierInRequest.d.ts"}

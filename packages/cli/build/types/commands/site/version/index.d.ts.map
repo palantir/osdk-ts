@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,OAAQ;AAC3C,cAAc,sBAAsB,sBAAuB;AAO3D,cAAMA,SAAS,cACb,gBACA;AAgBF,eAAe","names":["command: CommandModule<\n  CommonSiteArgs,\n  CommonSiteArgs\n>"],"sources":["../../../../../src/commands/site/version/index.ts"],"version":3,"file":"index.d.ts"}

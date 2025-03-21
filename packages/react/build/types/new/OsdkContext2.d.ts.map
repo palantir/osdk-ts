@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,cAAc,cAAe;AAC3C,cAAc,wBAAwB,kCAAmC;AACzE,OAAO,WAAW,OAAQ;UAYhB,oBAAoB;CAC5B,QAAQ;CAKR,kBAAkB;AACnB;AAED,OAAO,cAAMA,cAAc,MAAM,QAAQ","names":["OsdkContext2: React.Context<OsdkContextContents>"],"sources":["../../../src/new/OsdkContext2.ts"],"version":3,"file":"OsdkContext2.d.ts"}

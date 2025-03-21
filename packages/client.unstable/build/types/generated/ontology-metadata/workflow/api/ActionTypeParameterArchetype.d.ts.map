@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,yBAAyB,sCAAuC;AAC9E,cAAc,+CAA+C,8CAA+C;AAC5G,cAAc,+CAA+C,8CAA+C;AAC5G,cAAc,sCAAsC,qCAAsC;;;;AAK1F,iBAAiB,6BAA6B;CAC5C,IAAI;CACJ,aAAa;CACb,aAAa;CACb;CACA,MAAM;AACP","names":[],"sources":["../../../../../../src/generated/ontology-metadata/workflow/api/ActionTypeParameterArchetype.ts"],"version":3,"file":"ActionTypeParameterArchetype.d.ts"}

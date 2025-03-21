@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mCAAmC,kCAAmC;AACpF,cAAc,yCAAyC,wCAAyC;;;;AAKhG,iBAAiB,iCAAiC;CAChD,qBAAqB,MAAM;CAC3B;CACA,eAAe;AAChB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/search/SharedPropertyTypeSearchResponse.ts"],"version":3,"file":"SharedPropertyTypeSearchResponse.d.ts"}

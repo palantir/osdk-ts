@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,qBAAqB,qBAAsB;AACzD,cAAc,wCAAwC,uCAAwC;;;;;AAM9F,iBAAiB,qCAAqC;CACpD,uBAAuB,OACrB,eACA;AAEH","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/permissions/GetBulkActionTypePermissionsResponse.ts"],"version":3,"file":"GetBulkActionTypePermissionsResponse.d.ts"}

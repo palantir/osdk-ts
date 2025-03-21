@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,6BAA6B,4BAA6B;AACxE,cAAc,6BAA6B,4BAA6B;AACxE,iBAAiB,qCAAqC;CACpD,MAAM;CACN,gBAAgB,MAAM;AACvB;AAED,iBAAiB,8BAA8B;CAC7C,MAAM;CACN,SAAS;AACV;AACD,YAAY,wBACR,uCACA","names":[],"sources":["../../../../src/generated/third-party-application-service/ProjectAuthScopePatch.ts"],"version":3,"file":"ProjectAuthScopePatch.d.ts"}

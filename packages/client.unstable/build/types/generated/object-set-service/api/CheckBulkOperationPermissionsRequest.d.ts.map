@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mCAAmC,kCAAmC;AACpF,cAAc,6BAA6B,4BAA6B;;;;AAKxE,iBAAiB,qCAAqC;CACpD,wBAAwB,MAAM;CAC9B,WAAW;AACZ","names":[],"sources":["../../../../../src/generated/object-set-service/api/CheckBulkOperationPermissionsRequest.ts"],"version":3,"file":"CheckBulkOperationPermissionsRequest.d.ts"}

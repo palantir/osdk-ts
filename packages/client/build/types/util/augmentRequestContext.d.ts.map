@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,eAAe,sBAAsB,4BAA6B;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AA+BhF,OAAO,cAAM,wBACXA,QAAQ,eACRC,UAAUC,KAAK,mBAAmB,QAAQ,oBACzC","names":["client: MinimalClient","augment: (ctx: RequestContext) => Partial<RequestContext>","ctx: RequestContext"],"sources":["../../../src/util/augmentRequestContext.ts"],"version":3,"file":"augmentRequestContext.d.ts"}

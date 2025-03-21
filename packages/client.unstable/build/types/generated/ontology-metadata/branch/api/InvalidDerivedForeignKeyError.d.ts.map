@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,0BAA2B;AAC5D,cAAc,qBAAqB,4BAA6B;AAChE,cAAc,sBAAsB,6BAA8B;;;;AAKlE,iBAAiB,8BAA8B;CAC7C,sBAAsB;CACtB,sBAAsB;CACtB,UAAU;CACV,0BAA0B;AAC3B","names":[],"sources":["../../../../../../src/generated/ontology-metadata/branch/api/InvalidDerivedForeignKeyError.ts"],"version":3,"file":"InvalidDerivedForeignKeyError.d.ts"}

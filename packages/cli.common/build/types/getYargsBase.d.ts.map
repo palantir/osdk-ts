@@ -1,0 +1,1 @@
+{"mappings":"AAkBA,cAAc,YAAY,OAAQ;AAGlC,cAAc,qBAAqB,oBAAqB;AAKxD,OAAO,iBAAS,aAAaA,iBAAiB,KAAK","names":["args: string[]"],"sources":["../../src/getYargsBase.ts"],"version":3,"file":"getYargsBase.d.ts"}

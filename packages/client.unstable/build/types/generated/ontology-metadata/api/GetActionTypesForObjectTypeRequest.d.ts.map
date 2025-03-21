@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,4CAA4C,2CAA4C;AACtG,cAAc,qBAAqB,oBAAqB;AACxD,cAAc,uBAAuB,sBAAuB;;;;AAK5D,iBAAiB,mCAAmC;CAClD,YAAY;CACZ,iBAAiB;CACjB,WAAW;CACX;AACD","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/GetActionTypesForObjectTypeRequest.ts"],"version":3,"file":"GetActionTypesForObjectTypeRequest.d.ts"}

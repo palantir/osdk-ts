@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,KAAM;AAC1C,cAAc,mBAAmB,+BAAgC;AAWjE,YAAY,8BACVA,iBACAC,aAAa,gBACV,MAAM;AAEX,OAAO,iBAAS,0BACdD,iBACAC,aAAa,cACZ,MAAM","names":["baseUrl: string","fauxFoundry: FauxFoundry"],"sources":["../../../src/handlers/createFauxFoundryHandlers.ts"],"version":3,"file":"createFauxFoundryHandlers.d.ts"}

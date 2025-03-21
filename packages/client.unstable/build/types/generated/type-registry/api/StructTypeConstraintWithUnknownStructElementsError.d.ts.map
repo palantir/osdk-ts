@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,yBAAyB,wBAAyB;AAChE,cAAc,2CAA2C,0CAA2C;AACpG,iBAAiB,mDAAmD;CAClE,uBAAuB;CACvB,qBAAqB,MAAM;AAC5B","names":[],"sources":["../../../../../src/generated/type-registry/api/StructTypeConstraintWithUnknownStructElementsError.ts"],"version":3,"file":"StructTypeConstraintWithUnknownStructElementsError.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,yBAAyB,gBAAiB;AAExD,OAAO,cAAM,kBACXA,eAAe,QAAQ;CAAE,OAAO;AAAmB,aAC5C,QAAQ","names":["importPromise: Promise<{ files: ModuleImportFiles }>"],"sources":["../../src/getPackageFiles.ts"],"version":3,"file":"getPackageFiles.d.ts"}

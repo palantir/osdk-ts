@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,wBAAwB,uBAAwB;AAC9D,cAAc,uBAAuB,sBAAuB;;;;;AAM5D,iBAAiB,uCAAuC;CACtD,iBAAiB;CACjB,mBAAmB,MAAM;AAC1B","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/GetObjectTypesForInterfaceTypesRequest.ts"],"version":3,"file":"GetObjectTypesForInterfaceTypesRequest.d.ts"}

@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,2CAA2C,0CAA2C;AACpG,iBAAiB,uCAAuC;CACtD,QAAQ;AACT","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/schemamigrations/ObjectTypePrimaryKeyRenameModification.ts"],"version":3,"file":"ObjectTypePrimaryKeyRenameModification.d.ts"}

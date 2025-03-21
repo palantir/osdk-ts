@@ -1,0 +1,1 @@
+{"mappings":"AAiBA,cAAc,2BAA2B,sBAAuB;;;;;;;AAShE,OAAO,iBAAS,oBACdA,iBACAC,qBAAqB,0BACrBC,mBACAC,iBAAgB,WAAW,QAC1B","names":["baseUrl: string","tokenProvider: () => Promise<string> | string","userAgent: string","fetchFn: typeof globalThis.fetch"],"sources":["../../src/createClientContext.ts"],"version":3,"file":"createClientContext.d.ts"}

@@ -1,0 +1,4 @@
+import type { OntologyBulkLoadEntitiesByDatasourcesAuditRecord } from "./OntologyBulkLoadEntitiesByDatasourcesAuditRecord.js";
+export interface OntologyMetadataServiceBulkLoadOntologyEntitiesByDatasourcesResultParams {
+	record: OntologyBulkLoadEntitiesByDatasourcesAuditRecord;
+}

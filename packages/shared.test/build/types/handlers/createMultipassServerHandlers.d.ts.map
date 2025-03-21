@@ -1,0 +1,1 @@
+{"mappings":"AAiBA,cAAc,kCAAkC,gCAAiC;AAEjF,OAAO,cAAMA,+BAA+B","names":["createMultipassServerHandlers: FauxFoundryHandlersFactory"],"sources":["../../../src/handlers/createMultipassServerHandlers.ts"],"version":3,"file":"createMultipassServerHandlers.d.ts"}

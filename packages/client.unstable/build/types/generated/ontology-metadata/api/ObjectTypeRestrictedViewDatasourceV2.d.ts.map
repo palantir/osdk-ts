@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,+BAA+B,8BAA+B;AAC5E,cAAc,uBAAuB,sBAAuB;AAC5D,cAAc,yBAAyB,wBAAyB;;;;;;AAOhE,iBAAiB,qCAAqC;CACpD,mBAAmB;CACnB,iBAAiB,OAAO,iBAAiB;AAC1C","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ObjectTypeRestrictedViewDatasourceV2.ts"],"version":3,"file":"ObjectTypeRestrictedViewDatasourceV2.d.ts"}

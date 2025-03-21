@@ -1,0 +1,11 @@
+export { actionTakesAttachment, actionTakesMedia, actionTakesObjectSet, createFooInterface, createOffice, createOfficeAndEmployee, createStructPerson, deleteBarInterface, deleteFooInterface, moveOffice, promoteEmployee, promoteEmployeeObject } from './ontology/actions.js';
+export * as $Actions from './ontology/actions.js';
+export { BarInterface, FooInterface } from './ontology/interfaces.js';
+export * as $Interfaces from './ontology/interfaces.js';
+export { BgaoNflPlayer, Employee, equipment, objectTypeWithAllPropertyTypes, ObjectWithTimestampPrimaryKey, Office, Person, Task, Todo } from './ontology/objects.js';
+export * as $Objects from './ontology/objects.js';
+export { acceptsThreeDimensionalAggregationFunction, acceptsTwoDimensionalAggregationFunction, addOne, incrementPersonAge, incrementPersonAgeComplex, queryAcceptsObject, queryAcceptsObjectSets, queryTypeReturnsArray, queryTypeReturnsMap, returnsDate, returnsObject, returnsTimestamp, threeDimensionalAggregationFunction, twoDimensionalAggregationFunction } from './ontology/queries.js';
+export * as $Queries from './ontology/queries.js';
+export { $osdkMetadata } from './OntologyMetadata.js';
+export { $ontologyRid } from './OntologyMetadata.js';
+//# sourceMappingURL=index.js.map

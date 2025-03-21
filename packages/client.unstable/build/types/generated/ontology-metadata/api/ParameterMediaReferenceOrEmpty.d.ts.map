@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,+BAA+B,8BAA+B;AAC5E,iBAAiB,qCAAqC;CACpD,MAAM;CACN,OAAO;AACR;AAED,iBAAiB,8CAA8C;CAC7D,MAAM;CACN,gBAAgB;AACjB;AACD,YAAY,iCACR,uCACA","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/ParameterMediaReferenceOrEmpty.ts"],"version":3,"file":"ParameterMediaReferenceOrEmpty.d.ts"}

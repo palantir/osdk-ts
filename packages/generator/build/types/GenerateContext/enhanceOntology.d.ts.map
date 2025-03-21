@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,8BAA8B,8BAA+B;AAC3E,SAAS,kCAAkC,iCAAkC;AAE7E,OAAO,iBAAS,gBACd,EACE,WACA,WACA,iBACA,oBACA,cAOD,EANE;CACD,WAAW;CACX,kBAAkB;CAClB,qBAAqB;CACrB,eAAe;CACf;AACD,IACA","names":[],"sources":["../../../src/GenerateContext/enhanceOntology.ts"],"version":3,"file":"enhanceOntology.d.ts"}

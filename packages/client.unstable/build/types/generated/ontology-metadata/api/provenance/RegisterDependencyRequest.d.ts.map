@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,uBAAuB,uBAAwB;AAC7D,cAAc,iBAAiB,gBAAiB;AAChD,cAAc,2CAA2C,0CAA2C;AACpG,cAAc,WAAW,UAAW;;;;AAKpC,iBAAiB,0BAA0B;CACzC,kBAAkB;CAClB,WAAW;CACX,MAAM,MAAM;CACZ,iBAAiB;AAClB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/provenance/RegisterDependencyRequest.ts"],"version":3,"file":"RegisterDependencyRequest.d.ts"}

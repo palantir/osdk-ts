@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mBAAmB,mBAAoB;AACrD,cAAc,qBAAqB,qBAAsB;AACzD,iBAAiB,kDAAkD;CACjE,MAAM;CACN,eAAe;AAChB;AAED,iBAAiB,gDAAgD;CAC/D,MAAM;CACN,aAAa;AACd;;;;AAID,YAAY,sCACR,oDACA","names":[],"sources":["../../../../../../src/generated/ontology-metadata/api/usage/DeprecationOntologyEntityIdentifier.ts"],"version":3,"file":"DeprecationOntologyEntityIdentifier.d.ts"}

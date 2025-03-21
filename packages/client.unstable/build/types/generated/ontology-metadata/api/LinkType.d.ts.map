@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,sBAAsB,qBAAsB;AAC1D,cAAc,kBAAkB,iBAAkB;AAClD,cAAc,mBAAmB,kBAAmB;AACpD,cAAc,sBAAsB,qBAAsB;;;;AAK1D,iBAAiB,SAAS;CACxB,YAAY;CACZ,IAAI;CACJ,KAAK;CACL,QAAQ;CACR;AACD","names":[],"sources":["../../../../../src/generated/ontology-metadata/api/LinkType.ts"],"version":3,"file":"LinkType.d.ts"}

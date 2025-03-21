@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,yBAAyB,gCAAiC;AACxE,cAAc,mBAAmB,0BAA2B;AAC5D,cAAc,uBAAuB,8BAA+B;AACpE,cAAc,6BAA6B,4BAA6B;AACxE,iBAAiB,eAAe;CAC9B,KAAK;CACL,aAAa;CACb,uBAAuB;CACvB,eAAe;AAChB","names":[],"sources":["../../../../../../src/generated/ontology-metadata/branch/api/OntologyBranch.ts"],"version":3,"file":"OntologyBranch.d.ts"}

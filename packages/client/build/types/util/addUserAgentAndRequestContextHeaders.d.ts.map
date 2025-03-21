@@ -1,0 +1,1 @@
+{"mappings":"AAgBA,cAAc,mCAAmC,WAAY;AAE7D,cAAc,qBAAqB,4BAA6B;AAEhE,OAAO,cAAM,uCACXA,QAAQ,eACRC,cAAc,KAAK,6BAA6B,oBAC/C","names":["client: MinimalClient","withMetadata: Pick<ObjectOrInterfaceDefinition, \"osdkMetadata\">"],"sources":["../../../src/util/addUserAgentAndRequestContextHeaders.ts"],"version":3,"file":"addUserAgentAndRequestContextHeaders.d.ts"}
