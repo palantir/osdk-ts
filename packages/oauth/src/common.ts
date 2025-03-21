@@ -52,7 +52,7 @@ declare const process: {
 export interface LocalStorageState {
   refresh_token?: string;
   refreshTokenMarker?: string;
-  // The scopes requested during the initial auth grant, which our request token is still valid for
+  // The scopes requested during the initial auth grant, which our refresh token is still valid for
   // Note any or none of these scopes may have actually been granted when we received our last access token
   requestedScopes?: string[];
 }
