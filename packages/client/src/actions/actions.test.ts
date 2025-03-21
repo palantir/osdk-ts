@@ -685,6 +685,7 @@ describe("ActionResponse remapping", () => {
       "createStructPerson",
       "deleteBarInterface",
       "deleteFooInterface",
+      "editTodo",
       "moveOffice",
       "promoteEmployee",
       "promoteEmployeeObject",

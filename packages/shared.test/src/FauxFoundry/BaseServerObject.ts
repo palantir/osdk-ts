@@ -21,4 +21,17 @@ export interface BaseServerObject extends OntologiesV2.OntologyObjectV2 {
   __primaryKey: string | number | boolean;
   __apiName: OntologiesV2.ObjectTypeApiName;
   __title?: string;
+
+  [key: string]: unknown;
+}
+
+export function isBaseServerObject(obj: unknown): obj is BaseServerObject {
+  return (
+    typeof obj === "object"
+    && obj != null
+    && "__primaryKey" in obj
+    && "__apiName" in obj
+    && !("$apiName" in obj)
+    && !("$primaryKey" in obj)
+  );
 }

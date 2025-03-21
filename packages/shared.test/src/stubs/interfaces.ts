@@ -14,33 +14,6 @@
  * limitations under the License.
  */
 
-import type { InterfaceType } from "@osdk/foundry.ontologies";
-import { fooSpt } from "./spts.js";
-
-export const FooInterface: InterfaceType = {
-  apiName: "FooInterface",
-  description: "Interface for Foo",
-  displayName: "Foo Interface",
-  rid: "ri.interface.main.interface.1",
-  extendsInterfaces: [],
-  properties: {
-    fooSpt: {
-      ...fooSpt,
-      required: true,
-    },
-  },
-  links: {},
-  implementedByObjectTypes: ["Employee", "Person"],
-  allProperties: {
-    fooSpt: {
-      ...fooSpt,
-      required: true,
-    },
-  },
-  allExtendsInterfaces: [],
-  allLinks: {},
-};
-
 export const employeeInterfaceScoped = {
   fullName: "Santa Claus",
   $rid:
@@ -83,17 +56,4 @@ export const employeeFullObjectScoped2 = {
   employeeStatus: "TimeSeries<String>",
   employeeSensor: "TimeSeries<>",
   employeeLocation: "GeotimeSeriesReferencePlaceholder",
-};
-export const BarInterface: InterfaceType = {
-  apiName: "BarInterface",
-  description: "Interface for Bar",
-  displayName: "Bar Interface",
-  rid: "ri.interface.main.interface.2",
-  extendsInterfaces: [],
-  properties: {},
-  allProperties: {},
-  links: {},
-  implementedByObjectTypes: [],
-  allExtendsInterfaces: [],
-  allLinks: {},
 };
