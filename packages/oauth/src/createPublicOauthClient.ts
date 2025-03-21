@@ -171,6 +171,7 @@ export function createPublicOauthClient(
     oauthHttpOptions,
     maybeRefresh.bind(globalThis, true),
     refreshTokenMarker,
+    scopes,
   );
 
   // as an arrow function, `useHistory` is known to be a boolean
@@ -187,10 +188,20 @@ export function createPublicOauthClient(
   async function maybeRefresh(
     expectRefreshToken?: boolean,
   ): Promise<Token | undefined> {
-    const { refresh_token, refreshTokenMarker: lastRefreshTokenMarker } =
-      readLocal(client);
+    const {
+      refresh_token,
+      refreshTokenMarker: lastRefreshTokenMarker,
+      requestedScopes: initialRequestedScopes,
+    } = readLocal(client);
 
-    if (!refresh_token || lastRefreshTokenMarker !== refreshTokenMarker) {
+    const areScopesEqual = initialRequestedScopes != null
+      && scopes!.every(scope => initialRequestedScopes.includes(scope))
+      && scopes!.length === initialRequestedScopes.length;
+
+    if (
+      !refresh_token || lastRefreshTokenMarker !== refreshTokenMarker
+      || !areScopesEqual
+    ) {
       if (expectRefreshToken) throw new Error("No refresh token found");
       return;
     }
