@@ -134,3 +134,4 @@ export type {
 } from "./timeseries/timeseries.js";
 export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
 export {};
+export type { Logger } from "./Logger.js";

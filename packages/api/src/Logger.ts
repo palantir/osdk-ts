@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-export * from "./actions.js";
-export * from "./actionTypes.js";
-export * from "./defaultOntologyForConjure.js";
-export * from "./interfaceTypes.js";
-export * from "./linkTypes.js";
-export * from "./objects.js";
-export * from "./objectTypesWithLinkTypes.js";
-export * from "./objectTypeV2.js";
-export * from "./queries.js";
-export * from "./queryTypes.js";
+export interface Logger {
+  trace: LogFn;
+  debug: LogFn;
+  fatal: LogFn;
+  error: LogFn;
+  warn: LogFn;
+  info: LogFn;
+
+  isLevelEnabled(level: string): boolean;
+
+  child(
+    bindings: Record<string, any>,
+    options?: { level?: string; msgPrefix?: string },
+  ): Logger;
+}
+
+export interface LogFn {
+  (obj: unknown, msg?: string, ...args: any[]): void;
+  (msg: string, ...args: any[]): void;
+}

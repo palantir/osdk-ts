@@ -35,7 +35,7 @@ import {
   MoveOffice,
   PromoteEmployee,
   PromoteEmployeeObject,
-} from "./actionsTypes.js";
+} from "./actionTypes.js";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
 
 export const actionRequestCreateOffice: ApplyActionRequestV2 = {

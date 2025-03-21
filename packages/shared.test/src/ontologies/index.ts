@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,4 @@
  * limitations under the License.
  */
 
-export * from "./actions.js";
-export * from "./actionTypes.js";
-export * from "./defaultOntologyForConjure.js";
-export * from "./interfaceTypes.js";
-export * from "./linkTypes.js";
-export * from "./objects.js";
-export * from "./objectTypesWithLinkTypes.js";
-export * from "./objectTypeV2.js";
-export * from "./queries.js";
-export * from "./queryTypes.js";
+export { addEmployeeOntology } from "./EmployeeOntology.js";

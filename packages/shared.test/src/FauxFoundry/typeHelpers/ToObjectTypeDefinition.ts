@@ -33,11 +33,18 @@ export type ToObjectTypeDefinition<T extends ObjectTypeV2> = {
   type: "object";
   apiName: T["apiName"];
   __DefinitionMetadata: Omit<ObjectMetadata, "properties"> & {
-    props: {
-      [key in keyof T["properties"] & string]: PropertyValueWireToClient[
-        PropertyV2ToWirePropertyTypes<T["properties"][key]>
-      ];
-    };
+    props:
+      & {
+        [key in keyof T["properties"] & string]?: PropertyValueWireToClient[
+          PropertyV2ToWirePropertyTypes<T["properties"][key]>
+        ];
+      }
+      // setup the primary key to not be optional
+      & {
+        [key in T["primaryKey"]]: PropertyValueWireToClient[
+          PropertyV2ToWirePropertyTypes<T["properties"][key]>
+        ];
+      };
     properties: {
       [key in keyof T["properties"] & string]: PropertyDef<
         PropertyV2ToWirePropertyTypes<T["properties"][key]>
