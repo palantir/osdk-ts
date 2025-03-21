@@ -51,7 +51,7 @@ export type FetchPageResult<
   L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
-  T extends boolean,
+  T extends boolean = false,
 > = PageResult<
   PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S, T>>
     : Osdk.Instance<Q, ExtractOptions<R, S, T>, L>
