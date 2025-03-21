@@ -11,7 +11,7 @@ checkEnv(redirectUrl, "VITE_FOUNDRY_REDIRECT_URL");
 {{#if scopes}}
 const scopes = [
   {{#each scopes}}
-    "{{this}}",
+  "{{this}}",
   {{/each}}
 ];
 {{/if}}
@@ -33,10 +33,7 @@ const auth = createPublicOauthClient(
   url,
   redirectUrl,
   {{#if scopes}}
-  true,
-  undefined,
-  window.location.toString(),
-  scopes,
+  { scopes },
   {{/if}}
 );
 
