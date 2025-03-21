@@ -1,7 +1,7 @@
 {
   "name": "@osdk/create-app.template.expo.v2",
   "private": true,
-  "version": "2.2.0-beta.5",
+  "version": "2.2.0-beta.9",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -34,7 +34,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@babel/runtime": "^7.26.7",
+    "@babel/runtime": "^7.26.10",
     "@expo/vector-icons": "^14.0.2",
     "@react-navigation/bottom-tabs": "^7.0.0",
     "@react-navigation/elements": "^2.2.4",

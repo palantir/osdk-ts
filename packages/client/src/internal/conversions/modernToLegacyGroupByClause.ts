@@ -42,6 +42,15 @@ export function modernToLegacyGroupByClause(
           },
         ];
       }
+    } else if ("$exact" in type) {
+      return [
+        {
+          type: "exact",
+          field,
+          maxGroupCount: type.$exact?.$limit ?? undefined,
+          defaultValue: type.$exact.$defaultValue ?? undefined,
+        },
+      ];
     } else if ("$fixedWidth" in type) {
       return [{
         type: "fixedWidth",

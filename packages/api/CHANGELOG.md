@@ -1,5 +1,37 @@
 # @osdk/api
 
+## 2.2.0-beta.9
+
+### Minor Changes
+
+- 12843cb: Add ability to load all underlying properties of an interface.
+- f82767c: Allow using aggregation operations for boolean property types
+
+## 2.2.0-beta.8
+
+### Minor Changes
+
+- 0e874b1: Exporting more entities from functions package.
+- 63b2e63: Update Platform SDK Dependencies
+- 26c2d95: Add experimental function to load page of objects by rid.
+- 63b2e63: Supports generating queries for entrySet function types
+- 63b2e63: Adds ObjectSpecifiers to generated OSDK objects
+
+## 2.2.0-beta.7
+
+### Minor Changes
+
+- 7416ce4: Adds deleted objects and links returned from applyAction
+- 7416ce4: Update Platform SDK Dependencies
+- 805df40: Fix interface action types.
+
+## 2.2.0-beta.6
+
+### Minor Changes
+
+- cddfbf9: Adds default value option to group by
+- a6e5f89: Changes count, exactDistinct, and approximateDistinct to be non-nullable
+
 ## 2.2.0-beta.5
 
 ## 2.2.0-beta.4

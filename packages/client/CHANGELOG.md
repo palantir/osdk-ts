@@ -1,5 +1,82 @@
 # @osdk/client
 
+## 2.2.0-beta.9
+
+### Minor Changes
+
+- 12843cb: Add ability to load all underlying properties of an interface.
+- 2517750: observeList should work for interfaces and have the fully loaded content
+- 2517750: Provides efficient OrderByCanonicalizer
+- 2517750: Initial internal architecture document for ObservableClient
+- 2517750: subscribe in ObservableClient now uses Observer
+
+### Patch Changes
+
+- Updated dependencies [12843cb]
+- Updated dependencies [f82767c]
+  - @osdk/api@2.2.0-beta.9
+  - @osdk/generator-converters@2.2.0-beta.9
+  - @osdk/client.unstable@2.2.0-beta.9
+
+## 2.2.0-beta.8
+
+### Minor Changes
+
+- 1ba3871: Support $clone for interface objects
+- 63b2e63: Update Platform SDK Dependencies
+- 26c2d95: Add experimental function to load page of objects by rid.
+- 63b2e63: Supports generating queries for entrySet function types
+- 63b2e63: Adds ObjectSpecifiers to generated OSDK objects
+
+### Patch Changes
+
+- Updated dependencies [ad93d55]
+- Updated dependencies [0e874b1]
+- Updated dependencies [63b2e63]
+- Updated dependencies [26c2d95]
+- Updated dependencies [63b2e63]
+- Updated dependencies [63b2e63]
+  - @osdk/shared.net.errors@2.2.0-beta.2
+  - @osdk/shared.net.fetch@1.2.0-beta.2
+  - @osdk/api@2.2.0-beta.8
+  - @osdk/generator-converters@2.2.0-beta.8
+  - @osdk/shared.client.impl@1.2.0-beta.2
+  - @osdk/client.unstable@2.2.0-beta.8
+
+## 2.2.0-beta.7
+
+### Minor Changes
+
+- 7416ce4: Adds deleted objects and links returned from applyAction
+- 7416ce4: Update Platform SDK Dependencies
+- 879b6c3: Include a more descriptive error message for multiple filters on a single property filter clause
+- 805df40: Fix interface action types.
+
+### Patch Changes
+
+- Updated dependencies [7416ce4]
+- Updated dependencies [7416ce4]
+- Updated dependencies [805df40]
+  - @osdk/api@2.2.0-beta.7
+  - @osdk/generator-converters@2.2.0-beta.7
+  - @osdk/client.unstable@2.2.0-beta.7
+
+## 2.2.0-beta.6
+
+### Minor Changes
+
+- cddfbf9: Adds default value option to group by
+- ea4e4b1: Fix attachments to be upload sequentially rather than in parallel.
+
+### Patch Changes
+
+- Updated dependencies [b68adea]
+- Updated dependencies [cddfbf9]
+- Updated dependencies [a6e5f89]
+  - @osdk/generator-converters@2.2.0-beta.6
+  - @osdk/api@2.2.0-beta.6
+  - @osdk/client.unstable@2.2.0-beta.6
+
 ## 2.2.0-beta.5
 
 ### Minor Changes

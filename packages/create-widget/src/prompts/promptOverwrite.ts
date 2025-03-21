@@ -34,7 +34,7 @@ export async function promptOverwrite({
     return true;
   }
 
-  const result = (await consola.prompt(
+  const result = await consola.prompt(
     `The directory ${
       green(
         project,
@@ -48,9 +48,7 @@ export async function promptOverwrite({
         { label: "Cancel", value: "cancel" },
       ],
     },
-    // Types for "select" are wrong the value is returned rather than the option object
-    // https://github.com/unjs/consola/pull/238
-  )) as unknown as "overwrite" | "ignore" | "cancel";
+  ) as "overwrite" | "ignore" | "cancel";
 
   switch (result) {
     case "overwrite":

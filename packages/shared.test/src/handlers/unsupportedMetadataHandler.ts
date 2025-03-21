@@ -17,7 +17,7 @@
 import type { RequestHandler } from "msw";
 import { http, HttpResponse } from "msw";
 import { ActionTypeWithUnsupportedTypes } from "../stubs/actionsTypes.js";
-import { defaultOntology } from "../stubs/ontologies.js";
+import { defaultOntologyMetadata } from "../stubs/ontologies/defaultOntologyMetadata.js";
 import { authHandlerMiddleware } from "./commonHandlers.js";
 
 export const unsupportedMetadataHandler: Array<RequestHandler> = [
@@ -36,7 +36,7 @@ export const unsupportedMetadataHandler: Array<RequestHandler> = [
   http.get(
     "https://stack.palantir.com/api/v1/ontologies/:ontologyRid/objectTypes",
     authHandlerMiddleware(async ({ params }) => {
-      if (params.ontologyRid !== defaultOntology.rid) {
+      if (params.ontologyRid !== defaultOntologyMetadata.rid) {
         return HttpResponse.json(
           { message: "Ontology not found" },
           { status: 404 },

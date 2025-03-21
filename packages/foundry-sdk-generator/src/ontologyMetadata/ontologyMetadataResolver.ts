@@ -656,6 +656,7 @@ export class OntologyMetadataResolver {
       case "timestamp":
       case "struct":
       case "mediaReference":
+      case "objectType":
         return Result.ok({});
 
       default:

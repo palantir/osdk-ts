@@ -1,5 +1,21 @@
 # @osdk/create-app
 
+## 2.2.0-beta.9
+
+## 2.2.0-beta.8
+
+### Minor Changes
+
+- 770ec64: Drop Next.js templates
+
+## 2.2.0-beta.7
+
+### Minor Changes
+
+- 21e33a5: Upgrade consola to 3.4.0
+
+## 2.2.0-beta.6
+
 ## 2.2.0-beta.5
 
 ## 2.2.0-beta.4

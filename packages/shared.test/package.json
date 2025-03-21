@@ -1,7 +1,7 @@
 {
   "name": "@osdk/shared.test",
   "private": true,
-  "version": "2.2.0-beta.5",
+  "version": "2.2.0-beta.9",
   "description": "",
   "access": "private",
   "license": "Apache-2.0",
@@ -30,20 +30,25 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "test": "vitest run --pool=forks",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
-    "@osdk/foundry.core": "2.13.0",
-    "@osdk/foundry.geo": "2.13.0",
-    "@osdk/foundry.ontologies": "2.13.0",
-    "@osdk/internal.foundry.ontologies": "2.13.0",
+    "@osdk/foundry.core": "2.16.0",
+    "@osdk/foundry.geo": "2.16.0",
+    "@osdk/foundry.ontologies": "2.16.0",
+    "@osdk/internal.foundry.ontologies": "2.16.0",
+    "date-fns": "^4.1.0",
+    "fast-deep-equal": "^3.1.3",
     "fetch-retry": "^6.0.0",
     "json-stable-stringify": "^1.1.1",
+    "mnemonist": "^0.40.3",
     "msw": "^2.7.0",
-    "tiny-invariant": "^1.3.3"
+    "tiny-invariant": "^1.3.3",
+    "type-fest": "^4.37.0"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",

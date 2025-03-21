@@ -17,8 +17,8 @@
 import type { ActionDefinition, ActionEditResponse } from "@osdk/api";
 import { delay } from "msw";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
-
-import { type Changes, createChangedObjects } from "./ChangedObjects.js";
+import { type Changes, createChangedObjects } from "./Changes.js";
+import type { ObjectCacheKey } from "./ObjectQuery.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
 import type { Store } from "./Store.js";
 
@@ -32,6 +32,9 @@ export class ActionApplication {
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
     opts?: Store.ApplyActionOptions,
   ) => Promise<unknown> = (action, args, { optimisticUpdate } = {}) => {
+    const logger = process.env.NODE_ENV !== "production"
+      ? this.store.logger?.child({ methodName: "applyAction" })
+      : this.store.logger;
     const removeOptimisticResult = runOptimisticJob(
       this.store,
       optimisticUpdate,
@@ -46,18 +49,18 @@ export class ActionApplication {
           action,
         ).applyAction(args as any, { $returnEdits: true });
 
-        if (ACTION_DELAY > 0) {
-          // eslint-disable-next-line no-console
-          console.log("action done, pausing");
-          await delay(ACTION_DELAY);
-          // eslint-disable-next-line no-console
-          console.log("action done, pausing done");
+        if (process.env.NODE_ENV !== "production") {
+          if (ACTION_DELAY > 0) {
+            logger?.debug("action done, pausing");
+            await delay(ACTION_DELAY);
+            logger?.debug("action done, pausing done");
+          }
         }
         await this.#invalidateActionEditResponse(actionResults);
         return actionResults;
       } finally {
         if (process.env.NODE_ENV !== "production") {
-          this.store.logger?.debug(
+          logger?.debug(
             "optimistic action complete; remove the results",
           );
         }
@@ -93,12 +96,26 @@ export class ActionApplication {
       await Promise.all(promisesToWait);
 
       // the action invocation just gives back object ids,
-      // so we don't want to build the changes object
-      // until we have up to date values.
-      changes = this.#changesFromActionEditResponse(value);
-
-      // updates `changes` in place
-      await this.store.maybeRevalidateLists(changes);
+      // but the invalidateObject calls above should have put the
+      // actual objects in the cache
+      const changes = createChangedObjects();
+      for (const changeType of ["addedObjects", "modifiedObjects"] as const) {
+        for (const { objectType, primaryKey } of (value[changeType] ?? [])) {
+          const cacheKey = this.store.getCacheKey<ObjectCacheKey>(
+            "object",
+            objectType,
+            primaryKey,
+          );
+          // N.B. this probably isn't right. `getValue`() will give you the "top"
+          // value but I think we want the "truth" guaranteed.
+          const obj = this.store.getValue(cacheKey);
+          if (obj && obj.value) {
+            changes[changeType].set(objectType, obj.value);
+            (changeType === "addedObjects" ? changes.added : changes.modified)
+              .add(cacheKey);
+          }
+        }
+      }
     } else {
       for (const apiName of value.editedObjectTypes) {
         typesToInvalidate.add(apiName.toString());
@@ -107,18 +124,5 @@ export class ActionApplication {
     }
 
     return value;
-  };
-
-  #changesFromActionEditResponse = (value: ActionEditResponse) => {
-    const changes = createChangedObjects();
-    for (const changeType of ["addedObjects", "modifiedObjects"] as const) {
-      for (const { objectType, primaryKey } of (value[changeType] ?? [])) {
-        const obj = this.store.getObject(objectType, primaryKey);
-        if (obj) {
-          changes[changeType].set(objectType, obj);
-        }
-      }
-    }
-    return changes;
   };
 }

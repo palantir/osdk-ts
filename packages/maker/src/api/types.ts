@@ -217,7 +217,7 @@ export type LinkTypeDefinition =
   | OneToManyLinkTypeDefinition
   | ManyToManyLinkTypeDefinition;
 
-export type OneToManyLinkTypeDefinition = {
+export interface OneToManyLinkTypeDefinition {
   id: LinkTypeId;
   one: OneToManyObjectLinkReference;
   toMany: OneToManyObjectLinkReference;
@@ -226,26 +226,26 @@ export type OneToManyLinkTypeDefinition = {
   editsEnabled?: boolean;
   status?: OntologyIrLinkTypeStatus;
   redacted?: boolean;
-};
+}
 
-export type OneToManyObjectLinkReference = {
+export interface OneToManyObjectLinkReference {
   object: ObjectType;
   metadata: LinkTypeMetadata;
-};
+}
 
-export type ManyToManyLinkTypeDefinition = {
+export interface ManyToManyLinkTypeDefinition {
   id: LinkTypeId;
   many: ManyToManyObjectLinkReference;
   toMany: ManyToManyObjectLinkReference;
   editsEnabled?: boolean;
   status?: OntologyIrLinkTypeStatus;
   redacted?: boolean;
-};
+}
 
-export type ManyToManyObjectLinkReference = {
+export interface ManyToManyObjectLinkReference {
   object: ObjectType;
   metadata: LinkTypeMetadata;
-};
+}
 
 export type LinkSideMetadata = OptionalFields<
   RequiredFields<

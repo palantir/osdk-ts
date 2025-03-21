@@ -1,5 +1,54 @@
 # @osdk/generator-converters
 
+## 2.2.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [12843cb]
+- Updated dependencies [f82767c]
+  - @osdk/api@2.2.0-beta.9
+
+## 2.2.0-beta.8
+
+### Minor Changes
+
+- 63b2e63: Update Platform SDK Dependencies
+- 63b2e63: Supports generating queries for entrySet function types
+
+### Patch Changes
+
+- Updated dependencies [0e874b1]
+- Updated dependencies [63b2e63]
+- Updated dependencies [26c2d95]
+- Updated dependencies [63b2e63]
+- Updated dependencies [63b2e63]
+  - @osdk/api@2.2.0-beta.8
+
+## 2.2.0-beta.7
+
+### Minor Changes
+
+- 7416ce4: Update Platform SDK Dependencies
+
+### Patch Changes
+
+- Updated dependencies [7416ce4]
+- Updated dependencies [7416ce4]
+- Updated dependencies [805df40]
+  - @osdk/api@2.2.0-beta.7
+
+## 2.2.0-beta.6
+
+### Minor Changes
+
+- b68adea: Add support for inherited interfaces.
+
+### Patch Changes
+
+- Updated dependencies [cddfbf9]
+- Updated dependencies [a6e5f89]
+  - @osdk/api@2.2.0-beta.6
+
 ## 2.2.0-beta.5
 
 ### Patch Changes

@@ -14,72 +14,16 @@
  * limitations under the License.
  */
 
-import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
+/* eslint-disable @typescript-eslint/require-await */
+
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
-import type { HttpResponseResolver, PathParams, RequestHandler } from "msw";
+import type { RequestHandler } from "msw";
 import { http as rest, HttpResponse } from "msw";
-import invariant from "tiny-invariant";
-import type { BaseAPIError } from "../BaseError.js";
-import {
-  ActionNotFoundError,
-  InvalidRequest,
-  LinkTypeNotFound,
-  ObjectNotFoundError,
-  ObjectTypeDoesNotExistError,
-  OntologyNotFoundError,
-  QueryNotFoundError,
-} from "../errors.js";
-import {
-  defaultOntology,
-  defaultOntologyForConjure,
-  fullOntology,
-} from "../stubs/ontologies.js";
+import { defaultOntologyForConjure } from "../stubs/ontologies.js";
+import { defaultOntologyMetadata } from "../stubs/ontologies/defaultOntologyMetadata.js";
+import { fauxFoundry } from "../stubs/ontologies/legacyFullOntology.js";
 import { authHandlerMiddleware } from "./commonHandlers.js";
-import type { ExtractBody, ExtractResponse } from "./util/handleOpenApiCall.js";
-import {
-  handleOpenApiCall,
-  OpenApiCallError,
-} from "./util/handleOpenApiCall.js";
-
-export function getOntology(
-  ontologyApiName: string,
-): OntologyFullMetadata {
-  if (
-    ontologyApiName !== fullOntology.ontology.apiName
-    && ontologyApiName !== fullOntology.ontology.rid
-  ) {
-    throw new OpenApiCallError(404, OntologyNotFoundError(ontologyApiName));
-  }
-  return fullOntology;
-}
-
-function getObjectDef(ontologyApiName: string, objectTypeApiName: string) {
-  const ontology = getOntology(ontologyApiName);
-  const objectType = ontology.objectTypes[objectTypeApiName];
-  if (objectType === undefined) {
-    throw new OpenApiCallError(
-      404,
-      ObjectTypeDoesNotExistError(objectTypeApiName),
-    );
-  }
-  return objectType;
-}
-
-function getLinkType(
-  ontologyApiName: string,
-  objectTypeApiName: string,
-  linkTypeName: string,
-) {
-  const objectType = getObjectDef(ontologyApiName, objectTypeApiName);
-  const linkType = objectType.linkTypes.find((a) => a.apiName === linkTypeName);
-  if (linkType === undefined) {
-    throw new OpenApiCallError(
-      404,
-      LinkTypeNotFound(objectTypeApiName, linkTypeName),
-    );
-  }
-  return linkType;
-}
+import { handleOpenApiCall } from "./util/handleOpenApiCall.js";
 
 type ConjureObjectTypeInfo = {
   displayMetadata: {
@@ -123,7 +67,7 @@ type ConjureObjectTypeInfo = {
   typeGroups: [];
 };
 
-export const ontologyMetadataEndpoint: Array<RequestHandler> = [
+const getOntologyEndpoints = (base: string | undefined) => [
   /**
    * Load ObjectSet Objects
    */
@@ -131,76 +75,56 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
     OntologiesV2.OntologiesV2.getFullMetadata,
     ["ontologyApiName"],
     async (req) => {
-      const ontology = getOntology(req.params.ontologyApiName);
-      return ontology;
+      return fauxFoundry
+        .getOntology(req.params.ontologyApiName)
+        .getOntologyFullMetadata();
     },
+    base,
   ),
 
   handleOpenApiCall(
     OntologiesV2.ObjectTypesV2.get,
     ["ontologyApiName", "objectTypeApiName"],
     async (req) => {
-      const { objectType } = getObjectDef(
-        req.params.ontologyApiName,
-        req.params.objectTypeApiName,
-      );
-
-      return objectType;
+      return fauxFoundry
+        .getOntology(req.params.ontologyApiName)
+        .getObjectTypeFullMetadataOrThrow(req.params.objectTypeApiName)
+        .objectType;
     },
+    base,
   ),
 
   handleOpenApiCall(
     OntologiesV2.ObjectTypesV2.getFullMetadata,
     ["ontologyApiName", "objectTypeApiName"],
     async (req) => {
-      return getObjectDef(
-        req.params.ontologyApiName,
-        req.params.objectTypeApiName,
-      );
+      return fauxFoundry
+        .getOntology(req.params.ontologyApiName)
+        .getObjectTypeFullMetadataOrThrow(req.params.objectTypeApiName);
     },
-  ),
-  handleOpenApiCall(
-    OntologiesV2.ObjectTypesV2.getFullMetadata,
-    ["ontologyApiName", "objectTypeApiName"],
-    async (req) => {
-      return getObjectDef(
-        req.params.ontologyApiName,
-        req.params.objectTypeApiName,
-      );
-    },
-    "https://stack.palantirCustom.com/foo/first/someStuff/",
+    base,
   ),
 
   handleOpenApiCall(
     OntologiesV2.ActionTypesV2.get,
     ["ontologyApiName", "actionTypeApiName"],
     async (req) => {
-      const ontology = getOntology(req.params.ontologyApiName);
-      const actionType = ontology.actionTypes[req.params.actionTypeApiName];
-      if (actionType === undefined) {
-        throw new OpenApiCallError(
-          404,
-          ActionNotFoundError(),
-        );
-      }
-      return actionType;
+      return fauxFoundry
+        .getOntology(req.params.ontologyApiName)
+        .getActionDef(req.params.actionTypeApiName);
     },
+    base,
   ),
 
   handleOpenApiCall(
     OntologiesV2.QueryTypes.get,
     ["ontologyApiName", "queryTypeApiName"],
     async (req) => {
-      const ontology = getOntology(req.params.ontologyApiName);
-      const queryType = ontology.queryTypes[req.params.queryTypeApiName];
-      if (queryType === undefined) {
-        throw new OpenApiCallError(
-          404,
-          QueryNotFoundError(req.params.queryTypeApiName),
-        );
-      }
-      return queryType;
+      return fauxFoundry
+        .getOntology(req.params.ontologyApiName)
+        .getQueryDef(req.params.queryTypeApiName);
     },
+    base,
   ),
 
   handleOpenApiCall(
@@ -211,14 +135,11 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
       "linkType",
     ],
     async ({ params }) => {
-      const linkType = getLinkType(
-        params.ontology,
-        params.objectType,
-        params.linkType,
-      );
-
-      return linkType;
+      return fauxFoundry
+        .getOntology(params.ontology)
+        .getLinkTypeSideV2(params.objectType, params.linkType);
     },
+    base,
   ),
 
   handleOpenApiCall(
@@ -228,38 +149,47 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
       "objectType",
     ],
     async ({ params }) => {
-      const object = getObjectDef(params.ontology, params.objectType);
-
-      return { data: object.linkTypes };
+      return {
+        data: fauxFoundry
+          .getOntology(params.ontology)
+          .getObjectTypeFullMetadataOrThrow(params.objectType).linkTypes,
+      };
     },
+    base,
   ),
 
   handleOpenApiCall(
     OntologiesV2.OntologyInterfaces.list,
     ["ontologyApiName"],
     async (req) => {
-      // will throw if bad name
-      getOntology(req.params.ontologyApiName as string);
-
       return {
-        data: Object.values(fullOntology.interfaceTypes),
+        data: fauxFoundry
+          .getOntology(req.params.ontologyApiName)
+          .getAllInterfaceTypes(),
       };
     },
+    base,
   ),
 
   handleOpenApiCall(
     OntologiesV2.OntologyInterfaces.get,
     ["ontologyApiName", "interfaceType"],
-    handleInterfaceGet,
+    ({ params }) => {
+      return fauxFoundry
+        .getOntology(params.ontologyApiName)
+        .getInterfaceType(params.interfaceType);
+    },
+    base,
   ),
+];
 
-  handleOpenApiCall(
-    OntologiesV2.OntologyInterfaces.get,
-    ["ontologyApiName", "interfaceType"],
-    handleInterfaceGet,
+export const ontologyMetadataEndpoint: Array<RequestHandler> = [
+  ...getOntologyEndpoints(undefined),
+  ...getOntologyEndpoints(
     "https://stack.palantirCustom.com/foo/first/someStuff/",
   ),
 
+  // FIXME: does this need to live?
   rest.post(
     `https://stack.palantir.com/ontology-metadata/api/ontology/ontology/ontologies/load/all`,
     authHandlerMiddleware(
@@ -277,291 +207,11 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
                   defaultBranchRid:
                     "ri.ontology.main.branch.122438ac-a6b7-46e9-825f-6c911ffff857",
                 },
-              [defaultOntology.rid]: defaultOntologyForConjure,
+              [defaultOntologyMetadata.rid]: defaultOntologyForConjure,
             },
           },
         );
       },
     ),
   ),
-
-  rest.post(
-    `https://stack.palantir.com/ontology-metadata/api/ontology/ontology/loadEntities`,
-    authHandlerMiddleware<
-      {
-        objectTypeVersions: Record<
-          /*object type rid*/ string,
-          /*ontology version*/ string
-        >;
-        linkTypeVersions: Record<string, string>;
-        loadRedacted: boolean;
-        includeObjectTypesWithoutSearchableDatasources: boolean;
-      }
-    >(
-      async (
-        { request },
-      ) => {
-        const body = await request.json();
-        invariant(
-          Object.entries(body.linkTypeVersions).length === 0,
-          "Currently don't support loading links via tests",
-        );
-        invariant(!body.loadRedacted, "unsupported for tests");
-        invariant(
-          body.includeObjectTypesWithoutSearchableDatasources,
-          "unsupported for tests",
-        );
-
-        return HttpResponse.json<
-          {
-            objectTypes: Record</* rid */ string, ConjureObjectTypeInfo>;
-            linkTypes: Record<string, unknown>;
-            currentOntologyVersion: string;
-          }
-        >({
-          linkTypes: {},
-          currentOntologyVersion:
-            defaultOntologyForConjure.currentOntologyVersion,
-          objectTypes: Object.fromEntries(
-            Object.entries(body.objectTypeVersions).map<
-              [string, ConjureObjectTypeInfo]
-            >(
-              ([objectTypeRid, ontologyVersion]) => {
-                if (
-                  defaultOntologyForConjure.currentOntologyVersion
-                    !== ontologyVersion
-                ) {
-                  throw new OpenApiCallError(
-                    404,
-                    OntologyNotFoundError(ontologyVersion),
-                  );
-                }
-                const entry = Object.values(fullOntology.objectTypes).find(
-                  a => a.objectType.rid === objectTypeRid,
-                );
-
-                if (!entry) {
-                  throw new OpenApiCallError(
-                    404,
-                    OntologyNotFoundError(ontologyVersion),
-                  );
-                }
-
-                const ret: ConjureObjectTypeInfo = {
-                  apiName: entry.objectType.apiName,
-                  displayMetadata: {
-                    "description": "...",
-                    "displayName": entry.objectType.displayName!,
-                    "groupDisplayName": null,
-                    "icon": {
-                      "type": "blueprint",
-                      "blueprint": {
-                        "color": "#00B3A4",
-                        "locator": "person",
-                      },
-                    },
-                    "pluralDisplayName": "Employees",
-                    "visibility": "PROMINENT",
-                  },
-                  id: "we don't track this",
-                  primaryKeys: [entry.objectType.primaryKey],
-                  propertyTypes: Object.fromEntries(
-                    Object.entries(entry.objectType.properties)
-                      .map(([k, v]) => [k, {
-                        ...v,
-                        rid: k,
-                      }]),
-                  ), // don't care right now
-                  implementsInterfaces: entry
-                    .implementsInterfaces as string[],
-                  implementsInterfaces2: [], // don't care right now
-                  rid: entry.objectType.rid,
-                  redacted: null,
-                  "status": {
-                    "type": "active",
-                    "active": {},
-                  },
-                  titlePropertyTypeRid: "we don't track this",
-                  "traits": {
-                    "eventMetadata": null,
-                    "actionLogMetadata": null,
-                    "timeSeriesMetadata": null,
-                    "sensorTrait": null,
-                    "workflowObjectTypeTraits": {},
-                  },
-                  typeGroups: [],
-                };
-
-                return [objectTypeRid, ret];
-              },
-            ),
-          ),
-        });
-      },
-    ),
-  ),
-
-  rest.post(
-    `https://stack.palantir.com/ontology-metadata/api/ontology/ontology/bulkLoadEntities`,
-    authHandlerMiddleware<
-      {
-        datasourceTypes: never[];
-        objectTypes: {
-          identifier: {
-            type: "objectTypeRid";
-            objectTypeRid: string;
-          };
-          versionReference: {
-            type: "ontologyVersion";
-            ontologyVersion: string;
-          };
-        }[];
-        linkTypes: never[];
-        sharedPropertyTypes: never[];
-        interfaceTypes: never[];
-        typeGroups: never[];
-        loadRedacted: false;
-        includeObjectTypeCount: undefined;
-        includeObjectTypesWithoutSearchableDatasources: true;
-        includeEntityMetadata: undefined;
-      }
-    >(
-      async (
-        { request },
-      ) => {
-        const body = await request.json();
-        invariant(
-          Object.entries(body.linkTypes).length === 0,
-          "Currently don't support loading links via tests",
-        );
-        invariant(!body.loadRedacted, "unsupported for tests");
-        invariant(
-          body.includeObjectTypesWithoutSearchableDatasources,
-          "unsupported for tests",
-        );
-
-        return HttpResponse.json<
-          {
-            objectTypes: Array<{ objectType: ConjureObjectTypeInfo }>;
-            linkTypes: Record<string, unknown>;
-            currentOntologyVersion: string;
-          }
-        >({
-          linkTypes: {},
-          currentOntologyVersion:
-            defaultOntologyForConjure.currentOntologyVersion,
-          objectTypes: body.objectTypes.map<
-            { objectType: ConjureObjectTypeInfo }
-          >(
-            ({ identifier, versionReference }) => {
-              if (
-                defaultOntologyForConjure.currentOntologyVersion
-                  !== versionReference.ontologyVersion
-              ) {
-                throw new OpenApiCallError(
-                  404,
-                  OntologyNotFoundError(versionReference.ontologyVersion),
-                );
-              }
-              const entry = Object.values(fullOntology.objectTypes).find(
-                a => a.objectType.rid === identifier.objectTypeRid,
-              );
-
-              if (!entry) {
-                throw new OpenApiCallError(
-                  404,
-                  OntologyNotFoundError(versionReference.ontologyVersion),
-                );
-              }
-
-              const ret: ConjureObjectTypeInfo = {
-                apiName: entry.objectType.apiName,
-                displayMetadata: {
-                  "description": "...",
-                  "displayName": entry.objectType.displayName!,
-                  "groupDisplayName": null,
-                  "icon": {
-                    "type": "blueprint",
-                    "blueprint": {
-                      "color": "#00B3A4",
-                      "locator": "person",
-                    },
-                  },
-                  "pluralDisplayName": "Employees",
-                  "visibility": "PROMINENT",
-                },
-                id: "we don't track this",
-                primaryKeys: [entry.objectType.primaryKey],
-                propertyTypes: Object.fromEntries(
-                  Object.entries(entry.objectType.properties)
-                    .map(([k, v]) => [k, {
-                      ...v,
-                      rid: k,
-                    }]),
-                ), // don't care right now
-                implementsInterfaces: entry
-                  .implementsInterfaces as string[],
-                implementsInterfaces2: [], // don't care right now
-                rid: entry.objectType.rid,
-                redacted: null,
-                "status": {
-                  "type": "active",
-                  "active": {},
-                },
-                titlePropertyTypeRid: "we don't track this",
-                "traits": {
-                  "eventMetadata": null,
-                  "actionLogMetadata": null,
-                  "timeSeriesMetadata": null,
-                  "sensorTrait": null,
-                  "workflowObjectTypeTraits": {},
-                },
-                typeGroups: [],
-              };
-
-              return { objectType: ret };
-            },
-          ),
-        });
-      },
-    ),
-  ),
 ];
-
-async function handleInterfaceGet(
-  req: Parameters<
-    HttpResponseResolver<
-      PathParams<string>,
-      ExtractBody<typeof OntologiesV2.OntologyInterfaces.get>,
-      ExtractResponse<typeof OntologiesV2.OntologyInterfaces.get> | BaseAPIError
-    >
-  >[0],
-) {
-  // will throw if bad name
-  getOntology(req.params.ontologyApiName as string);
-
-  const interfaceType = req.params.interfaceType;
-  if (typeof interfaceType !== "string") {
-    throw new OpenApiCallError(
-      400,
-      InvalidRequest("Invalid parameter objectType"),
-    );
-  }
-
-  if (
-    fullOntology.interfaceTypes[interfaceType]
-      === undefined
-  ) {
-    throw new OpenApiCallError(
-      404,
-      ObjectNotFoundError(
-        req.params.interfaceType as string,
-        "",
-      ),
-    );
-  }
-
-  return (
-    fullOntology.interfaceTypes[interfaceType]
-  );
-}

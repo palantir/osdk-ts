@@ -18,8 +18,6 @@ import type {
   InterfaceMetadata,
   NullabilityAdherence,
   ObjectMetadata,
-  ObjectOrInterfaceDefinition,
-  Osdk,
 } from "@osdk/api";
 import type {
   InterfaceToObjectTypeMappings,
@@ -32,6 +30,10 @@ import {
   type FetchedObjectTypeDefinition,
 } from "../ontology/OntologyProvider.js";
 import { createOsdkObject } from "./convertWireToOsdkObjects/createOsdkObject.js";
+import type { InterfaceHolder } from "./convertWireToOsdkObjects/InterfaceHolder.js";
+import type { ObjectHolder } from "./convertWireToOsdkObjects/ObjectHolder.js";
+import { createObjectSpecifierFromPrimaryKey } from "./createObjectSpecifierFromPrimaryKey.js";
+import type { SimpleOsdkProperties } from "./SimpleOsdkProperties.js";
 
 /**
  * If interfaceApiName is not undefined, converts the instances of the
@@ -56,9 +58,11 @@ export async function convertWireToOsdkObjects(
   forceRemoveRid: boolean = false,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull: NullabilityAdherence = false,
-): Promise<Osdk.Instance<ObjectOrInterfaceDefinition>[]> {
+): Promise<Array<ObjectHolder | InterfaceHolder>> {
   client.logger?.debug(`START convertWireToOsdkObjects()`);
 
+  // remove the __ prefixed properties and convert them to $ prefixed.
+  // updates in place
   fixObjectPropertiesInPlace(objects, forceRemoveRid);
 
   const ifaceDef = interfaceApiName
@@ -106,7 +110,11 @@ export async function convertWireToOsdkObjects(
       continue;
     }
 
-    let osdkObject = createOsdkObject(client, objectDef, rawObj);
+    let osdkObject: ObjectHolder | InterfaceHolder = createOsdkObject(
+      client,
+      objectDef,
+      rawObj,
+    );
     if (interfaceApiName) osdkObject = osdkObject.$as(interfaceApiName);
 
     ret.push(osdkObject);
@@ -116,6 +124,42 @@ export async function convertWireToOsdkObjects(
   return ret;
 }
 
+export async function convertWireToOsdkObjects2(
+  client: MinimalClient,
+  objects: OntologyObjectV2[],
+  interfaceApiName: string,
+  forceRemoveRid?: boolean,
+  selectedProps?: ReadonlyArray<string>,
+  strictNonNull?: NullabilityAdherence,
+  interfaceToObjectTypeMappings?: Record<
+    InterfaceTypeApiName,
+    InterfaceToObjectTypeMappings
+  >,
+): Promise<Array<InterfaceHolder>>;
+export async function convertWireToOsdkObjects2(
+  client: MinimalClient,
+  objects: OntologyObjectV2[],
+  interfaceApiName: undefined,
+  forceRemoveRid?: boolean,
+  selectedProps?: ReadonlyArray<string>,
+  strictNonNull?: NullabilityAdherence,
+  interfaceToObjectTypeMappings?: Record<
+    InterfaceTypeApiName,
+    InterfaceToObjectTypeMappings
+  >,
+): Promise<Array<ObjectHolder>>;
+export async function convertWireToOsdkObjects2(
+  client: MinimalClient,
+  objects: OntologyObjectV2[],
+  interfaceApiName: string | undefined,
+  forceRemoveRid?: boolean,
+  selectedProps?: ReadonlyArray<string>,
+  strictNonNull?: NullabilityAdherence,
+  interfaceToObjectTypeMappings?: Record<
+    InterfaceTypeApiName,
+    InterfaceToObjectTypeMappings
+  >,
+): Promise<Array<ObjectHolder | InterfaceHolder>>;
 /**
  * @internal
  */
@@ -130,7 +174,7 @@ export async function convertWireToOsdkObjects2(
     InterfaceTypeApiName,
     InterfaceToObjectTypeMappings
   > = {},
-): Promise<Osdk.Instance<ObjectOrInterfaceDefinition>[]> {
+): Promise<Array<ObjectHolder | InterfaceHolder>> {
   client.logger?.debug(`START convertWireToOsdkObjects2()`);
 
   fixObjectPropertiesInPlace(objects, forceRemoveRid);
@@ -183,7 +227,11 @@ export async function convertWireToOsdkObjects2(
       continue;
     }
 
-    let osdkObject = createOsdkObject(client, objectDef, rawObj);
+    let osdkObject: ObjectHolder | InterfaceHolder = createOsdkObject(
+      client,
+      objectDef,
+      rawObj,
+    );
     if (interfaceApiName) osdkObject = osdkObject.$as(interfaceApiName);
 
     ret.push(osdkObject);
@@ -194,14 +242,16 @@ export async function convertWireToOsdkObjects2(
 }
 
 /**
+ * @internal
+ *
  * Utility function that lets us take down selected property names from an interface
  * and convert them to an array of property names on an object.
  */
-function convertInterfacePropNamesToObjectPropNames(
-  objectDef: FetchedObjectTypeDefinition & { interfaceMap: {} },
+export function convertInterfacePropNamesToObjectPropNames(
+  objectDef: FetchedObjectTypeDefinition,
   interfaceApiName: string,
   ifacePropsToMap: readonly string[],
-) {
+): string[] {
   return ifacePropsToMap.map((ifaceProp) =>
     objectDef.interfaceMap[interfaceApiName][ifaceProp]
   );
@@ -216,7 +266,7 @@ function convertInterfacePropNamesToObjectPropNames(
  * @param rawObj
  */
 function reframeAsObjectInPlace(
-  objectDef: FetchedObjectTypeDefinition & { interfaceMap: {} },
+  objectDef: FetchedObjectTypeDefinition,
   interfaceApiName: string,
   rawObj: OntologyObjectV2,
 ) {
@@ -258,6 +308,7 @@ function isConforming(
         client.logger?.debug(
           {
             obj: {
+              $apiName: obj["$apiName"],
               $objectType: obj["$objectType"],
               $primaryKey: obj["$primaryKey"],
             },
@@ -292,7 +343,7 @@ function invariantInterfacesAsViews(
 function fixObjectPropertiesInPlace(
   objs: OntologyObjectV2[],
   forceRemoveRid: boolean,
-) {
+): asserts objs is SimpleOsdkProperties[] {
   for (const obj of objs) {
     if (forceRemoveRid) {
       delete obj.__rid;
@@ -313,6 +364,11 @@ function fixObjectPropertiesInPlace(
     // copying over for now as its always returned. In the future, this should just be inferred from underlying
     obj.$primaryKey ??= obj.__primaryKey;
     obj.$title ??= obj.__title;
+
+    obj.$objectSpecifier = createObjectSpecifierFromPrimaryKey(
+      { apiName: obj.$apiName, type: "object" },
+      obj.$primaryKey,
+    );
 
     // we don't want people to use these
     delete obj.__apiName;

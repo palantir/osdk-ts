@@ -1,5 +1,21 @@
 # @osdk/widget.vite-plugin.unstable
 
+## 2.1.0-beta.3
+
+### Patch Changes
+
+- @osdk/widget.api.unstable@2.1.0-beta.3
+
+## 2.1.0-beta.2
+
+### Minor Changes
+
+- 0caa7b8: Use HTML parsing for Vite post-build widget manifest creation
+
+### Patch Changes
+
+- @osdk/widget.api.unstable@2.1.0-beta.2
+
 ## 2.0.0-beta.16
 
 ### Patch Changes

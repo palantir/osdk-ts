@@ -14,38 +14,33 @@
  * limitations under the License.
  */
 
-import type { LoadObjectSetResponseV2 } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import stableStringify from "json-stable-stringify";
-import type { HttpResponseResolver, PathParams, RequestHandler } from "msw";
-import type { BaseAPIError } from "../BaseError.js";
+import type { RequestHandler } from "msw";
 import { InvalidRequest } from "../errors.js";
-import { filterObjectsProperties } from "../filterObjects.js";
 import { aggregationRequestHandlers } from "../stubs/aggregationRequests.js";
-import { loadObjectSetRequestHandlers } from "../stubs/objectSetRequest.js";
-import { defaultOntology } from "../stubs/ontologies.js";
-import { pageThroughResponse } from "./endpointUtils.js";
-import type { ExtractBody } from "./util/handleOpenApiCall.js";
+import { fauxFoundry } from "../stubs/ontologies/legacyFullOntology.js";
 import {
   handleOpenApiCall,
   OpenApiCallError,
 } from "./util/handleOpenApiCall.js";
 
 export const objectSetHandlers: Array<RequestHandler> = [
+  undefined,
+  "https://stack.palantirCustom.com/foo/first/someStuff/",
+].flatMap(baseUrl => [
   /**
    * Load ObjectSet Objects
    */
   handleOpenApiCall(
     OntologiesV2.OntologyObjectSets.load,
     ["ontologyApiName"],
-    handleLoadObjectSet,
-  ),
-
-  handleOpenApiCall(
-    OntologiesV2.OntologyObjectSets.load,
-    ["ontologyApiName"],
-    handleLoadObjectSet,
-    "https://stack.palantirCustom.com/foo/first/someStuff/",
+    async ({ request, params }) => {
+      return fauxFoundry
+        .getDataStore(params.ontologyApiName)
+        .getObjectsFromObjectSet(await request.json());
+    },
+    baseUrl,
   ),
 
   /**
@@ -67,38 +62,6 @@ export const objectSetHandlers: Array<RequestHandler> = [
         ),
       );
     },
+    baseUrl,
   ),
-];
-
-async function handleLoadObjectSet(
-  req: Parameters<
-    HttpResponseResolver<
-      PathParams<string>,
-      ExtractBody<typeof OntologiesV2.OntologyObjectSets.load>,
-      LoadObjectSetResponseV2 | BaseAPIError
-    >
-  >[0],
-) {
-  const parsedBody = await req.request.json();
-  const selected = parsedBody.select;
-  const response: LoadObjectSetResponseV2 | undefined = pageThroughResponse(
-    loadObjectSetRequestHandlers,
-    parsedBody,
-    true,
-  );
-
-  if (
-    (req.params.ontologyApiName === defaultOntology.apiName
-      || req.params.ontologyApiName === defaultOntology.rid)
-    && response
-  ) {
-    return filterObjectsProperties(response, [...selected], true);
-  }
-
-  throw new OpenApiCallError(
-    400,
-    InvalidRequest(
-      `Invalid request body: ${JSON.stringify(parsedBody)}`,
-    ),
-  );
-}
+]);
