@@ -123,6 +123,10 @@ export type ObjectPropertyType = RequiredFields<
   "apiName" | "type" | "displayName"
 >;
 
+export interface InterfacePropertyType {
+  sharedPropertyType: SharedPropertyType;
+  required: boolean;
+}
 export interface InterfaceType extends
   Omit<
     OntologyIrInterfaceType,
@@ -133,9 +137,10 @@ export interface InterfaceType extends
     | "allLinks"
     | "allExtendsInterfaces"
     | "propertiesV2"
+    | "allPropertiesV2"
   >
 {
-  properties: Record<string, SharedPropertyType>;
+  propertiesV2: Record<string, InterfacePropertyType>;
   status: InterfaceTypeStatus;
 }
 
