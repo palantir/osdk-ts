@@ -15,7 +15,7 @@
  */
 
 import type { InterfaceType } from "@osdk/foundry.ontologies";
-import { fooSpt } from "./spts.js";
+import { fooSpt, fooSpt2 } from "./spts.js";
 
 export const FooInterface: InterfaceType = {
   apiName: "FooInterface",
@@ -28,6 +28,10 @@ export const FooInterface: InterfaceType = {
       ...fooSpt,
       required: true,
     },
+    fooSpt2: {
+      ...fooSpt2,
+      required: false,
+    },
   },
   links: {},
   implementedByObjectTypes: ["Employee", "Person"],
@@ -35,6 +39,10 @@ export const FooInterface: InterfaceType = {
     fooSpt: {
       ...fooSpt,
       required: true,
+    },
+    fooSpt2: {
+      ...fooSpt2,
+      required: false,
     },
   },
   allExtendsInterfaces: [],

@@ -25,3 +25,13 @@ export const fooSpt: SharedPropertyType = {
   displayName: "Foo",
   description: "A foo",
 } satisfies SharedPropertyType;
+
+export const fooSpt2: SharedPropertyType = {
+  rid: "ri.sharedPropertyType.main.sharedPropertyType.2",
+  apiName: "fooSpt2",
+  dataType: {
+    type: "string",
+  },
+  displayName: "Foo2",
+  description: "A foo2",
+} satisfies SharedPropertyType;

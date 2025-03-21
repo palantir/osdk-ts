@@ -911,7 +911,12 @@ describe("ObjectSet", () => {
           .toEqualTypeOf<"fullName">();
 
         expectTypeOf<
-          ConvertProps<FooInterface, Employee, "fooSpt", "$allBaseProperties">
+          ConvertProps<
+            FooInterface,
+            Employee,
+            "fooSpt" | "fooSpt2",
+            "$allBaseProperties"
+          >
         >()
           .toEqualTypeOf<
             | "employeeId"
@@ -932,14 +937,14 @@ describe("ObjectSet", () => {
           K extends PropertyKeys<T>,
         > = T & { properties: { [KK in K]: { nullable: false } } };
 
-        type CheesedFoo = CheesedProp<FooInterface, "fooSpt">;
+        type CheesedFoo = CheesedProp<FooInterface, "fooSpt" | "fooSpt2">;
         const CheesedFoo: CheesedFoo = FooInterface as CheesedFoo;
 
         type T = ConvertProps<Employee, CheesedFoo, "fullName">;
 
         const cheesedFooNotStrict = result.data[0].$as(CheesedFoo);
         expectTypeOf(cheesedFooNotStrict).branded.toEqualTypeOf<
-          Osdk<CheesedFoo, "$all" | "$notStrict">
+          Osdk<CheesedFoo, "fooSpt">
         >();
 
         cheesedFooNotStrict.fooSpt;

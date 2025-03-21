@@ -187,6 +187,13 @@ describe("FetchMetadata", () => {
             "nullable": true,
             "type": "string",
           },
+          "fooSpt2": {
+            "description": "A foo2",
+            "displayName": "Foo2",
+            "multiplicity": false,
+            "nullable": true,
+            "type": "string",
+          },
         },
         "rid": "ri.interface.main.interface.1",
         "type": "interface",
