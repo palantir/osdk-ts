@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.10.0-beta.10
+
+### Minor Changes
+
+- 5e8e839: Bump OMS API to include links in ontology IR
+
+### Patch Changes
+
+- Updated dependencies [46cede4]
+  - @osdk/api@2.2.0-beta.10
+
 ## 0.10.0-beta.9
 
 ### Minor Changes

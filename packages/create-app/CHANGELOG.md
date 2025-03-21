@@ -1,5 +1,13 @@
 # @osdk/create-app
 
+## 2.2.0-beta.10
+
+### Minor Changes
+
+- e75819c: Add comments to env files in templates
+- fa02507: Use options overload when initializing client in create-app templates and standardize formatting
+- 1d0e72a: Ensure tutorials are not shown by cli
+
 ## 2.2.0-beta.9
 
 ## 2.2.0-beta.8
