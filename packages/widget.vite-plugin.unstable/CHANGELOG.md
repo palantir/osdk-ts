@@ -1,5 +1,11 @@
 # @osdk/widget.vite-plugin.unstable
 
+## 2.1.0-beta.4
+
+### Patch Changes
+
+- @osdk/widget.api.unstable@2.1.0-beta.4
+
 ## 2.1.0-beta.3
 
 ### Patch Changes

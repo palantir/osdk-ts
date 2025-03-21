@@ -1,5 +1,7 @@
 # @osdk/create-widget
 
+## 2.1.0-beta.4
+
 ## 2.1.0-beta.3
 
 ### Minor Changes
