@@ -45,6 +45,38 @@ export function startNodeApiServer<
   ...clientArgs: CF extends ClientFactory<any, infer A> ? A : never[]
 ): TestSetup<CF extends ClientFactory<infer C, any> ? C : never> {
   const apiServer = setupServer(...fauxFoundry.handlers);
+
+  const logger_ = fauxFoundry.logger?.child({}, { msgPrefix: "msw" });
+  function logger(methodName: string, requestId: string) {
+    return logger_?.child({ methodName }, { msgPrefix: `(${requestId})` });
+  }
+
+  apiServer.events.on("request:start", async ({ request, requestId }) => {
+    const blob = await request.clone().blob();
+
+    logger("request:start", requestId)?.debug(
+      `${request.method} ${request.url}`,
+      blob.type === "application/json" ? await blob.text() : blob,
+    );
+  });
+  apiServer.events.on("unhandledException", ({ error, requestId, request }) => {
+    logger("unhandledException", requestId)?.error(error);
+  });
+  apiServer.events.on("response:mocked", ({ requestId, response }) => {
+    logger("response:mocked", requestId)?.debug(
+      "Mocked response",
+      response.status,
+      response.statusText,
+    );
+  });
+  apiServer.events.on("request:end", ({ request, requestId }) => {
+    logger("request:end", requestId)?.debug(``);
+  });
+  apiServer.events.on("request:unhandled", ({ request, requestId }) => {
+    logger("request:unhandled", requestId)?.warn(
+      `Unhandled request ${request.method} ${request.url}`,
+    );
+  });
   const auth = () => Promise.resolve("myAccessToken");
   apiServer.listen();
   return {

@@ -19,8 +19,8 @@ import type { FauxDataStore } from "../FauxFoundry/FauxDataStore.js";
 import { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
 import type { FauxOntology } from "../FauxFoundry/FauxOntology.js";
 import { registerLazyActions } from "./actions.js";
-import { ActionTypeWithUnsupportedTypes } from "./actionsTypes.js";
-import { BarInterface, FooInterface } from "./interfaces.js";
+import { ActionTypeWithUnsupportedTypes, editTodo } from "./actionTypes.js";
+import { BarInterface, FooInterface } from "./interfaceTypes.js";
 import {
   employee1 as employee_John_50030,
   employee2 as employee_Jane_50031,
@@ -55,6 +55,7 @@ export class LegacyFauxFoundry extends FauxFoundry {
 
     registerLazyActions(legacyFullOntology);
     legacyFullOntology.registerActionType(ActionTypeWithUnsupportedTypes);
+    legacyFullOntology.registerActionType(editTodo.actionTypeV2);
 
     registerLazyQueries(legacyFullOntology);
 

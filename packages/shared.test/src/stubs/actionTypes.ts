@@ -15,8 +15,21 @@
  */
 
 import type { ActionTypeV2, ObjectTypeApiName } from "@osdk/foundry.ontologies";
-import { BarInterface, FooInterface } from "./interfaces.js";
+import type { ActionTypeBuilderResult } from "../FauxFoundry/typeHelpers/ActionTypeBuilder.js";
+import { ActionTypeBuilder } from "../FauxFoundry/typeHelpers/ActionTypeBuilder.js";
+import type { TH_ActionParameterV2 } from "../FauxFoundry/typeHelpers/TH_ActionParameterV2.js";
+import { BarInterface, FooInterface } from "./interfaceTypes.js";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
+
+export const editTodo: ActionTypeBuilderResult<{
+  id: TH_ActionParameterV2<"integer", true>;
+  text: TH_ActionParameterV2<"string", false>;
+  completed: TH_ActionParameterV2<"string", false>;
+}> = new ActionTypeBuilder("editTodo")
+  .addParameter("id", "integer", true)
+  .addParameter("text", "string")
+  .addParameter("completed", "string")
+  .build();
 
 export const PromoteEmployee: ActionTypeV2 = {
   apiName: "promoteEmployee",

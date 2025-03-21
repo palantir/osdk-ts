@@ -16,7 +16,7 @@
 
 import type { ObjectTypeV2 } from "@osdk/foundry.ontologies";
 
-export const employeeObjectType: ObjectTypeV2 = {
+export const employeeObjectType = {
   apiName: "Employee",
   displayName: "Employee",
   pluralDisplayName: "Employees",
@@ -88,7 +88,7 @@ export const employeeObjectType: ObjectTypeV2 = {
   },
   rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
   status: "ACTIVE",
-};
+} as const satisfies ObjectTypeV2;
 
 export const officeObjectType: {
   readonly apiName: "Office";

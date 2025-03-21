@@ -14,11 +14,26 @@
  * limitations under the License.
  */
 
-import type { CompileTimeMetadata, ObjectTypeDefinition } from "@osdk/api";
-import type { ObjectTypeV2 } from "@osdk/foundry.ontologies";
-import type { ToObjectTypeDefinition } from "./ToObjectTypeDefinition.js";
+import type { ActionParameterV2 } from "@osdk/foundry.ontologies";
 
-export type JustProps<T extends ObjectTypeV2 | ObjectTypeDefinition> =
-  CompileTimeMetadata<
-    T extends ObjectTypeV2 ? ToObjectTypeDefinition<T> : T
-  >["props"];
+export type SimpleActionParamTypes = "string" | "integer" | "boolean";
+
+export type TH_ActionParameterV2<
+  T extends SimpleActionParamTypes,
+  R extends boolean,
+> =
+  & {
+    dataType: { type: T };
+    required: R;
+  }
+  & ActionParameterV2;
+
+export function createActionParameterV2<
+  T extends SimpleActionParamTypes,
+  R extends boolean,
+>(type: T, required: R): TH_ActionParameterV2<T, R> {
+  return {
+    dataType: { type },
+    required,
+  } as TH_ActionParameterV2<T, R>;
+}
