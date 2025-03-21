@@ -202,26 +202,29 @@ describe(createPublicOauthClient, () => {
         redirect_uri: clientArgs.redirectUrl,
         response_type: "code",
         code_challenge_method: "S256",
-        scope: "offline_access api:read-data api:write-data",
+        scope: "offline_access "
+          + (clientArgs.scopes ?? ["api:read-data", "api:write-data"]).join(
+            " ",
+          ),
         state: expect.any(String),
       }),
     );
   }
 
-  describe("refresh token marker", () => {
+  describe("refresh token marker and scopes", () => {
     beforeEach(() => {
       setupWindowLocation("https://foundry.local");
     });
 
-    it("should not allow refresh if the refresh markers do not match", async () => {
+    // Backwards compatibility from when we didn't store scopes
+    it("should not allow refresh if scopes in local storage is undefined", async () => {
       setupLocalState({
         refresh_token: "refreshToken",
-        refreshTokenMarker: "not-the-right-marker",
       });
 
       setupClient({
         ...BASE_CLIENT_ARGS,
-        refreshTokenMarker: "marker",
+        // Testing with default scopes
       });
 
       await expectRedirectToMultipass(
@@ -229,15 +232,51 @@ describe(createPublicOauthClient, () => {
       );
     });
 
-    it("should try to refresh if refresh tokens do match", async () => {
+    it("should not allow refresh if requested scopes are different", async () => {
       setupLocalState({
         refresh_token: "refreshToken",
-        refreshTokenMarker: "marker",
+        requestedScopes: ["api:read-data"],
+      });
+
+      setupClient({
+        ...BASE_CLIENT_ARGS,
+        scopes: ["api:write-data"],
+      });
+
+      await expectRedirectToMultipass(
+        client(),
+      );
+    });
+
+    it("should not allow refresh if the refresh markers do not match", async () => {
+      setupLocalState({
+        refresh_token: "refreshToken",
+        refreshTokenMarker: "not-the-right-marker",
+        requestedScopes: ["api:read-data"],
       });
 
       setupClient({
         ...BASE_CLIENT_ARGS,
         refreshTokenMarker: "marker",
+        scopes: ["api:read-data"],
+      });
+
+      await expectRedirectToMultipass(
+        client(),
+      );
+    });
+
+    it("should try to refresh if refresh markers match and requested scopes are equal", async () => {
+      setupLocalState({
+        refresh_token: "refreshToken",
+        refreshTokenMarker: "marker",
+        requestedScopes: ["api:datasets-read", "api:admin-read"],
+      });
+
+      setupClient({
+        ...BASE_CLIENT_ARGS,
+        refreshTokenMarker: "marker",
+        scopes: ["api:admin-read", "api:datasets-read"],
       });
 
       hoistedMocks.makeTokenAndSaveRefresh.mockImplementationOnce(
@@ -344,6 +383,7 @@ describe(createPublicOauthClient, () => {
         expect.anything(),
         expect.any(Function),
         undefined,
+        clientArgs.scopes ?? ["api:read-data", "api:write-data"],
       );
     });
 
@@ -353,6 +393,8 @@ describe(createPublicOauthClient, () => {
       {
         localStorage: {
           refresh_token: "a-refresh-token",
+          requestedScopes: clientArgs.scopes
+            ?? ["api:read-data", "api:write-data"],
         },
         sessionStorage: {},
       },
