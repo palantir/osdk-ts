@@ -35,7 +35,7 @@ type fetchPageByRidFn = <
 >(
   objectType: Q,
   rids: string[],
-  options?: FetchPageArgs<Q, L, R, any, S>,
+  options?: FetchPageArgs<Q, L, R, any, S, T>,
 ) => Promise<FetchPageResult<Q, L, R, S, T>>;
 
 export const __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid: Experiment<
