@@ -138,11 +138,12 @@ export function createPublicOauthClient(
   ctxPath?: string,
 ): PublicOauthClient {
   let refreshTokenMarker: string | undefined;
+  let joinedScopes: string;
   ({
     useHistory,
     loginPage,
     postLoginPage,
-    scopes,
+    joinedScopes,
     fetchFn,
     ctxPath,
     refreshTokenMarker,
@@ -171,7 +172,7 @@ export function createPublicOauthClient(
     oauthHttpOptions,
     maybeRefresh.bind(globalThis, true),
     refreshTokenMarker,
-    scopes,
+    joinedScopes,
   );
 
   // as an arrow function, `useHistory` is known to be a boolean
@@ -195,8 +196,7 @@ export function createPublicOauthClient(
     } = readLocal(client);
 
     const areScopesEqual = initialRequestedScopes != null
-      && scopes!.every(scope => initialRequestedScopes.includes(scope))
-      && scopes!.length === initialRequestedScopes.length;
+      && joinedScopes === initialRequestedScopes;
 
     if (
       !refresh_token || lastRefreshTokenMarker !== refreshTokenMarker
@@ -321,7 +321,7 @@ export function createPublicOauthClient(
       redirect_uri,
       code_challenge: await calculatePKCECodeChallenge(codeVerifier),
       code_challenge_method: "S256",
-      scope: ["offline_access", ...scopes].join(" "),
+      scope: "offline_access" + ` ${joinedScopes}`,
     })}`);
 
     // Give time for redirect to happen

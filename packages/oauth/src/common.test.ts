@@ -82,7 +82,7 @@ describe("local functions", () => {
       {},
       refresh,
       "marker marker",
-      ["yay:my-fun-scope", "sad:my-boring-scope"],
+      "yay:my-fun-scope sad:my-boring-scope",
     );
 
     makeTokenAndSaveRefresh({
@@ -97,7 +97,7 @@ describe("local functions", () => {
       JSON.stringify({
         refresh_token: "refresh",
         refreshTokenMarker: "marker marker",
-        requestedScopes: ["yay:my-fun-scope", "sad:my-boring-scope"],
+        requestedScopes: "yay:my-fun-scope sad:my-boring-scope",
       }),
     );
   });

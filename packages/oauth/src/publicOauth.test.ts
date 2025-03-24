@@ -202,10 +202,10 @@ describe(createPublicOauthClient, () => {
         redirect_uri: clientArgs.redirectUrl,
         response_type: "code",
         code_challenge_method: "S256",
-        scope: "offline_access "
-          + (clientArgs.scopes ?? ["api:read-data", "api:write-data"]).join(
-            " ",
-          ),
+        scope: [
+          "offline_access",
+          ...(clientArgs.scopes ?? ["api:read-data", "api:write-data"].sort()),
+        ].join(" "),
         state: expect.any(String),
       }),
     );
@@ -235,7 +235,7 @@ describe(createPublicOauthClient, () => {
     it("should not allow refresh if requested scopes are different", async () => {
       setupLocalState({
         refresh_token: "refreshToken",
-        requestedScopes: ["api:read-data"],
+        requestedScopes: "api:read-data",
       });
 
       setupClient({
@@ -252,7 +252,7 @@ describe(createPublicOauthClient, () => {
       setupLocalState({
         refresh_token: "refreshToken",
         refreshTokenMarker: "not-the-right-marker",
-        requestedScopes: ["api:read-data"],
+        requestedScopes: "api:read-data",
       });
 
       setupClient({
@@ -270,13 +270,13 @@ describe(createPublicOauthClient, () => {
       setupLocalState({
         refresh_token: "refreshToken",
         refreshTokenMarker: "marker",
-        requestedScopes: ["api:datasets-read", "api:admin-read"],
+        requestedScopes: "api:admin-read api:datasets-read",
       });
 
       setupClient({
         ...BASE_CLIENT_ARGS,
         refreshTokenMarker: "marker",
-        scopes: ["api:admin-read", "api:datasets-read"],
+        scopes: ["api:datasets-read", "api:admin-read"],
       });
 
       hoistedMocks.makeTokenAndSaveRefresh.mockImplementationOnce(
@@ -383,7 +383,8 @@ describe(createPublicOauthClient, () => {
         expect.anything(),
         expect.any(Function),
         undefined,
-        clientArgs.scopes ?? ["api:read-data", "api:write-data"],
+        (clientArgs.scopes
+          ?? ["api:read-data", "api:write-data"]).sort().join(" "),
       );
     });
 
@@ -393,8 +394,8 @@ describe(createPublicOauthClient, () => {
       {
         localStorage: {
           refresh_token: "a-refresh-token",
-          requestedScopes: clientArgs.scopes
-            ?? ["api:read-data", "api:write-data"],
+          requestedScopes: (clientArgs.scopes
+            ?? ["api:read-data", "api:write-data"]).sort().join(" "),
         },
         sessionStorage: {},
       },

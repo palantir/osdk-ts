@@ -52,9 +52,9 @@ declare const process: {
 export interface LocalStorageState {
   refresh_token?: string;
   refreshTokenMarker?: string;
-  // The scopes requested during the initial auth grant, which our refresh token is still valid for
+  // The stringified space-separated list of scopes requested during the initial auth grant, which our refresh token is still valid for
   // Note any or none of these scopes may have actually been granted when we received our last access token
-  requestedScopes?: string[];
+  requestedScopes?: string;
 }
 
 export type SessionStorageState =
@@ -140,7 +140,7 @@ export function common<
   oauthHttpOptions: HttpRequestOptions,
   refresh: R,
   refreshTokenMarker: string | undefined,
-  scopes: string[],
+  scopes: string,
 ): {
   getToken: BaseOauthClient<keyof Events & string> & { refresh: R };
   makeTokenAndSaveRefresh: (
