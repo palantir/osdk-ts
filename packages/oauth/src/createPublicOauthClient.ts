@@ -321,7 +321,7 @@ export function createPublicOauthClient(
       redirect_uri,
       code_challenge: await calculatePKCECodeChallenge(codeVerifier),
       code_challenge_method: "S256",
-      scope: "offline_access" + ` ${joinedScopes}`,
+      scope: `offline_access ${joinedScopes}`,
     })}`);
 
     // Give time for redirect to happen
