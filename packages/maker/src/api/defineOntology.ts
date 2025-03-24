@@ -263,18 +263,19 @@ function convertInterface(
   return {
     ...interfaceType,
     propertiesV2: Object.fromEntries(
-      Object.values(interfaceType.properties)
+      Object.values(interfaceType.propertiesV2)
         .map((
           spt,
-        ) => [spt.apiName, {
-          required: true,
-          sharedPropertyType: convertSpt(spt),
+        ) => [spt.sharedPropertyType.apiName, {
+          required: spt.required,
+          sharedPropertyType: convertSpt(spt.sharedPropertyType),
         }]),
     ),
     // these are omitted from our internal types but we need to re-add them for the final json
     allExtendsInterfaces: [],
     allLinks: [],
     allProperties: [],
+    allPropertiesV2: {},
     properties: [],
   };
 }
