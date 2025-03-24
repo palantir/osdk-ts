@@ -44,6 +44,7 @@ export function createConfidentialOauthClient(
   const client: Client = { client_id, client_secret };
   const authServer = createAuthorizationServer(ctxPath, url);
   const oauthHttpOptions: HttpRequestOptions = { [customFetch]: fetchFn };
+  const joinedScopes = scopes.join(" ");
 
   const { getToken, makeTokenAndSaveRefresh } = common(
     client,
@@ -52,7 +53,7 @@ export function createConfidentialOauthClient(
     oauthHttpOptions,
     undefined,
     undefined,
-    scopes,
+    joinedScopes,
   );
 
   async function _signIn() {
@@ -64,7 +65,7 @@ export function createConfidentialOauthClient(
           await clientCredentialsGrantRequest(
             authServer,
             client,
-            new URLSearchParams({ scope: scopes.join(" ") }),
+            new URLSearchParams({ scope: joinedScopes }),
             oauthHttpOptions,
           ),
         ),
