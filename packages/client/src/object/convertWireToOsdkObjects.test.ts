@@ -23,15 +23,8 @@ import {
 } from "@osdk/client.test.ontology";
 import type { OntologyObjectV2 } from "@osdk/foundry.ontologies";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
-import { apiServer } from "@osdk/shared.test";
-import {
-  afterAll,
-  beforeAll,
-  describe,
-  expect,
-  expectTypeOf,
-  it,
-} from "vitest";
+import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
+import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 import { additionalContext, type Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
@@ -46,17 +39,12 @@ describe("convertWireToOsdkObjects", () => {
     FooInterface: { Employee: { fooSpt: "fullName" } },
   };
 
-  beforeAll(async () => {
-    apiServer.listen();
-    client = createClient(
-      "https://stack.palantir.com",
-      $ontologyRid,
-      async () => "myAccessToken",
-    );
-  });
-
-  afterAll(() => {
-    apiServer.close();
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
+    ({ client } = testSetup);
+    return () => {
+      testSetup.apiServer.close();
+    };
   });
 
   it("configures properties correctly", async () => {

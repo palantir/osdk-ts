@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import type { LinkTypeId } from "./LinkTypeId.js";
 import type { LinkTypeMetadata } from "./LinkTypeMetadata.js";
-import type { LinkTypeRid } from "./LinkTypeRid.js";
 import type { ObjectTypeApiName } from "./ObjectTypeApiName.js";
 
 /**
@@ -33,6 +33,6 @@ export interface OntologyIrIntermediaryLinkDefinition {
   intermediaryObjectTypeRid: ObjectTypeApiName;
   objectTypeRidA: ObjectTypeApiName;
   objectTypeRidB: ObjectTypeApiName;
-  aToIntermediaryLinkTypeRid: LinkTypeRid;
-  intermediaryToBLinkTypeRid: LinkTypeRid;
+  aToIntermediaryLinkTypeRid: LinkTypeId;
+  intermediaryToBLinkTypeRid: LinkTypeId;
 }

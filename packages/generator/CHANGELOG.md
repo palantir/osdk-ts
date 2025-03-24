@@ -1,5 +1,35 @@
 # @osdk/generator
 
+## 2.2.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [7170fd1]
+  - @osdk/api@2.2.0-beta.11
+  - @osdk/generator-converters@2.2.0-beta.11
+
+## 2.2.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [23ea0e4]
+- Updated dependencies [46cede4]
+  - @osdk/api@2.2.0-beta.10
+  - @osdk/generator-converters@2.2.0-beta.10
+
+## 2.2.0-beta.9
+
+### Minor Changes
+
+- 12843cb: Add ability to load all underlying properties of an interface.
+
+### Patch Changes
+
+- Updated dependencies [12843cb]
+- Updated dependencies [f82767c]
+  - @osdk/api@2.2.0-beta.9
+  - @osdk/generator-converters@2.2.0-beta.9
+
 ## 2.2.0-beta.8
 
 ### Minor Changes

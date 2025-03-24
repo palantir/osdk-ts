@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import type { ActionTypeCreate } from "../ActionTypeCreate.js";
 import type { ActionTypeIdInRequest } from "../ActionTypeIdInRequest.js";
 import type { ActionTypeRid } from "../ActionTypeRid.js";
 import type { ActionTypeUpdate } from "../ActionTypeUpdate.js";
+import type { CompassProjectRid } from "../CompassProjectRid.js";
 import type { RuleSet } from "../formatting/RuleSet.js";
 import type { RuleSetCreate } from "../formatting/RuleSetCreate.js";
 import type { RuleSetIdInRequest } from "../formatting/RuleSetIdInRequest.js";
@@ -93,6 +94,10 @@ export interface OntologyModificationRequest {
     SharedPropertyTypeIdInRequest,
     OntologyPackageRid
   >;
+  sharedPropertyTypesToCreateInProject: Record<
+    SharedPropertyTypeIdInRequest,
+    CompassProjectRid
+  >;
   sharedPropertyTypesToUpdate: Record<
     SharedPropertyTypeRid,
     SharedPropertyTypeModification
@@ -105,6 +110,10 @@ export interface OntologyModificationRequest {
   interfaceTypesToCreateInPackage: Record<
     InterfaceTypeIdInRequest,
     OntologyPackageRid
+  >;
+  interfaceTypesToCreateInProject: Record<
+    InterfaceTypeIdInRequest,
+    CompassProjectRid
   >;
   interfaceTypesToUpdate: Record<InterfaceTypeRid, InterfaceTypeModification>;
   interfaceTypesToDelete: Array<InterfaceTypeRid>;

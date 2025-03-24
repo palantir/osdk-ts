@@ -20,6 +20,7 @@ import type { ActionLogicModification } from "./ActionLogicModification.js";
 import type { ActionNotificationModification } from "./ActionNotificationModification.js";
 import type { ActionNotificationSettings } from "./ActionNotificationSettings.js";
 import type { ActionRevert } from "./ActionRevert.js";
+import type { ActionSubmissionConfiguration } from "./ActionSubmissionConfiguration.js";
 import type { ActionTypeApiName } from "./ActionTypeApiName.js";
 import type { ActionTypeDisplayMetadataModification } from "./ActionTypeDisplayMetadataModification.js";
 import type { ActionTypeProvenanceModification } from "./ActionTypeProvenanceModification.js";
@@ -71,4 +72,5 @@ export interface ActionTypeUpdate {
   revert: ActionRevert | undefined;
   provenance: ActionTypeProvenanceModification | undefined;
   typeGroups: Array<TypeGroupRidOrIdInRequest>;
+  submissionConfiguration: ActionSubmissionConfiguration | undefined;
 }

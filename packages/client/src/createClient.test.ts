@@ -16,7 +16,6 @@
 
 import { Task } from "@osdk/client.test.ontology";
 import * as SharedClientContext from "@osdk/shared.client.impl";
-import { mockFetchResponse, MockOntology } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { metadataCacheClient } from "./__unstable/ConjureSupport.js";
@@ -24,6 +23,18 @@ import type { Client } from "./Client.js";
 import { createClient } from "./createClient.js";
 import * as MakeConjureContext from "./ontology/makeConjureContext.js";
 import { USER_AGENT } from "./util/UserAgent.js";
+
+export function mockFetchResponse(
+  fetch: MockedFunction<typeof globalThis.fetch>,
+  response: any,
+): void {
+  fetch.mockResolvedValueOnce({
+    json: () => Promise.resolve(response),
+    blob: () => Promise.resolve(response),
+    status: 200,
+    ok: true,
+  } as any);
+}
 
 describe(createClient, () => {
   const validOlderVersion = "0.13.0" as const;
@@ -33,12 +44,14 @@ describe(createClient, () => {
   let fetchFunction: MockedFunction<typeof globalThis.fetch>;
   let client: Client;
 
+  const ontologyRid = "ri.not.important";
+
   beforeEach(() => {
     fetchFunction = vi.fn();
 
     client = createClient(
       "https://mock.com",
-      MockOntology.metadata.ontologyRid,
+      ontologyRid,
       async () => "Token",
       undefined,
       fetchFunction,
@@ -76,7 +89,7 @@ describe(createClient, () => {
       const spy = vi.spyOn(SharedClientContext, "createSharedClientContext");
       const client = createClient(
         "https://mock.com",
-        MockOntology.metadata.ontologyRid,
+        ontologyRid,
         async () => "Token",
         undefined,
         fetchFunction,
@@ -85,7 +98,7 @@ describe(createClient, () => {
 
       createClient(
         "https://mock1.com/",
-        MockOntology.metadata.ontologyRid,
+        ontologyRid,
         async () => "Token",
         undefined,
         fetchFunction,
@@ -94,7 +107,7 @@ describe(createClient, () => {
 
       createClient(
         "https://mock2.com/stuff/first/foo",
-        MockOntology.metadata.ontologyRid,
+        ontologyRid,
         async () => "Token",
         undefined,
         fetchFunction,
@@ -103,7 +116,7 @@ describe(createClient, () => {
 
       createClient(
         "https://mock3.com/stuff/first/foo/",
-        MockOntology.metadata.ontologyRid,
+        ontologyRid,
         async () => "Token",
         undefined,
         fetchFunction,

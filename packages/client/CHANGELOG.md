@@ -1,5 +1,49 @@
 # @osdk/client
 
+## 2.2.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [7170fd1]
+- Updated dependencies [10da391]
+  - @osdk/api@2.2.0-beta.11
+  - @osdk/client.unstable@2.2.0-beta.11
+  - @osdk/generator-converters@2.2.0-beta.11
+
+## 2.2.0-beta.10
+
+### Minor Changes
+
+- 81c0d8c: Client will now provide a default logger to console.error if none is provided
+- 81c0d8c: ObservableClient now queues up object loads for bulk processing
+
+### Patch Changes
+
+- Updated dependencies [23ea0e4]
+- Updated dependencies [5e8e839]
+- Updated dependencies [46cede4]
+  - @osdk/api@2.2.0-beta.10
+  - @osdk/client.unstable@2.2.0-beta.10
+  - @osdk/generator-converters@2.2.0-beta.10
+
+## 2.2.0-beta.9
+
+### Minor Changes
+
+- 12843cb: Add ability to load all underlying properties of an interface.
+- 2517750: observeList should work for interfaces and have the fully loaded content
+- 2517750: Provides efficient OrderByCanonicalizer
+- 2517750: Initial internal architecture document for ObservableClient
+- 2517750: subscribe in ObservableClient now uses Observer
+
+### Patch Changes
+
+- Updated dependencies [12843cb]
+- Updated dependencies [f82767c]
+  - @osdk/api@2.2.0-beta.9
+  - @osdk/generator-converters@2.2.0-beta.9
+  - @osdk/client.unstable@2.2.0-beta.9
+
 ## 2.2.0-beta.8
 
 ### Minor Changes

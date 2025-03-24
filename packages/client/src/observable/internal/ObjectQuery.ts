@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectSet,
-  ObjectTypeDefinition,
-  Osdk,
-  PrimaryKeyType,
-} from "@osdk/api";
+import type { ObjectTypeDefinition, Osdk, PrimaryKeyType } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import type { Connectable, Observable, Subject } from "rxjs";
 import { BehaviorSubject, connectable, map } from "rxjs";
@@ -27,6 +22,7 @@ import { additionalContext } from "../../Client.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
 import type { CommonObserveOptions, Status } from "../ObservableClient.js";
+import { getBulkObjectLoader } from "./BulkObjectLoader.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Entry } from "./Layer.js";
 import { Query } from "./Query.js";
@@ -111,17 +107,11 @@ export class ObjectQuery extends Query<
       );
     }
 
-    const objectSet = this.store.client({
-      type: "object",
-      apiName: this.#apiName,
-    }) as ObjectSet<ObjectTypeDefinition>;
-    const obj = await objectSet.fetchOne(this.#pk);
+    const obj = await getBulkObjectLoader(this.store.client)
+      .fetch(this.#apiName, this.#pk);
+
     this.store.batch({}, (batch) => {
-      this.writeToStore(
-        obj as ObjectHolder<typeof obj>,
-        "loaded",
-        batch,
-      );
+      this.writeToStore(obj, "loaded", batch);
     });
   }
 

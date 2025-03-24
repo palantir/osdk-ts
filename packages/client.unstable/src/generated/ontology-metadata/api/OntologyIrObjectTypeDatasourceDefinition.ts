@@ -15,6 +15,7 @@
  */
 
 import type { OntologyIrObjectTypeDatasetDatasourceV2 } from "./OntologyIrObjectTypeDatasetDatasourceV2.js";
+import type { OntologyIrObjectTypeDatasetDatasourceV3 } from "./OntologyIrObjectTypeDatasetDatasourceV3.js";
 import type { OntologyIrObjectTypeDerivedPropertiesDatasource } from "./OntologyIrObjectTypeDerivedPropertiesDatasource.js";
 import type { OntologyIrObjectTypeDirectDatasource } from "./OntologyIrObjectTypeDirectDatasource.js";
 import type { OntologyIrObjectTypeEditsOnlyDatasource } from "./OntologyIrObjectTypeEditsOnlyDatasource.js";
@@ -23,6 +24,7 @@ import type { OntologyIrObjectTypeMediaSetViewDatasource } from "./OntologyIrObj
 import type { OntologyIrObjectTypeRestrictedStreamDatasource } from "./OntologyIrObjectTypeRestrictedStreamDatasource.js";
 import type { OntologyIrObjectTypeRestrictedViewDatasourceV2 } from "./OntologyIrObjectTypeRestrictedViewDatasourceV2.js";
 import type { OntologyIrObjectTypeStreamDatasourceV2 } from "./OntologyIrObjectTypeStreamDatasourceV2.js";
+import type { OntologyIrObjectTypeTableDatasource } from "./OntologyIrObjectTypeTableDatasource.js";
 import type { OntologyIrObjectTypeTimeSeriesDatasource } from "./OntologyIrObjectTypeTimeSeriesDatasource.js";
 export interface OntologyIrObjectTypeDatasourceDefinition_streamV2 {
   type: "streamV2";
@@ -37,6 +39,11 @@ export interface OntologyIrObjectTypeDatasourceDefinition_timeSeries {
 export interface OntologyIrObjectTypeDatasourceDefinition_datasetV2 {
   type: "datasetV2";
   datasetV2: OntologyIrObjectTypeDatasetDatasourceV2;
+}
+
+export interface OntologyIrObjectTypeDatasourceDefinition_datasetV3 {
+  type: "datasetV3";
+  datasetV3: OntologyIrObjectTypeDatasetDatasourceV3;
 }
 
 export interface OntologyIrObjectTypeDatasourceDefinition_restrictedViewV2 {
@@ -57,6 +64,11 @@ export interface OntologyIrObjectTypeDatasourceDefinition_mediaSetView {
 export interface OntologyIrObjectTypeDatasourceDefinition_geotimeSeries {
   type: "geotimeSeries";
   geotimeSeries: OntologyIrObjectTypeGeotimeSeriesDatasource;
+}
+
+export interface OntologyIrObjectTypeDatasourceDefinition_table {
+  type: "table";
+  table: OntologyIrObjectTypeTableDatasource;
 }
 
 export interface OntologyIrObjectTypeDatasourceDefinition_editsOnly {
@@ -80,10 +92,12 @@ export type OntologyIrObjectTypeDatasourceDefinition =
   | OntologyIrObjectTypeDatasourceDefinition_streamV2
   | OntologyIrObjectTypeDatasourceDefinition_timeSeries
   | OntologyIrObjectTypeDatasourceDefinition_datasetV2
+  | OntologyIrObjectTypeDatasourceDefinition_datasetV3
   | OntologyIrObjectTypeDatasourceDefinition_restrictedViewV2
   | OntologyIrObjectTypeDatasourceDefinition_restrictedStream
   | OntologyIrObjectTypeDatasourceDefinition_mediaSetView
   | OntologyIrObjectTypeDatasourceDefinition_geotimeSeries
+  | OntologyIrObjectTypeDatasourceDefinition_table
   | OntologyIrObjectTypeDatasourceDefinition_editsOnly
   | OntologyIrObjectTypeDatasourceDefinition_direct
   | OntologyIrObjectTypeDatasourceDefinition_derived;

@@ -16,25 +16,64 @@
 
 import type { TimeSeriesPoint } from "@osdk/api";
 import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
-import { apiServer } from "@osdk/shared.test";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
+import { formatISO, sub } from "date-fns";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
 describe("Timeseries", () => {
   let client: Client;
+  const locationGeotimeData = {
+    50030: [
+      {
+        time: "2012-02-12",
+        value: { type: "Point", coordinates: [1.1, 1.1] },
+      },
+      {
+        time: "2013-03-13",
+        value: { type: "Point", coordinates: [2.2, 2.2] },
+      },
+      {
+        time: "2014-04-14",
+        value: { type: "Point", coordinates: [3.3, 3.3] },
+      },
+    ],
+    50031: [
+      {
+        time: formatISO(sub(Date.now(), { "days": 2 })),
+        value: {
+          type: "Point",
+          coordinates: [2.2, 2.2],
+        },
+      },
+    ],
+  };
 
   beforeAll(async () => {
-    apiServer.listen();
-    client = createClient(
-      "https://stack.palantir.com",
-      $ontologyRid,
-      async () => "myAccessToken",
+    const testSetup = startNodeApiServer(
+      new LegacyFauxFoundry(),
+      createClient,
     );
-  });
+    ({ client } = testSetup);
 
-  afterAll(() => {
-    apiServer.close();
+    for (const [pk, data] of Object.entries(locationGeotimeData)) {
+      testSetup.fauxFoundry.getDataStore($ontologyRid)
+        .registerTimeSeriesData(
+          "Employee",
+          pk,
+          "employeeLocation",
+          data,
+        );
+    }
+
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2013-03-13"));
+
+    return () => {
+      testSetup.apiServer.close();
+      vi.useRealTimers();
+    };
   });
 
   it("get latest value works", async () => {
@@ -54,17 +93,9 @@ describe("Timeseries", () => {
     expect(employee.employeeLocation?.lastFetchedValue).toBeDefined();
 
     expect(nextLastPoint).toEqual(fetchedPoint);
-    expect(nextLastPoint?.time).toEqual("2014-04-14");
-    expect(nextLastPoint?.value).toEqual({
-      type: "Point",
-      coordinates: [3.3, 3.3],
-    });
+    expect(nextLastPoint).toEqual(locationGeotimeData[50030][2]);
 
-    expect(fetchedPoint?.time).toEqual("2014-04-14");
-    expect(fetchedPoint?.value).toEqual({
-      type: "Point",
-      coordinates: [3.3, 3.3],
-    });
+    expect(fetchedPoint).toEqual(locationGeotimeData[50030][2]);
 
     // Making sure caching working as expected
     const initialPointEmployee2 = employee2.employeeLocation?.lastFetchedValue;
@@ -75,17 +106,9 @@ describe("Timeseries", () => {
     expect(employee2.employeeLocation?.lastFetchedValue).toBeDefined();
 
     expect(nextLastPoint2).toEqual(fetchedPoint2);
-    expect(nextLastPoint2?.time).toEqual("2013-03-13");
-    expect(nextLastPoint2?.value).toEqual({
-      type: "Point",
-      coordinates: [2.2, 2.2],
-    });
+    expect(nextLastPoint2).toEqual(locationGeotimeData[50031][0]);
 
-    expect(fetchedPoint2?.time).toEqual("2013-03-13");
-    expect(fetchedPoint2?.value).toEqual({
-      type: "Point",
-      coordinates: [2.2, 2.2],
-    });
+    expect(fetchedPoint2).toEqual(locationGeotimeData[50031][0]);
   });
 
   it("getAll values with before works", async () => {
@@ -96,16 +119,10 @@ describe("Timeseries", () => {
       $unit: "month",
     });
     expect(points).toBeDefined();
-    expect(points!).toEqual([{
-      time: "2012-02-12",
-      value: { type: "Point", coordinates: [1.1, 1.1] },
-    }, {
-      time: "2013-03-13",
-      value: { type: "Point", coordinates: [2.2, 2.2] },
-    }, {
-      time: "2014-04-14",
-      value: { type: "Point", coordinates: [3.3, 3.3] },
-    }]);
+    expect(points!).toEqual([
+      locationGeotimeData[50030][1],
+      locationGeotimeData[50030][2],
+    ]);
   });
 
   it("getAll values with after works", async () => {
@@ -116,13 +133,12 @@ describe("Timeseries", () => {
       $unit: "month",
     });
     expect(points).toBeDefined();
-    expect(points!).toEqual([{
-      time: "2012-02-12",
-      value: { type: "Point", coordinates: [1.1, 1.1] },
-    }, {
-      time: "2014-04-14",
-      value: { type: "Point", coordinates: [3.3, 3.3] },
-    }]);
+    expect(points!).toEqual([
+      locationGeotimeData[50030][0],
+      locationGeotimeData[50030][1],
+    ]);
+
+    vi.useRealTimers();
   });
 
   it("getAll points with absolute range works", async () => {
@@ -147,16 +163,9 @@ describe("Timeseries", () => {
     expect(employee.$primaryKey).toEqual(50030);
     const points = await employee.employeeLocation?.getAllValues();
     expect(points).toBeDefined();
-    expect(points!).toEqual([
-      { time: "2012-02-12", value: { type: "Point", coordinates: [1.1, 1.1] } },
-      { time: "2012-02-12", value: { type: "Point", coordinates: [1.1, 1.1] } },
-      {
-        time: "2013-03-13",
-        value: { type: "Point", coordinates: [2.2, 2.2] },
-      },
-      { time: "2014-04-14", value: { type: "Point", coordinates: [3.3, 3.3] } },
-      { time: "2014-04-14", value: { type: "Point", coordinates: [3.3, 3.3] } },
-    ]);
+    expect(points!).toEqual(
+      locationGeotimeData[50030],
+    );
   });
 
   it("getAll points with no data works", async () => {
@@ -183,13 +192,10 @@ describe("Timeseries", () => {
       points.push(point);
     }
     expect(points).toBeDefined();
-    expect(points!).toEqual([{
-      time: "2013-03-13",
-      value: { type: "Point", coordinates: [2.2, 2.2] },
-    }, {
-      time: "2014-04-14",
-      value: { type: "Point", coordinates: [3.3, 3.3] },
-    }]);
+    expect(points!).toEqual([
+      locationGeotimeData[50030][1],
+      locationGeotimeData[50030][2],
+    ]);
   });
 
   it("async iter points with no query", async () => {
@@ -202,15 +208,8 @@ describe("Timeseries", () => {
       points.push(point);
     }
     expect(points).toBeDefined();
-    expect(points!).toEqual([
-      { time: "2012-02-12", value: { type: "Point", coordinates: [1.1, 1.1] } },
-      { time: "2012-02-12", value: { type: "Point", coordinates: [1.1, 1.1] } },
-      {
-        time: "2013-03-13",
-        value: { type: "Point", coordinates: [2.2, 2.2] },
-      },
-      { time: "2014-04-14", value: { type: "Point", coordinates: [3.3, 3.3] } },
-      { time: "2014-04-14", value: { type: "Point", coordinates: [3.3, 3.3] } },
-    ]);
+    expect(points!).toEqual(
+      locationGeotimeData[50030],
+    );
   });
 });

@@ -1,6 +1,6 @@
 {
   "name": "@osdk/functions.unstable",
-  "version": "0.1.0-beta.1",
+  "version": "0.1.0-beta.4",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -17,6 +17,15 @@
       },
       "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
+    },
+    "./internal": {
+      "browser": "./build/browser/public/internal.js",
+      "import": {
+        "types": "./build/types/public/internal.d.ts",
+        "default": "./build/esm/public/internal.js"
+      },
+      "require": "./build/cjs/public/internal.cjs",
+      "default": "./build/browser/public/internal.js"
     },
     "./*": {
       "browser": "./build/browser/public/*.js",
@@ -35,6 +44,7 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "test": "vitest run --pool=forks",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
@@ -43,14 +53,12 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
-    "@types/geojson": "^7946.0.13",
-    "fetch-retry": "^6.0.0",
-    "tiny-invariant": "^1.3.1",
-    "type-fest": "^4.18.2"
+    "@osdk/client": "workspace:~"
   },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.26.5",
     "@microsoft/api-extractor": "^7.49.1",
+    "@osdk/client.test.ontology": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "ts-expect": "^1.3.0",

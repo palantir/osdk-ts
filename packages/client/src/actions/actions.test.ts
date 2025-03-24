@@ -22,7 +22,6 @@ import type {
 } from "@osdk/api";
 import {
   $Actions,
-  $ontologyRid,
   actionTakesAttachment,
   actionTakesMedia,
   createFooInterface,
@@ -30,48 +29,44 @@ import {
   createStructPerson,
   deleteBarInterface,
   deleteFooInterface,
+  Employee,
   moveOffice,
 } from "@osdk/client.test.ontology";
 import type {
   BatchApplyActionResponseV2,
   SyncApplyActionResponseV2,
 } from "@osdk/foundry.ontologies";
-import { apiServer, stubData } from "@osdk/shared.test";
 import {
-  afterAll,
-  beforeAll,
-  describe,
-  expect,
-  expectTypeOf,
-  it,
-  vi,
-} from "vitest";
+  LegacyFauxFoundry,
+  MockOntologiesV2,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
+import type { SetupServer } from "msw/node";
+import { beforeAll, describe, expect, expectTypeOf, it, vi } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createAttachmentUpload } from "../object/AttachmentUpload.js";
 import { ActionValidationError } from "./ActionValidationError.js";
 import { remapActionResponse } from "./applyAction.js";
 
-describe("actions", () => {
+describe.each([
+  "https://stack.palantir.com",
+  "https://stack.palantirCustom.com/foo/first/someStuff",
+])("actions for %s", (baseUrl) => {
   let client: Client;
-  let customEntryPointClient: Client;
+  let apiServer: SetupServer;
 
-  beforeAll(async () => {
-    apiServer.listen();
-    client = createClient(
-      "https://stack.palantir.com",
-      $ontologyRid,
-      async () => "myAccessToken",
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new LegacyFauxFoundry(baseUrl),
+      createClient,
     );
-    customEntryPointClient = createClient(
-      "https://stack.palantirCustom.com/foo/first/someStuff",
-      $ontologyRid,
-      async () => "myAccessToken",
-    );
-  });
+    ({ client, apiServer } = testSetup);
 
-  afterAll(() => {
-    apiServer.close();
+    return () => {
+      apiServer.close();
+    };
   });
 
   it("conditionally returns the edits", async () => {
@@ -82,7 +77,7 @@ describe("actions", () => {
     }, { $returnEdits: true });
 
     expectTypeOf<typeof result>().toEqualTypeOf<ActionEditResponse>();
-    expect(result).toMatchInlineSnapshot(`
+    expect(result).toMatchObject(
       {
         "addedLinks": [],
         "addedObjects": [
@@ -100,8 +95,8 @@ describe("actions", () => {
         ],
         "modifiedObjects": [],
         "type": "edits",
-      }
-    `);
+      },
+    );
 
     // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
     const undefinedResult = await client(createOffice).applyAction({
@@ -126,38 +121,52 @@ describe("actions", () => {
     const result = await client(moveOffice).applyAction({
       officeId: "SEA",
       newAddress: "456 Pike Place",
-      newCapacity: 40,
+      // intentionally using a string to trigger validation errors
+      newCapacity: "40" as unknown as number,
     }, {
       $validateOnly: true,
     });
     expectTypeOf<typeof result>().toEqualTypeOf<ActionValidationResponse>();
 
-    expect(result).toMatchInlineSnapshot(`
-        {
-          "parameters": {},
-          "result": "INVALID",
-          "submissionCriteria": [],
-        }
-      `);
+    expect(result).toMatchObject(
+      {
+        "parameters": {
+          "newCapacity": {
+            "evaluatedConstraints": [],
+            "required": false,
+            "result": "INVALID",
+          },
+        },
+        "result": "INVALID",
+        "submissionCriteria": [],
+      },
+    );
   });
 
   it("returns validation directly on validateOnly mode, with custom entry point in URL", async () => {
-    const result = await customEntryPointClient(moveOffice).applyAction({
+    const result = await client(moveOffice).applyAction({
       officeId: "SEA",
       newAddress: "456 Pike Place",
-      newCapacity: 40,
+      // intentionally using a string to trigger validation failure
+      newCapacity: "40" as unknown as number,
     }, {
       $validateOnly: true,
     });
     expectTypeOf<typeof result>().toEqualTypeOf<ActionValidationResponse>();
 
-    expect(result).toMatchInlineSnapshot(`
-        {
-          "parameters": {},
-          "result": "INVALID",
-          "submissionCriteria": [],
-        }
-      `);
+    expect(result).toMatchObject(
+      {
+        "parameters": {
+          "newCapacity": {
+            "evaluatedConstraints": [],
+            "required": false,
+            "result": "INVALID",
+          },
+        },
+        "result": "INVALID",
+        "submissionCriteria": [],
+      },
+    );
   });
 
   it("throws on validation errors", async () => {
@@ -165,20 +174,27 @@ describe("actions", () => {
       const result = await client(moveOffice).applyAction({
         officeId: "SEA",
         newAddress: "456 Pike Place",
-        newCapacity: 40,
+        // intentionally using a string to trigger validation failure
+        newCapacity: "40" as unknown as number,
       }, {
         $returnEdits: true,
       });
       expect.fail("Should not reach here");
     } catch (e) {
       expect(e).toBeInstanceOf(ActionValidationError);
-      expect((e as ActionValidationError).validation).toMatchInlineSnapshot(`
+      expect((e as ActionValidationError).validation).toMatchObject(
         {
-          "parameters": {},
+          "parameters": {
+            "newCapacity": {
+              "evaluatedConstraints": [],
+              "required": false,
+              "result": "INVALID",
+            },
+          },
           "result": "INVALID",
           "submissionCriteria": [],
-        }
-      `);
+        },
+      );
     }
   });
 
@@ -229,12 +245,25 @@ describe("actions", () => {
       attachment: string | AttachmentUpload;
     }[]>().toMatchTypeOf<InferredBatchParamType>();
 
-    const result = await client(actionTakesAttachment).applyAction({
-      attachment: "attachment.rid",
-    });
+    await apiServer.boundary(async () => {
+      apiServer.use(MockOntologiesV2.Actions.apply(baseUrl, (info) => {
+        return {
+          validation: {
+            result: "VALID",
+            submissionCriteria: [],
+            parameters: {},
+          },
+        };
+      }));
 
-    expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
-    expect(result).toBeUndefined();
+      // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
+      const result = await client(actionTakesAttachment).applyAction({
+        attachment: "ri.some.rid",
+      });
+
+      expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
+      expect(result).toBeUndefined();
+    })();
   });
 
   it("Accepts attachment uploads", async () => {
@@ -272,18 +301,19 @@ describe("actions", () => {
       InferredBatchParamType
     >();
 
-    const blob =
-      stubData.attachmentUploadRequestBody[stubData.localAttachment1.filename];
+    const blob = new Blob([JSON.stringify({ name: "Hello World" }, null, 2)]);
 
     const attachment = createAttachmentUpload(blob, "file1.txt");
 
     // Mimics the Web file API (https://developer.mozilla.org/en-US/docs/Web/API/File). The File constructor is only available in Node 19.2.0 and above
     const fileAttachment = Object.assign(blob, { name: "file1.txt" });
 
+    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
     const result = await client(actionTakesAttachment).applyAction({
       attachment,
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
     const result2 = await client(actionTakesAttachment).applyAction({
       attachment: fileAttachment,
     });
@@ -312,7 +342,8 @@ describe("actions", () => {
     >();
 
     const result = await client(actionTakesMedia).applyAction({
-      media_reference: stubData.mediaReference,
+      media_reference:
+        stubData.actionRequestMediaUpload.parameters.media_reference,
     });
 
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
@@ -356,7 +387,7 @@ describe("actions", () => {
     const result = await client(deleteFooInterface).applyAction({
       deletedInterface: {
         $objectType: "Employee",
-        $primaryKey: 1,
+        $primaryKey: 50030,
       },
     });
 
@@ -426,7 +457,7 @@ describe("actions", () => {
     }[]>().toMatchTypeOf<InferredBatchParamType>();
 
     const result = await client(createFooInterface).applyAction({
-      createdInterface: "UnderlyingObject",
+      createdInterface: Employee.apiName,
     });
 
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
@@ -446,7 +477,7 @@ describe("actions", () => {
       },
     ], { $returnEdits: true });
 
-    expect(result).toMatchInlineSnapshot(`
+    expect(result).toMatchObject(
       {
         "addedLinks": [],
         "addedObjects": [],
@@ -468,8 +499,8 @@ describe("actions", () => {
           },
         ],
         "type": "edits",
-      }
-    `);
+      },
+    );
   });
 });
 
@@ -660,3 +691,11 @@ describe("ActionResponse remapping", () => {
     ]);
   });
 });
+
+function wrapper<R>(fn: () => R): typeof fn {
+  return () => fn();
+}
+
+async function example() {
+  await wrapper(async () => Promise.resolve("hi"))();
+}

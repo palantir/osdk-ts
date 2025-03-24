@@ -1,5 +1,49 @@
 # @osdk/foundry-sdk-generator
 
+## 2.2.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [7170fd1]
+  - @osdk/api@2.2.0-beta.11
+  - @osdk/client@2.2.0-beta.11
+  - @osdk/generator@2.2.0-beta.11
+
+## 2.2.0-beta.10
+
+### Minor Changes
+
+- a72bf30: Fix normalization of paths for generator on windows.
+
+### Patch Changes
+
+- Updated dependencies [23ea0e4]
+- Updated dependencies [46cede4]
+- Updated dependencies [81c0d8c]
+- Updated dependencies [81c0d8c]
+  - @osdk/api@2.2.0-beta.10
+  - @osdk/client@2.2.0-beta.10
+  - @osdk/generator@2.2.0-beta.10
+
+## 2.2.0-beta.9
+
+### Minor Changes
+
+- 12843cb: Add ability to load all underlying properties of an interface.
+- 26a850c: Fix windows generation bug.
+
+### Patch Changes
+
+- Updated dependencies [12843cb]
+- Updated dependencies [f82767c]
+- Updated dependencies [2517750]
+- Updated dependencies [2517750]
+- Updated dependencies [2517750]
+- Updated dependencies [2517750]
+  - @osdk/generator@2.2.0-beta.9
+  - @osdk/client@2.2.0-beta.9
+  - @osdk/api@2.2.0-beta.9
+
 ## 2.2.0-beta.8
 
 ### Minor Changes

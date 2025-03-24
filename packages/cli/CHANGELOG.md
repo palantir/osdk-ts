@@ -1,5 +1,15 @@
 # @osdk/cli
 
+## 0.26.0-beta.11
+
+### Minor Changes
+
+- 6c1c377: Switch unstable widgets command to preview endpoints
+
+## 0.26.0-beta.10
+
+## 0.26.0-beta.9
+
 ## 0.26.0-beta.8
 
 ### Minor Changes

@@ -18,8 +18,6 @@ import { createInternalClientContext, widgetRegistry } from "#net";
 import { consola } from "consola";
 import { colorize } from "consola/utils";
 import { handlePromptCancel } from "../../../../consola/handlePromptCancel.js";
-import type { StemmaRepositoryRid } from "../../../../net/StemmaRepositoryRid.js";
-import type { WidgetSetRid } from "../../../../net/WidgetSetRid.js";
 import { loadToken } from "../../../../util/token.js";
 import type { VersionDeleteArgs } from "./VersionDeleteArgs.js";
 
@@ -40,40 +38,6 @@ export default async function versionDeleteCommand(
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
-  const widgetSetRelease = await widgetRegistry.getWidgetSetRelease(
-    clientCtx,
-    widgetSet,
-    version,
-  );
-  const { repositoryRid, siteVersion } = getSiteLocator(widgetSetRelease);
-  await Promise.all([
-    widgetRegistry.deleteWidgetSetRelease(clientCtx, widgetSet, version),
-    widgetRegistry.deleteSiteVersion(clientCtx, repositoryRid, siteVersion),
-  ]);
+  await widgetRegistry.deleteRelease(clientCtx, widgetSet, version);
   consola.success(`Deleted version ${version}`);
-}
-
-function getSiteLocator(
-  widgetSetRelease: widgetRegistry.WidgetSetRelease,
-): { repositoryRid: WidgetSetRid | StemmaRepositoryRid; siteVersion: string } {
-  switch (widgetSetRelease.locator.type) {
-    case "internalSitesLayout":
-      return {
-        repositoryRid: widgetSetRelease.widgetSetRid,
-        siteVersion: widgetSetRelease.locator.internalSitesLayout.version,
-      };
-    case "externalSitesLayout":
-      return {
-        repositoryRid: widgetSetRelease.locator.externalSitesLayout
-          .repositoryRid as StemmaRepositoryRid,
-        siteVersion: widgetSetRelease.locator.externalSitesLayout.version,
-      };
-    default:
-      const _: never = widgetSetRelease.locator;
-      throw new Error(
-        `Unknown widget set locator type ${
-          (widgetSetRelease.locator as any).type
-        }`,
-      );
-  }
 }

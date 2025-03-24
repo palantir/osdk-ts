@@ -25,6 +25,7 @@ export async function runInterfacesTest2(): Promise<void> {
   const athletes = await dsClient(Athlete).where({
     name22: { $eq: "Michael Jordan" },
   }).fetchPage({ $includeAllBaseObjectProperties: true });
+
   invariant(athletes.data.length > 0);
 
   const athlete1 = athletes.data[0];
@@ -43,7 +44,7 @@ export async function runInterfacesTest2(): Promise<void> {
   const athletesSelected = await dsClient(Athlete).where({
     name22: { $eq: "Michael Jordan" },
   }).fetchPage({
-    $select: ["athleteId"],
+    $select: ["athleteId", "jerseyNumber", "name22"],
     $includeAllBaseObjectProperties: true,
   });
 
@@ -60,6 +61,14 @@ export async function runInterfacesTest2(): Promise<void> {
       typeof nbaPlayer1
     >
   >(true);
+
+  const athletesNotAllSelected = await dsClient(Athlete).where({
+    name22: { $eq: "Michael Jordan" },
+  }).fetchPage({
+    $select: ["athleteId", "name22"],
+    // @ts-expect-error
+    $includeAllBaseObjectProperties: true,
+  });
 }
 
 void runInterfacesTest2();

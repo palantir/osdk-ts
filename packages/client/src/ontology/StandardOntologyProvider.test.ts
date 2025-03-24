@@ -14,35 +14,37 @@
  * limitations under the License.
  */
 
-import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
-import { apiServer } from "@osdk/shared.test";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { createMinimalClient } from "../createMinimalClient.js";
+import { Employee } from "@osdk/client.test.ontology";
+import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
+import { beforeAll, describe, expect, it } from "vitest";
+import { createMinimalClientHelper } from "../createMinimalClientHelper.js";
+import type { MinimalClient } from "../MinimalClientContext.js";
 import { fetchPage } from "../object/fetchPage.js";
 import {
   createStandardOntologyProviderFactory,
 } from "./StandardOntologyProvider.js";
 
 describe(createStandardOntologyProviderFactory, () => {
-  beforeAll(async () => {
-    apiServer.listen();
-  });
-  afterAll(() => {
-    apiServer.close();
-  });
+  let client: MinimalClient;
+  let loads: string[] = [];
 
-  it("doesn't revalidate if not needed", async () => {
-    const client = createMinimalClient(
-      { ontologyRid: $ontologyRid },
-      "https://stack.palantir.com",
-      async () => "myAccessToken",
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new LegacyFauxFoundry(),
+      createMinimalClientHelper,
     );
+    ({ client } = testSetup);
 
-    let loads: string[] = [];
-    apiServer.events.on("request:start", ({ request }) => {
+    testSetup.apiServer.events.on("request:start", ({ request }) => {
       loads.push(new URL(request.url).pathname);
     });
 
+    return () => {
+      testSetup.apiServer.close();
+    };
+  });
+
+  it("doesn't revalidate if not needed", async () => {
     await fetchPage(client, Employee, {});
 
     // first load should lookup employee and its link types

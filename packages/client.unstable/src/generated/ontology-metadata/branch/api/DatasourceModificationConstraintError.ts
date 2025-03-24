@@ -28,6 +28,7 @@ import type { MarkingPropertiesMustBeBackedByDatasourceWithGranularPermissionsEr
 import type { MarkingPropertiesMustBeReferencedInGranularPolicyError } from "./MarkingPropertiesMustBeReferencedInGranularPolicyError.js";
 import type { MarkingPropertiesMustHaveAssociatedMarkingConstraintsError } from "./MarkingPropertiesMustHaveAssociatedMarkingConstraintsError.js";
 import type { NotAllPropertyTypesAreMappedToDatasourceWithinObjectType } from "./NotAllPropertyTypesAreMappedToDatasourceWithinObjectType.js";
+import type { ObjectTypeDatasourceCannotHaveAssumedMarkingsUpdatedError } from "./ObjectTypeDatasourceCannotHaveAssumedMarkingsUpdatedError.js";
 import type { ObjectTypeDatasourceColumnMappingMismatchError } from "./ObjectTypeDatasourceColumnMappingMismatchError.js";
 import type { ObjectTypeDatasourceWithoutPrimaryKeyColumnError } from "./ObjectTypeDatasourceWithoutPrimaryKeyColumnError.js";
 import type { ObjectTypeWithUnmappedTitlePropertyError } from "./ObjectTypeWithUnmappedTitlePropertyError.js";
@@ -143,6 +144,12 @@ export interface DatasourceModificationConstraintError_gpsPolicyColumnsFromRestr
   gpsPolicyColumnsFromRestrictedViewsAreMapped:
     GpsPolicyColumnsFromRestrictedViewsAreMappedError;
 }
+
+export interface DatasourceModificationConstraintError_objectTypeDatasourceCannotHaveAssumedMarkingsUpdated {
+  type: "objectTypeDatasourceCannotHaveAssumedMarkingsUpdated";
+  objectTypeDatasourceCannotHaveAssumedMarkingsUpdated:
+    ObjectTypeDatasourceCannotHaveAssumedMarkingsUpdatedError;
+}
 /**
  * A type representing validation errors associated with datasource modifications on a branch.
  */
@@ -165,4 +172,5 @@ export type DatasourceModificationConstraintError =
   | DatasourceModificationConstraintError_derivedPropertyLinkDefinitionInvalid
   | DatasourceModificationConstraintError_derivedPropertyLinkDefinitionCardinalityInvalid
   | DatasourceModificationConstraintError_derivedPropertyIncompatibleDefinitionAndForeignPropertyBaseType
-  | DatasourceModificationConstraintError_gpsPolicyColumnsFromRestrictedViewsAreMapped;
+  | DatasourceModificationConstraintError_gpsPolicyColumnsFromRestrictedViewsAreMapped
+  | DatasourceModificationConstraintError_objectTypeDatasourceCannotHaveAssumedMarkingsUpdated;

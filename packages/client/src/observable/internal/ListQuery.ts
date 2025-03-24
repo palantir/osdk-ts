@@ -35,7 +35,7 @@ import {
 } from "rxjs";
 import invariant from "tiny-invariant";
 import { additionalContext, type Client } from "../../Client.js";
-import type { Logger } from "../../Logger.js";
+import type { Logger } from "../../logger/Logger.js";
 import type { InterfaceHolder } from "../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import {
   ObjectDefRef,
@@ -944,9 +944,14 @@ async function reloadDataAsFullObjects(
     ),
   );
 
-  data = data.map((obj) =>
-    objectTypeToPrimaryKeyToObject[obj.$objectType][obj.$primaryKey]
-  );
+  data = data.map((obj) => {
+    invariant(
+      objectTypeToPrimaryKeyToObject[obj.$objectType][obj.$primaryKey],
+      `Could not find object ${obj.$objectType} ${obj.$primaryKey}`,
+    );
+    return objectTypeToPrimaryKeyToObject[obj.$objectType][obj.$primaryKey];
+  });
+
   return data;
 }
 
