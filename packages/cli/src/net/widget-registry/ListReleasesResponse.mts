@@ -14,19 +14,9 @@
  * limitations under the License.
  */
 
-import { createFetch } from "../createFetch.mjs";
-import type { InternalClientContext } from "../internalClientContext.mjs";
-import type { WidgetSetRid } from "../WidgetSetRid.js";
-import type { WidgetSetRelease } from "./WidgetSetRelease.mjs";
+import type { Release } from "./Release.mjs";
 
-export async function getWidgetSetRelease(
-  ctx: InternalClientContext,
-  widgetSetRid: WidgetSetRid,
-  version: string,
-): Promise<WidgetSetRelease> {
-  const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/widget-registry/api/widget-sets/${widgetSetRid}/releases/${version}`;
-  const response = await fetch(url);
-  return response.json();
+export interface ListReleasesResponse {
+  data: Array<Release>;
+  nextPageToken?: string;
 }

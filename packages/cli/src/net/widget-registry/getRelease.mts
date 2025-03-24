@@ -16,26 +16,17 @@
 
 import { createFetch } from "../createFetch.mjs";
 import type { InternalClientContext } from "../internalClientContext.mjs";
-import type { StemmaRepositoryRid } from "../StemmaRepositoryRid.js";
 import type { WidgetSetRid } from "../WidgetSetRid.js";
+import type { Release } from "./Release.mjs";
 
-export async function publishManifest(
+export async function getRelease(
   ctx: InternalClientContext,
-  repositoryRid: WidgetSetRid | StemmaRepositoryRid,
-  version: string,
-): Promise<void> {
+  widgetSetRid: WidgetSetRid,
+  releaseVersion: string,
+): Promise<Release> {
   const fetch = createFetch(ctx.tokenProvider);
   const url =
-    `${ctx.foundryUrl}/widget-registry/api/repositories/${repositoryRid}/publish-manifest`;
-
-  await fetch(
-    url,
-    {
-      method: "POST",
-      body: JSON.stringify({ version }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  );
+    `${ctx.foundryUrl}/api/v2/widgets/widgetSets/${widgetSetRid}/releases/${releaseVersion}?preview=true`;
+  const response = await fetch(url);
+  return response.json();
 }

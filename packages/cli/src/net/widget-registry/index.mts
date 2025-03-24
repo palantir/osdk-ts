@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-export { deleteSiteVersion } from "./deleteSiteVersion.mjs";
-export { deleteWidgetSetRelease } from "./deleteWidgetSetRelease.mjs";
-export { getWidgetSetRelease } from "./getWidgetSetRelease.mjs";
-export { listWidgetSetReleases } from "./listWidgetSetReleases.mjs";
-export type { ListWidgetSetReleasesResponse } from "./ListWidgetSetReleasesResponse.mjs";
-export { publishManifest } from "./publishManifest.mjs";
-export { uploadSiteVersion } from "./uploadSiteVersion.mjs";
-export type { WidgetSetRelease } from "./WidgetSetRelease.mjs";
+export { deleteRelease } from "./deleteRelease.mjs";
+export { getRelease } from "./getRelease.mjs";
+export { listReleases } from "./listReleases.mjs";
+export type { ListReleasesResponse } from "./ListReleasesResponse.mjs";
+export { publishRelease } from "./publishRelease.mjs";
+export type { Release } from "./Release.mjs";
+export type { ReleaseLocator } from "./ReleaseLocator.mjs";

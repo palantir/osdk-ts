@@ -67,9 +67,9 @@ export default async function widgetSetDeployCommand(
     consola.debug(`Deploying to repository ${repository} for ${widgetSet}`);
   }
 
-  consola.start("Uploading widget set files");
+  consola.start("Publishing widget set files");
   await Promise.all([
-    widgetRegistry.uploadSiteVersion(
+    widgetRegistry.publishRelease(
       clientCtx,
       deployRid,
       widgetSetVersion,
@@ -77,30 +77,10 @@ export default async function widgetSetDeployCommand(
     ),
     archive.finalize(),
   ]);
-  consola.success("Upload complete");
-
-  consola.start("Publishing widget set manifest");
-  try {
-    await widgetRegistry.publishManifest(
-      clientCtx,
-      deployRid,
-      widgetSetVersion,
-    );
-    consola.success(`Deployed ${widgetSetVersion} successfully`);
-  } catch (e) {
-    consola.fail("Failed to publish manifest, cleaning up");
-    await widgetRegistry.deleteSiteVersion(
-      clientCtx,
-      deployRid,
-      widgetSetVersion,
-    );
-    throw e;
-  }
+  consola.success("Publish complete");
 }
 
-async function findWidgetSetVersion(
-  directory: string,
-): Promise<string> {
+async function findWidgetSetVersion(directory: string): Promise<string> {
   try {
     const manifestContent = await fs.promises.readFile(
       path.resolve(directory, MANIFEST_FILE_LOCATION),
