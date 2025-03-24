@@ -54,17 +54,19 @@ export function getTimeRange(body: TimeSeriesQuery): TimeRange {
     };
 }
 
-export const parseTimeSeriesRangeV2 = (
+export function parseTimeSeriesRangeV2(
   range: TimeSeriesRange,
-): TimeRange => ({
-  type: "absolute",
-  startTime: range.startTime,
-  endTime: range.endTime,
-});
+): TimeRange {
+  return {
+    type: "absolute",
+    startTime: range.startTime,
+    endTime: range.endTime,
+  };
+}
 
-export const parseTimeSeriesQuery = (query: TimeSeriesQueryWrapper): {
+export function parseTimeSeriesQuery(query: TimeSeriesQueryWrapper): {
   range?: TimeRange;
-} => {
+} {
   if (isLegacyTimeSeriesQuery(query)) {
     return {
       range: getTimeRange(query),
@@ -78,7 +80,7 @@ export const parseTimeSeriesQuery = (query: TimeSeriesQueryWrapper): {
   }
 
   return {};
-};
+}
 
 export async function* asyncIterPointsHelper<
   T extends number | string | GeoJSON.Point,
