@@ -1,5 +1,15 @@
 # @osdk/client
 
+## 2.2.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [7170fd1]
+- Updated dependencies [10da391]
+  - @osdk/api@2.2.0-beta.11
+  - @osdk/client.unstable@2.2.0-beta.11
+  - @osdk/generator-converters@2.2.0-beta.11
+
 ## 2.2.0-beta.10
 
 ### Minor Changes

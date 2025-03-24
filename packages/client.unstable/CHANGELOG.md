@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.2.0-beta.11
+
+### Minor Changes
+
+- 10da391: Links as Code
+
 ## 2.2.0-beta.10
 
 ### Minor Changes

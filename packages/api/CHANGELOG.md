@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.2.0-beta.11
+
+### Minor Changes
+
+- 7170fd1: Fix generics for fetchPageByRid
+
 ## 2.2.0-beta.10
 
 ### Minor Changes

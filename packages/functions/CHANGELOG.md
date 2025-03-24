@@ -1,5 +1,13 @@
 # @osdk/functions.unstable
 
+## 0.1.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [7170fd1]
+  - @osdk/api@2.2.0-beta.11
+  - @osdk/client@2.2.0-beta.11
+
 ## 0.1.0-beta.3
 
 ### Minor Changes
