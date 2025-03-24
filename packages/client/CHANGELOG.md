@@ -1,5 +1,21 @@
 # @osdk/client
 
+## 2.2.0-beta.10
+
+### Minor Changes
+
+- 81c0d8c: Client will now provide a default logger to console.error if none is provided
+- 81c0d8c: ObservableClient now queues up object loads for bulk processing
+
+### Patch Changes
+
+- Updated dependencies [23ea0e4]
+- Updated dependencies [5e8e839]
+- Updated dependencies [46cede4]
+  - @osdk/api@2.2.0-beta.10
+  - @osdk/client.unstable@2.2.0-beta.10
+  - @osdk/generator-converters@2.2.0-beta.10
+
 ## 2.2.0-beta.9
 
 ### Minor Changes
