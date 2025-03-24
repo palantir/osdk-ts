@@ -643,6 +643,7 @@ describe("Ontology Defining", () => {
                 },
               },
             },
+            "linkTypes": {},
             "objectTypes": {},
             "sharedPropertyTypes": {
               "com.palantir.property1": {
