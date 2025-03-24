@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
+import { createFetch } from "../createFetch.mjs";
+import type { InternalClientContext } from "../internalClientContext.mjs";
 import type { WidgetSetRid } from "../WidgetSetRid.js";
-import type { WidgetSetLocator } from "./WidgetSetLocator.mjs";
+import type { ListReleasesResponse } from "./ListReleasesResponse.mjs";
 
-export interface WidgetSetRelease {
-  widgetSetRid: WidgetSetRid;
-  widgetSetVersion: string;
-  locator: WidgetSetLocator;
-  attribution: {
-    userId: string;
-    timestamp: string;
-  };
-  description?: string;
-  widgetRids: string[];
+export async function listReleases(
+  ctx: InternalClientContext,
+  widgetSetRid: WidgetSetRid,
+): Promise<ListReleasesResponse> {
+  const fetch = createFetch(ctx.tokenProvider);
+  const url =
+    `${ctx.foundryUrl}/api/v2/widgets/widgetSets/${widgetSetRid}/releases?preview=true`;
+  const response = await fetch(url);
+  return response.json();
 }

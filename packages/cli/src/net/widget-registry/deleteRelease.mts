@@ -17,15 +17,19 @@
 import { createFetch } from "../createFetch.mjs";
 import type { InternalClientContext } from "../internalClientContext.mjs";
 import type { WidgetSetRid } from "../WidgetSetRid.js";
-import type { ListWidgetSetReleasesResponse } from "./ListWidgetSetReleasesResponse.mjs";
 
-export async function listWidgetSetReleases(
+export async function deleteRelease(
   ctx: InternalClientContext,
   widgetSetRid: WidgetSetRid,
-): Promise<ListWidgetSetReleasesResponse> {
+  releaseVersion: string,
+): Promise<void> {
   const fetch = createFetch(ctx.tokenProvider);
   const url =
-    `${ctx.foundryUrl}/widget-registry/api/widget-sets/${widgetSetRid}/releases`;
-  const response = await fetch(url);
-  return response.json();
+    `${ctx.foundryUrl}/api/v2/widgets/widgetSets/${widgetSetRid}/releases/${releaseVersion}?preview=true`;
+  await fetch(
+    url,
+    {
+      method: "DELETE",
+    },
+  );
 }

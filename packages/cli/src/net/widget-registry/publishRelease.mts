@@ -19,20 +19,20 @@ import type { InternalClientContext } from "../internalClientContext.mjs";
 import type { StemmaRepositoryRid } from "../StemmaRepositoryRid.js";
 import type { WidgetSetRid } from "../WidgetSetRid.js";
 
-export async function uploadSiteVersion(
+export async function publishRelease(
   ctx: InternalClientContext,
   repositoryRid: WidgetSetRid | StemmaRepositoryRid,
-  version: string,
+  repositoryVersion: string,
   zipFile: ReadableStream | Blob | BufferSource,
 ): Promise<void> {
   const fetch = createFetch(ctx.tokenProvider);
   const url =
-    `${ctx.foundryUrl}/artifacts/api/repositories/${repositoryRid}/contents/release/siteasset/versions/zip/${version}`;
+    `${ctx.foundryUrl}/api/v2/widgets/repositories/${repositoryRid}/publish?preview=true&repositoryVersion=${repositoryVersion}`;
 
   await fetch(
     url,
     {
-      method: "PUT",
+      method: "POST",
       body: zipFile,
       headers: {
         "Content-Type": "application/octet-stream",

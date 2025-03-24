@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-import { createFetch } from "../createFetch.mjs";
-import type { InternalClientContext } from "../internalClientContext.mjs";
 import type { WidgetSetRid } from "../WidgetSetRid.js";
+import type { ReleaseLocator } from "./ReleaseLocator.mjs";
 
-export async function deleteWidgetSetRelease(
-  ctx: InternalClientContext,
-  widgetSetRid: WidgetSetRid,
-  version: string,
-): Promise<void> {
-  const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/widget-registry/api/widget-sets/${widgetSetRid}/releases/${version}`;
-  await fetch(
-    url,
-    {
-      method: "DELETE",
-    },
-  );
+export interface Release {
+  widgetSetRid: WidgetSetRid;
+  version: string;
+  locator: ReleaseLocator;
+  description?: string;
 }

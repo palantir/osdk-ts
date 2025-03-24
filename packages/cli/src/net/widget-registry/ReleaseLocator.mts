@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import type { WidgetSetRelease } from "./WidgetSetRelease.mjs";
+import type { StemmaRepositoryRid } from "../StemmaRepositoryRid.js";
+import type { WidgetSetRid } from "../WidgetSetRid.js";
 
-export interface ListWidgetSetReleasesResponse {
-  releases: Array<WidgetSetRelease>;
-  nextPageToken?: string;
+export interface ReleaseLocator {
+  repositoryRid: WidgetSetRid | StemmaRepositoryRid;
+  repositoryVersion: string;
 }
