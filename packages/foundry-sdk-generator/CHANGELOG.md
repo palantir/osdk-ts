@@ -1,5 +1,21 @@
 # @osdk/foundry-sdk-generator
 
+## 2.2.0-beta.10
+
+### Minor Changes
+
+- a72bf30: Fix normalization of paths for generator on windows.
+
+### Patch Changes
+
+- Updated dependencies [23ea0e4]
+- Updated dependencies [46cede4]
+- Updated dependencies [81c0d8c]
+- Updated dependencies [81c0d8c]
+  - @osdk/api@2.2.0-beta.10
+  - @osdk/client@2.2.0-beta.10
+  - @osdk/generator@2.2.0-beta.10
+
 ## 2.2.0-beta.9
 
 ### Minor Changes

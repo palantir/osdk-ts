@@ -1,5 +1,11 @@
 # @osdk/create-app.template.tutorial-todo-aip-app
 
+## 2.2.0-beta.10
+
+### Minor Changes
+
+- fa02507: Use options overload when initializing client in create-app templates and standardize formatting
+
 ## 2.2.0-beta.9
 
 ## 2.2.0-beta.8

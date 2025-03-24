@@ -1,5 +1,12 @@
 # @osdk/api
 
+## 2.2.0-beta.10
+
+### Minor Changes
+
+- 23ea0e4: Fix type break.
+- 46cede4: Fix include all properties flag.
+
 ## 2.2.0-beta.9
 
 ### Minor Changes
