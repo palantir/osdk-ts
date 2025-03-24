@@ -43,5 +43,5 @@ export function isTimeSeriesQueryV2(
 export function isLegacyTimeSeriesQuery(
   query: TimeSeriesQueryWrapper,
 ): query is TimeSeriesQuery {
-  return !("range" in query);
+  return !isTimeSeriesQueryV2(query);
 }
