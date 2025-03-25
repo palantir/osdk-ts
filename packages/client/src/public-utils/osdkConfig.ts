@@ -38,20 +38,28 @@ export interface OsdkConfig {
   ontologyRid: string;
 }
 
+function isProduction(): boolean {
+  return process.env.NODE_ENV === "production";
+}
+
+function getConfigValue(metaTagName: string, viteEnvVarName: string): string {
+  return isProduction()
+    ? getMetaTagContent(metaTagName)
+    : getViteEnvVar(viteEnvVarName);
+}
+
+function getOntologyRid(ontologyRid: string): string {
+  return isProduction() ? getMetaTagContent("osdk-ontologyRid") : ontologyRid;
+}
+
 export function getOsdkConfig(ontologyRid: string): OsdkConfig {
-  const isProduction = process.env.NODE_ENV === "production";
   return {
-    clientId: isProduction
-      ? getMetaTagContent("osdk-clientId")
-      : getViteEnvVar("VITE_FOUNDRY_CLIENT_ID"),
-    redirectUrl: isProduction
-      ? getMetaTagContent("osdk-redirectUrl")
-      : getViteEnvVar("VITE_FOUNDRY_REDIRECT_URL"),
-    foundryUrl: isProduction
-      ? getMetaTagContent("osdk-foundryUrl")
-      : getViteEnvVar("VITE_FOUNDRY_API_URL"),
-    ontologyRid: isProduction
-      ? getMetaTagContent("osdk-ontologyRid")
-      : ontologyRid,
+    clientId: getConfigValue("osdk-clientId", "VITE_FOUNDRY_CLIENT_ID"),
+    redirectUrl: getConfigValue(
+      "osdk-redirectUrl",
+      "VITE_FOUNDRY_REDIRECT_URL",
+    ),
+    foundryUrl: getConfigValue("osdk-foundryUrl", "VITE_FOUNDRY_API_URL"),
+    ontologyRid: getOntologyRid(ontologyRid),
   };
 }
