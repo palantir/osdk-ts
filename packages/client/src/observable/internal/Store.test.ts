@@ -108,7 +108,7 @@ const ANY_INIT_ENTRY = {
   status: "init",
 };
 
- 
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 function fullTaskName(task?: Task): string {
   return task ? `${fullTaskName(task.suite)} > ${task.name}` : "";
 }

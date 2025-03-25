@@ -29,7 +29,7 @@ describe(BulkObjectLoader, () => {
     mockClient = createClientMockHelper();
     client = mockClient.client;
 
-     
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     vi.mocked(client.fetchMetadata).mockReturnValue(
       Promise.resolve(
         {
