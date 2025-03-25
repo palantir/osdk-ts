@@ -44,33 +44,35 @@ export class ActionApplication {
       optimisticUpdate,
     );
 
-    try {
-      // The types for client get confused when we dynamically applyAction so we
-      // have to deal with the `any` here and force cast it to what it should be.
-      // TODO: Update the types so this doesn't happen!
+    return await (async () => {
+      try {
+        // The types for client get confused when we dynamically applyAction so we
+        // have to deal with the `any` here and force cast it to what it should be.
+        // TODO: Update the types so this doesn't happen!
 
-      const actionResults: ActionEditResponse = await this.store.client(
-        action,
-      ).applyAction(args as any, { $returnEdits: true });
+        const actionResults: ActionEditResponse = await this.store.client(
+          action,
+        ).applyAction(args as any, { $returnEdits: true });
 
-      if (process.env.NODE_ENV !== "production") {
-        if (ACTION_DELAY > 0) {
-          logger?.debug("action done, pausing", actionResults);
-          await delay(ACTION_DELAY);
-          logger?.debug("action done, pausing done");
+        if (process.env.NODE_ENV !== "production") {
+          if (ACTION_DELAY > 0) {
+            logger?.debug("action done, pausing", actionResults);
+            await delay(ACTION_DELAY);
+            logger?.debug("action done, pausing done");
+          }
         }
+        await this.#invalidateActionEditResponse(actionResults);
+        return actionResults;
+      } finally {
+        if (process.env.NODE_ENV !== "production") {
+          logger?.debug(
+            "optimistic action complete; remove the results",
+          );
+        }
+        // make sure this happens even if the action fails
+        await removeOptimisticResult();
       }
-      await this.#invalidateActionEditResponse(actionResults);
-      return actionResults;
-    } finally {
-      if (process.env.NODE_ENV !== "production") {
-        logger?.debug(
-          "optimistic action complete; remove the results",
-        );
-      }
-      // make sure this happens even if the action fails
-      await removeOptimisticResult();
-    }
+    })();
   };
 
   #invalidateActionEditResponse = async (

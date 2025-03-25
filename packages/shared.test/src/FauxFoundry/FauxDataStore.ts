@@ -52,10 +52,20 @@ export interface MediaMetadataAndContent {
   metaData: OntologiesV2.MediaMetadata;
 }
 
+type ObjectTypeCreatableWithoutApiName<T extends ObjectTypeDefinition> =
+  OrUndefinedToOptional<JustProps<T>>;
+
+/**
+ * Represents the properties needed to create an object, specifically,
+ * the properties of the object and the $apiName
+ */
 type ObjectTypeCreatable<T extends ObjectTypeDefinition> =
-  & OrUndefinedToOptional<JustProps<T>>
+  & ObjectTypeCreatableWithoutApiName<T>
   & { $apiName: CompileTimeMetadata<T>["apiName"] };
 
+/**
+ * Helper type for converting `foo: string | undefined` into `foo?: string`
+ */
 type OrUndefinedToOptional<T extends object> =
   & {
     [K in keyof T as T[K] extends undefined ? K : never]?: T[K];
@@ -64,11 +74,24 @@ type OrUndefinedToOptional<T extends object> =
     [K in keyof T as T[K] extends undefined ? never : K]?: T[K];
   };
 
+/**
+ * Type safe object for representing "client" side objects.
+ */
 interface BaseObjectTypeCreatable {
-  $apiName: OntologiesV2.ObjectTypeApiName;
+  $apiName?: OntologiesV2.ObjectTypeApiName;
+
   /** if present it must match the correct value */
   $primaryKey?: string | number | boolean;
+
+  /** If set, will use the as the $rid for the object, otherwise one is created for you */
   $rid?: string;
+
+  /**
+   * All the properties.
+   *
+   * FUTURE: This only handles the primitive types right now. If we want to be able to create
+   * objects with some helpers for other types, this will need to be updated.
+   */
   [key: string]: string | number | boolean | undefined;
 }
 
@@ -114,6 +137,11 @@ export class FauxDataStore {
     this.#attachments = attachments;
   }
 
+  /**
+   * Removes all data that is associated with a namespace/ontology.
+   *
+   * Note: does not clear `attachments` nor does it clear the ontology itself.
+   */
   public clear(): void {
     this.#media.clear();
     this.#timeSeriesData.clear();
@@ -159,66 +187,49 @@ export class FauxDataStore {
   }
 
   /**
-   * Version for use in places like @osdk/client
-   * @param obj
+   * Version for use in places like @osdk/client.
+   *
+   * @param obj An `Osdk.Instance` like object for the ObjectType in the generics
    */
   registerObject<T extends ObjectTypeDefinition>(
-    obj: ObjectTypeCreatable<T>,
+    objectType: T,
+    obj: ObjectTypeCreatable<T> | ObjectTypeCreatableWithoutApiName<T>,
   ): void;
   /**
-   * Version of register object used in shared.test
-   * @param obj
-   * @internal
+   * Version of register object generally used in shared.test
+   * @param obj A raw server side representation of an object
+   *
+   * @internal so that we don't get the overrides in `@osdk/client` that make it
+   * too easy to end up with an any.
    */
   registerObject(obj: BaseServerObject): void;
   registerObject(
-    anyObj: BaseServerObject | BaseObjectTypeCreatable,
+    objectType: string | ObjectTypeDefinition | BaseServerObject,
+    anyObj?: BaseServerObject | BaseObjectTypeCreatable,
   ): void {
     let bso: BaseServerObject;
     // obj = { ...obj }; // make a copy so we can mutate it
-    if (isBaseServerObject(anyObj)) {
+
+    if (isBaseServerObject(objectType)) {
+      invariant(
+        anyObj == null,
+        "Internal overload should only pass one argument",
+      );
+      invariant(
+        !Object.keys(objectType).some(s => s.startsWith("$")),
+        "Object should not have any keys starting with $ if it has __apiName",
+      );
+      bso = objectType;
+    } else if (anyObj == null) {
+      invariant(false, "should not be possible due to overloads");
+    } else if (isBaseServerObject(anyObj)) {
       invariant(
         !Object.keys(anyObj).some(s => s.startsWith("$")),
         "Object should not have any keys starting with $ if it has __apiName",
       );
       bso = anyObj;
-    } else if ("$apiName" in anyObj) {
-      const { $apiName, $primaryKey, ...others } = anyObj;
-
-      const meta = this.ontology.getObjectTypeFullMetadataOrThrow($apiName);
-      const realPrimaryKey = anyObj[meta.objectType.primaryKey] as
-        | string
-        | number
-        | boolean;
-
-      const maybeTitle = anyObj[meta.objectType.titleProperty];
-      const rid = anyObj.$rid
-        ?? `ri.phonograph2-objects.main.object.${crypto.randomUUID()}`;
-
-      invariant(
-        realPrimaryKey != null,
-        `Object should have a primary key. ${JSON.stringify(anyObj)}`,
-      );
-
-      invariant(
-        $primaryKey == null || $primaryKey === realPrimaryKey,
-        "Primary key mismatch",
-      );
-
-      bso = {
-        __apiName: $apiName,
-        __primaryKey: realPrimaryKey,
-        __title: maybeTitle ? String(maybeTitle) : undefined,
-        __rid: rid,
-        ...others,
-      };
     } else {
-      invariant(
-        false,
-        `Object should either have __apiName or $apiName. Full object: ${
-          JSON.stringify(anyObj)
-        }`,
-      );
+      bso = this.#osdkCreatableToBso(objectType, anyObj);
     }
 
     const apiName = bso.__apiName || bso.$apiName;
@@ -251,6 +262,50 @@ export class FauxDataStore {
       String(bso.__primaryKey),
       Object.freeze({ ...bso }),
     );
+  }
+
+  #osdkCreatableToBso(
+    objectType: string | ObjectTypeDefinition,
+    anyObj: BaseObjectTypeCreatable,
+  ) {
+    objectType = typeof objectType === "string"
+      ? objectType
+      : objectType.apiName;
+
+    if ("$apiName" in anyObj) {
+      invariant(anyObj.$apiName === objectType);
+    }
+    const { $apiName, $primaryKey, ...others } = anyObj;
+
+    const meta = this.ontology.getObjectTypeFullMetadataOrThrow(
+      objectType,
+    );
+    const realPrimaryKey = anyObj[meta.objectType.primaryKey] as
+      | string
+      | number
+      | boolean;
+
+    const maybeTitle = anyObj[meta.objectType.titleProperty];
+    const rid = anyObj.$rid
+      ?? `ri.phonograph2-objects.main.object.${crypto.randomUUID()}`;
+
+    invariant(
+      realPrimaryKey != null,
+      `Object should have a primary key. ${JSON.stringify(anyObj)}`,
+    );
+
+    invariant(
+      $primaryKey == null || $primaryKey === realPrimaryKey,
+      "Primary key mismatch",
+    );
+
+    return {
+      __apiName: objectType,
+      __primaryKey: realPrimaryKey,
+      __title: maybeTitle ? String(maybeTitle) : undefined,
+      __rid: rid,
+      ...others,
+    };
   }
 
   replaceObjectOrThrow(x: BaseServerObject): void {

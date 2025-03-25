@@ -27,6 +27,10 @@ import type { ActionParameterV2, ParameterId } from "@osdk/foundry.ontologies";
 import type { TH_ActionParameterV2 } from "./TH_ActionParameterV2.js";
 import type { TH_ActionTypeV2 } from "./TH_ActionTypeV2.js";
 
+/**
+ * Helper type for converting a "const" `ActionTypeV2` into a "const"
+ * `ActionDefinition` for compile time checks
+ */
 export interface TH_ActionDefinition<
   X extends TH_ActionTypeV2<Record<ParameterId, ActionParameterV2>>,
 > extends ActionDefinition<any> {

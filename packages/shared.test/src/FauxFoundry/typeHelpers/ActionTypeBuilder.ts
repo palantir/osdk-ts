@@ -95,6 +95,8 @@ export class ActionTypeBuilder<
     const actionTypeV2 = this.action;
     const actionMetadata = wireActionTypeV2ToSdkActionMetadata(
       actionTypeV2,
+      // cast below is needed because the compile time type also needs `signatures`
+      // which we don't create in the conversion.
     ) as TH_ActionMetadata<TH_ActionTypeV2<P>>;
 
     return {

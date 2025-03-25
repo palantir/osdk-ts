@@ -141,27 +141,25 @@ function setupOntology(fauxFoundry: FauxFoundry) {
 function setupSomeEmployees(fauxFoundry: FauxFoundry) {
   const dataStore = fauxFoundry.getDefaultDataStore();
 
-  dataStore.registerObject<Employee>({
-    $apiName: "Employee",
+  dataStore.registerObject(Employee, {
     employeeId: 1,
   });
 
-  dataStore.registerObject<Employee>({
-    $apiName: "Employee",
+  dataStore.registerObject(Employee, {
     employeeId: 2,
   });
 
-  dataStore.registerObject<Employee>({
+  dataStore.registerObject(Employee, {
     $apiName: "Employee",
     employeeId: 3,
   });
 
-  dataStore.registerObject<Employee>({
+  dataStore.registerObject(Employee, {
     $apiName: "Employee",
     employeeId: 4,
   });
 
-  dataStore.registerObject<Employee>({
+  dataStore.registerObject(Employee, {
     $apiName: "Employee",
     employeeId: JOHN_DOE_ID,
     fullName: "John Doe",
@@ -989,11 +987,11 @@ describe(Store, () => {
     });
     describe("batching", () => {
       it("groups requests for single objects", async () => {
-        fauxFoundry.getDefaultDataStore().registerObject<Employee>({
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
           $apiName: "Employee",
           employeeId: 0,
         });
-        fauxFoundry.getDefaultDataStore().registerObject<Employee>({
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
           $apiName: "Employee",
           employeeId: 1,
         });
@@ -1035,7 +1033,7 @@ describe(Store, () => {
       });
 
       it("properly invalidates objects", async () => {
-        fauxFoundry.getDefaultDataStore().registerObject<Todo>({
+        fauxFoundry.getDefaultDataStore().registerObject(Todo, {
           $apiName: "Todo",
           id: 0,
           text: "og title",
@@ -1082,7 +1080,7 @@ describe(Store, () => {
         });
 
         // set the object in the "backend"
-        fauxFoundry.getDefaultDataStore().registerObject<Todo>({
+        fauxFoundry.getDefaultDataStore().registerObject(Todo, {
           $apiName: "Todo",
           id: 0,
           text: "does not matter",
@@ -1154,7 +1152,7 @@ describe(Store, () => {
           (["a", "b", "c"] as const).map(text => {
             const id = nextPk++;
 
-            fauxFoundry.getDefaultDataStore().registerObject<Todo>({
+            fauxFoundry.getDefaultDataStore().registerObject(Todo, {
               $apiName: "Todo",
               id,
               text,
@@ -1419,14 +1417,14 @@ describe(Store, () => {
 
         testStage("Resolve Action");
 
+        const modifiedObjectA = fauxObjectA.$clone({
+          text: "a prime",
+        });
+
         const pkForD = (await pActionResult).addedObjects?.[0].primaryKey;
         invariant(typeof pkForD === "number");
         // load this without the cache for comparisons
         const createdObjectD = await client(Todo).fetchOne(pkForD);
-
-        const modifiedObjectA = fauxObjectA.$clone({
-          text: "a prime",
-        });
 
         await waitForCall(subListUnordered, 1);
         expectSingleListCallAndClear(subListUnordered, [

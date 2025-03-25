@@ -30,28 +30,11 @@ const colors = {
   fatal: [chalk.redBright, chalk.bgRedBright],
 } as const;
 
-function createLogMethod(
-  name: "trace" | "debug" | "info" | "warn" | "error" | "fatal",
-  bindings: Record<string, any>,
-  options: { level?: string; msgPrefix?: string },
-): LogFn {
-  const msgs: string[] = [colors[name][1](name)];
-
-  if (options?.msgPrefix) {
-    msgs.push(colors[name][0](options.msgPrefix));
-  }
-
-  if (typeof bindings === "object" && "methodName" in bindings) {
-    msgs.push(chalk.magenta(`.${bindings.methodName}()`));
-  }
-
-  // eslint-disable-next-line no-console
-  return vi.fn<LogFn>(console[name === "fatal" ? "error" : name].bind(
-    console,
-    msgs.join(" "),
-  )) as LogFn;
-}
-
+/**
+ * A logger suitable for using in unit tests.
+ * - It uses chalk for colors (Node and browser console.log supports)
+ * - Does not rely on async behavior of `pino`.
+ */
 export class TestLogger extends BaseLogger implements Logger {
   constructor(
     bindings: Record<string, any> = {},
@@ -66,7 +49,29 @@ export class TestLogger extends BaseLogger implements Logger {
     for (
       const k of ["trace", "debug", "info", "warn", "error", "fatal"] as const
     ) {
-      this[k] = createLogMethod(k, bindings, options);
+      this[k] = this.#createLogMethod(k, bindings, options);
     }
+  }
+
+  #createLogMethod(
+    name: "trace" | "debug" | "info" | "warn" | "error" | "fatal",
+    bindings: Record<string, any>,
+    options: { level?: string; msgPrefix?: string },
+  ): LogFn {
+    const msgs: string[] = [colors[name][1](name)];
+
+    if (options?.msgPrefix) {
+      msgs.push(colors[name][0](options.msgPrefix));
+    }
+
+    if (typeof bindings === "object" && "methodName" in bindings) {
+      msgs.push(chalk.magenta(`.${bindings.methodName}()`));
+    }
+
+    // eslint-disable-next-line no-console
+    return vi.fn<LogFn>(console[name === "fatal" ? "error" : name].bind(
+      console,
+      msgs.join(" "),
+    )) as LogFn;
   }
 }

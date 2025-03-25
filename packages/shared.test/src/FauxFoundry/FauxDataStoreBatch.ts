@@ -94,8 +94,8 @@ export class FauxDataStoreBatch {
 
     this.#fauxDataStore.registerObject({
       ...object,
-      $apiName: objectType,
-      $primaryKey: primaryKey,
+      __apiName: objectType,
+      __primaryKey: primaryKey,
       [fullMetadata.objectType.primaryKey]: primaryKey,
     });
     this.objectEdits.edits.push({
