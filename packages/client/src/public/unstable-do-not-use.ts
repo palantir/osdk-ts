@@ -26,3 +26,8 @@ export type {
   Observer,
   Unsubscribable,
 } from "../observable/ObservableClient.js";
+export type { OsdkConfig } from "../public-utils/osdkConfig.js";
+export {
+  getMetaTagContent,
+  getOsdkConfig,
+} from "../public-utils/osdkConfig.js";
