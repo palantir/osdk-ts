@@ -565,7 +565,7 @@ describe.each([
       const result = await client(FooInterface).fetchPage();
 
       const object = result.data[0];
-      expect(object.$objectSpecifier).toBe("Employee:50050");
+      expect(object.$objectSpecifier).toBe("Employee:50030");
     });
   });
 });
