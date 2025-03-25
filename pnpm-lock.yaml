@@ -14867,7 +14867,7 @@ snapshots:
 
   '@babel/helper-wrap-function@7.25.9':
     dependencies:
-      '@babel/template': 7.27.0
+      '@babel/template': 7.26.9
       '@babel/traverse': 7.26.9
       '@babel/types': 7.27.0
     transitivePeerDependencies:
@@ -24387,8 +24387,8 @@ snapshots:
   metro-transform-plugins@0.81.0:
     dependencies:
       '@babel/core': 7.26.0
-      '@babel/generator': 7.27.0
-      '@babel/template': 7.27.0
+      '@babel/generator': 7.26.9
+      '@babel/template': 7.26.9
       '@babel/traverse': 7.26.9
       flow-enums-runtime: 0.0.6
       nullthrows: 1.1.1
@@ -24398,9 +24398,9 @@ snapshots:
   metro-transform-worker@0.81.0:
     dependencies:
       '@babel/core': 7.26.0
-      '@babel/generator': 7.27.0
-      '@babel/parser': 7.27.0
-      '@babel/types': 7.27.0
+      '@babel/generator': 7.26.9
+      '@babel/parser': 7.26.9
+      '@babel/types': 7.26.9
       flow-enums-runtime: 0.0.6
       metro: 0.81.0
       metro-babel-transformer: 0.81.0
