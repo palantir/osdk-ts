@@ -1284,6 +1284,7 @@ export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<Ag
 
 // Warning: (ae-forgotten-export) The symbol "AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "WITH_PROPERTIES_AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "WITH_PROPERTIES_AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type ValidAggregationKeys<
