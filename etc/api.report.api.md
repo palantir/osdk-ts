@@ -1259,12 +1259,13 @@ export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<Ag
 
 // Warning: (ae-forgotten-export) The symbol "AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "GetWirePropertyValueFromClient" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "WITH_PROPERTIES_AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type ValidAggregationKeys<
 	Q extends ObjectOrInterfaceDefinition,
 	R extends "aggregate" | "withPropertiesAggregate" = "aggregate"
-> = keyof ({ [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<GetWirePropertyValueFromClient<CompileTimeMetadata<Q>["properties"][KK]["type"]>, R extends "aggregate" ? true : false>}`]? : any } & {
+> = keyof ({ [KK in AggregatableKeys<Q> as `${KK & string}:${R extends "aggregate" ? AGG_FOR_TYPE<GetWirePropertyValueFromClient<CompileTimeMetadata<Q>["properties"][KK]["type"]>> : WITH_PROPERTIES_AGG_FOR_TYPE<CompileTimeMetadata<Q>["properties"][KK]["type"]>}`]? : any } & {
     	$count?: any
 });
 
