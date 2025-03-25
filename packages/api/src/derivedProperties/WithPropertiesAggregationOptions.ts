@@ -14,21 +14,30 @@
  * limitations under the License.
  */
 
-export type CollectWithPropAggregations = "collectSet" | "collectList";
-
-export type BaseWithPropAggregations =
+export type DistinctWithPropAggregateOption =
   | "approximateDistinct"
   | "exactDistinct";
 
-export type StringWithPropAggregateOption =
-  | BaseWithPropAggregations
-  | CollectWithPropAggregations;
+export type BaseWithPropAggregations =
+  | DistinctWithPropAggregateOption
+  | "collectSet"
+  | "collectList";
+
+export type MinMaxWithPropAggregateOption = "min" | "max";
+
+export type DatetimeAggregateOption =
+  | MinMaxWithPropAggregateOption
+  | BaseWithPropAggregations;
 
 export type NumericWithPropAggregateOption =
-  | "min"
-  | "max"
   | "sum"
   | "avg"
   | "approximatePercentile"
-  | BaseWithPropAggregations
-  | CollectWithPropAggregations;
+  | MinMaxWithPropAggregateOption
+  | BaseWithPropAggregations;
+
+export type ValidCollectPropertyKeysForSpecialTypes =
+  | "attachment"
+  | "geopoint"
+  | "geoshape"
+  | "boolean";
