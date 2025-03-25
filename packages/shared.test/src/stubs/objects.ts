@@ -267,3 +267,16 @@ export const objectWithAllPropertyTypesEmptyEntries = {
   __title: "2",
   id: 2,
 };
+
+export const objectWithAllPropertyTypes2 = {
+  ...objectWithAllPropertyTypes1,
+  __rid:
+    "ri.phonograph2-objects.main.object.401ac022-89eb-4591-8b7e-0a912b9efb44",
+  __primaryKey: 5,
+  __apiName: "objectTypeWithAllPropertyTypes",
+  __title: "5",
+  id: 5,
+} as {
+  __primaryKey: number;
+  __apiName: string;
+};

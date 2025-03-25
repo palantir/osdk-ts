@@ -1177,6 +1177,7 @@ describe(Store, () => {
             $objectSpecifier: `${type.apiName}:${x.$primaryKey}`,
           }],
           undefined,
+          {},
         ))[0] as ObjectHolder & Osdk.Instance<X>;
       }
 

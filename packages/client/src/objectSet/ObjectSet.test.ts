@@ -15,6 +15,7 @@
  */
 
 import type {
+  Attachment,
   CompileTimeMetadata,
   ConvertProps,
   FetchPageResult,
@@ -36,6 +37,7 @@ import {
   BgaoNflPlayer,
   Employee,
   FooInterface,
+  objectTypeWithAllPropertyTypes,
   Office,
 } from "@osdk/client.test.ontology";
 import {
@@ -798,6 +800,126 @@ describe("ObjectSet", () => {
       });
 
       expect(objectWithUndefinedRdp.derivedPropertyName).toBeUndefined();
+    });
+
+    it("correctly deserializes attachments and geo properties", async () => {
+      const objectWithRdp = await client(objectTypeWithAllPropertyTypes)
+        .withProperties({
+          "attachmentSelectDp": (base) =>
+            base.pivotTo("linkedObjectType").selectProperty("attachment"),
+          "geoSelectDp": (base) =>
+            base.pivotTo("linkedObjectType").selectProperty("geoShape"),
+          "geoCollectListDp": (base) =>
+            base.pivotTo("linkedObjectType").aggregate(
+              "geoShapeArray:collectList",
+            ),
+        }).fetchOne(5);
+
+      expectTypeOf(objectWithRdp.attachmentSelectDp).toEqualTypeOf<
+        Attachment | undefined
+      >();
+      expect(objectWithRdp.attachmentSelectDp).toMatchInlineSnapshot(
+        `
+        {
+          "fetchContents": [Function],
+          "fetchMetadata": [Function],
+          "rid": "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
+        }
+      `,
+      );
+
+      expectTypeOf(objectWithRdp.geoSelectDp).toEqualTypeOf<
+        GeoJSON.GeoJSON | undefined
+      >();
+      expect(objectWithRdp.geoSelectDp).toMatchInlineSnapshot(`
+        {
+          "coordinates": [
+            [
+              [
+                1,
+                1,
+              ],
+              [
+                1,
+                2,
+              ],
+              [
+                2,
+                2,
+              ],
+              [
+                2,
+                1,
+              ],
+              [
+                1,
+                1,
+              ],
+            ],
+          ],
+          "type": "Polygon",
+        }
+      `);
+
+      expectTypeOf(objectWithRdp.geoCollectListDp).toEqualTypeOf<
+        GeoJSON.GeoJSON[] | undefined
+      >();
+      expect(objectWithRdp.geoCollectListDp).toMatchInlineSnapshot(`
+        [
+          [
+            {
+              "coordinates": [
+                [
+                  [
+                    1,
+                    1,
+                  ],
+                  [
+                    1,
+                    2,
+                  ],
+                  [
+                    2,
+                    2,
+                  ],
+                  [
+                    2,
+                    1,
+                  ],
+                  [
+                    1,
+                    1,
+                  ],
+                ],
+              ],
+              "type": "Polygon",
+            },
+          ],
+        ]
+      `);
+
+      // Tests that we deserialize properly for fetchPage as well
+      const fetchPageTest = await client(objectTypeWithAllPropertyTypes)
+        .withProperties({
+          "attachmentSelectDp": (base) =>
+            base.pivotTo("linkedObjectType").selectProperty("attachment"),
+          "geoSelectDp": (base) =>
+            base.pivotTo("linkedObjectType").selectProperty("geoShape"),
+          "geoCollectListDp": (base) =>
+            base.pivotTo("linkedObjectType").aggregate(
+              "geoShapeArray:collectList",
+            ),
+        }).where({ "id": { "$eq": 5 } }).fetchPage();
+
+      expect(fetchPageTest.data[0].attachmentSelectDp).toMatchInlineSnapshot(
+        `
+        {
+          "fetchContents": [Function],
+          "fetchMetadata": [Function],
+          "rid": "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
+        }
+      `,
+      );
     });
   });
 
