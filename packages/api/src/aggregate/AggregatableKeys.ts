@@ -45,11 +45,10 @@ export type NumericAggregateOption =
   | "exactDistinct"
   | MinMaxAggregateOption;
 
-type AGG_FOR_TYPE<WIRE_TYPE extends WirePropertyTypes> =
-  GetWirePropertyValueFromClient<WIRE_TYPE> extends number
-    ? NumericAggregateOption
-    : WIRE_TYPE extends "datetime" | "timestamp" ? DatetimeAggregateOption
-    : BaseAggregateOptions;
+type AGG_FOR_TYPE<WIRE_TYPE extends WirePropertyTypes> = number extends
+  GetWirePropertyValueFromClient<WIRE_TYPE> ? NumericAggregateOption
+  : WIRE_TYPE extends "datetime" | "timestamp" ? DatetimeAggregateOption
+  : BaseAggregateOptions;
 
 type WITH_PROPERTIES_AGG_FOR_TYPE<WIRE_TYPE extends WirePropertyTypes> =
   number extends GetWirePropertyValueFromClient<WIRE_TYPE>

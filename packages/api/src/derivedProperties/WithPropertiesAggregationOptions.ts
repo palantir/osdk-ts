@@ -18,10 +18,11 @@ export type DistinctWithPropAggregateOption =
   | "approximateDistinct"
   | "exactDistinct";
 
+export type CollectWithPropAggregations = "collectSet" | "collectList";
+
 export type BaseWithPropAggregations =
   | DistinctWithPropAggregateOption
-  | "collectSet"
-  | "collectList";
+  | CollectWithPropAggregations;
 
 export type MinMaxWithPropAggregateOption = "min" | "max";
 
