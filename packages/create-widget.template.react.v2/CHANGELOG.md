@@ -1,5 +1,11 @@
 # @osdk/create-widget.template.react.v2
 
+## 2.0.1
+
+### Patch Changes
+
+- 4f38bbe: Use options overload when initializing client in create-app templates and standardize formatting
+
 ## 2.0.0
 
 ### Minor Changes

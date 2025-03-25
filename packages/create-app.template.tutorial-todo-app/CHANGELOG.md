@@ -1,5 +1,11 @@
 # @osdk/create-app.template.tutorial-todo-app
 
+## 2.1.2
+
+### Patch Changes
+
+- 4f38bbe: Use options overload when initializing client in create-app templates and standardize formatting
+
 ## 2.1.1
 
 ## 2.1.0

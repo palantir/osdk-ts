@@ -1,5 +1,12 @@
 # @osdk/widget.client.unstable
 
+## 2.0.1
+
+### Patch Changes
+
+- @osdk/client@2.1.2
+- @osdk/widget.api.unstable@2.0.1
+
 ## 2.0.0
 
 ### Major Changes
