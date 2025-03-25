@@ -1,5 +1,11 @@
 # @osdk/oauth
 
+## 1.1.1
+
+### Patch Changes
+
+- 2354693: Discard refresh token if requested scopes have changed
+
 ## 1.1.0
 
 ### Minor Changes
