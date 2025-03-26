@@ -19,10 +19,24 @@ import type { ObjectSet } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
+export async function extractRdpDefinition(
+  clientCtx: MinimalClient,
+  objectSet: ObjectSet,
+  methodInputObjectType: string,
+): Promise<
+  Record<string, ObjectMetadata.Property>
+> {
+  return (await extractRdpDefinitionInternal(
+    clientCtx,
+    objectSet,
+    methodInputObjectType,
+  ))[0];
+}
+
 /* @internal
 * Returns a tuple of the derived property definitions and the object type that the derived property is defined on.
 */
-export async function extractRdpDefinition(
+async function extractRdpDefinitionInternal(
   clientCtx: MinimalClient,
   objectSet: ObjectSet,
   methodInputObjectType: string,
@@ -33,7 +47,7 @@ export async function extractRdpDefinition(
 
   switch (objectSet.type) {
     case "searchAround": {
-      const [definitions, childObjectType] = await extractRdpDefinition(
+      const [definitions, childObjectType] = await extractRdpDefinitionInternal(
         clientCtx,
         objectSet.objectSet,
         methodInputObjectType,
@@ -50,7 +64,7 @@ export async function extractRdpDefinition(
     }
     case "withProperties": {
       // These are the definitions and current object type for all object set operations prior to the definition (e.g. filter, pivotTo, etc.)
-      const [definitions, childObjectType] = await extractRdpDefinition(
+      const [definitions, childObjectType] = await extractRdpDefinitionInternal(
         clientCtx,
         objectSet.objectSet,
         methodInputObjectType,
@@ -68,11 +82,12 @@ export async function extractRdpDefinition(
           case "collectSet":
           case "get":
             // This is the object set construction for the derived property definition construction. We pass in childObjectType so that when we reach MethodInputObjectSet, we know where to start looking.
-            const [_, operationLevelObjectType] = await extractRdpDefinition(
-              clientCtx,
-              definition.objectSet,
-              childObjectType,
-            );
+            const [_, operationLevelObjectType] =
+              await extractRdpDefinitionInternal(
+                clientCtx,
+                definition.objectSet,
+                childObjectType,
+              );
             const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
               operationLevelObjectType,
             );
@@ -96,7 +111,7 @@ export async function extractRdpDefinition(
     case "asBaseObjectTypes":
     case "asType":
     case "nearestNeighbors":
-      return extractRdpDefinition(
+      return extractRdpDefinitionInternal(
         clientCtx,
         objectSet.objectSet,
         methodInputObjectType,

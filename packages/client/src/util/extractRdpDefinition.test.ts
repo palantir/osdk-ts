@@ -84,7 +84,7 @@ describe("extractRdpDefinition", () => {
       "",
     );
 
-    expect(result[0]).toMatchInlineSnapshot(
+    expect(result).toMatchInlineSnapshot(
       `
       {
         "myRdp": {
@@ -135,7 +135,7 @@ describe("extractRdpDefinition", () => {
       "",
     );
 
-    expect(result[0]).toMatchInlineSnapshot(`
+    expect(result).toMatchInlineSnapshot(`
       {
         "myRdp": {
           "type": "attachment",
