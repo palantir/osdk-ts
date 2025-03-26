@@ -1,5 +1,25 @@
 # @osdk/client.unstable
 
+## 2.2.0-beta.12
+
+## 2.2.0-beta.11
+
+### Minor Changes
+
+- 10da391: Links as Code
+
+## 2.2.0-beta.10
+
+### Minor Changes
+
+- 5e8e839: Bump OMS API to include links in ontology IR
+
+## 2.2.0-beta.9
+
+## 2.2.0-beta.8
+
+## 2.2.0-beta.7
+
 ## 2.2.0-beta.6
 
 ## 2.2.0-beta.5

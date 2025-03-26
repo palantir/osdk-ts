@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-import { $ontologyRid, Employee, Task } from "@osdk/client.test.ontology";
-import { apiServer, MockOntology, stubData } from "@osdk/shared.test";
+import { Employee, Task } from "@osdk/client.test.ontology";
+import type { MediaReference } from "@osdk/foundry.core";
+import {
+  LegacyFauxFoundry,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
-import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
@@ -32,24 +37,20 @@ describe(toDataValue, () => {
 
   const mockFetch: MockedFunction<typeof globalThis.fetch> = vi.fn();
 
-  beforeAll(async () => {
-    apiServer.listen();
-    client = createClient(
-      "https://stack.palantir.com",
-      $ontologyRid,
-      async () => "myAccessToken",
-    );
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
+    ({ client } = testSetup);
 
     clientCtx = createMinimalClient(
-      MockOntology.metadata,
-      "https://stack.palantir.com",
-      async () => "myAccessToken",
+      { ontologyRid: testSetup.fauxFoundry.defaultOntologyRid },
+      testSetup.fauxFoundry.baseUrl,
+      testSetup.auth,
       {},
     );
-  });
 
-  afterAll(() => {
-    apiServer.close();
+    return () => {
+      testSetup.apiServer.close();
+    };
   });
 
   it("converts passthrough values correctly", async () => {
@@ -142,34 +143,42 @@ describe(toDataValue, () => {
   });
 
   it("converts blob attachment uploads correctly", async () => {
-    const blob =
-      stubData.attachmentUploadRequestBody[stubData.localAttachment1.filename];
+    const blob = new Blob([JSON.stringify({ "hi": "mom" })]);
     const attachmentUpload = createAttachmentUpload(blob, "file1.txt");
     const converted = await toDataValue(attachmentUpload, clientCtx);
 
-    expect(converted).toEqual(
-      "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
-    );
+    expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/i);
   });
 
   it("converts file attachment uploads correctly", async () => {
     // Mimics the Web file API (https://developer.mozilla.org/en-US/docs/Web/API/File). The File constructor is only available in Node 19.2.0 and above
     const file = Object.assign(
-      stubData.attachmentUploadRequestBody[stubData.localAttachment1.filename],
+      new Blob([
+        JSON.stringify({ name: "Hello World" }, null, 2),
+      ], {
+        type: "application/json",
+      }),
       { name: "file1.txt" },
     );
 
     const converted = await toDataValue(file, clientCtx);
-
-    expect(converted).toEqual(
-      "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
-    );
+    expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/i);
   });
 
   it("converts media reference correctly", async () => {
-    const converted = await toDataValue(stubData.mediaReference, clientCtx);
-    expect(converted).toEqual(
-      stubData.mediaReference,
-    );
+    const mediaReference: MediaReference = {
+      mimeType: "application/json",
+      reference: {
+        type: "mediaSetViewItem",
+        mediaSetViewItem: {
+          mediaItemRid: "media-item-rid",
+          mediaSetRid: "media-set-rid",
+          mediaSetViewRid: "media-set-view-rid",
+        },
+      },
+    };
+
+    const converted = await toDataValue(mediaReference, clientCtx);
+    expect(converted).toEqual(mediaReference);
   });
 });

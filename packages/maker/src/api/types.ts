@@ -25,7 +25,10 @@ import type {
   InterfaceTypeStatus_active,
   InterfaceTypeStatus_deprecated,
   InterfaceTypeStatus_experimental,
+  LinkTypeDisplayMetadata,
+  LinkTypeMetadata,
   OntologyIrInterfaceType,
+  OntologyIrLinkTypeStatus,
   OntologyIrObjectType,
   OntologyIrPropertyType,
   SharedPropertyTypeGothamMapping,
@@ -51,6 +54,7 @@ export interface Ontology extends
   sharedPropertyTypes: Record<string, SharedPropertyType>;
   objectTypes: Record<string, ObjectType>;
   valueTypes: Record<string, ValueTypeDefinitionVersion[]>;
+  linkTypes: Record<string, LinkTypeDefinition>;
   importedTypes: ImportedTypes;
 }
 export type {
@@ -61,6 +65,9 @@ export type {
 };
 
 export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
+export type OptionalFields<T, K extends keyof T> =
+  & Pick<Partial<T>, K>
+  & Omit<T, K>;
 
 export interface ObjectTypeInner extends
   Omit<
@@ -123,6 +130,10 @@ export type ObjectPropertyType = RequiredFields<
   "apiName" | "type" | "displayName"
 >;
 
+export interface InterfacePropertyType {
+  sharedPropertyType: SharedPropertyType;
+  required: boolean;
+}
 export interface InterfaceType extends
   Omit<
     OntologyIrInterfaceType,
@@ -132,9 +143,11 @@ export interface InterfaceType extends
     | "allProperties"
     | "allLinks"
     | "allExtendsInterfaces"
+    | "propertiesV2"
+    | "allPropertiesV2"
   >
 {
-  properties: Record<string, SharedPropertyType>;
+  propertiesV2: Record<string, InterfacePropertyType>;
   status: InterfaceTypeStatus;
 }
 
@@ -202,6 +215,50 @@ export interface StructPropertyType extends
   fieldType: PropertyTypeTypesWithoutStruct;
 }
 
+export type ObjectTypePropertyApiName = string;
+export type LinkTypeId = string;
+
+export type LinkTypeDefinition =
+  | OneToManyLinkTypeDefinition
+  | ManyToManyLinkTypeDefinition;
+
+export interface OneToManyLinkTypeDefinition {
+  id: LinkTypeId;
+  one: OneToManyObjectLinkReference;
+  toMany: OneToManyObjectLinkReference;
+  manyForeignKeyProperty: ObjectTypePropertyApiName;
+  cardinality: "OneToMany" | "OneToOne" | undefined;
+  editsEnabled?: boolean;
+  status?: OntologyIrLinkTypeStatus;
+  redacted?: boolean;
+}
+
+export interface OneToManyObjectLinkReference {
+  object: ObjectType;
+  metadata: LinkTypeMetadata;
+}
+
+export interface ManyToManyLinkTypeDefinition {
+  id: LinkTypeId;
+  many: ManyToManyObjectLinkReference;
+  toMany: ManyToManyObjectLinkReference;
+  editsEnabled?: boolean;
+  status?: OntologyIrLinkTypeStatus;
+  redacted?: boolean;
+}
+
+export interface ManyToManyObjectLinkReference {
+  object: ObjectType;
+  metadata: LinkTypeMetadata;
+}
+
+export type LinkSideMetadata = OptionalFields<
+  RequiredFields<
+    Omit<LinkTypeMetadata, "displayMetadata"> & LinkTypeDisplayMetadata,
+    "apiName"
+  >,
+  "visibility" | "typeClasses"
+>;
 export interface ValueTypeType_array {
   constraints: {
     constraint: Extract<DataConstraint, { type: "array" }>["array"];

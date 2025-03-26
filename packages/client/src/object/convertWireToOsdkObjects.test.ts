@@ -23,15 +23,8 @@ import {
 } from "@osdk/client.test.ontology";
 import type { OntologyObjectV2 } from "@osdk/foundry.ontologies";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
-import { apiServer } from "@osdk/shared.test";
-import {
-  afterAll,
-  beforeAll,
-  describe,
-  expect,
-  expectTypeOf,
-  it,
-} from "vitest";
+import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
+import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 import { additionalContext, type Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
@@ -46,17 +39,12 @@ describe("convertWireToOsdkObjects", () => {
     FooInterface: { Employee: { fooSpt: "fullName" } },
   };
 
-  beforeAll(async () => {
-    apiServer.listen();
-    client = createClient(
-      "https://stack.palantir.com",
-      $ontologyRid,
-      async () => "myAccessToken",
-    );
-  });
-
-  afterAll(() => {
-    apiServer.close();
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
+    ({ client } = testSetup);
+    return () => {
+      testSetup.apiServer.close();
+    };
   });
 
   it("configures properties correctly", async () => {
@@ -74,6 +62,7 @@ describe("convertWireToOsdkObjects", () => {
       "$apiName",
       "$objectType",
       "$primaryKey",
+      "$objectSpecifier",
       "employeeLocation",
     ].sort());
 
@@ -93,7 +82,7 @@ describe("convertWireToOsdkObjects", () => {
 
     // Should not have $title
     expect(JSON.stringify(employee)).toMatchInlineSnapshot(
-      `"{"employeeId":50030,"fullName":"John Doe","office":"NYC","class":"Red","startDate":"2019-01-01","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"$apiName":"Employee","$objectType":"Employee","$primaryKey":50030}"`,
+      `"{"employeeId":50030,"fullName":"John Doe","office":"NYC","class":"Red","startDate":"2019-01-01","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"$apiName":"Employee","$objectType":"Employee","$primaryKey":50030,"$objectSpecifier":"Employee:50030"}"`,
     );
 
     expect(JSON.stringify(employee.$as(FooInterface))).toMatchInlineSnapshot(
@@ -102,7 +91,7 @@ describe("convertWireToOsdkObjects", () => {
 
     // Should have $title
     expect(JSON.stringify(employee2)).toMatchInlineSnapshot(
-      `"{"employeeId":50031,"fullName":"Jane Doe","office":"SEA","class":"Blue","startDate":"2012-02-12","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"$apiName":"Employee","$objectType":"Employee","$primaryKey":50031,"$title":"Jane Doe"}"`,
+      `"{"employeeId":50031,"fullName":"Jane Doe","office":"SEA","class":"Blue","startDate":"2012-02-12","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"$apiName":"Employee","$objectType":"Employee","$primaryKey":50031,"$title":"Jane Doe","$objectSpecifier":"Employee:50031"}"`,
     );
 
     expect(JSON.stringify(employee2.$as(FooInterface))).toMatchInlineSnapshot(
@@ -289,6 +278,7 @@ describe("convertWireToOsdkObjects", () => {
     expect(obj).toMatchInlineSnapshot(`
       {
         "$apiName": "Employee",
+        "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
         "$title": "Steve",
@@ -338,6 +328,7 @@ describe("convertWireToOsdkObjects", () => {
     expect(obj).toMatchInlineSnapshot(`
       {
         "$apiName": "Employee",
+        "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
         "$title": "Steve",
@@ -385,6 +376,7 @@ describe("convertWireToOsdkObjects", () => {
     expect(obj).toMatchInlineSnapshot(`
       {
         "$apiName": "Employee",
+        "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
         "$rid": "hiMom",
@@ -440,6 +432,7 @@ describe("convertWireToOsdkObjects", () => {
     expect(obj).toMatchInlineSnapshot(`
       {
         "$apiName": "Employee",
+        "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
         "$rid": "hiMom",

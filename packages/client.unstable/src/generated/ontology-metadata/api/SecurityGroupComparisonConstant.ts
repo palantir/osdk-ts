@@ -28,6 +28,9 @@ export interface SecurityGroupComparisonConstant_strings {
   type: "strings";
   strings: Array<string>;
 }
+/**
+ * A value represented by a constant.
+ */
 export type SecurityGroupComparisonConstant =
   | SecurityGroupComparisonConstant_string
   | SecurityGroupComparisonConstant_boolean

@@ -48,7 +48,7 @@ describe("generatePerQueryDataFiles", () => {
         "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
       export { returnsTodo } from './queries/returnsTodo.js';
       ",
-        "/foo/ontology/queries/getCount.ts": "import type { QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
+        "/foo/ontology/queries/getCount.ts": "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
       import { $osdkMetadata } from '../../OntologyMetadata.js';
 
@@ -101,7 +101,7 @@ describe("generatePerQueryDataFiles", () => {
         osdkMetadata: $osdkMetadata,
       };
       ",
-        "/foo/ontology/queries/returnsTodo.ts": "import type { QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
+        "/foo/ontology/queries/returnsTodo.ts": "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
       import { $osdkMetadata } from '../../OntologyMetadata.js';
       import type { Todo } from '../objects/Todo.js';
@@ -330,7 +330,7 @@ describe("generatePerQueryDataFiles", () => {
     );
     expect(helper.getFiles()["/foo/ontology/queries/doThing.ts"])
       .toMatchInlineSnapshot(`
-        "import type { QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
+        "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 

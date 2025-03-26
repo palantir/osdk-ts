@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectSet,
-  ObjectTypeDefinition,
-  Osdk,
-  PrimaryKeyType,
-} from "@osdk/api";
+import type { ObjectTypeDefinition, Osdk, PrimaryKeyType } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import type { Connectable, Observable, Subject } from "rxjs";
 import { BehaviorSubject, connectable, map } from "rxjs";
 import { additionalContext } from "../../Client.js";
+import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
 import type { CommonObserveOptions, Status } from "../ObservableClient.js";
+import { getBulkObjectLoader } from "./BulkObjectLoader.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Entry } from "./Layer.js";
 import { Query } from "./Query.js";
@@ -33,12 +30,10 @@ import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 
 export interface ObjectEntry extends Entry<ObjectCacheKey> {}
 
-type ObjectStorageData = Osdk.Instance<ObjectTypeDefinition>;
-
 export interface ObjectCacheKey extends
   CacheKey<
     "object",
-    ObjectStorageData,
+    ObjectHolder,
     ObjectQuery,
     [string, pk: PrimaryKeyType<ObjectTypeDefinition>]
   >
@@ -82,7 +77,7 @@ export class ObjectQuery extends Query<
   protected _createConnectable(
     subject: Observable<SubjectPayload<ObjectCacheKey>>,
   ): Connectable<ObjectPayload> {
-    return connectable(
+    return connectable<ObjectPayload>(
       subject.pipe(
         map((x) => {
           return {
@@ -105,52 +100,73 @@ export class ObjectQuery extends Query<
     );
   }
 
-  async _fetch(): Promise<void> {
+  async _fetchAndStore(): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.info({ methodName: "_fetch" });
+      this.logger?.child({ methodName: "_fetchAndStore" }).info(
+        "calling fetchOne",
+      );
     }
 
-    const objectSet = this.store.client({
-      type: "object",
-      apiName: this.#apiName,
-    }) as ObjectSet<ObjectTypeDefinition>;
-    const obj = await objectSet.fetchOne(this.#pk);
+    const obj = await getBulkObjectLoader(this.store.client)
+      .fetch(this.#apiName, this.#pk);
+
     this.store.batch({}, (batch) => {
-      this.writeToStore(
-        obj as Osdk.Instance<ObjectTypeDefinition>,
-        "loaded",
-        batch,
-      );
+      this.writeToStore(obj, "loaded", batch);
     });
   }
 
   writeToStore(
-    data: Osdk.Instance<ObjectTypeDefinition>,
+    data: ObjectHolder,
     status: Status,
     batch: BatchContext,
   ): Entry<ObjectCacheKey> {
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.trace(
-        { methodName: "writeToStore" },
-        `{status: ${status}},`,
-        data,
-      );
-    }
     const entry = batch.read(this.cacheKey);
 
     if (entry && deepEqual(data, entry.value)) {
-      // must do a "full write" here so that the lastUpdated is updated
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.child({ methodName: "writeToStore" }).debug(
+          `Object was deep equal, just setting status`,
+        );
+      }
+      // must do a "full write" here so that the lastUpdated is updated but we
+      // don't want to retrigger anyone's memoization on the value!
       return batch.write(this.cacheKey, entry.value, status);
-      //   return entry.value.data as Osdk.Instance<ObjectTypeDefinition>;
+    }
+
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "writeToStore" }).debug(
+        JSON.stringify({ status }),
+        data,
+      );
     }
     const ret = batch.write(this.cacheKey, data, status);
-
-    if (entry) {
-      batch.changes.modifiedObjects.set(data.$apiName, data);
-    } else {
-      batch.changes.addedObjects.set(data.$apiName, data);
-    }
+    batch.changes.registerObject(this.cacheKey, data, /* isNew */ !entry);
 
     return ret;
   }
+}
+
+/**
+ * Internal helper method for writing objects to the store and returning their
+ * object keys
+ * @internal
+ */
+export function storeOsdkInstances(
+  store: Store,
+  values: Array<ObjectHolder> | Array<Osdk.Instance<any, any, any>>,
+  batch: BatchContext,
+): ObjectCacheKey[] {
+  // update the cache for any object that has changed
+  // and save the mapped values to return
+  return values.map(v => {
+    return store.getObjectQuery(
+      v.$apiName,
+      v.$primaryKey as string | number,
+    )
+      .writeToStore(
+        v as ObjectHolder,
+        "loaded",
+        batch,
+      ).cacheKey;
+  });
 }

@@ -17,6 +17,7 @@
 import type {
   CompileTimeMetadata,
   ConvertProps,
+  FetchPageResult,
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -26,24 +27,23 @@ import type {
   Result,
 } from "@osdk/api";
 import { isOk } from "@osdk/api";
-import { __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid } from "@osdk/api/unstable";
 import {
-  $ontologyRid,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+} from "@osdk/api/unstable";
+import {
   BarInterface,
   BgaoNflPlayer,
   Employee,
   FooInterface,
   Office,
 } from "@osdk/client.test.ontology";
-import { apiServer, stubData } from "@osdk/shared.test";
 import {
-  afterAll,
-  beforeAll,
-  describe,
-  expect,
-  expectTypeOf,
-  it,
-} from "vitest";
+  LegacyFauxFoundry,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
+import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
@@ -82,17 +82,12 @@ export type PropMapToObject<
 describe("ObjectSet", () => {
   let client: Client;
 
-  beforeAll(async () => {
-    apiServer.listen();
-    client = createClient(
-      "https://stack.palantir.com",
-      $ontologyRid,
-      async () => "myAccessToken",
-    );
-  });
-
-  afterAll(() => {
-    apiServer.close();
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
+    ({ client } = testSetup);
+    return () => {
+      testSetup.apiServer.close();
+    };
   });
 
   it("does not allow intersect/union/subtract with different object types", () => {
@@ -138,13 +133,19 @@ describe("ObjectSet", () => {
   it("objects set union", async () => {
     const objectSet = client(Employee);
     const unionedObjectSet = objectSet.union(objectSet);
-    let iter = 0;
     const { data: employees } = await unionedObjectSet.fetchPage();
+    const pks = new Set<number>();
     for (const emp of employees) {
-      expect(emp.employeeId).toEqual(50030 + iter);
-      iter += 1;
+      pks.add(emp.$primaryKey);
     }
-    expect(iter).toEqual(2);
+
+    expect(pks.size).toEqual(6);
+    expect(pks.has(stubData.employee1.employeeId)).toBe(true);
+    expect(pks.has(stubData.employee2.employeeId)).toBe(true);
+    expect(pks.has(stubData.employee3.employeeId)).toBe(true);
+    expect(pks.has(stubData.employee4withDerived.employeeId)).toBe(true);
+    expect(pks.has(stubData.employeePassesStrict.__primaryKey)).toBe(true);
+    expect(pks.has(stubData.employee50050.employeeId)).toBe(true);
   });
 
   it("objects set subtract", async () => {
@@ -153,75 +154,56 @@ describe("ObjectSet", () => {
       employeeId: 50030,
     });
     const subtractedObjectSet = objectSet.subtract(objectSet2);
-    let iter = 0;
-    const { data: employees } = await subtractedObjectSet.fetchPage();
-    for (const emp of employees) {
-      expect(emp.employeeId).toEqual(50031 + iter);
-      iter += 1;
-    }
-    expect(iter).toEqual(2);
+
+    const objectSetResults = await objectSet.fetchPage();
+    const objectSet2Results = await objectSet2.fetchPage();
+    const subtractedObjectSetResults = await subtractedObjectSet.fetchPage();
+
+    expect(objectSet2Results.data).toHaveLength(1);
+    expect(subtractedObjectSetResults.data).toHaveLength(
+      objectSetResults.data.length - objectSet2Results.data.length,
+    );
+    expect(subtractedObjectSetResults.data.find(x => x.$primaryKey === 50030))
+      .toBeUndefined();
   });
 
   it("objects set intersect", async () => {
     const objectSet = client(Employee);
     const intersectedObjectSet = objectSet.intersect(objectSet);
-    let iter = 0;
+    const iter = 0;
     const { data: employees } = await intersectedObjectSet.fetchPage();
+    const pks = new Set<number>();
     for (const emp of employees) {
-      expect(emp.employeeId).toEqual(50032);
-      iter += 1;
+      pks.add(emp.$primaryKey);
     }
-    expect(iter).toEqual(1);
+
+    expect(pks.size).toEqual(6);
+    expect(pks.has(stubData.employee1.employeeId)).toBe(true);
+    expect(pks.has(stubData.employee2.employeeId)).toBe(true);
+    expect(pks.has(stubData.employee3.employeeId)).toBe(true);
+    expect(pks.has(stubData.employee4withDerived.employeeId)).toBe(true);
+    expect(pks.has(stubData.employeePassesStrict.__primaryKey)).toBe(true);
+    expect(pks.has(stubData.employee50050.employeeId)).toBe(true);
   });
 
   it("orders objects in ascending order without a filter, and returns all results", async () => {
     const { data: employees } = await client(Employee)
+      .where({
+        employeeId: { $isNull: false },
+      })
       .fetchPage({
         $orderBy: { "employeeId": "asc" },
       });
-    expect(employees).toMatchObject([
-      {
-        $apiName: "Employee",
-        $objectType: "Employee",
-        $primaryKey: 50030,
-        class: "Red",
-        employeeId: 50030,
-        employeeStatus: expect.anything(),
-        employeeSensor: expect.anything(),
-        fullName: "John Doe",
-        office: "NYC",
-        startDate: "2019-01-01",
-        employeeLocation: expect.anything(),
-      },
-      {
-        $apiName: "Employee",
-        $objectType: "Employee",
-        $primaryKey: 50031,
-        $title: "Jane Doe",
-        class: "Blue",
-        employeeId: 50031,
-        employeeStatus: expect.anything(),
-        employeeSensor: expect.anything(),
-        fullName: "Jane Doe",
-        office: "SEA",
-        startDate: "2012-02-12",
-        employeeLocation: expect.anything(),
-      },
-      {
-        $apiName: "Employee",
-        $objectType: "Employee",
-        $primaryKey: 50032,
-        $title: "Jack Smith",
-        class: "Red",
-        employeeId: 50032,
-        employeeStatus: expect.anything(),
-        employeeSensor: expect.anything(),
-        fullName: "Jack Smith",
-        office: "LON",
-        startDate: "2015-05-15",
-        employeeLocation: expect.anything(),
-      },
-    ]);
+
+    expect(employees.map(e => e.$primaryKey))
+      .toEqual([
+        50030,
+        50031,
+        50032,
+        50033,
+        50035,
+        stubData.employee50050.employeeId,
+      ]);
   });
 
   it("allows fetching by PK from a base object set - fetchOne", async () => {
@@ -239,7 +221,7 @@ describe("ObjectSet", () => {
       __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
     ).fetchOneByRid(
       Employee,
-      "ri.employee.i.look.for",
+      stubData.employee1.__rid,
     );
     expectTypeOf<typeof employee>().toMatchTypeOf<
       Osdk<Employee, PropertyKeys<Employee>>
@@ -247,12 +229,27 @@ describe("ObjectSet", () => {
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
   });
 
+  it("allows fetching page of rids with experimental function", async () => {
+    const employees = await client(
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+    ).fetchPageByRid(
+      Employee,
+      [stubData.employee1.__rid, stubData.employee2.__rid],
+      {},
+    );
+    expectTypeOf<typeof employees>().toMatchTypeOf<
+      FetchPageResult<Employee, PropertyKeys<Employee>, boolean, any, any>
+    >;
+    expect(employees.data[0].$primaryKey).toBe(stubData.employee1.employeeId);
+    expect(employees.data[1].$primaryKey).toBe(stubData.employee2.employeeId);
+  });
+
   it("allows fetching by rid with experimental function, with select", async () => {
     const employee = await client(
       __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
     ).fetchOneByRid(
       Employee,
-      "ri.employee.i.look.for",
+      stubData.employee2.__rid,
       { $select: ["fullName"] },
     );
     expectTypeOf<typeof employee>().toMatchTypeOf<
@@ -260,6 +257,22 @@ describe("ObjectSet", () => {
     >;
     expect(employee.$primaryKey).toBe(stubData.employee2.employeeId);
   });
+
+  it("allows fetching by rid with experimental function, with select 2", async () => {
+    const employees = await client(
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+    ).fetchPageByRid(
+      Employee,
+      [stubData.employee2.__rid, stubData.employee3.__rid],
+      { $select: ["fullName"] },
+    );
+    expectTypeOf<typeof employees>().toMatchTypeOf<
+      FetchPageResult<Employee, "fullName", boolean, any, any>
+    >;
+    expect(employees.data[0].$primaryKey).toBe(stubData.employee2.employeeId);
+    expect(employees.data[1].$primaryKey).toBe(stubData.employee3.employeeId);
+  });
+
   it("check struct parsing", async () => {
     const player = await client(BgaoNflPlayer).fetchOne(
       "tkelce",
@@ -393,16 +406,20 @@ describe("ObjectSet", () => {
   it(" object set union works with fetchPageWithErrors", async () => {
     const objectSet = client(Employee);
     const unionedObjectSet = objectSet.union(objectSet);
-    let iter = 0;
+    const iter = 0;
     const result = await unionedObjectSet.fetchPageWithErrors();
-    if (isOk(result)) {
-      const employees = result.value.data;
-      for (const emp of employees) {
-        expect(emp.employeeId).toEqual(50030 + iter);
-        iter += 1;
-      }
-      expect(iter).toEqual(2);
+    const pks = new Set<number>();
+    for (const emp of result.value!.data) {
+      pks.add(emp.$primaryKey);
     }
+
+    expect(pks.size).toEqual(6);
+    expect(pks.has(stubData.employee1.employeeId)).toBe(true);
+    expect(pks.has(stubData.employee2.employeeId)).toBe(true);
+    expect(pks.has(stubData.employee3.employeeId)).toBe(true);
+    expect(pks.has(stubData.employee4withDerived.employeeId)).toBe(true);
+    expect(pks.has(stubData.employeePassesStrict.__primaryKey)).toBe(true);
+    expect(pks.has(stubData.employee50050.employeeId)).toBe(true);
   });
 
   it("allows $in filter with ReadonlyArrays", () => {
@@ -530,7 +547,7 @@ describe("ObjectSet", () => {
             ? await client(Employee).fetchPage(opts)
             : (await client(Employee).fetchPageWithErrors(opts)).value!;
 
-          expect(result.data).toHaveLength(4);
+          expect(result.data).toHaveLength(6);
           expectTypeOf(result.data[0]).branded.toEqualTypeOf<
             Osdk<Employee, "$all" | "$notStrict" | "$rid">
           >();
@@ -546,7 +563,7 @@ describe("ObjectSet", () => {
             ? await client(Employee).fetchPage(opts)
             : (await client(Employee).fetchPageWithErrors(opts)).value!;
 
-          expect(result.data).toHaveLength(4);
+          expect(result.data).toHaveLength(6);
           expectTypeOf(result.data[0]).branded.toEqualTypeOf<
             Osdk<Employee, "$all" | "$notStrict">
           >();
@@ -764,60 +781,65 @@ describe("ObjectSet", () => {
       const objectWithRdp = await client(Employee).withProperties({
         "derivedPropertyName": (base) =>
           base.pivotTo("lead").selectProperty("employeeId"),
-      }).fetchOne(50035);
+      }).fetchOne(stubData.employee1.employeeId);
 
       expectTypeOf(objectWithRdp.derivedPropertyName).toEqualTypeOf<
         number
       >();
-      expect(objectWithRdp.derivedPropertyName).toBe(1);
+      expect(objectWithRdp.derivedPropertyName).toBe(
+        stubData.employee2.__primaryKey,
+      );
 
       const objectWithUndefinedRdp = await client(Employee).withProperties({
         "derivedPropertyName": (base) =>
           base.pivotTo("lead").selectProperty("employeeId"),
-      }).fetchOne(50036, { $select: ["derivedPropertyName"] });
+      }).fetchOne(stubData.employee2.employeeId, {
+        $select: ["derivedPropertyName"],
+      });
 
       expect(objectWithUndefinedRdp.derivedPropertyName).toBeUndefined();
     });
   });
 
-  describe.each(["fetchOne", "fetchOneWithErrors"] as const)("%s", (k) => {
-    describe("strictNonNull: false", () => {
-      describe("includeRid: true", () => {
-        it("returns bad data", async () => {
-          // Look at this
-          const opts = {
-            $__EXPERIMENTAL_strictNonNull: false,
-            $includeRid: true,
-          } as const;
-          const result = k === "fetchOne"
-            ? await client(Employee).fetchOne(50033, opts)
-            : (await client(Employee).fetchOneWithErrors(50033, opts)).value!;
+  // Can't run these tests because we can't load by primary key!
+  // describe.each(["fetchOne", "fetchOneWithErrors"] as const)("%s", (k) => {
+  //   describe("strictNonNull: false", () => {
+  //     describe("includeRid: true", () => {
+  //       it("returns bad data", async () => {
+  //         // Look at this
+  //         const opts = {
+  //           $__EXPERIMENTAL_strictNonNull: false,
+  //           $includeRid: true,
+  //         } as const;
+  //         const result = k === "fetchOne"
+  //           ? await client(Employee).fetchOne(50033, opts)
+  //           : (await client(Employee).fetchOneWithErrors(50033, opts)).value!;
 
-          expect(result).not.toBeUndefined();
-          expectTypeOf(result).branded.toEqualTypeOf<
-            Osdk<Employee, "$all" | "$notStrict" | "$rid">
-          >();
-        });
-      });
+  //         expect(result).not.toBeUndefined();
+  //         expectTypeOf(result).branded.toEqualTypeOf<
+  //           Osdk<Employee, "$all" | "$notStrict" | "$rid">
+  //         >();
+  //       });
+  //     });
 
-      describe("includeRid: false", () => {
-        it("returns bad data", async () => {
-          const opts = {
-            $__EXPERIMENTAL_strictNonNull: false,
-            $includeRid: false,
-          } as const;
-          const result = k === "fetchOne"
-            ? await client(Employee).fetchOne(50033, opts)
-            : (await client(Employee).fetchOneWithErrors(50033, opts)).value!;
+  //     describe("includeRid: false", () => {
+  //       it("returns bad data", async () => {
+  //         const opts = {
+  //           $__EXPERIMENTAL_strictNonNull: false,
+  //           $includeRid: false,
+  //         } as const;
+  //         const result = k === "fetchOne"
+  //           ? await client(Employee).fetchOne(50033, opts)
+  //           : (await client(Employee).fetchOneWithErrors(50033, opts)).value!;
 
-          expect(result).not.toBeUndefined();
-          expectTypeOf(result).branded.toEqualTypeOf<
-            Osdk<Employee, "$all" | "$notStrict">
-          >();
-        });
-      });
-    });
-  });
+  //         expect(result).not.toBeUndefined();
+  //         expectTypeOf(result).branded.toEqualTypeOf<
+  //           Osdk<Employee, "$all" | "$notStrict">
+  //         >();
+  //       });
+  //     });
+  //   });
+  // });
 
   describe("conversions", () => {
     describe("strictNonNull: false", () => {
@@ -883,8 +905,24 @@ describe("ObjectSet", () => {
         >()
           .toEqualTypeOf<"fooSpt">();
 
-        expectTypeOf<ConvertProps<FooInterface, Employee, "fooSpt">>()
+        expectTypeOf<
+          ConvertProps<FooInterface, Employee, "fooSpt">
+        >()
           .toEqualTypeOf<"fullName">();
+
+        expectTypeOf<
+          ConvertProps<FooInterface, Employee, "fooSpt", "$allBaseProperties">
+        >()
+          .toEqualTypeOf<
+            | "employeeId"
+            | "fullName"
+            | "office"
+            | "class"
+            | "startDate"
+            | "employeeStatus"
+            | "employeeSensor"
+            | "employeeLocation"
+          >();
 
         // We don't have a proper definition that has
         // a non-null property on an interface so

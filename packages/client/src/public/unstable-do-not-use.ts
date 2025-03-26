@@ -18,8 +18,16 @@ export { augment } from "../object/fetchPage.js";
 
 // THIS IS NOT THE FINAL NAME DO NOT SHIP LIKE THIS
 export type { ActionSignatureFromDef } from "../actions/applyAction.js";
-export type { ListPayload } from "../observable/ListPayload.js";
-export type { ObjectPayload } from "../observable/ObjectPayload.js";
-export type { Unsubscribable } from "../observable/ObservableClient.js";
-export type { ObservableClient } from "../observable/ObservableClient.js";
 export { createObservableClient } from "../observable/ObservableClient.js";
+export type {
+  ObservableClient,
+  ObserveObjectArgs,
+  ObserveObjectsArgs,
+  Observer,
+  Unsubscribable,
+} from "../observable/ObservableClient.js";
+export type { OsdkConfig } from "../public-utils/osdkConfig.js";
+export {
+  getMetaTagContent,
+  getOsdkConfig,
+} from "../public-utils/osdkConfig.js";

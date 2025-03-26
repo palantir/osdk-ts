@@ -34,6 +34,9 @@ import type {
   OntologyIr,
   OntologyIrInterfaceType,
   OntologyIrInterfaceTypeBlockDataV2,
+  OntologyIrLinkDefinition,
+  OntologyIrLinkTypeBlockDataV2,
+  OntologyIrManyToManyLinkTypeDatasource,
   OntologyIrObjectTypeBlockDataV2,
   OntologyIrObjectTypeDatasource,
   OntologyIrPropertyType,
@@ -47,6 +50,7 @@ import type {
 } from "@osdk/client.unstable";
 import type {
   InterfaceType,
+  LinkTypeDefinition,
   ObjectPropertyType,
   ObjectType,
   Ontology,
@@ -77,6 +81,7 @@ export async function defineOntology(
     interfaceTypes: {},
     sharedPropertyTypes: {},
     valueTypes: {},
+    linkTypes: {},
     importedTypes: {
       sharedPropertyTypes: [],
     },
@@ -152,6 +157,13 @@ function convertToWireOntologyIr(
               }];
             },
           ),
+      ),
+      linkTypes: Object.fromEntries(
+        Object.entries(ontology.linkTypes).map<
+          [string, OntologyIrLinkTypeBlockDataV2]
+        >(([id, link]) => {
+          return [id, convertLink(link)];
+        }),
       ),
       blockPermissionInformation: {
         actionTypes: {},
@@ -257,17 +269,129 @@ function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {
   return output;
 }
 
+function convertLink(
+  linkType: LinkTypeDefinition,
+): OntologyIrLinkTypeBlockDataV2 {
+  let definition: OntologyIrLinkDefinition;
+  let datasource: OntologyIrManyToManyLinkTypeDatasource | undefined =
+    undefined;
+  if ("one" in linkType) {
+    definition = {
+      type: "oneToMany",
+      oneToMany: {
+        cardinalityHint: "ONE_TO_ONE",
+        manyToOneLinkMetadata: linkType.toMany.metadata,
+        objectTypeRidManySide: linkType.toMany.object.apiName,
+        objectTypeRidOneSide: linkType.one.object.apiName,
+        oneToManyLinkMetadata: linkType.one.metadata,
+        oneSidePrimaryKeyToManySidePropertyMapping: [{
+          from: {
+            apiName: linkType.one.object.primaryKeys[0],
+            object: linkType.one.object.apiName,
+          },
+          to: {
+            apiName: linkType.manyForeignKeyProperty,
+            object: linkType.toMany.object.apiName,
+          },
+        }],
+      },
+    };
+  } else {
+    definition = {
+      type: "manyToMany",
+      manyToMany: {
+        objectTypeAToBLinkMetadata: linkType.many.metadata,
+        objectTypeBToALinkMetadata: linkType.toMany.metadata,
+        objectTypeRidA: linkType.many.object.apiName,
+        objectTypeRidB: linkType.toMany.object.apiName,
+        peeringMetadata: undefined,
+        objectTypeAPrimaryKeyPropertyMapping: [{
+          from: {
+            apiName: linkType.many.object.primaryKeys[0],
+            object: linkType.many.object.apiName,
+          },
+          to: {
+            apiName: linkType.many.object.primaryKeys[0],
+            object: linkType.many.object.apiName,
+          },
+        }],
+        objectTypeBPrimaryKeyPropertyMapping: [{
+          from: {
+            apiName: linkType.toMany.object.primaryKeys[0],
+            object: linkType.toMany.object.apiName,
+          },
+          to: {
+            apiName: linkType.toMany.object.primaryKeys[0],
+            object: linkType.toMany.object.apiName,
+          },
+        }],
+      },
+    };
+
+    datasource = {
+      rid: "ri.ontology.main.datasource.link-".concat(linkType.id),
+      datasource: {
+        type: "dataset",
+        dataset: {
+          datasetRid: "link-".concat(linkType.id),
+          writebackDatasetRid: undefined,
+          objectTypeAPrimaryKeyMapping: [{
+            property: {
+              apiName: linkType.many.object.primaryKeys[0],
+              object: linkType.many.object.apiName,
+            },
+            column: linkType.many.object.primaryKeys[0],
+          }],
+          objectTypeBPrimaryKeyMapping: [{
+            property: {
+              apiName: linkType.toMany.object.primaryKeys[0],
+              object: linkType.toMany.object.apiName,
+            },
+            column: linkType.many.object.primaryKeys[0],
+          }],
+        },
+      },
+      editsConfiguration: {
+        onlyAllowPrivilegedEdits: false,
+      },
+      redacted: linkType.redacted,
+    };
+  }
+
+  return {
+    linkType: {
+      definition: definition,
+      id: linkType.id,
+      status: linkType.status ?? { type: "active", active: {} },
+      redacted: linkType.redacted ?? false,
+    },
+    datasources: datasource !== undefined ? [datasource] : [],
+    entityMetadata: {
+      arePatchesEnabled: linkType.editsEnabled ?? false,
+    },
+  };
+}
+
 function convertInterface(
   interfaceType: InterfaceType,
 ): OntologyIrInterfaceType {
   return {
     ...interfaceType,
-    properties: Object.values(interfaceType.properties)
-      .map<OntologyIrSharedPropertyType>((spt) => convertSpt(spt)),
+    propertiesV2: Object.fromEntries(
+      Object.values(interfaceType.propertiesV2)
+        .map((
+          spt,
+        ) => [spt.sharedPropertyType.apiName, {
+          required: spt.required,
+          sharedPropertyType: convertSpt(spt.sharedPropertyType),
+        }]),
+    ),
     // these are omitted from our internal types but we need to re-add them for the final json
     allExtendsInterfaces: [],
     allLinks: [],
     allProperties: [],
+    allPropertiesV2: {},
+    properties: [],
   };
 }
 

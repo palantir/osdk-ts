@@ -40,6 +40,7 @@ type AGG_FOR_TYPE<T, U extends boolean> = number extends T
   ? U extends true ? NumericAggregateOption : NumericWithPropAggregateOption
   : string extends T
     ? U extends true ? StringAggregateOption : StringWithPropAggregateOption
+  : boolean extends T ? U extends true ? never : StringWithPropAggregateOption
   : never;
 
 export type ValidAggregationKeys<

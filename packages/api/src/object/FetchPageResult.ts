@@ -51,9 +51,10 @@ export type FetchPageResult<
   L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
+  T extends boolean = false,
 > = PageResult<
-  PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S>>
-    : Osdk.Instance<Q, ExtractOptions<R, S>, L>
+  PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S, T>>
+    : Osdk.Instance<Q, ExtractOptions<R, S, T>, L>
 >;
 
 /**
@@ -65,9 +66,10 @@ export type SingleOsdkResult<
   R extends boolean,
   S extends NullabilityAdherence,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  T extends boolean = false,
 > = Osdk.Instance<
   Q,
-  ExtractOptions<R, S>,
+  ExtractOptions<R, S, T>,
   PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
   { [K in Extract<keyof RDPs, L>]: RDPs[K] }
 >;

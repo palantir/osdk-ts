@@ -18,25 +18,42 @@ import {
   $ontologyRid,
   objectTypeWithAllPropertyTypes,
 } from "@osdk/client.test.ontology";
-import { apiServer, stubData } from "@osdk/shared.test";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import {
+  LegacyFauxFoundry,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
+import { beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
 describe("media", () => {
   let client: Client;
 
-  beforeAll(async () => {
-    apiServer.listen();
-    client = createClient(
-      "https://stack.palantir.com",
-      $ontologyRid,
-      async () => "myAccessToken",
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new LegacyFauxFoundry(),
+      createClient,
     );
-  });
 
-  afterAll(() => {
-    apiServer.close();
+    ({ client } = testSetup);
+
+    testSetup.fauxFoundry
+      .getDataStore($ontologyRid)
+      .registerMedia(
+        objectTypeWithAllPropertyTypes.apiName,
+        "mediaReference",
+        new TextEncoder().encode(
+          JSON.stringify({ content: "Hello World" }),
+        ),
+        "application/json",
+        "file1.txt",
+        stubData.objectWithAllPropertyTypes1.mediaReference,
+      );
+
+    return () => {
+      testSetup.apiServer.close();
+    };
   });
 
   it("reads media metadata successfully", async () => {
@@ -48,10 +65,11 @@ describe("media", () => {
     const object1 = result.data[0];
     expect(object1.mediaReference).toBeDefined();
     const mediaMetadata = await object1.mediaReference?.fetchMetadata();
-    expect(mediaMetadata).toBeDefined();
-    expect(mediaMetadata?.path).toEqual("file1.txt");
-    expect(mediaMetadata?.mediaType).toEqual("application/json");
-    expect(mediaMetadata?.sizeBytes).toEqual(20);
+    expect(mediaMetadata).toEqual({
+      path: "file1.txt",
+      mediaType: "application/json",
+      sizeBytes: 25,
+    });
   });
 
   it("reads media content successfully", async () => {
@@ -61,8 +79,7 @@ describe("media", () => {
     const object1 = result.data[0];
     expect(object1.mediaReference).toBeDefined();
     const mediaContent = await object1?.mediaReference?.fetchContents();
-    const mediaText = await mediaContent!.text();
-    expect(JSON.parse(mediaText)).toEqual({
+    expect(await mediaContent!.json()).toEqual({
       content: "Hello World",
     });
   });

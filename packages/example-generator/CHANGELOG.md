@@ -1,5 +1,56 @@
 # @osdk/example-generator
 
+## 0.10.0-beta.12
+
+### Patch Changes
+
+- @osdk/create-app@2.2.0-beta.12
+- @osdk/create-widget@2.1.0-beta.5
+
+## 0.10.0-beta.11
+
+### Patch Changes
+
+- @osdk/create-app@2.2.0-beta.11
+- @osdk/create-widget@2.1.0-beta.4
+
+## 0.10.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [e75819c]
+- Updated dependencies [fa02507]
+- Updated dependencies [1d0e72a]
+  - @osdk/create-app@2.2.0-beta.10
+  - @osdk/create-widget@2.1.0-beta.4
+
+## 0.10.0-beta.9
+
+### Patch Changes
+
+- @osdk/create-app@2.2.0-beta.9
+- @osdk/create-widget@2.1.0-beta.3
+
+## 0.10.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [770ec64]
+  - @osdk/create-app@2.2.0-beta.8
+  - @osdk/create-widget@2.1.0-beta.3
+
+## 0.10.0-beta.7
+
+### Minor Changes
+
+- 21e33a5: Upgrade consola to 3.4.0
+
+### Patch Changes
+
+- Updated dependencies [21e33a5]
+  - @osdk/create-widget@2.1.0-beta.3
+  - @osdk/create-app@2.2.0-beta.7
+
 ## 0.10.0-beta.6
 
 ### Patch Changes

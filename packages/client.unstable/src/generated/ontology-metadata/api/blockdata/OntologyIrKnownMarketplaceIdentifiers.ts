@@ -21,7 +21,6 @@ import type { GroupId } from "../GroupId.js";
 import type { InterfaceLinkTypeApiName } from "../InterfaceLinkTypeApiName.js";
 import type { InterfaceTypeApiName } from "../InterfaceTypeApiName.js";
 import type { LinkTypeId } from "../LinkTypeId.js";
-import type { LinkTypeRid } from "../LinkTypeRid.js";
 import type { ModuleRid } from "../ModuleRid.js";
 import type { ObjectTypeApiName } from "../ObjectTypeApiName.js";
 import type { ObjectTypeFieldApiName } from "../ObjectTypeFieldApiName.js";
@@ -40,7 +39,7 @@ export interface OntologyIrKnownMarketplaceIdentifiers {
   sharedPropertyTypes: Record<ObjectTypeFieldApiName, BlockInternalId>;
   valueTypes: Record<ValueTypeRid, Record<ValueTypeVersionId, BlockInternalId>>;
   propertyTypes: Record<ObjectTypeFieldApiName, BlockInternalId>;
-  linkTypes: Record<LinkTypeRid, BlockInternalId>;
+  linkTypes: Record<LinkTypeId, BlockInternalId>;
   actionTypes: Record<ActionTypeRid, BlockInternalId>;
   actionParameters: Record<ParameterRid, BlockInternalId>;
   workshopModules: Record<ModuleRid, BlockInternalId>;

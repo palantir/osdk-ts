@@ -17,6 +17,7 @@
 import type { ActionApplyClientPreferences } from "./ActionApplyClientPreferences.js";
 import type { ActionLogConfiguration } from "./ActionLogConfiguration.js";
 import type { ActionNotificationSettings } from "./ActionNotificationSettings.js";
+import type { ActionSubmissionConfiguration } from "./ActionSubmissionConfiguration.js";
 import type { ActionTypeApiName } from "./ActionTypeApiName.js";
 import type { ActionTypeDisplayMetadataModification } from "./ActionTypeDisplayMetadataModification.js";
 import type { ActionTypeEntities } from "./ActionTypeEntities.js";
@@ -48,4 +49,5 @@ export interface ActionTypeMetadataModification {
   actionApplyClientSettings: ActionApplyClientPreferences | undefined;
   notificationSettings: ActionNotificationSettings;
   provenance: ActionTypeProvenance | undefined;
+  submissionConfiguration: ActionSubmissionConfiguration | undefined;
 }

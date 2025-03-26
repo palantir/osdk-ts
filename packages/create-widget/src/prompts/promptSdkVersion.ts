@@ -33,7 +33,7 @@ export async function promptSdkVersion({
     consola.fail(
       `The ${template.label} template does not support a "${sdkVersion}" SDK version.`,
     );
-    sdkVersion = (await consola.prompt(
+    sdkVersion = await consola.prompt(
       `Please choose which version of the OSDK you'd like to use for the ${template.label} template:`,
       {
         type: "select",
@@ -44,9 +44,7 @@ export async function promptSdkVersion({
             value: sdkVersion,
           })),
       },
-      // Types for "select" are wrong the value is returned rather than the option object
-      // https://github.com/unjs/consola/pull/238
-    )) as unknown as SdkVersion;
+    );
   }
 
   return sdkVersion as SdkVersion;

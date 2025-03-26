@@ -61,6 +61,9 @@ export interface DerivedPropertyAggregationModification_collectSet {
   type: "collectSet";
   collectSet: LinkedCollectionModification;
 }
+/**
+ * An aggregation function and what it should be computed on (e.g. a property type on the linked object type).
+ */
 export type DerivedPropertyAggregationModification =
   | DerivedPropertyAggregationModification_count
   | DerivedPropertyAggregationModification_avg

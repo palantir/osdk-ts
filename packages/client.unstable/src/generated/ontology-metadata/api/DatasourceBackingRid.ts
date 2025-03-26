@@ -23,6 +23,7 @@ import type { MediaSetRid } from "./MediaSetRid.js";
 import type { MediaSetViewRid } from "./MediaSetViewRid.js";
 import type { RestrictedViewRid } from "./RestrictedViewRid.js";
 import type { StreamLocatorRid } from "./StreamLocatorRid.js";
+import type { TableRid } from "./TableRid.js";
 import type { TimeSeriesSyncRid } from "./TimeSeriesSyncRid.js";
 export interface DatasourceBackingRid_datasetRid {
   type: "datasetRid";
@@ -64,6 +65,11 @@ export interface DatasourceBackingRid_geotimeSeriesIntegrationRid {
   geotimeSeriesIntegrationRid: GeotimeSeriesIntegrationRid;
 }
 
+export interface DatasourceBackingRid_tableRid {
+  type: "tableRid";
+  tableRid: TableRid;
+}
+
 export interface DatasourceBackingRid_editsOnlyRid {
   type: "editsOnlyRid";
   editsOnlyRid: EditsOnlyRid;
@@ -90,6 +96,7 @@ export type DatasourceBackingRid =
   | DatasourceBackingRid_mediaSetRid
   | DatasourceBackingRid_mediaSetViewRid
   | DatasourceBackingRid_geotimeSeriesIntegrationRid
+  | DatasourceBackingRid_tableRid
   | DatasourceBackingRid_editsOnlyRid
   | DatasourceBackingRid_directSourceRid
   | DatasourceBackingRid_derivedPropertiesSourceRid;

@@ -107,22 +107,6 @@ export default async function main(
   }
 }
 
-async function loadOntologyViaJiti(input: string) {
-  Object.assign(globalThis, {
-    defineInterface,
-    defineObject,
-    defineSharedPropertyType,
-  });
-
-  const jiti_ = await import("jiti");
-  const jiti = (jiti_.default as any as typeof jiti_["default"]["default"])(
-    process.cwd(),
-    { debug: true },
-  );
-
-  return defineOntology("", async () => await jiti(input));
-}
-
 async function loadOntologyViaTsNode(input: string) {
   Object.assign(globalThis, {
     defineInterface,

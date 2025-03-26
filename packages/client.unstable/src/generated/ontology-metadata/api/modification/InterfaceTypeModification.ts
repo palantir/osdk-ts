@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,13 @@ import type { InterfaceTypeRidOrIdInRequest } from "../InterfaceTypeRidOrIdInReq
 import type { InterfaceTypeStatus } from "../InterfaceTypeStatus.js";
 import type { SharedPropertyTypeRidOrIdInRequest } from "../SharedPropertyTypeRidOrIdInRequest.js";
 import type { InterfaceLinkTypeModification } from "./InterfaceLinkTypeModification.js";
+import type { InterfaceSharedPropertyTypeModification } from "./InterfaceSharedPropertyTypeModification.js";
 export interface InterfaceTypeModification {
   displayMetadata: InterfaceTypeDisplayMetadata;
   apiName: InterfaceTypeApiName;
   status: InterfaceTypeStatus;
   properties: Array<SharedPropertyTypeRidOrIdInRequest>;
+  propertiesV2: Array<InterfaceSharedPropertyTypeModification>;
   extendsInterfaces: Array<InterfaceTypeRidOrIdInRequest>;
   links: Array<InterfaceLinkTypeModification>;
 }

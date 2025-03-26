@@ -18,11 +18,12 @@ import react from "@vitejs/plugin-react";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
-import { SETUP_PATH } from "./src/common/constants.js";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: `/${SETUP_PATH}`,
+  // Support being served on a non-root path
+  // https://vite.dev/guide/build#relative-base
+  base: "./",
   plugins: [react()],
   server: {
     port: 8080,

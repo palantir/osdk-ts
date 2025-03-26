@@ -136,7 +136,7 @@
     },
 
     "build": {
-      "dependsOn": ["transpile", "typecheck"],
+      "dependsOn": ["transpile", "transpileTypes", "typecheck"],
       "inputs": [
         "src/**/*",
 
@@ -178,11 +178,6 @@
     "@osdk/e2e.sandbox.todoapp#build": {
       "inputs": ["src/**/*", "vite.config.ts", "index.html"],
       "dependsOn": ["transpile", "typecheck"]
-    },
-
-    "@osdk/examples.next-static-export#build": {
-      "dependsOn": ["transpile", "typecheck"],
-      "inputs": ["../../google-font-mocked-response.js"]
     },
 
     "transpile": {

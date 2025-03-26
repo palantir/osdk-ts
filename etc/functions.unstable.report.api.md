@@ -4,6 +4,25 @@
 
 ```ts
 
+import { Attachment } from '@osdk/api';
+import type { Client } from '@osdk/client';
+import type { CompileTimeMetadata } from '@osdk/api';
+import type { ObjectMetadata } from '@osdk/api';
+import type { ObjectTypeDefinition } from '@osdk/api';
+import type { Osdk } from '@osdk/api';
+import type { OsdkObjectPropertyType } from '@osdk/api';
+import type { PropertyKeys } from '@osdk/api';
+import { Range as Range_2 } from '@osdk/api';
+import { ThreeDimensionalAggregation } from '@osdk/api';
+import { TwoDimensionalAggregation } from '@osdk/api';
+
+export { Attachment }
+
+// Warning: (ae-forgotten-export) The symbol "AnyEdit" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export function createEditBatch<T extends AnyEdit>(_client: Client): EditBatch<T>;
+
 // @public (undocumented)
 export type DateISOString<T extends string = string> = T & {
     	__dateBrand?: void
@@ -13,6 +32,50 @@ export type DateISOString<T extends string = string> = T & {
 export type Double<T extends number = number> = T & {
     	__doubleBrand?: void
 };
+
+// @public (undocumented)
+export interface EditBatch<X extends AnyEdit = never> {
+    	// Warning: (ae-forgotten-export) The symbol "CreateObjectEdits" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    create: <O extends CreateObjectEdits<X>>(obj: O["obj"], properties: O["properties"]) => void;
+    	// Warning: (ae-forgotten-export) The symbol "DeleteObjectEdits" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    delete: <O extends DeleteObjectEdits<X>>(obj: O["obj"]) => void;
+    	// (undocumented)
+    getEdits: () => X[];
+    	// Warning: (ae-forgotten-export) The symbol "AddLinkEdits" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    link: <L extends AddLinkEdits<X>>(source: L["source"], apiName: L["apiName"], target: L["target"]) => void;
+    	// Warning: (ae-forgotten-export) The symbol "RemoveLinkEdits" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    unlink: <L extends RemoveLinkEdits<X>>(source: L["source"], apiName: L["apiName"], target: L["target"]) => void;
+    	// Warning: (ae-forgotten-export) The symbol "UpdateObjectEdits" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    update: <O extends UpdateObjectEdits<X>>(obj: O["obj"], properties: O["properties"]) => void;
+}
+
+// @public (undocumented)
+export namespace Edits {
+    	// Warning: (ae-forgotten-export) The symbol "AddLink" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "RemoveLink" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export type Link<
+    		S extends ObjectTypeDefinition,
+    		L extends keyof CompileTimeMetadata<S>["links"]
+    	> = AddLink<S, L> | RemoveLink<S, L>;
+    	// Warning: (ae-forgotten-export) The symbol "CreateObject" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "DeleteObject" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "UpdateObject" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export type Object<S extends ObjectTypeDefinition> = CreateObject<S> | DeleteObject<S> | UpdateObject<S>;
+}
 
 // @public (undocumented)
 export type Float<T extends number = number> = T & {
@@ -29,10 +92,16 @@ export type Long<T extends string = string> = T & {
     	__longBrand?: void
 };
 
+export { Range_2 as Range }
+
+export { ThreeDimensionalAggregation }
+
 // @public (undocumented)
 export type TimestampISOString<T extends string = string> = T & {
     	__timestampBrand?: void
 };
+
+export { TwoDimensionalAggregation }
 
 // (No @packageDocumentation comment for this package)
 

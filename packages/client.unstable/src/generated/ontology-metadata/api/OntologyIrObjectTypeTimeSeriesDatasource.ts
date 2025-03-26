@@ -15,6 +15,7 @@
  */
 
 import type { TimeSeriesSyncName } from "./blockdata/TimeSeriesSyncName.js";
+import type { MarkingId } from "./MarkingId.js";
 import type { ObjectTypeFieldApiName } from "./ObjectTypeFieldApiName.js";
 
 /**
@@ -23,4 +24,5 @@ import type { ObjectTypeFieldApiName } from "./ObjectTypeFieldApiName.js";
 export interface OntologyIrObjectTypeTimeSeriesDatasource {
   timeSeriesSyncRid: TimeSeriesSyncName;
   properties: Array<ObjectTypeFieldApiName>;
+  assumedMarkings: Array<MarkingId>;
 }

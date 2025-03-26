@@ -16,7 +16,11 @@
 
 import invariant from "tiny-invariant";
 import { namespace, ontologyDefinition } from "./defineOntology.js";
-import type { ObjectType, SharedPropertyType } from "./types.js";
+import type {
+  InterfacePropertyType,
+  ObjectType,
+  SharedPropertyType,
+} from "./types.js";
 
 export function defineObject(objectDef: ObjectType): ObjectType {
   const apiName = namespace + objectDef.apiName;
@@ -46,7 +50,8 @@ export function defineObject(objectDef: ObjectType): ObjectType {
     const nonExistentInterfaceProperties: ValidationResult[] = interfaceImpl
       .propertyMapping.map(val => val.interfaceProperty).filter(
         interfaceProperty =>
-          interfaceImpl.implements.properties[interfaceProperty] === undefined,
+          interfaceImpl.implements.propertiesV2[interfaceProperty]
+            === undefined,
       ).map(interfaceProp => ({
         type: "invalid",
         reason:
@@ -59,13 +64,14 @@ export function defineObject(objectDef: ObjectType): ObjectType {
       ),
     );
     const validateProperty = (
-      interfaceProp: [string, SharedPropertyType],
+      interfaceProp: [string, InterfacePropertyType],
     ): ValidationResult => {
       if (
-        interfaceProp[1].nonNameSpacedApiName in interfaceToObjectProperties
+        interfaceProp[1].sharedPropertyType.nonNameSpacedApiName
+          in interfaceToObjectProperties
       ) {
         return validateInterfaceImplProperty(
-          interfaceProp[1],
+          interfaceProp[1].sharedPropertyType,
           interfaceToObjectProperties[interfaceProp[0]],
           objectDef,
         );
@@ -73,16 +79,18 @@ export function defineObject(objectDef: ObjectType): ObjectType {
       return {
         type: "invalid",
         reason: `Interface property ${interfaceImpl.implements.apiName}.${
-          interfaceProp[1].nonNameSpacedApiName
+          interfaceProp[1].sharedPropertyType.nonNameSpacedApiName
         } not implemented by ${objectDef.apiName} object definition`,
       };
     };
-    const baseValidations = Object.entries(interfaceImpl.implements.properties)
+    const baseValidations = Object.entries(
+      interfaceImpl.implements.propertiesV2,
+    )
       .map<ValidationResult>(validateProperty);
     const extendsValidations = interfaceImpl.implements.extendsInterfaces
       .flatMap(interfaceApiName =>
         Object.entries(
-          ontologyDefinition.interfaceTypes[interfaceApiName].properties,
+          ontologyDefinition.interfaceTypes[interfaceApiName].propertiesV2,
         ).map(validateProperty)
       );
 

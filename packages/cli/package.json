@@ -1,6 +1,6 @@
 {
   "name": "@osdk/cli",
-  "version": "0.26.0-beta.6",
+  "version": "0.26.0-beta.12",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -40,7 +40,7 @@
     "@arethetypeswrong/cli": "0.17.3",
     "ajv": "8.13.0",
     "archiver": "7.0.1",
-    "consola": "3.2.3",
+    "consola": "3.4.0",
     "open": "10.1.0",
     "pretty-bytes": "6.1.1",
     "semver": "7.6.3",

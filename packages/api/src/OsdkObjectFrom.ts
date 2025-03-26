@@ -71,10 +71,17 @@ export type MapPropNamesToObjectType<
   FROM extends ObjectOrInterfaceDefinition,
   TO extends ObjectTypeDefinition,
   P extends ValidOsdkPropParams<FROM>,
-> = PropMapToObject<
-  FROM,
-  TO
->[JustProps<FROM, P> & keyof PropMapToObject<FROM, TO>];
+  OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
+> = "$allBaseProperties" extends OPTIONS
+  ? PropertyKeys<FROM> extends P ? PropertyKeys<TO>
+  : PropMapToObject<
+    FROM,
+    TO
+  >[JustProps<FROM, P> & keyof PropMapToObject<FROM, TO>]
+  : PropMapToObject<
+    FROM,
+    TO
+  >[JustProps<FROM, P> & keyof PropMapToObject<FROM, TO>];
 
 export type PropMapToInterface<
   FROM extends ObjectTypeDefinition,
@@ -100,10 +107,11 @@ export type ConvertProps<
   FROM extends ObjectOrInterfaceDefinition,
   TO extends ValidToFrom<FROM>,
   P extends ValidOsdkPropParams<FROM>,
+  OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
 > = TO extends FROM ? P
   : TO extends ObjectTypeDefinition ? (
       UnionIfTrue<
-        MapPropNamesToObjectType<FROM, TO, P>,
+        MapPropNamesToObjectType<FROM, TO, P, OPTIONS>,
         P extends "$rid" ? true : false,
         "$rid"
       >
@@ -185,7 +193,7 @@ export type Osdk<
 export namespace Osdk {
   export type Instance<
     Q extends ObjectOrInterfaceDefinition,
-    OPTIONS extends never | "$rid" = never,
+    OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
     P extends PropertyKeys<Q> = PropertyKeys<Q>,
     R extends Record<string, SimplePropertyDef> = {},
   > =
@@ -207,7 +215,7 @@ export namespace Osdk {
       ) => Osdk.Instance<
         NEW_Q,
         OPTIONS,
-        ConvertProps<Q, NEW_Q, P>
+        ConvertProps<Q, NEW_Q, P, OPTIONS>
       >;
 
       readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(
@@ -250,8 +258,14 @@ export type ExtractRidOption<R extends boolean> = // comment for readability
     : DefaultToFalse<R> extends false ? never
     : "$rid";
 
+export type ExtractAllPropertiesOption<T extends boolean> = // comment for readability
+  IsNever<T> extends true ? never
+    : DefaultToFalse<T> extends false ? never
+    : "$allBaseProperties";
+
 // not exported from package
 export type ExtractOptions<
   R extends boolean,
   S extends NullabilityAdherence = NullabilityAdherence.Default,
-> = ExtractRidOption<R>;
+  T extends boolean = false,
+> = ExtractRidOption<R> | ExtractAllPropertiesOption<T>;

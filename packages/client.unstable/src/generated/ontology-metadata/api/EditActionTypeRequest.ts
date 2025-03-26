@@ -19,6 +19,7 @@ import type { ActionLogic } from "./ActionLogic.js";
 import type { ActionNotification } from "./ActionNotification.js";
 import type { ActionNotificationSettings } from "./ActionNotificationSettings.js";
 import type { ActionRevert } from "./ActionRevert.js";
+import type { ActionSubmissionConfiguration } from "./ActionSubmissionConfiguration.js";
 import type { ActionTypeApiName } from "./ActionTypeApiName.js";
 import type { ActionTypeDisplayMetadataModification } from "./ActionTypeDisplayMetadataModification.js";
 import type { ActionTypeStatus } from "./ActionTypeStatus.js";
@@ -51,4 +52,5 @@ export interface EditActionTypeRequest {
   webhooks: ActionWebhooks | undefined;
   notifications: Array<ActionNotification>;
   notificationSettings: ActionNotificationSettings | undefined;
+  submissionConfiguration: ActionSubmissionConfiguration | undefined;
 }

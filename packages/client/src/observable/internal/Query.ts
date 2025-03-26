@@ -22,10 +22,12 @@ import type {
   Subscription,
 } from "rxjs";
 import { additionalContext } from "../../Client.js";
-import type { Logger } from "../../Logger.js";
+import type { Logger } from "../../logger/Logger.js";
 import type { CommonObserveOptions, Status } from "../ObservableClient.js";
 import type { CacheKey } from "./CacheKey.js";
+import type { Changes } from "./Changes.js";
 import type { Entry } from "./Layer.js";
+import type { OptimisticId } from "./OptimisticId.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 
 export abstract class Query<
@@ -77,25 +79,41 @@ export abstract class Query<
   ): Connectable<PAYLOAD>;
 
   public subscribe(
-    observer: Partial<Observer<PAYLOAD>>,
+    observer: Observer<PAYLOAD>,
   ): Subscription {
     this.#connectable ??= this._createConnectable(this.#subject);
     this.#subscription = this.#connectable.connect();
     return this.#connectable.subscribe(observer);
   }
 
-  revalidate(force?: boolean): Promise<unknown> {
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.info({ methodName: "revalidate" });
-    }
+  /**
+   * Causes the query to revalidate. This will cause the query to fetch
+   * the latest data from the server and update the store if it is deemed
+   * "stale" or if `force` is true.
+   *
+   * @param force
+   * @returns
+   */
+  async revalidate(force?: boolean): Promise<void> {
+    const logger = process.env.NODE_ENV !== "production"
+      ? this.logger?.child({ methodName: "revalidate" })
+      : this.logger;
 
     if (force) {
       this.abortController?.abort();
     }
 
-    // if we are pending the first page we can just ignore this
+    // n.b. I think this isn't quite right since we may require multiple
+    // pages to properly "revalidate" for someone. This only really works if you
+    // have a single page/object. It needs to be redone. FIXME
+
+    // if we are pending the first page/object we can just ignore this
     if (this.pendingFetch) {
-      return this.pendingFetch;
+      if (process.env.NODE_ENV !== "production") {
+        logger?.info("Fetch is already pending, using it");
+      }
+      await this.pendingFetch;
+      return;
     }
 
     if (
@@ -106,13 +124,21 @@ export abstract class Query<
       )
     ) {
       if (process.env.NODE_ENV !== "production") {
-        this.logger?.trace({ methodName: "revalidate" }, "DEDUPE");
+        logger?.debug("Within dupeInterval, aborting revalidate");
       }
 
       return Promise.resolve();
     }
 
+    if (process.env.NODE_ENV !== "production") {
+      logger?.debug("Starting actual revalidate");
+    }
+
     this.store.batch({}, (batch) => {
+      // make sure the truth layer knows we are loading
+
+      // this will not trigger an update to `changes` so it cannot trigger an
+      // update of a list either. This may not be the behavior we want.
       this.setStatus("loading", batch);
     });
 
@@ -121,34 +147,35 @@ export abstract class Query<
     this.lastFetchStarted = Date.now();
 
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.trace({ methodName: "revalidate" }, "calling _fetch()");
+      logger?.debug("calling _fetchAndStore()");
     }
-    this.pendingFetch = this._fetch()
-      .catch((e) => {
-        this.logger?.error({ methodName: "revalidate" }, "_fetch() FAILED", e);
-        throw e;
-      })
+    this.pendingFetch = this._fetchAndStore()
       .finally(() => {
-        this.logger?.info({ methodName: "revalidate" }, "finally _fetch()");
+        logger?.info("finally _fetchAndStore()");
         this.pendingFetch = undefined;
       });
 
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.info({ methodName: "revalidate" }, "Returning");
-    }
-
-    return this.pendingFetch;
+    await this.pendingFetch;
+    return;
   }
 
-  _preFetch(): void {}
-  abstract _fetch(): Promise<unknown>;
+  protected _preFetch(): void {}
 
+  protected abstract _fetchAndStore(): Promise<unknown>;
+
+  /**
+   * Sets the status of the query in the store (but does not store that in `changes`).
+   *
+   * @param status
+   * @param batch
+   * @returns
+   */
   setStatus(
     status: Status,
     batch: BatchContext,
   ): void {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.trace({ methodName: "setStatus" }, status);
+      this.logger?.child({ methodName: "setStatus" }).debug(status);
     }
     const existing = batch.read(this.cacheKey);
     if (existing?.status === status) return;
@@ -164,11 +191,33 @@ export abstract class Query<
     this._dispose();
   }
 
-  _dispose(): void {}
+  /**
+   * Per query type dispose functionality
+   */
+  protected _dispose(): void {}
 
+  /**
+   * The purpose of this method is to provide a way for others to write
+   * directly into the store for this query.
+   *
+   * @param data
+   * @param status
+   * @param batch
+   */
   abstract writeToStore(
     data: KEY["__cacheKey"]["value"],
     status: Status,
     batch: BatchContext,
   ): Entry<KEY>;
+
+  /**
+   * @param changes
+   * @param optimisticId
+   * @returns If revalidation is needed, a promise that resolves after the
+   *          revalidation is complete. Otherwise, undefined.
+   */
+  maybeUpdateAndRevalidate?: (
+    changes: Changes,
+    optimisticId: OptimisticId | undefined,
+  ) => Promise<void> | undefined;
 }

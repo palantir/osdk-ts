@@ -69,7 +69,7 @@ export interface Client extends SharedClient, OldSharedClient {
     o: Q,
   ): QuerySignatureFromDef<Q>;
 
-  <Q extends Experiment<"2.0.8"> | Experiment<"2.1.0">>(
+  <Q extends Experiment<"2.0.8"> | Experiment<"2.1.0"> | Experiment<"2.2.0">>(
     experiment: Q,
   ): ExperimentFns<Q>;
 

@@ -1,5 +1,75 @@
 # @osdk/generator
 
+## 2.2.0-beta.12
+
+### Patch Changes
+
+- @osdk/api@2.2.0-beta.12
+- @osdk/generator-converters@2.2.0-beta.12
+
+## 2.2.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [7170fd1]
+  - @osdk/api@2.2.0-beta.11
+  - @osdk/generator-converters@2.2.0-beta.11
+
+## 2.2.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [23ea0e4]
+- Updated dependencies [46cede4]
+  - @osdk/api@2.2.0-beta.10
+  - @osdk/generator-converters@2.2.0-beta.10
+
+## 2.2.0-beta.9
+
+### Minor Changes
+
+- 12843cb: Add ability to load all underlying properties of an interface.
+
+### Patch Changes
+
+- Updated dependencies [12843cb]
+- Updated dependencies [f82767c]
+  - @osdk/api@2.2.0-beta.9
+  - @osdk/generator-converters@2.2.0-beta.9
+
+## 2.2.0-beta.8
+
+### Minor Changes
+
+- 63b2e63: Update Platform SDK Dependencies
+- 63b2e63: Supports generating queries for entrySet function types
+
+### Patch Changes
+
+- Updated dependencies [0e874b1]
+- Updated dependencies [63b2e63]
+- Updated dependencies [26c2d95]
+- Updated dependencies [63b2e63]
+- Updated dependencies [63b2e63]
+  - @osdk/api@2.2.0-beta.8
+  - @osdk/generator-converters@2.2.0-beta.8
+
+## 2.2.0-beta.7
+
+### Minor Changes
+
+- 21e33a5: Upgrade consola to 3.4.0
+- 7416ce4: Update Platform SDK Dependencies
+- 805df40: Fix interface action types.
+
+### Patch Changes
+
+- Updated dependencies [7416ce4]
+- Updated dependencies [7416ce4]
+- Updated dependencies [805df40]
+  - @osdk/api@2.2.0-beta.7
+  - @osdk/generator-converters@2.2.0-beta.7
+
 ## 2.2.0-beta.6
 
 ### Minor Changes

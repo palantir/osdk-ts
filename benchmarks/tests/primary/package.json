@@ -1,7 +1,7 @@
 {
   "name": "@osdk/benchmarks.primary",
   "private": true,
-  "version": "0.1.0-beta.19",
+  "version": "0.1.0-beta.25",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
   "devDependencies": {
     "@types/node": "^18.0.0",
     "cli-progress": "^3.12.0",
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.25.0",
     "execa": "^9.5.1",
     "express": "^4.21.2",
     "fast-deep-equal": "3.1.3",

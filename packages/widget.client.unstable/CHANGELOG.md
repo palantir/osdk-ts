@@ -1,5 +1,33 @@
 # @osdk/widget.client.unstable
 
+## 2.1.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [c92fe73]
+  - @osdk/client@2.2.0-beta.12
+  - @osdk/widget.api.unstable@2.1.0-beta.5
+
+## 2.1.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [81c0d8c]
+- Updated dependencies [81c0d8c]
+  - @osdk/client@2.2.0-beta.10
+  - @osdk/widget.api.unstable@2.1.0-beta.4
+
+## 2.1.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [7416ce4]
+- Updated dependencies [7416ce4]
+- Updated dependencies [879b6c3]
+- Updated dependencies [805df40]
+  - @osdk/client@2.2.0-beta.7
+  - @osdk/widget.api.unstable@2.1.0-beta.3
+
 ## 2.1.0-beta.2
 
 ### Patch Changes

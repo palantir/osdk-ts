@@ -1,5 +1,29 @@
 # @osdk/cli
 
+## 0.26.0-beta.12
+
+## 0.26.0-beta.11
+
+### Minor Changes
+
+- 6c1c377: Switch unstable widgets command to preview endpoints
+
+## 0.26.0-beta.10
+
+## 0.26.0-beta.9
+
+## 0.26.0-beta.8
+
+### Minor Changes
+
+- ad93d55: Include deep inspect information about unknown errors
+
+## 0.26.0-beta.7
+
+### Minor Changes
+
+- 21e33a5: Upgrade consola to 3.4.0
+
 ## 0.26.0-beta.6
 
 ## 0.26.0-beta.5

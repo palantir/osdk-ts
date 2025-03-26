@@ -27,11 +27,8 @@ export default async function versionListCommand(
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
   consola.start("Fetching versions");
 
-  const response = await widgetRegistry.listWidgetSetReleases(
-    clientCtx,
-    widgetSet,
-  );
-  if (response.releases.length === 0) {
+  const response = await widgetRegistry.listReleases(clientCtx, widgetSet);
+  if (response.data.length === 0) {
     consola.info("No widget set versions found");
     return;
   }
@@ -40,11 +37,9 @@ export default async function versionListCommand(
 
   const semver = await import("semver");
   const sortedVersions = semver.rsort(
-    response.releases.map(v => v.widgetSetVersion).filter(v => semver.valid(v)),
+    response.data.map((v) => v.version).filter((v) => semver.valid(v)),
   );
   for (const version of sortedVersions) {
-    consola.log(
-      `    - ${version}`,
-    );
+    consola.log(`    - ${version}`);
   }
 }

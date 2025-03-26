@@ -21,14 +21,14 @@ import type {
   ObjectUpdate,
   StreamMessage,
 } from "@osdk/foundry.ontologies";
-import { apiServer } from "@osdk/shared.test";
+import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import ImportedWebSocket from "isomorphic-ws";
 import { http, HttpResponse } from "msw";
+import type { SetupServer } from "msw/node";
 import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
 import type { MockedClass, MockedFunction, MockedObject } from "vitest";
 import {
-  afterAll,
   afterEach,
   beforeAll,
   beforeEach,
@@ -38,8 +38,9 @@ import {
   vi,
 } from "vitest";
 import { z } from "zod";
+import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
-import type { Logger } from "../Logger.js";
+import type { Logger } from "../logger/Logger.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
   constructWebsocketUrl,
@@ -94,13 +95,17 @@ vi.mock("isomorphic-ws", async (importOriginal) => {
 let currentSubscriptionId = 0;
 
 describe("ObjectSetListenerWebsocket", async () => {
-  beforeAll(async () => {
-    apiServer.listen();
-    addLoggerToApiServer(rootLogger);
-  });
-
-  afterAll(() => {
-    apiServer.close();
+  let apiServer: SetupServer;
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new LegacyFauxFoundry(STACK),
+      createClient,
+    );
+    ({ apiServer } = testSetup);
+    addLoggerToApiServer(testSetup.apiServer, rootLogger);
+    return () => {
+      testSetup.apiServer.close();
+    };
   });
 
   describe("basic setup", () => {
@@ -293,6 +298,7 @@ describe("ObjectSetListenerWebsocket", async () => {
             {
               "object": {
                 "$apiName": "Employee",
+                "$objectSpecifier": "Employee:undefined",
                 "$objectType": "Employee",
                 "$primaryKey": undefined,
                 "$title": undefined,
@@ -313,6 +319,7 @@ describe("ObjectSetListenerWebsocket", async () => {
             {
               "object": {
                 "$apiName": "Employee",
+                "$objectSpecifier": "Employee:12345",
                 "$objectType": "Employee",
                 "$primaryKey": "12345",
                 "$title": undefined,
@@ -612,7 +619,7 @@ function setWebSocketState(ws: MockedWebSocket, readyState: "open" | "close") {
   ws._eventEmitter.dispatchEvent(new Event(readyState, {}));
 }
 
-function addLoggerToApiServer(logger: Logger) {
+function addLoggerToApiServer(apiServer: SetupServer, logger: Logger) {
   const z = (
     name: string,
     { requestId, request }: { requestId: string; request: Request },
