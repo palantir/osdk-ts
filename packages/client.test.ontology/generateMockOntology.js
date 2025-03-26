@@ -16,15 +16,49 @@
 
 // @ts-check
 
-import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
 import { LegacyFauxFoundry } from "@osdk/shared.test";
-import { rmSync } from "node:fs";
+import { execa } from "execa";
+import { promises as fs, rmSync } from "node:fs";
 import { mkdir, readdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const outDir = join(__dirname, "src", "generatedNoCheck");
+
+const version = process.argv[2];
+const packageName = "@osdk/generator";
+
+async function installAndImport(packageName, version) {
+  const tmpDir = join(__dirname, "tmp");
+  await mkdir(tmpDir, { recursive: true });
+
+  await execa("pnpm", [
+    "install",
+    `${packageName}@${version}`,
+    "--prefix=./tmp",
+    "--lockfile=false",
+  ], {
+    cwd: __dirname,
+  });
+
+  const packageJsonPath = join(
+    tmpDir,
+    "node_modules",
+    packageName,
+    "package.json",
+  );
+  const packageJsonContent = await fs.readFile(packageJsonPath, "utf8");
+  const packageJson = JSON.parse(packageJsonContent);
+  const mainEntry = packageJson.main;
+
+  const packageMainFile = join(tmpDir, "node_modules", packageName, mainEntry);
+
+  const importedModule = await import(packageMainFile);
+
+  return importedModule;
+}
+
+const outDir = join(__dirname, "src", `generatedNoCheck`);
 
 try {
   rmSync(outDir, { recursive: true, force: true });
@@ -43,13 +77,20 @@ const ontologyWithoutUnsupportedAction = {
   },
 };
 
-// the generator does not correctly handle actions that point to object types outside of the ontology
-// this step is typically handled by code upstream of the actual generator
 delete ontologyWithoutUnsupportedAction.actionTypes["unsupportedAction"];
+
+let generateClientSdkVersionTwoPointZero;
+if (version) {
+  const generatorModule = await installAndImport(packageName, version);
+  generateClientSdkVersionTwoPointZero =
+    generatorModule.generateClientSdkVersionTwoPointZero;
+} else {
+  ({ generateClientSdkVersionTwoPointZero } = await import("@osdk/generator"));
+}
 
 await generateClientSdkVersionTwoPointZero(
   ontologyWithoutUnsupportedAction,
-  "typescript-sdk/dev osdk-cli/dev",
+  `typescript-sdk/dev osdk-cli/dev`,
   {
     writeFile: (path, contents) => {
       return writeFile(path, contents, "utf-8");
