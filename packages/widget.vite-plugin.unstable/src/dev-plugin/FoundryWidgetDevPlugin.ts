@@ -26,7 +26,7 @@ import type { Plugin, ViteDevServer } from "vite";
 import {
   CONFIG_FILE_SUFFIX,
   ENTRYPOINTS_PATH,
-  PALANTIR_PATH,
+  FINISH_PATH,
   SETUP_PATH,
   VITE_INJECTIONS_PATH,
 } from "../common/constants.js";
@@ -73,11 +73,29 @@ export function FoundryWidgetDevPlugin(): Plugin {
       server.printUrls = () => printSetupPageUrl(server);
 
       /**
+       * Redirect `./.palantir/setup` to `./.palantir/setup/` to ensure that relative paths work
+       * correctly. Relative paths must be used so that the dev server UI can be accessed on
+       * non-root paths.
+       */
+      server.middlewares.use(
+        serverPath(server, SETUP_PATH),
+        (req, res, next) => {
+          if (req.originalUrl?.endsWith(serverPath(server, SETUP_PATH))) {
+            res.statusCode = 301;
+            res.setHeader("Location", `${serverPath(server, SETUP_PATH)}/`);
+            res.end();
+          } else {
+            next();
+          }
+        },
+      );
+
+      /**
        * Serve the setup page that will load the entrypoints in iframes and trigger the finish
        * endpoint once widgets have been loaded.
        */
       server.middlewares.use(
-        `/${SETUP_PATH}`,
+        serverPath(server, SETUP_PATH),
         sirv(path.resolve(DIR_DIST, "../../site"), {
           single: true,
           dev: true,
@@ -89,10 +107,16 @@ export function FoundryWidgetDevPlugin(): Plugin {
        * order to trigger module parsing.
        */
       server.middlewares.use(
-        `/${ENTRYPOINTS_PATH}`,
+        serverPath(server, ENTRYPOINTS_PATH),
         (_, res) => {
           res.setHeader("Content-Type", "application/json");
-          res.end(JSON.stringify(htmlEntrypoints));
+          res.end(
+            JSON.stringify(
+              htmlEntrypoints.map((entrypoint) =>
+                serverPath(server, entrypoint)
+              ),
+            ),
+          );
         },
       );
 
@@ -100,7 +124,7 @@ export function FoundryWidgetDevPlugin(): Plugin {
        * Finish the setup process by setting the widget overrides in Foundry and enabling dev mode.
        */
       server.middlewares.use(
-        `/${PALANTIR_PATH}/finish`,
+        serverPath(server, FINISH_PATH),
         async (_, res) => {
           // Wait for the setup page to trigger the parsing of the config files
           const numEntrypoints = htmlEntrypoints.length;
@@ -129,7 +153,7 @@ export function FoundryWidgetDevPlugin(): Plugin {
        * work correctly.
        */
       server.middlewares.use(
-        `/${VITE_INJECTIONS_PATH}`,
+        serverPath(server, VITE_INJECTIONS_PATH),
         async (_, res) => {
           res.setHeader("Access-Control-Allow-Origin", "*");
           res.setHeader("Content-Type", "application/javascript");
@@ -205,9 +229,13 @@ function getFullSourcePath(source: string, importer: string): string {
   return path.resolve(path.dirname(importer), source);
 }
 
+function serverPath(server: ViteDevServer, subPath: string): string {
+  return path.resolve(server.config.base, subPath);
+}
+
 function printSetupPageUrl(server: ViteDevServer) {
   const localhostUrl = getLocalhostUrl(server);
-  const setupRoute = `${localhostUrl}${server.config.base ?? "/"}${SETUP_PATH}`;
+  const setupRoute = `${localhostUrl}${serverPath(server, SETUP_PATH)}/`;
   server.config.logger.info(
     `  ${color.green("➜")}  ${
       color.bold("Click to enter developer mode for your widget set")
