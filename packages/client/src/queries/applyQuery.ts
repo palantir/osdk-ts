@@ -18,6 +18,7 @@ import type {
   AllowedBucketKeyTypes,
   AllowedBucketTypes,
   CompileTimeMetadata,
+  ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
   OsdkBase,
   PrimaryKeyType,
@@ -99,7 +100,7 @@ async function remapQueryResponse<
   client: MinimalClient,
   responseDataType: T,
   responseValue: DataValue,
-  definitions: Map<string, ObjectTypeDefinition>,
+  definitions: Map<string, ObjectOrInterfaceDefinition>,
 ): Promise<QueryReturnType<T>> {
   // handle null responses
   if (responseValue == null) {
@@ -154,7 +155,7 @@ async function remapQueryResponse<
     }
     case "object": {
       const def = definitions.get(responseDataType.object);
-      if (!def) {
+      if (!def || def.type !== "object") {
         throw new Error(
           `Missing definition for ${responseDataType.object}`,
         );
@@ -266,8 +267,8 @@ async function remapQueryResponse<
 async function getRequiredDefinitions(
   dataType: QueryDataTypeDefinition,
   client: MinimalClient,
-): Promise<Map<string, ObjectTypeDefinition>> {
-  const result = new Map<string, ObjectTypeDefinition>();
+): Promise<Map<string, ObjectOrInterfaceDefinition>> {
+  const result = new Map<string, ObjectOrInterfaceDefinition>();
   switch (dataType.type) {
     case "objectSet": {
       const objectDef = await client.ontologyProvider.getObjectDefinition(
@@ -362,10 +363,10 @@ function requiresConversion(dataType: QueryDataTypeDefinition) {
 function getObjectSpecifier(
   primaryKey: any,
   objectTypeApiName: string,
-  definitions: Map<string, ObjectTypeDefinition>,
+  definitions: Map<string, ObjectOrInterfaceDefinition>,
 ): string {
   const def = definitions.get(objectTypeApiName);
-  if (!def) {
+  if (!def || def.type !== "object") {
     throw new Error(
       `Missing definition for ${objectTypeApiName}`,
     );
