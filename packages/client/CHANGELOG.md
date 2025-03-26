@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 2.2.0-beta.12
+
+### Minor Changes
+
+- c92fe73: Add OsdkConfig utils to client/unstable
+
+### Patch Changes
+
+- @osdk/api@2.2.0-beta.12
+- @osdk/client.unstable@2.2.0-beta.12
+- @osdk/generator-converters@2.2.0-beta.12
+
 ## 2.2.0-beta.11
 
 ### Patch Changes
