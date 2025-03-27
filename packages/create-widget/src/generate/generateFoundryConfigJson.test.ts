@@ -30,12 +30,38 @@ const expected = `
 }
 `.trimStart();
 
+const expectedWithRepository = `
+{
+  "foundryUrl": "https://example.palantirfoundry.com",
+  "widgetSet": {
+    "rid": "ri.widgetregistry..widget-set.fake",
+    "repository": "ri.stemma.main.repository.fake",
+    "directory": "./dist",
+    "autoVersion": {
+      "type": "package-json"
+    }
+  }
+}
+`.trimStart();
+
 test("it generates foundry.config.json", () => {
   expect(
     generateFoundryConfigJson({
       foundryUrl: "https://example.palantirfoundry.com",
       widgetSet: "ri.widgetregistry..widget-set.fake",
+      repository: undefined,
       directory: "./dist",
     }),
   ).toEqual(expected);
+});
+
+test("it generates foundry.config.json with repository", () => {
+  expect(
+    generateFoundryConfigJson({
+      foundryUrl: "https://example.palantirfoundry.com",
+      widgetSet: "ri.widgetregistry..widget-set.fake",
+      repository: "ri.stemma.main.repository.fake",
+      directory: "./dist",
+    }),
+  ).toEqual(expectedWithRepository);
 });

@@ -30,6 +30,7 @@ interface RunArgs {
   sdkVersion: SdkVersion;
   foundryUrl: string;
   widgetSet: string;
+  repository: string | undefined;
   osdkPackage?: string;
   osdkRegistryUrl?: string;
 }
@@ -41,6 +42,7 @@ export async function run({
   sdkVersion,
   foundryUrl,
   widgetSet,
+  repository,
   osdkPackage,
   osdkRegistryUrl,
 }: RunArgs): Promise<void> {
@@ -131,6 +133,7 @@ export async function run({
   const foundryConfigJson = generateFoundryConfigJson({
     foundryUrl,
     widgetSet,
+    repository,
     directory: template.buildDirectory,
   });
   fs.writeFileSync(path.join(root, "foundry.config.json"), foundryConfigJson);
