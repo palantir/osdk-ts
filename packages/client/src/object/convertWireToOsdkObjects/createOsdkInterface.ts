@@ -52,6 +52,10 @@ export function createOsdkInterface<
         value: underlying.$primaryKey,
         enumerable: "$primaryKey" in underlying,
       },
+      "$objectSpecifier": {
+        value: underlying.$objectSpecifier,
+        enumerable: "$objectSpecifier" in underlying,
+      },
       "$title": {
         value: underlying.$title,
         enumerable: "$title" in underlying,

@@ -20,7 +20,7 @@ import type {
   Osdk,
   PropertyKeys,
 } from "@osdk/api";
-import { $Objects, Employee } from "@osdk/client.test.ontology";
+import { $Objects, Employee, FooInterface } from "@osdk/client.test.ontology";
 import {
   LegacyFauxFoundry,
   startNodeApiServer,
@@ -502,6 +502,7 @@ describe.each([
         expect(clonedInterface).toMatchObject(
           {
             "$apiName": "FooInterface",
+            "$objectSpecifier": "Employee:50031",
             "$objectType": "Employee",
             "$primaryKey": 50031,
             "$title": "John Adams",
@@ -512,6 +513,7 @@ describe.each([
         expect(clonedInterface.$as("Employee")).toMatchObject(
           {
             "$apiName": "Employee",
+            "$objectSpecifier": "Employee:50031",
             "$objectType": "Employee",
             "$primaryKey": 50031,
             "$title": "John Adams",
@@ -547,6 +549,23 @@ describe.each([
           `Cannot clone interface with notImplementedFooSpt as property is not implemented by the underlying object type Employee`,
         );
       });
+    });
+  });
+  describe("objectSpecifier", () => {
+    it("returns the object specifier for a loaded object", async () => {
+      const result = await client(Employee).where({
+        employeeId: stubData.employee1.employeeId,
+      }).fetchPage();
+
+      const employee = result.data[0];
+      expect(employee.$objectSpecifier).toBe("Employee:50030");
+    });
+
+    it("returns the object specifier for a loaded interface object", async () => {
+      const result = await client(FooInterface).fetchPage();
+
+      const object = result.data[0];
+      expect(object.$objectSpecifier).toBe("Employee:50030");
     });
   });
 });
