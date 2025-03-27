@@ -5,6 +5,7 @@ backlink
 Canonicalizer
 Canonicalizers
 codegen
+commitish
 devx
 Discoverability
 duplicative
