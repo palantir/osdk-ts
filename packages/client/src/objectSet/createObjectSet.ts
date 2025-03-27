@@ -173,7 +173,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           ),
           objectType,
           objectSet,
-          { ...args, $nextPageToken },
+          { ...args, $pageSize: 10000, $nextPageToken },
         );
         $nextPageToken = result.nextPageToken;
 
