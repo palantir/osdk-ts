@@ -25,7 +25,7 @@ function checkEnv(
 /**
  * Initialize the client to interact with the Ontology SDK
  */
-const auth = createPublicOauthClient(
+export const auth = createPublicOauthClient(
   clientId,
   url,
   redirectUrl,
@@ -38,4 +38,4 @@ const client = createClient(
   auth,
 );
 
-export { auth, client };
+export default client;
