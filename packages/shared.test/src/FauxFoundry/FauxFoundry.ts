@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import type { Logger } from "@osdk/api";
 import type { Ontology, OntologyV2 } from "@osdk/foundry.ontologies";
 import type { RequestHandler } from "msw";
+import * as crypto from "node:crypto";
 import { OntologyNotFoundError } from "../errors.js";
 import { createFauxFoundryHandlers } from "../handlers/createFauxFoundryHandlers.js";
 import { OpenApiCallError } from "../handlers/util/handleOpenApiCall.js";
@@ -34,6 +36,7 @@ export class FauxFoundry {
   readonly attachments: FauxAttachmentStore = new FauxAttachmentStore();
   readonly baseUrl: string;
   readonly defaultOntologyRid: any;
+  readonly logger: Logger | undefined;
 
   constructor(
     baseUrl: string,
@@ -43,11 +46,13 @@ export class FauxFoundry {
       description: "The default ontology",
       rid: `ri.ontology.main.ontology.${crypto.randomUUID()}`,
     },
+    { logger }: { logger?: Logger } = {},
   ) {
     this.baseUrl = baseUrl;
     this.#handlers = createFauxFoundryHandlers(baseUrl, this);
     this.createOntology(defaultOntology);
     this.defaultOntologyRid = defaultOntology.rid;
+    this.logger = logger;
   }
 
   get handlers(): RequestHandler[] {

@@ -16,7 +16,7 @@
 
 import type { FauxActionImpl } from "../../FauxFoundry/FauxActionImpl.js";
 import type { JustProps } from "../../FauxFoundry/typeHelpers/JustProps.js";
-import type { MoveOffice } from "../actionsTypes.js";
+import type { MoveOffice } from "../actionTypes.js";
 import { officeObjectType } from "../objectTypeV2.js";
 
 export const moveOfficeImpl: FauxActionImpl<typeof MoveOffice> = (

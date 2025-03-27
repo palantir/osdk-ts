@@ -3485,6 +3485,9 @@ importers:
       '@osdk/foundry.ontologies':
         specifier: 2.16.0
         version: 2.16.0
+      '@osdk/generator-converters':
+        specifier: workspace:~
+        version: link:../generator-converters
       '@osdk/internal.foundry.ontologies':
         specifier: 2.16.0
         version: 2.16.0
@@ -5584,7 +5587,7 @@ packages:
 
   '@expo/bunyan@4.0.1':
     resolution: {integrity: sha512-+Lla7nYSiHZirgK+U/uYzsLv/X+HaJienbD5AKX1UQZHYfWaP+9uuQluRB4GrEVWF0GZ7vEVp/jzaOT9k/SQlg==}
-    engines: {node: '>=0.10.0'}
+    engines: {'0': node >=0.10.0}
 
   '@expo/cli@0.21.8':
     resolution: {integrity: sha512-gU+NlL/XS9r7LEfLhjDDKuv3jEtOh+rVnk/k7Lp8WrUwaMCoEGfmQpSqLXetFCCC4UFXSaj1cdMGoy2UBw4rew==}
@@ -14681,7 +14684,7 @@ snapshots:
 
   '@babel/helper-annotate-as-pure@7.25.9':
     dependencies:
-      '@babel/types': 7.26.9
+      '@babel/types': 7.27.0
 
   '@babel/helper-compilation-targets@7.26.5':
     dependencies:
@@ -14797,7 +14800,7 @@ snapshots:
   '@babel/helper-module-imports@7.25.9':
     dependencies:
       '@babel/traverse': 7.26.9
-      '@babel/types': 7.26.9
+      '@babel/types': 7.26.10
     transitivePeerDependencies:
       - supports-color
 
@@ -14867,7 +14870,7 @@ snapshots:
 
   '@babel/helper-wrap-function@7.25.9':
     dependencies:
-      '@babel/template': 7.26.9
+      '@babel/template': 7.27.0
       '@babel/traverse': 7.26.9
       '@babel/types': 7.27.0
     transitivePeerDependencies:
@@ -15187,7 +15190,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.26.0
       '@babel/helper-plugin-utils': 7.26.5
-      '@babel/template': 7.26.9
+      '@babel/template': 7.27.0
 
   '@babel/plugin-transform-destructuring@7.25.9(@babel/core@7.26.0)':
     dependencies:
@@ -19144,7 +19147,7 @@ snapshots:
 
   '@svgr/hast-util-to-babel-ast@8.0.0':
     dependencies:
-      '@babel/types': 7.26.9
+      '@babel/types': 7.26.10
       entities: 4.5.0
 
   '@svgr/plugin-jsx@8.1.0(@svgr/core@8.1.0(typescript@5.5.4))':
@@ -19342,16 +19345,16 @@ snapshots:
 
   '@types/babel__generator@7.6.7':
     dependencies:
-      '@babel/types': 7.26.9
+      '@babel/types': 7.26.10
 
   '@types/babel__template@7.4.4':
     dependencies:
-      '@babel/parser': 7.26.9
-      '@babel/types': 7.26.9
+      '@babel/parser': 7.26.10
+      '@babel/types': 7.26.10
 
   '@types/babel__traverse@7.20.4':
     dependencies:
-      '@babel/types': 7.26.9
+      '@babel/types': 7.26.10
 
   '@types/cookie@0.6.0': {}
 
@@ -23315,7 +23318,7 @@ snapshots:
   istanbul-lib-instrument@5.2.1:
     dependencies:
       '@babel/core': 7.26.0
-      '@babel/parser': 7.26.10
+      '@babel/parser': 7.27.0
       '@istanbuljs/schema': 0.1.3
       istanbul-lib-coverage: 3.2.2
       semver: 6.3.1
@@ -23325,7 +23328,7 @@ snapshots:
   istanbul-lib-instrument@6.0.3:
     dependencies:
       '@babel/core': 7.26.0
-      '@babel/parser': 7.26.9
+      '@babel/parser': 7.27.0
       '@istanbuljs/schema': 0.1.3
       istanbul-lib-coverage: 3.2.2
       semver: 7.6.3
@@ -23819,7 +23822,7 @@ snapshots:
   jscodeshift@0.14.0(@babel/preset-env@7.26.0(@babel/core@7.26.0)):
     dependencies:
       '@babel/core': 7.26.0
-      '@babel/parser': 7.26.9
+      '@babel/parser': 7.26.10
       '@babel/plugin-proposal-class-properties': 7.18.6(@babel/core@7.26.0)
       '@babel/plugin-proposal-nullish-coalescing-operator': 7.18.6(@babel/core@7.26.0)
       '@babel/plugin-proposal-optional-chaining': 7.21.0(@babel/core@7.26.0)
@@ -24387,8 +24390,8 @@ snapshots:
   metro-transform-plugins@0.81.0:
     dependencies:
       '@babel/core': 7.26.0
-      '@babel/generator': 7.26.9
-      '@babel/template': 7.26.9
+      '@babel/generator': 7.27.0
+      '@babel/template': 7.27.0
       '@babel/traverse': 7.26.9
       flow-enums-runtime: 0.0.6
       nullthrows: 1.1.1
@@ -24398,9 +24401,9 @@ snapshots:
   metro-transform-worker@0.81.0:
     dependencies:
       '@babel/core': 7.26.0
-      '@babel/generator': 7.26.9
-      '@babel/parser': 7.26.9
-      '@babel/types': 7.26.9
+      '@babel/generator': 7.27.0
+      '@babel/parser': 7.27.0
+      '@babel/types': 7.27.0
       flow-enums-runtime: 0.0.6
       metro: 0.81.0
       metro-babel-transformer: 0.81.0
@@ -24419,11 +24422,11 @@ snapshots:
     dependencies:
       '@babel/code-frame': 7.26.2
       '@babel/core': 7.26.0
-      '@babel/generator': 7.26.9
-      '@babel/parser': 7.26.9
+      '@babel/generator': 7.27.0
+      '@babel/parser': 7.26.10
       '@babel/template': 7.26.9
       '@babel/traverse': 7.26.9
-      '@babel/types': 7.26.9
+      '@babel/types': 7.26.10
       accepts: 1.3.8
       chalk: 4.1.2
       ci-info: 2.0.0
