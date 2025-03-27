@@ -8,11 +8,14 @@ const redirectUrl = import.meta.env.VITE_FOUNDRY_REDIRECT_URL;
 checkEnv(url, "VITE_FOUNDRY_API_URL");
 checkEnv(clientId, "VITE_FOUNDRY_CLIENT_ID");
 checkEnv(redirectUrl, "VITE_FOUNDRY_REDIRECT_URL");
-const scopes = ["api:ontologies-read", "api:ontologies-write"];
+const scopes = [
+  "api:ontologies-read",
+  "api:ontologies-write",
+];
 
 function checkEnv(
   value: string | undefined,
-  name: string
+  name: string,
 ): asserts value is string {
   if (value == null) {
     throw new Error(`Missing environment variable: ${name}`);
@@ -22,8 +25,17 @@ function checkEnv(
 /**
  * Initialize the client to interact with the Ontology SDK
  */
-const auth = createPublicOauthClient(clientId, url, redirectUrl, { scopes });
+const auth = createPublicOauthClient(
+  clientId,
+  url,
+  redirectUrl,
+  { scopes },
+);
 
-const client = createClient(url, $ontologyRid, auth);
+const client = createClient(
+  url,
+  $ontologyRid,
+  auth,
+);
 
 export { auth, client };
