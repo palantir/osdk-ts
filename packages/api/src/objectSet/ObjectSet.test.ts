@@ -157,7 +157,7 @@ describe("ObjectSet", () => {
               base.pivotTo("lead").aggregate("class:collectSet"),
             "select": (base) => base.pivotTo("lead").selectProperty("fullName"),
             "collectList": (base) =>
-              base.pivotTo("lead").aggregate("booleanProp:collectSet"),
+              base.pivotTo("lead").aggregate("class:collectList"),
             "min": (base) => base.pivotTo("lead").aggregate("employeeId:max"),
             "max": (base) => base.pivotTo("lead").aggregate("employeeId:min"),
             "sum": (base) => base.pivotTo("lead").aggregate("employeeId:sum"),
@@ -179,7 +179,7 @@ describe("ObjectSet", () => {
                 {
                   collectSet: "string"[] | undefined;
                   select: "string" | undefined;
-                  collectList: "boolean"[] | undefined;
+                  collectList: "string"[] | undefined;
                   min: "double" | undefined;
                   max: "double" | undefined;
                   sum: "double" | undefined;
@@ -288,7 +288,17 @@ describe("ObjectSet", () => {
 
       it("Works with selecting all non-RDP's", async () => {
         const withFamilyResults = await withFamily.fetchPage({
-          $select: ["class", "fullName", "employeeId", "booleanProp"],
+          $select: [
+            "class",
+            "fullName",
+            "employeeId",
+            "attachment",
+            "geopoint",
+            "timeseries",
+            "mediaReference",
+            "geotimeSeriesReference",
+            "isActive",
+          ],
         });
 
         expectTypeOf<typeof withFamilyResults["data"][0]>()
@@ -363,6 +373,41 @@ describe("ObjectSet", () => {
       fauxObjectSet.withProperties({
         "mom": (base) => base.pivotTo("lead").aggregate("$count"),
       }) satisfies ObjectSetType;
+    });
+
+    it("has correct aggregation keys", () => {
+      fauxObjectSet.withProperties({
+        "integer": (base) => base.pivotTo("lead").aggregate("$count"),
+        "integerNumericAgg": (base) =>
+          base.pivotTo("lead").aggregate("employeeId:sum"),
+        "string": (base) => base.pivotTo("lead").aggregate("class:collectList"),
+        "stringDoesNotHaveNumericAgg": (base) =>
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("class:sum"),
+        "isActive": (base) =>
+          base.pivotTo("lead").aggregate("isActive:approximateDistinct"),
+        "attachment": (base) =>
+          base.pivotTo("lead").aggregate("attachment:collectList"),
+        "geopoint": (base) =>
+          base.pivotTo("lead").aggregate("geopoint:collectList"),
+        "numericTimeseries": (base) =>
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("timeseries:sum"),
+        "numericTimeseriesExactDistinct": (base) =>
+          base.pivotTo("lead").aggregate("timeseries:exactDistinct"),
+        "mediaReference": (base) =>
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("mediaReference:avg"),
+        "mediaReferenceExactDistinct": (base) =>
+          base.pivotTo("lead").aggregate("mediaReference:exactDistinct"),
+        "geotimeSeriesReference": (base) =>
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("geotimeSeriesReference:sum"),
+        "geotimeSeriesReferenceExactDistinct": (base) =>
+          base.pivotTo("lead").aggregate(
+            "geotimeSeriesReference:exactDistinct",
+          ),
+      });
     });
   });
 });
