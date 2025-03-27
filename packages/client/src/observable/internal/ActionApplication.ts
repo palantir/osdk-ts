@@ -15,7 +15,7 @@
  */
 
 import type { ActionDefinition, ActionEditResponse } from "@osdk/api";
-import { delay } from "msw";
+import delay from "delay";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { type Changes, createChangedObjects } from "./Changes.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";

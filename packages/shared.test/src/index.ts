@@ -27,3 +27,6 @@ export type { TestSetup } from "./setupServers.js";
 export * as stubData from "./stubs/index.js";
 export { LegacyFauxFoundry } from "./stubs/LegacyFauxFoundry.js";
 export { withoutRid } from "./withoutRid.js";
+
+export * as msw from "msw";
+export type { SetupServer } from "msw/node";
