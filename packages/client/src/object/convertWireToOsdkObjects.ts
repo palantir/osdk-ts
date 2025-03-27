@@ -32,7 +32,6 @@ import {
 import { createOsdkObject } from "./convertWireToOsdkObjects/createOsdkObject.js";
 import type { InterfaceHolder } from "./convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "./convertWireToOsdkObjects/ObjectHolder.js";
-import { createObjectSpecifierFromPrimaryKey } from "./createObjectSpecifierFromPrimaryKey.js";
 import type { SimpleOsdkProperties } from "./SimpleOsdkProperties.js";
 
 /**
@@ -386,11 +385,6 @@ function fixObjectPropertiesInPlace(
     // copying over for now as its always returned. In the future, this should just be inferred from underlying
     obj.$primaryKey ??= obj.__primaryKey;
     obj.$title ??= obj.__title;
-
-    obj.$objectSpecifier = createObjectSpecifierFromPrimaryKey(
-      { apiName: obj.$apiName, type: "object" },
-      obj.$primaryKey,
-    );
 
     // we don't want people to use these
     delete obj.__apiName;

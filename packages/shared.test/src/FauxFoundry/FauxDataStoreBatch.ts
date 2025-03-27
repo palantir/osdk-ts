@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
+import type {
+  CompileTimeMetadata,
+  ObjectTypeDefinition,
+  PrimaryKeyType,
+} from "@osdk/api";
 import type * as OntologiesV2 from "@osdk/foundry.ontologies";
 import deepEqual from "fast-deep-equal";
 import { OpenApiCallError } from "../handlers/util/handleOpenApiCall.js";
 import type { BaseServerObject } from "./BaseServerObject.js";
 import type { FauxDataStore } from "./FauxDataStore.js";
+import type { JustProps } from "./typeHelpers/JustProps.js";
 
 /**
  * This is separate from the FauxDataStore so that we can in the future support
@@ -49,11 +55,21 @@ export class FauxDataStoreBatch {
     );
   };
 
-  addObject = (
+  public addObject<T extends ObjectTypeDefinition>(
+    objectType: T["apiName"],
+    primaryKey: PrimaryKeyType<T>,
+    update: Omit<JustProps<T>, CompileTimeMetadata<T>["primaryKeyApiName"]>,
+  ): void;
+  public addObject(
     objectType: string,
     primaryKey: string | number | boolean,
     object: BaseServerObject,
-  ): void => {
+  ): void;
+  public addObject(
+    objectType: string,
+    primaryKey: string | number | boolean,
+    object: BaseServerObject,
+  ): void {
     const existingObject = this.#fauxDataStore.getObject(
       objectType,
       primaryKey,
@@ -72,20 +88,39 @@ export class FauxDataStoreBatch {
         } satisfies OntologiesV2.ObjectAlreadyExists,
       );
     }
-    this.#fauxDataStore.registerObject(object);
+
+    const fullMetadata = this.#fauxDataStore.ontology
+      .getObjectTypeFullMetadataOrThrow(objectType);
+
+    this.#fauxDataStore.registerObject({
+      ...object,
+      __apiName: objectType,
+      __primaryKey: primaryKey,
+      [fullMetadata.objectType.primaryKey]: primaryKey,
+    });
     this.objectEdits.edits.push({
       type: "addObject",
-      primaryKey: String(primaryKey),
+      primaryKey,
       objectType,
     });
     this.objectEdits.addedObjectCount += 1;
-  };
+  }
 
-  modifyObject = (
+  public modifyObject<T extends ObjectTypeDefinition>(
+    objectType: T["apiName"],
+    primaryKey: PrimaryKeyType<T>,
+    update: Partial<JustProps<T>>,
+  ): void;
+  public modifyObject(
     objectType: string,
     primaryKey: string | number | boolean,
     update: Partial<BaseServerObject>,
-  ): void => {
+  ): void;
+  public modifyObject(
+    objectType: string,
+    primaryKey: string | number | boolean,
+    update: Partial<BaseServerObject>,
+  ): void {
     const origObj = this.#fauxDataStore.getObjectOrThrow(
       objectType,
       primaryKey,
@@ -99,12 +134,12 @@ export class FauxDataStoreBatch {
       this.#fauxDataStore.replaceObjectOrThrow(newObj);
       this.objectEdits.edits.push({
         type: "modifyObject",
-        primaryKey: String(primaryKey),
+        primaryKey,
         objectType,
       });
       this.objectEdits.modifiedObjectsCount += 1;
     }
-  };
+  }
 
   deleteObject = (
     objectType: string,

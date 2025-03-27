@@ -16,6 +16,7 @@
 
 import type {
   ActionDefinition,
+  ActionEditResponse,
   InterfaceDefinition,
   ObjectTypeDefinition,
   PrimaryKeyType,
@@ -239,8 +240,8 @@ export class Store {
     action: Q,
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
     opts?: Store.ApplyActionOptions,
-  ) => Promise<unknown> = (action, args, opts) => {
-    return new ActionApplication(this).applyAction(action, args, opts);
+  ) => Promise<ActionEditResponse> = async (action, args, opts) => {
+    return await new ActionApplication(this).applyAction(action, args, opts);
   };
 
   removeLayer(layerId: OptimisticId): void {

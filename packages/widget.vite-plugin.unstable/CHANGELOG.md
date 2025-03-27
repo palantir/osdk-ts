@@ -1,5 +1,15 @@
 # @osdk/widget.vite-plugin.unstable
 
+## 2.1.0-beta.5
+
+### Minor Changes
+
+- 994ab25: Support widget dev server on non-root paths
+
+### Patch Changes
+
+- @osdk/widget.api.unstable@2.1.0-beta.5
+
 ## 2.1.0-beta.4
 
 ### Patch Changes

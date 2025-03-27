@@ -30,11 +30,11 @@ import type { DataValue } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { createObjectSpecifierFromPrimaryKey } from "../object/createObjectSpecifierFromPrimaryKey.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
 import { hydrateAttachmentFromRidInternal } from "../public-utils/hydrateAttachmentFromRid.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
+import { createObjectSpecifierFromPrimaryKey } from "../util/objectSpecifierUtils.js";
 import { toDataValueQueries } from "../util/toDataValueQueries.js";
 import type { QueryParameterType, QueryReturnType } from "./types.js";
 
@@ -155,7 +155,7 @@ async function remapQueryResponse<
     }
     case "object": {
       const def = definitions.get(responseDataType.object);
-      if (!def) {
+      if (!def || def.type !== "object") {
         throw new Error(
           `Missing definition for ${responseDataType.object}`,
         );
@@ -366,7 +366,7 @@ function getObjectSpecifier(
   definitions: Map<string, ObjectOrInterfaceDefinition>,
 ): string {
   const def = definitions.get(objectTypeApiName);
-  if (!def) {
+  if (!def || def.type !== "object") {
     throw new Error(
       `Missing definition for ${objectTypeApiName}`,
     );
@@ -378,7 +378,7 @@ function getObjectSpecifier(
 }
 
 export function createQueryObjectResponse<
-  Q extends ObjectOrInterfaceDefinition,
+  Q extends ObjectTypeDefinition,
 >(
   primaryKey: PrimaryKeyType<Q>,
   objectDef: Q,

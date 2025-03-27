@@ -652,6 +652,31 @@ export type LinkedType<
 export type LinkNames<Q extends ObjectOrInterfaceDefinition> = keyof CompileTimeMetadata<Q>["links"] & string;
 
 // @public (undocumented)
+export interface Logger {
+    	// (undocumented)
+    child(bindings: Record<string, any>, options?: {
+        		level?: string
+        		msgPrefix?: string
+        	}): Logger;
+    	// (undocumented)
+    debug: LogFn;
+    	// (undocumented)
+    error: LogFn;
+    	// (undocumented)
+    fatal: LogFn;
+    	// (undocumented)
+    info: LogFn;
+    	// (undocumented)
+    isLevelEnabled(level: string): boolean;
+    	// Warning: (ae-forgotten-export) The symbol "LogFn" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    trace: LogFn;
+    	// (undocumented)
+    warn: LogFn;
+}
+
+// @public (undocumented)
 export interface Media {
     	fetchContents(): Promise<Response>;
     	fetchMetadata(): Promise<MediaMetadata_2>;

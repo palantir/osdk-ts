@@ -86,7 +86,7 @@ describe("convertWireToOsdkObjects", () => {
     );
 
     expect(JSON.stringify(employee.$as(FooInterface))).toMatchInlineSnapshot(
-      `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50030,"fooSpt":"John Doe"}"`,
+      `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50030,"$objectSpecifier":"Employee:50030","fooSpt":"John Doe"}"`,
     );
 
     // Should have $title
@@ -95,7 +95,7 @@ describe("convertWireToOsdkObjects", () => {
     );
 
     expect(JSON.stringify(employee2.$as(FooInterface))).toMatchInlineSnapshot(
-      `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50031,"$title":"Jane Doe","fooSpt":"Jane Doe"}"`,
+      `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50031,"$objectSpecifier":"Employee:50031","$title":"Jane Doe","fooSpt":"Jane Doe"}"`,
     );
   });
 
@@ -269,6 +269,7 @@ describe("convertWireToOsdkObjects", () => {
     expect(objAsFoo).toMatchInlineSnapshot(`
       {
         "$apiName": "FooInterface",
+        "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
         "$title": "Steve",
@@ -320,6 +321,7 @@ describe("convertWireToOsdkObjects", () => {
     expect(objAsFoo).toMatchInlineSnapshot(`
       {
         "$apiName": "FooInterface",
+        "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
         "$title": "Steve",
@@ -368,6 +370,7 @@ describe("convertWireToOsdkObjects", () => {
     expect(objAsFoo).toMatchInlineSnapshot(`
       {
         "$apiName": "FooInterface",
+        "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
         "$rid": "hiMom",
@@ -425,6 +428,7 @@ describe("convertWireToOsdkObjects", () => {
     expect(objAsFoo).toMatchInlineSnapshot(`
       {
         "$apiName": "FooInterface",
+        "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
         "$rid": "hiMom",

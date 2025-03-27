@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import type { CompileTimeMetadata } from "@osdk/api";
+import type { CompileTimeMetadata, ObjectTypeDefinition } from "@osdk/api";
 import type { ObjectTypeV2 } from "@osdk/foundry.ontologies";
 import type { ToObjectTypeDefinition } from "./ToObjectTypeDefinition.js";
 
-export type JustProps<T extends ObjectTypeV2> = CompileTimeMetadata<
-  ToObjectTypeDefinition<T>
->["props"];
+export type JustProps<T extends ObjectTypeV2 | ObjectTypeDefinition> =
+  CompileTimeMetadata<
+    T extends ObjectTypeV2 ? ToObjectTypeDefinition<T> : T
+  >["props"];

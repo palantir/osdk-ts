@@ -14,14 +14,4 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectOrInterfaceDefinition,
-  ObjectSpecifier,
-  PrimaryKeyType,
-} from "@osdk/api";
-
-export function createObjectSpecifierFromPrimaryKey<
-  Q extends ObjectOrInterfaceDefinition,
->(def: Q, primaryKey: PrimaryKeyType<Q>): ObjectSpecifier<Q> {
-  return `${def.apiName}:${primaryKey}` as ObjectSpecifier<Q>;
-}
+export { addEmployeeOntology } from "./EmployeeOntology.js";

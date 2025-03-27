@@ -25,8 +25,8 @@ import {
   employeeFullObjectScoped2,
   employeeInterfaceScoped,
   employeeInterfaceScoped2,
-  FooInterface,
 } from "./interfaces.js";
+import { FooInterface } from "./interfaceTypes.js";
 
 const baseObjectSet: LoadObjectSetV2MultipleObjectTypesRequest = {
   objectSet: {

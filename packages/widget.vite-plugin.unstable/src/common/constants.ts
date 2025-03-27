@@ -17,6 +17,7 @@
 export const PALANTIR_PATH: string = ".palantir";
 export const SETUP_PATH: string = `${PALANTIR_PATH}/setup`;
 export const ENTRYPOINTS_PATH: string = `${PALANTIR_PATH}/entrypoints`;
+export const FINISH_PATH: string = `${PALANTIR_PATH}/finish`;
 export const VITE_INJECTIONS_PATH: string =
   `${PALANTIR_PATH}/vite-injections.js`;
 export const CONFIG_FILE_SUFFIX = ".config";
