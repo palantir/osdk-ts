@@ -15,7 +15,11 @@
  */
 
 import type { LinkTypeSideV2 } from "@osdk/foundry.ontologies";
-import { employeeObjectType, officeObjectType } from "./objectTypes.js";
+import {
+  employeeObjectType,
+  objectTypeWithAllPropertyTypes,
+  officeObjectType,
+} from "./objectTypes.js";
 
 export const peepsLinkType: LinkTypeSideV2 = {
   apiName: "peeps",
@@ -51,4 +55,13 @@ export const occupants: LinkTypeSideV2 = {
   cardinality: "MANY",
   displayName: "Office Occupants",
   linkTypeRid: officeLinkType.linkTypeRid,
+};
+
+export const allPropertyTypesSelfLink: LinkTypeSideV2 = {
+  apiName: "linkedObjectType",
+  status: "EXPERIMENTAL",
+  objectTypeApiName: objectTypeWithAllPropertyTypes.apiName,
+  cardinality: "ONE",
+  displayName: "Linked Object Type",
+  linkTypeRid: "rid.link-type.832",
 };

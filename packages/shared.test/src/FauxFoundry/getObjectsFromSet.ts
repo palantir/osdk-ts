@@ -241,6 +241,16 @@ function getDerivedPropertySelection(
       }
       return objs[0]?.[operation.selectedPropertyApiName];
     }
+    case "collectList": {
+      const objs = getObjectsFromSet(ds, objectSet, obj);
+      return objs.map(o => o[operation.selectedPropertyApiName]);
+    }
+    case "collectSet": {
+      const objs = getObjectsFromSet(ds, objectSet, obj);
+      return Array.from(
+        new Set(objs.map(o => o[operation.selectedPropertyApiName])),
+      );
+    }
   }
 }
 
