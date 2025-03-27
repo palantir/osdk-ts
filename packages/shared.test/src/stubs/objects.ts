@@ -267,3 +267,79 @@ export const objectWithAllPropertyTypesEmptyEntries = {
   __title: "2",
   id: 2,
 };
+
+export const objectWithAllPropertyTypes2 = {
+  __rid:
+    "ri.phonograph2-objects.main.object.401ac022-89eb-4591-8b7e-0a912b9efb44",
+  __primaryKey: 5,
+  __apiName: "objectTypeWithAllPropertyTypes",
+  __title: "5",
+  id: 5,
+  string: "string",
+  boolean: false,
+  date: "2020-02-02",
+  dateTime: "2020-02-02T02:02:02.000Z",
+  decimal: 2.2,
+  integer: 2,
+  attachment: {
+    rid: "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a81",
+  },
+  attachment2: {
+    rid: "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a82",
+  },
+  attachmentArray: [
+    {
+      rid:
+        "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a81",
+    },
+    {
+      rid:
+        "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a82",
+    },
+  ],
+  long: 2,
+  short: 2,
+  float: 2.2,
+  double: 2.2,
+  byte: 2,
+  geoPoint: { type: "Point", coordinates: [2.2, 2.2] },
+  geoShape: {
+    coordinates: [
+      [
+        [2.0, 2.0],
+        [2.0, 3.0],
+        [3.0, 3.0],
+        [3.0, 2.0],
+        [2.0, 2.0],
+      ],
+    ],
+    type: "Polygon",
+  },
+  stringArray: ["string2"],
+  booleanArray: [false],
+  dateArray: ["2020-02-02"],
+  dateTimeArray: ["2020-02-02T02:02:02.000Z"],
+  decimalArray: [2.2],
+  integerArray: [2],
+  longArray: [2],
+  shortArray: [2],
+  floatArray: [2.2],
+  doubleArray: [2.2],
+  byteArray: [2],
+  geoPointArray: [{ type: "Point", coordinates: [2.2, 2.2] }],
+  geoShapeArray: [
+    {
+      coordinates: [
+        [
+          [2.0, 2.0],
+          [2.0, 3.0],
+          [3.0, 3.0],
+          [3.0, 2.0],
+          [2.0, 2.0],
+        ],
+      ],
+      type: "Polygon",
+    },
+  ],
+  mediaReference: "ri.MediaReferencePlaceholder2",
+} as const;

@@ -15,6 +15,8 @@
  */
 
 import type {
+  BaseWithPropAggregations,
+  CollectWithPropAggregations,
   NumericWithPropAggregateOption,
   StringWithPropAggregateOption,
 } from "../derivedProperties/WithPropertiesAggregationOptions.js";
@@ -26,6 +28,7 @@ import type {
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
+import type { WirePropertyTypes } from "../ontology/WirePropertyTypes.js";
 
 export type StringAggregateOption = "approximateDistinct" | "exactDistinct";
 export type NumericAggregateOption =
@@ -36,12 +39,23 @@ export type NumericAggregateOption =
   | "approximateDistinct"
   | "exactDistinct";
 
-type AGG_FOR_TYPE<T, U extends boolean> = number extends T
-  ? U extends true ? NumericAggregateOption : NumericWithPropAggregateOption
-  : string extends T
-    ? U extends true ? StringAggregateOption : StringWithPropAggregateOption
-  : boolean extends T ? U extends true ? never : StringWithPropAggregateOption
+type AGG_FOR_TYPE<PROPERTY_TYPE> = number extends PROPERTY_TYPE
+  ? NumericAggregateOption
+  : string extends PROPERTY_TYPE ? StringAggregateOption
   : never;
+
+type WITH_PROPERTIES_AGG_FOR_TYPE<WIRE_TYPE extends WirePropertyTypes> =
+  number extends GetWirePropertyValueFromClient<WIRE_TYPE>
+    ? NumericWithPropAggregateOption
+    : string extends GetWirePropertyValueFromClient<WIRE_TYPE>
+      ? StringWithPropAggregateOption
+    : WITH_PROPERTIES_AGG_FOR_SPECIAL_WIRE_TYPE<WIRE_TYPE>;
+
+type WITH_PROPERTIES_AGG_FOR_SPECIAL_WIRE_TYPE<
+  WIRE_TYPE extends WirePropertyTypes,
+> = WIRE_TYPE extends "attachment" | "geopoint" | "geoshape" | "boolean"
+  ? BaseWithPropAggregations | CollectWithPropAggregations
+  : BaseWithPropAggregations;
 
 export type ValidAggregationKeys<
   Q extends ObjectOrInterfaceDefinition,
@@ -49,12 +63,15 @@ export type ValidAggregationKeys<
 > = keyof (
   & {
     [
-      KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<
-        GetWirePropertyValueFromClient<
+      KK in AggregatableKeys<Q> as `${KK & string}:${R extends "aggregate"
+        ? AGG_FOR_TYPE<
+          GetWirePropertyValueFromClient<
+            CompileTimeMetadata<Q>["properties"][KK]["type"]
+          >
+        >
+        : WITH_PROPERTIES_AGG_FOR_TYPE<
           CompileTimeMetadata<Q>["properties"][KK]["type"]
-        >,
-        R extends "aggregate" ? true : false
-      >}`
+        >}`
     ]?: any;
   }
   & { $count?: any }

@@ -55,6 +55,10 @@ export async function convertWireToOsdkObjects(
   objects: OntologyObjectV2[],
   interfaceApiName: string | undefined,
   forceRemoveRid: boolean = false,
+  derivedPropertyTypesByName: Record<
+    string,
+    ObjectMetadata.Property
+  >,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull: NullabilityAdherence = false,
 ): Promise<Array<ObjectHolder | InterfaceHolder>> {
@@ -113,6 +117,7 @@ export async function convertWireToOsdkObjects(
       client,
       objectDef,
       rawObj,
+      derivedPropertyTypesByName,
     );
     if (interfaceApiName) osdkObject = osdkObject.$as(interfaceApiName);
 
@@ -127,6 +132,10 @@ export async function convertWireToOsdkObjects2(
   client: MinimalClient,
   objects: OntologyObjectV2[],
   interfaceApiName: string,
+  derivedPropertyTypeByName: Record<
+    string,
+    ObjectMetadata.Property
+  >,
   forceRemoveRid?: boolean,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull?: NullabilityAdherence,
@@ -139,6 +148,10 @@ export async function convertWireToOsdkObjects2(
   client: MinimalClient,
   objects: OntologyObjectV2[],
   interfaceApiName: undefined,
+  derivedPropertyTypeByName: Record<
+    string,
+    ObjectMetadata.Property
+  >,
   forceRemoveRid?: boolean,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull?: NullabilityAdherence,
@@ -151,6 +164,10 @@ export async function convertWireToOsdkObjects2(
   client: MinimalClient,
   objects: OntologyObjectV2[],
   interfaceApiName: string | undefined,
+  derivedPropertyTypeByName: Record<
+    string,
+    ObjectMetadata.Property
+  >,
   forceRemoveRid?: boolean,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull?: NullabilityAdherence,
@@ -166,6 +183,10 @@ export async function convertWireToOsdkObjects2(
   client: MinimalClient,
   objects: OntologyObjectV2[],
   interfaceApiName: string | undefined,
+  derivedPropertyTypeByName: Record<
+    string,
+    ObjectMetadata.Property
+  >,
   forceRemoveRid: boolean = false,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull: NullabilityAdherence = false,
@@ -230,6 +251,7 @@ export async function convertWireToOsdkObjects2(
       client,
       objectDef,
       rawObj,
+      derivedPropertyTypeByName,
     );
     if (interfaceApiName) osdkObject = osdkObject.$as(interfaceApiName);
 

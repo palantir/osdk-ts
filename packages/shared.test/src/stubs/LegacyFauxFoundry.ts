@@ -30,6 +30,7 @@ import {
   employeePassesStrict,
   nycOffice,
   objectWithAllPropertyTypes1,
+  objectWithAllPropertyTypes2,
   objectWithAllPropertyTypesEmptyEntries,
   travisPlayer,
 } from "./objects.js";
@@ -87,6 +88,9 @@ export class LegacyFauxFoundry extends FauxFoundry {
     );
 
     legacyFauxDataStore.registerObject(objectWithAllPropertyTypes1);
+    legacyFauxDataStore.registerObject(
+      objectWithAllPropertyTypes2,
+    );
     legacyFauxDataStore.registerObject(objectWithAllPropertyTypesEmptyEntries);
     legacyFauxDataStore.registerObject(travisPlayer);
     legacyFauxDataStore.registerLink(
@@ -100,6 +104,12 @@ export class LegacyFauxFoundry extends FauxFoundry {
       "lead",
       employee_Jane_50031,
       "peeps",
+    );
+    legacyFauxDataStore.registerLink(
+      objectWithAllPropertyTypes2,
+      "linkedObjectType",
+      objectWithAllPropertyTypes1,
+      "linkedObjectType",
     );
     invariant(
       legacyFauxDataStore.getLinksOrThrow(
