@@ -18,13 +18,11 @@ import type { TimeSeriesPoint } from "@osdk/api";
 import { Employee } from "@osdk/client.test.ontology";
 import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import { formatISO, sub } from "date-fns";
-import { type SetupServerApi } from "msw/node";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
 describe("Timeseries", () => {
-  let apiServer: SetupServerApi;
   let client: Client;
   const statusTimeseriesData = [
     { time: formatISO(sub(Date.now(), { "years": 2 })), value: -365 },

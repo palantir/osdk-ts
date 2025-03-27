@@ -21,6 +21,7 @@ import {
   FooInterface,
   Todo,
 } from "@osdk/client.test.ontology";
+import type { SetupServer } from "@osdk/shared.test";
 import {
   ActionTypeBuilder,
   FauxFoundry,
@@ -29,7 +30,6 @@ import {
   stubData,
 } from "@osdk/shared.test";
 import chalk from "chalk";
-import type { SetupServerApi } from "msw/node";
 import invariant from "tiny-invariant";
 import type { Task } from "vitest";
 import {
@@ -944,7 +944,7 @@ describe(Store, () => {
 
   describe("with mock client", () => {
     let client: Client;
-    let apiServer: SetupServerApi;
+    let apiServer: SetupServer;
     let fauxFoundry: FauxFoundry;
     let store: Store;
 

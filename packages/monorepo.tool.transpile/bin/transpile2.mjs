@@ -176,11 +176,12 @@ async function transpileWithTsup(format, target) {
     // these packages are not CJS compatible so we need to bundle them up when we do tsup with cjs
     noExternal: format === "cjs"
       ? [
-        "@osdk/shared.client",
         "@osdk/foundry.ontologies",
+        "@osdk/shared.client",
         "@osdk/shared.client2",
         "delay",
         "oauth4webapi",
+        "p-defer",
       ]
       : [],
     format: [format],

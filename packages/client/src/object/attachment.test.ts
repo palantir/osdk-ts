@@ -20,7 +20,7 @@ import {
   startNodeApiServer,
   stubData,
 } from "@osdk/shared.test";
-import { type SetupServer } from "msw/node";
+import { type SetupServer } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
