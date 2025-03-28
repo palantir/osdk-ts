@@ -231,7 +231,7 @@ export function getDerivedPropertyValue(
 function getDerivedPropertySelection(
   ds: FauxDataStore,
   obj: BaseServerObject,
-  { operation, objectSet }: OntologiesV2.SelectedPropertyDefinition,
+  { operation, objectSet }: OntologiesV2.SelectedPropertyExpression,
 ) {
   switch (operation.type) {
     case "get": {
