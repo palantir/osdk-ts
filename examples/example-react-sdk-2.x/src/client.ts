@@ -1,17 +1,19 @@
+import type { Client } from "@osdk/client";
 import { createClient } from "@osdk/client";
-import { createPublicOauthClient } from "@osdk/oauth";
 import { $ontologyRid } from "@osdk/e2e.generated.catchall";
+import { createPublicOauthClient } from "@osdk/oauth";
 
 const url = import.meta.env.VITE_FOUNDRY_API_URL;
 const clientId = import.meta.env.VITE_FOUNDRY_CLIENT_ID;
 const redirectUrl = import.meta.env.VITE_FOUNDRY_REDIRECT_URL;
-checkEnv(url, "VITE_FOUNDRY_API_URL");
-checkEnv(clientId, "VITE_FOUNDRY_CLIENT_ID");
-checkEnv(redirectUrl, "VITE_FOUNDRY_REDIRECT_URL");
 const scopes = [
   "api:ontologies-read",
   "api:ontologies-write",
 ];
+
+checkEnv(url, "VITE_FOUNDRY_API_URL");
+checkEnv(clientId, "VITE_FOUNDRY_CLIENT_ID");
+checkEnv(redirectUrl, "VITE_FOUNDRY_REDIRECT_URL");
 
 function checkEnv(
   value: string | undefined,
@@ -22,9 +24,6 @@ function checkEnv(
   }
 }
 
-/**
- * Initialize the client to interact with the Ontology SDK
- */
 export const auth = createPublicOauthClient(
   clientId,
   url,
@@ -32,7 +31,10 @@ export const auth = createPublicOauthClient(
   { scopes },
 );
 
-const client = createClient(
+/**
+ * Initialize the client to interact with the Ontology SDK
+ */
+const client: Client = createClient(
   url,
   $ontologyRid,
   auth,
