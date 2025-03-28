@@ -75,8 +75,10 @@ export type {
 } from "./blockDataIr.js";
 export type { OntologyIrLinkTypeBlockDataV2 } from "./generated/ontology-metadata/api/blockdata/OntologyIrLinkTypeBlockDataV2.js";
 export type { OntologyIrObjectTypeBlockDataV2 } from "./generated/ontology-metadata/api/blockdata/OntologyIrObjectTypeBlockDataV2.js";
+export type { ColumnName } from "./generated/ontology-metadata/api/ColumnName.js";
 export type { InterfaceSharedPropertyType } from "./generated/ontology-metadata/api/InterfaceSharedPropertyType.js";
 export type { LinkTypeDisplayMetadata } from "./generated/ontology-metadata/api/LinkTypeDisplayMetadata.js";
+export type { ObjectTypeFieldApiName } from "./generated/ontology-metadata/api/ObjectTypeFieldApiName.js";
 export type { OntologyIrInterfaceSharedPropertyType } from "./generated/ontology-metadata/api/OntologyIrInterfaceSharedPropertyType.js";
 export type { OntologyIrLinkDefinition } from "./generated/ontology-metadata/api/OntologyIrLinkDefinition.js";
 export type { OntologyIrLinkType } from "./generated/ontology-metadata/api/OntologyIrLinkType.js";
