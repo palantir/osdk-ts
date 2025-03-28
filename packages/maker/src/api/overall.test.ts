@@ -2626,6 +2626,7 @@ describe("Ontology Defining", () => {
                     "propertyMapping": {
                       "buzz": "buzz",
                     },
+                    "propertySecurityGroups": undefined,
                     "retentionPolicy": {
                       "time": {
                         "window": "PT1H",
@@ -2717,6 +2718,7 @@ describe("Ontology Defining", () => {
                       "bar": "bar",
                       "fizz": "fizz",
                     },
+                    "propertySecurityGroups": undefined,
                     "retentionPolicy": {
                       "none": {},
                       "type": "none",

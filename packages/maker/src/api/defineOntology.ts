@@ -253,6 +253,7 @@ function convertDatasourceDefinition(
           retentionPolicy: window
             ? { type: "time", time: { window } }
             : { type: "none", none: {} },
+          propertySecurityGroups: undefined,
         },
       };
     case "dataset":
