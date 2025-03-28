@@ -32,6 +32,7 @@ npx @osdk/create-widget [project] [--<option>]
 | --sdkVersion      | The SDK version to use (1.x or 2.x), defaults to 2.x [string] |
 | --foundryUrl      | URL for the Foundry stack [string]                            |
 | --widget          | Widget resource identifier (rid) [string]                     |
+| --repository      | Repository resource identifier (rid) [string]                 |
 | --osdkPackage     | OSDK package name for application [string]                    |
 | --osdkRegistryUrl | URL for NPM registry to install OSDK package [string]         |
 

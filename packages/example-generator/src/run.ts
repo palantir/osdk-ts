@@ -113,6 +113,7 @@ async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
       sdkVersion,
       foundryUrl: "https://fake.palantirfoundry.com",
       widgetSet: "ri.widgetregistry..widget-set.fake",
+      repository: undefined,
       osdkPackage,
       osdkRegistryUrl:
         "https://fake.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",

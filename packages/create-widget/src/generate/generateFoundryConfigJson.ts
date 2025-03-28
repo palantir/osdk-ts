@@ -17,10 +17,12 @@
 export function generateFoundryConfigJson({
   foundryUrl,
   widgetSet,
+  repository,
   directory,
 }: {
   foundryUrl: string;
   widgetSet: string;
+  repository: string | undefined;
   directory: string;
 }): string {
   return (
@@ -29,6 +31,7 @@ export function generateFoundryConfigJson({
         foundryUrl,
         widgetSet: {
           rid: widgetSet,
+          repository,
           directory,
           autoVersion: {
             type: "package-json",
