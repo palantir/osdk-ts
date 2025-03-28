@@ -3277,8 +3277,8 @@ importers:
   packages/monorepo.cspell:
     dependencies:
       '@cspell/cspell-types':
-        specifier: ^8.11.0
-        version: 8.12.1
+        specifier: ^8.18.0
+        version: 8.18.0
       '@types/node':
         specifier: ^18.0.0
         version: 18.19.74
@@ -4973,12 +4973,12 @@ packages:
     resolution: {integrity: sha512-Ur3IK0R92G/2J6roopG9cU/EhoYAMOx2um7KYlq93cdrly8RBAK2NCcGCL7DbjQB6C9RYEAV60ueMUnQ45RrCQ==}
     engines: {node: '>=18'}
 
-  '@cspell/cspell-types@8.12.1':
-    resolution: {integrity: sha512-17POyyRgl7m7mMuv1qk2xX6E5bdT0F3247vloBCdUMyaVtmtN4uEiQ/jqU5vtW02vxlKjKS0HcTvKz4EVfSlzQ==}
-    engines: {node: '>=18'}
-
   '@cspell/cspell-types@8.17.5':
     resolution: {integrity: sha512-91y2+0teunRSRZj940ORDA3kdjyenrUiM+4j6nQQH24sAIAJdRmQl2LG3eUTmeaSReJGkZIpnToQ6DyU5cC88Q==}
+    engines: {node: '>=18'}
+
+  '@cspell/cspell-types@8.18.0':
+    resolution: {integrity: sha512-z7ETwulTCAHpSNBqwD5d3Uoui4ClD+tfREoD0cKd9uMbLtN9W/WMVQAGDWJpOCUFrWsGYYM3/3/ob2oZhwdQag==}
     engines: {node: '>=18'}
 
   '@cspell/dict-ada@4.1.0':
@@ -16164,9 +16164,9 @@ snapshots:
 
   '@cspell/cspell-service-bus@8.17.5': {}
 
-  '@cspell/cspell-types@8.12.1': {}
-
   '@cspell/cspell-types@8.17.5': {}
+
+  '@cspell/cspell-types@8.18.0': {}
 
   '@cspell/dict-ada@4.1.0': {}
 
