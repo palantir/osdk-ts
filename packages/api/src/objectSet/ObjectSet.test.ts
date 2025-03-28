@@ -489,4 +489,15 @@ describe("ObjectSet", () => {
       });
     });
   });
+  describe("expressions", () => {
+    describe("numeric expressions", () => {
+      const a = fauxObjectSet.withProperties({
+        "mySum": (base) =>
+          base.pivotTo("lead").selectProperty("employeeId").add(
+            1,
+            "employeeId",
+          ),
+      });
+    });
+  });
 });

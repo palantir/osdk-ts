@@ -29,11 +29,26 @@ import type {
 } from "./WithPropertiesAggregationOptions.js";
 
 export namespace DerivedProperty {
-  export type SelectorResult<
+  export interface Definition<
     T extends SimplePropertyDef,
-  > = {
+    Q extends ObjectOrInterfaceDefinition,
+  > {
     type: T;
-  };
+  }
+
+  export interface NumericPropertyDefinition<
+    T extends SimplePropertyDef,
+    Q extends ObjectOrInterfaceDefinition,
+  > extends Definition<T, Q>, NumericExpressions<Q> {}
+
+  export interface DatetimePropertyDefinition<
+    T extends SimplePropertyDef,
+    Q extends ObjectOrInterfaceDefinition,
+  > extends Definition<T, Q>, DatetimeExpressions<Q> {}
+  export interface TimestampPropertyDefinition<
+    T extends SimplePropertyDef,
+    Q extends ObjectOrInterfaceDefinition,
+  > extends Definition<T, Q>, TimestampExpressions<Q> {}
 
   export type Clause<
     Q extends ObjectOrInterfaceDefinition,
@@ -46,7 +61,7 @@ export namespace DerivedProperty {
     T extends SimplePropertyDef,
   > = (
     baseObjectSet: DerivedProperty.Builder<Q, false>,
-  ) => SelectorResult<T>;
+  ) => Definition<T, Q> | NumericPropertyDefinition<T, Q>;
 
   export interface Builder<
     Q extends ObjectOrInterfaceDefinition,
@@ -65,6 +80,14 @@ export namespace DerivedProperty {
     CONSTRAINED extends boolean,
   > extends AggregateBuilder<Q, CONSTRAINED>, Selectable<Q> {
   }
+
+  export type ValidParts =
+    | "year"
+    | "month"
+    | "day"
+    | "hour"
+    | "minute"
+    | "second";
 }
 
 type BuilderTypeFromConstraint<
@@ -110,7 +133,7 @@ type Aggregatable<
       : P extends "approximatePercentile" ? { percentile: number }
       : never
       : never,
-  ) => DerivedProperty.SelectorResult<
+  ) => DerivedProperty.Definition<
     V extends `${infer N}:${infer P}`
       ? P extends CollectWithPropAggregations
         ? Array<CompileTimeMetadata<Q>["properties"][N]["type"]> | undefined
@@ -119,18 +142,151 @@ type Aggregatable<
       : P extends "approximateDistinct" | "exactDistinct" | "$count" ? "integer"
       : "double" | undefined
       : V extends "$count" ? "integer"
-      : never
+      : never,
+    Q
   >;
 };
 
 type Selectable<Q extends ObjectOrInterfaceDefinition> = {
   readonly selectProperty: <R extends PropertyKeys<Q>>(
     propertyName: R,
-  ) => DerivedProperty.SelectorResult<
+  ) => DefinitionForType<
+    Q,
     SimplePropertyDef.Make<
       CompileTimeMetadata<Q>["properties"][R]["type"],
       CompileTimeMetadata<Q>["properties"][R]["nullable"],
       CompileTimeMetadata<Q>["properties"][R]["multiplicity"]
     >
+  >;
+};
+
+// TODO: Fix arrays
+// TODO: Fix base type
+type DefinitionForType<
+  Q extends ObjectOrInterfaceDefinition,
+  T extends SimplePropertyDef,
+> = number extends SimplePropertyDef.ExtractRuntimeBaseType<T>
+  ? DerivedProperty.NumericPropertyDefinition<T, Q>
+  : DerivedProperty.Definition<T, Q>;
+
+type NumericExpressionArgArray<Q extends ObjectOrInterfaceDefinition> = Array<
+  | number
+  | PropertyKeys<Q>
+  | DerivedProperty.NumericPropertyDefinition<any, any>
+>;
+
+type DatetimeExpressionArgArray<Q extends ObjectOrInterfaceDefinition> = Array<
+  | string
+  | PropertyKeys<Q>
+  | DerivedProperty.DatetimePropertyDefinition<any, any>
+>;
+
+type NumericExpressions<Q extends ObjectOrInterfaceDefinition> = {
+  readonly add: (
+    ...args: NumericExpressionArgArray<Q>
+  ) => DerivedProperty.NumericPropertyDefinition<
+    SimplePropertyDef.Make<"integer", false, false>,
+    Q
+  >;
+
+  readonly subtract: (
+    left:
+      | number
+      | PropertyKeys<Q>
+      | DerivedProperty.NumericPropertyDefinition<any, any>,
+    right:
+      | number
+      | PropertyKeys<Q>
+      | DerivedProperty.NumericPropertyDefinition<any, any>,
+  ) => DerivedProperty.NumericPropertyDefinition<
+    SimplePropertyDef.Make<"integer", false, false>,
+    Q
+  >;
+
+  readonly multiply: (
+    ...args: NumericExpressionArgArray<Q>
+  ) => DerivedProperty.NumericPropertyDefinition<
+    SimplePropertyDef.Make<"integer", false, false>,
+    Q
+  >;
+
+  readonly divide: (
+    left:
+      | number
+      | PropertyKeys<Q>
+      | DerivedProperty.NumericPropertyDefinition<any, any>,
+    right:
+      | number
+      | PropertyKeys<Q>
+      | DerivedProperty.NumericPropertyDefinition<any, any>,
+  ) => DerivedProperty.NumericPropertyDefinition<
+    SimplePropertyDef.Make<"integer", false, false>,
+    Q
+  >;
+
+  readonly abs: () => DerivedProperty.NumericPropertyDefinition<
+    SimplePropertyDef.Make<"integer", false, false>,
+    Q
+  >;
+
+  readonly negate: () => DerivedProperty.NumericPropertyDefinition<
+    SimplePropertyDef.Make<"integer", false, false>,
+    Q
+  >;
+
+  readonly max: (
+    ...args: NumericExpressionArgArray<Q>
+  ) => DerivedProperty.NumericPropertyDefinition<
+    SimplePropertyDef.Make<"integer", false, false>,
+    Q
+  >;
+
+  readonly min: (
+    ...args: NumericExpressionArgArray<Q>
+  ) => DerivedProperty.NumericPropertyDefinition<
+    SimplePropertyDef.Make<"integer", false, false>,
+    Q
+  >;
+};
+
+type DatetimeExpressions<Q extends ObjectOrInterfaceDefinition> = {
+  readonly min: (
+    ...args: DatetimeExpressionArgArray<Q>
+  ) => DerivedProperty.DatetimePropertyDefinition<
+    SimplePropertyDef.Make<"datetime", false, false>,
+    Q
+  >;
+  readonly max: (
+    ...args: DatetimeExpressionArgArray<Q>
+  ) => DerivedProperty.DatetimePropertyDefinition<
+    SimplePropertyDef.Make<"datetime", false, false>,
+    Q
+  >;
+  readonly extractPart: (
+    part: DerivedProperty.ValidParts,
+  ) => DerivedProperty.NumericPropertyDefinition<
+    SimplePropertyDef.Make<"string", false, false>,
+    Q
+  >;
+};
+
+type TimestampExpressions<Q extends ObjectOrInterfaceDefinition> = {
+  readonly min: (
+    ...args: DatetimeExpressionArgArray<Q>
+  ) => DerivedProperty.DatetimePropertyDefinition<
+    SimplePropertyDef.Make<"timestamp", false, false>,
+    Q
+  >;
+  readonly max: (
+    ...args: DatetimeExpressionArgArray<Q>
+  ) => DerivedProperty.DatetimePropertyDefinition<
+    SimplePropertyDef.Make<"timestamp", false, false>,
+    Q
+  >;
+  readonly extractPart: (
+    part: DerivedProperty.ValidParts,
+  ) => DerivedProperty.NumericPropertyDefinition<
+    SimplePropertyDef.Make<"string", false, false>,
+    Q
   >;
 };

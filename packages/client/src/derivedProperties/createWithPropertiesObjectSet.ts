@@ -22,6 +22,7 @@ import type {
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
+import { selectorResultFactory } from "./derivedPropertyDefinitionFactory.js";
 
 const idCounter = 0;
 
@@ -96,7 +97,7 @@ export function createWithPropertiesObjectSet<
             "Invalid aggregation operation " + aggregationOperation,
           );
       }
-      const selectorResult: DerivedProperty.SelectorResult<any> = { type: {} };
+      const selectorResult: DerivedProperty.Definition<any, any> = { type: {} };
       definitionMap.set(selectorResult, {
         type: "selection",
         objectSet: objectSet,
@@ -105,16 +106,18 @@ export function createWithPropertiesObjectSet<
       return selectorResult;
     },
     selectProperty: (name) => {
-      const selectorResult: DerivedProperty.SelectorResult<any> = { type: {} };
-      definitionMap.set(selectorResult, {
+      const wrappedObjectSet: DerivedPropertyDefinition = {
         type: "selection",
         objectSet: objectSet,
         operation: {
           type: "get",
           selectedPropertyApiName: name,
         },
-      });
-      return selectorResult;
+      };
+      const selectorResult: DerivedProperty.Definition<any, any> =
+        selectorResultFactory(wrappedObjectSet);
+      definitionMap.set(selectorResult, wrappedObjectSet);
+      return selectorResult as any;
     },
   };
 
