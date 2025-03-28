@@ -31,6 +31,8 @@
  */
 
 import type {
+  ColumnName,
+  ObjectTypeFieldApiName,
   OntologyIr,
   OntologyIrInterfaceType,
   OntologyIrInterfaceTypeBlockDataV2,
@@ -39,6 +41,7 @@ import type {
   OntologyIrManyToManyLinkTypeDatasource,
   OntologyIrObjectTypeBlockDataV2,
   OntologyIrObjectTypeDatasource,
+  OntologyIrObjectTypeDatasourceDefinition,
   OntologyIrPropertyType,
   OntologyIrSharedPropertyType,
   OntologyIrSharedPropertyTypeBlockDataV2,
@@ -178,23 +181,9 @@ function convertToWireOntologyIr(
 function convertObject(
   objectType: ObjectType,
 ): OntologyIrObjectTypeBlockDataV2 {
-  const propertyDatasource: Record<string, PropertyTypeMappingInfo> = {};
-  (objectType.properties ?? []).forEach((property) => {
-    propertyDatasource[property.apiName] = {
-      type: "column",
-      column: property.apiName,
-    };
-  });
-
   const datasource: OntologyIrObjectTypeDatasource = {
     rid: "ri.ontology.main.datasource.".concat(objectType.apiName),
-    datasource: {
-      type: "datasetV2",
-      datasetV2: {
-        datasetRid: objectType.apiName,
-        propertyMapping: propertyDatasource,
-      },
-    },
+    datasource: convertDatasourceDefinition(objectType),
     editsConfiguration: {
       onlyAllowPrivilegedEdits: false,
     },
@@ -244,6 +233,43 @@ function convertObject(
     datasources: [datasource],
     entityMetadata: { arePatchesEnabled: objectType.editsEnabled ?? false },
   };
+}
+
+function convertDatasourceDefinition(
+  objectType: ObjectType,
+): OntologyIrObjectTypeDatasourceDefinition {
+  switch (objectType.datasource?.type) {
+    case "stream":
+      const window = objectType.datasource.retentionPeriod;
+      return {
+        type: "stream",
+        stream: {
+          streamLocator: objectType.apiName,
+          propertyMapping: Object.fromEntries(
+            (objectType.properties ?? []).map((
+              prop,
+            ) => [prop.apiName, prop.apiName]),
+          ) as Record<ObjectTypeFieldApiName, ColumnName>,
+          retentionPolicy: window
+            ? { type: "time", time: { window } }
+            : { type: "none", none: {} },
+        },
+      };
+    case "dataset":
+    default:
+      return {
+        type: "datasetV2",
+        datasetV2: {
+          datasetRid: objectType.apiName,
+          propertyMapping: Object.fromEntries(
+            (objectType.properties ?? []).map((prop) => [
+              prop.apiName,
+              { type: "column", column: prop.apiName },
+            ]),
+          ) as Record<string, PropertyTypeMappingInfo>,
+        },
+      };
+  }
 }
 
 function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {

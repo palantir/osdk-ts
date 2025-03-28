@@ -2572,5 +2572,353 @@ describe("Ontology Defining", () => {
       }
         `);
     });
+
+    it("Explicit datasource definitions are properly defined", () => {
+      const datasetBackedObject = defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "datasetBackedObject",
+        pluralDisplayName: "datasetBackedObject",
+        apiName: "foo",
+        primaryKeys: ["bar"],
+        properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+        datasource: { type: "dataset" },
+      });
+
+      const streamBackedObjectNoRetention = defineObject({
+        titlePropertyApiName: "fizz",
+        displayName: "streamBackedObjectNoRetention",
+        pluralDisplayName: "streamBackedObjectNoRetention",
+        apiName: "fizz",
+        primaryKeys: ["fizz"],
+        properties: [{ apiName: "fizz", type: "string", displayName: "Fizz" }, {
+          apiName: "bar",
+          type: "string",
+          displayName: "Bar",
+        }],
+        datasource: { type: "stream" },
+      });
+
+      const streamBackedObjectWithRetention = defineObject({
+        titlePropertyApiName: "buzz",
+        displayName: "streamBackedObjectWithRetention",
+        pluralDisplayName: "streamBackedObjectWithRetention",
+        apiName: "buzz",
+        primaryKeys: ["buzz"],
+        properties: [{ apiName: "buzz", type: "string", displayName: "Buzz" }],
+        datasource: { type: "stream", retentionPeriod: "PT1H" },
+      });
+
+      expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+      {
+        "blockPermissionInformation": {
+          "actionTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+        },
+        "interfaceTypes": {},
+        "linkTypes": {},
+        "objectTypes": {
+          "com.palantir.buzz": {
+            "datasources": [
+              {
+                "datasource": {
+                  "stream": {
+                    "propertyMapping": {
+                      "buzz": "buzz",
+                    },
+                    "retentionPolicy": {
+                      "time": {
+                        "window": "PT1H",
+                      },
+                      "type": "time",
+                    },
+                    "streamLocator": "com.palantir.buzz",
+                  },
+                  "type": "stream",
+                },
+                "editsConfiguration": {
+                  "onlyAllowPrivilegedEdits": false,
+                },
+                "redacted": false,
+                "rid": "ri.ontology.main.datasource.com.palantir.buzz",
+              },
+            ],
+            "entityMetadata": {
+              "arePatchesEnabled": false,
+            },
+            "objectType": {
+              "allImplementsInterfaces": {},
+              "apiName": "com.palantir.buzz",
+              "displayMetadata": {
+                "description": undefined,
+                "displayName": "streamBackedObjectWithRetention",
+                "groupDisplayName": undefined,
+                "icon": {
+                  "blueprint": {
+                    "color": "#2D72D2",
+                    "locator": "cube",
+                  },
+                  "type": "blueprint",
+                },
+                "pluralDisplayName": "streamBackedObjectWithRetention",
+                "visibility": "NORMAL",
+              },
+              "implementsInterfaces2": [],
+              "primaryKeys": [
+                "buzz",
+              ],
+              "propertyTypes": {
+                "buzz": {
+                  "apiName": "buzz",
+                  "baseFormatter": undefined,
+                  "dataConstraints": undefined,
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "Buzz",
+                    "visibility": "NORMAL",
+                  },
+                  "indexedForSearch": true,
+                  "inlineAction": undefined,
+                  "ruleSetBinding": undefined,
+                  "sharedPropertyTypeApiName": undefined,
+                  "sharedPropertyTypeRid": undefined,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                  "type": {
+                    "string": {
+                      "analyzerOverride": undefined,
+                      "enableAsciiFolding": undefined,
+                      "isLongText": false,
+                      "supportsEfficientLeadingWildcard": false,
+                      "supportsExactMatching": true,
+                    },
+                    "type": "string",
+                  },
+                  "typeClasses": [],
+                  "valueType": undefined,
+                },
+              },
+              "redacted": false,
+              "status": {
+                "active": {},
+                "type": "active",
+              },
+              "titlePropertyTypeRid": "buzz",
+            },
+          },
+          "com.palantir.fizz": {
+            "datasources": [
+              {
+                "datasource": {
+                  "stream": {
+                    "propertyMapping": {
+                      "bar": "bar",
+                      "fizz": "fizz",
+                    },
+                    "retentionPolicy": {
+                      "none": {},
+                      "type": "none",
+                    },
+                    "streamLocator": "com.palantir.fizz",
+                  },
+                  "type": "stream",
+                },
+                "editsConfiguration": {
+                  "onlyAllowPrivilegedEdits": false,
+                },
+                "redacted": false,
+                "rid": "ri.ontology.main.datasource.com.palantir.fizz",
+              },
+            ],
+            "entityMetadata": {
+              "arePatchesEnabled": false,
+            },
+            "objectType": {
+              "allImplementsInterfaces": {},
+              "apiName": "com.palantir.fizz",
+              "displayMetadata": {
+                "description": undefined,
+                "displayName": "streamBackedObjectNoRetention",
+                "groupDisplayName": undefined,
+                "icon": {
+                  "blueprint": {
+                    "color": "#2D72D2",
+                    "locator": "cube",
+                  },
+                  "type": "blueprint",
+                },
+                "pluralDisplayName": "streamBackedObjectNoRetention",
+                "visibility": "NORMAL",
+              },
+              "implementsInterfaces2": [],
+              "primaryKeys": [
+                "fizz",
+              ],
+              "propertyTypes": {
+                "bar": {
+                  "apiName": "bar",
+                  "baseFormatter": undefined,
+                  "dataConstraints": undefined,
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "Bar",
+                    "visibility": "NORMAL",
+                  },
+                  "indexedForSearch": true,
+                  "inlineAction": undefined,
+                  "ruleSetBinding": undefined,
+                  "sharedPropertyTypeApiName": undefined,
+                  "sharedPropertyTypeRid": undefined,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                  "type": {
+                    "string": {
+                      "analyzerOverride": undefined,
+                      "enableAsciiFolding": undefined,
+                      "isLongText": false,
+                      "supportsEfficientLeadingWildcard": false,
+                      "supportsExactMatching": true,
+                    },
+                    "type": "string",
+                  },
+                  "typeClasses": [],
+                  "valueType": undefined,
+                },
+                "fizz": {
+                  "apiName": "fizz",
+                  "baseFormatter": undefined,
+                  "dataConstraints": undefined,
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "Fizz",
+                    "visibility": "NORMAL",
+                  },
+                  "indexedForSearch": true,
+                  "inlineAction": undefined,
+                  "ruleSetBinding": undefined,
+                  "sharedPropertyTypeApiName": undefined,
+                  "sharedPropertyTypeRid": undefined,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                  "type": {
+                    "string": {
+                      "analyzerOverride": undefined,
+                      "enableAsciiFolding": undefined,
+                      "isLongText": false,
+                      "supportsEfficientLeadingWildcard": false,
+                      "supportsExactMatching": true,
+                    },
+                    "type": "string",
+                  },
+                  "typeClasses": [],
+                  "valueType": undefined,
+                },
+              },
+              "redacted": false,
+              "status": {
+                "active": {},
+                "type": "active",
+              },
+              "titlePropertyTypeRid": "fizz",
+            },
+          },
+          "com.palantir.foo": {
+            "datasources": [
+              {
+                "datasource": {
+                  "datasetV2": {
+                    "datasetRid": "com.palantir.foo",
+                    "propertyMapping": {
+                      "bar": {
+                        "column": "bar",
+                        "type": "column",
+                      },
+                    },
+                  },
+                  "type": "datasetV2",
+                },
+                "editsConfiguration": {
+                  "onlyAllowPrivilegedEdits": false,
+                },
+                "redacted": false,
+                "rid": "ri.ontology.main.datasource.com.palantir.foo",
+              },
+            ],
+            "entityMetadata": {
+              "arePatchesEnabled": false,
+            },
+            "objectType": {
+              "allImplementsInterfaces": {},
+              "apiName": "com.palantir.foo",
+              "displayMetadata": {
+                "description": undefined,
+                "displayName": "datasetBackedObject",
+                "groupDisplayName": undefined,
+                "icon": {
+                  "blueprint": {
+                    "color": "#2D72D2",
+                    "locator": "cube",
+                  },
+                  "type": "blueprint",
+                },
+                "pluralDisplayName": "datasetBackedObject",
+                "visibility": "NORMAL",
+              },
+              "implementsInterfaces2": [],
+              "primaryKeys": [
+                "bar",
+              ],
+              "propertyTypes": {
+                "bar": {
+                  "apiName": "bar",
+                  "baseFormatter": undefined,
+                  "dataConstraints": undefined,
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "Bar",
+                    "visibility": "NORMAL",
+                  },
+                  "indexedForSearch": true,
+                  "inlineAction": undefined,
+                  "ruleSetBinding": undefined,
+                  "sharedPropertyTypeApiName": undefined,
+                  "sharedPropertyTypeRid": undefined,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                  "type": {
+                    "string": {
+                      "analyzerOverride": undefined,
+                      "enableAsciiFolding": undefined,
+                      "isLongText": false,
+                      "supportsEfficientLeadingWildcard": false,
+                      "supportsExactMatching": true,
+                    },
+                    "type": "string",
+                  },
+                  "typeClasses": [],
+                  "valueType": undefined,
+                },
+              },
+              "redacted": false,
+              "status": {
+                "active": {},
+                "type": "active",
+              },
+              "titlePropertyTypeRid": "bar",
+            },
+          },
+        },
+        "sharedPropertyTypes": {},
+      }
+        `);
+    });
   });
 });
