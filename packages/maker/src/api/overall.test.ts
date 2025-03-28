@@ -2622,7 +2622,7 @@ describe("Ontology Defining", () => {
             "datasources": [
               {
                 "datasource": {
-                  "stream": {
+                  "streamV2": {
                     "propertyMapping": {
                       "buzz": "buzz",
                     },
@@ -2634,7 +2634,7 @@ describe("Ontology Defining", () => {
                     },
                     "streamLocator": "com.palantir.buzz",
                   },
-                  "type": "stream",
+                  "type": "streamV2",
                 },
                 "editsConfiguration": {
                   "onlyAllowPrivilegedEdits": false,
@@ -2712,7 +2712,7 @@ describe("Ontology Defining", () => {
             "datasources": [
               {
                 "datasource": {
-                  "stream": {
+                  "streamV2": {
                     "propertyMapping": {
                       "bar": "bar",
                       "fizz": "fizz",
@@ -2723,7 +2723,7 @@ describe("Ontology Defining", () => {
                     },
                     "streamLocator": "com.palantir.fizz",
                   },
-                  "type": "stream",
+                  "type": "streamV2",
                 },
                 "editsConfiguration": {
                   "onlyAllowPrivilegedEdits": false,

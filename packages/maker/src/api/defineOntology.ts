@@ -242,8 +242,8 @@ function convertDatasourceDefinition(
     case "stream":
       const window = objectType.datasource.retentionPeriod;
       return {
-        type: "stream",
-        stream: {
+        type: "streamV2",
+        streamV2: {
           streamLocator: objectType.apiName,
           propertyMapping: Object.fromEntries(
             (objectType.properties ?? []).map((
