@@ -1,3 +1,4 @@
+import type { Client } from "@osdk/client";
 import { createClient } from "@osdk/client";
 import { createPublicOauthClient } from "@osdk/oauth";
 import { $ontologyRid } from "{{osdkPackage}}";
@@ -5,9 +6,6 @@ import { $ontologyRid } from "{{osdkPackage}}";
 const url = import.meta.env.VITE_FOUNDRY_API_URL;
 const clientId = import.meta.env.VITE_FOUNDRY_CLIENT_ID;
 const redirectUrl = import.meta.env.VITE_FOUNDRY_REDIRECT_URL;
-checkEnv(url, "VITE_FOUNDRY_API_URL");
-checkEnv(clientId, "VITE_FOUNDRY_CLIENT_ID");
-checkEnv(redirectUrl, "VITE_FOUNDRY_REDIRECT_URL");
 {{#if scopes}}
 const scopes = [
   {{#each scopes}}
@@ -15,6 +13,10 @@ const scopes = [
   {{/each}}
 ];
 {{/if}}
+
+checkEnv(url, "VITE_FOUNDRY_API_URL");
+checkEnv(clientId, "VITE_FOUNDRY_CLIENT_ID");
+checkEnv(redirectUrl, "VITE_FOUNDRY_REDIRECT_URL");
 
 function checkEnv(
   value: string | undefined,
@@ -25,10 +27,7 @@ function checkEnv(
   }
 }
 
-/**
- * Initialize the client to interact with the Ontology SDK
- */
-const auth = createPublicOauthClient(
+export const auth = createPublicOauthClient(
   clientId,
   url,
   redirectUrl,
@@ -37,10 +36,13 @@ const auth = createPublicOauthClient(
   {{/if}}
 );
 
-const client = createClient(
+/**
+ * Initialize the client to interact with the Ontology SDK
+ */
+const client: Client = createClient(
   url,
   $ontologyRid,
   auth,
 );
 
-export { auth, client };
+export default client;
