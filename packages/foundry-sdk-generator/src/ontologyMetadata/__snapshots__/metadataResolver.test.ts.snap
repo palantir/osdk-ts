@@ -15,6 +15,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
             "dataType": {
               "type": "mediaReference",
             },
+            "displayName": "Media Reference",
             "required": true,
           },
         },
@@ -53,12 +54,14 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
               ],
               "type": "struct",
             },
+            "displayName": "Address",
             "required": false,
           },
           "name": {
             "dataType": {
               "type": "string",
             },
+            "displayName": "Name",
             "required": true,
           },
         },
@@ -80,6 +83,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
               "interfaceTypeApiName": "FooInterface",
               "type": "interfaceObject",
             },
+            "displayName": "Deleted Interface",
             "required": true,
           },
         },
@@ -100,18 +104,21 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
             "dataType": {
               "type": "integer",
             },
+            "displayName": "Employee ID",
             "required": true,
           },
           "newCompensation": {
             "dataType": {
               "type": "double",
             },
+            "displayName": "New Compensation",
             "required": true,
           },
           "newTitle": {
             "dataType": {
               "type": "string",
             },
+            "displayName": "New Title",
             "required": true,
           },
         },
@@ -343,18 +350,21 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
             "dataType": {
               "type": "integer",
             },
+            "displayName": "Employee ID",
             "required": true,
           },
           "newCompensation": {
             "dataType": {
               "type": "double",
             },
+            "displayName": "New Compensation",
             "required": true,
           },
           "newTitle": {
             "dataType": {
               "type": "string",
             },
+            "displayName": "New Title",
             "required": true,
           },
         },
@@ -564,18 +574,21 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
             "dataType": {
               "type": "integer",
             },
+            "displayName": "Employee ID",
             "required": true,
           },
           "newCompensation": {
             "dataType": {
               "type": "double",
             },
+            "displayName": "New Compensation",
             "required": true,
           },
           "newTitle": {
             "dataType": {
               "type": "string",
             },
+            "displayName": "New Title",
             "required": true,
           },
         },

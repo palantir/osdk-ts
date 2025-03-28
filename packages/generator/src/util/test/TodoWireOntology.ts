@@ -29,6 +29,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
       description: "An action which takes different types of parameters",
       parameters: {
         object: {
+          displayName: "markTodoCompleted",
           description: "A Todo to mark completed",
           dataType: {
             type: "object",
@@ -50,6 +51,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
       description: "An action which takes in an array of objects",
       parameters: {
         object: {
+          displayName: "deleteTodos",
           description: "Todo(s) to be deleted",
           "dataType": {
             "type": "array",
