@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.2.0-beta.13
+
+### Minor Changes
+
+- 488b51c: Add support for using aggregations and GeoJSON types from runtime derived properties
+
 ## 2.2.0-beta.12
 
 ## 2.2.0-beta.11
