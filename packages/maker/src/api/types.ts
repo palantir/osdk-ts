@@ -456,6 +456,7 @@ export interface ObjectTypeDatasourceDefinition_dataset {
 
 export interface ObjectTypeDatasourceDefinition_stream {
   type: "stream";
+  // Retention period must be in ISO 8601 duration format
   retentionPeriod?: string;
 }
 

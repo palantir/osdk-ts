@@ -31,8 +31,6 @@
  */
 
 import type {
-  ColumnName,
-  ObjectTypeFieldApiName,
   OntologyIr,
   OntologyIrInterfaceType,
   OntologyIrInterfaceTypeBlockDataV2,
@@ -49,7 +47,7 @@ import type {
   OntologyIrType,
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
-  PropertyTypeMappingInfo,
+  RetentionPolicy,
 } from "@osdk/client.unstable";
 import type {
   InterfaceType,
@@ -241,18 +239,20 @@ function convertDatasourceDefinition(
   switch (objectType.datasource?.type) {
     case "stream":
       const window = objectType.datasource.retentionPeriod;
+      const retentionPolicy: RetentionPolicy = window
+        ? { type: "time", time: { window } }
+        : { type: "none", none: {} };
+      const propertyMapping = Object.fromEntries(
+        (objectType.properties ?? []).map((
+          prop,
+        ) => [prop.apiName, prop.apiName]),
+      );
       return {
         type: "streamV2",
         streamV2: {
           streamLocator: objectType.apiName,
-          propertyMapping: Object.fromEntries(
-            (objectType.properties ?? []).map((
-              prop,
-            ) => [prop.apiName, prop.apiName]),
-          ) as Record<ObjectTypeFieldApiName, ColumnName>,
-          retentionPolicy: window
-            ? { type: "time", time: { window } }
-            : { type: "none", none: {} },
+          propertyMapping,
+          retentionPolicy,
           propertySecurityGroups: undefined,
         },
       };
@@ -267,7 +267,7 @@ function convertDatasourceDefinition(
               prop.apiName,
               { type: "column", column: prop.apiName },
             ]),
-          ) as Record<string, PropertyTypeMappingInfo>,
+          ),
         },
       };
   }

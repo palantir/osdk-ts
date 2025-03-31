@@ -92,4 +92,5 @@ export type { OntologyIrObjectTypeInterfaceImplementation } from "./generated/on
 export type { OntologyIrOneToManyLinkDefinition } from "./generated/ontology-metadata/api/OntologyIrOneToManyLinkDefinition.js";
 export type { OntologyIrPropertyType } from "./generated/ontology-metadata/api/OntologyIrPropertyType.js";
 export type { PropertyTypeMappingInfo } from "./generated/ontology-metadata/api/PropertyTypeMappingInfo.js";
+export type { RetentionPolicy } from "./generated/ontology-metadata/api/RetentionPolicy.js";
 export type { Visibility } from "./generated/ontology-metadata/api/Visibility.js";
