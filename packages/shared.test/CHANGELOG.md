@@ -1,5 +1,18 @@
 # @osdk/shared.test
 
+## 2.2.0-beta.13
+
+### Minor Changes
+
+- 488b51c: Add support for using aggregations and GeoJSON types from runtime derived properties
+
+### Patch Changes
+
+- Updated dependencies [488b51c]
+- Updated dependencies [71462e9]
+  - @osdk/api@2.2.0-beta.13
+  - @osdk/generator-converters@2.2.0-beta.13
+
 ## 2.2.0-beta.12
 
 ### Patch Changes

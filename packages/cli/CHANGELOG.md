@@ -1,5 +1,11 @@
 # @osdk/cli
 
+## 0.26.0-beta.13
+
+### Minor Changes
+
+- 3876e2d: Fix a bug where --auto-version is required without foundry.config.json preventing --version from being usable.
+
 ## 0.26.0-beta.12
 
 ## 0.26.0-beta.11
