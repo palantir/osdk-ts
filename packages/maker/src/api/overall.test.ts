@@ -2942,7 +2942,7 @@ describe("Ontology Defining", () => {
           },
         })
       ).toThrowErrorMatchingInlineSnapshot(
-        "[Error: Invariant failed: Retention period bad retention period string on object buzz is not a valid ISO 8601 duration string]",
+        `[Error: Invariant failed: Retention period "bad retention period string" on object "buzz" is not a valid ISO 8601 duration string]`,
       );
     });
   });

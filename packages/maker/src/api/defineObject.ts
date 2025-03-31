@@ -52,7 +52,7 @@ export function defineObject(objectDef: ObjectType): ObjectType {
   const retentionPeriod = (objectDef.datasource as any)?.retentionPeriod;
   invariant(
     retentionPeriod === undefined || ISO_8601_DURATION.test(retentionPeriod),
-    `Retention period ${retentionPeriod} on object ${objectDef.apiName} is not a valid ISO 8601 duration string`,
+    `Retention period "${retentionPeriod}" on object "${objectDef.apiName}" is not a valid ISO 8601 duration string`,
   );
 
   objectDef.implementsInterfaces?.forEach(interfaceImpl => {
