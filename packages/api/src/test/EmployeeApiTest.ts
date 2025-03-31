@@ -33,6 +33,8 @@ export namespace EmployeeApiTest {
     | "timeseries"
     | "mediaReference"
     | "geotimeSeriesReference"
+    | "lastClockIn"
+    | "dateOfBirth"
     | "isActive";
 
   export interface Links {
@@ -52,6 +54,8 @@ export namespace EmployeeApiTest {
       | $PropType["geotimeSeriesReference"]
       | undefined;
     readonly isActive: $PropType["boolean"] | undefined;
+    readonly lastClockIn: $PropType["timestamp"] | undefined;
+    readonly dateOfBirth: $PropType["datetime"] | undefined;
   }
   export type StrictProps = Props;
 
@@ -108,6 +112,8 @@ export interface EmployeeApiTest extends $ObjectTypeDefinition {
         "single"
       >;
       isActive: $PropertyDef<"boolean", "nullable", "single">;
+      lastClockIn: $PropertyDef<"timestamp", "nullable", "single">;
+      dateOfBirth: $PropertyDef<"datetime", "nullable", "single">;
     };
     rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44";
     status: "ACTIVE";

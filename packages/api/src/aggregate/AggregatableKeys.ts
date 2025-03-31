@@ -35,8 +35,8 @@ export type BaseAggregateOptions = "approximateDistinct" | "exactDistinct";
 export type MinMaxAggregateOption = "min" | "max";
 
 export type DatetimeAggregateOption =
-  & MinMaxAggregateOption
-  & BaseAggregateOptions;
+  | MinMaxAggregateOption
+  | BaseAggregateOptions;
 
 export type NumericAggregateOption =
   | "sum"

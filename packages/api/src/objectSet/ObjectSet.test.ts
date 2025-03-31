@@ -31,6 +31,9 @@ describe("ObjectSet", () => {
     asyncIter: vi.fn(() => {
       return {};
     }),
+    aggregate: vi.fn(() => {
+      return {};
+    }),
   } as any as EmployeeApiTest.ObjectSet;
 
   describe("normal", () => {
@@ -298,6 +301,8 @@ describe("ObjectSet", () => {
             "mediaReference",
             "geotimeSeriesReference",
             "isActive",
+            "lastClockIn",
+            "dateOfBirth",
           ],
         });
 
@@ -407,6 +412,16 @@ describe("ObjectSet", () => {
           base.pivotTo("lead").aggregate(
             "geotimeSeriesReference:exactDistinct",
           ),
+      });
+    });
+  });
+  describe("aggregate", () => {
+    it("has correct aggregation keys", () => {
+      void fauxObjectSet.aggregate({
+        "$select": {
+          "lastClockIn:max": "asc",
+          "dateOfBirth:max": "desc",
+        },
       });
     });
   });
