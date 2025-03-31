@@ -2922,5 +2922,28 @@ describe("Ontology Defining", () => {
       }
         `);
     });
+
+    it("Fail if stream retention period is not ISO 8601 compliant", () => {
+      expect(() =>
+        defineObject({
+          titlePropertyApiName: "buzz",
+          displayName: "streamBackedObjectWithRetention",
+          pluralDisplayName: "streamBackedObjectWithRetention",
+          apiName: "buzz",
+          primaryKeys: ["buzz"],
+          properties: [{
+            apiName: "buzz",
+            type: "string",
+            displayName: "Buzz",
+          }],
+          datasource: {
+            type: "stream",
+            retentionPeriod: "bad retention period string",
+          },
+        })
+      ).toThrowErrorMatchingInlineSnapshot(
+        "[Error: Invariant failed: Retention period bad retention period string on object buzz is not a valid ISO 8601 duration string]",
+      );
+    });
   });
 });
