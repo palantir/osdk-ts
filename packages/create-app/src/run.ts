@@ -169,13 +169,6 @@ export async function run(
     corsProxy,
   });
   fs.writeFileSync(path.join(root, ".env.development"), envDevelopment);
-  const envProduction = generateEnvProduction({
-    envPrefix: template.envPrefix,
-    foundryUrl,
-    applicationUrl,
-    clientId,
-  });
-  fs.writeFileSync(path.join(root, ".env.production"), envProduction);
   const foundryConfigJson = generateFoundryConfigJson({
     foundryUrl,
     application,
@@ -194,6 +187,14 @@ export async function run(
       path.join(root, "public/.palantir/deployment.config.json"),
       deploymentConfigJson,
     );
+  } else {
+    const envProduction = generateEnvProduction({
+      envPrefix: template.envPrefix,
+      foundryUrl,
+      applicationUrl,
+      clientId,
+    });
+    fs.writeFileSync(path.join(root, ".env.production"), envProduction);
   }
 
   consola.success("Success");
