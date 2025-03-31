@@ -2,7 +2,7 @@ import { expect, test } from "vitest";
 import { readFileSync } from "fs";
 import { resolve } from "path";
 
-test.skipIf(process.env.VERIFY_ENV_PRODUCTION !== "true")(
+test.skipIf(process.env.VERIFY_DEPLOYMENT_CONFIG !== "true")(
   "deployment.config.json should not contain placeholder values for redirectUrl",
   () => {
     const configPath = resolve(
