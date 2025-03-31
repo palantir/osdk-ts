@@ -21,6 +21,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { consola } from "./consola.js";
+import { generateDeploymentConfigJson } from "./generate/generateDeploymentConfigJson.js";
 import {
   generateEnvDevelopment,
   generateEnvProduction,
@@ -43,6 +44,7 @@ interface RunArgs {
   osdkRegistryUrl: string;
   corsProxy: boolean;
   scopes: string[] | undefined;
+  ontologyRid: string;
 }
 
 export async function run(
@@ -59,6 +61,7 @@ export async function run(
     osdkRegistryUrl,
     corsProxy,
     scopes,
+    ontologyRid,
   }: RunArgs,
 ): Promise<void> {
   consola.log("");
@@ -179,6 +182,19 @@ export async function run(
     directory: template.buildDirectory,
   });
   fs.writeFileSync(path.join(root, "foundry.config.json"), foundryConfigJson);
+
+  if (sdkVersion === "2.x" && !template.id.includes("expo")) {
+    const deploymentConfigJson = generateDeploymentConfigJson({
+      clientId,
+      foundryUrl,
+      applicationUrl,
+      ontologyRid,
+    });
+    fs.writeFileSync(
+      path.join(root, "public/.palantir/deployment.config.json"),
+      deploymentConfigJson,
+    );
+  }
 
   consola.success("Success");
 
