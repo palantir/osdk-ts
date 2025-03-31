@@ -1,0 +1,6 @@
+{
+  "clientId": "123",
+  "redirectUrl": "https://example.com/auth/callback",
+  "foundryUrl": "https://fake.palantirfoundry.com",
+  "ontologyRid": "ri.ontologies.main.ontology.fake"
+}

@@ -1,32 +1,19 @@
-import type { Client } from "@osdk/client";
-import { createClient } from "@osdk/client";
-import { createPublicOauthClient } from "@osdk/oauth";
+import { createClient, type Client } from "@osdk/client";
+import { getOsdkConfig } from "@osdk/client/unstable-do-not-use";
+import { createPublicOauthClient, type PublicOauthClient } from "@osdk/oauth";
 import { $ontologyRid } from "@osdk/e2e.generated.catchall";
 
-const url = import.meta.env.VITE_FOUNDRY_API_URL;
-const clientId = import.meta.env.VITE_FOUNDRY_CLIENT_ID;
-const redirectUrl = import.meta.env.VITE_FOUNDRY_REDIRECT_URL;
+const { clientId, redirectUrl, foundryUrl, ontologyRid } =
+  getOsdkConfig($ontologyRid);
+
 const scopes = [
   "api:ontologies-read",
   "api:ontologies-write",
 ];
 
-checkEnv(url, "VITE_FOUNDRY_API_URL");
-checkEnv(clientId, "VITE_FOUNDRY_CLIENT_ID");
-checkEnv(redirectUrl, "VITE_FOUNDRY_REDIRECT_URL");
-
-function checkEnv(
-  value: string | undefined,
-  name: string,
-): asserts value is string {
-  if (value == null) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-}
-
-export const auth = createPublicOauthClient(
+export const auth: PublicOauthClient = createPublicOauthClient(
   clientId,
-  url,
+  foundryUrl,
   redirectUrl,
   { scopes },
 );
@@ -35,8 +22,8 @@ export const auth = createPublicOauthClient(
  * Initialize the client to interact with the Ontology SDK
  */
 const client: Client = createClient(
-  url,
-  $ontologyRid,
+  foundryUrl,
+  ontologyRid,
   auth,
 );
 
