@@ -14,26 +14,46 @@
  * limitations under the License.
  */
 
-import type { DerivedProperty, ObjectOrInterfaceDefinition } from "@osdk/api";
+import type { DerivedProperty } from "@osdk/api";
 import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
+import invariant from "tiny-invariant";
 
 /** @internal */
-export function selectorResultFactory<Q extends ObjectOrInterfaceDefinition>(
-  objectSet: DerivedPropertyDefinition,
-): DerivedProperty.NumericPropertyDefinition<any, Q> {
+export function selectorResultFactory(
+  wireDefinition: DerivedPropertyDefinition,
+  definitionMap: Map<any, DerivedPropertyDefinition>,
+): DerivedProperty.NumericPropertyDefinition<any, any> {
   return {
     type: {},
     abs() {
-      return selectorResultFactory(objectSet);
+      return selectorResultFactory({
+        type: "absoluteValue",
+        property: wireDefinition,
+      }, definitionMap);
     },
     negate() {
-      return selectorResultFactory(objectSet);
+      return selectorResultFactory({
+        type: "negate",
+        property: wireDefinition,
+      }, definitionMap);
     },
-    max() {
-      return selectorResultFactory(objectSet);
+    max(...args: (string | number | DerivedProperty.Definition<any, any>)[]) {
+      return selectorResultFactory({
+        type: "greatest",
+        properties: [
+          wireDefinition,
+          ...args.map((arg) => getDefinitionFromMap(arg, definitionMap)),
+        ],
+      }, definitionMap);
     },
-    min() {
-      return selectorResultFactory(objectSet);
+    min(...args: (string | number | DerivedProperty.Definition<any, any>)[]) {
+      return selectorResultFactory({
+        type: "least",
+        properties: [
+          wireDefinition,
+          ...args.map((arg) => getDefinitionFromMap(arg, definitionMap)),
+        ],
+      }, definitionMap);
     },
     add(
       ...args: (
@@ -45,12 +65,13 @@ export function selectorResultFactory<Q extends ObjectOrInterfaceDefinition>(
         >
       )[]
     ) {
-      for (const arg of args) {
-        if (typeof arg === "string" || typeof arg === "number") {
-          continue;
-        }
-      }
-      return selectorResultFactory(objectSet);
+      return selectorResultFactory({
+        type: "add",
+        properties: [
+          wireDefinition,
+          ...args.map((arg) => getDefinitionFromMap(arg, definitionMap)),
+        ],
+      }, definitionMap);
     },
     subtract(
       left:
@@ -62,7 +83,11 @@ export function selectorResultFactory<Q extends ObjectOrInterfaceDefinition>(
         | number
         | DerivedProperty.NumericPropertyDefinition<any, any>,
     ) {
-      return selectorResultFactory(objectSet);
+      return selectorResultFactory({
+        "type": "subtract",
+        "left": getDefinitionFromMap(left, definitionMap),
+        "right": getDefinitionFromMap(right, definitionMap),
+      }, definitionMap);
     },
     multiply(
       ...args: (
@@ -74,7 +99,13 @@ export function selectorResultFactory<Q extends ObjectOrInterfaceDefinition>(
         >
       )[]
     ) {
-      return selectorResultFactory(objectSet);
+      return selectorResultFactory({
+        type: "multiply",
+        properties: [
+          wireDefinition,
+          ...args.map((arg) => getDefinitionFromMap(arg, definitionMap)),
+        ],
+      }, definitionMap);
     },
     divide(
       left:
@@ -86,10 +117,28 @@ export function selectorResultFactory<Q extends ObjectOrInterfaceDefinition>(
         | number
         | DerivedProperty.NumericPropertyDefinition<any, any>,
     ) {
-      return selectorResultFactory(objectSet);
+      return selectorResultFactory({
+        "type": "subtract",
+        "left": getDefinitionFromMap(left, definitionMap),
+        "right": getDefinitionFromMap(right, definitionMap),
+      }, definitionMap);
     },
-  } satisfies DerivedProperty.NumericPropertyDefinition<
-    any,
-    any
-  >;
+  };
 }
+
+const getDefinitionFromMap = (
+  arg: string | number | DerivedProperty.Definition<any, any>,
+  definitionMap: Map<any, DerivedPropertyDefinition>,
+): DerivedPropertyDefinition => {
+  if (typeof arg === "object") {
+    const definition = definitionMap.get(arg);
+    invariant(definition, "Derived Property is not defined");
+    return definition;
+  } else if (typeof arg === "string") {
+    return {
+      "type": "property",
+      "apiName": arg,
+    } satisfies DerivedPropertyDefinition;
+  }
+  invariant(false, "Invalid argument type for a derived property");
+};

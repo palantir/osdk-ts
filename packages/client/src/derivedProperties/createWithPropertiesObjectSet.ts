@@ -115,7 +115,7 @@ export function createWithPropertiesObjectSet<
         },
       };
       const selectorResult: DerivedProperty.Definition<any, any> =
-        selectorResultFactory(wrappedObjectSet);
+        selectorResultFactory(wrappedObjectSet, definitionMap);
       definitionMap.set(selectorResult, wrappedObjectSet);
       return selectorResult as any;
     },

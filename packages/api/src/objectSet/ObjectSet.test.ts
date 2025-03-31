@@ -494,8 +494,9 @@ describe("ObjectSet", () => {
       const a = fauxObjectSet.withProperties({
         "mySum": (base) =>
           base.pivotTo("lead").selectProperty("employeeId").add(
-            1,
             "employeeId",
+            23,
+            base.pivotTo("lead").selectProperty("employeeId"),
           ),
       });
     });

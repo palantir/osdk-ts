@@ -16,6 +16,7 @@
 
 import type { ValidAggregationKeys } from "../aggregate/AggregatableKeys.js";
 import type { WhereClause } from "../aggregate/WhereClause.js";
+import type { FilteredPropertyKeys } from "../ontology/FilteredPropertyKeys.js";
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
@@ -61,7 +62,11 @@ export namespace DerivedProperty {
     T extends SimplePropertyDef,
   > = (
     baseObjectSet: DerivedProperty.Builder<Q, false>,
-  ) => Definition<T, Q> | NumericPropertyDefinition<T, Q>;
+  ) =>
+    | Definition<T, Q>
+    | NumericPropertyDefinition<T, Q>
+    | DatetimePropertyDefinition<T, Q>
+    | TimestampPropertyDefinition<T, Q>;
 
   export interface Builder<
     Q extends ObjectOrInterfaceDefinition,
@@ -167,11 +172,22 @@ type DefinitionForType<
   T extends SimplePropertyDef,
 > = number extends SimplePropertyDef.ExtractRuntimeBaseType<T>
   ? DerivedProperty.NumericPropertyDefinition<T, Q>
+  : SimplePropertyDef.ExtractRuntimeBaseType<T> extends "datetime"
+    ? DerivedProperty.DatetimePropertyDefinition<T, Q>
   : DerivedProperty.Definition<T, Q>;
+
+type NumericProperties =
+  | "decimal"
+  | "integer"
+  | "double"
+  | "float"
+  | "short"
+  | "long"
+  | "byte";
 
 type NumericExpressionArgArray<Q extends ObjectOrInterfaceDefinition> = Array<
   | number
-  | PropertyKeys<Q>
+  | FilteredPropertyKeys<Q, NumericProperties>
   | DerivedProperty.NumericPropertyDefinition<any, any>
 >;
 
