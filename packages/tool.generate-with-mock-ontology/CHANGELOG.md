@@ -1,5 +1,17 @@
 # @osdk/tool.generate-with-mock-ontology
 
+## 0.2.0-beta.13
+
+### Patch Changes
+
+- Updated dependencies [2ce3659]
+- Updated dependencies [488b51c]
+- Updated dependencies [71462e9]
+- Updated dependencies [e873024]
+- Updated dependencies [88591f7]
+  - @osdk/client@2.2.0-beta.13
+  - @osdk/api@2.2.0-beta.13
+
 ## 0.2.0-beta.12
 
 ### Patch Changes
