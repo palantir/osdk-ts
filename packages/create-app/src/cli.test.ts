@@ -100,6 +100,8 @@ async function runTest(
     sdkVersion,
     "--scopes",
     "api:read-data",
+    "--ontologyRid",
+    "ri.ontology.main.ontology.fake",
   ]);
 
   expect(fs.readdirSync(path.join(process.cwd(), project)).length)
