@@ -62,8 +62,6 @@ export async function convertWireToOsdkObjects(
   selectedProps?: ReadonlyArray<string>,
   strictNonNull: NullabilityAdherence = false,
 ): Promise<Array<ObjectHolder | InterfaceHolder>> {
-  client.logger?.debug(`START convertWireToOsdkObjects()`);
-
   // remove the __ prefixed properties and convert them to $ prefixed.
   // updates in place
   fixObjectPropertiesInPlace(objects, forceRemoveRid);
@@ -124,7 +122,6 @@ export async function convertWireToOsdkObjects(
     ret.push(osdkObject);
   }
 
-  client.logger?.debug(`END convertWireToOsdkObjects()`);
   return ret;
 }
 
@@ -195,8 +192,6 @@ export async function convertWireToOsdkObjects2(
     InterfaceToObjectTypeMappings
   > = {},
 ): Promise<Array<ObjectHolder | InterfaceHolder>> {
-  client.logger?.debug(`START convertWireToOsdkObjects2()`);
-
   fixObjectPropertiesInPlace(objects, forceRemoveRid);
 
   const ret = [];
@@ -258,7 +253,6 @@ export async function convertWireToOsdkObjects2(
     ret.push(osdkObject);
   }
 
-  client.logger?.debug(`END convertWireToOsdkObjects2()`);
   return ret;
 }
 

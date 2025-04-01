@@ -17,28 +17,6 @@
 import { BaseLogger } from "./BaseLogger.js";
 import type { LogFn, Logger } from "./Logger.js";
 
-function createLogMethod(
-  name: "trace" | "debug" | "info" | "warn" | "error" | "fatal",
-  bindings: Record<string, any>,
-  options: { level?: string; msgPrefix?: string },
-): LogFn {
-  const msgs: string[] = [name];
-
-  if (options?.msgPrefix) {
-    msgs.push(options.msgPrefix);
-  }
-
-  if (typeof bindings === "object" && "methodName" in bindings) {
-    msgs.push(`.${bindings.methodName}()`);
-  }
-
-  // eslint-disable-next-line no-console
-  return console[name === "fatal" ? "error" : name].bind(
-    console,
-    msgs.join(" "),
-  );
-}
-
 export class MinimalLogger extends BaseLogger implements Logger {
   constructor(
     bindings: Record<string, any> = {},
@@ -49,11 +27,25 @@ export class MinimalLogger extends BaseLogger implements Logger {
       { ...options, level: options.level ?? "error" },
       MinimalLogger,
     );
+  }
 
-    for (
-      const k of ["trace", "debug", "info", "warn", "error", "fatal"] as const
-    ) {
-      this[k] = createLogMethod(k, bindings, options);
+  createLogMethod(
+    name: "trace" | "debug" | "info" | "warn" | "error" | "fatal",
+    bindings: Record<string, any>,
+  ): LogFn {
+    const msgs: string[] = [name];
+
+    if (this.options?.msgPrefix) {
+      msgs.push(this.options.msgPrefix);
     }
+
+    if (typeof bindings === "object" && "methodName" in bindings) {
+      msgs.push(`.${bindings.methodName}()`);
+    }
+
+    return (...args: any[]) => {
+      // eslint-disable-next-line no-console
+      console[name === "fatal" ? "error" : name](msgs.join(" "), ...args);
+    };
   }
 }

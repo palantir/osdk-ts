@@ -45,23 +45,16 @@ export class TestLogger extends BaseLogger implements Logger {
       { ...options, level: options.level ?? "error" },
       TestLogger,
     );
-
-    for (
-      const k of ["trace", "debug", "info", "warn", "error", "fatal"] as const
-    ) {
-      this[k] = this.#createLogMethod(k, bindings, options);
-    }
   }
 
-  #createLogMethod(
+  protected createLogMethod(
     name: "trace" | "debug" | "info" | "warn" | "error" | "fatal",
     bindings: Record<string, any>,
-    options: { level?: string; msgPrefix?: string },
   ): LogFn {
     const msgs: string[] = [colors[name][1](name)];
 
-    if (options?.msgPrefix) {
-      msgs.push(colors[name][0](options.msgPrefix));
+    if (this.options?.msgPrefix) {
+      msgs.push(colors[name][0](this.options.msgPrefix));
     }
 
     if (typeof bindings === "object" && "methodName" in bindings) {
