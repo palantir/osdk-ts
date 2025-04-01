@@ -86,7 +86,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       augmentRequestContext(clientCtx, _ => ({ finalMethodCall: "aggregate" })),
       objectType,
       objectSet,
-    ),
+    ) as ObjectSet<Q>["aggregate"],
 
     fetchPage: fetchPageInternal.bind(
       globalThis,

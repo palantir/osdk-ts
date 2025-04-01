@@ -230,8 +230,9 @@ export interface AsyncIterArgs<
 	R extends boolean = false,
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
-	T extends boolean = false
-> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
+	T extends boolean = false,
+	RDP_KEYS extends string = never
+> extends SelectArg<Q, K, R, S, RDP_KEYS>, OrderByArg<Q, PropertyKeys<Q>> {
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
     	// (undocumented)
@@ -504,8 +505,9 @@ export interface FetchPageArgs<
 	R extends boolean = false,
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
-	T extends boolean = false
-> extends AsyncIterArgs<Q, K, R, A, S, T> {
+	T extends boolean = false,
+	RDP_KEYS extends string = never
+> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS> {
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
@@ -796,8 +798,8 @@ export interface ObjectQueryDataType<T_Target extends ObjectTypeDefinition = nev
 // @public (undocumented)
 export interface ObjectSet<
 	Q extends ObjectOrInterfaceDefinition = any,
-	UNUSED_OR_RDP extends ObjectSet<Q, any> | Record<string, SimplePropertyDef> = ObjectSet<Q, any>
-> extends ObjectSetCleanedTypes<Q, ExtractRdp<UNUSED_OR_RDP>, MergeObjectSet<Q, UNUSED_OR_RDP>> {}
+	UNUSED_OR_RDP extends BaseObjectSet<Q> | Record<string, SimplePropertyDef> = never
+> extends ObjectSetCleanedTypes<Q, ExtractRdp<UNUSED_OR_RDP>, MergeObjectSet<Q, ExtractRdp<UNUSED_OR_RDP>>> {}
 
 // @public (undocumented)
 export interface ObjectSetQueryDataType<T_Target extends ObjectTypeDefinition = never> extends BaseQueryDataTypeDefinition<"objectSet"> {
@@ -967,10 +969,7 @@ export interface PropertyDef<
 }
 
 // @public (undocumented)
-export type PropertyKeys<
-	O extends ObjectOrInterfaceDefinition,
-	RDPs extends Record<string, SimplePropertyDef> = {}
-> = (keyof NonNullable<O["__DefinitionMetadata"]>["properties"] | keyof RDPs) & string;
+export type PropertyKeys<O extends ObjectOrInterfaceDefinition> = (keyof NonNullable<O["__DefinitionMetadata"]>["properties"]) & string;
 
 // @public
 export interface PropertyValueWireToClient {
@@ -1145,12 +1144,13 @@ export interface SelectArg<
 	Q extends ObjectOrInterfaceDefinition,
 	L extends PropertyKeys<Q> = PropertyKeys<Q>,
 	R extends boolean = false,
-	S extends NullabilityAdherence = NullabilityAdherence.Default
+	S extends NullabilityAdherence = NullabilityAdherence.Default,
+	RDP_KEYS extends string = never
 > {
     	// (undocumented)
     $includeRid?: R;
     	// (undocumented)
-    $select?: readonly L[];
+    $select?: readonly (L | RDP_KEYS)[];
 }
 
 // @public (undocumented)
