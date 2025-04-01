@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.10.0-beta.14
+
+### Minor Changes
+
+- a08bdfb: Support stream datasources in OAC
+
+### Patch Changes
+
+- Updated dependencies [6abf078]
+  - @osdk/api@2.2.0-beta.14
+
 ## 0.10.0-beta.13
 
 ### Patch Changes

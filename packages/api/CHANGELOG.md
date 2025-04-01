@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.2.0-beta.14
+
+### Minor Changes
+
+- 6abf078: Fixes aggregation types for datetime to include collectList and collectSet
+
 ## 2.2.0-beta.13
 
 ### Minor Changes
