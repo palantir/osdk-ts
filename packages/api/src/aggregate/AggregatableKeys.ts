@@ -16,6 +16,7 @@
 
 import type {
   BaseWithPropAggregations,
+  DatetimeWithPropAggregateOption,
   DistinctWithPropAggregateOption,
   NumericWithPropAggregateOption,
   ValidCollectPropertyKeysForSpecialTypes,
@@ -53,7 +54,8 @@ type AGG_FOR_TYPE<WIRE_TYPE extends WirePropertyTypes> = number extends
 type WITH_PROPERTIES_AGG_FOR_TYPE<WIRE_TYPE extends WirePropertyTypes> =
   number extends GetWirePropertyValueFromClient<WIRE_TYPE>
     ? NumericWithPropAggregateOption
-    : WIRE_TYPE extends "datetime" | "timestamp" ? DatetimeAggregateOption
+    : WIRE_TYPE extends "datetime" | "timestamp"
+      ? DatetimeWithPropAggregateOption
     : WIRE_TYPE extends "string" ? BaseWithPropAggregations
     : WITH_PROPERTIES_AGG_FOR_SPECIAL_WIRE_TYPE<WIRE_TYPE>;
 
