@@ -232,7 +232,7 @@ export interface AsyncIterArgs<
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	T extends boolean = false,
 	RDP_KEYS extends string = never
-> extends SelectArg<Q, K, R, S, RDP_KEYS>, OrderByArg<Q, PropertyKeys<Q>> {
+> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
     	// (undocumented)
@@ -791,6 +791,23 @@ export interface ObjectQueryDataType<T_Target extends ObjectTypeDefinition = nev
     object: string;
 }
 
+// @public (undocumented)
+export namespace ObjectSet {
+    	// (undocumented)
+    export interface FetchPageSignature<
+    		Q extends ObjectOrInterfaceDefinition,
+    		RDPs extends Record<string, SimplePropertyDef> = {}
+    	> {
+        		// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+        // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+        // Warning: (ae-forgotten-export) The symbol "ValidFetchPageArgs" needs to be exported by the entry point index.d.ts
+        // Warning: (ae-forgotten-export) The symbol "ExtractOptions2" needs to be exported by the entry point index.d.ts
+        // Warning: (ae-forgotten-export) The symbol "SubSelectKeys" needs to be exported by the entry point index.d.ts
+        // Warning: (ae-forgotten-export) The symbol "SubSelectRDPs" needs to be exported by the entry point index.d.ts
+        <const X extends ValidFetchPageArgs<Q, RDPs> = never>(args?: X): Promise<PageResult<Osdk.Instance<Q, ExtractOptions2<X>, SubSelectKeys<Q, X>, SubSelectRDPs<RDPs, X>>>>;
+        	}
+}
+
 // Warning: (ae-forgotten-export) The symbol "ObjectSetCleanedTypes" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ExtractRdp" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MergeObjectSet" needs to be exported by the entry point index.d.ts
@@ -1144,13 +1161,12 @@ export interface SelectArg<
 	Q extends ObjectOrInterfaceDefinition,
 	L extends PropertyKeys<Q> = PropertyKeys<Q>,
 	R extends boolean = false,
-	S extends NullabilityAdherence = NullabilityAdherence.Default,
-	RDP_KEYS extends string = never
+	S extends NullabilityAdherence = NullabilityAdherence.Default
 > {
     	// (undocumented)
     $includeRid?: R;
     	// (undocumented)
-    $select?: readonly (L | RDP_KEYS)[];
+    $select?: readonly L[];
 }
 
 // @public (undocumented)
