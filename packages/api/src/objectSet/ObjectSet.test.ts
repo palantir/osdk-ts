@@ -27,7 +27,7 @@ describe("ObjectSet", () => {
     withProperties: vi.fn(() => {
       return fauxObjectSet;
     }),
-    fetchPage: vi.fn(() => Promise.resolve()),
+    fetchPage: vi.fn(() => Promise.resolve({ data: [{}] })),
     asyncIter: vi.fn(() => {
       return {};
     }),
@@ -429,6 +429,48 @@ describe("ObjectSet", () => {
           return base.pivotTo("lead").aggregate("dateOfBirth:collectSet");
         },
       });
+    });
+
+    it("has correct aggregation return types", async () => {
+      const aggTestObjectSet = fauxObjectSet.withProperties({
+        "maxHasSameType": (base) =>
+          base.pivotTo("lead").aggregate("dateOfBirth:max"),
+        "minHasSameType": (base) =>
+          base.pivotTo("lead").aggregate("dateOfBirth:min"),
+        "approximateDistinctNumberNoUndefined": (base) =>
+          base.pivotTo("lead").aggregate("employeeId:approximateDistinct"),
+        "exactDistinctNumberNoUndefined": (base) =>
+          base.pivotTo("lead").aggregate("employeeId:exactDistinct"),
+        "countNumberNoUndefined": (base) =>
+          base.pivotTo("lead").aggregate("$count"),
+        "sumNumber": (base) => base.pivotTo("lead").aggregate("employeeId:sum"),
+        "avgNumber": (base) => base.pivotTo("lead").aggregate("employeeId:avg"),
+      }).fetchPage();
+
+      const result = (await aggTestObjectSet).data[0];
+      expectTypeOf((await aggTestObjectSet).data[0]).toEqualTypeOf<
+        Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {
+          maxHasSameType: "datetime" | undefined;
+          minHasSameType: "datetime" | undefined;
+          avgNumber: "double" | undefined;
+          approximateDistinctNumberNoUndefined: "integer";
+          exactDistinctNumberNoUndefined: "integer";
+          countNumberNoUndefined: "integer";
+          sumNumber: "double" | undefined;
+        }>
+      >();
+
+      expectTypeOf(result.maxHasSameType).toEqualTypeOf<string | undefined>();
+      expectTypeOf(result.minHasSameType).toEqualTypeOf<string | undefined>();
+      expectTypeOf(result.approximateDistinctNumberNoUndefined).toEqualTypeOf<
+        number
+      >();
+      expectTypeOf(result.exactDistinctNumberNoUndefined).toEqualTypeOf<
+        number
+      >();
+      expectTypeOf(result.countNumberNoUndefined).toEqualTypeOf<number>();
+      expectTypeOf(result.sumNumber).toEqualTypeOf<number | undefined>();
+      expectTypeOf(result.avgNumber).toEqualTypeOf<number | undefined>();
     });
   });
   describe("aggregate", () => {
