@@ -233,6 +233,10 @@ export default tseslint.config(
       "no-console": "off",
     },
   },
+  {
+    files: ["**/vitest.config.mts"],
+    rules: { "import/no-extraneous-dependencies": "off" },
+  },
   //
   // Flat out ignore these globs
   //
