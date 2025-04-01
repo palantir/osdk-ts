@@ -29,14 +29,34 @@ import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
 export function createMockObjectSet<
   Q extends ObjectOrInterfaceDefinition,
 >(): $ObjectSet<Q, never> {
-  const fauxObjectSet = {
+  let fauxObject: Osdk.Instance<Q>,
+    fauxResults: any,
+    fauxObjectSet: $ObjectSet<Q>;
+
+  // eslint-disable-next-line prefer-const
+  fauxObject = {
+    $link: {
+      peeps: {
+        $objectSetInternals: {
+          def: {},
+        },
+      },
+    },
+  } as Osdk.Instance<Q>;
+
+  fauxResults = {
+    data: [fauxObject],
+  };
+
+  fauxObjectSet = {
     where: vi.fn(() => {
       return fauxObjectSet;
     }),
     withProperties: vi.fn(() => {
       return fauxObjectSet;
     }),
-    fetchPage: vi.fn(() => Promise.resolve({ data: [{}] })),
+    fetchPage: vi.fn(() => Promise.resolve(fauxResults)),
+    fetchOne: vi.fn(() => fauxObject),
     asyncIter: vi.fn(() => {
       return {};
     }),
@@ -140,6 +160,8 @@ describe("ObjectSet", () => {
             "isActive",
             "mediaReference",
             "timeseries",
+            "lastClockIn",
+            "dateOfBirth",
           ],
         });
 
@@ -161,6 +183,8 @@ describe("ObjectSet", () => {
             "isActive",
             "mediaReference",
             "timeseries",
+            "lastClockIn",
+            "dateOfBirth",
           ],
         });
     });
@@ -198,7 +222,6 @@ describe("ObjectSet", () => {
           return base.pivotTo("lead").aggregate("class:exactDistinct");
         },
       });
-      withA.pivotTo("lead");
 
       const isWithAAssignable: $ObjectSet<EmployeeApiTest, {}> = withA;
 

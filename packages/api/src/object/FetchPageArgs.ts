@@ -77,9 +77,6 @@ export interface OrderByArg<
   Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q> = PropertyKeys<Q>,
 > extends ObjectSetArgs.OrderBy<L> {
-  // $orderBy?: {
-  //   [K in L]?: "asc" | "desc";
-  // };
 }
 
 export type SelectArgToKeys<
