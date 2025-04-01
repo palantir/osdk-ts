@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.2.0-beta.14
+
+### Minor Changes
+
+- a08bdfb: Support stream datasources in OAC
+
 ## 2.2.0-beta.13
 
 ## 2.2.0-beta.12
