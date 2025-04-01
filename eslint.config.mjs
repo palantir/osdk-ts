@@ -95,6 +95,9 @@ export default tseslint.config(
       "no-console": "error",
 
       "unused-imports/no-unused-imports": "error",
+      "import/no-extraneous-dependencies": ["error", {
+        "devDependencies": false,
+      }],
     },
     settings: {
       "import/parsers": {
@@ -210,6 +213,9 @@ export default tseslint.config(
 
       // rules that should be enabled but I dont want a massive delta yet
       "@typescript-eslint/await-thenable": "warn",
+
+      // should be able to use dev deps in tests
+      "import/no-extraneous-dependencies": "off",
     },
   },
   //
