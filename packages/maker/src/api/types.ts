@@ -95,14 +95,18 @@ export type InterfaceImplementation = {
   propertyMapping: { interfaceProperty: string; mapsTo: string }[];
 };
 
-export type ObjectType = RequiredFields<
-  Partial<ObjectTypeInner>,
-  | "apiName"
-  | "primaryKeys"
-  | "displayName"
-  | "pluralDisplayName"
-  | "titlePropertyApiName"
->;
+export type ObjectType =
+  & RequiredFields<
+    Partial<ObjectTypeInner>,
+    | "apiName"
+    | "primaryKeys"
+    | "displayName"
+    | "pluralDisplayName"
+    | "titlePropertyApiName"
+  >
+  & {
+    datasource?: ObjectTypeDatasourceDefinition;
+  };
 
 export interface ObjectPropertyTypeInner extends
   Omit<
@@ -445,3 +449,17 @@ export type ValueTypeDefinitionVersion = {
   constraints: ValueTypeDataConstraint[];
   exampleValues: ExampleValue[];
 };
+
+export interface ObjectTypeDatasourceDefinition_dataset {
+  type: "dataset";
+}
+
+export interface ObjectTypeDatasourceDefinition_stream {
+  type: "stream";
+  // Retention period must be in ISO 8601 duration format
+  retentionPeriod?: string;
+}
+
+export type ObjectTypeDatasourceDefinition =
+  | ObjectTypeDatasourceDefinition_stream
+  | ObjectTypeDatasourceDefinition_dataset;

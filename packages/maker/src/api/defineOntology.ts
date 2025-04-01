@@ -39,6 +39,7 @@ import type {
   OntologyIrManyToManyLinkTypeDatasource,
   OntologyIrObjectTypeBlockDataV2,
   OntologyIrObjectTypeDatasource,
+  OntologyIrObjectTypeDatasourceDefinition,
   OntologyIrPropertyType,
   OntologyIrSharedPropertyType,
   OntologyIrSharedPropertyTypeBlockDataV2,
@@ -46,7 +47,7 @@ import type {
   OntologyIrType,
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
-  PropertyTypeMappingInfo,
+  RetentionPolicy,
 } from "@osdk/client.unstable";
 import type {
   InterfaceType,
@@ -178,23 +179,9 @@ function convertToWireOntologyIr(
 function convertObject(
   objectType: ObjectType,
 ): OntologyIrObjectTypeBlockDataV2 {
-  const propertyDatasource: Record<string, PropertyTypeMappingInfo> = {};
-  (objectType.properties ?? []).forEach((property) => {
-    propertyDatasource[property.apiName] = {
-      type: "column",
-      column: property.apiName,
-    };
-  });
-
   const datasource: OntologyIrObjectTypeDatasource = {
     rid: "ri.ontology.main.datasource.".concat(objectType.apiName),
-    datasource: {
-      type: "datasetV2",
-      datasetV2: {
-        datasetRid: objectType.apiName,
-        propertyMapping: propertyDatasource,
-      },
-    },
+    datasource: convertDatasourceDefinition(objectType),
     editsConfiguration: {
       onlyAllowPrivilegedEdits: false,
     },
@@ -244,6 +231,46 @@ function convertObject(
     datasources: [datasource],
     entityMetadata: { arePatchesEnabled: objectType.editsEnabled ?? false },
   };
+}
+
+function convertDatasourceDefinition(
+  objectType: ObjectType,
+): OntologyIrObjectTypeDatasourceDefinition {
+  switch (objectType.datasource?.type) {
+    case "stream":
+      const window = objectType.datasource.retentionPeriod;
+      const retentionPolicy: RetentionPolicy = window
+        ? { type: "time", time: { window } }
+        : { type: "none", none: {} };
+      const propertyMapping = Object.fromEntries(
+        (objectType.properties ?? []).map((
+          prop,
+        ) => [prop.apiName, prop.apiName]),
+      );
+      return {
+        type: "streamV2",
+        streamV2: {
+          streamLocator: objectType.apiName,
+          propertyMapping,
+          retentionPolicy,
+          propertySecurityGroups: undefined,
+        },
+      };
+    case "dataset":
+    default:
+      return {
+        type: "datasetV2",
+        datasetV2: {
+          datasetRid: objectType.apiName,
+          propertyMapping: Object.fromEntries(
+            (objectType.properties ?? []).map((prop) => [
+              prop.apiName,
+              { type: "column", column: prop.apiName },
+            ]),
+          ),
+        },
+      };
+  }
 }
 
 function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {

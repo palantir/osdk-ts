@@ -22,6 +22,10 @@ import type {
   SharedPropertyType,
 } from "./types.js";
 
+// From https://stackoverflow.com/a/79288714
+const ISO_8601_DURATION =
+  /^P(?!$)(?:(?:((?:\d+Y)|(?:\d+(?:\.|,)\d+Y$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+D)|(?:\d+(?:\.|,)\d+D$))?(T((?:\d+H)|(?:\d+(?:\.|,)\d+H$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+S)|(?:\d+(?:\.|,)\d+S$))?)?)|(?:\d+(?:(?:\.|,)\d+)?W))$/;
+
 export function defineObject(objectDef: ObjectType): ObjectType {
   const apiName = namespace + objectDef.apiName;
   const propertyApiNames = (objectDef.properties ?? []).map(val => val.apiName);
@@ -44,6 +48,11 @@ export function defineObject(objectDef: ObjectType): ObjectType {
   invariant(
     nonExistentPrimaryKeys.length === 0,
     `Primary key properties ${nonExistentPrimaryKeys} do not exist on object ${objectDef.apiName}`,
+  );
+  const retentionPeriod = (objectDef.datasource as any)?.retentionPeriod;
+  invariant(
+    retentionPeriod === undefined || ISO_8601_DURATION.test(retentionPeriod),
+    `Retention period "${retentionPeriod}" on object "${objectDef.apiName}" is not a valid ISO 8601 duration string`,
   );
 
   objectDef.implementsInterfaces?.forEach(interfaceImpl => {
