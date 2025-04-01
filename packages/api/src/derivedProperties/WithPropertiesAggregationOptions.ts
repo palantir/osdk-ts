@@ -26,7 +26,7 @@ export type BaseWithPropAggregations =
 
 export type MinMaxWithPropAggregateOption = "min" | "max";
 
-export type DatetimeAggregateOption =
+export type DatetimeWithPropAggregateOption =
   | MinMaxWithPropAggregateOption
   | BaseWithPropAggregations;
 

@@ -412,6 +412,22 @@ describe("ObjectSet", () => {
           base.pivotTo("lead").aggregate(
             "geotimeSeriesReference:exactDistinct",
           ),
+        "lastClockIn": (base) => {
+          base.pivotTo("lead").aggregate("lastClockIn:approximateDistinct");
+          base.pivotTo("lead").aggregate("lastClockIn:exactDistinct");
+          base.pivotTo("lead").aggregate("lastClockIn:max");
+          base.pivotTo("lead").aggregate("lastClockIn:min");
+          base.pivotTo("lead").aggregate("lastClockIn:collectList");
+          return base.pivotTo("lead").aggregate("lastClockIn:collectSet");
+        },
+        "dateOfBirth": (base) => {
+          base.pivotTo("lead").aggregate("dateOfBirth:approximateDistinct");
+          base.pivotTo("lead").aggregate("dateOfBirth:exactDistinct");
+          base.pivotTo("lead").aggregate("dateOfBirth:max");
+          base.pivotTo("lead").aggregate("dateOfBirth:min");
+          base.pivotTo("lead").aggregate("dateOfBirth:collectList");
+          return base.pivotTo("lead").aggregate("dateOfBirth:collectSet");
+        },
       });
     });
   });
@@ -420,7 +436,13 @@ describe("ObjectSet", () => {
       void fauxObjectSet.aggregate({
         "$select": {
           "lastClockIn:max": "asc",
+          "lastClockIn:min": "desc",
+          "lastClockIn:approximateDistinct": "asc",
+          "lastClockIn:exactDistinct": "desc",
           "dateOfBirth:max": "desc",
+          "dateOfBirth:min": "asc",
+          "dateOfBirth:approximateDistinct": "asc",
+          "dateOfBirth:exactDistinct": "desc",
         },
       });
     });
