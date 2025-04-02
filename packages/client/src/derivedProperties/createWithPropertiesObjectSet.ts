@@ -22,7 +22,7 @@ import type {
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
-import { selectorResultFactory } from "./derivedPropertyDefinitionFactory.js";
+import { derivedPropertyDefinitionFactory } from "./derivedPropertyDefinitionFactory.js";
 
 type WithConstSelect<Q extends ObjectOrInterfaceDefinition> =
   & DerivedProperty.SelectPropertyBuilder<Q, false>
@@ -107,7 +107,7 @@ export function createWithPropertiesObjectSet<
         operation: aggregationOperationDefinition,
       };
       const selectorResult: DerivedProperty.Definition<any, any> =
-        selectorResultFactory(wrappedObjectSet, definitionMap);
+        derivedPropertyDefinitionFactory(wrappedObjectSet, definitionMap);
       definitionMap.set(selectorResult, wrappedObjectSet);
       return selectorResult;
     },
@@ -121,7 +121,7 @@ export function createWithPropertiesObjectSet<
         },
       };
       const selectorResult: DerivedProperty.Definition<any, any> =
-        selectorResultFactory(wrappedObjectSet, definitionMap);
+        derivedPropertyDefinitionFactory(wrappedObjectSet, definitionMap);
       definitionMap.set(selectorResult, wrappedObjectSet);
       return selectorResult as any;
     },

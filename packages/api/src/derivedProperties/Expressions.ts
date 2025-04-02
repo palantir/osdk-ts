@@ -46,7 +46,7 @@ export type DefinitionForType<
 type NumericExpressionArg<Q extends ObjectOrInterfaceDefinition> =
   | number
   | FilteredPropertyKeys<Q, WithPropertiesNumerics>
-  | DerivedProperty.NumericPropertyDefinition<any, any>;
+  | DerivedProperty.NumericPropertyDefinition<any, Q>;
 
 type ReturnTypeForNumericMethod<
   Q extends ObjectOrInterfaceDefinition,
@@ -87,7 +87,7 @@ type ExtractWirePropertyTypeFromNumericArg<
   Q extends ObjectOrInterfaceDefinition,
   ARG extends NumericExpressionArg<Q>,
 > = ARG extends number ? "double"
-  : ARG extends DerivedProperty.NumericPropertyDefinition<infer T, any>
+  : ARG extends DerivedProperty.NumericPropertyDefinition<infer T, Q>
     ? T extends SimplePropertyDef ? SimplePropertyDef.ExtractWirePropertyType<T>
     : never
   : ARG extends FilteredPropertyKeys<Q, WithPropertiesNumerics>
@@ -165,7 +165,7 @@ type DatetimeExpressionArg<Q extends ObjectOrInterfaceDefinition> =
 type ExtractPropertyTypeFromDatetimeArg<
   Q extends ObjectOrInterfaceDefinition,
   ARG extends DatetimeExpressionArg<Q>,
-> = ARG extends DerivedProperty.DatetimePropertyDefinition<infer T, any>
+> = ARG extends DerivedProperty.DatetimePropertyDefinition<infer T, Q>
   ? T extends SimplePropertyDef ? SimplePropertyDef.ExtractWirePropertyType<T>
   : never
   : ARG extends FilteredPropertyKeys<Q, WithPropertiesDatetime>

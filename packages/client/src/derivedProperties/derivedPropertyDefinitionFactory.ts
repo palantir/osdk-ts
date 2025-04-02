@@ -19,25 +19,25 @@ import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 
 /** @internal */
-export function selectorResultFactory(
+export function derivedPropertyDefinitionFactory(
   wireDefinition: DerivedPropertyDefinition,
   definitionMap: Map<any, DerivedPropertyDefinition>,
 ): DerivedProperty.NumericPropertyDefinition<any, any> {
   const definition: DerivedProperty.NumericPropertyDefinition<any, any> = {
     abs() {
-      return selectorResultFactory({
+      return derivedPropertyDefinitionFactory({
         type: "absoluteValue",
         property: wireDefinition,
       }, definitionMap);
     },
     negate() {
-      return selectorResultFactory({
+      return derivedPropertyDefinitionFactory({
         type: "negate",
         property: wireDefinition,
       }, definitionMap);
     },
     max(value) {
-      return selectorResultFactory({
+      return derivedPropertyDefinitionFactory({
         type: "greatest",
         properties: [
           wireDefinition,
@@ -46,7 +46,7 @@ export function selectorResultFactory(
       }, definitionMap);
     },
     min(value) {
-      return selectorResultFactory({
+      return derivedPropertyDefinitionFactory({
         type: "least",
         properties: [
           wireDefinition,
@@ -57,7 +57,7 @@ export function selectorResultFactory(
     plus(
       value,
     ) {
-      return selectorResultFactory({
+      return derivedPropertyDefinitionFactory({
         type: "add",
         properties: [
           wireDefinition,
@@ -68,7 +68,7 @@ export function selectorResultFactory(
     minus(
       value,
     ) {
-      return selectorResultFactory({
+      return derivedPropertyDefinitionFactory({
         "type": "subtract",
         "left": wireDefinition,
         "right": getDefinitionFromMap(value, definitionMap),
@@ -77,7 +77,7 @@ export function selectorResultFactory(
     times(
       value,
     ) {
-      return selectorResultFactory({
+      return derivedPropertyDefinitionFactory({
         type: "multiply",
         properties: [
           wireDefinition,
@@ -88,7 +88,7 @@ export function selectorResultFactory(
     divideBy(
       value,
     ) {
-      return selectorResultFactory({
+      return derivedPropertyDefinitionFactory({
         "type": "subtract",
         "left": wireDefinition,
         "right": getDefinitionFromMap(value, definitionMap),

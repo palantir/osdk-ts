@@ -76,7 +76,7 @@ export namespace DerivedProperty {
   export interface Builder<
     Q extends ObjectOrInterfaceDefinition,
     CONSTRAINED extends boolean,
-  > extends BaseBuilder<Q, CONSTRAINED>, Constant {
+  > extends BaseBuilder<Q, CONSTRAINED>, Constant<Q> {
   }
 
   export interface AggregateBuilder<
@@ -128,39 +128,39 @@ type Pivotable<
     : DerivedProperty.SelectPropertyBuilder<LinkedType<Q, L>, false>;
 };
 
-type Constant = {
+type Constant<Q extends ObjectOrInterfaceDefinition> = {
   readonly constant: {
     readonly double: (
       value: number,
     ) => DerivedProperty.NumericPropertyDefinition<
       SimplePropertyDef.Make<"double", false, false>,
-      any
+      Q
     >;
 
     readonly integer: (
       value: number,
     ) => DerivedProperty.NumericPropertyDefinition<
       SimplePropertyDef.Make<"integer", false, false>,
-      any
+      Q
     >;
     readonly long: (
       value: string,
     ) => DerivedProperty.NumericPropertyDefinition<
       SimplePropertyDef.Make<"long", false, false>,
-      any
+      Q
     >;
 
     readonly datetime: (
       value: string,
     ) => DerivedProperty.DatetimePropertyDefinition<
       SimplePropertyDef.Make<"datetime", false, false>,
-      any
+      Q
     >;
     readonly timestamp: (
       value: string,
     ) => DerivedProperty.DatetimePropertyDefinition<
       SimplePropertyDef.Make<"timestamp", false, false>,
-      any
+      Q
     >;
   };
 };

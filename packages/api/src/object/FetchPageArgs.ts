@@ -53,12 +53,11 @@ export type SelectArgToKeys<
 
 export interface FetchPageArgs<
   Q extends ObjectOrInterfaceDefinition,
-  K extends PropertyKeys<Q, RDPs> = PropertyKeys<Q>,
+  K extends PropertyKeys<Q> = PropertyKeys<Q>,
   R extends boolean = false,
   A extends Augments = never,
   S extends NullabilityAdherence = NullabilityAdherence.Default,
   T extends boolean = false,
-  RDPs extends Record<string, any> = {},
 > extends AsyncIterArgs<Q, K, R, A, S, T> {
   $nextPageToken?: string;
   $pageSize?: number;
