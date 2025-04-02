@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { RegisterDependencyRequest } from "../RegisterDependencyRequest.js";
-import type { RegisterDependencyResponse } from "../RegisterDependencyResponse.js";
+import type {
+  RegisterDependencyRequest as _api_provenance_RegisterDependencyRequest,
+  RegisterDependencyResponse as _api_provenance_RegisterDependencyResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to register dependencies on ontology entities.
@@ -26,7 +28,7 @@ import type { RegisterDependencyResponse } from "../RegisterDependencyResponse.j
  */
 export async function registerDependency(
   ctx: ConjureContext,
-  request: RegisterDependencyRequest,
-): Promise<RegisterDependencyResponse> {
+  request: _api_provenance_RegisterDependencyRequest,
+): Promise<_api_provenance_RegisterDependencyResponse> {
   return conjureFetch(ctx, `/provenance/registerDependency`, "PUT", request);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetObjectTypesForTypeGroupsRequest } from "../GetObjectTypesForTypeGroupsRequest.js";
-import type { GetObjectTypesForTypeGroupsResponse } from "../GetObjectTypesForTypeGroupsResponse.js";
+import type {
+  GetObjectTypesForTypeGroupsRequest as _api_GetObjectTypesForTypeGroupsRequest,
+  GetObjectTypesForTypeGroupsResponse
+    as _api_GetObjectTypesForTypeGroupsResponse,
+} from "../__components.js";
 
 /**
  * Gets a map of TypeGroupRids to the set of ObjectTypeRids that use the TypeGroup. At most 50 TypeGroupRids
@@ -24,8 +27,8 @@ import type { GetObjectTypesForTypeGroupsResponse } from "../GetObjectTypesForTy
  */
 export async function getObjectTypesForTypeGroups(
   ctx: ConjureContext,
-  request: GetObjectTypesForTypeGroupsRequest,
-): Promise<GetObjectTypesForTypeGroupsResponse> {
+  request: _api_GetObjectTypesForTypeGroupsRequest,
+): Promise<_api_GetObjectTypesForTypeGroupsResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/load/objectTypesForTypeGroups`,

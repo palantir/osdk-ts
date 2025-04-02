@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,12 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { SetOntologyBranchOrganizationMarkingsRequest } from "../SetOntologyBranchOrganizationMarkingsRequest.js";
-import type { SetOntologyBranchOrganizationMarkingsResponse } from "../SetOntologyBranchOrganizationMarkingsResponse.js";
+import type {
+  SetOntologyBranchOrganizationMarkingsRequest
+    as _branch_api_SetOntologyBranchOrganizationMarkingsRequest,
+  SetOntologyBranchOrganizationMarkingsResponse
+    as _branch_api_SetOntologyBranchOrganizationMarkingsResponse,
+} from "../__components.js";
 
 /**
  * Manually set the org markings for an ontology branch. This will throw if the stack does not
@@ -24,8 +28,8 @@ import type { SetOntologyBranchOrganizationMarkingsResponse } from "../SetOntolo
  */
 export async function setOntologyBranchOrganizationMarkings(
   ctx: ConjureContext,
-  request: SetOntologyBranchOrganizationMarkingsRequest,
-): Promise<SetOntologyBranchOrganizationMarkingsResponse> {
+  request: _branch_api_SetOntologyBranchOrganizationMarkingsRequest,
+): Promise<_branch_api_SetOntologyBranchOrganizationMarkingsResponse> {
   return conjureFetch(
     ctx,
     `/ontology/branch/setBranchOrganizationMarkings`,

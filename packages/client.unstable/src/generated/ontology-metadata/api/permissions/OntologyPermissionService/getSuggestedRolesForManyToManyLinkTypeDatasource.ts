@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { LinkTypeRid } from "../../LinkTypeRid.js";
-import type { GetSuggestedRolesDatasourceResponse } from "../GetSuggestedRolesDatasourceResponse.js";
+import type { LinkTypeRid as _api_LinkTypeRid } from "../../__components.js";
+import type { GetSuggestedRolesDatasourceResponse as _api_permissions_GetSuggestedRolesDatasourceResponse } from "../__components.js";
 
 /**
  * Returns the ids of the principals that are suggested to have the editor or owner role on the many to many link type.
@@ -30,8 +30,8 @@ import type { GetSuggestedRolesDatasourceResponse } from "../GetSuggestedRolesDa
  */
 export async function getSuggestedRolesForManyToManyLinkTypeDatasource(
   ctx: ConjureContext,
-  linkTypeRid: LinkTypeRid,
-): Promise<GetSuggestedRolesDatasourceResponse> {
+  linkTypeRid: _api_LinkTypeRid,
+): Promise<_api_permissions_GetSuggestedRolesDatasourceResponse> {
   return conjureFetch(
     ctx,
     `/permissions/suggestRoles/linkType/${linkTypeRid}/datasource`,

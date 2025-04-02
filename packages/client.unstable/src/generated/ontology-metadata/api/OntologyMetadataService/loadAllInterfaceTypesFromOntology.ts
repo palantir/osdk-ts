@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,12 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { LoadAllInterfaceTypesPageRequest } from "../LoadAllInterfaceTypesPageRequest.js";
-import type { LoadAllInterfaceTypesPageResponse } from "../LoadAllInterfaceTypesPageResponse.js";
-import type { OntologyRid } from "../OntologyRid.js";
-import type { OntologyVersion } from "../OntologyVersion.js";
+import type {
+  LoadAllInterfaceTypesPageRequest as _api_LoadAllInterfaceTypesPageRequest,
+  LoadAllInterfaceTypesPageResponse as _api_LoadAllInterfaceTypesPageResponse,
+  OntologyRid as _api_OntologyRid,
+  OntologyVersion as _api_OntologyVersion,
+} from "../__components.js";
 
 /**
  * Endpoint to load a paged collection of all interfaces visible to the user from the specified ontology and
@@ -26,10 +28,10 @@ import type { OntologyVersion } from "../OntologyVersion.js";
  */
 export async function loadAllInterfaceTypesFromOntology(
   ctx: ConjureContext,
-  ontologyRid: OntologyRid,
-  ontologyVersion: OntologyVersion,
-  request: LoadAllInterfaceTypesPageRequest,
-): Promise<LoadAllInterfaceTypesPageResponse> {
+  ontologyRid: _api_OntologyRid,
+  ontologyVersion: _api_OntologyVersion,
+  request: _api_LoadAllInterfaceTypesPageRequest,
+): Promise<_api_LoadAllInterfaceTypesPageResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/load/${ontologyRid}/${ontologyVersion}/loadAllInterfaceTypes`,

@@ -15,8 +15,12 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetActionTypesForInterfaceTypeRequest } from "../GetActionTypesForInterfaceTypeRequest.js";
-import type { GetActionTypesForInterfaceTypeResponse } from "../GetActionTypesForInterfaceTypeResponse.js";
+import type {
+  GetActionTypesForInterfaceTypeRequest
+    as _api_GetActionTypesForInterfaceTypeRequest,
+  GetActionTypesForInterfaceTypeResponse
+    as _api_GetActionTypesForInterfaceTypeResponse,
+} from "../__components.js";
 
 /**
  * Gets all the action types that the interface type is associated with. E.g. actions that create an interface
@@ -25,8 +29,8 @@ import type { GetActionTypesForInterfaceTypeResponse } from "../GetActionTypesFo
  */
 export async function getActionTypesForInterfaceType(
   ctx: ConjureContext,
-  request: GetActionTypesForInterfaceTypeRequest,
-): Promise<GetActionTypesForInterfaceTypeResponse> {
+  request: _api_GetActionTypesForInterfaceTypeRequest,
+): Promise<_api_GetActionTypesForInterfaceTypeResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/actionTypesForInterfaceType`,

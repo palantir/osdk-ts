@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { LoadActionTypesFromOntologyRequest } from "../../LoadActionTypesFromOntologyRequest.js";
-import type { LoadActionTypesFromOntologyResponse } from "../../LoadActionTypesFromOntologyResponse.js";
+import type {
+  LoadActionTypesFromOntologyRequest as _api_LoadActionTypesFromOntologyRequest,
+  LoadActionTypesFromOntologyResponse
+    as _api_LoadActionTypesFromOntologyResponse,
+} from "../../__components.js";
 
 /**
  * Endpoint to batch load ActionTypes. The returned LoadActionTypeResponse will only contain
@@ -29,7 +32,7 @@ import type { LoadActionTypesFromOntologyResponse } from "../../LoadActionTypesF
  */
 export async function loadActionTypesFromOntology(
   ctx: ConjureContext,
-  request: LoadActionTypesFromOntologyRequest,
-): Promise<LoadActionTypesFromOntologyResponse> {
+  request: _api_LoadActionTypesFromOntologyRequest,
+): Promise<_api_LoadActionTypesFromOntologyResponse> {
   return conjureFetch(ctx, `/actions/types/loadFromOntology`, "POST", request);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,22 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyRid } from "../../../api/OntologyRid.js";
-import type { LoadOntologyBranchWithProposalRequest } from "../LoadOntologyBranchWithProposalRequest.js";
-import type { LoadOntologyBranchWithProposalResponse } from "../LoadOntologyBranchWithProposalResponse.js";
+import type { OntologyRid as _api_OntologyRid } from "../../../api/__components.js";
+import type {
+  LoadOntologyBranchWithProposalRequest
+    as _approvals_api_LoadOntologyBranchWithProposalRequest,
+  LoadOntologyBranchWithProposalResponse
+    as _approvals_api_LoadOntologyBranchWithProposalResponse,
+} from "../__components.js";
 
 /**
  * Load an existing branch in the provided ontology. Users who can view atleast one entity modified on that branch will be able to load it.
  */
 export async function loadOntologyBranchWithProposal(
   ctx: ConjureContext,
-  ontologyRid: OntologyRid,
-  request: LoadOntologyBranchWithProposalRequest,
-): Promise<LoadOntologyBranchWithProposalResponse> {
+  ontologyRid: _api_OntologyRid,
+  request: _approvals_api_LoadOntologyBranchWithProposalRequest,
+): Promise<_approvals_api_LoadOntologyBranchWithProposalResponse> {
   return conjureFetch(
     ctx,
     `/ontology/approvals/experimental/ontology/${ontologyRid}/loadBranchWithProposal`,

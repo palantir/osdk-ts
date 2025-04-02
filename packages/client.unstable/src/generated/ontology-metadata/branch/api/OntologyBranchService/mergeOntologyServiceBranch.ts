@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,13 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyBranchRid } from "../../../api/OntologyBranchRid.js";
-import type { MergeOntologyServiceBranchRequest } from "../MergeOntologyServiceBranchRequest.js";
-import type { MergeOntologyServiceBranchResponse } from "../MergeOntologyServiceBranchResponse.js";
+import type { OntologyBranchRid as _api_OntologyBranchRid } from "../../../api/__components.js";
+import type {
+  MergeOntologyServiceBranchRequest
+    as _branch_api_MergeOntologyServiceBranchRequest,
+  MergeOntologyServiceBranchResponse
+    as _branch_api_MergeOntologyServiceBranchResponse,
+} from "../__components.js";
 
 /**
  * Merge a service branch from a service external to OMS. This endpoint should only be called by
@@ -27,9 +31,9 @@ import type { MergeOntologyServiceBranchResponse } from "../MergeOntologyService
 export async function mergeOntologyServiceBranch(
   ctx: ConjureContext,
   onBehalfOf: string,
-  ontologyBranchRid: OntologyBranchRid,
-  request: MergeOntologyServiceBranchRequest,
-): Promise<MergeOntologyServiceBranchResponse> {
+  ontologyBranchRid: _api_OntologyBranchRid,
+  request: _branch_api_MergeOntologyServiceBranchRequest,
+): Promise<_branch_api_MergeOntologyServiceBranchResponse> {
   return conjureFetch(
     ctx,
     `/ontology/branch/service-branch/merge/${ontologyBranchRid}`,

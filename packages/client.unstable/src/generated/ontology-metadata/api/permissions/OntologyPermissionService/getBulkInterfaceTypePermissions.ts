@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,12 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetBulkInterfaceTypePermissionsRequest } from "../GetBulkInterfaceTypePermissionsRequest.js";
-import type { GetBulkInterfaceTypePermissionsResponse } from "../GetBulkInterfaceTypePermissionsResponse.js";
+import type {
+  GetBulkInterfaceTypePermissionsRequest
+    as _api_permissions_GetBulkInterfaceTypePermissionsRequest,
+  GetBulkInterfaceTypePermissionsResponse
+    as _api_permissions_GetBulkInterfaceTypePermissionsResponse,
+} from "../__components.js";
 
 /**
  * Returns which permissions the user has on the InterfaceTypes provided. Limited to at most 500 entries per
@@ -24,7 +28,7 @@ import type { GetBulkInterfaceTypePermissionsResponse } from "../GetBulkInterfac
  */
 export async function getBulkInterfaceTypePermissions(
   ctx: ConjureContext,
-  request: GetBulkInterfaceTypePermissionsRequest,
-): Promise<GetBulkInterfaceTypePermissionsResponse> {
+  request: _api_permissions_GetBulkInterfaceTypePermissionsRequest,
+): Promise<_api_permissions_GetBulkInterfaceTypePermissionsResponse> {
   return conjureFetch(ctx, `/permissions/interfaceTypes`, "PUT", request);
 }

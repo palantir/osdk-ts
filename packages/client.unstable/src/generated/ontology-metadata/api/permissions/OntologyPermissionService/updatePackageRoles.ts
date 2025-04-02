@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyPackageRid } from "../../OntologyPackageRid.js";
-import type { UpdatePackageRolesRequest } from "../UpdatePackageRolesRequest.js";
-import type { UpdatePackageRolesResponse } from "../UpdatePackageRolesResponse.js";
+import type { OntologyPackageRid as _api_OntologyPackageRid } from "../../__components.js";
+import type {
+  UpdatePackageRolesRequest as _api_permissions_UpdatePackageRolesRequest,
+  UpdatePackageRolesResponse as _api_permissions_UpdatePackageRolesResponse,
+} from "../__components.js";
 
 /**
  * Updates the roles on the specified package.
@@ -29,9 +31,9 @@ import type { UpdatePackageRolesResponse } from "../UpdatePackageRolesResponse.j
  */
 export async function updatePackageRoles(
   ctx: ConjureContext,
-  packageRid: OntologyPackageRid,
-  request: UpdatePackageRolesRequest,
-): Promise<UpdatePackageRolesResponse> {
+  packageRid: _api_OntologyPackageRid,
+  request: _api_permissions_UpdatePackageRolesRequest,
+): Promise<_api_permissions_UpdatePackageRolesResponse> {
   return conjureFetch(
     ctx,
     `/permissions/packages/${packageRid}/roles`,

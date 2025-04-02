@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,20 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyBranchRid } from "../../../api/OntologyBranchRid.js";
-import type { LoadOntologyBranchRequest } from "../LoadOntologyBranchRequest.js";
-import type { LoadOntologyBranchResponse } from "../LoadOntologyBranchResponse.js";
+import type { OntologyBranchRid as _api_OntologyBranchRid } from "../../../api/__components.js";
+import type {
+  LoadOntologyBranchRequest as _branch_api_LoadOntologyBranchRequest,
+  LoadOntologyBranchResponse as _branch_api_LoadOntologyBranchResponse,
+} from "../__components.js";
 
 /**
  * Load an existing branch with the provided ontologyBranchRid.
  */
 export async function loadOntologyBranch(
   ctx: ConjureContext,
-  ontologyBranchRid: OntologyBranchRid,
-  request: LoadOntologyBranchRequest,
-): Promise<LoadOntologyBranchResponse> {
+  ontologyBranchRid: _api_OntologyBranchRid,
+  request: _branch_api_LoadOntologyBranchRequest,
+): Promise<_branch_api_LoadOntologyBranchResponse> {
   return conjureFetch(
     ctx,
     `/ontology/branch/load/${ontologyBranchRid}`,

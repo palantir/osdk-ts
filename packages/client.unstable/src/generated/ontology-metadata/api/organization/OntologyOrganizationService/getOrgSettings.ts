@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OrganizationRid } from "../../OrganizationRid.js";
-import type { GetOrgSettingsRequest } from "../GetOrgSettingsRequest.js";
-import type { GetOrgSettingsResponse } from "../GetOrgSettingsResponse.js";
+import type { OrganizationRid as _api_OrganizationRid } from "../../__components.js";
+import type {
+  GetOrgSettingsRequest as _api_organization_GetOrgSettingsRequest,
+  GetOrgSettingsResponse as _api_organization_GetOrgSettingsResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to load organization-wide Ontology settings. Returns either the stored value
@@ -27,9 +29,9 @@ import type { GetOrgSettingsResponse } from "../GetOrgSettingsResponse.js";
  */
 export async function getOrgSettings(
   ctx: ConjureContext,
-  organizationRid: OrganizationRid,
-  request: GetOrgSettingsRequest,
-): Promise<GetOrgSettingsResponse> {
+  organizationRid: _api_OrganizationRid,
+  request: _api_organization_GetOrgSettingsRequest,
+): Promise<_api_organization_GetOrgSettingsResponse> {
   return conjureFetch(
     ctx,
     `/organization/getSettings/${organizationRid}`,

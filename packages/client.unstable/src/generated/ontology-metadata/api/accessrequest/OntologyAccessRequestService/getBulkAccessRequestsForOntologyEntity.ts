@@ -15,16 +15,20 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { BulkGetAccessRequestForOntologyEntityRequest } from "../BulkGetAccessRequestForOntologyEntityRequest.js";
-import type { BulkGetAccessRequestsForOntologyEntityResponse } from "../BulkGetAccessRequestsForOntologyEntityResponse.js";
+import type {
+  BulkGetAccessRequestForOntologyEntityRequest
+    as _api_accessrequest_BulkGetAccessRequestForOntologyEntityRequest,
+  BulkGetAccessRequestsForOntologyEntityResponse
+    as _api_accessrequest_BulkGetAccessRequestsForOntologyEntityResponse,
+} from "../__components.js";
 
 /**
  * Gets the set of access requests that target the specified entities
  */
 export async function getBulkAccessRequestsForOntologyEntity(
   ctx: ConjureContext,
-  request: BulkGetAccessRequestForOntologyEntityRequest,
-): Promise<BulkGetAccessRequestsForOntologyEntityResponse> {
+  request: _api_accessrequest_BulkGetAccessRequestForOntologyEntityRequest,
+): Promise<_api_accessrequest_BulkGetAccessRequestsForOntologyEntityResponse> {
   return conjureFetch(
     ctx,
     `/ontology/access-request/getAccessRequestsForOntologyEntity`,

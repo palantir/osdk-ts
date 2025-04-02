@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,14 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { LoadAllSharedPropertyTypesPageRequest } from "../LoadAllSharedPropertyTypesPageRequest.js";
-import type { LoadAllSharedPropertyTypesPageResponse } from "../LoadAllSharedPropertyTypesPageResponse.js";
-import type { OntologyRid } from "../OntologyRid.js";
-import type { OntologyVersion } from "../OntologyVersion.js";
+import type {
+  LoadAllSharedPropertyTypesPageRequest
+    as _api_LoadAllSharedPropertyTypesPageRequest,
+  LoadAllSharedPropertyTypesPageResponse
+    as _api_LoadAllSharedPropertyTypesPageResponse,
+  OntologyRid as _api_OntologyRid,
+  OntologyVersion as _api_OntologyVersion,
+} from "../__components.js";
 
 /**
  * Endpoint to load a paged collection of all SharedPropertyTypes visible to the user from the specified Ontology and
@@ -26,10 +30,10 @@ import type { OntologyVersion } from "../OntologyVersion.js";
  */
 export async function loadAllSharedPropertyTypesFromOntology(
   ctx: ConjureContext,
-  ontologyRid: OntologyRid,
-  ontologyVersion: OntologyVersion,
-  request: LoadAllSharedPropertyTypesPageRequest,
-): Promise<LoadAllSharedPropertyTypesPageResponse> {
+  ontologyRid: _api_OntologyRid,
+  ontologyVersion: _api_OntologyVersion,
+  request: _api_LoadAllSharedPropertyTypesPageRequest,
+): Promise<_api_LoadAllSharedPropertyTypesPageResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/load/${ontologyRid}/${ontologyVersion}/loadAllSharedPropertyTypes`,

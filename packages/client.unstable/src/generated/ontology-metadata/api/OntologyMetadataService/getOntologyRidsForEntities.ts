@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyRidsForEntitiesRequest } from "../OntologyRidsForEntitiesRequest.js";
-import type { OntologyRidsForEntitiesResponse } from "../OntologyRidsForEntitiesResponse.js";
+import type {
+  OntologyRidsForEntitiesRequest as _api_OntologyRidsForEntitiesRequest,
+  OntologyRidsForEntitiesResponse as _api_OntologyRidsForEntitiesResponse,
+} from "../__components.js";
 
 /**
  * Gets the ontology rids to which the given ontology entities belong.
@@ -28,8 +30,8 @@ import type { OntologyRidsForEntitiesResponse } from "../OntologyRidsForEntities
  */
 export async function getOntologyRidsForEntities(
   ctx: ConjureContext,
-  request: OntologyRidsForEntitiesRequest,
-): Promise<OntologyRidsForEntitiesResponse> {
+  request: _api_OntologyRidsForEntitiesRequest,
+): Promise<_api_OntologyRidsForEntitiesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/getOntologyRidsForEntities`,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyLmsRequest } from "../llm/OntologyLmsRequest.js";
-import type { OntologyLmsResponse } from "../llm/OntologyLmsResponse.js";
+import type {
+  OntologyLmsRequest as _api_llm_OntologyLmsRequest,
+  OntologyLmsResponse as _api_llm_OntologyLmsResponse,
+} from "../llm/__components.js";
 
 /**
  * Endpoint to use an Ontology LMS App plugin. This is a union of plugins that can define how we prompt the
@@ -24,7 +26,7 @@ import type { OntologyLmsResponse } from "../llm/OntologyLmsResponse.js";
  */
 export async function usePlugin(
   ctx: ConjureContext,
-  request: OntologyLmsRequest,
-): Promise<OntologyLmsResponse> {
+  request: _api_llm_OntologyLmsRequest,
+): Promise<_api_llm_OntologyLmsResponse> {
   return conjureFetch(ctx, `/llm/usePlugin`, "POST", request);
 }

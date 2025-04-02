@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,12 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { LoadAllObjectTypesFromOntologyPageRequest } from "../LoadAllObjectTypesFromOntologyPageRequest.js";
-import type { LoadAllObjectTypesFromOntologyPageResponse } from "../LoadAllObjectTypesFromOntologyPageResponse.js";
+import type {
+  LoadAllObjectTypesFromOntologyPageRequest
+    as _api_LoadAllObjectTypesFromOntologyPageRequest,
+  LoadAllObjectTypesFromOntologyPageResponse
+    as _api_LoadAllObjectTypesFromOntologyPageResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to load a paged collection of all ObjectTypes visible to the user from the specified Ontology and
@@ -24,8 +28,8 @@ import type { LoadAllObjectTypesFromOntologyPageResponse } from "../LoadAllObjec
  */
 export async function loadAllObjectTypesFromOntologyPage(
   ctx: ConjureContext,
-  request: LoadAllObjectTypesFromOntologyPageRequest,
-): Promise<LoadAllObjectTypesFromOntologyPageResponse> {
+  request: _api_LoadAllObjectTypesFromOntologyPageRequest,
+): Promise<_api_LoadAllObjectTypesFromOntologyPageResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/load/loadAllObjectTypes`,

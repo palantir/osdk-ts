@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,22 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { UpdateAssociationRequest } from "../association/metadata/UpdateAssociationRequest.js";
-import type { UpdateAssociationResponse } from "../association/metadata/UpdateAssociationResponse.js";
-import type { OntologyRid } from "../OntologyRid.js";
+import type { OntologyRid as _api_OntologyRid } from "../__components.js";
+import type {
+  UpdateAssociationRequest
+    as _api_association_metadata_UpdateAssociationRequest,
+  UpdateAssociationResponse
+    as _api_association_metadata_UpdateAssociationResponse,
+} from "../association/metadata/__components.js";
 
 /**
  * Endpoint to update an association between an ontology entity and a resource
  */
 export async function updateAssociation(
   ctx: ConjureContext,
-  ontologyRid: OntologyRid,
-  request: UpdateAssociationRequest,
-): Promise<UpdateAssociationResponse> {
+  ontologyRid: _api_OntologyRid,
+  request: _api_association_metadata_UpdateAssociationRequest,
+): Promise<_api_association_metadata_UpdateAssociationResponse> {
   return conjureFetch(
     ctx,
     `/association/ontology/${ontologyRid}/updateOntologyEntityAssociation`,

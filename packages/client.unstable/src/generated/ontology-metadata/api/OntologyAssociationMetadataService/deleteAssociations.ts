@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,22 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { DeleteAssociationsRequest } from "../association/metadata/DeleteAssociationsRequest.js";
-import type { DeleteAssociationsResponse } from "../association/metadata/DeleteAssociationsResponse.js";
-import type { OntologyRid } from "../OntologyRid.js";
+import type { OntologyRid as _api_OntologyRid } from "../__components.js";
+import type {
+  DeleteAssociationsRequest
+    as _api_association_metadata_DeleteAssociationsRequest,
+  DeleteAssociationsResponse
+    as _api_association_metadata_DeleteAssociationsResponse,
+} from "../association/metadata/__components.js";
 
 /**
  * Endpoint to delete associations between one or more <ontology entity, resource> pairs
  */
 export async function deleteAssociations(
   ctx: ConjureContext,
-  ontologyRid: OntologyRid,
-  request: DeleteAssociationsRequest,
-): Promise<DeleteAssociationsResponse> {
+  ontologyRid: _api_OntologyRid,
+  request: _api_association_metadata_DeleteAssociationsRequest,
+): Promise<_api_association_metadata_DeleteAssociationsResponse> {
   return conjureFetch(
     ctx,
     `/association/ontology/${ontologyRid}/deleteOntologyEntityAssociations`,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,16 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { SharedPropertyTypeRid } from "../../SharedPropertyTypeRid.js";
-import type { GetSharedPropertyTypePermissionsResponse } from "../GetSharedPropertyTypePermissionsResponse.js";
+import type { SharedPropertyTypeRid as _api_SharedPropertyTypeRid } from "../../__components.js";
+import type { GetSharedPropertyTypePermissionsResponse as _api_permissions_GetSharedPropertyTypePermissionsResponse } from "../__components.js";
 
 /**
  * Returns which permissions the user has on the SharedPropertyType.
  */
 export async function getSharedPropertyTypePermissions(
   ctx: ConjureContext,
-  sharedPropertyTypeRid: SharedPropertyTypeRid,
-): Promise<GetSharedPropertyTypePermissionsResponse> {
+  sharedPropertyTypeRid: _api_SharedPropertyTypeRid,
+): Promise<_api_permissions_GetSharedPropertyTypePermissionsResponse> {
   return conjureFetch(
     ctx,
     `/permissions/sharedPropertyType/${sharedPropertyTypeRid}`,

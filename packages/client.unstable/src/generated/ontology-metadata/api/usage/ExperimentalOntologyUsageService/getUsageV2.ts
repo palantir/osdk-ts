@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetUsageRequestV2 } from "../GetUsageRequestV2.js";
-import type { GetUsageResponseV2 } from "../GetUsageResponseV2.js";
+import type {
+  GetUsageRequestV2 as _api_usage_GetUsageRequestV2,
+  GetUsageResponseV2 as _api_usage_GetUsageResponseV2,
+} from "../__components.js";
 
 /**
  * Endpoint to get the usage of ontology entities over the last 30 days.
@@ -25,7 +27,7 @@ import type { GetUsageResponseV2 } from "../GetUsageResponseV2.js";
  */
 export async function getUsageV2(
   ctx: ConjureContext,
-  request: GetUsageRequestV2,
-): Promise<GetUsageResponseV2> {
+  request: _api_usage_GetUsageRequestV2,
+): Promise<_api_usage_GetUsageResponseV2> {
   return conjureFetch(ctx, `/usage/search/getUsageV2`, "PUT", request);
 }

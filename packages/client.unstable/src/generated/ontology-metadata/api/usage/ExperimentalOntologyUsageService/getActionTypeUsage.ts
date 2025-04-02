@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetActionTypeUsageRequest } from "../GetActionTypeUsageRequest.js";
-import type { GetActionTypeUsageResponse } from "../GetActionTypeUsageResponse.js";
+import type {
+  GetActionTypeUsageRequest as _api_usage_GetActionTypeUsageRequest,
+  GetActionTypeUsageResponse as _api_usage_GetActionTypeUsageResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to load usage settings by day for an action type.
@@ -26,7 +28,7 @@ import type { GetActionTypeUsageResponse } from "../GetActionTypeUsageResponse.j
  */
 export async function getActionTypeUsage(
   ctx: ConjureContext,
-  request: GetActionTypeUsageRequest,
-): Promise<GetActionTypeUsageResponse> {
+  request: _api_usage_GetActionTypeUsageRequest,
+): Promise<_api_usage_GetActionTypeUsageResponse> {
   return conjureFetch(ctx, `/usage/search`, "PUT", request);
 }

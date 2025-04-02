@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,12 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { LoadAllOntologiesInternalRequest } from "../../modification/LoadAllOntologiesInternalRequest.js";
-import type { LoadAllOntologiesInternalResponse } from "../../modification/LoadAllOntologiesInternalResponse.js";
+import type {
+  LoadAllOntologiesInternalRequest
+    as _api_modification_LoadAllOntologiesInternalRequest,
+  LoadAllOntologiesInternalResponse
+    as _api_modification_LoadAllOntologiesInternalResponse,
+} from "../../modification/__components.js";
 
 /**
  * Endpoint to load metadata about the Ontologies a user has access to. The response will contain
@@ -25,7 +29,7 @@ import type { LoadAllOntologiesInternalResponse } from "../../modification/LoadA
  */
 export async function loadAllOntologiesInternal(
   ctx: ConjureContext,
-  request: LoadAllOntologiesInternalRequest,
-): Promise<LoadAllOntologiesInternalResponse> {
+  request: _api_modification_LoadAllOntologiesInternalRequest,
+): Promise<_api_modification_LoadAllOntologiesInternalResponse> {
   return conjureFetch(ctx, `/ontology/v2/load/all`, "POST", request);
 }
