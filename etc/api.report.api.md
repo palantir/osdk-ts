@@ -414,26 +414,38 @@ export namespace DerivedProperty {
     export interface AggregateBuilder<
     		Q extends ObjectOrInterfaceDefinition,
     		CONSTRAINED extends boolean
-    	> extends Builder<Q, CONSTRAINED>, Aggregatable<Q> {}
+    	> extends BaseBuilder<Q, CONSTRAINED>, Aggregatable<Q> {}
     	// Warning: (ae-forgotten-export) The symbol "Filterable" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "Pivotable" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export interface BaseBuilder<
+    		Q extends ObjectOrInterfaceDefinition,
+    		CONSTRAINED extends boolean
+    	> extends Filterable<Q, CONSTRAINED>, Pivotable<Q, CONSTRAINED> {}
+    	// Warning: (ae-forgotten-export) The symbol "Constant" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     export interface Builder<
     		Q extends ObjectOrInterfaceDefinition,
     		CONSTRAINED extends boolean
-    	> extends Filterable<Q, CONSTRAINED>, Pivotable<Q, CONSTRAINED> {}
+    	> extends BaseBuilder<Q, CONSTRAINED>, Constant<Q> {}
     	// (undocumented)
     export type Clause<Q extends ObjectOrInterfaceDefinition> = {
-        		[key: string]: Selector<Q, SimplePropertyDef>
+        		[key: string]: Creator<Q, SimplePropertyDef>
         	};
+    	// (undocumented)
+    export type Creator<
+    		Q extends ObjectOrInterfaceDefinition,
+    		T extends SimplePropertyDef
+    	> = (baseObjectSet: Builder<Q, false>) => Definition<T, Q> | NumericPropertyDefinition<T, Q> | DatetimePropertyDefinition<T, Q>;
     	// Warning: (ae-forgotten-export) The symbol "DatetimeExpressions" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     export interface DatetimePropertyDefinition<
     		T extends SimplePropertyDef,
     		Q extends ObjectOrInterfaceDefinition
-    	> extends Definition<T, Q>, DatetimeExpressions<Q> {}
+    	> extends Definition<T, Q>, DatetimeExpressions<Q, T> {}
     	// Warning: (ae-forgotten-export) The symbol "SimplePropertyDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -450,12 +462,7 @@ export namespace DerivedProperty {
     export interface NumericPropertyDefinition<
     		T extends SimplePropertyDef,
     		Q extends ObjectOrInterfaceDefinition
-    	> extends Definition<T, Q>, NumericExpressions<Q> {}
-    	// (undocumented)
-    export type Selector<
-    		Q extends ObjectOrInterfaceDefinition,
-    		T extends SimplePropertyDef
-    	> = (baseObjectSet: DerivedProperty.Builder<Q, false>) => Definition<T, Q> | NumericPropertyDefinition<T, Q>;
+    	> extends Definition<T, Q>, NumericExpressions<Q, T> {}
     	// Warning: (ae-forgotten-export) The symbol "Selectable" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -463,15 +470,9 @@ export namespace DerivedProperty {
     		Q extends ObjectOrInterfaceDefinition,
     		CONSTRAINED extends boolean
     	> extends AggregateBuilder<Q, CONSTRAINED>, Selectable<Q> {}
-    	// Warning: (ae-forgotten-export) The symbol "TimestampExpressions" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    export interface TimestampPropertyDefinition<
-    		T extends SimplePropertyDef,
-    		Q extends ObjectOrInterfaceDefinition
-    	> extends Definition<T, Q>, TimestampExpressions<Q> {}
     	// (undocumented)
     export type ValidParts = "year" | "month" | "day" | "hour" | "minute" | "second";
+    	{};
 }
 
 // @public (undocumented)
