@@ -23,8 +23,7 @@ export function selectorResultFactory(
   wireDefinition: DerivedPropertyDefinition,
   definitionMap: Map<any, DerivedPropertyDefinition>,
 ): DerivedProperty.NumericPropertyDefinition<any, any> {
-  return {
-    type: {},
+  const definition: DerivedProperty.NumericPropertyDefinition<any, any> = {
     abs() {
       return selectorResultFactory({
         type: "absoluteValue",
@@ -37,93 +36,69 @@ export function selectorResultFactory(
         property: wireDefinition,
       }, definitionMap);
     },
-    max(...args: (string | number | DerivedProperty.Definition<any, any>)[]) {
+    max(value) {
       return selectorResultFactory({
         type: "greatest",
         properties: [
           wireDefinition,
-          ...args.map((arg) => getDefinitionFromMap(arg, definitionMap)),
+          getDefinitionFromMap(value, definitionMap),
         ],
       }, definitionMap);
     },
-    min(...args: (string | number | DerivedProperty.Definition<any, any>)[]) {
+    min(value) {
       return selectorResultFactory({
         type: "least",
         properties: [
           wireDefinition,
-          ...args.map((arg) => getDefinitionFromMap(arg, definitionMap)),
+          getDefinitionFromMap(value, definitionMap),
         ],
       }, definitionMap);
     },
-    add(
-      ...args: (
-        | string
-        | number
-        | DerivedProperty.NumericPropertyDefinition<
-          any,
-          any
-        >
-      )[]
+    plus(
+      value,
     ) {
       return selectorResultFactory({
         type: "add",
         properties: [
           wireDefinition,
-          ...args.map((arg) => getDefinitionFromMap(arg, definitionMap)),
+          getDefinitionFromMap(value, definitionMap),
         ],
       }, definitionMap);
     },
-    subtract(
-      left:
-        | string
-        | number
-        | DerivedProperty.NumericPropertyDefinition<any, any>,
-      right:
-        | string
-        | number
-        | DerivedProperty.NumericPropertyDefinition<any, any>,
+    minus(
+      value,
     ) {
       return selectorResultFactory({
         "type": "subtract",
-        "left": getDefinitionFromMap(left, definitionMap),
-        "right": getDefinitionFromMap(right, definitionMap),
+        "left": wireDefinition,
+        "right": getDefinitionFromMap(value, definitionMap),
       }, definitionMap);
     },
-    multiply(
-      ...args: (
-        | string
-        | number
-        | DerivedProperty.NumericPropertyDefinition<
-          any,
-          any
-        >
-      )[]
+    times(
+      value,
     ) {
       return selectorResultFactory({
         type: "multiply",
         properties: [
           wireDefinition,
-          ...args.map((arg) => getDefinitionFromMap(arg, definitionMap)),
+          getDefinitionFromMap(value, definitionMap),
         ],
       }, definitionMap);
     },
-    divide(
-      left:
-        | string
-        | number
-        | DerivedProperty.NumericPropertyDefinition<any, any>,
-      right:
-        | string
-        | number
-        | DerivedProperty.NumericPropertyDefinition<any, any>,
+    divideBy(
+      value,
     ) {
       return selectorResultFactory({
         "type": "subtract",
-        "left": getDefinitionFromMap(left, definitionMap),
-        "right": getDefinitionFromMap(right, definitionMap),
+        "left": wireDefinition,
+        "right": getDefinitionFromMap(value, definitionMap),
       }, definitionMap);
     },
+    type: {},
   };
+
+  definitionMap.set(definition, wireDefinition);
+  return definition;
 }
 
 const getDefinitionFromMap = (
@@ -138,7 +113,9 @@ const getDefinitionFromMap = (
     return {
       "type": "property",
       "apiName": arg,
-    } satisfies DerivedPropertyDefinition;
+    };
+  } else if (typeof arg === "number") {
+    invariant(false, "Literals for derived properties are not yet supported");
   }
   invariant(false, "Invalid argument type for a derived property");
 };

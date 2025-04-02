@@ -16,7 +16,6 @@
 
 import type { ValidAggregationKeys } from "../aggregate/AggregatableKeys.js";
 import type { WhereClause } from "../aggregate/WhereClause.js";
-import type { FilteredPropertyKeys } from "../ontology/FilteredPropertyKeys.js";
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
@@ -24,6 +23,11 @@ import type {
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
 import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
+import type {
+  DatetimeExpressions,
+  DefinitionForType,
+  NumericExpressions,
+} from "./Expressions.js";
 import type {
   CollectWithPropAggregations,
   MinMaxWithPropAggregateOption,
@@ -40,44 +44,45 @@ export namespace DerivedProperty {
   export interface NumericPropertyDefinition<
     T extends SimplePropertyDef,
     Q extends ObjectOrInterfaceDefinition,
-  > extends Definition<T, Q>, NumericExpressions<Q> {}
+  > extends Definition<T, Q>, NumericExpressions<Q, T> {}
 
   export interface DatetimePropertyDefinition<
     T extends SimplePropertyDef,
     Q extends ObjectOrInterfaceDefinition,
-  > extends Definition<T, Q>, DatetimeExpressions<Q> {}
-  export interface TimestampPropertyDefinition<
-    T extends SimplePropertyDef,
-    Q extends ObjectOrInterfaceDefinition,
-  > extends Definition<T, Q>, TimestampExpressions<Q> {}
+  > extends Definition<T, Q>, DatetimeExpressions<Q, T> {}
 
   export type Clause<
     Q extends ObjectOrInterfaceDefinition,
   > = {
-    [key: string]: Selector<Q, SimplePropertyDef>;
+    [key: string]: Creator<Q, SimplePropertyDef>;
   };
 
-  export type Selector<
+  export type Creator<
     Q extends ObjectOrInterfaceDefinition,
     T extends SimplePropertyDef,
   > = (
-    baseObjectSet: DerivedProperty.Builder<Q, false>,
+    baseObjectSet: Builder<Q, false>,
   ) =>
     | Definition<T, Q>
     | NumericPropertyDefinition<T, Q>
-    | DatetimePropertyDefinition<T, Q>
-    | TimestampPropertyDefinition<T, Q>;
+    | DatetimePropertyDefinition<T, Q>;
 
-  export interface Builder<
+  interface BaseBuilder<
     Q extends ObjectOrInterfaceDefinition,
     CONSTRAINED extends boolean,
   > extends Filterable<Q, CONSTRAINED>, Pivotable<Q, CONSTRAINED> {
   }
 
+  export interface Builder<
+    Q extends ObjectOrInterfaceDefinition,
+    CONSTRAINED extends boolean,
+  > extends BaseBuilder<Q, CONSTRAINED>, Constant {
+  }
+
   export interface AggregateBuilder<
     Q extends ObjectOrInterfaceDefinition,
     CONSTRAINED extends boolean,
-  > extends Builder<Q, CONSTRAINED>, Aggregatable<Q> {
+  > extends BaseBuilder<Q, CONSTRAINED>, Aggregatable<Q> {
   }
 
   export interface SelectPropertyBuilder<
@@ -123,6 +128,43 @@ type Pivotable<
     : DerivedProperty.SelectPropertyBuilder<LinkedType<Q, L>, false>;
 };
 
+type Constant = {
+  readonly constant: {
+    readonly double: (
+      value: number,
+    ) => DerivedProperty.NumericPropertyDefinition<
+      SimplePropertyDef.Make<"double", false, false>,
+      any
+    >;
+
+    readonly integer: (
+      value: number,
+    ) => DerivedProperty.NumericPropertyDefinition<
+      SimplePropertyDef.Make<"integer", false, false>,
+      any
+    >;
+    readonly long: (
+      value: string,
+    ) => DerivedProperty.NumericPropertyDefinition<
+      SimplePropertyDef.Make<"long", false, false>,
+      any
+    >;
+
+    readonly datetime: (
+      value: string,
+    ) => DerivedProperty.DatetimePropertyDefinition<
+      SimplePropertyDef.Make<"datetime", false, false>,
+      any
+    >;
+    readonly timestamp: (
+      value: string,
+    ) => DerivedProperty.DatetimePropertyDefinition<
+      SimplePropertyDef.Make<"timestamp", false, false>,
+      any
+    >;
+  };
+};
+
 type Aggregatable<
   Q extends ObjectOrInterfaceDefinition,
 > = {
@@ -138,17 +180,36 @@ type Aggregatable<
       : P extends "approximatePercentile" ? { percentile: number }
       : never
       : never,
-  ) => DerivedProperty.Definition<
+  ) => DefinitionForType<
+    Q,
     V extends `${infer N}:${infer P}`
-      ? P extends CollectWithPropAggregations
-        ? Array<CompileTimeMetadata<Q>["properties"][N]["type"]> | undefined
-      : P extends MinMaxWithPropAggregateOption
-        ? CompileTimeMetadata<Q>["properties"][N]["type"] | undefined
-      : P extends "approximateDistinct" | "exactDistinct" | "$count" ? "integer"
-      : "double" | undefined
-      : V extends "$count" ? "integer"
-      : never,
-    Q
+      ? P extends CollectWithPropAggregations ? SimplePropertyDef.Make<
+          CompileTimeMetadata<Q>["properties"][N]["type"],
+          true,
+          true
+        >
+      : P extends MinMaxWithPropAggregateOption ? SimplePropertyDef.Make<
+          CompileTimeMetadata<Q>["properties"][N]["type"],
+          true,
+          false
+        >
+      : P extends "approximateDistinct" | "exactDistinct"
+        ? SimplePropertyDef.Make<
+          "integer",
+          false,
+          false
+        >
+      : SimplePropertyDef.Make<
+        "double",
+        true,
+        false
+      >
+      : V extends "$count" ? SimplePropertyDef.Make<
+          "integer",
+          false,
+          false
+        >
+      : never
   >;
 };
 
@@ -162,147 +223,5 @@ type Selectable<Q extends ObjectOrInterfaceDefinition> = {
       CompileTimeMetadata<Q>["properties"][R]["nullable"],
       CompileTimeMetadata<Q>["properties"][R]["multiplicity"]
     >
-  >;
-};
-
-// TODO: Fix arrays
-// TODO: Fix base type
-type DefinitionForType<
-  Q extends ObjectOrInterfaceDefinition,
-  T extends SimplePropertyDef,
-> = number extends SimplePropertyDef.ExtractRuntimeBaseType<T>
-  ? DerivedProperty.NumericPropertyDefinition<T, Q>
-  : SimplePropertyDef.ExtractRuntimeBaseType<T> extends "datetime"
-    ? DerivedProperty.DatetimePropertyDefinition<T, Q>
-  : DerivedProperty.Definition<T, Q>;
-
-type NumericProperties =
-  | "decimal"
-  | "integer"
-  | "double"
-  | "float"
-  | "short"
-  | "long"
-  | "byte";
-
-type NumericExpressionArgArray<Q extends ObjectOrInterfaceDefinition> = Array<
-  | number
-  | FilteredPropertyKeys<Q, NumericProperties>
-  | DerivedProperty.NumericPropertyDefinition<any, any>
->;
-
-type DatetimeExpressionArgArray<Q extends ObjectOrInterfaceDefinition> = Array<
-  | string
-  | PropertyKeys<Q>
-  | DerivedProperty.DatetimePropertyDefinition<any, any>
->;
-
-type NumericExpressions<Q extends ObjectOrInterfaceDefinition> = {
-  readonly add: (
-    ...args: NumericExpressionArgArray<Q>
-  ) => DerivedProperty.NumericPropertyDefinition<
-    SimplePropertyDef.Make<"integer", false, false>,
-    Q
-  >;
-
-  readonly subtract: (
-    left:
-      | number
-      | PropertyKeys<Q>
-      | DerivedProperty.NumericPropertyDefinition<any, any>,
-    right:
-      | number
-      | PropertyKeys<Q>
-      | DerivedProperty.NumericPropertyDefinition<any, any>,
-  ) => DerivedProperty.NumericPropertyDefinition<
-    SimplePropertyDef.Make<"integer", false, false>,
-    Q
-  >;
-
-  readonly multiply: (
-    ...args: NumericExpressionArgArray<Q>
-  ) => DerivedProperty.NumericPropertyDefinition<
-    SimplePropertyDef.Make<"integer", false, false>,
-    Q
-  >;
-
-  readonly divide: (
-    left:
-      | number
-      | PropertyKeys<Q>
-      | DerivedProperty.NumericPropertyDefinition<any, any>,
-    right:
-      | number
-      | PropertyKeys<Q>
-      | DerivedProperty.NumericPropertyDefinition<any, any>,
-  ) => DerivedProperty.NumericPropertyDefinition<
-    SimplePropertyDef.Make<"integer", false, false>,
-    Q
-  >;
-
-  readonly abs: () => DerivedProperty.NumericPropertyDefinition<
-    SimplePropertyDef.Make<"integer", false, false>,
-    Q
-  >;
-
-  readonly negate: () => DerivedProperty.NumericPropertyDefinition<
-    SimplePropertyDef.Make<"integer", false, false>,
-    Q
-  >;
-
-  readonly max: (
-    ...args: NumericExpressionArgArray<Q>
-  ) => DerivedProperty.NumericPropertyDefinition<
-    SimplePropertyDef.Make<"integer", false, false>,
-    Q
-  >;
-
-  readonly min: (
-    ...args: NumericExpressionArgArray<Q>
-  ) => DerivedProperty.NumericPropertyDefinition<
-    SimplePropertyDef.Make<"integer", false, false>,
-    Q
-  >;
-};
-
-type DatetimeExpressions<Q extends ObjectOrInterfaceDefinition> = {
-  readonly min: (
-    ...args: DatetimeExpressionArgArray<Q>
-  ) => DerivedProperty.DatetimePropertyDefinition<
-    SimplePropertyDef.Make<"datetime", false, false>,
-    Q
-  >;
-  readonly max: (
-    ...args: DatetimeExpressionArgArray<Q>
-  ) => DerivedProperty.DatetimePropertyDefinition<
-    SimplePropertyDef.Make<"datetime", false, false>,
-    Q
-  >;
-  readonly extractPart: (
-    part: DerivedProperty.ValidParts,
-  ) => DerivedProperty.NumericPropertyDefinition<
-    SimplePropertyDef.Make<"string", false, false>,
-    Q
-  >;
-};
-
-type TimestampExpressions<Q extends ObjectOrInterfaceDefinition> = {
-  readonly min: (
-    ...args: DatetimeExpressionArgArray<Q>
-  ) => DerivedProperty.DatetimePropertyDefinition<
-    SimplePropertyDef.Make<"timestamp", false, false>,
-    Q
-  >;
-  readonly max: (
-    ...args: DatetimeExpressionArgArray<Q>
-  ) => DerivedProperty.DatetimePropertyDefinition<
-    SimplePropertyDef.Make<"timestamp", false, false>,
-    Q
-  >;
-  readonly extractPart: (
-    part: DerivedProperty.ValidParts,
-  ) => DerivedProperty.NumericPropertyDefinition<
-    SimplePropertyDef.Make<"string", false, false>,
-    Q
   >;
 };

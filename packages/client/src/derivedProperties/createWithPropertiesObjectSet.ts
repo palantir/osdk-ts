@@ -24,7 +24,11 @@ import invariant from "tiny-invariant";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import { selectorResultFactory } from "./derivedPropertyDefinitionFactory.js";
 
-const idCounter = 0;
+type WithConstSelect<Q extends ObjectOrInterfaceDefinition> =
+  & DerivedProperty.SelectPropertyBuilder<Q, false>
+  & {
+    constant: DerivedProperty.Builder<Q, true>["constant"];
+  };
 
 /** @internal */
 export function createWithPropertiesObjectSet<
@@ -33,8 +37,8 @@ export function createWithPropertiesObjectSet<
   objectType: Q,
   objectSet: WireObjectSet,
   definitionMap: Map<any, DerivedPropertyDefinition>,
-): DerivedProperty.SelectPropertyBuilder<Q, false> {
-  const base: DerivedProperty.SelectPropertyBuilder<Q, false> = {
+): WithConstSelect<Q> {
+  const base: WithConstSelect<Q> = {
     pivotTo: (link) => {
       return createWithPropertiesObjectSet(objectType, {
         type: "searchAround",
@@ -97,12 +101,14 @@ export function createWithPropertiesObjectSet<
             "Invalid aggregation operation " + aggregationOperation,
           );
       }
-      const selectorResult: DerivedProperty.Definition<any, any> = { type: {} };
-      definitionMap.set(selectorResult, {
+      const wrappedObjectSet: DerivedPropertyDefinition = {
         type: "selection",
         objectSet: objectSet,
         operation: aggregationOperationDefinition,
-      });
+      };
+      const selectorResult: DerivedProperty.Definition<any, any> =
+        selectorResultFactory(wrappedObjectSet, definitionMap);
+      definitionMap.set(selectorResult, wrappedObjectSet);
       return selectorResult;
     },
     selectProperty: (name) => {
@@ -119,7 +125,23 @@ export function createWithPropertiesObjectSet<
       definitionMap.set(selectorResult, wrappedObjectSet);
       return selectorResult as any;
     },
+    constant: {
+      double: (value) => {
+        invariant(false, "Not supported");
+      },
+      integer: (value) => {
+        invariant(false, "Not supported");
+      },
+      long: (value) => {
+        invariant(false, "Not supported");
+      },
+      datetime: (value) => {
+        invariant(false, "Not supported");
+      },
+      timestamp: (value) => {
+        invariant(false, "Not supported");
+      },
+    },
   };
-
   return base;
 }
