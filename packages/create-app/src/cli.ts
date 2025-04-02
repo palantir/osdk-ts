@@ -23,6 +23,7 @@ import { promptApplicationUrl } from "./prompts/promptApplicationUrl.js";
 import { promptClientId } from "./prompts/promptClientId.js";
 import { promptCorsProxy } from "./prompts/promptCorsProxy.js";
 import { promptFoundryUrl } from "./prompts/promptFoundryUrl.js";
+import { promptOntologyRid } from "./prompts/promptOntologyRid.js";
 import { promptOsdkPackage } from "./prompts/promptOsdkPackage.js";
 import { promptOsdkRegistryUrl } from "./prompts/promptOsdkRegistryUrl.js";
 import { promptOverwrite } from "./prompts/promptOverwrite.js";
@@ -48,6 +49,7 @@ interface CliArgs {
   osdkRegistryUrl?: string;
   corsProxy?: boolean;
   scopes?: string[];
+  ontologyRid?: string;
 }
 
 export async function cli(args: string[] = process.argv): Promise<void> {
@@ -122,6 +124,10 @@ export async function cli(args: string[] = process.argv): Promise<void> {
             array: true,
             describe:
               "List of client-side scopes to be used when creating a client",
+          })
+          .option("ontologyRid", {
+            type: "string",
+            describe: "RID of the Ontology your application is using.",
           }),
     );
 
@@ -141,6 +147,7 @@ export async function cli(args: string[] = process.argv): Promise<void> {
   const osdkRegistryUrl: string = await promptOsdkRegistryUrl(parsed);
   const corsProxy: boolean = await promptCorsProxy(parsed);
   const scopes: string[] | undefined = await promptScopes(parsed);
+  const ontologyRid: string = await promptOntologyRid(parsed);
 
   await run({
     project,
@@ -155,5 +162,6 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     osdkRegistryUrl,
     corsProxy,
     scopes,
+    ontologyRid,
   });
 }
