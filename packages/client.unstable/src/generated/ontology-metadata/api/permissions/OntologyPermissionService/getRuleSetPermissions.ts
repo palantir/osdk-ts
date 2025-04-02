@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,20 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyBranchRid } from "../../OntologyBranchRid.js";
-import type { RuleSetRid } from "../../RuleSetRid.js";
-import type { GetRuleSetPermissionsResponse } from "../GetRuleSetPermissionsResponse.js";
+import type {
+  OntologyBranchRid as _api_OntologyBranchRid,
+  RuleSetRid as _api_RuleSetRid,
+} from "../../__components.js";
+import type { GetRuleSetPermissionsResponse as _api_permissions_GetRuleSetPermissionsResponse } from "../__components.js";
 
 /**
  * Returns which permissions the user has on the RuleSet.
  */
 export async function getRuleSetPermissions(
   ctx: ConjureContext,
-  ruleSetRid: RuleSetRid,
-  ontologyBranchRid: OntologyBranchRid | undefined,
-): Promise<GetRuleSetPermissionsResponse> {
+  ruleSetRid: _api_RuleSetRid,
+  ontologyBranchRid: _api_OntologyBranchRid | null | undefined,
+): Promise<_api_permissions_GetRuleSetPermissionsResponse> {
   return conjureFetch(
     ctx,
     `/permissions/ruleSet/${ruleSetRid}`,

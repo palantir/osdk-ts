@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetDeprecationUsageRequest } from "../GetDeprecationUsageRequest.js";
-import type { GetDeprecationUsageResponse } from "../GetDeprecationUsageResponse.js";
+import type {
+  GetDeprecationUsageRequest as _api_usage_GetDeprecationUsageRequest,
+  GetDeprecationUsageResponse as _api_usage_GetDeprecationUsageResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to get the daily deprecation usage of an ontology entity over the last 30 days.
@@ -30,7 +32,7 @@ import type { GetDeprecationUsageResponse } from "../GetDeprecationUsageResponse
  */
 export async function getDeprecationUsage(
   ctx: ConjureContext,
-  request: GetDeprecationUsageRequest,
-): Promise<GetDeprecationUsageResponse> {
+  request: _api_usage_GetDeprecationUsageRequest,
+): Promise<_api_usage_GetDeprecationUsageResponse> {
   return conjureFetch(ctx, `/usage/search/getDeprecationUsage`, "PUT", request);
 }

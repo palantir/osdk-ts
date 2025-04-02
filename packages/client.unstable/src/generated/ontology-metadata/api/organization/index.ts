@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,16 @@
 
 export * as OntologyOrganizationService from "./OntologyOrganizationService.js";
 
-export type { GetOrgSettingsByUserRequest } from "./GetOrgSettingsByUserRequest.js";
-export type { GetOrgSettingsByUserResponse } from "./GetOrgSettingsByUserResponse.js";
-export type { GetOrgSettingsRequest } from "./GetOrgSettingsRequest.js";
-export type { GetOrgSettingsResponse } from "./GetOrgSettingsResponse.js";
-export type { ProposalsDisabled } from "./ProposalsDisabled.js";
-export type { ProposalsEnabled } from "./ProposalsEnabled.js";
-export type { ProposalsEnabledStatus } from "./ProposalsEnabledStatus.js";
-export type { ProposalsSettings } from "./ProposalsSettings.js";
-export type { SetOrgSettingsRequest } from "./SetOrgSettingsRequest.js";
-export type { SetOrgSettingsResponse } from "./SetOrgSettingsResponse.js";
-export type { UsageSettings } from "./UsageSettings.js";
+export type {
+  GetOrgSettingsByUserRequest,
+  GetOrgSettingsByUserResponse,
+  GetOrgSettingsRequest,
+  GetOrgSettingsResponse,
+  ProposalsDisabled,
+  ProposalsEnabled,
+  ProposalsEnabledStatus,
+  ProposalsSettings,
+  SetOrgSettingsRequest,
+  SetOrgSettingsResponse,
+  UsageSettings,
+} from "./__components.js";

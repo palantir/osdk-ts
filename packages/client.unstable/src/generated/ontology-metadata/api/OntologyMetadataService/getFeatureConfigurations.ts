@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetFeatureConfigurationsResponse } from "../GetFeatureConfigurationsResponse.js";
+import type { GetFeatureConfigurationsResponse as _api_GetFeatureConfigurationsResponse } from "../__components.js";
 
 /**
  * Please contact the OMS team before using this endpoint.
@@ -25,6 +25,6 @@ import type { GetFeatureConfigurationsResponse } from "../GetFeatureConfiguratio
  */
 export async function getFeatureConfigurations(
   ctx: ConjureContext,
-): Promise<GetFeatureConfigurationsResponse> {
+): Promise<_api_GetFeatureConfigurationsResponse> {
   return conjureFetch(ctx, `/ontology/featureConfigurations`, "GET");
 }

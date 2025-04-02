@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { ActionTypeGetOrganizationsRequest } from "../../ActionTypeGetOrganizationsRequest.js";
-import type { ActionTypeGetOrganizationsResponse } from "../../ActionTypeGetOrganizationsResponse.js";
+import type {
+  ActionTypeGetOrganizationsRequest as _api_ActionTypeGetOrganizationsRequest,
+  ActionTypeGetOrganizationsResponse as _api_ActionTypeGetOrganizationsResponse,
+} from "../../__components.js";
 
 /**
  * This is an experimental endpoint and does not have any backwards-compatibility guarantees.
@@ -26,7 +28,7 @@ import type { ActionTypeGetOrganizationsResponse } from "../../ActionTypeGetOrga
  */
 export async function getOrganizations(
   ctx: ConjureContext,
-  request: ActionTypeGetOrganizationsRequest,
-): Promise<ActionTypeGetOrganizationsResponse> {
+  request: _api_ActionTypeGetOrganizationsRequest,
+): Promise<_api_ActionTypeGetOrganizationsResponse> {
   return conjureFetch(ctx, `/actions/orgs/get/v2`, "POST", request);
 }

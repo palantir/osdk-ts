@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GlobalBranchRid } from "../../../api/GlobalBranchRid.js";
-import type { OntologyBranchRid } from "../../../api/OntologyBranchRid.js";
+import type {
+  GlobalBranchRid as _api_GlobalBranchRid,
+  OntologyBranchRid as _api_OntologyBranchRid,
+} from "../../../api/__components.js";
 
 /**
  * Endpoint get the corresponding OntologyBranchRid for a global BranchRid given by BranchService.
@@ -27,7 +29,7 @@ import type { OntologyBranchRid } from "../../../api/OntologyBranchRid.js";
  */
 export async function getOntologyBranchRid(
   ctx: ConjureContext,
-  globalBranchRid: GlobalBranchRid,
-): Promise<OntologyBranchRid> {
+  globalBranchRid: _api_GlobalBranchRid,
+): Promise<_api_OntologyBranchRid> {
   return conjureFetch(ctx, `/ontology/branch/global/${globalBranchRid}`, "GET");
 }

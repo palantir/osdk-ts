@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,16 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { SemanticSearchObjectTypesRequest } from "../search/semantic/SemanticSearchObjectTypesRequest.js";
-import type { SemanticSearchObjectTypesResponse } from "../search/semantic/SemanticSearchObjectTypesResponse.js";
+import type {
+  SemanticSearchObjectTypesRequest
+    as _api_search_semantic_SemanticSearchObjectTypesRequest,
+  SemanticSearchObjectTypesResponse
+    as _api_search_semantic_SemanticSearchObjectTypesResponse,
+} from "../search/semantic/__components.js";
 export async function semanticSearchObjectTypes(
   ctx: ConjureContext,
-  request: SemanticSearchObjectTypesRequest,
-): Promise<SemanticSearchObjectTypesResponse> {
+  request: _api_search_semantic_SemanticSearchObjectTypesRequest,
+): Promise<_api_search_semantic_SemanticSearchObjectTypesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/semantic-search/v0/semantic-search-object-types`,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,15 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { ActionTypeRid } from "../../ActionTypeRid.js";
-import type { GetActionTypePermissionsResponse } from "../GetActionTypePermissionsResponse.js";
+import type { ActionTypeRid as _api_ActionTypeRid } from "../../__components.js";
+import type { GetActionTypePermissionsResponse as _api_permissions_GetActionTypePermissionsResponse } from "../__components.js";
 
 /**
  * Returns which permissions the user has on the ActionType.
  */
 export async function getActionTypePermissions(
   ctx: ConjureContext,
-  actionTypeRid: ActionTypeRid,
-): Promise<GetActionTypePermissionsResponse> {
+  actionTypeRid: _api_ActionTypeRid,
+): Promise<_api_permissions_GetActionTypePermissionsResponse> {
   return conjureFetch(ctx, `/permissions/actionType/${actionTypeRid}`, "GET");
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,13 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { CheckExistingUniqueIdentifiersRequest } from "../../modification/CheckExistingUniqueIdentifiersRequest.js";
-import type { CheckExistingUniqueIdentifiersResponse } from "../../modification/CheckExistingUniqueIdentifiersResponse.js";
-import type { OntologyRid } from "../../OntologyRid.js";
+import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
+import type {
+  CheckExistingUniqueIdentifiersRequest
+    as _api_modification_CheckExistingUniqueIdentifiersRequest,
+  CheckExistingUniqueIdentifiersResponse
+    as _api_modification_CheckExistingUniqueIdentifiersResponse,
+} from "../../modification/__components.js";
 
 /**
  * Intended for use when making modifications to the Ontology. Allows checking ahead of time if identifiers that
@@ -27,9 +31,9 @@ import type { OntologyRid } from "../../OntologyRid.js";
  */
 export async function checkExistingUniqueIdentifiers(
   ctx: ConjureContext,
-  ontologyRid: OntologyRid,
-  request: CheckExistingUniqueIdentifiersRequest,
-): Promise<CheckExistingUniqueIdentifiersResponse> {
+  ontologyRid: _api_OntologyRid,
+  request: _api_modification_CheckExistingUniqueIdentifiersRequest,
+): Promise<_api_modification_CheckExistingUniqueIdentifiersResponse> {
   return conjureFetch(
     ctx,
     `/ontology/v2/${ontologyRid}/modification/check-uniqueness`,

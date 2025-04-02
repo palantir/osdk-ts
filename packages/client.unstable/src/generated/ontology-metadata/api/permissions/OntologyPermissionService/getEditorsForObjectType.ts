@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,12 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetEditorsForObjectTypeRequest } from "../GetEditorsForObjectTypeRequest.js";
-import type { GetEditorsForObjectTypeResponse } from "../GetEditorsForObjectTypeResponse.js";
+import type {
+  GetEditorsForObjectTypeRequest
+    as _api_permissions_GetEditorsForObjectTypeRequest,
+  GetEditorsForObjectTypeResponse
+    as _api_permissions_GetEditorsForObjectTypeResponse,
+} from "../__components.js";
 
 /**
  * Returns the ids of the users who have the editor or owner role on the given ObjectType. Or, in the case of
@@ -28,8 +32,8 @@ import type { GetEditorsForObjectTypeResponse } from "../GetEditorsForObjectType
  */
 export async function getEditorsForObjectType(
   ctx: ConjureContext,
-  request: GetEditorsForObjectTypeRequest,
-): Promise<GetEditorsForObjectTypeResponse> {
+  request: _api_permissions_GetEditorsForObjectTypeRequest,
+): Promise<_api_permissions_GetEditorsForObjectTypeResponse> {
   return conjureFetch(
     ctx,
     `/permissions/getEditorsForObjectType`,

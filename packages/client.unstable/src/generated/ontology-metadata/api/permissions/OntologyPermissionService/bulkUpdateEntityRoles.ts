@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { BulkUpdateEntityRolesRequest } from "../BulkUpdateEntityRolesRequest.js";
-import type { BulkUpdateEntityRolesResponse } from "../BulkUpdateEntityRolesResponse.js";
+import type {
+  BulkUpdateEntityRolesRequest as _api_permissions_BulkUpdateEntityRolesRequest,
+  BulkUpdateEntityRolesResponse
+    as _api_permissions_BulkUpdateEntityRolesResponse,
+} from "../__components.js";
 
 /**
  * Updates the role grants for a set of ontology entities. NOTE: If roles are updated on an ObjectType or LinkType, the
@@ -26,8 +29,8 @@ import type { BulkUpdateEntityRolesResponse } from "../BulkUpdateEntityRolesResp
  */
 export async function bulkUpdateEntityRoles(
   ctx: ConjureContext,
-  updateRequest: BulkUpdateEntityRolesRequest,
-): Promise<BulkUpdateEntityRolesResponse> {
+  updateRequest: _api_permissions_BulkUpdateEntityRolesRequest,
+): Promise<_api_permissions_BulkUpdateEntityRolesResponse> {
   return conjureFetch(
     ctx,
     `/permissions/bulkUpdateEntityRoles`,

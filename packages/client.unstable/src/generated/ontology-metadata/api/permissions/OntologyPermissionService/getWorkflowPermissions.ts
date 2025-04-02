@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,15 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { WorkflowRid } from "../../../workflow/api/WorkflowRid.js";
-import type { GetWorkflowPermissionsResponse } from "../GetWorkflowPermissionsResponse.js";
+import type { WorkflowRid as _workflow_api_WorkflowRid } from "../../../workflow/api/__components.js";
+import type { GetWorkflowPermissionsResponse as _api_permissions_GetWorkflowPermissionsResponse } from "../__components.js";
 
 /**
  * Returns which permissions the user has on the Workflow.
  */
 export async function getWorkflowPermissions(
   ctx: ConjureContext,
-  workflowRid: WorkflowRid,
-): Promise<GetWorkflowPermissionsResponse> {
+  workflowRid: _workflow_api_WorkflowRid,
+): Promise<_api_permissions_GetWorkflowPermissionsResponse> {
   return conjureFetch(ctx, `/permissions/workflow/${workflowRid}`, "GET");
 }

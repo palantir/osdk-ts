@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,19 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetModifiedEntitiesRequest } from "../../modification/GetModifiedEntitiesRequest.js";
-import type { GetModifiedEntitiesResponse } from "../../modification/GetModifiedEntitiesResponse.js";
-import type { OntologyRid } from "../../OntologyRid.js";
+import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
+import type {
+  GetModifiedEntitiesRequest as _api_modification_GetModifiedEntitiesRequest,
+  GetModifiedEntitiesResponse as _api_modification_GetModifiedEntitiesResponse,
+} from "../../modification/__components.js";
 
 /**
  * Returns all entities modified between two given OntologyVersions.
  */
 export async function getModifiedEntities(
   ctx: ConjureContext,
-  ontologyRid: OntologyRid,
-  request: GetModifiedEntitiesRequest,
-): Promise<GetModifiedEntitiesResponse> {
+  ontologyRid: _api_OntologyRid,
+  request: _api_modification_GetModifiedEntitiesRequest,
+): Promise<_api_modification_GetModifiedEntitiesResponse> {
   return conjureFetch(ctx, `/ontology/v2/${ontologyRid}/diff`, "POST", request);
 }

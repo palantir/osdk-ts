@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyLoadDatasourcesRequest } from "../OntologyLoadDatasourcesRequest.js";
-import type { OntologyLoadDatasourcesResponse } from "../OntologyLoadDatasourcesResponse.js";
+import type {
+  OntologyLoadDatasourcesRequest as _api_OntologyLoadDatasourcesRequest,
+  OntologyLoadDatasourcesResponse as _api_OntologyLoadDatasourcesResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to load datasources for Ontology entities at a given OntologyVersion or at the latest
@@ -27,8 +29,8 @@ import type { OntologyLoadDatasourcesResponse } from "../OntologyLoadDatasources
  */
 export async function loadOntologyDatasources(
   ctx: ConjureContext,
-  request: OntologyLoadDatasourcesRequest,
-): Promise<OntologyLoadDatasourcesResponse> {
+  request: _api_OntologyLoadDatasourcesRequest,
+): Promise<_api_OntologyLoadDatasourcesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/load/datasources`,

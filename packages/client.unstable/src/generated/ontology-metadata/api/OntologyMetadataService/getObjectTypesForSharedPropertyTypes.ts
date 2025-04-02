@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,12 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetObjectTypesForSharedPropertyTypesRequest } from "../GetObjectTypesForSharedPropertyTypesRequest.js";
-import type { GetObjectTypesForSharedPropertyTypesResponse } from "../GetObjectTypesForSharedPropertyTypesResponse.js";
+import type {
+  GetObjectTypesForSharedPropertyTypesRequest
+    as _api_GetObjectTypesForSharedPropertyTypesRequest,
+  GetObjectTypesForSharedPropertyTypesResponse
+    as _api_GetObjectTypesForSharedPropertyTypesResponse,
+} from "../__components.js";
 
 /**
  * Gets a map of SharedPropertyTypeRid to the set of ObjectTypeRids that use the SharedPropertyType. At most 50
@@ -24,8 +28,8 @@ import type { GetObjectTypesForSharedPropertyTypesResponse } from "../GetObjectT
  */
 export async function getObjectTypesForSharedPropertyTypes(
   ctx: ConjureContext,
-  request: GetObjectTypesForSharedPropertyTypesRequest,
-): Promise<GetObjectTypesForSharedPropertyTypesResponse> {
+  request: _api_GetObjectTypesForSharedPropertyTypesRequest,
+): Promise<_api_GetObjectTypesForSharedPropertyTypesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/load/objectTypesForSharedPropertyTypes`,

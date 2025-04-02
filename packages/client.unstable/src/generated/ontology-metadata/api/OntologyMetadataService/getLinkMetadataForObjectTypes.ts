@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,12 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetLinkMetadataForObjectTypesRequest } from "../GetLinkMetadataForObjectTypesRequest.js";
-import type { GetLinkMetadataForObjectTypesResponse } from "../GetLinkMetadataForObjectTypesResponse.js";
+import type {
+  GetLinkMetadataForObjectTypesRequest
+    as _api_GetLinkMetadataForObjectTypesRequest,
+  GetLinkMetadataForObjectTypesResponse
+    as _api_GetLinkMetadataForObjectTypesResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to batch load links associated to given ObjectTypeRid(s). The GetLinkTypesForObjectTypesResponse
@@ -26,8 +30,8 @@ import type { GetLinkMetadataForObjectTypesResponse } from "../GetLinkMetadataFo
  */
 export async function getLinkMetadataForObjectTypes(
   ctx: ConjureContext,
-  request: GetLinkMetadataForObjectTypesRequest,
-): Promise<GetLinkMetadataForObjectTypesResponse> {
+  request: _api_GetLinkMetadataForObjectTypesRequest,
+): Promise<_api_GetLinkMetadataForObjectTypesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/getLinkMetadataForObjectTypes`,

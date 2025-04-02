@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,17 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyModifyRequest } from "../OntologyModifyRequest.js";
-import type { OntologyModifyResponse } from "../OntologyModifyResponse.js";
+import type {
+  OntologyModifyRequest as _api_OntologyModifyRequest,
+  OntologyModifyResponse as _api_OntologyModifyResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to modify Ontology entities.
  */
 export async function modifyOntology(
   ctx: ConjureContext,
-  request: OntologyModifyRequest,
-): Promise<OntologyModifyResponse> {
+  request: _api_OntologyModifyRequest,
+): Promise<_api_OntologyModifyResponse> {
   return conjureFetch(ctx, `/ontology/ontology/modify`, "POST", request);
 }

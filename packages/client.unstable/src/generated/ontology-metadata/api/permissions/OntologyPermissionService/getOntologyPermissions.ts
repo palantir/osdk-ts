@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,20 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyBranchRid } from "../../OntologyBranchRid.js";
-import type { OntologyRid } from "../../OntologyRid.js";
-import type { GetOntologyPermissionsResponse } from "../GetOntologyPermissionsResponse.js";
+import type {
+  OntologyBranchRid as _api_OntologyBranchRid,
+  OntologyRid as _api_OntologyRid,
+} from "../../__components.js";
+import type { GetOntologyPermissionsResponse as _api_permissions_GetOntologyPermissionsResponse } from "../__components.js";
 
 /**
  * Returns the Ontology-level permissions which the user has.
  */
 export async function getOntologyPermissions(
   ctx: ConjureContext,
-  ontologyRid: OntologyRid,
-  ontologyBranchRid: OntologyBranchRid | undefined,
-): Promise<GetOntologyPermissionsResponse> {
+  ontologyRid: _api_OntologyRid,
+  ontologyBranchRid: _api_OntologyBranchRid | null | undefined,
+): Promise<_api_permissions_GetOntologyPermissionsResponse> {
   return conjureFetch(
     ctx,
     `/permissions/ontology/${ontologyRid}`,

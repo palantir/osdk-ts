@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetCreateOntologyPermissionsResponse } from "../GetCreateOntologyPermissionsResponse.js";
+import type { GetCreateOntologyPermissionsResponse as _api_permissions_GetCreateOntologyPermissionsResponse } from "../__components.js";
 
 /**
  * Returns whether the user has permissions to create a new Ontology.
  */
 export async function getCreateOntologyPermissions(
   ctx: ConjureContext,
-): Promise<GetCreateOntologyPermissionsResponse> {
+): Promise<_api_permissions_GetCreateOntologyPermissionsResponse> {
   return conjureFetch(ctx, `/permissions/ontologyCreate`, "GET");
 }

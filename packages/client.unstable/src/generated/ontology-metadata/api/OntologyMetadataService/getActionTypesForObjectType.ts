@@ -15,8 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetActionTypesForObjectTypeRequest } from "../GetActionTypesForObjectTypeRequest.js";
-import type { GetActionTypesForObjectTypeResponse } from "../GetActionTypesForObjectTypeResponse.js";
+import type {
+  GetActionTypesForObjectTypeRequest as _api_GetActionTypesForObjectTypeRequest,
+  GetActionTypesForObjectTypeResponse
+    as _api_GetActionTypesForObjectTypeResponse,
+} from "../__components.js";
 
 /**
  * Gets all the action types that the object type is associated with. E.g. actions that create an object, edit
@@ -25,8 +28,8 @@ import type { GetActionTypesForObjectTypeResponse } from "../GetActionTypesForOb
  */
 export async function getActionTypesForObjectType(
   ctx: ConjureContext,
-  request: GetActionTypesForObjectTypeRequest,
-): Promise<GetActionTypesForObjectTypeResponse> {
+  request: _api_GetActionTypesForObjectTypeRequest,
+): Promise<_api_GetActionTypesForObjectTypeResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/actionTypesForObjectType`,

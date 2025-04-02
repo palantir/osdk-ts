@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
-import type { ArrayPropertyType } from "./generated/ontology-metadata/api/ArrayPropertyType.js";
+import type {
+  ArrayPropertyType,
+  InterfaceLinkType,
+  InterfaceType,
+  SharedPropertyType,
+  StructFieldType,
+  StructPropertyType,
+  Type,
+  Type_array,
+  Type_struct,
+} from "./generated/ontology-metadata/api/__components.js";
 import type {
   InterfaceTypeBlockDataV2,
   OntologyBlockDataV2,
@@ -22,16 +32,6 @@ import type {
   OntologyIrObjectTypeBlockDataV2,
   SharedPropertyTypeBlockDataV2,
 } from "./generated/ontology-metadata/api/blockdata/index.js";
-import type { InterfaceLinkType } from "./generated/ontology-metadata/api/InterfaceLinkType.js";
-import type { InterfaceType } from "./generated/ontology-metadata/api/InterfaceType.js";
-import type { SharedPropertyType } from "./generated/ontology-metadata/api/SharedPropertyType.js";
-import type { StructFieldType } from "./generated/ontology-metadata/api/StructFieldType.js";
-import type { StructPropertyType } from "./generated/ontology-metadata/api/StructPropertyType.js";
-import type {
-  Type,
-  Type_array,
-  Type_struct,
-} from "./generated/ontology-metadata/api/Type.js";
 import type { BaseType } from "./generated/type-registry/api/BaseType.js";
 import type { ExampleValue } from "./generated/type-registry/api/ExampleValue.js";
 import type { ValueTypeApiName } from "./generated/type-registry/api/ValueTypeApiName.js";

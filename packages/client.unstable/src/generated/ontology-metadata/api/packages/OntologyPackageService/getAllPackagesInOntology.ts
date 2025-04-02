@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyPackageRid } from "../../OntologyPackageRid.js";
-import type { OntologyRid } from "../../OntologyRid.js";
-import type { OntologyPackageMetadata } from "../OntologyPackageMetadata.js";
+import type {
+  OntologyPackageRid as _api_OntologyPackageRid,
+  OntologyRid as _api_OntologyRid,
+} from "../../__components.js";
+import type { OntologyPackageMetadata as _api_packages_OntologyPackageMetadata } from "../__components.js";
 
 /**
  * Gets all packages in the specified ontology. Requires `ontology:view-ontology` on the ontology rid and
@@ -25,7 +27,9 @@ import type { OntologyPackageMetadata } from "../OntologyPackageMetadata.js";
  */
 export async function getAllPackagesInOntology(
   ctx: ConjureContext,
-  ontologyRid: OntologyRid,
-): Promise<Record<OntologyPackageRid, OntologyPackageMetadata>> {
+  ontologyRid: _api_OntologyRid,
+): Promise<
+  Record<_api_OntologyPackageRid, _api_packages_OntologyPackageMetadata>
+> {
   return conjureFetch(ctx, `/ontology/packages/${ontologyRid}/packages`, "GET");
 }

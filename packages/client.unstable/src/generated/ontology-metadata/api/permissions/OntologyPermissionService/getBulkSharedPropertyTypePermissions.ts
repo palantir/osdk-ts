@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,12 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetBulkSharedPropertyTypePermissionsRequest } from "../GetBulkSharedPropertyTypePermissionsRequest.js";
-import type { GetBulkSharedPropertyTypePermissionsResponse } from "../GetBulkSharedPropertyTypePermissionsResponse.js";
+import type {
+  GetBulkSharedPropertyTypePermissionsRequest
+    as _api_permissions_GetBulkSharedPropertyTypePermissionsRequest,
+  GetBulkSharedPropertyTypePermissionsResponse
+    as _api_permissions_GetBulkSharedPropertyTypePermissionsResponse,
+} from "../__components.js";
 
 /**
  * Returns which permissions the user has on the SharedPropertyTypes provided. Limited to at most 500 entries per
@@ -24,7 +28,7 @@ import type { GetBulkSharedPropertyTypePermissionsResponse } from "../GetBulkSha
  */
 export async function getBulkSharedPropertyTypePermissions(
   ctx: ConjureContext,
-  request: GetBulkSharedPropertyTypePermissionsRequest,
-): Promise<GetBulkSharedPropertyTypePermissionsResponse> {
+  request: _api_permissions_GetBulkSharedPropertyTypePermissionsRequest,
+): Promise<_api_permissions_GetBulkSharedPropertyTypePermissionsResponse> {
   return conjureFetch(ctx, `/permissions/sharedPropertyTypes`, "PUT", request);
 }

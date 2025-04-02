@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-export type { ActionTypeProvenance } from "./ActionTypeProvenance.js";
-export type { ActionTypeProvenanceSource } from "./ActionTypeProvenanceSource.js";
-export type { BuilderEntityProvenance } from "./BuilderEntityProvenance.js";
-export type { EditsHistoryProvenance } from "./EditsHistoryProvenance.js";
-export type { EntityProvenance } from "./EntityProvenance.js";
-export type { EntityProvenanceSource } from "./EntityProvenanceSource.js";
-export type { MarketplaceBlockSetInstallationRid } from "./MarketplaceBlockSetInstallationRid.js";
-export type { MarketplaceEntityProvenance } from "./MarketplaceEntityProvenance.js";
-export type { OntologyIrEditsHistoryProvenance } from "./OntologyIrEditsHistoryProvenance.js";
-export type { OntologyIrEntityProvenance } from "./OntologyIrEntityProvenance.js";
-export type { OntologyIrEntityProvenanceSource } from "./OntologyIrEntityProvenanceSource.js";
-export type { OntologyMetadataAppEntityProvenance } from "./OntologyMetadataAppEntityProvenance.js";
+export type {
+  ActionTypeProvenance,
+  ActionTypeProvenanceSource,
+  BuilderEntityProvenance,
+  EditsHistoryProvenance,
+  EntityProvenance,
+  EntityProvenanceSource,
+  MarketplaceBlockSetInstallationRid,
+  MarketplaceEntityProvenance,
+  OntologyIrEditsHistoryProvenance,
+  OntologyIrEntityProvenance,
+  OntologyIrEntityProvenanceSource,
+  OntologyMetadataAppEntityProvenance,
+} from "./__components.js";

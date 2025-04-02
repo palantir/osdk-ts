@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,19 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetBulkObjectTypePermissionsRequest } from "../GetBulkObjectTypePermissionsRequest.js";
-import type { GetBulkObjectTypePermissionsResponse } from "../GetBulkObjectTypePermissionsResponse.js";
+import type {
+  GetBulkObjectTypePermissionsRequest
+    as _api_permissions_GetBulkObjectTypePermissionsRequest,
+  GetBulkObjectTypePermissionsResponse
+    as _api_permissions_GetBulkObjectTypePermissionsResponse,
+} from "../__components.js";
 
 /**
  * Returns which permissions the user has on the ObjectTypes provided. Limited to at most 500 entries per call.
  */
 export async function getBulkObjectTypePermissions(
   ctx: ConjureContext,
-  request: GetBulkObjectTypePermissionsRequest,
-): Promise<GetBulkObjectTypePermissionsResponse> {
+  request: _api_permissions_GetBulkObjectTypePermissionsRequest,
+): Promise<_api_permissions_GetBulkObjectTypePermissionsResponse> {
   return conjureFetch(ctx, `/permissions/objectTypes`, "PUT", request);
 }

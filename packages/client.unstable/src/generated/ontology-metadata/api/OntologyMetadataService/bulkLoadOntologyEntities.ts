@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyBulkLoadEntitiesRequest } from "../OntologyBulkLoadEntitiesRequest.js";
-import type { OntologyBulkLoadEntitiesResponse } from "../OntologyBulkLoadEntitiesResponse.js";
+import type {
+  OntologyBulkLoadEntitiesRequest as _api_OntologyBulkLoadEntitiesRequest,
+  OntologyBulkLoadEntitiesResponse as _api_OntologyBulkLoadEntitiesResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to load Ontology entities in bulk. The returned OntologyBulkLoadEntitiesResponse will only
@@ -29,9 +31,9 @@ import type { OntologyBulkLoadEntitiesResponse } from "../OntologyBulkLoadEntiti
  */
 export async function bulkLoadOntologyEntities(
   ctx: ConjureContext,
-  onBehalfOf: string | undefined,
-  request: OntologyBulkLoadEntitiesRequest,
-): Promise<OntologyBulkLoadEntitiesResponse> {
+  onBehalfOf: string | null | undefined,
+  request: _api_OntologyBulkLoadEntitiesRequest,
+): Promise<_api_OntologyBulkLoadEntitiesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/bulkLoadEntities`,

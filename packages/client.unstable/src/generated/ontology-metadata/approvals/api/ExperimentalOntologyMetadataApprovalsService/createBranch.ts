@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyRid } from "../../../api/OntologyRid.js";
-import type { CreateOntologyBranchRequest } from "../CreateOntologyBranchRequest.js";
-import type { CreateOntologyBranchResponse } from "../CreateOntologyBranchResponse.js";
+import type { OntologyRid as _api_OntologyRid } from "../../../api/__components.js";
+import type {
+  CreateOntologyBranchRequest as _approvals_api_CreateOntologyBranchRequest,
+  CreateOntologyBranchResponse as _approvals_api_CreateOntologyBranchResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to create a new branch in an existing ontology. This also creates an OntologyBranchProposal from this branch to the
@@ -27,9 +29,9 @@ import type { CreateOntologyBranchResponse } from "../CreateOntologyBranchRespon
  */
 export async function createBranch(
   ctx: ConjureContext,
-  ontologyRid: OntologyRid,
-  request: CreateOntologyBranchRequest,
-): Promise<CreateOntologyBranchResponse> {
+  ontologyRid: _api_OntologyRid,
+  request: _approvals_api_CreateOntologyBranchRequest,
+): Promise<_approvals_api_CreateOntologyBranchResponse> {
   return conjureFetch(
     ctx,
     `/ontology/approvals/experimental/${ontologyRid}/createBranch`,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetOrgSettingsByUserRequest } from "../GetOrgSettingsByUserRequest.js";
-import type { GetOrgSettingsByUserResponse } from "../GetOrgSettingsByUserResponse.js";
+import type {
+  GetOrgSettingsByUserRequest as _api_organization_GetOrgSettingsByUserRequest,
+  GetOrgSettingsByUserResponse
+    as _api_organization_GetOrgSettingsByUserResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to load organization-wide Ontology settings for the user sending the request based on the
@@ -25,7 +28,7 @@ import type { GetOrgSettingsByUserResponse } from "../GetOrgSettingsByUserRespon
  */
 export async function getOrgSettingsByUser(
   ctx: ConjureContext,
-  request: GetOrgSettingsByUserRequest,
-): Promise<GetOrgSettingsByUserResponse> {
+  request: _api_organization_GetOrgSettingsByUserRequest,
+): Promise<_api_organization_GetOrgSettingsByUserResponse> {
   return conjureFetch(ctx, `/organization/getSettings/user`, "POST", request);
 }

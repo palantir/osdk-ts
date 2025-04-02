@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { TagDependentRequest } from "../TagDependentRequest.js";
-import type { TagDependentResponse } from "../TagDependentResponse.js";
+import type {
+  TagDependentRequest as _api_provenance_TagDependentRequest,
+  TagDependentResponse as _api_provenance_TagDependentResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to tag a dependent entity.
@@ -25,7 +27,7 @@ import type { TagDependentResponse } from "../TagDependentResponse.js";
  */
 export async function tagDependent(
   ctx: ConjureContext,
-  request: TagDependentRequest,
-): Promise<TagDependentResponse> {
+  request: _api_provenance_TagDependentRequest,
+): Promise<_api_provenance_TagDependentResponse> {
   return conjureFetch(ctx, `/provenance/tagDependent`, "PUT", request);
 }

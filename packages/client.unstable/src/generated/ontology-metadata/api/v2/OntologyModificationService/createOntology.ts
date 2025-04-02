@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyCreateRequest } from "../../modification/OntologyCreateRequest.js";
-import type { OntologyCreateResponse } from "../../modification/OntologyCreateResponse.js";
+import type {
+  OntologyCreateRequest as _api_modification_OntologyCreateRequest,
+  OntologyCreateResponse as _api_modification_OntologyCreateResponse,
+} from "../../modification/__components.js";
 
 /**
  * Endpoint to create an Ontology. This should be a one time action when a new
@@ -28,7 +30,7 @@ import type { OntologyCreateResponse } from "../../modification/OntologyCreateRe
  */
 export async function createOntology(
   ctx: ConjureContext,
-  request: OntologyCreateRequest,
-): Promise<OntologyCreateResponse> {
+  request: _api_modification_OntologyCreateRequest,
+): Promise<_api_modification_OntologyCreateResponse> {
   return conjureFetch(ctx, `/ontology/v2/create`, "POST", request);
 }
