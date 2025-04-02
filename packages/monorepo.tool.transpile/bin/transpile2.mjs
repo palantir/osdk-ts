@@ -340,6 +340,21 @@ async function transpileWithBabel(format, target) {
     if (result.map) {
       const mapFilePath = destPath + ".map";
       result.map.file = path.basename(destPath);
+
+      // this lets us mark the loggers for the sourceMap
+      // to be ignored by browsers so you still see
+      // the correct line numbers!
+      // See https://developer.chrome.com/docs/devtools/x-google-ignore-list
+      // and https://tc39.es/ecma426/#sec-source-map-format
+      if (
+        result.map.sources.some(s =>
+          s === "MinimalLogger.ts" || s === "BrowserLogger.ts"
+        )
+      ) {
+        // @ts-ignore
+        (result.map.ignoreList ??= []).push(0);
+      }
+
       await mkdir(path.dirname(mapFilePath), { recursive: true });
       await writeFile(mapFilePath, JSON.stringify(result.map));
 

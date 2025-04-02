@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import type { LogFn, Logger } from "./Logger.js";
+import type { Logger } from "@osdk/api";
+import type { LogFn } from "./Logger.js";
 
-function noop() {
+export function noop(): any {
 }
 
 interface LoggerConstructor {
@@ -48,7 +49,21 @@ export abstract class BaseLogger implements Logger {
     this.bindings = bindings;
     this.options = options;
     this.#factory = factory;
+
+    for (
+      const k of ["trace", "debug", "info", "warn", "error", "fatal"] as const
+    ) {
+      if (this.options?.level && !this.isLevelEnabled(k)) {
+        continue;
+      }
+      this[k] = this.createLogMethod(k, bindings);
+    }
   }
+
+  protected abstract createLogMethod(
+    name: "trace" | "debug" | "info" | "warn" | "error" | "fatal",
+    bindings: Record<string, any>,
+  ): LogFn;
 
   trace: LogFn = noop;
   debug: LogFn = noop;
