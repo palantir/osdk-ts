@@ -127,7 +127,7 @@ export async function cli(args: string[] = process.argv): Promise<void> {
           })
           .option("ontologyRid", {
             type: "string",
-            describe: "RID of the Ontology your application is using.",
+            describe: "RID of the Ontology your application is using",
           }),
     );
 
