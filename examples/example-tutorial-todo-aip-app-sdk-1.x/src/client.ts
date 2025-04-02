@@ -10,7 +10,7 @@ function getMetaTagContent(tagName: string): string {
   return value;
 }
 
-const foundryUrl = getMetaTagContent("osdk-foundryUrl");
+const url = getMetaTagContent("osdk-foundryUrl");
 const clientId = getMetaTagContent("osdk-clientId");
 const redirectUrl = getMetaTagContent("osdk-redirectUrl");
 const scopes = [
@@ -22,10 +22,10 @@ const scopes = [
  * Initialize the client to interact with the Ontology SDK
  */
 const client = new FoundryClient({
-  foundryUrl,
+  url,
   auth: new PublicClientAuth({
     clientId,
-    foundryUrl,
+    url,
     redirectUrl,
     scopes,
   }),
