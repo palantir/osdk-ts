@@ -213,9 +213,6 @@ export default tseslint.config(
 
       // rules that should be enabled but I dont want a massive delta yet
       "@typescript-eslint/await-thenable": "warn",
-
-      // should be able to use dev deps in tests
-      "import/no-extraneous-dependencies": "off",
     },
   },
   //
@@ -231,10 +228,12 @@ export default tseslint.config(
     ],
     rules: {
       "no-console": "off",
+      // should be able to use dev deps in tests
+      "import/no-extraneous-dependencies": "off",
     },
   },
   {
-    files: ["**/vitest.config.mts"],
+    files: ["**/vitest.config.mts", "**/*.mjs"],
     rules: { "import/no-extraneous-dependencies": "off" },
   },
   //
