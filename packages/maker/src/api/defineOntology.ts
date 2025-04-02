@@ -180,7 +180,7 @@ function convertObject(
   objectType: ObjectType,
 ): OntologyIrObjectTypeBlockDataV2 {
   const datasource: OntologyIrObjectTypeDatasource = {
-    rid: "ri.ontology.main.datasource.".concat(objectType.apiName ?? ""),
+    rid: "ri.ontology.main.datasource.".concat(objectType.apiName),
     datasource: convertDatasourceDefinition(objectType),
     editsConfiguration: {
       onlyAllowPrivilegedEdits: false,
