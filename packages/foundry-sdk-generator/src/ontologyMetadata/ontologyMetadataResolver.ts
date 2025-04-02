@@ -591,7 +591,16 @@ export class OntologyMetadataResolver {
       case "null":
         return Result.ok({});
       case "unsupported":
+      case "entrySet":
+        return Result.err([
+          `Unable to load query ${queryApiName} because it takes an unsupported parameter type: ${
+            JSON.stringify(
+              baseType,
+            )
+          } in parameter ${propertyName}`,
+        ]);
       default:
+        const _: never = baseType;
         return Result.err([
           `Unable to load query ${queryApiName} because it takes an unsupported parameter type: ${
             JSON.stringify(
@@ -604,47 +613,47 @@ export class OntologyMetadataResolver {
 
   private isSupportedActionTypeParameter(
     actionApiName: string,
-    actonTypeParameter: ActionParameterType,
+    actionTypeParameter: ActionParameterType,
     loadedObjectApiNames: Set<string>,
     loadedInterfaceApiNames: Set<string>,
   ): Result<{}, string[]> {
-    switch (actonTypeParameter.type) {
+    switch (actionTypeParameter.type) {
       case "array":
         return this.isSupportedActionTypeParameter(
           actionApiName,
-          actonTypeParameter.subType,
+          actionTypeParameter.subType,
           loadedObjectApiNames,
           loadedInterfaceApiNames,
         );
       case "object":
-        if (loadedObjectApiNames.has(actonTypeParameter.objectTypeApiName!)) {
+        if (loadedObjectApiNames.has(actionTypeParameter.objectTypeApiName!)) {
           return Result.ok({});
         }
         return Result.err([
-          `Unable to load action ${actionApiName} because it takes an unloaded object type as a parameter: ${actonTypeParameter
+          `Unable to load action ${actionApiName} because it takes an unloaded object type as a parameter: ${actionTypeParameter
             .objectTypeApiName!} `
-          + `make sure to specify it as an argument with --ontologyObjects ${actonTypeParameter
+          + `make sure to specify it as an argument with --ontologyObjects ${actionTypeParameter
             .objectTypeApiName!})`,
         ]);
       case "objectSet":
-        if (loadedObjectApiNames.has(actonTypeParameter.objectTypeApiName!)) {
+        if (loadedObjectApiNames.has(actionTypeParameter.objectTypeApiName!)) {
           return Result.ok({});
         }
         return Result.err([
-          `Unable to load action ${actionApiName} because it takes an ObjectSet of unloaded object type as a parameter: ${actonTypeParameter
+          `Unable to load action ${actionApiName} because it takes an ObjectSet of unloaded object type as a parameter: ${actionTypeParameter
             .objectTypeApiName!} `
-          + `make sure to specify it as an argument with --ontologyObjects ${actonTypeParameter
+          + `make sure to specify it as an argument with --ontologyObjects ${actionTypeParameter
             .objectTypeApiName!})`,
         ]);
       case "interfaceObject":
         if (
-          loadedInterfaceApiNames.has(actonTypeParameter.interfaceTypeApiName)
+          loadedInterfaceApiNames.has(actionTypeParameter.interfaceTypeApiName)
         ) {
           return Result.ok({});
         }
         return Result.err([
-          `Unable to load action ${actionApiName} because it takes an unloaded interface type as a parameter: ${actonTypeParameter.interfaceTypeApiName} `
-          + `make sure to specify it as an argument with --ontologyInterfaces ${actonTypeParameter.interfaceTypeApiName}`,
+          `Unable to load action ${actionApiName} because it takes an unloaded interface type as a parameter: ${actionTypeParameter.interfaceTypeApiName} `
+          + `make sure to specify it as an argument with --ontologyInterfaces ${actionTypeParameter.interfaceTypeApiName}`,
         ]);
       case "string":
       case "boolean":
@@ -657,13 +666,15 @@ export class OntologyMetadataResolver {
       case "struct":
       case "mediaReference":
       case "objectType":
+      case "marking":
         return Result.ok({});
 
       default:
+        const _: never = actionTypeParameter;
         return Result.err([
           `Unable to load action ${actionApiName} because it takes an unsupported parameter: ${
             JSON.stringify(
-              actonTypeParameter,
+              actionTypeParameter,
             )
           } `
           + `specify only the actions you want to load with the --actions argument.`,
