@@ -36,18 +36,21 @@ export const PromoteEmployee: ActionTypeV2 = {
   description: "Update an employee's title and compensation",
   parameters: {
     employeeId: {
+      "displayName": "Employee ID",
       dataType: {
         type: "integer",
       },
       required: true,
     },
     newTitle: {
+      "displayName": "New Title",
       dataType: {
         type: "string",
       },
       required: true,
     },
     newCompensation: {
+      "displayName": "New Compensation",
       dataType: {
         type: "double",
       },
@@ -67,6 +70,7 @@ export const PromoteEmployeeObject: ActionTypeV2 = {
   description: "Update an employee's title and compensation",
   parameters: {
     employee: {
+      "displayName": "Employee",
       dataType: {
         type: "object",
         objectApiName: employeeObjectType.apiName,
@@ -75,12 +79,14 @@ export const PromoteEmployeeObject: ActionTypeV2 = {
       required: true,
     },
     newTitle: {
+      displayName: "New Title",
       dataType: {
         type: "string",
       },
       required: true,
     },
     newCompensation: {
+      displayName: "New Compensation",
       dataType: {
         type: "double",
       },
@@ -100,12 +106,14 @@ export const CreateOffice: ActionTypeV2 = {
   description: "Create an office's",
   parameters: {
     officeId: {
+      displayName: "Office ID",
       dataType: {
         type: "string",
       },
       required: true,
     },
     address: {
+      displayName: "Address",
       description:
         "The office's physical address (not necessarily shipping address)",
       dataType: {
@@ -114,6 +122,7 @@ export const CreateOffice: ActionTypeV2 = {
       required: false,
     },
     capacity: {
+      displayName: "Capacity",
       description:
         "The maximum seated-at-desk capacity of the office (maximum fire-safe capacity may be higher)",
       dataType: {
@@ -122,6 +131,7 @@ export const CreateOffice: ActionTypeV2 = {
       required: false,
     },
     officeNames: {
+      displayName: "Office Names",
       description: "A list of all office names",
       dataType: {
         type: "array",
@@ -145,12 +155,14 @@ export const CreateOfficeAndEmployee: ActionTypeV2 = {
   description: "Create an office and employee",
   parameters: {
     officeId: {
+      displayName: "Office ID",
       dataType: {
         type: "string",
       },
       required: true,
     },
     address: {
+      displayName: "Address",
       description:
         "The office's physical address (not necessarily shipping address)",
       dataType: {
@@ -159,6 +171,7 @@ export const CreateOfficeAndEmployee: ActionTypeV2 = {
       required: false,
     },
     capacity: {
+      displayName: "Capacity",
       description:
         "The maximum seated-at-desk capacity of the office (maximum fire-safe capacity may be higher)",
       dataType: {
@@ -167,6 +180,7 @@ export const CreateOfficeAndEmployee: ActionTypeV2 = {
       required: false,
     },
     officeNames: {
+      displayName: "Office Names",
       description: "A list of all office names",
       dataType: {
         type: "array",
@@ -177,6 +191,7 @@ export const CreateOfficeAndEmployee: ActionTypeV2 = {
       required: false,
     },
     employeeId: {
+      displayName: "Employee ID",
       description: "New employee Id",
       dataType: {
         type: "integer",
@@ -201,6 +216,7 @@ interface MoveOfficeActionDef {
       readonly dataType: {
         readonly type: "string";
       };
+      readonly displayName: string;
       readonly required: true;
     };
     readonly newAddress: {
@@ -209,6 +225,7 @@ interface MoveOfficeActionDef {
       readonly dataType: {
         readonly type: "string";
       };
+      readonly displayName: string;
       readonly required: false;
     };
     readonly newCapacity: {
@@ -217,6 +234,7 @@ interface MoveOfficeActionDef {
       readonly dataType: {
         readonly type: "integer";
       };
+      readonly displayName: string;
       readonly required: false;
     };
     readonly officeNames: {
@@ -227,6 +245,7 @@ interface MoveOfficeActionDef {
           readonly type: "integer";
         };
       };
+      readonly displayName: string;
       readonly required: false;
     };
   };
@@ -247,12 +266,14 @@ export const MoveOffice: MoveOfficeActionDef = {
   displayName: "move-office",
   parameters: {
     officeId: {
+      displayName: "Office ID",
       dataType: {
         type: "string",
       },
       required: true,
     },
     newAddress: {
+      displayName: "New Address",
       description:
         "The office's new physical address (not necessarily shipping address)",
       dataType: {
@@ -261,6 +282,7 @@ export const MoveOffice: MoveOfficeActionDef = {
       required: false,
     },
     newCapacity: {
+      displayName: "New Capacity",
       description:
         "The maximum seated-at-desk capacity of the new office (maximum fire-safe capacity may be higher)",
       dataType: {
@@ -269,6 +291,7 @@ export const MoveOffice: MoveOfficeActionDef = {
       required: false,
     },
     officeNames: {
+      displayName: "Office Names",
       description: "A list of all office names",
       dataType: {
         type: "array",
@@ -292,6 +315,7 @@ export const ActionTakesObjectSet: ActionTypeV2 = {
   description: "An action which takes an Object Set",
   parameters: {
     employees: {
+      displayName: "Employees",
       dataType: {
         type: "objectSet",
         objectTypeApiName: employeeObjectType.apiName,
@@ -313,6 +337,7 @@ export const ActionTakesAttachment: {
       readonly dataType: {
         readonly type: "attachment";
       };
+      readonly displayName: string;
       readonly required: true;
     };
   };
@@ -325,6 +350,7 @@ export const ActionTakesAttachment: {
   description: "An action which takes an attachment",
   parameters: {
     attachment: {
+      displayName: "Attachment",
       dataType: {
         type: "attachment",
       },
@@ -341,6 +367,7 @@ export const ActionTakesMedia: ActionTypeV2 = {
   description: "An action which takes a mediaReference parameter",
   parameters: {
     media_reference: {
+      displayName: "Media Reference",
       dataType: {
         type: "mediaReference",
       },
@@ -357,12 +384,14 @@ export const ActionTypeWithUnsupportedTypes: ActionTypeV2 = {
   description: "An unsupported action type",
   parameters: {
     unsupportedProperty: {
+      displayName: "Unsupported Property",
       dataType: {
         type: "unsupportedType" as "integer",
       },
       required: false,
     },
     unsupportedObject: {
+      displayName: "Unsupported Object",
       dataType: {
         type: "object",
         objectApiName: "unsupported",
@@ -382,6 +411,7 @@ export const ActionTakesInterface: ActionTypeV2 = {
   status: "EXPERIMENTAL",
   parameters: {
     deletedInterface: {
+      displayName: "Deleted Interface",
       dataType: {
         type: "interfaceObject",
         interfaceTypeApiName: FooInterface.apiName,
@@ -404,6 +434,7 @@ export const ActionTakesAnotherInterface: ActionTypeV2 = {
   status: "EXPERIMENTAL",
   parameters: {
     deletedInterface: {
+      displayName: "Deleted Interface",
       dataType: {
         type: "interfaceObject",
         interfaceTypeApiName: BarInterface.apiName,
@@ -426,6 +457,7 @@ export const ActionCreatesInterface: ActionTypeV2 = {
   status: "EXPERIMENTAL",
   parameters: {
     createdInterface: {
+      displayName: "Created Interface",
       dataType: {
         type: "objectType",
       },
@@ -446,12 +478,14 @@ export const ActionTakesStruct: ActionTypeV2 = {
   description: "Create a struct",
   parameters: {
     name: {
+      displayName: "Name",
       dataType: {
         type: "string",
       },
       required: true,
     },
     address: {
+      displayName: "Address",
       dataType: {
         type: "struct",
         fields: [
