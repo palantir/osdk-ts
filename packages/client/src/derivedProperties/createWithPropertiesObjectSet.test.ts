@@ -114,4 +114,103 @@ describe(createWithPropertiesObjectSet, () => {
         }
       `);
   });
+
+  describe("expressions", () => {
+    it("can handle expressions referencing other property keys", () => {
+      const map = new Map<any, DerivedPropertyDefinition>();
+      const deriveObjectSet = createWithPropertiesObjectSet(Employee, {
+        type: "methodInput",
+      }, map);
+
+      const clause: DerivedProperty.Clause<Employee> = {
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("employeeId").plus("employeeId"),
+        // "secondaryDerivedPropertyName": (base) =>
+        //   base.pivotTo("lead").aggregate("employeeId:avg").divide("employeeId", 2),
+      };
+
+      const result = clause["derivedPropertyName"](deriveObjectSet);
+      const definition = map.get(result);
+
+      expect(definition).toMatchInlineSnapshot(`
+        {
+          "properties": [
+            {
+              "objectSet": {
+                "link": "lead",
+                "objectSet": {
+                  "type": "methodInput",
+                },
+                "type": "searchAround",
+              },
+              "operation": {
+                "selectedPropertyApiName": "employeeId",
+                "type": "get",
+              },
+              "type": "selection",
+            },
+            {
+              "apiName": "employeeId",
+              "type": "property",
+            },
+          ],
+          "type": "add",
+        }
+      `);
+    });
+
+    // TODO: Add test for literal
+    it("can handle nested definitions in an expression", () => {
+      const map = new Map<any, DerivedPropertyDefinition>();
+      const deriveObjectSet = createWithPropertiesObjectSet(Employee, {
+        type: "methodInput",
+      }, map);
+
+      const clause: DerivedProperty.Clause<Employee> = {
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("employeeId").plus(
+            base.pivotTo("lead").selectProperty("employeeId"),
+          ),
+      };
+
+      const result = clause["derivedPropertyName"](deriveObjectSet);
+      const definition = map.get(result);
+
+      expect(definition).toMatchInlineSnapshot(`
+        {
+          "properties": [
+            {
+              "objectSet": {
+                "link": "lead",
+                "objectSet": {
+                  "type": "methodInput",
+                },
+                "type": "searchAround",
+              },
+              "operation": {
+                "selectedPropertyApiName": "employeeId",
+                "type": "get",
+              },
+              "type": "selection",
+            },
+            {
+              "objectSet": {
+                "link": "lead",
+                "objectSet": {
+                  "type": "methodInput",
+                },
+                "type": "searchAround",
+              },
+              "operation": {
+                "selectedPropertyApiName": "employeeId",
+                "type": "get",
+              },
+              "type": "selection",
+            },
+          ],
+          "type": "add",
+        }
+      `);
+    });
+  });
 });
