@@ -588,10 +588,10 @@ export class OntologyMetadataResolver {
       case "threeDimensionalAggregation":
       case "timestamp":
       case "twoDimensionalAggregation":
+      case "entrySet":
       case "null":
         return Result.ok({});
       case "unsupported":
-      case "entrySet":
         return Result.err([
           `Unable to load query ${queryApiName} because it takes an unsupported parameter type: ${
             JSON.stringify(
