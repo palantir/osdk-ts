@@ -515,10 +515,10 @@ describe("ObjectSet", () => {
               >
             >;
 
-            selectedInteger.plus(1);
-            selectedInteger.minus(1);
-            selectedInteger.times(1);
-            selectedInteger.divideBy(1);
+            selectedInteger.add(1);
+            selectedInteger.subtract(1);
+            selectedInteger.multiply(1);
+            selectedInteger.divide(1);
             selectedInteger.abs();
             selectedInteger.negate();
             selectedInteger.max(1);
@@ -587,10 +587,10 @@ describe("ObjectSet", () => {
               >
             >;
 
-            selectedInteger.plus(1);
-            selectedInteger.minus(1);
-            selectedInteger.times(1);
-            selectedInteger.divideBy(1);
+            selectedInteger.add(1);
+            selectedInteger.subtract(1);
+            selectedInteger.multiply(1);
+            selectedInteger.divide(1);
             selectedInteger.abs();
             selectedInteger.negate();
             selectedInteger.max(1);
@@ -659,10 +659,10 @@ describe("ObjectSet", () => {
               >
             >;
 
-            maxAggregation.plus(1);
-            maxAggregation.minus(1);
-            maxAggregation.times(1);
-            maxAggregation.divideBy(1);
+            maxAggregation.add(1);
+            maxAggregation.subtract(1);
+            maxAggregation.multiply(1);
+            maxAggregation.divide(1);
             maxAggregation.abs();
             maxAggregation.negate();
             maxAggregation.max(1);
@@ -690,7 +690,7 @@ describe("ObjectSet", () => {
               base.pivotTo("peeps").aggregate("employeeId:min"),
             ).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
-                "double" | undefined,
+                "integer" | undefined,
                 EmployeeApiTest
               >
             >();
@@ -730,7 +730,7 @@ describe("ObjectSet", () => {
         const objectSet = fauxObjectSet.withProperties({
           "myProp1": (base) => {
             const intAndLong = base.pivotTo("lead").selectProperty("employeeId")
-              .plus("yearsOfExperience").plus("employeeId");
+              .add("yearsOfExperience").add("employeeId");
             expectTypeOf(intAndLong).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<"long", EmployeeApiTest>
             >();
@@ -738,7 +738,7 @@ describe("ObjectSet", () => {
             const intAndDouble = base.pivotTo("lead").selectProperty(
               "employeeId",
             )
-              .plus("performanceScore").plus("employeeId");
+              .add("performanceScore").add("employeeId");
             expectTypeOf(intAndDouble).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "double",
@@ -749,7 +749,7 @@ describe("ObjectSet", () => {
             const longAndDouble = base.pivotTo("lead").selectProperty(
               "yearsOfExperience",
             )
-              .plus("performanceScore").plus("yearsOfExperience");
+              .add("performanceScore").add("yearsOfExperience");
             expectTypeOf(longAndDouble).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "double",
@@ -760,13 +760,13 @@ describe("ObjectSet", () => {
             const longAndLong = base.pivotTo("lead").selectProperty(
               "yearsOfExperience",
             )
-              .plus("yearsOfExperience");
+              .add("yearsOfExperience");
             expectTypeOf(longAndLong).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<"long", EmployeeApiTest>
             >();
 
             const intAndInt = base.pivotTo("lead").selectProperty("employeeId")
-              .plus("employeeId");
+              .add("employeeId");
             expectTypeOf(intAndInt).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "integer",
@@ -776,9 +776,9 @@ describe("ObjectSet", () => {
 
             const intLongDoubleChain = base.pivotTo("lead").selectProperty(
               "employeeId",
-            ).plus("yearsOfExperience").plus("employeeId").plus(
+            ).add("yearsOfExperience").add("employeeId").add(
               "performanceScore",
-            ).plus("yearsOfExperience");
+            ).add("yearsOfExperience");
             expectTypeOf(intLongDoubleChain).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "double",
@@ -788,7 +788,7 @@ describe("ObjectSet", () => {
 
             const shortAndIntReturnsInt = base.pivotTo("lead").selectProperty(
               "rank",
-            ).plus("employeeId");
+            ).add("employeeId");
             expectTypeOf(shortAndIntReturnsInt).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "integer",
@@ -799,7 +799,7 @@ describe("ObjectSet", () => {
             const shortAndFloatReturnsDouble = base.pivotTo("lead")
               .selectProperty(
                 "rank",
-              ).plus("hourlyRate");
+              ).add("hourlyRate");
             expectTypeOf(shortAndFloatReturnsDouble).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "double",
@@ -816,7 +816,7 @@ describe("ObjectSet", () => {
         const objectSet = fauxObjectSet.withProperties({
           "myProp1": (base) => {
             const plus = base.pivotTo("lead").selectProperty("employeeId")
-              .plus(1);
+              .add(1);
             expectTypeOf(plus).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "double",
@@ -833,7 +833,7 @@ describe("ObjectSet", () => {
         const objectSet = fauxObjectSet.withProperties({
           "myProp1": (base) => {
             const plus = base.pivotTo("lead").selectProperty("employeeId")
-              .plus(base.constant.double(1));
+              .add(base.constant.double(1));
             expectTypeOf(plus).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "double",
@@ -844,7 +844,7 @@ describe("ObjectSet", () => {
             const intPlusIntReturnsInt = base.pivotTo("lead").selectProperty(
               "employeeId",
             )
-              .plus(base.constant.integer(1));
+              .add(base.constant.integer(1));
             expectTypeOf(intPlusIntReturnsInt).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "integer",
@@ -861,7 +861,7 @@ describe("ObjectSet", () => {
         const objectSet = fauxObjectSet.withProperties({
           "myProp1": (base) => {
             const nested = base.pivotTo("lead").selectProperty("employeeId")
-              .plus(
+              .add(
                 base.pivotTo("peeps").aggregate("employeeId:sum"),
               );
             expectTypeOf(nested).toEqualTypeOf<
@@ -880,7 +880,7 @@ describe("ObjectSet", () => {
         const objectSet = fauxObjectSet.withProperties({
           "myProp1": (base) => {
             const nested = base.pivotTo("lead").selectProperty("employeeId")
-              .plus(
+              .add(
                 "performanceScore",
               );
             expectTypeOf(nested).toEqualTypeOf<

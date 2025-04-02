@@ -94,12 +94,11 @@ type ExtractWirePropertyTypeFromNumericArg<
     ? NonNullable<CompileTimeMetadata<Q>["properties"][ARG]["type"]>
   : never;
 
-/* @internal */
 export type NumericExpressions<
   Q extends ObjectOrInterfaceDefinition,
   LEFT_PROPERTY_TYPE extends SimplePropertyDef,
 > = {
-  readonly plus: <A extends NumericExpressionArg<Q>>(
+  readonly add: <A extends NumericExpressionArg<Q>>(
     value: A,
   ) => ReturnTypeForNumericMethod<
     Q,
@@ -107,7 +106,7 @@ export type NumericExpressions<
     ExtractWirePropertyTypeFromNumericArg<Q, A>
   >;
 
-  readonly minus: <A extends NumericExpressionArg<Q>>(
+  readonly subtract: <A extends NumericExpressionArg<Q>>(
     value: A,
   ) => ReturnTypeForNumericMethod<
     Q,
@@ -115,7 +114,7 @@ export type NumericExpressions<
     ExtractWirePropertyTypeFromNumericArg<Q, A>
   >;
 
-  readonly times: <A extends NumericExpressionArg<Q>>(
+  readonly multiply: <A extends NumericExpressionArg<Q>>(
     value: A,
   ) => ReturnTypeForNumericMethod<
     Q,
@@ -123,7 +122,7 @@ export type NumericExpressions<
     ExtractWirePropertyTypeFromNumericArg<Q, A>
   >;
 
-  readonly divideBy: <A extends NumericExpressionArg<Q>>(
+  readonly divide: <A extends NumericExpressionArg<Q>>(
     value: A,
   ) => ReturnTypeForNumericMethod<
     Q,
@@ -172,7 +171,6 @@ type ExtractPropertyTypeFromDatetimeArg<
     ? NonNullable<CompileTimeMetadata<Q>["properties"][ARG]["type"]>
   : never;
 
-/* @internal */
 export type DatetimeExpressions<
   Q extends ObjectOrInterfaceDefinition,
   LEFT_PROPERTY_TYPE extends SimplePropertyDef,

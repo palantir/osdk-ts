@@ -109,7 +109,7 @@ export function createWithPropertiesObjectSet<
       const selectorResult: DerivedProperty.Definition<any, any> =
         derivedPropertyDefinitionFactory(wrappedObjectSet, definitionMap);
       definitionMap.set(selectorResult, wrappedObjectSet);
-      return selectorResult;
+      return selectorResult as any;
     },
     selectProperty: (name) => {
       const wrappedObjectSet: DerivedPropertyDefinition = {

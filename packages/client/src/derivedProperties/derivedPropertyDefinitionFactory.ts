@@ -54,7 +54,7 @@ export function derivedPropertyDefinitionFactory(
         ],
       }, definitionMap);
     },
-    plus(
+    add(
       value,
     ) {
       return derivedPropertyDefinitionFactory({
@@ -65,7 +65,7 @@ export function derivedPropertyDefinitionFactory(
         ],
       }, definitionMap);
     },
-    minus(
+    subtract(
       value,
     ) {
       return derivedPropertyDefinitionFactory({
@@ -74,7 +74,7 @@ export function derivedPropertyDefinitionFactory(
         "right": getDefinitionFromMap(value, definitionMap),
       }, definitionMap);
     },
-    times(
+    multiply(
       value,
     ) {
       return derivedPropertyDefinitionFactory({
@@ -85,7 +85,7 @@ export function derivedPropertyDefinitionFactory(
         ],
       }, definitionMap);
     },
-    divideBy(
+    divide(
       value,
     ) {
       return derivedPropertyDefinitionFactory({

@@ -124,7 +124,7 @@ describe(createWithPropertiesObjectSet, () => {
 
       const clause: DerivedProperty.Clause<Employee> = {
         "derivedPropertyName": (base) =>
-          base.pivotTo("lead").selectProperty("employeeId").plus("employeeId"),
+          base.pivotTo("lead").selectProperty("employeeId").add("employeeId"),
         // "secondaryDerivedPropertyName": (base) =>
         //   base.pivotTo("lead").aggregate("employeeId:avg").divide("employeeId", 2),
       };
@@ -168,7 +168,7 @@ describe(createWithPropertiesObjectSet, () => {
 
       const clause: DerivedProperty.Clause<Employee> = {
         "derivedPropertyName": (base) =>
-          base.pivotTo("lead").selectProperty("employeeId").plus(
+          base.pivotTo("lead").selectProperty("employeeId").add(
             base.pivotTo("lead").selectProperty("employeeId"),
           ),
       };
