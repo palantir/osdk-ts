@@ -2947,10 +2947,10 @@ describe("Ontology Defining", () => {
     });
 
     it("Property-level datasources are properly defined", () => {
-      const objectDatasourceIgnored = defineObject({
+      const simpleExoticProperty = defineObject({
         titlePropertyApiName: "bar",
-        displayName: "objectDatasourceIgnored",
-        pluralDisplayName: "objectDatasourceIgnored",
+        displayName: "simpleExoticProperty",
+        pluralDisplayName: "simpleExoticProperty",
         apiName: "foo",
         primaryKeys: ["bar"],
         properties: [{
@@ -2958,7 +2958,6 @@ describe("Ontology Defining", () => {
           type: "geotimeSeries",
           displayName: "Bar",
         }],
-        datasource: { type: "dataset" },
       });
 
       const defaultToObjectDatasource = defineObject({

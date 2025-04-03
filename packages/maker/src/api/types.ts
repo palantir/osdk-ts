@@ -173,38 +173,48 @@ export interface SharedPropertyType extends PropertyType {
 }
 
 export type PropertyTypeType =
-  | PropertyTypeTypesWithoutStruct
-  | {
-    type: "struct";
-    structDefinition: {
-      [api_name: string]:
-        | StructPropertyType
-        | Exclude<PropertyTypeTypesWithoutStruct, MarkingPropertyType>;
-    };
-  };
+  | PropertyTypeTypePrimitive
+  | PropertyTypeTypeExotic;
 
-export type PropertyTypeTypesWithoutStruct =
+export type PropertyTypeTypePrimitive =
   | "boolean"
   | "byte"
   | "date"
   | "decimal"
   | "double"
   | "float"
-  | "geopoint"
-  | "geoshape"
   | "integer"
   | "long"
-  | MarkingPropertyType
   | "short"
   | "string"
-  | "timestamp"
+  | "timestamp";
+
+export type PropertyTypeTypeExotic =
+  | "geopoint"
+  | "geoshape"
   | "mediaReference"
-  | "geotimeSeries";
+  | "geotimeSeries"
+  | MarkingPropertyType
+  | PropertyTypeTypeStruct;
 
 type MarkingPropertyType = {
   type: "marking";
   markingType: "MANDATORY" | "CBAC";
 };
+
+type PropertyTypeTypeStruct = {
+  type: "struct";
+  structDefinition: {
+    [api_name: string]:
+      | StructPropertyType
+      | Exclude<PropertyTypeTypesWithoutStruct, MarkingPropertyType>;
+  };
+};
+
+export type PropertyTypeTypesWithoutStruct = Exclude<
+  PropertyTypeType,
+  PropertyTypeTypeStruct
+>;
 
 type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 

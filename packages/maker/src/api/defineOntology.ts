@@ -49,6 +49,7 @@ import type {
   OntologyIrValueTypeBlockDataEntry,
   RetentionPolicy,
 } from "@osdk/client.unstable";
+import { isExotic } from "./defineObject.js";
 import type {
   InterfaceType,
   LinkTypeDefinition,
@@ -183,16 +184,13 @@ function convertObject(
     (objectType.properties ?? [])
       .flatMap(prop => extractPropertyDatasource(prop, objectType.apiName));
 
-  const objectDatasource =
-    propertyDatasources.length < (objectType.properties ?? []).length
-      ? [buildDatasource(
-        objectType.apiName,
-        convertDatasourceDefinition(
-          objectType,
-          objectType.properties!.filter(p => !isExotic(p)),
-        ),
-      )]
-      : [];
+  const objectDatasource = buildDatasource(
+    objectType.apiName,
+    convertDatasourceDefinition(
+      objectType,
+      objectType.properties ?? [],
+    ),
+  );
 
   const implementations = objectType.implementsInterfaces ?? [];
 
@@ -234,7 +232,7 @@ function convertObject(
       })),
       allImplementsInterfaces: {},
     },
-    datasources: [...propertyDatasources, ...objectDatasource],
+    datasources: [...propertyDatasources, objectDatasource],
     entityMetadata: { arePatchesEnabled: objectType.editsEnabled ?? false },
   };
 }
@@ -243,7 +241,7 @@ function extractPropertyDatasource(
   property: ObjectPropertyType,
   objectTypeApiName: string,
 ): OntologyIrObjectTypeDatasource[] {
-  if (!isExotic(property)) {
+  if (!isExotic(property.type)) {
     return [];
   }
   const identifier = objectTypeApiName + "." + property.apiName;
@@ -325,12 +323,6 @@ function convertDatasourceDefinition(
         },
       };
   }
-}
-
-function isExotic(property: ObjectPropertyType): boolean {
-  return ["geotimeSeries", "mediaReference"].includes(
-    property.type as string,
-  );
 }
 
 function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {
