@@ -2947,25 +2947,12 @@ describe("Ontology Defining", () => {
     });
 
     it("Property-level datasources are properly defined", () => {
-      const simpleExoticProperty = defineObject({
+      const exampleObject = defineObject({
         titlePropertyApiName: "bar",
-        displayName: "simpleExoticProperty",
-        pluralDisplayName: "simpleExoticProperty",
-        apiName: "foo",
-        primaryKeys: ["bar"],
-        properties: [{
-          apiName: "bar",
-          type: "geotimeSeries",
-          displayName: "Bar",
-        }],
-      });
-
-      const defaultToObjectDatasource = defineObject({
-        titlePropertyApiName: "fizz",
-        displayName: "defaultToObjectDatasource",
-        pluralDisplayName: "defaultToObjectDatasource",
+        displayName: "exampleObject",
+        pluralDisplayName: "exampleObject",
         apiName: "fizz",
-        primaryKeys: ["fizz"],
+        primaryKeys: ["bar"],
         properties: [{
           apiName: "fizz",
           type: "mediaReference",
@@ -2979,234 +2966,156 @@ describe("Ontology Defining", () => {
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
-      {
-        "blockData": {
-          "blockPermissionInformation": {
-            "actionTypes": {},
+        {
+          "blockData": {
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
             "linkTypes": {},
-            "objectTypes": {},
-          },
-          "interfaceTypes": {},
-          "linkTypes": {},
-          "objectTypes": {
-            "com.palantir.fizz": {
-              "datasources": [
-                {
-                  "datasource": {
-                    "mediaSetView": {
-                      "assumedMarkings": [],
-                      "mediaSetViewLocator": "com.palantir.fizz.fizz",
-                      "properties": [
-                        "fizz",
-                      ],
-                    },
-                    "type": "mediaSetView",
-                  },
-                  "editsConfiguration": {
-                    "onlyAllowPrivilegedEdits": false,
-                  },
-                  "redacted": false,
-                  "rid": "ri.ontology.main.datasource.fizz",
-                },
-                {
-                  "datasource": {
-                    "streamV2": {
-                      "propertyMapping": {
-                        "bar": "bar",
+            "objectTypes": {
+              "com.palantir.fizz": {
+                "datasources": [
+                  {
+                    "datasource": {
+                      "mediaSetView": {
+                        "assumedMarkings": [],
+                        "mediaSetViewLocator": "com.palantir.fizz.fizz",
+                        "properties": [
+                          "fizz",
+                        ],
                       },
-                      "propertySecurityGroups": undefined,
-                      "retentionPolicy": {
-                        "none": {},
-                        "type": "none",
+                      "type": "mediaSetView",
+                    },
+                    "editsConfiguration": {
+                      "onlyAllowPrivilegedEdits": false,
+                    },
+                    "redacted": false,
+                    "rid": "ri.ontology.main.datasource.fizz",
+                  },
+                  {
+                    "datasource": {
+                      "streamV2": {
+                        "propertyMapping": {
+                          "bar": "bar",
+                          "fizz": "fizz",
+                        },
+                        "propertySecurityGroups": undefined,
+                        "retentionPolicy": {
+                          "none": {},
+                          "type": "none",
+                        },
+                        "streamLocator": "com.palantir.fizz",
                       },
-                      "streamLocator": "com.palantir.fizz",
+                      "type": "streamV2",
                     },
-                    "type": "streamV2",
-                  },
-                  "editsConfiguration": {
-                    "onlyAllowPrivilegedEdits": false,
-                  },
-                  "redacted": false,
-                  "rid": "ri.ontology.main.datasource.com.palantir.fizz",
-                },
-              ],
-              "entityMetadata": {
-                "arePatchesEnabled": false,
-              },
-              "objectType": {
-                "allImplementsInterfaces": {},
-                "apiName": "com.palantir.fizz",
-                "displayMetadata": {
-                  "description": undefined,
-                  "displayName": "defaultToObjectDatasource",
-                  "groupDisplayName": undefined,
-                  "icon": {
-                    "blueprint": {
-                      "color": "#2D72D2",
-                      "locator": "cube",
+                    "editsConfiguration": {
+                      "onlyAllowPrivilegedEdits": false,
                     },
-                    "type": "blueprint",
+                    "redacted": false,
+                    "rid": "ri.ontology.main.datasource.com.palantir.fizz",
                   },
-                  "pluralDisplayName": "defaultToObjectDatasource",
-                  "visibility": "NORMAL",
-                },
-                "implementsInterfaces2": [],
-                "primaryKeys": [
-                  "fizz",
                 ],
-                "propertyTypes": {
-                  "bar": {
-                    "apiName": "bar",
-                    "baseFormatter": undefined,
-                    "dataConstraints": undefined,
-                    "displayMetadata": {
-                      "description": undefined,
-                      "displayName": "Bar",
-                      "visibility": "NORMAL",
-                    },
-                    "indexedForSearch": true,
-                    "inlineAction": undefined,
-                    "ruleSetBinding": undefined,
-                    "sharedPropertyTypeApiName": undefined,
-                    "sharedPropertyTypeRid": undefined,
-                    "status": {
-                      "active": {},
-                      "type": "active",
-                    },
-                    "type": {
-                      "string": {
-                        "analyzerOverride": undefined,
-                        "enableAsciiFolding": undefined,
-                        "isLongText": false,
-                        "supportsEfficientLeadingWildcard": false,
-                        "supportsExactMatching": true,
+                "entityMetadata": {
+                  "arePatchesEnabled": false,
+                },
+                "objectType": {
+                  "allImplementsInterfaces": {},
+                  "apiName": "com.palantir.fizz",
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "exampleObject",
+                    "groupDisplayName": undefined,
+                    "icon": {
+                      "blueprint": {
+                        "color": "#2D72D2",
+                        "locator": "cube",
                       },
-                      "type": "string",
+                      "type": "blueprint",
                     },
-                    "typeClasses": [],
-                    "valueType": undefined,
+                    "pluralDisplayName": "exampleObject",
+                    "visibility": "NORMAL",
                   },
-                  "fizz": {
-                    "apiName": "fizz",
-                    "baseFormatter": undefined,
-                    "dataConstraints": undefined,
-                    "displayMetadata": {
-                      "description": undefined,
-                      "displayName": "Fizz",
-                      "visibility": "NORMAL",
+                  "implementsInterfaces2": [],
+                  "primaryKeys": [
+                    "bar",
+                  ],
+                  "propertyTypes": {
+                    "bar": {
+                      "apiName": "bar",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Bar",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [],
+                      "valueType": undefined,
                     },
-                    "indexedForSearch": true,
-                    "inlineAction": undefined,
-                    "ruleSetBinding": undefined,
-                    "sharedPropertyTypeApiName": undefined,
-                    "sharedPropertyTypeRid": undefined,
-                    "status": {
-                      "active": {},
-                      "type": "active",
+                    "fizz": {
+                      "apiName": "fizz",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Fizz",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "mediaReference": {},
+                        "type": "mediaReference",
+                      },
+                      "typeClasses": [],
+                      "valueType": undefined,
                     },
-                    "type": {
-                      "mediaReference": {},
-                      "type": "mediaReference",
-                    },
-                    "typeClasses": [],
-                    "valueType": undefined,
                   },
+                  "redacted": false,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                  "titlePropertyTypeRid": "bar",
                 },
-                "redacted": false,
-                "status": {
-                  "active": {},
-                  "type": "active",
-                },
-                "titlePropertyTypeRid": "fizz",
               },
             },
-            "com.palantir.foo": {
-              "datasources": [
-                {
-                  "datasource": {
-                    "geotimeSeries": {
-                      "geotimeSeriesIntegrationRid": "com.palantir.foo.bar",
-                      "properties": [
-                        "bar",
-                      ],
-                    },
-                    "type": "geotimeSeries",
-                  },
-                  "editsConfiguration": {
-                    "onlyAllowPrivilegedEdits": false,
-                  },
-                  "redacted": false,
-                  "rid": "ri.ontology.main.datasource.bar",
-                },
-              ],
-              "entityMetadata": {
-                "arePatchesEnabled": false,
-              },
-              "objectType": {
-                "allImplementsInterfaces": {},
-                "apiName": "com.palantir.foo",
-                "displayMetadata": {
-                  "description": undefined,
-                  "displayName": "objectDatasourceIgnored",
-                  "groupDisplayName": undefined,
-                  "icon": {
-                    "blueprint": {
-                      "color": "#2D72D2",
-                      "locator": "cube",
-                    },
-                    "type": "blueprint",
-                  },
-                  "pluralDisplayName": "objectDatasourceIgnored",
-                  "visibility": "NORMAL",
-                },
-                "implementsInterfaces2": [],
-                "primaryKeys": [
-                  "bar",
-                ],
-                "propertyTypes": {
-                  "bar": {
-                    "apiName": "bar",
-                    "baseFormatter": undefined,
-                    "dataConstraints": undefined,
-                    "displayMetadata": {
-                      "description": undefined,
-                      "displayName": "Bar",
-                      "visibility": "NORMAL",
-                    },
-                    "indexedForSearch": true,
-                    "inlineAction": undefined,
-                    "ruleSetBinding": undefined,
-                    "sharedPropertyTypeApiName": undefined,
-                    "sharedPropertyTypeRid": undefined,
-                    "status": {
-                      "active": {},
-                      "type": "active",
-                    },
-                    "type": {
-                      "geotimeSeriesReference": {},
-                      "type": "geotimeSeriesReference",
-                    },
-                    "typeClasses": [],
-                    "valueType": undefined,
-                  },
-                },
-                "redacted": false,
-                "status": {
-                  "active": {},
-                  "type": "active",
-                },
-                "titlePropertyTypeRid": "bar",
-              },
-            },
+            "sharedPropertyTypes": {},
           },
-          "sharedPropertyTypes": {},
-        },
-        "importedTypes": {
-          "sharedPropertyTypes": [],
-        },
-      }
-
- `);
+          "importedTypes": {
+            "sharedPropertyTypes": [],
+          },
+        }
+      `);
     });
   });
 });
