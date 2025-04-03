@@ -59,8 +59,8 @@ export function parseTimeSeriesRangeV2(
 ): TimeRange {
   return {
     type: "absolute",
-    startTime: range.startTime,
-    endTime: range.endTime,
+    startTime: range.$startTime,
+    endTime: range.$endTime,
   };
 }
 
@@ -75,7 +75,7 @@ export function parseTimeSeriesQuery(query: TimeSeriesQueryWrapper): {
 
   if (isTimeSeriesQueryV2(query)) {
     return {
-      range: query.range ? parseTimeSeriesRangeV2(query.range) : undefined,
+      range: query.$range ? parseTimeSeriesRangeV2(query.$range) : undefined,
     };
   }
 

@@ -47,14 +47,14 @@ export type TimeSeriesQuery =
   };
 
 export type TimeSeriesQueryV2 = {
-  range: TimeSeriesRange;
+  $range: TimeSeriesRange;
 };
 
 export type TimeSeriesQueryWrapper = TimeSeriesQuery | TimeSeriesQueryV2;
 
 export type TimeSeriesRange = {
-  startTime?: string;
-  endTime?: string;
+  $startTime?: string;
+  $endTime?: string;
 };
 
 export type TimeseriesDurationUnits =
