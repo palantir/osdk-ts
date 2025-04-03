@@ -194,10 +194,10 @@ export type PropertyTypeTypeExotic =
   | "geoshape"
   | "mediaReference"
   | "geotimeSeries"
-  | MarkingPropertyType
+  | PropertyTypeTypeMarking
   | PropertyTypeTypeStruct;
 
-type MarkingPropertyType = {
+type PropertyTypeTypeMarking = {
   type: "marking";
   markingType: "MANDATORY" | "CBAC";
 };
@@ -207,7 +207,7 @@ type PropertyTypeTypeStruct = {
   structDefinition: {
     [api_name: string]:
       | StructPropertyType
-      | Exclude<PropertyTypeTypesWithoutStruct, MarkingPropertyType>;
+      | Exclude<PropertyTypeTypesWithoutStruct, PropertyTypeTypeMarking>;
   };
 };
 
