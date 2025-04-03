@@ -198,7 +198,8 @@ export type PropertyTypeTypesWithoutStruct =
   | "short"
   | "string"
   | "timestamp"
-  | "mediaReference";
+  | "mediaReference"
+  | "geotimeSeries";
 
 type MarkingPropertyType = {
   type: "marking";
