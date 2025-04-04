@@ -102,6 +102,10 @@ export async function cli(args: string[] = process.argv): Promise<void> {
             type: "string",
             describe: "Application resource identifier (rid)",
           })
+          .option("ontology", {
+            type: "string",
+            describe: "Ontology resource identifier (rid)",
+          })
           .option("clientId", {
             type: "string",
             describe: "OAuth client ID for application",
@@ -124,10 +128,6 @@ export async function cli(args: string[] = process.argv): Promise<void> {
             array: true,
             describe:
               "List of client-side scopes to be used when creating a client",
-          })
-          .option("ontologyRid", {
-            type: "string",
-            describe: "RID of the Ontology your application is using",
           }),
     );
 
@@ -142,12 +142,12 @@ export async function cli(args: string[] = process.argv): Promise<void> {
   const foundryUrl: string = await promptFoundryUrl(parsed);
   const applicationUrl: string | undefined = await promptApplicationUrl(parsed);
   const application: string = await promptApplicationRid(parsed);
+  const ontology: string = await promptOntologyRid(parsed);
   const clientId: string = await promptClientId(parsed);
   const osdkPackage: string = await promptOsdkPackage(parsed);
   const osdkRegistryUrl: string = await promptOsdkRegistryUrl(parsed);
   const corsProxy: boolean = await promptCorsProxy(parsed);
   const scopes: string[] | undefined = await promptScopes(parsed);
-  const ontologyRid: string = await promptOntologyRid(parsed);
 
   await run({
     project,
@@ -162,6 +162,6 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     osdkRegistryUrl,
     corsProxy,
     scopes,
-    ontologyRid,
+    ontology,
   });
 }

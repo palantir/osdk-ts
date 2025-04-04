@@ -85,13 +85,13 @@ async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
       foundryUrl: "https://fake.palantirfoundry.com",
       applicationUrl: "https://example.com",
       application: "ri.third-party-applications.main.application.fake",
+      ontology: "ri.ontology.main.ontology.fake",
       clientId: "123",
       osdkPackage,
       osdkRegistryUrl:
         "https://fake.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
       corsProxy: false,
       scopes: ["api:ontologies-read", "api:ontologies-write"],
-      ontologyRid: "ri.ontologies.main.ontology.fake",
     });
 
     await mutateFiles(tmpDir, exampleId, template, sdkVersion);

@@ -19,13 +19,13 @@ export function generateEnvDevelopment({
   foundryUrl,
   clientId,
   corsProxy,
-  ontologyRid,
+  ontology,
 }: {
   envPrefix: string;
   foundryUrl: string;
   clientId: string;
   corsProxy: boolean;
-  ontologyRid: string;
+  ontology: string;
 }): string {
   const foundryApiUrl = corsProxy ? "http://localhost:8080" : foundryUrl;
   const applicationUrl = "http://localhost:8080";
@@ -61,7 +61,7 @@ ${envPrefix}FOUNDRY_CLIENT_ID=${clientId}
 # You can check the Ontology on the "Data Resources" page of Developer Console. 
 # It typically does not need to be changed.
 
-${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontologyRid}
+${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontology}
 `;
 }
 
@@ -70,13 +70,13 @@ export function generateEnvProduction({
   foundryUrl,
   applicationUrl,
   clientId,
-  ontologyRid,
+  ontology,
 }: {
   envPrefix: string;
   foundryUrl: string;
   applicationUrl: string | undefined;
   clientId: string;
-  ontologyRid: string;
+  ontology: string;
 }): string {
   const applicationUrlOrDefault = applicationUrl
     ?? "<Fill in the domain at which you deploy your application>";
@@ -116,6 +116,6 @@ ${envPrefix}FOUNDRY_CLIENT_ID=${clientId}
 # You can check the Ontology on the "Data Resources" page of Developer Console. 
 # It typically does not need to be changed.
 
-${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontologyRid}
+${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontology}
 `;
 }
