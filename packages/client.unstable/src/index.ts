@@ -56,6 +56,8 @@ export type {
 } from "./generated/ontology-metadata/api/__components.js";
 export type { InterfaceTypeRid } from "./generated/ontology-metadata/api/__components.js";
 
+export type { TypeGroup } from "./generated/ontology-metadata/api/TypeGroup.js";
+
 export type {
   ApiNameValueTypeReference,
   ImportedSharedPropertyTypes,

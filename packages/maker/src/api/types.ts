@@ -33,6 +33,7 @@ import type {
   OntologyIrPropertyType,
   SharedPropertyTypeGothamMapping,
   StructFieldType,
+  TypeGroup,
   ValueTypeApiName,
   ValueTypeDataConstraint,
   ValueTypeDisplayMetadata,
@@ -56,7 +57,11 @@ export interface Ontology extends
   valueTypes: Record<string, ValueTypeDefinitionVersion[]>;
   linkTypes: Record<string, LinkTypeDefinition>;
   importedTypes: ImportedTypes;
+  typeGroups: Record<string, TypeGroup>;
 }
+
+export type { TypeGroup };
+
 export type {
   InterfaceTypeStatus,
   InterfaceTypeStatus_active,
