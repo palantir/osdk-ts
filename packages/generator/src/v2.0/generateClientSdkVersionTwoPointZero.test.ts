@@ -347,6 +347,7 @@ const referencingOntology = {
       "apiName": "setTaskBody",
       "parameters": {
         "task": {
+          "displayName": "taskBody",
           "dataType": {
             "type": "object",
             "objectApiName": "com.example.dep.Task",
@@ -355,6 +356,7 @@ const referencingOntology = {
           "required": true,
         },
         "body": {
+          "displayName": "body",
           "dataType": {
             "type": "string",
           },

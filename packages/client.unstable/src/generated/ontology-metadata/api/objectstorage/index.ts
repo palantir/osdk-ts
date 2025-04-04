@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-export type { DatasetSecurityProvenanceInformation } from "./DatasetSecurityProvenanceInformation.js";
-export type { GetSecurityProvenanceRequest } from "./GetSecurityProvenanceRequest.js";
-export type { GetSecurityProvenanceRequestOld } from "./GetSecurityProvenanceRequestOld.js";
-export type { GetSecurityProvenanceResponse } from "./GetSecurityProvenanceResponse.js";
-export type { LinkTypeSecurityProvenanceInformation } from "./LinkTypeSecurityProvenanceInformation.js";
-export type { LinkTypeSecurityProvenanceLoadResponse } from "./LinkTypeSecurityProvenanceLoadResponse.js";
-export type { ObjectStorageService } from "./ObjectStorageService.js";
-export type { ObjectTypeProvenanceProperties } from "./ObjectTypeProvenanceProperties.js";
-export type { ObjectTypeSecurityProvenanceInformation } from "./ObjectTypeSecurityProvenanceInformation.js";
-export type { ObjectTypeSecurityProvenanceLoadResponse } from "./ObjectTypeSecurityProvenanceLoadResponse.js";
-export type { Operation } from "./Operation.js";
-export type { ProvenanceRid } from "./ProvenanceRid.js";
-export type { RestrictedViewSecurityProvenanceInformation } from "./RestrictedViewSecurityProvenanceInformation.js";
-export type { StreamSecurityProvenanceInformation } from "./StreamSecurityProvenanceInformation.js";
-export type { TimeSeriesSecurityProvenanceInformation } from "./TimeSeriesSecurityProvenanceInformation.js";
+export type {
+  DatasetSecurityProvenanceInformation,
+  GetSecurityProvenanceRequest,
+  GetSecurityProvenanceRequestOld,
+  GetSecurityProvenanceResponse,
+  LinkTypeSecurityProvenanceInformation,
+  LinkTypeSecurityProvenanceLoadResponse,
+  ObjectStorageService,
+  ObjectTypeProvenanceProperties,
+  ObjectTypeSecurityProvenanceInformation,
+  ObjectTypeSecurityProvenanceLoadResponse,
+  Operation,
+  ProvenanceRid,
+  RestrictedViewSecurityProvenanceInformation,
+  StreamSecurityProvenanceInformation,
+  TimeSeriesSecurityProvenanceInformation,
+} from "./__components.js";

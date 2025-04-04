@@ -15,8 +15,9 @@
  */
 
 export * from "./actions.js";
-export * from "./actionsTypes.js";
+export * from "./actionTypes.js";
 export * from "./defaultOntologyForConjure.js";
+export * from "./interfaceTypes.js";
 export * from "./linkTypes.js";
 export * from "./objects.js";
 export * from "./objectTypesWithLinkTypes.js";

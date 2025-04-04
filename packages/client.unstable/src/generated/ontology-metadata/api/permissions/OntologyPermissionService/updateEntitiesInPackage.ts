@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,13 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyPackageRid } from "../../OntologyPackageRid.js";
-import type { UpdateEntitiesInPackageRequest } from "../UpdateEntitiesInPackageRequest.js";
-import type { UpdateEntitiesInPackageResponse } from "../UpdateEntitiesInPackageResponse.js";
+import type { OntologyPackageRid as _api_OntologyPackageRid } from "../../__components.js";
+import type {
+  UpdateEntitiesInPackageRequest
+    as _api_permissions_UpdateEntitiesInPackageRequest,
+  UpdateEntitiesInPackageResponse
+    as _api_permissions_UpdateEntitiesInPackageResponse,
+} from "../__components.js";
 
 /**
  * Adds or removes entities to/from the specified package.
@@ -33,9 +37,9 @@ import type { UpdateEntitiesInPackageResponse } from "../UpdateEntitiesInPackage
  */
 export async function updateEntitiesInPackage(
   ctx: ConjureContext,
-  packageRid: OntologyPackageRid,
-  request: UpdateEntitiesInPackageRequest,
-): Promise<UpdateEntitiesInPackageResponse> {
+  packageRid: _api_OntologyPackageRid,
+  request: _api_permissions_UpdateEntitiesInPackageRequest,
+): Promise<_api_permissions_UpdateEntitiesInPackageResponse> {
   return conjureFetch(
     ctx,
     `/permissions/packages/${packageRid}`,

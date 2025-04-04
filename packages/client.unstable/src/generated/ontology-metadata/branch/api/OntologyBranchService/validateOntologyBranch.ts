@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyBranchRid } from "../../../api/OntologyBranchRid.js";
-import type { ValidateOntologyBranchRequest } from "../ValidateOntologyBranchRequest.js";
-import type { ValidateOntologyBranchResponse } from "../ValidateOntologyBranchResponse.js";
+import type { OntologyBranchRid as _api_OntologyBranchRid } from "../../../api/__components.js";
+import type {
+  ValidateOntologyBranchRequest as _branch_api_ValidateOntologyBranchRequest,
+  ValidateOntologyBranchResponse as _branch_api_ValidateOntologyBranchResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to validate a branch to determine if it is mergeable with the default branch. The main purpose
@@ -27,9 +29,9 @@ import type { ValidateOntologyBranchResponse } from "../ValidateOntologyBranchRe
  */
 export async function validateOntologyBranch(
   ctx: ConjureContext,
-  ontologyBranchRid: OntologyBranchRid,
-  request: ValidateOntologyBranchRequest,
-): Promise<ValidateOntologyBranchResponse> {
+  ontologyBranchRid: _api_OntologyBranchRid,
+  request: _branch_api_ValidateOntologyBranchRequest,
+): Promise<_branch_api_ValidateOntologyBranchResponse> {
   return conjureFetch(
     ctx,
     `/ontology/branch/${ontologyBranchRid}/validate`,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,16 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { InterfaceTypeRid } from "../../InterfaceTypeRid.js";
-import type { GetInterfaceTypePermissionsResponse } from "../GetInterfaceTypePermissionsResponse.js";
+import type { InterfaceTypeRid as _api_InterfaceTypeRid } from "../../__components.js";
+import type { GetInterfaceTypePermissionsResponse as _api_permissions_GetInterfaceTypePermissionsResponse } from "../__components.js";
 
 /**
  * Returns which permissions the user has on the InterfaceType.
  */
 export async function getInterfaceTypePermissions(
   ctx: ConjureContext,
-  interfaceTypeRid: InterfaceTypeRid,
-): Promise<GetInterfaceTypePermissionsResponse> {
+  interfaceTypeRid: _api_InterfaceTypeRid,
+): Promise<_api_permissions_GetInterfaceTypePermissionsResponse> {
   return conjureFetch(
     ctx,
     `/permissions/interfaceType/${interfaceTypeRid}`,

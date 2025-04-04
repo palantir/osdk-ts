@@ -16,23 +16,25 @@
 
 export * as OntologyAccessRequestService from "./OntologyAccessRequestService.js";
 
-export type { AccessRequest } from "./AccessRequest.js";
-export type { AccessRequestEntityRid } from "./AccessRequestEntityRid.js";
-export type { AccessSubRequest } from "./AccessSubRequest.js";
-export type { AccessSubRequestDetails } from "./AccessSubRequestDetails.js";
-export type { AccessSubRequestMetadata } from "./AccessSubRequestMetadata.js";
-export type { AccessSubRequestModification } from "./AccessSubRequestModification.js";
-export type { AccessSubRequestUpdate } from "./AccessSubRequestUpdate.js";
-export type { AddAccessSubRequest } from "./AddAccessSubRequest.js";
-export type { BulkGetAccessRequestForOntologyEntityRequest } from "./BulkGetAccessRequestForOntologyEntityRequest.js";
-export type { BulkGetAccessRequestsForOntologyEntityResponse } from "./BulkGetAccessRequestsForOntologyEntityResponse.js";
-export type { CreateAccessRequestRequest } from "./CreateAccessRequestRequest.js";
-export type { CreateAccessRequestResponse } from "./CreateAccessRequestResponse.js";
-export type { EditAccessSubRequest } from "./EditAccessSubRequest.js";
-export type { InternalRealmGroupAdditionSubRequest } from "./InternalRealmGroupAdditionSubRequest.js";
-export type { LoadAccessRequestDetailsRequest } from "./LoadAccessRequestDetailsRequest.js";
-export type { LoadAccessRequestDetailsResponse } from "./LoadAccessRequestDetailsResponse.js";
-export type { OntologyEntityRoleGrantSubRequest } from "./OntologyEntityRoleGrantSubRequest.js";
-export type { RemoveAccessSubRequest } from "./RemoveAccessSubRequest.js";
-export type { UpdateAccessRequestRequest } from "./UpdateAccessRequestRequest.js";
-export type { UpdateAccessRequestResponse } from "./UpdateAccessRequestResponse.js";
+export type {
+  AccessRequest,
+  AccessRequestEntityRid,
+  AccessSubRequest,
+  AccessSubRequestDetails,
+  AccessSubRequestMetadata,
+  AccessSubRequestModification,
+  AccessSubRequestUpdate,
+  AddAccessSubRequest,
+  BulkGetAccessRequestForOntologyEntityRequest,
+  BulkGetAccessRequestsForOntologyEntityResponse,
+  CreateAccessRequestRequest,
+  CreateAccessRequestResponse,
+  EditAccessSubRequest,
+  InternalRealmGroupAdditionSubRequest,
+  LoadAccessRequestDetailsRequest,
+  LoadAccessRequestDetailsResponse,
+  OntologyEntityRoleGrantSubRequest,
+  RemoveAccessSubRequest,
+  UpdateAccessRequestRequest,
+  UpdateAccessRequestResponse,
+} from "./__components.js";

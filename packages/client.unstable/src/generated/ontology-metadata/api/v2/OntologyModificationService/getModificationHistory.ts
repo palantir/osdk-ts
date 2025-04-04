@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,13 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetModificationHistoryRequest } from "../../modification/GetModificationHistoryRequest.js";
-import type { GetModificationHistoryResponse } from "../../modification/GetModificationHistoryResponse.js";
-import type { OntologyRid } from "../../OntologyRid.js";
+import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
+import type {
+  GetModificationHistoryRequest
+    as _api_modification_GetModificationHistoryRequest,
+  GetModificationHistoryResponse
+    as _api_modification_GetModificationHistoryResponse,
+} from "../../modification/__components.js";
 
 /**
  * Returns pages of metadata about the history of modifications to the provided Ontology, including the
@@ -26,9 +30,9 @@ import type { OntologyRid } from "../../OntologyRid.js";
  */
 export async function getModificationHistory(
   ctx: ConjureContext,
-  ontologyRid: OntologyRid,
-  request: GetModificationHistoryRequest,
-): Promise<GetModificationHistoryResponse> {
+  ontologyRid: _api_OntologyRid,
+  request: _api_modification_GetModificationHistoryRequest,
+): Promise<_api_modification_GetModificationHistoryResponse> {
   return conjureFetch(
     ctx,
     `/ontology/v2/${ontologyRid}/modification/history`,

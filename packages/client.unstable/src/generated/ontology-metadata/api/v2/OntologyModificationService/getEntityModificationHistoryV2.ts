@@ -15,8 +15,12 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetEntityModificationHistoryRequest } from "../../modification/GetEntityModificationHistoryRequest.js";
-import type { GetEntityModificationHistoryResponse } from "../../modification/GetEntityModificationHistoryResponse.js";
+import type {
+  GetEntityModificationHistoryRequest
+    as _api_modification_GetEntityModificationHistoryRequest,
+  GetEntityModificationHistoryResponse
+    as _api_modification_GetEntityModificationHistoryResponse,
+} from "../../modification/__components.js";
 
 /**
  * Returns pages of metadata about the history of modifications to the provided entity, including the
@@ -26,8 +30,8 @@ import type { GetEntityModificationHistoryResponse } from "../../modification/Ge
  */
 export async function getEntityModificationHistoryV2(
   ctx: ConjureContext,
-  request: GetEntityModificationHistoryRequest,
-): Promise<GetEntityModificationHistoryResponse> {
+  request: _api_modification_GetEntityModificationHistoryRequest,
+): Promise<_api_modification_GetEntityModificationHistoryResponse> {
   return conjureFetch(
     ctx,
     `/ontology/v2/modification/history/entity`,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { ActionTypeSearchRequest } from "../search/ActionTypeSearchRequest.js";
-import type { ActionTypeSearchResponse } from "../search/ActionTypeSearchResponse.js";
+import type {
+  ActionTypeSearchRequest as _api_search_ActionTypeSearchRequest,
+  ActionTypeSearchResponse as _api_search_ActionTypeSearchResponse,
+} from "../search/__components.js";
 
 /**
  * Endpoint to search ActionTypes based on various filters. Endpoint allows to return results based on relevance
@@ -28,8 +30,8 @@ import type { ActionTypeSearchResponse } from "../search/ActionTypeSearchRespons
  */
 export async function searchActionTypes(
   ctx: ConjureContext,
-  request: ActionTypeSearchRequest,
-): Promise<ActionTypeSearchResponse> {
+  request: _api_search_ActionTypeSearchRequest,
+): Promise<_api_search_ActionTypeSearchResponse> {
   return conjureFetch(
     ctx,
     `/ontology/search/v0/searchActionTypes`,

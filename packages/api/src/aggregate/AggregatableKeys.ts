@@ -15,8 +15,11 @@
  */
 
 import type {
+  BaseWithPropAggregations,
+  DatetimeWithPropAggregateOption,
+  DistinctWithPropAggregateOption,
   NumericWithPropAggregateOption,
-  StringWithPropAggregateOption,
+  ValidCollectPropertyKeysForSpecialTypes,
 } from "../derivedProperties/WithPropertiesAggregationOptions.js";
 import type {
   GetWirePropertyValueFromClient,
@@ -26,22 +29,41 @@ import type {
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
+import type { WirePropertyTypes } from "../ontology/WirePropertyTypes.js";
 
-export type StringAggregateOption = "approximateDistinct" | "exactDistinct";
+export type BaseAggregateOptions = "approximateDistinct" | "exactDistinct";
+
+export type MinMaxAggregateOption = "min" | "max";
+
+export type DatetimeAggregateOption =
+  | MinMaxAggregateOption
+  | BaseAggregateOptions;
+
 export type NumericAggregateOption =
-  | "min"
-  | "max"
   | "sum"
   | "avg"
   | "approximateDistinct"
-  | "exactDistinct";
+  | "exactDistinct"
+  | MinMaxAggregateOption;
 
-type AGG_FOR_TYPE<T, U extends boolean> = number extends T
-  ? U extends true ? NumericAggregateOption : NumericWithPropAggregateOption
-  : string extends T
-    ? U extends true ? StringAggregateOption : StringWithPropAggregateOption
-  : boolean extends T ? U extends true ? never : StringWithPropAggregateOption
-  : never;
+type AGG_FOR_TYPE<WIRE_TYPE extends WirePropertyTypes> = number extends
+  GetWirePropertyValueFromClient<WIRE_TYPE> ? NumericAggregateOption
+  : WIRE_TYPE extends "datetime" | "timestamp" ? DatetimeAggregateOption
+  : BaseAggregateOptions;
+
+type WITH_PROPERTIES_AGG_FOR_TYPE<WIRE_TYPE extends WirePropertyTypes> =
+  number extends GetWirePropertyValueFromClient<WIRE_TYPE>
+    ? NumericWithPropAggregateOption
+    : WIRE_TYPE extends "datetime" | "timestamp"
+      ? DatetimeWithPropAggregateOption
+    : WIRE_TYPE extends "string" ? BaseWithPropAggregations
+    : WITH_PROPERTIES_AGG_FOR_SPECIAL_WIRE_TYPE<WIRE_TYPE>;
+
+type WITH_PROPERTIES_AGG_FOR_SPECIAL_WIRE_TYPE<
+  WIRE_TYPE extends WirePropertyTypes,
+> = WIRE_TYPE extends ValidCollectPropertyKeysForSpecialTypes
+  ? BaseWithPropAggregations
+  : DistinctWithPropAggregateOption;
 
 export type ValidAggregationKeys<
   Q extends ObjectOrInterfaceDefinition,
@@ -49,12 +71,13 @@ export type ValidAggregationKeys<
 > = keyof (
   & {
     [
-      KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<
-        GetWirePropertyValueFromClient<
+      KK in AggregatableKeys<Q> as `${KK & string}:${R extends "aggregate"
+        ? AGG_FOR_TYPE<
           CompileTimeMetadata<Q>["properties"][KK]["type"]
-        >,
-        R extends "aggregate" ? true : false
-      >}`
+        >
+        : WITH_PROPERTIES_AGG_FOR_TYPE<
+          CompileTimeMetadata<Q>["properties"][KK]["type"]
+        >}`
     ]?: any;
   }
   & { $count?: any }

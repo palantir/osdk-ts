@@ -1,5 +1,11 @@
 # @osdk/oauth
 
+## 1.2.0-beta.2
+
+### Minor Changes
+
+- cbd4ea9: Discard refresh token if requested scopes have changed
+
 ## 1.1.0-beta.11
 
 ### Minor Changes

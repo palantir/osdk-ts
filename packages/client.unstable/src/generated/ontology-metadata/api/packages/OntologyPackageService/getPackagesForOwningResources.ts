@@ -15,8 +15,12 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetPackagesForOwningResourcesRequest } from "../GetPackagesForOwningResourcesRequest.js";
-import type { GetPackagesForOwningResourcesResponse } from "../GetPackagesForOwningResourcesResponse.js";
+import type {
+  GetPackagesForOwningResourcesRequest
+    as _api_packages_GetPackagesForOwningResourcesRequest,
+  GetPackagesForOwningResourcesResponse
+    as _api_packages_GetPackagesForOwningResourcesResponse,
+} from "../__components.js";
 
 /**
  * Gets all packages owned by the specified resources. Resources which have no package associated will not have
@@ -25,8 +29,8 @@ import type { GetPackagesForOwningResourcesResponse } from "../GetPackagesForOwn
  */
 export async function getPackagesForOwningResources(
   ctx: ConjureContext,
-  request: GetPackagesForOwningResourcesRequest,
-): Promise<GetPackagesForOwningResourcesResponse> {
+  request: _api_packages_GetPackagesForOwningResourcesRequest,
+): Promise<_api_packages_GetPackagesForOwningResourcesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/packages/packagesForOwningResources`,

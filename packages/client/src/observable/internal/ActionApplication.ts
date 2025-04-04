@@ -15,7 +15,7 @@
  */
 
 import type { ActionDefinition, ActionEditResponse } from "@osdk/api";
-import { delay } from "msw";
+import delay from "delay";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { type Changes, createChangedObjects } from "./Changes.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
@@ -31,7 +31,11 @@ export class ActionApplication {
     action: Q,
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
     opts?: Store.ApplyActionOptions,
-  ) => Promise<unknown> = (action, args, { optimisticUpdate } = {}) => {
+  ) => Promise<ActionEditResponse> = async (
+    action,
+    args,
+    { optimisticUpdate } = {},
+  ) => {
     const logger = process.env.NODE_ENV !== "production"
       ? this.store.logger?.child({ methodName: "applyAction" })
       : this.store.logger;
@@ -39,7 +43,8 @@ export class ActionApplication {
       this.store,
       optimisticUpdate,
     );
-    return (async () => {
+
+    return await (async () => {
       try {
         // The types for client get confused when we dynamically applyAction so we
         // have to deal with the `any` here and force cast it to what it should be.
@@ -51,7 +56,7 @@ export class ActionApplication {
 
         if (process.env.NODE_ENV !== "production") {
           if (ACTION_DELAY > 0) {
-            logger?.debug("action done, pausing");
+            logger?.debug("action done, pausing", actionResults);
             await delay(ACTION_DELAY);
             logger?.debug("action done, pausing done");
           }

@@ -36,13 +36,13 @@ import type {
   BatchApplyActionResponseV2,
   SyncApplyActionResponseV2,
 } from "@osdk/foundry.ontologies";
+import type { SetupServer } from "@osdk/shared.test";
 import {
   LegacyFauxFoundry,
   MockOntologiesV2,
   startNodeApiServer,
   stubData,
 } from "@osdk/shared.test";
-import type { SetupServer } from "msw/node";
 import { beforeAll, describe, expect, expectTypeOf, it, vi } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
@@ -685,6 +685,7 @@ describe("ActionResponse remapping", () => {
       "createStructPerson",
       "deleteBarInterface",
       "deleteFooInterface",
+      "editTodo",
       "moveOffice",
       "promoteEmployee",
       "promoteEmployeeObject",

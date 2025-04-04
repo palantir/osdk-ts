@@ -39,6 +39,7 @@ import type {
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
+import { extractRdpDefinition } from "../util/extractRdpDefinition.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 
 export function augment<
@@ -142,6 +143,7 @@ async function fetchInterfacePage<
       result.data as OntologyObjectV2[], // drop readonly
       interfaceType.apiName,
       !args.$includeRid,
+      await extractRdpDefinition(client, objectSet, interfaceType.apiName),
     );
     return result as any;
   }
@@ -164,6 +166,7 @@ async function fetchInterfacePage<
       client,
       result.data,
       interfaceType.apiName,
+      {},
       !args.$includeRid,
       args.$select,
       false,
@@ -329,6 +332,7 @@ export async function fetchObjectPage<
       r.data as OntologyObjectV2[],
       undefined,
       undefined,
+      await extractRdpDefinition(client, objectSet, objectType.apiName),
       args.$select,
     ),
     nextPageToken: r.nextPageToken,

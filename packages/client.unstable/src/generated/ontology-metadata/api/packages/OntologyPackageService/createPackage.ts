@@ -15,9 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyRid } from "../../OntologyRid.js";
-import type { CreatePackageRequest } from "../CreatePackageRequest.js";
-import type { CreatePackageResponse } from "../CreatePackageResponse.js";
+import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
+import type {
+  CreatePackageRequest as _api_packages_CreatePackageRequest,
+  CreatePackageResponse as _api_packages_CreatePackageResponse,
+} from "../__components.js";
 
 /**
  * Creates a new package in the specified ontology. Requires the privileged operation `ontology:service-create-package`
@@ -27,10 +29,10 @@ import type { CreatePackageResponse } from "../CreatePackageResponse.js";
  */
 export async function createPackage(
   ctx: ConjureContext,
-  onBehalfOf: string | undefined,
-  ontologyRid: OntologyRid,
-  request: CreatePackageRequest,
-): Promise<CreatePackageResponse> {
+  onBehalfOf: string | null | undefined,
+  ontologyRid: _api_OntologyRid,
+  request: _api_packages_CreatePackageRequest,
+): Promise<_api_packages_CreatePackageResponse> {
   return conjureFetch(
     ctx,
     `/ontology/packages/${ontologyRid}/create`,

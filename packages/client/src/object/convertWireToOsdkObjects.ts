@@ -32,7 +32,6 @@ import {
 import { createOsdkObject } from "./convertWireToOsdkObjects/createOsdkObject.js";
 import type { InterfaceHolder } from "./convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "./convertWireToOsdkObjects/ObjectHolder.js";
-import { createObjectSpecifierFromPrimaryKey } from "./createObjectSpecifierFromPrimaryKey.js";
 import type { SimpleOsdkProperties } from "./SimpleOsdkProperties.js";
 
 /**
@@ -56,11 +55,13 @@ export async function convertWireToOsdkObjects(
   objects: OntologyObjectV2[],
   interfaceApiName: string | undefined,
   forceRemoveRid: boolean = false,
+  derivedPropertyTypesByName: Record<
+    string,
+    ObjectMetadata.Property
+  >,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull: NullabilityAdherence = false,
 ): Promise<Array<ObjectHolder | InterfaceHolder>> {
-  client.logger?.debug(`START convertWireToOsdkObjects()`);
-
   // remove the __ prefixed properties and convert them to $ prefixed.
   // updates in place
   fixObjectPropertiesInPlace(objects, forceRemoveRid);
@@ -114,13 +115,13 @@ export async function convertWireToOsdkObjects(
       client,
       objectDef,
       rawObj,
+      derivedPropertyTypesByName,
     );
     if (interfaceApiName) osdkObject = osdkObject.$as(interfaceApiName);
 
     ret.push(osdkObject);
   }
 
-  client.logger?.debug(`END convertWireToOsdkObjects()`);
   return ret;
 }
 
@@ -128,6 +129,10 @@ export async function convertWireToOsdkObjects2(
   client: MinimalClient,
   objects: OntologyObjectV2[],
   interfaceApiName: string,
+  derivedPropertyTypeByName: Record<
+    string,
+    ObjectMetadata.Property
+  >,
   forceRemoveRid?: boolean,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull?: NullabilityAdherence,
@@ -140,6 +145,10 @@ export async function convertWireToOsdkObjects2(
   client: MinimalClient,
   objects: OntologyObjectV2[],
   interfaceApiName: undefined,
+  derivedPropertyTypeByName: Record<
+    string,
+    ObjectMetadata.Property
+  >,
   forceRemoveRid?: boolean,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull?: NullabilityAdherence,
@@ -152,6 +161,10 @@ export async function convertWireToOsdkObjects2(
   client: MinimalClient,
   objects: OntologyObjectV2[],
   interfaceApiName: string | undefined,
+  derivedPropertyTypeByName: Record<
+    string,
+    ObjectMetadata.Property
+  >,
   forceRemoveRid?: boolean,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull?: NullabilityAdherence,
@@ -167,6 +180,10 @@ export async function convertWireToOsdkObjects2(
   client: MinimalClient,
   objects: OntologyObjectV2[],
   interfaceApiName: string | undefined,
+  derivedPropertyTypeByName: Record<
+    string,
+    ObjectMetadata.Property
+  >,
   forceRemoveRid: boolean = false,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull: NullabilityAdherence = false,
@@ -175,8 +192,6 @@ export async function convertWireToOsdkObjects2(
     InterfaceToObjectTypeMappings
   > = {},
 ): Promise<Array<ObjectHolder | InterfaceHolder>> {
-  client.logger?.debug(`START convertWireToOsdkObjects2()`);
-
   fixObjectPropertiesInPlace(objects, forceRemoveRid);
 
   const ret = [];
@@ -231,13 +246,13 @@ export async function convertWireToOsdkObjects2(
       client,
       objectDef,
       rawObj,
+      derivedPropertyTypeByName,
     );
     if (interfaceApiName) osdkObject = osdkObject.$as(interfaceApiName);
 
     ret.push(osdkObject);
   }
 
-  client.logger?.debug(`END convertWireToOsdkObjects2()`);
   return ret;
 }
 
@@ -364,11 +379,6 @@ function fixObjectPropertiesInPlace(
     // copying over for now as its always returned. In the future, this should just be inferred from underlying
     obj.$primaryKey ??= obj.__primaryKey;
     obj.$title ??= obj.__title;
-
-    obj.$objectSpecifier = createObjectSpecifierFromPrimaryKey(
-      { apiName: obj.$apiName, type: "object" },
-      obj.$primaryKey,
-    );
 
     // we don't want people to use these
     delete obj.__apiName;

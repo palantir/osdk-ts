@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { LoadEntityMetadataRequest } from "../LoadEntityMetadataRequest.js";
-import type { LoadEntityMetadataResponse } from "../LoadEntityMetadataResponse.js";
+import type {
+  LoadEntityMetadataRequest as _api_entitymetadata_LoadEntityMetadataRequest,
+  LoadEntityMetadataResponse as _api_entitymetadata_LoadEntityMetadataResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to load the EntityMetadata for the specified ObjectTypeRids/LinkTypeRids at the specified
@@ -36,7 +38,7 @@ import type { LoadEntityMetadataResponse } from "../LoadEntityMetadataResponse.j
  */
 export async function loadEntityMetadata(
   ctx: ConjureContext,
-  request: LoadEntityMetadataRequest,
-): Promise<LoadEntityMetadataResponse> {
+  request: _api_entitymetadata_LoadEntityMetadataRequest,
+): Promise<_api_entitymetadata_LoadEntityMetadataResponse> {
   return conjureFetch(ctx, `/entityMetadata/load`, "POST", request);
 }

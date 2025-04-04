@@ -15,18 +15,22 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyProposalRid } from "../../../api/OntologyProposalRid.js";
-import type { LoadOntologyBranchForProposalRequest } from "../LoadOntologyBranchForProposalRequest.js";
-import type { LoadOntologyBranchForProposalResponse } from "../LoadOntologyBranchForProposalResponse.js";
+import type { OntologyProposalRid as _api_OntologyProposalRid } from "../../../api/__components.js";
+import type {
+  LoadOntologyBranchForProposalRequest
+    as _branch_api_LoadOntologyBranchForProposalRequest,
+  LoadOntologyBranchForProposalResponse
+    as _branch_api_LoadOntologyBranchForProposalResponse,
+} from "../__components.js";
 
 /**
  * Load a ProposalV2 and its parent branch with the provided ontologyProposalRid.
  */
 export async function loadOntologyBranchForProposal(
   ctx: ConjureContext,
-  ontologyProposalRid: OntologyProposalRid,
-  request: LoadOntologyBranchForProposalRequest,
-): Promise<LoadOntologyBranchForProposalResponse> {
+  ontologyProposalRid: _api_OntologyProposalRid,
+  request: _branch_api_LoadOntologyBranchForProposalRequest,
+): Promise<_branch_api_LoadOntologyBranchForProposalResponse> {
   return conjureFetch(
     ctx,
     `/ontology/branch/load/proposalV2/${ontologyProposalRid}`,

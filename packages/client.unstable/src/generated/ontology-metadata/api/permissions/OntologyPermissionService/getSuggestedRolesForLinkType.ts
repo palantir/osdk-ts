@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { LinkTypeRid } from "../../LinkTypeRid.js";
-import type { GetSuggestedRolesResponse } from "../GetSuggestedRolesResponse.js";
+import type { LinkTypeRid as _api_LinkTypeRid } from "../../__components.js";
+import type { GetSuggestedRolesResponse as _api_permissions_GetSuggestedRolesResponse } from "../__components.js";
 
 /**
  * Returns the ids of the users that are suggested to have the editor or owner role on the LinkType.
@@ -30,8 +30,8 @@ import type { GetSuggestedRolesResponse } from "../GetSuggestedRolesResponse.js"
  */
 export async function getSuggestedRolesForLinkType(
   ctx: ConjureContext,
-  linkTypeRid: LinkTypeRid,
-): Promise<GetSuggestedRolesResponse> {
+  linkTypeRid: _api_LinkTypeRid,
+): Promise<_api_permissions_GetSuggestedRolesResponse> {
   return conjureFetch(
     ctx,
     `/permissions/suggestRoles/linkType/${linkTypeRid}`,

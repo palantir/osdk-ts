@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyLoadRequest } from "../OntologyLoadRequest.js";
-import type { OntologyLoadResponse } from "../OntologyLoadResponse.js";
+import type {
+  OntologyLoadRequest as _api_OntologyLoadRequest,
+  OntologyLoadResponse as _api_OntologyLoadResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to batch load Ontology entities. The returned OntologyLoadResponse will only contain
@@ -27,7 +29,7 @@ import type { OntologyLoadResponse } from "../OntologyLoadResponse.js";
  */
 export async function loadOntology(
   ctx: ConjureContext,
-  request: OntologyLoadRequest,
-): Promise<OntologyLoadResponse> {
+  request: _api_OntologyLoadRequest,
+): Promise<_api_OntologyLoadResponse> {
   return conjureFetch(ctx, `/ontology/ontology/load`, "POST", request);
 }

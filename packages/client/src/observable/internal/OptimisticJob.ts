@@ -84,6 +84,7 @@ export class OptimisticJob {
             ...properties,
           }],
           undefined,
+          {},
         ).then(objs => {
           return objs[0];
         });

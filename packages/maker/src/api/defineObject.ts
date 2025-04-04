@@ -19,8 +19,14 @@ import { namespace, ontologyDefinition } from "./defineOntology.js";
 import type {
   InterfacePropertyType,
   ObjectType,
+  PropertyTypeType,
+  PropertyTypeTypeExotic,
   SharedPropertyType,
 } from "./types.js";
+
+// From https://stackoverflow.com/a/79288714
+const ISO_8601_DURATION =
+  /^P(?!$)(?:(?:((?:\d+Y)|(?:\d+(?:\.|,)\d+Y$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+D)|(?:\d+(?:\.|,)\d+D$))?(T((?:\d+H)|(?:\d+(?:\.|,)\d+H$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+S)|(?:\d+(?:\.|,)\d+S$))?)?)|(?:\d+(?:(?:\.|,)\d+)?W))$/;
 
 export function defineObject(objectDef: ObjectType): ObjectType {
   const apiName = namespace + objectDef.apiName;
@@ -44,6 +50,23 @@ export function defineObject(objectDef: ObjectType): ObjectType {
   invariant(
     nonExistentPrimaryKeys.length === 0,
     `Primary key properties ${nonExistentPrimaryKeys} do not exist on object ${objectDef.apiName}`,
+  );
+  const retentionPeriod = (objectDef.datasource as any)?.retentionPeriod;
+  invariant(
+    retentionPeriod === undefined || ISO_8601_DURATION.test(retentionPeriod),
+    `Retention period "${retentionPeriod}" on object "${objectDef.apiName}" is not a valid ISO 8601 duration string`,
+  );
+  invariant(
+    (objectDef.properties ?? []).filter(p =>
+      p.apiName === objectDef.titlePropertyApiName
+    ).every(p => !isExotic(p.type)),
+    `Title property ${objectDef.titlePropertyApiName} must be a primitive type`,
+  );
+  invariant(
+    (objectDef.properties ?? []).filter(p =>
+      objectDef.primaryKeys.includes(p.apiName)
+    ).every(p => !isExotic(p.type)),
+    `Primary key properties ${objectDef.primaryKeys} can only be primitive types`,
   );
 
   objectDef.implementsInterfaces?.forEach(interfaceImpl => {
@@ -106,6 +129,19 @@ export function defineObject(objectDef: ObjectType): ObjectType {
 
   ontologyDefinition.objectTypes[apiName] = { ...objectDef, apiName: apiName };
   return { ...objectDef, apiName: apiName };
+}
+
+export function isExotic(
+  type: PropertyTypeType,
+): type is PropertyTypeTypeExotic {
+  if (typeof type === "string") {
+    return ["geopoint", "geoshape", "mediaReference", "geotimeSeries"].includes(
+      type,
+    );
+  } else if (typeof type === "object" && type != null) {
+    return type.type === "marking" || type.type === "struct";
+  }
+  return false;
 }
 
 type ValidationResult = { type: "valid" } | { type: "invalid"; reason: string };

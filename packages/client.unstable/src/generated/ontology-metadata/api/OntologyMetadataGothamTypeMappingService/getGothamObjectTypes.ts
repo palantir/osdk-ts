@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyRid } from "../OntologyRid.js";
-import type { GetGothamObjectTypesResponse } from "../typemapping/GetGothamObjectTypesResponse.js";
+import type { OntologyRid as _api_OntologyRid } from "../__components.js";
+import type { GetGothamObjectTypesResponse as _api_typemapping_GetGothamObjectTypesResponse } from "../typemapping/__components.js";
 
 /**
  * Returns all object types from the Gotham ontology that are not Foundry owned as instances of
@@ -27,8 +27,8 @@ import type { GetGothamObjectTypesResponse } from "../typemapping/GetGothamObjec
  */
 export async function getGothamObjectTypes(
   ctx: ConjureContext,
-  ontologyRid: OntologyRid,
-): Promise<GetGothamObjectTypesResponse> {
+  ontologyRid: _api_OntologyRid,
+): Promise<_api_typemapping_GetGothamObjectTypesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/typemapping/getGothamObjectTypes/${ontologyRid}`,

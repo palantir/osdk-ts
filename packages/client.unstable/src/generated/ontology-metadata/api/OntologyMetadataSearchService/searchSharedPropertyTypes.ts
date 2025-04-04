@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,12 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { SharedPropertyTypeSearchRequest } from "../search/SharedPropertyTypeSearchRequest.js";
-import type { SharedPropertyTypeSearchResponse } from "../search/SharedPropertyTypeSearchResponse.js";
+import type {
+  SharedPropertyTypeSearchRequest
+    as _api_search_SharedPropertyTypeSearchRequest,
+  SharedPropertyTypeSearchResponse
+    as _api_search_SharedPropertyTypeSearchResponse,
+} from "../search/__components.js";
 
 /**
  * Endpoint to search SharedPropertyTypes based on various filters. Endpoint allows to return results based on
@@ -29,8 +33,8 @@ import type { SharedPropertyTypeSearchResponse } from "../search/SharedPropertyT
  */
 export async function searchSharedPropertyTypes(
   ctx: ConjureContext,
-  request: SharedPropertyTypeSearchRequest,
-): Promise<SharedPropertyTypeSearchResponse> {
+  request: _api_search_SharedPropertyTypeSearchRequest,
+): Promise<_api_search_SharedPropertyTypeSearchResponse> {
   return conjureFetch(
     ctx,
     `/ontology/search/v0/searchSharedPropertyTypes`,

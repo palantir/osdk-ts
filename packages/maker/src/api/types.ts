@@ -95,14 +95,18 @@ export type InterfaceImplementation = {
   propertyMapping: { interfaceProperty: string; mapsTo: string }[];
 };
 
-export type ObjectType = RequiredFields<
-  Partial<ObjectTypeInner>,
-  | "apiName"
-  | "primaryKeys"
-  | "displayName"
-  | "pluralDisplayName"
-  | "titlePropertyApiName"
->;
+export type ObjectType =
+  & RequiredFields<
+    Partial<ObjectTypeInner>,
+    | "apiName"
+    | "primaryKeys"
+    | "displayName"
+    | "pluralDisplayName"
+    | "titlePropertyApiName"
+  >
+  & {
+    datasource?: ObjectTypeDatasourceDefinition;
+  };
 
 export interface ObjectPropertyTypeInner extends
   Omit<
@@ -169,37 +173,48 @@ export interface SharedPropertyType extends PropertyType {
 }
 
 export type PropertyTypeType =
-  | PropertyTypeTypesWithoutStruct
-  | {
-    type: "struct";
-    structDefinition: {
-      [api_name: string]:
-        | StructPropertyType
-        | Exclude<PropertyTypeTypesWithoutStruct, MarkingPropertyType>;
-    };
-  };
+  | PropertyTypeTypePrimitive
+  | PropertyTypeTypeExotic;
 
-export type PropertyTypeTypesWithoutStruct =
+export type PropertyTypeTypePrimitive =
   | "boolean"
   | "byte"
   | "date"
   | "decimal"
   | "double"
   | "float"
-  | "geopoint"
-  | "geoshape"
   | "integer"
   | "long"
-  | MarkingPropertyType
   | "short"
   | "string"
-  | "timestamp"
-  | "mediaReference";
+  | "timestamp";
 
-type MarkingPropertyType = {
+export type PropertyTypeTypeExotic =
+  | "geopoint"
+  | "geoshape"
+  | "mediaReference"
+  | "geotimeSeries"
+  | PropertyTypeTypeMarking
+  | PropertyTypeTypeStruct;
+
+type PropertyTypeTypeMarking = {
   type: "marking";
   markingType: "MANDATORY" | "CBAC";
 };
+
+type PropertyTypeTypeStruct = {
+  type: "struct";
+  structDefinition: {
+    [api_name: string]:
+      | StructPropertyType
+      | Exclude<PropertyTypeTypesWithoutStruct, PropertyTypeTypeMarking>;
+  };
+};
+
+export type PropertyTypeTypesWithoutStruct = Exclude<
+  PropertyTypeType,
+  PropertyTypeTypeStruct
+>;
 
 type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 
@@ -445,3 +460,17 @@ export type ValueTypeDefinitionVersion = {
   constraints: ValueTypeDataConstraint[];
   exampleValues: ExampleValue[];
 };
+
+export interface ObjectTypeDatasourceDefinition_dataset {
+  type: "dataset";
+}
+
+export interface ObjectTypeDatasourceDefinition_stream {
+  type: "stream";
+  // Retention period must be in ISO 8601 duration format
+  retentionPeriod?: string;
+}
+
+export type ObjectTypeDatasourceDefinition =
+  | ObjectTypeDatasourceDefinition_stream
+  | ObjectTypeDatasourceDefinition_dataset;

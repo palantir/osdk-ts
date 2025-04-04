@@ -21,10 +21,13 @@ import type {
   ObjectUpdate,
   StreamMessage,
 } from "@osdk/foundry.ontologies";
-import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
+import {
+  LegacyFauxFoundry,
+  msw,
+  type SetupServer,
+  startNodeApiServer,
+} from "@osdk/shared.test";
 import ImportedWebSocket from "isomorphic-ws";
-import { http, HttpResponse } from "msw";
-import type { SetupServer } from "msw/node";
 import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
 import type { MockedClass, MockedFunction, MockedObject } from "vitest";
@@ -154,10 +157,10 @@ describe("ObjectSetListenerWebsocket", async () => {
 
       let objectSetRidCounter = 0;
       apiServer.use(
-        http.post(
+        msw.http.post(
           `${STACK}api/v2/ontologySubscriptions/ontologies/${$ontologyRid}/streamSubscriptions`,
           () =>
-            HttpResponse.json({
+            msw.HttpResponse.json({
               objectSetRid: `rid.hi.${objectSetRidCounter++}`,
             }),
         ),

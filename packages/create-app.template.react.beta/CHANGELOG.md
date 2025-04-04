@@ -1,5 +1,15 @@
 # @osdk/create-app.template.react
 
+## 2.2.0-beta.14
+
+## 2.2.0-beta.13
+
+### Minor Changes
+
+- 43283db: Use client.ts
+
+## 2.2.0-beta.12
+
 ## 2.2.0-beta.11
 
 ## 2.2.0-beta.10

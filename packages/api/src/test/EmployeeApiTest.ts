@@ -28,7 +28,14 @@ export namespace EmployeeApiTest {
     | "employeeId"
     | "fullName"
     | "class"
-    | "booleanProp";
+    | "attachment"
+    | "geopoint"
+    | "timeseries"
+    | "mediaReference"
+    | "geotimeSeriesReference"
+    | "lastClockIn"
+    | "dateOfBirth"
+    | "isActive";
 
   export interface Links {
     readonly lead: $SingleLinkAccessor<EmployeeApiTest>;
@@ -39,7 +46,16 @@ export namespace EmployeeApiTest {
     readonly class: $PropType["string"] | undefined;
     readonly fullName: $PropType["string"] | undefined;
     readonly employeeId: $PropType["integer"] | undefined;
-    readonly booleanProp: $PropType["boolean"] | undefined;
+    readonly attachment: $PropType["attachment"] | undefined;
+    readonly geopoint: $PropType["geopoint"] | undefined;
+    readonly timeseries: $PropType["numericTimeseries"] | undefined;
+    readonly mediaReference: $PropType["mediaReference"] | undefined;
+    readonly geotimeSeriesReference:
+      | $PropType["geotimeSeriesReference"]
+      | undefined;
+    readonly isActive: $PropType["boolean"] | undefined;
+    readonly lastClockIn: $PropType["timestamp"] | undefined;
+    readonly dateOfBirth: $PropType["datetime"] | undefined;
   }
   export type StrictProps = Props;
 
@@ -86,7 +102,18 @@ export interface EmployeeApiTest extends $ObjectTypeDefinition {
       class: $PropertyDef<"string", "nullable", "single">;
       fullName: $PropertyDef<"string", "nullable", "single">;
       employeeId: $PropertyDef<"integer", "nullable", "single">;
-      booleanProp: $PropertyDef<"boolean", "nullable", "single">;
+      attachment: $PropertyDef<"attachment", "nullable", "single">;
+      geopoint: $PropertyDef<"geopoint", "nullable", "single">;
+      timeseries: $PropertyDef<"numericTimeseries", "nullable", "single">;
+      mediaReference: $PropertyDef<"mediaReference", "nullable", "single">;
+      geotimeSeriesReference: $PropertyDef<
+        "geotimeSeriesReference",
+        "nullable",
+        "single"
+      >;
+      isActive: $PropertyDef<"boolean", "nullable", "single">;
+      lastClockIn: $PropertyDef<"timestamp", "nullable", "single">;
+      dateOfBirth: $PropertyDef<"datetime", "nullable", "single">;
     };
     rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44";
     status: "ACTIVE";

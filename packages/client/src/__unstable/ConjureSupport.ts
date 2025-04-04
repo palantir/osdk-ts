@@ -98,7 +98,7 @@ export class MetadataClient {
     getPropertyMapping: () => Promise<ObjectPropertyMapping>;
     getLinkMapping: () => Promise<ObjectLinkMapping>;
     getRid: () => string;
-    getApiName: () => Promise<string | undefined>;
+    getApiName: () => Promise<string | null | undefined>;
   }> = strongMemoAsync(async (rid: string) => {
     return Promise.resolve({
       getPropertyMapping: this.#objectPropertyMapping.bind(this, rid),
@@ -112,7 +112,7 @@ export class MetadataClient {
     getPropertyMapping: () => Promise<ObjectPropertyMapping>;
     getLinkMapping: () => Promise<ObjectLinkMapping>;
     getRid: () => string;
-    getApiName: () => Promise<string | undefined>;
+    getApiName: () => Promise<string | null | undefined>;
   }> = strongMemoAsync(
     async (objectApiName: string) => {
       const objectDef = await this.#client.ontologyProvider.getObjectDefinition(

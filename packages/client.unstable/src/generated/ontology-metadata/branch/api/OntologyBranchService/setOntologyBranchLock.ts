@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyBranchRid } from "../../../api/OntologyBranchRid.js";
-import type { SetOntologyBranchLockRequest } from "../SetOntologyBranchLockRequest.js";
-import type { SetOntologyBranchLockResponse } from "../SetOntologyBranchLockResponse.js";
+import type { OntologyBranchRid as _api_OntologyBranchRid } from "../../../api/__components.js";
+import type {
+  SetOntologyBranchLockRequest as _branch_api_SetOntologyBranchLockRequest,
+  SetOntologyBranchLockResponse as _branch_api_SetOntologyBranchLockResponse,
+} from "../__components.js";
 
 /**
  * Endpoint for setting lock metadata for branches. Currently only functional for Builder branches.
@@ -25,9 +27,9 @@ import type { SetOntologyBranchLockResponse } from "../SetOntologyBranchLockResp
 export async function setOntologyBranchLock(
   ctx: ConjureContext,
   onBehalfOf: string,
-  ontologyBranchRid: OntologyBranchRid,
-  request: SetOntologyBranchLockRequest,
-): Promise<SetOntologyBranchLockResponse> {
+  ontologyBranchRid: _api_OntologyBranchRid,
+  request: _branch_api_SetOntologyBranchLockRequest,
+): Promise<_branch_api_SetOntologyBranchLockResponse> {
   return conjureFetch(
     ctx,
     `/ontology/branch/setLock/${ontologyBranchRid}`,

@@ -14,93 +14,95 @@
  * limitations under the License.
  */
 
-export type { CaseSensitiveGothamObjectTypeUri } from "./CaseSensitiveGothamObjectTypeUri.js";
-export type { CaseSensitiveGothamPropertyTypeUri } from "./CaseSensitiveGothamPropertyTypeUri.js";
-export type { CheckTranslationEligibilityRequest } from "./CheckTranslationEligibilityRequest.js";
-export type { CheckTranslationEligibilityResponse } from "./CheckTranslationEligibilityResponse.js";
-export type { ClientTranslationEligibilityResult } from "./ClientTranslationEligibilityResult.js";
-export type { ExpectedGeoHashBaseType } from "./ExpectedGeoHashBaseType.js";
-export type { ExpectedStringBaseType } from "./ExpectedStringBaseType.js";
-export type { ExpectedTimestampBaseType } from "./ExpectedTimestampBaseType.js";
-export type { ExternalMappingConfiguration } from "./ExternalMappingConfiguration.js";
-export type { ExternalMappingConfigurationFilter } from "./ExternalMappingConfigurationFilter.js";
-export type { GetGothamObjectTypesResponse } from "./GetGothamObjectTypesResponse.js";
-export type { GetGothamPropertyTypesResponse } from "./GetGothamPropertyTypesResponse.js";
-export type { GothamDatasourceDelegateId } from "./GothamDatasourceDelegateId.js";
-export type { GothamDatasourceMetadata } from "./GothamDatasourceMetadata.js";
-export type { GothamIntrinsic } from "./GothamIntrinsic.js";
-export type { GothamIntrinsicEndDate } from "./GothamIntrinsicEndDate.js";
-export type { GothamIntrinsicExpectedBaseType } from "./GothamIntrinsicExpectedBaseType.js";
-export type { GothamIntrinsicLatLong } from "./GothamIntrinsicLatLong.js";
-export type { GothamIntrinsicMgrs } from "./GothamIntrinsicMgrs.js";
-export type { GothamIntrinsicStartDate } from "./GothamIntrinsicStartDate.js";
-export type { GothamIntrinsicV2 } from "./GothamIntrinsicV2.js";
-export type { GothamMappingConfiguration } from "./GothamMappingConfiguration.js";
-export type { GothamObjectIntrinsicMapping } from "./GothamObjectIntrinsicMapping.js";
-export type { GothamObjectTypeAvailable } from "./GothamObjectTypeAvailable.js";
-export type { GothamObjectTypeUnavailable } from "./GothamObjectTypeUnavailable.js";
-export type { GothamObjectTypeUnavailableHasNonLabelPropertyTitleGenerators } from "./GothamObjectTypeUnavailableHasNonLabelPropertyTitleGenerators.js";
-export type { GothamObjectTypeUnavailableHasTypeGroups } from "./GothamObjectTypeUnavailableHasTypeGroups.js";
-export type { GothamObjectTypeUnavailableInTransfer } from "./GothamObjectTypeUnavailableInTransfer.js";
-export type { GothamObjectTypeUnavailableIsCoreType } from "./GothamObjectTypeUnavailableIsCoreType.js";
-export type { GothamObjectTypeUnavailableIsNotUnrestricted } from "./GothamObjectTypeUnavailableIsNotUnrestricted.js";
-export type { GothamObjectTypeUnavailableLabelPropertyCannotBeImported } from "./GothamObjectTypeUnavailableLabelPropertyCannotBeImported.js";
-export type { GothamObjectTypeUnavailableMissingSharedPropertyType } from "./GothamObjectTypeUnavailableMissingSharedPropertyType.js";
-export type { GothamObjectTypeUnavailableSpecifiedLabelPropertyTypeNotFound } from "./GothamObjectTypeUnavailableSpecifiedLabelPropertyTypeNotFound.js";
-export type { GothamObjectTypeUri } from "./GothamObjectTypeUri.js";
-export type { GothamOntologyParentType } from "./GothamOntologyParentType.js";
-export type { GothamOntologyParentTypeUri } from "./GothamOntologyParentTypeUri.js";
-export type { GothamPropertyComponentUri } from "./GothamPropertyComponentUri.js";
-export type { GothamPropertyDatasourceMapping } from "./GothamPropertyDatasourceMapping.js";
-export type { GothamPropertyDatasourceMappingProperty } from "./GothamPropertyDatasourceMappingProperty.js";
-export type { GothamPropertyDatasourceMappingStruct } from "./GothamPropertyDatasourceMappingStruct.js";
-export type { GothamPropertyIntrinsicMapping } from "./GothamPropertyIntrinsicMapping.js";
-export type { GothamPropertyIntrinsicMappingV2 } from "./GothamPropertyIntrinsicMappingV2.js";
-export type { GothamPropertyIntrinsicMappingV3 } from "./GothamPropertyIntrinsicMappingV3.js";
-export type { GothamPropertyTypeAvailable } from "./GothamPropertyTypeAvailable.js";
-export type { GothamPropertyTypeUnavailable } from "./GothamPropertyTypeUnavailable.js";
-export type { GothamPropertyTypeUnavailableConverterError } from "./GothamPropertyTypeUnavailableConverterError.js";
-export type { GothamPropertyTypeUnavailableDeprecated } from "./GothamPropertyTypeUnavailableDeprecated.js";
-export type { GothamPropertyTypeUnavailableHasCustomMakers } from "./GothamPropertyTypeUnavailableHasCustomMakers.js";
-export type { GothamPropertyTypeUnavailableInTransfer } from "./GothamPropertyTypeUnavailableInTransfer.js";
-export type { GothamPropertyTypeUnavailableIsComposite } from "./GothamPropertyTypeUnavailableIsComposite.js";
-export type { GothamPropertyTypeUnavailableNonIndexedProperty } from "./GothamPropertyTypeUnavailableNonIndexedProperty.js";
-export type { GothamPropertyTypeUnavailableSystemProperty } from "./GothamPropertyTypeUnavailableSystemProperty.js";
-export type { GothamPropertyTypeUnavailableUnknown } from "./GothamPropertyTypeUnavailableUnknown.js";
-export type { GothamPropertyTypeUnavailableUnsupportedBaseValidators } from "./GothamPropertyTypeUnavailableUnsupportedBaseValidators.js";
-export type { GothamPropertyTypeUnavailableUnsupportedMaxValueLength } from "./GothamPropertyTypeUnavailableUnsupportedMaxValueLength.js";
-export type { GothamPropertyTypeUri } from "./GothamPropertyTypeUri.js";
-export type { GothamPropertyValueTypesToCreate } from "./GothamPropertyValueTypesToCreate.js";
-export type { GothamRepresentativePropertyType } from "./GothamRepresentativePropertyType.js";
-export type { GothamTypeInstallFailedStatus } from "./GothamTypeInstallFailedStatus.js";
-export type { GothamTypeInstallInstalledStatus } from "./GothamTypeInstallInstalledStatus.js";
-export type { GothamTypeInstallInstallingStatus } from "./GothamTypeInstallInstallingStatus.js";
-export type { GothamTypeInstallNotFoundStatus } from "./GothamTypeInstallNotFoundStatus.js";
-export type { GothamTypeInstallQueuedStatus } from "./GothamTypeInstallQueuedStatus.js";
-export type { GothamTypeInstallStagedStatus } from "./GothamTypeInstallStagedStatus.js";
-export type { GothamTypeInstallStatus } from "./GothamTypeInstallStatus.js";
-export type { GothamTypeInstallStatusWithVersion } from "./GothamTypeInstallStatusWithVersion.js";
-export type { GothamUsageRestriction } from "./GothamUsageRestriction.js";
-export type { IntegrationClientType } from "./IntegrationClientType.js";
-export type { LoadGothamTypeInstallationStatusesRequest } from "./LoadGothamTypeInstallationStatusesRequest.js";
-export type { LoadGothamTypeInstallationStatusesResponse } from "./LoadGothamTypeInstallationStatusesResponse.js";
-export type { ObjectTypeGothamMapping } from "./ObjectTypeGothamMapping.js";
-export type { ObjectTypeGothamMappingModification } from "./ObjectTypeGothamMappingModification.js";
-export type { ObjectTypeHasUnavailableRepresentativePropertyTypes } from "./ObjectTypeHasUnavailableRepresentativePropertyTypes.js";
-export type { OntologyIrGothamPropertyDatasourceMapping } from "./OntologyIrGothamPropertyDatasourceMapping.js";
-export type { OntologyIrGothamPropertyDatasourceMappingProperty } from "./OntologyIrGothamPropertyDatasourceMappingProperty.js";
-export type { OntologyIrGothamPropertyDatasourceMappingStruct } from "./OntologyIrGothamPropertyDatasourceMappingStruct.js";
-export type { OntologyIrGothamPropertyIntrinsicMapping } from "./OntologyIrGothamPropertyIntrinsicMapping.js";
-export type { OntologyIrGothamPropertyIntrinsicMappingV2 } from "./OntologyIrGothamPropertyIntrinsicMappingV2.js";
-export type { OntologyIrGothamPropertyIntrinsicMappingV3 } from "./OntologyIrGothamPropertyIntrinsicMappingV3.js";
-export type { OntologyIrObjectTypeGothamMapping } from "./OntologyIrObjectTypeGothamMapping.js";
-export type { PropertyTypeGothamMapping } from "./PropertyTypeGothamMapping.js";
-export type { RevDbIntegrationState } from "./RevDbIntegrationState.js";
-export type { SharedPropertyTypeGothamMapping } from "./SharedPropertyTypeGothamMapping.js";
-export type { SharedPropertyTypeGothamMappingModification } from "./SharedPropertyTypeGothamMappingModification.js";
-export type { TranslatableDatasource } from "./TranslatableDatasource.js";
-export type { TranslationEligibility } from "./TranslationEligibility.js";
-export type { UnavailableGothamObjectTypeCause } from "./UnavailableGothamObjectTypeCause.js";
-export type { UnavailableGothamPropertyTypeCause } from "./UnavailableGothamPropertyTypeCause.js";
-export type { UntranslatableSecurity } from "./UntranslatableSecurity.js";
-export type { UntranslatableSecurityFailureType } from "./UntranslatableSecurityFailureType.js";
+export type {
+  CaseSensitiveGothamObjectTypeUri,
+  CaseSensitiveGothamPropertyTypeUri,
+  CheckTranslationEligibilityRequest,
+  CheckTranslationEligibilityResponse,
+  ClientTranslationEligibilityResult,
+  ExpectedGeoHashBaseType,
+  ExpectedStringBaseType,
+  ExpectedTimestampBaseType,
+  ExternalMappingConfiguration,
+  ExternalMappingConfigurationFilter,
+  GetGothamObjectTypesResponse,
+  GetGothamPropertyTypesResponse,
+  GothamDatasourceDelegateId,
+  GothamDatasourceMetadata,
+  GothamIntrinsic,
+  GothamIntrinsicEndDate,
+  GothamIntrinsicExpectedBaseType,
+  GothamIntrinsicLatLong,
+  GothamIntrinsicMgrs,
+  GothamIntrinsicStartDate,
+  GothamIntrinsicV2,
+  GothamMappingConfiguration,
+  GothamObjectIntrinsicMapping,
+  GothamObjectTypeAvailable,
+  GothamObjectTypeUnavailable,
+  GothamObjectTypeUnavailableHasNonLabelPropertyTitleGenerators,
+  GothamObjectTypeUnavailableHasTypeGroups,
+  GothamObjectTypeUnavailableInTransfer,
+  GothamObjectTypeUnavailableIsCoreType,
+  GothamObjectTypeUnavailableIsNotUnrestricted,
+  GothamObjectTypeUnavailableLabelPropertyCannotBeImported,
+  GothamObjectTypeUnavailableMissingSharedPropertyType,
+  GothamObjectTypeUnavailableSpecifiedLabelPropertyTypeNotFound,
+  GothamObjectTypeUri,
+  GothamOntologyParentType,
+  GothamOntologyParentTypeUri,
+  GothamPropertyComponentUri,
+  GothamPropertyDatasourceMapping,
+  GothamPropertyDatasourceMappingProperty,
+  GothamPropertyDatasourceMappingStruct,
+  GothamPropertyIntrinsicMapping,
+  GothamPropertyIntrinsicMappingV2,
+  GothamPropertyIntrinsicMappingV3,
+  GothamPropertyTypeAvailable,
+  GothamPropertyTypeUnavailable,
+  GothamPropertyTypeUnavailableConverterError,
+  GothamPropertyTypeUnavailableDeprecated,
+  GothamPropertyTypeUnavailableHasCustomMakers,
+  GothamPropertyTypeUnavailableInTransfer,
+  GothamPropertyTypeUnavailableIsComposite,
+  GothamPropertyTypeUnavailableNonIndexedProperty,
+  GothamPropertyTypeUnavailableSystemProperty,
+  GothamPropertyTypeUnavailableUnknown,
+  GothamPropertyTypeUnavailableUnsupportedBaseValidators,
+  GothamPropertyTypeUnavailableUnsupportedMaxValueLength,
+  GothamPropertyTypeUri,
+  GothamPropertyValueTypesToCreate,
+  GothamRepresentativePropertyType,
+  GothamTypeInstallFailedStatus,
+  GothamTypeInstallInstalledStatus,
+  GothamTypeInstallInstallingStatus,
+  GothamTypeInstallNotFoundStatus,
+  GothamTypeInstallQueuedStatus,
+  GothamTypeInstallStagedStatus,
+  GothamTypeInstallStatus,
+  GothamTypeInstallStatusWithVersion,
+  GothamUsageRestriction,
+  IntegrationClientType,
+  LoadGothamTypeInstallationStatusesRequest,
+  LoadGothamTypeInstallationStatusesResponse,
+  ObjectTypeGothamMapping,
+  ObjectTypeGothamMappingModification,
+  ObjectTypeHasUnavailableRepresentativePropertyTypes,
+  OntologyIrGothamPropertyDatasourceMapping,
+  OntologyIrGothamPropertyDatasourceMappingProperty,
+  OntologyIrGothamPropertyDatasourceMappingStruct,
+  OntologyIrGothamPropertyIntrinsicMapping,
+  OntologyIrGothamPropertyIntrinsicMappingV2,
+  OntologyIrGothamPropertyIntrinsicMappingV3,
+  OntologyIrObjectTypeGothamMapping,
+  PropertyTypeGothamMapping,
+  RevDbIntegrationState,
+  SharedPropertyTypeGothamMapping,
+  SharedPropertyTypeGothamMappingModification,
+  TranslatableDatasource,
+  TranslationEligibility,
+  UnavailableGothamObjectTypeCause,
+  UnavailableGothamPropertyTypeCause,
+  UntranslatableSecurity,
+  UntranslatableSecurityFailureType,
+} from "./__components.js";

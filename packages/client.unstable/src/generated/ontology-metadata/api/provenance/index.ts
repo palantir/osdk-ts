@@ -16,42 +16,44 @@
 
 export * as ExperimentalOntologyProvenanceService from "./ExperimentalOntologyProvenanceService.js";
 
-export type { AllPropertiesPropertySet } from "./AllPropertiesPropertySet.js";
-export type { BatchGetTaggedDependentsForOntologyEntityIdentifierRequest } from "./BatchGetTaggedDependentsForOntologyEntityIdentifierRequest.js";
-export type { BatchGetTaggedDependentsForOntologyEntityIdentifierResponse } from "./BatchGetTaggedDependentsForOntologyEntityIdentifierResponse.js";
-export type { DependencyIdentifierAndTag } from "./DependencyIdentifierAndTag.js";
-export type { Dependent } from "./Dependent.js";
-export type { GetDependenciesForTaggedDependentRequest } from "./GetDependenciesForTaggedDependentRequest.js";
-export type { GetDependenciesForTaggedDependentRequestV2 } from "./GetDependenciesForTaggedDependentRequestV2.js";
-export type { GetDependenciesForTaggedDependentResponse } from "./GetDependenciesForTaggedDependentResponse.js";
-export type { GetDependenciesForTaggedDependentResponseV2 } from "./GetDependenciesForTaggedDependentResponseV2.js";
-export type { GetDependenciesForTaggedDependentResponseV2Success } from "./GetDependenciesForTaggedDependentResponseV2Success.js";
-export type { GetDependenciesForTaggedDependentResponseV2TagNotFound } from "./GetDependenciesForTaggedDependentResponseV2TagNotFound.js";
-export type { GetDependenciesPagingToken } from "./GetDependenciesPagingToken.js";
-export type { GetDependenciesV2PagingToken } from "./GetDependenciesV2PagingToken.js";
-export type { GetTaggedDependentsForOntologyEntityIdentifierPagingToken } from "./GetTaggedDependentsForOntologyEntityIdentifierPagingToken.js";
-export type { GetTaggedDependentsForOntologyEntityIdentifierRequest } from "./GetTaggedDependentsForOntologyEntityIdentifierRequest.js";
-export type { GetTaggedDependentsForOntologyEntityIdentifierResponse } from "./GetTaggedDependentsForOntologyEntityIdentifierResponse.js";
-export type { GetTaggedDependentsForOntologyEntityRequest } from "./GetTaggedDependentsForOntologyEntityRequest.js";
-export type { GetTaggedDependentsForOntologyEntityResponse } from "./GetTaggedDependentsForOntologyEntityResponse.js";
-export type { GetTaggedDependentsPagingToken } from "./GetTaggedDependentsPagingToken.js";
-export type { ObjectTypeIdWithPropertyTypeIds } from "./ObjectTypeIdWithPropertyTypeIds.js";
-export type { ObjectTypeRidWithPropertyTypeRids } from "./ObjectTypeRidWithPropertyTypeRids.js";
-export type { ObjectTypeWithProperties } from "./ObjectTypeWithProperties.js";
-export type { OntologyEntityId } from "./OntologyEntityId.js";
-export type { PropertyTypeIdSet } from "./PropertyTypeIdSet.js";
-export type { PropertyTypeIdWithObjectTypeId } from "./PropertyTypeIdWithObjectTypeId.js";
-export type { PropertyTypeRidSet } from "./PropertyTypeRidSet.js";
-export type { PropertyTypeRidWithObjectTypeRid } from "./PropertyTypeRidWithObjectTypeRid.js";
-export type { ProvenanceDependentOntologyEntities } from "./ProvenanceDependentOntologyEntities.js";
-export type { ProvenanceOntologyEntityIdentifier } from "./ProvenanceOntologyEntityIdentifier.js";
-export type { ProvenanceOntologyEntityRid } from "./ProvenanceOntologyEntityRid.js";
-export type { ProvenanceOntologyEntityRidType } from "./ProvenanceOntologyEntityRidType.js";
-export type { RegisterDependencyRequest } from "./RegisterDependencyRequest.js";
-export type { RegisterDependencyResponse } from "./RegisterDependencyResponse.js";
-export type { Tag } from "./Tag.js";
-export type { TagDependentRequest } from "./TagDependentRequest.js";
-export type { TagDependentResponse } from "./TagDependentResponse.js";
-export type { TaggedDependencyAndDependent } from "./TaggedDependencyAndDependent.js";
-export type { Version } from "./Version.js";
-export type { VersionedResource } from "./VersionedResource.js";
+export type {
+  AllPropertiesPropertySet,
+  BatchGetTaggedDependentsForOntologyEntityIdentifierRequest,
+  BatchGetTaggedDependentsForOntologyEntityIdentifierResponse,
+  DependencyIdentifierAndTag,
+  Dependent,
+  GetDependenciesForTaggedDependentRequest,
+  GetDependenciesForTaggedDependentRequestV2,
+  GetDependenciesForTaggedDependentResponse,
+  GetDependenciesForTaggedDependentResponseV2,
+  GetDependenciesForTaggedDependentResponseV2Success,
+  GetDependenciesForTaggedDependentResponseV2TagNotFound,
+  GetDependenciesPagingToken,
+  GetDependenciesV2PagingToken,
+  GetTaggedDependentsForOntologyEntityIdentifierPagingToken,
+  GetTaggedDependentsForOntologyEntityIdentifierRequest,
+  GetTaggedDependentsForOntologyEntityIdentifierResponse,
+  GetTaggedDependentsForOntologyEntityRequest,
+  GetTaggedDependentsForOntologyEntityResponse,
+  GetTaggedDependentsPagingToken,
+  ObjectTypeIdWithPropertyTypeIds,
+  ObjectTypeRidWithPropertyTypeRids,
+  ObjectTypeWithProperties,
+  OntologyEntityId,
+  PropertyTypeIdSet,
+  PropertyTypeIdWithObjectTypeId,
+  PropertyTypeRidSet,
+  PropertyTypeRidWithObjectTypeRid,
+  ProvenanceDependentOntologyEntities,
+  ProvenanceOntologyEntityIdentifier,
+  ProvenanceOntologyEntityRid,
+  ProvenanceOntologyEntityRidType,
+  RegisterDependencyRequest,
+  RegisterDependencyResponse,
+  Tag,
+  TagDependentRequest,
+  TagDependentResponse,
+  TaggedDependencyAndDependent,
+  Version,
+  VersionedResource,
+} from "./__components.js";

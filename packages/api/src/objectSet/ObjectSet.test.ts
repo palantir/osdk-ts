@@ -27,8 +27,11 @@ describe("ObjectSet", () => {
     withProperties: vi.fn(() => {
       return fauxObjectSet;
     }),
-    fetchPage: vi.fn(() => Promise.resolve()),
+    fetchPage: vi.fn(() => Promise.resolve({ data: [{}] })),
     asyncIter: vi.fn(() => {
+      return {};
+    }),
+    aggregate: vi.fn(() => {
       return {};
     }),
   } as any as EmployeeApiTest.ObjectSet;
@@ -157,7 +160,7 @@ describe("ObjectSet", () => {
               base.pivotTo("lead").aggregate("class:collectSet"),
             "select": (base) => base.pivotTo("lead").selectProperty("fullName"),
             "collectList": (base) =>
-              base.pivotTo("lead").aggregate("booleanProp:collectSet"),
+              base.pivotTo("lead").aggregate("class:collectList"),
             "min": (base) => base.pivotTo("lead").aggregate("employeeId:max"),
             "max": (base) => base.pivotTo("lead").aggregate("employeeId:min"),
             "sum": (base) => base.pivotTo("lead").aggregate("employeeId:sum"),
@@ -179,7 +182,7 @@ describe("ObjectSet", () => {
                 {
                   collectSet: "string"[] | undefined;
                   select: "string" | undefined;
-                  collectList: "boolean"[] | undefined;
+                  collectList: "string"[] | undefined;
                   min: "double" | undefined;
                   max: "double" | undefined;
                   sum: "double" | undefined;
@@ -288,7 +291,19 @@ describe("ObjectSet", () => {
 
       it("Works with selecting all non-RDP's", async () => {
         const withFamilyResults = await withFamily.fetchPage({
-          $select: ["class", "fullName", "employeeId", "booleanProp"],
+          $select: [
+            "class",
+            "fullName",
+            "employeeId",
+            "attachment",
+            "geopoint",
+            "timeseries",
+            "mediaReference",
+            "geotimeSeriesReference",
+            "isActive",
+            "lastClockIn",
+            "dateOfBirth",
+          ],
         });
 
         expectTypeOf<typeof withFamilyResults["data"][0]>()
@@ -363,6 +378,115 @@ describe("ObjectSet", () => {
       fauxObjectSet.withProperties({
         "mom": (base) => base.pivotTo("lead").aggregate("$count"),
       }) satisfies ObjectSetType;
+    });
+
+    it("has correct aggregation keys", () => {
+      fauxObjectSet.withProperties({
+        "integer": (base) => base.pivotTo("lead").aggregate("$count"),
+        "integerNumericAgg": (base) =>
+          base.pivotTo("lead").aggregate("employeeId:sum"),
+        "string": (base) => base.pivotTo("lead").aggregate("class:collectList"),
+        "stringDoesNotHaveNumericAgg": (base) =>
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("class:sum"),
+        "isActive": (base) =>
+          base.pivotTo("lead").aggregate("isActive:approximateDistinct"),
+        "attachment": (base) =>
+          base.pivotTo("lead").aggregate("attachment:collectList"),
+        "geopoint": (base) =>
+          base.pivotTo("lead").aggregate("geopoint:collectList"),
+        "numericTimeseries": (base) =>
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("timeseries:sum"),
+        "numericTimeseriesExactDistinct": (base) =>
+          base.pivotTo("lead").aggregate("timeseries:exactDistinct"),
+        "mediaReference": (base) =>
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("mediaReference:avg"),
+        "mediaReferenceExactDistinct": (base) =>
+          base.pivotTo("lead").aggregate("mediaReference:exactDistinct"),
+        "geotimeSeriesReference": (base) =>
+          // @ts-expect-error
+          base.pivotTo("lead").aggregate("geotimeSeriesReference:sum"),
+        "geotimeSeriesReferenceExactDistinct": (base) =>
+          base.pivotTo("lead").aggregate(
+            "geotimeSeriesReference:exactDistinct",
+          ),
+        "lastClockIn": (base) => {
+          base.pivotTo("lead").aggregate("lastClockIn:approximateDistinct");
+          base.pivotTo("lead").aggregate("lastClockIn:exactDistinct");
+          base.pivotTo("lead").aggregate("lastClockIn:max");
+          base.pivotTo("lead").aggregate("lastClockIn:min");
+          base.pivotTo("lead").aggregate("lastClockIn:collectList");
+          return base.pivotTo("lead").aggregate("lastClockIn:collectSet");
+        },
+        "dateOfBirth": (base) => {
+          base.pivotTo("lead").aggregate("dateOfBirth:approximateDistinct");
+          base.pivotTo("lead").aggregate("dateOfBirth:exactDistinct");
+          base.pivotTo("lead").aggregate("dateOfBirth:max");
+          base.pivotTo("lead").aggregate("dateOfBirth:min");
+          base.pivotTo("lead").aggregate("dateOfBirth:collectList");
+          return base.pivotTo("lead").aggregate("dateOfBirth:collectSet");
+        },
+      });
+    });
+
+    it("has correct aggregation return types", async () => {
+      const aggTestObjectSet = fauxObjectSet.withProperties({
+        "maxHasSameType": (base) =>
+          base.pivotTo("lead").aggregate("dateOfBirth:max"),
+        "minHasSameType": (base) =>
+          base.pivotTo("lead").aggregate("dateOfBirth:min"),
+        "approximateDistinctNumberNoUndefined": (base) =>
+          base.pivotTo("lead").aggregate("employeeId:approximateDistinct"),
+        "exactDistinctNumberNoUndefined": (base) =>
+          base.pivotTo("lead").aggregate("employeeId:exactDistinct"),
+        "countNumberNoUndefined": (base) =>
+          base.pivotTo("lead").aggregate("$count"),
+        "sumNumber": (base) => base.pivotTo("lead").aggregate("employeeId:sum"),
+        "avgNumber": (base) => base.pivotTo("lead").aggregate("employeeId:avg"),
+      }).fetchPage();
+
+      const result = (await aggTestObjectSet).data[0];
+      expectTypeOf((await aggTestObjectSet).data[0]).toEqualTypeOf<
+        Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {
+          maxHasSameType: "datetime" | undefined;
+          minHasSameType: "datetime" | undefined;
+          avgNumber: "double" | undefined;
+          approximateDistinctNumberNoUndefined: "integer";
+          exactDistinctNumberNoUndefined: "integer";
+          countNumberNoUndefined: "integer";
+          sumNumber: "double" | undefined;
+        }>
+      >();
+
+      expectTypeOf(result.maxHasSameType).toEqualTypeOf<string | undefined>();
+      expectTypeOf(result.minHasSameType).toEqualTypeOf<string | undefined>();
+      expectTypeOf(result.approximateDistinctNumberNoUndefined).toEqualTypeOf<
+        number
+      >();
+      expectTypeOf(result.exactDistinctNumberNoUndefined).toEqualTypeOf<
+        number
+      >();
+      expectTypeOf(result.countNumberNoUndefined).toEqualTypeOf<number>();
+      expectTypeOf(result.sumNumber).toEqualTypeOf<number | undefined>();
+      expectTypeOf(result.avgNumber).toEqualTypeOf<number | undefined>();
+    });
+  });
+  describe("aggregate", () => {
+    it("has correct aggregation keys", () => {
+      void fauxObjectSet.aggregate({
+        "$select": {
+          "lastClockIn:max": "asc",
+          "lastClockIn:min": "desc",
+          "lastClockIn:approximateDistinct": "asc",
+          "lastClockIn:exactDistinct": "desc",
+          "dateOfBirth:max": "desc",
+          "dateOfBirth:min": "asc",
+          "dateOfBirth:approximateDistinct": "asc",
+          "dateOfBirth:exactDistinct": "desc",
+        },
+      });
     });
   });
 });

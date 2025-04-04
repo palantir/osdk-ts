@@ -15,8 +15,12 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetOntologyEntitiesForTypeGroupsRequest } from "../GetOntologyEntitiesForTypeGroupsRequest.js";
-import type { GetOntologyEntitiesForTypeGroupsResponse } from "../GetOntologyEntitiesForTypeGroupsResponse.js";
+import type {
+  GetOntologyEntitiesForTypeGroupsRequest
+    as _api_GetOntologyEntitiesForTypeGroupsRequest,
+  GetOntologyEntitiesForTypeGroupsResponse
+    as _api_GetOntologyEntitiesForTypeGroupsResponse,
+} from "../__components.js";
 
 /**
  * Gets a map of TypeGroupRids to the rids of all the ontology entities that use the TypeGroup.
@@ -24,8 +28,8 @@ import type { GetOntologyEntitiesForTypeGroupsResponse } from "../GetOntologyEnt
  */
 export async function getOntologyEntitiesForTypeGroups(
   ctx: ConjureContext,
-  request: GetOntologyEntitiesForTypeGroupsRequest,
-): Promise<GetOntologyEntitiesForTypeGroupsResponse> {
+  request: _api_GetOntologyEntitiesForTypeGroupsRequest,
+): Promise<_api_GetOntologyEntitiesForTypeGroupsResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/load/entitiesForTypeGroups`,

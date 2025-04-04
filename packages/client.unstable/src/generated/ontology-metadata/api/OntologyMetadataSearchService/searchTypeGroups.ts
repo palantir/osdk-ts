@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { TypeGroupSearchRequest } from "../search/TypeGroupSearchRequest.js";
-import type { TypeGroupSearchResponse } from "../search/TypeGroupSearchResponse.js";
+import type {
+  TypeGroupSearchRequest as _api_search_TypeGroupSearchRequest,
+  TypeGroupSearchResponse as _api_search_TypeGroupSearchResponse,
+} from "../search/__components.js";
 
 /**
  * Endpoint to search TypeGroups based on various filters. Endpoint allows to return results based on
@@ -29,8 +31,8 @@ import type { TypeGroupSearchResponse } from "../search/TypeGroupSearchResponse.
  */
 export async function searchTypeGroups(
   ctx: ConjureContext,
-  request: TypeGroupSearchRequest,
-): Promise<TypeGroupSearchResponse> {
+  request: _api_search_TypeGroupSearchRequest,
+): Promise<_api_search_TypeGroupSearchResponse> {
   return conjureFetch(
     ctx,
     `/ontology/search/v0/searchTypeGroups`,

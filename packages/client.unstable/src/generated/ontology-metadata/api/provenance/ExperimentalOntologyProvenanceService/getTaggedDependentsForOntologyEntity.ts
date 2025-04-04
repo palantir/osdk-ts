@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,12 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetTaggedDependentsForOntologyEntityRequest } from "../GetTaggedDependentsForOntologyEntityRequest.js";
-import type { GetTaggedDependentsForOntologyEntityResponse } from "../GetTaggedDependentsForOntologyEntityResponse.js";
+import type {
+  GetTaggedDependentsForOntologyEntityRequest
+    as _api_provenance_GetTaggedDependentsForOntologyEntityRequest,
+  GetTaggedDependentsForOntologyEntityResponse
+    as _api_provenance_GetTaggedDependentsForOntologyEntityResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to get the tagged dependents on the requested OntologyEntity. Requires view permissions on the
@@ -24,8 +28,8 @@ import type { GetTaggedDependentsForOntologyEntityResponse } from "../GetTaggedD
  */
 export async function getTaggedDependentsForOntologyEntity(
   ctx: ConjureContext,
-  request: GetTaggedDependentsForOntologyEntityRequest,
-): Promise<GetTaggedDependentsForOntologyEntityResponse> {
+  request: _api_provenance_GetTaggedDependentsForOntologyEntityRequest,
+): Promise<_api_provenance_GetTaggedDependentsForOntologyEntityResponse> {
   return conjureFetch(
     ctx,
     `/provenance/getTaggedDependentsForOntologyEntity`,

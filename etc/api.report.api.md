@@ -652,6 +652,31 @@ export type LinkedType<
 export type LinkNames<Q extends ObjectOrInterfaceDefinition> = keyof CompileTimeMetadata<Q>["links"] & string;
 
 // @public (undocumented)
+export interface Logger {
+    	// (undocumented)
+    child(bindings: Record<string, any>, options?: {
+        		level?: string
+        		msgPrefix?: string
+        	}): Logger;
+    	// (undocumented)
+    debug: LogFn;
+    	// (undocumented)
+    error: LogFn;
+    	// (undocumented)
+    fatal: LogFn;
+    	// (undocumented)
+    info: LogFn;
+    	// (undocumented)
+    isLevelEnabled(level: string): boolean;
+    	// Warning: (ae-forgotten-export) The symbol "LogFn" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    trace: LogFn;
+    	// (undocumented)
+    warn: LogFn;
+}
+
+// @public (undocumented)
 export interface Media {
     	fetchContents(): Promise<Response>;
     	fetchMetadata(): Promise<MediaMetadata_2>;
@@ -1258,13 +1283,13 @@ export type TwoDimensionalAggregation<
 export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<AggregationValueTypes>;
 
 // Warning: (ae-forgotten-export) The symbol "AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "GetWirePropertyValueFromClient" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "WITH_PROPERTIES_AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type ValidAggregationKeys<
 	Q extends ObjectOrInterfaceDefinition,
 	R extends "aggregate" | "withPropertiesAggregate" = "aggregate"
-> = keyof ({ [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<GetWirePropertyValueFromClient<CompileTimeMetadata<Q>["properties"][KK]["type"]>, R extends "aggregate" ? true : false>}`]? : any } & {
+> = keyof ({ [KK in AggregatableKeys<Q> as `${KK & string}:${R extends "aggregate" ? AGG_FOR_TYPE<CompileTimeMetadata<Q>["properties"][KK]["type"]> : WITH_PROPERTIES_AGG_FOR_TYPE<CompileTimeMetadata<Q>["properties"][KK]["type"]>}`]? : any } & {
     	$count?: any
 });
 

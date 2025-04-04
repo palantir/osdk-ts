@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,13 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyRid } from "../OntologyRid.js";
-import type { LoadGothamTypeInstallationStatusesRequest } from "../typemapping/LoadGothamTypeInstallationStatusesRequest.js";
-import type { LoadGothamTypeInstallationStatusesResponse } from "../typemapping/LoadGothamTypeInstallationStatusesResponse.js";
+import type { OntologyRid as _api_OntologyRid } from "../__components.js";
+import type {
+  LoadGothamTypeInstallationStatusesRequest
+    as _api_typemapping_LoadGothamTypeInstallationStatusesRequest,
+  LoadGothamTypeInstallationStatusesResponse
+    as _api_typemapping_LoadGothamTypeInstallationStatusesResponse,
+} from "../typemapping/__components.js";
 
 /**
  * Retrieves the install status of a type by URI. Also returns its corresponding Foundry ontology version
@@ -33,9 +37,9 @@ import type { LoadGothamTypeInstallationStatusesResponse } from "../typemapping/
  */
 export async function loadGothamTypeInstallationStatuses(
   ctx: ConjureContext,
-  ontologyRid: OntologyRid,
-  request: LoadGothamTypeInstallationStatusesRequest,
-): Promise<LoadGothamTypeInstallationStatusesResponse> {
+  ontologyRid: _api_OntologyRid,
+  request: _api_typemapping_LoadGothamTypeInstallationStatusesRequest,
+): Promise<_api_typemapping_LoadGothamTypeInstallationStatusesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/typemapping/loadGothamTypeInstallationStatuses/${ontologyRid}`,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { LoadRuleSetsRequest } from "../LoadRuleSetsRequest.js";
-import type { LoadRuleSetsResponse } from "../LoadRuleSetsResponse.js";
+import type {
+  LoadRuleSetsRequest as _api_formatting_LoadRuleSetsRequest,
+  LoadRuleSetsResponse as _api_formatting_LoadRuleSetsResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to batch load RuleSets. The returned LoadRuleSetsResponse will only contain
@@ -26,8 +28,8 @@ import type { LoadRuleSetsResponse } from "../LoadRuleSetsResponse.js";
  */
 export async function loadRuleSets(
   ctx: ConjureContext,
-  request: LoadRuleSetsRequest,
-): Promise<LoadRuleSetsResponse> {
+  request: _api_formatting_LoadRuleSetsRequest,
+): Promise<_api_formatting_LoadRuleSetsResponse> {
   return conjureFetch(
     ctx,
     `/formatting/rulesets/loadRuleSets`,

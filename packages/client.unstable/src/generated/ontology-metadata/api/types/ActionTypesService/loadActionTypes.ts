@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { ActionTypeLoadRequest } from "../../ActionTypeLoadRequest.js";
-import type { ActionTypeLoadResponse } from "../../ActionTypeLoadResponse.js";
+import type {
+  ActionTypeLoadRequest as _api_ActionTypeLoadRequest,
+  ActionTypeLoadResponse as _api_ActionTypeLoadResponse,
+} from "../../__components.js";
 
 /**
  * Endpoint to batch load Action Types. The returned ActionTypeLoadResponse will only contain Actions that
@@ -24,8 +26,8 @@ import type { ActionTypeLoadResponse } from "../../ActionTypeLoadResponse.js";
  */
 export async function loadActionTypes(
   ctx: ConjureContext,
-  onBehalfOf: string | undefined,
-  request: ActionTypeLoadRequest,
-): Promise<ActionTypeLoadResponse> {
+  onBehalfOf: string | null | undefined,
+  request: _api_ActionTypeLoadRequest,
+): Promise<_api_ActionTypeLoadResponse> {
   return conjureFetch(ctx, `/actions/types/load`, "POST", request);
 }

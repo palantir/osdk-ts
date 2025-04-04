@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { TypeGroupGetOrganizationsRequest } from "../TypeGroupGetOrganizationsRequest.js";
-import type { TypeGroupGetOrganizationsResponse } from "../TypeGroupGetOrganizationsResponse.js";
+import type {
+  TypeGroupGetOrganizationsRequest as _api_TypeGroupGetOrganizationsRequest,
+  TypeGroupGetOrganizationsResponse as _api_TypeGroupGetOrganizationsResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to batch load organization rids per TypeGroup. The response will only contain entries for
@@ -25,7 +27,7 @@ import type { TypeGroupGetOrganizationsResponse } from "../TypeGroupGetOrganizat
  */
 export async function getOrganizationsForTypeGroups(
   ctx: ConjureContext,
-  request: TypeGroupGetOrganizationsRequest,
-): Promise<TypeGroupGetOrganizationsResponse> {
+  request: _api_TypeGroupGetOrganizationsRequest,
+): Promise<_api_TypeGroupGetOrganizationsResponse> {
   return conjureFetch(ctx, `/type-groups/orgs/get`, "PUT", request);
 }

@@ -1,5 +1,44 @@
 # @osdk/client
 
+## 2.2.0-beta.14
+
+### Patch Changes
+
+- Updated dependencies [a08bdfb]
+- Updated dependencies [6abf078]
+  - @osdk/client.unstable@2.2.0-beta.14
+  - @osdk/api@2.2.0-beta.14
+  - @osdk/generator-converters@2.2.0-beta.14
+
+## 2.2.0-beta.13
+
+### Minor Changes
+
+- 2ce3659: Update underlying pagination size for async iter.
+- 488b51c: Add support for using aggregations and GeoJSON types from runtime derived properties
+- e873024: Fixes issues requiring msw and p-defer
+- 88591f7: Small fixes for ObjectSpecifier
+
+### Patch Changes
+
+- Updated dependencies [488b51c]
+- Updated dependencies [71462e9]
+  - @osdk/api@2.2.0-beta.13
+  - @osdk/generator-converters@2.2.0-beta.13
+  - @osdk/client.unstable@2.2.0-beta.13
+
+## 2.2.0-beta.12
+
+### Minor Changes
+
+- c92fe73: Add OsdkConfig utils to client/unstable
+
+### Patch Changes
+
+- @osdk/api@2.2.0-beta.12
+- @osdk/client.unstable@2.2.0-beta.12
+- @osdk/generator-converters@2.2.0-beta.12
+
 ## 2.2.0-beta.11
 
 ### Patch Changes

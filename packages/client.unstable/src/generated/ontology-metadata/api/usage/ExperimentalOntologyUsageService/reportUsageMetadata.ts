@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { ReportUsageMetadataRequest } from "../ReportUsageMetadataRequest.js";
-import type { ReportUsageMetadataResponse } from "../ReportUsageMetadataResponse.js";
+import type {
+  ReportUsageMetadataRequest as _api_usage_ReportUsageMetadataRequest,
+  ReportUsageMetadataResponse as _api_usage_ReportUsageMetadataResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to report usage of ontology entities. The reported usage will be stored and made available for
@@ -28,7 +30,7 @@ import type { ReportUsageMetadataResponse } from "../ReportUsageMetadataResponse
 export async function reportUsageMetadata(
   ctx: ConjureContext,
   serviceToken: string,
-  request: ReportUsageMetadataRequest,
-): Promise<ReportUsageMetadataResponse> {
+  request: _api_usage_ReportUsageMetadataRequest,
+): Promise<_api_usage_ReportUsageMetadataResponse> {
   return conjureFetch(ctx, `/usage/reportUsageMetadata`, "POST", request);
 }

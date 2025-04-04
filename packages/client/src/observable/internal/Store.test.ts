@@ -14,27 +14,24 @@
  * limitations under the License.
  */
 
-import type {
-  CompileTimeMetadata,
-  ObjectMetadata,
-  ObjectTypeDefinition,
-  Osdk,
-  OsdkBase,
-} from "@osdk/api";
+import type { Osdk } from "@osdk/api";
 import {
-  createOffice,
+  editTodo,
   Employee,
   FooInterface,
   Todo,
 } from "@osdk/client.test.ontology";
-import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
+import type { SetupServer } from "@osdk/shared.test";
 import {
-  LegacyFauxFoundry,
+  ActionTypeBuilder,
+  FauxFoundry,
+  ontologies,
   startNodeApiServer,
   stubData,
 } from "@osdk/shared.test";
 import chalk from "chalk";
-import type { Mock, Task } from "vitest";
+import invariant from "tiny-invariant";
+import type { Task } from "vitest";
 import {
   afterAll,
   afterEach,
@@ -46,14 +43,11 @@ import {
   vi,
   vitest,
 } from "vitest";
+import { ActionValidationError } from "../../actions/ActionValidationError.js";
 import { type Client } from "../../Client.js";
 import { createClient } from "../../createClient.js";
-import { createMinimalClient } from "../../createMinimalClient.js";
-
+import { TestLogger } from "../../logger/TestLogger.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
-import { createObjectSet } from "../../objectSet/createObjectSet.js";
-import type { OntologyProvider } from "../../ontology/OntologyProvider.js";
-import { InterfaceDefinitions } from "../../ontology/OntologyProvider.js";
 import type {
   ObserveListOptions,
   Unsubscribable,
@@ -62,12 +56,10 @@ import type { ObjectCacheKey } from "./ObjectQuery.js";
 import { createOptimisticId } from "./OptimisticId.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
 import { invalidateList, Store } from "./Store.js";
-import type { MockClientHelper } from "./testUtils.js";
 import {
   applyCustomMatchers,
   createClientMockHelper,
   createDefer,
-  createTestLogger,
   expectNoMoreCalls,
   expectSingleListCallAndClear,
   expectSingleObjectCallAndClear,
@@ -80,9 +72,11 @@ import {
   waitForCall,
 } from "./testUtils.js";
 
+const JOHN_DOE_ID = 50030;
+
 const defer = createDefer();
 
-const logger = createTestLogger({});
+const logger = new TestLogger();
 
 beforeAll(() => {
   vi.setConfig({
@@ -126,6 +120,52 @@ function testStage(s: string) {
 
 applyCustomMatchers();
 
+function setupOntology(fauxFoundry: FauxFoundry) {
+  const fauxOntology = fauxFoundry.getDefaultOntology();
+  ontologies.addEmployeeOntology(fauxOntology);
+
+  fauxFoundry.getDefaultOntology().registerObjectType(
+    stubData.todoWithLinkTypes,
+  );
+
+  fauxFoundry.getDefaultOntology().registerActionType(
+    stubData.editTodo.actionTypeV2,
+    (b, payload) => {
+      const { id, ...other } = payload.parameters;
+
+      b.modifyObject<Todo>(Todo.apiName, id, { ...other });
+    },
+  );
+}
+
+function setupSomeEmployees(fauxFoundry: FauxFoundry) {
+  const dataStore = fauxFoundry.getDefaultDataStore();
+
+  dataStore.registerObject(Employee, {
+    employeeId: 1,
+  });
+
+  dataStore.registerObject(Employee, {
+    employeeId: 2,
+  });
+
+  dataStore.registerObject(Employee, {
+    $apiName: "Employee",
+    employeeId: 3,
+  });
+
+  dataStore.registerObject(Employee, {
+    $apiName: "Employee",
+    employeeId: 4,
+  });
+
+  dataStore.registerObject(Employee, {
+    $apiName: "Employee",
+    employeeId: JOHN_DOE_ID,
+    fullName: "John Doe",
+  });
+}
+
 describe(Store, () => {
   describe("with mock server", () => {
     let client: Client;
@@ -136,11 +176,14 @@ describe(Store, () => {
 
     beforeAll(async () => {
       const testSetup = startNodeApiServer(
-        new LegacyFauxFoundry(),
+        new FauxFoundry("https://stack.palantir.com/"),
         createClient,
         { logger },
       );
       ({ client } = testSetup);
+
+      setupOntology(testSetup.fauxFoundry);
+      setupSomeEmployees(testSetup.fauxFoundry);
 
       employeesAsServerReturns = (await client(Employee).fetchPage()).data;
       mutatedEmployees = [
@@ -546,13 +589,13 @@ describe(Store, () => {
       });
 
       const likeEmployee50030 = expect.objectContaining({
-        $primaryKey: 50030,
+        $primaryKey: JOHN_DOE_ID,
         fullName: "John Doe",
       });
 
       it("fetches and updates twice", async () => {
         defer(
-          cache.observeObject(Employee, 50030, { mode: "force" }, subFn1),
+          cache.observeObject(Employee, JOHN_DOE_ID, { mode: "force" }, subFn1),
         );
 
         expect(subFn1.next).toHaveBeenCalledExactlyOnceWith(
@@ -578,7 +621,7 @@ describe(Store, () => {
         subFn1.next.mockClear();
 
         defer(
-          cache.observeObject(Employee, 50030, { mode: "force" }, subFn2),
+          cache.observeObject(Employee, JOHN_DOE_ID, { mode: "force" }, subFn2),
         );
         expectSingleObjectCallAndClear(subFn1, likeEmployee50030, "loading");
 
@@ -611,14 +654,21 @@ describe(Store, () => {
         subFn.error.mockClear();
 
         sub = defer(
-          cache.observeObject(Employee, 50030, { mode: "offline" }, subFn),
+          cache.observeObject(
+            Employee,
+            JOHN_DOE_ID,
+            { mode: "offline" },
+            subFn,
+          ),
         );
 
         expectSingleObjectCallAndClear(subFn, undefined!, "init");
       });
 
       it("does basic observation and unsubscribe", async () => {
-        const emp = employeesAsServerReturns[0];
+        const emp = employeesAsServerReturns.find(x =>
+          x.$primaryKey === JOHN_DOE_ID
+        )!;
 
         // force an update
         updateObject(cache, emp);
@@ -639,7 +689,9 @@ describe(Store, () => {
       });
 
       it("observes with list update", async () => {
-        const emp = employeesAsServerReturns[0];
+        const emp = employeesAsServerReturns.find(x =>
+          x.$primaryKey === JOHN_DOE_ID
+        )!;
 
         // force an update
         updateObject(cache, emp.$clone({ fullName: "not the name" }));
@@ -891,25 +943,40 @@ describe(Store, () => {
   });
 
   describe("with mock client", () => {
-    let client: Mock<Client> & Client;
-    let mockClient: MockClientHelper;
+    let client: Client;
+    let apiServer: SetupServer;
+    let fauxFoundry: FauxFoundry;
     let store: Store;
 
+    beforeAll(async () => {
+      const testSetup = startNodeApiServer(
+        new FauxFoundry("https://stack.palantir.com/", undefined, { logger }),
+        createClient,
+        { logger },
+      );
+      ({ client, apiServer, fauxFoundry } = testSetup);
+
+      setupOntology(testSetup.fauxFoundry);
+
+      return () => {
+        testSetup.apiServer.close();
+      };
+    });
+
+    beforeEach(() => {
+      apiServer.resetHandlers();
+    });
+
     beforeEach(async () => {
-      mockClient = createClientMockHelper();
-      client = mockClient.client;
       store = new Store(client);
     });
 
     it("properly fires error handler for a list", async () => {
-      const error = new Error("A faux error");
-      mockClient.mockFetchPageOnce().reject(error);
-
       const sub = mockListSubCallback();
 
       store.observeList({
         type: Employee,
-        where: {},
+        where: { aBadPropertyThatDoesNotExist: "aBadValue" } as any,
         orderBy: {},
       }, sub);
 
@@ -920,28 +987,14 @@ describe(Store, () => {
     });
     describe("batching", () => {
       it("groups requests for single objects", async () => {
-        mockClient.mockFetchPageOnce().resolve({
-          data: [{
-            $apiName: "Employee",
-            $objectType: "Employee",
-            $primaryKey: 0,
-          }, {
-            $apiName: "Employee",
-            $objectType: "Employee",
-            $primaryKey: 1,
-          }],
-          nextPageToken: undefined,
-          totalCount: "2",
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 0,
         });
-
-        vi.mocked(client.fetchMetadata).mockReturnValue(Promise.resolve(
-          {
-            primaryKeyApiName: "id",
-          } satisfies Pick<
-            ObjectMetadata,
-            "primaryKeyApiName"
-          > as ObjectMetadata,
-        ));
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 1,
+        });
 
         const a = mockSingleSubCallback();
         const b = mockSingleSubCallback();
@@ -971,32 +1024,19 @@ describe(Store, () => {
             }),
           }),
         });
-        console.log(client.mock.calls);
       });
     });
 
     describe("actions", () => {
       beforeEach(() => {
-        vi.mocked(client.fetchMetadata).mockReturnValue(Promise.resolve(
-          {
-            primaryKeyApiName: "id",
-          } satisfies Pick<
-            ObjectMetadata,
-            "primaryKeyApiName"
-          > as ObjectMetadata,
-        ));
+        fauxFoundry.getDefaultDataStore().clear();
       });
 
       it("properly invalidates objects", async () => {
-        // after the below `observeObject`, the cache will need to load from the server
-        // (also the batch loader uses object set to load not fetchOne)
-        mockClient.mockFetchPageOnce().resolve({
-          data: [{
-            $apiName: "Todo",
-            $primaryKey: 0,
-          }],
-          nextPageToken: undefined,
-          totalCount: "1",
+        fauxFoundry.getDefaultDataStore().registerObject(Todo, {
+          $apiName: "Todo",
+          id: 0,
+          text: "og title",
         });
 
         const todoSubFn = mockSingleSubCallback();
@@ -1016,26 +1056,9 @@ describe(Store, () => {
         });
 
         // at this point we have an observation properly set up
-        mockClient.mockApplyActionOnce().resolve({
-          addedObjects: [{
-            objectType: "Todo",
-            primaryKey: 0,
-          }],
-        });
-
-        // after we apply the action, the object is invalidated and gets re-requested
-        mockClient.mockFetchPageOnce().resolve({
-          data: [{
-            $primaryKey: 0,
-            $apiName: "Todo",
-            text: "hello there kind sir",
-          }],
-          nextPageToken: undefined,
-          totalCount: "1",
-        });
-
-        await store.applyAction(createOffice, {
-          officeId: "whatever",
+        await store.applyAction(editTodo, {
+          id: 0,
+          text: "hello there kind sir",
         });
 
         await todoSubFn.expectLoadingAndLoaded({
@@ -1051,18 +1074,16 @@ describe(Store, () => {
       });
 
       it("rolls back optimistic updates on error", async () => {
-        const fauxObject = {
-          $apiName: "Todo",
-          $objectType: "Todo",
-          $primaryKey: 0,
-          $title: "does not matter",
-        } as Osdk.Instance<Todo> & ObjectHolder;
+        const fauxObject = expect.objectContaining({
+          id: 0,
+          text: "does not matter",
+        });
 
-        // after the below `observeObject`, the cache will need to load from the server
-        mockClient.mockFetchPageOnce().resolve({
-          data: [fauxObject],
-          nextPageToken: undefined,
-          totalCount: "1",
+        // set the object in the "backend"
+        fauxFoundry.getDefaultDataStore().registerObject(Todo, {
+          $apiName: "Todo",
+          id: 0,
+          text: "does not matter",
         });
 
         const todoSubFn = mockSingleSubCallback();
@@ -1083,125 +1104,63 @@ describe(Store, () => {
           }),
         });
 
+        const object: Osdk.Instance<Todo> | undefined = store.getValue(
+          store.getCacheKey<ObjectCacheKey>("object", "Todo", 0),
+        )?.value as any;
+        invariant(object);
+
         // at this point we have an observation properly set up
-        const applyActionResult = mockClient.mockApplyActionOnce();
-
-        const actionPromise = store.applyAction(createOffice, {
-          officeId: "whatever",
-        }, {
-          optimisticUpdate: (ctx) => {
-            ctx.updateObject({ ...fauxObject, text: "optimistic" });
-          },
-        });
-
-        await waitForCall(todoSubFn, 1);
-        expect(todoSubFn.next).toHaveBeenCalledExactlyOnceWith(
-          objectPayloadContaining({
-            object: {
-              ...fauxObject,
-              text: "optimistic",
+        await expect(
+          store.applyAction(editTodo, {
+            id: "not an id that exists",
+          } as any, {
+            optimisticUpdate: (ctx) => {
+              ctx.updateObject(object.$clone({ text: "optimistic" }));
             },
+          }),
+        ).rejects.toThrow(ActionValidationError);
+
+        await waitForCall(todoSubFn, 2);
+        await todoSubFn.expectLoadingAndLoaded({
+          loading: objectPayloadContaining({
             status: "loading",
+            object: expect.objectContaining({
+              id: 0,
+              text: "optimistic",
+            }),
             isOptimistic: true,
           }),
-        );
-        todoSubFn.next.mockClear();
-
-        // let the action error out
-        applyActionResult.reject("an error thrown");
-        await expect(actionPromise).rejects.toThrow("an error thrown");
-
-        // back to the original object
-        await waitForCall(todoSubFn, 1);
-        expect(todoSubFn.next).toHaveBeenCalledExactlyOnceWith(
-          objectPayloadContaining({
+          loaded: objectPayloadContaining({
             object: fauxObject,
             status: "loaded",
             isOptimistic: false,
           }),
-        );
+        });
       });
     });
 
     describe("orderBy", async () => {
-      const ontologyProvider: OntologyProvider = {
-        getObjectDefinition: async (apiName) => {
-          return {
-            ...wireObjectTypeFullMetadataToSdkObjectMetadata(
-              stubData.todoWithLinkTypes,
-              true,
-            ),
-            [InterfaceDefinitions]: {},
-          };
-        },
-        getActionDefinition(apiName) {
-          throw new Error("not implemented");
-        },
-        getInterfaceDefinition(apiName) {
-          throw new Error("not implemented");
-        },
-        getQueryDefinition(apiName) {
-          throw new Error("not implemented");
-        },
-      };
-
-      const minimalClient = createMinimalClient(
-        { ontologyRid: "ri.whatever" },
-        "https://localhost:8080",
-        () => Promise.resolve("token"),
-        { logger },
-        fetch,
-        createObjectSet,
-        (opts) => (client) => ontologyProvider,
-      );
-
-      async function createObject<
-        X extends ObjectTypeDefinition,
-        WeakSauce extends boolean = false,
-      >(
-        type: X,
-        x:
-          // & OntologyObjectV2
-          & Omit<
-            OsdkBase<WeakSauce extends true ? ObjectTypeDefinition : X>,
-            "$apiName" | "$objectType" | "$objectSpecifier"
-          >
-          & CompileTimeMetadata<X>["props"],
-      ) {
-        return (await minimalClient.objectFactory2(
-          minimalClient,
-          [{
-            ...x,
-            $apiName: type.apiName,
-            $objectType: type.apiName,
-            $objectSpecifier: `${type.apiName}:${x.$primaryKey}`,
-          }],
-          undefined,
-        ))[0] as ObjectHolder & Osdk.Instance<X>;
-      }
-
       let nextPk = 0;
-      const fauxObjectA = await createObject(Todo, {
-        $primaryKey: nextPk,
-        $title: "a",
-        id: nextPk,
-        text: "a",
-      });
 
-      nextPk++;
-      const fauxObjectB = await createObject(Todo, {
-        $primaryKey: nextPk,
-        $title: "b",
-        id: nextPk,
-        text: "b",
-      });
+      let fauxObjectA: Osdk.Instance<Todo>;
+      let fauxObjectB: Osdk.Instance<Todo>;
+      let fauxObjectC: Osdk.Instance<Todo>;
 
-      nextPk++;
-      const fauxObjectC = await createObject(Todo, {
-        $primaryKey: nextPk,
-        $title: "c",
-        id: nextPk,
-        text: "c",
+      beforeAll(async () => {
+        fauxFoundry.getDefaultDataStore().clear();
+        [fauxObjectA, fauxObjectB, fauxObjectC] = await Promise.all(
+          (["a", "b", "c"] as const).map(text => {
+            const id = nextPk++;
+
+            fauxFoundry.getDefaultDataStore().registerObject(Todo, {
+              $apiName: "Todo",
+              id,
+              text,
+            });
+
+            return client(Todo).fetchOne(id);
+          }),
+        );
       });
 
       const noWhereNoOrderBy = {
@@ -1220,17 +1179,6 @@ describe(Store, () => {
 
       const subListUnordered = mockListSubCallback();
       const subListOrdered = mockListSubCallback();
-
-      beforeEach(() => {
-        vi.mocked(client.fetchMetadata).mockReturnValue(Promise.resolve(
-          {
-            primaryKeyApiName: "id",
-          } satisfies Pick<
-            ObjectMetadata,
-            "primaryKeyApiName"
-          > as ObjectMetadata,
-        ));
-      });
 
       beforeEach(() => {
         defer(
@@ -1291,14 +1239,11 @@ describe(Store, () => {
       });
 
       it("produces proper results with optimistic updates and successful action", async () => {
-        const optimisticallyMutatedA = await createObject<Todo, true>(Todo, {
-          ...fauxObjectA,
+        const optimisticallyMutatedA = fauxObjectA.$clone({
           text: "optimistic",
         });
         const pkForOptimistic = nextPk++;
-        const optimisticallyCreatedObjectD = await createObject(Todo, {
-          "$primaryKey": pkForOptimistic,
-          "$title": "d",
+        const optimisticallyCreatedObjectD = expect.objectContaining({
           "text": "d",
           id: pkForOptimistic,
         });
@@ -1321,12 +1266,6 @@ describe(Store, () => {
         );
 
         testStage("Start");
-
-        // the optimistic job will call createObject which triggers the `objectFactory2` of the
-        // cache context.
-        mockClient.mockObjectFactory2Once().resolve([
-          optimisticallyCreatedObjectD,
-        ]);
 
         // Perform something optimistic.
         const removeOptimisticResult = runOptimisticJob(store, (b) => {
@@ -1383,27 +1322,17 @@ describe(Store, () => {
       // I think these are named backwards
       it("produces proper results with optimistic updates and rollback", async () => {
         const pkForOptimistic = nextPk++;
-        const optimisticallyCreatedObjectD = await createObject<Todo>(Todo, {
+        const optimisticallyCreatedObjectD = expect.objectContaining({
           "$primaryKey": pkForOptimistic,
-          "$title": "d",
-          "text": "d",
+          "$title": undefined, // FIXME once this is calculated by optimistic then this needs to be the right value
+          "text": "d optimistic",
           id: pkForOptimistic,
         });
-
-        const optimisticallyMutatedA = await createObject<Todo, true>(Todo, {
-          ...fauxObjectA,
+        const optimisticallyMutatedA = fauxObjectA.$clone({
           text: "optimistic",
         });
 
         testStage("Initial Setup");
-
-        // later we will "create" this object
-        const createdObjectD = await createObject<Todo>(Todo, {
-          "$primaryKey": 9000,
-          "$title": "d prime",
-          "text": "d prime",
-          id: 9000,
-        });
 
         // for whatever reason, the first list is loaded as [B, A]
         updateList(store, noWhereNoOrderBy, [fauxObjectB, fauxObjectA]);
@@ -1424,25 +1353,44 @@ describe(Store, () => {
 
         testStage("Optimistic Creation");
 
+        // create the weirdest action ever. It always creates a Todo with
+        // a new primary key and the text "d" and updates A
+        const {
+          actionDefinition: crazyAction,
+          actionTypeV2: crazyActionTypeV2,
+        } = new ActionTypeBuilder("asdf")
+          .addParameter("foo", "string")
+          .build();
+
+        fauxFoundry.getDefaultOntology().registerActionType(
+          crazyActionTypeV2,
+          (batch, params) => {
+            const idForD = nextPk++;
+
+            batch.addObject(Todo.apiName, idForD, {
+              id: idForD,
+              text: "d",
+            });
+
+            batch.modifyObject(fauxObjectA.$apiName, fauxObjectA.$primaryKey, {
+              text: "a prime",
+              $title: "a prime", // FIXME we shouldn't have to set this, it can be calculated
+            });
+          },
+        );
+
         // the optimistic job will call createObject which triggers the `objectFactory2` of the
         // cache context.
 
-        mockClient.mockObjectFactory2Once().resolve([
-          optimisticallyCreatedObjectD,
-        ]);
-
-        const mockedApplyAction = mockClient.mockApplyActionOnce();
-
-        testStage("Apply Action");
-
-        const actionPromise = store.applyAction(
-          createOffice,
-          { officeId: "5" },
+        // Perform something optimistic.
+        const pActionResult = store.applyAction<typeof crazyAction>(
+          crazyAction,
+          {},
           {
             optimisticUpdate: (b) => {
-              b.createObject(Todo, optimisticallyCreatedObjectD.$primaryKey, {
-                id: optimisticallyCreatedObjectD.$primaryKey,
-                text: "d",
+              b.createObject(Todo, pkForOptimistic, {
+                id: pkForOptimistic,
+                text: "d optimistic",
               });
               b.updateObject(optimisticallyMutatedA);
             },
@@ -1469,40 +1417,18 @@ describe(Store, () => {
 
         testStage("Resolve Action");
 
-        const modifiedObjectA = await createObject<Todo>(Todo, {
-          ...fauxObjectA,
+        const modifiedObjectA = fauxObjectA.$clone({
           text: "a prime",
         });
 
-        // The action will complete and then revalidate in order...
-        mockClient.mockFetchPageOnce().resolve({
-          data: [modifiedObjectA, createdObjectD],
-          nextPageToken: undefined,
-          totalCount: "1",
-        });
-
-        mockedApplyAction.resolve({
-          addedObjects: [
-            {
-              objectType: "Todo",
-              primaryKey: createdObjectD.id,
-            },
-          ],
-          modifiedObjects: [
-            {
-              objectType: "Todo",
-              primaryKey: fauxObjectA.$primaryKey,
-            },
-          ],
-        });
-
-        await actionPromise;
+        const pkForD = (await pActionResult).addedObjects?.[0].primaryKey;
+        invariant(typeof pkForD === "number");
+        // load this without the cache for comparisons
+        const createdObjectD = await client(Todo).fetchOne(pkForD);
 
         await waitForCall(subListUnordered, 1);
-        console.log("=====", subListUnordered.next.mock.calls[0][0]);
         expectSingleListCallAndClear(subListUnordered, [
           fauxObjectB,
-          // fauxObjectC,
           modifiedObjectA,
           createdObjectD,
         ], { isOptimistic: false });
