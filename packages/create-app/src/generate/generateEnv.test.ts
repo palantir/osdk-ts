@@ -48,6 +48,12 @@ PUBLIC_FOUNDRY_API_URL=https://example.palantirfoundry.com
 # Developer Console. It typically does not need to be changed.
 
 PUBLIC_FOUNDRY_CLIENT_ID=123
+
+# This Ontology RID must match the Ontology RID your Developer Console is associated with.
+# You can check the Ontology on the "Data Resources" page of Developer Console. 
+# It typically does not need to be changed.
+
+PUBLIC_FOUNDRY_ONTOLOGY_RID=ri.ontology.main.ontology.fake
 `.trimStart();
 
 const expectedEnvDevelopmentCorsProxy = `
@@ -78,6 +84,12 @@ PUBLIC_FOUNDRY_API_URL=http://localhost:8080
 # Developer Console. It typically does not need to be changed.
 
 PUBLIC_FOUNDRY_CLIENT_ID=123
+
+# This Ontology RID must match the Ontology RID your Developer Console is associated with.
+# You can check the Ontology on the "Data Resources" page of Developer Console. 
+# It typically does not need to be changed.
+
+PUBLIC_FOUNDRY_ONTOLOGY_RID=ri.ontology.main.ontology.fake
 `.trimStart();
 
 const expectedEnvProduction = `
@@ -108,6 +120,12 @@ PUBLIC_FOUNDRY_API_URL=https://example.palantirfoundry.com
 # Developer Console. It typically does not need to be changed.
 
 PUBLIC_FOUNDRY_CLIENT_ID=123
+
+# This Ontology RID must match the Ontology RID your Developer Console is associated with.
+# You can check the Ontology on the "Data Resources" page of Developer Console. 
+# It typically does not need to be changed.
+
+PUBLIC_FOUNDRY_ONTOLOGY_RID=ri.ontology.main.ontology.fake
 `.trimStart();
 
 const expectedEnvProductionNoAppUrl = `
@@ -138,6 +156,12 @@ PUBLIC_FOUNDRY_API_URL=https://example.palantirfoundry.com
 # Developer Console. It typically does not need to be changed.
 
 PUBLIC_FOUNDRY_CLIENT_ID=123
+
+# This Ontology RID must match the Ontology RID your Developer Console is associated with.
+# You can check the Ontology on the "Data Resources" page of Developer Console. 
+# It typically does not need to be changed.
+
+PUBLIC_FOUNDRY_ONTOLOGY_RID=ri.ontology.main.ontology.fake
 `.trimStart();
 
 test("it generates .env.development", () => {
@@ -146,6 +170,7 @@ test("it generates .env.development", () => {
     foundryUrl: "https://example.palantirfoundry.com",
     clientId: "123",
     corsProxy: false,
+    ontology: "ri.ontology.main.ontology.fake",
   })).toEqual(expectedEnvDevelopment);
 });
 
@@ -155,6 +180,7 @@ test("it generates .env.development assuming CORS proxy", () => {
     foundryUrl: "https://example.palantirfoundry.com",
     clientId: "123",
     corsProxy: true,
+    ontology: "ri.ontology.main.ontology.fake",
   })).toEqual(expectedEnvDevelopmentCorsProxy);
 });
 
@@ -164,6 +190,7 @@ test("it generates .env.production", () => {
     foundryUrl: "https://example.palantirfoundry.com",
     applicationUrl: "https://app.com",
     clientId: "123",
+    ontology: "ri.ontology.main.ontology.fake",
   })).toEqual(expectedEnvProduction);
 });
 
@@ -173,5 +200,6 @@ test("it generates .env.production without app url", () => {
     foundryUrl: "https://example.palantirfoundry.com",
     applicationUrl: undefined,
     clientId: "123",
+    ontology: "ri.ontology.main.ontology.fake",
   })).toEqual(expectedEnvProductionNoAppUrl);
 });

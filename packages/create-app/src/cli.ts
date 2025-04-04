@@ -23,6 +23,7 @@ import { promptApplicationUrl } from "./prompts/promptApplicationUrl.js";
 import { promptClientId } from "./prompts/promptClientId.js";
 import { promptCorsProxy } from "./prompts/promptCorsProxy.js";
 import { promptFoundryUrl } from "./prompts/promptFoundryUrl.js";
+import { promptOntologyRid } from "./prompts/promptOntologyRid.js";
 import { promptOsdkPackage } from "./prompts/promptOsdkPackage.js";
 import { promptOsdkRegistryUrl } from "./prompts/promptOsdkRegistryUrl.js";
 import { promptOverwrite } from "./prompts/promptOverwrite.js";
@@ -43,6 +44,7 @@ interface CliArgs {
   applicationUrl?: string;
   skipApplicationUrl?: boolean;
   application?: string;
+  ontology?: string;
   clientId?: string;
   osdkPackage?: string;
   osdkRegistryUrl?: string;
@@ -100,6 +102,10 @@ export async function cli(args: string[] = process.argv): Promise<void> {
             type: "string",
             describe: "Application resource identifier (rid)",
           })
+          .option("ontology", {
+            type: "string",
+            describe: "Ontology resource identifier (rid)",
+          })
           .option("clientId", {
             type: "string",
             describe: "OAuth client ID for application",
@@ -136,6 +142,7 @@ export async function cli(args: string[] = process.argv): Promise<void> {
   const foundryUrl: string = await promptFoundryUrl(parsed);
   const applicationUrl: string | undefined = await promptApplicationUrl(parsed);
   const application: string = await promptApplicationRid(parsed);
+  const ontology: string = await promptOntologyRid(parsed);
   const clientId: string = await promptClientId(parsed);
   const osdkPackage: string = await promptOsdkPackage(parsed);
   const osdkRegistryUrl: string = await promptOsdkRegistryUrl(parsed);
@@ -155,5 +162,6 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     osdkRegistryUrl,
     corsProxy,
     scopes,
+    ontology,
   });
 }
