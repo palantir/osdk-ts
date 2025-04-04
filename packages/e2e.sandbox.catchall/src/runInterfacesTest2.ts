@@ -62,6 +62,7 @@ export async function runInterfacesTest2(): Promise<void> {
     >
   >(true);
 
+  // You cannot specify both $select and $includeAllBaseObjectProperties
   const athletesNotAllSelected = await dsClient(Athlete).where({
     name22: { $eq: "Michael Jordan" },
   }).fetchPage({

@@ -17,6 +17,7 @@
 import type {
   ActionDefinition,
   ActionEditResponse,
+  FetchPageArgs,
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -235,7 +236,7 @@ export function createClientMockHelper(): MockClientHelper {
     const d = pDefer<X>();
 
     const objectSet: ObjectSet<ObjectTypeDefinition> = {
-      fetchPage: async (fetchPageArgs) => {
+      fetchPage: async (fetchPageArgs: FetchPageArgs<any>) => {
         mockLog("fetchPage", fetchPageArgs);
         const r = await d.promise;
         return { ...r, $primaryKey: fetchPageArgs };
@@ -260,7 +261,7 @@ export function createClientMockHelper(): MockClientHelper {
 
     client.mockReturnValueOnce(
       {
-        fetchOne: async (a) => {
+        fetchOne: async (a: FetchPageArgs<any>) => {
           mockLog("fetchOne", a);
           invariant(
             expectedId === undefined || a === expectedId,
@@ -269,9 +270,11 @@ export function createClientMockHelper(): MockClientHelper {
           const r = await d.promise;
           invariant(
             r.$primaryKey === a,
-            `expected id to match. Got ${a} but object to return was ${r.$primaryKey}`,
+            `expected id to match. Got ${
+              JSON.stringify(a)
+            } but object to return was ${r.$primaryKey}`,
           );
-          return r;
+          return r as Osdk.Instance<any>;
         },
       } as Pick<ObjectSet<ObjectTypeDefinition>, "fetchOne">,
     );
