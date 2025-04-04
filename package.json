@@ -15,6 +15,7 @@
     "prepare": "husky install",
     "tag-release": "./scripts/tag-release.sh",
     "test": "FORCE_COLOR=1 turbo run test",
+    "test-backcompat": "./scripts/checkMinorBackcompat.sh",
     "test:watch": "FORCE_COLOR=1 turbo run test:watch",
     "typecheckAll": "tsc --build packages/* examples-extra/basic/*"
   },
