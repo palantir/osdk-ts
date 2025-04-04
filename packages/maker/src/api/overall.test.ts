@@ -2945,5 +2945,177 @@ describe("Ontology Defining", () => {
         `[Error: Invariant failed: Retention period "bad retention period string" on object "buzz" is not a valid ISO 8601 duration string]`,
       );
     });
+
+    it("Property-level datasources are properly defined", () => {
+      const exampleObject = defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "exampleObject",
+        pluralDisplayName: "exampleObject",
+        apiName: "fizz",
+        primaryKeys: ["bar"],
+        properties: [{
+          apiName: "fizz",
+          type: "mediaReference",
+          displayName: "Fizz",
+        }, {
+          apiName: "bar",
+          type: "string",
+          displayName: "Bar",
+        }],
+        datasource: { type: "stream" },
+      });
+
+      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+        {
+          "blockData": {
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {
+              "com.palantir.fizz": {
+                "datasources": [
+                  {
+                    "datasource": {
+                      "mediaSetView": {
+                        "assumedMarkings": [],
+                        "mediaSetViewLocator": "com.palantir.fizz.fizz",
+                        "properties": [
+                          "fizz",
+                        ],
+                      },
+                      "type": "mediaSetView",
+                    },
+                    "editsConfiguration": {
+                      "onlyAllowPrivilegedEdits": false,
+                    },
+                    "redacted": false,
+                    "rid": "ri.ontology.main.datasource.fizz",
+                  },
+                  {
+                    "datasource": {
+                      "streamV2": {
+                        "propertyMapping": {
+                          "bar": "bar",
+                          "fizz": "fizz",
+                        },
+                        "propertySecurityGroups": undefined,
+                        "retentionPolicy": {
+                          "none": {},
+                          "type": "none",
+                        },
+                        "streamLocator": "com.palantir.fizz",
+                      },
+                      "type": "streamV2",
+                    },
+                    "editsConfiguration": {
+                      "onlyAllowPrivilegedEdits": false,
+                    },
+                    "redacted": false,
+                    "rid": "ri.ontology.main.datasource.com.palantir.fizz",
+                  },
+                ],
+                "entityMetadata": {
+                  "arePatchesEnabled": false,
+                },
+                "objectType": {
+                  "allImplementsInterfaces": {},
+                  "apiName": "com.palantir.fizz",
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "exampleObject",
+                    "groupDisplayName": undefined,
+                    "icon": {
+                      "blueprint": {
+                        "color": "#2D72D2",
+                        "locator": "cube",
+                      },
+                      "type": "blueprint",
+                    },
+                    "pluralDisplayName": "exampleObject",
+                    "visibility": "NORMAL",
+                  },
+                  "implementsInterfaces2": [],
+                  "primaryKeys": [
+                    "bar",
+                  ],
+                  "propertyTypes": {
+                    "bar": {
+                      "apiName": "bar",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Bar",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [],
+                      "valueType": undefined,
+                    },
+                    "fizz": {
+                      "apiName": "fizz",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Fizz",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "mediaReference": {},
+                        "type": "mediaReference",
+                      },
+                      "typeClasses": [],
+                      "valueType": undefined,
+                    },
+                  },
+                  "redacted": false,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                  "titlePropertyTypeRid": "bar",
+                },
+              },
+            },
+            "sharedPropertyTypes": {},
+          },
+          "importedTypes": {
+            "sharedPropertyTypes": [],
+          },
+        }
+      `);
+    });
   });
 });

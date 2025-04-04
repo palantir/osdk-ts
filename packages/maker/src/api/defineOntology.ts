@@ -49,6 +49,7 @@ import type {
   OntologyIrValueTypeBlockDataEntry,
   RetentionPolicy,
 } from "@osdk/client.unstable";
+import { isExotic } from "./defineObject.js";
 import type {
   InterfaceType,
   LinkTypeDefinition,
@@ -179,14 +180,17 @@ function convertToWireOntologyIr(
 function convertObject(
   objectType: ObjectType,
 ): OntologyIrObjectTypeBlockDataV2 {
-  const datasource: OntologyIrObjectTypeDatasource = {
-    rid: "ri.ontology.main.datasource.".concat(objectType.apiName),
-    datasource: convertDatasourceDefinition(objectType),
-    editsConfiguration: {
-      onlyAllowPrivilegedEdits: false,
-    },
-    redacted: false,
-  };
+  const propertyDatasources: OntologyIrObjectTypeDatasource[] =
+    (objectType.properties ?? [])
+      .flatMap(prop => extractPropertyDatasource(prop, objectType.apiName));
+
+  const objectDatasource = buildDatasource(
+    objectType.apiName,
+    convertDatasourceDefinition(
+      objectType,
+      objectType.properties ?? [],
+    ),
+  );
 
   const implementations = objectType.implementsInterfaces ?? [];
 
@@ -228,13 +232,61 @@ function convertObject(
       })),
       allImplementsInterfaces: {},
     },
-    datasources: [datasource],
+    datasources: [...propertyDatasources, objectDatasource],
     entityMetadata: { arePatchesEnabled: objectType.editsEnabled ?? false },
   };
 }
 
+function extractPropertyDatasource(
+  property: ObjectPropertyType,
+  objectTypeApiName: string,
+): OntologyIrObjectTypeDatasource[] {
+  if (!isExotic(property.type)) {
+    return [];
+  }
+  const identifier = objectTypeApiName + "." + property.apiName;
+  switch (property.type as string) {
+    case "geotimeSeries":
+      const geotimeDefinition: OntologyIrObjectTypeDatasourceDefinition = {
+        type: "geotimeSeries",
+        geotimeSeries: {
+          geotimeSeriesIntegrationRid: identifier,
+          properties: [property.apiName],
+        },
+      };
+      return [buildDatasource(property.apiName, geotimeDefinition)];
+    case "mediaReference":
+      const mediaSetDefinition: OntologyIrObjectTypeDatasourceDefinition = {
+        type: "mediaSetView",
+        mediaSetView: {
+          assumedMarkings: [],
+          mediaSetViewLocator: identifier,
+          properties: [property.apiName],
+        },
+      };
+      return [buildDatasource(property.apiName, mediaSetDefinition)];
+    default:
+      return [];
+  }
+}
+
+function buildDatasource(
+  apiName: string,
+  definition: OntologyIrObjectTypeDatasourceDefinition,
+): OntologyIrObjectTypeDatasource {
+  return ({
+    rid: "ri.ontology.main.datasource.".concat(apiName),
+    datasource: definition,
+    editsConfiguration: {
+      onlyAllowPrivilegedEdits: false,
+    },
+    redacted: false,
+  });
+}
+
 function convertDatasourceDefinition(
   objectType: ObjectType,
+  properties: ObjectPropertyType[],
 ): OntologyIrObjectTypeDatasourceDefinition {
   switch (objectType.datasource?.type) {
     case "stream":
@@ -243,7 +295,7 @@ function convertDatasourceDefinition(
         ? { type: "time", time: { window } }
         : { type: "none", none: {} };
       const propertyMapping = Object.fromEntries(
-        (objectType.properties ?? []).map((
+        properties.map((
           prop,
         ) => [prop.apiName, prop.apiName]),
       );
@@ -263,7 +315,7 @@ function convertDatasourceDefinition(
         datasetV2: {
           datasetRid: objectType.apiName,
           propertyMapping: Object.fromEntries(
-            (objectType.properties ?? []).map((prop) => [
+            properties.map((prop) => [
               prop.apiName,
               { type: "column", column: prop.apiName },
             ]),
@@ -551,6 +603,12 @@ function convertType(
       return {
         type: type,
         mediaReference: {},
+      };
+
+    case (type === "geotimeSeries"):
+      return {
+        type: "geotimeSeriesReference",
+        geotimeSeriesReference: {},
       };
 
     default:
