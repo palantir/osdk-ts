@@ -40,7 +40,7 @@ test("it prompts again if answered value is invalid", async () => {
 });
 
 test("it accepts valid initial value without prompt", async () => {
-  expect(await promptOntologyRid({ ontologyRid: validOntologyRid })).toEqual(
+  expect(await promptOntologyRid({ ontology: validOntologyRid })).toEqual(
     validOntologyRid,
   );
   expect(vi.mocked(consola).prompt).not.toHaveBeenCalled();
@@ -49,7 +49,7 @@ test("it accepts valid initial value without prompt", async () => {
 test("it prompts if initial value is invalid", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce(validOntologyRid);
   expect(
-    await promptOntologyRid({ ontologyRid: "ri.something.else.and.fake" }),
+    await promptOntologyRid({ ontology: "ri.something.else.and.fake" }),
   ).toEqual(validOntologyRid);
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(1);
 });

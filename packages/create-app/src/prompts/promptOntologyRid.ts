@@ -18,18 +18,18 @@ import { consola } from "../consola.js";
 import { italic } from "../highlight.js";
 
 export async function promptOntologyRid({
-  ontologyRid,
+  ontology,
 }: {
-  ontologyRid?: string;
+  ontology?: string;
 }): Promise<string> {
   while (
-    ontologyRid == null
-    || !/^ri\.ontology\.[^.]+\.ontology\.[^.]+$/.test(ontologyRid)
+    ontology == null
+    || !/^ri\.ontology\.[^.]+\.ontology\.[^.]+$/.test(ontology)
   ) {
-    if (ontologyRid != null) {
+    if (ontology != null) {
       consola.fail("Please enter a valid Ontology resource identifier (rid)");
     }
-    ontologyRid = await consola.prompt(
+    ontology = await consola.prompt(
       `Enter the Ontology resource identifier (rid) associated with your Developer Console:\n${
         italic(
           "(Example: ri.ontology.main.ontology.1df1ce4c-f9d2-0f78-a316-287f6ac80bb2)",
@@ -38,5 +38,5 @@ export async function promptOntologyRid({
       { type: "text" },
     );
   }
-  return ontologyRid;
+  return ontology;
 }

@@ -44,12 +44,12 @@ interface CliArgs {
   applicationUrl?: string;
   skipApplicationUrl?: boolean;
   application?: string;
+  ontology?: string;
   clientId?: string;
   osdkPackage?: string;
   osdkRegistryUrl?: string;
   corsProxy?: boolean;
   scopes?: string[];
-  ontologyRid?: string;
 }
 
 export async function cli(args: string[] = process.argv): Promise<void> {
