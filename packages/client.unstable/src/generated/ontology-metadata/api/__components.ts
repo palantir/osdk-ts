@@ -26,6 +26,7 @@ import type {
   RestrictedViewName as _api_blockdata_RestrictedViewName,
   StreamName as _api_blockdata_StreamName,
   TimeSeriesSyncName as _api_blockdata_TimeSeriesSyncName,
+  ValidationRuleIndex as _api_blockdata_ValidationRuleIndex,
 } from "./blockdata/__components.js";
 import type {
   DerivedPropertiesDefinition
@@ -6043,7 +6044,6 @@ export interface OntologyInformation {
  * execution. We don't allow the mixing of FunctionRule with other LogicRules in the same ActionType.
  */
 export interface OntologyIrActionLogic {
-  actionLogRule?: OntologyIrActionLogRule | null | undefined;
   rules: Array<OntologyIrLogicRule>;
 }
 /**
@@ -6243,38 +6243,24 @@ export interface OntologyIrActionTypeEntities {
   typeGroups: Array<TypeGroupRid>;
 }
 export interface OntologyIrActionTypeLevelValidation {
-  ordering: Array<ValidationRuleRid>;
-  rules: Record<ValidationRuleRid, OntologyIrValidationRule>;
+  rules: Record<_api_blockdata_ValidationRuleIndex, OntologyIrValidationRule>;
 }
 export interface OntologyIrActionTypeLogic {
   logic: OntologyIrActionLogic;
-  notifications: Array<OntologyIrActionNotification>;
-  revert?: ActionRevert | null | undefined;
   validation: OntologyIrActionValidation;
-  webhooks?: OntologyIrActionWebhooks | null | undefined;
 }
 /**
  * An ActionType defines the schema of the edits that can be made to Phonograph.
  */
 export interface OntologyIrActionTypeMetadata {
-  actionApplyClientSettings?: ActionApplyClientPreferences | null | undefined;
-  actionLogConfiguration?: ActionLogConfiguration | null | undefined;
   apiName: ActionTypeApiName;
   displayMetadata: ActionTypeDisplayMetadata;
   entities?: OntologyIrActionTypeEntities | null | undefined;
-  formContentOrdering: Array<FormContent>;
-  notificationSettings: ActionNotificationSettings;
+  formContentOrdering: Array<OntologyIrFormContent>;
   parameterOrdering: Array<ParameterId>;
   parameters: Record<ParameterId, OntologyIrParameter>;
-  provenance?:
-    | _api_entitymetadata_provenance_ActionTypeProvenance
-    | null
-    | undefined;
-  rid: ActionTypeRid;
-  sections: Record<SectionId, Section>;
+  sections: Record<SectionId, OntologyIrSection>;
   status: ActionTypeStatus;
-  submissionConfiguration?: ActionSubmissionConfiguration | null | undefined;
-  version: ActionTypeVersion;
 }
 export interface OntologyIrActionValidation {
   actionTypeLevelValidation: OntologyIrActionTypeLevelValidation;
@@ -6282,7 +6268,6 @@ export interface OntologyIrActionValidation {
     ParameterId,
     OntologyIrConditionalValidationBlock
   >;
-  sectionValidations: Record<SectionId, OntologyIrSectionDisplayBlock>;
 }
 /**
  * ActionWebhooks contains the definition for webhooks that are executed as part of running an Action.
@@ -6308,10 +6293,6 @@ export interface OntologyIrAddInterfaceRule {
   sharedPropertyValues: Record<
     ObjectTypeFieldApiName,
     OntologyIrLogicRuleValue
-  >;
-  structFieldValues: Record<
-    ObjectTypeFieldApiName,
-    Record<StructFieldRid, StructFieldLogicRuleValue>
   >;
 }
 export interface OntologyIrAddObjectRule {
@@ -6650,12 +6631,7 @@ export interface OntologyIrConditionalOverride {
   parameterBlockOverrides: Array<OntologyIrParameterValidationBlockOverride>;
 }
 export interface OntologyIrConditionalValidationBlock {
-  conditionalOverrides: Array<OntologyIrConditionalOverride>;
   defaultValidation: OntologyIrParameterValidationBlock;
-  structFieldValidations: Record<
-    _api_types_StructParameterFieldApiName,
-    OntologyIrStructFieldConditionalValidationBlock
-  >;
 }
 export interface OntologyIrConditionValue_parameterId {
   type: "parameterId";
@@ -6770,6 +6746,22 @@ export interface OntologyIrEventMetadata {
   eventIdPropertyTypeRid: ObjectTypeFieldApiName;
   startTimePropertyTypeRid: ObjectTypeFieldApiName;
 }
+export interface OntologyIrFormContent_parameterId {
+  type: "parameterId";
+  parameterId: ParameterId;
+}
+
+export interface OntologyIrFormContent_sectionId {
+  type: "sectionId";
+  sectionId: SectionId;
+}
+/**
+ * Items that we can place on the action form.
+ */
+export type OntologyIrFormContent =
+  | OntologyIrFormContent_parameterId
+  | OntologyIrFormContent_sectionId;
+
 export interface OntologyIrFunctionExecutionWithRecipientInput_logicRuleValue {
   type: "logicRuleValue";
   logicRuleValue: OntologyIrLogicRuleValue;
@@ -6964,31 +6956,6 @@ export type OntologyIrLinkTypeStatus =
   | OntologyIrLinkTypeStatus_deprecated
   | OntologyIrLinkTypeStatus_example;
 
-export interface OntologyIrLogicRule_addObjectRule {
-  type: "addObjectRule";
-  addObjectRule: OntologyIrAddObjectRule;
-}
-
-export interface OntologyIrLogicRule_addOrModifyObjectRule {
-  type: "addOrModifyObjectRule";
-  addOrModifyObjectRule: OntologyIrAddOrModifyObjectRule;
-}
-
-export interface OntologyIrLogicRule_addOrModifyObjectRuleV2 {
-  type: "addOrModifyObjectRuleV2";
-  addOrModifyObjectRuleV2: OntologyIrAddOrModifyObjectRuleV2;
-}
-
-export interface OntologyIrLogicRule_modifyObjectRule {
-  type: "modifyObjectRule";
-  modifyObjectRule: OntologyIrModifyObjectRule;
-}
-
-export interface OntologyIrLogicRule_deleteObjectRule {
-  type: "deleteObjectRule";
-  deleteObjectRule: DeleteObjectRule;
-}
-
 export interface OntologyIrLogicRule_addInterfaceRule {
   type: "addInterfaceRule";
   addInterfaceRule: OntologyIrAddInterfaceRule;
@@ -6998,50 +6965,9 @@ export interface OntologyIrLogicRule_modifyInterfaceRule {
   type: "modifyInterfaceRule";
   modifyInterfaceRule: OntologyIrModifyInterfaceRule;
 }
-
-export interface OntologyIrLogicRule_addLinkRule {
-  type: "addLinkRule";
-  addLinkRule: AddLinkRule;
-}
-
-export interface OntologyIrLogicRule_deleteLinkRule {
-  type: "deleteLinkRule";
-  deleteLinkRule: DeleteLinkRule;
-}
-
-export interface OntologyIrLogicRule_addInterfaceLinkRule {
-  type: "addInterfaceLinkRule";
-  addInterfaceLinkRule: OntologyIrAddInterfaceLinkRule;
-}
-
-export interface OntologyIrLogicRule_deleteInterfaceLinkRule {
-  type: "deleteInterfaceLinkRule";
-  deleteInterfaceLinkRule: OntologyIrDeleteInterfaceLinkRule;
-}
-
-export interface OntologyIrLogicRule_functionRule {
-  type: "functionRule";
-  functionRule: OntologyIrFunctionRule;
-}
-
-export interface OntologyIrLogicRule_batchedFunctionRule {
-  type: "batchedFunctionRule";
-  batchedFunctionRule: OntologyIrBatchedFunctionRule;
-}
 export type OntologyIrLogicRule =
-  | OntologyIrLogicRule_addObjectRule
-  | OntologyIrLogicRule_addOrModifyObjectRule
-  | OntologyIrLogicRule_addOrModifyObjectRuleV2
-  | OntologyIrLogicRule_modifyObjectRule
-  | OntologyIrLogicRule_deleteObjectRule
   | OntologyIrLogicRule_addInterfaceRule
-  | OntologyIrLogicRule_modifyInterfaceRule
-  | OntologyIrLogicRule_addLinkRule
-  | OntologyIrLogicRule_deleteLinkRule
-  | OntologyIrLogicRule_addInterfaceLinkRule
-  | OntologyIrLogicRule_deleteInterfaceLinkRule
-  | OntologyIrLogicRule_functionRule
-  | OntologyIrLogicRule_batchedFunctionRule;
+  | OntologyIrLogicRule_modifyInterfaceRule;
 
 export interface OntologyIrLogicRuleValue_parameterId {
   type: "parameterId";
@@ -7178,10 +7104,6 @@ export interface OntologyIrModifyInterfaceRule {
   sharedPropertyValues: Record<
     ObjectTypeFieldApiName,
     OntologyIrLogicRuleValue
-  >;
-  structFieldValues: Record<
-    ObjectTypeFieldApiName,
-    Record<StructFieldRid, StructFieldLogicRuleValue>
   >;
 }
 export interface OntologyIrModifyObjectRule {
@@ -7608,7 +7530,6 @@ export interface OntologyIrOrCondition {
 export interface OntologyIrParameter {
   displayMetadata: ParameterDisplayMetadata;
   id: ParameterId;
-  rid: ParameterRid;
   type: _api_types_OntologyIrBaseParameterType;
 }
 /**
@@ -7863,7 +7784,6 @@ export type OntologyIrParameterValidationBlockOverride =
  * evaluate correctness of submitted parameters.
  */
 export interface OntologyIrParameterValidationDisplayMetadata {
-  prefill?: OntologyIrParameterPrefill | null | undefined;
   renderHint: _api_types_ParameterRenderHint;
   visibility: _api_types_ParameterVisibility;
 }
@@ -7978,6 +7898,14 @@ export interface OntologyIrRidUrlTarget {
 export interface OntologyIrRuleSetBinding {
   bindings: Record<ValueReferenceId, OntologyIrValueReferenceSource>;
   ruleSetRid: RuleSetRid;
+}
+/**
+ * A physical and logical grouping of parameters on the action form.
+ */
+export interface OntologyIrSection {
+  content: Array<SectionContent>;
+  displayMetadata: SectionDisplayMetadata;
+  id: SectionId;
 }
 /**
  * This block contains a conditional override for a section.

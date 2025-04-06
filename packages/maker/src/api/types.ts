@@ -15,6 +15,7 @@
  */
 
 import type {
+  ActionTypeStatus,
   ApiNameValueTypeReference,
   BaseType,
   DataConstraint,
@@ -27,10 +28,15 @@ import type {
   InterfaceTypeStatus_experimental,
   LinkTypeDisplayMetadata,
   LinkTypeMetadata,
+  OntologyIrBaseParameterType,
+  OntologyIrFormContent,
   OntologyIrInterfaceType,
   OntologyIrLinkTypeStatus,
+  OntologyIrLogicRule,
   OntologyIrObjectType,
   OntologyIrPropertyType,
+  OntologyIrValidationRule,
+  SectionId,
   SharedPropertyTypeGothamMapping,
   StructFieldType,
   ValueTypeApiName,
@@ -41,13 +47,21 @@ import type {
   Visibility,
 } from "@osdk/client.unstable";
 
-import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
+import type {
+  ActionTypeApiName,
+  OntologyFullMetadata,
+  ParameterId,
+} from "@osdk/foundry.ontologies";
 import type { BlueprintIcon } from "./iconNames.js";
 
 export interface Ontology extends
   Omit<
     OntologyFullMetadata,
-    "ontology" | "sharedPropertyTypes" | "interfaceTypes" | "objectTypes"
+    | "ontology"
+    | "sharedPropertyTypes"
+    | "interfaceTypes"
+    | "objectTypes"
+    | "actionTypes"
   >
 {
   interfaceTypes: Record<string, InterfaceType>;
@@ -55,8 +69,41 @@ export interface Ontology extends
   objectTypes: Record<string, ObjectType>;
   valueTypes: Record<string, ValueTypeDefinitionVersion[]>;
   linkTypes: Record<string, LinkTypeDefinition>;
+  actionTypes: Record<string, ActionType>;
   importedTypes: ImportedTypes;
 }
+
+export type ActionType = RequiredFields<
+  Partial<ActionTypeInner>,
+  "apiName" | "displayName" | "status"
+>;
+
+export interface ActionParameter {
+  id: ParameterId;
+  displayName: string;
+  type: OntologyIrBaseParameterType;
+  description?: string;
+  typeClasses?: Array<TypeClass>;
+  validation?: {
+    required?: boolean;
+    listLength?: { min?: number; max?: number };
+  };
+}
+
+export interface ActionTypeInner {
+  apiName: ActionTypeApiName;
+  displayName: string;
+  description?: string;
+  icon?: { locator: BlueprintIcon; color: string };
+  parameters: Array<ActionParameter>;
+  rules: Array<OntologyIrLogicRule>;
+  sections: Record<SectionId, Array<ParameterId>>;
+  status: ActionTypeStatus;
+  formContentOrdering: Array<OntologyIrFormContent>;
+  validation?: Array<OntologyIrValidationRule>;
+  typeClasses?: Array<TypeClass>;
+}
+
 export type {
   InterfaceTypeStatus,
   InterfaceTypeStatus_active,

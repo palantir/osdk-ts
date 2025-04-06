@@ -72,6 +72,7 @@ import type {
   ObjectTypeAlias as _api_entitymetadata_ObjectTypeAlias,
   OntologyIrLinkTypeEntityMetadata
     as _api_entitymetadata_OntologyIrLinkTypeEntityMetadata,
+  PatchApplicationStrategy as _api_entitymetadata_PatchApplicationStrategy,
   StorageBackend as _api_entitymetadata_StorageBackend,
 } from "../entitymetadata/__components.js";
 import type { EntityProvenance as _api_entitymetadata_provenance_EntityProvenance } from "../entitymetadata/provenance/__components.js";
@@ -232,6 +233,10 @@ export interface MarketplaceObjectTypeEntityMetadata {
     | undefined;
   entityConfig: _api_entitymetadata_EntityConfig;
   gothamMapping?: _api_typemapping_ObjectTypeGothamMapping | null | undefined;
+  patchApplicationStrategy?:
+    | _api_entitymetadata_PatchApplicationStrategy
+    | null
+    | undefined;
   provenance?:
     | _api_entitymetadata_provenance_EntityProvenance
     | null
@@ -284,7 +289,6 @@ export interface OntologyBlockDataV2 {
 }
 export interface OntologyIrActionTypeBlockDataV2 {
   actionType: _api_OntologyIrActionType;
-  parameterIds: Record<ActionParameterShapeId, _api_ParameterId>;
 }
 export interface OntologyIrBlockPermissionInformation {
   actionTypes: Record<_api_ActionTypeRid, ActionTypePermissionInformation>;
@@ -479,6 +483,11 @@ export type StreamName = string;
  * Ontology as code uses this as a stable ID for TimeSeriesSync inputs
  */
 export type TimeSeriesSyncName = string;
+
+/**
+ * The index of the validation rule within an action. This is used both for identification and ordering.
+ */
+export type ValidationRuleIndex = number;
 export type WritebackDatasetRid = string;
 export interface WritebackDatasetSpec {
   filter: DataFilter;

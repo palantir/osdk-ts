@@ -17,6 +17,7 @@
 import type {
   DatasourceIdentifier as _api_DatasourceIdentifier,
   ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
+  OntologyRid as _api_OntologyRid,
   OntologyVersion as _api_OntologyVersion,
   PropertyTypeRid as _api_PropertyTypeRid,
   SharedPropertyTypeRid as _api_SharedPropertyTypeRid,
@@ -45,6 +46,7 @@ export type CaseSensitiveGothamPropertyTypeUri = string;
  */
 export interface CheckTranslationEligibilityRequest {
   delegates: Record<GothamDatasourceDelegateId, _api_DatasourceIdentifier>;
+  ontologyRid?: _api_OntologyRid | null | undefined;
 }
 /**
  * Returns the security translation eligibility of the requested Delegates.

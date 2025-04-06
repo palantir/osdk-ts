@@ -158,6 +158,7 @@ import type {
   ObjectDbType as _api_entitymetadata_ObjectDbType,
   ObjectDbTypeConfig as _api_entitymetadata_ObjectDbTypeConfig,
   ObjectTypeAlias as _api_entitymetadata_ObjectTypeAlias,
+  PatchApplicationStrategy as _api_entitymetadata_PatchApplicationStrategy,
   SharedPropertyTypeAlias as _api_entitymetadata_SharedPropertyTypeAlias,
   TransformProfileConfig as _api_entitymetadata_TransformProfileConfig,
   TransitionWindows as _api_entitymetadata_TransitionWindows,
@@ -992,6 +993,10 @@ export interface ObjectTypeEntityMetadataModifyRequest {
     | ObjectTypeIndexingSettingsModification
     | null
     | undefined;
+  patchApplicationStrategy?:
+    | PatchApplicationStrategyModification
+    | null
+    | undefined;
   provenance?: EntityProvenanceModification | null | undefined;
   targetStorageBackend?: StorageBackendModification | null | undefined;
 }
@@ -1420,6 +1425,9 @@ export interface PartialPropertyTypeModification {
   sharedPropertyTypeId: _api_SharedPropertyTypeRidOrIdInRequest;
   status?: PropertyTypeStatusModification | null | undefined;
   typeClasses: Array<_api_TypeClass>;
+}
+export interface PatchApplicationStrategyModification {
+  patchApplicationStrategy: _api_entitymetadata_PatchApplicationStrategy;
 }
 export interface PerOntologyUniqueIdentifier_objectTypeId {
   type: "objectTypeId";
