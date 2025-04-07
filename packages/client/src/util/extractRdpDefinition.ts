@@ -22,15 +22,14 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 export async function extractRdpDefinition(
   clientCtx: MinimalClient,
   objectSet: ObjectSet,
-  methodInputObjectType: string,
 ): Promise<
   Record<string, ObjectMetadata.Property>
 > {
   return (await extractRdpDefinitionInternal(
     clientCtx,
     objectSet,
-    methodInputObjectType,
-  ))[0];
+    undefined,
+  )).definitions;
 }
 
 /* @internal
@@ -39,36 +38,46 @@ export async function extractRdpDefinition(
 async function extractRdpDefinitionInternal(
   clientCtx: MinimalClient,
   objectSet: ObjectSet,
-  methodInputObjectType: string,
+  methodInputObjectType: string | undefined,
 ): Promise<
-  [Record<string, ObjectMetadata.Property>, string]
+  {
+    definitions: Record<string, ObjectMetadata.Property>;
+    childObjectType?: string;
+  }
 > {
-  const result: Record<string, ObjectMetadata.Property> = {};
-
   switch (objectSet.type) {
     case "searchAround": {
-      const [definitions, childObjectType] = await extractRdpDefinitionInternal(
-        clientCtx,
-        objectSet.objectSet,
-        methodInputObjectType,
-      );
+      const { definitions, childObjectType } =
+        await extractRdpDefinitionInternal(
+          clientCtx,
+          objectSet.objectSet,
+          methodInputObjectType,
+        );
+
+      if (childObjectType === undefined || childObjectType === "") {
+        return { definitions: {}, childObjectType: "" };
+      }
       const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
         childObjectType,
       );
       const linkDef = objDef.links[objectSet.link];
       invariant(linkDef, `Missing link definition for '${objectSet.link}'`);
-      return [
-        { ...result, ...definitions },
-        objDef.links[objectSet.link].targetType,
-      ];
+      return {
+        definitions,
+        childObjectType: objDef.links[objectSet.link].targetType,
+      };
     }
     case "withProperties": {
       // These are the definitions and current object type for all object set operations prior to the definition (e.g. filter, pivotTo, etc.)
-      const [definitions, childObjectType] = await extractRdpDefinitionInternal(
-        clientCtx,
-        objectSet.objectSet,
-        methodInputObjectType,
-      );
+      const { definitions, childObjectType } =
+        await extractRdpDefinitionInternal(
+          clientCtx,
+          objectSet.objectSet,
+          methodInputObjectType,
+        );
+      if (childObjectType === undefined || childObjectType === "") {
+        return { definitions: {} };
+      }
 
       for (
         const [name, definition] of Object.entries(objectSet.derivedProperties)
@@ -82,31 +91,37 @@ async function extractRdpDefinitionInternal(
           case "collectSet":
           case "get":
             // This is the object set construction for the derived property definition construction. We pass in childObjectType so that when we reach MethodInputObjectSet, we know where to start looking.
-            const [_, operationLevelObjectType] =
+            const { childObjectType: operationLevelObjectType } =
               await extractRdpDefinitionInternal(
                 clientCtx,
                 definition.objectSet,
                 childObjectType,
               );
+            if (
+              operationLevelObjectType === undefined
+              || operationLevelObjectType === ""
+            ) {
+              return { definitions: {} };
+            }
             const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
               operationLevelObjectType,
             );
 
-            result[name] =
+            definitions[name] =
               objDef.properties[definition.operation.selectedPropertyApiName];
 
           default:
             continue;
         }
       }
-      return [{ ...result, ...definitions }, childObjectType];
+      return { definitions, childObjectType };
     }
     case "methodInput":
-      return [{}, methodInputObjectType];
+      return { definitions: {}, childObjectType: methodInputObjectType };
     case "base":
-      return [{}, objectSet.objectType];
+      return { definitions: {}, childObjectType: objectSet.objectType };
     case "interfaceBase":
-      return [{}, objectSet.interfaceType];
+      return { definitions: {}, childObjectType: objectSet.interfaceType };
     case "filter":
     case "asBaseObjectTypes":
     case "asType":
@@ -118,12 +133,34 @@ async function extractRdpDefinitionInternal(
       );
     // These will throw in OSS so we should throw here so no request is made
     case "intersect":
-    case "static":
     case "subtract":
     case "union":
+      const objectSets = objectSet.objectSets;
+      const objectSetTypes = await Promise.all(
+        objectSets.map((os) =>
+          extractRdpDefinitionInternal(
+            clientCtx,
+            os,
+            methodInputObjectType,
+          )
+        ),
+      );
+      const definitions = objectSetTypes.reduce(
+        (acc, { definitions }) => ({ ...acc, ...definitions }),
+        {},
+      );
+      invariant(
+        Object.keys(definitions).length === 0,
+        "Object sets combined using intersect, subtract, or union must not contain any derived property definitions",
+      );
+      return {
+        definitions: {},
+        childObjectType: objectSetTypes[0].childObjectType,
+      };
+    case "static":
     case "reference":
-      return [{}, ""];
-    // We don't have to worry about new object sets being added and breaking people since the OSDK is always constructing these.
+      return { definitions: {} };
+    // We don't have to worry about new object sets being added and doing a runtime break and breaking people since the OSDK is always constructing these.
     default:
       const _: never = objectSet;
       invariant(
