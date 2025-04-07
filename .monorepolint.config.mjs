@@ -45,6 +45,9 @@ const OUTPUT_BUNDLE_ALL =
 const OUTPUT_ESM_ONLY =
   /** @type {const} */ ({ browser: undefined, cjs: undefined, esm: "normal" });
 
+const OUTPUT_NONE =
+  /** @type {const} */ ({ browser: undefined, cjs: undefined, esm: undefined });
+
 /** @type {OsdkPackageOptions}  */
 const LIBRARY_RULES = {
   tsVersion: LATEST_TYPESCRIPT_DEP,
@@ -180,10 +183,22 @@ const archetypeRules = archetypes(
       ...INTERNAL_LIBRARY_RULES,
     },
   )
+  .addArchetype("publishedSandboxes", [
+    "@osdk/e2e.sandbox.catchall",
+  ], {
+    ...INTERNAL_LIBRARY_RULES,
+    skipTypes: true,
+    private: false,
+    extraFiles: ["src/"],
+    skipBuildInFiles: true,
+  })
+  .addArchetype("publishedGeneratedSdks", ["@osdk/e2e.generated.catchall"], {
+    ...LIBRARY_RULES,
+    skipAttw: true,
+  })
   .addArchetype(
     "currentlyGeneratedSdks",
     [
-      "@osdk/e2e.generated.catchall",
       "@osdk/e2e.generated.api-namespace.*",
     ],
     {
@@ -211,7 +226,6 @@ const archetypeRules = archetypes(
   .addArchetype(
     "nodeSandboxes",
     [
-      "@osdk/e2e.sandbox.catchall",
       "@osdk/e2e.sandbox.oauth",
     ],
     {
@@ -651,6 +665,7 @@ function minimalPackageRules(shared, options) {
  * @property { typeof LATEST_TYPESCRIPT_DEP | "^4.9.5"=} tsVersion
  * @property { boolean } [react]
  * @property { string[] } [extraPublishFiles]
+ * * @property { boolean } [skipBuildInFiles]
  * @property { "happy-dom" } [vitestEnvironment]
  * @property { boolean } [skipTsconfigReferences]
  * @property { boolean } [aliasConsola]
@@ -789,10 +804,18 @@ function standardPackageRules(shared, options) {
             ? [
               ...(options.extraPublishFiles ?? []),
               ...(options.extraFiles ?? []),
-              ...(options.output.cjs ? ["build/cjs"] : []),
-              ...(options.output.esm ? ["build/esm"] : []),
-              ...(options.output.browser ? ["build/browser"] : []),
-              ...(options.skipTypes ? [] : ["build/types"]),
+              ...(options.output.cjs && !options.skipBuildInFiles
+                ? ["build/cjs"]
+                : []),
+              ...(options.output.esm && !options.skipBuildInFiles
+                ? ["build/esm"]
+                : []),
+              ...(options.output.browser && !options.skipBuildInFiles
+                ? ["build/browser"]
+                : []),
+              ...(options.skipTypes || options.skipBuildInFiles
+                ? []
+                : ["build/types"]),
               "CHANGELOG.md",
               "package.json",
               "templates",
