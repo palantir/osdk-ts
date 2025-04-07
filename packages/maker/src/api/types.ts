@@ -15,6 +15,7 @@
  */
 
 import type {
+  ActionTypeApiName,
   ActionTypeStatus,
   ApiNameValueTypeReference,
   BaseType,
@@ -37,6 +38,7 @@ import type {
   OntologyIrObjectType,
   OntologyIrPropertyType,
   OntologyIrValidationRule,
+  ParameterId,
   SectionId,
   SharedPropertyTypeGothamMapping,
   StructFieldType,
@@ -48,11 +50,7 @@ import type {
   Visibility,
 } from "@osdk/client.unstable";
 
-import type {
-  ActionTypeApiName,
-  OntologyFullMetadata,
-  ParameterId,
-} from "@osdk/foundry.ontologies";
+import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import type { BlueprintIcon } from "./iconNames.js";
 
 export interface Ontology extends
