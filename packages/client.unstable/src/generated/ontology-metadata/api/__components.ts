@@ -6047,6 +6047,14 @@ export interface OntologyIrActionLogic {
   rules: Array<OntologyIrLogicRule>;
 }
 /**
+ * This signals to OMA that the Object Type will be regenerated as the Action Type changes, rather than modified
+ * directly by the user. Also, OMA should not validate that the backing dataset has the required columns, as
+ * these will instead be generated on save.
+ */
+export interface OntologyIrActionLogMetadata {
+  actionTypeRids: Array<ActionTypeApiName>;
+}
+/**
  * Users can optionally configure an ActionLogicRule for their ActionType that defines how Action parameters and
  * their properties should be mapped to properties of their Action Log Object Type.
  */
@@ -6260,8 +6268,36 @@ export interface OntologyIrActionTypeMetadata {
   parameterOrdering: Array<ParameterId>;
   parameters: Record<ParameterId, OntologyIrParameter>;
   sections: Record<SectionId, OntologyIrSection>;
-  status: ActionTypeStatus;
+  status: OntologyIrActionTypeStatus;
 }
+export interface OntologyIrActionTypeStatus_experimental {
+  type: "experimental";
+  experimental: ExperimentalActionTypeStatus;
+}
+
+export interface OntologyIrActionTypeStatus_active {
+  type: "active";
+  active: ActiveActionTypeStatus;
+}
+
+export interface OntologyIrActionTypeStatus_deprecated {
+  type: "deprecated";
+  deprecated: OntologyIrDeprecatedActionTypeStatus;
+}
+
+export interface OntologyIrActionTypeStatus_example {
+  type: "example";
+  example: ExampleActionTypeStatus;
+}
+/**
+ * The status to indicate whether the ActionType is either Experimental, Active, Deprecated, or Example.
+ */
+export type OntologyIrActionTypeStatus =
+  | OntologyIrActionTypeStatus_experimental
+  | OntologyIrActionTypeStatus_active
+  | OntologyIrActionTypeStatus_deprecated
+  | OntologyIrActionTypeStatus_example;
+
 export interface OntologyIrActionValidation {
   actionTypeLevelValidation: OntologyIrActionTypeLevelValidation;
   parameterValidations: Record<
@@ -6696,6 +6732,14 @@ export interface OntologyIrDeleteInterfaceLinkRule {
   targetObject: ParameterId;
 }
 /**
+ * This status indicates that the ActionType is reaching the end of its life and will be removed as per the deadline specified.
+ */
+export interface OntologyIrDeprecatedActionTypeStatus {
+  deadline: string;
+  message: string;
+  replacedBy?: ActionTypeApiName | null | undefined;
+}
+/**
  * This status indicates that the interface is reaching the end of its life and will be removed as per the
  * deadline specified.
  */
@@ -6802,6 +6846,11 @@ export interface OntologyIrFunctionRule {
   functionInputValues: Record<FunctionInputName, OntologyIrLogicRuleValue>;
   functionRid: FunctionRid;
   functionVersion: SemanticFunctionVersion;
+}
+export interface OntologyIrInlineActionType {
+  displayOptions: InlineActionDisplayOptions;
+  parameterId?: ParameterId | null | undefined;
+  rid: ActionTypeApiName;
 }
 export interface OntologyIrInterfaceLinkType {
   cardinality: InterfaceLinkTypeCardinality;
@@ -7497,7 +7546,7 @@ export interface OntologyIrObjectTypeTimeSeriesDatasource {
   timeSeriesSyncRid: _api_blockdata_TimeSeriesSyncName;
 }
 export interface OntologyIrObjectTypeTraits {
-  actionLogMetadata?: ActionLogMetadata | null | undefined;
+  actionLogMetadata?: OntologyIrActionLogMetadata | null | undefined;
   eventMetadata?: OntologyIrEventMetadata | null | undefined;
   peeringMetadata?: ObjectTypePeeringMetadata | null | undefined;
   sensorTrait?: OntologyIrSensorTrait | null | undefined;
@@ -7839,7 +7888,7 @@ export interface OntologyIrPropertyType {
   dataConstraints?: DataConstraints | null | undefined;
   displayMetadata: PropertyTypeDisplayMetadata;
   indexedForSearch: boolean;
-  inlineAction?: InlineActionType | null | undefined;
+  inlineAction?: OntologyIrInlineActionType | null | undefined;
   ruleSetBinding?: OntologyIrRuleSetBinding | null | undefined;
   sharedPropertyTypeApiName?: ObjectTypeFieldApiName | null | undefined;
   sharedPropertyTypeRid?: ObjectTypeFieldApiName | null | undefined;
@@ -11556,6 +11605,58 @@ export interface StructParameterFieldValue {
   parameterId: ParameterId;
   structFieldApiName: _api_types_StructParameterFieldApiName;
 }
+export interface StructPropertyFieldType_boolean {
+  type: "boolean";
+  boolean: BooleanPropertyType;
+}
+
+export interface StructPropertyFieldType_date {
+  type: "date";
+  date: DatePropertyType;
+}
+
+export interface StructPropertyFieldType_double {
+  type: "double";
+  double: DoublePropertyType;
+}
+
+export interface StructPropertyFieldType_geohash {
+  type: "geohash";
+  geohash: GeohashPropertyType;
+}
+
+export interface StructPropertyFieldType_integer {
+  type: "integer";
+  integer: IntegerPropertyType;
+}
+
+export interface StructPropertyFieldType_long {
+  type: "long";
+  long: LongPropertyType;
+}
+
+export interface StructPropertyFieldType_string {
+  type: "string";
+  string: StringPropertyType;
+}
+
+export interface StructPropertyFieldType_timestamp {
+  type: "timestamp";
+  timestamp: TimestampPropertyType;
+}
+/**
+ * Wrapper type for the various supported struct property field types.
+ */
+export type StructPropertyFieldType =
+  | StructPropertyFieldType_boolean
+  | StructPropertyFieldType_date
+  | StructPropertyFieldType_double
+  | StructPropertyFieldType_geohash
+  | StructPropertyFieldType_integer
+  | StructPropertyFieldType_long
+  | StructPropertyFieldType_string
+  | StructPropertyFieldType_timestamp;
+
 export interface StructPropertyType {
   structFields: Array<StructFieldType>;
 }

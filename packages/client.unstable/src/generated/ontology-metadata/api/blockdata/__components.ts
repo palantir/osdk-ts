@@ -16,6 +16,7 @@
 
 import type {
   ActionType as _api_ActionType,
+  ActionTypeApiName as _api_ActionTypeApiName,
   ActionTypeRid as _api_ActionTypeRid,
   ColumnName as _api_ColumnName,
   DatasourceRid as _api_DatasourceRid,
@@ -291,7 +292,7 @@ export interface OntologyIrActionTypeBlockDataV2 {
   actionType: _api_OntologyIrActionType;
 }
 export interface OntologyIrBlockPermissionInformation {
-  actionTypes: Record<_api_ActionTypeRid, ActionTypePermissionInformation>;
+  actionTypes: Record<_api_ActionTypeApiName, ActionTypePermissionInformation>;
   linkTypes: Record<_api_LinkTypeId, LinkTypePermissionInformation>;
   objectTypes: Record<_api_ObjectTypeApiName, ObjectTypePermissionInformation>;
 }
@@ -300,11 +301,11 @@ export interface OntologyIrInterfaceTypeBlockDataV2 {
 }
 export interface OntologyIrKnownMarketplaceIdentifiers {
   actionParameterIds: Record<
-    _api_ActionTypeRid,
+    _api_ActionTypeApiName,
     Record<_api_ParameterId, BlockInternalId>
   >;
   actionParameters: Record<_api_ParameterRid, BlockInternalId>;
-  actionTypes: Record<_api_ActionTypeRid, BlockInternalId>;
+  actionTypes: Record<_api_ActionTypeApiName, BlockInternalId>;
   datasourceColumns: Record<BlockInternalId, any>;
   datasources: Record<BlockInternalId, any>;
   filesDatasources: Record<BlockInternalId, any>;
@@ -376,6 +377,7 @@ export interface OntologyIrObjectTypeBlockDataV2 {
   objectType: _api_OntologyIrObjectType;
 }
 export interface OntologyIrOntologyBlockDataV2 {
+  actionTypes: Record<_api_ActionTypeApiName, OntologyIrActionTypeBlockDataV2>;
   blockPermissionInformation?:
     | OntologyIrBlockPermissionInformation
     | null
