@@ -55,7 +55,7 @@ async function extractRdpDefinitionInternal(
         );
 
       if (childObjectType === undefined || childObjectType === "") {
-        return { definitions: {}, childObjectType: "" };
+        return { definitions: {} };
       }
       const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
         childObjectType,
@@ -145,6 +145,7 @@ async function extractRdpDefinitionInternal(
           )
         ),
       );
+
       const definitions = objectSetTypes.reduce(
         (acc, { definitions }) => ({ ...acc, ...definitions }),
         {},
@@ -153,12 +154,26 @@ async function extractRdpDefinitionInternal(
         Object.keys(definitions).length === 0,
         "Object sets combined using intersect, subtract, or union must not contain any derived property definitions",
       );
+
+      const firstValidChildObjectType = objectSetTypes.find(
+        ({ childObjectType }) => childObjectType != null,
+      )?.childObjectType;
+      invariant(
+        objectSetTypes.every(
+          ({ childObjectType }) =>
+            childObjectType === firstValidChildObjectType
+            || childObjectType == null,
+        ),
+        "All object sets in an intersect, subtract, or union must have the same child object type",
+      );
+
       return {
         definitions: {},
-        childObjectType: objectSetTypes[0].childObjectType,
+        childObjectType: firstValidChildObjectType,
       };
     case "static":
     case "reference":
+      // Static and reference object sets are always intersected with a base object set, so we can just return no child object type.
       return { definitions: {} };
     // We don't have to worry about new object sets being added and doing a runtime break and breaking people since the OSDK is always constructing these.
     default:

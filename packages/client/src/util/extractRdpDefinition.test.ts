@@ -148,18 +148,18 @@ describe("extractRdpDefinition", () => {
     `);
   });
 
-  it("handles `intersection` object set type", async () => {
+  it("handles `intersection` object set type and nested static and reference object sets", async () => {
     const intersectionObjectSet: ObjectSet = {
       type: "intersect",
-      objectSets: [{
-        type: "searchAround",
-        objectSet: { type: "base", objectType: "BaseType" },
-        link: "testLink1",
-      }, {
-        type: "searchAround",
-        objectSet: { type: "base", objectType: "BaseType" },
-        link: "testLink1",
-      }],
+      objectSets: [
+        {
+          type: "searchAround",
+          objectSet: { type: "base", objectType: "BaseType" },
+          link: "testLink1",
+        },
+        { type: "static", "objects": ["object1", "object2"] },
+        { type: "reference", "reference": "rid.os.1234" },
+      ],
     };
 
     const RdpWithIntersectionBaseObjectSet: ObjectSet = {
@@ -210,6 +210,45 @@ describe("extractRdpDefinition", () => {
       extractRdpDefinition(mockClientCtx, intersectionObjectSetWithNestedRdps),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[Error: Invariant failed: Object sets combined using intersect, subtract, or union must not contain any derived property definitions]`,
+    );
+  });
+
+  it("throes with intersect, subtract, or union having different child object types", async () => {
+    const intersectionObjectSet: ObjectSet = {
+      type: "intersect",
+      objectSets: [
+        {
+          type: "searchAround",
+          objectSet: { type: "base", objectType: "BaseType" },
+          link: "testLink1",
+        },
+        { type: "base", objectType: "BaseType" },
+      ],
+    };
+
+    const RdpWithIntersectionBaseObjectSet: ObjectSet = {
+      type: "withProperties",
+      objectSet: intersectionObjectSet,
+      derivedProperties: {
+        myRdp: {
+          type: "selection",
+          objectSet: {
+            type: "searchAround",
+            objectSet: { type: "methodInput" },
+            link: "testLink2",
+          },
+          operation: {
+            type: "get",
+            selectedPropertyApiName: "testProperty",
+          },
+        },
+      },
+    };
+
+    await expect(
+      extractRdpDefinition(mockClientCtx, RdpWithIntersectionBaseObjectSet),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invariant failed: All object sets in an intersect, subtract, or union must have the same child object type]`,
     );
   });
 });
