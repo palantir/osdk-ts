@@ -1,6 +1,5 @@
 {
   "name": "@osdk/e2e.generated.catchall",
-  "private": true,
   "version": "3.1.0-beta.1",
   "description": "",
   "license": "Apache-2.0",
@@ -60,7 +59,16 @@
     "access": "public"
   },
   "keywords": [],
-  "files": [],
+  "files": [
+    "build/cjs",
+    "build/esm",
+    "build/browser",
+    "build/types",
+    "CHANGELOG.md",
+    "package.json",
+    "templates",
+    "*.d.ts"
+  ],
   "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
   "types": "./build/cjs/index.d.cts",
