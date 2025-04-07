@@ -6288,7 +6288,7 @@ export interface OntologyIrAddInterfaceLinkRule {
   targetObject: ParameterId;
 }
 export interface OntologyIrAddInterfaceRule {
-  interfaceTypeRid: InterfaceTypeApiName;
+  interfaceApiName: InterfaceTypeApiName;
   objectType: ParameterId;
   sharedPropertyValues: Record<
     ObjectTypeFieldApiName,
@@ -7528,7 +7528,7 @@ export interface OntologyIrOrCondition {
  * Parameters of an ActionType represent what inputs the ActionType requires.
  */
 export interface OntologyIrParameter {
-  displayMetadata: ParameterDisplayMetadata;
+  displayMetadata: OntologyIrParameterDisplayMetadata;
   id: ParameterId;
   type: _api_types_OntologyIrBaseParameterType;
 }
@@ -7588,6 +7588,11 @@ export type OntologyIrParameterDateTimeRangeOrEmpty =
   | OntologyIrParameterDateTimeRangeOrEmpty_empty
   | OntologyIrParameterDateTimeRangeOrEmpty_datetime;
 
+export interface OntologyIrParameterDisplayMetadata {
+  description: string;
+  displayName: string;
+  typeClasses: Array<TypeClass>;
+}
 export interface OntologyIrParameterMultipassUser {
   filter: Array<OntologyIrMultipassUserFilter>;
 }

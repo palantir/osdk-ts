@@ -746,6 +746,7 @@ export type {
   OntologyIrParameterDateRangeValue,
   OntologyIrParameterDateTimeRange,
   OntologyIrParameterDateTimeRangeOrEmpty,
+  OntologyIrParameterDisplayMetadata,
   OntologyIrParameterMultipassUser,
   OntologyIrParameterMultipassUserOrEmpty,
   OntologyIrParameterObjectPropertyValue,

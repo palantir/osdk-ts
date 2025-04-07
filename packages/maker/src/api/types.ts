@@ -28,6 +28,7 @@ import type {
   InterfaceTypeStatus_experimental,
   LinkTypeDisplayMetadata,
   LinkTypeMetadata,
+  OntologyIrAllowedParameterValues,
   OntologyIrBaseParameterType,
   OntologyIrFormContent,
   OntologyIrInterfaceType,
@@ -75,7 +76,7 @@ export interface Ontology extends
 
 export type ActionType = RequiredFields<
   Partial<ActionTypeInner>,
-  "apiName" | "displayName" | "status"
+  "apiName" | "displayName" | "rules" | "status"
 >;
 
 export interface ActionParameter {
@@ -84,11 +85,17 @@ export interface ActionParameter {
   type: OntologyIrBaseParameterType;
   description?: string;
   typeClasses?: Array<TypeClass>;
-  validation?: {
-    required?: boolean;
-    listLength?: { min?: number; max?: number };
-  };
+  validation?: ActionParameterValidation;
 }
+
+export interface ActionParameterValidation {
+  allowedValues: OntologyIrAllowedParameterValues;
+  size: ActionParameterRequirementConstraint;
+}
+
+export type ActionParameterRequirementConstraint =
+  | { required: boolean }
+  | { listLength: { min?: number; max?: number } };
 
 export interface ActionTypeInner {
   apiName: ActionTypeApiName;
@@ -98,7 +105,7 @@ export interface ActionTypeInner {
   parameters: Array<ActionParameter>;
   rules: Array<OntologyIrLogicRule>;
   sections: Record<SectionId, Array<ParameterId>>;
-  status: ActionTypeStatus;
+  status: ActionTypeStatus; // TODO(dpaquin): could probably flatten
   formContentOrdering: Array<OntologyIrFormContent>;
   validation?: Array<OntologyIrValidationRule>;
   typeClasses?: Array<TypeClass>;

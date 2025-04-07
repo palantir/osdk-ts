@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+import { defineAction } from "./defineAction.js";
 import { importSharedPropertyType } from "./defineImportSpt.js";
 import { defineInterface } from "./defineInterface.js";
 import { defineInterfaceLinkConstraint } from "./defineInterfaceLinkConstraint.js";
@@ -151,6 +152,7 @@ describe("Ontology Defining", () => {
 
         expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
           {
+            "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
               "linkTypes": {},
@@ -272,6 +274,7 @@ describe("Ontology Defining", () => {
 
         expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
           {
+            "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
               "linkTypes": {},
@@ -352,6 +355,7 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
         {
+          "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
             "linkTypes": {},
@@ -575,6 +579,7 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
           {
+            "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
               "linkTypes": {},
@@ -705,6 +710,7 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
         {
+          "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
             "linkTypes": {},
@@ -938,6 +944,7 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
         {
+          "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
             "linkTypes": {},
@@ -1019,6 +1026,7 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
         {
+          "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
             "linkTypes": {},
@@ -1127,6 +1135,7 @@ describe("Ontology Defining", () => {
 
     expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
       {
+        "actionTypes": {},
         "blockPermissionInformation": {
           "actionTypes": {},
           "linkTypes": {},
@@ -1266,6 +1275,7 @@ describe("Ontology Defining", () => {
 
     expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
               {
+                "actionTypes": {},
                 "blockPermissionInformation": {
                   "actionTypes": {},
                   "linkTypes": {},
@@ -1359,6 +1369,7 @@ describe("Ontology Defining", () => {
 
     expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
       {
+        "actionTypes": {},
         "blockPermissionInformation": {
           "actionTypes": {},
           "linkTypes": {},
@@ -1652,6 +1663,7 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
           {
+            "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
               "linkTypes": {},
@@ -1918,6 +1930,7 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
       {
+        "actionTypes": {},
         "blockPermissionInformation": {
           "actionTypes": {},
           "linkTypes": {},
@@ -2250,6 +2263,7 @@ describe("Ontology Defining", () => {
       });
       expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
       {
+        "actionTypes": {},
         "blockPermissionInformation": {
           "actionTypes": {},
           "linkTypes": {},
@@ -2610,6 +2624,7 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
       {
+        "actionTypes": {},
         "blockPermissionInformation": {
           "actionTypes": {},
           "linkTypes": {},
@@ -2968,6 +2983,7 @@ describe("Ontology Defining", () => {
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
           "blockData": {
+            "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
               "linkTypes": {},
@@ -3116,6 +3132,144 @@ describe("Ontology Defining", () => {
           },
         }
       `);
+    });
+  });
+
+  describe("Actions", () => {
+    it("Actions are properly defined", () => {
+      const minimalAction = defineAction({
+        apiName: "foo",
+        displayName: "minimalAction",
+        status: { type: "active", active: {} },
+        rules: [{
+          type: "addInterfaceRule",
+          addInterfaceRule: {
+            interfaceApiName: "foo",
+            objectType: "param1",
+            sharedPropertyValues: {},
+          },
+        }],
+        parameters: [{
+          id: "param1",
+          displayName: "param1",
+          type: { type: "boolean", boolean: {} },
+        }],
+      });
+
+      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+      {
+        "blockData": {
+          "actionTypes": {
+            "com.palantir.foo": {
+              "actionType": {
+                "actionTypeLogic": {
+                  "logic": {
+                    "rules": [
+                      {
+                        "addInterfaceRule": {
+                          "interfaceApiName": "foo",
+                          "objectType": "param1",
+                          "sharedPropertyValues": {},
+                        },
+                        "type": "addInterfaceRule",
+                      },
+                    ],
+                  },
+                  "validation": {
+                    "actionTypeLevelValidation": {
+                      "rules": {},
+                    },
+                    "parameterValidations": {},
+                  },
+                },
+                "metadata": {
+                  "apiName": "com.palantir.foo",
+                  "displayMetadata": {
+                    "configuration": {
+                      "defaultLayout": "FORM",
+                      "displayAndFormat": {
+                        "table": {
+                          "columnWidthByParameterRid": {},
+                          "enableFileImport": true,
+                          "fitHorizontally": false,
+                          "frozenColumnCount": 0,
+                          "rowHeightInLines": 1,
+                        },
+                      },
+                      "enableLayoutUserSwitch": false,
+                    },
+                    "description": "",
+                    "displayName": "minimalAction",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#000000",
+                        "locator": "edit",
+                      },
+                      "type": "blueprint",
+                    },
+                    "successMessage": [],
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                  },
+                  "formContentOrdering": [],
+                  "parameterOrdering": [
+                    "param1",
+                  ],
+                  "parameters": {
+                    "param1": {
+                      "displayMetadata": {
+                        "description": "",
+                        "displayName": "param1",
+                        "typeClasses": [
+                          {
+                            "kind": "render_hint",
+                            "name": "SELECTABLE",
+                          },
+                          {
+                            "kind": "render_hint",
+                            "name": "SORTABLE",
+                          },
+                        ],
+                      },
+                      "id": "param1",
+                      "type": {
+                        "boolean": {},
+                        "type": "boolean",
+                      },
+                    },
+                  },
+                  "sections": {},
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                },
+              },
+            },
+          },
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {},
+        },
+        "importedTypes": {
+          "sharedPropertyTypes": [],
+        },
+      }
+        `);
     });
   });
 });

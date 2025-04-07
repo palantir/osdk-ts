@@ -63,14 +63,14 @@ export function defineAction(actionDef: ActionType): ActionType {
     undefinedParametersInOrdering.length === 0,
     `Parameters [${undefinedParametersInOrdering}] were referenced in content ordering but not defined`,
   );
+  invariant(
+    actionDef.rules.length > 0,
+    `Action type ${actionDef.apiName} must have at least one logic rule`,
+  );
 
-  // TODO(dpaquin): deep verifications for things like referenced object types?
+  // TODO(dpaquin): check parameters used in rules are defined
 
-  // Questions:
-  //  - can an action have no logic rules?
-  //  - can an action have no parameters?
-  //  - do all parameters have to appear in the form content ordering (either in sections or individually)?
-  //  - do all parameters have to be referenced in the logic rules?
+  // TODO(dpaquin): do all parameters need to exist in parameterValidations (for knowing the render hints, value constraints, etc)?
 
   const fullAction = { ...actionDef, apiName: apiName };
   ontologyDefinition.actionTypes[apiName] = fullAction;

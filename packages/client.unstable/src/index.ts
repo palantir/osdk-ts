@@ -30,9 +30,14 @@ export { loadAllOntologies } from "./generated/ontology-metadata/api/OntologyMet
 
 export * from "./generated/ontology-metadata/api/__components.js";
 
-export type { OntologyIrBaseParameterType } from "./generated/ontology-metadata/api/types/__components.js";
+export type {
+  OntologyIrBaseParameterType,
+  ParameterRenderHint,
+  ParameterRequiredConfiguration,
+} from "./generated/ontology-metadata/api/types/__components.js";
 
 export type {
+  OntologyIrActionTypeBlockDataV2,
   OntologyIrLinkTypeBlockDataV2,
   OntologyIrObjectTypeBlockDataV2,
 } from "./generated/ontology-metadata/api/blockdata/__components.ts";
