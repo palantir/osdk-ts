@@ -5,11 +5,11 @@ function getMetaTagContent(tagName: string): string {
   const elements = document.querySelectorAll(`meta[name="${tagName}"]`);
   const element = elements.item(elements.length - 1);
   const value = element ? element.getAttribute("content") : null;
-  if (value == null) {
+  if (value == null || value === "") {
     throw new Error(`Meta tag ${tagName} not found`);
   }
   if (value.match(/%.+%/)) {
-    throw new Error(`Meta tag ${tagName} contains placeholder value. Please add ${value.replace(/%/g, "")} in your .env files.`);
+    throw new Error(`Meta tag ${tagName} contains placeholder value. Please add ${value.replace(/%/g, "")} to your .env files.`);
   }
   return value;
 }
