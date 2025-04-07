@@ -8,7 +8,7 @@ function getMetaTagContent(tagName: string): string {
     throw new Error(`Meta tag ${tagName} not found`);
   }
   if (value.match(/%.+%/)) {
-    throw new Error(`Meta tag ${tagName} contains placeholder value. Please add ${value.replace(/%/g, "")} to your .env files.`);
+    throw new Error(`Meta tag ${tagName} contains placeholder value. Please add ${value.replace(/%/g, "")} to your .env files`);
   }
   return value;
 }
