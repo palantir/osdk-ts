@@ -1,5 +1,12 @@
 # @osdk/generator-converters
 
+## 2.2.0-beta.15
+
+### Patch Changes
+
+- Updated dependencies [ed69666]
+  - @osdk/api@2.2.0-beta.15
+
 ## 2.2.0-beta.14
 
 ### Patch Changes

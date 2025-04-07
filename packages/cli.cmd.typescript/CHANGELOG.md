@@ -1,5 +1,17 @@
 # @osdk/cli.cmd.typescript
 
+## 0.26.0-beta.15
+
+### Minor Changes
+
+- cc380b5: Use the latest Platform APIs
+
+### Patch Changes
+
+- Updated dependencies [cc380b5]
+  - @osdk/generator@2.2.0-beta.15
+  - @osdk/cli.common@0.26.0-beta.15
+
 ## 0.26.0-beta.14
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @osdk/example-generator
 
+## 0.10.0-beta.15
+
+### Minor Changes
+
+- 1444362: Read environment variables from index.html meta tags
+
+### Patch Changes
+
+- Updated dependencies [1444362]
+  - @osdk/create-app@2.2.0-beta.15
+  - @osdk/create-widget@2.1.0-beta.6
+
 ## 0.10.0-beta.14
 
 ### Patch Changes
