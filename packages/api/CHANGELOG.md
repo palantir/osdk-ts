@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.2.0-beta.15
+
+### Minor Changes
+
+- ed69666: Update conjure-lite to 0.7.1
+
 ## 2.2.0-beta.14
 
 ### Minor Changes
