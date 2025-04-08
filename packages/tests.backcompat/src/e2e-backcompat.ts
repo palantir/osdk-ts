@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import chalk from "chalk";
+import consola from "consola";
 import { execa } from "execa";
 import { findUpSync } from "find-up";
 import { promises as fs } from "fs";
@@ -36,11 +38,6 @@ const e2eTestingDir = path.join(
   "..",
   "e2eTesting",
 );
-
-/****
- *
- * WIP
- */
 
 async function installPackagesAtVersion(version: string) {
   const versionedDir = join(e2eTestingDir, version);
@@ -69,22 +66,57 @@ async function installPackagesAtVersion(version: string) {
 }
 
 export async function runE2eBackcompatTests(): Promise<void> {
-  const installPath = await installPackagesAtVersion("latest");
+  const version = "latest";
+  const installPath = await installPackagesAtVersion(version);
+
+  const testDirPath = path.join(installPath, "e2e.sandbox.catchall");
 
   await modifyPackageJsonToUseDirectPaths(
     path.join(
-      installPath,
-      "e2e.sandbox.catchall",
+      testDirPath,
       "package.json",
     ),
     {
       "@osdk/e2e.generated.catchall": path.join(
         installPath,
         "e2e.generated.catchall",
-        "package.json",
       ),
       "@osdk/client": "root",
       "@osdk/api": "root",
+      "@osdk/cli": "root",
+      "@osdk/monorepo.api-extractor": "root",
+      "@osdk/monorepo.tsconfig": "root",
     },
   );
+
+  await fs.writeFile(
+    path.join(testDirPath, "pnpm-workspace.yaml"),
+    "",
+  );
+
+  consola.info(
+    `Installing client dependencies for SDK generated with version ${
+      chalk.blue(testDirPath)
+    }`,
+  );
+
+  const installResult = await execa("pnpm", ["install"], {
+    cwd: testDirPath,
+  });
+
+  if (installResult.failed) {
+    throw new Error(
+      `pnpm install on client package failed for version ${version}`,
+    );
+  }
+
+  consola.info(
+    `Typechecking client package for version ${chalk.blue(version)}`,
+  );
+
+  await execa("pnpm", [
+    "typecheck",
+  ], {
+    cwd: testDirPath,
+  });
 }

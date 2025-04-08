@@ -274,8 +274,6 @@ export async function runClientBackcompatTests(): Promise<void> {
 
     const transpileResult = await execa("pnpm", [
       "typecheck",
-      "--project",
-      path.join(rootPath, "packages", "client", "tsconfig.json"),
     ], {
       cwd: clientCopyPath,
     });
