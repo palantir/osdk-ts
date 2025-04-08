@@ -17,34 +17,167 @@
 import chalk from "chalk";
 import consola from "consola";
 import { execa } from "execa";
+import { findUpSync } from "find-up";
 import { promises as fs } from "fs";
 import * as path from "node:path";
-import { exit } from "node:process";
 import { fileURLToPath } from "node:url";
 import semver from "semver";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const packagesPath = path.join(
-  __dirname,
-  "..",
-  "..",
-  "..",
+const THIS_FILE_DIR = path.dirname(fileURLToPath(import.meta.url));
+const pnpmLockFile = findUpSync("pnpm-lock.yaml");
+
+if (!pnpmLockFile) {
+  throw new Error("pnpm-lock.yaml not found. :(");
+}
+
+const rootPath = path.dirname(pnpmLockFile);
+
+const monorepoTranspilePath = path.join(
+  rootPath,
+  "packages",
+  "monorepo.tool.transpile",
+  "bin",
+  "transpile2.mjs",
 );
 
-async function codegenAtVersion(version: string) {
-  const dirPath = path.join(
-    packagesPath,
+const builtSdksPath = path.join(
+  THIS_FILE_DIR,
+  "codegen",
+  "sdks",
+);
+
+async function codegenAtVersion(version: string, outPath: string) {
+  consola.info(
+    `Running codegen for version ${chalk.blue(version)}`,
+  );
+  const outSrcPath = path.join(outPath, "src");
+  await fs.mkdir(outSrcPath, { recursive: true });
+  const { failed } = await execa("pnpm", [
+    "client.test.generate",
+    "--o",
+    outSrcPath,
+    "--v",
+    version,
+  ]);
+
+  const testOntologyPackagePath = path.join(
+    rootPath,
+    "packages",
     "client.test.ontology",
   );
 
-  consola.info(`Running codegen for version ${chalk.blue(version)}`);
-  const { failed } = await execa("pnpm", ["codegen", version], {
-    cwd: dirPath,
+  await fs.copyFile(
+    path.join(testOntologyPackagePath, "package.json"),
+    path.join(outPath, "package.json"),
+  );
+  await fs.copyFile(
+    path.join(testOntologyPackagePath, "tsconfig.json"),
+    path.join(outPath, "tsconfig.json"),
+  );
+  await fs.writeFile(
+    path.join(outPath, "pnpm-workspace.yaml"),
+    "",
+  );
+
+  await modifyPackageJsonToUseDirectPaths(path.join(outPath, "package.json"));
+
+  const pkgPath = path.join(outPath, "package.json");
+  const pkgData = JSON.parse(await fs.readFile(pkgPath, "utf8"));
+
+  /**
+   * Babel core is expecting these modules to be present in the workspace.
+   */
+  pkgData.dependencies = {
+    ...pkgData.dependencies,
+    "@babel/preset-typescript": "latest",
+    "@babel/preset-react": "latest",
+  };
+
+  await fs.writeFile(pkgPath, JSON.stringify(pkgData, null, 2));
+
+  await execa("pnpm", ["install"], { cwd: outPath });
+
+  /**
+   * monorepo.tool.transpile uses find-up on the pnpm-workspace.yaml file to find the root.
+   * Failing to remove it will cause the transpile command to fail.
+   */
+  await fs.unlink(path.join(outPath, "pnpm-workspace.yaml"));
+
+  await execa("pnpm", ["transpileEsm"], { cwd: outPath });
+
+  await execa("pnpm", ["transpileTypes"], { cwd: outPath });
+}
+
+async function copyClientPackage() {
+  const srcPath = path.join(rootPath, "packages", "client");
+  const destPath = path.join(THIS_FILE_DIR, "clientCopy");
+
+  consola.info(`Copying client into ${destPath} for testing`);
+
+  await fs.mkdir(destPath, { recursive: true });
+  await fs.cp(path.join(srcPath, "src"), path.join(destPath, "src"), {
+    recursive: true,
   });
-  if (failed) {
-    consola.error(`Codegen failed for version ${chalk.red(version)}`);
-    exit(1);
+  await fs.copyFile(
+    path.join(srcPath, "package.json"),
+    path.join(destPath, "package.json"),
+  );
+  await fs.copyFile(
+    path.join(srcPath, "tsconfig.json"),
+    path.join(destPath, "tsconfig.json"),
+  );
+  await fs.writeFile(
+    path.join(destPath, "pnpm-workspace.yaml"),
+    "",
+  );
+
+  await modifyPackageJsonToUseDirectPaths(
+    path.join(destPath, "package.json"),
+  );
+
+  return destPath;
+}
+
+async function modifyPackageJsonToDependOnGeneratedSdkVersion(
+  packageJsonPath: string,
+  generatorVersion: string,
+) {
+  const packageData = JSON.parse(await fs.readFile(packageJsonPath, "utf8"));
+  packageData.devDependencies["@osdk/client.test.ontology"] = path.join(
+    builtSdksPath,
+    generatorVersion,
+  );
+  await fs.writeFile(packageJsonPath, JSON.stringify(packageData, null, 2));
+}
+
+async function modifyPackageJsonToUseDirectPaths(packageJsonPath: string) {
+  const packageData = JSON.parse(await fs.readFile(packageJsonPath, "utf8"));
+
+  for (const depType of ["dependencies", "devDependencies"]) {
+    const deps = packageData[depType];
+    if (!deps) continue;
+    for (const dep in deps) {
+      if (typeof deps[dep] === "string" && deps[dep].startsWith("workspace:")) {
+        const depName = dep.replace("@osdk/", "");
+        deps[dep] = path.join(
+          rootPath,
+          "packages",
+          depName,
+        );
+      }
+    }
   }
+
+  for (const script in packageData.scripts) {
+    if (typeof packageData.scripts[script] === "string") {
+      packageData.scripts[script] = packageData.scripts[script].replace(
+        "monorepo.tool.transpile",
+        monorepoTranspilePath,
+      );
+    }
+  }
+
+  await fs.writeFile(packageJsonPath, JSON.stringify(packageData, null, 2));
 }
 
 async function fetchMatchingVersions(range: string): Promise<string[]> {
@@ -61,7 +194,8 @@ async function fetchMatchingVersions(range: string): Promise<string[]> {
 
 async function getVersionFromPackageJson(): Promise<string> {
   const packageJsonPath = path.join(
-    packagesPath,
+    rootPath,
+    "packages",
     "client",
     "package.json",
   );
@@ -78,23 +212,38 @@ async function getVersionFromPackageJson(): Promise<string> {
 const versionRange = await getVersionFromPackageJson();
 const versions = await fetchMatchingVersions(versionRange);
 
+const clientCopyPath = await copyClientPackage();
+
+const FailedVersions: Array<{ version: string; error: string }> = [];
+
 for (const version of versions.reverse()) {
   consola.info(`Processing version ${chalk.blue(version)}`);
 
+  const outPath = path.join(
+    builtSdksPath,
+    version,
+  );
+
   try {
-    await codegenAtVersion(version);
+    await codegenAtVersion(version, outPath);
   } catch (e) {
     consola.warn(
       `Failed to codegen at version ${
         chalk.yellow(version)
       } due to likely incompatible generator features. Defaulting to standard tests.`,
     );
+    FailedVersions.push({
+      version,
+      error: (e as Error).message,
+    });
     continue;
   }
 
-  const clientDirPath = path.join(
-    packagesPath,
-    "client",
+  await codegenAtVersion(version, outPath);
+
+  await modifyPackageJsonToDependOnGeneratedSdkVersion(
+    path.join(clientCopyPath, "package.json"),
+    version,
   );
 
   consola.info(
@@ -102,18 +251,27 @@ for (const version of versions.reverse()) {
       chalk.blue(version)
     }`,
   );
+
   const installResult = await execa("pnpm", ["install"], {
-    cwd: clientDirPath,
+    cwd: clientCopyPath,
   });
+
   if (installResult.failed) {
     throw new Error(
       `pnpm install on client package failed for version ${version}`,
     );
   }
 
-  consola.info(`Transpiling client package for version ${chalk.blue(version)}`);
-  const transpileResult = await execa("pnpm", ["turbo", "transpile"], {
-    cwd: clientDirPath,
+  consola.info(
+    `Typechecking client package for version ${chalk.blue(version)}`,
+  );
+
+  const transpileResult = await execa("pnpm", [
+    "typecheck",
+    "--project",
+    path.join(rootPath, "packages", "client", "tsconfig.json"),
+  ], {
+    cwd: clientCopyPath,
   });
   if (transpileResult.failed) {
     throw new Error(
@@ -125,4 +283,17 @@ for (const version of versions.reverse()) {
       chalk.green(version)
     } for backwards compatibility`,
   );
+}
+
+consola.success(
+  "Successfully generated and tested all versions for backwards compatibility across minor version ",
+);
+
+if (FailedVersions.length > 0) {
+  consola.info("The following versions encountered issues:");
+  FailedVersions.forEach(({ version, error }) => {
+    consola.warn(`Version ${chalk.yellow(version)}: ${error}`);
+  });
+} else {
+  consola.success("All versions passed without issues!");
 }

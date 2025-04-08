@@ -1,0 +1,24 @@
+{
+  "name": "@osdk/client.test.generate",
+  "private": true,
+  "version": "2.2.0-beta.14",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "dependencies": {
+    "@osdk/api": "workspace:*"
+  },
+  "peerDependencies": {},
+  "devDependencies": {
+    "@osdk/generator": "workspace:~",
+    "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/shared.test": "workspace:~",
+    "execa": "9.5.2",
+    "typescript": "~5.5.4",
+    "yargs": "17.7.2"
+  },
+  "bin": "./bin/generateMockOntology.mjs"
+}

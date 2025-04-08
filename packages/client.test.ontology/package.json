@@ -26,7 +26,7 @@
   "scripts": {
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "codegen": "node ./generateMockOntology.js",
+    "codegen": "client.test.generate --outDir src/generatedNoCheck",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
@@ -38,11 +38,8 @@
   },
   "peerDependencies": {},
   "devDependencies": {
-    "@osdk/generator": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/shared.test": "workspace:~",
-    "execa": "9.5.2",
     "typescript": "~5.5.4"
   },
   "publishConfig": {

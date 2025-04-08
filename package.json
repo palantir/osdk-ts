@@ -31,6 +31,7 @@
     "@monorepolint/config": "0.6.0-alpha.4",
     "@monorepolint/core": "0.6.0-alpha.4",
     "@monorepolint/rules": "0.6.0-alpha.4",
+    "@osdk/client.test.generate": "workspace:~",
     "@osdk/monorepo.cspell": "workspace:~",
     "@osdk/monorepo.tool.transpile": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
