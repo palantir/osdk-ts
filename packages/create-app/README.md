@@ -34,15 +34,16 @@ npx @osdk/create-app [project] [--<option>]
 | --applicationUrl     | URL the production application will be hosted on [string]                        |
 | --skipApplicationUrl | Skip filling in URL the production application will be hosted on [boolean]       |
 | --application        | Application resource identifier (rid) [string]                                   |
+| --ontology           | Ontology resource identifier (rid) [string]                                      |
 | --clientId           | OAuth client ID for application [string]                                         |
 | --osdkPackage        | OSDK package name for application [string]                                       |
 | --osdkRegistryUrl    | URL for NPM registry to install OSDK package [string]                            |
 | --corsProxy          | Include a CORS proxy for Foundry API requests during local development [boolean] |
+| --scopes             | Scopes to request during OAuth flow [array<string>]                              |
 
 ## Templates
 
-| Template name      | Description                                                                                                                           |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
-| react              | [React](https://react.dev/) with [Vite](https://vitejs.dev/guide/why.html)                                                            |
-| vue                | [Vue](https://vuejs.org/) with [Vite](https://vitejs.dev/guide/why.html)                                                              |
-| next-static-export | [Next.js](https://nextjs.org/) with [static export](https://nextjs.org/docs/pages/building-your-application/deploying/static-exports) |
+| Template name | Description                                                                |
+| ------------- | -------------------------------------------------------------------------- |
+| react         | [React](https://react.dev/) with [Vite](https://vitejs.dev/guide/why.html) |
+| vue           | [Vue](https://vuejs.org/) with [Vite](https://vitejs.dev/guide/why.html)   |
