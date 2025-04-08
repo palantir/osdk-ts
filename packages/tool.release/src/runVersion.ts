@@ -178,8 +178,6 @@ export async function runVersion({
     }
   }
 
-  throw "Aborting for now";
-
   const touchedFiles = await applyReleasePlan(
     releasePlan,
     packages,
