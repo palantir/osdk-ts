@@ -17,6 +17,9 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release/') }}
+    needs: 
+      - build
+      - e2e
     permissions:
       contents: write
       pull-requests: write
