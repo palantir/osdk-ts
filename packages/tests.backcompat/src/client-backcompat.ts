@@ -150,20 +150,24 @@ async function modifyPackageJsonToDependOnGeneratedSdkVersion(
   await fs.writeFile(packageJsonPath, JSON.stringify(packageData, null, 2));
 }
 
-async function modifyPackageJsonToUseDirectPaths(packageJsonPath: string) {
+export async function modifyPackageJsonToUseDirectPaths(
+  packageJsonPath: string,
+  overrides: Record<string, string> = {},
+): Promise<void> {
   const packageData = JSON.parse(await fs.readFile(packageJsonPath, "utf8"));
 
   for (const depType of ["dependencies", "devDependencies"]) {
     const deps = packageData[depType];
     if (!deps) continue;
     for (const dep in deps) {
-      if (typeof deps[dep] === "string" && deps[dep].startsWith("workspace:")) {
+      if (overrides[dep] != null && overrides[dep] !== "root") {
+        deps[dep] = overrides[dep];
+      } else if (
+        overrides[dep] === "root"
+        || (typeof deps[dep] === "string" && deps[dep].startsWith("workspace:"))
+      ) {
         const depName = dep.replace("@osdk/", "");
-        deps[dep] = path.join(
-          rootPath,
-          "packages",
-          depName,
-        );
+        deps[dep] = path.join(rootPath, "packages", depName);
       }
     }
   }
@@ -180,11 +184,14 @@ async function modifyPackageJsonToUseDirectPaths(packageJsonPath: string) {
   await fs.writeFile(packageJsonPath, JSON.stringify(packageData, null, 2));
 }
 
-async function fetchMatchingVersions(range: string): Promise<string[]> {
+export async function fetchMatchingVersions(
+  packageName: string,
+  range: string,
+): Promise<string[]> {
   consola.info(`Fetching matching versions for range ${chalk.blue(range)}`);
   const { stdout } = await execa("npm", [
     "view",
-    "@osdk/client",
+    packageName,
     "versions",
     "--json",
   ]);
@@ -209,91 +216,91 @@ async function getVersionFromPackageJson(): Promise<string> {
   }
 }
 
-const versionRange = await getVersionFromPackageJson();
-const versions = await fetchMatchingVersions(versionRange);
+export async function runClientBackcompatTests(): Promise<void> {
+  const versionRange = await getVersionFromPackageJson();
+  const versions = await fetchMatchingVersions("@osdk/client", versionRange);
 
-const clientCopyPath = await copyClientPackage();
+  const clientCopyPath = await copyClientPackage();
 
-const FailedVersions: Array<{ version: string; error: string }> = [];
+  const FailedVersions: Array<{ version: string; error: string }> = [];
 
-for (const version of versions.reverse()) {
-  consola.info(`Processing version ${chalk.blue(version)}`);
+  for (const version of versions.reverse()) {
+    consola.info(`Processing version ${chalk.blue(version)}`);
 
-  const outPath = path.join(
-    builtSdksPath,
-    version,
-  );
-
-  try {
-    await codegenAtVersion(version, outPath);
-  } catch (e) {
-    consola.warn(
-      `Failed to codegen at version ${
-        chalk.yellow(version)
-      } due to likely incompatible generator features. Defaulting to standard tests.`,
-    );
-    FailedVersions.push({
+    const outPath = path.join(
+      builtSdksPath,
       version,
-      error: (e as Error).message,
+    );
+
+    try {
+      await codegenAtVersion(version, outPath);
+    } catch (e) {
+      consola.warn(
+        `Failed to codegen at version ${
+          chalk.yellow(version)
+        } due to likely incompatible generator features. Defaulting to standard tests.`,
+      );
+      FailedVersions.push({
+        version,
+        error: (e as Error).message,
+      });
+      continue;
+    }
+
+    await modifyPackageJsonToDependOnGeneratedSdkVersion(
+      path.join(clientCopyPath, "package.json"),
+      version,
+    );
+
+    consola.info(
+      `Installing client dependencies for SDK generated with version ${
+        chalk.blue(version)
+      }`,
+    );
+
+    const installResult = await execa("pnpm", ["install"], {
+      cwd: clientCopyPath,
     });
-    continue;
-  }
 
-  await codegenAtVersion(version, outPath);
+    if (installResult.failed) {
+      throw new Error(
+        `pnpm install on client package failed for version ${version}`,
+      );
+    }
 
-  await modifyPackageJsonToDependOnGeneratedSdkVersion(
-    path.join(clientCopyPath, "package.json"),
-    version,
-  );
+    consola.info(
+      `Typechecking client package for version ${chalk.blue(version)}`,
+    );
 
-  consola.info(
-    `Installing client dependencies for SDK generated with version ${
-      chalk.blue(version)
-    }`,
-  );
-
-  const installResult = await execa("pnpm", ["install"], {
-    cwd: clientCopyPath,
-  });
-
-  if (installResult.failed) {
-    throw new Error(
-      `pnpm install on client package failed for version ${version}`,
+    const transpileResult = await execa("pnpm", [
+      "typecheck",
+      "--project",
+      path.join(rootPath, "packages", "client", "tsconfig.json"),
+    ], {
+      cwd: clientCopyPath,
+    });
+    if (transpileResult.failed) {
+      throw new Error(
+        `pnpm turbo transpile on client package failed for version ${version}`,
+      );
+    }
+    consola.success(
+      `Successfully tested version ${
+        chalk.green(version)
+      } for backwards compatibility`,
     );
   }
 
-  consola.info(
-    `Typechecking client package for version ${chalk.blue(version)}`,
-  );
-
-  const transpileResult = await execa("pnpm", [
-    "typecheck",
-    "--project",
-    path.join(rootPath, "packages", "client", "tsconfig.json"),
-  ], {
-    cwd: clientCopyPath,
-  });
-  if (transpileResult.failed) {
-    throw new Error(
-      `pnpm turbo transpile on client package failed for version ${version}`,
-    );
-  }
   consola.success(
-    `Successfully tested version ${
-      chalk.green(version)
-    } for backwards compatibility`,
+    "Successfully generated and tested all versions for backwards compatibility across minor version ",
   );
-}
 
-consola.success(
-  "Successfully generated and tested all versions for backwards compatibility across minor version ",
-);
-
-if (FailedVersions.length > 0) {
-  consola.info("The following versions encountered issues:");
-  FailedVersions.forEach(({ version, error }) => {
-    consola.warn(`Version ${chalk.yellow(version)}: ${error}`);
-  });
-} else {
-  consola.success("All versions passed without issues!");
+  if (FailedVersions.length > 0) {
+    consola.info("The following versions encountered issues:");
+    FailedVersions.forEach(({ version, error }) => {
+      consola.warn(`Version ${chalk.yellow(version)}: ${error}`);
+    });
+  } else {
+    consola.success("All versions passed without issues!");
+  }
 }
