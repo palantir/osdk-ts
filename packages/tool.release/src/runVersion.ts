@@ -112,10 +112,11 @@ export async function runVersion({
     );
   }
 
-  const isMainBranch = context.branch === "main"
-    || process.env.PRETEND_BRANCH === "main";
-  const isReleaseBranch = context.branch.startsWith("release/")
-    || process.env.PRETEND_BRANCH?.startsWith("release/");
+  const isMainBranch =
+    (process.env.PRETEND_BRANCH ?? context.branch) === "main";
+
+  const isReleaseBranch = (process.env.PRETEND_BRANCH ?? context.branch)
+    .startsWith("release/");
 
   const runGitCommands = !process.env.PRETEND_BRANCH;
 
@@ -166,7 +167,7 @@ export async function runVersion({
       : undefined,
   );
 
-  mutateReleasePlan(releasePlan, isMainBranch ? "main" : "patch");
+  mutateReleasePlan(cwd, releasePlan, isMainBranch ? "main" : "release branch");
 
   for (const release of releasePlan.releases) {
     const versions = await packageVersionsOrEmptySet(release.name);
@@ -176,6 +177,8 @@ export async function runVersion({
       );
     }
   }
+
+  throw "Aborting for now";
 
   const touchedFiles = await applyReleasePlan(
     releasePlan,
