@@ -1,5 +1,12 @@
 # @osdk/functions.unstable
 
+## 0.0.4
+
+### Patch Changes
+
+- @osdk/api@2.1.3
+- @osdk/client@2.1.3
+
 ## 0.0.3
 
 ### Patch Changes

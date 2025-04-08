@@ -1,5 +1,13 @@
 # @osdk/create-app.template.react
 
+## 2.1.3
+
+### Patch Changes
+
+- 7eb0b0f: Read environment variables from index.html meta tags
+- 7eb0b0f: Use client.ts
+- b187cbb: Set @osdk/create version to non-beta
+
 ## 2.1.2
 
 ### Patch Changes

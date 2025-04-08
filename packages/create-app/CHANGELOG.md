@@ -1,5 +1,14 @@
 # @osdk/create-app
 
+## 2.1.3
+
+### Patch Changes
+
+- 7eb0b0f: Read environment variables from index.html meta tags
+- 7eb0b0f: Add comments to env files in templates
+- 7eb0b0f: Drop Next.js templates
+- 7eb0b0f: Ensure tutorials are not shown by cli
+
 ## 2.1.2
 
 ### Patch Changes
