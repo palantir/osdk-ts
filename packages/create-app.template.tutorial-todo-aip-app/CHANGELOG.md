@@ -1,5 +1,11 @@
 # @osdk/create-app.template.tutorial-todo-aip-app
 
+## 2.1.3
+
+### Patch Changes
+
+- 7eb0b0f: Read environment variables from index.html meta tags
+
 ## 2.1.2
 
 ### Patch Changes
