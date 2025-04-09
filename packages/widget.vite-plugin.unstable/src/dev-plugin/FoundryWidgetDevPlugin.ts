@@ -143,7 +143,12 @@ export function FoundryWidgetDevPlugin(): Plugin {
             configFiles,
             getLocalhostUrl(server),
           );
-          await publishDevModeSettings(server, widgetIdToOverrides, res);
+          await publishDevModeSettings(
+            server,
+            widgetIdToOverrides,
+            getBaseHref(server),
+            res,
+          );
         },
       );
 
@@ -220,6 +225,10 @@ function getLocalhostUrl(server: ViteDevServer): string {
   return `${
     server.config.server.https ? "https" : "http"
   }://localhost:${server.config.server.port}`;
+}
+
+function getBaseHref(server: ViteDevServer): string {
+  return `${getLocalhostUrl(server)}${server.config.base}`;
 }
 
 /**
