@@ -13,7 +13,9 @@
       "@osdk/foundry-sdk-generator",
       "@osdk/generator-converters",
       "@osdk/generator-utils",
-      "@osdk/generator"
+      "@osdk/generator",
+      "@osdk/e2e.generated.catchall",
+      "@osdk/e2e.sandbox.catchall"
     ],
     ["@osdk/cli", "@osdk/cli.*"],
     [
