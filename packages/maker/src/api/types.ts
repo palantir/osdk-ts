@@ -23,19 +23,21 @@ import type {
   ExampleValue,
   FailureMessage,
   ImportedTypes,
+  InterfaceTypeApiName,
   InterfaceTypeStatus,
   InterfaceTypeStatus_active,
   InterfaceTypeStatus_deprecated,
   InterfaceTypeStatus_experimental,
   LinkTypeDisplayMetadata,
   LinkTypeMetadata,
-  OntologyIrAllowedParameterValues,
   OntologyIrBaseParameterType,
+  OntologyIrConditionValue,
   OntologyIrFormContent,
   OntologyIrInterfaceType,
   OntologyIrLinkTypeStatus,
   OntologyIrLogicRule,
   OntologyIrObjectType,
+  OntologyIrParameterDateRangeValue,
   OntologyIrPropertyType,
   OntologyIrValidationRule,
   ParameterId,
@@ -74,39 +76,65 @@ export interface Ontology extends
 
 export type ActionType = RequiredFields<
   Partial<ActionTypeInner>,
-  "apiName" | "displayName" | "rules" | "status"
+  "apiName" | "displayName" | "rules" | "status" | "validation"
 >;
 
 export interface ActionParameter {
   id: ParameterId;
   displayName: string;
   type: OntologyIrBaseParameterType;
+  validation: ActionParameterValidation;
   description?: string;
   typeClasses?: Array<TypeClass>;
-  validation?: ActionParameterValidation;
 }
 
 export interface ActionParameterValidation {
-  allowedValues: OntologyIrAllowedParameterValues;
-  size: ActionParameterRequirementConstraint;
+  allowedValues: ActionParameterAllowedValues;
+  required: ActionParameterRequirementConstraint;
 }
 
 export type ActionParameterRequirementConstraint =
-  | { required: boolean }
+  | boolean
   | { listLength: { min?: number; max?: number } };
+
+export type ActionParameterAllowedValues =
+  | {
+    type: "range";
+    min?: OntologyIrConditionValue;
+    max?: OntologyIrConditionValue;
+  }
+  | { type: "text"; minLength?: number; maxLength?: number; regex?: string }
+  | {
+    type: "datetime";
+    maximum?: OntologyIrParameterDateRangeValue;
+    minimum?: OntologyIrParameterDateRangeValue;
+  }
+  | { type: "objectTypeReference"; interfaceTypes: Array<InterfaceTypeApiName> }
+  | { type: "attachment" }
+  | { type: "boolean" }
+  | { type: "objectSetRid" }
+  | { type: "cbacMarking" }
+  | { type: "mandatoryMarking" }
+  | { type: "objectList" }
+  | { type: "mediaReference" }
+  | { type: "timeSeriesReference" }
+  | { type: "geohash" }
+  | { type: "geoshape" }
+  | { type: "geotimeSeriesReference" }
+  | { type: "redacted" };
 
 export interface ActionTypeInner {
   apiName: ActionTypeApiName;
   displayName: string;
-  description?: string;
-  icon?: { locator: BlueprintIcon; color: string };
+  description: string;
+  icon: { locator: BlueprintIcon; color: string };
   parameters: Array<ActionParameter>;
   rules: Array<OntologyIrLogicRule>;
   sections: Record<SectionId, Array<ParameterId>>;
-  status: ActionTypeStatus; // TODO(dpaquin): could probably flatten
+  status: ActionTypeStatus; // TODO(dpaquin): can flatten
   formContentOrdering: Array<OntologyIrFormContent>;
-  validation?: Array<OntologyIrValidationRule>;
-  typeClasses?: Array<TypeClass>;
+  validation: Array<OntologyIrValidationRule>;
+  typeClasses: Array<TypeClass>;
 }
 
 export type {

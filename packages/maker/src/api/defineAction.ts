@@ -27,6 +27,10 @@ export function defineAction(actionDef: ActionType): ActionType {
       `Action type with apiName ${actionDef.apiName} is already defined`,
     );
   }
+  invariant(
+    /^[a-z0-9]+(-[a-z0-9]+)*$/.test(actionDef.apiName),
+    `Action type apiName "${actionDef.apiName}" must be alphanumeric, lowercase, and kebab-case`,
+  );
 
   const parameterIdsSet = new Set(parameterIds);
   invariant(
@@ -71,6 +75,9 @@ export function defineAction(actionDef: ActionType): ActionType {
   // TODO(dpaquin): check parameters used in rules are defined
 
   // TODO(dpaquin): do all parameters need to exist in parameterValidations (for knowing the render hints, value constraints, etc)?
+  //    answer: yes
+
+  // TODO(dpaquin): ^ but for InvalidObjectTypeApiName (https://www.palantir.com/docs/foundry/object-link-types/create-object-type#naming-guidelines)
 
   const fullAction = { ...actionDef, apiName: apiName };
   ontologyDefinition.actionTypes[apiName] = fullAction;

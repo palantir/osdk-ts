@@ -6477,11 +6477,6 @@ export interface OntologyIrAllowedParameterValues_redacted {
   type: "redacted";
   redacted: Redacted;
 }
-
-export interface OntologyIrAllowedParameterValues_struct {
-  type: "struct";
-  struct: ParameterStructOrEmpty;
-}
 export type OntologyIrAllowedParameterValues =
   | OntologyIrAllowedParameterValues_oneOf
   | OntologyIrAllowedParameterValues_range
@@ -6505,8 +6500,7 @@ export type OntologyIrAllowedParameterValues =
   | OntologyIrAllowedParameterValues_geohash
   | OntologyIrAllowedParameterValues_geoshape
   | OntologyIrAllowedParameterValues_geotimeSeriesReference
-  | OntologyIrAllowedParameterValues_redacted
-  | OntologyIrAllowedParameterValues_struct;
+  | OntologyIrAllowedParameterValues_redacted;
 
 export interface OntologyIrAllowedStructFieldValues_oneOf {
   type: "oneOf";

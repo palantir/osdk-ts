@@ -34,7 +34,7 @@ import type {
   OntologyIr,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionValidation,
-  OntologyIrBaseParameterType,
+  OntologyIrAllowedParameterValues,
   OntologyIrInterfaceType,
   OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrLinkDefinition,
@@ -60,6 +60,7 @@ import type {
 } from "@osdk/client.unstable";
 import { isExotic } from "./defineObject.js";
 import type {
+  ActionParameter,
   ActionParameterRequirementConstraint,
   ActionType,
   InterfaceType,
@@ -641,7 +642,11 @@ function convertActionValidation(
   return {
     actionTypeLevelValidation: {
       rules: Object.fromEntries(
-        (action.validation ?? []).map((rule, idx) => [idx, rule]),
+        (action.validation
+          ?? [{
+            condition: { type: "true", true: {} },
+            displayMetadata: { failureMessage: "", typeClasses: [] },
+          }]).map((rule, idx) => [idx, rule]),
       ),
     },
     parameterValidations: Object.fromEntries(
@@ -651,13 +656,13 @@ function convertActionValidation(
           {
             defaultValidation: {
               display: {
-                renderHint: renderHintFromBaseType(p.type),
+                renderHint: renderHintFromBaseType(p),
                 visibility: { type: "editable", editable: {} },
               },
               validation: {
                 // TODO(dpaquin): make allowedValues cleaner based on type?
-                allowedValues: p.validation.allowedValues,
-                required: convertSizeConstraint(p.validation.size),
+                allowedValues: extractAllowedValues(p),
+                required: convertSizeConstraint(p.validation.required),
               },
             },
           },
@@ -714,7 +719,7 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
     actionType: {
       actionTypeLogic: {
         logic: {
-          rules: action.rules ?? [],
+          rules: action.rules,
         },
         validation: actionValidation,
       },
@@ -756,10 +761,100 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
   };
 }
 
+function extractAllowedValues(
+  parameter: ActionParameter,
+): OntologyIrAllowedParameterValues {
+  switch (parameter.validation.allowedValues.type) {
+    case "range":
+      const { min, max } = parameter.validation.allowedValues;
+      return {
+        type: "range",
+        range: {
+          type: "range",
+          range: {
+            ...(min === undefined
+              ? {}
+              : { minimum: { inclusive: true, value: min } }),
+            ...(max === undefined
+              ? {}
+              : { maximum: { inclusive: true, value: max } }),
+          },
+        },
+      };
+    case "text":
+      const { minLength, maxLength, regex } =
+        parameter.validation.allowedValues;
+      return {
+        type: "text",
+        text: {
+          type: "text",
+          text: {
+            ...(minLength === undefined
+              ? {}
+              : { minimumLength: minLength }),
+            ...(maxLength === undefined
+              ? {}
+              : { maximumLength: maxLength }),
+            ...(regex === undefined
+              ? {}
+              : { regex: { regex: regex, failureMessage: "Invalid input" } }),
+          },
+        },
+      };
+    case "datetime":
+      const { minimum, maximum } = parameter.validation.allowedValues;
+      return {
+        type: "datetime",
+        datetime: {
+          type: "datetime",
+          datetime: {
+            minimum,
+            maximum,
+          },
+        },
+      };
+    case "objectTypeReference":
+      return {
+        type: "objectTypeReference",
+        objectTypeReference: {
+          type: "objectTypeReference",
+          objectTypeReference: {
+            interfaceTypeRids:
+              parameter.validation.allowedValues.interfaceTypes,
+          },
+        },
+      };
+    case "redacted":
+      return {
+        type: "redacted",
+        redacted: {},
+      };
+    case "geotimeSeriesReference":
+      return {
+        type: "geotimeSeriesReference",
+        geotimeSeriesReference: {
+          type: "geotimeSeries",
+          geotimeSeries: {},
+        },
+      };
+    default:
+      const k: Partial<OntologyIrAllowedParameterValues["type"]> =
+        parameter.validation.allowedValues.type;
+      return {
+        type: k,
+        [k]: {
+          type: k,
+          [k]: {},
+        },
+      } as unknown as OntologyIrAllowedParameterValues;
+      // TODO(dpaquin): there's probably a TS clean way to do this
+  }
+}
+
 function renderHintFromBaseType(
-  type: OntologyIrBaseParameterType,
+  parameter: ActionParameter,
 ): ParameterRenderHint {
-  switch (type.type) {
+  switch (parameter.type.type) {
     case "boolean":
     case "booleanList":
       return { type: "checkbox", checkbox: {} };
@@ -790,8 +885,15 @@ function renderHintFromBaseType(
       return { type: "filePicker", filePicker: {} };
     case "marking":
     case "markingList":
-      // TODO(dpaquin): CBAC vs mandatory?
-      return { type: "mandatoryMarkingPicker", mandatoryMarkingPicker: {} };
+      if (parameter.validation.allowedValues.type === "mandatoryMarking") {
+        return { type: "mandatoryMarkingPicker", mandatoryMarkingPicker: {} };
+      } else if (parameter.validation.allowedValues.type === "cbacMarking") {
+        return { type: "cbacMarkingPicker", cbacMarkingPicker: {} };
+      } else {
+        throw new Error(
+          `The allowed values for "${parameter.displayName}" are not compatible with the base parameter type`,
+        );
+      }
     case "timeSeriesReference":
     case "objectReference":
     case "objectReferenceList":
@@ -807,19 +909,19 @@ function renderHintFromBaseType(
     case "structList":
       throw new Error("Structs are not supported yet");
     default:
-      throw new Error(`Unknown type ${type}`);
+      throw new Error(`Unknown type ${parameter.type}`);
   }
 }
 
 function convertSizeConstraint(
-  validation: ActionParameterRequirementConstraint,
+  required: ActionParameterRequirementConstraint,
 ): ParameterRequiredConfiguration {
-  if ("required" in validation) {
-    return validation.required
+  if (typeof required === "boolean") {
+    return required
       ? { type: "required", required: {} }
       : { type: "notRequired", notRequired: {} };
   }
-  const { min, max } = validation.listLength;
+  const { min, max } = required.listLength;
   return {
     type: "listLengthValidation",
     listLengthValidation: { minLength: min, maxLength: max },
