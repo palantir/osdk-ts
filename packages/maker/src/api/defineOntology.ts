@@ -681,10 +681,7 @@ function convertActionParameters(
     displayMetadata: {
       displayName: p.displayName,
       description: p.description ?? "",
-      typeClasses: [{
-        kind: "render_hint",
-        name: "SELECTABLE",
-      }, { kind: "render_hint", name: "SORTABLE" }],
+      typeClasses: [],
     },
   }]));
 }
@@ -746,10 +743,7 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
             blueprint: action.icon ?? { locator: "edit", color: "#000000" },
           },
           successMessage: [],
-          typeClasses: action.typeClasses ?? [{
-            kind: "render_hint",
-            name: "SELECTABLE",
-          }, { kind: "render_hint", name: "SORTABLE" }],
+          typeClasses: action.typeClasses ?? [],
         },
         formContentOrdering: action.formContentOrdering ?? [],
         parameterOrdering: (action.parameters ?? []).map(p => p.id),

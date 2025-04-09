@@ -3248,16 +3248,7 @@ describe("Ontology Defining", () => {
                       "type": "blueprint",
                     },
                     "successMessage": [],
-                    "typeClasses": [
-                      {
-                        "kind": "render_hint",
-                        "name": "SELECTABLE",
-                      },
-                      {
-                        "kind": "render_hint",
-                        "name": "SORTABLE",
-                      },
-                    ],
+                    "typeClasses": [],
                   },
                   "formContentOrdering": [],
                   "parameterOrdering": [
@@ -3268,16 +3259,7 @@ describe("Ontology Defining", () => {
                       "displayMetadata": {
                         "description": "",
                         "displayName": "param1",
-                        "typeClasses": [
-                          {
-                            "kind": "render_hint",
-                            "name": "SELECTABLE",
-                          },
-                          {
-                            "kind": "render_hint",
-                            "name": "SORTABLE",
-                          },
-                        ],
+                        "typeClasses": [],
                       },
                       "id": "param1",
                       "type": {
