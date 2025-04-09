@@ -72,12 +72,7 @@ export function defineAction(actionDef: ActionType): ActionType {
     `Action type ${actionDef.apiName} must have at least one logic rule`,
   );
 
-  // TODO(dpaquin): check parameters used in rules are defined
-
-  // TODO(dpaquin): do all parameters need to exist in parameterValidations (for knowing the render hints, value constraints, etc)?
-  //    answer: yes
-
-  // TODO(dpaquin): ^ but for InvalidObjectTypeApiName (https://www.palantir.com/docs/foundry/object-link-types/create-object-type#naming-guidelines)
+  // TODO(dpaquin): check parameter ids referenced anywhere are defined?
 
   const fullAction = { ...actionDef, apiName: apiName };
   ontologyDefinition.actionTypes[apiName] = fullAction;

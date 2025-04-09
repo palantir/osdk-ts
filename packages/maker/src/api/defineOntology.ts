@@ -636,76 +636,6 @@ function convertType(
   }
 }
 
-function convertActionValidation(
-  action: ActionType,
-): OntologyIrActionValidation {
-  return {
-    actionTypeLevelValidation: {
-      rules: Object.fromEntries(
-        (action.validation
-          ?? [{
-            condition: { type: "true", true: {} },
-            displayMetadata: { failureMessage: "", typeClasses: [] },
-          }]).map((rule, idx) => [idx, rule]),
-      ),
-    },
-    parameterValidations: Object.fromEntries(
-      (action.parameters ?? []).flatMap(p => {
-        return p.validation === undefined ? [] : [[
-          p.id,
-          {
-            defaultValidation: {
-              display: {
-                renderHint: renderHintFromBaseType(p),
-                visibility: { type: "editable", editable: {} },
-              },
-              validation: {
-                // TODO(dpaquin): make allowedValues cleaner based on type?
-                allowedValues: extractAllowedValues(p),
-                required: convertSizeConstraint(p.validation.required),
-              },
-            },
-          },
-        ]];
-      }),
-    ),
-  };
-}
-
-function convertActionParameters(
-  action: ActionType,
-): Record<ParameterId, OntologyIrParameter> {
-  return Object.fromEntries((action.parameters ?? []).map(p => [p.id, {
-    id: p.id,
-    type: p.type,
-    displayMetadata: {
-      displayName: p.displayName,
-      description: p.description ?? "",
-      typeClasses: [],
-    },
-  }]));
-}
-
-function convertActionSections(
-  action: ActionType,
-): Record<SectionId, OntologyIrSection> {
-  return Object.fromEntries(
-    Object.entries(action.sections ?? {}).map((
-      [sectionId, parameterIds],
-    ) => [sectionId, {
-      id: sectionId,
-      content: parameterIds.map(p => ({ type: "parameterId", parameterId: p })),
-      displayMetadata: {
-        collapsedByDefault: false,
-        columnCount: 1,
-        description: "",
-        displayName: sectionId,
-        showTitleBar: true,
-      },
-    }]),
-  );
-}
-
 function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
   const actionValidation = convertActionValidation(action);
   const actionParameters: Record<ParameterId, OntologyIrParameter> =
@@ -753,6 +683,77 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
       },
     },
   };
+}
+
+function convertActionValidation(
+  action: ActionType,
+): OntologyIrActionValidation {
+  return {
+    actionTypeLevelValidation: {
+      rules: Object.fromEntries(
+        (action.validation
+          ?? [{
+            condition: { type: "true", true: {} },
+            displayMetadata: { failureMessage: "", typeClasses: [] },
+          }]).map((rule, idx) => [idx, rule]),
+      ),
+    },
+    parameterValidations: Object.fromEntries(
+      (action.parameters ?? []).map(p => {
+        return [
+          p.id,
+          {
+            defaultValidation: {
+              display: {
+                renderHint: renderHintFromBaseType(p),
+                visibility: { type: "editable", editable: {} },
+              },
+              validation: {
+                allowedValues: extractAllowedValues(p),
+                required: convertParameterRequirementConstraint(
+                  p.validation.required,
+                ),
+              },
+            },
+          },
+        ];
+      }),
+    ),
+  };
+}
+
+function convertActionParameters(
+  action: ActionType,
+): Record<ParameterId, OntologyIrParameter> {
+  return Object.fromEntries((action.parameters ?? []).map(p => [p.id, {
+    id: p.id,
+    type: p.type,
+    displayMetadata: {
+      displayName: p.displayName,
+      description: p.description ?? "",
+      typeClasses: [],
+    },
+  }]));
+}
+
+function convertActionSections(
+  action: ActionType,
+): Record<SectionId, OntologyIrSection> {
+  return Object.fromEntries(
+    Object.entries(action.sections ?? {}).map((
+      [sectionId, parameterIds],
+    ) => [sectionId, {
+      id: sectionId,
+      content: parameterIds.map(p => ({ type: "parameterId", parameterId: p })),
+      displayMetadata: {
+        collapsedByDefault: false,
+        columnCount: 1,
+        description: "",
+        displayName: sectionId,
+        showTitleBar: true,
+      },
+    }]),
+  );
 }
 
 function extractAllowedValues(
@@ -907,7 +908,7 @@ function renderHintFromBaseType(
   }
 }
 
-function convertSizeConstraint(
+function convertParameterRequirementConstraint(
   required: ActionParameterRequirementConstraint,
 ): ParameterRequiredConfiguration {
   if (typeof required === "boolean") {
