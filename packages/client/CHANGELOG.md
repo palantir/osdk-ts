@@ -1,5 +1,22 @@
 # @osdk/client
 
+## 2.2.0-beta.15
+
+### Minor Changes
+
+- ed69666: Update conjure-lite to 0.7.1
+- 1e16dcb: Exposes MinimalLogger and BrowserLogger via @osdk/client/internal
+- 1e16dcb: Default logging is error level only
+- f4370e3: Fixes error when using intersection, subtraction, or union object sets
+- cc380b5: Use the latest Platform APIs
+
+### Patch Changes
+
+- Updated dependencies [ed69666]
+  - @osdk/client.unstable@2.2.0-beta.15
+  - @osdk/api@2.2.0-beta.15
+  - @osdk/generator-converters@2.2.0-beta.15
+
 ## 2.2.0-beta.14
 
 ### Patch Changes
