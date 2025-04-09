@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import { consola } from 'consola';
-import type { MigrateArgs } from './MigrateArgs.js';
-import { updateIndexFile } from './updaters/updateIndexFile.js';
-import { updateEnvFiles } from './updaters/updateEnvFiles.js';
-import { updateClientFile } from './updaters/updateClientFile.js';
-import { checkGitStatus, confirmProceedMigration, validateRequiredFiles, backupInstructions } from './utils.js';
+import { consola } from "consola";
+import type { MigrateArgs } from "./MigrateArgs.js";
+import { updateClientFile } from "./updaters/updateClientFile.js";
+import { updateEnvFiles } from "./updaters/updateEnvFiles.js";
+import { updateIndexFile } from "./updaters/updateIndexFile.js";
+import {
+  backupInstructions,
+  checkGitStatus,
+  confirmProceedMigration,
+  validateRequiredFiles,
+} from "./utils.js";
 
 export default async function migrateCommand(
   { ontology, clientPath, indexPath }: MigrateArgs,
@@ -28,9 +33,11 @@ export default async function migrateCommand(
   try {
     const gitCheckResult = checkGitStatus();
     if (gitCheckResult.shouldConfirm) {
-      const shouldProceed = await confirmProceedMigration(gitCheckResult.message);
+      const shouldProceed = await confirmProceedMigration(
+        gitCheckResult.message,
+      );
       if (!shouldProceed) {
-        consola.info('Migration cancelled');
+        consola.info("Migration cancelled");
         return;
       }
     }
@@ -40,7 +47,7 @@ export default async function migrateCommand(
       consola.error(validationResult.message);
       return;
     }
-    
+
     const clientFileInfo = await updateClientFile(clientPath);
     const indexFileInfo = await updateIndexFile(indexPath);
     const envFilesInfo = await updateEnvFiles(ontology);
