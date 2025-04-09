@@ -76,7 +76,7 @@ export interface Ontology extends
 
 export type ActionType = RequiredFields<
   Partial<ActionTypeInner>,
-  "apiName" | "displayName" | "rules" | "status" | "validation"
+  "apiName" | "displayName" | "rules" | "status"
 >;
 
 export interface ActionParameter {
