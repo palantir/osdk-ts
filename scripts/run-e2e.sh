@@ -53,7 +53,7 @@ if [[ ! -f "$TEST_PATH" ]]; then
 fi
 
 if [[ "$RUN_TRANSPILE" == true ]]; then
-    pnpm turbo transpile 
+    pnpm turbo transpileEsm
 else
     echo -e "${YELLOW}Skipping 'pnpm turbo transpile'${NC}"
 fi
