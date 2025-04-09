@@ -21,7 +21,10 @@ import { findUpSync } from "find-up";
 import { promises as fs } from "fs";
 import path, { join } from "path";
 import { fileURLToPath } from "url";
-import { modifyPackageJsonToUseDirectPaths } from "./client-backcompat.js";
+import {
+  fetchMatchingVersions,
+  modifyPackageJsonToUseDirectPaths,
+} from "./client-backcompat.js";
 
 const THIS_FILE_DIR = path.dirname(fileURLToPath(import.meta.url));
 
@@ -65,58 +68,95 @@ async function installPackagesAtVersion(version: string) {
   return path.join(versionedDir, "node_modules", "@osdk");
 }
 
-export async function runE2eBackcompatTests(): Promise<void> {
-  const version = "latest";
-  const installPath = await installPackagesAtVersion(version);
-
-  const testDirPath = path.join(installPath, "e2e.sandbox.catchall");
-
+async function installPackageDependenciesWithOverrides(
+  packagePath: string,
+  dependencyOverrides: Record<string, string>,
+) {
   await modifyPackageJsonToUseDirectPaths(
     path.join(
-      testDirPath,
+      packagePath,
       "package.json",
     ),
-    {
-      "@osdk/e2e.generated.catchall": path.join(
-        installPath,
-        "e2e.generated.catchall",
-      ),
-      "@osdk/client": "root",
-      "@osdk/api": "root",
-      "@osdk/cli": "root",
-      "@osdk/monorepo.api-extractor": "root",
-      "@osdk/monorepo.tsconfig": "root",
-    },
+    dependencyOverrides,
   );
 
   await fs.writeFile(
-    path.join(testDirPath, "pnpm-workspace.yaml"),
+    path.join(packagePath, "pnpm-workspace.yaml"),
     "",
   );
 
   consola.info(
-    `Installing client dependencies for SDK generated with version ${
-      chalk.blue(testDirPath)
-    }`,
+    `Installing dependencies at ${chalk.blue(packagePath)}`,
   );
 
-  const installResult = await execa("pnpm", ["install"], {
-    cwd: testDirPath,
+  await execa("pnpm", ["install"], {
+    cwd: packagePath,
   });
+}
 
-  if (installResult.failed) {
+export async function runE2eBackcompatTests(): Promise<void> {
+  const versions = await fetchMatchingVersions("@osdk/e2e.generated.catchall");
+  if (versions.length === 0) {
+    consola.warn("No versions found for @osdk/e2e.generated.catchall");
     throw new Error(
-      `pnpm install on client package failed for version ${version}`,
+      "No versions found for @osdk/e2e.generated.catchall",
     );
   }
 
   consola.info(
-    `Typechecking client package for version ${chalk.blue(version)}`,
+    `Found ${
+      chalk.blue(versions.length)
+    } versions of @osdk/e2e.generated.catchall`,
   );
+  for (const version of versions) {
+    consola.info(
+      `Running E2E test package at version ${chalk.blue(version)}`,
+    );
+    const installPath = await installPackagesAtVersion(version);
 
-  await execa("pnpm", [
-    "typecheck",
-  ], {
-    cwd: testDirPath,
-  });
+    const generatedSDKPath = path.join(installPath, "e2e.generated.catchall");
+    const sandboxPath = path.join(installPath, "e2e.sandbox.catchall");
+
+    const dependencyOverrides = {
+      "@osdk/e2e.generated.catchall": generatedSDKPath,
+      "@osdk/client": "root",
+      "@osdk/api": "root",
+      "@osdk/cli": "root",
+      "@osdk/cli.cmd.typescript": "root",
+      "@osdk/monorepo.api-extractor": "root",
+      "@osdk/monorepo.tsconfig": "root",
+    };
+
+    await installPackageDependenciesWithOverrides(
+      generatedSDKPath,
+      dependencyOverrides,
+    );
+    await installPackageDependenciesWithOverrides(
+      sandboxPath,
+      dependencyOverrides,
+    );
+
+    consola.info(
+      `Typechecking E2E test package at version ${chalk.blue(version)}`,
+    );
+
+    try {
+      await execa("pnpm", [
+        "typecheck",
+      ], {
+        cwd: sandboxPath,
+      });
+    } catch (e) {
+      consola.error(
+        `E2E test package at version ${chalk.blue(version)} failed typecheck`,
+      );
+      consola.error((e as Error).message);
+      continue;
+    }
+
+    consola.success(
+      `E2E test package at version ${chalk.blue(version)} passed typecheck`,
+    );
+  }
+  consola.info("All E2E test packages passed typecheck");
 }

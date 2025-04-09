@@ -156,7 +156,9 @@ export async function modifyPackageJsonToUseDirectPaths(
 ): Promise<void> {
   const packageData = JSON.parse(await fs.readFile(packageJsonPath, "utf8"));
 
-  for (const depType of ["dependencies", "devDependencies"]) {
+  for (
+    const depType of ["dependencies", "devDependencies", "peerDependencies"]
+  ) {
     const deps = packageData[depType];
     if (!deps) continue;
     for (const dep in deps) {
@@ -186,8 +188,10 @@ export async function modifyPackageJsonToUseDirectPaths(
 
 export async function fetchMatchingVersions(
   packageName: string,
-  range: string,
 ): Promise<string[]> {
+  const range = await getVersionFromPackageJson(
+    packageName,
+  );
   consola.info(`Fetching matching versions for range ${chalk.blue(range)}`);
   const { stdout } = await execa("npm", [
     "view",
@@ -199,11 +203,13 @@ export async function fetchMatchingVersions(
   return versions.filter((version: string) => semver.satisfies(version, range));
 }
 
-async function getVersionFromPackageJson(): Promise<string> {
+async function getVersionFromPackageJson(
+  packageName: string,
+): Promise<string> {
   const packageJsonPath = path.join(
     rootPath,
     "packages",
-    "client",
+    packageName.replace("@osdk/", ""),
     "package.json",
   );
   const packageJson = JSON.parse(await fs.readFile(packageJsonPath, "utf-8"));
@@ -217,8 +223,7 @@ async function getVersionFromPackageJson(): Promise<string> {
 }
 
 export async function runClientBackcompatTests(): Promise<void> {
-  const versionRange = await getVersionFromPackageJson();
-  const versions = await fetchMatchingVersions("@osdk/client", versionRange);
+  const versions = await fetchMatchingVersions("@osdk/client");
 
   const clientCopyPath = await copyClientPackage();
 

@@ -3557,14 +3557,14 @@ importers:
         specifier: ~5.5.4
         version: 5.5.4
 
-  packages/test.backcompat:
+  packages/tests.backcompat:
     dependencies:
       chalk:
         specifier: ^5.4.1
         version: 5.4.1
       consola:
         specifier: ^3.4.0
-        version: 3.4.0
+        version: 3.4.2
       execa:
         specifier: ^9.5.1
         version: 9.5.2
