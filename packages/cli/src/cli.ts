@@ -20,6 +20,7 @@ import { ExitProcessError, getYargsBase } from "@osdk/cli.common";
 import { consola } from "consola";
 import type { Argv } from "yargs";
 import auth from "./commands/auth/index.js";
+import migrate from "./commands/migrate/index.js";
 import site from "./commands/site/index.js";
 import widgetSet from "./commands/widgetset/index.js";
 
@@ -36,6 +37,7 @@ export async function cli(args: string[] = process.argv): Promise<
   try {
     return await base
       .command(site)
+      .command(migrate)
       .command({
         command: "unstable",
         aliases: ["experimental"],
