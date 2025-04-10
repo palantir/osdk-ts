@@ -53,19 +53,19 @@ type ReturnTypeForNumericMethod<
   LEFT extends WirePropertyTypes,
   RIGHT extends WirePropertyTypes,
 > = "double" extends (LEFT | RIGHT) ? DerivedProperty.NumericPropertyDefinition<
-    SimplePropertyDef.Make<"double", false, false>,
+    SimplePropertyDef.Make<"double", "non-nullable", "single">,
     Q
   >
   : "float" extends (LEFT | RIGHT) ? DerivedProperty.NumericPropertyDefinition<
-      SimplePropertyDef.Make<"double", false, false>,
+      SimplePropertyDef.Make<"double", "non-nullable", "single">,
       Q
     >
   : "long" extends (LEFT | RIGHT) ? DerivedProperty.NumericPropertyDefinition<
-      SimplePropertyDef.Make<"long", false, false>,
+      SimplePropertyDef.Make<"long", "non-nullable", "single">,
       Q
     >
   : DerivedProperty.NumericPropertyDefinition<
-    SimplePropertyDef.Make<"integer", false, false>,
+    SimplePropertyDef.Make<"integer", "non-nullable", "single">,
     Q
   >;
 
@@ -75,11 +75,11 @@ type ReturnTypeForDatetimeMethod<
   RIGHT extends WirePropertyTypes,
 > = "timestamp" extends (LEFT | RIGHT)
   ? DerivedProperty.DatetimePropertyDefinition<
-    SimplePropertyDef.Make<"timestamp", false, false>,
+    SimplePropertyDef.Make<"timestamp", "non-nullable", "single">,
     Q
   >
   : DerivedProperty.DatetimePropertyDefinition<
-    SimplePropertyDef.Make<"datetime", false, false>,
+    SimplePropertyDef.Make<"datetime", "non-nullable", "single">,
     Q
   >;
 
@@ -191,5 +191,5 @@ export type DatetimeExpressions<
   >;
   readonly extractPart: (
     value: DatetimeExpressionArg<Q>,
-  ) => SimplePropertyDef.Make<"string", false, false>;
+  ) => SimplePropertyDef.Make<"string", "non-nullable", "single">;
 };

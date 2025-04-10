@@ -26,8 +26,8 @@ export type SimplePropertyDef =
 export namespace SimplePropertyDef {
   export type Make<
     T extends WirePropertyTypes,
-    N extends boolean | undefined,
-    M extends boolean | undefined,
+    N extends "nullable" | "non-nullable",
+    M extends "array" | "single",
   > =
     // while it is cleaner to just do this as the union of two conditionals, it
     // actually makes it so that it can't be derived inline which we want
@@ -35,14 +35,18 @@ export namespace SimplePropertyDef {
     // | (P["multiplicity"] extends true ? Array<P["type"]> : P["type"])
     // | (P["nullable"] extends true ? undefined : never);
     // we do:
-    M extends true ? N extends true ? Array<T> | undefined
+    M extends "array" ? N extends "nullable" ? Array<T> | undefined
       : Array<T>
-      : N extends true ? T | undefined
+      : N extends "nullable" ? T | undefined
       : T;
 
   export type FromPropertyMetadata<
     P extends ObjectMetadata.Property,
-  > = Make<P["type"], P["nullable"], P["multiplicity"]>;
+  > = Make<
+    P["type"],
+    P["nullable"] extends true ? "nullable" : "non-nullable",
+    P["multiplicity"] extends true ? "array" : "single"
+  >;
 
   // exported for testing
   export type ExtractMultiplicity<

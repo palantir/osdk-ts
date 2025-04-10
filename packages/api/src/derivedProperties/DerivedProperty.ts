@@ -133,33 +133,33 @@ type Constant<Q extends ObjectOrInterfaceDefinition> = {
     readonly double: (
       value: number,
     ) => DerivedProperty.NumericPropertyDefinition<
-      SimplePropertyDef.Make<"double", false, false>,
+      SimplePropertyDef.Make<"double", "non-nullable", "single">,
       Q
     >;
 
     readonly integer: (
       value: number,
     ) => DerivedProperty.NumericPropertyDefinition<
-      SimplePropertyDef.Make<"integer", false, false>,
+      SimplePropertyDef.Make<"integer", "non-nullable", "single">,
       Q
     >;
     readonly long: (
       value: string,
     ) => DerivedProperty.NumericPropertyDefinition<
-      SimplePropertyDef.Make<"long", false, false>,
+      SimplePropertyDef.Make<"long", "non-nullable", "single">,
       Q
     >;
 
     readonly datetime: (
       value: string,
     ) => DerivedProperty.DatetimePropertyDefinition<
-      SimplePropertyDef.Make<"datetime", false, false>,
+      SimplePropertyDef.Make<"datetime", "non-nullable", "single">,
       Q
     >;
     readonly timestamp: (
       value: string,
     ) => DerivedProperty.DatetimePropertyDefinition<
-      SimplePropertyDef.Make<"timestamp", false, false>,
+      SimplePropertyDef.Make<"timestamp", "non-nullable", "single">,
       Q
     >;
   };
@@ -185,29 +185,29 @@ type Aggregatable<
     V extends `${infer N}:${infer P}`
       ? P extends CollectWithPropAggregations ? SimplePropertyDef.Make<
           CompileTimeMetadata<Q>["properties"][N]["type"],
-          true,
-          true
+          "nullable",
+          "array"
         >
       : P extends MinMaxWithPropAggregateOption ? SimplePropertyDef.Make<
           CompileTimeMetadata<Q>["properties"][N]["type"],
-          true,
-          false
+          "nullable",
+          "single"
         >
       : P extends "approximateDistinct" | "exactDistinct"
         ? SimplePropertyDef.Make<
           "integer",
-          false,
-          false
+          "non-nullable",
+          "single"
         >
       : SimplePropertyDef.Make<
         "double",
-        true,
-        false
+        "nullable",
+        "single"
       >
       : V extends "$count" ? SimplePropertyDef.Make<
           "integer",
-          false,
-          false
+          "non-nullable",
+          "single"
         >
       : never
   >;
@@ -220,8 +220,12 @@ type Selectable<Q extends ObjectOrInterfaceDefinition> = {
     Q,
     SimplePropertyDef.Make<
       CompileTimeMetadata<Q>["properties"][R]["type"],
-      CompileTimeMetadata<Q>["properties"][R]["nullable"],
-      CompileTimeMetadata<Q>["properties"][R]["multiplicity"]
+      CompileTimeMetadata<Q>["properties"][R]["nullable"] extends true
+        ? "nullable"
+        : "non-nullable",
+      CompileTimeMetadata<Q>["properties"][R]["multiplicity"] extends true
+        ? "array"
+        : "single"
     >
   >;
 };
