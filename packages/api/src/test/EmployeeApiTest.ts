@@ -33,9 +33,13 @@ export namespace EmployeeApiTest {
     | "timeseries"
     | "mediaReference"
     | "geotimeSeriesReference"
-    | "lastClockIn"
-    | "dateOfBirth"
-    | "isActive";
+    | "isActive"
+    | "yearsOfExperience"
+    | "rank"
+    | "performanceScore"
+    | "hourlyRate"
+    | "dateOfJoining"
+    | "lastUpdated";
 
   export interface Links {
     readonly lead: $SingleLinkAccessor<EmployeeApiTest>;
@@ -47,15 +51,19 @@ export namespace EmployeeApiTest {
     readonly fullName: $PropType["string"] | undefined;
     readonly employeeId: $PropType["integer"] | undefined;
     readonly attachment: $PropType["attachment"] | undefined;
-    readonly geopoint: $PropType["geopoint"] | undefined;
+    readonly geopoint: $PropType["long"] | undefined;
     readonly timeseries: $PropType["numericTimeseries"] | undefined;
     readonly mediaReference: $PropType["mediaReference"] | undefined;
     readonly geotimeSeriesReference:
       | $PropType["geotimeSeriesReference"]
       | undefined;
     readonly isActive: $PropType["boolean"] | undefined;
-    readonly lastClockIn: $PropType["timestamp"] | undefined;
-    readonly dateOfBirth: $PropType["datetime"] | undefined;
+    readonly yearsOfExperience: $PropType["long"] | undefined;
+    readonly rank: $PropType["short"] | undefined;
+    readonly performanceScore: $PropType["double"] | undefined;
+    readonly hourlyRate: $PropType["float"] | undefined;
+    readonly dateOfJoining: $PropType["datetime"] | undefined;
+    readonly lastUpdated: $PropType["timestamp"] | undefined;
   }
   export type StrictProps = Props;
 
@@ -103,7 +111,7 @@ export interface EmployeeApiTest extends $ObjectTypeDefinition {
       fullName: $PropertyDef<"string", "nullable", "single">;
       employeeId: $PropertyDef<"integer", "nullable", "single">;
       attachment: $PropertyDef<"attachment", "nullable", "single">;
-      geopoint: $PropertyDef<"geopoint", "nullable", "single">;
+      geopoint: $PropertyDef<"long", "nullable", "single">;
       timeseries: $PropertyDef<"numericTimeseries", "nullable", "single">;
       mediaReference: $PropertyDef<"mediaReference", "nullable", "single">;
       geotimeSeriesReference: $PropertyDef<
@@ -112,8 +120,12 @@ export interface EmployeeApiTest extends $ObjectTypeDefinition {
         "single"
       >;
       isActive: $PropertyDef<"boolean", "nullable", "single">;
-      lastClockIn: $PropertyDef<"timestamp", "nullable", "single">;
-      dateOfBirth: $PropertyDef<"datetime", "nullable", "single">;
+      yearsOfExperience: $PropertyDef<"long", "nullable", "single">;
+      rank: $PropertyDef<"short", "nullable", "single">;
+      performanceScore: $PropertyDef<"double", "nullable", "single">;
+      hourlyRate: $PropertyDef<"float", "nullable", "single">;
+      dateOfJoining: $PropertyDef<"datetime", "nullable", "single">;
+      lastUpdated: $PropertyDef<"timestamp", "nullable", "single">;
     };
     rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44";
     status: "ACTIVE";
