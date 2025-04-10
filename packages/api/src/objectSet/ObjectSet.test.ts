@@ -16,31 +16,79 @@
 
 import { describe, expectTypeOf, it, test, vi } from "vitest";
 
-import type { ObjectSet as $ObjectSet, Osdk, PropertyKeys } from "../index.js";
+import type {
+  NullabilityAdherence,
+  ObjectOrInterfaceDefinition,
+  ObjectSet as $ObjectSet,
+  Osdk,
+  PageResult,
+  PropertyKeys,
+} from "../index.js";
 import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
 
-describe("ObjectSet", () => {
-  const fauxObjectSet = {
+export function createMockObjectSet<
+  Q extends ObjectOrInterfaceDefinition,
+>(): $ObjectSet<Q, never> {
+  let fauxObject: Osdk.Instance<Q>,
+    fauxResults: any,
+    fauxObjectSet: $ObjectSet<Q>;
+
+  // eslint-disable-next-line prefer-const
+  fauxObject = {
+    $link: {
+      peeps: {
+        $objectSetInternals: {
+          def: {},
+        },
+      },
+    },
+  } as Osdk.Instance<Q>;
+
+  fauxResults = {
+    data: [fauxObject],
+  };
+
+  fauxObjectSet = {
     where: vi.fn(() => {
       return fauxObjectSet;
     }),
     withProperties: vi.fn(() => {
       return fauxObjectSet;
     }),
-    fetchPage: vi.fn(() => Promise.resolve({ data: [{}] })),
+    fetchPage: vi.fn(() => Promise.resolve(fauxResults)),
+    fetchOne: vi.fn(() => fauxObject),
     asyncIter: vi.fn(() => {
       return {};
     }),
     aggregate: vi.fn(() => {
       return {};
     }),
-  } as any as EmployeeApiTest.ObjectSet;
+    pivotTo: vi.fn(() => {
+      return fauxObjectSet;
+    }),
+  } as any as $ObjectSet<Q>;
+
+  return fauxObjectSet;
+}
+
+describe("ObjectSet", () => {
+  const fauxObjectSet = createMockObjectSet<EmployeeApiTest>();
 
   describe("normal", () => {
     test("select none", async () => {
       const result = await fauxObjectSet.fetchPage();
       expectTypeOf<typeof result.data[0]>().toEqualTypeOf<
-        Osdk.Instance<EmployeeApiTest, never>
+        Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>>
+      >();
+
+      // Do it again but be explicit about the params to be sure
+      // we don't break them
+      const result2 = await fauxObjectSet.fetchPage<
+        PropertyKeys<EmployeeApiTest>,
+        false,
+        never,
+        NullabilityAdherence.Default,
+        false
       >();
     });
 
@@ -52,6 +100,121 @@ describe("ObjectSet", () => {
     });
   });
 
+  describe("includeAllBaseObjectProperties", () => {
+    it("has the right types if you pass true", async () => {
+      const fetchPageResult = await fauxObjectSet
+        .where({ class: "idk" })
+        .fetchPage({ $includeAllBaseObjectProperties: true });
+
+      expectTypeOf(fetchPageResult).toEqualTypeOf<
+        PageResult<
+          Osdk.Instance<EmployeeApiTest, "$allBaseProperties">
+        >
+      >();
+
+      const asyncIterResult = fauxObjectSet
+        .where({ class: "idk" })
+        .asyncIter({ $includeAllBaseObjectProperties: true });
+
+      expectTypeOf(asyncIterResult).toEqualTypeOf<
+        AsyncIterableIterator<
+          Osdk.Instance<EmployeeApiTest, "$allBaseProperties">
+        >
+      >();
+    });
+
+    it("does not let you pass partial $select and true", async () => {
+      const fetchPageResult = await fauxObjectSet
+        .where({ class: "idk" })
+        .fetchPage({
+          // @ts-expect-error
+          $includeAllBaseObjectProperties: true,
+          $select: ["attachment"],
+        });
+
+      const asyncIterResult = fauxObjectSet
+        .where({ class: "idk" })
+        .asyncIter({
+          // @ts-expect-error
+          $includeAllBaseObjectProperties: true,
+          $select: ["attachment"],
+        });
+    });
+
+    it("does let you pass full select options and false", async () => {
+      const fetchPageResult = await fauxObjectSet
+        .where({ class: "idk" })
+        .fetchPage({
+          $includeAllBaseObjectProperties: true,
+
+          // this select list is intended to represent all properties on `EmployeeApiTest`,
+          // so if you get an error here later and you added properties to that object,
+          // be sure to add them here too.
+          $select: [
+            "attachment",
+            "class",
+            "employeeId",
+            "fullName",
+            "geopoint",
+            "geotimeSeriesReference",
+            "isActive",
+            "mediaReference",
+            "timeseries",
+            "lastClockIn",
+            "dateOfBirth",
+          ],
+        });
+
+      const asyncIterResult = await fauxObjectSet
+        .where({ class: "idk" })
+        .fetchPage({
+          $includeAllBaseObjectProperties: true,
+
+          // this select list is intended to represent all properties on `EmployeeApiTest`,
+          // so if you get an error here later and you added properties to that object,
+          // be sure to add them here too.
+          $select: [
+            "attachment",
+            "class",
+            "employeeId",
+            "fullName",
+            "geopoint",
+            "geotimeSeriesReference",
+            "isActive",
+            "mediaReference",
+            "timeseries",
+            "lastClockIn",
+            "dateOfBirth",
+          ],
+        });
+    });
+  });
+
+  test("includeRid", async () => {
+    const x = await fauxObjectSet
+      .where({ class: "idk" })
+      .fetchPage({ $includeRid: true });
+
+    expectTypeOf(x).toEqualTypeOf<
+      PageResult<
+        Osdk.Instance<EmployeeApiTest, "$rid">
+      >
+    >();
+  });
+
+  test("pivotTo", async () => {
+    const noArgs = await fauxObjectSet.pivotTo("peeps").fetchPage({});
+    const subselect = await fauxObjectSet.pivotTo("peeps").fetchPage({
+      $select: ["employeeId", "class"],
+    });
+
+    expectTypeOf(subselect).toEqualTypeOf<
+      PageResult<
+        Osdk.Instance<EmployeeApiTest, never, "employeeId" | "class">
+      >
+    >();
+  });
+
   describe(".withProperties", () => {
     test("single property", async () => {
       const withA = fauxObjectSet.withProperties({
@@ -59,6 +222,8 @@ describe("ObjectSet", () => {
           return base.pivotTo("lead").aggregate("class:exactDistinct");
         },
       });
+
+      const isWithAAssignable: $ObjectSet<EmployeeApiTest, {}> = withA;
 
       expectTypeOf(withA).toEqualTypeOf<
         $ObjectSet<EmployeeApiTest, {
@@ -76,6 +241,15 @@ describe("ObjectSet", () => {
 
       expectTypeOf<typeof withAResults["data"][0]["a"]>()
         .toEqualTypeOf<number>();
+    });
+
+    it("can be sub-selected", () => {
+      const objectWithUndefinedRdp = fauxObjectSet.withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("employeeId"),
+      }).fetchOne(3, {
+        $select: ["derivedPropertyName"],
+      });
     });
 
     test("multiple properties", async () => {
@@ -206,6 +380,37 @@ describe("ObjectSet", () => {
         const where = withFamily.where({ "mom": 1 });
         const whereResults = await where.fetchPage();
 
+        // Checks that if you did an `await where.fetchPage()` that you can then
+        // pass/assign it to something explicit.
+        const _assignPreviouslyInferredPages: PageResult<
+          Osdk.Instance<
+            EmployeeApiTest,
+            never,
+            PropertyKeys<EmployeeApiTest>,
+            {
+              mom: "integer";
+              dad: "string" | undefined;
+              sister: "string"[] | undefined;
+            }
+          >
+        > = whereResults;
+
+        // Checks that if you did an `await where.fetchPage()` that you can then
+        // pass/assign it to something explicit.
+        const _assignPreviouslyInferredInstance: Osdk.Instance<
+          EmployeeApiTest,
+          never,
+          PropertyKeys<EmployeeApiTest>,
+          {
+            mom: "integer";
+            dad: "string" | undefined;
+            sister: "string"[] | undefined;
+          }
+        > = whereResults.data[0];
+
+        const q = whereResults.data[0].$link.peeps.$objectSetInternals.def;
+
+        // same as above but with expectTypeOf
         expectTypeOf<typeof where>().toEqualTypeOf<typeof withFamily>();
         expectTypeOf<typeof whereResults["data"][0]>()
           .toEqualTypeOf<
@@ -220,6 +425,34 @@ describe("ObjectSet", () => {
               }
             >
           >();
+
+        // Checks that when you directly assign, it infers correctly.
+        // Sometimes an explicit assignment can affect how typescript infers
+        // types.
+        const shouldBeAssignablePage: PageResult<
+          Osdk.Instance<
+            EmployeeApiTest,
+            never,
+            PropertyKeys<EmployeeApiTest>,
+            {
+              mom: "integer";
+              dad: "string" | undefined;
+              sister: "string"[] | undefined;
+            }
+          >
+        > = await where.fetchPage();
+
+        const _shouldBeAssignableSingle: Osdk.Instance<
+          EmployeeApiTest,
+          never,
+          PropertyKeys<EmployeeApiTest>,
+          {
+            mom: "integer";
+            dad: "string" | undefined;
+            sister: "string"[] | undefined;
+          }
+        > = await withFamily.fetchOne(1);
+        await withFamily.fetchOne(1);
       });
 
       it("works with .async", () => {
