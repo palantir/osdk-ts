@@ -67,6 +67,7 @@ export type {
   SharedPropertyTypeBlockDataV2,
   StreamName,
   TimeSeriesSyncName,
+  ValidationRuleIndex,
   WritebackDatasetRid,
   WritebackDatasetSpec,
 } from "./__components.js";

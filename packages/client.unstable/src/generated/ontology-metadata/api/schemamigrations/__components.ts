@@ -26,6 +26,9 @@ import type {
   PropertyTypeRid as _api_PropertyTypeRid,
   SchemaMigrationRid as _api_SchemaMigrationRid,
   SchemaVersion as _api_SchemaVersion,
+  StructFieldApiNameOrRid as _api_StructFieldApiNameOrRid,
+  StructFieldRid as _api_StructFieldRid,
+  StructPropertyFieldType as _api_StructPropertyFieldType,
   Type as _api_Type,
 } from "../__components.js";
 
@@ -64,6 +67,23 @@ export interface CastMigrationModification {
   target: _api_Type;
 }
 /**
+ * Migration to cast a property to another type.
+ */
+export interface CastStructFieldMigration {
+  property: _api_PropertyTypeRid;
+  source: _api_StructPropertyFieldType;
+  structField: _api_StructFieldRid;
+  target: _api_StructPropertyFieldType;
+}
+/**
+ * Migration to cast a property to another type.
+ */
+export interface CastStructFieldMigrationModification {
+  property: _api_PropertyTypeRid;
+  structField: _api_StructFieldRid;
+  target: _api_StructPropertyFieldType;
+}
+/**
  * Delete existing transition from given source schema version.
  */
 export interface DeleteTransitionModification {
@@ -85,6 +105,13 @@ export interface DropDatasourceMigration {
  */
 export interface DropPropertyMigration {
   property: _api_PropertyTypeRid;
+}
+/**
+ * Migration to drop a struct field of a struct property
+ */
+export interface DropStructFieldMigration {
+  property: _api_PropertyTypeRid;
+  structField: _api_StructFieldRid;
 }
 /**
  * Update the edits resolution strategy of an object type from edits always win to latest timestamp.
@@ -218,10 +245,26 @@ export interface OntologyIrCastMigration {
   target: _api_OntologyIrType;
 }
 /**
+ * Migration to cast a property to another type.
+ */
+export interface OntologyIrCastStructFieldMigration {
+  property: _api_ObjectTypeFieldApiName;
+  source: _api_StructPropertyFieldType;
+  structField: _api_StructFieldRid;
+  target: _api_StructPropertyFieldType;
+}
+/**
  * Migration to drop the given property.
  */
 export interface OntologyIrDropPropertyMigration {
   property: _api_ObjectTypeFieldApiName;
+}
+/**
+ * Migration to drop a struct field of a struct property
+ */
+export interface OntologyIrDropStructFieldMigration {
+  property: _api_ObjectTypeFieldApiName;
+  structField: _api_StructFieldRid;
 }
 /**
  * Update the edits resolution strategy of an object type from edits always win to latest timestamp.
@@ -301,6 +344,14 @@ export interface OntologyIrRenamePropertyMigration {
   target: _api_ObjectTypeFieldApiName;
 }
 /**
+ * Migration to rename a struct property field to another.
+ */
+export interface OntologyIrRenameStructFieldMigration {
+  property: _api_ObjectTypeFieldApiName;
+  sourceStructField: _api_StructFieldRid;
+  targetStructField: _api_StructFieldRid;
+}
+/**
  * A SchemaMigrationInstruction with a unique identifier.
  */
 export interface OntologyIrSchemaMigration {
@@ -310,6 +361,11 @@ export interface OntologyIrSchemaMigration {
 export interface OntologyIrSchemaMigrationInstruction_dropProperty {
   type: "dropProperty";
   dropProperty: OntologyIrDropPropertyMigration;
+}
+
+export interface OntologyIrSchemaMigrationInstruction_dropStructField {
+  type: "dropStructField";
+  dropStructField: OntologyIrDropStructFieldMigration;
 }
 
 export interface OntologyIrSchemaMigrationInstruction_dropDatasource {
@@ -332,9 +388,19 @@ export interface OntologyIrSchemaMigrationInstruction_renameProperty {
   renameProperty: OntologyIrRenamePropertyMigration;
 }
 
+export interface OntologyIrSchemaMigrationInstruction_renameStructField {
+  type: "renameStructField";
+  renameStructField: OntologyIrRenameStructFieldMigration;
+}
+
 export interface OntologyIrSchemaMigrationInstruction_cast {
   type: "cast";
   cast: OntologyIrCastMigration;
+}
+
+export interface OntologyIrSchemaMigrationInstruction_castStructField {
+  type: "castStructField";
+  castStructField: OntologyIrCastStructFieldMigration;
 }
 
 export interface OntologyIrSchemaMigrationInstruction_revert {
@@ -357,11 +423,14 @@ export interface OntologyIrSchemaMigrationInstruction_updateEditsResolutionStrat
  */
 export type OntologyIrSchemaMigrationInstruction =
   | OntologyIrSchemaMigrationInstruction_dropProperty
+  | OntologyIrSchemaMigrationInstruction_dropStructField
   | OntologyIrSchemaMigrationInstruction_dropDatasource
   | OntologyIrSchemaMigrationInstruction_dropAllPatches
   | OntologyIrSchemaMigrationInstruction_renameDatasource
   | OntologyIrSchemaMigrationInstruction_renameProperty
+  | OntologyIrSchemaMigrationInstruction_renameStructField
   | OntologyIrSchemaMigrationInstruction_cast
+  | OntologyIrSchemaMigrationInstruction_castStructField
   | OntologyIrSchemaMigrationInstruction_revert
   | OntologyIrSchemaMigrationInstruction_nonRevertible
   | OntologyIrSchemaMigrationInstruction_updateEditsResolutionStrategy;
@@ -463,6 +532,22 @@ export interface RenamePropertyMigrationModification {
   target: _api_PropertyTypeId;
 }
 /**
+ * Migration to rename a struct property field to another.
+ */
+export interface RenameStructFieldMigration {
+  property: _api_PropertyTypeRid;
+  sourceStructField: _api_StructFieldRid;
+  targetStructField: _api_StructFieldRid;
+}
+/**
+ * Migration to rename struct property and its fields to another.
+ */
+export interface RenameStructFieldMigrationModification {
+  property: _api_PropertyTypeRid;
+  sourceStructField: _api_StructFieldRid;
+  targetStructField: _api_StructFieldApiNameOrRid;
+}
+/**
  * Revert a previous migration.
  */
 export interface RevertMigration {
@@ -481,6 +566,11 @@ export interface SchemaMigrationInitialization {
 export interface SchemaMigrationInstruction_dropProperty {
   type: "dropProperty";
   dropProperty: DropPropertyMigration;
+}
+
+export interface SchemaMigrationInstruction_dropStructField {
+  type: "dropStructField";
+  dropStructField: DropStructFieldMigration;
 }
 
 export interface SchemaMigrationInstruction_dropDatasource {
@@ -503,9 +593,19 @@ export interface SchemaMigrationInstruction_renameProperty {
   renameProperty: RenamePropertyMigration;
 }
 
+export interface SchemaMigrationInstruction_renameStructField {
+  type: "renameStructField";
+  renameStructField: RenameStructFieldMigration;
+}
+
 export interface SchemaMigrationInstruction_cast {
   type: "cast";
   cast: CastMigration;
+}
+
+export interface SchemaMigrationInstruction_castStructField {
+  type: "castStructField";
+  castStructField: CastStructFieldMigration;
 }
 
 export interface SchemaMigrationInstruction_revert {
@@ -527,11 +627,14 @@ export interface SchemaMigrationInstruction_updateEditsResolutionStrategy {
  */
 export type SchemaMigrationInstruction =
   | SchemaMigrationInstruction_dropProperty
+  | SchemaMigrationInstruction_dropStructField
   | SchemaMigrationInstruction_dropDatasource
   | SchemaMigrationInstruction_dropAllPatches
   | SchemaMigrationInstruction_renameDatasource
   | SchemaMigrationInstruction_renameProperty
+  | SchemaMigrationInstruction_renameStructField
   | SchemaMigrationInstruction_cast
+  | SchemaMigrationInstruction_castStructField
   | SchemaMigrationInstruction_revert
   | SchemaMigrationInstruction_nonRevertible
   | SchemaMigrationInstruction_updateEditsResolutionStrategy;
@@ -549,6 +652,11 @@ export type SchemaMigrationInstructionInitialization =
 export interface SchemaMigrationInstructionModification_dropProperty {
   type: "dropProperty";
   dropProperty: DropPropertyMigration;
+}
+
+export interface SchemaMigrationInstructionModification_dropStructField {
+  type: "dropStructField";
+  dropStructField: DropStructFieldMigration;
 }
 
 export interface SchemaMigrationInstructionModification_dropDatasource {
@@ -571,9 +679,19 @@ export interface SchemaMigrationInstructionModification_renameProperty {
   renameProperty: RenamePropertyMigrationModification;
 }
 
+export interface SchemaMigrationInstructionModification_renameStructField {
+  type: "renameStructField";
+  renameStructField: RenameStructFieldMigrationModification;
+}
+
 export interface SchemaMigrationInstructionModification_cast {
   type: "cast";
   cast: CastMigrationModification;
+}
+
+export interface SchemaMigrationInstructionModification_castStructField {
+  type: "castStructField";
+  castStructField: CastStructFieldMigrationModification;
 }
 
 export interface SchemaMigrationInstructionModification_revert {
@@ -595,11 +713,14 @@ export interface SchemaMigrationInstructionModification_updateEditsResolutionStr
  */
 export type SchemaMigrationInstructionModification =
   | SchemaMigrationInstructionModification_dropProperty
+  | SchemaMigrationInstructionModification_dropStructField
   | SchemaMigrationInstructionModification_dropDatasource
   | SchemaMigrationInstructionModification_dropAllPatches
   | SchemaMigrationInstructionModification_renameDatasource
   | SchemaMigrationInstructionModification_renameProperty
+  | SchemaMigrationInstructionModification_renameStructField
   | SchemaMigrationInstructionModification_cast
+  | SchemaMigrationInstructionModification_castStructField
   | SchemaMigrationInstructionModification_revert
   | SchemaMigrationInstructionModification_nonRevertible
   | SchemaMigrationInstructionModification_updateEditsResolutionStrategy;

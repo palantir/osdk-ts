@@ -28,6 +28,7 @@ import type {
 import type {
   InterfaceTypeBlockDataV2,
   OntologyBlockDataV2,
+  OntologyIrActionTypeBlockDataV2,
   OntologyIrLinkTypeBlockDataV2,
   OntologyIrObjectTypeBlockDataV2,
   SharedPropertyTypeBlockDataV2,
@@ -55,7 +56,6 @@ export interface OntologyIrOntologyBlockDataV2 extends
       OntologyBlockDataV2,
       | "knownIdentifiers"
       | "ruleSets"
-      | "actionTypes"
       | "blockOutputCompassLocations"
     >,
     {
@@ -66,6 +66,7 @@ export interface OntologyIrOntologyBlockDataV2 extends
         OntologyIrSharedPropertyTypeBlockDataV2
       >;
       linkTypes: Record<string, OntologyIrLinkTypeBlockDataV2>;
+      actionTypes: Record<string, OntologyIrActionTypeBlockDataV2>;
     }
   >
 {
