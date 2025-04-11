@@ -32,6 +32,17 @@ export * from "./generated/ontology-metadata/api/__components.js";
 
 export type {
   OntologyIrBaseParameterType,
+  OntologyIrBaseParameterType_decimal,
+  OntologyIrBaseParameterType_decimalList,
+  OntologyIrBaseParameterType_interfaceReference,
+  OntologyIrBaseParameterType_interfaceReferenceList,
+  OntologyIrBaseParameterType_objectReference,
+  OntologyIrBaseParameterType_objectReferenceList,
+  OntologyIrBaseParameterType_objectSetRid,
+  OntologyIrBaseParameterType_struct,
+  OntologyIrBaseParameterType_structList,
+  OntologyIrBaseParameterType_timestamp,
+  OntologyIrBaseParameterType_timestampList,
   ParameterRenderHint,
   ParameterRequiredConfiguration,
 } from "./generated/ontology-metadata/api/types/__components.js";

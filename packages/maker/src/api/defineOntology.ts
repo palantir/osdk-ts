@@ -35,6 +35,7 @@ import type {
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionValidation,
   OntologyIrAllowedParameterValues,
+  OntologyIrBaseParameterType,
   OntologyIrInterfaceType,
   OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrLinkDefinition,
@@ -727,7 +728,9 @@ function convertActionParameters(
 ): Record<ParameterId, OntologyIrParameter> {
   return Object.fromEntries((action.parameters ?? []).map(p => [p.id, {
     id: p.id,
-    type: p.type,
+    type: (typeof p.type === "string"
+      ? { type: p.type, [p.type]: {} }
+      : p.type) as OntologyIrBaseParameterType,
     displayMetadata: {
       displayName: p.displayName,
       description: p.description ?? "",
@@ -849,7 +852,10 @@ function extractAllowedValues(
 function renderHintFromBaseType(
   parameter: ActionParameter,
 ): ParameterRenderHint {
-  switch (parameter.type.type) {
+  const type = typeof parameter.type === "string"
+    ? parameter.type
+    : parameter.type.type;
+  switch (type) {
     case "boolean":
     case "booleanList":
       return { type: "checkbox", checkbox: {} };
@@ -904,7 +910,7 @@ function renderHintFromBaseType(
     case "structList":
       throw new Error("Structs are not supported yet");
     default:
-      throw new Error(`Unknown type ${parameter.type}`);
+      throw new Error(`Unknown type ${type}`);
   }
 }
 

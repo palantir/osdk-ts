@@ -3152,7 +3152,7 @@ describe("Ontology Defining", () => {
         parameters: [{
           id: "param1",
           displayName: "param1",
-          type: { type: "boolean", boolean: {} },
+          type: "boolean",
           validation: { required: true, allowedValues: { type: "boolean" } },
         }],
       });

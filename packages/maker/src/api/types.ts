@@ -30,7 +30,17 @@ import type {
   InterfaceTypeStatus_experimental,
   LinkTypeDisplayMetadata,
   LinkTypeMetadata,
-  OntologyIrBaseParameterType,
+  OntologyIrBaseParameterType_decimal,
+  OntologyIrBaseParameterType_decimalList,
+  OntologyIrBaseParameterType_interfaceReference,
+  OntologyIrBaseParameterType_interfaceReferenceList,
+  OntologyIrBaseParameterType_objectReference,
+  OntologyIrBaseParameterType_objectReferenceList,
+  OntologyIrBaseParameterType_objectSetRid,
+  OntologyIrBaseParameterType_struct,
+  OntologyIrBaseParameterType_structList,
+  OntologyIrBaseParameterType_timestamp,
+  OntologyIrBaseParameterType_timestampList,
   OntologyIrConditionValue,
   OntologyIrFormContent,
   OntologyIrInterfaceType,
@@ -82,7 +92,7 @@ export type ActionType = RequiredFields<
 export interface ActionParameter {
   id: ParameterId;
   displayName: string;
-  type: OntologyIrBaseParameterType;
+  type: ActionParameterType;
   validation: ActionParameterValidation;
   description?: string;
   typeClasses?: Array<TypeClass>;
@@ -554,3 +564,52 @@ export interface ObjectTypeDatasourceDefinition_stream {
 export type ObjectTypeDatasourceDefinition =
   | ObjectTypeDatasourceDefinition_stream
   | ObjectTypeDatasourceDefinition_dataset;
+
+export type ActionParameterTypePrimitive =
+  | "boolean"
+  | "booleanList"
+  | "integer"
+  | "integerList"
+  | "long"
+  | "longList"
+  | "double"
+  | "doubleList"
+  | "string"
+  | "stringList"
+  | "decimal"
+  | "decimalList"
+  | "timestamp"
+  | "timestampList"
+  | "geohash"
+  | "geohashList"
+  | "geoshape"
+  | "geoshapeList"
+  | "timeSeriesReference"
+  | "date"
+  | "dateList"
+  | "objectTypeReference"
+  | "attachment"
+  | "attachmentList"
+  | "marking"
+  | "markingList"
+  | "mediaReference"
+  | "mediaReferenceList"
+  | "geotimeSeriesReference"
+  | "geotimeSeriesReferenceList";
+
+export type ActionParameterTypeComplex =
+  | OntologyIrBaseParameterType_decimal
+  | OntologyIrBaseParameterType_decimalList
+  | OntologyIrBaseParameterType_timestamp
+  | OntologyIrBaseParameterType_timestampList
+  | OntologyIrBaseParameterType_objectReference
+  | OntologyIrBaseParameterType_objectReferenceList
+  | OntologyIrBaseParameterType_objectSetRid
+  | OntologyIrBaseParameterType_interfaceReference
+  | OntologyIrBaseParameterType_interfaceReferenceList
+  | OntologyIrBaseParameterType_struct
+  | OntologyIrBaseParameterType_structList;
+
+export type ActionParameterType =
+  | ActionParameterTypePrimitive
+  | ActionParameterTypeComplex;

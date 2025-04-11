@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ParameterId } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import { namespace, ontologyDefinition } from "./defineOntology.js";
 import type { ActionType } from "./types.js";
@@ -38,12 +39,11 @@ export function defineAction(actionDef: ActionType): ActionType {
     `Parameter ids must be unique`,
   );
 
-  const undefinedParametersInSections = Object.values(actionDef.sections ?? {})
-    .flatMap(p => p)
-    .filter(pId => !parameterIdsSet.has(pId));
+  const parameterIdsNotFound = Array.from(referencedParameterIds(actionDef))
+    .filter(p => !parameterIdsSet.has(p));
   invariant(
-    undefinedParametersInSections.length === 0,
-    `Parameters [${undefinedParametersInSections}] were referenced in section definitions but not defined`,
+    parameterIdsNotFound.length === 0,
+    `Parameters [${parameterIdsNotFound}] were referenced but not defined`,
   );
 
   const definedSectionIds = new Set(Object.keys(actionDef.sections ?? []));
@@ -56,17 +56,6 @@ export function defineAction(actionDef: ActionType): ActionType {
     `Sections [${undefinedSectionsInOrdering}] were referenced in content ordering but not defined`,
   );
 
-  const undefinedParametersInOrdering = (actionDef.formContentOrdering ?? [])
-    .flatMap(
-      item =>
-        item.type === "parameterId"
-          ? [item.parameterId]
-          : actionDef.sections![item.sectionId],
-    ).filter(p => !parameterIdsSet.has(p));
-  invariant(
-    undefinedParametersInOrdering.length === 0,
-    `Parameters [${undefinedParametersInOrdering}] were referenced in content ordering but not defined`,
-  );
   invariant(
     actionDef.rules.length > 0,
     `Action type ${actionDef.apiName} must have at least one logic rule`,
@@ -77,4 +66,44 @@ export function defineAction(actionDef: ActionType): ActionType {
   const fullAction = { ...actionDef, apiName: apiName };
   ontologyDefinition.actionTypes[apiName] = fullAction;
   return fullAction;
+}
+
+function referencedParameterIds(actionDef: ActionType): Set<ParameterId> {
+  const parameterIds: Set<ParameterId> = new Set();
+
+  // section definitions
+  Object.values(actionDef.sections ?? {})
+    .flatMap(p => p).forEach(pId => parameterIds.add(pId));
+
+  // form content ordering
+  (actionDef.formContentOrdering ?? []).forEach(item => {
+    if (item.type === "parameterId") {
+      parameterIds.add(item.parameterId);
+    }
+  });
+
+  // logic rules
+  actionDef.rules.forEach(rule => {
+    switch (rule.type) {
+      case "addInterfaceRule":
+        parameterIds.add(rule.addInterfaceRule.objectType);
+        Object.values(rule.addInterfaceRule.sharedPropertyValues).forEach(v => {
+          if (v.type === "parameterId") {
+            parameterIds.add(v.parameterId);
+          }
+        });
+        break;
+      case "modifyInterfaceRule":
+        parameterIds.add(rule.modifyInterfaceRule.interfaceObjectToModify);
+        Object.values(rule.modifyInterfaceRule.sharedPropertyValues).forEach(
+          v => {
+            if (v.type === "parameterId") {
+              parameterIds.add(v.parameterId);
+            }
+          },
+        );
+        break;
+    }
+  });
+  return parameterIds;
 }
