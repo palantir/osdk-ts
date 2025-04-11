@@ -61,8 +61,6 @@ export function defineAction(actionDef: ActionType): ActionType {
     `Action type ${actionDef.apiName} must have at least one logic rule`,
   );
 
-  // TODO(dpaquin): check parameter ids referenced anywhere are defined?
-
   const fullAction = { ...actionDef, apiName: apiName };
   ontologyDefinition.actionTypes[apiName] = fullAction;
   return fullAction;
