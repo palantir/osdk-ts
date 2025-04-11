@@ -852,6 +852,7 @@ function extractAllowedValues(
 function renderHintFromBaseType(
   parameter: ActionParameter,
 ): ParameterRenderHint {
+  // TODO(dpaquin): these are just guesses, we should find where they're actually defined
   const type = typeof parameter.type === "string"
     ? parameter.type
     : parameter.type.type;
@@ -905,7 +906,7 @@ function renderHintFromBaseType(
     case "mediaReferenceList":
     case "geotimeSeriesReference":
     case "geotimeSeriesReferenceList":
-      return { type: "resourcePicker", resourcePicker: {} };
+      return { type: "dropdown", dropdown: {} };
     case "struct":
     case "structList":
       throw new Error("Structs are not supported yet");
