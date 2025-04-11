@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { InterfaceTypeSearchRequest } from "../search/InterfaceTypeSearchRequest.js";
-import type { InterfaceTypeSearchResponse } from "../search/InterfaceTypeSearchResponse.js";
+import type {
+  InterfaceTypeSearchRequest as _api_search_InterfaceTypeSearchRequest,
+  InterfaceTypeSearchResponse as _api_search_InterfaceTypeSearchResponse,
+} from "../search/__components.js";
 
 /**
  * Endpoint to search InterfaceTypes based on various filters. Endpoint allows to return results based on
@@ -29,8 +31,8 @@ import type { InterfaceTypeSearchResponse } from "../search/InterfaceTypeSearchR
  */
 export async function searchInterfaceTypes(
   ctx: ConjureContext,
-  request: InterfaceTypeSearchRequest,
-): Promise<InterfaceTypeSearchResponse> {
+  request: _api_search_InterfaceTypeSearchRequest,
+): Promise<_api_search_InterfaceTypeSearchResponse> {
   return conjureFetch(
     ctx,
     `/ontology/search/v0/searchInterfaceTypes`,

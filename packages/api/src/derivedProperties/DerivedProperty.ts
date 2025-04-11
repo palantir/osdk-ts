@@ -23,7 +23,10 @@ import type {
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
 import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
-import type { CollectWithPropAggregations } from "./WithPropertiesAggregationOptions.js";
+import type {
+  CollectWithPropAggregations,
+  MinMaxWithPropAggregateOption,
+} from "./WithPropertiesAggregationOptions.js";
 
 export namespace DerivedProperty {
   export type SelectorResult<
@@ -111,10 +114,11 @@ type Aggregatable<
     V extends `${infer N}:${infer P}`
       ? P extends CollectWithPropAggregations
         ? Array<CompileTimeMetadata<Q>["properties"][N]["type"]> | undefined
-      : P extends "approximateDistinct" | "exactDistinct" | "$count"
-        ? "integer" | undefined
+      : P extends MinMaxWithPropAggregateOption
+        ? CompileTimeMetadata<Q>["properties"][N]["type"] | undefined
+      : P extends "approximateDistinct" | "exactDistinct" | "$count" ? "integer"
       : "double" | undefined
-      : V extends "$count" ? "integer" | undefined
+      : V extends "$count" ? "integer"
       : never
   >;
 };

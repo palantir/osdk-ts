@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-export type { OntologyObjectTypeSemanticSearchStatus } from "./OntologyObjectTypeSemanticSearchStatus.js";
-export type { SemanticSearchObjectTypeResponseEntry } from "./SemanticSearchObjectTypeResponseEntry.js";
-export type { SemanticSearchObjectTypesRequest } from "./SemanticSearchObjectTypesRequest.js";
-export type { SemanticSearchObjectTypesResponse } from "./SemanticSearchObjectTypesResponse.js";
+export type {
+  OntologyObjectTypeSemanticSearchStatus,
+  SemanticSearchObjectTypeResponseEntry,
+  SemanticSearchObjectTypesRequest,
+  SemanticSearchObjectTypesResponse,
+} from "./__components.js";

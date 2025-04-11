@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetOntologySummaryRequest } from "../GetOntologySummaryRequest.js";
-import type { GetOntologySummaryResponse } from "../GetOntologySummaryResponse.js";
-import type { OntologyRid } from "../OntologyRid.js";
+import type {
+  GetOntologySummaryRequest as _api_GetOntologySummaryRequest,
+  GetOntologySummaryResponse as _api_GetOntologySummaryResponse,
+  OntologyRid as _api_OntologyRid,
+} from "../__components.js";
 
 /**
  * Endpoint to load a summary of an Ontology including the number of entities of each type visible to the user.
@@ -31,9 +33,9 @@ import type { OntologyRid } from "../OntologyRid.js";
  */
 export async function getOntologySummary(
   ctx: ConjureContext,
-  ontologyRid: OntologyRid,
-  request: GetOntologySummaryRequest,
-): Promise<GetOntologySummaryResponse> {
+  ontologyRid: _api_OntologyRid,
+  request: _api_GetOntologySummaryRequest,
+): Promise<_api_GetOntologySummaryResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/load/${ontologyRid}/summary`,

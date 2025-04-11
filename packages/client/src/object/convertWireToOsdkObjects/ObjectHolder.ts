@@ -17,19 +17,21 @@
 import type { Osdk } from "@osdk/api";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
-import type { DollarAsFn } from "./getDollarAs.js";
+import type { BaseHolder } from "./BaseHolder.js";
 import type { get$link } from "./getDollarLink.js";
-import type {
-  ClientRef,
-  ObjectDefRef,
-  UnderlyingOsdkObject,
-} from "./InternalSymbols.js";
+import type { ClientRef, ObjectDefRef } from "./InternalSymbols.js";
 
-/** @internal */
-export interface ObjectHolder<Q extends FetchedObjectTypeDefinition> {
-  readonly [UnderlyingOsdkObject]: Osdk<Q>;
+/**
+ * @internal
+ *
+ * The unused generic parameter `_Q` can be used as an added check when casting.
+ * That is its only purpose
+ */
+export interface ObjectHolder<_Q extends Osdk.Instance<any> = never>
+  extends BaseHolder
+{
   readonly [ObjectDefRef]: FetchedObjectTypeDefinition;
   readonly [ClientRef]: MinimalClient;
-  readonly "$as": DollarAsFn;
+
   readonly "$link": ReturnType<typeof get$link>;
 }

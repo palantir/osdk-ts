@@ -15,13 +15,14 @@ import type {
 } from '@osdk/client';
 
 export namespace Todo {
-  export type PropertyKeys = 'id' | 'title' | 'isComplete';
+  export type PropertyKeys = 'id' | 'isComplete' | 'location' | 'title';
 
   export type Links = {};
 
   export interface Props {
     readonly id: $PropType['string'];
     readonly isComplete: $PropType['boolean'] | undefined;
+    readonly location: $PropType['geopoint'] | undefined;
     readonly title: $PropType['string'] | undefined;
   }
   export type StrictProps = Props;
@@ -50,38 +51,43 @@ export interface Todo extends $ObjectTypeDefinition {
     linksType: Todo.Links;
     strictProps: Todo.StrictProps;
     apiName: 'Todo';
-    description: 'Its a todo item.';
+    description: '';
     displayName: 'Todo';
     icon: {
       type: 'blueprint';
-      name: 'todo';
-      color: 'red';
+      color: '#4C90F0';
+      name: 'confirm';
     };
+    implements: [];
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
-    pluralDisplayName: "Todo's";
+    pluralDisplayName: 'Todos';
     primaryKeyApiName: 'id';
     primaryKeyType: 'string';
     properties: {
       /**
-       * (no ontology metadata)
+       *   display name: 'Id'
        */
       id: $PropertyDef<'string', 'non-nullable', 'single'>;
       /**
-       * (no ontology metadata)
+       *   display name: 'Is Complete'
        */
       isComplete: $PropertyDef<'boolean', 'nullable', 'single'>;
       /**
-       *   display name: 'Title',
-       *   description: The text of the todo
+       * (no ontology metadata)
+       */
+      location: $PropertyDef<'geopoint', 'nullable', 'single'>;
+      /**
+       *   display name: 'Title'
        */
       title: $PropertyDef<'string', 'nullable', 'single'>;
     };
-    rid: 'ridForTodo';
-    status: 'ACTIVE';
+    rid: 'ri.ontology.main.object-type.a3fcfef9-ec11-4f2d-8a4c-dc010de837bf';
+    status: 'EXPERIMENTAL';
     titleProperty: 'title';
     type: 'object';
+    visibility: 'NORMAL';
   };
 }
 

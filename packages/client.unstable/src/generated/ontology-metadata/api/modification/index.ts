@@ -14,135 +14,140 @@
  * limitations under the License.
  */
 
-export type { ActionLogMetadataModification } from "./ActionLogMetadataModification.js";
-export type { ActionLogNotRequiredModification } from "./ActionLogNotRequiredModification.js";
-export type { ActionLogRequiredModification } from "./ActionLogRequiredModification.js";
-export type { ActionLogRequirednessModification } from "./ActionLogRequirednessModification.js";
-export type { ActionTypeModification } from "./ActionTypeModification.js";
-export type { ActivePropertyTypeStatusModification } from "./ActivePropertyTypeStatusModification.js";
-export type { ArrayPropertyTypeModification } from "./ArrayPropertyTypeModification.js";
-export type { CheckExistingUniqueIdentifiersRequest } from "./CheckExistingUniqueIdentifiersRequest.js";
-export type { CheckExistingUniqueIdentifiersResponse } from "./CheckExistingUniqueIdentifiersResponse.js";
-export type { CompassFolderRid } from "./CompassFolderRid.js";
-export type { CompassNamespaceRid } from "./CompassNamespaceRid.js";
-export type { DataConstraintsModification } from "./DataConstraintsModification.js";
-export type { DeprecatedPropertyTypeStatusModification } from "./DeprecatedPropertyTypeStatusModification.js";
-export type { DropLinkTypePeeringMetadata } from "./DropLinkTypePeeringMetadata.js";
-export type { DropObjectTypePeeringMetadata } from "./DropObjectTypePeeringMetadata.js";
-export type { EditsHistoryConfigModification } from "./EditsHistoryConfigModification.js";
-export type { EditsHistoryModification } from "./EditsHistoryModification.js";
-export type { EditsResolutionStrategyModification } from "./EditsResolutionStrategyModification.js";
-export type { EnabledObjectStoragesStatus } from "./EnabledObjectStoragesStatus.js";
-export type { EntityConfigModification } from "./EntityConfigModification.js";
-export type { EntityModificationHistoryPageItem } from "./EntityModificationHistoryPageItem.js";
-export type { EntityProvenanceModification } from "./EntityProvenanceModification.js";
-export type { EntityProvenanceSourceModification } from "./EntityProvenanceSourceModification.js";
-export type { EntityRid } from "./EntityRid.js";
-export type { EventMetadataModification } from "./EventMetadataModification.js";
-export type { ExamplePropertyTypeStatusModification } from "./ExamplePropertyTypeStatusModification.js";
-export type { ExperimentalPropertyTypeStatusModification } from "./ExperimentalPropertyTypeStatusModification.js";
-export type { GetEntityModificationHistoryRequest } from "./GetEntityModificationHistoryRequest.js";
-export type { GetEntityModificationHistoryResponse } from "./GetEntityModificationHistoryResponse.js";
-export type { GetModificationHistoryRequest } from "./GetModificationHistoryRequest.js";
-export type { GetModificationHistoryResponse } from "./GetModificationHistoryResponse.js";
-export type { GetModifiedEntitiesRequest } from "./GetModifiedEntitiesRequest.js";
-export type { GetModifiedEntitiesResponse } from "./GetModifiedEntitiesResponse.js";
-export type { ImportSharedPropertyTypesRequest } from "./ImportSharedPropertyTypesRequest.js";
-export type { ImportSharedPropertyTypesResponse } from "./ImportSharedPropertyTypesResponse.js";
-export type { InlineActionTypeModification } from "./InlineActionTypeModification.js";
-export type { InterfaceLinkTypeImplementationModification } from "./InterfaceLinkTypeImplementationModification.js";
-export type { InterfaceLinkTypeModification } from "./InterfaceLinkTypeModification.js";
-export type { InterfacePropertyImplementationModification } from "./InterfacePropertyImplementationModification.js";
-export type { InterfaceTypeModification } from "./InterfaceTypeModification.js";
-export type { IntermediaryLinkDefinitionModification } from "./IntermediaryLinkDefinitionModification.js";
-export type { LinkDefinitionModification } from "./LinkDefinitionModification.js";
-export type { LinkTypeCreate } from "./LinkTypeCreate.js";
-export type { LinkTypeDelete } from "./LinkTypeDelete.js";
-export type { LinkTypeEntityMetadataModifyRequest } from "./LinkTypeEntityMetadataModifyRequest.js";
-export type { LinkTypeModification } from "./LinkTypeModification.js";
-export type { LinkTypeModifyRequest } from "./LinkTypeModifyRequest.js";
-export type { LinkTypePeeringMetadataModification } from "./LinkTypePeeringMetadataModification.js";
-export type { LinkTypeUpdate } from "./LinkTypeUpdate.js";
-export type { LoadAllOntologiesInternalRequest } from "./LoadAllOntologiesInternalRequest.js";
-export type { LoadAllOntologiesInternalResponse } from "./LoadAllOntologiesInternalResponse.js";
-export type { ManyToManyLinkDefinitionModification } from "./ManyToManyLinkDefinitionModification.js";
-export type { ManyToManyLinkTypeDatasetDatasourceModification } from "./ManyToManyLinkTypeDatasetDatasourceModification.js";
-export type { ManyToManyLinkTypeDatasourceCreate } from "./ManyToManyLinkTypeDatasourceCreate.js";
-export type { ManyToManyLinkTypeDatasourceDelete } from "./ManyToManyLinkTypeDatasourceDelete.js";
-export type { ManyToManyLinkTypeDatasourceModificationDefinition } from "./ManyToManyLinkTypeDatasourceModificationDefinition.js";
-export type { ManyToManyLinkTypeDatasourceModifyRequest } from "./ManyToManyLinkTypeDatasourceModifyRequest.js";
-export type { ManyToManyLinkTypeDatasourceUpdate } from "./ManyToManyLinkTypeDatasourceUpdate.js";
-export type { ManyToManyLinkTypeStreamDatasourceModification } from "./ManyToManyLinkTypeStreamDatasourceModification.js";
-export type { MigrationConfigurationModification } from "./MigrationConfigurationModification.js";
-export type { ModificationHistoryPageItem } from "./ModificationHistoryPageItem.js";
-export type { ModificationHistoryPageItemSummary } from "./ModificationHistoryPageItemSummary.js";
-export type { ModificationHistoryPageToken } from "./ModificationHistoryPageToken.js";
-export type { ModificationType } from "./ModificationType.js";
-export type { NoEditsHistoryModification } from "./NoEditsHistoryModification.js";
-export type { NoneEntityProvenance } from "./NoneEntityProvenance.js";
-export type { ObjectStorageV1Modification } from "./ObjectStorageV1Modification.js";
-export type { ObjectStorageV2Modification } from "./ObjectStorageV2Modification.js";
-export type { ObjectTypeCreate } from "./ObjectTypeCreate.js";
-export type { ObjectTypeDatasetDatasourceModification } from "./ObjectTypeDatasetDatasourceModification.js";
-export type { ObjectTypeDatasetDatasourceV2Modification } from "./ObjectTypeDatasetDatasourceV2Modification.js";
-export type { ObjectTypeDatasourceCreate } from "./ObjectTypeDatasourceCreate.js";
-export type { ObjectTypeDatasourceDelete } from "./ObjectTypeDatasourceDelete.js";
-export type { ObjectTypeDatasourceModificationDefinition } from "./ObjectTypeDatasourceModificationDefinition.js";
-export type { ObjectTypeDatasourceModifyRequest } from "./ObjectTypeDatasourceModifyRequest.js";
-export type { ObjectTypeDatasourceUpdate } from "./ObjectTypeDatasourceUpdate.js";
-export type { ObjectTypeDelete } from "./ObjectTypeDelete.js";
-export type { ObjectTypeDerivedPropertiesDatasourceModification } from "./ObjectTypeDerivedPropertiesDatasourceModification.js";
-export type { ObjectTypeDirectDatasourceModification } from "./ObjectTypeDirectDatasourceModification.js";
-export type { ObjectTypeEditsOnlyDatasourceModification } from "./ObjectTypeEditsOnlyDatasourceModification.js";
-export type { ObjectTypeEntityMetadataModifyRequest } from "./ObjectTypeEntityMetadataModifyRequest.js";
-export type { ObjectTypeGeotimeSeriesDatasourceModification } from "./ObjectTypeGeotimeSeriesDatasourceModification.js";
-export type { ObjectTypeIndexingSettingsModification } from "./ObjectTypeIndexingSettingsModification.js";
-export type { ObjectTypeInterfaceImplementationModification } from "./ObjectTypeInterfaceImplementationModification.js";
-export type { ObjectTypeMediaDatasourceModification } from "./ObjectTypeMediaDatasourceModification.js";
-export type { ObjectTypeMediaSetViewDatasourceModification } from "./ObjectTypeMediaSetViewDatasourceModification.js";
-export type { ObjectTypeModification } from "./ObjectTypeModification.js";
-export type { ObjectTypeModifyRequest } from "./ObjectTypeModifyRequest.js";
-export type { ObjectTypePeeringMetadataModification } from "./ObjectTypePeeringMetadataModification.js";
-export type { ObjectTypeRestrictedStreamDatasourceModification } from "./ObjectTypeRestrictedStreamDatasourceModification.js";
-export type { ObjectTypeRestrictedViewDatasourceModification } from "./ObjectTypeRestrictedViewDatasourceModification.js";
-export type { ObjectTypeRestrictedViewDatasourceV2Modification } from "./ObjectTypeRestrictedViewDatasourceV2Modification.js";
-export type { ObjectTypeStreamDatasourceModification } from "./ObjectTypeStreamDatasourceModification.js";
-export type { ObjectTypeStreamDatasourceV2Modification } from "./ObjectTypeStreamDatasourceV2Modification.js";
-export type { ObjectTypeTimeSeriesDatasourceModification } from "./ObjectTypeTimeSeriesDatasourceModification.js";
-export type { ObjectTypeTraitsModification } from "./ObjectTypeTraitsModification.js";
-export type { ObjectTypeUpdate } from "./ObjectTypeUpdate.js";
-export type { OneToManyLinkDefinitionModification } from "./OneToManyLinkDefinitionModification.js";
-export type { OntologyAdminConfig } from "./OntologyAdminConfig.js";
-export type { OntologyApiNamespaceIdentifier } from "./OntologyApiNamespaceIdentifier.js";
-export type { OntologyCreateRequest } from "./OntologyCreateRequest.js";
-export type { OntologyCreateResponse } from "./OntologyCreateResponse.js";
-export type { OntologyDeleteRequest } from "./OntologyDeleteRequest.js";
-export type { OntologyDeleteResponse } from "./OntologyDeleteResponse.js";
-export type { OntologyDiff } from "./OntologyDiff.js";
-export type { OntologyInformationInternal } from "./OntologyInformationInternal.js";
-export type { OntologyModificationDescription } from "./OntologyModificationDescription.js";
-export type { OntologyModificationRequest } from "./OntologyModificationRequest.js";
-export type { OntologyModificationResponse } from "./OntologyModificationResponse.js";
-export type { OntologyNamespace } from "./OntologyNamespace.js";
-export type { OntologyProjectRid } from "./OntologyProjectRid.js";
-export type { OntologyUpdateRequest } from "./OntologyUpdateRequest.js";
-export type { OntologyUpdateResponse } from "./OntologyUpdateResponse.js";
-export type { PartialPropertyTypeModification } from "./PartialPropertyTypeModification.js";
-export type { PerOntologyUniqueIdentifier } from "./PerOntologyUniqueIdentifier.js";
-export type { PropertyTypeModification } from "./PropertyTypeModification.js";
-export type { PropertyTypeStatusModification } from "./PropertyTypeStatusModification.js";
-export type { PutParameterRequestModificationWithId } from "./PutParameterRequestModificationWithId.js";
-export type { PutParameterRequestWithId } from "./PutParameterRequestWithId.js";
-export type { PutSectionRequestWithId } from "./PutSectionRequestWithId.js";
-export type { ReadOnlyV1V2Modification } from "./ReadOnlyV1V2Modification.js";
-export type { SensorTraitModification } from "./SensorTraitModification.js";
-export type { SharedPropertyTypeModification } from "./SharedPropertyTypeModification.js";
-export type { StorageBackendModification } from "./StorageBackendModification.js";
-export type { StructFieldTypeModification } from "./StructFieldTypeModification.js";
-export type { StructPropertyTypeModification } from "./StructPropertyTypeModification.js";
-export type { TimeSeriesMetadataModification } from "./TimeSeriesMetadataModification.js";
-export type { TypeForModification } from "./TypeForModification.js";
-export type { TypeGroupModification } from "./TypeGroupModification.js";
-export type { ValidationRuleModificationWithIdInRequest } from "./ValidationRuleModificationWithIdInRequest.js";
-export type { ValueTypeReferenceModification } from "./ValueTypeReferenceModification.js";
-export type { WorkflowObjectTypeTraitImplModification } from "./WorkflowObjectTypeTraitImplModification.js";
+export type {
+  ActionLogMetadataModification,
+  ActionLogNotRequiredModification,
+  ActionLogRequiredModification,
+  ActionLogRequirednessModification,
+  ActionTypeModification,
+  ActivePropertyTypeStatusModification,
+  ArrayPropertyTypeModification,
+  CheckExistingUniqueIdentifiersRequest,
+  CheckExistingUniqueIdentifiersResponse,
+  CompassFolderRid,
+  CompassNamespaceRid,
+  DataConstraintsModification,
+  DeprecatedPropertyTypeStatusModification,
+  DropLinkTypePeeringMetadata,
+  DropObjectTypePeeringMetadata,
+  EditsHistoryConfigModification,
+  EditsHistoryModification,
+  EditsResolutionStrategyModification,
+  EnabledObjectStoragesStatus,
+  EntityConfigModification,
+  EntityModificationHistoryPageItem,
+  EntityProvenanceModification,
+  EntityProvenanceSourceModification,
+  EntityRid,
+  EventMetadataModification,
+  ExamplePropertyTypeStatusModification,
+  ExperimentalPropertyTypeStatusModification,
+  GetEntityModificationHistoryRequest,
+  GetEntityModificationHistoryResponse,
+  GetModificationHistoryRequest,
+  GetModificationHistoryResponse,
+  GetModifiedEntitiesRequest,
+  GetModifiedEntitiesResponse,
+  ImportSharedPropertyTypesRequest,
+  ImportSharedPropertyTypesResponse,
+  InlineActionTypeModification,
+  InterfaceLinkTypeImplementationModification,
+  InterfaceLinkTypeModification,
+  InterfacePropertyImplementationModification,
+  InterfaceSharedPropertyTypeModification,
+  InterfaceTypeModification,
+  IntermediaryLinkDefinitionModification,
+  LinkDefinitionModification,
+  LinkTypeCreate,
+  LinkTypeDelete,
+  LinkTypeEntityMetadataModifyRequest,
+  LinkTypeModification,
+  LinkTypeModifyRequest,
+  LinkTypePeeringMetadataModification,
+  LinkTypeUpdate,
+  LoadAllOntologiesInternalRequest,
+  LoadAllOntologiesInternalResponse,
+  ManyToManyLinkDefinitionModification,
+  ManyToManyLinkTypeDatasetDatasourceModification,
+  ManyToManyLinkTypeDatasourceCreate,
+  ManyToManyLinkTypeDatasourceDelete,
+  ManyToManyLinkTypeDatasourceModificationDefinition,
+  ManyToManyLinkTypeDatasourceModifyRequest,
+  ManyToManyLinkTypeDatasourceUpdate,
+  ManyToManyLinkTypeStreamDatasourceModification,
+  MigrationConfigurationModification,
+  ModificationHistoryPageItem,
+  ModificationHistoryPageItemSummary,
+  ModificationHistoryPageToken,
+  ModificationType,
+  NoEditsHistoryModification,
+  NoneEntityProvenance,
+  ObjectStorageV1Modification,
+  ObjectStorageV2Modification,
+  ObjectTypeCreate,
+  ObjectTypeDatasetDatasourceModification,
+  ObjectTypeDatasetDatasourceV2Modification,
+  ObjectTypeDatasetDatasourceV3Modification,
+  ObjectTypeDatasourceCreate,
+  ObjectTypeDatasourceDelete,
+  ObjectTypeDatasourceModificationDefinition,
+  ObjectTypeDatasourceModifyRequest,
+  ObjectTypeDatasourceUpdate,
+  ObjectTypeDelete,
+  ObjectTypeDerivedPropertiesDatasourceModification,
+  ObjectTypeDirectDatasourceModification,
+  ObjectTypeEditsOnlyDatasourceModification,
+  ObjectTypeEntityMetadataModifyRequest,
+  ObjectTypeGeotimeSeriesDatasourceModification,
+  ObjectTypeIndexingSettingsModification,
+  ObjectTypeInterfaceImplementationModification,
+  ObjectTypeMediaDatasourceModification,
+  ObjectTypeMediaSetViewDatasourceModification,
+  ObjectTypeModification,
+  ObjectTypeModifyRequest,
+  ObjectTypePeeringMetadataModification,
+  ObjectTypeRestrictedStreamDatasourceModification,
+  ObjectTypeRestrictedViewDatasourceModification,
+  ObjectTypeRestrictedViewDatasourceV2Modification,
+  ObjectTypeStreamDatasourceModification,
+  ObjectTypeStreamDatasourceV2Modification,
+  ObjectTypeTableDatasourceModification,
+  ObjectTypeTimeSeriesDatasourceModification,
+  ObjectTypeTraitsModification,
+  ObjectTypeUpdate,
+  OneToManyLinkDefinitionModification,
+  OntologyAdminConfig,
+  OntologyApiNamespaceIdentifier,
+  OntologyCreateRequest,
+  OntologyCreateResponse,
+  OntologyDeleteRequest,
+  OntologyDeleteResponse,
+  OntologyDiff,
+  OntologyInformationInternal,
+  OntologyModificationDescription,
+  OntologyModificationRequest,
+  OntologyModificationResponse,
+  OntologyNamespace,
+  OntologyProjectRid,
+  OntologyUpdateRequest,
+  OntologyUpdateResponse,
+  PartialPropertyTypeModification,
+  PerOntologyUniqueIdentifier,
+  PropertyTypeModification,
+  PropertyTypeStatusModification,
+  PutParameterRequestModificationWithId,
+  PutParameterRequestWithId,
+  PutSectionRequestWithId,
+  ReadOnlyV1V2Modification,
+  SensorTraitModification,
+  SharedPropertyTypeModification,
+  StorageBackendModification,
+  StructFieldTypeModification,
+  StructPropertyTypeModification,
+  TimeSeriesMetadataModification,
+  TypeForModification,
+  TypeGroupModification,
+  ValidationRuleModificationWithIdInRequest,
+  ValueTypeReferenceModification,
+  WorkflowObjectTypeTraitImplModification,
+} from "./__components.js";

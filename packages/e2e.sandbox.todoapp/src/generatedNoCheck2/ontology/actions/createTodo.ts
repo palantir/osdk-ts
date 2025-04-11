@@ -16,6 +16,11 @@ export namespace createTodo {
       nullable: false;
       type: 'boolean';
     };
+    location: {
+      multiplicity: false;
+      nullable: true;
+      type: 'string';
+    };
     Todo: {
       multiplicity: false;
       nullable: false;
@@ -28,6 +33,8 @@ export namespace createTodo {
    */
   export interface Params {
     readonly is_complete: ActionParam.PrimitiveType<'boolean'>;
+
+    readonly location?: ActionParam.PrimitiveType<'string'>;
 
     readonly Todo: ActionParam.PrimitiveType<'string'>;
   }
@@ -52,12 +59,14 @@ export namespace createTodo {
 /**
  * Creates Todo
  * @param {ActionParam.PrimitiveType<"boolean">} is_complete
+ * @param {ActionParam.PrimitiveType<"string">} [location]
  * @param {ActionParam.PrimitiveType<"string">} Todo
  */
 export interface createTodo extends ActionDefinition<createTodo.Signatures> {
   __DefinitionMetadata?: {
     apiName: 'createTodo';
     description: 'Creates Todo';
+    displayName: 'Create Todo';
     modifiedEntities: {
       Todo: {
         created: true;
@@ -65,7 +74,7 @@ export interface createTodo extends ActionDefinition<createTodo.Signatures> {
       };
     };
     parameters: createTodo.ParamsDefinition;
-    rid: 'notNeeded?';
+    rid: 'ri.actions.main.action-type.1913052f-0395-4643-9d37-62fc7f74289d';
     status: 'ACTIVE';
     type: 'action';
 

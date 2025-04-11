@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
-import type { OntologyObjectV2 } from "@osdk/foundry.ontologies";
+import type { ObjectMetadata } from "@osdk/api";
+import type { Attachment, ReferenceValue } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import { GeotimeSeriesPropertyImpl } from "../../createGeotimeSeriesProperty.js";
 import { MediaReferencePropertyImpl } from "../../createMediaReferenceProperty.js";
@@ -23,6 +23,8 @@ import { TimeSeriesPropertyImpl } from "../../createTimeseriesProperty.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { hydrateAttachmentFromRidInternal } from "../../public-utils/hydrateAttachmentFromRid.js";
+import { createObjectSpecifierFromPrimaryKey } from "../../util/objectSpecifierUtils.js";
+import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 import { get$as } from "./getDollarAs.js";
 import { get$link } from "./getDollarLink.js";
 import {
@@ -31,11 +33,6 @@ import {
   UnderlyingOsdkObject,
 } from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
-
-interface InternalOsdkInstance {
-  [ObjectDefRef]: FetchedObjectTypeDefinition;
-  [ClientRef]: MinimalClient;
-}
 
 const specialPropertyTypes = new Set(
   [
@@ -52,21 +49,22 @@ const specialPropertyTypes = new Set(
 // every time an object is created.
 const basePropDefs = {
   "$as": {
-    get: function(this: InternalOsdkInstance) {
+    get: function(this: ObjectHolder) {
       return get$as(this[ObjectDefRef]);
     },
   },
   "$link": {
-    get: function(this: InternalOsdkInstance & ObjectHolder<any>) {
+    get: function(this: ObjectHolder) {
       return get$link(this);
     },
   },
   "$clone": {
     value: function(
-      this: InternalOsdkInstance & ObjectHolder<any>,
+      this: ObjectHolder,
       update: Record<string, any> | undefined,
     ) {
-      const rawObj = this[UnderlyingOsdkObject];
+      // I think `rawObj` is the same thing as `this` and can be removed?
+      const rawObj = this[UnderlyingOsdkObject] as SimpleOsdkProperties;
       const def = this[ObjectDefRef];
 
       if (update == null) {
@@ -90,26 +88,44 @@ const basePropDefs = {
       return createOsdkObject(this[ClientRef], this[ObjectDefRef], newObject);
     },
   },
+  "$objectSpecifier": {
+    get: function(this: ObjectHolder) {
+      const rawObj = this[UnderlyingOsdkObject];
+      return createObjectSpecifierFromPrimaryKey(
+        this[ObjectDefRef],
+        rawObj.$primaryKey,
+      );
+    },
+    enumerable: true,
+  },
 };
 
-/** @internal */
-export function createOsdkObject<
-  Q extends FetchedObjectTypeDefinition,
->(
+/**
+ * @internal
+ * @param client
+ * @param objectDef
+ * @param simpleOsdkProperties
+ */
+export function createOsdkObject(
   client: MinimalClient,
-  objectDef: Q,
-  rawObj: OntologyObjectV2,
-): Osdk<ObjectTypeDefinition, any> {
+  objectDef: FetchedObjectTypeDefinition,
+  simpleOsdkProperties: SimpleOsdkProperties,
+  derivedPropertyTypeByName: Record<string, ObjectMetadata.Property> = {},
+): ObjectHolder {
   // updates the object's "hidden class/map".
-  Object.defineProperties(rawObj, {
-    [UnderlyingOsdkObject]: {
-      enumerable: false,
-      value: rawObj,
-    },
-    [ObjectDefRef]: { value: objectDef, enumerable: false },
-    [ClientRef]: { value: client, enumerable: false },
-    ...basePropDefs,
-  });
+  const rawObj = simpleOsdkProperties as ObjectHolder;
+  Object.defineProperties(
+    rawObj,
+    {
+      [UnderlyingOsdkObject]: {
+        enumerable: false,
+        value: simpleOsdkProperties,
+      },
+      [ObjectDefRef]: { value: objectDef, enumerable: false },
+      [ClientRef]: { value: client, enumerable: false },
+      ...basePropDefs,
+    } satisfies Record<keyof ObjectHolder, PropertyDescriptor>,
+  );
 
   // Assign the special values
   for (const propKey of Object.keys(rawObj)) {
@@ -121,19 +137,42 @@ export function createOsdkObject<
       rawObj[propKey] = createSpecialProperty(
         client,
         objectDef,
-        rawObj as any,
+        rawObj,
         propKey,
       );
+    } else if (
+      propKey in derivedPropertyTypeByName
+      && typeof (derivedPropertyTypeByName[propKey].type) === "string"
+      && specialPropertyTypes.has(derivedPropertyTypeByName[propKey].type)
+    ) {
+      const rawValue = rawObj[propKey as any];
+      if (derivedPropertyTypeByName[propKey].type === "attachment") {
+        if (Array.isArray(rawValue)) {
+          rawObj[propKey] = rawValue.map(a =>
+            hydrateAttachmentFromRidInternal(client, a.rid)
+          );
+        } else {
+          rawObj[propKey] = hydrateAttachmentFromRidInternal(
+            client,
+            (rawValue as Attachment).rid,
+          );
+        }
+      } else {
+        invariant(
+          false,
+          "Derived property aggregations for Timeseries and Media are not supported",
+        );
+      }
     }
   }
 
-  return Object.freeze(rawObj) as Osdk<ObjectTypeDefinition, any>;
+  return Object.freeze(rawObj);
 }
 
 function createSpecialProperty(
   client: MinimalClient,
   objectDef: FetchedObjectTypeDefinition,
-  rawObject: Osdk.Instance<any>,
+  rawObject: ObjectHolder,
   p: keyof typeof rawObject & string | symbol,
 ) {
   const rawValue = rawObject[p as any];
@@ -144,63 +183,56 @@ function createSpecialProperty(
         && specialPropertyTypes.has(propDef.type),
     );
   }
-  {
-    {
-      {
-        {
-          if (propDef.type === "attachment") {
-            if (Array.isArray(rawValue)) {
-              return rawValue.map(a =>
-                hydrateAttachmentFromRidInternal(client, a.rid)
-              );
-            }
-            return hydrateAttachmentFromRidInternal(client, rawValue.rid);
-          }
-
-          if (
-            propDef.type === "numericTimeseries"
-            || propDef.type === "stringTimeseries"
-            || propDef.type === "sensorTimeseries"
-          ) {
-            return new TimeSeriesPropertyImpl<
-              (typeof propDef)["type"] extends "numericTimeseries" ? number
-                : (typeof propDef)["type"] extends "stringTimeseries" ? string
-                : number | string
-            >(
-              client,
-              objectDef.apiName,
-              rawObject[objectDef.primaryKeyApiName as string],
-              p as string,
-            );
-          }
-
-          if (propDef.type === "geotimeSeriesReference") {
-            return new GeotimeSeriesPropertyImpl<GeoJSON.Point>(
-              client,
-              objectDef.apiName,
-              rawObject[objectDef.primaryKeyApiName as string],
-              p as string,
-              rawValue.type === "geotimeSeriesValue"
-                ? {
-                  time: rawValue.timestamp,
-                  value: {
-                    type: "Point",
-                    coordinates: rawValue.position,
-                  },
-                }
-                : undefined,
-            );
-          }
-          if (propDef.type === "mediaReference") {
-            return new MediaReferencePropertyImpl({
-              client,
-              objectApiName: objectDef.apiName,
-              primaryKey: rawObject[objectDef.primaryKeyApiName as string],
-              propertyName: p as string,
-            });
-          }
-        }
-      }
+  if (propDef.type === "attachment") {
+    if (Array.isArray(rawValue)) {
+      return rawValue.map(a => hydrateAttachmentFromRidInternal(client, a.rid));
     }
+    return hydrateAttachmentFromRidInternal(
+      client,
+      (rawValue as Attachment).rid,
+    );
+  }
+
+  if (
+    propDef.type === "numericTimeseries"
+    || propDef.type === "stringTimeseries"
+    || propDef.type === "sensorTimeseries"
+  ) {
+    return new TimeSeriesPropertyImpl<
+      (typeof propDef)["type"] extends "numericTimeseries" ? number
+        : (typeof propDef)["type"] extends "stringTimeseries" ? string
+        : number | string
+    >(
+      client,
+      objectDef.apiName,
+      rawObject[objectDef.primaryKeyApiName as string],
+      p as string,
+    );
+  }
+
+  if (propDef.type === "geotimeSeriesReference") {
+    return new GeotimeSeriesPropertyImpl<GeoJSON.Point>(
+      client,
+      objectDef.apiName,
+      rawObject[objectDef.primaryKeyApiName as string],
+      p as string,
+      (rawValue as ReferenceValue).type === "geotimeSeriesValue"
+        ? {
+          time: (rawValue as ReferenceValue).timestamp,
+          value: {
+            type: "Point",
+            coordinates: (rawValue as ReferenceValue).position,
+          },
+        }
+        : undefined,
+    );
+  }
+  if (propDef.type === "mediaReference") {
+    return new MediaReferencePropertyImpl({
+      client,
+      objectApiName: objectDef.apiName,
+      primaryKey: rawObject[objectDef.primaryKeyApiName as string],
+      propertyName: p as string,
+    });
   }
 }

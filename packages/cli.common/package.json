@@ -1,7 +1,7 @@
 {
   "name": "@osdk/cli.common",
   "private": true,
-  "version": "0.26.0-beta.5",
+  "version": "0.26.0-beta.15",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -40,7 +40,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "consola": "^3.2.3",
+    "consola": "^3.4.0",
     "open": "^10.1.0",
     "semver": "^7.6.3",
     "yargs": "^17.7.2"

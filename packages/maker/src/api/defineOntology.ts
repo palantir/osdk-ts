@@ -34,8 +34,12 @@ import type {
   OntologyIr,
   OntologyIrInterfaceType,
   OntologyIrInterfaceTypeBlockDataV2,
+  OntologyIrLinkDefinition,
+  OntologyIrLinkTypeBlockDataV2,
+  OntologyIrManyToManyLinkTypeDatasource,
   OntologyIrObjectTypeBlockDataV2,
   OntologyIrObjectTypeDatasource,
+  OntologyIrObjectTypeDatasourceDefinition,
   OntologyIrPropertyType,
   OntologyIrSharedPropertyType,
   OntologyIrSharedPropertyTypeBlockDataV2,
@@ -43,10 +47,12 @@ import type {
   OntologyIrType,
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
-  PropertyTypeMappingInfo,
+  RetentionPolicy,
 } from "@osdk/client.unstable";
+import { isExotic } from "./defineObject.js";
 import type {
   InterfaceType,
+  LinkTypeDefinition,
   ObjectPropertyType,
   ObjectType,
   Ontology,
@@ -77,6 +83,7 @@ export async function defineOntology(
     interfaceTypes: {},
     sharedPropertyTypes: {},
     valueTypes: {},
+    linkTypes: {},
     importedTypes: {
       sharedPropertyTypes: [],
     },
@@ -153,6 +160,13 @@ function convertToWireOntologyIr(
             },
           ),
       ),
+      linkTypes: Object.fromEntries(
+        Object.entries(ontology.linkTypes).map<
+          [string, OntologyIrLinkTypeBlockDataV2]
+        >(([id, link]) => {
+          return [id, convertLink(link)];
+        }),
+      ),
       blockPermissionInformation: {
         actionTypes: {},
         linkTypes: {},
@@ -166,28 +180,17 @@ function convertToWireOntologyIr(
 function convertObject(
   objectType: ObjectType,
 ): OntologyIrObjectTypeBlockDataV2 {
-  const propertyDatasource: Record<string, PropertyTypeMappingInfo> = {};
-  (objectType.properties ?? []).forEach((property) => {
-    propertyDatasource[property.apiName] = {
-      type: "column",
-      column: property.apiName,
-    };
-  });
+  const propertyDatasources: OntologyIrObjectTypeDatasource[] =
+    (objectType.properties ?? [])
+      .flatMap(prop => extractPropertyDatasource(prop, objectType.apiName));
 
-  const datasource: OntologyIrObjectTypeDatasource = {
-    rid: "ri.ontology.main.datasource.".concat(objectType.apiName),
-    datasource: {
-      type: "datasetV2",
-      datasetV2: {
-        datasetRid: objectType.apiName,
-        propertyMapping: propertyDatasource,
-      },
-    },
-    editsConfiguration: {
-      onlyAllowPrivilegedEdits: false,
-    },
-    redacted: false,
-  };
+  const objectDatasource = buildDatasource(
+    objectType.apiName,
+    convertDatasourceDefinition(
+      objectType,
+      objectType.properties ?? [],
+    ),
+  );
 
   const implementations = objectType.implementsInterfaces ?? [];
 
@@ -229,9 +232,97 @@ function convertObject(
       })),
       allImplementsInterfaces: {},
     },
-    datasources: [datasource],
+    datasources: [...propertyDatasources, objectDatasource],
     entityMetadata: { arePatchesEnabled: objectType.editsEnabled ?? false },
   };
+}
+
+function extractPropertyDatasource(
+  property: ObjectPropertyType,
+  objectTypeApiName: string,
+): OntologyIrObjectTypeDatasource[] {
+  if (!isExotic(property.type)) {
+    return [];
+  }
+  const identifier = objectTypeApiName + "." + property.apiName;
+  switch (property.type as string) {
+    case "geotimeSeries":
+      const geotimeDefinition: OntologyIrObjectTypeDatasourceDefinition = {
+        type: "geotimeSeries",
+        geotimeSeries: {
+          geotimeSeriesIntegrationRid: identifier,
+          properties: [property.apiName],
+        },
+      };
+      return [buildDatasource(property.apiName, geotimeDefinition)];
+    case "mediaReference":
+      const mediaSetDefinition: OntologyIrObjectTypeDatasourceDefinition = {
+        type: "mediaSetView",
+        mediaSetView: {
+          assumedMarkings: [],
+          mediaSetViewLocator: identifier,
+          properties: [property.apiName],
+        },
+      };
+      return [buildDatasource(property.apiName, mediaSetDefinition)];
+    default:
+      return [];
+  }
+}
+
+function buildDatasource(
+  apiName: string,
+  definition: OntologyIrObjectTypeDatasourceDefinition,
+): OntologyIrObjectTypeDatasource {
+  return ({
+    rid: "ri.ontology.main.datasource.".concat(apiName),
+    datasource: definition,
+    editsConfiguration: {
+      onlyAllowPrivilegedEdits: false,
+    },
+    redacted: false,
+  });
+}
+
+function convertDatasourceDefinition(
+  objectType: ObjectType,
+  properties: ObjectPropertyType[],
+): OntologyIrObjectTypeDatasourceDefinition {
+  switch (objectType.datasource?.type) {
+    case "stream":
+      const window = objectType.datasource.retentionPeriod;
+      const retentionPolicy: RetentionPolicy = window
+        ? { type: "time", time: { window } }
+        : { type: "none", none: {} };
+      const propertyMapping = Object.fromEntries(
+        properties.map((
+          prop,
+        ) => [prop.apiName, prop.apiName]),
+      );
+      return {
+        type: "streamV2",
+        streamV2: {
+          streamLocator: objectType.apiName,
+          propertyMapping,
+          retentionPolicy,
+          propertySecurityGroups: undefined,
+        },
+      };
+    case "dataset":
+    default:
+      return {
+        type: "datasetV2",
+        datasetV2: {
+          datasetRid: objectType.apiName,
+          propertyMapping: Object.fromEntries(
+            properties.map((prop) => [
+              prop.apiName,
+              { type: "column", column: prop.apiName },
+            ]),
+          ),
+        },
+      };
+  }
 }
 
 function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {
@@ -257,17 +348,129 @@ function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {
   return output;
 }
 
+function convertLink(
+  linkType: LinkTypeDefinition,
+): OntologyIrLinkTypeBlockDataV2 {
+  let definition: OntologyIrLinkDefinition;
+  let datasource: OntologyIrManyToManyLinkTypeDatasource | undefined =
+    undefined;
+  if ("one" in linkType) {
+    definition = {
+      type: "oneToMany",
+      oneToMany: {
+        cardinalityHint: "ONE_TO_ONE",
+        manyToOneLinkMetadata: linkType.toMany.metadata,
+        objectTypeRidManySide: linkType.toMany.object.apiName,
+        objectTypeRidOneSide: linkType.one.object.apiName,
+        oneToManyLinkMetadata: linkType.one.metadata,
+        oneSidePrimaryKeyToManySidePropertyMapping: [{
+          from: {
+            apiName: linkType.one.object.primaryKeys[0],
+            object: linkType.one.object.apiName,
+          },
+          to: {
+            apiName: linkType.manyForeignKeyProperty,
+            object: linkType.toMany.object.apiName,
+          },
+        }],
+      },
+    };
+  } else {
+    definition = {
+      type: "manyToMany",
+      manyToMany: {
+        objectTypeAToBLinkMetadata: linkType.many.metadata,
+        objectTypeBToALinkMetadata: linkType.toMany.metadata,
+        objectTypeRidA: linkType.many.object.apiName,
+        objectTypeRidB: linkType.toMany.object.apiName,
+        peeringMetadata: undefined,
+        objectTypeAPrimaryKeyPropertyMapping: [{
+          from: {
+            apiName: linkType.many.object.primaryKeys[0],
+            object: linkType.many.object.apiName,
+          },
+          to: {
+            apiName: linkType.many.object.primaryKeys[0],
+            object: linkType.many.object.apiName,
+          },
+        }],
+        objectTypeBPrimaryKeyPropertyMapping: [{
+          from: {
+            apiName: linkType.toMany.object.primaryKeys[0],
+            object: linkType.toMany.object.apiName,
+          },
+          to: {
+            apiName: linkType.toMany.object.primaryKeys[0],
+            object: linkType.toMany.object.apiName,
+          },
+        }],
+      },
+    };
+
+    datasource = {
+      rid: "ri.ontology.main.datasource.link-".concat(linkType.id),
+      datasource: {
+        type: "dataset",
+        dataset: {
+          datasetRid: "link-".concat(linkType.id),
+          writebackDatasetRid: undefined,
+          objectTypeAPrimaryKeyMapping: [{
+            property: {
+              apiName: linkType.many.object.primaryKeys[0],
+              object: linkType.many.object.apiName,
+            },
+            column: linkType.many.object.primaryKeys[0],
+          }],
+          objectTypeBPrimaryKeyMapping: [{
+            property: {
+              apiName: linkType.toMany.object.primaryKeys[0],
+              object: linkType.toMany.object.apiName,
+            },
+            column: linkType.many.object.primaryKeys[0],
+          }],
+        },
+      },
+      editsConfiguration: {
+        onlyAllowPrivilegedEdits: false,
+      },
+      redacted: linkType.redacted,
+    };
+  }
+
+  return {
+    linkType: {
+      definition: definition,
+      id: linkType.id,
+      status: linkType.status ?? { type: "active", active: {} },
+      redacted: linkType.redacted ?? false,
+    },
+    datasources: datasource !== undefined ? [datasource] : [],
+    entityMetadata: {
+      arePatchesEnabled: linkType.editsEnabled ?? false,
+    },
+  };
+}
+
 function convertInterface(
   interfaceType: InterfaceType,
 ): OntologyIrInterfaceType {
   return {
     ...interfaceType,
-    properties: Object.values(interfaceType.properties)
-      .map<OntologyIrSharedPropertyType>((spt) => convertSpt(spt)),
+    propertiesV2: Object.fromEntries(
+      Object.values(interfaceType.propertiesV2)
+        .map((
+          spt,
+        ) => [spt.sharedPropertyType.apiName, {
+          required: spt.required,
+          sharedPropertyType: convertSpt(spt.sharedPropertyType),
+        }]),
+    ),
     // these are omitted from our internal types but we need to re-add them for the final json
     allExtendsInterfaces: [],
     allLinks: [],
     allProperties: [],
+    allPropertiesV2: {},
+    properties: [],
   };
 }
 
@@ -400,6 +603,12 @@ function convertType(
       return {
         type: type,
         mediaReference: {},
+      };
+
+    case (type === "geotimeSeries"):
+      return {
+        type: "geotimeSeriesReference",
+        geotimeSeriesReference: {},
       };
 
     default:

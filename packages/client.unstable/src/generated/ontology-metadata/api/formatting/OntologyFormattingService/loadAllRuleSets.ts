@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { LoadAllRuleSetsRequest } from "../LoadAllRuleSetsRequest.js";
-import type { LoadRuleSetsResponse } from "../LoadRuleSetsResponse.js";
+import type {
+  LoadAllRuleSetsRequest as _api_formatting_LoadAllRuleSetsRequest,
+  LoadRuleSetsResponse as _api_formatting_LoadRuleSetsResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to load rule sets from a given (or otherwise default) OntologyRid at a given (or otherwise
@@ -27,8 +29,8 @@ import type { LoadRuleSetsResponse } from "../LoadRuleSetsResponse.js";
  */
 export async function loadAllRuleSets(
   ctx: ConjureContext,
-  request: LoadAllRuleSetsRequest,
-): Promise<LoadRuleSetsResponse> {
+  request: _api_formatting_LoadAllRuleSetsRequest,
+): Promise<_api_formatting_LoadRuleSetsResponse> {
   return conjureFetch(
     ctx,
     `/formatting/rulesets/loadAllRuleSets`,

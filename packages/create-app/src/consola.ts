@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import type { ConsolaInstance } from "consola";
+import type { ConsolaInstance, PromptOptions } from "consola";
 import { consola as defaultConsola, createConsola } from "consola";
 
+// https://github.com/unjs/consola?tab=readme-ov-file#await-promptmessage--type-cancel-
+const cancelSymbol = Symbol.for("cancel");
+
 export const consola: ConsolaInstance = createConsola({
-  // https://github.com/unjs/consola/issues/251
-  async prompt(...params) {
-    const response = (await defaultConsola.prompt(...params)) as any;
-    if (
-      typeof response === "symbol"
-      && response.toString() === "Symbol(clack:cancel)"
-    ) {
+  async prompt(message: string, opts?: PromptOptions) {
+    const response = (await defaultConsola.prompt(message, {
+      ...opts,
+      cancel: opts?.cancel ?? "symbol",
+    })) as any;
+    if (response === cancelSymbol) {
       defaultConsola.fail("Operation cancelled");
       process.exit(0);
     }

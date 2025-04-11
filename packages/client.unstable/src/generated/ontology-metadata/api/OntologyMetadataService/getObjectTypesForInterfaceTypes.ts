@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,12 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetObjectTypesForInterfaceTypesRequest } from "../GetObjectTypesForInterfaceTypesRequest.js";
-import type { GetObjectTypesForInterfaceTypesResponse } from "../GetObjectTypesForInterfaceTypesResponse.js";
+import type {
+  GetObjectTypesForInterfaceTypesRequest
+    as _api_GetObjectTypesForInterfaceTypesRequest,
+  GetObjectTypesForInterfaceTypesResponse
+    as _api_GetObjectTypesForInterfaceTypesResponse,
+} from "../__components.js";
 
 /**
  * Gets a map of interfaces to the set of object types that implement the interface. At most 50 interfaces can be
@@ -24,8 +28,8 @@ import type { GetObjectTypesForInterfaceTypesResponse } from "../GetObjectTypesF
  */
 export async function getObjectTypesForInterfaceTypes(
   ctx: ConjureContext,
-  request: GetObjectTypesForInterfaceTypesRequest,
-): Promise<GetObjectTypesForInterfaceTypesResponse> {
+  request: _api_GetObjectTypesForInterfaceTypesRequest,
+): Promise<_api_GetObjectTypesForInterfaceTypesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/load/objectTypesForInterfaceTypes`,

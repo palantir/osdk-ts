@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,12 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { BulkLoadObjectTypeSchemaMigrationsRequest } from "../BulkLoadObjectTypeSchemaMigrationsRequest.js";
-import type { BulkLoadObjectTypeSchemaMigrationsResponse } from "../BulkLoadObjectTypeSchemaMigrationsResponse.js";
+import type {
+  BulkLoadObjectTypeSchemaMigrationsRequest
+    as _api_schemamigrations_BulkLoadObjectTypeSchemaMigrationsRequest,
+  BulkLoadObjectTypeSchemaMigrationsResponse
+    as _api_schemamigrations_BulkLoadObjectTypeSchemaMigrationsResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to bulk load schema migrations for ObjectTypes at a given OntologyVersions. Requires viewer
@@ -26,8 +30,8 @@ import type { BulkLoadObjectTypeSchemaMigrationsResponse } from "../BulkLoadObje
  */
 export async function bulkLoadObjectTypeSchemaMigrations(
   ctx: ConjureContext,
-  request: BulkLoadObjectTypeSchemaMigrationsRequest,
-): Promise<BulkLoadObjectTypeSchemaMigrationsResponse> {
+  request: _api_schemamigrations_BulkLoadObjectTypeSchemaMigrationsRequest,
+): Promise<_api_schemamigrations_BulkLoadObjectTypeSchemaMigrationsResponse> {
   return conjureFetch(
     ctx,
     `/schemamigrations/load/objecttypes`,

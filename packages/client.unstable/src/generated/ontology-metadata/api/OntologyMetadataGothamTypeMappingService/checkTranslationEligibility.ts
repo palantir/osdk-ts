@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,12 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { CheckTranslationEligibilityRequest } from "../typemapping/CheckTranslationEligibilityRequest.js";
-import type { CheckTranslationEligibilityResponse } from "../typemapping/CheckTranslationEligibilityResponse.js";
+import type {
+  CheckTranslationEligibilityRequest
+    as _api_typemapping_CheckTranslationEligibilityRequest,
+  CheckTranslationEligibilityResponse
+    as _api_typemapping_CheckTranslationEligibilityResponse,
+} from "../typemapping/__components.js";
 
 /**
  * Evaluate if the requested Datasource Delegates can be translated into the Simple Policy Structure
@@ -24,8 +28,8 @@ import type { CheckTranslationEligibilityResponse } from "../typemapping/CheckTr
  */
 export async function checkTranslationEligibility(
   ctx: ConjureContext,
-  request: CheckTranslationEligibilityRequest,
-): Promise<CheckTranslationEligibilityResponse> {
+  request: _api_typemapping_CheckTranslationEligibilityRequest,
+): Promise<_api_typemapping_CheckTranslationEligibilityResponse> {
   return conjureFetch(
     ctx,
     `/ontology/typemapping/checkTranslationEligibility`,

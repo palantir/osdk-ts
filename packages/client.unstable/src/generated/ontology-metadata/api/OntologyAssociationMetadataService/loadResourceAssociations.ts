@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,22 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { LoadResourceAssociationsRequest } from "../association/metadata/LoadResourceAssociationsRequest.js";
-import type { LoadResourceAssociationsResponse } from "../association/metadata/LoadResourceAssociationsResponse.js";
-import type { OntologyRid } from "../OntologyRid.js";
+import type { OntologyRid as _api_OntologyRid } from "../__components.js";
+import type {
+  LoadResourceAssociationsRequest
+    as _api_association_metadata_LoadResourceAssociationsRequest,
+  LoadResourceAssociationsResponse
+    as _api_association_metadata_LoadResourceAssociationsResponse,
+} from "../association/metadata/__components.js";
 
 /**
  * Endpoint to load the ontology associations linked to the requested resources
  */
 export async function loadResourceAssociations(
   ctx: ConjureContext,
-  ontologyRid: OntologyRid,
-  request: LoadResourceAssociationsRequest,
-): Promise<LoadResourceAssociationsResponse> {
+  ontologyRid: _api_OntologyRid,
+  request: _api_association_metadata_LoadResourceAssociationsRequest,
+): Promise<_api_association_metadata_LoadResourceAssociationsResponse> {
   return conjureFetch(
     ctx,
     `/association/ontology/${ontologyRid}/loadAssociatedOntologyEntities`,

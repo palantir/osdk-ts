@@ -22,6 +22,7 @@ export default function CreateTodoForm() {
       await applyAction({
         is_complete: false,
         Todo: title,
+        location: "0,0",
 
         $optimisticUpdate: (b) => {
           const id = "TMP " + window.crypto.randomUUID();
@@ -29,6 +30,7 @@ export default function CreateTodoForm() {
             title,
             id,
             isComplete: false,
+            location: undefined,
           });
         },
       });
@@ -50,7 +52,9 @@ export default function CreateTodoForm() {
           ref={formRef}
           onSubmit={onSubmit}
         >
-          <div className="error">{JSON.stringify(error)}</div>
+          <div className="error">
+            <pre>{JSON.stringify(error, null,2)}</pre>
+          </div>
           <input
             type="text"
             name={"title"}

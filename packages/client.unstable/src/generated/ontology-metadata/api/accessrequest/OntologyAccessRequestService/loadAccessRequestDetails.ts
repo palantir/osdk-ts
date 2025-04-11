@@ -15,8 +15,12 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { LoadAccessRequestDetailsRequest } from "../LoadAccessRequestDetailsRequest.js";
-import type { LoadAccessRequestDetailsResponse } from "../LoadAccessRequestDetailsResponse.js";
+import type {
+  LoadAccessRequestDetailsRequest
+    as _api_accessrequest_LoadAccessRequestDetailsRequest,
+  LoadAccessRequestDetailsResponse
+    as _api_accessrequest_LoadAccessRequestDetailsResponse,
+} from "../__components.js";
 
 /**
  * Returns the access requests of the requested ontology entities.
@@ -25,8 +29,8 @@ import type { LoadAccessRequestDetailsResponse } from "../LoadAccessRequestDetai
  */
 export async function loadAccessRequestDetails(
   ctx: ConjureContext,
-  request: LoadAccessRequestDetailsRequest,
-): Promise<LoadAccessRequestDetailsResponse> {
+  request: _api_accessrequest_LoadAccessRequestDetailsRequest,
+): Promise<_api_accessrequest_LoadAccessRequestDetailsResponse> {
   return conjureFetch(
     ctx,
     `/ontology/access-request/loadAccessRequestDetails`,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,13 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { ImportSharedPropertyTypesRequest } from "../../modification/ImportSharedPropertyTypesRequest.js";
-import type { ImportSharedPropertyTypesResponse } from "../../modification/ImportSharedPropertyTypesResponse.js";
-import type { OntologyRid } from "../../OntologyRid.js";
+import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
+import type {
+  ImportSharedPropertyTypesRequest
+    as _api_modification_ImportSharedPropertyTypesRequest,
+  ImportSharedPropertyTypesResponse
+    as _api_modification_ImportSharedPropertyTypesResponse,
+} from "../../modification/__components.js";
 
 /**
  * Imports SharedPropertyTypes from their corresponding ontology to another. This will result in both ontologies
@@ -34,9 +38,9 @@ import type { OntologyRid } from "../../OntologyRid.js";
  */
 export async function importSharedPropertyTypes(
   ctx: ConjureContext,
-  ontologyRid: OntologyRid,
-  request: ImportSharedPropertyTypesRequest,
-): Promise<ImportSharedPropertyTypesResponse> {
+  ontologyRid: _api_OntologyRid,
+  request: _api_modification_ImportSharedPropertyTypesRequest,
+): Promise<_api_modification_ImportSharedPropertyTypesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/v2/${ontologyRid}/import`,

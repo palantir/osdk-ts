@@ -1,7 +1,6 @@
 {
   "name": "@osdk/e2e.sandbox.catchall",
-  "private": true,
-  "version": "0.4.0-beta.1",
+  "version": "0.0.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -42,7 +41,7 @@
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
     "@osdk/e2e.generated.catchall": "workspace:~",
-    "@osdk/foundry": "2.13.0",
+    "@osdk/foundry": "2.17.0",
     "chalk": "^5.4.1",
     "pino": "^9.1.0",
     "pino-pretty": "^11.2.1",
@@ -59,7 +58,13 @@
   "publishConfig": {
     "access": "public"
   },
-  "files": [],
+  "files": [
+    "src/",
+    "CHANGELOG.md",
+    "package.json",
+    "templates",
+    "*.d.ts"
+  ],
   "module": "./build/esm/index.js",
   "types": "./build/esm/index.d.ts",
   "type": "module"

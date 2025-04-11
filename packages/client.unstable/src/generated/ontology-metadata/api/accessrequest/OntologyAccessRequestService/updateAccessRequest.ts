@@ -15,9 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { AccessRequestRid } from "../../AccessRequestRid.js";
-import type { UpdateAccessRequestRequest } from "../UpdateAccessRequestRequest.js";
-import type { UpdateAccessRequestResponse } from "../UpdateAccessRequestResponse.js";
+import type { AccessRequestRid as _api_AccessRequestRid } from "../../__components.js";
+import type {
+  UpdateAccessRequestRequest as _api_accessrequest_UpdateAccessRequestRequest,
+  UpdateAccessRequestResponse as _api_accessrequest_UpdateAccessRequestResponse,
+} from "../__components.js";
 
 /**
  * Throws:
@@ -37,9 +39,9 @@ import type { UpdateAccessRequestResponse } from "../UpdateAccessRequestResponse
  */
 export async function updateAccessRequest(
   ctx: ConjureContext,
-  accessRequestRid: AccessRequestRid,
-  updateAccessRequest: UpdateAccessRequestRequest,
-): Promise<UpdateAccessRequestResponse> {
+  accessRequestRid: _api_AccessRequestRid,
+  updateAccessRequest: _api_accessrequest_UpdateAccessRequestRequest,
+): Promise<_api_accessrequest_UpdateAccessRequestResponse> {
   return conjureFetch(
     ctx,
     `/ontology/access-request/${accessRequestRid}`,

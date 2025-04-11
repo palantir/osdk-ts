@@ -17,35 +17,117 @@
 import type {
   LoadObjectSetV2MultipleObjectTypesRequest,
   LoadObjectSetV2MultipleObjectTypesResponse,
+  ObjectSet,
 } from "@osdk/foundry.ontologies";
 import stableStringify from "json-stable-stringify";
 import {
+  employeeFullObjectScoped,
+  employeeFullObjectScoped2,
   employeeInterfaceScoped,
   employeeInterfaceScoped2,
-  FooInterface,
 } from "./interfaces.js";
+import { FooInterface } from "./interfaceTypes.js";
 
 const baseObjectSet: LoadObjectSetV2MultipleObjectTypesRequest = {
-  objectSet: { type: "interfaceBase", interfaceType: FooInterface.apiName },
+  objectSet: {
+    type: "interfaceBase",
+    interfaceType: FooInterface.apiName,
+  },
   select: [],
   excludeRid: true,
 };
 
+const baseObjectSetFullObject: LoadObjectSetV2MultipleObjectTypesRequest = {
+  objectSet: {
+    type: "intersect",
+    objectSets: [
+      { type: "interfaceBase", interfaceType: FooInterface.apiName },
+      {
+        type: "interfaceBase",
+        interfaceType: FooInterface.apiName,
+        includeAllBaseObjectProperties: true,
+      },
+    ],
+  },
+  select: [],
+  excludeRid: true,
+};
+
+function wrapWithEmptyFilter(objectSet: ObjectSet): ObjectSet {
+  return {
+    type: "filter",
+    objectSet,
+    where: { type: "and", value: [] },
+  };
+}
+
+const baseObjectSetEmptyFilter: LoadObjectSetV2MultipleObjectTypesRequest = {
+  ...baseObjectSet,
+  objectSet: wrapWithEmptyFilter(baseObjectSet.objectSet),
+};
+
 const baseObjectSetSelect: LoadObjectSetV2MultipleObjectTypesRequest = {
-  objectSet: { type: "interfaceBase", interfaceType: FooInterface.apiName },
+  objectSet: {
+    type: "interfaceBase",
+    interfaceType: FooInterface.apiName,
+  },
   select: ["fullName"],
   excludeRid: true,
 };
 
+const baseObjectSetSelectFullObject: LoadObjectSetV2MultipleObjectTypesRequest =
+  {
+    objectSet: {
+      type: "intersect",
+      objectSets: [
+        { type: "interfaceBase", interfaceType: FooInterface.apiName },
+        {
+          type: "interfaceBase",
+          interfaceType: FooInterface.apiName,
+          includeAllBaseObjectProperties: true,
+        },
+      ],
+    },
+    select: ["fullName"],
+    excludeRid: true,
+  };
+
 const eqSearchBody: LoadObjectSetV2MultipleObjectTypesRequest = {
   objectSet: {
     type: "filter",
-    objectSet: { type: "interfaceBase", interfaceType: FooInterface.apiName },
+    objectSet: {
+      type: "interfaceBase",
+      interfaceType: FooInterface.apiName,
+    },
     where: {
       type: "eq",
       field: "fooSpt",
       value: "The Grinch",
     },
+  },
+  select: [],
+  excludeRid: true,
+};
+
+const eqSearchBodyFullScope: LoadObjectSetV2MultipleObjectTypesRequest = {
+  objectSet: {
+    type: "intersect",
+    objectSets: [{
+      type: "filter",
+      objectSet: {
+        type: "interfaceBase",
+        interfaceType: FooInterface.apiName,
+      },
+      where: {
+        type: "eq",
+        field: "fooSpt",
+        value: "The Grinch",
+      },
+    }, {
+      type: "interfaceBase",
+      interfaceType: FooInterface.apiName,
+      includeAllBaseObjectProperties: true,
+    }],
   },
   select: [],
   excludeRid: true,
@@ -67,10 +149,33 @@ const equalsObjectSetResponse: LoadObjectSetV2MultipleObjectTypesResponse = {
   totalCount: "1",
 };
 
+const baseObjectFullScopeSetResponse:
+  LoadObjectSetV2MultipleObjectTypesResponse = {
+    data: [employeeFullObjectScoped],
+    interfaceToObjectTypeMappings: {
+      FooInterface: { Employee: { fooSpt: "fullName" } },
+    },
+    totalCount: "1",
+  };
+
+const equalsFullScopeObjectSetResponse:
+  LoadObjectSetV2MultipleObjectTypesResponse = {
+    data: [employeeFullObjectScoped2],
+    interfaceToObjectTypeMappings: {
+      FooInterface: { Employee: { fooSpt: "fullName" } },
+    },
+    totalCount: "1",
+  };
+
 export const loadInterfaceObjectSetHandlers: {
   [key: string]: LoadObjectSetV2MultipleObjectTypesResponse;
 } = {
   [stableStringify(baseObjectSet)]: baseObjectSetResponse,
+  [stableStringify(baseObjectSetFullObject)]: baseObjectFullScopeSetResponse,
+  [stableStringify(baseObjectSetEmptyFilter)]: baseObjectSetResponse,
   [stableStringify(eqSearchBody)]: equalsObjectSetResponse,
   [stableStringify(baseObjectSetSelect)]: baseObjectSetResponse,
+  [stableStringify(baseObjectSetSelectFullObject)]:
+    baseObjectFullScopeSetResponse,
+  [stableStringify(eqSearchBodyFullScope)]: equalsFullScopeObjectSetResponse,
 };

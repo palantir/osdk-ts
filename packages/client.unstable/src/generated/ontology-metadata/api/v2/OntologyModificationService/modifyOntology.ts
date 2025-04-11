@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,18 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyModificationRequest } from "../../modification/OntologyModificationRequest.js";
-import type { OntologyModificationResponse } from "../../modification/OntologyModificationResponse.js";
-import type { OntologyRid } from "../../OntologyRid.js";
+import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
+import type {
+  OntologyModificationRequest as _api_modification_OntologyModificationRequest,
+  OntologyModificationResponse
+    as _api_modification_OntologyModificationResponse,
+} from "../../modification/__components.js";
 export async function modifyOntology(
   ctx: ConjureContext,
-  onBehalfOf: string | undefined,
-  ontologyRid: OntologyRid | undefined,
-  request: OntologyModificationRequest,
-): Promise<OntologyModificationResponse> {
+  onBehalfOf: string | null | undefined,
+  ontologyRid: _api_OntologyRid | null | undefined,
+  request: _api_modification_OntologyModificationRequest,
+): Promise<_api_modification_OntologyModificationResponse> {
   return conjureFetch(ctx, `/ontology/v2/modify`, "POST", request, {
     ontologyRid,
   });

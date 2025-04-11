@@ -54,6 +54,7 @@ import yargs from "yargs";
 import { FailedWithUserMessage } from "./FailedWithUserMessage.js";
 import { checkIfClean as isGitClean, setupUser } from "./gitUtils.js";
 import { runPublish } from "./runPublish.js";
+import { runTagRelease } from "./runTagRelease.js";
 import type { GithubContext } from "./runVersion.js";
 import { runVersion } from "./runVersion.js";
 import { simulateMinorBump } from "./simulateMinorBump.js";
@@ -68,7 +69,7 @@ async function getStdoutOrThrow(...args: Parameters<typeof getExecOutput>) {
 }
 
 async function getContext(
-  args: { repo: string; branch?: string },
+  args: { repo: string; branch?: string; commitSha?: string },
 ): Promise<GithubContext> {
   const parts = args.repo.split("/");
 
@@ -77,7 +78,8 @@ async function getContext(
       owner: parts[0],
       repo: parts[1],
     },
-    sha: (await getStdoutOrThrow("git", ["rev-parse", "HEAD"])).trim(),
+    sha: args.commitSha
+      ?? (await getStdoutOrThrow("git", ["rev-parse", "HEAD"])).trim(),
     branch: args.branch
       ?? process.env.GITHUB_HEAD_REF
       ?? (await getStdoutOrThrow("git", ["symbolic-ref", "HEAD"])).replace(
@@ -93,7 +95,7 @@ async function getContext(
     .options({
       cwd: { type: "string", description: "Change working directory" },
       mode: {
-        choices: ["version", "publish", "simulateMinorBump"],
+        choices: ["version", "publish", "simulateMinorBump", "tag-version"],
         default: "version",
       },
       publishCmd: {
@@ -117,6 +119,10 @@ async function getContext(
         description: "Setup git user",
         default: false,
       },
+      commitSha: {
+        type: "string",
+        description: "Custom commit SHA to use for tagging releases",
+      },
     })
     .check((argv) => {
       if (argv.mode === "publish" && !argv.publishCmd) {
@@ -135,6 +141,13 @@ async function getContext(
     })
     .parseAsync();
 
+  if (args.mode === "tag-version") {
+    const context = await getContext(args);
+
+    await runTagRelease(context, args.commitSha);
+    return;
+  }
+
   if (args.cwd) {
     consola.info(`Changing directory to ${args.cwd}`);
     process.chdir(args.cwd);
@@ -145,7 +158,7 @@ async function getContext(
     await setupUser();
   }
 
-  if (!await isGitClean()) {
+  if (process.env.SKIP_GIT_CLEAN_CHECK !== "true" && !await isGitClean()) {
     throw new FailedWithUserMessage(
       "Your working directory is not clean. We are aborting for your protection.",
     );

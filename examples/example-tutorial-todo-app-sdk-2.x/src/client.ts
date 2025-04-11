@@ -1,44 +1,42 @@
-import { createClient } from "@osdk/client";
-import { createPublicOauthClient } from "@osdk/oauth";
-import { $ontologyRid } from "@osdk/e2e.generated.catchall";
+import { createClient, type Client } from "@osdk/client";
+import { createPublicOauthClient, type PublicOauthClient } from "@osdk/oauth";
 
-const url = import.meta.env.VITE_FOUNDRY_API_URL;
-const clientId = import.meta.env.VITE_FOUNDRY_CLIENT_ID;
-const redirectUrl = import.meta.env.VITE_FOUNDRY_REDIRECT_URL;
-checkEnv(url, "VITE_FOUNDRY_API_URL");
-checkEnv(clientId, "VITE_FOUNDRY_CLIENT_ID");
-checkEnv(redirectUrl, "VITE_FOUNDRY_REDIRECT_URL");
+function getMetaTagContent(tagName: string): string {
+  const elements = document.querySelectorAll(`meta[name="${tagName}"]`);
+  const element = elements.item(elements.length - 1);
+  const value = element ? element.getAttribute("content") : null;
+  if (value == null || value === "") {
+    throw new Error(`Meta tag ${tagName} not found or empty`);
+  }
+  if (value.match(/%.+%/)) {
+    throw new Error(`Meta tag ${tagName} contains placeholder value. Please add ${value.replace(/%/g, "")} to your .env files`);
+  }
+  return value;
+}
+
+const foundryUrl = getMetaTagContent("osdk-foundryUrl");
+const clientId = getMetaTagContent("osdk-clientId");
+const redirectUrl = getMetaTagContent("osdk-redirectUrl");
+const ontologyRid = getMetaTagContent("osdk-ontologyRid");
 const scopes = [
-    "api:ontologies-read",
-    "api:ontologies-write",
+  "api:ontologies-read",
+  "api:ontologies-write",
 ];
 
-function checkEnv(
-  value: string | undefined,
-  name: string,
-): asserts value is string {
-  if (value == null) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-}
+export const auth: PublicOauthClient = createPublicOauthClient(
+  clientId,
+  foundryUrl,
+  redirectUrl,
+  { scopes },
+);
 
 /**
  * Initialize the client to interact with the Ontology SDK
  */
-const auth = createPublicOauthClient(
-  clientId,
-  url,
-  redirectUrl,
-  true,
-  undefined,
-  window.location.toString(),
-  scopes,
-);
-
-const client = createClient(
-  url,
-  $ontologyRid,
+const client: Client = createClient(
+  foundryUrl,
+  ontologyRid,
   auth,
 );
 
-export { auth, client };
+export default client;

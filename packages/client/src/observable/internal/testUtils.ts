@@ -17,6 +17,7 @@
 import type {
   ActionDefinition,
   ActionEditResponse,
+  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -28,17 +29,24 @@ import type {
 import { Chalk } from "chalk";
 import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
+import type { Observer } from "rxjs";
 import invariant from "tiny-invariant";
-import type { Mock } from "vitest";
+import type { Mock, MockedObject } from "vitest";
 import { afterEach, beforeEach, expect, vi, vitest } from "vitest";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import type { Client } from "../../Client.js";
 import { additionalContext } from "../../Client.js";
-import type { LogFn, Logger } from "../../Logger.js";
+import type { LogFn, Logger } from "../../logger/Logger.js";
+import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
-import type { Status, Unsubscribable } from "../ObservableClient.js";
+import type { OrderBy, Status, Unsubscribable } from "../ObservableClient.js";
 import type { Entry } from "./Layer.js";
+import type { ListQueryOptions } from "./ListQuery.js";
+import type { ObjectCacheKey } from "./ObjectQuery.js";
+import { storeOsdkInstances } from "./ObjectQuery.js";
+import type { OptimisticId } from "./OptimisticId.js";
+import type { Store } from "./Store.js";
 
 const chalk = new Chalk(); // new Chalk({ level: 3 });
 
@@ -56,7 +64,10 @@ export interface MockClientHelper {
   >;
 
   mockObjectFactory2Once: () => DeferredPromise<
-    Osdk.Instance<ObjectOrInterfaceDefinition, never, any, {}>[]
+    Array<
+      | Osdk.Instance<ObjectOrInterfaceDefinition, never, any, {}>
+      | ObjectHolder
+    >
   >;
 
   mockFetchPageOnce: <
@@ -107,7 +118,7 @@ export function createTestLogger(
           ...args2: any[],
         ]
       ) => {
-        const hasData = typeof args[0] !== "string";
+        const hasData = args.length > 0 && typeof args[0] !== "string";
         const obj: Record<string, unknown> = hasData ? args[0] as any : {};
         const more: any[] = hasData ? args.slice(1) : args.slice(0);
 
@@ -115,7 +126,7 @@ export function createTestLogger(
         console.log(
           `${colors[name][1](name)}${
             options?.msgPrefix ? " " + colors[name][0](options.msgPrefix) : ""
-          }${obj.methodName ? ` .${chalk.magenta(obj.methodName)}()` : ""}`,
+          }${obj?.methodName ? ` .${chalk.magenta(obj.methodName)}()` : ""}`,
           ...more,
         );
         if (bindings && Object.keys(bindings).length > 0) {
@@ -171,7 +182,7 @@ export function createClientMockHelper(): MockClientHelper {
         return deadObjectSet;
       },
       fetchPage: (...fetchArgs: any[]) => {
-        localLogger.trace("etchPage", where!, fetchArgs);
+        localLogger.trace("fetchPage", where!, fetchArgs);
         throw new Error("NO");
       },
       fetchOne: (...fetchArgs: any[]) => {
@@ -201,13 +212,17 @@ export function createClientMockHelper(): MockClientHelper {
     requestContext: {},
     logger,
   };
+  client.fetchMetadata = vitest.fn();
 
   function mockObjectFactory2Once() {
     const d = pDefer<
-      Osdk.Instance<ObjectOrInterfaceDefinition, never, any, {}>[]
+      (
+        | Osdk.Instance<ObjectOrInterfaceDefinition, never, any, {}>
+        | ObjectHolder
+      )[]
     >();
     vi.mocked(client[additionalContext].objectFactory2).mockReturnValueOnce(
-      d.promise,
+      d.promise as Promise<ObjectHolder[]>,
     );
     return d;
   }
@@ -252,7 +267,11 @@ export function createClientMockHelper(): MockClientHelper {
             "expected id to match",
           );
           const r = await d.promise;
-          return { ...r, $primaryKey: a };
+          invariant(
+            r.$primaryKey === a,
+            `expected id to match. Got ${a} but object to return was ${r.$primaryKey}`,
+          );
+          return r;
         },
       } as Pick<ObjectSet<ObjectTypeDefinition>, "fetchOne">,
     );
@@ -272,6 +291,8 @@ export function createClientMockHelper(): MockClientHelper {
             type: "edits",
             addedLinks: x.addedLinks ?? [],
             addedObjects: x.addedObjects ?? [],
+            deletedObjects: x.deletedObjects ?? [],
+            deletedLinks: x.deletedLinks ?? [],
             deletedLinksCount: x.deletedLinksCount ?? 0,
             deletedObjectsCount: x.deletedObjectsCount ?? 0,
             editedObjectTypes: x.editedObjectTypes ?? [],
@@ -316,40 +337,45 @@ export function createDefer() {
 }
 
 export function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
-  subFn: Mock<(e: ListPayload | undefined) => void>,
-  resolvedList: Osdk.Instance<T>[],
+  subFn: MockedObject<Observer<ListPayload | undefined>>,
+  resolvedList: ObjectHolder[] | Osdk.Instance<T>[],
   payloadOptions: Omit<Partial<ListPayload>, "resolvedList"> = {},
 ): void {
   if (vitest.isFakeTimers()) {
     vitest.runOnlyPendingTimers();
   }
-  expect(subFn).toHaveBeenCalledExactlyOnceWith(
+  expect(subFn.next).toHaveBeenCalledExactlyOnceWith(
     listPayloadContaining({
       ...payloadOptions,
-      resolvedList,
+      resolvedList: resolvedList as unknown as Array<
+        ObjectHolder
+      >,
     }),
   );
-  subFn.mockClear();
+  subFn.next.mockClear();
 }
 
 export function expectSingleObjectCallAndClear<T extends ObjectTypeDefinition>(
-  subFn: Mock<(e: ObjectPayload | undefined) => void>,
+  subFn: MockedObject<Observer<ObjectPayload | undefined>>,
   object: Osdk.Instance<T>,
   status?: Status,
 ): void {
-  expect(subFn).toHaveBeenCalledExactlyOnceWith(
+  expect(subFn.next).toHaveBeenCalledExactlyOnceWith(
     expect.objectContaining({
       object,
       status: status ?? expect.any(String),
     }),
   );
-  subFn.mockClear();
+  subFn.next.mockClear();
 }
 
 export async function waitForCall(
-  subFn: Mock<(e: any) => void>,
+  subFn: Mock<(e: any) => void> | MockedObject<Observer<any>>,
   times: number = 1,
 ): Promise<void> {
+  if ("next" in subFn && "error" in subFn && "complete" in subFn) {
+    subFn = subFn.next;
+  }
   try {
     await vi.waitFor(() => {
       expect(subFn).toHaveBeenCalledTimes(times);
@@ -363,12 +389,21 @@ export async function waitForCall(
   expect(subFn).toHaveBeenCalledTimes(times);
 }
 
+export function expectNoMoreCalls(
+  observer: MockedObject<
+    Observer<any>
+  >,
+): void {
+  expect(observer.next).not.toHaveBeenCalled();
+  expect(observer.error).not.toHaveBeenCalled();
+}
+
 function createSubscriptionHelper() {
 }
 
 export function mockSingleSubCallback():
-  & Mock<
-    (e: ObjectPayload | undefined) => void
+  & MockedObject<
+    Observer<ObjectPayload | undefined>
   >
   & {
     // expectLoaded: (value: unknown) => Promise<void>;
@@ -379,7 +414,7 @@ export function mockSingleSubCallback():
     }) => Promise<void>;
   }
 {
-  const ret = vitest.fn((e: ObjectPayload | undefined) => {});
+  const ret = mockObserver<ObjectPayload | undefined>();
 
   //   async function expectLoaded(value: unknown) {
   //     await waitForCall(ret);
@@ -411,29 +446,37 @@ export function mockSingleSubCallback():
     expectLoadingAndLoaded: async (
       q: { loading?: unknown; loaded: unknown },
     ) => {
-      await waitForCall(ret, 2);
+      await waitForCall(ret.next, 2);
 
       // as long as we get the loaded call we are happy
-      expect(ret).toHaveBeenNthCalledWith(
+      expect(ret.next).toHaveBeenNthCalledWith(
         1,
         q.loading,
       );
-      expect(ret).toHaveBeenNthCalledWith(
+      expect(ret.next).toHaveBeenNthCalledWith(
         2,
         q.loaded,
       );
-      expect(ret).toHaveBeenCalledTimes(2);
-      ret.mockClear();
+      expect(ret.next).toHaveBeenCalledTimes(2);
+      ret.next.mockClear();
     },
   });
 }
 
-export function mockListSubCallback(): Mock<
-  (x: ListPayload | undefined) => void
+export function mockObserver<T>(): MockedObject<Observer<T>> {
+  return {
+    next: vitest.fn(),
+
+    // error: vitest.fn((x) => console.error(x)),
+    error: vitest.fn(),
+    complete: vitest.fn(),
+  };
+}
+
+export function mockListSubCallback(): MockedObject<
+  Observer<ListPayload | undefined>
 > {
-  return vitest.fn(
-    (x: ListPayload | undefined) => {},
-  );
+  return mockObserver<ListPayload | undefined>();
 }
 
 export function cacheEntryContaining(x: Partial<Entry<any>>): Entry<any> {
@@ -502,4 +545,80 @@ interface CustomAsymmetricMatchers<R = any> {
 declare module "vitest" {
   interface Assertion<T = any> extends CustomMatchers<T> {}
   interface AsymmetricMatchersContaining extends CustomAsymmetricMatchers {}
+}
+
+/**
+ * Updates the internal state of a list and will create a new internal query if needed.
+ *
+ * Helper method only for tests right now. May be removed later.
+ *
+ * @param apiName
+ * @param where
+ * @param orderBy
+ * @param objects
+ * @param param4
+ * @param opts
+ */
+export function updateList<
+  T extends ObjectTypeDefinition | InterfaceDefinition,
+>(
+  store: Store,
+  {
+    type,
+    where,
+    orderBy,
+  }: {
+    type: Pick<T, "apiName" | "type">;
+    where: WhereClause<T>;
+    orderBy: OrderBy<T>;
+  },
+  objects: ObjectHolder[] | Osdk.Instance<T>[],
+  { optimisticId }: { optimisticId?: OptimisticId } = {},
+  opts: ListQueryOptions = { dedupeInterval: 0 },
+): void {
+  if (process.env.NODE_ENV !== "production") {
+    store.logger?.child({ methodName: "updateList" }).info(
+      "",
+      { optimisticId },
+    );
+  }
+
+  const query = store.getListQuery(
+    type,
+    where ?? {},
+    orderBy ?? {},
+    opts,
+  );
+
+  store.batch({ optimisticId }, (batch) => {
+    const objectCacheKeys = storeOsdkInstances(store, objects, batch);
+    query._updateList(objectCacheKeys, false, "loaded", batch);
+  });
+}
+
+export function getObject(
+  store: Store,
+  type: string,
+  pk: number,
+): ObjectHolder | undefined {
+  return store.getValue(store.getCacheKey<ObjectCacheKey>("object", type, pk))
+    ?.value;
+}
+
+export function updateObject<T extends ObjectOrInterfaceDefinition>(
+  store: Store,
+  value: Osdk.Instance<T>,
+  { optimisticId }: { optimisticId?: OptimisticId } = {},
+): Osdk.Instance<T> {
+  const query = store.getObjectQuery(value.$apiName, value.$primaryKey);
+
+  store.batch({ optimisticId }, (batch) => {
+    return query.writeToStore(
+      value as unknown as ObjectHolder<typeof value>,
+      "loaded",
+      batch,
+    );
+  });
+
+  return value;
 }

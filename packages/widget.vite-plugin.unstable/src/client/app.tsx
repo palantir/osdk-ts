@@ -92,14 +92,14 @@ export const App: React.FC = () => {
       )}
       {/* To load the entrypoint info, we have to actually load it in the browser to get vite to follow the module graph. Since we know these files will fail, we just load them in iframes set to display: none to trigger the load hook in vite */}
       {entrypointPaths.map((entrypointPath) => (
-        <iframe key={entrypointPath} src={`/${entrypointPath}`} />
+        <iframe key={entrypointPath} src={entrypointPath} />
       ))}
     </div>
   );
 };
 
 function loadEntrypoints(): Promise<string[]> {
-  return fetch("./entrypoints").then((res) => res.json());
+  return fetch("../entrypoints").then((res) => res.json());
 }
 
 function finish(): Promise<
@@ -113,5 +113,5 @@ function finish(): Promise<
     status: "pending";
   }
 > {
-  return fetch("./finish").then((res) => res.json());
+  return fetch("../finish").then((res) => res.json());
 }

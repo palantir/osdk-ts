@@ -15,26 +15,51 @@
  */
 
 import type { ReleasePlan } from "@changesets/types";
+import chalk from "chalk";
+import * as path from "node:path";
 import { inc } from "semver";
 import { FailedWithUserMessage } from "./FailedWithUserMessage.js";
 
 export function mutateReleasePlan(
+  cwd: string,
   releasePlan: ReleasePlan,
-  releaseType: "patch" | "main",
+  releaseType: "release branch" | "main",
 ): void {
+  let bulkErrorMsg = "";
   for (const changeSet of releasePlan.changesets) {
+    let errorStarted = false;
     for (const release of changeSet.releases) {
       if (releaseType === "main" && release.type === "patch") {
         release.type = "minor";
       } else if (
-        releaseType === "patch" && (release.type !== "patch")
+        releaseType === "release branch" && (release.type !== "patch")
         && (release.type !== "none")
       ) {
-        throw new FailedWithUserMessage(
-          `Releasing requires converting a ${release.type} to a patch, but that may not be safe.`,
-        );
+        if (!errorStarted) {
+          bulkErrorMsg = `\n${
+            chalk.cyan(
+              path.relative(
+                cwd,
+                `${path.join(cwd, ".changeset", changeSet.id)}.md`,
+              ),
+            )
+          }:\n`;
+          errorStarted = true;
+        }
+        bulkErrorMsg += `  - ${
+          chalk.red(`${release.name}: ${release.type}`)
+        }\n`;
       }
     }
+  }
+
+  if (bulkErrorMsg.length > 0) {
+    throw new FailedWithUserMessage(
+      `Unable to create a release for the stable branch.\n\n`
+        + `Our branching model requires that we only release patch changes on a stable branch `
+        + `to avoid version number collisions with main and the other release branches. `
+        + `Problems:\n${bulkErrorMsg}`,
+    );
   }
 
   for (const q of releasePlan.releases) {

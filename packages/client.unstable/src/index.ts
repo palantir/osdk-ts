@@ -24,12 +24,12 @@ export type {
 export type {
   ObjectSetFilter,
 } from "./generated/object-set-service/api/ObjectSetFilter.js";
-export type { LinkTypeMetadata } from "./generated/ontology-metadata/api/LinkTypeMetadata.js";
-export type { LoadAllOntologiesResponse } from "./generated/ontology-metadata/api/LoadAllOntologiesResponse.js";
-export type { ObjectType } from "./generated/ontology-metadata/api/ObjectType.js";
-export type { StructFieldType } from "./generated/ontology-metadata/api/StructFieldType.js";
-export type { Type } from "./generated/ontology-metadata/api/Type.js";
-export type { SharedPropertyTypeGothamMapping } from "./generated/ontology-metadata/api/typemapping/SharedPropertyTypeGothamMapping.js";
+export type { LinkTypeMetadata } from "./generated/ontology-metadata/api/__components.js";
+export type { LoadAllOntologiesResponse } from "./generated/ontology-metadata/api/__components.js";
+export type { ObjectType } from "./generated/ontology-metadata/api/__components.js";
+export type { StructFieldType } from "./generated/ontology-metadata/api/__components.js";
+export type { Type } from "./generated/ontology-metadata/api/__components.js";
+export type { SharedPropertyTypeGothamMapping } from "./generated/ontology-metadata/api/typemapping/__components.js";
 
 export { createTemporaryObjectSet } from "./generated/object-set-service/api/ObjectSetService.js";
 export { getBulkLinksPage } from "./generated/object-set-service/api/ObjectSetServiceV2/getBulkLinksPage.js";
@@ -48,13 +48,13 @@ export type { ValueTypeDisplayMetadata } from "./generated/type-registry/api/Val
 export type { ValueTypeStatus } from "./generated/type-registry/api/ValueTypeStatus.js";
 export type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVersion.js";
 
-export type { InterfaceTypeRid } from "./generated/ontology-metadata/api/InterfaceTypeRid.js";
 export type {
   InterfaceTypeStatus,
   InterfaceTypeStatus_active,
   InterfaceTypeStatus_deprecated,
   InterfaceTypeStatus_experimental,
-} from "./generated/ontology-metadata/api/InterfaceTypeStatus.js";
+} from "./generated/ontology-metadata/api/__components.js";
+export type { InterfaceTypeRid } from "./generated/ontology-metadata/api/__components.js";
 
 export type {
   ApiNameValueTypeReference,
@@ -73,11 +73,25 @@ export type {
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
 } from "./blockDataIr.js";
-export type { OntologyIrObjectTypeBlockDataV2 } from "./generated/ontology-metadata/api/blockdata/OntologyIrObjectTypeBlockDataV2.js";
-export type { OntologyIrObjectType } from "./generated/ontology-metadata/api/OntologyIrObjectType.js";
-export type { OntologyIrObjectTypeDatasource } from "./generated/ontology-metadata/api/OntologyIrObjectTypeDatasource.js";
-export type { OntologyIrObjectTypeDatasourceDefinition } from "./generated/ontology-metadata/api/OntologyIrObjectTypeDatasourceDefinition.js";
-export type { OntologyIrObjectTypeInterfaceImplementation } from "./generated/ontology-metadata/api/OntologyIrObjectTypeInterfaceImplementation.js";
-export type { OntologyIrPropertyType } from "./generated/ontology-metadata/api/OntologyIrPropertyType.js";
-export type { PropertyTypeMappingInfo } from "./generated/ontology-metadata/api/PropertyTypeMappingInfo.js";
-export type { Visibility } from "./generated/ontology-metadata/api/Visibility.js";
+
+export type { Visibility } from "./generated/ontology-metadata/api/__components.ts";
+export type { ColumnName } from "./generated/ontology-metadata/api/__components.ts";
+export type { InterfaceSharedPropertyType } from "./generated/ontology-metadata/api/__components.ts";
+export type { LinkTypeDisplayMetadata } from "./generated/ontology-metadata/api/__components.ts";
+export type { ObjectTypeFieldApiName } from "./generated/ontology-metadata/api/__components.ts";
+export type { OntologyIrInterfaceSharedPropertyType } from "./generated/ontology-metadata/api/__components.ts";
+export type { OntologyIrLinkDefinition } from "./generated/ontology-metadata/api/__components.ts";
+export type { OntologyIrLinkType } from "./generated/ontology-metadata/api/__components.ts";
+export type { OntologyIrLinkTypeStatus } from "./generated/ontology-metadata/api/__components.ts";
+export type { OntologyIrManyToManyLinkDefinition } from "./generated/ontology-metadata/api/__components.ts";
+export type { OntologyIrManyToManyLinkTypeDatasource } from "./generated/ontology-metadata/api/__components.ts";
+export type { OntologyIrObjectType } from "./generated/ontology-metadata/api/__components.ts";
+export type { OntologyIrObjectTypeDatasource } from "./generated/ontology-metadata/api/__components.ts";
+export type { OntologyIrObjectTypeDatasourceDefinition } from "./generated/ontology-metadata/api/__components.ts";
+export type { OntologyIrObjectTypeInterfaceImplementation } from "./generated/ontology-metadata/api/__components.ts";
+export type { OntologyIrOneToManyLinkDefinition } from "./generated/ontology-metadata/api/__components.ts";
+export type { OntologyIrPropertyType } from "./generated/ontology-metadata/api/__components.ts";
+export type { PropertyTypeMappingInfo } from "./generated/ontology-metadata/api/__components.ts";
+export type { RetentionPolicy } from "./generated/ontology-metadata/api/__components.ts";
+export type { OntologyIrLinkTypeBlockDataV2 } from "./generated/ontology-metadata/api/blockdata/__components.ts";
+export type { OntologyIrObjectTypeBlockDataV2 } from "./generated/ontology-metadata/api/blockdata/__components.ts";

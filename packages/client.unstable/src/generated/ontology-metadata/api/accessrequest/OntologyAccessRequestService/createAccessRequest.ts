@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { CreateAccessRequestRequest } from "../CreateAccessRequestRequest.js";
-import type { CreateAccessRequestResponse } from "../CreateAccessRequestResponse.js";
+import type {
+  CreateAccessRequestRequest as _api_accessrequest_CreateAccessRequestRequest,
+  CreateAccessRequestResponse as _api_accessrequest_CreateAccessRequestResponse,
+} from "../__components.js";
 
 /**
  * Throws:
@@ -34,7 +36,7 @@ import type { CreateAccessRequestResponse } from "../CreateAccessRequestResponse
  */
 export async function createAccessRequest(
   ctx: ConjureContext,
-  request: CreateAccessRequestRequest,
-): Promise<CreateAccessRequestResponse> {
+  request: _api_accessrequest_CreateAccessRequestRequest,
+): Promise<_api_accessrequest_CreateAccessRequestResponse> {
   return conjureFetch(ctx, `/ontology/access-request/request`, "POST", request);
 }

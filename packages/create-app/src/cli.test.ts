@@ -88,6 +88,8 @@ async function runTest(
     "https://app.example.palantirfoundry.com",
     "--application",
     "ri.third-party-applications.main.application.fake",
+    "--ontology",
+    "ri.ontology.main.ontology.fake",
     "--clientId",
     "123",
     "--osdkPackage",
@@ -98,6 +100,8 @@ async function runTest(
     corsProxy.toString(),
     "--sdkVersion",
     sdkVersion,
+    "--scopes",
+    "api:read-data",
   ]);
 
   expect(fs.readdirSync(path.join(process.cwd(), project)).length)

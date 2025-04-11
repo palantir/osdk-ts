@@ -1,5 +1,116 @@
 # @osdk/maker
 
+## 0.10.0-beta.15
+
+### Minor Changes
+
+- 24c4b12: Add geotime and mediaset datasources to OAC
+- cc380b5: Use the latest Platform APIs
+
+### Patch Changes
+
+- Updated dependencies [ed69666]
+  - @osdk/api@2.2.0-beta.15
+
+## 0.10.0-beta.14
+
+### Minor Changes
+
+- a08bdfb: Support stream datasources in OAC
+
+### Patch Changes
+
+- Updated dependencies [6abf078]
+  - @osdk/api@2.2.0-beta.14
+
+## 0.10.0-beta.13
+
+### Patch Changes
+
+- Updated dependencies [488b51c]
+- Updated dependencies [71462e9]
+  - @osdk/api@2.2.0-beta.13
+
+## 0.10.0-beta.12
+
+### Patch Changes
+
+- @osdk/api@2.2.0-beta.12
+
+## 0.10.0-beta.11
+
+### Minor Changes
+
+- 10da391: Links as Code
+- 340ba44: Fix test
+
+### Patch Changes
+
+- Updated dependencies [7170fd1]
+  - @osdk/api@2.2.0-beta.11
+
+## 0.10.0-beta.10
+
+### Minor Changes
+
+- 0a41cec: Support optional interface properties
+- 5e8e839: Bump OMS API to include links in ontology IR
+
+### Patch Changes
+
+- Updated dependencies [23ea0e4]
+- Updated dependencies [46cede4]
+  - @osdk/api@2.2.0-beta.10
+
+## 0.10.0-beta.9
+
+### Minor Changes
+
+- 12843cb: Add ability to load all underlying properties of an interface.
+
+### Patch Changes
+
+- Updated dependencies [12843cb]
+- Updated dependencies [f82767c]
+  - @osdk/api@2.2.0-beta.9
+
+## 0.10.0-beta.8
+
+### Minor Changes
+
+- 63b2e63: Update Platform SDK Dependencies
+
+### Patch Changes
+
+- Updated dependencies [0e874b1]
+- Updated dependencies [63b2e63]
+- Updated dependencies [26c2d95]
+- Updated dependencies [63b2e63]
+- Updated dependencies [63b2e63]
+  - @osdk/api@2.2.0-beta.8
+
+## 0.10.0-beta.7
+
+### Minor Changes
+
+- 21e33a5: Upgrade consola to 3.4.0
+- 7416ce4: Update Platform SDK Dependencies
+
+### Patch Changes
+
+- Updated dependencies [7416ce4]
+- Updated dependencies [7416ce4]
+- Updated dependencies [805df40]
+  - @osdk/api@2.2.0-beta.7
+
+## 0.10.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [cddfbf9]
+- Updated dependencies [a6e5f89]
+  - @osdk/api@2.2.0-beta.6
+
 ## 0.10.0-beta.5
 
 ### Patch Changes

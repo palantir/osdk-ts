@@ -1,5 +1,43 @@
 # @osdk/create-app
 
+## 2.2.0-beta.15
+
+### Minor Changes
+
+- 1444362: Read environment variables from index.html meta tags
+
+## 2.2.0-beta.14
+
+## 2.2.0-beta.13
+
+## 2.2.0-beta.12
+
+## 2.2.0-beta.11
+
+## 2.2.0-beta.10
+
+### Minor Changes
+
+- e75819c: Add comments to env files in templates
+- fa02507: Use options overload when initializing client in create-app templates and standardize formatting
+- 1d0e72a: Ensure tutorials are not shown by cli
+
+## 2.2.0-beta.9
+
+## 2.2.0-beta.8
+
+### Minor Changes
+
+- 770ec64: Drop Next.js templates
+
+## 2.2.0-beta.7
+
+### Minor Changes
+
+- 21e33a5: Upgrade consola to 3.4.0
+
+## 2.2.0-beta.6
+
 ## 2.2.0-beta.5
 
 ## 2.2.0-beta.4

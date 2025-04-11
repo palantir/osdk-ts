@@ -16,77 +16,80 @@
 
 export * as OntologyEntityMetadataService from "./OntologyEntityMetadataService.js";
 
-export type { ActionLogNotRequired } from "./ActionLogNotRequired.js";
-export type { ActionLogRequiredForObjectType } from "./ActionLogRequiredForObjectType.js";
-export type { ActionLogRequirednessMetadata } from "./ActionLogRequirednessMetadata.js";
-export type { ActionLogRequirednessSetting } from "./ActionLogRequirednessSetting.js";
-export type { ActiveStorageBackend } from "./ActiveStorageBackend.js";
-export type { Alias } from "./Alias.js";
-export type { AutomaticTransformProfile } from "./AutomaticTransformProfile.js";
-export type { CombinedModificationType } from "./CombinedModificationType.js";
-export type { CombinedOntologyHistoryPageItem } from "./CombinedOntologyHistoryPageItem.js";
-export type { CombinedOntologyHistoryPageItemSummary } from "./CombinedOntologyHistoryPageItemSummary.js";
-export type { CombinedOntologyHistoryPageToken } from "./CombinedOntologyHistoryPageToken.js";
-export type { DayOfWeek } from "./DayOfWeek.js";
-export type { DayTime } from "./DayTime.js";
-export type { EditsHistory } from "./EditsHistory.js";
-export type { EditsHistoryConfig } from "./EditsHistoryConfig.js";
-export type { EditsResolutionStrategies } from "./EditsResolutionStrategies.js";
-export type { EditsResolutionStrategy } from "./EditsResolutionStrategy.js";
-export type { EntityConfig } from "./EntityConfig.js";
-export type { EntityMigrationAborted } from "./EntityMigrationAborted.js";
-export type { EntityMigrationCategory } from "./EntityMigrationCategory.js";
-export type { EntityMigrationFailed } from "./EntityMigrationFailed.js";
-export type { EntityMigrationFinished } from "./EntityMigrationFinished.js";
-export type { EntityMigrationInProgress } from "./EntityMigrationInProgress.js";
-export type { EntityMigrationNotAttempted } from "./EntityMigrationNotAttempted.js";
-export type { EntityMigrationStage } from "./EntityMigrationStage.js";
-export type { EntityMigrationStatus } from "./EntityMigrationStatus.js";
-export type { EntityMigrationStatusModification } from "./EntityMigrationStatusModification.js";
-export type { ExtraLargeTransformProfile } from "./ExtraLargeTransformProfile.js";
-export type { GetCombinedOntologyHistoryRequest } from "./GetCombinedOntologyHistoryRequest.js";
-export type { GetCombinedOntologyHistoryResponse } from "./GetCombinedOntologyHistoryResponse.js";
-export type { LinkTypeEntityMetadata } from "./LinkTypeEntityMetadata.js";
-export type { LinkTypeEntityMetadataLoadRequest } from "./LinkTypeEntityMetadataLoadRequest.js";
-export type { LinkTypeEntityMetadataLoadResponse } from "./LinkTypeEntityMetadataLoadResponse.js";
-export type { LinkTypeSystemEntityMetadata } from "./LinkTypeSystemEntityMetadata.js";
-export type { LinkTypeSystemEntityMetadataModification } from "./LinkTypeSystemEntityMetadataModification.js";
-export type { LoadEntityMetadataRequest } from "./LoadEntityMetadataRequest.js";
-export type { LoadEntityMetadataResponse } from "./LoadEntityMetadataResponse.js";
-export type { MigrationConfiguration } from "./MigrationConfiguration.js";
-export type { NoEditsHistory } from "./NoEditsHistory.js";
-export type { ObjectDbConfig } from "./ObjectDbConfig.js";
-export type { ObjectDbType } from "./ObjectDbType.js";
-export type { ObjectDbTypeConfig } from "./ObjectDbTypeConfig.js";
-export type { ObjectDbTypeSyncConfig } from "./ObjectDbTypeSyncConfig.js";
-export type { ObjectStorageV1 } from "./ObjectStorageV1.js";
-export type { ObjectStorageV2 } from "./ObjectStorageV2.js";
-export type { ObjectTypeAlias } from "./ObjectTypeAlias.js";
-export type { ObjectTypeEntityMetadata } from "./ObjectTypeEntityMetadata.js";
-export type { ObjectTypeEntityMetadataLoadRequest } from "./ObjectTypeEntityMetadataLoadRequest.js";
-export type { ObjectTypeEntityMetadataLoadResponse } from "./ObjectTypeEntityMetadataLoadResponse.js";
-export type { ObjectTypeIndexingSettings } from "./ObjectTypeIndexingSettings.js";
-export type { ObjectTypeSystemEntityMetadata } from "./ObjectTypeSystemEntityMetadata.js";
-export type { ObjectTypeSystemEntityMetadataModification } from "./ObjectTypeSystemEntityMetadataModification.js";
-export type { OntologyIrEditsHistory } from "./OntologyIrEditsHistory.js";
-export type { OntologyIrEditsHistoryConfig } from "./OntologyIrEditsHistoryConfig.js";
-export type { OntologyIrEditsResolutionStrategies } from "./OntologyIrEditsResolutionStrategies.js";
-export type { OntologyIrEditsResolutionStrategy } from "./OntologyIrEditsResolutionStrategy.js";
-export type { OntologyIrLinkTypeEntityMetadata } from "./OntologyIrLinkTypeEntityMetadata.js";
-export type { OntologyIrTimestampPropertyStrategy } from "./OntologyIrTimestampPropertyStrategy.js";
-export type { ReadOnlyV1V2 } from "./ReadOnlyV1V2.js";
-export type { SharedPropertyTypeAlias } from "./SharedPropertyTypeAlias.js";
-export type { SoakPeriodInformation } from "./SoakPeriodInformation.js";
-export type { StorageBackend } from "./StorageBackend.js";
-export type { SyncConfig } from "./SyncConfig.js";
-export type { SyncMetadata } from "./SyncMetadata.js";
-export type { SyncMetadataModification } from "./SyncMetadataModification.js";
-export type { SystemEntityMetadataModificationRequest } from "./SystemEntityMetadataModificationRequest.js";
-export type { SystemEntityMetadataModificationResponse } from "./SystemEntityMetadataModificationResponse.js";
-export type { TimestampPropertyStrategy } from "./TimestampPropertyStrategy.js";
-export type { TimeWindow } from "./TimeWindow.js";
-export type { TransformProfileConfig } from "./TransformProfileConfig.js";
-export type { TransitionWindow } from "./TransitionWindow.js";
-export type { TransitionWindows } from "./TransitionWindows.js";
+export type {
+  ActionLogNotRequired,
+  ActionLogRequiredForObjectType,
+  ActionLogRequirednessMetadata,
+  ActionLogRequirednessSetting,
+  ActiveStorageBackend,
+  Alias,
+  AutomaticTransformProfile,
+  CombinedModificationType,
+  CombinedOntologyHistoryPageItem,
+  CombinedOntologyHistoryPageItemSummary,
+  CombinedOntologyHistoryPageToken,
+  DayOfWeek,
+  DayTime,
+  EditsHistory,
+  EditsHistoryConfig,
+  EditsHistoryImportConfiguration,
+  EditsResolutionStrategies,
+  EditsResolutionStrategy,
+  EntityConfig,
+  EntityMigrationAborted,
+  EntityMigrationCategory,
+  EntityMigrationFailed,
+  EntityMigrationFinished,
+  EntityMigrationInProgress,
+  EntityMigrationNotAttempted,
+  EntityMigrationStage,
+  EntityMigrationStatus,
+  EntityMigrationStatusModification,
+  ExtraLargeTransformProfile,
+  GetCombinedOntologyHistoryRequest,
+  GetCombinedOntologyHistoryResponse,
+  LinkTypeEntityMetadata,
+  LinkTypeEntityMetadataLoadRequest,
+  LinkTypeEntityMetadataLoadResponse,
+  LinkTypeSystemEntityMetadata,
+  LinkTypeSystemEntityMetadataModification,
+  LoadEntityMetadataRequest,
+  LoadEntityMetadataResponse,
+  MigrationConfiguration,
+  NoEditsHistory,
+  ObjectDbConfig,
+  ObjectDbType,
+  ObjectDbTypeConfig,
+  ObjectDbTypeSyncConfig,
+  ObjectStorageV1,
+  ObjectStorageV2,
+  ObjectTypeAlias,
+  ObjectTypeEntityMetadata,
+  ObjectTypeEntityMetadataLoadRequest,
+  ObjectTypeEntityMetadataLoadResponse,
+  ObjectTypeIndexingSettings,
+  ObjectTypeSystemEntityMetadata,
+  ObjectTypeSystemEntityMetadataModification,
+  OntologyIrEditsHistory,
+  OntologyIrEditsHistoryConfig,
+  OntologyIrEditsResolutionStrategies,
+  OntologyIrEditsResolutionStrategy,
+  OntologyIrLinkTypeEntityMetadata,
+  OntologyIrTimestampPropertyStrategy,
+  ReadOnlyV1V2,
+  SharedPropertyTypeAlias,
+  SoakPeriodInformation,
+  StorageBackend,
+  SyncConfig,
+  SyncMetadata,
+  SyncMetadataModification,
+  SystemEntityMetadataModificationRequest,
+  SystemEntityMetadataModificationResponse,
+  TimestampPropertyStrategy,
+  TimeWindow,
+  TransformProfileConfig,
+  TransitionWindow,
+  TransitionWindows,
+} from "./__components.js";
 
 export * as provenance from "./provenance/index.js";

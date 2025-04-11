@@ -15,17 +15,20 @@
  */
 
 import type {
+  InterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
   WhereClause,
 } from "@osdk/client";
-import type { ListPayload } from "@osdk/client/unstable-do-not-use";
+import type { ObserveObjectsArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
-export interface UseOsdkObjectsOptions<T extends ObjectTypeDefinition> {
+export interface UseOsdkObjectsOptions<
+  T extends ObjectTypeDefinition | InterfaceDefinition,
+> {
   /**
    * Standard OSDK Where
    */
@@ -88,13 +91,15 @@ export interface UseOsdkObjectsOptions<T extends ObjectTypeDefinition> {
   streamUpdates?: boolean;
 }
 
-export interface UseOsdkListResult<T extends ObjectTypeDefinition> {
+export interface UseOsdkListResult<
+  T extends ObjectTypeDefinition | InterfaceDefinition,
+> {
   fetchMore: (() => Promise<unknown>) | undefined;
   data: Osdk.Instance<T>[] | undefined;
   isLoading: boolean;
 
   // FIXME populate error!
-  // error: undefined;
+  error: Error | undefined;
 
   /**
    * Refers to whether the ordered list of objects (only considering the $primaryKey)
@@ -112,16 +117,18 @@ declare const process: {
   };
 };
 
-export function useOsdkObjects<T extends ObjectTypeDefinition>(
-  objectType: T,
+export function useOsdkObjects<
+  Q extends ObjectTypeDefinition | InterfaceDefinition,
+>(
+  type: Q,
   {
     pageSize,
     orderBy,
     dedupeIntervalMs,
     where = {},
     streamUpdates,
-  }: UseOsdkObjectsOptions<T> = {},
-): UseOsdkListResult<T> {
+  }: UseOsdkObjectsOptions<Q> = {},
+): UseOsdkListResult<Q> {
   const { observableClient } = React.useContext(OsdkContext2);
 
   /*  We want the canonical where clause so that the use of `React.useMemo`
@@ -132,28 +139,31 @@ export function useOsdkObjects<T extends ObjectTypeDefinition>(
 
   const { subscribe, getSnapShot } = React.useMemo(
     () =>
-      makeExternalStore<ListPayload>(
-        (x) =>
+      makeExternalStore<ObserveObjectsArgs<Q>>(
+        (observer) =>
           observableClient.observeList({
-            objectType,
+            type,
             where: canonWhere,
             dedupeInterval: dedupeIntervalMs ?? 2_000,
             pageSize,
             orderBy,
             streamUpdates,
-          }, x),
+          }, observer),
         process.env.NODE_ENV !== "production"
-          ? `list ${objectType.apiName} ${JSON.stringify(canonWhere)}`
+          ? `list ${type.apiName} ${JSON.stringify(canonWhere)}`
           : void 0,
       ),
-    [observableClient, objectType, canonWhere, dedupeIntervalMs],
+    [observableClient, type, canonWhere, dedupeIntervalMs],
   );
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
   // TODO: we need to expose the error in the result
   return {
     fetchMore: listPayload?.fetchMore,
-    data: listPayload?.resolvedList as Osdk.Instance<T>[],
+    error: listPayload && "error" in listPayload
+      ? listPayload?.error
+      : undefined,
+    data: listPayload?.resolvedList as Osdk.Instance<Q>[],
     isLoading: listPayload?.status === "loading",
     isOptimistic: listPayload?.isOptimistic ?? false,
   };

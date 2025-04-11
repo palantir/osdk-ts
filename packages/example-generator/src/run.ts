@@ -85,6 +85,7 @@ async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
       foundryUrl: "https://fake.palantirfoundry.com",
       applicationUrl: "https://example.com",
       application: "ri.third-party-applications.main.application.fake",
+      ontology: "ri.ontology.main.ontology.fake",
       clientId: "123",
       osdkPackage,
       osdkRegistryUrl:
@@ -113,6 +114,7 @@ async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
       sdkVersion,
       foundryUrl: "https://fake.palantirfoundry.com",
       widgetSet: "ri.widgetregistry..widget-set.fake",
+      repository: undefined,
       osdkPackage,
       osdkRegistryUrl:
         "https://fake.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",

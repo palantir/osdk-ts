@@ -123,7 +123,8 @@ const command: CommandModule<
 
         const autoVersionType = args.autoVersion ?? autoVersion;
         if (
-          autoVersionType !== "git-describe"
+          autoVersionType != null
+          && autoVersionType !== "git-describe"
           && autoVersionType !== "package-json"
         ) {
           throw new YargsCheckError(

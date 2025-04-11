@@ -1,5 +1,23 @@
 # @osdk/create-widget
 
+## 2.1.0-beta.6
+
+### Minor Changes
+
+- ffc1e6e: Add --repository option to create-widget
+
+## 2.1.0-beta.5
+
+## 2.1.0-beta.4
+
+## 2.1.0-beta.3
+
+### Minor Changes
+
+- 21e33a5: Upgrade consola to 3.4.0
+
+## 2.1.0-beta.2
+
 ## 2.0.0-beta.16
 
 ### Minor Changes

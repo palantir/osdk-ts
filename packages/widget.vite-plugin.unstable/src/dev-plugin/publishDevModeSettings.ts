@@ -25,6 +25,7 @@ import { enableDevMode, setWidgetSetSettings } from "./network.js";
 export async function publishDevModeSettings(
   server: ViteDevServer,
   widgetIdToOverrides: Record<string, string[]>,
+  baseHref: string,
   res: ServerResponse,
 ): Promise<void> {
   try {
@@ -48,6 +49,7 @@ export async function publishDevModeSettings(
       foundryUrl,
       widgetSetRid,
       widgetIdToOverrides,
+      baseHref,
     );
     if (settingsResponse.status !== 200) {
       server.config.logger.warn(

@@ -14,25 +14,6 @@
  * limitations under the License.
  */
 
-import type { InterfaceType } from "@osdk/foundry.ontologies";
-import { fooSpt } from "./spts.js";
-
-export const FooInterface: InterfaceType = {
-  apiName: "FooInterface",
-  description: "Interface for Foo",
-  displayName: "Foo Interface",
-  rid: "ri.interface.main.interface.1",
-  extendsInterfaces: [],
-  properties: {
-    fooSpt,
-  },
-  links: {},
-  implementedByObjectTypes: ["Employee", "Person"],
-  allProperties: { fooSpt },
-  allExtendsInterfaces: [],
-  allLinks: {},
-};
-
 export const employeeInterfaceScoped = {
   fullName: "Santa Claus",
   $rid:
@@ -48,16 +29,31 @@ export const employeeInterfaceScoped2 = {
   $primaryKey: 50052,
   $apiName: "Employee",
 };
-export const BarInterface: InterfaceType = {
-  apiName: "BarInterface",
-  description: "Interface for Bar",
-  displayName: "Bar Interface",
-  rid: "ri.interface.main.interface.2",
-  extendsInterfaces: [],
-  properties: {},
-  allProperties: {},
-  links: {},
-  implementedByObjectTypes: [],
-  allExtendsInterfaces: [],
-  allLinks: {},
+
+export const employeeFullObjectScoped = {
+  fullName: "Santa Claus",
+  $rid:
+    "ri.phonograph2-objects.main.object.99a6fccb-f333-46d6-a07e-7725c5f18b61",
+  $primaryKey: 50050,
+  $apiName: "Employee",
+  office: "North Pole",
+  class: "Red",
+  startDate: "2019-01-01",
+  employeeStatus: "TimeSeries<String>",
+  employeeSensor: "TimeSeries<>",
+  employeeLocation: "GeotimeSeriesReferencePlaceholder",
+};
+
+export const employeeFullObjectScoped2 = {
+  fullName: "The Grinch",
+  $rid:
+    "ri.phonograph2-objects.main.object.99a6fccb-f333-46d6-a07e-7725c5f18b61",
+  $primaryKey: 50052,
+  $apiName: "Employee",
+  office: "Where the Grinch Lives",
+  class: "Blue",
+  startDate: "2012-02-12",
+  employeeStatus: "TimeSeries<String>",
+  employeeSensor: "TimeSeries<>",
+  employeeLocation: "GeotimeSeriesReferencePlaceholder",
 };

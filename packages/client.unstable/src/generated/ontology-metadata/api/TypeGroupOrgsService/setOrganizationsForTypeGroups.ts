@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { TypeGroupSetOrganizationsRequest } from "../TypeGroupSetOrganizationsRequest.js";
+import type { TypeGroupSetOrganizationsRequest as _api_TypeGroupSetOrganizationsRequest } from "../__components.js";
 
 /**
  * Endpoint to batch set organization markings on TypeGroups. The requesting user
@@ -25,7 +25,7 @@ import type { TypeGroupSetOrganizationsRequest } from "../TypeGroupSetOrganizati
  */
 export async function setOrganizationsForTypeGroups(
   ctx: ConjureContext,
-  request: TypeGroupSetOrganizationsRequest,
+  request: _api_TypeGroupSetOrganizationsRequest,
 ): Promise<void> {
   return conjureFetch(ctx, `/type-groups/orgs`, "PUT", request);
 }

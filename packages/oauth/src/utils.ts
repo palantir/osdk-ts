@@ -17,12 +17,15 @@
 import invariant from "tiny-invariant";
 import type { PublicOauthClientOptions } from "./createPublicOauthClient.js";
 
-interface ProcessedPublicOauthClientOptions
-  extends
-    Omit<Required<PublicOauthClientOptions>, "loginPage" | "refreshTokenMarker">
+interface ProcessedPublicOauthClientOptions extends
+  Omit<
+    Required<PublicOauthClientOptions>,
+    "loginPage" | "refreshTokenMarker" | "scopes"
+  >
 {
   loginPage?: string;
   refreshTokenMarker?: string;
+  joinedScopes: string;
 }
 
 export function processOptionsAndAssignDefaults(
@@ -62,7 +65,8 @@ export function processOptionsAndAssignDefaults(
     useHistory: options.useHistory ?? true,
     loginPage: options.loginPage,
     postLoginPage: options.postLoginPage || window.location.toString(),
-    scopes: options.scopes ?? ["api:read-data", "api:write-data"],
+    joinedScopes: [...options.scopes ?? ["api:read-data", "api:write-data"]]
+      .sort().join(" "),
     fetchFn: options.fetchFn ?? globalThis.fetch,
     ctxPath: options.ctxPath ?? "multipass",
     refreshTokenMarker: options.refreshTokenMarker,

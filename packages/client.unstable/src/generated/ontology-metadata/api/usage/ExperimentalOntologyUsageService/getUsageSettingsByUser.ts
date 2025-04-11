@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetUsageSettingsByUserRequest } from "../GetUsageSettingsByUserRequest.js";
-import type { GetUsageSettingsByUserResponse } from "../GetUsageSettingsByUserResponse.js";
+import type {
+  GetUsageSettingsByUserRequest as _api_usage_GetUsageSettingsByUserRequest,
+  GetUsageSettingsByUserResponse as _api_usage_GetUsageSettingsByUserResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to load Ontology Usage settings for the user sending the request based on the user's membership
@@ -24,7 +26,7 @@ import type { GetUsageSettingsByUserResponse } from "../GetUsageSettingsByUserRe
  */
 export async function getUsageSettingsByUser(
   ctx: ConjureContext,
-  request: GetUsageSettingsByUserRequest,
-): Promise<GetUsageSettingsByUserResponse> {
+  request: _api_usage_GetUsageSettingsByUserRequest,
+): Promise<_api_usage_GetUsageSettingsByUserResponse> {
   return conjureFetch(ctx, `/usage/getSettings/user`, "POST", request);
 }

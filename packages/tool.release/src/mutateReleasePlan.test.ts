@@ -43,7 +43,7 @@ describe(mutateReleasePlan, () => {
         ],
       };
 
-      mutateReleasePlan(plan, "main");
+      mutateReleasePlan("/faux/cwd", plan, "main");
 
       expect(plan).toEqual({
         changesets: [
@@ -74,7 +74,7 @@ describe(mutateReleasePlan, () => {
       const plan: ReleasePlan = {
         changesets: [
           {
-            id: "5",
+            id: "breezy-adults-call",
             releases: [
               { name: "foo", type: "minor" },
             ],
@@ -84,7 +84,7 @@ describe(mutateReleasePlan, () => {
         preState: undefined,
         releases: [
           {
-            changesets: ["5"],
+            changesets: ["breezy-adults-call"],
             oldVersion: "2.1.3",
             newVersion: "2.1.4",
             name: "foo",
@@ -94,10 +94,16 @@ describe(mutateReleasePlan, () => {
       };
 
       expect(() => {
-        mutateReleasePlan(plan, "patch");
-      }).toThrowErrorMatchingInlineSnapshot(
-        `[FailedWithUserMessage: Releasing requires converting a minor to a patch, but that may not be safe.]`,
-      );
+        mutateReleasePlan("/faux/cwd", plan, "release branch");
+      }).toThrowErrorMatchingInlineSnapshot(`
+        [FailedWithUserMessage: Unable to create a release for the stable branch.
+
+        Our branching model requires that we only release patch changes on a stable branch to avoid version number collisions with main and the other release branches. Problems:
+
+        .changeset/breezy-adults-call.md:
+          - foo: minor
+        ]
+      `);
     });
   });
 });

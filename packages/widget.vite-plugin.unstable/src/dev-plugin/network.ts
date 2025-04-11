@@ -26,6 +26,7 @@ export function setWidgetSetSettings(
   foundryUrl: string,
   widgetSetRid: string,
   widgetIdToOverrides: Record<string, string[]>,
+  baseHref: string,
 ): Promise<Response> {
   const widgetSettings: WidgetSettings = Object.fromEntries(
     Object.entries(widgetIdToOverrides).map(
@@ -44,7 +45,7 @@ export function setWidgetSetSettings(
   return fetch(
     `${foundryUrl}/widget-registry/api/dev-mode/settings/${widgetSetRid}/ids`,
     {
-      body: JSON.stringify({ widgetSettings }),
+      body: JSON.stringify({ baseHref, widgetSettings }),
       method: "PUT",
       headers: {
         authorization: `Bearer ${process.env.FOUNDRY_TOKEN}`,

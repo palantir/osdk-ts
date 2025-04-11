@@ -16,7 +16,7 @@
 
 import type { ObjectTypeV2 } from "@osdk/foundry.ontologies";
 
-export const employeeObjectType: ObjectTypeV2 = {
+export const employeeObjectType = {
   apiName: "Employee",
   displayName: "Employee",
   pluralDisplayName: "Employees",
@@ -88,9 +88,59 @@ export const employeeObjectType: ObjectTypeV2 = {
   },
   rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
   status: "ACTIVE",
-};
+} as const satisfies ObjectTypeV2;
 
-export const officeObjectType: ObjectTypeV2 = {
+export const officeObjectType: {
+  readonly apiName: "Office";
+  readonly displayName: "Office";
+  readonly pluralDisplayName: "Office";
+  readonly icon: {
+    readonly type: "blueprint";
+    readonly color: "blue";
+    readonly name: "office";
+  };
+  readonly description: "A office in our Company";
+  readonly primaryKey: "officeId";
+  readonly titleProperty: "officeId";
+  readonly properties: {
+    readonly officeId: {
+      readonly dataType: {
+        readonly type: "string";
+      };
+      readonly rid: "rid";
+    };
+    readonly entrance: {
+      readonly dataType: {
+        readonly type: "geopoint";
+      };
+      readonly rid: "rid";
+    };
+    readonly occupiedArea: {
+      readonly description: "The occupied area of the Office";
+      readonly dataType: {
+        readonly type: "geoshape";
+      };
+      readonly rid: "rid";
+    };
+    readonly name: {
+      readonly description: "The Name of the Office";
+      readonly dataType: {
+        readonly type: "string";
+      };
+      readonly rid: "rid";
+    };
+    readonly capacity: {
+      readonly description: "The capacity of the Office";
+      readonly dataType: {
+        readonly type: "integer";
+      };
+      readonly rid: "rid";
+    };
+  };
+  readonly rid:
+    "ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45";
+  readonly status: "ACTIVE";
+} = {
   apiName: "Office",
   displayName: "Office",
   pluralDisplayName: "Office",
@@ -125,10 +175,17 @@ export const officeObjectType: ObjectTypeV2 = {
       },
       rid: "rid",
     },
+    capacity: {
+      description: "The capacity of the Office",
+      dataType: {
+        type: "integer",
+      },
+      rid: "rid",
+    },
   },
   rid: "ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45",
   status: "ACTIVE",
-};
+} as const satisfies ObjectTypeV2;
 
 export const equipmentObjectType: ObjectTypeV2 = {
   apiName: "equipment",

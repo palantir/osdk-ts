@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import { additionalContext } from "../../Client.js";
+import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
-import { type Changes } from "./ChangedObjects.js";
+import { type Changes } from "./Changes.js";
 import { createOptimisticId, type OptimisticId } from "./OptimisticId.js";
 import type { Store } from "./Store.js";
 
@@ -28,14 +28,14 @@ export class OptimisticJob {
 
   constructor(store: Store, optimisticId: OptimisticId) {
     const updatedObjects: Array<
-      Osdk.Instance<ObjectTypeDefinition>
+      ObjectHolder
     > = [];
 
     // due to potentially needing to fetch the object metadata,
     // the creation of objects needs to be async. In practice, the
     // metadata is cached.
     const addedObjectPromises: Array<
-      Promise<Osdk.Instance<ObjectTypeDefinition>>
+      Promise<ObjectHolder>
     > = [];
 
     // TODO, this code needs to be refactored. its weird right now
@@ -70,8 +70,8 @@ export class OptimisticJob {
     };
 
     this.context = {
-      updateObject(value: Osdk.Instance<ObjectTypeDefinition>) {
-        updatedObjects.push(value);
+      updateObject(value) {
+        updatedObjects.push(value as unknown as ObjectHolder<typeof value>);
         return this;
       },
       createObject(type, pk, properties) {
@@ -84,6 +84,7 @@ export class OptimisticJob {
             ...properties,
           }],
           undefined,
+          {},
         ).then(objs => {
           return objs[0];
         });

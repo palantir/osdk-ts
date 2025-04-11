@@ -25,7 +25,10 @@ import type {
   InterfaceTypeStatus_active,
   InterfaceTypeStatus_deprecated,
   InterfaceTypeStatus_experimental,
+  LinkTypeDisplayMetadata,
+  LinkTypeMetadata,
   OntologyIrInterfaceType,
+  OntologyIrLinkTypeStatus,
   OntologyIrObjectType,
   OntologyIrPropertyType,
   SharedPropertyTypeGothamMapping,
@@ -51,6 +54,7 @@ export interface Ontology extends
   sharedPropertyTypes: Record<string, SharedPropertyType>;
   objectTypes: Record<string, ObjectType>;
   valueTypes: Record<string, ValueTypeDefinitionVersion[]>;
+  linkTypes: Record<string, LinkTypeDefinition>;
   importedTypes: ImportedTypes;
 }
 export type {
@@ -61,6 +65,9 @@ export type {
 };
 
 export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
+export type OptionalFields<T, K extends keyof T> =
+  & Pick<Partial<T>, K>
+  & Omit<T, K>;
 
 export interface ObjectTypeInner extends
   Omit<
@@ -88,14 +95,18 @@ export type InterfaceImplementation = {
   propertyMapping: { interfaceProperty: string; mapsTo: string }[];
 };
 
-export type ObjectType = RequiredFields<
-  Partial<ObjectTypeInner>,
-  | "apiName"
-  | "primaryKeys"
-  | "displayName"
-  | "pluralDisplayName"
-  | "titlePropertyApiName"
->;
+export type ObjectType =
+  & RequiredFields<
+    Partial<ObjectTypeInner>,
+    | "apiName"
+    | "primaryKeys"
+    | "displayName"
+    | "pluralDisplayName"
+    | "titlePropertyApiName"
+  >
+  & {
+    datasource?: ObjectTypeDatasourceDefinition;
+  };
 
 export interface ObjectPropertyTypeInner extends
   Omit<
@@ -123,6 +134,10 @@ export type ObjectPropertyType = RequiredFields<
   "apiName" | "type" | "displayName"
 >;
 
+export interface InterfacePropertyType {
+  sharedPropertyType: SharedPropertyType;
+  required: boolean;
+}
 export interface InterfaceType extends
   Omit<
     OntologyIrInterfaceType,
@@ -132,9 +147,11 @@ export interface InterfaceType extends
     | "allProperties"
     | "allLinks"
     | "allExtendsInterfaces"
+    | "propertiesV2"
+    | "allPropertiesV2"
   >
 {
-  properties: Record<string, SharedPropertyType>;
+  propertiesV2: Record<string, InterfacePropertyType>;
   status: InterfaceTypeStatus;
 }
 
@@ -156,37 +173,48 @@ export interface SharedPropertyType extends PropertyType {
 }
 
 export type PropertyTypeType =
-  | PropertyTypeTypesWithoutStruct
-  | {
-    type: "struct";
-    structDefinition: {
-      [api_name: string]:
-        | StructPropertyType
-        | Exclude<PropertyTypeTypesWithoutStruct, MarkingPropertyType>;
-    };
-  };
+  | PropertyTypeTypePrimitive
+  | PropertyTypeTypeExotic;
 
-export type PropertyTypeTypesWithoutStruct =
+export type PropertyTypeTypePrimitive =
   | "boolean"
   | "byte"
   | "date"
   | "decimal"
   | "double"
   | "float"
-  | "geopoint"
-  | "geoshape"
   | "integer"
   | "long"
-  | MarkingPropertyType
   | "short"
   | "string"
-  | "timestamp"
-  | "mediaReference";
+  | "timestamp";
 
-type MarkingPropertyType = {
+export type PropertyTypeTypeExotic =
+  | "geopoint"
+  | "geoshape"
+  | "mediaReference"
+  | "geotimeSeries"
+  | PropertyTypeTypeMarking
+  | PropertyTypeTypeStruct;
+
+type PropertyTypeTypeMarking = {
   type: "marking";
   markingType: "MANDATORY" | "CBAC";
 };
+
+type PropertyTypeTypeStruct = {
+  type: "struct";
+  structDefinition: {
+    [api_name: string]:
+      | StructPropertyType
+      | Exclude<PropertyTypeTypesWithoutStruct, PropertyTypeTypeMarking>;
+  };
+};
+
+export type PropertyTypeTypesWithoutStruct = Exclude<
+  PropertyTypeType,
+  PropertyTypeTypeStruct
+>;
 
 type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 
@@ -202,6 +230,50 @@ export interface StructPropertyType extends
   fieldType: PropertyTypeTypesWithoutStruct;
 }
 
+export type ObjectTypePropertyApiName = string;
+export type LinkTypeId = string;
+
+export type LinkTypeDefinition =
+  | OneToManyLinkTypeDefinition
+  | ManyToManyLinkTypeDefinition;
+
+export interface OneToManyLinkTypeDefinition {
+  id: LinkTypeId;
+  one: OneToManyObjectLinkReference;
+  toMany: OneToManyObjectLinkReference;
+  manyForeignKeyProperty: ObjectTypePropertyApiName;
+  cardinality: "OneToMany" | "OneToOne" | undefined;
+  editsEnabled?: boolean;
+  status?: OntologyIrLinkTypeStatus;
+  redacted?: boolean;
+}
+
+export interface OneToManyObjectLinkReference {
+  object: ObjectType;
+  metadata: LinkTypeMetadata;
+}
+
+export interface ManyToManyLinkTypeDefinition {
+  id: LinkTypeId;
+  many: ManyToManyObjectLinkReference;
+  toMany: ManyToManyObjectLinkReference;
+  editsEnabled?: boolean;
+  status?: OntologyIrLinkTypeStatus;
+  redacted?: boolean;
+}
+
+export interface ManyToManyObjectLinkReference {
+  object: ObjectType;
+  metadata: LinkTypeMetadata;
+}
+
+export type LinkSideMetadata = OptionalFields<
+  RequiredFields<
+    Omit<LinkTypeMetadata, "displayMetadata"> & LinkTypeDisplayMetadata,
+    "apiName"
+  >,
+  "visibility" | "typeClasses"
+>;
 export interface ValueTypeType_array {
   constraints: {
     constraint: Extract<DataConstraint, { type: "array" }>["array"];
@@ -388,3 +460,17 @@ export type ValueTypeDefinitionVersion = {
   constraints: ValueTypeDataConstraint[];
   exampleValues: ExampleValue[];
 };
+
+export interface ObjectTypeDatasourceDefinition_dataset {
+  type: "dataset";
+}
+
+export interface ObjectTypeDatasourceDefinition_stream {
+  type: "stream";
+  // Retention period must be in ISO 8601 duration format
+  retentionPeriod?: string;
+}
+
+export type ObjectTypeDatasourceDefinition =
+  | ObjectTypeDatasourceDefinition_stream
+  | ObjectTypeDatasourceDefinition_dataset;

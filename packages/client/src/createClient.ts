@@ -16,6 +16,7 @@
 
 import type {
   ActionDefinition,
+  FetchPageArgs,
   FilteredPropertyKeys,
   InterfaceDefinition,
   NullabilityAdherence,
@@ -35,6 +36,7 @@ import type {
 import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
 } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
@@ -46,8 +48,10 @@ import { applyAction } from "./actions/applyAction.js";
 import { additionalContext, type Client } from "./Client.js";
 import { createMinimalClient } from "./createMinimalClient.js";
 import { fetchMetadataInternal } from "./fetchMetadata.js";
-import type { Logger } from "./Logger.js";
+import { type Logger } from "./logger/Logger.js";
+import { MinimalLogger } from "./logger/MinimalLogger.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
+import { fetchPage } from "./object/fetchPage.js";
 import { fetchSingle } from "./object/fetchSingle.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
@@ -122,7 +126,7 @@ export function createClientInternal(
     { ontologyRid },
     baseUrl,
     tokenProvider,
-    options,
+    { ...options, logger: options?.logger ?? new MinimalLogger() },
     fetchFn,
     objectSetFactory,
   );
@@ -183,7 +187,7 @@ export function createClientInternal(
                 objectType,
                 options,
                 createWithRid(
-                  rid,
+                  [rid],
                 ),
               ) as Osdk<Q>;
             },
@@ -210,6 +214,27 @@ export function createClientInternal(
                   mediaItemPath: fileName,
                   preview: true,
                 },
+              );
+            },
+          } as any;
+
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid.name:
+          return {
+            fetchPageByRid: async <
+              Q extends ObjectOrInterfaceDefinition,
+              const L extends PropertyKeys<Q>,
+              const R extends boolean,
+              const S extends false | "throw" = NullabilityAdherence.Default,
+            >(
+              objectOrInterfaceType: Q,
+              rids: string[],
+              options: FetchPageArgs<Q, L, R, any, S> = {},
+            ) => {
+              return await fetchPage(
+                clientCtx,
+                objectOrInterfaceType,
+                options,
+                createWithRid(rids),
               );
             },
           } as any;
@@ -263,11 +288,11 @@ export const createClient: (
 );
 
 function createWithRid(
-  rid: string,
+  rids: string[],
 ) {
   const withRid: WireObjectSet = {
     type: "static",
-    "objects": [rid],
+    "objects": rids,
   };
 
   return withRid;

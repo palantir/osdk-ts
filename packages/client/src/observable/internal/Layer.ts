@@ -68,6 +68,10 @@ export class Layer {
     return this.#cache.entries();
   }
 
+  keys(): IterableIterator<CacheKey<string, any, any>> {
+    return this.#cache.keys();
+  }
+
   public get<K extends CacheKey<string, unknown, any>>(
     cacheKey: K,
   ): Entry<K> | undefined {

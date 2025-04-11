@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { BatchGetPackagesRequest } from "../BatchGetPackagesRequest.js";
-import type { BatchGetPackagesResponse } from "../BatchGetPackagesResponse.js";
+import type {
+  BatchGetPackagesRequest as _api_packages_BatchGetPackagesRequest,
+  BatchGetPackagesResponse as _api_packages_BatchGetPackagesResponse,
+} from "../__components.js";
 
 /**
  * Gets packages by Rid. Resources which have no package associated will not have
@@ -25,8 +27,8 @@ import type { BatchGetPackagesResponse } from "../BatchGetPackagesResponse.js";
  */
 export async function batchGetPackages(
   ctx: ConjureContext,
-  request: BatchGetPackagesRequest,
-): Promise<BatchGetPackagesResponse> {
+  request: _api_packages_BatchGetPackagesRequest,
+): Promise<_api_packages_BatchGetPackagesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/packages/batchGetPackages`,

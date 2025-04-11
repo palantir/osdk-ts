@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,19 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetBulkLinkTypePermissionsRequest } from "../GetBulkLinkTypePermissionsRequest.js";
-import type { GetBulkLinkTypePermissionsResponse } from "../GetBulkLinkTypePermissionsResponse.js";
+import type {
+  GetBulkLinkTypePermissionsRequest
+    as _api_permissions_GetBulkLinkTypePermissionsRequest,
+  GetBulkLinkTypePermissionsResponse
+    as _api_permissions_GetBulkLinkTypePermissionsResponse,
+} from "../__components.js";
 
 /**
  * Returns which permissions the user has on the LinkTypes provided. Limited to at most 500 entries per call.
  */
 export async function getBulkLinkTypePermissions(
   ctx: ConjureContext,
-  request: GetBulkLinkTypePermissionsRequest,
-): Promise<GetBulkLinkTypePermissionsResponse> {
+  request: _api_permissions_GetBulkLinkTypePermissionsRequest,
+): Promise<_api_permissions_GetBulkLinkTypePermissionsResponse> {
   return conjureFetch(ctx, `/permissions/linkTypes`, "PUT", request);
 }

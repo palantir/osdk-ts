@@ -18,9 +18,13 @@ import type { QueryDataTypeDefinition } from "@osdk/api";
 import { type DataValue } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { isAttachmentUpload } from "../object/AttachmentUpload.js";
+import {
+  isAttachmentFile,
+  isAttachmentUpload,
+} from "../object/AttachmentUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import { isOsdkBaseObject } from "./isOsdkBaseObject.js";
+import { extractPrimaryKeyFromObjectSpecifier } from "./objectSpecifierUtils.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
 /**
@@ -39,6 +43,18 @@ export async function toDataValueQueries(
   }
 
   if (Array.isArray(value) && desiredType.multiplicity) {
+    const values = Array.from(value);
+    if (
+      values.some((dataValue) =>
+        isAttachmentUpload(dataValue) || isAttachmentFile(dataValue)
+      )
+    ) {
+      const converted = [];
+      for (const value of values) {
+        converted.push(await toDataValueQueries(value, client, desiredType));
+      }
+      return converted;
+    }
     const promiseArray = Array.from(
       value,
       async (innerValue) =>
@@ -61,7 +77,7 @@ export async function toDataValueQueries(
       }
 
       if (
-        typeof value === "object" && value instanceof Blob && "name" in value
+        isAttachmentFile(value)
       ) {
         const attachment = await OntologiesV2.Attachments.upload(
           client,
@@ -115,6 +131,30 @@ export async function toDataValueQueries(
       break;
     }
 
+    case "map": {
+      if (typeof value === "object") {
+        const entrySet: Array<{ key: any; value: any }> = [];
+        for (const [key, mapValue] of Object.entries(value)) {
+          entrySet.push({
+            key: desiredType.keyType.type === "object"
+              ? extractPrimaryKeyFromObjectSpecifier(key as any)
+              : await toDataValueQueries(
+                key,
+                client,
+                desiredType.keyType,
+              ),
+            value: await toDataValueQueries(
+              mapValue,
+              client,
+              desiredType.valueType,
+            ),
+          });
+        }
+        return entrySet;
+      }
+      break;
+    }
+
     case "struct": {
       if (typeof value === "object") {
         const structMap: { [key: string]: unknown } = {};
@@ -128,6 +168,7 @@ export async function toDataValueQueries(
         return structMap;
       }
     }
+
     case "boolean":
     case "date":
     case "double":

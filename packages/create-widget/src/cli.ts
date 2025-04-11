@@ -32,11 +32,11 @@ import type { SdkVersion, Template } from "./templates.js";
 interface CliArgs {
   project?: string;
   overwrite?: boolean;
-  beta?: boolean;
   template?: string;
   sdkVersion?: string;
   foundryUrl?: string;
   widgetSet?: string;
+  repository?: string;
   osdkPackage?: string;
   osdkRegistryUrl?: string;
 }
@@ -60,11 +60,6 @@ export async function cli(args: string[] = process.argv): Promise<void> {
             type: "boolean",
             describe: "Overwrite project directory if already exists",
           })
-          .option("beta", {
-            type: "boolean",
-            describe:
-              "Use templates compatible with the Beta version of the SDK",
-          })
           .option("template", {
             type: "string",
             describe: "Template name to use",
@@ -80,6 +75,10 @@ export async function cli(args: string[] = process.argv): Promise<void> {
           .option("widgetSet", {
             type: "string",
             describe: "Widget set resource identifier (rid)",
+          })
+          .option("repository", {
+            type: "string",
+            describe: "Repository resource identifier (rid)",
           })
           .option("osdkPackage", {
             type: "string",
@@ -100,6 +99,7 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     template,
   });
   const foundryUrl: string = await promptFoundryUrl(parsed);
+  const repository: string | undefined = parsed.repository;
   const osdkPackage: string | undefined = template.requiresOsdk
     ? await promptOsdkPackage(parsed)
     : undefined;
@@ -115,6 +115,7 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     sdkVersion,
     foundryUrl,
     widgetSet,
+    repository,
     osdkPackage,
     osdkRegistryUrl,
   });

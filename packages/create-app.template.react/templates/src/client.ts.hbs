@@ -1,20 +1,28 @@
 import { FoundryClient, PublicClientAuth } from "{{osdkPackage}}";
 
-const url = import.meta.env.VITE_FOUNDRY_API_URL;
-const clientId = import.meta.env.VITE_FOUNDRY_CLIENT_ID;
-const redirectUrl = import.meta.env.VITE_FOUNDRY_REDIRECT_URL;
-checkEnv(url, "VITE_FOUNDRY_API_URL");
-checkEnv(clientId, "VITE_FOUNDRY_CLIENT_ID");
-checkEnv(redirectUrl, "VITE_FOUNDRY_REDIRECT_URL");
-
-function checkEnv(
-  value: string | undefined,
-  name: string,
-): asserts value is string {
-  if (value == null) {
-    throw new Error(`Missing environment variable: ${name}`);
+function getMetaTagContent(tagName: string): string {
+  const elements = document.querySelectorAll(`meta[name="${tagName}"]`);
+  const element = elements.item(elements.length - 1);
+  const value = element ? element.getAttribute("content") : null;
+  if (value == null || value === "") {
+    throw new Error(`Meta tag ${tagName} not found or empty`);
   }
+  if (value.match(/%.+%/)) {
+    throw new Error(`Meta tag ${tagName} contains placeholder value. Please add ${value.replace(/%/g, "")} to your .env files`);
+  }
+  return value;
 }
+
+const url = getMetaTagContent("osdk-foundryUrl");
+const clientId = getMetaTagContent("osdk-clientId");
+const redirectUrl = getMetaTagContent("osdk-redirectUrl");
+{{#if scopes}}
+const scopes = [
+  {{#each scopes}}
+  "{{this}}",
+  {{/each}}
+];
+{{/if}}
 
 /**
  * Initialize the client to interact with the Ontology SDK
@@ -26,11 +34,7 @@ const client = new FoundryClient({
     url,
     redirectUrl,
     {{#if scopes}}
-    scopes: [
-      {{#each scopes}}
-        "{{this}}",
-      {{/each}}
-    ],
+    scopes,
     {{/if}}
   }),
 });

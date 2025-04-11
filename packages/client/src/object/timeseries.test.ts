@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-1.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,42 +15,71 @@
  */
 
 import type { TimeSeriesPoint } from "@osdk/api";
-import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
-import { apiServer } from "@osdk/shared.test";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { Employee } from "@osdk/client.test.ontology";
+import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
+import { formatISO, sub } from "date-fns";
+import { beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
 describe("Timeseries", () => {
   let client: Client;
+  const statusTimeseriesData = [
+    { time: formatISO(sub(Date.now(), { "years": 2 })), value: -365 },
+    { time: formatISO(sub(Date.now(), { "months": 2 })), value: -30 },
+    { time: formatISO(sub(Date.now(), { "weeks": 2 })), value: -7 },
+    { time: formatISO(sub(Date.now(), { "days": 2 })), value: -1 },
+  ];
 
-  beforeAll(async () => {
-    apiServer.listen();
-    client = createClient(
-      "https://stack.palantir.com",
-      $ontologyRid,
-      async () => "myAccessToken",
+  const sensorTimeseriesData = [
+    { time: formatISO(sub(Date.now(), { "years": 3 })), value: -365 },
+    { time: formatISO(sub(Date.now(), { "months": 3 })), value: -30 },
+    { time: formatISO(sub(Date.now(), { "weeks": 3 })), value: -7 },
+    { time: formatISO(sub(Date.now(), { "days": 3 })), value: -1 },
+  ];
+
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new LegacyFauxFoundry(),
+      createClient,
     );
-  });
+    ({ client } = testSetup);
 
-  afterAll(() => {
-    apiServer.close();
+    testSetup.fauxFoundry.getDefaultDataStore()
+      .registerTimeSeriesData(
+        "Employee",
+        "50030",
+        "employeeStatus",
+        statusTimeseriesData,
+      );
+
+    testSetup.fauxFoundry.getDefaultDataStore()
+      .registerTimeSeriesData(
+        "Employee",
+        "50030",
+        "employeeSensor",
+        sensorTimeseriesData,
+      );
+
+    return () => {
+      testSetup.apiServer.close();
+    };
   });
 
   it("get first points works", async () => {
     const employee = await client(Employee).fetchOne(50030);
     expect(employee.$primaryKey).toEqual(50030);
     const point = await employee.employeeStatus?.getFirstPoint();
-    expect(point?.time).toEqual("2012-02-12");
-    expect(point?.value).toEqual(10);
+    expect(point?.time).toEqual(statusTimeseriesData[0].time);
+    expect(point?.value).toEqual(statusTimeseriesData[0].value);
   });
 
   it("get last points works", async () => {
     const employee = await client(Employee).fetchOne(50030);
     expect(employee.$primaryKey).toEqual(50030);
     const point = await employee.employeeStatus?.getLastPoint();
-    expect(point?.time).toEqual("2014-04-14");
-    expect(point?.value).toEqual(30);
+    expect(point?.time).toEqual(statusTimeseriesData[3].time);
+    expect(point?.value).toEqual(statusTimeseriesData[3].value);
   });
 
   it("get last and first points works with sensor object", async () => {
@@ -60,25 +89,26 @@ describe("Timeseries", () => {
     const firstPoint = await employee.employeeSensor?.getFirstPoint();
     const lastPoint = await employee.employeeSensor?.getLastPoint();
 
-    expect(firstPoint?.time).toEqual("2015-05-15");
-    expect(firstPoint?.value).toEqual(40);
+    expect(firstPoint?.time).toEqual(sensorTimeseriesData[0].time);
+    expect(firstPoint?.value).toEqual(sensorTimeseriesData[0].value);
 
-    expect(lastPoint?.time).toEqual("2014-04-14");
-    expect(lastPoint?.value).toEqual(30);
+    expect(lastPoint?.time).toEqual(sensorTimeseriesData[3].time);
+    expect(lastPoint?.value).toEqual(sensorTimeseriesData[3].value);
   });
 
   it("getAll points with before works", async () => {
     const employee = await client(Employee).fetchOne(50030);
     expect(employee.$primaryKey).toEqual(50030);
+
     const points = await employee.employeeStatus?.getAllPoints({
       $before: 1,
       $unit: "month",
     });
     expect(points).toBeDefined();
-    expect(points!).toEqual([{ time: "2012-02-12", value: 10 }, {
-      time: "2013-03-13",
-      value: 20,
-    }, { time: "2014-04-14", value: 30 }]);
+    expect(points!).toEqual([
+      expect.objectContaining({ value: -7 }),
+      expect.objectContaining({ value: -1 }),
+    ]);
   });
 
   it("getAll points with after works", async () => {
@@ -89,24 +119,26 @@ describe("Timeseries", () => {
       $unit: "month",
     });
     expect(points).toBeDefined();
-    expect(points!).toEqual([{ time: "2012-02-12", value: 10 }, {
-      time: "2014-04-14",
-      value: 30,
-    }]);
+    expect(points!).toEqual([
+      expect.objectContaining({ value: -365 }),
+      expect.objectContaining({ value: -30 }),
+      expect.objectContaining({ value: -7 }),
+      expect.objectContaining({ value: -1 }),
+    ]);
   });
 
   it("getAll points with absolute range works", async () => {
     const employee = await client(Employee).fetchOne(50030);
     expect(employee.$primaryKey).toEqual(50030);
     const points = await employee.employeeStatus?.getAllPoints({
-      $startTime: "2013-03-12T12:00:00.000Z",
-      $endTime: "2014-04-14T12:00:00.000Z",
+      $startTime: formatISO(sub(Date.now(), { "months": 3 })),
+      $endTime: formatISO(sub(Date.now(), { "days": 10 })),
     });
     expect(points).toBeDefined();
-    expect(points!).toEqual([{
-      time: "2013-03-13",
-      value: 20,
-    }, { time: "2014-04-14", value: 30 }]);
+    expect(points!).toEqual([
+      expect.objectContaining({ value: -30 }),
+      expect.objectContaining({ value: -7 }),
+    ]);
   });
 
   it("getAll points with no query works", async () => {
@@ -115,14 +147,10 @@ describe("Timeseries", () => {
     const points = await employee.employeeStatus?.getAllPoints();
     expect(points).toBeDefined();
     expect(points!).toEqual([
-      { time: "2012-02-12", value: 10 },
-      { time: "2012-02-12", value: 10 },
-      {
-        time: "2013-03-13",
-        value: 20,
-      },
-      { time: "2014-04-14", value: 30 },
-      { time: "2014-04-14", value: 30 },
+      expect.objectContaining({ value: -365 }),
+      expect.objectContaining({ value: -30 }),
+      expect.objectContaining({ value: -7 }),
+      expect.objectContaining({ value: -1 }),
     ]);
   });
 
@@ -130,8 +158,8 @@ describe("Timeseries", () => {
     const employee = await client(Employee).fetchOne(50030);
     expect(employee.$primaryKey).toEqual(50030);
     const pointsIter = employee.employeeStatus?.asyncIterPoints({
-      $startTime: "2013-03-12T12:00:00.000Z",
-      $endTime: "2014-04-14T12:00:00.000Z",
+      $startTime: formatISO(sub(Date.now(), { "months": 3 })),
+      $endTime: formatISO(sub(Date.now(), { "days": 10 })),
     });
 
     const points: TimeSeriesPoint<string>[] = [];
@@ -139,10 +167,10 @@ describe("Timeseries", () => {
       points.push(point);
     }
     expect(points).toBeDefined();
-    expect(points!).toEqual([{
-      time: "2013-03-13",
-      value: 20,
-    }, { time: "2014-04-14", value: 30 }]);
+    expect(points!).toEqual([
+      expect.objectContaining({ value: -30 }),
+      expect.objectContaining({ value: -7 }),
+    ]);
   });
 
   it("async iter points with no query", async () => {
@@ -156,14 +184,10 @@ describe("Timeseries", () => {
     }
     expect(points).toBeDefined();
     expect(points!).toEqual([
-      { time: "2012-02-12", value: 10 },
-      { time: "2012-02-12", value: 10 },
-      {
-        time: "2013-03-13",
-        value: 20,
-      },
-      { time: "2014-04-14", value: 30 },
-      { time: "2014-04-14", value: 30 },
+      expect.objectContaining({ value: -365 }),
+      expect.objectContaining({ value: -30 }),
+      expect.objectContaining({ value: -7 }),
+      expect.objectContaining({ value: -1 }),
     ]);
   });
 });

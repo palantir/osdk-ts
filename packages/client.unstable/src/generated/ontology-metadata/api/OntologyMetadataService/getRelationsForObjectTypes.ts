@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetRelationsForObjectTypesRequest } from "../GetRelationsForObjectTypesRequest.js";
-import type { GetRelationsForObjectTypesResponse } from "../GetRelationsForObjectTypesResponse.js";
+import type {
+  GetRelationsForObjectTypesRequest as _api_GetRelationsForObjectTypesRequest,
+  GetRelationsForObjectTypesResponse as _api_GetRelationsForObjectTypesResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to batch load relations associated to given objectTypeIds. The GetRelationsForObjectTypesResponse
@@ -26,8 +28,8 @@ import type { GetRelationsForObjectTypesResponse } from "../GetRelationsForObjec
  */
 export async function getRelationsForObjectTypes(
   ctx: ConjureContext,
-  request: GetRelationsForObjectTypesRequest,
-): Promise<GetRelationsForObjectTypesResponse> {
+  request: _api_GetRelationsForObjectTypesRequest,
+): Promise<_api_GetRelationsForObjectTypesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/relationsForObjectTypes`,

@@ -18,7 +18,6 @@ export namespace completeTodo {
       type: 'boolean';
     };
     Todo: {
-      description: 'A todo Object';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Todo>;
@@ -26,20 +25,18 @@ export namespace completeTodo {
   };
 
   /**
-   * Completes Todo
+   * Marks Todo complete/incomplete
    */
   export interface Params {
     readonly is_complete: ActionParam.PrimitiveType<'boolean'>;
-    /**
-     * A todo Object
-     */
+
     readonly Todo: ActionParam.ObjectType<Todo>;
   }
 
   // Represents a fqn of the action
   export interface Signatures {
     /**
-     * Completes Todo
+     * Marks Todo complete/incomplete
      */
     applyAction<OP extends ApplyActionOptions>(
       args: completeTodo.Params,
@@ -54,14 +51,15 @@ export namespace completeTodo {
 }
 
 /**
- * Completes Todo
+ * Marks Todo complete/incomplete
  * @param {ActionParam.PrimitiveType<"boolean">} is_complete
- * @param {ActionParam.ObjectType<Todo>} Todo A todo Object
+ * @param {ActionParam.ObjectType<Todo>} Todo
  */
 export interface completeTodo extends ActionDefinition<completeTodo.Signatures> {
   __DefinitionMetadata?: {
     apiName: 'completeTodo';
-    description: 'Completes Todo';
+    description: 'Marks Todo complete/incomplete';
+    displayName: 'Complete To Do';
     modifiedEntities: {
       Todo: {
         created: false;
@@ -69,7 +67,7 @@ export interface completeTodo extends ActionDefinition<completeTodo.Signatures> 
       };
     };
     parameters: completeTodo.ParamsDefinition;
-    rid: '';
+    rid: 'ri.actions.main.action-type.b8ed5dbd-6d22-4b6d-8ab4-3b63c6007df9';
     status: 'ACTIVE';
     type: 'action';
 

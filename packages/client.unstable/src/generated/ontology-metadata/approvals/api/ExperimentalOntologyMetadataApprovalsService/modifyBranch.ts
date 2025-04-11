@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,20 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyRid } from "../../../api/OntologyRid.js";
-import type { ModifyOntologyBranchRequest } from "../ModifyOntologyBranchRequest.js";
-import type { ModifyOntologyBranchResponse } from "../ModifyOntologyBranchResponse.js";
+import type { OntologyRid as _api_OntologyRid } from "../../../api/__components.js";
+import type {
+  ModifyOntologyBranchRequest as _approvals_api_ModifyOntologyBranchRequest,
+  ModifyOntologyBranchResponse as _approvals_api_ModifyOntologyBranchResponse,
+} from "../__components.js";
 
 /**
  * Modify an existing branch in the provided ontology. Users who can view the branch will be able to modify the branch.
  */
 export async function modifyBranch(
   ctx: ConjureContext,
-  ontologyRid: OntologyRid,
-  request: ModifyOntologyBranchRequest,
-): Promise<ModifyOntologyBranchResponse> {
+  ontologyRid: _api_OntologyRid,
+  request: _approvals_api_ModifyOntologyBranchRequest,
+): Promise<_approvals_api_ModifyOntologyBranchResponse> {
   return conjureFetch(
     ctx,
     `/ontology/approvals/experimental/ontology/${ontologyRid}/modifyBranch`,

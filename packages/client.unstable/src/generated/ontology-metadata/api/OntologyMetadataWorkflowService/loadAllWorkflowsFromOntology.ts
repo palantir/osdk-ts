@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,14 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { LoadAllWorkflowsPageRequest } from "../../workflow/api/LoadAllWorkflowsPageRequest.js";
-import type { LoadAllWorkflowsPageResponse } from "../../workflow/api/LoadAllWorkflowsPageResponse.js";
-import type { OntologyRid } from "../OntologyRid.js";
-import type { OntologyVersion } from "../OntologyVersion.js";
+import type {
+  LoadAllWorkflowsPageRequest as _workflow_api_LoadAllWorkflowsPageRequest,
+  LoadAllWorkflowsPageResponse as _workflow_api_LoadAllWorkflowsPageResponse,
+} from "../../workflow/api/__components.js";
+import type {
+  OntologyRid as _api_OntologyRid,
+  OntologyVersion as _api_OntologyVersion,
+} from "../__components.js";
 
 /**
  * Endpoint to get all the Workflows a user has access to. There are no guarantees that the Workflow will have
@@ -29,10 +33,10 @@ import type { OntologyVersion } from "../OntologyVersion.js";
  */
 export async function loadAllWorkflowsFromOntology(
   ctx: ConjureContext,
-  ontologyRid: OntologyRid,
-  ontologyVersion: OntologyVersion,
-  request: LoadAllWorkflowsPageRequest,
-): Promise<LoadAllWorkflowsPageResponse> {
+  ontologyRid: _api_OntologyRid,
+  ontologyVersion: _api_OntologyVersion,
+  request: _workflow_api_LoadAllWorkflowsPageRequest,
+): Promise<_workflow_api_LoadAllWorkflowsPageResponse> {
   return conjureFetch(
     ctx,
     `/workflow/ontology/load/${ontologyRid}/${ontologyVersion}/loadAllWorkflowsFromOntology`,

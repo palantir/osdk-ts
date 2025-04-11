@@ -1,5 +1,41 @@
 # @osdk/client.unstable
 
+## 2.2.0-beta.15
+
+### Minor Changes
+
+- ed69666: Update conjure-lite to 0.7.1
+
+## 2.2.0-beta.14
+
+### Minor Changes
+
+- a08bdfb: Support stream datasources in OAC
+
+## 2.2.0-beta.13
+
+## 2.2.0-beta.12
+
+## 2.2.0-beta.11
+
+### Minor Changes
+
+- 10da391: Links as Code
+
+## 2.2.0-beta.10
+
+### Minor Changes
+
+- 5e8e839: Bump OMS API to include links in ontology IR
+
+## 2.2.0-beta.9
+
+## 2.2.0-beta.8
+
+## 2.2.0-beta.7
+
+## 2.2.0-beta.6
+
 ## 2.2.0-beta.5
 
 ## 2.2.0-beta.4

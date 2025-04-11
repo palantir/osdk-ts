@@ -62,7 +62,7 @@ describe("local functions", () => {
     );
   });
 
-  it("should save the refreshTokenMaker if it exists", () => {
+  it("should save the refreshTokenMaker if it exists, as well as the requested scopes", () => {
     const client = {
       client_id: "hi_mom",
     };
@@ -82,6 +82,7 @@ describe("local functions", () => {
       {},
       refresh,
       "marker marker",
+      "yay:my-fun-scope sad:my-boring-scope",
     );
 
     makeTokenAndSaveRefresh({
@@ -96,6 +97,7 @@ describe("local functions", () => {
       JSON.stringify({
         refresh_token: "refresh",
         refreshTokenMarker: "marker marker",
+        requestedScopes: "yay:my-fun-scope sad:my-boring-scope",
       }),
     );
   });

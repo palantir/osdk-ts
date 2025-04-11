@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyBranchRid } from "../../../api/OntologyBranchRid.js";
-import type { FindConflictsRequest } from "../FindConflictsRequest.js";
-import type { FindConflictsResponse } from "../FindConflictsResponse.js";
+import type { OntologyBranchRid as _api_OntologyBranchRid } from "../../../api/__components.js";
+import type {
+  FindConflictsRequest as _branch_api_FindConflictsRequest,
+  FindConflictsResponse as _branch_api_FindConflictsResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to determine if there are conflicts for entities between the branch with the provided
@@ -27,9 +29,9 @@ import type { FindConflictsResponse } from "../FindConflictsResponse.js";
  */
 export async function findConflicts(
   ctx: ConjureContext,
-  ontologyBranchRid: OntologyBranchRid,
-  request: FindConflictsRequest,
-): Promise<FindConflictsResponse> {
+  ontologyBranchRid: _api_OntologyBranchRid,
+  request: _branch_api_FindConflictsRequest,
+): Promise<_branch_api_FindConflictsResponse> {
   return conjureFetch(
     ctx,
     `/ontology/branch/${ontologyBranchRid}/findConflicts`,

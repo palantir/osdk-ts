@@ -39,6 +39,7 @@ import type {
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
+import { extractRdpDefinition } from "../util/extractRdpDefinition.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 
 export function augment<
@@ -89,17 +90,36 @@ export function objectSetToSearchJsonV2(
   throw new Error(`Unsupported objectSet type: ${objectSet.type}`);
 }
 
+/** @internal */
+export function resolveInterfaceObjectSet(
+  objectSet: ObjectSet,
+  interfaceTypeApiName: string,
+  args: FetchPageArgs<any, any, any, any, any, any>,
+): ObjectSet {
+  return args?.$includeAllBaseObjectProperties
+    ? {
+      type: "intersect",
+      objectSets: [objectSet, {
+        type: "interfaceBase",
+        interfaceType: interfaceTypeApiName,
+        includeAllBaseObjectProperties: true,
+      }],
+    }
+    : objectSet;
+}
+
 async function fetchInterfacePage<
   Q extends InterfaceDefinition,
   L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
+  T extends boolean,
 >(
   client: MinimalClient,
   interfaceType: Q,
-  args: FetchPageArgs<Q, L, R, any, S>,
+  args: FetchPageArgs<Q, L, R, any, S, T>,
   objectSet: ObjectSet,
-): Promise<FetchPageResult<Q, L, R, S>> {
+): Promise<FetchPageResult<Q, L, R, S, T>> {
   if (args.$__UNSTABLE_useOldInterfaceApis) {
     const result = await OntologiesV2.OntologyInterfaces
       .search(
@@ -123,6 +143,7 @@ async function fetchInterfacePage<
       result.data as OntologyObjectV2[], // drop readonly
       interfaceType.apiName,
       !args.$includeRid,
+      await extractRdpDefinition(client, objectSet),
     );
     return result as any;
   }
@@ -130,7 +151,11 @@ async function fetchInterfacePage<
     addUserAgentAndRequestContextHeaders(client, interfaceType),
     await client.ontologyRid,
     applyFetchArgs<LoadObjectSetV2MultipleObjectTypesRequest>(args, {
-      objectSet,
+      objectSet: resolveInterfaceObjectSet(
+        objectSet,
+        interfaceType.apiName,
+        args,
+      ),
       select: ((args?.$select as string[] | undefined) ?? []),
       excludeRid: !args?.$includeRid,
     }),
@@ -141,6 +166,7 @@ async function fetchInterfacePage<
       client,
       result.data,
       interfaceType.apiName,
+      {},
       !args.$includeRid,
       args.$select,
       false,
@@ -148,7 +174,7 @@ async function fetchInterfacePage<
     ),
     nextPageToken: result.nextPageToken,
     totalCount: result.totalCount,
-  }) as unknown as Promise<FetchPageResult<Q, L, R, S>>;
+  }) as unknown as Promise<FetchPageResult<Q, L, R, S, T>>;
 }
 
 /** @internal */
@@ -158,12 +184,13 @@ export async function fetchPageInternal<
   R extends boolean,
   A extends Augments,
   S extends NullabilityAdherence,
+  T extends boolean,
 >(
   client: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet,
-  args: FetchPageArgs<Q, L, R, A, S> = {},
-): Promise<FetchPageResult<Q, L, R, S>> {
+  args: FetchPageArgs<Q, L, R, A, S, T> = {},
+): Promise<FetchPageResult<Q, L, R, S, T>> {
   if (objectType.type === "interface") {
     return await fetchInterfacePage(
       client,
@@ -188,12 +215,13 @@ export async function fetchPageWithErrorsInternal<
   R extends boolean,
   A extends Augments,
   S extends NullabilityAdherence,
+  T extends boolean,
 >(
   client: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet,
-  args: FetchPageArgs<Q, L, R, A, S> = {},
-): Promise<Result<FetchPageResult<Q, L, R, S>>> {
+  args: FetchPageArgs<Q, L, R, A, S, T> = {},
+): Promise<Result<FetchPageResult<Q, L, R, S, T>>> {
   try {
     const result = await fetchPageInternal(client, objectType, objectSet, args);
     return { value: result };
@@ -218,12 +246,13 @@ export async function fetchPage<
   L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
+  T extends boolean,
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, any, S>,
+  args: FetchPageArgs<Q, L, R, any, S, T>,
   objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
-): Promise<FetchPageResult<Q, L, R, S>> {
+): Promise<FetchPageResult<Q, L, R, S, T>> {
   return fetchPageInternal(client, objectType, objectSet, args);
 }
 
@@ -233,12 +262,13 @@ export async function fetchPageWithErrors<
   L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
+  T extends boolean,
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, any, S>,
+  args: FetchPageArgs<Q, L, R, any, S, T>,
   objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
-): Promise<Result<FetchPageResult<Q, L, R, S>>> {
+): Promise<Result<FetchPageResult<Q, L, R, S, T>>> {
   return fetchPageWithErrorsInternal(client, objectType, objectSet, args);
 }
 
@@ -249,7 +279,7 @@ function applyFetchArgs<
     pageSize?: PageSize;
   },
 >(
-  args: FetchPageArgs<any, any, any, any, any>,
+  args: FetchPageArgs<any, any, any, any, any, any>,
   body: X,
 ): X {
   if (args?.$nextPageToken) {
@@ -278,12 +308,13 @@ export async function fetchObjectPage<
   L extends PropertyKeys<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
+  T extends boolean,
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, Augments, S>,
+  args: FetchPageArgs<Q, L, R, Augments, S, T>,
   objectSet: ObjectSet,
-): Promise<FetchPageResult<Q, L, R, S>> {
+): Promise<FetchPageResult<Q, L, R, S, T>> {
   const r = await OntologiesV2.OntologyObjectSets.load(
     addUserAgentAndRequestContextHeaders(client, objectType),
     await client.ontologyRid,
@@ -301,9 +332,10 @@ export async function fetchObjectPage<
       r.data as OntologyObjectV2[],
       undefined,
       undefined,
+      await extractRdpDefinition(client, objectSet),
       args.$select,
     ),
     nextPageToken: r.nextPageToken,
     totalCount: r.totalCount,
-  }) as unknown as Promise<FetchPageResult<Q, L, R, S>>;
+  }) as unknown as Promise<FetchPageResult<Q, L, R, S, T>>;
 }

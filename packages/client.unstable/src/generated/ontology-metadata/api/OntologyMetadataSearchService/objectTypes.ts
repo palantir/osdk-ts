@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { ObjectTypeSearchRequest } from "../search/ObjectTypeSearchRequest.js";
-import type { ObjectTypeSearchResponse } from "../search/ObjectTypeSearchResponse.js";
+import type {
+  ObjectTypeSearchRequest as _api_search_ObjectTypeSearchRequest,
+  ObjectTypeSearchResponse as _api_search_ObjectTypeSearchResponse,
+} from "../search/__components.js";
 
 /**
  * This endpoint should only be used for batch processing workflows where all matches to a query need
@@ -31,7 +33,7 @@ import type { ObjectTypeSearchResponse } from "../search/ObjectTypeSearchRespons
  */
 export async function objectTypes(
   ctx: ConjureContext,
-  request: ObjectTypeSearchRequest,
-): Promise<ObjectTypeSearchResponse> {
+  request: _api_search_ObjectTypeSearchRequest,
+): Promise<_api_search_ObjectTypeSearchResponse> {
   return conjureFetch(ctx, `/ontology/search/v0/objectTypes`, "POST", request);
 }

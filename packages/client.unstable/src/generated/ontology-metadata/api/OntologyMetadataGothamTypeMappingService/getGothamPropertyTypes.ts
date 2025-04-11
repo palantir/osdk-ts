@@ -15,8 +15,8 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyRid } from "../OntologyRid.js";
-import type { GetGothamPropertyTypesResponse } from "../typemapping/GetGothamPropertyTypesResponse.js";
+import type { OntologyRid as _api_OntologyRid } from "../__components.js";
+import type { GetGothamPropertyTypesResponse as _api_typemapping_GetGothamPropertyTypesResponse } from "../typemapping/__components.js";
 
 /**
  * Returns a GetGothamPropertyTypesResponse that contains available gotham property types
@@ -32,8 +32,8 @@ import type { GetGothamPropertyTypesResponse } from "../typemapping/GetGothamPro
  */
 export async function getGothamPropertyTypes(
   ctx: ConjureContext,
-  ontologyRid: OntologyRid,
-): Promise<GetGothamPropertyTypesResponse> {
+  ontologyRid: _api_OntologyRid,
+): Promise<_api_typemapping_GetGothamPropertyTypesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/typemapping/getGothamPropertyTypes/${ontologyRid}`,

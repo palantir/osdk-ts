@@ -115,7 +115,7 @@ export namespace ActionParam {
     export type InterfaceType<T extends InterfaceDefinition> = {
         		$objectType: NonNullable<T["__DefinitionMetadata"]> extends {
             			implementedBy: infer U
-            		} ? (U extends ReadonlyArray<string> ? U[number] : string) : string
+            		} ? (U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string) : string
         		$primaryKey: string | number
         	};
     	// (undocumented)
@@ -229,10 +229,13 @@ export interface AsyncIterArgs<
 	K extends PropertyKeys<Q> = PropertyKeys<Q>,
 	R extends boolean = false,
 	A extends Augments = never,
-	S extends NullabilityAdherence = NullabilityAdherence.Default
+	S extends NullabilityAdherence = NullabilityAdherence.Default,
+	T extends boolean = false
 > extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
+    	// (undocumented)
+    $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
 }
 
 // @public (undocumented)
@@ -287,8 +290,9 @@ export type CompileTimeMetadata<T extends {
 export type ConvertProps<
 	FROM extends ObjectOrInterfaceDefinition,
 	TO extends ValidToFrom<FROM>,
-	P extends ValidOsdkPropParams<FROM>
-> = TO extends FROM ? P : TO extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToObjectType<FROM, TO, P>, P extends "$rid" ? true : false, "$rid">) : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToInterface<FROM, TO, P>, P extends "$rid" ? true : false, "$rid">) : never : never;
+	P extends ValidOsdkPropParams<FROM>,
+	OPTIONS extends never | "$rid" | "$allBaseProperties" = never
+> = TO extends FROM ? P : TO extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToObjectType<FROM, TO, P, OPTIONS>, P extends "$rid" ? true : false, "$rid">) : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToInterface<FROM, TO, P>, P extends "$rid" ? true : false, "$rid">) : never : never;
 
 // @public
 export interface DataValueClientToWire {
@@ -499,8 +503,9 @@ export interface FetchPageArgs<
 	K extends PropertyKeys<Q> = PropertyKeys<Q>,
 	R extends boolean = false,
 	A extends Augments = never,
-	S extends NullabilityAdherence = NullabilityAdherence.Default
-> extends AsyncIterArgs<Q, K, R, A, S> {
+	S extends NullabilityAdherence = NullabilityAdherence.Default,
+	T extends boolean = false
+> extends AsyncIterArgs<Q, K, R, A, S, T> {
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
@@ -514,8 +519,9 @@ export type FetchPageResult<
 	Q extends ObjectOrInterfaceDefinition,
 	L extends PropertyKeys<Q>,
 	R extends boolean,
-	S extends NullabilityAdherence
-> = PageResult<PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S>> : Osdk.Instance<Q, ExtractOptions<R, S>, L>>;
+	S extends NullabilityAdherence,
+	T extends boolean = false
+> = PageResult<PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S, T>> : Osdk.Instance<Q, ExtractOptions<R, S, T>, L>>;
 
 // @public (undocumented)
 export type FilteredPropertyKeys<
@@ -644,6 +650,31 @@ export type LinkedType<
 
 // @public (undocumented)
 export type LinkNames<Q extends ObjectOrInterfaceDefinition> = keyof CompileTimeMetadata<Q>["links"] & string;
+
+// @public (undocumented)
+export interface Logger {
+    	// (undocumented)
+    child(bindings: Record<string, any>, options?: {
+        		level?: string
+        		msgPrefix?: string
+        	}): Logger;
+    	// (undocumented)
+    debug: LogFn;
+    	// (undocumented)
+    error: LogFn;
+    	// (undocumented)
+    fatal: LogFn;
+    	// (undocumented)
+    info: LogFn;
+    	// (undocumented)
+    isLevelEnabled(level: string): boolean;
+    	// Warning: (ae-forgotten-export) The symbol "LogFn" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    trace: LogFn;
+    	// (undocumented)
+    warn: LogFn;
+}
 
 // @public (undocumented)
 export interface Media {
@@ -803,6 +834,11 @@ export namespace ObjectSetSubscription {
 }
 
 // @public (undocumented)
+export type ObjectSpecifier<Q extends ObjectOrInterfaceDefinition> = string & {
+    	__apiName: Q["apiName"] | (Q extends InterfaceDefinition ? NonNullable<Q["__DefinitionMetadata"]> extends InterfaceMetadata ? NonNullable<NonNullable<Q["__DefinitionMetadata"]>["implementedBy"]>[number] : never : never)
+};
+
+// @public (undocumented)
 export interface ObjectTypeDefinition {
     	// (undocumented)
     __DefinitionMetadata?: ObjectMetadata & ObjectInterfaceCompileDefinition;
@@ -844,14 +880,14 @@ export namespace Osdk {
     // (undocumented)
     export type Instance<
     		Q extends ObjectOrInterfaceDefinition,
-    		OPTIONS extends never | "$rid" = never,
+    		OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
     		P extends PropertyKeys<Q> = PropertyKeys<Q>,
     		R extends Record<string, SimplePropertyDef> = {}
     	> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
         		readonly $link: Q extends {
             			linksType?: any
             		} ? Q["linksType"] : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q> : never
-        		readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P>>
+        		readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P, OPTIONS>>
         		readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(updatedObject?: Osdk.Instance<Q, any, NEW_PROPS> | { [K in NEW_PROPS]? : CompileTimeMetadata<Q>["props"][K] }) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>
         	} & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
         		readonly $rid: string
@@ -864,6 +900,7 @@ export type OsdkBase<Q extends ObjectOrInterfaceDefinition> = {
     	readonly $objectType: string
     	readonly $primaryKey: PrimaryKeyType<Q>
     	readonly $title: string | undefined
+    	readonly $objectSpecifier: ObjectSpecifier<Q>
 };
 
 // @public @deprecated (undocumented)
@@ -985,9 +1022,10 @@ export interface PropertyValueWireToClient {
 // Warning: (ae-forgotten-export) The symbol "StructQueryDataType" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "TwoDimensionalAggregationDataType" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ThreeDimensionalAggregationDataType" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "MapDataType" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type QueryDataTypeDefinition<T_Target extends ObjectTypeDefinition = any> = PrimitiveDataType | ObjectQueryDataType<T_Target> | ObjectSetQueryDataType<T_Target> | SetQueryDataType | UnionQueryDataType | StructQueryDataType | TwoDimensionalAggregationDataType | ThreeDimensionalAggregationDataType;
+export type QueryDataTypeDefinition<T_Target extends ObjectTypeDefinition = any> = PrimitiveDataType | ObjectQueryDataType<T_Target> | ObjectSetQueryDataType<T_Target> | SetQueryDataType | UnionQueryDataType | StructQueryDataType | TwoDimensionalAggregationDataType | ThreeDimensionalAggregationDataType | MapDataType;
 
 // @public (undocumented)
 export interface QueryDefinition<T = any> {
@@ -1036,9 +1074,7 @@ export namespace QueryParam {
     //
     // (undocumented)
     export type RangeKey<T extends AggregationRangeKeyTypes> = AggKeyClientToWire<"range", T>;
-    	// Warning: (ae-forgotten-export) The symbol "ThreeDimensionalAggregation" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
+    	// (undocumented)
     export type ThreeDimensionalAggregationType<
     		OUT extends AggregationKeyTypes | RangeKey<any>,
     		IN extends AggregationKeyTypes | RangeKey<any>,
@@ -1046,7 +1082,6 @@ export namespace QueryParam {
     	> = ThreeDimensionalAggregation<OUT extends AggregationKeyTypes ? AggKeyClientToWire<OUT> : OUT, IN extends AggregationKeyTypes ? AggKeyClientToWire<IN> : IN, AggValueClientToWire<V>>;
     	// Warning: (ae-forgotten-export) The symbol "AggregationKeyTypes" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "AggregationValueTypes" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "TwoDimensionalAggregation" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "AggValueClientToWire" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -1088,6 +1123,18 @@ export namespace QueryResult {
     	> = TwoDimensionalAggregation<T extends AggregationKeyTypes ? AggKeyWireToClient<T> : T, AggValueWireToClient<V>>;
 }
 
+// Warning: (ae-forgotten-export) The symbol "AllowedBucketTypes_2" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type Range_2<T extends AllowedBucketTypes_2> = {
+    	startValue?: T
+    	endValue: T
+} | {
+    	startValue: T
+    	endValue?: T
+};
+export { Range_2 as Range }
+
 // Warning: (ae-forgotten-export) The symbol "ErrorResult" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -1124,8 +1171,24 @@ export type SingleOsdkResult<
 	L extends PropertyKeys<Q> | (keyof RDPs & string),
 	R extends boolean,
 	S extends NullabilityAdherence,
-	RDPs extends Record<string, SimplePropertyDef> = {}
-> = Osdk.Instance<Q, ExtractOptions<R, S>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>;
+	RDPs extends Record<string, SimplePropertyDef> = {},
+	T extends boolean = false
+> = Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>;
+
+// Warning: (ae-forgotten-export) The symbol "AllowedBucketKeyTypes_2" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type ThreeDimensionalAggregation<
+	T extends AllowedBucketKeyTypes_2,
+	U extends AllowedBucketKeyTypes_2,
+	V extends AllowedBucketTypes_2
+> = {
+    	key: T
+    	groups: {
+        		key: U
+        		value: V
+        	}[]
+}[];
 
 // Warning: (ae-forgotten-export) The symbol "AggregationKeyDataType" needs to be exported by the entry point index.d.ts
 //
@@ -1208,16 +1271,25 @@ export type TimeSeriesQuery = {
 };
 
 // @public (undocumented)
+export type TwoDimensionalAggregation<
+	T extends AllowedBucketKeyTypes_2,
+	U extends AllowedBucketTypes_2
+> = {
+    	key: T
+    	value: U
+}[];
+
+// @public (undocumented)
 export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<AggregationValueTypes>;
 
 // Warning: (ae-forgotten-export) The symbol "AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "GetWirePropertyValueFromClient" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "WITH_PROPERTIES_AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type ValidAggregationKeys<
 	Q extends ObjectOrInterfaceDefinition,
 	R extends "aggregate" | "withPropertiesAggregate" = "aggregate"
-> = keyof ({ [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<GetWirePropertyValueFromClient<CompileTimeMetadata<Q>["properties"][KK]["type"]>, R extends "aggregate" ? true : false>}`]? : any } & {
+> = keyof ({ [KK in AggregatableKeys<Q> as `${KK & string}:${R extends "aggregate" ? AGG_FOR_TYPE<CompileTimeMetadata<Q>["properties"][KK]["type"]> : WITH_PROPERTIES_AGG_FOR_TYPE<CompileTimeMetadata<Q>["properties"][KK]["type"]>}`]? : any } & {
     	$count?: any
 });
 

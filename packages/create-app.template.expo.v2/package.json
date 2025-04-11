@@ -1,7 +1,7 @@
 {
   "name": "@osdk/create-app.template.expo.v2",
   "private": true,
-  "version": "2.2.0-beta.5",
+  "version": "2.2.0-beta.15",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -34,9 +34,9 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@babel/runtime": "^7.26.7",
+    "@babel/runtime": "^7.26.10",
     "@expo/vector-icons": "^14.0.2",
-    "@react-navigation/bottom-tabs": "^7.0.0",
+    "@react-navigation/bottom-tabs": "^7.3.4",
     "@react-navigation/elements": "^2.2.4",
     "@react-navigation/native": "^7.0.14",
     "dotenv": "^16.4.5",
@@ -46,7 +46,7 @@
     "expo-constants": "~17.0.3",
     "expo-font": "~13.0.1",
     "expo-haptics": "~14.0.0",
-    "expo-linking": "~7.0.3",
+    "expo-linking": "~7.0.5",
     "expo-router": "~4.0.9",
     "expo-splash-screen": "~0.29.13",
     "expo-status-bar": "~2.0.0",
@@ -78,8 +78,8 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-test-renderer": "^18.3.0",
-    "@typescript-eslint/eslint-plugin": "^8.21.0",
-    "@typescript-eslint/parser": "^8.21.0",
+    "@typescript-eslint/eslint-plugin": "^8.28.0",
+    "@typescript-eslint/parser": "^8.28.0",
     "@vitejs/plugin-react": "^4.2.0",
     "eslint": "^9.19.0",
     "eslint-config-expo": "~8.0.1",
@@ -94,8 +94,8 @@
     "jest-expo": "~52.0.2",
     "react-test-renderer": "18.3.1",
     "typescript": "~5.5.4",
-    "typescript-eslint": "^8.21.0",
-    "vite": "^6.0.11",
+    "typescript-eslint": "^8.28.0",
+    "vite": "^6.2.4",
     "vitest": "^3.0.5"
   },
   "publishConfig": {

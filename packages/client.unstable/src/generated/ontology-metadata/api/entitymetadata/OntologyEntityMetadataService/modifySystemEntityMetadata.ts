@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,13 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { OntologyRid } from "../../OntologyRid.js";
-import type { SystemEntityMetadataModificationRequest } from "../SystemEntityMetadataModificationRequest.js";
-import type { SystemEntityMetadataModificationResponse } from "../SystemEntityMetadataModificationResponse.js";
+import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
+import type {
+  SystemEntityMetadataModificationRequest
+    as _api_entitymetadata_SystemEntityMetadataModificationRequest,
+  SystemEntityMetadataModificationResponse
+    as _api_entitymetadata_SystemEntityMetadataModificationResponse,
+} from "../__components.js";
 
 /**
  * Endpoint to modify the SystemEntityMetadata for the specified ObjectType(s)/LinkType(s). This is intended to
@@ -28,9 +32,9 @@ import type { SystemEntityMetadataModificationResponse } from "../SystemEntityMe
  */
 export async function modifySystemEntityMetadata(
   ctx: ConjureContext,
-  ontologyRid: OntologyRid,
-  request: SystemEntityMetadataModificationRequest,
-): Promise<SystemEntityMetadataModificationResponse> {
+  ontologyRid: _api_OntologyRid,
+  request: _api_entitymetadata_SystemEntityMetadataModificationRequest,
+): Promise<_api_entitymetadata_SystemEntityMetadataModificationResponse> {
   return conjureFetch(ctx, `/entityMetadata/system/modify`, "POST", request, {
     ontologyRid,
   });

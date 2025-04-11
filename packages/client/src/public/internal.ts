@@ -17,3 +17,6 @@
 export { createAndFetchTempObjectSetRid } from "../public-utils/createAndFetchTempObjectSetRid.js";
 export { hydrateAttachmentFromRid } from "../public-utils/hydrateAttachmentFromRid.js";
 export { hydrateObjectSetFromRid } from "../public-utils/hydrateObjectSetFromRid.js";
+
+export { BrowserLogger } from "../logger/BrowserLogger.js";
+export { MinimalLogger } from "../logger/MinimalLogger.js";

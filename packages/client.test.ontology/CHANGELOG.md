@@ -1,5 +1,84 @@
 # @osdk/client.test.ontology
 
+## 2.2.0-beta.15
+
+### Patch Changes
+
+- Updated dependencies [ed69666]
+  - @osdk/api@2.2.0-beta.15
+
+## 2.2.0-beta.14
+
+### Patch Changes
+
+- Updated dependencies [6abf078]
+  - @osdk/api@2.2.0-beta.14
+
+## 2.2.0-beta.13
+
+### Patch Changes
+
+- Updated dependencies [488b51c]
+- Updated dependencies [71462e9]
+  - @osdk/api@2.2.0-beta.13
+
+## 2.2.0-beta.12
+
+### Patch Changes
+
+- @osdk/api@2.2.0-beta.12
+
+## 2.2.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [7170fd1]
+  - @osdk/api@2.2.0-beta.11
+
+## 2.2.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [23ea0e4]
+- Updated dependencies [46cede4]
+  - @osdk/api@2.2.0-beta.10
+
+## 2.2.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [12843cb]
+- Updated dependencies [f82767c]
+  - @osdk/api@2.2.0-beta.9
+
+## 2.2.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [0e874b1]
+- Updated dependencies [63b2e63]
+- Updated dependencies [26c2d95]
+- Updated dependencies [63b2e63]
+- Updated dependencies [63b2e63]
+  - @osdk/api@2.2.0-beta.8
+
+## 2.2.0-beta.7
+
+### Patch Changes
+
+- Updated dependencies [7416ce4]
+- Updated dependencies [7416ce4]
+- Updated dependencies [805df40]
+  - @osdk/api@2.2.0-beta.7
+
+## 2.2.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [cddfbf9]
+- Updated dependencies [a6e5f89]
+  - @osdk/api@2.2.0-beta.6
+
 ## 2.2.0-beta.5
 
 ### Patch Changes
