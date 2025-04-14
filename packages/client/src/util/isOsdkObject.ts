@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { OsdkBase } from "@osdk/api";
-
-export function isOsdkBaseObject(o: any): o is OsdkBase<any> {
-  return o && typeof o === "object" && typeof o.$apiName === "string"
+export function isActionOrQueryObjectParameter(
+  o: any,
+): o is { $primaryKey: any } {
+  return o && typeof o === "object"
     && o.$primaryKey != null;
 }

@@ -25,7 +25,7 @@ import { isMediaReference } from "../object/mediaUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import { isInterfaceActionParam } from "./interfaceUtils.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
-import { isOsdkBaseObject } from "./isOsdkObject.js";
+import { isActionOrQueryObjectParameter } from "./isOsdkObject.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
 /**
@@ -92,7 +92,7 @@ export async function toDataValue(
     return await toDataValue(value.__primaryKey, client);
   }
 
-  if (isOsdkBaseObject(value)) {
+  if (isActionOrQueryObjectParameter(value)) {
     return await toDataValue(value.$primaryKey, client);
   }
 

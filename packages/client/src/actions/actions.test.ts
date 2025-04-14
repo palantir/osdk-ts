@@ -428,7 +428,7 @@ describe.each([
       };
     }[]>().toMatchTypeOf<InferredBatchParamType>();
   });
-  it("Accepts object type refs", async () => {
+  it("Accepts object type refs for interface actions", async () => {
     const clientBoundTakesObjectType = client(
       createFooInterface,
     ).applyAction;
@@ -502,6 +502,151 @@ describe.each([
       },
     );
   });
+
+  // describe("actions with object parameters", () => {
+  //   const clientBoundTakesObject = client(promoteEmployeeObject).applyAction;
+  //   const clientBoundBatchTakesObject =
+  //     client(promoteEmployeeObject).batchApplyAction;
+  //   type InferredParamType = Parameters<
+  //     typeof clientBoundTakesObject
+  //   >[0];
+  //   type InferredBatchParamType = Parameters<
+  //     typeof clientBoundBatchTakesObject
+  //   >[0];
+
+  //   it("accepts loaded OSDK objects", async () => {
+  //     expectTypeOf<
+  //       {
+  //         employee: Osdk.Instance<Employee>;
+  //         newCompensation: number;
+  //         newTitle: string;
+  //       }
+  //     >().toMatchTypeOf<
+  //       InferredParamType
+  //     >();
+
+  //     expectTypeOf<
+  //       {
+  //         employee: Osdk.Instance<Employee>;
+  //         newCompensation: number;
+  //         newTitle: string;
+  //       }[]
+  //     >().toMatchTypeOf<
+  //       InferredBatchParamType
+  //     >();
+
+  //     const employee = await client(Employee).fetchOne(30050);
+
+  //     await client(promoteEmployeeObject).applyAction({
+  //       employee,
+  //       newCompensation: 100000,
+  //       newTitle: "Senior Engineer",
+  //     });
+  //   });
+
+  //   it("accepts primary keys", async () => {
+  //     expectTypeOf<
+  //       {
+  //         employee: number;
+  //         newCompensation: number;
+  //         newTitle: string;
+  //       }
+  //     >().toMatchTypeOf<
+  //       InferredParamType
+  //     >();
+
+  //     expectTypeOf<
+  //       {
+  //         employee: number;
+  //         newCompensation: number;
+  //         newTitle: string;
+  //       }[]
+  //     >().toMatchTypeOf<
+  //       InferredBatchParamType
+  //     >();
+
+  //     await client(promoteEmployeeObject).applyAction({
+  //       employee: 30050,
+  //       newCompensation: 100000,
+  //       newTitle: "Senior Engineer",
+  //     });
+  //   });
+
+  //   /**
+  //    * Our action and query object parameters originally accepted a type with these as required types.
+  //    * Some of our users called actions with type literals and specified values for these types. We changed this
+  //    * type so that adding to OSDK base will not break these types, but we need to make sure users who previously
+  //    * defined these types as a literal are still able to call actions with them.
+  //    */
+  //   it("accepts object literals with $title, $objectType, $apiName", async () => {
+  //     expectTypeOf<
+  //       {
+  //         employee: {
+  //           $primaryKey: number;
+  //           $title: string;
+  //           $objectType: string;
+  //           $apiName: "Employee";
+  //         };
+  //         newCompensation: number;
+  //         newTitle: string;
+  //       }
+  //     >().toMatchTypeOf<
+  //       InferredParamType
+  //     >();
+  //     expectTypeOf<
+  //       {
+  //         employee: {
+  //           $primaryKey: number;
+  //           $title: string;
+  //           $objectType: string;
+  //           $apiName: "Employee";
+  //         };
+  //         newCompensation: number;
+  //         newTitle: string;
+  //       }[]
+  //     >().toMatchTypeOf<
+  //       InferredBatchParamType
+  //     >();
+  //     await client(promoteEmployeeObject).applyAction({
+  //       employee: {
+  //         $primaryKey: 30050,
+  //         $title: "Test Employee",
+  //         $objectType: "Employee",
+  //         $apiName: "Employee",
+  //       },
+  //       newCompensation: 100000,
+  //       newTitle: "Senior Engineer",
+  //     });
+  //   });
+
+  //   it("accepts object literals with just $primaryKey", async () => {
+  //     expectTypeOf<
+  //       {
+  //         employee: { $primaryKey: number };
+  //         newCompensation: number;
+  //         newTitle: string;
+  //       }
+  //     >().toMatchTypeOf<
+  //       InferredParamType
+  //     >();
+
+  //     expectTypeOf<
+  //       {
+  //         employee: { $primaryKey: number };
+  //         newCompensation: number;
+  //         newTitle: string;
+  //       }[]
+  //     >().toMatchTypeOf<
+  //       InferredBatchParamType
+  //     >();
+
+  //     await client(promoteEmployeeObject).applyAction({
+  //       employee: { $primaryKey: 30050 },
+  //       newCompensation: 100000,
+  //       newTitle: "Senior Engineer",
+  //     });
+  //   });
+  // });
 });
 
 describe("ActionResponse remapping", () => {

@@ -304,8 +304,9 @@ export class FauxOntology {
   registerQueryType(
     def: OntologiesV2.QueryTypeV2,
     implementation?: FauxQueryImpl,
+    shouldOverride?: boolean,
   ): void {
-    if (def.apiName in this.#ontology.queryTypes) {
+    if (def.apiName in this.#ontology.queryTypes && !shouldOverride) {
       throw new Error(
         `QueryType ${def.apiName} already registered`,
       );

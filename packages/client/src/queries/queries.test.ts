@@ -31,7 +31,11 @@ import {
   threeDimensionalAggregationFunction,
   twoDimensionalAggregationFunction,
 } from "@osdk/client.test.ontology";
-import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
+import {
+  LegacyFauxFoundry,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
 import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
@@ -41,6 +45,17 @@ describe("queries", () => {
 
   beforeAll(() => {
     const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
+
+    testSetup.fauxFoundry.getDefaultOntology().registerQueryType(
+      stubData.queryTypeAcceptsObjects,
+      () => {
+        return {
+          value: 50031,
+        };
+      },
+      true,
+    );
+
     ({ client } = testSetup);
     return () => {
       testSetup.apiServer.close();
@@ -71,6 +86,33 @@ describe("queries", () => {
       object: 50030,
     });
     expect(result2).toEqual({
+      $apiName: "Employee",
+      $objectType: "Employee",
+      $primaryKey: 50031,
+      $objectSpecifier: "Employee:50031",
+    });
+
+    // Should also accept just primary key literals
+    const result3 = await client(queryAcceptsObject).executeFunction({
+      object: { $primaryKey: 50030 },
+    });
+    expect(result3).toEqual({
+      $apiName: "Employee",
+      $objectType: "Employee",
+      $primaryKey: 50031,
+      $objectSpecifier: "Employee:50031",
+    });
+
+    // Should also accept literals with OsdkBase
+    const result4 = await client(queryAcceptsObject).executeFunction({
+      object: {
+        $primaryKey: 50030,
+        $objectType: "Employee",
+        $apiName: "Employee",
+        $title: "title",
+      },
+    });
+    expect(result4).toEqual({
       $apiName: "Employee",
       $objectType: "Employee",
       $primaryKey: 50031,
