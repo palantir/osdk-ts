@@ -161,6 +161,7 @@ export interface PropertyType {
   description?: string;
   displayName?: string;
   valueType?: ApiNameValueTypeReference;
+  visibility?: Visibility;
   typeClasses?: TypeClass[];
 }
 

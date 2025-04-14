@@ -489,6 +489,7 @@ function convertSpt(
     description,
     apiName,
     displayName,
+    visibility,
     gothamMapping,
     typeClasses,
     valueType,
@@ -507,7 +508,7 @@ function convertSpt(
     apiName,
     displayMetadata: {
       displayName: displayName ?? apiName,
-      visibility: "NORMAL",
+      visibility: visibility ?? "NORMAL",
       description,
     },
     type: array
