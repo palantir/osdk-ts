@@ -64,7 +64,9 @@ export namespace ActionMetadata {
       | "attachment"
       | "marking"
       | "mediaReference"
-      | "objectType";
+      | "objectType"
+      | "geoshape"
+      | "geohash";
 
     export interface Object<
       T_Target extends ObjectTypeDefinition = never,

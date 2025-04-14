@@ -29,7 +29,12 @@ type TH_ActionParameterType_Primitive<X extends ActionParameterType> = X extends
   : ActionParam.PrimitiveType<
     Exclude<
       X["type"],
-      "object" | "array" | "objectSet" | "interfaceObject" | "attachment"
+      | "object"
+      | "array"
+      | "objectSet"
+      | "interfaceObject"
+      | "attachment"
+      | "vector"
     >
   >;
 

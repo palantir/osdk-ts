@@ -24,6 +24,7 @@ import {
   $Actions,
   actionTakesAttachment,
   actionTakesMedia,
+  addGeoshape,
   createFooInterface,
   createOffice,
   createStructPerson,
@@ -344,6 +345,33 @@ describe.each([
     const result = await client(actionTakesMedia).applyAction({
       media_reference:
         stubData.actionRequestMediaUpload.parameters.media_reference,
+    });
+
+    expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
+    expect(result).toBeUndefined();
+  });
+
+  it("Accepts geoshapes", async () => {
+    const clientBoundActionTakesMedia = client(
+      addGeoshape,
+    ).applyAction;
+    type InferredParamType = Parameters<
+      typeof clientBoundActionTakesMedia
+    >[0];
+
+    expectTypeOf<
+      {
+        geoshapeParam: GeoJSON.GeoJSON;
+        geohashParam: GeoJSON.Point;
+      }
+    >().toMatchTypeOf<
+      InferredParamType
+    >();
+
+    const result = await client(addGeoshape).applyAction({
+      geoshapeParam:
+        stubData.actionRequestWithGeoshape.parameters.geoshapeParam,
+      geohashParam: stubData.actionRequestWithGeoshape.parameters.geohashParam,
     });
 
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
