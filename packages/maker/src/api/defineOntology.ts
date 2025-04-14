@@ -605,7 +605,7 @@ function convertType(
     case (typeof type === "object" && "isLongText" in type):
       return {
         "type": "string",
-        string: {
+        "string": {
           analyzerOverride: undefined,
           enableAsciiFolding: undefined,
           isLongText: type.isLongText,
