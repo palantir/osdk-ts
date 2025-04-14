@@ -602,6 +602,19 @@ function convertType(
         struct: { structFields },
       };
 
+    case (typeof type === "object" && "isLongText" in type):
+      return {
+        "type": "string",
+        "string": {
+          analyzerOverride: undefined,
+          enableAsciiFolding: undefined,
+          isLongText: type.isLongText,
+          supportsEfficientLeadingWildcard:
+            type.supportsEfficientLeadingWildcard,
+          supportsExactMatching: type.supportsExactMatching,
+        },
+      };
+
     case (type === "geopoint"):
       return { type: "geohash", geohash: {} };
 
