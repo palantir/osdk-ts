@@ -18,24 +18,42 @@ export type { DirectedLinkTypeRid } from "./generated/object-set-service/api/Dir
 export type { FoundryObjectReference } from "./generated/object-set-service/api/FoundryObjectReference.js";
 export type { GetBulkLinksPageRequest } from "./generated/object-set-service/api/GetBulkLinksPageRequest.js";
 export type { ObjectIdentifier } from "./generated/object-set-service/api/ObjectIdentifier.js";
-export type {
-  ObjectSet,
-} from "./generated/object-set-service/api/ObjectSet.js";
-export type {
-  ObjectSetFilter,
-} from "./generated/object-set-service/api/ObjectSetFilter.js";
-export type { LinkTypeMetadata } from "./generated/ontology-metadata/api/__components.js";
-export type { LoadAllOntologiesResponse } from "./generated/ontology-metadata/api/__components.js";
-export type { ObjectType } from "./generated/ontology-metadata/api/__components.js";
-export type { StructFieldType } from "./generated/ontology-metadata/api/__components.js";
-export type { Type } from "./generated/ontology-metadata/api/__components.js";
-export type { SharedPropertyTypeGothamMapping } from "./generated/ontology-metadata/api/typemapping/__components.js";
+export type { ObjectSet } from "./generated/object-set-service/api/ObjectSet.js";
+export type { ObjectSetFilter } from "./generated/object-set-service/api/ObjectSetFilter.js";
 
 export { createTemporaryObjectSet } from "./generated/object-set-service/api/ObjectSetService.js";
 export { getBulkLinksPage } from "./generated/object-set-service/api/ObjectSetServiceV2/getBulkLinksPage.js";
+
 export { bulkLoadOntologyEntities } from "./generated/ontology-metadata/api/OntologyMetadataService/bulkLoadOntologyEntities.js";
 export { getLinkTypesForObjectTypes } from "./generated/ontology-metadata/api/OntologyMetadataService/getLinkTypesForObjectTypes.js";
 export { loadAllOntologies } from "./generated/ontology-metadata/api/OntologyMetadataService/loadAllOntologies.js";
+
+export * from "./generated/ontology-metadata/api/__components.js";
+
+export type {
+  OntologyIrBaseParameterType,
+  OntologyIrBaseParameterType_decimal,
+  OntologyIrBaseParameterType_decimalList,
+  OntologyIrBaseParameterType_interfaceReference,
+  OntologyIrBaseParameterType_interfaceReferenceList,
+  OntologyIrBaseParameterType_objectReference,
+  OntologyIrBaseParameterType_objectReferenceList,
+  OntologyIrBaseParameterType_objectSetRid,
+  OntologyIrBaseParameterType_struct,
+  OntologyIrBaseParameterType_structList,
+  OntologyIrBaseParameterType_timestamp,
+  OntologyIrBaseParameterType_timestampList,
+  ParameterRenderHint,
+  ParameterRequiredConfiguration,
+} from "./generated/ontology-metadata/api/types/__components.js";
+
+export type {
+  OntologyIrActionTypeBlockDataV2,
+  OntologyIrLinkTypeBlockDataV2,
+  OntologyIrObjectTypeBlockDataV2,
+} from "./generated/ontology-metadata/api/blockdata/__components.ts";
+
+export type { SharedPropertyTypeGothamMapping } from "./generated/ontology-metadata/api/typemapping/__components.ts";
 
 export type { BaseType } from "./generated/type-registry/api/BaseType.js";
 export type { DataConstraint } from "./generated/type-registry/api/DataConstraint.js";
@@ -47,14 +65,6 @@ export type { ValueTypeDataConstraint } from "./generated/type-registry/api/Valu
 export type { ValueTypeDisplayMetadata } from "./generated/type-registry/api/ValueTypeDisplayMetadata.js";
 export type { ValueTypeStatus } from "./generated/type-registry/api/ValueTypeStatus.js";
 export type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVersion.js";
-
-export type {
-  InterfaceTypeStatus,
-  InterfaceTypeStatus_active,
-  InterfaceTypeStatus_deprecated,
-  InterfaceTypeStatus_experimental,
-} from "./generated/ontology-metadata/api/__components.js";
-export type { InterfaceTypeRid } from "./generated/ontology-metadata/api/__components.js";
 
 export type {
   ApiNameValueTypeReference,
@@ -73,25 +83,3 @@ export type {
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
 } from "./blockDataIr.js";
-
-export type { Visibility } from "./generated/ontology-metadata/api/__components.ts";
-export type { ColumnName } from "./generated/ontology-metadata/api/__components.ts";
-export type { InterfaceSharedPropertyType } from "./generated/ontology-metadata/api/__components.ts";
-export type { LinkTypeDisplayMetadata } from "./generated/ontology-metadata/api/__components.ts";
-export type { ObjectTypeFieldApiName } from "./generated/ontology-metadata/api/__components.ts";
-export type { OntologyIrInterfaceSharedPropertyType } from "./generated/ontology-metadata/api/__components.ts";
-export type { OntologyIrLinkDefinition } from "./generated/ontology-metadata/api/__components.ts";
-export type { OntologyIrLinkType } from "./generated/ontology-metadata/api/__components.ts";
-export type { OntologyIrLinkTypeStatus } from "./generated/ontology-metadata/api/__components.ts";
-export type { OntologyIrManyToManyLinkDefinition } from "./generated/ontology-metadata/api/__components.ts";
-export type { OntologyIrManyToManyLinkTypeDatasource } from "./generated/ontology-metadata/api/__components.ts";
-export type { OntologyIrObjectType } from "./generated/ontology-metadata/api/__components.ts";
-export type { OntologyIrObjectTypeDatasource } from "./generated/ontology-metadata/api/__components.ts";
-export type { OntologyIrObjectTypeDatasourceDefinition } from "./generated/ontology-metadata/api/__components.ts";
-export type { OntologyIrObjectTypeInterfaceImplementation } from "./generated/ontology-metadata/api/__components.ts";
-export type { OntologyIrOneToManyLinkDefinition } from "./generated/ontology-metadata/api/__components.ts";
-export type { OntologyIrPropertyType } from "./generated/ontology-metadata/api/__components.ts";
-export type { PropertyTypeMappingInfo } from "./generated/ontology-metadata/api/__components.ts";
-export type { RetentionPolicy } from "./generated/ontology-metadata/api/__components.ts";
-export type { OntologyIrLinkTypeBlockDataV2 } from "./generated/ontology-metadata/api/blockdata/__components.ts";
-export type { OntologyIrObjectTypeBlockDataV2 } from "./generated/ontology-metadata/api/blockdata/__components.ts";

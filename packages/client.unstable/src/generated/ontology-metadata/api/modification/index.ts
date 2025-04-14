@@ -132,6 +132,7 @@ export type {
   OntologyUpdateRequest,
   OntologyUpdateResponse,
   PartialPropertyTypeModification,
+  PatchApplicationStrategyModification,
   PerOntologyUniqueIdentifier,
   PropertyTypeModification,
   PropertyTypeStatusModification,
