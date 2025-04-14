@@ -286,7 +286,8 @@ export type PropertyTypeTypeExotic =
   | "mediaReference"
   | "geotimeSeries"
   | PropertyTypeTypeMarking
-  | PropertyTypeTypeStruct;
+  | PropertyTypeTypeStruct
+  | PropertyTypeTypeString;
 
 type PropertyTypeTypeMarking = {
   type: "marking";
@@ -300,6 +301,13 @@ type PropertyTypeTypeStruct = {
       | StructPropertyType
       | Exclude<PropertyTypeTypesWithoutStruct, PropertyTypeTypeMarking>;
   };
+};
+
+type PropertyTypeTypeString = {
+  type: "string";
+  isLongText: boolean;
+  supportsEfficientLeadingWildcard: boolean;
+  supportsExactMatching: boolean;
 };
 
 export type PropertyTypeTypesWithoutStruct = Exclude<

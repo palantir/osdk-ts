@@ -1529,6 +1529,138 @@ describe("Ontology Defining", () => {
     `);
   });
 
+  it("Custom string fields properly set", () => {
+    const spt = defineSharedPropertyType({
+      apiName: "foo",
+      type: {
+        type: "string",
+        isLongText: true,
+        supportsEfficientLeadingWildcard: true,
+        supportsExactMatching: false,
+      },
+    });
+
+    defineInterface({
+      apiName: "interface",
+      properties: { foo: spt },
+    });
+
+    expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+      {
+        "actionTypes": {},
+        "blockPermissionInformation": {
+          "actionTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+        },
+        "interfaceTypes": {
+          "com.palantir.interface": {
+            "interfaceType": {
+              "allExtendsInterfaces": [],
+              "allLinks": [],
+              "allProperties": [],
+              "allPropertiesV2": {},
+              "apiName": "com.palantir.interface",
+              "displayMetadata": {
+                "description": "interface",
+                "displayName": "interface",
+                "icon": undefined,
+              },
+              "extendsInterfaces": [],
+              "links": [],
+              "properties": [],
+              "propertiesV2": {
+                "com.palantir.foo": {
+                  "required": true,
+                  "sharedPropertyType": {
+                    "aliases": [],
+                    "apiName": "com.palantir.foo",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "foo",
+                      "visibility": "NORMAL",
+                    },
+                    "gothamMapping": undefined,
+                    "indexedForSearch": true,
+                    "provenance": undefined,
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": true,
+                        "supportsEfficientLeadingWildcard": true,
+                        "supportsExactMatching": false,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                },
+              },
+              "status": {
+                "active": {},
+                "type": "active",
+              },
+            },
+          },
+        },
+        "linkTypes": {},
+        "objectTypes": {},
+        "sharedPropertyTypes": {
+          "com.palantir.foo": {
+            "sharedPropertyType": {
+              "aliases": [],
+              "apiName": "com.palantir.foo",
+              "baseFormatter": undefined,
+              "dataConstraints": undefined,
+              "displayMetadata": {
+                "description": undefined,
+                "displayName": "foo",
+                "visibility": "NORMAL",
+              },
+              "gothamMapping": undefined,
+              "indexedForSearch": true,
+              "provenance": undefined,
+              "type": {
+                "string": {
+                  "analyzerOverride": undefined,
+                  "enableAsciiFolding": undefined,
+                  "isLongText": true,
+                  "supportsEfficientLeadingWildcard": true,
+                  "supportsExactMatching": false,
+                },
+                "type": "string",
+              },
+              "typeClasses": [
+                {
+                  "kind": "render_hint",
+                  "name": "SELECTABLE",
+                },
+                {
+                  "kind": "render_hint",
+                  "name": "SORTABLE",
+                },
+              ],
+              "valueType": undefined,
+            },
+          },
+        },
+      }
+    `);
+  });
+
   it("defaults interface status to active", () => {
     const result = defineInterface({ apiName: "Foo" });
     expect(result.status).toEqual({ type: "active", active: {} });
