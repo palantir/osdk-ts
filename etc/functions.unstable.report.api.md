@@ -18,7 +18,7 @@ export { Attachment }
 // Warning: (ae-forgotten-export) The symbol "AnyEdit" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export function createEditBatch<T extends AnyEdit>(_client: Client): EditBatch<T>;
+export function createEditBatch<T extends AnyEdit = never>(_client: Client): EditBatch<T>;
 
 // @public (undocumented)
 export type DateISOString<T extends string = string> = T & {
