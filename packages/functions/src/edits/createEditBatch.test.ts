@@ -48,12 +48,14 @@ describe(createEditBatch, () => {
 
     editBatch.create(Task, { id: 0, name: "My Task Name" });
     editBatch.create(Task, { id: 1, name: "My Other Task Name" });
+    editBatch.create(Task, { id: 3 });
     editBatch.delete({ $apiName: "Task", $primaryKey: 0 });
     editBatch.delete(taskInstance);
     editBatch.update({ $apiName: "Task", $primaryKey: 0 }, {
       name: "My New Task Name",
     });
     editBatch.update(taskInstance, { name: "My Very New Task Name" });
+    editBatch.update({ $apiName: "Task", $primaryKey: 3 }, {});
     editBatch.create(Task, { id: 0, name: "My Task Name" });
 
     editBatch.link({ $apiName: "Task", $primaryKey: 0 }, "RP", {
@@ -81,6 +83,11 @@ describe(createEditBatch, () => {
         obj: Task,
         properties: { id: 1, name: "My Other Task Name" },
       },
+      {
+        type: "createObject",
+        obj: Task,
+        properties: { id: 3 },
+      },
       { type: "deleteObject", obj: { $apiName: "Task", $primaryKey: 0 } },
       { type: "deleteObject", obj: { $apiName: "Task", $primaryKey: 2 } },
       {
@@ -92,6 +99,11 @@ describe(createEditBatch, () => {
         type: "updateObject",
         obj: { $apiName: "Task", $primaryKey: 2 },
         properties: { name: "My Very New Task Name" },
+      },
+      {
+        type: "updateObject",
+        obj: { $apiName: "Task", $primaryKey: 3 },
+        properties: {},
       },
       {
         type: "createObject",
