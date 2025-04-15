@@ -101,6 +101,7 @@ const archetypeRules = archetypes(
       "@osdk/e2e.generated.1.1.x",
       "@osdk/examples.*",
       "@osdk/monorepo.*",
+      "@osdk/client.test.generate",
     ],
     {
       ...LIBRARY_RULES,
