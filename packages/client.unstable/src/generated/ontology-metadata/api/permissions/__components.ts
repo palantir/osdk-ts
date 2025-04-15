@@ -337,6 +337,8 @@ export interface GetOntologyPermissionsResponse {
   canCreateSharedPropertyTypes: boolean;
   canCreateTypeGroups: boolean;
   canCreateWorkflows: boolean;
+  canDeleteOntology: boolean;
+  canUpdateOntology: boolean;
   canUseNotificationsWithActionType: boolean;
 }
 /**

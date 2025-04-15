@@ -1344,6 +1344,7 @@ export interface ObjectTypeDatasourceColumnMappingMismatchError {
  */
 export interface ObjectTypeDatasourceWithoutPrimaryKeyColumnError {
   datasource: string;
+  datasourceRid: _api_DatasourceRid;
   objectType: _api_ObjectTypeRid;
 }
 /**

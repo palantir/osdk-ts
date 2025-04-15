@@ -35,22 +35,45 @@ export interface ActionTypeErrorCategory_parameter {
   type: "parameter";
   parameter: InvalidActionTypeParameterWithIdentifier;
 }
+
+export interface ActionTypeErrorCategory_reference {
+  type: "reference";
+  reference: InvalidActionTypeReference;
+}
+
+export interface ActionTypeErrorCategory_indeterminate {
+  type: "indeterminate";
+  indeterminate: IndeterminateErrorCategory;
+}
 export type ActionTypeErrorCategory =
   | ActionTypeErrorCategory_definition
-  | ActionTypeErrorCategory_parameter;
+  | ActionTypeErrorCategory_parameter
+  | ActionTypeErrorCategory_reference
+  | ActionTypeErrorCategory_indeterminate;
 
 export interface ActionTypeParameterErrorCategory_definition {
   type: "definition";
   definition: InvalidActionTypeParameterDefinition;
 }
+
+export interface ActionTypeParameterErrorCategory_reference {
+  type: "reference";
+  reference: InvalidActionTypeParameterReference;
+}
+
+export interface ActionTypeParameterErrorCategory_indeterminate {
+  type: "indeterminate";
+  indeterminate: IndeterminateErrorCategory;
+}
 export type ActionTypeParameterErrorCategory =
-  ActionTypeParameterErrorCategory_definition;
+  | ActionTypeParameterErrorCategory_definition
+  | ActionTypeParameterErrorCategory_reference
+  | ActionTypeParameterErrorCategory_indeterminate;
 
 export interface ErrorData {
   errorMessage: string;
   errorName: string;
   safeArgs: Array<SafeArg>;
-  unsafeArgs: Array<UnsafeArg>;
 }
 /**
  * Error Tags are applied at the error level, enabling the client to manage errors differently.
@@ -70,7 +93,20 @@ export interface InterfaceTypeErrorCategory_definition {
   type: "definition";
   definition: InvalidInterfaceTypeDefinition;
 }
-export type InterfaceTypeErrorCategory = InterfaceTypeErrorCategory_definition;
+
+export interface InterfaceTypeErrorCategory_reference {
+  type: "reference";
+  reference: InvalidInterfaceTypeReference;
+}
+
+export interface InterfaceTypeErrorCategory_indeterminate {
+  type: "indeterminate";
+  indeterminate: IndeterminateErrorCategory;
+}
+export type InterfaceTypeErrorCategory =
+  | InterfaceTypeErrorCategory_definition
+  | InterfaceTypeErrorCategory_reference
+  | InterfaceTypeErrorCategory_indeterminate;
 
 export interface InvalidActionTypeDefinition_indeterminate {
   type: "indeterminate";
@@ -86,10 +122,36 @@ export interface InvalidActionTypeParameterDefinition_indeterminate {
 export type InvalidActionTypeParameterDefinition =
   InvalidActionTypeParameterDefinition_indeterminate;
 
+export interface InvalidActionTypeParameterReference_indeterminate {
+  type: "indeterminate";
+  indeterminate: IndeterminateErrorCategory;
+}
+
+export interface InvalidActionTypeParameterReference_notFound {
+  type: "notFound";
+  notFound: NotFoundErrorCategory;
+}
+export type InvalidActionTypeParameterReference =
+  | InvalidActionTypeParameterReference_indeterminate
+  | InvalidActionTypeParameterReference_notFound;
+
 export interface InvalidActionTypeParameterWithIdentifier {
   errorCategory: ActionTypeParameterErrorCategory;
   identifier: _api_ActionTypeParameterIdentifier;
 }
+export interface InvalidActionTypeReference_indeterminate {
+  type: "indeterminate";
+  indeterminate: IndeterminateErrorCategory;
+}
+
+export interface InvalidActionTypeReference_notFound {
+  type: "notFound";
+  notFound: NotFoundErrorCategory;
+}
+export type InvalidActionTypeReference =
+  | InvalidActionTypeReference_indeterminate
+  | InvalidActionTypeReference_notFound;
+
 export interface InvalidActionTypeWithIdentifier {
   errorCategory: ActionTypeErrorCategory;
   identifier: _api_ActionTypeIdentifier;
@@ -157,6 +219,19 @@ export interface InvalidInterfaceTypeDefinition_indeterminate {
 export type InvalidInterfaceTypeDefinition =
   InvalidInterfaceTypeDefinition_indeterminate;
 
+export interface InvalidInterfaceTypeReference_indeterminate {
+  type: "indeterminate";
+  indeterminate: IndeterminateErrorCategory;
+}
+
+export interface InvalidInterfaceTypeReference_notFound {
+  type: "notFound";
+  notFound: NotFoundErrorCategory;
+}
+export type InvalidInterfaceTypeReference =
+  | InvalidInterfaceTypeReference_indeterminate
+  | InvalidInterfaceTypeReference_notFound;
+
 export interface InvalidInterfaceTypeWithIdentifier {
   errorCategory: InterfaceTypeErrorCategory;
   identifier: _api_InterfaceTypeRidOrIdInRequest;
@@ -166,6 +241,19 @@ export interface InvalidLinkTypeDefinition_indeterminate {
   indeterminate: IndeterminateErrorCategory;
 }
 export type InvalidLinkTypeDefinition = InvalidLinkTypeDefinition_indeterminate;
+
+export interface InvalidLinkTypeReference_indeterminate {
+  type: "indeterminate";
+  indeterminate: IndeterminateErrorCategory;
+}
+
+export interface InvalidLinkTypeReference_notFound {
+  type: "notFound";
+  notFound: NotFoundErrorCategory;
+}
+export type InvalidLinkTypeReference =
+  | InvalidLinkTypeReference_indeterminate
+  | InvalidLinkTypeReference_notFound;
 
 export interface InvalidLinkTypeWithIdentifier {
   errorCategory: LinkTypeErrorCategory;
@@ -185,6 +273,19 @@ export interface InvalidObjectPropertyTypeDefinition_indeterminate {
 export type InvalidObjectPropertyTypeDefinition =
   InvalidObjectPropertyTypeDefinition_indeterminate;
 
+export interface InvalidObjectPropertyTypeReference_indeterminate {
+  type: "indeterminate";
+  indeterminate: IndeterminateErrorCategory;
+}
+
+export interface InvalidObjectPropertyTypeReference_notFound {
+  type: "notFound";
+  notFound: NotFoundErrorCategory;
+}
+export type InvalidObjectPropertyTypeReference =
+  | InvalidObjectPropertyTypeReference_indeterminate
+  | InvalidObjectPropertyTypeReference_notFound;
+
 export interface InvalidObjectPropertyTypeWithIdentifier {
   errorCategory: ObjectPropertyTypeErrorCategory;
   identifier: _api_PropertyTypeIdentifier;
@@ -200,6 +301,19 @@ export interface InvalidObjectTypeDefinition_indeterminate {
 export type InvalidObjectTypeDefinition =
   InvalidObjectTypeDefinition_indeterminate;
 
+export interface InvalidObjectTypeReference_indeterminate {
+  type: "indeterminate";
+  indeterminate: IndeterminateErrorCategory;
+}
+
+export interface InvalidObjectTypeReference_notFound {
+  type: "notFound";
+  notFound: NotFoundErrorCategory;
+}
+export type InvalidObjectTypeReference =
+  | InvalidObjectTypeReference_indeterminate
+  | InvalidObjectTypeReference_notFound;
+
 export interface InvalidObjectTypeWithIdentifier {
   errorCategory: ObjectTypeErrorCategory;
   identifier: _api_ObjectTypeIdentifier;
@@ -213,6 +327,19 @@ export interface InvalidSharedPropertyTypeDefinition_indeterminate {
 }
 export type InvalidSharedPropertyTypeDefinition =
   InvalidSharedPropertyTypeDefinition_indeterminate;
+
+export interface InvalidSharedPropertyTypeReference_indeterminate {
+  type: "indeterminate";
+  indeterminate: IndeterminateErrorCategory;
+}
+
+export interface InvalidSharedPropertyTypeReference_notFound {
+  type: "notFound";
+  notFound: NotFoundErrorCategory;
+}
+export type InvalidSharedPropertyTypeReference =
+  | InvalidSharedPropertyTypeReference_indeterminate
+  | InvalidSharedPropertyTypeReference_notFound;
 
 export interface InvalidSharedPropertyTypeWithIdentifier {
   errorCategory: SharedPropertyTypeErrorCategory;
@@ -230,14 +357,41 @@ export interface LinkTypeErrorCategory_definition {
   type: "definition";
   definition: InvalidLinkTypeDefinition;
 }
-export type LinkTypeErrorCategory = LinkTypeErrorCategory_definition;
 
+export interface LinkTypeErrorCategory_reference {
+  type: "reference";
+  reference: InvalidLinkTypeReference;
+}
+
+export interface LinkTypeErrorCategory_indeterminate {
+  type: "indeterminate";
+  indeterminate: IndeterminateErrorCategory;
+}
+export type LinkTypeErrorCategory =
+  | LinkTypeErrorCategory_definition
+  | LinkTypeErrorCategory_reference
+  | LinkTypeErrorCategory_indeterminate;
+
+export interface NotFoundErrorCategory {
+}
 export interface ObjectPropertyTypeErrorCategory_definition {
   type: "definition";
   definition: InvalidObjectPropertyTypeDefinition;
 }
+
+export interface ObjectPropertyTypeErrorCategory_reference {
+  type: "reference";
+  reference: InvalidObjectPropertyTypeReference;
+}
+
+export interface ObjectPropertyTypeErrorCategory_indeterminate {
+  type: "indeterminate";
+  indeterminate: IndeterminateErrorCategory;
+}
 export type ObjectPropertyTypeErrorCategory =
-  ObjectPropertyTypeErrorCategory_definition;
+  | ObjectPropertyTypeErrorCategory_definition
+  | ObjectPropertyTypeErrorCategory_reference
+  | ObjectPropertyTypeErrorCategory_indeterminate;
 
 export interface ObjectTypeDatasourceErrorCategory_definition {
   type: "definition";
@@ -260,10 +414,22 @@ export interface ObjectTypeErrorCategory_datasource {
   type: "datasource";
   datasource: InvalidObjectTypeDatasourceWithIdentifier;
 }
+
+export interface ObjectTypeErrorCategory_reference {
+  type: "reference";
+  reference: InvalidObjectTypeReference;
+}
+
+export interface ObjectTypeErrorCategory_indeterminate {
+  type: "indeterminate";
+  indeterminate: IndeterminateErrorCategory;
+}
 export type ObjectTypeErrorCategory =
   | ObjectTypeErrorCategory_definition
   | ObjectTypeErrorCategory_propertyType
-  | ObjectTypeErrorCategory_datasource;
+  | ObjectTypeErrorCategory_datasource
+  | ObjectTypeErrorCategory_reference
+  | ObjectTypeErrorCategory_indeterminate;
 
 export interface OntologyModificationValidationError {
   errorData: ErrorData;
@@ -276,7 +442,7 @@ export interface SafeArg {
   value: SafeArgValue;
 }
 export interface SafeArgList {
-  value: Array<SafeArgString>;
+  values: Array<SafeArgString>;
 }
 export interface SafeArgOptional {
   value?: SafeArgString | null | undefined;
@@ -305,35 +471,17 @@ export interface SharedPropertyTypeErrorCategory_definition {
   type: "definition";
   definition: InvalidSharedPropertyTypeDefinition;
 }
+
+export interface SharedPropertyTypeErrorCategory_reference {
+  type: "reference";
+  reference: InvalidSharedPropertyTypeReference;
+}
+
+export interface SharedPropertyTypeErrorCategory_indeterminate {
+  type: "indeterminate";
+  indeterminate: IndeterminateErrorCategory;
+}
 export type SharedPropertyTypeErrorCategory =
-  SharedPropertyTypeErrorCategory_definition;
-
-export interface UnsafeArg {
-  name: string;
-  value: UnsafeArgValue;
-}
-export interface UnsafeArgList {
-  value: Array<UnsafeArgString>;
-}
-export interface UnsafeArgOptional {
-  value?: UnsafeArgString | null | undefined;
-}
-export type UnsafeArgString = string;
-export interface UnsafeArgValue_string {
-  type: "string";
-  string: UnsafeArgString;
-}
-
-export interface UnsafeArgValue_list {
-  type: "list";
-  list: UnsafeArgList;
-}
-
-export interface UnsafeArgValue_optional {
-  type: "optional";
-  optional: UnsafeArgOptional;
-}
-export type UnsafeArgValue =
-  | UnsafeArgValue_string
-  | UnsafeArgValue_list
-  | UnsafeArgValue_optional;
+  | SharedPropertyTypeErrorCategory_definition
+  | SharedPropertyTypeErrorCategory_reference
+  | SharedPropertyTypeErrorCategory_indeterminate;
