@@ -64,14 +64,24 @@ export interface RemoveLink<
     ObjectMetadata.Link<infer T, any> ? ObjectLocator<T> : never;
 }
 
+type PartialForOptionalProperties<T> =
+  & {
+    [K in keyof T as undefined extends T[K] ? K : never]?: T[K];
+  }
+  & {
+    [K in keyof T as undefined extends T[K] ? never : K]-?: T[K];
+  };
+
 export interface CreateObject<S extends ObjectTypeDefinition> {
   type: "createObject";
   obj: S;
-  properties: {
-    [P in PropertyKeys<S>]: OsdkObjectPropertyType<
-      CompileTimeMetadata<S>["properties"][P]
-    >;
-  };
+  properties: PartialForOptionalProperties<
+    {
+      [P in PropertyKeys<S>]: OsdkObjectPropertyType<
+        CompileTimeMetadata<S>["properties"][P]
+      >;
+    }
+  >;
 }
 
 export interface DeleteObject<S extends ObjectTypeDefinition> {
@@ -82,14 +92,16 @@ export interface DeleteObject<S extends ObjectTypeDefinition> {
 export interface UpdateObject<S extends ObjectTypeDefinition> {
   type: "updateObject";
   obj: ObjectLocator<S>;
-  properties: {
-    [
-      P in Exclude<
-        PropertyKeys<S>,
-        CompileTimeMetadata<S>["primaryKeyApiName"]
-      >
-    ]: OsdkObjectPropertyType<CompileTimeMetadata<S>["properties"][P]>;
-  };
+  properties: Partial<
+    {
+      [
+        P in Exclude<
+          PropertyKeys<S>,
+          CompileTimeMetadata<S>["primaryKeyApiName"]
+        >
+      ]: OsdkObjectPropertyType<CompileTimeMetadata<S>["properties"][P]>;
+    }
+  >;
 }
 
 export type AnyEdit =
