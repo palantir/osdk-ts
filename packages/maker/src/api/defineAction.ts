@@ -32,9 +32,13 @@ export function defineCreateAction(
   objectType?: ObjectType,
 ): ActionType {
   return defineAction({
-    apiName: `create-${kebab(interfaceType.apiName)}${
-      objectType === undefined ? "" : `-${kebab(objectType.apiName)}`
-    }`, // TODO(dpaquin): remove namespaces
+    apiName: `create-${
+      kebab(interfaceType.apiName.split(".").pop() ?? interfaceType.apiName)
+    }${
+      objectType === undefined
+        ? ""
+        : `-${kebab(objectType.apiName.split(".").pop() ?? objectType.apiName)}`
+    }`,
     displayName: `Create ${interfaceType.displayMetadata.displayName}`,
     parameters: [
       {
@@ -104,9 +108,13 @@ export function defineModifyAction(
   objectType?: ObjectType,
 ): ActionType {
   return defineAction({
-    apiName: `modify-${kebab(interfaceType.apiName)}${
-      objectType === undefined ? "" : `-${kebab(objectType.apiName)}`
-    }`, // TODO(dpaquin): remove namespaces
+    apiName: `modify-${
+      kebab(interfaceType.apiName.split(".").pop() ?? interfaceType.apiName)
+    }${
+      objectType === undefined
+        ? ""
+        : `-${kebab(objectType.apiName.split(".").pop() ?? objectType.apiName)}`
+    }`,
     displayName: `Modify ${interfaceType.displayMetadata.displayName}`,
     parameters: [
       {

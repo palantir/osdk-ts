@@ -3461,10 +3461,10 @@ describe("Ontology Defining", () => {
       );
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
-        {
+      {
         "blockData": {
           "actionTypes": {
-            "com.palantir.create-com-palantir-example-interface-com-palantir-foo": {
+            "com.palantir.create-example-interface-foo": {
               "actionType": {
                 "actionTypeLogic": {
                   "logic": {
@@ -3573,7 +3573,7 @@ describe("Ontology Defining", () => {
                   },
                 },
                 "metadata": {
-                  "apiName": "com.palantir.create-com-palantir-example-interface-com-palantir-foo",
+                  "apiName": "com.palantir.create-example-interface-foo",
                   "displayMetadata": {
                     "configuration": {
                       "defaultLayout": "FORM",
@@ -3643,7 +3643,7 @@ describe("Ontology Defining", () => {
                 },
               },
             },
-            "com.palantir.modify-com-palantir-example-interface-com-palantir-foo": {
+            "com.palantir.modify-example-interface-foo": {
               "actionType": {
                 "actionTypeLogic": {
                   "logic": {
@@ -3751,7 +3751,7 @@ describe("Ontology Defining", () => {
                   },
                 },
                 "metadata": {
-                  "apiName": "com.palantir.modify-com-palantir-example-interface-com-palantir-foo",
+                  "apiName": "com.palantir.modify-example-interface-foo",
                   "displayMetadata": {
                     "configuration": {
                       "defaultLayout": "FORM",
@@ -4021,7 +4021,7 @@ describe("Ontology Defining", () => {
         "importedTypes": {
           "sharedPropertyTypes": [],
         },
-      } 
+      }
         `);
     });
 
@@ -4039,7 +4039,7 @@ describe("Ontology Defining", () => {
       {
         "blockData": {
           "actionTypes": {
-            "com.palantir.create-com-palantir-example-interface": {
+            "com.palantir.create-example-interface": {
               "actionType": {
                 "actionTypeLogic": {
                   "logic": {
@@ -4137,7 +4137,7 @@ describe("Ontology Defining", () => {
                   },
                 },
                 "metadata": {
-                  "apiName": "com.palantir.create-com-palantir-example-interface",
+                  "apiName": "com.palantir.create-example-interface",
                   "displayMetadata": {
                     "configuration": {
                       "defaultLayout": "FORM",
@@ -4207,7 +4207,7 @@ describe("Ontology Defining", () => {
                 },
               },
             },
-            "com.palantir.modify-com-palantir-example-interface": {
+            "com.palantir.modify-example-interface": {
               "actionType": {
                 "actionTypeLogic": {
                   "logic": {
@@ -4300,7 +4300,7 @@ describe("Ontology Defining", () => {
                   },
                 },
                 "metadata": {
-                  "apiName": "com.palantir.modify-com-palantir-example-interface",
+                  "apiName": "com.palantir.modify-example-interface",
                   "displayMetadata": {
                     "configuration": {
                       "defaultLayout": "FORM",
