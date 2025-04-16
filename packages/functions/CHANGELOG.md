@@ -1,5 +1,11 @@
 # @osdk/functions.unstable
 
+## 0.0.5
+
+### Patch Changes
+
+- f911ce5: Small improvements to functions ontology edits API
+
 ## 0.0.4
 
 ### Patch Changes
