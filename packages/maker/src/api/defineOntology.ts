@@ -31,6 +31,7 @@
  */
 
 import type {
+  ActionTypeStatus,
   OntologyIr,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionValidation,
@@ -694,7 +695,12 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
         parameterOrdering: (action.parameters ?? []).map(p => p.id),
         parameters: actionParameters,
         sections: actionSections,
-        status: action.status,
+        status: typeof action.status === "string"
+          ? {
+            type: action.status,
+            [action.status]: {},
+          } as unknown as ActionTypeStatus
+          : action.status,
       },
     },
   };
@@ -777,6 +783,17 @@ function extractAllowedValues(
   parameter: ActionParameter,
 ): OntologyIrAllowedParameterValues {
   switch (parameter.validation.allowedValues.type) {
+    case "oneOf":
+      return {
+        type: "oneOf",
+        oneOf: {
+          type: "oneOf",
+          oneOf: {
+            labelledValues: parameter.validation.allowedValues.oneOf,
+            otherValueAllowed: { allowed: false },
+          },
+        },
+      };
     case "range":
       const { min, max } = parameter.validation.allowedValues;
       return {

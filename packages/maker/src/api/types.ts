@@ -16,7 +16,7 @@
 
 import type {
   ActionTypeApiName,
-  ActionTypeStatus,
+  ActionTypeStatus_deprecated,
   ApiNameValueTypeReference,
   BaseType,
   DataConstraint,
@@ -37,6 +37,7 @@ import type {
   OntologyIrBaseParameterType_objectReference,
   OntologyIrBaseParameterType_objectReferenceList,
   OntologyIrBaseParameterType_objectSetRid,
+  OntologyIrBaseParameterType_objectTypeReference,
   OntologyIrBaseParameterType_struct,
   OntologyIrBaseParameterType_structList,
   OntologyIrBaseParameterType_timestamp,
@@ -44,6 +45,7 @@ import type {
   OntologyIrConditionValue,
   OntologyIrFormContent,
   OntologyIrInterfaceType,
+  OntologyIrLabelledValue,
   OntologyIrLinkTypeStatus,
   OntologyIrLogicRule,
   OntologyIrObjectType,
@@ -107,7 +109,12 @@ export type ActionParameterRequirementConstraint =
   | boolean
   | { listLength: { min?: number; max?: number } };
 
+// TODO(dpaquin): cleanup? or does "type: foo" actually make sense here
 export type ActionParameterAllowedValues =
+  | {
+    type: "oneOf";
+    oneOf: Array<OntologyIrLabelledValue>;
+  }
   | {
     type: "range";
     min?: OntologyIrConditionValue;
@@ -131,6 +138,7 @@ export type ActionParameterAllowedValues =
   | { type: "geohash" }
   | { type: "geoshape" }
   | { type: "geotimeSeriesReference" }
+  | { type: "interfaceObjectQuery" }
   | { type: "redacted" };
 
 export interface ActionTypeInner {
@@ -141,11 +149,17 @@ export interface ActionTypeInner {
   parameters: Array<ActionParameter>;
   rules: Array<OntologyIrLogicRule>;
   sections: Record<SectionId, Array<ParameterId>>;
-  status: ActionTypeStatus; // TODO(dpaquin): can flatten
+  status: ActionStatus;
   formContentOrdering: Array<OntologyIrFormContent>;
   validation: Array<OntologyIrValidationRule>;
   typeClasses: Array<TypeClass>;
 }
+
+export type ActionStatus =
+  | "active"
+  | "experimental"
+  | "example"
+  | ActionTypeStatus_deprecated;
 
 export type {
   InterfaceTypeStatus,
@@ -614,6 +628,7 @@ export type ActionParameterTypeComplex =
   | OntologyIrBaseParameterType_objectReference
   | OntologyIrBaseParameterType_objectReferenceList
   | OntologyIrBaseParameterType_objectSetRid
+  | OntologyIrBaseParameterType_objectTypeReference
   | OntologyIrBaseParameterType_interfaceReference
   | OntologyIrBaseParameterType_interfaceReferenceList
   | OntologyIrBaseParameterType_struct

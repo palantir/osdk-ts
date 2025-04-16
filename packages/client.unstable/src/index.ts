@@ -39,6 +39,7 @@ export type {
   OntologyIrBaseParameterType_objectReference,
   OntologyIrBaseParameterType_objectReferenceList,
   OntologyIrBaseParameterType_objectSetRid,
+  OntologyIrBaseParameterType_objectTypeReference,
   OntologyIrBaseParameterType_struct,
   OntologyIrBaseParameterType_structList,
   OntologyIrBaseParameterType_timestamp,

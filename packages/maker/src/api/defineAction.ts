@@ -17,7 +17,163 @@
 import type { ParameterId } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import { namespace, ontologyDefinition } from "./defineOntology.js";
-import type { ActionType } from "./types.js";
+import type {
+  ActionParameterAllowedValues,
+  ActionParameterType,
+  ActionParameterTypePrimitive,
+  ActionType,
+  InterfaceType,
+  ObjectType,
+  SharedPropertyType,
+} from "./types.js";
+
+export function defineCreateAction(
+  interfaceType: InterfaceType,
+  objectType?: ObjectType,
+): ActionType {
+  return defineAction({
+    apiName: `create-${
+      kebab(interfaceType.apiName.split(".").pop() ?? interfaceType.apiName)
+    }${
+      objectType === undefined
+        ? ""
+        : `-${kebab(objectType.apiName.split(".").pop() ?? objectType.apiName)}`
+    }`,
+    displayName: `Create ${interfaceType.displayMetadata.displayName}`,
+    parameters: [
+      {
+        id: "objectTypeParameter",
+        displayName: "Object type to create",
+        type: {
+          type: "objectTypeReference",
+          objectTypeReference: { interfaceTypeRids: [interfaceType.apiName] },
+        },
+        validation: {
+          required: true,
+          allowedValues: objectType === undefined
+            ? {
+              type: "objectTypeReference",
+              interfaceTypes: [interfaceType.apiName],
+            }
+            : {
+              type: "oneOf",
+              oneOf: [{
+                label: objectType.displayName,
+                value: {
+                  type: "objectType",
+                  objectType: { objectTypeId: objectType.apiName },
+                },
+              }],
+            },
+        },
+      },
+      ...Object.entries(interfaceType.propertiesV2).map((
+        [id, prop],
+      ) => ({
+        id,
+        displayName: prop.sharedPropertyType.displayName
+          ?? prop.sharedPropertyType.nonNameSpacedApiName,
+        type: extractActionParameterTypeFromSpt(prop.sharedPropertyType),
+        typeClasses: prop.sharedPropertyType.typeClasses ?? [],
+        validation: {
+          required: true,
+          allowedValues: extractAllowedValuesFromSpt(
+            prop.sharedPropertyType,
+          ),
+        },
+      })),
+    ],
+    status: interfaceType.status.type !== "deprecated"
+      ? interfaceType.status.type
+      : interfaceType.status,
+    rules: [
+      {
+        type: "addInterfaceRule",
+        addInterfaceRule: {
+          interfaceApiName: interfaceType.apiName,
+          objectTypeParameter: "objectTypeParameter",
+          sharedPropertyValues: Object.fromEntries(
+            Object.entries(interfaceType.propertiesV2).map((
+              [id, prop],
+            ) => [id, { type: "parameterId", parameterId: id }]),
+          ),
+        },
+      },
+    ],
+  });
+}
+
+export function defineModifyAction(
+  interfaceType: InterfaceType,
+  objectType?: ObjectType,
+): ActionType {
+  return defineAction({
+    apiName: `modify-${
+      kebab(interfaceType.apiName.split(".").pop() ?? interfaceType.apiName)
+    }${
+      objectType === undefined
+        ? ""
+        : `-${kebab(objectType.apiName.split(".").pop() ?? objectType.apiName)}`
+    }`,
+    displayName: `Modify ${interfaceType.displayMetadata.displayName}`,
+    parameters: [
+      {
+        id: "interfaceObjectToModifyParameter",
+        displayName: "Object type to modify",
+        type: {
+          type: "interfaceReference",
+          interfaceReference: { interfaceTypeRid: interfaceType.apiName },
+        },
+        validation: {
+          required: true,
+          allowedValues: objectType === undefined
+            ? { type: "interfaceObjectQuery" }
+            : {
+              type: "oneOf",
+              oneOf: [{
+                label: objectType.displayName,
+                value: {
+                  type: "objectType",
+                  objectType: { objectTypeId: objectType.apiName },
+                },
+              }],
+            },
+        },
+      },
+      ...Object.entries(interfaceType.propertiesV2).map((
+        [id, prop],
+      ) => ({
+        id,
+        displayName: prop.sharedPropertyType.displayName
+          ?? prop.sharedPropertyType.nonNameSpacedApiName,
+        type: extractActionParameterTypeFromSpt(prop.sharedPropertyType),
+        typeClasses: prop.sharedPropertyType.typeClasses ?? [],
+        validation: {
+          required: true,
+          allowedValues: extractAllowedValuesFromSpt(
+            prop.sharedPropertyType,
+          ),
+        },
+      })),
+    ],
+    status: interfaceType.status.type !== "deprecated"
+      ? interfaceType.status.type
+      : interfaceType.status,
+    rules: [
+      {
+        type: "modifyInterfaceRule",
+        modifyInterfaceRule: {
+          interfaceObjectToModifyParameter: "interfaceObjectToModifyParameter",
+          sharedPropertyValues: Object.fromEntries(
+            Object.entries(interfaceType.propertiesV2).map((
+              [id, prop],
+            ) => [id, { type: "parameterId", parameterId: id }]),
+          ),
+        },
+      },
+    ],
+  });
+}
 
 export function defineAction(actionDef: ActionType): ActionType {
   const apiName = namespace + actionDef.apiName;
@@ -43,7 +199,9 @@ export function defineAction(actionDef: ActionType): ActionType {
     .filter(p => !parameterIdsSet.has(p));
   invariant(
     parameterIdsNotFound.length === 0,
-    `Parameters [${parameterIdsNotFound}] were referenced but not defined`,
+    `Parameters ${
+      JSON.stringify(parameterIdsNotFound)
+    } were referenced but not defined`,
   );
 
   const definedSectionIds = new Set(Object.keys(actionDef.sections ?? []));
@@ -82,26 +240,191 @@ function referencedParameterIds(actionDef: ActionType): Set<ParameterId> {
 
   // logic rules
   actionDef.rules.forEach(rule => {
+    // when visiting each rule, we also do drive-by namespace prefixing
     switch (rule.type) {
       case "addInterfaceRule":
-        parameterIds.add(rule.addInterfaceRule.objectType);
-        Object.values(rule.addInterfaceRule.sharedPropertyValues).forEach(v => {
-          if (v.type === "parameterId") {
-            parameterIds.add(v.parameterId);
-          }
-        });
-        break;
-      case "modifyInterfaceRule":
-        parameterIds.add(rule.modifyInterfaceRule.interfaceObjectToModify);
-        Object.values(rule.modifyInterfaceRule.sharedPropertyValues).forEach(
-          v => {
+        rule.addInterfaceRule.interfaceApiName = sanitize(
+          rule.addInterfaceRule.interfaceApiName,
+        );
+        parameterIds.add(rule.addInterfaceRule.objectTypeParameter);
+        Object.entries(rule.addInterfaceRule.sharedPropertyValues).forEach(
+          ([k, v]) => {
             if (v.type === "parameterId") {
               parameterIds.add(v.parameterId);
             }
+            rule.addInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
+            delete rule.addInterfaceRule.sharedPropertyValues[k];
+          },
+        );
+        break;
+      case "modifyInterfaceRule":
+        parameterIds.add(
+          rule.modifyInterfaceRule.interfaceObjectToModifyParameter,
+        );
+        Object.entries(rule.modifyInterfaceRule.sharedPropertyValues).forEach(
+          ([k, v]) => {
+            if (v.type === "parameterId") {
+              parameterIds.add(v.parameterId);
+            }
+            rule.modifyInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
+            delete rule.modifyInterfaceRule.sharedPropertyValues[k];
           },
         );
         break;
     }
   });
   return parameterIds;
+}
+
+function extractAllowedValuesFromSpt(
+  spt: SharedPropertyType,
+): ActionParameterAllowedValues {
+  switch (spt.type) {
+    case "boolean":
+      return { type: "boolean" };
+    case "byte":
+      return {
+        type: "range",
+        min: {
+          type: "staticValue",
+          staticValue: { type: "integer", integer: 0 },
+        },
+        max: {
+          type: "staticValue",
+          staticValue: { type: "integer", integer: 255 },
+        },
+      };
+    case "timestamp":
+    case "date":
+      return { type: "datetime" };
+    case "decimal":
+    case "double":
+    case "float":
+    case "integer":
+    case "long":
+      return { type: "range" };
+    case "short":
+      return {
+        type: "range",
+        min: {
+          type: "staticValue",
+          staticValue: { type: "integer", integer: 0 },
+        },
+        max: {
+          type: "staticValue",
+          staticValue: { type: "integer", integer: 65535 },
+        },
+      };
+    case "string":
+      return { type: "text" };
+    case "geopoint":
+    case "geoshape":
+      return { type: "geoshape" };
+    case "mediaReference":
+      return { type: "mediaReference" };
+    case "geotimeSeries":
+      return { type: "geotimeSeriesReference" };
+    default:
+      switch (spt.type.type) {
+        case "marking":
+          return spt.type.markingType === "CBAC"
+            ? { type: "cbacMarking" }
+            : { type: "mandatoryMarking" };
+        case "struct":
+          throw new Error("Structs are not supported yet");
+        default:
+          throw new Error("Unknown type");
+      }
+      break;
+  }
+}
+
+function extractActionParameterTypeFromSpt(
+  spt: SharedPropertyType,
+): ActionParameterType {
+  const typeType = spt.type;
+  if (typeof typeType === "object") {
+    switch (typeType.type) {
+      case "marking":
+        break;
+      case "struct":
+        break;
+      default:
+        throw new Error(`Unknown type`);
+    }
+  }
+  if (
+    typeof typeType === "string" && isActionParameterTypePrimitive(typeType)
+  ) {
+    return maybeAddList(typeType, spt);
+  }
+  switch (typeType) {
+    case "byte":
+    case "short":
+      return maybeAddList("integer", spt);
+    case "geopoint":
+      return maybeAddList("geoshape", spt);
+    case "float":
+      return maybeAddList("double", spt);
+    case "geotimeSeries":
+      return maybeAddList("geotimeSeriesReference", spt);
+    default:
+      throw new Error("Unknown type");
+  }
+}
+
+function maybeAddList(
+  type: ActionParameterTypePrimitive,
+  spt: SharedPropertyType,
+): ActionParameterType {
+  return ((spt.array ?? false) ? type + "List" : type) as ActionParameterType;
+}
+
+function isActionParameterTypePrimitive(
+  type: string,
+): type is ActionParameterTypePrimitive {
+  return [
+    "boolean",
+    "booleanList",
+    "integer",
+    "integerList",
+    "long",
+    "longList",
+    "double",
+    "doubleList",
+    "string",
+    "stringList",
+    "decimal",
+    "decimalList",
+    "timestamp",
+    "timestampList",
+    "geohash",
+    "geohashList",
+    "geoshape",
+    "geoshapeList",
+    "timeSeriesReference",
+    "date",
+    "dateList",
+    "objectTypeReference",
+    "attachment",
+    "attachmentList",
+    "marking",
+    "markingList",
+    "mediaReference",
+    "mediaReferenceList",
+    "geotimeSeriesReference",
+    "geotimeSeriesReferenceList",
+  ].includes(type);
+}
+
+function kebab(s: string): string {
+  return s
+    .replace(/([a-z])([A-Z])/g, "$1-$2")
+    .replace(/([A-Z])([A-Z][a-z])/g, "$1-$2")
+    .replace(/\./g, "-")
+    .toLowerCase();
+}
+
+function sanitize(s: string): string {
+  return s.includes(".") ? s : namespace + s;
 }

@@ -6325,7 +6325,7 @@ export interface OntologyIrAddInterfaceLinkRule {
 }
 export interface OntologyIrAddInterfaceRule {
   interfaceApiName: InterfaceTypeApiName;
-  objectType: ParameterId;
+  objectTypeParameter: ParameterId;
   sharedPropertyValues: Record<
     ObjectTypeFieldApiName,
     OntologyIrLogicRuleValue
@@ -7143,7 +7143,7 @@ export type OntologyIrMediaSourceRid =
   | OntologyIrMediaSourceRid_datasetRid;
 
 export interface OntologyIrModifyInterfaceRule {
-  interfaceObjectToModify: ParameterId;
+  interfaceObjectToModifyParameter: ParameterId;
   sharedPropertyValues: Record<
     ObjectTypeFieldApiName,
     OntologyIrLogicRuleValue
