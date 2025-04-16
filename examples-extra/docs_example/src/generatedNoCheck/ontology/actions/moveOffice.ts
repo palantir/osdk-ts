@@ -61,13 +61,13 @@ export namespace moveOffice {
     /**
      * Update an office's physical location
      */
-    applyAction<P extends moveOffice.Params, OP extends ApplyActionOptions>(
-      args: P,
+    applyAction<OP extends ApplyActionOptions>(
+      args: moveOffice.Params,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
 
-    batchApplyAction<P extends ReadonlyArray<moveOffice.Params>, OP extends ApplyBatchActionOptions>(
-      args: P,
+    batchApplyAction<OP extends ApplyBatchActionOptions>(
+      args: ReadonlyArray<moveOffice.Params>,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }
