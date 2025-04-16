@@ -1,5 +1,18 @@
 # @osdk/maker
 
+## 0.10.0-beta.16
+
+### Minor Changes
+
+- 4a02a1f: Make string more configurable
+- c0aa106: Add visibility field to shared property type in maker
+- 395ae07: Actions as code
+- c7f7a99: Export defineOntology method
+
+### Patch Changes
+
+- @osdk/api@2.2.0-beta.16
+
 ## 0.10.0-beta.15
 
 ### Minor Changes
