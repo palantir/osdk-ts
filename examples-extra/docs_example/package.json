@@ -43,7 +43,7 @@
     "tslib": "^2.6.3",
     "typescript": "~5.5.4",
     "typescript-eslint": "^8.28.0",
-    "vite": "^6.2.4"
+    "vite": "^6.3.0"
   },
   "type": "module"
 }
