@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.2.0-beta.16
+
+### Minor Changes
+
+- 395ae07: Actions as code
+
 ## 2.2.0-beta.15
 
 ### Minor Changes
