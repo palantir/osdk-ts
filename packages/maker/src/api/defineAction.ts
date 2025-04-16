@@ -240,24 +240,34 @@ function referencedParameterIds(actionDef: ActionType): Set<ParameterId> {
 
   // logic rules
   actionDef.rules.forEach(rule => {
+    // when visiting each rule, we also do drive-by namespace prefixing
     switch (rule.type) {
       case "addInterfaceRule":
+        rule.addInterfaceRule.interfaceApiName = sanitize(
+          rule.addInterfaceRule.interfaceApiName,
+        );
         parameterIds.add(rule.addInterfaceRule.objectTypeParameter);
-        Object.values(rule.addInterfaceRule.sharedPropertyValues).forEach(v => {
-          if (v.type === "parameterId") {
-            parameterIds.add(v.parameterId);
-          }
-        });
+        Object.entries(rule.addInterfaceRule.sharedPropertyValues).forEach(
+          ([k, v]) => {
+            if (v.type === "parameterId") {
+              parameterIds.add(v.parameterId);
+            }
+            rule.addInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
+            delete rule.addInterfaceRule.sharedPropertyValues[k];
+          },
+        );
         break;
       case "modifyInterfaceRule":
         parameterIds.add(
           rule.modifyInterfaceRule.interfaceObjectToModifyParameter,
         );
-        Object.values(rule.modifyInterfaceRule.sharedPropertyValues).forEach(
-          v => {
+        Object.entries(rule.modifyInterfaceRule.sharedPropertyValues).forEach(
+          ([k, v]) => {
             if (v.type === "parameterId") {
               parameterIds.add(v.parameterId);
             }
+            rule.modifyInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
+            delete rule.modifyInterfaceRule.sharedPropertyValues[k];
           },
         );
         break;
@@ -413,4 +423,8 @@ function kebab(s: string): string {
     .replace(/([A-Z])([A-Z][a-z])/g, "$1-$2")
     .replace(/\./g, "-")
     .toLowerCase();
+}
+
+function sanitize(s: string): string {
+  return s.includes(".") ? s : namespace + s;
 }

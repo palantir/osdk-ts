@@ -3304,7 +3304,7 @@ describe("Ontology Defining", () => {
                     "rules": [
                       {
                         "addInterfaceRule": {
-                          "interfaceApiName": "foo",
+                          "interfaceApiName": "com.palantir.foo",
                           "objectTypeParameter": "param1",
                           "sharedPropertyValues": {},
                         },
@@ -3474,7 +3474,7 @@ describe("Ontology Defining", () => {
                           "interfaceApiName": "com.palantir.exampleInterface",
                           "objectTypeParameter": "objectTypeParameter",
                           "sharedPropertyValues": {
-                            "property1": {
+                            "com.palantir.property1": {
                               "parameterId": "property1",
                               "type": "parameterId",
                             },
@@ -3652,7 +3652,7 @@ describe("Ontology Defining", () => {
                         "modifyInterfaceRule": {
                           "interfaceObjectToModifyParameter": "interfaceObjectToModifyParameter",
                           "sharedPropertyValues": {
-                            "property1": {
+                            "com.palantir.property1": {
                               "parameterId": "property1",
                               "type": "parameterId",
                             },
@@ -4049,7 +4049,7 @@ describe("Ontology Defining", () => {
                           "interfaceApiName": "com.palantir.exampleInterface",
                           "objectTypeParameter": "objectTypeParameter",
                           "sharedPropertyValues": {
-                            "property1": {
+                            "com.palantir.property1": {
                               "parameterId": "property1",
                               "type": "parameterId",
                             },
@@ -4216,7 +4216,7 @@ describe("Ontology Defining", () => {
                         "modifyInterfaceRule": {
                           "interfaceObjectToModifyParameter": "interfaceObjectToModifyParameter",
                           "sharedPropertyValues": {
-                            "property1": {
+                            "com.palantir.property1": {
                               "parameterId": "property1",
                               "type": "parameterId",
                             },
