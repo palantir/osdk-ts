@@ -4,7 +4,7 @@
 
 ```ts
 
-import { Attachment } from '@osdk/api';
+import { Attachment } from '@osdk/client';
 import type { Client } from '@osdk/client';
 import type { CompileTimeMetadata } from '@osdk/api';
 import type { ObjectMetadata } from '@osdk/api';
@@ -12,9 +12,9 @@ import type { ObjectTypeDefinition } from '@osdk/api';
 import type { Osdk } from '@osdk/api';
 import type { OsdkObjectPropertyType } from '@osdk/api';
 import type { PropertyKeys } from '@osdk/api';
-import { Range as Range_2 } from '@osdk/api';
-import { ThreeDimensionalAggregation } from '@osdk/api';
-import { TwoDimensionalAggregation } from '@osdk/api';
+import { Range as Range_2 } from '@osdk/client';
+import { ThreeDimensionalAggregation } from '@osdk/client';
+import { TwoDimensionalAggregation } from '@osdk/client';
 
 export { Attachment }
 

@@ -12,6 +12,7 @@ import { ActionReturnTypeForOptions } from '@osdk/api';
 import { ActionValidationResponse } from '@osdk/api';
 import { ApplyActionOptions } from '@osdk/api';
 import { ApplyBatchActionOptions } from '@osdk/api';
+import { Attachment } from '@osdk/api';
 import type { AttachmentUpload } from '@osdk/api';
 import type { CompileTimeMetadata } from '@osdk/api';
 import type { DataValueClientToWire } from '@osdk/api';
@@ -41,11 +42,14 @@ import { QueryDefinition } from '@osdk/api';
 import type { QueryMetadata } from '@osdk/api';
 import { QueryParam } from '@osdk/api';
 import { QueryResult } from '@osdk/api';
+import { Range as Range_2 } from '@osdk/api';
 import { Result } from '@osdk/api';
 import type { SharedClient } from '@osdk/shared.client2';
 import { SharedClient as SharedClient_2 } from '@osdk/shared.client';
 import type { SharedClientContext } from '@osdk/shared.client2';
 import { SingleLinkAccessor } from '@osdk/api';
+import { ThreeDimensionalAggregation } from '@osdk/api';
+import { TwoDimensionalAggregation } from '@osdk/api';
 import { VersionBound } from '@osdk/api';
 import { WhereClause } from '@osdk/api';
 
@@ -71,6 +75,8 @@ export { ActionValidationResponse }
 export { ApplyActionOptions }
 
 export { ApplyBatchActionOptions }
+
+export { Attachment }
 
 // Warning: (ae-forgotten-export) The symbol "OldSharedClient" needs to be exported by the entry point index.d.ts
 //
@@ -188,6 +194,8 @@ export { QueryParam }
 
 export { QueryResult }
 
+export { Range_2 as Range }
+
 export { Result }
 
 // @public (undocumented)
@@ -201,6 +209,10 @@ export type ResultOrError<T extends object> = ({
 };
 
 export { SingleLinkAccessor }
+
+export { ThreeDimensionalAggregation }
+
+export { TwoDimensionalAggregation }
 
 export { VersionBound }
 
