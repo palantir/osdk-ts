@@ -66,7 +66,7 @@ export namespace ActionParam {
         : U extends ReadonlyArray<string> ? U[number]
         : string)
       : string;
-    $primaryKey: string | number;
+    $primaryKey: string | number | boolean;
   };
 
   export type StructType<
