@@ -707,6 +707,7 @@ describe("ActionResponse remapping", () => {
       "actionTakesAttachment",
       "actionTakesMedia",
       "actionTakesObjectSet",
+      "addGeoshape",
       "createFooInterface",
       "createOffice",
       "createOfficeAndEmployee",
