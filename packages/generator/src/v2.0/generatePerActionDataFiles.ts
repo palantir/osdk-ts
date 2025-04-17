@@ -189,9 +189,9 @@ export async function generatePerActionDataFiles(
             // Represents a fqn of the action
             export interface Signatures {
               ${getDescriptionIfPresent(action.description)}
-              applyAction<P extends ${action.paramsIdentifier}, OP extends ApplyActionOptions>(args: P, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
+              applyAction<OP extends ApplyActionOptions>(args: ${action.paramsIdentifier}, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
            
-              batchApplyAction<P extends ReadonlyArray<${action.paramsIdentifier}>, OP extends ApplyBatchActionOptions>(args: P, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
+              batchApplyAction<OP extends ApplyBatchActionOptions>(args: ReadonlyArray<${action.paramsIdentifier}>, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
             }
   
           }

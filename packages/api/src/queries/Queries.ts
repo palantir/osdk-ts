@@ -25,7 +25,7 @@ import type {
   AggregationRangeKeyTypes,
   AggregationValueTypes,
 } from "../ontology/QueryDefinition.js";
-import type { OsdkBase } from "../OsdkBase.js";
+import type { OsdkBase, OsdkBaseWithPrimaryKey } from "../OsdkBase.js";
 import type { OsdkObjectPrimaryKeyType } from "../OsdkObjectPrimaryKeyType.js";
 import type {
   AggKeyClientToWire,
@@ -50,7 +50,7 @@ export namespace QueryParam {
    * Helper type to convert action definition parameter object types to typescript types
    */
   export type ObjectType<T extends ObjectTypeDefinition> =
-    | OsdkBase<T>
+    | OsdkBaseWithPrimaryKey<T>
     | OsdkObjectPrimaryKeyType<T>;
 
   /**
