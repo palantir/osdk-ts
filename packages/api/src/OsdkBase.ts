@@ -31,9 +31,13 @@ export type OsdkBase<
   readonly $primaryKey: PrimaryKeyType<Q>;
 
   readonly $title: string | undefined;
-
-  readonly $objectSpecifier: ObjectSpecifier<Q>;
 };
+
+export interface OsdkBaseWithObjectSpecifier<
+  Q extends ObjectOrInterfaceDefinition,
+> extends OsdkBase<Q> {
+  readonly $objectSpecifier: ObjectSpecifier<Q>;
+}
 
 export type PrimaryKeyType<Q extends ObjectOrInterfaceDefinition> =
   & (Q extends ObjectTypeDefinition ? OsdkObjectPrimaryKeyType<Q>

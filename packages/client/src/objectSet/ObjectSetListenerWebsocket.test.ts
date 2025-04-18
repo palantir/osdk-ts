@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import type { ObjectSetSubscription, PropertyKeys } from "@osdk/api";
+import type { ObjectSetSubscription, Osdk, PropertyKeys } from "@osdk/api";
 import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import type {
   ObjectSetStreamSubscribeRequests,
-  ObjectUpdate,
   StreamMessage,
 } from "@osdk/foundry.ontologies";
 import {
@@ -125,7 +124,10 @@ describe("ObjectSetListenerWebsocket", async () => {
     >;
     let oslwInst = 0;
 
-    let updateReceived: ObjectUpdate | undefined = undefined;
+    let updateReceived: {
+      object: Osdk.Instance<Employee>;
+      state: "ADDED_OR_UPDATED" | "REMOVED";
+    } | undefined = undefined;
 
     let listenerPromise: DeferredPromise<void>;
 
@@ -147,7 +149,7 @@ describe("ObjectSetListenerWebsocket", async () => {
 
       listener = {
         onChange: vi.fn((o) => {
-          updateReceived = o;
+          updateReceived = { object: o.object, state: o.state };
           listenerPromise.resolve();
         }),
         onError: vi.fn(),
