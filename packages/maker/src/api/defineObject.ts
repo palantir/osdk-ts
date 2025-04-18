@@ -15,23 +15,31 @@
  */
 
 import invariant from "tiny-invariant";
-import { namespace, ontologyDefinition } from "./defineOntology.js";
+import { ontologyDefinition, updateOntology } from "./defineOntology.js";
 import type {
   InterfacePropertyType,
   ObjectType,
+  ObjectTypeDefinition,
   PropertyTypeType,
   PropertyTypeTypeExotic,
   SharedPropertyType,
 } from "./types.js";
+import { OntologyEntityTypeEnum } from "./types.js";
 
 // From https://stackoverflow.com/a/79288714
 const ISO_8601_DURATION =
   /^P(?!$)(?:(?:((?:\d+Y)|(?:\d+(?:\.|,)\d+Y$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+D)|(?:\d+(?:\.|,)\d+D$))?(T((?:\d+H)|(?:\d+(?:\.|,)\d+H$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+S)|(?:\d+(?:\.|,)\d+S$))?)?)|(?:\d+(?:(?:\.|,)\d+)?W))$/;
 
-export function defineObject(objectDef: ObjectType): ObjectType {
+export function defineObjectInner(
+  namespace: string,
+  objectDef: ObjectTypeDefinition,
+): ObjectType {
   const apiName = namespace + objectDef.apiName;
   const propertyApiNames = (objectDef.properties ?? []).map(val => val.apiName);
-  if (ontologyDefinition.objectTypes[apiName] !== undefined) {
+  if (
+    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][apiName]
+      !== undefined
+  ) {
     throw new Error(
       `Object type with apiName ${objectDef.apiName} is already defined`,
     );
@@ -44,8 +52,9 @@ export function defineObject(objectDef: ObjectType): ObjectType {
     objectDef.primaryKeys.length !== 0,
     `${objectDef.apiName} does not have any primary keys, objects must have at least one primary key`,
   );
+
   const nonExistentPrimaryKeys = objectDef.primaryKeys.filter(primaryKey =>
-    !objectDef.properties?.map(val => val.apiName).includes(primaryKey)
+    !propertyApiNames.includes(primaryKey)
   );
   invariant(
     nonExistentPrimaryKeys.length === 0,
@@ -113,7 +122,9 @@ export function defineObject(objectDef: ObjectType): ObjectType {
     const extendsValidations = interfaceImpl.implements.extendsInterfaces
       .flatMap(interfaceApiName =>
         Object.entries(
-          ontologyDefinition.interfaceTypes[interfaceApiName].propertiesV2,
+          ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][
+            interfaceApiName
+          ].propertiesV2 as Record<string, InterfacePropertyType>,
         ).map(validateProperty)
       );
 
@@ -125,10 +136,23 @@ export function defineObject(objectDef: ObjectType): ObjectType {
       allFailedValidations.length === 0,
       "\n" + allFailedValidations.map(formatValidationErrors).join("\n"),
     );
+
+    interfaceImpl.propertyMapping = interfaceImpl.propertyMapping.map((
+      mapping,
+    ) => ({
+      interfaceProperty: extractNamespace(interfaceImpl.implements.apiName)
+        + mapping.interfaceProperty,
+      mapsTo: mapping.mapsTo,
+    }));
   });
 
-  ontologyDefinition.objectTypes[apiName] = { ...objectDef, apiName: apiName };
-  return { ...objectDef, apiName: apiName };
+  const finalObject: ObjectType = {
+    ...objectDef,
+    apiName: apiName,
+    __type: OntologyEntityTypeEnum.OBJECT_TYPE,
+  };
+  updateOntology(namespace, finalObject);
+  return finalObject;
 }
 
 export function isExotic(
@@ -156,7 +180,7 @@ function formatValidationErrors(
 function validateInterfaceImplProperty(
   spt: SharedPropertyType,
   mappedObjectProp: string,
-  object: ObjectType,
+  object: ObjectTypeDefinition,
 ): ValidationResult {
   const objProp = object.properties?.find(prop =>
     prop.apiName === mappedObjectProp
@@ -177,4 +201,8 @@ function validateInterfaceImplProperty(
   }
 
   return { type: "valid" };
+}
+
+function extractNamespace(apiName: string): string {
+  return apiName.substring(0, apiName.lastIndexOf(".") + 1);
 }

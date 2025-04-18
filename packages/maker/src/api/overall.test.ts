@@ -15,28 +15,26 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
-import {
-  defineAction,
-  defineCreateAction,
-  defineModifyAction,
-} from "./defineAction.js";
+import { createContext } from "./context.js";
 import { importSharedPropertyType } from "./defineImportSpt.js";
-import { defineInterface } from "./defineInterface.js";
-import { defineInterfaceLinkConstraint } from "./defineInterfaceLinkConstraint.js";
-import { defineLink } from "./defineLink.js";
-import { defineObject } from "./defineObject.js";
 import {
   defineOntology,
   dumpOntologyFullMetadata,
   dumpValueTypeWireType,
 } from "./defineOntology.js";
-import { defineSharedPropertyType } from "./defineSpt.js";
-import { defineValueType } from "./defineValueType.js";
-import type {
-  InterfaceType,
-  InterfaceTypeStatus_deprecated,
-  InterfaceTypeStatus_experimental,
-} from "./types.js";
+import type { InterfaceType } from "./types.js";
+
+const {
+  defineAction,
+  defineObject,
+  defineInterface,
+  defineCreateAction,
+  defineModifyAction,
+  defineValueType,
+  defineLink,
+  defineSharedPropertyType,
+  defineInterfaceLinkConstraint,
+} = createContext("com.palantir.");
 
 describe("Ontology Defining", () => {
   beforeEach(async () => {
@@ -1670,11 +1668,11 @@ describe("Ontology Defining", () => {
     expect(result.status).toEqual({ type: "active", active: {} });
   });
 
-  it("sets interface status as experimental from opts as typed", () => {
+  it("sets interface status as experimental from opts", () => {
     const experimentalStatus = {
       type: "experimental",
       experimental: {},
-    } as InterfaceTypeStatus_experimental;
+    };
     const result = defineInterface({
       apiName: "Foo",
       status: { type: "experimental" },
@@ -1682,14 +1680,14 @@ describe("Ontology Defining", () => {
     expect(result.status).toEqual(experimentalStatus);
   });
 
-  it("sets interface status as deprecated from opts as typed", () => {
+  it("sets interface status as deprecated from opts", () => {
     const deprecatedStatus = {
       type: "deprecated",
       deprecated: {
         message: "foo",
         deadline: "foo",
       },
-    } as InterfaceTypeStatus_deprecated;
+    };
     const result = defineInterface({
       apiName: "Foo",
       status: { type: "deprecated", message: "foo", deadline: "foo" },
@@ -2033,7 +2031,7 @@ describe("Ontology Defining", () => {
       });
 
       defineLink({
-        id: "fizzToFoo",
+        apiName: "fizzToFoo",
         one: {
           object: object,
           metadata: {
@@ -2369,7 +2367,7 @@ describe("Ontology Defining", () => {
       });
 
       defineLink({
-        id: "fizzToFoo",
+        apiName: "fizzToFoo",
         many: {
           object: object,
           metadata: {

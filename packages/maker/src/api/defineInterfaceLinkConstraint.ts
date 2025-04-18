@@ -15,7 +15,7 @@
  */
 
 import invariant from "tiny-invariant";
-import { namespace } from "./defineOntology.js";
+import { sanitize } from "./defineOntology.js";
 import type { InterfaceType } from "./types.js";
 
 type Meta = { apiName: string; displayName?: string; description?: string };
@@ -40,10 +40,11 @@ type One = {
   required?: boolean;
 };
 
-export function defineInterfaceLinkConstraint(
+export function defineInterfaceLinkConstraintInner(
+  namespace: string,
   linkDef: One | Many,
 ): void {
-  const fromLinkMeta = getLinkMeta(linkDef);
+  const fromLinkMeta = getLinkMeta(namespace, linkDef);
 
   invariant(
     linkDef.from.links.find(a => a.metadata.apiName === fromLinkMeta.apiName)
@@ -66,18 +67,15 @@ function getLinkedType(t: string | InterfaceType) {
   };
 }
 
-function getLinkMeta(meta: One | Many) {
-  return typeof meta === "string"
-    ? withDefaults({ apiName: namespace + meta })
-    : withDefaults(meta);
-}
-
-function withDefaults(
-  { apiName, description, displayName }: Meta,
-): Required<Meta> {
+function getLinkMeta(namespace: string, meta: One | Many): Required<Meta> {
+  const { apiName, displayName, description } = meta;
+  const apiNameWithNamespace = sanitize(namespace, apiName);
+  const apiNameWithoutNamespace = apiNameWithNamespace.slice(
+    apiNameWithNamespace.lastIndexOf(".") + 1,
+  );
   return {
-    apiName: namespace + apiName,
-    displayName: displayName ?? apiName,
-    description: description ?? displayName ?? apiName,
+    apiName: apiNameWithNamespace,
+    displayName: displayName ?? apiNameWithoutNamespace,
+    description: description ?? displayName ?? apiNameWithoutNamespace,
   };
 }
