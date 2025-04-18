@@ -11,36 +11,29 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 export namespace createTestGeoAction {
   // Represents the definition of the parameters for the action
   export type ParamsDefinition = {
-    geohashProp: {
+    geo_title: {
+      multiplicity: false;
+      nullable: false;
+      type: 'string';
+    };
+    geohash_prop: {
       multiplicity: false;
       nullable: false;
       type: 'geohash';
     };
-    geoPk: {
-      multiplicity: false;
-      nullable: false;
-      type: 'string';
-    };
-    geoshapeProp: {
+    geoshape_prop: {
       multiplicity: false;
       nullable: false;
       type: 'geoshape';
     };
-    geoTitle: {
-      multiplicity: false;
-      nullable: false;
-      type: 'string';
-    };
   };
 
   export interface Params {
-    readonly geohashProp: ActionParam.PrimitiveType<'geohash'>;
+    readonly geo_title: ActionParam.PrimitiveType<'string'>;
 
-    readonly geoPk: ActionParam.PrimitiveType<'string'>;
+    readonly geohash_prop: ActionParam.PrimitiveType<'geohash'>;
 
-    readonly geoshapeProp: ActionParam.PrimitiveType<'geoshape'>;
-
-    readonly geoTitle: ActionParam.PrimitiveType<'string'>;
+    readonly geoshape_prop: ActionParam.PrimitiveType<'geoshape'>;
   }
 
   // Represents a fqn of the action
@@ -58,10 +51,9 @@ export namespace createTestGeoAction {
 }
 
 /**
- * @param {ActionParam.PrimitiveType<"geohash">} geohashProp
- * @param {ActionParam.PrimitiveType<"string">} geoPk
- * @param {ActionParam.PrimitiveType<"geoshape">} geoshapeProp
- * @param {ActionParam.PrimitiveType<"string">} geoTitle
+ * @param {ActionParam.PrimitiveType<"string">} geo_title
+ * @param {ActionParam.PrimitiveType<"geohash">} geohash_prop
+ * @param {ActionParam.PrimitiveType<"geoshape">} geoshape_prop
  */
 export interface createTestGeoAction extends ActionDefinition<createTestGeoAction.Signatures> {
   __DefinitionMetadata?: {

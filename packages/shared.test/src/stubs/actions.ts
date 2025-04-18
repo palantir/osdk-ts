@@ -158,13 +158,7 @@ export const actionRequestWithGeoshape: ApplyActionRequestV2 = {
       ],
       "type": "Polygon",
     },
-    geohashParam: {
-      "coordinates": [
-        -79.4382042508868,
-        40.917859676842255,
-      ],
-      "type": "Point",
-    },
+    geohashParam: "-79.4382042508868, 40.917859676842255",
   },
 };
 

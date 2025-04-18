@@ -124,7 +124,7 @@ function validateActionParameterType(
       }
       return;
     case "geohash":
-      if (!isPoint(value)) {
+      if (!(typeof value === "string")) {
         ret.result = "INVALID";
         ret.parameters[paramKey] = {
           ...baseParam,

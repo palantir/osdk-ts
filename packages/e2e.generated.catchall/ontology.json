@@ -69,25 +69,19 @@
       "displayName": "Create Test Geo object",
       "status": "EXPERIMENTAL",
       "parameters": {
-        "geoPk": {
+        "geo_title": {
           "dataType": {
             "type": "string"
           },
           "required": true
         },
-        "geoTitle": {
-          "dataType": {
-            "type": "string"
-          },
-          "required": true
-        },
-        "geohashProp": {
+        "geohash_prop": {
           "dataType": {
             "type": "geohash"
           },
           "required": true
         },
-        "geoshapeProp": {
+        "geoshape_prop": {
           "dataType": {
             "type": "geoshape"
           },
