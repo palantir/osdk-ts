@@ -125,7 +125,7 @@ function wrapWithProxy<
   return new Proxy(obj, {
     get(target, prop) {
       if (prop in target) {
-        importer(target); // TODO(dpaquin): can probably be done in a better way
+        importer(target);
         return target[prop as keyof T];
       }
       return undefined;
