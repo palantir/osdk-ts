@@ -4,14 +4,14 @@
 
 ```ts
 
-import { Attachment } from '@osdk/api';
+import { Attachment } from '@osdk/client';
 import type { Client } from '@osdk/client';
-import type { CompileTimeMetadata } from '@osdk/api';
-import type { ObjectMetadata } from '@osdk/api';
-import type { ObjectTypeDefinition } from '@osdk/api';
-import type { Osdk } from '@osdk/api';
-import type { OsdkObjectPropertyType } from '@osdk/api';
-import type { PropertyKeys } from '@osdk/api';
+import type { CompileTimeMetadata } from '@osdk/client';
+import type { ObjectMetadata } from '@osdk/client';
+import type { ObjectTypeDefinition } from '@osdk/client';
+import type { Osdk } from '@osdk/client';
+import type { OsdkObjectPropertyType } from '@osdk/client';
+import type { PropertyKeys } from '@osdk/client';
 
 export { Attachment }
 
