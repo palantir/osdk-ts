@@ -24,18 +24,16 @@ export function wirePropertyV2ToSdkPrimaryKeyTypeDefinition(
     case "integer":
     case "double":
     case "string":
-    case "boolean":
     case "byte":
     case "long":
-    case "short": {
+    case "short":
+    case "timestamp": {
       return input.dataType.type;
     }
     case "date": {
       return "datetime";
     }
-    case "timestamp": {
-      return "timestamp";
-    }
+    case "boolean":
     case "geopoint":
     case "geoshape":
     case "decimal":
@@ -50,7 +48,7 @@ export function wirePropertyV2ToSdkPrimaryKeyTypeDefinition(
     case "cipherText":
     case "vector":
       throw new Error(
-        `Type not supported for primaryKey: ${input.dataType.type}`,
+        `Primary key of type ${input.dataType.type} is not supported`,
       );
     default:
       const _: never = input.dataType;

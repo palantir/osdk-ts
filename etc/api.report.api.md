@@ -950,7 +950,7 @@ export type PossibleWhereClauseFilters = "$gt" | "$eq" | "$ne" | "$isNull" | "$c
 export type PrimaryKeyType<Q extends ObjectOrInterfaceDefinition> = (Q extends ObjectTypeDefinition ? OsdkObjectPrimaryKeyType<Q> : unknown) & PropertyValueWireToClient[PrimaryKeyTypes];
 
 // @public (undocumented)
-export type PrimaryKeyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "byte";
+export type PrimaryKeyTypes = "string" | "datetime" | "double" | "integer" | "timestamp" | "short" | "long" | "byte";
 
 // @public (undocumented)
 export interface PropertyDef<
