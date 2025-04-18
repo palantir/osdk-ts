@@ -16,22 +16,29 @@
 
 import type { ParameterId } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
-import { namespace, ontologyDefinition } from "./defineOntology.js";
-import type {
-  ActionParameterAllowedValues,
-  ActionParameterType,
-  ActionParameterTypePrimitive,
-  ActionType,
-  InterfaceType,
-  ObjectType,
-  SharedPropertyType,
+import {
+  ontologyDefinition,
+  sanitize,
+  updateOntology,
+} from "./defineOntology.js";
+import {
+  type ActionParameterAllowedValues,
+  type ActionParameterType,
+  type ActionParameterTypePrimitive,
+  type ActionType,
+  type ActionTypeDefinition,
+  type InterfaceType,
+  type ObjectType,
+  OntologyEntityTypeEnum,
+  type SharedPropertyType,
 } from "./types.js";
 
-export function defineCreateAction(
+export function defineCreateActionInner(
+  namespace: string,
   interfaceType: InterfaceType,
   objectType?: ObjectType,
 ): ActionType {
-  return defineAction({
+  return defineActionInner(namespace, {
     apiName: `create-${
       kebab(interfaceType.apiName.split(".").pop() ?? interfaceType.apiName)
     }${
@@ -103,11 +110,12 @@ export function defineCreateAction(
   });
 }
 
-export function defineModifyAction(
+export function defineModifyActionInner(
+  namespace: string,
   interfaceType: InterfaceType,
   objectType?: ObjectType,
 ): ActionType {
-  return defineAction({
+  return defineActionInner(namespace, {
     apiName: `modify-${
       kebab(interfaceType.apiName.split(".").pop() ?? interfaceType.apiName)
     }${
@@ -175,11 +183,16 @@ export function defineModifyAction(
   });
 }
 
-export function defineAction(actionDef: ActionType): ActionType {
+export function defineActionInner(
+  namespace: string,
+  actionDef: ActionTypeDefinition,
+): ActionType {
   const apiName = namespace + actionDef.apiName;
   const parameterIds = (actionDef.parameters ?? []).map(p => p.id);
-
-  if (ontologyDefinition.actionTypes[apiName] !== undefined) {
+  if (
+    ontologyDefinition[OntologyEntityTypeEnum.ACTION_TYPE][apiName]
+      !== undefined
+  ) {
     throw new Error(
       `Action type with apiName ${actionDef.apiName} is already defined`,
     );
@@ -195,7 +208,9 @@ export function defineAction(actionDef: ActionType): ActionType {
     `Parameter ids must be unique`,
   );
 
-  const parameterIdsNotFound = Array.from(referencedParameterIds(actionDef))
+  const parameterIdsNotFound = Array.from(
+    referencedParameterIds(namespace, actionDef),
+  )
     .filter(p => !parameterIdsSet.has(p));
   invariant(
     parameterIdsNotFound.length === 0,
@@ -219,12 +234,19 @@ export function defineAction(actionDef: ActionType): ActionType {
     `Action type ${actionDef.apiName} must have at least one logic rule`,
   );
 
-  const fullAction = { ...actionDef, apiName: apiName };
-  ontologyDefinition.actionTypes[apiName] = fullAction;
+  const fullAction: ActionType = {
+    ...actionDef,
+    apiName: apiName,
+    __type: OntologyEntityTypeEnum.ACTION_TYPE,
+  };
+  updateOntology(namespace, fullAction);
   return fullAction;
 }
 
-function referencedParameterIds(actionDef: ActionType): Set<ParameterId> {
+function referencedParameterIds(
+  namespace: string,
+  actionDef: ActionTypeDefinition,
+): Set<ParameterId> {
   const parameterIds: Set<ParameterId> = new Set();
 
   // section definitions
@@ -244,6 +266,7 @@ function referencedParameterIds(actionDef: ActionType): Set<ParameterId> {
     switch (rule.type) {
       case "addInterfaceRule":
         rule.addInterfaceRule.interfaceApiName = sanitize(
+          namespace,
           rule.addInterfaceRule.interfaceApiName,
         );
         parameterIds.add(rule.addInterfaceRule.objectTypeParameter);
@@ -252,7 +275,8 @@ function referencedParameterIds(actionDef: ActionType): Set<ParameterId> {
             if (v.type === "parameterId") {
               parameterIds.add(v.parameterId);
             }
-            rule.addInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
+            rule.addInterfaceRule.sharedPropertyValues[sanitize(namespace, k)] =
+              v;
             delete rule.addInterfaceRule.sharedPropertyValues[k];
           },
         );
@@ -266,7 +290,8 @@ function referencedParameterIds(actionDef: ActionType): Set<ParameterId> {
             if (v.type === "parameterId") {
               parameterIds.add(v.parameterId);
             }
-            rule.modifyInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
+            rule.modifyInterfaceRule
+              .sharedPropertyValues[sanitize(namespace, k)] = v;
             delete rule.modifyInterfaceRule.sharedPropertyValues[k];
           },
         );
@@ -423,8 +448,4 @@ function kebab(s: string): string {
     .replace(/([A-Z])([A-Z][a-z])/g, "$1-$2")
     .replace(/\./g, "-")
     .toLowerCase();
-}
-
-function sanitize(s: string): string {
-  return s.includes(".") ? s : namespace + s;
 }
