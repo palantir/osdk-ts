@@ -23,7 +23,9 @@ import { fileURLToPath } from "node:url";
 import color from "picocolors";
 import sirv from "sirv";
 import type { Plugin, ViteDevServer } from "vite";
+import yargs from "yargs";
 import {
+  CODE_WORKSPACES,
   CONFIG_FILE_SUFFIX,
   ENTRYPOINTS_PATH,
   FINISH_PATH,
@@ -32,6 +34,7 @@ import {
 } from "../common/constants.js";
 import { extractWidgetConfig } from "../common/extractWidgetConfig.js";
 import { getInputHtmlEntrypoints } from "../common/getInputHtmlEntrypoints.js";
+import { safeGetEnvVar } from "../common/safeGetEnvVar.js";
 import { standardizeFileExtension } from "../common/standardizeFileExtension.js";
 import { extractInjectedScripts } from "./extractInjectedScripts.js";
 import { getWidgetIdOverrideMap } from "./getWidgetIdOverrideMap.js";
@@ -62,6 +65,20 @@ export function FoundryWidgetDevPlugin(): Plugin {
      */
     buildStart(options) {
       htmlEntrypoints = getInputHtmlEntrypoints(options);
+    },
+
+    /**
+     * Check that the FOUNDRY_TOKEN environment variable is set when running in dev mode. This is
+     * required to publish the widget overrides to Foundry.
+     */
+    config(_, { command }) {
+      if (command === "serve" && process.env.VITEST == null) {
+        safeGetEnvVar(
+          process.env,
+          "FOUNDRY_TOKEN",
+          "This value is required to run dev mode.",
+        );
+      }
     },
 
     /**
@@ -143,11 +160,13 @@ export function FoundryWidgetDevPlugin(): Plugin {
             configFiles,
             getLocalhostUrl(server),
           );
+          const isCodeWorkspacesMode = await getIsCodeWorkspacesMode();
           await publishDevModeSettings(
             server,
             widgetIdToOverrides,
-            getBaseHref(server),
+            getBaseHref(server, isCodeWorkspacesMode),
             res,
+            isCodeWorkspacesMode,
           );
         },
       );
@@ -227,7 +246,23 @@ function getLocalhostUrl(server: ViteDevServer): string {
   }://localhost:${server.config.server.port}`;
 }
 
-function getBaseHref(server: ViteDevServer): string {
+function getBaseHref(
+  server: ViteDevServer,
+  isCodeWorkspacesMode: boolean,
+): string {
+  if (isCodeWorkspacesMode) {
+    const devServerDomain = safeGetEnvVar(
+      process.env,
+      "DEV_SERVER_DOMAIN",
+      "This value is required when running dev mode in Code Workspaces mode.",
+    );
+    const devServerPath = safeGetEnvVar(
+      process.env,
+      "DEV_SERVER_BASE_PATH",
+      "This value is required when running dev mode in Code Workspaces mode.",
+    );
+    return `https://${devServerDomain}${devServerPath}`;
+  }
   return `${getLocalhostUrl(server)}${server.config.base}`;
 }
 
@@ -250,4 +285,9 @@ function printSetupPageUrl(server: ViteDevServer) {
       color.bold("Click to enter developer mode for your widget set")
     }: ${color.green(setupRoute)}`,
   );
+}
+
+async function getIsCodeWorkspacesMode(): Promise<boolean> {
+  const args = await yargs(process.argv).argv;
+  return args.mode === CODE_WORKSPACES;
 }
