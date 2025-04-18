@@ -190,6 +190,9 @@ export type DatetimeExpressions<
     ExtractPropertyTypeFromDatetimeArg<Q, typeof value>
   >;
   readonly extractPart: (
-    value: DatetimeExpressionArg<Q>,
-  ) => SimplePropertyDef.Make<"string", "non-nullable", "single">;
+    value: DerivedProperty.ValidParts,
+  ) => DerivedProperty.Definition<
+    SimplePropertyDef.Make<"string", "non-nullable", "single">,
+    Q
+  >;
 };

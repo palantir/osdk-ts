@@ -38,7 +38,7 @@ export function createWithPropertiesObjectSet<
   objectSet: WireObjectSet,
   definitionMap: Map<any, DerivedPropertyDefinition>,
 ): WithConstSelect<Q> {
-  const base: WithConstSelect<Q> = {
+  return {
     pivotTo: (link) => {
       return createWithPropertiesObjectSet(objectType, {
         type: "searchAround",
@@ -143,5 +143,4 @@ export function createWithPropertiesObjectSet<
       },
     },
   };
-  return base;
 }

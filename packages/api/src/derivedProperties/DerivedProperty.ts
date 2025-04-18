@@ -91,13 +91,7 @@ export namespace DerivedProperty {
   > extends AggregateBuilder<Q, CONSTRAINED>, Selectable<Q> {
   }
 
-  export type ValidParts =
-    | "year"
-    | "month"
-    | "day"
-    | "hour"
-    | "minute"
-    | "second";
+  export type ValidParts = "DAYS" | "MONTHS" | "QUARTERS" | "YEARS";
 }
 
 type BuilderTypeFromConstraint<

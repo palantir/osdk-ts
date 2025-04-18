@@ -213,4 +213,44 @@ describe(createWithPropertiesObjectSet, () => {
       `);
     });
   });
+
+  it("handles datetime expressions", () => {
+    const map = new Map<any, DerivedPropertyDefinition>();
+    const deriveObjectSet = createWithPropertiesObjectSet(Employee, {
+      type: "methodInput",
+    }, map);
+
+    const clause: DerivedProperty.Clause<Employee> = {
+      "derivedPropertyName": (base) =>
+        base.pivotTo("lead").selectProperty("startDate").extractPart("MONTHS"),
+      "secondaryDerivedPropertyName": (base) =>
+        base.pivotTo("lead").selectProperty("startDate").min(
+          base.pivotTo("lead").selectProperty("startDate"),
+        ),
+    };
+
+    const result = clause["derivedPropertyName"](deriveObjectSet);
+    const definition = map.get(result);
+
+    expect(definition).toMatchInlineSnapshot(`
+      {
+        "part": "MONTHS",
+        "property": {
+          "objectSet": {
+            "link": "lead",
+            "objectSet": {
+              "type": "methodInput",
+            },
+            "type": "searchAround",
+          },
+          "operation": {
+            "selectedPropertyApiName": "startDate",
+            "type": "get",
+          },
+          "type": "selection",
+        },
+        "type": "extract",
+      }
+    `);
+  });
 });

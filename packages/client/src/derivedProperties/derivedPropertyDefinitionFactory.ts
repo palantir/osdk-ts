@@ -22,8 +22,18 @@ import invariant from "tiny-invariant";
 export function derivedPropertyDefinitionFactory(
   wireDefinition: DerivedPropertyDefinition,
   definitionMap: Map<any, DerivedPropertyDefinition>,
-): DerivedProperty.NumericPropertyDefinition<any, any> {
-  const definition: DerivedProperty.NumericPropertyDefinition<any, any> = {
+): DerivedProperty.NumericPropertyDefinition<any, any> & {
+  extractPart: DerivedProperty.DatetimePropertyDefinition<
+    any,
+    any
+  >["extractPart"];
+} {
+  const definition: DerivedProperty.NumericPropertyDefinition<any, any> & {
+    extractPart: DerivedProperty.DatetimePropertyDefinition<
+      any,
+      any
+    >["extractPart"];
+  } = {
     abs() {
       return derivedPropertyDefinitionFactory({
         type: "absoluteValue",
@@ -94,7 +104,14 @@ export function derivedPropertyDefinitionFactory(
         "right": getDefinitionFromMap(value, definitionMap),
       }, definitionMap);
     },
-    type: {},
+    type: 1,
+    extractPart: (part) => {
+      return derivedPropertyDefinitionFactory({
+        type: "extract",
+        part,
+        property: wireDefinition,
+      }, definitionMap);
+    },
   };
 
   definitionMap.set(definition, wireDefinition);
