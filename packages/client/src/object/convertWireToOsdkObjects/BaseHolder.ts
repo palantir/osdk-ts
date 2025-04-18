@@ -26,7 +26,7 @@ export interface BaseHolder {
 
   readonly $apiName: string;
   readonly $objectType: string;
-  readonly $primaryKey: string | number | boolean;
+  readonly $primaryKey: string | number;
   readonly $title: string | undefined;
   readonly $objectSpecifier: ObjectSpecifier<any>;
 
