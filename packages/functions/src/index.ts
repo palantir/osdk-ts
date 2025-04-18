@@ -28,7 +28,7 @@ export type {
   Range,
   ThreeDimensionalAggregation,
   TwoDimensionalAggregation,
-} from "@osdk/api";
+} from "@osdk/client";
 
 export { createEditBatch } from "./edits/createEditBatch.js";
 export type { EditBatch } from "./edits/EditBatch.js";
