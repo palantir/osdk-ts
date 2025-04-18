@@ -45,12 +45,12 @@ export namespace queryTakesAllParameterTypes {
     /**
      * (no ontology metadata)
      */
-    readonly functionMap: Record<QueryParam.PrimitiveType<'float'>, QueryParam.PrimitiveType<'string'>>;
+    readonly functionMap: Partial<Record<QueryParam.PrimitiveType<'float'>, QueryParam.PrimitiveType<'string'>>>;
 
     /**
      * (no ontology metadata)
      */
-    readonly functionMapObjectKey: Record<ObjectSpecifier<Todo>, QueryParam.PrimitiveType<'string'>>;
+    readonly functionMapObjectKey: Partial<Record<ObjectSpecifier<Todo>, QueryParam.PrimitiveType<'string'>>>;
 
     /**
      * (no ontology metadata)
