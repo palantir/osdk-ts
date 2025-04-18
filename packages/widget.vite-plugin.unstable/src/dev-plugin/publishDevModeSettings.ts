@@ -17,6 +17,7 @@
 import { loadFoundryConfig } from "@osdk/foundry-config-json";
 import type { ServerResponse } from "node:http";
 import type { ViteDevServer } from "vite";
+import { safeGetEnvVar } from "../common/safeGetEnvVar.js";
 import { enableDevMode, setWidgetSetSettings } from "./network.js";
 
 /**
@@ -27,23 +28,19 @@ export async function publishDevModeSettings(
   widgetIdToOverrides: Record<string, string[]>,
   baseHref: string,
   res: ServerResponse,
+  isCodeWorkspacesMode: boolean,
 ): Promise<void> {
   try {
-    if (process.env.FOUNDRY_TOKEN == null) {
-      throw new Error(
-        "FOUNDRY_TOKEN environment variable not found, unable to start dev mode.",
-      );
-      return;
-    }
-
     const foundryConfig = await loadFoundryConfig("widgetSet");
     if (foundryConfig == null) {
       throw new Error(
         "foundry.config.json file not found.",
       );
     }
+    const foundryUrl = isCodeWorkspacesMode
+      ? getCodeWorkspacesFoundryUrl()
+      : foundryConfig.foundryConfig.foundryUrl;
 
-    const foundryUrl = foundryConfig.foundryConfig.foundryUrl;
     const widgetSetRid = foundryConfig.foundryConfig.widgetSet.rid;
     const settingsResponse = await setWidgetSetSettings(
       foundryUrl,
@@ -79,8 +76,10 @@ export async function publishDevModeSettings(
     res.setHeader("Content-Type", "application/json");
     res.end(JSON.stringify({
       status: "success",
-      redirectUrl:
-        `${foundryUrl}/workspace/custom-widgets/preview/${widgetSetRid}`,
+      // In Code Workspaces the preview UI automatically handles this redirect
+      redirectUrl: isCodeWorkspacesMode
+        ? null
+        : `${foundryUrl}/workspace/custom-widgets/preview/${widgetSetRid}`,
     }));
   } catch (error: unknown) {
     // Note, this can't be server.config.logger.error as that method throws and prevents a response being sent
@@ -93,4 +92,14 @@ export async function publishDevModeSettings(
       JSON.stringify({ status: "failed", error: (error as Error).message }),
     );
   }
+}
+
+function getCodeWorkspacesFoundryUrl(): string {
+  return `https://${
+    safeGetEnvVar(
+      process.env,
+      "FOUNDRY_PROXY_URL",
+      "This value is required when running dev mode in Code Workspaces mode.",
+    )
+  }`;
 }
