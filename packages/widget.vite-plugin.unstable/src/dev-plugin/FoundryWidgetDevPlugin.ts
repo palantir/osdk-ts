@@ -64,11 +64,6 @@ export function FoundryWidgetDevPlugin(): Plugin {
      * setup page and trigger module parsing.
      */
     buildStart(options) {
-      safeGetEnvVar(
-        process.env,
-        "FOUNDRY_TOKEN",
-        "This value is required to run dev mode.",
-      );
       htmlEntrypoints = getInputHtmlEntrypoints(options);
     },
 
@@ -77,6 +72,12 @@ export function FoundryWidgetDevPlugin(): Plugin {
      * endpoint will set the widget overrides in Foundry and enable dev mode.
      */
     configureServer(server) {
+      safeGetEnvVar(
+        process.env,
+        "FOUNDRY_TOKEN",
+        "This value is required to run dev mode.",
+      );
+
       // Override the printUrls function to print the setup page URL
       server.printUrls = () => printSetupPageUrl(server);
 
