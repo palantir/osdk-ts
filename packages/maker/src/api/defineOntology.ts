@@ -104,6 +104,7 @@ export function updateOntology<
   entity: T,
 ): void {
   if (namespace !== globalNamespace) {
+    // importing is handled by the importer in context.js
     return;
   }
   if (entity.__type !== OntologyEntityTypeEnum.VALUE_TYPE) {
@@ -120,22 +121,6 @@ export function updateOntology<
   ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName]
     .push(entity);
 }
-// importing is handled by the importer in context.js
-
-// } else {
-//   if (importedTypes[namespace] === undefined) {
-//     importedTypes[namespace] = {
-//       SHARED_PROPERTY_TYPE: {},
-//       OBJECT_TYPE: {},
-//       ACTION_TYPE: {},
-//       LINK_TYPE: {},
-//       INTERFACE_TYPE: {},
-//       VALUE_TYPE: {},
-//     };
-//     // TODO(dpaquin): can probably just make this a class or something
-//   }
-//   importedTypes[namespace][entity.__type][entity.apiName] = entity;
-// }
 
 export async function defineOntology(
   ns: string,
@@ -249,7 +234,7 @@ function convertToWireOntologyIr(
         objectTypes: {},
       },
     },
-    importedTypes: convertToWireImportedTypes(importedTypes), // TODO(dpaquin): convert imported types to wire format
+    importedTypes: convertToWireImportedTypes(importedTypes),
   };
 }
 
@@ -1051,7 +1036,6 @@ export function sanitize(namespace: string, s: string): string {
   return s.includes(".") ? s : namespace + s;
 }
 
-// only for tests
 export function setGlobalNamespace(ns: string): void {
   globalNamespace = ns;
 }
