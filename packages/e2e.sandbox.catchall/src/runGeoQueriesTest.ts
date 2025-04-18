@@ -137,7 +137,16 @@ export async function runGeoQueriesTest(): Promise<void> {
     geometry10M: { $isNull: false },
   }).fetchPage();
 
-  console.log(nonNullGeoProps.data.map(data => data.usState));
+  // console.log(nonNullGeoProps.data.map(data => data.usState));
+
+  // const huh = await client(createTestGeoAction).applyAction({
+  //   geohash_prop: { type: "Point", coordinates: [50, 100] },
+  //   geo_title: "oops",
+  //   geoshape_prop: {
+  //     type: "Polygon",
+  //     coordinates: [[[0, 1], [1, 1], [2, 2], [3, 3], [0, 1]]],
+  //   },
+  // });
 }
 
 void runGeoQueriesTest();

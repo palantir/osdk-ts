@@ -26,6 +26,7 @@ import {
   ActionCreatesInterface,
   ActionTakesAnotherInterface,
   ActionTakesAttachment,
+  ActionTakesGeoshape,
   ActionTakesInterface,
   ActionTakesMedia,
   ActionTakesObjectSet,
@@ -127,6 +128,40 @@ export const actionRequestWithStruct: ApplyActionRequestV2 = {
   },
 };
 
+export const actionRequestWithGeoshape: ApplyActionRequestV2 = {
+  options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
+  parameters: {
+    geoshapeParam: {
+      "coordinates": [
+        [
+          [
+            -97.86567863752134,
+            38.418052586871624,
+          ],
+          [
+            -97.86567863752134,
+            35.410223767370525,
+          ],
+          [
+            -91.98573135442845,
+            35.410223767370525,
+          ],
+          [
+            -91.98573135442845,
+            38.418052586871624,
+          ],
+          [
+            -97.86567863752134,
+            38.418052586871624,
+          ],
+        ],
+      ],
+      "type": "Polygon",
+    },
+    geohashParam: "-79.4382042508868, 40.917859676842255",
+  },
+};
+
 const actionResponseCreateOfficeAndEmployee: SyncApplyActionResponseV2 = {
   validation: {
     submissionCriteria: [],
@@ -210,6 +245,14 @@ export function registerLazyActions(fauxOntology: FauxOntology): void {
         actionResponseCreateOfficeAndEmployee,
       ],
     ]),
+  );
+
+  fauxOntology.registerActionType(
+    ActionTakesGeoshape,
+    createLazyDoNothingActionImpl([[
+      actionRequestWithGeoshape,
+      actionResponse,
+    ]]),
   );
 
   fauxOntology.registerActionType(

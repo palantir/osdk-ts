@@ -72,6 +72,8 @@ function actionPropertyToSdkPropertyDefinition(
     case "mediaReference":
     case "marking":
     case "objectType":
+    case "geohash":
+    case "geoshape":
       return parameterType.type;
     case "date":
       return "datetime";

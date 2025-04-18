@@ -48,6 +48,8 @@ export interface DataValueWireToClient {
   struct: Record<string, any>;
   set: Set<any>;
   objectType: string;
+  geohash: GeoJSON.Point;
+  geoshape: GeoJSON.GeoJSON;
 }
 
 /**
@@ -81,6 +83,8 @@ export interface DataValueClientToWire {
   }[];
   struct: Record<string, any>;
   objectType: string;
+  geohash: GeoJSON.Point;
+  geoshape: GeoJSON.GeoJSON;
 }
 
 export type AllowedBucketTypes = string | number | boolean;

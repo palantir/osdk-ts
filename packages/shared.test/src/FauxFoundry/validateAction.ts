@@ -39,7 +39,7 @@ export function validateAction(
   };
   for (const [k, v] of Object.entries(def.parameters)) {
     const value = payload.parameters[k];
-    validateDataType(v.dataType, v, value, ret, k, dataStore);
+    validateActionParameterType(v.dataType, v, value, ret, k, dataStore);
   }
 
   return ret;
@@ -47,7 +47,7 @@ export function validateAction(
 
 // So far these all basically return the same thing
 // and can likely be rewritten as a function that return boolean
-function validateDataType(
+function validateActionParameterType(
   dataType: ActionParameterType,
   paramDef: ActionParameterV2,
   value: unknown,
@@ -84,7 +84,7 @@ function validateDataType(
         return;
       }
       for (const item of value) {
-        validateDataType(
+        validateActionParameterType(
           dataType.subType,
           paramDef,
           item,
@@ -123,7 +123,27 @@ function validateDataType(
         };
       }
       return;
+    case "geohash":
+      if (!(typeof value === "string")) {
+        ret.result = "INVALID";
+        ret.parameters[paramKey] = {
+          ...baseParam,
+        };
+      }
+      return;
 
+    case "geoshape":
+      if (
+        !(typeof value === "object"
+          && ("coordinates" in value! || "geometries" in value!
+            || "features" in value!))
+      ) {
+        ret.result = "INVALID";
+        ret.parameters[paramKey] = {
+          ...baseParam,
+        };
+      }
+      return;
     case "interfaceObject": {
       if (!isInterfaceActionParam(value)) {
         ret.result = "INVALID";
@@ -154,6 +174,14 @@ function validateDataType(
           ...baseParam,
         };
       }
+      return;
+    }
+
+    case "vector": {
+      ret.result = "INVALID";
+      ret.parameters[paramKey] = {
+        ...baseParam,
+      };
       return;
     }
 
@@ -326,4 +354,12 @@ export function isInterfaceActionParam(value: any): value is {
       || typeof value.primaryKeyValue === "number"
       || typeof value.primaryKeyValue === "boolean")
   );
+}
+
+function isPoint(obj: any): obj is GeoJSON.Point {
+  return obj.type === "Point"
+    && Array.isArray(obj.coordinates)
+    && obj.coordinates.length === 2
+    && typeof obj.coordinates[0] === "number"
+    && typeof obj.coordinates[1] === "number";
 }

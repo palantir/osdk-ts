@@ -26,6 +26,7 @@ import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import { isInterfaceActionParam } from "./interfaceUtils.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
 import { isOsdkBaseObject } from "./isOsdkObject.js";
+import { isPoint } from "./isPoint.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
 /**
@@ -94,6 +95,10 @@ export async function toDataValue(
 
   if (isOsdkBaseObject(value)) {
     return await toDataValue(value.$primaryKey, client);
+  }
+
+  if (isPoint(value)) {
+    return await toDataValue(value.coordinates.join(""), client);
   }
 
   // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
