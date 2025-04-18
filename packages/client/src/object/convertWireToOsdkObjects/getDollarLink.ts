@@ -18,6 +18,7 @@ import type {
   ObjectSet,
   OsdkObjectLinksObject,
   SelectArg,
+  SingleLinkAccessor,
   WhereClause,
 } from "@osdk/api";
 import { getWireObjectSet } from "../../objectSet/createObjectSet.js";
@@ -49,21 +50,25 @@ export function get$link(
 
         const value = !linkDef.multiplicity
           ? {
-            fetchOne: <A extends SelectArg<any>>(options?: A) =>
+            fetchOne: <A extends SelectArg<any, any, any, any>>(
+              options?: A,
+            ) =>
               fetchSingle(
                 client,
                 objDef,
                 options ?? {},
                 getWireObjectSet(objectSet),
               ),
-            fetchOneWithErrors: <A extends SelectArg<any>>(options?: A) =>
+            fetchOneWithErrors: <A extends SelectArg<any, any, any, any>>(
+              options?: A,
+            ) =>
               fetchSingleWithErrors(
                 client,
                 objDef,
                 options ?? {},
                 getWireObjectSet(objectSet),
               ),
-          }
+          } as SingleLinkAccessor<any>
           : objectSet;
 
         return [linkName, value];
