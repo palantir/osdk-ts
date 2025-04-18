@@ -25,9 +25,6 @@ import type {
   ImportedTypes,
   InterfaceTypeApiName,
   InterfaceTypeStatus,
-  InterfaceTypeStatus_active,
-  InterfaceTypeStatus_deprecated,
-  InterfaceTypeStatus_experimental,
   LinkTypeDisplayMetadata,
   LinkTypeMetadata,
   OntologyIrBaseParameterType_decimal,
@@ -81,15 +78,58 @@ export interface Ontology extends
   sharedPropertyTypes: Record<string, SharedPropertyType>;
   objectTypes: Record<string, ObjectType>;
   valueTypes: Record<string, ValueTypeDefinitionVersion[]>;
-  linkTypes: Record<string, LinkTypeDefinition>;
+  linkTypes: Record<string, LinkType>;
   actionTypes: Record<string, ActionType>;
   importedTypes: ImportedTypes;
 }
 
-export type ActionType = RequiredFields<
-  Partial<ActionTypeInner>,
-  "apiName" | "displayName" | "rules" | "status"
->;
+export interface OntologyEntityBase {
+  __type: OntologyEntityTypeEnum;
+  apiName: string;
+}
+
+export enum OntologyEntityTypeEnum {
+  OBJECT_TYPE = "OBJECT_TYPE",
+  LINK_TYPE = "LINK_TYPE",
+  INTERFACE_TYPE = "INTERFACE_TYPE",
+  SHARED_PROPERTY_TYPE = "SHARED_PROPERTY_TYPE",
+  ACTION_TYPE = "ACTION_TYPE",
+  VALUE_TYPE = "VALUE_TYPE",
+}
+export interface OntologyEntityTypeMapping {
+  [OntologyEntityTypeEnum.OBJECT_TYPE]: ObjectType;
+  [OntologyEntityTypeEnum.ACTION_TYPE]: ActionType;
+  [OntologyEntityTypeEnum.LINK_TYPE]: LinkType;
+  [OntologyEntityTypeEnum.INTERFACE_TYPE]: InterfaceType;
+  [OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE]: SharedPropertyType;
+  [OntologyEntityTypeEnum.VALUE_TYPE]: ValueTypeDefinitionVersion;
+}
+
+export type OntologyDefinition =
+  & {
+    [K in Exclude<OntologyEntityTypeEnum, "VALUE_TYPE">]: Record<
+      string,
+      OntologyEntityTypeMapping[K]
+    >;
+  }
+  & {
+    VALUE_TYPE: Record<string, ValueTypeDefinitionVersion[]>;
+  };
+
+export type OntologyEntityType =
+  OntologyEntityTypeMapping[keyof OntologyEntityTypeMapping];
+
+export type ActionType =
+  & OntologyEntityBase
+  & RequiredFields<
+    Partial<ActionTypeInner>,
+    "apiName" | "displayName" | "rules" | "status"
+  >
+  & {
+    __type: OntologyEntityTypeEnum.ACTION_TYPE;
+  };
+
+export type ActionTypeDefinition = Omit<ActionType, "__type">;
 
 export interface ActionParameter {
   id: ParameterId;
@@ -161,12 +201,7 @@ export type ActionStatus =
   | "example"
   | ActionTypeStatus_deprecated;
 
-export type {
-  InterfaceTypeStatus,
-  InterfaceTypeStatus_active,
-  InterfaceTypeStatus_deprecated,
-  InterfaceTypeStatus_experimental,
-};
+export type { InterfaceTypeStatus };
 
 export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
 export type OptionalFields<T, K extends keyof T> =
@@ -200,6 +235,7 @@ export type InterfaceImplementation = {
 };
 
 export type ObjectType =
+  & OntologyEntityBase
   & RequiredFields<
     Partial<ObjectTypeInner>,
     | "apiName"
@@ -210,7 +246,9 @@ export type ObjectType =
   >
   & {
     datasource?: ObjectTypeDatasourceDefinition;
+    __type: OntologyEntityTypeEnum.OBJECT_TYPE;
   };
+export type ObjectTypeDefinition = Omit<ObjectType, "__type">;
 
 export interface ObjectPropertyTypeInner extends
   Omit<
@@ -243,6 +281,7 @@ export interface InterfacePropertyType {
   required: boolean;
 }
 export interface InterfaceType extends
+  OntologyEntityBase,
   Omit<
     OntologyIrInterfaceType,
     // we want our simplified representation
@@ -257,6 +296,7 @@ export interface InterfaceType extends
 {
   propertiesV2: Record<string, InterfacePropertyType>;
   status: InterfaceTypeStatus;
+  __type: OntologyEntityTypeEnum.INTERFACE_TYPE;
 }
 
 export interface PropertyType {
@@ -271,10 +311,11 @@ export interface PropertyType {
 
 type TypeClass = { kind: string; name: string };
 
-export interface SharedPropertyType extends PropertyType {
+export interface SharedPropertyType extends OntologyEntityBase, PropertyType {
   apiName: string;
   nonNameSpacedApiName: string;
   gothamMapping?: SharedPropertyTypeGothamMapping;
+  __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE;
 }
 
 export type PropertyTypeType =
@@ -346,12 +387,30 @@ export interface StructPropertyType extends
 export type ObjectTypePropertyApiName = string;
 export type LinkTypeId = string;
 
+export type LinkType =
+  | (OntologyEntityBase & OneToManyLinkTypeDefinition & {
+    __type: OntologyEntityTypeEnum.LINK_TYPE;
+  })
+  | (OntologyEntityBase & ManyToManyLinkTypeDefinition & {
+    __type: OntologyEntityTypeEnum.LINK_TYPE;
+  });
+
 export type LinkTypeDefinition =
-  | OneToManyLinkTypeDefinition
-  | ManyToManyLinkTypeDefinition;
+  | Omit<
+    OntologyEntityBase & OneToManyLinkTypeDefinition & {
+      __type: OntologyEntityTypeEnum.LINK_TYPE;
+    },
+    "__type"
+  >
+  | Omit<
+    OntologyEntityBase & ManyToManyLinkTypeDefinition & {
+      __type: OntologyEntityTypeEnum.LINK_TYPE;
+    },
+    "__type"
+  >;
 
 export interface OneToManyLinkTypeDefinition {
-  id: LinkTypeId;
+  apiName: LinkTypeId;
   one: OneToManyObjectLinkReference;
   toMany: OneToManyObjectLinkReference;
   manyForeignKeyProperty: ObjectTypePropertyApiName;
@@ -362,12 +421,12 @@ export interface OneToManyLinkTypeDefinition {
 }
 
 export interface OneToManyObjectLinkReference {
-  object: ObjectType;
+  object: ObjectTypeDefinition;
   metadata: LinkTypeMetadata;
 }
 
 export interface ManyToManyLinkTypeDefinition {
-  id: LinkTypeId;
+  apiName: LinkTypeId;
   many: ManyToManyObjectLinkReference;
   toMany: ManyToManyObjectLinkReference;
   editsEnabled?: boolean;
@@ -376,7 +435,7 @@ export interface ManyToManyLinkTypeDefinition {
 }
 
 export interface ManyToManyObjectLinkReference {
-  object: ObjectType;
+  object: ObjectTypeDefinition;
   metadata: LinkTypeMetadata;
 }
 
@@ -564,7 +623,7 @@ export type ValueTypeType =
   | ValueTypeType_structV2
   | ValueTypeType_timestamp;
 
-export type ValueTypeDefinitionVersion = {
+export type ValueTypeDefinitionVersion = OntologyEntityBase & {
   apiName: ValueTypeApiName;
   displayMetadata: ValueTypeDisplayMetadata;
   status: ValueTypeStatus;
@@ -572,6 +631,7 @@ export type ValueTypeDefinitionVersion = {
   baseType: BaseType;
   constraints: ValueTypeDataConstraint[];
   exampleValues: ExampleValue[];
+  __type: OntologyEntityTypeEnum.VALUE_TYPE;
 };
 
 export interface ObjectTypeDatasourceDefinition_dataset {

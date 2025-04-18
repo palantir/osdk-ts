@@ -15,8 +15,12 @@
  */
 
 import invariant from "tiny-invariant";
-import { ontologyDefinition } from "./defineOntology.js";
-import type { PropertyTypeType, SharedPropertyType } from "./types.js";
+import { createImporter } from "./context.js";
+import {
+  OntologyEntityTypeEnum,
+  type PropertyTypeType,
+  type SharedPropertyType,
+} from "./types.js";
 
 /**
  * Defines a foreign shared property type you want to take as an input to your product. The typeHint field is used for OSDK generation
@@ -30,9 +34,9 @@ export function importSharedPropertyType(
 ): SharedPropertyType {
   const { apiName, packageName, typeHint } = opts;
   if (packageName !== undefined) {
-    ontologyDefinition.importedTypes.sharedPropertyTypes.push({
-      apiName,
-      packageName,
+    createImporter(packageName)({
+      apiName: apiName,
+      __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
     });
     invariant(
       !packageName.endsWith("."),
@@ -48,7 +52,13 @@ export function importSharedPropertyType(
       apiName: packageName + "." + apiName,
       type: typeHint,
       nonNameSpacedApiName: apiName,
+      __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
     };
   }
-  return { apiName: apiName, type: typeHint, nonNameSpacedApiName: apiName };
+  return {
+    apiName: apiName,
+    type: typeHint,
+    nonNameSpacedApiName: apiName,
+    __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
+  };
 }
