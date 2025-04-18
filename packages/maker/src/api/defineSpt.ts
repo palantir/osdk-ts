@@ -20,38 +20,49 @@ import type {
   Visibility,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
-import { namespace, ontologyDefinition } from "./defineOntology.js";
-import type { PropertyTypeType, SharedPropertyType } from "./types.js";
+import { ontologyDefinition, updateOntology } from "./defineOntology.js";
+import {
+  OntologyEntityTypeEnum,
+  type PropertyTypeType,
+  type SharedPropertyType,
+} from "./types.js";
 
 const defaultTypeClasses: SharedPropertyType["typeClasses"] = [{
   kind: "render_hint",
   name: "SELECTABLE",
 }, { kind: "render_hint", name: "SORTABLE" }];
 
-export function defineSharedPropertyType(
-  opts: {
-    apiName: string;
-    type: PropertyTypeType;
-    array?: boolean;
-    description?: string;
-    displayName?: string;
-    valueType?: ApiNameValueTypeReference;
-    visibility?: Visibility;
-    typeClasses?: SharedPropertyType["typeClasses"];
-    gothamMapping?: SharedPropertyTypeGothamMapping;
-  },
+export interface SharedPropertyTypeDefinition {
+  apiName: string;
+  type: PropertyTypeType;
+  array?: boolean;
+  description?: string;
+  displayName?: string;
+  valueType?: ApiNameValueTypeReference;
+  visibility?: Visibility;
+  typeClasses?: SharedPropertyType["typeClasses"];
+  gothamMapping?: SharedPropertyTypeGothamMapping;
+}
+
+export function defineSharedPropertyTypeInner(
+  namespace: string,
+  sptDef: SharedPropertyTypeDefinition,
 ): SharedPropertyType {
-  const apiName = namespace + opts.apiName;
+  const apiName = namespace + sptDef.apiName;
   invariant(
-    ontologyDefinition.sharedPropertyTypes[apiName] === undefined,
+    ontologyDefinition[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE][apiName]
+      === undefined,
     `Shared property type ${apiName} already exists`,
   );
 
-  return ontologyDefinition.sharedPropertyTypes[apiName] = {
-    ...opts,
+  const fullSpt: SharedPropertyType = {
+    ...sptDef,
     apiName,
-    nonNameSpacedApiName: opts.apiName,
-    displayName: opts.displayName ?? opts.apiName, // This way the non-namespaced api name is the display name (maybe not ideal)
-    typeClasses: opts.typeClasses ?? defaultTypeClasses,
+    nonNameSpacedApiName: sptDef.apiName,
+    displayName: sptDef.displayName ?? sptDef.apiName, // This way the non-namespaced api name is the display name (maybe not ideal)
+    typeClasses: sptDef.typeClasses ?? defaultTypeClasses,
+    __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
   };
+  updateOntology(namespace, fullSpt);
+  return fullSpt;
 }

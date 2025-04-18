@@ -32,7 +32,7 @@
 
 import type {
   ActionTypeStatus,
-  DataConstraints,
+  ImportedTypes,
   OntologyIr,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionValidation,
@@ -68,44 +68,97 @@ import type {
   ActionParameterRequirementConstraint,
   ActionType,
   InterfaceType,
-  LinkTypeDefinition,
-  Nullability,
+  LinkType,
   ObjectPropertyType,
   ObjectType,
-  Ontology,
+  OntologyDefinition,
+  OntologyEntityType,
   PropertyTypeType,
   SharedPropertyType,
 } from "./types.js";
+import { OntologyEntityTypeEnum } from "./types.js";
+
+// type -> apiName -> entity
+/** @internal */
+export let ontologyDefinition: OntologyDefinition;
+
+// type -> namespace -> apiNames
+/** @internal */
+
+export let importedTypes: Record<
+  OntologyEntityTypeEnum,
+  Record<string, Set<string>>
+>;
 
 /** @internal */
-export let ontologyDefinition: Ontology;
-
-/** @internal */
-export let namespace: string;
+export let globalNamespace: string;
 
 type OntologyAndValueTypeIrs = {
   ontology: OntologyIr;
   valueType: OntologyIrValueTypeBlockData;
 };
 
+export function updateOntology<
+  T extends OntologyEntityType,
+>(
+  namespace: string,
+  entity: T,
+): void {
+  if (namespace !== globalNamespace) {
+    return;
+  }
+  if (entity.__type !== OntologyEntityTypeEnum.VALUE_TYPE) {
+    ontologyDefinition[entity.__type][entity.apiName] = entity;
+    return;
+  }
+  // value types are a special case
+  if (
+    ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName]
+      === undefined
+  ) {
+    ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName] = [];
+  }
+  ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName]
+    .push(entity);
+}
+// importing is handled by the importer in context.js
+
+// } else {
+//   if (importedTypes[namespace] === undefined) {
+//     importedTypes[namespace] = {
+//       SHARED_PROPERTY_TYPE: {},
+//       OBJECT_TYPE: {},
+//       ACTION_TYPE: {},
+//       LINK_TYPE: {},
+//       INTERFACE_TYPE: {},
+//       VALUE_TYPE: {},
+//     };
+//     // TODO(dpaquin): can probably just make this a class or something
+//   }
+//   importedTypes[namespace][entity.__type][entity.apiName] = entity;
+// }
+
 export async function defineOntology(
   ns: string,
   body: () => void | Promise<void>,
 ): Promise<OntologyAndValueTypeIrs> {
-  namespace = ns;
+  globalNamespace = ns;
   ontologyDefinition = {
-    actionTypes: {},
-    objectTypes: {},
-    queryTypes: {},
-    interfaceTypes: {},
-    sharedPropertyTypes: {},
-    valueTypes: {},
-    linkTypes: {},
-    importedTypes: {
-      sharedPropertyTypes: [],
-    },
+    OBJECT_TYPE: {},
+    ACTION_TYPE: {},
+    LINK_TYPE: {},
+    INTERFACE_TYPE: {},
+    SHARED_PROPERTY_TYPE: {},
+    VALUE_TYPE: {},
   };
-
+  importedTypes = {
+    SHARED_PROPERTY_TYPE: {},
+    OBJECT_TYPE: {},
+    ACTION_TYPE: {},
+    LINK_TYPE: {},
+    INTERFACE_TYPE: {},
+    VALUE_TYPE: {},
+  };
   try {
     await body();
   } catch (e) {
@@ -124,10 +177,10 @@ export async function defineOntology(
 }
 
 function convertOntologyToValueTypeIr(
-  ontology: Ontology,
+  ontology: OntologyDefinition,
 ): OntologyIrValueTypeBlockData {
   return {
-    valueTypes: Object.values(ontology.valueTypes).map<
+    valueTypes: Object.values(ontology[OntologyEntityTypeEnum.VALUE_TYPE]).map<
       OntologyIrValueTypeBlockDataEntry
     >(definitions => ({
       metadata: {
@@ -146,12 +199,12 @@ function convertOntologyToValueTypeIr(
 }
 
 function convertToWireOntologyIr(
-  ontology: Ontology,
+  ontology: OntologyDefinition,
 ): OntologyIr {
   return {
     blockData: {
       objectTypes: Object.fromEntries(
-        Object.entries(ontology.objectTypes).map<
+        Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).map<
           [string, OntologyIrObjectTypeBlockDataV2]
         >(([apiName, objectType]) => {
           return [apiName, convertObject(objectType)];
@@ -159,7 +212,7 @@ function convertToWireOntologyIr(
       ),
       sharedPropertyTypes: Object.fromEntries(
         Object.entries(
-          ontology.sharedPropertyTypes,
+          ontology[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE],
         )
           .map<[string, OntologyIrSharedPropertyTypeBlockDataV2]>((
             [apiName, spt],
@@ -167,7 +220,7 @@ function convertToWireOntologyIr(
       ),
       interfaceTypes: Object.fromEntries(
         Object.entries(
-          ontology.interfaceTypes,
+          ontology[OntologyEntityTypeEnum.INTERFACE_TYPE],
         )
           .map<[string, OntologyIrInterfaceTypeBlockDataV2]>(
             ([apiName, interfaceType]) => {
@@ -178,14 +231,14 @@ function convertToWireOntologyIr(
           ),
       ),
       linkTypes: Object.fromEntries(
-        Object.entries(ontology.linkTypes).map<
+        Object.entries(ontology[OntologyEntityTypeEnum.LINK_TYPE]).map<
           [string, OntologyIrLinkTypeBlockDataV2]
         >(([id, link]) => {
           return [id, convertLink(link)];
         }),
       ),
       actionTypes: Object.fromEntries(
-        Object.entries(ontology.actionTypes).map<
+        Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE]).map<
           [string, OntologyIrActionTypeBlockDataV2]
         >(([apiName, action]) => {
           return [apiName, convertAction(action)];
@@ -197,7 +250,25 @@ function convertToWireOntologyIr(
         objectTypes: {},
       },
     },
-    importedTypes: ontology.importedTypes,
+    importedTypes: convertToWireImportedTypes(importedTypes), // TODO(dpaquin): convert imported types to wire format
+  };
+}
+
+function convertToWireImportedTypes(
+  importedTypes: Record<
+    OntologyEntityTypeEnum,
+    Record<string, Set<string>>
+  >,
+): ImportedTypes {
+  return {
+    sharedPropertyTypes: Object.entries(
+      importedTypes[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE],
+    ).flatMap(([namespace, apiNames]) => {
+      return Array.from(apiNames).map(apiName => ({
+        apiName,
+        packageName: namespace,
+      }));
+    }),
   };
 }
 
@@ -245,7 +316,7 @@ function convertObject(
         interfaceTypeApiName: impl.implements.apiName,
         properties: Object.fromEntries(
           impl.propertyMapping.map(
-            mapping => [namespace + mapping.interfaceProperty, {
+            mapping => [mapping.interfaceProperty, {
               propertyTypeRid: mapping.mapsTo,
             }],
           ),
@@ -370,7 +441,7 @@ function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {
 }
 
 function convertLink(
-  linkType: LinkTypeDefinition,
+  linkType: LinkType,
 ): OntologyIrLinkTypeBlockDataV2 {
   let definition: OntologyIrLinkDefinition;
   let datasource: OntologyIrManyToManyLinkTypeDatasource | undefined =
@@ -429,11 +500,11 @@ function convertLink(
     };
 
     datasource = {
-      rid: "ri.ontology.main.datasource.link-".concat(linkType.id),
+      rid: "ri.ontology.main.datasource.link-".concat(linkType.apiName),
       datasource: {
         type: "dataset",
         dataset: {
-          datasetRid: "link-".concat(linkType.id),
+          datasetRid: "link-".concat(linkType.apiName),
           writebackDatasetRid: undefined,
           objectTypeAPrimaryKeyMapping: [{
             property: {
@@ -461,7 +532,7 @@ function convertLink(
   return {
     linkType: {
       definition: definition,
-      id: linkType.id,
+      id: linkType.apiName,
       status: linkType.status ?? { type: "active", active: {} },
       redacted: linkType.redacted ?? false,
     },
@@ -475,8 +546,9 @@ function convertLink(
 function convertInterface(
   interfaceType: InterfaceType,
 ): OntologyIrInterfaceType {
+  const { __type, ...other } = interfaceType;
   return {
-    ...interfaceType,
+    ...other,
     propertiesV2: Object.fromEntries(
       Object.values(interfaceType.propertiesV2)
         .map((
@@ -1030,4 +1102,13 @@ function distributeTypeHelper<T extends string>(
   type: T,
 ): T extends any ? { type: T } & { [K in T]: {} } : never {
   return { type, [type]: {} } as any; // any cast to match conditional return type
+}
+
+export function sanitize(namespace: string, s: string): string {
+  return s.includes(".") ? s : namespace + s;
+}
+
+// only for tests
+export function setGlobalNamespace(ns: string): void {
+  globalNamespace = ns;
 }
