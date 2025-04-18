@@ -68,16 +68,24 @@ export function FoundryWidgetDevPlugin(): Plugin {
     },
 
     /**
+     * Check that the FOUNDRY_TOKEN environment variable is set when running in dev mode. This is
+     * required to publish the widget overrides to Foundry.
+     */
+    config(_, { command }) {
+      if (command === "serve" && process.env.VITEST == null) {
+        safeGetEnvVar(
+          process.env,
+          "FOUNDRY_TOKEN",
+          "This value is required to run dev mode.",
+        );
+      }
+    },
+
+    /**
      * Configure the Vite server to serve the setup page and handle the finish endpoint. This
      * endpoint will set the widget overrides in Foundry and enable dev mode.
      */
     configureServer(server) {
-      safeGetEnvVar(
-        process.env,
-        "FOUNDRY_TOKEN",
-        "This value is required to run dev mode.",
-      );
-
       // Override the printUrls function to print the setup page URL
       server.printUrls = () => printSetupPageUrl(server);
 
