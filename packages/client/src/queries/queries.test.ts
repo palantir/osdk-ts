@@ -277,7 +277,7 @@ describe("queries", () => {
 
     expectTypeOf<InferredParamType>()
       .toMatchTypeOf<
-        { peopleMap: Record<ObjectSpecifier<Employee>, string> }
+        { peopleMap: Partial<Record<ObjectSpecifier<Employee>, string>> }
       >();
 
     const myMap: Record<ObjectSpecifier<Employee>, string> = {
@@ -294,7 +294,7 @@ describe("queries", () => {
     `);
 
     expectTypeOf<typeof result>().toMatchTypeOf<
-      Record<ObjectSpecifier<Employee>, number>
+      Partial<Record<ObjectSpecifier<Employee>, number>>
     >();
 
     const object = await client(Employee).fetchOne(50030);
