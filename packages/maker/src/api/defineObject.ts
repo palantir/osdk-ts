@@ -132,7 +132,8 @@ export function defineObjectInner(
     interfaceImpl.propertyMapping = interfaceImpl.propertyMapping.map((
       mapping,
     ) => ({
-      interfaceProperty: namespace + mapping.interfaceProperty,
+      interfaceProperty: extractNamespace(interfaceImpl.implements.apiName)
+        + mapping.interfaceProperty,
       mapsTo: mapping.mapsTo,
     }));
   });
@@ -192,4 +193,8 @@ function validateInterfaceImplProperty(
   }
 
   return { type: "valid" };
+}
+
+function extractNamespace(apiName: string): string {
+  return apiName.substring(0, apiName.lastIndexOf(".") + 1);
 }
