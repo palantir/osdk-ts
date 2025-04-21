@@ -139,7 +139,8 @@ export function isExotic(
       type,
     );
   } else if (typeof type === "object" && type != null) {
-    return type.type === "marking" || type.type === "struct";
+    return type.type === "marking" || type.type === "struct"
+      || type.type === "timeSeries";
   }
   return false;
 }

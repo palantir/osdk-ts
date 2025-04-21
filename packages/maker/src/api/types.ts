@@ -54,6 +54,8 @@ import type {
   OntologyIrValidationRule,
   ParameterId,
   SectionId,
+  SeriesValueMetadata_enum,
+  SeriesValueMetadata_numeric,
   SharedPropertyTypeGothamMapping,
   StructFieldType,
   ValueTypeApiName,
@@ -301,7 +303,8 @@ export type PropertyTypeTypeExotic =
   | "geotimeSeries"
   | PropertyTypeTypeMarking
   | PropertyTypeTypeStruct
-  | PropertyTypeTypeString;
+  | PropertyTypeTypeString
+  | PropertyTypeTypeTimeSeries;
 
 type PropertyTypeTypeMarking = {
   type: "marking";
@@ -322,6 +325,12 @@ type PropertyTypeTypeString = {
   isLongText: boolean;
   supportsEfficientLeadingWildcard: boolean;
   supportsExactMatching: boolean;
+};
+
+type PropertyTypeTypeTimeSeries = {
+  type: "timeSeries";
+  seriesValueMetadata: SeriesValueMetadata_numeric | SeriesValueMetadata_enum;
+  sensorLinkTypeId: string;
 };
 
 export type PropertyTypeTypesWithoutStruct = Exclude<

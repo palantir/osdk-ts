@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { SeriesValueMetadata_numeric } from "@osdk/client.unstable";
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   defineAction,
@@ -1646,6 +1647,156 @@ describe("Ontology Defining", () => {
                   "supportsExactMatching": false,
                 },
                 "type": "string",
+              },
+              "typeClasses": [
+                {
+                  "kind": "render_hint",
+                  "name": "SELECTABLE",
+                },
+                {
+                  "kind": "render_hint",
+                  "name": "SORTABLE",
+                },
+              ],
+              "valueType": undefined,
+            },
+          },
+        },
+      }
+    `);
+  });
+
+  it("TimeSeries fields properly set", () => {
+    const seriesValueMetadata: SeriesValueMetadata_numeric = {
+      type: "numeric",
+      numeric: {
+        defaultInternalInterpolation: {
+          type: "propertyType",
+          propertyType: "bar",
+        },
+      },
+    };
+    const spt = defineSharedPropertyType({
+      apiName: "foo",
+      type: {
+        type: "timeSeries",
+        seriesValueMetadata: seriesValueMetadata,
+        sensorLinkTypeId: "sensorId",
+      },
+    });
+
+    defineInterface({
+      apiName: "interface",
+      properties: { foo: spt },
+    });
+
+    expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+      {
+        "actionTypes": {},
+        "blockPermissionInformation": {
+          "actionTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+        },
+        "interfaceTypes": {
+          "com.palantir.interface": {
+            "interfaceType": {
+              "allExtendsInterfaces": [],
+              "allLinks": [],
+              "allProperties": [],
+              "allPropertiesV2": {},
+              "apiName": "com.palantir.interface",
+              "displayMetadata": {
+                "description": "interface",
+                "displayName": "interface",
+                "icon": undefined,
+              },
+              "extendsInterfaces": [],
+              "links": [],
+              "properties": [],
+              "propertiesV2": {
+                "com.palantir.foo": {
+                  "required": true,
+                  "sharedPropertyType": {
+                    "aliases": [],
+                    "apiName": "com.palantir.foo",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "foo",
+                      "visibility": "NORMAL",
+                    },
+                    "gothamMapping": undefined,
+                    "indexedForSearch": true,
+                    "provenance": undefined,
+                    "type": {
+                      "experimentalTimeDependentV1": {
+                        "sensorLinkTypeId": "sensorId",
+                        "seriesValueMetadata": {
+                          "numeric": {
+                            "defaultInternalInterpolation": {
+                              "propertyType": "bar",
+                              "type": "propertyType",
+                            },
+                          },
+                          "type": "numeric",
+                        },
+                      },
+                      "type": "experimentalTimeDependentV1",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                },
+              },
+              "status": {
+                "active": {},
+                "type": "active",
+              },
+            },
+          },
+        },
+        "linkTypes": {},
+        "objectTypes": {},
+        "sharedPropertyTypes": {
+          "com.palantir.foo": {
+            "sharedPropertyType": {
+              "aliases": [],
+              "apiName": "com.palantir.foo",
+              "baseFormatter": undefined,
+              "dataConstraints": undefined,
+              "displayMetadata": {
+                "description": undefined,
+                "displayName": "foo",
+                "visibility": "NORMAL",
+              },
+              "gothamMapping": undefined,
+              "indexedForSearch": true,
+              "provenance": undefined,
+              "type": {
+                "experimentalTimeDependentV1": {
+                  "sensorLinkTypeId": "sensorId",
+                  "seriesValueMetadata": {
+                    "numeric": {
+                      "defaultInternalInterpolation": {
+                        "propertyType": "bar",
+                        "type": "propertyType",
+                      },
+                    },
+                    "type": "numeric",
+                  },
+                },
+                "type": "experimentalTimeDependentV1",
               },
               "typeClasses": [
                 {
