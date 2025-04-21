@@ -5234,4 +5234,106 @@ describe("Ontology Defining", () => {
         `);
     });
   });
+  describe("Importing", () => {
+    it("Importing entities works", () => {
+      const defineSpt = createContext("namespace.1").defineSharedPropertyType;
+      const defineInterface = createContext("com.palantir.").defineInterface;
+      const importedSpt = defineSpt({
+        apiName: "importedSpt",
+        type: "string",
+      });
+      const exampleInterface = defineInterface({
+        apiName: "exampleInterface",
+        properties: {
+          importedSpt,
+        },
+      });
+      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+      {
+        "blockData": {
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {
+            "com.palantir.exampleInterface": {
+              "interfaceType": {
+                "allExtendsInterfaces": [],
+                "allLinks": [],
+                "allProperties": [],
+                "allPropertiesV2": {},
+                "apiName": "com.palantir.exampleInterface",
+                "displayMetadata": {
+                  "description": "exampleInterface",
+                  "displayName": "exampleInterface",
+                  "icon": undefined,
+                },
+                "extendsInterfaces": [],
+                "links": [],
+                "properties": [],
+                "propertiesV2": {
+                  "namespace.1.importedSpt": {
+                    "required": true,
+                    "sharedPropertyType": {
+                      "aliases": [],
+                      "apiName": "namespace.1.importedSpt",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "importedSpt",
+                        "visibility": "NORMAL",
+                      },
+                      "gothamMapping": undefined,
+                      "indexedForSearch": true,
+                      "provenance": undefined,
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                  },
+                },
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+              },
+            },
+          },
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {},
+        },
+        "importedTypes": {
+          "sharedPropertyTypes": [
+            {
+              "apiName": "namespace.1.importedSpt",
+              "packageName": "namespace.1",
+            },
+          ],
+        },
+      }
+        `);
+    });
+  });
 });

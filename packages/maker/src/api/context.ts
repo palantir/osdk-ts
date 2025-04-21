@@ -26,6 +26,7 @@ import { defineLinkInner } from "./defineLink.js";
 import { defineObjectInner } from "./defineObject.js";
 
 import {
+  currentNamespace,
   globalNamespace,
   importedTypes,
   setGlobalNamespace,
@@ -102,8 +103,11 @@ export function createContext(namespace: string): OntologyAsCodeFunctions {
       return [
         name.replace(/Inner$/, ""),
         (...args: any[]) =>
-          wrapWithProxy(
-            (fn as any)(sanitizedNamespace, ...args),
+          wrapWithImporter(
+            (setCurrentNamespace(fn, namespace) as any)(
+              sanitizedNamespace,
+              ...args,
+            ),
             importer,
           ),
       ];
@@ -111,7 +115,19 @@ export function createContext(namespace: string): OntologyAsCodeFunctions {
   ) as unknown as OntologyAsCodeFunctions;
 }
 
-function wrapWithProxy<
+function setCurrentNamespace<F extends Function>(
+  fn: F,
+  namespace: string,
+): F {
+  return ((...args: any[]) => {
+    currentNamespace.push(namespace);
+    const val = fn(...args);
+    currentNamespace.pop();
+    return val;
+  }) as unknown as F;
+}
+
+function wrapWithImporter<
   T extends OntologyEntityType,
 >(
   obj: T,
@@ -134,14 +150,18 @@ function wrapWithProxy<
 }
 
 export function createImporter(
-  namespace: string,
+  homeNamespace: string,
 ): <T extends OntologyEntityBase>(e: T) => void {
-  return namespace === globalNamespace
+  return homeNamespace === globalNamespace
     ? () => {}
     : (e) => {
-      if (importedTypes[e.__type][namespace] === undefined) {
-        importedTypes[e.__type][namespace] = new Set();
+      const current = currentNamespace[currentNamespace.length - 1];
+      if (current !== globalNamespace || current === homeNamespace) {
+        return;
       }
-      importedTypes[e.__type][namespace].add(e.apiName);
+      if (importedTypes[e.__type][homeNamespace] === undefined) {
+        importedTypes[e.__type][homeNamespace] = new Set();
+      }
+      importedTypes[e.__type][homeNamespace].add(e.apiName);
     };
 }

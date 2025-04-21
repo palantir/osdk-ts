@@ -84,7 +84,6 @@ export let ontologyDefinition: OntologyDefinition;
 
 // type -> namespace -> apiNames
 /** @internal */
-
 export let importedTypes: Record<
   OntologyEntityTypeEnum,
   Record<string, Set<string>>
@@ -92,6 +91,9 @@ export let importedTypes: Record<
 
 /** @internal */
 export let globalNamespace: string;
+
+/** @internal */
+export let currentNamespace: string[];
 
 type OntologyAndValueTypeIrs = {
   ontology: OntologyIr;
@@ -144,6 +146,7 @@ export async function defineOntology(
     INTERFACE_TYPE: {},
     VALUE_TYPE: {},
   };
+  currentNamespace = [globalNamespace];
   try {
     await body();
   } catch (e) {
