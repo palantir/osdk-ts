@@ -25,6 +25,44 @@ export namespace NullabilityAdherence {
   export type Default = "throw";
 }
 
+export namespace ObjectSetArgs {
+  export interface Select<
+    OBJECT_KEYS extends string = never,
+    RDP_KEYS extends string = never,
+  > {
+    $select?: readonly (OBJECT_KEYS | RDP_KEYS)[];
+    $includeRid?: boolean;
+  }
+
+  export interface OrderBy<
+    L extends string = never,
+  > {
+    $orderBy?: {
+      [K in L]?: "asc" | "desc";
+    };
+  }
+
+  export interface AsyncIter<
+    Q extends ObjectOrInterfaceDefinition,
+    K extends PropertyKeys<Q> = never,
+    T extends boolean = false,
+    RDP_KEYS extends string = never,
+  > extends Select<K, RDP_KEYS>, OrderBy<K> {
+    $__UNSTABLE_useOldInterfaceApis?: boolean;
+    $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
+  }
+
+  export interface FetchPage<
+    Q extends ObjectOrInterfaceDefinition,
+    K extends PropertyKeys<Q> = never,
+    T extends boolean = false,
+    RDP_KEYS extends string = never,
+  > extends AsyncIter<Q, K, T, RDP_KEYS> {
+    $nextPageToken?: string;
+    $pageSize?: number;
+  }
+}
+
 export interface SelectArg<
   Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q> = PropertyKeys<Q>,
@@ -38,10 +76,7 @@ export interface SelectArg<
 export interface OrderByArg<
   Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q> = PropertyKeys<Q>,
-> {
-  $orderBy?: {
-    [K in L]?: "asc" | "desc";
-  };
+> extends ObjectSetArgs.OrderBy<L> {
 }
 
 export type SelectArgToKeys<
@@ -58,7 +93,8 @@ export interface FetchPageArgs<
   A extends Augments = never,
   S extends NullabilityAdherence = NullabilityAdherence.Default,
   T extends boolean = false,
-> extends AsyncIterArgs<Q, K, R, A, S, T> {
+  RDP_KEYS extends string = never,
+> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS> {
   $nextPageToken?: string;
   $pageSize?: number;
 }
@@ -70,6 +106,7 @@ export interface AsyncIterArgs<
   A extends Augments = never,
   S extends NullabilityAdherence = NullabilityAdherence.Default,
   T extends boolean = false,
+  RDP_KEYS extends string = never,
 > extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
   $__UNSTABLE_useOldInterfaceApis?: boolean;
   $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
