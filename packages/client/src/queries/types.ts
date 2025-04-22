@@ -28,9 +28,8 @@ import type {
 import type { PartialByNotStrict } from "../util/partialBy.js";
 
 export type QuerySignatureFromDef<T extends QueryDefinition<any>> = {
-  executeFunction: NonNullable<T["__DefinitionMetadata"]> extends never
-    ? QuerySignature<T>
-    : NonNullable<T["__DefinitionMetadata"]>["signature"];
+  executeFunction: CompileTimeMetadata<T> extends never ? QuerySignature<T>
+    : CompileTimeMetadata<T>["signature"];
 };
 
 export type QuerySignature<T extends QueryDefinition<any>> =

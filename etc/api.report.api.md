@@ -113,7 +113,7 @@ export namespace ActionMetadata {
 export namespace ActionParam {
     	// (undocumented)
     export type InterfaceType<T extends InterfaceDefinition> = {
-        		$objectType: NonNullable<T["__DefinitionMetadata"]> extends {
+        		$objectType: CompileTimeMetadata<T> extends {
             			implementedBy: infer U
             		} ? (U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string) : string
         		$primaryKey: string | number
@@ -286,7 +286,7 @@ export type CompileTimeMetadata<T extends {
 // Warning: (ae-forgotten-export) The symbol "MapPropNamesToObjectType" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MapPropNamesToInterface" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export type ConvertProps<
 	FROM extends ObjectOrInterfaceDefinition,
 	TO extends ValidToFrom<FROM>,
@@ -522,12 +522,6 @@ export type FetchPageResult<
 	S extends NullabilityAdherence,
 	T extends boolean = false
 > = PageResult<PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S, T>> : Osdk.Instance<Q, ExtractOptions<R, S, T>, L>>;
-
-// @public (undocumented)
-export type FilteredPropertyKeys<
-	O extends ObjectOrInterfaceDefinition,
-	T extends WirePropertyTypes
-> = { [K in keyof NonNullable<O["__DefinitionMetadata"]>["properties"]] : NonNullable<O["__DefinitionMetadata"]>["properties"][K]["type"] extends T ? K : never }[keyof NonNullable<O["__DefinitionMetadata"]>["properties"]];
 
 // @public (undocumented)
 export type GeoFilter_Intersects = {
@@ -835,7 +829,7 @@ export namespace ObjectSetSubscription {
 
 // @public (undocumented)
 export type ObjectSpecifier<Q extends ObjectOrInterfaceDefinition> = string & {
-    	__apiName: Q["apiName"] | (Q extends InterfaceDefinition ? NonNullable<Q["__DefinitionMetadata"]> extends InterfaceMetadata ? NonNullable<NonNullable<Q["__DefinitionMetadata"]>["implementedBy"]>[number] : never : never)
+    	__apiName: Q["apiName"] | (Q extends InterfaceDefinition ? CompileTimeMetadata<Q> extends InterfaceMetadata ? NonNullable<CompileTimeMetadata<Q>["implementedBy"]>[number] : never : never)
 };
 
 // @public (undocumented)
@@ -970,7 +964,20 @@ export interface PropertyDef<
 export type PropertyKeys<
 	O extends ObjectOrInterfaceDefinition,
 	RDPs extends Record<string, SimplePropertyDef> = {}
-> = (keyof NonNullable<O["__DefinitionMetadata"]>["properties"] | keyof RDPs) & string;
+> = (keyof CompileTimeMetadata<O>["properties"] | keyof RDPs) & string;
+
+// @public (undocumented)
+export namespace PropertyKeys {
+    	// Warning: (ae-forgotten-export) The symbol "IncludeValuesExtending" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export type Filtered<
+    		Q extends ObjectOrInterfaceDefinition,
+    		T extends WirePropertyTypes
+    	> = keyof IncludeValuesExtending<CompileTimeMetadata<Q>["properties"], {
+        		type: T
+        	}>;
+}
 
 // @public
 export interface PropertyValueWireToClient {

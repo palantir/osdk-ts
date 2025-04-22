@@ -17,7 +17,6 @@
 import type {
   ActionDefinition,
   FetchPageArgs,
-  FilteredPropertyKeys,
   InterfaceDefinition,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
@@ -196,7 +195,7 @@ export function createClientInternal(
           return {
             createMediaReference: async <
               Q extends ObjectTypeDefinition,
-              const L extends FilteredPropertyKeys<Q, "mediaReference">,
+              const L extends PropertyKeys.Filtered<Q, "mediaReference">,
             >(args: {
               data: Blob;
               fileName: string;

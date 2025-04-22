@@ -22,6 +22,7 @@ import type {
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
+  CompileTimeMetadata as CompileTimeActionMetadata,
   DataValueClientToWire,
 } from "@osdk/api";
 import type {
@@ -62,10 +63,6 @@ export type OsdkActionParameters<
   X extends ActionParametersDefinition,
 > = NullableProps<X> extends never ? NotOptionalParams<X>
   : PartialBy<NotOptionalParams<X>, NullableProps<X>>;
-
-export type CompileTimeActionMetadata<
-  T extends ActionDefinition<any>,
-> = NonNullable<T["__DefinitionMetadata"]>;
 
 export type ActionSignatureFromDef<
   T extends ActionDefinition<any>,

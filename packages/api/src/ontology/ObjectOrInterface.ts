@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
+import type { IncludeValuesExtending } from "../util/IncludeValuesExtending.js";
 import type { InterfaceDefinition } from "./InterfaceDefinition.js";
-import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
+import type {
+  CompileTimeMetadata,
+  ObjectTypeDefinition,
+} from "./ObjectTypeDefinition.js";
 import type { SimplePropertyDef } from "./SimplePropertyDef.js";
+import type { WirePropertyTypes } from "./WirePropertyTypes.js";
 
 export type ObjectOrInterfaceDefinition =
   | ObjectTypeDefinition
@@ -42,5 +47,15 @@ export type PropertyKeys<
   O extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > =
-  & (keyof NonNullable<O["__DefinitionMetadata"]>["properties"] | keyof RDPs)
+  & (keyof CompileTimeMetadata<O>["properties"] | keyof RDPs)
   & string;
+
+export namespace PropertyKeys {
+  export type Filtered<
+    Q extends ObjectOrInterfaceDefinition,
+    T extends WirePropertyTypes,
+  > = keyof IncludeValuesExtending<
+    CompileTimeMetadata<Q>["properties"],
+    { type: T }
+  >;
+}
