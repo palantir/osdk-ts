@@ -56,7 +56,7 @@ export function defineSharedPropertyType(
         metadata.numeric.defaultInternalInterpolation.propertyType;
       const nestedApiName = namespace + propertyType;
       invariant(
-        ontologyDefinition.sharedPropertyTypes[namespace + propertyType]
+        ontologyDefinition.sharedPropertyTypes[nestedApiName]
           !== undefined,
         `Property type ${propertyType} in TimeSeries defaultInternalInterpolation does not exist.`,
       );
