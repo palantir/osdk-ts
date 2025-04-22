@@ -104,7 +104,6 @@ export function derivedPropertyDefinitionFactory(
         "right": getDefinitionFromMap(value, definitionMap),
       }, definitionMap);
     },
-    type: 1,
     extractPart: (part) => {
       return derivedPropertyDefinitionFactory({
         type: "extract",
@@ -112,6 +111,7 @@ export function derivedPropertyDefinitionFactory(
         property: wireDefinition,
       }, definitionMap);
     },
+    type: {},
   };
 
   definitionMap.set(definition, wireDefinition);
