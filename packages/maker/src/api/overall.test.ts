@@ -1666,7 +1666,38 @@ describe("Ontology Defining", () => {
     `);
   });
 
+  it("nested TimeSeries property types must exist", () => {
+    function createTimeSeries() {
+      const seriesValueMetadata: SeriesValueMetadata_numeric = {
+        type: "numeric",
+        numeric: {
+          defaultInternalInterpolation: {
+            type: "propertyType",
+            propertyType: "bar",
+          },
+        },
+      };
+      const spt = defineSharedPropertyType({
+        apiName: "foo",
+        type: {
+          type: "timeSeries",
+          seriesValueMetadata: seriesValueMetadata,
+          sensorLinkTypeId: "sensorId",
+        },
+      });
+    }
+    expect(() => {
+      createTimeSeries();
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invariant failed: Property type bar in TimeSeries defaultInternalInterpolation does not exist.]`,
+    );
+  });
+
   it("TimeSeries fields properly set", () => {
+    const bar = defineSharedPropertyType({
+      apiName: "bar",
+      type: "string",
+    });
     const seriesValueMetadata: SeriesValueMetadata_numeric = {
       type: "numeric",
       numeric: {
@@ -1769,6 +1800,34 @@ describe("Ontology Defining", () => {
         "linkTypes": {},
         "objectTypes": {},
         "sharedPropertyTypes": {
+          "com.palantir.bar": {
+            "sharedPropertyType": {
+              "aliases": [],
+              "apiName": "com.palantir.bar",
+              "baseFormatter": undefined,
+              "dataConstraints": undefined,
+              "displayMetadata": {
+                "description": undefined,
+                "displayName": "com.palantir.bar",
+                "visibility": "NORMAL",
+              },
+              "gothamMapping": undefined,
+              "indexedForSearch": true,
+              "provenance": undefined,
+              "type": {
+                "string": {
+                  "analyzerOverride": undefined,
+                  "enableAsciiFolding": undefined,
+                  "isLongText": false,
+                  "supportsEfficientLeadingWildcard": false,
+                  "supportsExactMatching": true,
+                },
+                "type": "string",
+              },
+              "typeClasses": [],
+              "valueType": undefined,
+            },
+          },
           "com.palantir.foo": {
             "sharedPropertyType": {
               "aliases": [],
@@ -1812,6 +1871,178 @@ describe("Ontology Defining", () => {
             },
           },
         },
+      }
+    `);
+  });
+
+  it("Time series object properly defined", () => {
+    const seriesValueMetadata: SeriesValueMetadata_numeric = {
+      type: "numeric",
+      numeric: {
+        defaultInternalInterpolation: {
+          type: "propertyType",
+          propertyType: "fizz",
+        },
+      },
+    };
+
+    const object = defineObject({
+      titlePropertyApiName: "buzz",
+      displayName: "Foo",
+      pluralDisplayName: "Foo",
+      apiName: "foo",
+      primaryKeys: ["buzz"],
+      properties: [{ apiName: "buzz", type: "string", displayName: "Buzz" }, {
+        apiName: "bar",
+        type: {
+          type: "timeSeries",
+          seriesValueMetadata: seriesValueMetadata,
+          sensorLinkTypeId: "sensorId",
+        },
+        displayName: "Bar",
+      }],
+    });
+
+    expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+        {
+        "actionTypes": {},
+        "blockPermissionInformation": {
+          "actionTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+        },
+        "interfaceTypes": {},
+        "linkTypes": {},
+        "objectTypes": {
+          "com.palantir.foo": {
+            "datasources": [
+              {
+                "datasource": {
+                  "datasetV2": {
+                    "datasetRid": "com.palantir.foo",
+                    "propertyMapping": {
+                      "bar": {
+                        "column": "bar",
+                        "type": "column",
+                      },
+                      "buzz": {
+                        "column": "buzz",
+                        "type": "column",
+                      },
+                    },
+                  },
+                  "type": "datasetV2",
+                },
+                "editsConfiguration": {
+                  "onlyAllowPrivilegedEdits": false,
+                },
+                "redacted": false,
+                "rid": "ri.ontology.main.datasource.com.palantir.foo",
+              },
+            ],
+            "entityMetadata": {
+              "arePatchesEnabled": false,
+            },
+            "objectType": {
+              "allImplementsInterfaces": {},
+              "apiName": "com.palantir.foo",
+              "displayMetadata": {
+                "description": undefined,
+                "displayName": "Foo",
+                "groupDisplayName": undefined,
+                "icon": {
+                  "blueprint": {
+                    "color": "#2D72D2",
+                    "locator": "cube",
+                  },
+                  "type": "blueprint",
+                },
+                "pluralDisplayName": "Foo",
+                "visibility": "NORMAL",
+              },
+              "implementsInterfaces2": [],
+              "primaryKeys": [
+                "buzz",
+              ],
+              "propertyTypes": {
+                "bar": {
+                  "apiName": "bar",
+                  "baseFormatter": undefined,
+                  "dataConstraints": undefined,
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "Bar",
+                    "visibility": "NORMAL",
+                  },
+                  "indexedForSearch": true,
+                  "inlineAction": undefined,
+                  "ruleSetBinding": undefined,
+                  "sharedPropertyTypeApiName": undefined,
+                  "sharedPropertyTypeRid": undefined,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                  "type": {
+                    "experimentalTimeDependentV1": {
+                      "sensorLinkTypeId": "sensorId",
+                      "seriesValueMetadata": {
+                        "numeric": {
+                          "defaultInternalInterpolation": {
+                            "propertyType": "fizz",
+                            "type": "propertyType",
+                          },
+                        },
+                        "type": "numeric",
+                      },
+                    },
+                    "type": "experimentalTimeDependentV1",
+                  },
+                  "typeClasses": [],
+                  "valueType": undefined,
+                },
+                "buzz": {
+                  "apiName": "buzz",
+                  "baseFormatter": undefined,
+                  "dataConstraints": undefined,
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "Buzz",
+                    "visibility": "NORMAL",
+                  },
+                  "indexedForSearch": true,
+                  "inlineAction": undefined,
+                  "ruleSetBinding": undefined,
+                  "sharedPropertyTypeApiName": undefined,
+                  "sharedPropertyTypeRid": undefined,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                  "type": {
+                    "string": {
+                      "analyzerOverride": undefined,
+                      "enableAsciiFolding": undefined,
+                      "isLongText": false,
+                      "supportsEfficientLeadingWildcard": false,
+                      "supportsExactMatching": true,
+                    },
+                    "type": "string",
+                  },
+                  "typeClasses": [],
+                  "valueType": undefined,
+                },
+              },
+              "redacted": false,
+              "status": {
+                "active": {},
+                "type": "active",
+              },
+              "titlePropertyTypeRid": "buzz",
+            },
+          },
+        },
+        "sharedPropertyTypes": {},
       }
     `);
   });
