@@ -254,6 +254,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
             objectType,
             { type: "methodInput" },
             definitionMap,
+            true,
           ));
         derivedProperties[key] = definitionMap.get(
           derivedPropertyDefinition,

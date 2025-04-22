@@ -52,6 +52,31 @@ describe(createWithPropertiesObjectSet, () => {
       `);
   });
 
+  it("correctly allows select property off the base object set", () => {
+    const map = new Map<any, DerivedPropertyDefinition>();
+    const deriveObjectSet = createWithPropertiesObjectSet(
+      Employee,
+      {
+        type: "methodInput",
+      },
+      map,
+      true,
+    );
+
+    const clause = {
+      "derivedPropertyName": (base) => base.selectProperty("employeeId"),
+    } satisfies DerivedProperty.Clause<Employee>;
+
+    const result = clause["derivedPropertyName"](deriveObjectSet);
+    const definition = map.get(result);
+    expect(definition).toMatchInlineSnapshot(`
+      {
+        "apiName": "employeeId",
+        "type": "property",
+      }
+    `);
+  });
+
   it("correctly handles multiple definitions in one clause", () => {
     const map = new Map<any, DerivedPropertyDefinition>();
     const deriveObjectSet = createWithPropertiesObjectSet(Employee, {

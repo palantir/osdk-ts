@@ -37,6 +37,7 @@ export function createWithPropertiesObjectSet<
   objectType: Q,
   objectSet: WireObjectSet,
   definitionMap: Map<any, DerivedPropertyDefinition>,
+  fromBaseObjectSet: boolean = false,
 ): WithConstSelect<Q> {
   return {
     pivotTo: (link) => {
@@ -112,6 +113,16 @@ export function createWithPropertiesObjectSet<
       return selectorResult as any;
     },
     selectProperty: (name) => {
+      if (fromBaseObjectSet) {
+        const wrappedObjectSet: DerivedPropertyDefinition = {
+          type: "property",
+          apiName: name,
+        };
+        const selectorResult: DerivedProperty.Definition<any, any> =
+          derivedPropertyDefinitionFactory(wrappedObjectSet, definitionMap);
+        definitionMap.set(selectorResult, wrappedObjectSet);
+        return selectorResult as any;
+      }
       const wrappedObjectSet: DerivedPropertyDefinition = {
         type: "selection",
         objectSet: objectSet,
