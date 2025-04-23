@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import type { Media, MediaMetadata } from "@osdk/api";
+import type { Media, MediaMetadata, MediaReference } from "@osdk/api";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "./MinimalClientContext.js";
 
 export class MediaReferencePropertyImpl implements Media {
+  #mediaReference: MediaReference;
   #triplet: [string, any, string];
   #client: MinimalClient;
 
@@ -27,10 +28,18 @@ export class MediaReferencePropertyImpl implements Media {
     objectApiName: string;
     primaryKey: any;
     propertyName: string;
+    mediaReferencePropertyValue: OntologiesV2.MediaReferenceProperty;
   }) {
-    const { client, objectApiName, primaryKey, propertyName } = args;
+    const {
+      client,
+      objectApiName,
+      primaryKey,
+      propertyName,
+      mediaReferencePropertyValue,
+    } = args;
     this.#client = client;
     this.#triplet = [objectApiName, primaryKey, propertyName];
+    this.#mediaReference = JSON.parse(mediaReferencePropertyValue);
   }
 
   public async fetchContents(): Promise<Response> {
@@ -58,5 +67,9 @@ export class MediaReferencePropertyImpl implements Media {
       sizeBytes: Number(r.sizeBytes),
       mediaType: r.mediaType,
     };
+  }
+
+  public getReference(): MediaReference {
+    return this.#mediaReference;
   }
 }
