@@ -23,7 +23,7 @@ export type {
   TimestampISOString,
 } from "./PrimitiveTypes.js";
 
-export type { Attachment } from "@osdk/api";
+export type { Attachment } from "@osdk/client";
 
 export { createEditBatch } from "./edits/createEditBatch.js";
 export type { EditBatch } from "./edits/EditBatch.js";

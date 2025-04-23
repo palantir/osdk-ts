@@ -21,7 +21,7 @@ import type {
   Osdk,
   OsdkObjectPropertyType,
   PropertyKeys,
-} from "@osdk/api";
+} from "@osdk/client";
 
 export type ObjectLocator<
   S extends ObjectTypeDefinition = ObjectTypeDefinition,

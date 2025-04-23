@@ -12,8 +12,9 @@ import { ActionReturnTypeForOptions } from '@osdk/api';
 import { ActionValidationResponse } from '@osdk/api';
 import { ApplyActionOptions } from '@osdk/api';
 import { ApplyBatchActionOptions } from '@osdk/api';
+import { Attachment } from '@osdk/api';
 import type { AttachmentUpload } from '@osdk/api';
-import type { CompileTimeMetadata } from '@osdk/api';
+import { CompileTimeMetadata } from '@osdk/api';
 import type { DataValueClientToWire } from '@osdk/api';
 import type { DataValueWireToClient } from '@osdk/api';
 import type { Experiment } from '@osdk/api/unstable';
@@ -29,6 +30,7 @@ import type { ObjectSetQueryDataType } from '@osdk/api';
 import { ObjectTypeDefinition } from '@osdk/api';
 import { Osdk } from '@osdk/api';
 import { OsdkObject } from '@osdk/api';
+import { OsdkObjectPropertyType } from '@osdk/api';
 import { PageResult } from '@osdk/api';
 import { PalantirApiError } from '@osdk/shared.net.errors';
 import { PropertyDef } from '@osdk/api';
@@ -70,6 +72,8 @@ export { ApplyActionOptions }
 
 export { ApplyBatchActionOptions }
 
+export { Attachment }
+
 // Warning: (ae-forgotten-export) The symbol "OldSharedClient" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -91,6 +95,8 @@ export interface Client extends SharedClient, OldSharedClient {
     	// (undocumented)
     fetchMetadata<Q extends (ObjectTypeDefinition | InterfaceDefinition | ActionDefinition<any> | QueryDefinition<any>)>(o: Q): Promise<Q extends ObjectTypeDefinition ? ObjectMetadata : Q extends InterfaceDefinition ? InterfaceMetadata : Q extends ActionDefinition<any> ? ActionMetadata : Q extends QueryDefinition<any> ? QueryMetadata : never>;
 }
+
+export { CompileTimeMetadata }
 
 // @public (undocumented)
 export function createAttachmentUpload(data: Blob, name: string): AttachmentUpload;
@@ -161,6 +167,8 @@ export { ObjectTypeDefinition }
 export { Osdk }
 
 export { OsdkObject }
+
+export { OsdkObjectPropertyType }
 
 export { PageResult }
 

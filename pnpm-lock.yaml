@@ -3078,11 +3078,8 @@ importers:
 
   packages/functions:
     dependencies:
-      '@osdk/api':
-        specifier: workspace:~
-        version: link:../api
       '@osdk/client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../client
     devDependencies:
       '@microsoft/api-documenter':
