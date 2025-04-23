@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "@osdk/client.unstable": "workspace:~",
-    "@osdk/foundry.ontologies": "2.18.0",
+    "@osdk/foundry.ontologies": "2.19.0",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/yargs": "^17.0.32",

@@ -16,6 +16,7 @@
 
 import { type ObjectTypeDefinition } from "@osdk/api";
 import type * as OntologiesV2 from "@osdk/foundry.ontologies";
+import type { VersionedQueryTypeApiName } from "@osdk/internal.foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { ReadonlyDeep } from "type-fest";
 import {
@@ -310,7 +311,7 @@ export class FauxOntology {
         `QueryType ${def.apiName} already registered`,
       );
     }
-    this.#ontology.queryTypes[def.apiName] = def;
+    this.#ontology.queryTypes[def.apiName as VersionedQueryTypeApiName] = def;
     if (implementation) {
       this.#queryImpl.set(def.apiName, implementation);
     }
