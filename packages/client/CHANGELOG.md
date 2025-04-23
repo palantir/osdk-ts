@@ -1,5 +1,14 @@
 # @osdk/client
 
+## 2.1.4
+
+### Patch Changes
+
+- 760e1ff: Use client as peer dep in functions package.
+  - @osdk/api@2.1.4
+  - @osdk/client.unstable@2.1.4
+  - @osdk/generator-converters@2.1.4
+
 ## 2.1.3
 
 ### Patch Changes
