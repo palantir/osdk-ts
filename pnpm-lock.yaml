@@ -3099,7 +3099,7 @@ importers:
   packages/functions:
     dependencies:
       '@osdk/client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../client
     devDependencies:
       '@microsoft/api-documenter':

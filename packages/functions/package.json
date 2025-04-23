@@ -51,9 +51,9 @@
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
-
-  "peerDependencies": { "@osdk/client": "workspace:~" },
-
+  "peerDependencies": {
+    "@osdk/client": "workspace:^"
+  },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.26.5",
     "@microsoft/api-extractor": "^7.49.1",
