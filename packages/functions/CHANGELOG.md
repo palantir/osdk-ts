@@ -1,5 +1,14 @@
 # @osdk/functions.unstable
 
+## 0.0.6
+
+### Patch Changes
+
+- 760e1ff: Relax peer dep for client.
+- 760e1ff: Use client as peer dep in functions package.
+- Updated dependencies [760e1ff]
+  - @osdk/client@2.1.4
+
 ## 0.0.5
 
 ### Patch Changes
