@@ -23,7 +23,6 @@ import { fileURLToPath } from "node:url";
 import color from "picocolors";
 import sirv from "sirv";
 import type { Plugin, ViteDevServer } from "vite";
-import yargs from "yargs";
 import {
   CODE_WORKSPACES,
   CONFIG_FILE_SUFFIX,
@@ -54,6 +53,8 @@ export function FoundryWidgetDevPlugin(): Plugin {
   const configFileToEntrypoint: Record<string, string> = {};
   // Store the configuration per module ID, e.g. /repo/src/widget-one.config.ts -> { ... }
   const configFiles: Record<string, WidgetConfig<ParameterConfig>> = {};
+  // Enabled tailored behavior when running in Code Workspaces
+  let isCodeWorkspacesMode: boolean;
 
   return {
     name: "@osdk:widget-dev-plugin",
@@ -68,10 +69,15 @@ export function FoundryWidgetDevPlugin(): Plugin {
     },
 
     /**
-     * Check that the FOUNDRY_TOKEN environment variable is set when running in dev mode. This is
-     * required to publish the widget overrides to Foundry.
+     * Capture configuration options from the Vite config. This is used to determine if we are running in
+     * Code Workspaces mode and in dev mode.
      */
-    config(_, { command }) {
+    config(resolvedConfig, { command }) {
+      // Check for the optional `--mode` argument when running `vite`
+      isCodeWorkspacesMode = resolvedConfig.mode === CODE_WORKSPACES;
+
+      // Only check for the FOUNDRY_TOKEN environment variable when running in dev mode.
+      // When command is "serve" and not in test mode (VITEST).
       if (command === "serve" && process.env.VITEST == null) {
         safeGetEnvVar(
           process.env,
@@ -160,7 +166,6 @@ export function FoundryWidgetDevPlugin(): Plugin {
             configFiles,
             getLocalhostUrl(server),
           );
-          const isCodeWorkspacesMode = await getIsCodeWorkspacesMode();
           await publishDevModeSettings(
             server,
             widgetIdToOverrides,
@@ -285,9 +290,4 @@ function printSetupPageUrl(server: ViteDevServer) {
       color.bold("Click to enter developer mode for your widget set")
     }: ${color.green(setupRoute)}`,
   );
-}
-
-async function getIsCodeWorkspacesMode(): Promise<boolean> {
-  const args = await yargs(process.argv).argv;
-  return args.mode === CODE_WORKSPACES;
 }

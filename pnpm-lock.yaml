@@ -3795,9 +3795,6 @@ importers:
       sirv:
         specifier: ^3.0.0
         version: 3.0.0
-      yargs:
-        specifier: ^17.7.2
-        version: 17.7.2
     devDependencies:
       '@blueprintjs/core':
         specifier: ^5.16.0
@@ -3826,9 +3823,6 @@ importers:
       '@types/react-dom':
         specifier: ^18.3.1
         version: 18.3.1
-      '@types/yargs':
-        specifier: ^17.0.29
-        version: 17.0.33
       '@vitejs/plugin-react':
         specifier: ^4.2.0
         version: 4.2.1(vite@6.2.4(@types/node@22.13.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.39.0)(yaml@2.7.0))
