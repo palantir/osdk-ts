@@ -134,6 +134,7 @@ export interface queryTakesAllParameterTypes
     rid: 'query.rid';
     type: 'query';
     version: 'version';
+    pinned: false;
     parameters: {
       /**
        *   description: an array of strings
@@ -367,5 +368,6 @@ export const queryTakesAllParameterTypes: queryTakesAllParameterTypes = {
   apiName: 'queryTakesAllParameterTypes',
   type: 'query',
   version: 'version',
+  pinned: false,
   osdkMetadata: $osdkMetadata,
 };

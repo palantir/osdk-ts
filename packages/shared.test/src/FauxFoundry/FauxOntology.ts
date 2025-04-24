@@ -59,6 +59,31 @@ export class FauxOntology {
     return this.#ontology;
   }
 
+  getFilteredOntologyMetadata(
+    request: OntologiesV2.LoadOntologyMetadataRequest,
+  ): OntologiesV2.OntologyFullMetadata {
+    return {
+      ontology: this.#ontology.ontology,
+      objectTypes: this.#filterRecord(
+        this.#ontology.objectTypes,
+        request.objectTypes,
+      ),
+      actionTypes: this.#filterRecord(
+        this.#ontology.actionTypes,
+        request.actionTypes,
+      ),
+      queryTypes: this.#filterRecord(
+        this.#ontology.queryTypes,
+        request.queryTypes,
+      ),
+      interfaceTypes: this.#filterRecord(
+        this.#ontology.interfaceTypes,
+        request.interfaceTypes,
+      ),
+      sharedPropertyTypes: {},
+    };
+  }
+
   getAllInterfaceTypes(): OntologiesV2.InterfaceType[] {
     return Object.values(this.#ontology.interfaceTypes);
   }
@@ -333,5 +358,14 @@ export class FauxOntology {
       );
     }
     this.#ontology.sharedPropertyTypes[def.apiName] = def;
+  }
+
+  #filterRecord<T>(
+    record: Record<string, T>,
+    keys: string[],
+  ): Record<string, T> {
+    return Object.fromEntries(
+      Object.entries(record).filter(([key]) => keys.includes(key)),
+    );
   }
 }

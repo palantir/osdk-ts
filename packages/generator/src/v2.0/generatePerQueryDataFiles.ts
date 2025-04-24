@@ -38,6 +38,7 @@ export async function generatePerQueryDataFilesV2(
     fs,
     outDir: rootOutDir,
     ontology,
+    pinnedQueryTypes,
     importExt = "",
     forInternalUse = false,
   }: Pick<
@@ -47,6 +48,7 @@ export async function generatePerQueryDataFilesV2(
     | "importExt"
     | "ontology"
     | "forInternalUse"
+    | "pinnedQueryTypes"
   >,
   v2: boolean,
 ): Promise<void> {
@@ -63,6 +65,7 @@ export async function generatePerQueryDataFilesV2(
         importExt,
         ontology,
         forInternalUse,
+        pinnedQueryTypes,
       );
     }),
   );
@@ -92,6 +95,7 @@ async function generateV2QueryFile(
   importExt: string,
   ontology: EnhancedOntologyDefinition,
   forInternalUse: boolean,
+  pinnedQueryTypes: string[],
 ) {
   const relFilePath = path.join(relOutDir, `${query.shortApiName}.ts`);
   const objectTypes = getObjectTypeApiNamesFromQuery(query);
@@ -113,9 +117,7 @@ async function generateV2QueryFile(
     wireQueryDataTypeToQueryDataTypeDefinition(query.output),
   );
 
-  const referencedObjectTypes = objectTypes.length > 0
-    ? objectTypes.map(apiNameObj => `"${apiNameObj}"`).join("|")
-    : "never";
+  const isPinned = pinnedQueryTypes.includes(query.fullApiName);
 
   await fs.writeFile(
     path.join(outDir, `${query.shortApiName}.ts`),
@@ -189,6 +191,7 @@ async function generateV2QueryFile(
         >, VersionBound<$ExpectedClientVersion>{
          __DefinitionMetadata?: {
              ${stringify(baseProps)}
+             pinned: ${isPinned};
             parameters: {
             ${parameterDefsForType(ontology, query)}
             };
@@ -217,17 +220,11 @@ async function generateV2QueryFile(
         "rid": () => undefined,
       })
     },
+    pinned: ${isPinned},
     osdkMetadata: $osdkMetadata
         };
         `),
   );
-}
-
-function parametersForConst(query: EnhancedQuery) {
-  return stringify(query.parameters, {
-    "*": (parameter, formatter) =>
-      formatter(deleteUndefineds(paramToDef(parameter))),
-  });
 }
 
 function parameterDefsForType(

@@ -22,11 +22,13 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 export async function loadQueryMetadata(
   client: MinimalClient,
   queryType: string,
+  version: string | undefined,
 ): Promise<QueryMetadata> {
   const r = await OntologiesV2.QueryTypes.get(
     client,
     await client.ontologyRid,
     queryType,
+    { version },
   );
 
   return wireQueryTypeV2ToSdkQueryMetadata(r);

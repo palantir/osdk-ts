@@ -43,7 +43,7 @@ export const createStandardOntologyProviderFactory: (
       client: MinimalClient,
       key: string,
     ): Promise<FetchedObjectTypeDefinition> {
-      let objectDef = await loadFullObjectMetadata(client, key);
+      const objectDef = await loadFullObjectMetadata(client, key);
 
       // ensure we have all of the interfaces loaded
       const interfaceDefs = Object.fromEntries<
@@ -72,9 +72,9 @@ export const createStandardOntologyProviderFactory: (
     async function loadQuery(
       client: MinimalClient,
       key: string,
+      version?: string,
     ) {
-      const r = await loadQueryMetadata(client, key);
-      return r;
+      return loadQueryMetadata(client, key, version);
     }
 
     async function loadAction(
@@ -105,11 +105,31 @@ export const createStandardOntologyProviderFactory: (
       };
     }
 
+    function makeQueryGetter(
+      client: MinimalClient,
+      fn: (
+        client: MinimalClient,
+        apiName: string,
+        version?: string,
+      ) => Promise<QueryMetadata>,
+    ) {
+      const queryCache = createAsyncClientCache<string, QueryMetadata>(
+        (client, key) => {
+          const [apiName, version] = key.split(":");
+          return fn(client, apiName, version || undefined);
+        },
+      );
+      return async (apiName: string, version?: string) => {
+        const key = `${apiName}:${version ?? ""}`;
+        return await queryCache.get(client, key);
+      };
+    }
+
     const ret = {
       getObjectDefinition: makeGetter(loadObject),
       getInterfaceDefinition: makeGetter(loadInterface),
-      getQueryDefinition: makeGetter(loadQuery),
       getActionDefinition: makeGetter(loadAction),
+      getQueryDefinition: makeQueryGetter(client, loadQuery),
     };
     return ret;
   };

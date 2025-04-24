@@ -189,7 +189,7 @@ describe("Load Ontologies Metadata", () => {
       throw new Error();
     }
 
-    const fullMetadata = ontologyDefinitions.value.filteredFullMetadata;
+    const fullMetadata = ontologyDefinitions.value.requestedMetadata;
     expect(Object.keys(fullMetadata.objectTypes)).toHaveLength(0);
     expect(Object.keys(fullMetadata.actionTypes)).toHaveLength(0);
     expect(Object.keys(fullMetadata.queryTypes)).toHaveLength(0);
@@ -215,7 +215,7 @@ describe("Load Ontologies Metadata", () => {
       throw new Error();
     }
 
-    const fullMetadata = ontologyDefinitions.value.filteredFullMetadata;
+    const fullMetadata = ontologyDefinitions.value.requestedMetadata;
 
     expect(Object.keys(fullMetadata.objectTypes)).toHaveLength(1);
     expect(fullMetadata.objectTypes.Employee.linkTypes)
@@ -244,7 +244,7 @@ describe("Load Ontologies Metadata", () => {
       throw new Error(ontologyDefinitions.error.join("\n"));
     }
 
-    const fullMetadata = ontologyDefinitions.value.filteredFullMetadata;
+    const fullMetadata = ontologyDefinitions.value.requestedMetadata;
 
     expect(Object.keys(fullMetadata.objectTypes)).toHaveLength(2);
     expect(fullMetadata.objectTypes.Employee.linkTypes).toHaveLength(2);
@@ -276,7 +276,7 @@ describe("Load Ontologies Metadata", () => {
       throw new Error(ontologyDefinitions.error.join("\n"));
     }
 
-    const fullMetadata = ontologyDefinitions.value.filteredFullMetadata;
+    const fullMetadata = ontologyDefinitions.value.requestedMetadata;
 
     expect(Object.keys(fullMetadata.objectTypes)).toHaveLength(2);
     expect(Object.keys(fullMetadata.actionTypes)).toHaveLength(4);
