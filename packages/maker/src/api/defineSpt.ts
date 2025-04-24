@@ -60,11 +60,6 @@ export function defineSharedPropertyType(
           !== undefined,
         `Property type ${propertyType} in TimeSeries defaultInternalInterpolation does not exist.`,
       );
-      ontologyDefinition.sharedPropertyTypes[nestedApiName] = {
-        apiName: nestedApiName,
-        nonNameSpacedApiName: propertyType,
-        type: "string",
-      };
     } else if (
       metadata.type === "enum"
       && metadata.enum.defaultInternalInterpolation.type === "propertyType"
@@ -76,11 +71,6 @@ export function defineSharedPropertyType(
         ontologyDefinition.sharedPropertyTypes[nestedApiName] !== undefined,
         `Property type ${propertyType} in TimeSeries defaultInternalInterpolation does not exist.`,
       );
-      ontologyDefinition.sharedPropertyTypes[nestedApiName] = {
-        apiName: nestedApiName,
-        nonNameSpacedApiName: propertyType,
-        type: "string",
-      };
     }
   }
   return ontologyDefinition.sharedPropertyTypes[apiName] = {
