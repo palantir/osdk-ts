@@ -60,7 +60,7 @@ export namespace ActionMetadata {
     	// (undocumented)
     export namespace DataType {
         		// (undocumented)
-        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "objectType";
+        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "objectType" | "geoshape" | "geohash";
         		// (undocumented)
         export interface Interface<T_Target extends InterfaceDefinition = never> {
             			// (undocumented)
@@ -316,6 +316,10 @@ export interface DataValueClientToWire {
     	// (undocumented)
     float: number;
     	// (undocumented)
+    geohash: GeoJSON.Point;
+    	// (undocumented)
+    geoshape: GeoJSON.GeoJSON;
+    	// (undocumented)
     integer: number;
     	// (undocumented)
     long: string | number;
@@ -370,6 +374,10 @@ export interface DataValueWireToClient {
     double: number;
     	// (undocumented)
     float: number;
+    	// (undocumented)
+    geohash: GeoJSON.Point;
+    	// (undocumented)
+    geoshape: GeoJSON.GeoJSON;
     	// (undocumented)
     integer: number;
     	// (undocumented)
