@@ -36,9 +36,10 @@ type PackageInfo = Map<string, {
 }>;
 
 export interface OntologyInfo {
-  filteredFullMetadata: OntologyFullMetadata;
+  requestedMetadata: OntologyFullMetadata;
   externalInterfaces: Map<string, string>;
   externalObjects: Map<string, string>;
+  pinnedQueryTypes: string[];
 }
 
 export class OntologyMetadataResolver {
@@ -192,18 +193,46 @@ export class OntologyMetadataResolver {
       ]);
     }
 
-    const ontologyFullMetadata = await OntologiesV2.getFullMetadata(
-      this.getClientContext(),
-      ontology.rid as OntologyIdentifier,
+    const linkTypes = new Map<string, Set<string>>();
+    const objectTypes = new Set(entities.objectTypesApiNamesToLoad);
+    const interfaceTypes = new Set(entities.interfaceTypesApiNamesToLoad);
+    const actionTypes = new Set(
+      entities.actionTypesApiNamesToLoad?.map(action => this.camelize(action)),
     );
 
-    if ((ontologyFullMetadata as any).errorName != null) {
-      return Result.err([
-        `Unable to load the specified Ontology metadata.\n${
-          JSON.stringify(ontologyFullMetadata, null, 2)
-        }`,
-      ]);
+    for (const linkType of entities.linkTypesApiNamesToLoad ?? []) {
+      const [objectTypeApiName, linkTypeApiName] = linkType.split(
+        ".",
+      );
+      if (!linkTypes.has(objectTypeApiName)) {
+        linkTypes.set(objectTypeApiName, new Set());
+      }
+      linkTypes.get(objectTypeApiName)?.add(linkTypeApiName);
     }
+
+    const queryTypes = new Set<string>();
+    const pinnedQueryTypes = [];
+
+    for (const queryType of entities.queryTypesApiNamesToLoad ?? []) {
+      const [queryTypeApiName, version] = queryType.split(":");
+      if (version != null) {
+        pinnedQueryTypes.push(queryTypeApiName);
+        continue;
+      }
+      queryTypes.add(queryTypeApiName);
+    }
+
+    const requestedMetadata = await OntologiesV2.loadMetadata(
+      this.getClientContext(),
+      ontology.rid as OntologyIdentifier,
+      {
+        actionTypes: [...actionTypes],
+        objectTypes: [...objectTypes],
+        queryTypes: [...queryTypes],
+        interfaceTypes: [...interfaceTypes],
+        linkTypes: [...linkTypes.keys()],
+      },
+    );
 
     const externalObjects = new Map();
     const externalInterfaces = new Map();
@@ -216,7 +245,7 @@ export class OntologyMetadataResolver {
       const dataScope = sdk.inputs.dataScope.ontologyV2;
 
       for (const rid of dataScope.objectTypes) {
-        const ot = Object.values(ontologyFullMetadata.objectTypes).find(
+        const ot = Object.values(requestedMetadata.objectTypes).find(
           (ot) => ot.objectType.rid === rid,
         );
 
@@ -230,7 +259,7 @@ export class OntologyMetadataResolver {
       }
 
       for (const rid of dataScope.interfaceTypes) {
-        const it = Object.values(ontologyFullMetadata.interfaceTypes).find(
+        const it = Object.values(requestedMetadata.interfaceTypes).find(
           (it) => it.rid === rid,
         );
 
@@ -243,39 +272,20 @@ export class OntologyMetadataResolver {
       }
     }
 
-    const linkTypes = new Map<string, Set<string>>();
-    const objectTypes = new Set(entities.objectTypesApiNamesToLoad);
-    const queryTypes = new Set(entities.queryTypesApiNamesToLoad);
-    const actionTypes = new Set(
-      entities.actionTypesApiNamesToLoad?.map(action => this.camelize(action)),
-    );
-
-    const interfaceTypes = new Set(entities.interfaceTypesApiNamesToLoad);
-
-    for (const linkType of entities.linkTypesApiNamesToLoad ?? []) {
-      const [objectTypeApiName, linkTypeApiName] = linkType.split(
-        ".",
-      );
-      if (!linkTypes.has(objectTypeApiName)) {
-        linkTypes.set(objectTypeApiName, new Set());
-      }
-      linkTypes.get(objectTypeApiName)?.add(linkTypeApiName);
-    }
-
-    const filteredFullMetadata = this.filterMetadataByApiName(
-      ontologyFullMetadata,
-      {
-        objectTypes,
-        linkTypes,
-        actionTypes,
-        queryTypes,
-        interfaceTypes,
-      },
-      extPackageInfo,
-    );
+    // const filteredFullMetadata = this.filterMetadataByApiName(
+    //   ontologyFullMetadata,
+    //   {
+    //     objectTypes,
+    //     linkTypes,
+    //     actionTypes,
+    //     queryTypes,
+    //     interfaceTypes,
+    //   },
+    //   extPackageInfo,
+    // );
 
     const validData: Result<{}, string[]> = this.validateLoadedOntologyMetadata(
-      filteredFullMetadata,
+      requestedMetadata,
       {
         objectTypes,
         linkTypes,
@@ -283,7 +293,6 @@ export class OntologyMetadataResolver {
         queryTypes,
         interfaceTypes,
       },
-      ontologyFullMetadata,
       extPackageInfo,
     );
 
@@ -291,9 +300,10 @@ export class OntologyMetadataResolver {
       return Result.err(validData.error);
     }
     return Result.ok({
-      filteredFullMetadata,
+      requestedMetadata,
       externalInterfaces,
       externalObjects,
+      pinnedQueryTypes,
     });
   }
 
@@ -306,7 +316,6 @@ export class OntologyMetadataResolver {
       actionTypes: Set<string>;
       interfaceTypes: Set<string>;
     },
-    fullOntology: OntologyFullMetadata,
     packageInfo: PackageInfo,
   ): Result<{}, string[]> {
     const errors: string[] = [];
@@ -357,7 +366,8 @@ export class OntologyMetadataResolver {
           )
         ) {
           // is it in a package?
-          const fromFull = fullOntology.objectTypes[link.objectTypeApiName];
+          const fromFull =
+            filteredFullMetadata.objectTypes[link.objectTypeApiName];
           if (fromFull && hasObjectType(packageInfo, fromFull)) {
             continue;
           }
