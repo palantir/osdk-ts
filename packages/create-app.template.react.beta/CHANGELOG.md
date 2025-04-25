@@ -1,5 +1,17 @@
 # @osdk/create-app.template.react
 
+## 2.2.0-beta.16
+
+### Minor Changes
+
+- b2e8fc5: Set @osdk/create version to non-beta
+
+## 2.2.0-beta.15
+
+### Minor Changes
+
+- 1444362: Read environment variables from index.html meta tags
+
 ## 2.2.0-beta.14
 
 ## 2.2.0-beta.13

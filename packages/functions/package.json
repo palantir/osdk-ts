@@ -1,6 +1,6 @@
 {
   "name": "@osdk/functions.unstable",
-  "version": "0.1.0-beta.7",
+  "version": "0.1.0-beta.9",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -51,9 +51,8 @@
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
-  "dependencies": {
-    "@osdk/api": "workspace:~",
-    "@osdk/client": "workspace:~"
+  "peerDependencies": {
+    "@osdk/client": "workspace:^"
   },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.26.5",

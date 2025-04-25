@@ -18,6 +18,7 @@ export { SotSensor } from './objects/SotSensor.js';
 export { StateTerritory } from './objects/StateTerritory.js';
 export { StructPerson } from './objects/StructPerson.js';
 export { StructPersonOpisTeam } from './objects/StructPersonOpisTeam.js';
+export { TestGeoAction } from './objects/TestGeoAction.js';
 export { Todo } from './objects/Todo.js';
 export { Venture } from './objects/Venture.js';
 export { WeatherStation } from './objects/WeatherStation.js';

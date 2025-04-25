@@ -20,6 +20,7 @@ import {
 } from "@osdk/client/internal";
 import {
   BoundariesUsState,
+  createTestGeoAction,
   WeatherStation,
 } from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
@@ -33,7 +34,9 @@ const a = await hydrateObjectSetFromRid(
 ).fetchPage();
 
 console.log(a.data);
-export async function runGeoQueriesTest(): Promise<void> {
+export async function runGeoQueriesTest(
+  runAction: boolean = false,
+): Promise<void> {
   const result = await client(WeatherStation).where({
     geohash: {
       $within: {
@@ -138,6 +141,17 @@ export async function runGeoQueriesTest(): Promise<void> {
   }).fetchPage();
 
   console.log(nonNullGeoProps.data.map(data => data.usState));
+
+  if (runAction) {
+    await client(createTestGeoAction).applyAction({
+      geohash_prop: { type: "Point", coordinates: [50, 100] },
+      geo_title: "oops",
+      geoshape_prop: {
+        type: "Polygon",
+        coordinates: [[[0, 1], [1, 1], [2, 2], [3, 3], [0, 1]]],
+      },
+    });
+  }
 }
 
 void runGeoQueriesTest();

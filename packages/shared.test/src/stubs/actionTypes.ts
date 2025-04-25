@@ -519,3 +519,27 @@ export const ActionTakesStruct: ActionTypeV2 = {
   operations: [],
   status: "ACTIVE",
 };
+
+export const ActionTakesGeoshape: ActionTypeV2 = {
+  apiName: "addGeoshape",
+  displayName: "Add Geoshape",
+  status: "EXPERIMENTAL",
+  parameters: {
+    geoshapeParam: {
+      displayName: "Geoshape Param",
+      dataType: {
+        type: "geoshape",
+      },
+      required: true,
+    },
+    geohashParam: {
+      displayName: "Geohash Param",
+      dataType: {
+        type: "geohash",
+      },
+      required: true,
+    },
+  },
+  rid: "ri.actions.main.action-type.5828bab4-49c7-4fdf-a780-6ccbc359d817",
+  operations: [],
+};

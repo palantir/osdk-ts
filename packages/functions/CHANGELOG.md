@@ -1,5 +1,28 @@
 # @osdk/functions.unstable
 
+## 0.1.0-beta.9
+
+### Minor Changes
+
+- e38a2e5: Small improvements to functions ontology edits API
+
+### Patch Changes
+
+- @osdk/client@2.2.0-beta.16
+- @osdk/api@2.2.0-beta.16
+
+## 0.1.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [ed69666]
+- Updated dependencies [1e16dcb]
+- Updated dependencies [1e16dcb]
+- Updated dependencies [f4370e3]
+- Updated dependencies [cc380b5]
+  - @osdk/client@2.2.0-beta.15
+  - @osdk/api@2.2.0-beta.15
+
 ## 0.1.0-beta.7
 
 ### Patch Changes

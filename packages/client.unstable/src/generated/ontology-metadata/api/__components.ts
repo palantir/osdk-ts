@@ -26,6 +26,7 @@ import type {
   RestrictedViewName as _api_blockdata_RestrictedViewName,
   StreamName as _api_blockdata_StreamName,
   TimeSeriesSyncName as _api_blockdata_TimeSeriesSyncName,
+  ValidationRuleIndex as _api_blockdata_ValidationRuleIndex,
 } from "./blockdata/__components.js";
 import type {
   DerivedPropertiesDefinition
@@ -45,7 +46,10 @@ import type {
   MarketplaceEntityProvenance
     as _api_entitymetadata_provenance_MarketplaceEntityProvenance,
 } from "./entitymetadata/provenance/__components.js";
-import type { ObjectSetFilter as _api_objectset_ObjectSetFilter } from "./objectset/__components.js";
+import type {
+  ObjectSetFilter as _api_objectset_ObjectSetFilter,
+  OntologyIrObjectSetFilter as _api_objectset_OntologyIrObjectSetFilter,
+} from "./objectset/__components.js";
 import type { SharedPropertyTypeGothamMapping as _api_typemapping_SharedPropertyTypeGothamMapping } from "./typemapping/__components.js";
 import type {
   BaseParameterType as _api_types_BaseParameterType,
@@ -5800,6 +5804,7 @@ export interface ObjectTypesNotFoundError {
 }
 export interface ObjectTypesSummary {
   maximumNumberOfObjectTypes: number;
+  maxVectorDimensionality: number;
   visibleObjectTypes: number;
 }
 export interface ObjectTypeStatus_experimental {
@@ -6043,8 +6048,15 @@ export interface OntologyInformation {
  * execution. We don't allow the mixing of FunctionRule with other LogicRules in the same ActionType.
  */
 export interface OntologyIrActionLogic {
-  actionLogRule?: OntologyIrActionLogRule | null | undefined;
   rules: Array<OntologyIrLogicRule>;
+}
+/**
+ * This signals to OMA that the Object Type will be regenerated as the Action Type changes, rather than modified
+ * directly by the user. Also, OMA should not validate that the backing dataset has the required columns, as
+ * these will instead be generated on save.
+ */
+export interface OntologyIrActionLogMetadata {
+  actionTypeRids: Array<ActionTypeApiName>;
 }
 /**
  * Users can optionally configure an ActionLogicRule for their ActionType that defines how Action parameters and
@@ -6054,8 +6066,8 @@ export interface OntologyIrActionLogRule {
   actionLogObjectTypeId: ObjectTypeId;
   editedObjectRelations: Record<ObjectTypeId, LinkTypeId>;
   enabled: boolean;
-  propertyValues: Record<PropertyTypeId, OntologyIrActionLogValue>;
-  reasonCodes: Array<PropertyTypeId>;
+  propertyValues: Record<ObjectTypeFieldApiName, OntologyIrActionLogValue>;
+  reasonCodes: Array<ObjectTypeFieldApiName>;
 }
 export interface OntologyIrActionLogValue_parameterValue {
   type: "parameterValue";
@@ -6064,7 +6076,7 @@ export interface OntologyIrActionLogValue_parameterValue {
 
 export interface OntologyIrActionLogValue_objectParameterPropertyValue {
   type: "objectParameterPropertyValue";
-  objectParameterPropertyValue: ObjectParameterPropertyValue;
+  objectParameterPropertyValue: OntologyIrObjectParameterPropertyValue;
 }
 
 export interface OntologyIrActionLogValue_interfaceParameterPropertyValue {
@@ -6149,7 +6161,7 @@ export interface OntologyIrActionLogValue_scenarioRid {
 
 export interface OntologyIrActionLogValue_summary {
   type: "summary";
-  summary: Array<ActionTypeRichTextComponent>;
+  summary: Array<OntologyIrActionTypeRichTextComponent>;
 }
 export type OntologyIrActionLogValue =
   | OntologyIrActionLogValue_parameterValue
@@ -6230,11 +6242,24 @@ export interface OntologyIrActionsObjectSet {
     _api_types_ConditionValueId,
     OntologyIrConditionValue
   >;
-  objectSet: DynamicObjectSet;
+  objectSet: OntologyIrDynamicObjectSet;
 }
 export interface OntologyIrActionType {
   actionTypeLogic: OntologyIrActionTypeLogic;
   metadata: OntologyIrActionTypeMetadata;
+}
+/**
+ * DisplayMetadata shape used in responses
+ */
+export interface OntologyIrActionTypeDisplayMetadata {
+  configuration: ActionTypeDisplayMetadataConfiguration;
+  description: string;
+  displayName: string;
+  icon?: Icon | null | undefined;
+  submitButtonDisplayMetadata?: ButtonDisplayMetadata | null | undefined;
+  successMessage: Array<OntologyIrActionTypeRichTextComponent>;
+  typeClasses: Array<TypeClass>;
+  undoButtonConfiguration?: boolean | null | undefined;
 }
 export interface OntologyIrActionTypeEntities {
   affectedInterfaceTypes: Array<InterfaceTypeApiName>;
@@ -6243,46 +6268,88 @@ export interface OntologyIrActionTypeEntities {
   typeGroups: Array<TypeGroupRid>;
 }
 export interface OntologyIrActionTypeLevelValidation {
-  ordering: Array<ValidationRuleRid>;
-  rules: Record<ValidationRuleRid, OntologyIrValidationRule>;
+  rules: Record<_api_blockdata_ValidationRuleIndex, OntologyIrValidationRule>;
 }
 export interface OntologyIrActionTypeLogic {
   logic: OntologyIrActionLogic;
-  notifications: Array<OntologyIrActionNotification>;
-  revert?: ActionRevert | null | undefined;
   validation: OntologyIrActionValidation;
-  webhooks?: OntologyIrActionWebhooks | null | undefined;
 }
 /**
  * An ActionType defines the schema of the edits that can be made to Phonograph.
  */
 export interface OntologyIrActionTypeMetadata {
-  actionApplyClientSettings?: ActionApplyClientPreferences | null | undefined;
-  actionLogConfiguration?: ActionLogConfiguration | null | undefined;
   apiName: ActionTypeApiName;
-  displayMetadata: ActionTypeDisplayMetadata;
+  displayMetadata: OntologyIrActionTypeDisplayMetadata;
   entities?: OntologyIrActionTypeEntities | null | undefined;
-  formContentOrdering: Array<FormContent>;
-  notificationSettings: ActionNotificationSettings;
+  formContentOrdering: Array<OntologyIrFormContent>;
   parameterOrdering: Array<ParameterId>;
   parameters: Record<ParameterId, OntologyIrParameter>;
-  provenance?:
-    | _api_entitymetadata_provenance_ActionTypeProvenance
-    | null
-    | undefined;
-  rid: ActionTypeRid;
-  sections: Record<SectionId, Section>;
-  status: ActionTypeStatus;
-  submissionConfiguration?: ActionSubmissionConfiguration | null | undefined;
-  version: ActionTypeVersion;
+  sections: Record<SectionId, OntologyIrSection>;
+  status: OntologyIrActionTypeStatus;
 }
+export interface OntologyIrActionTypeRichTextComponent_message {
+  type: "message";
+  message: ActionTypeRichTextMessage;
+}
+
+export interface OntologyIrActionTypeRichTextComponent_parameter {
+  type: "parameter";
+  parameter: ActionTypeRichTextParameterReference;
+}
+
+export interface OntologyIrActionTypeRichTextComponent_parameterProperty {
+  type: "parameterProperty";
+  parameterProperty: OntologyIrActionTypeRichTextParameterPropertyReference;
+}
+/**
+ * Generic type that can used to define a string that should have Action execution details injected into it when
+ * it is rendered.
+ */
+export type OntologyIrActionTypeRichTextComponent =
+  | OntologyIrActionTypeRichTextComponent_message
+  | OntologyIrActionTypeRichTextComponent_parameter
+  | OntologyIrActionTypeRichTextComponent_parameterProperty;
+
+/**
+ * Indicates that this value in the rendered string should be replaced with the specified Object Parameter's
+ * property value.
+ */
+export type OntologyIrActionTypeRichTextParameterPropertyReference =
+  OntologyIrObjectParameterPropertyValue;
+export interface OntologyIrActionTypeStatus_experimental {
+  type: "experimental";
+  experimental: ExperimentalActionTypeStatus;
+}
+
+export interface OntologyIrActionTypeStatus_active {
+  type: "active";
+  active: ActiveActionTypeStatus;
+}
+
+export interface OntologyIrActionTypeStatus_deprecated {
+  type: "deprecated";
+  deprecated: OntologyIrDeprecatedActionTypeStatus;
+}
+
+export interface OntologyIrActionTypeStatus_example {
+  type: "example";
+  example: ExampleActionTypeStatus;
+}
+/**
+ * The status to indicate whether the ActionType is either Experimental, Active, Deprecated, or Example.
+ */
+export type OntologyIrActionTypeStatus =
+  | OntologyIrActionTypeStatus_experimental
+  | OntologyIrActionTypeStatus_active
+  | OntologyIrActionTypeStatus_deprecated
+  | OntologyIrActionTypeStatus_example;
+
 export interface OntologyIrActionValidation {
   actionTypeLevelValidation: OntologyIrActionTypeLevelValidation;
   parameterValidations: Record<
     ParameterId,
     OntologyIrConditionalValidationBlock
   >;
-  sectionValidations: Record<SectionId, OntologyIrSectionDisplayBlock>;
 }
 /**
  * ActionWebhooks contains the definition for webhooks that are executed as part of running an Action.
@@ -6303,38 +6370,34 @@ export interface OntologyIrAddInterfaceLinkRule {
   targetObject: ParameterId;
 }
 export interface OntologyIrAddInterfaceRule {
-  interfaceTypeRid: InterfaceTypeApiName;
-  objectType: ParameterId;
+  interfaceApiName: InterfaceTypeApiName;
+  objectTypeParameter: ParameterId;
   sharedPropertyValues: Record<
     ObjectTypeFieldApiName,
     OntologyIrLogicRuleValue
   >;
-  structFieldValues: Record<
-    ObjectTypeFieldApiName,
-    Record<StructFieldRid, StructFieldLogicRuleValue>
-  >;
 }
 export interface OntologyIrAddObjectRule {
   objectTypeId: ObjectTypeId;
-  propertyValues: Record<PropertyTypeId, OntologyIrLogicRuleValue>;
+  propertyValues: Record<ObjectTypeFieldApiName, OntologyIrLogicRuleValue>;
   structFieldValues: Record<
-    PropertyTypeId,
+    ObjectTypeFieldApiName,
     Record<StructFieldRid, StructFieldLogicRuleValue>
   >;
 }
 export interface OntologyIrAddOrModifyObjectRule {
   objectTypeId: ObjectTypeId;
-  propertyValues: Record<PropertyTypeId, OntologyIrLogicRuleValue>;
+  propertyValues: Record<ObjectTypeFieldApiName, OntologyIrLogicRuleValue>;
   structFieldValues: Record<
-    PropertyTypeId,
+    ObjectTypeFieldApiName,
     Record<StructFieldRid, StructFieldLogicRuleValue>
   >;
 }
 export interface OntologyIrAddOrModifyObjectRuleV2 {
   objectToModify: ParameterId;
-  propertyValues: Record<PropertyTypeId, OntologyIrLogicRuleValue>;
+  propertyValues: Record<ObjectTypeFieldApiName, OntologyIrLogicRuleValue>;
   structFieldValues: Record<
-    PropertyTypeId,
+    ObjectTypeFieldApiName,
     Record<StructFieldRid, StructFieldLogicRuleValue>
   >;
 }
@@ -6460,11 +6523,6 @@ export interface OntologyIrAllowedParameterValues_redacted {
   type: "redacted";
   redacted: Redacted;
 }
-
-export interface OntologyIrAllowedParameterValues_struct {
-  type: "struct";
-  struct: ParameterStructOrEmpty;
-}
 export type OntologyIrAllowedParameterValues =
   | OntologyIrAllowedParameterValues_oneOf
   | OntologyIrAllowedParameterValues_range
@@ -6488,8 +6546,7 @@ export type OntologyIrAllowedParameterValues =
   | OntologyIrAllowedParameterValues_geohash
   | OntologyIrAllowedParameterValues_geoshape
   | OntologyIrAllowedParameterValues_geotimeSeriesReference
-  | OntologyIrAllowedParameterValues_redacted
-  | OntologyIrAllowedParameterValues_struct;
+  | OntologyIrAllowedParameterValues_redacted;
 
 export interface OntologyIrAllowedStructFieldValues_oneOf {
   type: "oneOf";
@@ -6557,6 +6614,52 @@ export interface OntologyIrAsynchronousPostWritebackWebhook_staticFunctionInput 
 export type OntologyIrAsynchronousPostWritebackWebhook =
   | OntologyIrAsynchronousPostWritebackWebhook_staticDirectInput
   | OntologyIrAsynchronousPostWritebackWebhook_staticFunctionInput;
+
+export interface OntologyIrBaseFormatter_knownFormatter {
+  type: "knownFormatter";
+  knownFormatter: KnownFormatter;
+}
+
+export interface OntologyIrBaseFormatter_number {
+  type: "number";
+  number: OntologyIrNumberFormatter;
+}
+
+export interface OntologyIrBaseFormatter_timestamp {
+  type: "timestamp";
+  timestamp: OntologyIrTimestampFormatter;
+}
+
+export interface OntologyIrBaseFormatter_date {
+  type: "date";
+  date: DateFormatter;
+}
+
+export interface OntologyIrBaseFormatter_string {
+  type: "string";
+  string: StringFormatter;
+}
+
+export interface OntologyIrBaseFormatter_timeDependent {
+  type: "timeDependent";
+  timeDependent: OntologyIrTimeDependentFormatter;
+}
+
+export interface OntologyIrBaseFormatter_boolean {
+  type: "boolean";
+  boolean: BooleanFormatter;
+}
+/**
+ * The basic formatting behavior.
+ */
+export type OntologyIrBaseFormatter =
+  | OntologyIrBaseFormatter_knownFormatter
+  | OntologyIrBaseFormatter_number
+  | OntologyIrBaseFormatter_timestamp
+  | OntologyIrBaseFormatter_date
+  | OntologyIrBaseFormatter_string
+  | OntologyIrBaseFormatter_timeDependent
+  | OntologyIrBaseFormatter_boolean;
 
 /**
  * A basic action notification's email body. Uses Handlebars templating.
@@ -6650,12 +6753,7 @@ export interface OntologyIrConditionalOverride {
   parameterBlockOverrides: Array<OntologyIrParameterValidationBlockOverride>;
 }
 export interface OntologyIrConditionalValidationBlock {
-  conditionalOverrides: Array<OntologyIrConditionalOverride>;
   defaultValidation: OntologyIrParameterValidationBlock;
-  structFieldValidations: Record<
-    _api_types_StructParameterFieldApiName,
-    OntologyIrStructFieldConditionalValidationBlock
-  >;
 }
 export interface OntologyIrConditionValue_parameterId {
   type: "parameterId";
@@ -6669,7 +6767,7 @@ export interface OntologyIrConditionValue_staticValue {
 
 export interface OntologyIrConditionValue_objectParameterPropertyValue {
   type: "objectParameterPropertyValue";
-  objectParameterPropertyValue: ObjectParameterPropertyValue;
+  objectParameterPropertyValue: OntologyIrObjectParameterPropertyValue;
 }
 
 export interface OntologyIrConditionValue_interfaceParameterPropertyValue {
@@ -6713,11 +6811,39 @@ export type OntologyIrDateRangeValue =
   | OntologyIrDateRangeValue_relative
   | OntologyIrDateRangeValue_now;
 
+export interface OntologyIrDatetimeTimezone_static {
+  type: "static";
+  static: OntologyIrDatetimeTimezoneDefinition;
+}
+
+export interface OntologyIrDatetimeTimezone_user {
+  type: "user";
+  user: UserTimezone;
+}
+export type OntologyIrDatetimeTimezone =
+  | OntologyIrDatetimeTimezone_static
+  | OntologyIrDatetimeTimezone_user;
+
+export interface OntologyIrDatetimeTimezoneDefinition_zoneId {
+  type: "zoneId";
+  zoneId: OntologyIrPropertyTypeReferenceOrStringConstant;
+}
+export type OntologyIrDatetimeTimezoneDefinition =
+  OntologyIrDatetimeTimezoneDefinition_zoneId;
+
 export interface OntologyIrDeleteInterfaceLinkRule {
   interfaceLinkTypeRid: InterfaceLinkTypeApiName;
   interfaceTypeRid: InterfaceTypeApiName;
   sourceObject: ParameterId;
   targetObject: ParameterId;
+}
+/**
+ * This status indicates that the ActionType is reaching the end of its life and will be removed as per the deadline specified.
+ */
+export interface OntologyIrDeprecatedActionTypeStatus {
+  deadline: string;
+  message: string;
+  replacedBy?: ActionTypeApiName | null | undefined;
 }
 /**
  * This status indicates that the interface is reaching the end of its life and will be removed as per the
@@ -6752,6 +6878,43 @@ export interface OntologyIrDeprecatedPropertyTypeStatus {
   message: string;
   replacedBy?: ObjectTypeFieldApiName | null | undefined;
 }
+/**
+ * An ObjectSet gotten as a result of performing a sequence of Transforms on a base ObjectSet.
+ * Each transforms is either a PropertyFilter or a SearchAround.
+ * There is a limit of 3 SearchArounds.
+ */
+export interface OntologyIrDynamicObjectSet {
+  startingObjectSet: OntologyIrDynamicObjectSetInput;
+  transforms: Array<OntologyIrObjectSetTransform>;
+}
+export interface OntologyIrDynamicObjectSetInput_base {
+  type: "base";
+  base: DynamicObjectSetInputBase;
+}
+
+export interface OntologyIrDynamicObjectSetInput_parameter {
+  type: "parameter";
+  parameter: DynamicObjectSetInputParameter;
+}
+
+export interface OntologyIrDynamicObjectSetInput_unioned {
+  type: "unioned";
+  unioned: OntologyIrDynamicObjectSetInputUnioned;
+}
+/**
+ * A wrapper used to reference an ObjectSet
+ */
+export type OntologyIrDynamicObjectSetInput =
+  | OntologyIrDynamicObjectSetInput_base
+  | OntologyIrDynamicObjectSetInput_parameter
+  | OntologyIrDynamicObjectSetInput_unioned;
+
+/**
+ * Depicts an ObjectSet which is a union of all ObjectSets provided.
+ */
+export interface OntologyIrDynamicObjectSetInputUnioned {
+  dynamicObjectSets: Array<OntologyIrDynamicObjectSet>;
+}
 export interface OntologyIrEmailBody_basic {
   type: "basic";
   basic: OntologyIrBasicEmailBody;
@@ -6770,6 +6933,30 @@ export interface OntologyIrEventMetadata {
   eventIdPropertyTypeRid: ObjectTypeFieldApiName;
   startTimePropertyTypeRid: ObjectTypeFieldApiName;
 }
+/**
+ * Note this is experimental, should not be used without consulting the product team and format can
+ * change/break without notice.
+ */
+export interface OntologyIrExperimentalTimeDependentPropertyTypeV1 {
+  sensorLinkTypeId?: LinkTypeId | null | undefined;
+  seriesValueMetadata: OntologyIrSeriesValueMetadata;
+}
+export interface OntologyIrFormContent_parameterId {
+  type: "parameterId";
+  parameterId: ParameterId;
+}
+
+export interface OntologyIrFormContent_sectionId {
+  type: "sectionId";
+  sectionId: SectionId;
+}
+/**
+ * Items that we can place on the action form.
+ */
+export type OntologyIrFormContent =
+  | OntologyIrFormContent_parameterId
+  | OntologyIrFormContent_sectionId;
+
 export interface OntologyIrFunctionExecutionWithRecipientInput_logicRuleValue {
   type: "logicRuleValue";
   logicRuleValue: OntologyIrLogicRuleValue;
@@ -6810,6 +6997,11 @@ export interface OntologyIrFunctionRule {
   functionInputValues: Record<FunctionInputName, OntologyIrLogicRuleValue>;
   functionRid: FunctionRid;
   functionVersion: SemanticFunctionVersion;
+}
+export interface OntologyIrInlineActionType {
+  displayOptions: InlineActionDisplayOptions;
+  parameterId?: ParameterId | null | undefined;
+  rid: ActionTypeApiName;
 }
 export interface OntologyIrInterfaceLinkType {
   cardinality: InterfaceLinkTypeCardinality;
@@ -6969,11 +7161,6 @@ export interface OntologyIrLogicRule_addObjectRule {
   addObjectRule: OntologyIrAddObjectRule;
 }
 
-export interface OntologyIrLogicRule_addOrModifyObjectRule {
-  type: "addOrModifyObjectRule";
-  addOrModifyObjectRule: OntologyIrAddOrModifyObjectRule;
-}
-
 export interface OntologyIrLogicRule_addOrModifyObjectRuleV2 {
   type: "addOrModifyObjectRuleV2";
   addOrModifyObjectRuleV2: OntologyIrAddOrModifyObjectRuleV2;
@@ -6998,50 +7185,13 @@ export interface OntologyIrLogicRule_modifyInterfaceRule {
   type: "modifyInterfaceRule";
   modifyInterfaceRule: OntologyIrModifyInterfaceRule;
 }
-
-export interface OntologyIrLogicRule_addLinkRule {
-  type: "addLinkRule";
-  addLinkRule: AddLinkRule;
-}
-
-export interface OntologyIrLogicRule_deleteLinkRule {
-  type: "deleteLinkRule";
-  deleteLinkRule: DeleteLinkRule;
-}
-
-export interface OntologyIrLogicRule_addInterfaceLinkRule {
-  type: "addInterfaceLinkRule";
-  addInterfaceLinkRule: OntologyIrAddInterfaceLinkRule;
-}
-
-export interface OntologyIrLogicRule_deleteInterfaceLinkRule {
-  type: "deleteInterfaceLinkRule";
-  deleteInterfaceLinkRule: OntologyIrDeleteInterfaceLinkRule;
-}
-
-export interface OntologyIrLogicRule_functionRule {
-  type: "functionRule";
-  functionRule: OntologyIrFunctionRule;
-}
-
-export interface OntologyIrLogicRule_batchedFunctionRule {
-  type: "batchedFunctionRule";
-  batchedFunctionRule: OntologyIrBatchedFunctionRule;
-}
 export type OntologyIrLogicRule =
   | OntologyIrLogicRule_addObjectRule
-  | OntologyIrLogicRule_addOrModifyObjectRule
   | OntologyIrLogicRule_addOrModifyObjectRuleV2
   | OntologyIrLogicRule_modifyObjectRule
   | OntologyIrLogicRule_deleteObjectRule
   | OntologyIrLogicRule_addInterfaceRule
-  | OntologyIrLogicRule_modifyInterfaceRule
-  | OntologyIrLogicRule_addLinkRule
-  | OntologyIrLogicRule_deleteLinkRule
-  | OntologyIrLogicRule_addInterfaceLinkRule
-  | OntologyIrLogicRule_deleteInterfaceLinkRule
-  | OntologyIrLogicRule_functionRule
-  | OntologyIrLogicRule_batchedFunctionRule;
+  | OntologyIrLogicRule_modifyInterfaceRule;
 
 export interface OntologyIrLogicRuleValue_parameterId {
   type: "parameterId";
@@ -7055,7 +7205,7 @@ export interface OntologyIrLogicRuleValue_staticValue {
 
 export interface OntologyIrLogicRuleValue_objectParameterPropertyValue {
   type: "objectParameterPropertyValue";
-  objectParameterPropertyValue: ObjectParameterPropertyValue;
+  objectParameterPropertyValue: OntologyIrObjectParameterPropertyValue;
 }
 
 export interface OntologyIrLogicRuleValue_interfaceParameterPropertyValue {
@@ -7174,21 +7324,17 @@ export type OntologyIrMediaSourceRid =
   | OntologyIrMediaSourceRid_datasetRid;
 
 export interface OntologyIrModifyInterfaceRule {
-  interfaceObjectToModify: ParameterId;
+  interfaceObjectToModifyParameter: ParameterId;
   sharedPropertyValues: Record<
     ObjectTypeFieldApiName,
     OntologyIrLogicRuleValue
   >;
-  structFieldValues: Record<
-    ObjectTypeFieldApiName,
-    Record<StructFieldRid, StructFieldLogicRuleValue>
-  >;
 }
 export interface OntologyIrModifyObjectRule {
   objectToModify: ParameterId;
-  propertyValues: Record<PropertyTypeId, OntologyIrLogicRuleValue>;
+  propertyValues: Record<ObjectTypeFieldApiName, OntologyIrLogicRuleValue>;
   structFieldValues: Record<
-    PropertyTypeId,
+    ObjectTypeFieldApiName,
     Record<StructFieldRid, StructFieldLogicRuleValue>
   >;
 }
@@ -7208,6 +7354,20 @@ export interface OntologyIrMultipassUserInGroupFilter {
 export interface OntologyIrNewObjectUrlTarget {
   keys: Record<PropertyId, OntologyIrLogicRuleValue>;
   objectTypeId: ObjectTypeId;
+}
+/**
+ * Configuration for non-numeric series.
+ */
+export interface OntologyIrNonNumericSeriesValueMetadata {
+  defaultInternalInterpolation:
+    OntologyIrPropertyTypeReferenceOrNonNumericInternalInterpolation;
+}
+/**
+ * The unit to accompany the non-numeric value of a Time Dependent property. Can be provided by a property or a
+ * user-inputted constant.
+ */
+export interface OntologyIrNonNumericSeriesValueUnit {
+  customUnit: OntologyIrPropertyTypeReferenceOrStringConstant;
 }
 export interface OntologyIrNotCondition {
   condition: OntologyIrCondition;
@@ -7240,11 +7400,160 @@ export type OntologyIrNotificationTemplateInputValue =
   | OntologyIrNotificationTemplateInputValue_actionTriggererValue;
 
 /**
+ * Note that non-visual features e.g. sorting & histograms, are not guaranteed to be currency-aware. They can
+ * group the same number together even if they have different currencies.
+ */
+export interface OntologyIrNumberFormatCurrency {
+  base: NumberFormatBase;
+  currencyCode: OntologyIrPropertyTypeReferenceOrStringConstant;
+  style: NumberFormatCurrencyStyle;
+}
+/**
+ * For units that aren't accepted by NumberFormatUnit.
+ * No auto-conversion will ever be attempted.
+ * This is mostly a label providing instruction on which values can share an axis.
+ */
+export interface OntologyIrNumberFormatCustomUnit {
+  base: NumberFormatBase;
+  unit: OntologyIrPropertyTypeReferenceOrStringConstant;
+}
+/**
+ * Consider using currency/unit instead of this formatter.
+ *
+ * Attach an arbitrary constant pre/post-fix.
+ */
+export interface OntologyIrNumberFormatPrePostFix {
+  base: NumberFormatBase;
+  prePostFix: OntologyIrPrePostFix;
+}
+export interface OntologyIrNumberFormatter_base {
+  type: "base";
+  base: NumberFormatBase;
+}
+
+export interface OntologyIrNumberFormatter_percentage {
+  type: "percentage";
+  percentage: NumberFormatPercentage;
+}
+
+export interface OntologyIrNumberFormatter_perMille {
+  type: "perMille";
+  perMille: NumberFormatPerMille;
+}
+
+export interface OntologyIrNumberFormatter_ordinal {
+  type: "ordinal";
+  ordinal: NumberFormatOrdinal;
+}
+
+export interface OntologyIrNumberFormatter_currency {
+  type: "currency";
+  currency: OntologyIrNumberFormatCurrency;
+}
+
+export interface OntologyIrNumberFormatter_unit {
+  type: "unit";
+  unit: OntologyIrNumberFormatUnit;
+}
+
+export interface OntologyIrNumberFormatter_customUnit {
+  type: "customUnit";
+  customUnit: OntologyIrNumberFormatCustomUnit;
+}
+
+export interface OntologyIrNumberFormatter_prePost {
+  type: "prePost";
+  prePost: OntologyIrNumberFormatPrePostFix;
+}
+
+export interface OntologyIrNumberFormatter_duration {
+  type: "duration";
+  duration: NumberFormatDuration;
+}
+
+export interface OntologyIrNumberFormatter_thousands {
+  type: "thousands";
+  thousands: NumberFormatThousands;
+}
+
+export interface OntologyIrNumberFormatter_millions {
+  type: "millions";
+  millions: NumberFormatMillions;
+}
+
+export interface OntologyIrNumberFormatter_billions {
+  type: "billions";
+  billions: NumberFormatBillions;
+}
+
+export interface OntologyIrNumberFormatter_basisPoint {
+  type: "basisPoint";
+  basisPoint: NumberFormatBasisPoint;
+}
+export type OntologyIrNumberFormatter =
+  | OntologyIrNumberFormatter_base
+  | OntologyIrNumberFormatter_percentage
+  | OntologyIrNumberFormatter_perMille
+  | OntologyIrNumberFormatter_ordinal
+  | OntologyIrNumberFormatter_currency
+  | OntologyIrNumberFormatter_unit
+  | OntologyIrNumberFormatter_customUnit
+  | OntologyIrNumberFormatter_prePost
+  | OntologyIrNumberFormatter_duration
+  | OntologyIrNumberFormatter_thousands
+  | OntologyIrNumberFormatter_millions
+  | OntologyIrNumberFormatter_billions
+  | OntologyIrNumberFormatter_basisPoint;
+
+/**
+ * Note that this formatter breaks e.g. sorting features if used in combination with auto-conversion.
+ */
+export interface OntologyIrNumberFormatUnit {
+  base: NumberFormatBase;
+  unit: OntologyIrPropertyTypeReferenceOrStringConstant;
+}
+/**
+ * Configuration for a time series property that can contain either numeric or non-numeric data. A boolean property
+ * reference is required to determine if the series is numeric or non-numeric.
+ */
+export interface OntologyIrNumericOrNonNumericSeriesValueMetadataV2 {
+  isNonNumericPropertyTypeId: ObjectTypeFieldApiName;
+}
+/**
+ * Configuration for numeric series.
+ */
+export interface OntologyIrNumericSeriesValueMetadata {
+  defaultInternalInterpolation:
+    OntologyIrPropertyTypeReferenceOrNumericInternalInterpolation;
+}
+export interface OntologyIrNumericSeriesValueUnit_standardUnit {
+  type: "standardUnit";
+  standardUnit: OntologyIrNumberFormatUnit;
+}
+
+export interface OntologyIrNumericSeriesValueUnit_customUnit {
+  type: "customUnit";
+  customUnit: OntologyIrNumberFormatCustomUnit;
+}
+/**
+ * The unit to accompany the numeric value of a Time Dependent property. Can be a standardized NumberFormatUnit
+ * or a user-inputted NumberFormatCustomUnit for Numeric series. Either can be provided by a property or a
+ * user-inputted constant.
+ */
+export type OntologyIrNumericSeriesValueUnit =
+  | OntologyIrNumericSeriesValueUnit_standardUnit
+  | OntologyIrNumericSeriesValueUnit_customUnit;
+
+export interface OntologyIrObjectParameterPropertyValue {
+  parameterId: ParameterId;
+  propertyTypeId: ObjectTypeFieldApiName;
+}
+/**
  * Reference to a struct field of a struct property.
  */
 export interface OntologyIrObjectParameterStructFieldValue {
   parameterId: ParameterId;
-  propertyTypeId: PropertyTypeId;
+  propertyTypeId: ObjectTypeFieldApiName;
   structFieldRid: StructFieldRid;
 }
 /**
@@ -7252,7 +7561,7 @@ export interface OntologyIrObjectParameterStructFieldValue {
  */
 export interface OntologyIrObjectParameterStructListFieldValue {
   parameterId: ParameterId;
-  propertyTypeId: PropertyTypeId;
+  propertyTypeId: ObjectTypeFieldApiName;
   structFieldRid: StructFieldRid;
 }
 /**
@@ -7266,7 +7575,7 @@ export interface OntologyIrObjectQueryPrefill {
  */
 export interface OntologyIrObjectQueryPropertyValue {
   objectSet: OntologyIrActionsObjectSet;
-  propertyTypeId: PropertyTypeId;
+  propertyTypeId: ObjectTypeFieldApiName;
 }
 /**
  * Generates an ObjectSetRid, from the provided ObjectSet definition, that would be used as the default value
@@ -7275,6 +7584,22 @@ export interface OntologyIrObjectQueryPropertyValue {
 export interface OntologyIrObjectSetRidPrefill {
   objectSet: OntologyIrActionsObjectSet;
 }
+export interface OntologyIrObjectSetTransform_propertyFilter {
+  type: "propertyFilter";
+  propertyFilter: _api_objectset_OntologyIrObjectSetFilter;
+}
+
+export interface OntologyIrObjectSetTransform_searchAround {
+  type: "searchAround";
+  searchAround: ObjectSetSearchAround;
+}
+/**
+ * Transforms an ObjectSet by Filtering or performing a SearchAround.
+ */
+export type OntologyIrObjectSetTransform =
+  | OntologyIrObjectSetTransform_propertyFilter
+  | OntologyIrObjectSetTransform_searchAround;
+
 /**
  * An ObjectType is a model that represents a real world concept. For example, there could be
  * an Employees ObjectType to represent the employees in a business organization.
@@ -7575,7 +7900,7 @@ export interface OntologyIrObjectTypeTimeSeriesDatasource {
   timeSeriesSyncRid: _api_blockdata_TimeSeriesSyncName;
 }
 export interface OntologyIrObjectTypeTraits {
-  actionLogMetadata?: ActionLogMetadata | null | undefined;
+  actionLogMetadata?: OntologyIrActionLogMetadata | null | undefined;
   eventMetadata?: OntologyIrEventMetadata | null | undefined;
   peeringMetadata?: ObjectTypePeeringMetadata | null | undefined;
   sensorTrait?: OntologyIrSensorTrait | null | undefined;
@@ -7606,9 +7931,8 @@ export interface OntologyIrOrCondition {
  * Parameters of an ActionType represent what inputs the ActionType requires.
  */
 export interface OntologyIrParameter {
-  displayMetadata: ParameterDisplayMetadata;
+  displayMetadata: OntologyIrParameterDisplayMetadata;
   id: ParameterId;
-  rid: ParameterRid;
   type: _api_types_OntologyIrBaseParameterType;
 }
 /**
@@ -7667,6 +7991,11 @@ export type OntologyIrParameterDateTimeRangeOrEmpty =
   | OntologyIrParameterDateTimeRangeOrEmpty_empty
   | OntologyIrParameterDateTimeRangeOrEmpty_datetime;
 
+export interface OntologyIrParameterDisplayMetadata {
+  description: string;
+  displayName: string;
+  typeClasses: Array<TypeClass>;
+}
 export interface OntologyIrParameterMultipassUser {
   filter: Array<OntologyIrMultipassUserFilter>;
 }
@@ -7690,7 +8019,7 @@ export type OntologyIrParameterMultipassUserOrEmpty =
 export interface OntologyIrParameterObjectPropertyValue {
   objectSet: OntologyIrActionsObjectSet;
   otherValueAllowed?: OtherValueAllowed | null | undefined;
-  propertyTypeId: PropertyTypeId;
+  propertyTypeId: ObjectTypeFieldApiName;
 }
 export interface OntologyIrParameterObjectPropertyValueOrEmpty_empty {
   type: "empty";
@@ -7761,7 +8090,7 @@ export interface OntologyIrParameterPrefill_staticObject {
 
 export interface OntologyIrParameterPrefill_objectParameterPropertyValue {
   type: "objectParameterPropertyValue";
-  objectParameterPropertyValue: ObjectParameterPropertyValue;
+  objectParameterPropertyValue: OntologyIrObjectParameterPropertyValue;
 }
 
 export interface OntologyIrParameterPrefill_interfaceParameterPropertyValue {
@@ -7863,7 +8192,6 @@ export type OntologyIrParameterValidationBlockOverride =
  * evaluate correctness of submitted parameters.
  */
 export interface OntologyIrParameterValidationDisplayMetadata {
-  prefill?: OntologyIrParameterPrefill | null | undefined;
   renderHint: _api_types_ParameterRenderHint;
   visibility: _api_types_ParameterVisibility;
 }
@@ -7884,6 +8212,10 @@ export type OntologyIrParameterValueOneOfOrEmpty =
   | OntologyIrParameterValueOneOfOrEmpty_empty
   | OntologyIrParameterValueOneOfOrEmpty_oneOf;
 
+export interface OntologyIrPrePostFix {
+  postfix?: OntologyIrPropertyTypeReferenceOrStringConstant | null | undefined;
+  prefix?: OntologyIrPropertyTypeReferenceOrStringConstant | null | undefined;
+}
 /**
  * Defines a grouping of properties sharing the same security.
  *
@@ -7910,11 +8242,11 @@ export interface OntologyIrPropertySecurityGroups {
  */
 export interface OntologyIrPropertyType {
   apiName: ObjectTypeFieldApiName;
-  baseFormatter?: BaseFormatter | null | undefined;
+  baseFormatter?: OntologyIrBaseFormatter | null | undefined;
   dataConstraints?: DataConstraints | null | undefined;
   displayMetadata: PropertyTypeDisplayMetadata;
   indexedForSearch: boolean;
-  inlineAction?: InlineActionType | null | undefined;
+  inlineAction?: OntologyIrInlineActionType | null | undefined;
   ruleSetBinding?: OntologyIrRuleSetBinding | null | undefined;
   sharedPropertyTypeApiName?: ObjectTypeFieldApiName | null | undefined;
   sharedPropertyTypeRid?: ObjectTypeFieldApiName | null | undefined;
@@ -7923,6 +8255,45 @@ export interface OntologyIrPropertyType {
   typeClasses: Array<TypeClass>;
   valueType?: ValueTypeApiNameReference | null | undefined;
 }
+export interface OntologyIrPropertyTypeReferenceOrNonNumericInternalInterpolation_propertyType {
+  type: "propertyType";
+  propertyType: ObjectTypeFieldApiName;
+}
+
+export interface OntologyIrPropertyTypeReferenceOrNonNumericInternalInterpolation_internalInterpolation {
+  type: "internalInterpolation";
+  internalInterpolation: NonNumericInternalInterpolation;
+}
+export type OntologyIrPropertyTypeReferenceOrNonNumericInternalInterpolation =
+  | OntologyIrPropertyTypeReferenceOrNonNumericInternalInterpolation_propertyType
+  | OntologyIrPropertyTypeReferenceOrNonNumericInternalInterpolation_internalInterpolation;
+
+export interface OntologyIrPropertyTypeReferenceOrNumericInternalInterpolation_propertyType {
+  type: "propertyType";
+  propertyType: ObjectTypeFieldApiName;
+}
+
+export interface OntologyIrPropertyTypeReferenceOrNumericInternalInterpolation_internalInterpolation {
+  type: "internalInterpolation";
+  internalInterpolation: NumericInternalInterpolation;
+}
+export type OntologyIrPropertyTypeReferenceOrNumericInternalInterpolation =
+  | OntologyIrPropertyTypeReferenceOrNumericInternalInterpolation_propertyType
+  | OntologyIrPropertyTypeReferenceOrNumericInternalInterpolation_internalInterpolation;
+
+export interface OntologyIrPropertyTypeReferenceOrStringConstant_constant {
+  type: "constant";
+  constant: string;
+}
+
+export interface OntologyIrPropertyTypeReferenceOrStringConstant_propertyType {
+  type: "propertyType";
+  propertyType: ObjectTypeFieldApiName;
+}
+export type OntologyIrPropertyTypeReferenceOrStringConstant =
+  | OntologyIrPropertyTypeReferenceOrStringConstant_constant
+  | OntologyIrPropertyTypeReferenceOrStringConstant_propertyType;
+
 export interface OntologyIrPropertyTypeStatus_experimental {
   type: "experimental";
   experimental: ExperimentalPropertyTypeStatus;
@@ -7978,6 +8349,14 @@ export interface OntologyIrRidUrlTarget {
 export interface OntologyIrRuleSetBinding {
   bindings: Record<ValueReferenceId, OntologyIrValueReferenceSource>;
   ruleSetRid: RuleSetRid;
+}
+/**
+ * A physical and logical grouping of parameters on the action form.
+ */
+export interface OntologyIrSection {
+  content: Array<SectionContent>;
+  displayMetadata: SectionDisplayMetadata;
+  id: SectionId;
 }
 /**
  * This block contains a conditional override for a section.
@@ -8116,13 +8495,38 @@ export type OntologyIrSecurityGroupSecurityDefinition =
 export interface OntologyIrSensorTrait {
   readingPropertyTypeRid: ObjectTypeFieldApiName;
 }
+export interface OntologyIrSeriesValueMetadata_numeric {
+  type: "numeric";
+  numeric: OntologyIrNumericSeriesValueMetadata;
+}
+
+export interface OntologyIrSeriesValueMetadata_enum {
+  type: "enum";
+  enum: OntologyIrNonNumericSeriesValueMetadata;
+}
+
+export interface OntologyIrSeriesValueMetadata_numericOrNonNumeric {
+  type: "numericOrNonNumeric";
+  numericOrNonNumeric: NumericOrNonNumericSeriesValueMetadata;
+}
+
+export interface OntologyIrSeriesValueMetadata_numericOrNonNumericV2 {
+  type: "numericOrNonNumericV2";
+  numericOrNonNumericV2: OntologyIrNumericOrNonNumericSeriesValueMetadataV2;
+}
+export type OntologyIrSeriesValueMetadata =
+  | OntologyIrSeriesValueMetadata_numeric
+  | OntologyIrSeriesValueMetadata_enum
+  | OntologyIrSeriesValueMetadata_numericOrNonNumeric
+  | OntologyIrSeriesValueMetadata_numericOrNonNumericV2;
+
 /**
  * A property type that can be shared across object types.
  */
 export interface OntologyIrSharedPropertyType {
   aliases: Array<_api_entitymetadata_SharedPropertyTypeAlias>;
   apiName: ObjectTypeFieldApiName;
-  baseFormatter?: BaseFormatter | null | undefined;
+  baseFormatter?: OntologyIrBaseFormatter | null | undefined;
   dataConstraints?: DataConstraints | null | undefined;
   displayMetadata: SharedPropertyTypeDisplayMetadata;
   gothamMapping?:
@@ -8303,12 +8707,82 @@ export interface OntologyIrTemplateNotificationBody {
   shortBody: OntologyIrShortBody;
 }
 /**
+ * Formatter applied to TIME DEPENDENT properties.
+ */
+export interface OntologyIrTimeDependentFormatter {
+  timeDependentSeriesFormat: OntologyIrTimeDependentSeriesFormat;
+}
+/**
+ * Configuration for non-numeric series.
+ */
+export interface OntologyIrTimeDependentNonNumericSeriesFormat {
+  defaultInternalInterpolation:
+    OntologyIrPropertyTypeReferenceOrNonNumericInternalInterpolation;
+  unit?: OntologyIrNonNumericSeriesValueUnit | null | undefined;
+}
+/**
+ * Configuration for either numeric or non-numeric series.
+ */
+export interface OntologyIrTimeDependentNumericOrNonNumericSeriesFormat {
+  defaultInternalInterpolationPropertyTypeId: ObjectTypeFieldApiName;
+  isNonNumericPropertyTypeId: ObjectTypeFieldApiName;
+  unitPropertyTypeId: ObjectTypeFieldApiName;
+}
+/**
+ * Configuration for either numeric or non-numeric series.
+ */
+export interface OntologyIrTimeDependentNumericOrNonNumericSeriesFormatV2 {
+  defaultInternalInterpolationPropertyTypeId?:
+    | ObjectTypeFieldApiName
+    | null
+    | undefined;
+  unitPropertyTypeId?: ObjectTypeFieldApiName | null | undefined;
+}
+/**
+ * Configuration for numeric series.
+ */
+export interface OntologyIrTimeDependentNumericSeriesFormat {
+  defaultInternalInterpolation:
+    OntologyIrPropertyTypeReferenceOrNumericInternalInterpolation;
+  unit?: OntologyIrNumericSeriesValueUnit | null | undefined;
+}
+export interface OntologyIrTimeDependentSeriesFormat_numeric {
+  type: "numeric";
+  numeric: OntologyIrTimeDependentNumericSeriesFormat;
+}
+
+export interface OntologyIrTimeDependentSeriesFormat_nonNumeric {
+  type: "nonNumeric";
+  nonNumeric: OntologyIrTimeDependentNonNumericSeriesFormat;
+}
+
+export interface OntologyIrTimeDependentSeriesFormat_numericOrNonNumeric {
+  type: "numericOrNonNumeric";
+  numericOrNonNumeric: OntologyIrTimeDependentNumericOrNonNumericSeriesFormat;
+}
+
+export interface OntologyIrTimeDependentSeriesFormat_numericOrNonNumericV2 {
+  type: "numericOrNonNumericV2";
+  numericOrNonNumericV2:
+    OntologyIrTimeDependentNumericOrNonNumericSeriesFormatV2;
+}
+export type OntologyIrTimeDependentSeriesFormat =
+  | OntologyIrTimeDependentSeriesFormat_numeric
+  | OntologyIrTimeDependentSeriesFormat_nonNumeric
+  | OntologyIrTimeDependentSeriesFormat_numericOrNonNumeric
+  | OntologyIrTimeDependentSeriesFormat_numericOrNonNumericV2;
+
+/**
  * Describes how to treat an object of this type as a time series.
  */
 export interface OntologyIrTimeSeriesMetadata {
   measurePropertyTypeRid?: ObjectTypeFieldApiName | null | undefined;
   timeSeriesIdPropertyTypeRid: ObjectTypeFieldApiName;
   valueUnitsPropertyTypeRid?: ObjectTypeFieldApiName | null | undefined;
+}
+export interface OntologyIrTimestampFormatter {
+  displayTimezone: OntologyIrDatetimeTimezone;
+  format: DatetimeFormat;
 }
 export interface OntologyIrType_array {
   type: "array";
@@ -8377,7 +8851,8 @@ export interface OntologyIrType_string {
 
 export interface OntologyIrType_experimentalTimeDependentV1 {
   type: "experimentalTimeDependentV1";
-  experimentalTimeDependentV1: ExperimentalTimeDependentPropertyTypeV1;
+  experimentalTimeDependentV1:
+    OntologyIrExperimentalTimeDependentPropertyTypeV1;
 }
 
 export interface OntologyIrType_timestamp {
@@ -8826,6 +9301,14 @@ export type OrganizationMarkingId = string;
  * The rid for a Multipass Organization.
  */
 export type OrganizationRid = string;
+
+/**
+ * A set of organization rids and the corresponding ontology entities that have those organization markings.
+ */
+export interface OrganizationRidsAndEntityResourceIdentifiers {
+  entityResourceIdentifiers: Array<string>;
+  organizationRids: Array<OrganizationRid>;
+}
 export interface OrganizationRidsForOntologyResponse {
   organizationRids: Array<OrganizationRid>;
 }
@@ -11623,6 +12106,58 @@ export interface StructParameterFieldValue {
   parameterId: ParameterId;
   structFieldApiName: _api_types_StructParameterFieldApiName;
 }
+export interface StructPropertyFieldType_boolean {
+  type: "boolean";
+  boolean: BooleanPropertyType;
+}
+
+export interface StructPropertyFieldType_date {
+  type: "date";
+  date: DatePropertyType;
+}
+
+export interface StructPropertyFieldType_double {
+  type: "double";
+  double: DoublePropertyType;
+}
+
+export interface StructPropertyFieldType_geohash {
+  type: "geohash";
+  geohash: GeohashPropertyType;
+}
+
+export interface StructPropertyFieldType_integer {
+  type: "integer";
+  integer: IntegerPropertyType;
+}
+
+export interface StructPropertyFieldType_long {
+  type: "long";
+  long: LongPropertyType;
+}
+
+export interface StructPropertyFieldType_string {
+  type: "string";
+  string: StringPropertyType;
+}
+
+export interface StructPropertyFieldType_timestamp {
+  type: "timestamp";
+  timestamp: TimestampPropertyType;
+}
+/**
+ * Wrapper type for the various supported struct property field types.
+ */
+export type StructPropertyFieldType =
+  | StructPropertyFieldType_boolean
+  | StructPropertyFieldType_date
+  | StructPropertyFieldType_double
+  | StructPropertyFieldType_geohash
+  | StructPropertyFieldType_integer
+  | StructPropertyFieldType_long
+  | StructPropertyFieldType_string
+  | StructPropertyFieldType_timestamp;
+
 export interface StructPropertyType {
   structFields: Array<StructFieldType>;
 }

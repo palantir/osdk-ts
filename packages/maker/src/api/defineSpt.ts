@@ -17,6 +17,7 @@
 import type {
   ApiNameValueTypeReference,
   SharedPropertyTypeGothamMapping,
+  Visibility,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import { namespace, ontologyDefinition } from "./defineOntology.js";
@@ -35,6 +36,7 @@ export function defineSharedPropertyType(
     description?: string;
     displayName?: string;
     valueType?: ApiNameValueTypeReference;
+    visibility?: Visibility;
     typeClasses?: SharedPropertyType["typeClasses"];
     gothamMapping?: SharedPropertyTypeGothamMapping;
   },

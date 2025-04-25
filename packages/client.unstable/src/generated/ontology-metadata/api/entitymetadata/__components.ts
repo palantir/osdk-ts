@@ -99,6 +99,16 @@ export interface CombinedOntologyHistoryPageItemSummary {
  * about the content of the paging token and it should not be parsed/modified.
  */
 export type CombinedOntologyHistoryPageToken = string;
+
+/**
+ * With this strategy, whether a datasource is alive for a given object is evaluated on a
+ * datasource-by-datasource basis. This can have unintuitive consequences if properties are moved between
+ * different datasources, as the MarkAlive instructions within the patch will not be adjusted to reflect the new
+ * datasources containing the edited properties. In such cases, if the new datasource were not otherwise marked
+ * as alive, the values of the migrated properties would become nulls.
+ */
+export interface DatasourceScopedLivenessStrategy {
+}
 export type DayOfWeek =
   | "MONDAY"
   | "TUESDAY"
@@ -396,6 +406,7 @@ export interface LoadEntityMetadataResponse {
  */
 export interface MigrationConfiguration {
   entityMigrationCategory: EntityMigrationCategory;
+  importEditsHistory?: boolean | null | undefined;
   minMigrationDuration: string;
   transitionRetryLimit: number;
   transitionWindows: TransitionWindows;
@@ -434,6 +445,12 @@ export interface ObjectDbTypeConfig {
  */
 export interface ObjectDbTypeSyncConfig {
   syncConfig: Record<_api_ObjectDbSyncRid, SyncConfig>;
+}
+/**
+ * With this strategy, liveness is no longer evaluated on a datasource-by-datasource level, and is evaluated at
+ * the object level. This provides improved UX for MDOs, and has no effect for non-MDOs.
+ */
+export interface ObjectScopedLivenessStrategy {
 }
 /**
  * Entity can be stored in Phonograph. Note that it is not guaranteed that the object type or link type is
@@ -478,6 +495,7 @@ export interface ObjectTypeEntityMetadata {
   entityConfig: EntityConfig;
   gothamMapping?: _api_typemapping_ObjectTypeGothamMapping | null | undefined;
   objectTypeIndexingSettings?: ObjectTypeIndexingSettings | null | undefined;
+  patchApplicationStrategy: PatchApplicationStrategy;
   provenance?:
     | _api_entitymetadata_provenance_EntityProvenance
     | null
@@ -584,6 +602,19 @@ export interface OntologyIrLinkTypeEntityMetadata {
 export interface OntologyIrTimestampPropertyStrategy {
   timestampPropertyRid: _api_ObjectTypeFieldApiName;
 }
+export interface PatchApplicationStrategy_datasourceScopedLiveness {
+  type: "datasourceScopedLiveness";
+  datasourceScopedLiveness: DatasourceScopedLivenessStrategy;
+}
+
+export interface PatchApplicationStrategy_objectScopedLiveness {
+  type: "objectScopedLiveness";
+  objectScopedLiveness: ObjectScopedLivenessStrategy;
+}
+export type PatchApplicationStrategy =
+  | PatchApplicationStrategy_datasourceScopedLiveness
+  | PatchApplicationStrategy_objectScopedLiveness;
+
 /**
  * Entity can be stored in Phonograph and Highbury though the data is read-only. Edits are disabled.
  * This is a legacy state which should not be used anymore. OMS guarantees that the latest version of each

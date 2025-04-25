@@ -16,6 +16,7 @@
 
 import type {
   ActionType as _api_ActionType,
+  ActionTypeApiName as _api_ActionTypeApiName,
   ActionTypeRid as _api_ActionTypeRid,
   ColumnName as _api_ColumnName,
   DatasourceRid as _api_DatasourceRid,
@@ -72,6 +73,7 @@ import type {
   ObjectTypeAlias as _api_entitymetadata_ObjectTypeAlias,
   OntologyIrLinkTypeEntityMetadata
     as _api_entitymetadata_OntologyIrLinkTypeEntityMetadata,
+  PatchApplicationStrategy as _api_entitymetadata_PatchApplicationStrategy,
   StorageBackend as _api_entitymetadata_StorageBackend,
 } from "../entitymetadata/__components.js";
 import type { EntityProvenance as _api_entitymetadata_provenance_EntityProvenance } from "../entitymetadata/provenance/__components.js";
@@ -232,6 +234,10 @@ export interface MarketplaceObjectTypeEntityMetadata {
     | undefined;
   entityConfig: _api_entitymetadata_EntityConfig;
   gothamMapping?: _api_typemapping_ObjectTypeGothamMapping | null | undefined;
+  patchApplicationStrategy?:
+    | _api_entitymetadata_PatchApplicationStrategy
+    | null
+    | undefined;
   provenance?:
     | _api_entitymetadata_provenance_EntityProvenance
     | null
@@ -284,10 +290,9 @@ export interface OntologyBlockDataV2 {
 }
 export interface OntologyIrActionTypeBlockDataV2 {
   actionType: _api_OntologyIrActionType;
-  parameterIds: Record<ActionParameterShapeId, _api_ParameterId>;
 }
 export interface OntologyIrBlockPermissionInformation {
-  actionTypes: Record<_api_ActionTypeRid, ActionTypePermissionInformation>;
+  actionTypes: Record<_api_ActionTypeApiName, ActionTypePermissionInformation>;
   linkTypes: Record<_api_LinkTypeId, LinkTypePermissionInformation>;
   objectTypes: Record<_api_ObjectTypeApiName, ObjectTypePermissionInformation>;
 }
@@ -296,11 +301,11 @@ export interface OntologyIrInterfaceTypeBlockDataV2 {
 }
 export interface OntologyIrKnownMarketplaceIdentifiers {
   actionParameterIds: Record<
-    _api_ActionTypeRid,
+    _api_ActionTypeApiName,
     Record<_api_ParameterId, BlockInternalId>
   >;
   actionParameters: Record<_api_ParameterRid, BlockInternalId>;
-  actionTypes: Record<_api_ActionTypeRid, BlockInternalId>;
+  actionTypes: Record<_api_ActionTypeApiName, BlockInternalId>;
   datasourceColumns: Record<BlockInternalId, any>;
   datasources: Record<BlockInternalId, any>;
   filesDatasources: Record<BlockInternalId, any>;
@@ -318,7 +323,7 @@ export interface OntologyIrKnownMarketplaceIdentifiers {
   objectTypes: Record<_api_ObjectTypeApiName, BlockInternalId>;
   propertyTypeIds: Record<
     _api_ObjectTypeId,
-    Record<_api_PropertyTypeId, BlockInternalId>
+    Record<_api_ObjectTypeFieldApiName, BlockInternalId>
   >;
   propertyTypes: Record<_api_ObjectTypeFieldApiName, BlockInternalId>;
   shapeIdForInstallPrefix?: BlockShapeId | null | undefined;
@@ -372,6 +377,7 @@ export interface OntologyIrObjectTypeBlockDataV2 {
   objectType: _api_OntologyIrObjectType;
 }
 export interface OntologyIrOntologyBlockDataV2 {
+  actionTypes: Record<_api_ActionTypeApiName, OntologyIrActionTypeBlockDataV2>;
   blockPermissionInformation?:
     | OntologyIrBlockPermissionInformation
     | null
@@ -404,7 +410,7 @@ export interface OntologyIrPropertyToPropertyMapping {
 export interface OntologyIrSchemaMigrationBlockData {
   propertyTypeRidsToIds: Record<
     _api_ObjectTypeFieldApiName,
-    _api_PropertyTypeId
+    _api_ObjectTypeFieldApiName
   >;
   schemaMigrations: OntologyIrSchemaTransitionsWithSchemaVersion;
 }
@@ -479,6 +485,11 @@ export type StreamName = string;
  * Ontology as code uses this as a stable ID for TimeSeriesSync inputs
  */
 export type TimeSeriesSyncName = string;
+
+/**
+ * The index of the validation rule within an action. This is used both for identification and ordering.
+ */
+export type ValidationRuleIndex = number;
 export type WritebackDatasetRid = string;
 export interface WritebackDatasetSpec {
   filter: DataFilter;

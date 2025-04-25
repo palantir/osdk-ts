@@ -19,6 +19,8 @@ import { namespace, ontologyDefinition } from "./defineOntology.js";
 import type {
   InterfacePropertyType,
   ObjectType,
+  PropertyTypeType,
+  PropertyTypeTypeExotic,
   SharedPropertyType,
 } from "./types.js";
 
@@ -53,6 +55,18 @@ export function defineObject(objectDef: ObjectType): ObjectType {
   invariant(
     retentionPeriod === undefined || ISO_8601_DURATION.test(retentionPeriod),
     `Retention period "${retentionPeriod}" on object "${objectDef.apiName}" is not a valid ISO 8601 duration string`,
+  );
+  invariant(
+    (objectDef.properties ?? []).filter(p =>
+      p.apiName === objectDef.titlePropertyApiName
+    ).every(p => !isExotic(p.type)),
+    `Title property ${objectDef.titlePropertyApiName} must be a primitive type`,
+  );
+  invariant(
+    (objectDef.properties ?? []).filter(p =>
+      objectDef.primaryKeys.includes(p.apiName)
+    ).every(p => !isExotic(p.type)),
+    `Primary key properties ${objectDef.primaryKeys} can only be primitive types`,
   );
 
   objectDef.implementsInterfaces?.forEach(interfaceImpl => {
@@ -115,6 +129,19 @@ export function defineObject(objectDef: ObjectType): ObjectType {
 
   ontologyDefinition.objectTypes[apiName] = { ...objectDef, apiName: apiName };
   return { ...objectDef, apiName: apiName };
+}
+
+export function isExotic(
+  type: PropertyTypeType,
+): type is PropertyTypeTypeExotic {
+  if (typeof type === "string") {
+    return ["geopoint", "geoshape", "mediaReference", "geotimeSeries"].includes(
+      type,
+    );
+  } else if (typeof type === "object" && type != null) {
+    return type.type === "marking" || type.type === "struct";
+  }
+  return false;
 }
 
 type ValidationResult = { type: "valid" } | { type: "invalid"; reason: string };

@@ -64,6 +64,38 @@
         }
       ]
     },
+    "create-test-geo-action": {
+      "apiName": "create-test-geo-action",
+      "displayName": "Create Test Geo object",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "geo_title": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "geohash_prop": {
+          "dataType": {
+            "type": "geohash"
+          },
+          "required": true
+        },
+        "geoshape_prop": {
+          "dataType": {
+            "type": "geoshape"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.7558117e-5dd4-461c-9c81-760deb512d32",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "TestGeoAction"
+        }
+      ]
+    },
     "create-media-via-function": {
       "apiName": "create-media-via-function",
       "displayName": "Create media object via function",
@@ -559,6 +591,52 @@
             },
             "description": "geopoint",
             "displayName": "Geohash"
+          }
+        },
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "weather",
+          "color": "color"
+        },
+        "titleProperty": "stationId",
+        "pluralDisplayName": "Weather Stations"
+      },
+      "linkTypes": []
+    },
+    "TestGeoAction": {
+      "objectType": {
+        "apiName": "TestGeoAction",
+        "primaryKey": "geoPk",
+        "displayName": "Test Geo Object",
+        "description": "Test Geo Object",
+        "properties": {
+          "geoPk": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "geohashProp": {
+            "dataType": {
+              "type": "geohash"
+            },
+            "description": "geopoint",
+            "displayName": "Geohash"
+          },
+          "geoshapeProp": {
+            "dataType": {
+              "type": "geoshape"
+            },
+            "description": "geoshape",
+            "displayName": "Geoshape"
+          },
+          "geoTitle": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "geoTitle",
+            "displayName": "Geotitle"
           }
         },
         "status": "ACTIVE",

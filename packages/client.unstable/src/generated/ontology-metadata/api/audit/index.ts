@@ -115,6 +115,8 @@ export type {
   OntologyMetadataServiceBulkLoadOntologyEntitiesResultParams,
   OntologyMetadataServiceCreateOntologyRequestParams,
   OntologyMetadataServiceCreateOntologyResultParams,
+  OntologyMetadataServiceDryRunModificationRequestParams,
+  OntologyMetadataServiceDryRunModificationResultParams,
   OntologyMetadataServiceGetActionTypesForInterfaceTypeRequestParams,
   OntologyMetadataServiceGetActionTypesForInterfaceTypesResultParams,
   OntologyMetadataServiceGetActionTypesForObjectTypeRequestParams,

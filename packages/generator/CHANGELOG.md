@@ -1,5 +1,24 @@
 # @osdk/generator
 
+## 2.2.0-beta.16
+
+### Patch Changes
+
+- @osdk/api@2.2.0-beta.16
+- @osdk/generator-converters@2.2.0-beta.16
+
+## 2.2.0-beta.15
+
+### Minor Changes
+
+- cc380b5: Use the latest Platform APIs
+
+### Patch Changes
+
+- Updated dependencies [ed69666]
+  - @osdk/api@2.2.0-beta.15
+  - @osdk/generator-converters@2.2.0-beta.15
+
 ## 2.2.0-beta.14
 
 ### Minor Changes

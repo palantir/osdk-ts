@@ -57,7 +57,7 @@ describe("extractRdpDefinition", () => {
     } as any,
   } as MinimalClient;
 
-  const objectSet: ObjectSet = {
+  const objectSetWithRdps: ObjectSet = {
     type: "withProperties",
     objectSet: {
       type: "searchAround",
@@ -80,8 +80,7 @@ describe("extractRdpDefinition", () => {
   it("handles 'withProperties' object set type", async () => {
     const result = await extractRdpDefinition(
       mockClientCtx,
-      objectSet,
-      "",
+      objectSetWithRdps,
     );
 
     expect(result).toMatchInlineSnapshot(
@@ -98,7 +97,7 @@ describe("extractRdpDefinition", () => {
   it("combines definitions from multiple derived properties", async () => {
     const nestedObjectSet: ObjectSet = {
       type: "withProperties",
-      objectSet,
+      objectSet: objectSetWithRdps,
       derivedProperties: {
         rdp1: {
           type: "selection",
@@ -132,7 +131,6 @@ describe("extractRdpDefinition", () => {
     const result = await extractRdpDefinition(
       mockClientCtx,
       nestedObjectSet,
-      "",
     );
 
     expect(result).toMatchInlineSnapshot(`
@@ -148,5 +146,109 @@ describe("extractRdpDefinition", () => {
         },
       }
     `);
+  });
+
+  it("handles `intersection` object set type and nested static and reference object sets", async () => {
+    const intersectionObjectSet: ObjectSet = {
+      type: "intersect",
+      objectSets: [
+        {
+          type: "searchAround",
+          objectSet: { type: "base", objectType: "BaseType" },
+          link: "testLink1",
+        },
+        { type: "static", "objects": ["object1", "object2"] },
+        { type: "reference", "reference": "rid.os.1234" },
+      ],
+    };
+
+    const RdpWithIntersectionBaseObjectSet: ObjectSet = {
+      type: "withProperties",
+      objectSet: intersectionObjectSet,
+      derivedProperties: {
+        myRdp: {
+          type: "selection",
+          objectSet: {
+            type: "searchAround",
+            objectSet: { type: "methodInput" },
+            link: "testLink2",
+          },
+          operation: {
+            type: "get",
+            selectedPropertyApiName: "testProperty",
+          },
+        },
+      },
+    };
+
+    const result = await extractRdpDefinition(
+      mockClientCtx,
+      RdpWithIntersectionBaseObjectSet,
+    );
+
+    expect(result).toMatchInlineSnapshot(
+      `
+      {
+        "myRdp": {
+          "type": "attachment",
+        },
+      }
+    `,
+    );
+  });
+
+  it("throws with intersect, subtract, or union having nested RDPs", async () => {
+    const intersectionObjectSetWithNestedRdps: ObjectSet = {
+      type: "intersect",
+      objectSets: [objectSetWithRdps, {
+        type: "base",
+        objectType: "ThirdType",
+      }],
+    };
+
+    await expect(
+      extractRdpDefinition(mockClientCtx, intersectionObjectSetWithNestedRdps),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invariant failed: Object sets combined using intersect, subtract, or union must not contain any derived property definitions]`,
+    );
+  });
+
+  it("throes with intersect, subtract, or union having different child object types", async () => {
+    const intersectionObjectSet: ObjectSet = {
+      type: "intersect",
+      objectSets: [
+        {
+          type: "searchAround",
+          objectSet: { type: "base", objectType: "BaseType" },
+          link: "testLink1",
+        },
+        { type: "base", objectType: "BaseType" },
+      ],
+    };
+
+    const RdpWithIntersectionBaseObjectSet: ObjectSet = {
+      type: "withProperties",
+      objectSet: intersectionObjectSet,
+      derivedProperties: {
+        myRdp: {
+          type: "selection",
+          objectSet: {
+            type: "searchAround",
+            objectSet: { type: "methodInput" },
+            link: "testLink2",
+          },
+          operation: {
+            type: "get",
+            selectedPropertyApiName: "testProperty",
+          },
+        },
+      },
+    };
+
+    await expect(
+      extractRdpDefinition(mockClientCtx, RdpWithIntersectionBaseObjectSet),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invariant failed: All object sets in an intersect, subtract, or union must have the same child object type]`,
+    );
   });
 });

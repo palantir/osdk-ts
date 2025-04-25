@@ -31,7 +31,12 @@
  */
 
 import type {
+  ActionTypeStatus,
   OntologyIr,
+  OntologyIrActionTypeBlockDataV2,
+  OntologyIrActionValidation,
+  OntologyIrAllowedParameterValues,
+  OntologyIrBaseParameterType,
   OntologyIrInterfaceType,
   OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrLinkDefinition,
@@ -40,16 +45,26 @@ import type {
   OntologyIrObjectTypeBlockDataV2,
   OntologyIrObjectTypeDatasource,
   OntologyIrObjectTypeDatasourceDefinition,
+  OntologyIrParameter,
   OntologyIrPropertyType,
+  OntologyIrSection,
   OntologyIrSharedPropertyType,
   OntologyIrSharedPropertyTypeBlockDataV2,
   OntologyIrStructFieldType,
   OntologyIrType,
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
+  ParameterId,
+  ParameterRenderHint,
+  ParameterRequiredConfiguration,
   RetentionPolicy,
+  SectionId,
 } from "@osdk/client.unstable";
+import { isExotic } from "./defineObject.js";
 import type {
+  ActionParameter,
+  ActionParameterRequirementConstraint,
+  ActionType,
   InterfaceType,
   LinkTypeDefinition,
   ObjectPropertyType,
@@ -166,6 +181,13 @@ function convertToWireOntologyIr(
           return [id, convertLink(link)];
         }),
       ),
+      actionTypes: Object.fromEntries(
+        Object.entries(ontology.actionTypes).map<
+          [string, OntologyIrActionTypeBlockDataV2]
+        >(([apiName, action]) => {
+          return [apiName, convertAction(action)];
+        }),
+      ),
       blockPermissionInformation: {
         actionTypes: {},
         linkTypes: {},
@@ -179,14 +201,17 @@ function convertToWireOntologyIr(
 function convertObject(
   objectType: ObjectType,
 ): OntologyIrObjectTypeBlockDataV2 {
-  const datasource: OntologyIrObjectTypeDatasource = {
-    rid: "ri.ontology.main.datasource.".concat(objectType.apiName),
-    datasource: convertDatasourceDefinition(objectType),
-    editsConfiguration: {
-      onlyAllowPrivilegedEdits: false,
-    },
-    redacted: false,
-  };
+  const propertyDatasources: OntologyIrObjectTypeDatasource[] =
+    (objectType.properties ?? [])
+      .flatMap(prop => extractPropertyDatasource(prop, objectType.apiName));
+
+  const objectDatasource = buildDatasource(
+    objectType.apiName,
+    convertDatasourceDefinition(
+      objectType,
+      objectType.properties ?? [],
+    ),
+  );
 
   const implementations = objectType.implementsInterfaces ?? [];
 
@@ -228,13 +253,61 @@ function convertObject(
       })),
       allImplementsInterfaces: {},
     },
-    datasources: [datasource],
+    datasources: [...propertyDatasources, objectDatasource],
     entityMetadata: { arePatchesEnabled: objectType.editsEnabled ?? false },
   };
 }
 
+function extractPropertyDatasource(
+  property: ObjectPropertyType,
+  objectTypeApiName: string,
+): OntologyIrObjectTypeDatasource[] {
+  if (!isExotic(property.type)) {
+    return [];
+  }
+  const identifier = objectTypeApiName + "." + property.apiName;
+  switch (property.type as string) {
+    case "geotimeSeries":
+      const geotimeDefinition: OntologyIrObjectTypeDatasourceDefinition = {
+        type: "geotimeSeries",
+        geotimeSeries: {
+          geotimeSeriesIntegrationRid: identifier,
+          properties: [property.apiName],
+        },
+      };
+      return [buildDatasource(property.apiName, geotimeDefinition)];
+    case "mediaReference":
+      const mediaSetDefinition: OntologyIrObjectTypeDatasourceDefinition = {
+        type: "mediaSetView",
+        mediaSetView: {
+          assumedMarkings: [],
+          mediaSetViewLocator: identifier,
+          properties: [property.apiName],
+        },
+      };
+      return [buildDatasource(property.apiName, mediaSetDefinition)];
+    default:
+      return [];
+  }
+}
+
+function buildDatasource(
+  apiName: string,
+  definition: OntologyIrObjectTypeDatasourceDefinition,
+): OntologyIrObjectTypeDatasource {
+  return ({
+    rid: "ri.ontology.main.datasource.".concat(apiName),
+    datasource: definition,
+    editsConfiguration: {
+      onlyAllowPrivilegedEdits: false,
+    },
+    redacted: false,
+  });
+}
+
 function convertDatasourceDefinition(
   objectType: ObjectType,
+  properties: ObjectPropertyType[],
 ): OntologyIrObjectTypeDatasourceDefinition {
   switch (objectType.datasource?.type) {
     case "stream":
@@ -243,7 +316,7 @@ function convertDatasourceDefinition(
         ? { type: "time", time: { window } }
         : { type: "none", none: {} };
       const propertyMapping = Object.fromEntries(
-        (objectType.properties ?? []).map((
+        properties.map((
           prop,
         ) => [prop.apiName, prop.apiName]),
       );
@@ -263,7 +336,7 @@ function convertDatasourceDefinition(
         datasetV2: {
           datasetRid: objectType.apiName,
           propertyMapping: Object.fromEntries(
-            (objectType.properties ?? []).map((prop) => [
+            properties.map((prop) => [
               prop.apiName,
               { type: "column", column: prop.apiName },
             ]),
@@ -437,6 +510,7 @@ function convertSpt(
     description,
     apiName,
     displayName,
+    visibility,
     gothamMapping,
     typeClasses,
     valueType,
@@ -455,7 +529,7 @@ function convertSpt(
     apiName,
     displayMetadata: {
       displayName: displayName ?? apiName,
-      visibility: "NORMAL",
+      visibility: visibility ?? "NORMAL",
       description,
     },
     type: array
@@ -529,6 +603,19 @@ function convertType(
         struct: { structFields },
       };
 
+    case (typeof type === "object" && "isLongText" in type):
+      return {
+        "type": "string",
+        "string": {
+          analyzerOverride: undefined,
+          enableAsciiFolding: undefined,
+          isLongText: type.isLongText,
+          supportsEfficientLeadingWildcard:
+            type.supportsEfficientLeadingWildcard,
+          supportsExactMatching: type.supportsExactMatching,
+        },
+      };
+
     case (type === "geopoint"):
       return { type: "geohash", geohash: {} };
 
@@ -553,10 +640,325 @@ function convertType(
         mediaReference: {},
       };
 
+    case (type === "geotimeSeries"):
+      return {
+        type: "geotimeSeriesReference",
+        geotimeSeriesReference: {},
+      };
+
     default:
       // use helper function to distribute `type` properly
       return distributeTypeHelper(type);
   }
+}
+
+function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
+  const actionValidation = convertActionValidation(action);
+  const actionParameters: Record<ParameterId, OntologyIrParameter> =
+    convertActionParameters(action);
+  const actionSections: Record<SectionId, OntologyIrSection> =
+    convertActionSections(action);
+  return {
+    actionType: {
+      actionTypeLogic: {
+        logic: {
+          rules: action.rules,
+        },
+        validation: actionValidation,
+      },
+      metadata: {
+        apiName: action.apiName,
+        displayMetadata: {
+          configuration: {
+            defaultLayout: "FORM",
+            displayAndFormat: {
+              table: {
+                columnWidthByParameterRid: {},
+                enableFileImport: true,
+                fitHorizontally: false,
+                frozenColumnCount: 0,
+                rowHeightInLines: 1,
+              },
+            },
+            enableLayoutUserSwitch: false,
+          },
+          description: action.description ?? "",
+          displayName: action.displayName,
+          icon: {
+            type: "blueprint",
+            blueprint: action.icon ?? { locator: "edit", color: "#000000" },
+          },
+          successMessage: [],
+          typeClasses: action.typeClasses ?? [],
+        },
+        formContentOrdering: action.formContentOrdering ?? [],
+        parameterOrdering: (action.parameters ?? []).map(p => p.id),
+        parameters: actionParameters,
+        sections: actionSections,
+        status: typeof action.status === "string"
+          ? {
+            type: action.status,
+            [action.status]: {},
+          } as unknown as ActionTypeStatus
+          : action.status,
+      },
+    },
+  };
+}
+
+function convertActionValidation(
+  action: ActionType,
+): OntologyIrActionValidation {
+  return {
+    actionTypeLevelValidation: {
+      rules: Object.fromEntries(
+        (action.validation
+          ?? [{
+            condition: { type: "true", true: {} },
+            displayMetadata: { failureMessage: "", typeClasses: [] },
+          }]).map((rule, idx) => [idx, rule]),
+      ),
+    },
+    parameterValidations: Object.fromEntries(
+      (action.parameters ?? []).map(p => {
+        return [
+          p.id,
+          {
+            defaultValidation: {
+              display: {
+                renderHint: renderHintFromBaseType(p),
+                visibility: { type: "editable", editable: {} },
+              },
+              validation: {
+                allowedValues: extractAllowedValues(p),
+                required: convertParameterRequirementConstraint(
+                  p.validation.required,
+                ),
+              },
+            },
+          },
+        ];
+      }),
+    ),
+  };
+}
+
+function convertActionParameters(
+  action: ActionType,
+): Record<ParameterId, OntologyIrParameter> {
+  return Object.fromEntries((action.parameters ?? []).map(p => [p.id, {
+    id: p.id,
+    type: (typeof p.type === "string"
+      ? { type: p.type, [p.type]: {} }
+      : p.type) as OntologyIrBaseParameterType,
+    displayMetadata: {
+      displayName: p.displayName,
+      description: p.description ?? "",
+      typeClasses: [],
+    },
+  }]));
+}
+
+function convertActionSections(
+  action: ActionType,
+): Record<SectionId, OntologyIrSection> {
+  return Object.fromEntries(
+    Object.entries(action.sections ?? {}).map((
+      [sectionId, parameterIds],
+    ) => [sectionId, {
+      id: sectionId,
+      content: parameterIds.map(p => ({ type: "parameterId", parameterId: p })),
+      displayMetadata: {
+        collapsedByDefault: false,
+        columnCount: 1,
+        description: "",
+        displayName: sectionId,
+        showTitleBar: true,
+      },
+    }]),
+  );
+}
+
+function extractAllowedValues(
+  parameter: ActionParameter,
+): OntologyIrAllowedParameterValues {
+  switch (parameter.validation.allowedValues.type) {
+    case "oneOf":
+      return {
+        type: "oneOf",
+        oneOf: {
+          type: "oneOf",
+          oneOf: {
+            labelledValues: parameter.validation.allowedValues.oneOf,
+            otherValueAllowed: { allowed: false },
+          },
+        },
+      };
+    case "range":
+      const { min, max } = parameter.validation.allowedValues;
+      return {
+        type: "range",
+        range: {
+          type: "range",
+          range: {
+            ...(min === undefined
+              ? {}
+              : { minimum: { inclusive: true, value: min } }),
+            ...(max === undefined
+              ? {}
+              : { maximum: { inclusive: true, value: max } }),
+          },
+        },
+      };
+    case "text":
+      const { minLength, maxLength, regex } =
+        parameter.validation.allowedValues;
+      return {
+        type: "text",
+        text: {
+          type: "text",
+          text: {
+            ...(minLength === undefined
+              ? {}
+              : { minimumLength: minLength }),
+            ...(maxLength === undefined
+              ? {}
+              : { maximumLength: maxLength }),
+            ...(regex === undefined
+              ? {}
+              : { regex: { regex: regex, failureMessage: "Invalid input" } }),
+          },
+        },
+      };
+    case "datetime":
+      const { minimum, maximum } = parameter.validation.allowedValues;
+      return {
+        type: "datetime",
+        datetime: {
+          type: "datetime",
+          datetime: {
+            minimum,
+            maximum,
+          },
+        },
+      };
+    case "objectTypeReference":
+      return {
+        type: "objectTypeReference",
+        objectTypeReference: {
+          type: "objectTypeReference",
+          objectTypeReference: {
+            interfaceTypeRids:
+              parameter.validation.allowedValues.interfaceTypes,
+          },
+        },
+      };
+    case "redacted":
+      return {
+        type: "redacted",
+        redacted: {},
+      };
+    case "geotimeSeriesReference":
+      return {
+        type: "geotimeSeriesReference",
+        geotimeSeriesReference: {
+          type: "geotimeSeries",
+          geotimeSeries: {},
+        },
+      };
+    default:
+      const k: Partial<OntologyIrAllowedParameterValues["type"]> =
+        parameter.validation.allowedValues.type;
+      return {
+        type: k,
+        [k]: {
+          type: k,
+          [k]: {},
+        },
+      } as unknown as OntologyIrAllowedParameterValues;
+      // TODO(dpaquin): there's probably a TS clean way to do this
+  }
+}
+
+function renderHintFromBaseType(
+  parameter: ActionParameter,
+): ParameterRenderHint {
+  // TODO(dpaquin): these are just guesses, we should find where they're actually defined
+  const type = typeof parameter.type === "string"
+    ? parameter.type
+    : parameter.type.type;
+  switch (type) {
+    case "boolean":
+    case "booleanList":
+      return { type: "checkbox", checkbox: {} };
+    case "integer":
+    case "integerList":
+    case "long":
+    case "longList":
+    case "double":
+    case "doubleList":
+    case "decimal":
+    case "decimalList":
+      return { type: "numericInput", numericInput: {} };
+    case "string":
+    case "stringList":
+    case "geohash":
+    case "geohashList":
+    case "geoshape":
+    case "geoshapeList":
+    case "objectSetRid":
+      return { type: "textInput", textInput: {} };
+    case "timestamp":
+    case "timestampList":
+    case "date":
+    case "dateList":
+      return { type: "dateTimePicker", dateTimePicker: {} };
+    case "attachment":
+    case "attachmentList":
+      return { type: "filePicker", filePicker: {} };
+    case "marking":
+    case "markingList":
+      if (parameter.validation.allowedValues.type === "mandatoryMarking") {
+        return { type: "mandatoryMarkingPicker", mandatoryMarkingPicker: {} };
+      } else if (parameter.validation.allowedValues.type === "cbacMarking") {
+        return { type: "cbacMarkingPicker", cbacMarkingPicker: {} };
+      } else {
+        throw new Error(
+          `The allowed values for "${parameter.displayName}" are not compatible with the base parameter type`,
+        );
+      }
+    case "timeSeriesReference":
+    case "objectReference":
+    case "objectReferenceList":
+    case "interfaceReference":
+    case "interfaceReferenceList":
+    case "objectTypeReference":
+    case "mediaReference":
+    case "mediaReferenceList":
+    case "geotimeSeriesReference":
+    case "geotimeSeriesReferenceList":
+      return { type: "dropdown", dropdown: {} };
+    case "struct":
+    case "structList":
+      throw new Error("Structs are not supported yet");
+    default:
+      throw new Error(`Unknown type ${type}`);
+  }
+}
+
+function convertParameterRequirementConstraint(
+  required: ActionParameterRequirementConstraint,
+): ParameterRequiredConfiguration {
+  if (typeof required === "boolean") {
+    return required
+      ? { type: "required", required: {} }
+      : { type: "notRequired", notRequired: {} };
+  }
+  const { min, max } = required.listLength;
+  return {
+    type: "listLengthValidation",
+    listLengthValidation: { minLength: min, maxLength: max },
+  };
 }
 
 /**

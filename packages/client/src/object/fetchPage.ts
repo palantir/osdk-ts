@@ -143,7 +143,7 @@ async function fetchInterfacePage<
       result.data as OntologyObjectV2[], // drop readonly
       interfaceType.apiName,
       !args.$includeRid,
-      await extractRdpDefinition(client, objectSet, interfaceType.apiName),
+      await extractRdpDefinition(client, objectSet),
     );
     return result as any;
   }
@@ -332,7 +332,7 @@ export async function fetchObjectPage<
       r.data as OntologyObjectV2[],
       undefined,
       undefined,
-      await extractRdpDefinition(client, objectSet, objectType.apiName),
+      await extractRdpDefinition(client, objectSet),
       args.$select,
     ),
     nextPageToken: r.nextPageToken,

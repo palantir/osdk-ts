@@ -14,40 +14,50 @@
  * limitations under the License.
  */
 
+import { getFoundryToken } from "./getFoundryToken.js";
+
 type WidgetSettings = Record<string, {
-  entrypointJs: Array<{
+  scriptEntrypoints: Array<{
     filePath: string;
-    scriptType: { type: "module"; module: {} };
+    scriptType: "DEFAULT" | "MODULE";
   }>;
-  entrypointCss: Array<{ filePath: string }>;
+  stylesheetEntrypoints: Array<{ filePath: string }>;
 }>;
 
 export function setWidgetSetSettings(
   foundryUrl: string,
   widgetSetRid: string,
   widgetIdToOverrides: Record<string, string[]>,
+  baseHref: string,
+  viteMode: string | undefined,
 ): Promise<Response> {
   const widgetSettings: WidgetSettings = Object.fromEntries(
     Object.entries(widgetIdToOverrides).map(
       ([widgetId, overrides]) => ([
         widgetId,
         {
-          entrypointJs: overrides.map((filePath) => ({
+          scriptEntrypoints: overrides.map((filePath) => ({
             filePath,
-            scriptType: { type: "module", module: {} },
+            scriptType: "MODULE",
           })),
-          entrypointCss: [],
+          stylesheetEntrypoints: [],
         },
       ] as const),
     ),
   );
   return fetch(
-    `${foundryUrl}/widget-registry/api/dev-mode/settings/${widgetSetRid}/ids`,
+    `${foundryUrl}/api/v2/widgets/devModeSettings/setWidgetSetById?preview=true`,
     {
-      body: JSON.stringify({ widgetSettings }),
-      method: "PUT",
+      body: JSON.stringify({
+        widgetSetRid,
+        settings: {
+          baseHref,
+          widgetSettings,
+        },
+      }),
+      method: "POST",
       headers: {
-        authorization: `Bearer ${process.env.FOUNDRY_TOKEN}`,
+        authorization: `Bearer ${getFoundryToken(viteMode)}`,
         accept: "application/json",
         "content-type": "application/json",
       },
@@ -55,12 +65,18 @@ export function setWidgetSetSettings(
   );
 }
 
-export function enableDevMode(foundryUrl: string): Promise<Response> {
-  return fetch(`${foundryUrl}/widget-registry/api/dev-mode/enable`, {
-    method: "POST",
-    headers: {
-      authorization: `Bearer ${process.env.FOUNDRY_TOKEN}`,
-      accept: "application/json",
+export function enableDevMode(
+  foundryUrl: string,
+  viteMode: string | undefined,
+): Promise<Response> {
+  return fetch(
+    `${foundryUrl}/api/v2/widgets/devModeSettings/enable?preview=true`,
+    {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${getFoundryToken(viteMode)}`,
+        accept: "application/json",
+      },
     },
-  });
+  );
 }

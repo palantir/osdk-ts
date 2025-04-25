@@ -1,5 +1,31 @@
 # @osdk/foundry-sdk-generator
 
+## 2.2.0-beta.16
+
+### Patch Changes
+
+- @osdk/client@2.2.0-beta.16
+- @osdk/api@2.2.0-beta.16
+- @osdk/generator@2.2.0-beta.16
+
+## 2.2.0-beta.15
+
+### Minor Changes
+
+- fbaeff5: Add support for marking types when loading action parameters.
+- cc380b5: Use the latest Platform APIs
+
+### Patch Changes
+
+- Updated dependencies [ed69666]
+- Updated dependencies [1e16dcb]
+- Updated dependencies [1e16dcb]
+- Updated dependencies [f4370e3]
+- Updated dependencies [cc380b5]
+  - @osdk/client@2.2.0-beta.15
+  - @osdk/api@2.2.0-beta.15
+  - @osdk/generator@2.2.0-beta.15
+
 ## 2.2.0-beta.14
 
 ### Patch Changes

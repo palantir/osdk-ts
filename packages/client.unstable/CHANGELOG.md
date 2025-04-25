@@ -1,5 +1,17 @@
 # @osdk/client.unstable
 
+## 2.2.0-beta.16
+
+### Minor Changes
+
+- 395ae07: Actions as code
+
+## 2.2.0-beta.15
+
+### Minor Changes
+
+- ed69666: Update conjure-lite to 0.7.1
+
 ## 2.2.0-beta.14
 
 ### Minor Changes
