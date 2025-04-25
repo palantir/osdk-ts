@@ -17,6 +17,7 @@
 export { checkExistingUniqueIdentifiers } from "./OntologyModificationService/checkExistingUniqueIdentifiers.js";
 export { createOntology } from "./OntologyModificationService/createOntology.js";
 export { deleteOntology } from "./OntologyModificationService/deleteOntology.js";
+export { dryRunModifyOntology } from "./OntologyModificationService/dryRunModifyOntology.js";
 export { getEntityModificationHistory } from "./OntologyModificationService/getEntityModificationHistory.js";
 export { getEntityModificationHistoryV2 } from "./OntologyModificationService/getEntityModificationHistoryV2.js";
 export { getModificationHistory } from "./OntologyModificationService/getModificationHistory.js";

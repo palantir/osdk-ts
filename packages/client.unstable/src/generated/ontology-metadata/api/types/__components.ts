@@ -21,6 +21,7 @@ import type {
   MediaItemRid as _api_MediaItemRid,
   MediaSetRid as _api_MediaSetRid,
   MediaSetViewRid as _api_MediaSetViewRid,
+  ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
   ObjectTypeId as _api_ObjectTypeId,
   OntologyIrQualifiedSeriesIdPropertyValue
     as _api_OntologyIrQualifiedSeriesIdPropertyValue,
@@ -1455,12 +1456,12 @@ export interface OntologyIrDataValue_null {
 
 export interface OntologyIrDataValue_objectLocator {
   type: "objectLocator";
-  objectLocator: ObjectLocatorValue;
+  objectLocator: OntologyIrObjectLocatorValue;
 }
 
 export interface OntologyIrDataValue_objectLocatorList {
   type: "objectLocatorList";
-  objectLocatorList: ObjectLocatorListValue;
+  objectLocatorList: OntologyIrObjectLocatorListValue;
 }
 
 export interface OntologyIrDataValue_objectType {
@@ -1560,6 +1561,24 @@ export interface OntologyIrInterfaceReferenceListType {
 export interface OntologyIrInterfaceReferenceType {
   interfaceTypeRid: _api_InterfaceTypeApiName;
 }
+export interface OntologyIrObjectLocator {
+  objectTypeId: _api_ObjectTypeId;
+  primaryKey: OntologyIrObjectPrimaryKey;
+}
+/**
+ * A parameter value type that consists of a list of ObjectLocators.
+ */
+export interface OntologyIrObjectLocatorListValue {
+  objectLocatorList: Array<OntologyIrObjectLocator>;
+}
+/**
+ * A parameter value type that is an ObjectLocator.
+ */
+export type OntologyIrObjectLocatorValue = OntologyIrObjectLocator;
+export type OntologyIrObjectPrimaryKey = Record<
+  _api_ObjectTypeFieldApiName,
+  PrimaryKeyValue
+>;
 export interface OntologyIrTimeDependentPropertyValue_seriesId {
   type: "seriesId";
   seriesId: _api_SeriesIdPropertyValue;
