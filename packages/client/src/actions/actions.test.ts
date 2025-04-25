@@ -368,7 +368,6 @@ describe.each([
       InferredParamType
     >();
 
-    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
     const result = await client(addGeoshape).applyAction({
       geoshapeParam: {
         type: "Polygon",
