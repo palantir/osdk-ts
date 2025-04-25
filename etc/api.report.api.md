@@ -1045,7 +1045,11 @@ export interface QueryDefinition<T = any> {
     	// (undocumented)
     osdkMetadata?: OsdkMetadata;
     	// (undocumented)
+    pinned: boolean;
+    	// (undocumented)
     type: "query";
+    	// (undocumented)
+    version: string;
 }
 
 // @public (undocumented)
