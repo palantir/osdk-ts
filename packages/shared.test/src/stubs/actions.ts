@@ -131,8 +131,9 @@ export const actionRequestWithStruct: ApplyActionRequestV2 = {
 export const actionRequestWithGeoshape: ApplyActionRequestV2 = {
   options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
   parameters: {
+    geohashParam: "-79.4382042508868,40.917859676842255",
     geoshapeParam: {
-      "coordinates": [
+      coordinates: [
         [
           [
             -97.86567863752134,
@@ -156,9 +157,8 @@ export const actionRequestWithGeoshape: ApplyActionRequestV2 = {
           ],
         ],
       ],
-      "type": "Polygon",
+      type: "Polygon",
     },
-    geohashParam: "-79.4382042508868, 40.917859676842255",
   },
 };
 
