@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-export const PALANTIR_PATH: string = ".palantir";
-export const SETUP_PATH: string = `${PALANTIR_PATH}/setup`;
-export const ENTRYPOINTS_PATH: string = `${PALANTIR_PATH}/entrypoints`;
-export const FINISH_PATH: string = `${PALANTIR_PATH}/finish`;
-export const VITE_INJECTIONS_PATH: string =
-  `${PALANTIR_PATH}/vite-injections.js`;
-export const CONFIG_FILE_SUFFIX = ".config";
+import { safeGetEnvVar } from "../common/safeGetEnvVar.js";
+import {
+  CODE_WORKSPACES_TOKEN,
+  isCodeWorkspacesMode,
+} from "./codeWorkspacesMode.js";
+
+// User token environment variable name
+const FOUNDRY_TOKEN = "FOUNDRY_TOKEN";
+
+export function getFoundryToken(mode: string | undefined): string {
+  return safeGetEnvVar(
+    process.env,
+    isCodeWorkspacesMode(mode) ? CODE_WORKSPACES_TOKEN : FOUNDRY_TOKEN,
+    "This value is required to run dev mode.",
+  );
+}

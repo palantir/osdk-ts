@@ -24,7 +24,6 @@ import color from "picocolors";
 import sirv from "sirv";
 import type { Plugin, ViteDevServer } from "vite";
 import {
-  CODE_WORKSPACES,
   CONFIG_FILE_SUFFIX,
   ENTRYPOINTS_PATH,
   FINISH_PATH,
@@ -33,9 +32,13 @@ import {
 } from "../common/constants.js";
 import { extractWidgetConfig } from "../common/extractWidgetConfig.js";
 import { getInputHtmlEntrypoints } from "../common/getInputHtmlEntrypoints.js";
-import { safeGetEnvVar } from "../common/safeGetEnvVar.js";
 import { standardizeFileExtension } from "../common/standardizeFileExtension.js";
+import {
+  getCodeWorkspacesBaseHref,
+  isCodeWorkspacesMode,
+} from "./codeWorkspacesMode.js";
 import { extractInjectedScripts } from "./extractInjectedScripts.js";
+import { getFoundryToken } from "./getFoundryToken.js";
 import { getWidgetIdOverrideMap } from "./getWidgetIdOverrideMap.js";
 import { publishDevModeSettings } from "./publishDevModeSettings.js";
 
@@ -53,8 +56,6 @@ export function FoundryWidgetDevPlugin(): Plugin {
   const configFileToEntrypoint: Record<string, string> = {};
   // Store the configuration per module ID, e.g. /repo/src/widget-one.config.ts -> { ... }
   const configFiles: Record<string, WidgetConfig<ParameterConfig>> = {};
-  // Enabled tailored behavior when running in Code Workspaces
-  let isCodeWorkspacesMode: boolean;
 
   return {
     name: "@osdk:widget-dev-plugin",
@@ -69,21 +70,13 @@ export function FoundryWidgetDevPlugin(): Plugin {
     },
 
     /**
-     * Capture configuration options from the Vite config. This is used to determine if we are running in
-     * Code Workspaces mode and in dev mode.
+     * Check for the required token environment variable in dev mode.
      */
     config(resolvedConfig, { command }) {
-      // Check for the optional `--mode` argument when running `vite`
-      isCodeWorkspacesMode = resolvedConfig.mode === CODE_WORKSPACES;
-
-      // Only check for the FOUNDRY_TOKEN environment variable when running in dev mode.
+      // Only check for the token environment variable when running in dev mode.
       // When command is "serve" and not in test mode (VITEST).
       if (command === "serve" && process.env.VITEST == null) {
-        safeGetEnvVar(
-          process.env,
-          "FOUNDRY_TOKEN",
-          "This value is required to run dev mode.",
-        );
+        getFoundryToken(resolvedConfig.mode);
       }
     },
 
@@ -169,9 +162,8 @@ export function FoundryWidgetDevPlugin(): Plugin {
           await publishDevModeSettings(
             server,
             widgetIdToOverrides,
-            getBaseHref(server, isCodeWorkspacesMode),
+            getBaseHref(server),
             res,
-            isCodeWorkspacesMode,
           );
         },
       );
@@ -253,22 +245,10 @@ function getLocalhostUrl(server: ViteDevServer): string {
 
 function getBaseHref(
   server: ViteDevServer,
-  isCodeWorkspacesMode: boolean,
 ): string {
-  if (isCodeWorkspacesMode) {
-    const devServerDomain = safeGetEnvVar(
-      process.env,
-      "DEV_SERVER_DOMAIN",
-      "This value is required when running dev mode in Code Workspaces mode.",
-    );
-    const devServerPath = safeGetEnvVar(
-      process.env,
-      "DEV_SERVER_BASE_PATH",
-      "This value is required when running dev mode in Code Workspaces mode.",
-    );
-    return `https://${devServerDomain}${devServerPath}`;
-  }
-  return `${getLocalhostUrl(server)}${server.config.base}`;
+  return isCodeWorkspacesMode(server.config.mode)
+    ? getCodeWorkspacesBaseHref()
+    : `${getLocalhostUrl(server)}${server.config.base}`;
 }
 
 /**

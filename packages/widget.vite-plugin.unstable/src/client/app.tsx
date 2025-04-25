@@ -27,7 +27,7 @@ type PageState =
   }
   | {
     state: "success";
-    redirectUrl: string | null;
+    isRedirecting: boolean;
   };
 
 const POLLING_INTERVAL = 250;
@@ -52,12 +52,21 @@ export const App: React.FC = () => {
           if (result.status === "pending") {
             return;
           }
+
+          // On success or failure, we clear the poll and end the loading state
           window.clearInterval(poll);
           setPageState(
             result.status === "success"
-              ? { state: "success", redirectUrl: result.redirectUrl }
+              ? { state: "success", isRedirecting: result.redirectUrl != null }
               : { state: "failed", error: result.error },
           );
+
+          // When running in Code Workspaces the parent app will handle the redirect
+          if (result.status === "success" && result.redirectUrl != null) {
+            setTimeout(() => {
+              window.location.href = result.redirectUrl!;
+            }, REDIRECT_DELAY);
+          }
         })
         .catch((error: unknown) => {
           window.clearInterval(poll);
@@ -69,16 +78,6 @@ export const App: React.FC = () => {
     }, POLLING_INTERVAL);
     return () => window.clearInterval(poll);
   }, []);
-
-  // Redirect on reaching success state
-  useEffect(() => {
-    // When running in Code Workspaces the parent app will handle the redirect
-    if (pageState.state === "success" && pageState.redirectUrl != null) {
-      setTimeout(() => {
-        window.location.href = pageState.redirectUrl!;
-      }, REDIRECT_DELAY);
-    }
-  }, [pageState]);
 
   return (
     <div className="body">
@@ -95,7 +94,7 @@ export const App: React.FC = () => {
           description={
             <div className="description">
               <Spinner intent="primary" size={SpinnerSize.SMALL} />{" "}
-              {pageState.redirectUrl != null
+              {pageState.isRedirecting
                 ? <span>Redirecting you…</span>
                 : <span>Loading preview…</span>}
             </div>
