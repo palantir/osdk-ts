@@ -163,6 +163,10 @@ import type {
   OntologyCreateResponse as _api_modification_OntologyCreateResponse,
   OntologyDeleteRequest as _api_modification_OntologyDeleteRequest,
   OntologyDeleteResponse as _api_modification_OntologyDeleteResponse,
+  OntologyModificationDryRunRequest
+    as _api_modification_OntologyModificationDryRunRequest,
+  OntologyModificationDryRunResponse
+    as _api_modification_OntologyModificationDryRunResponse,
   OntologyModificationRequest as _api_modification_OntologyModificationRequest,
   OntologyModificationResponse
     as _api_modification_OntologyModificationResponse,
@@ -645,6 +649,7 @@ export type OntologyMetadataAuditEvent =
   | "ONTOLOGY_METADATA_SERVICE_LOAD_ALL_TYPE_GROUPS_FROM_ONTOLOGY"
   | "ONTOLOGY_METADATA_SERVICE_LOAD_ONTOLOGY_DATASOURCES"
   | "ONTOLOGY_METADATA_SERVICE_MODIFY_ONTOLOGY"
+  | "ONTOLOGY_METADATA_SERVICE_DRY_RUN_MODIFY_ONTOLOGY"
   | "ONTOLOGY_METADATA_SERVICE_MODIFICATION"
   | "ONTOLOGT_METADATA_SERVICE_SYSTEM_ENTITY_METADATA_MODIFICATION"
   | "ONTOLOGY_METADATA_SERVICE_MODIFICATION_CHECK_UNIQUE_IDENTIFIERS"
@@ -769,6 +774,12 @@ export interface OntologyMetadataServiceCreateOntologyRequestParams {
 }
 export interface OntologyMetadataServiceCreateOntologyResultParams {
   response: _api_modification_OntologyCreateResponse;
+}
+export interface OntologyMetadataServiceDryRunModificationRequestParams {
+  request: _api_modification_OntologyModificationDryRunRequest;
+}
+export interface OntologyMetadataServiceDryRunModificationResultParams {
+  response: _api_modification_OntologyModificationDryRunResponse;
 }
 export interface OntologyMetadataServiceGetActionTypesForInterfaceTypeRequestParams {
   request: _api_GetActionTypesForInterfaceTypeRequest;

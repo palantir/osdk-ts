@@ -199,6 +199,7 @@ import type {
   SharedPropertyTypeGothamMappingModification
     as _api_typemapping_SharedPropertyTypeGothamMappingModification,
 } from "../typemapping/__components.js";
+import type { OntologyValidationError as _api_validation_OntologyValidationError } from "../validation/__components.js";
 
 /**
  * This signals to OMA that the Object Type will be regenerated as the Action Type changes, rather than modified
@@ -345,6 +346,12 @@ export interface DropObjectTypePeeringMetadata {
  * Configuration to enable edits history. In the future specific settings may be added.
  */
 export interface EditsHistoryConfigModification {
+}
+/**
+ * Contains configuration to import edits history from Phonograph to Funnel/Highbury. This should be set in the
+ * edits history object, not in the main object.
+ */
+export interface EditsHistoryImportConfigurationModification {
 }
 export interface EditsHistoryModification_config {
   type: "config";
@@ -730,6 +737,7 @@ export interface ManyToManyLinkTypeStreamDatasourceModification {
  * Request to set the migration configuration for the Phonograph to Highbury migration for an entity.
  */
 export interface MigrationConfigurationModification {
+  importEditsHistory?: boolean | null | undefined;
   minMigrationDuration: string;
   transitionRetryLimit: number;
   transitionWindows: _api_entitymetadata_TransitionWindows;
@@ -796,6 +804,10 @@ export interface ObjectStorageV1Modification {
  * endpoint can be used.
  */
 export interface ObjectStorageV2Modification {
+  editsHistoryImportConfiguration?:
+    | EditsHistoryImportConfigurationModification
+    | null
+    | undefined;
   migrationConfiguration?:
     | MigrationConfigurationModification
     | null
@@ -1261,6 +1273,27 @@ export interface OntologyInformationInternal {
  * made by OMS.
  */
 export type OntologyModificationDescription = string;
+export interface OntologyModificationDryRunErrorStatus {
+  errors: Array<_api_validation_OntologyValidationError>;
+}
+export interface OntologyModificationDryRunRequest {
+  modificationRequest: OntologyModificationRequest;
+}
+export interface OntologyModificationDryRunResponse_success {
+  type: "success";
+  success: OntologyModificationDryRunSuccessStatus;
+}
+
+export interface OntologyModificationDryRunResponse_error {
+  type: "error";
+  error: OntologyModificationDryRunErrorStatus;
+}
+export type OntologyModificationDryRunResponse =
+  | OntologyModificationDryRunResponse_success
+  | OntologyModificationDryRunResponse_error;
+
+export interface OntologyModificationDryRunSuccessStatus {
+}
 export interface OntologyModificationRequest {
   actionTypesToCreate: Record<
     _api_ActionTypeIdInRequest,
