@@ -73,7 +73,8 @@ describe("generatePerQueryDataFiles", () => {
           apiName: 'getCount';
           rid: 'rid.query.1';
           type: 'query';
-          version: '0';
+          version: '1.1.0';
+          pinned: false;
           parameters: {
             /**
              * (no ontology metadata)
@@ -91,14 +92,15 @@ describe("generatePerQueryDataFiles", () => {
         };
         apiName: 'getCount';
         type: 'query';
-        version: '0';
+        version: '1.1.0';
         osdkMetadata: typeof $osdkMetadata;
       }
 
       export const getCount: getCount = {
         apiName: 'getCount',
         type: 'query',
-        version: '0',
+        version: '1.1.0',
+        pinned: false,
         osdkMetadata: $osdkMetadata,
       };
       ",
@@ -127,7 +129,8 @@ describe("generatePerQueryDataFiles", () => {
           apiName: 'returnsTodo';
           rid: 'rid.query.2';
           type: 'query';
-          version: '0';
+          version: '3.2.0';
+          pinned: false;
           parameters: {
             /**
              *   description: Random desc so we test jsdoc
@@ -150,14 +153,15 @@ describe("generatePerQueryDataFiles", () => {
         };
         apiName: 'returnsTodo';
         type: 'query';
-        version: '0';
+        version: '3.2.0';
         osdkMetadata: typeof $osdkMetadata;
       }
 
       export const returnsTodo: returnsTodo = {
         apiName: 'returnsTodo',
         type: 'query',
-        version: '0',
+        version: '3.2.0',
+        pinned: false,
         osdkMetadata: $osdkMetadata,
       };
       ",
@@ -384,6 +388,7 @@ describe("generatePerQueryDataFiles", () => {
             rid: 'rid.query.1';
             type: 'query';
             version: '0';
+            pinned: false;
             parameters: {
               /**
                * (no ontology metadata)
@@ -468,6 +473,7 @@ describe("generatePerQueryDataFiles", () => {
           apiName: 'doThing',
           type: 'query',
           version: '0',
+          pinned: false,
           osdkMetadata: $osdkMetadata,
         };
         "

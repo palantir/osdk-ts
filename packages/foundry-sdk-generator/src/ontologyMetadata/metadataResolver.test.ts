@@ -66,7 +66,8 @@ describe("Load Ontologies Metadata", () => {
       {
         "externalInterfaces": Map {},
         "externalObjects": Map {},
-        "filteredFullMetadata": {
+        "pinnedQueryTypes": [],
+        "requestedMetadata": {
           "actionTypes": {},
           "interfaceTypes": {},
           "objectTypes": {},
@@ -310,5 +311,89 @@ describe("Load Ontologies Metadata", () => {
           "Unable to load action deleteFooInterface because it takes an unloaded interface type as a parameter: FooInterface make sure to specify it as an argument with --ontologyInterfaces FooInterface",
         ]
       `);
+  });
+
+  describe("Load ontology metadata with query types with versions", () => {
+    it("Loads query types with versions", async () => {
+      const ontologyMetadataResolver = new OntologyMetadataResolver(
+        "myAccessToken",
+        "https://stack.palantir.com",
+      );
+      const ontologyDefinitions = await ontologyMetadataResolver
+        .getWireOntologyDefinition(
+          "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+          {
+            queryTypesApiNamesToLoad: ["addOne:0.0.9"],
+          },
+        );
+      if (ontologyDefinitions.isErr()) {
+        throw new Error(ontologyDefinitions.error.join("\n"));
+      }
+
+      expect(ontologyDefinitions.value.pinnedQueryTypes).toEqual(["addOne"]);
+      expect(
+        ontologyDefinitions.value.requestedMetadata.queryTypes,
+      ).toMatchInlineSnapshot(`
+        {
+          "addOne:0.0.9": {
+            "apiName": "addOne",
+            "displayName": "myFunction",
+            "output": {
+              "type": "integer",
+            },
+            "parameters": {
+              "n": {
+                "dataType": {
+                  "type": "integer",
+                },
+              },
+            },
+            "rid": "ri.function-registry.main.function.abd64ff3-276e-48c5-afee-5a6ef0b2ea47",
+            "version": "0.0.9",
+          },
+        }
+      `);
+    });
+
+    it("Loads query types with no versions", async () => {
+      const ontologyMetadataResolver = new OntologyMetadataResolver(
+        "myAccessToken",
+        "https://stack.palantir.com",
+      );
+      const ontologyDefinitions = await ontologyMetadataResolver
+        .getWireOntologyDefinition(
+          "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+          {
+            queryTypesApiNamesToLoad: ["addOne"],
+          },
+        );
+      if (ontologyDefinitions.isErr()) {
+        throw new Error(ontologyDefinitions.error.join("\n"));
+      }
+
+      expect(ontologyDefinitions.value.pinnedQueryTypes.length).toEqual(0);
+      expect(
+        ontologyDefinitions.value.requestedMetadata.queryTypes,
+      ).toMatchInlineSnapshot(`
+        {
+          "addOne": {
+            "apiName": "addOne",
+            "displayName": "myFunction",
+            "output": {
+              "type": "integer",
+            },
+            "parameters": {
+              "n": {
+                "dataType": {
+                  "type": "integer",
+                },
+              },
+            },
+            "rid": "ri.function-registry.main.function.abd64ff3-276e-48c5-afee-5a6ef0b2ea47",
+            "version": "0.0.9",
+          },
+        }
+      `);
+    });
   });
 });

@@ -62,20 +62,44 @@ export class FauxOntology {
   getFilteredOntologyMetadata(
     request: OntologiesV2.LoadOntologyMetadataRequest,
   ): OntologiesV2.OntologyFullMetadata {
+    const queryTypeApiNameToNameAndVersion = Object.fromEntries(
+      request.queryTypes.map(
+        queryNameAndVersion => [
+          queryNameAndVersion.split(":")[0],
+          queryNameAndVersion,
+        ],
+      ),
+    );
+
     return {
       ontology: this.#ontology.ontology,
-      objectTypes: this.#filterRecord(
-        this.#ontology.objectTypes,
-        request.objectTypes,
+      objectTypes: Object.fromEntries(
+        Object.entries(this.#ontology.objectTypes).filter(([objectType]) =>
+          request.objectTypes.includes(objectType)
+        ).map(([objectTypeApiName, objectTypeDefinition]) => [
+          objectTypeApiName,
+          {
+            ...objectTypeDefinition,
+            linkTypes: objectTypeDefinition.linkTypes.filter(linkType =>
+              request.linkTypes.includes(linkType.apiName)
+            ),
+          },
+        ]),
       ),
       actionTypes: this.#filterRecord(
         this.#ontology.actionTypes,
         request.actionTypes,
       ),
-      queryTypes: this.#filterRecord(
-        this.#ontology.queryTypes,
-        request.queryTypes,
+      queryTypes: Object.fromEntries(
+        Object.entries(this.#ontology.queryTypes).filter(([queryType]) =>
+          Object.keys(queryTypeApiNameToNameAndVersion).includes(queryType)
+        )
+          .map(([queryTypeApiName, queryTypeDefinition]) => [
+            queryTypeApiNameToNameAndVersion[queryTypeApiName],
+            queryTypeDefinition,
+          ]),
       ),
+
       interfaceTypes: this.#filterRecord(
         this.#ontology.interfaceTypes,
         request.interfaceTypes,

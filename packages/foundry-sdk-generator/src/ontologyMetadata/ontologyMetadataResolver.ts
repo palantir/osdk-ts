@@ -19,13 +19,16 @@ import { getSdk, getSdkPackage } from "@osdk/client.unstable.tpsa";
 import type {
   ActionParameterType,
   ActionTypeV2,
+  InterfaceType,
   ObjectTypeFullMetadata,
+  ObjectTypeV2,
   Ontology,
   OntologyFullMetadata,
   OntologyIdentifier,
   QueryDataType,
   QueryTypeV2,
 } from "@osdk/foundry.ontologies";
+import { ObjectTypesV2, OntologyInterfaces } from "@osdk/foundry.ontologies";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { Result } from "./Result.js";
 
@@ -56,81 +59,6 @@ export class OntologyMetadataResolver {
       () => Promise.resolve(this.#authToken),
       `foundry-typescript-osdk-generator/${process.env.npm_package_version!}`,
     );
-  }
-
-  private filterMetadataByApiName(
-    ontologyFullMetadata: OntologyFullMetadata,
-    expectedEntities: {
-      linkTypes: Map<string, Set<string>>;
-      objectTypes: Set<string>;
-      queryTypes: Set<string>;
-      actionTypes: Set<string>;
-      interfaceTypes: Set<string>;
-    },
-    pkgInfo: PackageInfo,
-  ): OntologyFullMetadata {
-    const filteredObjectTypes = Object.fromEntries(
-      Object.entries(ontologyFullMetadata.objectTypes).filter(
-        ([, { objectType }]) => {
-          for (const { sdk: { inputs: { dataScope } } } of pkgInfo.values()) {
-            for (const objectTypeRid of dataScope.ontologyV2.objectTypes) {
-              if (objectTypeRid === objectType.rid) {
-                return true;
-              }
-            }
-          }
-          return expectedEntities.objectTypes.has(objectType.apiName);
-        },
-      ),
-    );
-
-    const filteredInterfaceTypes = Object.fromEntries(
-      Object.entries(ontologyFullMetadata.interfaceTypes).filter((
-        [interfaceApiName],
-      ) => expectedEntities.interfaceTypes.has(interfaceApiName)),
-    );
-
-    Object.values(filteredObjectTypes).forEach(objectType => {
-      const linkTypesToKeep = expectedEntities.linkTypes.get(
-        objectType.objectType.apiName,
-      );
-      if (!linkTypesToKeep) {
-        objectType.linkTypes = [];
-        return;
-      }
-
-      objectType.linkTypes = objectType.linkTypes.filter(linkType =>
-        linkTypesToKeep.has(linkType.apiName)
-      );
-    });
-
-    const filteredActionTypes = Object.fromEntries(
-      Object.entries(ontologyFullMetadata.actionTypes).filter(
-        ([actionApiName]) => {
-          if (
-            expectedEntities.actionTypes.has(this.camelize(actionApiName))
-          ) {
-            return true;
-          }
-          return false;
-        },
-      ),
-    );
-
-    const filteredQueryTypes = Object.fromEntries(
-      Object.entries(ontologyFullMetadata.queryTypes).filter(([queryApiName]) =>
-        expectedEntities.queryTypes.has(queryApiName)
-      ),
-    );
-
-    return {
-      ontology: ontologyFullMetadata.ontology,
-      objectTypes: filteredObjectTypes,
-      actionTypes: filteredActionTypes,
-      queryTypes: filteredQueryTypes,
-      interfaceTypes: filteredInterfaceTypes,
-      sharedPropertyTypes: {},
-    };
   }
 
   public async getInfoForPackages(
@@ -193,12 +121,13 @@ export class OntologyMetadataResolver {
       ]);
     }
 
-    const linkTypes = new Map<string, Set<string>>();
     const objectTypes = new Set(entities.objectTypesApiNamesToLoad);
     const interfaceTypes = new Set(entities.interfaceTypesApiNamesToLoad);
     const actionTypes = new Set(
       entities.actionTypesApiNamesToLoad?.map(action => this.camelize(action)),
     );
+
+    const linkTypes = new Map<string, Set<string>>();
 
     for (const linkType of entities.linkTypesApiNamesToLoad ?? []) {
       const [objectTypeApiName, linkTypeApiName] = linkType.split(
@@ -214,25 +143,19 @@ export class OntologyMetadataResolver {
     const pinnedQueryTypes = [];
 
     for (const queryType of entities.queryTypesApiNamesToLoad ?? []) {
-      const [queryTypeApiName, version] = queryType.split(":");
-      if (version != null) {
-        pinnedQueryTypes.push(queryTypeApiName);
-        continue;
+      if (queryTypes.has(queryType)) {
+        return Result.err([
+          `Query type ${queryType} was specified multiple times.`,
+        ]);
       }
-      queryTypes.add(queryTypeApiName);
-    }
+      const lastColonIndex = queryType.lastIndexOf(":");
 
-    const requestedMetadata = await OntologiesV2.loadMetadata(
-      this.getClientContext(),
-      ontology.rid as OntologyIdentifier,
-      {
-        actionTypes: [...actionTypes],
-        objectTypes: [...objectTypes],
-        queryTypes: [...queryTypes],
-        interfaceTypes: [...interfaceTypes],
-        linkTypes: [...linkTypes.keys()],
-      },
-    );
+      if (lastColonIndex !== -1) {
+        const queryTypeApiName = queryType.substring(0, lastColonIndex);
+        pinnedQueryTypes.push(queryTypeApiName);
+      }
+      queryTypes.add(queryType);
+    }
 
     const externalObjects = new Map();
     const externalInterfaces = new Map();
@@ -244,9 +167,21 @@ export class OntologyMetadataResolver {
 
       const dataScope = sdk.inputs.dataScope.ontologyV2;
 
+      const objectTypes: ObjectTypeV2[] = [];
+      let nextPageToken: string | undefined = undefined;
+      do {
+        const response = await ObjectTypesV2.list(
+          this.getClientContext(),
+          ontology.rid as OntologyIdentifier,
+          { pageToken: nextPageToken },
+        );
+        objectTypes.push(...response.data);
+        nextPageToken = response.nextPageToken;
+      } while (nextPageToken);
+
       for (const rid of dataScope.objectTypes) {
-        const ot = Object.values(requestedMetadata.objectTypes).find(
-          (ot) => ot.objectType.rid === rid,
+        const ot = Object.values(objectTypes).find(
+          (ot) => ot.rid === rid,
         );
 
         if (!ot) {
@@ -255,11 +190,24 @@ export class OntologyMetadataResolver {
           );
         }
 
-        externalObjects.set(ot.objectType.apiName, sdk.npm.npmPackageName);
+        externalObjects.set(ot.apiName, sdk.npm.npmPackageName);
+        entities.objectTypesApiNamesToLoad?.push(ot.apiName);
       }
 
+      const interfaceTypes: InterfaceType[] = [];
+      nextPageToken = undefined;
+      do {
+        const response = await OntologyInterfaces.list(
+          this.getClientContext(),
+          ontology.rid as OntologyIdentifier,
+          { pageToken: nextPageToken },
+        );
+        interfaceTypes.push(...response.data);
+        nextPageToken = response.nextPageToken;
+      } while (nextPageToken);
+
       for (const rid of dataScope.interfaceTypes) {
-        const it = Object.values(requestedMetadata.interfaceTypes).find(
+        const it = Object.values(interfaceTypes).find(
           (it) => it.rid === rid,
         );
 
@@ -269,20 +217,23 @@ export class OntologyMetadataResolver {
           );
         }
         externalInterfaces.set(it.apiName, sdk.npm.npmPackageName);
+        entities.interfaceTypesApiNamesToLoad?.push(it.apiName);
       }
     }
 
-    // const filteredFullMetadata = this.filterMetadataByApiName(
-    //   ontologyFullMetadata,
-    //   {
-    //     objectTypes,
-    //     linkTypes,
-    //     actionTypes,
-    //     queryTypes,
-    //     interfaceTypes,
-    //   },
-    //   extPackageInfo,
-    // );
+    const requestedMetadata = await OntologiesV2.loadMetadata(
+      this.getClientContext(),
+      ontology.rid as OntologyIdentifier,
+      {
+        actionTypes: [...actionTypes],
+        objectTypes: [...objectTypes],
+        queryTypes: [...queryTypes],
+        interfaceTypes: [...interfaceTypes],
+        linkTypes: Array.from(linkTypes.entries()).flatMap(
+          ([_, linkTypeApiNames]) => [...linkTypeApiNames],
+        ),
+      },
+    );
 
     const validData: Result<{}, string[]> = this.validateLoadedOntologyMetadata(
       requestedMetadata,
@@ -366,11 +317,11 @@ export class OntologyMetadataResolver {
           )
         ) {
           // is it in a package?
-          const fromFull =
-            filteredFullMetadata.objectTypes[link.objectTypeApiName];
-          if (fromFull && hasObjectType(packageInfo, fromFull)) {
-            continue;
-          }
+          // const fromFull =
+          //   filteredFullMetadata.objectTypes[link.objectTypeApiName];
+          // if (fromFull && hasObjectType(packageInfo, fromFull)) {
+          //   continue;
+          // }
 
           errors.push(
             `Unable to load link type ${link.apiName} for ${
