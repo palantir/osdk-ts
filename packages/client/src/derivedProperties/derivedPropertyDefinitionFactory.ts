@@ -126,11 +126,6 @@ const getDefinitionFromMap = (
     const definition = definitionMap.get(arg);
     invariant(definition, "Derived Property is not defined");
     return definition;
-  } else if (typeof arg === "string") {
-    return {
-      "type": "property",
-      "apiName": arg,
-    };
   } else if (typeof arg === "number") {
     invariant(false, "Literals for derived properties are not yet supported");
   }

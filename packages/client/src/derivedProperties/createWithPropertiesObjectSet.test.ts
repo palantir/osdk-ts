@@ -143,13 +143,20 @@ describe(createWithPropertiesObjectSet, () => {
   describe("expressions", () => {
     it("can handle expressions referencing other property keys", () => {
       const map = new Map<any, DerivedPropertyDefinition>();
-      const deriveObjectSet = createWithPropertiesObjectSet(Employee, {
-        type: "methodInput",
-      }, map);
+      const deriveObjectSet = createWithPropertiesObjectSet(
+        Employee,
+        {
+          type: "methodInput",
+        },
+        map,
+        true,
+      );
 
       const clause: DerivedProperty.Clause<Employee> = {
         "derivedPropertyName": (base) =>
-          base.pivotTo("lead").selectProperty("employeeId").add("employeeId"),
+          base.pivotTo("lead").selectProperty("employeeId").add(
+            base.selectProperty("employeeId"),
+          ),
         // "secondaryDerivedPropertyName": (base) =>
         //   base.pivotTo("lead").aggregate("employeeId:avg").divide("employeeId", 2),
       };

@@ -51,7 +51,7 @@ export namespace EmployeeApiTest {
     readonly fullName: $PropType["string"] | undefined;
     readonly employeeId: $PropType["integer"] | undefined;
     readonly attachment: $PropType["attachment"] | undefined;
-    readonly geopoint: $PropType["long"] | undefined;
+    readonly geopoint: $PropType["geopoint"] | undefined;
     readonly timeseries: $PropType["numericTimeseries"] | undefined;
     readonly mediaReference: $PropType["mediaReference"] | undefined;
     readonly geotimeSeriesReference:
@@ -111,7 +111,7 @@ export interface EmployeeApiTest extends $ObjectTypeDefinition {
       fullName: $PropertyDef<"string", "nullable", "single">;
       employeeId: $PropertyDef<"integer", "nullable", "single">;
       attachment: $PropertyDef<"attachment", "nullable", "single">;
-      geopoint: $PropertyDef<"long", "nullable", "single">;
+      geopoint: $PropertyDef<"geopoint", "nullable", "single">;
       timeseries: $PropertyDef<"numericTimeseries", "nullable", "single">;
       mediaReference: $PropertyDef<"mediaReference", "nullable", "single">;
       geotimeSeriesReference: $PropertyDef<

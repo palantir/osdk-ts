@@ -161,8 +161,13 @@ describe("ObjectSet", () => {
             "isActive",
             "mediaReference",
             "timeseries",
-            "lastClockIn",
-            "dateOfBirth",
+            "dateOfJoining",
+            "hourlyRate",
+            "yearsOfExperience",
+            "rank",
+            "performanceScore",
+            "mediaReference",
+            "lastUpdated",
           ],
         });
 
@@ -184,8 +189,13 @@ describe("ObjectSet", () => {
             "isActive",
             "mediaReference",
             "timeseries",
-            "lastClockIn",
-            "dateOfBirth",
+            "dateOfJoining",
+            "hourlyRate",
+            "yearsOfExperience",
+            "rank",
+            "performanceScore",
+            "mediaReference",
+            "lastUpdated",
           ],
         });
     });
@@ -959,7 +969,9 @@ describe("ObjectSet", () => {
         const objectSet = fauxObjectSet.withProperties({
           "myProp1": (base) => {
             const intAndLong = base.pivotTo("lead").selectProperty("employeeId")
-              .add("yearsOfExperience").add("employeeId");
+              .add(base.selectProperty("yearsOfExperience")).add(
+                base.selectProperty("employeeId"),
+              );
             expectTypeOf(intAndLong).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<"long", EmployeeApiTest>
             >();
@@ -967,7 +979,9 @@ describe("ObjectSet", () => {
             const intAndDouble = base.pivotTo("lead").selectProperty(
               "employeeId",
             )
-              .add("performanceScore").add("employeeId");
+              .add(base.selectProperty("performanceScore")).add(
+                base.selectProperty("employeeId"),
+              );
             expectTypeOf(intAndDouble).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "double",
@@ -978,7 +992,9 @@ describe("ObjectSet", () => {
             const longAndDouble = base.pivotTo("lead").selectProperty(
               "yearsOfExperience",
             )
-              .add("performanceScore").add("yearsOfExperience");
+              .add(base.selectProperty("performanceScore")).add(
+                base.selectProperty("yearsOfExperience"),
+              );
             expectTypeOf(longAndDouble).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "double",
@@ -989,13 +1005,13 @@ describe("ObjectSet", () => {
             const longAndLong = base.pivotTo("lead").selectProperty(
               "yearsOfExperience",
             )
-              .add("yearsOfExperience");
+              .add(base.selectProperty("yearsOfExperience"));
             expectTypeOf(longAndLong).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<"long", EmployeeApiTest>
             >();
 
             const intAndInt = base.pivotTo("lead").selectProperty("employeeId")
-              .add("employeeId");
+              .add(base.selectProperty("employeeId"));
             expectTypeOf(intAndInt).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "integer",
@@ -1005,9 +1021,11 @@ describe("ObjectSet", () => {
 
             const intLongDoubleChain = base.pivotTo("lead").selectProperty(
               "employeeId",
-            ).add("yearsOfExperience").add("employeeId").add(
-              "performanceScore",
-            ).add("yearsOfExperience");
+            ).add(base.selectProperty("yearsOfExperience")).add(
+              base.selectProperty("employeeId"),
+            ).add(
+              base.selectProperty("performanceScore"),
+            ).add(base.selectProperty("employeeId"));
             expectTypeOf(intLongDoubleChain).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "double",
@@ -1017,7 +1035,7 @@ describe("ObjectSet", () => {
 
             const shortAndIntReturnsInt = base.pivotTo("lead").selectProperty(
               "rank",
-            ).add("employeeId");
+            ).add(base.selectProperty("employeeId"));
             expectTypeOf(shortAndIntReturnsInt).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "integer",
@@ -1028,7 +1046,7 @@ describe("ObjectSet", () => {
             const shortAndFloatReturnsDouble = base.pivotTo("lead")
               .selectProperty(
                 "rank",
-              ).add("hourlyRate");
+              ).add(base.selectProperty("hourlyRate"));
             expectTypeOf(shortAndFloatReturnsDouble).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "double",
@@ -1110,7 +1128,7 @@ describe("ObjectSet", () => {
           "myProp1": (base) => {
             const nested = base.pivotTo("lead").selectProperty("employeeId")
               .add(
-                "performanceScore",
+                base.selectProperty("performanceScore"),
               );
             expectTypeOf(nested).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
@@ -1141,8 +1159,8 @@ describe("ObjectSet", () => {
               >
             >();
 
-            selectedDatetime.max("dateOfJoining");
-            selectedDatetime.min("lastUpdated");
+            selectedDatetime.max(base.selectProperty("dateOfJoining"));
+            selectedDatetime.min(base.selectProperty("lastUpdated"));
 
             expectTypeOf(base.pivotTo("lead").selectProperty("lastUpdated"))
               .toEqualTypeOf<
@@ -1161,7 +1179,7 @@ describe("ObjectSet", () => {
         const objectSet = fauxObjectSet.withProperties({
           "myProp1": (base) => {
             const max = base.pivotTo("lead").selectProperty("dateOfJoining")
-              .max("lastUpdated");
+              .max(base.selectProperty("lastUpdated"));
             expectTypeOf(max).toEqualTypeOf<
               DerivedProperty.DatetimePropertyDefinition<
                 "timestamp",
@@ -1170,7 +1188,7 @@ describe("ObjectSet", () => {
             >();
 
             const min = base.pivotTo("lead").selectProperty("dateOfJoining")
-              .min("dateOfJoining");
+              .min(base.selectProperty("dateOfJoining"));
             expectTypeOf(min).toEqualTypeOf<
               DerivedProperty.DatetimePropertyDefinition<
                 "datetime",
@@ -1239,7 +1257,7 @@ describe("ObjectSet", () => {
           "myProp1": (base) => {
             const nested = base.pivotTo("lead").selectProperty("dateOfJoining")
               .min(
-                "lastUpdated",
+                base.selectProperty("lastUpdated"),
               );
             expectTypeOf(nested).toEqualTypeOf<
               DerivedProperty.DatetimePropertyDefinition<

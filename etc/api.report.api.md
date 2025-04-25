@@ -432,13 +432,14 @@ export namespace DerivedProperty {
     		Q extends ObjectOrInterfaceDefinition,
     		CONSTRAINED extends boolean
     	> extends Filterable<Q, CONSTRAINED>, Pivotable<Q, CONSTRAINED> {}
-    	// Warning: (ae-forgotten-export) The symbol "Constant" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "Selectable" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "Constant" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     export interface Builder<
     		Q extends ObjectOrInterfaceDefinition,
     		CONSTRAINED extends boolean
-    	> extends BaseBuilder<Q, CONSTRAINED>, Constant<Q> {}
+    	> extends BaseBuilder<Q, CONSTRAINED>, Selectable<Q>, Constant<Q> {}
     	// (undocumented)
     export type Clause<Q extends ObjectOrInterfaceDefinition> = {
         		[key: string]: Creator<Q, SimplePropertyDef>
@@ -472,15 +473,13 @@ export namespace DerivedProperty {
     		T extends SimplePropertyDef,
     		Q extends ObjectOrInterfaceDefinition
     	> extends Definition<T, Q>, NumericExpressions<Q, T> {}
-    	// Warning: (ae-forgotten-export) The symbol "Selectable" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
+    	// (undocumented)
     export interface SelectPropertyBuilder<
     		Q extends ObjectOrInterfaceDefinition,
     		CONSTRAINED extends boolean
     	> extends AggregateBuilder<Q, CONSTRAINED>, Selectable<Q> {}
     	// (undocumented)
-    export type ValidParts = "year" | "month" | "day" | "hour" | "minute" | "second";
+    export type ValidParts = "DAYS" | "MONTHS" | "QUARTERS" | "YEARS";
     	{};
 }
 

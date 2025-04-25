@@ -45,7 +45,6 @@ export type DefinitionForType<
 
 type NumericExpressionArg<Q extends ObjectOrInterfaceDefinition> =
   | number
-  | FilteredPropertyKeys<Q, WithPropertiesNumerics>
   | DerivedProperty.NumericPropertyDefinition<any, Q>;
 
 type ReturnTypeForNumericMethod<
@@ -158,8 +157,7 @@ export type NumericExpressions<
 };
 
 type DatetimeExpressionArg<Q extends ObjectOrInterfaceDefinition> =
-  | FilteredPropertyKeys<Q, WithPropertiesDatetime>
-  | DerivedProperty.DatetimePropertyDefinition<any, Q>;
+  DerivedProperty.DatetimePropertyDefinition<any, Q>;
 
 type ExtractPropertyTypeFromDatetimeArg<
   Q extends ObjectOrInterfaceDefinition,
