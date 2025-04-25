@@ -97,9 +97,18 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
   OntologiesV2.QueryTypes.get(
     baseUrl,
     async (req) => {
+      const queryParams = Object.fromEntries(
+        new URL(req.request.url).searchParams.entries(),
+      );
+
+      const version = queryParams["version"];
       return fauxFoundry
         .getOntology(req.params.ontologyApiName)
-        .getQueryDef(req.params.queryTypeApiName);
+        .getQueryDef(
+          version
+            ? `${req.params.queryTypeApiName}:${version}`
+            : req.params.queryTypeApiName,
+        );
     },
   ),
 

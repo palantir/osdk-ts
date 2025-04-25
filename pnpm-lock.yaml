@@ -3506,6 +3506,9 @@ importers:
       msw:
         specifier: ^2.7.3
         version: 2.7.3(@types/node@22.13.0)(typescript@5.5.4)
+      semver:
+        specifier: ^7.5.1
+        version: 7.6.3
       tiny-invariant:
         specifier: ^1.3.3
         version: 1.3.3
@@ -3522,6 +3525,9 @@ importers:
       '@types/json-stable-stringify':
         specifier: ^1.0.36
         version: 1.0.36
+      '@types/semver':
+        specifier: ^7.3.12
+        version: 7.5.8
       ts-expect:
         specifier: ^1.3.0
         version: 1.3.0
@@ -14614,7 +14620,7 @@ snapshots:
       commander: 10.0.1
       marked: 9.1.6
       marked-terminal: 7.3.0(marked@9.1.6)
-      semver: 7.7.1
+      semver: 7.6.3
 
   '@arethetypeswrong/core@0.15.1':
     dependencies:
@@ -14642,7 +14648,7 @@ snapshots:
       cjs-module-lexer: 1.4.3
       fflate: 0.8.2
       lru-cache: 10.4.3
-      semver: 7.7.1
+      semver: 7.6.3
       typescript: 5.6.1-rc
       validate-npm-package-name: 5.0.1
 
@@ -15909,7 +15915,7 @@ snapshots:
       outdent: 0.5.0
       prettier: 2.8.8
       resolve-from: 5.0.0
-      semver: 7.7.1
+      semver: 7.6.3
 
   '@changesets/apply-release-plan@7.0.6':
     dependencies:
@@ -15943,7 +15949,7 @@ snapshots:
       '@changesets/should-skip-package': 0.1.2
       '@changesets/types': 6.1.0
       '@manypkg/get-packages': 1.1.3
-      semver: 7.7.1
+      semver: 7.6.3
 
   '@changesets/changelog-git@0.2.0':
     dependencies:
@@ -15980,7 +15986,7 @@ snapshots:
       package-manager-detector: 0.2.11
       picocolors: 1.1.1
       resolve-from: 5.0.0
-      semver: 7.7.1
+      semver: 7.6.3
       spawndamnit: 3.0.1
       term-size: 2.2.1
 
@@ -16020,7 +16026,7 @@ snapshots:
       '@changesets/types': 6.1.0
       '@manypkg/get-packages': 1.1.3
       picocolors: 1.1.1
-      semver: 7.7.1
+      semver: 7.6.3
 
   '@changesets/get-release-plan@4.0.8':
     dependencies:
@@ -16676,7 +16682,7 @@ snapshots:
       resolve: 1.22.8
       resolve-from: 5.0.0
       resolve.exports: 2.0.2
-      semver: 7.7.1
+      semver: 7.6.3
       send: 0.19.1
       slugify: 1.6.6
       source-map-support: 0.5.21
@@ -16713,7 +16719,7 @@ snapshots:
       getenv: 1.0.0
       glob: 10.4.5
       resolve-from: 5.0.0
-      semver: 7.7.1
+      semver: 7.6.3
       slash: 3.0.0
       slugify: 1.6.6
       xcode: 3.0.1
@@ -16774,7 +16780,7 @@ snapshots:
       require-from-string: 2.0.2
       resolve-from: 5.0.0
       resolve-workspace-root: 2.0.0
-      semver: 7.7.1
+      semver: 7.6.3
       slugify: 1.6.6
       sucrase: 3.35.0
     transitivePeerDependencies:
@@ -16828,7 +16834,7 @@ snapshots:
       minimatch: 3.1.2
       p-limit: 3.1.0
       resolve-from: 5.0.0
-      semver: 7.7.1
+      semver: 7.6.3
     transitivePeerDependencies:
       - supports-color
 
@@ -16927,7 +16933,7 @@ snapshots:
       debug: 4.4.0
       fs-extra: 9.1.0
       resolve-from: 5.0.0
-      semver: 7.7.1
+      semver: 7.6.3
       xml2js: 0.6.0
     transitivePeerDependencies:
       - supports-color
@@ -17438,7 +17444,7 @@ snapshots:
       jest-diff: 29.7.0
       resolve-package-path: 4.0.3
       runtypes: 6.7.0
-      semver: 7.7.1
+      semver: 7.6.3
       tslib: 2.8.1
 
   '@monorepolint/utils@0.6.0-alpha.4':
@@ -17478,7 +17484,7 @@ snapshots:
 
   '@npmcli/fs@3.1.1':
     dependencies:
-      semver: 7.7.1
+      semver: 7.6.3
 
   '@octokit/app@15.1.5':
     dependencies:
@@ -23251,7 +23257,7 @@ snapshots:
 
   is-bun-module@1.3.0:
     dependencies:
-      semver: 7.7.1
+      semver: 7.6.3
 
   is-callable@1.2.7: {}
 
@@ -23484,7 +23490,7 @@ snapshots:
       '@babel/parser': 7.27.0
       '@istanbuljs/schema': 0.1.3
       istanbul-lib-coverage: 3.2.2
-      semver: 7.7.1
+      semver: 7.6.3
     transitivePeerDependencies:
       - supports-color
 
@@ -23867,7 +23873,7 @@ snapshots:
       jest-util: 29.7.0
       natural-compare: 1.4.0
       pretty-format: 29.7.0
-      semver: 7.7.1
+      semver: 7.6.3
     transitivePeerDependencies:
       - supports-color
 

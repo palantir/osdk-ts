@@ -34,6 +34,24 @@ export const addOneQueryType: QueryTypeV2 = {
   version: "0.0.9",
 };
 
+export const addOneQueryTypeOlderVersion: QueryTypeV2 = {
+  apiName: "addOne",
+  displayName: "myFunction",
+  parameters: {
+    n: {
+      dataType: {
+        type: "integer",
+      },
+    },
+  },
+  output: {
+    type: "integer",
+  },
+  rid:
+    "ri.function-registry.main.function.abd64ff3-276e-48c5-afee-5a6ef0b2ea47",
+  version: "0.0.1",
+};
+
 export const queryTypeReturnsStruct: QueryTypeV2 = {
   apiName: "incrementPersonAge",
   displayName: "incrementAge",

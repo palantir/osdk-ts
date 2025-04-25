@@ -338,4 +338,31 @@ describe("queries", () => {
     );
     expect(result).toEqual(["Pitt", "Clooney", "Reynolds"]);
   });
+
+  it("pinned queries call execute with the right version", async () => {
+    const result = await client($Queries.addOne).executeFunction({
+      n: 2,
+    });
+    expect(result).toEqual(3);
+
+    const result2 = await client({ ...$Queries.addOne, version: "0.0.1" })
+      .executeFunction({
+        n: 6,
+      });
+    expect(result2).toEqual(7);
+  });
+
+  it("non-pinned queries call execute with the right version", async () => {
+    // The stubbed data for version 0.0.5 does not exist. This test passes
+    // because executeQuery is called without a version and our stubs resolve to latest.
+    const result2 = await client({
+      ...$Queries.addOne,
+      version: "0.0.5",
+      pinned: false,
+    })
+      .executeFunction({
+        n: 2,
+      });
+    expect(result2).toEqual(3);
+  });
 });

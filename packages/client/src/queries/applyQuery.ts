@@ -50,7 +50,7 @@ export async function applyQuery<
 > {
   const qd = await client.ontologyProvider.getQueryDefinition(
     query.apiName,
-    query.version,
+    query.pinned ? query.version : undefined,
   );
 
   const response = await OntologiesV2.Queries.execute(

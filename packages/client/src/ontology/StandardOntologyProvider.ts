@@ -72,9 +72,8 @@ export const createStandardOntologyProviderFactory: (
     async function loadQuery(
       client: MinimalClient,
       key: string,
-      version?: string,
     ) {
-      return loadQueryMetadata(client, key, version);
+      return loadQueryMetadata(client, key);
     }
 
     async function loadAction(
@@ -109,18 +108,17 @@ export const createStandardOntologyProviderFactory: (
       client: MinimalClient,
       fn: (
         client: MinimalClient,
-        apiName: string,
-        version?: string,
+        key: string,
+        skipCache?: boolean,
       ) => Promise<QueryMetadata>,
     ) {
       const queryCache = createAsyncClientCache<string, QueryMetadata>(
         (client, key) => {
-          const [apiName, version] = key.split(":");
-          return fn(client, apiName, version || undefined);
+          return fn(client, key);
         },
       );
       return async (apiName: string, version?: string) => {
-        const key = `${apiName}:${version ?? ""}`;
+        const key = version ? `${apiName}:${version}` : apiName;
         return await queryCache.get(client, key);
       };
     }

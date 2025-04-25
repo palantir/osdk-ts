@@ -16,7 +16,11 @@
 
 import { type ObjectTypeDefinition } from "@osdk/api";
 import type * as OntologiesV2 from "@osdk/foundry.ontologies";
-import type { VersionedQueryTypeApiName } from "@osdk/internal.foundry.ontologies";
+import type {
+  LoadOntologyMetadataRequest,
+  VersionedQueryTypeApiName,
+} from "@osdk/internal.foundry.ontologies";
+import semver, { valid } from "semver";
 import invariant from "tiny-invariant";
 import type { ReadonlyDeep } from "type-fest";
 import {
@@ -38,7 +42,10 @@ import type { TH_ObjectTypeFullMetadata } from "./typeHelpers/TH_ObjectTypeFullM
 export class FauxOntology {
   #ontology: OntologiesV2.OntologyFullMetadata;
   #actionImpl: Map<OntologiesV2.ActionTypeApiName, FauxActionImpl> = new Map();
-  #queryImpl: Map<OntologiesV2.QueryApiName, FauxQueryImpl> = new Map();
+  #queryImpl: Map<
+    OntologiesV2.QueryApiName,
+    Map<OntologiesV2.FunctionVersion, FauxQueryImpl>
+  > = new Map();
 
   constructor(ontology: OntologiesV2.OntologyV2) {
     this.#ontology = {
@@ -62,15 +69,6 @@ export class FauxOntology {
   getFilteredOntologyMetadata(
     request: OntologiesV2.LoadOntologyMetadataRequest,
   ): OntologiesV2.OntologyFullMetadata {
-    const queryTypeApiNameToNameAndVersion = Object.fromEntries(
-      request.queryTypes.map(
-        queryNameAndVersion => [
-          queryNameAndVersion.split(":")[0],
-          queryNameAndVersion,
-        ],
-      ),
-    );
-
     return {
       ontology: this.#ontology.ontology,
       objectTypes: Object.fromEntries(
@@ -86,21 +84,13 @@ export class FauxOntology {
           },
         ]),
       ),
-      actionTypes: this.#filterRecord(
+      actionTypes: filterRecord(
         this.#ontology.actionTypes,
         request.actionTypes,
       ),
-      queryTypes: Object.fromEntries(
-        Object.entries(this.#ontology.queryTypes).filter(([queryType]) =>
-          Object.keys(queryTypeApiNameToNameAndVersion).includes(queryType)
-        )
-          .map(([queryTypeApiName, queryTypeDefinition]) => [
-            queryTypeApiNameToNameAndVersion[queryTypeApiName],
-            queryTypeDefinition,
-          ]),
-      ),
+      queryTypes: this.#getFilteredQueryTypes(request),
 
-      interfaceTypes: this.#filterRecord(
+      interfaceTypes: filterRecord(
         this.#ontology.interfaceTypes,
         request.interfaceTypes,
       ),
@@ -175,19 +165,30 @@ export class FauxOntology {
     return impl;
   }
 
-  public getQueryDef(queryTypeApiName: string): OntologiesV2.QueryTypeV2 {
-    const queryType = this.#ontology.queryTypes[queryTypeApiName];
+  public getQueryDef(
+    queryTypeApiNameAndVersion: string,
+  ): OntologiesV2.QueryTypeV2 {
+    const queryType = this.#ontology
+      .queryTypes[this.#convertToVersionedApiName(queryTypeApiNameAndVersion)];
     if (queryType === undefined) {
       throw new OpenApiCallError(
         404,
-        QueryNotFoundError(queryTypeApiName),
+        QueryNotFoundError(queryTypeApiNameAndVersion),
       );
     }
     return queryType;
   }
 
-  public getQueryImpl(queryTypeApiName: string): FauxQueryImpl {
-    const impl = this.#queryImpl.get(queryTypeApiName);
+  public getQueryImpl(
+    queryTypeApiName: string,
+    version?: string,
+  ): FauxQueryImpl {
+    const versionMap = this.#queryImpl.get(queryTypeApiName);
+
+    const impl = version !== undefined
+      ? versionMap?.get(version)
+      : versionMap?.get(semver.rsort(Array.from(versionMap.keys() ?? []))[0]);
+
     if (!impl) {
       throw new OpenApiCallError(
         404,
@@ -355,14 +356,28 @@ export class FauxOntology {
     def: OntologiesV2.QueryTypeV2,
     implementation?: FauxQueryImpl,
   ): void {
-    if (def.apiName in this.#ontology.queryTypes) {
+    if (`${def.apiName}:${def.version}` in this.#ontology.queryTypes) {
       throw new Error(
         `QueryType ${def.apiName} already registered`,
       );
     }
-    this.#ontology.queryTypes[def.apiName as VersionedQueryTypeApiName] = def;
+    this.#ontology
+      .queryTypes[
+        `${def.apiName}:${def.version}` as VersionedQueryTypeApiName
+      ] = def;
     if (implementation) {
-      this.#queryImpl.set(def.apiName, implementation);
+      if (!this.#queryImpl.has(def.apiName)) {
+        this.#queryImpl.set(def.apiName, new Map());
+      }
+      if (!valid(def.version)) {
+        throw new Error(
+          `QueryType ${def.apiName} version ${def.version} is not semver valid`,
+        );
+      }
+      this.#queryImpl.get(def.apiName)?.set(
+        def.version,
+        implementation,
+      );
     }
   }
 
@@ -384,12 +399,52 @@ export class FauxOntology {
     this.#ontology.sharedPropertyTypes[def.apiName] = def;
   }
 
-  #filterRecord<T>(
-    record: Record<string, T>,
-    keys: string[],
-  ): Record<string, T> {
+  #getFilteredQueryTypes(request: LoadOntologyMetadataRequest): Record<
+    OntologiesV2.QueryApiName,
+    OntologiesV2.QueryTypeV2
+  > {
+    const remappedQueryTypes = request.queryTypes.map(x =>
+      this.#convertToVersionedApiName(x)
+    );
     return Object.fromEntries(
-      Object.entries(record).filter(([key]) => keys.includes(key)),
+      Object.entries(this.#ontology.queryTypes).filter((
+        [queryTypeApiName],
+      ) => remappedQueryTypes.includes(queryTypeApiName)).map((
+        [queryTypeApiName, queryTypeDefinition],
+      ) => [
+        request.queryTypes[remappedQueryTypes.indexOf(queryTypeApiName)],
+        queryTypeDefinition,
+      ]),
     );
   }
+
+  #convertToVersionedApiName(
+    apiName: string,
+  ): VersionedQueryTypeApiName {
+    // If a query is requested without a version, we remap it to include a versioned api name with the latest version
+    if (extractVersion(apiName) !== undefined) {
+      return apiName as VersionedQueryTypeApiName;
+    }
+    const version = semver.rsort(
+      Object.keys(this.#ontology.queryTypes).filter(
+        queryTypeApiName => queryTypeApiName.startsWith(apiName),
+      ).map(x => extractVersion(x)),
+    )[0];
+    return `${apiName}:${version}`;
+  }
+}
+
+function filterRecord<T>(
+  record: Record<string, T>,
+  keys: string[],
+): Record<string, T> {
+  return Object.fromEntries(
+    Object.entries(record).filter(([key]) => keys.includes(key)),
+  );
+}
+
+function extractVersion(
+  apiName: string,
+): string {
+  return apiName.split(":")[1];
 }

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { valid } from "semver";
 import { OntologiesV2 } from "../mock/index.js";
 import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
 
@@ -27,9 +28,20 @@ export const createQueryHandlers: FauxFoundryHandlersFactory = (
   OntologiesV2.Queries.execute(
     baseUrl,
     async ({ request, params: { ontologyApiName, queryApiName } }) => {
+      const queryParams = Object.fromEntries(
+        new URL(request.url).searchParams.entries(),
+      );
+
+      const version = queryParams["version"];
+      if (!valid(version)) {
+        throw new Error(
+          `Invalid version "${version}" for query "${queryApiName}" in ontology "${ontologyApiName}: not semver compatible".`,
+        );
+      }
+
       const queryImpl = fauxFoundry
         .getOntology(ontologyApiName)
-        .getQueryImpl(queryApiName);
+        .getQueryImpl(queryApiName, version);
 
       return queryImpl(
         await request.json(),
