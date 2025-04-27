@@ -46,7 +46,33 @@ export function defineSharedPropertyType(
     ontologyDefinition.sharedPropertyTypes[apiName] === undefined,
     `Shared property type ${apiName} already exists`,
   );
-
+  if (typeof opts.type === "object" && opts.type.type === "timeSeries") {
+    const metadata = opts.type.seriesValueMetadata;
+    if (
+      metadata.type === "numeric"
+      && metadata.numeric.defaultInternalInterpolation.type === "propertyType"
+    ) {
+      const propertyType =
+        metadata.numeric.defaultInternalInterpolation.propertyType;
+      const nestedApiName = namespace + propertyType;
+      invariant(
+        ontologyDefinition.sharedPropertyTypes[nestedApiName]
+          !== undefined,
+        `Property type ${propertyType} in TimeSeries defaultInternalInterpolation does not exist.`,
+      );
+    } else if (
+      metadata.type === "enum"
+      && metadata.enum.defaultInternalInterpolation.type === "propertyType"
+    ) {
+      const propertyType =
+        metadata.enum.defaultInternalInterpolation.propertyType;
+      const nestedApiName = namespace + propertyType;
+      invariant(
+        ontologyDefinition.sharedPropertyTypes[nestedApiName] !== undefined,
+        `Property type ${propertyType} in TimeSeries defaultInternalInterpolation does not exist.`,
+      );
+    }
+  }
   return ontologyDefinition.sharedPropertyTypes[apiName] = {
     ...opts,
     apiName,

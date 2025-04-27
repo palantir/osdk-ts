@@ -286,6 +286,15 @@ function extractPropertyDatasource(
         },
       };
       return [buildDatasource(property.apiName, mediaSetDefinition)];
+    case "experimentalTimeDependentV1":
+      const timeSeriesDefinition: OntologyIrObjectTypeDatasourceDefinition = {
+        type: "timeSeries",
+        timeSeries: {
+          timeSeriesSyncRid: identifier,
+          properties: [property.apiName],
+        },
+      };
+      return [buildDatasource(property.apiName, timeSeriesDefinition)];
     default:
       return [];
   }
@@ -613,6 +622,15 @@ function convertType(
           supportsEfficientLeadingWildcard:
             type.supportsEfficientLeadingWildcard,
           supportsExactMatching: type.supportsExactMatching,
+        },
+      };
+
+    case (typeof type === "object" && "seriesValueMetadata" in type):
+      return {
+        type: "experimentalTimeDependentV1",
+        experimentalTimeDependentV1: {
+          seriesValueMetadata: type.seriesValueMetadata,
+          sensorLinkTypeId: type.sensorLinkTypeId,
         },
       };
 
