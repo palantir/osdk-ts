@@ -15,13 +15,12 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
-import { createContext } from "./context.js";
-import { importSharedPropertyType } from "./defineImportSpt.js";
 import {
   defineOntology,
   dumpOntologyFullMetadata,
   dumpValueTypeWireType,
 } from "./defineOntology.js";
+import { getMakerForNamespace } from "./getMakerForNamespace.js";
 import type { InterfaceType } from "./types.js";
 
 const {
@@ -34,7 +33,7 @@ const {
   defineLink,
   defineSharedPropertyType,
   defineInterfaceLinkConstraint,
-} = createContext("com.palantir.");
+} = getMakerForNamespace("com.palantir.");
 
 describe("Ontology Defining", () => {
   beforeEach(async () => {
@@ -57,7 +56,7 @@ describe("Ontology Defining", () => {
         "[Error: Invariant failed: Version is not a valid semver]",
       );
     });
-    it("Correctly serializes a value type", async () => {
+    it("Correctly serializes a value type", () => {
       defineValueType({
         apiName: "apiName",
         displayName: "displayName",
@@ -191,7 +190,6 @@ describe("Ontology Defining", () => {
                         },
                         "gothamMapping": undefined,
                         "indexedForSearch": true,
-                        "provenance": undefined,
                         "type": {
                           "string": {
                             "analyzerOverride": undefined,
@@ -239,7 +237,6 @@ describe("Ontology Defining", () => {
                   },
                   "gothamMapping": undefined,
                   "indexedForSearch": true,
-                  "provenance": undefined,
                   "type": {
                     "string": {
                       "analyzerOverride": undefined,
@@ -299,7 +296,6 @@ describe("Ontology Defining", () => {
                   },
                   "gothamMapping": undefined,
                   "indexedForSearch": true,
-                  "provenance": undefined,
                   "type": {
                     "string": {
                       "analyzerOverride": undefined,
@@ -396,7 +392,6 @@ describe("Ontology Defining", () => {
                       },
                       "gothamMapping": undefined,
                       "indexedForSearch": true,
-                      "provenance": undefined,
                       "type": {
                         "string": {
                           "analyzerOverride": undefined,
@@ -457,7 +452,6 @@ describe("Ontology Defining", () => {
                       },
                       "gothamMapping": undefined,
                       "indexedForSearch": true,
-                      "provenance": undefined,
                       "type": {
                         "string": {
                           "analyzerOverride": undefined,
@@ -505,7 +499,6 @@ describe("Ontology Defining", () => {
                 },
                 "gothamMapping": undefined,
                 "indexedForSearch": true,
-                "provenance": undefined,
                 "type": {
                   "string": {
                     "analyzerOverride": undefined,
@@ -542,7 +535,6 @@ describe("Ontology Defining", () => {
                 },
                 "gothamMapping": undefined,
                 "indexedForSearch": true,
-                "provenance": undefined,
                 "type": {
                   "string": {
                     "analyzerOverride": undefined,
@@ -618,7 +610,6 @@ describe("Ontology Defining", () => {
                         },
                         "gothamMapping": undefined,
                         "indexedForSearch": true,
-                        "provenance": undefined,
                         "type": {
                           "string": {
                             "analyzerOverride": undefined,
@@ -666,7 +657,6 @@ describe("Ontology Defining", () => {
                   },
                   "gothamMapping": undefined,
                   "indexedForSearch": true,
-                  "provenance": undefined,
                   "type": {
                     "string": {
                       "analyzerOverride": undefined,
@@ -751,7 +741,6 @@ describe("Ontology Defining", () => {
                       },
                       "gothamMapping": undefined,
                       "indexedForSearch": true,
-                      "provenance": undefined,
                       "type": {
                         "string": {
                           "analyzerOverride": undefined,
@@ -812,7 +801,6 @@ describe("Ontology Defining", () => {
                       },
                       "gothamMapping": undefined,
                       "indexedForSearch": true,
-                      "provenance": undefined,
                       "type": {
                         "string": {
                           "analyzerOverride": undefined,
@@ -860,7 +848,6 @@ describe("Ontology Defining", () => {
                 },
                 "gothamMapping": undefined,
                 "indexedForSearch": true,
-                "provenance": undefined,
                 "type": {
                   "string": {
                     "analyzerOverride": undefined,
@@ -897,7 +884,6 @@ describe("Ontology Defining", () => {
                 },
                 "gothamMapping": undefined,
                 "indexedForSearch": true,
-                "provenance": undefined,
                 "type": {
                   "string": {
                     "analyzerOverride": undefined,
@@ -1180,7 +1166,6 @@ describe("Ontology Defining", () => {
                     },
                     "gothamMapping": undefined,
                     "indexedForSearch": true,
-                    "provenance": undefined,
                     "type": {
                       "string": {
                         "analyzerOverride": undefined,
@@ -1228,7 +1213,6 @@ describe("Ontology Defining", () => {
               },
               "gothamMapping": undefined,
               "indexedForSearch": true,
-              "provenance": undefined,
               "type": {
                 "string": {
                   "analyzerOverride": undefined,
@@ -1300,7 +1284,6 @@ describe("Ontology Defining", () => {
                       },
                       "gothamMapping": undefined,
                       "indexedForSearch": true,
-                      "provenance": undefined,
                       "type": {
                         "struct": {
                           "structFields": [
@@ -1350,185 +1333,6 @@ describe("Ontology Defining", () => {
                 },
               }
       `);
-  });
-
-  it("Adds imported SPTs only to the interface definition", () => {
-    const regularSpt = defineSharedPropertyType({
-      apiName: "foo",
-      type: { type: "marking", markingType: "CBAC" },
-    });
-
-    const importedSpt = importSharedPropertyType({
-      apiName: "bar",
-      typeHint: "string",
-      packageName: "com.palantir.bar",
-    });
-
-    defineInterface({
-      apiName: "interface",
-      properties: { foo: regularSpt, bar: importedSpt },
-    });
-
-    expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
-      {
-        "actionTypes": {},
-        "blockPermissionInformation": {
-          "actionTypes": {},
-          "linkTypes": {},
-          "objectTypes": {},
-        },
-        "interfaceTypes": {
-          "com.palantir.interface": {
-            "interfaceType": {
-              "allExtendsInterfaces": [],
-              "allLinks": [],
-              "allProperties": [],
-              "allPropertiesV2": {},
-              "apiName": "com.palantir.interface",
-              "displayMetadata": {
-                "description": "interface",
-                "displayName": "interface",
-                "icon": undefined,
-              },
-              "extendsInterfaces": [],
-              "links": [],
-              "properties": [],
-              "propertiesV2": {
-                "com.palantir.bar.bar": {
-                  "required": true,
-                  "sharedPropertyType": {
-                    "aliases": [],
-                    "apiName": "com.palantir.bar.bar",
-                    "baseFormatter": undefined,
-                    "dataConstraints": undefined,
-                    "displayMetadata": {
-                      "description": undefined,
-                      "displayName": "com.palantir.bar.bar",
-                      "visibility": "NORMAL",
-                    },
-                    "gothamMapping": undefined,
-                    "indexedForSearch": true,
-                    "provenance": undefined,
-                    "type": {
-                      "string": {
-                        "analyzerOverride": undefined,
-                        "enableAsciiFolding": undefined,
-                        "isLongText": false,
-                        "supportsEfficientLeadingWildcard": false,
-                        "supportsExactMatching": true,
-                      },
-                      "type": "string",
-                    },
-                    "typeClasses": [],
-                    "valueType": undefined,
-                  },
-                },
-                "com.palantir.foo": {
-                  "required": true,
-                  "sharedPropertyType": {
-                    "aliases": [],
-                    "apiName": "com.palantir.foo",
-                    "baseFormatter": undefined,
-                    "dataConstraints": {
-                      "nullability": undefined,
-                      "nullabilityV2": {
-                        "noEmptyCollections": true,
-                        "noNulls": true,
-                      },
-                      "propertyTypeConstraints": [],
-                    },
-                    "displayMetadata": {
-                      "description": undefined,
-                      "displayName": "foo",
-                      "visibility": "NORMAL",
-                    },
-                    "gothamMapping": undefined,
-                    "indexedForSearch": true,
-                    "provenance": undefined,
-                    "type": {
-                      "marking": {
-                        "markingType": "CBAC",
-                      },
-                      "type": "marking",
-                    },
-                    "typeClasses": [
-                      {
-                        "kind": "render_hint",
-                        "name": "SELECTABLE",
-                      },
-                      {
-                        "kind": "render_hint",
-                        "name": "SORTABLE",
-                      },
-                    ],
-                    "valueType": undefined,
-                  },
-                },
-              },
-              "status": {
-                "active": {},
-                "type": "active",
-              },
-            },
-          },
-        },
-        "linkTypes": {},
-        "objectTypes": {},
-        "sharedPropertyTypes": {
-          "com.palantir.foo": {
-            "sharedPropertyType": {
-              "aliases": [],
-              "apiName": "com.palantir.foo",
-              "baseFormatter": undefined,
-              "dataConstraints": {
-                "nullability": undefined,
-                "nullabilityV2": {
-                  "noEmptyCollections": true,
-                  "noNulls": true,
-                },
-                "propertyTypeConstraints": [],
-              },
-              "displayMetadata": {
-                "description": undefined,
-                "displayName": "foo",
-                "visibility": "NORMAL",
-              },
-              "gothamMapping": undefined,
-              "indexedForSearch": true,
-              "provenance": undefined,
-              "type": {
-                "marking": {
-                  "markingType": "CBAC",
-                },
-                "type": "marking",
-              },
-              "typeClasses": [
-                {
-                  "kind": "render_hint",
-                  "name": "SELECTABLE",
-                },
-                {
-                  "kind": "render_hint",
-                  "name": "SORTABLE",
-                },
-              ],
-              "valueType": undefined,
-            },
-          },
-        },
-      }
-      `);
-
-    expect(dumpOntologyFullMetadata().importedTypes).toMatchInlineSnapshot(`
-       {
-         "sharedPropertyTypes": [
-           {
-             "apiName": "bar",
-             "packageName": "com.palantir.bar",
-           },
-         ],
-       }
-    `);
   });
 
   it("Custom string fields properly set", () => {
@@ -1586,7 +1390,6 @@ describe("Ontology Defining", () => {
                     },
                     "gothamMapping": undefined,
                     "indexedForSearch": true,
-                    "provenance": undefined,
                     "type": {
                       "string": {
                         "analyzerOverride": undefined,
@@ -1634,7 +1437,6 @@ describe("Ontology Defining", () => {
               },
               "gothamMapping": undefined,
               "indexedForSearch": true,
-              "provenance": undefined,
               "type": {
                 "string": {
                   "analyzerOverride": undefined,
@@ -1834,7 +1636,6 @@ describe("Ontology Defining", () => {
                         },
                         "gothamMapping": undefined,
                         "indexedForSearch": true,
-                        "provenance": undefined,
                         "type": {
                           "string": {
                             "analyzerOverride": undefined,
@@ -1979,7 +1780,6 @@ describe("Ontology Defining", () => {
                   },
                   "gothamMapping": undefined,
                   "indexedForSearch": true,
-                  "provenance": undefined,
                   "type": {
                     "string": {
                       "analyzerOverride": undefined,
@@ -3262,7 +3062,16 @@ describe("Ontology Defining", () => {
             "sharedPropertyTypes": {},
           },
           "importedTypes": {
-            "sharedPropertyTypes": [],
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
         }
       `);
@@ -3422,7 +3231,16 @@ describe("Ontology Defining", () => {
           "sharedPropertyTypes": {},
         },
         "importedTypes": {
-          "sharedPropertyTypes": [],
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {},
         },
       }
         `);
@@ -3854,7 +3672,6 @@ describe("Ontology Defining", () => {
                       },
                       "gothamMapping": undefined,
                       "indexedForSearch": true,
-                      "provenance": undefined,
                       "type": {
                         "string": {
                           "analyzerOverride": undefined,
@@ -3990,7 +3807,6 @@ describe("Ontology Defining", () => {
                 },
                 "gothamMapping": undefined,
                 "indexedForSearch": true,
-                "provenance": undefined,
                 "type": {
                   "string": {
                     "analyzerOverride": undefined,
@@ -4017,7 +3833,16 @@ describe("Ontology Defining", () => {
           },
         },
         "importedTypes": {
-          "sharedPropertyTypes": [],
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {},
         },
       }
         `);
@@ -5153,7 +4978,6 @@ describe("Ontology Defining", () => {
                       },
                       "gothamMapping": undefined,
                       "indexedForSearch": true,
-                      "provenance": undefined,
                       "type": {
                         "string": {
                           "analyzerOverride": undefined,
@@ -5201,7 +5025,6 @@ describe("Ontology Defining", () => {
                 },
                 "gothamMapping": undefined,
                 "indexedForSearch": true,
-                "provenance": undefined,
                 "type": {
                   "string": {
                     "analyzerOverride": undefined,
@@ -5228,7 +5051,16 @@ describe("Ontology Defining", () => {
           },
         },
         "importedTypes": {
-          "sharedPropertyTypes": [],
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {},
         },
       }
         `);
@@ -5236,8 +5068,10 @@ describe("Ontology Defining", () => {
   });
   describe("Importing", () => {
     it("Importing entities works", () => {
-      const defineSpt = createContext("namespace.1").defineSharedPropertyType;
-      const defineInterface = createContext("com.palantir.").defineInterface;
+      const defineSpt =
+        getMakerForNamespace("namespace.1").defineSharedPropertyType;
+      const defineInterface =
+        getMakerForNamespace("com.palantir.").defineInterface;
       const importedSpt = defineSpt({
         apiName: "importedSpt",
         type: "string",
@@ -5288,7 +5122,6 @@ describe("Ontology Defining", () => {
                       },
                       "gothamMapping": undefined,
                       "indexedForSearch": true,
-                      "provenance": undefined,
                       "type": {
                         "string": {
                           "analyzerOverride": undefined,
@@ -5325,21 +5158,63 @@ describe("Ontology Defining", () => {
           "sharedPropertyTypes": {},
         },
         "importedTypes": {
-          "sharedPropertyTypes": [
-            {
-              "apiName": "namespace.1.importedSpt",
-              "packageName": "namespace.1",
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {
+            "namespace.1.importedSpt": {
+              "sharedPropertyType": {
+                "aliases": [],
+                "apiName": "namespace.1.importedSpt",
+                "baseFormatter": undefined,
+                "dataConstraints": undefined,
+                "displayMetadata": {
+                  "description": undefined,
+                  "displayName": "importedSpt",
+                  "visibility": "NORMAL",
+                },
+                "gothamMapping": undefined,
+                "indexedForSearch": true,
+                "type": {
+                  "string": {
+                    "analyzerOverride": undefined,
+                    "enableAsciiFolding": undefined,
+                    "isLongText": false,
+                    "supportsEfficientLeadingWildcard": false,
+                    "supportsExactMatching": true,
+                  },
+                  "type": "string",
+                },
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE",
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE",
+                  },
+                ],
+                "valueType": undefined,
+              },
             },
-          ],
+          },
         },
       }
         `);
     });
     it("Transitive importing works", () => {
-      const { defineSharedPropertyType, defineInterface } = createContext(
-        "namespace.1",
-      );
-      const defineObject = createContext("com.palantir.").defineObject;
+      const { defineSharedPropertyType, defineInterface } =
+        getMakerForNamespace(
+          "namespace.1",
+        );
+      const defineObject = getMakerForNamespace("com.palantir.").defineObject;
       const importedSpt = defineSharedPropertyType({
         apiName: "importedSpt",
         type: "string",
@@ -5478,12 +5353,114 @@ describe("Ontology Defining", () => {
           "sharedPropertyTypes": {},
         },
         "importedTypes": {
-          "sharedPropertyTypes": [
-            {
-              "apiName": "namespace.1.importedSpt",
-              "packageName": "namespace.1",
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {
+            "namespace.1.importedInterface": {
+              "interfaceType": {
+                "allExtendsInterfaces": [],
+                "allLinks": [],
+                "allProperties": [],
+                "allPropertiesV2": {},
+                "apiName": "namespace.1.importedInterface",
+                "displayMetadata": {
+                  "description": "importedInterface",
+                  "displayName": "importedInterface",
+                  "icon": undefined,
+                },
+                "extendsInterfaces": [],
+                "links": [],
+                "properties": [],
+                "propertiesV2": {
+                  "namespace.1.importedSpt": {
+                    "required": true,
+                    "sharedPropertyType": {
+                      "aliases": [],
+                      "apiName": "namespace.1.importedSpt",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "importedSpt",
+                        "visibility": "NORMAL",
+                      },
+                      "gothamMapping": undefined,
+                      "indexedForSearch": true,
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                  },
+                },
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+              },
             },
-          ],
+          },
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {
+            "namespace.1.importedSpt": {
+              "sharedPropertyType": {
+                "aliases": [],
+                "apiName": "namespace.1.importedSpt",
+                "baseFormatter": undefined,
+                "dataConstraints": undefined,
+                "displayMetadata": {
+                  "description": undefined,
+                  "displayName": "importedSpt",
+                  "visibility": "NORMAL",
+                },
+                "gothamMapping": undefined,
+                "indexedForSearch": true,
+                "type": {
+                  "string": {
+                    "analyzerOverride": undefined,
+                    "enableAsciiFolding": undefined,
+                    "isLongText": false,
+                    "supportsEfficientLeadingWildcard": false,
+                    "supportsExactMatching": true,
+                  },
+                  "type": "string",
+                },
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE",
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE",
+                  },
+                ],
+                "valueType": undefined,
+              },
+            },
+          },
         },
       }
         `);

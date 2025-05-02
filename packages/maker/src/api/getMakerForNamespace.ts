@@ -26,14 +26,16 @@ import { defineLinkInner } from "./defineLink.js";
 import { defineObjectInner } from "./defineObject.js";
 
 import {
-  currentNamespace,
+  decImporting,
   globalNamespace,
   importedTypes,
+  importing,
+  incImporting,
   setGlobalNamespace,
 } from "./defineOntology.js";
 import { defineSharedPropertyTypeInner } from "./defineSpt.js";
 import { defineValueTypeInner } from "./defineValueType.js";
-import { type OntologyEntityBase, type OntologyEntityType } from "./types.js";
+import { type OntologyEntityType, OntologyEntityTypeEnum } from "./types.js";
 
 // all functions must be suffixed with "Inner" and take a namespace as the first argument
 const innerFunctions = {
@@ -77,7 +79,9 @@ type OntologyAsCodeFunctions = {
 
 const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
 
-export function createContext(namespace: string): OntologyAsCodeFunctions {
+export function getMakerForNamespace(
+  namespace: string,
+): OntologyAsCodeFunctions {
   if (globalNamespace === undefined) {
     // for cases where the cli isn't used, such as simple scripts or tests
     setGlobalNamespace(namespace);
@@ -104,7 +108,7 @@ export function createContext(namespace: string): OntologyAsCodeFunctions {
         name.replace(/Inner$/, ""),
         (...args: any[]) =>
           wrapWithImporter(
-            (setCurrentNamespace(fn, namespace) as any)(
+            (setImporting(fn, namespace) as any)(
               sanitizedNamespace,
               ...args,
             ),
@@ -115,14 +119,18 @@ export function createContext(namespace: string): OntologyAsCodeFunctions {
   ) as unknown as OntologyAsCodeFunctions;
 }
 
-function setCurrentNamespace<F extends Function>(
+function setImporting<F extends Function>(
   fn: F,
   namespace: string,
 ): F {
+  if (withDot(namespace) !== withDot(globalNamespace)) {
+    return fn;
+  }
+
   return ((...args: any[]) => {
-    currentNamespace.push(namespace);
+    incImporting();
     const val = fn(...args);
-    currentNamespace.pop();
+    decImporting();
     return val;
   }) as unknown as F;
 }
@@ -151,17 +159,31 @@ function wrapWithImporter<
 
 export function createImporter(
   homeNamespace: string,
-): <T extends OntologyEntityBase>(e: T) => void {
+): <T extends OntologyEntityType>(e: T) => void {
   return homeNamespace === globalNamespace
     ? () => {}
     : (e) => {
-      const current = currentNamespace[currentNamespace.length - 1];
-      if (current !== globalNamespace || current === homeNamespace) {
+      if (importing === 0) {
         return;
       }
-      if (importedTypes[e.__type][homeNamespace] === undefined) {
-        importedTypes[e.__type][homeNamespace] = new Set();
+      if (e.__type !== OntologyEntityTypeEnum.VALUE_TYPE) {
+        importedTypes[e.__type][e.apiName] = e;
+        return;
       }
-      importedTypes[e.__type][homeNamespace].add(e.apiName);
+      // value types are a special case
+      if (
+        importedTypes[OntologyEntityTypeEnum.VALUE_TYPE][e.apiName]
+          === undefined
+      ) {
+        importedTypes[OntologyEntityTypeEnum.VALUE_TYPE][e.apiName] = [];
+      }
+      importedTypes[OntologyEntityTypeEnum.VALUE_TYPE][e.apiName]
+        .push(e);
     };
+}
+
+function withDot(
+  namespace: string,
+): string {
+  return namespace.endsWith(".") ? namespace : `${namespace}.`;
 }

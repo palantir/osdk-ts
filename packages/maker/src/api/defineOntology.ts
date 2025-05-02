@@ -1,20 +1,4 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/*
  * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,7 +16,6 @@
 
 import type {
   ActionTypeStatus,
-  ImportedTypes,
   OntologyIr,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionValidation,
@@ -46,6 +29,7 @@ import type {
   OntologyIrObjectTypeBlockDataV2,
   OntologyIrObjectTypeDatasource,
   OntologyIrObjectTypeDatasourceDefinition,
+  OntologyIrOntologyBlockDataV2,
   OntologyIrParameter,
   OntologyIrPropertyType,
   OntologyIrSection,
@@ -82,18 +66,15 @@ import { OntologyEntityTypeEnum } from "./types.js";
 /** @internal */
 export let ontologyDefinition: OntologyDefinition;
 
-// type -> namespace -> apiNames
+// type -> apiName -> entity
 /** @internal */
-export let importedTypes: Record<
-  OntologyEntityTypeEnum,
-  Record<string, Set<string>>
->;
+export let importedTypes: OntologyDefinition;
 
 /** @internal */
 export let globalNamespace: string;
 
 /** @internal */
-export let currentNamespace: string[];
+export let importing: number;
 
 type OntologyAndValueTypeIrs = {
   ontology: OntologyIr;
@@ -107,7 +88,7 @@ export function updateOntology<
   entity: T,
 ): void {
   if (namespace !== globalNamespace) {
-    // importing is handled by the importer in context.js
+    // importing is handled by the importer in getMakerForNamespace.js
     return;
   }
   if (entity.__type !== OntologyEntityTypeEnum.VALUE_TYPE) {
@@ -146,7 +127,7 @@ export async function defineOntology(
     INTERFACE_TYPE: {},
     VALUE_TYPE: {},
   };
-  currentNamespace = [globalNamespace];
+  importing = 0;
   try {
     await body();
   } catch (e) {
@@ -190,74 +171,62 @@ function convertToWireOntologyIr(
   ontology: OntologyDefinition,
 ): OntologyIr {
   return {
-    blockData: {
-      objectTypes: Object.fromEntries(
-        Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).map<
-          [string, OntologyIrObjectTypeBlockDataV2]
-        >(([apiName, objectType]) => {
-          return [apiName, convertObject(objectType)];
-        }),
-      ),
-      sharedPropertyTypes: Object.fromEntries(
-        Object.entries(
-          ontology[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE],
-        )
-          .map<[string, OntologyIrSharedPropertyTypeBlockDataV2]>((
-            [apiName, spt],
-          ) => [apiName, { sharedPropertyType: convertSpt(spt) }]),
-      ),
-      interfaceTypes: Object.fromEntries(
-        Object.entries(
-          ontology[OntologyEntityTypeEnum.INTERFACE_TYPE],
-        )
-          .map<[string, OntologyIrInterfaceTypeBlockDataV2]>(
-            ([apiName, interfaceType]) => {
-              return [apiName, {
-                interfaceType: convertInterface(interfaceType),
-              }];
-            },
-          ),
-      ),
-      linkTypes: Object.fromEntries(
-        Object.entries(ontology[OntologyEntityTypeEnum.LINK_TYPE]).map<
-          [string, OntologyIrLinkTypeBlockDataV2]
-        >(([id, link]) => {
-          return [id, convertLink(link)];
-        }),
-      ),
-      actionTypes: Object.fromEntries(
-        Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE]).map<
-          [string, OntologyIrActionTypeBlockDataV2]
-        >(([apiName, action]) => {
-          return [apiName, convertAction(action)];
-        }),
-      ),
-      blockPermissionInformation: {
-        actionTypes: {},
-        linkTypes: {},
-        objectTypes: {},
-      },
-    },
-    importedTypes: convertToWireImportedTypes(importedTypes),
+    blockData: convertToWireBlockData(ontology),
+    importedTypes: convertToWireBlockData(importedTypes),
   };
 }
 
-function convertToWireImportedTypes(
-  importedTypes: Record<
-    OntologyEntityTypeEnum,
-    Record<string, Set<string>>
-  >,
-): ImportedTypes {
-  return {
-    sharedPropertyTypes: Object.entries(
-      importedTypes[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE],
-    ).flatMap(([namespace, apiNames]) => {
-      return Array.from(apiNames).map(apiName => ({
-        apiName,
-        packageName: namespace,
-      }));
-    }),
-  };
+function convertToWireBlockData(
+  ontology: OntologyDefinition,
+): OntologyIrOntologyBlockDataV2 {
+  return ({
+    objectTypes: Object.fromEntries(
+      Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).map<
+        [string, OntologyIrObjectTypeBlockDataV2]
+      >(([apiName, objectType]) => {
+        return [apiName, convertObject(objectType)];
+      }),
+    ),
+    sharedPropertyTypes: Object.fromEntries(
+      Object.entries(
+        ontology[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE],
+      )
+        .map<[string, OntologyIrSharedPropertyTypeBlockDataV2]>((
+          [apiName, spt],
+        ) => [apiName, { sharedPropertyType: convertSpt(spt) }]),
+    ),
+    interfaceTypes: Object.fromEntries(
+      Object.entries(
+        ontology[OntologyEntityTypeEnum.INTERFACE_TYPE],
+      )
+        .map<[string, OntologyIrInterfaceTypeBlockDataV2]>(
+          ([apiName, interfaceType]) => {
+            return [apiName, {
+              interfaceType: convertInterface(interfaceType),
+            }];
+          },
+        ),
+    ),
+    linkTypes: Object.fromEntries(
+      Object.entries(ontology[OntologyEntityTypeEnum.LINK_TYPE]).map<
+        [string, OntologyIrLinkTypeBlockDataV2]
+      >(([id, link]) => {
+        return [id, convertLink(link)];
+      }),
+    ),
+    actionTypes: Object.fromEntries(
+      Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE]).map<
+        [string, OntologyIrActionTypeBlockDataV2]
+      >(([apiName, action]) => {
+        return [apiName, convertAction(action)];
+      }),
+    ),
+    blockPermissionInformation: {
+      actionTypes: {},
+      linkTypes: {},
+      objectTypes: {},
+    },
+  });
 }
 
 function convertObject(
@@ -600,7 +569,6 @@ function convertSpt(
     dataConstraints: dataConstraint,
     gothamMapping: gothamMapping,
     indexedForSearch: true,
-    provenance: undefined,
     typeClasses: typeClasses ?? [],
     valueType: valueType,
   };
@@ -1098,4 +1066,11 @@ export function sanitize(namespace: string, s: string): string {
 
 export function setGlobalNamespace(ns: string): void {
   globalNamespace = ns;
+}
+
+export function incImporting(): void {
+  importing += 1;
+}
+export function decImporting(): void {
+  importing -= 1;
 }
