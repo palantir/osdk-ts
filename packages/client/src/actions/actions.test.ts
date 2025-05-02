@@ -369,9 +369,37 @@ describe.each([
     >();
 
     const result = await client(addGeoshape).applyAction({
-      geoshapeParam:
-        stubData.actionRequestWithGeoshape.parameters.geoshapeParam,
-      geohashParam: stubData.actionRequestWithGeoshape.parameters.geohashParam,
+      geoshapeParam: {
+        type: "Polygon",
+        coordinates: [
+          [
+            [
+              -97.86567863752134,
+              38.418052586871624,
+            ],
+            [
+              -97.86567863752134,
+              35.410223767370525,
+            ],
+            [
+              -91.98573135442845,
+              35.410223767370525,
+            ],
+            [
+              -91.98573135442845,
+              38.418052586871624,
+            ],
+            [
+              -97.86567863752134,
+              38.418052586871624,
+            ],
+          ],
+        ],
+      },
+      geohashParam: {
+        type: "Point",
+        coordinates: [-79.4382042508868, 40.917859676842255],
+      },
     });
 
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
