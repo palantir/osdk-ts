@@ -19,6 +19,8 @@ import type {
   ActionEditResponse,
   FetchPageArgs,
   InterfaceDefinition,
+  LogFn,
+  Logger,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -37,7 +39,6 @@ import { afterEach, beforeEach, expect, vi, vitest } from "vitest";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import type { Client } from "../../Client.js";
 import { additionalContext } from "../../Client.js";
-import type { LogFn, Logger } from "../../logger/Logger.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";

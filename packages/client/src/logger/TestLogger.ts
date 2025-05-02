@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import type { LogFn, Logger } from "@osdk/api";
 import { Chalk } from "chalk";
 import { vi } from "vitest";
 import { BaseLogger } from "./BaseLogger.js";
-import type { LogFn, Logger } from "./Logger.js";
 
 const chalk = new Chalk(); // new Chalk({ level: 3 });
 

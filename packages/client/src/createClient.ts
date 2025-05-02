@@ -19,6 +19,7 @@ import type {
   FetchPageArgs,
   FilteredPropertyKeys,
   InterfaceDefinition,
+  Logger,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -48,7 +49,6 @@ import { applyAction } from "./actions/applyAction.js";
 import { additionalContext, type Client } from "./Client.js";
 import { createMinimalClient } from "./createMinimalClient.js";
 import { fetchMetadataInternal } from "./fetchMetadata.js";
-import { type Logger } from "./logger/Logger.js";
 import { MinimalLogger } from "./logger/MinimalLogger.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { fetchPage } from "./object/fetchPage.js";

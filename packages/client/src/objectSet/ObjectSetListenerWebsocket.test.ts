@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSetSubscription, PropertyKeys } from "@osdk/api";
+import type { Logger, ObjectSetSubscription, PropertyKeys } from "@osdk/api";
 import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import type {
   ObjectSetStreamSubscribeRequests,
@@ -43,7 +43,6 @@ import {
 import { z } from "zod";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
-import type { Logger } from "../logger/Logger.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
   constructWebsocketUrl,

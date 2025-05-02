@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { Logger } from "@osdk/api";
-import type { LogFn } from "./Logger.js";
+import type { LogFn, Logger } from "@osdk/api";
 
 export function noop(): any {
 }
