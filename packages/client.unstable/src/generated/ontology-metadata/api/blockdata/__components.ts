@@ -148,6 +148,7 @@ export type DatasourcePredicate =
  * Ontology as code uses this as a stable ID for GeotimeSeriesIntegration inputs
  */
 export type GeotimeSeriesIntegrationName = string;
+export type ImportedTypes = OntologyBlockDataV2;
 export type InstallLocationBlockShapeId = BlockShapeId;
 export interface InterfaceTypeBlockDataV2 {
   interfaceType: _api_InterfaceType;
@@ -296,6 +297,7 @@ export interface OntologyIrBlockPermissionInformation {
   linkTypes: Record<_api_LinkTypeId, LinkTypePermissionInformation>;
   objectTypes: Record<_api_ObjectTypeApiName, ObjectTypePermissionInformation>;
 }
+export type OntologyIrImportedTypes = OntologyIrOntologyBlockDataV2;
 export interface OntologyIrInterfaceTypeBlockDataV2 {
   interfaceType: _api_OntologyIrInterfaceType;
 }

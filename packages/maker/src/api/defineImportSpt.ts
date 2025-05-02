@@ -15,7 +15,6 @@
  */
 
 import invariant from "tiny-invariant";
-import { createImporter } from "./context.js";
 import {
   OntologyEntityTypeEnum,
   type PropertyTypeType,
@@ -34,10 +33,6 @@ export function importSharedPropertyType(
 ): SharedPropertyType {
   const { apiName, packageName, typeHint } = opts;
   if (packageName !== undefined) {
-    createImporter(packageName)({
-      apiName: apiName,
-      __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
-    });
     invariant(
       !packageName.endsWith("."),
       "Package name format invalid ends with period",

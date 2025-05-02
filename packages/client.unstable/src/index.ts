@@ -48,11 +48,7 @@ export type {
   ParameterRequiredConfiguration,
 } from "./generated/ontology-metadata/api/types/__components.js";
 
-export type {
-  OntologyIrActionTypeBlockDataV2,
-  OntologyIrLinkTypeBlockDataV2,
-  OntologyIrObjectTypeBlockDataV2,
-} from "./generated/ontology-metadata/api/blockdata/__components.ts";
+export type * from "./generated/ontology-metadata/api/blockdata/__components.ts";
 
 export type { SharedPropertyTypeGothamMapping } from "./generated/ontology-metadata/api/typemapping/__components.ts";
 
@@ -69,18 +65,8 @@ export type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVe
 
 export type {
   ApiNameValueTypeReference,
-  ImportedSharedPropertyTypes,
-  ImportedTypes,
   OntologyIr,
-  OntologyIrInterfaceType,
-  OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrOntologyBlockDataV2,
-  OntologyIrPackagedValueType,
-  OntologyIrPackagedValueTypeMetadata,
-  OntologyIrSharedPropertyType,
-  OntologyIrSharedPropertyTypeBlockDataV2,
-  OntologyIrStructFieldType,
-  OntologyIrType,
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
 } from "./blockDataIr.js";

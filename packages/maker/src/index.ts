@@ -16,4 +16,4 @@
 
 export { default as default } from "./cli/main.js";
 
-export { createContext } from "./api/context.js";
+export { getMakerForNamespace as createContext } from "./api/getMakerForNamespace.js";
