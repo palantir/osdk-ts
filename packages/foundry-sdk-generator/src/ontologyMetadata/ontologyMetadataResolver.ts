@@ -58,81 +58,6 @@ export class OntologyMetadataResolver {
     );
   }
 
-  private filterMetadataByApiName(
-    ontologyFullMetadata: OntologyFullMetadata,
-    expectedEntities: {
-      linkTypes: Map<string, Set<string>>;
-      objectTypes: Set<string>;
-      queryTypes: Set<string>;
-      actionTypes: Set<string>;
-      interfaceTypes: Set<string>;
-    },
-    pkgInfo: PackageInfo,
-  ): OntologyFullMetadata {
-    const filteredObjectTypes = Object.fromEntries(
-      Object.entries(ontologyFullMetadata.objectTypes).filter(
-        ([, { objectType }]) => {
-          for (const { sdk: { inputs: { dataScope } } } of pkgInfo.values()) {
-            for (const objectTypeRid of dataScope.ontologyV2.objectTypes) {
-              if (objectTypeRid === objectType.rid) {
-                return true;
-              }
-            }
-          }
-          return expectedEntities.objectTypes.has(objectType.apiName);
-        },
-      ),
-    );
-
-    const filteredInterfaceTypes = Object.fromEntries(
-      Object.entries(ontologyFullMetadata.interfaceTypes).filter((
-        [interfaceApiName],
-      ) => expectedEntities.interfaceTypes.has(interfaceApiName)),
-    );
-
-    Object.values(filteredObjectTypes).forEach(objectType => {
-      const linkTypesToKeep = expectedEntities.linkTypes.get(
-        objectType.objectType.apiName,
-      );
-      if (!linkTypesToKeep) {
-        objectType.linkTypes = [];
-        return;
-      }
-
-      objectType.linkTypes = objectType.linkTypes.filter(linkType =>
-        linkTypesToKeep.has(linkType.apiName)
-      );
-    });
-
-    const filteredActionTypes = Object.fromEntries(
-      Object.entries(ontologyFullMetadata.actionTypes).filter(
-        ([actionApiName]) => {
-          if (
-            expectedEntities.actionTypes.has(this.camelize(actionApiName))
-          ) {
-            return true;
-          }
-          return false;
-        },
-      ),
-    );
-
-    const filteredQueryTypes = Object.fromEntries(
-      Object.entries(ontologyFullMetadata.queryTypes).filter(([queryApiName]) =>
-        expectedEntities.queryTypes.has(queryApiName)
-      ),
-    );
-
-    return {
-      ontology: ontologyFullMetadata.ontology,
-      objectTypes: filteredObjectTypes,
-      actionTypes: filteredActionTypes,
-      queryTypes: filteredQueryTypes,
-      interfaceTypes: filteredInterfaceTypes,
-      sharedPropertyTypes: {},
-    };
-  }
-
   public async getInfoForPackages(
     pkgs: Map<string, string>,
   ): Promise<PackageInfo> {
@@ -222,17 +147,26 @@ export class OntologyMetadataResolver {
       queryTypes.add(queryTypeApiName);
     }
 
-    const requestedMetadata = await OntologiesV2.loadMetadata(
-      this.getClientContext(),
-      ontology.rid as OntologyIdentifier,
-      {
-        actionTypes: [...actionTypes],
-        objectTypes: [...objectTypes],
-        queryTypes: [...queryTypes],
-        interfaceTypes: [...interfaceTypes],
-        linkTypes: [...linkTypes.keys()],
-      },
-    );
+    let requestedMetadata: OntologyFullMetadata;
+    try {
+      requestedMetadata = await OntologiesV2.loadMetadata(
+        this.getClientContext(),
+        ontology.rid as OntologyIdentifier,
+        {
+          actionTypes: [...actionTypes],
+          objectTypes: [...objectTypes],
+          queryTypes: [...queryTypes],
+          interfaceTypes: [...interfaceTypes],
+          linkTypes: [...linkTypes.keys()],
+        },
+      );
+    } catch (e) {
+      return Result.err([
+        `Unable to load the specified Ontology resources with network error: ${
+          JSON.stringify(e)
+        }`,
+      ]);
+    }
 
     const externalObjects = new Map();
     const externalInterfaces = new Map();
@@ -271,18 +205,6 @@ export class OntologyMetadataResolver {
         externalInterfaces.set(it.apiName, sdk.npm.npmPackageName);
       }
     }
-
-    // const filteredFullMetadata = this.filterMetadataByApiName(
-    //   ontologyFullMetadata,
-    //   {
-    //     objectTypes,
-    //     linkTypes,
-    //     actionTypes,
-    //     queryTypes,
-    //     interfaceTypes,
-    //   },
-    //   extPackageInfo,
-    // );
 
     const validData: Result<{}, string[]> = this.validateLoadedOntologyMetadata(
       requestedMetadata,
@@ -335,29 +257,7 @@ export class OntologyMetadataResolver {
       ]),
     );
 
-    const loadedInterfaceTypes = Object.fromEntries(
-      Object.values(filteredFullMetadata.interfaceTypes).map(
-        interfaceType => [interfaceType.apiName, interfaceType],
-      ),
-    );
-
-    const missingObjectTypes: string[] = [];
     for (const object of expectedEntities.objectTypes) {
-      // Expected an object that wasn't loaded
-      if (!loadedObjectTypes[object]) {
-        missingObjectTypes.push(object);
-        continue;
-      }
-
-      // Expected a link that wasn't received
-      for (const expectedLink of expectedEntities.linkTypes.get(object) ?? []) {
-        if (!loadedLinkTypes[object][expectedLink]) {
-          errors.push(
-            `Unable to find link type ${expectedLink} for Object Type ${object}`,
-          );
-        }
-      }
-
       for (const [, link] of Object.entries(loadedLinkTypes[object])) {
         // Loaded a link where target was not loaded
         if (
@@ -381,28 +281,6 @@ export class OntologyMetadataResolver {
       }
     }
 
-    if (missingObjectTypes.length > 0) {
-      errors.push(
-        `Unable to find the following Object Types: ${
-          missingObjectTypes.join(", ")
-        }`,
-      );
-    }
-    const missingInterfaceTypes: string[] = [];
-    for (const expectedInterface of expectedEntities.interfaceTypes) {
-      if (!loadedInterfaceTypes[expectedInterface]) {
-        missingInterfaceTypes.push(expectedInterface);
-        continue;
-      }
-    }
-    if (missingInterfaceTypes.length > 0) {
-      errors.push(
-        `Unable to find the following Interface Types: ${
-          missingInterfaceTypes.join(", ")
-        }`,
-      );
-    }
-
     const loadedQueryTypes = Object.fromEntries(
       Object.entries(filteredFullMetadata.queryTypes).map((
         [queryApiName, query],
@@ -411,14 +289,6 @@ export class OntologyMetadataResolver {
         query,
       ]),
     );
-
-    // Validate expected queries were loaded
-    const missingQueryTypes: string[] = [];
-    for (const queryApiName of expectedEntities.queryTypes) {
-      if (!loadedQueryTypes[queryApiName]) {
-        missingQueryTypes.push(queryApiName);
-      }
-    }
 
     // Validate parameters and output for Queries
     for (const query of Object.values(loadedQueryTypes)) {
@@ -433,12 +303,6 @@ export class OntologyMetadataResolver {
       }
     }
 
-    if (missingQueryTypes.length > 0) {
-      errors.push(
-        `Unable to find the following Query Types: ${missingQueryTypes.join()}`,
-      );
-    }
-
     const loadedActionTypes = Object.fromEntries(
       Object.entries(filteredFullMetadata.actionTypes).map((
         [actionApiName, action],
@@ -447,13 +311,6 @@ export class OntologyMetadataResolver {
         action,
       ]),
     );
-
-    const missingActionTypes: string[] = [];
-    for (const actionApiName of expectedEntities.actionTypes) {
-      if (!loadedActionTypes[actionApiName]) {
-        missingActionTypes.push(actionApiName);
-      }
-    }
 
     // Validate parameters for Actions
     for (const action of Object.values(loadedActionTypes)) {
@@ -467,12 +324,6 @@ export class OntologyMetadataResolver {
           errors.push(errorString);
         }
       }
-    }
-
-    if (missingActionTypes.length > 0) {
-      errors.push(
-        `Unable to find the following Action Types: ${missingActionTypes.join()}`,
-      );
     }
 
     if (errors.length > 0) {
