@@ -371,9 +371,9 @@ export function getQueryParamType(
       break;
 
     case "map":
-      inner = `Record<${
+      inner = `Partial<Record<${
         getQueryParamType(enhancedOntology, input.keyType, type, true)
-      }, ${getQueryParamType(enhancedOntology, input.valueType, type)}>`;
+      }, ${getQueryParamType(enhancedOntology, input.valueType, type)}>>`;
   }
 
   if (input.multiplicity && type === "Param") {

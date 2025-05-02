@@ -667,8 +667,19 @@ export class OntologyMetadataResolver {
       case "mediaReference":
       case "objectType":
       case "marking":
+      case "geohash":
+      case "geoshape":
         return Result.ok({});
 
+      case "vector":
+        return Result.err([
+          `Unable to load action ${actionApiName} because it takes an unsupported parameter: ${
+            JSON.stringify(
+              actionTypeParameter,
+            )
+          } `
+          + `specify only the actions you want to load with the --actions argument.`,
+        ]);
       default:
         const _: never = actionTypeParameter;
         return Result.err([

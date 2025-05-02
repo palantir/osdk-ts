@@ -15,22 +15,45 @@
  */
 
 import type {
+  ActionTypeApiName,
+  ActionTypeStatus_deprecated,
   ApiNameValueTypeReference,
   BaseType,
   DataConstraint,
   ExampleValue,
   FailureMessage,
   ImportedTypes,
+  InterfaceTypeApiName,
   InterfaceTypeStatus,
   InterfaceTypeStatus_active,
   InterfaceTypeStatus_deprecated,
   InterfaceTypeStatus_experimental,
   LinkTypeDisplayMetadata,
   LinkTypeMetadata,
+  OntologyIrBaseParameterType_decimal,
+  OntologyIrBaseParameterType_decimalList,
+  OntologyIrBaseParameterType_interfaceReference,
+  OntologyIrBaseParameterType_interfaceReferenceList,
+  OntologyIrBaseParameterType_objectReference,
+  OntologyIrBaseParameterType_objectReferenceList,
+  OntologyIrBaseParameterType_objectSetRid,
+  OntologyIrBaseParameterType_objectTypeReference,
+  OntologyIrBaseParameterType_struct,
+  OntologyIrBaseParameterType_structList,
+  OntologyIrBaseParameterType_timestamp,
+  OntologyIrBaseParameterType_timestampList,
+  OntologyIrConditionValue,
+  OntologyIrFormContent,
   OntologyIrInterfaceType,
+  OntologyIrLabelledValue,
   OntologyIrLinkTypeStatus,
+  OntologyIrLogicRule,
   OntologyIrObjectType,
+  OntologyIrParameterDateRangeValue,
   OntologyIrPropertyType,
+  OntologyIrValidationRule,
+  ParameterId,
+  SectionId,
   SharedPropertyTypeGothamMapping,
   StructFieldType,
   ValueTypeApiName,
@@ -47,7 +70,11 @@ import type { BlueprintIcon } from "./iconNames.js";
 export interface Ontology extends
   Omit<
     OntologyFullMetadata,
-    "ontology" | "sharedPropertyTypes" | "interfaceTypes" | "objectTypes"
+    | "ontology"
+    | "sharedPropertyTypes"
+    | "interfaceTypes"
+    | "objectTypes"
+    | "actionTypes"
   >
 {
   interfaceTypes: Record<string, InterfaceType>;
@@ -55,8 +82,85 @@ export interface Ontology extends
   objectTypes: Record<string, ObjectType>;
   valueTypes: Record<string, ValueTypeDefinitionVersion[]>;
   linkTypes: Record<string, LinkTypeDefinition>;
+  actionTypes: Record<string, ActionType>;
   importedTypes: ImportedTypes;
 }
+
+export type ActionType = RequiredFields<
+  Partial<ActionTypeInner>,
+  "apiName" | "displayName" | "rules" | "status"
+>;
+
+export interface ActionParameter {
+  id: ParameterId;
+  displayName: string;
+  type: ActionParameterType;
+  validation: ActionParameterValidation;
+  description?: string;
+  typeClasses?: Array<TypeClass>;
+}
+
+export interface ActionParameterValidation {
+  allowedValues: ActionParameterAllowedValues;
+  required: ActionParameterRequirementConstraint;
+}
+
+export type ActionParameterRequirementConstraint =
+  | boolean
+  | { listLength: { min?: number; max?: number } };
+
+// TODO(dpaquin): cleanup? or does "type: foo" actually make sense here
+export type ActionParameterAllowedValues =
+  | {
+    type: "oneOf";
+    oneOf: Array<OntologyIrLabelledValue>;
+  }
+  | {
+    type: "range";
+    min?: OntologyIrConditionValue;
+    max?: OntologyIrConditionValue;
+  }
+  | { type: "text"; minLength?: number; maxLength?: number; regex?: string }
+  | {
+    type: "datetime";
+    maximum?: OntologyIrParameterDateRangeValue;
+    minimum?: OntologyIrParameterDateRangeValue;
+  }
+  | { type: "objectTypeReference"; interfaceTypes: Array<InterfaceTypeApiName> }
+  | { type: "attachment" }
+  | { type: "boolean" }
+  | { type: "objectSetRid" }
+  | { type: "cbacMarking" }
+  | { type: "mandatoryMarking" }
+  | { type: "objectList" }
+  | { type: "mediaReference" }
+  | { type: "timeSeriesReference" }
+  | { type: "geohash" }
+  | { type: "geoshape" }
+  | { type: "geotimeSeriesReference" }
+  | { type: "interfaceObjectQuery" }
+  | { type: "redacted" };
+
+export interface ActionTypeInner {
+  apiName: ActionTypeApiName;
+  displayName: string;
+  description: string;
+  icon: { locator: BlueprintIcon; color: string };
+  parameters: Array<ActionParameter>;
+  rules: Array<OntologyIrLogicRule>;
+  sections: Record<SectionId, Array<ParameterId>>;
+  status: ActionStatus;
+  formContentOrdering: Array<OntologyIrFormContent>;
+  validation: Array<OntologyIrValidationRule>;
+  typeClasses: Array<TypeClass>;
+}
+
+export type ActionStatus =
+  | "active"
+  | "experimental"
+  | "example"
+  | ActionTypeStatus_deprecated;
+
 export type {
   InterfaceTypeStatus,
   InterfaceTypeStatus_active,
@@ -161,6 +265,7 @@ export interface PropertyType {
   description?: string;
   displayName?: string;
   valueType?: ApiNameValueTypeReference;
+  visibility?: Visibility;
   typeClasses?: TypeClass[];
 }
 
@@ -195,7 +300,8 @@ export type PropertyTypeTypeExotic =
   | "mediaReference"
   | "geotimeSeries"
   | PropertyTypeTypeMarking
-  | PropertyTypeTypeStruct;
+  | PropertyTypeTypeStruct
+  | PropertyTypeTypeString;
 
 type PropertyTypeTypeMarking = {
   type: "marking";
@@ -209,6 +315,13 @@ type PropertyTypeTypeStruct = {
       | StructPropertyType
       | Exclude<PropertyTypeTypesWithoutStruct, PropertyTypeTypeMarking>;
   };
+};
+
+type PropertyTypeTypeString = {
+  type: "string";
+  isLongText: boolean;
+  supportsEfficientLeadingWildcard: boolean;
+  supportsExactMatching: boolean;
 };
 
 export type PropertyTypeTypesWithoutStruct = Exclude<
@@ -474,3 +587,53 @@ export interface ObjectTypeDatasourceDefinition_stream {
 export type ObjectTypeDatasourceDefinition =
   | ObjectTypeDatasourceDefinition_stream
   | ObjectTypeDatasourceDefinition_dataset;
+
+export type ActionParameterTypePrimitive =
+  | "boolean"
+  | "booleanList"
+  | "integer"
+  | "integerList"
+  | "long"
+  | "longList"
+  | "double"
+  | "doubleList"
+  | "string"
+  | "stringList"
+  | "decimal"
+  | "decimalList"
+  | "timestamp"
+  | "timestampList"
+  | "geohash"
+  | "geohashList"
+  | "geoshape"
+  | "geoshapeList"
+  | "timeSeriesReference"
+  | "date"
+  | "dateList"
+  | "objectTypeReference"
+  | "attachment"
+  | "attachmentList"
+  | "marking"
+  | "markingList"
+  | "mediaReference"
+  | "mediaReferenceList"
+  | "geotimeSeriesReference"
+  | "geotimeSeriesReferenceList";
+
+export type ActionParameterTypeComplex =
+  | OntologyIrBaseParameterType_decimal
+  | OntologyIrBaseParameterType_decimalList
+  | OntologyIrBaseParameterType_timestamp
+  | OntologyIrBaseParameterType_timestampList
+  | OntologyIrBaseParameterType_objectReference
+  | OntologyIrBaseParameterType_objectReferenceList
+  | OntologyIrBaseParameterType_objectSetRid
+  | OntologyIrBaseParameterType_objectTypeReference
+  | OntologyIrBaseParameterType_interfaceReference
+  | OntologyIrBaseParameterType_interfaceReferenceList
+  | OntologyIrBaseParameterType_struct
+  | OntologyIrBaseParameterType_structList;
+
+export type ActionParameterType =
+  | ActionParameterTypePrimitive
+  | ActionParameterTypeComplex;

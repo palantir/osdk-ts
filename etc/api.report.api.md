@@ -60,7 +60,7 @@ export namespace ActionMetadata {
     	// (undocumented)
     export namespace DataType {
         		// (undocumented)
-        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "objectType";
+        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "objectType" | "geoshape" | "geohash";
         		// (undocumented)
         export interface Interface<T_Target extends InterfaceDefinition = never> {
             			// (undocumented)
@@ -230,7 +230,8 @@ export interface AsyncIterArgs<
 	R extends boolean = false,
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
-	T extends boolean = false
+	T extends boolean = false,
+	RDP_KEYS extends string = never
 > extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
@@ -315,6 +316,10 @@ export interface DataValueClientToWire {
     	// (undocumented)
     float: number;
     	// (undocumented)
+    geohash: GeoJSON.Point;
+    	// (undocumented)
+    geoshape: GeoJSON.GeoJSON;
+    	// (undocumented)
     integer: number;
     	// (undocumented)
     long: string | number;
@@ -369,6 +374,10 @@ export interface DataValueWireToClient {
     double: number;
     	// (undocumented)
     float: number;
+    	// (undocumented)
+    geohash: GeoJSON.Point;
+    	// (undocumented)
+    geoshape: GeoJSON.GeoJSON;
     	// (undocumented)
     integer: number;
     	// (undocumented)
@@ -504,8 +513,9 @@ export interface FetchPageArgs<
 	R extends boolean = false,
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
-	T extends boolean = false
-> extends AsyncIterArgs<Q, K, R, A, S, T> {
+	T extends boolean = false,
+	RDP_KEYS extends string = never
+> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS> {
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
@@ -796,8 +806,8 @@ export interface ObjectQueryDataType<T_Target extends ObjectTypeDefinition = nev
 // @public (undocumented)
 export interface ObjectSet<
 	Q extends ObjectOrInterfaceDefinition = any,
-	UNUSED_OR_RDP extends ObjectSet<Q, any> | Record<string, SimplePropertyDef> = ObjectSet<Q, any>
-> extends ObjectSetCleanedTypes<Q, ExtractRdp<UNUSED_OR_RDP>, MergeObjectSet<Q, UNUSED_OR_RDP>> {}
+	UNUSED_OR_RDP extends BaseObjectSet<Q> | Record<string, SimplePropertyDef> = never
+> extends ObjectSetCleanedTypes<Q, ExtractRdp<UNUSED_OR_RDP>, MergeObjectSet<Q, ExtractRdp<UNUSED_OR_RDP>>> {}
 
 // @public (undocumented)
 export interface ObjectSetQueryDataType<T_Target extends ObjectTypeDefinition = never> extends BaseQueryDataTypeDefinition<"objectSet"> {
@@ -950,7 +960,7 @@ export type PossibleWhereClauseFilters = "$gt" | "$eq" | "$ne" | "$isNull" | "$c
 export type PrimaryKeyType<Q extends ObjectOrInterfaceDefinition> = (Q extends ObjectTypeDefinition ? OsdkObjectPrimaryKeyType<Q> : unknown) & PropertyValueWireToClient[PrimaryKeyTypes];
 
 // @public (undocumented)
-export type PrimaryKeyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "byte";
+export type PrimaryKeyTypes = "string" | "datetime" | "double" | "integer" | "timestamp" | "short" | "long" | "byte";
 
 // @public (undocumented)
 export interface PropertyDef<
@@ -967,10 +977,7 @@ export interface PropertyDef<
 }
 
 // @public (undocumented)
-export type PropertyKeys<
-	O extends ObjectOrInterfaceDefinition,
-	RDPs extends Record<string, SimplePropertyDef> = {}
-> = (keyof NonNullable<O["__DefinitionMetadata"]>["properties"] | keyof RDPs) & string;
+export type PropertyKeys<O extends ObjectOrInterfaceDefinition> = (keyof NonNullable<O["__DefinitionMetadata"]>["properties"]) & string;
 
 // @public
 export interface PropertyValueWireToClient {

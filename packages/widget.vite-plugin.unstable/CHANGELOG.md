@@ -1,5 +1,16 @@
 # @osdk/widget.vite-plugin.unstable
 
+## 2.1.0-beta.7
+
+### Minor Changes
+
+- 3ba0499: Move Vite plugin to API Gateway public endpoints
+- a9f2596: Send baseHref when setting widget set settings
+
+### Patch Changes
+
+- @osdk/widget.api.unstable@2.1.0-beta.7
+
 ## 2.1.0-beta.6
 
 ### Patch Changes

@@ -320,7 +320,12 @@ const disallowWorkspaceCaret = createRuleFactory({
             });
           }
         } else if (version === "workspace:^") {
-          if (dep === "@osdk/shared.client2") continue;
+          if (
+            dep === "@osdk/shared.client2"
+            // Since this package is only being used internally, it's fine to keep this relaxed to ^ so it can use newer client versions without bumping everything
+            || (packageJson.name === "@osdk/functions.unstable"
+              && dep === "@osdk/client")
+          ) continue;
           const message = `'workspace:^' not allowed (${d}['${dep}']).`;
           context.addError({
             message,
