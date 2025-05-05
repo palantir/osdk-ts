@@ -20,10 +20,25 @@ export namespace NbaPlayer {
   export type Links = {};
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly gamesPlayed: $PropType['integer'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly id: $PropType['string'];
+    /**
+     * (no ontology metadata)
+     */
     readonly jerseyNumber: $PropType['integer'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly name: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly wikiUrl: $PropType['string'] | undefined;
   }
   export type StrictProps = Props;

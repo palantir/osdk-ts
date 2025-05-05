@@ -20,7 +20,13 @@ export namespace McAirportStruct {
   export type Links = {};
 
   export interface Props {
+    /**
+     *   display name: 'Airport Name'
+     */
     readonly airportName: $PropType['string'];
+    /**
+     *   display name: 'Airport Struct'
+     */
     readonly airportStruct:
       | {
           code: $PropType['string'] | undefined;
@@ -28,8 +34,17 @@ export namespace McAirportStruct {
           timestamp: $PropType['string'] | undefined;
         }
       | undefined;
+    /**
+     *   display name: 'City'
+     */
     readonly city: $PropType['string'] | undefined;
+    /**
+     *   display name: 'Origin Date'
+     */
     readonly originDate: $PropType['timestamp'] | undefined;
+    /**
+     *   display name: 'State'
+     */
     readonly state: $PropType['string'] | undefined;
   }
   export type StrictProps = Props;

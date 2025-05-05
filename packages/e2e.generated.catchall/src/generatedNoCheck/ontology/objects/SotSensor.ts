@@ -20,10 +20,25 @@ export namespace SotSensor {
   export type Links = {};
 
   export interface Props {
+    /**
+     *   display name: 'Is Enum'
+     */
     readonly isEnum: $PropType['boolean'] | undefined;
+    /**
+     *   display name: 'Sensor Name'
+     */
     readonly sensorName: $PropType['string'] | undefined;
+    /**
+     *   display name: 'Series Id'
+     */
     readonly seriesId: $PropType['string'];
+    /**
+     *   display name: 'Time Series Property'
+     */
     readonly timeSeriesProperty: $PropType['sensorTimeseries'] | undefined;
+    /**
+     *   display name: 'Well Id'
+     */
     readonly wellId: $PropType['string'] | undefined;
   }
   export type StrictProps = Props;

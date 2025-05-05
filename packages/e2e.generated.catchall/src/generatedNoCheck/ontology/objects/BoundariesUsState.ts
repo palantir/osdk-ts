@@ -20,9 +20,22 @@ export namespace BoundariesUsState {
   export type Links = {};
 
   export interface Props {
+    /**
+     *   display name: 'Geometry10M',
+     *   description: geoshape
+     */
     readonly geometry10M: $PropType['geoshape'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly latitude: $PropType['double'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly longitude: $PropType['double'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly usState: $PropType['string'];
   }
   export type StrictProps = Props;

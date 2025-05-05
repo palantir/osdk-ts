@@ -20,8 +20,17 @@ export namespace BuilderDeploymentState {
   export type Links = {};
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly currentTimestamp: $PropType['timestamp'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly date: $PropType['datetime'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly skuId: $PropType['string'];
   }
   export type StrictProps = Props;

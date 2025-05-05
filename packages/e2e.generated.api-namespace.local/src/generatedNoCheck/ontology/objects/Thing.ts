@@ -20,7 +20,13 @@ export namespace Thing {
   export type Links = {};
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly body: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly id: $PropType['integer'];
   }
   export type StrictProps = Props;

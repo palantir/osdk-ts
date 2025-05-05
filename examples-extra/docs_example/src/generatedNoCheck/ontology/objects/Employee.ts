@@ -23,11 +23,29 @@ export namespace Employee {
   }
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly class: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly employeeId: $PropType['integer'];
+    /**
+     *   description: TimeSeries of the status of the employee
+     */
     readonly employeeStatus: $PropType['stringTimeseries'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly fullName: $PropType['string'] | undefined;
+    /**
+     *   description: The unique of the employee's assigned office. This is some more text.
+     */
     readonly office: $PropType['integer'] | undefined;
+    /**
+     *   description: The date the employee was hired (most recently, if they were re-hired)
+     */
     readonly startDate: $PropType['datetime'] | undefined;
   }
   export type StrictProps = Props;

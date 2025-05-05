@@ -20,8 +20,17 @@ export namespace DherlihyComplexObject {
   export type Links = {};
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly id: $PropType['string'];
+    /**
+     * (no ontology metadata)
+     */
     readonly secret: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly seriesId: $PropType['numericTimeseries'] | undefined;
   }
   export type StrictProps = Props;

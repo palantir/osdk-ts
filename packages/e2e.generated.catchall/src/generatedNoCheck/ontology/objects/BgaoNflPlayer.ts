@@ -20,6 +20,9 @@ export namespace BgaoNflPlayer {
   export type Links = {};
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly address:
       | {
           addressLine1: $PropType['string'] | undefined;
@@ -29,10 +32,25 @@ export namespace BgaoNflPlayer {
           zipCode: $PropType['integer'] | undefined;
         }
       | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly gamesPlayed: $PropType['integer'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly id: $PropType['string'];
+    /**
+     * (no ontology metadata)
+     */
     readonly name: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly number: $PropType['integer'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly wikiUrl: $PropType['string'] | undefined;
   }
   export type StrictProps = Props;
