@@ -35,28 +35,28 @@ export type Double<T extends number = number> = T & {
 
 // @public (undocumented)
 export interface EditBatch<X extends AnyEdit = never> {
-    	// Warning: (ae-forgotten-export) The symbol "CreateObjectEdits" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "ExtractCreateObjectArgs" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    create: <O extends CreateObjectEdits<X>>(obj: O["obj"], properties: O["properties"]) => void;
-    	// Warning: (ae-forgotten-export) The symbol "DeleteObjectEdits" needs to be exported by the entry point index.d.ts
+    create: (...args: ExtractCreateObjectArgs<X>) => void;
+    	// Warning: (ae-forgotten-export) The symbol "ExtractDeletableObjects" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    delete: <O extends DeleteObjectEdits<X>>(obj: O["obj"]) => void;
+    delete: (obj: ExtractDeletableObjects<X>) => void;
     	// (undocumented)
     getEdits: () => X[];
-    	// Warning: (ae-forgotten-export) The symbol "AddLinkEdits" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "ExtractAddLinkArgs" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    link: <L extends AddLinkEdits<X>>(source: L["source"], apiName: L["apiName"], target: L["target"]) => void;
-    	// Warning: (ae-forgotten-export) The symbol "RemoveLinkEdits" needs to be exported by the entry point index.d.ts
+    link: (...args: ExtractAddLinkArgs<X>) => void;
+    	// Warning: (ae-forgotten-export) The symbol "ExtractRemoveLinkArgs" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    unlink: <L extends RemoveLinkEdits<X>>(source: L["source"], apiName: L["apiName"], target: L["target"]) => void;
-    	// Warning: (ae-forgotten-export) The symbol "UpdateObjectEdits" needs to be exported by the entry point index.d.ts
+    unlink: (...args: ExtractRemoveLinkArgs<X>) => void;
+    	// Warning: (ae-forgotten-export) The symbol "ExtractUpdateObjectArgs" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    update: <O extends UpdateObjectEdits<X>>(obj: O["obj"], properties: O["properties"]) => void;
+    update: (...args: ExtractUpdateObjectArgs<X>) => void;
 }
 
 // @public (undocumented)
