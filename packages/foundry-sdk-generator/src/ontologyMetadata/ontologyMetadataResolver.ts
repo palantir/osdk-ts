@@ -193,7 +193,124 @@ export class OntologyMetadataResolver {
       ]);
     }
 
-    if (!extPackageInfo) {
+    if (extPackageInfo.size > 0) {
+    const ontologyFullMetadata = await OntologiesV2.getFullMetadata(
+      this.getClientContext(),
+      ontology.rid as OntologyIdentifier,
+    );
+
+    if ((ontologyFullMetadata as any).errorName != null) {
+      return Result.err([
+        `Unable to load the specified Ontology metadata.\n${
+          JSON.stringify(ontologyFullMetadata, null, 2)
+        }`,
+      ]);
+    }
+
+    const externalObjects = new Map();
+    const externalInterfaces = new Map();
+
+    for (const { sdk } of extPackageInfo.values()) {
+      if (sdk.npm?.npmPackageName == null) {
+        throw new Error(
+          "External package is not generated as an npm package",
+        );
+      }
+
+      const dataScope = sdk.inputs.dataScope.ontologyV2;
+
+      for (const rid of dataScope.objectTypes) {
+        const ot = Object.values(ontologyFullMetadata.objectTypes).find(
+          (ot) => ot.objectType.rid === rid,
+        );
+
+        if (!ot) {
+          throw new Error(
+            `Could not find external object type with rid ${rid}`,
+          );
+        }
+
+        externalObjects.set(ot.objectType.apiName, sdk.npm.npmPackageName);
+      }
+
+      for (const rid of dataScope.interfaceTypes) {
+        const it = Object.values(ontologyFullMetadata.interfaceTypes).find(
+          (it) => it.rid === rid,
+        );
+
+        if (!it) {
+          throw new Error(
+            `Could not find external interface type with rid ${rid}`,
+          );
+        }
+        externalInterfaces.set(it.apiName, sdk.npm.npmPackageName);
+      }
+    }
+
+    const linkTypes = new Map<string, Set<string>>();
+    const objectTypes = new Set(entities.objectTypesApiNamesToLoad);
+    const queryTypes = new Set(entities.queryTypesApiNamesToLoad);
+    for (const queryType of entities.queryTypesApiNamesToLoad ?? []) {
+      if (queryType.includes(":")) {
+        throw new Error(
+          `Pinned query types are not supported with external packages: ${queryType}`,
+        );
+      }
+    }
+    const actionTypes = new Set(
+      entities.actionTypesApiNamesToLoad?.map(action =>
+        this.camelize(action)
+      ),
+    );
+
+    const interfaceTypes = new Set(entities.interfaceTypesApiNamesToLoad);
+
+    for (const linkType of entities.linkTypesApiNamesToLoad ?? []) {
+      const [objectTypeApiName, linkTypeApiName] = linkType.split(
+        ".",
+      );
+      if (!linkTypes.has(objectTypeApiName)) {
+        linkTypes.set(objectTypeApiName, new Set());
+      }
+      linkTypes.get(objectTypeApiName)?.add(linkTypeApiName);
+    }
+
+    const filteredFullMetadata = this.filterMetadataByApiName(
+      ontologyFullMetadata,
+      {
+        objectTypes,
+        linkTypes,
+        actionTypes,
+        queryTypes,
+        interfaceTypes,
+      },
+      extPackageInfo,
+    );
+
+    const validData: Result<{}, string[]> = this
+      .validateLoadedOntologyMetadata(
+        filteredFullMetadata,
+        {
+          objectTypes,
+          linkTypes,
+          actionTypes,
+          queryTypes,
+          interfaceTypes,
+        },
+        extPackageInfo,
+        ontologyFullMetadata,
+      );
+
+    if (validData.isErr()) {
+      return Result.err(validData.error);
+    }
+    return Result.ok({
+      requestedMetadata: filteredFullMetadata,
+      externalInterfaces,
+      externalObjects,
+      pinnedQueryTypes: [],
+    });
+    } else {
       const objectTypes = new Set(entities.objectTypesApiNamesToLoad);
       const interfaceTypes = new Set(entities.interfaceTypesApiNamesToLoad);
       const actionTypes = new Set(
@@ -267,123 +384,6 @@ export class OntologyMetadataResolver {
         externalInterfaces: new Map(),
         externalObjects: new Map(),
         pinnedQueryTypes,
-      });
-    } else {
-      const ontologyFullMetadata = await OntologiesV2.getFullMetadata(
-        this.getClientContext(),
-        ontology.rid as OntologyIdentifier,
-      );
-
-      if ((ontologyFullMetadata as any).errorName != null) {
-        return Result.err([
-          `Unable to load the specified Ontology metadata.\n${
-            JSON.stringify(ontologyFullMetadata, null, 2)
-          }`,
-        ]);
-      }
-
-      const externalObjects = new Map();
-      const externalInterfaces = new Map();
-
-      for (const { sdk } of extPackageInfo.values()) {
-        if (sdk.npm?.npmPackageName == null) {
-          throw new Error(
-            "External package is not generated as an npm package",
-          );
-        }
-
-        const dataScope = sdk.inputs.dataScope.ontologyV2;
-
-        for (const rid of dataScope.objectTypes) {
-          const ot = Object.values(ontologyFullMetadata.objectTypes).find(
-            (ot) => ot.objectType.rid === rid,
-          );
-
-          if (!ot) {
-            throw new Error(
-              `Could not find external object type with rid ${rid}`,
-            );
-          }
-
-          externalObjects.set(ot.objectType.apiName, sdk.npm.npmPackageName);
-        }
-
-        for (const rid of dataScope.interfaceTypes) {
-          const it = Object.values(ontologyFullMetadata.interfaceTypes).find(
-            (it) => it.rid === rid,
-          );
-
-          if (!it) {
-            throw new Error(
-              `Could not find external interface type with rid ${rid}`,
-            );
-          }
-          externalInterfaces.set(it.apiName, sdk.npm.npmPackageName);
-        }
-      }
-
-      const linkTypes = new Map<string, Set<string>>();
-      const objectTypes = new Set(entities.objectTypesApiNamesToLoad);
-      const queryTypes = new Set(entities.queryTypesApiNamesToLoad);
-      for (const queryType of entities.queryTypesApiNamesToLoad ?? []) {
-        if (queryType.includes(":")) {
-          throw new Error(
-            `Pinned query types are not supported with external packages: ${queryType}`,
-          );
-        }
-      }
-      const actionTypes = new Set(
-        entities.actionTypesApiNamesToLoad?.map(action =>
-          this.camelize(action)
-        ),
-      );
-
-      const interfaceTypes = new Set(entities.interfaceTypesApiNamesToLoad);
-
-      for (const linkType of entities.linkTypesApiNamesToLoad ?? []) {
-        const [objectTypeApiName, linkTypeApiName] = linkType.split(
-          ".",
-        );
-        if (!linkTypes.has(objectTypeApiName)) {
-          linkTypes.set(objectTypeApiName, new Set());
-        }
-        linkTypes.get(objectTypeApiName)?.add(linkTypeApiName);
-      }
-
-      const filteredFullMetadata = this.filterMetadataByApiName(
-        ontologyFullMetadata,
-        {
-          objectTypes,
-          linkTypes,
-          actionTypes,
-          queryTypes,
-          interfaceTypes,
-        },
-        extPackageInfo,
-      );
-
-      const validData: Result<{}, string[]> = this
-        .validateLoadedOntologyMetadata(
-          filteredFullMetadata,
-          {
-            objectTypes,
-            linkTypes,
-            actionTypes,
-            queryTypes,
-            interfaceTypes,
-          },
-          extPackageInfo,
-          ontologyFullMetadata,
-        );
-
-      if (validData.isErr()) {
-        return Result.err(validData.error);
-      }
-      return Result.ok({
-        requestedMetadata: filteredFullMetadata,
-        externalInterfaces,
-        externalObjects,
-        pinnedQueryTypes: [],
       });
     }
   }
