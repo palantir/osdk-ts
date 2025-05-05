@@ -111,4 +111,15 @@ describe("intellisense", () => {
       `"(no ontology metadata)"`,
     );
   });
+
+  it("showsObjectPropertyJsdoc", { timeout: 40_000 }, async () => {
+    const { resp } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 26,
+      offset: 13,
+    });
+    expect(resp.body?.documentation).toMatchInlineSnapshot(
+      `"description: Geotime series reference of the location of the employee"`,
+    );
+  });
 });
