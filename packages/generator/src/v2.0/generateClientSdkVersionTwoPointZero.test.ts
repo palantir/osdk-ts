@@ -729,6 +729,10 @@ describe("generator", () => {
           export type PropertyKeys = 'SomeProperty';
 
           export interface Props {
+            /**
+             *   display name: 'Sum Property',
+             *   description: Some property
+             */
             readonly SomeProperty: $PropType['string'] | undefined;
           }
           export type StrictProps = Props;
@@ -808,6 +812,9 @@ describe("generator", () => {
           }
 
           export interface Props {
+            /**
+             * (no ontology metadata)
+             */
             readonly email: $PropType['string'];
           }
           export type StrictProps = Props;
@@ -896,8 +903,18 @@ describe("generator", () => {
           }
 
           export interface Props {
+            /**
+             *   display name: 'Body',
+             *   description: The text of the todo
+             */
             readonly body: $PropType['string'] | undefined;
+            /**
+             * (no ontology metadata)
+             */
             readonly complete: $PropType['boolean'] | undefined;
+            /**
+             * (no ontology metadata)
+             */
             readonly id: $PropType['integer'];
           }
           export type StrictProps = Props;
@@ -1350,6 +1367,10 @@ describe("generator", () => {
           export type PropertyKeys = 'SomeProperty';
 
           export interface Props {
+            /**
+             *   display name: 'Sum Property',
+             *   description: Some property
+             */
             readonly SomeProperty: $PropType['string'] | undefined;
           }
           export type StrictProps = Props;
@@ -1429,6 +1450,9 @@ describe("generator", () => {
           }
 
           export interface Props {
+            /**
+             * (no ontology metadata)
+             */
             readonly email: $PropType['string'];
           }
           export type StrictProps = Props;
@@ -1517,8 +1541,18 @@ describe("generator", () => {
           }
 
           export interface Props {
+            /**
+             *   display name: 'Body',
+             *   description: The text of the todo
+             */
             readonly body: $PropType['string'] | undefined;
+            /**
+             * (no ontology metadata)
+             */
             readonly complete: $PropType['boolean'] | undefined;
+            /**
+             * (no ontology metadata)
+             */
             readonly id: $PropType['integer'];
           }
           export type StrictProps = Props;
@@ -1921,7 +1955,13 @@ describe("generator", () => {
             export type Links = {};
 
             export interface Props {
+              /**
+               * (no ontology metadata)
+               */
               readonly body: $PropType['string'] | undefined;
+              /**
+               * (no ontology metadata)
+               */
               readonly id: $PropType['integer'];
             }
             export type StrictProps = Props;
@@ -2144,7 +2184,13 @@ describe("generator", () => {
           export type PropertyKeys = 'spt' | 'spt2';
 
           export interface Props {
+            /**
+             *   display name: 'Some Property'
+             */
             readonly spt: $PropType['string'] | undefined;
+            /**
+             *   display name: 'Some Property 2'
+             */
             readonly spt2: $PropType['string'] | undefined;
           }
           export type StrictProps = Props;
@@ -2222,7 +2268,13 @@ describe("generator", () => {
           export type Links = {};
 
           export interface Props {
+            /**
+             * (no ontology metadata)
+             */
             readonly body: $PropType['string'] | undefined;
+            /**
+             * (no ontology metadata)
+             */
             readonly taskId: $PropType['string'];
           }
           export type StrictProps = Props;
