@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { LogFn, Logger } from "@osdk/api";
+import type { Logger } from "@osdk/api";
 import { BaseLogger } from "./BaseLogger.js";
 
 export class MinimalLogger extends BaseLogger implements Logger {
@@ -32,7 +32,7 @@ export class MinimalLogger extends BaseLogger implements Logger {
   createLogMethod(
     name: "trace" | "debug" | "info" | "warn" | "error" | "fatal",
     bindings: Record<string, any>,
-  ): LogFn {
+  ): Logger.LogFn {
     const msgs: string[] = [name];
 
     if (this.options?.msgPrefix) {

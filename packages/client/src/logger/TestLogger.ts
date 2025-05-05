@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { LogFn, Logger } from "@osdk/api";
+import type { Logger } from "@osdk/api";
 import { Chalk } from "chalk";
 import { vi } from "vitest";
 import { BaseLogger } from "./BaseLogger.js";
@@ -50,7 +50,7 @@ export class TestLogger extends BaseLogger implements Logger {
   protected createLogMethod(
     name: "trace" | "debug" | "info" | "warn" | "error" | "fatal",
     bindings: Record<string, any>,
-  ): LogFn {
+  ): Logger.LogFn {
     const msgs: string[] = [colors[name][1](name)];
 
     if (this.options?.msgPrefix) {
@@ -62,9 +62,9 @@ export class TestLogger extends BaseLogger implements Logger {
     }
 
     // eslint-disable-next-line no-console
-    return vi.fn<LogFn>(console[name === "fatal" ? "error" : name].bind(
+    return vi.fn<Logger.LogFn>(console[name === "fatal" ? "error" : name].bind(
       console,
       msgs.join(" "),
-    )) as LogFn;
+    )) as Logger.LogFn;
   }
 }

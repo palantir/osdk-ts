@@ -19,7 +19,6 @@ import type {
   ActionEditResponse,
   FetchPageArgs,
   InterfaceDefinition,
-  LogFn,
   Logger,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -91,7 +90,7 @@ function mockLog(...args: any[]) {
     ...args,
   );
 }
-// interface LogFn {
+// interface Logger.LogFn {
 //   (obj: unknown, msg?: string, ...args: any[]): void;
 //   (msg: string, ...args: any[]): void;
 // }
@@ -111,7 +110,7 @@ export function createTestLogger(
   function createLogMethod(
     name: "debug" | "error" | "info" | "warn" | "fatal" | "trace",
   ) {
-    return vi.fn<LogFn>(
+    return vi.fn<Logger.LogFn>(
       (
         ...args: [
           obj: unknown,
@@ -136,7 +135,7 @@ export function createTestLogger(
           console.log(bindings);
         }
       },
-    ) as LogFn;
+    ) as Logger.LogFn;
   }
   return {
     debug: createLogMethod("debug"),

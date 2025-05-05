@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { LogFn, Logger } from "@osdk/api";
+import type { Logger } from "@osdk/api";
 import { BaseLogger } from "./BaseLogger.js";
 function createStyle({ color }: { color: string }) {
   return `color: ${color}; border: 1px solid ${color}; padding: 2px; border-radius: 3px;`;
@@ -56,7 +56,7 @@ export class BrowserLogger extends BaseLogger implements Logger {
   protected createLogMethod(
     name: "trace" | "debug" | "info" | "warn" | "error" | "fatal",
     bindings: Record<string, any>,
-  ): LogFn {
+  ): Logger.LogFn {
     const msgs: string[] = [`%c${name}%c`];
     const styles: string[] = [levelStyles[name], ""];
 
