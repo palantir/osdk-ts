@@ -45,16 +45,15 @@
     "date-fns": "^4.1.0",
     "fast-deep-equal": "^3.1.3",
     "fetch-retry": "^6.0.0",
-    "json-stable-stringify": "^1.1.1",
+    "json-stable-stringify": "^1.3.0",
     "mnemonist": "^0.40.3",
-    "msw": "^2.7.3",
+    "msw": "^2.7.6",
     "tiny-invariant": "^1.3.3",
     "type-fest": "^4.37.0"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@types/json-stable-stringify": "^1.0.36",
     "ts-expect": "^1.3.0",
     "typescript": "~5.5.4"
   },
