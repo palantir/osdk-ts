@@ -14,40 +14,109 @@
  * limitations under the License.
  */
 
+import type { ObjectTypeDefinition } from "@osdk/client";
 import type {
-  AddLinkEdits,
+  AddLink,
   AnyEdit,
-  CreateObjectEdits,
-  DeleteObjectEdits,
-  RemoveLinkEdits,
-  UpdateObjectEdits,
+  CreateObject,
+  DeleteObject,
+  ObjectLocator,
+  RemoveLink,
+  UpdateObject,
 } from "./types.js";
 
-export interface EditBatch<X extends AnyEdit = never> {
-  link: <L extends AddLinkEdits<X>>(
-    source: L["source"],
-    apiName: L["apiName"],
-    target: L["target"],
+// Helper type for literal "apiName" values without resorting to expensive type inference.
+interface ObjectTypeDefinitionForLocator<OL extends ObjectLocator<any>>
+  extends ObjectTypeDefinition
+{
+  apiName: OL["$apiName"];
+}
+
+// AddLink helper types
+export type AddLinkSources<X extends AnyEdit> = X extends
+  AddLink<infer OTD, any> ? ObjectLocator<OTD> : never;
+
+export type AddLinkApiNames<X extends AnyEdit, SOL extends ObjectLocator<any>> =
+  X extends AddLink<ObjectTypeDefinitionForLocator<SOL>, infer A> ? A : never;
+
+export type AddLinkTargets<
+  X extends AnyEdit,
+  SOL extends ObjectLocator<any>,
+  A extends string,
+> = X extends AddLink<ObjectTypeDefinitionForLocator<SOL>, A> ? X["target"]
+  : never;
+
+// RemoveLink helper types
+export type RemoveLinkSources<X extends AnyEdit> = X extends
+  RemoveLink<infer OTD, any> ? ObjectLocator<OTD> : never;
+
+export type RemoveLinkApiNames<
+  X extends AnyEdit,
+  SOL extends ObjectLocator<any>,
+> = X extends RemoveLink<ObjectTypeDefinitionForLocator<SOL>, infer L> ? L
+  : never;
+
+export type RemoveLinkTargets<
+  X extends AnyEdit,
+  SOL extends ObjectLocator<any>,
+  A extends string,
+> = X extends RemoveLink<ObjectTypeDefinitionForLocator<SOL>, A> ? X["target"]
+  : never;
+
+// CreateObject helper types
+export type CreatableObjectTypes<X extends AnyEdit> = X extends
+  CreateObject<infer OTD> ? OTD : never;
+
+export type CreatableObjectTypeProperties<
+  X extends AnyEdit,
+  OTD extends ObjectTypeDefinition,
+> = X extends CreateObject<OTD> ? X["properties"] : never;
+
+// DeleteObject helper types
+export type DeletableObjectLocators<X extends AnyEdit> = X extends
+  DeleteObject<infer OTD> ? ObjectLocator<OTD> : never;
+
+// UpdateObject helper types
+export type UpdatableObjectLocators<X extends AnyEdit> = X extends
+  UpdateObject<infer OTD> ? ObjectLocator<OTD> : never;
+
+export type UpdatableObjectLocatorProperties<
+  X extends AnyEdit,
+  OL extends ObjectLocator<any>,
+> = X extends UpdateObject<ObjectTypeDefinitionForLocator<OL>> ? X["properties"]
+  : never;
+
+export interface EditBatch<
+  X extends AnyEdit = never,
+> {
+  link: <
+    SOL extends AddLinkSources<X>,
+    A extends AddLinkApiNames<X, SOL>,
+  >(
+    source: SOL,
+    apiName: A,
+    target: AddLinkTargets<X, SOL, A>,
   ) => void;
 
-  unlink: <L extends RemoveLinkEdits<X>>(
-    source: L["source"],
-    apiName: L["apiName"],
-    target: L["target"],
+  unlink: <
+    SOL extends RemoveLinkSources<X>,
+    A extends RemoveLinkApiNames<X, SOL>,
+  >(
+    source: SOL,
+    apiName: A,
+    target: RemoveLinkTargets<X, SOL, A>,
   ) => void;
 
-  create: <O extends CreateObjectEdits<X>>(
-    obj: O["obj"],
-    properties: O["properties"],
+  create: <OTD extends CreatableObjectTypes<X>>(
+    obj: OTD,
+    properties: CreatableObjectTypeProperties<X, OTD>,
   ) => void;
 
-  delete: <O extends DeleteObjectEdits<X>>(
-    obj: O["obj"],
-  ) => void;
+  delete: <OL extends DeletableObjectLocators<X>>(obj: OL) => void;
 
-  update: <O extends UpdateObjectEdits<X>>(
-    obj: O["obj"],
-    properties: O["properties"],
+  update: <OL extends UpdatableObjectLocators<X>>(
+    obj: OL,
+    properties: UpdatableObjectLocatorProperties<X, OL>,
   ) => void;
 
   getEdits: () => X[];

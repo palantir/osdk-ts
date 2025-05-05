@@ -15,8 +15,8 @@
  */
 
 import type { Client, Osdk } from "@osdk/client";
-import type { Person } from "@osdk/client.test.ontology";
-import { Task } from "@osdk/client.test.ontology";
+import type { Employee, Person } from "@osdk/client.test.ontology";
+import { Office, Task } from "@osdk/client.test.ontology";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createEditBatch } from "./createEditBatch.js";
 import type { EditBatch } from "./EditBatch.js";
@@ -24,7 +24,10 @@ import type { Edits } from "./types.js";
 
 type TestEditScope =
   | Edits.Object<Task>
-  | Edits.Link<Task, "RP">;
+  | Edits.Object<Office>
+  | Edits.Link<Task, "RP">
+  | Edits.Link<Task, "Todos">
+  | Edits.Link<Office, "occupants">;
 
 describe(createEditBatch, () => {
   let client: Client;
@@ -46,6 +49,24 @@ describe(createEditBatch, () => {
       $primaryKey: 2,
     } as Osdk.Instance<Person>;
 
+    const officeInstance = {
+      $apiName: "Office",
+      $primaryKey: "2",
+    } as Osdk.Instance<Office>;
+
+    const employeeInstance = {
+      $apiName: "Employee",
+      $primaryKey: 2,
+    } as Osdk.Instance<Employee>;
+
+    editBatch.link(officeInstance, "occupants");
+
+    editBatch.link(
+      { "$apiName": "Task", $primaryKey: 0 },
+      "RP",
+      personInstance,
+    );
+
     editBatch.create(Task, { id: 0, name: "My Task Name" });
     editBatch.create(Task, { id: 1, name: "My Other Task Name" });
     editBatch.create(Task, { id: 3 });
@@ -57,6 +78,8 @@ describe(createEditBatch, () => {
     editBatch.update(taskInstance, { name: "My Very New Task Name" });
     editBatch.update({ $apiName: "Task", $primaryKey: 3 }, {});
     editBatch.create(Task, { id: 0, name: "My Task Name" });
+    editBatch.create(Office, { officeId: "3", capacity: 2 });
+    editBatch.create(Office);
 
     editBatch.link({ $apiName: "Task", $primaryKey: 0 }, "RP", {
       $apiName: "Person",
@@ -71,6 +94,7 @@ describe(createEditBatch, () => {
       $apiName: "Person",
       $primaryKey: 1,
     });
+    editBatch.link(officeInstance, "occupants", employeeInstance);
 
     expect(editBatch.getEdits()).toEqual([
       {
@@ -111,6 +135,16 @@ describe(createEditBatch, () => {
         properties: { id: 0, name: "My Task Name" },
       },
       {
+        type: "createObject",
+        obj: Office,
+        properties: { officeId: "3", capacity: 2 },
+      },
+      {
+        type: "updateObject",
+        obj: { $apiName: "Office", $primaryKey: "2" },
+        properties: { capacity: 4 },
+      },
+      {
         type: "addLink",
         apiName: "RP",
         source: { $apiName: "Task", $primaryKey: 0 },
@@ -133,6 +167,12 @@ describe(createEditBatch, () => {
         apiName: "RP",
         source: { $apiName: "Task", $primaryKey: 0 },
         target: { $apiName: "Person", $primaryKey: 1 },
+      },
+      {
+        type: "addLink",
+        apiName: "occupants",
+        source: { $apiName: "Office", $primaryKey: "2" },
+        target: { $apiName: "Employee", $primaryKey: 2 },
       },
     ]);
   });
