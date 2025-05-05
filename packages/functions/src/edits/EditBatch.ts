@@ -15,40 +15,44 @@
  */
 
 import type {
-  AddLinkEdits,
+  AddLink,
   AnyEdit,
-  CreateObjectEdits,
-  DeleteObjectEdits,
-  RemoveLinkEdits,
-  UpdateObjectEdits,
+  CreateObject,
+  DeleteObject,
+  ObjectLocator,
+  RemoveLink,
+  UpdateObject,
 } from "./types.js";
 
+export type ExtractAddLinkArgs<X extends AnyEdit> = X extends
+  AddLink<infer S, infer L> ? [ObjectLocator<S>, L, AddLink<S, L>["target"]]
+  : never;
+
+export type ExtractRemoveLinkArgs<X extends AnyEdit> = X extends
+  RemoveLink<infer S, infer L>
+  ? [ObjectLocator<S>, L, RemoveLink<S, L>["target"]]
+  : never;
+
+export type ExtractCreateObjectArgs<X extends AnyEdit> = X extends
+  CreateObject<infer O> ? [O, CreateObject<O>["properties"]] : never;
+
+export type ExtractDeletableObjects<X extends AnyEdit> = X extends
+  DeleteObject<infer O> ? ObjectLocator<O> : never;
+
+export type ExtractUpdateObjectArgs<X extends AnyEdit> = X extends
+  UpdateObject<infer O> ? [ObjectLocator<O>, UpdateObject<O>["properties"]]
+  : never;
+
 export interface EditBatch<X extends AnyEdit = never> {
-  link: <L extends AddLinkEdits<X>>(
-    source: L["source"],
-    apiName: L["apiName"],
-    target: L["target"],
-  ) => void;
+  link: (...args: ExtractAddLinkArgs<X>) => void;
 
-  unlink: <L extends RemoveLinkEdits<X>>(
-    source: L["source"],
-    apiName: L["apiName"],
-    target: L["target"],
-  ) => void;
+  unlink: (...args: ExtractRemoveLinkArgs<X>) => void;
 
-  create: <O extends CreateObjectEdits<X>>(
-    obj: O["obj"],
-    properties: O["properties"],
-  ) => void;
+  create: (...args: ExtractCreateObjectArgs<X>) => void;
 
-  delete: <O extends DeleteObjectEdits<X>>(
-    obj: O["obj"],
-  ) => void;
+  delete: (obj: ExtractDeletableObjects<X>) => void;
 
-  update: <O extends UpdateObjectEdits<X>>(
-    obj: O["obj"],
-    properties: O["properties"],
-  ) => void;
+  update: (...args: ExtractUpdateObjectArgs<X>) => void;
 
   getEdits: () => X[];
 }
