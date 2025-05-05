@@ -34,7 +34,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@babel/runtime": "^7.26.10",
+    "@babel/runtime": "^7.27.1",
     "@expo/vector-icons": "^14.0.2",
     "@react-navigation/bottom-tabs": "^7.3.4",
     "@react-navigation/elements": "^2.2.4",
@@ -66,7 +66,7 @@
     "react-router-dom": "^6.23.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.0",
+    "@babel/core": "^7.27.1",
     "@eslint/compat": "^1.2.1",
     "@eslint/js": "^9.13.0",
     "@osdk/create-app.template-packager": "workspace:~",
