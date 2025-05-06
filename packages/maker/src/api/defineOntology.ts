@@ -32,6 +32,7 @@
 
 import type {
   ActionTypeStatus,
+  DataConstraints,
   OntologyIr,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionValidation,
@@ -60,6 +61,7 @@ import type {
   RetentionPolicy,
   SectionId,
 } from "@osdk/client.unstable";
+import invariant from "tiny-invariant";
 import { isExotic } from "./defineObject.js";
 import type {
   ActionParameter,
@@ -67,6 +69,7 @@ import type {
   ActionType,
   InterfaceType,
   LinkTypeDefinition,
+  Nullability,
   ObjectPropertyType,
   ObjectType,
   Ontology,
@@ -362,7 +365,7 @@ function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {
     typeClasses: property.typeClasses ?? [],
     status: property.status ?? { type: "active", active: {} },
     inlineAction: undefined,
-    dataConstraints: property.dataConstraints,
+    dataConstraints: convertNullabilityToDataConstraint(property),
     sharedPropertyTypeRid: property.sharedPropertyType?.apiName,
     valueType: undefined,
   };
@@ -514,17 +517,12 @@ function convertSpt(
     gothamMapping,
     typeClasses,
     valueType,
+    nullability,
   }: SharedPropertyType,
 ): OntologyIrSharedPropertyType {
   const dataConstraint:
     | OntologyIrSharedPropertyType["dataConstraints"]
-    | undefined = (typeof type === "object" && type.type === "marking")
-      ? {
-        propertyTypeConstraints: [],
-        nullability: undefined,
-        nullabilityV2: { noEmptyCollections: true, noNulls: true },
-      }
-      : undefined;
+    | undefined = convertNullabilityToDataConstraint({ type, nullability });
   return {
     apiName,
     displayMetadata: {
@@ -958,6 +956,34 @@ function convertParameterRequirementConstraint(
   return {
     type: "listLengthValidation",
     listLengthValidation: { minLength: min, maxLength: max },
+  };
+}
+
+function convertNullabilityToDataConstraint(
+  prop: { type: PropertyTypeType; nullability?: Nullability },
+): DataConstraints | undefined {
+  if (typeof prop.type === "object" && prop.type.type === "marking") {
+    if (prop.nullability === undefined) {
+      return {
+        propertyTypeConstraints: [],
+        nullability: undefined,
+        nullabilityV2: { noEmptyCollections: true, noNulls: true },
+      };
+    }
+    invariant(
+      prop.nullability?.noNulls,
+      "Marking property type has noNulls set to false, marking properties must not be nullable",
+    );
+    return {
+      propertyTypeConstraints: [],
+      nullability: undefined,
+      nullabilityV2: prop.nullability,
+    };
+  }
+  return prop.nullability === undefined ? undefined : {
+    propertyTypeConstraints: [],
+    nullability: undefined,
+    nullabilityV2: prop.nullability,
   };
 }
 
