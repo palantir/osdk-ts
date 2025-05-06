@@ -41,9 +41,9 @@
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/shared.test": "workspace:~",
-    "@types/node": "^18.0.0",
-    "execa": "^9.5.1",
-    "msw": "^2.7.3",
+    "@types/node": "^18.19.87",
+    "execa": "^9.5.2",
+    "msw": "^2.7.6",
     "typescript": "~5.5.4"
   },
   "publishConfig": {

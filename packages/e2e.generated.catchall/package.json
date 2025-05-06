@@ -47,12 +47,12 @@
     "@osdk/client": "workspace:~"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "^0.17.3",
+    "@arethetypeswrong/cli": "^0.17.4",
     "@osdk/api": "workspace:~",
     "@osdk/cli.cmd.typescript": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "tslib": "^2.6.3",
+    "tslib": "^2.8.1",
     "typescript": "~5.5.4"
   },
   "publishConfig": {

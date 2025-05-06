@@ -1033,8 +1033,8 @@ function checkApiRules(shared) {
       options: {
         devDependencies: {
           "@osdk/monorepo.api-extractor": "workspace:~",
-          "@microsoft/api-documenter": "^7.26.5",
-          "@microsoft/api-extractor": "^7.49.1",
+          "@microsoft/api-documenter": "^7.26.26",
+          "@microsoft/api-extractor": "^7.52.7",
         },
       },
     }),

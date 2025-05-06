@@ -48,8 +48,8 @@
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@types/node": "^18.0.0",
-    "@types/yargs": "^17.0.29",
+    "@types/node": "^18.19.87",
+    "@types/yargs": "^17.0.33",
     "typescript": "~5.5.4"
   },
   "publishConfig": {
