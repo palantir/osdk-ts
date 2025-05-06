@@ -669,21 +669,30 @@ export interface Logger {
         		msgPrefix?: string
         	}): Logger;
     	// (undocumented)
-    debug: LogFn;
+    debug: Logger.LogFn;
     	// (undocumented)
-    error: LogFn;
+    error: Logger.LogFn;
     	// (undocumented)
-    fatal: LogFn;
+    fatal: Logger.LogFn;
     	// (undocumented)
-    info: LogFn;
+    info: Logger.LogFn;
     	// (undocumented)
     isLevelEnabled(level: string): boolean;
-    	// Warning: (ae-forgotten-export) The symbol "LogFn" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    trace: LogFn;
     	// (undocumented)
-    warn: LogFn;
+    trace: Logger.LogFn;
+    	// (undocumented)
+    warn: Logger.LogFn;
+}
+
+// @public (undocumented)
+export namespace Logger {
+    	// (undocumented)
+    export interface LogFn {
+        		// (undocumented)
+        (obj: unknown, msg?: string, ...args: any[]): void;
+        		// (undocumented)
+        (msg: string, ...args: any[]): void;
+        	}
 }
 
 // @public (undocumented)

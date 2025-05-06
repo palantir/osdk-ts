@@ -22,6 +22,7 @@ import type { ExperimentFns } from '@osdk/api/unstable';
 import { InterfaceDefinition } from '@osdk/api';
 import type { InterfaceMetadata } from '@osdk/api';
 import { isOk } from '@osdk/api';
+import { Logger } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/api/unstable';
 import { ObjectMetadata } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
@@ -141,30 +142,7 @@ export { InterfaceDefinition }
 
 export { isOk }
 
-// @public (undocumented)
-export interface Logger {
-    	// (undocumented)
-    child(bindings: Record<string, any>, options?: {
-        		level?: string
-        		msgPrefix?: string
-        	}): Logger;
-    	// (undocumented)
-    debug: LogFn;
-    	// (undocumented)
-    error: LogFn;
-    	// (undocumented)
-    fatal: LogFn;
-    	// (undocumented)
-    info: LogFn;
-    	// (undocumented)
-    isLevelEnabled(level: string): boolean;
-    	// Warning: (ae-forgotten-export) The symbol "LogFn" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    trace: LogFn;
-    	// (undocumented)
-    warn: LogFn;
-}
+export { Logger }
 
 export { ObjectMetadata }
 

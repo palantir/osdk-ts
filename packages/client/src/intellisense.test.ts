@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { Logger } from "@osdk/api";
 import { findUpSync } from "find-up";
 import * as path from "node:path";
 import invariant from "tiny-invariant";
@@ -27,7 +28,6 @@ import {
   it,
   vi,
 } from "vitest";
-import type { Logger } from "./logger/Logger.js";
 import type { TsServer } from "./tsserver.js";
 import { startTsServer } from "./tsserver.js";
 

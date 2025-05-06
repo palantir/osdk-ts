@@ -15,7 +15,6 @@
  */
 
 import type { Logger } from "@osdk/api";
-import type { LogFn } from "./Logger.js";
 
 export function noop(): any {
 }
@@ -63,14 +62,14 @@ export abstract class BaseLogger implements Logger {
   protected abstract createLogMethod(
     name: "trace" | "debug" | "info" | "warn" | "error" | "fatal",
     bindings: Record<string, any>,
-  ): LogFn;
+  ): Logger.LogFn;
 
-  trace: LogFn = noop;
-  debug: LogFn = noop;
-  warn: LogFn = noop;
-  info: LogFn = noop;
-  error: LogFn = noop;
-  fatal: LogFn = noop;
+  trace: Logger.LogFn = noop;
+  debug: Logger.LogFn = noop;
+  warn: Logger.LogFn = noop;
+  info: Logger.LogFn = noop;
+  error: Logger.LogFn = noop;
+  fatal: Logger.LogFn = noop;
 
   child(
     bindings: Record<string, any>,

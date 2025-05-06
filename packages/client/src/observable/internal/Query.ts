@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { Logger } from "@osdk/api";
 import type {
   Connectable,
   Observable,
@@ -22,7 +23,6 @@ import type {
   Subscription,
 } from "rxjs";
 import { additionalContext } from "../../Client.js";
-import type { Logger } from "../../logger/Logger.js";
 import type { CommonObserveOptions, Status } from "../ObservableClient.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Changes } from "./Changes.js";

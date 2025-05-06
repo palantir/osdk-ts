@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import type { Logger } from "@osdk/api";
 import type { SharedClientContext } from "@osdk/shared.client2";
-import type { Logger } from "./logger/Logger.js";
 import type {
   convertWireToOsdkObjects,
   convertWireToOsdkObjects2,

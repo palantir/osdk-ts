@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import type { Logger } from "@osdk/api";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
-import type { Logger } from "./logger/Logger.js";
 import type {
   ClientCacheKey,
   MinimalClient,
