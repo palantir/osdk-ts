@@ -108,7 +108,7 @@ export class OntologyMetadataResolver {
       Object.entries(ontologyFullMetadata.actionTypes).filter(
         ([actionApiName]) => {
           if (
-            expectedEntities.actionTypes.has(this.camelize(actionApiName))
+            expectedEntities.actionTypes.has(actionApiName)
           ) {
             return true;
           }
@@ -258,9 +258,7 @@ export class OntologyMetadataResolver {
       }
     }
     const actionTypes = new Set(
-      entities.actionTypesApiNamesToLoad?.map(action =>
-        this.camelize(action)
-      ),
+      entities.actionTypesApiNamesToLoad,
     );
 
     const interfaceTypes = new Set(entities.interfaceTypesApiNamesToLoad);
@@ -314,9 +312,7 @@ export class OntologyMetadataResolver {
       const objectTypes = new Set(entities.objectTypesApiNamesToLoad);
       const interfaceTypes = new Set(entities.interfaceTypesApiNamesToLoad);
       const actionTypes = new Set(
-        entities.actionTypesApiNamesToLoad?.map(action =>
-          this.camelize(action)
-        ),
+        entities.actionTypesApiNamesToLoad,
       );
 
       const linkTypes = new Map<string, Set<string>>();
@@ -360,6 +356,9 @@ export class OntologyMetadataResolver {
           linkTypes: Array.from(linkTypes.entries()).flatMap(
             ([_, linkTypeApiNames]) => [...linkTypeApiNames],
           ),
+        },
+        {
+          preview: true,
         },
       );
 
@@ -520,24 +519,15 @@ export class OntologyMetadataResolver {
       );
     }
 
-    const loadedActionTypes = Object.fromEntries(
-      Object.entries(filteredFullMetadata.actionTypes).map((
-        [actionApiName, action],
-      ) => [
-        this.camelize(actionApiName),
-        action,
-      ]),
-    );
-
     const missingActionTypes: string[] = [];
     for (const actionApiName of expectedEntities.actionTypes) {
-      if (!loadedActionTypes[actionApiName]) {
+      if (!filteredFullMetadata.actionTypes[actionApiName]) {
         missingActionTypes.push(actionApiName);
       }
     }
 
     // Validate parameters for Actions
-    for (const action of Object.values(loadedActionTypes)) {
+    for (const action of Object.values(filteredFullMetadata.actionTypes)) {
       const result = this.validateActionParameters(
         action,
         expectedEntities.objectTypes,
@@ -597,14 +587,12 @@ export class OntologyMetadataResolver {
     loadedObjectApiNames: Set<string>,
     loadedInterfaceApiNames: Set<string>,
   ): Result<{}, string[]> {
-    const camelizedApiName = this.camelize(actionType.apiName);
-
     const parameterValidation: Array<Result<{}, string[]>> = Object.entries(
       actionType.parameters,
     ).map(
       ([_paramName, paramData]) =>
         this.isSupportedActionTypeParameter(
-          camelizedApiName,
+          actionType.apiName,
           paramData.dataType,
           loadedObjectApiNames,
           loadedInterfaceApiNames,
@@ -782,10 +770,6 @@ export class OntologyMetadataResolver {
           + `specify only the actions you want to load with the --actions argument.`,
         ]);
     }
-  }
-
-  private camelize(name: string) {
-    return name.replace(/-./g, segment => segment[1]!.toUpperCase());
   }
 }
 

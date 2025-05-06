@@ -108,7 +108,7 @@ describe("Load Ontologies Metadata", () => {
       [
         "Unable to find the following Object Types: objectDoesNotExist",
         "Unable to find the following Query Types: queryDoesNotExist",
-        "Unable to find the following Action Types: actionDoesNotExit",
+        "Unable to find the following Action Types: action-does-not-exit",
       ]
     `);
   });
@@ -206,7 +206,7 @@ describe("Load Ontologies Metadata", () => {
         "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
         {
           objectTypesApiNamesToLoad: ["Employee"],
-          actionTypesApiNamesToLoad: ["promote-employee"],
+          actionTypesApiNamesToLoad: ["promoteEmployee"],
           interfaceTypesApiNamesToLoad: ["FooInterface"],
         },
       );
@@ -236,7 +236,7 @@ describe("Load Ontologies Metadata", () => {
         "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
         {
           objectTypesApiNamesToLoad: ["Employee", "Office"],
-          actionTypesApiNamesToLoad: ["promote-employee"],
+          actionTypesApiNamesToLoad: ["promoteEmployee"],
           linkTypesApiNamesToLoad: ["Employee.peeps", "Employee.officeLink"],
         },
       );
@@ -264,7 +264,7 @@ describe("Load Ontologies Metadata", () => {
         {
           objectTypesApiNamesToLoad: ["Employee", "Office"],
           actionTypesApiNamesToLoad: [
-            "promote-employee",
+            "promoteEmployee",
             "deleteFooInterface",
             "createStructPerson",
             "actionTakesMedia",
@@ -294,7 +294,7 @@ describe("Load Ontologies Metadata", () => {
         {
           objectTypesApiNamesToLoad: ["Employee", "Office"],
           actionTypesApiNamesToLoad: [
-            "promote-employee",
+            "promoteEmployee",
             "deleteFooInterface",
             "createStructPerson",
             "actionTakesMedia",
