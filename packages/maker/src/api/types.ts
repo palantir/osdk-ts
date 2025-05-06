@@ -181,8 +181,10 @@ export interface ObjectTypeInner extends
     | "allImplementsInterfaces"
     | "implementsInterfaces2"
     | "displayMetadata"
+    | "primaryKeys"
   >
 {
+  primaryKeyPropertyApiName: string;
   properties: Array<ObjectPropertyType>;
   titlePropertyApiName: string;
   implementsInterfaces: Array<InterfaceImplementation>;
@@ -203,7 +205,7 @@ export type ObjectType =
   & RequiredFields<
     Partial<ObjectTypeInner>,
     | "apiName"
-    | "primaryKeys"
+    | "primaryKeyPropertyApiName"
     | "displayName"
     | "pluralDisplayName"
     | "titlePropertyApiName"
