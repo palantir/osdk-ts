@@ -38,13 +38,13 @@ export namespace createTestGeoAction {
 
   // Represents a fqn of the action
   export interface Signatures {
-    applyAction<P extends createTestGeoAction.Params, OP extends ApplyActionOptions>(
-      args: P,
+    applyAction<OP extends ApplyActionOptions>(
+      args: createTestGeoAction.Params,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
 
-    batchApplyAction<P extends ReadonlyArray<createTestGeoAction.Params>, OP extends ApplyBatchActionOptions>(
-      args: P,
+    batchApplyAction<OP extends ApplyBatchActionOptions>(
+      args: ReadonlyArray<createTestGeoAction.Params>,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }

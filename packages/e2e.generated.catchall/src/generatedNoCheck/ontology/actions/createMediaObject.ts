@@ -31,13 +31,13 @@ export namespace createMediaObject {
 
   // Represents a fqn of the action
   export interface Signatures {
-    applyAction<P extends createMediaObject.Params, OP extends ApplyActionOptions>(
-      args: P,
+    applyAction<OP extends ApplyActionOptions>(
+      args: createMediaObject.Params,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
 
-    batchApplyAction<P extends ReadonlyArray<createMediaObject.Params>, OP extends ApplyBatchActionOptions>(
-      args: P,
+    batchApplyAction<OP extends ApplyBatchActionOptions>(
+      args: ReadonlyArray<createMediaObject.Params>,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }
