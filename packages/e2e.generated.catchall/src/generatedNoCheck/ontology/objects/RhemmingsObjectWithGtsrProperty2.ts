@@ -20,10 +20,25 @@ export namespace RhemmingsObjectWithGtsrProperty2 {
   export type Links = {};
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly gtsr: $PropType['geotimeSeriesReference'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly id: $PropType['string'];
+    /**
+     * (no ontology metadata)
+     */
     readonly location: $PropType['geopoint'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly timestamp: $PropType['timestamp'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly type: $PropType['string'] | undefined;
   }
   export type StrictProps = Props;

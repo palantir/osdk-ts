@@ -14,8 +14,20 @@ export namespace Athlete {
   export type PropertyKeys = 'jerseyNumber' | 'athleteId' | 'name22';
 
   export interface Props {
+    /**
+     *   display name: 'Athlete ID',
+     *   description: Athlete ID
+     */
     readonly athleteId: $PropType['string'] | undefined;
+    /**
+     *   display name: 'Jersey Number',
+     *   description: Jersey Number
+     */
     readonly jerseyNumber: $PropType['integer'] | undefined;
+    /**
+     *   display name: 'Name',
+     *   description: Name
+     */
     readonly name22: $PropType['string'] | undefined;
   }
   export type StrictProps = Props;

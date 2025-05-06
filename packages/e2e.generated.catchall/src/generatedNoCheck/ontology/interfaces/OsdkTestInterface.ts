@@ -14,6 +14,9 @@ export namespace OsdkTestInterface {
   export type PropertyKeys = 'objectDescription';
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly objectDescription: $PropType['string'] | undefined;
   }
   export type StrictProps = Props;

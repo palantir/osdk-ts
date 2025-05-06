@@ -23,8 +23,17 @@ export namespace StateTerritory {
   }
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly airportStateCode: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly airportStateName: $PropType['string'];
+    /**
+     * (no ontology metadata)
+     */
     readonly country: $PropType['string'] | undefined;
   }
   export type StrictProps = Props;

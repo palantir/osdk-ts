@@ -23,8 +23,17 @@ export namespace Venture {
   }
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly ventureId: $PropType['string'];
+    /**
+     * (no ontology metadata)
+     */
     readonly ventureName: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly ventureStart: $PropType['datetime'] | undefined;
   }
   export type StrictProps = Props;

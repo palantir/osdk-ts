@@ -20,8 +20,18 @@ export namespace Todo {
   export type Links = {};
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly id: $PropType['string'];
+    /**
+     * (no ontology metadata)
+     */
     readonly isComplete: $PropType['boolean'] | undefined;
+    /**
+     *   display name: 'Title',
+     *   description: The text of the todo
+     */
     readonly title: $PropType['string'] | undefined;
   }
   export type StrictProps = Props;

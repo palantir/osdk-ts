@@ -20,8 +20,17 @@ export namespace GtfsTripTrackObject {
   export type Links = {};
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly entityId: $PropType['string'];
+    /**
+     * (no ontology metadata)
+     */
     readonly geotimeSeriesReferences: $PropType['geotimeSeriesReference'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly timestamp: $PropType['timestamp'] | undefined;
   }
   export type StrictProps = Props;

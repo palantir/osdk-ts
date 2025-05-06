@@ -26,11 +26,29 @@ export namespace Office {
   export type Links = {};
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly entrance: $PropType['geopoint'] | undefined;
+    /**
+     *   description: The individual capacities of meetings rooms in the office
+     */
     readonly meetingRoomCapacities: $PropType['integer'][] | undefined;
+    /**
+     *   description: The Names of meetings rooms in the office
+     */
     readonly meetingRooms: $PropType['string'][] | undefined;
+    /**
+     *   description: The Name of the Office
+     */
     readonly name: $PropType['string'] | undefined;
+    /**
+     *   description: The occupied area of the Office
+     */
     readonly occupiedArea: $PropType['geoshape'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly officeId: $PropType['string'];
   }
   export type StrictProps = Props;

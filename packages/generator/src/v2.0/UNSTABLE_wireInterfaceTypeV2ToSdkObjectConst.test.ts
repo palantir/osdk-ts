@@ -137,6 +137,9 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         export type PropertyKeys = "bar";
 
         export interface Props {
+          /**
+           * (no ontology metadata)
+           */
           readonly bar: $PropType["integer"] | undefined;
         }
         export type StrictProps = Props;
@@ -229,6 +232,10 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         export type PropertyKeys = "foo";
 
         export interface Props {
+          /**
+           *   display name: 'foo property dn',
+           *   description: foo property desc
+           */
           readonly foo: $PropType["integer"] | undefined;
         }
         export type StrictProps = Props;
@@ -322,7 +329,15 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         export type PropertyKeys = "foo" | "bar";
 
         export interface Props {
+          /**
+           *   display name: 'bar property dn',
+           *   description: bar property desc
+           */
           readonly bar: $PropType["integer"] | undefined;
+          /**
+           *   display name: 'foo property dn',
+           *   description: foo property desc
+           */
           readonly foo: $PropType["integer"] | undefined;
         }
         export type StrictProps = Props;
@@ -421,6 +436,10 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         export type PropertyKeys = "foo";
 
         export interface Props {
+          /**
+           *   display name: 'foo property dn',
+           *   description: foo property desc
+           */
           readonly foo: $PropType["integer"] | undefined;
         }
         export type StrictProps = Props;

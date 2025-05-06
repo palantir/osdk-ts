@@ -23,7 +23,13 @@ export namespace Country_1 {
   }
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly airportCountryIsoCode: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly airportCountryName: $PropType['string'];
   }
   export type StrictProps = Props;
