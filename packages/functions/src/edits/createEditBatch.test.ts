@@ -26,6 +26,7 @@ type TestEditScope =
   | Edits.Object<Task>
   | Edits.Object<Office>
   | Edits.Link<Task, "RP">
+  | Edits.Link<Task, "Todos">
   | Edits.Link<Office, "occupants">;
 
 describe(createEditBatch, () => {
@@ -57,6 +58,16 @@ describe(createEditBatch, () => {
       $apiName: "Employee",
       $primaryKey: 2,
     } as Osdk.Instance<Employee>;
+
+    editBatch.link(taskInstance, "RP", personInstance);
+
+    editBatch.link(officeInstance, "occupants", employeeInstance);
+
+    editBatch.link(
+      { "$apiName": "Task", $primaryKey: 0 },
+      "RP",
+      personInstance,
+    );
 
     editBatch.create(Task, { id: 0, name: "My Task Name" });
     editBatch.create(Task, { id: 1, name: "My Other Task Name" });

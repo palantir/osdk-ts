@@ -18,17 +18,18 @@ import type {
   CompileTimeMetadata,
   ObjectMetadata,
   ObjectTypeDefinition,
-  Osdk,
   OsdkObjectPropertyType,
   PropertyKeys,
+  PropertyValueWireToClient,
 } from "@osdk/client";
 
-export type ObjectLocator<
-  S extends ObjectTypeDefinition = ObjectTypeDefinition,
-> = {
-  $apiName: Osdk.Instance<S>["$apiName"];
-  $primaryKey: Osdk.Instance<S>["$primaryKey"];
-};
+export interface ObjectLocator<
+  S extends ObjectTypeDefinition,
+> {
+  $apiName: CompileTimeMetadata<S>["apiName"];
+  $primaryKey:
+    PropertyValueWireToClient[CompileTimeMetadata<S>["primaryKeyType"]];
+}
 
 export namespace Edits {
   export type Object<S extends ObjectTypeDefinition> =
@@ -42,26 +43,29 @@ export namespace Edits {
   > = AddLink<S, L> | RemoveLink<S, L>;
 }
 
-export interface AddLink<
+interface LinkBase<
   S extends ObjectTypeDefinition,
   L extends keyof CompileTimeMetadata<S>["links"],
 > {
-  type: "addLink";
   apiName: L;
   source: ObjectLocator<S>;
   target: CompileTimeMetadata<S>["links"][L] extends
     ObjectMetadata.Link<infer T, any> ? ObjectLocator<T> : never;
+  _SourceDef: S;
+}
+
+export interface AddLink<
+  S extends ObjectTypeDefinition,
+  L extends keyof CompileTimeMetadata<S>["links"],
+> extends LinkBase<S, L> {
+  type: "addLink";
 }
 
 export interface RemoveLink<
   S extends ObjectTypeDefinition,
   L extends keyof CompileTimeMetadata<S>["links"],
-> {
+> extends LinkBase<S, L> {
   type: "removeLink";
-  apiName: L;
-  source: ObjectLocator<S>;
-  target: CompileTimeMetadata<S>["links"][L] extends
-    ObjectMetadata.Link<infer T, any> ? ObjectLocator<T> : never;
 }
 
 type PartialForOptionalProperties<T> =
