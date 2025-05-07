@@ -48,6 +48,7 @@ export type {
   OntologyIrMultiMatchFilter,
   OntologyIrNotFilter,
   OntologyIrObjectSetFilter,
+  OntologyIrObjectTypeFilter,
   OntologyIrOrFilter,
   OntologyIrParameterizedExactMatchFilter,
   OntologyIrParameterizedRangeFilter,

@@ -15,6 +15,7 @@
  */
 
 import type {
+  ObjectTypeApiName as _api_ObjectTypeApiName,
   ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
   ObjectTypeId as _api_ObjectTypeId,
   PropertyId as _api_PropertyId,
@@ -476,7 +477,7 @@ export interface OntologyIrObjectSetFilter_geoShape {
 
 export interface OntologyIrObjectSetFilter_objectType {
   type: "objectType";
-  objectType: ObjectTypeFilter;
+  objectType: OntologyIrObjectTypeFilter;
 }
 
 export interface OntologyIrObjectSetFilter_hasProperty {
@@ -557,6 +558,12 @@ export type OntologyIrObjectSetFilter =
   | OntologyIrObjectSetFilter_parameterizedExactMatch
   | OntologyIrObjectSetFilter_userContext;
 
+/**
+ * An object matches an ObjectTypeFilter iff its ObjectTypeId matches the provided ObjectTypeId.
+ */
+export interface OntologyIrObjectTypeFilter {
+  objectTypeId: _api_ObjectTypeApiName;
+}
 /**
  * An ObjectSetFilter used to combine multiple ObjectSetFilters.
  * An object matches an OrFilter iff it matches at least one of the filters.

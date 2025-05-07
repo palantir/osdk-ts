@@ -46,6 +46,7 @@ export type {
   DerivedPropertyMultiHopLinkExceedsMaximumStepCountError,
   DerivedPropertyMultiHopLinkIsEmptyError,
   DerivedPropertyTypeDependOnAnotherDerivedPropertyError,
+  EntityIndexingConfiguration,
   ErrorStatus,
   FindConflictsRequest,
   FindConflictsResponse,
