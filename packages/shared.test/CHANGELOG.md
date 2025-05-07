@@ -1,5 +1,21 @@
 # @osdk/shared.test
 
+## 2.2.0-beta.17
+
+### Minor Changes
+
+- 5a12181: Quick fix for geohash params.
+- 791e655: Add support for geoshape and geohash action parameters.
+
+### Patch Changes
+
+- Updated dependencies [c6bee50]
+- Updated dependencies [abe4897]
+- Updated dependencies [70b4464]
+- Updated dependencies [791e655]
+  - @osdk/api@2.2.0-beta.17
+  - @osdk/generator-converters@2.2.0-beta.17
+
 ## 2.2.0-beta.16
 
 ### Patch Changes

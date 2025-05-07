@@ -1,5 +1,15 @@
 # @osdk/widget.vite-plugin.unstable
 
+## 2.1.0-beta.8
+
+### Minor Changes
+
+- 87b747c: Code Workspaces awareness for the Widgets Vite plugin
+
+### Patch Changes
+
+- @osdk/widget.api.unstable@2.1.0-beta.8
+
 ## 2.1.0-beta.7
 
 ### Minor Changes
