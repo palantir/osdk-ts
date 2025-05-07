@@ -2,4 +2,4 @@
 "@osdk/maker": patch
 ---
 
-Make Object PKs singluar
+Make Object PKs singular
