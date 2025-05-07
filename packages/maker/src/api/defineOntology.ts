@@ -231,7 +231,7 @@ function convertObject(
         pluralDisplayName: objectType.pluralDisplayName,
         visibility: objectType.visibility ?? "NORMAL",
       },
-      primaryKeys: objectType.primaryKeys,
+      primaryKeys: [objectType.primaryKeyPropertyApiName],
       propertyTypes: Object.fromEntries(
         objectType.properties?.map<[string, OntologyIrPropertyType]>(
           val => [val.apiName, convertProperty(val)],
@@ -389,7 +389,7 @@ function convertLink(
         oneToManyLinkMetadata: linkType.one.metadata,
         oneSidePrimaryKeyToManySidePropertyMapping: [{
           from: {
-            apiName: linkType.one.object.primaryKeys[0],
+            apiName: linkType.one.object.primaryKeyPropertyApiName,
             object: linkType.one.object.apiName,
           },
           to: {
@@ -410,21 +410,21 @@ function convertLink(
         peeringMetadata: undefined,
         objectTypeAPrimaryKeyPropertyMapping: [{
           from: {
-            apiName: linkType.many.object.primaryKeys[0],
+            apiName: linkType.many.object.primaryKeyPropertyApiName,
             object: linkType.many.object.apiName,
           },
           to: {
-            apiName: linkType.many.object.primaryKeys[0],
+            apiName: linkType.many.object.primaryKeyPropertyApiName,
             object: linkType.many.object.apiName,
           },
         }],
         objectTypeBPrimaryKeyPropertyMapping: [{
           from: {
-            apiName: linkType.toMany.object.primaryKeys[0],
+            apiName: linkType.toMany.object.primaryKeyPropertyApiName,
             object: linkType.toMany.object.apiName,
           },
           to: {
-            apiName: linkType.toMany.object.primaryKeys[0],
+            apiName: linkType.toMany.object.primaryKeyPropertyApiName,
             object: linkType.toMany.object.apiName,
           },
         }],
@@ -440,17 +440,17 @@ function convertLink(
           writebackDatasetRid: undefined,
           objectTypeAPrimaryKeyMapping: [{
             property: {
-              apiName: linkType.many.object.primaryKeys[0],
+              apiName: linkType.many.object.primaryKeyPropertyApiName,
               object: linkType.many.object.apiName,
             },
-            column: linkType.many.object.primaryKeys[0],
+            column: linkType.many.object.primaryKeyPropertyApiName,
           }],
           objectTypeBPrimaryKeyMapping: [{
             property: {
-              apiName: linkType.toMany.object.primaryKeys[0],
+              apiName: linkType.toMany.object.primaryKeyPropertyApiName,
               object: linkType.toMany.object.apiName,
             },
-            column: linkType.many.object.primaryKeys[0],
+            column: linkType.many.object.primaryKeyPropertyApiName,
           }],
         },
       },

@@ -37,7 +37,7 @@ export function defineLink(
 
     const typesMatch =
       foreignKey.type === linkDefinition.one.object.properties?.find(prop =>
-        prop.apiName === linkDefinition.one.object.primaryKeys[0]
+        prop.apiName === linkDefinition.one.object.primaryKeyPropertyApiName
       )?.type;
     invariant(
       typesMatch,
