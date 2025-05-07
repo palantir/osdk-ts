@@ -6063,8 +6063,8 @@ export interface OntologyIrActionLogMetadata {
  * their properties should be mapped to properties of their Action Log Object Type.
  */
 export interface OntologyIrActionLogRule {
-  actionLogObjectTypeId: ObjectTypeId;
-  editedObjectRelations: Record<ObjectTypeId, LinkTypeId>;
+  actionLogObjectTypeId: ObjectTypeApiName;
+  editedObjectRelations: Record<ObjectTypeApiName, LinkTypeId>;
   enabled: boolean;
   propertyValues: Record<ObjectTypeFieldApiName, OntologyIrActionLogValue>;
   reasonCodes: Array<ObjectTypeFieldApiName>;
@@ -6086,7 +6086,7 @@ export interface OntologyIrActionLogValue_interfaceParameterPropertyValue {
 
 export interface OntologyIrActionLogValue_editedObjects {
   type: "editedObjects";
-  editedObjects: ObjectTypeId;
+  editedObjects: ObjectTypeApiName;
 }
 
 export interface OntologyIrActionLogValue_allEditedObjects {
@@ -6264,7 +6264,7 @@ export interface OntologyIrActionTypeDisplayMetadata {
 export interface OntologyIrActionTypeEntities {
   affectedInterfaceTypes: Array<InterfaceTypeApiName>;
   affectedLinkTypes: Array<LinkTypeId>;
-  affectedObjectTypes: Array<ObjectTypeId>;
+  affectedObjectTypes: Array<ObjectTypeApiName>;
   typeGroups: Array<TypeGroupRid>;
 }
 export interface OntologyIrActionTypeLevelValidation {
@@ -6378,7 +6378,7 @@ export interface OntologyIrAddInterfaceRule {
   >;
 }
 export interface OntologyIrAddObjectRule {
-  objectTypeId: ObjectTypeId;
+  objectTypeId: ObjectTypeApiName;
   propertyValues: Record<ObjectTypeFieldApiName, OntologyIrLogicRuleValue>;
   structFieldValues: Record<
     ObjectTypeFieldApiName,
@@ -6386,7 +6386,7 @@ export interface OntologyIrAddObjectRule {
   >;
 }
 export interface OntologyIrAddOrModifyObjectRule {
-  objectTypeId: ObjectTypeId;
+  objectTypeId: ObjectTypeApiName;
   propertyValues: Record<ObjectTypeFieldApiName, OntologyIrLogicRuleValue>;
   structFieldValues: Record<
     ObjectTypeFieldApiName,
@@ -6889,7 +6889,7 @@ export interface OntologyIrDynamicObjectSet {
 }
 export interface OntologyIrDynamicObjectSetInput_base {
   type: "base";
-  base: DynamicObjectSetInputBase;
+  base: OntologyIrDynamicObjectSetInputBase;
 }
 
 export interface OntologyIrDynamicObjectSetInput_parameter {
@@ -6909,6 +6909,12 @@ export type OntologyIrDynamicObjectSetInput =
   | OntologyIrDynamicObjectSetInput_parameter
   | OntologyIrDynamicObjectSetInput_unioned;
 
+/**
+ * Depicts an ObjectSet with all objects of this ObjectType
+ */
+export interface OntologyIrDynamicObjectSetInputBase {
+  objectTypeId: ObjectTypeApiName;
+}
 /**
  * Depicts an ObjectSet which is a union of all ObjectSets provided.
  */
@@ -7105,7 +7111,7 @@ export type OntologyIrLinkDefinition =
 
 export interface OntologyIrLinkedEntityTypeId_objectType {
   type: "objectType";
-  objectType: ObjectTypeId;
+  objectType: ObjectTypeApiName;
 }
 
 export interface OntologyIrLinkedEntityTypeId_interfaceType {
@@ -7353,7 +7359,7 @@ export interface OntologyIrMultipassUserInGroupFilter {
  */
 export interface OntologyIrNewObjectUrlTarget {
   keys: Record<PropertyId, OntologyIrLogicRuleValue>;
-  objectTypeId: ObjectTypeId;
+  objectTypeId: ObjectTypeApiName;
 }
 /**
  * Configuration for non-numeric series.
@@ -7584,6 +7590,14 @@ export interface OntologyIrObjectQueryPropertyValue {
 export interface OntologyIrObjectSetRidPrefill {
   objectSet: OntologyIrActionsObjectSet;
 }
+/**
+ * Transforms objects in the ObjectSet to all objects on the other end of the specified Relation.
+ */
+export interface OntologyIrObjectSetSearchAround {
+  objectTypeId: ObjectTypeApiName;
+  relationId: LinkTypeId;
+  relationSide: _api_types_RelationSide;
+}
 export interface OntologyIrObjectSetTransform_propertyFilter {
   type: "propertyFilter";
   propertyFilter: _api_objectset_OntologyIrObjectSetFilter;
@@ -7591,7 +7605,7 @@ export interface OntologyIrObjectSetTransform_propertyFilter {
 
 export interface OntologyIrObjectSetTransform_searchAround {
   type: "searchAround";
-  searchAround: ObjectSetSearchAround;
+  searchAround: OntologyIrObjectSetSearchAround;
 }
 /**
  * Transforms an ObjectSet by Filtering or performing a SearchAround.
