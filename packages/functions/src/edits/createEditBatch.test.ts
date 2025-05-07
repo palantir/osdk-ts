@@ -59,14 +59,6 @@ describe(createEditBatch, () => {
       $primaryKey: 2,
     } as Osdk.Instance<Employee>;
 
-    editBatch.link(officeInstance, "occupants");
-
-    editBatch.link(
-      { "$apiName": "Task", $primaryKey: 0 },
-      "RP",
-      personInstance,
-    );
-
     editBatch.create(Task, { id: 0, name: "My Task Name" });
     editBatch.create(Task, { id: 1, name: "My Other Task Name" });
     editBatch.create(Task, { id: 3 });
@@ -79,7 +71,7 @@ describe(createEditBatch, () => {
     editBatch.update({ $apiName: "Task", $primaryKey: 3 }, {});
     editBatch.create(Task, { id: 0, name: "My Task Name" });
     editBatch.create(Office, { officeId: "3", capacity: 2 });
-    editBatch.create(Office);
+    editBatch.update({ $apiName: "Office", $primaryKey: "3" }, { capacity: 4 });
 
     editBatch.link({ $apiName: "Task", $primaryKey: 0 }, "RP", {
       $apiName: "Person",
@@ -94,7 +86,17 @@ describe(createEditBatch, () => {
       $apiName: "Person",
       $primaryKey: 1,
     });
+    editBatch.link(taskInstance, "Todos", { $apiName: "Todo", $primaryKey: 0 });
+    editBatch.unlink({ $apiName: "Task", $primaryKey: 2 }, "Todos", {
+      $apiName: "Todo",
+      $primaryKey: 0,
+    });
     editBatch.link(officeInstance, "occupants", employeeInstance);
+    editBatch.unlink(
+      { $apiName: "Office", $primaryKey: "2" },
+      "occupants",
+      employeeInstance,
+    );
 
     expect(editBatch.getEdits()).toEqual([
       {
@@ -141,7 +143,7 @@ describe(createEditBatch, () => {
       },
       {
         type: "updateObject",
-        obj: { $apiName: "Office", $primaryKey: "2" },
+        obj: { $apiName: "Office", $primaryKey: "3" },
         properties: { capacity: 4 },
       },
       {
@@ -170,6 +172,24 @@ describe(createEditBatch, () => {
       },
       {
         type: "addLink",
+        apiName: "Todos",
+        source: { $apiName: "Task", $primaryKey: 2 },
+        target: { $apiName: "Todo", $primaryKey: 0 },
+      },
+      {
+        type: "removeLink",
+        apiName: "Todos",
+        source: { $apiName: "Task", $primaryKey: 2 },
+        target: { $apiName: "Todo", $primaryKey: 0 },
+      },
+      {
+        type: "addLink",
+        apiName: "occupants",
+        source: { $apiName: "Office", $primaryKey: "2" },
+        target: { $apiName: "Employee", $primaryKey: 2 },
+      },
+      {
+        type: "removeLink",
         apiName: "occupants",
         source: { $apiName: "Office", $primaryKey: "2" },
         target: { $apiName: "Employee", $primaryKey: 2 },
