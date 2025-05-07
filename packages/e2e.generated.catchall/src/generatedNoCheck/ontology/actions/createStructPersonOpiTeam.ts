@@ -44,13 +44,13 @@ export namespace createStructPersonOpiTeam {
     /**
      * Create a struct person on the OPI team
      */
-    applyAction<P extends createStructPersonOpiTeam.Params, OP extends ApplyActionOptions>(
-      args: P,
+    applyAction<OP extends ApplyActionOptions>(
+      args: createStructPersonOpiTeam.Params,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
 
-    batchApplyAction<P extends ReadonlyArray<createStructPersonOpiTeam.Params>, OP extends ApplyBatchActionOptions>(
-      args: P,
+    batchApplyAction<OP extends ApplyBatchActionOptions>(
+      args: ReadonlyArray<createStructPersonOpiTeam.Params>,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }

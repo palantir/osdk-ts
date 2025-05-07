@@ -45,9 +45,8 @@ export namespace DerivedObjectOrInterfaceDefinition {
 
 export type PropertyKeys<
   O extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = {},
 > =
-  & (keyof CompileTimeMetadata<O>["properties"] | keyof RDPs)
+  & (keyof CompileTimeMetadata<O>["properties"])
   & string;
 
 export namespace PropertyKeys {

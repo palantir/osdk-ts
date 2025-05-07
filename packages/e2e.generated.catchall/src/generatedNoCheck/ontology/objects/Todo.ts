@@ -23,10 +23,26 @@ export namespace Todo {
   }
 
   export interface Props {
+    /**
+     *   display name: 'Body',
+     *   description: The text of the todo
+     */
     readonly body: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly complete: $PropType['boolean'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly id: $PropType['integer'];
+    /**
+     * (no ontology metadata)
+     */
     readonly priority: $PropType['integer'] | undefined;
+    /**
+     *   display name: 'Text'
+     */
     readonly text: $PropType['string'] | undefined;
   }
   export type StrictProps = Props;

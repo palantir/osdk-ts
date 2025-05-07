@@ -20,9 +20,21 @@ export namespace MtaBus {
   export type Links = {};
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly nextStopId: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly positionId: $PropType['geotimeSeriesReference'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly routeId: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly vehicleId: $PropType['string'];
   }
   export type StrictProps = Props;

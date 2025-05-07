@@ -18,6 +18,7 @@ import type {
   ActionDefinition,
   ActionEditResponse,
   InterfaceDefinition,
+  Logger,
   ObjectTypeDefinition,
   PrimaryKeyType,
   WhereClause,
@@ -27,7 +28,6 @@ import { BehaviorSubject } from "rxjs";
 import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { additionalContext, type Client } from "../../Client.js";
-import type { Logger } from "../../logger/Logger.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";

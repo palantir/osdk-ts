@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 
-export interface Logger {
-  trace: LogFn;
-  debug: LogFn;
-  fatal: LogFn;
-  error: LogFn;
-  warn: LogFn;
-  info: LogFn;
+// WARNING!
+// WARNING!
+// This file is used for tests that check intellisense. Editing this file by hand will likely
+// break tests that have hard coded line numbers and line offsets.
 
-  isLevelEnabled(level: string): boolean;
+import type { Osdk } from "@osdk/api";
+import type { Employee } from "@osdk/client.test.ontology";
 
-  child(
-    bindings: Record<string, any>,
-    options?: { level?: string; msgPrefix?: string },
-  ): Logger;
-}
-
-export interface LogFn {
-  (obj: unknown, msg?: string, ...args: any[]): void;
-  (msg: string, ...args: any[]): void;
-}
+const employee: Osdk.Instance<Employee> = {} as any;
+employee.employeeLocation;

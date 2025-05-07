@@ -16,8 +16,7 @@
 
 import { describe, expectTypeOf, it } from "vitest";
 import type { NullabilityAdherence } from "./object/FetchPageArgs.js";
-import type { ObjectSet } from "./objectSet/ObjectSet.js";
-import type { ObjectOrInterfaceDefinition } from "./ontology/ObjectOrInterface.js";
+import { createMockObjectSet } from "./objectSet/ObjectSet.test.js";
 import type { ExtractOptions, Osdk } from "./OsdkObjectFrom.js";
 
 describe("ExtractOptions", () => {
@@ -343,21 +342,12 @@ describe("ExtractOptions", () => {
   });
 
   describe("Inferred return types from fetchPage work", () => {
-    function createObjectSetChannel<O extends ObjectOrInterfaceDefinition>(
-      objectSet: ObjectSet<O>,
-    ): Awaited<ReturnType<ObjectSet<O>["fetchPage"]>>["data"] {
-      return {} as any;
-    }
-
-    class Helper<O extends ObjectOrInterfaceDefinition> {
-      constructor(private objectSet: ObjectSet<O>) {}
-      public go() {
-        return createObjectSetChannel(this.objectSet);
-      }
-    }
+    const fauxObjectSet = createMockObjectSet<quickAndDirty>();
 
     it("is not $notStrict", async () => {
-      expectTypeOf<ReturnType<Helper<quickAndDirty>["go"]>>().branded
+      const page = await fauxObjectSet.fetchPage();
+
+      expectTypeOf<typeof page["data"]>().branded
         .toEqualTypeOf<
           Osdk.Instance<quickAndDirty>[]
         >();

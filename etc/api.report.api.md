@@ -60,7 +60,7 @@ export namespace ActionMetadata {
     	// (undocumented)
     export namespace DataType {
         		// (undocumented)
-        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "objectType";
+        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "objectType" | "geoshape" | "geohash";
         		// (undocumented)
         export interface Interface<T_Target extends InterfaceDefinition = never> {
             			// (undocumented)
@@ -230,7 +230,8 @@ export interface AsyncIterArgs<
 	R extends boolean = false,
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
-	T extends boolean = false
+	T extends boolean = false,
+	RDP_KEYS extends string = never
 > extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
@@ -315,6 +316,10 @@ export interface DataValueClientToWire {
     	// (undocumented)
     float: number;
     	// (undocumented)
+    geohash: GeoJSON.Point;
+    	// (undocumented)
+    geoshape: GeoJSON.GeoJSON;
+    	// (undocumented)
     integer: number;
     	// (undocumented)
     long: string | number;
@@ -370,6 +375,10 @@ export interface DataValueWireToClient {
     	// (undocumented)
     float: number;
     	// (undocumented)
+    geohash: GeoJSON.Point;
+    	// (undocumented)
+    geoshape: GeoJSON.GeoJSON;
+    	// (undocumented)
     integer: number;
     	// (undocumented)
     long: string;
@@ -414,37 +423,64 @@ export namespace DerivedProperty {
     export interface AggregateBuilder<
     		Q extends ObjectOrInterfaceDefinition,
     		CONSTRAINED extends boolean
-    	> extends Builder<Q, CONSTRAINED>, Aggregatable<Q> {}
+    	> extends BaseBuilder<Q, CONSTRAINED>, Aggregatable<Q> {}
     	// Warning: (ae-forgotten-export) The symbol "Filterable" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "Pivotable" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export interface BaseBuilder<
+    		Q extends ObjectOrInterfaceDefinition,
+    		CONSTRAINED extends boolean
+    	> extends Filterable<Q, CONSTRAINED>, Pivotable<Q, CONSTRAINED> {}
+    	// Warning: (ae-forgotten-export) The symbol "Selectable" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "Constant" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     export interface Builder<
     		Q extends ObjectOrInterfaceDefinition,
     		CONSTRAINED extends boolean
-    	> extends Filterable<Q, CONSTRAINED>, Pivotable<Q, CONSTRAINED> {}
+    	> extends BaseBuilder<Q, CONSTRAINED>, Selectable<Q>, Constant<Q> {}
     	// (undocumented)
     export type Clause<Q extends ObjectOrInterfaceDefinition> = {
-        		[key: string]: Selector<Q, SimplePropertyDef>
+        		[key: string]: Creator<Q, SimplePropertyDef>
         	};
     	// (undocumented)
-    export type Selector<
+    export type Creator<
     		Q extends ObjectOrInterfaceDefinition,
     		T extends SimplePropertyDef
-    	> = (baseObjectSet: DerivedProperty.Builder<Q, false>) => SelectorResult<T>;
+    	> = (baseObjectSet: Builder<Q, false>) => Definition<T, Q> | NumericPropertyDefinition<T, Q> | DatetimePropertyDefinition<T, Q>;
+    	// Warning: (ae-forgotten-export) The symbol "DatetimeExpressions" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export interface DatetimePropertyDefinition<
+    		T extends SimplePropertyDef,
+    		Q extends ObjectOrInterfaceDefinition
+    	> extends Definition<T, Q>, DatetimeExpressions<Q, T> {}
     	// Warning: (ae-forgotten-export) The symbol "SimplePropertyDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    export type SelectorResult<T extends SimplePropertyDef> = {
-        		type: T
-        	};
-    	// Warning: (ae-forgotten-export) The symbol "Selectable" needs to be exported by the entry point index.d.ts
+    export interface Definition<
+    		T extends SimplePropertyDef,
+    		Q extends ObjectOrInterfaceDefinition
+    	> {
+        		// (undocumented)
+        type: T;
+        	}
+    	// Warning: (ae-forgotten-export) The symbol "NumericExpressions" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
+    export interface NumericPropertyDefinition<
+    		T extends SimplePropertyDef,
+    		Q extends ObjectOrInterfaceDefinition
+    	> extends Definition<T, Q>, NumericExpressions<Q, T> {}
+    	// (undocumented)
     export interface SelectPropertyBuilder<
     		Q extends ObjectOrInterfaceDefinition,
     		CONSTRAINED extends boolean
     	> extends AggregateBuilder<Q, CONSTRAINED>, Selectable<Q> {}
+    	// (undocumented)
+    export type ValidParts = "DAYS" | "MONTHS" | "QUARTERS" | "YEARS";
+    	{};
 }
 
 // @public (undocumented)
@@ -504,8 +540,9 @@ export interface FetchPageArgs<
 	R extends boolean = false,
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
-	T extends boolean = false
-> extends AsyncIterArgs<Q, K, R, A, S, T> {
+	T extends boolean = false,
+	RDP_KEYS extends string = never
+> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS> {
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
@@ -653,21 +690,30 @@ export interface Logger {
         		msgPrefix?: string
         	}): Logger;
     	// (undocumented)
-    debug: LogFn;
+    debug: Logger.LogFn;
     	// (undocumented)
-    error: LogFn;
+    error: Logger.LogFn;
     	// (undocumented)
-    fatal: LogFn;
+    fatal: Logger.LogFn;
     	// (undocumented)
-    info: LogFn;
+    info: Logger.LogFn;
     	// (undocumented)
     isLevelEnabled(level: string): boolean;
-    	// Warning: (ae-forgotten-export) The symbol "LogFn" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    trace: LogFn;
     	// (undocumented)
-    warn: LogFn;
+    trace: Logger.LogFn;
+    	// (undocumented)
+    warn: Logger.LogFn;
+}
+
+// @public (undocumented)
+export namespace Logger {
+    	// (undocumented)
+    export interface LogFn {
+        		// (undocumented)
+        (obj: unknown, msg?: string, ...args: any[]): void;
+        		// (undocumented)
+        (msg: string, ...args: any[]): void;
+        	}
 }
 
 // @public (undocumented)
@@ -790,8 +836,8 @@ export interface ObjectQueryDataType<T_Target extends ObjectTypeDefinition = nev
 // @public (undocumented)
 export interface ObjectSet<
 	Q extends ObjectOrInterfaceDefinition = any,
-	UNUSED_OR_RDP extends ObjectSet<Q, any> | Record<string, SimplePropertyDef> = ObjectSet<Q, any>
-> extends ObjectSetCleanedTypes<Q, ExtractRdp<UNUSED_OR_RDP>, MergeObjectSet<Q, UNUSED_OR_RDP>> {}
+	UNUSED_OR_RDP extends BaseObjectSet<Q> | Record<string, SimplePropertyDef> = never
+> extends ObjectSetCleanedTypes<Q, ExtractRdp<UNUSED_OR_RDP>, MergeObjectSet<Q, ExtractRdp<UNUSED_OR_RDP>>> {}
 
 // @public (undocumented)
 export interface ObjectSetQueryDataType<T_Target extends ObjectTypeDefinition = never> extends BaseQueryDataTypeDefinition<"objectSet"> {
@@ -869,7 +915,8 @@ export type Osdk<
 
 // @public (undocumented)
 export namespace Osdk {
-    	// Warning: (ae-forgotten-export) The symbol "GetPropsKeys" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "OsdkBaseWithObjectSpecifier" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "GetPropsKeys" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     export type Instance<
@@ -877,7 +924,7 @@ export namespace Osdk {
     		OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
     		P extends PropertyKeys<Q> = PropertyKeys<Q>,
     		R extends Record<string, SimplePropertyDef> = {}
-    	> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
+    	> = OsdkBaseWithObjectSpecifier<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
         		readonly $link: Q extends {
             			linksType?: any
             		} ? Q["linksType"] : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q> : never
@@ -894,7 +941,6 @@ export type OsdkBase<Q extends ObjectOrInterfaceDefinition> = {
     	readonly $objectType: string
     	readonly $primaryKey: PrimaryKeyType<Q>
     	readonly $title: string | undefined
-    	readonly $objectSpecifier: ObjectSpecifier<Q>
 };
 
 // @public @deprecated (undocumented)
@@ -961,10 +1007,7 @@ export interface PropertyDef<
 }
 
 // @public (undocumented)
-export type PropertyKeys<
-	O extends ObjectOrInterfaceDefinition,
-	RDPs extends Record<string, SimplePropertyDef> = {}
-> = (keyof CompileTimeMetadata<O>["properties"] | keyof RDPs) & string;
+export type PropertyKeys<O extends ObjectOrInterfaceDefinition> = (keyof CompileTimeMetadata<O>["properties"]) & string;
 
 // @public (undocumented)
 export namespace PropertyKeys {
@@ -1108,7 +1151,7 @@ export namespace QueryResult {
     	// (undocumented)
     export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
     	// (undocumented)
-    export type ObjectType<T extends ObjectTypeDefinition> = OsdkBase<T>;
+    export type ObjectType<T extends ObjectTypeDefinition> = OsdkBaseWithObjectSpecifier<T>;
     	// (undocumented)
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueWireToClient[T];
     	// Warning: (ae-forgotten-export) The symbol "AggKeyWireToClient" needs to be exported by the entry point index.d.ts

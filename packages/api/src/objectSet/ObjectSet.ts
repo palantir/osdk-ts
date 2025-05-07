@@ -24,10 +24,10 @@ import type {
   Augments,
   FetchPageArgs,
   NullabilityAdherence,
+  ObjectSetArgs,
   SelectArg,
 } from "../object/FetchPageArgs.js";
 import type { Result } from "../object/Result.js";
-import type { InterfaceDefinition } from "../ontology/InterfaceDefinition.js";
 import type {
   DerivedObjectOrInterfaceDefinition,
   ObjectOrInterfaceDefinition,
@@ -39,7 +39,12 @@ import type {
 } from "../ontology/ObjectTypeDefinition.js";
 import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { PrimaryKeyType } from "../OsdkBase.js";
-import type { ExtractOptions, Osdk } from "../OsdkObjectFrom.js";
+import type {
+  ExtractAllPropertiesOption,
+  ExtractOptions,
+  ExtractRidOption,
+  Osdk,
+} from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 import type { BaseObjectSet } from "./BaseObjectSet.js";
@@ -47,14 +52,50 @@ import type { ObjectSetSubscription } from "./ObjectSetListener.js";
 
 type MergeObjectSet<
   Q extends ObjectOrInterfaceDefinition,
-  D extends ObjectSet<Q> | Record<string, SimplePropertyDef> = {},
-> = D extends Record<string, SimplePropertyDef>
-  ? DerivedObjectOrInterfaceDefinition.WithDerivedProperties<Q, D>
-  : Q;
+  D extends Record<string, SimplePropertyDef> = {},
+> = DerivedObjectOrInterfaceDefinition.WithDerivedProperties<Q, D>;
 
 type ExtractRdp<
-  D extends ObjectSet<any, any> | Record<string, SimplePropertyDef>,
-> = D extends Record<string, SimplePropertyDef> ? D : {};
+  D extends
+    | BaseObjectSet<any>
+    | Record<string, SimplePropertyDef>,
+> = [D] extends [never] ? {}
+  : D extends BaseObjectSet<any> ? {}
+  : D extends Record<string, SimplePropertyDef> ? D
+  : {};
+
+type MaybeSimplifyPropertyKeys<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends PropertyKeys<Q>,
+> = PropertyKeys<Q> extends L ? PropertyKeys<Q> : L;
+
+type SubSelectKeysHelper<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends string,
+> = [L] extends [never] ? PropertyKeys<Q>
+  : PropertyKeys<Q> extends L ? PropertyKeys<Q>
+  : L & PropertyKeys<Q>;
+
+type SubSelectKeys<
+  Q extends ObjectOrInterfaceDefinition,
+  X extends SelectArg<Q, PropertyKeys<Q>, any, any> = never,
+> = SubSelectKeysHelper<Q, Extract$Select<X>>;
+
+type NOOP<T> = T extends (...args: any[]) => any ? T
+  : T extends abstract new(...args: any[]) => any ? T
+  : { [K in keyof T]: T[K] };
+
+type SubSelectRDPsHelper<
+  X extends ValidFetchPageArgs<any, any> | ValidAsyncIterArgs<any, any>,
+  DEFAULT extends string,
+> = [X] extends [never] ? DEFAULT
+  : (X["$select"] & string[])[number] & DEFAULT;
+
+type SubSelectRDPs<
+  RDPs extends Record<string, SimplePropertyDef>,
+  X extends ValidFetchPageArgs<any, RDPs> | ValidAsyncIterArgs<any, RDPs>,
+> = [RDPs] extends [never] ? never
+  : NOOP<{ [K in SubSelectRDPsHelper<X, string & keyof RDPs>]: RDPs[K] }>;
 
 export interface MinimalObjectSet<
   Q extends ObjectOrInterfaceDefinition,
@@ -67,8 +108,65 @@ export interface MinimalObjectSet<
 {
 }
 
-// TODO MOVE THIS
+export type ExtractOptions2<
+  X extends FetchPageArgs<any, any, any, any, any, any, any>,
+> = [X] extends [never] ? never
+  :
+    | ExtractRidOption<X["$includeRid"] extends true ? true : false>
+    | ExtractAllPropertiesOption<
+      X["$includeAllBaseObjectProperties"] extends true ? true : false
+    >;
+
+type Extract$Select<X extends FetchPageArgs<any, any>> = NonNullable<
+  X["$select"]
+>[number];
+
 interface FetchPage<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> {
+  readonly fetchPage: FetchPageSignature<Q, RDPs>;
+  readonly fetchPageWithErrors: FetchPageWithErrorsSignature<Q, RDPs>;
+}
+
+type ValidFetchPageArgs<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef>,
+> =
+  | ObjectSetArgs.FetchPage<
+    Q,
+    PropertyKeys<Q>,
+    false,
+    string & keyof RDPs
+  >
+  | ObjectSetArgs.FetchPage<
+    Q,
+    never,
+    true,
+    string & keyof RDPs
+  >;
+
+type ValidAsyncIterArgs<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef>,
+> =
+  | ObjectSetArgs.AsyncIter<
+    Q,
+    PropertyKeys<Q>,
+    false,
+    string & keyof RDPs
+  >
+  | AsyncIterArgs<
+    Q,
+    never,
+    any,
+    any,
+    any,
+    true,
+    string & keyof RDPs
+  >;
+
+interface FetchPageSignature<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > {
@@ -84,21 +182,79 @@ interface FetchPage<
 
    * @returns a page of objects
    */
-  readonly fetchPage: <
-    L extends PropertyKeys<Q, RDPs>,
+  <const X extends ValidFetchPageArgs<Q, RDPs> = never>(
+    args?: X,
+  ): Promise<
+    PageResult<
+      Osdk.Instance<
+        Q,
+        ExtractOptions2<X>,
+        SubSelectKeys<Q, X>,
+        SubSelectRDPs<RDPs, X>
+      >
+    >
+  >;
+
+  /**
+   * Gets a page of objects of this type, with a result wrapper
+   * @param args - Args to specify next page token and page size, if applicable
+   * @example
+   *  const myObjs = await objectSet.fetchPage({
+      $pageSize: 10,
+      $nextPageToken: "nextPage"
+    });
+     const myObjsResult = myObjs.data;
+
+   * @returns a page of objects
+   */
+  <
+    L extends PropertyKeys<Q>,
     R extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
   >(
     args?: FetchPageArgs<Q, L, R, A, S, T>,
-  ) => Promise<
+  ): Promise<
     PageResult<
       Osdk.Instance<
         Q,
         ExtractOptions<R, S, T>,
-        PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
-        { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+        MaybeSimplifyPropertyKeys<Q, L>
+      >
+    >
+  >;
+}
+
+interface FetchPageWithErrorsSignature<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> {
+  /**
+   * Gets a page of objects of this type, with a result wrapper
+   * @param args - Args to specify next page token and page size, if applicable
+   * @example
+   *  const myObjs = await objectSet.fetchPage({
+      $pageSize: 10,
+      $nextPageToken: "nextPage"
+    });
+
+     if(isOk(myObjs)){
+     const myObjsResult = myObjs.value.data;
+    }
+   * @returns a page of objects, wrapped in a result wrapper
+   */
+  <X extends ValidFetchPageArgs<Q, RDPs> = never>(
+    args?: X,
+  ): Promise<
+    Result<
+      PageResult<
+        Osdk.Instance<
+          Q,
+          ExtractOptions2<X>,
+          SubSelectKeys<Q, X>,
+          SubSelectRDPs<RDPs, X>
+        >
       >
     >
   >;
@@ -117,22 +273,21 @@ interface FetchPage<
     }
    * @returns a page of objects, wrapped in a result wrapper
    */
-  readonly fetchPageWithErrors: <
-    L extends PropertyKeys<Q, RDPs>,
+  <
+    L extends PropertyKeys<Q>,
     R extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
   >(
     args?: FetchPageArgs<Q, L, R, A, S, T>,
-  ) => Promise<
+  ): Promise<
     Result<
       PageResult<
         Osdk.Instance<
           Q,
           ExtractOptions<R, S, T>,
-          PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
-          { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+          MaybeSimplifyPropertyKeys<Q, L>
         >
       >
     >
@@ -159,7 +314,7 @@ interface Where<
   ) => this;
 }
 
-interface AsyncIter<
+interface AsyncIterSignature<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > {
@@ -171,27 +326,47 @@ interface AsyncIter<
    * }
    * @returns an async iterator to load all objects
    */
-  readonly asyncIter: <
-    L extends PropertyKeys<Q, RDPs>,
+  <X extends ValidAsyncIterArgs<Q, RDPs> = never>(
+    args?: X,
+  ): AsyncIterableIterator<
+    Osdk.Instance<
+      Q,
+      ExtractOptions2<X>,
+      SubSelectKeys<Q, X>,
+      SubSelectRDPs<RDPs, X>
+    >
+  >;
+
+  /**
+   * Returns an async iterator to load all objects of this type
+   * @example
+   * for await (const obj of myObjectSet.asyncIter()){
+   * // Handle obj
+   * }
+   * @returns an async iterator to load all objects
+   */
+  <
+    L extends PropertyKeys<Q>,
     R extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
   >(
     args?: AsyncIterArgs<Q, L, R, A, S, T>,
-  ) => AsyncIterableIterator<
+  ): AsyncIterableIterator<
     Osdk.Instance<
       Q,
       ExtractOptions<R, S, T>,
-      PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
-      { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+      MaybeSimplifyPropertyKeys<Q, L>
     >
   >;
 }
 
-interface InterfaceObjectSet<
-  Q extends InterfaceDefinition,
-> extends MinimalObjectSet<Q> {
+interface AsyncIter<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> {
+  asyncIter: AsyncIterSignature<Q, RDPs>;
 }
 
 interface WithProperties<
@@ -201,7 +376,7 @@ interface WithProperties<
   readonly withProperties: <
     NEW extends Record<string, SimplePropertyDef>,
   >(
-    clause: { [K in keyof NEW]: DerivedProperty.Selector<Q, NEW[K]> },
+    clause: { [K in keyof NEW]: DerivedProperty.Creator<Q, NEW[K]> },
   ) => ObjectSet<
     Q,
     {
@@ -216,13 +391,14 @@ export interface ObjectSet<
   Q extends ObjectOrInterfaceDefinition = any,
   // Generated code has what is basically ObjectSet<Q> set in here
   // but we never used it so I am repurposing it for RDP
-  UNUSED_OR_RDP extends ObjectSet<Q, any> | Record<string, SimplePropertyDef> =
-    ObjectSet<Q, any>,
+  UNUSED_OR_RDP extends
+    | BaseObjectSet<Q>
+    | Record<string, SimplePropertyDef> = never,
 > extends
   ObjectSetCleanedTypes<
     Q,
     ExtractRdp<UNUSED_OR_RDP>,
-    MergeObjectSet<Q, UNUSED_OR_RDP>
+    MergeObjectSet<Q, ExtractRdp<UNUSED_OR_RDP>>
   >
 {
 }
@@ -314,53 +490,99 @@ interface PivotTo<
    */
   readonly pivotTo: <L extends LinkNames<Q>>(
     type: L,
-  ) => CompileTimeMetadata<LinkedType<Q, L>>["objectSet"]; // ObjectSet<LinkedType<Q, L>>;
+  ) => ObjectSet<LinkedType<Q, L>>;
+}
+
+interface FetchOneSignature<
+  Q extends ObjectTypeDefinition,
+  RDPs extends Record<string, SimplePropertyDef>,
+> {
+  /**
+   * Fetches one object with the specified primary key, without a result wrapper
+   */
+  <
+    X extends ObjectSetArgs.Select<PropertyKeys<Q>, string & keyof RDPs> =
+      never,
+  >(
+    primaryKey: PrimaryKeyType<Q>,
+    options?: X,
+  ): Promise<
+    Osdk.Instance<
+      Q,
+      ExtractOptions2<X>,
+      SubSelectKeys<Q, X>,
+      SubSelectRDPs<RDPs, X>
+    >
+  >;
+
+  /**
+   * Fetches one object with the specified primary key, without a result wrapper
+   */
+  <
+    const L extends PropertyKeys<Q>,
+    const R extends boolean,
+    const S extends false | "throw" = NullabilityAdherence.Default,
+  >(
+    primaryKey: PrimaryKeyType<Q>,
+    options?: SelectArg<Q, L, R, S>,
+  ): Promise<
+    Osdk.Instance<
+      Q,
+      ExtractOptions<R, S>,
+      MaybeSimplifyPropertyKeys<Q, L>
+    >
+  >;
+}
+
+interface FetchOneWithErrorsSignature<
+  Q extends ObjectTypeDefinition,
+  RDPs extends Record<string, SimplePropertyDef>,
+> {
+  /**
+   * Fetches one object with the specified primary key, with a result wrapper
+   */
+  <X extends ObjectSetArgs.Select<PropertyKeys<Q>, string & keyof RDPs>>(
+    primaryKey: PrimaryKeyType<Q>,
+    options?: X,
+  ): Promise<
+    Result<
+      Osdk.Instance<
+        Q,
+        ExtractOptions2<X>,
+        SubSelectKeys<Q, X>,
+        SubSelectRDPs<RDPs, X>
+      >
+    >
+  >;
+
+  /**
+   * Fetches one object with the specified primary key, with a result wrapper
+   */
+  <
+    const L extends PropertyKeys<Q>,
+    const R extends boolean,
+    const S extends false | "throw" = NullabilityAdherence.Default,
+  >(
+    primaryKey: PrimaryKeyType<Q>,
+    options?: SelectArg<Q, L, R, S>,
+  ): Promise<
+    Result<
+      Osdk.Instance<
+        Q,
+        ExtractOptions<R, S>,
+        MaybeSimplifyPropertyKeys<Q, L>
+      >
+    >
+  >;
 }
 
 interface FetchOne<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef>,
 > {
-  /**
-   * Fetches one object with the specified primary key, without a result wrapper
-   */
-  readonly fetchOne: Q extends ObjectTypeDefinition ? <
-      const L extends PropertyKeys<Q, RDPs>,
-      const R extends boolean,
-      const S extends false | "throw" = NullabilityAdherence.Default,
-    >(
-      primaryKey: PrimaryKeyType<Q>,
-      options?: SelectArg<Q, L, R, S>,
-    ) => Promise<
-      Osdk.Instance<
-        Q,
-        ExtractOptions<R, S>,
-        PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
-        { [K in Extract<keyof RDPs, L>]: RDPs[K] }
-      >
-    >
-    : never;
-
-  /**
-   * Fetches one object with the specified primary key, with a result wrapper
-   */
-  readonly fetchOneWithErrors: Q extends ObjectTypeDefinition ? <
-      L extends PropertyKeys<Q, RDPs>,
-      R extends boolean,
-      S extends false | "throw" = NullabilityAdherence.Default,
-    >(
-      primaryKey: PrimaryKeyType<Q>,
-      options?: SelectArg<Q, L, R, S>,
-    ) => Promise<
-      Result<
-        Osdk.Instance<
-          Q,
-          ExtractOptions<R, S>,
-          PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
-          { [K in Extract<keyof RDPs, L>]: RDPs[K] }
-        >
-      >
-    >
+  fetchOne: Q extends ObjectTypeDefinition ? FetchOneSignature<Q, RDPs> : never;
+  fetchOneWithErrors: Q extends ObjectTypeDefinition
+    ? FetchOneWithErrorsSignature<Q, RDPs>
     : never;
 }
 
@@ -385,13 +607,13 @@ interface Subscribe<
 interface ObjectSetCleanedTypes<
   Q extends ObjectOrInterfaceDefinition,
   D extends Record<string, SimplePropertyDef>,
-  MERGED extends ObjectOrInterfaceDefinition,
+  MERGED extends ObjectOrInterfaceDefinition & Q,
 > extends
   MinimalObjectSet<Q, D>,
   WithProperties<Q, D>,
   Aggregate<MERGED>,
   SetArithmetic<MERGED>,
-  PivotTo<MERGED>,
+  PivotTo<Q>,
   FetchOne<Q, D>,
   Subscribe<MERGED>
 {

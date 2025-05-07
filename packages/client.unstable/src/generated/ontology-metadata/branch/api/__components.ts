@@ -58,6 +58,7 @@ import type {
   ValueTypeReference as _api_ValueTypeReference,
 } from "../../api/__components.js";
 import type { ModificationType as _api_modification_ModificationType } from "../../api/modification/__components.js";
+import type { OntologyValidationError as _api_validation_OntologyValidationError } from "../../api/validation/__components.js";
 import type { WorkflowRid as _workflow_api_WorkflowRid } from "../../workflow/api/__components.js";
 
 /**
@@ -1170,6 +1171,11 @@ export type MergeConstraintError = MergeConstraintError_branchConflictsWithMain;
 
 export interface MergedStatusV2 {
 }
+export interface MergeOntologyBranchDryRunRequest {
+}
+export interface MergeOntologyBranchDryRunResponse {
+  status: OntologyBranchMergeStatus;
+}
 export interface MergeOntologyServiceBranchRequest {
 }
 export interface MergeOntologyServiceBranchResponse {
@@ -1432,6 +1438,24 @@ export type OntologyBranchDetails =
 export type OntologyBranchDisplayName = string;
 export interface OntologyBranchEntityModificationData {
   modificationType: _api_modification_ModificationType;
+}
+export interface OntologyBranchMergeFailureStatus {
+  errors: Array<_api_validation_OntologyValidationError>;
+}
+export interface OntologyBranchMergeStatus_success {
+  type: "success";
+  success: OntologyBranchMergeSuccessStatus;
+}
+
+export interface OntologyBranchMergeStatus_failure {
+  type: "failure";
+  failure: OntologyBranchMergeFailureStatus;
+}
+export type OntologyBranchMergeStatus =
+  | OntologyBranchMergeStatus_success
+  | OntologyBranchMergeStatus_failure;
+
+export interface OntologyBranchMergeSuccessStatus {
 }
 /**
  * A type to represent the modified ontology entities and the contributors of an OntologyBranch.

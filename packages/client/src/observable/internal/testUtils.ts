@@ -17,7 +17,9 @@
 import type {
   ActionDefinition,
   ActionEditResponse,
+  FetchPageArgs,
   InterfaceDefinition,
+  Logger,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -36,7 +38,6 @@ import { afterEach, beforeEach, expect, vi, vitest } from "vitest";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import type { Client } from "../../Client.js";
 import { additionalContext } from "../../Client.js";
-import type { LogFn, Logger } from "../../logger/Logger.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
@@ -89,7 +90,7 @@ function mockLog(...args: any[]) {
     ...args,
   );
 }
-// interface LogFn {
+// interface Logger.LogFn {
 //   (obj: unknown, msg?: string, ...args: any[]): void;
 //   (msg: string, ...args: any[]): void;
 // }
@@ -109,7 +110,7 @@ export function createTestLogger(
   function createLogMethod(
     name: "debug" | "error" | "info" | "warn" | "fatal" | "trace",
   ) {
-    return vi.fn<LogFn>(
+    return vi.fn<Logger.LogFn>(
       (
         ...args: [
           obj: unknown,
@@ -134,7 +135,7 @@ export function createTestLogger(
           console.log(bindings);
         }
       },
-    ) as LogFn;
+    ) as Logger.LogFn;
   }
   return {
     debug: createLogMethod("debug"),
@@ -235,7 +236,7 @@ export function createClientMockHelper(): MockClientHelper {
     const d = pDefer<X>();
 
     const objectSet: ObjectSet<ObjectTypeDefinition> = {
-      fetchPage: async (fetchPageArgs) => {
+      fetchPage: async (fetchPageArgs: FetchPageArgs<any>) => {
         mockLog("fetchPage", fetchPageArgs);
         const r = await d.promise;
         return { ...r, $primaryKey: fetchPageArgs };
@@ -260,7 +261,7 @@ export function createClientMockHelper(): MockClientHelper {
 
     client.mockReturnValueOnce(
       {
-        fetchOne: async (a) => {
+        fetchOne: async (a: FetchPageArgs<any>) => {
           mockLog("fetchOne", a);
           invariant(
             expectedId === undefined || a === expectedId,
@@ -269,9 +270,11 @@ export function createClientMockHelper(): MockClientHelper {
           const r = await d.promise;
           invariant(
             r.$primaryKey === a,
-            `expected id to match. Got ${a} but object to return was ${r.$primaryKey}`,
+            `expected id to match. Got ${
+              JSON.stringify(a)
+            } but object to return was ${r.$primaryKey}`,
           );
-          return r;
+          return r as Osdk.Instance<any>;
         },
       } as Pick<ObjectSet<ObjectTypeDefinition>, "fetchOne">,
     );

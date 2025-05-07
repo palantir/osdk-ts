@@ -17,21 +17,27 @@
 import { NonIdealState, Spinner, SpinnerSize } from "@blueprintjs/core";
 import React, { useEffect } from "react";
 
-type State = {
-  state: "loading";
-} | {
-  state: "failed";
-  error?: string;
-} | {
-  state: "success";
-};
+type PageState =
+  | {
+    state: "loading";
+  }
+  | {
+    state: "failed";
+    error?: string;
+  }
+  | {
+    state: "success";
+    isRedirecting: boolean;
+  };
 
 const POLLING_INTERVAL = 250;
 const REDIRECT_DELAY = 500;
 
 export const App: React.FC = () => {
   const [entrypointPaths, setEntrypointPaths] = React.useState<string[]>([]);
-  const [loading, setLoading] = React.useState<State>({ state: "loading" });
+  const [pageState, setPageState] = React.useState<PageState>({
+    state: "loading",
+  });
 
   // Load entrypoints values on mount
   useEffect(() => {
@@ -41,53 +47,65 @@ export const App: React.FC = () => {
   // Poll the finish endpoint until it returns a success or error
   useEffect(() => {
     const poll = window.setInterval(() => {
-      void finish().then((result) => {
-        if (result.status === "success") {
-          setLoading({ state: "success" });
-          setTimeout(() => {
-            window.location.href = result.redirectUrl;
-          }, REDIRECT_DELAY);
+      void finish()
+        .then((result) => {
+          if (result.status === "pending") {
+            return;
+          }
+
+          // On success or failure, we clear the poll and end the loading state
           window.clearInterval(poll);
-        } else if (result.status === "error") {
-          setLoading({ state: "failed", error: result.error });
+          setPageState(
+            result.status === "success"
+              ? { state: "success", isRedirecting: result.redirectUrl != null }
+              : { state: "failed", error: result.error },
+          );
+
+          // When running in Code Workspaces the parent app will handle the redirect
+          if (result.status === "success" && result.redirectUrl != null) {
+            setTimeout(() => {
+              window.location.href = result.redirectUrl!;
+            }, REDIRECT_DELAY);
+          }
+        })
+        .catch((error: unknown) => {
           window.clearInterval(poll);
-        }
-      }).catch((error: unknown) => {
-        setLoading({
-          state: "failed",
-          error: error instanceof Error ? error.message : undefined,
+          setPageState({
+            state: "failed",
+            error: error instanceof Error ? error.message : undefined,
+          });
         });
-        window.clearInterval(poll);
-      });
     }, POLLING_INTERVAL);
     return () => window.clearInterval(poll);
   }, []);
 
   return (
     <div className="body">
-      {loading.state === "loading" && (
+      {pageState.state === "loading" && (
         <NonIdealState
           title="Generating developer mode manifest…"
           icon={<Spinner intent="primary" />}
         />
       )}
-      {loading.state === "success" && (
+      {pageState.state === "success" && (
         <NonIdealState
           title="Started dev mode"
           icon="tick-circle"
           description={
             <div className="description">
               <Spinner intent="primary" size={SpinnerSize.SMALL} />{" "}
-              Redirecting you…
+              {pageState.isRedirecting
+                ? <span>Redirecting you…</span>
+                : <span>Loading preview…</span>}
             </div>
           }
         />
       )}
-      {loading.state === "failed" && (
+      {pageState.state === "failed" && (
         <NonIdealState
           title="Failed to start dev mode"
           icon="error"
-          description={loading.error}
+          description={pageState.error}
         />
       )}
       {/* To load the entrypoint info, we have to actually load it in the browser to get vite to follow the module graph. Since we know these files will fail, we just load them in iframes set to display: none to trigger the load hook in vite */}
@@ -103,13 +121,15 @@ function loadEntrypoints(): Promise<string[]> {
 }
 
 function finish(): Promise<
-  {
+  | {
     status: "success";
-    redirectUrl: string;
-  } | {
+    redirectUrl: string | null;
+  }
+  | {
     status: "error";
     error: string;
-  } | {
+  }
+  | {
     status: "pending";
   }
 > {

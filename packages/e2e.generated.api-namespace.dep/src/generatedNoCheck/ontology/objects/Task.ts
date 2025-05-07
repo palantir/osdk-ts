@@ -20,7 +20,13 @@ export namespace Task {
   export type Links = {};
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly body: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly taskId: $PropType['string'];
   }
   export type StrictProps = Props;

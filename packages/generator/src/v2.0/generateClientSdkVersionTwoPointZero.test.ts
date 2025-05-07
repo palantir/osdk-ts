@@ -591,13 +591,13 @@ describe("generator", () => {
             /**
              * An action which takes in an array of objects
              */
-            applyAction<P extends deleteTodos.Params, OP extends ApplyActionOptions>(
-              args: P,
+            applyAction<OP extends ApplyActionOptions>(
+              args: deleteTodos.Params,
               options?: OP,
             ): Promise<ActionReturnTypeForOptions<OP>>;
 
-            batchApplyAction<P extends ReadonlyArray<deleteTodos.Params>, OP extends ApplyBatchActionOptions>(
-              args: P,
+            batchApplyAction<OP extends ApplyBatchActionOptions>(
+              args: ReadonlyArray<deleteTodos.Params>,
               options?: OP,
             ): Promise<ActionReturnTypeForOptions<OP>>;
           }
@@ -667,13 +667,13 @@ describe("generator", () => {
             /**
              * An action which takes different types of parameters
              */
-            applyAction<P extends markTodoCompleted.Params, OP extends ApplyActionOptions>(
-              args: P,
+            applyAction<OP extends ApplyActionOptions>(
+              args: markTodoCompleted.Params,
               options?: OP,
             ): Promise<ActionReturnTypeForOptions<OP>>;
 
-            batchApplyAction<P extends ReadonlyArray<markTodoCompleted.Params>, OP extends ApplyBatchActionOptions>(
-              args: P,
+            batchApplyAction<OP extends ApplyBatchActionOptions>(
+              args: ReadonlyArray<markTodoCompleted.Params>,
               options?: OP,
             ): Promise<ActionReturnTypeForOptions<OP>>;
           }
@@ -729,6 +729,10 @@ describe("generator", () => {
           export type PropertyKeys = 'SomeProperty';
 
           export interface Props {
+            /**
+             *   display name: 'Sum Property',
+             *   description: Some property
+             */
             readonly SomeProperty: $PropType['string'] | undefined;
           }
           export type StrictProps = Props;
@@ -808,6 +812,9 @@ describe("generator", () => {
           }
 
           export interface Props {
+            /**
+             * (no ontology metadata)
+             */
             readonly email: $PropType['string'];
           }
           export type StrictProps = Props;
@@ -896,8 +903,18 @@ describe("generator", () => {
           }
 
           export interface Props {
+            /**
+             *   display name: 'Body',
+             *   description: The text of the todo
+             */
             readonly body: $PropType['string'] | undefined;
+            /**
+             * (no ontology metadata)
+             */
             readonly complete: $PropType['boolean'] | undefined;
+            /**
+             * (no ontology metadata)
+             */
             readonly id: $PropType['integer'];
           }
           export type StrictProps = Props;
@@ -1212,13 +1229,13 @@ describe("generator", () => {
             /**
              * An action which takes in an array of objects
              */
-            applyAction<P extends deleteTodos.Params, OP extends ApplyActionOptions>(
-              args: P,
+            applyAction<OP extends ApplyActionOptions>(
+              args: deleteTodos.Params,
               options?: OP,
             ): Promise<ActionReturnTypeForOptions<OP>>;
 
-            batchApplyAction<P extends ReadonlyArray<deleteTodos.Params>, OP extends ApplyBatchActionOptions>(
-              args: P,
+            batchApplyAction<OP extends ApplyBatchActionOptions>(
+              args: ReadonlyArray<deleteTodos.Params>,
               options?: OP,
             ): Promise<ActionReturnTypeForOptions<OP>>;
           }
@@ -1288,13 +1305,13 @@ describe("generator", () => {
             /**
              * An action which takes different types of parameters
              */
-            applyAction<P extends markTodoCompleted.Params, OP extends ApplyActionOptions>(
-              args: P,
+            applyAction<OP extends ApplyActionOptions>(
+              args: markTodoCompleted.Params,
               options?: OP,
             ): Promise<ActionReturnTypeForOptions<OP>>;
 
-            batchApplyAction<P extends ReadonlyArray<markTodoCompleted.Params>, OP extends ApplyBatchActionOptions>(
-              args: P,
+            batchApplyAction<OP extends ApplyBatchActionOptions>(
+              args: ReadonlyArray<markTodoCompleted.Params>,
               options?: OP,
             ): Promise<ActionReturnTypeForOptions<OP>>;
           }
@@ -1350,6 +1367,10 @@ describe("generator", () => {
           export type PropertyKeys = 'SomeProperty';
 
           export interface Props {
+            /**
+             *   display name: 'Sum Property',
+             *   description: Some property
+             */
             readonly SomeProperty: $PropType['string'] | undefined;
           }
           export type StrictProps = Props;
@@ -1429,6 +1450,9 @@ describe("generator", () => {
           }
 
           export interface Props {
+            /**
+             * (no ontology metadata)
+             */
             readonly email: $PropType['string'];
           }
           export type StrictProps = Props;
@@ -1517,8 +1541,18 @@ describe("generator", () => {
           }
 
           export interface Props {
+            /**
+             *   display name: 'Body',
+             *   description: The text of the todo
+             */
             readonly body: $PropType['string'] | undefined;
+            /**
+             * (no ontology metadata)
+             */
             readonly complete: $PropType['boolean'] | undefined;
+            /**
+             * (no ontology metadata)
+             */
             readonly id: $PropType['integer'];
           }
           export type StrictProps = Props;
@@ -1921,7 +1955,13 @@ describe("generator", () => {
             export type Links = {};
 
             export interface Props {
+              /**
+               * (no ontology metadata)
+               */
               readonly body: $PropType['string'] | undefined;
+              /**
+               * (no ontology metadata)
+               */
               readonly id: $PropType['integer'];
             }
             export type StrictProps = Props;
@@ -2042,13 +2082,13 @@ describe("generator", () => {
 
             // Represents a fqn of the action
             export interface Signatures {
-              applyAction<P extends setTaskBody.Params, OP extends ApplyActionOptions>(
-                args: P,
+              applyAction<OP extends ApplyActionOptions>(
+                args: setTaskBody.Params,
                 options?: OP,
               ): Promise<ActionReturnTypeForOptions<OP>>;
 
-              batchApplyAction<P extends ReadonlyArray<setTaskBody.Params>, OP extends ApplyBatchActionOptions>(
-                args: P,
+              batchApplyAction<OP extends ApplyBatchActionOptions>(
+                args: ReadonlyArray<setTaskBody.Params>,
                 options?: OP,
               ): Promise<ActionReturnTypeForOptions<OP>>;
             }
@@ -2144,7 +2184,13 @@ describe("generator", () => {
           export type PropertyKeys = 'spt' | 'spt2';
 
           export interface Props {
+            /**
+             *   display name: 'Some Property'
+             */
             readonly spt: $PropType['string'] | undefined;
+            /**
+             *   display name: 'Some Property 2'
+             */
             readonly spt2: $PropType['string'] | undefined;
           }
           export type StrictProps = Props;
@@ -2222,7 +2268,13 @@ describe("generator", () => {
           export type Links = {};
 
           export interface Props {
+            /**
+             * (no ontology metadata)
+             */
             readonly body: $PropType['string'] | undefined;
+            /**
+             * (no ontology metadata)
+             */
             readonly taskId: $PropType['string'];
           }
           export type StrictProps = Props;

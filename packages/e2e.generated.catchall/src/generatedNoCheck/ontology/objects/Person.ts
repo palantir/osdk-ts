@@ -24,6 +24,9 @@ export namespace Person {
   }
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly email: $PropType['string'];
   }
   export type StrictProps = Props;

@@ -20,7 +20,13 @@ export namespace equipment {
   export type Links = {};
 
   export interface Props {
+    /**
+     *   description: The id of an equipment
+     */
     readonly equipmentId: $PropType['string'];
+    /**
+     * (no ontology metadata)
+     */
     readonly type: $PropType['string'] | undefined;
   }
   export type StrictProps = Props;

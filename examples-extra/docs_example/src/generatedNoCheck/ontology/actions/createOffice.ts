@@ -61,13 +61,13 @@ export namespace createOffice {
     /**
      * Create an office's
      */
-    applyAction<P extends createOffice.Params, OP extends ApplyActionOptions>(
-      args: P,
+    applyAction<OP extends ApplyActionOptions>(
+      args: createOffice.Params,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
 
-    batchApplyAction<P extends ReadonlyArray<createOffice.Params>, OP extends ApplyBatchActionOptions>(
-      args: P,
+    batchApplyAction<OP extends ApplyBatchActionOptions>(
+      args: ReadonlyArray<createOffice.Params>,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }

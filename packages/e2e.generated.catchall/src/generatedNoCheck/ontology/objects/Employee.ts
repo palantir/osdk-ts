@@ -37,17 +37,53 @@ export namespace Employee {
   }
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly adUsername: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly businessTitle: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly email: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly employeeNumber: $PropType['double'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly favPlace: $PropType['geopoint'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly firstFullTimeStartDate: $PropType['datetime'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly firstName: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly id: $PropType['string'];
+    /**
+     * (no ontology metadata)
+     */
     readonly jobProfile: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly locationCity: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly locationName: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly locationType: $PropType['string'] | undefined;
   }
   export type StrictProps = Props;

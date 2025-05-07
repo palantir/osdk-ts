@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "consola": "^3.4.0",
-    "open": "^10.1.0",
+    "open": "^10.1.2",
     "semver": "^7.6.3",
     "yargs": "^17.7.2"
   },

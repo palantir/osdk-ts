@@ -22,8 +22,13 @@ import type {
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
+import { derivedPropertyDefinitionFactory } from "./derivedPropertyDefinitionFactory.js";
 
-const idCounter = 0;
+type WithConstSelect<Q extends ObjectOrInterfaceDefinition> =
+  & DerivedProperty.SelectPropertyBuilder<Q, false>
+  & {
+    constant: DerivedProperty.Builder<Q, true>["constant"];
+  };
 
 /** @internal */
 export function createWithPropertiesObjectSet<
@@ -32,8 +37,9 @@ export function createWithPropertiesObjectSet<
   objectType: Q,
   objectSet: WireObjectSet,
   definitionMap: Map<any, DerivedPropertyDefinition>,
-): DerivedProperty.SelectPropertyBuilder<Q, false> {
-  const base: DerivedProperty.SelectPropertyBuilder<Q, false> = {
+  fromBaseObjectSet: boolean = false,
+): WithConstSelect<Q> {
+  return {
     pivotTo: (link) => {
       return createWithPropertiesObjectSet(objectType, {
         type: "searchAround",
@@ -96,27 +102,56 @@ export function createWithPropertiesObjectSet<
             "Invalid aggregation operation " + aggregationOperation,
           );
       }
-      const selectorResult: DerivedProperty.SelectorResult<any> = { type: {} };
-      definitionMap.set(selectorResult, {
+      const wrappedObjectSet: DerivedPropertyDefinition = {
         type: "selection",
         objectSet: objectSet,
         operation: aggregationOperationDefinition,
-      });
-      return selectorResult;
+      };
+      const selectorResult: DerivedProperty.Definition<any, any> =
+        derivedPropertyDefinitionFactory(wrappedObjectSet, definitionMap);
+      definitionMap.set(selectorResult, wrappedObjectSet);
+      return selectorResult as any;
     },
     selectProperty: (name) => {
-      const selectorResult: DerivedProperty.SelectorResult<any> = { type: {} };
-      definitionMap.set(selectorResult, {
+      if (fromBaseObjectSet) {
+        const wrappedObjectSet: DerivedPropertyDefinition = {
+          type: "property",
+          apiName: name,
+        };
+        const selectorResult: DerivedProperty.Definition<any, any> =
+          derivedPropertyDefinitionFactory(wrappedObjectSet, definitionMap);
+        definitionMap.set(selectorResult, wrappedObjectSet);
+        return selectorResult as any;
+      }
+      const wrappedObjectSet: DerivedPropertyDefinition = {
         type: "selection",
         objectSet: objectSet,
         operation: {
           type: "get",
           selectedPropertyApiName: name,
         },
-      });
-      return selectorResult;
+      };
+      const selectorResult: DerivedProperty.Definition<any, any> =
+        derivedPropertyDefinitionFactory(wrappedObjectSet, definitionMap);
+      definitionMap.set(selectorResult, wrappedObjectSet);
+      return selectorResult as any;
+    },
+    constant: {
+      double: (value) => {
+        invariant(false, "Not supported");
+      },
+      integer: (value) => {
+        invariant(false, "Not supported");
+      },
+      long: (value) => {
+        invariant(false, "Not supported");
+      },
+      datetime: (value) => {
+        invariant(false, "Not supported");
+      },
+      timestamp: (value) => {
+        invariant(false, "Not supported");
+      },
     },
   };
-
-  return base;
 }

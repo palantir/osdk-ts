@@ -1715,7 +1715,7 @@ describe("Ontology Defining", () => {
           displayName: "Foo",
           pluralDisplayName: "Foo",
           apiName: "foo",
-          primaryKeys: ["bar"],
+          primaryKeyPropertyApiName: "bar",
           properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
         });
       }).toThrowErrorMatchingInlineSnapshot(
@@ -1728,11 +1728,11 @@ describe("Ontology Defining", () => {
           displayName: "Foo",
           pluralDisplayName: "Foo",
           apiName: "foo",
-          primaryKeys: ["fizz"],
+          primaryKeyPropertyApiName: "fizz",
           properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Primary key properties fizz do not exist on object foo]`,
+        `[Error: Invariant failed: Primary key property fizz does not exist on object foo]`,
       );
 
       expect(() => {
@@ -1741,7 +1741,7 @@ describe("Ontology Defining", () => {
           displayName: "Foo",
           pluralDisplayName: "Foo",
           apiName: "foo",
-          primaryKeys: ["bar"],
+          primaryKeyPropertyApiName: "bar",
           properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
           implementsInterfaces: [{
             implements: sample,
@@ -1758,7 +1758,7 @@ describe("Ontology Defining", () => {
           displayName: "Foo",
           pluralDisplayName: "Foo",
           apiName: "foo",
-          primaryKeys: ["bar"],
+          primaryKeyPropertyApiName: "bar",
           properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
           implementsInterfaces: [{
             implements: sample,
@@ -1789,7 +1789,7 @@ describe("Ontology Defining", () => {
         displayName: "Foo",
         pluralDisplayName: "Foo",
         apiName: "foo",
-        primaryKeys: ["bar"],
+        primaryKeyPropertyApiName: "bar",
         properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
         implementsInterfaces: [{
           implements: sample,
@@ -2015,7 +2015,7 @@ describe("Ontology Defining", () => {
         displayName: "Foo",
         pluralDisplayName: "Foo",
         apiName: "foo",
-        primaryKeys: ["bar"],
+        primaryKeyPropertyApiName: "bar",
         properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
       });
 
@@ -2024,7 +2024,7 @@ describe("Ontology Defining", () => {
         displayName: "Fizz",
         pluralDisplayName: "Fizz",
         apiName: "fizz",
-        primaryKeys: ["fizz"],
+        primaryKeyPropertyApiName: "fizz",
         properties: [{ apiName: "fizz", type: "string", displayName: "Fizz" }, {
           apiName: "bar",
           type: "string",
@@ -2351,7 +2351,7 @@ describe("Ontology Defining", () => {
         displayName: "Foo",
         pluralDisplayName: "Foo",
         apiName: "foo",
-        primaryKeys: ["bar"],
+        primaryKeyPropertyApiName: "bar",
         properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
       });
 
@@ -2360,7 +2360,7 @@ describe("Ontology Defining", () => {
         displayName: "Fizz",
         pluralDisplayName: "Fizz",
         apiName: "fizz",
-        primaryKeys: ["fizz"],
+        primaryKeyPropertyApiName: "fizz",
         properties: [{ apiName: "fizz", type: "string", displayName: "Fizz" }, {
           apiName: "bar",
           type: "string",
@@ -2729,7 +2729,7 @@ describe("Ontology Defining", () => {
         displayName: "datasetBackedObject",
         pluralDisplayName: "datasetBackedObject",
         apiName: "foo",
-        primaryKeys: ["bar"],
+        primaryKeyPropertyApiName: "bar",
         properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
         datasource: { type: "dataset" },
       });
@@ -2739,7 +2739,7 @@ describe("Ontology Defining", () => {
         displayName: "streamBackedObjectNoRetention",
         pluralDisplayName: "streamBackedObjectNoRetention",
         apiName: "fizz",
-        primaryKeys: ["fizz"],
+        primaryKeyPropertyApiName: "fizz",
         properties: [{ apiName: "fizz", type: "string", displayName: "Fizz" }, {
           apiName: "bar",
           type: "string",
@@ -2753,7 +2753,7 @@ describe("Ontology Defining", () => {
         displayName: "streamBackedObjectWithRetention",
         pluralDisplayName: "streamBackedObjectWithRetention",
         apiName: "buzz",
-        primaryKeys: ["buzz"],
+        primaryKeyPropertyApiName: "buzz",
         properties: [{ apiName: "buzz", type: "string", displayName: "Buzz" }],
         datasource: { type: "stream", retentionPeriod: "PT1H" },
       });
@@ -3081,7 +3081,7 @@ describe("Ontology Defining", () => {
           displayName: "streamBackedObjectWithRetention",
           pluralDisplayName: "streamBackedObjectWithRetention",
           apiName: "buzz",
-          primaryKeys: ["buzz"],
+          primaryKeyPropertyApiName: "buzz",
           properties: [{
             apiName: "buzz",
             type: "string",
@@ -3103,7 +3103,7 @@ describe("Ontology Defining", () => {
         displayName: "exampleObject",
         pluralDisplayName: "exampleObject",
         apiName: "fizz",
-        primaryKeys: ["bar"],
+        primaryKeyPropertyApiName: "bar",
         properties: [{
           apiName: "fizz",
           type: "mediaReference",
@@ -3442,7 +3442,7 @@ describe("Ontology Defining", () => {
         displayName: "exampleObjectType",
         pluralDisplayName: "exampleObjectTypes",
         apiName: "foo",
-        primaryKeys: ["bar"],
+        primaryKeyPropertyApiName: "bar",
         properties: [{
           apiName: "bar",
           type: "string",

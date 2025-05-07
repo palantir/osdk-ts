@@ -406,6 +406,7 @@ export interface LoadEntityMetadataResponse {
  */
 export interface MigrationConfiguration {
   entityMigrationCategory: EntityMigrationCategory;
+  importEditsHistory?: boolean | null | undefined;
   minMigrationDuration: string;
   transitionRetryLimit: number;
   transitionWindows: TransitionWindows;

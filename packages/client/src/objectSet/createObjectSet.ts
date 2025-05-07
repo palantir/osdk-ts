@@ -86,7 +86,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       augmentRequestContext(clientCtx, _ => ({ finalMethodCall: "aggregate" })),
       objectType,
       objectSet,
-    ),
+    ) as ObjectSet<Q>["aggregate"],
 
     fetchPage: fetchPageInternal.bind(
       globalThis,
@@ -254,6 +254,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
             objectType,
             { type: "methodInput" },
             definitionMap,
+            true,
           ));
         derivedProperties[key] = definitionMap.get(
           derivedPropertyDefinition,

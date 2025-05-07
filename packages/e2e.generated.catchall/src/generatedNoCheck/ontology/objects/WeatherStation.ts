@@ -20,7 +20,14 @@ export namespace WeatherStation {
   export type Links = {};
 
   export interface Props {
+    /**
+     *   display name: 'Geohash',
+     *   description: geopoint
+     */
     readonly geohash: $PropType['geopoint'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly stationId: $PropType['string'];
   }
   export type StrictProps = Props;

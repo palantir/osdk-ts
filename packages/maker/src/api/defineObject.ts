@@ -41,15 +41,8 @@ export function defineObject(objectDef: ObjectType): ObjectType {
     `Title property ${objectDef.titlePropertyApiName} is not defined on object ${objectDef.apiName}`,
   );
   invariant(
-    objectDef.primaryKeys.length !== 0,
-    `${objectDef.apiName} does not have any primary keys, objects must have at least one primary key`,
-  );
-  const nonExistentPrimaryKeys = objectDef.primaryKeys.filter(primaryKey =>
-    !objectDef.properties?.map(val => val.apiName).includes(primaryKey)
-  );
-  invariant(
-    nonExistentPrimaryKeys.length === 0,
-    `Primary key properties ${nonExistentPrimaryKeys} do not exist on object ${objectDef.apiName}`,
+    propertyApiNames.includes(objectDef.primaryKeyPropertyApiName),
+    `Primary key property ${objectDef.primaryKeyPropertyApiName} does not exist on object ${objectDef.apiName}`,
   );
   const retentionPeriod = (objectDef.datasource as any)?.retentionPeriod;
   invariant(
@@ -64,9 +57,9 @@ export function defineObject(objectDef: ObjectType): ObjectType {
   );
   invariant(
     (objectDef.properties ?? []).filter(p =>
-      objectDef.primaryKeys.includes(p.apiName)
+      p.apiName === objectDef.primaryKeyPropertyApiName
     ).every(p => !isExotic(p.type)),
-    `Primary key properties ${objectDef.primaryKeys} can only be primitive types`,
+    `Primary key properties ${objectDef.primaryKeyPropertyApiName} can only be primitive types`,
   );
 
   objectDef.implementsInterfaces?.forEach(interfaceImpl => {

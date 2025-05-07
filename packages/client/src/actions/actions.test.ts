@@ -24,6 +24,7 @@ import {
   $Actions,
   actionTakesAttachment,
   actionTakesMedia,
+  addGeoshape,
   createFooInterface,
   createOffice,
   createStructPerson,
@@ -344,6 +345,61 @@ describe.each([
     const result = await client(actionTakesMedia).applyAction({
       media_reference:
         stubData.actionRequestMediaUpload.parameters.media_reference,
+    });
+
+    expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
+    expect(result).toBeUndefined();
+  });
+
+  it("Accepts geoshapes", async () => {
+    const clientBoundActionTakesMedia = client(
+      addGeoshape,
+    ).applyAction;
+    type InferredParamType = Parameters<
+      typeof clientBoundActionTakesMedia
+    >[0];
+
+    expectTypeOf<
+      {
+        geoshapeParam: GeoJSON.GeoJSON;
+        geohashParam: GeoJSON.Point;
+      }
+    >().toMatchTypeOf<
+      InferredParamType
+    >();
+
+    const result = await client(addGeoshape).applyAction({
+      geoshapeParam: {
+        type: "Polygon",
+        coordinates: [
+          [
+            [
+              -97.86567863752134,
+              38.418052586871624,
+            ],
+            [
+              -97.86567863752134,
+              35.410223767370525,
+            ],
+            [
+              -91.98573135442845,
+              35.410223767370525,
+            ],
+            [
+              -91.98573135442845,
+              38.418052586871624,
+            ],
+            [
+              -97.86567863752134,
+              38.418052586871624,
+            ],
+          ],
+        ],
+      },
+      geohashParam: {
+        type: "Point",
+        coordinates: [-79.4382042508868, 40.917859676842255],
+      },
     });
 
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
@@ -679,6 +735,7 @@ describe("ActionResponse remapping", () => {
       "actionTakesAttachment",
       "actionTakesMedia",
       "actionTakesObjectSet",
+      "addGeoshape",
       "createFooInterface",
       "createOffice",
       "createOfficeAndEmployee",

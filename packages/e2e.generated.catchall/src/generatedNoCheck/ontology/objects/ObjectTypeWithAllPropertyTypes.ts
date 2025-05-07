@@ -51,36 +51,129 @@ export namespace ObjectTypeWithAllPropertyTypes {
   export type Links = {};
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly attachment: $PropType['attachment'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly attachmentArray: $PropType['attachment'][] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly boolean: $PropType['boolean'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly booleanArray: $PropType['boolean'][] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly byte: $PropType['byte'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly byteArray: $PropType['byte'][] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly date: $PropType['datetime'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly dateArray: $PropType['datetime'][] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly dateTime: $PropType['timestamp'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly dateTimeArray: $PropType['timestamp'][] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly decimal: $PropType['decimal'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly decimalArray: $PropType['decimal'][] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly double: $PropType['double'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly doubleArray: $PropType['double'][] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly float: $PropType['float'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly floatArray: $PropType['float'][] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly geoPoint: $PropType['geopoint'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly geoPointArray: $PropType['geopoint'][] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly geoShape: $PropType['geoshape'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly geoShapeArray: $PropType['geoshape'][] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly id: $PropType['integer'];
+    /**
+     * (no ontology metadata)
+     */
     readonly integer: $PropType['integer'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly integerArray: $PropType['integer'][] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly long: $PropType['long'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly longArray: $PropType['long'][] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly numericTimeseries: $PropType['numericTimeseries'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly short: $PropType['short'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly shortArray: $PropType['short'][] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly string: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly stringArray: $PropType['string'][] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly stringTimeseries: $PropType['stringTimeseries'] | undefined;
   }
   export type StrictProps = Props;
