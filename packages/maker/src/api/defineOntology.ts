@@ -16,6 +16,7 @@
 
 import type {
   ActionTypeStatus,
+  DataConstraints,
   OntologyIr,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionValidation,
@@ -54,6 +55,7 @@ import type {
   ActionType,
   InterfaceType,
   LinkType,
+  Nullability,
   ObjectPropertyType,
   ObjectType,
   OntologyDefinition,

@@ -5185,7 +5185,7 @@ describe("Ontology Defining", () => {
         displayName: "Foo",
         pluralDisplayName: "Foo",
         apiName: "foo",
-        primaryKeys: ["bar"],
+        primaryKeyPropertyApiName: "bar",
         properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
         implementsInterfaces: [{
           implements: importedInterface,
