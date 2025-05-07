@@ -25,6 +25,7 @@ import type {
   GeotimeSeriesIntegrationRid as _api_GeotimeSeriesIntegrationRid,
   GroupId as _api_GroupId,
   InterfaceLinkTypeApiName as _api_InterfaceLinkTypeApiName,
+  InterfaceLinkTypeCardinality as _api_InterfaceLinkTypeCardinality,
   InterfaceLinkTypeRid as _api_InterfaceLinkTypeRid,
   InterfaceType as _api_InterfaceType,
   InterfaceTypeApiName as _api_InterfaceTypeApiName,
@@ -40,6 +41,7 @@ import type {
   ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
   ObjectTypeId as _api_ObjectTypeId,
   ObjectTypeRid as _api_ObjectTypeRid,
+  OneToManyLinkCardinalityHint as _api_OneToManyLinkCardinalityHint,
   OntologyIrActionType as _api_OntologyIrActionType,
   OntologyIrInterfaceType as _api_OntologyIrInterfaceType,
   OntologyIrLinkType as _api_OntologyIrLinkType,
@@ -48,6 +50,7 @@ import type {
   OntologyIrObjectType as _api_OntologyIrObjectType,
   OntologyIrObjectTypeDatasource as _api_OntologyIrObjectTypeDatasource,
   OntologyIrSharedPropertyType as _api_OntologyIrSharedPropertyType,
+  OntologyIrType as _api_OntologyIrType,
   OntologyPackageRid as _api_OntologyPackageRid,
   ParameterId as _api_ParameterId,
   ParameterRid as _api_ParameterRid,
@@ -59,6 +62,7 @@ import type {
   SharedPropertyType as _api_SharedPropertyType,
   SharedPropertyTypeRid as _api_SharedPropertyTypeRid,
   TimeSeriesSyncRid as _api_TimeSeriesSyncRid,
+  Type as _api_Type,
   ValueTypeRid as _api_ValueTypeRid,
   ValueTypeVersionId as _api_ValueTypeVersionId,
   WebhookRid as _api_WebhookRid,
@@ -84,6 +88,10 @@ import type {
   SchemaTransition as _api_schemamigrations_SchemaTransition,
 } from "../schemamigrations/__components.js";
 import type { ObjectTypeGothamMapping as _api_typemapping_ObjectTypeGothamMapping } from "../typemapping/__components.js";
+import type {
+  BaseParameterType as _api_types_BaseParameterType,
+  OntologyIrBaseParameterType as _api_types_OntologyIrBaseParameterType,
+} from "../types/__components.js";
 export type ActionParameterShapeId = string;
 export interface ActionTypeBlockDataV2 {
   actionType: _api_ActionType;
@@ -148,6 +156,88 @@ export type DatasourcePredicate =
  * Ontology as code uses this as a stable ID for GeotimeSeriesIntegration inputs
  */
 export type GeotimeSeriesIntegrationName = string;
+export interface ImportedActionType {
+  apiName: _api_ActionTypeApiName;
+  description?: string | null | undefined;
+  displayName: string;
+  parameters: Array<ImportedParameter>;
+}
+export interface ImportedInterfaceLinkType {
+  apiName: _api_InterfaceLinkTypeApiName;
+  cardinality: _api_InterfaceLinkTypeCardinality;
+  description?: string | null | undefined;
+  displayName: string;
+  required: boolean;
+}
+export interface ImportedInterfaceType {
+  apiName: _api_InterfaceTypeApiName;
+  description?: string | null | undefined;
+  displayName: string;
+  links: Array<ImportedInterfaceLinkType>;
+  properties: Array<ImportedSharedPropertyType>;
+}
+export interface ImportedLinkDefinition_manyToMany {
+  type: "manyToMany";
+  manyToMany: ImportedManyToManyLinkDefinition;
+}
+
+export interface ImportedLinkDefinition_oneToMany {
+  type: "oneToMany";
+  oneToMany: ImportedOneToManyLinkDefinition;
+}
+export type ImportedLinkDefinition =
+  | ImportedLinkDefinition_manyToMany
+  | ImportedLinkDefinition_oneToMany;
+
+export interface ImportedLinkType {
+  definition: ImportedLinkDefinition;
+  id: _api_LinkTypeId;
+}
+export interface ImportedManyToManyLinkDefinition {
+  objectTypeApiNameA: _api_ObjectTypeApiName;
+  objectTypeApiNameB: _api_ObjectTypeApiName;
+  objectTypeAToBLinkDisplayName: string;
+  objectTypeBToALinkDisplayName: string;
+}
+export interface ImportedObjectType {
+  apiName: _api_ObjectTypeApiName;
+  description?: string | null | undefined;
+  displayName: string;
+  propertyTypes: Array<ImportedPropertyType>;
+}
+export interface ImportedOneToManyLinkDefinition {
+  cardinality?: _api_OneToManyLinkCardinalityHint | null | undefined;
+  manyToOneLinkDisplayName: string;
+  objectTypeApiNameManySide: _api_ObjectTypeApiName;
+  objectTypeApiNameOneSide: _api_ObjectTypeApiName;
+  oneToManyLinkDisplayName: string;
+}
+export interface ImportedParameter {
+  description?: string | null | undefined;
+  displayName: string;
+  id: _api_ParameterId;
+  type: _api_types_BaseParameterType;
+}
+export interface ImportedPropertyType {
+  apiName: _api_ObjectTypeFieldApiName;
+  description?: string | null | undefined;
+  displayName: string;
+  sharedPropertyType?: _api_ObjectTypeFieldApiName | null | undefined;
+  type: _api_Type;
+}
+export interface ImportedSharedPropertyType {
+  apiName: _api_ObjectTypeFieldApiName;
+  description?: string | null | undefined;
+  displayName: string;
+  type: _api_Type;
+}
+export interface ImportedTypes {
+  actionTypes: Array<ImportedActionType>;
+  interfaceTypes: Array<ImportedInterfaceType>;
+  linkTypes: Array<ImportedLinkType>;
+  objectTypes: Array<ImportedObjectType>;
+  sharedPropertyTypes: Array<ImportedSharedPropertyType>;
+}
 export type InstallLocationBlockShapeId = BlockShapeId;
 export interface InterfaceTypeBlockDataV2 {
   interfaceType: _api_InterfaceType;
@@ -295,6 +385,51 @@ export interface OntologyIrBlockPermissionInformation {
   actionTypes: Record<_api_ActionTypeApiName, ActionTypePermissionInformation>;
   linkTypes: Record<_api_LinkTypeId, LinkTypePermissionInformation>;
   objectTypes: Record<_api_ObjectTypeApiName, ObjectTypePermissionInformation>;
+}
+export interface OntologyIrImportedActionType {
+  apiName: _api_ActionTypeApiName;
+  description?: string | null | undefined;
+  displayName: string;
+  parameters: Array<OntologyIrImportedParameter>;
+}
+export interface OntologyIrImportedInterfaceType {
+  apiName: _api_InterfaceTypeApiName;
+  description?: string | null | undefined;
+  displayName: string;
+  links: Array<ImportedInterfaceLinkType>;
+  properties: Array<OntologyIrImportedSharedPropertyType>;
+}
+export interface OntologyIrImportedObjectType {
+  apiName: _api_ObjectTypeApiName;
+  description?: string | null | undefined;
+  displayName: string;
+  propertyTypes: Array<OntologyIrImportedPropertyType>;
+}
+export interface OntologyIrImportedParameter {
+  description?: string | null | undefined;
+  displayName: string;
+  id: _api_ParameterId;
+  type: _api_types_OntologyIrBaseParameterType;
+}
+export interface OntologyIrImportedPropertyType {
+  apiName: _api_ObjectTypeFieldApiName;
+  description?: string | null | undefined;
+  displayName: string;
+  sharedPropertyType?: _api_ObjectTypeFieldApiName | null | undefined;
+  type: _api_OntologyIrType;
+}
+export interface OntologyIrImportedSharedPropertyType {
+  apiName: _api_ObjectTypeFieldApiName;
+  description?: string | null | undefined;
+  displayName: string;
+  type: _api_OntologyIrType;
+}
+export interface OntologyIrImportedTypes {
+  actionTypes: Array<OntologyIrImportedActionType>;
+  interfaceTypes: Array<OntologyIrImportedInterfaceType>;
+  linkTypes: Array<ImportedLinkType>;
+  objectTypes: Array<OntologyIrImportedObjectType>;
+  sharedPropertyTypes: Array<OntologyIrImportedSharedPropertyType>;
 }
 export interface OntologyIrInterfaceTypeBlockDataV2 {
   interfaceType: _api_OntologyIrInterfaceType;

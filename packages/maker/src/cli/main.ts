@@ -20,10 +20,7 @@ import * as path from "node:path";
 import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { defineInterface } from "../api/defineInterface.js";
-import { defineObject } from "../api/defineObject.js";
 import { defineOntology } from "../api/defineOntology.js";
-import { defineSharedPropertyType } from "../api/defineSpt.js";
 
 const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
 
@@ -107,37 +104,7 @@ export default async function main(
   }
 }
 
-async function loadOntologyViaTsNode(input: string) {
-  Object.assign(globalThis, {
-    defineInterface,
-    defineObject,
-    defineSharedPropertyType,
-  });
-
-  const tsNode = await import("ts-node");
-  const tsNodeService = tsNode.register({
-    transpileOnly: true,
-    compilerOptions: {
-      module: "commonjs",
-      target: "esnext",
-    },
-    esm: true,
-  });
-
-  tsNodeService.enabled(true);
-
-  const q = await import(input);
-  return q;
-}
-
 async function loadOntology(input: string, apiNamespace: string) {
-  // Object.assign(globalThis, {
-  //   defineInterface,
-  //   defineLink,
-  //   defineObject,
-  //   defineSharedPropertyType,
-  // });
-
   const q = await defineOntology(apiNamespace, async () => await import(input));
   return q;
 }

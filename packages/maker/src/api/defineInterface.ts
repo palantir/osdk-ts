@@ -15,14 +15,15 @@
  */
 
 import invariant from "tiny-invariant";
-import { namespace, ontologyDefinition } from "./defineOntology.js";
-import { defineSharedPropertyType } from "./defineSpt.js";
+import { ontologyDefinition, updateOntology } from "./defineOntology.js";
+import { defineSharedPropertyTypeInner } from "./defineSpt.js";
 import type { BlueprintIcon } from "./iconNames.js";
-import type {
-  InterfaceType,
-  InterfaceTypeStatus,
-  PropertyTypeType,
-  SharedPropertyType,
+import {
+  type InterfaceType,
+  type InterfaceTypeStatus,
+  OntologyEntityTypeEnum,
+  type PropertyTypeType,
+  type SharedPropertyType,
 } from "./types.js";
 
 type SimplifiedInterfaceTypeStatus =
@@ -36,29 +37,32 @@ type PropertyWithOptional = {
   propertyDefinition: PropertyBase;
 };
 
-export function defineInterface(
-  opts: {
-    apiName: string;
-    displayName?: string;
-    description?: string;
-    icon?: { locator: BlueprintIcon; color: string };
-    status?: SimplifiedInterfaceTypeStatus;
-    properties?: Record<
-      string,
-      PropertyBase | PropertyWithOptional
-    >;
+export type InterfaceTypeDefinition = {
+  apiName: string;
+  displayName?: string;
+  description?: string;
+  icon?: { locator: BlueprintIcon; color: string };
+  status?: SimplifiedInterfaceTypeStatus;
+  properties?: Record<
+    string,
+    PropertyBase | PropertyWithOptional
+  >;
+  extends?: InterfaceType | InterfaceType[] | string | string[];
+};
 
-    extends?: InterfaceType | InterfaceType[] | string | string[];
-  },
+export function defineInterfaceInner(
+  namespace: string,
+  interfaceDef: InterfaceTypeDefinition,
 ): InterfaceType {
-  const apiName = namespace + opts.apiName;
+  const apiName = namespace + interfaceDef.apiName;
   invariant(
-    ontologyDefinition.interfaceTypes[apiName] === undefined,
+    ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][apiName]
+      === undefined,
     `Interface ${apiName} already exists`,
   );
 
   const properties = Object.fromEntries(
-    Object.entries(opts.properties ?? {}).map<
+    Object.entries(interfaceDef.properties ?? {}).map<
       [string, { required: boolean; sharedPropertyType: SharedPropertyType }]
     >(
       ([apiName, type]) => {
@@ -66,6 +70,7 @@ export function defineInterface(
           return [apiName, {
             required: type.required,
             sharedPropertyType: unifyBasePropertyDefinition(
+              namespace,
               apiName,
               type.propertyDefinition,
             ),
@@ -74,32 +79,36 @@ export function defineInterface(
 
         return [apiName, {
           required: true,
-          sharedPropertyType: unifyBasePropertyDefinition(apiName, type),
+          sharedPropertyType: unifyBasePropertyDefinition(
+            namespace,
+            apiName,
+            type,
+          ),
         }];
       },
     ),
   );
 
   let extendsInterfaces: string[] = [];
-  if (opts.extends) {
-    if (typeof opts.extends === "string") {
-      extendsInterfaces = [opts.extends];
+  if (interfaceDef.extends) {
+    if (typeof interfaceDef.extends === "string") {
+      extendsInterfaces = [interfaceDef.extends];
     } else if (
-      Array.isArray(opts.extends)
-      && opts.extends.every(item => typeof item === "string")
+      Array.isArray(interfaceDef.extends)
+      && interfaceDef.extends.every(item => typeof item === "string")
     ) {
-      extendsInterfaces = opts.extends;
-    } else if ((opts.extends as InterfaceType).apiName !== undefined) {
-      extendsInterfaces = [(opts.extends as InterfaceType).apiName];
+      extendsInterfaces = interfaceDef.extends;
+    } else if ((interfaceDef.extends as InterfaceType).apiName !== undefined) {
+      extendsInterfaces = [(interfaceDef.extends as InterfaceType).apiName];
     } else {
-      extendsInterfaces = (opts.extends as InterfaceType[]).map(item =>
+      extendsInterfaces = (interfaceDef.extends as InterfaceType[]).map(item =>
         item.apiName
       );
     }
   }
 
   const status: InterfaceTypeStatus = mapSimplifiedStatusToInterfaceTypeStatus(
-    opts.status ?? { type: "active" },
+    interfaceDef.status ?? { type: "active" },
   );
 
   invariant(
@@ -108,15 +117,19 @@ export function defineInterface(
     `Deprecated status must include message and deadline properties.`,
   );
 
-  const a: InterfaceType = {
+  const fullInterface: InterfaceType = {
     apiName,
     displayMetadata: {
-      displayName: opts.displayName ?? opts.apiName,
-      description: opts.description ?? opts.displayName ?? opts.apiName,
-      icon: opts.icon !== undefined
+      displayName: interfaceDef.displayName ?? interfaceDef.apiName,
+      description: interfaceDef.description ?? interfaceDef.displayName
+        ?? interfaceDef.apiName,
+      icon: interfaceDef.icon !== undefined
         ? {
           type: "blueprint",
-          blueprint: { color: opts.icon.color, locator: opts.icon.locator },
+          blueprint: {
+            color: interfaceDef.icon.color,
+            locator: interfaceDef.icon.locator,
+          },
         }
         : undefined,
     },
@@ -124,9 +137,11 @@ export function defineInterface(
     links: [],
     status,
     propertiesV2: properties,
+    __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
   };
 
-  return ontologyDefinition.interfaceTypes[apiName] = a;
+  updateOntology(namespace, fullInterface);
+  return fullInterface;
 }
 
 function isPropertyTypeType(
@@ -170,6 +185,7 @@ function mapSimplifiedStatusToInterfaceTypeStatus(
 }
 
 function unifyBasePropertyDefinition(
+  namespace: string,
   apiName: string,
   type: PropertyBase,
 ): SharedPropertyType {
@@ -184,7 +200,7 @@ function unifyBasePropertyDefinition(
       } for property ${apiName} on InterfaceType ${apiName}`,
     );
 
-    const spt = defineSharedPropertyType({
+    const spt = defineSharedPropertyTypeInner(namespace, {
       apiName,
       displayName: apiName,
       type,

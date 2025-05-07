@@ -1,20 +1,4 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/*
  * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,6 +22,7 @@ import type {
   OntologyIrActionValidation,
   OntologyIrAllowedParameterValues,
   OntologyIrBaseParameterType,
+  OntologyIrImportedTypes,
   OntologyIrInterfaceType,
   OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrLinkDefinition,
@@ -46,6 +31,7 @@ import type {
   OntologyIrObjectTypeBlockDataV2,
   OntologyIrObjectTypeDatasource,
   OntologyIrObjectTypeDatasourceDefinition,
+  OntologyIrOntologyBlockDataV2,
   OntologyIrParameter,
   OntologyIrPropertyType,
   OntologyIrSection,
@@ -68,44 +54,83 @@ import type {
   ActionParameterRequirementConstraint,
   ActionType,
   InterfaceType,
-  LinkTypeDefinition,
+  LinkType,
   Nullability,
   ObjectPropertyType,
   ObjectType,
-  Ontology,
+  OntologyDefinition,
+  OntologyEntityType,
   PropertyTypeType,
   SharedPropertyType,
 } from "./types.js";
+import { OntologyEntityTypeEnum } from "./types.js";
+
+// type -> apiName -> entity
+/** @internal */
+export let ontologyDefinition: OntologyDefinition;
+
+// type -> apiName -> entity
+/** @internal */
+export let importedTypes: OntologyDefinition;
 
 /** @internal */
-export let ontologyDefinition: Ontology;
+export let globalNamespace: string;
 
 /** @internal */
-export let namespace: string;
+export let importing: number;
 
 type OntologyAndValueTypeIrs = {
   ontology: OntologyIr;
   valueType: OntologyIrValueTypeBlockData;
 };
 
+export function updateOntology<
+  T extends OntologyEntityType,
+>(
+  namespace: string,
+  entity: T,
+): void {
+  if (namespace !== globalNamespace) {
+    // importing is handled by the importer in getMakerForNamespace.js
+    return;
+  }
+  if (entity.__type !== OntologyEntityTypeEnum.VALUE_TYPE) {
+    ontologyDefinition[entity.__type][entity.apiName] = entity;
+    return;
+  }
+  // value types are a special case
+  if (
+    ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName]
+      === undefined
+  ) {
+    ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName] = [];
+  }
+  ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName]
+    .push(entity);
+}
+
 export async function defineOntology(
   ns: string,
   body: () => void | Promise<void>,
 ): Promise<OntologyAndValueTypeIrs> {
-  namespace = ns;
+  globalNamespace = ns;
   ontologyDefinition = {
-    actionTypes: {},
-    objectTypes: {},
-    queryTypes: {},
-    interfaceTypes: {},
-    sharedPropertyTypes: {},
-    valueTypes: {},
-    linkTypes: {},
-    importedTypes: {
-      sharedPropertyTypes: [],
-    },
+    OBJECT_TYPE: {},
+    ACTION_TYPE: {},
+    LINK_TYPE: {},
+    INTERFACE_TYPE: {},
+    SHARED_PROPERTY_TYPE: {},
+    VALUE_TYPE: {},
   };
-
+  importedTypes = {
+    SHARED_PROPERTY_TYPE: {},
+    OBJECT_TYPE: {},
+    ACTION_TYPE: {},
+    LINK_TYPE: {},
+    INTERFACE_TYPE: {},
+    VALUE_TYPE: {},
+  };
+  importing = 0;
   try {
     await body();
   } catch (e) {
@@ -124,10 +149,10 @@ export async function defineOntology(
 }
 
 function convertOntologyToValueTypeIr(
-  ontology: Ontology,
+  ontology: OntologyDefinition,
 ): OntologyIrValueTypeBlockData {
   return {
-    valueTypes: Object.values(ontology.valueTypes).map<
+    valueTypes: Object.values(ontology[OntologyEntityTypeEnum.VALUE_TYPE]).map<
       OntologyIrValueTypeBlockDataEntry
     >(definitions => ({
       metadata: {
@@ -146,59 +171,166 @@ function convertOntologyToValueTypeIr(
 }
 
 function convertToWireOntologyIr(
-  ontology: Ontology,
+  ontology: OntologyDefinition,
 ): OntologyIr {
   return {
-    blockData: {
-      objectTypes: Object.fromEntries(
-        Object.entries(ontology.objectTypes).map<
-          [string, OntologyIrObjectTypeBlockDataV2]
-        >(([apiName, objectType]) => {
-          return [apiName, convertObject(objectType)];
-        }),
-      ),
-      sharedPropertyTypes: Object.fromEntries(
-        Object.entries(
-          ontology.sharedPropertyTypes,
-        )
-          .map<[string, OntologyIrSharedPropertyTypeBlockDataV2]>((
-            [apiName, spt],
-          ) => [apiName, { sharedPropertyType: convertSpt(spt) }]),
-      ),
-      interfaceTypes: Object.fromEntries(
-        Object.entries(
-          ontology.interfaceTypes,
-        )
-          .map<[string, OntologyIrInterfaceTypeBlockDataV2]>(
-            ([apiName, interfaceType]) => {
-              return [apiName, {
-                interfaceType: convertInterface(interfaceType),
-              }];
-            },
-          ),
-      ),
-      linkTypes: Object.fromEntries(
-        Object.entries(ontology.linkTypes).map<
-          [string, OntologyIrLinkTypeBlockDataV2]
-        >(([id, link]) => {
-          return [id, convertLink(link)];
-        }),
-      ),
-      actionTypes: Object.fromEntries(
-        Object.entries(ontology.actionTypes).map<
-          [string, OntologyIrActionTypeBlockDataV2]
-        >(([apiName, action]) => {
-          return [apiName, convertAction(action)];
-        }),
-      ),
-      blockPermissionInformation: {
-        actionTypes: {},
-        linkTypes: {},
-        objectTypes: {},
-      },
-    },
-    importedTypes: ontology.importedTypes,
+    blockData: convertToWireBlockData(ontology),
+    importedTypes: convertToWireImportedTypes(importedTypes),
   };
+}
+
+function convertToWireImportedTypes(
+  importedTypes: OntologyDefinition,
+): OntologyIrImportedTypes {
+  const asBlockData = convertToWireBlockData(importedTypes); // this just makes things easier to work with
+  return {
+    sharedPropertyTypes: Object.values(asBlockData.sharedPropertyTypes).map(
+      spt => ({
+        apiName: spt.sharedPropertyType.apiName,
+        displayName: spt.sharedPropertyType.displayMetadata.displayName,
+        description: spt.sharedPropertyType.displayMetadata.description,
+        type: spt.sharedPropertyType.type,
+      }),
+    ),
+    objectTypes: Object.values(
+      asBlockData.objectTypes,
+    ).map(ot => ({
+      apiName: ot.objectType.apiName,
+      displayName: ot.objectType.displayMetadata.displayName,
+      description: ot.objectType.displayMetadata.description,
+      propertyTypes: Object.values(ot.objectType.propertyTypes).map(p => ({
+        apiName: p.apiName,
+        displayName: p.displayMetadata.displayName,
+        description: p.displayMetadata.description,
+        type: p.type,
+        sharedPropertyType: p.sharedPropertyTypeApiName,
+      })),
+    })),
+    interfaceTypes: Object.values(asBlockData.interfaceTypes).map(i => ({
+      apiName: i.interfaceType.apiName,
+      displayName: i.interfaceType.displayMetadata.displayName,
+      description: i.interfaceType.displayMetadata.description,
+      properties: Object.values(i.interfaceType.allPropertiesV2).map(p => ({
+        apiName: p.sharedPropertyType.apiName,
+        displayName: p.sharedPropertyType.displayMetadata.displayName,
+        description: p.sharedPropertyType.displayMetadata.description,
+        type: p.sharedPropertyType.type,
+      })),
+      links: i.interfaceType.allLinks.map(l => ({
+        apiName: l.metadata.apiName,
+        displayName: l.metadata.displayName,
+        description: l.metadata.description,
+        cardinality: l.cardinality,
+        required: l.required,
+      })),
+    })),
+    actionTypes: Object.values(asBlockData.actionTypes).map(a => ({
+      apiName: a.actionType.metadata.apiName,
+      displayName: a.actionType.metadata.displayMetadata.displayName,
+      description: a.actionType.metadata.displayMetadata.description,
+      parameters: Object.values(a.actionType.metadata.parameters).map(p => ({
+        id: p.id,
+        displayName: p.displayMetadata.displayName,
+        description: p.displayMetadata.description,
+        type: p.type,
+      })),
+    })),
+    linkTypes: Object.values(asBlockData.linkTypes).map(l => {
+      if (l.linkType.definition.type === "oneToMany") {
+        return {
+          id: l.linkType.id,
+          definition: {
+            type: "oneToMany",
+            "oneToMany": {
+              objectTypeApiNameOneSide:
+                l.linkType.definition.oneToMany.objectTypeRidOneSide,
+              objectTypeApiNameManySide:
+                l.linkType.definition.oneToMany.objectTypeRidManySide,
+              manyToOneLinkDisplayName:
+                l.linkType.definition.oneToMany.manyToOneLinkMetadata
+                  .displayMetadata.displayName,
+              oneToManyLinkDisplayName:
+                l.linkType.definition.oneToMany.oneToManyLinkMetadata
+                  .displayMetadata.displayName,
+              cardinality: l.linkType.definition.oneToMany.cardinalityHint,
+            },
+          },
+        };
+      } else {
+        return {
+          id: l.linkType.id,
+          definition: {
+            type: "manyToMany",
+            "manyToMany": {
+              objectTypeApiNameA:
+                l.linkType.definition.manyToMany.objectTypeRidA,
+              objectTypeApiNameB:
+                l.linkType.definition.manyToMany.objectTypeRidB,
+              objectTypeAToBLinkDisplayName:
+                l.linkType.definition.manyToMany.objectTypeAToBLinkMetadata
+                  .displayMetadata.displayName,
+              objectTypeBToALinkDisplayName:
+                l.linkType.definition.manyToMany.objectTypeBToALinkMetadata
+                  .displayMetadata.displayName,
+            },
+          },
+        };
+      }
+    }),
+  };
+}
+
+function convertToWireBlockData(
+  ontology: OntologyDefinition,
+): OntologyIrOntologyBlockDataV2 {
+  return ({
+    objectTypes: Object.fromEntries(
+      Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).map<
+        [string, OntologyIrObjectTypeBlockDataV2]
+      >(([apiName, objectType]) => {
+        return [apiName, convertObject(objectType)];
+      }),
+    ),
+    sharedPropertyTypes: Object.fromEntries(
+      Object.entries(
+        ontology[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE],
+      )
+        .map<[string, OntologyIrSharedPropertyTypeBlockDataV2]>((
+          [apiName, spt],
+        ) => [apiName, { sharedPropertyType: convertSpt(spt) }]),
+    ),
+    interfaceTypes: Object.fromEntries(
+      Object.entries(
+        ontology[OntologyEntityTypeEnum.INTERFACE_TYPE],
+      )
+        .map<[string, OntologyIrInterfaceTypeBlockDataV2]>(
+          ([apiName, interfaceType]) => {
+            return [apiName, {
+              interfaceType: convertInterface(interfaceType),
+            }];
+          },
+        ),
+    ),
+    linkTypes: Object.fromEntries(
+      Object.entries(ontology[OntologyEntityTypeEnum.LINK_TYPE]).map<
+        [string, OntologyIrLinkTypeBlockDataV2]
+      >(([id, link]) => {
+        return [id, convertLink(link)];
+      }),
+    ),
+    actionTypes: Object.fromEntries(
+      Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE]).map<
+        [string, OntologyIrActionTypeBlockDataV2]
+      >(([apiName, action]) => {
+        return [apiName, convertAction(action)];
+      }),
+    ),
+    blockPermissionInformation: {
+      actionTypes: {},
+      linkTypes: {},
+      objectTypes: {},
+    },
+  });
 }
 
 function convertObject(
@@ -248,7 +380,7 @@ function convertObject(
         interfaceTypeApiName: impl.implements.apiName,
         properties: Object.fromEntries(
           impl.propertyMapping.map(
-            mapping => [namespace + mapping.interfaceProperty, {
+            mapping => [mapping.interfaceProperty, {
               propertyTypeRid: mapping.mapsTo,
             }],
           ),
@@ -373,7 +505,7 @@ function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {
 }
 
 function convertLink(
-  linkType: LinkTypeDefinition,
+  linkType: LinkType,
 ): OntologyIrLinkTypeBlockDataV2 {
   let definition: OntologyIrLinkDefinition;
   let datasource: OntologyIrManyToManyLinkTypeDatasource | undefined =
@@ -432,11 +564,11 @@ function convertLink(
     };
 
     datasource = {
-      rid: "ri.ontology.main.datasource.link-".concat(linkType.id),
+      rid: "ri.ontology.main.datasource.link-".concat(linkType.apiName),
       datasource: {
         type: "dataset",
         dataset: {
-          datasetRid: "link-".concat(linkType.id),
+          datasetRid: "link-".concat(linkType.apiName),
           writebackDatasetRid: undefined,
           objectTypeAPrimaryKeyMapping: [{
             property: {
@@ -464,7 +596,7 @@ function convertLink(
   return {
     linkType: {
       definition: definition,
-      id: linkType.id,
+      id: linkType.apiName,
       status: linkType.status ?? { type: "active", active: {} },
       redacted: linkType.redacted ?? false,
     },
@@ -478,8 +610,9 @@ function convertLink(
 function convertInterface(
   interfaceType: InterfaceType,
 ): OntologyIrInterfaceType {
+  const { __type, ...other } = interfaceType;
   return {
-    ...interfaceType,
+    ...other,
     propertiesV2: Object.fromEntries(
       Object.values(interfaceType.propertiesV2)
         .map((
@@ -543,7 +676,6 @@ function convertSpt(
     dataConstraints: dataConstraint,
     gothamMapping: gothamMapping,
     indexedForSearch: true,
-    provenance: undefined,
     typeClasses: typeClasses ?? [],
     valueType: valueType,
   };
@@ -997,4 +1129,19 @@ function distributeTypeHelper<T extends string>(
   type: T,
 ): T extends any ? { type: T } & { [K in T]: {} } : never {
   return { type, [type]: {} } as any; // any cast to match conditional return type
+}
+
+export function sanitize(namespace: string, s: string): string {
+  return s.includes(".") ? s : namespace + s;
+}
+
+export function setGlobalNamespace(ns: string): void {
+  globalNamespace = ns;
+}
+
+export function incImporting(): void {
+  importing += 1;
+}
+export function decImporting(): void {
+  importing -= 1;
 }
