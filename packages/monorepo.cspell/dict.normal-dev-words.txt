@@ -37,3 +37,4 @@ unioned
 unresolve
 Unsubscribable
 webapi
+singluar

@@ -1732,7 +1732,7 @@ describe("Ontology Defining", () => {
           properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Primary key properties fizz do not exist on object foo]`,
+        `[Error: Invariant failed: Primary key property fizz does not exist on object foo]`,
       );
 
       expect(() => {

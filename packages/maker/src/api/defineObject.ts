@@ -42,7 +42,7 @@ export function defineObject(objectDef: ObjectType): ObjectType {
   );
   invariant(
     propertyApiNames.includes(objectDef.primaryKeyPropertyApiName),
-    `Primary key property ${objectDef.primaryKeyPropertyApiName} do not exist on object ${objectDef.apiName}`,
+    `Primary key property ${objectDef.primaryKeyPropertyApiName} does not exist on object ${objectDef.apiName}`,
   );
   const retentionPeriod = (objectDef.datasource as any)?.retentionPeriod;
   invariant(
