@@ -17,7 +17,10 @@
 import type { DataValueClientToWire } from "../mapping/DataValueMapping.js";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { InterfaceDefinition } from "../ontology/InterfaceDefinition.js";
-import type { ObjectTypeDefinition } from "../ontology/ObjectTypeDefinition.js";
+import type {
+  CompileTimeMetadata,
+  ObjectTypeDefinition,
+} from "../ontology/ObjectTypeDefinition.js";
 import type { OsdkBase } from "../OsdkBase.js";
 import type { OsdkObjectPrimaryKeyType } from "../OsdkObjectPrimaryKeyType.js";
 
@@ -61,8 +64,8 @@ export namespace ActionParam {
    * Helper type to convert action definition parameter interface types to typescript types
    */
   export type InterfaceType<T extends InterfaceDefinition> = {
-    $objectType: NonNullable<T["__DefinitionMetadata"]> extends
-      { implementedBy: infer U } ? (U extends ReadonlyArray<never> ? string
+    $objectType: CompileTimeMetadata<T> extends { implementedBy: infer U }
+      ? (U extends ReadonlyArray<never> ? string
         : U extends ReadonlyArray<string> ? U[number]
         : string)
       : string;

@@ -15,8 +15,10 @@
  */
 
 import type { MediaReference } from "../object/Media.js";
-import type { FilteredPropertyKeys } from "../ontology/FilteredPropertyKeys.js";
-import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
+import type {
+  ObjectOrInterfaceDefinition,
+  PropertyKeys,
+} from "../ontology/ObjectOrInterface.js";
 import type { Experiment } from "./Experiment.js";
 
 /**
@@ -33,7 +35,7 @@ import type { Experiment } from "./Experiment.js";
  */
 type createMediaReference = <
   Q extends ObjectOrInterfaceDefinition,
-  const L extends FilteredPropertyKeys<Q, "mediaReference">,
+  const L extends PropertyKeys.Filtered<Q, "mediaReference">,
 >(
   args: {
     data: Blob;

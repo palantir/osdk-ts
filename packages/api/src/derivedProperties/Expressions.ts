@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import type { FilteredPropertyKeys } from "../ontology/FilteredPropertyKeys.js";
-import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
+import type {
+  ObjectOrInterfaceDefinition,
+  PropertyKeys,
+} from "../ontology/ObjectOrInterface.js";
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
 import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { WirePropertyTypes } from "../ontology/WirePropertyTypes.js";
@@ -89,7 +91,7 @@ type ExtractWirePropertyTypeFromNumericArg<
   : ARG extends DerivedProperty.NumericPropertyDefinition<infer T, Q>
     ? T extends SimplePropertyDef ? SimplePropertyDef.ExtractWirePropertyType<T>
     : never
-  : ARG extends FilteredPropertyKeys<Q, WithPropertiesNumerics>
+  : ARG extends PropertyKeys.Filtered<Q, WithPropertiesNumerics>
     ? NonNullable<CompileTimeMetadata<Q>["properties"][ARG]["type"]>
   : never;
 
@@ -165,7 +167,7 @@ type ExtractPropertyTypeFromDatetimeArg<
 > = ARG extends DerivedProperty.DatetimePropertyDefinition<infer T, Q>
   ? T extends SimplePropertyDef ? SimplePropertyDef.ExtractWirePropertyType<T>
   : never
-  : ARG extends FilteredPropertyKeys<Q, WithPropertiesDatetime>
+  : ARG extends PropertyKeys.Filtered<Q, WithPropertiesDatetime>
     ? NonNullable<CompileTimeMetadata<Q>["properties"][ARG]["type"]>
   : never;
 
