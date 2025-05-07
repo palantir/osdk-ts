@@ -1,5 +1,12 @@
 # @osdk/client.unstable
 
+## 2.2.0-beta.17
+
+### Minor Changes
+
+- 6eeb423: Simple create and modify actions for interfaces
+- 37f8e60: api bump for concrete actions
+
 ## 2.2.0-beta.16
 
 ### Minor Changes

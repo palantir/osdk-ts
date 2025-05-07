@@ -1,5 +1,23 @@
 # @osdk/functions.unstable
 
+## 0.1.0-beta.10
+
+### Minor Changes
+
+- cef1846: Relax peer dep for client.
+- 751e5b3: Use client as peer dep in functions package.
+
+### Patch Changes
+
+- Updated dependencies [b61e9f5]
+- Updated dependencies [abe4897]
+- Updated dependencies [5a12181]
+- Updated dependencies [430dee3]
+- Updated dependencies [70b4464]
+- Updated dependencies [791e655]
+- Updated dependencies [751e5b3]
+  - @osdk/client@2.2.0-beta.17
+
 ## 0.1.0-beta.9
 
 ### Minor Changes
