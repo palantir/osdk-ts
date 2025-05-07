@@ -193,6 +193,9 @@ export class OntologyMetadataResolver {
       ]);
     }
 
+    // If we're passing in an external SDK package, we need to load the full metadata. As a result, we cannot use query
+    // version pinning. This codepath should be merged with the `loadMetadata` codepath when we have the ability to load
+    // objects and interfaces by RID.
     if (extPackageInfo.size > 0) {
     const ontologyFullMetadata = await OntologiesV2.getFullMetadata(
       this.getClientContext(),
