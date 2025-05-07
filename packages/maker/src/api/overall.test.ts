@@ -3062,16 +3062,11 @@ describe("Ontology Defining", () => {
             "sharedPropertyTypes": {},
           },
           "importedTypes": {
-            "actionTypes": {},
-            "blockPermissionInformation": {
-              "actionTypes": {},
-              "linkTypes": {},
-              "objectTypes": {},
-            },
-            "interfaceTypes": {},
-            "linkTypes": {},
-            "objectTypes": {},
-            "sharedPropertyTypes": {},
+            "actionTypes": [],
+            "interfaceTypes": [],
+            "linkTypes": [],
+            "objectTypes": [],
+            "sharedPropertyTypes": [],
           },
         }
       `);
@@ -3231,16 +3226,11 @@ describe("Ontology Defining", () => {
           "sharedPropertyTypes": {},
         },
         "importedTypes": {
-          "actionTypes": {},
-          "blockPermissionInformation": {
-            "actionTypes": {},
-            "linkTypes": {},
-            "objectTypes": {},
-          },
-          "interfaceTypes": {},
-          "linkTypes": {},
-          "objectTypes": {},
-          "sharedPropertyTypes": {},
+          "actionTypes": [],
+          "interfaceTypes": [],
+          "linkTypes": [],
+          "objectTypes": [],
+          "sharedPropertyTypes": [],
         },
       }
         `);
@@ -3833,16 +3823,11 @@ describe("Ontology Defining", () => {
           },
         },
         "importedTypes": {
-          "actionTypes": {},
-          "blockPermissionInformation": {
-            "actionTypes": {},
-            "linkTypes": {},
-            "objectTypes": {},
-          },
-          "interfaceTypes": {},
-          "linkTypes": {},
-          "objectTypes": {},
-          "sharedPropertyTypes": {},
+          "actionTypes": [],
+          "interfaceTypes": [],
+          "linkTypes": [],
+          "objectTypes": [],
+          "sharedPropertyTypes": [],
         },
       }
         `);
@@ -4301,16 +4286,11 @@ describe("Ontology Defining", () => {
           },
         },
         "importedTypes": {
-          "actionTypes": {},
-          "blockPermissionInformation": {
-            "actionTypes": {},
-            "linkTypes": {},
-            "objectTypes": {},
-          },
-          "interfaceTypes": {},
-          "linkTypes": {},
-          "objectTypes": {},
-          "sharedPropertyTypes": {},
+          "actionTypes": [],
+          "interfaceTypes": [],
+          "linkTypes": [],
+          "objectTypes": [],
+          "sharedPropertyTypes": [],
         },
       }
         `);
@@ -4408,53 +4388,27 @@ describe("Ontology Defining", () => {
           "sharedPropertyTypes": {},
         },
         "importedTypes": {
-          "actionTypes": {},
-          "blockPermissionInformation": {
-            "actionTypes": {},
-            "linkTypes": {},
-            "objectTypes": {},
-          },
-          "interfaceTypes": {},
-          "linkTypes": {},
-          "objectTypes": {},
-          "sharedPropertyTypes": {
-            "namespace.1.importedSpt": {
-              "sharedPropertyType": {
-                "aliases": [],
-                "apiName": "namespace.1.importedSpt",
-                "baseFormatter": undefined,
-                "dataConstraints": undefined,
-                "displayMetadata": {
-                  "description": undefined,
-                  "displayName": "importedSpt",
-                  "visibility": "NORMAL",
+          "actionTypes": [],
+          "interfaceTypes": [],
+          "linkTypes": [],
+          "objectTypes": [],
+          "sharedPropertyTypes": [
+            {
+              "apiName": "namespace.1.importedSpt",
+              "description": undefined,
+              "displayName": "importedSpt",
+              "type": {
+                "string": {
+                  "analyzerOverride": undefined,
+                  "enableAsciiFolding": undefined,
+                  "isLongText": false,
+                  "supportsEfficientLeadingWildcard": false,
+                  "supportsExactMatching": true,
                 },
-                "gothamMapping": undefined,
-                "indexedForSearch": true,
-                "type": {
-                  "string": {
-                    "analyzerOverride": undefined,
-                    "enableAsciiFolding": undefined,
-                    "isLongText": false,
-                    "supportsEfficientLeadingWildcard": false,
-                    "supportsExactMatching": true,
-                  },
-                  "type": "string",
-                },
-                "typeClasses": [
-                  {
-                    "kind": "render_hint",
-                    "name": "SELECTABLE",
-                  },
-                  {
-                    "kind": "render_hint",
-                    "name": "SORTABLE",
-                  },
-                ],
-                "valueType": undefined,
+                "type": "string",
               },
             },
-          },
+          ],
         },
       }
         `);
@@ -4603,114 +4557,35 @@ describe("Ontology Defining", () => {
           "sharedPropertyTypes": {},
         },
         "importedTypes": {
-          "actionTypes": {},
-          "blockPermissionInformation": {
-            "actionTypes": {},
-            "linkTypes": {},
-            "objectTypes": {},
-          },
-          "interfaceTypes": {
-            "namespace.1.importedInterface": {
-              "interfaceType": {
-                "allExtendsInterfaces": [],
-                "allLinks": [],
-                "allProperties": [],
-                "allPropertiesV2": {},
-                "apiName": "namespace.1.importedInterface",
-                "displayMetadata": {
-                  "description": "importedInterface",
-                  "displayName": "importedInterface",
-                  "icon": undefined,
+          "actionTypes": [],
+          "interfaceTypes": [
+            {
+              "apiName": "namespace.1.importedInterface",
+              "description": "importedInterface",
+              "displayName": "importedInterface",
+              "links": [],
+              "properties": [],
+            },
+          ],
+          "linkTypes": [],
+          "objectTypes": [],
+          "sharedPropertyTypes": [
+            {
+              "apiName": "namespace.1.importedSpt",
+              "description": undefined,
+              "displayName": "importedSpt",
+              "type": {
+                "string": {
+                  "analyzerOverride": undefined,
+                  "enableAsciiFolding": undefined,
+                  "isLongText": false,
+                  "supportsEfficientLeadingWildcard": false,
+                  "supportsExactMatching": true,
                 },
-                "extendsInterfaces": [],
-                "links": [],
-                "properties": [],
-                "propertiesV2": {
-                  "namespace.1.importedSpt": {
-                    "required": true,
-                    "sharedPropertyType": {
-                      "aliases": [],
-                      "apiName": "namespace.1.importedSpt",
-                      "baseFormatter": undefined,
-                      "dataConstraints": undefined,
-                      "displayMetadata": {
-                        "description": undefined,
-                        "displayName": "importedSpt",
-                        "visibility": "NORMAL",
-                      },
-                      "gothamMapping": undefined,
-                      "indexedForSearch": true,
-                      "type": {
-                        "string": {
-                          "analyzerOverride": undefined,
-                          "enableAsciiFolding": undefined,
-                          "isLongText": false,
-                          "supportsEfficientLeadingWildcard": false,
-                          "supportsExactMatching": true,
-                        },
-                        "type": "string",
-                      },
-                      "typeClasses": [
-                        {
-                          "kind": "render_hint",
-                          "name": "SELECTABLE",
-                        },
-                        {
-                          "kind": "render_hint",
-                          "name": "SORTABLE",
-                        },
-                      ],
-                      "valueType": undefined,
-                    },
-                  },
-                },
-                "status": {
-                  "active": {},
-                  "type": "active",
-                },
+                "type": "string",
               },
             },
-          },
-          "linkTypes": {},
-          "objectTypes": {},
-          "sharedPropertyTypes": {
-            "namespace.1.importedSpt": {
-              "sharedPropertyType": {
-                "aliases": [],
-                "apiName": "namespace.1.importedSpt",
-                "baseFormatter": undefined,
-                "dataConstraints": undefined,
-                "displayMetadata": {
-                  "description": undefined,
-                  "displayName": "importedSpt",
-                  "visibility": "NORMAL",
-                },
-                "gothamMapping": undefined,
-                "indexedForSearch": true,
-                "type": {
-                  "string": {
-                    "analyzerOverride": undefined,
-                    "enableAsciiFolding": undefined,
-                    "isLongText": false,
-                    "supportsEfficientLeadingWildcard": false,
-                    "supportsExactMatching": true,
-                  },
-                  "type": "string",
-                },
-                "typeClasses": [
-                  {
-                    "kind": "render_hint",
-                    "name": "SELECTABLE",
-                  },
-                  {
-                    "kind": "render_hint",
-                    "name": "SORTABLE",
-                  },
-                ],
-                "valueType": undefined,
-              },
-            },
-          },
+          ],
         },
       }
         `);
