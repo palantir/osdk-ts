@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.2.0-beta.18
+
+### Minor Changes
+
+- 56aa502: Improves exposed APIs
+
 ## 2.2.0-beta.17
 
 ### Minor Changes

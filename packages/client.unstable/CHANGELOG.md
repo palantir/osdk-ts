@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.2.0-beta.18
+
+### Minor Changes
+
+- 6ac8f0b: api bump
+
 ## 2.2.0-beta.17
 
 ### Minor Changes
