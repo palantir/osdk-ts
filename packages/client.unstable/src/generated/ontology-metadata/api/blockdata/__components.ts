@@ -319,10 +319,10 @@ export interface OntologyIrKnownMarketplaceIdentifiers {
   interfaceTypes: Record<_api_InterfaceTypeApiName, BlockInternalId>;
   linkTypeIds: Record<_api_LinkTypeId, BlockInternalId>;
   linkTypes: Record<_api_LinkTypeId, BlockInternalId>;
-  objectTypeIds: Record<_api_ObjectTypeId, BlockInternalId>;
+  objectTypeIds: Record<_api_ObjectTypeApiName, BlockInternalId>;
   objectTypes: Record<_api_ObjectTypeApiName, BlockInternalId>;
   propertyTypeIds: Record<
-    _api_ObjectTypeId,
+    _api_ObjectTypeApiName,
     Record<_api_ObjectTypeFieldApiName, BlockInternalId>
   >;
   propertyTypes: Record<_api_ObjectTypeFieldApiName, BlockInternalId>;

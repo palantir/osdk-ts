@@ -21,6 +21,7 @@ import type {
   MediaItemRid as _api_MediaItemRid,
   MediaSetRid as _api_MediaSetRid,
   MediaSetViewRid as _api_MediaSetViewRid,
+  ObjectTypeApiName as _api_ObjectTypeApiName,
   ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
   ObjectTypeId as _api_ObjectTypeId,
   OntologyIrQualifiedSeriesIdPropertyValue
@@ -1225,17 +1226,17 @@ export interface OntologyIrBaseParameterType_dateList {
 
 export interface OntologyIrBaseParameterType_objectReference {
   type: "objectReference";
-  objectReference: ObjectReferenceType;
+  objectReference: OntologyIrObjectReferenceType;
 }
 
 export interface OntologyIrBaseParameterType_objectReferenceList {
   type: "objectReferenceList";
-  objectReferenceList: ObjectReferenceListType;
+  objectReferenceList: OntologyIrObjectReferenceListType;
 }
 
 export interface OntologyIrBaseParameterType_objectSetRid {
   type: "objectSetRid";
-  objectSetRid: ObjectSetRidType;
+  objectSetRid: OntologyIrObjectSetRidType;
 }
 
 export interface OntologyIrBaseParameterType_interfaceReference {
@@ -1466,7 +1467,7 @@ export interface OntologyIrDataValue_objectLocatorList {
 
 export interface OntologyIrDataValue_objectType {
   type: "objectType";
-  objectType: ObjectTypeValue;
+  objectType: OntologyIrObjectTypeValue;
 }
 
 export interface OntologyIrDataValue_attachment {
@@ -1562,7 +1563,7 @@ export interface OntologyIrInterfaceReferenceType {
   interfaceTypeRid: _api_InterfaceTypeApiName;
 }
 export interface OntologyIrObjectLocator {
-  objectTypeId: _api_ObjectTypeId;
+  objectTypeId: _api_ObjectTypeApiName;
   primaryKey: OntologyIrObjectPrimaryKey;
 }
 /**
@@ -1579,6 +1580,32 @@ export type OntologyIrObjectPrimaryKey = Record<
   _api_ObjectTypeFieldApiName,
   PrimaryKeyValue
 >;
+
+/**
+ * ObjectReferenceListType specifies that this parameter must be a list of ObjectLocators.
+ */
+export interface OntologyIrObjectReferenceListType {
+  objectTypeId: _api_ObjectTypeApiName;
+}
+/**
+ * ObjectReferenceType specifies that this parameter must be an ObjectLocator. An additional optional field maybeCreateObjectOption is included for handling upsert action types by providing flexibility of object creation from a user-specified PK or auto-generated UID PK.
+ */
+export interface OntologyIrObjectReferenceType {
+  maybeCreateObjectOption?: CreateObjectOption | null | undefined;
+  objectTypeId: _api_ObjectTypeApiName;
+}
+/**
+ * ObjectSetRidType specifies that this parameter must be an ObjectSetRid.
+ */
+export interface OntologyIrObjectSetRidType {
+  objectTypeId: _api_ObjectTypeApiName;
+}
+/**
+ * A parameter value that references a specific object type.
+ */
+export interface OntologyIrObjectTypeValue {
+  objectTypeId: _api_ObjectTypeApiName;
+}
 export interface OntologyIrTimeDependentPropertyValue_seriesId {
   type: "seriesId";
   seriesId: _api_SeriesIdPropertyValue;

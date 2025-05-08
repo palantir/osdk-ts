@@ -1,5 +1,43 @@
 # @osdk/client
 
+## 2.2.0-beta.18
+
+### Minor Changes
+
+- 56aa502: Improves exposed APIs
+
+### Patch Changes
+
+- Updated dependencies [56aa502]
+- Updated dependencies [6ac8f0b]
+  - @osdk/api@2.2.0-beta.18
+  - @osdk/client.unstable@2.2.0-beta.18
+  - @osdk/generator-converters@2.2.0-beta.18
+
+## 2.2.0-beta.17
+
+### Minor Changes
+
+- b61e9f5: Make Query Map Types Optional
+- abe4897: Removes support for boolean primary keys
+- 5a12181: Quick fix for geohash params.
+- 430dee3: JSdoc for object properties are generated
+- 70b4464: Fix types for RDPs
+- 791e655: Add support for geoshape and geohash action parameters.
+- 751e5b3: Use client as peer dep in functions package.
+
+### Patch Changes
+
+- Updated dependencies [c6bee50]
+- Updated dependencies [6eeb423]
+- Updated dependencies [abe4897]
+- Updated dependencies [70b4464]
+- Updated dependencies [37f8e60]
+- Updated dependencies [791e655]
+  - @osdk/api@2.2.0-beta.17
+  - @osdk/client.unstable@2.2.0-beta.17
+  - @osdk/generator-converters@2.2.0-beta.17
+
 ## 2.2.0-beta.16
 
 ### Patch Changes

@@ -181,8 +181,10 @@ export interface ObjectTypeInner extends
     | "allImplementsInterfaces"
     | "implementsInterfaces2"
     | "displayMetadata"
+    | "primaryKeys"
   >
 {
+  primaryKeyPropertyApiName: string;
   properties: Array<ObjectPropertyType>;
   titlePropertyApiName: string;
   implementsInterfaces: Array<InterfaceImplementation>;
@@ -203,7 +205,7 @@ export type ObjectType =
   & RequiredFields<
     Partial<ObjectTypeInner>,
     | "apiName"
-    | "primaryKeys"
+    | "primaryKeyPropertyApiName"
     | "displayName"
     | "pluralDisplayName"
     | "titlePropertyApiName"
@@ -222,6 +224,7 @@ export interface ObjectPropertyTypeInner extends
     | "valueType"
     | "ruleSetBinding"
     | "displayMetadata"
+    | "dataConstraints"
   >
 {
   type: PropertyTypeType;
@@ -231,6 +234,7 @@ export interface ObjectPropertyTypeInner extends
   description: string | undefined;
   displayName: string;
   visibility: Visibility;
+  nullability?: Nullability;
 }
 
 export type ObjectPropertyType = RequiredFields<
@@ -267,6 +271,12 @@ export interface PropertyType {
   valueType?: ApiNameValueTypeReference;
   visibility?: Visibility;
   typeClasses?: TypeClass[];
+  nullability?: Nullability;
+}
+
+export interface Nullability {
+  noEmptyCollections: boolean;
+  noNulls: boolean;
 }
 
 type TypeClass = { kind: string; name: string };

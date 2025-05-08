@@ -20,9 +20,21 @@ export namespace OsdkTestObject {
   export type Links = {};
 
   export interface Props {
+    /**
+     *   display name: 'Description'
+     */
     readonly description: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly osdkObjectName: $PropType['string'] | undefined;
+    /**
+     *   display name: 'Primary Key'
+     */
     readonly primaryKey_: $PropType['string'];
+    /**
+     *   display name: 'String Property'
+     */
     readonly stringProperty: $PropType['string'] | undefined;
   }
   export type StrictProps = Props;

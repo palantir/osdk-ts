@@ -19,15 +19,14 @@ import type {
   InterfaceMetadata,
 } from "./InterfaceDefinition.js";
 import type { ObjectOrInterfaceDefinition } from "./ObjectOrInterface.js";
+import type { CompileTimeMetadata } from "./ObjectTypeDefinition.js";
 
 export type ObjectSpecifier<Q extends ObjectOrInterfaceDefinition> = string & {
   __apiName:
     | Q["apiName"]
     | (Q extends InterfaceDefinition
-      ? NonNullable<Q["__DefinitionMetadata"]> extends InterfaceMetadata
-        ? NonNullable<
-          NonNullable<Q["__DefinitionMetadata"]>["implementedBy"]
-        >[number]
+      ? CompileTimeMetadata<Q> extends InterfaceMetadata
+        ? NonNullable<CompileTimeMetadata<Q>["implementedBy"]>[number]
       : never
       : never);
 };

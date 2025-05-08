@@ -20,8 +20,17 @@ export namespace MnayanOsdkMediaObject {
   export type Links = {};
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly id: $PropType['string'];
+    /**
+     * (no ontology metadata)
+     */
     readonly mediaReference: $PropType['mediaReference'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly path: $PropType['string'] | undefined;
   }
   export type StrictProps = Props;

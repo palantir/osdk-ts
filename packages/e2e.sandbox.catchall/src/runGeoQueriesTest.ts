@@ -15,25 +15,12 @@
  */
 
 import {
-  createAndFetchTempObjectSetRid,
-  hydrateObjectSetFromRid,
-} from "@osdk/client/internal";
-import {
   BoundariesUsState,
   createTestGeoAction,
   WeatherStation,
 } from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
 
-const b = await createAndFetchTempObjectSetRid(client, client(WeatherStation));
-console.log(b);
-const a = await hydrateObjectSetFromRid(
-  client,
-  WeatherStation,
-  b,
-).fetchPage();
-
-console.log(a.data);
 export async function runGeoQueriesTest(
   runAction: boolean = false,
 ): Promise<void> {

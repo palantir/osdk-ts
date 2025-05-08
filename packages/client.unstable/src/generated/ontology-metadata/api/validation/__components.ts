@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ConflictingEntitiesSummary as _branch_api_ConflictingEntitiesSummary } from "../../branch/api/__components.js";
 import type {
   ActionTypeIdentifier as _api_ActionTypeIdentifier,
   ActionTypeParameterIdentifier as _api_ActionTypeParameterIdentifier,
@@ -666,6 +667,11 @@ export interface ErrorType_ontologyEntityApiNameConflicts {
   ontologyEntityApiNameConflicts: OntologyEntityApiNameConflicts;
 }
 
+export interface ErrorType_ontologyBranchConflictsWithMain {
+  type: "ontologyBranchConflictsWithMain";
+  ontologyBranchConflictsWithMain: OntologyBranchConflictsWithMain;
+}
+
 export interface ErrorType_intermediaryLinkTypeInvalidAssociatedLinkType {
   type: "intermediaryLinkTypeInvalidAssociatedLinkType";
   intermediaryLinkTypeInvalidAssociatedLinkType:
@@ -963,6 +969,12 @@ export interface ErrorType_interfaceTypeContainsDuplicateProperties {
   type: "interfaceTypeContainsDuplicateProperties";
   interfaceTypeContainsDuplicateProperties:
     InterfaceTypeContainsDuplicateProperties;
+}
+
+export interface ErrorType_interfaceTypeContainsInheritedSharedPropertyTypes {
+  type: "interfaceTypeContainsInheritedSharedPropertyTypes";
+  interfaceTypeContainsInheritedSharedPropertyTypes:
+    InterfaceTypeContainsInheritedSharedPropertyTypes;
 }
 
 export interface ErrorType_interfaceTypeExtendedDoesNotExistOrDeleted {
@@ -3236,11 +3248,31 @@ export interface ErrorType_typeGroupDescriptionTooLong {
   type: "typeGroupDescriptionTooLong";
   typeGroupDescriptionTooLong: TypeGroupDescriptionTooLong;
 }
+
+export interface ErrorType_objectEditsCannotBeCopiedForObjectTypeOnBranchNeedsRebasing {
+  type: "objectEditsCannotBeCopiedForObjectTypeOnBranchNeedsRebasing";
+  objectEditsCannotBeCopiedForObjectTypeOnBranchNeedsRebasing:
+    ObjectEditsCannotBeCopiedForObjectTypeOnBranchNeedsRebasing;
+}
+
+export interface ErrorType_objectTypeBranchIndexingConfigCanOnlyBeSetOnNonDefaultBranches {
+  type: "objectTypeBranchIndexingConfigCanOnlyBeSetOnNonDefaultBranches";
+  objectTypeBranchIndexingConfigCanOnlyBeSetOnNonDefaultBranches:
+    ObjectTypeBranchIndexingConfigCanOnlyBeSetOnNonDefaultBranches;
+}
+
+export interface ErrorType_parentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch {
+  type:
+    "parentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch";
+  parentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch:
+    ParentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch;
+}
 /**
  * A union that represents all possible ontology modification validation errors.
  */
 export type ErrorType =
   | ErrorType_ontologyEntityApiNameConflicts
+  | ErrorType_ontologyBranchConflictsWithMain
   | ErrorType_intermediaryLinkTypeInvalidAssociatedLinkType
   | ErrorType_intermediaryLinkTypeMustBeOsv2
   | ErrorType_intermediaryLinkTypeReferencedObjectTypesMustBeOsv2
@@ -3296,6 +3328,7 @@ export type ErrorType =
   | ErrorType_sensorLinkTypeLinkedSensorObjectTypeDoesNotHaveSensorTrait
   | ErrorType_interfaceTypeToDeleteIsReferencedByExistingTypes
   | ErrorType_interfaceTypeContainsDuplicateProperties
+  | ErrorType_interfaceTypeContainsInheritedSharedPropertyTypes
   | ErrorType_interfaceTypeExtendedDoesNotExistOrDeleted
   | ErrorType_interfaceTypeWithActiveStatusRemovingSharedPropertyTypes
   | ErrorType_interfaceTypeInvalidApiName
@@ -3686,7 +3719,10 @@ export type ErrorType =
   | ErrorType_actionTypeInvalidApiNamePrefixes
   | ErrorType_typeGroupCountExceeded
   | ErrorType_typeGroupDisplayNameTooLong
-  | ErrorType_typeGroupDescriptionTooLong;
+  | ErrorType_typeGroupDescriptionTooLong
+  | ErrorType_objectEditsCannotBeCopiedForObjectTypeOnBranchNeedsRebasing
+  | ErrorType_objectTypeBranchIndexingConfigCanOnlyBeSetOnNonDefaultBranches
+  | ErrorType_parentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch;
 
 export interface IndeterminateErrorCategory {
 }
@@ -3709,6 +3745,12 @@ export interface InterfaceLinkTypeDisplayNameTooLong {
  * The interface contains duplicate properties. This may be due to declaring a property as both required and optional.
  */
 export interface InterfaceTypeContainsDuplicateProperties {
+}
+/**
+ * The interface contains shared property types that are inherited from an extended interface. Removing the
+ * shared property type from the child interface will keep the interface definition but resolve the error.
+ */
+export interface InterfaceTypeContainsInheritedSharedPropertyTypes {
 }
 /**
  * An interface contains too many properties. This includes both properties coming from the interface as well as those coming from extended interfaces. It also counts both optional and required properties.
@@ -4310,6 +4352,11 @@ export interface LinkTypeV1WithOsv2ObjectDbsEnabled {
 }
 export interface NotFoundErrorCategory {
 }
+/**
+ * Edits from parent ontology branch cannot be copied for this object type, because ontology needs to be rebased.
+ */
+export interface ObjectEditsCannotBeCopiedForObjectTypeOnBranchNeedsRebasing {
+}
 export interface ObjectPropertyTypeErrorCategory_definition {
   type: "definition";
   definition: InvalidObjectPropertyTypeDefinition;
@@ -4373,6 +4420,11 @@ export interface ObjectTypeBaseFormatterReferencedPropertiesDoNotExist {
  * Mapping both OSv1 types and types with derived properties is disallowed.
  */
 export interface ObjectTypeBothDerivedPropertyTypeAndObjectStorageV1MappedToGotham {
+}
+/**
+ * Object type branch indexing config can only be set on non-default branches.
+ */
+export interface ObjectTypeBranchIndexingConfigCanOnlyBeSetOnNonDefaultBranches {
 }
 /**
  * The user does not have permissions to edit privileged provenance on ontology entities metadata.
@@ -5433,6 +5485,12 @@ export interface ObjectTypeWithUnmappedTitleProperty {
 export interface ObjectTypeWorkflowTraitMappingsDoNotExistOnTrait {
 }
 /**
+ * Merge conflicts have been detected between the branch and the main branch. These conflicts must be resolved before merge.
+ */
+export interface OntologyBranchConflictsWithMain {
+  conflictingEntitiesSummary: _branch_api_ConflictingEntitiesSummary;
+}
+/**
  * There are API name conflicts between Object types, Interface types, Object and Interface types, or Shared Property types.
  */
 export interface OntologyEntityApiNameConflicts {
@@ -5442,6 +5500,11 @@ export interface OntologyValidationError {
   errorTags: Array<ErrorTag>;
   errorType: ErrorType;
   invalidEntities: Array<InvalidEntity>;
+}
+/**
+ * Parent object type branch indexing config can only be set for object types present on the parent branch.
+ */
+export interface ParentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch {
 }
 /**
  * A RuleSetBinding is referencing missing PropertyTypeIds.

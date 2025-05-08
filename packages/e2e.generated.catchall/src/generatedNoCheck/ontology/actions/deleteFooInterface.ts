@@ -25,13 +25,13 @@ export namespace deleteFooInterface {
 
   // Represents a fqn of the action
   export interface Signatures {
-    applyAction<P extends deleteFooInterface.Params, OP extends ApplyActionOptions>(
-      args: P,
+    applyAction<OP extends ApplyActionOptions>(
+      args: deleteFooInterface.Params,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
 
-    batchApplyAction<P extends ReadonlyArray<deleteFooInterface.Params>, OP extends ApplyBatchActionOptions>(
-      args: P,
+    batchApplyAction<OP extends ApplyBatchActionOptions>(
+      args: ReadonlyArray<deleteFooInterface.Params>,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }

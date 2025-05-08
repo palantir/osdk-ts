@@ -14,7 +14,13 @@ export namespace TodoLike {
   export type PropertyKeys = 'name' | 'isComplete';
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly isComplete: $PropType['boolean'] | undefined;
+    /**
+     *   display name: 'Name'
+     */
     readonly name: $PropType['string'] | undefined;
   }
   export type StrictProps = Props;

@@ -24,13 +24,13 @@ export namespace createMediaViaFunction {
 
   // Represents a fqn of the action
   export interface Signatures {
-    applyAction<P extends createMediaViaFunction.Params, OP extends ApplyActionOptions>(
-      args: P,
+    applyAction<OP extends ApplyActionOptions>(
+      args: createMediaViaFunction.Params,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
 
-    batchApplyAction<P extends ReadonlyArray<createMediaViaFunction.Params>, OP extends ApplyBatchActionOptions>(
-      args: P,
+    batchApplyAction<OP extends ApplyBatchActionOptions>(
+      args: ReadonlyArray<createMediaViaFunction.Params>,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }

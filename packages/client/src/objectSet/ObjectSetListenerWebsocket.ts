@@ -15,6 +15,7 @@
  */
 
 import type {
+  Logger,
   ObjectOrInterfaceDefinition,
   ObjectSetSubscription,
   Osdk,
@@ -33,7 +34,6 @@ import type {
 } from "@osdk/foundry.ontologies";
 import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
-import type { Logger } from "../logger/Logger.js";
 import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
 
 const MINIMUM_RECONNECT_DELAY_MS = 5 * 1000;

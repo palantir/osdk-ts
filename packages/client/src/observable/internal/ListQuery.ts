@@ -15,6 +15,7 @@
  */
 
 import type {
+  Logger,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -35,7 +36,6 @@ import {
 } from "rxjs";
 import invariant from "tiny-invariant";
 import { additionalContext, type Client } from "../../Client.js";
-import type { Logger } from "../../logger/Logger.js";
 import type { InterfaceHolder } from "../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import {
   ObjectDefRef,

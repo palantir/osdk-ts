@@ -20,12 +20,33 @@ export namespace FintrafficAis {
   export type Links = {};
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly centroid: $PropType['geopoint'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly geometry: $PropType['geoshape'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly mmsi: $PropType['string'];
+    /**
+     * (no ontology metadata)
+     */
     readonly name: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly seriesId: $PropType['geotimeSeriesReference'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly shipType: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly timestamp: $PropType['timestamp'] | undefined;
   }
   export type StrictProps = Props;

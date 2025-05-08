@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { Logger } from "@osdk/api";
 import { findUpSync } from "find-up";
 import * as path from "node:path";
 import invariant from "tiny-invariant";
@@ -27,7 +28,6 @@ import {
   it,
   vi,
 } from "vitest";
-import type { Logger } from "./logger/Logger.js";
 import type { TsServer } from "./tsserver.js";
 import { startTsServer } from "./tsserver.js";
 
@@ -109,6 +109,17 @@ describe("intellisense", () => {
     });
     expect(resp.body?.documentation).toMatchInlineSnapshot(
       `"(no ontology metadata)"`,
+    );
+  });
+
+  it("showsObjectPropertyJsdoc", { timeout: 40_000 }, async () => {
+    const { resp } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 26,
+      offset: 13,
+    });
+    expect(resp.body?.documentation).toMatchInlineSnapshot(
+      `"description: Geotime series reference of the location of the employee"`,
     );
   });
 });

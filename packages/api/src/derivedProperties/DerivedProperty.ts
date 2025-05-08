@@ -24,40 +24,65 @@ import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
 import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 import type {
+  DatetimeExpressions,
+  DefinitionForType,
+  NumericExpressions,
+} from "./Expressions.js";
+import type {
   CollectWithPropAggregations,
   MinMaxWithPropAggregateOption,
 } from "./WithPropertiesAggregationOptions.js";
 
 export namespace DerivedProperty {
-  export type SelectorResult<
+  export interface Definition<
     T extends SimplePropertyDef,
-  > = {
+    Q extends ObjectOrInterfaceDefinition,
+  > {
     type: T;
-  };
+  }
+
+  export interface NumericPropertyDefinition<
+    T extends SimplePropertyDef,
+    Q extends ObjectOrInterfaceDefinition,
+  > extends Definition<T, Q>, NumericExpressions<Q, T> {}
+
+  export interface DatetimePropertyDefinition<
+    T extends SimplePropertyDef,
+    Q extends ObjectOrInterfaceDefinition,
+  > extends Definition<T, Q>, DatetimeExpressions<Q, T> {}
 
   export type Clause<
     Q extends ObjectOrInterfaceDefinition,
   > = {
-    [key: string]: Selector<Q, SimplePropertyDef>;
+    [key: string]: Creator<Q, SimplePropertyDef>;
   };
 
-  export type Selector<
+  export type Creator<
     Q extends ObjectOrInterfaceDefinition,
     T extends SimplePropertyDef,
   > = (
-    baseObjectSet: DerivedProperty.Builder<Q, false>,
-  ) => SelectorResult<T>;
+    baseObjectSet: Builder<Q, false>,
+  ) =>
+    | Definition<T, Q>
+    | NumericPropertyDefinition<T, Q>
+    | DatetimePropertyDefinition<T, Q>;
 
-  export interface Builder<
+  interface BaseBuilder<
     Q extends ObjectOrInterfaceDefinition,
     CONSTRAINED extends boolean,
   > extends Filterable<Q, CONSTRAINED>, Pivotable<Q, CONSTRAINED> {
   }
 
+  export interface Builder<
+    Q extends ObjectOrInterfaceDefinition,
+    CONSTRAINED extends boolean,
+  > extends BaseBuilder<Q, CONSTRAINED>, Selectable<Q>, Constant<Q> {
+  }
+
   export interface AggregateBuilder<
     Q extends ObjectOrInterfaceDefinition,
     CONSTRAINED extends boolean,
-  > extends Builder<Q, CONSTRAINED>, Aggregatable<Q> {
+  > extends BaseBuilder<Q, CONSTRAINED>, Aggregatable<Q> {
   }
 
   export interface SelectPropertyBuilder<
@@ -65,6 +90,8 @@ export namespace DerivedProperty {
     CONSTRAINED extends boolean,
   > extends AggregateBuilder<Q, CONSTRAINED>, Selectable<Q> {
   }
+
+  export type ValidParts = "DAYS" | "MONTHS" | "QUARTERS" | "YEARS";
 }
 
 type BuilderTypeFromConstraint<
@@ -95,6 +122,43 @@ type Pivotable<
     : DerivedProperty.SelectPropertyBuilder<LinkedType<Q, L>, false>;
 };
 
+type Constant<Q extends ObjectOrInterfaceDefinition> = {
+  readonly constant: {
+    readonly double: (
+      value: number,
+    ) => DerivedProperty.NumericPropertyDefinition<
+      SimplePropertyDef.Make<"double", "non-nullable", "single">,
+      Q
+    >;
+
+    readonly integer: (
+      value: number,
+    ) => DerivedProperty.NumericPropertyDefinition<
+      SimplePropertyDef.Make<"integer", "non-nullable", "single">,
+      Q
+    >;
+    readonly long: (
+      value: string,
+    ) => DerivedProperty.NumericPropertyDefinition<
+      SimplePropertyDef.Make<"long", "non-nullable", "single">,
+      Q
+    >;
+
+    readonly datetime: (
+      value: string,
+    ) => DerivedProperty.DatetimePropertyDefinition<
+      SimplePropertyDef.Make<"datetime", "non-nullable", "single">,
+      Q
+    >;
+    readonly timestamp: (
+      value: string,
+    ) => DerivedProperty.DatetimePropertyDefinition<
+      SimplePropertyDef.Make<"timestamp", "non-nullable", "single">,
+      Q
+    >;
+  };
+};
+
 type Aggregatable<
   Q extends ObjectOrInterfaceDefinition,
 > = {
@@ -110,15 +174,35 @@ type Aggregatable<
       : P extends "approximatePercentile" ? { percentile: number }
       : never
       : never,
-  ) => DerivedProperty.SelectorResult<
+  ) => DefinitionForType<
+    Q,
     V extends `${infer N}:${infer P}`
-      ? P extends CollectWithPropAggregations
-        ? Array<CompileTimeMetadata<Q>["properties"][N]["type"]> | undefined
-      : P extends MinMaxWithPropAggregateOption
-        ? CompileTimeMetadata<Q>["properties"][N]["type"] | undefined
-      : P extends "approximateDistinct" | "exactDistinct" | "$count" ? "integer"
-      : "double" | undefined
-      : V extends "$count" ? "integer"
+      ? P extends CollectWithPropAggregations ? SimplePropertyDef.Make<
+          CompileTimeMetadata<Q>["properties"][N]["type"],
+          "nullable",
+          "array"
+        >
+      : P extends MinMaxWithPropAggregateOption ? SimplePropertyDef.Make<
+          CompileTimeMetadata<Q>["properties"][N]["type"],
+          "nullable",
+          "single"
+        >
+      : P extends "approximateDistinct" | "exactDistinct"
+        ? SimplePropertyDef.Make<
+          "integer",
+          "non-nullable",
+          "single"
+        >
+      : SimplePropertyDef.Make<
+        "double",
+        "nullable",
+        "single"
+      >
+      : V extends "$count" ? SimplePropertyDef.Make<
+          "integer",
+          "non-nullable",
+          "single"
+        >
       : never
   >;
 };
@@ -126,11 +210,16 @@ type Aggregatable<
 type Selectable<Q extends ObjectOrInterfaceDefinition> = {
   readonly selectProperty: <R extends PropertyKeys<Q>>(
     propertyName: R,
-  ) => DerivedProperty.SelectorResult<
+  ) => DefinitionForType<
+    Q,
     SimplePropertyDef.Make<
       CompileTimeMetadata<Q>["properties"][R]["type"],
-      CompileTimeMetadata<Q>["properties"][R]["nullable"],
-      CompileTimeMetadata<Q>["properties"][R]["multiplicity"]
+      CompileTimeMetadata<Q>["properties"][R]["nullable"] extends true
+        ? "nullable"
+        : "non-nullable",
+      CompileTimeMetadata<Q>["properties"][R]["multiplicity"] extends true
+        ? "array"
+        : "single"
     >
   >;
 };

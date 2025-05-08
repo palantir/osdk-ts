@@ -14,6 +14,9 @@ export namespace SomeInterface {
   export type PropertyKeys = 'spt';
 
   export interface Props {
+    /**
+     *   display name: 'Some Property'
+     */
     readonly spt: $PropType['string'] | undefined;
   }
   export type StrictProps = Props;

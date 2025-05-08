@@ -1,5 +1,20 @@
 # @osdk/api
 
+## 2.2.0-beta.18
+
+### Minor Changes
+
+- 56aa502: Improves exposed APIs
+
+## 2.2.0-beta.17
+
+### Minor Changes
+
+- c6bee50: Removes ObjectSpecifier from OsdkBase
+- abe4897: Removes support for boolean primary keys
+- 70b4464: Fix types for RDPs
+- 791e655: Add support for geoshape and geohash action parameters.
+
 ## 2.2.0-beta.16
 
 ## 2.2.0-beta.15
