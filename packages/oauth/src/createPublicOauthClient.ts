@@ -69,6 +69,8 @@ export function createPublicOauthClient(
   const client: Client = { client_id, token_endpoint_auth_method: "none" };
   const authServer = createAuthorizationServer(ctxPath, url);
   const oauthHttpOptions: HttpRequestOptions = { [customFetch]: fetchFn };
+  let joinedScopes: string = [...scopes ?? ["api:read-data", "api:write-data"]]
+    .sort().join(" ");
 
   const { makeTokenAndSaveRefresh, getToken } = common(
     client,
@@ -76,6 +78,7 @@ export function createPublicOauthClient(
     _signIn,
     oauthHttpOptions,
     maybeRefresh.bind(globalThis, true),
+    joinedScopes,
   );
 
   async function go(x: string) {
@@ -89,8 +92,17 @@ export function createPublicOauthClient(
   async function maybeRefresh(
     expectRefreshToken?: boolean,
   ): Promise<Token | undefined> {
-    const { refresh_token } = readLocal(client);
+    const { refresh_token, requestedScopes: initialRequestedScopes } =
+      readLocal(client);
     if (!refresh_token) {
+      if (expectRefreshToken) throw new Error("No refresh token found");
+      return;
+    }
+
+    const areScopesEqual = initialRequestedScopes != null
+      && joinedScopes === initialRequestedScopes;
+
+    if (!refresh_token || !areScopesEqual) {
       if (expectRefreshToken) throw new Error("No refresh token found");
       return;
     }
@@ -191,7 +203,7 @@ export function createPublicOauthClient(
       redirect_uri: redirectUrl,
       code_challenge: await calculatePKCECodeChallenge(codeVerifier),
       code_challenge_method: "S256",
-      scope: ["offline_access", ...scopes].join(" "),
+      scope: `offline_access ${joinedScopes}`,
     })}`);
 
     // Give time for redirect to happen
