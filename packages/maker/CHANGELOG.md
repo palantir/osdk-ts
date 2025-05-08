@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.10.0-beta.18
+
+### Minor Changes
+
+- 489ea17: Wire through nullability to SPT
+
+### Patch Changes
+
+- Updated dependencies [56aa502]
+  - @osdk/api@2.2.0-beta.18
+
 ## 0.10.0-beta.17
 
 ### Minor Changes

@@ -1,5 +1,19 @@
 # @osdk/client
 
+## 2.2.0-beta.18
+
+### Minor Changes
+
+- 56aa502: Improves exposed APIs
+
+### Patch Changes
+
+- Updated dependencies [56aa502]
+- Updated dependencies [6ac8f0b]
+  - @osdk/api@2.2.0-beta.18
+  - @osdk/client.unstable@2.2.0-beta.18
+  - @osdk/generator-converters@2.2.0-beta.18
+
 ## 2.2.0-beta.17
 
 ### Minor Changes
