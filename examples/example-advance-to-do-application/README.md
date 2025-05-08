@@ -1,48 +1,511 @@
-# tutorial-advance-to-do-application
+# Advanced Todo Application with OSDK
 
-This project was generated with [`@osdk/create-app`](https://www.npmjs.com/package/@osdk/create-app) and demonstrates using the Ontology SDK package `@tutorial-advance-to-do-application/sdk` with React on top of Vite. Check out the [Vite](https://vitejs.dev/guide/) docs for further configuration.
+This project demonstrates advanced features of the Ontology SDK (OSDK) using a Todo application as a practical example. The application allows users to manage projects and tasks with support for specialized task types (coding and learning tasks), real-time updates, media content, and advanced data querying techniques.
 
-## Developing locally
+## Table of Contents
 
-A `FOUNDRY_TOKEN` environment variable is required to authenticate with the NPM registry. When developing locally you may use the token used to git clone the repository (may only be valid for 7 days), or generate a longer lived token [inside Foundry](https://www.palantir.com/docs/foundry/platform-security-third-party/user-generated-tokens/#generation).
+- [Advanced Todo Application with OSDK](#advanced-todo-application-with-osdk)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Project Architecture](#project-architecture)
+    - [React Routing](#react-routing)
+      - [Routing Configuration](#routing-configuration)
+    - [The `client.ts` File](#the-clientts-file)
+      - [Key Responsibilities](#key-responsibilities)
+      - [Implementation](#implementation)
+      - [Usage in Components](#usage-in-components)
+  - [Configuration](#configuration)
+    - [Environment Files](#environment-files)
+    - [Meta Tags Configuration in `index.html`](#meta-tags-configuration-in-indexhtml)
+      - [Meta Tags Breakdown](#meta-tags-breakdown)
+    - [Key Configuration Variables](#key-configuration-variables)
+    - [Development vs. Production Configuration](#development-vs-production-configuration)
+      - [Development Environment](#development-environment)
+      - [Production Environment](#production-environment)
+    - [Deployment using Marketplace](#deployment-using-marketplace)
+    - [Runtime Configuration Updates](#runtime-configuration-updates)
+  - [Key OSDK Features Demonstrated](#key-osdk-features-demonstrated)
+    - [1. Interfaces and Polymorphic Task Types](#1-interfaces-and-polymorphic-task-types)
+    - [2. Media Content (MediaSets)](#2-media-content-mediasets)
+    - [3. Runtime Derived Properties (RDP)](#3-runtime-derived-properties-rdp)
+    - [4. Metadata-Driven UI](#4-metadata-driven-ui)
+    - [5. Real-Time Data with Subscriptions](#5-real-time-data-with-subscriptions)
+    - [6. Efficient User Data Handling](#6-efficient-user-data-handling)
+  - [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+    - [Deployment](#deployment)
+  - [Architecture](#architecture)
+  - [Learn More](#learn-more)
 
-Install project dependencies:
+## Overview
 
-```sh
+This application was built using:
+
+- React 18 with TypeScript
+- Vite as the build tool
+- OSDK (Ontology SDK) for backend connectivity
+- SWR for data fetching and caching
+
+The Todo application demonstrates:
+
+- Project and task management
+- User authentication and profile management
+- Specialized task types through interfaces
+- Media content handling with MediaSets
+- Real-time data updates through subscriptions
+- Dynamic UI based on ontology metadata
+- User activity analytics
+
+## Project Architecture
+
+### React Routing
+
+This application uses React Router for client-side routing. The routing configuration is set up in the main application entry point.
+
+#### Routing Configuration
+
+The application uses `createBrowserRouter` from React Router with a simple configuration:
+
+```tsx
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <Home />,
+    },
+    {
+      path: "/auth/callback",
+      element: <AuthCallback />,
+    },
+  ],
+  { basename: import.meta.env.BASE_URL },
+);
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <RouterProvider router={router} />,
+  </StrictMode>
+);
+```
+
+The routes are:
+- `/`: The main application home page
+- `/auth/callback`: Handles OAuth authentication callbacks
+
+Authentication is managed through the OSDK OAuth client in `client.ts`, which redirects unauthenticated users to the login page automatically.
+
+### The `client.ts` File
+
+The `client.ts` file serves as the central connection point to the OSDK backend. It initializes and exports an OSDK client instance that's used throughout the application.
+
+#### Key Responsibilities
+
+1. **OSDK Client Initialization**: Configures the OSDK client with authentication, foundry URL, and ontology RID
+2. **Authentication Integration**: Uses OSDK OAuth for authentication
+3. **Meta Tag Processing**: Retrieves configuration parameters from meta tags in the HTML document
+
+#### Implementation
+
+```typescript
+import { Client, createClient } from "@osdk/client";
+import { createPublicOauthClient } from "@osdk/oauth";
+
+function getMetaTagContent(tagName: string): string {
+  const elements = document.querySelectorAll(`meta[name="${tagName}"]`);
+  const element = elements.item(elements.length - 1);
+  const value = element ? element.getAttribute("content") : null;
+
+  if (value == null || value === "") {
+    throw new Error(`Meta tag ${tagName} not found or empty`);
+  }
+
+  if (value.match(/^%.+%$/)) {
+    throw new Error(`Meta tag ${tagName} contains placeholder value. Add ${value.replace(`/docs/%/g`, "")} to your .env files`);
+  }
+
+  return value;
+}
+
+const foundryUrl = getMetaTagContent("osdk-foundryUrl");
+const clientId = getMetaTagContent("osdk-clientId");
+const redirectUrl = getMetaTagContent("osdk-redirectUrl");
+const ontologyRid = getMetaTagContent("osdk-ontologyRid");
+const scopes = [
+	"api:read-data",
+	"api:write-data",
+	"api:admin-read",
+	"api:mediasets-read",
+	"api:mediasets-write"
+]
+
+export const auth = createPublicOauthClient(
+  clientId,
+  foundryUrl,
+  redirectUrl,
+  undefined,
+  undefined,
+  undefined,
+  scopes,
+  )
+
+const client: Client = createClient(
+  foundryUrl,
+  ontologyRid,
+  auth,
+);
+
+export default client;
+```
+
+#### Usage in Components
+
+Components and hooks import this client to interact with the backend:
+
+```typescript
+import client from '../client';
+
+// In a hook like useTasks or useProjects
+const fetcher = useCallback(async () => {
+  const tasksPage = await client(OsdkITask).where({
+      projectId: { $eq: project.$primaryKey },
+  }).fetchPage({
+      $orderBy: { "dueDate": "desc", "status": "asc" }, 
+  });
+  // Process and return the data
+}, [project.$primaryKey]);
+```
+
+## Configuration
+
+This application uses environment variables for configuration, allowing for different settings between development and production environments. Configuration values are primarily applied through meta tags in the HTML, which are then read by the `client.ts` file.
+
+### Environment Files
+
+The application uses the following environment files:
+
+- `.env` - Base environment variables used in all environments
+- `.env.development` - Development-specific variables (used with `npm run dev`)
+- `.env.production` - Production-specific variables (used with `npm run build`)
+
+### Meta Tags Configuration in `index.html`
+
+The application uses meta tags in `index.html` to dynamically configure the OSDK client. This approach avoids hardcoding sensitive information directly into JavaScript code.
+
+```html
+<meta name="osdk-clientId" content="%VITE_FOUNDRY_CLIENT_ID%" />
+<meta name="osdk-redirectUrl" content="%VITE_FOUNDRY_REDIRECT_URL%" />
+<meta name="osdk-foundryUrl" content="%VITE_FOUNDRY_API_URL%" />
+<meta name="osdk-ontologyRid" content="%VITE_FOUNDRY_ONTOLOGY_RID%" />
+```
+
+#### Meta Tags Breakdown
+
+- **`osdk-clientId`**: OAuth client ID for authentication
+- **`osdk-redirectUrl`**: URL for redirect after successful authentication
+- **`osdk-foundryUrl`**: Base URL of the Foundry API
+- **`osdk-ontologyRid`**: Resource identifier for the application's ontology
+
+### Key Configuration Variables
+
+```
+# Authentication settings
+VITE_FOUNDRY_CLIENT_ID=your-client-id
+VITE_FOUNDRY_REDIRECT_URL=http://localhost:3000/
+VITE_FOUNDRY_API_URL=https://my-foundry-instance.palantirfoundry.com
+VITE_FOUNDRY_ONTOLOGY_RID=ri.ontology.main.ontology.12345678-abcd-1234-efgh-1234567890ab
+
+# Feature flags
+VITE_ENABLE_ANALYTICS=true
+VITE_ENABLE_REAL_TIME_UPDATES=true
+
+# API version
+VITE_API_VERSION=v1
+```
+
+### Development vs. Production Configuration
+
+#### Development Environment
+
+The development environment typically uses:
+
+- Local development server with hot module replacement
+- Integration with a development or staging Foundry instance
+- More verbose logging and debugging information
+- Mock data when needed
+- Disabled analytics
+
+Example `.env.development`:
+
+```
+VITE_FOUNDRY_CLIENT_ID=your-dev-client-id
+VITE_FOUNDRY_REDIRECT_URL=http://localhost:3000/
+VITE_FOUNDRY_API_URL=https://dev-foundry.palantirfoundry.com
+VITE_FOUNDRY_ONTOLOGY_RID=ri.ontology.main.ontology.dev-12345
+VITE_ENABLE_ANALYTICS=false
+VITE_ENABLE_MOCK_DATA=true
+VITE_LOG_LEVEL=debug
+```
+
+#### Production Environment
+
+The production environment uses:
+
+- Production Foundry instance
+- Optimized builds with minimized code
+- Full analytics tracking
+- Error reporting to monitoring services
+- Stricter security settings
+
+Example `.env.production`:
+
+```
+VITE_FOUNDRY_CLIENT_ID=your-prod-client-id
+VITE_FOUNDRY_REDIRECT_URL=https://your-production-domain.com/
+VITE_FOUNDRY_API_URL=https://prod-foundry.palantirfoundry.com
+VITE_FOUNDRY_ONTOLOGY_RID=ri.ontology.main.ontology.prod-67890
+VITE_ENABLE_ANALYTICS=true
+VITE_ENABLE_MOCK_DATA=false
+VITE_LOG_LEVEL=error
+```
+
+### Deployment using Marketplace
+
+When deploying your application via Marketplace, the Developer console automatically replaces the HTML meta tag placeholders with actual values from the environment variables. This ensures correct configuration without requiring manual HTML modifications.
+
+### Runtime Configuration Updates
+
+For configuration that might change at runtime without redeployment, we use a configuration service:
+
+```typescript
+// configService.ts
+import { useEffect, useState } from 'react';
+import client from './client';
+import { OsdkAppConfig } from './generated/ontology';
+
+export function useAppConfig() {
+  const [config, setConfig] = useState({
+    featureFlags: {
+      enableNewUI: import.meta.env.VITE_ENABLE_NEW_UI === 'true',
+      enableBetaFeatures: false,
+    },
+    settings: {
+      refreshInterval: 30000,
+    }
+  });
+
+  useEffect(() => {
+    // Fetch runtime configuration from backend
+    async function loadConfig() {
+      try {
+        const serverConfig = await client(OsdkAppConfig).all();
+        if (serverConfig && serverConfig.length > 0) {
+          setConfig(currentConfig => ({
+            ...currentConfig,
+            ...serverConfig[0],
+          }));
+        }
+      } catch (error) {
+        console.error('Failed to load runtime configuration', error);
+      }
+    }
+
+    loadConfig();
+  }, []);
+
+  return config;
+}
+```
+
+## Key OSDK Features Demonstrated
+
+### 1. Interfaces and Polymorphic Task Types
+
+The application uses OSDK interfaces to implement polymorphic task types:
+
+- `ITask`: Base interface for all tasks
+- `osdkCodingTask`: Implementation for coding-related tasks
+- `osdkLearningTask`: Implementation for learning tasks with media content
+
+```typescript
+// Task details component decides which concrete implementation to render
+if (task.osdkTask.$objectType === "osdkCodingTask") {
+    return <TaskDetailsCoding task={task} />;
+}
+if (task.osdkTask.$objectType === "osdkLearningTask") {
+    return <TaskDetailsLearning task={task} />;
+}
+```
+
+### 2. Media Content (MediaSets)
+
+The application demonstrates working with binary content through MediaSets:
+
+```typescript
+// Fetching and displaying media content from MediaSets
+const response = await learningTask.mediaReference.fetchContents();
+const blob: Blob | undefined = await response.blob();
+const mediaUrl = blob ? URL.createObjectURL(blob) : "";
+
+// Getting media metadata
+const mediaTypeResp = await learningTask.mediaReference.fetchMetadata();
+```
+
+Media rendering is handled dynamically based on media type:
+
+- PDF documents with embedded viewer
+- Images with responsive display
+- Videos with player controls
+- Links to external resources
+
+### 3. Runtime Derived Properties (RDP)
+
+The application uses RDPs to efficiently calculate aggregate statistics at the server level:
+
+```typescript
+.withProperties({
+  "numberOfTasks": (baseObjectSet) =>
+    baseObjectSet.pivotTo("osdkTodoTask").aggregate("$count"),
+  "numberOfCompletedTasks": (baseObjectSet) =>
+    baseObjectSet.pivotTo("osdkTodoTask").where({
+      "status": { $eq: "COMPLETED" },
+    }).aggregate("$count"),
+  // Additional statistics...
+})
+```
+
+This demonstrates how to:
+
+- Calculate metrics server-side to minimize data transfer
+- Use relationship traversal with `pivotTo`
+- Apply filtering with `where` conditions
+- Perform aggregations with `aggregate`
+
+### 4. Metadata-Driven UI
+
+The application accesses and uses ontology metadata to create dynamic UIs:
+
+```typescript
+const getObjectTypeMetadata = useCallback(async () => {
+  const objectTypeMetadata = await client.fetchMetadata(OsdkITask);
+  setMetadata(objectTypeMetadata);
+}, []);
+```
+
+This metadata is used to:
+
+- Display ontology-defined property names
+- Show object type descriptions
+- Create context-aware user interfaces
+- Support future ontology changes without code changes
+
+### 5. Real-Time Data with Subscriptions
+
+The application implements real-time updates using OSDK subscriptions:
+
+```typescript
+const subscription = client(OsdkITask)
+  .where({ projectId: { $eq: project.$primaryKey } })
+  .subscribe({
+    onChange(update) {
+      // Handle real-time updates
+    },
+    onSuccessfulSubscription() { /* ... */ },
+    onError(err) { /* ... */ },
+    onOutOfDate() { /* ... */ },
+  });
+```
+
+This provides:
+
+- Live updates when tasks are created, modified, or deleted
+- Efficient updates that only refresh changed data
+- Error handling for subscription issues
+
+### 6. Efficient User Data Handling
+
+The application demonstrates batch fetching and caching of user data:
+
+```typescript
+const getBatchUserDetails = useCallback(async (userIds: string[]) => {
+    const cachedUsers: UserDetails = {};
+    const usersToFetch: string[] = [];
+
+    userIds.forEach((userId) => {
+      const cachedUser: State<unknown, unknown> | undefined = cache.get(`user-${userId}`);
+      if (cachedUser && cachedUser.data) {
+        cachedUsers[userId] = cachedUser.data as User;
+      } else {
+        usersToFetch.push(userId);
+      }
+    });
+
+    if (usersToFetch.length > 0) {
+      const usersRequest = await getBatch(client, usersToFetch.map((userId) => ({ userId })));
+      Object.entries(usersRequest.data).forEach(([userId, user]) => {
+        cachedUsers[userId] = user;
+        mutate(`user-${userId}`, user, { revalidate: false });
+      });
+    }
+    return cachedUsers;
+  }, [cache]);
+```
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- NPM 8+
+- Access to a Foundry instance with the Todo ontology deployed
+
+### Installation
+
+1. Clone the repository
+
+```bash
+git clone <repository-url>
+cd advance-to-do-application-repo
+```
+
+2. Install dependencies
+
+```bash
 npm install
 ```
 
-Run the following command from the project root to start a local development server on `http://localhost:8080`:
+3. Configure environment variables
+   - For local development, update `.env.development`
+   - For production, update `.env.production`
 
-```sh
+4. Start the development server
+
+```bash
 npm run dev
 ```
 
-Development configuration is stored in `.env.development`.
+### Deployment
 
-In order to make API requests to Foundry, CORS must be configured for the stack to allow `http://localhost:8080` to load resources. The configured OAuth client must also allow `http://localhost:8080/auth/callback` as a redirect URL.
+Deploy to Foundry website hosting by tagging a release:
 
-## Developing with Code Workspaces
-
-Run the following command in a VS Code workspace terminal from the project root to start a development server on the workspace:
-
-```sh
-npm run dev:remote
-```
-
-Open the preview panel to see the application from the development server.
-
-## Deploying
-
-Foundry CI has been configured to automatically deploy production builds of this project to Foundry website hosting whenever git tags are pushed.
-
-```
+```bash
 git tag <x.y.z>
 git push origin tag <x.y.z>
 ```
 
-By default, a new site version will be uploaded and deployed as the production version immediately. If instead, you prefer to only upload the version and manually deploy it as the production version later you can set the `site.uploadOnly` property in the `foundry.config.json` file to `true`.
+## Architecture
 
-Production configuration is stored in `.env.production`. A default test is included in `env.test.ts` to verify your production environment variables which runs in Foundry CI whenever git tags are pushed by setting the environment variable `VERIFY_ENV_PRODUCTION=true`.
+The application follows a modern React architecture with:
 
-If you did not yet register a subdomain for Foundry website hosting you will need to first do so and then fill in the `VITE_FOUNDRY_REDIRECT_URL` in `.env.production`. The configured OAuth client must also allow the auth callback on the subdomain as a redirect URL.
+- **Data Service Hooks**: Encapsulate OSDK interactions (`useProjects`, `useTasks`, etc.)
+- **UI Components**: Focused on presentation and user interaction
+- **SWR for Data Management**: Handles caching, revalidation, and background updates
+- **Component-Specific Logic**: Each component has access to exactly the data it needs
+
+## Learn More
+
+For more information about OSDK and the advanced features used in this application:
+
+- [OSDK Documentation](https://www.palantir.com/docs/foundry/ontology-sdk/overview/)
+- [SWR Documentation](https://swr.vercel.app/)
+- [React Documentation](https://reactjs.org/docs/getting-started.html)
