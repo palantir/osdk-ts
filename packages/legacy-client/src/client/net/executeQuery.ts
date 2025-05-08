@@ -48,8 +48,9 @@ import type {
   QueryParameters,
   WrappedQueryReturnType,
 } from "../queries.js";
-import { isOk } from "../Result.js";
+import { isErr, isOk } from "../Result.js";
 import { getObject } from "./getObject.js";
+import { loadAllObjects } from "./loadObjects.js";
 import { getParameterValueMapping } from "./util/getParameterValueMapping.js";
 import { wrapResult } from "./util/wrapResult.js";
 import type { WireOntologyObjectV2 } from "./WireOntologyObjectV2.js";
@@ -123,6 +124,27 @@ async function remapQueryResponseType<
 
   // handle arrays
   if (definition.multiplicity) {
+    if (definition.type === "object") {
+      const objects = await loadAllObjects(client, definition.object, {
+        type: "filter",
+        where: {
+          type: "in",
+          field: client.ontology.objects[definition.object].primaryKeyApiName,
+          value: responseValue,
+        } as any,
+        objectSet: {
+          type: "base",
+          objectType: definition.object,
+        },
+      }, []);
+
+      if (isOk(objects)) {
+        return objects.value;
+      } else {
+        throw objects.error;
+      }
+    }
+
     const definitionWithoutMultiplicity = {
       ...definition,
       multiplicity: false,
@@ -150,152 +172,150 @@ async function remapQueryResponseType<
     case "integer":
     case "long":
       return responseValue as number;
-    default:
-      switch (definition.type) {
-        case "object": {
-          if (typeof responseValue !== "object") {
-            const result = await getObject(
-              client,
-              definition.object,
-              responseValue,
-              [],
-            );
 
-            if (isOk(result)) {
-              return result.value;
-            } else {
-              throw result.error;
-            }
-          }
+    case "object": {
+      if (typeof responseValue !== "object") {
+        const result = await getObject(
+          client,
+          definition.object,
+          responseValue,
+          [],
+        );
 
-          // The API Gateway returns the object's primary key, but this is defensive
-          // in the case we change it to return the full type
-          return convertWireToOsdkObject(
-            client,
-            responseValue as WireOntologyObjectV2<any>,
-          );
+        if (isOk(result)) {
+          return result.value;
+        } else {
+          throw result.error;
         }
-
-        case "set": {
-          if (!Array.isArray(responseValue)) {
-            throw new Error(
-              `Expected response in array format, but received ${typeof responseValue}`,
-            );
-          }
-
-          const remappedResponse = await Promise.all(
-            responseValue.map(async arrayValue =>
-              remapQueryResponseType(
-                client,
-                definition.set,
-                arrayValue,
-              )
-            ),
-          );
-
-          return new Set(remappedResponse);
-        }
-
-        case "struct": {
-          if (typeof responseValue !== "object") {
-            throw new Error(
-              `Expected object response, but received ${typeof responseValue}`,
-            );
-          }
-
-          const responseEntries = Object.entries(responseValue);
-          const remappedResponseEntries = await Promise.all(
-            responseEntries.map(async ([key, structValue]) => {
-              const structType = definition.struct[key];
-              const remappedValue = await remapQueryResponseType(
-                client,
-                structType,
-                structValue,
-              );
-              return [key, remappedValue];
-            }),
-          );
-          const remappedResponse = remappedResponseEntries.reduce(
-            (acc, [key, mappedValue]) => {
-              acc[key as string] = mappedValue as ParameterValue;
-              return acc;
-            },
-            {} as { [key: string]: ParameterValue },
-          );
-
-          return remappedResponse;
-        }
-
-        case "twoDimensionalAggregation": {
-          const typedValue = responseValue as QueryTwoDimensionalAggregation;
-          const groups = typedValue.groups.map(group => {
-            const key = remapQueryBucketKeyType(
-              definition.twoDimensionalAggregation,
-              group.key,
-            );
-            const value = remapQueryBucketValueType(
-              definition.twoDimensionalAggregation.valueType,
-              group.value,
-            );
-            return {
-              key,
-              value,
-            };
-          });
-
-          return {
-            groups,
-          };
-        }
-
-        case "threeDimensionalAggregation": {
-          const typedValue = responseValue as QueryThreeDimensionalAggregation;
-          const groups = typedValue.groups.map(group => {
-            const key = remapQueryBucketKeyType(
-              definition.threeDimensionalAggregation,
-              group.key,
-            );
-            const subBuckets = group.groups.map(subGroup => {
-              return {
-                key: remapQueryBucketKeyType(
-                  definition.threeDimensionalAggregation.valueType,
-                  subGroup.key,
-                ),
-                value: remapQueryBucketValueType(
-                  definition.threeDimensionalAggregation.valueType.valueType,
-                  subGroup.value,
-                ),
-              };
-            });
-            return {
-              key,
-              value: subBuckets,
-            };
-          });
-
-          return {
-            groups,
-          };
-        }
-
-        case "objectSet":
-          return createOsdkObjectSet(
-            client,
-            definition.objectSet,
-            {
-              type: "reference",
-              reference: responseValue as string,
-            },
-          );
-
-        case "union":
-          throw new Error("Union type is not supported in response");
-        default:
-          const _: never = definition;
-          throw new Error(
-            `Cannot remap query response of type ${JSON.stringify(definition)}`,
-          );
       }
+
+      // The API Gateway returns the object's primary key, but this is defensive
+      // in the case we change it to return the full type
+      return convertWireToOsdkObject(
+        client,
+        responseValue as WireOntologyObjectV2<any>,
+      );
+    }
+
+    case "set": {
+      if (!Array.isArray(responseValue)) {
+        throw new Error(
+          `Expected response in array format, but received ${typeof responseValue}`,
+        );
+      }
+
+      const remappedResponse = await Promise.all(
+        responseValue.map(async arrayValue =>
+          remapQueryResponseType(
+            client,
+            definition.set,
+            arrayValue,
+          )
+        ),
+      );
+
+      return new Set(remappedResponse);
+    }
+
+    case "struct": {
+      if (typeof responseValue !== "object") {
+        throw new Error(
+          `Expected object response, but received ${typeof responseValue}`,
+        );
+      }
+
+      const responseEntries = Object.entries(responseValue);
+      const remappedResponseEntries = await Promise.all(
+        responseEntries.map(async ([key, structValue]) => {
+          const structType = definition.struct[key];
+          const remappedValue = await remapQueryResponseType(
+            client,
+            structType,
+            structValue,
+          );
+          return [key, remappedValue];
+        }),
+      );
+      const remappedResponse = remappedResponseEntries.reduce(
+        (acc, [key, mappedValue]) => {
+          acc[key as string] = mappedValue as ParameterValue;
+          return acc;
+        },
+        {} as { [key: string]: ParameterValue },
+      );
+
+      return remappedResponse;
+    }
+
+    case "twoDimensionalAggregation": {
+      const typedValue = responseValue as QueryTwoDimensionalAggregation;
+      const groups = typedValue.groups.map(group => {
+        const key = remapQueryBucketKeyType(
+          definition.twoDimensionalAggregation,
+          group.key,
+        );
+        const value = remapQueryBucketValueType(
+          definition.twoDimensionalAggregation.valueType,
+          group.value,
+        );
+        return {
+          key,
+          value,
+        };
+      });
+
+      return {
+        groups,
+      };
+    }
+
+    case "threeDimensionalAggregation": {
+      const typedValue = responseValue as QueryThreeDimensionalAggregation;
+      const groups = typedValue.groups.map(group => {
+        const key = remapQueryBucketKeyType(
+          definition.threeDimensionalAggregation,
+          group.key,
+        );
+        const subBuckets = group.groups.map(subGroup => {
+          return {
+            key: remapQueryBucketKeyType(
+              definition.threeDimensionalAggregation.valueType,
+              subGroup.key,
+            ),
+            value: remapQueryBucketValueType(
+              definition.threeDimensionalAggregation.valueType.valueType,
+              subGroup.value,
+            ),
+          };
+        });
+        return {
+          key,
+          value: subBuckets,
+        };
+      });
+
+      return {
+        groups,
+      };
+    }
+
+    case "objectSet":
+      return createOsdkObjectSet(
+        client,
+        definition.objectSet,
+        {
+          type: "reference",
+          reference: responseValue as string,
+        },
+      );
+
+    case "union":
+      throw new Error("Union type is not supported in response");
+    default:
+      const _: never = definition;
+      throw new Error(
+        `Cannot remap query response of type ${JSON.stringify(definition)}`,
+      );
   }
 }
 

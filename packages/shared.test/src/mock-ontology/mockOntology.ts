@@ -384,6 +384,19 @@ export const MockOntology = {
         },
       },
     },
+    queryTypeReturnsObjectArray: {
+      type: "query",
+      apiName: "queryTypeReturnsObjectArray",
+      description: "a query that returns an object array",
+      version: "version",
+      parameters: {},
+      output: {
+        type: "object",
+        nullable: false,
+        multiplicity: true,
+        object: "Todo",
+      },
+    },
   },
 } as const satisfies OntologyDefinition<any, any, any, any>;
 type capture = typeof MockOntology;
