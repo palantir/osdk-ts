@@ -15,71 +15,84 @@
  */
 
 import type { Client } from "@osdk/client";
-import type { EditBatch } from "./EditBatch.js";
 import type {
-  AddLinkEdits,
-  AnyEdit,
-  CreateObjectEdits,
-  DeleteObjectEdits,
-  RemoveLinkEdits,
-  UpdateObjectEdits,
-} from "./types.js";
+  AddLinkApiNames,
+  AddLinkSources,
+  AddLinkTargets,
+  CreatableObjectTypeProperties,
+  CreatableObjectTypes,
+  DeletableObjectLocators,
+  EditBatch,
+  RemoveLinkApiNames,
+  RemoveLinkSources,
+  RemoveLinkTargets,
+  UpdatableObjectLocatorProperties,
+  UpdatableObjectLocators,
+} from "./EditBatch.js";
+import type { AnyEdit } from "./types.js";
 
 class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
   private edits: X[] = [];
 
-  public link<L extends AddLinkEdits<X>>(
-    source: L["source"],
-    apiName: L["apiName"],
-    target: L["target"],
+  public link<
+    SOL extends AddLinkSources<X>,
+    A extends AddLinkApiNames<X, SOL>,
+  >(
+    source: SOL,
+    apiName: A,
+    target: AddLinkTargets<X, SOL, A>,
   ): void {
     this.edits.push({
       type: "addLink",
       source,
       apiName,
       target,
-    } as L);
+    } as unknown as X);
   }
 
-  public unlink<L extends RemoveLinkEdits<X>>(
-    source: L["source"],
-    apiName: L["apiName"],
-    target: L["target"],
+  public unlink<
+    SOL extends RemoveLinkSources<X>,
+    A extends RemoveLinkApiNames<X, SOL>,
+  >(
+    source: SOL,
+    apiName: A,
+    target: RemoveLinkTargets<X, SOL, A>,
   ): void {
     this.edits.push({
       type: "removeLink",
       source,
       apiName,
       target,
-    } as L);
+    } as unknown as X);
   }
 
-  public create<O extends CreateObjectEdits<X>>(
-    obj: O["obj"],
-    properties: O["properties"],
+  public create<OTD extends CreatableObjectTypes<X>>(
+    obj: OTD,
+    properties: CreatableObjectTypeProperties<X, OTD>,
   ): void {
     this.edits.push({
       type: "createObject",
       obj,
       properties,
-    } as O);
+    } as unknown as X);
   }
 
-  public delete<O extends DeleteObjectEdits<X>>(
-    obj: O["obj"],
-  ): void {
-    this.edits.push({ type: "deleteObject", obj } as O);
+  public delete<OL extends DeletableObjectLocators<X>>(obj: OL): void {
+    this.edits.push({
+      type: "deleteObject",
+      obj,
+    } as unknown as X);
   }
 
-  public update<O extends UpdateObjectEdits<X>>(
-    obj: O["obj"],
-    properties: O["properties"],
+  public update<OL extends UpdatableObjectLocators<X>>(
+    obj: OL,
+    properties: UpdatableObjectLocatorProperties<X, OL>,
   ): void {
     this.edits.push({
       type: "updateObject",
       obj,
       properties,
-    } as O);
+    } as unknown as X);
   }
 
   public getEdits(): X[] {
