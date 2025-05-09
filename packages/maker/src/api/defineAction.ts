@@ -346,9 +346,9 @@ function extractActionParameterTypeFromSpt(
   if (typeof typeType === "object") {
     switch (typeType.type) {
       case "marking":
-        break;
+        return maybeAddList("marking", spt);
       case "struct":
-        break;
+        throw new Error("Structs are not supported yet");
       default:
         throw new Error(`Unknown type`);
     }
