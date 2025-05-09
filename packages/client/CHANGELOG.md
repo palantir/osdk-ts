@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 2.2.0-beta.19
+
+### Minor Changes
+
+- 1f6842f: Send a null value for parameters explicitly set to undefined rather than dropping the field
+
+### Patch Changes
+
+- @osdk/api@2.2.0-beta.19
+- @osdk/client.unstable@2.2.0-beta.19
+- @osdk/generator-converters@2.2.0-beta.19
+
 ## 2.2.0-beta.18
 
 ### Minor Changes
