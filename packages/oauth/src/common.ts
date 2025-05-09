@@ -49,8 +49,6 @@ declare const process: {
   env: Record<string, string | undefined>;
 };
 
-const localStorage = globalThis.localStorage;
-
 type LocalStorageState =
   // when we are going to the login page
   | {
@@ -88,7 +86,7 @@ type LocalStorageState =
 
 export function saveLocal(client: Client, x: LocalStorageState) {
   // MUST `localStorage?` as nodejs does not have localStorage
-  localStorage?.setItem(
+  globalThis.localStorage?.setItem(
     `@osdk/oauth : refresh : ${client.client_id}`,
     JSON.stringify(x),
   );
@@ -96,13 +94,17 @@ export function saveLocal(client: Client, x: LocalStorageState) {
 
 export function removeLocal(client: Client) {
   // MUST `localStorage?` as nodejs does not have localStorage
-  localStorage?.removeItem(`@osdk/oauth : refresh : ${client.client_id}`);
+  globalThis.localStorage?.removeItem(
+    `@osdk/oauth : refresh : ${client.client_id}`,
+  );
 }
 
 export function readLocal(client: Client): LocalStorageState {
   return JSON.parse(
     // MUST `localStorage?` as nodejs does not have localStorage
-    localStorage?.getItem(`@osdk/oauth : refresh : ${client.client_id}`)
+    globalThis.localStorage?.getItem(
+      `@osdk/oauth : refresh : ${client.client_id}`,
+    )
       ?? "{}",
   );
 }
