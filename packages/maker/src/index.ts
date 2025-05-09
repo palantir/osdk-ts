@@ -18,8 +18,11 @@ export { default as default } from "./cli/main.js";
 
 export {
   defineAction,
-  defineCreateAction,
-  defineModifyAction,
+  defineCreateInterfaceObjectAction,
+  defineCreateObjectAction,
+  defineDeleteObjectAction,
+  defineModifyInterfaceObjectAction,
+  defineModifyObjectAction,
 } from "./api/defineAction.js";
 export { importSharedPropertyType } from "./api/defineImportSpt.js";
 export { defineInterface } from "./api/defineInterface.js";

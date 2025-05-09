@@ -127,6 +127,7 @@ export type ActionParameterAllowedValues =
     minimum?: OntologyIrParameterDateRangeValue;
   }
   | { type: "objectTypeReference"; interfaceTypes: Array<InterfaceTypeApiName> }
+  | { type: "objectQuery" }
   | { type: "attachment" }
   | { type: "boolean" }
   | { type: "objectSetRid" }
@@ -621,6 +622,7 @@ export type ActionParameterTypePrimitive =
   | "date"
   | "dateList"
   | "objectTypeReference"
+  | "objectReference"
   | "attachment"
   | "attachmentList"
   | "marking"
@@ -639,6 +641,7 @@ export type ActionParameterTypeComplex =
   | OntologyIrBaseParameterType_objectReferenceList
   | OntologyIrBaseParameterType_objectSetRid
   | OntologyIrBaseParameterType_objectTypeReference
+  | OntologyIrBaseParameterType_objectReference
   | OntologyIrBaseParameterType_interfaceReference
   | OntologyIrBaseParameterType_interfaceReferenceList
   | OntologyIrBaseParameterType_struct
