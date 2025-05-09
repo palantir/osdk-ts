@@ -7191,13 +7191,25 @@ export interface OntologyIrLogicRule_modifyInterfaceRule {
   type: "modifyInterfaceRule";
   modifyInterfaceRule: OntologyIrModifyInterfaceRule;
 }
+
+export interface OntologyIrLogicRule_addLinkRule {
+  type: "addLinkRule";
+  addLinkRule: AddLinkRule;
+}
+
+export interface OntologyIrLogicRule_deleteLinkRule {
+  type: "deleteLinkRule";
+  deleteLinkRule: DeleteLinkRule;
+}
 export type OntologyIrLogicRule =
   | OntologyIrLogicRule_addObjectRule
   | OntologyIrLogicRule_addOrModifyObjectRuleV2
   | OntologyIrLogicRule_modifyObjectRule
   | OntologyIrLogicRule_deleteObjectRule
   | OntologyIrLogicRule_addInterfaceRule
-  | OntologyIrLogicRule_modifyInterfaceRule;
+  | OntologyIrLogicRule_modifyInterfaceRule
+  | OntologyIrLogicRule_addLinkRule
+  | OntologyIrLogicRule_deleteLinkRule;
 
 export interface OntologyIrLogicRuleValue_parameterId {
   type: "parameterId";

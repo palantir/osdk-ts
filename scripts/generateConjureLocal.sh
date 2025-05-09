@@ -31,7 +31,7 @@ function generateConjure() {
     formatTypescript "$OUT_DIR" "$PACKAGE_PATH"
 }
 
-generateConjure "/Volumes/git/second/ontology-metadata-service/ontology-metadata-api/build/conjure-transform-output/ontology-metadata-api.conjure.json" "${SCRIPT_DIR}/../packages/client.unstable" "ontology-metadata"
+generateConjure "/Volumes/git/ontology-metadata-service/ontology-metadata-api/build/conjure-transform-output/ontology-metadata-api.conjure.json" "${SCRIPT_DIR}/../packages/client.unstable" "ontology-metadata"
 
 # Reset git changes if the generated files are only changed by copyright year
 git status --porcelain --untracked-files=no | while read line; do

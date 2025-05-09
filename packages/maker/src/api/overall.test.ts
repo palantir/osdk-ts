@@ -17,8 +17,10 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   defineAction,
+  defineAddLinkAction,
   defineCreateInterfaceObjectAction,
   defineCreateObjectAction,
+  defineDeleteLinkAction,
   defineDeleteObjectAction,
   defineModifyInterfaceObjectAction,
   defineModifyObjectAction,
@@ -4775,6 +4777,85 @@ describe("Ontology Defining", () => {
         })
       ).toThrowError(
         "Invariant failed: Object to modify parameter must be defined in parameters",
+      );
+    });
+
+    it("Link actions can only be used with many-to-many link types", () => {
+      const object1 = defineObject({
+        apiName: "foo",
+        displayName: "Test Object 1",
+        description: "Sample object description",
+        primaryKeyPropertyApiName: "id",
+        pluralDisplayName: "tests",
+        titlePropertyApiName: "name",
+        properties: [{
+          apiName: "name",
+          type: "string",
+          displayName: "Name",
+          description: "The name of the test object",
+        }, {
+          apiName: "id",
+          type: "string",
+          displayName: "ID",
+          description: "The ID of the test object",
+        }],
+      });
+      const object2 = defineObject({
+        apiName: "bar",
+        displayName: "Test Object 2",
+        description: "Sample object description",
+        primaryKeyPropertyApiName: "id",
+        pluralDisplayName: "tests",
+        titlePropertyApiName: "name",
+        properties: [{
+          apiName: "name",
+          type: "string",
+          displayName: "Name",
+          description: "The name of the test object",
+        }, {
+          apiName: "id",
+          type: "string",
+          displayName: "ID",
+          description: "The ID of the test object",
+        }],
+      });
+
+      const sampleLink = defineLink({
+        id: "link",
+        one: {
+          object: object1,
+          metadata: {
+            displayMetadata: {
+              displayName: "Foo",
+              groupDisplayName: "",
+              pluralDisplayName: "Foos",
+              visibility: "NORMAL",
+            },
+            typeClasses: [],
+            apiName: "foo",
+          },
+        },
+        toMany: {
+          object: object2,
+          metadata: {
+            displayMetadata: {
+              displayName: "Fizz",
+              groupDisplayName: "",
+              pluralDisplayName: "Fizzes",
+              visibility: "NORMAL",
+            },
+            typeClasses: [],
+            apiName: "fizz",
+          },
+        },
+        manyForeignKeyProperty: "id",
+        cardinality: "OneToMany",
+      });
+      expect(() => defineAddLinkAction(sampleLink)).toThrowError(
+        "Add link action is not supported for one-to-many link types",
+      );
+      expect(() => defineDeleteLinkAction(sampleLink)).toThrowError(
+        "Delete link action is not supported for one-to-many link types",
       );
     });
 
