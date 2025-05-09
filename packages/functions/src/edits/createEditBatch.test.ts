@@ -30,7 +30,28 @@ type TestEditScope =
   | Edits.Link<Office, "occupants">;
 
 describe(createEditBatch, () => {
+  const taskInstance = {
+    $apiName: "Task",
+    $primaryKey: 2,
+  } as Osdk.Instance<Task>;
+
+  const personInstance = {
+    $apiName: "Person",
+    $primaryKey: 2,
+  } as Osdk.Instance<Person>;
+
+  const officeInstance = {
+    $apiName: "Office",
+    $primaryKey: "2",
+  } as Osdk.Instance<Office>;
+
+  const employeeInstance = {
+    $apiName: "Employee",
+    $primaryKey: 2,
+  } as Osdk.Instance<Employee>;
+
   let client: Client;
+
   let editBatch: EditBatch<TestEditScope>;
 
   beforeEach(() => {
@@ -39,26 +60,6 @@ describe(createEditBatch, () => {
   });
 
   it("collects all edits", () => {
-    const taskInstance = {
-      $apiName: "Task",
-      $primaryKey: 2,
-    } as Osdk.Instance<Task>;
-
-    const personInstance = {
-      $apiName: "Person",
-      $primaryKey: 2,
-    } as Osdk.Instance<Person>;
-
-    const officeInstance = {
-      $apiName: "Office",
-      $primaryKey: "2",
-    } as Osdk.Instance<Office>;
-
-    const employeeInstance = {
-      $apiName: "Employee",
-      $primaryKey: 2,
-    } as Osdk.Instance<Employee>;
-
     editBatch.create(Task, { id: 0, name: "My Task Name" });
     editBatch.create(Task, { id: 1, name: "My Other Task Name" });
     editBatch.create(Task, { id: 3 });
@@ -195,5 +196,71 @@ describe(createEditBatch, () => {
         target: { $apiName: "Employee", $primaryKey: 2 },
       },
     ]);
+  });
+
+  it("prevents bad link edits", () => {
+    // @ts-expect-error
+    editBatch.link(taskInstance, "RP", officeInstance); // Linking to Office instead of Person
+
+    // @ts-expect-error
+    editBatch.link(
+      { $apiName: "Task", $primaryKey: 2 },
+      "occupants",
+      employeeInstance,
+    ); // Using Office link
+
+    // @ts-expect-error
+    editBatch.link(
+      { $apiName: "Office", $primaryKey: "2" },
+      "occupants",
+      personInstance,
+    ); // Linking to Person instead of Employee
+
+    // @ts-expect-error
+    editBatch.link(officeInstance, "Todos", {
+      $apiName: "Todo",
+      $primaryKey: 0,
+    }); // Using Task link
+  });
+
+  it("prevents bad unlink edits", () => {
+    // @ts-expect-error
+    editBatch.unlink(taskInstance, "RP", officeInstance); // Unlinking Office instead of Person
+
+    // @ts-expect-error
+    editBatch.unlink(
+      { $apiName: "Task", $primaryKey: 2 },
+      "occupants",
+      employeeInstance,
+    ); // Using Office link
+
+    // @ts-expect-error
+    editBatch.unlink(
+      { $apiName: "Office", $primaryKey: "2" },
+      "occupants",
+      personInstance,
+    ); // Unlinking Person instead of Employee
+
+    // @ts-expect-error
+    editBatch.unlink(officeInstance, "Todos", {
+      $apiName: "Todo",
+      $primaryKey: 0,
+    }); // Using Task link
+  });
+
+  it("prevents bad update edits", () => {
+    // @ts-expect-error
+    editBatch.update(taskInstance, { capacity: 4 }); // Using Office properties
+
+    // @ts-expect-error
+    editBatch.update({ $apiName: "Task", $primaryKey: 2 }, { capacity: 4 }); // Using Office properties
+  });
+
+  it("prevents bad update edits", () => {
+    // @ts-expect-error
+    editBatch.update(taskInstance, { capacity: 4 }); // Using Office properties
+
+    // @ts-expect-error
+    editBatch.update({ $apiName: "Task", $primaryKey: 2 }, { capacity: 4 }); // Using Office properties
   });
 });
