@@ -15,6 +15,7 @@
     "prepare": "husky install",
     "tag-release": "./scripts/tag-release.sh",
     "test": "FORCE_COLOR=1 turbo run test",
+    "test-backcompat": "./scripts/checkMinorBackcompat.sh",
     "test:watch": "FORCE_COLOR=1 turbo run test:watch",
     "typecheckAll": "tsc --build packages/* examples-extra/basic/*"
   },
@@ -30,6 +31,7 @@
     "@monorepolint/config": "0.6.0-alpha.4",
     "@monorepolint/core": "0.6.0-alpha.4",
     "@monorepolint/rules": "0.6.0-alpha.4",
+    "@osdk/client.test.generate": "workspace:~",
     "@osdk/monorepo.cspell": "workspace:~",
     "@osdk/monorepo.tool.transpile": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
