@@ -26,6 +26,7 @@ import { getInputHtmlEntrypoints } from "../common/getInputHtmlEntrypoints.js";
 import { standardizeFileExtension } from "../common/standardizeFileExtension.js";
 import { buildWidgetSetManifest } from "./buildWidgetSetManifest.js";
 import { getWidgetBuildOutputs } from "./getWidgetBuildOutputs.js";
+import { getWidgetSetInputSpec } from "./getWidgetSetInputSpec.js";
 import { isConfigFile } from "./isConfigFile.js";
 
 export function FoundryWidgetBuildPlugin(): Plugin {
@@ -86,10 +87,14 @@ export function FoundryWidgetBuildPlugin(): Plugin {
       const widgetBuilds = htmlEntrypoints.map((input) =>
         getWidgetBuildOutputs(bundle, input, config.build.outDir, configFiles)
       );
+      const widgetSetInputSpec = await getWidgetSetInputSpec(
+        path.resolve(process.cwd(), "package.json"),
+      );
       const widgetSetManifest = buildWidgetSetManifest(
         foundryConfig.foundryConfig.widgetSet.rid,
         widgetSetVersion,
         widgetBuilds,
+        widgetSetInputSpec,
       );
 
       // Write the manifest to the dist directory
