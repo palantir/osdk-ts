@@ -1,5 +1,7 @@
 # @osdk/api
 
+## 2.2.0-beta.19
+
 ## 2.2.0-beta.18
 
 ### Minor Changes
