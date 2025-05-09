@@ -563,7 +563,7 @@ describe.each([
   describe("Properly handles undefined values for optional parameters", () => {
     it("Sends null on request for explicitly undefined values", async () => {
       await apiServer.boundary(async () => {
-        let request: ApplyActionRequestV2 = {} as ApplyActionRequestV2;
+        let request = {} as ApplyActionRequestV2;
         apiServer.use(MockOntologiesV2.Actions.apply(baseUrl, async (info) => {
           request = await info.request.json();
           return {
@@ -585,7 +585,7 @@ describe.each([
 
     it("Does not send null on request for unset values", async () => {
       await apiServer.boundary(async () => {
-        let request: ApplyActionRequestV2 = {} as ApplyActionRequestV2;
+        let request = {} as ApplyActionRequestV2;
         apiServer.use(MockOntologiesV2.Actions.apply(baseUrl, async (info) => {
           request = await info.request.json();
           return {
@@ -600,7 +600,6 @@ describe.each([
         await client($Actions.createStructPerson).applyAction({
           name: "testMan",
         });
-        // @ts-ignore
         expect(request.parameters).toEqual({ name: "testMan" });
       })();
     });
