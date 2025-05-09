@@ -202,17 +202,17 @@ describe(createEditBatch, () => {
     // @ts-expect-error
     editBatch.link(taskInstance, "RP", officeInstance); // Linking to Office instead of Person
 
-    // @ts-expect-error
     editBatch.link(
       { $apiName: "Task", $primaryKey: 2 },
+      // @ts-expect-error
       "occupants",
       employeeInstance,
     ); // Using Office link
 
-    // @ts-expect-error
     editBatch.link(
       { $apiName: "Office", $primaryKey: "2" },
       "occupants",
+      // @ts-expect-error
       personInstance,
     ); // Linking to Person instead of Employee
 
@@ -227,17 +227,17 @@ describe(createEditBatch, () => {
     // @ts-expect-error
     editBatch.unlink(taskInstance, "RP", officeInstance); // Unlinking Office instead of Person
 
-    // @ts-expect-error
     editBatch.unlink(
       { $apiName: "Task", $primaryKey: 2 },
+      // @ts-expect-error
       "occupants",
       employeeInstance,
     ); // Using Office link
 
-    // @ts-expect-error
     editBatch.unlink(
       { $apiName: "Office", $primaryKey: "2" },
       "occupants",
+      // @ts-expect-error
       personInstance,
     ); // Unlinking Person instead of Employee
 
