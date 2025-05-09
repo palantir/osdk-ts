@@ -1,0 +1,43 @@
+:root {
+  --background-color-light: #f0f0f0;
+  --background-color-dark: #333;
+  --card-background-color-light: #fff;
+  --card-background-color-dark: #444;
+  --text-color-light: #000;
+  --text-color-dark: #fff;
+  --card-border-color: #007bff;
+  --shadow-color-light: rgba(0, 0, 0, 0.1);
+  --shadow-color-dark: rgba(255, 255, 255, 0.1);
+  color: var(--text-color);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+      --background-color: var(--background-color-dark);
+      --card-background-color: var(--card-background-color-dark);
+      --text-color: var(--text-color-dark);
+      --shadow-color: var(--shadow-color-dark);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+      --background-color: var(--background-color-light);
+      --card-background-color: var(--card-background-color-light);
+      --text-color: var(--text-color-light);
+      --shadow-color: var(--shadow-color-light);
+  }
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  padding: 10px;
+  background-color: var(--background-color);
+  gap: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  color: var(--text-color);
+}
