@@ -16,6 +16,7 @@ export interface getTodoCount extends QueryDefinition<getTodoCount.Signature>, V
     rid: 'query.rid2';
     type: 'query';
     version: '0.1.2';
+    pinned: false;
     parameters: {};
     output: {
       nullable: false;
@@ -33,5 +34,6 @@ export const getTodoCount: getTodoCount = {
   apiName: 'getTodoCount',
   type: 'query',
   version: '0.1.2',
+  pinned: false,
   osdkMetadata: $osdkMetadata,
 };

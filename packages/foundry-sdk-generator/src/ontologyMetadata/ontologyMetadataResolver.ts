@@ -36,9 +36,10 @@ type PackageInfo = Map<string, {
 }>;
 
 export interface OntologyInfo {
-  filteredFullMetadata: OntologyFullMetadata;
+  requestedMetadata: OntologyFullMetadata;
   externalInterfaces: Map<string, string>;
   externalObjects: Map<string, string>;
+  pinnedQueryTypes: string[];
 }
 
 export class OntologyMetadataResolver {
@@ -107,7 +108,7 @@ export class OntologyMetadataResolver {
       Object.entries(ontologyFullMetadata.actionTypes).filter(
         ([actionApiName]) => {
           if (
-            expectedEntities.actionTypes.has(this.camelize(actionApiName))
+            expectedEntities.actionTypes.has(actionApiName)
           ) {
             return true;
           }
@@ -192,6 +193,10 @@ export class OntologyMetadataResolver {
       ]);
     }
 
+    // If we're passing in an external SDK package, we need to load the full metadata. As a result, we cannot use query
+    // version pinning. This codepath should be merged with the `loadMetadata` codepath when we have the ability to load
+    // objects and interfaces by RID.
+    if (extPackageInfo.size > 0) {
     const ontologyFullMetadata = await OntologiesV2.getFullMetadata(
       this.getClientContext(),
       ontology.rid as OntologyIdentifier,
@@ -210,7 +215,9 @@ export class OntologyMetadataResolver {
 
     for (const { sdk } of extPackageInfo.values()) {
       if (sdk.npm?.npmPackageName == null) {
-        throw new Error("External package is not generated as an npm package");
+        throw new Error(
+          "External package is not generated as an npm package",
+        );
       }
 
       const dataScope = sdk.inputs.dataScope.ontologyV2;
@@ -246,8 +253,15 @@ export class OntologyMetadataResolver {
     const linkTypes = new Map<string, Set<string>>();
     const objectTypes = new Set(entities.objectTypesApiNamesToLoad);
     const queryTypes = new Set(entities.queryTypesApiNamesToLoad);
+    for (const queryType of entities.queryTypesApiNamesToLoad ?? []) {
+      if (queryType.includes(":")) {
+        throw new Error(
+          `Pinned query types are not supported with external packages: ${queryType}`,
+        );
+      }
+    }
     const actionTypes = new Set(
-      entities.actionTypesApiNamesToLoad?.map(action => this.camelize(action)),
+      entities.actionTypesApiNamesToLoad,
     );
 
     const interfaceTypes = new Set(entities.interfaceTypesApiNamesToLoad);
@@ -274,27 +288,106 @@ export class OntologyMetadataResolver {
       extPackageInfo,
     );
 
-    const validData: Result<{}, string[]> = this.validateLoadedOntologyMetadata(
-      filteredFullMetadata,
-      {
-        objectTypes,
-        linkTypes,
-        actionTypes,
-        queryTypes,
-        interfaceTypes,
-      },
-      ontologyFullMetadata,
-      extPackageInfo,
-    );
+    const validData: Result<{}, string[]> = this
+      .validateLoadedOntologyMetadata(
+        filteredFullMetadata,
+        {
+          objectTypes,
+          linkTypes,
+          actionTypes,
+          queryTypes,
+          interfaceTypes,
+        },
+        extPackageInfo,
+        ontologyFullMetadata,
+      );
 
     if (validData.isErr()) {
       return Result.err(validData.error);
     }
     return Result.ok({
-      filteredFullMetadata,
+      requestedMetadata: filteredFullMetadata,
       externalInterfaces,
       externalObjects,
+      pinnedQueryTypes: [],
     });
+    } else {
+      const objectTypes = new Set(entities.objectTypesApiNamesToLoad);
+      const interfaceTypes = new Set(entities.interfaceTypesApiNamesToLoad);
+      const actionTypes = new Set(
+        entities.actionTypesApiNamesToLoad,
+      );
+
+      const linkTypes = new Map<string, Set<string>>();
+
+      for (const linkType of entities.linkTypesApiNamesToLoad ?? []) {
+        const [objectTypeApiName, linkTypeApiName] = linkType.split(
+          ".",
+        );
+        if (!linkTypes.has(objectTypeApiName)) {
+          linkTypes.set(objectTypeApiName, new Set());
+        }
+        linkTypes.get(objectTypeApiName)?.add(linkTypeApiName);
+      }
+
+      const queryTypes = new Set<string>();
+      const pinnedQueryTypes = [];
+
+      for (const queryType of entities.queryTypesApiNamesToLoad ?? []) {
+        if (queryTypes.has(queryType)) {
+          return Result.err([
+            `Query type ${queryType} was specified multiple times.`,
+          ]);
+        }
+        const lastColonIndex = queryType.lastIndexOf(":");
+
+        if (lastColonIndex !== -1) {
+          const queryTypeApiName = queryType.substring(0, lastColonIndex);
+          pinnedQueryTypes.push(queryTypeApiName);
+        }
+        queryTypes.add(queryType);
+      }
+
+      const requestedMetadata = await OntologiesV2.loadMetadata(
+        this.getClientContext(),
+        ontology.rid as OntologyIdentifier,
+        {
+          actionTypes: [...actionTypes],
+          objectTypes: [...objectTypes],
+          queryTypes: [...queryTypes],
+          interfaceTypes: [...interfaceTypes],
+          linkTypes: Array.from(linkTypes.entries()).flatMap(
+            ([_, linkTypeApiNames]) => [...linkTypeApiNames],
+          ),
+        },
+        {
+          preview: true,
+        },
+      );
+
+      const validData: Result<{}, string[]> = this
+        .validateLoadedOntologyMetadata(
+          requestedMetadata,
+          {
+            objectTypes,
+            linkTypes,
+            actionTypes,
+            queryTypes,
+            interfaceTypes,
+          },
+          extPackageInfo,
+        );
+
+      if (validData.isErr()) {
+        return Result.err(validData.error);
+      }
+      return Result.ok({
+        requestedMetadata,
+        externalInterfaces: new Map(),
+        externalObjects: new Map(),
+        pinnedQueryTypes,
+      });
+    }
   }
 
   private validateLoadedOntologyMetadata(
@@ -306,8 +399,8 @@ export class OntologyMetadataResolver {
       actionTypes: Set<string>;
       interfaceTypes: Set<string>;
     },
-    fullOntology: OntologyFullMetadata,
     packageInfo: PackageInfo,
+    fullMetadata?: OntologyFullMetadata,
   ): Result<{}, string[]> {
     const errors: string[] = [];
     const loadedObjectTypes = Object.fromEntries(
@@ -357,7 +450,7 @@ export class OntologyMetadataResolver {
           )
         ) {
           // is it in a package?
-          const fromFull = fullOntology.objectTypes[link.objectTypeApiName];
+          const fromFull = fullMetadata?.objectTypes[link.objectTypeApiName];
           if (fromFull && hasObjectType(packageInfo, fromFull)) {
             continue;
           }
@@ -429,24 +522,15 @@ export class OntologyMetadataResolver {
       );
     }
 
-    const loadedActionTypes = Object.fromEntries(
-      Object.entries(filteredFullMetadata.actionTypes).map((
-        [actionApiName, action],
-      ) => [
-        this.camelize(actionApiName),
-        action,
-      ]),
-    );
-
     const missingActionTypes: string[] = [];
     for (const actionApiName of expectedEntities.actionTypes) {
-      if (!loadedActionTypes[actionApiName]) {
+      if (!filteredFullMetadata.actionTypes[actionApiName]) {
         missingActionTypes.push(actionApiName);
       }
     }
 
     // Validate parameters for Actions
-    for (const action of Object.values(loadedActionTypes)) {
+    for (const action of Object.values(filteredFullMetadata.actionTypes)) {
       const result = this.validateActionParameters(
         action,
         expectedEntities.objectTypes,
@@ -506,14 +590,12 @@ export class OntologyMetadataResolver {
     loadedObjectApiNames: Set<string>,
     loadedInterfaceApiNames: Set<string>,
   ): Result<{}, string[]> {
-    const camelizedApiName = this.camelize(actionType.apiName);
-
     const parameterValidation: Array<Result<{}, string[]>> = Object.entries(
       actionType.parameters,
     ).map(
       ([_paramName, paramData]) =>
         this.isSupportedActionTypeParameter(
-          camelizedApiName,
+          actionType.apiName,
           paramData.dataType,
           loadedObjectApiNames,
           loadedInterfaceApiNames,
@@ -691,10 +773,6 @@ export class OntologyMetadataResolver {
           + `specify only the actions you want to load with the --actions argument.`,
         ]);
     }
-  }
-
-  private camelize(name: string) {
-    return name.replace(/-./g, segment => segment[1]!.toUpperCase());
   }
 }
 

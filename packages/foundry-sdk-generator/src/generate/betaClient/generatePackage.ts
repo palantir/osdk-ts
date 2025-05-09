@@ -50,7 +50,7 @@ export async function generatePackage(
     await mkdir(options.outputDir, { recursive: true });
     await writeFile(
       path.join(options.outputDir, "ontology.json"),
-      JSON.stringify(ontologyInfo.filteredFullMetadata, null, 2),
+      JSON.stringify(ontologyInfo.requestedMetadata, null, 2),
       "utf-8",
     );
     return;
@@ -78,13 +78,16 @@ export async function generatePackage(
   };
 
   await generateClientSdkVersionTwoPointZero(
-    ontologyInfo.filteredFullMetadata,
+    ontologyInfo.requestedMetadata,
     `typescript-sdk/${options.packageVersion} ${USER_AGENT}`,
     hostFs,
     packagePath,
     "module",
     ontologyInfo.externalObjects,
     ontologyInfo.externalInterfaces,
+    new Map(),
+    false,
+    ontologyInfo.pinnedQueryTypes,
   );
 
   // actually write file plus save contents

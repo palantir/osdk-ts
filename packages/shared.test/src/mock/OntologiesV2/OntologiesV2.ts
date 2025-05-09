@@ -26,6 +26,14 @@ export const getFullMetadata: CallFactory<
   ["ontologyApiName"],
 );
 
+export const loadMetadata: CallFactory<
+  "ontologyApiName",
+  typeof OntologiesV2.loadMetadata
+> = handleOpenApiCall(
+  OntologiesV2.loadMetadata,
+  ["ontologyApiName"],
+);
+
 export const list: CallFactory<never, typeof OntologiesV2.list> =
   handleOpenApiCall(
     OntologiesV2.list,

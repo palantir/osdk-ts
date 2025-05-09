@@ -56,7 +56,10 @@ export interface OntologyProvider {
     apiName: string,
   ) => Promise<InterfaceMetadata>;
 
-  getQueryDefinition: (apiName: string) => Promise<QueryMetadata>;
+  getQueryDefinition: (
+    apiName: string,
+    version: string | undefined,
+  ) => Promise<QueryMetadata>;
 
   getActionDefinition: (apiName: string) => Promise<ActionMetadata>;
 }

@@ -26,7 +26,7 @@ export interface GenerateContext {
   fs: MinimalFs;
 
   outDir: string;
-
+  pinnedQueryTypes: string[];
   ontologyApiNamespace?: string | undefined;
   apiNamespacePackageMap?: Map<string, string>;
   forInternalUse?: boolean;
