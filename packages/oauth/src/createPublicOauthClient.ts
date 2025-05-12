@@ -99,10 +99,10 @@ export function createPublicOauthClient(
       return;
     }
 
-    const areScopesEqual = initialRequestedScopes != null
-      && joinedScopes === initialRequestedScopes;
-
-    if (!refresh_token || !areScopesEqual) {
+    if (
+      !refresh_token || !(initialRequestedScopes != null
+        && joinedScopes === initialRequestedScopes)
+    ) {
       if (expectRefreshToken) throw new Error("No refresh token found");
       return;
     }
