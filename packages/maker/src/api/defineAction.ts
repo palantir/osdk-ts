@@ -19,7 +19,6 @@ import invariant from "tiny-invariant";
 import {
   globalNamespace,
   ontologyDefinition,
-  sanitize,
   updateOntology,
 } from "./defineOntology.js";
 import {
@@ -29,12 +28,14 @@ import {
   type ActionType,
   type ActionTypeDefinition,
   type InterfaceType,
+  type ObjectPropertyType,
   type ObjectType,
   OntologyEntityTypeEnum,
+  type PropertyTypeType,
   type SharedPropertyType,
 } from "./types.js";
 
-export function defineCreateAction(
+export function defineCreateInterfaceObjectAction(
   interfaceType: InterfaceType,
   objectType?: ObjectType,
 ): ActionType {
@@ -112,7 +113,44 @@ export function defineCreateAction(
   });
 }
 
-export function defineModifyAction(
+export function defineCreateObjectAction(
+  objectType: ObjectType,
+): ActionType {
+  return defineAction({
+    apiName: `create-object-${
+      kebab(objectType.apiName.split(".").pop() ?? objectType.apiName)
+    }`,
+    displayName: `Create ${objectType.displayName}`,
+    parameters: [
+      ...(objectType.properties?.map(prop => ({
+        id: prop.apiName,
+        displayName: prop.displayName,
+        type: extractActionParameterType(prop),
+        validation: {
+          required: true,
+          allowedValues: extractAllowedValuesFromType(prop.type),
+        },
+      })) ?? []),
+    ],
+    status: "active",
+    rules: [{
+      type: "addObjectRule",
+      addObjectRule: {
+        objectTypeId: objectType.apiName,
+        propertyValues: objectType.properties
+          ? Object.fromEntries(
+            objectType.properties.map(
+              p => [p.apiName, { type: "parameterId", parameterId: p.apiName }],
+            ),
+          )
+          : {},
+        structFieldValues: {},
+      },
+    }],
+  });
+}
+
+export function defineModifyInterfaceObjectAction(
   interfaceType: InterfaceType,
   objectType?: ObjectType,
 ): ActionType {
@@ -186,11 +224,98 @@ export function defineModifyAction(
   });
 }
 
-export function defineAction(
-  actionDef: ActionTypeDefinition,
+export function defineModifyObjectAction(
+  objectType: ObjectType,
 ): ActionType {
+  return defineAction({
+    apiName: `modify-object-${
+      kebab(objectType.apiName.split(".").pop() ?? objectType.apiName)
+    }`,
+    displayName: `Modify ${objectType.displayName}`,
+    parameters: [
+      {
+        id: "objectToModifyParameter",
+        displayName: "Modify object",
+        type: {
+          type: "objectReference",
+          objectReference: { objectTypeId: objectType.apiName },
+        },
+        validation: {
+          allowedValues: { type: "objectQuery" },
+          required: true,
+        },
+      },
+      ...(objectType.properties?.map(prop => ({
+        id: prop.apiName,
+        displayName: prop.displayName,
+        type: extractActionParameterType(prop),
+        validation: {
+          required: true,
+          allowedValues: extractAllowedValuesFromType(prop.type),
+        },
+      })) ?? []),
+    ],
+    status: "active",
+    rules: [
+      {
+        type: "modifyObjectRule",
+        modifyObjectRule: {
+          objectToModify: "objectToModifyParameter",
+          propertyValues: objectType.properties
+            ? Object.fromEntries(
+              objectType.properties.map(
+                p => [p.apiName, {
+                  type: "parameterId",
+                  parameterId: p.apiName,
+                }],
+              ),
+            )
+            : {},
+          structFieldValues: {},
+        },
+      },
+    ],
+  });
+}
+
+export function defineDeleteObjectAction(
+  objectType: ObjectType,
+): ActionType {
+  return defineAction({
+    apiName: `delete-object-${
+      kebab(objectType.apiName.split(".").pop() ?? objectType.apiName)
+    }`,
+    displayName: `Delete ${objectType.displayName}`,
+    parameters: [
+      {
+        id: "objectToDeleteParameter",
+        displayName: "Delete object",
+        type: {
+          type: "objectReference",
+          objectReference: { objectTypeId: objectType.apiName },
+        },
+        validation: {
+          required: true,
+          allowedValues: { type: "objectQuery" },
+        },
+      },
+    ],
+    status: "active",
+    rules: [
+      {
+        type: "deleteObjectRule",
+        deleteObjectRule: {
+          objectToDelete: "objectToDeleteParameter",
+        },
+      },
+    ],
+  });
+}
+
+export function defineAction(actionDef: ActionTypeDefinition): ActionType {
   const apiName = globalNamespace + actionDef.apiName;
   const parameterIds = (actionDef.parameters ?? []).map(p => p.id);
+
   if (
     ontologyDefinition[OntologyEntityTypeEnum.ACTION_TYPE][apiName]
       !== undefined
@@ -210,9 +335,7 @@ export function defineAction(
     `Parameter ids must be unique`,
   );
 
-  const parameterIdsNotFound = Array.from(
-    referencedParameterIds(actionDef),
-  )
+  const parameterIdsNotFound = Array.from(referencedParameterIds(actionDef))
     .filter(p => !parameterIdsSet.has(p));
   invariant(
     parameterIdsNotFound.length === 0,
@@ -235,12 +358,25 @@ export function defineAction(
     actionDef.rules.length > 0,
     `Action type ${actionDef.apiName} must have at least one logic rule`,
   );
-
-  const fullAction: ActionType = {
+  actionDef.rules.forEach(rule => {
+    if (rule.type === "modifyObjectRule") {
+      invariant(
+        parameterIds.some(id => id === rule.modifyObjectRule.objectToModify),
+        `Object to modify parameter must be defined in parameters`,
+      );
+    }
+    if (rule.type === "deleteObjectRule") {
+      invariant(
+        parameterIds.some(id => id === rule.deleteObjectRule.objectToDelete),
+        `Object to delete parameter must be defined in parameters`,
+      );
+    }
+  });
+  const fullAction = {
     ...actionDef,
     apiName: apiName,
     __type: OntologyEntityTypeEnum.ACTION_TYPE,
-  };
+  } as ActionType;
   updateOntology(fullAction);
   return fullAction;
 }
@@ -267,7 +403,6 @@ function referencedParameterIds(
     switch (rule.type) {
       case "addInterfaceRule":
         rule.addInterfaceRule.interfaceApiName = sanitize(
-          globalNamespace,
           rule.addInterfaceRule.interfaceApiName,
         );
         parameterIds.add(rule.addInterfaceRule.objectTypeParameter);
@@ -276,9 +411,8 @@ function referencedParameterIds(
             if (v.type === "parameterId") {
               parameterIds.add(v.parameterId);
             }
+            rule.addInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
             delete rule.addInterfaceRule.sharedPropertyValues[k];
-            rule.addInterfaceRule
-              .sharedPropertyValues[sanitize(globalNamespace, k)] = v;
           },
         );
         break;
@@ -291,9 +425,8 @@ function referencedParameterIds(
             if (v.type === "parameterId") {
               parameterIds.add(v.parameterId);
             }
+            rule.modifyInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
             delete rule.modifyInterfaceRule.sharedPropertyValues[k];
-            rule.modifyInterfaceRule
-              .sharedPropertyValues[sanitize(globalNamespace, k)] = v;
           },
         );
         break;
@@ -475,4 +608,8 @@ function kebab(s: string): string {
     .replace(/([A-Z])([A-Z][a-z])/g, "$1-$2")
     .replace(/\./g, "-")
     .toLowerCase();
+}
+
+function sanitize(s: string): string {
+  return s.includes(".") ? s : globalNamespace + s;
 }

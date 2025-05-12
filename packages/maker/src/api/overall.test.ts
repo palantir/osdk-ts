@@ -15,7 +15,14 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
-import { defineAction } from "./defineAction.js";
+import {
+  defineAction,
+  defineCreateInterfaceObjectAction,
+  defineCreateObjectAction,
+  defineDeleteObjectAction,
+  defineModifyInterfaceObjectAction,
+  defineModifyObjectAction,
+} from "./defineAction.js";
 import { defineInterface } from "./defineInterface.js";
 import { defineInterfaceLinkConstraint } from "./defineInterfaceLinkConstraint.js";
 import { defineLink } from "./defineLink.js";
@@ -3989,6 +3996,10 @@ describe("Ontology Defining", () => {
            "sharedPropertyTypes": {},
          },
          "importedTypes": {
+           "actionTypes": [],
+           "interfaceTypes": [],
+           "linkTypes": [],
+           "objectTypes": [],
            "sharedPropertyTypes": [],
          },
        }
@@ -4520,6 +4531,10 @@ describe("Ontology Defining", () => {
            "sharedPropertyTypes": {},
          },
          "importedTypes": {
+           "actionTypes": [],
+           "interfaceTypes": [],
+           "linkTypes": [],
+           "objectTypes": [],
            "sharedPropertyTypes": [],
          },
        }
