@@ -1,5 +1,12 @@
 # @osdk/e2e.sandbox.todoappapp
 
+## 2.0.4
+
+### Patch Changes
+
+- Updated dependencies [75711ff]
+  - @osdk/oauth@0.3.1
+
 ## 2.0.3
 
 ### Patch Changes

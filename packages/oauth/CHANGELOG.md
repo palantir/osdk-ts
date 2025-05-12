@@ -1,5 +1,11 @@
 # @osdk/oauth
 
+## 0.3.1
+
+### Patch Changes
+
+- 75711ff: Added the ability to re-create the refresh token if the operation scopes change
+
 ## 0.3.0
 
 ### Minor Changes
