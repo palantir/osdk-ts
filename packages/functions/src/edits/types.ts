@@ -110,25 +110,3 @@ export type AnyEdit =
   | CreateObject<any>
   | DeleteObject<any>
   | UpdateObject<any>;
-
-export type AddLinkEdits<X extends AnyEdit> = Extract<X, { type: "addLink" }>;
-
-export type RemoveLinkEdits<X extends AnyEdit> = Extract<
-  X,
-  { type: "removeLink" }
->;
-
-export type CreateObjectEdits<X extends AnyEdit> = Extract<
-  X,
-  { type: "createObject" }
->;
-
-export type DeleteObjectEdits<X extends AnyEdit> = Extract<
-  X,
-  { type: "deleteObject" }
->;
-
-export type UpdateObjectEdits<X extends AnyEdit> = Extract<
-  X,
-  { type: "updateObject" }
->;

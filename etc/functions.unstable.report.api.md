@@ -35,28 +35,40 @@ export type Double<T extends number = number> = T & {
 
 // @public (undocumented)
 export interface EditBatch<X extends AnyEdit = never> {
-    	// Warning: (ae-forgotten-export) The symbol "CreateObjectEdits" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "CreatableObjectTypes" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "CreatableObjectTypeProperties" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    create: <O extends CreateObjectEdits<X>>(obj: O["obj"], properties: O["properties"]) => void;
-    	// Warning: (ae-forgotten-export) The symbol "DeleteObjectEdits" needs to be exported by the entry point index.d.ts
+    create: <OTD extends CreatableObjectTypes<X>>(obj: OTD, properties: CreatableObjectTypeProperties<X, OTD>) => void;
+    	// Warning: (ae-forgotten-export) The symbol "DeletableObjectLocators" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    delete: <O extends DeleteObjectEdits<X>>(obj: O["obj"]) => void;
+    delete: <OL extends DeletableObjectLocators<X>>(obj: OL) => void;
     	// (undocumented)
     getEdits: () => X[];
-    	// Warning: (ae-forgotten-export) The symbol "AddLinkEdits" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "AddLinkSources" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "AddLinkApiNames" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "AddLinkTargets" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    link: <L extends AddLinkEdits<X>>(source: L["source"], apiName: L["apiName"], target: L["target"]) => void;
-    	// Warning: (ae-forgotten-export) The symbol "RemoveLinkEdits" needs to be exported by the entry point index.d.ts
+    link: <
+    		SOL extends AddLinkSources<X>,
+    		A extends AddLinkApiNames<X, SOL>
+    	>(source: SOL, apiName: A, target: AddLinkTargets<X, SOL, A>) => void;
+    	// Warning: (ae-forgotten-export) The symbol "RemoveLinkSources" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "RemoveLinkApiNames" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "RemoveLinkTargets" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    unlink: <L extends RemoveLinkEdits<X>>(source: L["source"], apiName: L["apiName"], target: L["target"]) => void;
-    	// Warning: (ae-forgotten-export) The symbol "UpdateObjectEdits" needs to be exported by the entry point index.d.ts
+    unlink: <
+    		SOL extends RemoveLinkSources<X>,
+    		A extends RemoveLinkApiNames<X, SOL>
+    	>(source: SOL, apiName: A, target: RemoveLinkTargets<X, SOL, A>) => void;
+    	// Warning: (ae-forgotten-export) The symbol "UpdatableObjectLocators" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "UpdatableObjectLocatorProperties" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    update: <O extends UpdateObjectEdits<X>>(obj: O["obj"], properties: O["properties"]) => void;
+    update: <OL extends UpdatableObjectLocators<X>>(obj: OL, properties: UpdatableObjectLocatorProperties<X, OL>) => void;
 }
 
 // @public (undocumented)
