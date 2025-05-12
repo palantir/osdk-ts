@@ -49,8 +49,6 @@ declare const process: {
   env: Record<string, string | undefined>;
 };
 
-const localStorage = globalThis.localStorage;
-
 type LocalStorageState =
   // when we are going to the login page
   | {
@@ -58,6 +56,9 @@ type LocalStorageState =
     codeVerifier?: never;
     state?: never;
     oldUrl: string;
+    // The stringified space-separated list of scopes requested during the initial auth grant, which our refresh token is still valid for
+    // Note any or none of these scopes may have actually been granted when we received our last access token
+    requestedScopes?: string;
   }
   // when we are redirecting to oauth login
   | {
@@ -65,6 +66,7 @@ type LocalStorageState =
     codeVerifier: string;
     state: string;
     oldUrl: string;
+    requestedScopes?: string;
   }
   // when we have the refresh token
   | {
@@ -72,17 +74,19 @@ type LocalStorageState =
     codeVerifier?: never;
     state?: never;
     oldUrl?: never;
+    requestedScopes?: string;
   }
   | {
     refresh_token?: never;
     codeVerifier?: never;
     state?: never;
     oldUrl?: never;
+    requestedScopes?: string;
   };
 
 export function saveLocal(client: Client, x: LocalStorageState) {
   // MUST `localStorage?` as nodejs does not have localStorage
-  localStorage?.setItem(
+  globalThis.localStorage?.setItem(
     `@osdk/oauth : refresh : ${client.client_id}`,
     JSON.stringify(x),
   );
@@ -90,13 +94,17 @@ export function saveLocal(client: Client, x: LocalStorageState) {
 
 export function removeLocal(client: Client) {
   // MUST `localStorage?` as nodejs does not have localStorage
-  localStorage?.removeItem(`@osdk/oauth : refresh : ${client.client_id}`);
+  globalThis.localStorage?.removeItem(
+    `@osdk/oauth : refresh : ${client.client_id}`,
+  );
 }
 
 export function readLocal(client: Client): LocalStorageState {
   return JSON.parse(
     // MUST `localStorage?` as nodejs does not have localStorage
-    localStorage?.getItem(`@osdk/oauth : refresh : ${client.client_id}`)
+    globalThis.localStorage?.getItem(
+      `@osdk/oauth : refresh : ${client.client_id}`,
+    )
       ?? "{}",
   );
 }
@@ -109,6 +117,7 @@ export function common<
   _signIn: () => Promise<Token>,
   oauthHttpOptions: HttpRequestOptions,
   refresh: R,
+  scopes: string,
 ): {
   getToken: BaseOauthClient<keyof Events & string> & { refresh: R };
   makeTokenAndSaveRefresh: (
@@ -125,7 +134,7 @@ export function common<
   ): Token {
     const { refresh_token, expires_in, access_token } = resp;
     invariant(expires_in != null);
-    saveLocal(client, { refresh_token });
+    saveLocal(client, { refresh_token, requestedScopes: scopes });
     token = {
       refresh_token,
       expires_in,
