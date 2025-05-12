@@ -505,9 +505,9 @@ function extractAllowedValuesFromType(
 }
 
 function extractActionParameterType(
-  spt: SharedPropertyType | ObjectPropertyType,
+  pt: SharedPropertyType | ObjectPropertyType,
 ): ActionParameterType {
-  const typeType = spt.type;
+  const typeType = pt.type;
   if (typeof typeType === "object") {
     switch (typeType.type) {
       case "marking":
@@ -521,18 +521,18 @@ function extractActionParameterType(
   if (
     typeof typeType === "string" && isActionParameterTypePrimitive(typeType)
   ) {
-    return maybeAddList(typeType, spt.array);
+    return maybeAddList(typeType, pt);
   }
   switch (typeType) {
     case "byte":
     case "short":
-      return maybeAddList("integer", spt.array);
+      return maybeAddList("integer", pt);
     case "geopoint":
-      return maybeAddList("geoshape", spt.array);
+      return maybeAddList("geoshape", pt);
     case "float":
-      return maybeAddList("double", spt.array);
+      return maybeAddList("double", pt);
     case "geotimeSeries":
-      return maybeAddList("geotimeSeriesReference", spt.array);
+      return maybeAddList("geotimeSeriesReference", pt);
     default:
       throw new Error("Unknown type");
   }
@@ -540,9 +540,9 @@ function extractActionParameterType(
 
 function maybeAddList(
   type: ActionParameterTypePrimitive,
-  array?: boolean,
+  pt: SharedPropertyType | ObjectPropertyType,
 ): ActionParameterType {
-  return ((array ?? false) ? type + "List" : type) as ActionParameterType;
+  return ((pt.array ?? false) ? type + "List" : type) as ActionParameterType;
 }
 
 function isActionParameterTypePrimitive(
