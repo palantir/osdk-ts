@@ -144,6 +144,8 @@ const cspell = {
 
         // Used in a stub
         "Clooney",
+        "Itask",
+        "Mobi",
       ],
       ignoreWords: [
         // it's an NPM package
@@ -152,6 +154,8 @@ const cspell = {
         "picocolors",
         // used in a RID template literal string
         "widgetregistry",
+        // used in scopes
+        "mediasets",
       ],
     },
     {

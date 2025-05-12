@@ -1,0 +1,12 @@
+{
+  "foundryUrl": "https://hatch.palantirfoundry.com",
+  "site": {
+    "application": "ri.third-party-applications.main.application.94401aab-d091-42e0-8d20-20f35ccd250d",
+    "directory": "./dist",
+    "autoVersion": {
+      "type": "git-describe",
+      "tagPrefix": ""
+    },
+    "uploadOnly": false
+  }
+}
