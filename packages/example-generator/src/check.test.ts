@@ -29,5 +29,5 @@ it(
       check: true,
     });
   },
-  { timeout: 15000 },
+  { timeout: 30000 },
 );

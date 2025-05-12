@@ -21,25 +21,19 @@ function Home() {
         <div>
           <h2>Objects ({objectApiNames.length})</h2>
           {objectApiNames.map((objectApiName) => (
-            <pre key={objectApiName}>
-              $Objects.{objectApiName}
-            </pre>
+            <pre key={objectApiName}>$Objects.{objectApiName}</pre>
           ))}
         </div>
         <div>
           <h2>Actions ({actionApiNames.length})</h2>
           {actionApiNames.map((actionApiName) => (
-            <pre key={actionApiName}>
-              $Actions.{actionApiName}
-            </pre>
+            <pre key={actionApiName}>$Actions.{actionApiName}</pre>
           ))}
         </div>
         <div>
           <h2>Queries ({queryApiNames.length})</h2>
           {queryApiNames.map((queryApiName) => (
-            <pre key={queryApiName}>
-              $Queries.{queryApiName}
-            </pre>
+            <pre key={queryApiName}>$Queries.{queryApiName}</pre>
           ))}
         </div>
       </div>
