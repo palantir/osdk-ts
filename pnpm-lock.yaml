@@ -110,7 +110,7 @@ importers:
         version: 3.1.1(eslint@9.21.0(jiti@2.4.2))
       eslint-plugin-import:
         specifier: ^2.31.0
-        version: 2.31.0(@typescript-eslint/parser@8.31.0(eslint@9.21.0(jiti@2.4.2))(typescript@5.5.4))(eslint-import-resolver-typescript@3.8.3)(eslint@9.21.0(jiti@2.4.2))
+        version: 2.31.0(@typescript-eslint/parser@8.31.0(eslint@9.21.0(jiti@2.4.2))(typescript@5.5.4))(eslint-import-resolver-typescript@3.8.3(eslint-plugin-import@2.31.0)(eslint@9.21.0(jiti@2.4.2)))(eslint@9.21.0(jiti@2.4.2))
       eslint-plugin-unused-imports:
         specifier: ^4.1.4
         version: 4.1.4(@typescript-eslint/eslint-plugin@8.31.0(@typescript-eslint/parser@8.31.0(eslint@9.21.0(jiti@2.4.2))(typescript@5.5.4))(eslint@9.21.0(jiti@2.4.2))(typescript@5.5.4))(eslint@9.21.0(jiti@2.4.2))
@@ -362,7 +362,7 @@ importers:
         version: 3.1.1(eslint@9.21.0(jiti@2.4.2))
       eslint-plugin-import:
         specifier: ^2.31.0
-        version: 2.31.0(@typescript-eslint/parser@8.31.0(eslint@9.21.0(jiti@2.4.2))(typescript@5.5.4))(eslint-import-resolver-typescript@3.8.3)(eslint@9.21.0(jiti@2.4.2))
+        version: 2.31.0(@typescript-eslint/parser@8.31.0(eslint@9.21.0(jiti@2.4.2))(typescript@5.5.4))(eslint-import-resolver-typescript@3.8.3(eslint-plugin-import@2.31.0)(eslint@9.21.0(jiti@2.4.2)))(eslint@9.21.0(jiti@2.4.2))
       eslint-plugin-jsx-a11y:
         specifier: ^6.10.1
         version: 6.10.1(eslint@9.21.0(jiti@2.4.2))
@@ -709,20 +709,11 @@ importers:
         specifier: ^4.2.0
         version: 4.2.1(vite@6.3.5(@types/node@18.19.74)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.39.0)(yaml@2.7.0))
       eslint:
-        specifier: ^9.21.0
+        specifier: ^9.19.0
         version: 9.21.0(jiti@2.4.2)
-      eslint-formatter-autolinkable-stylish:
-        specifier: ^1.4.0
-        version: 1.4.0(eslint@9.21.0(jiti@2.4.2))
-      eslint-import-resolver-typescript:
-        specifier: ^3.8.3
-        version: 3.8.3(eslint-plugin-import@2.31.0)(eslint@9.21.0(jiti@2.4.2))
-      eslint-plugin-header:
-        specifier: ^3.1.1
-        version: 3.1.1(eslint@9.21.0(jiti@2.4.2))
       eslint-plugin-import:
         specifier: ^2.31.0
-        version: 2.31.0(@typescript-eslint/parser@8.31.0(eslint@9.21.0(jiti@2.4.2))(typescript@5.5.4))(eslint-import-resolver-typescript@3.8.3)(eslint@9.21.0(jiti@2.4.2))
+        version: 2.31.0(@typescript-eslint/parser@8.31.0(eslint@9.21.0(jiti@2.4.2))(typescript@5.5.4))(eslint-import-resolver-typescript@3.8.3(eslint-plugin-import@2.31.0)(eslint@9.21.0(jiti@2.4.2)))(eslint@9.21.0(jiti@2.4.2))
       eslint-plugin-jsx-a11y:
         specifier: ^6.10.1
         version: 6.10.1(eslint@9.21.0(jiti@2.4.2))
@@ -738,9 +729,6 @@ importers:
       eslint-plugin-react-refresh:
         specifier: ^0.4.14
         version: 0.4.14(eslint@9.21.0(jiti@2.4.2))
-      eslint-plugin-unused-imports:
-        specifier: ^4.1.4
-        version: 4.1.4(@typescript-eslint/eslint-plugin@8.31.0(@typescript-eslint/parser@8.31.0(eslint@9.21.0(jiti@2.4.2))(typescript@5.5.4))(eslint@9.21.0(jiti@2.4.2))(typescript@5.5.4))(eslint@9.21.0(jiti@2.4.2))
       globals:
         specifier: ^15.11.0
         version: 15.11.0
@@ -23151,7 +23139,7 @@ snapshots:
       stable-hash: 0.0.4
       tinyglobby: 0.2.12
     optionalDependencies:
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.31.0(eslint@9.21.0(jiti@2.4.2))(typescript@5.5.4))(eslint-import-resolver-typescript@3.8.3)(eslint@9.21.0(jiti@2.4.2))
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.31.0(eslint@9.21.0(jiti@2.4.2))(typescript@5.5.4))(eslint-import-resolver-typescript@3.8.3(eslint-plugin-import@2.31.0)(eslint@9.21.0(jiti@2.4.2)))(eslint@9.21.0(jiti@2.4.2))
     transitivePeerDependencies:
       - supports-color
 
@@ -23259,7 +23247,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.31.0(eslint@9.21.0(jiti@2.4.2))(typescript@5.5.4))(eslint-import-resolver-typescript@3.8.3)(eslint@9.21.0(jiti@2.4.2)):
+  eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.31.0(eslint@9.21.0(jiti@2.4.2))(typescript@5.5.4))(eslint-import-resolver-typescript@3.8.3(eslint-plugin-import@2.31.0)(eslint@9.21.0(jiti@2.4.2)))(eslint@9.21.0(jiti@2.4.2)):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.8
