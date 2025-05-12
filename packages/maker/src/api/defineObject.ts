@@ -15,7 +15,11 @@
  */
 
 import invariant from "tiny-invariant";
-import { ontologyDefinition, updateOntology } from "./defineOntology.js";
+import {
+  globalNamespace,
+  ontologyDefinition,
+  updateOntology,
+} from "./defineOntology.js";
 import type {
   InterfacePropertyType,
   ObjectType,
@@ -38,9 +42,12 @@ export function defineObject(objectDef: ObjectType): ObjectType {
 export function defineObject(objectDef: ObjectType): ObjectType {
 export function defineObjectInner(
   namespace: string,
+export function defineObjectInner(
+  namespace: string,
+export function defineObject(
   objectDef: ObjectTypeDefinition,
 ): ObjectType {
-  const apiName = namespace + objectDef.apiName;
+  const apiName = globalNamespace + objectDef.apiName;
   const propertyApiNames = (objectDef.properties ?? []).map(val => val.apiName);
   if (
     ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][apiName]
@@ -175,7 +182,7 @@ export function defineObjectInner(
     apiName: apiName,
     __type: OntologyEntityTypeEnum.OBJECT_TYPE,
   };
-  updateOntology(namespace, finalObject);
+  updateOntology(finalObject);
   return finalObject;
 }
 

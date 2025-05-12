@@ -20,7 +20,11 @@ import type {
   Visibility,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
-import { ontologyDefinition, updateOntology } from "./defineOntology.js";
+import {
+  globalNamespace,
+  ontologyDefinition,
+  updateOntology,
+} from "./defineOntology.js";
 import {
   OntologyEntityTypeEnum,
   type PropertyTypeType,
@@ -44,11 +48,10 @@ export interface SharedPropertyTypeDefinition {
   gothamMapping?: SharedPropertyTypeGothamMapping;
 }
 
-export function defineSharedPropertyTypeInner(
-  namespace: string,
+export function defineSharedPropertyType(
   sptDef: SharedPropertyTypeDefinition,
 ): SharedPropertyType {
-  const apiName = namespace + sptDef.apiName;
+  const apiName = globalNamespace + sptDef.apiName;
   invariant(
     ontologyDefinition[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE][apiName]
       === undefined,
@@ -63,6 +66,6 @@ export function defineSharedPropertyTypeInner(
     typeClasses: sptDef.typeClasses ?? defaultTypeClasses,
     __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
   };
-  updateOntology(namespace, fullSpt);
+  updateOntology(fullSpt);
   return fullSpt;
 }

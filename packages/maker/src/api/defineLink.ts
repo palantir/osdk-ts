@@ -28,8 +28,7 @@ const defaultTypeClasses: SharedPropertyType["typeClasses"] = [{
   name: "SELECTABLE",
 }, { kind: "render_hint", name: "SORTABLE" }];
 
-export function defineLinkInner(
-  namespace: string,
+export function defineLink(
   linkDefinition: LinkTypeDefinition,
 ): LinkType {
   if ("one" in linkDefinition) {
@@ -54,6 +53,6 @@ export function defineLinkInner(
     ...linkDefinition,
     __type: OntologyEntityTypeEnum.LINK_TYPE,
   };
-  updateOntology(namespace, linkType);
+  updateOntology(linkType);
   return linkType;
 }

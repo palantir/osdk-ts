@@ -47,6 +47,9 @@ import type {
   RetentionPolicy,
   SectionId,
 } from "@osdk/client.unstable";
+import consola from "consola";
+import * as fs from "fs";
+import * as path from "path";
 import invariant from "tiny-invariant";
 import { isExotic } from "./defineObject.js";
 import type {
@@ -87,13 +90,8 @@ type OntologyAndValueTypeIrs = {
 export function updateOntology<
   T extends OntologyEntityType,
 >(
-  namespace: string,
   entity: T,
 ): void {
-  if (namespace !== globalNamespace) {
-    // importing is handled by the importer in getMakerForNamespace.js
-    return;
-  }
   if (entity.__type !== OntologyEntityTypeEnum.VALUE_TYPE) {
     ontologyDefinition[entity.__type][entity.apiName] = entity;
     return;
@@ -112,6 +110,7 @@ export function updateOntology<
 export async function defineOntology(
   ns: string,
   body: () => void | Promise<void>,
+  outputDir: string,
 ): Promise<OntologyAndValueTypeIrs> {
   globalNamespace = ns;
   ontologyDefinition = {
@@ -142,10 +141,85 @@ export async function defineOntology(
     throw e;
   }
 
+  consola.warn(`Ontology -- ${JSON.stringify(ontologyDefinition, null, 2)}`);
+  writeStaticObjects(outputDir);
   return {
     ontology: convertToWireOntologyIr(ontologyDefinition),
     valueType: convertOntologyToValueTypeIr(ontologyDefinition),
   };
+}
+
+export function writeStaticObjects(outputDir: string): void {
+  const outputBuildDir = path.resolve(outputDir, "build");
+  const typeDirs = {
+    [OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE]: "shared-property-types",
+    [OntologyEntityTypeEnum.ACTION_TYPE]: "action-types",
+    [OntologyEntityTypeEnum.OBJECT_TYPE]: "object-types",
+    [OntologyEntityTypeEnum.LINK_TYPE]: "link-types",
+    [OntologyEntityTypeEnum.INTERFACE_TYPE]: "interface-types",
+    [OntologyEntityTypeEnum.VALUE_TYPE]: "value-types",
+  };
+
+  if (!fs.existsSync(outputBuildDir)) {
+    fs.mkdirSync(outputBuildDir, { recursive: true });
+  }
+
+  Object.values(typeDirs).forEach(typeDirNameFromMap => {
+    const currentTypeDirPath = path.join(outputBuildDir, typeDirNameFromMap);
+    if (fs.existsSync(currentTypeDirPath)) {
+      fs.rmSync(currentTypeDirPath, { recursive: true, force: true });
+    }
+    fs.mkdirSync(currentTypeDirPath, { recursive: true });
+  });
+
+  const topLevelExportStatements: string[] = [];
+
+  Object.entries(ontologyDefinition).forEach(
+    ([ontologyTypeEnumKey, entities]) => {
+      const typeDirName =
+        typeDirs[ontologyTypeEnumKey as OntologyEntityTypeEnum];
+
+      const typeDirPath = path.join(outputBuildDir, typeDirName);
+      const entityModuleNames: string[] = [];
+
+      Object.entries(entities).forEach(([apiName, entity]) => {
+        const entityFileNameBase = camel(withoutNamespace(apiName))
+          + (ontologyTypeEnumKey as OntologyEntityTypeEnum
+              === OntologyEntityTypeEnum.VALUE_TYPE
+            ? "ValueType"
+            : "");
+        const filePath = path.join(typeDirPath, `${entityFileNameBase}.ts`);
+        const content = `
+import { importOntologyEntity } from '@osdk/maker';
+
+export const ${entityFileNameBase} = ${
+          JSON.stringify(entity, null, 2)
+        } as const;
+        
+importOntologyEntity(${entityFileNameBase});
+        `;
+        fs.writeFileSync(filePath, content, { flag: "w" });
+        entityModuleNames.push(entityFileNameBase);
+      });
+
+      if (entityModuleNames.length > 0) {
+        const typeIndexContent = entityModuleNames
+          .map(name => `export * from './${name}';`)
+          .join("\n") + "\n";
+        const typeIndexFilePath = path.join(typeDirPath, "index.ts");
+        fs.writeFileSync(typeIndexFilePath, typeIndexContent, { flag: "w" });
+        topLevelExportStatements.push(
+          `export * from './build/${typeDirName}';`,
+        );
+      }
+    },
+  );
+
+  if (topLevelExportStatements.length > 0) {
+    const mainIndexContent = topLevelExportStatements.join("\n") + "\n";
+    const mainIndexFilePath = path.join(outputDir, "index.ts");
+    fs.writeFileSync(mainIndexFilePath, mainIndexContent, { flag: "w" });
+  }
 }
 
 function convertOntologyToValueTypeIr(
@@ -1177,4 +1251,19 @@ export function incImporting(): void {
 }
 export function decImporting(): void {
   importing -= 1;
+}
+function withoutNamespace(apiName: string): string {
+  const lastDot = apiName.lastIndexOf(".");
+  if (lastDot === -1) {
+    return apiName;
+  }
+  return apiName.substring(lastDot + 1);
+}
+function camel(str: string): string {
+  if (!str) {
+    return str;
+  }
+  let result = str.replace(/[-_]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ""));
+  result = result.charAt(0).toLowerCase() + result.slice(1);
+  return result;
 }

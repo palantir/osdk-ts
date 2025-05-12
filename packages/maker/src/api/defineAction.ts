@@ -17,6 +17,7 @@
 import type { ParameterId } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import {
+  globalNamespace,
   ontologyDefinition,
   sanitize,
   updateOntology,
@@ -33,12 +34,11 @@ import {
   type SharedPropertyType,
 } from "./types.js";
 
-export function defineCreateActionInner(
-  namespace: string,
+export function defineCreateAction(
   interfaceType: InterfaceType,
   objectType?: ObjectType,
 ): ActionType {
-  return defineActionInner(namespace, {
+  return defineAction({
     apiName: `create-${
       kebab(interfaceType.apiName.split(".").pop() ?? interfaceType.apiName)
     }${
@@ -112,12 +112,11 @@ export function defineCreateActionInner(
   });
 }
 
-export function defineModifyActionInner(
-  namespace: string,
+export function defineModifyAction(
   interfaceType: InterfaceType,
   objectType?: ObjectType,
 ): ActionType {
-  return defineActionInner(namespace, {
+  return defineAction({
     apiName: `modify-${
       kebab(interfaceType.apiName.split(".").pop() ?? interfaceType.apiName)
     }${
@@ -187,11 +186,10 @@ export function defineModifyActionInner(
   });
 }
 
-export function defineActionInner(
-  namespace: string,
+export function defineAction(
   actionDef: ActionTypeDefinition,
 ): ActionType {
-  const apiName = namespace + actionDef.apiName;
+  const apiName = globalNamespace + actionDef.apiName;
   const parameterIds = (actionDef.parameters ?? []).map(p => p.id);
   if (
     ontologyDefinition[OntologyEntityTypeEnum.ACTION_TYPE][apiName]
@@ -213,7 +211,7 @@ export function defineActionInner(
   );
 
   const parameterIdsNotFound = Array.from(
-    referencedParameterIds(namespace, actionDef),
+    referencedParameterIds(actionDef),
   )
     .filter(p => !parameterIdsSet.has(p));
   invariant(
@@ -243,12 +241,11 @@ export function defineActionInner(
     apiName: apiName,
     __type: OntologyEntityTypeEnum.ACTION_TYPE,
   };
-  updateOntology(namespace, fullAction);
+  updateOntology(fullAction);
   return fullAction;
 }
 
 function referencedParameterIds(
-  namespace: string,
   actionDef: ActionTypeDefinition,
 ): Set<ParameterId> {
   const parameterIds: Set<ParameterId> = new Set();
@@ -270,7 +267,7 @@ function referencedParameterIds(
     switch (rule.type) {
       case "addInterfaceRule":
         rule.addInterfaceRule.interfaceApiName = sanitize(
-          namespace,
+          globalNamespace,
           rule.addInterfaceRule.interfaceApiName,
         );
         parameterIds.add(rule.addInterfaceRule.objectTypeParameter);
@@ -279,9 +276,9 @@ function referencedParameterIds(
             if (v.type === "parameterId") {
               parameterIds.add(v.parameterId);
             }
-            rule.addInterfaceRule.sharedPropertyValues[sanitize(namespace, k)] =
-              v;
             delete rule.addInterfaceRule.sharedPropertyValues[k];
+            rule.addInterfaceRule
+              .sharedPropertyValues[sanitize(globalNamespace, k)] = v;
           },
         );
         break;
@@ -294,9 +291,9 @@ function referencedParameterIds(
             if (v.type === "parameterId") {
               parameterIds.add(v.parameterId);
             }
-            rule.modifyInterfaceRule
-              .sharedPropertyValues[sanitize(namespace, k)] = v;
             delete rule.modifyInterfaceRule.sharedPropertyValues[k];
+            rule.modifyInterfaceRule
+              .sharedPropertyValues[sanitize(globalNamespace, k)] = v;
           },
         );
         break;

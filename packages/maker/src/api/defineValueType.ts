@@ -122,8 +122,7 @@ export type ValueTypeDefinition = {
   version: string;
 };
 
-export function defineValueTypeInner(
-  namespace: string,
+export function defineValueType(
   valueTypeDef: ValueTypeDefinition,
 ): ValueTypeDefinitionVersion {
   const { apiName, displayName, description, type, version } = valueTypeDef;
@@ -162,6 +161,6 @@ export function defineValueTypeInner(
     exampleValues: [],
     __type: OntologyEntityTypeEnum.VALUE_TYPE,
   };
-  updateOntology(namespace, vt);
+  updateOntology(vt);
   return vt;
 }

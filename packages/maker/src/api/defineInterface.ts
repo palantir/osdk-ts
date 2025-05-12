@@ -15,8 +15,12 @@
  */
 
 import invariant from "tiny-invariant";
-import { ontologyDefinition, updateOntology } from "./defineOntology.js";
-import { defineSharedPropertyTypeInner } from "./defineSpt.js";
+import {
+  globalNamespace,
+  ontologyDefinition,
+  updateOntology,
+} from "./defineOntology.js";
+import { defineSharedPropertyType } from "./defineSpt.js";
 import type { BlueprintIcon } from "./iconNames.js";
 import {
   type InterfaceType,
@@ -50,11 +54,10 @@ export type InterfaceTypeDefinition = {
   extends?: InterfaceType | InterfaceType[] | string | string[];
 };
 
-export function defineInterfaceInner(
-  namespace: string,
+export function defineInterface(
   interfaceDef: InterfaceTypeDefinition,
 ): InterfaceType {
-  const apiName = namespace + interfaceDef.apiName;
+  const apiName = globalNamespace + interfaceDef.apiName;
   invariant(
     ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][apiName]
       === undefined,
@@ -70,7 +73,7 @@ export function defineInterfaceInner(
           return [apiName, {
             required: type.required,
             sharedPropertyType: unifyBasePropertyDefinition(
-              namespace,
+              globalNamespace,
               apiName,
               type.propertyDefinition,
             ),
@@ -80,7 +83,7 @@ export function defineInterfaceInner(
         return [apiName, {
           required: true,
           sharedPropertyType: unifyBasePropertyDefinition(
-            namespace,
+            globalNamespace,
             apiName,
             type,
           ),
@@ -140,7 +143,7 @@ export function defineInterfaceInner(
     __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
   };
 
-  updateOntology(namespace, fullInterface);
+  updateOntology(fullInterface);
   return fullInterface;
 }
 
@@ -200,7 +203,7 @@ function unifyBasePropertyDefinition(
       } for property ${apiName} on InterfaceType ${apiName}`,
     );
 
-    const spt = defineSharedPropertyTypeInner(namespace, {
+    const spt = defineSharedPropertyType({
       apiName,
       displayName: apiName,
       type,

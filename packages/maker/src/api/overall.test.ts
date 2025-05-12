@@ -15,29 +15,23 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+import { defineAction } from "./defineAction.js";
+import { defineInterface } from "./defineInterface.js";
+import { defineInterfaceLinkConstraint } from "./defineInterfaceLinkConstraint.js";
+import { defineLink } from "./defineLink.js";
+import { defineObject } from "./defineObject.js";
 import {
   defineOntology,
   dumpOntologyFullMetadata,
   dumpValueTypeWireType,
 } from "./defineOntology.js";
-import { getMakerForNamespace } from "./getMakerForNamespace.js";
+import { defineSharedPropertyType } from "./defineSpt.js";
+import { defineValueType } from "./defineValueType.js";
 import type { InterfaceType } from "./types.js";
-
-const {
-  defineAction,
-  defineObject,
-  defineInterface,
-  defineCreateAction,
-  defineModifyAction,
-  defineValueType,
-  defineLink,
-  defineSharedPropertyType,
-  defineInterfaceLinkConstraint,
-} = getMakerForNamespace("com.palantir.");
 
 describe("Ontology Defining", () => {
   beforeEach(async () => {
-    await defineOntology("com.palantir.", () => {});
+    await defineOntology("com.palantir.", () => {}, "/tmp/");
   });
 
   describe("ValueTypes", () => {
@@ -114,7 +108,7 @@ describe("Ontology Defining", () => {
 
     // N.B Not sure what this is for but I don't want to break anything so I added the eslint ignore
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    defineOntology("com.palantir.", () => {});
+    defineOntology("com.palantir.", () => {}, "/tmp/");
   });
 
   describe("Interfaces", () => {
@@ -3256,7 +3250,7 @@ describe("Ontology Defining", () => {
         }],
       });
 
-      const createActionWithoutObjectType = defineCreateInterfaceObjectAction(
+      const createActionWithObjectType = defineCreateInterfaceObjectAction(
         exampleInterface,
         exampleObjectType,
       );
@@ -5041,301 +5035,6 @@ describe("Ontology Defining", () => {
           "linkTypes": [],
           "objectTypes": [],
           "sharedPropertyTypes": [],
-        },
-      }
-        `);
-    });
-  });
-  describe("Importing", () => {
-    it("Importing entities works", () => {
-      const defineSpt =
-        getMakerForNamespace("namespace.1").defineSharedPropertyType;
-      const defineInterface =
-        getMakerForNamespace("com.palantir.").defineInterface;
-      const importedSpt = defineSpt({
-        apiName: "importedSpt",
-        type: "string",
-      });
-      const exampleInterface = defineInterface({
-        apiName: "exampleInterface",
-        properties: {
-          importedSpt,
-        },
-      });
-      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
-      {
-        "blockData": {
-          "actionTypes": {},
-          "blockPermissionInformation": {
-            "actionTypes": {},
-            "linkTypes": {},
-            "objectTypes": {},
-          },
-          "interfaceTypes": {
-            "com.palantir.exampleInterface": {
-              "interfaceType": {
-                "allExtendsInterfaces": [],
-                "allLinks": [],
-                "allProperties": [],
-                "allPropertiesV2": {},
-                "apiName": "com.palantir.exampleInterface",
-                "displayMetadata": {
-                  "description": "exampleInterface",
-                  "displayName": "exampleInterface",
-                  "icon": undefined,
-                },
-                "extendsInterfaces": [],
-                "links": [],
-                "properties": [],
-                "propertiesV2": {
-                  "namespace.1.importedSpt": {
-                    "required": true,
-                    "sharedPropertyType": {
-                      "aliases": [],
-                      "apiName": "namespace.1.importedSpt",
-                      "baseFormatter": undefined,
-                      "dataConstraints": undefined,
-                      "displayMetadata": {
-                        "description": undefined,
-                        "displayName": "importedSpt",
-                        "visibility": "NORMAL",
-                      },
-                      "gothamMapping": undefined,
-                      "indexedForSearch": true,
-                      "type": {
-                        "string": {
-                          "analyzerOverride": undefined,
-                          "enableAsciiFolding": undefined,
-                          "isLongText": false,
-                          "supportsEfficientLeadingWildcard": false,
-                          "supportsExactMatching": true,
-                        },
-                        "type": "string",
-                      },
-                      "typeClasses": [
-                        {
-                          "kind": "render_hint",
-                          "name": "SELECTABLE",
-                        },
-                        {
-                          "kind": "render_hint",
-                          "name": "SORTABLE",
-                        },
-                      ],
-                      "valueType": undefined,
-                    },
-                  },
-                },
-                "status": {
-                  "active": {},
-                  "type": "active",
-                },
-              },
-            },
-          },
-          "linkTypes": {},
-          "objectTypes": {},
-          "sharedPropertyTypes": {},
-        },
-        "importedTypes": {
-          "actionTypes": [],
-          "interfaceTypes": [],
-          "linkTypes": [],
-          "objectTypes": [],
-          "sharedPropertyTypes": [
-            {
-              "apiName": "namespace.1.importedSpt",
-              "description": undefined,
-              "displayName": "importedSpt",
-              "type": {
-                "string": {
-                  "analyzerOverride": undefined,
-                  "enableAsciiFolding": undefined,
-                  "isLongText": false,
-                  "supportsEfficientLeadingWildcard": false,
-                  "supportsExactMatching": true,
-                },
-                "type": "string",
-              },
-            },
-          ],
-        },
-      }
-        `);
-    });
-    it("Transitive importing works", () => {
-      const { defineSharedPropertyType, defineInterface } =
-        getMakerForNamespace(
-          "namespace.1",
-        );
-      const defineObject = getMakerForNamespace("com.palantir.").defineObject;
-      const importedSpt = defineSharedPropertyType({
-        apiName: "importedSpt",
-        type: "string",
-      });
-      const importedInterface = defineInterface({
-        apiName: "importedInterface",
-        properties: {
-          importedSpt,
-        },
-      });
-      // Only `importedInterface` is imported in Typescript, but `importedSpt` should also be imported in OAC
-      const object = defineObject({
-        titlePropertyApiName: "bar",
-        displayName: "Foo",
-        pluralDisplayName: "Foo",
-        apiName: "foo",
-        primaryKeyPropertyApiName: "bar",
-        properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
-        implementsInterfaces: [{
-          implements: importedInterface,
-          propertyMapping: [{
-            interfaceProperty: "importedSpt",
-            mapsTo: "bar",
-          }],
-        }],
-      });
-      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
-      {
-        "blockData": {
-          "actionTypes": {},
-          "blockPermissionInformation": {
-            "actionTypes": {},
-            "linkTypes": {},
-            "objectTypes": {},
-          },
-          "interfaceTypes": {},
-          "linkTypes": {},
-          "objectTypes": {
-            "com.palantir.foo": {
-              "datasources": [
-                {
-                  "datasource": {
-                    "datasetV2": {
-                      "datasetRid": "com.palantir.foo",
-                      "propertyMapping": {
-                        "bar": {
-                          "column": "bar",
-                          "type": "column",
-                        },
-                      },
-                    },
-                    "type": "datasetV2",
-                  },
-                  "editsConfiguration": {
-                    "onlyAllowPrivilegedEdits": false,
-                  },
-                  "redacted": false,
-                  "rid": "ri.ontology.main.datasource.com.palantir.foo",
-                },
-              ],
-              "entityMetadata": {
-                "arePatchesEnabled": false,
-              },
-              "objectType": {
-                "allImplementsInterfaces": {},
-                "apiName": "com.palantir.foo",
-                "displayMetadata": {
-                  "description": undefined,
-                  "displayName": "Foo",
-                  "groupDisplayName": undefined,
-                  "icon": {
-                    "blueprint": {
-                      "color": "#2D72D2",
-                      "locator": "cube",
-                    },
-                    "type": "blueprint",
-                  },
-                  "pluralDisplayName": "Foo",
-                  "visibility": "NORMAL",
-                },
-                "implementsInterfaces2": [
-                  {
-                    "interfaceTypeApiName": "namespace.1.importedInterface",
-                    "properties": {
-                      "namespace.1.importedSpt": {
-                        "propertyTypeRid": "bar",
-                      },
-                    },
-                  },
-                ],
-                "primaryKeys": [
-                  "bar",
-                ],
-                "propertyTypes": {
-                  "bar": {
-                    "apiName": "bar",
-                    "baseFormatter": undefined,
-                    "dataConstraints": undefined,
-                    "displayMetadata": {
-                      "description": undefined,
-                      "displayName": "Bar",
-                      "visibility": "NORMAL",
-                    },
-                    "indexedForSearch": true,
-                    "inlineAction": undefined,
-                    "ruleSetBinding": undefined,
-                    "sharedPropertyTypeApiName": undefined,
-                    "sharedPropertyTypeRid": undefined,
-                    "status": {
-                      "active": {},
-                      "type": "active",
-                    },
-                    "type": {
-                      "string": {
-                        "analyzerOverride": undefined,
-                        "enableAsciiFolding": undefined,
-                        "isLongText": false,
-                        "supportsEfficientLeadingWildcard": false,
-                        "supportsExactMatching": true,
-                      },
-                      "type": "string",
-                    },
-                    "typeClasses": [],
-                    "valueType": undefined,
-                  },
-                },
-                "redacted": false,
-                "status": {
-                  "active": {},
-                  "type": "active",
-                },
-                "titlePropertyTypeRid": "bar",
-              },
-            },
-          },
-          "sharedPropertyTypes": {},
-        },
-        "importedTypes": {
-          "actionTypes": [],
-          "interfaceTypes": [
-            {
-              "apiName": "namespace.1.importedInterface",
-              "description": "importedInterface",
-              "displayName": "importedInterface",
-              "links": [],
-              "properties": [],
-            },
-          ],
-          "linkTypes": [],
-          "objectTypes": [],
-          "sharedPropertyTypes": [
-            {
-              "apiName": "namespace.1.importedSpt",
-              "description": undefined,
-              "displayName": "importedSpt",
-              "type": {
-                "string": {
-                  "analyzerOverride": undefined,
-                  "enableAsciiFolding": undefined,
-                  "isLongText": false,
-                  "supportsEfficientLeadingWildcard": false,
-                  "supportsExactMatching": true,
-                },
-                "type": "string",
-              },
-            },
-          ],
         },
       }
         `);
