@@ -1006,7 +1006,7 @@ describe("generator", () => {
             rid: 'rid.query.1';
             type: 'query';
             version: '1.1.0';
-            pinned: false;
+            isFixedVersion: false;
             parameters: {
               /**
                * (no ontology metadata)
@@ -1032,7 +1032,7 @@ describe("generator", () => {
           apiName: 'getCount',
           type: 'query',
           version: '1.1.0',
-          pinned: false,
+          isFixedVersion: false,
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -1062,7 +1062,7 @@ describe("generator", () => {
             rid: 'rid.query.2';
             type: 'query';
             version: '3.2.0';
-            pinned: false;
+            isFixedVersion: false;
             parameters: {
               /**
                *   description: Random desc so we test jsdoc
@@ -1093,7 +1093,7 @@ describe("generator", () => {
           apiName: 'returnsTodo',
           type: 'query',
           version: '3.2.0',
-          pinned: false,
+          isFixedVersion: false,
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -1631,7 +1631,7 @@ describe("generator", () => {
             rid: 'rid.query.1';
             type: 'query';
             version: '1.1.0';
-            pinned: false;
+            isFixedVersion: false;
             parameters: {
               /**
                * (no ontology metadata)
@@ -1657,7 +1657,7 @@ describe("generator", () => {
           apiName: 'foo.bar.getCount',
           type: 'query',
           version: '1.1.0',
-          pinned: false,
+          isFixedVersion: false,
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -1687,7 +1687,7 @@ describe("generator", () => {
             rid: 'rid.query.2';
             type: 'query';
             version: '3.2.0';
-            pinned: false;
+            isFixedVersion: false;
             parameters: {
               /**
                *   description: Random desc so we test jsdoc
@@ -1718,7 +1718,7 @@ describe("generator", () => {
           apiName: 'foo.bar.returnsTodo',
           type: 'query',
           version: '3.2.0',
-          pinned: false,
+          isFixedVersion: false,
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -1853,7 +1853,7 @@ describe("generator", () => {
               rid: 'ri.a.b.c';
               type: 'query';
               version: '0';
-              pinned: false;
+              isFixedVersion: false;
               parameters: {
                 /**
                  * (no ontology metadata)
@@ -1883,7 +1883,7 @@ describe("generator", () => {
             apiName: 'getTask',
             type: 'query',
             version: '0',
-            pinned: false,
+            isFixedVersion: false,
             osdkMetadata: $osdkMetadata,
           };
           "
@@ -2379,7 +2379,7 @@ describe("generator", () => {
             rid: 'rid.query.1';
             type: 'query';
             version: '1.1.0';
-            pinned: true;
+            isFixedVersion: true;
             parameters: {
               /**
                * (no ontology metadata)
@@ -2405,7 +2405,7 @@ describe("generator", () => {
           apiName: 'getCount',
           type: 'query',
           version: '1.1.0',
-          pinned: true,
+          isFixedVersion: true,
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -2435,7 +2435,7 @@ describe("generator", () => {
             rid: 'rid.query.2';
             type: 'query';
             version: '0';
-            pinned: false;
+            isFixedVersion: false;
             parameters: {
               /**
                *   description: Random desc so we test jsdoc
@@ -2466,7 +2466,7 @@ describe("generator", () => {
           apiName: 'returnsTodo',
           type: 'query',
           version: '0',
-          pinned: false,
+          isFixedVersion: false,
           osdkMetadata: $osdkMetadata,
         };
         ",

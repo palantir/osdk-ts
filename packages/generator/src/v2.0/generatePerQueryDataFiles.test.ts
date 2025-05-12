@@ -74,7 +74,7 @@ describe("generatePerQueryDataFiles", () => {
           rid: 'rid.query.1';
           type: 'query';
           version: '1.1.0';
-          pinned: false;
+          isFixedVersion: false;
           parameters: {
             /**
              * (no ontology metadata)
@@ -100,7 +100,7 @@ describe("generatePerQueryDataFiles", () => {
         apiName: 'getCount',
         type: 'query',
         version: '1.1.0',
-        pinned: false,
+        isFixedVersion: false,
         osdkMetadata: $osdkMetadata,
       };
       ",
@@ -130,7 +130,7 @@ describe("generatePerQueryDataFiles", () => {
           rid: 'rid.query.2';
           type: 'query';
           version: '3.2.0';
-          pinned: false;
+          isFixedVersion: false;
           parameters: {
             /**
              *   description: Random desc so we test jsdoc
@@ -161,7 +161,7 @@ describe("generatePerQueryDataFiles", () => {
         apiName: 'returnsTodo',
         type: 'query',
         version: '3.2.0',
-        pinned: false,
+        isFixedVersion: false,
         osdkMetadata: $osdkMetadata,
       };
       ",
@@ -388,7 +388,7 @@ describe("generatePerQueryDataFiles", () => {
             rid: 'rid.query.1';
             type: 'query';
             version: '0';
-            pinned: false;
+            isFixedVersion: false;
             parameters: {
               /**
                * (no ontology metadata)
@@ -473,7 +473,7 @@ describe("generatePerQueryDataFiles", () => {
           apiName: 'doThing',
           type: 'query',
           version: '0',
-          pinned: false,
+          isFixedVersion: false,
           osdkMetadata: $osdkMetadata,
         };
         "

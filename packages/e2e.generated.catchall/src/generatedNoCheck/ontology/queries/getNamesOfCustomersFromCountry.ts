@@ -25,7 +25,7 @@ export interface getNamesOfCustomersFromCountry
     rid: 'ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdda';
     type: 'query';
     version: '0.1.1';
-    pinned: false;
+    isFixedVersion: false;
     parameters: {
       /**
        * (no ontology metadata)
@@ -52,6 +52,6 @@ export const getNamesOfCustomersFromCountry: getNamesOfCustomersFromCountry = {
   apiName: 'getNamesOfCustomersFromCountry',
   type: 'query',
   version: '0.1.1',
-  pinned: false,
+  isFixedVersion: false,
   osdkMetadata: $osdkMetadata,
 };

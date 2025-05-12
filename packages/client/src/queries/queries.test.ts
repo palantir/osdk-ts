@@ -358,7 +358,7 @@ describe("queries", () => {
     const result2 = await client({
       ...$Queries.addOne,
       version: "0.0.5",
-      pinned: false,
+      isFixedVersion: false,
     })
       .executeFunction({
         n: 2,

@@ -117,7 +117,7 @@ async function generateV2QueryFile(
     wireQueryDataTypeToQueryDataTypeDefinition(query.output),
   );
 
-  const isPinned = pinnedQueryTypes.includes(query.fullApiName);
+  const isUsingFixedVersion = pinnedQueryTypes.includes(query.fullApiName);
 
   await fs.writeFile(
     path.join(outDir, `${query.shortApiName}.ts`),
@@ -191,7 +191,7 @@ async function generateV2QueryFile(
         >, VersionBound<$ExpectedClientVersion>{
          __DefinitionMetadata?: {
              ${stringify(baseProps)}
-             pinned: ${isPinned};
+             isFixedVersion: ${isUsingFixedVersion};
             parameters: {
             ${parameterDefsForType(ontology, query)}
             };
@@ -220,7 +220,7 @@ async function generateV2QueryFile(
         "rid": () => undefined,
       })
     },
-    pinned: ${isPinned},
+    isFixedVersion: ${isUsingFixedVersion},
     osdkMetadata: $osdkMetadata
         };
         `),

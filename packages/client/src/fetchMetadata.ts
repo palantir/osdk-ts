@@ -61,7 +61,7 @@ export const fetchMetadataInternal = async <
   } else if (definition.type === "query") {
     return client.ontologyProvider.getQueryDefinition(
       definition.apiName,
-      definition.pinned ? definition.version : undefined,
+      definition.isFixedVersion ? definition.version : undefined,
     ) as any;
   } else {
     throw new Error("Not implemented for given definition");
